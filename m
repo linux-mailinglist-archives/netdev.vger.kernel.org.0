@@ -2,104 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C564229E2C1
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:38:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B76429E2BE
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:38:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404444AbgJ2CiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 22:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404438AbgJ2ChT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 22:37:19 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1CEC0613CF;
-        Wed, 28 Oct 2020 19:37:18 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id 13so1111009pfy.4;
-        Wed, 28 Oct 2020 19:37:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=SfPETHJW2bmykg6fooNc2zKiaqTDW1VZc2TFcTnVdDQ=;
-        b=q9NVcsWumb0BvVd7t17D7q3L8lpBvEaRkcqzGGHDO5z+CrqRkZZVXxPFOCIsMa8ZIe
-         Qp8fnOFdoqcPhY5o6kNLTFnAqG3HXy2VlL48fWZunRI3BCDq1U4zNpFYCO58hdnqvF4R
-         YTI/lxVtolU72nq3PJCsRLDTbkK+UilS5uhAM8FNcl1kthZwdJIYf4gHuPxjV2xAXA7u
-         S2BrUs4fCcMT+UFa8nRtP4zIl25GSh/BMw1Uupazf26lM78cM3qF7wgFZFWcnfn7yAWm
-         0xgCZzk23S2WqWEnMXlPoPJfohI25dY09C3J4kq9ZrMCKDB7OSuK/Tt+nwXxzfhNAFgM
-         s05w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=SfPETHJW2bmykg6fooNc2zKiaqTDW1VZc2TFcTnVdDQ=;
-        b=hOPLJ54rTX/4TShVQ8Tfl0zHMLRNjhb5dQalzTbPMfZG/q7D6gIxDt2QftCY8e44z8
-         j7cAVnHAvfj83jefh9btazmxPMrdofHMYf8GDVT5M3SKptpGLdcTI9D6ZXr7PxWXIJR3
-         TJj7O2puI0U9W0Mytpip15QaEPrLNadDjE3SFqLGJZe0LRglaE0RQBAlAPBC9A6R0GRN
-         ez9MDKj0hbZvxyf2QdNI30iMnk2HwH5+NYyeZf/E6b4JngHEEO7M7As3SXnHwGMYqtFC
-         MbTg7AlfvajoxHfYCFT4PA/ja8pPW2iu4qJ5WE/0kYyVM4E5AHZNGu5pAKPDfwO1dHJy
-         DRZQ==
-X-Gm-Message-State: AOAM533WJ9yHj7UonIN2hhpMGli4K2xtYo5B76St9q1Vsyb/18489Np0
-        qpiywS5DHaelU+hhxEAst6fe+KmPvio=
-X-Google-Smtp-Source: ABdhPJyyY/uc2C6iB73OdiRrVISho6mhFUh/DXypEfPwm0mG9dT4pRWYmo/FrMNSpSy690ZCqdYLFQ==
-X-Received: by 2002:a17:90b:204:: with SMTP id fy4mr2054895pjb.156.1603939037529;
-        Wed, 28 Oct 2020 19:37:17 -0700 (PDT)
-Received: from [10.230.28.251] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z3sm906832pfk.159.2020.10.28.19.37.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Oct 2020 19:37:16 -0700 (PDT)
-Subject: Re: [PATCH net-next 4/5] net: mscc: ocelot: make entry_type a member
- of struct ocelot_multicast
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20201029022738.722794-1-vladimir.oltean@nxp.com>
- <20201029022738.722794-5-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <5831e03c-1714-4ac8-3073-d18f807aff26@gmail.com>
-Date:   Wed, 28 Oct 2020 19:37:09 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.4.0
+        id S2404445AbgJ2CiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 22:38:02 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:6923 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404449AbgJ2Chj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 22:37:39 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CM8jv1XMSz6tv0;
+        Thu, 29 Oct 2020 10:37:39 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 29 Oct 2020 10:37:26 +0800
+Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     Vishwanath Pai <vpai@akamai.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+CC:     "Hunt, Joshua" <johunt@akamai.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linuxarm@huawei.com" <linuxarm@huawei.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
+ <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
+ <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
+ <CAP12E-+3DY-dgzVercKc-NYGPExWO1NjTOr1Gf3tPLKvp6O6+g@mail.gmail.com>
+ <AE096F70-4419-4A67-937A-7741FBDA6668@akamai.com>
+ <CAM_iQpX0XzNDCzc2U5=g6aU-HGYs3oryHx=rmM3ue9sH=Jd4Gw@mail.gmail.com>
+ <19f888c2-8bc1-ea56-6e19-4cb4841c4da0@akamai.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <93ab7f0f-7b5a-74c3-398d-a572274a4790@huawei.com>
+Date:   Thu, 29 Oct 2020 10:37:26 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-In-Reply-To: <20201029022738.722794-5-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <19f888c2-8bc1-ea56-6e19-4cb4841c4da0@akamai.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/28/2020 7:27 PM, Vladimir Oltean wrote:
-> This saves a re-classification of the MDB address on deletion.
+On 2020/10/29 4:04, Vishwanath Pai wrote:
+> On 10/28/20 1:47 PM, Cong Wang wrote:
+>> On Wed, Oct 28, 2020 at 8:37 AM Pai, Vishwanath <vpai@akamai.com> wrote:
+>>> Hi,
+>>>
+>>> We noticed some problems when testing the latest 5.4 LTS kernel and traced it
+>>> back to this commit using git bisect. When running our tests the machine stops
+>>> responding to all traffic and the only way to recover is a reboot. I do not see
+>>> a stack trace on the console.
+>>
+>> Do you mean the machine is still running fine just the network is down?
+>>
+>> If so, can you dump your tc config with stats when the problem is happening?
+>> (You can use `tc -s -d qd show ...`.)
+>>
+>>>
+>>> This can be reproduced using the packetdrill test below, it should be run a
+>>> few times or in a loop. You should hit this issue within a few tries but
+>>> sometimes might take up to 15-20 tries.
+>> ...
+>>> I can reproduce the issue easily on v5.4.68, and after reverting this commit it
+>>> does not happen anymore.
+>>
+>> This is odd. The patch in this thread touches netdev reset path, if packetdrill
+>> is the only thing you use to trigger the bug (that is netdev is always active),
+>> I can not connect them.
+>>
+>> Thanks.
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
+> Hi Cong,
+> 
+>> Do you mean the machine is still running fine just the network is down?
+> 
+> I was able to access the machine via serial console, it looks like it is
+> up and running, just that networking is down.
+> 
+>> If so, can you dump your tc config with stats when the problem is happening?
+>> (You can use `tc -s -d qd show ...`.)
+> 
+> If I try running tc when the machine is in this state the command never
+> returns. It doesn't print anything but doesn't exit either.
+> 
+>> This is odd. The patch in this thread touches netdev reset path, if packetdrill
+>> is the only thing you use to trigger the bug (that is netdev is always active),
+>> I can not connect them.
+> 
+> I think packetdrill creates a tun0 interface when it starts the
+> test and tears it down at the end, so it might be hitting this code path
+> during teardown.
 
-[snip]
+Hi, Is there any preparation setup before running the above packetdrill test
+case, I run the above test case in 5.9-rc4 with this patch applied without any
+preparation setup, did not reproduce it.
 
->  	mc = ocelot_multicast_get(ocelot, mdb->addr, vid);
->  	if (!mc) {
->  		/* New entry */
-> -		int pgid = ocelot_mdb_get_pgid(ocelot, entry_type);
-> +		int pgid;
-> +
-> +		mc = devm_kzalloc(ocelot->dev, sizeof(*mc), GFP_KERNEL);
+By the way, I am newbie to packetdrill:), it would be good to provide the
+detail setup to reproduce it,thanks.
 
-If the MDB object is programmed with SWITCHDEV_OBJ_ID_HOST_MDB then you
-would need this gfp_t to be GFP_ATOMIC per
-net/bridge/br_mdb.c::__br_mdb_notify, if this is a regular
-SWITCHDEV_OBJ_ID_MDB then GFP_KERNEL appears to be fine.
-
-Looks like this existed before, so that might have to be fixed separately.
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+> 
+> P.S: My mail server is having connectivity issues with vger.kernel.org
+> so messages aren't getting delivered to netdev. It'll hopefully get
+> resolved soon.
+> 
+> Thanks,
+> Vishwanath
+> 
+> 
+> .
+> 
