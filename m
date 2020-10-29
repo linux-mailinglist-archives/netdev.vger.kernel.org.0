@@ -2,90 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3554829F09C
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 16:56:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EAD429F0C8
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 17:09:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728509AbgJ2P4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 11:56:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58332 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728450AbgJ2P4a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 11:56:30 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7CDFD206B2;
-        Thu, 29 Oct 2020 15:56:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603986989;
-        bh=UIYyaC9mWXzASi/e/U7uoy/4dyXW1LiDvKm13VKMy4s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PEI41i3ZoJhIeG7S0wdP61pqF6ebSRk+K7bVoA6WcmUVOTRSP7TeVEngKZIxFm9IC
-         2/I5TlPAOE902RPm+CL85tl7glSA+edgRpHtIKvbE1fbSh4qpma6ZuyY5n37A+3biq
-         QpqmaTuKGayA9PYTEjoam2qco5dRtw+uf4nTXBeA=
-Date:   Thu, 29 Oct 2020 08:56:27 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Arnd Bergmann <arnd@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        devel@driverdev.osuosl.org, Arnd Bergmann <arnd@arndb.de>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [RFC] wimax: move out to staging
-Message-ID: <20201029085627.698080a7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201028055628.GB244117@kroah.com>
-References: <20201027212448.454129-1-arnd@kernel.org>
-        <20201028055628.GB244117@kroah.com>
+        id S1726028AbgJ2QJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 12:09:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725804AbgJ2QJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 12:09:10 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B013C0613CF
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 09:09:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Gj30upH9/kEo26IaLq0uisTLNryuTCzVHKmwJEDBErA=; b=XCXVFW4jrNOdVHccWw7xQKuXXV
+        0MGWU8CyAZjbinAiCQA0waEunzYnX2s/l+N3Pakg8H6PuvPjAW3JMrmJgjOv+cJefjpZnBC8lI42L
+        wAPrH5wUYmYtENJ0IEzGCrjFqLY/7BQf8koL5ICVchllGUI2FWoAp3zEYG1/cv4m+N3Xi/R5wqC36
+        +mJMcZR+4ZUA+rwNwGXc2QB54CY8xsTPQUh4SUYYd6k6m9WP5jzohCLFjv9G9nLp9QhFzsFPExjTw
+        Tf7c98FZbpYXpbd/o8I3gEd4CTGSVe/LHjaOTcqJTSPQ+fM9aSyzlo5edvIO4li0PoCfCa7A9KCbl
+        N0QBSS1g==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:44448 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1kYAU3-0004cG-BN; Thu, 29 Oct 2020 16:09:03 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1kYAU3-00071C-1G; Thu, 29 Oct 2020 16:09:03 +0000
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] net: dsa: mv88e6xxx: fix vlan setup
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1kYAU3-00071C-1G@rmk-PC.armlinux.org.uk>
+Sender: "Russell King,,," <rmk@armlinux.org.uk>
+Date:   Thu, 29 Oct 2020 16:09:03 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Oct 2020 06:56:28 +0100 Greg Kroah-Hartman wrote:
-> On Tue, Oct 27, 2020 at 10:20:13PM +0100, Arnd Bergmann wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> > 
-> > There are no known users of this driver as of October 2020, and it will
-> > be removed unless someone turns out to still need it in future releases.
-> > 
-> > According to https://en.wikipedia.org/wiki/List_of_WiMAX_networks, there
-> > have been many public wimax networks, but it appears that these entries
-> > are all stale, after everyone has migrated to LTE or discontinued their
-> > service altogether.
-> > 
-> > NetworkManager appears to have dropped userspace support in 2015
-> > https://bugzilla.gnome.org/show_bug.cgi?id=747846, the
-> > www.linuxwimax.org
-> > site had already shut down earlier.
-> > 
-> > WiMax is apparently still being deployed on airport campus networks
-> > ("AeroMACS"), but in a frequency band that was not supported by the old
-> > Intel 2400m (used in Sandy Bridge laptops and earlier), which is the
-> > only driver using the kernel's wimax stack.
-> > 
-> > Move all files into drivers/staging/wimax, including the uapi header
-> > files and documentation, to make it easier to remove it when it gets
-> > to that. Only minimal changes are made to the source files, in order
-> > to make it possible to port patches across the move.
-> > 
-> > Also remove the MAINTAINERS entry that refers to a broken mailing
-> > list and website.
-> > 
-> > Suggested-by: Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>  
-> 
-> Is this ok for me to take through the staging tree?  If so, I need an
-> ack from the networking maintainers.
-> 
-> If not, feel free to send it through the networking tree and add:
-> 
-> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+DSA assumes that a bridge which has vlan filtering disabled is not
+vlan aware, and ignores all vlan configuration. However, the kernel
+software bridge code allows configuration in this state.
 
-Thinking about it now - we want this applied to -next, correct? 
-In that case it may be better if we take it. The code is pretty dead
-but syzbot and the trivial fix crowd don't know it, so I may slip,
-apply something and we'll have a conflict.
+This causes the kernel's idea of the bridge vlan state and the
+hardware state to disagree, so "bridge vlan show" indicates a correct
+configuration but the hardware lacks all configuration. Even worse,
+enabling vlan filtering on a DSA bridge immediately blocks all traffic
+which, given the output of "bridge vlan show", is very confusing.
+
+Allow the VLAN configuration to be updated on Marvell DSA bridges,
+otherwise we end up cutting all traffic when enabling vlan filtering.
+
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+This is the revised version of the patch that has been waiting a long
+time to fix this issue on the Marvell DSA switches.
+
+ drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index bd297ae7cf9e..72340c17f099 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2851,6 +2851,7 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
+ 
+ 	chip->ds = ds;
+ 	ds->slave_mii_bus = mv88e6xxx_default_mdio_bus(chip);
++	ds->configure_vlan_while_not_filtering = true;
+ 
+ 	mv88e6xxx_reg_lock(chip);
+ 
+-- 
+2.20.1
+
