@@ -2,108 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E88529EA02
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 12:07:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3EB429EA05
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 12:07:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727371AbgJ2LGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727386AbgJ2LG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 07:06:56 -0400
+Received: from correo.us.es ([193.147.175.20]:54974 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727023AbgJ2LGz (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 29 Oct 2020 07:06:55 -0400
-Received: from mail-eopbgr70071.outbound.protection.outlook.com ([40.107.7.71]:32327
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726025AbgJ2LGz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 07:06:55 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jVd7Oq6WCVVwzW7o/wUeNL5eChbaJVL/tpttnCpQYXH94B+7kM1F5MkFLKXoaSFz5jgawhToVMwrYXnygH3m2IssawsIvNSC26rrVjPai9AZcj9k7EcNLGwTyClxETzQ7Cdvf5G+oFNAXYVRIpWOLgb+XuFCCLQbr+v1JbskXJzdH+MDZjVbW/k4ihhArBE9RfuML59K9HFGRy0aZSt/p2oz4HuSAdN6rcZmqWcbbAEDTlmblK+NCZDrdetx3zK3wJ5xNPwYdzAc4S7Q8MubuuRIUYBG7h6KPiWu20gJEwcijnbGe4l14eZF29UhS1XxpB3kL7G8FHJpgh5PEvMyfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aJbCiPiloaoYvlC2ib66DxOopObhv66Rrt7Ur15W2Ew=;
- b=MCVvbOR2IuXKwYTTzzF46NQ/pN7wh6uHV8j4JYur8fIVn4rL6sqcqQ8tMLiRBf3bBe/hCvdLyrF7W6LS0pPes/EdJTcKAlnXnseRtjjGB1fLUR6VTAp5qEKPdx7jOuWxzYQ1X0TL9btHjBnNzW8W0s5G7rTfQNtx5b3VT4QsHPyvTbDoR6YhUMWwq0rVqkgA3dfbWYCdxm0qp43uq0hpUsDtvg565KUxkh320x7rUlMn4wZTMdeEwOGqOn06xjxsF+UmRJ8Y1aBNgJZo/gDql/gZEWrahh9sUYGpeScIZyjwhC/xQqqMbgDjscYduxHSprtygE9UZ+n4fCvjOECCqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aJbCiPiloaoYvlC2ib66DxOopObhv66Rrt7Ur15W2Ew=;
- b=l0ejH/w/3mQrX7HZSxfYHw/CKAVBcMMyrnXLbGEtrzKdXoIHe0pb6yaimhnIbosS8koj6NhUJmpgTa4wS5D47LO20yqX6Mqi5GvgJnFmxmyFf8GGRoxMHF4Xn00m4zaHC+iw04mImQpHFz3URKpo9qg45fdv9nF1gVF7jjXz0UU=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR0402MB3550.eurprd04.prod.outlook.com (2603:10a6:803:3::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Thu, 29 Oct
- 2020 11:06:48 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3499.027; Thu, 29 Oct 2020
- 11:06:48 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-CC:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 4/5] net: mscc: ocelot: make entry_type a member
- of struct ocelot_multicast
-Thread-Topic: [PATCH net-next 4/5] net: mscc: ocelot: make entry_type a member
- of struct ocelot_multicast
-Thread-Index: AQHWrZsfTNJok4x350yal8NLoCn43Kmt3ZWAgACOZIA=
-Date:   Thu, 29 Oct 2020 11:06:47 +0000
-Message-ID: <20201029110647.nfwpfuqkbznqmo2u@skbuf>
-References: <20201029022738.722794-1-vladimir.oltean@nxp.com>
- <20201029022738.722794-5-vladimir.oltean@nxp.com>
- <5831e03c-1714-4ac8-3073-d18f807aff26@gmail.com>
-In-Reply-To: <5831e03c-1714-4ac8-3073-d18f807aff26@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.2.177]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: fcd7aab6-9567-4f2b-a8d4-08d87bfabae5
-x-ms-traffictypediagnostic: VI1PR0402MB3550:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0402MB3550FA934B526D192A79CB78E0140@VI1PR0402MB3550.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zGbWLtYE0VwN5G7Dux+9iM6pb+cx9B7/oPAjjyE5d+QD9l1GTnyl4RVMmn6xCgjj1sYQV1huDfL5fxxijzsqen0BBj0DmyBwolBTAC0i/9DX/kFaS4TFyFO3UYS4c9u2Hdzbr7jz/5fmysdurn7fKBQ5I2Gu/QZqFWuyWETspZ88ZqoCuwpzSgrOsWlC5PgWm2c/iF+tQbhsy6djHU3hGbgrc37sR6caH7MQV6pdISWi72q8avMA7DTIOIs24QHsKBl4m/o+b5HoRgNx1i2VnQuhYKtlXgViTYpsPaDt9AgmJEgVWXL4JJILL7nr8EcvcS3i1e52I2SbaJ/J1Hxzbg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(39860400002)(396003)(366004)(136003)(376002)(346002)(8676002)(478600001)(6486002)(33716001)(8936002)(4326008)(2906002)(6916009)(6506007)(316002)(54906003)(44832011)(66446008)(186003)(6512007)(26005)(9686003)(5660300002)(86362001)(66556008)(76116006)(64756008)(66946007)(66476007)(4744005)(71200400001)(1076003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: /qZVaDhfVRV7wFpHZyyYdc+FxGZ+yum+hd5+iL59arj0yUg3L12hNWgqVmutb/xc8YKfW8ZkQtmA80hexQt8Yonn9jjG2iq/FFBF2w/4NpM3Z/74xnrbwPyj4HmsnlXZjI4pFcMrh2RiqbzHDBIcY6a4N23mnNdfckLb2NsgnEAXUt3TKATvWbuOt7lJn22NvDaqfexKLT1aOjIcRDQ28j4avadaf5bDRFjd81KtmarI0voQ0lURPSOBRBRYDQRPJGhY0snuthAtc7qn9Fsz2I2H/SLPcoxhMfA4dsvBLgjub/3+6GXC/fm2DV+7L0cNeXDmTsSZo/uotbTEy38tQR9wG4gVuKXK0Tk3t3Kw/nDnnXbvwTGz6dKbL+LwPGSKR2b8dL0L9jrpde8ft9g2QQsK2PQbL4W7sjIyGvwtXH84Jzy2KeqEAmMzdPv3ae4dY0/hAuL36hljZtwAnlogtthjJqTekJ3RKNNbam8aDMl2LDgypOi1GQt5I+QiXpl13kdthIMe1A4p1typDDvhkZPpHp0RUHNUrzclOcm4WYDHXPjtq1vibPQs9JXou1FPB2Kciwqb5laxWxaWHCDYTUxaTosgskDUARd3Gajfekwf+1GYg9DxXtWRgUM99nuFaqLIBSBLBu4uyw8xkiK3WQ==
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1264763597DD6E46857DFA1BF2184C6E@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id A118E891992
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 12:06:53 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 92BFDDA844
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 12:06:53 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 79B3EDA840; Thu, 29 Oct 2020 12:06:53 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 4F7AFDA78A;
+        Thu, 29 Oct 2020 12:06:51 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 29 Oct 2020 12:06:51 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 236CC42EF4EA;
+        Thu, 29 Oct 2020 12:06:51 +0100 (CET)
+Date:   Thu, 29 Oct 2020 12:06:50 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
+        kuba@kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org
+Subject: Re: [PATCH linux-5.9 1/1] net: netfilter: fix KASAN:
+ slab-out-of-bounds Read in nft_flow_rule_create
+Message-ID: <20201029110650.GA10242@salvia>
+References: <20201019172532.3906-1-saeed.mirzamohammadi@oracle.com>
+ <20201020115047.GA15628@salvia>
+ <28C74722-8F35-4397-B567-FA5BCF525891@oracle.com>
+ <3BE1A64B-7104-4220-BAD1-870338A33B15@oracle.com>
+ <566D38F7-7C99-40F4-A948-03F2F0439BBB@oracle.com>
+ <20201027062111.GD206502@kroah.com>
+ <20201027081922.GA5285@salvia>
+ <20201029110241.GB3840801@kroah.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fcd7aab6-9567-4f2b-a8d4-08d87bfabae5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2020 11:06:47.9029
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NwZyXdmGTswD8A/Fr3kQ37MneEd3Y61I0gtdFI/2naH4bYsix2BKb90O2nzvoyqAceglDTbhRXtv9Vkc+LHrlA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3550
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201029110241.GB3840801@kroah.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 07:37:09PM -0700, Florian Fainelli wrote:
-> If the MDB object is programmed with SWITCHDEV_OBJ_ID_HOST_MDB then you
-> would need this gfp_t to be GFP_ATOMIC per
-> net/bridge/br_mdb.c::__br_mdb_notify, if this is a regular
-> SWITCHDEV_OBJ_ID_MDB then GFP_KERNEL appears to be fine.
+On Thu, Oct 29, 2020 at 12:02:41PM +0100, Greg KH wrote:
+> On Tue, Oct 27, 2020 at 09:19:22AM +0100, Pablo Neira Ayuso wrote:
+> > Hi Greg,
+> > 
+> > On Tue, Oct 27, 2020 at 07:21:11AM +0100, Greg KH wrote:
+> > > On Sun, Oct 25, 2020 at 04:31:57PM -0700, Saeed Mirzamohammadi wrote:
+> > > > Adding stable.
+> > > 
+> > > What did that do?
+> > 
+> > Saeed is requesting that stable maintainers cherry-picks this patch:
+> > 
+> > 31cc578ae2de ("netfilter: nftables_offload: KASAN slab-out-of-bounds
+> > Read in nft_flow_rule_create")
+> > 
+> > into stable 5.4 and 5.8.
+> 
+> 5.9 is also a stable kernel :)
 
-Good point, I think I would need to do something more radical anyway, as
-programming anything into the MAC table calls:
-ocelot_mact_learn
--> ocelot_mact_wait_for_completion
-   -> readx_poll_timeout
-I'm thinking to move all of this into a workqueue.=
+Oh, indeed, I forgot this one :)
+
+> Will go queue it up everywhere...
+
+Thanks.
