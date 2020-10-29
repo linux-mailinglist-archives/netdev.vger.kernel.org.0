@@ -2,77 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DF1229ECBF
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 14:22:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4232829ECC9
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 14:23:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725904AbgJ2NWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 09:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54680 "EHLO
+        id S1726943AbgJ2NXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 09:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725771AbgJ2NWc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 09:22:32 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A962CC0613D2
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 06:21:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=qnNuc+Q4zm9I9Hk5SLspxv5x30VByZY9NTRPEOGdNuM=; b=WvTKhCcEN58zDBuTBe8fFpJ3V
-        l2qTwu6B3/f1Jiys9HiyMxvEM+EQ89VTCubjfnKbqX/CIEiR0KLgZ79X6WJ0SdeXgMcOTMGRvv5l9
-        Q4zJyluY1ta4L/nD4WycfnGyEWDswfXECCDB7fvOh3qoHcsn8rbb7YWmMGOlCdZEEiuAU9ahBOzUK
-        gyyCZDHMLEKoTN7Ty1e3NRydAz9Vyme3IQG/9tDKxtkNnauQ3x408B1H+IlVY3Ls3M6AhaTHxf+NI
-        uMXjsPhoW/Pwsdd1urzTQmcXFdZOXUdBEneeJW0Y5bW4V5UYm4a3E5HI+3wWCB5lyU4df3hVjA6+w
-        058TWjI3g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52466)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kY7sL-0004Og-Eo; Thu, 29 Oct 2020 13:21:57 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kY7sL-00068t-8U; Thu, 29 Oct 2020 13:21:57 +0000
-Date:   Thu, 29 Oct 2020 13:21:57 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next 4/5] net: phy: marvell10g: change MACTYPE if
- underlying MAC does not support it
-Message-ID: <20201029132157.GT1551@shell.armlinux.org.uk>
-References: <20201028221427.22968-1-kabel@kernel.org>
- <20201028221427.22968-5-kabel@kernel.org>
+        with ESMTP id S1725601AbgJ2NXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 09:23:37 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA67C0613D2;
+        Thu, 29 Oct 2020 06:23:36 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id t22so1276081plr.9;
+        Thu, 29 Oct 2020 06:23:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GXWZRuxu4VR36pF/cjVXXRZb5YESqKLE2k0JDNWMpBU=;
+        b=Ba+fdg0/mxmgFjx3BLhYuwhBgDs7yEH1xttYt57NG88+f0TEcVpfvrejTKwXT6T9Jv
+         zd+bPE4ayZFtQJ7MoOoMci+vPQs/fDnVQH9S+u2G0VNACi+uUEOdXhga+LZF8Wm7rBhP
+         LM2/qFbrQ3anWMpqrW3f4TjSyECdwmt4D7T4zqGuoa/9MNQ6hDJZap2lMFf2PZeZvSaR
+         O9Lg8fF1fV01q7Loptb/jRBtEk8XS+YDdjeeVgGOsWWEdHY1WnKTT1nBVYU2zczf9EKB
+         UjFya2ka4Pp1fMueAV1fJQq2xy3acTYSNR7dmiYoXPsbgEAClxUBfpMMtvbQ+UA7gr5/
+         B7IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GXWZRuxu4VR36pF/cjVXXRZb5YESqKLE2k0JDNWMpBU=;
+        b=bTtIicXMv1Vtr1CcAOd5GTDDjNqw+wPxc8CWEwggxBej+Li3B/yjsjHmFvj/6J6yYk
+         AfOsNxNbiTT9lwi6Yy7aCw4NksImEFPWbIR5YWR9T7odOo+IET0Sb6fVivaaUF1t1Y5h
+         zWA6Cxoo370jjqo/nDCGR4TPARsrUqjnhiLqUbN81oGYYfRZZ6qfL8E6C9I3Ii/mZBRm
+         cFR2nvC7+VilzxhoOfhvDAb3RHmsrtUpy1Jf3pW8afeOfcA1a6gqUhpJpXXA3Wzvb/4G
+         DOaXyslbeDG484Z4jPPpuOf128aHKGwtX3p/t60b+jNRC5pSJUyt3Huj6wJJQunnPi1I
+         4nQw==
+X-Gm-Message-State: AOAM533IGmlrWSyDVcIYycs5uW1rKNPc02VjWudgyOAhDXrIEYCeP868
+        LU44s0oTnxjQl0RoNaS6sFo3dvIpqZfTnL3v6NA=
+X-Google-Smtp-Source: ABdhPJwOTAUNTtIHl2nJJxRVPqBOxgwW3ox58eG5wvfAmz1vNeMZX5wHcOnEQ6xyE0OJ2VNHkuFomQ==
+X-Received: by 2002:a17:902:690b:b029:d6:41d8:bdc7 with SMTP id j11-20020a170902690bb02900d641d8bdc7mr3918041plk.7.1603977816207;
+        Thu, 29 Oct 2020 06:23:36 -0700 (PDT)
+Received: from localhost.localdomain ([49.207.222.191])
+        by smtp.gmail.com with ESMTPSA id i1sm2795872pfa.168.2020.10.29.06.23.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 06:23:35 -0700 (PDT)
+From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
+To:     Oliver Neukum <oneukum@suse.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Subject: [PATCH v2] net: usb: usbnet: update __usbnet_{read|write}_cmd() to use new API
+Date:   Thu, 29 Oct 2020 18:52:56 +0530
+Message-Id: <20201029132256.11793-1-anant.thazhemadam@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20201010065623.10189-1-anant.thazhemadam@gmail.com>
+References: <20201010065623.10189-1-anant.thazhemadam@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201028221427.22968-5-kabel@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 11:14:26PM +0100, Marek Behún wrote:
-> RollBall SFPs contain a Marvell 88X3310 PHY, but by default the MACTYPE
-> is set to 10GBASE-R with Rate Matching.
-> 
-> Some devices (for example those based on Armada 38x) only support up to
-> 2500base-x SerDes modes.
-> 
-> Change the PHY's MACTYPE to 4 (which means changing between 10gbase-r,
-> 5gbase-r, 2500base-x ans SGMII depending on copper speed) if this is the
-> case (which is infered from phydev->interface).
-> 
-> Signed-off-by: Marek Behún <kabel@kernel.org>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Russell King <rmk+kernel@armlinux.org.uk>
+Currently, __usbnet_{read|write}_cmd() use usb_control_msg(),
+and thus consider potential partial reads/writes being done to 
+be perfectly valid.
+Quite a few callers of usbnet_{read|write}_cmd() don't enforce
+checking for partial reads/writes into account either, automatically
+assuming that a complete read/write occurs.
 
-This'll do as a stop-gap until we have a better way to determine which
-MACTYPE mode we should be using.
+However, the new usb_control_msg_{send|recv}() APIs don't allow partial
+reads and writes.
+Using the new APIs also relaxes the return value checking that must
+be done after usbnet_{read|write}_cmd() is called.
 
+Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+---
+Changes in v2:
+	* Fix build error
+
+This patch has been compile and build tested with a .config file that
+was generated using make allyesconfig, and the build error has been 
+fixed.
+Unfortunately, I wasn't able to get my hands on a usbnet adapter for testing,
+and would appreciate it if someone could do that.
+
+ drivers/net/usb/usbnet.c | 52 ++++++++--------------------------------
+ 1 file changed, 10 insertions(+), 42 deletions(-)
+
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index bf6c58240bd4..2f7c7b7f4047 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1982,64 +1982,32 @@ EXPORT_SYMBOL(usbnet_link_change);
+ static int __usbnet_read_cmd(struct usbnet *dev, u8 cmd, u8 reqtype,
+ 			     u16 value, u16 index, void *data, u16 size)
+ {
+-	void *buf = NULL;
+-	int err = -ENOMEM;
+ 
+ 	netdev_dbg(dev->net, "usbnet_read_cmd cmd=0x%02x reqtype=%02x"
+ 		   " value=0x%04x index=0x%04x size=%d\n",
+ 		   cmd, reqtype, value, index, size);
+ 
+-	if (size) {
+-		buf = kmalloc(size, GFP_KERNEL);
+-		if (!buf)
+-			goto out;
+-	}
+-
+-	err = usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
+-			      cmd, reqtype, value, index, buf, size,
+-			      USB_CTRL_GET_TIMEOUT);
+-	if (err > 0 && err <= size) {
+-        if (data)
+-            memcpy(data, buf, err);
+-        else
+-            netdev_dbg(dev->net,
+-                "Huh? Data requested but thrown away.\n");
+-    }
+-	kfree(buf);
+-out:
+-	return err;
++	return usb_control_msg_recv(dev->udev, 0,
++			      cmd, reqtype, value, index, data, size,
++			      USB_CTRL_GET_TIMEOUT, GFP_KERNEL);
+ }
+ 
+ static int __usbnet_write_cmd(struct usbnet *dev, u8 cmd, u8 reqtype,
+ 			      u16 value, u16 index, const void *data,
+ 			      u16 size)
+ {
+-	void *buf = NULL;
+-	int err = -ENOMEM;
+-
+ 	netdev_dbg(dev->net, "usbnet_write_cmd cmd=0x%02x reqtype=%02x"
+ 		   " value=0x%04x index=0x%04x size=%d\n",
+ 		   cmd, reqtype, value, index, size);
+ 
+-	if (data) {
+-		buf = kmemdup(data, size, GFP_KERNEL);
+-		if (!buf)
+-			goto out;
+-	} else {
+-        if (size) {
+-            WARN_ON_ONCE(1);
+-            err = -EINVAL;
+-            goto out;
+-        }
+-    }
+-
+-	err = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0),
+-			      cmd, reqtype, value, index, buf, size,
+-			      USB_CTRL_SET_TIMEOUT);
+-	kfree(buf);
++	if (size && !data) {
++		WARN_ON_ONCE(1);
++		return -EINVAL;
++	}
+ 
+-out:
+-	return err;
++	return usb_control_msg_send(dev->udev, 0,
++			cmd, reqtype, value, index, data, size,
++			USB_CTRL_SET_TIMEOUT, GFP_KERNEL);
+ }
+ 
+ /*
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
