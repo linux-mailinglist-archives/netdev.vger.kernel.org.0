@@ -2,292 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9182429EA5C
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 12:18:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2A629EA83
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 12:30:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727617AbgJ2LSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 07:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35626 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727484AbgJ2LS2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 07:18:28 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF802C0613D2
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 04:18:27 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id t11so2576346edj.13
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 04:18:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uCve2fqdX3eNfDkHydNsG1ArXsFgKs44/Cen4YHQRhc=;
-        b=Rt2fU4VojLB9xvErHudVB8jLuZ1H4pDYHINrUlGVIFh956A+ak6vfplVj/PyGF/wR6
-         kUYNhsaVQ+eRZdczfzvBBKSHbc291jSGfaVF5EHgqdKEU9CisHWI7UT7yqZsxQQSYktV
-         OCFf+s/MB/su7dw/PZ/r9fl/Ex5dGIgshId0bAnwzl4FrV1V2lj0vOphUjN0e8XXJQ0a
-         LrzM1IobgNfOjMsF4z31YUQSguZWUmHuvrdQmc1aS3McmGlxlrDMbygteLaUaw5C7gch
-         7dNecrLLNvcX2HRw+EpoXXGgDzfAcdeYV/aMwJitKrgQn+VjmMaEw4Og1V8AWLrBtz9r
-         3XtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uCve2fqdX3eNfDkHydNsG1ArXsFgKs44/Cen4YHQRhc=;
-        b=DYcQImviBOeygOj/sqa9EZbRM78chkeTMZ/4Wx3n7IZUDRXPRLjMcC/fNWwLnQo0Pw
-         wLrRL0Nv73ApS0fPdsdUQQG/uWbjVl9lyrptjpwe/ZM5VJTpxWI62/RTC11ahmtuDMRS
-         T1K3ZAKNzQ5NQMnM/dG68pg+Ym1UgwSmxIr176/B9DENf4Y28nl5hvTZMev47KHc8WTX
-         AD/VTrhH82fn/0GjiwdwCvoRwMI8jEldfRdNzck5N9/2cKtp/JuGsFFd5XpcUKEqq37P
-         V8FV36K8X4hyYZYyvVw8zx878GDHZUSPJQ/dl/akYKOM99/D+fSbp4cWrm5lMNTm7YOP
-         TIlQ==
-X-Gm-Message-State: AOAM532ouzFEhBIkdfRlOYy/suDA8aBrCw/9/N1j/+uT/+k5juE3TRcG
-        KIfDApnLivj09j/LnOjzPdBv1iI/o9meUmAd
-X-Google-Smtp-Source: ABdhPJzHM6Kh55jDDItpDcML3PR0jZUQ8wUM62ziJUdSVnAvdQ8026HGkyF8lmg3tdbch4S3XiNy1w==
-X-Received: by 2002:a05:6402:b87:: with SMTP id cf7mr3517570edb.137.1603970306426;
-        Thu, 29 Oct 2020 04:18:26 -0700 (PDT)
-Received: from localhost.localdomain ([2a02:a03f:689e:3400:b894:bc77:ad21:b2db])
-        by smtp.gmail.com with ESMTPSA id c19sm1302160edt.48.2020.10.29.04.18.25
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 29 Oct 2020 04:18:25 -0700 (PDT)
-From:   David Verbeiren <david.verbeiren@tessares.net>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org,
-        David Verbeiren <david.verbeiren@tessares.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: [PATCH bpf] selftest/bpf: Validate initial values of per-cpu hash elems
-Date:   Thu, 29 Oct 2020 12:17:30 +0100
-Message-Id: <20201029111730.6881-1-david.verbeiren@tessares.net>
-X-Mailer: git-send-email 2.29.0
+        id S1727229AbgJ2LaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 07:30:03 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:14253 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726912AbgJ2LaC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 07:30:02 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f9aa7a50002>; Thu, 29 Oct 2020 04:29:41 -0700
+Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 29 Oct
+ 2020 11:30:00 +0000
+Date:   Thu, 29 Oct 2020 13:29:56 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     wenxu <wenxu@ucloud.cn>
+CC:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: mlx5_vdpa problem
+Message-ID: <20201029112956.GA139728@mtl-vdi-166.wap.labs.mlnx>
+References: <401b2eb1-f77b-f7d5-8d6f-03ec30e81d6a@ucloud.cn>
+ <258f86a8-d6ae-010a-11f8-c155b1df4723@ucloud.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <258f86a8-d6ae-010a-11f8-c155b1df4723@ucloud.cn>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1603970981; bh=aICB8l911UbIki7etRsy2KK9LG1P2S2d6Qq2/AuBEU0=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:Content-Transfer-Encoding:
+         In-Reply-To:User-Agent:X-Originating-IP:X-ClientProxiedBy;
+        b=g2UgHmxknVH2+lNfGRi+fXh0QYJZwD0TLJTwT127/Y9XFrhji6XtWgewdAnVVvXqg
+         CX3k5HMta87Z1PdDwemxTqpQubgmqdpJ7R1ZMgv6WxEOK/scz/oxff6rAH4sIGgrX/
+         pXhsA9oOGxptjb3nH297WqoP8pC81MDUy1DdHhkGEt4audwCiLEaiackCOTA7Jcg42
+         XVTqH6WncT8nvleFNeXYrgxkCmeyn9XdmoA+aWe2uvr2AGY1LWh9HkXrJ4g1We4ZYs
+         8jXbu2pF8YT4Ljkdxlz/RuH/b0GZjgeANEJmC6xvYpxTR3QyMguHYChoK1sbuTE4z6
+         n7J7+qFJwVhoQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tests that when per-cpu hash map or LRU hash map elements are
-re-used as a result of a bpf program inserting elements, the
-element values for the other CPUs than the one executing the
-BPF code are reset to 0.
+On Thu, Oct 22, 2020 at 06:40:56PM +0800, wenxu wrote:
+>=20
+> Hi mellanox team,
+>=20
+>=20
+> I test the mlx5 vdpa=A0 in linux-5.9 and meet several problem.
+>=20
+>=20
+> # lspci | grep Ether | grep Dx
+> b3:00.0 Ethernet controller: Mellanox Technologies MT2892 Family [Connect=
+X-6 Dx]
+> b3:00.1 Ethernet controller: Mellanox Technologies MT2892 Family [Connect=
+X-6 Dx]
+>=20
+> # ethtool -i net2
+> driver: mlx5e_rep
+> version: 5.9.0
+> firmware-version: 22.28.1002 (MT_0000000430)
+> expansion-rom-version:
+> bus-info: 0000:b3:00.0
+> supports-statistics: yes
+> supports-test: no
+> supports-eeprom-access: no
+> supports-register-dump: no
+> supports-priv-flags: no
+>=20
+>=20
+> init switchdev:
+>=20
+>=20
+> # echo 1 > /sys/class/net/net2/device/sriov_numvfs
+> # echo 0000:b3:00.2 > /sys/bus/pci/drivers/mlx5_core/unbind
+> # devlink dev eswitch set pci/0000:b3:00.0=A0 mode switchdev encap enable
+>=20
+> # modprobe vdpa vhost-vdpa mlx5_vdpa
+>=20
+> # ip l set dev net2 vf 0 mac 52:90:01:00:02:13
+> # echo 0000:b3:00.2 > /sys/bus/pci/drivers/mlx5_core/bind
+>=20
+>=20
+> setup vm:
+>=20
+> # qemu-system-x86_64 -name test=A0 -enable-kvm -smp 16,sockets=3D2,cores=
+=3D8,threads=3D1 -m 8192 -drive file=3D./centos7.qcow2,format=3Dqcow2,if=3D=
+none,id=3Ddrive-virtio-disk0 -device virtio-blk-pci,scsi=3Doff,bus=3Dpci.0,=
+addr=3D0x7,drive=3Ddrive-virtio-disk0,id=3Dvirtio-disk0,bootindex=3D1 -netd=
+ev type=3Dvhost-vdpa,vhostdev=3D/dev/vhost-vdpa-0,id=3Dvhost-vdpa0 -device =
+virtio-net-pci,netdev=3Dvhost-vdpa0,page-per-vq=3Don,iommu_platform=3Don,id=
+=3Dnet0,bus=3Dpci.0,addr=3D0x3,disable-legacy=3Don -vnc 0.0.0.0:0
+>=20
+>=20
+> In the vm:=A0 virtio net device=A0 eth0 with ip address 10.0.0.75/24
+>=20
+> On the host: VF0 rep device pf0vf0 with ip address 10.0.0.7/24
+>=20
+>=20
+> problem 1:
+>=20
+> On the host:
+>=20
+> # ping 10.0.0.75
+>=20
+> Some times there will be loss packets.
+>=20
+> And in the VM:
+>=20
+> dmesg shows:
+>=20
+> eth0: bad tso: type 100, size: 0
+>=20
+> eth0: bad tso: type 10, size: 28
+>=20
+>=20
+> So I think maybe the vnet header is not init with 0?=A0 And Then I clear =
+the gso_type, gso_size and flags in the virtio_net driver.=A0 There is no p=
+ackets dropped.
 
-This validates the fix proposed in:
-https://lkml.kernel.org/bpf/20201027221324.27894-1-david.verbeiren@tessares.net/
+Hi wenxu, thanks for reporting this.
 
-Change-Id: I38bc7b3744ed40704a7b2cc6efa179fb344c4bee
-Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: David Verbeiren <david.verbeiren@tessares.net>
----
- .../selftests/bpf/prog_tests/map_init.c       | 204 ++++++++++++++++++
- 1 file changed, 204 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/map_init.c
+Usually, you would not assign IP address to the representor as it
+represents a switch port. Nevertheless, I will try to reproduce this
+here.
+Could you repeat your experiment with two hosts so the host the
+representor for your VF and the uplink representor are connected to an
+ovs switch and other host is configured with ip address 10.0.0.7/24?
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/map_init.c b/tools/testing/selftests/bpf/prog_tests/map_init.c
-new file mode 100644
-index 000000000000..9640cf925908
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/map_init.c
-@@ -0,0 +1,204 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+// Copyright (c) 2020 Tessares SA <http://www.tessares.net>
-+
-+#include <test_progs.h>
-+
-+#define TEST_VALUE 0x1234
-+
-+static int nr_cpus;
-+static int duration;
-+static char bpf_log_buf[BPF_LOG_BUF_SIZE];
-+
-+typedef unsigned long long map_key_t;
-+typedef unsigned long long map_value_t;
-+typedef struct {
-+	map_value_t v; /* padding */
-+} __bpf_percpu_val_align pcpu_map_value_t;
-+
-+/* executes bpf program that updates map with key, value */
-+static int bpf_prog_insert_elem(int fd, map_key_t key, map_value_t value)
-+{
-+	struct bpf_load_program_attr prog;
-+	struct bpf_insn insns[] = {
-+		BPF_LD_IMM64(BPF_REG_8, key),
-+		BPF_LD_IMM64(BPF_REG_9, value),
-+
-+		/* update: R1=fd, R2=&key, R3=&value, R4=flags */
-+		BPF_LD_MAP_FD(BPF_REG_1, fd),
-+		BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+		BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_8, 0),
-+		BPF_MOV64_REG(BPF_REG_3, BPF_REG_2),
-+		BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, -8),
-+		BPF_STX_MEM(BPF_DW, BPF_REG_3, BPF_REG_9, 0),
-+		BPF_MOV64_IMM(BPF_REG_4, 0),
-+		BPF_EMIT_CALL(BPF_FUNC_map_update_elem),
-+
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	};
-+	char buf[64] = {};
-+	int pfd, err;
-+	__u32 retval = 0;
-+
-+	memset(&prog, 0, sizeof(prog));
-+	prog.prog_type = BPF_PROG_TYPE_SCHED_CLS;
-+	prog.insns = insns;
-+	prog.insns_cnt = ARRAY_SIZE(insns);
-+	prog.license = "GPL";
-+
-+	pfd = bpf_load_program_xattr(&prog, bpf_log_buf, BPF_LOG_BUF_SIZE);
-+	if (CHECK(pfd < 0, "bpf_load_program_xattr", "failed: %s\n%s\n",
-+		  strerror(errno), bpf_log_buf))
-+		return -1;
-+
-+	err = bpf_prog_test_run(pfd, 1, buf, sizeof(buf), NULL, NULL,
-+				&retval, NULL);
-+	if (CHECK(err || retval, "bpf_prog_test_run",
-+		  "err=%d retval=%d errno=%d\n", err, retval, errno))
-+		err = -1;
-+
-+	close(pfd);
-+
-+	return err;
-+}
-+
-+static int check_values_one_cpu(pcpu_map_value_t *value, map_value_t expected)
-+{
-+	int i, nzCnt = 0;
-+	map_value_t val;
-+
-+	for (i = 0; i < nr_cpus; i++) {
-+		val = bpf_percpu(value, i);
-+		if (val) {
-+			if (val != expected) {
-+				PRINT_FAIL("Unexpected value (cpu %d): 0x%llx\n",
-+					   i, val);
-+				return -1;
-+			}
-+			nzCnt++;
-+		}
-+	}
-+
-+	if (CHECK(nzCnt != 1, "non-zero-count",
-+		   "Map value set for %d CPUs instead of 1!\n", nzCnt))
-+		return -1;
-+
-+	return 0;
-+}
-+
-+static int map_setup(int map_type, int max, int num)
-+{
-+	pcpu_map_value_t value[nr_cpus];
-+	int map_fd, i, err;
-+	map_key_t key;
-+
-+	map_fd = bpf_create_map(map_type, sizeof(key),
-+				sizeof(pcpu_map_value_t), 2, 0);
-+	if (CHECK(map_fd < 0, "bpf_create_map", "failed: %s\n",
-+		  strerror(errno)))
-+		return -1;
-+
-+	for (i = 0; i < nr_cpus; i++)
-+		bpf_percpu(value, i) = 0xdeadbeef;
-+
-+	for (key = 1; key <= num; key++) {
-+		err = bpf_map_update_elem(map_fd, &key, value, BPF_NOEXIST);
-+		if (CHECK(err, "bpf_map_update_elem", "(key=%llu) failed: %s\n",
-+			  key, strerror(errno))) {
-+			close(map_fd);
-+			return -1;
-+		}
-+	}
-+
-+	return map_fd;
-+}
-+
-+/* Add key=1 elem with values set for all CPUs
-+ * Delete elem key=1
-+ * Run bpf prog that inserts new key=1 elem with value=0x1234
-+ *   (bpf prog can only set value for current CPU)
-+ * Lookup Key=1 and check value is as expected for all CPUs:
-+ *   value set by bpf prog for one CPU, 0 for all others
-+ */
-+static void test_pcpu_map_init(void)
-+{
-+	pcpu_map_value_t value[nr_cpus];
-+	int map_fd, err;
-+	map_key_t key;
-+
-+	/* set up map with 1 element, value filled for all CPUs */
-+	map_fd = map_setup(BPF_MAP_TYPE_PERCPU_HASH, 2, 1);
-+	if (CHECK(map_fd < 0, "map_setup", "failed\n"))
-+		return;
-+
-+	/* delete key=1 element so it will later be re-used*/
-+	key = 1;
-+	err = bpf_map_delete_elem(map_fd, &key);
-+	if (CHECK(err, "bpf_map_delete_elem", "failed: %s\n", strerror(errno)))
-+		goto error_map;
-+
-+	/* run bpf prog that inserts new elem, re-using the slot just freed */
-+	err = bpf_prog_insert_elem(map_fd, key, TEST_VALUE);
-+	if (!ASSERT_OK(err, "bpf_prog_insert_elem"))
-+		goto error_map;
-+
-+	/* check that key=1 was re-created by bpf prog */
-+	err = bpf_map_lookup_elem(map_fd, &key, value);
-+	if (CHECK(err, "bpf_map_lookup_elem", "failed: %s\n", strerror(errno)))
-+		goto error_map;
-+
-+	/* and has expected value for just a single CPU, 0 for all others */
-+	check_values_one_cpu(value, TEST_VALUE);
-+
-+error_map:
-+	close(map_fd);
-+}
-+
-+/* Add key=1 and key=2 elems with values set for all CPUs
-+ * Run bpf prog that inserts new key=3 elem
-+ *   (only for current cpu; other cpus should have initial value = 0)
-+ * Lookup Key=1 and check value is as expected for all CPUs
-+ */
-+static void test_pcpu_lru_map_init(void)
-+{
-+	pcpu_map_value_t value[nr_cpus];
-+	int map_fd, err;
-+	map_key_t key;
-+
-+	/* Set up LRU map with 2 elements, values filled for all CPUs.
-+	 * With these 2 elements, the LRU map is full
-+	 */
-+	map_fd = map_setup(BPF_MAP_TYPE_LRU_PERCPU_HASH, 2, 2);
-+	if (CHECK(map_fd < 0, "map_setup", "failed\n"))
-+		return;
-+
-+	/* run bpf prog that inserts new key=3 element, re-using LRU slot */
-+	key = 3;
-+	err = bpf_prog_insert_elem(map_fd, key, TEST_VALUE);
-+	if (!ASSERT_OK(err, "bpf_prog_insert_elem"))
-+		goto error_map;
-+
-+	/* check that key=3 present */
-+	err = bpf_map_lookup_elem(map_fd, &key, value);
-+	if (CHECK(err, "bpf_map_lookup_elem", "failed: %s\n", strerror(errno)))
-+		goto error_map;
-+
-+	/* and has expected value for just a single CPU, 0 for all others */
-+	check_values_one_cpu(value, TEST_VALUE);
-+
-+error_map:
-+	close(map_fd);
-+}
-+
-+void test_map_init(void)
-+{
-+	nr_cpus = bpf_num_possible_cpus();
-+	if (CHECK(nr_cpus <= 1, "nr_cpus", "> 1 needed for this test"))
-+		return;
-+
-+	if (test__start_subtest("pcpu_map_init"))
-+		test_pcpu_map_init();
-+	if (test__start_subtest("pcpu_lru_map_init"))
-+		test_pcpu_lru_map_init();
-+}
--- 
-2.29.0
+Also, can you send the firmware version you're using?
 
+>=20
+>=20
+> problem 2:
+>=20
+> In the vm: iperf -s
+>=20
+> On the host: iperf -c 10.0.0.75 -t 100 -i 2.
+>=20
+>=20
+> The tcp connection can't established for the syn+ack with partail cum but=
+ not handle correct by hardware.
+>=20
+> After I set the csum off=A0 for eth0 in the vm, the problem is resolved. =
+Although the mlx5_vnet support VIRTIO_NET_F_CSUM feature.
+>=20
+>=20
+>=20
+> problem 3:
+>=20
+>=20
+> The iperf perofrmance not stable before I disable the pf0vf0 tso offload
+>=20
+> #ethtool -K pf0vf0 tso off
+>=20
+>=20
+> I know the mlx5_vnet did not support feature VIRTIO_NET_F_GUEST_TSO4. But=
+ the hardware can't=A0 cut the big tso packet to several small tcp packet a=
+nd send to virtio=A0 net device?
+>=20
+>=20
+>=20
+>=20
+> BR
+>=20
+> wenxu
+>=20
+>=20
+>=20
