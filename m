@@ -2,93 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B01129E2CA
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:38:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 640F229E2CE
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:38:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726732AbgJ2CWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2387521AbgJ2CWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 28 Oct 2020 22:22:45 -0400
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:56692 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726694AbgJ2CWd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 22:22:33 -0400
-Received: from [192.168.188.14] (unknown [106.75.220.2])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 025305C17FF;
-        Thu, 29 Oct 2020 10:22:05 +0800 (CST)
-Subject: [resend] Solution for the problem conntrack in tc subsystem
-References: <7821f3ae-0e71-0d8b-5ef9-81da69ac29dc@ucloud.cn>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-From:   wenxu <wenxu@ucloud.cn>
-X-Forwarded-Message-Id: <7821f3ae-0e71-0d8b-5ef9-81da69ac29dc@ucloud.cn>
-Message-ID: <435e4756-f36a-f0f5-0ac5-45bd5cacaff2@ucloud.cn>
-Date:   Thu, 29 Oct 2020 10:22:04 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726506AbgJ2CWf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 22:22:35 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4119EC0613D1;
+        Wed, 28 Oct 2020 19:22:35 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id x13so1068995pfa.9;
+        Wed, 28 Oct 2020 19:22:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=V5JJRMZ/LialouktJyBf7mZSO4NBSF4FBTqd6F9Pi8k=;
+        b=IeNhS+Gyv2qKdOjaHQtoBxqrLnpSOXonjzaxaepYpBINZK59SCw0bdEjnEM4KMfThQ
+         1NLsKcLfwnF0h5XAT5EyI0DptSB7xjkMGW7KTr+7GkNK0vA3fXKPmX8nNnMwBz6yg4U3
+         GxuWR+bTz0RQ5PD42Spt+7mBIHoj86PGpMnMIPbM9VWQkhHbFIoe8POPWSUX8jdAhY26
+         wshSbIZ/4VbrXN8Kojs/cobPVgKKPm/bKeaa9clVvVIzZ/5sVK+6586aIeZhA3qQDgG9
+         5JQZbCdyOyfjOA6JGQmzenokJUTxGxSijZkxB3S9qllNlLXKKh4tfq56G+z13IrdB+d8
+         SwZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=V5JJRMZ/LialouktJyBf7mZSO4NBSF4FBTqd6F9Pi8k=;
+        b=Z/Xv6i9WHRWD8Qh0nfZSSac2+FKT+tHWiuJcG39ZaXkr5UZF9xN8YNbhbfntqcIyvq
+         JnrCdm9XKonhAnxVJyQGdAgcWw3gT+BRwvqv6xNzM1LFvr7/qXU177Cj6Fx+QdUGhR/U
+         bCpl4HDRkjeYuL22YkvibrjJPawklgOqAdbE//w8dhW1FaVvLR1uwDLHiAQcG2usa4co
+         eZwLOnoQtdxKa2ejVLKNI+TEY23CKBLykSvx3K1sNp33L8fdL8fnBZBSauVTM4Piurrv
+         f354fcu22mIZ2nFNUVsOM3tgZudZZnyyv4ORP2LJ8Sxc3BF3e8qP2vUFx6htGUCmF0iE
+         HW2A==
+X-Gm-Message-State: AOAM532U2nZfyauxFU911iYaFIga1C4xKB6cvzyB811y/f3IJKgeyVhR
+        ZZ3sDDvZiOwcRxE4BEav7ok=
+X-Google-Smtp-Source: ABdhPJxpJ+gXX35+waw2MH3TvaKILK3+9AoBbHuUkui20aiv9+lsITQX0TlCxdAARkoMff2+MPY+1A==
+X-Received: by 2002:a63:4d0b:: with SMTP id a11mr1948937pgb.296.1603938154633;
+        Wed, 28 Oct 2020 19:22:34 -0700 (PDT)
+Received: from [10.230.28.251] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y3sm891152pfn.167.2020.10.28.19.22.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Oct 2020 19:22:33 -0700 (PDT)
+Subject: Re: [PATCH net-next v7 2/8] net: dsa: Give drivers the chance to veto
+ certain upper devices
+To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20201028074221.29326-1-kurt@linutronix.de>
+ <20201028074221.29326-3-kurt@linutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <67c19828-6335-3003-b86b-18d72a961e05@gmail.com>
+Date:   Wed, 28 Oct 2020 19:22:31 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.4.0
 MIME-Version: 1.0
-In-Reply-To: <7821f3ae-0e71-0d8b-5ef9-81da69ac29dc@ucloud.cn>
+In-Reply-To: <20201028074221.29326-3-kurt@linutronix.de>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZH0tKSkpOSk4fHR5NVkpNS0hCSENKSU1KSE9VGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hNSlVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PzY6Ngw5Vj5LP08LQgoZMC0S
-        KSswCzxVSlVKTUtIQkhDSklNSEtKVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
-        TlVJSUtVSVlXWQgBWUFJTU1MNwY+
-X-HM-Tid: 0a75722989122087kuqy025305c17ff
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Hi,
 
+On 10/28/2020 12:42 AM, Kurt Kanzenbach wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Some switches rely on unique pvids to ensure port separation in
+> standalone mode, because they don't have a port forwarding matrix
+> configurable in hardware. So, setups like a group of 2 uppers with the
+> same VLAN, swp0.100 and swp1.100, will cause traffic tagged with VLAN
+> 100 to be autonomously forwarded between these switch ports, in spite
+> of there being no bridge between swp0 and swp1.
+> 
+> These drivers need to prevent this from happening. They need to have
+> VLAN filtering enabled in standalone mode (so they'll drop frames tagged
+> with unknown VLANs) and they can only accept an 8021q upper on a port as
+> long as it isn't installed on any other port too. So give them the
+> chance to veto bad user requests.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> ---
+>  include/net/dsa.h |  6 ++++++
+>  net/dsa/slave.c   | 12 ++++++++++++
+>  2 files changed, 18 insertions(+)
+> 
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 04e93bafb7bd..4e60d2610f20 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -536,6 +536,12 @@ struct dsa_switch_ops {
+>  	void	(*get_regs)(struct dsa_switch *ds, int port,
+>  			    struct ethtool_regs *regs, void *p);
+>  
+> +	/*
+> +	 * Upper device tracking.
+> +	 */
+> +	int	(*port_prechangeupper)(struct dsa_switch *ds, int port,
+> +				       struct netdev_notifier_changeupper_info *info);
+> +
+>  	/*
+>  	 * Bridge integration
+>  	 */
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index 3bc5ca40c9fb..1919a025c06f 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -1987,10 +1987,22 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+>  	switch (event) {
+>  	case NETDEV_PRECHANGEUPPER: {
+>  		struct netdev_notifier_changeupper_info *info = ptr;
+> +		struct dsa_switch *ds;
+> +		struct dsa_port *dp;
+> +		int err;
+>  
+>  		if (!dsa_slave_dev_check(dev))
+>  			return dsa_prevent_bridging_8021q_upper(dev, ptr);
+>  
+> +		dp = dsa_slave_to_port(dev);
+> +		ds = dp->ds;
+> +
+> +		if (ds->ops->port_prechangeupper) {
+> +			err = ds->ops->port_prechangeupper(ds, dp->index, ptr);
 
-Currently kernel tc subsystem can do conntrack things in cat_ct. But there is a problem need
+I would pass 'info' instead of 'ptr' here even if there is no functional
+difference, this would be clearer. Not a reason to resubmit if
+everything else is fine in this series:
 
-to fix.  For several fragment packets handle in act_ct.  The tcf_ct_handle_fragments will defrag
-
-the packets to a big one. But the after action will redirect mirror to a device which maybe lead
-
-the reassembly big packet over the mtu of target device.
-
-
-The proposal "net/sched: act_mirred: fix fragment the packet after defrag in act_ct"
-
-http://patchwork.ozlabs.org/project/netdev/patch/1593485646-14989-1-git-send-email-wenxu@ucloud.cn/
-
-is not been accepted.
-
-
-another proposal "net/sched: add act_ct_output support"
-
-http://patchwork.ozlabs.org/project/netdev/patch/1598335663-26503-1-git-send-email-wenxu@ucloud.cn/
-
-is also not a good solution. There are some duplicate codes for this and act_mirred.
-
-
-Something other proposal like add the  act_fragment also can't be work.  The fragment will make
-
-The big packet to several ones and can't be handle in the tc pipe. And also this is not friendly for
-
-user to explicitly add action for fragment.
-
-Only do gso for the reassembly big packet is also can't fix all the case such for icmp packet.
-
-
-So there are some proper solution for this problem. In the Internet we can't avoid the fragment packets.
-
-
-
-BR
-
-wenxu
-
-
-
-
-
-
-
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
