@@ -2,92 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D4C529EFE7
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 16:30:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3680229F012
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 16:35:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726004AbgJ2Pax (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 11:30:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46566 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728094AbgJ2PaF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 11:30:05 -0400
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F16F220724
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 15:30:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603985404;
-        bh=XzZtbCkl1jo+TfW5pKpAlerOkwGIGki4vv7UFVKZvtU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=uW4bt13OG+P/Et+UsZEf0rEs59mwXoof5q27zLZ6dwSw0dFfr4ufDurPQ6jc4NkjF
-         gxSZSuppLX0pvLiancfJ8p6/FGc71o68wYAqCoj4s9aR2g/DRnEo6Cx5LuzqK7kHke
-         O+AcIDO4AuJaak4l2PR1gydYgKBUwQZmKiciSeO0=
-Received: by mail-qt1-f180.google.com with SMTP id h19so2069749qtq.4
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 08:30:03 -0700 (PDT)
-X-Gm-Message-State: AOAM531yVPY1i2wOMwJPpErUsRrEhDBjrAtwHc8NZkFYzRBaG1lJ6p7e
-        NI8UPYbtNkcqmGA9z5DoF8MEYLJVt9L/g3k6z8M=
-X-Google-Smtp-Source: ABdhPJxOtebNGLJYx/yMw0wSoth8m7OyCBgtL1+OjViPBEEEvdvdOlf0H8Dxb/Bvs/lfaVTzxgRozbhKEuQ5M+Z3Jio=
-X-Received: by 2002:ac8:7955:: with SMTP id r21mr4056900qtt.204.1603985403006;
- Thu, 29 Oct 2020 08:30:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201028002235.928999-1-andrew@lunn.ch> <20201028002235.928999-3-andrew@lunn.ch>
- <294bfee65035493fac1e2643a5e360d5@AcuMS.aculab.com> <20201029143121.GN878328@lunn.ch>
- <2c3145a577f84e96b2ec7be15db90331@AcuMS.aculab.com> <20201029151307.GP878328@lunn.ch>
-In-Reply-To: <20201029151307.GP878328@lunn.ch>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 29 Oct 2020 16:29:46 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0Hc6+a=Ncf-_SS5rsPH5b5TuaGBTF6iqhqWhqrbF8jZw@mail.gmail.com>
-Message-ID: <CAK8P3a0Hc6+a=Ncf-_SS5rsPH5b5TuaGBTF6iqhqWhqrbF8jZw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] net: rose: Escape trigraph to fix warning
- with W=1
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Laight <David.Laight@aculab.com>,
-        Arnd Bergmann <arnd@arndb.de>,
+        id S1728329AbgJ2P3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 11:29:08 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:36755 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728189AbgJ2P05 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 11:26:57 -0400
+Received: by mail-oi1-f194.google.com with SMTP id y186so3584520oia.3;
+        Thu, 29 Oct 2020 08:26:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4OFBgFX8nLewiGm0jPfaiHisoQ+37/JFIGxKrAiCiQ0=;
+        b=LXfpRCb82FBJtaOftXsJGLwN3cs0ooQ6JJzWyaWWZA70CAPZF6hJ+IY94Dzv08dTp5
+         B/o363Lu3CqggkUwN5z48VBxCuDz57dEUQ7fRCr+F/54vkH6lRuHe1NCTuzVAQDYPs1f
+         nSSwnRznZwadZSYcHbg0NUHLlpeZ4RzPLmnj9t+lDvC0K3uCVswL/BKKsTbtst3beRDB
+         l8Q4I8AcKHWCMq8PK6iw9uVd7cV0KngdF4ZTS+tyEuRxMQL5KcQP3AtDoTY9lQSkFN5B
+         TmSnN/oBw83vYo3EAwzgkj4C+Y3XD7G0Ki/LVwMYQgs1nYmvbkjOuihYv/ZMn116Jlgo
+         Djmw==
+X-Gm-Message-State: AOAM532WQVQWBwjss1zVW87xWYVvXLQ19hu1dVAFu9Luw00zv7DRtn33
+        iCf+Ulyxw5NINCgPWtxCAA==
+X-Google-Smtp-Source: ABdhPJw8CuiTPteZx2cGCfAEj/1GKhtCCfbr2/hiuI3d+cIboYSSNq6Ss3yQni+9Jc/GGf1rHNK0zQ==
+X-Received: by 2002:aca:b854:: with SMTP id i81mr316628oif.6.1603985217102;
+        Thu, 29 Oct 2020 08:26:57 -0700 (PDT)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id c14sm667260otp.1.2020.10.29.08.26.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 08:26:55 -0700 (PDT)
+Received: (nullmailer pid 1902350 invoked by uid 1000);
+        Thu, 29 Oct 2020 15:26:54 -0000
+Date:   Thu, 29 Oct 2020 10:26:54 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        devicetree@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Ralf Baechle <ralf@linux-mips.org>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next v7 8/8] dt-bindings: net: dsa: Add documentation
+ for Hellcreek switches
+Message-ID: <20201029152654.GA1901783@bogus>
+References: <20201028074221.29326-1-kurt@linutronix.de>
+ <20201028074221.29326-9-kurt@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201028074221.29326-9-kurt@linutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 4:13 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> On Thu, Oct 29, 2020 at 02:52:52PM +0000, David Laight wrote:
-> > From: Andrew Lunn
-> > > Sent: 29 October 2020 14:31
->
-> I think this trigraph issues popped up because of one of the changes
-> you have in your playground, adding more warnings.
->
-> What do you think of disabling the trigraph warning as well as
-> disabling trigraphs themselves?
+On Wed, 28 Oct 2020 08:42:21 +0100, Kurt Kanzenbach wrote:
+> Add basic documentation and example.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  .../net/dsa/hirschmann,hellcreek.yaml         | 127 ++++++++++++++++++
+>  1 file changed, 127 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+> 
 
-The trigraph warnings are currently disabled in mainline, and trigraphs
-themselves are disabled in GCC unless explicitly enabled.
 
-My series contained a patch that changes all trigraphs by adding
-'\' characters, to let us no longer disable the warning and slightly
-simplify the command line:
+My bot found errors running 'make dt_binding_check' on your patch:
 
- drivers/atm/idt77252.c                                  | 2 +-
- drivers/gpu/drm/msm/msm_rd.c                            | 2 +-
- drivers/mtd/maps/sun_uflash.c                           | 2 +-
- drivers/net/ethernet/marvell/mvneta.c                   | 2 +-
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 +-
- drivers/s390/block/dasd_proc.c                          | 2 +-
- drivers/scsi/imm.c                                      | 4 ++--
- drivers/scsi/ppa.c                                      | 4 ++--
- drivers/tty/serial/sunsu.c                              | 2 +-
- net/rose/af_rose.c                                      | 4 ++--
- sound/isa/msnd/msnd.c                                   | 2 +-
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml:49:11: [warning] wrong indentation: expected 8 but found 10 (indentation)
 
-Sorry you ran into this after you picked up the patches to the
-Makefile but not my preparation patch.
+dtschema/dtc warnings/errors:
 
-I was unsure about whether this is worth changing, so I did not
-send that one patch from my series and we can probably just
-not drop the -Wno-trigraphs flag.
 
-       Arnd
+See https://patchwork.ozlabs.org/patch/1389458
+
+The base for the patch is generally the last rc1. Any dependencies
+should be noted.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
