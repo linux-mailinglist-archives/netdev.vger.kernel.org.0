@@ -2,73 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0631429F076
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 16:50:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3554829F09C
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 16:56:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728455AbgJ2PuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 11:50:24 -0400
-Received: from novek.ru ([213.148.174.62]:43586 "EHLO novek.ru"
+        id S1728509AbgJ2P4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 11:56:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58332 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728388AbgJ2PuY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 11:50:24 -0400
-Received: from [192.168.0.18] (unknown [37.228.234.253])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1728450AbgJ2P4a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 11:56:30 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 82106502F65;
-        Thu, 29 Oct 2020 18:52:28 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 82106502F65
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1603986750; bh=Er4UxBPa4BBYlAQLxLfuVhPOfnPKZW9tEU+7njR9EMs=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=LG0CoDVgNjfaCpbQmYs+aMZxFwxQ0jqWITuzDaqwZqQvctNZK3SUXosvyyLW2juTK
-         FVWG4otShi11/wLncOdQ9M1LUAggn/osP+GtPIsmGcPCx+wPf9/B1OIGYiqPg9WzA9
-         llNFDT2QqK/GzqD5+Fh649ZGy//rR/gaQsDq7AA4=
-Subject: Re: [PATCH net] ip6_tunnel: set inner ipproto before ip6_tnl_encap.
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Alexander Ovechkin <ovov@yandex-team.ru>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Tom Herbert <tom@herbertland.com>
-References: <20201016111156.26927-1-ovov@yandex-team.ru>
- <CA+FuTSe5szAPV0qDVU1Qa7e-XH6uO4eWELfzykOvpb0CJ0NbUA@mail.gmail.com>
- <0E7BC212-3BBA-4C68-89B9-C6DA956553AD@yandex-team.ru>
- <CA+FuTSfNZoONM3TZxpC0ND2AsiNw0K-jgjKMe0FWkS9LVG6yNA@mail.gmail.com>
- <ABA7FBA9-42F8-4D6E-9D1E-CDEC74966131@yandex-team.ru>
- <CA+FuTSeejYh2eu80bB8MikUMb7KevQN-ka-+anfTfQATPSrKHA@mail.gmail.com>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-Message-ID: <d5aff8dd-1eeb-2963-d4a6-c230cb43c1ae@novek.ru>
-Date:   Thu, 29 Oct 2020 15:50:17 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 7CDFD206B2;
+        Thu, 29 Oct 2020 15:56:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603986989;
+        bh=UIYyaC9mWXzASi/e/U7uoy/4dyXW1LiDvKm13VKMy4s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PEI41i3ZoJhIeG7S0wdP61pqF6ebSRk+K7bVoA6WcmUVOTRSP7TeVEngKZIxFm9IC
+         2/I5TlPAOE902RPm+CL85tl7glSA+edgRpHtIKvbE1fbSh4qpma6ZuyY5n37A+3biq
+         QpqmaTuKGayA9PYTEjoam2qco5dRtw+uf4nTXBeA=
+Date:   Thu, 29 Oct 2020 08:56:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        devel@driverdev.osuosl.org, Arnd Bergmann <arnd@arndb.de>,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>
+Subject: Re: [RFC] wimax: move out to staging
+Message-ID: <20201029085627.698080a7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201028055628.GB244117@kroah.com>
+References: <20201027212448.454129-1-arnd@kernel.org>
+        <20201028055628.GB244117@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <CA+FuTSeejYh2eu80bB8MikUMb7KevQN-ka-+anfTfQATPSrKHA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 28 Oct 2020 06:56:28 +0100 Greg Kroah-Hartman wrote:
+> On Tue, Oct 27, 2020 at 10:20:13PM +0100, Arnd Bergmann wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> > 
+> > There are no known users of this driver as of October 2020, and it will
+> > be removed unless someone turns out to still need it in future releases.
+> > 
+> > According to https://en.wikipedia.org/wiki/List_of_WiMAX_networks, there
+> > have been many public wimax networks, but it appears that these entries
+> > are all stale, after everyone has migrated to LTE or discontinued their
+> > service altogether.
+> > 
+> > NetworkManager appears to have dropped userspace support in 2015
+> > https://bugzilla.gnome.org/show_bug.cgi?id=747846, the
+> > www.linuxwimax.org
+> > site had already shut down earlier.
+> > 
+> > WiMax is apparently still being deployed on airport campus networks
+> > ("AeroMACS"), but in a frequency band that was not supported by the old
+> > Intel 2400m (used in Sandy Bridge laptops and earlier), which is the
+> > only driver using the kernel's wimax stack.
+> > 
+> > Move all files into drivers/staging/wimax, including the uapi header
+> > files and documentation, to make it easier to remove it when it gets
+> > to that. Only minimal changes are made to the source files, in order
+> > to make it possible to port patches across the move.
+> > 
+> > Also remove the MAINTAINERS entry that refers to a broken mailing
+> > list and website.
+> > 
+> > Suggested-by: Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>  
+> 
+> Is this ok for me to take through the staging tree?  If so, I need an
+> ack from the networking maintainers.
+> 
+> If not, feel free to send it through the networking tree and add:
+> 
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-
-On 29.10.2020 14:40, Willem de Bruijn wrote:
-> On Thu, Oct 29, 2020 at 3:46 AM Alexander Ovechkin <ovov@yandex-team.ru> wrote:
->> On 28 Oct 2020, at 01:53 UTC Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
->>> On Tue, Oct 27, 2020 at 5:52 PM Alexander Ovechkin <ovov@yandex-team.ru> wrote:
->>>>> But it was moved on purpose to avoid setting the inner protocol to IPPROTO_MPLS. That needs to use skb->inner_protocol to further segment.
->>>> And why do we need to avoid setting the inner protocol to IPPROTO_MPLS? Currently skb->inner_protocol is used before call of ip6_tnl_xmit.
->>>> Can you please give example when this patch breaks MPLS segmentation?
->>> mpls_gso_segment calls skb_mac_gso_segment on the inner packet. After
->>> setting skb->protocol based on skb->inner_protocol.
->> Yeah, but mpls_gso_segment is called before ip6_tnl_xmit (because tun devices don't have NETIF_F_GSO_SOFTWARE in their mpls_features), so it does not matter to what value ip6_tnl_xmit sets skb->inner_ipproto.
->> And even if gso would been called after both mpls_xmit and ip6_tnl_xmit it would fail as you have written.
-> Good point. Okay, if no mpls gso packets can make it here, then it
-> should not matter.
->
-> Vadim, are we missing another reason for this move?
->
-> Else, no other concerns from me. Please do add a Fixes tag.
-I need a bit of time to repeat all the tests I've done earlier. Will be back 
-soon with the results.
+Thinking about it now - we want this applied to -next, correct? 
+In that case it may be better if we take it. The code is pretty dead
+but syzbot and the trivial fix crowd don't know it, so I may slip,
+apply something and we'll have a conflict.
