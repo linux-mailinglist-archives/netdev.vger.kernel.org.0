@@ -2,137 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1002529E4A3
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:45:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B566129E4AA
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:45:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730343AbgJ2Hkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 03:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727842AbgJ2HYy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:54 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3554AC0613D6;
-        Wed, 28 Oct 2020 19:51:03 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id c129so939391yba.8;
-        Wed, 28 Oct 2020 19:51:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pFNTNQYbRyOv5NmpjKO5OIDkrgD4q/4HyFQbZpD9rio=;
-        b=Sz3ZR9ETd2kV4vxHW3jXQvbFLBr+/gNd8lV4FkSGC8RQACO3bRIqVuJyqeqCF3w0Zu
-         diFYbTQJwT5/x9Tj8qO+qWlVy1iMBrWF6LCV+54pm11ww8siqo/F216uszvvTdxpv+UF
-         i7pYyT8qkJGPwEG5sKAIi0hDe/hxWcYaKs1rfJ/JQNEFu7YihXOmLJtvLoe1IfnUR5Zm
-         9mIReXtEjB5QAtLn4uGKmUCX83pc0/mNxTvmeBoV0Yr4brgMPi51H+2gnUuv0xDxvDTZ
-         gL11sW1ciW+fYidRsNmeVypZUACQFcj950Usl8Tj1C8hywMeic8KyYigDpIVMFZR/b0D
-         N+lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pFNTNQYbRyOv5NmpjKO5OIDkrgD4q/4HyFQbZpD9rio=;
-        b=bPbF8ENVQ7Fgc7yljSv6MYbAYzRiVL2zHcUILyaVub5RihAjtXwkDr30TacbekSY9f
-         cLCoxRjcfRMsa96ovIc8MmcFzlZ+vWiQzSK4z0Nq1FaBkSMwv42hWrxFrt/k1kC9JliV
-         3SWRGhgg5tbk7y3K18r87eDS4vLH2iaVbiughr9iTMnmgcryFxMFs75muHWblmnRimiJ
-         CqWeYNPGsWSXJToX6UbyE1+P4NRFjUyWsxidLaDh1BlxZgxVK/hYPiw1cwyM8wauxC9e
-         5TcFxqiGq5GzNX+z7k4TKLZxhCyGMjyw97M6cLbhAWTFMjw+7LzWJHFwtM/DaTiTb7Ul
-         AgUw==
-X-Gm-Message-State: AOAM53188jEHpk1y+U0SX7F6Eg/bHFeCW5cbnw6W9zaXAm1MbpihiSji
-        op5PzExFuhLvm7r0zWTZSLasU9ncTDTPYI+q/q8=
-X-Google-Smtp-Source: ABdhPJzNjJWkIUjdzJJFAiK/Djvk8G351SdeQVAcdMClEbbFFEmkOxxD14nzc/iZg96DlvalpxCnyrKtP+wUdZ6QhDU=
-X-Received: by 2002:a25:c7c6:: with SMTP id w189mr3129912ybe.403.1603939862400;
- Wed, 28 Oct 2020 19:51:02 -0700 (PDT)
+        id S1730493AbgJ2HmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 03:42:16 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7095 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727051AbgJ2HmP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:42:15 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CM93c6g2kzLpc0;
+        Thu, 29 Oct 2020 10:53:00 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 29 Oct 2020 10:52:51 +0800
+Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
+ <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
+ <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <1f8ebcde-f5ff-43df-960e-3661706e8d04@huawei.com>
+Date:   Thu, 29 Oct 2020 10:52:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-References: <20201023033855.3894509-1-haliu@redhat.com> <20201028132529.3763875-1-haliu@redhat.com>
- <7babcccb-2b31-f9bf-16ea-6312e449b928@gmail.com> <20201029020637.GM2408@dhcp-12-153.nay.redhat.com>
- <CAEf4BzZR4MqQJCD4kzFsbhpfmp4RB7SHcP5AbAiqzqK7to2u+g@mail.gmail.com> <20201028193438.21f1c9b0@hermes.local>
-In-Reply-To: <20201028193438.21f1c9b0@hermes.local>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 28 Oct 2020 19:50:51 -0700
-Message-ID: <CAEf4BzY1gz2fR0DXOYgbheDArdYhWA66YRFuy=xMRveHTx=VVQ@mail.gmail.com>
-Subject: Re: [PATCHv2 iproute2-next 0/5] iproute2: add libbpf support
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Hangbin Liu <haliu@redhat.com>, David Ahern <dsahern@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 7:34 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Wed, 28 Oct 2020 19:27:20 -0700
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
->
-> > On Wed, Oct 28, 2020 at 7:06 PM Hangbin Liu <haliu@redhat.com> wrote:
-> > >
-> > > On Wed, Oct 28, 2020 at 05:02:34PM -0600, David Ahern wrote:
-> > > > fails to compile on Ubuntu 20.10:
-> > > >
-> > > > root@u2010-sfo3:~/iproute2.git# ./configure
-> > > > TC schedulers
-> > > >  ATM  yes
-> > > >  IPT  using xtables
-> > > >  IPSET  yes
-> > > >
-> > > > iptables modules directory: /usr/lib/x86_64-linux-gnu/xtables
-> > > > libc has setns: yes
-> > > > SELinux support: yes
-> > > > libbpf support: yes
-> > > > ELF support: yes
-> > > > libmnl support: yes
-> > > > Berkeley DB: no
-> > > > need for strlcpy: yes
-> > > > libcap support: yes
-> > > >
-> > > > root@u2010-sfo3:~/iproute2.git# make clean
-> > > >
-> > > > root@u2010-sfo3:~/iproute2.git# make -j 4
-> > > > ...
-> > > > /usr/bin/ld: ../lib/libutil.a(bpf_libbpf.o): in function `load_bpf_object':
-> > > > bpf_libbpf.c:(.text+0x3cb): undefined reference to
-> > > > `bpf_program__section_name'
-> > > > /usr/bin/ld: bpf_libbpf.c:(.text+0x438): undefined reference to
-> > > > `bpf_program__section_name'
-> > > > /usr/bin/ld: bpf_libbpf.c:(.text+0x716): undefined reference to
-> > > > `bpf_program__section_name'
-> > > > collect2: error: ld returned 1 exit status
-> > > > make[1]: *** [Makefile:27: ip] Error 1
-> > > > make[1]: *** Waiting for unfinished jobs....
-> > > > make: *** [Makefile:64: all] Error 2
-> > >
-> > > You need to update libbpf to latest version.
-> >
-> > Why not using libbpf from submodule?
->
-> Because it makes it harder for people downloading tarballs and distributions.
+On 2020/9/18 3:26, Cong Wang wrote:
+> On Fri, Sep 11, 2020 at 1:13 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>
+>> On 2020/9/11 4:07, Cong Wang wrote:
+>>> On Tue, Sep 8, 2020 at 4:06 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>
+>>>> Currently there is concurrent reset and enqueue operation for the
+>>>> same lockless qdisc when there is no lock to synchronize the
+>>>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
+>>>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
+>>>> out-of-bounds access for priv->ring[] in hns3 driver if user has
+>>>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
+>>>> skb with a larger queue_mapping after the corresponding qdisc is
+>>>> reset, and call hns3_nic_net_xmit() with that skb later.
+>>>>
+>>>> Reused the existing synchronize_net() in dev_deactivate_many() to
+>>>> make sure skb with larger queue_mapping enqueued to old qdisc(which
+>>>> is saved in dev_queue->qdisc_sleeping) will always be reset when
+>>>> dev_reset_queue() is called.
+>>>>
+>>>> Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
+>>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>>>> ---
+>>>> ChangeLog V2:
+>>>>         Reuse existing synchronize_net().
+>>>> ---
+>>>>  net/sched/sch_generic.c | 48 +++++++++++++++++++++++++++++++++---------------
+>>>>  1 file changed, 33 insertions(+), 15 deletions(-)
+>>>>
+>>>> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+>>>> index 265a61d..54c4172 100644
+>>>> --- a/net/sched/sch_generic.c
+>>>> +++ b/net/sched/sch_generic.c
+>>>> @@ -1131,24 +1131,10 @@ EXPORT_SYMBOL(dev_activate);
+>>>>
+>>>>  static void qdisc_deactivate(struct Qdisc *qdisc)
+>>>>  {
+>>>> -       bool nolock = qdisc->flags & TCQ_F_NOLOCK;
+>>>> -
+>>>>         if (qdisc->flags & TCQ_F_BUILTIN)
+>>>>                 return;
+>>>> -       if (test_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state))
+>>>> -               return;
+>>>> -
+>>>> -       if (nolock)
+>>>> -               spin_lock_bh(&qdisc->seqlock);
+>>>> -       spin_lock_bh(qdisc_lock(qdisc));
+>>>>
+>>>>         set_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state);
+>>>> -
+>>>> -       qdisc_reset(qdisc);
+>>>> -
+>>>> -       spin_unlock_bh(qdisc_lock(qdisc));
+>>>> -       if (nolock)
+>>>> -               spin_unlock_bh(&qdisc->seqlock);
+>>>>  }
+>>>>
+>>>>  static void dev_deactivate_queue(struct net_device *dev,
+>>>> @@ -1165,6 +1151,30 @@ static void dev_deactivate_queue(struct net_device *dev,
+>>>>         }
+>>>>  }
+>>>>
+>>>> +static void dev_reset_queue(struct net_device *dev,
+>>>> +                           struct netdev_queue *dev_queue,
+>>>> +                           void *_unused)
+>>>> +{
+>>>> +       struct Qdisc *qdisc;
+>>>> +       bool nolock;
+>>>> +
+>>>> +       qdisc = dev_queue->qdisc_sleeping;
+>>>> +       if (!qdisc)
+>>>> +               return;
+>>>> +
+>>>> +       nolock = qdisc->flags & TCQ_F_NOLOCK;
+>>>> +
+>>>> +       if (nolock)
+>>>> +               spin_lock_bh(&qdisc->seqlock);
+>>>> +       spin_lock_bh(qdisc_lock(qdisc));
+>>>
+>>>
+>>> I think you do not need this lock for lockless one.
+>>
+>> It seems so.
+>> Maybe another patch to remove qdisc_lock(qdisc) for lockless
+>> qdisc?
+> 
+> Yeah, but not sure if we still want this lockless qdisc any more,
+> it brings more troubles than gains.
+> 
+>>
+>>
+>>>
+>>>> +
+>>>> +       qdisc_reset(qdisc);
+>>>> +
+>>>> +       spin_unlock_bh(qdisc_lock(qdisc));
+>>>> +       if (nolock)
+>>>> +               spin_unlock_bh(&qdisc->seqlock);
+>>>> +}
+>>>> +
+>>>>  static bool some_qdisc_is_busy(struct net_device *dev)
+>>>>  {
+>>>>         unsigned int i;
+>>>> @@ -1213,12 +1223,20 @@ void dev_deactivate_many(struct list_head *head)
+>>>>                 dev_watchdog_down(dev);
+>>>>         }
+>>>>
+>>>> -       /* Wait for outstanding qdisc-less dev_queue_xmit calls.
+>>>> +       /* Wait for outstanding qdisc-less dev_queue_xmit calls or
+>>>> +        * outstanding qdisc enqueuing calls.
+>>>>          * This is avoided if all devices are in dismantle phase :
+>>>>          * Caller will call synchronize_net() for us
+>>>>          */
+>>>>         synchronize_net();
+>>>>
+>>>> +       list_for_each_entry(dev, head, close_list) {
+>>>> +               netdev_for_each_tx_queue(dev, dev_reset_queue, NULL);
+>>>> +
+>>>> +               if (dev_ingress_queue(dev))
+>>>> +                       dev_reset_queue(dev, dev_ingress_queue(dev), NULL);
+>>>> +       }
+>>>> +
+>>>>         /* Wait for outstanding qdisc_run calls. */
+>>>>         list_for_each_entry(dev, head, close_list) {
+>>>>                 while (some_qdisc_is_busy(dev)) {
+>>>
+>>> Do you want to reset before waiting for TX action?
+>>>
+>>> I think it is safer to do it after, at least prior to commit 759ae57f1b
+>>> we did after.
+>>
+>> The reference to the txq->qdisc is always protected by RCU, so the synchronize_net()
+>> should be enought to ensure there is no skb enqueued to the old qdisc that is saved
+>> in the dev_queue->qdisc_sleeping, because __dev_queue_xmit can only see the new qdisc
+>> after synchronize_net(), which is noop_qdisc, and noop_qdisc will make sure any skb
+>> enqueued to it will be dropped and freed, right?
+> 
+> Hmm? In net_tx_action(), we do not hold RCU read lock, and we do not
+> reference qdisc via txq->qdisc but via sd->output_queue.
 
-Genuinely curious, making harder how exactly? When packaging sources
-as a tarball you'd check out submodules before packaging, right?
+Sorry for the delay reply, I seems to miss this.
 
-> Iproute2 has worked well by being standalone.
+I assumed synchronize_net() also wait for outstanding softirq to finish, right?
 
-Again, maybe I'm missing something, but what makes it not a
-standalone, if it is using a submodule? Pahole, for instance, is using
-libbpf through submodule and just bypasses all the problems with
-detection of features and library availability. I haven't heard anyone
-complaining about it made working with pahole harder in any way.
+> 
+> 
+>>
+>> If we do any additional reset that is not related to qdisc in dev_reset_queue(), we
+>> can move it after some_qdisc_is_busy() checking.
+> 
+> I am not suggesting to do an additional reset, I am suggesting to move
+> your reset after the busy waiting.
 
->
-> Want to merge libbpf into iproute2??
+There maybe a deadlock here if we reset the qdisc after the some_qdisc_is_busy() checking,
+because some_qdisc_is_busy() may require the qdisc reset to clear the skb, so that
+some_qdisc_is_busy() can return false. I am not sure this is really a problem, but
+sch_direct_xmit() may requeue the skb when dev_hard_start_xmit return TX_BUSY.
 
-No... How did you come to this conclusion?..
-
->
->
+> 
+> Thanks.
+> .
+> 
