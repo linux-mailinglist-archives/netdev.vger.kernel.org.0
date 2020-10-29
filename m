@@ -2,244 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC34829E8EB
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 11:25:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3855929E8EE
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 11:27:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbgJ2KZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 06:25:12 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:6926 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725773AbgJ2KZM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 06:25:12 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CMM5J2hT5z6y6h;
-        Thu, 29 Oct 2020 18:25:08 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 29 Oct 2020 18:24:57 +0800
-Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     Vishwanath Pai <vpai@akamai.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-CC:     "Hunt, Joshua" <johunt@akamai.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        id S1726235AbgJ2K1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 06:27:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39089 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725773AbgJ2K1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 06:27:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603967231;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CawZHAHsADnYGtPdnNVTledh1fXyNWfHH1USQ/nhD8M=;
+        b=KCZuPz9CjbwU28jh2tmqrK26owQuUx7R6pef0K8HhjQGQj6QnOuopbVFS2gKkEeicV+OTG
+        6dqwzBqR9JG6kUfTP6mlD93IbjnorGUoHxouap3qSJKDFo25gimAGCZ/Ivc+pRoVTbPVE7
+        iQ41m9PuPKCEWe3oi7hkbSFpDSHR9JA=
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
+ [209.85.215.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-147-MEzePyQzNoitj70PYOfSlg-1; Thu, 29 Oct 2020 06:27:10 -0400
+X-MC-Unique: MEzePyQzNoitj70PYOfSlg-1
+Received: by mail-pg1-f200.google.com with SMTP id j10so1761382pgc.6
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 03:27:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CawZHAHsADnYGtPdnNVTledh1fXyNWfHH1USQ/nhD8M=;
+        b=uQ/6mCte7xBMdbYhrlTNr/c+RqFQucnO3cjCdTatLVSrJEEZz2HBHKzuok0UK+N2ot
+         3xjj6kcHHDNFT5eHO73RCE2n43hTADT8JA1S6+9SdXg9FbDSiGSSAIgIJHJ4pptD7c6n
+         A2q+ngm/p9+M4Nyrj4GZTh+gciNg2jRbtCvFFU8phqfPfd8/e6dmX2lGey4OxRBzT4qJ
+         OssYzsgGr/pFSK3IKVQVUpM5Tsx3Iiklp3prqtIrX9hukcVR1iahiVP2lgpWtHkAZ++W
+         /G7bwz3XuFdYUFhDDHkUC4FRmuqw8K6Iz0aI2Hr35DKD6qhtSRIEoZzCSTQ/0HfBKGZ+
+         pAeg==
+X-Gm-Message-State: AOAM53199wm3ij8HScnjAV73kOMPbgJQY5UWetNEOt7s+OOFVQLkWB9r
+        vvpkJhv8hbWQRhRoXFgR34RGss9qqSoqe60qHNCPYMkEptcL/JAmtt9nMWiNz6yqGz0iBjaFMsI
+        v/MLL7J+jNcQMlm8=
+X-Received: by 2002:a62:6dc2:0:b029:152:637c:4cf5 with SMTP id i185-20020a626dc20000b0290152637c4cf5mr3662207pfc.15.1603967228916;
+        Thu, 29 Oct 2020 03:27:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzL5q1JJnLRnQTy+dkmTfd1Epzd58F2F8pDh8JBEdWz+QGU7Nz54Ud3XYChJCl4bRsQsiBIkg==
+X-Received: by 2002:a62:6dc2:0:b029:152:637c:4cf5 with SMTP id i185-20020a626dc20000b0290152637c4cf5mr3662178pfc.15.1603967228668;
+        Thu, 29 Oct 2020 03:27:08 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id x123sm2465927pfb.212.2020.10.29.03.27.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 03:27:08 -0700 (PDT)
+Date:   Thu, 29 Oct 2020 18:26:56 +0800
+From:   Hangbin Liu <haliu@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         David Miller <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
- <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
- <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
- <CAP12E-+3DY-dgzVercKc-NYGPExWO1NjTOr1Gf3tPLKvp6O6+g@mail.gmail.com>
- <AE096F70-4419-4A67-937A-7741FBDA6668@akamai.com>
- <CAM_iQpX0XzNDCzc2U5=g6aU-HGYs3oryHx=rmM3ue9sH=Jd4Gw@mail.gmail.com>
- <19f888c2-8bc1-ea56-6e19-4cb4841c4da0@akamai.com>
- <93ab7f0f-7b5a-74c3-398d-a572274a4790@huawei.com>
- <248e5a32-a102-0ced-1462-aa2bc5244252@akamai.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <de690c67-6e9f-8885-10c1-f47313de7b62@huawei.com>
-Date:   Thu, 29 Oct 2020 18:24:57 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCHv2 iproute2-next 0/5] iproute2: add libbpf support
+Message-ID: <20201029102656.GU2408@dhcp-12-153.nay.redhat.com>
+References: <20201023033855.3894509-1-haliu@redhat.com>
+ <20201028132529.3763875-1-haliu@redhat.com>
+ <7babcccb-2b31-f9bf-16ea-6312e449b928@gmail.com>
+ <20201029020637.GM2408@dhcp-12-153.nay.redhat.com>
+ <7a412e24-0846-bffe-d533-3407d06d83c4@gmail.com>
+ <20201029024506.GN2408@dhcp-12-153.nay.redhat.com>
+ <99d68384-c638-1d65-5945-2814ccd2e09e@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <248e5a32-a102-0ced-1462-aa2bc5244252@akamai.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <99d68384-c638-1d65-5945-2814ccd2e09e@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/10/29 12:50, Vishwanath Pai wrote:
-> On 10/28/20 10:37 PM, Yunsheng Lin wrote:
->> On 2020/10/29 4:04, Vishwanath Pai wrote:
->>> On 10/28/20 1:47 PM, Cong Wang wrote:
->>>> On Wed, Oct 28, 2020 at 8:37 AM Pai, Vishwanath <vpai@akamai.com> wrote:
->>>>> Hi,
->>>>>
->>>>> We noticed some problems when testing the latest 5.4 LTS kernel and traced it
->>>>> back to this commit using git bisect. When running our tests the machine stops
->>>>> responding to all traffic and the only way to recover is a reboot. I do not see
->>>>> a stack trace on the console.
->>>>
->>>> Do you mean the machine is still running fine just the network is down?
->>>>
->>>> If so, can you dump your tc config with stats when the problem is happening?
->>>> (You can use `tc -s -d qd show ...`.)
->>>>
->>>>>
->>>>> This can be reproduced using the packetdrill test below, it should be run a
->>>>> few times or in a loop. You should hit this issue within a few tries but
->>>>> sometimes might take up to 15-20 tries.
->>>> ...
->>>>> I can reproduce the issue easily on v5.4.68, and after reverting this commit it
->>>>> does not happen anymore.
->>>>
->>>> This is odd. The patch in this thread touches netdev reset path, if packetdrill
->>>> is the only thing you use to trigger the bug (that is netdev is always active),
->>>> I can not connect them.
->>>>
->>>> Thanks.
->>>
->>> Hi Cong,
->>>
->>>> Do you mean the machine is still running fine just the network is down?
->>>
->>> I was able to access the machine via serial console, it looks like it is
->>> up and running, just that networking is down.
->>>
->>>> If so, can you dump your tc config with stats when the problem is happening?
->>>> (You can use `tc -s -d qd show ...`.)
->>>
->>> If I try running tc when the machine is in this state the command never
->>> returns. It doesn't print anything but doesn't exit either.
->>>
->>>> This is odd. The patch in this thread touches netdev reset path, if packetdrill
->>>> is the only thing you use to trigger the bug (that is netdev is always active),
->>>> I can not connect them.
->>>
->>> I think packetdrill creates a tun0 interface when it starts the
->>> test and tears it down at the end, so it might be hitting this code path
->>> during teardown.
->>
->> Hi, Is there any preparation setup before running the above packetdrill test
->> case, I run the above test case in 5.9-rc4 with this patch applied without any
->> preparation setup, did not reproduce it.
->>
->> By the way, I am newbie to packetdrill:), it would be good to provide the
->> detail setup to reproduce it,thanks.
->>
->>>
->>> P.S: My mail server is having connectivity issues with vger.kernel.org
->>> so messages aren't getting delivered to netdev. It'll hopefully get
->>> resolved soon.
->>>
->>> Thanks,
->>> Vishwanath
->>>
->>>
->>> .
->>>
+On Wed, Oct 28, 2020 at 09:00:41PM -0600, David Ahern wrote:
+> >> nope. you need to be able to handle this. Ubuntu 20.10 was just
+> >> released, and it has a version of libbpf. If you are going to integrate
+> >> libbpf into other packages like iproute2, it needs to just work with
+> >> that version.
+> > 
+> > OK, I can replace bpf_program__section_name by bpf_program__title().
 > 
-> I can't reproduce it on v5.9-rc4 either, it is probably an issue only on
-> 5.4 then (and maybe older LTS versions). Can you give it a try on
-> 5.4.68?
-> 
-> For running packetdrill, download the latest version from their github
-> repo, then run it in a loop without any special arguments. This is what
-> I do to reproduce it:
-> 
-> while true; do ./packetdrill <test-file>; done
-> 
-> I don't think any other setup is necessary.
+> I believe this one can be handled through a compatability check. Looks
+> the rename / deprecation is fairly recent (78cdb58bdf15f from Sept 2020).
 
-Hi, run the above test for above an hour using 5.4.68, still did not
-reproduce it, as below:
+Hi David,
 
+I just come up with another way. In configure, build a temp program and update
+the function checking every time is not graceful. How about just check the
+libbpf version, since libbpf has exported all functions in src/libbpf.map.
 
-root@(none)$ cd /home/root/
-root@(none)$ ls
-creat_vlan.sh  packetdrill    test.pd
-root@(none)$ cat test.pd
-0 `echo 4 > /proc/sys/net/ipv4/tcp_min_tso_segs`
+Currently, only bpf_program__section_name() is added in 0.2.0, all other
+needed functions are supported in 0.1.0.
 
-0.400 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
-0.400 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
+So in configure, the new check would like:
 
-// set maxseg to 1000 to work with both ipv4 and ipv6
-0.500 setsockopt(3, SOL_TCP, TCP_MAXSEG, [1000], 4) = 0
-0.500 bind(3, ..., ...) = 0
-0.500 listen(3, 1) = 0
+check_force_libbpf()
+{
+    # if set FORCE_LIBBPF but no libbpf support, just exist the config
+    # process to make sure we don't build without libbpf.
+    if [ -n "$FORCE_LIBBPF" ]; then
+        echo "FORCE_LIBBPF set, but couldn't find a usable libbpf"
+        exit 1
+    fi
+}
 
-// Establish connection
-0.600 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 5>
-0.600 > S. 0:0(0) ack 1 <...>
+check_libbpf()
+{
+    if ! ${PKG_CONFIG} libbpf --exists && [ -z "$LIBBPF_DIR" ] ; then
+        echo "no"
+        check_force_libbpf
+        return
+    fi
 
-0.800 < . 1:1(0) ack 1 win 320
-0.800 accept(3, ..., ...) = 4
+    if [ $(uname -m) == x86_64 ]; then
+        local LIBSUBDIR=lib64
+    else
+        local LIBSUBDIR=lib
+    fi
 
-// Send 4 data segments.
-+0 write(4, ..., 4000) = 4000
-+0 > P. 1:4001(4000) ack 1
+    if [ -n "$LIBBPF_DIR" ]; then
+        LIBBPF_CFLAGS="-I${LIBBPF_DIR}/include -L${LIBBPF_DIR}/${LIBSUBDIR}"
+        LIBBPF_LDLIBS="${LIBBPF_DIR}/${LIBSUBDIR}/libbpf.a -lz -lelf"
+    else
+        LIBBPF_CFLAGS=$(${PKG_CONFIG} libbpf --cflags)
+        LIBBPF_LDLIBS=$(${PKG_CONFIG} libbpf --libs)
+    fi
 
-// Receive a SACK
-+.1 < . 1:1(0) ack 1 win 320 <sack 1001:2001,nop,nop>
+    if ${PKG_CONFIG} libbpf --atleast-version 0.1.0 || \
+        PKG_CONFIG_LIBDIR=${LIBBPF_DIR}/${LIBSUBDIR}/pkgconfig \
+	${PKG_CONFIG} libbpf --atleast-version 0.1.0; then
+        echo "HAVE_LIBBPF:=y" >>$CONFIG
+        echo 'CFLAGS += -DHAVE_LIBBPF ' $LIBBPF_CFLAGS >> $CONFIG
+        echo 'LDLIBS += ' $LIBBPF_LDLIBS >>$CONFIG
+        echo "yes"
+    else
+        echo "no"
+        check_force_libbpf
+	return
+    fi
 
-+.3 %{ print "TCP CA state: ",tcpi_ca_state  }%
-root@(none)$ cat creat_vlan.sh
-#!/bin/sh
+    # bpf_program__title() is deprecated since libbpf 0.2.0, use
+    # bpf_program__section_name() instead if we support
+    if ${PKG_CONFIG} libbpf --atleast-version 0.2.0 || \
+        PKG_CONFIG_LIBDIR=${LIBBPF_DIR}/${LIBSUBDIR}/pkgconfig \
+	${PKG_CONFIG} libbpf --atleast-version 0.2.0; then
+        echo 'CFLAGS += -DHAVE_LIBBPF_SECTION_NAME ' $LIBBPF_CFLAGS >> $CONFIG
+    fi
+}
 
-for((i=0; i<10000; i++))
-do
-	./packetdrill test.pd
-done
-root@(none)$ ./creat_vlan.sh
-TCP CA state:  3
-^C
-root@(none)$ ifconfig
-eth0      Link encap:Ethernet  HWaddr 5c:e8:83:0d:f7:ed
-          inet addr:192.168.1.93  Bcast:192.168.1.255  Mask:255.255.255.0
-          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:3570 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:3190 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000
-          RX bytes:1076349 (1.0 MiB)  TX bytes:414874 (405.1 KiB)
+And in lib/bpf_libbpf.c, we add a new helper like:
 
-eth2      Link encap:Ethernet  HWaddr 5c:e8:83:0d:f7:ec
-          inet addr:192.168.100.1  Bcast:192.168.100.255  Mask:255.255.255.0
-          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:81848576 errors:0 dropped:0 overruns:0 frame:78
-          TX packets:72497816 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000
-          RX bytes:2044282289568 (1.8 TiB)  TX bytes:2457441698852 (2.2 TiB)
+static const char *get_bpf_program__section_name(const struct bpf_program *prog)
+{
+#ifdef HAVE_LIBBPF_SECTION_NAME
+	return bpf_program__section_name(prog);
+#else
+	return bpf_program__title(prog, false);
+#endif
+}
 
-lo        Link encap:Local Loopback
-          inet addr:127.0.0.1  Mask:255.0.0.0
-          UP LOOPBACK RUNNING  MTU:65536  Metric:1
-          RX packets:1 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:1 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000
-          RX bytes:68 (68.0 B)  TX bytes:68 (68.0 B)
+Thanks
+Hangbin
 
-root@(none)$ ./creat_vlan.sh
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-TCP CA state:  3
-^C
-root@(none)$ cat /proc/cmdline
-BOOT_IMAGE=/linyunsheng/Image.5.0 rdinit=/init console=ttyAMA0,115200 earlycon=pl011,mmio32,0x94080000 iommu.strict=1
-root@(none)$ cat /proc/version
-Linux version 5.4.68 (linyunsheng@ubuntu) (gcc version 5.4.0 20160609 (Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.12)) #1 SMP PREEMPT Thu Oct 29 16:59:37 CST 2020
-root@(none)$
-
-
-
-> 
-> -Vishwanath
-> 
-> .
-> 
