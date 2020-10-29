@@ -2,180 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90F9229F7E5
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:25:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F95129F7FB
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:28:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725952AbgJ2WZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 18:25:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54992 "EHLO
+        id S1726027AbgJ2W2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 18:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbgJ2WZs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 18:25:48 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670EEC0613CF
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 15:25:48 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id 7so6022420ejm.0
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 15:25:48 -0700 (PDT)
+        with ESMTP id S1726020AbgJ2W2s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 18:28:48 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB35C0613D2;
+        Thu, 29 Oct 2020 15:28:48 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id l24so4659080edj.8;
+        Thu, 29 Oct 2020 15:28:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tPkhgoZCoNKuZkNqzsqClmWwArbIz2ujzRy7ZbDQUHM=;
-        b=hCJto95vVJWBZh6PlFrZzA02+c8UlOoFn/0AczIF0zP9yfPZP3G1LakX1j0CF3mxKj
-         APXUHMnjYX40Bv6/v3kc4+cOJUA619HdD2VbnT3hK4BM5aqbW1FuRNaaeiqSeIS06iE5
-         NrQ5mxfboRZ9lsaJzw+G4+EKb2ma3fVKQBRqC9f9G7W//MlW8crN9VvY0hRN2kcNGjD0
-         gt93WrVJVi9R7Kgdy7gQzii+3PMIRne36GjNWE48yy4cAaSVXYl7j3FiGJ9fxwv4k+Ht
-         ga+vpsaYHR7uEPakK0+G7lCKowjVPBMehB8t72acXip2vRALqaaf5vIegdc+a9Oy5OVb
-         PAvw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RXMc5OSGpgSuMJ24cCnWO2LiNVxOAy2zAp+LUmQlsfc=;
+        b=lj6ynL4ahqFevPNd366kcEIifQfswQRS3HkifRdvYvebwHO07T6Fvzg8KJCyz0hFY5
+         FzskV9YvPFCc4Rzk4Oow+VoWKNIExu5l34uFGh/HQBimJfsADE8H6DAgKnsyM4et+2zF
+         rWDUcxU9W1c0qHMUYouZCXkZEtQHXwO53rGn/P5oIqtoah3F5ItqWfcXf4eKpmlXdowr
+         EU5RW8BrIg6gcYRIX7sN+OQqiNcljGuPGnOc47vk36tzJ1bNs2vJT8K31mDhvJ03dKZB
+         GmRV1fW/ZFBW+P8B0WUmQGa1NrMw4Z5zAtjKKkR5uSoX/t3sBF9w9uCyiRx6fdHPgXKV
+         gRtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tPkhgoZCoNKuZkNqzsqClmWwArbIz2ujzRy7ZbDQUHM=;
-        b=unYZKJjVOe1UstmobJXIbQtRTrepOJd49zTuzJlEGUuZtQHKF9MeDKnuR26FfAZCRd
-         gsF9I1X0mY0AciMMX/ALhlb8FBe7+I8nGpNNiY8adNVJOA2z4MYOsMMXBFkvxN3a4ICj
-         YLniz1goDLF5x8H69m5V52X5eBoTvJtWF5G3n6ZdLyMSpBHZExRhYyXjqKaC7yrgqRYR
-         qDdRRzrd08c6ByMQTQBG0l8Fys0VXtTPm5cVkN3QdBlVD7rMGc3oVltKo13FcR5cJZ19
-         yTdwHnIC2OZn0HOt+6SPiqsZz2JmcNT3rW5DwTP5hLv9amEEHTD+pejTfg9KrcSWGOxg
-         yowA==
-X-Gm-Message-State: AOAM531ff84/q7XtwI5PehYHc9e8UW0CzTHOxzxBuPaZUexmw5SB06Fe
-        30iSdhtWXpYUwbou1hc4M2SYfAtEp2kzSLo6VWJ6Wg==
-X-Google-Smtp-Source: ABdhPJxEm6s6k6aY+2eV8lHzRVSz1PBzcREy/9GRw7FLKBKZfcrVByKidut7Z6qAQev0K1F+JQaZMKcnrU3aqNEXSuY=
-X-Received: by 2002:a17:906:4351:: with SMTP id z17mr6185859ejm.110.1604010346851;
- Thu, 29 Oct 2020 15:25:46 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201001230403.2445035-1-danielwinkler@google.com>
- <CAP2xMbtC0invbRT2q6LuamfEbE9ppMkRUO+jOisgtBG17JkrwA@mail.gmail.com> <CABBYNZJ65vXxeyJmZ_L_D+9pm7uDHo0+_ioHzMyh0q8sVmREsQ@mail.gmail.com>
-In-Reply-To: <CABBYNZJ65vXxeyJmZ_L_D+9pm7uDHo0+_ioHzMyh0q8sVmREsQ@mail.gmail.com>
-From:   Daniel Winkler <danielwinkler@google.com>
-Date:   Thu, 29 Oct 2020 15:25:35 -0700
-Message-ID: <CAP2xMbs4sUyap_-YAFA6=52Qj+_uxGww7LwmbWACVC0j0LvbLQ@mail.gmail.com>
-Subject: Re: [PATCH v4 0/5] Bluetooth: Add new MGMT interface for advertising add
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        BlueZ <linux-bluetooth@vger.kernel.org>,
-        chromeos-bluetooth-upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RXMc5OSGpgSuMJ24cCnWO2LiNVxOAy2zAp+LUmQlsfc=;
+        b=G8QRZkpn3AXqbeh9byhCLzQCR7uVVfakH+OcR0OgT81X2aBiLci1d+au5yzLXKyoEu
+         ZdCUtTo9k8zf5Es+vBJiXtvHWDzrV+kBlo7HeYmF93xhJsYMvpK11moaI2i/Tz+odxXR
+         wiuLCdHUqYi4Dul4GjSWlEJ2UY9Z16fw2WgnbM2X7SoIuCtA/LisnYnQsPDv/uAD9xrp
+         1jk1x3FH5vvQOyKE16byS1pXr8FXHhdBzPT4UuWJxsXuYaZnLMiwrQjUOdYmvCbw3ECh
+         LYD0ilp8cs69ro08MrEf8vazGk8+8KWN8VrgTa/Tw69RBT6Xg+E+pd2Kz3PozymDzIcj
+         E09Q==
+X-Gm-Message-State: AOAM533B7O3vYLnVF4hEJtcplGogs+BSn73SnTzcxWJ8M/ZDnXpnMD9/
+        0y6lpAY8GGe/obCUaXODq8Q=
+X-Google-Smtp-Source: ABdhPJxMla1hQY3H5lpvyzRbQs8GPoKs4WJAe/tRW4FScgMjEHEPi0tXWBQovxfJ0xdUmvgh9DqrMw==
+X-Received: by 2002:aa7:c490:: with SMTP id m16mr6354399edq.298.1604010527112;
+        Thu, 29 Oct 2020 15:28:47 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id v6sm2154708ejj.112.2020.10.29.15.28.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 15:28:46 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     David Ahern <dsahern@gmail.com>, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, jiri@mellanox.com,
+        idosch@idosch.org
+Subject: [PATCH v2 iproute2-next] bridge: add support for L2 multicast groups
+Date:   Fri, 30 Oct 2020 00:28:28 +0200
+Message-Id: <20201029222828.2149980-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Luiz,
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Thank you for the feedback regarding mgmt-tester. I intended to use
-the tool, but found that it had a very high rate of test failure even
-before I started adding new tests. If you have a strong preference for
-its use, I can look into it again but it may take some time. These
-changes were tested with manual and automated functional testing on
-our end.
+Extend the 'bridge mdb' command for the following syntax:
+bridge mdb add dev br0 port swp0 grp 01:02:03:04:05:06 permanent
 
-Please let me know your thoughts.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+Changes in v2:
+- Removed the const void casts.
+- Removed MDB_FLAGS_L2 from the UAPI to be in sync with the latest
+  kernel patch:
+  https://patchwork.ozlabs.org/project/netdev/patch/20201028233831.610076-1-vladimir.oltean@nxp.com/
 
-Thanks,
-Daniel
+ bridge/mdb.c                   | 54 ++++++++++++++++++++++++++--------
+ include/uapi/linux/if_bridge.h |  1 +
+ 2 files changed, 42 insertions(+), 13 deletions(-)
 
-On Thu, Oct 29, 2020 at 2:45 PM Luiz Augusto von Dentz
-<luiz.dentz@gmail.com> wrote:
->
-> Hi Daniel,
->
-> On Thu, Oct 29, 2020 at 2:35 PM Daniel Winkler <danielwinkler@google.com> wrote:
-> >
-> > Hello Maintainers,
-> >
-> > Just a friendly reminder to review this kernel patch series. I may
-> > have accidentally named this series the same as the userspace series,
-> > so I apologize if it has caused the set to be hidden in anybody's
-> > inbox. I'll be sure not to do this in the future.
->
-> I will review them coming next, one of the things that seems to be
-> missing these days is to update mgmt-tester when a new command is
-> introduced, this should actually be added along side the kernel
-> changes since we do plan to have the CI verify the kernel patches as
-> well, also there is a way to test the kernel changes directly in the
-> host with use of tools/test-runner you just need insure the options
-> mentioned in doc/test-runner are set so you can run the kernel with
-> the changes directly.
->
-> > Thanks in advance for your time!
-> >
-> > Best regards,
-> > Daniel Winkler
-> >
-> > On Thu, Oct 1, 2020 at 4:04 PM Daniel Winkler <danielwinkler@google.com> wrote:
-> > >
-> > > Hi Maintainers,
-> > >
-> > > This patch series defines the new two-call MGMT interface for adding
-> > > new advertising instances. Similarly to the hci advertising commands, a
-> > > mgmt call to set parameters is expected to be first, followed by a mgmt
-> > > call to set advertising data/scan response. The members of the
-> > > parameters request are optional; the caller defines a "params" bitfield
-> > > in the structure that indicates which parameters were intentionally set,
-> > > and others are set to defaults.
-> > >
-> > > The main feature here is the introduction of min/max parameters and tx
-> > > power that can be requested by the client. Min/max parameters will be
-> > > used both with and without extended advertising support, and tx power
-> > > will be used with extended advertising support. After a call for hci
-> > > advertising parameters, a new TX_POWER_SELECTED event will be emitted to
-> > > alert userspace to the actual chosen tx power.
-> > >
-> > > Additionally, to inform userspace of the controller LE Tx power
-> > > capabilities for the client's benefit, this series also changes the
-> > > security info MGMT command to more flexibly contain other capabilities,
-> > > such as LE min and max tx power.
-> > >
-> > > All changes have been tested on hatch (extended advertising) and kukui
-> > > (no extended advertising) chromebooks with manual testing verifying
-> > > correctness of parameters/data in btmon traces, and our automated test
-> > > suite of 25 single- and multi-advertising usage scenarios.
-> > >
-> > > A separate patch series will add support in bluetoothd. Thanks in
-> > > advance for your feedback!
-> > >
-> > > Daniel Winkler
-> > >
-> > >
-> > > Changes in v4:
-> > > - Add remaining data and scan response length to MGMT params response
-> > > - Moving optional params into 'flags' field of MGMT command
-> > > - Combine LE tx range into a single EIR field for MGMT capabilities cmd
-> > >
-> > > Changes in v3:
-> > > - Adding selected tx power to adv params mgmt response, removing event
-> > > - Re-using security info MGMT command to carry controller capabilities
-> > >
-> > > Changes in v2:
-> > > - Fixed sparse error in Capabilities MGMT command
-> > >
-> > > Daniel Winkler (5):
-> > >   Bluetooth: Add helper to set adv data
-> > >   Bluetooth: Break add adv into two mgmt commands
-> > >   Bluetooth: Use intervals and tx power from mgmt cmds
-> > >   Bluetooth: Query LE tx power on startup
-> > >   Bluetooth: Change MGMT security info CMD to be more generic
-> > >
-> > >  include/net/bluetooth/hci.h      |   7 +
-> > >  include/net/bluetooth/hci_core.h |  12 +-
-> > >  include/net/bluetooth/mgmt.h     |  49 +++-
-> > >  net/bluetooth/hci_core.c         |  47 +++-
-> > >  net/bluetooth/hci_event.c        |  19 ++
-> > >  net/bluetooth/hci_request.c      |  29 ++-
-> > >  net/bluetooth/mgmt.c             | 424 +++++++++++++++++++++++++++++--
-> > >  7 files changed, 542 insertions(+), 45 deletions(-)
-> > >
-> > > --
-> > > 2.28.0.709.gb0816b6eb0-goog
-> > >
->
->
->
-> --
-> Luiz Augusto von Dentz
+diff --git a/bridge/mdb.c b/bridge/mdb.c
+index 4cd7ca762b78..f2723ab122d0 100644
+--- a/bridge/mdb.c
++++ b/bridge/mdb.c
+@@ -149,6 +149,7 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
+ 			    struct nlmsghdr *n, struct rtattr **tb)
+ {
+ 	const void *grp, *src;
++	const char *addr;
+ 	SPRINT_BUF(abuf);
+ 	const char *dev;
+ 	int af;
+@@ -156,9 +157,16 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
+ 	if (filter_vlan && e->vid != filter_vlan)
+ 		return;
+ 
+-	af = e->addr.proto == htons(ETH_P_IP) ? AF_INET : AF_INET6;
+-	grp = af == AF_INET ? (const void *)&e->addr.u.ip4 :
+-			      (const void *)&e->addr.u.ip6;
++	if (!e->addr.proto) {
++		af = AF_PACKET;
++		grp = &e->addr.u.mac_addr;
++	} else if (e->addr.proto == htons(ETH_P_IP)) {
++		af = AF_INET;
++		grp = &e->addr.u.ip4;
++	} else {
++		af = AF_INET6;
++		grp = &e->addr.u.ip6;
++	}
+ 	dev = ll_index_to_name(ifindex);
+ 
+ 	open_json_object(NULL);
+@@ -168,9 +176,14 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
+ 	print_string(PRINT_ANY, "port", " port %s",
+ 		     ll_index_to_name(e->ifindex));
+ 
++	if (af == AF_INET || af == AF_INET6)
++		addr = inet_ntop(af, grp, abuf, sizeof(abuf));
++	else
++		addr = ll_addr_n2a(grp, ETH_ALEN, 0, abuf, sizeof(abuf));
++
+ 	print_color_string(PRINT_ANY, ifa_family_color(af),
+-			    "grp", " grp %s",
+-			    inet_ntop(af, grp, abuf, sizeof(abuf)));
++			    "grp", " grp %s", addr);
++
+ 	if (tb && tb[MDBA_MDB_EATTR_SOURCE]) {
+ 		src = (const void *)RTA_DATA(tb[MDBA_MDB_EATTR_SOURCE]);
+ 		print_color_string(PRINT_ANY, ifa_family_color(af),
+@@ -440,6 +453,25 @@ static int mdb_show(int argc, char **argv)
+ 	return 0;
+ }
+ 
++static int mdb_parse_grp(const char *grp, struct br_mdb_entry *e)
++{
++	if (inet_pton(AF_INET, grp, &e->addr.u.ip4)) {
++		e->addr.proto = htons(ETH_P_IP);
++		return 0;
++	}
++	if (inet_pton(AF_INET6, grp, &e->addr.u.ip6)) {
++		e->addr.proto = htons(ETH_P_IPV6);
++		return 0;
++	}
++	if (ll_addr_a2n((char *)e->addr.u.mac_addr, sizeof(e->addr.u.mac_addr),
++			grp) == ETH_ALEN) {
++		e->addr.proto = 0;
++		return 0;
++	}
++
++	return -1;
++}
++
+ static int mdb_modify(int cmd, int flags, int argc, char **argv)
+ {
+ 	struct {
+@@ -497,14 +529,10 @@ static int mdb_modify(int cmd, int flags, int argc, char **argv)
+ 	if (!entry.ifindex)
+ 		return nodev(p);
+ 
+-	if (!inet_pton(AF_INET, grp, &entry.addr.u.ip4)) {
+-		if (!inet_pton(AF_INET6, grp, &entry.addr.u.ip6)) {
+-			fprintf(stderr, "Invalid address \"%s\"\n", grp);
+-			return -1;
+-		} else
+-			entry.addr.proto = htons(ETH_P_IPV6);
+-	} else
+-		entry.addr.proto = htons(ETH_P_IP);
++	if (mdb_parse_grp(grp, &entry)) {
++		fprintf(stderr, "Invalid address \"%s\"\n", grp);
++		return -1;
++	}
+ 
+ 	entry.vid = vid;
+ 	addattr_l(&req.n, sizeof(req), MDBA_SET_ENTRY, &entry, sizeof(entry));
+diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+index 69b99901fc5a..db41a5ff34af 100644
+--- a/include/uapi/linux/if_bridge.h
++++ b/include/uapi/linux/if_bridge.h
+@@ -526,6 +526,7 @@ struct br_mdb_entry {
+ 		union {
+ 			__be32	ip4;
+ 			struct in6_addr ip6;
++			unsigned char mac_addr[ETH_ALEN];
+ 		} u;
+ 		__be16		proto;
+ 	} addr;
+-- 
+2.25.1
+
