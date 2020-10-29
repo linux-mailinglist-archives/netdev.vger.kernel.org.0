@@ -2,476 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CABDC29E301
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:45:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25DCF29E2AF
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:32:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726731AbgJ2CoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 22:44:16 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:27914 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726625AbgJ1Veh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:34:37 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09SEoKlw017158;
-        Wed, 28 Oct 2020 07:51:05 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=CAn5tLAqUzWEtQpbvbuSvF/wRMEQL53y05TYQkl81ig=;
- b=h2Iy0viJQiFD9K1XRuVCAz5poAIsrToSYIt3/0OmYI8YlM1YYYh7YD1+X7t+EMbMzbCQ
- uXs6dGNJmgNNtp+t8XHRTBn0pWFTMFCoKEU/hv8GWtRdPjyRgabkC/ogQd33IvXfV0nB
- EOXVITa2NRPiSIK8B/zpMaQbW1n+fRo8vVrKnf+mjJMGr0nFlrsZVoR7CE86N0Kut4+O
- S9sfvus+8tHTfyxjw4bCygng/srBx3ExJP95KCWKKafLU/tW4t9pwIGzurnF+kadfBk0
- YN9vpQCBpuKCKDye5xJ0POFXdGcbm524CbrQua1zulc/dlpD51Hq5h7yE5ES6pRCc7kp ug== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 34chmn883d-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 28 Oct 2020 07:51:05 -0700
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 28 Oct
- 2020 07:51:04 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 28 Oct
- 2020 07:51:04 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 28 Oct 2020 07:51:04 -0700
-Received: from hyd1schalla-dt.marvell.com (hyd1schalla-dt.marvell.com [10.29.8.39])
-        by maili.marvell.com (Postfix) with ESMTP id 133303F7040;
-        Wed, 28 Oct 2020 07:51:00 -0700 (PDT)
-From:   Srujana Challa <schalla@marvell.com>
-To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <kuba@kernel.org>, <sgoutham@marvell.com>, <gakula@marvell.com>,
-        <sbhatta@marvell.com>, <schandran@marvell.com>,
-        <pathreya@marvell.com>, Srujana Challa <schalla@marvell.com>
-Subject: [PATCH v8,net-next,02/12] octeontx2-af: add mailbox interface for CPT
-Date:   Wed, 28 Oct 2020 20:20:05 +0530
-Message-ID: <20201028145015.19212-3-schalla@marvell.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201028145015.19212-1-schalla@marvell.com>
-References: <20201028145015.19212-1-schalla@marvell.com>
+        id S1727247AbgJ2CcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 22:32:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726055AbgJ2Ca5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 22:30:57 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F11C0613CF;
+        Wed, 28 Oct 2020 19:20:58 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id k6so1792852ior.2;
+        Wed, 28 Oct 2020 19:20:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KpAmy8R8W8FSv8OXlUtqLiCP76FJNmvLZoJQVbUNCDc=;
+        b=JgAYlplVb/pEpMqWZIp3SXJtuH4Hus05Syh+tbLieu3xI98XgpOED9CBHUeKTv5Rb9
+         CkqtaBgfi5noiOSEYszpMb7CfUu5R8Siw8zXnPWv4o1Ut0tENBsj+THamRrTW0K9A1I+
+         50w8nrzzuklVibqhFp1RImge4KuquTutyZbZ9PXsY5rOHtlffbUdarQdbAIGEWWZhL6/
+         ezxR0RODmK8prdpa9quwYJI9Z5aoEmbG6RXjzOajqFtv/7QuYQNDrxENaI95ld0xTgm5
+         jXfYIVAdl2/DrdIuJQJ90loItyqjY3Zy9/688CPhcydW1AEK5PnR997H9HGFZ+WkMZFX
+         Wq0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KpAmy8R8W8FSv8OXlUtqLiCP76FJNmvLZoJQVbUNCDc=;
+        b=FTsOEGDJ4iOS+A38iDvY2hS2Y9xyYd+gyd/6r6UWRx2d35A+Q1YhmcZCq+IrvIzuQH
+         AyCRjl1DM632eygF8LTgn534bLmYv8K7antkhwhsGYlAzbpUmBDvtPnUe5VIBSTP9cIl
+         2nVfBS99CsD4bRGwY/Xog540eG18UGAZgGTuIpTVLeZVGgBExVVzWjpPjD55SC5JjQn1
+         3r1X3vEPo1MDX400PMYR5A/eN7IO8Dk0dmT1NM1YGg1Lg+TW+VxthBX4S3702I3061Ty
+         T2V+BIkGe60pZPLAUN2bds5IqQOJfP0igtyCplQoebnT2eGrk4BdlnoOyPVP3yAKvqrt
+         4T8w==
+X-Gm-Message-State: AOAM5339MF2YhS6n1kv87Q/40QnWz7SAGGFxNhJXC4GFCYl90DInl4lx
+        j4Q2Gklp5ZFQaCZOA/YQ15k=
+X-Google-Smtp-Source: ABdhPJxwiSrxtT02874BNkFVV1g7meD23uFfPYMyc5KUmWjL45fZ8aHhPDYabLtjCjQmgcUiSxB3zw==
+X-Received: by 2002:a6b:9108:: with SMTP id t8mr1844128iod.206.1603938057532;
+        Wed, 28 Oct 2020 19:20:57 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:e1b0:db06:9a2d:91c5])
+        by smtp.googlemail.com with ESMTPSA id t2sm1012135iob.5.2020.10.28.19.20.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Oct 2020 19:20:56 -0700 (PDT)
+Subject: Re: [PATCHv2 iproute2-next 0/5] iproute2: add libbpf support
+To:     Hangbin Liu <haliu@redhat.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
+        <toke@redhat.com>
+References: <20201023033855.3894509-1-haliu@redhat.com>
+ <20201028132529.3763875-1-haliu@redhat.com>
+ <7babcccb-2b31-f9bf-16ea-6312e449b928@gmail.com>
+ <20201029020637.GM2408@dhcp-12-153.nay.redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <7a412e24-0846-bffe-d533-3407d06d83c4@gmail.com>
+Date:   Wed, 28 Oct 2020 20:20:55 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-10-28_07:2020-10-28,2020-10-28 signatures=0
+In-Reply-To: <20201029020637.GM2408@dhcp-12-153.nay.redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On OcteonTX2 SoC, the admin function (AF) is the only one with all
-priviliges to configure HW and alloc resources, PFs and it's VFs
-have to request AF via mailbox for all their needs. This patch adds
-a mailbox interface for CPT PFs and VFs to allocate resources
-for cryptography.
+On 10/28/20 8:06 PM, Hangbin Liu wrote:
+> On Wed, Oct 28, 2020 at 05:02:34PM -0600, David Ahern wrote:
+>> fails to compile on Ubuntu 20.10:
+>>
+>> root@u2010-sfo3:~/iproute2.git# ./configure
+>> TC schedulers
+>>  ATM	yes
+>>  IPT	using xtables
+>>  IPSET  yes
+>>
+>> iptables modules directory: /usr/lib/x86_64-linux-gnu/xtables
+>> libc has setns: yes
+>> SELinux support: yes
+>> libbpf support: yes
+>> ELF support: yes
+>> libmnl support: yes
+>> Berkeley DB: no
+>> need for strlcpy: yes
+>> libcap support: yes
+>>
+>> root@u2010-sfo3:~/iproute2.git# make clean
+>>
+>> root@u2010-sfo3:~/iproute2.git# make -j 4
+>> ...
+>> /usr/bin/ld: ../lib/libutil.a(bpf_libbpf.o): in function `load_bpf_object':
+>> bpf_libbpf.c:(.text+0x3cb): undefined reference to
+>> `bpf_program__section_name'
+>> /usr/bin/ld: bpf_libbpf.c:(.text+0x438): undefined reference to
+>> `bpf_program__section_name'
+>> /usr/bin/ld: bpf_libbpf.c:(.text+0x716): undefined reference to
+>> `bpf_program__section_name'
+>> collect2: error: ld returned 1 exit status
+>> make[1]: *** [Makefile:27: ip] Error 1
+>> make[1]: *** Waiting for unfinished jobs....
+>> make: *** [Makefile:64: all] Error 2
+> 
+> You need to update libbpf to latest version.
 
-Signed-off-by: Suheil Chandran <schandran@marvell.com>
-Signed-off-by: Srujana Challa <schalla@marvell.com>
----
- .../ethernet/marvell/octeontx2/af/Makefile    |   3 +-
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |  33 +++
- .../net/ethernet/marvell/octeontx2/af/rvu.c   |   2 +-
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |   1 +
- .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 229 ++++++++++++++++++
- .../ethernet/marvell/octeontx2/af/rvu_reg.h   |  63 ++++-
- 6 files changed, 323 insertions(+), 8 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+nope. you need to be able to handle this. Ubuntu 20.10 was just
+released, and it has a version of libbpf. If you are going to integrate
+libbpf into other packages like iproute2, it needs to just work with
+that version.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/Makefile b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-index 2f7a861d0c7b..d258b9a8cefb 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-@@ -9,4 +9,5 @@ obj-$(CONFIG_OCTEONTX2_AF) += octeontx2_af.o
- 
- octeontx2_mbox-y := mbox.o rvu_trace.o
- octeontx2_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \
--		  rvu_reg.o rvu_npc.o rvu_debugfs.o ptp.o
-+		  rvu_reg.o rvu_npc.o rvu_debugfs.o ptp.o \
-+		  rvu_cpt.o
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 263a21129416..56b29fb49037 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -158,6 +158,11 @@ M(NPA_HWCTX_DISABLE,	0x403, npa_hwctx_disable, hwctx_disable_req, msg_rsp)\
- /* SSO/SSOW mbox IDs (range 0x600 - 0x7FF) */				\
- /* TIM mbox IDs (range 0x800 - 0x9FF) */				\
- /* CPT mbox IDs (range 0xA00 - 0xBFF) */				\
-+M(CPT_LF_ALLOC,		0xA00, cpt_lf_alloc, cpt_lf_alloc_req_msg,	\
-+			       msg_rsp)					\
-+M(CPT_LF_FREE,		0xA01, cpt_lf_free, msg_req, msg_rsp)		\
-+M(CPT_RD_WR_REGISTER,	0xA02, cpt_rd_wr_register,  cpt_rd_wr_reg_msg,	\
-+			       cpt_rd_wr_reg_msg)			\
- /* NPC mbox IDs (range 0x6000 - 0x7FFF) */				\
- M(NPC_MCAM_ALLOC_ENTRY,	0x6000, npc_mcam_alloc_entry, npc_mcam_alloc_entry_req,\
- 				npc_mcam_alloc_entry_rsp)		\
-@@ -881,4 +886,32 @@ struct ptp_rsp {
- 	u64 clk;
- };
- 
-+/* CPT mailbox error codes
-+ * Range 901 - 1000.
-+ */
-+enum cpt_af_status {
-+	CPT_AF_ERR_PARAM		= -901,
-+	CPT_AF_ERR_GRP_INVALID		= -902,
-+	CPT_AF_ERR_LF_INVALID		= -903,
-+	CPT_AF_ERR_ACCESS_DENIED	= -904,
-+	CPT_AF_ERR_SSO_PF_FUNC_INVALID	= -905,
-+	CPT_AF_ERR_NIX_PF_FUNC_INVALID	= -906
-+};
-+
-+/* CPT mbox message formats */
-+struct cpt_rd_wr_reg_msg {
-+	struct mbox_msghdr hdr;
-+	u64 reg_offset;
-+	u64 *ret_val;
-+	u64 val;
-+	u8 is_write;
-+};
-+
-+struct cpt_lf_alloc_req_msg {
-+	struct mbox_msghdr hdr;
-+	u16 nix_pf_func;
-+	u16 sso_pf_func;
-+	u16 eng_grpmsk;
-+};
-+
- #endif /* MBOX_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index e1f918960730..3e24897ed9b5 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -1025,7 +1025,7 @@ int rvu_mbox_handler_ready(struct rvu *rvu, struct msg_req *req,
- /* Get current count of a RVU block's LF/slots
-  * provisioned to a given RVU func.
-  */
--static u16 rvu_get_rsrc_mapcount(struct rvu_pfvf *pfvf, int blktype)
-+u16 rvu_get_rsrc_mapcount(struct rvu_pfvf *pfvf, int blktype)
- {
- 	switch (blktype) {
- 	case BLKTYPE_NPA:
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index 90eed3160915..c37e106d7006 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -429,6 +429,7 @@ int rvu_get_lf(struct rvu *rvu, struct rvu_block *block, u16 pcifunc, u16 slot);
- int rvu_lf_reset(struct rvu *rvu, struct rvu_block *block, int lf);
- int rvu_get_blkaddr(struct rvu *rvu, int blktype, u16 pcifunc);
- int rvu_poll_reg(struct rvu *rvu, u64 block, u64 offset, u64 mask, bool zero);
-+u16 rvu_get_rsrc_mapcount(struct rvu_pfvf *pfvf, int blktype);
- 
- /* RVU HW reg validation */
- enum regmap_block {
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-new file mode 100644
-index 000000000000..e53d0a62f507
---- /dev/null
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -0,0 +1,229 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2020 Marvell. */
-+
-+#include <linux/pci.h>
-+#include "rvu_struct.h"
-+#include "rvu_reg.h"
-+#include "mbox.h"
-+#include "rvu.h"
-+
-+/* CPT PF device id */
-+#define	PCI_DEVID_OTX2_CPT_PF	0xA0FD
-+
-+/* Maximum supported microcode groups */
-+#define CPT_MAX_ENGINE_GROUPS	8
-+
-+static int get_cpt_pf_num(struct rvu *rvu)
-+{
-+	int i, domain_nr, cpt_pf_num = -1;
-+	struct pci_dev *pdev;
-+
-+	domain_nr = pci_domain_nr(rvu->pdev->bus);
-+	for (i = 0; i < rvu->hw->total_pfs; i++) {
-+		pdev = pci_get_domain_bus_and_slot(domain_nr, i + 1, 0);
-+		if (!pdev)
-+			continue;
-+
-+		if (pdev->device == PCI_DEVID_OTX2_CPT_PF) {
-+			cpt_pf_num = i;
-+			put_device(&pdev->dev);
-+			break;
-+		}
-+		put_device(&pdev->dev);
-+	}
-+	return cpt_pf_num;
-+}
-+
-+static bool is_cpt_pf(struct rvu *rvu, u16 pcifunc)
-+{
-+	int cpt_pf_num = get_cpt_pf_num(rvu);
-+
-+	if (rvu_get_pf(pcifunc) != cpt_pf_num)
-+		return false;
-+	if (pcifunc & RVU_PFVF_FUNC_MASK)
-+		return false;
-+
-+	return true;
-+}
-+
-+static bool is_cpt_vf(struct rvu *rvu, u16 pcifunc)
-+{
-+	int cpt_pf_num = get_cpt_pf_num(rvu);
-+
-+	if (rvu_get_pf(pcifunc) != cpt_pf_num)
-+		return false;
-+	if (!(pcifunc & RVU_PFVF_FUNC_MASK))
-+		return false;
-+
-+	return true;
-+}
-+
-+int rvu_mbox_handler_cpt_lf_alloc(struct rvu *rvu,
-+				  struct cpt_lf_alloc_req_msg *req,
-+				  struct msg_rsp *rsp)
-+{
-+	u16 pcifunc = req->hdr.pcifunc;
-+	struct rvu_block *block;
-+	int cptlf, blkaddr;
-+	int num_lfs, slot;
-+	u64 val;
-+
-+	if (req->eng_grpmsk == 0x0)
-+		return CPT_AF_ERR_GRP_INVALID;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, pcifunc);
-+	if (blkaddr < 0)
-+		return blkaddr;
-+
-+	block = &rvu->hw->block[blkaddr];
-+	num_lfs = rvu_get_rsrc_mapcount(rvu_get_pfvf(rvu, pcifunc),
-+					block->type);
-+	if (!num_lfs)
-+		return CPT_AF_ERR_LF_INVALID;
-+
-+	/* Check if requested 'CPTLF <=> NIXLF' mapping is valid */
-+	if (req->nix_pf_func) {
-+		/* If default, use 'this' CPTLF's PFFUNC */
-+		if (req->nix_pf_func == RVU_DEFAULT_PF_FUNC)
-+			req->nix_pf_func = pcifunc;
-+		if (!is_pffunc_map_valid(rvu, req->nix_pf_func, BLKTYPE_NIX))
-+			return CPT_AF_ERR_NIX_PF_FUNC_INVALID;
-+	}
-+
-+	/* Check if requested 'CPTLF <=> SSOLF' mapping is valid */
-+	if (req->sso_pf_func) {
-+		/* If default, use 'this' CPTLF's PFFUNC */
-+		if (req->sso_pf_func == RVU_DEFAULT_PF_FUNC)
-+			req->sso_pf_func = pcifunc;
-+		if (!is_pffunc_map_valid(rvu, req->sso_pf_func, BLKTYPE_SSO))
-+			return CPT_AF_ERR_SSO_PF_FUNC_INVALID;
-+	}
-+
-+	for (slot = 0; slot < num_lfs; slot++) {
-+		cptlf = rvu_get_lf(rvu, block, pcifunc, slot);
-+		if (cptlf < 0)
-+			return CPT_AF_ERR_LF_INVALID;
-+
-+		/* Set CPT LF group and priority */
-+		val = (u64)req->eng_grpmsk << 48 | 1;
-+		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), val);
-+
-+		/* Set CPT LF NIX_PF_FUNC and SSO_PF_FUNC */
-+		val = (u64)req->nix_pf_func << 48 |
-+		      (u64)req->sso_pf_func << 32;
-+		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf), val);
-+	}
-+
-+	return 0;
-+}
-+
-+int rvu_mbox_handler_cpt_lf_free(struct rvu *rvu, struct msg_req *req,
-+				 struct msg_rsp *rsp)
-+{
-+	u16 pcifunc = req->hdr.pcifunc;
-+	struct rvu_block *block;
-+	int cptlf, blkaddr;
-+	int num_lfs, slot;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, pcifunc);
-+	if (blkaddr < 0)
-+		return blkaddr;
-+
-+	block = &rvu->hw->block[blkaddr];
-+	num_lfs = rvu_get_rsrc_mapcount(rvu_get_pfvf(rvu, pcifunc),
-+					block->type);
-+	if (!num_lfs)
-+		return CPT_AF_ERR_LF_INVALID;
-+
-+	for (slot = 0; slot < num_lfs; slot++) {
-+		cptlf = rvu_get_lf(rvu, block, pcifunc, slot);
-+		if (cptlf < 0)
-+			return CPT_AF_ERR_LF_INVALID;
-+
-+		/* Reset CPT LF group and priority */
-+		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), 0x0);
-+		/* Reset CPT LF NIX_PF_FUNC and SSO_PF_FUNC */
-+		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf), 0x0);
-+	}
-+
-+	return 0;
-+}
-+
-+int rvu_mbox_handler_cpt_rd_wr_register(struct rvu *rvu,
-+					struct cpt_rd_wr_reg_msg *req,
-+					struct cpt_rd_wr_reg_msg *rsp)
-+{
-+	int blkaddr, num_lfs, offs, lf;
-+	struct rvu_block *block;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, 0);
-+	if (blkaddr < 0)
-+		return blkaddr;
-+
-+	/* This message is accepted only if sent from CPT PF/VF */
-+	if (!is_cpt_pf(rvu, req->hdr.pcifunc) &&
-+	    !is_cpt_vf(rvu, req->hdr.pcifunc))
-+		return CPT_AF_ERR_ACCESS_DENIED;
-+
-+	rsp->reg_offset = req->reg_offset;
-+	rsp->ret_val = req->ret_val;
-+	rsp->is_write = req->is_write;
-+
-+	/* Registers that can be accessed from PF/VF */
-+	if ((req->reg_offset & 0xFF000) ==  CPT_AF_LFX_CTL(0) ||
-+	    (req->reg_offset & 0xFF000) ==  CPT_AF_LFX_CTL2(0)) {
-+		offs = req->reg_offset & 0xFFF;
-+		if (offs % 8)
-+			return CPT_AF_ERR_ACCESS_DENIED;
-+		lf = offs >> 3;
-+		block = &rvu->hw->block[blkaddr];
-+		num_lfs = rvu_get_rsrc_mapcount(rvu_get_pfvf(rvu,
-+							     req->hdr.pcifunc),
-+						block->type);
-+		if (lf >= num_lfs)
-+			/* Slot is not valid for that PF/VF */
-+			return CPT_AF_ERR_ACCESS_DENIED;
-+
-+		/* Need to translate CPT LF slot to global number because
-+		 * VFs use local numbering from 0 to number of LFs - 1
-+		 */
-+		lf = rvu_get_lf(rvu, &rvu->hw->block[blkaddr],
-+				req->hdr.pcifunc, lf);
-+		if (lf < 0)
-+			return CPT_AF_ERR_ACCESS_DENIED;
-+
-+		req->reg_offset &= 0xFF000;
-+		req->reg_offset += lf << 3;
-+		rsp->reg_offset = req->reg_offset;
-+	} else if (!(req->hdr.pcifunc & RVU_PFVF_FUNC_MASK)) {
-+		/* Registers that can be accessed from PF */
-+		switch (req->reg_offset & 0xFF000) {
-+		case CPT_AF_PF_FUNC:
-+		case CPT_AF_BLK_RST:
-+		case CPT_AF_CONSTANTS1:
-+			if (req->reg_offset & 0xFFF)
-+				return CPT_AF_ERR_ACCESS_DENIED;
-+			break;
-+
-+		case CPT_AF_EXEX_STS(0):
-+		case CPT_AF_EXEX_CTL(0):
-+		case CPT_AF_EXEX_CTL2(0):
-+		case CPT_AF_EXEX_UCODE_BASE(0):
-+			offs = req->reg_offset & 0xFFF;
-+			if ((offs % 8) || (offs >> 3) > 127)
-+				return CPT_AF_ERR_ACCESS_DENIED;
-+			break;
-+		default:
-+			return CPT_AF_ERR_ACCESS_DENIED;
-+		}
-+	} else {
-+		return CPT_AF_ERR_ACCESS_DENIED;
-+	}
-+
-+	if (req->is_write)
-+		rvu_write64(rvu, blkaddr, req->reg_offset, req->val);
-+	else
-+		rsp->val = rvu_read64(rvu, blkaddr, req->reg_offset);
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-index 7ca599b973c0..807b1c1a9d85 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-@@ -429,12 +429,63 @@
- #define TIM_AF_LF_RST			(0x20)
- 
- /* CPT */
--#define CPT_AF_CONSTANTS0		(0x0000)
--#define CPT_PRIV_LFX_CFG		(0x41000)
--#define CPT_PRIV_LFX_INT_CFG		(0x43000)
--#define CPT_AF_RVU_LF_CFG_DEBUG		(0x45000)
--#define CPT_AF_LF_RST			(0x44000)
--#define CPT_AF_BLK_RST			(0x46000)
-+#define CPT_AF_CONSTANTS0               (0x0000)
-+#define CPT_AF_CONSTANTS1               (0x1000)
-+#define CPT_AF_DIAG                     (0x3000)
-+#define CPT_AF_ECO                      (0x4000)
-+#define CPT_AF_FLTX_INT(a)              (0xa000ull | (u64)(a) << 3)
-+#define CPT_AF_FLTX_INT_W1S(a)          (0xb000ull | (u64)(a) << 3)
-+#define CPT_AF_FLTX_INT_ENA_W1C(a)      (0xc000ull | (u64)(a) << 3)
-+#define CPT_AF_FLTX_INT_ENA_W1S(a)      (0xd000ull | (u64)(a) << 3)
-+#define CPT_AF_PSNX_EXE(a)              (0xe000ull | (u64)(a) << 3)
-+#define CPT_AF_PSNX_EXE_W1S(a)          (0xf000ull | (u64)(a) << 3)
-+#define CPT_AF_PSNX_LF(a)               (0x10000ull | (u64)(a) << 3)
-+#define CPT_AF_PSNX_LF_W1S(a)           (0x11000ull | (u64)(a) << 3)
-+#define CPT_AF_EXEX_CTL2(a)             (0x12000ull | (u64)(a) << 3)
-+#define CPT_AF_EXEX_STS(a)              (0x13000ull | (u64)(a) << 3)
-+#define CPT_AF_EXE_ERR_INFO             (0x14000)
-+#define CPT_AF_EXEX_ACTIVE(a)           (0x16000ull | (u64)(a) << 3)
-+#define CPT_AF_INST_REQ_PC              (0x17000)
-+#define CPT_AF_INST_LATENCY_PC          (0x18000)
-+#define CPT_AF_RD_REQ_PC                (0x19000)
-+#define CPT_AF_RD_LATENCY_PC            (0x1a000)
-+#define CPT_AF_RD_UC_PC                 (0x1b000)
-+#define CPT_AF_ACTIVE_CYCLES_PC         (0x1c000)
-+#define CPT_AF_EXE_DBG_CTL              (0x1d000)
-+#define CPT_AF_EXE_DBG_DATA             (0x1e000)
-+#define CPT_AF_EXE_REQ_TIMER            (0x1f000)
-+#define CPT_AF_EXEX_CTL(a)              (0x20000ull | (u64)(a) << 3)
-+#define CPT_AF_EXE_PERF_CTL             (0x21000)
-+#define CPT_AF_EXE_DBG_CNTX(a)          (0x22000ull | (u64)(a) << 3)
-+#define CPT_AF_EXE_PERF_EVENT_CNT       (0x23000)
-+#define CPT_AF_EXE_EPCI_INBX_CNT(a)     (0x24000ull | (u64)(a) << 3)
-+#define CPT_AF_EXE_EPCI_OUTBX_CNT(a)    (0x25000ull | (u64)(a) << 3)
-+#define CPT_AF_EXEX_UCODE_BASE(a)       (0x26000ull | (u64)(a) << 3)
-+#define CPT_AF_LFX_CTL(a)               (0x27000ull | (u64)(a) << 3)
-+#define CPT_AF_LFX_CTL2(a)              (0x29000ull | (u64)(a) << 3)
-+#define CPT_AF_CPTCLK_CNT               (0x2a000)
-+#define CPT_AF_PF_FUNC                  (0x2b000)
-+#define CPT_AF_LFX_PTR_CTL(a)           (0x2c000ull | (u64)(a) << 3)
-+#define CPT_AF_GRPX_THR(a)              (0x2d000ull | (u64)(a) << 3)
-+#define CPT_AF_CTL                      (0x2e000ull)
-+#define CPT_AF_XEX_THR(a)               (0x2f000ull | (u64)(a) << 3)
-+#define CPT_PRIV_LFX_CFG                (0x41000)
-+#define CPT_PRIV_AF_INT_CFG             (0x42000)
-+#define CPT_PRIV_LFX_INT_CFG            (0x43000)
-+#define CPT_AF_LF_RST                   (0x44000)
-+#define CPT_AF_RVU_LF_CFG_DEBUG         (0x45000)
-+#define CPT_AF_BLK_RST                  (0x46000)
-+#define CPT_AF_RVU_INT                  (0x47000)
-+#define CPT_AF_RVU_INT_W1S              (0x47008)
-+#define CPT_AF_RVU_INT_ENA_W1S          (0x47010)
-+#define CPT_AF_RVU_INT_ENA_W1C          (0x47018)
-+#define CPT_AF_RAS_INT                  (0x47020)
-+#define CPT_AF_RAS_INT_W1S              (0x47028)
-+#define CPT_AF_RAS_INT_ENA_W1S          (0x47030)
-+#define CPT_AF_RAS_INT_ENA_W1C          (0x47038)
-+
-+#define CPT_AF_LF_CTL2_SHIFT 3
-+#define CPT_AF_LF_SSO_PF_FUNC_SHIFT 32
- 
- #define NPC_AF_BLK_RST                  (0x00040)
- 
--- 
-2.28.0
+> 
+> But this also remind me that I need to add bpf_program__section_name() to
+> configure checking. I will see if I missed other functions' checking.
+
+This is going to be an on-going problem. iproute2 should work with
+whatever version of libbpf is installed on that system.
 
