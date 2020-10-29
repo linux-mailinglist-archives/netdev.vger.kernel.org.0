@@ -2,245 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B5FB29F580
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 20:43:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26B9429F5BC
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 21:01:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726156AbgJ2Tnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 15:43:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56380 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725948AbgJ2Tnj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 15:43:39 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4D46F20782;
-        Thu, 29 Oct 2020 19:43:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604000617;
-        bh=h3MleAy+1i2eMRVMC5aKx7VQAHzPoDk2AMn0XlSZBZY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=vjfObC9WXk9Tesv8y8OWMIHzvLU10Mbvqe+c+mQtsYn1yQ2tVAm8yQiFTmvDbQFF2
-         uF1QLvpKsrX+KXWZm+qJ6akObbqG2+J6UmkgVI0uSEFEW+r79r8mNjuhkTVA2zIUxk
-         FzCTMrhyTIyJ18jhq9G+2hkhZKkJa12viWmMzQuw=
-Date:   Thu, 29 Oct 2020 12:43:35 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Networking
-Message-ID: <20201029124335.2886a2bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726404AbgJ2UBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 16:01:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60676 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725914AbgJ2UBB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 16:01:01 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8914C0613CF;
+        Thu, 29 Oct 2020 12:51:52 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id h21so4898206iob.10;
+        Thu, 29 Oct 2020 12:51:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yGPWeMIi84aR1I4lps3FxOHp7MUBa0SbmybRkXicge8=;
+        b=C8LcbvSXxLLX57cIkg2bN4jLT2ORvRz8ODQ4vvupZQXKLiiuILOvW50A22RZ+TKBkv
+         RHvLLpvXMJbeFihIhz71sGJkwbao80F9jBtTFYq8/nsBalrLS5Lbat1Nps0G09bXI76m
+         ZpQk04bw3+1OPLDEjccBA+G7kTgg/60JyKF99m1gcyxr8M9U5pcEg1AbMN5GamEwb7H9
+         /YdffSm4spaB5yMQ/d0jdf5Ct+KeJHIijlFZKL2R9zEaOGPW/8LN7Oj4Spbcv1HnExIt
+         6t3lPZDzWuUAyujhdBehNsHBZTxnhKNiWDsCRr3gPECdivHZ3gjjxNGbbowsqj/AX+fA
+         PaTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yGPWeMIi84aR1I4lps3FxOHp7MUBa0SbmybRkXicge8=;
+        b=HWpitXQmb7iZ5roR3U9OKrzmh5UHrqhec+j54fqKiMaYuGsDkxC7/WJQpOzawVM9I+
+         5fgnFF7Saao6QZSaWMeLEef0jzS026jZZYn2IXChPD8Rytnpgh8/WBQuayDwcpA+/vJs
+         Bcznv5zM9Fj+EoStF5RUblA0CTBAWO2DqIW0JVIGi0l0gWLPyfvGLNhhbgGf6VpCorcO
+         tO6AR8HP8nCt0vjLTELsYlHFx1Yf42PEQmf/3u7KwdmWxO0N6ky1lXiPaZugKVuJycJG
+         2YaBPjNtgCaaHxKX83X2ciOYdrLkvSJctmlbfJzpnbdtDCAarg0bWx0L64+bPfeUI9sv
+         PnFw==
+X-Gm-Message-State: AOAM530F8BClnI4o5wXTCG0TsD3B1EvfLTD7dId0BVonRwlgQfjBSOAe
+        WWXqwsnIzD9QHXXiECbqRmBKWx3X6RnnED1sIKQ=
+X-Google-Smtp-Source: ABdhPJzBH7FxSXk+z8mo7AmimRNJKTBp1oW9R8ih0X9YoJdtq3/e2F9QbFPqh5QfqUHQPfpvvPU2kOFmthE/rFbIZwI=
+X-Received: by 2002:a02:c648:: with SMTP id k8mr4999752jan.96.1604001111938;
+ Thu, 29 Oct 2020 12:51:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <160384954046.698509.132709669068189999.stgit@localhost.localdomain>
+ <160384963313.698509.13129692731727238158.stgit@localhost.localdomain>
+ <20201029015115.jotej3wgi3p6yn6u@kafai-mbp> <CAKgT0UcpqQaHOdjcOGybF0pWuZS_ZqYOArQ8kLfvheGFE-ur-w@mail.gmail.com>
+ <20201029181258.ezff3vfpar7fxbam@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201029181258.ezff3vfpar7fxbam@kafai-mbp.dhcp.thefacebook.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 29 Oct 2020 12:51:40 -0700
+Message-ID: <CAKgT0Ufx14H--p3PO7wunHNJ6vXyhmzB4ZgTw-h0wuVKrRT32A@mail.gmail.com>
+Subject: Re: [bpf-next PATCH 2/4] selftests/bpf: Drop python client/server in
+ favor of threads
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>, brakmo@fb.com,
+        alexanderduyck@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 3cb12d27ff655e57e8efe3486dca2a22f4e30578:
+On Thu, Oct 29, 2020 at 11:13 AM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Thu, Oct 29, 2020 at 09:58:15AM -0700, Alexander Duyck wrote:
+> [ ... ]
+>
 
-  Merge tag 'net-5.10-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-10-23 12:05:49 -0700)
+[...]
 
-are available in the Git repository at:
+> >
+> > > Also, when looking closer at BPF_SOCK_OPS_STATE_CB in test_tcpbpf_kern.c,
+> > > it seems the map value "gp" is slapped together across multiple
+> > > TCP_CLOSE events which may be not easy to understand.
+> > >
+> > > How about it checks different states: TCP_CLOSE, TCP_LAST_ACK,
+> > > and BPF_TCP_FIN_WAIT2.  Each of this state will update its own
+> > > values under "gp".  Something like this (only compiler tested on
+> > > top of patch 4):
+> > >
+> > > diff --git i/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c w/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > > index 7e92c37976ac..65b247b03dfc 100644
+> > > --- i/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > > +++ w/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > > @@ -90,15 +90,14 @@ static void verify_result(int map_fd, int sock_map_fd)
+> > >               result.event_map, expected_events);
+> > >
+> > >         ASSERT_EQ(result.bytes_received, 501, "bytes_received");
+> > > -       ASSERT_EQ(result.bytes_acked, 1002, "bytes_acked");
+> > > +       ASSERT_EQ(result.bytes_acked, 1001, "bytes_acked");
+> > >         ASSERT_EQ(result.data_segs_in, 1, "data_segs_in");
+> > >         ASSERT_EQ(result.data_segs_out, 1, "data_segs_out");
+> > >         ASSERT_EQ(result.bad_cb_test_rv, 0x80, "bad_cb_test_rv");
+> > >         ASSERT_EQ(result.good_cb_test_rv, 0, "good_cb_test_rv");
+> > > -       ASSERT_EQ(result.num_listen, 1, "num_listen");
+> > > -
+> > > -       /* 3 comes from one listening socket + both ends of the connection */
+> > > -       ASSERT_EQ(result.num_close_events, 3, "num_close_events");
+> > > +       ASSERT_EQ(result.num_listen_close, 1, "num_listen");
+> > > +       ASSERT_EQ(result.num_last_ack, 1, "num_last_ack");
+> > > +       ASSERT_EQ(result.num_fin_wait2, 1, "num_fin_wait2");
+> > >
+> > >         /* check setsockopt for SAVE_SYN */
+> > >         key = 0;
+> > > diff --git i/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c w/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
+> > > index 3e6912e4df3d..2c5ffb50d6e0 100644
+> > > --- i/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
+> > > +++ w/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
+> > > @@ -55,9 +55,11 @@ int bpf_testcb(struct bpf_sock_ops *skops)
+> > >  {
+> > >         char header[sizeof(struct ipv6hdr) + sizeof(struct tcphdr)];
+> > >         struct bpf_sock_ops *reuse = skops;
+> > > +       struct tcpbpf_globals *gp;
+> > >         struct tcphdr *thdr;
+> > >         int good_call_rv = 0;
+> > >         int bad_call_rv = 0;
+> > > +       __u32 key_zero = 0;
+> > >         int save_syn = 1;
+> > >         int rv = -1;
+> > >         int v = 0;
+> > > @@ -155,26 +157,21 @@ int bpf_testcb(struct bpf_sock_ops *skops)
+> > >         case BPF_SOCK_OPS_RETRANS_CB:
+> > >                 break;
+> > >         case BPF_SOCK_OPS_STATE_CB:
+> > > -               if (skops->args[1] == BPF_TCP_CLOSE) {
+> > > -                       __u32 key = 0;
+> > > -                       struct tcpbpf_globals g, *gp;
+> > > -
+> > > -                       gp = bpf_map_lookup_elem(&global_map, &key);
+> > > -                       if (!gp)
+> > > -                               break;
+> > > -                       g = *gp;
+> > > -                       if (skops->args[0] == BPF_TCP_LISTEN) {
+> > > -                               g.num_listen++;
+> > > -                       } else {
+> > > -                               g.total_retrans = skops->total_retrans;
+> > > -                               g.data_segs_in = skops->data_segs_in;
+> > > -                               g.data_segs_out = skops->data_segs_out;
+> > > -                               g.bytes_received = skops->bytes_received;
+> > > -                               g.bytes_acked = skops->bytes_acked;
+> > > -                       }
+> > > -                       g.num_close_events++;
+> > > -                       bpf_map_update_elem(&global_map, &key, &g,
+> > > -                                           BPF_ANY);
+> > > +               gp = bpf_map_lookup_elem(&global_map, &key_zero);
+> > > +               if (!gp)
+> > > +                       break;
+> > > +               if (skops->args[1] == BPF_TCP_CLOSE &&
+> > > +                   skops->args[0] == BPF_TCP_LISTEN) {
+> > > +                       gp->num_listen_close++;
+> > > +               } else if (skops->args[1] == BPF_TCP_LAST_ACK) {
+> > > +                       gp->total_retrans = skops->total_retrans;
+> > > +                       gp->data_segs_in = skops->data_segs_in;
+> > > +                       gp->data_segs_out = skops->data_segs_out;
+> > > +                       gp->bytes_received = skops->bytes_received;
+> > > +                       gp->bytes_acked = skops->bytes_acked;
+> > > +                       gp->num_last_ack++;
+> > > +               } else if (skops->args[1] == BPF_TCP_FIN_WAIT2) {
+> > > +                       gp->num_fin_wait2++;
+> I meant with the above change in "case BPF_SOCK_OPS_STATE_CB".
+> The retry-and-wait in tcpbpf_user.c can be avoided.
+>
+> What may still be needed in tcpbpf_user.c is to use shutdown and
+> read-zero to ensure the sk has gone through those states before
+> calling verify_result().  Something like this [ uncompiled code again :) ]:
+>
+>         /* Always send FIN from accept_fd first to
+>          * ensure it will go through FIN_WAIT_2.
+>          */
+>         shutdown(accept_fd, SHUT_WR);
+>         /* Ensure client_fd gets the FIN */
+>         err = read(client_fd, buf, sizeof(buf));
+>         if (CHECK(err != 0, "read-after-shutdown(client_fd):",
+>                   "err:%d errno:%d\n", err, errno))
+>                 goto close_accept_fd;
+>
+>         /* FIN sends from client_fd and it must be in LAST_ACK now */
+>         shutdown(client_fd, SHUT_WR);
+>         /* Ensure accept_fd gets the FIN-ACK.
+>          * accept_fd must have passed the FIN_WAIT2.
+>          */
+>         err = read(accept_fd, buf, sizeof(buf));
+>         if (CHECK(err != 0, "read-after-shutdown(accept_fd):",
+>                   "err:%d errno:%d\n", err, errno))
+>                 goto close_accept_fd;
+>
+>         close(server_fd);
+>         close(accept_fd);
+>         close(client_fd);
+>
+>         /* All sk has gone through the states being tested.
+>          * check the results now.
+>          */
+>         verify_result(map_fd, sock_map_fd);
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.10-rc2
+Okay. I think I see how that works then. Basically shutdown the write
+on one end and read on the other expecting to hold until it forces us
+out with a read of length 0 on the other end. Although I might just
+use recv since that was the call being used to pull data from the
+socket rather than read. I just need to make sure I perform it
+starting with the shutdown on the accept end first so that it will
+close first to avoid causing the received/acked to be swapped.
 
-for you to fetch changes up to 2734a24e6e5d18522fbf599135c59b82ec9b2c9e:
+Thanks.
 
-  r8169: fix issue with forced threading in combination with shared interrupts (2020-10-29 11:49:04 -0700)
-
-----------------------------------------------------------------
-Networking fixes for 5.10-rc2.
-
-Current release regressions:
-
- - r8169: fix forced threading conflicting with other shared
-   interrupts; we tried to fix the use of raise_softirq_irqoff
-   from an IRQ handler on RT by forcing hard irqs, but this
-   driver shares legacy PCI IRQs so drop the _irqoff() instead
-
- - tipc: fix memory leak caused by a recent syzbot report fix
-   to tipc_buf_append()
-
-Current release - bugs in new features:
-
- - devlink: Unlock on error in dumpit() and fix some error codes
-
- - net/smc: fix null pointer dereference in smc_listen_decline()
-
-Previous release - regressions:
-
- - tcp: Prevent low rmem stalls with SO_RCVLOWAT.
-
- - net: protect tcf_block_unbind with block lock
-
- - ibmveth: Fix use of ibmveth in a bridge; the self-imposed filtering
-   to only send legal frames to the hypervisor was too strict
-
- - net: hns3: Clear the CMDQ registers before unmapping BAR region;
-   incorrect cleanup order was leading to a crash
-
- - bnxt_en - handful of fixes to fixes:
-    - Send HWRM_FUNC_RESET fw command unconditionally, even
-      if there are PCIe errors being reported
-    - Check abort error state in bnxt_open_nic().
-    - Invoke cancel_delayed_work_sync() for PFs also.
-    - Fix regression in workqueue cleanup logic in bnxt_remove_one().
-
- - mlxsw: Only advertise link modes supported by both driver
-   and device, after removal of 56G support from the driver
-   56G was not cleared from advertised modes
-
- - net/smc: fix suppressed return code
-
-Previous release - always broken:
-
- - netem: fix zero division in tabledist, caused by integer overflow
-
- - bnxt_en: Re-write PCI BARs after PCI fatal error.
-
- - cxgb4: set up filter action after rewrites
-
- - net: ipa: command payloads already mapped
-
-Misc:
-
- - s390/ism: fix incorrect system EID, it's okay to change since
-   it was added in current release
-
- - vsock: use ns_capable_noaudit() on socket create to suppress
-   false positive audit messages
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Aleksandr Nogikh (1):
-      netem: fix zero division in tabledist
-
-Alex Elder (1):
-      net: ipa: command payloads already mapped
-
-Amit Cohen (2):
-      mlxsw: Only advertise link modes supported by both driver and device
-      mlxsw: core: Fix use-after-free in mlxsw_emad_trans_finish()
-
-Andrew Gabbasov (1):
-      ravb: Fix bit fields checking in ravb_hwtstamp_get()
-
-Arjun Roy (1):
-      tcp: Prevent low rmem stalls with SO_RCVLOWAT.
-
-Dan Carpenter (3):
-      net: hns3: clean up a return in hclge_tm_bp_setup()
-      devlink: Fix some error codes
-      devlink: Unlock on error in dumpit()
-
-Guillaume Nault (1):
-      net/sched: act_mpls: Add softdep on mpls_gso.ko
-
-Heiner Kallweit (1):
-      r8169: fix issue with forced threading in combination with shared interrupts
-
-Ido Schimmel (1):
-      mlxsw: core: Fix memory leak on module removal
-
-Jakub Kicinski (4):
-      Merge branch 'ionic-memory-usage-fixes'
-      Merge branch 'net-smc-fixes-2020-10-23'
-      Merge branch 'mlxsw-various-fixes'
-      Merge branch 'bnxt_en-bug-fixes'
-
-Jeff Vander Stoep (1):
-      vsock: use ns_capable_noaudit() on socket create
-
-Karsten Graul (3):
-      net/smc: fix null pointer dereference in smc_listen_decline()
-      net/smc: fix suppressed return code
-      s390/ism: fix incorrect system EID
-
-Leon Romanovsky (1):
-      net: protect tcf_block_unbind with block lock
-
-Lijun Pan (1):
-      ibmvnic: fix ibmvnic_set_mac
-
-Masahiro Fujiwara (1):
-      gtp: fix an use-before-init in gtp_newlink()
-
-Michael Chan (1):
-      bnxt_en: Check abort error state in bnxt_open_nic().
-
-Michael Ellerman (1):
-      net: ucc_geth: Drop extraneous parentheses in comparison
-
-Paolo Abeni (1):
-      mptcp: add missing memory scheduling in the rx path
-
-Raju Rangoju (1):
-      cxgb4: set up filter action after rewrites
-
-Shannon Nelson (3):
-      ionic: clean up sparse complaints
-      ionic: no rx flush in deinit
-      ionic: fix mem leak in rx_empty
-
-Thomas Bogendoerfer (1):
-      ibmveth: Fix use of ibmveth in a bridge.
-
-Tung Nguyen (1):
-      tipc: fix memory leak caused by tipc_buf_append()
-
-Vasundhara Volam (4):
-      bnxt_en: Fix regression in workqueue cleanup logic in bnxt_remove_one().
-      bnxt_en: Invoke cancel_delayed_work_sync() for PFs also.
-      bnxt_en: Re-write PCI BARs after PCI fatal error.
-      bnxt_en: Send HWRM_FUNC_RESET fw command unconditionally.
-
-Vinay Kumar Yadav (3):
-      chelsio/chtls: fix tls record info to user
-      chelsio/chtls: fix deadlock issue
-      chelsio/chtls: fix memory leaks in CPL handlers
-
-Zenghui Yu (1):
-      net: hns3: Clear the CMDQ registers before unmapping BAR region
-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c          | 49 ++++++++++++-------
- drivers/net/ethernet/broadcom/bnxt/bnxt.h          |  1 +
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c  | 56 +++++++++++-----------
- drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h        |  4 ++
- .../chelsio/inline_crypto/chtls/chtls_cm.c         | 29 +++++------
- .../chelsio/inline_crypto/chtls/chtls_io.c         |  7 ++-
- drivers/net/ethernet/freescale/ucc_geth.c          |  2 +-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  |  2 +-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  2 +-
- drivers/net/ethernet/ibm/ibmveth.c                 |  6 ---
- drivers/net/ethernet/ibm/ibmvnic.c                 |  8 +++-
- drivers/net/ethernet/mellanox/mlxsw/core.c         |  5 ++
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c     |  9 +++-
- drivers/net/ethernet/mellanox/mlxsw/spectrum.h     |  1 +
- .../net/ethernet/mellanox/mlxsw/spectrum_ethtool.c | 30 ++++++++++++
- drivers/net/ethernet/pensando/ionic/ionic_dev.c    |  4 +-
- drivers/net/ethernet/pensando/ionic/ionic_dev.h    |  2 +
- drivers/net/ethernet/pensando/ionic/ionic_fw.c     |  6 +--
- drivers/net/ethernet/pensando/ionic/ionic_lif.c    | 29 ++++++-----
- drivers/net/ethernet/pensando/ionic/ionic_main.c   |  4 +-
- drivers/net/ethernet/pensando/ionic/ionic_stats.h  |  2 +-
- drivers/net/ethernet/pensando/ionic/ionic_txrx.c   | 47 +++++++-----------
- drivers/net/ethernet/pensando/ionic/ionic_txrx.h   |  1 -
- drivers/net/ethernet/realtek/r8169_main.c          |  4 +-
- drivers/net/ethernet/renesas/ravb_main.c           | 10 ++--
- drivers/net/gtp.c                                  | 16 +++----
- drivers/net/ipa/gsi_trans.c                        | 21 +++++---
- drivers/s390/net/ism_drv.c                         |  2 +-
- net/core/devlink.c                                 | 30 +++++++-----
- net/ipv4/tcp.c                                     |  2 +
- net/ipv4/tcp_input.c                               |  3 +-
- net/mptcp/protocol.c                               | 10 ++++
- net/sched/act_mpls.c                               |  1 +
- net/sched/cls_api.c                                |  4 +-
- net/sched/sch_netem.c                              |  9 +++-
- net/smc/af_smc.c                                   |  7 +--
- net/smc/smc_core.c                                 |  7 ++-
- net/tipc/msg.c                                     |  5 +-
- net/vmw_vsock/af_vsock.c                           |  2 +-
- 39 files changed, 261 insertions(+), 178 deletions(-)
+- Alex
