@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4965429E437
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:36:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1B7929E45D
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:38:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729403AbgJ2HgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 03:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
+        id S1729831AbgJ2HiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 03:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728134AbgJ2HY5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:57 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BF4C08EA6F;
-        Thu, 29 Oct 2020 00:06:02 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id e7so1548752pfn.12;
-        Thu, 29 Oct 2020 00:06:02 -0700 (PDT)
+        with ESMTP id S1727561AbgJ2HYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:53 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43994C08EA70;
+        Thu, 29 Oct 2020 00:06:11 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id t6so843950plq.11;
+        Thu, 29 Oct 2020 00:06:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=jd64SognjwqYRQuRMRSNbd08vn8VKgqQiHZBeDjXezk=;
-        b=ckKZLJIhWPiIm8Y4HaXD5QDaspycUtrzv0Y8V+GOhz52XnRDedNY5Rn4K/xvwLSLXV
-         8kLBZOpXykM9sZoQaDZtvwJDgJqVnoi5BET/1qOVcj28dBDWUDg1ypu9pbxX8tQDGlqy
-         /hVkOuvCImVVHqMnpcJD3k/sIEI33A8ev6JoCChiX2j7AX5IzhHLwDILm70M9vXzLvyX
-         /YHulwBjLVh3vIGX8L8iA8xv+F5V+WWDruhNzIAXop3sYHycikLk4JbOzu5I4iLCpZ2j
-         FOwwWZeP95Si372Fx2uajFmhZwLUGrdLHc405vtOdGgS7/foH8vNiTqk3TUsR9HCmVNs
-         D31A==
+        bh=Sv9CFe0MpUrtrIxlHMuiPEsfPm/oLc/qkaCuXjiMpk4=;
+        b=C8f0/w5BsOrQQMevk5iH0d/3W+FNL8dXSbN3c5EA9Mk4yxIZRXGCfPBmLSQdPc9xcP
+         sxszDta7dHc2Pqda1RP+724FS72JVHNFVUhfM4Hv8J9JCJ/LcXr996bubfVL5YBOekQR
+         XRCQyNKLH//cYHq7/0NpyOzL5c6qAuiZu8o9e80kw0F+aeyuDOOKRYe/8XcUa1ed+0as
+         Lx89ifXcIitmhsRJcsaU2G99mQ1pHBwlPsYZZHCl00M+DzJtEk/e7cmutIYcarPFTNsV
+         M3lhaojalnkwM6Ac8xgGdMlg/0/WJhX/o5o73oi8WKHqoiFyzF2dLOjkEgeViqhurjX8
+         i6Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=jd64SognjwqYRQuRMRSNbd08vn8VKgqQiHZBeDjXezk=;
-        b=PZjBDXvR2ds2sr7+GKfyeQeOE5rvbcJsDIZNRn+Jv0uQOCQH29mM8RgUGwDOiyvIXa
-         1wMt+HvtZy31STpPpOL+rPrQIqsAi85lDEXKQit1S5HtqMi610mMtSqCprNHwH+296PF
-         0SKm2lDyIxKXbQu28pV/fJLLcgAlw14wMMyvXKvaSKzvW2yk0vRwapCMRL4p0DVb5mjV
-         iyt4yW21GQAxYelbWsiEsWFvRLUYSKrmuJL5GFqlaOyOh+7n3FIyCJ0FzKgDkR76JJ9m
-         w0P+Nvi+MfsIuOvZwtLYKzDBpTh0oZEn4gTQ/0V2faZUgnRHgj6R3PUAHJoQSvg+pjLd
-         GnPw==
-X-Gm-Message-State: AOAM530gwe4EmmJ9P9XOb54d1ZEacUvzGl+qZUQJlOEbEW+ED41DjqLf
-        6x2MDthNzE57j2YWIQXgqexF4kxz3Ic=
-X-Google-Smtp-Source: ABdhPJyJsojm6kvb0A+CKqF5ts5SkdNL+pbTZreTRBKOacbTYfriJoFP9rv91liwOuVbuzw/kBo79w==
-X-Received: by 2002:aa7:8c50:0:b029:160:1240:493d with SMTP id e16-20020aa78c500000b02901601240493dmr2907704pfd.31.1603955161886;
-        Thu, 29 Oct 2020 00:06:01 -0700 (PDT)
+        bh=Sv9CFe0MpUrtrIxlHMuiPEsfPm/oLc/qkaCuXjiMpk4=;
+        b=D01gkORj3OMzF1Tl4kOGWc/j2dy4O9dkA1wHqMlibJGLch9RU8INmHQ5yFxQVrBWeO
+         5fMdhrxw/c9yAToknveBgSpODdZvW/GLJzlTieGMyCYSUbz7+oMljT1V851z/J1w+qf0
+         rzRjRlguhnWSYbZsR9GeH5De0tIB6oJG3H14WZWDWs1+ui6Siw1X6w/Gj9hLsYgSC/Cz
+         IxmmCkt97Gl1ICE6KWrzoDQiFoINvxHw1Y5G5l7U8rTpiDDpilP7mgvup2Z9aidTJfxX
+         XwFuyD77Dv745x46YCvm3f+jaTsWoZ3onqrzPoW6ewSH5eME8h2swH4oTsfhweVf1YLQ
+         yugg==
+X-Gm-Message-State: AOAM533VyYPDdfsJ8FtDepAlHpgYABDLpz/j+C4CySOEYCLFL3CNvF8e
+        eZfs6uqhjhwWnq1s3hzu6ng76o86kyg=
+X-Google-Smtp-Source: ABdhPJwPYp3HteQT+4wPlLPvow8MQWmZUqrBc2W0ZWNCIJBwQUvgRPwHyAxOVs+I8B9m+7P3YSbAnA==
+X-Received: by 2002:a17:902:7c14:b029:d4:d894:7eed with SMTP id x20-20020a1709027c14b02900d4d8947eedmr2731123pll.81.1603955170490;
+        Thu, 29 Oct 2020 00:06:10 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id m13sm1616003pjl.45.2020.10.29.00.06.00
+        by smtp.gmail.com with ESMTPSA id g22sm1741640pfh.147.2020.10.29.00.06.09
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 29 Oct 2020 00:06:01 -0700 (PDT)
+        Thu, 29 Oct 2020 00:06:09 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
@@ -54,97 +54,96 @@ Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net,
         Jakub Kicinski <kuba@kernel.org>, gnault@redhat.com,
         pabeni@redhat.com, willemdebruijn.kernel@gmail.com
-Subject: [PATCHv5 net-next 05/16] sctp: create udp6 sock and set its encap_rcv
-Date:   Thu, 29 Oct 2020 15:04:59 +0800
-Message-Id: <3c26801d36575d0e9c9bd260e6c1f1b67e4b721e.1603955040.git.lucien.xin@gmail.com>
+Subject: [PATCHv5 net-next 06/16] sctp: add encap_err_lookup for udp encap socks
+Date:   Thu, 29 Oct 2020 15:05:00 +0800
+Message-Id: <279d266bc34ebc439114f39da983dc08845ea37a.1603955040.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1cfd9ca0154d35389b25f68457ea2943a19e7da2.1603955040.git.lucien.xin@gmail.com>
+In-Reply-To: <3c26801d36575d0e9c9bd260e6c1f1b67e4b721e.1603955040.git.lucien.xin@gmail.com>
 References: <cover.1603955040.git.lucien.xin@gmail.com>
  <48053c3bf48a46899bc0130dc43adca1e6925581.1603955040.git.lucien.xin@gmail.com>
  <4f439ed717442a649ba78dc0efc6f121208a9995.1603955040.git.lucien.xin@gmail.com>
  <e7575f9fea2b867bf0c7c3e8541e8a6101610055.1603955040.git.lucien.xin@gmail.com>
  <1cfd9ca0154d35389b25f68457ea2943a19e7da2.1603955040.git.lucien.xin@gmail.com>
+ <3c26801d36575d0e9c9bd260e6c1f1b67e4b721e.1603955040.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1603955040.git.lucien.xin@gmail.com>
 References: <cover.1603955040.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to add the udp6 sock part in sctp_udp_sock_start/stop().
-udp_conf.use_udp6_rx_checksums is set to true, as:
+As it says in rfc6951#section-5.5:
 
-   "The SCTP checksum MUST be computed for IPv4 and IPv6, and the UDP
-    checksum SHOULD be computed for IPv4 and IPv6"
+  "When receiving ICMP or ICMPv6 response packets, there might not be
+   enough bytes in the payload to identify the SCTP association that the
+   SCTP packet triggering the ICMP or ICMPv6 packet belongs to.  If a
+   received ICMP or ICMPv6 packet cannot be related to a specific SCTP
+   association or the verification tag cannot be verified, it MUST be
+   discarded silently.  In particular, this means that the SCTP stack
+   MUST NOT rely on receiving ICMP or ICMPv6 messages.  Implementation
+   constraints could prevent processing received ICMP or ICMPv6
+   messages."
 
-says in rfc6951#section-5.3.
+ICMP or ICMPv6 packets need to be handled, and this is implemented by
+udp encap sock .encap_err_lookup function.
 
-v1->v2:
-  - Add pr_err() when fails to create udp v6 sock.
-  - Add #if IS_ENABLED(CONFIG_IPV6) not to create v6 sock when ipv6 is
-    disabled.
+The .encap_err_lookup function is called in __udp(6)_lib_err_encap()
+to confirm this path does need to be updated. For sctp, what we can
+do here is check if the corresponding asoc and transport exist.
+
+Note that icmp packet process for sctp over udp is done by udp sock
+.encap_err_lookup(), and it means for now we can't do as much as
+sctp_v4/6_err() does. Also we can't do the two mappings mentioned
+in rfc6951#section-5.5.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/net/netns/sctp.h |  1 +
- net/sctp/protocol.c      | 26 ++++++++++++++++++++++++++
- 2 files changed, 27 insertions(+)
+ net/sctp/protocol.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/include/net/netns/sctp.h b/include/net/netns/sctp.h
-index 8cc9aff..247b401 100644
---- a/include/net/netns/sctp.h
-+++ b/include/net/netns/sctp.h
-@@ -24,6 +24,7 @@ struct netns_sctp {
- 
- 	/* UDP tunneling listening sock. */
- 	struct sock *udp4_sock;
-+	struct sock *udp6_sock;
- 	/* UDP tunneling listening port. */
- 	int udp_port;
- 
 diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
-index 0f79334..8410c9a 100644
+index 8410c9a..4d12a0c 100644
 --- a/net/sctp/protocol.c
 +++ b/net/sctp/protocol.c
-@@ -869,6 +869,28 @@ int sctp_udp_sock_start(struct net *net)
- 	setup_udp_tunnel_sock(net, sock, &tuncfg);
- 	net->sctp.udp4_sock = sock->sk;
- 
-+#if IS_ENABLED(CONFIG_IPV6)
-+	memset(&udp_conf, 0, sizeof(udp_conf));
-+
-+	udp_conf.family = AF_INET6;
-+	udp_conf.local_ip6 = in6addr_any;
-+	udp_conf.local_udp_port = htons(net->sctp.udp_port);
-+	udp_conf.use_udp6_rx_checksums = true;
-+	udp_conf.ipv6_v6only = true;
-+	err = udp_sock_create(net, &udp_conf, &sock);
-+	if (err) {
-+		pr_err("Failed to create the SCTP UDP tunneling v6 sock\n");
-+		udp_tunnel_sock_release(net->sctp.udp4_sock->sk_socket);
-+		net->sctp.udp4_sock = NULL;
-+		return err;
-+	}
-+
-+	tuncfg.encap_type = 1;
-+	tuncfg.encap_rcv = sctp_udp_rcv;
-+	setup_udp_tunnel_sock(net, sock, &tuncfg);
-+	net->sctp.udp6_sock = sock->sk;
-+#endif
-+
+@@ -848,6 +848,23 @@ static int sctp_udp_rcv(struct sock *sk, struct sk_buff *skb)
  	return 0;
  }
  
-@@ -878,6 +900,10 @@ void sctp_udp_sock_stop(struct net *net)
- 		udp_tunnel_sock_release(net->sctp.udp4_sock->sk_socket);
- 		net->sctp.udp4_sock = NULL;
- 	}
-+	if (net->sctp.udp6_sock) {
-+		udp_tunnel_sock_release(net->sctp.udp6_sock->sk_socket);
-+		net->sctp.udp6_sock = NULL;
-+	}
- }
++static int sctp_udp_err_lookup(struct sock *sk, struct sk_buff *skb)
++{
++	struct sctp_association *asoc;
++	struct sctp_transport *t;
++	int family;
++
++	skb->transport_header += sizeof(struct udphdr);
++	family = (ip_hdr(skb)->version == 4) ? AF_INET : AF_INET6;
++	sk = sctp_err_lookup(dev_net(skb->dev), family, skb, sctp_hdr(skb),
++			     &asoc, &t);
++	if (!sk)
++		return -ENOENT;
++
++	sctp_err_finish(sk, t);
++	return 0;
++}
++
+ int sctp_udp_sock_start(struct net *net)
+ {
+ 	struct udp_tunnel_sock_cfg tuncfg = {NULL};
+@@ -866,6 +883,7 @@ int sctp_udp_sock_start(struct net *net)
  
- /* Register address family specific functions. */
+ 	tuncfg.encap_type = 1;
+ 	tuncfg.encap_rcv = sctp_udp_rcv;
++	tuncfg.encap_err_lookup = sctp_udp_err_lookup;
+ 	setup_udp_tunnel_sock(net, sock, &tuncfg);
+ 	net->sctp.udp4_sock = sock->sk;
+ 
+@@ -887,6 +905,7 @@ int sctp_udp_sock_start(struct net *net)
+ 
+ 	tuncfg.encap_type = 1;
+ 	tuncfg.encap_rcv = sctp_udp_rcv;
++	tuncfg.encap_err_lookup = sctp_udp_err_lookup;
+ 	setup_udp_tunnel_sock(net, sock, &tuncfg);
+ 	net->sctp.udp6_sock = sock->sk;
+ #endif
 -- 
 2.1.0
 
