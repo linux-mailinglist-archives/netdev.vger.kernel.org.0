@@ -2,120 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 237D229E21B
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:07:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A37E829E295
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:28:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733237AbgJ2CHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 22:07:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28883 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727271AbgJ2CGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 22:06:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603937214;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WiKrctRMP15lV20zK+4gtceZ71rNHyxvbqtsGTAZ6gU=;
-        b=SSw7r1zHdlCTavCfgiAJiMhldECjvicNr9gEK6o09ndmDOv02Atuzp1AItSRggzZR7q24a
-        YkM2OzfiT+DJRsDh3y5QOADFPPpnTmZ36zPgP5h16EFZPxBTisqajfo8/llLbOX98R13YM
-        ngJesVHuyW45LrcVhnD9I222WdajGPU=
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
- [209.85.210.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-505-1oYhl0nFOnyilPwM6s5VWg-1; Wed, 28 Oct 2020 22:06:52 -0400
-X-MC-Unique: 1oYhl0nFOnyilPwM6s5VWg-1
-Received: by mail-pf1-f200.google.com with SMTP id a27so929992pfl.17
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 19:06:52 -0700 (PDT)
+        id S2391067AbgJ2C2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 22:28:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732825AbgJ2C1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 22:27:32 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713C8C0613D1;
+        Wed, 28 Oct 2020 19:27:32 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id i186so894698ybc.11;
+        Wed, 28 Oct 2020 19:27:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b9BOAnMXMoVPK4YONayTBt7vqZItsUD5u5uhV9sIfiI=;
+        b=FlGEB0LTTPM4gZS86lNMm1Fc30sNdacUX6shfO+qwnZA0Jz+Zh3WXZmKY2cxSG7XpP
+         A2NNzYYmRjXM5LcQypfBzYgzTSDGWLwSsUU3Jy6hpYCrzTUIGHffr6nqDwdqB6n98G1W
+         NSp7IxpPD6BitsmDe7y+BN90LFBgXCNANNnaxA8fhyyoltN24+jjd/IbPJr2zY1xbUB/
+         Uw4EgyZmxUViFlQTaKptVdWw+ZNPBv+Gy7SWX2NPlCdvwyGS9LK2LLRYewN2BfM2XWwf
+         sqnaBteTpBkeBl4liyyq6T8MdtMihgLYKPxCU5S6lK6Vc52haHktdgjQsPTzNuXlu+Xi
+         pmSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WiKrctRMP15lV20zK+4gtceZ71rNHyxvbqtsGTAZ6gU=;
-        b=PUudYLQtlC+ZsfMBYidreCrQzCtPOrNajanhb06WSGDKXPCdfeu/HkG7iVXpTTgFmb
-         UNglbAa0ojnCHT+wytTfWOrqi2Vj8b6oBTSadMqn81JsuI8hiKOg5dxRPURPQa5Sh5K8
-         kn7jigtrFpbu+mb5h19OpgwrAUgEJ21+HD85AnTneBYRC4habi+33AW8vBX7mL/eIEoK
-         fl68/LBF3bUS2+Z+aBjyFJY0NfyWMoNyE6UWfsdG1OBa2BCYQXjBNXbChm7meG3bfYUc
-         3jDan6Y0obXZ+LHZoSEpGXkmKDHztOMV2d9Oh0yOz04enn5pzoJkD1+vIkWHlTTQJmXz
-         xVQA==
-X-Gm-Message-State: AOAM532u/HunBDWmrZwdbfm1sdMw7gebzxrEWzKpmA+AKINwbxxQXSTi
-        ZFIzJafci1eg+uwcYXRedfyM9RI4qbDqJmxV9n3dplBxWR2T7dTrFgSzh1hGYjjjzCTnnNzPvAN
-        SEgrtPG9n0xwL38Q=
-X-Received: by 2002:a17:90a:d516:: with SMTP id t22mr1263710pju.118.1603937211118;
-        Wed, 28 Oct 2020 19:06:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwyMRb2uQE7ATVHZNR6LzlXGvxdkLkaB3eSdORGRWQ2lWVIA+j+MoIlCdPWs7FZrZGb6PJqag==
-X-Received: by 2002:a17:90a:d516:: with SMTP id t22mr1263683pju.118.1603937210851;
-        Wed, 28 Oct 2020 19:06:50 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id ne17sm679818pjb.44.2020.10.28.19.06.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 19:06:49 -0700 (PDT)
-Date:   Thu, 29 Oct 2020 10:06:37 +0800
-From:   Hangbin Liu <haliu@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b9BOAnMXMoVPK4YONayTBt7vqZItsUD5u5uhV9sIfiI=;
+        b=HWV9q0CmFxIQTc97B053vZ6SMDGGzvjeM2Db5r/IHarEAEvKErpib48NQ9F89Ug+RE
+         8ZdaG+CWG2ir3BlJgGD6WU+E4PGiy4efVQOaHmpdwUQqTOzbZOsKFR3u4Ju+VTJX5KWn
+         3e05BsBMzfjvJcZXrqLQwffEWpZH1QY9p7GETNfo0U6bu/LMkDuHlVSjqZu3+wqr+AGD
+         aqA5kKkknkWPQBQec42NgGZBVTL3vnJbWP8TYCb7mzMtMMU+lyf6FCM0GrGH/tNNJ/YI
+         dZl2BYWz1RloAbxHP2D6x9SgLM5Wpjo+9iTv9KZYSgAMFm/YpVKleHmlQOX8yDylS9Bp
+         T2XA==
+X-Gm-Message-State: AOAM530f/k/F8+AhMxZYbbp61VuQlDsO7q1EbC0rV0ZOcKiXYtwb0l11
+        +9oFixOu0BJcORr/9C1Ab4J7oeumZCQJS1pEZ9I=
+X-Google-Smtp-Source: ABdhPJxhGtV3S29KlyIGapKNKUXB3jYo/wYK3U/CETHFe/x6wevLSF4vrBGS4iZg9auYULOohzrgtng+0q+/g+YnEeI=
+X-Received: by 2002:a25:c001:: with SMTP id c1mr2879701ybf.27.1603938451449;
+ Wed, 28 Oct 2020 19:27:31 -0700 (PDT)
+MIME-Version: 1.0
+References: <20201023033855.3894509-1-haliu@redhat.com> <20201028132529.3763875-1-haliu@redhat.com>
+ <7babcccb-2b31-f9bf-16ea-6312e449b928@gmail.com> <20201029020637.GM2408@dhcp-12-153.nay.redhat.com>
+In-Reply-To: <20201029020637.GM2408@dhcp-12-153.nay.redhat.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 28 Oct 2020 19:27:20 -0700
+Message-ID: <CAEf4BzZR4MqQJCD4kzFsbhpfmp4RB7SHcP5AbAiqzqK7to2u+g@mail.gmail.com>
+Subject: Re: [PATCHv2 iproute2-next 0/5] iproute2: add libbpf support
+To:     Hangbin Liu <haliu@redhat.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         David Miller <davem@davemloft.net>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Jiri Benc <jbenc@redhat.com>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCHv2 iproute2-next 0/5] iproute2: add libbpf support
-Message-ID: <20201029020637.GM2408@dhcp-12-153.nay.redhat.com>
-References: <20201023033855.3894509-1-haliu@redhat.com>
- <20201028132529.3763875-1-haliu@redhat.com>
- <7babcccb-2b31-f9bf-16ea-6312e449b928@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7babcccb-2b31-f9bf-16ea-6312e449b928@gmail.com>
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 05:02:34PM -0600, David Ahern wrote:
-> fails to compile on Ubuntu 20.10:
-> 
-> root@u2010-sfo3:~/iproute2.git# ./configure
-> TC schedulers
->  ATM	yes
->  IPT	using xtables
->  IPSET  yes
-> 
-> iptables modules directory: /usr/lib/x86_64-linux-gnu/xtables
-> libc has setns: yes
-> SELinux support: yes
-> libbpf support: yes
-> ELF support: yes
-> libmnl support: yes
-> Berkeley DB: no
-> need for strlcpy: yes
-> libcap support: yes
-> 
-> root@u2010-sfo3:~/iproute2.git# make clean
-> 
-> root@u2010-sfo3:~/iproute2.git# make -j 4
-> ...
-> /usr/bin/ld: ../lib/libutil.a(bpf_libbpf.o): in function `load_bpf_object':
-> bpf_libbpf.c:(.text+0x3cb): undefined reference to
-> `bpf_program__section_name'
-> /usr/bin/ld: bpf_libbpf.c:(.text+0x438): undefined reference to
-> `bpf_program__section_name'
-> /usr/bin/ld: bpf_libbpf.c:(.text+0x716): undefined reference to
-> `bpf_program__section_name'
-> collect2: error: ld returned 1 exit status
-> make[1]: *** [Makefile:27: ip] Error 1
-> make[1]: *** Waiting for unfinished jobs....
-> make: *** [Makefile:64: all] Error 2
+On Wed, Oct 28, 2020 at 7:06 PM Hangbin Liu <haliu@redhat.com> wrote:
+>
+> On Wed, Oct 28, 2020 at 05:02:34PM -0600, David Ahern wrote:
+> > fails to compile on Ubuntu 20.10:
+> >
+> > root@u2010-sfo3:~/iproute2.git# ./configure
+> > TC schedulers
+> >  ATM  yes
+> >  IPT  using xtables
+> >  IPSET  yes
+> >
+> > iptables modules directory: /usr/lib/x86_64-linux-gnu/xtables
+> > libc has setns: yes
+> > SELinux support: yes
+> > libbpf support: yes
+> > ELF support: yes
+> > libmnl support: yes
+> > Berkeley DB: no
+> > need for strlcpy: yes
+> > libcap support: yes
+> >
+> > root@u2010-sfo3:~/iproute2.git# make clean
+> >
+> > root@u2010-sfo3:~/iproute2.git# make -j 4
+> > ...
+> > /usr/bin/ld: ../lib/libutil.a(bpf_libbpf.o): in function `load_bpf_object':
+> > bpf_libbpf.c:(.text+0x3cb): undefined reference to
+> > `bpf_program__section_name'
+> > /usr/bin/ld: bpf_libbpf.c:(.text+0x438): undefined reference to
+> > `bpf_program__section_name'
+> > /usr/bin/ld: bpf_libbpf.c:(.text+0x716): undefined reference to
+> > `bpf_program__section_name'
+> > collect2: error: ld returned 1 exit status
+> > make[1]: *** [Makefile:27: ip] Error 1
+> > make[1]: *** Waiting for unfinished jobs....
+> > make: *** [Makefile:64: all] Error 2
+>
+> You need to update libbpf to latest version.
 
-You need to update libbpf to latest version.
+Why not using libbpf from submodule?
 
-But this also remind me that I need to add bpf_program__section_name() to
-configure checking. I will see if I missed other functions' checking.
-
-Thanks
-Hangbin
-
+>
+> But this also remind me that I need to add bpf_program__section_name() to
+> configure checking. I will see if I missed other functions' checking.
+>
+> Thanks
+> Hangbin
+>
