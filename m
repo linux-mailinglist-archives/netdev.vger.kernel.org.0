@@ -2,194 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F95129F7FB
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:28:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A0F329F875
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:37:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726027AbgJ2W2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 18:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55470 "EHLO
+        id S1725945AbgJ2Whb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 18:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726020AbgJ2W2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 18:28:48 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB35C0613D2;
-        Thu, 29 Oct 2020 15:28:48 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id l24so4659080edj.8;
-        Thu, 29 Oct 2020 15:28:48 -0700 (PDT)
+        with ESMTP id S1725868AbgJ2Wha (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 18:37:30 -0400
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E838DC0613CF
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 15:37:28 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id eh4so2644317qvb.12
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 15:37:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RXMc5OSGpgSuMJ24cCnWO2LiNVxOAy2zAp+LUmQlsfc=;
-        b=lj6ynL4ahqFevPNd366kcEIifQfswQRS3HkifRdvYvebwHO07T6Fvzg8KJCyz0hFY5
-         FzskV9YvPFCc4Rzk4Oow+VoWKNIExu5l34uFGh/HQBimJfsADE8H6DAgKnsyM4et+2zF
-         rWDUcxU9W1c0qHMUYouZCXkZEtQHXwO53rGn/P5oIqtoah3F5ItqWfcXf4eKpmlXdowr
-         EU5RW8BrIg6gcYRIX7sN+OQqiNcljGuPGnOc47vk36tzJ1bNs2vJT8K31mDhvJ03dKZB
-         GmRV1fW/ZFBW+P8B0WUmQGa1NrMw4Z5zAtjKKkR5uSoX/t3sBF9w9uCyiRx6fdHPgXKV
-         gRtg==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=BiCPGNHEYq7IED6pRZ/BzCt1AxbVwIiK4WTDKoCvHSM=;
+        b=dnxy95AUQmjaY8Bv8LSaCRLQqP0eaMVA7DHEhwQJSsLrrv5iYturZZMke2JunjNxWs
+         Crh95X5tigSC6Y9q3VS175Ihr8AEZxaJKKUjvlh19VOPVXKwuZqPYEQvqmJ05tL07jPy
+         Te68NYUPjuK845g+oAbUVgeef6XVgBN8rTMmFWRDrDcnsPWBFY8CmLz3VGvDBgF3K/8f
+         l2QzEtpWq/7e/JgQFf8luCGNrtql8MmZ6jkPpZVwHK25ERtw+C9ME61Ort0Ax4hDnR2f
+         y6x+xvlKUJ3MS5QNt0QdwG50c/CH3ND4BqD8ON0IjQMmh+fpY8uXOfKt9mcNPUtS6y33
+         Pe1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RXMc5OSGpgSuMJ24cCnWO2LiNVxOAy2zAp+LUmQlsfc=;
-        b=G8QRZkpn3AXqbeh9byhCLzQCR7uVVfakH+OcR0OgT81X2aBiLci1d+au5yzLXKyoEu
-         ZdCUtTo9k8zf5Es+vBJiXtvHWDzrV+kBlo7HeYmF93xhJsYMvpK11moaI2i/Tz+odxXR
-         wiuLCdHUqYi4Dul4GjSWlEJ2UY9Z16fw2WgnbM2X7SoIuCtA/LisnYnQsPDv/uAD9xrp
-         1jk1x3FH5vvQOyKE16byS1pXr8FXHhdBzPT4UuWJxsXuYaZnLMiwrQjUOdYmvCbw3ECh
-         LYD0ilp8cs69ro08MrEf8vazGk8+8KWN8VrgTa/Tw69RBT6Xg+E+pd2Kz3PozymDzIcj
-         E09Q==
-X-Gm-Message-State: AOAM533B7O3vYLnVF4hEJtcplGogs+BSn73SnTzcxWJ8M/ZDnXpnMD9/
-        0y6lpAY8GGe/obCUaXODq8Q=
-X-Google-Smtp-Source: ABdhPJxMla1hQY3H5lpvyzRbQs8GPoKs4WJAe/tRW4FScgMjEHEPi0tXWBQovxfJ0xdUmvgh9DqrMw==
-X-Received: by 2002:aa7:c490:: with SMTP id m16mr6354399edq.298.1604010527112;
-        Thu, 29 Oct 2020 15:28:47 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id v6sm2154708ejj.112.2020.10.29.15.28.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2020 15:28:46 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     David Ahern <dsahern@gmail.com>, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com, jiri@mellanox.com,
-        idosch@idosch.org
-Subject: [PATCH v2 iproute2-next] bridge: add support for L2 multicast groups
-Date:   Fri, 30 Oct 2020 00:28:28 +0200
-Message-Id: <20201029222828.2149980-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=BiCPGNHEYq7IED6pRZ/BzCt1AxbVwIiK4WTDKoCvHSM=;
+        b=NWA6HE1D3CkYgBJRt4pzYWK14RP38QnFdD/vSWJIHThTdjopEmZshfI4YWj514EfkR
+         EEr2IWuJBNJEQeZSS5DftTxQTcwnNTRNkGPLfxFMUwicvMI9KvUQmIWDDK7z4lpm25GE
+         zyrfrElTeLCd3guVrdCcdHl9tP3qNC0YXyDbsAgTxE/EZdm1WHs1ZLXfGwWv54FXXOHH
+         1NqC+NhaD0+e075Hv9OxLZExyv7OxOULVhYgXM3N4wZs2iAPedP1ki1Fg1Zk67b3tZqD
+         A46oTRvAxaRLC/EeuzZvrTHbd05RUMg+KrSX8XGuXqstLeNQ8CcEiCVs9F2Zb+DnLiWO
+         d/Kg==
+X-Gm-Message-State: AOAM531EG8jETi320Ze4omUX9/sgpdydMzG2kwX+AW6AxvKVS6KSym7H
+        8ckFJp2lnoIHngxBC4C6RV75wreY6m9C
+X-Google-Smtp-Source: ABdhPJxWrWDS38PkkbgZk9b4i52L8CEXtkQ8bJSOEdv/nw+U1dByIV6meridJeVbYTlItASPFe201nMxl5oZ
+Sender: "irogers via sendgmr" <irogers@irogers.svl.corp.google.com>
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:2:f693:9fff:fef4:4583])
+ (user=irogers job=sendgmr) by 2002:ad4:43ca:: with SMTP id
+ o10mr6868463qvs.33.1604011048079; Thu, 29 Oct 2020 15:37:28 -0700 (PDT)
+Date:   Thu, 29 Oct 2020 15:37:07 -0700
+Message-Id: <20201029223707.494059-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.1.341.ge80a0c044ae-goog
+Subject: [PATCH v2] libbpf hashmap: Fix undefined behavior in hash_bits
+From:   Ian Rogers <irogers@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+If bits is 0, the case when the map is empty, then the >> is the size of
+the register which is undefined behavior - on x86 it is the same as a
+shift by 0. Fix by handling the 0 case explicitly and guarding calls to
+hash_bits for empty maps in hashmap__for_each_key_entry and
+hashmap__for_each_entry_safe.
 
-Extend the 'bridge mdb' command for the following syntax:
-bridge mdb add dev br0 port swp0 grp 01:02:03:04:05:06 permanent
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Suggested-by: Andrii Nakryiko <andriin@fb.com>,
+Signed-off-by: Ian Rogers <irogers@google.com>
 ---
-Changes in v2:
-- Removed the const void casts.
-- Removed MDB_FLAGS_L2 from the UAPI to be in sync with the latest
-  kernel patch:
-  https://patchwork.ozlabs.org/project/netdev/patch/20201028233831.610076-1-vladimir.oltean@nxp.com/
+ tools/lib/bpf/hashmap.h | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
- bridge/mdb.c                   | 54 ++++++++++++++++++++++++++--------
- include/uapi/linux/if_bridge.h |  1 +
- 2 files changed, 42 insertions(+), 13 deletions(-)
-
-diff --git a/bridge/mdb.c b/bridge/mdb.c
-index 4cd7ca762b78..f2723ab122d0 100644
---- a/bridge/mdb.c
-+++ b/bridge/mdb.c
-@@ -149,6 +149,7 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
- 			    struct nlmsghdr *n, struct rtattr **tb)
+diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
+index d9b385fe808c..10a4c4cd13cf 100644
+--- a/tools/lib/bpf/hashmap.h
++++ b/tools/lib/bpf/hashmap.h
+@@ -15,6 +15,9 @@
+ static inline size_t hash_bits(size_t h, int bits)
  {
- 	const void *grp, *src;
-+	const char *addr;
- 	SPRINT_BUF(abuf);
- 	const char *dev;
- 	int af;
-@@ -156,9 +157,16 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
- 	if (filter_vlan && e->vid != filter_vlan)
- 		return;
- 
--	af = e->addr.proto == htons(ETH_P_IP) ? AF_INET : AF_INET6;
--	grp = af == AF_INET ? (const void *)&e->addr.u.ip4 :
--			      (const void *)&e->addr.u.ip6;
-+	if (!e->addr.proto) {
-+		af = AF_PACKET;
-+		grp = &e->addr.u.mac_addr;
-+	} else if (e->addr.proto == htons(ETH_P_IP)) {
-+		af = AF_INET;
-+		grp = &e->addr.u.ip4;
-+	} else {
-+		af = AF_INET6;
-+		grp = &e->addr.u.ip6;
-+	}
- 	dev = ll_index_to_name(ifindex);
- 
- 	open_json_object(NULL);
-@@ -168,9 +176,14 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
- 	print_string(PRINT_ANY, "port", " port %s",
- 		     ll_index_to_name(e->ifindex));
- 
-+	if (af == AF_INET || af == AF_INET6)
-+		addr = inet_ntop(af, grp, abuf, sizeof(abuf));
-+	else
-+		addr = ll_addr_n2a(grp, ETH_ALEN, 0, abuf, sizeof(abuf));
-+
- 	print_color_string(PRINT_ANY, ifa_family_color(af),
--			    "grp", " grp %s",
--			    inet_ntop(af, grp, abuf, sizeof(abuf)));
-+			    "grp", " grp %s", addr);
-+
- 	if (tb && tb[MDBA_MDB_EATTR_SOURCE]) {
- 		src = (const void *)RTA_DATA(tb[MDBA_MDB_EATTR_SOURCE]);
- 		print_color_string(PRINT_ANY, ifa_family_color(af),
-@@ -440,6 +453,25 @@ static int mdb_show(int argc, char **argv)
- 	return 0;
- }
- 
-+static int mdb_parse_grp(const char *grp, struct br_mdb_entry *e)
-+{
-+	if (inet_pton(AF_INET, grp, &e->addr.u.ip4)) {
-+		e->addr.proto = htons(ETH_P_IP);
+ 	/* shuffle bits and return requested number of upper bits */
++	if (bits == 0)
 +		return 0;
-+	}
-+	if (inet_pton(AF_INET6, grp, &e->addr.u.ip6)) {
-+		e->addr.proto = htons(ETH_P_IPV6);
-+		return 0;
-+	}
-+	if (ll_addr_a2n((char *)e->addr.u.mac_addr, sizeof(e->addr.u.mac_addr),
-+			grp) == ETH_ALEN) {
-+		e->addr.proto = 0;
-+		return 0;
-+	}
 +
-+	return -1;
-+}
-+
- static int mdb_modify(int cmd, int flags, int argc, char **argv)
- {
- 	struct {
-@@ -497,14 +529,10 @@ static int mdb_modify(int cmd, int flags, int argc, char **argv)
- 	if (!entry.ifindex)
- 		return nodev(p);
+ #if (__SIZEOF_SIZE_T__ == __SIZEOF_LONG_LONG__)
+ 	/* LP64 case */
+ 	return (h * 11400714819323198485llu) >> (__SIZEOF_LONG_LONG__ * 8 - bits);
+@@ -174,17 +177,17 @@ bool hashmap__find(const struct hashmap *map, const void *key, void **value);
+  * @key: key to iterate entries for
+  */
+ #define hashmap__for_each_key_entry(map, cur, _key)			    \
+-	for (cur = ({ size_t bkt = hash_bits(map->hash_fn((_key), map->ctx),\
+-					     map->cap_bits);		    \
+-		     map->buckets ? map->buckets[bkt] : NULL; });	    \
++	for (cur = map->buckets						    \
++		     ? map->buckets[hash_bits(map->hash_fn((_key), map->ctx), map->cap_bits)] \
++		     : NULL;						    \
+ 	     cur;							    \
+ 	     cur = cur->next)						    \
+ 		if (map->equal_fn(cur->key, (_key), map->ctx))
  
--	if (!inet_pton(AF_INET, grp, &entry.addr.u.ip4)) {
--		if (!inet_pton(AF_INET6, grp, &entry.addr.u.ip6)) {
--			fprintf(stderr, "Invalid address \"%s\"\n", grp);
--			return -1;
--		} else
--			entry.addr.proto = htons(ETH_P_IPV6);
--	} else
--		entry.addr.proto = htons(ETH_P_IP);
-+	if (mdb_parse_grp(grp, &entry)) {
-+		fprintf(stderr, "Invalid address \"%s\"\n", grp);
-+		return -1;
-+	}
- 
- 	entry.vid = vid;
- 	addattr_l(&req.n, sizeof(req), MDBA_SET_ENTRY, &entry, sizeof(entry));
-diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index 69b99901fc5a..db41a5ff34af 100644
---- a/include/uapi/linux/if_bridge.h
-+++ b/include/uapi/linux/if_bridge.h
-@@ -526,6 +526,7 @@ struct br_mdb_entry {
- 		union {
- 			__be32	ip4;
- 			struct in6_addr ip6;
-+			unsigned char mac_addr[ETH_ALEN];
- 		} u;
- 		__be16		proto;
- 	} addr;
+ #define hashmap__for_each_key_entry_safe(map, cur, tmp, _key)		    \
+-	for (cur = ({ size_t bkt = hash_bits(map->hash_fn((_key), map->ctx),\
+-					     map->cap_bits);		    \
+-		     cur = map->buckets ? map->buckets[bkt] : NULL; });	    \
++	for (cur = map->buckets						    \
++		     ? map->buckets[hash_bits(map->hash_fn((_key), map->ctx), map->cap_bits)] \
++		     : NULL;						    \
+ 	     cur && ({ tmp = cur->next; true; });			    \
+ 	     cur = tmp)							    \
+ 		if (map->equal_fn(cur->key, (_key), map->ctx))
 -- 
-2.25.1
+2.29.1.341.ge80a0c044ae-goog
 
