@@ -2,160 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C52CD29E476
+	by mail.lfdr.de (Postfix) with ESMTP id 58DCA29E475
 	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:40:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727661AbgJ2HYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726762AbgJ2HYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 29 Oct 2020 03:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55404 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726960AbgJ2HYh (ORCPT
+        with ESMTP id S1726957AbgJ2HYh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:37 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98496C0613DE
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 20:32:49 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id x7so1715340ili.5
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 20:32:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AsiV4LnA+WsAIcfsMfOV3Z6JnZh0EVY6VY/TiEVRYGc=;
-        b=Je+OERTyyYnWtegiDUipd6LgVpBgin2zzE3RRmjviv0EYqfH8bBM7X91V6e1cvCb0C
-         b343IlV5SX8cIx6xqcCUcOb2zAel0vA1DhnmE8qJIoDAWyInLIHqNKTWp67bzy8fbizm
-         RkS8vP5Vg4Ay+XwPaC9Em+pCpIlZynGKPOkoK0lm7HbWs1wUaqwfwnHgQdhInBZRlCT2
-         ZNLRmFswHTrk6g+7reBEIYwxKPgxBjDsY4e3rcL8AkJG2xXot/cxqHksUtfHWT/qhVIi
-         sLiZgPaDSMukYfUgCob3r0OehtSfVUzU862mSnR035EFRGbyKjoG+8CLsLQIPEpUJjoq
-         fLkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AsiV4LnA+WsAIcfsMfOV3Z6JnZh0EVY6VY/TiEVRYGc=;
-        b=O/7Wrylr8xXB+wzIj+cYb+rMLGfWQqY9pcGFZD8OFozX+u+4lI/YrzUemPoMXe6E/x
-         i01FljGPetkRsDvhz73puztwxgczON4X8rtpMQ9os6UUNZT0kS0fFjzSoJSu1WzEMXo+
-         WQkvgG7Y7quDUSqrMYrsE6f6LkYlE/IHluI2rHtnLnRCh3HNUXo4YTloZvkMZfcEIvwN
-         bD6m4ILYP14UaJFcbQkhxL2o549kW0YHoXXIY+bBC2WaHCu1/Wj0k8HY3DMiuzZs6bLB
-         6OuCrVDJ2GCUFdoDXxZRzcAh1267eZEe/n/5WlvfbtIMNJzZm6rWwqn5DA5RmEGAy747
-         VAaw==
-X-Gm-Message-State: AOAM530DX5n7DPXdGhTVKBTa/blOmEDktrnczmvASIvTFAMbEbaWeEi+
-        Famk8mGK1f74X02SWqFQr6KEtXP8zhiQ+yW5P3U=
-X-Google-Smtp-Source: ABdhPJyJuQJ5NXoCtP4TGKmvW5ZssXu4e6oPOg90fkB7wTzaMbhE0HfOJ2VYBkCZ/KbZh+HeRvJ5pO+Zpy8wyjUCk30=
-X-Received: by 2002:a92:bacb:: with SMTP id t72mr1856455ill.241.1603942368868;
- Wed, 28 Oct 2020 20:32:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201028181221.30419-1-dqfext@gmail.com> <20201028183131.d4mxlqwl5v2hy2tb@skbuf>
-In-Reply-To: <20201028183131.d4mxlqwl5v2hy2tb@skbuf>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Thu, 29 Oct 2020 11:32:36 +0800
-Message-ID: <CALW65jYa9rTRaE2jn67iWG3=w=CFYvR0VWDNqtj5Vc3L=s6Jpg@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: mt7530: support setting MTU
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Murali Krishna Policharla <murali.policharla@broadcom.com>,
-        Jonathan McDowell <noodles@earth.li>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Content-Type: text/plain; charset="UTF-8"
+Received: from forwardcorp1p.mail.yandex.net (forwardcorp1p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b6:217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9901FC061787
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 21:24:01 -0700 (PDT)
+Received: from myt5-23f0be3aa648.qloud-c.yandex.net (myt5-23f0be3aa648.qloud-c.yandex.net [IPv6:2a02:6b8:c12:3e29:0:640:23f0:be3a])
+        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id DFB292E097F;
+        Thu, 29 Oct 2020 07:23:56 +0300 (MSK)
+Received: from myt4-18a966dbd9be.qloud-c.yandex.net (myt4-18a966dbd9be.qloud-c.yandex.net [2a02:6b8:c00:12ad:0:640:18a9:66db])
+        by myt5-23f0be3aa648.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id MAJBVvLcI5-Nu0CXqs1;
+        Thu, 29 Oct 2020 07:23:56 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1603945436; bh=4rg5j/D1YjETHzKWON2QaTE5wGtuxMBS1PDdN/hFLx4=;
+        h=To:Message-Id:References:Date:Subject:Cc:From:In-Reply-To;
+        b=Xne6kgH8Uj42GMUn968pLjH4N53gwEaTmMFYO9skyf1jNN92+LZcqKV2ZfrtPM/ze
+         RaDWIr0D+7VvG8ZArNYUShSNLdW230ArRMZtBKtIZQhUTE41CKITNJtel4CSTmwomK
+         lTy5Nbtcp/qVGGv3LYJ2t7emYN8xFUyX8jPy1qvs=
+Authentication-Results: myt5-23f0be3aa648.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from dynamic-vpn.dhcp.yndx.net (dynamic-vpn.dhcp.yndx.net [2a02:6b8:b080:6717::1:1])
+        by myt4-18a966dbd9be.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id rWynb4FulW-NumOSvKr;
+        Thu, 29 Oct 2020 07:23:56 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
+Subject: Re: [PATCH net] ip6_tunnel: set inner ipproto before ip6_tnl_encap.
+From:   Alexander Ovechkin <ovov@yandex-team.ru>
+In-Reply-To: <CA+FuTSfNZoONM3TZxpC0ND2AsiNw0K-jgjKMe0FWkS9LVG6yNA@mail.gmail.com>
+Date:   Thu, 29 Oct 2020 07:23:56 +0300
+Cc:     vfedorenko@novek.ru, Network Development <netdev@vger.kernel.org>,
+        Tom Herbert <tom@herbertland.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <ABA7FBA9-42F8-4D6E-9D1E-CDEC74966131@yandex-team.ru>
+References: <20201016111156.26927-1-ovov@yandex-team.ru>
+ <CA+FuTSe5szAPV0qDVU1Qa7e-XH6uO4eWELfzykOvpb0CJ0NbUA@mail.gmail.com>
+ <0E7BC212-3BBA-4C68-89B9-C6DA956553AD@yandex-team.ru>
+ <CA+FuTSfNZoONM3TZxpC0ND2AsiNw0K-jgjKMe0FWkS9LVG6yNA@mail.gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 2:31 AM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Thu, Oct 29, 2020 at 02:12:21AM +0800, DENG Qingfang wrote:
-> > MT7530/7531 has a global RX packet length register, which can be used
-> > to set MTU.
+On 28 Oct 2020, at 01:53 UTC Willem de Bruijn =
+<willemdebruijn.kernel@gmail.com> wrote:
+> On Tue, Oct 27, 2020 at 5:52 PM Alexander Ovechkin =
+<ovov@yandex-team.ru> wrote:
 > >
-> > Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-> > ---
->
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
->
-> Also, please format your patches with --subject-prefix="PATCH net-next"
-> in the future. Jakub installed some patchwork scripts that "guess" the
-> tree based on the commit message, but maybe sometimes they might fail:
->
-> https://patchwork.ozlabs.org/project/netdev/patch/e5fdcddeda21884a21162e441d1e8a04994f2825.1603837679.git.pavana.sharma@digi.com/
->
-> >  drivers/net/dsa/mt7530.c | 36 ++++++++++++++++++++++++++++++++++++
-> >  drivers/net/dsa/mt7530.h | 12 ++++++++++++
-> >  2 files changed, 48 insertions(+)
-> >
-> > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> > index de7692b763d8..7764c66a47c9 100644
-> > --- a/drivers/net/dsa/mt7530.c
-> > +++ b/drivers/net/dsa/mt7530.c
-> > @@ -1021,6 +1021,40 @@ mt7530_port_disable(struct dsa_switch *ds, int port)
-> >       mutex_unlock(&priv->reg_mutex);
-> >  }
-> >
-> > +static int
-> > +mt7530_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
-> > +{
-> > +     struct mt7530_priv *priv = ds->priv;
-> > +     int length;
-> > +
-> > +     /* When a new MTU is set, DSA always set the CPU port's MTU to the largest MTU
-> > +      * of the slave ports. Because the switch only has a global RX length register,
-> > +      * only allowing CPU port here is enough.
-> > +      */
->
-> Good point, please tell that to Linus (cc) - I'm talking about
-> e0b2e0d8e669 ("net: dsa: rtl8366rb: Roof MTU for switch"),
+> > > But it was moved on purpose to avoid setting the inner protocol to =
+IPPROTO_MPLS. That needs to use skb->inner_protocol to further segment.
+> > And why do we need to avoid setting the inner protocol to =
+IPPROTO_MPLS? Currently skb->inner_protocol is used before call of =
+ip6_tnl_xmit.
+> > Can you please give example when this patch breaks MPLS =
+segmentation?
+>=20
+> mpls_gso_segment calls skb_mac_gso_segment on the inner packet. After
+> setting skb->protocol based on skb->inner_protocol.
 
-And 6ae5834b983a ("net: dsa: b53: add MTU configuration support"),
-1baf0fac10fb ("net: dsa: mv88e6xxx: Use chip-wide max frame size for MTU"),
-f58d2598cf70 ("net: dsa: qca8k: implement the port MTU callbacks")
+Yeah, but mpls_gso_segment is called before ip6_tnl_xmit (because tun =
+devices don't have NETIF_F_GSO_SOFTWARE in their mpls_features), so it =
+does not matter to what value ip6_tnl_xmit sets skb->inner_ipproto.
+And even if gso would been called after both mpls_xmit and ip6_tnl_xmit =
+it would fail as you have written.
 
-CC'd them as well.
-
-Also, the commit e0b2e0d8e669 states that the new_mtu parameter is L2
-frame length instead of L2 payload. But according to my tests, it is
-L2 payload (i.e. the same as the MTU shown in `ip link` or `ifconfig`.
-Is that right?
-
->
-> > +     if (!dsa_is_cpu_port(ds, port))
-> > +             return 0;
-> > +
-> > +     /* RX length also includes Ethernet header, MTK tag, and FCS length */
-> > +     length = new_mtu + ETH_HLEN + MTK_HDR_LEN + ETH_FCS_LEN;
-> > +     if (length <= 1522)
-> > +             mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_PKT_LEN_MASK, MAX_RX_PKT_LEN_1522);
-> > +     else if (length <= 1536)
-> > +             mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_PKT_LEN_MASK, MAX_RX_PKT_LEN_1536);
-> > +     else if (length <= 1552)
-> > +             mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_PKT_LEN_MASK, MAX_RX_PKT_LEN_1552);
-> > +     else
-> > +             mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_JUMBO_MASK | MAX_RX_PKT_LEN_MASK,
-> > +                     MAX_RX_JUMBO(DIV_ROUND_UP(length, 1024)) | MAX_RX_PKT_LEN_JUMBO);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int
-> > +mt7530_port_max_mtu(struct dsa_switch *ds, int port)
-> > +{
-> > +     return MT7530_MAX_MTU;
-> > +}
-> > +
-> >  static void
-> >  mt7530_stp_state_set(struct dsa_switch *ds, int port, u8 state)
-> >  {
-> > @@ -2519,6 +2553,8 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
-> >       .get_sset_count         = mt7530_get_sset_count,
-> >       .port_enable            = mt7530_port_enable,
-> >       .port_disable           = mt7530_port_disable,
-> > +     .port_change_mtu        = mt7530_port_change_mtu,
-> > +     .port_max_mtu           = mt7530_port_max_mtu,
-> >       .port_stp_state_set     = mt7530_stp_state_set,
-> >       .port_bridge_join       = mt7530_port_bridge_join,
-> >       .port_bridge_leave      = mt7530_port_bridge_leave,
