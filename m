@@ -2,90 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33C9E29EB42
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 13:08:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E18AD29EB5E
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 13:12:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725730AbgJ2MIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 08:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbgJ2MIS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 08:08:18 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81536C0613CF
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 05:08:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=OzII732qr1hZWEXjut7B9sPopkt5x8MtErYT7xFdR0I=; b=h/t5L9/G8TGJRgF82RIiDJMg2
-        5DWkJTu/IyD7/xgbluoFqnJSMMIJ6v2/fSkOVcBvREudTcXKzSW8cO/1BA/EdUZJ6H5OYJSL1g9hv
-        SU0+6xG6jlm3efY6Y85wQEncatpWaT2zAuFaPP2+wcEp7/iQx2As3UO2SEHxLZ4deQG9MzqcfzytI
-        rNUAgsXLAa0wB7OlzaLOXi1ig9HIvoQe9rzqoxm18F3gIfLEvw6EtF0GR4oWs1IgQthGmfidpoSW6
-        bPiU3fyYeh6lfzsBcS+1Sd6nwAIrBgYs5oUyycYiHonXvKBOK4mFA2BkHx8ZfsYE/wfd2zkULnw1E
-        hdyCl1z1A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52436)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kY6j0-0004IX-5x; Thu, 29 Oct 2020 12:08:14 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kY6ix-00064o-0V; Thu, 29 Oct 2020 12:08:11 +0000
-Date:   Thu, 29 Oct 2020 12:08:10 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next 2/5] net: phylink: allow attaching phy for SFP
- modules on 802.3z mode
-Message-ID: <20201029120810.GP1551@shell.armlinux.org.uk>
-References: <20201028221427.22968-1-kabel@kernel.org>
- <20201028221427.22968-3-kabel@kernel.org>
+        id S1725782AbgJ2MLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 08:11:33 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:49015 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725385AbgJ2MLc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 08:11:32 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 09TCBCvL4020927, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb04.realtek.com.tw[172.21.6.97])
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 09TCBCvL4020927
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 29 Oct 2020 20:11:13 +0800
+Received: from localhost.localdomain (172.21.179.130) by
+ RTEXMB04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Thu, 29 Oct 2020 20:11:12 +0800
+From:   Willy Liu <willy.liu@realtek.com>
+To:     <andrew@lunn.ch>
+CC:     <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel>, <ryankao@realtek.com>,
+        Willy Liu <willy.liu@realtek.com>
+Subject: [PATCH net-next 2/2] net: phy: realtek: Add support for RTL8221B-VB-CG/RTL8221B-VM-CG
+Date:   Thu, 29 Oct 2020 20:10:53 +0800
+Message-ID: <1603973453-1799-1-git-send-email-willy.liu@realtek.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201028221427.22968-3-kabel@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Type: text/plain
+X-Originating-IP: [172.21.179.130]
+X-ClientProxiedBy: RTEXMB01.realtek.com.tw (172.21.6.94) To
+ RTEXMB04.realtek.com.tw (172.21.6.97)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 11:14:24PM +0100, Marek Behún wrote:
-> Some SFPs may contain an internal PHY which may in some cases want to
-> connect with the host interface in 1000base-x/2500base-x mode.
-> Do not fail if such PHY is being attached in one of these PHY interface
-> modes.
-> 
-> Signed-off-by: Marek Behún <kabel@kernel.org>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Russell King <rmk+kernel@armlinux.org.uk>
-> ---
->  drivers/net/phy/phylink.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> index 5d8c015bc9f2..52954f12ca5e 100644
-> --- a/drivers/net/phy/phylink.c
-> +++ b/drivers/net/phy/phylink.c
-> @@ -1018,7 +1018,7 @@ static int phylink_attach_phy(struct phylink *pl, struct phy_device *phy,
->  {
->  	if (WARN_ON(pl->cfg_link_an_mode == MLO_AN_FIXED ||
->  		    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
-> -		     phy_interface_mode_is_8023z(interface))))
-> +		     phy_interface_mode_is_8023z(interface) && !pl->sfp_bus)))
->  		return -EINVAL;
->  
->  	if (pl->phydev)
+RTL8221B-VB-CG is the third generation 2.5Gbps single port PHY from Realtek,
+and RTL8221B-VM-CG is 2.5Gbps single port PHY with MACsec feature.
+This patch adds the minimal driver to manage these two transceivers.
 
-I think also changing phylink_sfp_config() too since that check is no
-longer relevent - although it doesn't actually end up being effective
-today. So, might as well be removed along with the above change.
+Signed-off-by: Willy Liu <willy.liu@realtek.com>
+---
+ drivers/net/phy/realtek.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 988f075..51d9ef8 100755
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -670,6 +670,26 @@ static int rtlgen_resume(struct phy_device *phydev)
+ 		.read_mmd	= rtl822x_read_mmd,
+ 		.write_mmd	= rtl822x_write_mmd,
+ 	}, {
++		PHY_ID_MATCH_EXACT(0x001cc849),
++		.name           = "RTL8221B-VB-CG 2.5Gbps PHY",
++		.get_features   = rtl822x_get_features,
++		.config_aneg    = rtl822x_config_aneg,
++		.read_status    = rtl822x_read_status,
++		.suspend        = genphy_suspend,
++		.resume         = rtlgen_resume,
++		.read_page      = rtl821x_read_page,
++		.write_page     = rtl821x_write_page,
++	}, {
++		PHY_ID_MATCH_EXACT(0x001cc84a),
++		.name           = "RTL8221B-VM-CG 2.5Gbps PHY",
++		.get_features   = rtl822x_get_features,
++		.config_aneg    = rtl822x_config_aneg,
++		.read_status    = rtl822x_read_status,
++		.suspend        = genphy_suspend,
++		.resume         = rtlgen_resume,
++		.read_page      = rtl821x_read_page,
++		.write_page     = rtl821x_write_page,
++	}, {
+ 		PHY_ID_MATCH_EXACT(0x001cc961),
+ 		.name		= "RTL8366RB Gigabit Ethernet",
+ 		.config_init	= &rtl8366rb_config_init,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+1.9.1
+
