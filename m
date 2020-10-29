@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ADE329F53F
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 20:30:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9435329F53D
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 20:30:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726921AbgJ2T3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 15:29:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51500 "EHLO mail.kernel.org"
+        id S1726438AbgJ2T3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 15:29:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51524 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726253AbgJ2T3c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726277AbgJ2T3c (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 29 Oct 2020 15:29:32 -0400
 Received: from lore-desk.redhat.com (unknown [151.66.29.159])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8A86E207DE;
-        Thu, 29 Oct 2020 19:29:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 65BEF20825;
+        Thu, 29 Oct 2020 19:29:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603999746;
-        bh=CEqASvpURooVyTo2fuJKqWW0pHRASjrmZUlThXYDT4w=;
+        s=default; t=1603999749;
+        bh=2T02Rnj9JSqlSyqTOWwETG3CNvYOciUI7owaOFmtoLQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cGZ3jzaC0Wc8NG9Dqck8T9dTd4jcUaT5pTxPvbfRDdNpcF/EK7wXij+dJY0W4guEB
-         cyu1nz9Ai4RUVnn3O5ZmrMB80d9GIFP6XEP/tYMCEHHQYX2bqPMRhvkbgh41dLBTMk
-         zdDSoS9KOwZAkdFZJ9y1gRdvZ57Ny/vEvxLmm0lk=
+        b=Xmhi6WHj4k3m0XpBlFZ1/JVH4bgqrParXscypy7jAXFuzXnXx3wmISnGebf3JW7Wu
+         aFfvo/lve3xXj89aF7wMUCNy17evybwjsHtnza8V+nOEB9C5q1cZwIe8/5AHzfEUpw
+         o+ibQGffCjmNuP/Z5bSIOMoLw+eqqWshzWK8jYx8=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, lorenzo.bianconi@redhat.com,
         davem@davemloft.net, kuba@kernel.org, brouer@redhat.com,
         ilias.apalodimas@linaro.org
-Subject: [PATCH v2 net-next 3/4] net: mvpp2: add xdp tx return bulking support
-Date:   Thu, 29 Oct 2020 20:28:46 +0100
-Message-Id: <4908406107e94fee0335dcc2444874c90055f95a.1603998519.git.lorenzo@kernel.org>
+Subject: [PATCH v2 net-next 4/4] net: mlx5: add xdp tx return bulking support
+Date:   Thu, 29 Oct 2020 20:28:47 +0100
+Message-Id: <25c50a285cb59e113ed79574c6b360fdf6d0050f.1603998519.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1603998519.git.lorenzo@kernel.org>
 References: <cover.1603998519.git.lorenzo@kernel.org>
@@ -40,45 +40,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert mvpp2 driver to xdp_return_frame_bulk APIs.
+Convert mlx5 driver to xdp_return_frame_bulk APIs.
 
-XDP_REDIRECT (upstream codepath): 1.79Mpps
-XDP_REDIRECT (upstream codepath + bulking APIs): 1.93Mpps
+XDP_REDIRECT (upstream codepath): 8.5Mpps
+XDP_REDIRECT (upstream codepath + bulking APIs): 10.1Mpps
 
-Tested-by: Matteo Croce <mcroce@microsoft.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 5 ++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index f6616c8933ca..04f24d1d72ab 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -2440,8 +2440,10 @@ static void mvpp2_txq_bufs_free(struct mvpp2_port *port,
- 				struct mvpp2_tx_queue *txq,
- 				struct mvpp2_txq_pcpu *txq_pcpu, int num)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+index ae90d533a350..5fdfbf390d5c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+@@ -369,8 +369,10 @@ static void mlx5e_free_xdpsq_desc(struct mlx5e_xdpsq *sq,
+ 				  bool recycle)
  {
+ 	struct mlx5e_xdp_info_fifo *xdpi_fifo = &sq->db.xdpi_fifo;
 +	struct xdp_frame_bulk bq;
- 	int i;
+ 	u16 i;
  
 +	bq.xa = NULL;
- 	for (i = 0; i < num; i++) {
- 		struct mvpp2_txq_pcpu_buf *tx_buf =
- 			txq_pcpu->buffs + txq_pcpu->txq_get_index;
-@@ -2454,10 +2456,11 @@ static void mvpp2_txq_bufs_free(struct mvpp2_port *port,
- 			dev_kfree_skb_any(tx_buf->skb);
- 		else if (tx_buf->type == MVPP2_TYPE_XDP_TX ||
- 			 tx_buf->type == MVPP2_TYPE_XDP_NDO)
--			xdp_return_frame(tx_buf->xdpf);
-+			xdp_return_frame_bulk(tx_buf->xdpf, &bq);
+ 	for (i = 0; i < wi->num_pkts; i++) {
+ 		struct mlx5e_xdp_info xdpi = mlx5e_xdpi_fifo_pop(xdpi_fifo);
  
- 		mvpp2_txq_inc_get(txq_pcpu);
+@@ -379,7 +381,7 @@ static void mlx5e_free_xdpsq_desc(struct mlx5e_xdpsq *sq,
+ 			/* XDP_TX from the XSK RQ and XDP_REDIRECT */
+ 			dma_unmap_single(sq->pdev, xdpi.frame.dma_addr,
+ 					 xdpi.frame.xdpf->len, DMA_TO_DEVICE);
+-			xdp_return_frame(xdpi.frame.xdpf);
++			xdp_return_frame_bulk(xdpi.frame.xdpf, &bq);
+ 			break;
+ 		case MLX5E_XDP_XMIT_MODE_PAGE:
+ 			/* XDP_TX from the regular RQ */
+@@ -393,6 +395,7 @@ static void mlx5e_free_xdpsq_desc(struct mlx5e_xdpsq *sq,
+ 			WARN_ON_ONCE(true);
+ 		}
  	}
 +	xdp_flush_frame_bulk(&bq);
  }
  
- static inline struct mvpp2_rx_queue *mvpp2_get_rx_queue(struct mvpp2_port *port,
+ bool mlx5e_poll_xdpsq_cq(struct mlx5e_cq *cq)
 -- 
 2.26.2
 
