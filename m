@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E8C29EC52
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 13:54:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C14D29EC8A
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 14:14:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725940AbgJ2Myn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 08:54:43 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52050 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725355AbgJ2Myn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 08:54:43 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kY7Rv-0049os-FL; Thu, 29 Oct 2020 13:54:39 +0100
-Date:   Thu, 29 Oct 2020 13:54:39 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH net-next 1/5] net: phy: mdio-i2c: support I2C MDIO
- protocol for RollBall SFP modules
-Message-ID: <20201029125439.GK933237@lunn.ch>
-References: <20201028221427.22968-1-kabel@kernel.org>
- <20201028221427.22968-2-kabel@kernel.org>
- <20201029124141.GR1551@shell.armlinux.org.uk>
+        id S1725878AbgJ2NOJ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 29 Oct 2020 09:14:09 -0400
+Received: from [92.204.160.53] ([92.204.160.53]:53946 "EHLO server.domain.com"
+        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725379AbgJ2NOJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 09:14:09 -0400
+X-Greylist: delayed 6447 seconds by postgrey-1.27 at vger.kernel.org; Thu, 29 Oct 2020 09:14:08 EDT
+Received: from gmail.com (localhost [127.0.0.1])
+        by server.domain.com (Postfix) with ESMTP id 4B4C29E7B4A
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 06:50:58 -0400 (EDT)
+Reply-To: cgoveka@live.com
+From:   "Razali Zamri Ahmad" <office5@suncor.com>
+To:     netdev@vger.kernel.org
+Subject: RE: Investment Partner Needed ASAP...
+Date:   29 Oct 2020 03:51:01 -0700
+Message-ID: <20201029035057.69DAADE1B5586CB8@suncor.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201029124141.GR1551@shell.armlinux.org.uk>
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> It would be good to pass this through checkpatch - I notice some lines
-> seem to be over the 80 character limit now.
+I am Mr. Razali Zamri Ahmad  a staff of a reputable financial 
+institution in Malaysia. An investment was placed under my 
+management. I need your assistance in investing the fund in your 
+country into a good business. If you are interested kindly 
+respond so I can forward you with more details. 
 
-Hi Russell
+Reply via my private Email:  razalijan@live.com
 
-The limit got raised to something higher. I personally prefer 80, and
-if a file is using 80, new code would be inconsistent with old code if
-it did not use 80. So your request is reasonable anyway.
+Regards 
+Razali Zamri Ahmad.  
 
-   Andrew
+
