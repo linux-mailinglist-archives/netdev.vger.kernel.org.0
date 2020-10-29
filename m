@@ -2,121 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C2929EAE6
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 12:43:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C700D29EB2D
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 13:02:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725710AbgJ2LnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 07:43:22 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:53622 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725300AbgJ2LnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 07:43:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1603971801; x=1635507801;
-  h=references:from:to:cc:subject:in-reply-to:date:
-   message-id:mime-version;
-  bh=ZBitz/gLloGZESalGg0E+i8QCKv0J6P4kMoQsxYAmd4=;
-  b=R8VI3YK5zXdcckXDU8o2dliZlxZz2CJEkTt+Nq5Dwie2iOa3kC6Zv8/c
-   m/jYFX9LqmqlK4KBBuIICmJbCF7cpV9ksNZuiQYx37lPDC2nvaVwHRZdh
-   eSWPjn6pxuuChTZOOzUg17kbqrgVD/9Br1frAux3wy9g/fiKOGUGNsNum
-   A=;
-X-IronPort-AV: E=Sophos;i="5.77,429,1596499200"; 
-   d="scan'208";a="89792378"
-Received: from sea3-co-svc-lb6-vlan2.sea.amazon.com (HELO email-inbound-relay-2c-87a10be6.us-west-2.amazon.com) ([10.47.22.34])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 29 Oct 2020 11:43:15 +0000
-Received: from EX13D28EUC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2c-87a10be6.us-west-2.amazon.com (Postfix) with ESMTPS id 05C8BA1D42;
-        Thu, 29 Oct 2020 11:43:13 +0000 (UTC)
-Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.160.229) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 29 Oct 2020 11:43:09 +0000
-References: <cover.1603824486.git.lorenzo@kernel.org>
- <3fb334388ac7af755e1f03abb76a0a6335a90ff6.1603824486.git.lorenzo@kernel.org>
-User-agent: mu4e 1.4.12; emacs 27.1
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <lorenzo.bianconi@redhat.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <brouer@redhat.com>,
-        <ilias.apalodimas@linaro.org>
-Subject: Re: [PATCH net-next 4/4] net: mlx5: add xdp tx return bulking support
-In-Reply-To: <3fb334388ac7af755e1f03abb76a0a6335a90ff6.1603824486.git.lorenzo@kernel.org>
-Date:   Thu, 29 Oct 2020 13:42:44 +0200
-Message-ID: <pj41zl5z6tl0ln.fsf@u68c7b5b1d2d758.ant.amazon.com>
+        id S1725797AbgJ2MCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 08:02:32 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:47057 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725385AbgJ2MCc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 08:02:32 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id dfef3042;
+        Thu, 29 Oct 2020 12:00:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to
+        :content-type; s=mail; bh=IKnebaGdC8b0mR1Q29fh+gfHHKY=; b=0AjD+L
+        qAaaGb/LT4eA679KOrP/IXYQcl4wa49hRRzOR3k2Qf4MrKVMGSRksJoWpLmot2QD
+        8i+tfcG6ZbP2wUWQNvjOCX/+rGPKhQig8LhKVAzZbaboK7hhsPYrNdAThAAMOH2O
+        +vj+AIvCZCedHoijgLb+A8kk/BPxJssessPhJUFyPGJJLb7TYPbxjH9r7j9DFN3a
+        zD8h5kPKPVjpVujayjlnsdZvPBio0+aS8Me9XJodXiZVDSBykiKU988D5Lrrblyx
+        YzbFaPhYmwoL86sJIHsuHc7rz0K9OAHX1eb1B6XAGpOqQ4eIi9hIs1e7gGCX1mhv
+        CqI0A4Y8lpSeBGKg==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 27a2ba2a (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Thu, 29 Oct 2020 12:00:42 +0000 (UTC)
+Received: by mail-yb1-f170.google.com with SMTP id h196so1940688ybg.4;
+        Thu, 29 Oct 2020 05:02:04 -0700 (PDT)
+X-Gm-Message-State: AOAM531TDI9Ohlodc7OKl9A2wAo+IFIsawkDA7WFCaDJzUl+PmUCPWiT
+        wdAU3jXRkEmhd6Ts1uHdlnk93NkpFw28nfxTA/A=
+X-Google-Smtp-Source: ABdhPJws4sMjJ5gTYRaTuZplBgwYUu2/72U5E+Kxj9cpw3q9A2obBZ/+APgdYoDi4qCVG9iuuU/mnkse+Zyil03bdpA=
+X-Received: by 2002:a25:bbc4:: with SMTP id c4mr5432372ybk.178.1603972923657;
+ Thu, 29 Oct 2020 05:02:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.160.229]
-X-ClientProxiedBy: EX13D10UWB004.ant.amazon.com (10.43.161.121) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+References: <20201029025606.3523771-1-Jason@zx2c4.com> <20201029025606.3523771-3-Jason@zx2c4.com>
+In-Reply-To: <20201029025606.3523771-3-Jason@zx2c4.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 29 Oct 2020 13:01:53 +0100
+X-Gmail-Original-Message-ID: <CAHmME9ohyPOwQryPMzk7oNGaBeKSJoFmSQkemRoUYKhjqgQ7ag@mail.gmail.com>
+Message-ID: <CAHmME9ohyPOwQryPMzk7oNGaBeKSJoFmSQkemRoUYKhjqgQ7ag@mail.gmail.com>
+Subject: Re: [PATCH nf 2/2] netfilter: use actual socket sk rather than skb sk
+ when routing harder
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+As a historical note, this code goes all the way back to Rusty in
+2.3.14, where it looked like this:
 
-Lorenzo Bianconi <lorenzo@kernel.org> writes:
+#ifdef CONFIG_NETFILTER
+/* To preserve the cute illusion that a locally-generated packet can
+  be mangled before routing, we actually reroute if a hook altered
+  the packet. -RR */
+static int route_me_harder(struct sk_buff *skb)
+{
+       struct iphdr *iph = skb->nh.iph;
+       struct rtable *rt;
 
-> Convert mlx5 driver to xdp_return_frame_bulk APIs.
->
-> XDP_REDIRECT (upstream codepath): 8.5Mpps
-> XDP_REDIRECT (upstream codepath + bulking APIs): 10.1Mpps
->
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c 
-> b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> index ae90d533a350..5fdfbf390d5c 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> @@ -369,8 +369,10 @@ static void mlx5e_free_xdpsq_desc(struct 
-> mlx5e_xdpsq *sq,
->  				  bool recycle)
->  {
->  	struct mlx5e_xdp_info_fifo *xdpi_fifo = &sq->db.xdpi_fifo;
-> +	struct xdp_frame_bulk bq;
->  	u16 i;
->  
-> +	bq.xa = NULL;
->  	for (i = 0; i < wi->num_pkts; i++) {
->  		struct mlx5e_xdp_info xdpi = 
->  mlx5e_xdpi_fifo_pop(xdpi_fifo);
->  
-> @@ -379,7 +381,7 @@ static void mlx5e_free_xdpsq_desc(struct 
-> mlx5e_xdpsq *sq,
->  			/* XDP_TX from the XSK RQ and XDP_REDIRECT 
->  */
->  			dma_unmap_single(sq->pdev, 
->  xdpi.frame.dma_addr,
->  					 xdpi.frame.xdpf->len, 
->  DMA_TO_DEVICE);
-> -			xdp_return_frame(xdpi.frame.xdpf);
-> +			xdp_return_frame_bulk(xdpi.frame.xdpf, 
-> &bq);
->  			break;
->  		case MLX5E_XDP_XMIT_MODE_PAGE:
->  			/* XDP_TX from the regular RQ */
-> @@ -393,6 +395,7 @@ static void mlx5e_free_xdpsq_desc(struct 
-> mlx5e_xdpsq *sq,
->  			WARN_ON_ONCE(true);
->  		}
->  	}
-> +	xdp_flush_frame_bulk(&bq);
+       if (ip_route_output(&rt, iph->daddr, iph->saddr,
+                           RT_TOS(iph->tos) | RTO_CONN,
+                           skb->sk ? skb->sk->bound_dev_if : 0)) {
+               printk("route_me_harder: No more route.\n");
+               return -EINVAL;
+       }
 
-While I understand the rational behind this patchset, using an 
-intermediate buffer
-	void *q[XDP_BULK_QUEUE_SIZE];
-means more pressure on the data cache.
+       /* Drop old route. */
+       dst_release(skb->dst);
 
-At the time I ran performance tests on mlx5 to see whether 
-batching skbs before passing them to GRO would improve 
-performance. On some flows I got worse performance.
-This function seems to have less Dcache contention than RX flow, 
-but maybe some performance testing are needed here.
+       skb->dst = &rt->u.dst;
+       return 0;
+}
+#endif
 
->  }
->  
->  bool mlx5e_poll_xdpsq_cq(struct mlx5e_cq *cq)
-
+And until now, it was never updated to take the separate sock *sk parameter.
