@@ -2,79 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56FFC29F883
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:40:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E570329F888
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:42:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725904AbgJ2Wkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 18:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57294 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725372AbgJ2Wkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 18:40:32 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6871AC0613CF;
-        Thu, 29 Oct 2020 15:40:32 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id f140so3538166ybg.3;
-        Thu, 29 Oct 2020 15:40:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RT08zdMB6U/tTBtGYcjh42pKK9rfOLiH58A8WAYZMCs=;
-        b=Rj5ivE5C7Dvhdy1f7AWTrSdVsfZQHl2KkbK3JaLuG7VVAiaIWFvlWI9tECrE62oAh8
-         UIkIJV/lsq2hqQeTeRPAedC2tO+a9zLmnc2iDFEHSu9E/dXyZL0WFjD95Z4fJPhAn8w7
-         eGHYZX4ufuMxsr5miFPeBNT0vi/UXP6Ur8UdxRZlZjhqdpcUlDhgjZsaXGzadNroDNsJ
-         mTdE7jlueGrI8laLtWNBQFh4ZQlWeNmB+4VHR4UCmi0Gx2anz3sos5bjC+9noHstp8ch
-         z35D1O0p5XkNJb5XnJKdJuch9x/DqHZOg46kYDbS+sUyKD5KvkZfPp0hvo6aweZKmR7o
-         p+EA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RT08zdMB6U/tTBtGYcjh42pKK9rfOLiH58A8WAYZMCs=;
-        b=LZjtuWwwv7rmFzNuWcSgzuVjpa2nKo7ntP9S5TqSKVU2hw5gtAfXtlXsjDPW4dq7lw
-         GPh5auUiLse6m/Mel35JML/N/wGM/02QsyFCe+O+l5h1zWzzUhMZH8HgpSCYTb7FkCWY
-         1uDFE6MdSAyL0RKfusoxK+rNppx29QyNRW8KioS3LGP6PPhK8x2Tp9iLMfkohrMqvA4T
-         jB9w3Y64SoCQj4I5KIU4w55qBTmfu7tZgxQaqhIur7OlKRuqhzkYZty4z3xYndlnd8BK
-         zLPky2vCr761loHrhU7E3UF3cqIp+t6d8Pla819mM54ZwO8KC3gSUz9TTljtNwR2BMs3
-         tgrA==
-X-Gm-Message-State: AOAM533gVm0NRQQQNWhMu4A6ccLQIjkd4w2bknWc4ax871HKBFl/tY0d
-        MI4km1XmwTVKVfOAsLWLbaBwM+B/ENIeLHJdTC0=
-X-Google-Smtp-Source: ABdhPJyoLxPHCPa/4XJgfYaRpULeT+Xotb5qqzDGY0W7t/+hM+bAFASIiNxLE3XJSOGrinuC7gq7bvr/RWp4d5/qC5E=
-X-Received: by 2002:a25:25c2:: with SMTP id l185mr8467921ybl.230.1604011231723;
- Thu, 29 Oct 2020 15:40:31 -0700 (PDT)
+        id S1725775AbgJ2Wmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 18:42:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49802 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725372AbgJ2Wme (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 18:42:34 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2042B20639;
+        Thu, 29 Oct 2020 22:42:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604011353;
+        bh=tQ0l5V4oTxTVGP0tODtTkscyEVWsw8t0lVmFsdY5laM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Yd92HkfEq5MGLxNG/VDKKPlVEu58u8uIqw6WqIHmkDLSLsC6Skbygw18GUFIvvPBP
+         //sBtfvSNzKX+62TVK8ib7UHfjtQVhgUiCiqQeDorMGCldhLeRYqfSOxGdTTnVw/+D
+         kfUTIyLBt/koK0q/VwnHdzPgfW6e/F0cTpItuspA=
+Date:   Thu, 29 Oct 2020 15:42:32 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        =?UTF-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+Subject: Re: [PATCH] net: dsa: mt7530: support setting MTU
+Message-ID: <20201029154232.02e38471@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201028181221.30419-1-dqfext@gmail.com>
+References: <20201028181221.30419-1-dqfext@gmail.com>
 MIME-Version: 1.0
-References: <20201023123754.30304-1-david.verbeiren@tessares.net>
- <20201027221324.27894-1-david.verbeiren@tessares.net> <CAEf4Bzb84+Uv1dZa6WE5Eow3tovFqL+FpP8QfGP0C-QQj1JDTw@mail.gmail.com>
- <CAHzPrnEfDLZ6McM+OMBMPiJ1AT9JZta1eognnnowbtT9_pHGMw@mail.gmail.com>
-In-Reply-To: <CAHzPrnEfDLZ6McM+OMBMPiJ1AT9JZta1eognnnowbtT9_pHGMw@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 29 Oct 2020 15:40:20 -0700
-Message-ID: <CAEf4BzZBn9HWhTeyaOLXYwJtdandx44a8oJLjBunFUgjoN5Udw@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] bpf: zero-fill re-used per-cpu map element
-To:     David Verbeiren <david.verbeiren@tessares.net>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 7:44 AM David Verbeiren
-<david.verbeiren@tessares.net> wrote:
->
-> On Tue, Oct 27, 2020 at 11:55 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> > Looks good, but would be good to have a unit test (see below). Maybe
-> > in a follow up.
->
-> Here is the associated new selftest, implementing the sequence you
-> proposed (thanks for that!), and also one for LRU case:
-> https://lore.kernel.org/bpf/20201029111730.6881-1-david.verbeiren@tessares.net/
->
-> I hope I did it in the "right" framework of the day.
+On Thu, 29 Oct 2020 02:12:21 +0800 DENG Qingfang wrote:
+> MT7530/7531 has a global RX packet length register, which can be used
+> to set MTU.
+> 
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 
-You did it in a very laborious and hard way, which will be harder to
-maintain, unfortunately. But it should be trivial to simplify it with
-skeleton. It's probably better to combine the selftest patch with the
-kernel fix in this patch and send it as v2?
+Please wrap your code at 80 chars.
+
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index de7692b763d8..7764c66a47c9 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -1021,6 +1021,40 @@ mt7530_port_disable(struct dsa_switch *ds, int port)
+>  	mutex_unlock(&priv->reg_mutex);
+>  }
+>  
+> +static int
+> +mt7530_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+> +{
+> +	struct mt7530_priv *priv = ds->priv;
+> +	int length;
+> +
+> +	/* When a new MTU is set, DSA always set the CPU port's MTU to the largest MTU
+> +	 * of the slave ports. Because the switch only has a global RX length register,
+> +	 * only allowing CPU port here is enough.
+> +	 */
+> +	if (!dsa_is_cpu_port(ds, port))
+> +		return 0;
+> +
+> +	/* RX length also includes Ethernet header, MTK tag, and FCS length */
+> +	length = new_mtu + ETH_HLEN + MTK_HDR_LEN + ETH_FCS_LEN;
+> +	if (length <= 1522)
+> +		mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_PKT_LEN_MASK, MAX_RX_PKT_LEN_1522);
+> +	else if (length <= 1536)
+> +		mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_PKT_LEN_MASK, MAX_RX_PKT_LEN_1536);
+> +	else if (length <= 1552)
+> +		mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_PKT_LEN_MASK, MAX_RX_PKT_LEN_1552);
+> +	else
+> +		mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_JUMBO_MASK | MAX_RX_PKT_LEN_MASK,
+> +			MAX_RX_JUMBO(DIV_ROUND_UP(length, 1024)) | MAX_RX_PKT_LEN_JUMBO);
+
+this line should start under priv, so it aligns to the opening
+parenthesis.
+
+Besides, don't you need to reset the JUMBO bit when going from jumbo to
+non-jumbo? The mask should always include jumbo.
+
+I assume you're duplicating the mt7530_rmw() for the benefit of the
+constant validation, but it seems to be counterproductive here.
+
+> +	return 0;
+> +}
+
