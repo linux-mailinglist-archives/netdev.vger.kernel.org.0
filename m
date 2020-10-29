@@ -2,187 +2,292 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58D5E29EA26
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 12:10:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9182429EA5C
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 12:18:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727665AbgJ2LJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 07:09:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:57154 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727656AbgJ2LJr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 07:09:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603969785;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mUmBmibR91G10RNiRrOkfIxo1o/9rdeO2Vew3fkkmi4=;
-        b=EV8fIBGQfam8FjUHs4UzoPxnMekaDf/0aXyD9hvum/0kBDWJ9acP/CWvyN/XSYgAJYkVco
-        QQrqW4ODL2i+AdKqCVpCUkkRxcCgYcBml8jB6KdiNkNaPyv2KbOHUM0gf8uiZU4nYBK7hU
-        45M3dleb+DAzpFTEhjkweDp8oZ6qSbo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-120-ll3KQL2rOH2KH7xjpiTcoA-1; Thu, 29 Oct 2020 07:09:44 -0400
-X-MC-Unique: ll3KQL2rOH2KH7xjpiTcoA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 007DC10E2186;
-        Thu, 29 Oct 2020 11:09:42 +0000 (UTC)
-Received: from krava (unknown [10.40.193.60])
-        by smtp.corp.redhat.com (Postfix) with SMTP id A64585B4AA;
-        Thu, 29 Oct 2020 11:09:35 +0000 (UTC)
-Date:   Thu, 29 Oct 2020 12:09:34 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [RFC bpf-next 00/16] bpf: Speed up trampoline attach
-Message-ID: <20201029110934.GD3027684@krava>
-References: <20201022082138.2322434-1-jolsa@kernel.org>
- <20201022093510.37e8941f@gandalf.local.home>
- <20201022141154.GB2332608@krava>
- <20201022104205.728dd135@gandalf.local.home>
- <20201027043014.ebzcbzospzsaptvu@ast-mbp.dhcp.thefacebook.com>
- <20201027142803.GJ2900849@krava>
- <20201028211325.vstp37ukcvoilmk3@ast-mbp.dhcp.thefacebook.com>
+        id S1727617AbgJ2LSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 07:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727484AbgJ2LS2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 07:18:28 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF802C0613D2
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 04:18:27 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id t11so2576346edj.13
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 04:18:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uCve2fqdX3eNfDkHydNsG1ArXsFgKs44/Cen4YHQRhc=;
+        b=Rt2fU4VojLB9xvErHudVB8jLuZ1H4pDYHINrUlGVIFh956A+ak6vfplVj/PyGF/wR6
+         kUYNhsaVQ+eRZdczfzvBBKSHbc291jSGfaVF5EHgqdKEU9CisHWI7UT7yqZsxQQSYktV
+         OCFf+s/MB/su7dw/PZ/r9fl/Ex5dGIgshId0bAnwzl4FrV1V2lj0vOphUjN0e8XXJQ0a
+         LrzM1IobgNfOjMsF4z31YUQSguZWUmHuvrdQmc1aS3McmGlxlrDMbygteLaUaw5C7gch
+         7dNecrLLNvcX2HRw+EpoXXGgDzfAcdeYV/aMwJitKrgQn+VjmMaEw4Og1V8AWLrBtz9r
+         3XtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uCve2fqdX3eNfDkHydNsG1ArXsFgKs44/Cen4YHQRhc=;
+        b=DYcQImviBOeygOj/sqa9EZbRM78chkeTMZ/4Wx3n7IZUDRXPRLjMcC/fNWwLnQo0Pw
+         wLrRL0Nv73ApS0fPdsdUQQG/uWbjVl9lyrptjpwe/ZM5VJTpxWI62/RTC11ahmtuDMRS
+         T1K3ZAKNzQ5NQMnM/dG68pg+Ym1UgwSmxIr176/B9DENf4Y28nl5hvTZMev47KHc8WTX
+         AD/VTrhH82fn/0GjiwdwCvoRwMI8jEldfRdNzck5N9/2cKtp/JuGsFFd5XpcUKEqq37P
+         V8FV36K8X4hyYZYyvVw8zx878GDHZUSPJQ/dl/akYKOM99/D+fSbp4cWrm5lMNTm7YOP
+         TIlQ==
+X-Gm-Message-State: AOAM532ouzFEhBIkdfRlOYy/suDA8aBrCw/9/N1j/+uT/+k5juE3TRcG
+        KIfDApnLivj09j/LnOjzPdBv1iI/o9meUmAd
+X-Google-Smtp-Source: ABdhPJzHM6Kh55jDDItpDcML3PR0jZUQ8wUM62ziJUdSVnAvdQ8026HGkyF8lmg3tdbch4S3XiNy1w==
+X-Received: by 2002:a05:6402:b87:: with SMTP id cf7mr3517570edb.137.1603970306426;
+        Thu, 29 Oct 2020 04:18:26 -0700 (PDT)
+Received: from localhost.localdomain ([2a02:a03f:689e:3400:b894:bc77:ad21:b2db])
+        by smtp.gmail.com with ESMTPSA id c19sm1302160edt.48.2020.10.29.04.18.25
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 29 Oct 2020 04:18:25 -0700 (PDT)
+From:   David Verbeiren <david.verbeiren@tessares.net>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        David Verbeiren <david.verbeiren@tessares.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: [PATCH bpf] selftest/bpf: Validate initial values of per-cpu hash elems
+Date:   Thu, 29 Oct 2020 12:17:30 +0100
+Message-Id: <20201029111730.6881-1-david.verbeiren@tessares.net>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201028211325.vstp37ukcvoilmk3@ast-mbp.dhcp.thefacebook.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 02:13:25PM -0700, Alexei Starovoitov wrote:
-> On Tue, Oct 27, 2020 at 03:28:03PM +0100, Jiri Olsa wrote:
-> > On Mon, Oct 26, 2020 at 09:30:14PM -0700, Alexei Starovoitov wrote:
-> > > On Thu, Oct 22, 2020 at 10:42:05AM -0400, Steven Rostedt wrote:
-> > > > On Thu, 22 Oct 2020 16:11:54 +0200
-> > > > Jiri Olsa <jolsa@redhat.com> wrote:
-> > > > 
-> > > > > I understand direct calls as a way that bpf trampolines and ftrace can
-> > > > > co-exist together - ebpf trampolines need that functionality of accessing
-> > > > > parameters of a function as if it was called directly and at the same
-> > > > > point we need to be able attach to any function and to as many functions
-> > > > > as we want in a fast way
-> > > > 
-> > > > I was sold that bpf needed a quick and fast way to get the arguments of a
-> > > > function, as the only way to do that with ftrace is to save all registers,
-> > > > which, I was told was too much overhead, as if you only care about
-> > > > arguments, there's much less that is needed to save.
-> > > > 
-> > > > Direct calls wasn't added so that bpf and ftrace could co-exist, it was
-> > > > that for certain cases, bpf wanted a faster way to access arguments,
-> > > > because it still worked with ftrace, but the saving of regs was too
-> > > > strenuous.
-> > > 
-> > > Direct calls in ftrace were done so that ftrace and trampoline can co-exist.
-> > > There is no other use for it.
-> > > 
-> > > Jiri,
-> > > could you please redo your benchmarking hardcoding ftrace_managed=false ?
-> > > If going through register_ftrace_direct() is indeed so much slower
-> > > than arch_text_poke() then something gotta give.
-> > > Either register_ftrace_direct() has to become faster or users
-> > > have to give up on co-existing of bpf and ftrace.
-> > > So far not a single user cared about using trampoline and ftrace together.
-> > > So the latter is certainly an option.
-> > 
-> > I tried that, and IIRC it was not much faster, but I don't have details
-> > on that.. but it should be quick check, I'll do it
-> > 
-> > anyway later I realized that for us we need ftrace to stay, so I abandoned
-> > this idea ;-) and started to check on how to keep them both together and
-> > just make it faster
-> > 
-> > also currently bpf trampolines will not work without ftrace being
-> > enabled, because ftrace is doing the preparation work during compile,
-> > and replaces all the fentry calls with nop instructions and the
-> > replace code depends on those nops...  so if we go this way, we would
-> > need to make this preparation code generic
-> 
-> I didn't mean that part.
-> I was talking about register_ftrace_direct() only.
-> Could you please still do ftrace_managed=false experiment?
-> Sounds like the time to attach/detach will stay the same?
-> If so, then don't touch ftrace internals then. What's the point?
+Tests that when per-cpu hash map or LRU hash map elements are
+re-used as a result of a bpf program inserting elements, the
+element values for the other CPUs than the one executing the
+BPF code are reset to 0.
 
-actually, there's some speedup.. by running:
+This validates the fix proposed in:
+https://lkml.kernel.org/bpf/20201027221324.27894-1-david.verbeiren@tessares.net/
 
-  # perf stat --table -e cycles:k,cycles:u -r 10 ./src/bpftrace -ve 'kfunc:__x64_sys_s* { } i:ms:10 { print("exit\n"); exit();}'
-
-I've got following numbers on base:
-
-     3,463,157,566      cycles:k                                                      ( +-  0.14% )
-     1,164,026,270      cycles:u                                                      ( +-  0.29% )
-
-             # Table of individual measurements:
-             37.61 (-12.20) #######
-             49.35 (-0.46) #
-             54.03 (+4.22) ##
-             50.82 (+1.01) #
-             46.87 (-2.94) ##
-             53.10 (+3.29) ##
-             58.27 (+8.46) ###
-             64.85 (+15.04) #####
-             47.37 (-2.44) ##
-             35.83 (-13.98) ########
-
-             # Final result:
-             49.81 +- 2.76 seconds time elapsed  ( +-  5.54% )
-
-
-and following numbers with the patch below:
-
-     2,037,364,413      cycles:k        ( +-  0.52% )
-     1,164,769,939      cycles:u        ( +-  0.19% )
-
-             # Table of individual measurements:
-             30.52 (-8.54) ######
-             43.43 (+4.37) ###
-             43.72 (+4.66) ###
-             35.70 (-3.36) ##
-             40.70 (+1.63) #
-             43.51 (+4.44) ###
-             26.44 (-12.62) ##########
-             40.21 (+1.14) #
-             43.32 (+4.25) ##
-             43.09 (+4.03) ##
-
-             # Final result:
-             39.06 +- 1.95 seconds time elapsed  ( +-  4.99% )
-
-
-it looks like even ftrace_managed=false could be faster
-with batch update, which is not used, but there's support
-for it via text_poke_bp_batch function
-
-jirka
-
-
+Change-Id: I38bc7b3744ed40704a7b2cc6efa179fb344c4bee
+Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: David Verbeiren <david.verbeiren@tessares.net>
 ---
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index 35c5887d82ff..0a241e6eac7d 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -111,6 +111,8 @@ static int is_ftrace_location(void *ip)
- {
- 	long addr;
- 
-+	return 0;
+ .../selftests/bpf/prog_tests/map_init.c       | 204 ++++++++++++++++++
+ 1 file changed, 204 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/map_init.c
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/map_init.c b/tools/testing/selftests/bpf/prog_tests/map_init.c
+new file mode 100644
+index 000000000000..9640cf925908
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/map_init.c
+@@ -0,0 +1,204 @@
++// SPDX-License-Identifier: GPL-2.0-only
++// Copyright (c) 2020 Tessares SA <http://www.tessares.net>
 +
- 	addr = ftrace_location((long)ip);
- 	if (!addr)
- 		return 0;
++#include <test_progs.h>
++
++#define TEST_VALUE 0x1234
++
++static int nr_cpus;
++static int duration;
++static char bpf_log_buf[BPF_LOG_BUF_SIZE];
++
++typedef unsigned long long map_key_t;
++typedef unsigned long long map_value_t;
++typedef struct {
++	map_value_t v; /* padding */
++} __bpf_percpu_val_align pcpu_map_value_t;
++
++/* executes bpf program that updates map with key, value */
++static int bpf_prog_insert_elem(int fd, map_key_t key, map_value_t value)
++{
++	struct bpf_load_program_attr prog;
++	struct bpf_insn insns[] = {
++		BPF_LD_IMM64(BPF_REG_8, key),
++		BPF_LD_IMM64(BPF_REG_9, value),
++
++		/* update: R1=fd, R2=&key, R3=&value, R4=flags */
++		BPF_LD_MAP_FD(BPF_REG_1, fd),
++		BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
++		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
++		BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_8, 0),
++		BPF_MOV64_REG(BPF_REG_3, BPF_REG_2),
++		BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, -8),
++		BPF_STX_MEM(BPF_DW, BPF_REG_3, BPF_REG_9, 0),
++		BPF_MOV64_IMM(BPF_REG_4, 0),
++		BPF_EMIT_CALL(BPF_FUNC_map_update_elem),
++
++		BPF_MOV64_IMM(BPF_REG_0, 0),
++		BPF_EXIT_INSN(),
++	};
++	char buf[64] = {};
++	int pfd, err;
++	__u32 retval = 0;
++
++	memset(&prog, 0, sizeof(prog));
++	prog.prog_type = BPF_PROG_TYPE_SCHED_CLS;
++	prog.insns = insns;
++	prog.insns_cnt = ARRAY_SIZE(insns);
++	prog.license = "GPL";
++
++	pfd = bpf_load_program_xattr(&prog, bpf_log_buf, BPF_LOG_BUF_SIZE);
++	if (CHECK(pfd < 0, "bpf_load_program_xattr", "failed: %s\n%s\n",
++		  strerror(errno), bpf_log_buf))
++		return -1;
++
++	err = bpf_prog_test_run(pfd, 1, buf, sizeof(buf), NULL, NULL,
++				&retval, NULL);
++	if (CHECK(err || retval, "bpf_prog_test_run",
++		  "err=%d retval=%d errno=%d\n", err, retval, errno))
++		err = -1;
++
++	close(pfd);
++
++	return err;
++}
++
++static int check_values_one_cpu(pcpu_map_value_t *value, map_value_t expected)
++{
++	int i, nzCnt = 0;
++	map_value_t val;
++
++	for (i = 0; i < nr_cpus; i++) {
++		val = bpf_percpu(value, i);
++		if (val) {
++			if (val != expected) {
++				PRINT_FAIL("Unexpected value (cpu %d): 0x%llx\n",
++					   i, val);
++				return -1;
++			}
++			nzCnt++;
++		}
++	}
++
++	if (CHECK(nzCnt != 1, "non-zero-count",
++		   "Map value set for %d CPUs instead of 1!\n", nzCnt))
++		return -1;
++
++	return 0;
++}
++
++static int map_setup(int map_type, int max, int num)
++{
++	pcpu_map_value_t value[nr_cpus];
++	int map_fd, i, err;
++	map_key_t key;
++
++	map_fd = bpf_create_map(map_type, sizeof(key),
++				sizeof(pcpu_map_value_t), 2, 0);
++	if (CHECK(map_fd < 0, "bpf_create_map", "failed: %s\n",
++		  strerror(errno)))
++		return -1;
++
++	for (i = 0; i < nr_cpus; i++)
++		bpf_percpu(value, i) = 0xdeadbeef;
++
++	for (key = 1; key <= num; key++) {
++		err = bpf_map_update_elem(map_fd, &key, value, BPF_NOEXIST);
++		if (CHECK(err, "bpf_map_update_elem", "(key=%llu) failed: %s\n",
++			  key, strerror(errno))) {
++			close(map_fd);
++			return -1;
++		}
++	}
++
++	return map_fd;
++}
++
++/* Add key=1 elem with values set for all CPUs
++ * Delete elem key=1
++ * Run bpf prog that inserts new key=1 elem with value=0x1234
++ *   (bpf prog can only set value for current CPU)
++ * Lookup Key=1 and check value is as expected for all CPUs:
++ *   value set by bpf prog for one CPU, 0 for all others
++ */
++static void test_pcpu_map_init(void)
++{
++	pcpu_map_value_t value[nr_cpus];
++	int map_fd, err;
++	map_key_t key;
++
++	/* set up map with 1 element, value filled for all CPUs */
++	map_fd = map_setup(BPF_MAP_TYPE_PERCPU_HASH, 2, 1);
++	if (CHECK(map_fd < 0, "map_setup", "failed\n"))
++		return;
++
++	/* delete key=1 element so it will later be re-used*/
++	key = 1;
++	err = bpf_map_delete_elem(map_fd, &key);
++	if (CHECK(err, "bpf_map_delete_elem", "failed: %s\n", strerror(errno)))
++		goto error_map;
++
++	/* run bpf prog that inserts new elem, re-using the slot just freed */
++	err = bpf_prog_insert_elem(map_fd, key, TEST_VALUE);
++	if (!ASSERT_OK(err, "bpf_prog_insert_elem"))
++		goto error_map;
++
++	/* check that key=1 was re-created by bpf prog */
++	err = bpf_map_lookup_elem(map_fd, &key, value);
++	if (CHECK(err, "bpf_map_lookup_elem", "failed: %s\n", strerror(errno)))
++		goto error_map;
++
++	/* and has expected value for just a single CPU, 0 for all others */
++	check_values_one_cpu(value, TEST_VALUE);
++
++error_map:
++	close(map_fd);
++}
++
++/* Add key=1 and key=2 elems with values set for all CPUs
++ * Run bpf prog that inserts new key=3 elem
++ *   (only for current cpu; other cpus should have initial value = 0)
++ * Lookup Key=1 and check value is as expected for all CPUs
++ */
++static void test_pcpu_lru_map_init(void)
++{
++	pcpu_map_value_t value[nr_cpus];
++	int map_fd, err;
++	map_key_t key;
++
++	/* Set up LRU map with 2 elements, values filled for all CPUs.
++	 * With these 2 elements, the LRU map is full
++	 */
++	map_fd = map_setup(BPF_MAP_TYPE_LRU_PERCPU_HASH, 2, 2);
++	if (CHECK(map_fd < 0, "map_setup", "failed\n"))
++		return;
++
++	/* run bpf prog that inserts new key=3 element, re-using LRU slot */
++	key = 3;
++	err = bpf_prog_insert_elem(map_fd, key, TEST_VALUE);
++	if (!ASSERT_OK(err, "bpf_prog_insert_elem"))
++		goto error_map;
++
++	/* check that key=3 present */
++	err = bpf_map_lookup_elem(map_fd, &key, value);
++	if (CHECK(err, "bpf_map_lookup_elem", "failed: %s\n", strerror(errno)))
++		goto error_map;
++
++	/* and has expected value for just a single CPU, 0 for all others */
++	check_values_one_cpu(value, TEST_VALUE);
++
++error_map:
++	close(map_fd);
++}
++
++void test_map_init(void)
++{
++	nr_cpus = bpf_num_possible_cpus();
++	if (CHECK(nr_cpus <= 1, "nr_cpus", "> 1 needed for this test"))
++		return;
++
++	if (test__start_subtest("pcpu_map_init"))
++		test_pcpu_map_init();
++	if (test__start_subtest("pcpu_lru_map_init"))
++		test_pcpu_lru_map_init();
++}
+-- 
+2.29.0
 
