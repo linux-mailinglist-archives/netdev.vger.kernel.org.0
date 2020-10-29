@@ -2,110 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C015129E8D9
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 11:19:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC34829E8EB
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 11:25:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726324AbgJ2KTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 06:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54694 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725773AbgJ2KTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 06:19:21 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F71C0613D2
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 03:19:21 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id y12so2112983wrp.6
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 03:19:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=th1akp+i0p3luT17MDVyfDIixPXzvxVhiNfev+qI7wI=;
-        b=iC70U5CLYiWXDHz1rFrAqzeBWc9a0al8lJK9LfUcr34rUjSsBqdO8qo8D2zLzeGq9w
-         YlCp9FiPV9Tagua5n4ScQSbPM6SUEIsOG1YLjFi58I6dIJQQGM9LGFSBrdHPOvyrMY0r
-         Oj2IS0HwhsgTTBSh8LimhBvl3bdyFYV31YevSkC73rlmMyyVjQ8UIKJDYZvd9NzRSrbr
-         U2la0fpYZTdEn4OAvqA5lsJUM8G2TsSBAltBNjvc+wwA+yVICLjdeLVrs5v+Z1r4Mw2P
-         DPv/rYitCMYQ873/vZf5Bk+dnMAfotM4Js1hgvWISAksDU24WkTAwOGQ5feDD6E+Z+zT
-         yUPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=th1akp+i0p3luT17MDVyfDIixPXzvxVhiNfev+qI7wI=;
-        b=gea1bLaqEkqALtHdFKx7VQGj7vJxZrX/frULjXI+yNnj+1DyMBNdszPjM+gwOFax/C
-         iGdsjiyonn/piBdKlbMGBZXQhyj4QykgmkYXMpLoQBC9nBCzotytwOhegVJ/yIuC4SsX
-         d/Fucn0ePJQ3Qp/Z/Vfs9h3KpK+efkABPSTKbnmupx7UgAPwJy0nhOjWtxjybASW64Gm
-         3ppEuAPDXdjSj4FTzFBmLddUTSN7bfOl6uwafKsPNuG7EQu56zkgLXpwdlXNtz1aO0i/
-         nnbOkIqifJa1F4PyQL+hV6zHd+3bGUScd0vqcTdL6UTAc6Usg7c4KYXwaOznLe8grUss
-         d6Kg==
-X-Gm-Message-State: AOAM530oPDHDcjJWUetF7oPyDdcgsMbSctZN0NwBEp16qIM7u8QPw4lf
-        BaSO0NPT/XdlB+Ay13nWnCCzFZlpViM=
-X-Google-Smtp-Source: ABdhPJy4QPqWYZNKIQc7D2gG7O/mI41qpKLwToDrywRQmOdHD+fm4wvti9heIxMZWZzcVCD4HnTpHg==
-X-Received: by 2002:adf:92e4:: with SMTP id 91mr4536583wrn.230.1603966759992;
-        Thu, 29 Oct 2020 03:19:19 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:2800:c8fb:cb3e:2952:c247? (p200300ea8f232800c8fbcb3e2952c247.dip0.t-ipconnect.de. [2003:ea:8f23:2800:c8fb:cb3e:2952:c247])
-        by smtp.googlemail.com with ESMTPSA id h4sm4136335wrp.52.2020.10.29.03.19.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Oct 2020 03:19:19 -0700 (PDT)
-Subject: Re: [PATCH net] r8169: fix operation under forced interrupt threading
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Serge Belyshev <belyshev@depni.sinp.msu.ru>,
+        id S1726518AbgJ2KZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 06:25:12 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:6926 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725773AbgJ2KZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 06:25:12 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CMM5J2hT5z6y6h;
+        Thu, 29 Oct 2020 18:25:08 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 29 Oct 2020 18:24:57 +0800
+Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     Vishwanath Pai <vpai@akamai.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+CC:     "Hunt, Joshua" <johunt@akamai.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-References: <4d3ef84a-c812-5072-918a-22a6f6468310@gmail.com>
- <877drabmoq.fsf@depni.sinp.msu.ru>
- <f0d713d2-6dc4-5246-daca-54811825e064@gmail.com>
- <20201028162929.5f250d12@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <a37b2cdf-97c4-8d13-2a49-d4f8c0b43f04@gmail.com>
- <87y2jpe5by.fsf@nanos.tec.linutronix.de>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <b976846d-f40e-961f-6a3e-920fd5bf1add@gmail.com>
-Date:   Thu, 29 Oct 2020 11:19:14 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linuxarm@huawei.com" <linuxarm@huawei.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
+ <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
+ <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
+ <CAP12E-+3DY-dgzVercKc-NYGPExWO1NjTOr1Gf3tPLKvp6O6+g@mail.gmail.com>
+ <AE096F70-4419-4A67-937A-7741FBDA6668@akamai.com>
+ <CAM_iQpX0XzNDCzc2U5=g6aU-HGYs3oryHx=rmM3ue9sH=Jd4Gw@mail.gmail.com>
+ <19f888c2-8bc1-ea56-6e19-4cb4841c4da0@akamai.com>
+ <93ab7f0f-7b5a-74c3-398d-a572274a4790@huawei.com>
+ <248e5a32-a102-0ced-1462-aa2bc5244252@akamai.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <de690c67-6e9f-8885-10c1-f47313de7b62@huawei.com>
+Date:   Thu, 29 Oct 2020 18:24:57 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-In-Reply-To: <87y2jpe5by.fsf@nanos.tec.linutronix.de>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <248e5a32-a102-0ced-1462-aa2bc5244252@akamai.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29.10.2020 10:42, Thomas Gleixner wrote:
-> On Thu, Oct 29 2020 at 09:42, Heiner Kallweit wrote:
->> On 29.10.2020 00:29, Jakub Kicinski wrote:
->>> Other handles may take spin_locks, which will sleep on RT.
+On 2020/10/29 12:50, Vishwanath Pai wrote:
+> On 10/28/20 10:37 PM, Yunsheng Lin wrote:
+>> On 2020/10/29 4:04, Vishwanath Pai wrote:
+>>> On 10/28/20 1:47 PM, Cong Wang wrote:
+>>>> On Wed, Oct 28, 2020 at 8:37 AM Pai, Vishwanath <vpai@akamai.com> wrote:
+>>>>> Hi,
+>>>>>
+>>>>> We noticed some problems when testing the latest 5.4 LTS kernel and traced it
+>>>>> back to this commit using git bisect. When running our tests the machine stops
+>>>>> responding to all traffic and the only way to recover is a reboot. I do not see
+>>>>> a stack trace on the console.
+>>>>
+>>>> Do you mean the machine is still running fine just the network is down?
+>>>>
+>>>> If so, can you dump your tc config with stats when the problem is happening?
+>>>> (You can use `tc -s -d qd show ...`.)
+>>>>
+>>>>>
+>>>>> This can be reproduced using the packetdrill test below, it should be run a
+>>>>> few times or in a loop. You should hit this issue within a few tries but
+>>>>> sometimes might take up to 15-20 tries.
+>>>> ...
+>>>>> I can reproduce the issue easily on v5.4.68, and after reverting this commit it
+>>>>> does not happen anymore.
+>>>>
+>>>> This is odd. The patch in this thread touches netdev reset path, if packetdrill
+>>>> is the only thing you use to trigger the bug (that is netdev is always active),
+>>>> I can not connect them.
+>>>>
+>>>> Thanks.
 >>>
->>> I guess we may need to switch away from the _irqoff() variant for
->>> drivers with IRQF_SHARED after all :(
+>>> Hi Cong,
 >>>
->> Right. Unfortunately that's a large number of drivers,
->> e.g. pci_request_irq() sets IRQF_SHARED in general.
+>>>> Do you mean the machine is still running fine just the network is down?
+>>>
+>>> I was able to access the machine via serial console, it looks like it is
+>>> up and running, just that networking is down.
+>>>
+>>>> If so, can you dump your tc config with stats when the problem is happening?
+>>>> (You can use `tc -s -d qd show ...`.)
+>>>
+>>> If I try running tc when the machine is in this state the command never
+>>> returns. It doesn't print anything but doesn't exit either.
+>>>
+>>>> This is odd. The patch in this thread touches netdev reset path, if packetdrill
+>>>> is the only thing you use to trigger the bug (that is netdev is always active),
+>>>> I can not connect them.
+>>>
+>>> I think packetdrill creates a tun0 interface when it starts the
+>>> test and tears it down at the end, so it might be hitting this code path
+>>> during teardown.
+>>
+>> Hi, Is there any preparation setup before running the above packetdrill test
+>> case, I run the above test case in 5.9-rc4 with this patch applied without any
+>> preparation setup, did not reproduce it.
+>>
+>> By the way, I am newbie to packetdrill:), it would be good to provide the
+>> detail setup to reproduce it,thanks.
+>>
+>>>
+>>> P.S: My mail server is having connectivity issues with vger.kernel.org
+>>> so messages aren't getting delivered to netdev. It'll hopefully get
+>>> resolved soon.
+>>>
+>>> Thanks,
+>>> Vishwanath
+>>>
+>>>
+>>> .
+>>>
 > 
-> IRQF_SHARED is not the problem. It only becomes a problem when the
-> interrupt is actually shared which is only the case with the legacy PCI
-> interrupt. MSI[X] is not affected at all.
+> I can't reproduce it on v5.9-rc4 either, it is probably an issue only on
+> 5.4 then (and maybe older LTS versions). Can you give it a try on
+> 5.4.68?
 > 
-Correct, just that the legacy PCI interrupt scenario doesn't affect old
-systems/devices only. Users may run the system with nomsi for
-whatever reason and we need to be prepared.
+> For running packetdrill, download the latest version from their github
+> repo, then run it in a loop without any special arguments. This is what
+> I do to reproduce it:
+> 
+> while true; do ./packetdrill <test-file>; done
+> 
+> I don't think any other setup is necessary.
 
-We could add handling for (pcidev->msi_enabled || pcidev->msix_enabled),
-but this would look somewhat hacky to me.
+Hi, run the above test for above an hour using 5.4.68, still did not
+reproduce it, as below:
 
->> But at least for now there doesn't seem to be a better way to deal
->> with the challenges imposed by forced threading and shared irqs.
-> 
-> We still can do the static key trick, though it's admittedly hacky.
-> 
-> Thanks,
-> 
->         tglx
-> 
-> 
 
+root@(none)$ cd /home/root/
+root@(none)$ ls
+creat_vlan.sh  packetdrill    test.pd
+root@(none)$ cat test.pd
+0 `echo 4 > /proc/sys/net/ipv4/tcp_min_tso_segs`
+
+0.400 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
+0.400 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
+
+// set maxseg to 1000 to work with both ipv4 and ipv6
+0.500 setsockopt(3, SOL_TCP, TCP_MAXSEG, [1000], 4) = 0
+0.500 bind(3, ..., ...) = 0
+0.500 listen(3, 1) = 0
+
+// Establish connection
+0.600 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 5>
+0.600 > S. 0:0(0) ack 1 <...>
+
+0.800 < . 1:1(0) ack 1 win 320
+0.800 accept(3, ..., ...) = 4
+
+// Send 4 data segments.
++0 write(4, ..., 4000) = 4000
++0 > P. 1:4001(4000) ack 1
+
+// Receive a SACK
++.1 < . 1:1(0) ack 1 win 320 <sack 1001:2001,nop,nop>
+
++.3 %{ print "TCP CA state: ",tcpi_ca_state  }%
+root@(none)$ cat creat_vlan.sh
+#!/bin/sh
+
+for((i=0; i<10000; i++))
+do
+	./packetdrill test.pd
+done
+root@(none)$ ./creat_vlan.sh
+TCP CA state:  3
+^C
+root@(none)$ ifconfig
+eth0      Link encap:Ethernet  HWaddr 5c:e8:83:0d:f7:ed
+          inet addr:192.168.1.93  Bcast:192.168.1.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:3570 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:3190 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:1076349 (1.0 MiB)  TX bytes:414874 (405.1 KiB)
+
+eth2      Link encap:Ethernet  HWaddr 5c:e8:83:0d:f7:ec
+          inet addr:192.168.100.1  Bcast:192.168.100.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:81848576 errors:0 dropped:0 overruns:0 frame:78
+          TX packets:72497816 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:2044282289568 (1.8 TiB)  TX bytes:2457441698852 (2.2 TiB)
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:1 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:68 (68.0 B)  TX bytes:68 (68.0 B)
+
+root@(none)$ ./creat_vlan.sh
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+TCP CA state:  3
+^C
+root@(none)$ cat /proc/cmdline
+BOOT_IMAGE=/linyunsheng/Image.5.0 rdinit=/init console=ttyAMA0,115200 earlycon=pl011,mmio32,0x94080000 iommu.strict=1
+root@(none)$ cat /proc/version
+Linux version 5.4.68 (linyunsheng@ubuntu) (gcc version 5.4.0 20160609 (Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.12)) #1 SMP PREEMPT Thu Oct 29 16:59:37 CST 2020
+root@(none)$
+
+
+
+> 
+> -Vishwanath
+> 
+> .
+> 
