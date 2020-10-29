@@ -2,210 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B566129E4AA
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:45:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63FB929E49B
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:45:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730493AbgJ2HmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 03:42:16 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7095 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727051AbgJ2HmP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:42:15 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CM93c6g2kzLpc0;
-        Thu, 29 Oct 2020 10:53:00 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 29 Oct 2020 10:52:51 +0800
-Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
- <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
- <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <1f8ebcde-f5ff-43df-960e-3661706e8d04@huawei.com>
-Date:   Thu, 29 Oct 2020 10:52:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1727326AbgJ2HkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 03:40:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727352AbgJ2HYs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:48 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC8AC0613D7;
+        Wed, 28 Oct 2020 19:57:49 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id c11so1645042iln.9;
+        Wed, 28 Oct 2020 19:57:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=slws6IUnykeo5dzFI2HPlheVetOq9cA0vaAi9KjrkUI=;
+        b=Mu5vhbtlFpbW5Y8LJZc6OKIAVlXQARmB0hp3syWmazS9tlto3H/hnqH2TZExf5XBAB
+         ThOlf1yzXNwEpyEUXTZv1VhWm+UwxM5a5kElDqm16npCwf5m2RfyPXWsu+5IgUFc65qA
+         ujPZ/zd2uVLbfhJiG65fxzMtR4tVuyl9ELc+9vjyaLwonaarx8VCYxJ8XI25+mPpbNcW
+         xBmCOgjS9EASPhnt90qTNY1WB1fQRsJupEBOgJ7bmg6tNwd10Uu2AgfFJ2LyrSdNPPxl
+         3DkzabSj1DjuLQHUGnesXknZPCQJZuj+464PGRRn1/kcofgiDbe+AjTHDNCtacxv4kQH
+         NR6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:date:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=slws6IUnykeo5dzFI2HPlheVetOq9cA0vaAi9KjrkUI=;
+        b=OHwfTwIthwBsHJDpN6Qe13QCsgrqF68isbDFyZk9ebopYI9ubbiSvaanCIxpx0NFVT
+         dWhgKfq8mamv50WbRrSQIK33qHJEmo3Vev1y4RnyJ7TzoWuE8tjbI+pPlQe3XFLPPSpU
+         oESpkzVJ2M16NXkoBnEYEuaUS4bmrQ1Do22uc0rgH3TVbRbCwY8Ia/DDBNHZUJpjvpB9
+         8kam1AaPHORhDUjAnoJ1EqjWsLVl8lFUBHqRwEKHeBqjhR8lR6FOymRhAnLYZ9XIk498
+         j2dndTqfJBf42B7NKbR5GvrYsVGuBemcEyebQWnZ4ZbE/HtauXIx7PY20/w2A8fjX4FB
+         H8rg==
+X-Gm-Message-State: AOAM530IHKwNjK8MhrBLYClQ/pgZHch+v5qDOOKRuH6LkKqZbkxhCd64
+        jClj6ExXHzaw2ddff0GW2ck=
+X-Google-Smtp-Source: ABdhPJytng/BzQy75F2R7eaH5UanFPzuQhH3sCMGCDmeifgnFr71eKoroyYAiUSIiQO9sgOrvmz3yw==
+X-Received: by 2002:a05:6e02:ea5:: with SMTP id u5mr1554301ilj.18.1603940268837;
+        Wed, 28 Oct 2020 19:57:48 -0700 (PDT)
+Received: from rani.riverdale.lan ([2001:470:1f07:5f3::b55f])
+        by smtp.gmail.com with ESMTPSA id u8sm1158006ilm.36.2020.10.28.19.57.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Oct 2020 19:57:47 -0700 (PDT)
+Sender: Arvind Sankar <niveditas98@gmail.com>
+From:   Arvind Sankar <nivedita@alum.mit.edu>
+X-Google-Original-From: Arvind Sankar <arvind@rani.riverdale.lan>
+Date:   Wed, 28 Oct 2020 22:57:45 -0400
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <bpf@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] bpf: don't rely on GCC __attribute__((optimize))
+ to disable GCSE
+Message-ID: <20201029025745.GA2386070@rani.riverdale.lan>
+References: <20201028171506.15682-1-ardb@kernel.org>
+ <20201028171506.15682-2-ardb@kernel.org>
+ <20201028213903.fvdjydadqt6tx765@ast-mbp.dhcp.thefacebook.com>
+ <CAMj1kXFHcM-Jb+MwsLtB4NMUmMyAGGLeNGNLC9vTATot3NJLrA@mail.gmail.com>
+ <20201028225919.6ydy3m2u4p7x3to7@ast-mbp.dhcp.thefacebook.com>
+ <CAMj1kXG8PmvO6bLhGXPWtzKMnAsip2WDa-qdrd+kFfr30sd8-A@mail.gmail.com>
+ <20201028232001.pp7erdwft7oyt2xm@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201028232001.pp7erdwft7oyt2xm@ast-mbp.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/9/18 3:26, Cong Wang wrote:
-> On Fri, Sep 11, 2020 at 1:13 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>
->> On 2020/9/11 4:07, Cong Wang wrote:
->>> On Tue, Sep 8, 2020 at 4:06 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>>>
->>>> Currently there is concurrent reset and enqueue operation for the
->>>> same lockless qdisc when there is no lock to synchronize the
->>>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
->>>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
->>>> out-of-bounds access for priv->ring[] in hns3 driver if user has
->>>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
->>>> skb with a larger queue_mapping after the corresponding qdisc is
->>>> reset, and call hns3_nic_net_xmit() with that skb later.
->>>>
->>>> Reused the existing synchronize_net() in dev_deactivate_many() to
->>>> make sure skb with larger queue_mapping enqueued to old qdisc(which
->>>> is saved in dev_queue->qdisc_sleeping) will always be reset when
->>>> dev_reset_queue() is called.
->>>>
->>>> Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
->>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->>>> ---
->>>> ChangeLog V2:
->>>>         Reuse existing synchronize_net().
->>>> ---
->>>>  net/sched/sch_generic.c | 48 +++++++++++++++++++++++++++++++++---------------
->>>>  1 file changed, 33 insertions(+), 15 deletions(-)
->>>>
->>>> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
->>>> index 265a61d..54c4172 100644
->>>> --- a/net/sched/sch_generic.c
->>>> +++ b/net/sched/sch_generic.c
->>>> @@ -1131,24 +1131,10 @@ EXPORT_SYMBOL(dev_activate);
->>>>
->>>>  static void qdisc_deactivate(struct Qdisc *qdisc)
->>>>  {
->>>> -       bool nolock = qdisc->flags & TCQ_F_NOLOCK;
->>>> -
->>>>         if (qdisc->flags & TCQ_F_BUILTIN)
->>>>                 return;
->>>> -       if (test_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state))
->>>> -               return;
->>>> -
->>>> -       if (nolock)
->>>> -               spin_lock_bh(&qdisc->seqlock);
->>>> -       spin_lock_bh(qdisc_lock(qdisc));
->>>>
->>>>         set_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state);
->>>> -
->>>> -       qdisc_reset(qdisc);
->>>> -
->>>> -       spin_unlock_bh(qdisc_lock(qdisc));
->>>> -       if (nolock)
->>>> -               spin_unlock_bh(&qdisc->seqlock);
->>>>  }
->>>>
->>>>  static void dev_deactivate_queue(struct net_device *dev,
->>>> @@ -1165,6 +1151,30 @@ static void dev_deactivate_queue(struct net_device *dev,
->>>>         }
->>>>  }
->>>>
->>>> +static void dev_reset_queue(struct net_device *dev,
->>>> +                           struct netdev_queue *dev_queue,
->>>> +                           void *_unused)
->>>> +{
->>>> +       struct Qdisc *qdisc;
->>>> +       bool nolock;
->>>> +
->>>> +       qdisc = dev_queue->qdisc_sleeping;
->>>> +       if (!qdisc)
->>>> +               return;
->>>> +
->>>> +       nolock = qdisc->flags & TCQ_F_NOLOCK;
->>>> +
->>>> +       if (nolock)
->>>> +               spin_lock_bh(&qdisc->seqlock);
->>>> +       spin_lock_bh(qdisc_lock(qdisc));
->>>
->>>
->>> I think you do not need this lock for lockless one.
->>
->> It seems so.
->> Maybe another patch to remove qdisc_lock(qdisc) for lockless
->> qdisc?
+On Wed, Oct 28, 2020 at 04:20:01PM -0700, Alexei Starovoitov wrote:
+> On Thu, Oct 29, 2020 at 12:10:52AM +0100, Ard Biesheuvel wrote:
+> > On Wed, 28 Oct 2020 at 23:59, Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Wed, Oct 28, 2020 at 11:15:04PM +0100, Ard Biesheuvel wrote:
+> > > > On Wed, 28 Oct 2020 at 22:39, Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >
+> > > > > On Wed, Oct 28, 2020 at 06:15:05PM +0100, Ard Biesheuvel wrote:
+> > > > > > Commit 3193c0836 ("bpf: Disable GCC -fgcse optimization for
+> > > > > > ___bpf_prog_run()") introduced a __no_fgcse macro that expands to a
+> > > > > > function scope __attribute__((optimize("-fno-gcse"))), to disable a
+> > > > > > GCC specific optimization that was causing trouble on x86 builds, and
+> > > > > > was not expected to have any positive effect in the first place.
+> > > > > >
+> > > > > > However, as the GCC manual documents, __attribute__((optimize))
+> > > > > > is not for production use, and results in all other optimization
+> > > > > > options to be forgotten for the function in question. This can
+> > > > > > cause all kinds of trouble, but in one particular reported case,
+> > > > > > it causes -fno-asynchronous-unwind-tables to be disregarded,
+> > > > > > resulting in .eh_frame info to be emitted for the function.
+> > > > > >
+> > > > > > This reverts commit 3193c0836, and instead, it disables the -fgcse
+> > > > > > optimization for the entire source file, but only when building for
+> > > > > > X86 using GCC with CONFIG_BPF_JIT_ALWAYS_ON disabled. Note that the
+> > > > > > original commit states that CONFIG_RETPOLINE=n triggers the issue,
+> > > > > > whereas CONFIG_RETPOLINE=y performs better without the optimization,
+> > > > > > so it is kept disabled in both cases.
+> > > > > >
+> > > > > > Fixes: 3193c0836 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
+> > > > > > Link: https://lore.kernel.org/lkml/CAMuHMdUg0WJHEcq6to0-eODpXPOywLot6UD2=GFHpzoj_hCoBQ@mail.gmail.com/
+> > > > > > Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+> > > > > > ---
+> > > > > >  include/linux/compiler-gcc.h   | 2 --
+> > > > > >  include/linux/compiler_types.h | 4 ----
+> > > > > >  kernel/bpf/Makefile            | 6 +++++-
+> > > > > >  kernel/bpf/core.c              | 2 +-
+> > > > > >  4 files changed, 6 insertions(+), 8 deletions(-)
+> > > > > >
+> > > > > > diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+> > > > > > index d1e3c6896b71..5deb37024574 100644
+> > > > > > --- a/include/linux/compiler-gcc.h
+> > > > > > +++ b/include/linux/compiler-gcc.h
+> > > > > > @@ -175,5 +175,3 @@
+> > > > > >  #else
+> > > > > >  #define __diag_GCC_8(s)
+> > > > > >  #endif
+> > > > > > -
+> > > > > > -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
+> > > > >
+> > > > > See my reply in the other thread.
+> > > > > I prefer
+> > > > > -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
+> > > > > +#define __no_fgcse __attribute__((optimize("-fno-gcse,-fno-omit-frame-pointer")))
+> > > > >
+> > > > > Potentially with -fno-asynchronous-unwind-tables.
+> > > > >
+> > > >
+> > > > So how would that work? arm64 has the following:
+> > > >
+> > > > KBUILD_CFLAGS += -fno-asynchronous-unwind-tables -fno-unwind-tables
+> > > >
+> > > > ifeq ($(CONFIG_SHADOW_CALL_STACK), y)
+> > > > KBUILD_CFLAGS += -ffixed-x18
+> > > > endif
+> > > >
+> > > > and it adds -fpatchable-function-entry=2 for compilers that support
+> > > > it, but only when CONFIG_FTRACE is enabled.
+> > >
+> > > I think you're assuming that GCC drops all flags when it sees __attribute__((optimize)).
+> > > That's not the case.
+> > >
+> > 
+> > So which flags does it drop, and which doesn't it drop? Is that
+> > documented somewhere? Is that the same for all versions of GCC?
+> > 
+> > > > Also, as Nick pointed out, -fno-gcse does not work on Clang.
+> > >
+> > > yes and what's the point?
+> > > #define __no_fgcse is GCC only. clang doesn't need this workaround.
+> > >
+> > 
+> > Ah ok, that's at least something.
+> > 
+> > > > Every architecture will have a different set of requirements here. And
+> > > > there is no way of knowing which -f options are disregarded when you
+> > > > use the function attribute.
+> > > >
+> > > > So how on earth are you going to #define __no-fgcse correctly for
+> > > > every configuration imaginable?
+> > > >
+> > > > > __attribute__((optimize("")) is not as broken as you're claiming to be.
+> > > > > It has quirky gcc internal logic, but it's still widely used
+> > > > > in many software projects.
+> > > >
+> > > > So it's fine because it is only a little bit broken? I'm sorry, but
+> > > > that makes no sense whatsoever.
+> > > >
+> > > > If you insist on sticking with this broken construct, can you please
+> > > > make it GCC/x86-only at least?
+> > >
+> > > I'm totally fine with making
+> > > #define __no_fgcse __attribute__((optimize("-fno-gcse,-fno-omit-frame-pointer")))
+> > > to be gcc+x86 only.
+> > > I'd like to get rid of it, but objtool is not smart enough to understand
+> > > generated asm without it.
+> > 
+> > I'll defer to the x86 folks to make the final call here, but I would
+> > be perfectly happy doing
+> > 
+> > index d1e3c6896b71..68ddb91fbcc6 100644
+> > --- a/include/linux/compiler-gcc.h
+> > +++ b/include/linux/compiler-gcc.h
+> > @@ -176,4 +176,6 @@
+> >  #define __diag_GCC_8(s)
+> >  #endif
+> > 
+> > +#ifdef CONFIG_X86
+> >  #define __no_fgcse __attribute__((optimize("-fno-gcse")))
+> > +#endif
 > 
-> Yeah, but not sure if we still want this lockless qdisc any more,
-> it brings more troubles than gains.
+> If you're going to submit this patch could you please add
+> ,-fno-omit-frame-pointer
+> to the above as well?
 > 
->>
->>
->>>
->>>> +
->>>> +       qdisc_reset(qdisc);
->>>> +
->>>> +       spin_unlock_bh(qdisc_lock(qdisc));
->>>> +       if (nolock)
->>>> +               spin_unlock_bh(&qdisc->seqlock);
->>>> +}
->>>> +
->>>>  static bool some_qdisc_is_busy(struct net_device *dev)
->>>>  {
->>>>         unsigned int i;
->>>> @@ -1213,12 +1223,20 @@ void dev_deactivate_many(struct list_head *head)
->>>>                 dev_watchdog_down(dev);
->>>>         }
->>>>
->>>> -       /* Wait for outstanding qdisc-less dev_queue_xmit calls.
->>>> +       /* Wait for outstanding qdisc-less dev_queue_xmit calls or
->>>> +        * outstanding qdisc enqueuing calls.
->>>>          * This is avoided if all devices are in dismantle phase :
->>>>          * Caller will call synchronize_net() for us
->>>>          */
->>>>         synchronize_net();
->>>>
->>>> +       list_for_each_entry(dev, head, close_list) {
->>>> +               netdev_for_each_tx_queue(dev, dev_reset_queue, NULL);
->>>> +
->>>> +               if (dev_ingress_queue(dev))
->>>> +                       dev_reset_queue(dev, dev_ingress_queue(dev), NULL);
->>>> +       }
->>>> +
->>>>         /* Wait for outstanding qdisc_run calls. */
->>>>         list_for_each_entry(dev, head, close_list) {
->>>>                 while (some_qdisc_is_busy(dev)) {
->>>
->>> Do you want to reset before waiting for TX action?
->>>
->>> I think it is safer to do it after, at least prior to commit 759ae57f1b
->>> we did after.
->>
->> The reference to the txq->qdisc is always protected by RCU, so the synchronize_net()
->> should be enought to ensure there is no skb enqueued to the old qdisc that is saved
->> in the dev_queue->qdisc_sleeping, because __dev_queue_xmit can only see the new qdisc
->> after synchronize_net(), which is noop_qdisc, and noop_qdisc will make sure any skb
->> enqueued to it will be dropped and freed, right?
+> > and end the conversation here, because I honestly cannot wrap my head
+> > around the fact that you are willing to work around an x86 specific
+> > objtool shortcoming by arbitrarily disabling some GCC optimization for
+> > all architectures, using a construct that may or may not affect other
+> > compiler settings in unpredictable ways, where the compiler is being
+> > used to compile a BPF language runtime for executing BPF programs
+> > inside the kernel.
+> > 
+> > What on earth could go wrong?
 > 
-> Hmm? In net_tx_action(), we do not hold RCU read lock, and we do not
-> reference qdisc via txq->qdisc but via sd->output_queue.
+> Frankly I'm move worried that -Os will generate incorrect code.
+> All compilers have bugs. Kernel has bugs. What can go wrong?
 
-Sorry for the delay reply, I seems to miss this.
++linux-toolchains. GCC updated the documentation in 7.x to discourage
+people from using the optimize attribute.
 
-I assumed synchronize_net() also wait for outstanding softirq to finish, right?
-
-> 
-> 
->>
->> If we do any additional reset that is not related to qdisc in dev_reset_queue(), we
->> can move it after some_qdisc_is_busy() checking.
-> 
-> I am not suggesting to do an additional reset, I am suggesting to move
-> your reset after the busy waiting.
-
-There maybe a deadlock here if we reset the qdisc after the some_qdisc_is_busy() checking,
-because some_qdisc_is_busy() may require the qdisc reset to clear the skb, so that
-some_qdisc_is_busy() can return false. I am not sure this is really a problem, but
-sch_direct_xmit() may requeue the skb when dev_hard_start_xmit return TX_BUSY.
-
-> 
-> Thanks.
-> .
-> 
+https://gcc.gnu.org/git/?p=gcc.git;a=commitdiff;h=893100c3fa9b3049ce84dcc0c1a839ddc7a21387
