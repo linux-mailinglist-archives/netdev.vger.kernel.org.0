@@ -2,85 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7133429F15B
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 17:26:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3088129F16C
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 17:28:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726172AbgJ2Q0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 12:26:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45312 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725764AbgJ2Q02 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 12:26:28 -0400
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9A74321481;
-        Thu, 29 Oct 2020 16:26:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603988787;
-        bh=AGbrClZ+VS8MDj4+qu/P79fbZI0a9Y/wZY03UqXvbIQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=1J75wL+fenl4QtKgToscDvcdRQgeJ9ckPQzCnFCgel1JGTOeHbz6thszvlkzq7Yc0
-         afy5SOlJVefndRFGV2SkdGCmJhln4lVP1Vq8/bs74oxMQ9ihBEJRfif0zHcMKHy4By
-         5P4ZjX7werGj7uRVG5cn2B9QiF1paJuVsL9yFAfs=
-Received: by mail-qk1-f177.google.com with SMTP id x20so2457693qkn.1;
-        Thu, 29 Oct 2020 09:26:27 -0700 (PDT)
-X-Gm-Message-State: AOAM532oZamSEpPYosHYFHQHUkwyYgYUxY5Lm21ImTSJdy9BaEYArJ5h
-        HE0ZknshwMjCJBJGMId7nHUPIVJKUR68E6tnii4=
-X-Google-Smtp-Source: ABdhPJyKhwYeabEUTLeiqjDrdTiy26Ddcp+Fv2Yu27W3qNBlCpIN9wtSAH4ct8Pp5ZNA5hi9rwB4IlEYlt8RC94tdJo=
-X-Received: by 2002:a05:620a:b13:: with SMTP id t19mr4215522qkg.3.1603988786437;
- Thu, 29 Oct 2020 09:26:26 -0700 (PDT)
+        id S1726964AbgJ2Q21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 12:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726031AbgJ2Q21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 12:28:27 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A6AC0613D2
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 09:28:26 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id e15so2775175pfh.6
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 09:28:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rSveV6E6Fy8lD3Rn/Hz2z+bWeBndb8KH7LcmC9FCieo=;
+        b=anmYdddfQEL2a3pUPl4hl56gC0CuxKhQHLZWCn2xLIQDOKz/ivxorV2BgIadL/6PsA
+         Ic5YyK1y/SHEp0GgM2bK5JHTkf0m6oy4hybNZPwGCvjEZmSPi8X8Wg2VugxGC6EVqflv
+         uN6oK6GQzxm0e4kDNxBAb6daqNYYh0KV47KJ5PP49KcW1kkriLwHyxebtNnVvbbMDdsm
+         jpSFyUT7ZevSqNB+W9agq8u3NWxTjoiB8hyJbawCdMOTDo2+7iF7/Aj1wAyrzT6ia9Zo
+         mFDzV0zbWmXxxrwebV9Uz+TgW1SML0DLsKhvOvva4OvHqDQaXDY5MKfyzvJ7pahSK7f9
+         dHEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rSveV6E6Fy8lD3Rn/Hz2z+bWeBndb8KH7LcmC9FCieo=;
+        b=uczV5Tw5jVoemU5h0c+jT5BeIGIZolDUmqaAxHQHEC2cfV4KHywQUsGblF59UVmLus
+         BaGXKOjPR2T418J3teRgjegBd5fNr+/spu7c4TCjamLrcl8A3DH6+yE0dqr3WW4LzTYj
+         805CIeiWWVSoP/R4sU+ML+xjOCb/6Q4tAB31FB1wWJGpMWy6GOlpdIa7Fuihzs5VPG85
+         8Ib5PmpcrIuOxyNqYnls9EkoFktEZeYrtatds6wKMzZTS4iuvSB0H4to7Gs3Xd/eUK3n
+         hkww4DsHYxbhvmbCDkzFfBSZGLsLkWi5Ogg/jiPsYyOUG9bHS+8m7H9zj8eTErcP6bCR
+         yh2A==
+X-Gm-Message-State: AOAM530wLkheQD/APgJN/XIUY2c7R5+13udwS27hhjGBztzWONQYDhPG
+        /Ei4UNfWzhPkwjs30v8gviE=
+X-Google-Smtp-Source: ABdhPJzMhQ+uxG9ZMmATGJvx6QHJ+JlX8+8Yg14aChRCa4laL9QXPH4fI4ZF8+0CFbMxHI+izRmnqw==
+X-Received: by 2002:a62:17c2:0:b029:163:d44c:491c with SMTP id 185-20020a6217c20000b0290163d44c491cmr4738960pfx.81.1603988906250;
+        Thu, 29 Oct 2020 09:28:26 -0700 (PDT)
+Received: from [10.230.28.251] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b3sm3278863pfd.66.2020.10.29.09.28.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Oct 2020 09:28:25 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: fix vlan setup
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <E1kYAU3-00071C-1G@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <368dd624-ae0d-d593-156e-a201b11366de@gmail.com>
+Date:   Thu, 29 Oct 2020 09:28:19 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.4.0
 MIME-Version: 1.0
-References: <20201027212448.454129-1-arnd@kernel.org> <20201028055628.GB244117@kroah.com>
- <20201029085627.698080a7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201029085627.698080a7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 29 Oct 2020 17:26:09 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0+C450705M2-mHtvoS1Ogb4YiBCq830d1KAgodKpWK4A@mail.gmail.com>
-Message-ID: <CAK8P3a0+C450705M2-mHtvoS1Ogb4YiBCq830d1KAgodKpWK4A@mail.gmail.com>
-Subject: Re: [RFC] wimax: move out to staging
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <E1kYAU3-00071C-1G@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-n Thu, Oct 29, 2020 at 4:56 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> On Wed, 28 Oct 2020 06:56:28 +0100 Greg Kroah-Hartman wrote:
-> > On Tue, Oct 27, 2020 at 10:20:13PM +0100, Arnd Bergmann wrote:
-> >
-> > Is this ok for me to take through the staging tree?  If so, I need an
-> > ack from the networking maintainers.
-> >
-> > If not, feel free to send it through the networking tree and add:
-> >
-> > Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->
-> Thinking about it now - we want this applied to -next, correct?
-> In that case it may be better if we take it. The code is pretty dead
-> but syzbot and the trivial fix crowd don't know it, so I may slip,
-> apply something and we'll have a conflict.
 
-I think git will deal with a merge between branches containing
-the move vs fix, so it should work either way.
 
-A downside of having the move in net-next would be that
-you'd get trivial fixes send to Greg, but him being unable to
-apply them to his tree because the code is elsewhere.
+On 10/29/2020 9:09 AM, Russell King wrote:
+> DSA assumes that a bridge which has vlan filtering disabled is not
+> vlan aware, and ignores all vlan configuration. However, the kernel
+> software bridge code allows configuration in this state.
+> 
+> This causes the kernel's idea of the bridge vlan state and the
+> hardware state to disagree, so "bridge vlan show" indicates a correct
+> configuration but the hardware lacks all configuration. Even worse,
+> enabling vlan filtering on a DSA bridge immediately blocks all traffic
+> which, given the output of "bridge vlan show", is very confusing.
+> 
+> Allow the VLAN configuration to be updated on Marvell DSA bridges,
+> otherwise we end up cutting all traffic when enabling vlan filtering.
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-If you think it helps, I could prepare a pull request with this one
-patch (and probably the bugfix I sent first that triggered it), and
-then you can both merge the branch into net-next as well
-as staging-next.
-
-      Arnd
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
