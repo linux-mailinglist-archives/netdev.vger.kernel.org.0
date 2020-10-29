@@ -2,99 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E570329F888
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:42:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8852B29F89B
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:46:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725775AbgJ2Wmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 18:42:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49802 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725372AbgJ2Wme (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 18:42:34 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2042B20639;
-        Thu, 29 Oct 2020 22:42:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604011353;
-        bh=tQ0l5V4oTxTVGP0tODtTkscyEVWsw8t0lVmFsdY5laM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Yd92HkfEq5MGLxNG/VDKKPlVEu58u8uIqw6WqIHmkDLSLsC6Skbygw18GUFIvvPBP
-         //sBtfvSNzKX+62TVK8ib7UHfjtQVhgUiCiqQeDorMGCldhLeRYqfSOxGdTTnVw/+D
-         kfUTIyLBt/koK0q/VwnHdzPgfW6e/F0cTpItuspA=
-Date:   Thu, 29 Oct 2020 15:42:32 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        =?UTF-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-Subject: Re: [PATCH] net: dsa: mt7530: support setting MTU
-Message-ID: <20201029154232.02e38471@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201028181221.30419-1-dqfext@gmail.com>
-References: <20201028181221.30419-1-dqfext@gmail.com>
+        id S1725891AbgJ2WqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 18:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58146 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725763AbgJ2WqH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 18:46:07 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CE1C0613CF;
+        Thu, 29 Oct 2020 15:46:07 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id a12so3515325ybg.9;
+        Thu, 29 Oct 2020 15:46:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VVt6QEy9pGzyiGP4x1mdNcouqSR3BPdXvpJ6WW5vvcA=;
+        b=dCPv6UTfM5SUTRKc9CG6+5q6G2n5dS+bt3ss+D+Mx+92J+gHa+rQM4JLPMN3uSpW5/
+         O8Ceid6Fg030jVJXSw1S5WAlK6yXLqZVCxTF/V5MsWoxm2WMzvHYvxeMvIe9L59Roc0G
+         rlvlphIV3/ZqaaNKytKOE040AD/YwrCkvd07rxc3oIA0k2pwvBictI/ie9Na71ALNtXV
+         Jes331kNSdvhRbNnOqtFJk78YtMzuE2PoPBta/TBH7bFv9C2AuW5FMS2ABKVx5agyrhC
+         LuSZ818nwQKyR30iCWVAS6bNuykhziHsTtNr6GImiTruDlRkDQ4T+nprjbSPOIrLQrnV
+         ncLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VVt6QEy9pGzyiGP4x1mdNcouqSR3BPdXvpJ6WW5vvcA=;
+        b=U0DbqDxNx892v1xfu0mByzKXf4xxYaVTnhXQ0ERbCz0n9SUxcWDM0ll7A65Dfrv4UL
+         ISD9s/fwbRcs+AU26Skltt4VUG8HyGHockYJuYatfuZk9i/K3pWukIEj6yUXErFNmOhw
+         CLJ9nrScIr//citDcNgGGWL8/8YMbhKaT1ZWpL58NMU+AXPNTiAhkptkALsDlavcLA3v
+         9vGZmr504/h5Nw6VPvrxz4XrRY4VqtJVyGXYIf3AqvaRFjfesxky1wspBEOGuXwwLtts
+         eYR2quGEFKkiI/QkaCNmSa1p/D4kZz7qUItutC84uB7h+ouxRoWNQt0JXCkRy4/Zk2xD
+         MT2w==
+X-Gm-Message-State: AOAM533aZGCkFykJOZbmZgdRSLeIJYSUpIKNeFyAwciteHVtCmXPARvX
+        8WE5oOyhbWBGyiNmz7nWyb1veZgUnbW2/QWuZzBeQfrigbw/MA==
+X-Google-Smtp-Source: ABdhPJybcuK6gZtzYJqSFpf8JKPOvfM/h1kf+kHsoLpZKvlMb4P/mkkSHkS/3FFXho61gfM9SA+WP+BqQr+gTaQXlV0=
+X-Received: by 2002:a25:c7c6:: with SMTP id w189mr9535922ybe.403.1604011566711;
+ Thu, 29 Oct 2020 15:46:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201022082138.2322434-1-jolsa@kernel.org> <20201022082138.2322434-8-jolsa@kernel.org>
+ <20201028182534.GS2900849@krava> <20201028211502.ishg56ogvjuj7t4w@ast-mbp.dhcp.thefacebook.com>
+ <20201029092953.GA3027684@krava>
+In-Reply-To: <20201029092953.GA3027684@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 29 Oct 2020 15:45:55 -0700
+Message-ID: <CAEf4BzaLNeRVEYkvKoiz+1iwVkpCKALvRPPiCBOoBgyzZhbPJQ@mail.gmail.com>
+Subject: Re: [RFC bpf-next 07/16] kallsyms: Use rb tree for kallsyms name search
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Viktor Malik <vmalik@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Oct 2020 02:12:21 +0800 DENG Qingfang wrote:
-> MT7530/7531 has a global RX packet length register, which can be used
-> to set MTU.
-> 
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+On Thu, Oct 29, 2020 at 2:31 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Wed, Oct 28, 2020 at 02:15:02PM -0700, Alexei Starovoitov wrote:
+> > On Wed, Oct 28, 2020 at 07:25:34PM +0100, Jiri Olsa wrote:
+> > > On Thu, Oct 22, 2020 at 10:21:29AM +0200, Jiri Olsa wrote:
+> > > > The kallsyms_expand_symbol function showed in several bpf related
+> > > > profiles, because it's doing linear search.
+> > > >
+> > > > Before:
+> > > >
+> > > >  Performance counter stats for './src/bpftrace -ve kfunc:__x64_sys_s* \
+> > > >    { printf("test\n"); } i:ms:10 { printf("exit\n"); exit();}' (5 runs):
+> > > >
+> > > >      2,535,458,767      cycles:k                         ( +-  0.55% )
+> > > >        940,046,382      cycles:u                         ( +-  0.27% )
+> > > >
+> > > >              33.60 +- 3.27 seconds time elapsed  ( +-  9.73% )
+> > > >
+> > > > Loading all the vmlinux symbols in rbtree and and switch to rbtree
+> > > > search in kallsyms_lookup_name function to save few cycles and time.
+> > > >
+> > > > After:
+> > > >
+> > > >  Performance counter stats for './src/bpftrace -ve kfunc:__x64_sys_s* \
+> > > >    { printf("test\n"); } i:ms:10 { printf("exit\n"); exit();}' (5 runs):
+> > > >
+> > > >      2,199,433,771      cycles:k                         ( +-  0.55% )
+> > > >        936,105,469      cycles:u                         ( +-  0.37% )
+> > > >
+> > > >              26.48 +- 3.57 seconds time elapsed  ( +- 13.49% )
+> > > >
+> > > > Each symbol takes 160 bytes, so for my .config I've got about 18 MBs
+> > > > used for 115285 symbols.
+> > > >
+> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > >
+> > > FYI there's init_kprobes dependency on kallsyms_lookup_name in early
+> > > init call, so this won't work as it is :-\ will address this in v2
+> > >
+> > > also I'll switch to sorted array and bsearch, because kallsyms is not
+> > > dynamically updated
+> >
+> > wait wat? kallsyms are dynamically updated. bpf adds and removes from it.
+> > You even worked on some of those patches :)
+>
+> yes, it's tricky ;-) kallsyms_lookup_name function goes through builtin
+> (compiled in) symbols and "standard modules" symbols
+>
+> we add bpf symbols as "pseudo module" symbol, which is not covered by
+> this function search, it is covered when displaying /proc/kallsyms
+> (check get_ksymbol_bpf function), same for ftrace and kprobe symbols
+>
+> AFAICS we use kallsyms_lookup_name only to search builtin kernel symbols,
+> so we don't care it does not cover "pseudo modules"
+>
+> now.. what's even more funny, is that if I switch to sort/bsearch,
+> performance is back on the same numbers as the current code :-\
 
-Please wrap your code at 80 chars.
+If you do hashmap instead of RB tree or sort+bsearch, it will beat
+both (assuming you have an adequate number of hash buckets, of
+course).
 
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index de7692b763d8..7764c66a47c9 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -1021,6 +1021,40 @@ mt7530_port_disable(struct dsa_switch *ds, int port)
->  	mutex_unlock(&priv->reg_mutex);
->  }
->  
-> +static int
-> +mt7530_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
-> +{
-> +	struct mt7530_priv *priv = ds->priv;
-> +	int length;
-> +
-> +	/* When a new MTU is set, DSA always set the CPU port's MTU to the largest MTU
-> +	 * of the slave ports. Because the switch only has a global RX length register,
-> +	 * only allowing CPU port here is enough.
-> +	 */
-> +	if (!dsa_is_cpu_port(ds, port))
-> +		return 0;
-> +
-> +	/* RX length also includes Ethernet header, MTK tag, and FCS length */
-> +	length = new_mtu + ETH_HLEN + MTK_HDR_LEN + ETH_FCS_LEN;
-> +	if (length <= 1522)
-> +		mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_PKT_LEN_MASK, MAX_RX_PKT_LEN_1522);
-> +	else if (length <= 1536)
-> +		mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_PKT_LEN_MASK, MAX_RX_PKT_LEN_1536);
-> +	else if (length <= 1552)
-> +		mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_PKT_LEN_MASK, MAX_RX_PKT_LEN_1552);
-> +	else
-> +		mt7530_rmw(priv, MT7530_GMACCR, MAX_RX_JUMBO_MASK | MAX_RX_PKT_LEN_MASK,
-> +			MAX_RX_JUMBO(DIV_ROUND_UP(length, 1024)) | MAX_RX_PKT_LEN_JUMBO);
-
-this line should start under priv, so it aligns to the opening
-parenthesis.
-
-Besides, don't you need to reset the JUMBO bit when going from jumbo to
-non-jumbo? The mask should always include jumbo.
-
-I assume you're duplicating the mt7530_rmw() for the benefit of the
-constant validation, but it seems to be counterproductive here.
-
-> +	return 0;
-> +}
-
+>
+> jirka
+>
