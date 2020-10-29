@@ -2,102 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D785529F413
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 19:26:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 280F829F418
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 19:29:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726120AbgJ2S0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 14:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726096AbgJ2S0M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 14:26:12 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B947CC0613D3
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 11:26:11 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id y16so4214956ljk.1
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 11:26:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Qrar9dmRm4zwdoSrcFwY/wHsTikC9FDxVpd6kfA/rMU=;
-        b=nC2+zmQ8BbqhTLDDWr43qkKPAGZIIiM2rE/6dNa6mi0K1d6OQl1UMc7FfPoJwxy6ps
-         x6jtM8eI+8jRP2aq0Xv4xlQhGD5c3KvTJS3AkuzG/MBnjWIK7DrpieObKzkmYp5W8vby
-         DspwpJHFYhIGvSsF6tpHBWFC3HDR93XfkClwk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qrar9dmRm4zwdoSrcFwY/wHsTikC9FDxVpd6kfA/rMU=;
-        b=mSaCQAXh0VOwmLvY1sSoue1/dWbLBlot4KEC928L0LMGZ6EtVWm2bMCb3ONrM36g9G
-         CNWhZbJQ1ogPVXq/NPe2SGA1jLQEWBczmguUujX3fqF+xSCpa12OQGC4F5TEKSm/51g7
-         aaa1REWrJk/182uMBs0D0HcL9qKumrHQGVm1tLR+iI/SR0uYAlxGyuBut9PspezKFiFH
-         bYRCK1CQlUfdkxng4YVWfoyxU3TJbQCbuN4BUsw2/YG5zBZQR8UAcviBOL2Y9kooIZJ1
-         1arSJOBKx1tZ0URmh+x6wLh5pimfYD+2RYtKV3aH6rdUW9YykRhiai2Z703UrKI5VV6c
-         x6sA==
-X-Gm-Message-State: AOAM5303WVNLvpZh84kY58/FUz2o/MitaCJqIJRPewOv9Qfjxl2hdMFx
-        MZG4CrmlgPFVcV68xmYqsZhwqB/9Oep00w==
-X-Google-Smtp-Source: ABdhPJxKZyzsyX1obsMWmv4uTrnw4exg6Ipuzlj1EqZiSxJAGv8RLlqAtjB6X8KIsMYyqjmIUzUoYg==
-X-Received: by 2002:a2e:7a11:: with SMTP id v17mr2265326ljc.291.1603995969370;
-        Thu, 29 Oct 2020 11:26:09 -0700 (PDT)
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com. [209.85.167.47])
-        by smtp.gmail.com with ESMTPSA id j2sm412612lja.125.2020.10.29.11.26.08
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Oct 2020 11:26:08 -0700 (PDT)
-Received: by mail-lf1-f47.google.com with SMTP id a7so4528815lfk.9
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 11:26:08 -0700 (PDT)
-X-Received: by 2002:a19:41d7:: with SMTP id o206mr645895lfa.396.1603995967726;
- Thu, 29 Oct 2020 11:26:07 -0700 (PDT)
+        id S1725805AbgJ2S3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 14:29:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34558 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725768AbgJ2S3o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 14:29:44 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2922820732;
+        Thu, 29 Oct 2020 18:29:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603996183;
+        bh=c4xmi/u0PLiEv+/2i9iSo4juWyGOfphEjvHX1ZdMHdo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DNC+30hyoBdHqdgXtCRVsRzJAbctAYUXfIfmTt626ANPkUEHT83Mw28SDwYMP5vBT
+         OH2pQJmGUZfZ2cl+DX069MrNObt4EzFUGxw41OVa9B8dBbSWEJfaN9ZXfXZBQ+Omez
+         5nshKhFHPNmOi+8aeRnsHGeh9/riwSinoNZy8/F4=
+Date:   Thu, 29 Oct 2020 11:29:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        mptcp@lists.01.org
+Subject: Re: [PATCH net] mptcp: add missing memory scheduling in the rx path
+Message-ID: <20201029112942.773b5b74@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <d7886714-7b92-9be8-441e-73c48c52d62@linux.intel.com>
+References: <f6143a6193a083574f11b00dbf7b5ad151bc4ff4.1603810630.git.pabeni@redhat.com>
+        <d7886714-7b92-9be8-441e-73c48c52d62@linux.intel.com>
 MIME-Version: 1.0
-References: <20201028142433.18501-1-kitakar@gmail.com> <20201028142433.18501-2-kitakar@gmail.com>
-In-Reply-To: <20201028142433.18501-2-kitakar@gmail.com>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Thu, 29 Oct 2020 11:25:54 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXMfuqy=kCECktP_mYm9cAapXukeLhe=1i3uPbTu9wS2Qw@mail.gmail.com>
-Message-ID: <CA+ASDXMfuqy=kCECktP_mYm9cAapXukeLhe=1i3uPbTu9wS2Qw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] mwifiex: disable ps_mode explicitly by default instead
-To:     Tsuchiya Yuto <kitakar@gmail.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 7:04 PM Tsuchiya Yuto <kitakar@gmail.com> wrote:
->
-> On Microsoft Surface devices (PCIe-88W8897), the ps_mode causes
-> connection unstable, especially with 5GHz APs. Then, it eventually causes
-> fw crash.
->
-> This commit disables ps_mode by default instead of enabling it.
->
-> Required code is extracted from mwifiex_drv_set_power().
->
-> Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+On Tue, 27 Oct 2020 15:46:11 -0700 (PDT) Mat Martineau wrote:
+> On Tue, 27 Oct 2020, Paolo Abeni wrote:
+> > When moving the skbs from the subflow into the msk receive
+> > queue, we must schedule there the required amount of memory.
+> >
+> > Try to borrow the required memory from the subflow, if needed,
+> > so that we leverage the existing TCP heuristic.
+> >
+> > Fixes: 6771bfd9ee24 ("mptcp: update mptcp ack sequence from work queue")
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> 
+> Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 
-You should read up on WIPHY_FLAG_PS_ON_BY_DEFAULT and
-CONFIG_CFG80211_DEFAULT_PS, and set/respect those appropriately (hint:
-mwifiex sets WIPHY_FLAG_PS_ON_BY_DEFAULT, and your patch makes this a
-lie). Also, this seems like a quirk that you haven't properly worked
-out -- if you're working on a quirk framework in your other series,
-you should just key into that.
-
-For the record, Chrome OS supports plenty of mwifiex systems with 8897
-(SDIO only) and 8997 (PCIe), with PS enabled, and you're hurting
-those. Your problem sounds to be exclusively a problem with the PCIe
-8897 firmware.
-
-As-is, NAK.
-
-Brian
+Applied, thanks!
