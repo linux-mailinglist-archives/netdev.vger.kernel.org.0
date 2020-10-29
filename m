@@ -2,120 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6CBD29F466
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 20:01:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4447529F41F
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 19:34:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725910AbgJ2TA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 15:00:56 -0400
-Received: from mga14.intel.com ([192.55.52.115]:9145 "EHLO mga14.intel.com"
+        id S1725885AbgJ2Sea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 14:34:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35208 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725379AbgJ2TAz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 15:00:55 -0400
-IronPort-SDR: KDVij58seM7fS5mXAPkLUFgrFFBFYk03iskQUjPbB4UAuPjC+LTznOP3jgZjF6AIDoRZgjvWyA
- Ygud8dr0wovg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9789"; a="167708892"
-X-IronPort-AV: E=Sophos;i="5.77,430,1596524400"; 
-   d="scan'208";a="167708892"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2020 12:00:54 -0700
-IronPort-SDR: AVcv5sPTwueSjRZbmRkCruP8HgAaBy1K3SfD3smvEn1a05lXUNMEbt3YAErIHhMjL/dKahyCfA
- kGcfh/WgMvBw==
-X-IronPort-AV: E=Sophos;i="5.77,430,1596524400"; 
-   d="scan'208";a="351569252"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2020 12:00:52 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1kYDBL-001S8V-8J; Thu, 29 Oct 2020 21:01:55 +0200
-X-Original-To: andriy.shevchenko@linux.intel.com
-Received: from linux.intel.com [10.54.29.200]
-        by smile.fi.intel.com with IMAP (fetchmail-6.4.12)
-        for <andy@localhost> (single-drop); Tue, 27 Oct 2020 20:30:08 +0200 (EET)
-Received: from fmsmga008.fm.intel.com (fmsmga008.fm.intel.com [10.253.24.58])
+        id S1725769AbgJ2Se2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 14:34:28 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 538A4580428
-        for <andriy.shevchenko@linux.intel.com>; Tue, 27 Oct 2020 11:21:50 -0700 (PDT)
-IronPort-SDR: mXc+k7tCSxSVVantQU/cKcsjSiKwWJHyOPFNnBrK4Eq34pwqk7/64qD5MS8580ssrJoY997YQv
- fppirxEoYnLw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,424,1596524400"; 
-   d="scan'208";a="303848822"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 27 Oct 2020 11:21:48 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 0C1C7179; Tue, 27 Oct 2020 20:21:46 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH v3] net: phy: leds: Deduplicate link LED trigger registration
-Date:   Tue, 27 Oct 2020 20:21:46 +0200
-Message-Id: <20201027182146.21355-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.28.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 5B5B020825;
+        Thu, 29 Oct 2020 18:34:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603996467;
+        bh=fP/uVPZi0LUVGYE8DUr8VQFIQGDfZ+vs9v5SkNM7zyU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=f423O2UjQiVVT1+aNggoY+j2ueF1SO8Qk1qFAcb/noo80X1LuTa+wCO79X8Pexd8E
+         5zLbNBHwayA0uwtCCW8ITySjZCxpI9WFzXrvKeKM/A+akqW72zA+7Dh3ejTgGsHrCQ
+         odbHT8BQ6z2WBgl4X9DUJPAyOGDcJ7sFYvGDOgBM=
+Date:   Thu, 29 Oct 2020 11:34:26 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lijun Pan <ljp@linux.ibm.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net v3] ibmvnic: fix ibmvnic_set_mac
+Message-ID: <20201029113426.09ff67ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201027220456.71450-1-ljp@linux.ibm.com>
+References: <20201027220456.71450-1-ljp@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Refactor phy_led_trigger_register() and deduplicate its functionality
-when registering LED trigger for link.
+On Tue, 27 Oct 2020 17:04:56 -0500 Lijun Pan wrote:
+> Jakub Kicinski brought up a concern in ibmvnic_set_mac().
+> ibmvnic_set_mac() does this:
+> 
+> 	ether_addr_copy(adapter->mac_addr, addr->sa_data);
+> 	if (adapter->state != VNIC_PROBED)
+> 		rc = __ibmvnic_set_mac(netdev, addr->sa_data);
+> 
+> So if state == VNIC_PROBED, the user can assign an invalid address to
+> adapter->mac_addr, and ibmvnic_set_mac() will still return 0.
+> 
+> The fix is to validate ethernet address at the beginning of
+> ibmvnic_set_mac(), and move the ether_addr_copy to
+> the case of "adapter->state != VNIC_PROBED".
+> 
+> Fixes: 62740e97881c ("net/ibmvnic: Update MAC address settings after adapter reset")
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
-v3: rebased on top of v5.10-rc1
- drivers/net/phy/phy_led_triggers.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/phy/phy_led_triggers.c b/drivers/net/phy/phy_led_triggers.c
-index 59a94e07e7c5..08a3e9ea4102 100644
---- a/drivers/net/phy/phy_led_triggers.c
-+++ b/drivers/net/phy/phy_led_triggers.c
-@@ -66,11 +66,11 @@ static void phy_led_trigger_format_name(struct phy_device *phy, char *buf,
- 
- static int phy_led_trigger_register(struct phy_device *phy,
- 				    struct phy_led_trigger *plt,
--				    unsigned int speed)
-+				    unsigned int speed,
-+				    const char *suffix)
- {
- 	plt->speed = speed;
--	phy_led_trigger_format_name(phy, plt->name, sizeof(plt->name),
--				    phy_speed_to_str(speed));
-+	phy_led_trigger_format_name(phy, plt->name, sizeof(plt->name), suffix);
- 	plt->trigger.name = plt->name;
- 
- 	return led_trigger_register(&plt->trigger);
-@@ -99,12 +99,7 @@ int phy_led_triggers_register(struct phy_device *phy)
- 		goto out_clear;
- 	}
- 
--	phy_led_trigger_format_name(phy, phy->led_link_trigger->name,
--				    sizeof(phy->led_link_trigger->name),
--				    "link");
--	phy->led_link_trigger->trigger.name = phy->led_link_trigger->name;
--
--	err = led_trigger_register(&phy->led_link_trigger->trigger);
-+	err = phy_led_trigger_register(phy, phy->led_link_trigger, 0, "link");
- 	if (err)
- 		goto out_free_link;
- 
-@@ -119,7 +114,7 @@ int phy_led_triggers_register(struct phy_device *phy)
- 
- 	for (i = 0; i < phy->phy_num_led_triggers; i++) {
- 		err = phy_led_trigger_register(phy, &phy->phy_led_triggers[i],
--					       speeds[i]);
-+					       speeds[i], phy_speed_to_str(speeds[i]));
- 		if (err)
- 			goto out_unreg;
- 	}
--- 
-2.28.0
-
+Applied, thanks.
