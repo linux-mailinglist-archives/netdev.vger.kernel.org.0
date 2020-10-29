@@ -2,240 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9D829F47C
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 20:05:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38B6829F4B4
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 20:17:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726237AbgJ2TFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 15:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
+        id S1725778AbgJ2TQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 15:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725774AbgJ2TFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 15:05:22 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B91C0613CF;
-        Thu, 29 Oct 2020 12:05:21 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id k21so4707329ioa.9;
-        Thu, 29 Oct 2020 12:05:21 -0700 (PDT)
+        with ESMTP id S1725774AbgJ2TP7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 15:15:59 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861B9C0613D2
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 12:08:14 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id 133so3134661pfx.11
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 12:08:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=x/nfCoCP9F3Ki/1h24iD74gnLDTd/sr95ZiJpeJipjQ=;
-        b=vByD0S4shQJ2EaQtKYRzz7+XFAS7Aqc5jt9oNdTGUMKOFZeFxoMIZ64gKMBUjIjRK5
-         xUlbjFDmQzMKjPQG4YGliO8oxtI9caunzKS0Drq+7xckqqtq1BCkc0Pv4SqRLkHZWQnz
-         aaKJRsXY9LLbqqw7Rb3oeclwijkme/g2o5QktHshhjxEp3kG0mUSi3e4PUH2UbdKZ97K
-         N9QdDhfnGT6H7u6x2Aoq3lLP82l4wQWCVfBqQrsntgxBNVTyVyJZABaBBjQoX6lH/pOz
-         eYDJEIYHOWiSjS0UJiPIWZ8U/mSNPFYkdxjBL36O5+ysGaTUMFqv3hlozD30hS/cf08R
-         Cwog==
+        bh=Y24m8J6XRXiyU/lA5xhr9i8ViGqiIsVKI+T4tQrFiYQ=;
+        b=iGaIf0Pww+DBgxR4uNtu6DELMsXn7DwkW6+mmgWWopQWnxOdLGkrCSxKTkqNaFkdjG
+         uP/w7wsGz+iikuXo/4rWx2Mf8lYgzrEMUxQ8krr0vC6ia3FXy71FF0bpnWIKaj9IRuPS
+         WSR5H4eFAlzW+AK00tLa2AiqEaj895ibP2+BjbUhQUBsZuMhJNsAjwcFv600dnrlGwN2
+         gExKxjJiXmx/ZtsuyAp9039nKXwagcGe2jZ9jVDqWAiFCX55I7OtUdWDn2aH/NBz6wEe
+         PJbMzntkev3zrdaXGb7w0VfA6Zsi+OjNXN1Yu+KuMMFAgOJLyJvShnNxzfktSfNUmHhD
+         koUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=x/nfCoCP9F3Ki/1h24iD74gnLDTd/sr95ZiJpeJipjQ=;
-        b=Rmahflt4JVv7IgcK/c/coDRTv+4bUtdbMaSFxps1jlcAGKVDQNLcw10JVEHmlp4Wny
-         nk193n/c1qRPtOaoSuRAcUrn3+CnMXbGNJ9b8AbmEdXLqqBA5V4VSb4maHYp1xTYzeX1
-         +s09XT2i97bySCOO4cpXqgNP3Xh9+7VqqIyspwvM2tjwKNifaQ7RuOlH5EEWsoWmMZiG
-         zTpx3SNtnYkD4BzscJNowcJWcjF/yMx5+Ilb5Ym2hXkDV5uJF2DpKw/PMVeTRXnwC+M0
-         7YG5gPSWRgaGR+On/2olgXTASX1LILTXd0nsd5cILTNA9yShgzXsgMtvZU+uGGWkDrcc
-         KC3w==
-X-Gm-Message-State: AOAM530FHnntdkr2FBQpKYDOTXZ8ty+1DQlr/UUz72DZgPPRuvwz633N
-        DJDjQJySO7QRL+X1qXud8gfM5djQWA4cc5B/uE5SDrw7feWipg==
-X-Google-Smtp-Source: ABdhPJxUXRt2nYmHv8IhHOYTIbDN1r0icyesFBkhKRtfKbsahEuVW/ZgNZaiKivAF2hhVh6Lcq4V0eKYqDL8ZA8ATVE=
-X-Received: by 2002:a02:b786:: with SMTP id f6mr4952827jam.75.1603998320770;
- Thu, 29 Oct 2020 12:05:20 -0700 (PDT)
+        bh=Y24m8J6XRXiyU/lA5xhr9i8ViGqiIsVKI+T4tQrFiYQ=;
+        b=QxNS7lhDl7SwKnDNu6FVR143RDhosKIuh/Ipj2bMrK5LFZv+UngV9avozDgUVXE2lG
+         2G9jS2+l8jQa2KQsXRPJ2UT73jsZQSn6MfssocOFqndvnq8C0zqag+LevD+Vob847jEs
+         gUs+XSD7sKX0uTLW640dozPsrhyrMuIhPPI1GIGudX5z3Wv38vpsgyREGoUnYuzac7W6
+         aRBTJ2SL/AK41pacHz8dc3Sqe2Zy/oVgmLmuJWT3DpRaxZuASSBGWv7lcJSmfraSjVvN
+         9EIRgQAZTEerVmVa3X7mpj6Hz6yU1bYMThYqsRNDv9AuZWb8onb18cZihow8Q2XYuON+
+         FVBA==
+X-Gm-Message-State: AOAM530DSMq59RLYBG/+VYVGVux3RvSiCOvz4MazvwMJ8d1NTjWM+vXm
+        GbWviQaejz9h8t/jJmQUGBT25uJnkoQ+5iMlGic6EA==
+X-Google-Smtp-Source: ABdhPJxByvB+bTE6GDspSqKz9NSozj/5iO5HNuFnfk3VPSFirPRVE2h9Tk/tSYiGqZfgxrcNcgmis/iIHjG6PI5Queo=
+X-Received: by 2002:a17:90a:cb92:: with SMTP id a18mr1246719pju.136.1603998493813;
+ Thu, 29 Oct 2020 12:08:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
- <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com> <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
- <1f8ebcde-f5ff-43df-960e-3661706e8d04@huawei.com>
-In-Reply-To: <1f8ebcde-f5ff-43df-960e-3661706e8d04@huawei.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 29 Oct 2020 12:05:09 -0700
-Message-ID: <CAM_iQpUm91x8Q0G=CXE7S43DKryABkyMTa4mz_oEfEOTFS7BgQ@mail.gmail.com>
-Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>,
+References: <20201029173620.2121359-1-aleksandrnogikh@gmail.com>
+ <20201029173620.2121359-4-aleksandrnogikh@gmail.com> <40e7ef15f3ffd32567c1dd74edae982c53b0fb06.camel@sipsolutions.net>
+ <CANpmjNP3Jadj3r27Y+GhxUD_cboqn_d2BYKiqM4BzktezgjRYw@mail.gmail.com>
+In-Reply-To: <CANpmjNP3Jadj3r27Y+GhxUD_cboqn_d2BYKiqM4BzktezgjRYw@mail.gmail.com>
+From:   Andrey Konovalov <andreyknvl@google.com>
+Date:   Thu, 29 Oct 2020 20:08:02 +0100
+Message-ID: <CAAeHK+zj8yx8SJB_yy7GrQPiLuAKBTPfTV14-pEhZsiyPBEVbA@mail.gmail.com>
+Subject: Re: [PATCH v5 3/3] mac80211: add KCOV remote annotations to incoming
+ frame processing
+To:     Marco Elver <elver@google.com>
+Cc:     Dmitry Vyukov <dvyukov@google.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Aleksandr Nogikh <aleksandrnogikh@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linuxarm@huawei.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+        Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 7:54 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+On Thu, Oct 29, 2020 at 7:00 PM Marco Elver <elver@google.com> wrote:
 >
-> On 2020/9/18 3:26, Cong Wang wrote:
-> > On Fri, Sep 11, 2020 at 1:13 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> >>
-> >> On 2020/9/11 4:07, Cong Wang wrote:
-> >>> On Tue, Sep 8, 2020 at 4:06 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> >>>>
-> >>>> Currently there is concurrent reset and enqueue operation for the
-> >>>> same lockless qdisc when there is no lock to synchronize the
-> >>>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
-> >>>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
-> >>>> out-of-bounds access for priv->ring[] in hns3 driver if user has
-> >>>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
-> >>>> skb with a larger queue_mapping after the corresponding qdisc is
-> >>>> reset, and call hns3_nic_net_xmit() with that skb later.
-> >>>>
-> >>>> Reused the existing synchronize_net() in dev_deactivate_many() to
-> >>>> make sure skb with larger queue_mapping enqueued to old qdisc(which
-> >>>> is saved in dev_queue->qdisc_sleeping) will always be reset when
-> >>>> dev_reset_queue() is called.
-> >>>>
-> >>>> Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
-> >>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> >>>> ---
-> >>>> ChangeLog V2:
-> >>>>         Reuse existing synchronize_net().
-> >>>> ---
-> >>>>  net/sched/sch_generic.c | 48 +++++++++++++++++++++++++++++++++---------------
-> >>>>  1 file changed, 33 insertions(+), 15 deletions(-)
-> >>>>
-> >>>> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-> >>>> index 265a61d..54c4172 100644
-> >>>> --- a/net/sched/sch_generic.c
-> >>>> +++ b/net/sched/sch_generic.c
-> >>>> @@ -1131,24 +1131,10 @@ EXPORT_SYMBOL(dev_activate);
-> >>>>
-> >>>>  static void qdisc_deactivate(struct Qdisc *qdisc)
-> >>>>  {
-> >>>> -       bool nolock = qdisc->flags & TCQ_F_NOLOCK;
-> >>>> -
-> >>>>         if (qdisc->flags & TCQ_F_BUILTIN)
-> >>>>                 return;
-> >>>> -       if (test_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state))
-> >>>> -               return;
-> >>>> -
-> >>>> -       if (nolock)
-> >>>> -               spin_lock_bh(&qdisc->seqlock);
-> >>>> -       spin_lock_bh(qdisc_lock(qdisc));
-> >>>>
-> >>>>         set_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state);
-> >>>> -
-> >>>> -       qdisc_reset(qdisc);
-> >>>> -
-> >>>> -       spin_unlock_bh(qdisc_lock(qdisc));
-> >>>> -       if (nolock)
-> >>>> -               spin_unlock_bh(&qdisc->seqlock);
-> >>>>  }
-> >>>>
-> >>>>  static void dev_deactivate_queue(struct net_device *dev,
-> >>>> @@ -1165,6 +1151,30 @@ static void dev_deactivate_queue(struct net_device *dev,
-> >>>>         }
-> >>>>  }
-> >>>>
-> >>>> +static void dev_reset_queue(struct net_device *dev,
-> >>>> +                           struct netdev_queue *dev_queue,
-> >>>> +                           void *_unused)
-> >>>> +{
-> >>>> +       struct Qdisc *qdisc;
-> >>>> +       bool nolock;
-> >>>> +
-> >>>> +       qdisc = dev_queue->qdisc_sleeping;
-> >>>> +       if (!qdisc)
-> >>>> +               return;
-> >>>> +
-> >>>> +       nolock = qdisc->flags & TCQ_F_NOLOCK;
-> >>>> +
-> >>>> +       if (nolock)
-> >>>> +               spin_lock_bh(&qdisc->seqlock);
-> >>>> +       spin_lock_bh(qdisc_lock(qdisc));
-> >>>
-> >>>
-> >>> I think you do not need this lock for lockless one.
-> >>
-> >> It seems so.
-> >> Maybe another patch to remove qdisc_lock(qdisc) for lockless
-> >> qdisc?
+> On Thu, 29 Oct 2020 at 18:44, Johannes Berg <johannes@sipsolutions.net> wrote:
+> > On Thu, 2020-10-29 at 17:36 +0000, Aleksandr Nogikh wrote:
+> > > From: Aleksandr Nogikh <nogikh@google.com>
+> > >
+> > > Add KCOV remote annotations to ieee80211_iface_work() and
+> > > ieee80211_rx_list(). This will enable coverage-guided fuzzing of
+> > > mac80211 code that processes incoming 802.11 frames.
 > >
-> > Yeah, but not sure if we still want this lockless qdisc any more,
-> > it brings more troubles than gains.
-> >
-> >>
-> >>
-> >>>
-> >>>> +
-> >>>> +       qdisc_reset(qdisc);
-> >>>> +
-> >>>> +       spin_unlock_bh(qdisc_lock(qdisc));
-> >>>> +       if (nolock)
-> >>>> +               spin_unlock_bh(&qdisc->seqlock);
-> >>>> +}
-> >>>> +
-> >>>>  static bool some_qdisc_is_busy(struct net_device *dev)
-> >>>>  {
-> >>>>         unsigned int i;
-> >>>> @@ -1213,12 +1223,20 @@ void dev_deactivate_many(struct list_head *head)
-> >>>>                 dev_watchdog_down(dev);
-> >>>>         }
-> >>>>
-> >>>> -       /* Wait for outstanding qdisc-less dev_queue_xmit calls.
-> >>>> +       /* Wait for outstanding qdisc-less dev_queue_xmit calls or
-> >>>> +        * outstanding qdisc enqueuing calls.
-> >>>>          * This is avoided if all devices are in dismantle phase :
-> >>>>          * Caller will call synchronize_net() for us
-> >>>>          */
-> >>>>         synchronize_net();
-> >>>>
-> >>>> +       list_for_each_entry(dev, head, close_list) {
-> >>>> +               netdev_for_each_tx_queue(dev, dev_reset_queue, NULL);
-> >>>> +
-> >>>> +               if (dev_ingress_queue(dev))
-> >>>> +                       dev_reset_queue(dev, dev_ingress_queue(dev), NULL);
-> >>>> +       }
-> >>>> +
-> >>>>         /* Wait for outstanding qdisc_run calls. */
-> >>>>         list_for_each_entry(dev, head, close_list) {
-> >>>>                 while (some_qdisc_is_busy(dev)) {
-> >>>
-> >>> Do you want to reset before waiting for TX action?
-> >>>
-> >>> I think it is safer to do it after, at least prior to commit 759ae57f1b
-> >>> we did after.
-> >>
-> >> The reference to the txq->qdisc is always protected by RCU, so the synchronize_net()
-> >> should be enought to ensure there is no skb enqueued to the old qdisc that is saved
-> >> in the dev_queue->qdisc_sleeping, because __dev_queue_xmit can only see the new qdisc
-> >> after synchronize_net(), which is noop_qdisc, and noop_qdisc will make sure any skb
-> >> enqueued to it will be dropped and freed, right?
-> >
-> > Hmm? In net_tx_action(), we do not hold RCU read lock, and we do not
-> > reference qdisc via txq->qdisc but via sd->output_queue.
+> > I have no idea how we'll get this merged - Jakub, do you want to take
+> > the whole series? Or is somebody else responsible for the core kcov
+> > part?
 >
-> Sorry for the delay reply, I seems to miss this.
+> Typically core kcov changes have been going via the -mm tree.
 >
-> I assumed synchronize_net() also wait for outstanding softirq to finish, right?
-
-I do not see how and why it should. synchronize_net() is merely an optimized
-version of synchronize_rcu(), it should wait for RCU readers, softirqs are not
-necessarily RCU readers, net_tx_action() does not take RCU read lock either.
-
+> Andrey has been making most changes to KCOV recently, so if there are
+> no pending changes that conflict, I don't see it's a problem for this
+> whole series to go through networking. I think the other series that
+> Andrey had been working on has been changed to only touch
+> drivers/usb/, so there should be no conflicts pending.
 >
-> >
-> >
-> >>
-> >> If we do any additional reset that is not related to qdisc in dev_reset_queue(), we
-> >> can move it after some_qdisc_is_busy() checking.
-> >
-> > I am not suggesting to do an additional reset, I am suggesting to move
-> > your reset after the busy waiting.
->
-> There maybe a deadlock here if we reset the qdisc after the some_qdisc_is_busy() checking,
-> because some_qdisc_is_busy() may require the qdisc reset to clear the skb, so that
+> Dmitry, Andrey, is that reasonable?
 
-some_qdisc_is_busy() checks the status of qdisc, not the skb queue.
-
-
-> some_qdisc_is_busy() can return false. I am not sure this is really a problem, but
-> sch_direct_xmit() may requeue the skb when dev_hard_start_xmit return TX_BUSY.
-
-Sounds like another reason we should move the reset as late as possible?
-
-Thanks.
+Yes, sounds good. FTR, USB kcov changes go through the usb tree.
