@@ -2,72 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A027629E6CC
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 10:03:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C388C29E718
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 10:19:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726366AbgJ2JDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 05:03:30 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41076 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725904AbgJ2JDa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 05:03:30 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 07B80ABA2;
-        Thu, 29 Oct 2020 09:03:29 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 787B0604D8; Thu, 29 Oct 2020 10:03:28 +0100 (CET)
-Date:   Thu, 29 Oct 2020 10:03:28 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        David.Laight@aculab.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next v3] ethtool: Improve compatibility between
- netlink and ioctl interfaces
-Message-ID: <20201029090328.jwl7w7noeib3d4cz@lion.mk-sys.cz>
-References: <20201027145114.226918-1-idosch@idosch.org>
- <20201027145305.48ca1123@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201028005339.45daonidsidbzawn@lion.mk-sys.cz>
- <20201028173436.GA504959@shredder>
+        id S1726212AbgJ2JTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 05:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725372AbgJ2JTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 05:19:01 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBEDC0613D2
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 02:19:00 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id k21so808251wmi.1
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 02:19:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=3QZARK0cUqVtpaWQExOpKpTYGADGFy/wd0osB3S4KCE=;
+        b=Kv3en3Xzif5y/JfPJJwV6ZK23FoedKCMeRqkO9IFhzOLid5t96gzM4LDt5hRVfXiM4
+         wViPMrGMya5x93Xbc0JI36XEvb4g5iJdLHwf2jyxNI4/2OJusP04pr7COcwr8YhV8a02
+         7oa1flY3X6MRKWacooNR+fGrVwny1vTMqQETKm/5W+Eb1tQkqBYi8R8svRw9eKfrk3KB
+         ibzYCQ4/ivOPK9bW9PrXv3JeYvUe3bsN9V/UfaUckglreoW4d1E7N+ATQMKYTqDy8gCk
+         Xwobz/sNkg1B9Trilbf1KdvEF+P3bMehUZT+4lzDG7hPg91shDO5pMNczTSkON894tvb
+         44FQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=3QZARK0cUqVtpaWQExOpKpTYGADGFy/wd0osB3S4KCE=;
+        b=nuH/8qv37ZGp3N5NhBVhqMroZAaA7qpyKLzB8doWB3zOiMQjpsmB5gHy2mSZG5cUGy
+         t3SK4o2MFr2N3So6TyNo0WyWydGZSADLOY6x9jg1R5QtEcEYONIIXyOkUAee7lZJ5zuZ
+         M1XtL2tgNYIa8v0/TJKWXbaJljhIzqzL710DrlbF/zqLEkC8qnVjyUueiuIuFFWbKVC+
+         WxLzhLFf182mKoBHiHtcITxs/rOQ1WPIuse8a/BliCEzwtjIVkd2jI3oOuWm4uvJfN/G
+         wrGh/AFxBRl4flgmsnjcy6sLSvsF2lu2VmTDCSDBcZ5Jjfi6lY4ZNvy1NuujegXgjy4d
+         vsxQ==
+X-Gm-Message-State: AOAM532J5iFYmMpx4pyc0FH6ubvMVGs3vE4WOcMp2tSt+mxaroQ5UrtU
+        noxgeTvcFJKGpWp/WlPgi0uu6Kec2tg=
+X-Google-Smtp-Source: ABdhPJzKsEgXVC51XiGOltlIs2Ih3w/7KtyNlunxXVzBdKmXFTeZ4mluYWS1laKXSCfykku0KmTTug==
+X-Received: by 2002:a05:600c:28b:: with SMTP id 11mr289112wmk.47.1603963139402;
+        Thu, 29 Oct 2020 02:18:59 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:2800:c8fb:cb3e:2952:c247? (p200300ea8f232800c8fbcb3e2952c247.dip0.t-ipconnect.de. [2003:ea:8f23:2800:c8fb:cb3e:2952:c247])
+        by smtp.googlemail.com with ESMTPSA id b5sm3723290wrs.97.2020.10.29.02.18.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Oct 2020 02:18:58 -0700 (PDT)
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     Serge Belyshev <belyshev@depni.sinp.msu.ru>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net] r8169: fix issue with forced threading in combination
+ with shared interrupts
+Message-ID: <b5b53bfe-35ac-3768-85bf-74d1290cf394@gmail.com>
+Date:   Thu, 29 Oct 2020 10:18:53 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201028173436.GA504959@shredder>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 07:34:36PM +0200, Ido Schimmel wrote:
-> On Wed, Oct 28, 2020 at 01:53:39AM +0100, Michal Kubecek wrote:
-> > On Tue, Oct 27, 2020 at 02:53:05PM -0700, Jakub Kicinski wrote:
-> > > 
-> > > I did not look at the legacy code but I'm confused by what you wrote.
-> > > 
-> > > IIUC for ioctl it's the user space that sets the advertised.
-> > > For netlink it's the kernel.
-> > > So how does the legacy flag make the kernel behave like it used to?
-> > 
-> > The idea why I suggested "legacy" as the name was that it allowed
-> > ethtool to preserve the old behaviour (without having to query for
-> > supported modes first). But from this point of view it's indeed a bit
-> > confusing.
-> 
-> I think it would be best to solve this by having user space query the
-> kernel for supported link modes if autoneg is being enabled without
-> additional parameters. Then user space will issue a set request with
-> ETHTOOL_A_LINKMODES_OURS being set to all supported link modes.
-> 
-> It does not require kernel changes and would be easier on users that
-> currently need to resort to old ethtool despite having a kernel that
-> supports netlink-based ethtool.
+As reported by Serge flag IRQF_NO_THREAD causes an error if the
+interrupt is actually shared and the other driver(s) don't have this
+flag set. This situation can occur if a PCI(e) legacy interrupt is
+used in combination with forced threading.
+There's no good way to deal with this properly, therefore we have to
+remove flag IRQF_NO_THREAD. For fixing the original forced threading
+issue switch to napi_schedule().
 
-That would certainly be a solution. I'm not exactly happy about having
-to issue two requests but (1) it would be limited to specific case with
-"autoneg on" without advertise, speed and duplex (and lanes, when/if
-it's introduced), (2) we would need an extra request to check support of
-the flag anyway and (3) supported modes of a device are unlikely to
-change so that we don't have to worry about races.
+Fixes: 424a646e072a ("r8169: fix operation under forced interrupt threading")
+Link: https://www.spinics.net/lists/netdev/msg694960.html
+Reported-by: Serge Belyshev <belyshev@depni.sinp.msu.ru>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Michal
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 3b6ddc706..00f13805c 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4573,7 +4573,7 @@ static irqreturn_t rtl8169_interrupt(int irq, void *dev_instance)
+ 	}
+ 
+ 	rtl_irq_disable(tp);
+-	napi_schedule_irqoff(&tp->napi);
++	napi_schedule(&tp->napi);
+ out:
+ 	rtl_ack_events(tp, status);
+ 
+@@ -4746,7 +4746,7 @@ static int rtl_open(struct net_device *dev)
+ 	rtl_request_firmware(tp);
+ 
+ 	retval = request_irq(pci_irq_vector(pdev, 0), rtl8169_interrupt,
+-			     IRQF_NO_THREAD | IRQF_SHARED, dev->name, tp);
++			     IRQF_SHARED, dev->name, tp);
+ 	if (retval < 0)
+ 		goto err_release_fw_2;
+ 
+-- 
+2.29.1
+
