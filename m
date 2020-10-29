@@ -2,103 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39AD929F911
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 00:27:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6D9A29F92B
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 00:37:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725780AbgJ2X1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 19:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725372AbgJ2X1R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 19:27:17 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C9EC0613D2;
-        Thu, 29 Oct 2020 16:27:15 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id a4so3581506ybq.13;
-        Thu, 29 Oct 2020 16:27:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mfhUb6juWx0qOFMhcmc849Id4BoUV7O1zRgvTwJqMO0=;
-        b=Wj6KM8/Pn26bl/HIB2I/E2e1DDHlPoRZ1fyPw27dsUbwbtnWSrm0VYF/9Aaxmw7OnA
-         ib0BAuQns7KMqCur+mbrW6tj+lsZQII/d9uoauXL9eAOfNllFgT7OpHRrC9mnfz+iPWm
-         IB5PRcSG1VigRl6Q3hjpK31StZtJIXEZH3SJhIfWZWQj3vRh3tAJ2CLZI+GCZ+0jtTun
-         wB/8vjk4Ww3CXQdm5/5tXNo3dA23cA2AB65BeRhXqyOt76gdPxVkR/LZw8xqwiMzrX0M
-         nyHpDzHFgbyKtgUW/ODroNHFMDYyaCzzw3OMwqVSCdDe0tTv4U0AUQ7Cy+t4cQdAJIMl
-         0SnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mfhUb6juWx0qOFMhcmc849Id4BoUV7O1zRgvTwJqMO0=;
-        b=P15iPQ0rMeMf2M+JbL+P9QIbWcj7h5xJAJtwfSi9YlzSg7U5Uu/WcQtPCroQEwRiqK
-         aAoygtXp3VExfWBDqqBfvxxHFzE4K2y/Mf1zYRdJkLRqXBpELi2aXwU3CT58yqz9bz8c
-         UfCR7HjzvQWRlMpzrCwgsHbo3aGvG8i+yMhcLCcU5aUdCoEMZqF7oKBzpReDnO4lVqKY
-         ANsCzOO4tA9bAWvHxkgbHUA0J2uic6OpQNnY1nN1QzeFEZ4pdQfv3a0EXtJ5v8va25+6
-         8QgX6vYazuG6KZYGxV4DUeaMqSXJWeYl07CetYkUWSzxkl2+iEfpto58S0pCtlhJFfU3
-         qXZg==
-X-Gm-Message-State: AOAM531NxjwyvF8OOJlh5d8thEVYm/MV9boo+NtNOzDrpRPvZPoo8tq0
-        jwZ/8hLfum5JMYVR7n+kIuZ5rL/CNBi9ElHMUqE=
-X-Google-Smtp-Source: ABdhPJyJ59AItadnJmSEJ284yQXT3hSaQWvUvZxre6aEA8LEPTrRiI1Ca5GvyRLF7JG8VUTUvGV1RX6QpUlk0CxfbWo=
-X-Received: by 2002:a25:c7c6:: with SMTP id w189mr9737762ybe.403.1604014034793;
- Thu, 29 Oct 2020 16:27:14 -0700 (PDT)
+        id S1725849AbgJ2XhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 19:37:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60814 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725379AbgJ2XhV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 19:37:21 -0400
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B2F432074A;
+        Thu, 29 Oct 2020 23:37:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604014641;
+        bh=hUm6EKixMzK0UQl5hwaT/IX58lVoysxhR2u/b2BAN5Y=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=E13C8bLEkGyKTKREDMOd4y/w8DeqflUjJoNr27mXOmII2WR6JLRKZFUxaJ9ZdZlci
+         8QeqM7rUsAd2JrAN2kgvQgo33rQz5Orm2nVm4zY96uUB9zw2zOcLso1EVY2e7DMYTU
+         ueWiRmTEL//jzjYQtThbozMbQYv1/6DukSGZHYpU=
+Received: by mail-lf1-f50.google.com with SMTP id l28so5521497lfp.10;
+        Thu, 29 Oct 2020 16:37:20 -0700 (PDT)
+X-Gm-Message-State: AOAM531IQmRFpPHVZ8YwGBf2mq3Hkx3p9ed48uA/gL3e5t3vRA5PuZ0J
+        zl8gHjALClYJNRQbnQc89+ku0WMtASGx7d2XR7g=
+X-Google-Smtp-Source: ABdhPJyU2lM5iu04/2jnRLC1CU4J1bDtoExBLSlgTl54uv6N38AkCeREq3T1GnTGDAHc8ReP6NQj0ab9HvX4/Lt+wEQ=
+X-Received: by 2002:a19:ee12:: with SMTP id g18mr2761655lfb.515.1604014638909;
+ Thu, 29 Oct 2020 16:37:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <160384954046.698509.132709669068189999.stgit@localhost.localdomain>
- <160384962569.698509.4528110378641773523.stgit@localhost.localdomain>
-In-Reply-To: <160384962569.698509.4528110378641773523.stgit@localhost.localdomain>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 29 Oct 2020 16:27:04 -0700
-Message-ID: <CAEf4BzZxevcUHurBQ49006g87CzztDdWn6pWZRWzpL+_97R4qg@mail.gmail.com>
-Subject: Re: [bpf-next PATCH 1/4] selftests/bpf: Move test_tcppbf_user into test_progs
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Lawrence Brakmo <brakmo@fb.com>, alexanderduyck@fb.com
+References: <20201029111730.6881-1-david.verbeiren@tessares.net>
+ <CAPhsuW7o7D-6VW-Z3Umdw8z-7Ab+kkZrJf2EU9nCDFh0Xbn7sA@mail.gmail.com> <CAEf4BzZaZ2PT7nOrXGo-XM7ysgQ8JpDObUysnS+oxGV7e6GQgA@mail.gmail.com>
+In-Reply-To: <CAEf4BzZaZ2PT7nOrXGo-XM7ysgQ8JpDObUysnS+oxGV7e6GQgA@mail.gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Thu, 29 Oct 2020 16:37:08 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6JH=eoa0VVJziCMfN78E88G4Vy4jpxkKDm3z-Xh0jVYQ@mail.gmail.com>
+Message-ID: <CAPhsuW6JH=eoa0VVJziCMfN78E88G4Vy4jpxkKDm3z-Xh0jVYQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] selftest/bpf: Validate initial values of per-cpu hash elems
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     David Verbeiren <david.verbeiren@tessares.net>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 4:50 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
+On Thu, Oct 29, 2020 at 3:37 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> From: Alexander Duyck <alexanderduyck@fb.com>
->
-> Recently a bug was missed due to the fact that test_tcpbpf_user is not a
-> part of test_progs. In order to prevent similar issues in the future move
-> the test functionality into test_progs. By doing this we can make certain
-> that it is a part of standard testing and will not be overlooked.
->
-> As a part of moving the functionality into test_progs it is necessary to
-> integrate with the test_progs framework and to drop any redundant code.
-> This patch:
-> 1. Cleans up the include headers
-> 2. Dropped a duplicate definition of bpf_find_map
-> 3. Replaced printf calls with fprintf to stderr
-> 4. Renamed main to test_tcpbpf_user
-> 5. Dropped return value in favor of CHECK calls to check for errors
->
-> Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
-> ---
->  tools/testing/selftests/bpf/Makefile               |    3
->  .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |  138 +++++++++++++++++
->  tools/testing/selftests/bpf/test_tcpbpf_user.c     |  165 --------------------
+> On Thu, Oct 29, 2020 at 11:36 AM Song Liu <song@kernel.org> wrote:
+> >
+> > On Thu, Oct 29, 2020 at 4:19 AM David Verbeiren
+> > <david.verbeiren@tessares.net> wrote:
+> > >
+> > > Tests that when per-cpu hash map or LRU hash map elements are
+> > > re-used as a result of a bpf program inserting elements, the
+> > > element values for the other CPUs than the one executing the
+> > > BPF code are reset to 0.
 
-Please remove the binary from .gitignore as well
+[...]
 
->  3 files changed, 139 insertions(+), 167 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
->  delete mode 100644 tools/testing/selftests/bpf/test_tcpbpf_user.c
+> >
+> > > +                               return -1;
+> > > +                       }
+> > [...]
+> >
+> > > +
+> > > +       /* delete key=1 element so it will later be re-used*/
+> > > +       key = 1;
+> > > +       err = bpf_map_delete_elem(map_fd, &key);
+> > > +       if (CHECK(err, "bpf_map_delete_elem", "failed: %s\n", strerror(errno)))
+> > > +               goto error_map;
+> > > +
+> > > +       /* run bpf prog that inserts new elem, re-using the slot just freed */
+> > > +       err = bpf_prog_insert_elem(map_fd, key, TEST_VALUE);
+> > > +       if (!ASSERT_OK(err, "bpf_prog_insert_elem"))
+> > > +               goto error_map;
+> >
+> > What's the reason to use ASSERT_OK() instead of CHECK()?
+>
+> I've recently added the ASSERT_xxx() family of macros to accommodate
+> most common checks and provide sensible details printing. So I now
+> always prefer ASSERT() macroses, it saves a bunch of typing and time.
 
-if this file is mostly the same, then Git should be able to detect
-that this is a file rename. That will be captured in a diff explicitly
-and will minimize this patch significantly. Please double-check why
-this was not detected properly.
+I see. It is definitely less typing. :)
+
+Thanks,
+Song
 
 [...]
