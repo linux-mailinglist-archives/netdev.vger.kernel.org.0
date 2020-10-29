@@ -2,217 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4699629F5F1
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 21:15:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A002329F5F6
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 21:16:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726358AbgJ2UPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 16:15:40 -0400
-Received: from mx.der-flo.net ([193.160.39.236]:47174 "EHLO mx.der-flo.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725764AbgJ2UPj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 16:15:39 -0400
-Received: by mx.der-flo.net (Postfix, from userid 110)
-        id 7956F4431A; Thu, 29 Oct 2020 21:15:37 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mx.der-flo.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=4.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.2
-Received: from localhost (unknown [IPv6:2a02:1203:ecb0:3930:146b:10e2:afb5:be30])
-        (using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.der-flo.net (Postfix) with ESMTPSA id 971B744315;
-        Thu, 29 Oct 2020 21:15:30 +0100 (CET)
-From:   Florian Lehner <dev@der-flo.net>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        john.fastabend@gmail.com, Florian Lehner <dev@der-flo.net>
-Subject: [PATCH bpf-next v5] bpf: Lift hashtab key_size limit
-Date:   Thu, 29 Oct 2020 21:14:42 +0100
-Message-Id: <20201029201442.596690-1-dev@der-flo.net>
-X-Mailer: git-send-email 2.26.2
+        id S1726474AbgJ2UQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 16:16:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725764AbgJ2UQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 16:16:15 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FC6C0613CF;
+        Thu, 29 Oct 2020 13:16:15 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id 67so3233351ybt.6;
+        Thu, 29 Oct 2020 13:16:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UXsl9bQpXcF7K7v4cdbgLf4h8xLzYJsNQHUjicy4A60=;
+        b=bPcwa0ysJlIGJYf1scyyYHje68zwHXR5Te+w0R0UuyqJivrqkyA0TcMf0dT48CROS3
+         F+XeR48XXtMglzj2lzsRQx38MCAMRnXybfPmsX3K7WIhn8OH3Q+X1BdzR9TEg6p5BspW
+         R+B7cUedURK2v18Xl6onC5xPlqHqu7ydJXx1IjP3NTfD6Goy5s1RE5mo6H+9E2uYGrJp
+         wF37NHswSjrQulQQziqZu6KLONLFpF/U9dT4evuMSGfM6tVDhTv+Ff0qFZrAAUQUAsQc
+         izm0cyB1A2RVkQmPJMOVZPZzqj9LtnJvunycz6l3Vm4eLw7OY5B6VA/2WR6YqEqNsYRo
+         HaYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UXsl9bQpXcF7K7v4cdbgLf4h8xLzYJsNQHUjicy4A60=;
+        b=WP6UqgncBb0m7NDvBlP/MiGNOLDmMYuK6A6IDSyBayIwJ+WMsZMetU/1r+ckzxPk5Z
+         DQ5xItQDrRc/3C8ts+fB+jz/62m7IthCZnPdiPRjypwmHjBiMuJWyv4bITBuJI3T9/5W
+         glsqQ5Q7xce8cNT0YRc2uPAuOgbhLWub4HyU+xzyd3sNUVpD3m0Y30z7z4NS0iGYni++
+         JWcAX34vTMG0HAbHHc/kXmp9iLGPM0iaSmqnmxMf6B7QmyYp1hbl9Pwz6rwYkCwHzggy
+         Q+cHWtx9IKQNkY5f8fnkwm+qv8R+ZP6cWsF8LfkAF081LzOfDxta2bncMjKBdykhQ2rW
+         xoGQ==
+X-Gm-Message-State: AOAM532s4FPnBOAbQa9lx8oKoTA40/NzjaffRG0ZrerNfJN+972S+3xX
+        e0Wd9TzHZolS2Cu0gvKwZJvKa2/LG1zrX0SdRcA=
+X-Google-Smtp-Source: ABdhPJw8ekdgD4QdOyfCCLIZg9Z24SU4y3qDBdQFfPNB//ELn5AI6MtZuTnFUNJGIKN5sciSbqCgwDdpToNc3t+I61M=
+X-Received: by 2002:a25:25c2:: with SMTP id l185mr7758431ybl.230.1604002574839;
+ Thu, 29 Oct 2020 13:16:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201029160938.154084-1-irogers@google.com>
+In-Reply-To: <20201029160938.154084-1-irogers@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 29 Oct 2020 13:16:03 -0700
+Message-ID: <CAEf4BzZGUmtrATZnExcUY-BaiCmUKBDo4QOb6PjfumhYG_3c5w@mail.gmail.com>
+Subject: Re: [PATCH] libbpf hashmap: Fix undefined behavior in hash_bits
+To:     Ian Rogers <irogers@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently key_size of hashtab is limited to MAX_BPF_STACK.
-As the key of hashtab can also be a value from a per cpu map it can be
-larger than MAX_BPF_STACK.
+On Thu, Oct 29, 2020 at 9:11 AM Ian Rogers <irogers@google.com> wrote:
+>
+> If bits is 0, the case when the map is empty, then the >> is the size of
+> the register which is undefined behavior - on x86 it is the same as a
+> shift by 0. Fix by handling the 0 case explicitly when running with
+> address sanitizer.
+>
+> A variant of this patch was posted previously as:
+> https://lore.kernel.org/lkml/20200508063954.256593-1-irogers@google.com/
+>
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/lib/bpf/hashmap.h | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+>
+> diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
+> index d9b385fe808c..27d0556527d3 100644
+> --- a/tools/lib/bpf/hashmap.h
+> +++ b/tools/lib/bpf/hashmap.h
+> @@ -12,9 +12,23 @@
+>  #include <stddef.h>
+>  #include <limits.h>
+>
+> +#ifdef __has_feature
+> +#define HAVE_FEATURE(f) __has_feature(f)
+> +#else
+> +#define HAVE_FEATURE(f) 0
+> +#endif
+> +
+>  static inline size_t hash_bits(size_t h, int bits)
+>  {
+>         /* shuffle bits and return requested number of upper bits */
+> +#if defined(ADDRESS_SANITIZER) || HAVE_FEATURE(address_sanitizer)
+> +       /*
+> +        * If the requested bits == 0 avoid undefined behavior from a
+> +        * greater-than bit width shift right (aka invalid-shift-exponent).
+> +        */
+> +       if (bits == 0)
+> +               return -1;
+> +#endif
 
-The use-case for this patch originates to implement allow/disallow
-lists for files and file paths. The maximum length of file paths is
-defined by PATH_MAX with 4096 chars including nul.
-This limit exceeds MAX_BPF_STACK.
+Oh, just too much # magic here :(... If we want to prevent hash_bits()
+from being called with bits == 0 (despite the result never used),
+let's just adjust hashmap__for_each_key_entry and
+hashmap__for_each_key_entry_safe macros:
 
-Changelog:
+diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
+index d9b385fe808c..488e0ef236cb 100644
+--- a/tools/lib/bpf/hashmap.h
++++ b/tools/lib/bpf/hashmap.h
+@@ -174,9 +174,9 @@ bool hashmap__find(const struct hashmap *map,
+const void *key, void **value);
+  * @key: key to iterate entries for
+  */
+ #define hashmap__for_each_key_entry(map, cur, _key)                        \
+-       for (cur = ({ size_t bkt = hash_bits(map->hash_fn((_key), map->ctx),\
+-                                            map->cap_bits);                \
+-                    map->buckets ? map->buckets[bkt] : NULL; });           \
++       for (cur = map->buckets                                             \
++                  ? map->buckets[hash_bits(map->hash_fn((_key),
+map->ctx), map->cap_bits)] \
++                  : NULL;                                                  \
+             cur;                                                           \
+             cur = cur->next)                                               \
+                if (map->equal_fn(cur->key, (_key), map->ctx))
 
-v5:
- - Fix cast overflow
+Either way it's a bit ugly and long, but at least we don't have extra
+#-driven ugliness.
 
-v4:
- - Utilize BPF skeleton in tests
- - Rebase
 
-v3:
- - Rebase
-
-v2:
- - Add a test for bpf side
-
-Signed-off-by: Florian Lehner <dev@der-flo.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
----
- kernel/bpf/hashtab.c                          | 16 +++----
- .../selftests/bpf/prog_tests/hash_large_key.c | 43 ++++++++++++++++++
- .../selftests/bpf/progs/test_hash_large_key.c | 44 +++++++++++++++++++
- tools/testing/selftests/bpf/test_maps.c       |  3 +-
- 4 files changed, 94 insertions(+), 12 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/hash_large_key.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_hash_large_key.c
-
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 1815e97d4c9c..893a60ccb2df 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -390,17 +390,11 @@ static int htab_map_alloc_check(union bpf_attr *attr)
- 	    attr->value_size == 0)
- 		return -EINVAL;
- 
--	if (attr->key_size > MAX_BPF_STACK)
--		/* eBPF programs initialize keys on stack, so they cannot be
--		 * larger than max stack size
--		 */
--		return -E2BIG;
--
--	if (attr->value_size >= KMALLOC_MAX_SIZE -
--	    MAX_BPF_STACK - sizeof(struct htab_elem))
--		/* if value_size is bigger, the user space won't be able to
--		 * access the elements via bpf syscall. This check also makes
--		 * sure that the elem_size doesn't overflow and it's
-+	if ((u64)attr->key_size + attr->value_size >= KMALLOC_MAX_SIZE -
-+	   sizeof(struct htab_elem))
-+		/* if key_size + value_size is bigger, the user space won't be
-+		 * able to access the elements via bpf syscall. This check
-+		 * also makes sure that the elem_size doesn't overflow and it's
- 		 * kmalloc-able later in htab_map_update_elem()
- 		 */
- 		return -E2BIG;
-diff --git a/tools/testing/selftests/bpf/prog_tests/hash_large_key.c b/tools/testing/selftests/bpf/prog_tests/hash_large_key.c
-new file mode 100644
-index 000000000000..34684c0fc76d
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/hash_large_key.c
-@@ -0,0 +1,43 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <test_progs.h>
-+#include "test_hash_large_key.skel.h"
-+
-+void test_hash_large_key(void)
-+{
-+	int err, value = 21, duration = 0, hash_map_fd;
-+	struct test_hash_large_key *skel;
-+
-+	struct bigelement {
-+		int a;
-+		char b[4096];
-+		long long c;
-+	} key;
-+	bzero(&key, sizeof(key));
-+
-+	skel = test_hash_large_key__open_and_load();
-+	if (CHECK(!skel, "skel_open_and_load", "skeleton open/load failed\n"))
-+		return;
-+
-+	hash_map_fd = bpf_map__fd(skel->maps.hash_map);
-+	if (CHECK(hash_map_fd < 0, "bpf_map__fd", "failed\n"))
-+		goto cleanup;
-+
-+	err = test_hash_large_key__attach(skel);
-+	if (CHECK(err, "attach_raw_tp", "err %d\n", err))
-+		goto cleanup;
-+
-+	err = bpf_map_update_elem(hash_map_fd, &key, &value, BPF_ANY);
-+	if (CHECK(err, "bpf_map_update_elem", "errno=%d\n", errno))
-+		goto cleanup;
-+
-+	key.c = 1;
-+	err = bpf_map_lookup_elem(hash_map_fd, &key, &value);
-+	if (CHECK(err, "bpf_map_lookup_elem", "errno=%d\n", errno))
-+		goto cleanup;
-+
-+	CHECK_FAIL(value != 42);
-+
-+cleanup:
-+	test_hash_large_key__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_hash_large_key.c b/tools/testing/selftests/bpf/progs/test_hash_large_key.c
-new file mode 100644
-index 000000000000..473a22794a62
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_hash_large_key.c
-@@ -0,0 +1,44 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 2);
-+	__type(key, struct bigelement);
-+	__type(value, __u32);
-+} hash_map SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, struct bigelement);
-+} key_map SEC(".maps");
-+
-+struct bigelement {
-+	int a;
-+	char b[4096];
-+	long long c;
-+};
-+
-+SEC("raw_tracepoint/sys_enter")
-+int bpf_hash_large_key_test(void *ctx)
-+{
-+	int zero = 0, err = 1, value = 42;
-+	struct bigelement *key;
-+
-+	key = bpf_map_lookup_elem(&key_map, &zero);
-+	if (!key)
-+		return 0;
-+
-+	key->c = 1;
-+	if (bpf_map_update_elem(&hash_map, key, &value, BPF_ANY))
-+		return 0;
-+
-+	return 0;
-+}
-+
-diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
-index 0d92ebcb335d..0ad3e6305ff0 100644
---- a/tools/testing/selftests/bpf/test_maps.c
-+++ b/tools/testing/selftests/bpf/test_maps.c
-@@ -1223,9 +1223,10 @@ static void test_map_in_map(void)
- 
- static void test_map_large(void)
- {
-+
- 	struct bigkey {
- 		int a;
--		char b[116];
-+		char b[4096];
- 		long long c;
- 	} key;
- 	int fd, i, value;
--- 
-2.26.2
-
+>  #if (__SIZEOF_SIZE_T__ == __SIZEOF_LONG_LONG__)
+>         /* LP64 case */
+>         return (h * 11400714819323198485llu) >> (__SIZEOF_LONG_LONG__ * 8 - bits);
+> --
+> 2.29.1.341.ge80a0c044ae-goog
+>
