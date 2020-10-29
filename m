@@ -2,244 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 989A129E3D8
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:23:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C42D429E3FC
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:26:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbgJ2HWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 03:22:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42034 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726151AbgJ2HV0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 03:21:26 -0400
-Received: from coco.lan (ip5f5ad5de.dynamic.kabel-deutschland.de [95.90.213.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1D568206A1;
-        Thu, 29 Oct 2020 07:21:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603956079;
-        bh=ydKKLjnIGAQnlNnBFT/eI5WDiCpUdvgjw4RkqNPBoTs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AXef/AhAlPh1hi9YsdIj4o1ixVYaGEAZM4H9T1mWHDD5hcqq9AHBGqQYLJm4zvkzm
-         vDRNtmfz4vMaZ1nCDFiLdWyz0Wl7IBqlNL9mj+lYOyRgbN8ZBRkoI4V/HMDyMBFkDS
-         A+Vrm0psmwUp0NppXp1qjXj8jB9uy8mTt+24KpoY=
-Date:   Thu, 29 Oct 2020 08:21:00 +0100
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Javier =?UTF-8?B?R29uesOhbGV6?= <javier@javigon.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Benson Leung <bleung@chromium.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Bruno Meneguele <bmeneg@redhat.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Konstantin Khlebnikov <koct9i@gmail.com>,
-        Kranthi Kuntala <kranthi.kuntala@intel.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Len Brown <lenb@kernel.org>,
-        Leonid Maksymchuk <leonmaxx@gmail.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Orson Zhai <orsonzhai@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Peter Rosin <peda@axentia.se>, Petr Mladek <pmladek@suse.com>,
-        Philippe Bergheaud <felix@linux.ibm.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-pm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, xen-devel@lists.xenproject.org
-Subject: Re: [PATCH 20/33] docs: ABI: testing: make the files compatible
- with ReST output
-Message-ID: <20201029082100.4820072c@coco.lan>
-In-Reply-To: <20201028174427.GE9364@hoboy.vegasvil.org>
-References: <cover.1603893146.git.mchehab+huawei@kernel.org>
-        <4ebaaa0320101479e392ce2db4b62e24fdf15ef1.1603893146.git.mchehab+huawei@kernel.org>
-        <20201028174427.GE9364@hoboy.vegasvil.org>
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1728349AbgJ2H0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 03:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728395AbgJ2HZb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:25:31 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA5DC0613CF
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 00:25:30 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id n15so1615181wrq.2
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 00:25:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=p8arlK+Beb7st/ApIAXUziRhCdd+hqTNC9oSIz8cS/I=;
+        b=WffDFAChY1XXoEF3z34JPg4coRv0He3mCxXSe+x93smaO8DYgPYX1sBPD8QqewKjO0
+         kZezQVvr5A9rs7Upj4uhPVT7yEmG0a4ssEIssLqs9DBm4UogHUcztadqA8GQbOUhRBGK
+         5v3kQB8qwskjkAW+LmNNj2UfmOISlZ7ijrXhnSmOG6LWCLAjQiB1JwR28STZmZrFrMYW
+         JfIgvMpWZk7MAMOdgfbPg52ijybF2phR5qZZH5G4NC7rPXjURlGfvAmgKTxpsGwPUnl/
+         AL/BM8M9vNepXNe5A5jfz+u/c2jH773EvinrQ75hn99ihJAvnvSu2qpPmg3A2sbsI3VE
+         exPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=p8arlK+Beb7st/ApIAXUziRhCdd+hqTNC9oSIz8cS/I=;
+        b=fKcyzPlweVrFb6gn5gby1GhSxsiS9kVq5aLw85mmXwAlu5uuxkN9ifZLVPH018JbXw
+         xpQDVqVsL4EVO4d3MY3KxHBaTuymesuqm9J5uvLXkJ9trcavvf/tCMvFaS9vHHm7N36Q
+         lXRK6ajI15jfBjRrM/Dk+Eq3NsiIXjPtZfaIIn9bdDh+i/1lOWXpixDqicFernOT2Hzs
+         IDzF5N4OckJ/JxYywWk4KtVHJ1+aPR2x7UCJzg8G+m17VmJx5dn+dSan1kKBdekGbwa4
+         f/Xgg5eFpXlzvdAsIZBICH7qjTIpNMeW2g8f2JA+w1xdK0r/ICFG9BDxM2NxpW2Om9qQ
+         OIvQ==
+X-Gm-Message-State: AOAM533f3TzA8Uzgh9Qe1A6hPdppc4NWh9YnT3rh5mh1PgR28iExs9ZP
+        8cVuA+XMVjHU2Yp1OhD3tD/G9A==
+X-Google-Smtp-Source: ABdhPJxqMd6WvmNSmRkmWqlg/+S0Y9J+TXBN1OpZIQJ3wfwzn9XG7HaXykO1KxU76QzI/Jy1lqODJw==
+X-Received: by 2002:adf:fe8b:: with SMTP id l11mr3860128wrr.9.1603956328906;
+        Thu, 29 Oct 2020 00:25:28 -0700 (PDT)
+Received: from apalos.home (athedsl-246545.home.otenet.gr. [85.73.10.175])
+        by smtp.gmail.com with ESMTPSA id t199sm2733227wmt.46.2020.10.29.00.25.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 00:25:28 -0700 (PDT)
+Date:   Thu, 29 Oct 2020 09:25:26 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        brouer@redhat.com
+Subject: Re: [PATCH net-next 2/4] net: page_pool: add bulk support for
+ ptr_ring
+Message-ID: <20201029072526.GA61828@apalos.home>
+References: <cover.1603824486.git.lorenzo@kernel.org>
+ <cd58ca966fbe11cabbd6160decea6ce748ebce9f.1603824486.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cd58ca966fbe11cabbd6160decea6ce748ebce9f.1603824486.git.lorenzo@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Richard,
-
-Em Wed, 28 Oct 2020 10:44:27 -0700
-Richard Cochran <richardcochran@gmail.com> escreveu:
-
-> On Wed, Oct 28, 2020 at 03:23:18PM +0100, Mauro Carvalho Chehab wrote:
+On Tue, Oct 27, 2020 at 08:04:08PM +0100, Lorenzo Bianconi wrote:
+> Introduce the capability to batch page_pool ptr_ring refill since it is
+> usually run inside the driver NAPI tx completion loop.
 > 
-> > diff --git a/Documentation/ABI/testing/sysfs-uevent b/Documentation/ABI/testing/sysfs-uevent
-> > index aa39f8d7bcdf..d0893dad3f38 100644
-> > --- a/Documentation/ABI/testing/sysfs-uevent
-> > +++ b/Documentation/ABI/testing/sysfs-uevent
-> > @@ -19,7 +19,8 @@ Description:
-> >                  a transaction identifier so it's possible to use the same UUID
-> >                  value for one or more synthetic uevents in which case we
-> >                  logically group these uevents together for any userspace
-> > -                listeners. The UUID value appears in uevent as
-> > +                listeners. The UUID value appears in uevent as:  
+> Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  include/net/page_pool.h | 26 ++++++++++++++++++++++++++
+>  net/core/page_pool.c    | 33 +++++++++++++++++++++++++++++++++
+>  net/core/xdp.c          |  9 ++-------
+>  3 files changed, 61 insertions(+), 7 deletions(-)
 > 
-> I know almost nothing about Sphinx, but why have one colon here ^^^ and ...
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index 81d7773f96cd..b5b195305346 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -152,6 +152,8 @@ struct page_pool *page_pool_create(const struct page_pool_params *params);
+>  void page_pool_destroy(struct page_pool *pool);
+>  void page_pool_use_xdp_mem(struct page_pool *pool, void (*disconnect)(void *));
+>  void page_pool_release_page(struct page_pool *pool, struct page *page);
+> +void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> +			     int count);
+>  #else
+>  static inline void page_pool_destroy(struct page_pool *pool)
+>  {
+> @@ -165,6 +167,11 @@ static inline void page_pool_release_page(struct page_pool *pool,
+>  					  struct page *page)
+>  {
+>  }
+> +
+> +static inline void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> +					   int count)
+> +{
+> +}
+>  #endif
+>  
+>  void page_pool_put_page(struct page_pool *pool, struct page *page,
+> @@ -215,4 +222,23 @@ static inline void page_pool_nid_changed(struct page_pool *pool, int new_nid)
+>  	if (unlikely(pool->p.nid != new_nid))
+>  		page_pool_update_nid(pool, new_nid);
+>  }
+> +
+> +static inline void page_pool_ring_lock(struct page_pool *pool)
+> +	__acquires(&pool->ring.producer_lock)
+> +{
+> +	if (in_serving_softirq())
+> +		spin_lock(&pool->ring.producer_lock);
+> +	else
+> +		spin_lock_bh(&pool->ring.producer_lock);
+> +}
+> +
+> +static inline void page_pool_ring_unlock(struct page_pool *pool)
+> +	__releases(&pool->ring.producer_lock)
+> +{
+> +	if (in_serving_softirq())
+> +		spin_unlock(&pool->ring.producer_lock);
+> +	else
+> +		spin_unlock_bh(&pool->ring.producer_lock);
+> +}
+> +
+>  #endif /* _NET_PAGE_POOL_H */
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index ef98372facf6..84fb21f8865e 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -11,6 +11,8 @@
+>  #include <linux/device.h>
+>  
+>  #include <net/page_pool.h>
+> +#include <net/xdp.h>
+> +
+>  #include <linux/dma-direction.h>
+>  #include <linux/dma-mapping.h>
+>  #include <linux/page-flags.h>
+> @@ -408,6 +410,37 @@ void page_pool_put_page(struct page_pool *pool, struct page *page,
+>  }
+>  EXPORT_SYMBOL(page_pool_put_page);
+>  
+> +void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> +			     int count)
+> +{
+> +	struct page *page_ring[XDP_BULK_QUEUE_SIZE];
+> +	int i, len = 0;
+> +
+> +	for (i = 0; i < count; i++) {
+> +		struct page *page = virt_to_head_page(data[i]);
+> +
+> +		if (unlikely(page_ref_count(page) != 1 ||
+> +			     !pool_page_reusable(pool, page))) {
+> +			page_pool_release_page(pool, page);
+> +			put_page(page);
+> +			continue;
+> +		}
+> +
+> +		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+> +			page_pool_dma_sync_for_device(pool, page, -1);
+> +
+> +		page_ring[len++] = page;
+> +	}
+> +
+> +	page_pool_ring_lock(pool);
+> +	for (i = 0; i < len; i++) {
+> +		if (__ptr_ring_produce(&pool->ring, page_ring[i]))
+> +			page_pool_return_page(pool, page_ring[i]);
 
-Good point. After re-reading the text, this ":" doesn't belong here.
+Can we add a comment here on why the explicit spinlock needs to protect 
+page_pool_return_page() as well instead of just using ptr_ring_produce()?
 
+> +	}
+> +	page_pool_ring_unlock(pool);
+> +}
+> +EXPORT_SYMBOL(page_pool_put_page_bulk);
+> +
+>  static void page_pool_empty_ring(struct page_pool *pool)
+>  {
+>  	struct page *page;
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 93eabd789246..9f9a8d14df38 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -383,16 +383,11 @@ EXPORT_SYMBOL_GPL(xdp_return_frame_rx_napi);
+>  void xdp_flush_frame_bulk(struct xdp_frame_bulk *bq)
+>  {
+>  	struct xdp_mem_allocator *xa = bq->xa;
+> -	int i;
+>  
+> -	if (unlikely(!xa))
+> +	if (unlikely(!xa || !bq->count))
+>  		return;
+>  
+> -	for (i = 0; i < bq->count; i++) {
+> -		struct page *page = virt_to_head_page(bq->q[i]);
+> -
+> -		page_pool_put_full_page(xa->page_pool, page, false);
+> -	}
+> +	page_pool_put_page_bulk(xa->page_pool, bq->q, bq->count);
+>  	bq->count = 0;
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_flush_frame_bulk);
+> -- 
+> 2.26.2
 > 
-> > +
-> >                  "SYNTH_UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" environment
-> >                  variable.
-> >  
-> > @@ -30,18 +31,19 @@ Description:
-> >                  It's possible to define zero or more pairs - each pair is then
-> >                  delimited by a space character ' '. Each pair appears in
-> >                  synthetic uevent as "SYNTH_ARG_KEY=VALUE". That means the KEY
-> > -                name gains "SYNTH_ARG_" prefix to avoid possible collisions
-> > +                name gains `SYNTH_ARG_` prefix to avoid possible collisions
-> >                  with existing variables.
-> >  
-> > -                Example of valid sequence written to the uevent file:
-> > +                Example of valid sequence written to the uevent file::  
-> 
-> ... two here?
 
-The main issue that this patch wants to solve is here:
-
-                This generates synthetic uevent including these variables::
-
-                    ACTION=add
-                    SYNTH_ARG_A=1
-                    SYNTH_ARG_B=abc
-                    SYNTH_UUID=fe4d7c9d-b8c6-4a70-9ef1-3d8a58d18eed
-
-On Sphinx, consecutive lines with the same indent belongs to the same
-paragraph. So, without "::", the above will be displayed on a single line,
-which is undesired.
-
-using "::" tells Sphinx to display as-is. It will also place it into a a 
-box (colored for html output) and using a monospaced font.
-
-The change at the "uevent file:" line was done just for coherency
-purposes.
-
-Yet, after re-reading the text, there are other things that are not
-coherent. So, I guess the enclosed patch will work better for sys-uevent.
-
-Thanks,
-Mauro
-
-docs: ABI: sysfs-uevent: make it compatible with ReST output
-
-- Replace " by ``, in order to use monospaced fonts;
-- mark literal blocks as such.
-
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-
-diff --git a/Documentation/ABI/testing/sysfs-uevent b/Documentation/ABI/testing/sysfs-uevent
-index aa39f8d7bcdf..0b6227706b35 100644
---- a/Documentation/ABI/testing/sysfs-uevent
-+++ b/Documentation/ABI/testing/sysfs-uevent
-@@ -6,42 +6,46 @@ Description:
-                 Enable passing additional variables for synthetic uevents that
-                 are generated by writing /sys/.../uevent file.
- 
--                Recognized extended format is ACTION [UUID [KEY=VALUE ...].
-+                Recognized extended format is::
- 
--                The ACTION is compulsory - it is the name of the uevent action
--                ("add", "change", "remove"). There is no change compared to
--                previous functionality here. The rest of the extended format
--                is optional.
-+			ACTION [UUID [KEY=VALUE ...]
-+
-+                The ACTION is compulsory - it is the name of the uevent
-+                action (``add``, ``change``, ``remove``). There is no change
-+                compared to previous functionality here. The rest of the
-+                extended format is optional.
- 
-                 You need to pass UUID first before any KEY=VALUE pairs.
--                The UUID must be in "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-+                The UUID must be in ``xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx``
-                 format where 'x' is a hex digit. The UUID is considered to be
-                 a transaction identifier so it's possible to use the same UUID
-                 value for one or more synthetic uevents in which case we
-                 logically group these uevents together for any userspace
-                 listeners. The UUID value appears in uevent as
--                "SYNTH_UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" environment
-+                ``SYNTH_UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`` environment
-                 variable.
- 
-                 If UUID is not passed in, the generated synthetic uevent gains
--                "SYNTH_UUID=0" environment variable automatically.
-+                ``SYNTH_UUID=0`` environment variable automatically.
- 
-                 The KEY=VALUE pairs can contain alphanumeric characters only.
-+
-                 It's possible to define zero or more pairs - each pair is then
-                 delimited by a space character ' '. Each pair appears in
--                synthetic uevent as "SYNTH_ARG_KEY=VALUE". That means the KEY
--                name gains "SYNTH_ARG_" prefix to avoid possible collisions
-+                synthetic uevent as ``SYNTH_ARG_KEY=VALUE``. That means the KEY
-+                name gains ``SYNTH_ARG_`` prefix to avoid possible collisions
-                 with existing variables.
- 
--                Example of valid sequence written to the uevent file:
-+                Example of valid sequence written to the uevent file::
- 
-                     add fe4d7c9d-b8c6-4a70-9ef1-3d8a58d18eed A=1 B=abc
- 
--                This generates synthetic uevent including these variables:
-+                This generates synthetic uevent including these variables::
- 
-                     ACTION=add
-                     SYNTH_ARG_A=1
-                     SYNTH_ARG_B=abc
-                     SYNTH_UUID=fe4d7c9d-b8c6-4a70-9ef1-3d8a58d18eed
-+
- Users:
-                 udev, userspace tools generating synthetic uevents
+Thanks
+/Ilias
