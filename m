@@ -2,142 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0DA629F6EB
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 22:33:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D77B29F714
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 22:41:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726765AbgJ2VdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 17:33:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46784 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725820AbgJ2VdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 17:33:11 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F017C0613D2
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 14:33:11 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id j24so5777672ejc.11
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 14:33:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U+1j9yhCsv5S7W6DriLq4jlIZu6jMQxN+78GLaGNINY=;
-        b=ObwOf4Z+7QNvs8gO2kdUkeNUbXVbUl+Ox4/o49ffRqSzO+QYUS0pIhmO1RrB/D1yAF
-         C6yCm356JTlV5mHsRf3G+RcKYRhKbb0eAo/psddMsacuHoU5dHNeIn4OaTLx5vRCHVqq
-         otFhJR5d+BRHDTMd7/e1C943kvRVk+XIZsGUhDs69N6zq73w6ExLEoGQ/svlwtghQwHu
-         KKbHbopA/PgFTFUOuopDjA43JlB2F3ABFnAXmxyB5zxZVWMAud3c9R5WPrHdpvIZmjgD
-         SZs6SPXweM8G2yJQ0A+PzqOoucj0SN+5AGSzyk0hON4N5fe2icA/Jy49IE7W9PLggQPm
-         rFmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U+1j9yhCsv5S7W6DriLq4jlIZu6jMQxN+78GLaGNINY=;
-        b=uk1MkEvgg3woxxv2qz6l94Fw1kHiqkp6SvFlvdf+U7PEY442TdrRyNgHH1wBqBWYwZ
-         ERWu5EDfqUY+bTneFmpm5Odtf4OWs5lzgh/1ql/TJY9pp+/iWK4KOtJFbn8oqirR62i/
-         n82pmJQ0W86imyy6iDXJyCpGJ+Dz3sqGoQzZD85pAuswPr6vDYH7kJDmNF0hnuA7Xv57
-         PL7ldUd91TAWqVZ39eXUKMg3CdD1GDDcUhsHmeV/L4T1r3wtRq9eUFiY3VJkHLD6nl9B
-         4P4G4OwbfrhIhiSp5XZ/Ju7LhGGJiW3o6aab9BbwOkp+gSZi9FczTKrI0QWuRLwNe8Ca
-         35EQ==
-X-Gm-Message-State: AOAM533hZuzY17w5trJKDZsndpR5ggKHGmBc4jkzgCLYn1ABtQV5RLqs
-        Dqbnr+2e6hZNsOOtvpwj/NCEi9YvtMsgoCRoLMnnFg==
-X-Google-Smtp-Source: ABdhPJxombUP9s0EeQ/sGwuRNegG5as7v5c4dUH02LUZNI2n09DlPyfVaA9wadMKASx9QXs+NebMeP12kOxoDEPNzpk=
-X-Received: by 2002:a17:906:fa1b:: with SMTP id lo27mr3436193ejb.216.1604007189686;
- Thu, 29 Oct 2020 14:33:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201001230403.2445035-1-danielwinkler@google.com>
-In-Reply-To: <20201001230403.2445035-1-danielwinkler@google.com>
-From:   Daniel Winkler <danielwinkler@google.com>
-Date:   Thu, 29 Oct 2020 14:32:58 -0700
-Message-ID: <CAP2xMbtC0invbRT2q6LuamfEbE9ppMkRUO+jOisgtBG17JkrwA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/5] Bluetooth: Add new MGMT interface for advertising add
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     BlueZ <linux-bluetooth@vger.kernel.org>,
-        chromeos-bluetooth-upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1725946AbgJ2VlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 17:41:20 -0400
+Received: from m42-4.mailgun.net ([69.72.42.4]:50132 "EHLO m42-4.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725783AbgJ2Vk5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 17:40:57 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1604007656; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=QwjGCpEah9Sq8Chd+f03WJdaI6ErZNMGKZPBaGW55Bk=; b=NGqyNsIQonCH/RTS1X7IsqBtH8uWCqnoqnaypnKmpv2rsKsHI7aDPFa3iX2EdxG4SGnldxqk
+ 3w1Hf1wCgBrb6rqJgKRnuycCzu86/rAMKJzrcl+5O/25l687euzq+z+8DT0f+PiFfXO+/j3r
+ I2bUl2bSkaSY4zbv8/meYIpxzZw=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 5f9b36e689dd7476338aa2a2 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 29 Oct 2020 21:40:54
+ GMT
+Sender: hemantk=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 713F9C433F0; Thu, 29 Oct 2020 21:40:53 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from codeaurora.org (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: hemantk)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 654C3C433C9;
+        Thu, 29 Oct 2020 21:40:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 654C3C433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
+From:   Hemant Kumar <hemantk@codeaurora.org>
+To:     manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jhugo@codeaurora.org, bbhatt@codeaurora.org,
+        loic.poulain@linaro.org, netdev@vger.kernel.org,
+        Hemant Kumar <hemantk@codeaurora.org>
+Subject: [PATCH v10 0/4] userspace MHI client interface driver
+Date:   Thu, 29 Oct 2020 14:40:43 -0700
+Message-Id: <1604007647-32163-1-git-send-email-hemantk@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Maintainers,
+This patch series adds support for UCI driver. UCI driver enables userspace
+clients to communicate to external MHI devices like modem and WLAN. UCI driver
+probe creates standard character device file nodes for userspace clients to
+perform open, read, write, poll and release file operations. These file
+operations call MHI core layer APIs to perform data transfer using MHI bus
+to communicate with MHI device. Patch is tested using arm64 based platform.
 
-Just a friendly reminder to review this kernel patch series. I may
-have accidentally named this series the same as the userspace series,
-so I apologize if it has caused the set to be hidden in anybody's
-inbox. I'll be sure not to do this in the future.
+V10:
+- Replaced mutex_lock with mutex_lock_interruptible in read() and write() file
+  ops call back.
 
-Thanks in advance for your time!
+V9:
+- Renamed dl_lock to dl_pending _lock and pending list to dl_pending for
+  clarity.
+- Used read lock to protect cur_buf.
+- Change transfer status check logic and only consider 0 and -EOVERFLOW as
+  only success.
+- Added __int to module init function.
+- Print channel name instead of minor number upon successful probe.
 
-Best regards,
-Daniel Winkler
+V8:
+- Fixed kernel test robot compilation error by changing %lu to %zu for
+  size_t.
+- Replaced uci with UCI in Kconfig, commit text, and comments in driver
+  code.
+- Fixed minor style related comments.
 
-On Thu, Oct 1, 2020 at 4:04 PM Daniel Winkler <danielwinkler@google.com> wrote:
->
-> Hi Maintainers,
->
-> This patch series defines the new two-call MGMT interface for adding
-> new advertising instances. Similarly to the hci advertising commands, a
-> mgmt call to set parameters is expected to be first, followed by a mgmt
-> call to set advertising data/scan response. The members of the
-> parameters request are optional; the caller defines a "params" bitfield
-> in the structure that indicates which parameters were intentionally set,
-> and others are set to defaults.
->
-> The main feature here is the introduction of min/max parameters and tx
-> power that can be requested by the client. Min/max parameters will be
-> used both with and without extended advertising support, and tx power
-> will be used with extended advertising support. After a call for hci
-> advertising parameters, a new TX_POWER_SELECTED event will be emitted to
-> alert userspace to the actual chosen tx power.
->
-> Additionally, to inform userspace of the controller LE Tx power
-> capabilities for the client's benefit, this series also changes the
-> security info MGMT command to more flexibly contain other capabilities,
-> such as LE min and max tx power.
->
-> All changes have been tested on hatch (extended advertising) and kukui
-> (no extended advertising) chromebooks with manual testing verifying
-> correctness of parameters/data in btmon traces, and our automated test
-> suite of 25 single- and multi-advertising usage scenarios.
->
-> A separate patch series will add support in bluetoothd. Thanks in
-> advance for your feedback!
->
-> Daniel Winkler
->
->
-> Changes in v4:
-> - Add remaining data and scan response length to MGMT params response
-> - Moving optional params into 'flags' field of MGMT command
-> - Combine LE tx range into a single EIR field for MGMT capabilities cmd
->
-> Changes in v3:
-> - Adding selected tx power to adv params mgmt response, removing event
-> - Re-using security info MGMT command to carry controller capabilities
->
-> Changes in v2:
-> - Fixed sparse error in Capabilities MGMT command
->
-> Daniel Winkler (5):
->   Bluetooth: Add helper to set adv data
->   Bluetooth: Break add adv into two mgmt commands
->   Bluetooth: Use intervals and tx power from mgmt cmds
->   Bluetooth: Query LE tx power on startup
->   Bluetooth: Change MGMT security info CMD to be more generic
->
->  include/net/bluetooth/hci.h      |   7 +
->  include/net/bluetooth/hci_core.h |  12 +-
->  include/net/bluetooth/mgmt.h     |  49 +++-
->  net/bluetooth/hci_core.c         |  47 +++-
->  net/bluetooth/hci_event.c        |  19 ++
->  net/bluetooth/hci_request.c      |  29 ++-
->  net/bluetooth/mgmt.c             | 424 +++++++++++++++++++++++++++++--
->  7 files changed, 542 insertions(+), 45 deletions(-)
->
-> --
-> 2.28.0.709.gb0816b6eb0-goog
->
+V7:
+- Decoupled uci device and uci channel objects. uci device is
+  associated with device file node. uci channel is associated
+  with MHI channels. uci device refers to uci channel to perform
+  MHI channel operations for device file operations like read()
+  and write(). uci device increments its reference count for
+  every open(). uci device calls mhi_uci_dev_start_chan() to start
+  the MHI channel. uci channel object is tracking number of times
+  MHI channel is referred. This allows to keep the MHI channel in
+  start state until last release() is called. After that uci channel
+  reference count goes to 0 and uci channel clean up is performed
+  which stops the MHI channel. After the last call to release() if
+  driver is removed uci reference count becomes 0 and uci object is
+  cleaned up.
+- Use separate uci channel read and write lock to fine grain locking
+  between reader and writer.
+- Use uci device lock to synchronize open, release and driver remove.
+- Optimize for downlink only or uplink only UCI device.
+
+V6:
+- Moved uci.c to mhi directory.
+- Updated Kconfig to add module information.
+- Updated Makefile to rename uci object file name as mhi_uci
+- Removed kref for open count
+
+V5:
+- Removed mhi_uci_drv structure.
+- Used idr instead of creating global list of uci devices.
+- Used kref instead of local ref counting for uci device and
+  open count.
+- Removed unlikely macro.
+
+V4:
+- Fix locking to protect proper struct members.
+- Updated documentation describing uci client driver use cases.
+- Fixed uci ref counting in mhi_uci_open for error case.
+- Addressed style related review comments.
+
+V3: Added documentation for MHI UCI driver.
+
+V2:
+- Added mutex lock to prevent multiple readers to access same
+- mhi buffer which can result into use after free.
+
+Hemant Kumar (4):
+  bus: mhi: core: Add helper API to return number of free TREs
+  bus: mhi: core: Move MHI_MAX_MTU to external header file
+  docs: Add documentation for userspace client interface
+  bus: mhi: Add userspace client interface driver
+
+ Documentation/mhi/index.rst     |   1 +
+ Documentation/mhi/uci.rst       |  83 +++++
+ drivers/bus/mhi/Kconfig         |  13 +
+ drivers/bus/mhi/Makefile        |   4 +
+ drivers/bus/mhi/core/internal.h |   1 -
+ drivers/bus/mhi/core/main.c     |  12 +
+ drivers/bus/mhi/uci.c           | 662 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/mhi.h             |  12 +
+ 8 files changed, 787 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/mhi/uci.rst
+ create mode 100644 drivers/bus/mhi/uci.c
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
