@@ -2,216 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ABD929E4A1
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:45:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2AAD29E49E
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:45:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730309AbgJ2HkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 03:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
+        id S1730243AbgJ2HkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 03:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726923AbgJ2HYy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:54 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B791C08EA7A;
-        Thu, 29 Oct 2020 00:07:26 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id f38so1597179pgm.2;
-        Thu, 29 Oct 2020 00:07:26 -0700 (PDT)
+        with ESMTP id S1726754AbgJ2HYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:51 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF93C08EA7C
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 00:08:52 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id s9so1538840wro.8
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 00:08:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=ATbSL6Q32u4F3y+QUptyo6PFRdUoUx80acnuSgpGMmo=;
-        b=hyzIJ9CMLeorkUhwLFkSl7pE3kygkhjQDPTIyjp5FcNLUAfVATx3hLsdk15GzWx2Rk
-         kMF95eYBRU8MvImdzPysTtpFO/xkxhlIZ6t6YFuFXyIvjfmZRpIWbLepNmq1DlOcFwao
-         ogwXWVhic9IXw3u4aPk4/b3YDuvxfRu802TH4YsxF9pjFQrlbrQlnDUfZ7I5aYquMmwl
-         L60uNF4T7PtdJxmTYKH5B8/CGxW7NVCMU80+1lOH6pvv99Nkf4NZtQmxKoDsNeb1UQsP
-         FlZpytkQWqy/stMXccHHOIrWDlxhit+DUl/simRs6qh7WreG9ntldgftaw7JoK4lMe1n
-         FC4Q==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=90tbSpftzM+wEfef3WTFwlNnTYj4eB/xYx32SzM4xzY=;
+        b=wd3BV9e7/tLO+tTEwJuHf0XowRZux2zcVXGkWnmWxHKaABtDBZbBMJhMsBXsKICwMx
+         feRmzUDOoP0VZUDY99ZbnIjrSxCy+Riwq/xzNFtM7X2XAq2Yb1anaoxGJn6QS6mN15v0
+         JmQcbx1RGPZiOK4c8hrNPxtuEJCUWZTwh3eAzk4W/EuTvDWz6NBcF7c7YKJ7PlM0jdeM
+         2vPUx96xM+HmpSsvTeBqzpr8r6oOIiHOIxW6Iqw3WBL9LiHoYvEtAPsRIHMn6GdK1n6t
+         S0CpK9gIHMs+PBsQnGcmfh73bQhw1WkpHWQTBlz9Qwdy/pHtNpv8PRTJOX/Kg3agTT6q
+         msPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=ATbSL6Q32u4F3y+QUptyo6PFRdUoUx80acnuSgpGMmo=;
-        b=rF550lOF49Jd/vfIUaQl7ZjNC6QtJW2w6XIH3+l7yqNYFRdZ/5RE4pcUag1Ko5tPIa
-         u7aTP+8kRjZOBtk5h7g4YWb7UnKibLV81sHbI/ULJAKP1UZIkUlgo11RMm1fw0+pUe3K
-         ls8GNX+dd2YOaO6vALr8l524lJx9SmPucj6ElUxQbks1KgkMQvEb6MlxXmcBQv+9qFA5
-         FaHv6wYPp3kAsr2giP3bq56wDDg3CdYcIfzcDSfLHbiS93GiirUJUfeskUNT+3ZF8eZR
-         T+m0CnEBeIbio1QhzCbMRewdzFS439/IBYl1NzCPgOxj6qg0VyyJbcPJ2a0Wxg243TD6
-         sgwQ==
-X-Gm-Message-State: AOAM532tkuNVSpE7BwW24B1AqGCKWPxhqioMheENCZ1rzVo6v5e5n0Wg
-        SoKh5pdebGpwMQEW2ixZn6SvwFtgxE8=
-X-Google-Smtp-Source: ABdhPJzy50VIZcnngT+sbE2ZoeTcaSNWNufGSkW2c6EYHYRU7Ii/nMRBTW1OydoqUdK3/E7WeSXCpQ==
-X-Received: by 2002:a63:9508:: with SMTP id p8mr2828344pgd.189.1603955245668;
-        Thu, 29 Oct 2020 00:07:25 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id x29sm1712103pfp.152.2020.10.29.00.07.24
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 29 Oct 2020 00:07:24 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net,
-        Jakub Kicinski <kuba@kernel.org>, gnault@redhat.com,
-        pabeni@redhat.com, willemdebruijn.kernel@gmail.com
-Subject: [PATCHv5 net-next 16/16] sctp: enable udp tunneling socks
-Date:   Thu, 29 Oct 2020 15:05:10 +0800
-Message-Id: <8100c9314e5dc5bae00e44b18328da9bef881713.1603955041.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <f07cda44f4039fac54d48ddf82ae3fda953617af.1603955041.git.lucien.xin@gmail.com>
-References: <cover.1603955040.git.lucien.xin@gmail.com>
- <48053c3bf48a46899bc0130dc43adca1e6925581.1603955040.git.lucien.xin@gmail.com>
- <4f439ed717442a649ba78dc0efc6f121208a9995.1603955040.git.lucien.xin@gmail.com>
- <e7575f9fea2b867bf0c7c3e8541e8a6101610055.1603955040.git.lucien.xin@gmail.com>
- <1cfd9ca0154d35389b25f68457ea2943a19e7da2.1603955040.git.lucien.xin@gmail.com>
- <3c26801d36575d0e9c9bd260e6c1f1b67e4b721e.1603955040.git.lucien.xin@gmail.com>
- <279d266bc34ebc439114f39da983dc08845ea37a.1603955040.git.lucien.xin@gmail.com>
- <066bbdcf83188bbc62b6c458f2a0fd8f06f41640.1603955040.git.lucien.xin@gmail.com>
- <e72ab91d56df2ced82efb0c9d26d29f47d0747f7.1603955040.git.lucien.xin@gmail.com>
- <2b2703eb6a2cc84b7762ee7484a9a57408db162b.1603955040.git.lucien.xin@gmail.com>
- <1032fd094f807a870ca965e8355daf0be068008d.1603955041.git.lucien.xin@gmail.com>
- <e23bd6fddaea6641348e2115877afec5a4e2cf19.1603955041.git.lucien.xin@gmail.com>
- <88a89930e9ab2d1b2300ca81d7023feaaa818727.1603955041.git.lucien.xin@gmail.com>
- <dcea42706709242930ae2d019355f27e7ca745d3.1603955041.git.lucien.xin@gmail.com>
- <566c52da624a35533e0d0403f6218dbe9d39589c.1603955041.git.lucien.xin@gmail.com>
- <f07cda44f4039fac54d48ddf82ae3fda953617af.1603955041.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1603955040.git.lucien.xin@gmail.com>
-References: <cover.1603955040.git.lucien.xin@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=90tbSpftzM+wEfef3WTFwlNnTYj4eB/xYx32SzM4xzY=;
+        b=SEZfcvYWp07/0PFGWVXNcOIp38YxexjIfPmD9BoL2HBPG4wJFuHemu3pOfCxhRyH+7
+         6g4ShRfFKAmzwgjIcMzOLoh2PRmoY7CqwBU2y5aArsAWTfgCiS2BM+zammttAIBhFdk+
+         1ZvWw5B2F/VyzZT8/+3FRIdbXPHPsiyazcRl5gSYlhmPma+Q9WwYjwSBn9cFcegh6tCo
+         4aADtSx7fNXGvJYuyxCah48lfdQIAB7hhAkPfWlOKeX8FQZV/6b8I60m14SW4DeQRYnX
+         yUmZNMCHQwSOO4sZBXrNrCQNhnviB8pZW2zK/T/VTvkVuOzH2IeyHfpcaQqoUTnmOmzI
+         L/vQ==
+X-Gm-Message-State: AOAM533jepauXeA+P5cVk2q/dlo4Iq5tP9VKv8g0iCpGA2BXFNW8Q+B4
+        DX1w0+i8PYH5cglVMrRQTvTYrg==
+X-Google-Smtp-Source: ABdhPJyULY90N+uT8BWJ9LyldpfhK6Uh03XxkLYsulvOCfzFhpQstR0+n+ZnQDwSI9v/6zo0UOUO6Q==
+X-Received: by 2002:a5d:6506:: with SMTP id x6mr3826155wru.71.1603955331470;
+        Thu, 29 Oct 2020 00:08:51 -0700 (PDT)
+Received: from apalos.home (athedsl-246545.home.otenet.gr. [85.73.10.175])
+        by smtp.gmail.com with ESMTPSA id i33sm3324230wri.79.2020.10.29.00.08.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 00:08:51 -0700 (PDT)
+Date:   Thu, 29 Oct 2020 09:08:48 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        brouer@redhat.com
+Subject: Re: [PATCH net-next 2/4] net: page_pool: add bulk support for
+ ptr_ring
+Message-ID: <20201029070848.GA61336@apalos.home>
+References: <cover.1603824486.git.lorenzo@kernel.org>
+ <cd58ca966fbe11cabbd6160decea6ce748ebce9f.1603824486.git.lorenzo@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cd58ca966fbe11cabbd6160decea6ce748ebce9f.1603824486.git.lorenzo@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to enable udp tunneling socks by calling
-sctp_udp_sock_start() in sctp_ctrlsock_init(), and
-sctp_udp_sock_stop() in sctp_ctrlsock_exit().
+Hi Lorenzo, 
 
-Also add sysctl udp_port to allow changing the listening
-sock's port by users.
+On Tue, Oct 27, 2020 at 08:04:08PM +0100, Lorenzo Bianconi wrote:
+> Introduce the capability to batch page_pool ptr_ring refill since it is
+> usually run inside the driver NAPI tx completion loop.
+> 
+> Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  include/net/page_pool.h | 26 ++++++++++++++++++++++++++
+>  net/core/page_pool.c    | 33 +++++++++++++++++++++++++++++++++
+>  net/core/xdp.c          |  9 ++-------
+>  3 files changed, 61 insertions(+), 7 deletions(-)
+> 
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index 81d7773f96cd..b5b195305346 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -152,6 +152,8 @@ struct page_pool *page_pool_create(const struct page_pool_params *params);
+>  void page_pool_destroy(struct page_pool *pool);
+>  void page_pool_use_xdp_mem(struct page_pool *pool, void (*disconnect)(void *));
+>  void page_pool_release_page(struct page_pool *pool, struct page *page);
+> +void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> +			     int count);
+>  #else
+>  static inline void page_pool_destroy(struct page_pool *pool)
+>  {
+> @@ -165,6 +167,11 @@ static inline void page_pool_release_page(struct page_pool *pool,
+>  					  struct page *page)
+>  {
+>  }
+> +
+> +static inline void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> +					   int count)
+> +{
+> +}
+>  #endif
+>  
+>  void page_pool_put_page(struct page_pool *pool, struct page *page,
+> @@ -215,4 +222,23 @@ static inline void page_pool_nid_changed(struct page_pool *pool, int new_nid)
+>  	if (unlikely(pool->p.nid != new_nid))
+>  		page_pool_update_nid(pool, new_nid);
+>  }
+> +
+> +static inline void page_pool_ring_lock(struct page_pool *pool)
+> +	__acquires(&pool->ring.producer_lock)
+> +{
+> +	if (in_serving_softirq())
+> +		spin_lock(&pool->ring.producer_lock);
+> +	else
+> +		spin_lock_bh(&pool->ring.producer_lock);
+> +}
+> +
+> +static inline void page_pool_ring_unlock(struct page_pool *pool)
+> +	__releases(&pool->ring.producer_lock)
+> +{
+> +	if (in_serving_softirq())
+> +		spin_unlock(&pool->ring.producer_lock);
+> +	else
+> +		spin_unlock_bh(&pool->ring.producer_lock);
+> +}
+> +
+>  #endif /* _NET_PAGE_POOL_H */
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index ef98372facf6..84fb21f8865e 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -11,6 +11,8 @@
+>  #include <linux/device.h>
+>  
+>  #include <net/page_pool.h>
+> +#include <net/xdp.h>
+> +
+>  #include <linux/dma-direction.h>
+>  #include <linux/dma-mapping.h>
+>  #include <linux/page-flags.h>
+> @@ -408,6 +410,37 @@ void page_pool_put_page(struct page_pool *pool, struct page *page,
+>  }
+>  EXPORT_SYMBOL(page_pool_put_page);
+>  
+> +void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> +			     int count)
+> +{
+> +	struct page *page_ring[XDP_BULK_QUEUE_SIZE];
+> +	int i, len = 0;
+> +
+> +	for (i = 0; i < count; i++) {
+> +		struct page *page = virt_to_head_page(data[i]);
+> +
+> +		if (unlikely(page_ref_count(page) != 1 ||
+> +			     !pool_page_reusable(pool, page))) {
+> +			page_pool_release_page(pool, page);
 
-Wit this patch, the whole sctp over udp feature can be
-enabled and used.
+Mind switching this similarly to how page_pool_put_page() is using it?
+unlikely -> likely and remove the !
 
-v1->v2:
-  - Also update ctl_sock udp_port in proc_sctp_do_udp_port()
-    where netns udp_port gets changed.
-v2->v3:
-  - Call htons() when setting sk udp_port from netns udp_port.
-v3->v4:
-  - Not call sctp_udp_sock_start() when new_value is 0.
-  - Add udp_port entry in ip-sysctl.rst.
-v4->v5:
-  - Not call sctp_udp_sock_start/stop() in sctp_ctrlsock_init/exit().
-  - Improve the description of udp_port in ip-sysctl.rst.
+> +			put_page(page);
+> +			continue;
+> +		}
+> +
+> +		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+> +			page_pool_dma_sync_for_device(pool, page, -1);
+> +
+> +		page_ring[len++] = page;
+> +	}
+> +
+> +	page_pool_ring_lock(pool);
+> +	for (i = 0; i < len; i++) {
+> +		if (__ptr_ring_produce(&pool->ring, page_ring[i]))
+> +			page_pool_return_page(pool, page_ring[i]);
+> +	}
+> +	page_pool_ring_unlock(pool);
+> +}
+> +EXPORT_SYMBOL(page_pool_put_page_bulk);
+> +
+>  static void page_pool_empty_ring(struct page_pool *pool)
+>  {
+>  	struct page *page;
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 93eabd789246..9f9a8d14df38 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -383,16 +383,11 @@ EXPORT_SYMBOL_GPL(xdp_return_frame_rx_napi);
+>  void xdp_flush_frame_bulk(struct xdp_frame_bulk *bq)
+>  {
+>  	struct xdp_mem_allocator *xa = bq->xa;
+> -	int i;
+>  
+> -	if (unlikely(!xa))
+> +	if (unlikely(!xa || !bq->count))
+>  		return;
+>  
+> -	for (i = 0; i < bq->count; i++) {
+> -		struct page *page = virt_to_head_page(bq->q[i]);
+> -
+> -		page_pool_put_full_page(xa->page_pool, page, false);
+> -	}
+> +	page_pool_put_page_bulk(xa->page_pool, bq->q, bq->count);
+>  	bq->count = 0;
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_flush_frame_bulk);
+> -- 
+> 2.26.2
+> 
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- Documentation/networking/ip-sysctl.rst | 15 ++++++++++
- net/sctp/sysctl.c                      | 52 ++++++++++++++++++++++++++++++++++
- 2 files changed, 67 insertions(+)
-
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index dad3ba9..2aaf40b 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2642,6 +2642,21 @@ addr_scope_policy - INTEGER
- 
- 	Default: 1
- 
-+udp_port - INTEGER
-+	The listening port for the local UDP tunneling sock. Normally it's
-+	using the IANA-assigned UDP port number 9899 (sctp-tunneling).
-+
-+	This UDP sock is used for processing the incoming UDP-encapsulated
-+	SCTP packets (from RFC6951), and shared by all applications in the
-+	same net namespace. This UDP sock will be closed when the value is
-+	set to 0.
-+
-+	The value will also be used to set the src port of the UDP header
-+	for the outgoing UDP-encapsulated SCTP packets. For the dest port,
-+	please refer to 'encap_port' below.
-+
-+	Default: 0
-+
- encap_port - INTEGER
- 	The default remote UDP encapsulation port.
- 
-diff --git a/net/sctp/sysctl.c b/net/sctp/sysctl.c
-index ecc1b5e..e92df77 100644
---- a/net/sctp/sysctl.c
-+++ b/net/sctp/sysctl.c
-@@ -49,6 +49,8 @@ static int proc_sctp_do_rto_min(struct ctl_table *ctl, int write,
- 				void *buffer, size_t *lenp, loff_t *ppos);
- static int proc_sctp_do_rto_max(struct ctl_table *ctl, int write, void *buffer,
- 				size_t *lenp, loff_t *ppos);
-+static int proc_sctp_do_udp_port(struct ctl_table *ctl, int write, void *buffer,
-+				 size_t *lenp, loff_t *ppos);
- static int proc_sctp_do_alpha_beta(struct ctl_table *ctl, int write,
- 				   void *buffer, size_t *lenp, loff_t *ppos);
- static int proc_sctp_do_auth(struct ctl_table *ctl, int write,
-@@ -292,6 +294,15 @@ static struct ctl_table sctp_net_table[] = {
- 		.proc_handler	= proc_dointvec,
- 	},
- 	{
-+		.procname	= "udp_port",
-+		.data		= &init_net.sctp.udp_port,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_sctp_do_udp_port,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= &udp_port_max,
-+	},
-+	{
- 		.procname	= "encap_port",
- 		.data		= &init_net.sctp.encap_port,
- 		.maxlen		= sizeof(int),
-@@ -487,6 +498,47 @@ static int proc_sctp_do_auth(struct ctl_table *ctl, int write,
- 	return ret;
- }
- 
-+static int proc_sctp_do_udp_port(struct ctl_table *ctl, int write,
-+				 void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	struct net *net = current->nsproxy->net_ns;
-+	unsigned int min = *(unsigned int *)ctl->extra1;
-+	unsigned int max = *(unsigned int *)ctl->extra2;
-+	struct ctl_table tbl;
-+	int ret, new_value;
-+
-+	memset(&tbl, 0, sizeof(struct ctl_table));
-+	tbl.maxlen = sizeof(unsigned int);
-+
-+	if (write)
-+		tbl.data = &new_value;
-+	else
-+		tbl.data = &net->sctp.udp_port;
-+
-+	ret = proc_dointvec(&tbl, write, buffer, lenp, ppos);
-+	if (write && ret == 0) {
-+		struct sock *sk = net->sctp.ctl_sock;
-+
-+		if (new_value > max || new_value < min)
-+			return -EINVAL;
-+
-+		net->sctp.udp_port = new_value;
-+		sctp_udp_sock_stop(net);
-+		if (new_value) {
-+			ret = sctp_udp_sock_start(net);
-+			if (ret)
-+				net->sctp.udp_port = 0;
-+		}
-+
-+		/* Update the value in the control socket */
-+		lock_sock(sk);
-+		sctp_sk(sk)->udp_port = htons(net->sctp.udp_port);
-+		release_sock(sk);
-+	}
-+
-+	return ret;
-+}
-+
- int sctp_sysctl_net_register(struct net *net)
- {
- 	struct ctl_table *table;
--- 
-2.1.0
-
+Cheers
+/Ilias
