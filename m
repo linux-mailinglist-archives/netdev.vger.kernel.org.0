@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E18AD29EB5E
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 13:12:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F69B29EB61
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 13:13:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725782AbgJ2MLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 08:11:33 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:49015 "EHLO
+        id S1725789AbgJ2MNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 08:13:36 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:49168 "EHLO
         rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbgJ2MLc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 08:11:32 -0400
+        with ESMTP id S1725379AbgJ2MNf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 08:13:35 -0400
 Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 09TCBCvL4020927, This message is accepted by code: ctloc85258
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 09TCDHPm8021429, This message is accepted by code: ctloc85258
 Received: from mail.realtek.com (rtexmb04.realtek.com.tw[172.21.6.97])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 09TCBCvL4020927
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 09TCDHPm8021429
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 29 Oct 2020 20:11:13 +0800
+        Thu, 29 Oct 2020 20:13:17 +0800
 Received: from localhost.localdomain (172.21.179.130) by
  RTEXMB04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Thu, 29 Oct 2020 20:11:12 +0800
+ 15.1.2044.4; Thu, 29 Oct 2020 20:13:17 +0800
 From:   Willy Liu <willy.liu@realtek.com>
 To:     <andrew@lunn.ch>
 CC:     <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
         <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel>, <ryankao@realtek.com>,
+        <linux-kernel@vger.kernel.org>, <ryankao@realtek.com>,
         Willy Liu <willy.liu@realtek.com>
 Subject: [PATCH net-next 2/2] net: phy: realtek: Add support for RTL8221B-VB-CG/RTL8221B-VM-CG
-Date:   Thu, 29 Oct 2020 20:10:53 +0800
-Message-ID: <1603973453-1799-1-git-send-email-willy.liu@realtek.com>
+Date:   Thu, 29 Oct 2020 20:13:03 +0800
+Message-ID: <1603973583-1926-1-git-send-email-willy.liu@realtek.com>
 X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
 Content-Type: text/plain
