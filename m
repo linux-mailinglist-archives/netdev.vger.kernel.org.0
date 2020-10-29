@@ -2,76 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58DCA29E475
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:40:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C62D29E431
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:36:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726762AbgJ2HYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 03:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
+        id S1729312AbgJ2Hfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 03:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726957AbgJ2HYh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:37 -0400
-Received: from forwardcorp1p.mail.yandex.net (forwardcorp1p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b6:217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9901FC061787
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 21:24:01 -0700 (PDT)
-Received: from myt5-23f0be3aa648.qloud-c.yandex.net (myt5-23f0be3aa648.qloud-c.yandex.net [IPv6:2a02:6b8:c12:3e29:0:640:23f0:be3a])
-        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id DFB292E097F;
-        Thu, 29 Oct 2020 07:23:56 +0300 (MSK)
-Received: from myt4-18a966dbd9be.qloud-c.yandex.net (myt4-18a966dbd9be.qloud-c.yandex.net [2a02:6b8:c00:12ad:0:640:18a9:66db])
-        by myt5-23f0be3aa648.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id MAJBVvLcI5-Nu0CXqs1;
-        Thu, 29 Oct 2020 07:23:56 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1603945436; bh=4rg5j/D1YjETHzKWON2QaTE5wGtuxMBS1PDdN/hFLx4=;
-        h=To:Message-Id:References:Date:Subject:Cc:From:In-Reply-To;
-        b=Xne6kgH8Uj42GMUn968pLjH4N53gwEaTmMFYO9skyf1jNN92+LZcqKV2ZfrtPM/ze
-         RaDWIr0D+7VvG8ZArNYUShSNLdW230ArRMZtBKtIZQhUTE41CKITNJtel4CSTmwomK
-         lTy5Nbtcp/qVGGv3LYJ2t7emYN8xFUyX8jPy1qvs=
-Authentication-Results: myt5-23f0be3aa648.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from dynamic-vpn.dhcp.yndx.net (dynamic-vpn.dhcp.yndx.net [2a02:6b8:b080:6717::1:1])
-        by myt4-18a966dbd9be.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id rWynb4FulW-NumOSvKr;
-        Thu, 29 Oct 2020 07:23:56 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
-Subject: Re: [PATCH net] ip6_tunnel: set inner ipproto before ip6_tnl_encap.
-From:   Alexander Ovechkin <ovov@yandex-team.ru>
-In-Reply-To: <CA+FuTSfNZoONM3TZxpC0ND2AsiNw0K-jgjKMe0FWkS9LVG6yNA@mail.gmail.com>
-Date:   Thu, 29 Oct 2020 07:23:56 +0300
-Cc:     vfedorenko@novek.ru, Network Development <netdev@vger.kernel.org>,
-        Tom Herbert <tom@herbertland.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <ABA7FBA9-42F8-4D6E-9D1E-CDEC74966131@yandex-team.ru>
-References: <20201016111156.26927-1-ovov@yandex-team.ru>
- <CA+FuTSe5szAPV0qDVU1Qa7e-XH6uO4eWELfzykOvpb0CJ0NbUA@mail.gmail.com>
- <0E7BC212-3BBA-4C68-89B9-C6DA956553AD@yandex-team.ru>
- <CA+FuTSfNZoONM3TZxpC0ND2AsiNw0K-jgjKMe0FWkS9LVG6yNA@mail.gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-X-Mailer: Apple Mail (2.3608.120.23.2.4)
+        with ESMTP id S1728096AbgJ2HY5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:57 -0400
+X-Greylist: delayed 2584 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 28 Oct 2020 22:34:57 PDT
+Received: from mx0a-00190b01.pphosted.com (mx0a-00190b01.pphosted.com [IPv6:2620:100:9001:583::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A34C0610D3;
+        Wed, 28 Oct 2020 22:34:57 -0700 (PDT)
+Received: from pps.filterd (m0050093.ppops.net [127.0.0.1])
+        by m0050093.ppops.net-00190b01. (8.16.0.42/8.16.0.42) with SMTP id 09T4hmWN001609;
+        Thu, 29 Oct 2020 04:50:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=vNOU0G1+nDkC24wwPCUFpoG8J+CFgVtGuanshuUsUsk=;
+ b=Caj176iLpfJNs4A7qlOyJTvV5aQLOgImqIxpN1UY4Ag5UH7Irz2CLYZv5v0EZwF7as87
+ 4AzpQwQ+K3k0Phqhf/zeiaOf4J0cwqya4bhIOKNR2wpTAcACbl+VmseK7p4vyU7Ms2ra
+ fC9wK48wwX03Dx6gOg4Yo8mgbSBv4cmTowfTW6TfUr1p1HEKV6acF3j18t4JRIczf4pb
+ VPR77BK+klvaRZVTDoWrHLHmPIWxAhDeIUGx95D2JtsmsgaW0MappnojYBtvfl6yPlZ3
+ RiYd2/D+T4XOm7FNR6mAyJilgzqhGt22xfjRcVQ+eCXRsN5fNuIIgfkJWWgNOaG9RG4N QQ== 
+Received: from prod-mail-ppoint3 (a72-247-45-31.deploy.static.akamaitechnologies.com [72.247.45.31] (may be forged))
+        by m0050093.ppops.net-00190b01. with ESMTP id 34cce8c15w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 29 Oct 2020 04:50:38 +0000
+Received: from pps.filterd (prod-mail-ppoint3.akamai.com [127.0.0.1])
+        by prod-mail-ppoint3.akamai.com (8.16.0.42/8.16.0.42) with SMTP id 09T4nOLo029340;
+        Thu, 29 Oct 2020 00:50:37 -0400
+Received: from prod-mail-relay19.dfw02.corp.akamai.com ([172.27.165.173])
+        by prod-mail-ppoint3.akamai.com with ESMTP id 34f29rssdy-1;
+        Thu, 29 Oct 2020 00:50:37 -0400
+Received: from [0.0.0.0] (prod-ssh-gw01.bos01.corp.akamai.com [172.27.119.138])
+        by prod-mail-relay19.dfw02.corp.akamai.com (Postfix) with ESMTP id 685426055F;
+        Thu, 29 Oct 2020 04:50:36 +0000 (GMT)
+Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     "Hunt, Joshua" <johunt@akamai.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linuxarm@huawei.com" <linuxarm@huawei.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
+ <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
+ <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
+ <CAP12E-+3DY-dgzVercKc-NYGPExWO1NjTOr1Gf3tPLKvp6O6+g@mail.gmail.com>
+ <AE096F70-4419-4A67-937A-7741FBDA6668@akamai.com>
+ <CAM_iQpX0XzNDCzc2U5=g6aU-HGYs3oryHx=rmM3ue9sH=Jd4Gw@mail.gmail.com>
+ <19f888c2-8bc1-ea56-6e19-4cb4841c4da0@akamai.com>
+ <93ab7f0f-7b5a-74c3-398d-a572274a4790@huawei.com>
+From:   Vishwanath Pai <vpai@akamai.com>
+Message-ID: <248e5a32-a102-0ced-1462-aa2bc5244252@akamai.com>
+Date:   Thu, 29 Oct 2020 00:50:36 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
+MIME-Version: 1.0
+In-Reply-To: <93ab7f0f-7b5a-74c3-398d-a572274a4790@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-10-29_01:2020-10-28,2020-10-29 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 bulkscore=0
+ spamscore=0 phishscore=0 suspectscore=0 mlxlogscore=999 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2010290034
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-10-29_01:2020-10-28,2020-10-29 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 suspectscore=0
+ mlxlogscore=999 mlxscore=0 impostorscore=0 spamscore=0 phishscore=0
+ malwarescore=0 bulkscore=0 lowpriorityscore=0 priorityscore=1501
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010290034
+X-Agari-Authentication-Results: mx.akamai.com; spf=${SPFResult} (sender IP is 72.247.45.31)
+ smtp.mailfrom=vpai@akamai.com smtp.helo=prod-mail-ppoint3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28 Oct 2020, at 01:53 UTC Willem de Bruijn =
-<willemdebruijn.kernel@gmail.com> wrote:
-> On Tue, Oct 27, 2020 at 5:52 PM Alexander Ovechkin =
-<ovov@yandex-team.ru> wrote:
-> >
-> > > But it was moved on purpose to avoid setting the inner protocol to =
-IPPROTO_MPLS. That needs to use skb->inner_protocol to further segment.
-> > And why do we need to avoid setting the inner protocol to =
-IPPROTO_MPLS? Currently skb->inner_protocol is used before call of =
-ip6_tnl_xmit.
-> > Can you please give example when this patch breaks MPLS =
-segmentation?
->=20
-> mpls_gso_segment calls skb_mac_gso_segment on the inner packet. After
-> setting skb->protocol based on skb->inner_protocol.
+On 10/28/20 10:37 PM, Yunsheng Lin wrote:
+ > On 2020/10/29 4:04, Vishwanath Pai wrote:
+ >> On 10/28/20 1:47 PM, Cong Wang wrote:
+ >>> On Wed, Oct 28, 2020 at 8:37 AM Pai, Vishwanath <vpai@akamai.com> 
+wrote:
+ >>>> Hi,
+ >>>>
+ >>>> We noticed some problems when testing the latest 5.4 LTS kernel 
+and traced it
+ >>>> back to this commit using git bisect. When running our tests the 
+machine stops
+ >>>> responding to all traffic and the only way to recover is a reboot. 
+I do not see
+ >>>> a stack trace on the console.
+ >>>
+ >>> Do you mean the machine is still running fine just the network is down?
+ >>>
+ >>> If so, can you dump your tc config with stats when the problem is 
+happening?
+ >>> (You can use `tc -s -d qd show ...`.)
+ >>>
+ >>>>
+ >>>> This can be reproduced using the packetdrill test below, it should 
+be run a
+ >>>> few times or in a loop. You should hit this issue within a few 
+tries but
+ >>>> sometimes might take up to 15-20 tries.
+ >>> ...
+ >>>> I can reproduce the issue easily on v5.4.68, and after reverting 
+this commit it
+ >>>> does not happen anymore.
+ >>>
+ >>> This is odd. The patch in this thread touches netdev reset path, if 
+packetdrill
+ >>> is the only thing you use to trigger the bug (that is netdev is 
+always active),
+ >>> I can not connect them.
+ >>>
+ >>> Thanks.
+ >>
+ >> Hi Cong,
+ >>
+ >>> Do you mean the machine is still running fine just the network is down?
+ >>
+ >> I was able to access the machine via serial console, it looks like it is
+ >> up and running, just that networking is down.
+ >>
+ >>> If so, can you dump your tc config with stats when the problem is 
+happening?
+ >>> (You can use `tc -s -d qd show ...`.)
+ >>
+ >> If I try running tc when the machine is in this state the command never
+ >> returns. It doesn't print anything but doesn't exit either.
+ >>
+ >>> This is odd. The patch in this thread touches netdev reset path, if 
+packetdrill
+ >>> is the only thing you use to trigger the bug (that is netdev is 
+always active),
+ >>> I can not connect them.
+ >>
+ >> I think packetdrill creates a tun0 interface when it starts the
+ >> test and tears it down at the end, so it might be hitting this code path
+ >> during teardown.
+ >
+ > Hi, Is there any preparation setup before running the above 
+packetdrill test
+ > case, I run the above test case in 5.9-rc4 with this patch applied 
+without any
+ > preparation setup, did not reproduce it.
+ >
+ > By the way, I am newbie to packetdrill:), it would be good to provide the
+ > detail setup to reproduce it,thanks.
+ >
+ >>
+ >> P.S: My mail server is having connectivity issues with vger.kernel.org
+ >> so messages aren't getting delivered to netdev. It'll hopefully get
+ >> resolved soon.
+ >>
+ >> Thanks,
+ >> Vishwanath
+ >>
+ >>
+ >> .
+ >>
 
-Yeah, but mpls_gso_segment is called before ip6_tnl_xmit (because tun =
-devices don't have NETIF_F_GSO_SOFTWARE in their mpls_features), so it =
-does not matter to what value ip6_tnl_xmit sets skb->inner_ipproto.
-And even if gso would been called after both mpls_xmit and ip6_tnl_xmit =
-it would fail as you have written.
+I can't reproduce it on v5.9-rc4 either, it is probably an issue only on
+5.4 then (and maybe older LTS versions). Can you give it a try on
+5.4.68?
+
+For running packetdrill, download the latest version from their github
+repo, then run it in a loop without any special arguments. This is what
+I do to reproduce it:
+
+while true; do ./packetdrill <test-file>; done
+
+I don't think any other setup is necessary.
+
+-Vishwanath
 
