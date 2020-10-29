@@ -2,162 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECBDF29F71B
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 22:45:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7C3629F720
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 22:45:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725800AbgJ2VpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 17:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48664 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725379AbgJ2VpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 17:45:10 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8B6C0613CF;
-        Thu, 29 Oct 2020 14:45:10 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id 32so3767632otm.3;
-        Thu, 29 Oct 2020 14:45:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kcnHBJQrqekr4gwiB3cKmvgto9Dg2gyndVgzAIAwgv8=;
-        b=FqMpA1FS3IE0hRrgOCQf1L3zx8V2OmAxYfC0PWER+r6D7Dwyy66OSLzfgnzzYSPZmL
-         6RXDXlYzITA0cbpkFUXikADoXo349K0Ihyr8NIdKmzxCFiHXSfk1YAaukLr3MDPAqjkP
-         3NMkkBybv897u0+ySRyMprTa2gNVaQqToFERWsjoZA9oP/fxJEDVGglK+Ug7ab8kPfoU
-         oCdnfi33x82qZ6yXNRSYBoeqdoUrNHqDQDiiRKJWJSya3+CNMM1uz8KJ6N3v69JUmUVB
-         VEmlPtE2mKYmoiI69SmOlPXDOCTzBuQOSuRR03OQhH/yIl7IavvQP4UOWesopb6gBDYl
-         l2xg==
+        id S1725819AbgJ2Vpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 17:45:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54217 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725372AbgJ2Vpx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 17:45:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604007951;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rDydjHDEyxtDlbM9LiwatapQXLGWoCtD+jcyW+2/ETQ=;
+        b=QUFubY5nNLBg+q2jV5zMTNp9YwSn9ZKQYK+2PMZPB1QgM3WtO2PLzZkzUmDYRssje7817d
+        jTircTTrflok+fL2vaIl+kllTd//kEr8N24lCnHhO006+rBTaTzbpxh5YV/nf60SuCl1iU
+        Sy2JC97kE792irLE4uOzmXrPbqRUdZw=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-260-GLuPuPK5Npysk5CcnDJ0Qw-1; Thu, 29 Oct 2020 17:45:49 -0400
+X-MC-Unique: GLuPuPK5Npysk5CcnDJ0Qw-1
+Received: by mail-wr1-f69.google.com with SMTP id 2so1818776wrd.14
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 14:45:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kcnHBJQrqekr4gwiB3cKmvgto9Dg2gyndVgzAIAwgv8=;
-        b=cmVd1w2479/Jk4ynzjrSfZDPQUqjDDImWsUY6jLCXpBLLlWieuNgQIcfl9Wu4ajxxF
-         EAt3CGZGM5/AfDhv8ZVfL++VE6ZRcrK+HqLBWJDDYS0smAXSqF7XdNcTuNbXSizhOA01
-         ypk0KT9esjrgbUGhtyXmX189wyDofCNaTx/8MFfAOyHiSlf5T56G7Eib6192fmcyIjw+
-         cu3CQsBlV1PaLEugJcZWYqpBwUsNzEhZdSl0tvqOr7SZ86SSeIhwD2cdmFLv6yZS7uwK
-         TB0O9mb3vD8bW32Dbog9M3B2e7tdEuUqd0ldmgcscYxyVK4Uol+AXSEcicS9kHILGvL8
-         pZWA==
-X-Gm-Message-State: AOAM5306As5yOB7V5p91i6vyHcW4NARcN0KJIgyc/8Z6cc+97l496q/2
-        APnXBhR7mMFwKsLa38IWe/Y9RgfY/finG4kWiuI=
-X-Google-Smtp-Source: ABdhPJy/C5bBQMmDA7CF2+j1cwBggT6fEtt4NcAfPDsxH/0Fyy6CpGOfkb3eIn+HBk/R1YD67ExWv7ChIDPyHhrZOHI=
-X-Received: by 2002:a05:6830:134c:: with SMTP id r12mr4630467otq.240.1604007909012;
- Thu, 29 Oct 2020 14:45:09 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=rDydjHDEyxtDlbM9LiwatapQXLGWoCtD+jcyW+2/ETQ=;
+        b=DEE9VCjF2YRnzzztGgC+RGpcCFdyXRyXre144gmKs/g0LbZv6cU/hJPhy0MjD6FmNm
+         BjfNuU9ua/vCWIDvRnr2tDSkubX1rmK3ReT9YOxzEs7stu1oUPXu2k3LjRemJY6Dc7U4
+         jNSUG+RdOU96zxV12BkT34YkekTHAApG+f4+Jya94tgMmyL5n0MiYj2hxwF4b0/Ldsoo
+         Bwz5R8npIDentJK59uqT58ivJA/bj77XpOnkNnvvl9DVssOmwRjXS5Xe6qr4V3tn/lM4
+         s3MePbWDyZolQ+yvYKDf9COjg/CAfzN6tKcMDW8QalwtPwaNzYwYF1JbzEPnvh5RaXch
+         QAlw==
+X-Gm-Message-State: AOAM53372aodOD+F45N54EkEp/PRBvV/6EGV1sIKvPo6Git4FAiSF6Wq
+        DBfjiS5vffXk6rFsTfbY3XI9bXNR2pXWbOL0SyueMrqsWa0RO0VgBSnKX8Wv6MsZWykUL+5IPq4
+        7Y6WOBDeZfLV7iVat
+X-Received: by 2002:a1c:4957:: with SMTP id w84mr999521wma.84.1604007946561;
+        Thu, 29 Oct 2020 14:45:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxh522PLwbN3esfFYn02U54tG+HesahEou8DnEXFCh0nHrbm8lXdGF/MvzTNL4JtymMRQrDTA==
+X-Received: by 2002:a1c:4957:: with SMTP id w84mr999496wma.84.1604007946223;
+        Thu, 29 Oct 2020 14:45:46 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-118-93.red.bezeqint.net. [79.176.118.93])
+        by smtp.gmail.com with ESMTPSA id y185sm1793936wmb.29.2020.10.29.14.45.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 14:45:45 -0700 (PDT)
+Date:   Thu, 29 Oct 2020 17:45:42 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        netdev <netdev@vger.kernel.org>, lingshan.zhu@intel.com
+Subject: Re: [PATCH] vhost: Use mutex to protect vq_irq setup
+Message-ID: <20201029174526-mutt-send-email-mst@kernel.org>
+References: <20201028142004.GA100353@mtl-vdi-166.wap.labs.mlnx>
+ <60e24a0e-0d72-51b3-216a-b3cf62fb1a58@redhat.com>
+ <20201029073717.GA132479@mtl-vdi-166.wap.labs.mlnx>
 MIME-Version: 1.0
-References: <20201001230403.2445035-1-danielwinkler@google.com> <CAP2xMbtC0invbRT2q6LuamfEbE9ppMkRUO+jOisgtBG17JkrwA@mail.gmail.com>
-In-Reply-To: <CAP2xMbtC0invbRT2q6LuamfEbE9ppMkRUO+jOisgtBG17JkrwA@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Thu, 29 Oct 2020 14:44:57 -0700
-Message-ID: <CABBYNZJ65vXxeyJmZ_L_D+9pm7uDHo0+_ioHzMyh0q8sVmREsQ@mail.gmail.com>
-Subject: Re: [PATCH v4 0/5] Bluetooth: Add new MGMT interface for advertising add
-To:     Daniel Winkler <danielwinkler@google.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        BlueZ <linux-bluetooth@vger.kernel.org>,
-        chromeos-bluetooth-upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201029073717.GA132479@mtl-vdi-166.wap.labs.mlnx>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+On Thu, Oct 29, 2020 at 09:37:17AM +0200, Eli Cohen wrote:
+> On Thu, Oct 29, 2020 at 03:03:24PM +0800, Jason Wang wrote:
+> > 
+> > On 2020/10/28 下午10:20, Eli Cohen wrote:
+> > > Both irq_bypass_register_producer() and irq_bypass_unregister_producer()
+> > > require process context to run. Change the call context lock from
+> > > spinlock to mutex to protect the setup process to avoid deadlocks.
+> > > 
+> > > Fixes: 265a0ad8731d ("vhost: introduce vhost_vring_call")
+> > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > 
+> > 
+> > Hi Eli:
+> > 
+> > During review we spot that the spinlock is not necessary. And it was already
+> > protected by vq mutex. So it was removed in this commit:
+> > 
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=86e182fe12ee5869022614457037097c70fe2ed1
+> > 
+> > Thanks
+> > 
+> 
+> I see, thanks.
+> 
+> BTW, while testing irq bypassing, I noticed that qemu started crashing
+> and I fail to boot the VM? Is that a known issue. I checked using
+> updated master branch of qemu updated yesterday.
+> 
+> Any ideas how to check this further?
+> Did anyone actually check that irq bypassing works?
 
-On Thu, Oct 29, 2020 at 2:35 PM Daniel Winkler <danielwinkler@google.com> wrote:
->
-> Hello Maintainers,
->
-> Just a friendly reminder to review this kernel patch series. I may
-> have accidentally named this series the same as the userspace series,
-> so I apologize if it has caused the set to be hidden in anybody's
-> inbox. I'll be sure not to do this in the future.
+Confused. Is the crash related to this patch somehow?
 
-I will review them coming next, one of the things that seems to be
-missing these days is to update mgmt-tester when a new command is
-introduced, this should actually be added along side the kernel
-changes since we do plan to have the CI verify the kernel patches as
-well, also there is a way to test the kernel changes directly in the
-host with use of tools/test-runner you just need insure the options
-mentioned in doc/test-runner are set so you can run the kernel with
-the changes directly.
+> > 
+> > > ---
+> > >   drivers/vhost/vdpa.c  | 10 +++++-----
+> > >   drivers/vhost/vhost.c |  6 +++---
+> > >   drivers/vhost/vhost.h |  3 ++-
+> > >   3 files changed, 10 insertions(+), 9 deletions(-)
+> > > 
+> > > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> > > index be783592fe58..0a744f2b6e76 100644
+> > > --- a/drivers/vhost/vdpa.c
+> > > +++ b/drivers/vhost/vdpa.c
+> > > @@ -98,26 +98,26 @@ static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
+> > >   		return;
+> > >   	irq = ops->get_vq_irq(vdpa, qid);
+> > > -	spin_lock(&vq->call_ctx.ctx_lock);
+> > > +	mutex_lock(&vq->call_ctx.ctx_lock);
+> > >   	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+> > >   	if (!vq->call_ctx.ctx || irq < 0) {
+> > > -		spin_unlock(&vq->call_ctx.ctx_lock);
+> > > +		mutex_unlock(&vq->call_ctx.ctx_lock);
+> > >   		return;
+> > >   	}
+> > >   	vq->call_ctx.producer.token = vq->call_ctx.ctx;
+> > >   	vq->call_ctx.producer.irq = irq;
+> > >   	ret = irq_bypass_register_producer(&vq->call_ctx.producer);
+> > > -	spin_unlock(&vq->call_ctx.ctx_lock);
+> > > +	mutex_unlock(&vq->call_ctx.ctx_lock);
+> > >   }
+> > >   static void vhost_vdpa_unsetup_vq_irq(struct vhost_vdpa *v, u16 qid)
+> > >   {
+> > >   	struct vhost_virtqueue *vq = &v->vqs[qid];
+> > > -	spin_lock(&vq->call_ctx.ctx_lock);
+> > > +	mutex_lock(&vq->call_ctx.ctx_lock);
+> > >   	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+> > > -	spin_unlock(&vq->call_ctx.ctx_lock);
+> > > +	mutex_unlock(&vq->call_ctx.ctx_lock);
+> > >   }
+> > >   static void vhost_vdpa_reset(struct vhost_vdpa *v)
+> > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > > index 9ad45e1d27f0..938239e11455 100644
+> > > --- a/drivers/vhost/vhost.c
+> > > +++ b/drivers/vhost/vhost.c
+> > > @@ -302,7 +302,7 @@ static void vhost_vring_call_reset(struct vhost_vring_call *call_ctx)
+> > >   {
+> > >   	call_ctx->ctx = NULL;
+> > >   	memset(&call_ctx->producer, 0x0, sizeof(struct irq_bypass_producer));
+> > > -	spin_lock_init(&call_ctx->ctx_lock);
+> > > +	mutex_init(&call_ctx->ctx_lock);
+> > >   }
+> > >   static void vhost_vq_reset(struct vhost_dev *dev,
+> > > @@ -1650,9 +1650,9 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
+> > >   			break;
+> > >   		}
+> > > -		spin_lock(&vq->call_ctx.ctx_lock);
+> > > +		mutex_lock(&vq->call_ctx.ctx_lock);
+> > >   		swap(ctx, vq->call_ctx.ctx);
+> > > -		spin_unlock(&vq->call_ctx.ctx_lock);
+> > > +		mutex_unlock(&vq->call_ctx.ctx_lock);
+> > >   		break;
+> > >   	case VHOST_SET_VRING_ERR:
+> > >   		if (copy_from_user(&f, argp, sizeof f)) {
+> > > diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> > > index 9032d3c2a9f4..e8855ea04205 100644
+> > > --- a/drivers/vhost/vhost.h
+> > > +++ b/drivers/vhost/vhost.h
+> > > @@ -64,7 +64,8 @@ enum vhost_uaddr_type {
+> > >   struct vhost_vring_call {
+> > >   	struct eventfd_ctx *ctx;
+> > >   	struct irq_bypass_producer producer;
+> > > -	spinlock_t ctx_lock;
+> > > +	/* protect vq irq setup */
+> > > +	struct mutex ctx_lock;
+> > >   };
+> > >   /* The virtqueue structure describes a queue attached to a device. */
+> > 
 
-> Thanks in advance for your time!
->
-> Best regards,
-> Daniel Winkler
->
-> On Thu, Oct 1, 2020 at 4:04 PM Daniel Winkler <danielwinkler@google.com> wrote:
-> >
-> > Hi Maintainers,
-> >
-> > This patch series defines the new two-call MGMT interface for adding
-> > new advertising instances. Similarly to the hci advertising commands, a
-> > mgmt call to set parameters is expected to be first, followed by a mgmt
-> > call to set advertising data/scan response. The members of the
-> > parameters request are optional; the caller defines a "params" bitfield
-> > in the structure that indicates which parameters were intentionally set,
-> > and others are set to defaults.
-> >
-> > The main feature here is the introduction of min/max parameters and tx
-> > power that can be requested by the client. Min/max parameters will be
-> > used both with and without extended advertising support, and tx power
-> > will be used with extended advertising support. After a call for hci
-> > advertising parameters, a new TX_POWER_SELECTED event will be emitted to
-> > alert userspace to the actual chosen tx power.
-> >
-> > Additionally, to inform userspace of the controller LE Tx power
-> > capabilities for the client's benefit, this series also changes the
-> > security info MGMT command to more flexibly contain other capabilities,
-> > such as LE min and max tx power.
-> >
-> > All changes have been tested on hatch (extended advertising) and kukui
-> > (no extended advertising) chromebooks with manual testing verifying
-> > correctness of parameters/data in btmon traces, and our automated test
-> > suite of 25 single- and multi-advertising usage scenarios.
-> >
-> > A separate patch series will add support in bluetoothd. Thanks in
-> > advance for your feedback!
-> >
-> > Daniel Winkler
-> >
-> >
-> > Changes in v4:
-> > - Add remaining data and scan response length to MGMT params response
-> > - Moving optional params into 'flags' field of MGMT command
-> > - Combine LE tx range into a single EIR field for MGMT capabilities cmd
-> >
-> > Changes in v3:
-> > - Adding selected tx power to adv params mgmt response, removing event
-> > - Re-using security info MGMT command to carry controller capabilities
-> >
-> > Changes in v2:
-> > - Fixed sparse error in Capabilities MGMT command
-> >
-> > Daniel Winkler (5):
-> >   Bluetooth: Add helper to set adv data
-> >   Bluetooth: Break add adv into two mgmt commands
-> >   Bluetooth: Use intervals and tx power from mgmt cmds
-> >   Bluetooth: Query LE tx power on startup
-> >   Bluetooth: Change MGMT security info CMD to be more generic
-> >
-> >  include/net/bluetooth/hci.h      |   7 +
-> >  include/net/bluetooth/hci_core.h |  12 +-
-> >  include/net/bluetooth/mgmt.h     |  49 +++-
-> >  net/bluetooth/hci_core.c         |  47 +++-
-> >  net/bluetooth/hci_event.c        |  19 ++
-> >  net/bluetooth/hci_request.c      |  29 ++-
-> >  net/bluetooth/mgmt.c             | 424 +++++++++++++++++++++++++++++--
-> >  7 files changed, 542 insertions(+), 45 deletions(-)
-> >
-> > --
-> > 2.28.0.709.gb0816b6eb0-goog
-> >
-
-
-
--- 
-Luiz Augusto von Dentz
