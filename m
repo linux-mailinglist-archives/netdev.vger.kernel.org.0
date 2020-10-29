@@ -2,97 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 933B829F3B3
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 19:00:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6B3629F3BE
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 19:03:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725824AbgJ2SAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 14:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
+        id S1725769AbgJ2SD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 14:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725779AbgJ2SAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 14:00:19 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EC0C0613D2
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 11:00:19 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id z23so3952123oic.1
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 11:00:19 -0700 (PDT)
+        with ESMTP id S1725747AbgJ2SD0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 14:03:26 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D02AC0613CF
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 11:03:26 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id m13so3778282wrj.7
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 11:03:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WxRuOq6f8j/OJClpjygk5Sil7hNP3LLwSpzSQ8AdyIw=;
-        b=YgYWiWE7JZt28JrbecJ3RcV+vUGkrnWCMu2zz09AhOgDPRFoxcxkRzZRZIYZFCmYlU
-         WelfSscahfL8OzNYoWwJRkryvGoSRoiEzEwmbxgzLIlrQsEkw+8cQNZUSeEajoGXUTL2
-         jCF3B2dyfmz+kjVtpp5yyc9Fhe5zKey/CyuysYlk4j/z8ERIfXkVMdl8sJK6PgwvtR2P
-         kH93bhE8ipq6xK3TG8duQC4MaaN5xohyYUk9mYVO2K/X39cmPvAFOhDBT1oL1XXeVqQS
-         3+JrGtYAfp72Z8D22xDfjs9pDfbN+hikJ2F5+sVNIQOvRYxc0QJMzVkp3+mNERSJv5UD
-         alOQ==
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=2POKjdBXfG64SY+YaHA+CifYR71LEp3MixfJHoDyDD8=;
+        b=SVHcazhF63sKB9wJqF08tKcjmMfvCOcu0s61RArNEUx+rEXcQWBYTWTimCIP7np5zp
+         HjK5e24oEEZ1/HNh6TqI5gCIbWILNd/LxxrkS5v286y4DtR/9B/SuZJXYa2jLrXjZPm2
+         8qKcLlhnGi54o11ai5z9+8qDWY7GYfvwiWXA9dyJNTeo/cIPxWjlfm6Rymk9aXLH1xp6
+         v0yWuLS+jcIeq5L/3hfXBx8MzsvCS/+pNxqRaCRvbVxCHwERBW0p4OKqSQg0mhxgDq6u
+         RxuPcF1iH3mpR0rzJ7/lMFpX1Nuc4d/mdFWD7KM6fVBP/Zox2F/To1caOFXrzeRIXh1y
+         EDHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WxRuOq6f8j/OJClpjygk5Sil7hNP3LLwSpzSQ8AdyIw=;
-        b=BCh59K1Jm81Zxt2KB0qatcrBJvqlRjITzUTQ3LmLDS7uNXvLq9xBGXgkTa/8qeTTI/
-         fggwbxwgfPLYo5xqBrtiCNQx3AtPFvtJsv743y3Eui08yKdHWF+7XWQNj2rQ7VFE6Yfv
-         O4OaM6MLrI36l2Ec2CQtEx5bWrgi2zmutjEgOnKmipEHu5MO5Y7yA2Ld7G6uQf8a33o7
-         bq2oEZYVrLYh1LP3ybOqeiCki6qW8njmfqp5VPR6puOVL193jtJ80wfEcFr+XfqawUTu
-         Z9SQr37aHykw+e0ff36mCC1k+qb8K8yDNoirWVsqYwXQZsoua/aQ9HRPyM+vBTuWTjPs
-         iODQ==
-X-Gm-Message-State: AOAM531FSJMJitA6773di1SzCn4kohNysJ7fxY0KWvS+prWsNJpo2G24
-        bQ7QzkMt+5mQFz8cJBSC073YF9we5X5tI6ei/aAACw==
-X-Google-Smtp-Source: ABdhPJz3mnbcHjmN2y7saCgbvDUKaiY9BdLFyShvD8FLDdQTJYtPNBqIEiyaybFQMidaIPMWOeXim/lHrvti0R/5eDc=
-X-Received: by 2002:a54:4812:: with SMTP id j18mr655595oij.70.1603994418860;
- Thu, 29 Oct 2020 11:00:18 -0700 (PDT)
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=2POKjdBXfG64SY+YaHA+CifYR71LEp3MixfJHoDyDD8=;
+        b=e8BF5yojatPRlkbj+JswyAZId6MUdNed8uzfX1RBf2Nr0PwYzykfCukphE7ScLF9La
+         0tLUdEc8A6vJcGwSF/teNHWnU2We6irve6x7H36OLm8Sz6EXBSXkoDuAQcMPkwxFC/RU
+         aTRA8ykKSwphPbhkELo3o5ipxFJEUVZPj9Fi7z8X76hVsvhzziCzlVHtpi7SdsA0LGGv
+         p0AoO7vkbLu08c8sU9WrhAeu8gMdWNlk6Td2EUaxaxK//Ou97WXnyKz6LhqHdvinnXMz
+         6s2YBsxBOAz51her8bNalJcfPu7YbO9pIk4Alp6K23y0Ju7P6jsymcvdwMXHx0/D4TSO
+         Hq+Q==
+X-Gm-Message-State: AOAM531jVj0a1LSxu/BDaGFfnXiXqF1aSq893p9w30D0c3v5HWqf7821
+        t5pJWnVRjVJJCkxQx3JcmhMTEflyIjo=
+X-Google-Smtp-Source: ABdhPJx7qofLCbkG1HKwLH862cbXrM2r46Qu+xbDPeoV8nfJriSUPm2hvAC2AJxNfNXudTZtx0yA2A==
+X-Received: by 2002:a5d:468f:: with SMTP id u15mr7284821wrq.154.1603994604673;
+        Thu, 29 Oct 2020 11:03:24 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:2800:a990:f24b:87e1:a560? (p200300ea8f232800a990f24b87e1a560.dip0.t-ipconnect.de. [2003:ea:8f23:2800:a990:f24b:87e1:a560])
+        by smtp.googlemail.com with ESMTPSA id b5sm6353235wrs.97.2020.10.29.11.03.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Oct 2020 11:03:24 -0700 (PDT)
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: remove unneeded memory barrier in rtl_tx
+Message-ID: <2264563a-fa9e-11b0-2c42-31bc6b8e2790@gmail.com>
+Date:   Thu, 29 Oct 2020 18:56:06 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-References: <20201029173620.2121359-1-aleksandrnogikh@gmail.com>
- <20201029173620.2121359-4-aleksandrnogikh@gmail.com> <40e7ef15f3ffd32567c1dd74edae982c53b0fb06.camel@sipsolutions.net>
-In-Reply-To: <40e7ef15f3ffd32567c1dd74edae982c53b0fb06.camel@sipsolutions.net>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 29 Oct 2020 19:00:07 +0100
-Message-ID: <CANpmjNP3Jadj3r27Y+GhxUD_cboqn_d2BYKiqM4BzktezgjRYw@mail.gmail.com>
-Subject: Re: [PATCH v5 3/3] mac80211: add KCOV remote annotations to incoming
- frame processing
-To:     Dmitry Vyukov <dvyukov@google.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Andrey Konovalov <andreyknvl@google.com>
-Cc:     Aleksandr Nogikh <aleksandrnogikh@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        willemdebruijn.kernel@gmail.com,
-        Aleksandr Nogikh <nogikh@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Oct 2020 at 18:44, Johannes Berg <johannes@sipsolutions.net> wrote:
-> On Thu, 2020-10-29 at 17:36 +0000, Aleksandr Nogikh wrote:
-> > From: Aleksandr Nogikh <nogikh@google.com>
-> >
-> > Add KCOV remote annotations to ieee80211_iface_work() and
-> > ieee80211_rx_list(). This will enable coverage-guided fuzzing of
-> > mac80211 code that processes incoming 802.11 frames.
->
-> I have no idea how we'll get this merged - Jakub, do you want to take
-> the whole series? Or is somebody else responsible for the core kcov
-> part?
+tp->dirty_tx isn't changed outside rtl_tx(). Therefore I see no need
+to guarantee a specific order of reading tp->dirty_tx and tp->cur_tx.
+Having said that we can remove the memory barrier.
+In addition use READ_ONCE() when reading tp->cur_tx because it can
+change in parallel to rtl_tx().
 
-Typically core kcov changes have been going via the -mm tree.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Andrey has been making most changes to KCOV recently, so if there are
-no pending changes that conflict, I don't see it's a problem for this
-whole series to go through networking. I think the other series that
-Andrey had been working on has been changed to only touch
-drivers/usb/, so there should be no conflicts pending.
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index b6c11aaa5..75df476c6 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4364,9 +4364,8 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
+ 	unsigned int dirty_tx, tx_left, bytes_compl = 0, pkts_compl = 0;
+ 
+ 	dirty_tx = tp->dirty_tx;
+-	smp_rmb();
+ 
+-	for (tx_left = tp->cur_tx - dirty_tx; tx_left > 0; tx_left--) {
++	for (tx_left = READ_ONCE(tp->cur_tx) - dirty_tx; tx_left; tx_left--) {
+ 		unsigned int entry = dirty_tx % NUM_TX_DESC;
+ 		struct sk_buff *skb = tp->tx_skb[entry].skb;
+ 		u32 status;
+-- 
+2.29.1
 
-Dmitry, Andrey, is that reasonable?
-
-> In any case,
->
-> Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
->
-> johannes
->
