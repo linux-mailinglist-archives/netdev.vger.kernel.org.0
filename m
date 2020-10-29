@@ -2,101 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BF7729F731
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 22:53:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 491EA29F736
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 22:55:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725825AbgJ2VxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 17:53:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41813 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725372AbgJ2VxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 17:53:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604008401;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MyA/z9GmL/SPGNqgdbe5v/AJExbTh9xMmKh6pW57qzk=;
-        b=AiXwD4xCV9cHssKJE4SpqfYxxJUr2an907Z4nMMY3ty9djFN5i90BoZcL0N82XVyGGaV5j
-        PAXa0dR9EcLBHK8bFAWesCRcb9C6Mzg2mH8zP+MTWjPufNVYkWYFJQcUzIBJkJ4N+tESUA
-        LFd0yhbZgGncF3ffjTd6G50n0j1/Pvw=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-557-oqURfZUIPN2Vo6hNHxoEkw-1; Thu, 29 Oct 2020 17:53:17 -0400
-X-MC-Unique: oqURfZUIPN2Vo6hNHxoEkw-1
-Received: by mail-wr1-f69.google.com with SMTP id q15so1819446wrw.8
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 14:53:16 -0700 (PDT)
+        id S1725778AbgJ2Vzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 17:55:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725372AbgJ2Vzi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 17:55:38 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD45C0613CF;
+        Thu, 29 Oct 2020 14:55:37 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id x20so3328004qkn.1;
+        Thu, 29 Oct 2020 14:55:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hDXbXO8XOb1/R1kSoSdED0aIjWHfpfYjTnRGTgwxrWY=;
+        b=Ohdmu5aX+UhPupFYBedi9Xh6FSGm0G1GenZAeP6UA+x4UC4TmqsqVJ3PmO3J3a2BeL
+         2ZZ97sDHeZysUQYTk/FskQarCqYbMtSOa2ekBQy9YWuRrxtlaunBTdo3Xtr6IyDFh/+i
+         Qe1JrPkf072FvtL9VgxSixicxgv2Zz0hr3F5lqLumezRzbm7iWEqb9D0MSAAcKohIqD7
+         0CpG0/chbyKzPawwenddPD3QYUJsIIXcA8ocOG6Csx8HNpuXY9uBRUg8rTqibmd46m+r
+         SSMMCDIty82QD4nGT9JLnxY01ZSvuDpcgy9+X6xKd5yfL/y3oxCOOHb5RYidIVZsIYJi
+         CwoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=MyA/z9GmL/SPGNqgdbe5v/AJExbTh9xMmKh6pW57qzk=;
-        b=to6FCbUrmBdoQbD/MAA+luYw0f7B5bWCC3PczZYu9Dp3whqONHyGbJvaGav3e43gx1
-         lXbZMv4DFUUnpvx+zwbWIhr+s1Rx8nGo30By+UBSzgxbFgkix1yYYOHd/UHpuNq7t+1q
-         SlrV6deQYZWbDBYqN9tbCFM8GWQVOukwZ823J53DuXqL5sM+iJh/o63qq6uBs177iBk6
-         /YbHx9yT8NlrJdFs7DskxptdFCVghtwgnpVFEbf4G4AvQYYfKfwxOUX3bwikvrwh3JWH
-         gyT0qMkIK1sEZhOeBQilW2Xd5QjEuO/f+zUlhLN68QqjKW4LIAc3O3WiwPTwuXl/EZH8
-         Gcww==
-X-Gm-Message-State: AOAM531mvapv0cAt3X3gmcTV1M/f6bxnv2y6dGxnzGyy+0ICez2vpXVK
-        h0y1NszYzDBr68qAb9hANs9KyvBh13n812IyR8jRwTfiOGQdHPXtGg9//xySJsp1qSYKoSusZMj
-        b/R04wZZlaLV+52Sc
-X-Received: by 2002:a7b:cc8b:: with SMTP id p11mr1392923wma.100.1604008395966;
-        Thu, 29 Oct 2020 14:53:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzOb9jejDagKN2otqeV1zFSG0/6+d0FSNPfIRhJooGnxcFENInAFKxKGTfRGns8rrnMa1b1mA==
-X-Received: by 2002:a7b:cc8b:: with SMTP id p11mr1392912wma.100.1604008395829;
-        Thu, 29 Oct 2020 14:53:15 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-118-93.red.bezeqint.net. [79.176.118.93])
-        by smtp.gmail.com with ESMTPSA id v67sm2022382wma.17.2020.10.29.14.53.13
+         :mime-version:content-disposition:in-reply-to;
+        bh=hDXbXO8XOb1/R1kSoSdED0aIjWHfpfYjTnRGTgwxrWY=;
+        b=lKzbntJAGJ1H+Pes8FBdGKm84cZbeEMy2nnSIo+M+R8XmzWUdRB7jDHDRz4R2Z5IK4
+         lyfTQok+zGyEJntgu2LLgwAaF0OOnYUbM1e774ZTeSOchTCopmtfOXcwHpw23KzDLghr
+         zgtsBB6CHh5SlfrOnEHU9lIbra22g0amSXyjwVbnNn20kcpkztAafgu74ccL2IeoOOIu
+         IlerjCql6q3kihjwB/sbBLbu+kWhRnO5DV5Zcg9l7IcYh0U2hBvKd4UkwI3VENsClr1d
+         MDxax2KrgYmv2wWfQ2mB7zT5rkn+uUMAoaqNmzpLjus/qfWGSZvPArFrLCCh6G0vWAxn
+         XOqA==
+X-Gm-Message-State: AOAM531QFxtIX27Rrp68z9o1P8rriGbHFBKgqDtFZxHJdX1a3OqipWft
+        V8Z7KVSOKzMVbbnJpDrbBcc=
+X-Google-Smtp-Source: ABdhPJyOlFKOWKg66TJi4u3tmpvrbSWBzEBWuYHHDyaPJZ7h3f+WjfAJFos9bH8GNri+NrFYyRlQ3Q==
+X-Received: by 2002:a37:a34a:: with SMTP id m71mr5902772qke.81.1604008536991;
+        Thu, 29 Oct 2020 14:55:36 -0700 (PDT)
+Received: from localhost.localdomain ([177.220.172.74])
+        by smtp.gmail.com with ESMTPSA id t8sm1786432qtb.97.2020.10.29.14.55.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2020 14:53:14 -0700 (PDT)
-Date:   Thu, 29 Oct 2020 17:53:12 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     si-wei liu <si-wei.liu@oracle.com>
-Cc:     Jason Wang <jasowang@redhat.com>, lingshan.zhu@intel.com,
-        joao.m.martins@oracle.com, boris.ostrovsky@oracle.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] vhost-vdpa: fix page pinning leakage in error path
-Message-ID: <20201029175305-mutt-send-email-mst@kernel.org>
-References: <1601701330-16837-1-git-send-email-si-wei.liu@oracle.com>
- <1601701330-16837-3-git-send-email-si-wei.liu@oracle.com>
- <574a64e3-8873-0639-fe32-248cb99204bc@redhat.com>
- <5F863B83.6030204@oracle.com>
- <835e79de-52d9-1d07-71dd-d9bee6b9f62e@redhat.com>
- <20201015091150-mutt-send-email-mst@kernel.org>
- <5F88AE4A.9030300@oracle.com>
+        Thu, 29 Oct 2020 14:55:36 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 7C7F1C0DAB; Thu, 29 Oct 2020 18:55:33 -0300 (-03)
+Date:   Thu, 29 Oct 2020 18:55:33 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net,
+        Jakub Kicinski <kuba@kernel.org>, gnault@redhat.com,
+        pabeni@redhat.com, willemdebruijn.kernel@gmail.com
+Subject: Re: [PATCHv5 net-next 00/16] sctp: Implement RFC6951: UDP
+ Encapsulation of SCTP
+Message-ID: <20201029215533.GL3837@localhost.localdomain>
+References: <cover.1603955040.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5F88AE4A.9030300@oracle.com>
+In-Reply-To: <cover.1603955040.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 15, 2020 at 01:17:14PM -0700, si-wei liu wrote:
+On Thu, Oct 29, 2020 at 03:04:54PM +0800, Xin Long wrote:
+...
+> Patches:
 > 
-> On 10/15/2020 6:11 AM, Michael S. Tsirkin wrote:
-> > On Thu, Oct 15, 2020 at 02:15:32PM +0800, Jason Wang wrote:
-> > > On 2020/10/14 上午7:42, si-wei liu wrote:
-> > > > > 
-> > > > > So what I suggest is to fix the pinning leakage first and do the
-> > > > > possible optimization on top (which is still questionable to me).
-> > > > OK. Unfortunately, this was picked and got merged in upstream. So I will
-> > > > post a follow up patch set to 1) revert the commit to the original
-> > > > __get_free_page() implementation, and 2) fix the accounting and leakage
-> > > > on top. Will it be fine?
-> > > 
-> > > Fine.
-> > > 
-> > > Thanks
-> > Fine by me too.
-> > 
-> Thanks, Michael & Jason. I will post the fix shortly. Stay tuned.
-> 
-> -Siwei
+>    This patchset is using the udp4/6 tunnel APIs to implement the UDP
+>    Encapsulation of SCTP with not much change in SCTP protocol stack
+>    and with all current SCTP features keeped in Linux Kernel.
 
-did I miss the patch?
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
+Thanks Xin!
