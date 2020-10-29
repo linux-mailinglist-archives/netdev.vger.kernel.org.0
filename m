@@ -2,142 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C4E229EE46
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 15:31:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C0D629EE28
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 15:27:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727226AbgJ2Oa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 10:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
+        id S1726788AbgJ2O1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 10:27:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbgJ2Oa7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 10:30:59 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D37C0613CF
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 07:21:05 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id l8so28985wmg.3
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 07:21:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sTeULBiD1OTQjCqK9NH7W04tF/RFSsIi0nh2m74wYYk=;
-        b=qhvsU8bsyHVJX9wRizhkPR5eajPeSL7bPLRMb3qDtqMARlD7EFVdSIC6SRcevrZACK
-         L8vsb1fr7B20CqoTncOmFClITuE6HnBp0sHZaz0SZp2KOM0JrwU8opuCfUfUlrce3WGs
-         lm9PCgVl86LqZNSdIzV6IyqrRI16mpJoBiIZY1ADhscO7g5S9sSwxd40CIEsA4zegBpX
-         V/tNwRalJ0wLd6dhRNecPSSFYY/INHQIZ5KSEKaeiKp/sZ2aJmGZNaF4Yuo6sbNXhwZq
-         X/1u7444w6Jq+zDf91P2m1wUCVoZk/M39UpVMQdRmCty1igzY7WABHi9Dqwz+CgDLhGS
-         nWgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sTeULBiD1OTQjCqK9NH7W04tF/RFSsIi0nh2m74wYYk=;
-        b=FIEEfi7L9O+7IQBpH/2U+Kd0IXhvg5rb59knyJri7W43VArC+cEWLKUqd7A6vsMBlp
-         igrBpsVAk+LFT2MdssPbCtWTdbAqbuo3Z2jnNa6T+zDPAR7Md6M9WXtMXmIwmVp3j5ut
-         tHpj/3TkOXF1LMuo/zsiIzf8S1LYiVDlGodQxlJa1/AGcQ05JSgR1VdendbHsi8CQ17O
-         0EWYGLGbcoTo3JI70JMCn25ciJOFaZX7l5aIKGV2Q46PR9s3svVlvZuMVjrtNCgjH47n
-         jBzRJBhf6YoP8ld6hiUjW7d0XMDB/4ATx2Q+Q95TDtG0NDBVjVU5KtEUOFSptMdYTc3h
-         H6Mw==
-X-Gm-Message-State: AOAM530npYWLPmaeH4JB/WnVbhKK1Hmq0NLeDg5RuJWmcMNkuK9rxWaI
-        J9kaehzIEP6B9vCHr24TH37hGg==
-X-Google-Smtp-Source: ABdhPJwdWqzb8nAOFfKiqSZqDZnJRGG4ub/zxddemdxHv4W5tmdrBgzh3Qz2buSjb2OsbUx8/Dh7zw==
-X-Received: by 2002:a1c:e006:: with SMTP id x6mr32575wmg.107.1603981264366;
-        Thu, 29 Oct 2020 07:21:04 -0700 (PDT)
-Received: from apalos.home (athedsl-246545.home.otenet.gr. [85.73.10.175])
-        by smtp.gmail.com with ESMTPSA id n5sm5290154wrm.2.2020.10.29.07.21.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2020 07:21:03 -0700 (PDT)
-Date:   Thu, 29 Oct 2020 16:21:00 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steve McIntyre <steve@einval.com>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, Willy Liu <willy.liu@realtek.com>,
+        with ESMTP id S1727217AbgJ2O0L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 10:26:11 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98665C0613D2;
+        Thu, 29 Oct 2020 07:26:11 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kY8s6-00EpZx-Ey; Thu, 29 Oct 2020 15:25:46 +0100
+Message-ID: <bff39a3d645afc424478981cd7d9ad69c2b9b346.camel@sipsolutions.net>
+Subject: Re: [PATCH, net -> staging, v2] wimax: move out to staging
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Arnd Bergmann <arnd@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Masahisa Kojima <masahisa.kojima@linaro.org>
-Subject: Re: realtek PHY commit bbc4d71d63549 causes regression
-Message-ID: <20201029142100.GA70245@apalos.home>
-References: <20201017194904.GP456889@lunn.ch>
- <CAMj1kXEY5jK7z+_ezDX733zbtHnaGUNCkJ_gHcPqAavOQPOzBQ@mail.gmail.com>
- <20201017230226.GV456889@lunn.ch>
- <CAMj1kXGO=5MsbLYvng4JWdNhJ3Nb0TSFKvnT-ZhjF2xcO9dZaw@mail.gmail.com>
- <CAMj1kXF_mRBnTzee4j7+e9ogKiW=BXQ8-nbgq2wDcw0zaL1d5w@mail.gmail.com>
- <20201018154502.GZ456889@lunn.ch>
- <CAMj1kXGQDeOGj+2+tMnPhjoPJRX+eTh8-94yaH_bGwDATL7pkg@mail.gmail.com>
- <20201025142856.GC792004@lunn.ch>
- <CAMj1kXEM6a9wZKqqLjVACa+SHkdd0L6rRNcZCNjNNsmC-QxoxA@mail.gmail.com>
- <20201025144258.GE792004@lunn.ch>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org
+Date:   Thu, 29 Oct 2020 15:25:30 +0100
+In-Reply-To: <20201029134722.3965095-1-arnd@kernel.org>
+References: <20201029134722.3965095-1-arnd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201025144258.GE792004@lunn.ch>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew
-
-On Sun, Oct 25, 2020 at 03:42:58PM +0100, Andrew Lunn wrote:
-> On Sun, Oct 25, 2020 at 03:34:06PM +0100, Ard Biesheuvel wrote:
-> > On Sun, 25 Oct 2020 at 15:29, Andrew Lunn <andrew@lunn.ch> wrote:
-> > >
-> > > On Sun, Oct 25, 2020 at 03:16:36PM +0100, Ard Biesheuvel wrote:
-> > > > On Sun, 18 Oct 2020 at 17:45, Andrew Lunn <andrew@lunn.ch> wrote:
-> > > > >
-> > > > > > However, that leaves the question why bbc4d71d63549bcd was backported,
-> > > > > > although I understand why the discussion is a bit trickier there. But
-> > > > > > if it did not fix a regression, only broken code that never worked in
-> > > > > > the first place, I am not convinced it belongs in -stable.
-> > > > >
-> > > > > Please ask Serge Semin what platform he tested on. I kind of expect it
-> > > > > worked for him, in some limited way, enough that it passed his
-> > > > > testing.
-> > > > >
-> > > >
-> > > > I'll make a note here that a rather large number of platforms got
-> > > > broken by the same fix for the Realtek PHY driver:
-> > > >
-> > > > https://lore.kernel.org/lkml/?q=bbc4d71d6354
-> > > >
-> > > > I seriously doubt whether disabling TX/RX delay when it is enabled by
-> > > > h/w straps is the right thing to do here.
-> > >
-> > > The device tree is explicitly asking for rgmii. If it wanted the
-> > > hardware left alone, it should of used PHY_INTERFACE_MODE_NA.
-> > >
-> > 
-> > Would you suggest that these DTs remove the phy-mode instead? As I
-> > don't see anyone proposing that.
+On Thu, 2020-10-29 at 14:43 +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> What is also O.K, for most MAC drivers. Some might enforce it is
-> present, in which case, you can set it to "", which will get parsed as
-> PHY_INTERFACE_MODE_NA. But a few MAC drivers might configure there MII
-> bus depending on the PHY mode, RGMII vs GMII.
+> There are no known users of this driver as of October 2020, and it will
+> be removed unless someone turns out to still need it in future releases.
 > 
->     Andrew
+> According to https://en.wikipedia.org/wiki/List_of_WiMAX_networks, there
+> have been many public wimax networks, but it appears that many of these
+> have migrated to LTE or discontinued their service altogether.
+> As most PCs and phones lack WiMAX hardware support, the remaining
+> networks tend to use standalone routers. These almost certainly
+> run Linux, but not a modern kernel or the mainline wimax driver stack.
+> 
+> NetworkManager appears to have dropped userspace support in 2015
+> https://bugzilla.gnome.org/show_bug.cgi?id=747846, the
+> www.linuxwimax.org
+> site had already shut down earlier.
+> 
+> WiMax is apparently still being deployed on airport campus networks
+> ("AeroMACS"), but in a frequency band that was not supported by the old
+> Intel 2400m (used in Sandy Bridge laptops and earlier), which is the
+> only driver using the kernel's wimax stack.
+> 
+> Move all files into drivers/staging/wimax, including the uapi header
+> files and documentation, to make it easier to remove it when it gets
+> to that. Only minimal changes are made to the source files, in order
+> to make it possible to port patches across the move.
+> 
+> Also remove the MAINTAINERS entry that refers to a broken mailing
+> list and website.
+> 
+> Suggested-by: Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> changes in v2:
+> - fix a build regression
+> - add more information about remaining networks (Dan Carpenter)_
+> 
+> For v1, Greg said he'd appply the patch when he gets an Ack
+> from the maintainers.
+> 
+> Inaky, Johannes, Jakub: are you happy with this version?
 
-What about reverting the realtek PHY commit from stable?
-As Ard said it doesn't really fix anything (usage wise) and causes a bunch of
-problems.
+Sure, looks fine to me.
 
-If I understand correctly we have 3 options:
-1. 'Hack' the  drivers in stable to fix it (and most of those hacks will take 
-   a long time to remove)
-2. Update DTE of all affected devices, backport it to stable and force users to
-update
-3. Revert the PHY commit
+Acked-by: Johannes Berg <johannes@sipsolutions.net>
 
-imho [3] is the least painful solution.
+Not that I have much relation to this code other than having fixed up
+genetlink stuff over the years :)
 
+johannes
 
-Thanks
-/Ilias
