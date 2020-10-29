@@ -2,312 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D3F29F2DC
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 18:20:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A978A29F302
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 18:24:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726665AbgJ2RU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 13:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35630 "EHLO
+        id S1726286AbgJ2RY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 13:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726105AbgJ2RUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 13:20:25 -0400
-Received: from mx0b-00190b01.pphosted.com (mx0b-00190b01.pphosted.com [IPv6:2620:100:9005:57f::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7460AC0613CF;
-        Thu, 29 Oct 2020 10:20:25 -0700 (PDT)
-Received: from pps.filterd (m0050102.ppops.net [127.0.0.1])
-        by m0050102.ppops.net-00190b01. (8.16.0.42/8.16.0.42) with SMTP id 09THBuEp032732;
-        Thu, 29 Oct 2020 17:20:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=jan2016.eng;
- bh=w92e1OL9NQo6mI7XkyziJJNuhr7HPfoNzDYhE1PKTS0=;
- b=ZQN7nDW/8XdW/8bfM3gzHZn7xH0Pzlcj19o52ZZjpQUVes+m5flhfsddUWGqTkSN0nXp
- nYP96VSFrotKFnUEdhDo9rjAJSHccY0Q29+6w1sVxAxay3RuPOhiuPUHCdL6PEG430Sf
- 57Khs9gjwEbzoESKh3lCPKSIFOUVpu5Q9MJt3kqUgO+E++BiL/1HNFfHzDt2wuL7NwvM
- lBsebcJJpTVectb0UFwPOBXjOyczdCLE1f1c4i21ujFQ0CBBKeQV5agMUZmsaotqhRhp
- dJb81LNPD4GIfPLCecSS8cHiGrqMTqrIyWn4Eopdtk9oU55RWXLWBHDmUWPTtlu/eNfg ag== 
-Received: from prod-mail-ppoint7 (a72-247-45-33.deploy.static.akamaitechnologies.com [72.247.45.33] (may be forged))
-        by m0050102.ppops.net-00190b01. with ESMTP id 34cceyj1c0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 29 Oct 2020 17:20:03 +0000
-Received: from pps.filterd (prod-mail-ppoint7.akamai.com [127.0.0.1])
-        by prod-mail-ppoint7.akamai.com (8.16.0.42/8.16.0.42) with SMTP id 09THJxv6022856;
-        Thu, 29 Oct 2020 13:20:02 -0400
-Received: from prod-mail-relay19.dfw02.corp.akamai.com ([172.27.165.173])
-        by prod-mail-ppoint7.akamai.com with ESMTP id 34f1qg7jwj-1;
-        Thu, 29 Oct 2020 13:20:01 -0400
-Received: from [0.0.0.0] (prod-ssh-gw01.bos01.corp.akamai.com [172.27.119.138])
-        by prod-mail-relay19.dfw02.corp.akamai.com (Postfix) with ESMTP id 257DD604B8;
-        Thu, 29 Oct 2020 17:20:01 +0000 (GMT)
-Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     "Hunt, Joshua" <johunt@akamai.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
- <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
- <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
- <CAP12E-+3DY-dgzVercKc-NYGPExWO1NjTOr1Gf3tPLKvp6O6+g@mail.gmail.com>
- <AE096F70-4419-4A67-937A-7741FBDA6668@akamai.com>
- <CAM_iQpX0XzNDCzc2U5=g6aU-HGYs3oryHx=rmM3ue9sH=Jd4Gw@mail.gmail.com>
- <19f888c2-8bc1-ea56-6e19-4cb4841c4da0@akamai.com>
- <93ab7f0f-7b5a-74c3-398d-a572274a4790@huawei.com>
- <248e5a32-a102-0ced-1462-aa2bc5244252@akamai.com>
- <de690c67-6e9f-8885-10c1-f47313de7b62@huawei.com>
-From:   Vishwanath Pai <vpai@akamai.com>
-Message-ID: <cd4b2482-c3dc-fba6-6287-1218dc4bed6e@akamai.com>
-Date:   Thu, 29 Oct 2020 13:20:00 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1725849AbgJ2RY0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 13:24:26 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E671C0613CF
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 10:24:26 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id b129so1971175vsb.1
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 10:24:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=do61rsM4GwzXoI90CK0QdYPHtZr409f2iOnTWSbjtRE=;
+        b=BE19bXcnjjj/ywvtsgpJ98BIPYD0s0YhZ4DS8LEgTe9iBAX5+MgyMc8NNIlfgjtN1n
+         Qp2w+ZyUgqC9q7dnCtnG1wWvb8mLvtkZUY4LtesfY9uXkL5iSIVY9IclzMJ1QIAq0tTq
+         zrTEE3ikmR9Wk9tASsejJMJWWIkw+KIpOnS0NB/atujWHtrulYNt0xwBHTTO8wAQ53Lv
+         WbV2J3aEzkKLgQlGgbdb0sUarJpXHCj0bc14HVORs9NkHec+GMbkfthrVMcjb9AVF9h5
+         p6Z4LUf3RSOfLQiI3JDMHXpgDxGqtoYZioYBjvydrw1kHL9agyPERmlWtDz5xZOW4NO/
+         01Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=do61rsM4GwzXoI90CK0QdYPHtZr409f2iOnTWSbjtRE=;
+        b=OiUItUVA8dvoheWRO+uZ0efF5u3y0QZE5rJGLyHlCsA/gfa08Tx7Qlh2nTszbh47cE
+         97rQk9slqkAy8Xr1qu/WO/tStWHG6a3F4g9V6+Mnapux9njMosejr7wq7ZsCqG4RPu8l
+         gaLY3moQdKdRlix5AsTDw7ehlMUwW29OrRcLgZnr38sTokgdgoxbHyAweuA+AzJHL1RY
+         9ZmhdGRZ1Zhmv6QasTKUmSmqXJSccg47TB0zUMcmAPyvUAomz+xJai0HOEox6XI3IQHP
+         s+XLwNvg1mPQJ+oB69tSw/m31NI2zg3LZC8Meh8e7Tv6XirIgOozwFI+fiOovnf0URd6
+         tvug==
+X-Gm-Message-State: AOAM5329lcrgpr0HkzRby267Hdwil9qnXEpbJFnezFA0x7U1adRJsazq
+        0hBrUPovkATvO4NQ+30XdO9EYJyJaZs=
+X-Google-Smtp-Source: ABdhPJyM+eAgcm3M+fJIggGccRdxpm1WeEsu5nkp/A6b6ifxQ65+Wz4wgfcoS71Vn4iULODCY8Mq6A==
+X-Received: by 2002:a67:310d:: with SMTP id x13mr2825992vsx.19.1603992264826;
+        Thu, 29 Oct 2020 10:24:24 -0700 (PDT)
+Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com. [209.85.217.48])
+        by smtp.gmail.com with ESMTPSA id 190sm413176vsz.13.2020.10.29.10.24.23
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Oct 2020 10:24:24 -0700 (PDT)
+Received: by mail-vs1-f48.google.com with SMTP id u7so1934943vsq.11
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 10:24:23 -0700 (PDT)
+X-Received: by 2002:a67:c981:: with SMTP id y1mr4130116vsk.14.1603992263354;
+ Thu, 29 Oct 2020 10:24:23 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <de690c67-6e9f-8885-10c1-f47313de7b62@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-10-29_08:2020-10-29,2020-10-29 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0
- mlxlogscore=999 phishscore=0 suspectscore=0 spamscore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010290120
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-10-29_11:2020-10-29,2020-10-29 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 lowpriorityscore=0
- bulkscore=0 clxscore=1015 adultscore=0 malwarescore=0 phishscore=0
- mlxlogscore=999 impostorscore=0 suspectscore=0 priorityscore=1501
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010290119
-X-Agari-Authentication-Results: mx.akamai.com; spf=${SPFResult} (sender IP is 72.247.45.33)
- smtp.mailfrom=vpai@akamai.com smtp.helo=prod-mail-ppoint7
+References: <20201028131807.3371-1-xie.he.0141@gmail.com> <20201028131807.3371-5-xie.he.0141@gmail.com>
+In-Reply-To: <20201028131807.3371-5-xie.he.0141@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 29 Oct 2020 13:23:46 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeBZWsy4w4gdPU2sb2-njuEiqbXMgfnA5AdsXkNr__xRA@mail.gmail.com>
+Message-ID: <CA+FuTSeBZWsy4w4gdPU2sb2-njuEiqbXMgfnA5AdsXkNr__xRA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 4/4] net: hdlc_fr: Add support for any Ethertype
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/29/20 6:24 AM, Yunsheng Lin wrote:
- > On 2020/10/29 12:50, Vishwanath Pai wrote:
- >> On 10/28/20 10:37 PM, Yunsheng Lin wrote:
- >>> On 2020/10/29 4:04, Vishwanath Pai wrote:
- >>>> On 10/28/20 1:47 PM, Cong Wang wrote:
- >>>>> On Wed, Oct 28, 2020 at 8:37 AM Pai, Vishwanath <vpai@akamai.com> 
-wrote:
- >>>>>> Hi,
- >>>>>>
- >>>>>> We noticed some problems when testing the latest 5.4 LTS kernel 
-and traced it
- >>>>>> back to this commit using git bisect. When running our tests the 
-machine stops
- >>>>>> responding to all traffic and the only way to recover is a 
-reboot. I do not see
- >>>>>> a stack trace on the console.
- >>>>>
- >>>>> Do you mean the machine is still running fine just the network is 
-down?
- >>>>>
- >>>>> If so, can you dump your tc config with stats when the problem is 
-happening?
- >>>>> (You can use `tc -s -d qd show ...`.)
- >>>>>
- >>>>>>
- >>>>>> This can be reproduced using the packetdrill test below, it 
-should be run a
- >>>>>> few times or in a loop. You should hit this issue within a few 
-tries but
- >>>>>> sometimes might take up to 15-20 tries.
- >>>>> ...
- >>>>>> I can reproduce the issue easily on v5.4.68, and after reverting 
-this commit it
- >>>>>> does not happen anymore.
- >>>>>
- >>>>> This is odd. The patch in this thread touches netdev reset path, 
-if packetdrill
- >>>>> is the only thing you use to trigger the bug (that is netdev is 
-always active),
- >>>>> I can not connect them.
- >>>>>
- >>>>> Thanks.
- >>>>
- >>>> Hi Cong,
- >>>>
- >>>>> Do you mean the machine is still running fine just the network is 
-down?
- >>>>
- >>>> I was able to access the machine via serial console, it looks like 
-it is
- >>>> up and running, just that networking is down.
- >>>>
- >>>>> If so, can you dump your tc config with stats when the problem is 
-happening?
- >>>>> (You can use `tc -s -d qd show ...`.)
- >>>>
- >>>> If I try running tc when the machine is in this state the command 
-never
- >>>> returns. It doesn't print anything but doesn't exit either.
- >>>>
- >>>>> This is odd. The patch in this thread touches netdev reset path, 
-if packetdrill
- >>>>> is the only thing you use to trigger the bug (that is netdev is 
-always active),
- >>>>> I can not connect them.
- >>>>
- >>>> I think packetdrill creates a tun0 interface when it starts the
- >>>> test and tears it down at the end, so it might be hitting this 
-code path
- >>>> during teardown.
- >>>
- >>> Hi, Is there any preparation setup before running the above 
-packetdrill test
- >>> case, I run the above test case in 5.9-rc4 with this patch applied 
-without any
- >>> preparation setup, did not reproduce it.
- >>>
- >>> By the way, I am newbie to packetdrill:), it would be good to 
-provide the
- >>> detail setup to reproduce it,thanks.
- >>>
- >>>>
- >>>> P.S: My mail server is having connectivity issues with vger.kernel.org
- >>>> so messages aren't getting delivered to netdev. It'll hopefully get
- >>>> resolved soon.
- >>>>
- >>>> Thanks,
- >>>> Vishwanath
- >>>>
- >>>>
- >>>> .
- >>>>
- >>
- >> I can't reproduce it on v5.9-rc4 either, it is probably an issue only on
- >> 5.4 then (and maybe older LTS versions). Can you give it a try on
- >> 5.4.68?
- >>
- >> For running packetdrill, download the latest version from their github
- >> repo, then run it in a loop without any special arguments. This is what
- >> I do to reproduce it:
- >>
- >> while true; do ./packetdrill <test-file>; done
- >>
- >> I don't think any other setup is necessary.
- >
- > Hi, run the above test for above an hour using 5.4.68, still did not
- > reproduce it, as below:
- >
- >
- > root@(none)$ cd /home/root/
- > root@(none)$ ls
- > creat_vlan.sh  packetdrill    test.pd
- > root@(none)$ cat test.pd
- > 0 `echo 4 > /proc/sys/net/ipv4/tcp_min_tso_segs`
- >
- > 0.400 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
- > 0.400 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
- >
- > // set maxseg to 1000 to work with both ipv4 and ipv6
- > 0.500 setsockopt(3, SOL_TCP, TCP_MAXSEG, [1000], 4) = 0
- > 0.500 bind(3, ..., ...) = 0
- > 0.500 listen(3, 1) = 0
- >
- > // Establish connection
- > 0.600 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 5>
- > 0.600 > S. 0:0(0) ack 1 <...>
- >
- > 0.800 < . 1:1(0) ack 1 win 320
- > 0.800 accept(3, ..., ...) = 4
- >
- > // Send 4 data segments.
- > +0 write(4, ..., 4000) = 4000
- > +0 > P. 1:4001(4000) ack 1
- >
- > // Receive a SACK
- > +.1 < . 1:1(0) ack 1 win 320 <sack 1001:2001,nop,nop>
- >
- > +.3 %{ print "TCP CA state: ",tcpi_ca_state  }%
- > root@(none)$ cat creat_vlan.sh
- > #!/bin/sh
- >
- > for((i=0; i<10000; i++))
- > do
- >     ./packetdrill test.pd
- > done
- > root@(none)$ ./creat_vlan.sh
- > TCP CA state:  3
- > ^C
- > root@(none)$ ifconfig
- > eth0      Link encap:Ethernet  HWaddr 5c:e8:83:0d:f7:ed
- >           inet addr:192.168.1.93  Bcast:192.168.1.255 Mask:255.255.255.0
- >           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
- >           RX packets:3570 errors:0 dropped:0 overruns:0 frame:0
- >           TX packets:3190 errors:0 dropped:0 overruns:0 carrier:0
- >           collisions:0 txqueuelen:1000
- >           RX bytes:1076349 (1.0 MiB)  TX bytes:414874 (405.1 KiB)
- >
- > eth2      Link encap:Ethernet  HWaddr 5c:e8:83:0d:f7:ec
- >           inet addr:192.168.100.1  Bcast:192.168.100.255 
-Mask:255.255.255.0
- >           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
- >           RX packets:81848576 errors:0 dropped:0 overruns:0 frame:78
- >           TX packets:72497816 errors:0 dropped:0 overruns:0 carrier:0
- >           collisions:0 txqueuelen:1000
- >           RX bytes:2044282289568 (1.8 TiB)  TX bytes:2457441698852 
-(2.2 TiB)
- >
- > lo        Link encap:Local Loopback
- >           inet addr:127.0.0.1  Mask:255.0.0.0
- >           UP LOOPBACK RUNNING  MTU:65536  Metric:1
- >           RX packets:1 errors:0 dropped:0 overruns:0 frame:0
- >           TX packets:1 errors:0 dropped:0 overruns:0 carrier:0
- >           collisions:0 txqueuelen:1000
- >           RX bytes:68 (68.0 B)  TX bytes:68 (68.0 B)
- >
- > root@(none)$ ./creat_vlan.sh
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > TCP CA state:  3
- > ^C
- > root@(none)$ cat /proc/cmdline
- > BOOT_IMAGE=/linyunsheng/Image.5.0 rdinit=/init console=ttyAMA0,115200 
-earlycon=pl011,mmio32,0x94080000 iommu.strict=1
- > root@(none)$ cat /proc/version
- > Linux version 5.4.68 (linyunsheng@ubuntu) (gcc version 5.4.0 20160609 
-(Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.12)) #1 SMP PREEMPT Thu Oct 29 
-16:59:37 CST 2020
- > root@(none)$
- >
- >
- >
- >>
- >> -Vishwanath
- >>
- >> .
- >>
-I couldn't get it to reproduce on a ubuntu VM, maybe something is
-different with the way we setup our machines. We do have some scripts in
-/etc/network/{if-up.d,if-post-down.d} etc, or probably something else.
-I'll let you know when I can reliably reproduce it on the VM.
+On Wed, Oct 28, 2020 at 6:58 PM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> Change the fr_rx function to make this driver support any Ethertype
+> when receiving skbs on normal (non-Ethernet-emulating) PVC devices.
+> (This driver is already able to handle any Ethertype when sending.)
+>
+> Originally in the fr_rx function, the code that parses the long (10-byte)
+> header only recognizes a few Ethertype values and drops frames with other
+> Ethertype values. This patch replaces this code to make fr_rx support
+> any Ethertype. This patch also creates a new function fr_snap_parse as
+> part of the new code.
+>
+> Also add skb_reset_mac_header before we pass an skb (received on normal
+> PVC devices) to upper layers. Because we don't use header_ops for normal
+> PVC devices, we should hide the header from upper layer code in this case.
 
+This should probably be a separate commit
+
+> Cc: Krzysztof Halasa <khc@pm.waw.pl>
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
+> ---
+>  drivers/net/wan/hdlc_fr.c | 76 ++++++++++++++++++++++++++-------------
+>  1 file changed, 51 insertions(+), 25 deletions(-)
+>
+> diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
+> index 3639c2bfb141..e95efc14bc97 100644
+> --- a/drivers/net/wan/hdlc_fr.c
+> +++ b/drivers/net/wan/hdlc_fr.c
+> @@ -871,6 +871,45 @@ static int fr_lmi_recv(struct net_device *dev, struct sk_buff *skb)
+>         return 0;
+>  }
+>
+> +static int fr_snap_parse(struct sk_buff *skb, struct pvc_device *pvc)
+> +{
+> +       /* OUI 00-00-00 indicates an Ethertype follows */
+> +       if (skb->data[0] == 0x00 &&
+> +           skb->data[1] == 0x00 &&
+> +           skb->data[2] == 0x00) {
+> +               if (!pvc->main)
+> +                       return -1;
+> +               skb->dev = pvc->main;
+> +               skb->protocol = *(__be16 *)(skb->data + 3); /* Ethertype */
+
+Does it make sense to define a struct snap_hdr instead of manually
+casting all these bytes?
+
+> +               skb_pull(skb, 5);
+> +               skb_reset_mac_header(skb);
+> +               return 0;
+> +
+> +       /* OUI 00-80-C2 stands for the 802.1 organization */
+> +       } else if (skb->data[0] == 0x00 &&
+> +                  skb->data[1] == 0x80 &&
+> +                  skb->data[2] == 0xC2) {
+> +               /* PID 00-07 stands for Ethernet frames without FCS */
+> +               if (skb->data[3] == 0x00 &&
+> +                   skb->data[4] == 0x07) {
+
+
+And macros or constant integers to self document these kinds of fields.
