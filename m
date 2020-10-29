@@ -2,82 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40E8329F7C4
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:22:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D48FB29F78F
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:13:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725780AbgJ2WWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 18:22:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43018 "EHLO mail.kernel.org"
+        id S1725907AbgJ2WNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 18:13:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39792 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725372AbgJ2WWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 18:22:09 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1725822AbgJ2WNR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 18:13:17 -0400
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 299002075E;
-        Thu, 29 Oct 2020 22:11:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1CFC521534;
+        Thu, 29 Oct 2020 22:13:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604009471;
-        bh=ls7VqWJzgUgR+UhG3V4b/WnmCQ9UBDegbAbXV8a5odI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=B47WIO7qVw3bRN90S89hfKr8IeZcZz6p1n6NDNnqWSgoo5SoeOH+uQRHB00t5zirb
-         Zkyktfrx6pvFj7byU/VchZeLxVXRbrK4oUkPtOOrk/Rn9fBhGOjYrGO3lsE0ATCFMZ
-         UYgBxhHNFeK3XpPR8mEpRDLYCf4klD/3WgI44bFU=
-Date:   Thu, 29 Oct 2020 15:11:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     jmaloy@redhat.com
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        tipc-discussion@lists.sourceforge.net,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        tuong.t.lien@dektech.com.au, maloy@donjonn.com, xinl@redhat.com,
-        ying.xue@windriver.com, parthasarathy.bhuvaragan@gmail.com
-Subject: Re: [net] tipc: add stricter control of reserved service types
-Message-ID: <20201029151110.41fae663@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201028131912.3773561-1-jmaloy@redhat.com>
-References: <20201028131912.3773561-1-jmaloy@redhat.com>
+        s=default; t=1604009596;
+        bh=6G0KYvEIe0We8NX5HSEENfq+P+g0aXPqwOaw5vT8pHU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=t9s2F4T1BSutTSAYQzkKV9Vwzcfoj1IZCcvn6qLY+IE0toQSmiRzknnoOoZJq6OAX
+         O6GW5hYvnaJUWLZeshE3vvF5kX80yJDcPHTp3QBZ2QK6IPjBDWoTR8Hw+gn1mhS4K0
+         0aLWnqu+HPTdsm3sh/b27IUFocXEI8+jrdfoKUMU=
+Received: by mail-oi1-f173.google.com with SMTP id f7so4684919oib.4;
+        Thu, 29 Oct 2020 15:13:16 -0700 (PDT)
+X-Gm-Message-State: AOAM531h1wDfksxWMhD1RgyEOOc3toMDldpAAGH2j60G8DBC1nfnFHMM
+        3KG+GWrDrhQNgRIePGJB72jzGa8xpEucHMybW6c=
+X-Google-Smtp-Source: ABdhPJyCaru79zu3HxLlCyL7++Unf5ik6G+WcAV4bSZkMJOFXhdSAOc40vpKleOl7hnH1hBldv/dlbFhkw/866xLEgY=
+X-Received: by 2002:aca:2310:: with SMTP id e16mr940329oie.47.1604009595232;
+ Thu, 29 Oct 2020 15:13:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201028171506.15682-1-ardb@kernel.org> <20201028171506.15682-2-ardb@kernel.org>
+ <20201028213903.fvdjydadqt6tx765@ast-mbp.dhcp.thefacebook.com>
+ <CAMj1kXFHcM-Jb+MwsLtB4NMUmMyAGGLeNGNLC9vTATot3NJLrA@mail.gmail.com>
+ <20201028225919.6ydy3m2u4p7x3to7@ast-mbp.dhcp.thefacebook.com>
+ <CAMj1kXG8PmvO6bLhGXPWtzKMnAsip2WDa-qdrd+kFfr30sd8-A@mail.gmail.com>
+ <20201028232001.pp7erdwft7oyt2xm@ast-mbp.dhcp.thefacebook.com>
+ <20201029025745.GA2386070@rani.riverdale.lan> <20201029203113.GJ2672@gate.crashing.org>
+In-Reply-To: <20201029203113.GJ2672@gate.crashing.org>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Thu, 29 Oct 2020 23:13:04 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXHxX+u5-cN0v3SLdqZTSiKsWsFOvc2SC5=-ScaUZOu8Ng@mail.gmail.com>
+Message-ID: <CAMj1kXHxX+u5-cN0v3SLdqZTSiKsWsFOvc2SC5=-ScaUZOu8Ng@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] bpf: don't rely on GCC __attribute__((optimize))
+ to disable GCSE
+To:     Segher Boessenkool <segher@kernel.crashing.org>
+Cc:     Arvind Sankar <nivedita@alum.mit.edu>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <bpf@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-toolchains@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Oct 2020 09:19:12 -0400 jmaloy@redhat.com wrote:
-> From: Jon Maloy <jmaloy@redhat.com>
-> 
-> TIPC reserves 64 service types for current and future internal use.
-> Therefore, the bind() function is meant to block regular user sockets
-> from being bound to these values, while it should let through such
-> bindings from internal users.
-> 
-> However, since we at the design moment saw no way to distinguish
-> between regular and internal users the filter function ended up
-> with allowing all bindings of the reserved types which were really
-> in use ([0,1]), and block all the rest ([2,63]).
-> 
-> This is risky, since a regular user may bind to the service type
-> representing the topology server (TIPC_TOP_SRV == 1) or the one used
-> for indicating neighboring node status (TIPC_CFG_SRV == 0), and wreak
-> havoc for users of those services, i.e., most users.
-> 
-> The reality is however that TIPC_CFG_SRV never is bound through the
-> bind() function, since it doesn't represent a regular socket, and
-> TIPC_TOP_SRV can also be made to bypass the checks in tipc_bind()
-> by introducing a different entry function, tipc_sk_bind().
-> 
-> It should be noted that although this is a change of the API semantics,
-> there is no risk we will break any currently working applications by
-> doing this. Any application trying to bind to the values in question
-> would be badly broken from the outset, so there is no chance we would
-> find any such applications in real-world production systems.
+On Thu, 29 Oct 2020 at 21:35, Segher Boessenkool
+<segher@kernel.crashing.org> wrote:
+>
+> On Wed, Oct 28, 2020 at 10:57:45PM -0400, Arvind Sankar wrote:
+> > On Wed, Oct 28, 2020 at 04:20:01PM -0700, Alexei Starovoitov wrote:
+> > > All compilers have bugs. Kernel has bugs. What can go wrong?
+>
+> Heh.
+>
+> > +linux-toolchains. GCC updated the documentation in 7.x to discourage
+> > people from using the optimize attribute.
+> >
+> > https://gcc.gnu.org/git/?p=gcc.git;a=commitdiff;h=893100c3fa9b3049ce84dcc0c1a839ddc7a21387
+>
+> https://patchwork.ozlabs.org/project/gcc/patch/20151213081911.GA320@x4/
+> has all the discussion around that GCC patch.
+>
 
-You say above that it would wreak havoc for most users, not all :)
+For everyone's convenience, let me reproduce here how the GCC
+developers describe this attribute on their wiki [0]:
 
-I'd be more comfortable applying this to net-next, does that work for
-you? 
+"""
+Currently (2015), this attribute is known to have several critical
+bugs (PR37565, PR63401, PR60580, PR50782). Using it may produce not
+effect at all or lead to wrong-code.
 
-Also perhaps we could add a pr_warn_once() if an application tried
-using the reserved values, to help identify this change right away.
+Quoting one GCC maintainer: "I consider the optimize attribute code
+seriously broken and unmaintained (but sometimes useful for debugging
+- and only that)." source
 
-> Acked-by: Yung Xue <ying.xue@windriver.com>
-> Signed-off-by: Jon Maloy <jmaloy@redhat.com>
+Unfortunately, the people who added it are either not working on GCC
+anymore or not interested in fixing it. Do not try to guess how it is
+supposed to work by trial-and-error. There is not a list of options
+that are safe to use or known to be broken. Bug reports about the
+optimize attribute being broken will probably be closed as WONTFIX
+(PR59262), thus it is not worth to open new ones. If it works for you
+for a given version of GCC, it doesn't mean it will work on a
+different machine or a different version.
+
+The only realistic choices are to not use it, to use it and accept its
+brokenness (current or future one, since it is unmaintained), or join
+GCC and fix it (perhaps motivating other people along the way to join
+your effort).
+"""
+
+[0] https://gcc.gnu.org/wiki/FAQ#optimize_attribute_broken
