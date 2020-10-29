@@ -2,142 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A002329F5F6
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 21:16:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 916F129F5FF
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 21:17:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726474AbgJ2UQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 16:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34790 "EHLO
+        id S1726496AbgJ2URZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 16:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725764AbgJ2UQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 16:16:15 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FC6C0613CF;
-        Thu, 29 Oct 2020 13:16:15 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id 67so3233351ybt.6;
-        Thu, 29 Oct 2020 13:16:15 -0700 (PDT)
+        with ESMTP id S1726356AbgJ2URX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 16:17:23 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AADAC0613CF
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 13:17:23 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id x13so3287322pfa.9
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 13:17:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UXsl9bQpXcF7K7v4cdbgLf4h8xLzYJsNQHUjicy4A60=;
-        b=bPcwa0ysJlIGJYf1scyyYHje68zwHXR5Te+w0R0UuyqJivrqkyA0TcMf0dT48CROS3
-         F+XeR48XXtMglzj2lzsRQx38MCAMRnXybfPmsX3K7WIhn8OH3Q+X1BdzR9TEg6p5BspW
-         R+B7cUedURK2v18Xl6onC5xPlqHqu7ydJXx1IjP3NTfD6Goy5s1RE5mo6H+9E2uYGrJp
-         wF37NHswSjrQulQQziqZu6KLONLFpF/U9dT4evuMSGfM6tVDhTv+Ff0qFZrAAUQUAsQc
-         izm0cyB1A2RVkQmPJMOVZPZzqj9LtnJvunycz6l3Vm4eLw7OY5B6VA/2WR6YqEqNsYRo
-         HaYg==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2a3Kjr1yfgw2OjddxFMr5WYvUh+vrIY5aScCBEB5zcQ=;
+        b=VeupTnVUVwywx1DTuiAI0AoCTXCIwiFK3Kc9foMbYAVVZ266p3FP850qyPmiBktctf
+         FKdMHNAUqgjozeS3+UFnNM+WBRYP336SIHYvvyIdRcdEj/LvhnnColNS3PFNFEn46yp0
+         Wfzou+DIp3AkpSzFHUlVK2Q1fdAxaslFjZjxfaCuH0L7k9PBmgTv6FnDpMF+Qm51HVrN
+         GmTyr7yore7NvaNsmi6M0zS9n1zV0ZrXHOaFFIfZfkB+gO0YCgvj4GjWx92b9XOrIxGa
+         aRmsBQrNbohWsI89z040BB+5JyVQJdOaVyjx5d08kVwdgp8EcDkyXOBanMJGucBBDYOp
+         290g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UXsl9bQpXcF7K7v4cdbgLf4h8xLzYJsNQHUjicy4A60=;
-        b=WP6UqgncBb0m7NDvBlP/MiGNOLDmMYuK6A6IDSyBayIwJ+WMsZMetU/1r+ckzxPk5Z
-         DQ5xItQDrRc/3C8ts+fB+jz/62m7IthCZnPdiPRjypwmHjBiMuJWyv4bITBuJI3T9/5W
-         glsqQ5Q7xce8cNT0YRc2uPAuOgbhLWub4HyU+xzyd3sNUVpD3m0Y30z7z4NS0iGYni++
-         JWcAX34vTMG0HAbHHc/kXmp9iLGPM0iaSmqnmxMf6B7QmyYp1hbl9Pwz6rwYkCwHzggy
-         Q+cHWtx9IKQNkY5f8fnkwm+qv8R+ZP6cWsF8LfkAF081LzOfDxta2bncMjKBdykhQ2rW
-         xoGQ==
-X-Gm-Message-State: AOAM532s4FPnBOAbQa9lx8oKoTA40/NzjaffRG0ZrerNfJN+972S+3xX
-        e0Wd9TzHZolS2Cu0gvKwZJvKa2/LG1zrX0SdRcA=
-X-Google-Smtp-Source: ABdhPJw8ekdgD4QdOyfCCLIZg9Z24SU4y3qDBdQFfPNB//ELn5AI6MtZuTnFUNJGIKN5sciSbqCgwDdpToNc3t+I61M=
-X-Received: by 2002:a25:25c2:: with SMTP id l185mr7758431ybl.230.1604002574839;
- Thu, 29 Oct 2020 13:16:14 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2a3Kjr1yfgw2OjddxFMr5WYvUh+vrIY5aScCBEB5zcQ=;
+        b=qYouVj9vmOGdnp57notSRkyrxQkWq2LNZxRWCJvfhw1vLiKWyokEH5aAnJjw9W5MYn
+         U3GrBf+n+7jS8CnfPCFGPEu8s4apmsT5PopQLZG7Ijc+De+L01NjyOEq/hOnM39SvT9i
+         INmX67fEBdtibr+IwlhRlKcq/xA1eEmL+XSFzEgQJHUdzyy5RAUw/S8XZfjHPkRcCOgn
+         48eo1rbjcpnpDBAWEhUbcglctJxwKc7n162i0FkQwRjbZAHLCcfcNvyqpvMIKxBb+Jsp
+         DtY7sQ1hy6nobgqPR3ktoKHH3qLvbk49cPc96cJkEcpQ93zPNtvEg6m5R70kQdTa3NQz
+         WRTg==
+X-Gm-Message-State: AOAM533ZXbgujGtCkbFlI/cF6/8FrVQ7V0VTAUOl8Eb+AEvsXPeW12se
+        Eaem/P+zb0bwcRJjwWHib0ZxR5HHEz1VUTca
+X-Google-Smtp-Source: ABdhPJxO0PaNqPFl6fUVCZZaZoxs9ir/Io2diad8hthjHPLWoPAfTkKPRfHTsfKoH+CXsleQ06+74g==
+X-Received: by 2002:a05:6a00:2307:b029:164:d5da:c82c with SMTP id h7-20020a056a002307b0290164d5dac82cmr2714583pfh.5.1604002642807;
+        Thu, 29 Oct 2020 13:17:22 -0700 (PDT)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id h2sm681988pjv.15.2020.10.29.13.17.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 13:17:22 -0700 (PDT)
+Date:   Thu, 29 Oct 2020 13:17:18 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Puneet Sharma <pusharma@akamai.com>
+Cc:     dsahern@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] tc: add print options to fix json output
+Message-ID: <20201029131718.39b87b03@hermes.local>
+In-Reply-To: <20201028183554.18078-1-pusharma@akamai.com>
+References: <20201028183554.18078-1-pusharma@akamai.com>
 MIME-Version: 1.0
-References: <20201029160938.154084-1-irogers@google.com>
-In-Reply-To: <20201029160938.154084-1-irogers@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 29 Oct 2020 13:16:03 -0700
-Message-ID: <CAEf4BzZGUmtrATZnExcUY-BaiCmUKBDo4QOb6PjfumhYG_3c5w@mail.gmail.com>
-Subject: Re: [PATCH] libbpf hashmap: Fix undefined behavior in hash_bits
-To:     Ian Rogers <irogers@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 9:11 AM Ian Rogers <irogers@google.com> wrote:
->
-> If bits is 0, the case when the map is empty, then the >> is the size of
-> the register which is undefined behavior - on x86 it is the same as a
-> shift by 0. Fix by handling the 0 case explicitly when running with
-> address sanitizer.
->
-> A variant of this patch was posted previously as:
-> https://lore.kernel.org/lkml/20200508063954.256593-1-irogers@google.com/
->
-> Signed-off-by: Ian Rogers <irogers@google.com>
+On Wed, 28 Oct 2020 14:35:54 -0400
+Puneet Sharma <pusharma@akamai.com> wrote:
+
+> Currently, json for basic rules output does not produce correct json
+> syntax. The following fixes were done to correct it for extended
+> matches for use with "basic" filters.
+> 
+> tc/f_basic.c: replace fprintf with print_uint to support json output.
+> fixing this prints "handle" tag correctly in json output.
+> 
+> tc/m_ematch.c: replace various fprintf with correct print.
+> add new "ematch" tag for json output which represents
+> "tc filter add ... basic match '()'" string. Added print_raw_string
+> to print raw string instead of key value for json.
+> 
+> lib/json_writer.c: add jsonw_raw_string to print raw text in json.
+> 
+> lib/json_print.c: add print_color_raw_string to print string
+> depending on context.
+> 
+> example:
+> $ tc -s -d -j filter show dev <eth_name> ingress
+> Before:
+> ...
+> "options": {handle 0x2
+>   (
+>     cmp(u8 at 9 layer 1 eq 6)
+>     OR cmp(u8 at 9 layer 1 eq 17)
+>   ) AND ipset(test-ipv4 src)
+> 
+>             "actions": [{
+> ...
+> 
+> After:
+> [{
+> ...
+> "options": {
+>     "handle": 1,
+>     "ematch": "(cmp(u8 at 9 layer 1 eq 6)OR cmp(u8 at 9 layer 1 eq 17)) AND ipset(test-ipv4 src)",
+> ...
+> ]
+> 
+> Signed-off-by: Puneet Sharma <pusharma@akamai.com>
 > ---
->  tools/lib/bpf/hashmap.h | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
->
-> diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
-> index d9b385fe808c..27d0556527d3 100644
-> --- a/tools/lib/bpf/hashmap.h
-> +++ b/tools/lib/bpf/hashmap.h
-> @@ -12,9 +12,23 @@
->  #include <stddef.h>
->  #include <limits.h>
->
-> +#ifdef __has_feature
-> +#define HAVE_FEATURE(f) __has_feature(f)
-> +#else
-> +#define HAVE_FEATURE(f) 0
-> +#endif
-> +
->  static inline size_t hash_bits(size_t h, int bits)
->  {
->         /* shuffle bits and return requested number of upper bits */
-> +#if defined(ADDRESS_SANITIZER) || HAVE_FEATURE(address_sanitizer)
-> +       /*
-> +        * If the requested bits == 0 avoid undefined behavior from a
-> +        * greater-than bit width shift right (aka invalid-shift-exponent).
-> +        */
-> +       if (bits == 0)
-> +               return -1;
-> +#endif
 
-Oh, just too much # magic here :(... If we want to prevent hash_bits()
-from being called with bits == 0 (despite the result never used),
-let's just adjust hashmap__for_each_key_entry and
-hashmap__for_each_key_entry_safe macros:
+What is the point of introducing raw string?
+The JSON standard says that string fields must use proper escapes.
 
-diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
-index d9b385fe808c..488e0ef236cb 100644
---- a/tools/lib/bpf/hashmap.h
-+++ b/tools/lib/bpf/hashmap.h
-@@ -174,9 +174,9 @@ bool hashmap__find(const struct hashmap *map,
-const void *key, void **value);
-  * @key: key to iterate entries for
-  */
- #define hashmap__for_each_key_entry(map, cur, _key)                        \
--       for (cur = ({ size_t bkt = hash_bits(map->hash_fn((_key), map->ctx),\
--                                            map->cap_bits);                \
--                    map->buckets ? map->buckets[bkt] : NULL; });           \
-+       for (cur = map->buckets                                             \
-+                  ? map->buckets[hash_bits(map->hash_fn((_key),
-map->ctx), map->cap_bits)] \
-+                  : NULL;                                                  \
-             cur;                                                           \
-             cur = cur->next)                                               \
-                if (map->equal_fn(cur->key, (_key), map->ctx))
-
-Either way it's a bit ugly and long, but at least we don't have extra
-#-driven ugliness.
-
-
->  #if (__SIZEOF_SIZE_T__ == __SIZEOF_LONG_LONG__)
->         /* LP64 case */
->         return (h * 11400714819323198485llu) >> (__SIZEOF_LONG_LONG__ * 8 - bits);
-> --
-> 2.29.1.341.ge80a0c044ae-goog
->
+Please  don't emit invalid JSON. It will break consumption by other libraries.
