@@ -2,124 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE0FE29E76A
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 10:34:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0578F29E792
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 10:42:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726560AbgJ2JeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 05:34:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44461 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725929AbgJ2JeC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 05:34:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603964041;
+        id S1726002AbgJ2Jm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 05:42:27 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:60264 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725929AbgJ2Jm1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 05:42:27 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1603964545;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Vt9IrI+bbNphkz41mmMtwpNk3Dc6tdCm1kauoJydoGY=;
-        b=jOPkRiY2HUDqCriUIzumyYBdWOIQbv01gICEbAQvfQVXVwBULfD1ryyawAlilWE8opSmFq
-        +ZlHOUZp+TPFtSqZmZWa+TBwn12gBtzsvhSR7dU19kDgO55Bevj2CRhByy/oASRoTeCJkz
-        qbQ+/QKgcS1f/0ejlCXoxp6AxLIVLd4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-335-eWboWm2qPCWmrG4GxZMBmg-1; Thu, 29 Oct 2020 05:33:57 -0400
-X-MC-Unique: eWboWm2qPCWmrG4GxZMBmg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1472364149;
-        Thu, 29 Oct 2020 09:33:55 +0000 (UTC)
-Received: from krava (unknown [10.40.193.60])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 3AEDF5B4A1;
-        Thu, 29 Oct 2020 09:33:44 +0000 (UTC)
-Date:   Thu, 29 Oct 2020 10:33:43 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [RFC bpf-next 07/16] kallsyms: Use rb tree for kallsyms name
- search
-Message-ID: <20201029093343.GB3027684@krava>
-References: <20201022082138.2322434-1-jolsa@kernel.org>
- <20201022082138.2322434-8-jolsa@kernel.org>
- <20201028182534.GS2900849@krava>
- <CAEf4BzarrQLrh4PXZvMmrL8KpBTjB65V9+jxn0os-Yd2jN2aYQ@mail.gmail.com>
+        bh=sNSYAEdWrJ1xkZ1r90fG2WzUbalLDSTU2+9QTihgyFI=;
+        b=PGVx1r1jbStpvh5Yv8tpkkyWZtGyH454muOv0i7BA62QvIFOgpdk1CrFcxxzzOUGRgDgpf
+        Q5Po/PjRWMFlbA4t9dhTvQ9zOZgoPZeWkPrbEtbtrNYBbfnQdlwHV7uah2rnRGBNJV+xLU
+        iA5flm3Du5cd6VAWP5DHmPotHgTPYPbEp8AJ2uzVOBrxuKJhy9zejCPHeU2H6gssqQMyW3
+        QAlum3LoQkXbwHi3NhyQ3/DZbzMzVHHIbTMwZCswSwo0+YdBhI+4qhZjmZjJBvJTG237ev
+        fX564zO8z68lKL/OoFAbfY3LHT3xt/gLHWsInZvaJAhq9AE5qsXVN3oyi5mw4Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1603964545;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sNSYAEdWrJ1xkZ1r90fG2WzUbalLDSTU2+9QTihgyFI=;
+        b=aBV/wJbdlLBSgfOObd6bPytrxcV8EdAUNDqBf+iEcbVQRpxVZVhN5aHoKQhVpOkoztHb8g
+        000rQi4T1yIMJpBg==
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Serge Belyshev <belyshev@depni.sinp.msu.ru>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net] r8169: fix operation under forced interrupt threading
+In-Reply-To: <a37b2cdf-97c4-8d13-2a49-d4f8c0b43f04@gmail.com>
+References: <4d3ef84a-c812-5072-918a-22a6f6468310@gmail.com> <877drabmoq.fsf@depni.sinp.msu.ru> <f0d713d2-6dc4-5246-daca-54811825e064@gmail.com> <20201028162929.5f250d12@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <a37b2cdf-97c4-8d13-2a49-d4f8c0b43f04@gmail.com>
+Date:   Thu, 29 Oct 2020 10:42:25 +0100
+Message-ID: <87y2jpe5by.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzarrQLrh4PXZvMmrL8KpBTjB65V9+jxn0os-Yd2jN2aYQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 03:40:46PM -0700, Andrii Nakryiko wrote:
-> On Wed, Oct 28, 2020 at 3:29 PM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > On Thu, Oct 22, 2020 at 10:21:29AM +0200, Jiri Olsa wrote:
-> > > The kallsyms_expand_symbol function showed in several bpf related
-> > > profiles, because it's doing linear search.
-> > >
-> > > Before:
-> > >
-> > >  Performance counter stats for './src/bpftrace -ve kfunc:__x64_sys_s* \
-> > >    { printf("test\n"); } i:ms:10 { printf("exit\n"); exit();}' (5 runs):
-> > >
-> > >      2,535,458,767      cycles:k                         ( +-  0.55% )
-> > >        940,046,382      cycles:u                         ( +-  0.27% )
-> > >
-> > >              33.60 +- 3.27 seconds time elapsed  ( +-  9.73% )
-> > >
-> > > Loading all the vmlinux symbols in rbtree and and switch to rbtree
-> > > search in kallsyms_lookup_name function to save few cycles and time.
-> > >
-> > > After:
-> > >
-> > >  Performance counter stats for './src/bpftrace -ve kfunc:__x64_sys_s* \
-> > >    { printf("test\n"); } i:ms:10 { printf("exit\n"); exit();}' (5 runs):
-> > >
-> > >      2,199,433,771      cycles:k                         ( +-  0.55% )
-> > >        936,105,469      cycles:u                         ( +-  0.37% )
-> > >
-> > >              26.48 +- 3.57 seconds time elapsed  ( +- 13.49% )
-> > >
-> > > Each symbol takes 160 bytes, so for my .config I've got about 18 MBs
-> > > used for 115285 symbols.
-> > >
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> >
-> > FYI there's init_kprobes dependency on kallsyms_lookup_name in early
-> > init call, so this won't work as it is :-\ will address this in v2
-> >
-> > also I'll switch to sorted array and bsearch, because kallsyms is not
-> > dynamically updated
-> 
-> what about kernel modules then?
+On Thu, Oct 29 2020 at 09:42, Heiner Kallweit wrote:
+> On 29.10.2020 00:29, Jakub Kicinski wrote:
+>> Other handles may take spin_locks, which will sleep on RT.
+>> 
+>> I guess we may need to switch away from the _irqoff() variant for
+>> drivers with IRQF_SHARED after all :(
+>> 
+> Right. Unfortunately that's a large number of drivers,
+> e.g. pci_request_irq() sets IRQF_SHARED in general.
 
-please check my answer to Alexei, I just answered it there
+IRQF_SHARED is not the problem. It only becomes a problem when the
+interrupt is actually shared which is only the case with the legacy PCI
+interrupt. MSI[X] is not affected at all.
 
-thanks,
-jirka
+> But at least for now there doesn't seem to be a better way to deal
+> with the challenges imposed by forced threading and shared irqs.
 
-> 
-> >
-> > jirka
-> >
-> > > ---
-> > >  kernel/kallsyms.c | 95 ++++++++++++++++++++++++++++++++++++++++++-----
-> > >  1 file changed, 86 insertions(+), 9 deletions(-)
-> > >
-> 
-> [...]
-> 
+We still can do the static key trick, though it's admittedly hacky.
+
+Thanks,
+
+        tglx
+
 
