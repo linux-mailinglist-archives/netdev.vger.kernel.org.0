@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB98E29E4A0
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:45:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D573B29E441
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:37:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730271AbgJ2HkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 03:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
+        id S1729157AbgJ2HfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 03:35:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727685AbgJ2HYw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:52 -0400
+        with ESMTP id S1728223AbgJ2HY6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:58 -0400
 Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8F6C0604DD;
-        Wed, 28 Oct 2020 23:07:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13658C0604DE;
+        Wed, 28 Oct 2020 23:11:25 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
-        by mail.nic.cz (Postfix) with ESMTPSA id 0A0771409B1;
-        Thu, 29 Oct 2020 07:07:28 +0100 (CET)
-Date:   Thu, 29 Oct 2020 07:07:21 +0100
+        by mail.nic.cz (Postfix) with ESMTPSA id 5CF581409B1;
+        Thu, 29 Oct 2020 07:11:23 +0100 (CET)
+Date:   Thu, 29 Oct 2020 07:11:16 +0100
 From:   Marek Behun <marek.behun@nic.cz>
 To:     Pavana Sharma <pavana.sharma@digi.com>
 Cc:     andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
         gregkh@linuxfoundation.org, kuba@kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         vivien.didelot@gmail.com, ashkan.boldaji@digi.com
-Subject: Re: [PATCH v6 0/4] Add support for mv88e6393x family of Marvell
-Message-ID: <20201029070721.2e650f99@nic.cz>
-In-Reply-To: <cover.1603944740.git.pavana.sharma@digi.com>
-References: <20201028122115.GC933237@lunn.ch>
-        <cover.1603944740.git.pavana.sharma@digi.com>
+Subject: Re: [PATCH v6 2/4] net: phy: Add 5GBASER interface mode
+Message-ID: <20201029071116.42b4bd94@nic.cz>
+In-Reply-To: <9b93cc79d7cc07ee77808150ca76c9d243c8ca60.1603944740.git.pavana.sharma@digi.com>
+References: <cover.1603944740.git.pavana.sharma@digi.com>
+        <9b93cc79d7cc07ee77808150ca76c9d243c8ca60.1603944740.git.pavana.sharma@digi.com>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -43,17 +43,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Oct 2020 15:40:25 +1000
+On Thu, 29 Oct 2020 15:42:00 +1000
 Pavana Sharma <pavana.sharma@digi.com> wrote:
 
-> Updated patchset.
+> Add new mode supported by MV88E6393 family.
 > 
-> Split the patch to separate mv88e6393 changes from refactoring
-> serdes_get_lane.
-> Update Documentation before adding new mode.
 
-Pavana, the patch adding support for Amethyst has to be the last in the
-series. The patch refactoring the serdes_get_lane code must go before
-the patch adding the support for the new family, because Amethyst
-already needs this functionality.
+This commit message isn't ideal. It infers that the Amethyst is first
+such device to implement this mode, which is not true. The 5gbase-r mode
+is supported by various other hardware, for example Marvell's 88X3310
+PHY. Just say:
+  Add 5gbase-r PHY interface mode.
 
+>  	PHY_INTERFACE_MODE_2500BASEX,
+>  	PHY_INTERFACE_MODE_RXAUI,
+>  	PHY_INTERFACE_MODE_XAUI,
+> +	PHY_INTERFACE_MODE_5GBASER,
+>  	/* 10GBASE-R, XFI, SFI - single lane 10G Serdes */
+>  	PHY_INTERFACE_MODE_10GBASER,
+>  	PHY_INTERFACE_MODE_USXGMII,
+
+The position is IMO out of order. RXAUI and XAUI are both 10G modes, so
+5gbase-r should be between 2500base-x and rxaui.
+
+> @@ -187,6 +188,8 @@ static inline const char *phy_modes(phy_interface_t interface)
+>  		return "rxaui";
+>  	case PHY_INTERFACE_MODE_XAUI:
+>  		return "xaui";
+> +	case PHY_INTERFACE_MODE_5GBASER:
+> +		return "5gbase-r";
+>  	case PHY_INTERFACE_MODE_10GBASER:
+>  		return "10gbase-r";
+>  	case PHY_INTERFACE_MODE_USXGMII:
+
+Here as well.
