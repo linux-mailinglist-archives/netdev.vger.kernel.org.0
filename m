@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0578F29E792
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 10:42:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7209729E802
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 10:59:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726002AbgJ2Jm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 05:42:27 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:60264 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725929AbgJ2Jm1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 05:42:27 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1603964545;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sNSYAEdWrJ1xkZ1r90fG2WzUbalLDSTU2+9QTihgyFI=;
-        b=PGVx1r1jbStpvh5Yv8tpkkyWZtGyH454muOv0i7BA62QvIFOgpdk1CrFcxxzzOUGRgDgpf
-        Q5Po/PjRWMFlbA4t9dhTvQ9zOZgoPZeWkPrbEtbtrNYBbfnQdlwHV7uah2rnRGBNJV+xLU
-        iA5flm3Du5cd6VAWP5DHmPotHgTPYPbEp8AJ2uzVOBrxuKJhy9zejCPHeU2H6gssqQMyW3
-        QAlum3LoQkXbwHi3NhyQ3/DZbzMzVHHIbTMwZCswSwo0+YdBhI+4qhZjmZjJBvJTG237ev
-        fX564zO8z68lKL/OoFAbfY3LHT3xt/gLHWsInZvaJAhq9AE5qsXVN3oyi5mw4Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1603964545;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sNSYAEdWrJ1xkZ1r90fG2WzUbalLDSTU2+9QTihgyFI=;
-        b=aBV/wJbdlLBSgfOObd6bPytrxcV8EdAUNDqBf+iEcbVQRpxVZVhN5aHoKQhVpOkoztHb8g
-        000rQi4T1yIMJpBg==
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Serge Belyshev <belyshev@depni.sinp.msu.ru>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net] r8169: fix operation under forced interrupt threading
-In-Reply-To: <a37b2cdf-97c4-8d13-2a49-d4f8c0b43f04@gmail.com>
-References: <4d3ef84a-c812-5072-918a-22a6f6468310@gmail.com> <877drabmoq.fsf@depni.sinp.msu.ru> <f0d713d2-6dc4-5246-daca-54811825e064@gmail.com> <20201028162929.5f250d12@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <a37b2cdf-97c4-8d13-2a49-d4f8c0b43f04@gmail.com>
-Date:   Thu, 29 Oct 2020 10:42:25 +0100
-Message-ID: <87y2jpe5by.fsf@nanos.tec.linutronix.de>
+        id S1727212AbgJ2J60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 05:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727160AbgJ2J6S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 05:58:18 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E2D9C0613D5;
+        Thu, 29 Oct 2020 02:58:18 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id z24so1918669pgk.3;
+        Thu, 29 Oct 2020 02:58:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eOpZkXoCG56ttvootXx2Du0q4G+Dw2s2HQILRuJryPQ=;
+        b=W0XdM6abeQJafX3wPoDnTOdAI6IxN7rbSdEi3J6/0KaDeFR4yzh0gYk/aM7idgbPSS
+         lqbhE+8meKUg5DHatEjcfmhJaUUos5gQ3usVnfEP6ZhzDSRSgl3JQmIFdQ7InS6CUpFQ
+         3TSC08m4lNjgZIbMJP6Z1NKnfOl+GOSWUV8BXvHsKR4sf8njJPzC3DYtkuyTHF9kGxCt
+         N28DaPJVlmM+em42eqbIV7Nhq9jBa7sYtrNZI8avfHn243QYOsKJbg64PSTY/zB/IOIm
+         pQmuPwZSaXtUQHP5YFUF2HcPA032JsF/C9KYiFGAYyeqgs1HHTYhGUR8glCbwlib5VUL
+         96DA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eOpZkXoCG56ttvootXx2Du0q4G+Dw2s2HQILRuJryPQ=;
+        b=V/vX6KvAywBZoEEplua1smu4iHcYGMCqtNKElndyWlt20o3CDYhQDZSnY3pcePmWaN
+         eFY/uDItqopqPc4pXgAOzbfKc1aH74TQTlurIs0F/K0A+yXREpqn6xxHK/ElRbAidNuP
+         ReLkSbU0sUqpjqdNOvoVbZe6z7w7NkUAIC6b+90O8o3HydX0tYG4g9oYWPgJL6JDOt0X
+         fQRLBW+ykABrQkm8yjSBw8kCJwcXYsy/Wq7WdIKwg2DYS6XPbE2k0qoFbibKH+7lrU4d
+         mS8c+AA5xfycuEPSOUixPte3kU8QHl0Tt05Zr2G3YFvHXhWF7AEEIcvFu7HK8/npavNN
+         uBBA==
+X-Gm-Message-State: AOAM530rtPQK42+mKDXXYuy3UAWYj7nRUX1YRxbKlIrpUXCSWgyvLEYa
+        uxvjj0l8DKaYJWCVmm0At1c=
+X-Google-Smtp-Source: ABdhPJyvUiKjZgDWos0por6Ddaq749z3S6hP6PYbxZ5HRECZ3DmpzOnJvGQlqEWVsGG1kOQsvqQJ3Q==
+X-Received: by 2002:a05:6a00:7cb:b029:152:94b3:b2ee with SMTP id n11-20020a056a0007cbb029015294b3b2eemr3599158pfu.58.1603965498257;
+        Thu, 29 Oct 2020 02:58:18 -0700 (PDT)
+Received: from localhost.localdomain (sau-465d4-or.servercontrol.com.au. [43.250.207.1])
+        by smtp.gmail.com with ESMTPSA id t20sm2394747pfe.123.2020.10.29.02.58.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 02:58:17 -0700 (PDT)
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     andrew@lunn.ch, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hkallweit1@gmail.com
+Cc:     gregkh@linuxfoundation.org,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Subject: [PATCH] drivers: net: phy: Fix spelling in comment defalut to default
+Date:   Thu, 29 Oct 2020 15:25:25 +0530
+Message-Id: <20201029095525.20200-1-unixbhaskar@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29 2020 at 09:42, Heiner Kallweit wrote:
-> On 29.10.2020 00:29, Jakub Kicinski wrote:
->> Other handles may take spin_locks, which will sleep on RT.
->> 
->> I guess we may need to switch away from the _irqoff() variant for
->> drivers with IRQF_SHARED after all :(
->> 
-> Right. Unfortunately that's a large number of drivers,
-> e.g. pci_request_irq() sets IRQF_SHARED in general.
+Fixed spelling in comment like below:
 
-IRQF_SHARED is not the problem. It only becomes a problem when the
-interrupt is actually shared which is only the case with the legacy PCI
-interrupt. MSI[X] is not affected at all.
+s/defalut/default/p
 
-> But at least for now there doesn't seem to be a better way to deal
-> with the challenges imposed by forced threading and shared irqs.
+This is in linux-next.
 
-We still can do the static key trick, though it's admittedly hacky.
+Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+---
+ drivers/net/phy/marvell.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 5aec673a0120..77540f5d2622 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -696,7 +696,7 @@ static void marvell_config_led(struct phy_device *phydev)
 
-        tglx
+ static int marvell_config_init(struct phy_device *phydev)
+ {
+-	/* Set defalut LED */
++	/* Set default LED */
+ 	marvell_config_led(phydev);
 
+ 	/* Set registers from marvell,reg-init DT property */
+--
+2.26.2
 
