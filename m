@@ -2,274 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B630E2A1116
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 23:45:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C9702A1124
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 23:46:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726116AbgJ3WpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 18:45:22 -0400
-Received: from mga11.intel.com ([192.55.52.93]:45968 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726108AbgJ3WpQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Oct 2020 18:45:16 -0400
-IronPort-SDR: mlY4AB9Ww4jyTTm0rb1PlAqkaB/KcnM3mLzdmDKmllRriBEiTUdelWhfhbObHqtyjk+L2SyuTS
- wQBiOdck9jGQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9790"; a="165177403"
-X-IronPort-AV: E=Sophos;i="5.77,434,1596524400"; 
-   d="scan'208";a="165177403"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2020 15:45:14 -0700
-IronPort-SDR: 9I3S7hOympe45pE8kgYfcZE2uQ9aiH8F1KlT5MMH2t4xNr7P9Sqim8vKrBvbUH2OwSsReiXI7l
- MYcaf/GYLfZw==
-X-IronPort-AV: E=Sophos;i="5.77,434,1596524400"; 
-   d="scan'208";a="361983944"
-Received: from mjmartin-nuc02.amr.corp.intel.com ([10.254.102.227])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2020 15:45:13 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliangtang@gmail.com>, mptcp@lists.01.org,
-        kuba@kernel.org, davem@davemloft.net,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next 6/6] selftests: mptcp: add ADD_ADDR timeout test case
-Date:   Fri, 30 Oct 2020 15:45:06 -0700
-Message-Id: <20201030224506.108377-7-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201030224506.108377-1-mathew.j.martineau@linux.intel.com>
-References: <20201030224506.108377-1-mathew.j.martineau@linux.intel.com>
+        id S1725979AbgJ3Wqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 18:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56016 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725792AbgJ3Wqi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 18:46:38 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C412FC0613D5;
+        Fri, 30 Oct 2020 15:46:37 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id s15so10720187ejf.8;
+        Fri, 30 Oct 2020 15:46:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hdzDQCqjJnyS3Rh4YggWshAkvweKf0RvdENbWdlXEkM=;
+        b=CY4unsu17OUZQUauhh2Rye+vPeAYREKAhg2mX/BP1/pKALco4g6FN8LYtMFWjpB8Q3
+         ThGudIMUk2SwzRFyZBUVDHpm6zylt8aOS1iOpK1gO9rMorrdB6U3yfLR+xuXzhyNDvMx
+         rBfJlebdcqXgfORR3MEFyUKPPtnHCF4Xxwx3ofqaQMa2TZ1oYYuFasUCYog5op5R92Jy
+         FTa4JnQff2RZ+ZI2Qei6u52Y9gsgEThw5mSeiSNG0djPec+SsDKDiAdD6NgiDNomJqZz
+         Ogf2rlJmSkU1w8x5E5oxryKCPKODBzwfAbMwqKsgDJsBVrQnJP97T4gKeWysv12VPWyn
+         b85Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hdzDQCqjJnyS3Rh4YggWshAkvweKf0RvdENbWdlXEkM=;
+        b=E+1D1tKd4VdnRZVviWP6ryUlqzgmCtVfLKZqkEkQjiUIIoUpQWpPh3oy/N2ODhhWpz
+         qShopynnpoLaqb5H0zZE3/La5407Q0fpHqBXEhEFyeHyJa6CYML36zYLKM8XWzcRNIMc
+         gURGlUXfrP2xjea8TkDRNcComgggrEztAM/4lK7Gbmj5s/eLDQrBfHqyoouyU+VqW2JZ
+         Zn3vfDhGFV+TjHWsKN34/arOif6cBLDhk1r251oZC07LqxWjronDnabu//SWSGt3SC6Z
+         UdYHyHMQVSRBgljpREd+buu+jGqTOWJh/oC80CkFVVAT1ax2jUIvrzxfP7bd6fDE+2l4
+         1y5A==
+X-Gm-Message-State: AOAM533jZN/uZTUFvISXgzj3hIf1U+CNrVvmWbzpT18eMJhTFYDNv8jj
+        ShWGAPAK+9WGy5Hxd/kk5ng=
+X-Google-Smtp-Source: ABdhPJyx2iiPB5QekUKLvQvIJOO45HCgd8rDjQpuJSC1lrnZ8+reRpTv1dpezghb2eQUWhLEXC14Tw==
+X-Received: by 2002:a17:906:c114:: with SMTP id do20mr4645145ejc.169.1604097996471;
+        Fri, 30 Oct 2020 15:46:36 -0700 (PDT)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id ce13sm3720161edb.32.2020.10.30.15.46.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Oct 2020 15:46:35 -0700 (PDT)
+Date:   Sat, 31 Oct 2020 00:46:33 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Ioana Ciornei <ciorneiioana@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Christophe Leroy <christophe.leroy@c-s.fr>,
+        Dan Murphy <dmurphy@ti.com>,
+        Divya Koppera <Divya.Koppera@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Kavya Sree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        Marek Vasut <marex@denx.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Mathias Kresin <dev@kresin.me>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Michael Walle <michael@walle.cc>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Nisar Sayed <Nisar.Sayed@microchip.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Willy Liu <willy.liu@realtek.com>,
+        Yuiko Oshino <yuiko.oshino@microchip.com>
+Subject: Re: [PATCH net-next 00/19] net: phy: add support for shared
+ interrupts (part 1)
+Message-ID: <20201030224633.wxvkt7p7pb2kfbuk@skbuf>
+References: <20201029100741.462818-1-ciorneiioana@gmail.com>
+ <43d672ae-c089-6621-5ab3-3a0f0303e51a@gmail.com>
+ <20201030220642.ctkt2pitdvri3byt@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201030220642.ctkt2pitdvri3byt@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliangtang@gmail.com>
+On Sat, Oct 31, 2020 at 12:06:42AM +0200, Vladimir Oltean wrote:
+> On Fri, Oct 30, 2020 at 10:56:24PM +0100, Heiner Kallweit wrote:
+> > I'd just like to avoid the term "shared interrupt", because it has
+> > a well-defined meaning. Our major concern isn't shared interrupts
+> > but support for multiple interrupt sources (in addition to
+> > link change) in a PHY.
+> 
+> You may be a little bit confused Heiner.
+> This series adds support for exactly _that_ meaning of shared interrupts.
+> Shared interrupts (aka wired-OR on the PCB) don't work today with the
+> PHY library. I have a board that won't even boot to prompt when the
+> interrupt lines of its 2 PHYs are enabled, that this series fixes.
+> You might need to take another look through the commit messages I'm afraid.
 
-This patch added the test case for retransmitting ADD_ADDR when timeout
-occurs. It set NS1's add_addr_timeout to 1 second, and drop NS2's ADD_ADDR
-echo packets.
+Maybe this diagram will help you visualize better.
 
-Here we need to slow down the transfer process of all data to let the
-ADD_ADDR suboptions can be retransmitted three times. So we added a new
-parameter "speed" for do_transfer, it can be set with fast or slow.
+time
+ |
+ |       PHY 1                  PHY 2 has pending IRQ
+ |         |                      (e.g. link up)
+ |         v                             |
+ |   phy_interrupt()                     |
+ |  called for PHY 1                     |
+ |         |                             |
+ |         v                             |
+ | returns IRQ_HANDLED via               |
+ |  phy_clear_interrupt()                |
+ |         |                             |
+ |         |                             |
+ |         v                             |
+ | handling of shared IRQ                |
+ |     ends here                         |
+ |         |                             |
+ |         |                             v
+ |         |                PHY 2 still has pending IRQ
+ |         |            because, you know, it wasn't actually
+ |         |                          serviced
+ |         v                             |
+ |   phy_interrupt()                     |
+ |  called for PHY 1                     |
+ |         |                             |
+ |         v                             |
+ | returns IRQ_HANDLED via               |
+ |  phy_clear_interrupt()                |
+ |         |                             |
+ |         |                             |
+ |         v                             |
+ | handling of shared IRQ                |
+ |     ends here                         |
+ |         |                PHY 2: Hey! It's me! Over here!
+ |         |                             |
+ |         v                             |
+ |   phy_interrupt()                     |
+ |  called for PHY 1                     |
+ |         |                             |
+ |         v                             |
+ | returns IRQ_HANDLED via               |
+ |  phy_clear_interrupt()                |
+ |         |                             |
+ |         |                             |
+ |         v                             |
+ | handling of shared IRQ                |
+ |     ends here                         |
+ |         |                       PHY 2: Srsly?
+ |         |                             |
+ |         v                             |
+ |   phy_interrupt()                     |
+ |  called for PHY 1                     |
+ |         |                             |
+ |         v                             |
+ |        ...                           ...
+ |
+ |               21 seconds later
+ |
+ |                  RCU stall
+ v
 
-We also added three new optional parameters for run_tests, and dropped
-run_remove_tests function.
+This happens because today, the way phy_interrupt() is written, you can
+only return IRQ_NONE and give the other driver a chance _if_ your driver
+implements .did_interrupt(). But the kernel documentation of
+.did_interrupt() only recommends to implement that function if you are a
+multi-PHY package driver (otherwise stated, the hardware chip has an
+embedded shared IRQ). But as things stand, _everybody_ should implement
+.did_interrupt() in order for any combination of PHY drivers to support
+shared IRQs.
 
-Since we added the netfilter rules in this test case, we need to update
-the "config" file.
+What Ioana is proposing, and this is something that I fully agree with,
+is that we just get rid of the layering where the PHY library tries to
+be helpful but instead invites everybody to write systematically bad
+code. Anyone knows how to write an IRQ handler with eyes closed, but the
+fact that .did_interrupt() is mandatory for proper shared IRQ support is
+not obvious to everybody, it seems. So let's just have a dedicated IRQ
+handling function per each PHY driver, so that we don't get confused in
+this sloppy mess of return values, and the code can actually be
+followed.
 
-Suggested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Suggested-by: Paolo Abeni <pabeni@redhat.com>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
----
- tools/testing/selftests/net/mptcp/config      | 10 ++
- .../testing/selftests/net/mptcp/mptcp_join.sh | 94 ++++++++++++++-----
- 2 files changed, 80 insertions(+), 24 deletions(-)
+Even _with_ Ioana's changes, there is one more textbook case of shared
+interrupts causing trouble, and that is actually the reason why nobody
+likes them except hardware engineers who don't get to deal with this.
 
-diff --git a/tools/testing/selftests/net/mptcp/config b/tools/testing/selftests/net/mptcp/config
-index 741a1c4f4ae8..0faaccd21447 100644
---- a/tools/testing/selftests/net/mptcp/config
-+++ b/tools/testing/selftests/net/mptcp/config
-@@ -5,3 +5,13 @@ CONFIG_INET_DIAG=m
- CONFIG_INET_MPTCP_DIAG=m
- CONFIG_VETH=y
- CONFIG_NET_SCH_NETEM=m
-+CONFIG_NETFILTER=y
-+CONFIG_NETFILTER_ADVANCED=y
-+CONFIG_NETFILTER_NETLINK=m
-+CONFIG_NF_TABLES=m
-+CONFIG_NFT_COUNTER=m
-+CONFIG_NFT_COMPAT=m
-+CONFIG_NETFILTER_XTABLES=m
-+CONFIG_NETFILTER_XT_MATCH_BPF=m
-+CONFIG_NF_TABLES_IPV4=y
-+CONFIG_NF_TABLES_IPV6=y
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 08f53d86dedc..0d93b243695f 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -13,6 +13,24 @@ capture=0
- 
- TEST_COUNT=0
- 
-+# generated using "nfbpf_compile '(ip && (ip[54] & 0xf0) == 0x30) ||
-+#				  (ip6 && (ip6[74] & 0xf0) == 0x30)'"
-+CBPF_MPTCP_SUBOPTION_ADD_ADDR="14,
-+			       48 0 0 0,
-+			       84 0 0 240,
-+			       21 0 3 64,
-+			       48 0 0 54,
-+			       84 0 0 240,
-+			       21 6 7 48,
-+			       48 0 0 0,
-+			       84 0 0 240,
-+			       21 0 4 96,
-+			       48 0 0 74,
-+			       84 0 0 240,
-+			       21 0 1 48,
-+			       6 0 0 65535,
-+			       6 0 0 0"
-+
- init()
- {
- 	capout=$(mktemp)
-@@ -82,6 +100,26 @@ reset_with_cookies()
- 	done
- }
- 
-+reset_with_add_addr_timeout()
-+{
-+	local ip="${1:-4}"
-+	local tables
-+
-+	tables="iptables"
-+	if [ $ip -eq 6 ]; then
-+		tables="ip6tables"
-+	fi
-+
-+	reset
-+
-+	ip netns exec $ns1 sysctl -q net.mptcp.add_addr_timeout=1
-+	ip netns exec $ns2 $tables -A OUTPUT -p tcp \
-+		-m tcp --tcp-option 30 \
-+		-m bpf --bytecode \
-+		"$CBPF_MPTCP_SUBOPTION_ADD_ADDR" \
-+		-j DROP
-+}
-+
- for arg in "$@"; do
- 	if [ "$arg" = "-c" ]; then
- 		capture=1
-@@ -94,6 +132,17 @@ if [ $? -ne 0 ];then
- 	exit $ksft_skip
- fi
- 
-+iptables -V > /dev/null 2>&1
-+if [ $? -ne 0 ];then
-+	echo "SKIP: Could not run all tests without iptables tool"
-+	exit $ksft_skip
-+fi
-+
-+ip6tables -V > /dev/null 2>&1
-+if [ $? -ne 0 ];then
-+	echo "SKIP: Could not run all tests without ip6tables tool"
-+	exit $ksft_skip
-+fi
- 
- check_transfer()
- {
-@@ -135,6 +184,7 @@ do_transfer()
- 	connect_addr="$5"
- 	rm_nr_ns1="$6"
- 	rm_nr_ns2="$7"
-+	speed="$8"
- 
- 	port=$((10000+$TEST_COUNT))
- 	TEST_COUNT=$((TEST_COUNT+1))
-@@ -159,7 +209,7 @@ do_transfer()
- 		sleep 1
- 	fi
- 
--	if [[ $rm_nr_ns1 -eq 0 && $rm_nr_ns2 -eq 0 ]]; then
-+	if [ $speed = "fast" ]; then
- 		mptcp_connect="./mptcp_connect -j"
- 	else
- 		mptcp_connect="./mptcp_connect -r"
-@@ -250,26 +300,13 @@ run_tests()
- 	listener_ns="$1"
- 	connector_ns="$2"
- 	connect_addr="$3"
-+	rm_nr_ns1="${4:-0}"
-+	rm_nr_ns2="${5:-0}"
-+	speed="${6:-fast}"
- 	lret=0
- 
--	do_transfer ${listener_ns} ${connector_ns} MPTCP MPTCP ${connect_addr} 0 0
--	lret=$?
--	if [ $lret -ne 0 ]; then
--		ret=$lret
--		return
--	fi
--}
--
--run_remove_tests()
--{
--	listener_ns="$1"
--	connector_ns="$2"
--	connect_addr="$3"
--	rm_nr_ns1="$4"
--	rm_nr_ns2="$5"
--	lret=0
--
--	do_transfer ${listener_ns} ${connector_ns} MPTCP MPTCP ${connect_addr} ${rm_nr_ns1} ${rm_nr_ns2}
-+	do_transfer ${listener_ns} ${connector_ns} MPTCP MPTCP ${connect_addr} \
-+		${rm_nr_ns1} ${rm_nr_ns2} ${speed}
- 	lret=$?
- 	if [ $lret -ne 0 ]; then
- 		ret=$lret
-@@ -491,12 +528,21 @@ run_tests $ns1 $ns2 10.0.1.1
- chk_join_nr "multiple subflows and signal" 3 3 3
- chk_add_nr 1 1
- 
-+# add_addr timeout
-+reset_with_add_addr_timeout
-+ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl limits 1 1
-+ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
-+run_tests $ns1 $ns2 10.0.1.1 0 0 slow
-+chk_join_nr "signal address, ADD_ADDR timeout" 1 1 1
-+chk_add_nr 4 0
-+
- # single subflow, remove
- reset
- ip netns exec $ns1 ./pm_nl_ctl limits 0 1
- ip netns exec $ns2 ./pm_nl_ctl limits 0 1
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
--run_remove_tests $ns1 $ns2 10.0.1.1 0 1
-+run_tests $ns1 $ns2 10.0.1.1 0 1 slow
- chk_join_nr "remove single subflow" 1 1 1
- chk_rm_nr 1 1
- 
-@@ -506,7 +552,7 @@ ip netns exec $ns1 ./pm_nl_ctl limits 0 2
- ip netns exec $ns2 ./pm_nl_ctl limits 0 2
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.2.2 flags subflow
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
--run_remove_tests $ns1 $ns2 10.0.1.1 0 2
-+run_tests $ns1 $ns2 10.0.1.1 0 2 slow
- chk_join_nr "remove multiple subflows" 2 2 2
- chk_rm_nr 2 2
- 
-@@ -515,7 +561,7 @@ reset
- ip netns exec $ns1 ./pm_nl_ctl limits 0 1
- ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
- ip netns exec $ns2 ./pm_nl_ctl limits 1 1
--run_remove_tests $ns1 $ns2 10.0.1.1 1 0
-+run_tests $ns1 $ns2 10.0.1.1 1 0 slow
- chk_join_nr "remove single address" 1 1 1
- chk_add_nr 1 1
- chk_rm_nr 0 0
-@@ -526,7 +572,7 @@ ip netns exec $ns1 ./pm_nl_ctl limits 0 2
- ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
- ip netns exec $ns2 ./pm_nl_ctl limits 1 2
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
--run_remove_tests $ns1 $ns2 10.0.1.1 1 1
-+run_tests $ns1 $ns2 10.0.1.1 1 1 slow
- chk_join_nr "remove subflow and signal" 2 2 2
- chk_add_nr 1 1
- chk_rm_nr 1 1
-@@ -538,7 +584,7 @@ ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
- ip netns exec $ns2 ./pm_nl_ctl limits 1 3
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.4.2 flags subflow
--run_remove_tests $ns1 $ns2 10.0.1.1 1 2
-+run_tests $ns1 $ns2 10.0.1.1 1 2 slow
- chk_join_nr "remove subflows and signal" 3 3 3
- chk_add_nr 1 1
- chk_rm_nr 2 2
--- 
-2.29.2
+time
+ |
+ |   PHY 1 probed
+ | (module or built-in)
+ |         |                   PHY 2 has pending IRQ
+ |         |               (it had link up from previous
+ |         v               boot, or from bootloader, etc)
+ |   phy_interrupt()                     |
+ |  called for PHY 1                     |
+ |         |                             |
+ |         v                             |
+ | returns IRQ_NONE as                   |
+ |     it should                         v
+ |         |                PHY 2 still has pending IRQ
+ |         |               but its handler wasn't called
+ |         |              because its driver has not been
+ |         |                        yet loaded
+ |         v                             |
+ |   phy_interrupt()                     |
+ |  called for PHY 1                     |
+ |         |                             |
+ |         v                             |
+ | returns IRQ_NONE as                   |
+ |      it should                        v
+ |         |                   PHY 2: Not again :(
+ |         |                             |
+ |         v                             |
+ |   phy_interrupt()                     |
+ |  called for PHY 1                     |
+ |         |                             |
+ |         v                             |
+ | returns IRQ_NONE as                   |
+ |      it should                        |
+ |         |                             |
+ |        ...                           ...
+ |         |                             |
+ |         |                PHY 2 driver never gets probed
+ |         |               either because it's a module or
+ |         |                because the system is too busy
+ |         |                checking PHY 1 over and over
+ |         |                again for an interrupt that
+ |         |                     it did not trigger
+ |         |                             |
+ |        ...                           ...
+ |
+ |               21 seconds later
+ |
+ |                  RCU stall
+ v
 
+The way that it's solved is that it's never 100% solved.
+This one you can just avoid, but never recover from it.
+To avoid it, you must ensure from your previous boot environments
+(bootloader, kexec) that the IRQ line is not pending. Because if you
+leave the shared IRQ line pending, the system is kaput if it happens to
+probe the drivers in the wrong order (aka don't probe first the driver
+that will clear that shared IRQ). It's like Minesweeper, only worse.
+
+That's why the shutdown hook is there, as a best-effort attempt for
+Linux to clean up after itself. But we're always at the mercy of the
+bootloader, or even at the mercy of chance. If the previous kernel
+panicked, there's no orderly cleanup to speak of.
+
+Hope it's clearer now.
