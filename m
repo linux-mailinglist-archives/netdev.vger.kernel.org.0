@@ -2,178 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA9F329FA9C
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 02:30:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAB4529FAA6
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 02:36:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725926AbgJ3B3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 21:29:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36345 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725379AbgJ3B3t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 21:29:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604021387;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=RzAEEYm290UWyxLdw4Kh5CVGPIfFqHy/8knCSJBpXB8=;
-        b=R6vrthcnSYinobRjVny6H84kzuJ36xQi66JuFMdyOt7xlNdK4GvfWXBX4L1BrmABb1+3Rt
-        FDDBRP6bMXDMofNokn+eZUW0kFivIP91H61JQFBF7MVRBfXG/TyDN9xcJjZZbyOD+1qdu6
-        OEkSVrjaP4i0l44FtjRfAHwDkwdoc9U=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-205-Zk38r3uANxKPgdvNiELCLQ-1; Thu, 29 Oct 2020 21:29:43 -0400
-X-MC-Unique: Zk38r3uANxKPgdvNiELCLQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5F8791084C86;
-        Fri, 30 Oct 2020 01:29:41 +0000 (UTC)
-Received: from f31.redhat.com (ovpn-112-215.rdu2.redhat.com [10.10.112.215])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 83DA71002393;
-        Fri, 30 Oct 2020 01:29:39 +0000 (UTC)
-From:   jmaloy@redhat.com
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     tipc-discussion@lists.sourceforge.net,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
-        xinl@redhat.com, ying.xue@windriver.com,
-        parthasarathy.bhuvaragan@gmail.com
-Subject: [net-next v2] tipc: add stricter control of reserved service types
-Date:   Thu, 29 Oct 2020 21:29:38 -0400
-Message-Id: <20201030012938.489557-1-jmaloy@redhat.com>
+        id S1725800AbgJ3Bgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 21:36:41 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:6989 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725771AbgJ3Bgl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 21:36:41 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CMlK56tCBzhcfn;
+        Fri, 30 Oct 2020 09:36:41 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
+ 14.3.487.0; Fri, 30 Oct 2020 09:36:33 +0800
+Subject: Re: arping stuck with ENOBUFS in 4.19.150
+To:     David Ahern <dsahern@gmail.com>,
+        Joakim Tjernlund <Joakim.Tjernlund@infinera.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>
+References: <9bede0ef7e66729034988f2d01681ca88a5c52d6.camel@infinera.com>
+ <e09b367a58a0499f3bb0394596a9f87cc20eb5de.camel@infinera.com>
+ <777947a9-1a05-c51b-81fc-4338aca3af26@gmail.com>
+ <97730e024e7279d67f3eca7e0ef24395e9e08bff.camel@infinera.com>
+ <bf33dfc1-8e37-8ac0-7dcb-09002faadc7a@gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <4641f25f-7e7f-5d06-7e00-e1716cbdeddc@huawei.com>
+Date:   Fri, 30 Oct 2020 09:36:34 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
+In-Reply-To: <bf33dfc1-8e37-8ac0-7dcb-09002faadc7a@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
+On 2020/10/29 23:18, David Ahern wrote:
+> On 10/29/20 8:10 AM, Joakim Tjernlund wrote:
+>> OK, bisecting (was a bit of a bother since we merge upstream releases into our tree, is there a way to just bisect that?)
+>>
+>> Result was commit "net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc"  (749cc0b0c7f3dcdfe5842f998c0274e54987384f)
+>>
+>> Reverting that commit on top of our tree made it work again. How to fix?
+> 
+> Adding the author of that patch (linyunsheng@huawei.com) to take a look.
+> 
+> 
+>>
+>>  Jocke
+>>  
+>> On Mon, 2020-10-26 at 12:31 -0600, David Ahern wrote:
+>>>
+>>> On 10/26/20 6:58 AM, Joakim Tjernlund wrote:
+>>>> Ping  (maybe it should read "arping" instead :)
+>>>>
+>>>>  Jocke
+>>>>
+>>>> On Thu, 2020-10-22 at 17:19 +0200, Joakim Tjernlund wrote:
+>>>>> strace arping -q -c 1 -b -U  -I eth1 0.0.0.0
+>>>>> ...
+>>>>> sendto(3, "\0\1\10\0\6\4\0\1\0\6\234\v\6 \v\v\v\v\377\377\377\377\377\377\0\0\0\0", 28, 0, {sa_family=AF_PACKET, proto=0x806, if4, pkttype=PACKET_HOST, addr(6)={1, ffffffffffff},
+>>>>> 20) = -1 ENOBUFS (No buffer space available)
+>>>>> ....
+>>>>> and then arping loops.
+>>>>>
+>>>>> in 4.19.127 it was:
+>>>>> sendto(3, "\0\1\10\0\6\4\0\1\0\6\234\5\271\362\n\322\212E\377\377\377\377\377\377\0\0\0\0", 28, 0, {​sa_family=AF_PACKET, proto=0x806, if4, pkttype=PACKET_HOST, addr(6)={​1,
+>>>>> ffffffffffff}​, 20) = 28
+>>>>>
+>>>>> Seems like something has changed the IP behaviour between now and then ?
+>>>>> eth1 is UP but not RUNNING and has an IP address.
 
-TIPC reserves 64 service types for current and future internal use.
-Therefore, the bind() function is meant to block regular user sockets
-from being bound to these values, while it should let through such
-bindings from internal users.
+"eth1 is UP but not RUNNING" usually mean user has configure the netdev as up,
+but the hardware has not detected a linkup yet.
 
-However, since we at the design moment saw no way to distinguish
-between regular and internal users the filter function ended up
-with allowing all bindings of the reserved types which were really
-in use ([0,1]), and block all the rest ([2,63]).
+Also What is the output of "ethtool eth1"?
 
-This is risky, since a regular user may bind to the service type
-representing the topology server (TIPC_TOP_SRV == 1) or the one used
-for indicating neighboring node status (TIPC_CFG_SRV == 0), and wreak
-havoc for users of those services, i.e., most users.
+It would be good to see the status of netdev before and after executing arping cmd
+too.
 
-The reality is however that TIPC_CFG_SRV never is bound through the
-bind() function, since it doesn't represent a regular socket, and
-TIPC_TOP_SRV can also be made to bypass the checks in tipc_bind()
-by introducing a different entry function, tipc_sk_bind().
+Thanks.
 
-It should be noted that although this is a change of the API semantics,
-there is no risk we will break any currently working applications by
-doing this. Any application trying to bind to the values in question
-would be badly broken from the outset, so there is no chance we would
-find any such applications in real-world production systems.
+>>>>>
+>>>>>  Jocke
+>>>>
+>>>
+>>> do a git bisect between the releases to find out which commit is causing
+>>> the change in behavior.
 
-Acked-by: Yung Xue <ying.xue@windriver.com>
+unfortunately, I did not reproduce the above problem in 4.19.150 too.
 
----
-v2: Added warning printout when a user is blocked from binding,
-    as suggested by Jakub Kicinski
+root@(none)$ arping -q -c 1 -b -U  -I eth0 0.0.0.0
+root@(none)$ arping -v
+ARPing 2.21, by Thomas Habets <thomas@habets.se>
+usage: arping [ -0aAbdDeFpPqrRuUv ] [ -w <sec> ] [ -W <sec> ] [ -S <host/ip> ]
+              [ -T <host/ip ] [ -s <MAC> ] [ -t <MAC> ] [ -c <count> ]
+              [ -C <count> ] [ -i <interface> ] [ -m <type> ] [ -g <group> ]
+              [ -V <vlan> ] [ -Q <priority> ] <host/ip/MAC | -B>
+For complete usage info, use --help or check the manpage.
+root@(none)$ cat /proc/version
+Linux version 4.19.150 (linyunsheng@ubuntu) (gcc version 5.4.0 20160609 (Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.12)) #4 SMP PREEMPT Fri Oct 30 09:22:06 CST 2020
 
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
----
- net/tipc/socket.c | 27 ++++++++++++++++++---------
- net/tipc/socket.h |  2 +-
- net/tipc/topsrv.c |  4 ++--
- 3 files changed, 21 insertions(+), 12 deletions(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index e795a8a2955b..69c4b16e8184 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -658,8 +658,8 @@ static int tipc_release(struct socket *sock)
-  * NOTE: This routine doesn't need to take the socket lock since it doesn't
-  *       access any non-constant socket information.
-  */
--static int tipc_bind(struct socket *sock, struct sockaddr *uaddr,
--		     int uaddr_len)
-+
-+int tipc_sk_bind(struct socket *sock, struct sockaddr *uaddr, int uaddr_len)
- {
- 	struct sock *sk = sock->sk;
- 	struct sockaddr_tipc *addr = (struct sockaddr_tipc *)uaddr;
-@@ -691,13 +691,6 @@ static int tipc_bind(struct socket *sock, struct sockaddr *uaddr,
- 		goto exit;
- 	}
- 
--	if ((addr->addr.nameseq.type < TIPC_RESERVED_TYPES) &&
--	    (addr->addr.nameseq.type != TIPC_TOP_SRV) &&
--	    (addr->addr.nameseq.type != TIPC_CFG_SRV)) {
--		res = -EACCES;
--		goto exit;
--	}
--
- 	res = (addr->scope >= 0) ?
- 		tipc_sk_publish(tsk, addr->scope, &addr->addr.nameseq) :
- 		tipc_sk_withdraw(tsk, -addr->scope, &addr->addr.nameseq);
-@@ -706,6 +699,22 @@ static int tipc_bind(struct socket *sock, struct sockaddr *uaddr,
- 	return res;
- }
- 
-+static int tipc_bind(struct socket *sock, struct sockaddr *skaddr, int alen)
-+{
-+	struct sockaddr_tipc *addr = (struct sockaddr_tipc *)skaddr;
-+
-+	if (alen) {
-+		if (alen < sizeof(struct sockaddr_tipc))
-+			return -EINVAL;
-+		if (addr->addr.nameseq.type < TIPC_RESERVED_TYPES) {
-+			pr_warn_once("Can't bind to reserved service type %u\n",
-+				     addr->addr.nameseq.type);
-+			return -EACCES;
-+		}
-+	}
-+	return tipc_sk_bind(sock, skaddr, alen);
-+}
-+
- /**
-  * tipc_getname - get port ID of socket or peer socket
-  * @sock: socket structure
-diff --git a/net/tipc/socket.h b/net/tipc/socket.h
-index b11575afc66f..02cdf166807d 100644
---- a/net/tipc/socket.h
-+++ b/net/tipc/socket.h
-@@ -74,7 +74,7 @@ int tipc_dump_done(struct netlink_callback *cb);
- u32 tipc_sock_get_portid(struct sock *sk);
- bool tipc_sk_overlimit1(struct sock *sk, struct sk_buff *skb);
- bool tipc_sk_overlimit2(struct sock *sk, struct sk_buff *skb);
--
-+int tipc_sk_bind(struct socket *sock, struct sockaddr *skaddr, int alen);
- int tsk_set_importance(struct sock *sk, int imp);
- 
- #endif
-diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
-index 5f6f86051c83..cec029349662 100644
---- a/net/tipc/topsrv.c
-+++ b/net/tipc/topsrv.c
-@@ -520,12 +520,12 @@ static int tipc_topsrv_create_listener(struct tipc_topsrv *srv)
- 
- 	saddr.family	                = AF_TIPC;
- 	saddr.addrtype		        = TIPC_ADDR_NAMESEQ;
--	saddr.addr.nameseq.type	        = TIPC_TOP_SRV;
-+	saddr.addr.nameseq.type         = TIPC_TOP_SRV;
- 	saddr.addr.nameseq.lower	= TIPC_TOP_SRV;
- 	saddr.addr.nameseq.upper	= TIPC_TOP_SRV;
- 	saddr.scope			= TIPC_NODE_SCOPE;
- 
--	rc = kernel_bind(lsock, (struct sockaddr *)&saddr, sizeof(saddr));
-+	rc = tipc_sk_bind(lsock, (struct sockaddr *)&saddr, sizeof(saddr));
- 	if (rc < 0)
- 		goto err;
- 	rc = kernel_listen(lsock, 0);
--- 
-2.25.4
 
+>>
+> 
+> 
