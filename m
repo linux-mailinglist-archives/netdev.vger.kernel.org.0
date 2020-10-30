@@ -2,259 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C9702A1124
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 23:46:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4D8E2A112D
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 23:52:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725979AbgJ3Wqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 18:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56016 "EHLO
+        id S1725895AbgJ3WwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 18:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725792AbgJ3Wqi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 18:46:38 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C412FC0613D5;
-        Fri, 30 Oct 2020 15:46:37 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id s15so10720187ejf.8;
-        Fri, 30 Oct 2020 15:46:37 -0700 (PDT)
+        with ESMTP id S1725780AbgJ3WwV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 18:52:21 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F555C0613D5;
+        Fri, 30 Oct 2020 15:52:21 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id gi3so17410pjb.3;
+        Fri, 30 Oct 2020 15:52:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hdzDQCqjJnyS3Rh4YggWshAkvweKf0RvdENbWdlXEkM=;
-        b=CY4unsu17OUZQUauhh2Rye+vPeAYREKAhg2mX/BP1/pKALco4g6FN8LYtMFWjpB8Q3
-         ThGudIMUk2SwzRFyZBUVDHpm6zylt8aOS1iOpK1gO9rMorrdB6U3yfLR+xuXzhyNDvMx
-         rBfJlebdcqXgfORR3MEFyUKPPtnHCF4Xxwx3ofqaQMa2TZ1oYYuFasUCYog5op5R92Jy
-         FTa4JnQff2RZ+ZI2Qei6u52Y9gsgEThw5mSeiSNG0djPec+SsDKDiAdD6NgiDNomJqZz
-         Ogf2rlJmSkU1w8x5E5oxryKCPKODBzwfAbMwqKsgDJsBVrQnJP97T4gKeWysv12VPWyn
-         b85Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=91c9EpN35NammVPGZ4fZAQ5G050YxyvJ3BZUiRrkUMs=;
+        b=CCQG+ezN81ySThA+qBB5QkNFAEhBb6/sj04wP5mk154Md4ZDuvf5jxLl4wqou5M9UZ
+         dDpnas2WuL+iILzIo4jq+hPA1YXSg1JHOnUpTmuAFUrVS0We3TUI7yrvCbPbz3YmVHXA
+         z8WeT3pfUo8jIcq8HV6FzRrhp8XDvES63C/M1PyJgGa0cVUe7XOEiBtQ1dYVj4zWGZ+Z
+         3pmKtlQjWT0A5QMt/pt/6cRMfvfH+ev/y/IYMFAB389b+HNiJZYaTSPp9zh3cjc/AYB0
+         QPvt707IYWaFN0EXaATlJnVj07f1NdvSnGtZd27mRnBvgXKI4MxGWiSk9m4FRGZyGDGZ
+         DHkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hdzDQCqjJnyS3Rh4YggWshAkvweKf0RvdENbWdlXEkM=;
-        b=E+1D1tKd4VdnRZVviWP6ryUlqzgmCtVfLKZqkEkQjiUIIoUpQWpPh3oy/N2ODhhWpz
-         qShopynnpoLaqb5H0zZE3/La5407Q0fpHqBXEhEFyeHyJa6CYML36zYLKM8XWzcRNIMc
-         gURGlUXfrP2xjea8TkDRNcComgggrEztAM/4lK7Gbmj5s/eLDQrBfHqyoouyU+VqW2JZ
-         Zn3vfDhGFV+TjHWsKN34/arOif6cBLDhk1r251oZC07LqxWjronDnabu//SWSGt3SC6Z
-         UdYHyHMQVSRBgljpREd+buu+jGqTOWJh/oC80CkFVVAT1ax2jUIvrzxfP7bd6fDE+2l4
-         1y5A==
-X-Gm-Message-State: AOAM533jZN/uZTUFvISXgzj3hIf1U+CNrVvmWbzpT18eMJhTFYDNv8jj
-        ShWGAPAK+9WGy5Hxd/kk5ng=
-X-Google-Smtp-Source: ABdhPJyx2iiPB5QekUKLvQvIJOO45HCgd8rDjQpuJSC1lrnZ8+reRpTv1dpezghb2eQUWhLEXC14Tw==
-X-Received: by 2002:a17:906:c114:: with SMTP id do20mr4645145ejc.169.1604097996471;
-        Fri, 30 Oct 2020 15:46:36 -0700 (PDT)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id ce13sm3720161edb.32.2020.10.30.15.46.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Oct 2020 15:46:35 -0700 (PDT)
-Date:   Sat, 31 Oct 2020 00:46:33 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Ioana Ciornei <ciorneiioana@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
-        Dan Murphy <dmurphy@ti.com>,
-        Divya Koppera <Divya.Koppera@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Kavya Sree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Marek Vasut <marex@denx.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Mathias Kresin <dev@kresin.me>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Michael Walle <michael@walle.cc>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Nisar Sayed <Nisar.Sayed@microchip.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Willy Liu <willy.liu@realtek.com>,
-        Yuiko Oshino <yuiko.oshino@microchip.com>
-Subject: Re: [PATCH net-next 00/19] net: phy: add support for shared
- interrupts (part 1)
-Message-ID: <20201030224633.wxvkt7p7pb2kfbuk@skbuf>
-References: <20201029100741.462818-1-ciorneiioana@gmail.com>
- <43d672ae-c089-6621-5ab3-3a0f0303e51a@gmail.com>
- <20201030220642.ctkt2pitdvri3byt@skbuf>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=91c9EpN35NammVPGZ4fZAQ5G050YxyvJ3BZUiRrkUMs=;
+        b=kG76QQJ97mb7tH4HumG1ksJF1JSdxONkk0eAwyKJF1oKUZd/6vyKg2RtteVTu9FDVf
+         HoxqLImI6qZkt+ro7oOJJceUxPfN6gnht32njl2R92wWUoLMMhKtEJQNWbFtMBYtAso5
+         QtMM4lc9IfkigLCQz0BD4pi9VRxIfq2xms0YtglaZPk6Epar2tV+3u6VNdfxVJbt56s2
+         BrQacxzKkHzoR9KfU13pixjLhgGt3y9XdEFLmQZeFnBIuTzJTP7Zk7KuRFlu9V1CneDR
+         Ym56Q1J5FOk2BKK4Q839JVQe5zwEQbA5jgwqZ0HmwIK1jsLp+XU4z50p3hF3GkAj1EXI
+         FFPA==
+X-Gm-Message-State: AOAM532l+3xr7ywwPWCZ205lvSX+bY/wmK/mI1IugQob2Jt3IVtUT1pW
+        ymTU+ZWmeUStS+1AAauLBWF4gM3nzGVrMyr4QBLoh1vYNuc=
+X-Google-Smtp-Source: ABdhPJw34ayAF4nQFq7OJ5Mv48RULe+Tvk+O092gR/L7tzH8LdGtjI56M4bAjwO6ky2pSJsyeLTNt0Wqw0H3T+SbCuQ=
+X-Received: by 2002:a17:902:82c8:b029:d6:b42f:ce7a with SMTP id
+ u8-20020a17090282c8b02900d6b42fce7amr999714plz.23.1604098340678; Fri, 30 Oct
+ 2020 15:52:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201030220642.ctkt2pitdvri3byt@skbuf>
+References: <20201030022839.438135-1-xie.he.0141@gmail.com>
+ <20201030022839.438135-5-xie.he.0141@gmail.com> <CA+FuTSczR03KGNdksH2KyAyzoR9jc6avWNrD+UWyc7sXd44J4w@mail.gmail.com>
+ <CAJht_ENORPqd+GQPPzNfmCapQ6fwL_YGW8=1h20fqGe4_wDe9Q@mail.gmail.com>
+ <CAF=yD-J8PvkR5xTgv8bb6MHJatWtq5Y_mPjx4+tpWvweMPFFHA@mail.gmail.com>
+ <CAJht_EPscUkmcgidk5sGAO4K1iVeqDpBRDy75RQ+s0OKK3mB8Q@mail.gmail.com> <CA+FuTSefJk9xkPQU8K5Ew6ZmnSbMo0S4izAoc=h7-cDrN98jUQ@mail.gmail.com>
+In-Reply-To: <CA+FuTSefJk9xkPQU8K5Ew6ZmnSbMo0S4izAoc=h7-cDrN98jUQ@mail.gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Fri, 30 Oct 2020 15:52:09 -0700
+Message-ID: <CAJht_EOMJNENgE7bvy6Nc5xqoH9aKUhufWNvwhT-m3X0OreS3g@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 4/5] net: hdlc_fr: Do skb_reset_mac_header for
+ skbs received on normal PVC devices
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 31, 2020 at 12:06:42AM +0200, Vladimir Oltean wrote:
-> On Fri, Oct 30, 2020 at 10:56:24PM +0100, Heiner Kallweit wrote:
-> > I'd just like to avoid the term "shared interrupt", because it has
-> > a well-defined meaning. Our major concern isn't shared interrupts
-> > but support for multiple interrupt sources (in addition to
-> > link change) in a PHY.
-> 
-> You may be a little bit confused Heiner.
-> This series adds support for exactly _that_ meaning of shared interrupts.
-> Shared interrupts (aka wired-OR on the PCB) don't work today with the
-> PHY library. I have a board that won't even boot to prompt when the
-> interrupt lines of its 2 PHYs are enabled, that this series fixes.
-> You might need to take another look through the commit messages I'm afraid.
+On Fri, Oct 30, 2020 at 3:22 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> It's indirect:
+>
+>         skb_reset_network_header(skb);
+>         if (!skb_transport_header_was_set(skb))
+>                 skb_reset_transport_header(skb);
+>         skb_reset_mac_len(skb);
 
-Maybe this diagram will help you visualize better.
+Oh. I see. skb_reset_mac_len would set skb->mac_len. Not sure where
+skb->mac_len would be used though.
 
-time
- |
- |       PHY 1                  PHY 2 has pending IRQ
- |         |                      (e.g. link up)
- |         v                             |
- |   phy_interrupt()                     |
- |  called for PHY 1                     |
- |         |                             |
- |         v                             |
- | returns IRQ_HANDLED via               |
- |  phy_clear_interrupt()                |
- |         |                             |
- |         |                             |
- |         v                             |
- | handling of shared IRQ                |
- |     ends here                         |
- |         |                             |
- |         |                             v
- |         |                PHY 2 still has pending IRQ
- |         |            because, you know, it wasn't actually
- |         |                          serviced
- |         v                             |
- |   phy_interrupt()                     |
- |  called for PHY 1                     |
- |         |                             |
- |         v                             |
- | returns IRQ_HANDLED via               |
- |  phy_clear_interrupt()                |
- |         |                             |
- |         |                             |
- |         v                             |
- | handling of shared IRQ                |
- |     ends here                         |
- |         |                PHY 2: Hey! It's me! Over here!
- |         |                             |
- |         v                             |
- |   phy_interrupt()                     |
- |  called for PHY 1                     |
- |         |                             |
- |         v                             |
- | returns IRQ_HANDLED via               |
- |  phy_clear_interrupt()                |
- |         |                             |
- |         |                             |
- |         v                             |
- | handling of shared IRQ                |
- |     ends here                         |
- |         |                       PHY 2: Srsly?
- |         |                             |
- |         v                             |
- |   phy_interrupt()                     |
- |  called for PHY 1                     |
- |         |                             |
- |         v                             |
- |        ...                           ...
- |
- |               21 seconds later
- |
- |                  RCU stall
- v
+> > I thought only AF_PACKET/RAW sockets would need this information
+> > because other upper layers would not care about what happened in L2.
+>
+> I think that's a reasonable assumption. I don't have a good
+> counterexample ready. Specific to this case, it seems to have been
+> working with no one complaining so far ;)
 
-This happens because today, the way phy_interrupt() is written, you can
-only return IRQ_NONE and give the other driver a chance _if_ your driver
-implements .did_interrupt(). But the kernel documentation of
-.did_interrupt() only recommends to implement that function if you are a
-multi-PHY package driver (otherwise stated, the hardware chip has an
-embedded shared IRQ). But as things stand, _everybody_ should implement
-.did_interrupt() in order for any combination of PHY drivers to support
-shared IRQs.
-
-What Ioana is proposing, and this is something that I fully agree with,
-is that we just get rid of the layering where the PHY library tries to
-be helpful but instead invites everybody to write systematically bad
-code. Anyone knows how to write an IRQ handler with eyes closed, but the
-fact that .did_interrupt() is mandatory for proper shared IRQ support is
-not obvious to everybody, it seems. So let's just have a dedicated IRQ
-handling function per each PHY driver, so that we don't get confused in
-this sloppy mess of return values, and the code can actually be
-followed.
-
-Even _with_ Ioana's changes, there is one more textbook case of shared
-interrupts causing trouble, and that is actually the reason why nobody
-likes them except hardware engineers who don't get to deal with this.
-
-time
- |
- |   PHY 1 probed
- | (module or built-in)
- |         |                   PHY 2 has pending IRQ
- |         |               (it had link up from previous
- |         v               boot, or from bootloader, etc)
- |   phy_interrupt()                     |
- |  called for PHY 1                     |
- |         |                             |
- |         v                             |
- | returns IRQ_NONE as                   |
- |     it should                         v
- |         |                PHY 2 still has pending IRQ
- |         |               but its handler wasn't called
- |         |              because its driver has not been
- |         |                        yet loaded
- |         v                             |
- |   phy_interrupt()                     |
- |  called for PHY 1                     |
- |         |                             |
- |         v                             |
- | returns IRQ_NONE as                   |
- |      it should                        v
- |         |                   PHY 2: Not again :(
- |         |                             |
- |         v                             |
- |   phy_interrupt()                     |
- |  called for PHY 1                     |
- |         |                             |
- |         v                             |
- | returns IRQ_NONE as                   |
- |      it should                        |
- |         |                             |
- |        ...                           ...
- |         |                             |
- |         |                PHY 2 driver never gets probed
- |         |               either because it's a module or
- |         |                because the system is too busy
- |         |                checking PHY 1 over and over
- |         |                again for an interrupt that
- |         |                     it did not trigger
- |         |                             |
- |        ...                           ...
- |
- |               21 seconds later
- |
- |                  RCU stall
- v
-
-The way that it's solved is that it's never 100% solved.
-This one you can just avoid, but never recover from it.
-To avoid it, you must ensure from your previous boot environments
-(bootloader, kexec) that the IRQ line is not pending. Because if you
-leave the shared IRQ line pending, the system is kaput if it happens to
-probe the drivers in the wrong order (aka don't probe first the driver
-that will clear that shared IRQ). It's like Minesweeper, only worse.
-
-That's why the shutdown hook is there, as a best-effort attempt for
-Linux to clean up after itself. But we're always at the mercy of the
-bootloader, or even at the mercy of chance. If the previous kernel
-panicked, there's no orderly cleanup to speak of.
-
-Hope it's clearer now.
+Yeah. It seems to me that a lot of drivers (without header_ops) have
+this problem. The comment in af_packet.c before my commit b79a80bd6dd8
+also indicated this problem was widespread. It seemed to not cause any
+issues.
