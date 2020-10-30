@@ -2,62 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 927A62A0CB3
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 18:45:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63F1F2A0CC0
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 18:47:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727147AbgJ3RpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 13:45:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45860 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726430AbgJ3RpJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Oct 2020 13:45:09 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D84962076D;
-        Fri, 30 Oct 2020 17:45:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604079909;
-        bh=coCpvbSNlgSLI30nQVg9545TIYWROCvhvr+VAQBwwPM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=edtPBagA/Vxq0TXgC6fSuO3qEYK5Mgq5YEikOQ4VPE9ZOU9LzH61KgpiKu3jOS7U+
-         /tRWMGBZIWw8BYjQvRYceJFKikfn+O4ye+XkDzb51WXBkXxzhqCSKsBDevtCgYhVJo
-         lOQDDHpi22fakCfI8OlYLFjThpdrm9EfrmNtILI0=
-Date:   Fri, 30 Oct 2020 10:45:07 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v3] net: phy: leds: Deduplicate link LED trigger
- registration
-Message-ID: <20201030104507.4ec89ce3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201027182146.21355-1-andriy.shevchenko@linux.intel.com>
-References: <20201027182146.21355-1-andriy.shevchenko@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726758AbgJ3RrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 13:47:17 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:15626 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725844AbgJ3RrR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 13:47:17 -0400
+Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 09UHl9pM020669;
+        Fri, 30 Oct 2020 10:47:10 -0700
+From:   Rohit Maheshwari <rohitm@chelsio.com>
+To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
+Cc:     secdev@chelsio.com, Rohit Maheshwari <rohitm@chelsio.com>
+Subject: [net v3 00/10] cxgb4/ch_ktls: Fixes in nic tls code
+Date:   Fri, 30 Oct 2020 23:16:58 +0530
+Message-Id: <20201030174708.9578-1-rohitm@chelsio.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Oct 2020 20:21:46 +0200 Andy Shevchenko wrote:
-> Refactor phy_led_trigger_register() and deduplicate its functionality
-> when registering LED trigger for link.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This series helps in fixing multiple nic ktls issues. Series is
+broken into 10 patches.
 
-Applied..
+Patch 1 avoids deciding tls packet based on decrypted bit. If its
+a retransmit packet which has tls handshake and finish (for
+encryption), decrypted bit won't be set there, and so we can't
+rely on decrypted bit.
 
-> @@ -119,7 +114,7 @@ int phy_led_triggers_register(struct phy_device *phy)
->  
->  	for (i = 0; i < phy->phy_num_led_triggers; i++) {
->  		err = phy_led_trigger_register(phy, &phy->phy_led_triggers[i],
-> -					       speeds[i]);
-> +					       speeds[i], phy_speed_to_str(speeds[i]));
+Patch 2 helps supporting linear skb. SKBs were assumed non-linear.
+Corrected the length extraction.
 
-after wrapping this to 80 chars.
+Patch 3 fixes the checksum offload update in WR.
+
+Patch 4 corrects the usage of GFP_KERNEL and replaces it with
+GFP_ATOMIC.
+
+Patch 5 fixes kernel panic happening due to creating new skb for
+each record. As part of fix driver will use same skb to send out
+one tls record (partial data) of the same SKB.
+
+Patch 6 avoids sending extra data which is used to make a record 16
+byte aligned. We don't need to retransmit those extra few bytes.
+
+Patch 7 handles the cases where retransmit packet has tls starting
+exchanges which are prior to tls start marker.
+
+Patch 8 handles the small packet case which has partial TAG bytes
+only. HW can't handle those, hence using sw crypto for such pkts.
+
+Patch 9 corrects the potential tcb update problem.
+
+Patch 10 stops the queue if queue reaches threshold value.
+
+v1->v2:
+- Corrected fixes tag issue.
+- Marked chcr_ktls_sw_fallback() static.
+
+v2->v3:
+- Replaced GFP_KERNEL with GFP_ATOMIC.
+- Removed mixed fixes.
+
+Rohit Maheshwari (10):
+  cxgb4/ch_ktls: decrypted bit is not enough
+  ch_ktls: Correction in finding correct length
+  ch_ktls: Update cheksum information
+  ch_ktls: incorrect use of GFP_KERNEL
+  cxgb4/ch_ktls: creating skbs causes panic
+  ch_ktls: Correction in middle record handling
+  ch_ktls: packet handling prior to start marker
+  ch_ktls/cxgb4: handle partial tag alone SKBs
+  ch_ktls: tcb update fails sometimes
+  ch_ktls: stop the txq if reaches threshold
+
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |   3 +
+ .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    |   2 +
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |   1 +
+ .../net/ethernet/chelsio/cxgb4/cxgb4_uld.h    |   6 +
+ drivers/net/ethernet/chelsio/cxgb4/sge.c      | 111 ++-
+ .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c | 772 ++++++++++--------
+ .../chelsio/inline_crypto/ch_ktls/chcr_ktls.h |   1 +
+ 7 files changed, 532 insertions(+), 364 deletions(-)
+
+-- 
+2.18.1
 
