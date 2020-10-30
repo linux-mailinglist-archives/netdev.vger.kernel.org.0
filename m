@@ -2,160 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A61729FB1A
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 03:16:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2E2529FB2C
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 03:26:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726203AbgJ3CQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 22:16:14 -0400
-Received: from m42-4.mailgun.net ([69.72.42.4]:32810 "EHLO m42-4.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725790AbgJ3CQO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 22:16:14 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1604024173; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=LRMgOFZbItBqfHE6rw+IhX6ADhrLY1wYvZCBR3GV4N0=; b=T1tjjevsXJ7QN/gV8gKMONYGB0+YeSiZN+9jUSR8dkJsRMpFo7crplifFSrIyQH4pkpOrVsR
- HzpQOlSikcVStTlwPDc+veVG30W/5zu3s2P0GKEsehOs3UZwUZX2OdHcN1mAZ3ZxoepyrPwb
- b8GyDbdx4+AiZP8lIm+9AGrplIY=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
- 5f9b776d1df7f5f83c818584 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 30 Oct 2020 02:16:13
- GMT
-Sender: hemantk=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4357DC433FE; Fri, 30 Oct 2020 02:16:13 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.2 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.46.162.249] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: hemantk)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1AEACC433C9;
-        Fri, 30 Oct 2020 02:16:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1AEACC433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
-Subject: Re: [PATCH v10 3/4] docs: Add documentation for userspace client
- interface
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jhugo@codeaurora.org, bbhatt@codeaurora.org,
-        loic.poulain@linaro.org, netdev@vger.kernel.org
-References: <1604007647-32163-1-git-send-email-hemantk@codeaurora.org>
- <1604007647-32163-4-git-send-email-hemantk@codeaurora.org>
- <6f508e54-a170-8409-886c-a882b6fd5f63@infradead.org>
-From:   Hemant Kumar <hemantk@codeaurora.org>
-Message-ID: <cc3055e5-9522-aeaa-4b29-e4f811b832a8@codeaurora.org>
-Date:   Thu, 29 Oct 2020 19:16:11 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1725962AbgJ3C0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 22:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725780AbgJ3C0E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 22:26:04 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2E6C0613CF
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 19:26:03 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id s9so4813404wro.8
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 19:26:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=googlenew;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yFzxhyb3nLK2fRbNQ6gME5zHkWsuyomDuw38FJHECsg=;
+        b=nwBNL/0/nLX9P0oMVDk9hbq2+Nn+JCKItGnIS9DQCFbKUSA3KAezCLY8fdU6YyMWtm
+         EZrdNORYYiX62XDaVikhegNScld0lQmXqsONRGV63nnnBBd5aXK3mjxjTCfUgQ6jDK30
+         z3QE3rYVn8gnJX8RCl8TLtpNUkG3IAnTWATxmck/kIQd7LK24Jr+4yw3YcyaDlbcUhlB
+         lPgMDhiZ9UuFFaNZqtkL0ZehNYFpT6snJtwVvk9GJNa2bRYP9l2nvkGj1tSe2iatOxBm
+         vVq7LzdXsG1AnfErg1/CyTAavjTM8zUkwPxW48eWawUvCBxbmZacHtNSRJ1GSQAN+9CQ
+         Eigw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yFzxhyb3nLK2fRbNQ6gME5zHkWsuyomDuw38FJHECsg=;
+        b=FVgw9Z/f4RRfuAxY/N42a3jK9IiNzZQlUhhofUdYCsHcmaFhcn3BsvUEIUDoPUOqKG
+         5UWIR8EGfMp4nKPa6BANRuT3LE6ouIl6/wpW7MNT421aPKDTVLqhQMiK4s6htCW2QKv7
+         T4tPxVcT/bphbqgSLKueQw6HSO4qlvEYXPDUHjWwYcYPq0BXQ9eHx5dIhn9U49TgOS54
+         pPflUuwkpLLK8avlOpL/urNE+mVFF80KZL8RQHSE9Y7wquCv0f6ETkaCKjtzxr2r+rwn
+         JS57+03Q0fgi4jajYdvAdfr7KDgrOfud2nODJoYWUYHj6WXjyVDP1dwVWVHfqtXVKSFt
+         NuYQ==
+X-Gm-Message-State: AOAM530vj05IMWKBPT33ljaPFs2376hjN7FOs1s/U4PLwZ5mmFwFvS3G
+        3Y5YbXqiSc2cv4/4rwXL4uY2ew==
+X-Google-Smtp-Source: ABdhPJwO0OzT66WL2IB5tQji/aDCSeBdwm6by4A9533PkDSTCekpwS4oaZw7HtdnrMlQgxUe9CIbuA==
+X-Received: by 2002:adf:cd81:: with SMTP id q1mr91760wrj.410.1604024762575;
+        Thu, 29 Oct 2020 19:26:02 -0700 (PDT)
+Received: from localhost.localdomain ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
+        by smtp.gmail.com with ESMTPSA id i14sm2757170wml.24.2020.10.29.19.26.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 19:26:02 -0700 (PDT)
+From:   Dmitry Safonov <dima@arista.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Dmitry Safonov <dima@arista.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hillf Danton <hdanton@sina.com>, netdev@vger.kernel.org,
+        syzbot+a7e701c8385bd8543074@syzkaller.appspotmail.com,
+        syzbot+c43831072e7df506a646@syzkaller.appspotmail.com
+Subject: [PATCH 0/3] xfrm/compat: syzbot-found fixes
+Date:   Fri, 30 Oct 2020 02:25:57 +0000
+Message-Id: <20201030022600.724932-1-dima@arista.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <6f508e54-a170-8409-886c-a882b6fd5f63@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Randy,
+WARN_ON() for XFRMA_UNSPEC translation which likely no-one except
+syzkaller uses; properly zerofy tail-padding for 64-bit attribute;
+don't use __GFP_ZERO as the memory is initialized during translation.
 
-On 10/29/20 2:51 PM, Randy Dunlap wrote:
-> Hi,
-> 
-> On 10/29/20 2:40 PM, Hemant Kumar wrote:
->> MHI userspace client driver is creating device file node
->> for user application to perform file operations. File
->> operations are handled by MHI core driver. Currently
->> Loopback MHI channel is supported by this driver.
->>
->> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
->> ---
->>   Documentation/mhi/index.rst |  1 +
->>   Documentation/mhi/uci.rst   | 83 +++++++++++++++++++++++++++++++++++++++++++++
->>   2 files changed, 84 insertions(+)
->>   create mode 100644 Documentation/mhi/uci.rst
-> 
-> 
->> diff --git a/Documentation/mhi/uci.rst b/Documentation/mhi/uci.rst
->> new file mode 100644
->> index 0000000..fe901c4
->> --- /dev/null
->> +++ b/Documentation/mhi/uci.rst
->> @@ -0,0 +1,83 @@
->> +.. SPDX-License-Identifier: GPL-2.0
->> +
->> +=================================
->> +Userspace Client Interface (UCI)
->> +=================================
->> +
-> 
-> 
-> Lots of TLAs.
-> 
->> +
->> +read
->> +----
->> +
->> +When data transfer is completed on downlink channel, TRE buffer is copied to
->> +pending list. Reader is unblocked and data is copied to userspace buffer. TRE
->> +buffer is queued back to downlink channel transfer ring.
-> 
-> What is TRE?
-Transfer Ring Element
-i will add that in small bracket inline.
-> 
->> +
->> +Usage
->> +=====
->> +
->> +Device file node is created with format:-
->> +
->> +/dev/mhi_<controller_name>_<mhi_device_name>
->> +
->> +controller_name is the name of underlying bus used to transfer data. mhi_device
->> +name is the name of the MHI channel being used by MHI client in userspace to
->> +send or receive data using MHI protocol.
->> +
->> +There is a separate character device file node created for each channel
->> +specified in mhi device id table. MHI channels are statically defined by MHI
-> 
->                  MHI
-> unless it is a variable name, like below: mhi_device_id
-Done.
-> 
->> +specification. The list of supported channels is in the channel list variable
->> +of mhi_device_id table in UCI driver.
->> +
-> 
->> +Other Use Cases
->> +---------------
->> +
->> +Getting MHI device specific diagnostics information to userspace MHI diag client
-> 
->                                                                          diagnostic client
-Done.
-> 
->> +using DIAG channel 4 (Host to device) and 5 (Device to Host).
->>
-> 
-> thanks.
-> 
-
-Thanks for reviewing it. Let me fix it and re-upload.
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Hillf Danton <hdanton@sina.com>
+Cc: netdev@vger.kernel.org
 
 Thanks,
-Hemant
+         Dmitry
 
+Dmitry Safonov (3):
+  xfrm/compat: Translate by copying XFRMA_UNSPEC attribute
+  xfrm/compat: memset(0) 64-bit padding at right place
+  xfrm/compat: Don't allocate memory with __GFP_ZERO
+
+ net/xfrm/xfrm_compat.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+
+base-commit: 07e0887302450a62f51dba72df6afb5fabb23d1c
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.28.0
+
