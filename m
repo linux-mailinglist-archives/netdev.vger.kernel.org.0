@@ -2,32 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7877E2A0C35
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 18:11:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD9702A0C17
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 18:07:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727363AbgJ3RLN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 30 Oct 2020 13:11:13 -0400
-Received: from 45.173.252.243.turbolinenet.com.br ([45.173.252.243]:39191 "EHLO
-        srv01.turbolinenet.com.br" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726440AbgJ3RLN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 13:11:13 -0400
-Received: from [23.106.215.139]
-        by srv01.turbolinenet.com.br with esmtpsa (TLSv1:DHE-RSA-AES256-SHA:256)
-        (Exim 4.92.2)
-        (envelope-from <info@details.com>)
-        id 1kYQXw-0007kD-SX; Fri, 30 Oct 2020 07:18:09 -0200
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1727014AbgJ3RHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 13:07:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35896 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726259AbgJ3RHJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Oct 2020 13:07:09 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9088320756;
+        Fri, 30 Oct 2020 16:58:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604077122;
+        bh=NQHYM8GVLTc+Q27yNaiylvcsHI8eawqNkhk71989hxU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=xTLlkjIx4w09PWulJixzUroOxf9p9t7uJZJoFEYSFSwnio/kgEvB1ISxtBfQ1XhQO
+         CRonLlZtssrPFgKEqQDY0FuLA2qFvQfABK9owZaFrp0BCvur10RUbShdg33TeWq6Jt
+         2NvO1IKjbZJwiA1TSwxzMSnux5FGzrLMgp9HcKps=
+Date:   Fri, 30 Oct 2020 09:58:40 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: Re: [PATCH] net: stmmac: Fix channel lock initialization
+Message-ID: <20201030095840.5e999a1b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201029185011.4749-1-m.szyprowski@samsung.com>
+References: <CGME20201029185023eucas1p21872d74eeb62643a3ff364af7cf2c6eb@eucas1p2.samsung.com>
+        <20201029185011.4749-1-m.szyprowski@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Final Notice 2
-To:     Recipients <info@details.com>
-From:   info@details.com
-Date:   Fri, 30 Oct 2020 02:17:59 -0700
-Reply-To: trust101101@consultant.com
-Message-Id: <E1kYQXw-0007kD-SX@srv01.turbolinenet.com.br>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are trying to reach you as regards the estate of Late George Brumley, you were made one of the beneficiaries of his estate. Do get back to me at your earliest convenience. The Trustees
+On Thu, 29 Oct 2020 19:50:11 +0100 Marek Szyprowski wrote:
+> Commit 0366f7e06a6b ("net: stmmac: add ethtool support for get/set
+> channels") refactored channel initialization, but during that operation,
+> the spinlock initialization got lost. Fix this. This fixes the following
+> lockdep warning:
+ 
+> Fixes: 0366f7e06a6b ("net: stmmac: add ethtool support for get/set channels")
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+
+Applied to net, thanks!
