@@ -2,57 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBF6F29F9FA
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 01:49:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 637AE29FA01
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 01:51:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726156AbgJ3Atn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 20:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48900 "EHLO
+        id S1726218AbgJ3AvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 20:51:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725797AbgJ3Atn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 20:49:43 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D0AC0613D2;
-        Thu, 29 Oct 2020 17:49:43 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id 133so3795494pfx.11;
-        Thu, 29 Oct 2020 17:49:43 -0700 (PDT)
+        with ESMTP id S1726088AbgJ3AvG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 20:51:06 -0400
+Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104E2C0613D2
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 17:51:06 -0700 (PDT)
+Received: by mail-ua1-x941.google.com with SMTP id k12so1255394uad.11
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 17:51:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=DsTq0eaBSRmyjts94r7jVkRg1FP8IscyEg7XHscMyuM=;
-        b=F+98Wo2D0Zeu0ZxEW+2kYa5yfGJ+I3NOXsRPX3WSev3nTlgxAM2FVEFg6EsHrr+oyc
-         z8zpQ044rQSX/EAfWcVTWS1snVdd5alqc4k7MHcJhRy930k3WSUm/FCIKcso90AGqH6M
-         iX7iNHg9C32TjIbkGSn5JkVMjfuING/HGWTrehzXthFcsDbBor0YlvKNe0BtRJVkC6xl
-         HSsTlKfb8ik+gfBml+oV0iFS+8RTJfEDEu4g0fbJGfmv1WVirYLHlHY6BeMR4neIUn4t
-         Hg1ermBpuu1jkM78ZRbTHXEr1+w+x+terEqvJa+pURzJp+2V3cOlW3HZueNYKg6w/v0R
-         GM3Q==
+        bh=PUR3hxWNuXWgt8JjF6mcV9KOB+ukA9WxGvYO8uRlRk8=;
+        b=FBECrFu9flb5NhYRAKTfs67/0FKjY7hknH3+/7uYbTky5b02m2J1wZxqCivQ1DK4WX
+         Mhol013/PXzw4VcjqJJFyMNc8Xs4YErwZmHqBTUSYioWy9QFvb8yafAJ9njiu/d3Qi9W
+         zRZnE89rozk2sZEuq6IGS8ikkuI8XReqYsXcrjN81PI4iVfhLuIkd+DevWTBGqvVZuvd
+         iz5I97CBehgPqDUf2KGtCQLexuGA2GCmLFpBXHp8HF25OoLGtnA1KxCEFPVFKLfjvVTe
+         81VMVoUSSULqYHeUbvu9q1lX8r08hZMX7vGz7mO7KUOezYDil6GdYZP+chFx3HSHAqGF
+         JIDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DsTq0eaBSRmyjts94r7jVkRg1FP8IscyEg7XHscMyuM=;
-        b=YqyVPiscPk2pUQ85zeOV5xZabXZb1kJAIM3xdT7rHgN8PQcBrMFnbh+tc50nAybKaH
-         gxZ33ANcokWHEYFCbRx8le7BXRQyhJx8h9SFYrYSmcGzheV697Owj1a8QJ6qUU5WWXFR
-         zX0wHxu0HwMDM9lTaZfhjOOSo+o31hPNQwu0jVzbFdKKt9bLJT7MZnkB2y6YomF6ciwI
-         jcrYXZbAWcBoJdxTeGUzVBh7iJRFNqGE4h+0acWhSfM5Zwo8uqtRLmNYU8L8qMBp4UW7
-         DeMTiFphN98s1Y+RuMl3p/u4zIgzc/2DVQDPJfhfCuRTRzCO9NBVyYj2q8iygdMrCCd4
-         D9Hg==
-X-Gm-Message-State: AOAM5328bYHxZcLMRpmb/brezdH/JmlpbF6AAiBYCgdiEW4MmcZ6RpJj
-        jlFHJq6FxQyONdFk8rYmjg8sTTyzOl8U6nwuybs=
-X-Google-Smtp-Source: ABdhPJzjnf8q17mVpNIdFn7ayDBkcGHZhtFfhICd7YA/n7uNze+xpb+wERCv4xjYDfQC3+ED2MgTRtRXuawRu6G6xPo=
-X-Received: by 2002:a63:7347:: with SMTP id d7mr6496141pgn.63.1604018982521;
- Thu, 29 Oct 2020 17:49:42 -0700 (PDT)
+        bh=PUR3hxWNuXWgt8JjF6mcV9KOB+ukA9WxGvYO8uRlRk8=;
+        b=B9E9nF/a7cb6DUl/iY1x9rDuUENUoTrGQLkkyQwJ6I3aDsX2sYkTnI2hry2i3eUamB
+         wWURgFij+HyngqJjGsLBQKlqus8i7KjnolAA77kv6tD3aek/ai8XiXyk2Mj9fZ54s9/l
+         9VjgBjKAwRMl02AUZuUWG4F6YHUr7H32PuBzf+dFO+dOsBlAKRY7wue5mW3cvjlyD79o
+         M88jg7Q7+OJAwIzdGHiR3mR1ZFJJpMeecwc366CVuu/Z507tqi2XPcpJbT2py9J1JVl4
+         pzRTYtyrmnuJw43s45VI+RufTc0IKDl+XJppsmc/6EhPTBEUK1R2/LAHIz1lBuW0kEjq
+         xDzg==
+X-Gm-Message-State: AOAM531zPvKJhEEASd4/JXr6kXjpi5sF2aqkUypJspoQ9VAqEYgTwjOe
+        PlCot0q/hT8D4VDb7tzVMFZW2VdeLEc=
+X-Google-Smtp-Source: ABdhPJyT0rgtZOmSkVYQRcE8AsCpsp8OzQBcq38odWE/t6A00zKGRXUvESI2hnKVKSCWMA7rMePYSQ==
+X-Received: by 2002:ab0:2101:: with SMTP id d1mr25821ual.125.1604019064280;
+        Thu, 29 Oct 2020 17:51:04 -0700 (PDT)
+Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
+        by smtp.gmail.com with ESMTPSA id c18sm509575uap.6.2020.10.29.17.51.02
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Oct 2020 17:51:02 -0700 (PDT)
+Received: by mail-ua1-f46.google.com with SMTP id f15so1257936uaq.9
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 17:51:02 -0700 (PDT)
+X-Received: by 2002:ab0:35d7:: with SMTP id x23mr41532uat.92.1604019062121;
+ Thu, 29 Oct 2020 17:51:02 -0700 (PDT)
 MIME-Version: 1.0
 References: <20201028131807.3371-1-xie.he.0141@gmail.com> <20201028131807.3371-5-xie.he.0141@gmail.com>
  <CA+FuTSeBZWsy4w4gdPU2sb2-njuEiqbXMgfnA5AdsXkNr__xRA@mail.gmail.com> <CAJht_EMOxSn-hraig1jnF_KwNsYaCYnwaZvVH7rutdS0Lj0sGA@mail.gmail.com>
 In-Reply-To: <CAJht_EMOxSn-hraig1jnF_KwNsYaCYnwaZvVH7rutdS0Lj0sGA@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Thu, 29 Oct 2020 17:49:31 -0700
-Message-ID: <CAJht_EPggyhiaROvReNJ4hCwQ6+Z0wf4zHADrSAaT8jBE0J+1w@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 29 Oct 2020 20:50:23 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSf-RcVifpTMTw5OYs5Gdrdf-N6-ZyhC5jZF5qbxTa0t3g@mail.gmail.com>
+Message-ID: <CA+FuTSf-RcVifpTMTw5OYs5Gdrdf-N6-ZyhC5jZF5qbxTa0t3g@mail.gmail.com>
 Subject: Re: [PATCH net-next v2 4/4] net: hdlc_fr: Add support for any Ethertype
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Network Development <netdev@vger.kernel.org>,
         linux-kernel <linux-kernel@vger.kernel.org>,
@@ -62,7 +73,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 4:53 PM Xie He <xie.he.0141@gmail.com> wrote:
+On Thu, Oct 29, 2020 at 7:53 PM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> On Thu, Oct 29, 2020 at 10:24 AM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > > Also add skb_reset_mac_header before we pass an skb (received on normal
+> > > PVC devices) to upper layers. Because we don't use header_ops for normal
+> > > PVC devices, we should hide the header from upper layer code in this case.
+> >
+> > This should probably be a separate commit
+>
+> OK. I'll make it a separate commit in the next version of the series. Thanks!
 >
 > > Does it make sense to define a struct snap_hdr instead of manually
 > > casting all these bytes?
@@ -100,15 +122,14 @@ On Thu, Oct 29, 2020 at 4:53 PM Xie He <xie.he.0141@gmail.com> wrote:
 >
 > Would this look cleaner?
 
-Actually I don't think this is significantly cleaner than the previous
-version of code. A reader of this code may still wonder what are the
-values of all these macros, and he/she may still want to look up the
-values of them. The comment in the previous version of code has made
-the meaning of these values very clear, and the reader of the code
-would not need to go to another place of this file to find the values.
+Oh, right. The OUI being 3 bytes introduces masking and endianness
+issues if casting to a wider type. Similar to IPv6 flowlabel handling,
+for instance.
 
-The struct snap_hdr eliminates a cast, but only one cast. So it might
-not be very necessary, either. Introducing this struct also makes the
-reader need to go to another place of this file to look up the
-definition of this struct. So it does not significantly improve the
-readability (IMHO).
+There is a lot of OUI code, such as cea_db_is_hdmi_forum_vsdb. But no
+standard way of going about this. Some does byte-by-byte, some memcmp,
+some masks.
+
+The existing is probably as concise and readable as anything, and we
+don't really care about a few extra branches here. Never mind this
+suggestion.
