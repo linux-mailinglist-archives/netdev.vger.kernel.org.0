@@ -2,104 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38BAF2A0CD7
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 18:49:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C765F2A0CDD
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 18:53:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgJ3Rt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 13:49:57 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:19314 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726430AbgJ3Rt5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 13:49:57 -0400
-Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 09UHnq2w020698;
-        Fri, 30 Oct 2020 10:49:52 -0700
-From:   Rohit Maheshwari <rohitm@chelsio.com>
-To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
-Cc:     secdev@chelsio.com, Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [net v3 01/10] cxgb4/ch_ktls: decrypted bit is not enough
-Date:   Fri, 30 Oct 2020 23:19:48 +0530
-Message-Id: <20201030174948.9674-1-rohitm@chelsio.com>
-X-Mailer: git-send-email 2.18.1
+        id S1726297AbgJ3RxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 13:53:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49300 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726072AbgJ3RxH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Oct 2020 13:53:07 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B7B0120724;
+        Fri, 30 Oct 2020 17:53:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604080387;
+        bh=fiX1GZZW0VTWVzXnWU7zdBSZ50Wkkk7mejibE0CkdiY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MVu0kaAvE2wNNEOpn24cdcrKUr7wR9hPCh8U/U1elyPWxSiwguHNQIvA7gsA7MqOP
+         3catVGDL6ZN05N6NYGqCe+ts5RURK8jJsDIylSnD36zV3YWReaudQOs22edVXB7a+I
+         cXPRXnX16hvd3ESgDN9wYJrL3pZqzKSQPF7f/ktk=
+Date:   Fri, 30 Oct 2020 10:53:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, roopa@nvidia.com,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: Re: [PATCH net-next 00/16] selftests: net: bridge: add tests for
+ IGMPv3
+Message-ID: <20201030105305.719eac75@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201027185934.227040-1-razor@blackwall.org>
+References: <20201027185934.227040-1-razor@blackwall.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If skb has retransmit data starting before start marker, e.g. ccs,
-decrypted bit won't be set for that, and if it has some data to
-encrypt, then it must be given to crypto ULD. So in place of
-decrypted, check if socket is tls offloaded. Also, unless skb has
-some data to encrypt, no need to give it for tls offload handling.
+On Tue, 27 Oct 2020 20:59:18 +0200 Nikolay Aleksandrov wrote:
+> This set adds tests for the bridge's new IGMPv3 support. The tests use
+> precooked packets which are sent via mausezahn and the resulting state
+> after each test is checked for proper X,Y sets, (*,G) source list, source
+> list entry timers, (S,G) existence and flags, packet forwarding and
+> blocking, exclude group expiration and (*,G) auto-add. The first 3 patches
+> prepare the existing IGMPv2 tests, then patch 4 adds new helpers which are
+> used throughout the rest of the v3 tests.
+> The following new tests are added:
+>  - base case: IGMPv3 report 239.10.10.10 is_include (A)
+>  - include -> allow report
+>  - include -> is_include report
+>  - include -> is_exclude report
+>  - include -> to_exclude report
+>  - exclude -> allow report
+>  - exclude -> is_include report
+>  - exclude -> is_exclude report
+>  - exclude -> to_exclude report
+>  - include -> block report
+>  - exclude -> block report
+>  - exclude timeout (move to include + entry deletion)
+>  - S,G port entry automatic add to a *,G,exclude port
+> 
+> The variable names and set notation are the same as per RFC 3376,
+> for more information check RFC 3376 sections 4.2.15 and 6.4.1.
+> MLDv2 tests will be added by a separate patch-set.
 
-v2->v3:
-- Removed ifdef.
-
-Fixes: 5a4b9fe7fece ("cxgb4/chcr: complete record tx handling")
-Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c              | 1 +
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h               | 5 +++++
- drivers/net/ethernet/chelsio/cxgb4/sge.c                     | 3 ++-
- .../net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c   | 4 ----
- 4 files changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index a952fe198eb9..7fd264a6d085 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -1176,6 +1176,7 @@ static u16 cxgb_select_queue(struct net_device *dev, struct sk_buff *skb,
- 		txq = netdev_pick_tx(dev, skb, sb_dev);
- 		if (xfrm_offload(skb) || is_ptp_enabled(skb, dev) ||
- 		    skb->encapsulation ||
-+		    cxgb4_is_ktls_skb(skb) ||
- 		    (proto != IPPROTO_TCP && proto != IPPROTO_UDP))
- 			txq = txq % pi->nqsets;
- 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-index b169776ab484..e2a4941fa802 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-@@ -493,6 +493,11 @@ struct cxgb4_uld_info {
- #endif
- };
- 
-+static inline bool cxgb4_is_ktls_skb(struct sk_buff *skb)
-+{
-+	return skb->sk && tls_is_sk_tx_device_offloaded(skb->sk);
-+}
-+
- void cxgb4_uld_enable(struct adapter *adap);
- void cxgb4_register_uld(enum cxgb4_uld type, const struct cxgb4_uld_info *p);
- int cxgb4_unregister_uld(enum cxgb4_uld type);
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-index a9e9c7ae565d..01bd9c0dfe4e 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -1422,7 +1422,8 @@ static netdev_tx_t cxgb4_eth_xmit(struct sk_buff *skb, struct net_device *dev)
- #endif /* CHELSIO_IPSEC_INLINE */
- 
- #if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
--	if (skb->decrypted)
-+	if (cxgb4_is_ktls_skb(skb) &&
-+	    (skb->len - (skb_transport_offset(skb) + tcp_hdrlen(skb))))
- 		return adap->uld[CXGB4_ULD_KTLS].tx_handler(skb, dev);
- #endif /* CHELSIO_TLS_DEVICE */
- 
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-index 5195f692f14d..43c723c72c61 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-@@ -1878,10 +1878,6 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	mss = skb_is_gso(skb) ? skb_shinfo(skb)->gso_size : skb->data_len;
- 
--	/* check if we haven't set it for ktls offload */
--	if (!skb->sk || !tls_is_sk_tx_device_offloaded(skb->sk))
--		goto out;
--
- 	tls_ctx = tls_get_ctx(skb->sk);
- 	if (unlikely(tls_ctx->netdev != dev))
- 		goto out;
--- 
-2.18.1
-
+Applied, thanks Nik!
