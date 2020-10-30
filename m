@@ -2,61 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26A812A0730
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 14:56:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5E892A07FB
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 15:35:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbgJ3N4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 09:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726178AbgJ3N4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 09:56:19 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E60C0613CF
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 06:56:18 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id i2so6982686ljg.4
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 06:56:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=VAqQuLqR5LdSetoXiGa/dZV2l8B31+ZGd5wWEf7583Y=;
-        b=Ff10byA4qf9qQ9fLDk3jpzlwB1NqQE+mbn3AWCL0hYgyKn3RyM6wuyLwiMnIyx8Bvj
-         Oi3NJhxMskFX43gHW8RP3YJ6R0ZZHfXET4vpLiJ5l4m0CxH8Uj3lwgGxWdDaCJXnH0MI
-         0mEZ7oblJQgiTcLvdGZEetCH9NxUY4prOV1HtPbVL42aPaBJscDBi0HebdQf/KoQcFNK
-         z+rE3kUrSFUeehxmmyQC87efKznXM3p2bm68Rg0Su/myIw+IHI3DY4jsQP88/RcZxM3g
-         vq3PTdoYyrOs0wVQlmXoIvTS6Eh4eWiJmZ77Z1jW0fNzRGAssDyHY+9/xVLwQCqhaFhY
-         Ms7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=VAqQuLqR5LdSetoXiGa/dZV2l8B31+ZGd5wWEf7583Y=;
-        b=Q+S+e4MN3WV0gyZhcn+JLOdP72X0KElCZmPBxUapiutA3tIu8RW7ELfiaK4c/mAdOs
-         NyIYcJ3H65nhp2eu/TWdvRhlIsVD20KU637r5AOYWZBTSPVFiaVTcW+mtcUlkBzuoxRZ
-         sL995TZ8C7XO1r+ge7HJh6uW5LiBzO3E5J2xmom7qOQu1Tb/czcvzYui4LzQvTEMsJzz
-         8IrmyegdT88QhOLWRGxcVxCc2Tkh7qQXlWvqzOeUsKP56nTTlhT3HY6WHeeG8r7Ueoxa
-         NxyDVMmLkqcGVRovQ6Ff2wu4UAFUOSnpJCsZZVZirkFPwilv0QXyBn88l4A0/IoxaqqZ
-         r4UA==
-X-Gm-Message-State: AOAM531B6KGFaK7M+VI+WBConNyU0BS33sYW8XuzvKNLDeqC0kMyxmYs
-        2idS1++K+03Exdu0oOueEaEri7+17/bErIrSKRA=
-X-Google-Smtp-Source: ABdhPJzraMRusBC0x9kDtECWWpdBPrxQum5tzl7MkBZGhvDJPQRTLlu8/LBqJa+T+xQP7vzBQlUsvnwOpkEYJRhJuaM=
-X-Received: by 2002:a05:651c:1311:: with SMTP id u17mr1148779lja.177.1604066177228;
- Fri, 30 Oct 2020 06:56:17 -0700 (PDT)
+        id S1726732AbgJ3Ofl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 10:35:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28067 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726239AbgJ3Ofl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 10:35:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604068540;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=G/uUf4x5jmqoio45UotElBXDDV5Ef+L5uB7zqE76nAQ=;
+        b=MB0XzSiBOcao3Sih8lkm5XbwS007u17qZwCLlEDIcuS9P4PFL9MxUBq2gzRoiWhTuo1hIm
+        EB29BQ2y4xKnhwiT3+6t/keBkqvN6RdoCnJ0pBTCtGvnxGXCIDME/EBl9vI3H0MVaE8gFg
+        4H3GilbMCbfVHzHSsPBLPjJRsu/kdno=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-21-EDFthimKOPGHh7oFb3zDAg-1; Fri, 30 Oct 2020 10:35:34 -0400
+X-MC-Unique: EDFthimKOPGHh7oFb3zDAg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B1F788F62C6;
+        Fri, 30 Oct 2020 14:35:32 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E76921002C01;
+        Fri, 30 Oct 2020 14:35:22 +0000 (UTC)
+Date:   Fri, 30 Oct 2020 15:35:21 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     kbuild@lists.01.org, bpf@vger.kernel.org, lkp@intel.com,
+        kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        brouer@redhat.com
+Subject: Re: [PATCH bpf-next V4 2/5] bpf: bpf_fib_lookup return MTU value as
+ output when looked up
+Message-ID: <20201030153521.727bfb80@carbon>
+In-Reply-To: <20201028124942.GE1042@kadam>
+References: <160381601522.1435097.11103677488984953095.stgit@firesoul>
+        <20201028124942.GE1042@kadam>
 MIME-Version: 1.0
-Sender: alhajiahmedi28@gmail.com
-Received: by 2002:ab3:409a:0:0:0:0:0 with HTTP; Fri, 30 Oct 2020 06:56:16
- -0700 (PDT)
-From:   Ahmed Ibrahim <ahmedofficial313@gmail.com>
-Date:   Fri, 30 Oct 2020 13:56:16 +0000
-X-Google-Sender-Auth: DlrrgbsPlZ8SoKmypYh9Lc0jkdw
-Message-ID: <CABUS33qba90m4TMVM-zygXwxCp7hSRggEQrOtCqafUmWiPJxxA@mail.gmail.com>
-Subject: GREETINGS
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 28 Oct 2020 15:49:42 +0300
+Dan Carpenter <dan.carpenter@oracle.com> wrote:
+
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> New smatch warnings:
+> net/core/filter.c:5395 bpf_ipv4_fib_lookup() error: uninitialized symbol 'mtu'.
+
+I will fix and send V5.
+
 -- 
-Hello dear, I have a business proposal for you, can you get back to me
-please? Thanks
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
