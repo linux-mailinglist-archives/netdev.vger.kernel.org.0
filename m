@@ -2,88 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BB2D29F967
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 01:04:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0107F29F9AC
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 01:28:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725982AbgJ3AEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 20:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41990 "EHLO
+        id S1726181AbgJ3A21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 20:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725372AbgJ3AEc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 20:04:32 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D05C0613CF;
-        Thu, 29 Oct 2020 17:04:31 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id n11so4084220ota.2;
-        Thu, 29 Oct 2020 17:04:31 -0700 (PDT)
+        with ESMTP id S1726097AbgJ3A2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 20:28:24 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7008BC0613D2
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 17:28:24 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id x13so3714543pgp.7
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 17:28:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6u0rxoMW5EgguiQ1BaRLL9TYUXH249yr9CJfUjtzD94=;
-        b=Xw6j/s9cIdzpnn1yfTS9n2GAwVVoIxCPXzD7SVtNNx7d7Izi1qA4ao0++Vo+eQEHfN
-         dOJxPn8vyDcTC3+ogjmO2uAGqcUAvfQaCzoBt9fzGVlF0WDG2DrBzEcx0FbBrdmZjvtu
-         uuxkquQ0IsBfGA8OGlYaTlXQ5Gs323CxBQG1N/sC0zcN/qJ2DqUXEJjW7G0dN+PWRqYJ
-         Ph0MdiXwDdHz9Ycq0ZrSnbiQkp4hJhrsao3v/no2cZJVB8Y5Sv539uFeYdzrzAklMarf
-         FUwAkLvBBxsmPcN6eigiW8+Vg3n97EIw/R0wWy2gKLuiZ0EbMJGzGZgsu4zAZA+JBbCj
-         XCbg==
+        bh=oDwi5fkz2fdA7OaRrde67x0Vx0YqzDJ9WtGqBgk5940=;
+        b=WUyaw4KuGE29rwG84kcGmxDADN6HUT6oeKCmqcPeat6AWXYlZm/GbXSaIvvrli8t5O
+         YNOeAaEwDWcLx18V0tku7Y6BspBcRKwHwfzXusIwbllqo605pX6bhwOPPkei9S09Mdq7
+         wtMd5aTupcySHbfDtwfur+2zAFv4uje4YVg/2odQZjLFfYwDW7dc0jvBoCeyig+/mgr3
+         b60uwyy7evfL+LoBv6Opfg3GNq50IwvvU+k0RVIfCxMo+g+/hu4rr5+5jd8lAi0CZXBa
+         uqH4wsr+3VYXU/efy/D7nHoe85z1FXAoHbe8NvNPN7HJQoxOEjrItT/oIlPexo15Tc6S
+         J7IQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6u0rxoMW5EgguiQ1BaRLL9TYUXH249yr9CJfUjtzD94=;
-        b=pGNx+J04S1fzxGxjJehW6FjiPROYisnrU/kYkyXiL6+7WA17NrHsswEExsFvXIye/S
-         BzLpKGJDUHv7GWIjdXtUoexPuyIWyveumQA/Tgi2qICyXTt/qr+6s9vlCH/JkcMUdyKG
-         vxKVO5MoBNpCgn4T/8T8/jYZjOpeGrK4Gul8lYMDRx1G2QrF9bf/5zCbBN462YYmcee+
-         VvKRro0QxS4lB4JHd/WNqMkAnu28HHTzSGoLM1Gk6TZNNRfHtGmX1PSiB+ADhPLj5Lvi
-         y96CoIQf1gJrn6eSudjxmEes6WqvkoZA7Ur8P/c0lgm7sqyVou7Bbm1h+/3df3IOrd0m
-         SgmQ==
-X-Gm-Message-State: AOAM532Sn8bYsASi4ZyVDEvFROmtcels5xgRGq3FDNaQscledelVE/60
-        Ex92741y3KIU8zPx03FaMdsbBPjNbKtJtHd35/Q=
-X-Google-Smtp-Source: ABdhPJy674YLL3RLhCFMc9BBY9y/+nTgTZTAGU+qhGrdlTG6Zi+XRuQpC13GUd7wn+9akVH8B4bnOK3gY6QcO9Hl0+k=
-X-Received: by 2002:a05:6830:134c:: with SMTP id r12mr4975499otq.240.1604016269969;
- Thu, 29 Oct 2020 17:04:29 -0700 (PDT)
+        bh=oDwi5fkz2fdA7OaRrde67x0Vx0YqzDJ9WtGqBgk5940=;
+        b=gNghhN7R5RljWPl8Y0eqWAPGjkDfxM0KluQ2KFRgaH55fK74S44QzUW+DqgsP+l+20
+         6LH/w2v1sqPiGLtCI9EDwEExgBNqFb8m1VyByTg38ILAwAZyH04BWRWyzZDw4gzNR/N8
+         4Jeo9itShS45rVp/kwLHxyIs6PQokkmUK1d2ZhKUdQlETjD5SFndviRUPZm61HczZ3/g
+         xVAJ5c+rNbjoMT3CEPfyCGF5U4aSA9F2J3Xheej7wnXy8MKevyhWfyzzLNzdBc8+YfSe
+         OoAcDi+OOuwwl/q3FLgfzZ/H1+E5yak7YWb6IIZpntxznDYHdncAP79JBbJ5cHcZPxCx
+         zrzQ==
+X-Gm-Message-State: AOAM530rt13f2Yv831mTWBMsD0oMNqKBC4SvABm3kZeRFT8ATOaV0QnW
+        sMTbhhulp4DTkEA441nXxHLybs950cIPfTx1Ig2FEw==
+X-Google-Smtp-Source: ABdhPJwGhvPJ5K3S8YutGjeIV2dzBV6BJ3VkAWawExavdFHjCJPyR1FeMCSP1JrX9apzWmZAwXAfHbls/Fil83VRAaU=
+X-Received: by 2002:aa7:9a04:0:b029:163:fe2a:9e04 with SMTP id
+ w4-20020aa79a040000b0290163fe2a9e04mr7213480pfj.30.1604017703610; Thu, 29 Oct
+ 2020 17:28:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201001230403.2445035-1-danielwinkler@google.com>
- <CAP2xMbtC0invbRT2q6LuamfEbE9ppMkRUO+jOisgtBG17JkrwA@mail.gmail.com>
- <CABBYNZJ65vXxeyJmZ_L_D+9pm7uDHo0+_ioHzMyh0q8sVmREsQ@mail.gmail.com> <CAP2xMbs4sUyap_-YAFA6=52Qj+_uxGww7LwmbWACVC0j0LvbLQ@mail.gmail.com>
-In-Reply-To: <CAP2xMbs4sUyap_-YAFA6=52Qj+_uxGww7LwmbWACVC0j0LvbLQ@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Thu, 29 Oct 2020 17:04:18 -0700
-Message-ID: <CABBYNZ+0LW0sOPPe+QHWLn7XXdAjqKB3Prm21SyUQLeQqW=StA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/5] Bluetooth: Add new MGMT interface for advertising add
-To:     Daniel Winkler <danielwinkler@google.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        BlueZ <linux-bluetooth@vger.kernel.org>,
-        chromeos-bluetooth-upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
+References: <20201028171506.15682-1-ardb@kernel.org> <20201028171506.15682-2-ardb@kernel.org>
+ <20201028213903.fvdjydadqt6tx765@ast-mbp.dhcp.thefacebook.com>
+ <CAMj1kXFHcM-Jb+MwsLtB4NMUmMyAGGLeNGNLC9vTATot3NJLrA@mail.gmail.com>
+ <20201028225919.6ydy3m2u4p7x3to7@ast-mbp.dhcp.thefacebook.com>
+ <CAMj1kXG8PmvO6bLhGXPWtzKMnAsip2WDa-qdrd+kFfr30sd8-A@mail.gmail.com> <20201028232001.pp7erdwft7oyt2xm@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201028232001.pp7erdwft7oyt2xm@ast-mbp.dhcp.thefacebook.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 29 Oct 2020 17:28:11 -0700
+Message-ID: <CAKwvOd=Zrza=i54_=H3n2HkmMhg9EJ3Wy0kR5AXTSqBowsQV5g@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] bpf: don't rely on GCC __attribute__((optimize))
+ to disable GCSE
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <bpf@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Kees Cook <keescook@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
-
-On Thu, Oct 29, 2020 at 3:25 PM Daniel Winkler <danielwinkler@google.com> wrote:
+On Wed, Oct 28, 2020 at 4:20 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Hi Luiz,
+> On Thu, Oct 29, 2020 at 12:10:52AM +0100, Ard Biesheuvel wrote:
+> > On Wed, 28 Oct 2020 at 23:59, Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > I'm totally fine with making
+> > > #define __no_fgcse __attribute__((optimize("-fno-gcse,-fno-omit-frame-pointer")))
+> > > to be gcc+x86 only.
+> > > I'd like to get rid of it, but objtool is not smart enough to understand
+> > > generated asm without it.
+> >
+> > I'll defer to the x86 folks to make the final call here, but I would
+> > be perfectly happy doing
+> >
+> > index d1e3c6896b71..68ddb91fbcc6 100644
+> > --- a/include/linux/compiler-gcc.h
+> > +++ b/include/linux/compiler-gcc.h
+> > @@ -176,4 +176,6 @@
+> >  #define __diag_GCC_8(s)
+> >  #endif
+> >
+> > +#ifdef CONFIG_X86
+> >  #define __no_fgcse __attribute__((optimize("-fno-gcse")))
+> > +#endif
 >
-> Thank you for the feedback regarding mgmt-tester. I intended to use
-> the tool, but found that it had a very high rate of test failure even
-> before I started adding new tests. If you have a strong preference for
-> its use, I can look into it again but it may take some time. These
-> changes were tested with manual and automated functional testing on
-> our end.
->
-> Please let me know your thoughts.
+> If you're going to submit this patch could you please add
+> ,-fno-omit-frame-pointer
+> to the above as well?
 
-Total: 406, Passed: 358 (88.2%), Failed: 43, Not Run: 5
+You'll be playing whack-a-mole with other -f flags that should have
+been used, which changes even based on the config.  The -fsanitize=
+flags come to mind with the sanitizers.
 
-Looks like there are some 43 tests failing, we will need to fix these
-but it should prevent us to add new ones as well, you can use -p to
-filter what tests to run if you want to avoid these for now.
+defconfig shows:
+$ make LLVM=1 -j71 kernel/bpf/core.o V=1 2>&1 | grep "\-f"
+the following -f flags set:
+
+-fno-strict-aliasing
+-fno-common
+-fshort-wchar
+-fno-PIE
+-fno-asynchronous-unwind-tables
+-fno-delete-null-pointer-checks
+-fomit-frame-pointer
+-fmacro-prefix-map=./=
+-fstack-protector-strong
+
+We already know that -fno-asynchronous-unwind-tables get dropped,
+hence this patch.  And we know -fomit-frame-pointer or
+-fno-omit-frame-pointer I guess gets dropped, hence your ask.  We
+might not know the full extent which other flags get dropped with the
+optimize attribute, but I'd argue that my list above can all result in
+pretty bad bugs when accidentally omitted (ok, maybe not -fshort-wchar
+or -fmacro-prefix-map, idk what those do) or when mixed with code that
+has different values those flags control.  Searching GCC's bug tracker
+for `__attribute__((optimize` turns up plenty of reports to make me
+think this attribute maybe doesn't work the way folks suspect or
+intend: https://gcc.gnu.org/bugzilla/buglist.cgi?quicksearch=__attribute__%28%28optimize&list_id=283390.
+
+There's plenty of folks arguing against the use of the optimize
+attribute in favor of the command line flag.  I urge you to please
+reconsider the request.
+
+> Frankly I'm more worried that -Os will generate incorrect code.
+
+If you have observed bugs as a result of setting
+CONFIG_CC_OPTIMIZE_FOR_SIZE, we would love to help you get to the
+bottom of them and help you debug them.  But we should also remain
+vigilant against rejecting progress on the status quo for known issues
+over hypothetical issues without proper regard for evidence.
+Correctness is the chief concern of a compiler; that it generates
+incorrect code unless default-on optimizations are explicitly disabled
+would be concerning, if that was in fact the case.  Such a bug report
+would be invaluable to this code base, and likely others.  I trust
+you've seen bugs here, but I would like to help verify this claim.
+
+> All compilers have bugs. Kernel has bugs. What can go wrong?
+
+This is more terrifyingly precise and infinitely wise than you may
+have initially intended.  That my phone and laptop don't catch fire
+simultaneously now is nothing short of miraculous.  I'm still holding
+my breath.
+
+--
+Thanks,
+~Nick Desaulniers
