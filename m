@@ -2,114 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 879342A1101
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 23:42:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1D4D2A10F6
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 23:37:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725916AbgJ3Wmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 18:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
+        id S1725929AbgJ3Wh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 18:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbgJ3Wmm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 18:42:42 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987A1C0613D5;
-        Fri, 30 Oct 2020 15:42:42 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id c18so4202181wme.2;
-        Fri, 30 Oct 2020 15:42:42 -0700 (PDT)
+        with ESMTP id S1725816AbgJ3Wh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 18:37:56 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2672AC0613D5;
+        Fri, 30 Oct 2020 15:37:56 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id gr24so1859348ejb.9;
+        Fri, 30 Oct 2020 15:37:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gPVCkimDSde9NDOHVzmfZuIkAyViqLXXwudj3/IcjzA=;
-        b=SUlEi+TZCkdpCMY6i9McihVn/upESRR2wXK+YTou9HmFMrTzDn9XwBZjSkQX9o6XhJ
-         IySRtT4q/49KnJDF9agP6CDwm9shrjtl7utLcNg96Tatc4GAQEKQBPPhqTre2/o3eY0l
-         inCVwA38GlBXTNNz6ZG0rtkafwoMRVSUyhfd/NbbODzO4LeZioxQHZx+rp/vFE1qfQMU
-         z7n4DZ8dLYGnxLQBWYay2+G6lqSY9uJqr7ucxmS6d1FIS7kvle1dZkML2IqNPVk5RFE0
-         JOlnmrBEmnNtnNgupAODtqQcPLTe1qA0RPpb+QKFaxpzMHTISNpCbMaOU/OAHpxyxIU/
-         HA6Q==
+        bh=OUVs8tSdK5o6SJ/sOq9QJbY7iS/xvDNCvYPmxr6Xxhs=;
+        b=dMpc4fpaefgMxiDk4U4Sf0cPXwe/wSmds5xsbgPuija0lD3uvN24ArF8AdkNfqAUu+
+         w7loHhX1Y2nFVbEgLrnKErHzbj62QCkrMrZB7GHrfEoGYYMapswme4RCz0jLqOctrMfG
+         l8YmyWG7sqct6HAKz4gA/j8gDXHMx1OHr4H/6Vt/y7BEVACaZUjrWZayPh0ql0C4qSPI
+         uBmRPYNTIWJqQ/C7bB4KTplskLIe/PFq4EW1dbyPYCrk8ba27v1HAxQqCbbmaJz78Evz
+         D7aYlddDGBryKFMMpqcDi5/ZNEIMC7PwvgR2c0VthKtSMjoS+x/ggU3vTjWfxNgYZ6+C
+         7lvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=gPVCkimDSde9NDOHVzmfZuIkAyViqLXXwudj3/IcjzA=;
-        b=XX61Csz/M8OBRhWS7S0EPZy7VZDGpXhKr7FN39mfb7JhxCuaNdTU32V9277j9s5n2U
-         BmtzIj54brGk4cWOSKUQjHyfIgx3tlvsE0V1nnWkUND8+RfhQenhmhbvynJuMmMP1dQO
-         L95Qll+Quq9SLiXqAsxagp5cy6loj+HiBEV0XEK03T+E1Y926Hp+ndxyAtCnKVJwp2dG
-         3pz1l+pKNbfFgRAU++Yqp94L/TSFRBEWrvheKQOJ9I1GENugcRHeCXE6rpliFIrq6QWr
-         l+Ik2c7YhCDhRyw4atlzuFN///NLBMV655kLXzk7Wu2AotB65ru1B6WG0XE6Kb8nTv5Y
-         dJ1Q==
-X-Gm-Message-State: AOAM530IotcZctboACDaIuZkLvAL53LgymM5MLCc6f7XlpD6yYGin3VI
-        a/CRW8Dmo1sTK7w+y+y9PTo=
-X-Google-Smtp-Source: ABdhPJzS9p0fe6AYF2H85TKcYaS5v2pKzFtc5ULo5MbnjzaZ0m3Mr6ozmSq/8SAxzIFileUc9QO8Rg==
-X-Received: by 2002:a1c:ac87:: with SMTP id v129mr5076778wme.119.1604097761249;
-        Fri, 30 Oct 2020 15:42:41 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:2800:9d19:4c77:c465:2524? (p200300ea8f2328009d194c77c4652524.dip0.t-ipconnect.de. [2003:ea:8f23:2800:9d19:4c77:c465:2524])
-        by smtp.googlemail.com with ESMTPSA id t12sm12371719wrm.25.2020.10.30.15.42.39
+        bh=OUVs8tSdK5o6SJ/sOq9QJbY7iS/xvDNCvYPmxr6Xxhs=;
+        b=Tgo61AF39cCnomWO0YeI3eRWqcMxi5LU+mUj6b9x6OhMMgTju/BFnuCawoFsGo3Igg
+         25f8F2qiNjpDW+8iInMeXaebOEXxzJtxz0/X4Nz60jwRVN3FH3HACYj39rs+n+GkT2Rh
+         9HV51RR3PpwJdGKcSY/p5AYvfOnrOVG3oiNk1Kbh65OB/qfmTHCUIHnpsjgow538c79k
+         uHSXhKXd3eUKdSxQ1MxXTGzBAeNKVsohX21plq12YDk0urLjFhPqqw6FY9cZ3DtdXBAB
+         y9bPUfEedarDfm+XvqIVig7iAtuMpFVc6zxog/jXDklrB8qz/dySSH7cNzrgWpO1pcRD
+         Td+w==
+X-Gm-Message-State: AOAM533MLa3b79uU+S09Im204o5858y8CJzbrAUqtXHJDWQV3gvPayRv
+        MgyqjOHFbFJfxGjrqFj92bU=
+X-Google-Smtp-Source: ABdhPJwIpL3m9+J/FKfJ8S23qf73ozAUtWGIiRjRugnd7ZLtzyKtFdeWKNZWdoY58K7mNizWZiSsng==
+X-Received: by 2002:a17:906:370e:: with SMTP id d14mr4981038ejc.259.1604097474812;
+        Fri, 30 Oct 2020 15:37:54 -0700 (PDT)
+Received: from ?IPv6:2a01:110f:b59:fd00:28e3:24bf:72a1:43e4? ([2a01:110f:b59:fd00:28e3:24bf:72a1:43e4])
+        by smtp.gmail.com with ESMTPSA id g14sm1367351ejr.26.2020.10.30.15.37.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Oct 2020 15:42:40 -0700 (PDT)
-Subject: Re: [PATCH net-next 00/19] net: phy: add support for shared
- interrupts (part 1)
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ioana Ciornei <ciorneiioana@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
+        Fri, 30 Oct 2020 15:37:54 -0700 (PDT)
+Subject: Re: [PATCH RFC leds + net-next 2/7] leds: trigger: netdev: simplify
+ the driver by using bit field members
+To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
+        netdev@vger.kernel.org
+Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
         Dan Murphy <dmurphy@ti.com>,
-        Divya Koppera <Divya.Koppera@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Kavya Sree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Marek Vasut <marex@denx.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Mathias Kresin <dev@kresin.me>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Michael Walle <michael@walle.cc>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Nisar Sayed <Nisar.Sayed@microchip.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Willy Liu <willy.liu@realtek.com>,
-        Yuiko Oshino <yuiko.oshino@microchip.com>
-References: <20201029100741.462818-1-ciorneiioana@gmail.com>
- <43d672ae-c089-6621-5ab3-3a0f0303e51a@gmail.com>
- <20201030220642.ctkt2pitdvri3byt@skbuf>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <b9d74b13-1b6a-1fa1-700e-c1aa82eab956@gmail.com>
-Date:   Fri, 30 Oct 2020 23:33:46 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ben Whitten <ben.whitten@gmail.com>
+References: <20201030114435.20169-1-kabel@kernel.org>
+ <20201030114435.20169-3-kabel@kernel.org>
+From:   Jacek Anaszewski <jacek.anaszewski@gmail.com>
+Message-ID: <64419e33-ffcd-4082-01bd-3370dae86b4b@gmail.com>
+Date:   Fri, 30 Oct 2020 23:37:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.4.0
 MIME-Version: 1.0
-In-Reply-To: <20201030220642.ctkt2pitdvri3byt@skbuf>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20201030114435.20169-3-kabel@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.10.2020 23:06, Vladimir Oltean wrote:
-> On Fri, Oct 30, 2020 at 10:56:24PM +0100, Heiner Kallweit wrote:
->> I'd just like to avoid the term "shared interrupt", because it has
->> a well-defined meaning. Our major concern isn't shared interrupts
->> but support for multiple interrupt sources (in addition to
->> link change) in a PHY.
+Hi Marek,
+
+Bitops are guaranteed to be atomic and this was done for a reason.
+
+On 10/30/20 12:44 PM, Marek Behún wrote:
+> Use bit fields members in struct led_netdev_data instead of one mode
+> member and set_bit/clear_bit/test_bit functions. These functions are
+> suitable for longer or variable length bit arrays.
 > 
-> You may be a little bit confused Heiner.
-> This series adds support for exactly _that_ meaning of shared interrupts.
-> Shared interrupts (aka wired-OR on the PCB) don't work today with the
-> PHY library. I have a board that won't even boot to prompt when the
-> interrupt lines of its 2 PHYs are enabled, that this series fixes.
-> You might need to take another look through the commit messages I'm afraid.
+> Signed-off-by: Marek Behún <kabel@kernel.org>
+> ---
+>   drivers/leds/trigger/ledtrig-netdev.c | 69 ++++++++++++---------------
+>   1 file changed, 30 insertions(+), 39 deletions(-)
 > 
-Right, I was focusing on the PTP irq use case.
+> diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
+> index 4f6b73e3b491..8f013b6df4fa 100644
+> --- a/drivers/leds/trigger/ledtrig-netdev.c
+> +++ b/drivers/leds/trigger/ledtrig-netdev.c
+> @@ -49,11 +49,11 @@ struct led_netdev_data {
+>   	atomic_t interval;
+>   	unsigned int last_activity;
+>   
+> -	unsigned long mode;
+> -#define NETDEV_LED_LINK	0
+> -#define NETDEV_LED_TX	1
+> -#define NETDEV_LED_RX	2
+> -#define NETDEV_LED_MODE_LINKUP	3
+> +	unsigned link:1;
+> +	unsigned tx:1;
+> +	unsigned rx:1;
+> +
+> +	unsigned linkup:1;
+>   };
+>   
+>   enum netdev_led_attr {
+> @@ -73,10 +73,10 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
+>   	if (!led_cdev->blink_brightness)
+>   		led_cdev->blink_brightness = led_cdev->max_brightness;
+>   
+> -	if (!test_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode))
+> +	if (!trigger_data->linkup)
+>   		led_set_brightness(led_cdev, LED_OFF);
+[...]
+
+-- 
+Best regards,
+Jacek Anaszewski
