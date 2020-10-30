@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E3352A0F1D
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 21:07:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C4982A0F22
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 21:07:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727379AbgJ3UHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 16:07:08 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:33138 "EHLO
+        id S1727479AbgJ3UHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 16:07:15 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:33148 "EHLO
         fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725975AbgJ3UHI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 16:07:08 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 09UK71rY108040;
-        Fri, 30 Oct 2020 15:07:01 -0500
+        with ESMTP id S1727415AbgJ3UHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 16:07:14 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 09UK79rf108066;
+        Fri, 30 Oct 2020 15:07:09 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1604088421;
-        bh=rIc2Rlbdsgh8YepaFO9M3sefdA21E5gYn0Lu0N3mkqA=;
-        h=From:To:CC:Subject:Date;
-        b=J9zns5qNqPKUIoZlBpxlD65oINfytI+Li2MVOS6oHa4Wiof5gmcd1mPONzWH/rm86
-         NA3+zqZKIuuVpEriPIx70dKOmzdrcfNjY0B6hIh2B1sujyKNaqo7hh4hCc37dlCSXr
-         QV2KZJkls/GTzncDBfZmBBTFtyWL4/tOROTmBpOo=
-Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 09UK71Md035328
+        s=ti-com-17Q1; t=1604088429;
+        bh=vwAshrXZUm5aAiiEKPz3Y8AbZeuFow0vDlPm7YdaWkc=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=v3DJ/Z+UrOv5GY8wZkbzV517LpszhqSF3opcI4ajUthURuJLQ3UjxTcsV/bbsfpEG
+         JwZfAedfmp84AQa21pG9YxY/YmI6+riqycCOhRBrVhd/Lv34RfBWUTTcjfGNJoYtkA
+         i9ykhdjoGAsDV3U2nqSPL7nhuS0Zd87vA5Wx2k0g=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 09UK78pL051826
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 30 Oct 2020 15:07:01 -0500
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+        Fri, 30 Oct 2020 15:07:08 -0500
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 30
- Oct 2020 15:07:01 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ Oct 2020 15:07:08 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 30 Oct 2020 15:07:01 -0500
+ Frontend Transport; Fri, 30 Oct 2020 15:07:08 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 09UK70sH100346;
-        Fri, 30 Oct 2020 15:07:01 -0500
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 09UK77b1101190;
+        Fri, 30 Oct 2020 15:07:08 -0500
 From:   Grygorii Strashko <grygorii.strashko@ti.com>
 To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -44,10 +44,12 @@ CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
         <linux-omap@vger.kernel.org>,
         "Reviewed-by : Jesse Brandeburg" <jesse.brandeburg@intel.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next v3 00/10] net: ethernet: ti: am65-cpsw: add multi port support in mac-only mode
-Date:   Fri, 30 Oct 2020 22:06:57 +0200
-Message-ID: <20201030200707.24294-1-grygorii.strashko@ti.com>
+Subject: [PATCH net-next v3 01/10] net: ethernet: ti: am65-cpsw: move ale selection in pdata
+Date:   Fri, 30 Oct 2020 22:06:58 +0200
+Message-ID: <20201030200707.24294-2-grygorii.strashko@ti.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201030200707.24294-1-grygorii.strashko@ti.com>
+References: <20201030200707.24294-1-grygorii.strashko@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
@@ -55,64 +57,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+In preparation of adding more multi-port K3 CPSW versions move ALE
+selection in am65_cpsw_pdata, so it can be selected basing on DT
+compatibility property.
 
-This series adds multi-port support in mac-only mode (multi MAC mode) to TI
-AM65x CPSW driver in preparation for enabling support for multi-port devices,
-like Main CPSW0 on K3 J721E SoC or future CPSW3g on K3 AM64x SoC.
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+---
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 4 +++-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h | 1 +
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-The multi MAC mode is implemented by configuring every enabled port in "mac-only"
-mode (all ingress packets are sent only to the Host port and egress packets
-directed to target Ext. Port) and creating separate net_device for
-every enabled Ext. port.
-
-This series does not affect on existing CPSW2g one Ext. Port devices and xmit
-path changes are done only for multi-port devices by splitting xmit path for
-one-port and multi-port devices. 
-
-Patches 1-3: Preparation patches to improve K3 CPSW configuration depending on DT
-Patches 4-5: Fix VLAN offload for multi MAC mode
-Patch 6: Fixes CPTS context lose issue during PM runtime transition
-Patch 7: Fixes TX csum offload for multi MAC mode
-Patches 8-9: add multi-port support to TI AM65x CPSW
-Patch 10: handle deferred probe with new dev_err_probe() API
-
-changes in v3:
- - rebased
- - added Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
- - added Patch 10 which is minor optimization
-
-changes in v2:
-- patch 8: xmit path split for one-port and multi-port devices to avoid
-  performance losses 
-- patch 9: fixed the case when Port 1 is disabled
-- Patch 7: added fix for TX csum offload 
-
-v2: https://lore.kernel.org/patchwork/cover/1321608/
-v1: https://lore.kernel.org/patchwork/cover/1315766/
-
-Grygorii Strashko (10):
-  net: ethernet: ti: am65-cpsw: move ale selection in pdata
-  net: ethernet: ti: am65-cpsw: move free desc queue mode selection in
-    pdata
-  net: ethernet: ti: am65-cpsw: use cppi5_desc_is_tdcm()
-  net: ethernet: ti: cpsw_ale: add cpsw_ale_vlan_del_modify()
-  net: ethernet: ti: am65-cpsw: fix vlan offload for multi mac mode
-  net: ethernet: ti: am65-cpsw: keep active if cpts enabled
-  net: ethernet: ti: am65-cpsw: fix tx csum offload for multi mac mode
-  net: ethernet: ti: am65-cpsw: prepare xmit/rx path for multi-port
-    devices in mac-only mode
-  net: ethernet: ti: am65-cpsw: add multi port support in mac-only mode
-  net: ethernet: ti: am65-cpsw: handle deferred probe with
-    dev_err_probe()
-
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 355 ++++++++++++++---------
- drivers/net/ethernet/ti/am65-cpsw-nuss.h |   5 +
- drivers/net/ethernet/ti/cpsw_ale.c       |  41 ++-
- drivers/net/ethernet/ti/cpsw_ale.h       |   1 +
- drivers/net/ethernet/ti/cpsw_switchdev.c |   2 +-
- 5 files changed, 261 insertions(+), 143 deletions(-)
-
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 501d676fd88b..0ee1c7a5c90f 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -2005,10 +2005,12 @@ static const struct soc_device_attribute am65_cpsw_socinfo[] = {
+ 
+ static const struct am65_cpsw_pdata am65x_sr1_0 = {
+ 	.quirks = AM65_CPSW_QUIRK_I2027_NO_TX_CSUM,
++	.ale_dev_id = "am65x-cpsw2g",
+ };
+ 
+ static const struct am65_cpsw_pdata j721e_pdata = {
+ 	.quirks = 0,
++	.ale_dev_id = "am65x-cpsw2g",
+ };
+ 
+ static const struct of_device_id am65_cpsw_nuss_of_mtable[] = {
+@@ -2145,7 +2147,7 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
+ 	ale_params.ale_ageout = AM65_CPSW_ALE_AGEOUT_DEFAULT;
+ 	ale_params.ale_ports = common->port_num + 1;
+ 	ale_params.ale_regs = common->cpsw_base + AM65_CPSW_NU_ALE_BASE;
+-	ale_params.dev_id = "am65x-cpsw2g";
++	ale_params.dev_id = common->pdata.ale_dev_id;
+ 	ale_params.bus_freq = common->bus_freq;
+ 
+ 	common->ale = cpsw_ale_create(&ale_params);
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.h b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
+index 993e1d4d3222..9c2186b8eae9 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.h
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
+@@ -77,6 +77,7 @@ struct am65_cpsw_rx_chn {
+ 
+ struct am65_cpsw_pdata {
+ 	u32	quirks;
++	const char	*ale_dev_id;
+ };
+ 
+ struct am65_cpsw_common {
 -- 
 2.17.1
 
