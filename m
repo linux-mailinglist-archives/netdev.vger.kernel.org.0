@@ -2,109 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A03002A00DE
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 10:11:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 233B32A012A
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 10:22:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726102AbgJ3JLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 05:11:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57910 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725888AbgJ3JLI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 05:11:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604049066;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vEjyFFVdDRI1CvpF5KW9IORpE6DZMofZZiWLmGCXiyM=;
-        b=bP5RID4Fke9m3Am1+nlIJQK/HXo643XC13d/9eNmyD3TAAmW7fgrKtMyoJnFfh7xQQuH/X
-        Xq4cpeJKkjeLD3xVgCSEPB8ZD2bF3j6CQfkdwPVTmz2sKqCYY06cjsljo2Ep3RdSN1YVDZ
-        RmlEzpS7iThSCs5VSfA83e3eZY15HVQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-569-1n2DHti4PbGQTv2He3_xlA-1; Fri, 30 Oct 2020 05:11:03 -0400
-X-MC-Unique: 1n2DHti4PbGQTv2He3_xlA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 11A821006C9B;
-        Fri, 30 Oct 2020 09:11:02 +0000 (UTC)
-Received: from localhost (ovpn-113-41.ams2.redhat.com [10.36.113.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A163019C71;
-        Fri, 30 Oct 2020 09:10:58 +0000 (UTC)
-Date:   Fri, 30 Oct 2020 09:10:57 +0000
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     mst@redhat.com, netdev@vger.kernel.org, kvm@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vhost/vsock: add IOTLB API support
-Message-ID: <20201030091057.GB307361@stefanha-x1.localdomain>
-References: <20201029174351.134173-1-sgarzare@redhat.com>
+        id S1726264AbgJ3JWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 05:22:09 -0400
+Received: from server.msgroupspa.com ([185.149.113.111]:42568 "EHLO
+        server.msgroupspa.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725355AbgJ3JWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 05:22:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=msgroupspa.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        Message-ID:Reply-To:Subject:To:From:Date:MIME-Version:Sender:Cc:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=3BjszAdjdwh6ODONGTLpdHevYAw+ieapPsfeqclh2zA=; b=fuX2bKPHHb+7Cz0kNtrr37CFsu
+        z++lhoPHm7h2l2P8JSwv0DgNl5P6wNmOeYuE1C3GQqcREIA7DtCM47XAEu9GqrPcovnpdy2LQEfy/
+        MLzXhQnUNLI3m2dTp9h8N7atmp2mnSVyuhbvmKO3OhyDS4Fg8/+Ev7soYCmk24fZeEPPpSatH8g5h
+        blgD4VtDcXYhT0caiM5KrQWsgf/2F54LGPeE3tyFipcm7xy8JQwcS+QwgFuEwOjyNuthXCB2e8u3/
+        YttS1tk6FQbciNqZlM/qxjeKk8M7z1+YGPO+p+Q85hhJRXfQgGMXqXHWe3/ZE6NBgZtjElr/NbARz
+        JqRokXNw==;
+Received: from [::1] (port=52612 helo=server.msgroupspa.com)
+        by server.msgroupspa.com with esmtpa (Exim 4.93)
+        (envelope-from <no-reply@msgroupspa.com>)
+        id 1kYQSe-0000aJ-2z; Fri, 30 Oct 2020 17:12:40 +0800
 MIME-Version: 1.0
-In-Reply-To: <20201029174351.134173-1-sgarzare@redhat.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=stefanha@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="QKdGvSO+nmPlgiQ/"
-Content-Disposition: inline
+Date:   Fri, 30 Oct 2020 17:12:39 +0800
+From:   "Mr. Francois Pinault" <no-reply@msgroupspa.com>
+To:     undisclosed-recipients:;
+Subject: Hello
+Reply-To: francoispinault1936@outlook.com
+User-Agent: Roundcube Webmail/1.4.8
+Message-ID: <409d91f1e60be9d01cfd3e02442a9d98@msgroupspa.com>
+X-Sender: no-reply@msgroupspa.com
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - server.msgroupspa.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - msgroupspa.com
+X-Get-Message-Sender-Via: server.msgroupspa.com: authenticated_id: no-reply@msgroupspa.com
+X-Authenticated-Sender: server.msgroupspa.com: no-reply@msgroupspa.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---QKdGvSO+nmPlgiQ/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 29, 2020 at 06:43:51PM +0100, Stefano Garzarella wrote:
-> This patch enables the IOTLB API support for vhost-vsock devices,
-> allowing the userspace to emulate an IOMMU for the guest.
->=20
-> These changes were made following vhost-net, in details this patch:
-> - exposes VIRTIO_F_ACCESS_PLATFORM feature and inits the iotlb
->   device if the feature is acked
-> - implements VHOST_GET_BACKEND_FEATURES and
->   VHOST_SET_BACKEND_FEATURES ioctls
-> - calls vq_meta_prefetch() before vq processing to prefetch vq
->   metadata address in IOTLB
-> - provides .read_iter, .write_iter, and .poll callbacks for the
->   chardev; they are used by the userspace to exchange IOTLB messages
->=20
-> This patch was tested with QEMU and a patch applied [1] to fix a
-> simple issue:
->     $ qemu -M q35,accel=3Dkvm,kernel-irqchip=3Dsplit \
->            -drive file=3Dfedora.qcow2,format=3Dqcow2,if=3Dvirtio \
->            -device intel-iommu,intremap=3Don \
->            -device vhost-vsock-pci,guest-cid=3D3,iommu_platform=3Don
->=20
-> [1] https://lists.gnu.org/archive/html/qemu-devel/2020-10/msg09077.html
->=20
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
->  drivers/vhost/vsock.c | 68 +++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 65 insertions(+), 3 deletions(-)
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+-- 
+NOTE: If you Received this message in your spam / bulk folder, That is 
+Because of the restrictions Implemented by your Internet Service 
+Provider, I (François Pinault) urge you to treat it Genuinely.
+*******************************************
 
---QKdGvSO+nmPlgiQ/
-Content-Type: application/pgp-signature; name="signature.asc"
+Hello, I am Mr. François Pinault, i made a donation worth of £800,000.00 
+Pounds to you. You can verify my profile on Wikipedia or Forbes:
 
------BEGIN PGP SIGNATURE-----
+https://www.forbes.com/profile/francois-pinault/
+or
+https://en.wikipedia.org/wiki/Fran%C3%A7ois_Pinault
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl+b2KEACgkQnKSrs4Gr
-c8heawf7BlGCmdi/Ph7QeU55JSh58NjuVO52mV385qiSfOFHZhlEhfLdm0ZoP4GR
-OY+LpLUr4g+AkSEYXKh1zOFWnsll0nE1AlTKjX/W13BYTLxgJyca/4cPYU2IkrRA
-dYgf0RDKPTWqrkykyN+WQZg3X37Lf6Lnbb9ScSuGAkfgYln6Lsx+k5RuJyS7yhRS
-zqjA8mtUZRHlWrhZIg85pRqpE8plGYzw7MDccxQ+V139YskPek6nPXC1/5Mrqqyg
-bSBx5i21oD/hWzwaOZTv7Ux/4vdJV6qPNQCRcwGy0TXUwayHY1YolhfYnBtE+0e0
-GD/hy5jYsYaCgOcp7o604sYccTV6tg==
-=+iwf
------END PGP SIGNATURE-----
+For more information, Kindly contact me as soon as possible on this 
+email: francoispinault1936@outlook.com
 
---QKdGvSO+nmPlgiQ/--
-
+Yours sincerely,
+Mr. François Pinault
