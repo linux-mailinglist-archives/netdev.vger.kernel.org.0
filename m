@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9F8729FAC2
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 02:50:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2F0829FAC4
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 02:50:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726253AbgJ3Bty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 21:49:54 -0400
+        id S1726270AbgJ3Bt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 21:49:58 -0400
 Received: from mail-eopbgr80089.outbound.protection.outlook.com ([40.107.8.89]:30883
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726240AbgJ3Bts (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 21:49:48 -0400
+        id S1726195AbgJ3Btz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 21:49:55 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JT7dfv2wvbTXa/N06GMxRUxGY9/+oZlCLskuGZYT8K2RH8ehGG80IUXJrD8DwBhdyIvxNnUVmuNo+ujTnZ7ve9VJPHy9EigpcaH0k2fbvJidEiv0sSRL1u5S8ZMB0jpmnOV/IfNdC0oLnqd0F743hQ5Ol7h88xeBw4LVe6CV6cxD3ZDw/GNQauGhwJpMS1O75WJYFGbhQFriqjq6AQnI+cxyp1ZHfU88BOwe24NvVCUUjOGciJbGTotatoz3Lr7d5Kj70eyvwWxFXvehrqoWAnV6axF3zCbjhSh7QOzMl3qcE9Vwp38Iu3V1gI/E2/iGnpgILJL20aV6PmNZnHwXLA==
+ b=NO9G/YezJzSAoJRKi3ckolNZOokUf6q3ZAkNztSqr3ZW5MRUmGXYzfueHE8IM/LJAZfiFIBxZ9VbFJQJgET1lNbSnoBeKY0Gt2fqWFjh4658CXDZu2HTzttxwrc9azVMsw0msimy5t7J+wMDoTR+t0iv1d/vCMSPg5KuuefQKsT4cR0voURw5ipAbA3SMA/zhFfuzFaTKd8M7cLZH0FR9oO3+g7VjgPLYA6fjweNeNVO+SpKPLrYXlco8Ho5UqmTRZnYpaunkt30SE5yQc9FiE1hx/Rnwn4+tOi4EHkCv6yKh7YgC/U3rs1djc6cz4K54EZj8zCFn/JaLspqXJ2oFA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RG2zHUI+o++jrKpKLID7uzAyKVs2ITTp0Mn/fZ9PHHk=;
- b=C0/a4NvN8JAqN2sIazNHRZq5etryevpEyBBqjhQp6mcTlC/7yeufrHoE2jl1LeykemMaonClDDFKql2+900+W8CkcFbvozWO6ZgtoT6rgUvNzmZmtiMWhMG9vTuTFibCnO5sCsKlIX0nAa06wNagkNpA77S77Ugw8JJ7J3cnE3oyRWhv3Xswo547OD55Np4mWMtXWTLzeu9MvWU8M8Aa6I51zZfAGhnpoZ24vSdlwPew54Uw0J2e1rxI4hHv09YE1n4lsaxifCjb/ts++pbdPDoWeFlmEY11tCND0GC/x8mhdgK8L0Hsx0e2y9RWlo+AQuB7uUKjkngSkIM6gsmCEw==
+ bh=7kCSsNzUEkBL+c+qQtRHxNY32cQhLeaMAAh6GnFxw+E=;
+ b=msAKwJzO9waip0SVLXpva2v4knO/0bjXBeWkYNFfO53i90g6oB/YnqRyBKBd7g5BSc9JfoY4FoO+qFdtIRQ7c5ZhjVIidlSf8K8GRwpoy1nLdJs6n+tdsVo3fMzJ/ZrjREk3vnBN0wXAqbz5OJeEaQMQu/hMXzXSkUXXJHCn/V7UEH0vrulIkTHyGjCcaKTaPkOsD9Z9uFjv12QbKEHnqCUzUVrCjjDK8dfNKy1oOEdH1H6KKMiJMyta82JtYzzfLTccftmingT+1GkWKLB5J4JplbzZq/isVBrevTFMhrxuhqMQAbrNTAuZGHhM4MYhlxD69RtszVyKlAEig1ghSQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RG2zHUI+o++jrKpKLID7uzAyKVs2ITTp0Mn/fZ9PHHk=;
- b=eYRvoLbzQ9kRuleCh9Wi9C6U+Ne2fZ7vgJITMiovqUPIsTSUBsxHataxPHQ3FuI4HXKFMiyKucp11hJjosj5OVgxLi3KgCwtYc/HV7rgcpl+kf2UWCQ1LvD3P8K8zGkacPYor1pEiq7R98TDV6R8Y3mmQZACDI9/p/deOesHVtQ=
+ bh=7kCSsNzUEkBL+c+qQtRHxNY32cQhLeaMAAh6GnFxw+E=;
+ b=cMBcJbI6PNOQaF6DbT0l5wUOQYxQdrkh5RGRJNymjZE5ue+S7zUphRzLKlrxMa+bveWLeibddShWSjebZoDZ1p0otlaN14VQFb4kPU1m9T1ExuHF+g0te9+9+dMAvcdTcbguMHarIBUTbt676+P5c1GsRNh7D13NvaqomQPjfwU=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VI1PR0401MB2509.eurprd04.prod.outlook.com (2603:10a6:800:56::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Fri, 30 Oct
- 2020 01:49:38 +0000
+ 2020 01:49:39 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3499.027; Fri, 30 Oct 2020
- 01:49:38 +0000
+ 01:49:39 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         kuba@kernel.org, Christian Eggers <ceggers@arri.de>,
         Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>
-Subject: [PATCH v2 net-next 11/12] net: dsa: tag_gswip: let DSA core deal with TX reallocation
-Date:   Fri, 30 Oct 2020 03:49:09 +0200
-Message-Id: <20201030014910.2738809-12-vladimir.oltean@nxp.com>
+        Per Forlin <per.forlin@axis.com>,
+        Oleksij Rempel <linux@rempel-privat.de>
+Subject: [PATCH v2 net-next 12/12] net: dsa: tag_ar9331: let DSA core deal with TX reallocation
+Date:   Fri, 30 Oct 2020 03:49:10 +0200
+Message-Id: <20201030014910.2738809-13-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201030014910.2738809-1-vladimir.oltean@nxp.com>
 References: <20201030014910.2738809-1-vladimir.oltean@nxp.com>
@@ -57,28 +58,28 @@ X-ClientProxiedBy: AM0PR03CA0096.eurprd03.prod.outlook.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.177) by AM0PR03CA0096.eurprd03.prod.outlook.com (2603:10a6:208:69::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Fri, 30 Oct 2020 01:49:37 +0000
+Received: from localhost.localdomain (188.25.2.177) by AM0PR03CA0096.eurprd03.prod.outlook.com (2603:10a6:208:69::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Fri, 30 Oct 2020 01:49:38 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 4612e883-7160-409f-919f-08d87c760fb2
+X-MS-Office365-Filtering-Correlation-Id: 5ffaed03-e38d-4192-e4ce-08d87c761055
 X-MS-TrafficTypeDiagnostic: VI1PR0401MB2509:
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB25094B7791DCD7FAEE90D469E0150@VI1PR0401MB2509.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB250959B34FF9558B9B29A805E0150@VI1PR0401MB2509.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 35o1Xkp9x0UHr6MReI9e1Ym4IND2j2u9+JpX03fOC2jee7LOPzT++jGaTA7v5X47Mu+yInoRHhZQ2wZkWB73shGce4c2O+o7VxERAeOcWraf+p8lXsrma/j9zXgfvYDP5a3haJcKE9wUHVGqhlWa0K7ITYoELerH/nDnLfEVj6+dIZ1DwAdAudIhlRBYxi6gqlkaQT0VKHAGLL6ylLyUkEy+8GbmYlaUs6CHm98YVqY22tG1BuAxZzYmCQ1ZpcNPDgczCDuVM81mVg5Ob1AmnTSO1x1iPQtMHghxgkJa2hxSlKqGwh7EG9BVtBee/NqxDfHLSk9JqN69cCit24JsYlmadniCGKXG3cFkzcuA0t942UrpnVC91xCwQ30IeATE
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(136003)(396003)(346002)(376002)(366004)(5660300002)(54906003)(16526019)(6506007)(66946007)(66476007)(1076003)(316002)(186003)(8676002)(69590400008)(36756003)(86362001)(44832011)(52116002)(6512007)(6486002)(66556008)(6666004)(956004)(6916009)(8936002)(478600001)(2616005)(26005)(2906002)(4326008)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: wE8VaFH4HBEG8EOvVaVNi7rlhVJDxlcDxKAd2uCFARwclnAf0Yp+eOt0kc++H/lHnbkC4Ne5zszRbOOXwmQUN2xIphSeql43uuiGdxAvR7eoQlk1M1gxYJuarY2Itq16Fr9lk6dlNEFLhSm/XRzc6lUOxAQAQyUX95QFwDjIwPrNxiqKySibjkLzSRx6+u36HK2f5+Ypv5MXRWmUTjq6cXDxZhJSr489zthntZMDGJcZhEjsSJZ1Cswt/x8vinHizvw3Z8hQP5rZn7XZk5Rl8lst0qEK4hZLgZlFhZloeohPYcptJE9cp7vy1U43msYUHRJyzHce3KHUorlo7Rcn2BldpjC0sWGJlMYkJuMq8V7DpyQiEy8koen+STqGh2yMjLC6Xn0ZCHmvYZ/53tBQUP3cdaWrSaG9LWcH5PGHxuGeemq6bjHkV2P3VJPsaB1FAsgBza0kqBqO71LUlw5N5kMD+ZfTglvJ7u53NHKvQAsozSQe7nZpGo3FR9N76gIblWILvKrPceU2aKQg3oOuIinTZxOhBdIesxfHRGoCpG2q+hl4KpQL6bcsAmueNm9mHrpiy5MLqGt3AxFkAsOe3micsw7DkiPj8I65mZ1QdzaFcKo3Dx27DHjQfdN+H/O6RAy4gqp7EWPgLWJNYSZvXg==
+X-Microsoft-Antispam-Message-Info: mAzyP02EZ16mNRWNaV1YAMQZ6s1aS9IgDkhk/MRgKGAyPO/WoRcHtLgMwFu4T1vHdnDEI8rVul8AfSMn4v0nDbJR9xHDo+Yp+NPdjoZrk/BmiyA5rE4U+K5CiOtyj7s9EgCSxPa9L5QEaj7d66ZteMguwH56eXHM2vRCsjur429iuudDJ2T9wa6rhj8yoHQknM0Hg4Hlt9UsGd1bttEkqt9esGOWkFTIhqvwsrjX6mzuEiggY5qw1A2HujgAIBqULoiYdMTAHkpQzt58cW4aAKYeO+KUFKYjSUrcfPCX6DYjXnjnhCq3zhRAFi9Nj6x970lBcPeb55o7SYVcxjZue7GaIH22qr9kKwA11t8Pgsxv96AH5S/RaztypxfbeUrJ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(136003)(396003)(346002)(376002)(366004)(5660300002)(54906003)(4744005)(16526019)(6506007)(66946007)(66476007)(1076003)(316002)(186003)(8676002)(69590400008)(36756003)(86362001)(44832011)(52116002)(6512007)(6486002)(66556008)(6666004)(956004)(6916009)(8936002)(478600001)(2616005)(26005)(2906002)(4326008)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: HHRRx/TIB6+jOGLWhO2eRGIvmTSEbTEH3JoFWUt4pudiu68dq9dDhHwLKqUqBdYtliM0Xi8OyvoqgvMNiC0XQQLapr93gN6hxjW/sg//ivzneiulP7dIVo2otE9pWF6A0k2ajRTesvCYZbSZ/UXP6yrsWhghO4WoDJRv0KZhaPPKfBLXcKhxXW8enkxMZyKoO0Eiq1Han1LxXK2yTHHWd1Dx0L9WLA/EELSD4x7JZO6Z4UE7YL00ojOq4liY47JPZ6XlR1/+omOv5lDWrTr/wHPeVs1k0ayVncfvvleOkJ1XCIr49zidQCjLPRVmgSr8AHYIdnKRP2Dj9uJiV4xRLD2UvCoTpCoFzciHDKRRq6yEBRnySdGbhmu793I/kN/KRYvD5eCChijlGqE8LGotjVo9kkIlqL669q8rvMEoteil1CVAJnmS7maBjpJWsUJr6fT/5CVmcRFUMkOa0NgLMYUofgEixP0F/8a5wxGLNSoKKTXODHqm2Zrb2UeExovKpdTLuN2lQ6Yof4eZLbDE3p4CXgCyWuOcu9GV99L4rX1r+eqnvElAVmgMtqs3XfqAHM5z01YQTTtgtDJhPrW+6i9Py/eyo9ft9eFFFieKAn6FTd3ezncfrCkVC5dtilKbYaRREkS3XSDzH6CAWTmt/Q==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4612e883-7160-409f-919f-08d87c760fb2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ffaed03-e38d-4192-e4ce-08d87c761055
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2020 01:49:38.5970
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2020 01:49:39.6903
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xD0jDXfzTMF54whsTkSto71I1nA7uxN/yfLpFcmjVwYFHXCI1zuMNFM56xJ5iEeVzuGyuySgJP0UuTBr92291g==
+X-MS-Exchange-CrossTenant-UserPrincipalName: I1vVMyWjAVORS9HjuSkrhlwMdB0WRA0owb5AgauC/MU9UbaHG6DwEOY5jNaCgKNwkNQr8oPC+xvu51yxpVEMDw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2509
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -88,40 +89,30 @@ Now that we have a central TX reallocation procedure that accounts for
 the tagger's needed headroom in a generic way, we can remove the
 skb_cow_head call.
 
-This one is interesting, the DSA tag is 8 bytes on RX and 4 bytes on TX.
-Because DSA is unaware of asymmetrical tag lengths, the overhead/needed
-headroom is declared as 8 bytes and therefore 4 bytes larger than it
-needs to be. If this becomes a problem, and the GSWIP driver can't be
-converted to a uniform header length, we might need to make DSA aware of
-separate RX/TX overhead values.
-
-Cc: Hauke Mehrtens <hauke@hauke-m.de>
+Cc: Per Forlin <per.forlin@axis.com>
+Cc: Oleksij Rempel <linux@rempel-privat.de>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v2:
 None.
 
- net/dsa/tag_gswip.c | 5 -----
- 1 file changed, 5 deletions(-)
+ net/dsa/tag_ar9331.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/net/dsa/tag_gswip.c b/net/dsa/tag_gswip.c
-index 408d4af390a0..2f5bd5e338ab 100644
---- a/net/dsa/tag_gswip.c
-+++ b/net/dsa/tag_gswip.c
-@@ -60,13 +60,8 @@ static struct sk_buff *gswip_tag_xmit(struct sk_buff *skb,
- 				      struct net_device *dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
--	int err;
- 	u8 *gswip_tag;
+diff --git a/net/dsa/tag_ar9331.c b/net/dsa/tag_ar9331.c
+index 55b00694cdba..002cf7f952e2 100644
+--- a/net/dsa/tag_ar9331.c
++++ b/net/dsa/tag_ar9331.c
+@@ -31,9 +31,6 @@ static struct sk_buff *ar9331_tag_xmit(struct sk_buff *skb,
+ 	__le16 *phdr;
+ 	u16 hdr;
  
--	err = skb_cow_head(skb, GSWIP_TX_HEADER_LEN);
--	if (err)
+-	if (skb_cow_head(skb, AR9331_HDR_LEN) < 0)
 -		return NULL;
 -
- 	skb_push(skb, GSWIP_TX_HEADER_LEN);
+ 	phdr = skb_push(skb, AR9331_HDR_LEN);
  
- 	gswip_tag = skb->data;
+ 	hdr = FIELD_PREP(AR9331_HDR_VERSION_MASK, AR9331_HDR_VERSION);
 -- 
 2.25.1
 
