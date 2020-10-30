@@ -2,94 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A76B2A0F07
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 21:02:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E3352A0F1D
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 21:07:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbgJ3UB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 16:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58706 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725975AbgJ3UB6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 16:01:58 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131E2C0613CF;
-        Fri, 30 Oct 2020 13:01:57 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id c20so6232212pfr.8;
-        Fri, 30 Oct 2020 13:01:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1dUGsv5L8Yx4WdRQrViS7Xoa92fK64EgHaBplfQmptg=;
-        b=oIKKfOgJcc1F1MKCz7xkeX4jAT5GxTHezJlW/wSufBFzUbD1z/6/jR7WAkKprooqLQ
-         28FZBE91CUuIKQ+K1j9lCwnwMd6UFVe1YNKhr4sYEl8kXp+PVrrLKOCJHDp5SdkYVAM6
-         Lyw8TYHvZWADvjyLn5qyO210fY+W2DxDszjtLrQJ8TLwfS8y0DnVuP/HHRkymfqvTHfn
-         ZdVEn5LLmLHYGqfjLib+yMidNLqrEnCoBr/jeIzImmkZq3EWiLg5Awg6PFvRKfD+tPDm
-         e6KiBxmR7vpa2nK89is7akxpFqC/1ePQSzDdLQMn3HZUEkkMmDMItkRKASx1hi1mrZSv
-         1CaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1dUGsv5L8Yx4WdRQrViS7Xoa92fK64EgHaBplfQmptg=;
-        b=BEalDqm07OErTTH8XOTAhDy/iHQexb3CFSJYYLgjJtpv1x0753/OZkRaH2SQM/YC3g
-         Cwxvg1WCMzfDFEqfmiezTxoADj5CGqVW36bnI68LDaJV9hbcowqEIqcCcVzyzGY99hh/
-         9Orm1+SfhkuxGpDET2WPtJczHkgUokucjvqcltPrvXsFbmQ/SHHTSFBBPEs1xw2ahcv8
-         w4Bk5a43cihWWwIqxtsAoiNoFwPZFqKBYCP/3kVUTNH3kdqkacHGTP7dHvdF9PC48MSC
-         4aEcEFqCql1AQnnwI3EM2nLkjxSJD253+cXf1hzUxA6KKnfpcvZuroqzgfF6ubbInwxo
-         YOTw==
-X-Gm-Message-State: AOAM530BFrFg0Xdhocs8FrKmF9fhuUDyjnKl1vkCAeLWyGzeWv2Q1JdO
-        VKsaVOfwsY8w0aVvYjHKm6666kpTjQCOm9PwBrI=
-X-Google-Smtp-Source: ABdhPJzMsp0Spz0J3/bvpKhI0/HNtpInc5afmAg0SzOs3QgWW5J9sP1zo3iaQ+MlqfWjuhcesIJHcq4FoyHZKnH90lw=
-X-Received: by 2002:a17:90a:e615:: with SMTP id j21mr4890142pjy.66.1604088116548;
- Fri, 30 Oct 2020 13:01:56 -0700 (PDT)
+        id S1727379AbgJ3UHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 16:07:08 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:33138 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725975AbgJ3UHI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 16:07:08 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 09UK71rY108040;
+        Fri, 30 Oct 2020 15:07:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1604088421;
+        bh=rIc2Rlbdsgh8YepaFO9M3sefdA21E5gYn0Lu0N3mkqA=;
+        h=From:To:CC:Subject:Date;
+        b=J9zns5qNqPKUIoZlBpxlD65oINfytI+Li2MVOS6oHa4Wiof5gmcd1mPONzWH/rm86
+         NA3+zqZKIuuVpEriPIx70dKOmzdrcfNjY0B6hIh2B1sujyKNaqo7hh4hCc37dlCSXr
+         QV2KZJkls/GTzncDBfZmBBTFtyWL4/tOROTmBpOo=
+Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 09UK71Md035328
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 30 Oct 2020 15:07:01 -0500
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 30
+ Oct 2020 15:07:01 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 30 Oct 2020 15:07:01 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 09UK70sH100346;
+        Fri, 30 Oct 2020 15:07:01 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        "Reviewed-by : Jesse Brandeburg" <jesse.brandeburg@intel.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next v3 00/10] net: ethernet: ti: am65-cpsw: add multi port support in mac-only mode
+Date:   Fri, 30 Oct 2020 22:06:57 +0200
+Message-ID: <20201030200707.24294-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20201030022839.438135-1-xie.he.0141@gmail.com>
- <20201030022839.438135-2-xie.he.0141@gmail.com> <CA+FuTSdeP7n1eQU2L2qSCEdJVc=Ezs+PvCof+YJfDjiEFZeH_w@mail.gmail.com>
-In-Reply-To: <CA+FuTSdeP7n1eQU2L2qSCEdJVc=Ezs+PvCof+YJfDjiEFZeH_w@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Fri, 30 Oct 2020 13:01:45 -0700
-Message-ID: <CAJht_EMdbGQdXhYJ7xa_R-j-73fbsEjSUeavov40W52aGvQ21g@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 1/5] net: hdlc_fr: Simpify fr_rx by using
- "goto rx_drop" to drop frames
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 9:35 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> In general we try to avoid changing counter behavior like that, as
-> existing users
-> may depend on current behavior, e.g., in dashboards or automated monitoring.
->
-> I don't know how realistic that is in this specific case, no strong
-> objections. Use
-> good judgment.
+Hi
 
-Originally this function only increases stats.rx_dropped only when
-there's a memory squeeze. I don't know the specification for the
-meaning of stats.rx_dropped, but as I understand it indicates a frame
-is dropped. This is why I wanted to increase it whenever we drop a
-frame.
+This series adds multi-port support in mac-only mode (multi MAC mode) to TI
+AM65x CPSW driver in preparation for enabling support for multi-port devices,
+like Main CPSW0 on K3 J721E SoC or future CPSW3g on K3 AM64x SoC.
 
-Originally this function drops a frame silently if the PVC virtual
-device that corresponds to the DLCI number and the protocol type
-doesn't exist. I think we may at least need some way to note this.
-Originally this function drops a frame with a kernel info message
-printed if the protocol type is not supported. I think this is a bad
-way because if the other end continuously sends us a lot of frames
-with unsupported protocol types, our kernel message log will be
-overwhelmed.
+The multi MAC mode is implemented by configuring every enabled port in "mac-only"
+mode (all ingress packets are sent only to the Host port and egress packets
+directed to target Ext. Port) and creating separate net_device for
+every enabled Ext. port.
 
-I don't know how important it is to keep backwards compatibility. I
-usually don't consider this too much. But I can drop this change if we
-really want to keep the counter behavior unchanged. I think changing
-it is better if we don't consider backwards compatibility.
+This series does not affect on existing CPSW2g one Ext. Port devices and xmit
+path changes are done only for multi-port devices by splitting xmit path for
+one-port and multi-port devices. 
+
+Patches 1-3: Preparation patches to improve K3 CPSW configuration depending on DT
+Patches 4-5: Fix VLAN offload for multi MAC mode
+Patch 6: Fixes CPTS context lose issue during PM runtime transition
+Patch 7: Fixes TX csum offload for multi MAC mode
+Patches 8-9: add multi-port support to TI AM65x CPSW
+Patch 10: handle deferred probe with new dev_err_probe() API
+
+changes in v3:
+ - rebased
+ - added Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+ - added Patch 10 which is minor optimization
+
+changes in v2:
+- patch 8: xmit path split for one-port and multi-port devices to avoid
+  performance losses 
+- patch 9: fixed the case when Port 1 is disabled
+- Patch 7: added fix for TX csum offload 
+
+v2: https://lore.kernel.org/patchwork/cover/1321608/
+v1: https://lore.kernel.org/patchwork/cover/1315766/
+
+Grygorii Strashko (10):
+  net: ethernet: ti: am65-cpsw: move ale selection in pdata
+  net: ethernet: ti: am65-cpsw: move free desc queue mode selection in
+    pdata
+  net: ethernet: ti: am65-cpsw: use cppi5_desc_is_tdcm()
+  net: ethernet: ti: cpsw_ale: add cpsw_ale_vlan_del_modify()
+  net: ethernet: ti: am65-cpsw: fix vlan offload for multi mac mode
+  net: ethernet: ti: am65-cpsw: keep active if cpts enabled
+  net: ethernet: ti: am65-cpsw: fix tx csum offload for multi mac mode
+  net: ethernet: ti: am65-cpsw: prepare xmit/rx path for multi-port
+    devices in mac-only mode
+  net: ethernet: ti: am65-cpsw: add multi port support in mac-only mode
+  net: ethernet: ti: am65-cpsw: handle deferred probe with
+    dev_err_probe()
+
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 355 ++++++++++++++---------
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h |   5 +
+ drivers/net/ethernet/ti/cpsw_ale.c       |  41 ++-
+ drivers/net/ethernet/ti/cpsw_ale.h       |   1 +
+ drivers/net/ethernet/ti/cpsw_switchdev.c |   2 +-
+ 5 files changed, 261 insertions(+), 143 deletions(-)
+
+-- 
+2.17.1
+
