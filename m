@@ -2,179 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42B232A0B81
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 17:43:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63F102A0B89
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 17:43:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727276AbgJ3QnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 12:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55916 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbgJ3QnF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 12:43:05 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4494EC0613D2
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 09:43:05 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id k6so7062995ilq.2
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 09:43:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NZmqGfCg08N6iXx9q7TVWlSnhQqIDOwOjzOwbvXDxjI=;
-        b=INVfZz/fkvsZivy8jdRFY4jjuumPUnT03fIMmAZxhr2j3OQtTxmqWeMui9FFLMvZFz
-         QB2ePhBsJkuNysGjMHbU9DiLLxlLmss4JFzjBmUNAkJoiiGzYBFH/upOKm0AUQMizu+W
-         okAB9PgkVOM5lyq7RfM3eZWziu4Lw6xFmIPsA3WEdWrepzCLkMsPGFysW4PIdG4Ix46W
-         ABDHiqA089OjzR7YGXqWWnY73UPmGi5ssu5dObic6I8EipSHtDNSFTIEabkYZFtOUw53
-         gKZFvyCe8mIA4cQPQ5Ji/NguzzOPrnGBpJ5jXdtWnz2BLO+k8PETRjkg1JznRZelvTOY
-         uyUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NZmqGfCg08N6iXx9q7TVWlSnhQqIDOwOjzOwbvXDxjI=;
-        b=cx3ERUfri0xhj3Pqxy1QC3tdG6HzikWHyuaFtriuwEwR8xhkYO2BlYtCzSkkcR6J3+
-         IyL5sGddYX2WiOCUpBt0PT41gbBYHz3Fn2UXU+KK0eTSjSjjGeHxxPlfpMreP+rjcr5S
-         6a3Lgdd/nry1YEIuxwiqfbUI+rXzib+rcc2Zr+0WU8y8QEW9x4LFS/J/Bz7ddggeFpZh
-         jS3VeZKEsPTkCbAUVoj70Ih67sEkdxDbHmxcTE8c/o8t/W/2KS7+Y+aEU9aOxx1X5DJg
-         Y3kwAJO8t7KWEvm3nVNDbzUFtRXLS1goqg232aXsW4ERpeAR8rWsSPtp6/+kRfTnUeCL
-         0DDw==
-X-Gm-Message-State: AOAM531fXTJjT6uq81GfPIuPDWQ2ycA+YT6Dh+Uj/fN14BowZJxW2kUI
-        +bm8Zc3usYz5v8Je3pebzazXe88hnOy0axdaNJ4jEg==
-X-Google-Smtp-Source: ABdhPJwYf7SWuKIRh8xsBOBodbVLmuU+KCM1QaVpZsez95JZOYKTbDYung3PLxm+lfmttII+vBXdnzsUUs8NHjrseg0=
-X-Received: by 2002:a92:6403:: with SMTP id y3mr2528711ilb.72.1604076184121;
- Fri, 30 Oct 2020 09:43:04 -0700 (PDT)
+        id S1727164AbgJ3Qnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 12:43:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57938 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725808AbgJ3Qnu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Oct 2020 12:43:50 -0400
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0A94220727;
+        Fri, 30 Oct 2020 16:43:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604076229;
+        bh=+c90p9MaJzJuRoN3BvzXiKmnGAJxiR0Sa0P4b8aUQzo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=t88tlPU/NUroEniVPjW4TqLnvWhrIfH7ontb/tEW1sdRT1FnoiQWKwy+fSUx68sT0
+         rs+vZHx9YuNZDX4RlYGkx+PYCs8BQegue4RXJCYXSWqtTEusaM36gdfe9y47LRbpYq
+         RMWf3ILhVtq4udvvmC0MqjaXWbCMgZYZmibfi+A8=
+Received: by mail-lj1-f171.google.com with SMTP id m8so1531797ljj.0;
+        Fri, 30 Oct 2020 09:43:48 -0700 (PDT)
+X-Gm-Message-State: AOAM532qaDsqxVA3X6h99Ub1b4JpHMEpTene47Fd6aJCiygLTnVKTH25
+        8iOmZ1CUJAdzTQ7nWT7BrCHiR26dDKFN1loC/f4=
+X-Google-Smtp-Source: ABdhPJxm9sgEJSwmgM8hEzqnta7s9o9UIZv9ydY0U2OJxGGE0P5Itz/d9cN8+Gju9yF5FTpwjHbDKtASYlPQqQbzWVY=
+X-Received: by 2002:a05:651c:1341:: with SMTP id j1mr1556651ljb.41.1604076227193;
+ Fri, 30 Oct 2020 09:43:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1604042072.git.mchehab+huawei@kernel.org> <5bc78e5b68ed1e9e39135173857cb2e753be868f.1604042072.git.mchehab+huawei@kernel.org>
-In-Reply-To: <5bc78e5b68ed1e9e39135173857cb2e753be868f.1604042072.git.mchehab+huawei@kernel.org>
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-Date:   Fri, 30 Oct 2020 10:42:53 -0600
-Message-ID: <CANLsYkxc2uzA57Hg5OX31JOx08JCZfynzebjABv=6H01796xGA@mail.gmail.com>
-Subject: Re: [PATCH v2 31/39] docs: ABI: cleanup several ABI documents
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <marek.behun@nic.cz>,
-        =?UTF-8?Q?Marek_Marczykowski=2DG=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        =?UTF-8?Q?Roger_Pau_Monn=C3=A9?= <roger.pau@citrix.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Andreas Klinger <ak@it-klinger.de>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Anton Vorontsov <anton@enomsg.org>,
-        Asutosh Das <asutoshd@codeaurora.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Chao Yu <chao@kernel.org>,
-        Christian Gromm <christian.gromm@microchip.com>,
-        Colin Cross <ccross@android.com>, Dan Murphy <dmurphy@ti.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Danil Kipnis <danil.kipnis@cloud.ionos.com>,
-        David Sterba <dsterba@suse.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Dongsheng Yang <dongsheng.yang@easystack.cn>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Jack Wang <jinpu.wang@cloud.ionos.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Johan Hovold <johan@kernel.org>,
-        Jonas Meurer <jonas@freesources.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Kees Cook <keescook@chromium.org>,
-        Konstantin Khlebnikov <koct9i@gmail.com>,
-        Kranthi Kuntala <kranthi.kuntala@intel.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lee Jones <lee.jones@linaro.org>, Len Brown <lenb@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Oded Gabbay <oded.gabbay@gmail.com>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Oleh Kravchenko <oleg@kaa.org.ua>, Pavel Machek <pavel@ucw.cz>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Peter Chen <peter.chen@nxp.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Roman Sudarikov <roman.sudarikov@linux.intel.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Stefan Achatz <erazor_de@users.sourceforge.net>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tom Rix <trix@redhat.com>, Tony Luck <tony.luck@intel.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
-        Wu Hao <hao.wu@intel.com>, ceph-devel@vger.kernel.org,
-        Coresight ML <coresight@lists.linaro.org>,
-        dri-devel@lists.freedesktop.org, linux-acpi@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-f2fs-devel@lists.sourceforge.net, linux-fpga@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-i3c@lists.infradead.org,
-        linux-iio@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-remoteproc <linux-remoteproc@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+References: <20201029005902.1706310-1-andrii@kernel.org> <20201029005902.1706310-3-andrii@kernel.org>
+In-Reply-To: <20201029005902.1706310-3-andrii@kernel.org>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 30 Oct 2020 09:43:35 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6DxoRjBPJEgwzEtmVt-Uunw-MAmAF2tgh-ksjcKuJ4Bw@mail.gmail.com>
+Message-ID: <CAPhsuW6DxoRjBPJEgwzEtmVt-Uunw-MAmAF2tgh-ksjcKuJ4Bw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 02/11] selftest/bpf: relax btf_dedup test checks
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Oct 2020 at 01:41, Mauro Carvalho Chehab
-<mchehab+huawei@kernel.org> wrote:
+On Thu, Oct 29, 2020 at 1:40 AM Andrii Nakryiko <andrii@kernel.org> wrote:
 >
-> There are some ABI documents that, while they don't generate
-> any warnings, they have issues when parsed by get_abi.pl script
-> on its output result.
+> Remove the requirement of a strictly exact string section contents. This used
+> to be true when string deduplication was done through sorting, but with string
+> dedup done through hash table, it's no longer true. So relax test harness to
+> relax strings checks and, consequently, type checks, which now don't have to
+> have exactly the same string offsets.
 >
-> Address them, in order to provide a clean output.
->
-> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> #for IIO
-> Reviewed-by: Tom Rix <trix@redhat.com> # for fpga-manager
-> Reviewed-By: Kajol Jain<kjain@linux.ibm.com> # for sysfs-bus-event_source-devices-hv_gpci and sysfs-bus-event_source-devices-hv_24x7
-> Acked-by: Oded Gabbay <oded.gabbay@gmail.com> # for Habanalabs
-> Acked-by: Vaibhav Jain <vaibhav@linux.ibm.com> # for sysfs-bus-papr-pmem
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 > ---
+>  tools/testing/selftests/bpf/prog_tests/btf.c | 34 +++++++++++---------
+>  1 file changed, 19 insertions(+), 15 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
+> index 93162484c2ca..2ccc23b2a36f 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/btf.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/btf.c
+> @@ -6652,7 +6652,7 @@ static void do_test_dedup(unsigned int test_num)
+>         const void *test_btf_data, *expect_btf_data;
+>         const char *ret_test_next_str, *ret_expect_next_str;
+>         const char *test_strs, *expect_strs;
+> -       const char *test_str_cur, *test_str_end;
+> +       const char *test_str_cur;
+>         const char *expect_str_cur, *expect_str_end;
+>         unsigned int raw_btf_size;
+>         void *raw_btf;
+> @@ -6719,12 +6719,18 @@ static void do_test_dedup(unsigned int test_num)
+>                 goto done;
+>         }
+>
+> -       test_str_cur = test_strs;
+> -       test_str_end = test_strs + test_hdr->str_len;
+>         expect_str_cur = expect_strs;
+>         expect_str_end = expect_strs + expect_hdr->str_len;
+> -       while (test_str_cur < test_str_end && expect_str_cur < expect_str_end) {
+> +       while (expect_str_cur < expect_str_end) {
+>                 size_t test_len, expect_len;
+> +               int off;
+> +
+> +               off = btf__find_str(test_btf, expect_str_cur);
+> +               if (CHECK(off < 0, "exp str '%s' not found: %d\n", expect_str_cur, off)) {
+> +                       err = -1;
+> +                       goto done;
+> +               }
+> +               test_str_cur = btf__str_by_offset(test_btf, off);
+>
+>                 test_len = strlen(test_str_cur);
+>                 expect_len = strlen(expect_str_cur);
+> @@ -6741,15 +6747,8 @@ static void do_test_dedup(unsigned int test_num)
+>                         err = -1;
+>                         goto done;
+>                 }
+> -               test_str_cur += test_len + 1;
+>                 expect_str_cur += expect_len + 1;
+>         }
+> -       if (CHECK(test_str_cur != test_str_end,
+> -                 "test_str_cur:%p != test_str_end:%p",
+> -                 test_str_cur, test_str_end)) {
+> -               err = -1;
+> -               goto done;
+> -       }
+>
+>         test_nr_types = btf__get_nr_types(test_btf);
+>         expect_nr_types = btf__get_nr_types(expect_btf);
+> @@ -6775,10 +6774,15 @@ static void do_test_dedup(unsigned int test_num)
+>                         err = -1;
+>                         goto done;
+>                 }
+> -               if (CHECK(memcmp((void *)test_type,
+> -                                (void *)expect_type,
+> -                                test_size),
+> -                         "type #%d: contents differ", i)) {
 
->  .../testing/sysfs-bus-coresight-devices-etb10 |   5 +-
+I guess test_size and expect_size are not needed anymore?
 
-For the CoreSight part:
+> +               if (CHECK(btf_kind(test_type) != btf_kind(expect_type),
+> +                         "type %d kind: exp %d != got %u\n",
+> +                         i, btf_kind(expect_type), btf_kind(test_type))) {
+> +                       err = -1;
+> +                       goto done;
+> +               }
+> +               if (CHECK(test_type->info != expect_type->info,
+> +                         "type %d info: exp %d != got %u\n",
+> +                         i, expect_type->info, test_type->info)) {
 
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+btf_kind() returns part of ->info, so we only need the second check, no?
+
+IIUC, test_type and expect_type may have different name_off now. Shall
+we check ->size matches?
+
+
+>                         err = -1;
+>                         goto done;
+>                 }
+> --
+> 2.24.1
+>
