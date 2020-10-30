@@ -2,183 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 685C329FB51
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 03:30:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B9AD29FB59
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 03:33:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbgJ3Caj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 22:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
+        id S1725929AbgJ3Cd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 22:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726197AbgJ3Cah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 22:30:37 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44110C0613CF;
-        Thu, 29 Oct 2020 19:30:37 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id o3so3908736pgr.11;
-        Thu, 29 Oct 2020 19:30:37 -0700 (PDT)
+        with ESMTP id S1725780AbgJ3Cd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 22:33:27 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF52C0613CF;
+        Thu, 29 Oct 2020 19:33:27 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id n142so3900336ybf.7;
+        Thu, 29 Oct 2020 19:33:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=g7bH88D4g/VYGOa3hWMRp6XP+GTlXN0P1WC9N4Q2/XM=;
-        b=sIPVkoX/Of6nVZG0ZQgVEkv9eNrnT5+MLWijSKMQbASTMC4PXi8b+L2jK+WSCb12I2
-         rfzmY8ocgI9WK/Z4GFsF7Z2kU7rnTSDlzGasss0mN5YOb88P2MWW3SChA1B5PYj+XB2I
-         kJNeB95XEqJMVTz+DpoaPPEt8njOiIgrORPkp53nZQk37TTadn2it2iO6fJm3KXzEHWg
-         aroSeUO2kcm2plv5TQB9siuRYYT8neLqRjXBSV3YP+Z0mnUWzobdzdMUVQSYmmuJ6ZFp
-         aKeoU2Pg/DUf8Rbac59vFyzcs01F6JFxMSIBriLKvcElFtFTnahjusIKEXJWj6thO8wF
-         K7xg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iqyWJvIbQ2m2Q07/bq5tarOXlrpOxgQxrm0lLsIywI4=;
+        b=WgykwtdHaKmz2H54pqo/02jf77lvV2bEpU9uy4lUwMbpNZilswcC41Rm9GLoFkssrv
+         vzpQMm66i3BipHrDEMUOHmLbdo0eYvOjHD/xCrXyrUdclpPWVbJtDpo3X0TJRJM13zGL
+         Qi/7x2RncQg1Cw3OWd1bJnBe6U+yoxBn7PBaJzdC69fdneCLjWwlcAhlu0jFRfZp7HOJ
+         DpdQFxd/z109P+MgNcasoyrTYUwPj+1fLgsmXML5OVD3KO8DBu9FqDxunyBZ57LnZpOb
+         uDw7u30wGZrwNkesUr7CkeJVEkCJe/BiGkV+sM78CX3Gk5AftAnC2q55AH30sftVPlt6
+         eqDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=g7bH88D4g/VYGOa3hWMRp6XP+GTlXN0P1WC9N4Q2/XM=;
-        b=NM23zp4bwwNtzSsVzMaWAYEDBoi0C5g6TxX2qA2xckqahc9TwtDOs+tZkAOSRC3O0+
-         e5P9jBwaWYeGA2k3vsZnmJ1FmR5jTiHasdBAnRes8zPKsGsIin0SKl5Y1L1Uwe0+8Ddr
-         NS3fVSnsXaAmHL6A/ZuQuggJoesqk/BFUuJZ+iY3MfrS0BdzoEJLE99oSYiMJu6B/Vtd
-         VMyAIEtNUv8AS0x4dXnang99d0eU15P1wVPTJls3KKczAiu5koO9eSbEFVTuTX6ehwvE
-         WTCw46H0LN9az/BNuDzePi+UXJ3AoF5d1awHUMTnPEXigwULpYTuvWYILH+ZWIE37Tp4
-         V94w==
-X-Gm-Message-State: AOAM531qoXbkw82+3cHNolDJFT3zT3gfnGjSRFfbidQFBnzswiuZK0mE
-        +3zsfcqL1QBa4b9YBzFaojA=
-X-Google-Smtp-Source: ABdhPJxaWSHPgJMIvnjBMqb0MKb8E8b7ORoASIJ2qcWWVTBzFsOJt3fNIkTg+R+jiGT58y7Q+xSCCA==
-X-Received: by 2002:a65:5a0d:: with SMTP id y13mr230777pgs.436.1604025036855;
-        Thu, 29 Oct 2020 19:30:36 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:dd13:d62a:9d03:9a42])
-        by smtp.gmail.com with ESMTPSA id i24sm4216588pfd.7.2020.10.29.19.30.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2020 19:30:36 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net-next v4 5/5] net: hdlc_fr: Add support for any Ethertype
-Date:   Thu, 29 Oct 2020 19:28:39 -0700
-Message-Id: <20201030022839.438135-6-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201030022839.438135-1-xie.he.0141@gmail.com>
-References: <20201030022839.438135-1-xie.he.0141@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iqyWJvIbQ2m2Q07/bq5tarOXlrpOxgQxrm0lLsIywI4=;
+        b=QswjeOJGnd/FimXcK3jgW/pgf0bcPv3Lc+cknYT6j/l7F7oLqD/uT1QBZA6IA9BJR3
+         HQxCmKuRrudnUVS30K02W0jg9MXRiRE36iOGldRjQvIjkuIw3KNgtomlR16HF++Cpn/R
+         jIiFdsNYeK7SQeNMnGEEyI6ZunKggo422j0Qn7RkmqdOy6i/GCMhO6cqsVilb75IA3aJ
+         2o8ptqAua9vUADpY9Yz4JItU2O1ImKXzm8Cins5y3YqNj75MKshgVJt5mYFh0rLv6XjA
+         y1AGMzv9mbusNr9NioV9Z06YUPv1iMquykGir3tEcp9jJizIuiiKdgRX6TEGG5dZymwd
+         dSyA==
+X-Gm-Message-State: AOAM530nw75LUv1T9zEf9zHqUZcZ2vTdCoZCcABePYVLH+mIDIYLSSPo
+        fX+FrbJxybCIehPjwVTtB1WgGi5oMKSlU/nJ6j8=
+X-Google-Smtp-Source: ABdhPJwxTZvtp9c3al0IBnwajkcu6AqoaKf0VGqZCGClaUCr5qEt4NLwwMqKyMZViLmoQpUduFfMLAkwXhs2OOiUcJg=
+X-Received: by 2002:a25:cb10:: with SMTP id b16mr550277ybg.459.1604025206750;
+ Thu, 29 Oct 2020 19:33:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201029005902.1706310-1-andrii@kernel.org> <4427E5BD-5EBF-47E8-B7F6-9255BEAE2D53@fb.com>
+In-Reply-To: <4427E5BD-5EBF-47E8-B7F6-9255BEAE2D53@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 29 Oct 2020 19:33:15 -0700
+Message-ID: <CAEf4BzbtiByaU_-pEV8gVZH1N9_xCTWJBxb6DYPXF5p9b9+_kg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 00/11] libbpf: split BTF support
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change the fr_rx function to make this driver support any Ethertype
-when receiving skbs on normal (non-Ethernet-emulating) PVC devices.
-(This driver is already able to handle any Ethertype when sending.)
+On Thu, Oct 29, 2020 at 5:33 PM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Oct 28, 2020, at 5:58 PM, Andrii Nakryiko <andrii@kernel.org> wrote:
+> >
+> > This patch set adds support for generating and deduplicating split BTF. This
+> > is an enhancement to the BTF, which allows to designate one BTF as the "base
+> > BTF" (e.g., vmlinux BTF), and one or more other BTFs as "split BTF" (e.g.,
+> > kernel module BTF), which are building upon and extending base BTF with extra
+> > types and strings.
+> >
+> > Once loaded, split BTF appears as a single unified BTF superset of base BTF,
+> > with continuous and transparent numbering scheme. This allows all the existing
+> > users of BTF to work correctly and stay agnostic to the base/split BTFs
+> > composition.  The only difference is in how to instantiate split BTF: it
+> > requires base BTF to be alread instantiated and passed to btf__new_xxx_split()
+> > or btf__parse_xxx_split() "constructors" explicitly.
+> >
+> > This split approach is necessary if we are to have a reasonably-sized kernel
+> > module BTFs. By deduping each kernel module's BTF individually, resulting
+> > module BTFs contain copies of a lot of kernel types that are already present
+> > in vmlinux BTF. Even those single copies result in a big BTF size bloat. On my
+> > kernel configuration with 700 modules built, non-split BTF approach results in
+> > 115MBs of BTFs across all modules. With split BTF deduplication approach,
+> > total size is down to 5.2MBs total, which is on part with vmlinux BTF (at
+> > around 4MBs). This seems reasonable and practical. As to why we'd need kernel
+> > module BTFs, that should be pretty obvious to anyone using BPF at this point,
+> > as it allows all the BTF-powered features to be used with kernel modules:
+> > tp_btf, fentry/fexit/fmod_ret, lsm, bpf_iter, etc.
+>
+> Some high level questions. Do we plan to use split BTF for in-tree modules
+> (those built together with the kernel) or out-of-tree modules (those built
+> separately)? If it is for in-tree modules, is it possible to build split BTF
+> into vmlinux BTF?
 
-Originally in the fr_rx function, the code that parses the long (10-byte)
-header only recognizes a few Ethertype values and drops frames with other
-Ethertype values. This patch replaces this code to make fr_rx support
-any Ethertype. This patch also creates a new function fr_snap_parse as
-part of the new code.
+It will be possible to use for both in-tree and out-of-tree. For
+in-tree, this will be integrated into the kernel build process. For
+out-of-tree, whoever builds their kernel module will need to invoke
+pahole -J with an extra flag pointing to the right vmlinux image (I
+haven't looked into the exact details of this integration, maybe there
+are already scripts in Linux repo that out-of-tree modules have to
+use, in such case we can add this integration there).
 
-Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: Krzysztof Halasa <khc@pm.waw.pl>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- drivers/net/wan/hdlc_fr.c | 75 +++++++++++++++++++++++++--------------
- 1 file changed, 49 insertions(+), 26 deletions(-)
+Merging all in-tree modules' BTFs into vmlinux's BTF defeats the
+purpose of the split BTF and will just increase the size of vmlinux
+BTF unnecessarily.
 
-diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
-index 9a37575686b9..e95efc14bc97 100644
---- a/drivers/net/wan/hdlc_fr.c
-+++ b/drivers/net/wan/hdlc_fr.c
-@@ -871,6 +871,45 @@ static int fr_lmi_recv(struct net_device *dev, struct sk_buff *skb)
- 	return 0;
- }
- 
-+static int fr_snap_parse(struct sk_buff *skb, struct pvc_device *pvc)
-+{
-+	/* OUI 00-00-00 indicates an Ethertype follows */
-+	if (skb->data[0] == 0x00 &&
-+	    skb->data[1] == 0x00 &&
-+	    skb->data[2] == 0x00) {
-+		if (!pvc->main)
-+			return -1;
-+		skb->dev = pvc->main;
-+		skb->protocol = *(__be16 *)(skb->data + 3); /* Ethertype */
-+		skb_pull(skb, 5);
-+		skb_reset_mac_header(skb);
-+		return 0;
-+
-+	/* OUI 00-80-C2 stands for the 802.1 organization */
-+	} else if (skb->data[0] == 0x00 &&
-+		   skb->data[1] == 0x80 &&
-+		   skb->data[2] == 0xC2) {
-+		/* PID 00-07 stands for Ethernet frames without FCS */
-+		if (skb->data[3] == 0x00 &&
-+		    skb->data[4] == 0x07) {
-+			if (!pvc->ether)
-+				return -1;
-+			skb_pull(skb, 5);
-+			if (skb->len < ETH_HLEN)
-+				return -1;
-+			skb->protocol = eth_type_trans(skb, pvc->ether);
-+			return 0;
-+
-+		/* PID unsupported */
-+		} else {
-+			return -1;
-+		}
-+
-+	/* OUI unsupported */
-+	} else {
-+		return -1;
-+	}
-+}
- 
- static int fr_rx(struct sk_buff *skb)
- {
-@@ -945,35 +984,19 @@ static int fr_rx(struct sk_buff *skb)
- 		skb->protocol = htons(ETH_P_IPV6);
- 		skb_reset_mac_header(skb);
- 
--	} else if (skb->len > 10 && data[3] == FR_PAD &&
--		   data[4] == NLPID_SNAP && data[5] == FR_PAD) {
--		u16 oui = ntohs(*(__be16*)(data + 6));
--		u16 pid = ntohs(*(__be16*)(data + 8));
--		skb_pull(skb, 10);
--
--		switch ((((u32)oui) << 16) | pid) {
--		case ETH_P_ARP: /* routed frame with SNAP */
--		case ETH_P_IPX:
--		case ETH_P_IP:	/* a long variant */
--		case ETH_P_IPV6:
--			if (!pvc->main)
--				goto rx_drop;
--			skb->dev = pvc->main;
--			skb->protocol = htons(pid);
--			skb_reset_mac_header(skb);
--			break;
--
--		case 0x80C20007: /* bridged Ethernet frame */
--			if (!pvc->ether)
-+	} else if (data[3] == FR_PAD) {
-+		if (skb->len < 5)
-+			goto rx_error;
-+		if (data[4] == NLPID_SNAP) { /* A SNAP header follows */
-+			skb_pull(skb, 5);
-+			if (skb->len < 5) /* Incomplete SNAP header */
-+				goto rx_error;
-+			if (fr_snap_parse(skb, pvc))
- 				goto rx_drop;
--			skb->protocol = eth_type_trans(skb, pvc->ether);
--			break;
--
--		default:
--			netdev_info(frad, "Unsupported protocol, OUI=%x PID=%x\n",
--				    oui, pid);
-+		} else {
- 			goto rx_drop;
- 		}
-+
- 	} else {
- 		netdev_info(frad, "Unsupported protocol, NLPID=%x length=%i\n",
- 			    data[3], skb->len);
--- 
-2.27.0
-
+>
+> Thanks,
+> Song
+>
+> [...]
