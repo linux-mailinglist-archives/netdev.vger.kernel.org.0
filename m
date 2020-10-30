@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 328A229F9D9
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 01:39:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3369429F9E3
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 01:42:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726149AbgJ3Aj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 20:39:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47400 "EHLO
+        id S1726196AbgJ3Amh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 20:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725372AbgJ3Aj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 20:39:56 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE3AC0613CF;
-        Thu, 29 Oct 2020 17:39:56 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id y17so5047634ilg.4;
-        Thu, 29 Oct 2020 17:39:56 -0700 (PDT)
+        with ESMTP id S1725811AbgJ3Amh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 20:42:37 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96886C0613D2;
+        Thu, 29 Oct 2020 17:42:12 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id v18so5065455ilg.1;
+        Thu, 29 Oct 2020 17:42:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=yZnOjRgB/c43lsals/+DEM4gRXJ6X/fANm5gDe0g+8A=;
-        b=vbWKj5Ps1IwqjXpX9wQFw6SK9yjzQzVSw3QwZCcjs5XT0JNWL4TGI0E/hDn7op0o2J
-         rtvKVheXhvrUC8eLOCgVCe38iyI9bpUz5y255ojpHBdYLx7qFPU2C/Q5koLmifSGb3FL
-         CtGXZCdm1CVOFNMosnnyMAMCjKcI62hPgU+ZvvPWzEppc4TXCQRBq9Tqhf9wveMlI1lC
-         7rpaUv2RTCs+f8+wH+UlQuilNCEXdnRo9iXA7IWlVXwuNEiXSFFo2ujTxZsVarwY+mXJ
-         WABOrr8I5t/RfZSUxEct8o9dQFI9QeO0e3bAses4WHP7lV8pBkWZGV71iCxn54/eKDkH
-         bK8w==
+        bh=3zdjwskAZxaDq1AQ/INCnCALren2+iPDgMzroCJaVaM=;
+        b=kdtXU1L+EsNbpGLg75EaQfG65+ABDB3vO15uCx94bEMoZNXfyAvBosSM/edgKtzkLG
+         YkJqi0YRCv1P13JOSDX0q+pk+3BKV10Zk/VJa7VR1az2j5h7zEhFS9MYpMygXQeX51cw
+         QWK5yUuMLKL+UnfF/Hmjj4LYGUKeyC7zxaarDrq6PMKqRKbGlAAOBO3Womr7QVar162Y
+         tAUgTnWxBxyIaWJ4kjkLOui5Dja41EgTXIL+ZY6ZOrJ2F7TowvCz6yHtpztKhv2lsyP4
+         D3OpQAuuhIBsJKf+4G1ge5IHSPUbeZ837Vpemo8tKogeIi02gcjIACMRHg3TVoMY43js
+         fiTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=yZnOjRgB/c43lsals/+DEM4gRXJ6X/fANm5gDe0g+8A=;
-        b=s7xoWqeNBtJz/sEh62WNrVZ6IqYvPXWZbyZdrSkQ8Ux8jK27d93cvZEBf/Vaa1GlaC
-         Xq2gSKlnKFKikQYX7pYfJQgfOrbxiM5d/vNcEwvBjP5mzjWWxLJWkDWeYzPKEKKQPh5k
-         w3HtrdXgcwVAssTNw5d0fy1DGKogLD5FoeIhJ7YB0iH8CKmQa9yfM9X+dE439Cr45XaD
-         UtBh155zNjdoPpfmNBqjQwe0yateh22KuMV4cXPULeJOcJgoELLtoOumpSpHl7BUXg9i
-         y2odlVZmNgZW8p/eaDGZPAW4kqFwsyv4WpOjtkSFgHoSnQ7pVMM5n9iKgSKLORvESxil
-         e4yw==
-X-Gm-Message-State: AOAM53181PeP6f6I0kN3BLGQcTRNOx6FGeZmT6zninRxBkSENPKYLJGZ
-        VEEqtRSByioyeX3SVrJzCh3uIooDFpV/FlavOGQ=
-X-Google-Smtp-Source: ABdhPJxmM2AUBi9UjcBbUj4zZKDfZXLd5XqbzIxFHxtHCahZbyCJ187i+yEOdLgnT8za4WvQxHX2w3DxBn7lWqAV32w=
-X-Received: by 2002:a92:950d:: with SMTP id y13mr72110ilh.42.1604018395320;
- Thu, 29 Oct 2020 17:39:55 -0700 (PDT)
+        bh=3zdjwskAZxaDq1AQ/INCnCALren2+iPDgMzroCJaVaM=;
+        b=Wfx+5V+7c2L5lyjSM6ZJ7+cwsv9vSQzZcJDllT0WATebDA+ysLp7nYvi1OqSe5SFX+
+         5qeI/no/uZRGFjgZxVOLrnV20MSFU1uxVYNaGCBg9fE91M/vUf1wfqESjwWo5i9YZmC7
+         FJI8L1SIH4sqCrwnOf/GG8nVrNSmzyUa6W7O8xqO3N8S3mm/N/rpqdcfMODouqvb8NUO
+         kQgc16wVLn3tGPkaNxMB0WEUUMVhXOmBY13EY5+eMxxOU2nzgWNfn3GyYbf7u6M2O1hA
+         v4wCqcEfvObCtaQlFVwZHkLwhBDjkTT5qMxB4cFD9ca17XcGVsz8jF0FaPABM+VwWkaX
+         W66A==
+X-Gm-Message-State: AOAM533tWjIglfKsJqbgBmowQaaGlbUIloqXM0/NofF5hMLAtKOGLoHy
+        aS0gUHQQ3ZTnyeZtrvYNHu9qUVJKDa9vrpg4wRN5pPN93a8=
+X-Google-Smtp-Source: ABdhPJzdTXzJ+MZwSorbev9v2JoJgsEbZW9bhBhVgpqXVw7boyu+ksnUYYynKz7ih//eyvP8GnQDhB7x3UelC49aNuw=
+X-Received: by 2002:a05:6e02:1305:: with SMTP id g5mr41446ilr.237.1604018531894;
+ Thu, 29 Oct 2020 17:42:11 -0700 (PDT)
 MIME-Version: 1.0
 References: <160384954046.698509.132709669068189999.stgit@localhost.localdomain>
- <160384962569.698509.4528110378641773523.stgit@localhost.localdomain> <CAEf4BzZxevcUHurBQ49006g87CzztDdWn6pWZRWzpL+_97R4qg@mail.gmail.com>
-In-Reply-To: <CAEf4BzZxevcUHurBQ49006g87CzztDdWn6pWZRWzpL+_97R4qg@mail.gmail.com>
+ <160384964803.698509.11020605670605638967.stgit@localhost.localdomain> <CAEf4BzaELDiuHLbSdWdZZcjw5eNCJELBeHUc2CRiursUcUj_kg@mail.gmail.com>
+In-Reply-To: <CAEf4BzaELDiuHLbSdWdZZcjw5eNCJELBeHUc2CRiursUcUj_kg@mail.gmail.com>
 From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 29 Oct 2020 17:39:44 -0700
-Message-ID: <CAKgT0Uc35p7cgzgcw2--wfqMofBXHpr42uwhfOd1S1RT=VzcRw@mail.gmail.com>
-Subject: Re: [bpf-next PATCH 1/4] selftests/bpf: Move test_tcppbf_user into test_progs
+Date:   Thu, 29 Oct 2020 17:42:00 -0700
+Message-ID: <CAKgT0UcQzJ06ayURwpU78ybW+WYRUbbEH++6O9nPUxSSHnU89Q@mail.gmail.com>
+Subject: Re: [bpf-next PATCH 4/4] selftests/bpf: Migrate tcpbpf_user.c to use
+ BPF skeleton
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -65,55 +66,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 4:27 PM Andrii Nakryiko
+On Thu, Oct 29, 2020 at 4:20 PM Andrii Nakryiko
 <andrii.nakryiko@gmail.com> wrote:
 >
-> On Wed, Oct 28, 2020 at 4:50 PM Alexander Duyck
+> On Thu, Oct 29, 2020 at 12:57 AM Alexander Duyck
 > <alexander.duyck@gmail.com> wrote:
 > >
 > > From: Alexander Duyck <alexanderduyck@fb.com>
 > >
-> > Recently a bug was missed due to the fact that test_tcpbpf_user is not a
-> > part of test_progs. In order to prevent similar issues in the future move
-> > the test functionality into test_progs. By doing this we can make certain
-> > that it is a part of standard testing and will not be overlooked.
-> >
-> > As a part of moving the functionality into test_progs it is necessary to
-> > integrate with the test_progs framework and to drop any redundant code.
-> > This patch:
-> > 1. Cleans up the include headers
-> > 2. Dropped a duplicate definition of bpf_find_map
-> > 3. Replaced printf calls with fprintf to stderr
-> > 4. Renamed main to test_tcpbpf_user
-> > 5. Dropped return value in favor of CHECK calls to check for errors
+> > Update tcpbpf_user.c to make use of the BPF skeleton. Doing this we can
+> > simplify test_tcpbpf_user and reduce the overhead involved in setting up
+> > the test.
 > >
 > > Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
 > > ---
-> >  tools/testing/selftests/bpf/Makefile               |    3
-> >  .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |  138 +++++++++++++++++
-> >  tools/testing/selftests/bpf/test_tcpbpf_user.c     |  165 --------------------
 >
-> Please remove the binary from .gitignore as well
-
-Okay, I will update that.
-
-> >  3 files changed, 139 insertions(+), 167 deletions(-)
-> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> >  delete mode 100644 tools/testing/selftests/bpf/test_tcpbpf_user.c
+> Few suggestions below, but overall looks good:
 >
-> if this file is mostly the same, then Git should be able to detect
-> that this is a file rename. That will be captured in a diff explicitly
-> and will minimize this patch significantly. Please double-check why
-> this was not detected properly.
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
 >
-> [...]
+> >  .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |   48 +++++++++-----------
+> >  1 file changed, 21 insertions(+), 27 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > index 4e1190894e1e..7e92c37976ac 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > @@ -5,6 +5,7 @@
+> >
+> >  #include "test_tcpbpf.h"
+> >  #include "cgroup_helpers.h"
+> > +#include "test_tcpbpf_kern.skel.h"
+> >
+> >  #define LO_ADDR6 "::1"
+> >  #define CG_NAME "/tcpbpf-user-test"
+> > @@ -162,39 +163,32 @@ static void run_test(int map_fd, int sock_map_fd)
+> >
+> >  void test_tcpbpf_user(void)
+> >  {
+> > -       const char *file = "test_tcpbpf_kern.o";
+> > -       int prog_fd, map_fd, sock_map_fd;
+> > -       struct bpf_object *obj;
+> > +       struct test_tcpbpf_kern *skel;
+> > +       int map_fd, sock_map_fd;
+> > +       struct bpf_link *link;
+> >         int cg_fd = -1;
+> > -       int rv;
+> > -
+> > -       cg_fd = cgroup_setup_and_join(CG_NAME);
+> > -       if (CHECK_FAIL(cg_fd < 0))
+> > -               goto err;
+> >
+> > -       if (CHECK_FAIL(bpf_prog_load(file, BPF_PROG_TYPE_SOCK_OPS, &obj, &prog_fd))) {
+> > -               fprintf(stderr, "FAILED: load_bpf_file failed for: %s\n", file);
+> > -               goto err;
+> > -       }
+> > +       skel = test_tcpbpf_kern__open_and_load();
+> > +       if (CHECK(!skel, "open and load skel", "failed"))
+> > +               return;
+> >
+> > -       rv = bpf_prog_attach(prog_fd, cg_fd, BPF_CGROUP_SOCK_OPS, 0);
+> > -       if (CHECK_FAIL(rv)) {
+> > -               fprintf(stderr, "FAILED: bpf_prog_attach: %d (%s)\n",
+> > -                      errno, strerror(errno));
+> > -               goto err;
+> > -       }
+> > +       cg_fd = test__join_cgroup(CG_NAME);
+> > +       if (CHECK_FAIL(cg_fd < 0))
+>
+> please use either CHECK() or one of the newer ASSERT_xxx() macro (also
+> defined in test_progs.h), CHECK_FAIL should be avoided in general.
 
-I'll look into it. I hadn't noticed that the patch it generated is
-different then the one I am looking at in stgit. When I am doing a stg
-show in stgit it is listing it as a rename so I suspect it is a
-setting somewhere that is likely assuming legacy support or something.
-I'll get that straightened out before I submit a v2.
+So the plan I had was to actually move over to the following:
+        cg_fd = test__join_cgroup(CG_NAME);
+        if (CHECK_FAIL(cg_fd < 0))
+                goto cleanup_skel;
 
-Thanks.
+It still makes use of CHECK_FAIL but it looks like test__join_cgroup
+already takes care of error messaging so using CHECK_FAIL in this case
+makes more sense.
 
-- Alex
+In addition I was looking at simplifying the first patch which should
+just be the move with minimal changes to allow the functionality to
+build as a part of the test_progs framework. The end result should be
+the same it just helps to make the fact that the first patch should
+just be a move a little more clear.
+
+> > +               goto cleanup_skel;
+> >
+> > -       map_fd = bpf_find_map(__func__, obj, "global_map");
+> > -       if (CHECK_FAIL(map_fd < 0))
+> > -               goto err;
+> > +       map_fd = bpf_map__fd(skel->maps.global_map);
+> > +       sock_map_fd = bpf_map__fd(skel->maps.sockopt_results);
+> >
+> > -       sock_map_fd = bpf_find_map(__func__, obj, "sockopt_results");
+> > -       if (CHECK_FAIL(sock_map_fd < 0))
+> > -               goto err;
+> > +       link = bpf_program__attach_cgroup(skel->progs.bpf_testcb, cg_fd);
+>
+> you can do skel->links.bpf_testcb = bpf_program__attach_cgroup() and
+> skeleton's __destroy() call will take care of destroying the link
+
+Okay, I can look into using that. Actually this has me wondering if
+there wouldn't be some way to make use of test_tcpbpf_kern__attach to
+achieve this in some standard way. I'll get that sorted before I
+submit v2.
+
+> > +       if (CHECK(IS_ERR(link), "attach_cgroup(estab)", "err: %ld\n",
+> > +                 PTR_ERR(link)))
+>
+> there is a convenient ASSERT_OK_PTR() specifically for pointers like
+> this (and NULL ones as well, of course); saves a lot of typing and
+> encapsulates error extraction internally.
+
+I'll update the code to address that.
