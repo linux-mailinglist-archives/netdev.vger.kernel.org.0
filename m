@@ -2,92 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D12E2A008F
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 09:59:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 299FA2A0100
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 10:16:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726052AbgJ3I7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 04:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39544 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725355AbgJ3I7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 04:59:14 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4C2C0613D2;
-        Fri, 30 Oct 2020 01:59:14 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id r186so4668223pgr.0;
-        Fri, 30 Oct 2020 01:59:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KFyha+jVWs3vNAUNnCwlqigcK5fuTIaB3MtArdLXUM0=;
-        b=D3eRChZMk3Ya3kNvefizgHTyq1bXsF7+MKPHNGuBnYSiseVZapuqwII/RifglV4+yG
-         kP5IhURWpWVadOMYibOzQ8YpDo5JAz+6nPcMGtXN0HeWbgIBzXVMxXCvm/XCg+lPvy8K
-         nHTyidfA/0A0jWRLxeOsIgeTGNh65E9T+xy093U7V9Y57GH0a+7CJzyZlAHHNv5808IS
-         KMU4/vfsuORPz7RqybcpihpXLy5t9bm20t4OGTgIxX7RWod0/jqjHu+Zzf0psLj/zW+I
-         oDCr3OdYF4vELku89NtEq6YEhvbUjLPnJfWHXmQReUUfDRIU+XFSKN63/VVYk1L/NC1t
-         6VQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KFyha+jVWs3vNAUNnCwlqigcK5fuTIaB3MtArdLXUM0=;
-        b=WHcoDXSKmlrV2IgvqlU9oXqF6QdWyYpDRGycQzalwqYfJe5oApruB4GyvbaCZ+OCo4
-         ICw4MupRK5EmH4nf8//rAglQ0JhBvXKt5+mqSpWSWexn32EORQfLbeLmYcAHtPVa1YrJ
-         i/N0VilYico4htGiCgrzzP7Tma2rXT1WvU47tAAKX0Xjl3f1Iiu4vD0MYhHv9eCPFYX2
-         ipYk6Ku6567xp+G/5Mn+aBVk3CIB024I/YRL5+IwvMEsi5seDYSS0mj2Zth8ZD4ZEZgK
-         OeuUUxmdqpgvOs61/eUTWGU16PVbo4eirU3Fc4GV2ZG2UwuYejOW+T9O37JX1xQpRGpV
-         HH4g==
-X-Gm-Message-State: AOAM531SduqThDlVt80VLBZgHsFSUscuGR3rsGC2LutkuyAZ65i4FQYp
-        lh9y1vzTJ1RvYoxun4jnDG0=
-X-Google-Smtp-Source: ABdhPJz/R9c4Iy6G4XviW5KzXZZpA0IND4BWkLkmfiWXAU4xIK7t+Ur7Nr8rLnlySsy0SIOXC1MNbw==
-X-Received: by 2002:a17:90a:1f0b:: with SMTP id u11mr1596212pja.105.1604048354235;
-        Fri, 30 Oct 2020 01:59:14 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:33f6:681c:5049:8b27])
-        by smtp.gmail.com with ESMTPSA id n19sm5200786pfu.24.2020.10.30.01.59.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Oct 2020 01:59:13 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     Zou Wei <zou_wei@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] net: wan: sdla: Use bitwise instead of arithmetic
-Date:   Fri, 30 Oct 2020 01:58:59 -0700
-Message-Id: <20201030085859.448125-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <1603873191-106077-1-git-send-email-zou_wei@huawei.com>
-References: <1603873191-106077-1-git-send-email-zou_wei@huawei.com>
+        id S1726235AbgJ3JQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 05:16:49 -0400
+Received: from server.msgroupspa.com ([185.149.113.111]:55218 "EHLO
+        server.msgroupspa.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725790AbgJ3JQs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 05:16:48 -0400
+X-Greylist: delayed 3509 seconds by postgrey-1.27 at vger.kernel.org; Fri, 30 Oct 2020 05:16:46 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=msgroupspa.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        Message-ID:Reply-To:Subject:To:From:Date:MIME-Version:Sender:Cc:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=gOeEglh1DIJatPKqyvOsPs4e0Zw8Lzg9wwjnNfQdiM8=; b=IokIFgF2M/fhFw6IF8nrSwbJmM
+        MlwG3tpJlxdYp41ozZmBh23jShtPjpSHRdC3MpczAIOafQSanqCI4SpIxf3HTyUUpEdjCdB+OeYxK
+        Gw2rREgmK4FsnPMVRm8Tr9MSa6vU8nA7T3ULBza6f9cUqGaruQFk2tosoed242yvlCnR8OFuMS09H
+        R+xTyir+Feh+v3yHldX/7k2Rar9rNDQeeECacKpsU0fX+GyVg4L8cXIegtb47zjIqevAnOBjeKiTj
+        Vr75s/iQxnHvJPw4dgq0JKmBexcvsjZ+K+F/WU92VSUC9Wi7PJbH4zd7egkNt3FfkpFoU+MBkJLXr
+        WGoKwrJQ==;
+Received: from [::1] (port=54996 helo=server.msgroupspa.com)
+        by server.msgroupspa.com with esmtpa (Exim 4.93)
+        (envelope-from <no-reply@msgroupspa.com>)
+        id 1kYPRG-0006K5-Gd; Fri, 30 Oct 2020 16:07:10 +0800
 MIME-Version: 1.0
+Date:   Fri, 30 Oct 2020 16:07:10 +0800
+From:   "Mr. John Galvan" <no-reply@msgroupspa.com>
+To:     undisclosed-recipients:;
+Subject: Hello/Hallo
+Reply-To: galvan.johnny@outlook.com
+User-Agent: Roundcube Webmail/1.4.8
+Message-ID: <4da22a9c7203063f0d9f8b29d1c30dd1@msgroupspa.com>
+X-Sender: no-reply@msgroupspa.com
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - server.msgroupspa.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - msgroupspa.com
+X-Get-Message-Sender-Via: server.msgroupspa.com: authenticated_id: no-reply@msgroupspa.com
+X-Authenticated-Sender: server.msgroupspa.com: no-reply@msgroupspa.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Fix the following coccinelle warnings:
->
-> ./drivers/net/wan/sdla.c:841:38-39: WARNING: sum of probable bitmasks, consider |
->
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zou Wei <zou_wei@huawei.com>
-> ---
->  drivers/net/wan/sdla.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/wan/sdla.c b/drivers/net/wan/sdla.c
-> index bc2c1c7..cf43f4c 100644
-> --- a/drivers/net/wan/sdla.c
-> +++ b/drivers/net/wan/sdla.c
-> @@ -838,7 +838,8 @@ static void sdla_receive(struct net_device *dev)
->  		case SDLA_S502A:
->  		case SDLA_S502E:
->  			if (success)
-> -				__sdla_read(dev, SDLA_502_RCV_BUF + SDLA_502_DATA_OFS, skb_put(skb,len), len);
-> +				__sdla_read(dev, SDLA_502_RCV_BUF | SDLA_502_DATA_OFS,
-> +					    skb_put(skb, len), len);
->  
->  			SDLA_WINDOW(dev, SDLA_502_RCV_BUF);
->  			cmd->opp_flag = 0;
 
-No, this is not a bit-OR. This is a sum. The argument is an address,
-SDLA_502_RCV_BUF is a base address, SDLA_502_DATA_OFS is an offset.
-They should be sumed instead of bit-OR'ed.
+
+-- 
+Sir/Madam,
+
+I have access to very vital information that can be used to move a huge 
+amount of money. I have done my homework very well and I have the 
+machineries in place to get it done since I am still in active service. 
+If it was possible for me to do it alone I would not have bothered 
+contacting you. Ultimately I need an honest foreigner to play an 
+important role in the completion of this business transaction. Send 
+responds to this email: galvan.johnny@outlook.com
+
+Regards,
+John Galvan
+
+---------------------------------------------------------------
+
+Sir / Madam,
+
+Ich habe Zugang zu sehr wichtigen Informationen, mit denen ich eine 
+große Menge Geld bewegen kann. Ich habe meine Hausaufgaben sehr gut 
+gemacht und ich habe die Maschinen, um sie zu erledigen, da ich immer 
+noch im aktiven Dienst bin. Wenn es mir möglich gewesen wäre, es alleine 
+zu tun, hätte ich mich nicht darum gekümmert, Sie zu kontaktieren. 
+Letztendlich brauche ich einen ehrlichen Ausländer, der eine wichtige 
+Rolle beim Abschluss dieses Geschäftsvorgangs spielt. Senden Sie 
+Antworten auf diese E-Mail: galvan.johnny@outlook.com
+
+Grüße,
+John Galvan
