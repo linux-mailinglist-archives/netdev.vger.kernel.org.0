@@ -2,107 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B7C629FEA8
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 08:41:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1062629FEA4
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 08:41:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726163AbgJ3Hlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 03:41:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51892 "EHLO mail.kernel.org"
+        id S1726203AbgJ3HlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 03:41:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51962 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726124AbgJ3HlU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Oct 2020 03:41:20 -0400
+        id S1726133AbgJ3HlT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Oct 2020 03:41:19 -0400
 Received: from mail.kernel.org (ip5f5ad5bb.dynamic.kabel-deutschland.de [95.90.213.187])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9622A223C6;
-        Fri, 30 Oct 2020 07:41:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1C37522228;
+        Fri, 30 Oct 2020 07:41:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604043665;
-        bh=7pXZkTx4NQUNb+rBYGAAAZxDl0vIpOQRcftBUxab/t4=;
+        s=default; t=1604043667;
+        bh=aIKjlDhXRJaKOVxLaJI9RrJCRC/fqtfPsnVsn2Qk648=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2W3casn4acTL+duXr/V2NF+/Ei4f9TGxFjqsunwyOhdcMayisExJRv93gkBJ4jluf
-         t0NPNUZ3Kn68Yg5X16FPV0Rzun6CEnefnbPIgj4Je+KrGGb8uUmjZY8Nc+eJxiBjIe
-         oD7u562tIs9sWSJziBnXSMRz1ySSc/oJV3BbO+Mk=
+        b=FxoQ9NkcseV7SvoQHxhHnHHXSz61xdEUJSR1cbi50jq0nSEIbzBkrCK68mJ4qGAOu
+         YKNDwfXYW522np/mGbzeQKigQDzpemzQc9iqf9UulqP9KeWhN/wyXotimYddtngS1D
+         j4KWYSJmNPSLhLVAuzYNz9XceAs+zvmgT6+VMvUw=
 Received: from mchehab by mail.kernel.org with local (Exim 4.94)
         (envelope-from <mchehab@kernel.org>)
-        id 1kYP1w-004OgA-VZ; Fri, 30 Oct 2020 08:41:01 +0100
+        id 1kYP1x-004Ogg-Ku; Fri, 30 Oct 2020 08:41:01 +0100
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        =?UTF-8?q?Javier=20Gonz=C3=A1lez?= <javier@javigon.com>,
         "Jonathan Corbet" <corbet@lwn.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
+        Andreas Klinger <ak@it-klinger.de>,
         Andrew Donnellan <ajd@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Benson Leung <bleung@chromium.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Asutosh Das <asutoshd@codeaurora.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Boris Brezillon <bbrezillon@kernel.org>,
         Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Bruno Meneguele <bmeneg@redhat.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Chao Yu <chao@kernel.org>,
+        Christian Gromm <christian.gromm@microchip.com>,
+        Colin Cross <ccross@android.com>, Dan Murphy <dmurphy@ti.com>,
         Dan Williams <dan.j.williams@intel.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Danil Kipnis <danil.kipnis@cloud.ionos.com>,
+        David Sterba <dsterba@suse.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Dongsheng Yang <dongsheng.yang@easystack.cn>,
         Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Felipe Balbi <balbi@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Frederic Barrat <fbarrat@linux.ibm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
+        Guenter Roeck <linux@roeck-us.net>,
         Hanjun Guo <guohanjun@huawei.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Jack Wang <jinpu.wang@cloud.ionos.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jerry Snitselaar <jsnitsel@redhat.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Jonas Meurer <jonas@freesources.org>,
         Jonathan Cameron <jic23@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Kees Cook <keescook@chromium.org>,
         Konstantin Khlebnikov <koct9i@gmail.com>,
         Kranthi Kuntala <kranthi.kuntala@intel.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Len Brown <lenb@kernel.org>,
-        Leonid Maksymchuk <leonmaxx@gmail.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Lee Jones <lee.jones@linaro.org>, Len Brown <lenb@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Mario Limonciello <mario.limonciello@dell.com>,
         Mark Gross <mgross@linux.intel.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Michael Ellerman <mpe@ellerman.id.au>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
+        Mike Leach <mike.leach@linaro.org>,
         Oded Gabbay <oded.gabbay@gmail.com>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Orson Zhai <orsonzhai@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Oleh Kravchenko <oleg@kaa.org.ua>, Pavel Machek <pavel@ucw.cz>,
         Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Peter Chen <peter.chen@nxp.com>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Peter Rosin <peda@axentia.se>, Petr Mladek <pmladek@suse.com>,
-        Philippe Bergheaud <felix@linux.ibm.com>,
-        Richard Cochran <richardcochran@gmail.com>,
+        PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Roman Sudarikov <roman.sudarikov@linux.intel.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Saravana Kannan <saravanak@google.com>,
         Sebastian Reichel <sre@kernel.org>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Stefan Achatz <erazor_de@users.sourceforge.net>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Tom Rix <trix@redhat.com>,
+        Tom Rix <trix@redhat.com>, Tony Luck <tony.luck@intel.com>,
         Vaibhav Jain <vaibhav@linux.ibm.com>,
         Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
+        Wu Hao <hao.wu@intel.com>, ceph-devel@vger.kernel.org,
+        coresight@lists.linaro.org, dri-devel@lists.freedesktop.org,
         linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-fpga@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-i3c@lists.infradead.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-pm@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
-        linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, xen-devel@lists.xenproject.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 20/39] docs: ABI: testing: make the files compatible with ReST output
-Date:   Fri, 30 Oct 2020 08:40:39 +0100
-Message-Id: <58cf3c2d611e0197fb215652719ebd82ca2658db.1604042072.git.mchehab+huawei@kernel.org>
+Subject: [PATCH v2 31/39] docs: ABI: cleanup several ABI documents
+Date:   Fri, 30 Oct 2020 08:40:50 +0100
+Message-Id: <5bc78e5b68ed1e9e39135173857cb2e753be868f.1604042072.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1604042072.git.mchehab+huawei@kernel.org>
 References: <cover.1604042072.git.mchehab+huawei@kernel.org>
@@ -114,302 +141,715 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some files over there won't parse well by Sphinx.
+There are some ABI documents that, while they don't generate
+any warnings, they have issues when parsed by get_abi.pl script
+on its output result.
 
-Fix them.
+Address them, in order to provide a clean output.
 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # for IIO
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> #for IIO
+Reviewed-by: Tom Rix <trix@redhat.com> # for fpga-manager
+Reviewed-By: Kajol Jain<kjain@linux.ibm.com> # for sysfs-bus-event_source-devices-hv_gpci and sysfs-bus-event_source-devices-hv_24x7
+Acked-by: Oded Gabbay <oded.gabbay@gmail.com> # for Habanalabs
+Acked-by: Vaibhav Jain <vaibhav@linux.ibm.com> # for sysfs-bus-papr-pmem
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- .../ABI/testing/configfs-spear-pcie-gadget    |  36 +--
- Documentation/ABI/testing/configfs-usb-gadget |  83 +++---
- .../ABI/testing/configfs-usb-gadget-hid       |  10 +-
- .../ABI/testing/configfs-usb-gadget-rndis     |  16 +-
- .../ABI/testing/configfs-usb-gadget-uac1      |  18 +-
- .../ABI/testing/configfs-usb-gadget-uvc       | 220 +++++++++-------
- Documentation/ABI/testing/debugfs-ec          |  11 +-
- Documentation/ABI/testing/debugfs-pktcdvd     |  11 +-
- Documentation/ABI/testing/dev-kmsg            |  27 +-
- Documentation/ABI/testing/evm                 |  17 +-
- Documentation/ABI/testing/ima_policy          |  30 ++-
- Documentation/ABI/testing/procfs-diskstats    |  40 +--
- Documentation/ABI/testing/sysfs-block         |  38 +--
- Documentation/ABI/testing/sysfs-block-device  |   2 +
- Documentation/ABI/testing/sysfs-bus-acpi      |  18 +-
- .../sysfs-bus-event_source-devices-format     |   3 +-
- .../ABI/testing/sysfs-bus-i2c-devices-pca954x |  27 +-
- Documentation/ABI/testing/sysfs-bus-iio       |  11 +
- .../sysfs-bus-iio-adc-envelope-detector       |   5 +-
- .../ABI/testing/sysfs-bus-iio-cros-ec         |   2 +-
- .../ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32 |   8 +-
- .../ABI/testing/sysfs-bus-iio-lptimer-stm32   |  29 ++-
- .../sysfs-bus-iio-magnetometer-hmc5843        |  19 +-
- .../sysfs-bus-iio-temperature-max31856        |  19 +-
- .../ABI/testing/sysfs-bus-iio-timer-stm32     | 137 ++++++----
- .../testing/sysfs-bus-intel_th-devices-msc    |   4 +
- Documentation/ABI/testing/sysfs-bus-nfit      |   2 +-
- .../testing/sysfs-bus-pci-devices-aer_stats   | 119 +++++----
- Documentation/ABI/testing/sysfs-bus-rapidio   |  23 +-
- .../ABI/testing/sysfs-bus-thunderbolt         |  40 +--
- Documentation/ABI/testing/sysfs-bus-usb       |  30 ++-
- .../testing/sysfs-bus-usb-devices-usbsevseg   |   7 +-
- Documentation/ABI/testing/sysfs-bus-vfio-mdev |  10 +-
- Documentation/ABI/testing/sysfs-class-cxl     |  15 +-
- Documentation/ABI/testing/sysfs-class-led     |   2 +-
- .../testing/sysfs-class-led-driver-el15203000 | 229 ++++++++---------
- .../ABI/testing/sysfs-class-led-driver-sc27xx |   4 +-
- Documentation/ABI/testing/sysfs-class-mic     |  52 ++--
- Documentation/ABI/testing/sysfs-class-ocxl    |   3 +
- Documentation/ABI/testing/sysfs-class-power   |  73 +++++-
- .../ABI/testing/sysfs-class-power-twl4030     |  33 +--
- Documentation/ABI/testing/sysfs-class-rc      |  30 ++-
- .../ABI/testing/sysfs-class-scsi_host         |   7 +-
- Documentation/ABI/testing/sysfs-class-typec   |  12 +-
- .../testing/sysfs-devices-platform-ACPI-TAD   |   4 +
- .../ABI/testing/sysfs-devices-platform-docg3  |  10 +-
- .../sysfs-devices-platform-sh_mobile_lcdc_fb  |   8 +-
- .../ABI/testing/sysfs-devices-system-cpu      |  99 +++++---
- .../ABI/testing/sysfs-devices-system-ibm-rtl  |   6 +-
- .../testing/sysfs-driver-bd9571mwv-regulator  |   4 +
- Documentation/ABI/testing/sysfs-driver-genwqe |  11 +-
- .../testing/sysfs-driver-hid-logitech-lg4ff   |  18 +-
- .../ABI/testing/sysfs-driver-hid-wiimote      |  11 +-
- .../ABI/testing/sysfs-driver-samsung-laptop   |  13 +-
- .../ABI/testing/sysfs-driver-toshiba_acpi     |  26 ++
- .../ABI/testing/sysfs-driver-toshiba_haps     |   2 +
- Documentation/ABI/testing/sysfs-driver-wacom  |   4 +-
- Documentation/ABI/testing/sysfs-firmware-acpi | 237 +++++++++---------
- .../ABI/testing/sysfs-firmware-dmi-entries    |  50 ++--
- Documentation/ABI/testing/sysfs-firmware-gsmi |   2 +-
- .../ABI/testing/sysfs-firmware-memmap         |  16 +-
- Documentation/ABI/testing/sysfs-fs-ext4       |   4 +-
- .../ABI/testing/sysfs-hypervisor-xen          |  13 +-
- .../ABI/testing/sysfs-kernel-boot_params      |  23 +-
- .../ABI/testing/sysfs-kernel-mm-hugepages     |  12 +-
- .../ABI/testing/sysfs-platform-asus-laptop    |  21 +-
- .../ABI/testing/sysfs-platform-asus-wmi       |   1 +
- Documentation/ABI/testing/sysfs-platform-at91 |  10 +-
- .../ABI/testing/sysfs-platform-eeepc-laptop   |  14 +-
- .../ABI/testing/sysfs-platform-ideapad-laptop |   9 +-
- .../sysfs-platform-intel-wmi-thunderbolt      |   1 +
- .../ABI/testing/sysfs-platform-sst-atom       |  13 +-
- .../ABI/testing/sysfs-platform-usbip-vudc     |  11 +-
- Documentation/ABI/testing/sysfs-ptp           |   2 +-
- 74 files changed, 1322 insertions(+), 865 deletions(-)
+ Documentation/ABI/obsolete/sysfs-class-dax    |   8 +-
+ .../ABI/obsolete/sysfs-driver-hid-roccat-pyra |   3 +
+ Documentation/ABI/removed/devfs               |   1 +
+ Documentation/ABI/removed/raw1394             |   1 +
+ Documentation/ABI/removed/sysfs-class-rfkill  |   2 +-
+ Documentation/ABI/removed/video1394           |   1 +
+ Documentation/ABI/stable/firewire-cdev        |  63 ++---
+ Documentation/ABI/stable/sysfs-acpi-pmprofile |   4 +-
+ Documentation/ABI/stable/sysfs-bus-w1         |   1 +
+ Documentation/ABI/stable/sysfs-class-tpm      |   4 +-
+ Documentation/ABI/stable/sysfs-driver-speakup |   4 +
+ Documentation/ABI/testing/configfs-most       | 135 +++++++----
+ .../ABI/testing/configfs-usb-gadget-ecm       |  12 +-
+ .../ABI/testing/configfs-usb-gadget-eem       |  10 +-
+ .../ABI/testing/configfs-usb-gadget-loopback  |   6 +-
+ .../testing/configfs-usb-gadget-mass-storage  |  18 +-
+ .../ABI/testing/configfs-usb-gadget-midi      |  14 +-
+ .../ABI/testing/configfs-usb-gadget-printer   |   6 +-
+ .../testing/configfs-usb-gadget-sourcesink    |  18 +-
+ .../ABI/testing/configfs-usb-gadget-subset    |  10 +-
+ .../ABI/testing/configfs-usb-gadget-uac2      |  14 +-
+ .../ABI/testing/configfs-usb-gadget-uvc       |   2 +-
+ .../ABI/testing/debugfs-cec-error-inj         |   2 +-
+ .../ABI/testing/debugfs-driver-habanalabs     |  12 +-
+ .../ABI/testing/debugfs-pfo-nx-crypto         |  28 +--
+ Documentation/ABI/testing/debugfs-pktcdvd     |   2 +-
+ .../ABI/testing/debugfs-turris-mox-rwtm       |  10 +-
+ Documentation/ABI/testing/debugfs-wilco-ec    |  21 +-
+ Documentation/ABI/testing/dell-smbios-wmi     |  32 +--
+ Documentation/ABI/testing/gpio-cdev           |  13 +-
+ Documentation/ABI/testing/procfs-diskstats    |   6 +-
+ Documentation/ABI/testing/procfs-smaps_rollup |  48 ++--
+ Documentation/ABI/testing/pstore              |  19 +-
+ Documentation/ABI/testing/sysfs-block-rnbd    |   4 +-
+ Documentation/ABI/testing/sysfs-bus-acpi      |   1 +
+ .../testing/sysfs-bus-coresight-devices-etb10 |   5 +-
+ Documentation/ABI/testing/sysfs-bus-css       |   3 +
+ Documentation/ABI/testing/sysfs-bus-dfl       |   2 +
+ .../sysfs-bus-event_source-devices-hv_24x7    |   6 +-
+ .../sysfs-bus-event_source-devices-hv_gpci    |   7 +-
+ Documentation/ABI/testing/sysfs-bus-fcoe      |  68 ++++--
+ Documentation/ABI/testing/sysfs-bus-fsl-mc    |  12 +-
+ .../ABI/testing/sysfs-bus-i2c-devices-fsa9480 |  26 +-
+ Documentation/ABI/testing/sysfs-bus-i3c       |   2 +
+ Documentation/ABI/testing/sysfs-bus-iio       |  19 +-
+ .../ABI/testing/sysfs-bus-iio-adc-hi8435      |   5 +
+ .../ABI/testing/sysfs-bus-iio-adc-stm32       |   3 +
+ .../ABI/testing/sysfs-bus-iio-distance-srf08  |   7 +-
+ .../testing/sysfs-bus-iio-frequency-ad9523    |   2 +
+ .../testing/sysfs-bus-iio-frequency-adf4371   |  10 +-
+ .../ABI/testing/sysfs-bus-iio-health-afe440x  |  12 +-
+ .../ABI/testing/sysfs-bus-iio-light-isl29018  |   6 +-
+ .../testing/sysfs-bus-intel_th-devices-gth    |  11 +-
+ Documentation/ABI/testing/sysfs-bus-papr-pmem |  23 +-
+ Documentation/ABI/testing/sysfs-bus-pci       |  22 +-
+ .../ABI/testing/sysfs-bus-pci-devices-catpt   |   1 +
+ .../testing/sysfs-bus-pci-drivers-ehci_hcd    |   4 +-
+ Documentation/ABI/testing/sysfs-bus-rbd       |  37 ++-
+ Documentation/ABI/testing/sysfs-bus-siox      |   3 +
+ .../ABI/testing/sysfs-bus-thunderbolt         |  18 +-
+ Documentation/ABI/testing/sysfs-bus-usb       |   2 +
+ .../sysfs-class-backlight-driver-lm3533       |  26 +-
+ Documentation/ABI/testing/sysfs-class-bdi     |   1 -
+ .../ABI/testing/sysfs-class-chromeos          |  15 +-
+ Documentation/ABI/testing/sysfs-class-cxl     |   8 +-
+ Documentation/ABI/testing/sysfs-class-devlink |  30 ++-
+ Documentation/ABI/testing/sysfs-class-extcon  |  34 +--
+ .../ABI/testing/sysfs-class-fpga-manager      |   5 +-
+ Documentation/ABI/testing/sysfs-class-gnss    |   2 +
+ Documentation/ABI/testing/sysfs-class-led     |   1 +
+ .../testing/sysfs-class-led-driver-el15203000 |  30 +--
+ .../ABI/testing/sysfs-class-led-driver-lm3533 |  44 ++--
+ .../ABI/testing/sysfs-class-led-flash         |  27 ++-
+ .../testing/sysfs-class-led-trigger-netdev    |   7 +
+ .../testing/sysfs-class-led-trigger-usbport   |   1 +
+ .../ABI/testing/sysfs-class-leds-gt683r       |   8 +-
+ Documentation/ABI/testing/sysfs-class-net     |  61 +++--
+ .../ABI/testing/sysfs-class-net-cdc_ncm       |   6 +-
+ .../ABI/testing/sysfs-class-net-phydev        |   2 +
+ Documentation/ABI/testing/sysfs-class-pktcdvd |  36 +--
+ Documentation/ABI/testing/sysfs-class-power   |  12 +-
+ .../ABI/testing/sysfs-class-power-mp2629      |   1 +
+ .../ABI/testing/sysfs-class-power-twl4030     |   4 +-
+ Documentation/ABI/testing/sysfs-class-rapidio |  46 ++--
+ .../ABI/testing/sysfs-class-regulator         |  36 +--
+ .../ABI/testing/sysfs-class-remoteproc        |  14 +-
+ ...ysfs-class-rtc-rtc0-device-rtc_calibration |   1 +
+ Documentation/ABI/testing/sysfs-class-uwb_rc  |  13 +-
+ .../ABI/testing/sysfs-class-watchdog          |   7 +-
+ Documentation/ABI/testing/sysfs-dev           |   7 +-
+ .../ABI/testing/sysfs-devices-mapping         |  41 ++--
+ .../ABI/testing/sysfs-devices-memory          |  15 +-
+ .../sysfs-devices-platform-_UDC_-gadget       |  10 +-
+ .../ABI/testing/sysfs-devices-platform-ipmi   |  52 ++--
+ .../ABI/testing/sysfs-devices-system-cpu      |   4 +-
+ .../ABI/testing/sysfs-driver-hid-lenovo       |  10 +
+ .../ABI/testing/sysfs-driver-hid-ntrig        |  13 +-
+ .../ABI/testing/sysfs-driver-hid-roccat-kone  |  19 ++
+ .../ABI/testing/sysfs-driver-hid-wiimote      |   1 +
+ .../ABI/testing/sysfs-driver-input-exc3000    |   2 +
+ .../ABI/testing/sysfs-driver-jz4780-efuse     |   6 +-
+ .../ABI/testing/sysfs-driver-pciback          |   6 +-
+ Documentation/ABI/testing/sysfs-driver-ufs    | 228 ++++++++++++++----
+ .../ABI/testing/sysfs-driver-w1_ds28e17       |   3 +
+ Documentation/ABI/testing/sysfs-firmware-acpi |  16 +-
+ .../ABI/testing/sysfs-firmware-efi-esrt       |  28 ++-
+ .../testing/sysfs-firmware-efi-runtime-map    |  14 +-
+ .../ABI/testing/sysfs-firmware-qemu_fw_cfg    |  20 +-
+ Documentation/ABI/testing/sysfs-firmware-sfi  |   6 +-
+ .../ABI/testing/sysfs-firmware-sgi_uv         |   6 +-
+ Documentation/ABI/testing/sysfs-fs-f2fs       |  48 ++--
+ Documentation/ABI/testing/sysfs-kernel-mm-ksm |   5 +-
+ Documentation/ABI/testing/sysfs-kernel-slab   |   3 +
+ Documentation/ABI/testing/sysfs-module        |  17 +-
+ .../ABI/testing/sysfs-platform-dell-laptop    |  10 +-
+ .../ABI/testing/sysfs-platform-dell-smbios    |   4 +-
+ .../testing/sysfs-platform-i2c-demux-pinctrl  |   4 +-
+ Documentation/ABI/testing/sysfs-platform-kim  |   1 +
+ .../testing/sysfs-platform-phy-rcar-gen3-usb2 |  10 +-
+ .../ABI/testing/sysfs-platform-renesas_usb3   |  10 +-
+ Documentation/ABI/testing/sysfs-power         |  21 +-
+ Documentation/ABI/testing/sysfs-profiling     |   2 +-
+ Documentation/ABI/testing/sysfs-wusb_cbaf     |   3 +-
+ Documentation/ABI/testing/usb-charger-uevent  |  82 ++++---
+ Documentation/ABI/testing/usb-uevent          |  32 +--
+ scripts/get_abi.pl                            |   2 -
+ 126 files changed, 1323 insertions(+), 767 deletions(-)
 
-diff --git a/Documentation/ABI/testing/configfs-spear-pcie-gadget b/Documentation/ABI/testing/configfs-spear-pcie-gadget
-index 840c324ef34d..cf877bd341df 100644
---- a/Documentation/ABI/testing/configfs-spear-pcie-gadget
-+++ b/Documentation/ABI/testing/configfs-spear-pcie-gadget
-@@ -10,22 +10,24 @@ Description:
- 	This interfaces can be used to show spear's PCIe device capability.
+diff --git a/Documentation/ABI/obsolete/sysfs-class-dax b/Documentation/ABI/obsolete/sysfs-class-dax
+index 2cb9fc5e8bd1..0faf1354cd05 100644
+--- a/Documentation/ABI/obsolete/sysfs-class-dax
++++ b/Documentation/ABI/obsolete/sysfs-class-dax
+@@ -8,11 +8,11 @@ Description:	Device DAX is the device-centric analogue of Filesystem
+ 		system.  Device DAX is strict, precise and predictable.
+ 		Specifically this interface:
  
- 	Nodes are only visible when configfs is mounted. To mount configfs
--	in /config directory use:
--	# mount -t configfs none /config/
-+	in /config directory use::
+-		1/ Guarantees fault granularity with respect to a given
+-		page size (pte, pmd, or pud) set at configuration time.
++		1. Guarantees fault granularity with respect to a given
++		   page size (pte, pmd, or pud) set at configuration time.
  
--	For nth PCIe Device Controller
--	/config/pcie-gadget.n/
--		link ... used to enable ltssm and read its status.
--		int_type ...used to configure and read type of supported
--			interrupt
--		no_of_msi ... used to configure number of MSI vector needed and
-+	  # mount -t configfs none /config/
+-		2/ Enforces deterministic behavior by being strict about
+-		what fault scenarios are supported.
++		2. Enforces deterministic behavior by being strict about
++		   what fault scenarios are supported.
+ 
+ 		The /sys/class/dax/ interface enumerates all the
+ 		device-dax instances in the system. The ABI is
+diff --git a/Documentation/ABI/obsolete/sysfs-driver-hid-roccat-pyra b/Documentation/ABI/obsolete/sysfs-driver-hid-roccat-pyra
+index 5d41ebadf15e..66545c587a64 100644
+--- a/Documentation/ABI/obsolete/sysfs-driver-hid-roccat-pyra
++++ b/Documentation/ABI/obsolete/sysfs-driver-hid-roccat-pyra
+@@ -7,10 +7,13 @@ Description:	It is possible to switch the cpi setting of the mouse with the
+ 		setting reported by the mouse. This number has to be further
+ 		processed to receive the real dpi value:
+ 
++		===== ====
+ 		VALUE DPI
++		===== ====
+ 		1     400
+ 		2     800
+ 		4     1600
++		===== ====
+ 
+ 		This file is readonly.
+ 		Has never been used. If bookkeeping is done, it's done in userland tools.
+diff --git a/Documentation/ABI/removed/devfs b/Documentation/ABI/removed/devfs
+index 0020c49933c4..24fb35adf277 100644
+--- a/Documentation/ABI/removed/devfs
++++ b/Documentation/ABI/removed/devfs
+@@ -5,6 +5,7 @@ Description:
+ 	devfs has been unmaintained for a number of years, has unfixable
+ 	races, contains a naming policy within the kernel that is
+ 	against the LSB, and can be replaced by using udev.
 +
-+	For nth PCIe Device Controller /config/pcie-gadget.n/:
+ 	The files fs/devfs/*, include/linux/devfs_fs*.h were removed,
+ 	along with the assorted devfs function calls throughout the
+ 	kernel tree.
+diff --git a/Documentation/ABI/removed/raw1394 b/Documentation/ABI/removed/raw1394
+index ec333e676322..9ec7ec493920 100644
+--- a/Documentation/ABI/removed/raw1394
++++ b/Documentation/ABI/removed/raw1394
+@@ -7,6 +7,7 @@ Description:
+ 	to implement sensible device security policies, and its low level
+ 	of abstraction that required userspace clients to duplicate much
+ 	of the kernel's ieee1394 core functionality.
 +
-+	=============== ======================================================
-+	link		used to enable ltssm and read its status.
-+	int_type	used to configure and read type of supported interrupt
-+	no_of_msi	used to configure number of MSI vector needed and
- 			to read no of MSI granted.
--		inta ... write 1 to assert INTA and 0 to de-assert.
--		send_msi ... write MSI vector to be sent.
--		vendor_id ... used to write and read vendor id (hex)
--		device_id ... used to write and read device id (hex)
--		bar0_size ... used to write and read bar0_size
--		bar0_address ... used to write and read bar0 mapped area in hex.
--		bar0_rw_offset ... used to write and read offset of bar0 where
--			bar0_data will be written or read.
--		bar0_data ... used to write and read data at bar0_rw_offset.
-+	inta		write 1 to assert INTA and 0 to de-assert.
-+	send_msi	write MSI vector to be sent.
-+	vendor_id	used to write and read vendor id (hex)
-+	device_id	used to write and read device id (hex)
-+	bar0_size	used to write and read bar0_size
-+	bar0_address	used to write and read bar0 mapped area in hex.
-+	bar0_rw_offset	used to write and read offset of bar0 where bar0_data
-+			will be written or read.
-+	bar0_data	used to write and read data at bar0_rw_offset.
-+	=============== ======================================================
-diff --git a/Documentation/ABI/testing/configfs-usb-gadget b/Documentation/ABI/testing/configfs-usb-gadget
-index 4594cc2435e8..dc351e9af80a 100644
---- a/Documentation/ABI/testing/configfs-usb-gadget
-+++ b/Documentation/ABI/testing/configfs-usb-gadget
-@@ -12,22 +12,24 @@ Description:
+ 	Replaced by /dev/fw*, i.e. the <linux/firewire-cdev.h> ABI of
+ 	firewire-core.
  
- 		The attributes of a gadget:
- 
--		UDC		- bind a gadget to UDC/unbind a gadget;
--				write UDC's name found in /sys/class/udc/*
--				to bind a gadget, empty string "" to unbind.
-+		================  ============================================
-+		UDC		  bind a gadget to UDC/unbind a gadget;
-+				  write UDC's name found in /sys/class/udc/*
-+				  to bind a gadget, empty string "" to unbind.
- 
--		max_speed	- maximum speed the driver supports. Valid
--				names are super-speed-plus, super-speed,
--				high-speed, full-speed, and low-speed.
-+		max_speed	  maximum speed the driver supports. Valid
-+				  names are super-speed-plus, super-speed,
-+				  high-speed, full-speed, and low-speed.
- 
--		bDeviceClass	- USB device class code
--		bDeviceSubClass	- USB device subclass code
--		bDeviceProtocol	- USB device protocol code
--		bMaxPacketSize0	- maximum endpoint 0 packet size
--		bcdDevice	- bcd device release number
--		bcdUSB		- bcd USB specification version number
--		idProduct	- product ID
--		idVendor	- vendor ID
-+		bDeviceClass	  USB device class code
-+		bDeviceSubClass	  USB device subclass code
-+		bDeviceProtocol	  USB device protocol code
-+		bMaxPacketSize0	  maximum endpoint 0 packet size
-+		bcdDevice	  bcd device release number
-+		bcdUSB		  bcd USB specification version number
-+		idProduct	  product ID
-+		idVendor	  vendor ID
-+		================  ============================================
- 
- What:		/config/usb-gadget/gadget/configs
- Date:		Jun 2013
-@@ -41,8 +43,10 @@ KernelVersion:	3.11
- Description:
- 		The attributes of a configuration:
- 
--		bmAttributes	- configuration characteristics
--		MaxPower	- maximum power consumption from the bus
-+		================  ======================================
-+		bmAttributes	  configuration characteristics
-+		MaxPower	  maximum power consumption from the bus
-+		================  ======================================
- 
- What:		/config/usb-gadget/gadget/configs/config/strings
- Date:		Jun 2013
-@@ -57,7 +61,9 @@ KernelVersion:	3.11
- Description:
- 		The attributes:
- 
--		configuration	- configuration description
-+		================  =========================
-+		configuration	  configuration description
-+		================  =========================
- 
- 
- What:		/config/usb-gadget/gadget/functions
-@@ -76,8 +82,10 @@ Description:
- 
- 		The attributes:
- 
--		compatible_id		- 8-byte string for "Compatible ID"
--		sub_compatible_id	- 8-byte string for "Sub Compatible ID"
-+		=================	=====================================
-+		compatible_id		8-byte string for "Compatible ID"
-+		sub_compatible_id	8-byte string for "Sub Compatible ID"
-+		=================	=====================================
- 
- What:		/config/usb-gadget/gadget/functions/<func>.<inst>/interface.<n>/<property>
- Date:		May 2014
-@@ -89,16 +97,19 @@ Description:
- 
- 		The attributes:
- 
--		type		- value 1..7 for interpreting the data
--				1: unicode string
--				2: unicode string with environment variable
--				3: binary
--				4: little-endian 32-bit
--				5: big-endian 32-bit
--				6: unicode string with a symbolic link
--				7: multiple unicode strings
--		data		- blob of data to be interpreted depending on
-+		=====		===============================================
-+		type		value 1..7 for interpreting the data
+diff --git a/Documentation/ABI/removed/sysfs-class-rfkill b/Documentation/ABI/removed/sysfs-class-rfkill
+index 9c08c7f98ffb..f25174eafd55 100644
+--- a/Documentation/ABI/removed/sysfs-class-rfkill
++++ b/Documentation/ABI/removed/sysfs-class-rfkill
+@@ -10,4 +10,4 @@ Description:	This file was deprecated because there no longer was a way to
+ 		claim just control over a single rfkill instance.
+ 		This file was scheduled to be removed in 2012, and was removed
+ 		in 2016.
+-Values: 	0: Kernel handles events
++Values:		0: Kernel handles events
+diff --git a/Documentation/ABI/removed/video1394 b/Documentation/ABI/removed/video1394
+index c39c25aee77b..1905d35a6619 100644
+--- a/Documentation/ABI/removed/video1394
++++ b/Documentation/ABI/removed/video1394
+@@ -8,6 +8,7 @@ Description:
+ 	performance issues in its first generation.  Any video1394 user had
+ 	to use raw1394 + libraw1394 too because video1394 did not provide
+ 	asynchronous I/O for device discovery and configuration.
 +
-+				- 1: unicode string
-+				- 2: unicode string with environment variable
-+				- 3: binary
-+				- 4: little-endian 32-bit
-+				- 5: big-endian 32-bit
-+				- 6: unicode string with a symbolic link
-+				- 7: multiple unicode strings
-+		data		blob of data to be interpreted depending on
- 				type
-+		=====		===============================================
+ 	Replaced by /dev/fw*, i.e. the <linux/firewire-cdev.h> ABI of
+ 	firewire-core.
  
- What:		/config/usb-gadget/gadget/strings
- Date:		Jun 2013
-@@ -113,9 +124,11 @@ KernelVersion:	3.11
+diff --git a/Documentation/ABI/stable/firewire-cdev b/Documentation/ABI/stable/firewire-cdev
+index c9e8ff026154..261f85b13154 100644
+--- a/Documentation/ABI/stable/firewire-cdev
++++ b/Documentation/ABI/stable/firewire-cdev
+@@ -16,6 +16,7 @@ Description:
+ 		different scope:
+ 
+ 		  - The 1394 node which is associated with the file:
++
+ 			  - Asynchronous request transmission
+ 			  - Get the Configuration ROM
+ 			  - Query node ID
+@@ -23,6 +24,7 @@ Description:
+ 			    and local node
+ 
+ 		  - The 1394 bus (i.e. "card") to which the node is attached to:
++
+ 			  - Isochronous stream transmission and reception
+ 			  - Asynchronous stream transmission and reception
+ 			  - Asynchronous broadcast request transmission
+@@ -35,6 +37,7 @@ Description:
+ 			  - Bus reset initiation, bus reset event reception
+ 
+ 		  - All 1394 buses:
++
+ 			  - Allocation of IEEE 1212 address ranges on the local
+ 			    link layers, reception of inbound requests to such
+ 			    an address range, asynchronous response transmission
+@@ -59,50 +62,50 @@ Description:
+ 		The following file operations are supported:
+ 
+ 		open(2)
+-		Currently the only useful flags are O_RDWR.
++		    Currently the only useful flags are O_RDWR.
+ 
+ 		ioctl(2)
+-		Initiate various actions.  Some take immediate effect, others
+-		are performed asynchronously while or after the ioctl returns.
+-		See the inline documentation in <linux/firewire-cdev.h> for
+-		descriptions of all ioctls.
++		    Initiate various actions.  Some take immediate effect, others
++		    are performed asynchronously while or after the ioctl returns.
++		    See the inline documentation in <linux/firewire-cdev.h> for
++		    descriptions of all ioctls.
+ 
+ 		poll(2), select(2), epoll_wait(2) etc.
+-		Watch for events to become available to be read.
++		    Watch for events to become available to be read.
+ 
+ 		read(2)
+-		Receive various events.  There are solicited events like
+-		outbound asynchronous transaction completion or isochronous
+-		buffer completion, and unsolicited events such as bus resets,
+-		request reception, or PHY packet reception.  Always use a read
+-		buffer which is large enough to receive the largest event that
+-		could ever arrive.  See <linux/firewire-cdev.h> for descriptions
+-		of all event types and for which ioctls affect reception of
+-		events.
++		    Receive various events.  There are solicited events like
++		    outbound asynchronous transaction completion or isochronous
++		    buffer completion, and unsolicited events such as bus resets,
++		    request reception, or PHY packet reception.  Always use a read
++		    buffer which is large enough to receive the largest event that
++		    could ever arrive.  See <linux/firewire-cdev.h> for descriptions
++		    of all event types and for which ioctls affect reception of
++		    events.
+ 
+ 		mmap(2)
+-		Allocate a DMA buffer for isochronous reception or transmission
+-		and map it into the process address space.  The arguments should
+-		be used as follows:  addr = NULL, length = the desired buffer
+-		size, i.e. number of packets times size of largest packet,
+-		prot = at least PROT_READ for reception and at least PROT_WRITE
+-		for transmission, flags = MAP_SHARED, fd = the handle to the
+-		/dev/fw*, offset = 0.
++		    Allocate a DMA buffer for isochronous reception or transmission
++		    and map it into the process address space.  The arguments should
++		    be used as follows:  addr = NULL, length = the desired buffer
++		    size, i.e. number of packets times size of largest packet,
++		    prot = at least PROT_READ for reception and at least PROT_WRITE
++		    for transmission, flags = MAP_SHARED, fd = the handle to the
++		    /dev/fw*, offset = 0.
+ 
+ 		Isochronous reception works in packet-per-buffer fashion except
+ 		for multichannel reception which works in buffer-fill mode.
+ 
+ 		munmap(2)
+-		Unmap the isochronous I/O buffer from the process address space.
++		    Unmap the isochronous I/O buffer from the process address space.
+ 
+ 		close(2)
+-		Besides stopping and freeing I/O contexts that were associated
+-		with the file descriptor, back out any changes to the local
+-		nodes' Configuration ROM.  Deallocate isochronous channels and
+-		bandwidth at the IRM that were marked for kernel-assisted
+-		re- and deallocation.
++		    Besides stopping and freeing I/O contexts that were associated
++		    with the file descriptor, back out any changes to the local
++		    nodes' Configuration ROM.  Deallocate isochronous channels and
++		    bandwidth at the IRM that were marked for kernel-assisted
++		    re- and deallocation.
+ 
+-Users:		libraw1394
+-		libdc1394
+-		libhinawa
++Users:		libraw1394;
++		libdc1394;
++		libhinawa;
+ 		tools like linux-firewire-utils, fwhack, ...
+diff --git a/Documentation/ABI/stable/sysfs-acpi-pmprofile b/Documentation/ABI/stable/sysfs-acpi-pmprofile
+index fd97d22b677f..2d6314f0e4e4 100644
+--- a/Documentation/ABI/stable/sysfs-acpi-pmprofile
++++ b/Documentation/ABI/stable/sysfs-acpi-pmprofile
+@@ -1,8 +1,8 @@
+-What: 		/sys/firmware/acpi/pm_profile
++What:		/sys/firmware/acpi/pm_profile
+ Date:		03-Nov-2011
+ KernelVersion:	v3.2
+ Contact:	linux-acpi@vger.kernel.org
+-Description: 	The ACPI pm_profile sysfs interface exports the platform
++Description:	The ACPI pm_profile sysfs interface exports the platform
+ 		power management (and performance) requirement expectations
+ 		as provided by BIOS. The integer value is directly passed as
+ 		retrieved from the FADT ACPI table.
+diff --git a/Documentation/ABI/stable/sysfs-bus-w1 b/Documentation/ABI/stable/sysfs-bus-w1
+index 992dfb183ed0..5cd5e872bcae 100644
+--- a/Documentation/ABI/stable/sysfs-bus-w1
++++ b/Documentation/ABI/stable/sysfs-bus-w1
+@@ -6,6 +6,7 @@ Description:	Bus scanning interval, microseconds component.
+ 		control systems are attached/generate presence for as short as
+ 		100 ms - hence the tens-to-hundreds milliseconds scan intervals
+ 		are required.
++
+ 		see Documentation/w1/w1-generic.rst for detailed information.
+ Users:		any user space application which wants to know bus scanning
+ 		interval
+diff --git a/Documentation/ABI/stable/sysfs-class-tpm b/Documentation/ABI/stable/sysfs-class-tpm
+index ec464cf7861a..91ca63ec7581 100644
+--- a/Documentation/ABI/stable/sysfs-class-tpm
++++ b/Documentation/ABI/stable/sysfs-class-tpm
+@@ -191,6 +191,6 @@ Contact:	linux-integrity@vger.kernel.org
+ Description:	The "tpm_version_major" property shows the TCG spec major version
+ 		implemented by the TPM device.
+ 
+-		Example output:
++		Example output::
+ 
+-		2
++		  2
+diff --git a/Documentation/ABI/stable/sysfs-driver-speakup b/Documentation/ABI/stable/sysfs-driver-speakup
+index c6a32c434ce9..792f58ba327d 100644
+--- a/Documentation/ABI/stable/sysfs-driver-speakup
++++ b/Documentation/ABI/stable/sysfs-driver-speakup
+@@ -69,6 +69,7 @@ Description:	Controls if typing interrupts output from speakup. With
+ 		speakup if for example
+ 		the say screen command is used before the
+ 		entire screen  is read.
++
+ 		With no_interrupt set to one, if the say
+ 		screen command is used, and one then types on the keyboard,
+ 		speakup will continue to say the whole screen regardless until
+@@ -215,8 +216,10 @@ Description:	This file contains names for key states.
+ 		Again, these are part of the help system.  For instance, if you
+ 		had pressed speakup + keypad 3, you would hear:
+ 		"speakup keypad 3 is go to bottom edge."
++
+ 		The speakup key is depressed, so the name of the key state is
+ 		speakup.
++
+ 		This part of the message comes from the states collection.
+ 
+ What:		/sys/accessibility/speakup/i18n/characters
+@@ -297,6 +300,7 @@ KernelVersion:	2.6
+ Contact:	speakup@linux-speakup.org
+ Description:	Controls if punctuation is spoken by speakup, or by the
+ 		synthesizer.
++
+ 		For example, speakup speaks ">" as "greater", while
+ 		the espeak synthesizer used by the soft driver speaks "greater
+ 		than". Zero lets speakup speak the punctuation. One lets the
+diff --git a/Documentation/ABI/testing/configfs-most b/Documentation/ABI/testing/configfs-most
+index ed67a4d9f6d6..bc6b8bd18da4 100644
+--- a/Documentation/ABI/testing/configfs-most
++++ b/Documentation/ABI/testing/configfs-most
+@@ -15,22 +15,28 @@ KernelVersion:  5.2
  Description:
  		The attributes:
  
--		serialnumber	- gadget's serial number (string)
--		product		- gadget's product description
--		manufacturer	- gadget's manufacturer description
-+		============	=================================
-+		serialnumber	gadget's serial number (string)
-+		product		gadget's product description
-+		manufacturer	gadget's manufacturer description
-+		============	=================================
+-		buffer_size	configure the buffer size for this channel
++		buffer_size
++				configure the buffer size for this channel
  
- What:		/config/usb-gadget/gadget/os_desc
- Date:		May 2014
-@@ -123,8 +136,10 @@ KernelVersion:	3.16
- Description:
- 		This group contains "OS String" extension handling attributes.
+-		subbuffer_size	configure the sub-buffer size for this channel
++		subbuffer_size
++				configure the sub-buffer size for this channel
+ 				(needed for synchronous and isochrnous data)
  
--		use		- flag turning "OS Desctiptors" support on/off
--		b_vendor_code	- one-byte value used for custom per-device and
-+		=============	===============================================
-+		use		flag turning "OS Desctiptors" support on/off
-+		b_vendor_code	one-byte value used for custom per-device and
- 				per-interface requests
--		qw_sign		- an identifier to be reported as "OS String"
-+		qw_sign		an identifier to be reported as "OS String"
- 				proper
-+		=============	===============================================
-diff --git a/Documentation/ABI/testing/configfs-usb-gadget-hid b/Documentation/ABI/testing/configfs-usb-gadget-hid
-index f12e00e6baa3..748705c4cb58 100644
---- a/Documentation/ABI/testing/configfs-usb-gadget-hid
-+++ b/Documentation/ABI/testing/configfs-usb-gadget-hid
-@@ -4,8 +4,10 @@ KernelVersion:	3.19
+ 
+-		num_buffers	configure number of buffers used for this
++		num_buffers
++				configure number of buffers used for this
+ 				channel
+ 
+-		datatype	configure type of data that will travel over
++		datatype
++				configure type of data that will travel over
+ 				this channel
+ 
+-		direction	configure whether this link will be an input
++		direction
++				configure whether this link will be an input
+ 				or output
+ 
+-		dbr_size	configure DBR data buffer size (this is used
++		dbr_size
++				configure DBR data buffer size (this is used
+ 				for MediaLB communication only)
+ 
+ 		packets_per_xact
+@@ -39,18 +45,23 @@ Description:
+ 				transmitted via USB (this is used for USB
+ 				communication only)
+ 
+-		device		name of the device the link is to be attached to
++		device
++				name of the device the link is to be attached to
+ 
+-		channel		name of the channel the link is to be attached to
++		channel
++				name of the channel the link is to be attached to
+ 
+-		comp_params	pass parameters needed by some components
++		comp_params
++				pass parameters needed by some components
+ 
+-		create_link	write '1' to this attribute to trigger the
++		create_link
++				write '1' to this attribute to trigger the
+ 				creation of the link. In case of speculative
+ 				configuration, the creation is post-poned until
+ 				a physical device is being attached to the bus.
+ 
+-		destroy_link	write '1' to this attribute to destroy an
++		destroy_link
++				write '1' to this attribute to destroy an
+ 				active link
+ 
+ What: 		/sys/kernel/config/most_video/<link>
+@@ -59,22 +70,28 @@ KernelVersion:  5.2
  Description:
  		The attributes:
  
--		protocol	- HID protocol to use
--		report_desc	- blob corresponding to HID report descriptors
-+		=============	============================================
-+		protocol	HID protocol to use
-+		report_desc	blob corresponding to HID report descriptors
- 				except the data passed through /dev/hidg<N>
--		report_length	- HID report length
--		subclass	- HID device subclass to use
-+		report_length	HID report length
-+		subclass	HID device subclass to use
-+		=============	============================================
-diff --git a/Documentation/ABI/testing/configfs-usb-gadget-rndis b/Documentation/ABI/testing/configfs-usb-gadget-rndis
-index 137399095d74..9416eda7fe93 100644
---- a/Documentation/ABI/testing/configfs-usb-gadget-rndis
-+++ b/Documentation/ABI/testing/configfs-usb-gadget-rndis
-@@ -4,14 +4,16 @@ KernelVersion:	3.11
+-		buffer_size	configure the buffer size for this channel
++		buffer_size
++				configure the buffer size for this channel
+ 
+-		subbuffer_size	configure the sub-buffer size for this channel
++		subbuffer_size
++				configure the sub-buffer size for this channel
+ 				(needed for synchronous and isochrnous data)
+ 
+ 
+-		num_buffers	configure number of buffers used for this
++		num_buffers
++				configure number of buffers used for this
+ 				channel
+ 
+-		datatype	configure type of data that will travel over
++		datatype
++				configure type of data that will travel over
+ 				this channel
+ 
+-		direction	configure whether this link will be an input
++		direction
++				configure whether this link will be an input
+ 				or output
+ 
+-		dbr_size	configure DBR data buffer size (this is used
++		dbr_size
++				configure DBR data buffer size (this is used
+ 				for MediaLB communication only)
+ 
+ 		packets_per_xact
+@@ -83,18 +100,23 @@ Description:
+ 				transmitted via USB (this is used for USB
+ 				communication only)
+ 
+-		device		name of the device the link is to be attached to
++		device
++				name of the device the link is to be attached to
+ 
+-		channel		name of the channel the link is to be attached to
++		channel
++				name of the channel the link is to be attached to
+ 
+-		comp_params	pass parameters needed by some components
++		comp_params
++				pass parameters needed by some components
+ 
+-		create_link	write '1' to this attribute to trigger the
++		create_link
++				write '1' to this attribute to trigger the
+ 				creation of the link. In case of speculative
+ 				configuration, the creation is post-poned until
+ 				a physical device is being attached to the bus.
+ 
+-		destroy_link	write '1' to this attribute to destroy an
++		destroy_link
++				write '1' to this attribute to destroy an
+ 				active link
+ 
+ What: 		/sys/kernel/config/most_net/<link>
+@@ -103,22 +125,28 @@ KernelVersion:  5.2
+ Description:
+ 		The attributes:
+ 
+-		buffer_size	configure the buffer size for this channel
++		buffer_size
++				configure the buffer size for this channel
+ 
+-		subbuffer_size	configure the sub-buffer size for this channel
++		subbuffer_size
++				configure the sub-buffer size for this channel
+ 				(needed for synchronous and isochrnous data)
+ 
+ 
+-		num_buffers	configure number of buffers used for this
++		num_buffers
++				configure number of buffers used for this
+ 				channel
+ 
+-		datatype	configure type of data that will travel over
++		datatype
++				configure type of data that will travel over
+ 				this channel
+ 
+-		direction	configure whether this link will be an input
++		direction
++				configure whether this link will be an input
+ 				or output
+ 
+-		dbr_size	configure DBR data buffer size (this is used
++		dbr_size
++				configure DBR data buffer size (this is used
+ 				for MediaLB communication only)
+ 
+ 		packets_per_xact
+@@ -127,18 +155,23 @@ Description:
+ 				transmitted via USB (this is used for USB
+ 				communication only)
+ 
+-		device		name of the device the link is to be attached to
++		device
++				name of the device the link is to be attached to
+ 
+-		channel		name of the channel the link is to be attached to
++		channel
++				name of the channel the link is to be attached to
+ 
+-		comp_params	pass parameters needed by some components
++		comp_params
++				pass parameters needed by some components
+ 
+-		create_link	write '1' to this attribute to trigger the
++		create_link
++				write '1' to this attribute to trigger the
+ 				creation of the link. In case of speculative
+ 				configuration, the creation is post-poned until
+ 				a physical device is being attached to the bus.
+ 
+-		destroy_link	write '1' to this attribute to destroy an
++		destroy_link
++				write '1' to this attribute to destroy an
+ 				active link
+ 
+ What: 		/sys/kernel/config/most_sound/<card>
+@@ -147,7 +180,8 @@ KernelVersion:  5.2
+ Description:
+ 		The attributes:
+ 
+-		create_card	write '1' to this attribute to trigger the
++		create_card
++				write '1' to this attribute to trigger the
+                                 registration of the sound card with the ALSA
+ 				subsystem.
+ 
+@@ -157,22 +191,28 @@ KernelVersion:  5.2
+ Description:
+ 		The attributes:
+ 
+-		buffer_size	configure the buffer size for this channel
++		buffer_size
++				configure the buffer size for this channel
+ 
+-		subbuffer_size	configure the sub-buffer size for this channel
++		subbuffer_size
++				configure the sub-buffer size for this channel
+ 				(needed for synchronous and isochrnous data)
+ 
+ 
+-		num_buffers	configure number of buffers used for this
++		num_buffers
++				configure number of buffers used for this
+ 				channel
+ 
+-		datatype	configure type of data that will travel over
++		datatype
++				configure type of data that will travel over
+ 				this channel
+ 
+-		direction	configure whether this link will be an input
++		direction
++				configure whether this link will be an input
+ 				or output
+ 
+-		dbr_size	configure DBR data buffer size (this is used
++		dbr_size
++				configure DBR data buffer size (this is used
+ 				for MediaLB communication only)
+ 
+ 		packets_per_xact
+@@ -181,16 +221,21 @@ Description:
+ 				transmitted via USB (this is used for USB
+ 				communication only)
+ 
+-		device		name of the device the link is to be attached to
++		device
++				name of the device the link is to be attached to
+ 
+-		channel		name of the channel the link is to be attached to
++		channel
++				name of the channel the link is to be attached to
+ 
+-		comp_params	pass parameters needed by some components
++		comp_params
++				pass parameters needed by some components
+ 
+-		create_link	write '1' to this attribute to trigger the
++		create_link
++				write '1' to this attribute to trigger the
+ 				creation of the link. In case of speculative
+ 				configuration, the creation is post-poned until
+ 				a physical device is being attached to the bus.
+ 
+-		destroy_link	write '1' to this attribute to destroy an
++		destroy_link
++				write '1' to this attribute to destroy an
+ 				active link
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-ecm b/Documentation/ABI/testing/configfs-usb-gadget-ecm
+index 0addf7704b4c..272bc1e4ce2e 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-ecm
++++ b/Documentation/ABI/testing/configfs-usb-gadget-ecm
+@@ -4,13 +4,17 @@ KernelVersion:	3.11
  Description:
  		The attributes:
  
 -		ifname		- network device interface name associated with
-+		=========	=============================================
++		ifname
++			      - network device interface name associated with
+ 				this function instance
+-		qmult		- queue length multiplier for high and
++		qmult	
++			      - queue length multiplier for high and
+ 				super speed
+-		host_addr	- MAC address of host's end of this
++		host_addr
++			      - MAC address of host's end of this
+ 				Ethernet over USB link
+-		dev_addr	- MAC address of device's end of this
++		dev_addr
++			      - MAC address of device's end of this
+ 				Ethernet over USB link
+ 
+ 
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-eem b/Documentation/ABI/testing/configfs-usb-gadget-eem
+index a4c57158fcde..178c3d5fb647 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-eem
++++ b/Documentation/ABI/testing/configfs-usb-gadget-eem
+@@ -4,11 +4,13 @@ KernelVersion:	3.11
+ Description:
+ 		The attributes:
+ 
+-		ifname		- network device interface name associated with
++		==========	=============================================
 +		ifname		network device interface name associated with
  				this function instance
 -		qmult		- queue length multiplier for high and
@@ -421,18 +861,155 @@ index 137399095d74..9416eda7fe93 100644
 -		dev_addr	- MAC address of device's end of this
 +		dev_addr	MAC address of device's end of this
  				Ethernet over USB link
--		class		- USB interface class, default is 02 (hex)
--		subclass	- USB interface subclass, default is 06 (hex)
--		protocol	- USB interface protocol, default is 00 (hex)
-+		class		USB interface class, default is 02 (hex)
-+		subclass	USB interface subclass, default is 06 (hex)
-+		protocol	USB interface protocol, default is 00 (hex)
-+		=========	=============================================
-diff --git a/Documentation/ABI/testing/configfs-usb-gadget-uac1 b/Documentation/ABI/testing/configfs-usb-gadget-uac1
-index abfe447c848f..dc23fd776943 100644
---- a/Documentation/ABI/testing/configfs-usb-gadget-uac1
-+++ b/Documentation/ABI/testing/configfs-usb-gadget-uac1
-@@ -4,11 +4,13 @@ KernelVersion:	4.14
++		==========	=============================================
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-loopback b/Documentation/ABI/testing/configfs-usb-gadget-loopback
+index 06beefbcf061..e6c6ba5ac7ff 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-loopback
++++ b/Documentation/ABI/testing/configfs-usb-gadget-loopback
+@@ -4,5 +4,7 @@ KernelVersion:	3.13
+ Description:
+ 		The attributes:
+ 
+-		qlen		- depth of loopback queue
+-		buflen		- buffer length
++		=======		=======================
++		qlen		depth of loopback queue
++		buflen		buffer length
++		=======		=======================
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-mass-storage b/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
+index 9931fb0d63ba..c86b63a7bb43 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
++++ b/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
+@@ -4,12 +4,14 @@ KernelVersion:	3.13
+ Description:
+ 		The attributes:
+ 
+-		stall		- Set to permit function to halt bulk endpoints.
++		===========	==============================================
++		stall		Set to permit function to halt bulk endpoints.
+ 				Disabled on some USB devices known not to work
+ 				correctly. You should set it to true.
+-		num_buffers	- Number of pipeline buffers. Valid numbers
++		num_buffers	Number of pipeline buffers. Valid numbers
+ 				are 2..4. Available only if
+ 				CONFIG_USB_GADGET_DEBUG_FILES is set.
++		===========	==============================================
+ 
+ What:		/config/usb-gadget/gadget/functions/mass_storage.name/lun.name
+ Date:		Oct 2013
+@@ -17,15 +19,17 @@ KernelVersion:	3.13
+ Description:
+ 		The attributes:
+ 
+-		file		- The path to the backing file for the LUN.
++		===========	==============================================
++		file		The path to the backing file for the LUN.
+ 				Required if LUN is not marked as removable.
+-		ro		- Flag specifying access to the LUN shall be
++		ro		Flag specifying access to the LUN shall be
+ 				read-only. This is implied if CD-ROM emulation
+ 				is enabled as well as when it was impossible
+ 				to open "filename" in R/W mode.
+-		removable	- Flag specifying that LUN shall be indicated as
++		removable	Flag specifying that LUN shall be indicated as
+ 				being removable.
+-		cdrom		- Flag specifying that LUN shall be reported as
++		cdrom		Flag specifying that LUN shall be reported as
+ 				being a CD-ROM.
+-		nofua		- Flag specifying that FUA flag
++		nofua		Flag specifying that FUA flag
+ 				in SCSI WRITE(10,12)
++		===========	==============================================
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-midi b/Documentation/ABI/testing/configfs-usb-gadget-midi
+index 6b341df7249c..07389cddd51a 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-midi
++++ b/Documentation/ABI/testing/configfs-usb-gadget-midi
+@@ -4,9 +4,11 @@ KernelVersion:	3.19
+ Description:
+ 		The attributes:
+ 
+-		index		- index value for the USB MIDI adapter
+-		id		- ID string for the USB MIDI adapter
+-		buflen		- MIDI buffer length
+-		qlen		- USB read request queue length
+-		in_ports	- number of MIDI input ports
+-		out_ports	- number of MIDI output ports
++		==========	====================================
++		index		index value for the USB MIDI adapter
++		id		ID string for the USB MIDI adapter
++		buflen		MIDI buffer length
++		qlen		USB read request queue length
++		in_ports	number of MIDI input ports
++		out_ports	number of MIDI output ports
++		==========	====================================
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-printer b/Documentation/ABI/testing/configfs-usb-gadget-printer
+index 6b0714e3c605..7aa731bac2da 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-printer
++++ b/Documentation/ABI/testing/configfs-usb-gadget-printer
+@@ -4,6 +4,8 @@ KernelVersion:	4.1
+ Description:
+ 		The attributes:
+ 
+-		pnp_string	- Data to be passed to the host in pnp string
+-		q_len		- Number of requests per endpoint
++		==========      ===========================================
++		pnp_string	Data to be passed to the host in pnp string
++		q_len		Number of requests per endpoint
++		==========      ===========================================
+ 
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-sourcesink b/Documentation/ABI/testing/configfs-usb-gadget-sourcesink
+index f56335af2d88..1f3d31b607b7 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-sourcesink
++++ b/Documentation/ABI/testing/configfs-usb-gadget-sourcesink
+@@ -4,11 +4,13 @@ KernelVersion:	3.13
+ Description:
+ 		The attributes:
+ 
+-		pattern		- 0 (all zeros), 1 (mod63), 2 (none)
+-		isoc_interval	- 1..16
+-		isoc_maxpacket	- 0 - 1023 (fs), 0 - 1024 (hs/ss)
+-		isoc_mult	- 0..2 (hs/ss only)
+-		isoc_maxburst	- 0..15 (ss only)
+-		buflen		- buffer length
+-		bulk_qlen	- depth of queue for bulk
+-		iso_qlen	- depth of queue for iso
++		==============    ==================================
++		pattern		  0 (all zeros), 1 (mod63), 2 (none)
++		isoc_interval	  1..16
++		isoc_maxpacket	  0 - 1023 (fs), 0 - 1024 (hs/ss)
++		isoc_mult	  0..2 (hs/ss only)
++		isoc_maxburst	  0..15 (ss only)
++		buflen		  buffer length
++		bulk_qlen	  depth of queue for bulk
++		iso_qlen	  depth of queue for iso
++		==============    ==================================
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-subset b/Documentation/ABI/testing/configfs-usb-gadget-subset
+index 9373e2c51ea4..0061b864351f 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-subset
++++ b/Documentation/ABI/testing/configfs-usb-gadget-subset
+@@ -4,11 +4,13 @@ KernelVersion:	3.11
+ Description:
+ 		The attributes:
+ 
+-		ifname		- network device interface name associated with
++		==========	=============================================
++		ifname		network device interface name associated with
+ 				this function instance
+-		qmult		- queue length multiplier for high and
++		qmult		queue length multiplier for high and
+ 				super speed
+-		host_addr	- MAC address of host's end of this
++		host_addr	MAC address of host's end of this
+ 				Ethernet over USB link
+-		dev_addr	- MAC address of device's end of this
++		dev_addr	MAC address of device's end of this
+ 				Ethernet over USB link
++		==========	=============================================
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-uac2 b/Documentation/ABI/testing/configfs-usb-gadget-uac2
+index 2bfdd4efa9bd..d4356c8b8cd6 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-uac2
++++ b/Documentation/ABI/testing/configfs-usb-gadget-uac2
+@@ -4,9 +4,11 @@ KernelVersion:	3.18
  Description:
  		The attributes:
  
@@ -442,4076 +1019,4807 @@ index abfe447c848f..dc23fd776943 100644
 -		p_chmask - playback channel mask
 -		p_srate - playback sampling rate
 -		p_ssize - playback sample size (bytes)
--		req_number - the number of pre-allocated request
--			for both capture and playback
-+		==========	===================================
-+		c_chmask	capture channel mask
-+		c_srate		capture sampling rate
-+		c_ssize		capture sample size (bytes)
-+		p_chmask	playback channel mask
-+		p_srate		playback sampling rate
-+		p_ssize		playback sample size (bytes)
-+		req_number	the number of pre-allocated request
-+				for both capture and playback
-+		==========	===================================
++		=========  ============================
++		c_chmask   capture channel mask
++		c_srate    capture sampling rate
++		c_ssize    capture sample size (bytes)
++		p_chmask   playback channel mask
++		p_srate    playback sampling rate
++		p_ssize    playback sample size (bytes)
++		=========  ============================
 diff --git a/Documentation/ABI/testing/configfs-usb-gadget-uvc b/Documentation/ABI/testing/configfs-usb-gadget-uvc
-index 809765bd9573..cee81b0347bb 100644
+index cee81b0347bb..ac5e11af79a8 100644
 --- a/Documentation/ABI/testing/configfs-usb-gadget-uvc
 +++ b/Documentation/ABI/testing/configfs-usb-gadget-uvc
-@@ -3,9 +3,11 @@ Date:		Dec 2014
- KernelVersion:	4.0
- Description:	UVC function directory
+@@ -55,7 +55,7 @@ Description:	Default output terminal descriptors
  
--		streaming_maxburst	- 0..15 (ss only)
--		streaming_maxpacket	- 1..1023 (fs), 1..3072 (hs/ss)
--		streaming_interval	- 1..16
-+		===================	=============================
-+		streaming_maxburst	0..15 (ss only)
-+		streaming_maxpacket	1..1023 (fs), 1..3072 (hs/ss)
-+		streaming_interval	1..16
-+		===================	=============================
- 
- What:		/config/usb-gadget/gadget/functions/uvc.name/control
- Date:		Dec 2014
-@@ -13,8 +15,11 @@ KernelVersion:	4.0
- Description:	Control descriptors
- 
- 		All attributes read only:
--		bInterfaceNumber	- USB interface number for this
--					  streaming interface
-+
-+		================	=============================
-+		bInterfaceNumber	USB interface number for this
-+					streaming interface
-+		================	=============================
- 
- What:		/config/usb-gadget/gadget/functions/uvc.name/control/class
- Date:		Dec 2014
-@@ -47,13 +52,16 @@ KernelVersion:	4.0
- Description:	Default output terminal descriptors
- 
- 		All attributes read only:
--		iTerminal	- index of string descriptor
--		bSourceID 	- id of the terminal to which this terminal
-+
-+		==============	=============================================
-+		iTerminal	index of string descriptor
-+		bSourceID 	id of the terminal to which this terminal
+ 		==============	=============================================
+ 		iTerminal	index of string descriptor
+-		bSourceID 	id of the terminal to which this terminal
++		bSourceID	id of the terminal to which this terminal
  				is connected
--		bAssocTerminal	- id of the input terminal to which this output
-+		bAssocTerminal	id of the input terminal to which this output
+ 		bAssocTerminal	id of the input terminal to which this output
  				terminal is associated
--		wTerminalType	- terminal type
--		bTerminalID	- a non-zero id of this terminal
-+		wTerminalType	terminal type
-+		bTerminalID	a non-zero id of this terminal
-+		==============	=============================================
+diff --git a/Documentation/ABI/testing/debugfs-cec-error-inj b/Documentation/ABI/testing/debugfs-cec-error-inj
+index 5afcd78fbdb7..8debcb08a3b5 100644
+--- a/Documentation/ABI/testing/debugfs-cec-error-inj
++++ b/Documentation/ABI/testing/debugfs-cec-error-inj
+@@ -23,7 +23,7 @@ error injections without having to know the details of the driver-specific
+ commands.
  
- What:		/config/usb-gadget/gadget/functions/uvc.name/control/terminal/camera
- Date:		Dec 2014
-@@ -66,16 +74,19 @@ KernelVersion:	4.0
- Description:	Default camera terminal descriptors
+ Note that the output of 'error-inj' shall be valid as input to 'error-inj'.
+-So this must work:
++So this must work::
  
- 		All attributes read only:
--		bmControls		- bitmap specifying which controls are
--					supported for the video stream
--		wOcularFocalLength	- the value of Locular
--		wObjectiveFocalLengthMax- the value of Lmin
--		wObjectiveFocalLengthMin- the value of Lmax
--		iTerminal		- index of string descriptor
--		bAssocTerminal		- id of the output terminal to which
--					this terminal is connected
--		wTerminalType		- terminal type
--		bTerminalID		- a non-zero id of this terminal
+ 	$ cat error-inj >einj.txt
+ 	$ cat einj.txt >error-inj
+diff --git a/Documentation/ABI/testing/debugfs-driver-habanalabs b/Documentation/ABI/testing/debugfs-driver-habanalabs
+index 2e9ae311e02d..c5d678d39144 100644
+--- a/Documentation/ABI/testing/debugfs-driver-habanalabs
++++ b/Documentation/ABI/testing/debugfs-driver-habanalabs
+@@ -20,9 +20,13 @@ Description:    Allow the root user to disable/enable in runtime the clock
+                 The user can supply a bitmask value, each bit represents
+                 a different engine to disable/enable its clock gating feature.
+                 The bitmask is composed of 20 bits:
+-                0  -  7 : DMA channels
+-                8  - 11 : MME engines
+-                12 - 19 : TPC engines
 +
-+		========================  ====================================
-+		bmControls		  bitmap specifying which controls are
-+					  supported for the video stream
-+		wOcularFocalLength	  the value of Locular
-+		wObjectiveFocalLengthMax  the value of Lmin
-+		wObjectiveFocalLengthMin  the value of Lmax
-+		iTerminal		  index of string descriptor
-+		bAssocTerminal		  id of the output terminal to which
-+					  this terminal is connected
-+		wTerminalType		  terminal type
-+		bTerminalID		  a non-zero id of this terminal
-+		========================  ====================================
- 
- What:		/config/usb-gadget/gadget/functions/uvc.name/control/processing
- Date:		Dec 2014
-@@ -88,13 +99,16 @@ KernelVersion:	4.0
- Description:	Default processing unit descriptors
- 
- 		All attributes read only:
--		iProcessing	- index of string descriptor
--		bmControls	- bitmap specifying which controls are
++		=======   ============
++                0  -  7   DMA channels
++                8  - 11   MME engines
++                12 - 19   TPC engines
++		=======   ============
 +
-+		===============	========================================
-+		iProcessing	index of string descriptor
-+		bmControls	bitmap specifying which controls are
- 				supported for the video stream
--		wMaxMultiplier	- maximum digital magnification x100
--		bSourceID	- id of the terminal to which this unit is
-+		wMaxMultiplier	maximum digital magnification x100
-+		bSourceID	id of the terminal to which this unit is
- 				connected
--		bUnitID		- a non-zero id of this unit
-+		bUnitID		a non-zero id of this unit
-+		===============	========================================
- 
- What:		/config/usb-gadget/gadget/functions/uvc.name/control/header
- Date:		Dec 2014
-@@ -114,8 +128,11 @@ KernelVersion:	4.0
- Description:	Streaming descriptors
- 
- 		All attributes read only:
--		bInterfaceNumber	- USB interface number for this
--					  streaming interface
+                 The bit's location of a specific engine can be determined
+                 using (1 << GAUDI_ENGINE_ID_*). GAUDI_ENGINE_ID_* values
+                 are defined in uapi habanalabs.h file in enum gaudi_engine_id
+@@ -59,6 +63,7 @@ Description:    Allows the root user to read or write directly through the
+                 the generic Linux user-space PCI mapping) because the DDR bar
+                 is very small compared to the DDR memory and only the driver can
+                 move the bar before and after the transaction.
 +
-+		================	=============================
-+		bInterfaceNumber	USB interface number for this
-+					streaming interface
-+		================	=============================
+                 If the IOMMU is disabled, it also allows the root user to read
+                 or write from the host a device VA of a host mapped memory
  
- What:		/config/usb-gadget/gadget/functions/uvc.name/streaming/class
- Date:		Dec 2014
-@@ -148,13 +165,16 @@ KernelVersion:	4.0
- Description:	Default color matching descriptors
- 
- 		All attributes read only:
--		bMatrixCoefficients	- matrix used to compute luma and
--					chroma values from the color primaries
--		bTransferCharacteristics- optoelectronic transfer
--					characteristic of the source picutre,
--					also called the gamma function
--		bColorPrimaries		- color primaries and the reference
--					white
+@@ -73,6 +78,7 @@ Description:    Allows the root user to read or write 64 bit data directly
+                 the generic Linux user-space PCI mapping) because the DDR bar
+                 is very small compared to the DDR memory and only the driver can
+                 move the bar before and after the transaction.
 +
-+		========================  ======================================
-+		bMatrixCoefficients	  matrix used to compute luma and
-+					  chroma values from the color primaries
-+		bTransferCharacteristics  optoelectronic transfer
-+					  characteristic of the source picutre,
-+					  also called the gamma function
-+		bColorPrimaries		  color primaries and the reference
-+					  white
-+		========================  ======================================
+                 If the IOMMU is disabled, it also allows the root user to read
+                 or write from the host a device VA of a host mapped memory
  
- What:		/config/usb-gadget/gadget/functions/uvc.name/streaming/mjpeg
- Date:		Dec 2014
-@@ -168,47 +188,52 @@ Description:	Specific MJPEG format descriptors
- 
- 		All attributes read only,
- 		except bmaControls and bDefaultFrameIndex:
--		bFormatIndex		- unique id for this format descriptor;
-+
-+		===================	=====================================
-+		bFormatIndex		unique id for this format descriptor;
- 					only defined after parent header is
- 					linked into the streaming class;
- 					read-only
--		bmaControls		- this format's data for bmaControls in
-+		bmaControls		this format's data for bmaControls in
- 					the streaming header
--		bmInterfaceFlags	- specifies interlace information,
-+		bmInterfaceFlags	specifies interlace information,
- 					read-only
--		bAspectRatioY		- the X dimension of the picture aspect
-+		bAspectRatioY		the X dimension of the picture aspect
- 					ratio, read-only
--		bAspectRatioX		- the Y dimension of the picture aspect
-+		bAspectRatioX		the Y dimension of the picture aspect
- 					ratio, read-only
--		bmFlags			- characteristics of this format,
-+		bmFlags			characteristics of this format,
- 					read-only
--		bDefaultFrameIndex	- optimum frame index for this stream
-+		bDefaultFrameIndex	optimum frame index for this stream
-+		===================	=====================================
- 
- What:		/config/usb-gadget/gadget/functions/uvc.name/streaming/mjpeg/name/name
- Date:		Dec 2014
- KernelVersion:	4.0
- Description:	Specific MJPEG frame descriptors
- 
--		bFrameIndex		- unique id for this framedescriptor;
--					only defined after parent format is
--					linked into the streaming header;
--					read-only
--		dwFrameInterval		- indicates how frame interval can be
--					programmed; a number of values
--					separated by newline can be specified
--		dwDefaultFrameInterval	- the frame interval the device would
--					like to use as default
--		dwMaxVideoFrameBufferSize- the maximum number of bytes the
--					compressor will produce for a video
--					frame or still image
--		dwMaxBitRate		- the maximum bit rate at the shortest
--					frame interval in bps
--		dwMinBitRate		- the minimum bit rate at the longest
--					frame interval in bps
--		wHeight			- height of decoded bitmap frame in px
--		wWidth			- width of decoded bitmam frame in px
--		bmCapabilities		- still image support, fixed frame-rate
--					support
-+		=========================  =====================================
-+		bFrameIndex		   unique id for this framedescriptor;
-+					   only defined after parent format is
-+					   linked into the streaming header;
-+					   read-only
-+		dwFrameInterval		   indicates how frame interval can be
-+					   programmed; a number of values
-+					   separated by newline can be specified
-+		dwDefaultFrameInterval	   the frame interval the device would
-+					   like to use as default
-+		dwMaxVideoFrameBufferSize  the maximum number of bytes the
-+					   compressor will produce for a video
-+					   frame or still image
-+		dwMaxBitRate		   the maximum bit rate at the shortest
-+					   frame interval in bps
-+		dwMinBitRate		   the minimum bit rate at the longest
-+					   frame interval in bps
-+		wHeight			   height of decoded bitmap frame in px
-+		wWidth			   width of decoded bitmam frame in px
-+		bmCapabilities		   still image support, fixed frame-rate
-+					   support
-+		=========================  =====================================
- 
- What:		/config/usb-gadget/gadget/functions/uvc.name/streaming/uncompressed
- Date:		Dec 2014
-@@ -220,50 +245,54 @@ Date:		Dec 2014
- KernelVersion:	4.0
- Description:	Specific uncompressed format descriptors
- 
--		bFormatIndex		- unique id for this format descriptor;
-+		==================	=======================================
-+		bFormatIndex		unique id for this format descriptor;
- 					only defined after parent header is
- 					linked into the streaming class;
- 					read-only
--		bmaControls		- this format's data for bmaControls in
-+		bmaControls		this format's data for bmaControls in
- 					the streaming header
--		bmInterfaceFlags	- specifies interlace information,
-+		bmInterfaceFlags	specifies interlace information,
- 					read-only
--		bAspectRatioY		- the X dimension of the picture aspect
-+		bAspectRatioY		the X dimension of the picture aspect
- 					ratio, read-only
--		bAspectRatioX		- the Y dimension of the picture aspect
-+		bAspectRatioX		the Y dimension of the picture aspect
- 					ratio, read-only
--		bDefaultFrameIndex	- optimum frame index for this stream
--		bBitsPerPixel		- number of bits per pixel used to
-+		bDefaultFrameIndex	optimum frame index for this stream
-+		bBitsPerPixel		number of bits per pixel used to
- 					specify color in the decoded video
- 					frame
--		guidFormat		- globally unique id used to identify
-+		guidFormat		globally unique id used to identify
- 					stream-encoding format
-+		==================	=======================================
- 
- What:		/config/usb-gadget/gadget/functions/uvc.name/streaming/uncompressed/name/name
- Date:		Dec 2014
- KernelVersion:	4.0
- Description:	Specific uncompressed frame descriptors
- 
--		bFrameIndex		- unique id for this framedescriptor;
--					only defined after parent format is
--					linked into the streaming header;
--					read-only
--		dwFrameInterval		- indicates how frame interval can be
--					programmed; a number of values
--					separated by newline can be specified
--		dwDefaultFrameInterval	- the frame interval the device would
--					like to use as default
--		dwMaxVideoFrameBufferSize- the maximum number of bytes the
--					compressor will produce for a video
--					frame or still image
--		dwMaxBitRate		- the maximum bit rate at the shortest
--					frame interval in bps
--		dwMinBitRate		- the minimum bit rate at the longest
--					frame interval in bps
--		wHeight			- height of decoded bitmap frame in px
--		wWidth			- width of decoded bitmam frame in px
--		bmCapabilities		- still image support, fixed frame-rate
--					support
-+		=========================  =====================================
-+		bFrameIndex		   unique id for this framedescriptor;
-+					   only defined after parent format is
-+					   linked into the streaming header;
-+					   read-only
-+		dwFrameInterval		   indicates how frame interval can be
-+					   programmed; a number of values
-+					   separated by newline can be specified
-+		dwDefaultFrameInterval	   the frame interval the device would
-+					   like to use as default
-+		dwMaxVideoFrameBufferSize  the maximum number of bytes the
-+					   compressor will produce for a video
-+					   frame or still image
-+		dwMaxBitRate		   the maximum bit rate at the shortest
-+					   frame interval in bps
-+		dwMinBitRate		   the minimum bit rate at the longest
-+					   frame interval in bps
-+		wHeight			   height of decoded bitmap frame in px
-+		wWidth			   width of decoded bitmam frame in px
-+		bmCapabilities		   still image support, fixed frame-rate
-+					   support
-+		=========================  =====================================
- 
- What:		/config/usb-gadget/gadget/functions/uvc.name/streaming/header
- Date:		Dec 2014
-@@ -276,17 +305,20 @@ KernelVersion:	4.0
- Description:	Specific streaming header descriptors
- 
- 		All attributes read only:
--		bTriggerUsage		- how the host software will respond to
-+
-+		====================	=====================================
-+		bTriggerUsage		how the host software will respond to
- 					a hardware trigger interrupt event
--		bTriggerSupport		- flag specifying if hardware
-+		bTriggerSupport		flag specifying if hardware
- 					triggering is supported
--		bStillCaptureMethod	- method of still image caputre
-+		bStillCaptureMethod	method of still image caputre
- 					supported
--		bTerminalLink		- id of the output terminal to which
-+		bTerminalLink		id of the output terminal to which
- 					the video endpoint of this interface
- 					is connected
--		bmInfo			- capabilities of this video streaming
-+		bmInfo			capabilities of this video streaming
- 					interface
-+		====================	=====================================
- 
- What:		/sys/class/udc/udc.name/device/gadget/video4linux/video.name/function_name
- Date:		May 2018
-diff --git a/Documentation/ABI/testing/debugfs-ec b/Documentation/ABI/testing/debugfs-ec
-index 6546115a94da..ab6099daa8f5 100644
---- a/Documentation/ABI/testing/debugfs-ec
-+++ b/Documentation/ABI/testing/debugfs-ec
-@@ -6,7 +6,7 @@ Description:
- General information like which GPE is assigned to the EC and whether
- the global lock should get used.
- Knowing the EC GPE one can watch the amount of HW events related to
--the EC here (XY -> GPE number from /sys/kernel/debug/ec/*/gpe):
-+the EC here (XY -> GPE number from `/sys/kernel/debug/ec/*/gpe`):
- /sys/firmware/acpi/interrupts/gpeXY
- 
- The io file is binary and a userspace tool located here:
-@@ -14,7 +14,8 @@ ftp://ftp.suse.com/pub/people/trenn/sources/ec/
- should get used to read out the 256 Embedded Controller registers
- or writing to them.
- 
--CAUTION: Do not write to the Embedded Controller if you don't know
--what you are doing! Rebooting afterwards also is a good idea.
--This can influence the way your machine is cooled and fans may
--not get switched on again after you did a wrong write.
-+CAUTION:
-+  Do not write to the Embedded Controller if you don't know
-+  what you are doing! Rebooting afterwards also is a good idea.
-+  This can influence the way your machine is cooled and fans may
-+  not get switched on again after you did a wrong write.
-diff --git a/Documentation/ABI/testing/debugfs-pktcdvd b/Documentation/ABI/testing/debugfs-pktcdvd
-index cf11736acb76..787907d70462 100644
---- a/Documentation/ABI/testing/debugfs-pktcdvd
-+++ b/Documentation/ABI/testing/debugfs-pktcdvd
-@@ -4,16 +4,15 @@ KernelVersion:  2.6.20
- Contact:        Thomas Maier <balagi@justmail.de>
+diff --git a/Documentation/ABI/testing/debugfs-pfo-nx-crypto b/Documentation/ABI/testing/debugfs-pfo-nx-crypto
+index 685d5a448423..f75a655c1531 100644
+--- a/Documentation/ABI/testing/debugfs-pfo-nx-crypto
++++ b/Documentation/ABI/testing/debugfs-pfo-nx-crypto
+@@ -4,42 +4,42 @@ KernelVersion:	3.4
+ Contact:	Kent Yoder <key@linux.vnet.ibm.com>
  Description:
  
--debugfs interface
-------------------
--
- The pktcdvd module (packet writing driver) creates
- these files in debugfs:
+-  These debugfs interfaces are built by the nx-crypto driver, built in
++These debugfs interfaces are built by the nx-crypto driver, built in
+ arch/powerpc/crypto/nx.
  
+ Error Detection
+ ===============
+ 
+ errors:
+-- A u32 providing a total count of errors since the driver was loaded. The
+-only errors counted here are those returned from the hcall, H_COP_OP.
++  A u32 providing a total count of errors since the driver was loaded. The
++  only errors counted here are those returned from the hcall, H_COP_OP.
+ 
+ last_error:
+-- The most recent non-zero return code from the H_COP_OP hcall. -EBUSY is not
+-recorded here (the hcall will retry until -EBUSY goes away).
++  The most recent non-zero return code from the H_COP_OP hcall. -EBUSY is not
++  recorded here (the hcall will retry until -EBUSY goes away).
+ 
+ last_error_pid:
+-- The process ID of the process who received the most recent error from the
+-hcall.
++  The process ID of the process who received the most recent error from the
++  hcall.
+ 
+ Device Use
+ ==========
+ 
+ aes_bytes:
+-- The total number of bytes encrypted using AES in any of the driver's
+-supported modes.
++  The total number of bytes encrypted using AES in any of the driver's
++  supported modes.
+ 
+ aes_ops:
+-- The total number of AES operations submitted to the hardware.
++  The total number of AES operations submitted to the hardware.
+ 
+ sha256_bytes:
+-- The total number of bytes hashed by the hardware using SHA-256.
++  The total number of bytes hashed by the hardware using SHA-256.
+ 
+ sha256_ops:
+-- The total number of SHA-256 operations submitted to the hardware.
++  The total number of SHA-256 operations submitted to the hardware.
+ 
+ sha512_bytes:
+-- The total number of bytes hashed by the hardware using SHA-512.
++  The total number of bytes hashed by the hardware using SHA-512.
+ 
+ sha512_ops:
+-- The total number of SHA-512 operations submitted to the hardware.
++  The total number of SHA-512 operations submitted to the hardware.
+diff --git a/Documentation/ABI/testing/debugfs-pktcdvd b/Documentation/ABI/testing/debugfs-pktcdvd
+index 787907d70462..f6f65a4faea0 100644
+--- a/Documentation/ABI/testing/debugfs-pktcdvd
++++ b/Documentation/ABI/testing/debugfs-pktcdvd
+@@ -10,7 +10,7 @@ these files in debugfs:
  /sys/kernel/debug/pktcdvd/pktcdvd[0-7]/
+ 
+     ====            ====== ====================================
+-    info            (0444) Lots of driver statistics and infos.
++    info            0444   Lots of driver statistics and infos.
+     ====            ====== ====================================
+ 
+ Example::
+diff --git a/Documentation/ABI/testing/debugfs-turris-mox-rwtm b/Documentation/ABI/testing/debugfs-turris-mox-rwtm
+index c8f7dadd591c..ad08f535af3b 100644
+--- a/Documentation/ABI/testing/debugfs-turris-mox-rwtm
++++ b/Documentation/ABI/testing/debugfs-turris-mox-rwtm
+@@ -2,10 +2,12 @@ What:		/sys/kernel/debug/turris-mox-rwtm/do_sign
+ Date:		Jun 2020
+ KernelVersion:	5.8
+ Contact:	Marek Behún <marek.behun@nic.cz>
+-Description:	(W)
+-		    Message to sign with the ECDSA private key stored in
++Description:
 +
-+    ====            ====== ====================================
-     info            (0444) Lots of driver statistics and infos.
-+    ====            ====== ====================================
- 
--Example:
---------
-+Example::
- 
--cat /sys/kernel/debug/pktcdvd/pktcdvd0/info
-+    cat /sys/kernel/debug/pktcdvd/pktcdvd0/info
-diff --git a/Documentation/ABI/testing/dev-kmsg b/Documentation/ABI/testing/dev-kmsg
-index 3c0bb76e3417..a377b6c093c9 100644
---- a/Documentation/ABI/testing/dev-kmsg
-+++ b/Documentation/ABI/testing/dev-kmsg
-@@ -6,6 +6,7 @@ Description:	The /dev/kmsg character device node provides userspace access
- 		to the kernel's printk buffer.
- 
- 		Injecting messages:
-+
- 		Every write() to the opened device node places a log entry in
- 		the kernel's printk buffer.
- 
-@@ -21,6 +22,7 @@ Description:	The /dev/kmsg character device node provides userspace access
- 		the messages can always be reliably determined.
- 
- 		Accessing the buffer:
-+
- 		Every read() from the opened device node receives one record
- 		of the kernel's printk buffer.
- 
-@@ -48,6 +50,7 @@ Description:	The /dev/kmsg character device node provides userspace access
- 		if needed, without limiting the interface to a single reader.
- 
- 		The device supports seek with the following parameters:
-+
- 		SEEK_SET, 0
- 		  seek to the first entry in the buffer
- 		SEEK_END, 0
-@@ -87,18 +90,22 @@ Description:	The /dev/kmsg character device node provides userspace access
- 		readable context of the message, for reliable processing in
- 		userspace.
++		=== ===========================================================
++		(W) Message to sign with the ECDSA private key stored in
+ 		    device's OTP. The message must be exactly 64 bytes (since
+ 		    this is intended for SHA-512 hashes).
+-		(R)
+-		    The resulting signature, 136 bytes. This contains the R and
++		(R) The resulting signature, 136 bytes. This contains the R and
+ 		    S values of the ECDSA signature, both in big-endian format.
++		=== ===========================================================
+diff --git a/Documentation/ABI/testing/debugfs-wilco-ec b/Documentation/ABI/testing/debugfs-wilco-ec
+index 9d8d9d2def5b..682e3c09ef4d 100644
+--- a/Documentation/ABI/testing/debugfs-wilco-ec
++++ b/Documentation/ABI/testing/debugfs-wilco-ec
+@@ -27,16 +27,17 @@ Description:
+ 		for writing, two for the type and at least a single byte of
+ 		data.
  
 -		Example:
--		7,160,424069,-;pci_root PNP0A03:00: host bridge window [io  0x0000-0x0cf7] (ignored)
--		 SUBSYSTEM=acpi
--		 DEVICE=+acpi:PNP0A03:00
--		6,339,5140900,-;NET: Registered protocol family 10
--		30,340,5690716,-;udevd[80]: starting version 181
+-		// Request EC info type 3 (EC firmware build date)
+-		// Corresponds with sending type 0x00f0 with
+-		// MBOX = [38, 00, 03, 00]
+-		$ echo 00 f0 38 00 03 00 > /sys/kernel/debug/wilco_ec/raw
+-		// View the result. The decoded ASCII result "12/21/18" is
+-		// included after the raw hex.
+-		// Corresponds with MBOX = [00, 00, 31, 32, 2f, 32, 31, 38, ...]
+-		$ cat /sys/kernel/debug/wilco_ec/raw
+-		00 00 31 32 2f 32 31 2f 31 38 00 38 00 01 00 2f 00  ..12/21/18.8...
 +		Example::
 +
-+		  7,160,424069,-;pci_root PNP0A03:00: host bridge window [io  0x0000-0x0cf7] (ignored)
-+		   SUBSYSTEM=acpi
-+		   DEVICE=+acpi:PNP0A03:00
-+		  6,339,5140900,-;NET: Registered protocol family 10
-+		  30,340,5690716,-;udevd[80]: starting version 181
++		    // Request EC info type 3 (EC firmware build date)
++		    // Corresponds with sending type 0x00f0 with
++		    // MBOX = [38, 00, 03, 00]
++		    $ echo 00 f0 38 00 03 00 > /sys/kernel/debug/wilco_ec/raw
++		    // View the result. The decoded ASCII result "12/21/18" is
++		    // included after the raw hex.
++		    // Corresponds with MBOX = [00, 00, 31, 32, 2f, 32, 31, 38, ...]
++		    $ cat /sys/kernel/debug/wilco_ec/raw
++		    00 00 31 32 2f 32 31 2f 31 38 00 38 00 01 00 2f 00  ..12/21/18.8...
  
- 		The DEVICE= key uniquely identifies devices the following way:
--		  b12:8        - block dev_t
--		  c127:3       - char dev_t
--		  n8           - netdev ifindex
--		  +sound:card0 - subsystem:devname
+ 		Note that the first 16 bytes of the received MBOX[] will be
+ 		printed, even if some of the data is junk, and skipping bytes
+diff --git a/Documentation/ABI/testing/dell-smbios-wmi b/Documentation/ABI/testing/dell-smbios-wmi
+index fc919ce16008..5f3a0dc67050 100644
+--- a/Documentation/ABI/testing/dell-smbios-wmi
++++ b/Documentation/ABI/testing/dell-smbios-wmi
+@@ -10,29 +10,29 @@ Description:
+ 		<uapi/linux/wmi.h>
+ 
+ 		1) To perform an SMBIOS call from userspace, you'll need to
+-		first determine the minimum size of the calling interface
+-		buffer for your machine.
+-		Platforms that contain larger buffers can return larger
+-		objects from the system firmware.
+-		Commonly this size is either 4k or 32k.
++		   first determine the minimum size of the calling interface
++		   buffer for your machine.
++		   Platforms that contain larger buffers can return larger
++		   objects from the system firmware.
++		   Commonly this size is either 4k or 32k.
+ 
+-		To determine the size of the buffer read() a u64 dword from
+-		the WMI character device /dev/wmi/dell-smbios.
++		   To determine the size of the buffer read() a u64 dword from
++		   the WMI character device /dev/wmi/dell-smbios.
+ 
+ 		2) After you've determined the minimum size of the calling
+-		interface buffer, you can allocate a structure that represents
+-		the structure documented above.
++		   interface buffer, you can allocate a structure that represents
++		   the structure documented above.
+ 
+ 		3) In the 'length' object store the size of the buffer you
+-		determined above and allocated.
++		   determined above and allocated.
+ 
+ 		4) In this buffer object, prepare as necessary for the SMBIOS
+-		call you're interested in.  Typically SMBIOS buffers have
+-		"class", "select", and "input" defined to values that coincide
+-		with the data you are interested in.
+-		Documenting class/select/input values is outside of the scope
+-		of this documentation. Check with the libsmbios project for
+-		further documentation on these values.
++		   call you're interested in.  Typically SMBIOS buffers have
++		   "class", "select", and "input" defined to values that coincide
++		   with the data you are interested in.
++		   Documenting class/select/input values is outside of the scope
++		   of this documentation. Check with the libsmbios project for
++		   further documentation on these values.
+ 
+ 		6) Run the call by using ioctl() as described in the header.
+ 
+diff --git a/Documentation/ABI/testing/gpio-cdev b/Documentation/ABI/testing/gpio-cdev
+index 7b265fbb47e3..66bdcd188b6c 100644
+--- a/Documentation/ABI/testing/gpio-cdev
++++ b/Documentation/ABI/testing/gpio-cdev
+@@ -12,15 +12,16 @@ Description:
+ 		The following file operations are supported:
+ 
+ 		open(2)
+-		Currently the only useful flags are O_RDWR.
++		  Currently the only useful flags are O_RDWR.
+ 
+ 		ioctl(2)
+-		Initiate various actions.
+-		See the inline documentation in [include/uapi]<linux/gpio.h>
+-		for descriptions of all ioctls.
++		  Initiate various actions.
 +
-+		  ============  =================
-+		  b12:8         block dev_t
-+		  c127:3        char dev_t
-+		  n8            netdev ifindex
-+		  +sound:card0  subsystem:devname
-+		  ============  =================
++		  See the inline documentation in [include/uapi]<linux/gpio.h>
++		  for descriptions of all ioctls.
  
- 		The flags field carries '-' by default. A 'c' indicates a
- 		fragment of a line. Note, that these hints about continuation
-diff --git a/Documentation/ABI/testing/evm b/Documentation/ABI/testing/evm
-index 201d10319fa1..3c477ba48a31 100644
---- a/Documentation/ABI/testing/evm
-+++ b/Documentation/ABI/testing/evm
-@@ -17,26 +17,33 @@ Description:
- 		echoing a value to <securityfs>/evm made up of the
- 		following bits:
+ 		close(2)
+-		Stops and free up the I/O contexts that was associated
+-		with the file descriptor.
++		  Stops and free up the I/O contexts that was associated
++		  with the file descriptor.
  
-+		===	  ==================================================
- 		Bit	  Effect
-+		===	  ==================================================
- 		0	  Enable HMAC validation and creation
- 		1	  Enable digital signature validation
- 		2	  Permit modification of EVM-protected metadata at
- 			  runtime. Not supported if HMAC validation and
- 			  creation is enabled.
- 		31	  Disable further runtime modification of EVM policy
-+		===	  ==================================================
- 
--		For example:
-+		For example::
- 
--		echo 1 ><securityfs>/evm
-+		  echo 1 ><securityfs>/evm
- 
- 		will enable HMAC validation and creation
- 
--		echo 0x80000003 ><securityfs>/evm
-+		::
-+
-+		  echo 0x80000003 ><securityfs>/evm
- 
- 		will enable HMAC and digital signature validation and
- 		HMAC creation and disable all further modification of policy.
- 
--		echo 0x80000006 ><securityfs>/evm
-+		::
-+
-+		  echo 0x80000006 ><securityfs>/evm
- 
- 		will enable digital signature validation, permit
- 		modification of EVM-protected metadata and
-@@ -65,7 +72,7 @@ Description:
- 		Shows the set of extended attributes used to calculate or
- 		validate the EVM signature, and allows additional attributes
- 		to be added at runtime. Any signatures generated after
--		additional attributes are added (and on files posessing those
-+		additional attributes are added (and on files possessing those
- 		additional attributes) will only be valid if the same
- 		additional attributes are configured on system boot. Writing
- 		a single period (.) will lock the xattr list from any further
-diff --git a/Documentation/ABI/testing/ima_policy b/Documentation/ABI/testing/ima_policy
-index cd572912c593..e35263f97fc1 100644
---- a/Documentation/ABI/testing/ima_policy
-+++ b/Documentation/ABI/testing/ima_policy
-@@ -15,19 +15,22 @@ Description:
- 		IMA appraisal, if configured, uses these file measurements
- 		for local measurement appraisal.
- 
--		rule format: action [condition ...]
-+		::
- 
--		action: measure | dont_measure | appraise | dont_appraise |
--			audit | hash | dont_hash
--		condition:= base | lsm  [option]
-+		  rule format: action [condition ...]
-+
-+		  action: measure | dont_measure | appraise | dont_appraise |
-+			  audit | hash | dont_hash
-+		  condition:= base | lsm  [option]
- 			base:	[[func=] [mask=] [fsmagic=] [fsuuid=] [uid=]
- 				[euid=] [fowner=] [fsname=]]
- 			lsm:	[[subj_user=] [subj_role=] [subj_type=]
- 				 [obj_user=] [obj_role=] [obj_type=]]
- 			option:	[[appraise_type=]] [template=] [permit_directio]
- 				[appraise_flag=] [keyrings=]
--		base: 	func:= [BPRM_CHECK][MMAP_CHECK][CREDS_CHECK][FILE_CHECK][MODULE_CHECK]
--				[FIRMWARE_CHECK]
-+		  base:
-+			func:= [BPRM_CHECK][MMAP_CHECK][CREDS_CHECK][FILE_CHECK]MODULE_CHECK]
-+			        [FIRMWARE_CHECK]
- 				[KEXEC_KERNEL_CHECK] [KEXEC_INITRAMFS_CHECK]
- 				[KEXEC_CMDLINE] [KEY_CHECK]
- 			mask:= [[^]MAY_READ] [[^]MAY_WRITE] [[^]MAY_APPEND]
-@@ -37,8 +40,9 @@ Description:
- 			uid:= decimal value
- 			euid:= decimal value
- 			fowner:= decimal value
--		lsm:  	are LSM specific
--		option:	appraise_type:= [imasig] [imasig|modsig]
-+		  lsm:  are LSM specific
-+		  option:
-+			appraise_type:= [imasig] [imasig|modsig]
- 			appraise_flag:= [check_blacklist]
- 			Currently, blacklist check is only for files signed with appended
- 			signature.
-@@ -49,7 +53,7 @@ Description:
- 			(eg, ima-ng). Only valid when action is "measure".
- 			pcr:= decimal value
- 
--		default policy:
-+		  default policy:
- 			# PROC_SUPER_MAGIC
- 			dont_measure fsmagic=0x9fa0
- 			dont_appraise fsmagic=0x9fa0
-@@ -97,7 +101,8 @@ Description:
- 
- 		Examples of LSM specific definitions:
- 
--		SELinux:
-+		SELinux::
-+
- 			dont_measure obj_type=var_log_t
- 			dont_appraise obj_type=var_log_t
- 			dont_measure obj_type=auditd_log_t
-@@ -105,10 +110,11 @@ Description:
- 			measure subj_user=system_u func=FILE_CHECK mask=MAY_READ
- 			measure subj_role=system_r func=FILE_CHECK mask=MAY_READ
- 
--		Smack:
-+		Smack::
-+
- 			measure subj_user=_ func=FILE_CHECK mask=MAY_READ
- 
--		Example of measure rules using alternate PCRs:
-+		Example of measure rules using alternate PCRs::
- 
- 			measure func=KEXEC_KERNEL_CHECK pcr=4
- 			measure func=KEXEC_INITRAMFS_CHECK pcr=5
+ Users:		TBD
 diff --git a/Documentation/ABI/testing/procfs-diskstats b/Documentation/ABI/testing/procfs-diskstats
-index 70dcaf2481f4..df5a3a8c1edf 100644
+index df5a3a8c1edf..e58d641443d3 100644
 --- a/Documentation/ABI/testing/procfs-diskstats
 +++ b/Documentation/ABI/testing/procfs-diskstats
-@@ -6,28 +6,32 @@ Description:
- 		of block devices. Each line contains the following 14
- 		fields:
- 
--		 1 - major number
--		 2 - minor mumber
--		 3 - device name
--		 4 - reads completed successfully
--		 5 - reads merged
--		 6 - sectors read
--		 7 - time spent reading (ms)
--		 8 - writes completed
--		 9 - writes merged
--		10 - sectors written
--		11 - time spent writing (ms)
--		12 - I/Os currently in progress
--		13 - time spent doing I/Os (ms)
--		14 - weighted time spent doing I/Os (ms)
-+		==  ===================================
-+		 1  major number
-+		 2  minor mumber
-+		 3  device name
-+		 4  reads completed successfully
-+		 5  reads merged
-+		 6  sectors read
-+		 7  time spent reading (ms)
-+		 8  writes completed
-+		 9  writes merged
-+		10  sectors written
-+		11  time spent writing (ms)
-+		12  I/Os currently in progress
-+		13  time spent doing I/Os (ms)
-+		14  weighted time spent doing I/Os (ms)
-+		==  ===================================
- 
- 		Kernel 4.18+ appends four more fields for discard
- 		tracking putting the total at 18:
- 
--		15 - discards completed successfully
--		16 - discards merged
--		17 - sectors discarded
--		18 - time spent discarding
-+		==  ===================================
-+		15  discards completed successfully
-+		16  discards merged
-+		17  sectors discarded
-+		18  time spent discarding
-+		==  ===================================
+@@ -35,7 +35,9 @@ Description:
  
  		Kernel 5.5+ appends two more fields for flush requests:
  
-diff --git a/Documentation/ABI/testing/sysfs-block b/Documentation/ABI/testing/sysfs-block
-index 2322eb748b38..e34cdeeeb9d4 100644
---- a/Documentation/ABI/testing/sysfs-block
-+++ b/Documentation/ABI/testing/sysfs-block
-@@ -4,23 +4,27 @@ Contact:	Jerome Marchand <jmarchan@redhat.com>
- Description:
- 		The /sys/block/<disk>/stat files displays the I/O
- 		statistics of disk <disk>. They contain 11 fields:
--		 1 - reads completed successfully
--		 2 - reads merged
--		 3 - sectors read
--		 4 - time spent reading (ms)
--		 5 - writes completed
--		 6 - writes merged
--		 7 - sectors written
--		 8 - time spent writing (ms)
--		 9 - I/Os currently in progress
--		10 - time spent doing I/Os (ms)
--		11 - weighted time spent doing I/Os (ms)
--		12 - discards completed
--		13 - discards merged
--		14 - sectors discarded
--		15 - time spent discarding (ms)
--		16 - flush requests completed
--		17 - time spent flushing (ms)
-+
-+		==  ==============================================
-+		 1  reads completed successfully
-+		 2  reads merged
-+		 3  sectors read
-+		 4  time spent reading (ms)
-+		 5  writes completed
-+		 6  writes merged
-+		 7  sectors written
-+		 8  time spent writing (ms)
-+		 9  I/Os currently in progress
-+		10  time spent doing I/Os (ms)
-+		11  weighted time spent doing I/Os (ms)
-+		12  discards completed
-+		13  discards merged
-+		14  sectors discarded
-+		15  time spent discarding (ms)
-+		16  flush requests completed
-+		17  time spent flushing (ms)
-+		==  ==============================================
-+
- 		For more details refer Documentation/admin-guide/iostats.rst
+-		19 - flush requests completed successfully
+-		20 - time spent flushing
++		==  =====================================
++		19  flush requests completed successfully
++		20  time spent flushing
++		==  =====================================
  
+ 		For more details refer to Documentation/admin-guide/iostats.rst
+diff --git a/Documentation/ABI/testing/procfs-smaps_rollup b/Documentation/ABI/testing/procfs-smaps_rollup
+index 046978193368..a4e31c465194 100644
+--- a/Documentation/ABI/testing/procfs-smaps_rollup
++++ b/Documentation/ABI/testing/procfs-smaps_rollup
+@@ -14,28 +14,28 @@ Description:
+ 		For more details, see Documentation/filesystems/proc.rst
+ 		and the procfs man page.
  
-diff --git a/Documentation/ABI/testing/sysfs-block-device b/Documentation/ABI/testing/sysfs-block-device
-index 17f2bc7dd261..aa0fb500e3c9 100644
---- a/Documentation/ABI/testing/sysfs-block-device
-+++ b/Documentation/ABI/testing/sysfs-block-device
-@@ -8,11 +8,13 @@ Description:
+-		Typical output looks like this:
++		Typical output looks like this::
  
- 		It has the following valid values:
+-		00100000-ff709000 ---p 00000000 00:00 0		 [rollup]
+-		Size:               1192 kB
+-		KernelPageSize:        4 kB
+-		MMUPageSize:           4 kB
+-		Rss:		     884 kB
+-		Pss:		     385 kB
+-		Pss_Anon:	     301 kB
+-		Pss_File:	      80 kB
+-		Pss_Shmem:	       4 kB
+-		Shared_Clean:	     696 kB
+-		Shared_Dirty:	       0 kB
+-		Private_Clean:	     120 kB
+-		Private_Dirty:	      68 kB
+-		Referenced:	     884 kB
+-		Anonymous:	      68 kB
+-		LazyFree:	       0 kB
+-		AnonHugePages:	       0 kB
+-		ShmemPmdMapped:	       0 kB
+-		Shared_Hugetlb:	       0 kB
+-		Private_Hugetlb:       0 kB
+-		Swap:		       0 kB
+-		SwapPss:	       0 kB
+-		Locked:		     385 kB
++			00100000-ff709000 ---p 00000000 00:00 0		 [rollup]
++			Size:               1192 kB
++			KernelPageSize:        4 kB
++			MMUPageSize:           4 kB
++			Rss:		     884 kB
++			Pss:		     385 kB
++			Pss_Anon:	     301 kB
++			Pss_File:	      80 kB
++			Pss_Shmem:	       4 kB
++			Shared_Clean:	     696 kB
++			Shared_Dirty:	       0 kB
++			Private_Clean:	     120 kB
++			Private_Dirty:	      68 kB
++			Referenced:	     884 kB
++			Anonymous:	      68 kB
++			LazyFree:	       0 kB
++			AnonHugePages:	       0 kB
++			ShmemPmdMapped:	       0 kB
++			Shared_Hugetlb:	       0 kB
++			Private_Hugetlb:       0 kB
++			Swap:		       0 kB
++			SwapPss:	       0 kB
++			Locked:		     385 kB
+diff --git a/Documentation/ABI/testing/pstore b/Documentation/ABI/testing/pstore
+index d45209abdb1b..5b02540781a2 100644
+--- a/Documentation/ABI/testing/pstore
++++ b/Documentation/ABI/testing/pstore
+@@ -9,25 +9,25 @@ Description:	Generic interface to platform dependent persistent storage.
+ 		provide a generic interface to show records captured in
+ 		the dying moments.  In the case of a panic the last part
+ 		of the console log is captured, but other interesting
+-		data can also be saved.
++		data can also be saved::
  
-+		==	========================================================
- 		0	OFF - the LED is not activated on activity
- 		1	BLINK_ON - the LED blinks on every 10ms when activity is
- 			detected.
- 		2	BLINK_OFF - the LED is on when idle, and blinks off
- 			every 10ms when activity is detected.
-+		==	========================================================
+-		# mount -t pstore -o kmsg_bytes=8000 - /sys/fs/pstore
++		    # mount -t pstore -o kmsg_bytes=8000 - /sys/fs/pstore
  
- 		Note that the user must turn sw_activity OFF it they wish to
- 		control the activity LED via the em_message file.
+-		$ ls -l /sys/fs/pstore/
+-		total 0
+-		-r--r--r-- 1 root root 7896 Nov 30 15:38 dmesg-erst-1
++		    $ ls -l /sys/fs/pstore/
++		    total 0
++		    -r--r--r-- 1 root root 7896 Nov 30 15:38 dmesg-erst-1
+ 
+ 		Different users of this interface will result in different
+ 		filename prefixes.  Currently two are defined:
+ 
+-		"dmesg"	- saved console log
+-		"mce"	- architecture dependent data from fatal h/w error
++		- "dmesg" - saved console log
++		- "mce"   - architecture dependent data from fatal h/w error
+ 
+ 		Once the information in a file has been read, removing
+ 		the file will signal to the underlying persistent storage
+-		device that it can reclaim the space for later re-use.
++		device that it can reclaim the space for later re-use::
+ 
+-		$ rm /sys/fs/pstore/dmesg-erst-1
++		    $ rm /sys/fs/pstore/dmesg-erst-1
+ 
+ 		The expectation is that all files in /sys/fs/pstore/
+ 		will be saved elsewhere and erased from persistent store
+@@ -44,4 +44,3 @@ Description:	Generic interface to platform dependent persistent storage.
+ 		backends are available, the preferred backend may be
+ 		set by passing the pstore.backend= argument to the kernel at
+ 		boot time.
+-
+diff --git a/Documentation/ABI/testing/sysfs-block-rnbd b/Documentation/ABI/testing/sysfs-block-rnbd
+index 8f070b47f361..14a6fe9422b3 100644
+--- a/Documentation/ABI/testing/sysfs-block-rnbd
++++ b/Documentation/ABI/testing/sysfs-block-rnbd
+@@ -9,9 +9,9 @@ Description:	To unmap a volume, "normal" or "force" has to be written to:
+ 		is using the device.  When "force" is used, the device is also unmapped
+ 		when device is in use.  All I/Os that are in progress will fail.
+ 
+-		Example:
++		Example::
+ 
+-		# echo "normal" > /sys/block/rnbd0/rnbd/unmap_device
++		  # echo "normal" > /sys/block/rnbd0/rnbd/unmap_device
+ 
+ What:		/sys/block/rnbd<N>/rnbd/state
+ Date:		Feb 2020
 diff --git a/Documentation/ABI/testing/sysfs-bus-acpi b/Documentation/ABI/testing/sysfs-bus-acpi
-index e7898cfe5fb1..c78603497b97 100644
+index c78603497b97..58abacf59b2a 100644
 --- a/Documentation/ABI/testing/sysfs-bus-acpi
 +++ b/Documentation/ABI/testing/sysfs-bus-acpi
-@@ -67,14 +67,16 @@ Description:
- 		The return value is a decimal integer representing the device's
- 		status bitmap:
- 
--		Bit [0] –  Set if the device is present.
--		Bit [1] –  Set if the device is enabled and decoding its
--		           resources.
--		Bit [2] –  Set if the device should be shown in the UI.
--		Bit [3] –  Set if the device is functioning properly (cleared if
--		           device failed its diagnostics).
--		Bit [4] –  Set if the battery is present.
--		Bits [31:5] –  Reserved (must be cleared)
-+		===========  ==================================================
-+		Bit [0]      Set if the device is present.
-+		Bit [1]      Set if the device is enabled and decoding its
-+		             resources.
-+		Bit [2]      Set if the device should be shown in the UI.
-+		Bit [3]      Set if the device is functioning properly (cleared
-+			     if device failed its diagnostics).
-+		Bit [4]      Set if the battery is present.
-+		Bits [31:5]  Reserved (must be cleared)
-+		===========  ==================================================
- 
- 		If bit [0] is clear, then bit 1 must also be clear (a device
- 		that is not present cannot be enabled).
-diff --git a/Documentation/ABI/testing/sysfs-bus-event_source-devices-format b/Documentation/ABI/testing/sysfs-bus-event_source-devices-format
-index 5bb793ec926c..df7ccc1b2fba 100644
---- a/Documentation/ABI/testing/sysfs-bus-event_source-devices-format
-+++ b/Documentation/ABI/testing/sysfs-bus-event_source-devices-format
-@@ -10,7 +10,8 @@ Description:
- 		name/value pairs.
- 
- 		Userspace must be prepared for the possibility that attributes
--		define overlapping bit ranges. For example:
-+		define overlapping bit ranges. For example::
+@@ -5,6 +5,7 @@ Description:
+ 		This attribute indicates the full path of ACPI namespace
+ 		object associated with the device object.  For example,
+ 		\_SB_.PCI0.
 +
- 			attr1 = 'config:0-23'
- 			attr2 = 'config:0-7'
- 			attr3 = 'config:12-35'
-diff --git a/Documentation/ABI/testing/sysfs-bus-i2c-devices-pca954x b/Documentation/ABI/testing/sysfs-bus-i2c-devices-pca954x
-index 0b0de8cd0d13..b6c69eb80ca4 100644
---- a/Documentation/ABI/testing/sysfs-bus-i2c-devices-pca954x
-+++ b/Documentation/ABI/testing/sysfs-bus-i2c-devices-pca954x
-@@ -6,15 +6,18 @@ Description:
- 		Value that exists only for mux devices that can be
- 		written to control the behaviour of the multiplexer on
- 		idle. Possible values:
--		-2 - disconnect on idle, i.e. deselect the last used
--		     channel, which is useful when there is a device
--		     with an address that conflicts with another
--		     device on another mux on the same parent bus.
--		-1 - leave the mux as-is, which is the most optimal
--		     setting in terms of I2C operations and is the
--		     default mode.
--		0..<nchans> - set the mux to a predetermined channel,
--		     which is useful if there is one channel that is
--		     used almost always, and you want to reduce the
--		     latency for normal operations after rare
--		     transactions on other channels
+ 		This file is not present for device objects representing
+ 		fixed ACPI hardware features (like power and sleep
+ 		buttons).
+diff --git a/Documentation/ABI/testing/sysfs-bus-coresight-devices-etb10 b/Documentation/ABI/testing/sysfs-bus-coresight-devices-etb10
+index b5f526081711..3e92cbd3fd83 100644
+--- a/Documentation/ABI/testing/sysfs-bus-coresight-devices-etb10
++++ b/Documentation/ABI/testing/sysfs-bus-coresight-devices-etb10
+@@ -4,7 +4,10 @@ KernelVersion:	3.19
+ Contact:	Mathieu Poirier <mathieu.poirier@linaro.org>
+ Description:	(RW) Add/remove a sink from a trace path.  There can be multiple
+ 		source for a single sink.
+-		ex: echo 1 > /sys/bus/coresight/devices/20010000.etb/enable_sink
 +
-+		===========  ===============================================
-+		-2	     disconnect on idle, i.e. deselect the last used
-+			     channel, which is useful when there is a device
-+			     with an address that conflicts with another
-+			     device on another mux on the same parent bus.
-+		-1	     leave the mux as-is, which is the most optimal
-+			     setting in terms of I2C operations and is the
-+			     default mode.
-+		0..<nchans>  set the mux to a predetermined channel,
-+			     which is useful if there is one channel that is
-+			     used almost always, and you want to reduce the
-+			     latency for normal operations after rare
-+			     transactions on other channels
-+		===========  ===============================================
++		ex::
++
++		  echo 1 > /sys/bus/coresight/devices/20010000.etb/enable_sink
+ 
+ What:		/sys/bus/coresight/devices/<memory_map>.etb/trigger_cntr
+ Date:		November 2014
+diff --git a/Documentation/ABI/testing/sysfs-bus-css b/Documentation/ABI/testing/sysfs-bus-css
+index 966f8504bd7b..12a733fe357f 100644
+--- a/Documentation/ABI/testing/sysfs-bus-css
++++ b/Documentation/ABI/testing/sysfs-bus-css
+@@ -20,6 +20,7 @@ Contact:	Cornelia Huck <cornelia.huck@de.ibm.com>
+ Description:	Contains the ids of the channel paths used by this
+ 		subchannel, as reported by the channel subsystem
+ 		during subchannel recognition.
++
+ 		Note: This is an I/O-subchannel specific attribute.
+ Users:		s390-tools, HAL
+ 
+@@ -31,6 +32,7 @@ Description:	Contains the PIM/PAM/POM values, as reported by the
+ 		channel subsystem when last queried by the common I/O
+ 		layer (this implies that this attribute is not necessarily
+ 		in sync with the values current in the channel subsystem).
++
+ 		Note: This is an I/O-subchannel specific attribute.
+ Users:		s390-tools, HAL
+ 
+@@ -53,6 +55,7 @@ Description:	This file allows the driver for a device to be specified. When
+ 		opt-out of driver binding using a driver_override name such as
+ 		"none".  Only a single driver may be specified in the override,
+ 		there is no support for parsing delimiters.
++
+ 		Note that unlike the mechanism of the same name for pci, this
+ 		file does not allow to override basic matching rules. I.e.,
+ 		the driver must still match the subchannel type of the device.
+diff --git a/Documentation/ABI/testing/sysfs-bus-dfl b/Documentation/ABI/testing/sysfs-bus-dfl
+index 23543be904f2..b0265ab17200 100644
+--- a/Documentation/ABI/testing/sysfs-bus-dfl
++++ b/Documentation/ABI/testing/sysfs-bus-dfl
+@@ -4,6 +4,7 @@ KernelVersion:	5.10
+ Contact:	Xu Yilun <yilun.xu@intel.com>
+ Description:	Read-only. It returns type of DFL FIU of the device. Now DFL
+ 		supports 2 FIU types, 0 for FME, 1 for PORT.
++
+ 		Format: 0x%x
+ 
+ What:		/sys/bus/dfl/devices/dfl_dev.X/feature_id
+@@ -12,4 +13,5 @@ KernelVersion:	5.10
+ Contact:	Xu Yilun <yilun.xu@intel.com>
+ Description:	Read-only. It returns feature identifier local to its DFL FIU
+ 		type.
++
+ 		Format: 0x%x
+diff --git a/Documentation/ABI/testing/sysfs-bus-event_source-devices-hv_24x7 b/Documentation/ABI/testing/sysfs-bus-event_source-devices-hv_24x7
+index 2273627df190..de390a010af8 100644
+--- a/Documentation/ABI/testing/sysfs-bus-event_source-devices-hv_24x7
++++ b/Documentation/ABI/testing/sysfs-bus-event_source-devices-hv_24x7
+@@ -7,7 +7,7 @@ Description:    Read-only. Attribute group to describe the magic bits
+ 
+                 Each attribute under this group defines a bit range of the
+                 perf_event_attr.config. All supported attributes are listed
+-                below.
++                below::
+ 
+ 				chip = "config:16-31"
+ 				core  = "config:16-31"
+@@ -16,9 +16,9 @@ Description:    Read-only. Attribute group to describe the magic bits
+ 				offset = "config:32-63"
+ 				vcpu = "config:16-31"
+ 
+-               For example,
++                For example::
+ 
+-		PM_PB_CYC =  "domain=1,offset=0x80,chip=?,lpar=0x0"
++		  PM_PB_CYC =  "domain=1,offset=0x80,chip=?,lpar=0x0"
+ 
+ 		In this event, '?' after chip specifies that
+ 		this value will be provided by user while running this event.
+diff --git a/Documentation/ABI/testing/sysfs-bus-event_source-devices-hv_gpci b/Documentation/ABI/testing/sysfs-bus-event_source-devices-hv_gpci
+index 6a023b42486c..12e2bf92783f 100644
+--- a/Documentation/ABI/testing/sysfs-bus-event_source-devices-hv_gpci
++++ b/Documentation/ABI/testing/sysfs-bus-event_source-devices-hv_gpci
+@@ -7,7 +7,7 @@ Description:    Read-only. Attribute group to describe the magic bits
+ 
+                 Each attribute under this group defines a bit range of the
+                 perf_event_attr.config. All supported attributes are listed
+-                below.
++                below::
+ 
+ 				counter_info_version  = "config:16-23"
+ 				length  = "config:24-31"
+@@ -20,9 +20,9 @@ Description:    Read-only. Attribute group to describe the magic bits
+ 				secondary_index = "config:0-15"
+ 				starting_index = "config:32-63"
+ 
+-               For example,
++                For example::
+ 
+-		processor_core_utilization_instructions_completed = "request=0x94,
++		  processor_core_utilization_instructions_completed = "request=0x94,
+ 					phys_processor_idx=?,counter_info_version=0x8,
+ 					length=8,offset=0x18"
+ 
+@@ -36,6 +36,7 @@ Description:
+ 		'0' if the hypervisor is configured to forbid access to event
+ 		counters being accumulated by other guests and to physical
+ 		domain event counters.
++
+ 		'1' if that access is allowed.
+ 
+ What:		/sys/bus/event_source/devices/hv_gpci/interface/ga
+diff --git a/Documentation/ABI/testing/sysfs-bus-fcoe b/Documentation/ABI/testing/sysfs-bus-fcoe
+index 657df13b100d..8fe787cc4ab7 100644
+--- a/Documentation/ABI/testing/sysfs-bus-fcoe
++++ b/Documentation/ABI/testing/sysfs-bus-fcoe
+@@ -3,16 +3,19 @@ Date:		August 2012
+ KernelVersion:	TBD
+ Contact:	Robert Love <robert.w.love@intel.com>, devel@open-fcoe.org
+ Description:	The FCoE bus. Attributes in this directory are control interfaces.
++
+ Attributes:
+ 
+-	ctlr_create: 'FCoE Controller' instance creation interface. Writing an
++	ctlr_create:
++		     'FCoE Controller' instance creation interface. Writing an
+ 		     <ifname> to this file will allocate and populate sysfs with a
+ 		     fcoe_ctlr_device (ctlr_X). The user can then configure any
+ 		     per-port settings and finally write to the fcoe_ctlr_device's
+ 		     'start' attribute to begin the kernel's discovery and login
+ 		     process.
+ 
+-	ctlr_destroy: 'FCoE Controller' instance removal interface. Writing a
++	ctlr_destroy:
++		       'FCoE Controller' instance removal interface. Writing a
+ 		       fcoe_ctlr_device's sysfs name to this file will log the
+ 		       fcoe_ctlr_device out of the fabric or otherwise connected
+ 		       FCoE devices. It will also free all kernel memory allocated
+@@ -32,11 +35,13 @@ Description:	'FCoE Controller' instances on the fcoe bus.
+ 
+ Attributes:
+ 
+-	fcf_dev_loss_tmo: Device loss timeout period (see below). Changing
++	fcf_dev_loss_tmo:
++			  Device loss timeout period (see below). Changing
+ 			  this value will change the dev_loss_tmo for all
+ 			  FCFs discovered by this controller.
+ 
+-	mode:		  Display or change the FCoE Controller's mode. Possible
++	mode:
++			  Display or change the FCoE Controller's mode. Possible
+ 			  modes are 'Fabric' and 'VN2VN'. If a FCoE Controller
+ 			  is started in 'Fabric' mode then FIP FCF discovery is
+ 			  initiated and ultimately a fabric login is attempted.
+@@ -44,23 +49,30 @@ Attributes:
+ 			  FIP VN2VN discovery and login is performed. A FCoE
+ 			  Controller only supports one mode at a time.
+ 
+-	enabled:	  Whether an FCoE controller is enabled or disabled.
++	enabled:
++			  Whether an FCoE controller is enabled or disabled.
+ 			  0 if disabled, 1 if enabled. Writing either 0 or 1
+ 			  to this file will enable or disable the FCoE controller.
+ 
+-	lesb/link_fail:   Link Error Status Block (LESB) link failure count.
++	lesb/link_fail:
++			  Link Error Status Block (LESB) link failure count.
+ 
+-	lesb/vlink_fail:  Link Error Status Block (LESB) virtual link
++	lesb/vlink_fail:
++		          Link Error Status Block (LESB) virtual link
+ 			  failure count.
+ 
+-	lesb/miss_fka:    Link Error Status Block (LESB) missed FCoE
++	lesb/miss_fka:
++			  Link Error Status Block (LESB) missed FCoE
+ 			  Initialization Protocol (FIP) Keep-Alives (FKA).
+ 
+-	lesb/symb_err:    Link Error Status Block (LESB) symbolic error count.
++	lesb/symb_err:
++			  Link Error Status Block (LESB) symbolic error count.
+ 
+-	lesb/err_block:   Link Error Status Block (LESB) block error count.
++	lesb/err_block:
++			  Link Error Status Block (LESB) block error count.
+ 
+-	lesb/fcs_error:   Link Error Status Block (LESB) Fibre Channel
++	lesb/fcs_error:
++			  Link Error Status Block (LESB) Fibre Channel
+ 			  Services error count.
+ 
+ Notes: ctlr_X (global increment starting at 0)
+@@ -75,31 +87,41 @@ Description:	'FCoE FCF' instances on the fcoe bus. A FCF is a Fibre Channel
+ 		Fibre Channel frames into a FC fabric. It can also take
+ 		outbound FC frames and pack them in Ethernet packets to
+ 		be sent to their destination on the Ethernet segment.
++
+ Attributes:
+ 
+-	fabric_name: Identifies the fabric that the FCF services.
++	fabric_name:
++		     Identifies the fabric that the FCF services.
+ 
+-	switch_name: Identifies the FCF.
++	switch_name:
++		     Identifies the FCF.
+ 
+-	priority:    The switch's priority amongst other FCFs on the same
++	priority:
++		     The switch's priority amongst other FCFs on the same
+ 		     fabric.
+ 
+-	selected:    1 indicates that the switch has been selected for use;
++	selected:
++		     1 indicates that the switch has been selected for use;
+ 		     0 indicates that the switch will not be used.
+ 
+-	fc_map:      The Fibre Channel MAP
++	fc_map:
++		     The Fibre Channel MAP
+ 
+-	vfid:	     The Virtual Fabric ID
++	vfid:
++		     The Virtual Fabric ID
+ 
+-	mac:         The FCF's MAC address
++	mac:
++		     The FCF's MAC address
+ 
+-	fka_period:  The FIP Keep-Alive period
++	fka_period:
++		     The FIP Keep-Alive period
+ 
+ 	fabric_state: The internal kernel state
+-		      "Unknown" - Initialization value
+-		      "Disconnected" - No link to the FCF/fabric
+-		      "Connected" - Host is connected to the FCF
+-		      "Deleted" - FCF is being removed from the system
++
++		      - "Unknown" - Initialization value
++		      - "Disconnected" - No link to the FCF/fabric
++		      - "Connected" - Host is connected to the FCF
++		      - "Deleted" - FCF is being removed from the system
+ 
+ 	dev_loss_tmo: The device loss timeout period for this FCF.
+ 
+diff --git a/Documentation/ABI/testing/sysfs-bus-fsl-mc b/Documentation/ABI/testing/sysfs-bus-fsl-mc
+index 80256b8b4f26..bf3c6af6ad89 100644
+--- a/Documentation/ABI/testing/sysfs-bus-fsl-mc
++++ b/Documentation/ABI/testing/sysfs-bus-fsl-mc
+@@ -6,8 +6,10 @@ Description:
+ 		the driver to attempt to bind to the device found at
+ 		this location. The format for the location is Object.Id
+ 		and is the same as found in /sys/bus/fsl-mc/devices/.
+-                For example:
+-		# echo dpni.2 > /sys/bus/fsl-mc/drivers/fsl_dpaa2_eth/bind
++
++                For example::
++
++		  # echo dpni.2 > /sys/bus/fsl-mc/drivers/fsl_dpaa2_eth/bind
+ 
+ What:		/sys/bus/fsl-mc/drivers/.../unbind
+ Date:		December 2016
+@@ -17,5 +19,7 @@ Description:
+ 		driver to attempt to unbind from the device found at
+ 		this location. The format for the location is Object.Id
+ 		and is the same as found in /sys/bus/fsl-mc/devices/.
+-                For example:
+-		# echo dpni.2 > /sys/bus/fsl-mc/drivers/fsl_dpaa2_eth/unbind
++
++                For example::
++
++		  # echo dpni.2 > /sys/bus/fsl-mc/drivers/fsl_dpaa2_eth/unbind
+diff --git a/Documentation/ABI/testing/sysfs-bus-i2c-devices-fsa9480 b/Documentation/ABI/testing/sysfs-bus-i2c-devices-fsa9480
+index 9de269bb0ae5..42dfc9399d2d 100644
+--- a/Documentation/ABI/testing/sysfs-bus-i2c-devices-fsa9480
++++ b/Documentation/ABI/testing/sysfs-bus-i2c-devices-fsa9480
+@@ -3,19 +3,25 @@ Date:		February 2011
+ Contact:	Minkyu Kang <mk7.kang@samsung.com>
+ Description:
+ 		show what device is attached
+-		NONE - no device
+-		USB - USB device is attached
+-		UART - UART is attached
+-		CHARGER - Charger is attaced
+-		JIG - JIG is attached
++
++		=======  ======================
++		NONE     no device
++		USB      USB device is attached
++		UART     UART is attached
++		CHARGER  Charger is attaced
++		JIG      JIG is attached
++		=======  ======================
+ 
+ What:		/sys/bus/i2c/devices/.../switch
+ Date:		February 2011
+ Contact:	Minkyu Kang <mk7.kang@samsung.com>
+ Description:
+ 		show or set the state of manual switch
+-		VAUDIO - switch to VAUDIO path
+-		UART - switch to UART path
+-		AUDIO - switch to AUDIO path
+-		DHOST - switch to DHOST path
+-		AUTO - switch automatically by device
++
++		=======  ==============================
++		VAUDIO   switch to VAUDIO path
++		UART     switch to UART path
++		AUDIO    switch to AUDIO path
++		DHOST    switch to DHOST path
++		AUTO     switch automatically by device
++		=======  ==============================
+diff --git a/Documentation/ABI/testing/sysfs-bus-i3c b/Documentation/ABI/testing/sysfs-bus-i3c
+index 2f332ec36f82..1f4a2662335b 100644
+--- a/Documentation/ABI/testing/sysfs-bus-i3c
++++ b/Documentation/ABI/testing/sysfs-bus-i3c
+@@ -84,6 +84,7 @@ Description:
+ 		by space. Modes can be "hdr-ddr", "hdr-tsp" and "hdr-tsl".
+ 		See the I3C specification for more details about these HDR
+ 		modes.
++
+ 		This entry describes the HDRCAP of the master controller
+ 		driving the bus.
+ 
+@@ -135,6 +136,7 @@ Description:
+ 		Expose the HDR (High Data Rate) capabilities of a device.
+ 		Returns a list of supported HDR mode, each element is separated
+ 		by space. Modes can be "hdr-ddr", "hdr-tsp" and "hdr-tsl".
++
+ 		See the I3C specification for more details about these HDR
+ 		modes.
+ 
 diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index a9d51810a3ba..e3df71987eff 100644
+index e3df71987eff..df42bed09f25 100644
 --- a/Documentation/ABI/testing/sysfs-bus-iio
 +++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -65,6 +65,7 @@ Contact:	linux-iio@vger.kernel.org
+@@ -15,6 +15,7 @@ Description:
+ 		based on hardware generated events (e.g. data ready) or
+ 		provided by a separate driver for other hardware (e.g.
+ 		periodic timer, GPIO or high resolution timer).
++
+ 		Contains trigger type specific elements. These do not
+ 		generalize well and hence are not documented in this file.
+ 		X is the IIO index of the trigger.
+@@ -666,6 +667,7 @@ Description:
+ 		<type>[Y][_name]_<raw|input>_thresh_falling_value may take
+ 		different values, but the device can only enable both thresholds
+ 		or neither.
++
+ 		Note the driver will assume the last p events requested are
+ 		to be enabled where p is how many it supports (which may vary
+ 		depending on the exact set requested. So if you want to be
+@@ -720,6 +722,7 @@ Description:
+ 		<type>[Y][_name]_<raw|input>_roc_falling_value may take
+ 		different values, but the device can only enable both rate of
+ 		change thresholds or neither.
++
+ 		Note the driver will assume the last p events requested are
+ 		to be enabled where p is however many it supports (which may
+ 		vary depending on the exact set requested. So if you want to be
+@@ -775,9 +778,11 @@ Description:
+ 		Specifies the value of threshold that the device is comparing
+ 		against for the events enabled by
+ 		<type>Y[_name]_thresh[_rising|falling]_en.
++
+ 		If separate attributes exist for the two directions, but
+ 		direction is not specified for this attribute, then a single
+ 		threshold value applies to both directions.
++
+ 		The raw or input element of the name indicates whether the
+ 		value is in raw device units or in processed units (as _raw
+ 		and _input do on sysfs direct channel read attributes).
+@@ -860,6 +865,7 @@ Description:
+ 		If separate attributes exist for the two directions, but
+ 		direction is not specified for this attribute, then a single
+ 		hysteresis value applies to both directions.
++
+ 		For falling events the hysteresis is added to the _value attribute for
+ 		this event to get the upper threshold for when the event goes back to
+ 		normal, for rising events the hysteresis is subtracted from the _value
+@@ -906,6 +912,7 @@ Description:
+ 		Specifies the value of rate of change threshold that the
+ 		device is comparing against for the events enabled by
+ 		<type>[Y][_name]_roc[_rising|falling]_en.
++
+ 		If separate attributes exist for the two directions,
+ 		but direction is not specified for this attribute,
+ 		then a single threshold value applies to both directions.
+@@ -1305,6 +1312,7 @@ Description:
+ 		Proximity measurement indicating that some
+ 		object is near the sensor, usually by observing
+ 		reflectivity of infrared or ultrasound emitted.
++
+ 		Often these sensors are unit less and as such conversion
+ 		to SI units is not possible. Higher proximity measurements
+ 		indicate closer objects, and vice versa. Units after
+@@ -1450,9 +1458,12 @@ Contact:	linux-iio@vger.kernel.org
  Description:
- 		When the internal sampling clock can only take a specific set of
- 		frequencies, we can specify the available values with:
+ 		A single positive integer specifying the maximum number of scan
+ 		elements to wait for.
 +
- 		- a small discrete set of values like "0 2 4 6 8"
- 		- a range with minimum, step and maximum frequencies like
- 		  "[min step max]"
-@@ -1627,17 +1628,21 @@ Description:
- 		Mounting matrix for IIO sensors. This is a rotation matrix which
- 		informs userspace about sensor chip's placement relative to the
- 		main hardware it is mounted on.
+ 		Poll will block until the watermark is reached.
 +
- 		Main hardware placement is defined according to the local
- 		reference frame related to the physical quantity the sensor
- 		measures.
+ 		Blocking read will wait until the minimum between the requested
+ 		read amount or the low water mark is available.
 +
- 		Given that the rotation matrix is defined in a board specific
- 		way (platform data and / or device-tree), the main hardware
- 		reference frame definition is left to the implementor's choice
- 		(see below for a magnetometer example).
+ 		Non-blocking read will retrieve the available samples from the
+ 		buffer even if there are less samples then watermark level. This
+ 		allows the application to block on poll with a timeout and read
+@@ -1481,11 +1492,13 @@ Description:
+ 		device settings allows it (e.g. if a trigger is set that samples
+ 		data differently that the hardware fifo does then hardware fifo
+ 		will not enabled).
 +
- 		Applications should apply this rotation matrix to samples so
- 		that when main hardware reference frame is aligned onto local
- 		reference frame, then sensor chip reference frame is also
- 		perfectly aligned with it.
+ 		If the hardware fifo is enabled and the level of the hardware
+ 		fifo reaches the hardware fifo watermark level the device will
+ 		flush its hardware fifo to the device buffer. Doing a non
+ 		blocking read on the device when no samples are present in the
+ 		device buffer will also force a flush.
 +
- 		Matrix is a 3x3 unitary matrix and typically looks like
- 		[0, 1, 0; 1, 0, 0; 0, 0, -1]. Identity matrix
- 		[1, 0, 0; 0, 1, 0; 0, 0, 1] means sensor chip and main hardware
-@@ -1646,8 +1651,10 @@ Description:
- 		For example, a mounting matrix for a magnetometer sensor informs
- 		userspace about sensor chip's ORIENTATION relative to the main
- 		hardware.
+ 		When the hardware fifo is enabled there is no need to use a
+ 		trigger to use buffer mode since the watermark settings
+ 		guarantees that the hardware fifo is flushed to the device
+@@ -1523,6 +1536,7 @@ Description:
+ 		A single positive integer specifying the minimum watermark level
+ 		for the hardware fifo of this device. If the device does not
+ 		have a hardware fifo this entry is not present.
 +
- 		More specifically, main hardware orientation is defined with
- 		respect to the LOCAL EARTH GEOMAGNETIC REFERENCE FRAME where :
-+
- 		* Y is in the ground plane and positive towards magnetic North ;
- 		* X is in the ground plane, perpendicular to the North axis and
- 		  positive towards the East ;
-@@ -1656,13 +1663,16 @@ Description:
- 		An implementor might consider that for a hand-held device, a
- 		'natural' orientation would be 'front facing camera at the top'.
- 		The main hardware reference frame could then be described as :
-+
- 		* Y is in the plane of the screen and is positive towards the
- 		  top of the screen ;
- 		* X is in the plane of the screen, perpendicular to Y axis, and
- 		  positive towards the right hand side of the screen ;
- 		* Z is perpendicular to the screen plane and positive out of the
- 		  screen.
-+
- 		Another example for a quadrotor UAV might be :
-+
- 		* Y is in the plane of the propellers and positive towards the
- 		  front-view camera;
- 		* X is in the plane of the propellers, perpendicular to Y axis,
-@@ -1704,6 +1714,7 @@ Description:
- 		This interface is deprecated; please use the Counter subsystem.
+ 		If the user sets buffer/watermark to a value less than this one,
+ 		then the hardware watermark will remain unset.
  
- 		A list of possible counting directions which are:
+@@ -1533,6 +1547,7 @@ Description:
+ 		A single positive integer specifying the maximum watermark level
+ 		for the hardware fifo of this device. If the device does not
+ 		have a hardware fifo this entry is not present.
 +
- 		- "up"	: counter device is increasing.
- 		- "down": counter device is decreasing.
+ 		If the user sets buffer/watermark to a value greater than this
+ 		one, then the hardware watermark will be capped at this value.
  
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector b/Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
-index 2071f9bcfaa5..1c2a07f7a75e 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
-@@ -5,7 +5,8 @@ Contact:	Peter Rosin <peda@axentia.se>
- Description:
- 		The DAC is used to find the peak level of an alternating
- 		voltage input signal by a binary search using the output
--		of a comparator wired to an interrupt pin. Like so:
-+		of a comparator wired to an interrupt pin. Like so::
+@@ -1544,6 +1559,7 @@ Description:
+ 		levels for the hardware fifo. This entry is optional and if it
+ 		is not present it means that all the values between
+ 		hwfifo_watermark_min and hwfifo_watermark_max are supported.
 +
- 		                           _
- 		                          | \
- 		     input +------>-------|+ \
-@@ -19,10 +20,12 @@ Description:
- 		            |    irq|------<-------'
- 		            |       |
- 		            '-------'
-+
- 		The boolean invert attribute (0/1) should be set when the
- 		input signal is centered around the maximum value of the
- 		dac instead of zero. The envelope detector will search
- 		from below in this case and will also invert the result.
-+
- 		The edge/level of the interrupt is also switched to its
- 		opposite value.
- 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-cros-ec b/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-index 6158f831c761..adf24c40126f 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-@@ -4,7 +4,7 @@ KernelVersion:	4.7
+ 		If the user sets buffer/watermark to a value greater than
+ 		hwfifo_watermak_min but not equal to any of the values in this
+ 		list, the driver will chose an appropriate value for the
+@@ -1605,7 +1621,8 @@ KernelVersion:	4.1.0
  Contact:	linux-iio@vger.kernel.org
  Description:
- 		Writing '1' will perform a FOC (Fast Online Calibration). The
--                corresponding calibration offsets can be read from *_calibbias
-+                corresponding calibration offsets can be read from `*_calibbias`
-                 entries.
+ 		'1' (enable) or '0' (disable) specifying the enable
+-		of heater function. Same reading values apply
++		of heater function. Same reading values apply.
++
+ 		This ABI is especially applicable for humidity sensors
+ 		to heatup the device and get rid of any condensation
+ 		in some humidity environment
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-hi8435 b/Documentation/ABI/testing/sysfs-bus-iio-adc-hi8435
+index f30b4c424fb6..4b01150af397 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-adc-hi8435
++++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-hi8435
+@@ -19,9 +19,11 @@ Description:
+ 		is separately set for "GND-Open" and "Supply-Open" modes.
+ 		Channels 0..31 have common low threshold values, but could have different
+ 		sensing_modes.
++
+ 		The low voltage threshold range is between 2..21V.
+ 		Hysteresis between low and high thresholds can not be lower then 2 and
+ 		can not be odd.
++
+ 		If falling threshold results hysteresis to odd value then rising
+ 		threshold is automatically subtracted by one.
  
- What:		/sys/bus/iio/devices/iio:deviceX/location
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32
-index 0e66ae9b0071..91439d6d60b5 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32
-@@ -3,14 +3,20 @@ KernelVersion:	4.14
- Contact:	arnaud.pouliquen@st.com
- Description:
- 		For audio purpose only.
+@@ -34,10 +36,13 @@ Description:
+ 		this value then the threshold rising event is pushed.
+ 		Depending on in_voltageY_sensing_mode the high voltage threshold
+ 		is separately set for "GND-Open" and "Supply-Open" modes.
 +
- 		Used by audio driver to set/get the spi input frequency.
+ 		Channels 0..31 have common high threshold values, but could have different
+ 		sensing_modes.
 +
- 		This is mandatory if DFSDM is slave on SPI bus, to
- 		provide information on the SPI clock frequency during runtime
- 		Notice that the SPI frequency should be a multiple of sample
- 		frequency to ensure the precision.
--		if DFSDM input is SPI master
+ 		The high voltage threshold range is between 3..22V.
+ 		Hysteresis between low and high thresholds can not be lower then 2 and
+ 		can not be odd.
 +
-+		if DFSDM input is SPI master:
+ 		If rising threshold results hysteresis to odd value then falling
+ 		threshold is automatically appended by one.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-adc-stm32
+index efe4c85e3c8b..1975c7a1af34 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-adc-stm32
++++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-stm32
+@@ -5,10 +5,13 @@ Description:
+ 		The STM32 ADC can be configured to use external trigger sources
+ 		(e.g. timers, pwm or exti gpio). Then, it can be tuned to start
+ 		conversions on external trigger by either:
 +
- 			Reading  SPI clkout frequency,
- 			error on writing
+ 		- "rising-edge"
+ 		- "falling-edge"
+ 		- "both-edges".
 +
- 		If DFSDM input is SPI Slave:
+ 		Reading returns current trigger polarity.
 +
- 			Reading returns value previously set.
- 			Writing value before starting conversions.
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
-index ad2cc63e4bf8..73498ff666bd 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
-@@ -17,9 +17,11 @@ KernelVersion:	4.13
- Contact:	fabrice.gasnier@st.com
- Description:
- 		Configure the device counter quadrature modes:
-+
- 		- non-quadrature:
- 			Encoder IN1 input servers as the count input (up
- 			direction).
-+
- 		- quadrature:
- 			Encoder IN1 and IN2 inputs are mixed to get direction
- 			and count.
-@@ -35,23 +37,26 @@ KernelVersion:	4.13
- Contact:	fabrice.gasnier@st.com
- Description:
- 		Configure the device encoder/counter active edge:
-+
- 		- rising-edge
- 		- falling-edge
- 		- both-edges
+ 		Writing value before enabling conversions sets trigger polarity.
  
- 		In non-quadrature mode, device counts up on active edge.
+ What:		/sys/bus/iio/devices/triggerX/trigger_polarity_available
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-distance-srf08 b/Documentation/ABI/testing/sysfs-bus-iio-distance-srf08
+index a133fd8d081a..40df5c9fef99 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-distance-srf08
++++ b/Documentation/ABI/testing/sysfs-bus-iio-distance-srf08
+@@ -15,8 +15,11 @@ Description:
+ 		first object echoed in meters. Default value is 6.020.
+ 		This setting limits the time the driver is waiting for a
+ 		echo.
 +
- 		In quadrature mode, encoder counting scenarios are as follows:
--		----------------------------------------------------------------
+ 		Showing the range of available values is represented as the
+ 		minimum value, the step and the maximum value, all enclosed
+ 		in square brackets.
+-		Example:
+-		[0.043 0.043 11.008]
 +
-+		+---------+----------+--------------------+--------------------+
- 		| Active  | Level on |      IN1 signal    |     IN2 signal     |
--		| edge    | opposite |------------------------------------------
-+		| edge    | opposite +----------+---------+----------+---------+
- 		|         | signal   |  Rising  | Falling |  Rising  | Falling |
--		----------------------------------------------------------------
--		| Rising  | High ->  |   Down   |    -    |    Up    |    -    |
--		| edge    | Low  ->  |    Up    |    -    |   Down   |    -    |
--		----------------------------------------------------------------
--		| Falling | High ->  |    -     |    Up   |    -     |   Down  |
--		| edge    | Low  ->  |    -     |   Down  |    -     |    Up   |
--		----------------------------------------------------------------
--		| Both    | High ->  |   Down   |    Up   |    Up    |   Down  |
--		| edges   | Low  ->  |    Up    |   Down  |   Down   |    Up   |
--		----------------------------------------------------------------
-+		+---------+----------+----------+---------+----------+---------+
-+		| Rising  | High ->  |   Down   |    -    |   Up     |    -    |
-+		| edge    | Low  ->  |   Up     |    -    |   Down   |    -    |
-+		+---------+----------+----------+---------+----------+---------+
-+		| Falling | High ->  |    -     |   Up    |    -     |   Down  |
-+		| edge    | Low  ->  |    -     |   Down  |    -     |   Up    |
-+		+---------+----------+----------+---------+----------+---------+
-+		| Both    | High ->  |   Down   |   Up    |   Up     |   Down  |
-+		| edges   | Low  ->  |   Up     |   Down  |   Down   |   Up    |
-+		+---------+----------+----------+---------+----------+---------+
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-magnetometer-hmc5843 b/Documentation/ABI/testing/sysfs-bus-iio-magnetometer-hmc5843
-index 6275e9f56e6c..13f099ef6a95 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-magnetometer-hmc5843
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-magnetometer-hmc5843
-@@ -5,11 +5,16 @@ Contact:        linux-iio@vger.kernel.org
++		Example::
++
++			[0.043 0.043 11.008]
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
+index a91aeabe7b24..d065cda7dd96 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
+@@ -8,7 +8,9 @@ KernelVersion:	3.4.0
+ Contact:	linux-iio@vger.kernel.org
  Description:
-                 Current configuration and available configurations
- 		for the bias current.
--		normal		- Normal measurement configurations (default)
--		positivebias	- Positive bias configuration
--		negativebias	- Negative bias configuration
--		disabled	- Only available on HMC5983. Disables magnetic
-+
-+		============	  ============================================
-+		normal		  Normal measurement configurations (default)
-+		positivebias	  Positive bias configuration
-+		negativebias	  Negative bias configuration
-+		disabled	  Only available on HMC5983. Disables magnetic
- 				  sensor and enables temperature sensor.
--		Note: The effect of this configuration may vary
--		according to the device. For exact documentation
--		check the device's datasheet.
-+		============	  ============================================
-+
-+		Note:
-+		  The effect of this configuration may vary
-+		  according to the device. For exact documentation
-+		  check the device's datasheet.
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31856 b/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31856
-index 3b3509a3ef2f..e5ef6d8e5da1 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31856
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31856
-@@ -5,9 +5,12 @@ Description:
- 		Open-circuit fault. The detection of open-circuit faults,
- 		such as those caused by broken thermocouple wires.
  		Reading returns either '1' or '0'.
--		'1' = An open circuit such as broken thermocouple wires
--		      has been detected.
--		'0' = No open circuit or broken thermocouple wires are detected
 +
-+		===  =======================================================
-+		'1'  An open circuit such as broken thermocouple wires
-+		     has been detected.
-+		'0'  No open circuit or broken thermocouple wires are detected
-+		===  =======================================================
+ 		'1' means that the clock in question is present.
++
+ 		'0' means that the clock is missing.
  
- What:		/sys/bus/iio/devices/iio:deviceX/fault_ovuv
- KernelVersion:	5.1
-@@ -18,7 +21,11 @@ Description:
- 		cables by integrated MOSFETs at the T+ and T- inputs, and the
- 		BIAS output. These MOSFETs turn off when the input voltage is
- 		negative or greater than VDD.
-+
- 		Reading returns either '1' or '0'.
--		'1' = The input voltage is negative or greater than VDD.
--		'0' = The input voltage is positive and less than VDD (normal
--		state).
-+
-+		===  =======================================================
-+		'1'  The input voltage is negative or greater than VDD.
-+		'0'  The input voltage is positive and less than VDD (normal
-+		     state).
-+		===  =======================================================
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-index b7259234ad70..a10a4de3e5fe 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-@@ -3,67 +3,85 @@ KernelVersion:	4.11
- Contact:	benjamin.gaignard@st.com
+ What:		/sys/bus/iio/devices/iio:deviceX/pllY_locked
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4371 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4371
+index 302de64cb424..544548ee794c 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4371
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4371
+@@ -27,12 +27,12 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_name
+ KernelVersion:
+ Contact:	linux-iio@vger.kernel.org
  Description:
- 		Reading returns the list possible master modes which are:
--		- "reset"     :	The UG bit from the TIMx_EGR register is
-+
-+
-+		- "reset"
-+				The UG bit from the TIMx_EGR register is
- 				used as trigger output (TRGO).
--		- "enable"    : The Counter Enable signal CNT_EN is used
-+		- "enable"
-+				The Counter Enable signal CNT_EN is used
- 				as trigger output.
--		- "update"    : The update event is selected as trigger output.
-+		- "update"
-+				The update event is selected as trigger output.
- 				For instance a master timer can then be used
- 				as a prescaler for a slave timer.
--		- "compare_pulse" : The trigger output send a positive pulse
--				    when the CC1IF flag is to be set.
--		- "OC1REF"    : OC1REF signal is used as trigger output.
--		- "OC2REF"    : OC2REF signal is used as trigger output.
--		- "OC3REF"    : OC3REF signal is used as trigger output.
--		- "OC4REF"    : OC4REF signal is used as trigger output.
-+		- "compare_pulse"
-+				The trigger output send a positive pulse
-+				when the CC1IF flag is to be set.
-+		- "OC1REF"
-+				OC1REF signal is used as trigger output.
-+		- "OC2REF"
-+				OC2REF signal is used as trigger output.
-+		- "OC3REF"
-+				OC3REF signal is used as trigger output.
-+		- "OC4REF"
-+				OC4REF signal is used as trigger output.
-+
- 		Additional modes (on TRGO2 only):
--		- "OC5REF"    : OC5REF signal is used as trigger output.
--		- "OC6REF"    : OC6REF signal is used as trigger output.
-+
-+		- "OC5REF"
-+				OC5REF signal is used as trigger output.
-+		- "OC6REF"
-+				OC6REF signal is used as trigger output.
- 		- "compare_pulse_OC4REF":
--		  OC4REF rising or falling edges generate pulses.
-+				OC4REF rising or falling edges generate pulses.
- 		- "compare_pulse_OC6REF":
--		  OC6REF rising or falling edges generate pulses.
-+				OC6REF rising or falling edges generate pulses.
- 		- "compare_pulse_OC4REF_r_or_OC6REF_r":
--		  OC4REF or OC6REF rising edges generate pulses.
-+				OC4REF or OC6REF rising edges generate pulses.
- 		- "compare_pulse_OC4REF_r_or_OC6REF_f":
--		  OC4REF rising or OC6REF falling edges generate pulses.
-+				OC4REF rising or OC6REF falling edges generate
-+				pulses.
- 		- "compare_pulse_OC5REF_r_or_OC6REF_r":
--		  OC5REF or OC6REF rising edges generate pulses.
-+				OC5REF or OC6REF rising edges generate pulses.
- 		- "compare_pulse_OC5REF_r_or_OC6REF_f":
--		  OC5REF rising or OC6REF falling edges generate pulses.
-+				OC5REF rising or OC6REF falling edges generate
-+				pulses.
+-		Reading returns the datasheet name for channel Y:
++		Reading returns the datasheet name for channel Y::
  
--		+-----------+   +-------------+            +---------+
--		| Prescaler +-> | Counter     |        +-> | Master  | TRGO(2)
--		+-----------+   +--+--------+-+        |-> | Control +-->
--		                   |        |          ||  +---------+
--		                +--v--------+-+ OCxREF ||  +---------+
--		                | Chx compare +----------> | Output  | ChX
--		                +-----------+-+         |  | Control +-->
--		                      .     |           |  +---------+
--		                      .     |           |    .
--		                +-----------v-+ OC6REF  |    .
--		                | Ch6 compare +---------+>
--		                +-------------+
-+		::
+-		out_altvoltage0_name: RF8x
+-		out_altvoltage1_name: RFAUX8x
+-		out_altvoltage2_name: RF16x
+-		out_altvoltage3_name: RF32x
++		  out_altvoltage0_name: RF8x
++		  out_altvoltage1_name: RFAUX8x
++		  out_altvoltage2_name: RF16x
++		  out_altvoltage3_name: RF32x
  
--		Example with: "compare_pulse_OC4REF_r_or_OC6REF_r":
-+		  +-----------+   +-------------+            +---------+
-+		  | Prescaler +-> | Counter     |        +-> | Master  | TRGO(2)
-+		  +-----------+   +--+--------+-+        |-> | Control +-->
-+		                     |        |          ||  +---------+
-+		                  +--v--------+-+ OCxREF ||  +---------+
-+		                  | Chx compare +----------> | Output  | ChX
-+		                  +-----------+-+         |  | Control +-->
-+		                        .     |           |  +---------+
-+		                        .     |           |    .
-+		                  +-----------v-+ OC6REF  |    .
-+		                  | Ch6 compare +---------+>
-+		                  +-------------+
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown
+ KernelVersion:
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
+index 6adba9058b22..66b621f10223 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
++++ b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
+@@ -6,10 +6,14 @@ Description:
+ 		Get measured values from the ADC for these stages. Y is the
+ 		specific stage number corresponding to datasheet stage names
+ 		as follows:
+-		1 -> LED2
+-		2 -> ALED2/LED3
+-		3 -> LED1
+-		4 -> ALED1/LED4
++
++		== ==========
++		1  LED2
++		2  ALED2/LED3
++		3  LED1
++		4  ALED1/LED4
++		== ==========
++
+ 		Note that channels 5 and 6 represent LED2-ALED2 and LED1-ALED1
+ 		respectively which simply helper channels containing the
+ 		calculated difference in the value of stage 1 - 2 and 3 - 4.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-light-isl29018 b/Documentation/ABI/testing/sysfs-bus-iio-light-isl29018
+index f0ce0a0476ea..220206a20d98 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-light-isl29018
++++ b/Documentation/ABI/testing/sysfs-bus-iio-light-isl29018
+@@ -15,5 +15,7 @@ Description:
+ 		Scheme 0 has wider dynamic range, Scheme 1 proximity detection
+ 		is less affected by the ambient IR noise variation.
  
--		                X
--		              X   X
--		            X .   . X
--		          X   .   .   X
--		        X     .   .     X
--		count X .     .   .     . X
--		        .     .   .     .
--		        .     .   .     .
--		        +---------------+
--		OC4REF  |     .   .     |
--		      +-+     .   .     +-+
--		        .     +---+     .
--		OC6REF  .     |   |     .
--		      +-------+   +-------+
--		        +-+   +-+
--		TRGO2   | |   | |
--		      +-+ +---+ +---------+
-+		Example with: "compare_pulse_OC4REF_r_or_OC6REF_r"::
-+
-+		                  X
-+		                X   X
-+		              X .   . X
-+		            X   .   .   X
-+		          X     .   .     X
-+		  count X .     .   .     . X
-+		          .     .   .     .
-+		          .     .   .     .
-+		          +---------------+
-+		  OC4REF  |     .   .     |
-+		        +-+     .   .     +-+
-+		          .     +---+     .
-+		  OC6REF  .     |   |     .
-+		        +-------+   +-------+
-+		          +-+   +-+
-+		  TRGO2   | |   | |
-+		        +-+ +---+ +---------+
- 
- What:		/sys/bus/iio/devices/triggerX/master_mode
- KernelVersion:	4.11
-@@ -91,6 +109,30 @@ Description:
- 		When counting down the counter start from preset value
- 		and fire event when reach 0.
- 
-+What:		/sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available
-+KernelVersion:	4.12
-+Contact:	benjamin.gaignard@st.com
-+Description:
-+		Reading returns the list possible quadrature modes.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_count0_quadrature_mode
-+KernelVersion:	4.12
-+Contact:	benjamin.gaignard@st.com
-+Description:
-+		Configure the device counter quadrature modes:
-+
-+		channel_A:
-+			Encoder A input servers as the count input and B as
-+			the UP/DOWN direction control input.
-+
-+		channel_B:
-+			Encoder B input serves as the count input and A as
-+			the UP/DOWN direction control input.
-+
-+		quadrature:
-+			Encoder A and B inputs are mixed to get direction
-+			and count with a scale of 0.25.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/in_count_enable_mode_available
- KernelVersion:	4.12
- Contact:	benjamin.gaignard@st.com
-@@ -104,6 +146,7 @@ Description:
- 		Configure the device counter enable modes, in all case
- 		counting direction is set by in_count0_count_direction
- 		attribute and the counter is clocked by the internal clock.
-+
- 		always:
- 			Counter is always ON.
- 
-diff --git a/Documentation/ABI/testing/sysfs-bus-intel_th-devices-msc b/Documentation/ABI/testing/sysfs-bus-intel_th-devices-msc
-index 7fd2601c2831..a74252e580a5 100644
---- a/Documentation/ABI/testing/sysfs-bus-intel_th-devices-msc
-+++ b/Documentation/ABI/testing/sysfs-bus-intel_th-devices-msc
-@@ -9,11 +9,13 @@ Date:		June 2015
+-		0 Sensing IR from LED and ambient
+-		1 Sensing IR from LED with ambient IR rejection
++		== =============================================
++		0  Sensing IR from LED and ambient
++		1  Sensing IR from LED with ambient IR rejection
++		== =============================================
+diff --git a/Documentation/ABI/testing/sysfs-bus-intel_th-devices-gth b/Documentation/ABI/testing/sysfs-bus-intel_th-devices-gth
+index 22d0843849a8..b7b2278fe042 100644
+--- a/Documentation/ABI/testing/sysfs-bus-intel_th-devices-gth
++++ b/Documentation/ABI/testing/sysfs-bus-intel_th-devices-gth
+@@ -10,10 +10,13 @@ Date:		June 2015
  KernelVersion:	4.3
  Contact:	Alexander Shishkin <alexander.shishkin@linux.intel.com>
- Description:	(RW) Configure MSC operating mode:
+ Description:	(RO) Output port type:
+-		  0: not present,
+-		  1: MSU (Memory Storage Unit)
+-		  2: CTP (Common Trace Port)
+-		  4: PTI (MIPI PTI).
 +
- 		  - "single", for contiguous buffer mode (high-order alloc);
- 		  - "multi", for multiblock mode;
- 		  - "ExI", for DCI handler mode;
- 		  - "debug", for debug mode;
- 		  - any of the currently loaded buffer sinks.
++		 ==  =========================
++		  0  not present,
++		  1  MSU (Memory Storage Unit)
++		  2  CTP (Common Trace Port)
++		  4  PTI (MIPI PTI).
++		 ==  =========================
+ 
+ What:		/sys/bus/intel_th/devices/<intel_th_id>-gth/outputs/[0-7]_drop
+ Date:		June 2015
+diff --git a/Documentation/ABI/testing/sysfs-bus-papr-pmem b/Documentation/ABI/testing/sysfs-bus-papr-pmem
+index c1a67275c43f..8316c33862a0 100644
+--- a/Documentation/ABI/testing/sysfs-bus-papr-pmem
++++ b/Documentation/ABI/testing/sysfs-bus-papr-pmem
+@@ -11,19 +11,26 @@ Description:
+ 		at 'Documentation/powerpc/papr_hcalls.rst' . Below are
+ 		the flags reported in this sysfs file:
+ 
+-		* "not_armed"	: Indicates that NVDIMM contents will not
++		* "not_armed"
++				  Indicates that NVDIMM contents will not
+ 				  survive a power cycle.
+-		* "flush_fail"	: Indicates that NVDIMM contents
++		* "flush_fail"
++				  Indicates that NVDIMM contents
+ 				  couldn't be flushed during last
+ 				  shut-down event.
+-		* "restore_fail": Indicates that NVDIMM contents
++		* "restore_fail"
++				  Indicates that NVDIMM contents
+ 				  couldn't be restored during NVDIMM
+ 				  initialization.
+-		* "encrypted"	: NVDIMM contents are encrypted.
+-		* "smart_notify": There is health event for the NVDIMM.
+-		* "scrubbed"	: Indicating that contents of the
++		* "encrypted"
++				  NVDIMM contents are encrypted.
++		* "smart_notify"
++				  There is health event for the NVDIMM.
++		* "scrubbed"
++				  Indicating that contents of the
+ 				  NVDIMM have been scrubbed.
+-		* "locked"	: Indicating that NVDIMM contents cant
++		* "locked"
++				  Indicating that NVDIMM contents cant
+ 				  be modified until next power cycle.
+ 
+ What:		/sys/bus/nd/devices/nmemX/papr/perf_stats
+@@ -51,4 +58,4 @@ Description:
+ 		* "MedWDur " : Media Write Duration
+ 		* "CchRHCnt" : Cache Read Hit Count
+ 		* "CchWHCnt" : Cache Write Hit Count
+-		* "FastWCnt" : Fast Write Count
+\ No newline at end of file
++		* "FastWCnt" : Fast Write Count
+diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+index 450296cc7948..77ad9ec3c801 100644
+--- a/Documentation/ABI/testing/sysfs-bus-pci
++++ b/Documentation/ABI/testing/sysfs-bus-pci
+@@ -7,8 +7,10 @@ Description:
+ 		this location.	This is useful for overriding default
+ 		bindings.  The format for the location is: DDDD:BB:DD.F.
+ 		That is Domain:Bus:Device.Function and is the same as
+-		found in /sys/bus/pci/devices/.  For example:
+-		# echo 0000:00:19.0 > /sys/bus/pci/drivers/foo/bind
++		found in /sys/bus/pci/devices/.  For example::
 +
- 		If operating mode changes, existing buffer is deallocated,
- 		provided there are no active users and tracing is not enabled,
- 		otherwise the write will fail.
-@@ -23,10 +25,12 @@ Date:		June 2015
- KernelVersion:	4.3
- Contact:	Alexander Shishkin <alexander.shishkin@linux.intel.com>
- Description:	(RW) Configure MSC buffer size for "single" or "multi" modes.
++		  # echo 0000:00:19.0 > /sys/bus/pci/drivers/foo/bind
 +
- 		In single mode, this is a single number of pages, has to be
- 		power of 2. In multiblock mode, this is a comma-separated list
- 		of numbers of pages for each window to be allocated. Number of
- 		windows is not limited.
+ 		(Note: kernels before 2.6.28 may require echo -n).
+ 
+ What:		/sys/bus/pci/drivers/.../unbind
+@@ -20,8 +22,10 @@ Description:
+ 		this location.	This may be useful when overriding default
+ 		bindings.  The format for the location is: DDDD:BB:DD.F.
+ 		That is Domain:Bus:Device.Function and is the same as
+-		found in /sys/bus/pci/devices/. For example:
+-		# echo 0000:00:19.0 > /sys/bus/pci/drivers/foo/unbind
++		found in /sys/bus/pci/devices/. For example::
 +
- 		Writing to this file deallocates existing buffer (provided
- 		there are no active users and tracing is not enabled) and then
- 		allocates a new one.
-diff --git a/Documentation/ABI/testing/sysfs-bus-nfit b/Documentation/ABI/testing/sysfs-bus-nfit
-index e4f76e7eab93..63ef0b9ecce7 100644
---- a/Documentation/ABI/testing/sysfs-bus-nfit
-+++ b/Documentation/ABI/testing/sysfs-bus-nfit
-@@ -1,4 +1,4 @@
--For all of the nmem device attributes under nfit/*, see the 'NVDIMM Firmware
-+For all of the nmem device attributes under ``nfit/*``, see the 'NVDIMM Firmware
- Interface Table (NFIT)' section in the ACPI specification
- (http://www.uefi.org/specifications) for more details.
- 
-diff --git a/Documentation/ABI/testing/sysfs-bus-pci-devices-aer_stats b/Documentation/ABI/testing/sysfs-bus-pci-devices-aer_stats
-index 3c9a8c4a25eb..860db53037a5 100644
---- a/Documentation/ABI/testing/sysfs-bus-pci-devices-aer_stats
-+++ b/Documentation/ABI/testing/sysfs-bus-pci-devices-aer_stats
-@@ -1,6 +1,6 @@
--==========================
- PCIe Device AER statistics
--==========================
-+--------------------------
++		  # echo 0000:00:19.0 > /sys/bus/pci/drivers/foo/unbind
 +
- These attributes show up under all the devices that are AER capable. These
- statistical counters indicate the errors "as seen/reported by the device".
- Note that this may mean that if an endpoint is causing problems, the AER
-@@ -17,19 +17,18 @@ Description:	List of correctable errors seen and reported by this
- 		PCI device using ERR_COR. Note that since multiple errors may
- 		be reported using a single ERR_COR message, thus
- 		TOTAL_ERR_COR at the end of the file may not match the actual
--		total of all the errors in the file. Sample output:
---------------------------------------------------------------------------
--localhost /sys/devices/pci0000:00/0000:00:1c.0 # cat aer_dev_correctable
--Receiver Error 2
--Bad TLP 0
--Bad DLLP 0
--RELAY_NUM Rollover 0
--Replay Timer Timeout 0
--Advisory Non-Fatal 0
--Corrected Internal Error 0
--Header Log Overflow 0
--TOTAL_ERR_COR 2
---------------------------------------------------------------------------
-+		total of all the errors in the file. Sample output::
-+
-+		    localhost /sys/devices/pci0000:00/0000:00:1c.0 # cat aer_dev_correctable
-+		    Receiver Error 2
-+		    Bad TLP 0
-+		    Bad DLLP 0
-+		    RELAY_NUM Rollover 0
-+		    Replay Timer Timeout 0
-+		    Advisory Non-Fatal 0
-+		    Corrected Internal Error 0
-+		    Header Log Overflow 0
-+		    TOTAL_ERR_COR 2
+ 		(Note: kernels before 2.6.28 may require echo -n).
  
- What:		/sys/bus/pci/devices/<dev>/aer_dev_fatal
- Date:		July 2018
-@@ -39,28 +38,27 @@ Description:	List of uncorrectable fatal errors seen and reported by this
- 		PCI device using ERR_FATAL. Note that since multiple errors may
- 		be reported using a single ERR_FATAL message, thus
- 		TOTAL_ERR_FATAL at the end of the file may not match the actual
--		total of all the errors in the file. Sample output:
---------------------------------------------------------------------------
--localhost /sys/devices/pci0000:00/0000:00:1c.0 # cat aer_dev_fatal
--Undefined 0
--Data Link Protocol 0
--Surprise Down Error 0
--Poisoned TLP 0
--Flow Control Protocol 0
--Completion Timeout 0
--Completer Abort 0
--Unexpected Completion 0
--Receiver Overflow 0
--Malformed TLP 0
--ECRC 0
--Unsupported Request 0
--ACS Violation 0
--Uncorrectable Internal Error 0
--MC Blocked TLP 0
--AtomicOp Egress Blocked 0
--TLP Prefix Blocked Error 0
--TOTAL_ERR_FATAL 0
---------------------------------------------------------------------------
-+		total of all the errors in the file. Sample output::
-+
-+		    localhost /sys/devices/pci0000:00/0000:00:1c.0 # cat aer_dev_fatal
-+		    Undefined 0
-+		    Data Link Protocol 0
-+		    Surprise Down Error 0
-+		    Poisoned TLP 0
-+		    Flow Control Protocol 0
-+		    Completion Timeout 0
-+		    Completer Abort 0
-+		    Unexpected Completion 0
-+		    Receiver Overflow 0
-+		    Malformed TLP 0
-+		    ECRC 0
-+		    Unsupported Request 0
-+		    ACS Violation 0
-+		    Uncorrectable Internal Error 0
-+		    MC Blocked TLP 0
-+		    AtomicOp Egress Blocked 0
-+		    TLP Prefix Blocked Error 0
-+		    TOTAL_ERR_FATAL 0
- 
- What:		/sys/bus/pci/devices/<dev>/aer_dev_nonfatal
- Date:		July 2018
-@@ -70,32 +68,31 @@ Description:	List of uncorrectable nonfatal errors seen and reported by this
- 		PCI device using ERR_NONFATAL. Note that since multiple errors
- 		may be reported using a single ERR_FATAL message, thus
- 		TOTAL_ERR_NONFATAL at the end of the file may not match the
--		actual total of all the errors in the file. Sample output:
---------------------------------------------------------------------------
--localhost /sys/devices/pci0000:00/0000:00:1c.0 # cat aer_dev_nonfatal
--Undefined 0
--Data Link Protocol 0
--Surprise Down Error 0
--Poisoned TLP 0
--Flow Control Protocol 0
--Completion Timeout 0
--Completer Abort 0
--Unexpected Completion 0
--Receiver Overflow 0
--Malformed TLP 0
--ECRC 0
--Unsupported Request 0
--ACS Violation 0
--Uncorrectable Internal Error 0
--MC Blocked TLP 0
--AtomicOp Egress Blocked 0
--TLP Prefix Blocked Error 0
--TOTAL_ERR_NONFATAL 0
---------------------------------------------------------------------------
-+		actual total of all the errors in the file. Sample output::
-+
-+		    localhost /sys/devices/pci0000:00/0000:00:1c.0 # cat aer_dev_nonfatal
-+		    Undefined 0
-+		    Data Link Protocol 0
-+		    Surprise Down Error 0
-+		    Poisoned TLP 0
-+		    Flow Control Protocol 0
-+		    Completion Timeout 0
-+		    Completer Abort 0
-+		    Unexpected Completion 0
-+		    Receiver Overflow 0
-+		    Malformed TLP 0
-+		    ECRC 0
-+		    Unsupported Request 0
-+		    ACS Violation 0
-+		    Uncorrectable Internal Error 0
-+		    MC Blocked TLP 0
-+		    AtomicOp Egress Blocked 0
-+		    TLP Prefix Blocked Error 0
-+		    TOTAL_ERR_NONFATAL 0
- 
--============================
- PCIe Rootport AER statistics
--============================
-+----------------------------
-+
- These attributes show up under only the rootports (or root complex event
- collectors) that are AER capable. These indicate the number of error messages as
- "reported to" the rootport. Please note that the rootports also transmit
-diff --git a/Documentation/ABI/testing/sysfs-bus-rapidio b/Documentation/ABI/testing/sysfs-bus-rapidio
-index 13208b27dd87..634ea207a50a 100644
---- a/Documentation/ABI/testing/sysfs-bus-rapidio
-+++ b/Documentation/ABI/testing/sysfs-bus-rapidio
-@@ -4,24 +4,27 @@ Description:
- 		an individual subdirectory with the following name format of
- 		device_name "nn:d:iiii", where:
- 
--		nn   - two-digit hexadecimal ID of RapidIO network where the
-+		====   ========================================================
-+		nn     two-digit hexadecimal ID of RapidIO network where the
- 		       device resides
--		d    - device type: 'e' - for endpoint or 's' - for switch
--		iiii - four-digit device destID for endpoints, or switchID for
-+		d      device type: 'e' - for endpoint or 's' - for switch
-+		iiii   four-digit device destID for endpoints, or switchID for
- 		       switches
-+		====   ========================================================
- 
- 		For example, below is a list of device directories that
- 		represents a typical RapidIO network with one switch, one host,
- 		and two agent endpoints, as it is seen by the enumerating host
--		(with destID = 1):
-+		(with destID = 1)::
- 
--		/sys/bus/rapidio/devices/00:e:0000
--		/sys/bus/rapidio/devices/00:e:0002
--		/sys/bus/rapidio/devices/00:s:0001
-+		  /sys/bus/rapidio/devices/00:e:0000
-+		  /sys/bus/rapidio/devices/00:e:0002
-+		  /sys/bus/rapidio/devices/00:s:0001
- 
--		NOTE: An enumerating or discovering endpoint does not create a
--		sysfs entry for itself, this is why an endpoint with destID=1 is
--		not shown in the list.
-+		NOTE:
-+		  An enumerating or discovering endpoint does not create a
-+		  sysfs entry for itself, this is why an endpoint with destID=1
-+		  is not shown in the list.
- 
- Attributes Common for All RapidIO Devices
- -----------------------------------------
-diff --git a/Documentation/ABI/testing/sysfs-bus-thunderbolt b/Documentation/ABI/testing/sysfs-bus-thunderbolt
-index dd565c378b40..171127294674 100644
---- a/Documentation/ABI/testing/sysfs-bus-thunderbolt
-+++ b/Documentation/ABI/testing/sysfs-bus-thunderbolt
-@@ -37,16 +37,18 @@ Contact:	thunderbolt-software@lists.01.org
- Description:	This attribute holds current Thunderbolt security level
- 		set by the system BIOS. Possible values are:
- 
--		none: All devices are automatically authorized
--		user: Devices are only authorized based on writing
--		      appropriate value to the authorized attribute
--		secure: Require devices that support secure connect at
--			minimum. User needs to authorize each device.
--		dponly: Automatically tunnel Display port (and USB). No
--			PCIe tunnels are created.
--		usbonly: Automatically tunnel USB controller of the
-+		=======  ==================================================
-+		none     All devices are automatically authorized
-+		user     Devices are only authorized based on writing
-+		         appropriate value to the authorized attribute
-+		secure   Require devices that support secure connect at
-+			 minimum. User needs to authorize each device.
-+		dponly   Automatically tunnel Display port (and USB). No
-+			 PCIe tunnels are created.
-+		usbonly  Automatically tunnel USB controller of the
- 			 connected Thunderbolt dock (and Display Port). All
- 			 PCIe links downstream of the dock are removed.
-+		=======  ==================================================
- 
- What: /sys/bus/thunderbolt/devices/.../authorized
- Date:		Sep 2017
-@@ -61,17 +63,23 @@ Description:	This attribute is used to authorize Thunderbolt devices
- 		yet authorized.
- 
- 		Possible values are supported:
--		1: The device will be authorized and connected
-+
-+		==  ===========================================
-+		1   The device will be authorized and connected
-+		==  ===========================================
- 
- 		When key attribute contains 32 byte hex string the possible
- 		values are:
--		1: The 32 byte hex string is added to the device NVM and
--		   the device is authorized.
--		2: Send a challenge based on the 32 byte hex string. If the
--		   challenge response from device is valid, the device is
--		   authorized. In case of failure errno will be ENOKEY if
--		   the device did not contain a key at all, and
--		   EKEYREJECTED if the challenge response did not match.
-+
-+		==  ========================================================
-+		1   The 32 byte hex string is added to the device NVM and
-+		    the device is authorized.
-+		2   Send a challenge based on the 32 byte hex string. If the
-+		    challenge response from device is valid, the device is
-+		    authorized. In case of failure errno will be ENOKEY if
-+		    the device did not contain a key at all, and
-+		    EKEYREJECTED if the challenge response did not match.
-+		==  ========================================================
- 
- What: /sys/bus/thunderbolt/devices/.../boot
- Date:		Jun 2018
-diff --git a/Documentation/ABI/testing/sysfs-bus-usb b/Documentation/ABI/testing/sysfs-bus-usb
-index 614d216dff1d..e449b8374f6a 100644
---- a/Documentation/ABI/testing/sysfs-bus-usb
-+++ b/Documentation/ABI/testing/sysfs-bus-usb
-@@ -72,24 +72,27 @@ Description:
- 		table at compile time. The format for the device ID is:
- 		idVendor idProduct bInterfaceClass RefIdVendor RefIdProduct
- 		The vendor ID and device ID fields are required, the
--		rest is optional. The Ref* tuple can be used to tell the
-+		rest is optional. The `Ref*` tuple can be used to tell the
- 		driver to use the same driver_data for the new device as
- 		it is used for the reference device.
+ What:		/sys/bus/pci/drivers/.../new_id
+@@ -38,8 +42,9 @@ Description:
+ 		Class, Class Mask, and Private Driver Data.  The Vendor ID
+ 		and Device ID fields are required, the rest are optional.
  		Upon successfully adding an ID, the driver will probe
 -		for the device and attempt to bind to it.  For example:
--		# echo "8086 10f5" > /sys/bus/usb/drivers/foo/new_id
+-		# echo "8086 10f5" > /sys/bus/pci/drivers/foo/new_id
 +		for the device and attempt to bind to it.  For example::
 +
-+		  # echo "8086 10f5" > /sys/bus/usb/drivers/foo/new_id
++		  # echo "8086 10f5" > /sys/bus/pci/drivers/foo/new_id
  
- 		Here add a new device (0458:7045) using driver_data from
--		an already supported device (0458:704c):
--		# echo "0458 7045 0 0458 704c" > /sys/bus/usb/drivers/foo/new_id
-+		an already supported device (0458:704c)::
+ What:		/sys/bus/pci/drivers/.../remove_id
+ Date:		February 2009
+@@ -54,8 +59,9 @@ Description:
+ 		required, the rest are optional.  After successfully
+ 		removing an ID, the driver will no longer support the
+ 		device.  This is useful to ensure auto probing won't
+-		match the driver to the device.  For example:
+-		# echo "8086 10f5" > /sys/bus/pci/drivers/foo/remove_id
++		match the driver to the device.  For example::
 +
-+		  # echo "0458 7045 0 0458 704c" > /sys/bus/usb/drivers/foo/new_id
++		  # echo "8086 10f5" > /sys/bus/pci/drivers/foo/remove_id
  
- 		Reading from this file will list all dynamically added
- 		device IDs in the same format, with one entry per
--		line. For example:
--		# cat /sys/bus/usb/drivers/foo/new_id
--		8086 10f5
--		dead beef 06
--		f00d cafe
-+		line. For example::
+ What:		/sys/bus/pci/rescan
+ Date:		January 2009
+diff --git a/Documentation/ABI/testing/sysfs-bus-pci-devices-catpt b/Documentation/ABI/testing/sysfs-bus-pci-devices-catpt
+index 8a200f4eefbd..f85db86d63e8 100644
+--- a/Documentation/ABI/testing/sysfs-bus-pci-devices-catpt
++++ b/Documentation/ABI/testing/sysfs-bus-pci-devices-catpt
+@@ -4,6 +4,7 @@ Contact:	Cezary Rojewski <cezary.rojewski@intel.com>
+ Description:
+ 		Version of AudioDSP firmware ASoC catpt driver is
+ 		communicating with.
 +
-+		  # cat /sys/bus/usb/drivers/foo/new_id
-+		  8086 10f5
-+		  dead beef 06
-+		  f00d cafe
+ 		Format: %d.%d.%d.%d, type:major:minor:build.
  
- 		The list will be truncated at PAGE_SIZE bytes due to
- 		sysfs restrictions.
-@@ -209,6 +212,7 @@ Description:
- 		advance, and behaves well according to the specification.
- 		This attribute is a bit-field that controls the behavior of
- 		a specific port:
+ What:		/sys/devices/pci0000:00/<dev>/fw_info
+diff --git a/Documentation/ABI/testing/sysfs-bus-pci-drivers-ehci_hcd b/Documentation/ABI/testing/sysfs-bus-pci-drivers-ehci_hcd
+index 60c60fa624b2..c90d97a80855 100644
+--- a/Documentation/ABI/testing/sysfs-bus-pci-drivers-ehci_hcd
++++ b/Documentation/ABI/testing/sysfs-bus-pci-drivers-ehci_hcd
+@@ -21,11 +21,11 @@ Description:
+ 		number returns the port to normal operation.
+ 
+ 		For example: To force the high-speed device attached to
+-		port 4 on bus 2 to run at full speed:
++		port 4 on bus 2 to run at full speed::
+ 
+ 			echo 4 >/sys/bus/usb/devices/usb2/../companion
+ 
+-		To return the port to high-speed operation:
++		To return the port to high-speed operation::
+ 
+ 			echo -4 >/sys/bus/usb/devices/usb2/../companion
+ 
+diff --git a/Documentation/ABI/testing/sysfs-bus-rbd b/Documentation/ABI/testing/sysfs-bus-rbd
+index cc30bee8b5f4..417a2fe21be1 100644
+--- a/Documentation/ABI/testing/sysfs-bus-rbd
++++ b/Documentation/ABI/testing/sysfs-bus-rbd
+@@ -7,6 +7,8 @@ Description:
+ 
+ 		Usage: <mon ip addr> <options> <pool name> <rbd image name> [<snap name>]
+ 
++		Example::
 +
+ 		 $ echo "192.168.0.1 name=admin rbd foo" > /sys/bus/rbd/add
+ 
+ 		The snapshot name can be "-" or omitted to map the image
+@@ -23,6 +25,8 @@ Description:
+ 
+ 		Usage: <dev-id> [force]
+ 
++		Example::
++
+ 		 $ echo 2 > /sys/bus/rbd/remove
+ 
+ 		Optional "force" argument which when passed will wait for
+@@ -80,26 +84,29 @@ Date:		Oct, 2010
+ KernelVersion:	v2.6.37
+ Contact:	Sage Weil <sage@newdream.net>
+ Description:
+-		size:		(RO) The size (in bytes) of the mapped block
++
++		==============	================================================
++		size		(RO) The size (in bytes) of the mapped block
+ 				device.
+ 
+-		major:		(RO) The block device major number.
++		major		(RO) The block device major number.
+ 
+-		client_id:	(RO) The ceph unique client id that was assigned
++		client_id	(RO) The ceph unique client id that was assigned
+ 				for this specific session.
+ 
+-		pool:		(RO) The name of the storage pool where this rbd
++		pool		(RO) The name of the storage pool where this rbd
+ 				image resides. An rbd image name is unique
+ 				within its pool.
+ 
+-		name:		(RO) The name of the rbd image.
++		name		(RO) The name of the rbd image.
+ 
+-		refresh:	(WO) Writing to this file will reread the image
++		refresh		(WO) Writing to this file will reread the image
+ 				header data and set all relevant data structures
+ 				accordingly.
+ 
+-		current_snap:	(RO) The current snapshot for which the device
++		current_snap	(RO) The current snapshot for which the device
+ 				is mapped.
++		==============	================================================
+ 
+ 
+ What:		/sys/bus/rbd/devices/<dev-id>/pool_id
+@@ -117,11 +124,13 @@ Date:		Oct, 2012
+ KernelVersion:	v3.7
+ Contact:	Sage Weil <sage@newdream.net>
+ Description:
+-		image_id:	(RO) The unique id for the rbd image. (For rbd
++		=========	===============================================
++		image_id	(RO) The unique id for the rbd image. (For rbd
+ 				image format 1 this is empty.)
+ 
+-		features:	(RO) A hexadecimal encoding of the feature bits
++		features	(RO) A hexadecimal encoding of the feature bits
+ 				for this image.
++		=========	===============================================
+ 
+ 
+ What:		/sys/bus/rbd/devices/<dev-id>/parent
+@@ -149,14 +158,16 @@ Date:		Aug, 2016
+ KernelVersion:	v4.9
+ Contact:	Sage Weil <sage@newdream.net>
+ Description:
+-		snap_id:	(RO) The current snapshot's id.
++		============	================================================
++		snap_id		(RO) The current snapshot's id.
+ 
+-		config_info:	(RO) The string written into
++		config_info	(RO) The string written into
+ 				/sys/bus/rbd/add{,_single_major}.
+ 
+-		cluster_fsid:	(RO) The ceph cluster UUID.
++		cluster_fsid	(RO) The ceph cluster UUID.
+ 
+-		client_addr:	(RO) The ceph unique client
++		client_addr	(RO) The ceph unique client
+ 				entity_addr_t (address + nonce). The format is
+ 				<address>:<port>/<nonce>: '1.2.3.4:1234/5678' or
+ 				'[1:2:3:4:5:6:7:8]:1234/5678'.
++		============	================================================
+diff --git a/Documentation/ABI/testing/sysfs-bus-siox b/Documentation/ABI/testing/sysfs-bus-siox
+index c2a403f20b90..50e80238f30d 100644
+--- a/Documentation/ABI/testing/sysfs-bus-siox
++++ b/Documentation/ABI/testing/sysfs-bus-siox
+@@ -8,6 +8,7 @@ Description:
+ 		When the file contains a "1" the bus is operated and periodically
+ 		does a push-pull cycle to write and read data from the
+ 		connected devices.
++
+ 		When writing a "0" or "1" the bus moves to the described state.
+ 
+ What:		/sys/bus/siox/devices/siox-X/device_add
+@@ -21,8 +22,10 @@ Description:
+ 		to add a new device dynamically. <type> is the name that is used to match
+ 		to a driver (similar to the platform bus). <inbytes> and <outbytes> define
+ 		the length of the input and output shift register in bytes respectively.
++
+ 		<statustype> defines the 4 bit device type that is check to identify connection
+ 		problems.
++
+ 		The new device is added to the end of the existing chain.
+ 
+ What:		/sys/bus/siox/devices/siox-X/device_remove
+diff --git a/Documentation/ABI/testing/sysfs-bus-thunderbolt b/Documentation/ABI/testing/sysfs-bus-thunderbolt
+index 171127294674..0b4ab9e4b8f4 100644
+--- a/Documentation/ABI/testing/sysfs-bus-thunderbolt
++++ b/Documentation/ABI/testing/sysfs-bus-thunderbolt
+@@ -193,10 +193,11 @@ Description:	When new NVM image is written to the non-active NVM
+ 		verification fails an error code is returned instead.
+ 
+ 		This file will accept writing values "1" or "2"
++
+ 		- Writing "1" will flush the image to the storage
+-		area and authenticate the image in one action.
++		  area and authenticate the image in one action.
+ 		- Writing "2" will run some basic validation on the image
+-		and flush it to the storage area.
++		  and flush it to the storage area.
+ 
+ 		When read holds status of the last authentication
+ 		operation if an error occurred during the process. This
+@@ -213,9 +214,11 @@ Description:	This contains name of the property directory the XDomain
+ 		question. Following directories are already reserved by
+ 		the Apple XDomain specification:
+ 
+-		network:  IP/ethernet over Thunderbolt
+-		targetdm: Target disk mode protocol over Thunderbolt
+-		extdisp:  External display mode protocol over Thunderbolt
++		========  ===============================================
++		network   IP/ethernet over Thunderbolt
++		targetdm  Target disk mode protocol over Thunderbolt
++		extdisp   External display mode protocol over Thunderbolt
++		========  ===============================================
+ 
+ What:		/sys/bus/thunderbolt/devices/<xdomain>.<service>/modalias
+ Date:		Jan 2018
+@@ -293,7 +296,8 @@ Description:	For supported devices, automatically authenticate the new Thunderbo
+ 		image when the device is disconnected from the host system.
+ 
+ 		This file will accept writing values "1" or "2"
++
+ 		- Writing "1" will flush the image to the storage
+-		area and prepare the device for authentication on disconnect.
++		  area and prepare the device for authentication on disconnect.
+ 		- Writing "2" will run some basic validation on the image
+-		and flush it to the storage area.
++		  and flush it to the storage area.
+diff --git a/Documentation/ABI/testing/sysfs-bus-usb b/Documentation/ABI/testing/sysfs-bus-usb
+index e449b8374f6a..bf2c1968525f 100644
+--- a/Documentation/ABI/testing/sysfs-bus-usb
++++ b/Documentation/ABI/testing/sysfs-bus-usb
+@@ -9,6 +9,7 @@ Description:
+ 		by writing INTERFACE to /sys/bus/usb/drivers_probe
+ 		This allows to avoid side-effects with drivers
+ 		that need multiple interfaces.
++
+ 		A deauthorized interface cannot be probed or claimed.
+ 
+ What:		/sys/bus/usb/devices/usbX/interface_authorized_default
+@@ -216,6 +217,7 @@ Description:
  		 - Bit 0 of this field selects the "old" enumeration scheme,
  		   as it is considerably faster (it only causes one USB reset
  		   instead of 2).
-@@ -233,10 +237,10 @@ Description:
- 		poll() for monitoring changes to this value in user space.
- 
- 		Any time this value changes the corresponding hub device will send a
--		udev event with the following attributes:
-+		udev event with the following attributes::
- 
--		OVER_CURRENT_PORT=/sys/bus/usb/devices/.../(hub interface)/portX
--		OVER_CURRENT_COUNT=[current value of this sysfs attribute]
-+		  OVER_CURRENT_PORT=/sys/bus/usb/devices/.../(hub interface)/portX
-+		  OVER_CURRENT_COUNT=[current value of this sysfs attribute]
- 
- What:		/sys/bus/usb/devices/.../(hub interface)/portX/usb3_lpm_permit
- Date:		November 2015
-diff --git a/Documentation/ABI/testing/sysfs-bus-usb-devices-usbsevseg b/Documentation/ABI/testing/sysfs-bus-usb-devices-usbsevseg
-index 9ade80f81f96..2f86e4223bfc 100644
---- a/Documentation/ABI/testing/sysfs-bus-usb-devices-usbsevseg
-+++ b/Documentation/ABI/testing/sysfs-bus-usb-devices-usbsevseg
-@@ -12,8 +12,11 @@ KernelVersion:	2.6.26
- Contact:	Harrison Metzger <harrisonmetz@gmail.com>
- Description:	Controls the devices display mode.
- 		For a 6 character display the values are
 +
- 			MSB 0x06; LSB 0x3F, and
-+
- 		for an 8 character display the values are
-+
- 			MSB 0x08; LSB 0xFF.
+ 		   The old enumeration scheme can also be selected globally
+ 		   using /sys/module/usbcore/parameters/old_scheme_first, but
+ 		   it is often not desirable as the new scheme was introduced to
+diff --git a/Documentation/ABI/testing/sysfs-class-backlight-driver-lm3533 b/Documentation/ABI/testing/sysfs-class-backlight-driver-lm3533
+index c0e0a9ae7b3d..8251e78abc49 100644
+--- a/Documentation/ABI/testing/sysfs-class-backlight-driver-lm3533
++++ b/Documentation/ABI/testing/sysfs-class-backlight-driver-lm3533
+@@ -6,8 +6,10 @@ Description:
+ 		Get the ALS output channel used as input in
+ 		ALS-current-control mode (0, 1), where:
  
- What:		/sys/bus/usb/.../textmode
-@@ -37,7 +40,7 @@ KernelVersion:	2.6.26
- Contact:	Harrison Metzger <harrisonmetz@gmail.com>
- Description:	Controls the decimal places on the device.
- 		To set the nth decimal place, give this field
--		the value of 10 ** n. Assume this field has
-+		the value of ``10 ** n``. Assume this field has
- 		the value k and has 1 or more decimal places set,
- 		to set the mth place (where m is not already set),
--		change this fields value to k + 10 ** m.
-+		change this fields value to ``k + 10 ** m``.
-diff --git a/Documentation/ABI/testing/sysfs-bus-vfio-mdev b/Documentation/ABI/testing/sysfs-bus-vfio-mdev
-index 452dbe39270e..59fc804265db 100644
---- a/Documentation/ABI/testing/sysfs-bus-vfio-mdev
-+++ b/Documentation/ABI/testing/sysfs-bus-vfio-mdev
-@@ -28,8 +28,9 @@ Description:
- 		Writing UUID to this file will create mediated device of
- 		type <type-id> for parent device <device>. This is a
- 		write-only file.
--		For example:
--		# echo "83b8f4f2-509f-382f-3c1e-e6bfe0fa1001" >	\
-+		For example::
-+
-+		  # echo "83b8f4f2-509f-382f-3c1e-e6bfe0fa1001" >	\
- 		       /sys/devices/foo/mdev_supported_types/foo-1/create
+-		0 - out_current0 (backlight 0)
+-		1 - out_current1 (backlight 1)
++		==  ==========================
++		0   out_current0 (backlight 0)
++		1   out_current1 (backlight 1)
++		==  ==========================
  
- What:           /sys/.../mdev_supported_types/<type-id>/devices/
-@@ -107,5 +108,6 @@ Description:
- 		Writing '1' to this file destroys the mediated device. The
- 		vendor driver can fail the remove() callback if that device
- 		is active and the vendor driver doesn't support hot unplug.
--		Example:
--		# echo 1 > /sys/bus/mdev/devices/<UUID>/remove
-+		Example::
+ What:		/sys/class/backlight/<backlight>/als_en
+ Date:		May 2012
+@@ -30,8 +32,10 @@ Contact:	Johan Hovold <jhovold@gmail.com>
+ Description:
+ 		Set the brightness-mapping mode (0, 1), where:
+ 
+-		0 - exponential mode
+-		1 - linear mode
++		==  ================
++		0   exponential mode
++		1   linear mode
++		==  ================
+ 
+ What:		/sys/class/backlight/<backlight>/pwm
+ Date:		April 2012
+@@ -40,9 +44,11 @@ Contact:	Johan Hovold <jhovold@gmail.com>
+ Description:
+ 		Set the PWM-input control mask (5 bits), where:
+ 
+-		bit 5 - PWM-input enabled in Zone 4
+-		bit 4 - PWM-input enabled in Zone 3
+-		bit 3 - PWM-input enabled in Zone 2
+-		bit 2 - PWM-input enabled in Zone 1
+-		bit 1 - PWM-input enabled in Zone 0
+-		bit 0 - PWM-input enabled
++		=====   ===========================
++		bit 5   PWM-input enabled in Zone 4
++		bit 4   PWM-input enabled in Zone 3
++		bit 3   PWM-input enabled in Zone 2
++		bit 2   PWM-input enabled in Zone 1
++		bit 1   PWM-input enabled in Zone 0
++		bit 0   PWM-input enabled
++		=====   ===========================
+diff --git a/Documentation/ABI/testing/sysfs-class-bdi b/Documentation/ABI/testing/sysfs-class-bdi
+index d773d5697cf5..5402bd74ba43 100644
+--- a/Documentation/ABI/testing/sysfs-class-bdi
++++ b/Documentation/ABI/testing/sysfs-class-bdi
+@@ -24,7 +24,6 @@ default
+ 	filesystems which do not provide their own BDI.
+ 
+ Files under /sys/class/bdi/<bdi>/
+----------------------------------
+ 
+ read_ahead_kb (read-write)
+ 
+diff --git a/Documentation/ABI/testing/sysfs-class-chromeos b/Documentation/ABI/testing/sysfs-class-chromeos
+index 5819699d66ec..74ece942722e 100644
+--- a/Documentation/ABI/testing/sysfs-class-chromeos
++++ b/Documentation/ABI/testing/sysfs-class-chromeos
+@@ -17,13 +17,14 @@ Date:		August 2015
+ KernelVersion:	4.2
+ Description:
+ 		Tell the EC to reboot in various ways. Options are:
+-		"cancel": Cancel a pending reboot.
+-		"ro": Jump to RO without rebooting.
+-		"rw": Jump to RW without rebooting.
+-		"cold": Cold reboot.
+-		"disable-jump": Disable jump until next reboot.
+-		"hibernate": Hibernate the EC.
+-		"at-shutdown": Reboot after an AP shutdown.
 +
-+		  # echo 1 > /sys/bus/mdev/devices/<UUID>/remove
++		- "cancel": Cancel a pending reboot.
++		- "ro": Jump to RO without rebooting.
++		- "rw": Jump to RW without rebooting.
++		- "cold": Cold reboot.
++		- "disable-jump": Disable jump until next reboot.
++		- "hibernate": Hibernate the EC.
++		- "at-shutdown": Reboot after an AP shutdown.
+ 
+ What:		/sys/class/chromeos/<ec-device-name>/version
+ Date:		August 2015
 diff --git a/Documentation/ABI/testing/sysfs-class-cxl b/Documentation/ABI/testing/sysfs-class-cxl
-index 7970e3713e70..a6f51a104c44 100644
+index a6f51a104c44..818f55970efb 100644
 --- a/Documentation/ABI/testing/sysfs-class-cxl
 +++ b/Documentation/ABI/testing/sysfs-class-cxl
-@@ -72,11 +72,16 @@ Description:    read/write
-                 when performing the START_WORK ioctl. Only applicable when
-                 running under hashed page table mmu.
-                 Possible values:
--                        none: No prefaulting (default)
--                        work_element_descriptor: Treat the work element
--                                 descriptor as an effective address and
--                                 prefault what it points to.
--                        all: all segments process calling START_WORK maps.
+@@ -217,6 +217,7 @@ Description:    read/write
+                 card.  A power cycle is required to load the image.
+                 "none" could be useful for debugging because the trace arrays
+                 are preserved.
 +
-+                =======================  ======================================
-+		none			 No prefaulting (default)
-+		work_element_descriptor  Treat the work element
-+					 descriptor as an effective address and
-+					 prefault what it points to.
-+                all			 all segments process calling
-+					 START_WORK maps.
-+                =======================  ======================================
+                 "user" and "factory" means PERST will cause either the user or
+                 user or factory image to be loaded.
+                 Default is to reload on PERST whichever image the card has
+@@ -240,8 +241,11 @@ Contact:	linuxppc-dev@lists.ozlabs.org
+ Description:	read/write
+ 		Trust that when an image is reloaded via PERST, it will not
+ 		have changed.
+-		0 = don't trust, the image may be different (default)
+-		1 = trust that the image will not change.
 +
++		==  =================================================
++		0   don't trust, the image may be different (default)
++		1   trust that the image will not change.
++		==  =================================================
  Users:		https://github.com/ibm-capi/libcxl
  
- What:           /sys/class/cxl/<afu>/reset
+ What:           /sys/class/cxl/<card>/psl_timebase_synced
+diff --git a/Documentation/ABI/testing/sysfs-class-devlink b/Documentation/ABI/testing/sysfs-class-devlink
+index 64791b65c9a3..b662f747c83e 100644
+--- a/Documentation/ABI/testing/sysfs-class-devlink
++++ b/Documentation/ABI/testing/sysfs-class-devlink
+@@ -18,9 +18,9 @@ Description:
+ 
+ 		This will be one of the following strings:
+ 
+-		'consumer unbind'
+-		'supplier unbind'
+-		'never'
++		- 'consumer unbind'
++		- 'supplier unbind'
++		- 'never'
+ 
+ 		'consumer unbind' means the device link will be removed when
+ 		the consumer's driver is unbound from the consumer device.
+@@ -49,8 +49,10 @@ Description:
+ 
+ 		This will be one of the following strings:
+ 
+-		'0' - Does not affect runtime power management
+-		'1' - Affects runtime power management
++		===   ========================================
++		'0'   Does not affect runtime power management
++		'1'   Affects runtime power management
++		===   ========================================
+ 
+ What:		/sys/class/devlink/.../status
+ Date:		May 2020
+@@ -68,13 +70,13 @@ Description:
+ 
+ 		This will be one of the following strings:
+ 
+-		'not tracked'
+-		'dormant'
+-		'available'
+-		'consumer probing'
+-		'active'
+-		'supplier unbinding'
+-		'unknown'
++		- 'not tracked'
++		- 'dormant'
++		- 'available'
++		- 'consumer probing'
++		- 'active'
++		- 'supplier unbinding'
++		- 'unknown'
+ 
+ 		'not tracked' means this device link does not track the status
+ 		and has no impact on the binding, unbinding and syncing the
+@@ -114,8 +116,10 @@ Description:
+ 
+ 		This will be one of the following strings:
+ 
++		===  ================================
+ 		'0'
+-		'1' - Affects runtime power management
++		'1'  Affects runtime power management
++		===  ================================
+ 
+ 		'0' means the device link can affect other device behaviors
+ 		like binding/unbinding, suspend/resume, runtime power
+diff --git a/Documentation/ABI/testing/sysfs-class-extcon b/Documentation/ABI/testing/sysfs-class-extcon
+index 57a726232912..fde0fecd5de9 100644
+--- a/Documentation/ABI/testing/sysfs-class-extcon
++++ b/Documentation/ABI/testing/sysfs-class-extcon
+@@ -39,19 +39,22 @@ Description:
+ 		callback.
+ 
+ 		If the default callback for showing function is used, the
+-		format is like this:
+-		# cat state
+-		USB_OTG=1
+-		HDMI=0
+-		TA=1
+-		EAR_JACK=0
+-		#
++		format is like this::
++
++		    # cat state
++		    USB_OTG=1
++		    HDMI=0
++		    TA=1
++		    EAR_JACK=0
++		    #
++
+ 		In this example, the extcon device has USB_OTG and TA
+ 		cables attached and HDMI and EAR_JACK cables detached.
+ 
+ 		In order to update the state of an extcon device, enter a hex
+-		state number starting with 0x:
+-		# echo 0xHEX > state
++		state number starting with 0x::
++
++		    # echo 0xHEX > state
+ 
+ 		This updates the whole state of the extcon device.
+ 		Inputs of all the methods are required to meet the
+@@ -84,12 +87,13 @@ Contact:	MyungJoo Ham <myungjoo.ham@samsung.com>
+ Description:
+ 		Shows the relations of mutually exclusiveness. For example,
+ 		if the mutually_exclusive array of extcon device is
+-		{0x3, 0x5, 0xC, 0x0}, then the output is:
+-		# ls mutually_exclusive/
+-		0x3
+-		0x5
+-		0xc
+-		#
++		{0x3, 0x5, 0xC, 0x0}, then the output is::
++
++		    # ls mutually_exclusive/
++		    0x3
++		    0x5
++		    0xc
++		    #
+ 
+ 		Note that mutually_exclusive is a sub-directory of the extcon
+ 		device and the file names under the mutually_exclusive
+diff --git a/Documentation/ABI/testing/sysfs-class-fpga-manager b/Documentation/ABI/testing/sysfs-class-fpga-manager
+index 5284fa33d4c5..d78689c357a5 100644
+--- a/Documentation/ABI/testing/sysfs-class-fpga-manager
++++ b/Documentation/ABI/testing/sysfs-class-fpga-manager
+@@ -28,8 +28,7 @@ Description:	Read fpga manager state as a string.
+ 		* firmware request	= firmware class request in progress
+ 		* firmware request error = firmware request failed
+ 		* write init		= preparing FPGA for programming
+-		* write init error	= Error while preparing FPGA for
+-					  programming
++		* write init error	= Error while preparing FPGA for programming
+ 		* write			= FPGA ready to receive image data
+ 		* write error		= Error while programming
+ 		* write complete	= Doing post programming steps
+@@ -47,7 +46,7 @@ Description:	Read fpga manager status as a string.
+ 		programming errors to userspace. This is a list of strings for
+ 		the supported status.
+ 
+-		* reconfig operation error 	- invalid operations detected by
++		* reconfig operation error	- invalid operations detected by
+ 						  reconfiguration hardware.
+ 						  e.g. start reconfiguration
+ 						  with errors not cleared
+diff --git a/Documentation/ABI/testing/sysfs-class-gnss b/Documentation/ABI/testing/sysfs-class-gnss
+index 2467b6900eae..c8553d972edd 100644
+--- a/Documentation/ABI/testing/sysfs-class-gnss
++++ b/Documentation/ABI/testing/sysfs-class-gnss
+@@ -6,9 +6,11 @@ Description:
+ 		The GNSS receiver type. The currently identified types reflect
+ 		the protocol(s) supported by the receiver:
+ 
++			======		===========
+ 			"NMEA"		NMEA 0183
+ 			"SiRF"		SiRF Binary
+ 			"UBX"		UBX
++			======		===========
+ 
+ 		Note that also non-"NMEA" type receivers typically support a
+ 		subset of NMEA 0183 with vendor extensions (e.g. to allow
 diff --git a/Documentation/ABI/testing/sysfs-class-led b/Documentation/ABI/testing/sysfs-class-led
-index 5f67f7ab277b..65e040978f73 100644
+index 65e040978f73..0ed5c2629c6f 100644
 --- a/Documentation/ABI/testing/sysfs-class-led
 +++ b/Documentation/ABI/testing/sysfs-class-led
-@@ -50,7 +50,7 @@ Description:
+@@ -47,6 +47,7 @@ Contact:	Richard Purdie <rpurdie@rpsys.net>
+ Description:
+ 		Set the trigger for this LED. A trigger is a kernel based source
+ 		of LED events.
++
  		You can change triggers in a similar manner to the way an IO
  		scheduler is chosen. Trigger specific parameters can appear in
  		/sys/class/leds/<led> once a given trigger is selected. For
--		their documentation see sysfs-class-led-trigger-*.
-+		their documentation see `sysfs-class-led-trigger-*`.
- 
- What:		/sys/class/leds/<led>/inverted
- Date:		January 2011
 diff --git a/Documentation/ABI/testing/sysfs-class-led-driver-el15203000 b/Documentation/ABI/testing/sysfs-class-led-driver-el15203000
-index f520ece9b64c..69befe947d7e 100644
+index 69befe947d7e..da546e86deb5 100644
 --- a/Documentation/ABI/testing/sysfs-class-led-driver-el15203000
 +++ b/Documentation/ABI/testing/sysfs-class-led-driver-el15203000
-@@ -6,127 +6,132 @@ Description:
- 		The LEDs board supports only predefined patterns by firmware
- 		for specific LEDs.
+@@ -27,23 +27,23 @@ Description:
  
--		Breathing mode for Screen frame light tube:
--		"0 4000 1 4000"
-+		Breathing mode for Screen frame light tube::
+ 			^
+ 			|
+-		    0 On -|----+                   +----+                   +---
++		  0 On -|----+                   +----+                   +---
+ 			|    |                   |    |                   |
+ 		    Off-|    +-------------------+    +-------------------+
+ 			|
+-		    1 On -|    +----+                   +----+
++		  1 On -|    +----+                   +----+
+ 			|    |    |                   |    |
+ 		    Off |----+    +-------------------+    +------------------
+ 			|
+-		    2 On -|         +----+                   +----+
++		  2 On -|         +----+                   +----+
+ 			|         |    |                   |    |
+ 		    Off-|---------+    +-------------------+    +-------------
+ 			|
+-		    3 On -|              +----+                   +----+
++		  3 On -|              +----+                   +----+
+ 			|              |    |                   |    |
+ 		    Off-|--------------+    +-------------------+    +--------
+ 			|
+-		    4 On -|                   +----+                   +----+
++		  4 On -|                   +----+                   +----+
+ 			|                   |    |                   |    |
+ 		    Off-|-------------------+    +-------------------+    +---
+ 			|
+@@ -55,23 +55,23 @@ Description:
  
--		    ^
--		    |
--		Max-|     ---
--		    |    /   \
--		    |   /     \
--		    |  /       \     /
--		    | /         \   /
--		Min-|-           ---
--		    |
--		    0------4------8--> time (sec)
-+		    "0 4000 1 4000"
+ 			^
+ 			|
+-		    0 On -|    +-------------------+    +-------------------+
++		  0 On -|    +-------------------+    +-------------------+
+ 			|    |                   |    |                   |
+ 		    Off-|----+                   +----+                   +---
+ 			|
+-		    1 On -|----+    +-------------------+    +------------------
++		  1 On -|----+    +-------------------+    +------------------
+ 			|    |    |                   |    |
+ 		    Off |    +----+                   +----+
+ 			|
+-		    2 On -|---------+    +-------------------+    +-------------
++		  2 On -|---------+    +-------------------+    +-------------
+ 			|         |    |                   |    |
+ 		    Off-|         +----+                   +----+
+ 			|
+-		    3 On -|--------------+    +-------------------+    +--------
++		  3 On -|--------------+    +-------------------+    +--------
+ 			|              |    |                   |    |
+ 		    Off-|              +----+                   +----+
+ 			|
+-		    4 On -|-------------------+    +-------------------+    +---
++		  4 On -|-------------------+    +-------------------+    +---
+ 			|                   |    |                   |    |
+ 		    Off-|                   +----+                   +----+
+ 			|
+@@ -83,23 +83,23 @@ Description:
  
--		Cascade mode for Pipe LED:
--		"1 800 2 800 4 800 8 800 16 800"
-+			^
-+			|
-+		    Max-|     ---
-+			|    /   \
-+			|   /     \
-+			|  /       \     /
-+			| /         \   /
-+		    Min-|-           ---
-+			|
-+			0------4------8--> time (sec)
+ 			^
+ 			|
+-		    0 On -|----+                                       +--------
++		  0 On -|----+                                       +--------
+ 			|    |                                       |
+ 		    Off-|    +---------------------------------------+
+ 			|
+-		    1 On -|    +----+                             +----+
++		  1 On -|    +----+                             +----+
+ 			|    |    |                             |    |
+ 		    Off |----+    +-----------------------------+    +--------
+ 			|
+-		    2 On -|         +----+                   +----+
++		  2 On -|         +----+                   +----+
+ 			|         |    |                   |    |
+ 		    Off-|---------+    +-------------------+    +-------------
+ 			|
+-		    3 On -|              +----+         +----+
++		  3 On -|              +----+         +----+
+ 			|              |    |         |    |
+ 		    Off-|--------------+    +---------+    +------------------
+ 			|
+-		    4 On -|                   +---------+
++		  4 On -|                   +---------+
+ 			|                   |         |
+ 		    Off-|-------------------+         +-----------------------
+ 			|
+diff --git a/Documentation/ABI/testing/sysfs-class-led-driver-lm3533 b/Documentation/ABI/testing/sysfs-class-led-driver-lm3533
+index e4c89b261546..e38a835d0a85 100644
+--- a/Documentation/ABI/testing/sysfs-class-led-driver-lm3533
++++ b/Documentation/ABI/testing/sysfs-class-led-driver-lm3533
+@@ -6,8 +6,10 @@ Description:
+ 		Set the ALS output channel to use as input in
+ 		ALS-current-control mode (1, 2), where:
  
--		      ^
--		      |
--		0 On -|----+                   +----+                   +---
--		      |    |                   |    |                   |
--		  Off-|    +-------------------+    +-------------------+
--		      |
--		1 On -|    +----+                   +----+
--		      |    |    |                   |    |
--		  Off |----+    +-------------------+    +------------------
--		      |
--		2 On -|         +----+                   +----+
--		      |         |    |                   |    |
--		  Off-|---------+    +-------------------+    +-------------
--		      |
--		3 On -|              +----+                   +----+
--		      |              |    |                   |    |
--		  Off-|--------------+    +-------------------+    +--------
--		      |
--		4 On -|                   +----+                   +----+
--		      |                   |    |                   |    |
--		  Off-|-------------------+    +-------------------+    +---
--		      |
--		      0---0.8--1.6--2.4--3.2---4---4.8--5.6--6.4--7.2---8--> time (sec)
-+		Cascade mode for Pipe LED::
+-		1 - out_current1
+-		2 - out_current2
++		==  ============
++		1   out_current1
++		2   out_current2
++		==  ============
  
--		Inverted cascade mode for Pipe LED:
--		"30 800 29 800 27 800 23 800 15 800"
-+		    "1 800 2 800 4 800 8 800 16 800"
+ What:		/sys/class/leds/<led>/als_en
+ Date:		May 2012
+@@ -24,14 +26,16 @@ Contact:	Johan Hovold <jhovold@gmail.com>
+ Description:
+ 		Set the pattern generator fall and rise times (0..7), where:
  
--		      ^
--		      |
--		0 On -|    +-------------------+    +-------------------+
--		      |    |                   |    |                   |
--		  Off-|----+                   +----+                   +---
--		      |
--		1 On -|----+    +-------------------+    +------------------
--		      |    |    |                   |    |
--		  Off |    +----+                   +----+
--		      |
--		2 On -|---------+    +-------------------+    +-------------
--		      |         |    |                   |    |
--		  Off-|         +----+                   +----+
--		      |
--		3 On -|--------------+    +-------------------+    +--------
--		      |              |    |                   |    |
--		  Off-|              +----+                   +----+
--		      |
--		4 On -|-------------------+    +-------------------+    +---
--		      |                   |    |                   |    |
--		  Off-|                   +----+                   +----+
--		      |
--		      0---0.8--1.6--2.4--3.2---4---4.8--5.6--6.4--7.2---8--> time (sec)
-+			^
-+			|
-+		    0 On -|----+                   +----+                   +---
-+			|    |                   |    |                   |
-+		    Off-|    +-------------------+    +-------------------+
-+			|
-+		    1 On -|    +----+                   +----+
-+			|    |    |                   |    |
-+		    Off |----+    +-------------------+    +------------------
-+			|
-+		    2 On -|         +----+                   +----+
-+			|         |    |                   |    |
-+		    Off-|---------+    +-------------------+    +-------------
-+			|
-+		    3 On -|              +----+                   +----+
-+			|              |    |                   |    |
-+		    Off-|--------------+    +-------------------+    +--------
-+			|
-+		    4 On -|                   +----+                   +----+
-+			|                   |    |                   |    |
-+		    Off-|-------------------+    +-------------------+    +---
-+			|
-+			0---0.8--1.6--2.4--3.2---4---4.8--5.6--6.4--7.2---8--> time (sec)
+-		0 - 2048 us
+-		1 - 262 ms
+-		2 - 524 ms
+-		3 - 1.049 s
+-		4 - 2.097 s
+-		5 - 4.194 s
+-		6 - 8.389 s
+-		7 - 16.78 s
++		==  =======
++		0   2048 us
++		1   262 ms
++		2   524 ms
++		3   1.049 s
++		4   2.097 s
++		5   4.194 s
++		6   8.389 s
++		7   16.78 s
++		==  =======
  
--		Bounce mode for Pipe LED:
--		"1 800 2 800 4 800 8 800 16 800 16 800 8 800 4 800 2 800 1 800"
-+		Inverted cascade mode for Pipe LED::
+ What:		/sys/class/leds/<led>/id
+ Date:		April 2012
+@@ -47,8 +51,10 @@ Contact:	Johan Hovold <jhovold@gmail.com>
+ Description:
+ 		Set the brightness-mapping mode (0, 1), where:
  
--		      ^
--		      |
--		0 On -|----+                                       +--------
--		      |    |                                       |
--		  Off-|    +---------------------------------------+
--		      |
--		1 On -|    +----+                             +----+
--		      |    |    |                             |    |
--		  Off |----+    +-----------------------------+    +--------
--		      |
--		2 On -|         +----+                   +----+
--		      |         |    |                   |    |
--		  Off-|---------+    +-------------------+    +-------------
--		      |
--		3 On -|              +----+         +----+
--		      |              |    |         |    |
--		  Off-|--------------+    +---------+    +------------------
--		      |
--		4 On -|                   +---------+
--		      |                   |         |
--		  Off-|-------------------+         +-----------------------
--		      |
--		      0---0.8--1.6--2.4--3.2---4---4.8--5.6--6.4--7.2---8--> time (sec)
-+		    "30 800 29 800 27 800 23 800 15 800"
+-		0 - exponential mode
+-		1 - linear mode
++		==  ================
++		0   exponential mode
++		1   linear mode
++		==  ================
  
--		Inverted bounce mode for Pipe LED:
--		"30 800 29 800 27 800 23 800 15 800 15 800 23 800 27 800 29 800 30 800"
-+			^
-+			|
-+		    0 On -|    +-------------------+    +-------------------+
-+			|    |                   |    |                   |
-+		    Off-|----+                   +----+                   +---
-+			|
-+		    1 On -|----+    +-------------------+    +------------------
-+			|    |    |                   |    |
-+		    Off |    +----+                   +----+
-+			|
-+		    2 On -|---------+    +-------------------+    +-------------
-+			|         |    |                   |    |
-+		    Off-|         +----+                   +----+
-+			|
-+		    3 On -|--------------+    +-------------------+    +--------
-+			|              |    |                   |    |
-+		    Off-|              +----+                   +----+
-+			|
-+		    4 On -|-------------------+    +-------------------+    +---
-+			|                   |    |                   |    |
-+		    Off-|                   +----+                   +----+
-+			|
-+			0---0.8--1.6--2.4--3.2---4---4.8--5.6--6.4--7.2---8--> time (sec)
+ What:		/sys/class/leds/<led>/pwm
+ Date:		April 2012
+@@ -57,9 +63,11 @@ Contact:	Johan Hovold <jhovold@gmail.com>
+ Description:
+ 		Set the PWM-input control mask (5 bits), where:
  
--		      ^
--		      |
--		0 On -|    +---------------------------------------+
--		      |    |                                       |
--		  Off-|----+                                       +--------
--		      |
--		1 On -|----+    +-----------------------------+    +--------
--		      |    |    |                             |    |
--		  Off |    +----+                             +----+
--		      |
--		2 On -|---------+    +-------------------+    +-------------
--		      |         |    |                   |    |
--		  Off-|         +----+                   +----+
--		      |
--		3 On -|--------------+    +---------+    +------------------
--		      |              |    |         |    |
--		  Off-|              +----+         +----+
--		      |
--		4 On -|-------------------+         +-----------------------
--		      |                   |         |
--		  Off-|                   +---------+
--		      |
--		      0---0.8--1.6--2.4--3.2---4---4.8--5.6--6.4--7.2---8--> time (sec)
-+		Bounce mode for Pipe LED::
+-		bit 5 - PWM-input enabled in Zone 4
+-		bit 4 - PWM-input enabled in Zone 3
+-		bit 3 - PWM-input enabled in Zone 2
+-		bit 2 - PWM-input enabled in Zone 1
+-		bit 1 - PWM-input enabled in Zone 0
+-		bit 0 - PWM-input enabled
++		=====  ===========================
++		bit 5  PWM-input enabled in Zone 4
++		bit 4  PWM-input enabled in Zone 3
++		bit 3  PWM-input enabled in Zone 2
++		bit 2  PWM-input enabled in Zone 1
++		bit 1  PWM-input enabled in Zone 0
++		bit 0  PWM-input enabled
++		=====  ===========================
+diff --git a/Documentation/ABI/testing/sysfs-class-led-flash b/Documentation/ABI/testing/sysfs-class-led-flash
+index 220a0270b47b..11e5677c3672 100644
+--- a/Documentation/ABI/testing/sysfs-class-led-flash
++++ b/Documentation/ABI/testing/sysfs-class-led-flash
+@@ -55,26 +55,35 @@ Description:	read only
+ 		Flash faults are re-read after strobing the flash. Possible
+ 		flash faults:
+ 
+-		* led-over-voltage - flash controller voltage to the flash LED
++		* led-over-voltage
++			flash controller voltage to the flash LED
+ 			has exceeded the limit specific to the flash controller
+-		* flash-timeout-exceeded - the flash strobe was still on when
++		* flash-timeout-exceeded
++			the flash strobe was still on when
+ 			the timeout set by the user has expired; not all flash
+ 			controllers may set this in all such conditions
+-		* controller-over-temperature - the flash controller has
++		* controller-over-temperature
++			the flash controller has
+ 			overheated
+-		* controller-short-circuit - the short circuit protection
++		* controller-short-circuit
++			the short circuit protection
+ 			of the flash controller has been triggered
+-		* led-power-supply-over-current - current in the LED power
++		* led-power-supply-over-current
++			current in the LED power
+ 			supply has exceeded the limit specific to the flash
+ 			controller
+-		* indicator-led-fault - the flash controller has detected
++		* indicator-led-fault
++			the flash controller has detected
+ 			a short or open circuit condition on the indicator LED
+-		* led-under-voltage - flash controller voltage to the flash
++		* led-under-voltage
++			flash controller voltage to the flash
+ 			LED has been below the minimum limit specific to
+ 			the flash
+-		* controller-under-voltage - the input voltage of the flash
++		* controller-under-voltage
++			the input voltage of the flash
+ 			controller is below the limit under which strobing the
+ 			flash at full current will not be possible;
+ 			the condition persists until this flag is no longer set
+-		* led-over-temperature - the temperature of the LED has exceeded
++		* led-over-temperature
++			the temperature of the LED has exceeded
+ 			its allowed upper limit
+diff --git a/Documentation/ABI/testing/sysfs-class-led-trigger-netdev b/Documentation/ABI/testing/sysfs-class-led-trigger-netdev
+index 451af6d6768c..646540950e38 100644
+--- a/Documentation/ABI/testing/sysfs-class-led-trigger-netdev
++++ b/Documentation/ABI/testing/sysfs-class-led-trigger-netdev
+@@ -19,18 +19,23 @@ KernelVersion:	4.16
+ Contact:	linux-leds@vger.kernel.org
+ Description:
+ 		Signal the link state of the named network device.
 +
-+		    "1 800 2 800 4 800 8 800 16 800 16 800 8 800 4 800 2 800 1 800"
+ 		If set to 0 (default), the LED's normal state is off.
 +
-+			^
-+			|
-+		    0 On -|----+                                       +--------
-+			|    |                                       |
-+		    Off-|    +---------------------------------------+
-+			|
-+		    1 On -|    +----+                             +----+
-+			|    |    |                             |    |
-+		    Off |----+    +-----------------------------+    +--------
-+			|
-+		    2 On -|         +----+                   +----+
-+			|         |    |                   |    |
-+		    Off-|---------+    +-------------------+    +-------------
-+			|
-+		    3 On -|              +----+         +----+
-+			|              |    |         |    |
-+		    Off-|--------------+    +---------+    +------------------
-+			|
-+		    4 On -|                   +---------+
-+			|                   |         |
-+		    Off-|-------------------+         +-----------------------
-+			|
-+			0---0.8--1.6--2.4--3.2---4---4.8--5.6--6.4--7.2---8--> time (sec)
-+
-+		Inverted bounce mode for Pipe LED::
-+
-+		    "30 800 29 800 27 800 23 800 15 800 15 800 23 800 27 800 29 800 30 800"
-+
-+			^
-+			|
-+		    0 On -|    +---------------------------------------+
-+			|    |                                       |
-+		    Off-|----+                                       +--------
-+			|
-+		    1 On -|----+    +-----------------------------+    +--------
-+			|    |    |                             |    |
-+		    Off |    +----+                             +----+
-+			|
-+		    2 On -|---------+    +-------------------+    +-------------
-+			|         |    |                   |    |
-+		    Off-|         +----+                   +----+
-+			|
-+		    3 On -|--------------+    +---------+    +------------------
-+			|              |    |         |    |
-+		    Off-|              +----+         +----+
-+			|
-+		    4 On -|-------------------+         +-----------------------
-+			|                   |         |
-+		    Off-|                   +---------+
-+			|
-+			0---0.8--1.6--2.4--3.2---4---4.8--5.6--6.4--7.2---8--> time (sec)
+ 		If set to 1, the LED's normal state reflects the link state
+ 		of the named network device.
+ 		Setting this value also immediately changes the LED state.
  
- What:		/sys/class/leds/<led>/repeat
- Date:		September 2019
-diff --git a/Documentation/ABI/testing/sysfs-class-led-driver-sc27xx b/Documentation/ABI/testing/sysfs-class-led-driver-sc27xx
-index 45b1e605d355..215482379580 100644
---- a/Documentation/ABI/testing/sysfs-class-led-driver-sc27xx
-+++ b/Documentation/ABI/testing/sysfs-class-led-driver-sc27xx
-@@ -12,8 +12,8 @@ Description:
- 		format, we should set brightness as 0 for rise stage, fall
- 		stage and low stage.
- 
--		Min stage duration: 125 ms
--		Max stage duration: 31875 ms
-+		- Min stage duration: 125 ms
-+		- Max stage duration: 31875 ms
- 
- 		Since the stage duration step is 125 ms, the duration should be
- 		a multiplier of 125, like 125ms, 250ms, 375ms, 500ms ... 31875ms.
-diff --git a/Documentation/ABI/testing/sysfs-class-mic b/Documentation/ABI/testing/sysfs-class-mic
-index 6ef682603179..bd0e780c3760 100644
---- a/Documentation/ABI/testing/sysfs-class-mic
-+++ b/Documentation/ABI/testing/sysfs-class-mic
-@@ -41,24 +41,33 @@ Description:
- 		When read, this entry provides the current state of an Intel
- 		MIC device in the context of the card OS. Possible values that
- 		will be read are:
--		"ready" - The MIC device is ready to boot the card OS. On
--		reading this entry after an OSPM resume, a "boot" has to be
--		written to this entry if the card was previously shutdown
--		during OSPM suspend.
--		"booting" - The MIC device has initiated booting a card OS.
--		"online" - The MIC device has completed boot and is online
--		"shutting_down" - The card OS is shutting down.
--		"resetting" - A reset has been initiated for the MIC device
--		"reset_failed" - The MIC device has failed to reset.
 +
+ What:		/sys/class/leds/<led>/tx
+ Date:		Dec 2017
+ KernelVersion:	4.16
+ Contact:	linux-leds@vger.kernel.org
+ Description:
+ 		Signal transmission of data on the named network device.
 +
-+		===============  ===============================================
-+		"ready"		 The MIC device is ready to boot the card OS.
-+				 On reading this entry after an OSPM resume,
-+				 a "boot" has to be written to this entry if
-+				 the card was previously shutdown during OSPM
-+				 suspend.
-+		"booting"	 The MIC device has initiated booting a card OS.
-+		"online"	 The MIC device has completed boot and is online
-+		"shutting_down"	 The card OS is shutting down.
-+		"resetting"	 A reset has been initiated for the MIC device
-+		"reset_failed"	 The MIC device has failed to reset.
-+		===============  ===============================================
+ 		If set to 0 (default), the LED will not blink on transmission.
++
+ 		If set to 1, the LED will blink for the milliseconds specified
+ 		in interval to signal transmission.
  
- 		When written, this sysfs entry triggers different state change
- 		operations depending upon the current state of the card OS.
- 		Acceptable values are:
--		"boot" - Boot the card OS image specified by the combination
--			 of firmware, ramdisk, cmdline and bootmode
--			sysfs entries.
--		"reset" - Initiates device reset.
--		"shutdown" - Initiates card OS shutdown.
+@@ -40,6 +45,8 @@ KernelVersion:	4.16
+ Contact:	linux-leds@vger.kernel.org
+ Description:
+ 		Signal reception of data on the named network device.
 +
+ 		If set to 0 (default), the LED will not blink on reception.
 +
-+		==========  ===================================================
-+		"boot"      Boot the card OS image specified by the combination
-+			    of firmware, ramdisk, cmdline and bootmode
-+			    sysfs entries.
-+		"reset"     Initiates device reset.
-+		"shutdown"  Initiates card OS shutdown.
-+		==========  ===================================================
+ 		If set to 1, the LED will blink for the milliseconds specified
+ 		in interval to signal reception.
+diff --git a/Documentation/ABI/testing/sysfs-class-led-trigger-usbport b/Documentation/ABI/testing/sysfs-class-led-trigger-usbport
+index f440e690daef..eb81152b8348 100644
+--- a/Documentation/ABI/testing/sysfs-class-led-trigger-usbport
++++ b/Documentation/ABI/testing/sysfs-class-led-trigger-usbport
+@@ -8,5 +8,6 @@ Description:
+ 		selected for the USB port trigger. Selecting ports makes trigger
+ 		observing them for any connected devices and lighting on LED if
+ 		there are any.
++
+ 		Echoing "1" value selects USB port. Echoing "0" unselects it.
+ 		Current state can be also read.
+diff --git a/Documentation/ABI/testing/sysfs-class-leds-gt683r b/Documentation/ABI/testing/sysfs-class-leds-gt683r
+index 6adab27f646e..b57ffb26e722 100644
+--- a/Documentation/ABI/testing/sysfs-class-leds-gt683r
++++ b/Documentation/ABI/testing/sysfs-class-leds-gt683r
+@@ -7,9 +7,11 @@ Description:
+ 		of one LED will update the mode of its two sibling devices as
+ 		well. Possible values are:
  
- What:		/sys/class/mic/mic(x)/shutdown_status
- Date:		October 2013
-@@ -69,12 +78,15 @@ Description:
- 		OS can shutdown because of various reasons. When read, this
- 		entry provides the status on why the card OS was shutdown.
+-		0 - normal
+-		1 - audio
+-		2 - breathing
++		==  =========
++		0   normal
++		1   audio
++		2   breathing
++		==  =========
+ 
+ 		Normal: LEDs are fully on when enabled
+ 		Audio:  LEDs brightness depends on sound level
+diff --git a/Documentation/ABI/testing/sysfs-class-net b/Documentation/ABI/testing/sysfs-class-net
+index 3b404577f380..7670012ae9b6 100644
+--- a/Documentation/ABI/testing/sysfs-class-net
++++ b/Documentation/ABI/testing/sysfs-class-net
+@@ -4,10 +4,13 @@ KernelVersion:	3.17
+ Contact:	netdev@vger.kernel.org
+ Description:
+ 		Indicates the name assignment type. Possible values are:
+-		1: enumerated by the kernel, possibly in an unpredictable way
+-		2: predictably named by the kernel
+-		3: named by userspace
+-		4: renamed
++
++		== ==========================================================
++		1  enumerated by the kernel, possibly in an unpredictable way
++		2  predictably named by the kernel
++		3  named by userspace
++		4  renamed
++		== ==========================================================
+ 
+ What:		/sys/class/net/<iface>/addr_assign_type
+ Date:		July 2010
+@@ -15,10 +18,13 @@ KernelVersion:	3.2
+ Contact:	netdev@vger.kernel.org
+ Description:
+ 		Indicates the address assignment type. Possible values are:
+-		0: permanent address
+-		1: randomly generated
+-		2: stolen from another device
+-		3: set using dev_set_mac_address
++
++		== =============================
++		0  permanent address
++		1  randomly generated
++		2  stolen from another device
++		3  set using dev_set_mac_address
++		== =============================
+ 
+ What:		/sys/class/net/<iface>/addr_len
+ Date:		April 2005
+@@ -51,9 +57,12 @@ Description:
+ 		Default value 0 does not forward any link local frames.
+ 
+ 		Restricted bits:
+-		0: 01-80-C2-00-00-00 Bridge Group Address used for STP
+-		1: 01-80-C2-00-00-01 (MAC Control) 802.3 used for MAC PAUSE
+-		2: 01-80-C2-00-00-02 (Link Aggregation) 802.3ad
++
++		== ========================================================
++		0  01-80-C2-00-00-00 Bridge Group Address used for STP
++		1  01-80-C2-00-00-01 (MAC Control) 802.3 used for MAC PAUSE
++		2  01-80-C2-00-00-02 (Link Aggregation) 802.3ad
++		== ========================================================
+ 
+ 		Any values not setting these bits can be used. Take special
+ 		care when forwarding control frames e.g. 802.1X-PAE or LLDP.
+@@ -74,8 +83,11 @@ Contact:	netdev@vger.kernel.org
+ Description:
+ 		Indicates the current physical link state of the interface.
+ 		Posssible values are:
+-		0: physical link is down
+-		1: physical link is up
++
++		== =====================
++		0  physical link is down
++		1  physical link is up
++		== =====================
+ 
+ 		Note: some special devices, e.g: bonding and team drivers will
+ 		allow this attribute to be written to force a link state for
+@@ -131,8 +143,11 @@ Contact:	netdev@vger.kernel.org
+ Description:
+ 		Indicates whether the interface is under test. Possible
+ 		values are:
+-		0: interface is not being tested
+-		1: interface is being tested
++
++		== =============================
++		0  interface is not being tested
++		1  interface is being tested
++		== =============================
+ 
+ 		When an interface is under test, it cannot be expected
+ 		to pass packets as normal.
+@@ -144,8 +159,11 @@ Contact:	netdev@vger.kernel.org
+ Description:
+ 		Indicates the interface latest or current duplex value. Possible
+ 		values are:
+-		half: half duplex
+-		full: full duplex
++
++		====  ===========
++		half  half duplex
++		full  full duplex
++		====  ===========
+ 
+ 		Note: This attribute is only valid for interfaces that implement
+ 		the ethtool get_link_ksettings method (mostly Ethernet).
+@@ -196,8 +214,11 @@ Description:
+ 		Indicates the interface link mode, as a decimal number. This
+ 		attribute should be used in conjunction with 'dormant' attribute
+ 		to determine the interface usability. Possible values:
+-		0: default link mode
+-		1: dormant link mode
++
++		==  =================
++		0   default link mode
++		1   dormant link mode
++		==  =================
+ 
+ What:		/sys/class/net/<iface>/mtu
+ Date:		April 2005
+@@ -226,7 +247,9 @@ KernelVersion:	2.6.17
+ Contact:	netdev@vger.kernel.org
+ Description:
+ 		Indicates the interface RFC2863 operational state as a string.
++
  		Possible values are:
--		"nop" -  shutdown status is not applicable, when the card OS is
--			"online"
--		"crashed" - Shutdown because of a HW or SW crash.
--		"halted" - Shutdown because of a halt command.
--		"poweroff" - Shutdown because of a poweroff command.
--		"restart" - Shutdown because of a restart command.
 +
-+		==========  ===================================================
-+		"nop"       shutdown status is not applicable, when the card OS
-+			    is "online"
-+		"crashed"   Shutdown because of a HW or SW crash.
-+		"halted"    Shutdown because of a halt command.
-+		"poweroff"  Shutdown because of a poweroff command.
-+		"restart"   Shutdown because of a restart command.
-+		==========  ===================================================
+ 		"unknown", "notpresent", "down", "lowerlayerdown", "testing",
+ 		"dormant", "up".
  
- What:		/sys/class/mic/mic(x)/cmdline
- Date:		October 2013
-diff --git a/Documentation/ABI/testing/sysfs-class-ocxl b/Documentation/ABI/testing/sysfs-class-ocxl
-index ae1276efa45a..bf33f4fda58f 100644
---- a/Documentation/ABI/testing/sysfs-class-ocxl
-+++ b/Documentation/ABI/testing/sysfs-class-ocxl
-@@ -11,8 +11,11 @@ Contact:	linuxppc-dev@lists.ozlabs.org
- Description:	read only
- 		Number of contexts for the AFU, in the format <n>/<max>
- 		where:
+diff --git a/Documentation/ABI/testing/sysfs-class-net-cdc_ncm b/Documentation/ABI/testing/sysfs-class-net-cdc_ncm
+index f7be0e88b139..06416d0e163d 100644
+--- a/Documentation/ABI/testing/sysfs-class-net-cdc_ncm
++++ b/Documentation/ABI/testing/sysfs-class-net-cdc_ncm
+@@ -91,9 +91,9 @@ Date:		May 2014
+ KernelVersion:	3.16
+ Contact:	Bjørn Mork <bjorn@mork.no>
+ Description:
+-		Bit 0: 16-bit NTB supported (set to 1)
+-		Bit 1: 32-bit NTB supported
+-		Bits 2 – 15: reserved (reset to zero; must be ignored by host)
++		- Bit 0: 16-bit NTB supported (set to 1)
++		- Bit 1: 32-bit NTB supported
++		- Bits 2 – 15: reserved (reset to zero; must be ignored by host)
+ 
+ What:		/sys/class/net/<iface>/cdc_ncm/dwNtbInMaxSize
+ Date:		May 2014
+diff --git a/Documentation/ABI/testing/sysfs-class-net-phydev b/Documentation/ABI/testing/sysfs-class-net-phydev
+index 206cbf538b59..40ced0ea4316 100644
+--- a/Documentation/ABI/testing/sysfs-class-net-phydev
++++ b/Documentation/ABI/testing/sysfs-class-net-phydev
+@@ -35,7 +35,9 @@ Description:
+ 		Ethernet driver during bus enumeration, encoded in string.
+ 		This interface mode is used to configure the Ethernet MAC with the
+ 		appropriate mode for its data lines to the PHY hardware.
 +
-+			====	===============================================
- 			n:	number of currently active contexts, for debug
- 			max:	maximum number of contexts supported by the AFU
-+			====	===============================================
+ 		Possible values are:
++
+ 		<empty> (not available), mii, gmii, sgmii, tbi, rev-mii,
+ 		rmii, rgmii, rgmii-id, rgmii-rxid, rgmii-txid, rtbi, smii
+ 		xgmii, moca, qsgmii, trgmii, 1000base-x, 2500base-x, rxaui,
+diff --git a/Documentation/ABI/testing/sysfs-class-pktcdvd b/Documentation/ABI/testing/sysfs-class-pktcdvd
+index dde4f26d0780..ba1ce626591d 100644
+--- a/Documentation/ABI/testing/sysfs-class-pktcdvd
++++ b/Documentation/ABI/testing/sysfs-class-pktcdvd
+@@ -11,15 +11,17 @@ KernelVersion:	2.6.20
+ Contact:	Thomas Maier <balagi@justmail.de>
+ Description:
  
- What:		/sys/class/ocxl/<afu name>/pp_mmio_size
- Date:		January 2018
+-		add:		(WO) Write a block device id (major:minor) to
++		==========	==============================================
++		add		(WO) Write a block device id (major:minor) to
+ 				create a new pktcdvd device and map it to the
+ 				block device.
+ 
+-		remove:		(WO) Write the pktcdvd device id (major:minor)
++		remove		(WO) Write the pktcdvd device id (major:minor)
+ 				to remove the pktcdvd device.
+ 
+-		device_map:	(RO) Shows the device mapping in format:
++		device_map	(RO) Shows the device mapping in format:
+ 				pktcdvd[0-7] <pktdevid> <blkdevid>
++		==========	==============================================
+ 
+ 
+ What:		/sys/class/pktcdvd/pktcdvd[0-7]/dev
+@@ -65,29 +67,31 @@ Date:		Oct. 2006
+ KernelVersion:	2.6.20
+ Contact:	Thomas Maier <balagi@justmail.de>
+ Description:
+-		size:		(RO) Contains the size of the bio write queue.
++		==============	================================================
++		size		(RO) Contains the size of the bio write queue.
+ 
+-		congestion_off:	(RW) If bio write queue size is below this mark,
++		congestion_off	(RW) If bio write queue size is below this mark,
+ 				accept new bio requests from the block layer.
+ 
+-		congestion_on:	(RW) If bio write queue size is higher as this
++		congestion_on	(RW) If bio write queue size is higher as this
+ 				mark, do no longer accept bio write requests
+ 				from the block layer and wait till the pktcdvd
+ 				device has processed enough bio's so that bio
+ 				write queue size is below congestion off mark.
+ 				A value of <= 0 disables congestion control.
++		==============	================================================
+ 
+ 
+ Example:
+ --------
+-To use the pktcdvd sysfs interface directly, you can do:
++To use the pktcdvd sysfs interface directly, you can do::
+ 
+-# create a new pktcdvd device mapped to /dev/hdc
+-echo "22:0" >/sys/class/pktcdvd/add
+-cat /sys/class/pktcdvd/device_map
+-# assuming device pktcdvd0 was created, look at stat's
+-cat /sys/class/pktcdvd/pktcdvd0/stat/kb_written
+-# print the device id of the mapped block device
+-fgrep pktcdvd0 /sys/class/pktcdvd/device_map
+-# remove device, using pktcdvd0 device id   253:0
+-echo "253:0" >/sys/class/pktcdvd/remove
++    # create a new pktcdvd device mapped to /dev/hdc
++    echo "22:0" >/sys/class/pktcdvd/add
++    cat /sys/class/pktcdvd/device_map
++    # assuming device pktcdvd0 was created, look at stat's
++    cat /sys/class/pktcdvd/pktcdvd0/stat/kb_written
++    # print the device id of the mapped block device
++    fgrep pktcdvd0 /sys/class/pktcdvd/device_map
++    # remove device, using pktcdvd0 device id   253:0
++    echo "253:0" >/sys/class/pktcdvd/remove
 diff --git a/Documentation/ABI/testing/sysfs-class-power b/Documentation/ABI/testing/sysfs-class-power
-index dbccb2fcd7ce..d4319a04c302 100644
+index d4319a04c302..d68ad528a8e5 100644
 --- a/Documentation/ABI/testing/sysfs-class-power
 +++ b/Documentation/ABI/testing/sysfs-class-power
-@@ -1,4 +1,4 @@
--===== General Properties =====
-+**General Properties**
+@@ -43,7 +43,9 @@ Date:		May 2007
+ Contact:	linux-pm@vger.kernel.org
+ Description:
+ 		Fine grain representation of battery capacity.
++
+ 		Access: Read
++
+ 		Valid values: 0 - 100 (percent)
  
- What:		/sys/class/power_supply/<supply_name>/manufacturer
- Date:		May 2007
-@@ -72,6 +72,7 @@ Description:
- 		critically low).
+ What:		/sys/class/power_supply/<supply_name>/capacity_alert_max
+@@ -58,6 +60,7 @@ Description:
+ 		low).
  
  		Access: Read, Write
 +
  		Valid values: 0 - 100 (percent)
  
- What:		/sys/class/power_supply/<supply_name>/capacity_error_margin
-@@ -96,7 +97,9 @@ Description:
- 		Coarse representation of battery capacity.
+ What:		/sys/class/power_supply/<supply_name>/capacity_alert_min
+@@ -88,6 +91,7 @@ Description:
+ 		completely useless.
  
  		Access: Read
--		Valid values: "Unknown", "Critical", "Low", "Normal", "High",
-+
-+		Valid values:
-+			      "Unknown", "Critical", "Low", "Normal", "High",
- 			      "Full"
- 
- What:		/sys/class/power_supply/<supply_name>/current_avg
-@@ -139,6 +142,7 @@ Description:
- 		throttling for thermal cooling or improving battery health.
- 
- 		Access: Read, Write
-+
- 		Valid values: Represented in microamps
- 
- What:		/sys/class/power_supply/<supply_name>/charge_control_limit_max
-@@ -148,6 +152,7 @@ Description:
- 		Maximum legal value for the charge_control_limit property.
- 
- 		Access: Read
-+
- 		Valid values: Represented in microamps
- 
- What:		/sys/class/power_supply/<supply_name>/charge_control_start_threshold
-@@ -168,6 +173,7 @@ Description:
- 		stop.
- 
- 		Access: Read, Write
 +
  		Valid values: 0 - 100 (percent)
  
- What:		/sys/class/power_supply/<supply_name>/charge_type
-@@ -183,7 +189,9 @@ Description:
- 		different algorithm.
- 
- 		Access: Read, Write
--		Valid values: "Unknown", "N/A", "Trickle", "Fast", "Standard",
-+
-+		Valid values:
-+			      "Unknown", "N/A", "Trickle", "Fast", "Standard",
- 			      "Adaptive", "Custom"
- 
- What:		/sys/class/power_supply/<supply_name>/charge_term_current
-@@ -194,6 +202,7 @@ Description:
- 		when the battery is considered full and charging should end.
- 
- 		Access: Read
-+
- 		Valid values: Represented in microamps
- 
- What:		/sys/class/power_supply/<supply_name>/health
-@@ -204,7 +213,9 @@ Description:
- 		functionality.
- 
- 		Access: Read
--		Valid values: "Unknown", "Good", "Overheat", "Dead",
-+
-+		Valid values:
-+			      "Unknown", "Good", "Overheat", "Dead",
- 			      "Over voltage", "Unspecified failure", "Cold",
- 			      "Watchdog timer expire", "Safety timer expire",
- 			      "Over current", "Calibration required", "Warm",
-@@ -218,6 +229,7 @@ Description:
- 		for a battery charge cycle.
- 
- 		Access: Read
-+
- 		Valid values: Represented in microamps
- 
- What:		/sys/class/power_supply/<supply_name>/present
-@@ -227,9 +239,13 @@ Description:
- 		Reports whether a battery is present or not in the system.
- 
- 		Access: Read
-+
- 		Valid values:
-+
-+			== =======
- 			0: Absent
- 			1: Present
-+			== =======
- 
- What:		/sys/class/power_supply/<supply_name>/status
- Date:		May 2007
-@@ -240,7 +256,9 @@ Description:
- 		used to enable/disable charging to the battery.
- 
- 		Access: Read, Write
--		Valid values: "Unknown", "Charging", "Discharging",
-+
-+		Valid values:
-+			      "Unknown", "Charging", "Discharging",
- 			      "Not charging", "Full"
- 
- What:		/sys/class/power_supply/<supply_name>/technology
-@@ -250,7 +268,9 @@ Description:
- 		Describes the battery technology supported by the supply.
- 
- 		Access: Read
--		Valid values: "Unknown", "NiMH", "Li-ion", "Li-poly", "LiFe",
-+
-+		Valid values:
-+			      "Unknown", "NiMH", "Li-ion", "Li-poly", "LiFe",
- 			      "NiCd", "LiMn"
- 
- What:		/sys/class/power_supply/<supply_name>/temp
-@@ -260,6 +280,7 @@ Description:
- 		Reports the current TBAT battery temperature reading.
- 
- 		Access: Read
-+
- 		Valid values: Represented in 1/10 Degrees Celsius
- 
- What:		/sys/class/power_supply/<supply_name>/temp_alert_max
-@@ -274,6 +295,7 @@ Description:
- 		critically high, and charging has stopped).
- 
- 		Access: Read
-+
- 		Valid values: Represented in 1/10 Degrees Celsius
- 
- What:		/sys/class/power_supply/<supply_name>/temp_alert_min
-@@ -289,6 +311,7 @@ Description:
- 		remedy the situation).
- 
- 		Access: Read
-+
- 		Valid values: Represented in 1/10 Degrees Celsius
- 
- What:		/sys/class/power_supply/<supply_name>/temp_max
-@@ -299,6 +322,7 @@ Description:
- 		charging.
- 
- 		Access: Read
-+
- 		Valid values: Represented in 1/10 Degrees Celsius
- 
- What:		/sys/class/power_supply/<supply_name>/temp_min
-@@ -309,6 +333,7 @@ Description:
- 		charging.
- 
- 		Access: Read
-+
- 		Valid values: Represented in 1/10 Degrees Celsius
- 
- What:		/sys/class/power_supply/<supply_name>/voltage_avg,
-@@ -320,6 +345,7 @@ Description:
+ What:		/sys/class/power_supply/<supply_name>/capacity_level
+@@ -111,6 +115,7 @@ Description:
  		which they average readings to smooth out the reported value.
  
  		Access: Read
 +
- 		Valid values: Represented in microvolts
+ 		Valid values: Represented in microamps. Negative values are used
+ 		for discharging batteries, positive values for charging batteries.
  
- What:		/sys/class/power_supply/<supply_name>/voltage_max,
-@@ -330,6 +356,7 @@ Description:
- 		during charging.
- 
- 		Access: Read
-+
- 		Valid values: Represented in microvolts
- 
- What:		/sys/class/power_supply/<supply_name>/voltage_min,
-@@ -340,6 +367,7 @@ Description:
- 		during discharging.
- 
- 		Access: Read
-+
- 		Valid values: Represented in microvolts
- 
- What:		/sys/class/power_supply/<supply_name>/voltage_now,
-@@ -350,9 +378,10 @@ Description:
+@@ -131,6 +136,7 @@ Description:
  		This value is not averaged/smoothed.
  
  		Access: Read
 +
- 		Valid values: Represented in microvolts
+ 		Valid values: Represented in microamps. Negative values are used
+ 		for discharging batteries, positive values for charging batteries.
  
--===== USB Properties =====
-+**USB Properties**
+@@ -383,7 +389,7 @@ Description:
  
- What: 		/sys/class/power_supply/<supply_name>/current_avg
+ **USB Properties**
+ 
+-What: 		/sys/class/power_supply/<supply_name>/current_avg
++What:		/sys/class/power_supply/<supply_name>/current_avg
  Date:		May 2007
-@@ -363,6 +392,7 @@ Description:
- 		average readings to smooth out the reported value.
- 
- 		Access: Read
-+
- 		Valid values: Represented in microamps
- 
- 
-@@ -373,6 +403,7 @@ Description:
- 		Reports the maximum IBUS current the supply can support.
- 
- 		Access: Read
-+
- 		Valid values: Represented in microamps
- 
- What: 		/sys/class/power_supply/<supply_name>/current_now
-@@ -385,6 +416,7 @@ Description:
- 		within the reported min/max range.
- 
- 		Access: Read, Write
-+
- 		Valid values: Represented in microamps
- 
- What:		/sys/class/power_supply/<supply_name>/input_current_limit
-@@ -399,6 +431,7 @@ Description:
- 		solved using power limit use input_current_limit.
- 
- 		Access: Read, Write
-+
- 		Valid values: Represented in microamps
- 
- What:		/sys/class/power_supply/<supply_name>/input_voltage_limit
-@@ -441,10 +474,14 @@ Description:
- 		USB supply so voltage and current can be controlled).
- 
- 		Access: Read, Write
-+
- 		Valid values:
-+
-+			== ==================================================
- 			0: Offline
- 			1: Online Fixed - Fixed Voltage Supply
- 			2: Online Programmable - Programmable Voltage Supply
-+			== ==================================================
- 
- What:		/sys/class/power_supply/<supply_name>/temp
- Date:		May 2007
-@@ -455,6 +492,7 @@ Description:
- 		TJUNC temperature of an IC)
- 
- 		Access: Read
-+
- 		Valid values: Represented in 1/10 Degrees Celsius
- 
- What:		/sys/class/power_supply/<supply_name>/temp_alert_max
-@@ -470,6 +508,7 @@ Description:
- 		remedy the situation).
- 
- 		Access: Read
-+
- 		Valid values: Represented in 1/10 Degrees Celsius
- 
- What:		/sys/class/power_supply/<supply_name>/temp_alert_min
-@@ -485,6 +524,7 @@ Description:
- 		accordingly to remedy the situation).
- 
- 		Access: Read
-+
- 		Valid values: Represented in 1/10 Degrees Celsius
- 
- What:		/sys/class/power_supply/<supply_name>/temp_max
-@@ -494,6 +534,7 @@ Description:
- 		Reports the maximum allowed supply temperature for operation.
- 
- 		Access: Read
-+
- 		Valid values: Represented in 1/10 Degrees Celsius
- 
- What:		/sys/class/power_supply/<supply_name>/temp_min
-@@ -503,6 +544,7 @@ Description:
- 		Reports the mainimum allowed supply temperature for operation.
- 
- 		Access: Read
-+
- 		Valid values: Represented in 1/10 Degrees Celsius
- 
- What: 		/sys/class/power_supply/<supply_name>/usb_type
-@@ -514,7 +556,9 @@ Description:
- 		is attached.
- 
- 		Access: Read-Only
--		Valid values: "Unknown", "SDP", "DCP", "CDP", "ACA", "C", "PD",
-+
-+		Valid values:
-+			      "Unknown", "SDP", "DCP", "CDP", "ACA", "C", "PD",
- 			      "PD_DRP", "PD_PPS", "BrickID"
- 
- What: 		/sys/class/power_supply/<supply_name>/voltage_max
-@@ -524,6 +568,7 @@ Description:
- 		Reports the maximum VBUS voltage the supply can support.
- 
- 		Access: Read
-+
- 		Valid values: Represented in microvolts
- 
- What: 		/sys/class/power_supply/<supply_name>/voltage_min
-@@ -533,6 +578,7 @@ Description:
- 		Reports the minimum VBUS voltage the supply can support.
- 
- 		Access: Read
-+
- 		Valid values: Represented in microvolts
- 
- What: 		/sys/class/power_supply/<supply_name>/voltage_now
-@@ -545,9 +591,10 @@ Description:
- 		within the reported min/max range.
+ Contact:	linux-pm@vger.kernel.org
+ Description:
+@@ -449,6 +455,7 @@ Description:
+ 		solved using power limit use input_voltage_limit.
  
  		Access: Read, Write
 +
  		Valid values: Represented in microvolts
  
--===== Device Specific Properties =====
-+**Device Specific Properties**
+ What:		/sys/class/power_supply/<supply_name>/input_power_limit
+@@ -462,6 +469,7 @@ Description:
+ 		limit only for problems that can be solved using power limit.
  
- What:		/sys/class/power/ds2760-battery.*/charge_now
- Date:		May 2010
-@@ -581,6 +628,7 @@ Description:
- 		will drop to 0 A) and will trigger interrupt.
- 
- 		Valid values:
+ 		Access: Read, Write
 +
- 		- 5, 6 or 7 (hours),
- 		- 0: disabled.
+ 		Valid values: Represented in microwatts
  
-@@ -595,6 +643,7 @@ Description:
- 		will drop to 0 A) and will trigger interrupt.
+ What:		/sys/class/power_supply/<supply_name>/online,
+@@ -747,6 +755,7 @@ Description:
+ 		manufactured.
  
- 		Valid values:
+ 		Access: Read
 +
- 		- 4 - 16 (hours), step by 2 (rounded down)
- 		- 0: disabled.
+ 		Valid values: Reported as integer
  
-@@ -609,6 +658,7 @@ Description:
- 		interrupt and start top-off charging mode.
+ What:		/sys/class/power_supply/<supply_name>/manufacture_month
+@@ -756,6 +765,7 @@ Description:
+ 		Reports the month when the device has been manufactured.
  
- 		Valid values:
+ 		Access: Read
 +
- 		- 100000 - 200000 (microamps), step by 25000 (rounded down)
- 		- 200000 - 350000 (microamps), step by 50000 (rounded down)
- 		- 0: disabled.
-@@ -624,6 +674,7 @@ Description:
- 		will drop to 0 A) and will trigger interrupt.
+ 		Valid values: 1-12
  
- 		Valid values:
+ What:		/sys/class/power_supply/<supply_name>/manufacture_day
+diff --git a/Documentation/ABI/testing/sysfs-class-power-mp2629 b/Documentation/ABI/testing/sysfs-class-power-mp2629
+index 327a07e22805..914d67caac0d 100644
+--- a/Documentation/ABI/testing/sysfs-class-power-mp2629
++++ b/Documentation/ABI/testing/sysfs-class-power-mp2629
+@@ -5,4 +5,5 @@ Description:
+ 		Represents a battery impedance compensation to accelerate charging.
+ 
+                 Access: Read, Write
 +
- 		- 0 - 70 (minutes), step by 10 (rounded down)
- 
- What:		/sys/class/power_supply/bq24257-charger/ovp_voltage
-@@ -637,6 +688,7 @@ Description:
- 		device datasheet for details.
- 
- 		Valid values:
-+
- 		- 6000000, 6500000, 7000000, 8000000, 9000000, 9500000, 10000000,
- 		  10500000 (all uV)
- 
-@@ -652,6 +704,7 @@ Description:
- 		lower than the set value. See device datasheet for details.
- 
- 		Valid values:
-+
- 		- 4200000, 4280000, 4360000, 4440000, 4520000, 4600000, 4680000,
- 		  4760000 (all uV)
- 
-@@ -666,6 +719,7 @@ Description:
- 		the charger operates normally. See device datasheet for details.
- 
- 		Valid values:
-+
- 		- 1: enabled
- 		- 0: disabled
- 
-@@ -681,6 +735,7 @@ Description:
- 		from the system. See device datasheet for details.
- 
- 		Valid values:
-+
- 		- 1: enabled
- 		- 0: disabled
- 
+                 Valid values: Represented in milli-ohms. Valid range is [0, 140].
 diff --git a/Documentation/ABI/testing/sysfs-class-power-twl4030 b/Documentation/ABI/testing/sysfs-class-power-twl4030
-index b4fd32d210c5..7ac36dba87bc 100644
+index 7ac36dba87bc..b52f7023f8ba 100644
 --- a/Documentation/ABI/testing/sysfs-class-power-twl4030
 +++ b/Documentation/ABI/testing/sysfs-class-power-twl4030
-@@ -4,18 +4,20 @@ Description:
- 	Writing to this can disable charging.
- 
+@@ -6,9 +6,9 @@ Description:
  	Possible values are:
--		"auto" - draw power as appropriate for detected
--			 power source and battery status.
--		"off"  - do not draw any power.
--		"continuous"
--		       - activate mode described as "linear" in
--		         TWL data sheets.  This uses whatever
--			 current is available and doesn't switch off
--			 when voltage drops.
  
--			 This is useful for unstable power sources
--			 such as bicycle dynamo, but care should
--			 be taken that battery is not over-charged.
-+		=============	===========================================
-+		"auto" 		draw power as appropriate for detected
-+				power source and battery status.
-+		"off"  		do not draw any power.
-+		"continuous"	activate mode described as "linear" in
-+				TWL data sheets.  This uses whatever
-+				current is available and doesn't switch off
-+				when voltage drops.
+ 		=============	===========================================
+-		"auto" 		draw power as appropriate for detected
++		"auto"		draw power as appropriate for detected
+ 				power source and battery status.
+-		"off"  		do not draw any power.
++		"off"		do not draw any power.
+ 		"continuous"	activate mode described as "linear" in
+ 				TWL data sheets.  This uses whatever
+ 				current is available and doesn't switch off
+diff --git a/Documentation/ABI/testing/sysfs-class-rapidio b/Documentation/ABI/testing/sysfs-class-rapidio
+index 8716beeb16c1..19aefb21b639 100644
+--- a/Documentation/ABI/testing/sysfs-class-rapidio
++++ b/Documentation/ABI/testing/sysfs-class-rapidio
+@@ -6,6 +6,7 @@ Description:
+ 		The /sys/class/rapidio_port subdirectory contains individual
+ 		subdirectories named as "rapidioN" where N = mport ID registered
+ 		with RapidIO subsystem.
 +
-+				This is useful for unstable power sources
-+				such as bicycle dynamo, but care should
-+				be taken that battery is not over-charged.
-+		=============	===========================================
+ 		NOTE: An mport ID is not a RapidIO destination ID assigned to a
+ 		given local mport device.
  
- What: /sys/class/power_supply/twl4030_ac/mode
+@@ -16,7 +17,9 @@ Contact:	Matt Porter <mporter@kernel.crashing.org>,
+ 		Alexandre Bounine <alexandre.bounine@idt.com>
  Description:
-@@ -23,6 +25,9 @@ Description:
- 	Writing to this can disable charging.
- 
- 	Possible values are:
--		"auto" - draw power as appropriate for detected
--			 power source and battery status.
--		"off"  - do not draw any power.
+ 		(RO) reports RapidIO common transport system size:
 +
-+		======	===========================================
-+		"auto"	draw power as appropriate for detected
-+			power source and battery status.
-+		"off"	do not draw any power.
-+		======	===========================================
-diff --git a/Documentation/ABI/testing/sysfs-class-rc b/Documentation/ABI/testing/sysfs-class-rc
-index 6c0d6c8cb911..9c8ff7910858 100644
---- a/Documentation/ABI/testing/sysfs-class-rc
-+++ b/Documentation/ABI/testing/sysfs-class-rc
-@@ -21,15 +21,22 @@ KernelVersion:	2.6.36
- Contact:	Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+ 		0 = small (8-bit destination ID, max. 256 devices),
++
+ 		1 = large (16-bit destination ID, max. 65536 devices).
+ 
+ What:		/sys/class/rapidio_port/rapidioN/port_destid
+@@ -25,31 +28,32 @@ KernelVersion:	v3.15
+ Contact:	Matt Porter <mporter@kernel.crashing.org>,
+ 		Alexandre Bounine <alexandre.bounine@idt.com>
  Description:
- 		Reading this file returns a list of available protocols,
--		something like:
-+		something like::
+-		(RO) reports RapidIO destination ID assigned to the given
+-		RapidIO mport device. If value 0xFFFFFFFF is returned this means
+-		that no valid destination ID have been assigned to the mport
+-		(yet). Normally, before enumeration/discovery have been executed
+-		only fabric enumerating mports have a valid destination ID
+-		assigned to them using "hdid=..." rapidio module parameter.
 +
- 		    "rc5 [rc6] nec jvc [sony]"
-+
- 		Enabled protocols are shown in [] brackets.
-+
- 		Writing "+proto" will add a protocol to the list of enabled
- 		protocols.
-+
- 		Writing "-proto" will remove a protocol from the list of enabled
- 		protocols.
-+
- 		Writing "proto" will enable only "proto".
-+
- 		Writing "none" will disable all protocols.
-+
- 		Write fails with EINVAL if an invalid protocol combination or
- 		unknown protocol name is used.
++(RO) reports RapidIO destination ID assigned to the given
++RapidIO mport device. If value 0xFFFFFFFF is returned this means
++that no valid destination ID have been assigned to the mport
++(yet). Normally, before enumeration/discovery have been executed
++only fabric enumerating mports have a valid destination ID
++assigned to them using "hdid=..." rapidio module parameter.
  
-@@ -39,11 +46,13 @@ KernelVersion:	3.15
- Contact:	Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+ After enumeration or discovery was performed for a given mport device,
+ the corresponding subdirectory will also contain subdirectories for each
+ child RapidIO device connected to the mport.
+ 
+ The example below shows mport device subdirectory with several child RapidIO
+-devices attached to it.
++devices attached to it::
+ 
+-[rio@rapidio ~]$ ls /sys/class/rapidio_port/rapidio0/ -l
+-total 0
+-drwxr-xr-x 3 root root    0 Feb 11 15:10 00:e:0001
+-drwxr-xr-x 3 root root    0 Feb 11 15:10 00:e:0004
+-drwxr-xr-x 3 root root    0 Feb 11 15:10 00:e:0007
+-drwxr-xr-x 3 root root    0 Feb 11 15:10 00:s:0002
+-drwxr-xr-x 3 root root    0 Feb 11 15:10 00:s:0003
+-drwxr-xr-x 3 root root    0 Feb 11 15:10 00:s:0005
+-lrwxrwxrwx 1 root root    0 Feb 11 15:11 device -> ../../../0000:01:00.0
+--r--r--r-- 1 root root 4096 Feb 11 15:11 port_destid
+-drwxr-xr-x 2 root root    0 Feb 11 15:11 power
+-lrwxrwxrwx 1 root root    0 Feb 11 15:04 subsystem -> ../../../../../../class/rapidio_port
+--r--r--r-- 1 root root 4096 Feb 11 15:11 sys_size
+--rw-r--r-- 1 root root 4096 Feb 11 15:04 uevent
++    [rio@rapidio ~]$ ls /sys/class/rapidio_port/rapidio0/ -l
++    total 0
++    drwxr-xr-x 3 root root    0 Feb 11 15:10 00:e:0001
++    drwxr-xr-x 3 root root    0 Feb 11 15:10 00:e:0004
++    drwxr-xr-x 3 root root    0 Feb 11 15:10 00:e:0007
++    drwxr-xr-x 3 root root    0 Feb 11 15:10 00:s:0002
++    drwxr-xr-x 3 root root    0 Feb 11 15:10 00:s:0003
++    drwxr-xr-x 3 root root    0 Feb 11 15:10 00:s:0005
++    lrwxrwxrwx 1 root root    0 Feb 11 15:11 device -> ../../../0000:01:00.0
++    -r--r--r-- 1 root root 4096 Feb 11 15:11 port_destid
++    drwxr-xr-x 2 root root    0 Feb 11 15:11 power
++    lrwxrwxrwx 1 root root    0 Feb 11 15:04 subsystem -> ../../../../../../class/rapidio_port
++    -r--r--r-- 1 root root 4096 Feb 11 15:11 sys_size
++    -rw-r--r-- 1 root root 4096 Feb 11 15:04 uevent
+diff --git a/Documentation/ABI/testing/sysfs-class-regulator b/Documentation/ABI/testing/sysfs-class-regulator
+index bc578bc60628..8516f08806dd 100644
+--- a/Documentation/ABI/testing/sysfs-class-regulator
++++ b/Documentation/ABI/testing/sysfs-class-regulator
+@@ -35,13 +35,13 @@ Description:
+ 
+ 		This will be one of the following strings:
+ 
+-			off
+-			on
+-			error
+-			fast
+-			normal
+-			idle
+-			standby
++			- off
++			- on
++			- error
++			- fast
++			- normal
++			- idle
++			- standby
+ 
+ 		"off" means the regulator is not supplying power to the
+ 		system.
+@@ -74,9 +74,9 @@ Description:
+ 
+ 		This will be one of the following strings:
+ 
+-		'voltage'
+-		'current'
+-		'unknown'
++		- 'voltage'
++		- 'current'
++		- 'unknown'
+ 
+ 		'voltage' means the regulator output voltage can be controlled
+ 		by software.
+@@ -129,11 +129,11 @@ Description:
+ 
+ 		The opmode value can be one of the following strings:
+ 
+-		'fast'
+-		'normal'
+-		'idle'
+-		'standby'
+-		'unknown'
++		- 'fast'
++		- 'normal'
++		- 'idle'
++		- 'standby'
++		- 'unknown'
+ 
+ 		The modes are described in include/linux/regulator/consumer.h
+ 
+@@ -360,9 +360,9 @@ Description:
+ 
+ 		This will be one of the following strings:
+ 
+-		'enabled'
+-		'disabled'
+-		'unknown'
++		- 'enabled'
++		- 'disabled'
++		- 'unknown'
+ 
+ 		'enabled' means the regulator is in bypass mode.
+ 
+diff --git a/Documentation/ABI/testing/sysfs-class-remoteproc b/Documentation/ABI/testing/sysfs-class-remoteproc
+index 066b9b6f4924..0c9ee55098b8 100644
+--- a/Documentation/ABI/testing/sysfs-class-remoteproc
++++ b/Documentation/ABI/testing/sysfs-class-remoteproc
+@@ -16,11 +16,11 @@ Description:	Remote processor state
+ 
+ 		Reports the state of the remote processor, which will be one of:
+ 
+-		"offline"
+-		"suspended"
+-		"running"
+-		"crashed"
+-		"invalid"
++		- "offline"
++		- "suspended"
++		- "running"
++		- "crashed"
++		- "invalid"
+ 
+ 		"offline" means the remote processor is powered off.
+ 
+@@ -38,8 +38,8 @@ Description:	Remote processor state
+ 		Writing this file controls the state of the remote processor.
+ 		The following states can be written:
+ 
+-		"start"
+-		"stop"
++		- "start"
++		- "stop"
+ 
+ 		Writing "start" will attempt to start the processor running the
+ 		firmware indicated by, or written to,
+diff --git a/Documentation/ABI/testing/sysfs-class-rtc-rtc0-device-rtc_calibration b/Documentation/ABI/testing/sysfs-class-rtc-rtc0-device-rtc_calibration
+index ec950c93e5c6..ee8ed6494a01 100644
+--- a/Documentation/ABI/testing/sysfs-class-rtc-rtc0-device-rtc_calibration
++++ b/Documentation/ABI/testing/sysfs-class-rtc-rtc0-device-rtc_calibration
+@@ -7,6 +7,7 @@ Description:    Attribute for calibrating ST-Ericsson AB8500 Real Time Clock
+                 calibrate the AB8500.s 32KHz Real Time Clock.
+                 Every 60 seconds the AB8500 will correct the RTC's value
+                 by adding to it the value of this attribute.
++
+                 The range of the attribute is -127 to +127 in units of
+                 30.5 micro-seconds (half-parts-per-million of the 32KHz clock)
+ Users:          The /vendor/st-ericsson/base_utilities/core/rtc_calibration
+diff --git a/Documentation/ABI/testing/sysfs-class-uwb_rc b/Documentation/ABI/testing/sysfs-class-uwb_rc
+index a0578751c1e3..6c5dcad21e19 100644
+--- a/Documentation/ABI/testing/sysfs-class-uwb_rc
++++ b/Documentation/ABI/testing/sysfs-class-uwb_rc
+@@ -66,11 +66,14 @@ Description:
+                 <channel> <type> [<bpst offset>]
+ 
+                 to start (or stop) scanning on a channel.  <type> is one of:
+-                    0 - scan
+-                    1 - scan outside BP
+-                    2 - scan while inactive
+-                    3 - scanning disabled
+-                    4 - scan (with start time of <bpst offset>)
++
++		   ==   =======================================
++                    0   scan
++                    1   scan outside BP
++                    2   scan while inactive
++                    3   scanning disabled
++                    4   scan (with start time of <bpst offset>)
++		   ==   =======================================
+ 
+ What:           /sys/class/uwb_rc/uwbN/mac_address
+ Date:           July 2008
+diff --git a/Documentation/ABI/testing/sysfs-class-watchdog b/Documentation/ABI/testing/sysfs-class-watchdog
+index 9860a8b2ba75..585caecda3a5 100644
+--- a/Documentation/ABI/testing/sysfs-class-watchdog
++++ b/Documentation/ABI/testing/sysfs-class-watchdog
+@@ -91,10 +91,13 @@ Description:
+ 		h/w strapping (for WDT2 only).
+ 
+ 		At alternate flash the 'access_cs0' sysfs node provides:
+-			ast2400: a way to get access to the primary SPI flash
++
++			ast2400:
++				a way to get access to the primary SPI flash
+ 				chip at CS0 after booting from the alternate
+ 				chip at CS1.
+-			ast2500: a way to restore the normal address mapping
++			ast2500:
++				a way to restore the normal address mapping
+ 				from (CS0->CS1, CS1->CS0) to (CS0->CS0,
+ 				CS1->CS1).
+ 
+diff --git a/Documentation/ABI/testing/sysfs-dev b/Documentation/ABI/testing/sysfs-dev
+index a9f2b8b0530f..d1739063e762 100644
+--- a/Documentation/ABI/testing/sysfs-dev
++++ b/Documentation/ABI/testing/sysfs-dev
+@@ -9,9 +9,10 @@ Description:	The /sys/dev tree provides a method to look up the sysfs
+ 		the form "<major>:<minor>".  These links point to the
+ 		corresponding sysfs path for the given device.
+ 
+-		Example:
+-		$ readlink /sys/dev/block/8:32
+-		../../block/sdc
++		Example::
++
++		  $ readlink /sys/dev/block/8:32
++		  ../../block/sdc
+ 
+ 		Entries in /sys/dev/char and /sys/dev/block will be
+ 		dynamically created and destroyed as devices enter and
+diff --git a/Documentation/ABI/testing/sysfs-devices-mapping b/Documentation/ABI/testing/sysfs-devices-mapping
+index 490ccfd67f12..8d202bac9394 100644
+--- a/Documentation/ABI/testing/sysfs-devices-mapping
++++ b/Documentation/ABI/testing/sysfs-devices-mapping
+@@ -8,26 +8,27 @@ Description:
+                 block.
+                 For example, on 4-die Xeon platform with up to 6 IIO stacks per
+                 die and, therefore, 6 IIO PMON blocks per die, the mapping of
+-                IIO PMON block 0 exposes as the following:
++                IIO PMON block 0 exposes as the following::
+ 
+-                $ ls /sys/devices/uncore_iio_0/die*
+-                -r--r--r-- /sys/devices/uncore_iio_0/die0
+-                -r--r--r-- /sys/devices/uncore_iio_0/die1
+-                -r--r--r-- /sys/devices/uncore_iio_0/die2
+-                -r--r--r-- /sys/devices/uncore_iio_0/die3
++		    $ ls /sys/devices/uncore_iio_0/die*
++		    -r--r--r-- /sys/devices/uncore_iio_0/die0
++		    -r--r--r-- /sys/devices/uncore_iio_0/die1
++		    -r--r--r-- /sys/devices/uncore_iio_0/die2
++		    -r--r--r-- /sys/devices/uncore_iio_0/die3
+ 
+-                $ tail /sys/devices/uncore_iio_0/die*
+-                ==> /sys/devices/uncore_iio_0/die0 <==
+-                0000:00
+-                ==> /sys/devices/uncore_iio_0/die1 <==
+-                0000:40
+-                ==> /sys/devices/uncore_iio_0/die2 <==
+-                0000:80
+-                ==> /sys/devices/uncore_iio_0/die3 <==
+-                0000:c0
++		    $ tail /sys/devices/uncore_iio_0/die*
++		    ==> /sys/devices/uncore_iio_0/die0 <==
++		    0000:00
++		    ==> /sys/devices/uncore_iio_0/die1 <==
++		    0000:40
++		    ==> /sys/devices/uncore_iio_0/die2 <==
++		    0000:80
++		    ==> /sys/devices/uncore_iio_0/die3 <==
++		    0000:c0
+ 
+-                Which means:
+-                IIO PMU 0 on die 0 belongs to PCI RP on bus 0x00, domain 0x0000
+-                IIO PMU 0 on die 1 belongs to PCI RP on bus 0x40, domain 0x0000
+-                IIO PMU 0 on die 2 belongs to PCI RP on bus 0x80, domain 0x0000
+-                IIO PMU 0 on die 3 belongs to PCI RP on bus 0xc0, domain 0x0000
++                Which means::
++
++		    IIO PMU 0 on die 0 belongs to PCI RP on bus 0x00, domain 0x0000
++		    IIO PMU 0 on die 1 belongs to PCI RP on bus 0x40, domain 0x0000
++		    IIO PMU 0 on die 2 belongs to PCI RP on bus 0x80, domain 0x0000
++		    IIO PMU 0 on die 3 belongs to PCI RP on bus 0xc0, domain 0x0000
+diff --git a/Documentation/ABI/testing/sysfs-devices-memory b/Documentation/ABI/testing/sysfs-devices-memory
+index deef3b5723cf..2da2b1fba2c1 100644
+--- a/Documentation/ABI/testing/sysfs-devices-memory
++++ b/Documentation/ABI/testing/sysfs-devices-memory
+@@ -47,16 +47,19 @@ Description:
+ 		online/offline state of the memory section.  When written,
+ 		root can toggle the the online/offline state of a removable
+ 		memory section (see removable file description above)
+-		using the following commands.
+-		# echo online > /sys/devices/system/memory/memoryX/state
+-		# echo offline > /sys/devices/system/memory/memoryX/state
++		using the following commands::
++
++		  # echo online > /sys/devices/system/memory/memoryX/state
++		  # echo offline > /sys/devices/system/memory/memoryX/state
+ 
+ 		For example, if /sys/devices/system/memory/memory22/removable
+ 		contains a value of 1 and
+ 		/sys/devices/system/memory/memory22/state contains the
+ 		string "online" the following command can be executed by
+-		by root to offline that section.
+-		# echo offline > /sys/devices/system/memory/memory22/state
++		by root to offline that section::
++
++		  # echo offline > /sys/devices/system/memory/memory22/state
++
+ Users:		hotplug memory remove tools
+ 		http://www.ibm.com/developerworks/wikis/display/LinuxP/powerpc-utils
+ 
+@@ -78,6 +81,7 @@ Description:
+ 
+ 		For example, the following symbolic link is created for
+ 		memory section 9 on node0:
++
+ 		/sys/devices/system/memory/memory9/node0 -> ../../node/node0
+ 
+ 
+@@ -90,4 +94,5 @@ Description:
+ 		points to the corresponding /sys/devices/system/memory/memoryY
+ 		memory section directory.  For example, the following symbolic
+ 		link is created for memory section 9 on node0.
++
+ 		/sys/devices/system/node/node0/memory9 -> ../../memory/memory9
+diff --git a/Documentation/ABI/testing/sysfs-devices-platform-_UDC_-gadget b/Documentation/ABI/testing/sysfs-devices-platform-_UDC_-gadget
+index d548eaac230a..40f29a01fd14 100644
+--- a/Documentation/ABI/testing/sysfs-devices-platform-_UDC_-gadget
++++ b/Documentation/ABI/testing/sysfs-devices-platform-_UDC_-gadget
+@@ -3,8 +3,9 @@ Date:		April 2010
+ Contact:	Fabien Chouteau <fabien.chouteau@barco.com>
  Description:
- 		Sets the scancode filter expected value.
+ 		Show the suspend state of an USB composite gadget.
+-		1 -> suspended
+-		0 -> resumed
 +
- 		Use in combination with /sys/class/rc/rcN/filter_mask to set the
- 		expected value of the bits set in the filter mask.
- 		If the hardware supports it then scancodes which do not match
- 		the filter will be ignored. Otherwise the write will fail with
- 		an error.
-+
- 		This value may be reset to 0 if the current protocol is altered.
++		- 1 -> suspended
++		- 0 -> resumed
  
- What:		/sys/class/rc/rcN/filter_mask
-@@ -56,9 +65,11 @@ Description:
- 		of the scancode which should be compared against the expected
- 		value. A value of 0 disables the filter to allow all valid
- 		scancodes to be processed.
-+
- 		If the hardware supports it then scancodes which do not match
- 		the filter will be ignored. Otherwise the write will fail with
- 		an error.
-+
- 		This value may be reset to 0 if the current protocol is altered.
+ 		(_UDC_ is the name of the USB Device Controller driver)
  
- What:		/sys/class/rc/rcN/wakeup_protocols
-@@ -67,15 +78,22 @@ KernelVersion:	4.11
- Contact:	Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
- Description:
- 		Reading this file returns a list of available protocols to use
--		for the wakeup filter, something like:
-+		for the wakeup filter, something like::
-+
- 		    "rc-5 nec nec-x rc-6-0 rc-6-6a-24 [rc-6-6a-32] rc-6-mce"
-+
- 		Note that protocol variants are listed, so "nec", "sony",
- 		"rc-5", "rc-6" have their different bit length encodings
- 		listed if available.
-+
- 		The enabled wakeup protocol is shown in [] brackets.
-+
- 		Only one protocol can be selected at a time.
-+
- 		Writing "proto" will use "proto" for wakeup events.
-+
- 		Writing "none" will disable wakeup.
-+
- 		Write fails with EINVAL if an invalid protocol combination or
- 		unknown protocol name is used, or if wakeup is not supported by
- 		the hardware.
-@@ -86,13 +104,17 @@ KernelVersion:	3.15
- Contact:	Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
- Description:
- 		Sets the scancode wakeup filter expected value.
-+
- 		Use in combination with /sys/class/rc/rcN/wakeup_filter_mask to
- 		set the expected value of the bits set in the wakeup filter mask
- 		to trigger a system wake event.
-+
- 		If the hardware supports it and wakeup_filter_mask is not 0 then
- 		scancodes which match the filter will wake the system from e.g.
- 		suspend to RAM or power off.
-+
- 		Otherwise the write will fail with an error.
-+
- 		This value may be reset to 0 if the wakeup protocol is altered.
+@@ -17,5 +18,6 @@ Description:
+ 		Storage mode.
  
- What:		/sys/class/rc/rcN/wakeup_filter_mask
-@@ -101,11 +123,15 @@ KernelVersion:	3.15
- Contact:	Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
- Description:
- 		Sets the scancode wakeup filter mask of bits to compare.
-+
- 		Use in combination with /sys/class/rc/rcN/wakeup_filter to set
- 		the bits of the scancode which should be compared against the
- 		expected value to trigger a system wake event.
-+
- 		If the hardware supports it and wakeup_filter_mask is not 0 then
- 		scancodes which match the filter will wake the system from e.g.
- 		suspend to RAM or power off.
-+
- 		Otherwise the write will fail with an error.
-+
- 		This value may be reset to 0 if the wakeup protocol is altered.
-diff --git a/Documentation/ABI/testing/sysfs-class-scsi_host b/Documentation/ABI/testing/sysfs-class-scsi_host
-index bafc59fd7b69..7c98d8f43c45 100644
---- a/Documentation/ABI/testing/sysfs-class-scsi_host
-+++ b/Documentation/ABI/testing/sysfs-class-scsi_host
-@@ -56,8 +56,9 @@ Description:
- 		management) on top, which makes it match the Windows IRST (Intel
- 		Rapid Storage Technology) driver settings. This setting is also
- 		close to min_power, except that:
-+
- 		a) It does not use host-initiated slumber mode, but it does
--		allow device-initiated slumber
-+		   allow device-initiated slumber
- 		b) It does not enable low power device sleep mode (DevSlp).
- 
- What:		/sys/class/scsi_host/hostX/em_message
-@@ -70,8 +71,8 @@ Description:
- 		protocol, writes and reads correspond to the LED message format
- 		as defined in the AHCI spec.
- 
--		The user must turn sw_activity (under /sys/block/*/device/) OFF
--		it they wish to control the activity LED via the em_message
-+		The user must turn sw_activity (under `/sys/block/*/device/`)
-+		OFF it they wish to control the activity LED via the em_message
- 		file.
- 
- 		em_message_type: (RO) Displays the current enclosure management
-diff --git a/Documentation/ABI/testing/sysfs-class-typec b/Documentation/ABI/testing/sysfs-class-typec
-index b834671522d6..b7794e02ad20 100644
---- a/Documentation/ABI/testing/sysfs-class-typec
-+++ b/Documentation/ABI/testing/sysfs-class-typec
-@@ -40,10 +40,13 @@ Description:
- 		attribute will not return until the operation has finished.
- 
- 		Valid values:
--		- source (The port will behave as source only DFP port)
--		- sink (The port will behave as sink only UFP port)
--		- dual (The port will behave as dual-role-data and
-+
-+		======  ==============================================
-+		source  (The port will behave as source only DFP port)
-+		sink    (The port will behave as sink only UFP port)
-+		dual    (The port will behave as dual-role-data and
- 			dual-role-power port)
-+		======  ==============================================
- 
- What:		/sys/class/typec/<port>/vconn_source
- Date:		April 2017
-@@ -59,6 +62,7 @@ Description:
- 		generates uevent KOBJ_CHANGE.
- 
- 		Valid values:
-+
- 		- "no" when the port is not the VCONN Source
- 		- "yes" when the port is the VCONN Source
- 
-@@ -72,6 +76,7 @@ Description:
- 		power operation mode should show "usb_power_delivery".
- 
- 		Valid values:
-+
- 		- default
- 		- 1.5A
- 		- 3.0A
-@@ -191,6 +196,7 @@ Date:		April 2017
- Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
- Description:
- 		Shows type of the plug on the cable:
-+
- 		- type-a - Standard A
- 		- type-b - Standard B
- 		- type-c
-diff --git a/Documentation/ABI/testing/sysfs-devices-platform-ACPI-TAD b/Documentation/ABI/testing/sysfs-devices-platform-ACPI-TAD
-index 7e43cdce9a52..f7b360a61b21 100644
---- a/Documentation/ABI/testing/sysfs-devices-platform-ACPI-TAD
-+++ b/Documentation/ABI/testing/sysfs-devices-platform-ACPI-TAD
-@@ -7,6 +7,7 @@ Description:
- 		(RO) Hexadecimal bitmask of the TAD attributes are reported by
- 		the platform firmware (see ACPI 6.2, section 9.18.2):
- 
-+		======= ======================================================
- 		BIT(0): AC wakeup implemented if set
- 		BIT(1): DC wakeup implemented if set
- 		BIT(2): Get/set real time features implemented if set
-@@ -16,6 +17,7 @@ Description:
- 		BIT(6): The AC timer wakes up from S5 if set
- 		BIT(7): The DC timer wakes up from S4 if set
- 		BIT(8): The DC timer wakes up from S5 if set
-+		======= ======================================================
- 
- 		The other bits are reserved.
- 
-@@ -62,9 +64,11 @@ Description:
- 		timer status with the following meaning of bits (see ACPI 6.2,
- 		Section 9.18.5):
- 
-+		======= ======================================================
- 		Bit(0): The timer has expired if set.
- 		Bit(1): The timer has woken up the system from a sleep state
- 		        (S3 or S4/S5 if supported) if set.
-+		======= ======================================================
- 
- 		The other bits are reserved.
- 
-diff --git a/Documentation/ABI/testing/sysfs-devices-platform-docg3 b/Documentation/ABI/testing/sysfs-devices-platform-docg3
-index 8aa36716882f..378c42694bfb 100644
---- a/Documentation/ABI/testing/sysfs-devices-platform-docg3
-+++ b/Documentation/ABI/testing/sysfs-devices-platform-docg3
-@@ -9,8 +9,10 @@ Description:
- 		The protection has information embedded whether it blocks reads,
- 		writes or both.
- 		The result is:
--		0 -> the DPS is not keylocked
--		1 -> the DPS is keylocked
-+
-+		- 0 -> the DPS is not keylocked
-+		- 1 -> the DPS is keylocked
-+
- Users:		None identified so far.
- 
- What:		/sys/devices/platform/docg3/f[0-3]_dps[01]_protection_key
-@@ -27,8 +29,12 @@ Description:
- 		Entering the correct value toggle the lock, and can be observed
- 		through f[0-3]_dps[01]_is_keylocked.
  		Possible values are:
+-			1 -> ignore the FUA flag
+-			0 -> obey the FUA flag
 +
- 			- 8 bytes
-+
- 		Typical values are:
-+
- 			- "00000000"
- 			- "12345678"
-+
- Users:		None identified so far.
-diff --git a/Documentation/ABI/testing/sysfs-devices-platform-sh_mobile_lcdc_fb b/Documentation/ABI/testing/sysfs-devices-platform-sh_mobile_lcdc_fb
-index 2107082426da..e45ac2e865d5 100644
---- a/Documentation/ABI/testing/sysfs-devices-platform-sh_mobile_lcdc_fb
-+++ b/Documentation/ABI/testing/sysfs-devices-platform-sh_mobile_lcdc_fb
-@@ -17,10 +17,10 @@ Description:
- 		to overlay planes.
++			- 1 -> ignore the FUA flag
++			- 0 -> obey the FUA flag
+diff --git a/Documentation/ABI/testing/sysfs-devices-platform-ipmi b/Documentation/ABI/testing/sysfs-devices-platform-ipmi
+index afb5db856e1c..07df0ddc0b69 100644
+--- a/Documentation/ABI/testing/sysfs-devices-platform-ipmi
++++ b/Documentation/ABI/testing/sysfs-devices-platform-ipmi
+@@ -123,38 +123,40 @@ KernelVersion:	v4.15
+ Contact:	openipmi-developer@lists.sourceforge.net
+ Description:
  
- 		Selects the composition mode for the overlay. Possible values
--		are
-+		are:
+-		idles:			(RO) Number of times the interface was
++		======================	========================================
++		idles			(RO) Number of times the interface was
+ 					idle while being polled.
  
--		0 - Alpha Blending
--		1 - ROP3
-+		- 0 - Alpha Blending
-+		- 1 - ROP3
+-		watchdog_pretimeouts:	(RO) Number of watchdog pretimeouts.
++		watchdog_pretimeouts	(RO) Number of watchdog pretimeouts.
  
- What:		/sys/devices/platform/sh_mobile_lcdc_fb.[0-3]/graphics/fb[0-9]/ovl_position
- Date:		May 2012
-@@ -30,7 +30,7 @@ Description:
- 		to overlay planes.
+-		complete_transactions:	(RO) Number of completed messages.
++		complete_transactions	(RO) Number of completed messages.
  
- 		Stores the x,y overlay position on the display in pixels. The
--		position format is `[0-9]+,[0-9]+'.
-+		position format is `[0-9]+,[0-9]+`.
+-		events:			(RO) Number of IPMI events received from
++		events			(RO) Number of IPMI events received from
+ 					the hardware.
  
- What:		/sys/devices/platform/sh_mobile_lcdc_fb.[0-3]/graphics/fb[0-9]/ovl_rop3
- Date:		May 2012
+-		interrupts:		(RO) Number of interrupts the driver
++		interrupts		(RO) Number of interrupts the driver
+ 					handled.
+ 
+-		hosed_count:		(RO) Number of times the hardware didn't
++		hosed_count		(RO) Number of times the hardware didn't
+ 					follow the state machine.
+ 
+-		long_timeouts:		(RO) Number of times the driver
++		long_timeouts		(RO) Number of times the driver
+ 					requested a timer while nothing was in
+ 					progress.
+ 
+-		flag_fetches:		(RO) Number of times the driver
++		flag_fetches		(RO) Number of times the driver
+ 					requested flags from the hardware.
+ 
+-		attentions:		(RO) Number of time the driver got an
++		attentions		(RO) Number of time the driver got an
+ 					ATTN from the hardware.
+ 
+-		incoming_messages:	(RO) Number of asynchronous messages
++		incoming_messages	(RO) Number of asynchronous messages
+ 					received.
+ 
+-		short_timeouts:		(RO) Number of times the driver
++		short_timeouts		(RO) Number of times the driver
+ 					requested a timer while an operation was
+ 					in progress.
++		======================	========================================
+ 
+ 
+ What:		/sys/devices/platform/ipmi_si.*/interrupts_enabled
+@@ -201,38 +203,40 @@ Date:		Sep, 2017
+ KernelVersion:	v4.15
+ Contact:	openipmi-developer@lists.sourceforge.net
+ Description:
+-		hosed:			(RO) Number of times the hardware didn't
++		======================	========================================
++		hosed			(RO) Number of times the hardware didn't
+ 					follow the state machine.
+ 
+-		alerts:			(RO) Number of alerts received.
++		alerts			(RO) Number of alerts received.
+ 
+-		sent_messages:		(RO) Number of total messages sent.
++		sent_messages		(RO) Number of total messages sent.
+ 
+-		sent_message_parts:	(RO) Number of message parts sent.
++		sent_message_parts	(RO) Number of message parts sent.
+ 					Messages may be broken into parts if
+ 					they are long.
+ 
+-		received_messages:	(RO) Number of message responses
++		received_messages	(RO) Number of message responses
+ 					received.
+ 
+-		received_message_parts: (RO) Number of message fragments
++		received_message_parts	(RO) Number of message fragments
+ 					received.
+ 
+-		events:			(RO) Number of received events.
++		events			(RO) Number of received events.
+ 
+-		watchdog_pretimeouts:	(RO) Number of watchdog pretimeouts.
++		watchdog_pretimeouts	(RO) Number of watchdog pretimeouts.
+ 
+-		flag_fetches:		(RO) Number of times a flag fetch was
++		flag_fetches		(RO) Number of times a flag fetch was
+ 					requested.
+ 
+-		send_retries:		(RO) Number of time a message was
++		send_retries		(RO) Number of time a message was
+ 					retried.
+ 
+-		receive_retries:	(RO) Number of times the receive of a
++		receive_retries		(RO) Number of times the receive of a
+ 					message was retried.
+ 
+-		send_errors:		(RO) Number of times the send of a
++		send_errors		(RO) Number of times the send of a
+ 					message failed.
+ 
+-		receive_errors:		(RO) Number of errors in receiving
++		receive_errors		(RO) Number of errors in receiving
+ 					messages.
++		======================	========================================
 diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
-index b555df825447..274c337ec6a9 100644
+index 274c337ec6a9..1a04ca8162ad 100644
 --- a/Documentation/ABI/testing/sysfs-devices-system-cpu
 +++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
-@@ -151,23 +151,28 @@ Description:
- 		The processor idle states which are available for use have the
- 		following attributes:
+@@ -169,7 +169,7 @@ Description:
+ 			      observed CPU idle duration was too short for it
+ 			      (a count).
  
--		name: (RO) Name of the idle state (string).
-+		======== ==== =================================================
-+		name:	 (RO) Name of the idle state (string).
+-		below: 	 (RO) Number of times this state was entered, but the
++		below:	 (RO) Number of times this state was entered, but the
+ 			      observed CPU idle duration was too long for it
+ 			      (a count).
+ 		======== ==== =================================================
+@@ -601,7 +601,7 @@ Description:	Secure Virtual Machine
+ 		Facility in POWER9 and newer processors. i.e., it is a Secure
+ 		Virtual Machine.
  
- 		latency: (RO) The latency to exit out of this idle state (in
--		microseconds).
-+			      microseconds).
- 
--		power: (RO) The power consumed while in this idle state (in
--		milliwatts).
-+		power:   (RO) The power consumed while in this idle state (in
-+			      milliwatts).
- 
--		time: (RO) The total time spent in this idle state (in microseconds).
-+		time:    (RO) The total time spent in this idle state
-+			      (in microseconds).
- 
--		usage: (RO) Number of times this state was entered (a count).
-+		usage:	 (RO) Number of times this state was entered (a count).
- 
--		above: (RO) Number of times this state was entered, but the
--		       observed CPU idle duration was too short for it (a count).
-+		above:	 (RO) Number of times this state was entered, but the
-+			      observed CPU idle duration was too short for it
-+			      (a count).
- 
--		below: (RO) Number of times this state was entered, but the
--		       observed CPU idle duration was too long for it (a count).
-+		below: 	 (RO) Number of times this state was entered, but the
-+			      observed CPU idle duration was too long for it
-+			      (a count).
-+		======== ==== =================================================
- 
- What:		/sys/devices/system/cpu/cpuX/cpuidle/stateN/desc
- Date:		February 2008
-@@ -290,6 +295,7 @@ Description:	Processor frequency boosting control
- 		This switch controls the boost setting for the whole system.
- 		Boosting allows the CPU and the firmware to run at a frequency
- 		beyound it's nominal limit.
+-What: 		/sys/devices/system/cpu/cpuX/purr
++What:		/sys/devices/system/cpu/cpuX/purr
+ Date:		Apr 2005
+ Contact:	Linux for PowerPC mailing list <linuxppc-dev@ozlabs.org>
+ Description:	PURR ticks for this CPU since the system boot.
+diff --git a/Documentation/ABI/testing/sysfs-driver-hid-lenovo b/Documentation/ABI/testing/sysfs-driver-hid-lenovo
+index 53a0725962e1..aee85ca1f6be 100644
+--- a/Documentation/ABI/testing/sysfs-driver-hid-lenovo
++++ b/Documentation/ABI/testing/sysfs-driver-hid-lenovo
+@@ -3,14 +3,18 @@ Date:		July 2011
+ Contact:	linux-input@vger.kernel.org
+ Description:	This controls if mouse clicks should be generated if the trackpoint is quickly pressed. How fast this press has to be
+ 		is being controlled by press_speed.
 +
- 		More details can be found in
- 		Documentation/admin-guide/pm/cpufreq.rst
- 
-@@ -337,43 +343,57 @@ Contact:	Sudeep Holla <sudeep.holla@arm.com>
- Description:	Parameters for the CPU cache attributes
- 
- 		allocation_policy:
--			- WriteAllocate: allocate a memory location to a cache line
--					 on a cache miss because of a write
--			- ReadAllocate: allocate a memory location to a cache line
-+			- WriteAllocate:
-+					allocate a memory location to a cache line
-+					on a cache miss because of a write
-+			- ReadAllocate:
-+					allocate a memory location to a cache line
- 					on a cache miss because of a read
--			- ReadWriteAllocate: both writeallocate and readallocate
-+			- ReadWriteAllocate:
-+					both writeallocate and readallocate
- 
--		attributes: LEGACY used only on IA64 and is same as write_policy
-+		attributes:
-+			    LEGACY used only on IA64 and is same as write_policy
- 
--		coherency_line_size: the minimum amount of data in bytes that gets
-+		coherency_line_size:
-+				     the minimum amount of data in bytes that gets
- 				     transferred from memory to cache
- 
--		level: the cache hierarchy in the multi-level cache configuration
-+		level:
-+			the cache hierarchy in the multi-level cache configuration
- 
--		number_of_sets: total number of sets in the cache, a set is a
-+		number_of_sets:
-+				total number of sets in the cache, a set is a
- 				collection of cache lines with the same cache index
- 
--		physical_line_partition: number of physical cache line per cache tag
-+		physical_line_partition:
-+				number of physical cache line per cache tag
- 
--		shared_cpu_list: the list of logical cpus sharing the cache
-+		shared_cpu_list:
-+				the list of logical cpus sharing the cache
- 
--		shared_cpu_map: logical cpu mask containing the list of cpus sharing
-+		shared_cpu_map:
-+				logical cpu mask containing the list of cpus sharing
- 				the cache
- 
--		size: the total cache size in kB
-+		size:
-+			the total cache size in kB
- 
- 		type:
- 			- Instruction: cache that only holds instructions
- 			- Data: cache that only caches data
- 			- Unified: cache that holds both data and instructions
- 
--		ways_of_associativity: degree of freedom in placing a particular block
--					of memory in the cache
-+		ways_of_associativity:
-+			degree of freedom in placing a particular block
-+			of memory in the cache
- 
- 		write_policy:
--			- WriteThrough: data is written to both the cache line
-+			- WriteThrough:
-+					data is written to both the cache line
- 					and to the block in the lower-level memory
--			- WriteBack: data is written only to the cache line and
-+			- WriteBack:
-+				     data is written only to the cache line and
- 				     the modified cache line is written to main
- 				     memory only when it is replaced
- 
-@@ -414,30 +434,30 @@ Description:	POWERNV CPUFreq driver's frequency throttle stats directory and
- 		throttle attributes exported in the 'throttle_stats' directory:
- 
- 		- turbo_stat : This file gives the total number of times the max
--		frequency is throttled to lower frequency in turbo (at and above
--		nominal frequency) range of frequencies.
-+		  frequency is throttled to lower frequency in turbo (at and above
-+		  nominal frequency) range of frequencies.
- 
- 		- sub_turbo_stat : This file gives the total number of times the
--		max frequency is throttled to lower frequency in sub-turbo(below
--		nominal frequency) range of frequencies.
-+		  max frequency is throttled to lower frequency in sub-turbo(below
-+		  nominal frequency) range of frequencies.
- 
- 		- unthrottle : This file gives the total number of times the max
--		frequency is unthrottled after being throttled.
-+		  frequency is unthrottled after being throttled.
- 
- 		- powercap : This file gives the total number of times the max
--		frequency is throttled due to 'Power Capping'.
-+		  frequency is throttled due to 'Power Capping'.
- 
- 		- overtemp : This file gives the total number of times the max
--		frequency is throttled due to 'CPU Over Temperature'.
-+		  frequency is throttled due to 'CPU Over Temperature'.
- 
- 		- supply_fault : This file gives the total number of times the
--		max frequency is throttled due to 'Power Supply Failure'.
-+		  max frequency is throttled due to 'Power Supply Failure'.
- 
- 		- overcurrent : This file gives the total number of times the
--		max frequency is throttled due to 'Overcurrent'.
-+		  max frequency is throttled due to 'Overcurrent'.
- 
- 		- occ_reset : This file gives the total number of times the max
--		frequency is throttled due to 'OCC Reset'.
-+		  frequency is throttled due to 'OCC Reset'.
- 
- 		The sysfs attributes representing different throttle reasons like
- 		powercap, overtemp, supply_fault, overcurrent and occ_reset map to
-@@ -469,8 +489,9 @@ What:		/sys/devices/system/cpu/cpuX/regs/
- Date:		June 2016
- Contact:	Linux ARM Kernel Mailing list <linux-arm-kernel@lists.infradead.org>
- Description:	AArch64 CPU registers
+ 		Values are 0 or 1.
 +
- 		'identification' directory exposes the CPU ID registers for
--		 identifying model and revision of the CPU.
-+		identifying model and revision of the CPU.
+ 		Applies to Thinkpad USB Keyboard with TrackPoint.
  
- What:		/sys/devices/system/cpu/cpu#/cpu_capacity
- Date:		December 2016
-@@ -497,9 +518,11 @@ Description:	Information about CPU vulnerabilities
- 		vulnerabilities. The output of those files reflects the
- 		state of the CPUs in the system. Possible output values:
+ What:		/sys/bus/usb/devices/<busnum>-<devnum>:<config num>.<interface num>/<hid-bus>:<vendor-id>:<product-id>.<num>/dragging
+ Date:		July 2011
+ Contact:	linux-input@vger.kernel.org
+ Description:	If this setting is enabled, it is possible to do dragging by pressing the trackpoint. This requires press_to_select to be enabled.
++
+ 		Values are 0 or 1.
++
+ 		Applies to Thinkpad USB Keyboard with TrackPoint.
  
-+		================  ==============================================
- 		"Not affected"	  CPU is not affected by the vulnerability
- 		"Vulnerable"	  CPU is affected and no mitigation in effect
- 		"Mitigation: $M"  CPU is affected and mitigation $M is in effect
-+		================  ==============================================
+ What:		/sys/bus/usb/devices/<busnum>-<devnum>:<config num>.<interface num>/<hid-bus>:<vendor-id>:<product-id>.<num>/release_to_select
+@@ -25,7 +29,9 @@ Date:		July 2011
+ Contact:	linux-input@vger.kernel.org
+ Description:	This setting controls if the mouse click events generated by pressing the trackpoint (if press_to_select is enabled) generate
+ 		a left or right mouse button click.
++
+ 		Values are 0 or 1.
++
+ 		Applies to Thinkpad USB Keyboard with TrackPoint.
  
- 		See also: Documentation/admin-guide/hw-vuln/index.rst
+ What:		/sys/bus/usb/devices/<busnum>-<devnum>:<config num>.<interface num>/<hid-bus>:<vendor-id>:<product-id>.<num>/sensitivity
+@@ -39,12 +45,16 @@ What:		/sys/bus/usb/devices/<busnum>-<devnum>:<config num>.<interface num>/<hid-
+ Date:		July 2011
+ Contact:	linux-input@vger.kernel.org
+ Description:	This setting controls how fast the trackpoint needs to be pressed to generate a mouse click if press_to_select is enabled.
++
+ 		Values are decimal integers from 1 (slowest) to 255 (fastest).
++
+ 		Applies to Thinkpad USB Keyboard with TrackPoint.
  
-@@ -515,12 +538,14 @@ Description:	Control Symetric Multi Threading (SMT)
- 		control: Read/write interface to control SMT. Possible
- 			 values:
+ What:		/sys/bus/usb/devices/<busnum>-<devnum>:<config num>.<interface num>/<hid-bus>:<vendor-id>:<product-id>.<num>/fn_lock
+ Date:		July 2014
+ Contact:	linux-input@vger.kernel.org
+ Description:	This setting controls whether Fn Lock is enabled on the keyboard (i.e. if F1 is Mute or F1)
++
+ 		Values are 0 or 1
++
+ 		Applies to ThinkPad Compact (USB|Bluetooth) Keyboard with TrackPoint.
+diff --git a/Documentation/ABI/testing/sysfs-driver-hid-ntrig b/Documentation/ABI/testing/sysfs-driver-hid-ntrig
+index e574a5625efe..0e323a5cec6c 100644
+--- a/Documentation/ABI/testing/sysfs-driver-hid-ntrig
++++ b/Documentation/ABI/testing/sysfs-driver-hid-ntrig
+@@ -29,12 +29,13 @@ Contact:	linux-input@vger.kernel.org
+ Description:
+ 		Threholds to override activation slack.
  
-+			 ================ =========================================
- 			 "on"		  SMT is enabled
- 			 "off"		  SMT is disabled
- 			 "forceoff"	  SMT is force disabled. Cannot be changed.
- 			 "notsupported"   SMT is not supported by the CPU
- 			 "notimplemented" SMT runtime toggling is not
- 					  implemented for the architecture
-+			 ================ =========================================
+-		activation_width:	(RW) Width threshold to immediately
++		=================	=====================================
++		activation_width	(RW) Width threshold to immediately
+ 					start processing touch events.
  
- 			 If control status is "forceoff" or "notsupported" writes
- 			 are rejected.
-diff --git a/Documentation/ABI/testing/sysfs-devices-system-ibm-rtl b/Documentation/ABI/testing/sysfs-devices-system-ibm-rtl
-index 470def06ab0a..1a8ee26e92ae 100644
---- a/Documentation/ABI/testing/sysfs-devices-system-ibm-rtl
-+++ b/Documentation/ABI/testing/sysfs-devices-system-ibm-rtl
-@@ -5,8 +5,10 @@ Contact:        Vernon Mauery <vernux@us.ibm.com>
- Description:    The state file allows a means by which to change in and
-                 out of Premium Real-Time Mode (PRTM), as well as the
-                 ability to query the current state.
--                    0 => PRTM off
--                    1 => PRTM enabled
-+
-+                    - 0 => PRTM off
-+                    - 1 => PRTM enabled
-+
- Users:          The ibm-prtm userspace daemon uses this interface.
+-		activation_height:	(RW) Height threshold to immediately
++		activation_height	(RW) Height threshold to immediately
+ 					start processing touch events.
+-
++		=================	=====================================
+ 
+ What:		/sys/bus/hid/drivers/ntrig/<dev>/min_width
+ What:		/sys/bus/hid/drivers/ntrig/<dev>/min_height
+@@ -44,11 +45,13 @@ Contact:	linux-input@vger.kernel.org
+ Description:
+ 		Minimum size contact accepted.
+ 
+-		min_width:	(RW) Minimum touch contact width to decide
++		==========	===========================================
++		min_width	(RW) Minimum touch contact width to decide
+ 				activation and activity.
+ 
+-		min_height:	(RW) Minimum touch contact height to decide
++		min_height	(RW) Minimum touch contact height to decide
+ 				activation and activity.
++		==========	===========================================
  
  
-diff --git a/Documentation/ABI/testing/sysfs-driver-bd9571mwv-regulator b/Documentation/ABI/testing/sysfs-driver-bd9571mwv-regulator
-index 4d63a7904b94..42214b4ff14a 100644
---- a/Documentation/ABI/testing/sysfs-driver-bd9571mwv-regulator
-+++ b/Documentation/ABI/testing/sysfs-driver-bd9571mwv-regulator
-@@ -6,11 +6,13 @@ Description:	Read/write the current state of DDR Backup Mode, which controls
- 		if DDR power rails will be kept powered during system suspend.
- 		("on"/"1" = enabled, "off"/"0" = disabled).
- 		Two types of power switches (or control signals) can be used:
+ What:		/sys/bus/hid/drivers/ntrig/<dev>/sensor_physical_width
+diff --git a/Documentation/ABI/testing/sysfs-driver-hid-roccat-kone b/Documentation/ABI/testing/sysfs-driver-hid-roccat-kone
+index 8f7982c70d72..11cd9bf0ad18 100644
+--- a/Documentation/ABI/testing/sysfs-driver-hid-roccat-kone
++++ b/Documentation/ABI/testing/sysfs-driver-hid-roccat-kone
+@@ -3,17 +3,21 @@ Date:		March 2010
+ Contact:	Stefan Achatz <erazor_de@users.sourceforge.net>
+ Description:	It is possible to switch the dpi setting of the mouse with the
+ 		press of a button.
 +
- 		  A. With a momentary power switch (or pulse signal), DDR
- 		     Backup Mode is enabled by default when available, as the
- 		     PMIC will be configured only during system suspend.
- 		  B. With a toggle power switch (or level signal), the
- 		     following steps must be followed exactly:
-+
- 		       1. Configure PMIC for backup mode, to change the role of
- 			  the accessory power switch from a power switch to a
- 			  wake-up switch,
-@@ -20,8 +22,10 @@ Description:	Read/write the current state of DDR Backup Mode, which controls
- 		       3. Suspend system,
- 		       4. Switch accessory power switch on, to resume the
- 			  system.
-+
- 		     DDR Backup Mode must be explicitly enabled by the user,
- 		     to invoke step 1.
-+
- 		See also Documentation/devicetree/bindings/mfd/bd9571mwv.txt.
- Users:		User space applications for embedded boards equipped with a
- 		BD9571MWV PMIC.
-diff --git a/Documentation/ABI/testing/sysfs-driver-genwqe b/Documentation/ABI/testing/sysfs-driver-genwqe
-index 64ac6d567c4b..69d855dc4c47 100644
---- a/Documentation/ABI/testing/sysfs-driver-genwqe
-+++ b/Documentation/ABI/testing/sysfs-driver-genwqe
-@@ -29,8 +29,12 @@ What:           /sys/class/genwqe/genwqe<n>_card/reload_bitstream
- Date:           May 2014
- Contact:        klebers@linux.vnet.ibm.com
- Description:    Interface to trigger a PCIe card reset to reload the bitstream.
-+
-+		::
-+
-                   sudo sh -c 'echo 1 > \
-                     /sys/class/genwqe/genwqe0_card/reload_bitstream'
-+
-                 If successfully, the card will come back with the bitstream set
-                 on 'next_bitstream'.
+ 		When read, this file returns the raw number of the actual dpi
+ 		setting reported by the mouse. This number has to be further
+ 		processed to receive the real dpi value:
  
-@@ -64,8 +68,11 @@ Description:    Base clock frequency of the card.
- What:           /sys/class/genwqe/genwqe<n>_card/device/sriov_numvfs
- Date:           Oct 2013
- Contact:        haver@linux.vnet.ibm.com
--Description:    Enable VFs (1..15):
-+Description:    Enable VFs (1..15)::
-+
-                   sudo sh -c 'echo 15 > \
-                     /sys/bus/pci/devices/0000\:1b\:00.0/sriov_numvfs'
--                Disable VFs:
-+
-+                Disable VFs::
-+
-                   Write a 0 into the same sysfs entry.
-diff --git a/Documentation/ABI/testing/sysfs-driver-hid-logitech-lg4ff b/Documentation/ABI/testing/sysfs-driver-hid-logitech-lg4ff
-index 305dffd229a8..de07be314efc 100644
---- a/Documentation/ABI/testing/sysfs-driver-hid-logitech-lg4ff
-+++ b/Documentation/ABI/testing/sysfs-driver-hid-logitech-lg4ff
-@@ -12,7 +12,9 @@ KernelVersion:	4.1
- Contact:	Michal Malý <madcatxster@devoid-pointer.net>
- Description:	Displays a set of alternate modes supported by a wheel. Each
- 		mode is listed as follows:
-+
- 		  Tag: Mode Name
-+
- 		Currently active mode is marked with an asterisk. List also
- 		contains an abstract item "native" which always denotes the
- 		native mode of the wheel. Echoing the mode tag switches the
-@@ -24,24 +26,30 @@ Description:	Displays a set of alternate modes supported by a wheel. Each
- 		This entry is not created for devices that have only one mode.
++		===== =====
+ 		VALUE DPI
++		===== =====
+ 		1     800
+ 		2     1200
+ 		3     1600
+ 		4     2000
+ 		5     2400
+ 		6     3200
++		===== =====
  
- 		Currently supported mode switches:
--		Driving Force Pro:
+ 		This file is readonly.
+ Users:		http://roccat.sourceforge.net
+@@ -22,6 +26,7 @@ What:		/sys/bus/usb/devices/<busnum>-<devnum>:<config num>.<interface num>/<hid-
+ Date:		March 2010
+ Contact:	Stefan Achatz <erazor_de@users.sourceforge.net>
+ Description:	When read, this file returns the number of the actual profile.
 +
-+		Driving Force Pro::
-+
- 		  DF-EX --> DFP
+ 		This file is readonly.
+ Users:		http://roccat.sourceforge.net
  
--		G25:
-+		G25::
+@@ -33,6 +38,7 @@ Description:	When read, this file returns the raw integer version number of the
+ 		further usage in other programs. To receive the real version
+ 		number the decimal point has to be shifted 2 positions to the
+ 		left. E.g. a returned value of 138 means 1.38
 +
- 		  DF-EX --> DFP --> G25
+ 		This file is readonly.
+ Users:		http://roccat.sourceforge.net
  
--		G27:
-+		G27::
+@@ -43,10 +49,13 @@ Description:	The mouse can store 5 profiles which can be switched by the
+                 press of a button. A profile holds information like button
+                 mappings, sensitivity, the colors of the 5 leds and light
+                 effects.
 +
- 		  DF-EX <*> DFP <-> G25 <-> G27
- 		  DF-EX <*--------> G25 <-> G27
- 		  DF-EX <*----------------> G27
- 
--		G29:
-+		G29::
+                 When read, these files return the respective profile. The
+                 returned data is 975 bytes in size.
 +
- 		  DF-EX <*> DFP <-> G25 <-> G27 <-> G29
- 		  DF-EX <*--------> G25 <-> G27 <-> G29
- 		  DF-EX <*----------------> G27 <-> G29
- 		  DF-EX <*------------------------> G29
- 
--		DFGT:
-+		DFGT::
+ 		When written, this file lets one write the respective profile
+ 		data back to the mouse. The data has to be 975 bytes long.
 +
- 		  DF-EX <*> DFP <-> DFGT
- 		  DF-EX <*--------> DFGT
+ 		The mouse will reject invalid data, whereas the profile number
+ 		stored in the profile doesn't need to fit the number of the
+ 		store.
+@@ -58,6 +67,7 @@ Contact:	Stefan Achatz <erazor_de@users.sourceforge.net>
+ Description:	When read, this file returns the settings stored in the mouse.
+ 		The size of the data is 36 bytes and holds information like the
+ 		startup_profile, tcu state and calibration_data.
++
+ 		When written, this file lets write settings back to the mouse.
+ 		The data has to be 36 bytes long. The mouse will reject invalid
+ 		data.
+@@ -67,8 +77,10 @@ What:		/sys/bus/usb/devices/<busnum>-<devnum>:<config num>.<interface num>/<hid-
+ Date:		March 2010
+ Contact:	Stefan Achatz <erazor_de@users.sourceforge.net>
+ Description:	The integer value of this attribute ranges from 1 to 5.
++
+                 When read, this attribute returns the number of the profile
+                 that's active when the mouse is powered on.
++
+ 		When written, this file sets the number of the startup profile
+ 		and the mouse activates this profile immediately.
+ Users:		http://roccat.sourceforge.net
+@@ -80,9 +92,12 @@ Description:	The mouse has a "Tracking Control Unit" which lets the user
+ 		calibrate the laser power to fit the mousepad surface.
+ 		When read, this file returns the current state of the TCU,
+ 		where 0 means off and 1 means on.
++
+ 		Writing 0 in this file will switch the TCU off.
++
+ 		Writing 1 in this file will start the calibration which takes
+ 		around 6 seconds to complete and activates the TCU.
++
+ Users:		http://roccat.sourceforge.net
  
+ What:		/sys/bus/usb/devices/<busnum>-<devnum>:<config num>.<interface num>/<hid-bus>:<vendor-id>:<product-id>.<num>/kone/roccatkone<minor>/weight
+@@ -93,14 +108,18 @@ Description:	The mouse can be equipped with one of four supplied weights
+ 		and its value can be read out. When read, this file returns the
+ 		raw value returned by the mouse which eases further processing
+ 		in other software.
++
+ 		The values map to the weights as follows:
+ 
++		===== ======
+ 		VALUE WEIGHT
++		===== ======
+ 		0     none
+ 		1     5g
+ 		2     10g
+ 		3     15g
+ 		4     20g
++		===== ======
+ 
+ 		This file is readonly.
+ Users:		http://roccat.sourceforge.net
 diff --git a/Documentation/ABI/testing/sysfs-driver-hid-wiimote b/Documentation/ABI/testing/sysfs-driver-hid-wiimote
-index 39dfa5cb1cc5..cd7b82a5c27d 100644
+index cd7b82a5c27d..3bf43d9dcdfe 100644
 --- a/Documentation/ABI/testing/sysfs-driver-hid-wiimote
 +++ b/Documentation/ABI/testing/sysfs-driver-hid-wiimote
-@@ -39,9 +39,13 @@ Description:	While a device is initialized by the wiimote driver, we perform
- 		Other strings for each device-type are available and may be
- 		added if new device-specific detections are added.
- 		Currently supported are:
--			gen10: First Wii Remote generation
--			gen20: Second Wii Remote Plus generation (builtin MP)
+@@ -20,6 +20,7 @@ Description:	This file contains the currently connected and initialized
+ 		the official Nintendo Nunchuck extension and classic is the
+ 		Nintendo Classic Controller extension. The motionp extension can
+ 		be combined with the other two.
 +
-+			============= =======================================
-+			gen10:        First Wii Remote generation
-+			gen20:        Second Wii Remote Plus generation
-+				      (builtin MP)
- 			balanceboard: Wii Balance Board
-+			============= =======================================
+ 		Starting with kernel-version 3.11 Motion Plus hotplugging is
+ 		supported and if detected, it's no longer reported as static
+ 		extension. You will get uevent notifications for the motion-plus
+diff --git a/Documentation/ABI/testing/sysfs-driver-input-exc3000 b/Documentation/ABI/testing/sysfs-driver-input-exc3000
+index 3d316d54f81c..cd7c578aef2c 100644
+--- a/Documentation/ABI/testing/sysfs-driver-input-exc3000
++++ b/Documentation/ABI/testing/sysfs-driver-input-exc3000
+@@ -4,6 +4,7 @@ Contact:	linux-input@vger.kernel.org
+ Description:    Reports the firmware version provided by the touchscreen, for example "00_T6" on a EXC80H60
  
- What:		/sys/bus/hid/drivers/wiimote/<dev>/bboard_calib
- Date:		May 2013
-@@ -54,6 +58,7 @@ Description:	This attribute is only provided if the device was detected as a
- 		First, 0kg values for all 4 sensors are written, followed by the
- 		17kg values for all 4 sensors and last the 34kg values for all 4
- 		sensors.
+ 		Access: Read
 +
- 		Calibration data is already applied by the kernel to all input
- 		values but may be used by user-space to perform other
- 		transformations.
-@@ -68,9 +73,11 @@ Description:	This attribute is only provided if the device was detected as a
- 		is prefixed with a +/-. Each value is a signed 16bit number.
- 		Data is encoded as decimal numbers and specifies the offsets of
- 		the analog sticks of the pro-controller.
-+
- 		Calibration data is already applied by the kernel to all input
- 		values but may be used by user-space to perform other
- 		transformations.
-+
- 		Calibration data is detected by the kernel during device setup.
- 		You can write "scan\n" into this file to re-trigger calibration.
- 		You can also write data directly in the form "x1:y1 x2:y2" to
-diff --git a/Documentation/ABI/testing/sysfs-driver-samsung-laptop b/Documentation/ABI/testing/sysfs-driver-samsung-laptop
-index 34d3a3359cf4..28c9c040de5d 100644
---- a/Documentation/ABI/testing/sysfs-driver-samsung-laptop
-+++ b/Documentation/ABI/testing/sysfs-driver-samsung-laptop
-@@ -9,10 +9,12 @@ Description:	Some Samsung laptops have different "performance levels"
- 		their fans quiet at all costs.  Reading from this file
- 		will show the current performance level.  Writing to the
- 		file can change this value.
-+
- 			Valid options:
--				"silent"
--				"normal"
--				"overclock"
-+				- "silent"
-+				- "normal"
-+				- "overclock"
-+
- 		Note that not all laptops support all of these options.
- 		Specifically, not all support the "overclock" option,
- 		and it's still unknown if this value even changes
-@@ -25,8 +27,9 @@ Contact:	Corentin Chary <corentin.chary@gmail.com>
- Description:	Max battery charge level can be modified, battery cycle
- 		life can be extended by reducing the max battery charge
- 		level.
--		0 means normal battery mode (100% charge)
--		1 means battery life extender mode (80% charge)
-+
-+		- 0 means normal battery mode (100% charge)
-+		- 1 means battery life extender mode (80% charge)
+ 		Valid values: Represented as string
  
- What:		/sys/devices/platform/samsung/usb_charge
- Date:		December 1, 2011
-diff --git a/Documentation/ABI/testing/sysfs-driver-toshiba_acpi b/Documentation/ABI/testing/sysfs-driver-toshiba_acpi
-index f34221b52b14..e5a438d84e1f 100644
---- a/Documentation/ABI/testing/sysfs-driver-toshiba_acpi
-+++ b/Documentation/ABI/testing/sysfs-driver-toshiba_acpi
-@@ -4,10 +4,12 @@ KernelVersion:	3.15
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file controls the keyboard backlight operation mode, valid
- 		values are:
-+
- 			* 0x1  -> FN-Z
- 			* 0x2  -> AUTO (also called TIMER)
- 			* 0x8  -> ON
- 			* 0x10 -> OFF
-+
- 		Note that from kernel 3.16 onwards this file accepts all listed
- 		parameters, kernel 3.15 only accepts the first two (FN-Z and
- 		AUTO).
-@@ -41,8 +43,10 @@ KernelVersion:	3.15
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This files controls the status of the touchpad and pointing
- 		stick (if available), valid values are:
-+
- 			* 0 -> OFF
- 			* 1 -> ON
-+
- Users:		KToshiba
+ What:		/sys/bus/i2c/devices/xxx/model
+@@ -12,4 +13,5 @@ Contact:	linux-input@vger.kernel.org
+ Description:    Reports the model identification provided by the touchscreen, for example "Orion_1320" on a EXC80H60
  
- What:		/sys/devices/LNXSYSTM:00/LNXSYBUS:00/TOS{1900,620{0,7,8}}:00/available_kbd_modes
-@@ -51,10 +55,12 @@ KernelVersion:	3.16
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file shows the supported keyboard backlight modes
- 		the system supports, which can be:
+ 		Access: Read
 +
- 			* 0x1  -> FN-Z
- 			* 0x2  -> AUTO (also called TIMER)
- 			* 0x8  -> ON
- 			* 0x10 -> OFF
+ 		Valid values: Represented as string
+diff --git a/Documentation/ABI/testing/sysfs-driver-jz4780-efuse b/Documentation/ABI/testing/sysfs-driver-jz4780-efuse
+index bb6f5d6ceea0..4cf595d681e6 100644
+--- a/Documentation/ABI/testing/sysfs-driver-jz4780-efuse
++++ b/Documentation/ABI/testing/sysfs-driver-jz4780-efuse
+@@ -4,7 +4,9 @@ Contact:	PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>
+ Description:	read-only access to the efuse on the Ingenic JZ4780 SoC
+ 		The SoC has a one time programmable 8K efuse that is
+ 		split into segments. The driver supports read only.
+-		The segments are
++		The segments are:
 +
- 		Note that not all keyboard types support the listed modes.
- 		See the entry named "available_kbd_modes"
- Users:		KToshiba
-@@ -65,6 +71,7 @@ KernelVersion:	3.16
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file shows the current keyboard backlight type,
- 		which can be:
++		===== ======== =================
+ 		0x000   64 bit Random Number
+ 		0x008  128 bit Ingenic Chip ID
+ 		0x018  128 bit Customer ID
+@@ -12,5 +14,7 @@ Description:	read-only access to the efuse on the Ingenic JZ4780 SoC
+ 		0x1E0    8 bit Protect Segment
+ 		0x1E1 2296 bit HDMI Key
+ 		0x300 2048 bit Security boot key
++		===== ======== =================
 +
- 			* 1 -> Type 1, supporting modes FN-Z and AUTO
- 			* 2 -> Type 2, supporting modes TIMER, ON and OFF
- Users:		KToshiba
-@@ -75,10 +82,12 @@ KernelVersion:	4.0
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file controls the USB Sleep & Charge charging mode, which
- 		can be:
+ Users:		any user space application which wants to read the Chip
+ 		and Customer ID
+diff --git a/Documentation/ABI/testing/sysfs-driver-pciback b/Documentation/ABI/testing/sysfs-driver-pciback
+index 73308c2b81b0..49f5fd0c8bbd 100644
+--- a/Documentation/ABI/testing/sysfs-driver-pciback
++++ b/Documentation/ABI/testing/sysfs-driver-pciback
+@@ -7,8 +7,10 @@ Description:
+                 the format of DDDD:BB:DD.F-REG:SIZE:MASK will allow the guest
+                 to write and read from the PCI device. That is Domain:Bus:
+                 Device.Function-Register:Size:Mask (Domain is optional).
+-                For example:
+-                #echo 00:19.0-E0:2:FF > /sys/bus/pci/drivers/pciback/quirks
++                For example::
 +
- 			* 0 -> Disabled		(0x00)
- 			* 1 -> Alternate	(0x09)
- 			* 2 -> Auto		(0x21)
- 			* 3 -> Typical		(0x11)
++                  #echo 00:19.0-E0:2:FF > /sys/bus/pci/drivers/pciback/quirks
 +
- 		Note that from kernel 4.1 onwards this file accepts all listed
- 		values, kernel 4.0 only supports the first three.
- 		Note that this feature only works when connected to power, if
-@@ -93,8 +102,10 @@ Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file controls the USB Sleep Functions under battery, and
- 		set the level at which point they will be disabled, accepted
- 		values can be:
-+
- 			* 0	-> Disabled
- 			* 1-100	-> Battery level to disable sleep functions
-+
- 		Currently it prints two values, the first one indicates if the
- 		feature is enabled or disabled, while the second one shows the
- 		current battery level set.
-@@ -107,8 +118,10 @@ Date:		January 23, 2015
- KernelVersion:	4.0
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file controls the USB Rapid Charge state, which can be:
-+
- 			* 0 -> Disabled
- 			* 1 -> Enabled
-+
- 		Note that toggling this value requires a reboot for changes to
- 		take effect.
- Users:		KToshiba
-@@ -118,8 +131,10 @@ Date:		January 23, 2015
- KernelVersion:	4.0
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file controls the Sleep & Music state, which values can be:
-+
- 			* 0 -> Disabled
- 			* 1 -> Enabled
-+
- 		Note that this feature only works when connected to power, if
- 		you want to use it under battery, see the entry named
- 		"sleep_functions_on_battery"
-@@ -138,6 +153,7 @@ KernelVersion:	4.0
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file controls the state of the internal fan, valid
- 		values are:
-+
- 			* 0 -> OFF
- 			* 1 -> ON
+                 will allow the guest to read and write to the configuration
+                 register 0x0E.
  
-@@ -147,8 +163,10 @@ KernelVersion:	4.0
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file controls the Special Functions (hotkeys) operation
- 		mode, valid values are:
+diff --git a/Documentation/ABI/testing/sysfs-driver-ufs b/Documentation/ABI/testing/sysfs-driver-ufs
+index d1a352194d2e..adc0d0e91607 100644
+--- a/Documentation/ABI/testing/sysfs-driver-ufs
++++ b/Documentation/ABI/testing/sysfs-driver-ufs
+@@ -18,6 +18,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the device type. This is one of the UFS
+ 		device descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
 +
- 			* 0 -> Normal Operation
- 			* 1 -> Special Functions
-+
- 		In the "Normal Operation" mode, the F{1-12} keys are as usual
- 		and the hotkeys are accessed via FN-F{1-12}.
- 		In the "Special Functions" mode, the F{1-12} keys trigger the
-@@ -163,8 +181,10 @@ KernelVersion:	4.0
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file controls whether the laptop should turn ON whenever
- 		the LID is opened, valid values are:
-+
- 			* 0 -> Disabled
- 			* 1 -> Enabled
-+
- 		Note that toggling this value requires a reboot for changes to
- 		take effect.
- Users:		KToshiba
-@@ -174,8 +194,10 @@ Date:		February 12, 2015
- KernelVersion:	4.0
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file controls the USB 3 functionality, valid values are:
-+
- 			* 0 -> Disabled (Acts as a regular USB 2)
- 			* 1 -> Enabled (Full USB 3 functionality)
-+
- 		Note that toggling this value requires a reboot for changes to
- 		take effect.
- Users:		KToshiba
-@@ -188,10 +210,14 @@ Description:	This file controls the Cooling Method feature.
- 		Reading this file prints two values, the first is the actual cooling method
- 		and the second is the maximum cooling method supported.
- 		When the maximum cooling method is ONE, valid values are:
-+
- 			* 0 -> Maximum Performance
- 			* 1 -> Battery Optimized
-+
- 		When the maximum cooling method is TWO, valid values are:
-+
- 			* 0 -> Maximum Performance
- 			* 1 -> Performance
- 			* 2 -> Battery Optimized
-+
- Users:		KToshiba
-diff --git a/Documentation/ABI/testing/sysfs-driver-toshiba_haps b/Documentation/ABI/testing/sysfs-driver-toshiba_haps
-index a662370b4dbf..c938690ce10d 100644
---- a/Documentation/ABI/testing/sysfs-driver-toshiba_haps
-+++ b/Documentation/ABI/testing/sysfs-driver-toshiba_haps
-@@ -4,10 +4,12 @@ KernelVersion:	3.17
- Contact:	Azael Avalos <coproscefalo@gmail.com>
- Description:	This file controls the built-in accelerometer protection level,
- 		valid values are:
-+
- 			* 0 -> Disabled
- 			* 1 -> Low
- 			* 2 -> Medium
- 			* 3 -> High
-+
- 		The default potection value is set to 2 (Medium).
- Users:		KToshiba
+ 		The file is read only.
  
-diff --git a/Documentation/ABI/testing/sysfs-driver-wacom b/Documentation/ABI/testing/sysfs-driver-wacom
-index afc48fc163b5..16acaa5712ec 100644
---- a/Documentation/ABI/testing/sysfs-driver-wacom
-+++ b/Documentation/ABI/testing/sysfs-driver-wacom
-@@ -79,7 +79,9 @@ Description:
- 		When the Wacom Intuos 4 is connected over Bluetooth, the
- 		image has to contain 256 bytes (64x32 px 1 bit colour).
- 		The format is also scrambled, like in the USB mode, and it can
--		be summarized by converting 76543210 into GECA6420.
-+		be summarized by converting::
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/device_class
+@@ -26,6 +27,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the device class. This is one of the UFS
+ 		device descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
 +
-+					    76543210 into GECA6420.
- 					    HGFEDCBA      HFDB7531
+ 		The file is read only.
  
- What:		/sys/bus/hid/devices/<bus>:<vid>:<pid>.<n>/wacom_remote/unpair_remote
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/device_sub_class
+@@ -34,6 +36,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the UFS storage subclass. This is one of
+ 		the UFS device descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/protocol
+@@ -43,6 +46,7 @@ Description:	This file shows the protocol supported by an UFS device.
+ 		This is one of the UFS device descriptor parameters.
+ 		The full information about the descriptor could be found
+ 		at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/number_of_luns
+@@ -51,6 +55,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows number of logical units. This is one of
+ 		the UFS device descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/number_of_wluns
+@@ -60,6 +65,7 @@ Description:	This file shows number of well known logical units.
+ 		This is one of the UFS device descriptor parameters.
+ 		The full information about the descriptor could be found
+ 		at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/boot_enable
+@@ -69,6 +75,7 @@ Description:	This file shows value that indicates whether the device is
+ 		enabled for boot. This is one of the UFS device descriptor
+ 		parameters. The full information about the descriptor could
+ 		be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/descriptor_access_enable
+@@ -79,6 +86,7 @@ Description:	This file shows value that indicates whether the device
+ 		of the boot sequence. This is one of the UFS device descriptor
+ 		parameters. The full information about the descriptor could
+ 		be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/initial_power_mode
+@@ -88,6 +96,7 @@ Description:	This file shows value that defines the power mode after
+ 		device initialization or hardware reset. This is one of
+ 		the UFS device descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/high_priority_lun
+@@ -96,6 +105,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the high priority lun. This is one of
+ 		the UFS device descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/secure_removal_type
+@@ -104,6 +114,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the secure removal type. This is one of
+ 		the UFS device descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/support_security_lun
+@@ -113,6 +124,7 @@ Description:	This file shows whether the security lun is supported.
+ 		This is one of the UFS device descriptor parameters.
+ 		The full information about the descriptor could be found
+ 		at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/bkops_termination_latency
+@@ -122,6 +134,7 @@ Description:	This file shows the background operations termination
+ 		latency. This is one of the UFS device descriptor parameters.
+ 		The full information about the descriptor could be found
+ 		at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/initial_active_icc_level
+@@ -130,6 +143,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the initial active ICC level. This is one
+ 		of the UFS device descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/specification_version
+@@ -138,6 +152,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the specification version. This is one
+ 		of the UFS device descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/manufacturing_date
+@@ -147,6 +162,7 @@ Description:	This file shows the manufacturing date in BCD format.
+ 		This is one of the UFS device descriptor parameters.
+ 		The full information about the descriptor could be found
+ 		at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/manufacturer_id
+@@ -155,6 +171,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the manufacturee ID. This is one of the
+ 		UFS device descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/rtt_capability
+@@ -164,6 +181,7 @@ Description:	This file shows the maximum number of outstanding RTTs
+ 		supported by the device. This is one of the UFS device
+ 		descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/rtc_update
+@@ -173,6 +191,7 @@ Description:	This file shows the frequency and method of the realtime
+ 		clock update. This is one of the UFS device descriptor
+ 		parameters. The full information about the descriptor
+ 		could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/ufs_features
+@@ -182,6 +201,7 @@ Description:	This file shows which features are supported by the device.
+ 		This is one of the UFS device descriptor parameters.
+ 		The full information about the descriptor could be
+ 		found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/ffu_timeout
+@@ -190,6 +210,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the FFU timeout. This is one of the
+ 		UFS device descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/queue_depth
+@@ -198,6 +219,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the device queue depth. This is one of the
+ 		UFS device descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/device_version
+@@ -206,6 +228,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the device version. This is one of the
+ 		UFS device descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/number_of_secure_wpa
+@@ -215,6 +238,7 @@ Description:	This file shows number of secure write protect areas
+ 		supported by the device. This is one of the UFS device
+ 		descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/psa_max_data_size
+@@ -225,6 +249,7 @@ Description:	This file shows the maximum amount of data that may be
+ 		This is one of the UFS device descriptor parameters.
+ 		The full information about the descriptor could be found
+ 		at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/psa_state_timeout
+@@ -234,6 +259,7 @@ Description:	This file shows the command maximum timeout for a change
+ 		in PSA state. This is one of the UFS device descriptor
+ 		parameters. The full information about the descriptor could
+ 		be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ 
+@@ -244,6 +270,7 @@ Description:	This file shows the MIPI UniPro version number in BCD format.
+ 		This is one of the UFS interconnect descriptor parameters.
+ 		The full information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/interconnect_descriptor/mphy_version
+@@ -253,6 +280,7 @@ Description:	This file shows the MIPI M-PHY version number in BCD format.
+ 		This is one of the UFS interconnect descriptor parameters.
+ 		The full information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ 
+@@ -264,6 +292,7 @@ Description:	This file shows the total memory quantity available to
+ 		of the UFS geometry descriptor parameters. The full
+ 		information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/max_number_of_luns
+@@ -273,6 +302,7 @@ Description:	This file shows the maximum number of logical units
+ 		supported by the UFS device. This is one of the UFS
+ 		geometry descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/segment_size
+@@ -281,6 +311,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the segment size. This is one of the UFS
+ 		geometry descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/allocation_unit_size
+@@ -289,6 +320,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the allocation unit size. This is one of
+ 		the UFS geometry descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/min_addressable_block_size
+@@ -298,6 +330,7 @@ Description:	This file shows the minimum addressable block size. This
+ 		is one of the UFS geometry descriptor parameters. The full
+ 		information about the descriptor could be found at UFS
+ 		specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/optimal_read_block_size
+@@ -307,6 +340,7 @@ Description:	This file shows the optimal read block size. This is one
+ 		of the UFS geometry descriptor parameters. The full
+ 		information about the descriptor could be found at UFS
+ 		specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/optimal_write_block_size
+@@ -316,6 +350,7 @@ Description:	This file shows the optimal write block size. This is one
+ 		of the UFS geometry descriptor parameters. The full
+ 		information about the descriptor could be found at UFS
+ 		specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/max_in_buffer_size
+@@ -325,6 +360,7 @@ Description:	This file shows the maximum data-in buffer size. This
+ 		is one of the UFS geometry descriptor parameters. The full
+ 		information about the descriptor could be found at UFS
+ 		specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/max_out_buffer_size
+@@ -334,6 +370,7 @@ Description:	This file shows the maximum data-out buffer size. This
+ 		is one of the UFS geometry descriptor parameters. The full
+ 		information about the descriptor could be found at UFS
+ 		specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/rpmb_rw_size
+@@ -343,6 +380,7 @@ Description:	This file shows the maximum number of RPMB frames allowed
+ 		in Security Protocol In/Out. This is one of the UFS geometry
+ 		descriptor parameters. The full information about the
+ 		descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/dyn_capacity_resource_policy
+@@ -352,6 +390,7 @@ Description:	This file shows the dynamic capacity resource policy. This
+ 		is one of the UFS geometry descriptor parameters. The full
+ 		information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/data_ordering
+@@ -361,6 +400,7 @@ Description:	This file shows support for out-of-order data transfer.
+ 		This is one of the UFS geometry descriptor parameters.
+ 		The full information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/max_number_of_contexts
+@@ -370,6 +410,7 @@ Description:	This file shows maximum available number of contexts which
+ 		are supported by the device. This is one of the UFS geometry
+ 		descriptor parameters. The full information about the
+ 		descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/sys_data_tag_unit_size
+@@ -378,6 +419,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows system data tag unit size. This is one of
+ 		the UFS geometry descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/sys_data_tag_resource_size
+@@ -388,6 +430,7 @@ Description:	This file shows maximum storage area size allocated by
+ 		This is one of the UFS geometry descriptor parameters.
+ 		The full information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/secure_removal_types
+@@ -397,6 +440,7 @@ Description:	This file shows supported secure removal types. This is
+ 		one of the UFS geometry descriptor parameters. The full
+ 		information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/memory_types
+@@ -406,6 +450,7 @@ Description:	This file shows supported memory types. This is one of
+ 		the UFS geometry descriptor parameters. The full
+ 		information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/*_memory_max_alloc_units
+@@ -416,6 +461,7 @@ Description:	This file shows the maximum number of allocation units for
+ 		enhanced type 1-4). This is one of the UFS geometry
+ 		descriptor parameters. The full information about the
+ 		descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/*_memory_capacity_adjustment_factor
+@@ -426,6 +472,7 @@ Description:	This file shows the memory capacity adjustment factor for
+ 		enhanced type 1-4). This is one of the UFS geometry
+ 		descriptor parameters. The full information about the
+ 		descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ 
+@@ -436,6 +483,7 @@ Description:	This file shows preend of life information. This is one
+ 		of the UFS health descriptor parameters. The full
+ 		information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/health_descriptor/life_time_estimation_a
+@@ -445,6 +493,7 @@ Description:	This file shows indication of the device life time
+ 		(method a). This is one of the UFS health descriptor
+ 		parameters. The full information about the descriptor
+ 		could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/health_descriptor/life_time_estimation_b
+@@ -454,6 +503,7 @@ Description:	This file shows indication of the device life time
+ 		(method b). This is one of the UFS health descriptor
+ 		parameters. The full information about the descriptor
+ 		could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ 
+@@ -464,6 +514,7 @@ Description:	This file shows maximum VCC, VCCQ and VCCQ2 value for
+ 		active ICC levels from 0 to 15. This is one of the UFS
+ 		power descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ 
+@@ -473,6 +524,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file contains a device manufactureer name string.
+ 		The full information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/string_descriptors/product_name
+@@ -480,6 +532,7 @@ Date:		February 2018
+ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file contains a product name string. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/string_descriptors/oem_id
+@@ -487,6 +540,7 @@ Date:		February 2018
+ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file contains a OEM ID string. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/string_descriptors/serial_number
+@@ -495,6 +549,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file contains a device serial number string. The full
+ 		information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/string_descriptors/product_revision
+@@ -503,6 +558,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file contains a product revision string. The full
+ 		information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ 
+@@ -512,6 +568,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows boot LUN information. This is one of
+ 		the UFS unit descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/lun_write_protect
+@@ -520,6 +577,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows LUN write protection status. This is one of
+ 		the UFS unit descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/lun_queue_depth
+@@ -528,6 +586,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows LUN queue depth. This is one of the UFS
+ 		unit descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/psa_sensitive
+@@ -536,6 +595,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows PSA sensitivity. This is one of the UFS
+ 		unit descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/lun_memory_type
+@@ -544,6 +604,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows LUN memory type. This is one of the UFS
+ 		unit descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/data_reliability
+@@ -553,6 +614,7 @@ Description:	This file defines the device behavior when a power failure
+ 		occurs during a write operation. This is one of the UFS
+ 		unit descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/logical_block_size
+@@ -562,6 +624,7 @@ Description:	This file shows the size of addressable logical blocks
+ 		(calculated as an exponent with base 2). This is one of
+ 		the UFS unit descriptor parameters. The full information about
+ 		the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/logical_block_count
+@@ -571,6 +634,7 @@ Description:	This file shows total number of addressable logical blocks.
+ 		This is one of the UFS unit descriptor parameters. The full
+ 		information about the descriptor could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/erase_block_size
+@@ -579,6 +643,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the erase block size. This is one of
+ 		the UFS unit descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/provisioning_type
+@@ -587,6 +652,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the thin provisioning type. This is one of
+ 		the UFS unit descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/physical_memory_resourse_count
+@@ -595,6 +661,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the total physical memory resources. This is
+ 		one of the UFS unit descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/context_capabilities
+@@ -603,6 +670,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the context capabilities. This is one of
+ 		the UFS unit descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/large_unit_granularity
+@@ -611,6 +679,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the granularity of the LUN. This is one of
+ 		the UFS unit descriptor parameters. The full information
+ 		about the descriptor could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ 
+@@ -619,6 +688,7 @@ Date:		February 2018
+ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the device init status. The full information
+ 		about the flag could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/flags/permanent_wpe
+@@ -627,6 +697,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows whether permanent write protection is enabled.
+ 		The full information about the flag could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/flags/power_on_wpe
+@@ -636,6 +707,7 @@ Description:	This file shows whether write protection is enabled on all
+ 		logical units configured as power on write protected. The
+ 		full information about the flag could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/flags/bkops_enable
+@@ -644,6 +716,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows whether the device background operations are
+ 		enabled. The full information about the flag could be
+ 		found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/flags/life_span_mode_enable
+@@ -652,6 +725,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows whether the device life span mode is enabled.
+ 		The full information about the flag could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/flags/phy_resource_removal
+@@ -660,6 +734,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows whether physical resource removal is enable.
+ 		The full information about the flag could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/flags/busy_rtc
+@@ -668,6 +743,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows whether the device is executing internal
+ 		operation related to real time clock. The full information
+ 		about the flag could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/flags/disable_fw_update
+@@ -676,6 +752,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows whether the device FW update is permanently
+ 		disabled. The full information about the flag could be found
+ 		at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ 
+@@ -685,6 +762,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file provides the boot lun enabled UFS device attribute.
+ 		The full information about the attribute could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/current_power_mode
+@@ -693,6 +771,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file provides the current power mode UFS device attribute.
+ 		The full information about the attribute could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/active_icc_level
+@@ -701,6 +780,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file provides the active icc level UFS device attribute.
+ 		The full information about the attribute could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/ooo_data_enabled
+@@ -709,6 +789,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file provides the out of order data transfer enabled UFS
+ 		device attribute. The full information about the attribute
+ 		could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/bkops_status
+@@ -717,6 +798,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file provides the background operations status UFS device
+ 		attribute. The full information about the attribute could
+ 		be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/purge_status
+@@ -725,6 +807,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file provides the purge operation status UFS device
+ 		attribute. The full information about the attribute could
+ 		be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/max_data_in_size
+@@ -733,6 +816,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the maximum data size in a DATA IN
+ 		UPIU. The full information about the attribute could
+ 		be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/max_data_out_size
+@@ -741,6 +825,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file shows the maximum number of bytes that can be
+ 		requested with a READY TO TRANSFER UPIU. The full information
+ 		about the attribute could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/reference_clock_frequency
+@@ -749,6 +834,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file provides the reference clock frequency UFS device
+ 		attribute. The full information about the attribute could
+ 		be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/configuration_descriptor_lock
+@@ -765,6 +851,7 @@ Description:	This file provides the maximum current number of
+ 		outstanding RTTs in device that is allowed. The full
+ 		information about the attribute could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/exception_event_control
+@@ -773,6 +860,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file provides the exception event control UFS device
+ 		attribute. The full information about the attribute could
+ 		be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/exception_event_status
+@@ -781,6 +869,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file provides the exception event status UFS device
+ 		attribute. The full information about the attribute could
+ 		be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/ffu_status
+@@ -789,6 +878,7 @@ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file provides the ffu status UFS device attribute.
+ 		The full information about the attribute could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/psa_state
+@@ -796,6 +886,7 @@ Date:		February 2018
+ Contact:	Stanislav Nijnikov <stanislav.nijnikov@wdc.com>
+ Description:	This file show the PSA feature status. The full information
+ 		about the attribute could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/psa_data_size
+@@ -805,6 +896,7 @@ Description:	This file shows the amount of data that the host plans to
+ 		load to all logical units in pre-soldering state.
+ 		The full information about the attribute could be found at
+ 		UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ 
+@@ -815,6 +907,7 @@ Description:	This file shows the The amount of physical memory needed
+ 		to be removed from the physical memory resources pool of
+ 		the particular logical unit. The full information about
+ 		the attribute could be found at UFS specifications 2.1.
++
+ 		The file is read only.
+ 
+ 
+@@ -824,24 +917,28 @@ Contact:	Subhash Jadavani <subhashj@codeaurora.org>
+ Description:	This entry could be used to set or show the UFS device
+ 		runtime power management level. The current driver
+ 		implementation supports 6 levels with next target states:
+-		0 - an UFS device will stay active, an UIC link will
+-		stay active
+-		1 - an UFS device will stay active, an UIC link will
+-		hibernate
+-		2 - an UFS device will moved to sleep, an UIC link will
+-		stay active
+-		3 - an UFS device will moved to sleep, an UIC link will
+-		hibernate
+-		4 - an UFS device will be powered off, an UIC link will
+-		hibernate
+-		5 - an UFS device will be powered off, an UIC link will
+-		be powered off
++
++		==  ====================================================
++		0   an UFS device will stay active, an UIC link will
++		    stay active
++		1   an UFS device will stay active, an UIC link will
++		    hibernate
++		2   an UFS device will moved to sleep, an UIC link will
++		    stay active
++		3   an UFS device will moved to sleep, an UIC link will
++		    hibernate
++		4   an UFS device will be powered off, an UIC link will
++		    hibernate
++		5   an UFS device will be powered off, an UIC link will
++		    be powered off
++		==  ====================================================
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/rpm_target_dev_state
+ Date:		February 2018
+ Contact:	Subhash Jadavani <subhashj@codeaurora.org>
+ Description:	This entry shows the target power mode of an UFS device
+ 		for the chosen runtime power management level.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/rpm_target_link_state
+@@ -849,6 +946,7 @@ Date:		February 2018
+ Contact:	Subhash Jadavani <subhashj@codeaurora.org>
+ Description:	This entry shows the target state of an UFS UIC link
+ 		for the chosen runtime power management level.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/spm_lvl
+@@ -857,24 +955,28 @@ Contact:	Subhash Jadavani <subhashj@codeaurora.org>
+ Description:	This entry could be used to set or show the UFS device
+ 		system power management level. The current driver
+ 		implementation supports 6 levels with next target states:
+-		0 - an UFS device will stay active, an UIC link will
+-		stay active
+-		1 - an UFS device will stay active, an UIC link will
+-		hibernate
+-		2 - an UFS device will moved to sleep, an UIC link will
+-		stay active
+-		3 - an UFS device will moved to sleep, an UIC link will
+-		hibernate
+-		4 - an UFS device will be powered off, an UIC link will
+-		hibernate
+-		5 - an UFS device will be powered off, an UIC link will
+-		be powered off
++
++		==  ====================================================
++		0   an UFS device will stay active, an UIC link will
++		    stay active
++		1   an UFS device will stay active, an UIC link will
++		    hibernate
++		2   an UFS device will moved to sleep, an UIC link will
++		    stay active
++		3   an UFS device will moved to sleep, an UIC link will
++		    hibernate
++		4   an UFS device will be powered off, an UIC link will
++		    hibernate
++		5   an UFS device will be powered off, an UIC link will
++		    be powered off
++		==  ====================================================
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/spm_target_dev_state
+ Date:		February 2018
+ Contact:	Subhash Jadavani <subhashj@codeaurora.org>
+ Description:	This entry shows the target power mode of an UFS device
+ 		for the chosen system power management level.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/spm_target_link_state
+@@ -882,18 +984,21 @@ Date:		February 2018
+ Contact:	Subhash Jadavani <subhashj@codeaurora.org>
+ Description:	This entry shows the target state of an UFS UIC link
+ 		for the chosen system power management level.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/wb_presv_us_en
+ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows if preserve user-space was configured
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/wb_shared_alloc_units
+ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows the shared allocated units of WB buffer
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/wb_type
+@@ -901,6 +1006,7 @@ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows the configured WB type.
+ 		0x1 for shared buffer mode. 0x0 for dedicated buffer mode.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/wb_buff_cap_adj
+@@ -910,6 +1016,7 @@ Description:	This entry shows the total user-space decrease in shared
+ 		buffer mode.
+ 		The value of this parameter is 3 for TLC NAND when SLC mode
+ 		is used as WriteBooster Buffer. 2 for MLC NAND.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/wb_max_alloc_units
+@@ -917,6 +1024,7 @@ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows the Maximum total WriteBooster Buffer size
+ 		which is supported by the entire device.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/wb_max_wb_luns
+@@ -924,6 +1032,7 @@ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows the maximum number of luns that can support
+ 		WriteBooster.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/wb_sup_red_type
+@@ -937,46 +1046,59 @@ Description:	The supportability of user space reduction mode
+ 		preserve user space type.
+ 		02h: Device can be configured in either user space
+ 		reduction type or preserve user space type.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/geometry_descriptor/wb_sup_wb_type
+ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	The supportability of WriteBooster Buffer type.
+-		00h: LU based WriteBooster Buffer configuration
+-		01h: Single shared WriteBooster Buffer
+-		configuration
+-		02h: Supporting both LU based WriteBooster
+-		Buffer and Single shared WriteBooster Buffer
+-		configuration
++
++		===  ==========================================================
++		00h  LU based WriteBooster Buffer configuration
++		01h  Single shared WriteBooster Buffer configuration
++		02h  Supporting both LU based WriteBooster.
++		     Buffer and Single shared WriteBooster Buffer configuration
++		===  ==========================================================
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/flags/wb_enable
+ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows the status of WriteBooster.
+-		0: WriteBooster is not enabled.
+-		1: WriteBooster is enabled
++
++		== ============================
++		0  WriteBooster is not enabled.
++		1  WriteBooster is enabled
++		== ============================
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/flags/wb_flush_en
+ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows if flush is enabled.
+-		0: Flush operation is not performed.
+-		1: Flush operation is performed.
++
++		== =================================
++		0  Flush operation is not performed.
++		1  Flush operation is performed.
++		== =================================
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/flags/wb_flush_during_h8
+ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	Flush WriteBooster Buffer during hibernate state.
+-		0: Device is not allowed to flush the
+-		WriteBooster Buffer during link hibernate
+-		state.
+-		1: Device is allowed to flush the
+-		WriteBooster Buffer during link hibernate
+-		state
++
++		== =================================================
++		0  Device is not allowed to flush the
++		   WriteBooster Buffer during link hibernate state.
++		1  Device is allowed to flush the
++		   WriteBooster Buffer during link hibernate state.
++		== =================================================
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/wb_avail_buf
+@@ -984,23 +1106,30 @@ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows the amount of unused WriteBooster buffer
+ 		available.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/wb_cur_buf
+ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows the amount of unused current buffer.
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/wb_flush_status
+ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows the flush operation status.
+-		00h: idle
+-		01h: Flush operation in progress
+-		02h: Flush operation stopped prematurely.
+-		03h: Flush operation completed successfully
+-		04h: Flush operation general failure
++
++
++		===  ======================================
++		00h  idle
++		01h  Flush operation in progress
++		02h  Flush operation stopped prematurely.
++		03h  Flush operation completed successfully
++		04h  Flush operation general failure
++		===  ======================================
++
+ 		The file is read only.
+ 
+ What:		/sys/bus/platform/drivers/ufshcd/*/attributes/wb_life_time_est
+@@ -1008,9 +1137,13 @@ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows an indication of the WriteBooster Buffer
+ 		lifetime based on the amount of performed program/erase cycles
+-		01h: 0% - 10% WriteBooster Buffer life time used
++
++		===  =============================================
++		01h  0% - 10% WriteBooster Buffer life time used
+ 		...
+-		0Ah: 90% - 100% WriteBooster Buffer life time used
++		0Ah  90% - 100% WriteBooster Buffer life time used
++		===  =============================================
++
+ 		The file is read only.
+ 
+ What:		/sys/class/scsi_device/*/device/unit_descriptor/wb_buf_alloc_units
+@@ -1018,4 +1151,5 @@ Date:		June 2020
+ Contact:	Asutosh Das <asutoshd@codeaurora.org>
+ Description:	This entry shows the configured size of WriteBooster buffer.
+ 		0400h corresponds to 4GB.
++
+ 		The file is read only.
+diff --git a/Documentation/ABI/testing/sysfs-driver-w1_ds28e17 b/Documentation/ABI/testing/sysfs-driver-w1_ds28e17
+index d301e7017afe..e92aba4eb594 100644
+--- a/Documentation/ABI/testing/sysfs-driver-w1_ds28e17
++++ b/Documentation/ABI/testing/sysfs-driver-w1_ds28e17
+@@ -5,7 +5,9 @@ Contact:	Jan Kandziora <jjj@gmx.de>
+ Description:	When written, this file sets the I2C speed on the connected
+ 		DS28E17 chip. When read, it reads the current setting from
+ 		the DS28E17 chip.
++
+ 		Valid values: 100, 400, 900 [kBaud].
++
+ 		Default 100, can be set by w1_ds28e17.speed= module parameter.
+ Users:		w1_ds28e17 driver
+ 
+@@ -17,5 +19,6 @@ Description:	When written, this file sets the multiplier used to calculate
+ 		the busy timeout for I2C operations on the connected DS28E17
+ 		chip. When read, returns the current setting.
+ 		Valid values: 1 to 9.
++
+ 		Default 1, can be set by w1_ds28e17.stretch= module parameter.
+ Users:		w1_ds28e17 driver
 diff --git a/Documentation/ABI/testing/sysfs-firmware-acpi b/Documentation/ABI/testing/sysfs-firmware-acpi
-index 613f42a9d5cd..e4afc2538210 100644
+index e4afc2538210..b16d30a71709 100644
 --- a/Documentation/ABI/testing/sysfs-firmware-acpi
 +++ b/Documentation/ABI/testing/sysfs-firmware-acpi
-@@ -12,11 +12,14 @@ Description:
- 		image: The image bitmap. Currently a 32-bit BMP.
- 		status: 1 if the image is valid, 0 if firmware invalidated it.
- 		type: 0 indicates image is in BMP format.
+@@ -81,11 +81,11 @@ Description:
+ 		  $ cd /sys/firmware/acpi/interrupts
+ 		  $ grep . *
+ 		  error:	     0
+-		  ff_gbl_lock:	   0   enable
+-		  ff_pmtimer:	  0  invalid
+-		  ff_pwr_btn:	  0   enable
+-		  ff_rt_clk:	 2  disable
+-		  ff_slp_btn:	  0  invalid
++		  ff_gbl_lock:	     0   enable
++		  ff_pmtimer:	     0  invalid
++		  ff_pwr_btn:	     0   enable
++		  ff_rt_clk:	     2  disable
++		  ff_slp_btn:	     0  invalid
+ 		  gpe00:	     0	invalid
+ 		  gpe01:	     0	 enable
+ 		  gpe02:	   108	 enable
+@@ -118,9 +118,9 @@ Description:
+ 		  gpe1D:	     0	invalid
+ 		  gpe1E:	     0	invalid
+ 		  gpe1F:	     0	invalid
+-		  gpe_all:    1192
+-		  sci:	1194
+-		  sci_not:     0
++		  gpe_all:	  1192
++		  sci:		  1194
++		  sci_not:	     0
+ 
+ 		===========  ==================================================
+ 		sci	     The number of times the ACPI SCI
+diff --git a/Documentation/ABI/testing/sysfs-firmware-efi-esrt b/Documentation/ABI/testing/sysfs-firmware-efi-esrt
+index 6e431d1a4e79..31b57676d4ad 100644
+--- a/Documentation/ABI/testing/sysfs-firmware-efi-esrt
++++ b/Documentation/ABI/testing/sysfs-firmware-efi-esrt
+@@ -35,10 +35,13 @@ What:		/sys/firmware/efi/esrt/entries/entry$N/fw_type
+ Date:		February 2015
+ Contact:	Peter Jones <pjones@redhat.com>
+ Description:	What kind of firmware entry this is:
+-		0 - Unknown
+-		1 - System Firmware
+-		2 - Device Firmware
+-		3 - UEFI Driver
 +
-+		======== ===================================================
- 		version: The version of the BGRT. Currently 1.
- 		xoffset: The number of pixels between the left of the screen
- 			 and the left edge of the image.
- 		yoffset: The number of pixels between the top of the screen
- 			 and the top edge of the image.
-+		======== ===================================================
++		==  ===============
++		0   Unknown
++		1   System Firmware
++		2   Device Firmware
++		3   UEFI Driver
++		==  ===============
  
- What:		/sys/firmware/acpi/hotplug/
- Date:		February 2013
-@@ -33,12 +36,14 @@ Description:
- 		The following setting is available to user space for each
- 		hotplug profile:
- 
-+		======== =======================================================
- 		enabled: If set, the ACPI core will handle notifications of
--			hotplug events associated with the given class of
--			devices and will allow those devices to be ejected with
--			the help of the _EJ0 control method.  Unsetting it
--			effectively disables hotplug for the correspoinding
--			class of devices.
-+			 hotplug events associated with the given class of
-+			 devices and will allow those devices to be ejected with
-+			 the help of the _EJ0 control method.  Unsetting it
-+			 effectively disables hotplug for the correspoinding
-+			 class of devices.
-+		======== =======================================================
- 
- 		The value of the above attribute is an integer number: 1 (set)
- 		or 0 (unset).  Attempts to write any other values to it will
-@@ -71,86 +76,90 @@ Description:
- 		To figure out where all the SCI's are coming from,
- 		/sys/firmware/acpi/interrupts contains a file listing
- 		every possible source, and the count of how many
--		times it has triggered.
--
--		$ cd /sys/firmware/acpi/interrupts
--		$ grep . *
--		error:	     0
--		ff_gbl_lock:	   0   enable
--		ff_pmtimer:	  0  invalid
--		ff_pwr_btn:	  0   enable
--		ff_rt_clk:	 2  disable
--		ff_slp_btn:	  0  invalid
--		gpe00:	     0	invalid
--		gpe01:	     0	 enable
--		gpe02:	   108	 enable
--		gpe03:	     0	invalid
--		gpe04:	     0	invalid
--		gpe05:	     0	invalid
--		gpe06:	     0	 enable
--		gpe07:	     0	 enable
--		gpe08:	     0	invalid
--		gpe09:	     0	invalid
--		gpe0A:	     0	invalid
--		gpe0B:	     0	invalid
--		gpe0C:	     0	invalid
--		gpe0D:	     0	invalid
--		gpe0E:	     0	invalid
--		gpe0F:	     0	invalid
--		gpe10:	     0	invalid
--		gpe11:	     0	invalid
--		gpe12:	     0	invalid
--		gpe13:	     0	invalid
--		gpe14:	     0	invalid
--		gpe15:	     0	invalid
--		gpe16:	     0	invalid
--		gpe17:	  1084	 enable
--		gpe18:	     0	 enable
--		gpe19:	     0	invalid
--		gpe1A:	     0	invalid
--		gpe1B:	     0	invalid
--		gpe1C:	     0	invalid
--		gpe1D:	     0	invalid
--		gpe1E:	     0	invalid
--		gpe1F:	     0	invalid
--		gpe_all:    1192
--		sci:	1194
--		sci_not:     0	
--
--		sci - The number of times the ACPI SCI
--		has been called and claimed an interrupt.
--
--		sci_not - The number of times the ACPI SCI
--		has been called and NOT claimed an interrupt.
--
--		gpe_all - count of SCI caused by GPEs.
--
--		gpeXX - count for individual GPE source
--
--		ff_gbl_lock - Global Lock
--
--		ff_pmtimer - PM Timer
--
--		ff_pwr_btn - Power Button
--
--		ff_rt_clk - Real Time Clock
--
--		ff_slp_btn - Sleep Button
--
--		error - an interrupt that can't be accounted for above.
--
--		invalid: it's either a GPE or a Fixed Event that
--			doesn't have an event handler.
--
--		disable: the GPE/Fixed Event is valid but disabled.
--
--		enable: the GPE/Fixed Event is valid and enabled.
--
--		Root has permission to clear any of these counters.  Eg.
--		# echo 0 > gpe11
--
--		All counters can be cleared by clearing the total "sci":
--		# echo 0 > sci
-+		times it has triggered::
+ What:		/sys/firmware/efi/esrt/entries/entry$N/fw_class
+ Date:		February 2015
+@@ -71,11 +74,14 @@ Date:		February 2015
+ Contact:	Peter Jones <pjones@redhat.com>
+ Description:	The result of the last firmware update attempt for the
+ 		firmware resource entry.
+-		0 - Success
+-		1 - Insufficient resources
+-		2 - Incorrect version
+-		3 - Invalid format
+-		4 - Authentication error
+-		5 - AC power event
+-		6 - Battery power event
 +
-+		  $ cd /sys/firmware/acpi/interrupts
-+		  $ grep . *
-+		  error:	     0
-+		  ff_gbl_lock:	   0   enable
-+		  ff_pmtimer:	  0  invalid
-+		  ff_pwr_btn:	  0   enable
-+		  ff_rt_clk:	 2  disable
-+		  ff_slp_btn:	  0  invalid
-+		  gpe00:	     0	invalid
-+		  gpe01:	     0	 enable
-+		  gpe02:	   108	 enable
-+		  gpe03:	     0	invalid
-+		  gpe04:	     0	invalid
-+		  gpe05:	     0	invalid
-+		  gpe06:	     0	 enable
-+		  gpe07:	     0	 enable
-+		  gpe08:	     0	invalid
-+		  gpe09:	     0	invalid
-+		  gpe0A:	     0	invalid
-+		  gpe0B:	     0	invalid
-+		  gpe0C:	     0	invalid
-+		  gpe0D:	     0	invalid
-+		  gpe0E:	     0	invalid
-+		  gpe0F:	     0	invalid
-+		  gpe10:	     0	invalid
-+		  gpe11:	     0	invalid
-+		  gpe12:	     0	invalid
-+		  gpe13:	     0	invalid
-+		  gpe14:	     0	invalid
-+		  gpe15:	     0	invalid
-+		  gpe16:	     0	invalid
-+		  gpe17:	  1084	 enable
-+		  gpe18:	     0	 enable
-+		  gpe19:	     0	invalid
-+		  gpe1A:	     0	invalid
-+		  gpe1B:	     0	invalid
-+		  gpe1C:	     0	invalid
-+		  gpe1D:	     0	invalid
-+		  gpe1E:	     0	invalid
-+		  gpe1F:	     0	invalid
-+		  gpe_all:    1192
-+		  sci:	1194
-+		  sci_not:     0
-+
-+		===========  ==================================================
-+		sci	     The number of times the ACPI SCI
-+			     has been called and claimed an interrupt.
-+
-+		sci_not	     The number of times the ACPI SCI
-+			     has been called and NOT claimed an interrupt.
-+
-+		gpe_all	     count of SCI caused by GPEs.
-+
-+		gpeXX	     count for individual GPE source
-+
-+		ff_gbl_lock  Global Lock
-+
-+		ff_pmtimer   PM Timer
-+
-+		ff_pwr_btn   Power Button
-+
-+		ff_rt_clk    Real Time Clock
-+
-+		ff_slp_btn   Sleep Button
-+
-+		error	     an interrupt that can't be accounted for above.
-+
-+		invalid      it's either a GPE or a Fixed Event that
-+			     doesn't have an event handler.
-+
-+		disable	     the GPE/Fixed Event is valid but disabled.
-+
-+		enable       the GPE/Fixed Event is valid and enabled.
-+		===========  ==================================================
-+
-+		Root has permission to clear any of these counters.  Eg.::
-+
-+		  # echo 0 > gpe11
-+
-+		All counters can be cleared by clearing the total "sci"::
-+
-+		  # echo 0 > sci
++		==  ======================
++		0   Success
++		1   Insufficient resources
++		2   Incorrect version
++		3   Invalid format
++		4   Authentication error
++		5   AC power event
++		6   Battery power event
++		==  ======================
  
- 		None of these counters has an effect on the function
- 		of the system, they are simply statistics.
-@@ -165,32 +174,34 @@ Description:
+diff --git a/Documentation/ABI/testing/sysfs-firmware-efi-runtime-map b/Documentation/ABI/testing/sysfs-firmware-efi-runtime-map
+index c61b9b348e99..9c4d581be396 100644
+--- a/Documentation/ABI/testing/sysfs-firmware-efi-runtime-map
++++ b/Documentation/ABI/testing/sysfs-firmware-efi-runtime-map
+@@ -14,7 +14,7 @@ Description:	Switching efi runtime services to virtual mode requires
+ 		/sys/firmware/efi/runtime-map/ is the directory the kernel
+ 		exports that information in.
  
- 		Let's take power button fixed event for example, please kill acpid
- 		and other user space applications so that the machine won't shutdown
--		when pressing the power button.
--		# cat ff_pwr_btn
--		0	enabled
--		# press the power button for 3 times;
--		# cat ff_pwr_btn
--		3	enabled
--		# echo disable > ff_pwr_btn
--		# cat ff_pwr_btn
--		3	disabled
--		# press the power button for 3 times;
--		# cat ff_pwr_btn
--		3	disabled
--		# echo enable > ff_pwr_btn
--		# cat ff_pwr_btn
--		4	enabled
--		/*
--		 * this is because the status bit is set even if the enable bit is cleared,
--		 * and it triggers an ACPI fixed event when the enable bit is set again
--		 */
--		# press the power button for 3 times;
--		# cat ff_pwr_btn
--		7	enabled
--		# echo disable > ff_pwr_btn
--		# press the power button for 3 times;
--		# echo clear > ff_pwr_btn	/* clear the status bit */
--		# echo disable > ff_pwr_btn
--		# cat ff_pwr_btn
--		7	enabled
-+		when pressing the power button::
-+
-+		  # cat ff_pwr_btn
-+		  0	enabled
-+		  # press the power button for 3 times;
-+		  # cat ff_pwr_btn
-+		  3	enabled
-+		  # echo disable > ff_pwr_btn
-+		  # cat ff_pwr_btn
-+		  3	disabled
-+		  # press the power button for 3 times;
-+		  # cat ff_pwr_btn
-+		  3	disabled
-+		  # echo enable > ff_pwr_btn
-+		  # cat ff_pwr_btn
-+		  4	enabled
-+		  /*
-+		   * this is because the status bit is set even if the enable
-+		   * bit is cleared, and it triggers an ACPI fixed event when
-+		   * the enable bit is set again
-+		   */
-+		  # press the power button for 3 times;
-+		  # cat ff_pwr_btn
-+		  7	enabled
-+		  # echo disable > ff_pwr_btn
-+		  # press the power button for 3 times;
-+		  # echo clear > ff_pwr_btn	/* clear the status bit */
-+		  # echo disable > ff_pwr_btn
-+		  # cat ff_pwr_btn
-+		  7	enabled
+-		subdirectories are named with the number of the memory range:
++		subdirectories are named with the number of the memory range::
  
-diff --git a/Documentation/ABI/testing/sysfs-firmware-dmi-entries b/Documentation/ABI/testing/sysfs-firmware-dmi-entries
-index 210ad44b95a5..fe0289c87768 100644
---- a/Documentation/ABI/testing/sysfs-firmware-dmi-entries
-+++ b/Documentation/ABI/testing/sysfs-firmware-dmi-entries
-@@ -33,7 +33,7 @@ Description:
- 		doesn't matter), they will be represented in sysfs as
- 		entries "T-0" through "T-(N-1)":
+ 			/sys/firmware/efi/runtime-map/0
+ 			/sys/firmware/efi/runtime-map/1
+@@ -24,11 +24,13 @@ Description:	Switching efi runtime services to virtual mode requires
  
--		Example entry directories:
-+		Example entry directories::
+ 		Each subdirectory contains five files:
  
- 			/sys/firmware/dmi/entries/17-0
- 			/sys/firmware/dmi/entries/17-1
-@@ -50,61 +50,65 @@ Description:
- 		Each DMI entry in sysfs has the common header values
- 		exported as attributes:
+-		attribute : The attributes of the memory range.
+-		num_pages : The size of the memory range in pages.
+-		phys_addr : The physical address of the memory range.
+-		type      : The type of the memory range.
+-		virt_addr : The virtual address of the memory range.
++		=========   =========================================
++		attribute   The attributes of the memory range.
++		num_pages   The size of the memory range in pages.
++		phys_addr   The physical address of the memory range.
++		type        The type of the memory range.
++		virt_addr   The virtual address of the memory range.
++		=========   =========================================
  
--		handle	: The 16bit 'handle' that is assigned to this
-+		========  =================================================
-+		handle	  The 16bit 'handle' that is assigned to this
- 			  entry by the firmware.  This handle may be
- 			  referred to by other entries.
--		length	: The length of the entry, as presented in the
-+		length	  The length of the entry, as presented in the
- 			  entry itself.  Note that this is _not the
- 			  total count of bytes associated with the
--			  entry_.  This value represents the length of
-+			  entry.  This value represents the length of
- 			  the "formatted" portion of the entry.  This
- 			  "formatted" region is sometimes followed by
- 			  the "unformatted" region composed of nul
- 			  terminated strings, with termination signalled
- 			  by a two nul characters in series.
--		raw	: The raw bytes of the entry. This includes the
-+		raw	  The raw bytes of the entry. This includes the
- 			  "formatted" portion of the entry, the
- 			  "unformatted" strings portion of the entry,
- 			  and the two terminating nul characters.
--		type	: The type of the entry.  This value is the same
-+		type	  The type of the entry.  This value is the same
- 			  as found in the directory name.  It indicates
- 			  how the rest of the entry should be interpreted.
--		instance: The instance ordinal of the entry for the
-+		instance  The instance ordinal of the entry for the
- 			  given type.  This value is the same as found
- 			  in the parent directory name.
--		position: The ordinal position (zero-based) of the entry
-+		position  The ordinal position (zero-based) of the entry
- 			  within the entirety of the DMI entry table.
-+		========  =================================================
- 
--		=== Entry Specialization ===
-+		**Entry Specialization**
- 
- 		Some entry types may have other information available in
- 		sysfs.  Not all types are specialized.
- 
--		--- Type 15 - System Event Log ---
-+		**Type 15 - System Event Log**
- 
- 		This entry allows the firmware to export a log of
- 		events the system has taken.  This information is
- 		typically backed by nvram, but the implementation
- 		details are abstracted by this table.  This entry's data
--		is exported in the directory:
-+		is exported in the directory::
- 
--		/sys/firmware/dmi/entries/15-0/system_event_log
-+		  /sys/firmware/dmi/entries/15-0/system_event_log
- 
- 		and has the following attributes (documented in the
- 		SMBIOS / DMI specification under "System Event Log (Type 15)":
- 
--		area_length
--		header_start_offset
--		data_start_offset
--		access_method
--		status
--		change_token
--		access_method_address
--		header_format
--		per_log_type_descriptor_length
--		type_descriptors_supported_count
-+		- area_length
-+		- header_start_offset
-+		- data_start_offset
-+		- access_method
-+		- status
-+		- change_token
-+		- access_method_address
-+		- header_format
-+		- per_log_type_descriptor_length
-+		- type_descriptors_supported_count
- 
- 		As well, the kernel exports the binary attribute:
- 
--		raw_event_log	: The raw binary bits of the event log
-+		=============	  ====================================
-+		raw_event_log	  The raw binary bits of the event log
- 				  as described by the DMI entry.
-+		=============	  ====================================
-diff --git a/Documentation/ABI/testing/sysfs-firmware-gsmi b/Documentation/ABI/testing/sysfs-firmware-gsmi
-index 0faa0aaf4b6a..7a558354c1ee 100644
---- a/Documentation/ABI/testing/sysfs-firmware-gsmi
-+++ b/Documentation/ABI/testing/sysfs-firmware-gsmi
-@@ -20,7 +20,7 @@ Description:
- 
- 			This directory has the same layout (and
- 			underlying implementation as /sys/firmware/efi/vars.
--			See Documentation/ABI/*/sysfs-firmware-efi-vars
-+			See `Documentation/ABI/*/sysfs-firmware-efi-vars`
- 			for more information on how to interact with
- 			this structure.
- 
-diff --git a/Documentation/ABI/testing/sysfs-firmware-memmap b/Documentation/ABI/testing/sysfs-firmware-memmap
-index eca0d65087dc..1f6f4d3a32c0 100644
---- a/Documentation/ABI/testing/sysfs-firmware-memmap
-+++ b/Documentation/ABI/testing/sysfs-firmware-memmap
-@@ -20,7 +20,7 @@ Description:
- 		the raw memory map to userspace.
- 
- 		The structure is as follows: Under /sys/firmware/memmap there
--		are subdirectories with the number of the entry as their name:
-+		are subdirectories with the number of the entry as their name::
- 
- 			/sys/firmware/memmap/0
- 			/sys/firmware/memmap/1
-@@ -34,14 +34,16 @@ Description:
- 
- 		Each directory contains three files:
- 
--		start	: The start address (as hexadecimal number with the
-+		========  =====================================================
-+		start	  The start address (as hexadecimal number with the
- 			  '0x' prefix).
--		end	: The end address, inclusive (regardless whether the
-+		end	  The end address, inclusive (regardless whether the
- 			  firmware provides inclusive or exclusive ranges).
--		type	: Type of the entry as string. See below for a list of
-+		type	  Type of the entry as string. See below for a list of
- 			  valid types.
-+		========  =====================================================
- 
--		So, for example:
-+		So, for example::
- 
- 			/sys/firmware/memmap/0/start
- 			/sys/firmware/memmap/0/end
-@@ -57,9 +59,8 @@ Description:
- 		  - reserved
- 
- 		Following shell snippet can be used to display that memory
--		map in a human-readable format:
-+		map in a human-readable format::
- 
--		-------------------- 8< ----------------------------------------
- 		  #!/bin/bash
- 		  cd /sys/firmware/memmap
- 		  for dir in * ; do
-@@ -68,4 +69,3 @@ Description:
- 		      type=$(cat $dir/type)
- 		      printf "%016x-%016x (%s)\n" $start $[ $end +1] "$type"
- 		  done
--		-------------------- >8 ----------------------------------------
-diff --git a/Documentation/ABI/testing/sysfs-fs-ext4 b/Documentation/ABI/testing/sysfs-fs-ext4
-index 78604db56279..99e3d92f8299 100644
---- a/Documentation/ABI/testing/sysfs-fs-ext4
-+++ b/Documentation/ABI/testing/sysfs-fs-ext4
-@@ -45,8 +45,8 @@ Description:
- 		parameter will have their blocks allocated out of a
- 		block group specific preallocation pool, so that small
- 		files are packed closely together.  Each large file
--		 will have its blocks allocated out of its own unique
--		 preallocation pool.
-+		will have its blocks allocated out of its own unique
-+		preallocation pool.
- 
- What:		/sys/fs/ext4/<disk>/inode_readahead_blks
- Date:		March 2008
-diff --git a/Documentation/ABI/testing/sysfs-hypervisor-xen b/Documentation/ABI/testing/sysfs-hypervisor-xen
-index 53b7b2ea7515..4dbe0c49b393 100644
---- a/Documentation/ABI/testing/sysfs-hypervisor-xen
-+++ b/Documentation/ABI/testing/sysfs-hypervisor-xen
-@@ -15,14 +15,17 @@ KernelVersion:	4.3
- Contact:	Boris Ostrovsky <boris.ostrovsky@oracle.com>
- Description:	If running under Xen:
- 		Describes mode that Xen's performance-monitoring unit (PMU)
--		uses. Accepted values are
--			"off"  -- PMU is disabled
--			"self" -- The guest can profile itself
--			"hv"   -- The guest can profile itself and, if it is
-+		uses. Accepted values are:
-+
-+			======    ============================================
-+			"off"     PMU is disabled
-+			"self"    The guest can profile itself
-+			"hv"      The guest can profile itself and, if it is
- 				  privileged (e.g. dom0), the hypervisor
--			"all" --  The guest can profile itself, the hypervisor
-+			"all"     The guest can profile itself, the hypervisor
- 				  and all other guests. Only available to
- 				  privileged guests.
-+			======    ============================================
- 
- What:           /sys/hypervisor/pmu/pmu_features
- Date:           August 2015
-diff --git a/Documentation/ABI/testing/sysfs-kernel-boot_params b/Documentation/ABI/testing/sysfs-kernel-boot_params
-index eca38ce2852d..7f9bda453c4d 100644
---- a/Documentation/ABI/testing/sysfs-kernel-boot_params
-+++ b/Documentation/ABI/testing/sysfs-kernel-boot_params
-@@ -23,16 +23,17 @@ Description:	The /sys/kernel/boot_params directory contains two
- 		representation of setup_data type. "data" file is the binary
- 		representation of setup_data payload.
- 
--		The whole boot_params directory structure is like below:
--		/sys/kernel/boot_params
--		|__ data
--		|__ setup_data
--		|   |__ 0
--		|   |   |__ data
--		|   |   |__ type
--		|   |__ 1
--		|       |__ data
--		|       |__ type
--		|__ version
-+		The whole boot_params directory structure is like below::
-+
-+		  /sys/kernel/boot_params
-+		  |__ data
-+		  |__ setup_data
-+		  |   |__ 0
-+		  |   |   |__ data
-+		  |   |   |__ type
-+		  |   |__ 1
-+		  |       |__ data
-+		  |       |__ type
-+		  |__ version
- 
+ 		Above values are all hexadecimal numbers with the '0x' prefix.
  Users:		Kexec
-diff --git a/Documentation/ABI/testing/sysfs-kernel-mm-hugepages b/Documentation/ABI/testing/sysfs-kernel-mm-hugepages
-index fdaa2162fae1..294387e2c7fb 100644
---- a/Documentation/ABI/testing/sysfs-kernel-mm-hugepages
-+++ b/Documentation/ABI/testing/sysfs-kernel-mm-hugepages
+diff --git a/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg b/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
+index 011dda4f8e8a..ee0d6dbc810e 100644
+--- a/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
++++ b/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
+@@ -15,7 +15,7 @@ Description:
+ 		to the fw_cfg device can be found in "docs/specs/fw_cfg.txt"
+ 		in the QEMU source tree.
+ 
+-		=== SysFS fw_cfg Interface ===
++		**SysFS fw_cfg Interface**
+ 
+ 		The fw_cfg sysfs interface described in this document is only
+ 		intended to display discoverable blobs (i.e., those registered
+@@ -31,7 +31,7 @@ Description:
+ 
+ 			/sys/firmware/qemu_fw_cfg/rev
+ 
+-		--- Discoverable fw_cfg blobs by selector key ---
++		**Discoverable fw_cfg blobs by selector key**
+ 
+ 		All discoverable blobs listed in the fw_cfg file directory are
+ 		displayed as entries named after their unique selector key
+@@ -45,24 +45,26 @@ Description:
+ 		Each such fw_cfg sysfs entry has the following values exported
+ 		as attributes:
+ 
+-		name  	: The 56-byte nul-terminated ASCII string used as the
++		====	  ====================================================
++		name	  The 56-byte nul-terminated ASCII string used as the
+ 			  blob's 'file name' in the fw_cfg directory.
+-		size  	: The length of the blob, as given in the fw_cfg
++		size	  The length of the blob, as given in the fw_cfg
+ 			  directory.
+-		key	: The value of the blob's selector key as given in the
++		key	  The value of the blob's selector key as given in the
+ 			  fw_cfg directory. This value is the same as used in
+ 			  the parent directory name.
+-		raw	: The raw bytes of the blob, obtained by selecting the
++		raw	  The raw bytes of the blob, obtained by selecting the
+ 			  entry via the control register, and reading a number
+ 			  of bytes equal to the blob size from the data
+ 			  register.
++		====	  ====================================================
+ 
+-		--- Listing fw_cfg blobs by file name ---
++		**Listing fw_cfg blobs by file name**
+ 
+ 		While the fw_cfg device does not impose any specific naming
+ 		convention on the blobs registered in the file directory,
+ 		QEMU developers have traditionally used path name semantics
+-		to give each blob a descriptive name. For example:
++		to give each blob a descriptive name. For example::
+ 
+ 			"bootorder"
+ 			"genroms/kvmvapic.bin"
+@@ -81,7 +83,7 @@ Description:
+ 		of directories matching the path name components of fw_cfg
+ 		blob names, ending in symlinks to the by_key entry for each
+ 		"basename", as illustrated below (assume current directory is
+-		/sys/firmware):
++		/sys/firmware)::
+ 
+ 		    qemu_fw_cfg/by_name/bootorder -> ../by_key/38
+ 		    qemu_fw_cfg/by_name/etc/e820 -> ../../by_key/35
+diff --git a/Documentation/ABI/testing/sysfs-firmware-sfi b/Documentation/ABI/testing/sysfs-firmware-sfi
+index 4be7d44aeacf..5210e0f06ddb 100644
+--- a/Documentation/ABI/testing/sysfs-firmware-sfi
++++ b/Documentation/ABI/testing/sysfs-firmware-sfi
+@@ -9,7 +9,7 @@ Description:
+ 		http://simplefirmware.org/documentation
+ 
+ 		While the tables are used by the kernel, user-space
+-		can observe them this way:
++		can observe them this way::
+ 
+-		# cd /sys/firmware/sfi/tables
+-		# cat $TABLENAME > $TABLENAME.bin
++		  # cd /sys/firmware/sfi/tables
++		  # cat $TABLENAME > $TABLENAME.bin
+diff --git a/Documentation/ABI/testing/sysfs-firmware-sgi_uv b/Documentation/ABI/testing/sysfs-firmware-sgi_uv
+index 4573fd4b7876..66800baab096 100644
+--- a/Documentation/ABI/testing/sysfs-firmware-sgi_uv
++++ b/Documentation/ABI/testing/sysfs-firmware-sgi_uv
+@@ -5,7 +5,7 @@ Description:
+ 		The /sys/firmware/sgi_uv directory contains information
+ 		about the SGI UV platform.
+ 
+-		Under that directory are a number of files:
++		Under that directory are a number of files::
+ 
+ 			partition_id
+ 			coherence_id
+@@ -14,7 +14,7 @@ Description:
+ 		SGI UV systems can be partitioned into multiple physical
+ 		machines, which each partition running a unique copy
+ 		of the operating system.  Each partition will have a unique
+-		partition id.  To display the partition id, use the command:
++		partition id.  To display the partition id, use the command::
+ 
+ 			cat /sys/firmware/sgi_uv/partition_id
+ 
+@@ -22,6 +22,6 @@ Description:
+ 		A partitioned SGI UV system can have one or more coherence
+ 		domain.  The coherence id indicates which coherence domain
+ 		this partition is in.  To display the coherence id, use the
+-		command:
++		command::
+ 
+ 			cat /sys/firmware/sgi_uv/coherence_id
+diff --git a/Documentation/ABI/testing/sysfs-fs-f2fs b/Documentation/ABI/testing/sysfs-fs-f2fs
+index 834d0becae6d..67b3ed8e8c2f 100644
+--- a/Documentation/ABI/testing/sysfs-fs-f2fs
++++ b/Documentation/ABI/testing/sysfs-fs-f2fs
+@@ -20,10 +20,13 @@ What:		/sys/fs/f2fs/<disk>/gc_idle
+ Date:		July 2013
+ Contact:	"Namjae Jeon" <namjae.jeon@samsung.com>
+ Description:	Controls the victim selection policy for garbage collection.
+-		Setting gc_idle = 0(default) will disable this option. Setting
+-		gc_idle = 1 will select the Cost Benefit approach & setting
+-		gc_idle = 2 will select the greedy approach & setting
+-		gc_idle = 3 will select the age-threshold based approach.
++		Setting gc_idle = 0(default) will disable this option. Setting:
++
++		===========  ===============================================
++		gc_idle = 1  will select the Cost Benefit approach & setting
++		gc_idle = 2  will select the greedy approach & setting
++		gc_idle = 3  will select the age-threshold based approach.
++		===========  ===============================================
+ 
+ What:		/sys/fs/f2fs/<disk>/reclaim_segments
+ Date:		October 2013
+@@ -46,10 +49,17 @@ Date:		November 2013
+ Contact:	"Jaegeuk Kim" <jaegeuk.kim@samsung.com>
+ Description:	Controls the in-place-update policy.
+ 		updates in f2fs. User can set:
+-		0x01: F2FS_IPU_FORCE, 0x02: F2FS_IPU_SSR,
+-		0x04: F2FS_IPU_UTIL,  0x08: F2FS_IPU_SSR_UTIL,
+-		0x10: F2FS_IPU_FSYNC, 0x20: F2FS_IPU_ASYNC,
+-		0x40: F2FS_IPU_NOCACHE.
++
++		====  =================
++		0x01  F2FS_IPU_FORCE
++		0x02  F2FS_IPU_SSR
++		0x04  F2FS_IPU_UTIL
++		0x08  F2FS_IPU_SSR_UTIL
++		0x10  F2FS_IPU_FSYNC
++		0x20  F2FS_IPU_ASYNC,
++		0x40  F2FS_IPU_NOCACHE
++		====  =================
++
+ 		Refer segment.h for details.
+ 
+ What:		/sys/fs/f2fs/<disk>/min_ipu_util
+@@ -332,18 +342,28 @@ Date:		April 2020
+ Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
+ Description:	Give a way to attach REQ_META|FUA to data writes
+ 		given temperature-based bits. Now the bits indicate:
+-		*      REQ_META     |      REQ_FUA      |
+-		*    5 |    4 |   3 |    2 |    1 |   0 |
+-		* Cold | Warm | Hot | Cold | Warm | Hot |
++
++		+-------------------+-------------------+
++		|      REQ_META     |      REQ_FUA      |
++		+------+------+-----+------+------+-----+
++		|    5 |    4 |   3 |    2 |    1 |   0 |
++		+------+------+-----+------+------+-----+
++		| Cold | Warm | Hot | Cold | Warm | Hot |
++		+------+------+-----+------+------+-----+
+ 
+ What:		/sys/fs/f2fs/<disk>/node_io_flag
+ Date:		June 2020
+ Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
+ Description:	Give a way to attach REQ_META|FUA to node writes
+ 		given temperature-based bits. Now the bits indicate:
+-		*      REQ_META     |      REQ_FUA      |
+-		*    5 |    4 |   3 |    2 |    1 |   0 |
+-		* Cold | Warm | Hot | Cold | Warm | Hot |
++
++		+-------------------+-------------------+
++		|      REQ_META     |      REQ_FUA      |
++		+------+------+-----+------+------+-----+
++		|    5 |    4 |   3 |    2 |    1 |   0 |
++		+------+------+-----+------+------+-----+
++		| Cold | Warm | Hot | Cold | Warm | Hot |
++		+------+------+-----+------+------+-----+
+ 
+ What:		/sys/fs/f2fs/<disk>/iostat_period_ms
+ Date:		April 2020
+diff --git a/Documentation/ABI/testing/sysfs-kernel-mm-ksm b/Documentation/ABI/testing/sysfs-kernel-mm-ksm
+index dfc13244cda3..1c9bed5595f5 100644
+--- a/Documentation/ABI/testing/sysfs-kernel-mm-ksm
++++ b/Documentation/ABI/testing/sysfs-kernel-mm-ksm
+@@ -34,8 +34,9 @@ Description:	Kernel Samepage Merging daemon sysfs interface
+ 		in a tree.
+ 
+ 		run: write 0 to disable ksm, read 0 while ksm is disabled.
+-			write 1 to run ksm, read 1 while ksm is running.
+-			write 2 to disable ksm and unmerge all its pages.
++
++			- write 1 to run ksm, read 1 while ksm is running.
++			- write 2 to disable ksm and unmerge all its pages.
+ 
+ 		sleep_millisecs: how many milliseconds ksm should sleep between
+ 		scans.
+diff --git a/Documentation/ABI/testing/sysfs-kernel-slab b/Documentation/ABI/testing/sysfs-kernel-slab
+index ed35833ad7f0..c9f12baf8baa 100644
+--- a/Documentation/ABI/testing/sysfs-kernel-slab
++++ b/Documentation/ABI/testing/sysfs-kernel-slab
+@@ -346,6 +346,7 @@ Description:
+ 		number of objects per slab.  If a slab cannot be allocated
+ 		because of fragmentation, SLUB will retry with the minimum order
+ 		possible depending on its characteristics.
++
+ 		When debug_guardpage_minorder=N (N > 0) parameter is specified
+ 		(see Documentation/admin-guide/kernel-parameters.rst), the minimum possible
+ 		order is used and this sysfs entry can not be used to change
+@@ -361,6 +362,7 @@ Description:
+ 		new slab has not been possible at the cache's order and instead
+ 		fallen back to its minimum possible order.  It can be written to
+ 		clear the current count.
++
+ 		Available when CONFIG_SLUB_STATS is enabled.
+ 
+ What:		/sys/kernel/slab/cache/partial
+@@ -410,6 +412,7 @@ Description:
+ 		slab from a remote node as opposed to allocating a new slab on
+ 		the local node.  This reduces the amount of wasted memory over
+ 		the entire system but can be expensive.
++
+ 		Available when CONFIG_NUMA is enabled.
+ 
+ What:		/sys/kernel/slab/cache/sanity_checks
+diff --git a/Documentation/ABI/testing/sysfs-module b/Documentation/ABI/testing/sysfs-module
+index 0aac02e7fb0e..353c0db5bc1f 100644
+--- a/Documentation/ABI/testing/sysfs-module
++++ b/Documentation/ABI/testing/sysfs-module
+@@ -17,14 +17,15 @@ KernelVersion:	3.1
+ Contact:	Kirill Smelkov <kirr@mns.spb.ru>
+ Description:	Maximum time allowed for periodic transfers per microframe (μs)
+ 
+-		[ USB 2.0 sets maximum allowed time for periodic transfers per
++		Note:
++		  USB 2.0 sets maximum allowed time for periodic transfers per
+ 		  microframe to be 80%, that is 100 microseconds out of 125
+ 		  microseconds (full microframe).
+ 
+ 		  However there are cases, when 80% max isochronous bandwidth is
+ 		  too limiting. For example two video streams could require 110
+ 		  microseconds of isochronous bandwidth per microframe to work
+-		  together. ]
++		  together. 
+ 
+ 		Through this setting it is possible to raise the limit so that
+ 		the host controller would allow allocating more than 100
+@@ -45,8 +46,10 @@ Date:		Jan 2012
+ KernelVersion:»·3.3
+ Contact:	Kay Sievers <kay.sievers@vrfy.org>
+ Description:	Module taint flags:
+-			P - proprietary module
+-			O - out-of-tree module
+-			F - force-loaded module
+-			C - staging driver module
+-			E - unsigned module
++			==  =====================
++			P   proprietary module
++			O   out-of-tree module
++			F   force-loaded module
++			C   staging driver module
++			E   unsigned module
++			==  =====================
+diff --git a/Documentation/ABI/testing/sysfs-platform-dell-laptop b/Documentation/ABI/testing/sysfs-platform-dell-laptop
+index 9b917c7453de..82bcfe9df66e 100644
+--- a/Documentation/ABI/testing/sysfs-platform-dell-laptop
++++ b/Documentation/ABI/testing/sysfs-platform-dell-laptop
+@@ -34,9 +34,12 @@ Description:
+ 		this file. To disable a trigger, write its name preceded
+ 		by '-' instead.
+ 
+-		For example, to enable the keyboard as trigger run:
++		For example, to enable the keyboard as trigger run::
++
+ 		    echo +keyboard > /sys/class/leds/dell::kbd_backlight/start_triggers
+-		To disable it:
++
++		To disable it::
++
+ 		    echo -keyboard > /sys/class/leds/dell::kbd_backlight/start_triggers
+ 
+ 		Note that not all the available triggers can be configured.
+@@ -57,7 +60,8 @@ Description:
+ 		with any the above units. If no unit is specified, the value
+ 		is assumed to be expressed in seconds.
+ 
+-		For example, to set the timeout to 10 minutes run:
++		For example, to set the timeout to 10 minutes run::
++
+ 		    echo 10m > /sys/class/leds/dell::kbd_backlight/stop_timeout
+ 
+ 		Note that when this file is read, the returned value might be
+diff --git a/Documentation/ABI/testing/sysfs-platform-dell-smbios b/Documentation/ABI/testing/sysfs-platform-dell-smbios
+index 205d3b6361e0..e6e0f7f834a7 100644
+--- a/Documentation/ABI/testing/sysfs-platform-dell-smbios
++++ b/Documentation/ABI/testing/sysfs-platform-dell-smbios
+@@ -13,8 +13,8 @@ Description:
+ 		For example the token ID "5" would be available
+ 		as the following attributes:
+ 
+-		0005_location
+-		0005_value
++		- 0005_location
++		- 0005_value
+ 
+ 		Tokens will vary from machine to machine, and
+ 		only tokens available on that machine will be
+diff --git a/Documentation/ABI/testing/sysfs-platform-i2c-demux-pinctrl b/Documentation/ABI/testing/sysfs-platform-i2c-demux-pinctrl
+index c394b808be19..b6a138b50d99 100644
+--- a/Documentation/ABI/testing/sysfs-platform-i2c-demux-pinctrl
++++ b/Documentation/ABI/testing/sysfs-platform-i2c-demux-pinctrl
+@@ -5,9 +5,9 @@ Contact:	Wolfram Sang <wsa+renesas@sang-engineering.com>
+ Description:
+ 		Reading the file will give you a list of masters which can be
+ 		selected for a demultiplexed bus. The format is
+-		"<index>:<name>". Example from a Renesas Lager board:
++		"<index>:<name>". Example from a Renesas Lager board::
+ 
+-		0:/i2c@e6500000 1:/i2c@e6508000
++		  0:/i2c@e6500000 1:/i2c@e6508000
+ 
+ What:		/sys/devices/platform/<i2c-demux-name>/current_master
+ Date:		January 2016
+diff --git a/Documentation/ABI/testing/sysfs-platform-kim b/Documentation/ABI/testing/sysfs-platform-kim
+index c1653271872a..a7f81de68046 100644
+--- a/Documentation/ABI/testing/sysfs-platform-kim
++++ b/Documentation/ABI/testing/sysfs-platform-kim
+@@ -5,6 +5,7 @@ Contact:	"Pavan Savoy" <pavan_savoy@ti.com>
+ Description:
+ 		Name of the UART device at which the WL128x chip
+ 		is connected. example: "/dev/ttyS0".
++
+ 		The device name flows down to architecture specific board
+ 		initialization file from the SFI/ATAGS bootloader
+ 		firmware. The name exposed is read from the user-space
+diff --git a/Documentation/ABI/testing/sysfs-platform-phy-rcar-gen3-usb2 b/Documentation/ABI/testing/sysfs-platform-phy-rcar-gen3-usb2
+index 6212697bbf6f..bc510ccc37a7 100644
+--- a/Documentation/ABI/testing/sysfs-platform-phy-rcar-gen3-usb2
++++ b/Documentation/ABI/testing/sysfs-platform-phy-rcar-gen3-usb2
 @@ -7,9 +7,11 @@ Description:
- 		of the hugepages supported by the kernel/CPU combination.
+ 		The file can show/change the phy mode for role swap of usb.
  
- 		Under these directories are a number of files:
--			nr_hugepages
--			nr_overcommit_hugepages
--			free_hugepages
--			surplus_hugepages
--			resv_hugepages
+ 		Write the following strings to change the mode:
+-		 "host" - switching mode from peripheral to host.
+-		 "peripheral" - switching mode from host to peripheral.
 +
-+			- nr_hugepages
-+			- nr_overcommit_hugepages
-+			- free_hugepages
-+			- surplus_hugepages
-+			- resv_hugepages
-+
- 		See Documentation/admin-guide/mm/hugetlbpage.rst for details.
-diff --git a/Documentation/ABI/testing/sysfs-platform-asus-laptop b/Documentation/ABI/testing/sysfs-platform-asus-laptop
-index 8b0e8205a6a2..c78d358dbdbe 100644
---- a/Documentation/ABI/testing/sysfs-platform-asus-laptop
-+++ b/Documentation/ABI/testing/sysfs-platform-asus-laptop
-@@ -4,13 +4,16 @@ KernelVersion:	2.6.20
- Contact:	"Corentin Chary" <corentincj@iksaif.net>
- Description:
- 		This file allows display switching. The value
--		is composed by 4 bits and defined as follow:
--		4321
--		|||`- LCD
--		||`-- CRT
--		|`--- TV
--		`---- DVI
--		Ex: - 0 (0000b) means no display
-+		is composed by 4 bits and defined as follow::
-+
-+		  4321
-+		  |||`- LCD
-+		  ||`-- CRT
-+		  |`--- TV
-+		  `---- DVI
-+
-+		Ex:
-+		    - 0 (0000b) means no display
- 		    - 3 (0011b) CRT+LCD.
++		 - "host" - switching mode from peripheral to host.
++		 - "peripheral" - switching mode from host to peripheral.
  
- What:		/sys/devices/platform/asus_laptop/gps
-@@ -28,8 +31,10 @@ Contact:	"Corentin Chary" <corentincj@iksaif.net>
- Description:
- 		Some models like the W1N have a LED display that can be
- 		used to display several items of information.
--		To control the LED display, use the following :
-+		To control the LED display, use the following::
+ 		Read the file, then it shows the following strings:
+-		 "host" - The mode is host now.
+-		 "peripheral" - The mode is peripheral now.
 +
- 		    echo 0x0T000DDD > /sys/devices/platform/asus_laptop/
-+
- 		where T control the 3 letters display, and DDD the 3 digits display.
- 		The DDD table can be found in Documentation/admin-guide/laptops/asus-laptop.rst
++		 - "host" - The mode is host now.
++		 - "peripheral" - The mode is peripheral now.
+diff --git a/Documentation/ABI/testing/sysfs-platform-renesas_usb3 b/Documentation/ABI/testing/sysfs-platform-renesas_usb3
+index 5621c15d5dc0..8af5b9c3fabb 100644
+--- a/Documentation/ABI/testing/sysfs-platform-renesas_usb3
++++ b/Documentation/ABI/testing/sysfs-platform-renesas_usb3
+@@ -7,9 +7,11 @@ Description:
+ 		The file can show/change the drd mode of usb.
  
-diff --git a/Documentation/ABI/testing/sysfs-platform-asus-wmi b/Documentation/ABI/testing/sysfs-platform-asus-wmi
-index 1efac0ddb417..04885738cf15 100644
---- a/Documentation/ABI/testing/sysfs-platform-asus-wmi
-+++ b/Documentation/ABI/testing/sysfs-platform-asus-wmi
-@@ -5,6 +5,7 @@ Contact:	"Corentin Chary" <corentincj@iksaif.net>
- Description:
- 		Change CPU clock configuration (write-only).
- 		There are three available clock configuration:
+ 		Write the following string to change the mode:
+-		 "host" - switching mode from peripheral to host.
+-		 "peripheral" - switching mode from host to peripheral.
 +
- 		    * 0 -> Super Performance Mode
- 		    * 1 -> High Performance Mode
- 		    * 2 -> Power Saving Mode
-diff --git a/Documentation/ABI/testing/sysfs-platform-at91 b/Documentation/ABI/testing/sysfs-platform-at91
-index 4cc6a865ae66..b146be74b8e0 100644
---- a/Documentation/ABI/testing/sysfs-platform-at91
-+++ b/Documentation/ABI/testing/sysfs-platform-at91
-@@ -18,8 +18,10 @@ Description:
- 		In order to use an extended can_id add the
- 		CAN_EFF_FLAG (0x80000000U) to the can_id. Example:
++		- "host" - switching mode from peripheral to host.
++		- "peripheral" - switching mode from host to peripheral.
  
--		- standard id 0x7ff:
--		echo 0x7ff      > /sys/class/net/can0/mb0_id
-+		- standard id 0x7ff::
+ 		Read the file, then it shows the following strings:
+-		 "host" - The mode is host now.
+-		 "peripheral" - The mode is peripheral now.
++		
++		- "host" - The mode is host now.
++		- "peripheral" - The mode is peripheral now.
+diff --git a/Documentation/ABI/testing/sysfs-power b/Documentation/ABI/testing/sysfs-power
+index 5e6ead29124c..51c0f578bfce 100644
+--- a/Documentation/ABI/testing/sysfs-power
++++ b/Documentation/ABI/testing/sysfs-power
+@@ -47,14 +47,18 @@ Description:
+ 		suspend-to-disk mechanism.  Reading from this file returns
+ 		the name of the method by which the system will be put to
+ 		sleep on the next suspend.  There are four methods supported:
++
+ 		'firmware' - means that the memory image will be saved to disk
+ 		by some firmware, in which case we also assume that the
+ 		firmware will handle the system suspend.
++
+ 		'platform' - the memory image will be saved by the kernel and
+ 		the system will be put to sleep by the platform driver (e.g.
+ 		ACPI or other PM registers).
++
+ 		'shutdown' - the memory image will be saved by the kernel and
+ 		the system will be powered off.
++
+ 		'reboot' - the memory image will be saved by the kernel and
+ 		the system will be rebooted.
  
--		- extended id 0x1fffffff:
--		echo 0x9fffffff > /sys/class/net/can0/mb0_id
-+		    echo 0x7ff      > /sys/class/net/can0/mb0_id
-+
-+		- extended id 0x1fffffff::
-+
-+		    echo 0x9fffffff > /sys/class/net/can0/mb0_id
-diff --git a/Documentation/ABI/testing/sysfs-platform-eeepc-laptop b/Documentation/ABI/testing/sysfs-platform-eeepc-laptop
-index 5b026c69587a..70dbe0733cf6 100644
---- a/Documentation/ABI/testing/sysfs-platform-eeepc-laptop
-+++ b/Documentation/ABI/testing/sysfs-platform-eeepc-laptop
-@@ -4,9 +4,11 @@ KernelVersion:	2.6.26
- Contact:	"Corentin Chary" <corentincj@iksaif.net>
- Description:
- 		This file allows display switching.
-+
- 		- 1 = LCD
- 		- 2 = CRT
- 		- 3 = LCD+CRT
-+
- 		If you run X11, you should use xrandr instead.
+@@ -74,12 +78,12 @@ Description:
+ 		The suspend-to-disk method may be chosen by writing to this
+ 		file one of the accepted strings:
  
- What:		/sys/devices/platform/eeepc/camera
-@@ -30,16 +32,20 @@ Contact:	"Corentin Chary" <corentincj@iksaif.net>
- Description:
- 		Change CPU clock configuration.
- 		On the Eee PC 1000H there are three available clock configuration:
-+
- 		    * 0 -> Super Performance Mode
- 		    * 1 -> High Performance Mode
- 		    * 2 -> Power Saving Mode
-+
- 		On Eee PC 701 there is only 2 available clock configurations.
- 		Available configuration are listed in available_cpufv file.
- 		Reading this file will show the raw hexadecimal value which
--		is defined as follow:
--		| 8 bit | 8 bit |
--		    |       `---- Current mode
--		    `------------ Availables modes
-+		is defined as follow::
-+
-+		  | 8 bit | 8 bit |
-+		      |       `---- Current mode
-+		      `------------ Availables modes
-+
- 		For example, 0x301 means: mode 1 selected, 3 available modes.
+-		'firmware'
+-		'platform'
+-		'shutdown'
+-		'reboot'
+-		'testproc'
+-		'test'
++		- 'firmware'
++		- 'platform'
++		- 'shutdown'
++		- 'reboot'
++		- 'testproc'
++		- 'test'
  
- What:		/sys/devices/platform/eeepc/available_cpufv
-diff --git a/Documentation/ABI/testing/sysfs-platform-ideapad-laptop b/Documentation/ABI/testing/sysfs-platform-ideapad-laptop
-index 1b31be3f996a..fd2ac02bc5bd 100644
---- a/Documentation/ABI/testing/sysfs-platform-ideapad-laptop
-+++ b/Documentation/ABI/testing/sysfs-platform-ideapad-laptop
-@@ -12,6 +12,7 @@ Contact:	"Maxim Mikityanskiy <maxtram95@gmail.com>"
- Description:
- 		Change fan mode
- 		There are four available modes:
-+
- 			* 0 -> Super Silent Mode
- 			* 1 -> Standard Mode
- 			* 2 -> Dust Cleaning
-@@ -32,9 +33,11 @@ KernelVersion:	4.18
- Contact:	"Oleg Keri <ezhi99@gmail.com>"
- Description:
- 		Control fn-lock mode.
-+
- 			* 1 -> Switched On
- 			* 0 -> Switched Off
+ 		It will only change to 'firmware' or 'platform' if the system
+ 		supports that.
+@@ -114,9 +118,9 @@ Description:
+ 		string representing a nonzero integer into it.
  
--		For example:
--		# echo "0" >	\
--		/sys/bus/pci/devices/0000:00:1f.0/PNP0C09:00/VPC2004:00/fn_lock
-+		For example::
-+
-+		  # echo "0" >	\
-+		  /sys/bus/pci/devices/0000:00:1f.0/PNP0C09:00/VPC2004:00/fn_lock
-diff --git a/Documentation/ABI/testing/sysfs-platform-intel-wmi-thunderbolt b/Documentation/ABI/testing/sysfs-platform-intel-wmi-thunderbolt
-index 8af65059d519..e19144fd5d86 100644
---- a/Documentation/ABI/testing/sysfs-platform-intel-wmi-thunderbolt
-+++ b/Documentation/ABI/testing/sysfs-platform-intel-wmi-thunderbolt
-@@ -7,5 +7,6 @@ Description:
- 		Thunderbolt controllers to turn on or off when no
- 		devices are connected (write-only)
- 		There are two available states:
-+
- 		    * 0 -> Force power disabled
- 		    * 1 -> Force power enabled
-diff --git a/Documentation/ABI/testing/sysfs-platform-sst-atom b/Documentation/ABI/testing/sysfs-platform-sst-atom
-index 0d07c0395660..d5f6e21f0e42 100644
---- a/Documentation/ABI/testing/sysfs-platform-sst-atom
-+++ b/Documentation/ABI/testing/sysfs-platform-sst-atom
-@@ -5,13 +5,22 @@ Contact:	"Sebastien Guiriec" <sebastien.guiriec@intel.com>
- Description:
- 		LPE Firmware version for SST driver on all atom
- 		plaforms (BYT/CHT/Merrifield/BSW).
--		If the FW has never been loaded it will display:
-+		If the FW has never been loaded it will display::
-+
- 			"FW not yet loaded"
--		If FW has been loaded it will display:
-+
-+		If FW has been loaded it will display::
-+
- 			"v01.aa.bb.cc"
-+
- 		aa: Major version is reflecting SoC version:
-+
-+			=== =============
- 			0d: BYT FW
- 			0b: BSW FW
- 			07: Merrifield FW
-+			=== =============
-+
- 		bb: Minor version
-+
- 		cc: Build version
-diff --git a/Documentation/ABI/testing/sysfs-platform-usbip-vudc b/Documentation/ABI/testing/sysfs-platform-usbip-vudc
-index 81fcfb454913..53622d3ba27c 100644
---- a/Documentation/ABI/testing/sysfs-platform-usbip-vudc
-+++ b/Documentation/ABI/testing/sysfs-platform-usbip-vudc
-@@ -16,10 +16,13 @@ Contact:	Krzysztof Opasiak <k.opasiak@samsung.com>
- Description:
- 		Current status of the device.
- 		Allowed values:
--		1 - Device is available and can be exported
--		2 - Device is currently exported
--		3 - Fatal error occurred during communication
--		  with peer
-+
-+		==  ==========================================
-+		1   Device is available and can be exported
-+		2   Device is currently exported
-+		3   Fatal error occurred during communication
-+		    with peer
-+		==  ==========================================
+ 		To use this debugging feature you should attempt to suspend
+-		the machine, then reboot it and run
++		the machine, then reboot it and run::
  
- What:		/sys/devices/platform/usbip-vudc.%d/usbip_sockfd
- Date:		April 2016
-diff --git a/Documentation/ABI/testing/sysfs-ptp b/Documentation/ABI/testing/sysfs-ptp
-index a17f817a9309..2363ad810ddb 100644
---- a/Documentation/ABI/testing/sysfs-ptp
-+++ b/Documentation/ABI/testing/sysfs-ptp
-@@ -69,7 +69,7 @@ Description:
- 		pin offered by the PTP hardware clock. The file name
- 		is the hardware dependent pin name. Reading from this
- 		file produces two numbers, the assigned function (see
--		the PTP_PF_ enumeration values in linux/ptp_clock.h)
-+		the `PTP_PF_` enumeration values in linux/ptp_clock.h)
- 		and the channel number. The function and channel
- 		assignment may be changed by two writing numbers into
- 		the file.
+-		dmesg -s 1000000 | grep 'hash matches'
++		  dmesg -s 1000000 | grep 'hash matches'
+ 
+ 		If you do not get any matches (or they appear to be false
+ 		positives), it is possible that the last PM event point
+@@ -244,6 +248,7 @@ Description:
+ 		wakeup sources created with the help of /sys/power/wake_lock.
+ 		When a string is written to /sys/power/wake_unlock, it will be
+ 		assumed to represent the name of a wakeup source to deactivate.
++
+ 		If a wakeup source object of that name exists and is active at
+ 		the moment, it will be deactivated.
+ 
+diff --git a/Documentation/ABI/testing/sysfs-profiling b/Documentation/ABI/testing/sysfs-profiling
+index 8a8e466eb2c0..e39dd3a0ceef 100644
+--- a/Documentation/ABI/testing/sysfs-profiling
++++ b/Documentation/ABI/testing/sysfs-profiling
+@@ -5,7 +5,7 @@ Description:
+ 		/sys/kernel/profiling is the runtime equivalent
+ 		of the boot-time profile= option.
+ 
+-		You can get the same effect running:
++		You can get the same effect running::
+ 
+ 			echo 2 > /sys/kernel/profiling
+ 
+diff --git a/Documentation/ABI/testing/sysfs-wusb_cbaf b/Documentation/ABI/testing/sysfs-wusb_cbaf
+index a99c5f86a37a..2969d3694ec0 100644
+--- a/Documentation/ABI/testing/sysfs-wusb_cbaf
++++ b/Documentation/ABI/testing/sysfs-wusb_cbaf
+@@ -45,7 +45,8 @@ Description:
+                 7. Device is unplugged.
+ 
+                 References:
+-                  [WUSB-AM] Association Models Supplement to the
++                  [WUSB-AM]
++			    Association Models Supplement to the
+                             Certified Wireless Universal Serial Bus
+                             Specification, version 1.0.
+ 
+diff --git a/Documentation/ABI/testing/usb-charger-uevent b/Documentation/ABI/testing/usb-charger-uevent
+index 419a92dd0d86..1db89b0cf80f 100644
+--- a/Documentation/ABI/testing/usb-charger-uevent
++++ b/Documentation/ABI/testing/usb-charger-uevent
+@@ -3,44 +3,52 @@ Date:		2020-01-14
+ KernelVersion:	5.6
+ Contact:	linux-usb@vger.kernel.org
+ Description:	There are two USB charger states:
+-		USB_CHARGER_ABSENT
+-		USB_CHARGER_PRESENT
++
++		- USB_CHARGER_ABSENT
++		- USB_CHARGER_PRESENT
++
+ 		There are five USB charger types:
+-		USB_CHARGER_UNKNOWN_TYPE: Charger type is unknown
+-		USB_CHARGER_SDP_TYPE: Standard Downstream Port
+-		USB_CHARGER_CDP_TYPE: Charging Downstream Port
+-		USB_CHARGER_DCP_TYPE: Dedicated Charging Port
+-		USB_CHARGER_ACA_TYPE: Accessory Charging Adapter
++
++		========================  ==========================
++		USB_CHARGER_UNKNOWN_TYPE  Charger type is unknown
++		USB_CHARGER_SDP_TYPE      Standard Downstream Port
++		USB_CHARGER_CDP_TYPE      Charging Downstream Port
++		USB_CHARGER_DCP_TYPE      Dedicated Charging Port
++		USB_CHARGER_ACA_TYPE      Accessory Charging Adapter
++		========================  ==========================
++
+ 		https://www.usb.org/document-library/battery-charging-v12-spec-and-adopters-agreement
+ 
+-		Here are two examples taken using udevadm monitor -p when
+-		USB charger is online:
+-		UDEV  change   /devices/soc0/usbphynop1 (platform)
+-		ACTION=change
+-		DEVPATH=/devices/soc0/usbphynop1
+-		DRIVER=usb_phy_generic
+-		MODALIAS=of:Nusbphynop1T(null)Cusb-nop-xceiv
+-		OF_COMPATIBLE_0=usb-nop-xceiv
+-		OF_COMPATIBLE_N=1
+-		OF_FULLNAME=/usbphynop1
+-		OF_NAME=usbphynop1
+-		SEQNUM=2493
+-		SUBSYSTEM=platform
+-		USB_CHARGER_STATE=USB_CHARGER_PRESENT
+-		USB_CHARGER_TYPE=USB_CHARGER_SDP_TYPE
+-		USEC_INITIALIZED=227422826
++		Here are two examples taken using ``udevadm monitor -p`` when
++		USB charger is online::
+ 
+-		USB charger is offline:
+-		KERNEL change   /devices/soc0/usbphynop1 (platform)
+-		ACTION=change
+-		DEVPATH=/devices/soc0/usbphynop1
+-		DRIVER=usb_phy_generic
+-		MODALIAS=of:Nusbphynop1T(null)Cusb-nop-xceiv
+-		OF_COMPATIBLE_0=usb-nop-xceiv
+-		OF_COMPATIBLE_N=1
+-		OF_FULLNAME=/usbphynop1
+-		OF_NAME=usbphynop1
+-		SEQNUM=2494
+-		SUBSYSTEM=platform
+-		USB_CHARGER_STATE=USB_CHARGER_ABSENT
+-		USB_CHARGER_TYPE=USB_CHARGER_UNKNOWN_TYPE
++		    UDEV  change   /devices/soc0/usbphynop1 (platform)
++		    ACTION=change
++		    DEVPATH=/devices/soc0/usbphynop1
++		    DRIVER=usb_phy_generic
++		    MODALIAS=of:Nusbphynop1T(null)Cusb-nop-xceiv
++		    OF_COMPATIBLE_0=usb-nop-xceiv
++		    OF_COMPATIBLE_N=1
++		    OF_FULLNAME=/usbphynop1
++		    OF_NAME=usbphynop1
++		    SEQNUM=2493
++		    SUBSYSTEM=platform
++		    USB_CHARGER_STATE=USB_CHARGER_PRESENT
++		    USB_CHARGER_TYPE=USB_CHARGER_SDP_TYPE
++		    USEC_INITIALIZED=227422826
++
++		USB charger is offline::
++
++		    KERNEL change   /devices/soc0/usbphynop1 (platform)
++		    ACTION=change
++		    DEVPATH=/devices/soc0/usbphynop1
++		    DRIVER=usb_phy_generic
++		    MODALIAS=of:Nusbphynop1T(null)Cusb-nop-xceiv
++		    OF_COMPATIBLE_0=usb-nop-xceiv
++		    OF_COMPATIBLE_N=1
++		    OF_FULLNAME=/usbphynop1
++		    OF_NAME=usbphynop1
++		    SEQNUM=2494
++		    SUBSYSTEM=platform
++		    USB_CHARGER_STATE=USB_CHARGER_ABSENT
++		    USB_CHARGER_TYPE=USB_CHARGER_UNKNOWN_TYPE
+diff --git a/Documentation/ABI/testing/usb-uevent b/Documentation/ABI/testing/usb-uevent
+index d35c3cad892c..2b8eca4bf2b1 100644
+--- a/Documentation/ABI/testing/usb-uevent
++++ b/Documentation/ABI/testing/usb-uevent
+@@ -6,22 +6,22 @@ Description:	When the USB Host Controller has entered a state where it is no
+ 		longer functional a uevent will be raised. The uevent will
+ 		contain ACTION=offline and ERROR=DEAD.
+ 
+-		Here is an example taken using udevadm monitor -p:
++		Here is an example taken using udevadm monitor -p::
+ 
+-		KERNEL[130.428945] offline  /devices/pci0000:00/0000:00:10.0/usb2 (usb)
+-		ACTION=offline
+-		BUSNUM=002
+-		DEVNAME=/dev/bus/usb/002/001
+-		DEVNUM=001
+-		DEVPATH=/devices/pci0000:00/0000:00:10.0/usb2
+-		DEVTYPE=usb_device
+-		DRIVER=usb
+-		ERROR=DEAD
+-		MAJOR=189
+-		MINOR=128
+-		PRODUCT=1d6b/2/414
+-		SEQNUM=2168
+-		SUBSYSTEM=usb
+-		TYPE=9/0/1
++		    KERNEL[130.428945] offline  /devices/pci0000:00/0000:00:10.0/usb2 (usb)
++		    ACTION=offline
++		    BUSNUM=002
++		    DEVNAME=/dev/bus/usb/002/001
++		    DEVNUM=001
++		    DEVPATH=/devices/pci0000:00/0000:00:10.0/usb2
++		    DEVTYPE=usb_device
++		    DRIVER=usb
++		    ERROR=DEAD
++		    MAJOR=189
++		    MINOR=128
++		    PRODUCT=1d6b/2/414
++		    SEQNUM=2168
++		    SUBSYSTEM=usb
++		    TYPE=9/0/1
+ 
+ Users:		chromium-os-dev@chromium.org
+diff --git a/scripts/get_abi.pl b/scripts/get_abi.pl
+index f6adf4b38a2b..d09bb37dd236 100755
+--- a/scripts/get_abi.pl
++++ b/scripts/get_abi.pl
+@@ -316,8 +316,6 @@ sub output_rest {
+ 				$len = length($name) if (length($name) > $len);
+ 			}
+ 
+-			print "What:\n\n";
+-
+ 			print "+-" . "-" x $len . "-+\n";
+ 			foreach my $name (@names) {
+ 				printf "| %s", $name . " " x ($len - length($name)) . " |\n";
 -- 
 2.26.2
 
