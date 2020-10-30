@@ -2,67 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 465D12A09DD
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:29:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1DA62A09DE
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:29:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726760AbgJ3P3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 11:29:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33090 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725943AbgJ3P3H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Oct 2020 11:29:07 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ADC0D20725;
-        Fri, 30 Oct 2020 15:29:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604071747;
-        bh=VJ0D4N8MvBdVDAdA7jCi+yPAZuB3T0bsLr6EovWmk1c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=L/jErUDIERuoe24GRKf5ZbwmQ73DIY+wp6VHzR5WafYs2siqmOIst4Rsv7jjWKJl5
-         oK0YjRvxfGtGvaZ8D4FEWsOJ3kgIb/jqoTmk4FhsRtqDEFhpbPIXkIlH60ceDp9eIS
-         a3hiBLgqofAXgVLhinZm2FWlt7nHrephjRpCKNJc=
-Date:   Fri, 30 Oct 2020 08:29:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Mark Deneen <mdeneen@saucontech.com>
-Cc:     netdev@vger.kernel.org, nicolas.ferre@microchip.com,
-        claudiu.beznea@microchip.com, Klaus Doth <krnl@doth.eu>
-Subject: Re: [PATCH net v2] cadence: force nonlinear buffers to be cloned
-Message-ID: <20201030082905.78df525f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201030125139.613813-1-mdeneen@saucontech.com>
-References: <20201030125139.613813-1-mdeneen@saucontech.com>
+        id S1726973AbgJ3P3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 11:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725943AbgJ3P3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 11:29:15 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54E4C0613CF
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:29:13 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id g25so6249661edm.6
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:29:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=DNxhZBm7y9kuUgCZkBcBi+SCJDz8hhSGbmLkoj4ek34=;
+        b=smRs/rDHzRojHutfm2Z2cvD/VE6VX4LLtJuZvDk0DjG4Vcf/IAq7ZNoYhpeHUNo0Ts
+         BmcbaZvMHE7rn0iijXYJ4Qj9xBtlWfiKCzNa+JqKpUqPbMCzrmG4FJKBkIGTeUrcgMlM
+         Pt5jF8nt5rpiIQEMlfmNgQ0+Wz7l4Xg1OBDrYhMivgR8tkJSMj5jhQLILPeF6bqvm3nh
+         5/+k96mjP2x+nHSpj0vdH1E9vRVclJ0+kvAt8wfVR8SV4uFxvmChWuUoQftvpvPvSXvM
+         6w6jGFqBN/f94eO1HQirQUeDLk3d+ZxmfH0PmXWgh5oTuJF5CjAyD1kRLF8LFoZay8wS
+         aEDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=DNxhZBm7y9kuUgCZkBcBi+SCJDz8hhSGbmLkoj4ek34=;
+        b=DwggqvTxTkZHG/kJPbs3xsqrU7TseSnMMBTMfM6Av0y8HBK5qnUdTT2zj9ujeWyiqE
+         Sqfpo10VAYOeNbTNgpbzuaJhAQkfaZ+ntcC70n2JY8FEmPz9uvFTEcFehktTCoVeGVwP
+         XH4pjYOqw7ddL0JOIrJqR6L9Tl5DNxSi5IWoR6MPbzIS5fagm2YAmdPh2havnKTJy4Vq
+         +ALnqQGWu/TIl1w8fqLcQIV1gFgZbqrhJR1W1t4T8wCJmes5rgCToU6Ygs/FkL+QaA5V
+         TACjDROuN0t5aq3vIP6W5wyB+RECnIX/BwLYEgtztvS7Osi8OWZRC0dw3bXPoMtWa5Ht
+         lFSg==
+X-Gm-Message-State: AOAM531dg22Gmy2/iBQNZM1zkdmCJE4mqhhYwCMj6i0ZqpePmepL5Z3n
+        deKrnGeOFxqMlnavPVqtjOH6TF2Ne34=
+X-Google-Smtp-Source: ABdhPJxFUSSyJrnfONyPvbMeBslIuTIplsZAVWziVjwMkG1W61KPk7ntMqo+QstkvH6mT3llhaatZQ==
+X-Received: by 2002:a50:e686:: with SMTP id z6mr2970772edm.188.1604071752525;
+        Fri, 30 Oct 2020 08:29:12 -0700 (PDT)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id ok21sm3075360ejb.96.2020.10.30.08.29.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Oct 2020 08:29:11 -0700 (PDT)
+Date:   Fri, 30 Oct 2020 17:29:10 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next v2 0/5] Support for RollBall 10G copper SFP
+ modules
+Message-ID: <20201030152910.zmtecfzyxw4nuwud@skbuf>
+References: <20201029222509.27201-1-kabel@kernel.org>
+ <20201030150138.GB1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201030150138.GB1551@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Oct 2020 12:51:39 +0000 Mark Deneen wrote:
-> Suggested-by: Klaus Doth <krnl@doth.eu>
-> Fixes: 653e92a91 ("macb: add support for padding and fcs computation")
+On Fri, Oct 30, 2020 at 03:01:38PM +0000, Russell King - ARM Linux admin wrote:
+> https://blog.thedigitalgroup.com/to-vs-cc-vs-bcc-how-to-use-them-correctly
 
-Fixes tag: Fixes: 653e92a91 ("macb: add support for padding and fcs computation")
-Has these problem(s):
-	- SHA1 should be at least 12 digits long
-	  Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-	  or later) just making sure it is not set (or set to "auto").
-	- Subject does not match target commit subject
-	  Just use
-		git log -1 --format='Fixes: %h ("%s")'
+I have to disagree about some of the information provided in this link:
 
->  static int macb_pad_and_fcs(struct sk_buff **skb, struct net_device *ndev)
->  {
-> -	bool cloned = skb_cloned(*skb) || skb_header_cloned(*skb);
-> +	bool cloned = skb_cloned(*skb) || skb_header_cloned(*skb) ||
-> +	              skb_is_nonlinear(*skb);
->  	int padlen = ETH_ZLEN - (*skb)->len;
->  	int headroom = skb_headroom(*skb);
->  	int tailroom = skb_tailroom(*skb);
+------------------------------[cut here]------------------------------
+Using the BCC Field:
 
-Checkpatch says:
+BCC is for Blind Carbon Copy. It sends copies of the email to multiple
+recipients, the only difference being that none of the recipients are
+made aware of who else has received the email.
 
-ERROR: code indent should use tabs where possible
-#89: FILE: drivers/net/ethernet/cadence/macb_main.c:1933:
-+^I              skb_is_nonlinear(*skb);$
+The BCC field is used when you want to send an email to multiple
+recipients but do not want any of them to know about the other people
+you have sent them to. There can be many scenarios where the BCC field
+might be used, and the purpose might be a desire to keep the names of
+the recipients a secret to one another and also protect the privacy of
+recipients.
+
+The most common application is for sending an email to a long list of
+people who do not know each other, such as mailing lists. This protects
+the privacy of the recipients as they are not able to view each other’s
+email addresses.
+------------------------------[cut here]------------------------------
+
+It's plain stupid to put a mailing list in Bcc. I have filters that move
+inbound emails from Inbox to separate folders based on the mailing list
+from To: or CC:, except for emails where my address is also in To: or Cc:.
+But when the mailing list is in Bcc, that email evades the filter and
+arrives directly in my inbox, regardless of whether I'm even an intended
+recipient or not.
