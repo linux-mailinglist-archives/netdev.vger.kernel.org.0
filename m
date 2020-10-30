@@ -2,132 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1C442A05CF
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 13:52:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E42B2A05FD
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 13:54:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726402AbgJ3MwF convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 30 Oct 2020 08:52:05 -0400
-Received: from fortimail.saucontech.com ([72.2.176.80]:16288 "EHLO
-        fortimail.saucontech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725834AbgJ3MwF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 08:52:05 -0400
-Received: from email.saucontech.com ([10.20.20.47])
-        by fortimail.saucontech.com  with ESMTP id 09UCpvag001507-09UCpvai001507
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 30 Oct 2020 08:51:57 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by email.saucontech.com (Postfix) with ESMTP id F40CA4090F6;
-        Fri, 30 Oct 2020 08:51:56 -0400 (EDT)
-Received: from email.saucontech.com ([127.0.0.1])
-        by localhost (email.saucontech.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id suLtehgX4s7I; Fri, 30 Oct 2020 08:51:56 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by email.saucontech.com (Postfix) with ESMTP id 3F0214090A4;
-        Fri, 30 Oct 2020 08:51:56 -0400 (EDT)
-X-Virus-Scanned: amavisd-new at email.saucontech.com
-Received: from email.saucontech.com ([127.0.0.1])
-        by localhost (email.saucontech.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id zthsUHWnZcqT; Fri, 30 Oct 2020 08:51:56 -0400 (EDT)
-Received: from mdeneen.saucon.int (unknown [10.5.1.150])
-        by email.saucontech.com (Postfix) with ESMTPSA id 201FE408A5E;
-        Fri, 30 Oct 2020 08:51:56 -0400 (EDT)
-From:   Mark Deneen <mdeneen@saucontech.com>
-To:     netdev@vger.kernel.org
-Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        Mark Deneen <mdeneen@saucontech.com>, Klaus Doth <krnl@doth.eu>
-Subject: [PATCH net v2] cadence: force nonlinear buffers to be cloned
-Date:   Fri, 30 Oct 2020 12:51:39 +0000
-Message-Id: <20201030125139.613813-1-mdeneen@saucontech.com>
-X-Mailer: git-send-email 2.28.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S1726617AbgJ3MyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 08:54:24 -0400
+Received: from forwardcorp1o.mail.yandex.net ([95.108.205.193]:53206 "EHLO
+        forwardcorp1o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726531AbgJ3MyX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 08:54:23 -0400
+Received: from myt5-23f0be3aa648.qloud-c.yandex.net (myt5-23f0be3aa648.qloud-c.yandex.net [IPv6:2a02:6b8:c12:3e29:0:640:23f0:be3a])
+        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id 6FDF52E14E5;
+        Fri, 30 Oct 2020 15:54:20 +0300 (MSK)
+Received: from myt5-70c90f7d6d7d.qloud-c.yandex.net (myt5-70c90f7d6d7d.qloud-c.yandex.net [2a02:6b8:c12:3e2c:0:640:70c9:f7d])
+        by myt5-23f0be3aa648.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id 07XLD03vIa-sK0q6hW4;
+        Fri, 30 Oct 2020 15:54:20 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1604062460; bh=+Twee2elVIojNkL5OH2SmfPhN6Uz7UYHLkV5WWrr2Cg=;
+        h=To:Message-Id:References:Date:Subject:Cc:From:In-Reply-To;
+        b=YdiLQYgc0cevClzEd2AELhkMHUCb24WQHnTiJVlvkgLi5Dz+Sxi6jyP53GWIGWTJd
+         Xr/uxjOk4Dr04s7ZARBa3kBmJdsgmfIGml5AKXZzRPnx6LC88jCrlKcz4p5baYkpeu
+         WyEQLulHBMDGvdzKlPPw4QIw7i5ZuXgCjozQo6sQ=
+Authentication-Results: myt5-23f0be3aa648.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from dynamic-vpn.dhcp.yndx.net (dynamic-vpn.dhcp.yndx.net [2a02:6b8:b081:17::1:14])
+        by myt5-70c90f7d6d7d.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id YLSm5UCKYW-rPnWtvgU;
+        Fri, 30 Oct 2020 15:54:20 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
+Subject: Re: [PATCH net] ip6_tunnel: set inner ipproto before ip6_tnl_encap.
+From:   Alexander Ovechkin <ovov@yandex-team.ru>
+In-Reply-To: <93a65f76-3052-6162-a2f4-00091cd78927@novek.ru>
+Date:   Fri, 30 Oct 2020 15:54:19 +0300
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Tom Herbert <tom@herbertland.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <E9B679B3-58CA-4BB7-A9B9-1A28A6148D75@yandex-team.ru>
+References: <20201016111156.26927-1-ovov@yandex-team.ru>
+ <CA+FuTSe5szAPV0qDVU1Qa7e-XH6uO4eWELfzykOvpb0CJ0NbUA@mail.gmail.com>
+ <0E7BC212-3BBA-4C68-89B9-C6DA956553AD@yandex-team.ru>
+ <CA+FuTSfNZoONM3TZxpC0ND2AsiNw0K-jgjKMe0FWkS9LVG6yNA@mail.gmail.com>
+ <ABA7FBA9-42F8-4D6E-9D1E-CDEC74966131@yandex-team.ru>
+ <CA+FuTSeejYh2eu80bB8MikUMb7KevQN-ka-+anfTfQATPSrKHA@mail.gmail.com>
+ <93a65f76-3052-6162-a2f4-00091cd78927@novek.ru>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+X-Mailer: Apple Mail (2.3608.120.23.2.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In my test setup, I had a SAMA5D27 device configured with ip forwarding, and
-second device with usb ethernet (r8152) sending ICMP packets.  If the packet
-was larger than about 220 bytes, the SAMA5 device would "oops" with the
-following trace:
+On 30 Oct 2020, at 14:01, Vadim Fedorenko <vfedorenko@novek.ru> wrote:
+> Could not reproduce the bug. Could you please provide a test scenario?
 
-kernel BUG at net/core/skbuff.c:1863!
-Internal error: Oops - BUG: 0 [#1] ARM
-Modules linked in: xt_MASQUERADE ppp_async ppp_generic slhc iptable_nat xt_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 can_raw can bridge stp llc ipt_REJECT nf_reject_ipv4 sd_mod cdc_ether usbnet usb_storage r8152 scsi_mod mii o
-ption usb_wwan usbserial micrel macb at91_sama5d2_adc phylink gpio_sama5d2_piobu m_can_platform m_can industrialio_triggered_buffer kfifo_buf of_mdio can_dev fixed_phy sdhci_of_at91 sdhci_pltfm libphy sdhci mmc_core ohci_at91 ehci_atmel o
-hci_hcd iio_rescale industrialio sch_fq_codel spidev prox2_hal(O)
-CPU: 0 PID: 0 Comm: swapper Tainted: G           O      5.9.1-prox2+ #1
-Hardware name: Atmel SAMA5
-PC is at skb_put+0x3c/0x50
-LR is at macb_start_xmit+0x134/0xad0 [macb]
-pc : [<c05258cc>]    lr : [<bf0ea5b8>]    psr: 20070113
-sp : c0d01a60  ip : c07232c0  fp : c4250000
-r10: c0d03cc8  r9 : 00000000  r8 : c0d038c0
-r7 : 00000000  r6 : 00000008  r5 : c59b66c0  r4 : 0000002a
-r3 : 8f659eff  r2 : c59e9eea  r1 : 00000001  r0 : c59b66c0
-Flags: nzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-Control: 10c53c7d  Table: 2640c059  DAC: 00000051
-Process swapper (pid: 0, stack limit = 0x75002d81)
-
-<snipped stack>
-
-[<c05258cc>] (skb_put) from [<bf0ea5b8>] (macb_start_xmit+0x134/0xad0 [macb])
-[<bf0ea5b8>] (macb_start_xmit [macb]) from [<c053e504>] (dev_hard_start_xmit+0x90/0x11c)
-[<c053e504>] (dev_hard_start_xmit) from [<c0571180>] (sch_direct_xmit+0x124/0x260)
-[<c0571180>] (sch_direct_xmit) from [<c053eae4>] (__dev_queue_xmit+0x4b0/0x6d0)
-[<c053eae4>] (__dev_queue_xmit) from [<c05a5650>] (ip_finish_output2+0x350/0x580)
-[<c05a5650>] (ip_finish_output2) from [<c05a7e24>] (ip_output+0xb4/0x13c)
-[<c05a7e24>] (ip_output) from [<c05a39d0>] (ip_forward+0x474/0x500)
-[<c05a39d0>] (ip_forward) from [<c05a13d8>] (ip_sublist_rcv_finish+0x3c/0x50)
-[<c05a13d8>] (ip_sublist_rcv_finish) from [<c05a19b8>] (ip_sublist_rcv+0x11c/0x188)
-[<c05a19b8>] (ip_sublist_rcv) from [<c05a2494>] (ip_list_rcv+0xf8/0x124)
-[<c05a2494>] (ip_list_rcv) from [<c05403c4>] (__netif_receive_skb_list_core+0x1a0/0x20c)
-[<c05403c4>] (__netif_receive_skb_list_core) from [<c05405c4>] (netif_receive_skb_list_internal+0x194/0x230)
-[<c05405c4>] (netif_receive_skb_list_internal) from [<c0540684>] (gro_normal_list.part.0+0x14/0x28)
-[<c0540684>] (gro_normal_list.part.0) from [<c0541280>] (napi_complete_done+0x16c/0x210)
-[<c0541280>] (napi_complete_done) from [<bf14c1c0>] (r8152_poll+0x684/0x708 [r8152])
-[<bf14c1c0>] (r8152_poll [r8152]) from [<c0541424>] (net_rx_action+0x100/0x328)
-[<c0541424>] (net_rx_action) from [<c01012ec>] (__do_softirq+0xec/0x274)
-[<c01012ec>] (__do_softirq) from [<c012d6d4>] (irq_exit+0xcc/0xd0)
-[<c012d6d4>] (irq_exit) from [<c0160960>] (__handle_domain_irq+0x58/0xa4)
-[<c0160960>] (__handle_domain_irq) from [<c0100b0c>] (__irq_svc+0x6c/0x90)
-Exception stack(0xc0d01ef0 to 0xc0d01f38)
-1ee0:                                     00000000 0000003d 0c31f383 c0d0fa00
-1f00: c0d2eb80 00000000 c0d2e630 4dad8c49 4da967b0 0000003d 0000003d 00000000
-1f20: fffffff5 c0d01f40 c04e0f88 c04e0f8c 30070013 ffffffff
-[<c0100b0c>] (__irq_svc) from [<c04e0f8c>] (cpuidle_enter_state+0x7c/0x378)
-[<c04e0f8c>] (cpuidle_enter_state) from [<c04e12c4>] (cpuidle_enter+0x28/0x38)
-[<c04e12c4>] (cpuidle_enter) from [<c014f710>] (do_idle+0x194/0x214)
-[<c014f710>] (do_idle) from [<c014fa50>] (cpu_startup_entry+0xc/0x14)
-[<c014fa50>] (cpu_startup_entry) from [<c0a00dc8>] (start_kernel+0x46c/0x4a0)
-Code: e580c054 8a000002 e1a00002 e8bd8070 (e7f001f2)
----[ end trace 146c8a334115490c ]---
-
-The solution was to force nonlinear buffers to be cloned.  This was previously
-reported by Klaus Doth (https://www.spinics.net/lists/netdev/msg556937.html)
-but never formally submitted as a patch.
-
-Suggested-by: Klaus Doth <krnl@doth.eu>
-Fixes: 653e92a91 ("macb: add support for padding and fcs computation")
-Signed-off-by: Mark Deneen <mdeneen@saucontech.com>
----
- drivers/net/ethernet/cadence/macb_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 883e47c5b..845d9d8dd 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1929,7 +1929,8 @@ static inline int macb_clear_csum(struct sk_buff *skb)
-
- static int macb_pad_and_fcs(struct sk_buff **skb, struct net_device *ndev)
- {
--	bool cloned = skb_cloned(*skb) || skb_header_cloned(*skb);
-+	bool cloned = skb_cloned(*skb) || skb_header_cloned(*skb) ||
-+	              skb_is_nonlinear(*skb);
- 	int padlen = ETH_ZLEN - (*skb)->len;
- 	int headroom = skb_headroom(*skb);
- 	int tailroom = skb_tailroom(*skb);
---
-2.28.0
-
+It can be reproduced if your net device doesn=E2=80=99t support udp =
+tunnel segmentation (i.e its features do not have SKB_GSO_UDP_TUNNEL).
+If you try to send packet larger than the MTU fou6-only tunnel (without =
+any other encap) it will be dropped, because of invalid =
+skb->inner_ipproto (that will be equal to IPPROTO_UDP =E2=80=94 outer =
+protocol, instead of IPPROTO_IPV6).
+skb->inner_ipproto is used here:
+=
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/tree/net/ip=
+v4/udp_offload.c?id=3D07e0887302450a62f51dba72df6afb5fabb23d1c#n168=
