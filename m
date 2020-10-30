@@ -2,203 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32EBF29FB4A
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 03:30:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 685C329FB51
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 03:30:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726279AbgJ3CaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 22:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36120 "EHLO
+        id S1726336AbgJ3Caj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 22:30:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725831AbgJ3CaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 22:30:14 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246E0C0613CF;
-        Thu, 29 Oct 2020 19:30:14 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id m188so3918607ybf.2;
-        Thu, 29 Oct 2020 19:30:14 -0700 (PDT)
+        with ESMTP id S1726197AbgJ3Cah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 22:30:37 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44110C0613CF;
+        Thu, 29 Oct 2020 19:30:37 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id o3so3908736pgr.11;
+        Thu, 29 Oct 2020 19:30:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vvl2Aj70JHcuisMyuGqmA/6GQcFkENCvf6qacD/mdf0=;
-        b=XUj14oblLc+IpVD3w5vnuYsjvruJH+s8EdMu5driesQrFy92qPXutr22tNsklwurOf
-         7rFdpH1Fk8rM2cffzzSPv95Y1I5PmwwhLnNdm8rem/YqYVOTPsPW+wh6Z8kfst2JffQS
-         9X+jhrjdAjJ7Eiz8Yvl/qkGsYfu8LcGvWcWNkr1yLkVLDpz4TTsL/GRnmnpFzcjWaltI
-         muDdiZC1b3XbD/aZ33YmB8rhTRu8Y6tmZ27fhUVz875ntG7jS5ze3CMvWOoB7iPzdC6Z
-         arOULIBNxb4S5iohbJJjjFvCiWg28c5L7pzJOy8krK60/DAqIdGoMdg4+jHiDCFjv6Q9
-         K0/w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=g7bH88D4g/VYGOa3hWMRp6XP+GTlXN0P1WC9N4Q2/XM=;
+        b=sIPVkoX/Of6nVZG0ZQgVEkv9eNrnT5+MLWijSKMQbASTMC4PXi8b+L2jK+WSCb12I2
+         rfzmY8ocgI9WK/Z4GFsF7Z2kU7rnTSDlzGasss0mN5YOb88P2MWW3SChA1B5PYj+XB2I
+         kJNeB95XEqJMVTz+DpoaPPEt8njOiIgrORPkp53nZQk37TTadn2it2iO6fJm3KXzEHWg
+         aroSeUO2kcm2plv5TQB9siuRYYT8neLqRjXBSV3YP+Z0mnUWzobdzdMUVQSYmmuJ6ZFp
+         aKeoU2Pg/DUf8Rbac59vFyzcs01F6JFxMSIBriLKvcElFtFTnahjusIKEXJWj6thO8wF
+         K7xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vvl2Aj70JHcuisMyuGqmA/6GQcFkENCvf6qacD/mdf0=;
-        b=TY0fZhGkz/eircAW/ff3CHetupTUe4rvNvVMTlKYMlabNk7/p2bXJanV6+PM5efL4v
-         evaBCngQl5suRIpVFZWfow9EqrXhX1iYRHy5KyS1ZUd3MbV9zALiXLgzEMEX4G7ZzTyq
-         TVFghVhi4ZlYRNCSUPFMLxbCdORd2UpTJeK9OePHXVE6RZdNSlweh/c3KAXunc+xflNQ
-         BckmqjM8JDH1NuBt4a+pUel6SjelFAsjyC6B7pSHIl7g9x4p07deQxJsvg6FMSqGTI3U
-         noxxtXnSpQjjT1cXE4MPqFFE74b13bb1z3YtjB4t/5RbJeRPIueq1IXyJ29KmUZXNQkj
-         L9uQ==
-X-Gm-Message-State: AOAM5314h1mRAuo4olek/oORaT8pPc/WOxgEWT2/MLKBxIB+Wu3dJ9mK
-        wBd8qdSVmqRDXd8f4buUnN0RHFMkQ4+d29H6MGg=
-X-Google-Smtp-Source: ABdhPJz311JMlAJ/SsfdDTzlXFrPq1w30bqJLu3Z2n1N3I7T+vHiInTYwm3Ww7B9udohH9Ibj2C8BvHAJePr28BReY0=
-X-Received: by 2002:a25:cb10:: with SMTP id b16mr536604ybg.459.1604025013398;
- Thu, 29 Oct 2020 19:30:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=g7bH88D4g/VYGOa3hWMRp6XP+GTlXN0P1WC9N4Q2/XM=;
+        b=NM23zp4bwwNtzSsVzMaWAYEDBoi0C5g6TxX2qA2xckqahc9TwtDOs+tZkAOSRC3O0+
+         e5P9jBwaWYeGA2k3vsZnmJ1FmR5jTiHasdBAnRes8zPKsGsIin0SKl5Y1L1Uwe0+8Ddr
+         NS3fVSnsXaAmHL6A/ZuQuggJoesqk/BFUuJZ+iY3MfrS0BdzoEJLE99oSYiMJu6B/Vtd
+         VMyAIEtNUv8AS0x4dXnang99d0eU15P1wVPTJls3KKczAiu5koO9eSbEFVTuTX6ehwvE
+         WTCw46H0LN9az/BNuDzePi+UXJ3AoF5d1awHUMTnPEXigwULpYTuvWYILH+ZWIE37Tp4
+         V94w==
+X-Gm-Message-State: AOAM531qoXbkw82+3cHNolDJFT3zT3gfnGjSRFfbidQFBnzswiuZK0mE
+        +3zsfcqL1QBa4b9YBzFaojA=
+X-Google-Smtp-Source: ABdhPJxaWSHPgJMIvnjBMqb0MKb8E8b7ORoASIJ2qcWWVTBzFsOJt3fNIkTg+R+jiGT58y7Q+xSCCA==
+X-Received: by 2002:a65:5a0d:: with SMTP id y13mr230777pgs.436.1604025036855;
+        Thu, 29 Oct 2020 19:30:36 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:dd13:d62a:9d03:9a42])
+        by smtp.gmail.com with ESMTPSA id i24sm4216588pfd.7.2020.10.29.19.30.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 19:30:36 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net-next v4 5/5] net: hdlc_fr: Add support for any Ethertype
+Date:   Thu, 29 Oct 2020 19:28:39 -0700
+Message-Id: <20201030022839.438135-6-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20201030022839.438135-1-xie.he.0141@gmail.com>
+References: <20201030022839.438135-1-xie.he.0141@gmail.com>
 MIME-Version: 1.0
-References: <160384954046.698509.132709669068189999.stgit@localhost.localdomain>
- <160384964803.698509.11020605670605638967.stgit@localhost.localdomain>
- <CAEf4BzaELDiuHLbSdWdZZcjw5eNCJELBeHUc2CRiursUcUj_kg@mail.gmail.com> <CAKgT0UcQzJ06ayURwpU78ybW+WYRUbbEH++6O9nPUxSSHnU89Q@mail.gmail.com>
-In-Reply-To: <CAKgT0UcQzJ06ayURwpU78ybW+WYRUbbEH++6O9nPUxSSHnU89Q@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 29 Oct 2020 19:30:02 -0700
-Message-ID: <CAEf4BzY73uiNE8V_zyhRuMpX8+e6JyR+BkfHqPfztOpm9Orjng@mail.gmail.com>
-Subject: Re: [bpf-next PATCH 4/4] selftests/bpf: Migrate tcpbpf_user.c to use
- BPF skeleton
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Lawrence Brakmo <brakmo@fb.com>, alexanderduyck@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 5:42 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Thu, Oct 29, 2020 at 4:20 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Thu, Oct 29, 2020 at 12:57 AM Alexander Duyck
-> > <alexander.duyck@gmail.com> wrote:
-> > >
-> > > From: Alexander Duyck <alexanderduyck@fb.com>
-> > >
-> > > Update tcpbpf_user.c to make use of the BPF skeleton. Doing this we can
-> > > simplify test_tcpbpf_user and reduce the overhead involved in setting up
-> > > the test.
-> > >
-> > > Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
-> > > ---
-> >
-> > Few suggestions below, but overall looks good:
-> >
-> > Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> >
-> > >  .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |   48 +++++++++-----------
-> > >  1 file changed, 21 insertions(+), 27 deletions(-)
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > > index 4e1190894e1e..7e92c37976ac 100644
-> > > --- a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > > +++ b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > > @@ -5,6 +5,7 @@
-> > >
-> > >  #include "test_tcpbpf.h"
-> > >  #include "cgroup_helpers.h"
-> > > +#include "test_tcpbpf_kern.skel.h"
-> > >
-> > >  #define LO_ADDR6 "::1"
-> > >  #define CG_NAME "/tcpbpf-user-test"
-> > > @@ -162,39 +163,32 @@ static void run_test(int map_fd, int sock_map_fd)
-> > >
-> > >  void test_tcpbpf_user(void)
-> > >  {
-> > > -       const char *file = "test_tcpbpf_kern.o";
-> > > -       int prog_fd, map_fd, sock_map_fd;
-> > > -       struct bpf_object *obj;
-> > > +       struct test_tcpbpf_kern *skel;
-> > > +       int map_fd, sock_map_fd;
-> > > +       struct bpf_link *link;
-> > >         int cg_fd = -1;
-> > > -       int rv;
-> > > -
-> > > -       cg_fd = cgroup_setup_and_join(CG_NAME);
-> > > -       if (CHECK_FAIL(cg_fd < 0))
-> > > -               goto err;
-> > >
-> > > -       if (CHECK_FAIL(bpf_prog_load(file, BPF_PROG_TYPE_SOCK_OPS, &obj, &prog_fd))) {
-> > > -               fprintf(stderr, "FAILED: load_bpf_file failed for: %s\n", file);
-> > > -               goto err;
-> > > -       }
-> > > +       skel = test_tcpbpf_kern__open_and_load();
-> > > +       if (CHECK(!skel, "open and load skel", "failed"))
-> > > +               return;
-> > >
-> > > -       rv = bpf_prog_attach(prog_fd, cg_fd, BPF_CGROUP_SOCK_OPS, 0);
-> > > -       if (CHECK_FAIL(rv)) {
-> > > -               fprintf(stderr, "FAILED: bpf_prog_attach: %d (%s)\n",
-> > > -                      errno, strerror(errno));
-> > > -               goto err;
-> > > -       }
-> > > +       cg_fd = test__join_cgroup(CG_NAME);
-> > > +       if (CHECK_FAIL(cg_fd < 0))
-> >
-> > please use either CHECK() or one of the newer ASSERT_xxx() macro (also
-> > defined in test_progs.h), CHECK_FAIL should be avoided in general.
->
-> So the plan I had was to actually move over to the following:
->         cg_fd = test__join_cgroup(CG_NAME);
->         if (CHECK_FAIL(cg_fd < 0))
->                 goto cleanup_skel;
->
-> It still makes use of CHECK_FAIL but it looks like test__join_cgroup
-> already takes care of error messaging so using CHECK_FAIL in this case
-> makes more sense.
+Change the fr_rx function to make this driver support any Ethertype
+when receiving skbs on normal (non-Ethernet-emulating) PVC devices.
+(This driver is already able to handle any Ethertype when sending.)
 
-CHECK (and ASSERT) leave a paper-trail in verbose test log, so it
-makes it easier to debug tests, if something fails. CHECK_FAIL is
-invisible, unless if fails. So CHECK_FAIL should be used only for
-things that are happening on the order of hundreds of instances per
-test, or more.
+Originally in the fr_rx function, the code that parses the long (10-byte)
+header only recognizes a few Ethertype values and drops frames with other
+Ethertype values. This patch replaces this code to make fr_rx support
+any Ethertype. This patch also creates a new function fr_snap_parse as
+part of the new code.
 
->
-> In addition I was looking at simplifying the first patch which should
-> just be the move with minimal changes to allow the functionality to
-> build as a part of the test_progs framework. The end result should be
-> the same it just helps to make the fact that the first patch should
-> just be a move a little more clear.
+Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc: Krzysztof Halasa <khc@pm.waw.pl>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/hdlc_fr.c | 75 +++++++++++++++++++++++++--------------
+ 1 file changed, 49 insertions(+), 26 deletions(-)
 
-sure
+diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
+index 9a37575686b9..e95efc14bc97 100644
+--- a/drivers/net/wan/hdlc_fr.c
++++ b/drivers/net/wan/hdlc_fr.c
+@@ -871,6 +871,45 @@ static int fr_lmi_recv(struct net_device *dev, struct sk_buff *skb)
+ 	return 0;
+ }
+ 
++static int fr_snap_parse(struct sk_buff *skb, struct pvc_device *pvc)
++{
++	/* OUI 00-00-00 indicates an Ethertype follows */
++	if (skb->data[0] == 0x00 &&
++	    skb->data[1] == 0x00 &&
++	    skb->data[2] == 0x00) {
++		if (!pvc->main)
++			return -1;
++		skb->dev = pvc->main;
++		skb->protocol = *(__be16 *)(skb->data + 3); /* Ethertype */
++		skb_pull(skb, 5);
++		skb_reset_mac_header(skb);
++		return 0;
++
++	/* OUI 00-80-C2 stands for the 802.1 organization */
++	} else if (skb->data[0] == 0x00 &&
++		   skb->data[1] == 0x80 &&
++		   skb->data[2] == 0xC2) {
++		/* PID 00-07 stands for Ethernet frames without FCS */
++		if (skb->data[3] == 0x00 &&
++		    skb->data[4] == 0x07) {
++			if (!pvc->ether)
++				return -1;
++			skb_pull(skb, 5);
++			if (skb->len < ETH_HLEN)
++				return -1;
++			skb->protocol = eth_type_trans(skb, pvc->ether);
++			return 0;
++
++		/* PID unsupported */
++		} else {
++			return -1;
++		}
++
++	/* OUI unsupported */
++	} else {
++		return -1;
++	}
++}
+ 
+ static int fr_rx(struct sk_buff *skb)
+ {
+@@ -945,35 +984,19 @@ static int fr_rx(struct sk_buff *skb)
+ 		skb->protocol = htons(ETH_P_IPV6);
+ 		skb_reset_mac_header(skb);
+ 
+-	} else if (skb->len > 10 && data[3] == FR_PAD &&
+-		   data[4] == NLPID_SNAP && data[5] == FR_PAD) {
+-		u16 oui = ntohs(*(__be16*)(data + 6));
+-		u16 pid = ntohs(*(__be16*)(data + 8));
+-		skb_pull(skb, 10);
+-
+-		switch ((((u32)oui) << 16) | pid) {
+-		case ETH_P_ARP: /* routed frame with SNAP */
+-		case ETH_P_IPX:
+-		case ETH_P_IP:	/* a long variant */
+-		case ETH_P_IPV6:
+-			if (!pvc->main)
+-				goto rx_drop;
+-			skb->dev = pvc->main;
+-			skb->protocol = htons(pid);
+-			skb_reset_mac_header(skb);
+-			break;
+-
+-		case 0x80C20007: /* bridged Ethernet frame */
+-			if (!pvc->ether)
++	} else if (data[3] == FR_PAD) {
++		if (skb->len < 5)
++			goto rx_error;
++		if (data[4] == NLPID_SNAP) { /* A SNAP header follows */
++			skb_pull(skb, 5);
++			if (skb->len < 5) /* Incomplete SNAP header */
++				goto rx_error;
++			if (fr_snap_parse(skb, pvc))
+ 				goto rx_drop;
+-			skb->protocol = eth_type_trans(skb, pvc->ether);
+-			break;
+-
+-		default:
+-			netdev_info(frad, "Unsupported protocol, OUI=%x PID=%x\n",
+-				    oui, pid);
++		} else {
+ 			goto rx_drop;
+ 		}
++
+ 	} else {
+ 		netdev_info(frad, "Unsupported protocol, NLPID=%x length=%i\n",
+ 			    data[3], skb->len);
+-- 
+2.27.0
 
-
->
-> > > +               goto cleanup_skel;
-> > >
-> > > -       map_fd = bpf_find_map(__func__, obj, "global_map");
-> > > -       if (CHECK_FAIL(map_fd < 0))
-> > > -               goto err;
-> > > +       map_fd = bpf_map__fd(skel->maps.global_map);
-> > > +       sock_map_fd = bpf_map__fd(skel->maps.sockopt_results);
-> > >
-> > > -       sock_map_fd = bpf_find_map(__func__, obj, "sockopt_results");
-> > > -       if (CHECK_FAIL(sock_map_fd < 0))
-> > > -               goto err;
-> > > +       link = bpf_program__attach_cgroup(skel->progs.bpf_testcb, cg_fd);
-> >
-> > you can do skel->links.bpf_testcb = bpf_program__attach_cgroup() and
-> > skeleton's __destroy() call will take care of destroying the link
->
-> Okay, I can look into using that. Actually this has me wondering if
-> there wouldn't be some way to make use of test_tcpbpf_kern__attach to
-> achieve this in some standard way. I'll get that sorted before I
-> submit v2.
-
-cgroup BPF programs can't be auto-attached, because they expect cgroup
-FD, which you can't provide at compilation time (declaratively) in BPF
-code. So it has to be manually attached. skeleton's attach() will just
-ignore such programs.
-
->
-> > > +       if (CHECK(IS_ERR(link), "attach_cgroup(estab)", "err: %ld\n",
-> > > +                 PTR_ERR(link)))
-> >
-> > there is a convenient ASSERT_OK_PTR() specifically for pointers like
-> > this (and NULL ones as well, of course); saves a lot of typing and
-> > encapsulates error extraction internally.
->
-> I'll update the code to address that.
