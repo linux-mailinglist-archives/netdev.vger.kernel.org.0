@@ -2,146 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC73B2A04FB
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 13:07:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BD3A2A051C
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 13:14:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725355AbgJ3MHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 08:07:31 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:47550 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725808AbgJ3MHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 08:07:30 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09UC5Mea187402;
-        Fri, 30 Oct 2020 12:06:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : in-reply-to : message-id : references : mime-version :
- content-type; s=corp-2020-01-29;
- bh=PA5vm8YYxJcMJz7FkXJPGgwFOrfVUarZqcqKwGiR5pw=;
- b=vEWlzI++kJ99DZQRzwgFRaholuNA8Vo/M9bKIgdech0cXpLpnjcvmA8anPdbvzA158Cl
- 4Y2JzbFSWfMk1uOoFmdyaAYdz9x36iQdGakCHuPaiZ1JiplwdHkll5xtTpHMBeDX7INh
- IPgrca+O3sbFI+29PbYOi+A5kDLDtRVLWn6koUeLufrxK9FZEqfSX+xLobAmgpY2zpGB
- pz7gFP8WRMKzzc0LMPKFsyw9uNLyYCjQ1Rkpxkjdz9Y3oLXSxgACWY4gsZGvFSp2+Elf
- F8u+mUs4zpTbpogYa3M4blYW+s+ShOTfFW5FB0YaLQDMau7HEe9izo75u3P7zsI7cb0D gw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2130.oracle.com with ESMTP id 34c9sb9h3g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 30 Oct 2020 12:06:38 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09UC0TeT106000;
-        Fri, 30 Oct 2020 12:04:37 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 34cx1ud1gv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Oct 2020 12:04:37 +0000
-Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 09UC4aHZ030085;
-        Fri, 30 Oct 2020 12:04:36 GMT
-Received: from dhcp-10-175-216-65.vpn.oracle.com (/10.175.216.65)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 30 Oct 2020 05:04:35 -0700
-Date:   Fri, 30 Oct 2020 12:04:27 +0000 (GMT)
-From:   Alan Maguire <alan.maguire@oracle.com>
-X-X-Sender: alan@localhost
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-cc:     Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 00/11] libbpf: split BTF support
-In-Reply-To: <CAEf4BzbtiByaU_-pEV8gVZH1N9_xCTWJBxb6DYPXF5p9b9+_kg@mail.gmail.com>
-Message-ID: <alpine.LRH.2.21.2010301144050.25037@localhost>
-References: <20201029005902.1706310-1-andrii@kernel.org> <4427E5BD-5EBF-47E8-B7F6-9255BEAE2D53@fb.com> <CAEf4BzbtiByaU_-pEV8gVZH1N9_xCTWJBxb6DYPXF5p9b9+_kg@mail.gmail.com>
-User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
+        id S1726325AbgJ3MOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 08:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725355AbgJ3MOg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 08:14:36 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6998C0613D2;
+        Fri, 30 Oct 2020 05:14:35 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id g12so6187839wrp.10;
+        Fri, 30 Oct 2020 05:14:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YM6lVvP1rsbQaoeXf51BiJbGQods3VmOPaRIQze1Y/4=;
+        b=HYS7Z4uAi2/xNN9o74spG3l4kzUyP8VyV1TecIsI0doBZ3KR403fmibbpqsKbbgf1I
+         3YWsELKS/7CS8edlysu8nDc8RcDcXMmEGa4o1BQqQLKZe87LrkxJ58Kz1Epu/BxhLZa2
+         SyShNcHGq1zDPLgM10ram2PFohrsa3jhJOWizJV8PO0Wz++hR+C10AzNUhRMFNrMTcIE
+         5kE+QciPzpMLTBsx/B+SjWbEm0JFjOfIgDoRl/aOyHJ8AoSyZW0z4fea/VU5b2rg3GYi
+         NWz9y4KXE6Z4SsKitRMANq9qNhAnIRcQFnigs4kXnYaJqXClKX7njkNtK1BI53TwQ2OW
+         /taQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YM6lVvP1rsbQaoeXf51BiJbGQods3VmOPaRIQze1Y/4=;
+        b=Laf0vRhRHfsWG9Jx2wY85vLWMuOA/4gVZikG/k+uhsS9l4g9Y3TTAiXFW/804wa/XE
+         PcXHfwGXTMXYFtRlVjFeoxST487kzHqT2sTilELvbV8HhZP/vi4ZMCUvsrr9s0t99RlZ
+         qAMCOdYXF8BKZvDXbG2NFrNgMjrikJYVNjzZOhI/xuFn0HLC8VJ2TRAMCyIp1H0ndYnY
+         IAJ2FcU3SInSFGTa9RnMjRLg27p0fTMs3PP+Al97gGlvGefpHB2JSneVwTqO8iEC/gEj
+         rV+y2moXGPNKVBO9hFpPK3++3UVNwWutlLcWLYvVY5NrevxGTeD9G3g7igqU6zo8BJ92
+         E2xA==
+X-Gm-Message-State: AOAM532iCEHJYwLgcARj5jhhfm+UZUqApWoG76/B2/hRzqug1zSrDiT3
+        vf50GVIeIG7VN6Ut8gmLGaxSyB3kLZ3Xo0dJ/iE=
+X-Google-Smtp-Source: ABdhPJwickHJXtZNeeSxMgk7CR4/SX9TpUvLmsnUgAWwQfcePxqc+JJdQMVbyqrvcOZmy3D37IpNYw==
+X-Received: by 2002:a05:6000:12c2:: with SMTP id l2mr2949137wrx.249.1604060073865;
+        Fri, 30 Oct 2020 05:14:33 -0700 (PDT)
+Received: from kernel-dev.chello.ie ([80.111.136.190])
+        by smtp.gmail.com with ESMTPSA id 90sm10020925wrh.35.2020.10.30.05.14.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Oct 2020 05:14:33 -0700 (PDT)
+From:   Weqaar Janjua <weqaar.janjua@gmail.com>
+X-Google-Original-From: Weqaar Janjua <weqaar.a.janjua@intel.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
+        ast@kernel.org, magnus.karlsson@gmail.com, bjorn.topel@intel.com
+Cc:     Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
+        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
+        anders.roxell@linaro.org, jonathan.lemon@gmail.com
+Subject: [PATCH bpf-next 0/5] selftests/xsk: xsk selftests
+Date:   Fri, 30 Oct 2020 12:13:42 +0000
+Message-Id: <20201030121347.26984-1-weqaar.a.janjua@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9789 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0 bulkscore=0
- suspectscore=3 malwarescore=0 mlxlogscore=999 mlxscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010300093
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9789 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 malwarescore=0 lowpriorityscore=0 bulkscore=0
- priorityscore=1501 spamscore=0 phishscore=0 clxscore=1011 suspectscore=3
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010300094
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Oct 2020, Andrii Nakryiko wrote:
+This patch set adds AF_XDP selftests based on veth to selftests/xsk/.
 
-> On Thu, Oct 29, 2020 at 5:33 PM Song Liu <songliubraving@fb.com> wrote:
-> >
-> >
-> >
-> > > On Oct 28, 2020, at 5:58 PM, Andrii Nakryiko <andrii@kernel.org> wrote:
-> > >
-> > > This patch set adds support for generating and deduplicating split BTF. This
-> > > is an enhancement to the BTF, which allows to designate one BTF as the "base
-> > > BTF" (e.g., vmlinux BTF), and one or more other BTFs as "split BTF" (e.g.,
-> > > kernel module BTF), which are building upon and extending base BTF with extra
-> > > types and strings.
-> > >
-> > > Once loaded, split BTF appears as a single unified BTF superset of base BTF,
-> > > with continuous and transparent numbering scheme. This allows all the existing
-> > > users of BTF to work correctly and stay agnostic to the base/split BTFs
-> > > composition.  The only difference is in how to instantiate split BTF: it
-> > > requires base BTF to be alread instantiated and passed to btf__new_xxx_split()
-> > > or btf__parse_xxx_split() "constructors" explicitly.
-> > >
-> > > This split approach is necessary if we are to have a reasonably-sized kernel
-> > > module BTFs. By deduping each kernel module's BTF individually, resulting
-> > > module BTFs contain copies of a lot of kernel types that are already present
-> > > in vmlinux BTF. Even those single copies result in a big BTF size bloat. On my
-> > > kernel configuration with 700 modules built, non-split BTF approach results in
-> > > 115MBs of BTFs across all modules. With split BTF deduplication approach,
-> > > total size is down to 5.2MBs total, which is on part with vmlinux BTF (at
-> > > around 4MBs). This seems reasonable and practical. As to why we'd need kernel
-> > > module BTFs, that should be pretty obvious to anyone using BPF at this point,
-> > > as it allows all the BTF-powered features to be used with kernel modules:
-> > > tp_btf, fentry/fexit/fmod_ret, lsm, bpf_iter, etc.
-> >
-> > Some high level questions. Do we plan to use split BTF for in-tree modules
-> > (those built together with the kernel) or out-of-tree modules (those built
-> > separately)? If it is for in-tree modules, is it possible to build split BTF
-> > into vmlinux BTF?
-> 
-> It will be possible to use for both in-tree and out-of-tree. For
-> in-tree, this will be integrated into the kernel build process. For
-> out-of-tree, whoever builds their kernel module will need to invoke
-> pahole -J with an extra flag pointing to the right vmlinux image (I
-> haven't looked into the exact details of this integration, maybe there
-> are already scripts in Linux repo that out-of-tree modules have to
-> use, in such case we can add this integration there).
-> 
-> Merging all in-tree modules' BTFs into vmlinux's BTF defeats the
-> purpose of the split BTF and will just increase the size of vmlinux
-> BTF unnecessarily.
->
+# Topology:
+# ---------
+#                 -----------
+#               _ | Process | _
+#              /  -----------  \
+#             /        |        \
+#            /         |         \
+#      -----------     |     -----------
+#      | Thread1 |     |     | Thread2 |
+#      -----------     |     -----------
+#           |          |          |
+#      -----------     |     -----------
+#      |  xskX   |     |     |  xskY   |
+#      -----------     |     -----------
+#           |          |          |
+#      -----------     |     ----------
+#      |  vethX  | --------- |  vethY |
+#      -----------   peer    ----------
+#           |          |          |
+#      namespaceX      |     namespaceY
 
-Again more of a question about how module BTF will be exposed, but
-I'm wondering if there will be a way for a consumer to ask for
-type info across kernel and module BTF, i.e. something like
-libbpf_find_kernel_btf_id() ? Similarly will __builtin_btf_type_id()
-work across both vmlinux and modules? I'm thinking of the case where we 
-potentially don't know which module a type is defined in.
+These selftests test AF_XDP SKB and Native/DRV modes using veth Virtual
+Ethernet interfaces.
 
-I realize in some cases type names may refer to different types in 
-different modules (not sure how frequent this is in practice?) but
-I'm curious how the split model for modules will interact with existing 
-APIs and helpers.
+The test program contains two threads, each thread is single socket with
+a unique UMEM. It validates in-order packet delivery and packet content
+by sending packets to each other.
 
-In some cases it's likely that modules may share types with
-each other that they do not share with vmlinux; in such cases 
-will those types get deduplicated also, or is deduplication just
-between kernel/module, and not module/module? 
+Prerequisites setup by script TEST_PREREQUISITES.sh:
 
-Sorry I know these questions aren't about this patchset in
-particular, but I'm just trying to get a sense of the bigger
-picture. Thanks!
+   Set up veth interfaces as per the topology shown ^^:
+   * setup two veth interfaces and one namespace
+   ** veth<xxxx> in root namespace
+   ** veth<yyyy> in af_xdp<xxxx> namespace
+   ** namespace af_xdp<xxxx>
+   * create a spec file veth.spec that includes this run-time configuration
+     that is read by test scripts - filenames prefixed with TEST_XSK
+   *** xxxx and yyyy are randomly generated 4 digit numbers used to avoid
+       conflict with any existing interface.
 
-Alan
+The following tests are provided:
+
+1. AF_XDP SKB mode
+   Generic mode XDP is driver independent, used when the driver does
+   not have support for XDP. Works on any netdevice using sockets and
+   generic XDP path. XDP hook from netif_receive_skb().
+   a. nopoll - soft-irq processing
+   b. poll - using poll() syscall
+   c. Socket Teardown
+      Create a Tx and a Rx socket, Tx from one socket, Rx on another.
+      Destroy both sockets, then repeat multiple times. Only nopoll mode
+	  is used
+   d. Bi-directional Sockets
+      Configure sockets as bi-directional tx/rx sockets, sets up fill
+	  and completion rings on each socket, tx/rx in both directions.
+	  Only nopoll mode is used
+
+2. AF_XDP DRV/Native mode
+   Works on any netdevice with XDP_REDIRECT support, driver dependent.
+   Processes packets before SKB allocation. Provides better performance
+   than SKB. Driver hook available just after DMA of buffer descriptor.
+   a. nopoll
+   b. poll
+   c. Socket Teardown
+   d. Bi-directional Sockets
+   * Only copy mode is supported because veth does not currently support
+     zero-copy mode
+
+Total tests: 8.
+
+Flow:
+* Single process spawns two threads: Tx and Rx
+* Each of these two threads attach to a veth interface within their
+  assigned namespaces
+* Each thread creates one AF_XDP socket connected to a unique umem
+  for each veth interface
+* Tx thread transmits 10k packets from veth<xxxx> to veth<yyyy>
+* Rx thread verifies if all 10k packets were received and delivered
+  in-order, and have the right content
+
+Structure of the patch set:
+
+Patch 1: This patch adds XSK Selftests framework under
+         tools/testing/selftests/xsk, and README
+Patch 2: Adds tests: SKB poll and nopoll mode, mac-ip-udp debug,
+         and README updates
+Patch 3: Adds tests: DRV poll and nopoll mode, and README updates
+Patch 4: Adds tests: SKB and DRV Socket Teardown, and README updates
+Patch 5: Adds tests: SKB and DRV Bi-directional Sockets, and README
+         updates
+
+Thanks: Weqaar
+
+Weqaar Janjua (5):
+  selftests/xsk: xsk selftests framework
+  selftests/xsk: xsk selftests - SKB POLL, NOPOLL
+  selftests/xsk: xsk selftests - DRV POLL, NOPOLL
+  selftests/xsk: xsk selftests - Socket Teardown - SKB, DRV
+  selftests/xsk: xsk selftests - Bi-directional Sockets - SKB, DRV
+
+ MAINTAINERS                                   |    1 +
+ tools/testing/selftests/Makefile              |    1 +
+ tools/testing/selftests/xsk/Makefile          |   34 +
+ tools/testing/selftests/xsk/README            |  125 +++
+ .../selftests/xsk/TEST_PREREQUISITES.sh       |   53 +
+ tools/testing/selftests/xsk/TEST_XSK.sh       |   15 +
+ .../xsk/TEST_XSK_DRV_BIDIRECTIONAL.sh         |   22 +
+ .../selftests/xsk/TEST_XSK_DRV_NOPOLL.sh      |   18 +
+ .../selftests/xsk/TEST_XSK_DRV_POLL.sh        |   18 +
+ .../selftests/xsk/TEST_XSK_DRV_TEARDOWN.sh    |   18 +
+ .../xsk/TEST_XSK_SKB_BIDIRECTIONAL.sh         |   19 +
+ .../selftests/xsk/TEST_XSK_SKB_NOPOLL.sh      |   18 +
+ .../selftests/xsk/TEST_XSK_SKB_POLL.sh        |   18 +
+ .../selftests/xsk/TEST_XSK_SKB_TEARDOWN.sh    |   18 +
+ tools/testing/selftests/xsk/config            |   12 +
+ tools/testing/selftests/xsk/prereqs.sh        |  119 ++
+ tools/testing/selftests/xsk/xdpprogs/Makefile |   64 ++
+ .../selftests/xsk/xdpprogs/Makefile.target    |   68 ++
+ .../selftests/xsk/xdpprogs/xdpxceiver.c       | 1000 +++++++++++++++++
+ .../selftests/xsk/xdpprogs/xdpxceiver.h       |  159 +++
+ tools/testing/selftests/xsk/xskenv.sh         |   33 +
+ 21 files changed, 1833 insertions(+)
+ create mode 100644 tools/testing/selftests/xsk/Makefile
+ create mode 100644 tools/testing/selftests/xsk/README
+ create mode 100755 tools/testing/selftests/xsk/TEST_PREREQUISITES.sh
+ create mode 100755 tools/testing/selftests/xsk/TEST_XSK.sh
+ create mode 100755 tools/testing/selftests/xsk/TEST_XSK_DRV_BIDIRECTIONAL.sh
+ create mode 100755 tools/testing/selftests/xsk/TEST_XSK_DRV_NOPOLL.sh
+ create mode 100755 tools/testing/selftests/xsk/TEST_XSK_DRV_POLL.sh
+ create mode 100755 tools/testing/selftests/xsk/TEST_XSK_DRV_TEARDOWN.sh
+ create mode 100755 tools/testing/selftests/xsk/TEST_XSK_SKB_BIDIRECTIONAL.sh
+ create mode 100755 tools/testing/selftests/xsk/TEST_XSK_SKB_NOPOLL.sh
+ create mode 100755 tools/testing/selftests/xsk/TEST_XSK_SKB_POLL.sh
+ create mode 100755 tools/testing/selftests/xsk/TEST_XSK_SKB_TEARDOWN.sh
+ create mode 100644 tools/testing/selftests/xsk/config
+ create mode 100755 tools/testing/selftests/xsk/prereqs.sh
+ create mode 100644 tools/testing/selftests/xsk/xdpprogs/Makefile
+ create mode 100644 tools/testing/selftests/xsk/xdpprogs/Makefile.target
+ create mode 100644 tools/testing/selftests/xsk/xdpprogs/xdpxceiver.c
+ create mode 100644 tools/testing/selftests/xsk/xdpprogs/xdpxceiver.h
+ create mode 100755 tools/testing/selftests/xsk/xskenv.sh
+
+-- 
+2.20.1
+
