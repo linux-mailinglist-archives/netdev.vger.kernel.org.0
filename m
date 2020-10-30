@@ -2,137 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 339A329FE48
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 08:11:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED60529FE4D
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 08:14:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725995AbgJ3HLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 03:11:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45034 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725823AbgJ3HLa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Oct 2020 03:11:30 -0400
-Received: from coco.lan (ip5f5ad5bb.dynamic.kabel-deutschland.de [95.90.213.187])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A5A6620729;
-        Fri, 30 Oct 2020 07:11:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604041889;
-        bh=HMfalVRoys07ml7VPXGsddZqQtyxcaotzZe94CKTB5U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=R7y6Bkg5GrGcYmjgIayZshuogEXNtD+N43HIj2ydphSqWHTpEKjdj+tkINZ9lO4pX
-         +EzN06y8xtiLvvAwAlP7B2jMtZP7Xz5TMkR6xCd/tfAA7bm7KHEvTD9Bw/cC31SHKp
-         JuVmtl721avx2j0rGBNlzZnqYSENceoWWYTIE5Wc=
-Date:   Fri, 30 Oct 2020 08:11:09 +0100
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Javier =?UTF-8?B?R29uesOhbGV6?= <javier@javigon.com>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Benson Leung <bleung@chromium.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Bruno Meneguele <bmeneg@redhat.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Juergen Gross <jgross@suse.com>,
-        Konstantin Khlebnikov <koct9i@gmail.com>,
-        Kranthi Kuntala <kranthi.kuntala@intel.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Len Brown <lenb@kernel.org>,
-        Leonid Maksymchuk <leonmaxx@gmail.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Orson Zhai <orsonzhai@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Peter Rosin <peda@axentia.se>, Petr Mladek <pmladek@suse.com>,
-        Philippe Bergheaud <felix@linux.ibm.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-pm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, xen-devel@lists.xenproject.org
-Subject: Re: [PATCH 20/33] docs: ABI: testing: make the files compatible
- with ReST output
-Message-ID: <20201030081109.5f7bbdaf@coco.lan>
-In-Reply-To: <20201029144912.3c0a239b@archlinux>
-References: <cover.1603893146.git.mchehab+huawei@kernel.org>
-        <4ebaaa0320101479e392ce2db4b62e24fdf15ef1.1603893146.git.mchehab+huawei@kernel.org>
-        <20201029144912.3c0a239b@archlinux>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1725801AbgJ3HOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 03:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51678 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725355AbgJ3HOq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 03:14:46 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1314DC0613D2
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 00:14:46 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id f38so4458340pgm.2
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 00:14:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sslab.ics.keio.ac.jp; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=Nn37IfTCXj7OmHgyU0P/qf2aXP/R5yi/4Un5UCinwUE=;
+        b=MJ4AKEXn7TirRPKSoWVdZOqbNugwSZWnOJSKdKoZwBvgJ2HvloooFF8TK6++IkvgR/
+         LG3qbXpz+St1TZ8+d/VnMmvoAStv2CDgczOGUs2r11P8ViMcwHmgfRpj/wLW7hlo+TwC
+         I+EuRT6mAu0aLtMGFtMtMoxEfM8ODh7OnnIb8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Nn37IfTCXj7OmHgyU0P/qf2aXP/R5yi/4Un5UCinwUE=;
+        b=rt+4ogFFbU5R76L0p+OZUPyFx9N8yqptLbfzpKg6OOWmqrPcwW5xn87tvEWZ5OIXtL
+         urAbaN3yToAmDlLM1DOyQMLkFWFB3G2M1l/esSdomW/JlyQNIYFuFcYlLoN03NRkHjw9
+         u6M1qqYdZlQ1keOgfjFCi6ntliYhMJ36KS1Cde9HJMglXJwB14gKRpJaDRrVqygDiofV
+         U59wca4Q8onzkV88L4/7/syxVu/n0HvKO2PRIMJwi/9HC2FZm63nrR2DBfKDWAAM2hIg
+         9ZUqrECwJQIr+IQxHMAGmfz/RRqk4nGzqrM0aMQ62JA46OsH90efI7zKx+IqpINLnIyb
+         GeBg==
+X-Gm-Message-State: AOAM5321+rEaM0hjz9UYMxA0+jyQapj7vj1soEEhHUnx7X4kvNE5H5+I
+        pkMY89taMSbwduzeQOPPO3SQXg==
+X-Google-Smtp-Source: ABdhPJyM76ixBnDtfwwg71qY1GdE0SSR1uXigQAvZciL/lMm6nMzKuHOPOTW2EhMHzsyMoq95V1IpA==
+X-Received: by 2002:a17:90a:73c9:: with SMTP id n9mr1231337pjk.90.1604042085301;
+        Fri, 30 Oct 2020 00:14:45 -0700 (PDT)
+Received: from brooklyn.i.sslab.ics.keio.ac.jp (sslab-relay.ics.keio.ac.jp. [131.113.126.173])
+        by smtp.googlemail.com with ESMTPSA id y203sm4996152pfb.70.2020.10.30.00.14.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Oct 2020 00:14:44 -0700 (PDT)
+From:   Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Cc:     keitasuzuki.park@sslab.ics.keio.ac.jp,
+        takafumi@sslab.ics.keio.ac.jp,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] i40e: Fix memory leak in i40e_probe
+Date:   Fri, 30 Oct 2020 07:14:30 +0000
+Message-Id: <20201030071431.10488-1-keitasuzuki.park@sslab.ics.keio.ac.jp>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Thu, 29 Oct 2020 14:49:12 +0000
-Jonathan Cameron <jic23@kernel.org> escreveu:
+Struct i40e_veb is allocated in function i40e_setup_pf_switch, and
+stored to an array field veb inside struct i40e_pf. However when
+i40e_setup_misc_vector fails, this memory leaks.
 
-> On Wed, 28 Oct 2020 15:23:18 +0100
-> Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote:
-> 
-> > From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-> > 
-> > Some files over there won't parse well by Sphinx.
-> > 
-> > Fix them.
-> > 
-> > Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-> > Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>  
-> 
-> Query below...  I'm going to guess a rebase issue?
+Fix this by calling exit and teardown functions.
 
-Yes. I sent this series about 1,5 years ago. On that time, it
-ended by not being merged, as there were too much docs patches
-floating around. 
+Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+---
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-The second SoB is not there on my tree. It was added by
-git send-email ;-)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 4f8a2154b93f..428964c4ade1 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -15104,6 +15104,8 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		if (err) {
+ 			dev_info(&pdev->dev,
+ 				 "setup of misc vector failed: %d\n", err);
++			i40e_cloud_filter_exit(pf);
++			i40e_fdir_teardown(pf);
+ 			goto err_vsis;
+ 		}
+ 	}
+-- 
+2.17.1
 
-Anyway, fixed.
-
-Thanks,
-Mauro
