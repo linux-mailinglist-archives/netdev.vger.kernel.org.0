@@ -2,146 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63F102A0B89
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 17:43:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B28ED2A0BB3
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 17:51:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727164AbgJ3Qnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 12:43:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57938 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725808AbgJ3Qnu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Oct 2020 12:43:50 -0400
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726713AbgJ3QvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 12:51:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30462 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725808AbgJ3QvA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 12:51:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604076658;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MEMmusbGX/O+e3LL3XBF0hvrxPzkfS24s7nqpxx/rko=;
+        b=hp4GZ18euqY7eZiA1JUZGuePbRs1rEdIbNiaX2yLQ6vqONjXv43qV6BQaF+sYYXVl8TIAg
+        zGWf9vKcdkOV+dsZ8kwJuHjd9NMDp1zYLBu3cb032z05uBCCnVhW4PRgr8AGzeRmdMLB19
+        n31X3u29wpBismyqllxADrKO24ChfVg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-455-F_jV20kiNPGoO5ZLbHu54g-1; Fri, 30 Oct 2020 12:50:54 -0400
+X-MC-Unique: F_jV20kiNPGoO5ZLbHu54g-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0A94220727;
-        Fri, 30 Oct 2020 16:43:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604076229;
-        bh=+c90p9MaJzJuRoN3BvzXiKmnGAJxiR0Sa0P4b8aUQzo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=t88tlPU/NUroEniVPjW4TqLnvWhrIfH7ontb/tEW1sdRT1FnoiQWKwy+fSUx68sT0
-         rs+vZHx9YuNZDX4RlYGkx+PYCs8BQegue4RXJCYXSWqtTEusaM36gdfe9y47LRbpYq
-         RMWf3ILhVtq4udvvmC0MqjaXWbCMgZYZmibfi+A8=
-Received: by mail-lj1-f171.google.com with SMTP id m8so1531797ljj.0;
-        Fri, 30 Oct 2020 09:43:48 -0700 (PDT)
-X-Gm-Message-State: AOAM532qaDsqxVA3X6h99Ub1b4JpHMEpTene47Fd6aJCiygLTnVKTH25
-        8iOmZ1CUJAdzTQ7nWT7BrCHiR26dDKFN1loC/f4=
-X-Google-Smtp-Source: ABdhPJxm9sgEJSwmgM8hEzqnta7s9o9UIZv9ydY0U2OJxGGE0P5Itz/d9cN8+Gju9yF5FTpwjHbDKtASYlPQqQbzWVY=
-X-Received: by 2002:a05:651c:1341:: with SMTP id j1mr1556651ljb.41.1604076227193;
- Fri, 30 Oct 2020 09:43:47 -0700 (PDT)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 178AD1019642;
+        Fri, 30 Oct 2020 16:50:52 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 570705DA2A;
+        Fri, 30 Oct 2020 16:50:48 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 2A5F630736C8B;
+        Fri, 30 Oct 2020 17:50:47 +0100 (CET)
+Subject: [PATCH bpf-next V5 0/5] Subj: bpf: New approach for BPF MTU handling
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com
+Date:   Fri, 30 Oct 2020 17:50:47 +0100
+Message-ID: <160407661383.1525159.12855559773280533146.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-References: <20201029005902.1706310-1-andrii@kernel.org> <20201029005902.1706310-3-andrii@kernel.org>
-In-Reply-To: <20201029005902.1706310-3-andrii@kernel.org>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 30 Oct 2020 09:43:35 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6DxoRjBPJEgwzEtmVt-Uunw-MAmAF2tgh-ksjcKuJ4Bw@mail.gmail.com>
-Message-ID: <CAPhsuW6DxoRjBPJEgwzEtmVt-Uunw-MAmAF2tgh-ksjcKuJ4Bw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 02/11] selftest/bpf: relax btf_dedup test checks
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 1:40 AM Andrii Nakryiko <andrii@kernel.org> wrote:
->
-> Remove the requirement of a strictly exact string section contents. This used
-> to be true when string deduplication was done through sorting, but with string
-> dedup done through hash table, it's no longer true. So relax test harness to
-> relax strings checks and, consequently, type checks, which now don't have to
-> have exactly the same string offsets.
->
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> ---
->  tools/testing/selftests/bpf/prog_tests/btf.c | 34 +++++++++++---------
->  1 file changed, 19 insertions(+), 15 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
-> index 93162484c2ca..2ccc23b2a36f 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/btf.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/btf.c
-> @@ -6652,7 +6652,7 @@ static void do_test_dedup(unsigned int test_num)
->         const void *test_btf_data, *expect_btf_data;
->         const char *ret_test_next_str, *ret_expect_next_str;
->         const char *test_strs, *expect_strs;
-> -       const char *test_str_cur, *test_str_end;
-> +       const char *test_str_cur;
->         const char *expect_str_cur, *expect_str_end;
->         unsigned int raw_btf_size;
->         void *raw_btf;
-> @@ -6719,12 +6719,18 @@ static void do_test_dedup(unsigned int test_num)
->                 goto done;
->         }
->
-> -       test_str_cur = test_strs;
-> -       test_str_end = test_strs + test_hdr->str_len;
->         expect_str_cur = expect_strs;
->         expect_str_end = expect_strs + expect_hdr->str_len;
-> -       while (test_str_cur < test_str_end && expect_str_cur < expect_str_end) {
-> +       while (expect_str_cur < expect_str_end) {
->                 size_t test_len, expect_len;
-> +               int off;
-> +
-> +               off = btf__find_str(test_btf, expect_str_cur);
-> +               if (CHECK(off < 0, "exp str '%s' not found: %d\n", expect_str_cur, off)) {
-> +                       err = -1;
-> +                       goto done;
-> +               }
-> +               test_str_cur = btf__str_by_offset(test_btf, off);
->
->                 test_len = strlen(test_str_cur);
->                 expect_len = strlen(expect_str_cur);
-> @@ -6741,15 +6747,8 @@ static void do_test_dedup(unsigned int test_num)
->                         err = -1;
->                         goto done;
->                 }
-> -               test_str_cur += test_len + 1;
->                 expect_str_cur += expect_len + 1;
->         }
-> -       if (CHECK(test_str_cur != test_str_end,
-> -                 "test_str_cur:%p != test_str_end:%p",
-> -                 test_str_cur, test_str_end)) {
-> -               err = -1;
-> -               goto done;
-> -       }
->
->         test_nr_types = btf__get_nr_types(test_btf);
->         expect_nr_types = btf__get_nr_types(expect_btf);
-> @@ -6775,10 +6774,15 @@ static void do_test_dedup(unsigned int test_num)
->                         err = -1;
->                         goto done;
->                 }
-> -               if (CHECK(memcmp((void *)test_type,
-> -                                (void *)expect_type,
-> -                                test_size),
-> -                         "type #%d: contents differ", i)) {
+This patchset drops all the MTU checks in TC BPF-helpers that limits
+growing the packet size. This is done because these BPF-helpers doesn't
+take redirect into account, which can result in their MTU check being done
+against the wrong netdev.
 
-I guess test_size and expect_size are not needed anymore?
+The new approach is to give BPF-programs knowledge about the MTU on a
+netdev (via ifindex) and fib route lookup level. Meaning some BPF-helpers
+are added and extended to make it possible to do MTU checks in the
+BPF-code.
 
-> +               if (CHECK(btf_kind(test_type) != btf_kind(expect_type),
-> +                         "type %d kind: exp %d != got %u\n",
-> +                         i, btf_kind(expect_type), btf_kind(test_type))) {
-> +                       err = -1;
-> +                       goto done;
-> +               }
-> +               if (CHECK(test_type->info != expect_type->info,
-> +                         "type %d info: exp %d != got %u\n",
-> +                         i, expect_type->info, test_type->info)) {
+If BPF-prog doesn't comply with the MTU then the packet will eventually
+get dropped as some other layer. In some cases the existing kernel MTU
+checks will drop the packet, but there are also cases where BPF can bypass
+these checks. Specifically doing TC-redirect from ingress step
+(sch_handle_ingress) into egress code path (basically calling
+dev_queue_xmit()). It is left up to driver code to handle these kind of
+MTU violations.
 
-btf_kind() returns part of ->info, so we only need the second check, no?
+One advantage of this approach is that it ingress-to-egress BPF-prog can
+send information via packet data. With the MTU checks removed in the
+helpers, and also not done in skb_do_redirect() call, this allows for an
+ingress BPF-prog to communicate with an egress BPF-prog via packet data,
+as long as egress BPF-prog remove this prior to transmitting packet.
 
-IIUC, test_type and expect_type may have different name_off now. Shall
-we check ->size matches?
+This patchset is primarily focused on TC-BPF, but I've made sure that the
+MTU BPF-helpers also works for XDP BPF-programs.
+
+V2: Change BPF-helper API from lookup to check.
+V3: Drop enforcement of MTU in net-core, leave it to drivers.
+V4: Keep sanity limit + netdev "up" checks + rename BPF-helper.
+V5: Fix uninit variable + name struct output member mtu_result.
+
+---
+
+Jesper Dangaard Brouer (5):
+      bpf: Remove MTU check in __bpf_skb_max_len
+      bpf: bpf_fib_lookup return MTU value as output when looked up
+      bpf: add BPF-helper for MTU checking
+      bpf: drop MTU check when doing TC-BPF redirect to ingress
+      bpf: make it possible to identify BPF redirected SKBs
 
 
->                         err = -1;
->                         goto done;
->                 }
-> --
-> 2.24.1
->
+ include/linux/netdevice.h      |   31 +++++++
+ include/uapi/linux/bpf.h       |   81 +++++++++++++++++++
+ net/core/dev.c                 |   21 +----
+ net/core/filter.c              |  168 ++++++++++++++++++++++++++++++++++++----
+ net/sched/Kconfig              |    1 
+ tools/include/uapi/linux/bpf.h |   81 +++++++++++++++++++
+ 6 files changed, 342 insertions(+), 41 deletions(-)
+
+--
+
