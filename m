@@ -2,434 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A2052A0575
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 13:32:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B0612A0573
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 13:32:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726657AbgJ3Mbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 08:31:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
+        id S1726641AbgJ3Mbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 08:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726110AbgJ3MbL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 08:31:11 -0400
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42983C0613D2
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 05:31:11 -0700 (PDT)
+        with ESMTP id S1726531AbgJ3MbM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 08:31:12 -0400
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F3EC0613D2
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 05:31:12 -0700 (PDT)
 Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4CN1rC6nV4zQkKG;
-        Fri, 30 Oct 2020 13:31:07 +0100 (CET)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4CN1rG53D9zQky8;
+        Fri, 30 Oct 2020 13:31:10 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1604061066;
+        s=MBO0001; t=1604061068;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=E+m7GGoAxTktW8re+vpZUiEs5r1ldT7JEJniB5FwWoU=;
-        b=nYdMH2j5WxkmZzWiyTJ/wUV1xPxsDAxZMPbLX66NbH8aKFVYF97nkPjR1yNhWVvjK5vilb
-        puQ2VIwwPMXZ6xNv9uSfwsD1ncM9urcPYanVVQjm0YAhQB2V0AFfl2ViF07YxgdYThyYid
-        oo7raNs316GbnlEoBoqIG87usUw+76KmJahjYG+r7d3jGAY4o7gR54wSKZKVqfuEKOgVF2
-        wlgEsZduNNYbHDmcmsaqpBBPM7fCLGxWUqJqk3p6cL+bZ9CJhjShlOgT6j9HAxDVp7d8JB
-        oTPPxDEsqXQOHmpBpQsqlSOjxzOy1ugUbmFwmnKEx6smFGnmeIE3MAczN4joyw==
+        bh=L8gPvARuOucKpeeGtwIx19zoR5UzyAayT53YkNHfC9Y=;
+        b=QwqlzRKr9Sat0AMlQE8WH3dZH/nVdbDjbJ6iBYATXttGw4vyoKzL+c0Rn9XvSh+1NKKJIW
+        +7Wc32eNLeULyrmkMmwOjQWS/ASWnMzQLQGCVgODgTZ5jwk4mClvrziy4AWFiYkBgF4519
+        OfRsfSDNGdS4wbJrxltOPr+mTkw8pkz1eKkCFVsmSpjEkg+XkRcc1Cha8QzqnIkQ2zbj7p
+        +kvR35ytpwlQqGK4ejzK8iQ0wUyWmJC/m1f/gd2WvohzE3KzbiqxgZCpRyQEZlnR7r3GFs
+        ZnJr1I67GMDx8T74pnBYPBIgxLS3SgPssA9UnOpCnjIEGoHK2Ct18IYNTfCKxQ==
 Received: from smtp2.mailbox.org ([80.241.60.241])
-        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
-        with ESMTP id 9TF7G9DEEaTr; Fri, 30 Oct 2020 13:31:03 +0100 (CET)
+        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
+        with ESMTP id zivff0W5rBLR; Fri, 30 Oct 2020 13:31:04 +0100 (CET)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
 Cc:     john.fastabend@gmail.com, jiri@nvidia.com, idosch@nvidia.com,
         Jakub Kicinski <kuba@kernel.org>,
         Roman Mashak <mrv@mojatatu.com>, Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next v2 01/11] Unify batch processing across tools
-Date:   Fri, 30 Oct 2020 13:29:48 +0100
-Message-Id: <4a5b2f1b62b875c07df6e1df2239851b162309aa.1604059429.git.me@pmachata.org>
+Subject: [PATCH iproute2-next v2 02/11] lib: Add parse_one_of(), parse_on_off()
+Date:   Fri, 30 Oct 2020 13:29:49 +0100
+Message-Id: <194ae677df465086d6cd1d7962c07d790e6d049d.1604059429.git.me@pmachata.org>
 In-Reply-To: <cover.1604059429.git.me@pmachata.org>
 References: <cover.1604059429.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-MBO-SPAM-Probability: *
-X-Rspamd-Score: 1.06 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 9E2C6170E
-X-Rspamd-UID: dd2d58
+X-Rspamd-Score: 1.09 / 15.00 / 15.00
+X-Rspamd-Queue-Id: A4B7B1707
+X-Rspamd-UID: 236a96
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The code for handling batches is largely the same across iproute2 tools.
-Extract a helper to handle the batch, and adjust the tools to dispatch to
-this helper. Sandwitch the invocation between prologue / epilogue code
-specific for each tool.
+Take from the macsec code parse_one_of() and adapt so that it passes the
+primary result as the main return value, and error result through a
+pointer. That is the simplest way to make the code reusable across data
+types without introducing extra magic.
+
+Also from macsec take the specialization of parse_one_of() for parsing
+specifically the strings "off" and "on".
+
+Convert the macsec code to the new helpers.
 
 Signed-off-by: Petr Machata <me@pmachata.org>
 ---
- bridge/bridge.c   | 38 +++++++-------------------------------
- devlink/devlink.c | 41 +++++++----------------------------------
- include/utils.h   |  3 +++
- ip/ip.c           | 46 ++++++++++------------------------------------
- lib/utils.c       | 40 ++++++++++++++++++++++++++++++++++++++++
- rdma/rdma.c       | 38 +++++++-------------------------------
- tc/tc.c           | 38 +++++++-------------------------------
- 7 files changed, 81 insertions(+), 163 deletions(-)
+ include/utils.h |  4 ++++
+ ip/ipmacsec.c   | 52 +++++++++++--------------------------------------
+ lib/utils.c     | 28 ++++++++++++++++++++++++++
+ 3 files changed, 43 insertions(+), 41 deletions(-)
 
-diff --git a/bridge/bridge.c b/bridge/bridge.c
-index 453d689732bd..8f691cfdd466 100644
---- a/bridge/bridge.c
-+++ b/bridge/bridge.c
-@@ -77,20 +77,14 @@ static int do_cmd(const char *argv0, int argc, char **argv)
- 	return -1;
- }
- 
--static int batch(const char *name)
-+static int br_batch_cmd(int argc, char *argv[], void *data)
- {
--	char *line = NULL;
--	size_t len = 0;
--	int ret = EXIT_SUCCESS;
-+	return do_cmd(argv[0], argc, argv);
-+}
- 
--	if (name && strcmp(name, "-") != 0) {
--		if (freopen(name, "r", stdin) == NULL) {
--			fprintf(stderr,
--				"Cannot open file \"%s\" for reading: %s\n",
--				name, strerror(errno));
--			return EXIT_FAILURE;
--		}
--	}
-+static int batch(const char *name)
-+{
-+	int ret;
- 
- 	if (rtnl_open(&rth, 0) < 0) {
- 		fprintf(stderr, "Cannot open rtnetlink\n");
-@@ -99,25 +93,7 @@ static int batch(const char *name)
- 
- 	rtnl_set_strict_dump(&rth);
- 
--	cmdlineno = 0;
--	while (getcmdline(&line, &len, stdin) != -1) {
--		char *largv[100];
--		int largc;
--
--		largc = makeargs(line, largv, 100);
--		if (largc == 0)
--			continue;       /* blank line */
--
--		if (do_cmd(largv[0], largc, largv)) {
--			fprintf(stderr, "Command failed %s:%d\n",
--				name, cmdlineno);
--			ret = EXIT_FAILURE;
--			if (!force)
--				break;
--		}
--	}
--	if (line)
--		free(line);
-+	ret = do_batch(name, force, br_batch_cmd, NULL);
- 
- 	rtnl_close(&rth);
- 	return ret;
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 007677a5c564..7dba42c602b3 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -7745,43 +7745,16 @@ static void dl_free(struct dl *dl)
- 	free(dl);
- }
- 
--static int dl_batch(struct dl *dl, const char *name, bool force)
-+static int dl_batch_cmd(int argc, char *argv[], void *data)
- {
--	char *line = NULL;
--	size_t len = 0;
--	int ret = EXIT_SUCCESS;
--
--	if (name && strcmp(name, "-") != 0) {
--		if (freopen(name, "r", stdin) == NULL) {
--			fprintf(stderr,
--				"Cannot open file \"%s\" for reading: %s\n",
--				name, strerror(errno));
--			return EXIT_FAILURE;
--		}
--	}
--
--	cmdlineno = 0;
--	while (getcmdline(&line, &len, stdin) != -1) {
--		char *largv[100];
--		int largc;
--
--		largc = makeargs(line, largv, 100);
--		if (!largc)
--			continue;	/* blank line */
--
--		if (dl_cmd(dl, largc, largv)) {
--			fprintf(stderr, "Command failed %s:%d\n",
--				name, cmdlineno);
--			ret = EXIT_FAILURE;
--			if (!force)
--				break;
--		}
--	}
-+	struct dl *dl = data;
- 
--	if (line)
--		free(line);
-+	return dl_cmd(dl, argc, argv);
-+}
- 
--	return ret;
-+static int dl_batch(struct dl *dl, const char *name, bool force)
-+{
-+	return do_batch(name, force, dl_batch_cmd, dl);
- }
- 
- int main(int argc, char **argv)
 diff --git a/include/utils.h b/include/utils.h
-index 7041c4612e46..085b17b1f6e3 100644
+index 085b17b1f6e3..bd62cdcd7122 100644
 --- a/include/utils.h
 +++ b/include/utils.h
-@@ -322,4 +322,7 @@ int get_time64(__s64 *time, const char *str);
- char *sprint_time(__u32 time, char *buf);
- char *sprint_time64(__s64 time, char *buf);
+@@ -325,4 +325,8 @@ char *sprint_time64(__s64 time, char *buf);
+ int do_batch(const char *name, bool force,
+ 	     int (*cmd)(int argc, char *argv[], void *user), void *user);
  
-+int do_batch(const char *name, bool force,
-+	     int (*cmd)(int argc, char *argv[], void *user), void *user);
++int parse_one_of(const char *msg, const char *realval, const char * const *list,
++		 size_t len, int *p_err);
++int parse_on_off(const char *msg, const char *realval, int *p_err);
 +
  #endif /* __UTILS_H__ */
-diff --git a/ip/ip.c b/ip/ip.c
-index ac4450235370..5e31957f2420 100644
---- a/ip/ip.c
-+++ b/ip/ip.c
-@@ -121,56 +121,30 @@ static int do_cmd(const char *argv0, int argc, char **argv)
- 	return EXIT_FAILURE;
+diff --git a/ip/ipmacsec.c b/ip/ipmacsec.c
+index 18289ecd6d9e..bf48e8b5d0b2 100644
+--- a/ip/ipmacsec.c
++++ b/ip/ipmacsec.c
+@@ -23,8 +23,6 @@
+ #include "ll_map.h"
+ #include "libgenl.h"
+ 
+-static const char * const values_on_off[] = { "off", "on" };
+-
+ static const char * const validate_str[] = {
+ 	[MACSEC_VALIDATE_DISABLED] = "disabled",
+ 	[MACSEC_VALIDATE_CHECK] = "check",
+@@ -108,25 +106,6 @@ static void ipmacsec_usage(void)
+ 	exit(-1);
  }
  
--static int batch(const char *name)
-+static int ip_batch_cmd(int argc, char *argv[], void *data)
- {
--	char *line = NULL;
--	size_t len = 0;
--	int ret = EXIT_SUCCESS;
--	int orig_family = preferred_family;
-+	const int *orig_family = data;
- 
--	batch_mode = 1;
-+	preferred_family = *orig_family;
-+	return do_cmd(argv[0], argc, argv);
-+}
- 
--	if (name && strcmp(name, "-") != 0) {
--		if (freopen(name, "r", stdin) == NULL) {
--			fprintf(stderr,
--				"Cannot open file \"%s\" for reading: %s\n",
--				name, strerror(errno));
--			return EXIT_FAILURE;
+-static int one_of(const char *msg, const char *realval, const char * const *list,
+-		  size_t len, int *index)
+-{
+-	int i;
+-
+-	for (i = 0; i < len; i++) {
+-		if (matches(realval, list[i]) == 0) {
+-			*index = i;
+-			return 0;
 -		}
 -	}
-+static int batch(const char *name)
-+{
-+	int orig_family = preferred_family;
-+	int ret;
- 
- 	if (rtnl_open(&rth, 0) < 0) {
- 		fprintf(stderr, "Cannot open rtnetlink\n");
- 		return EXIT_FAILURE;
- 	}
- 
--	cmdlineno = 0;
--	while (getcmdline(&line, &len, stdin) != -1) {
--		char *largv[100];
--		int largc;
 -
--		preferred_family = orig_family;
+-	fprintf(stderr, "Error: argument of \"%s\" must be one of ", msg);
+-	for (i = 0; i < len; i++)
+-		fprintf(stderr, "\"%s\", ", list[i]);
+-	fprintf(stderr, "not \"%s\"\n", realval);
+-	return -1;
+-}
 -
--		largc = makeargs(line, largv, 100);
--		if (largc == 0)
--			continue;	/* blank line */
--
--		if (do_cmd(largv[0], largc, largv)) {
--			fprintf(stderr, "Command failed %s:%d\n",
--				name, cmdlineno);
--			ret = EXIT_FAILURE;
--			if (!force)
--				break;
--		}
--	}
--	if (line)
--		free(line);
-+	ret = do_batch(name, force, ip_batch_cmd, &orig_family);
- 
- 	rtnl_close(&rth);
- 	return ret;
- }
- 
--
- int main(int argc, char **argv)
+ static int get_an(__u8 *val, const char *arg)
  {
- 	char *basename;
+ 	int ret = get_u8(val, arg, 0);
+@@ -559,8 +538,7 @@ static int do_offload(enum cmd c, int argc, char **argv)
+ 	if (argc == 0)
+ 		ipmacsec_usage();
+ 
+-	ret = one_of("offload", *argv, offload_str, ARRAY_SIZE(offload_str),
+-		     (int *)&offload);
++	offload = parse_one_of("offload", *argv, offload_str, ARRAY_SIZE(offload_str), &ret);
+ 	if (ret)
+ 		ipmacsec_usage();
+ 
+@@ -1334,8 +1312,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			NEXT_ARG();
+ 			int i;
+ 
+-			ret = one_of("encrypt", *argv, values_on_off,
+-				     ARRAY_SIZE(values_on_off), &i);
++			i = parse_on_off("encrypt", *argv, &ret);
+ 			if (ret != 0)
+ 				return ret;
+ 			addattr8(n, MACSEC_BUFLEN, IFLA_MACSEC_ENCRYPT, i);
+@@ -1343,8 +1320,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			NEXT_ARG();
+ 			int i;
+ 
+-			ret = one_of("send_sci", *argv, values_on_off,
+-				     ARRAY_SIZE(values_on_off), &i);
++			i = parse_on_off("send_sci", *argv, &ret);
+ 			if (ret != 0)
+ 				return ret;
+ 			send_sci = i;
+@@ -1354,8 +1330,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			NEXT_ARG();
+ 			int i;
+ 
+-			ret = one_of("end_station", *argv, values_on_off,
+-				     ARRAY_SIZE(values_on_off), &i);
++			i = parse_on_off("end_station", *argv, &ret);
+ 			if (ret != 0)
+ 				return ret;
+ 			es = i;
+@@ -1364,8 +1339,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			NEXT_ARG();
+ 			int i;
+ 
+-			ret = one_of("scb", *argv, values_on_off,
+-				     ARRAY_SIZE(values_on_off), &i);
++			i = parse_on_off("scb", *argv, &ret);
+ 			if (ret != 0)
+ 				return ret;
+ 			scb = i;
+@@ -1374,8 +1348,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			NEXT_ARG();
+ 			int i;
+ 
+-			ret = one_of("protect", *argv, values_on_off,
+-				     ARRAY_SIZE(values_on_off), &i);
++			i = parse_on_off("protect", *argv, &ret);
+ 			if (ret != 0)
+ 				return ret;
+ 			addattr8(n, MACSEC_BUFLEN, IFLA_MACSEC_PROTECT, i);
+@@ -1383,8 +1356,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			NEXT_ARG();
+ 			int i;
+ 
+-			ret = one_of("replay", *argv, values_on_off,
+-				     ARRAY_SIZE(values_on_off), &i);
++			i = parse_on_off("replay", *argv, &ret);
+ 			if (ret != 0)
+ 				return ret;
+ 			replay_protect = !!i;
+@@ -1395,9 +1367,8 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				invarg("expected replay window size", *argv);
+ 		} else if (strcmp(*argv, "validate") == 0) {
+ 			NEXT_ARG();
+-			ret = one_of("validate", *argv,
+-				     validate_str, ARRAY_SIZE(validate_str),
+-				     (int *)&validate);
++			validate = parse_one_of("validate", *argv, validate_str,
++						ARRAY_SIZE(validate_str), &ret);
+ 			if (ret != 0)
+ 				return ret;
+ 			addattr8(n, MACSEC_BUFLEN,
+@@ -1411,9 +1382,8 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				invarg("expected an { 0..3 }", *argv);
+ 		} else if (strcmp(*argv, "offload") == 0) {
+ 			NEXT_ARG();
+-			ret = one_of("offload", *argv,
+-				     offload_str, ARRAY_SIZE(offload_str),
+-				     (int *)&offload);
++			offload = parse_one_of("offload", *argv, offload_str,
++					       ARRAY_SIZE(offload_str), &ret);
+ 			if (ret != 0)
+ 				return ret;
+ 			addattr8(n, MACSEC_BUFLEN,
 diff --git a/lib/utils.c b/lib/utils.c
-index c98021d6ecad..9815e328c9e0 100644
+index 9815e328c9e0..930877ae0f0d 100644
 --- a/lib/utils.c
 +++ b/lib/utils.c
-@@ -1695,3 +1695,43 @@ char *sprint_time64(__s64 time, char *buf)
- 	print_time64(buf, SPRINT_BSIZE-1, time);
- 	return buf;
- }
-+
-+int do_batch(const char *name, bool force,
-+	     int (*cmd)(int argc, char *argv[], void *data), void *data)
-+{
-+	char *line = NULL;
-+	size_t len = 0;
-+	int ret = EXIT_SUCCESS;
-+
-+	if (name && strcmp(name, "-") != 0) {
-+		if (freopen(name, "r", stdin) == NULL) {
-+			fprintf(stderr,
-+				"Cannot open file \"%s\" for reading: %s\n",
-+				name, strerror(errno));
-+			return EXIT_FAILURE;
-+		}
-+	}
-+
-+	cmdlineno = 0;
-+	while (getcmdline(&line, &len, stdin) != -1) {
-+		char *largv[100];
-+		int largc;
-+
-+		largc = makeargs(line, largv, 100);
-+		if (!largc)
-+			continue;	/* blank line */
-+
-+		if (cmd(largc, largv, data)) {
-+			fprintf(stderr, "Command failed %s:%d\n",
-+				name, cmdlineno);
-+			ret = EXIT_FAILURE;
-+			if (!force)
-+				break;
-+		}
-+	}
-+
-+	if (line)
-+		free(line);
-+
-+	return ret;
-+}
-diff --git a/rdma/rdma.c b/rdma/rdma.c
-index 9ea2d17ffe9e..8dc2d3e344be 100644
---- a/rdma/rdma.c
-+++ b/rdma/rdma.c
-@@ -41,40 +41,16 @@ static int rd_cmd(struct rd *rd, int argc, char **argv)
- 	return rd_exec_cmd(rd, cmds, "object");
- }
+@@ -1735,3 +1735,31 @@ int do_batch(const char *name, bool force,
  
--static int rd_batch(struct rd *rd, const char *name, bool force)
-+static int rd_batch_cmd(int argc, char *argv[], void *data)
- {
--	char *line = NULL;
--	size_t len = 0;
--	int ret = 0;
--
--	if (name && strcmp(name, "-") != 0) {
--		if (!freopen(name, "r", stdin)) {
--			pr_err("Cannot open file \"%s\" for reading: %s\n",
--			       name, strerror(errno));
--			return errno;
--		}
--	}
-+	struct rd *rd = data;
- 
--	cmdlineno = 0;
--	while (getcmdline(&line, &len, stdin) != -1) {
--		char *largv[512];
--		int largc;
--
--		largc = makeargs(line, largv, ARRAY_SIZE(largv));
--		if (!largc)
--			continue;	/* blank line */
--
--		ret = rd_cmd(rd, largc, largv);
--		if (ret) {
--			pr_err("Command failed %s:%d\n", name, cmdlineno);
--			if (!force)
--				break;
--		}
--	}
--
--	free(line);
-+	return rd_cmd(rd, argc, argv);
-+}
- 
--	return ret;
-+static int rd_batch(struct rd *rd, const char *name, bool force)
-+{
-+	return do_batch(name, force, rd_batch_cmd, rd);
- }
- 
- static int rd_init(struct rd *rd, char *filename)
-diff --git a/tc/tc.c b/tc/tc.c
-index 5d57054b45fb..01fe58d06202 100644
---- a/tc/tc.c
-+++ b/tc/tc.c
-@@ -231,22 +231,16 @@ static int do_cmd(int argc, char **argv)
- 	return -1;
- }
- 
-+static int tc_batch_cmd(int argc, char *argv[], void *data)
-+{
-+	return do_cmd(argc, argv);
-+}
-+
- static int batch(const char *name)
- {
--	char *line = NULL;
--	size_t len = 0;
--	int ret = 0;
-+	int ret;
- 
- 	batch_mode = 1;
--	if (name && strcmp(name, "-") != 0) {
--		if (freopen(name, "r", stdin) == NULL) {
--			fprintf(stderr,
--				"Cannot open file \"%s\" for reading: %s\n",
--				name, strerror(errno));
--			return -1;
--		}
--	}
--
- 	tc_core_init();
- 
- 	if (rtnl_open(&rth, 0) < 0) {
-@@ -254,26 +248,8 @@ static int batch(const char *name)
- 		return -1;
- 	}
- 
--	cmdlineno = 0;
--	while (getcmdline(&line, &len, stdin) != -1) {
--		char *largv[100];
--		int largc;
--
--		largc = makeargs(line, largv, 100);
--		if (largc == 0)
--			continue;	/* blank line */
--
--		if (do_cmd(largc, largv)) {
--			fprintf(stderr, "Command failed %s:%d\n",
--				name, cmdlineno);
--			ret = 1;
--			if (!force)
--				break;
--		}
--		fflush(stdout);
--	}
-+	ret = do_batch(name, force, tc_batch_cmd, NULL);
- 
--	free(line);
- 	rtnl_close(&rth);
  	return ret;
  }
++
++int parse_one_of(const char *msg, const char *realval, const char * const *list,
++		 size_t len, int *p_err)
++{
++	int i;
++
++	for (i = 0; i < len; i++) {
++		if (list[i] && matches(realval, list[i]) == 0) {
++			*p_err = 0;
++			return i;
++		}
++	}
++
++	fprintf(stderr, "Error: argument of \"%s\" must be one of ", msg);
++	for (i = 0; i < len; i++)
++		if (list[i])
++			fprintf(stderr, "\"%s\", ", list[i]);
++	fprintf(stderr, "not \"%s\"\n", realval);
++	*p_err = -EINVAL;
++	return 0;
++}
++
++int parse_on_off(const char *msg, const char *realval, int *p_err)
++{
++	static const char * const values_on_off[] = { "off", "on" };
++
++	return parse_one_of(msg, realval, values_on_off, ARRAY_SIZE(values_on_off), p_err);
++}
 -- 
 2.25.1
 
