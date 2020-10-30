@@ -2,223 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35D302A020D
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 11:02:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87C292A024F
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 11:09:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726319AbgJ3KCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 06:02:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20954 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726112AbgJ3KCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 06:02:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604052152;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Vu4Swj5ZddyZ5LlCNkDJhXHFRPfGcHPYwnlBLFF6NdI=;
-        b=DifxDmPZHJut5xU6zinPBd6uto8qENjep7gqFPS0+S0ZN5suKivR6s6osTbDEcDM8iNdUo
-        g0HpzIgaO9Cm6RbSReROdOrIJz6QC1++yZyKzwkFjrvYTcqus7vTeSCyUeNw5EqgEhSc2N
-        7rciaWhEu7XghRjDOLO1iXEdQIeBbBg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-475-HAqy5cglN9SlsxddpB3cEQ-1; Fri, 30 Oct 2020 06:02:29 -0400
-X-MC-Unique: HAqy5cglN9SlsxddpB3cEQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 42B53803620;
-        Fri, 30 Oct 2020 10:02:28 +0000 (UTC)
-Received: from [10.72.12.248] (ovpn-12-248.pek2.redhat.com [10.72.12.248])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E34325B4A1;
-        Fri, 30 Oct 2020 10:02:19 +0000 (UTC)
-Subject: Re: [PATCH] vhost/vsock: add IOTLB API support
-To:     Stefano Garzarella <sgarzare@redhat.com>, mst@redhat.com
-Cc:     netdev@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-References: <20201029174351.134173-1-sgarzare@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <751cc074-ae68-72c8-71de-a42458058761@redhat.com>
-Date:   Fri, 30 Oct 2020 18:02:18 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726583AbgJ3KJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 06:09:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50538 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726055AbgJ3KJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 06:09:28 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B543C0613D5
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 03:09:27 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id h12so3651273qtc.9
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 03:09:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HKjKG8xLf4hl4KGL08wOz97Uf/Uq5FWc5fG42s+qDsY=;
+        b=TM5Bw6PAIXOz+nTtr9excRpuvtiVbOKmoM/ZeNWT5OhVP0dd5hqlhFOupj+2xCEgRN
+         JeTxtgoWs+jeudgZ9IA8jtZiSnAw9Ipf8F4oNo4DhZotD2GG46YCALurZc48vpamdnDH
+         bDAYZYY0UDMQ4U+tcY/twD+X67yMUxY6dRKbYjO+3b0g5XaelEVxkUzLkp1zB392AI2K
+         2m1MttwmSo88t9aQ6aoIM2VaCRsaWaHkFa8ns2v0yZP3BySGZxcpF1apImCJxqUoZIbo
+         UqwzELNBZTiNLFtr5GfmkHii7LfNU4pXAIlwrARUL93aTJZAiyuWQgCHMSlSVdrG3j69
+         IX8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HKjKG8xLf4hl4KGL08wOz97Uf/Uq5FWc5fG42s+qDsY=;
+        b=RL2H3lDibO2CrlQpoGK/+DZfe36qhonZwse/o2BCVO4Kg8nXZDlEy0lYM4oUAV+fED
+         cmch8LiZQJkDsWzla9DgGhWodfWVT/fVxw7FqAX68Ppwm6kbpJgenvNZ7P/+GJJ7vGIv
+         +Y3a9sgPzkncxfpELnPGWhS9RkNUNUjZQkBvBGUd+Fo+I4pSWAlZhOPiMMbLlTP5G+Kz
+         2Kx3j1nFkGEiDYpL1Rh8bDXmKmH0Nrdf9Ep7qjtXbsOC0BZOddZ6L2QHn4I79KzR3HrX
+         +nHJeAhC244msHGIa04cK42TrfgFBDIDE78Zj6TvCuxv2nKSgyieqz3cSzYwzpHZCpXH
+         YKGQ==
+X-Gm-Message-State: AOAM5327fH58KIFXBwqkIwFCy7KC5+0Mcj3Ro55uLYU7Iw5C53lErExK
+        p5oQ2y2pSqCAyrBwX/8DizjFVxBrUQwegtfYwdDR9A==
+X-Google-Smtp-Source: ABdhPJyT07TAhVCTLBh3geO1R4D7Y/mZhb7Bp9lH2jDEIbAYWD4tuFn+d8WZdEQUt+YDaRTSu12xKZ/EE1zqHUQncd8=
+X-Received: by 2002:ac8:44ae:: with SMTP id a14mr1318678qto.67.1604052566546;
+ Fri, 30 Oct 2020 03:09:26 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201029174351.134173-1-sgarzare@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <000000000000c82fe505aef233c6@google.com> <CAEf4BzbuUDEktVCYZAonUTM6iYBcAOPjKho2gMRD+9Q=N5cYxQ@mail.gmail.com>
+In-Reply-To: <CAEf4BzbuUDEktVCYZAonUTM6iYBcAOPjKho2gMRD+9Q=N5cYxQ@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Fri, 30 Oct 2020 11:09:15 +0100
+Message-ID: <CACT4Y+aCTgfd1DXQENpxpsC=9WmJcg7CvY+NcXZOCAF6t4Cp3Q@mail.gmail.com>
+Subject: Re: WARNING in bpf_raw_tp_link_fill_link_info
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     syzbot <syzbot+976d5ecfab0c7eb43ac3@syzkaller.appspotmail.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Martin Lau <kafai@fb.com>, KP Singh <kpsingh@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/10/30 上午1:43, Stefano Garzarella wrote:
-> This patch enables the IOTLB API support for vhost-vsock devices,
-> allowing the userspace to emulate an IOMMU for the guest.
+On Fri, Sep 11, 2020 at 12:01 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> These changes were made following vhost-net, in details this patch:
-> - exposes VIRTIO_F_ACCESS_PLATFORM feature and inits the iotlb
->    device if the feature is acked
-> - implements VHOST_GET_BACKEND_FEATURES and
->    VHOST_SET_BACKEND_FEATURES ioctls
-> - calls vq_meta_prefetch() before vq processing to prefetch vq
->    metadata address in IOTLB
-> - provides .read_iter, .write_iter, and .poll callbacks for the
->    chardev; they are used by the userspace to exchange IOTLB messages
+> On Thu, Sep 10, 2020 at 2:31 AM syzbot
+> <syzbot+976d5ecfab0c7eb43ac3@syzkaller.appspotmail.com> wrote:
+> >
+> > Hello,
+> >
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    7fb5eefd selftests/bpf: Fix test_sysctl_loop{1, 2} failure..
+> > git tree:       bpf-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=1424fdb3900000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=b6856d16f78d8fa9
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=976d5ecfab0c7eb43ac3
+> > compiler:       gcc (GCC) 10.1.0-syz 20200507
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14a1f411900000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10929c11900000
+> >
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+976d5ecfab0c7eb43ac3@syzkaller.appspotmail.com
+> >
+> > ------------[ cut here ]------------
+> > WARNING: CPU: 0 PID: 6854 at include/linux/thread_info.h:150 check_copy_size include/linux/thread_info.h:150 [inline]
+> > WARNING: CPU: 0 PID: 6854 at include/linux/thread_info.h:150 copy_to_user include/linux/uaccess.h:167 [inline]
+> > WARNING: CPU: 0 PID: 6854 at include/linux/thread_info.h:150 bpf_raw_tp_link_fill_link_info+0x306/0x350 kernel/bpf/syscall.c:2661
+> > Kernel panic - not syncing: panic_on_warn set ...
+> > CPU: 0 PID: 6854 Comm: syz-executor574 Not tainted 5.9.0-rc1-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > Call Trace:
+> >  __dump_stack lib/dump_stack.c:77 [inline]
+> >  dump_stack+0x18f/0x20d lib/dump_stack.c:118
+> >  panic+0x2e3/0x75c kernel/panic.c:231
+> >  __warn.cold+0x20/0x4a kernel/panic.c:600
+> >  report_bug+0x1bd/0x210 lib/bug.c:198
+> >  handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
+> >  exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
+> >  asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
+> > RIP: 0010:check_copy_size include/linux/thread_info.h:150 [inline]
+> > RIP: 0010:copy_to_user include/linux/uaccess.h:167 [inline]
+> > RIP: 0010:bpf_raw_tp_link_fill_link_info+0x306/0x350 kernel/bpf/syscall.c:2661
+> > Code: 41 bc ea ff ff ff e9 35 ff ff ff 4c 89 ff e8 41 66 33 00 e9 d0 fd ff ff 4c 89 ff e8 a4 66 33 00 e9 06 ff ff ff e8 ca ed f2 ff <0f> 0b eb 94 48 89 ef e8 2e 66 33 00 e9 65 fd ff ff e8 24 66 33 00
+> > RSP: 0018:ffffc900051c7bd0 EFLAGS: 00010293
+> > RAX: 0000000000000000 RBX: ffffc900051c7c60 RCX: ffffffff818179d6
+> > RDX: ffff88808b490000 RSI: ffffffff81817a96 RDI: 0000000000000006
+> > RBP: 0000000000000019 R08: 0000000000000000 R09: ffffc900051c7c7f
+> > R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000019
+> > R13: 0000000000001265 R14: ffffffff8986ecc0 R15: ffffc900051c7c78
+> >  bpf_link_get_info_by_fd kernel/bpf/syscall.c:3626 [inline]
+> >  bpf_obj_get_info_by_fd+0x43a/0xc40 kernel/bpf/syscall.c:3664
+> >  __do_sys_bpf+0x1906/0x4b30 kernel/bpf/syscall.c:4237
+> >  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > RIP: 0033:0x4405f9
+> > Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+> > RSP: 002b:00007fff47155808 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+> > RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004405f9
+> > RDX: 0000000000000010 RSI: 00000000200000c0 RDI: 000000000000000f
+> > RBP: 00000000006ca018 R08: 00000000004002c8 R09: 00000000004002c8
+> > R10: 00000000004002c8 R11: 0000000000000246 R12: 0000000000401e00
+> > R13: 0000000000401e90 R14: 0000000000000000 R15: 0000000000000000
+> > Kernel Offset: disabled
+> > Rebooting in 86400 seconds..
+> >
 >
-> This patch was tested with QEMU and a patch applied [1] to fix a
-> simple issue:
->      $ qemu -M q35,accel=kvm,kernel-irqchip=split \
->             -drive file=fedora.qcow2,format=qcow2,if=virtio \
->             -device intel-iommu,intremap=on \
->             -device vhost-vsock-pci,guest-cid=3,iommu_platform=on
+> #syz fix: b474959d5afd ("bpf: Fix a buffer out-of-bound access when
+> filling raw_tp link_info")
 
+Complete patch title:
 
-Patch looks good, but a question:
-
-It looks to me you don't enable ATS which means vhost won't get any 
-invalidation request or did I miss anything?
-
-Thanks
-
-
->
-> [1] https://lists.gnu.org/archive/html/qemu-devel/2020-10/msg09077.html
->
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
->   drivers/vhost/vsock.c | 68 +++++++++++++++++++++++++++++++++++++++++--
->   1 file changed, 65 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> index a483cec31d5c..5e78fb719602 100644
-> --- a/drivers/vhost/vsock.c
-> +++ b/drivers/vhost/vsock.c
-> @@ -30,7 +30,12 @@
->   #define VHOST_VSOCK_PKT_WEIGHT 256
->   
->   enum {
-> -	VHOST_VSOCK_FEATURES = VHOST_FEATURES,
-> +	VHOST_VSOCK_FEATURES = VHOST_FEATURES |
-> +			       (1ULL << VIRTIO_F_ACCESS_PLATFORM)
-> +};
-> +
-> +enum {
-> +	VHOST_VSOCK_BACKEND_FEATURES = (1ULL << VHOST_BACKEND_F_IOTLB_MSG_V2)
->   };
->   
->   /* Used to track all the vhost_vsock instances on the system. */
-> @@ -94,6 +99,9 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
->   	if (!vhost_vq_get_backend(vq))
->   		goto out;
->   
-> +	if (!vq_meta_prefetch(vq))
-> +		goto out;
-> +
->   	/* Avoid further vmexits, we're already processing the virtqueue */
->   	vhost_disable_notify(&vsock->dev, vq);
->   
-> @@ -449,6 +457,9 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
->   	if (!vhost_vq_get_backend(vq))
->   		goto out;
->   
-> +	if (!vq_meta_prefetch(vq))
-> +		goto out;
-> +
->   	vhost_disable_notify(&vsock->dev, vq);
->   	do {
->   		u32 len;
-> @@ -766,8 +777,12 @@ static int vhost_vsock_set_features(struct vhost_vsock *vsock, u64 features)
->   	mutex_lock(&vsock->dev.mutex);
->   	if ((features & (1 << VHOST_F_LOG_ALL)) &&
->   	    !vhost_log_access_ok(&vsock->dev)) {
-> -		mutex_unlock(&vsock->dev.mutex);
-> -		return -EFAULT;
-> +		goto err;
-> +	}
-> +
-> +	if ((features & (1ULL << VIRTIO_F_ACCESS_PLATFORM))) {
-> +		if (vhost_init_device_iotlb(&vsock->dev, true))
-> +			goto err;
->   	}
->   
->   	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
-> @@ -778,6 +793,10 @@ static int vhost_vsock_set_features(struct vhost_vsock *vsock, u64 features)
->   	}
->   	mutex_unlock(&vsock->dev.mutex);
->   	return 0;
-> +
-> +err:
-> +	mutex_unlock(&vsock->dev.mutex);
-> +	return -EFAULT;
->   }
->   
->   static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
-> @@ -811,6 +830,18 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
->   		if (copy_from_user(&features, argp, sizeof(features)))
->   			return -EFAULT;
->   		return vhost_vsock_set_features(vsock, features);
-> +	case VHOST_GET_BACKEND_FEATURES:
-> +		features = VHOST_VSOCK_BACKEND_FEATURES;
-> +		if (copy_to_user(argp, &features, sizeof(features)))
-> +			return -EFAULT;
-> +		return 0;
-> +	case VHOST_SET_BACKEND_FEATURES:
-> +		if (copy_from_user(&features, argp, sizeof(features)))
-> +			return -EFAULT;
-> +		if (features & ~VHOST_VSOCK_BACKEND_FEATURES)
-> +			return -EOPNOTSUPP;
-> +		vhost_set_backend_features(&vsock->dev, features);
-> +		return 0;
->   	default:
->   		mutex_lock(&vsock->dev.mutex);
->   		r = vhost_dev_ioctl(&vsock->dev, ioctl, argp);
-> @@ -823,6 +854,34 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
->   	}
->   }
->   
-> +static ssize_t vhost_vsock_chr_read_iter(struct kiocb *iocb, struct iov_iter *to)
-> +{
-> +	struct file *file = iocb->ki_filp;
-> +	struct vhost_vsock *vsock = file->private_data;
-> +	struct vhost_dev *dev = &vsock->dev;
-> +	int noblock = file->f_flags & O_NONBLOCK;
-> +
-> +	return vhost_chr_read_iter(dev, to, noblock);
-> +}
-> +
-> +static ssize_t vhost_vsock_chr_write_iter(struct kiocb *iocb,
-> +					struct iov_iter *from)
-> +{
-> +	struct file *file = iocb->ki_filp;
-> +	struct vhost_vsock *vsock = file->private_data;
-> +	struct vhost_dev *dev = &vsock->dev;
-> +
-> +	return vhost_chr_write_iter(dev, from);
-> +}
-> +
-> +static __poll_t vhost_vsock_chr_poll(struct file *file, poll_table *wait)
-> +{
-> +	struct vhost_vsock *vsock = file->private_data;
-> +	struct vhost_dev *dev = &vsock->dev;
-> +
-> +	return vhost_chr_poll(file, dev, wait);
-> +}
-> +
->   static const struct file_operations vhost_vsock_fops = {
->   	.owner          = THIS_MODULE,
->   	.open           = vhost_vsock_dev_open,
-> @@ -830,6 +889,9 @@ static const struct file_operations vhost_vsock_fops = {
->   	.llseek		= noop_llseek,
->   	.unlocked_ioctl = vhost_vsock_dev_ioctl,
->   	.compat_ioctl   = compat_ptr_ioctl,
-> +	.read_iter      = vhost_vsock_chr_read_iter,
-> +	.write_iter     = vhost_vsock_chr_write_iter,
-> +	.poll           = vhost_vsock_chr_poll,
->   };
->   
->   static struct miscdevice vhost_vsock_misc = {
-
+#syz fix:
+bpf: Fix a buffer out-of-bound access when filling raw_tp link_info
