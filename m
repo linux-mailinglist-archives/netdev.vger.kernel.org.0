@@ -2,115 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B9AD29FB59
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 03:33:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DC1E29FB88
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 03:44:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725929AbgJ3Cd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 22:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36628 "EHLO
+        id S1725909AbgJ3CoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 22:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbgJ3Cd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 22:33:27 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF52C0613CF;
-        Thu, 29 Oct 2020 19:33:27 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id n142so3900336ybf.7;
-        Thu, 29 Oct 2020 19:33:27 -0700 (PDT)
+        with ESMTP id S1725781AbgJ3CoD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 22:44:03 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42C0C0613CF
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 19:44:03 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id k21so6011034ioa.9
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 19:44:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=iqyWJvIbQ2m2Q07/bq5tarOXlrpOxgQxrm0lLsIywI4=;
-        b=WgykwtdHaKmz2H54pqo/02jf77lvV2bEpU9uy4lUwMbpNZilswcC41Rm9GLoFkssrv
-         vzpQMm66i3BipHrDEMUOHmLbdo0eYvOjHD/xCrXyrUdclpPWVbJtDpo3X0TJRJM13zGL
-         Qi/7x2RncQg1Cw3OWd1bJnBe6U+yoxBn7PBaJzdC69fdneCLjWwlcAhlu0jFRfZp7HOJ
-         DpdQFxd/z109P+MgNcasoyrTYUwPj+1fLgsmXML5OVD3KO8DBu9FqDxunyBZ57LnZpOb
-         uDw7u30wGZrwNkesUr7CkeJVEkCJe/BiGkV+sM78CX3Gk5AftAnC2q55AH30sftVPlt6
-         eqDA==
+        bh=FL/Cy8ut4OmkPPb5f8+ZgGjMSZ1pKrG6xY+Ok4+PFPo=;
+        b=d3g3u5smUiy7WXP7RRcYhNon4D08AxxROQFfOv6fo0obC6XFr+v00SZVVAP/lEOMU/
+         AXPSlufn+CdL6wdwuVeLu3uwAQsQKLqBR+f+peXlA1Lhjvs04Rh84tFany/y7ERNxR53
+         uGS0SaCylf/snjj6N+ci0J9sHWvfErWGCXSAwnlk2tCnIp93Fm9+UOjOtJ5zFd3mcB69
+         1xmBPBHIH8xs9j+D8bRoMNJ9SOImuRW+pom2pfV4PkxAIU55uP6oJQIkuGnhffgEXz3p
+         9jWKz+dbxvF2BvOffjxWMKI7tzAMt0ZoNVOfYnBRB8yP/qlV9+btPRP+xy0EUsNJ2i1D
+         /11w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=iqyWJvIbQ2m2Q07/bq5tarOXlrpOxgQxrm0lLsIywI4=;
-        b=QswjeOJGnd/FimXcK3jgW/pgf0bcPv3Lc+cknYT6j/l7F7oLqD/uT1QBZA6IA9BJR3
-         HQxCmKuRrudnUVS30K02W0jg9MXRiRE36iOGldRjQvIjkuIw3KNgtomlR16HF++Cpn/R
-         jIiFdsNYeK7SQeNMnGEEyI6ZunKggo422j0Qn7RkmqdOy6i/GCMhO6cqsVilb75IA3aJ
-         2o8ptqAua9vUADpY9Yz4JItU2O1ImKXzm8Cins5y3YqNj75MKshgVJt5mYFh0rLv6XjA
-         y1AGMzv9mbusNr9NioV9Z06YUPv1iMquykGir3tEcp9jJizIuiiKdgRX6TEGG5dZymwd
-         dSyA==
-X-Gm-Message-State: AOAM530nw75LUv1T9zEf9zHqUZcZ2vTdCoZCcABePYVLH+mIDIYLSSPo
-        fX+FrbJxybCIehPjwVTtB1WgGi5oMKSlU/nJ6j8=
-X-Google-Smtp-Source: ABdhPJwxTZvtp9c3al0IBnwajkcu6AqoaKf0VGqZCGClaUCr5qEt4NLwwMqKyMZViLmoQpUduFfMLAkwXhs2OOiUcJg=
-X-Received: by 2002:a25:cb10:: with SMTP id b16mr550277ybg.459.1604025206750;
- Thu, 29 Oct 2020 19:33:26 -0700 (PDT)
+        bh=FL/Cy8ut4OmkPPb5f8+ZgGjMSZ1pKrG6xY+Ok4+PFPo=;
+        b=GQwuLoI7/1cO0X2JU+u/87/iZGQEBT1HWBmtprlYRaSkuEjdxlhPOdFLKxUa949UQG
+         ocy5qnb4iuxvx6Wt8nDHdAiH8vy7vsZKpvEgDBvwtL6badDCHQEQRYTJktMK7ywWnKMA
+         BkM3MiY9ObcO4Q70/9Wp78v3l3uD7IlhkgikNmhLNwyeA8TInl/hT1XOJW1UlOI0qzpg
+         MQC4PdFCnp8SBKvIohhcGJh4fwvGCIyWlJ8qGcbKbfVbPXYT3rOwuIBiPnGrdb6kMUYp
+         XPyKRiu69ESqEhKI+UqmGY4g7v8QNV3BKMJiVVcbDNty+64+NG/mDQ+NBKfODtSNG7ok
+         t5bw==
+X-Gm-Message-State: AOAM533bKafGlvMBcqpUiVT05FkVhxI7szX8ofjVVD6Jp5ohWI4iBJIr
+        hN8kraI44ZHRWiEgnNX2ktpWYdC1wJr264JhTDg=
+X-Google-Smtp-Source: ABdhPJxKAl9ZW4kiCHP2RRyBtjJEm8e0+BNopyOxk5QLCQ+Dk0ei5MgcasRjeHvQhrW6LxM12SK7l9Rtl+3xGBmaA5s=
+X-Received: by 2002:a05:6638:97:: with SMTP id v23mr315405jao.7.1604025842967;
+ Thu, 29 Oct 2020 19:44:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201029005902.1706310-1-andrii@kernel.org> <4427E5BD-5EBF-47E8-B7F6-9255BEAE2D53@fb.com>
-In-Reply-To: <4427E5BD-5EBF-47E8-B7F6-9255BEAE2D53@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 29 Oct 2020 19:33:15 -0700
-Message-ID: <CAEf4BzbtiByaU_-pEV8gVZH1N9_xCTWJBxb6DYPXF5p9b9+_kg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 00/11] libbpf: split BTF support
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
+References: <20201029063915.4287-1-dqfext@gmail.com> <20201029130147.GL933237@lunn.ch>
+In-Reply-To: <20201029130147.GL933237@lunn.ch>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Fri, 30 Oct 2020 10:43:51 +0800
+Message-ID: <CALW65jaPV7sH8v3-K4X8gnzKTymxF=5dnatuKEuesDf64YKa=A@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next] net: ethernet: mediatek: support setting MTU
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Landen Chao <landen.chao@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Frank Wunderlich <frank-w@public-files.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 5:33 PM Song Liu <songliubraving@fb.com> wrote:
+On Thu, Oct 29, 2020 at 9:02 PM Andrew Lunn <andrew@lunn.ch> wrote:
 >
->
->
-> > On Oct 28, 2020, at 5:58 PM, Andrii Nakryiko <andrii@kernel.org> wrote:
+> On Thu, Oct 29, 2020 at 02:39:15PM +0800, DENG Qingfang wrote:
+> > MT762x HW supports frame length up to 2048 (maximum length on GDM),
+> > so allow setting MTU up to 2030.
 > >
-> > This patch set adds support for generating and deduplicating split BTF. This
-> > is an enhancement to the BTF, which allows to designate one BTF as the "base
-> > BTF" (e.g., vmlinux BTF), and one or more other BTFs as "split BTF" (e.g.,
-> > kernel module BTF), which are building upon and extending base BTF with extra
-> > types and strings.
+> > Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> > ---
 > >
-> > Once loaded, split BTF appears as a single unified BTF superset of base BTF,
-> > with continuous and transparent numbering scheme. This allows all the existing
-> > users of BTF to work correctly and stay agnostic to the base/split BTFs
-> > composition.  The only difference is in how to instantiate split BTF: it
-> > requires base BTF to be alread instantiated and passed to btf__new_xxx_split()
-> > or btf__parse_xxx_split() "constructors" explicitly.
+> > I only tested this on MT7621, no sure if it is applicable for other SoCs
+> > especially MT7628, which has an old IP.
 > >
-> > This split approach is necessary if we are to have a reasonably-sized kernel
-> > module BTFs. By deduping each kernel module's BTF individually, resulting
-> > module BTFs contain copies of a lot of kernel types that are already present
-> > in vmlinux BTF. Even those single copies result in a big BTF size bloat. On my
-> > kernel configuration with 700 modules built, non-split BTF approach results in
-> > 115MBs of BTFs across all modules. With split BTF deduplication approach,
-> > total size is down to 5.2MBs total, which is on part with vmlinux BTF (at
-> > around 4MBs). This seems reasonable and practical. As to why we'd need kernel
-> > module BTFs, that should be pretty obvious to anyone using BPF at this point,
-> > as it allows all the BTF-powered features to be used with kernel modules:
-> > tp_btf, fentry/fexit/fmod_ret, lsm, bpf_iter, etc.
+> > ---
+> >  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 31 ++++++++++++++++++++-
+> >  drivers/net/ethernet/mediatek/mtk_eth_soc.h | 11 ++++++--
+> >  2 files changed, 38 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> > index 6d2d60675ffd..a0c56d9be1d5 100644
+> > --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> > +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> > @@ -353,7 +353,7 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
+> >       /* Setup gmac */
+> >       mcr_cur = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
+> >       mcr_new = mcr_cur;
+> > -     mcr_new |= MAC_MCR_MAX_RX_1536 | MAC_MCR_IPG_CFG | MAC_MCR_FORCE_MODE |
+> > +     mcr_new |= MAC_MCR_IPG_CFG | MAC_MCR_FORCE_MODE |
+> >                  MAC_MCR_BACKOFF_EN | MAC_MCR_BACKPR_EN | MAC_MCR_FORCE_LINK;
 >
-> Some high level questions. Do we plan to use split BTF for in-tree modules
-> (those built together with the kernel) or out-of-tree modules (those built
-> separately)? If it is for in-tree modules, is it possible to build split BTF
-> into vmlinux BTF?
+> Since you no longer set MAC_MCR_MAX_RX_1536, what does the hardware
+> default to?
 
-It will be possible to use for both in-tree and out-of-tree. For
-in-tree, this will be integrated into the kernel build process. For
-out-of-tree, whoever builds their kernel module will need to invoke
-pahole -J with an extra flag pointing to the right vmlinux image (I
-haven't looked into the exact details of this integration, maybe there
-are already scripts in Linux repo that out-of-tree modules have to
-use, in such case we can add this integration there).
-
-Merging all in-tree modules' BTFs into vmlinux's BTF defeats the
-purpose of the split BTF and will just increase the size of vmlinux
-BTF unnecessarily.
+2'b00, i.e. 1518 bytes.
 
 >
-> Thanks,
-> Song
+> >       /* Only update control register when needed! */
+> > @@ -2499,6 +2499,34 @@ static void mtk_uninit(struct net_device *dev)
+> >       mtk_rx_irq_disable(eth, ~0);
+> >  }
+> >
+> > +static int mtk_change_mtu(struct net_device *dev, int new_mtu)
+> > +{
+> > +     struct mtk_mac *mac = netdev_priv(dev);
+> > +     u32 mcr_cur, mcr_new;
+> > +     int length;
+> > +
+> > +     mcr_cur = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
+> > +     mcr_new = mcr_cur & ~MAC_MCR_MAX_RX_LEN_MASK;
+> > +     length = new_mtu + MTK_RX_ETH_HLEN;
+> > +
+> > +     if (length <= 1518)
+> > +             mcr_new |= MAC_MCR_MAX_RX_LEN(MAC_MCR_MAX_RX_LEN_1518);
+> > +     else if (length <= 1536)
+> > +             mcr_new |= MAC_MCR_MAX_RX_LEN(MAC_MCR_MAX_RX_LEN_1536);
+> > +     else if (length <= 1552)
+> > +             mcr_new |= MAC_MCR_MAX_RX_LEN(MAC_MCR_MAX_RX_LEN_1552);
+> > +     else
+> > +             mcr_new |= MAC_MCR_MAX_RX_LEN(MAC_MCR_MAX_RX_LEN_2048);
 >
-> [...]
+> You should have another if here, and return -EIVAL is the user asked
+> for an MTU of 2049 of greater.
+
+It is handled in net_device->max_mtu:
+> eth->netdev[id]->max_mtu = MTK_MAX_RX_LENGTH - MTK_RX_ETH_HLEN;
+
+As I tested:
+
+> # ip link set eth0 mtu 2031
+> RTNETLINK answers: Invalid argument
+
+>
+>     Andrew
