@@ -2,252 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB16B29FF71
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 09:14:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A23A29FF90
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 09:22:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725808AbgJ3IOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 04:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725355AbgJ3IOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 04:14:01 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACE6C0613D4
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 01:14:01 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id z24so4573905pgk.3
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 01:14:01 -0700 (PDT)
+        id S1725954AbgJ3IWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 04:22:05 -0400
+Received: from mail-vi1eur05on2041.outbound.protection.outlook.com ([40.107.21.41]:8160
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725790AbgJ3IWF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Oct 2020 04:22:05 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FkuLeTloU22hBMWvVVNGj2B7OjjnOk3fmNzllyRxbQHkLngQWqalSqCs4dnF+l3gPnTBYLbrhn7N7P5PaktiH6xmHOnjd7rFHW6YN5mHFthhtkYltyjBAZV0NleC2cGaKrSUzWSYqs0lStZTdIh0m91OphWZG/UhC2KZG6r3gGQjwO4Vt6+gMyEig5q0PWXdC95eRuSY0gB/XI1VDv5uOB5s5qgwav1qtP/hT/4qTDy060nz8Yp+xrqLRzmfMyfwHWi5tm2G2HoChzJMEpEOnfeMl4OUHMhdaXygi6aELiQNxt1XVybwhoeA8W8F+fDgPqzOoa5Czwxqt5yAUr9nJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+rrqLSHbLqnJcVtlMGjd8hpXQ8/gvuslBhvZauU0V2E=;
+ b=iFZE9SfFYWvZ/z9PkS9+SOMjNyOC4KcNEN6vjI5izYadpWBmvteY2oZfAkyyS1jpCQlmPsVXlGH9Sw70xqgdKo+P9HcEWO7eZ2fBrtWsBJ9TUKivUpbK15S02w+7UXtZJfAZJVkSuLfHDlC1mlKDJoQd8u+pvMn/VLMcQK8m45t0TcemAo56snsDzb/VBiVjVbbNz3sGDkdD7FlsqdI+N/SV5cAeN6g6juPmaEfvf/1YP1xmbclB0TuD1PLCoQsugIGOb4AsySyXJtNSl13rhnKiyBWgpQlEi+H1njSZk2hGOHuDBG5oAh9h7cl83c9W8eIBVCwx/IVeadAVgDx3Sw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=5x9networks.com; dmarc=pass action=none
+ header.from=5x9networks.com; dkim=pass header.d=5x9networks.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FErVvc6A5qH1alUpiUZdXd2Gs1X4yIXnaPUiKV1XzBs=;
-        b=XQaqqZUY+vDaoFE35JDQU2j1Gg88/6OGfk3ha++ZZS0kAmVs45uvH2T4kBLSzvQIGt
-         wDTZ2NNMBZ0c57F67DSMEpsP5m8lIat+mp31y89QwmkP8FNwSRDANNcoQMmFOoqzihxb
-         wRzEZ2Kgg1sB9sxPstCYjn1v0W6hfe4BspsveT+cd7dydWhjMefFl5+zHmnJXD6+seKv
-         JFIE8DPHVhI8DI4aXM0L0P/H/b5tNrqoD80vlY86XVwQ7DzRPwDPLUld0X0mGBFq6NTJ
-         8pBGwGj/SKwK+DjruV/zx0PjaipNCkdkDP6ZLmQrM/oLjjc1+OW+Za2UFFxh9pLamOKS
-         BjnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FErVvc6A5qH1alUpiUZdXd2Gs1X4yIXnaPUiKV1XzBs=;
-        b=t0irQvRwDHrDpLA5wVfR+DG9ziH9Mqc5U0Y/ZrotRwgV9ZoewCg3Mxt1HjWyI7gZRs
-         ttEdgwHLVR1BcklvrHwsppBtoaiXq79gUL+WFMC1lv08ULldimtOQso1cHb7K1+VwS+d
-         qsMSN/4IkVYbzz3Lrskt7iFc9SJotlfOVniadMGohUJYwbbKCCBMjptT8rPq8JsG08bV
-         xknYK5nkTE3SmEsaLJ8UrREqu/QhdBy1zmC2mhRUNXjswIDGbDOylZ1QO22e9eOxAN+1
-         0jbeDvf1z+xjcwiZPpS53o6Mk1t5kKwxQWGIsGqKimGolxVYqdNiv/yEY/dya/Uky+Ru
-         JE5Q==
-X-Gm-Message-State: AOAM533ANgttZmSPgfxDUIKq4VTmJXd7WZe+bTygwuauZYw/5qfjYQjP
-        W2VFaDwB/85VrVADFHwwXTXr
-X-Google-Smtp-Source: ABdhPJxA3H1UxqI4VmnmX2Pt7IQMmfBLVy2EiecG2wlc/LPj38xhT55LydbbIbJbNla+xJTdThPx6g==
-X-Received: by 2002:a17:90b:b12:: with SMTP id bf18mr1077616pjb.205.1604045640696;
-        Fri, 30 Oct 2020 01:14:00 -0700 (PDT)
-Received: from Mani-XPS-13-9360 ([2409:4072:918:28fe:10d5:aaf5:e319:ec72])
-        by smtp.gmail.com with ESMTPSA id gb13sm2250181pjb.55.2020.10.30.01.13.54
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 30 Oct 2020 01:13:59 -0700 (PDT)
-Date:   Fri, 30 Oct 2020 13:43:51 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     kuba@kernel.org, davem@davemloft.net, hemantk@codeaurora.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        bbhatt@codeaurora.org, willemdebruijn.kernel@gmail.com,
-        jhugo@codeaurora.org
-Subject: Re: [PATCH v8 2/2] net: Add mhi-net driver
-Message-ID: <20201030081351.GA3818@Mani-XPS-13-9360>
-References: <1603902898-25233-1-git-send-email-loic.poulain@linaro.org>
- <1603902898-25233-2-git-send-email-loic.poulain@linaro.org>
+ d=smartn.onmicrosoft.com; s=selector2-smartn-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+rrqLSHbLqnJcVtlMGjd8hpXQ8/gvuslBhvZauU0V2E=;
+ b=Uka2Y5zkUEeJqFIesOE2G1zNVt8Yttij6ZdUjq7FyX8deEzgPbKvsCSwvj28CUFcSWJY4TeOWHVhEAcaoVdHH2x6XyMvnpdmYGk82cydxvJ8Zd41E8d6rZVLfotZ05io1Ps5rEbkRCCLPHrWRDzmk07iQnUoYg4BmOycdqECEiA=
+Received: from VI1PR0201MB2448.eurprd02.prod.outlook.com
+ (2603:10a6:800:52::19) by VI1PR02MB4894.eurprd02.prod.outlook.com
+ (2603:10a6:803:98::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.27; Fri, 30 Oct
+ 2020 08:22:01 +0000
+Received: from VI1PR0201MB2448.eurprd02.prod.outlook.com
+ ([fe80::7d0b:44be:cb9a:1a49]) by VI1PR0201MB2448.eurprd02.prod.outlook.com
+ ([fe80::7d0b:44be:cb9a:1a49%8]) with mapi id 15.20.3499.027; Fri, 30 Oct 2020
+ 08:22:01 +0000
+From:   Branimir Rajtar <branimir.rajtar@5x9networks.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] typos in rtnetlink
+Thread-Topic: [PATCH] typos in rtnetlink
+Thread-Index: AQHWrQzX5yVDsDd+FE6hbjcZzBx41Kmv0ReAgAAASQA=
+Date:   Fri, 30 Oct 2020 08:22:01 +0000
+Message-ID: <6b9672e299364cc9b42829fc24774fb230346e46.camel@5x9networks.com>
+References: <83c34b90a2f7c87e84b73911a7837de2e087ad8f.camel@5x9networks.com>
+         <06351e24b36f55ee16fda8e34130a7a454c1cdea.camel@5x9networks.com>
+In-Reply-To: <06351e24b36f55ee16fda8e34130a7a454c1cdea.camel@5x9networks.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=5x9networks.com;
+x-originating-ip: [78.1.180.48]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2407a826-653b-43de-ad59-08d87cace059
+x-ms-traffictypediagnostic: VI1PR02MB4894:
+x-microsoft-antispam-prvs: <VI1PR02MB48945E0A8562E463533F4B99FC150@VI1PR02MB4894.eurprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: PcQSjUfOOChjkO8HOVjgLxOgwfHDFg1+czuOGocFhADZjI4PNmc5hPN3oMqqXHwmkvIa6uEwS8obJKHfXiXbAlcsDVAadhwREu6CUNZkO1PQl3sbvDIeLJlG5+BZW/DK92F64Ks9pjH8tVjOPpJYEKPJuAAabBg/GiAq8I1gvOdRGxna6/YrSP7NzEnHj23dQ+jCIKEST0kCiDYsS6YgM0axkThrivAZsqvW3pA17Q63gys78F/cp6Z2JVRukNktjsMmGmDfFCH8Cwvt8PNmwr2kDzhld2PfpbZYILIlzcmR9XQ/UJKPrGavK+O4Te9wywMRjeH+ieOMH1z6PZfC+w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0201MB2448.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(396003)(136003)(366004)(39830400003)(346002)(26005)(66446008)(6506007)(44832011)(6486002)(4744005)(186003)(64756008)(478600001)(86362001)(36756003)(66556008)(66476007)(71200400001)(66946007)(5660300002)(83380400001)(2616005)(316002)(8676002)(8936002)(2906002)(6916009)(76116006)(6512007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: ME4+qdlr6SeNvF2/hXhc0hsJu48OVCTuqwfEohyjAVSSugXXhrZiJmMSu3Xi2ZxB8ad9SyvvRTdeptT7XAjbXX2pSVqb18VfAJlmJnAOtQuWehD1DsK4Cm3qp5AEKTUMIToFvk2tXqig7ca/jLEIGYp1bB+2KzAeGvefeab+DnvfJYOsZOcOYrhACJrKegFvaW2LVDPouuB6ngm6v9EkB4jzMxsBbrPyNJ4fC6e1i08feXylkxWsP1DCL3MXa4exxJq6CFkWLL2Fw/BbF0TwNiDm+8Vym7Ywy7tFCdFulepdYHaWMbuZ2ZQeSY5FziBGhzUPF7tTc71qgXg6D26K6D36yAT+yMS7X7o2qtr5VCvwAMv0vJtq+pV/VUgjIudU2wEU3eQA3y+48EGKcQVviYoNXpJszsM49XvwCovgFSbrqC5KAPdjK9Gtj8FlfRYDUafrd7UKCFrBPnanz4xKEtjsxtU0DU2ZIHUS1IEsxPsFVget92dM5c5R4N86C5S0zbWrsWE6UfCeR1J4ECUg5i7Osjlk0X76CfFoeCRl9p4mj6xcUQWXClMEWCspgj5Ii7TV8pKYY6yuxbrdtXpDKQW7Lf9Sl2NHrxETTIQ2kqmQ7JnBS2ddfsx9M8zq2yx4c83hZucNJ1eTBjHcTkWwrg==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <852E7CFFCDDDA04FB4D24CFA6D422897@eurprd02.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1603902898-25233-2-git-send-email-loic.poulain@linaro.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-OriginatorOrg: 5x9networks.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0201MB2448.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2407a826-653b-43de-ad59-08d87cace059
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2020 08:22:01.2138
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5d7b4403-09d4-4db1-b2b2-3c5c42a4d68f
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vPFrTGP+1kf7NS97VmMRl81oc4LSme0fZl8Fjs6Y71iN8xBm/lIuMp8NwLlj2BA1j6yGm8jlYxlCKNbpAemIh/1Fqqg0rtmUCfsYRePzJXQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR02MB4894
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Loic,
-
-On Wed, Oct 28, 2020 at 05:34:58PM +0100, Loic Poulain wrote:
-> This patch adds a new network driver implementing MHI transport for
-> network packets. Packets can be in any format, though QMAP (rmnet)
-> is the usual protocol (flow control + PDN mux).
-> 
-> It support two MHI devices, IP_HW0 which is, the path to the IPA
-> (IP accelerator) on qcom modem, And IP_SW0 which is the software
-> driven IP path (to modem CPU).
-> 
-
-This patch looks good to me. I just commented few nits inline. With those
-addressed, you can have my:
-
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-
-Thanks,
-Mani
-
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> ---
->   v2: - rebase on net-next
->       - remove useless skb_linearize
->       - check error type on mhi_queue return
->       - rate limited errors
->       - Schedule RX refill only on 'low' buf level
->       - SET_NETDEV_DEV in probe
->       - reorder device remove sequence
->   v3: - Stop channels on net_register error
->       - Remove useles parentheses
->       - Add driver .owner
->   v4: - prevent potential cpu hog in rx-refill loop
->       - Access mtu via READ_ONCE
->   v5: - Fix access to u64 stats
->   v6: - Stop TX queue earlier if queue is full
->       - Preventing 'abnormal' NETDEV_TX_BUSY path
->   v7: - Stop dl/ul cb operations on channel resetting
->   v8: - remove premature comment about TX threading gain
->       - check rx_queued to determine queuing limits
->       - fix probe error path (unified goto usage)
-> 
->  drivers/net/Kconfig   |   7 ++
->  drivers/net/Makefile  |   1 +
->  drivers/net/mhi_net.c | 313 ++++++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 321 insertions(+)
->  create mode 100644 drivers/net/mhi_net.c
-> 
-> diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-> index 1368d1d..11a6357 100644
-> --- a/drivers/net/Kconfig
-> +++ b/drivers/net/Kconfig
-> @@ -426,6 +426,13 @@ config VSOCKMON
->  	  mostly intended for developers or support to debug vsock issues. If
->  	  unsure, say N.
->  
-> +config MHI_NET
-> +	tristate "MHI network driver"
-> +	depends on MHI_BUS
-> +	help
-> +	  This is the network driver for MHI.  It can be used with
-
-network driver for MHI bus.
-
-> +	  QCOM based WWAN modems (like SDX55).  Say Y or M.
-> +
->  endif # NET_CORE
->  
->  config SUNGEM_PHY
-> diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-> index 94b6080..8312037 100644
-> --- a/drivers/net/Makefile
-> +++ b/drivers/net/Makefile
-> @@ -34,6 +34,7 @@ obj-$(CONFIG_GTP) += gtp.o
->  obj-$(CONFIG_NLMON) += nlmon.o
->  obj-$(CONFIG_NET_VRF) += vrf.o
->  obj-$(CONFIG_VSOCKMON) += vsockmon.o
-> +obj-$(CONFIG_MHI_NET) += mhi_net.o
->  
->  #
->  # Networking Drivers
-> diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
-> new file mode 100644
-> index 0000000..4ba146d
-> --- /dev/null
-> +++ b/drivers/net/mhi_net.c
-> @@ -0,0 +1,313 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/* MHI Network driver - Network over MHI
-
-Network over MHI bus.
-
-> + *
-> + * Copyright (C) 2020 Linaro Ltd <loic.poulain@linaro.org>
-> + */
-> +
-> +#include <linux/if_arp.h>
-> +#include <linux/mhi.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/module.h>
-> +#include <linux/netdevice.h>
-> +#include <linux/skbuff.h>
-> +#include <linux/u64_stats_sync.h>
-> +
-> +#define MIN_MTU		ETH_MIN_MTU
-> +#define MAX_MTU		0xffff
-> +#define DEFAULT_MTU	16384
-
-Please add a prefix to avoid namespace issues in future...
-
-> +
-> +struct mhi_net_stats {
-> +	u64_stats_t rx_packets;
-> +	u64_stats_t rx_bytes;
-> +	u64_stats_t rx_errors;
-> +	u64_stats_t rx_dropped;
-> +	u64_stats_t tx_packets;
-> +	u64_stats_t tx_bytes;
-> +	u64_stats_t tx_errors;
-> +	u64_stats_t tx_dropped;
-> +	atomic_t rx_queued;
-> +	struct u64_stats_sync tx_syncp;
-> +	struct u64_stats_sync rx_syncp;
-> +};
-> +
-> +struct mhi_net_dev {
-> +	struct mhi_device *mdev;
-> +	struct net_device *ndev;
-> +	struct delayed_work rx_refill;
-> +	struct mhi_net_stats stats;
-> +	u32 rx_queue_sz;
-> +};
-> +
-
-[...]
-
-> +static void mhi_net_rx_refill_work(struct work_struct *work)
-> +{
-> +	struct mhi_net_dev *mhi_netdev = container_of(work, struct mhi_net_dev,
-> +						      rx_refill.work);
-> +	struct net_device *ndev = mhi_netdev->ndev;
-> +	struct mhi_device *mdev = mhi_netdev->mdev;
-> +	int size = READ_ONCE(ndev->mtu);
-> +	struct sk_buff *skb;
-> +	int err;
-> +
-> +	do {
-> +		skb = netdev_alloc_skb(ndev, size);
-> +		if (unlikely(!skb))
-> +			break;
-> +
-> +		err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb, size, MHI_EOT);
-> +		if (unlikely(err)) {
-> +			net_err_ratelimited("%s: Failed to queue RX buf (%d)\n",
-> +					    ndev->name, err);
-> +			kfree_skb(skb);
-> +			break;
-> +		}
-> +
-> +		/* Do not hog the CPU if rx buffers are completed faster than
-> +		 * queued (unlikely).
-
-s/completed/consumed
-
-> +		 */
-> +		cond_resched();
-> +	} while (atomic_inc_return(&mhi_netdev->stats.rx_queued) < mhi_netdev->rx_queue_sz);
-> +
-> +	/* If we're still starved of rx buffers, reschedule later */
-> +	if (unlikely(!atomic_read(&mhi_netdev->stats.rx_queued)))
-> +		schedule_delayed_work(&mhi_netdev->rx_refill, HZ / 2);
-> +}
-> +
-> +static int mhi_net_probe(struct mhi_device *mhi_dev,
-> +			 const struct mhi_device_id *id)
-> +{
-> +	const char *netname = (char *)id->driver_data;
-> +	struct mhi_net_dev *mhi_netdev;
-> +	struct net_device *ndev;
-> +	struct device *dev = &mhi_dev->dev;
-> +	int err;
-
-Since this is a networking driver, please stick to reverse xmas tree order for
-local variables.
+SGksDQoNCkknbSByZXBlYXRpbmcgbXkgZW1haWwgc2luY2UgSSBoYWQgSFRNTCBpbiB0ZXh0IGFu
+ZCB3YXMgdHJlYXRlZCBhcw0Kc3BhbS4NCg0KUmVnYXJkcywNCkJyYW5pbWlyDQoNCi0tLS0tT3Jp
+Z2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBicmFuaW1pci5yYWp0YXJANXg5bmV0d29ya3MuY29t
+DQpUbzogZGF2ZW1AZGF2ZW1sb2Z0Lm5ldCwga3ViYUBrZXJuZWwub3JnDQpDYzogdHJpdmlhbEBr
+ZXJuZWwub3JnLCBuZXRkZXZAdmdlci5rZXJuZWwub3JnDQpTdWJqZWN0OiBbUEFUQ0hdIHR5cG9z
+IGluIHJ0bmV0bGluaw0KRGF0ZTogV2VkLCAyOCBPY3QgMjAyMCAxMDoyOTozMCArMDEwMA0KDQpI
+aSBhbGwsDQoNCkkgbm90aWNlZCB0d28gdHlwb3MgaW4gdGhlIGNvbW1lbnRzIG9mIHRoZQ0KaW5j
+bHVkZS91YXJ0L2xpbnV4L3J0bmV0bGluay5oIGZpbGUgd2hpY2ggaGF2ZSBiZWVuIGJ1Z2dpbmcg
+bWUgYW5kIGhlcmUNCmlzIHRoZSBwYXRjaCBmb3IgaXQuDQoNCkkgYXBvbG9naXplIGlmIEkgYW0g
+d2FzdGluZyB5b3VyIHRpbWUsIEkgZG9uJ3Qga25vdyBpZiB5b3UgdXN1YWxseQ0KYWNjZXB0IHN1
+Y2ggc21hbGwgcGF0Y2hlcywgYnV0IEkgaGF2ZSBiZWVuIHdvcmtpbmcgd2l0aCB0aGlzIHNwZWNp
+ZmljDQpwYXJ0IG9mIGNvZGUgZm9yIHNvbWUgdGltZSBhbmQgaXQgYWx3YXlzIGFubm95cyBtZSB3
+aGVuIEkgbG9vayBhdCB0aGUNCnR5cG9zIHNvIEkgdGhvdWdodCBJIHNob3VsZCByZXBvcnQgaXQu
+DQoNClJlZ2FyZHMsDQpCcmFuaW1pciBSYWp0YXINCg0KU2lnbmVkLW9mZi1ieTogQnJhbmltaXIg
+UmFqdGFyIDxicmFuaW1pci5yYWp0YXJANXg5bmV0d29ya3MuY29tPg0K
