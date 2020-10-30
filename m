@@ -2,76 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5E892A07FB
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 15:35:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE5712A0901
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:01:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726732AbgJ3Ofl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 10:35:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28067 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726239AbgJ3Ofl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 10:35:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604068540;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=G/uUf4x5jmqoio45UotElBXDDV5Ef+L5uB7zqE76nAQ=;
-        b=MB0XzSiBOcao3Sih8lkm5XbwS007u17qZwCLlEDIcuS9P4PFL9MxUBq2gzRoiWhTuo1hIm
-        EB29BQ2y4xKnhwiT3+6t/keBkqvN6RdoCnJ0pBTCtGvnxGXCIDME/EBl9vI3H0MVaE8gFg
-        4H3GilbMCbfVHzHSsPBLPjJRsu/kdno=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-21-EDFthimKOPGHh7oFb3zDAg-1; Fri, 30 Oct 2020 10:35:34 -0400
-X-MC-Unique: EDFthimKOPGHh7oFb3zDAg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B1F788F62C6;
-        Fri, 30 Oct 2020 14:35:32 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.25])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E76921002C01;
-        Fri, 30 Oct 2020 14:35:22 +0000 (UTC)
-Date:   Fri, 30 Oct 2020 15:35:21 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     kbuild@lists.01.org, bpf@vger.kernel.org, lkp@intel.com,
-        kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        brouer@redhat.com
-Subject: Re: [PATCH bpf-next V4 2/5] bpf: bpf_fib_lookup return MTU value as
- output when looked up
-Message-ID: <20201030153521.727bfb80@carbon>
-In-Reply-To: <20201028124942.GE1042@kadam>
-References: <160381601522.1435097.11103677488984953095.stgit@firesoul>
-        <20201028124942.GE1042@kadam>
+        id S1726813AbgJ3PBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 11:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726691AbgJ3PBu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 11:01:50 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270F0C0613D5
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:01:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=qTamfvc9bl8x721EWWvU55KILuhSYGz7vEiw/2lF/6Y=; b=cY8s81lnH0lHtCmTAvGiM0gor
+        joUsdMl2Gq3vwDacykurHRwI8xAifjfWQiOppLZa+llWoZPxyLTecfb7StRevoubs66aTVP9gB2VY
+        NhecEGAPmFMgbOz8DG3+HaZK1Rej7evPEnITNwYct5PM4PzA6ECTXpEaWTs/16LWv2p4wnlx3z3O0
+        MmA1nrCBI5K8Q+fDHFwdUBS6RP1VcRIy/aDhrDpGebsPns/9oVmokZ9JIoQGLygUTqyX7yKxCVUdE
+        oMBEsy76dlHkYL1iJ+NmS1cWkTkIYbokNc3lSKpJ1OkuMn1zZ5uPdeB4hSyDBYgE/J8tbuUqGN6de
+        mcA1Ql7VA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52926)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kYVuP-0006AU-6i; Fri, 30 Oct 2020 15:01:41 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kYVuM-0007FU-7P; Fri, 30 Oct 2020 15:01:38 +0000
+Date:   Fri, 30 Oct 2020 15:01:38 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next v2 0/5] Support for RollBall 10G copper SFP
+ modules
+Message-ID: <20201030150138.GB1551@shell.armlinux.org.uk>
+References: <20201029222509.27201-1-kabel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201029222509.27201-1-kabel@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Oct 2020 15:49:42 +0300
-Dan Carpenter <dan.carpenter@oracle.com> wrote:
+A general point: please have me in the To: line rather than the Cc:
+line so that I can find emails better; I've just spent quite a while
+trying to find this series you posted last night amongst all the
+other emails that I'm Cc'd on.
 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+(The difference between To: and Cc: is that you expect those in the To:
+header to be the primary recipients who you expect action from, and
+those in the Cc: to be secondary recipients for information.)
+
+https://blog.thedigitalgroup.com/to-vs-cc-vs-bcc-how-to-use-them-correctly
+https://www.writebetteremails.com/to-cc.htm
+https://thinkproductive.co.uk/email-using-cc-bcc-to/
+... etc ...
+
+Thanks.
+
+On Thu, Oct 29, 2020 at 11:25:04PM +0100, Marek Behún wrote:
+> Hello,
 > 
-> New smatch warnings:
-> net/core/filter.c:5395 bpf_ipv4_fib_lookup() error: uninitialized symbol 'mtu'.
-
-I will fix and send V5.
+> this is v2 of series adding support for RollBall/Hilink SFP modules.
+> 
+> Checked with:
+>   checkpatch.pl --max-line-length=80
+> 
+> Changes from v1:
+> - wrapped to 80 columns as per Russell's request
+> - initialization of RollBall MDIO I2C protocol moved from sfp.c to
+>   mdio-i2c.c as per Russell's request
+> - second patch removes the 802.3z check also from phylink_sfp_config
+>   as suggested by Russell
+> - creation/destruction of mdiobus for SFP now occurs before probing
+>   for PHY/after releasing PHY (as suggested by Russell)
+> - the last patch became a little simpler after the above was done
+> 
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Russell King <rmk+kernel@armlinux.org.uk>
+> 
+> Marek Behún (5):
+>   net: phy: mdio-i2c: support I2C MDIO protocol for RollBall SFP modules
+>   net: phylink: allow attaching phy for SFP modules on 802.3z mode
+>   net: sfp: create/destroy I2C mdiobus before PHY probe/after PHY
+>     release
+>   net: phy: marvell10g: change MACTYPE if underlying MAC does not
+>     support it
+>   net: sfp: add support for multigig RollBall transceivers
+> 
+>  drivers/net/mdio/mdio-i2c.c   | 232 +++++++++++++++++++++++++++++++++-
+>  drivers/net/phy/marvell10g.c  |  31 +++++
+>  drivers/net/phy/phylink.c     |   5 +-
+>  drivers/net/phy/sfp.c         |  67 ++++++++--
+>  include/linux/mdio/mdio-i2c.h |   8 +-
+>  5 files changed, 322 insertions(+), 21 deletions(-)
+> 
+> 
+> base-commit: cd29296fdfca919590e4004a7e4905544f4c4a32
+> -- 
+> 2.26.2
+> 
+> 
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
