@@ -2,110 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B17AD2A10C8
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 23:22:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53D7C2A10DD
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 23:30:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725839AbgJ3WWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 18:22:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725774AbgJ3WWu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 18:22:50 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8336FC0613D5
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 15:22:50 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id u16so3373614vsl.13
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 15:22:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W6yLc/9lLkpWFOqKdGDVkVpxq2BUFC4iZBI6B15zaVI=;
-        b=ULx5KMpn5fdDpoBlQ9QYVSM9jumcw25Z5v58cDksfDYOWPo16aidT8aiydKzCMO8pP
-         MQnaVnTbxyzhI7plFu44nbQaBGA3y+dqKfhco2cb85X+lA5vN9vjPIrwwXSZolzE2mAK
-         ANbadbMU057qKFe34m3aSzwD/DC7/3jvySH4G8JhciWxPepNv62nXMFurderQE5/qmb6
-         WfmShmZw4jm4yv8yelLhsrtKJ1ZiYMMA3BWp0bZhSnfYxlxkjsyBEHc7vFyORsEdYjp5
-         wsy7To2akcl2OPRYZapmf5whLazJOOBpEwTi84t621clX3WYdSkxI5URf7dQXwHE8pvK
-         qXAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W6yLc/9lLkpWFOqKdGDVkVpxq2BUFC4iZBI6B15zaVI=;
-        b=rEiATJbCn5d8RJYcjJkKL4VAXUTsUY0vikq8SiSV+8GRHd3eMX4tqjsSEhZUHCA9AN
-         Yni8aKftsJ3as1riQBcC8gAb4WOuPkcQnpf+2A6glAKlVMRK+/o4d4gDxmAkmicxQcDb
-         bs2c3uDR1TsQR9gIJPWllKmhxuGRIIssDykmwFrW9ahJxmiF0Hg1Guholw8EcWwirVsJ
-         K3dQ6PAu7jV4XXa9uBGt6G2YTr7SMXb6tjsewJP7SvGRT3QCb2U//6E4IyN5UAHNJTPV
-         UZwgQtj1mdYQHz7bRcXSpdZEunnI1cp17Nh02XjtFavx9DcZxGHM+J0OBaLqsi1i0/S1
-         3V3A==
-X-Gm-Message-State: AOAM532csV5nWeanYEnbC+oSDNlMcwEl3SZbJwDRCymkk46wDjI8+fdH
-        535AylzAc4o4RGO39GE9WqcP1+L49xo=
-X-Google-Smtp-Source: ABdhPJwFFAXHyKQc1zpjzlrPLcGEWTjnT2M6O4RA/H5/6zSBVmy32N0KjU6b8o9cDORUQEZsg9v8Nw==
-X-Received: by 2002:a67:2fca:: with SMTP id v193mr9666838vsv.18.1604096569155;
-        Fri, 30 Oct 2020 15:22:49 -0700 (PDT)
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com. [209.85.217.48])
-        by smtp.gmail.com with ESMTPSA id w9sm250049uad.3.2020.10.30.15.22.47
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Oct 2020 15:22:48 -0700 (PDT)
-Received: by mail-vs1-f48.google.com with SMTP id w25so4217176vsk.9
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 15:22:47 -0700 (PDT)
-X-Received: by 2002:a67:c981:: with SMTP id y1mr8914701vsk.14.1604096567573;
- Fri, 30 Oct 2020 15:22:47 -0700 (PDT)
+        id S1725963AbgJ3Wac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 18:30:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35538 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725780AbgJ3Wac (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Oct 2020 18:30:32 -0400
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 76F05221EB;
+        Fri, 30 Oct 2020 22:30:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604097031;
+        bh=1SEtV+7K6WPgubjmBr0YXBpynUzAYHX6x8Trau0hjY0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=PFkdvN/uN9mwQJ+RX4cJkafCuiraa/ClnR4xIV6pv4X4aAUln6IbnhWR2rPiG2PDf
+         KyTty//Nrb1jVh5HpeLzwv0nhZocvCGg3o5cX5yUNPQDyNnQHEkcgyDMG6AzXLqvQe
+         6u+IQ7D9/fQB+tyWNDpK7Q4vM3YuHL5MCA9tm+4k=
+Received: by mail-lf1-f50.google.com with SMTP id b1so9777512lfp.11;
+        Fri, 30 Oct 2020 15:30:31 -0700 (PDT)
+X-Gm-Message-State: AOAM531x6jSz/5sMJsbjMb1lnuUNT9Cfc1YKRqkWcpZoxL5oelc+dw9N
+        bIfegCmU7xitDZ567+Z8XoB4asuE5pCiMXWrPFg=
+X-Google-Smtp-Source: ABdhPJzBOsmHcOgFpWu50Y+0W3w/cW4Zma33T1uq8r0sgrEgI4b1bnx7rbJvjFkshhwvSIx7y56JXfOI4P5gcm8EXCE=
+X-Received: by 2002:a19:c703:: with SMTP id x3mr1653157lff.105.1604097029626;
+ Fri, 30 Oct 2020 15:30:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201030022839.438135-1-xie.he.0141@gmail.com>
- <20201030022839.438135-5-xie.he.0141@gmail.com> <CA+FuTSczR03KGNdksH2KyAyzoR9jc6avWNrD+UWyc7sXd44J4w@mail.gmail.com>
- <CAJht_ENORPqd+GQPPzNfmCapQ6fwL_YGW8=1h20fqGe4_wDe9Q@mail.gmail.com>
- <CAF=yD-J8PvkR5xTgv8bb6MHJatWtq5Y_mPjx4+tpWvweMPFFHA@mail.gmail.com> <CAJht_EPscUkmcgidk5sGAO4K1iVeqDpBRDy75RQ+s0OKK3mB8Q@mail.gmail.com>
-In-Reply-To: <CAJht_EPscUkmcgidk5sGAO4K1iVeqDpBRDy75RQ+s0OKK3mB8Q@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 30 Oct 2020 18:22:10 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSefJk9xkPQU8K5Ew6ZmnSbMo0S4izAoc=h7-cDrN98jUQ@mail.gmail.com>
-Message-ID: <CA+FuTSefJk9xkPQU8K5Ew6ZmnSbMo0S4izAoc=h7-cDrN98jUQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 4/5] net: hdlc_fr: Do skb_reset_mac_header for
- skbs received on normal PVC devices
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>
+References: <20201029005902.1706310-1-andrii@kernel.org> <20201029005902.1706310-3-andrii@kernel.org>
+ <CAPhsuW6DxoRjBPJEgwzEtmVt-Uunw-MAmAF2tgh-ksjcKuJ4Bw@mail.gmail.com> <CAEf4Bzaj6mfLPtMbXBNJ9Z2E4AKS8W4vcYG6OGuO_XftAqKBeQ@mail.gmail.com>
+In-Reply-To: <CAEf4Bzaj6mfLPtMbXBNJ9Z2E4AKS8W4vcYG6OGuO_XftAqKBeQ@mail.gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 30 Oct 2020 15:30:18 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW5yKwo47uhpJVqGNvQBDw2w7adkZYfW9nk9Uk0RKRC-og@mail.gmail.com>
+Message-ID: <CAPhsuW5yKwo47uhpJVqGNvQBDw2w7adkZYfW9nk9Uk0RKRC-og@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 02/11] selftest/bpf: relax btf_dedup test checks
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 5:49 PM Xie He <xie.he.0141@gmail.com> wrote:
+On Fri, Oct 30, 2020 at 11:45 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> On Fri, Oct 30, 2020 at 2:28 PM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
+[...]
+> > > @@ -6775,10 +6774,15 @@ static void do_test_dedup(unsigned int test_num)
+> > >                         err = -1;
+> > >                         goto done;
+> > >                 }
+> > > -               if (CHECK(memcmp((void *)test_type,
+> > > -                                (void *)expect_type,
+> > > -                                test_size),
+> > > -                         "type #%d: contents differ", i)) {
 > >
-> > Yes, it might require holding off the other patches until net is
-> > merged into net-next.
+> > I guess test_size and expect_size are not needed anymore?
+>
+> hm.. they are used just one check above, still needed
+
+Hmm... I don't know what happened to me back then.. Please ignore.
+
+>
 > >
-> > Packet sockets are likely not the only way these packets are received?
-> > It changes mac_len as computed in __netif_receive_skb_core.
+> > > +               if (CHECK(btf_kind(test_type) != btf_kind(expect_type),
+> > > +                         "type %d kind: exp %d != got %u\n",
+> > > +                         i, btf_kind(expect_type), btf_kind(test_type))) {
+> > > +                       err = -1;
+> > > +                       goto done;
+> > > +               }
+> > > +               if (CHECK(test_type->info != expect_type->info,
+> > > +                         "type %d info: exp %d != got %u\n",
+> > > +                         i, expect_type->info, test_type->info)) {
+> >
+> > btf_kind() returns part of ->info, so we only need the second check, no?
 >
-> I looked at __netif_receive_skb_core. I didn't see it computing mac_len?
+> technically yes, but when kind mismatches, figuring that out from raw
+> info field is quite painful, so having a better, more targeted check
+> is still good.
 
-It's indirect:
+Fair enough. We can have a more clear check.
 
-        skb_reset_network_header(skb);
-        if (!skb_transport_header_was_set(skb))
-                skb_reset_transport_header(skb);
-        skb_reset_mac_len(skb);
-
-> I thought only AF_PACKET/RAW sockets would need this information
-> because other upper layers would not care about what happened in L2.
-
-I think that's a reasonable assumption. I don't have a good
-counterexample ready. Specific to this case, it seems to have been
-working with no one complaining so far ;)
-
-> I see mac_len is computed in netif_receive_generic_xdp. I'm not clear
-> about the reason why it calculates it. But it seems that it considers
-> the L2 header as an Ethernet header, which is incorrect for this
-> driver.
->
-> > If there is no real bug that is fixed, net-next is fine.
+Thanks,
+Song
