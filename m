@@ -2,98 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C29B29FB97
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 03:46:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A47BD29FB99
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 03:47:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726259AbgJ3Cqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 22:46:33 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:33845 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725800AbgJ3CqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 22:46:08 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 09U2jb7lB019635, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb03.realtek.com.tw[172.21.6.96])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 09U2jb7lB019635
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 30 Oct 2020 10:45:37 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Fri, 30 Oct 2020 10:45:36 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa]) by
- RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa%3]) with mapi id
- 15.01.2044.006; Fri, 30 Oct 2020 10:45:36 +0800
-From:   Willy Liu <willy.liu@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next 1/2] net: phy: realtek: Add phy ids for RTL8226-CG/RTL8226B-CG
-Thread-Topic: [PATCH net-next 1/2] net: phy: realtek: Add phy ids for
- RTL8226-CG/RTL8226B-CG
-Thread-Index: AQHWrew33+tlrfM0Wk2blDLfQG+RIamuD3mAgAAC/wCAAV3roA==
-Date:   Fri, 30 Oct 2020 02:45:36 +0000
-Message-ID: <e00771ccacb648b6a00b914e0421b080@realtek.com>
-References: <1603973277-1634-1-git-send-email-willy.liu@realtek.com>
- <20201029133759.GQ933237@lunn.ch>
- <2cca91c7-99eb-3109-9958-c3db43a43a9b@gmail.com>
-In-Reply-To: <2cca91c7-99eb-3109-9958-c3db43a43a9b@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.179.131]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        id S1726309AbgJ3Cqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 22:46:46 -0400
+Received: from z5.mailgun.us ([104.130.96.5]:19568 "EHLO z5.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725781AbgJ3Cpy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 22:45:54 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1604025952; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=DjIy/M1qVglqhJmRWua7rTWYev1FJVXfRDdZWx655o4=; b=F9uIUHVMFeuZUtvMfAblCD3yEpMX1Jc9epZU3FACfgW72SsyITXDjnw4rC9Qbq+hQmyapf87
+ h5+RFfvXHKZMu3jCiW94WZr4tyUX8x1M5yAMm5lGUeE0wZ1ksanbjl85zKv3HxMM3NSS4sIs
+ y310t8gVK/ZOq+aSPXYl7GANhpM=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 5f9b7e608335df1657971c63 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 30 Oct 2020 02:45:52
+ GMT
+Sender: hemantk=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 23180C433CB; Fri, 30 Oct 2020 02:45:52 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from codeaurora.org (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: hemantk)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 11F98C433C8;
+        Fri, 30 Oct 2020 02:45:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 11F98C433C8
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
+From:   Hemant Kumar <hemantk@codeaurora.org>
+To:     manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jhugo@codeaurora.org, bbhatt@codeaurora.org,
+        loic.poulain@linaro.org, netdev@vger.kernel.org,
+        Hemant Kumar <hemantk@codeaurora.org>
+Subject: [PATCH v11 0/4] userspace MHI client interface driver
+Date:   Thu, 29 Oct 2020 19:45:42 -0700
+Message-Id: <1604025946-28288-1-git-send-email-hemantk@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCBPY3QgMjksIDIwMjAgMjE6NDksIEhlaW5lciBIYWxsd2VpdCB3cm90ZToNCj4gT24g
-MjkuMTAuMjAyMCAxNDozNywgQW5kcmV3IEx1bm4gd3JvdGU6DQo+ID4gT24gVGh1LCBPY3QgMjks
-IDIwMjAgYXQgMDg6MDc6NTdQTSArMDgwMCwgV2lsbHkgTGl1IHdyb3RlOg0KPiA+PiBSZWFsdGVr
-IHNpbmdsZS1wb3J0IDIuNUdicHMgRXRoZXJuZXQgUEhZIGlkcyBhcyBiZWxvdzoNCj4gPj4gUlRM
-ODIyNi1DRzogMHgwMDFjYzgwMChFUykvMHgwMDFjYzgzOChNUCkNCj4gPj4gUlRMODIyNkItQ0cv
-UlRMODIyMUItQ0c6IDB4MDAxY2M4NDAoRVMpLzB4MDAxY2M4NDgoTVApDQo+ID4+IEVTOiBlbmdp
-bmVlciBzYW1wbGUNCj4gPj4gTVA6IG1hc3MgcHJvZHVjdGlvbg0KPiA+Pg0KPiA+PiBTaW5jZSBh
-Ym92ZSBQSFlzIGFyZSBhbHJlYWR5IGluIG1hc3MgcHJvZHVjdGlvbiBzdGFnZSwgbWFzcw0KPiA+
-PiBwcm9kdWN0aW9uIGlkIHNob3VsZCBiZSBhZGRlZC4NCj4gPj4NCj4gPj4gU2lnbmVkLW9mZi1i
-eTogV2lsbHkgTGl1IDx3aWxseS5saXVAcmVhbHRlay5jb20+DQo+ID4+IC0tLQ0KPiA+PiAgZHJp
-dmVycy9uZXQvcGh5L3JlYWx0ZWsuYyB8IDE4ICsrKysrKysrKysrKysrLS0tLQ0KPiA+PiAgMSBm
-aWxlIGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pICBtb2RlIGNoYW5n
-ZSAxMDA2NDQNCj4gPj4gPT4gMTAwNzU1IGRyaXZlcnMvbmV0L3BoeS9yZWFsdGVrLmMNCj4gPj4N
-Cj4gPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3BoeS9yZWFsdGVrLmMgYi9kcml2ZXJzL25l
-dC9waHkvcmVhbHRlay5jDQo+ID4+IG9sZCBtb2RlIDEwMDY0NCBuZXcgbW9kZSAxMDA3NTUgaW5k
-ZXggZmIxZGI3MS4uOTg4ZjA3NQ0KPiA+PiAtLS0gYS9kcml2ZXJzL25ldC9waHkvcmVhbHRlay5j
-DQo+ID4+ICsrKyBiL2RyaXZlcnMvbmV0L3BoeS9yZWFsdGVrLmMNCj4gPj4gQEAgLTU3LDYgKzU3
-LDkgQEANCj4gPj4gICNkZWZpbmUgUlRMR0VOX1NQRUVEX01BU0sJCQkweDA2MzANCj4gPj4NCj4g
-Pj4gICNkZWZpbmUgUlRMX0dFTkVSSUNfUEhZSUQJCQkweDAwMWNjODAwDQo+ID4+ICsjZGVmaW5l
-IFJUTF84MjI2X01QX1BIWUlECQkJMHgwMDFjYzgzOA0KPiA+PiArI2RlZmluZSBSVExfODIyMUJf
-RVNfUEhZSUQJCQkweDAwMWNjODQwDQo+ID4+ICsjZGVmaW5lIFJUTF84MjIxQl9NUF9QSFlJRAkJ
-CTB4MDAxY2M4NDgNCj4gPj4NCj4gPj4gIE1PRFVMRV9ERVNDUklQVElPTigiUmVhbHRlayBQSFkg
-ZHJpdmVyIik7DQo+IE1PRFVMRV9BVVRIT1IoIkpvaG5zb24NCj4gPj4gTGV1bmciKTsgQEAgLTUz
-MywxMCArNTM2LDE3IEBAIHN0YXRpYyBpbnQNCj4gPj4gcnRsZ2VuX21hdGNoX3BoeV9kZXZpY2Uo
-c3RydWN0IHBoeV9kZXZpY2UgKnBoeWRldikNCj4gPj4NCj4gPj4gIHN0YXRpYyBpbnQgcnRsODIy
-Nl9tYXRjaF9waHlfZGV2aWNlKHN0cnVjdCBwaHlfZGV2aWNlICpwaHlkZXYpICB7DQo+ID4+IC0J
-cmV0dXJuIHBoeWRldi0+cGh5X2lkID09IFJUTF9HRU5FUklDX1BIWUlEICYmDQo+ID4+ICsJcmV0
-dXJuIChwaHlkZXYtPnBoeV9pZCA9PSBSVExfR0VORVJJQ19QSFlJRCkgfHwNCj4gPj4gKwkgICAg
-ICAgKHBoeWRldi0+cGh5X2lkID09IFJUTF84MjI2X01QX1BIWUlEKSAmJg0KPiA+PiAgCSAgICAg
-ICBydGxnZW5fc3VwcG9ydHNfMl81Z2JwcyhwaHlkZXYpOw0KPiA+DQo+ID4gSGkgV2lsbHkNCj4g
-Pg0KPiA+IElmIGkgdW5kZXJzdGFuZCB0aGUgY29kZSBjb3JyZWN0bHksIHRoaXMgbWF0Y2ggZnVu
-Y3Rpb24gaXMgdXNlZA0KPiA+IGJlY2F1c2UgdGhlIGVuZ2luZWVyaW5nIHNhbXBsZSBkaWQgbm90
-IHVzZSBhIHByb3BlciBJRD8gVGhlIG1hc3MNCj4gPiBwcm9kdWN0aW9uIHBhcnQgZG9lcywgc28g
-dGhlcmUgaXMgbm8gbmVlZCB0byBtYWtlIHVzZSBvZiB0aGlzIGhhY2suDQo+ID4gUGxlYXNlIGp1
-c3QgbGlzdCBpdCBhcyBhIG5vcm1hbCBQSFkgdXNpbmcgUEhZX0lEX01BVENIX0VYQUNUKCkuDQo+
-ID4NCj4gUmlnaHQuIE15IHVuZGVyc3RhbmRpbmc6DQo+IFRoZXNlIFBIWSdzIGV4aXN0IGFzIHN0
-YW5kYWxvbmUgY2hpcHMgYW5kIGludGVncmF0ZWQgd2l0aCBSVEw4MTI1IE1BQy4NCj4gSUlSQyBm
-b3IgUlRMODEyNUEgdGhlIGludGVncmF0ZWQgUEhZIHJlcG9ydHMgUlRMX0dFTkVSSUNfUEhZSUQs
-IHNpbmNlDQo+IFJUTDgxMjVCIGl0IHJlcG9ydHMgdGhlIHNhbWUgUEhZSUQgYXMgdGhlIHN0YW5k
-YWxvbmUgbW9kZWwuDQpIaSBBbmRyZXcgJiYgSGVpbmVyLA0KVGhhbmtzIGZvciB5b3VyIGluZm9y
-bWF0aW9uLCBJIHdpbGwgY3JlYXRlIGRyaXZlcnMgZm9yIFJUTDgyMjYtQ0cgJiBSVEw4MjIxQi1D
-Rw0KYXMgc3RhbmRhbG9uZSBtb2RlbHMuDQogDQo+IC0tLS0tLVBsZWFzZSBjb25zaWRlciB0aGUg
-ZW52aXJvbm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsLg0K
+This patch series adds support for UCI driver. UCI driver enables userspace
+clients to communicate to external MHI devices like modem and WLAN. UCI driver
+probe creates standard character device file nodes for userspace clients to
+perform open, read, write, poll and release file operations. These file
+operations call MHI core layer APIs to perform data transfer using MHI bus
+to communicate with MHI device. Patch is tested using arm64 based platform.
+
+V11:
+- Fixed review comments for UCI documentation by expanding TLAs and rewording
+  some sentences.
+
+V10:
+- Replaced mutex_lock with mutex_lock_interruptible in read() and write() file
+  ops call back.
+
+V9:
+- Renamed dl_lock to dl_pending _lock and pending list to dl_pending for
+  clarity.
+- Used read lock to protect cur_buf.
+- Change transfer status check logic and only consider 0 and -EOVERFLOW as
+  only success.
+- Added __int to module init function.
+- Print channel name instead of minor number upon successful probe.
+
+V8:
+- Fixed kernel test robot compilation error by changing %lu to %zu for
+  size_t.
+- Replaced uci with UCI in Kconfig, commit text, and comments in driver
+  code.
+- Fixed minor style related comments.
+
+V7:
+- Decoupled uci device and uci channel objects. uci device is
+  associated with device file node. uci channel is associated
+  with MHI channels. uci device refers to uci channel to perform
+  MHI channel operations for device file operations like read()
+  and write(). uci device increments its reference count for
+  every open(). uci device calls mhi_uci_dev_start_chan() to start
+  the MHI channel. uci channel object is tracking number of times
+  MHI channel is referred. This allows to keep the MHI channel in
+  start state until last release() is called. After that uci channel
+  reference count goes to 0 and uci channel clean up is performed
+  which stops the MHI channel. After the last call to release() if
+  driver is removed uci reference count becomes 0 and uci object is
+  cleaned up.
+- Use separate uci channel read and write lock to fine grain locking
+  between reader and writer.
+- Use uci device lock to synchronize open, release and driver remove.
+- Optimize for downlink only or uplink only UCI device.
+
+V6:
+- Moved uci.c to mhi directory.
+- Updated Kconfig to add module information.
+- Updated Makefile to rename uci object file name as mhi_uci
+- Removed kref for open count
+
+V5:
+- Removed mhi_uci_drv structure.
+- Used idr instead of creating global list of uci devices.
+- Used kref instead of local ref counting for uci device and
+  open count.
+- Removed unlikely macro.
+
+V4:
+- Fix locking to protect proper struct members.
+- Updated documentation describing uci client driver use cases.
+- Fixed uci ref counting in mhi_uci_open for error case.
+- Addressed style related review comments.
+
+V3: Added documentation for MHI UCI driver.
+
+V2:
+- Added mutex lock to prevent multiple readers to access same
+- mhi buffer which can result into use after free.
+
+Hemant Kumar (4):
+  bus: mhi: core: Add helper API to return number of free TREs
+  bus: mhi: core: Move MHI_MAX_MTU to external header file
+  docs: Add documentation for userspace client interface
+  bus: mhi: Add userspace client interface driver
+
+ Documentation/mhi/index.rst     |   1 +
+ Documentation/mhi/uci.rst       |  84 +++++
+ drivers/bus/mhi/Kconfig         |  13 +
+ drivers/bus/mhi/Makefile        |   4 +
+ drivers/bus/mhi/core/internal.h |   1 -
+ drivers/bus/mhi/core/main.c     |  12 +
+ drivers/bus/mhi/uci.c           | 662 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/mhi.h             |  12 +
+ 8 files changed, 788 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/mhi/uci.rst
+ create mode 100644 drivers/bus/mhi/uci.c
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
