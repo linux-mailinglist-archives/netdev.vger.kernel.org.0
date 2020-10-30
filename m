@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A7092A0A05
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:37:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E90C2A0A06
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:37:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727134AbgJ3PhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 11:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
+        id S1727125AbgJ3PhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 11:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726642AbgJ3PhM (ORCPT
+        with ESMTP id S1726948AbgJ3PhM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 11:37:12 -0400
 Received: from confino.investici.org (confino.investici.org [IPv6:2a00:c38:11e:ffff::a020])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35247C0613CF
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:37:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B54C0613D2;
+        Fri, 30 Oct 2020 08:37:12 -0700 (PDT)
 Received: from mx1.investici.org (unknown [127.0.0.1])
-        by confino.investici.org (Postfix) with ESMTP id 4CN5yl28rnz12cc;
-        Fri, 30 Oct 2020 15:37:03 +0000 (UTC)
+        by confino.investici.org (Postfix) with ESMTP id 4CN5yq6qqnz110K;
+        Fri, 30 Oct 2020 15:37:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=privacyrequired.com;
-        s=stigmate; t=1604072223;
-        bh=j4NYs9Jl6xgkNi0+LQhpNE5IV9k30c3Bw/mkwJWZ+2E=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Npk5xjWT1c6jf9wXK7Xc5cSrjgSGTfOAFhAoOWUgKVBpgS5La3DCOV5OaXut3BCni
-         R12JkEhRXtUL0wFJzjqBYYjH7XSMwqlujhuixXKXlWSEYff8iFGlDjYrpIfOxIo4Hs
-         XgHDKCa2tTnuMyMgyc7/Z6SgBaAzUBPs026ISvR4=
-Received: from [212.103.72.250] (mx1.investici.org [212.103.72.250]) (Authenticated sender: laniel_francis@privacyrequired.com) by localhost (Postfix) with ESMTPSA id 4CN5yl0BM3z12cb;
-        Fri, 30 Oct 2020 15:37:02 +0000 (UTC)
+        s=stigmate; t=1604072227;
+        bh=a8NC42R6u3qlmdveQqeX3g+/yoA0KQ9pNupZi4YG580=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ib9/YJJGeRFgUpki+T+v+8nTyAJmWVrljn9eYxtlNNGSDm2OKgl7R0O/NaqLNIZjh
+         BpFKmo8PYDPWWVGVp7bmfqcEPb/bZ74uOYFdczA5uBaQ+3hid6FpEZK3xo913m8c1p
+         CleY+M1v960YfCepgpmgmgf/reE8bahA3r1kUP30=
+Received: from [212.103.72.250] (mx1.investici.org [212.103.72.250]) (Authenticated sender: laniel_francis@privacyrequired.com) by localhost (Postfix) with ESMTPSA id 4CN5yq50gfz10yD;
+        Fri, 30 Oct 2020 15:37:07 +0000 (UTC)
 From:   laniel_francis@privacyrequired.com
 To:     linux-hardening@vger.kernel.org, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, keescook@chromium.org,
         Francis Laniel <laniel_francis@privacyrequired.com>
-Subject: [PATCH v4 0/3] Fix inefficiences and rename nla_strlcpy
-Date:   Fri, 30 Oct 2020 16:36:44 +0100
-Message-Id: <20201030153647.4408-1-laniel_francis@privacyrequired.com>
+Subject: [PATCH v4 1/3] Fix unefficient call to memset before memcpu in nla_strlcpy.
+Date:   Fri, 30 Oct 2020 16:36:45 +0100
+Message-Id: <20201030153647.4408-2-laniel_francis@privacyrequired.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20201030153647.4408-1-laniel_francis@privacyrequired.com>
+References: <20201030153647.4408-1-laniel_francis@privacyrequired.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -42,66 +44,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Francis Laniel <laniel_francis@privacyrequired.com>
 
-Hi.
+Before this commit, nla_strlcpy first memseted dst to 0 then wrote src into it.
+This is inefficient because bytes whom number is less than src length are written
+twice.
 
+This patch solves this issue by first writing src into dst then fill dst with
+0's.
+Note that, in the case where src length is higher than dst, only 0 is written.
+Otherwise there are as many 0's written to fill dst.
 
-I hope your relatives and yourselves are fine.
+For example, if src is "foo\0" and dst is 5 bytes long, the result will be:
+1. "fooGG" after memcpy (G means garbage).
+2. "foo\0\0" after memset.
 
-This patch set answers to first three issues listed in:
-https://github.com/KSPP/linux/issues/110
+Signed-off-by: Francis Laniel <laniel_francis@privacyrequired.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+---
+ lib/nlattr.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-To sum up, the first patch fixes an inefficiency where some bytes in dst were
-written twice, one with 0 the other with src content.
-The second one modifies nla_strlcpy to return the same value as strscpy,
-i.e. number of bytes written or -E2BIG if src was truncated.
-The third rename nla_strlcpy to nla_strscpy.
-
-Unfortunately, I did not find how to create struct nlattr objects so I tested
-my modifications on simple char* and withing GDB with tc to get to
-tcf_proto_check_kind.
-This is why I tagged this patch set as RFC.
-
-If you see any way to improve the code or have any remark, feel free to comment.
-
-
-Best regards and take care of yourselves.
-
-Francis Laniel (3):
-  Fix unefficient call to memset before memcpu in nla_strlcpy.
-  Modify return value of nla_strlcpy to match that of strscpy.
-  treewide: rename nla_strlcpy to nla_strscpy.
-
- drivers/infiniband/core/nldev.c            | 10 +++---
- drivers/net/can/vxcan.c                    |  4 +--
- drivers/net/veth.c                         |  4 +--
- include/linux/genl_magic_struct.h          |  2 +-
- include/net/netlink.h                      |  4 +--
- include/net/pkt_cls.h                      |  2 +-
- kernel/taskstats.c                         |  2 +-
- lib/nlattr.c                               | 42 ++++++++++++++--------
- net/core/fib_rules.c                       |  4 +--
- net/core/rtnetlink.c                       | 12 +++----
- net/decnet/dn_dev.c                        |  2 +-
- net/ieee802154/nl-mac.c                    |  2 +-
- net/ipv4/devinet.c                         |  2 +-
- net/ipv4/fib_semantics.c                   |  2 +-
- net/ipv4/metrics.c                         |  2 +-
- net/netfilter/ipset/ip_set_hash_netiface.c |  4 +--
- net/netfilter/nf_tables_api.c              |  6 ++--
- net/netfilter/nfnetlink_acct.c             |  2 +-
- net/netfilter/nfnetlink_cthelper.c         |  4 +--
- net/netfilter/nft_ct.c                     |  2 +-
- net/netfilter/nft_log.c                    |  2 +-
- net/netlabel/netlabel_mgmt.c               |  2 +-
- net/nfc/netlink.c                          |  2 +-
- net/sched/act_api.c                        |  2 +-
- net/sched/act_ipt.c                        |  2 +-
- net/sched/act_simple.c                     |  4 +--
- net/sched/cls_api.c                        |  2 +-
- net/sched/sch_api.c                        |  2 +-
- net/tipc/netlink_compat.c                  |  2 +-
- 29 files changed, 73 insertions(+), 61 deletions(-)
-
+diff --git a/lib/nlattr.c b/lib/nlattr.c
+index 74019c8ebf6b..07156e581997 100644
+--- a/lib/nlattr.c
++++ b/lib/nlattr.c
+@@ -731,8 +731,9 @@ size_t nla_strlcpy(char *dst, const struct nlattr *nla, size_t dstsize)
+ 	if (dstsize > 0) {
+ 		size_t len = (srclen >= dstsize) ? dstsize - 1 : srclen;
+ 
+-		memset(dst, 0, dstsize);
+ 		memcpy(dst, src, len);
++		/* Zero pad end of dst. */
++		memset(dst + len, 0, dstsize - len);
+ 	}
+ 
+ 	return srclen;
 -- 
 2.20.1
 
