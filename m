@@ -2,157 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 514412A038F
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 12:01:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3D082A0395
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 12:02:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726240AbgJ3LBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 07:01:42 -0400
-Received: from mail.pqgruber.com ([52.59.78.55]:34798 "EHLO mail.pqgruber.com"
+        id S1726236AbgJ3LB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 07:01:59 -0400
+Received: from novek.ru ([213.148.174.62]:53574 "EHLO novek.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725355AbgJ3LBm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Oct 2020 07:01:42 -0400
-X-Greylist: delayed 514 seconds by postgrey-1.27 at vger.kernel.org; Fri, 30 Oct 2020 07:01:40 EDT
-Received: from workstation.tuxnet (213-47-165-233.cable.dynamic.surfer.at [213.47.165.233])
-        by mail.pqgruber.com (Postfix) with ESMTPSA id 87B3BC72B2F;
-        Fri, 30 Oct 2020 11:53:05 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pqgruber.com;
-        s=mail; t=1604055185;
-        bh=yh3sT3WW1+O648yQ/GFFsxCXuADwo5maBS6L9gk0uqk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UMGM+5F1KnHk++YN5WiqyGXtgaVR53MJzSqm1BWYLrkMElHu+HAGLj6M5CYFPMo+r
-         +mpLHP7hjSfa/20FPuzevztNDhCn2yBqazFMy+kxiYdlTjESSKzyGUZ0h9u3c7BV7e
-         xpxJpD3uEf7NUhpGt8dMwIXw+R2panUm3XvmOPoM=
-Date:   Fri, 30 Oct 2020 11:53:04 +0100
-From:   Clemens Gruber <clemens.gruber@pqgruber.com>
-To:     Greg Ungerer <gerg@linux-m68k.org>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, fugang.duan@nxp.com,
-        cphealy@gmail.com, dkarr@vyex.com
-Subject: Re: [PATCH v2] net: fec: fix MDIO probing for some FEC hardware
- blocks
-Message-ID: <20201030105304.GA37786@workstation.tuxnet>
-References: <20201028052232.1315167-1-gerg@linux-m68k.org>
+        id S1726210AbgJ3LB7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Oct 2020 07:01:59 -0400
+Received: from [192.168.0.18] (unknown [37.228.234.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id E8B80502F85;
+        Fri, 30 Oct 2020 14:04:03 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru E8B80502F85
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1604055845; bh=PrpEpYhQegyhchA2jupLKgJhHGM+qns2hDQvcmgaSnw=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=avMKY/snwK9ft8vuiJLo/XyMIslZSj5uL7w5C/yqFg+FjXcawhNYT/4fufxWrc5+p
+         asxmLsNx7wBFXsGeKHqOnvDUQxRq3bBDBDZBkIb+fRGjtdpF34RUC67VgL4jTrwraV
+         dpTAiSL2CZh+Rxm+t7XT+n6YUDKmLBFVeMrKtE/k=
+Subject: Re: [PATCH net] ip6_tunnel: set inner ipproto before ip6_tnl_encap.
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Alexander Ovechkin <ovov@yandex-team.ru>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Tom Herbert <tom@herbertland.com>
+References: <20201016111156.26927-1-ovov@yandex-team.ru>
+ <CA+FuTSe5szAPV0qDVU1Qa7e-XH6uO4eWELfzykOvpb0CJ0NbUA@mail.gmail.com>
+ <0E7BC212-3BBA-4C68-89B9-C6DA956553AD@yandex-team.ru>
+ <CA+FuTSfNZoONM3TZxpC0ND2AsiNw0K-jgjKMe0FWkS9LVG6yNA@mail.gmail.com>
+ <ABA7FBA9-42F8-4D6E-9D1E-CDEC74966131@yandex-team.ru>
+ <CA+FuTSeejYh2eu80bB8MikUMb7KevQN-ka-+anfTfQATPSrKHA@mail.gmail.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <93a65f76-3052-6162-a2f4-00091cd78927@novek.ru>
+Date:   Fri, 30 Oct 2020 11:01:51 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201028052232.1315167-1-gerg@linux-m68k.org>
+In-Reply-To: <CA+FuTSeejYh2eu80bB8MikUMb7KevQN-ka-+anfTfQATPSrKHA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 03:22:32PM +1000, Greg Ungerer wrote:
-> Some (apparently older) versions of the FEC hardware block do not like
-> the MMFR register being cleared to avoid generation of MII events at
-> initialization time. The action of clearing this register results in no
-> future MII events being generated at all on the problem block. This means
-> the probing of the MDIO bus will find no PHYs.
-> 
-> Create a quirk that can be checked at the FECs MII init time so that
-> the right thing is done. The quirk is set as appropriate for the FEC
-> hardware blocks that are known to need this.
-> 
-> Fixes: f166f890c8f0 ("net: ethernet: fec: Replace interrupt driven MDIO with polled IO")
-> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
-> ---
->  drivers/net/ethernet/freescale/fec.h      |  6 +++++
->  drivers/net/ethernet/freescale/fec_main.c | 29 +++++++++++++----------
->  2 files changed, 22 insertions(+), 13 deletions(-)
-> 
-> v2: use quirk for imx28 as well
-> 
-> Resending for consideration based on Andy's last comment that this fix
-> is enough on its own for all hardware types.
-> 
-> diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
-> index 832a2175636d..c527f4ee1d3a 100644
-> --- a/drivers/net/ethernet/freescale/fec.h
-> +++ b/drivers/net/ethernet/freescale/fec.h
-> @@ -456,6 +456,12 @@ struct bufdesc_ex {
->   */
->  #define FEC_QUIRK_HAS_FRREG		(1 << 16)
->  
-> +/* Some FEC hardware blocks need the MMFR cleared at setup time to avoid
-> + * the generation of an MII event. This must be avoided in the older
-> + * FEC blocks where it will stop MII events being generated.
-> + */
-> +#define FEC_QUIRK_CLEAR_SETUP_MII	(1 << 17)
-> +
->  struct bufdesc_prop {
->  	int qid;
->  	/* Address of Rx and Tx buffers */
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-> index fb37816a74db..65784d3e54a5 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -100,14 +100,14 @@ static const struct fec_devinfo fec_imx27_info = {
->  static const struct fec_devinfo fec_imx28_info = {
->  	.quirks = FEC_QUIRK_ENET_MAC | FEC_QUIRK_SWAP_FRAME |
->  		  FEC_QUIRK_SINGLE_MDIO | FEC_QUIRK_HAS_RACC |
-> -		  FEC_QUIRK_HAS_FRREG,
-> +		  FEC_QUIRK_HAS_FRREG | FEC_QUIRK_CLEAR_SETUP_MII,
->  };
->  
->  static const struct fec_devinfo fec_imx6q_info = {
->  	.quirks = FEC_QUIRK_ENET_MAC | FEC_QUIRK_HAS_GBIT |
->  		  FEC_QUIRK_HAS_BUFDESC_EX | FEC_QUIRK_HAS_CSUM |
->  		  FEC_QUIRK_HAS_VLAN | FEC_QUIRK_ERR006358 |
-> -		  FEC_QUIRK_HAS_RACC,
-> +		  FEC_QUIRK_HAS_RACC | FEC_QUIRK_CLEAR_SETUP_MII,
->  };
->  
->  static const struct fec_devinfo fec_mvf600_info = {
-> @@ -119,7 +119,8 @@ static const struct fec_devinfo fec_imx6x_info = {
->  		  FEC_QUIRK_HAS_BUFDESC_EX | FEC_QUIRK_HAS_CSUM |
->  		  FEC_QUIRK_HAS_VLAN | FEC_QUIRK_HAS_AVB |
->  		  FEC_QUIRK_ERR007885 | FEC_QUIRK_BUG_CAPTURE |
-> -		  FEC_QUIRK_HAS_RACC | FEC_QUIRK_HAS_COALESCE,
-> +		  FEC_QUIRK_HAS_RACC | FEC_QUIRK_HAS_COALESCE |
-> +		  FEC_QUIRK_CLEAR_SETUP_MII,
->  };
->  
->  static const struct fec_devinfo fec_imx6ul_info = {
-> @@ -127,7 +128,7 @@ static const struct fec_devinfo fec_imx6ul_info = {
->  		  FEC_QUIRK_HAS_BUFDESC_EX | FEC_QUIRK_HAS_CSUM |
->  		  FEC_QUIRK_HAS_VLAN | FEC_QUIRK_ERR007885 |
->  		  FEC_QUIRK_BUG_CAPTURE | FEC_QUIRK_HAS_RACC |
-> -		  FEC_QUIRK_HAS_COALESCE,
-> +		  FEC_QUIRK_HAS_COALESCE | FEC_QUIRK_CLEAR_SETUP_MII,
->  };
->  
->  static struct platform_device_id fec_devtype[] = {
-> @@ -2114,15 +2115,17 @@ static int fec_enet_mii_init(struct platform_device *pdev)
->  	if (suppress_preamble)
->  		fep->phy_speed |= BIT(7);
->  
-> -	/* Clear MMFR to avoid to generate MII event by writing MSCR.
-> -	 * MII event generation condition:
-> -	 * - writing MSCR:
-> -	 *	- mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
-> -	 *	  mscr_reg_data_in[7:0] != 0
-> -	 * - writing MMFR:
-> -	 *	- mscr[7:0]_not_zero
-> -	 */
-> -	writel(0, fep->hwp + FEC_MII_DATA);
-> +	if (fep->quirks & FEC_QUIRK_CLEAR_SETUP_MII) {
-> +		/* Clear MMFR to avoid to generate MII event by writing MSCR.
-> +		 * MII event generation condition:
-> +		 * - writing MSCR:
-> +		 *	- mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
-> +		 *	  mscr_reg_data_in[7:0] != 0
-> +		 * - writing MMFR:
-> +		 *	- mscr[7:0]_not_zero
-> +		 */
-> +		writel(0, fep->hwp + FEC_MII_DATA);
-> +	}
->  
->  	writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
->  
-> -- 
-> 2.25.1
-> 
 
-This fixes the problem on i.MX6Q!
 
-Tested-by: Clemens Gruber <clemens.gruber@pqgruber.com>
+On 29.10.2020 14:40, Willem de Bruijn wrote:
+> On Thu, Oct 29, 2020 at 3:46 AM Alexander Ovechkin <ovov@yandex-team.ru> wrote:
+>> On 28 Oct 2020, at 01:53 UTC Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+>>> On Tue, Oct 27, 2020 at 5:52 PM Alexander Ovechkin <ovov@yandex-team.ru> wrote:
+>>>>> But it was moved on purpose to avoid setting the inner protocol to IPPROTO_MPLS. That needs to use skb->inner_protocol to further segment.
+>>>> And why do we need to avoid setting the inner protocol to IPPROTO_MPLS? Currently skb->inner_protocol is used before call of ip6_tnl_xmit.
+>>>> Can you please give example when this patch breaks MPLS segmentation?
+>>> mpls_gso_segment calls skb_mac_gso_segment on the inner packet. After
+>>> setting skb->protocol based on skb->inner_protocol.
+>> Yeah, but mpls_gso_segment is called before ip6_tnl_xmit (because tun devices don't have NETIF_F_GSO_SOFTWARE in their mpls_features), so it does not matter to what value ip6_tnl_xmit sets skb->inner_ipproto.
+>> And even if gso would been called after both mpls_xmit and ip6_tnl_xmit it would fail as you have written.
+> Good point. Okay, if no mpls gso packets can make it here, then it
+> should not matter.
+>
+> Vadim, are we missing another reason for this move?
+>
+> Else, no other concerns from me. Please do add a Fixes tag.
+Could not reproduce the bug. Could you please provide a test scenario?
 
-Best regards,
-Clemens
+Anyway, all my scenarious with MPLS-in-IPv6 and MPLS-in-GUE are working so I'm 
+ok with moving
+
