@@ -2,77 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3399A2A0122
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 10:21:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B17A2A0127
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 10:21:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726083AbgJ3JVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 05:21:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42974 "EHLO
+        id S1726261AbgJ3JVn convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 30 Oct 2020 05:21:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726171AbgJ3JVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 05:21:05 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E30DC0613CF
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 02:21:05 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id 7so7672244ejm.0
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 02:21:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zOMqHpkJaHowq/dDwqOe5W8I3TUfOpuTyPw7+Js6M2c=;
-        b=iyx9eyDH7WmZazoHtD0wvDMdEYtOTYRkH5W2OXpABrc4DDaXQbyklGMqRgz7mysnO+
-         SlkEF+X7roFQ5na7QYEJblzSeUk9yYmaoi5O04cnWP2jbaGHBpGugiOPzahjM+EZz7Mb
-         fbt8P++bN5i+QWat46bs3qCK31COua4VddpDrjJq5bE76UsrUhy2jSr/g7fFj6foLlRz
-         NIR9yaHAXNkmZOwd4xlHlLzHpUbYhB5EICY+J9swrOFixE07hjSx7NS0L4WNXbXQEM8F
-         sCzZ+XtfmFFNYy+i3pCpTCwvYYIc0UOF+76uyD99d/HhjZjInnKxlBy/9Dic0Knv2ikr
-         Zsxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zOMqHpkJaHowq/dDwqOe5W8I3TUfOpuTyPw7+Js6M2c=;
-        b=FLy7LN4oA+RSfFKE6U9emAUt0UfH6NA+Gkvt6w0MmyPc6f5xBdsruSccaB5H6tNwFH
-         hssAhKsLHiidjdWidjwL7JjF80qj8d3NMdzD0dptF6uET4PQYF6qtJsf3ai4VbOZVx3/
-         25R1BPYwSWodLY4jv0WWS2kB68lt+nmlzwXa9cbJMFgDPCFf6CiHTUJQ2IPJbgxCmLk8
-         NnT3cwJgsXNFntmjOyylDlHYc4KvMXKlOrIiISlqqMt3k0k3/1MZNgfbXVYQhBI5CjwZ
-         CUd34soZiPDa0nFB+a2t3qzGFnpu3pXTQ00b4fdsJ7DXgAn0jbqO4LrA1pcJlFvhSHns
-         rm/A==
-X-Gm-Message-State: AOAM530AsiiZFJenGUEtfC5pOoUSw4CjT1/iC7lGuoABKPoqrKDJdfjL
-        7UM4qMF+6HjLYq87zjTN1txC3B9kA1U=
-X-Google-Smtp-Source: ABdhPJyw3HpHOK85AyJxA4OUFte4sjQqlxa4/iXBMVWwzkeMl1DBKqhRi0lmj/0XRT4w9EB01MeDtQ==
-X-Received: by 2002:a17:906:3614:: with SMTP id q20mr1394774ejb.297.1604049664294;
-        Fri, 30 Oct 2020 02:21:04 -0700 (PDT)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id b1sm2315583ejg.60.2020.10.30.02.21.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Oct 2020 02:21:03 -0700 (PDT)
-Date:   Fri, 30 Oct 2020 11:21:02 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org, Ido Schimmel <idosch@idosch.org>
-Subject: Re: [RFC PATCH 4/4] net: dsa: tag_edsa: support reception of packets
- from lag devices
-Message-ID: <20201030092102.teympxo3hq6bfz4b@skbuf>
-References: <20201028230858.5rgzbgdnxo2boqnd@skbuf>
- <C6P7J2EICLJ2.2QY1SQHL62MH3@wkz-x280>
+        with ESMTP id S1726214AbgJ3JVn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 05:21:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9DCBC0613D2
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 02:21:42 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kYQbL-0003W5-Kd; Fri, 30 Oct 2020 10:21:39 +0100
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kYQbH-0001kb-Sz; Fri, 30 Oct 2020 10:21:35 +0100
+Date:   Fri, 30 Oct 2020 10:21:35 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, kuba@kernel.org,
+        Christian Eggers <ceggers@arri.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Per Forlin <per.forlin@axis.com>,
+        Oleksij Rempel <linux@rempel-privat.de>
+Subject: Re: [PATCH v2 net-next 12/12] net: dsa: tag_ar9331: let DSA core
+ deal with TX reallocation
+Message-ID: <20201030092135.564abundlcpm43lj@pengutronix.de>
+References: <20201030014910.2738809-1-vladimir.oltean@nxp.com>
+ <20201030014910.2738809-13-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <C6P7J2EICLJ2.2QY1SQHL62MH3@wkz-x280>
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20201030014910.2738809-13-vladimir.oltean@nxp.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:20:47 up 350 days, 39 min, 372 users,  load average: 0.13, 0.07,
+ 0.05
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 08:47:17AM +0100, Tobias Waldekranz wrote:
-> Doesn't that basically boil down to the argument that "we can't merge
-> this change because it's never going to be used, except for when it is
-> used"? I don't know if I buy that.
+On Fri, Oct 30, 2020 at 03:49:10AM +0200, Vladimir Oltean wrote:
+> Now that we have a central TX reallocation procedure that accounts for
+> the tagger's needed headroom in a generic way, we can remove the
+> skb_cow_head call.
 > 
-> How about the inverse question: If this change is not acceptable, do
-> you have any other suggestion on to solve it? The hardware is what it
-> is, I can not will the source port information into existence, and
-> injecting packets on the wrong DSA port feels even more dirty to me.
+> Cc: Per Forlin <per.forlin@axis.com>
+> Cc: Oleksij Rempel <linux@rempel-privat.de>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-I suppose you're right, I don't have any better suggestion.
+Tested-by: Oleksij Rempel <linux@rempel-privat.de>
+
+> ---
+> Changes in v2:
+> None.
+> 
+>  net/dsa/tag_ar9331.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/net/dsa/tag_ar9331.c b/net/dsa/tag_ar9331.c
+> index 55b00694cdba..002cf7f952e2 100644
+> --- a/net/dsa/tag_ar9331.c
+> +++ b/net/dsa/tag_ar9331.c
+> @@ -31,9 +31,6 @@ static struct sk_buff *ar9331_tag_xmit(struct sk_buff *skb,
+>  	__le16 *phdr;
+>  	u16 hdr;
+>  
+> -	if (skb_cow_head(skb, AR9331_HDR_LEN) < 0)
+> -		return NULL;
+> -
+>  	phdr = skb_push(skb, AR9331_HDR_LEN);
+>  
+>  	hdr = FIELD_PREP(AR9331_HDR_VERSION_MASK, AR9331_HDR_VERSION);
+> -- 
+> 2.25.1
+> 
+
+Regards,
+Oleksij
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
