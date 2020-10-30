@@ -2,92 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4D8E2A112D
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 23:52:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 683092A1131
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 23:53:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725895AbgJ3WwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 18:52:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56894 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbgJ3WwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 18:52:21 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F555C0613D5;
-        Fri, 30 Oct 2020 15:52:21 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id gi3so17410pjb.3;
-        Fri, 30 Oct 2020 15:52:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=91c9EpN35NammVPGZ4fZAQ5G050YxyvJ3BZUiRrkUMs=;
-        b=CCQG+ezN81ySThA+qBB5QkNFAEhBb6/sj04wP5mk154Md4ZDuvf5jxLl4wqou5M9UZ
-         dDpnas2WuL+iILzIo4jq+hPA1YXSg1JHOnUpTmuAFUrVS0We3TUI7yrvCbPbz3YmVHXA
-         z8WeT3pfUo8jIcq8HV6FzRrhp8XDvES63C/M1PyJgGa0cVUe7XOEiBtQ1dYVj4zWGZ+Z
-         3pmKtlQjWT0A5QMt/pt/6cRMfvfH+ev/y/IYMFAB389b+HNiJZYaTSPp9zh3cjc/AYB0
-         QPvt707IYWaFN0EXaATlJnVj07f1NdvSnGtZd27mRnBvgXKI4MxGWiSk9m4FRGZyGDGZ
-         DHkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=91c9EpN35NammVPGZ4fZAQ5G050YxyvJ3BZUiRrkUMs=;
-        b=kG76QQJ97mb7tH4HumG1ksJF1JSdxONkk0eAwyKJF1oKUZd/6vyKg2RtteVTu9FDVf
-         HoxqLImI6qZkt+ro7oOJJceUxPfN6gnht32njl2R92wWUoLMMhKtEJQNWbFtMBYtAso5
-         QtMM4lc9IfkigLCQz0BD4pi9VRxIfq2xms0YtglaZPk6Epar2tV+3u6VNdfxVJbt56s2
-         BrQacxzKkHzoR9KfU13pixjLhgGt3y9XdEFLmQZeFnBIuTzJTP7Zk7KuRFlu9V1CneDR
-         Ym56Q1J5FOk2BKK4Q839JVQe5zwEQbA5jgwqZ0HmwIK1jsLp+XU4z50p3hF3GkAj1EXI
-         FFPA==
-X-Gm-Message-State: AOAM532l+3xr7ywwPWCZ205lvSX+bY/wmK/mI1IugQob2Jt3IVtUT1pW
-        ymTU+ZWmeUStS+1AAauLBWF4gM3nzGVrMyr4QBLoh1vYNuc=
-X-Google-Smtp-Source: ABdhPJw34ayAF4nQFq7OJ5Mv48RULe+Tvk+O092gR/L7tzH8LdGtjI56M4bAjwO6ky2pSJsyeLTNt0Wqw0H3T+SbCuQ=
-X-Received: by 2002:a17:902:82c8:b029:d6:b42f:ce7a with SMTP id
- u8-20020a17090282c8b02900d6b42fce7amr999714plz.23.1604098340678; Fri, 30 Oct
- 2020 15:52:20 -0700 (PDT)
+        id S1726020AbgJ3Ww6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 18:52:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48912 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725780AbgJ3Ww5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Oct 2020 18:52:57 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2087820825;
+        Fri, 30 Oct 2020 22:52:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604098376;
+        bh=9P4KNw5xcpR7x5NeyeVpmMxXUCRky89EVfiUKIGWGD0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N5VckLQqI69V90I5Rl7wMCdNBjp4oTlX5wKfESzVIrRTm18/0b9CpaLH9+3zvmQ6+
+         6phepvSV9oJfydsU9H0WbrlPCTDQ974j/u2ylAYXRivKgymVAJCX9DiYIJjwSPg+zO
+         QlxIcZn1rfSJQ7ZoTV9kcf+VLGcWa+SMTI3Der4Y=
+Date:   Fri, 30 Oct 2020 15:52:55 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Motiejus =?UTF-8?B?SmFrxaF0eXM=?= <desired.mta@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-doc@vger.kernel.org, trivial@kernel.org
+Subject: Re: [PATCH] Documentation: tproxy: more gentle intro
+Message-ID: <20201030155255.6599e46a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201027120620.476066-1-desired.mta@gmail.com>
+References: <20201027120620.476066-1-desired.mta@gmail.com>
 MIME-Version: 1.0
-References: <20201030022839.438135-1-xie.he.0141@gmail.com>
- <20201030022839.438135-5-xie.he.0141@gmail.com> <CA+FuTSczR03KGNdksH2KyAyzoR9jc6avWNrD+UWyc7sXd44J4w@mail.gmail.com>
- <CAJht_ENORPqd+GQPPzNfmCapQ6fwL_YGW8=1h20fqGe4_wDe9Q@mail.gmail.com>
- <CAF=yD-J8PvkR5xTgv8bb6MHJatWtq5Y_mPjx4+tpWvweMPFFHA@mail.gmail.com>
- <CAJht_EPscUkmcgidk5sGAO4K1iVeqDpBRDy75RQ+s0OKK3mB8Q@mail.gmail.com> <CA+FuTSefJk9xkPQU8K5Ew6ZmnSbMo0S4izAoc=h7-cDrN98jUQ@mail.gmail.com>
-In-Reply-To: <CA+FuTSefJk9xkPQU8K5Ew6ZmnSbMo0S4izAoc=h7-cDrN98jUQ@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Fri, 30 Oct 2020 15:52:09 -0700
-Message-ID: <CAJht_EOMJNENgE7bvy6Nc5xqoH9aKUhufWNvwhT-m3X0OreS3g@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 4/5] net: hdlc_fr: Do skb_reset_mac_header for
- skbs received on normal PVC devices
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 3:22 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> It's indirect:
->
->         skb_reset_network_header(skb);
->         if (!skb_transport_header_was_set(skb))
->                 skb_reset_transport_header(skb);
->         skb_reset_mac_len(skb);
+On Tue, 27 Oct 2020 14:06:20 +0200 Motiejus Jak=C5=A1tys wrote:
+> Clarify tproxy odcumentation, so it's easier to read/understand without
+> a-priori in-kernel transparent proxying knowledge:
+>=20
+> - re-shuffle the sections, as the "router" section is easier to
+>   understand when getting started.
+> - add a link to HAProxy page. This is where I learned most about what
+>   tproxy is, so I believe it is reasonable to include.
+> - removed a reference to linux 2.2.
+>=20
+> Plus Sphinx formatting/cosmetic changes.
+>=20
+> Signed-off-by: Motiejus Jak=C5=A1tys <desired.mta@gmail.com>
+> ---
+>  Documentation/networking/tproxy.rst | 155 +++++++++++++++-------------
+>  1 file changed, 83 insertions(+), 72 deletions(-)
+>=20
+> diff --git a/Documentation/networking/tproxy.rst b/Documentation/networki=
+ng/tproxy.rst
+> index 00dc3a1a66b4..0f43159046fb 100644
+> --- a/Documentation/networking/tproxy.rst
+> +++ b/Documentation/networking/tproxy.rst
+> @@ -1,42 +1,77 @@
+>  .. SPDX-License-Identifier: GPL-2.0
+> =20
+> -=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+> -Transparent proxy support
+> -=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
+> +Transparent proxy (TPROXY)
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
+> =20
+> -This feature adds Linux 2.2-like transparent proxy support to current ke=
+rnels.
+> -To use it, enable the socket match and the TPROXY target in your kernel =
+config.
+> -You will need policy routing too, so be sure to enable that as well.
+> +TPROXY enables forwarding and intercepting packets that were destined
+> +for other destination IPs, without using NAT chain or REDIRECT targets.
 
-Oh. I see. skb_reset_mac_len would set skb->mac_len. Not sure where
-skb->mac_len would be used though.
+"destined for other destination" does not sound good.
 
-> > I thought only AF_PACKET/RAW sockets would need this information
-> > because other upper layers would not care about what happened in L2.
->
-> I think that's a reasonable assumption. I don't have a good
-> counterexample ready. Specific to this case, it seems to have been
-> working with no one complaining so far ;)
+Better say endpoint than IPs, IP is the name of a protocol.
 
-Yeah. It seems to me that a lot of drivers (without header_ops) have
-this problem. The comment in af_packet.c before my commit b79a80bd6dd8
-also indicated this problem was widespread. It seemed to not cause any
-issues.
+> -From Linux 4.18 transparent proxy support is also available in nf_tables.
+> +Redirecting traffic
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> =20
+> -1. Making non-local sockets work
+> -=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+> +TPROXY is often used to "intercept" traffic on a router. This is usually=
+ done
+> +with the iptables ``REDIRECT`` target, however, there are serious limita=
+tions:
+> +it modifies the packets to change the destination address -- which might=
+ not be
+> +acceptable in certain situations, e.g.:
+> +- UDP: you won't be able to find out the original destination address.
+> +- TCP: getting the original destination address is racy.
+
+I don't think this rewrite of the examples helps. Also it doesn't
+render right. Please leave the original wording.
+
+> -The idea is that you identify packets with destination address matching =
+a local
+> -socket on your box, set the packet mark to a certain value::
+> +The ``TPROXY`` target provides similar functionality without relying on =
+NAT.
+> +Simply add rules like this to the iptables ruleset above:
+
+There are no rules "above" after the reordering.
+
+> -    # iptables -t mangle -N DIVERT
+> -    # iptables -t mangle -A PREROUTING -p tcp -m socket -j DIVERT
+> -    # iptables -t mangle -A DIVERT -j MARK --set-mark 1
+> -    # iptables -t mangle -A DIVERT -j ACCEPT
+> +.. code-block:: sh
+
+> +To use tproxy you'll need to have the following modules compiled for ipt=
+ables:
+> =20
+> -As an example implementation, tcprdr is available here:
+> -https://git.breakpoint.cc/cgit/fw/tcprdr.git/
+> -This tool is written by Florian Westphal and it was used for testing dur=
+ing the
+> -nf_tables implementation.
+> + - ``NETFILTER_XT_MATCH_SOCKET``
+> + - ``NETFILTER_XT_TARGET_TPROXY``
+> =20
+> -3. Iptables and nf_tables extensions
+> -=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +For nf_tables:
+> =20
+> -To use tproxy you'll need to have the following modules compiled for ipt=
+ables:
+> + - ``NFT_TPROXY``
+> + - ``NFT_SOCKET``
+
+What happened to the mention of policy routing in the kernel support?
+
+> - - NETFILTER_XT_MATCH_SOCKET
+> - - NETFILTER_XT_TARGET_TPROXY
+> +Application support
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+> +HAproxy
+> +-------
+> =20
+> -Squid 3.HEAD has support built-in. To use it, pass
+> -'--enable-linux-netfilter' to configure and set the 'tproxy' option on
+> -the HTTP listener you redirect traffic to with the TPROXY iptables
+> -target.
+> +Documented in `Haproxy blog`_.
+
+Can we add some words here, beyond just a link?
+
+> -For more information please consult the following page on the Squid
+> -wiki: http://wiki.squid-cache.org/Features/Tproxy4
+> +.. _`Squid wiki`: http://wiki.squid-cache.org/Features/Tproxy4
+> +.. _`HAproxy blog`: https://www.haproxy.com/blog/howto-transparent-proxy=
+ing-and-binding-with-haproxy-and-aloha-load-balancer/
+
+Overall I can see how the document can be hard to grasp, but I'm not
+sure the reordering is an improvement. In the doc as is the first
+section describes simple local receive of traffic not destined for
+local host. Second describes TPROXY redirect.=20
+
+Perhaps their headings or content could be clarified but reorder
+doesn't make much sense IMHO.
