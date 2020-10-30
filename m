@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 348A62A0CC3
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 18:47:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D7442A0CC4
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 18:47:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727108AbgJ3Rr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 13:47:29 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:52115 "EHLO
+        id S1727217AbgJ3Rrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 13:47:32 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:18243 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725844AbgJ3Rr2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 13:47:28 -0400
+        with ESMTP id S1727099AbgJ3Rrb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 13:47:31 -0400
 Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 09UHl9pP020669;
-        Fri, 30 Oct 2020 10:47:23 -0700
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 09UHl9pQ020669;
+        Fri, 30 Oct 2020 10:47:27 -0700
 From:   Rohit Maheshwari <rohitm@chelsio.com>
 To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
 Cc:     secdev@chelsio.com, Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [net v3 03/10] ch_ktls: Update cheksum information
-Date:   Fri, 30 Oct 2020 23:17:01 +0530
-Message-Id: <20201030174708.9578-4-rohitm@chelsio.com>
+Subject: [net v3 04/10] ch_ktls: incorrect use of GFP_KERNEL
+Date:   Fri, 30 Oct 2020 23:17:02 +0530
+Message-Id: <20201030174708.9578-5-rohitm@chelsio.com>
 X-Mailer: git-send-email 2.18.1
 In-Reply-To: <20201030174708.9578-1-rohitm@chelsio.com>
 References: <20201030174708.9578-1-rohitm@chelsio.com>
@@ -27,73 +27,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Checksum update was missing in the WR.
+Use of GFP_KERNEL under lock is not correct. Replacing it
+with GFP_ATOMIC.
 
-Fixes: 429765a149f1 ("chcr: handle partial end part of a record")
 Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
 ---
- .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c | 21 ++++++++++++-------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-index 447aec7ae954..a1448a1b38fd 100644
+index a1448a1b38fd..379d4d1220b1 100644
 --- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
 +++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-@@ -947,18 +947,17 @@ static int
- chcr_ktls_write_tcp_options(struct chcr_ktls_info *tx_info, struct sk_buff *skb,
- 			    struct sge_eth_txq *q, uint32_t tx_chan)
- {
-+	u32 ctrl, iplen, maclen, pktlen, ndesc, len16;
- 	struct fw_eth_tx_pkt_wr *wr;
- 	struct cpl_tx_pkt_core *cpl;
--	u32 ctrl, iplen, maclen;
- #if IS_ENABLED(CONFIG_IPV6)
- 	struct ipv6hdr *ip6;
- #endif
--	unsigned int ndesc;
- 	struct tcphdr *tcp;
--	int len16, pktlen;
-+	u8 buf[150] = {0};
- 	struct iphdr *ip;
- 	int credits;
--	u8 buf[150];
-+	u64 cntrl1;
- 	void *pos;
- 
- 	iplen = skb_network_header_len(skb);
-@@ -997,22 +996,28 @@ chcr_ktls_write_tcp_options(struct chcr_ktls_info *tx_info, struct sk_buff *skb,
- 			   TXPKT_PF_V(tx_info->adap->pf));
- 	cpl->pack = 0;
- 	cpl->len = htons(pktlen);
--	/* checksum offload */
--	cpl->ctrl1 = 0;
--
--	pos = cpl + 1;
- 
- 	memcpy(buf, skb->data, pktlen);
- 	if (tx_info->ip_family == AF_INET) {
- 		/* we need to correct ip header len */
- 		ip = (struct iphdr *)(buf + maclen);
- 		ip->tot_len = htons(pktlen - maclen);
-+		cntrl1 = TXPKT_CSUM_TYPE_V(TX_CSUM_TCPIP);
- #if IS_ENABLED(CONFIG_IPV6)
+@@ -1675,7 +1675,7 @@ static int chcr_end_part_handler(struct chcr_ktls_info *tx_info,
  	} else {
- 		ip6 = (struct ipv6hdr *)(buf + maclen);
- 		ip6->payload_len = htons(pktlen - maclen - iplen);
-+		cntrl1 = TXPKT_CSUM_TYPE_V(TX_CSUM_TCPIP6);
- #endif
- 	}
-+
-+	cntrl1 |= T6_TXPKT_ETHHDR_LEN_V(maclen - ETH_HLEN) |
-+		  TXPKT_IPHDR_LEN_V(iplen);
-+	/* checksum offload */
-+	cpl->ctrl1 = cpu_to_be64(cntrl1);
-+
-+	pos = cpl + 1;
-+
- 	/* now take care of the tcp header, if fin is not set then clear push
- 	 * bit as well, and if fin is set, it will be sent at the last so we
- 	 * need to update the tcp sequence number as per the last packet.
+ 		dev_kfree_skb_any(skb);
+ 
+-		nskb = alloc_skb(0, GFP_KERNEL);
++		nskb = alloc_skb(0, GFP_ATOMIC);
+ 		if (!nskb)
+ 			return NETDEV_TX_BUSY;
+ 		/* copy complete record in skb */
 -- 
 2.18.1
 
