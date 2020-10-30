@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D0C52A03E0
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 12:16:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1382E2A03E6
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 12:16:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726351AbgJ3LQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 07:16:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:60091 "EHLO
+        id S1726430AbgJ3LQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 07:16:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28883 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726285AbgJ3LQc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 07:16:32 -0400
+        by vger.kernel.org with ESMTP id S1726308AbgJ3LQg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 07:16:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604056591;
+        s=mimecast20190719; t=1604056594;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=WnT8yDT00QyRsUEZ7gp5zTCd68WeeplEqh2AFWI8M0Q=;
-        b=QFHO67zUYVETcAz7xPnzgUdbrjZlMlVOrFPOMGW37z/yvizLV1IjiSnhC1P8WuaM9HnG1h
-        at8IsaeyCQVPmfAL3to6jz2S6kNd+gw7S6XM/0jsfh8A0NjGBicywFXY+KepYpEfS1sxm+
-        4Dom0icWqI2iCNpux3zX1Snk2ZFVGYo=
+        bh=Vb6FoObRC7TNOdfp5eIxNq4N0EhVG53AtqK1jDnGeFM=;
+        b=GtQImrB2voOOHdq6TMFerKksp3KG2HpQ+EUqPflqrbgwXrDRycOCnTOaczYkDbQc02WHQI
+        mT+RmhAcqpX0N6WVWe4A0Rp/Sn08pu4OqV7ch5/g8L6rpaB3WgS81p5eCheliS6Cn6u0F6
+        6H/YYEykE05PO391cEuz1Pxf0YYkHag=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-262-mXSXqv9EPbi8R7k9h-V3SA-1; Fri, 30 Oct 2020 07:16:27 -0400
-X-MC-Unique: mXSXqv9EPbi8R7k9h-V3SA-1
+ us-mta-563-f98EyH-0N7e3KeSZhSIiSQ-1; Fri, 30 Oct 2020 07:16:30 -0400
+X-MC-Unique: f98EyH-0N7e3KeSZhSIiSQ-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 43CFD1006700;
-        Fri, 30 Oct 2020 11:16:26 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6B78D425CB;
+        Fri, 30 Oct 2020 11:16:28 +0000 (UTC)
 Received: from gerbillo.redhat.com (ovpn-114-14.ams2.redhat.com [10.36.114.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 345D010027AA;
-        Fri, 30 Oct 2020 11:16:24 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8054110027AA;
+        Fri, 30 Oct 2020 11:16:26 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Jonathan Corbet <corbet@lwn.net>,
@@ -41,9 +41,9 @@ Cc:     Jonathan Corbet <corbet@lwn.net>,
         Shuah Khan <shuah@kernel.org>, linux-doc@vger.kernel.org,
         linux-kselftest@vger.kernel.org,
         Marcelo Tosatti <mtosatti@redhat.com>
-Subject: [PATCH net-next v2 1/3] net/sysctl: factor-out netdev_rx_queue_set_rps_mask() helper
-Date:   Fri, 30 Oct 2020 12:16:01 +0100
-Message-Id: <02f88c3f7fb2dedb96b764328360c36d92bad95c.1604055792.git.pabeni@redhat.com>
+Subject: [PATCH net-next v2 2/3] net/core: introduce default_rps_mask netns attribute
+Date:   Fri, 30 Oct 2020 12:16:02 +0100
+Message-Id: <6ecd98ecb73e3d723e8cb9a80700ef9adc8e3428.1604055792.git.pabeni@redhat.com>
 In-Reply-To: <cover.1604055792.git.pabeni@redhat.com>
 References: <cover.1604055792.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -53,107 +53,165 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Will simplify the following patch. No functional change
-intended.
+If RPS is enabled, this allows configuring a default rps
+mask, which is effective since receive queue creation time.
+
+A default RPS mask allows the system admin to ensure proper
+isolation, avoiding races at network namespace or device
+creation time.
+
+The default RPS mask is initially empty, and can be
+modified via a newly added sysctl entry.
+
+v1 -> v2:
+ - declare rps_default_mask in netdevice.h to avoid a
+   sparse warning - Jakub
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/core/net-sysfs.c | 66 ++++++++++++++++++++++++--------------------
- 1 file changed, 36 insertions(+), 30 deletions(-)
+ Documentation/admin-guide/sysctl/net.rst |  6 +++
+ include/linux/netdevice.h                |  1 +
+ net/core/net-sysfs.c                     |  7 +++
+ net/core/sysctl_net_core.c               | 58 ++++++++++++++++++++++++
+ 4 files changed, 72 insertions(+)
 
+diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
+index 57fd6ce68fe0..818cb2030a8b 100644
+--- a/Documentation/admin-guide/sysctl/net.rst
++++ b/Documentation/admin-guide/sysctl/net.rst
+@@ -211,6 +211,12 @@ rmem_max
+ 
+ The maximum receive socket buffer size in bytes.
+ 
++rps_default_mask
++----------------
++
++The default RPS CPU mask used on newly created network devices. An empty
++mask means RPS disabled by default.
++
+ tstamp_allow_data
+ -----------------
+ Allow processes to receive tx timestamps looped together with the original
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 964b494b0e8d..2593689648d3 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -200,6 +200,7 @@ struct net_device_stats {
+ #include <linux/static_key.h>
+ extern struct static_key_false rps_needed;
+ extern struct static_key_false rfs_needed;
++extern struct cpumask rps_default_mask;
+ #endif
+ 
+ struct neighbour;
 diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 94fff0700bdd..b57426707216 100644
+index b57426707216..3f3d1d467fe0 100644
 --- a/net/core/net-sysfs.c
 +++ b/net/core/net-sysfs.c
-@@ -737,42 +737,18 @@ static ssize_t show_rps_map(struct netdev_rx_queue *queue, char *buf)
- 	return len < PAGE_SIZE ? len : -EINVAL;
- }
+@@ -983,6 +983,13 @@ static int rx_queue_add_kobject(struct net_device *dev, int index)
+ 			goto err;
+ 	}
  
--static ssize_t store_rps_map(struct netdev_rx_queue *queue,
--			     const char *buf, size_t len)
-+static int netdev_rx_queue_set_rps_mask(struct netdev_rx_queue *queue,
-+					cpumask_var_t mask)
- {
--	struct rps_map *old_map, *map;
--	cpumask_var_t mask;
--	int err, cpu, i, hk_flags;
- 	static DEFINE_MUTEX(rps_map_mutex);
--
--	if (!capable(CAP_NET_ADMIN))
--		return -EPERM;
--
--	if (!alloc_cpumask_var(&mask, GFP_KERNEL))
--		return -ENOMEM;
--
--	err = bitmap_parse(buf, len, cpumask_bits(mask), nr_cpumask_bits);
--	if (err) {
--		free_cpumask_var(mask);
--		return err;
--	}
--
--	if (!cpumask_empty(mask)) {
--		hk_flags = HK_FLAG_DOMAIN | HK_FLAG_WQ;
--		cpumask_and(mask, mask, housekeeping_cpumask(hk_flags));
--		if (cpumask_empty(mask)) {
--			free_cpumask_var(mask);
--			return -EINVAL;
--		}
--	}
-+	struct rps_map *old_map, *map;
-+	int cpu, i;
++#if IS_ENABLED(CONFIG_RPS) && IS_ENABLED(CONFIG_SYSCTL)
++	if (!cpumask_empty(&rps_default_mask)) {
++		error = netdev_rx_queue_set_rps_mask(queue, &rps_default_mask);
++		if (error)
++			goto err;
++	}
++#endif
+ 	kobject_uevent(kobj, KOBJ_ADD);
  
- 	map = kzalloc(max_t(unsigned int,
- 			    RPS_MAP_SIZE(cpumask_weight(mask)), L1_CACHE_BYTES),
- 		      GFP_KERNEL);
--	if (!map) {
--		free_cpumask_var(mask);
-+	if (!map)
- 		return -ENOMEM;
--	}
+ 	return error;
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index d86d8d11cfe4..13451ac88a74 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -15,6 +15,7 @@
+ #include <linux/vmalloc.h>
+ #include <linux/init.h>
+ #include <linux/slab.h>
++#include <linux/sched/isolation.h>
  
- 	i = 0;
- 	for_each_cpu_and(cpu, mask, cpu_online_mask)
-@@ -799,9 +775,39 @@ static ssize_t store_rps_map(struct netdev_rx_queue *queue,
+ #include <net/ip.h>
+ #include <net/sock.h>
+@@ -46,6 +47,54 @@ int sysctl_devconf_inherit_init_net __read_mostly;
+ EXPORT_SYMBOL(sysctl_devconf_inherit_init_net);
  
- 	if (old_map)
- 		kfree_rcu(old_map, rcu);
-+	return 0;
-+}
+ #ifdef CONFIG_RPS
++struct cpumask rps_default_mask;
 +
-+static ssize_t store_rps_map(struct netdev_rx_queue *queue,
-+			     const char *buf, size_t len)
++static int rps_default_mask_sysctl(struct ctl_table *table, int write,
++				   void *buffer, size_t *lenp, loff_t *ppos)
 +{
-+	cpumask_var_t mask;
-+	int err, hk_flags;
++	int len, err = 0;
 +
-+	if (!capable(CAP_NET_ADMIN))
-+		return -EPERM;
++	rtnl_lock();
++	if (write) {
++		err = cpumask_parse(buffer, &rps_default_mask);
++		if (err)
++			goto done;
 +
-+	if (!alloc_cpumask_var(&mask, GFP_KERNEL))
-+		return -ENOMEM;
-+
-+	err = bitmap_parse(buf, len, cpumask_bits(mask), nr_cpumask_bits);
-+	if (err)
-+		goto out;
- 
-+	if (!cpumask_empty(mask)) {
-+		hk_flags = HK_FLAG_DOMAIN | HK_FLAG_WQ;
-+		cpumask_and(mask, mask, housekeeping_cpumask(hk_flags));
-+		if (cpumask_empty(mask)) {
-+			err = -EINVAL;
-+			goto out;
++		if (!cpumask_empty(&rps_default_mask)) {
++			int hk_flags = HK_FLAG_DOMAIN | HK_FLAG_WQ;
++			cpumask_and(&rps_default_mask, &rps_default_mask,
++				    housekeeping_cpumask(hk_flags));
++			if (cpumask_empty(&rps_default_mask)) {
++				err = -EINVAL;
++				goto done;
++			}
 +		}
++	} else {
++		char kbuf[128];
++
++		if (*ppos || !*lenp) {
++			*lenp = 0;
++			goto done;
++		}
++
++		len = min(sizeof(kbuf) - 1, *lenp);
++		len = scnprintf(kbuf, len, "%*pb", cpumask_pr_args(&rps_default_mask));
++		if (!len) {
++			*lenp = 0;
++			goto done;
++		}
++		if (len < *lenp)
++			kbuf[len++] = '\n';
++		memcpy(buffer, kbuf, len);
++		*lenp = len;
++		*ppos += len;
 +	}
 +
-+	err = netdev_rx_queue_set_rps_mask(queue, mask);
++done:
++	rtnl_unlock();
++	return err;
++}
 +
-+out:
- 	free_cpumask_var(mask);
--	return len;
-+	return err ? : len;
- }
+ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
+ 				void *buffer, size_t *lenp, loff_t *ppos)
+ {
+@@ -466,6 +515,11 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= rps_sock_flow_sysctl
+ 	},
++	{
++		.procname	= "rps_default_mask",
++		.mode		= 0644,
++		.proc_handler	= rps_default_mask_sysctl
++	},
+ #endif
+ #ifdef CONFIG_NET_FLOW_LIMIT
+ 	{
+@@ -648,6 +702,10 @@ static __net_initdata struct pernet_operations sysctl_core_ops = {
  
- static ssize_t show_rps_dev_flow_table_cnt(struct netdev_rx_queue *queue,
+ static __init int sysctl_core_init(void)
+ {
++#if IS_ENABLED(CONFIG_RPS)
++	cpumask_copy(&rps_default_mask, cpu_none_mask);
++#endif
++
+ 	register_net_sysctl(&init_net, "net/core", net_core_table);
+ 	return register_pernet_subsys(&sysctl_core_ops);
+ }
 -- 
 2.26.2
 
