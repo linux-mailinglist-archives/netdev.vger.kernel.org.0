@@ -2,626 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19D022A0A07
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:37:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0137E2A0A60
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:50:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727150AbgJ3PhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 11:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45252 "EHLO
+        id S1726871AbgJ3Pu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 11:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726642AbgJ3PhO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 11:37:14 -0400
-Received: from confino.investici.org (confino.investici.org [IPv6:2a00:c38:11e:ffff::a020])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2343C0613CF;
-        Fri, 30 Oct 2020 08:37:13 -0700 (PDT)
-Received: from mx1.investici.org (unknown [127.0.0.1])
-        by confino.investici.org (Postfix) with ESMTP id 4CN5yw5Y0jz114R;
-        Fri, 30 Oct 2020 15:37:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=privacyrequired.com;
-        s=stigmate; t=1604072232;
-        bh=Bxb+1jo3jW39sozBli76rwE38UAMlZoZVKgi6RnXrZc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Srs+W09N9YWivwWiEVQkYY/5lK/IZGzvywZ00U0rw/FmdFwvlvyigkTcZddsbh/DV
-         MfCBMbj8++EHuKTtuir7rUl4A6tOCP7HsoWimwMqJQPYd+OZ3oi1ka3XYcMq5m9FHa
-         nztWy5nc7ktVzI2u4b2qvrEjG3wcY7bivGqmDW/A=
-Received: from [212.103.72.250] (mx1.investici.org [212.103.72.250]) (Authenticated sender: laniel_francis@privacyrequired.com) by localhost (Postfix) with ESMTPSA id 4CN5yw3Vd5z110K;
-        Fri, 30 Oct 2020 15:37:12 +0000 (UTC)
-From:   laniel_francis@privacyrequired.com
-To:     linux-hardening@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, keescook@chromium.org,
-        Francis Laniel <laniel_francis@privacyrequired.com>
-Subject: [PATCH v4 3/3] treewide: rename nla_strlcpy to nla_strscpy.
-Date:   Fri, 30 Oct 2020 16:36:47 +0100
-Message-Id: <20201030153647.4408-4-laniel_francis@privacyrequired.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201030153647.4408-1-laniel_francis@privacyrequired.com>
-References: <20201030153647.4408-1-laniel_francis@privacyrequired.com>
+        with ESMTP id S1726259AbgJ3PuY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 11:50:24 -0400
+Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B264C0613CF
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:50:23 -0700 (PDT)
+Received: by mail-vk1-xa44.google.com with SMTP id r17so1547488vkf.6
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:50:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gtkXqSXeZ0niBcrY1U1mimvyg988mPc0A08k1zPHfyo=;
+        b=Xj6zpqLY6m6TGo2+TWWnmV5XQolSSy2qt4J/xqlbdfCOsimKOYNB2+Ghq7b2ylJoCS
+         PtPUNkiQa/kQ5atpFV/jp7iddjyij2QFdluzGVVffMfPmKGb+yg8xWW2FCpykG/wo2Hh
+         oaUGvDrQo6fk0UAs0CUaECTmW1X/gzRPeymkkWI7hELduvL1uQOwA1PfwQhO+c+LqPg/
+         y2eZOnGVGZ9VvGcoQPWrRcKDgs6o4PpmLwAT577C2SwnR1rJYwalMMQ11ojO8dXZ09Jj
+         dVVBRTILIV78x9eGahkbS7VO/Po2y9MnC5TIrZFduBWzVQSXujX6uSygWzPpgm2dVHIL
+         j+BA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gtkXqSXeZ0niBcrY1U1mimvyg988mPc0A08k1zPHfyo=;
+        b=liRzvVahOEJgWx0GwmkViRKOwuCP4I3c6YL/dCLk387p5Nbf//Iq+ynALHHOIjEqQP
+         dHR0CcAi5cm+kZeYCn9oagUjeB7MCwP4E9U8zhAIzHmNca0aGe6E6GNtHBfAriIed9H1
+         aOoegk+2SCBbSDqDQwDksM1f80hHwWSpdkjpi8W0KY7e+6+4fQMfGmOEl4v9cZZuQstU
+         kZGNU1Ku+Bf9iFD9cjq3WJdsKeaE98S3fp/TNm5xkbPFn6Wz80U1WAUoHNHaKBBVkCPw
+         0YY0AOKaoHoyeTH5qEo+c3WpstUPAs9eJgNYltHnllb3Hlgrda23N6EIvVFFIWV901UZ
+         DvQQ==
+X-Gm-Message-State: AOAM531onUPoD/FWygb+HBqBUo5PawXijVToxvUUMdEjiGwK/BFbGHq/
+        aQQN8Qm4XLs8Y05jNLBHgPK9dvCT/+g=
+X-Google-Smtp-Source: ABdhPJyKU16y0gbr4tLUCiPIv/AxoDkuUKo+qLmL+6Gz7JxxlYe27Ku7JC75AtTiNSVGDGID3zbVCg==
+X-Received: by 2002:a1f:2389:: with SMTP id j131mr7651535vkj.18.1604073022171;
+        Fri, 30 Oct 2020 08:50:22 -0700 (PDT)
+Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com. [209.85.217.44])
+        by smtp.gmail.com with ESMTPSA id c21sm230891vsh.31.2020.10.30.08.50.20
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 30 Oct 2020 08:50:21 -0700 (PDT)
+Received: by mail-vs1-f44.google.com with SMTP id x11so1035903vsx.12
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:50:20 -0700 (PDT)
+X-Received: by 2002:a67:c981:: with SMTP id y1mr7538434vsk.14.1604073020412;
+ Fri, 30 Oct 2020 08:50:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <6e1ea05f-faeb-18df-91ef-572445691d89@solarflare.com> <94ca05ca-2871-3da6-e14f-0a9cb48ed2a5@solarflare.com>
+In-Reply-To: <94ca05ca-2871-3da6-e14f-0a9cb48ed2a5@solarflare.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 30 Oct 2020 11:49:44 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdaPV_ZsU=YfT6vAx-ScGWu1O1Ji1ubNmgxe4PZYYNfZw@mail.gmail.com>
+Message-ID: <CA+FuTSdaPV_ZsU=YfT6vAx-ScGWu1O1Ji1ubNmgxe4PZYYNfZw@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/4] sfc: implement encap TSO on EF100
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     linux-net-drivers@solarflare.com, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Francis Laniel <laniel_francis@privacyrequired.com>
+On Wed, Oct 28, 2020 at 9:39 PM Edward Cree <ecree@solarflare.com> wrote:
+>
+> The NIC only needs to know where the headers it has to edit (TCP and
+>  inner and outer IPv4) are, which fits GSO_PARTIAL nicely.
+> It also supports non-PARTIAL offload of UDP tunnels, again just
+>  needing to be told the outer transport offset so that it can edit
+>  the UDP length field.
+> (It's not clear to me whether the stack will ever use the non-PARTIAL
+>  version with the netdev feature flags we're setting here.)
+>
+> Signed-off-by: Edward Cree <ecree@solarflare.com>
+> ---
+>  drivers/net/ethernet/sfc/ef100_nic.c | 13 ++++++--
+>  drivers/net/ethernet/sfc/ef100_tx.c  | 45 ++++++++++++++++------------
+>  2 files changed, 37 insertions(+), 21 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+> index 3148fe770356..bf92cdc60cda 100644
+> --- a/drivers/net/ethernet/sfc/ef100_nic.c
+> +++ b/drivers/net/ethernet/sfc/ef100_nic.c
+> @@ -182,8 +182,16 @@ static int efx_ef100_init_datapath_caps(struct efx_nic *efx)
+>         if (rc)
+>                 return rc;
+>
+> -       if (efx_ef100_has_cap(nic_data->datapath_caps2, TX_TSO_V3))
+> -               efx->net_dev->features |= NETIF_F_TSO | NETIF_F_TSO6;
+> +       if (efx_ef100_has_cap(nic_data->datapath_caps2, TX_TSO_V3)) {
+> +               struct net_device *net_dev = efx->net_dev;
+> +               netdev_features_t tso = NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_GSO_PARTIAL |
+> +                                       NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_UDP_TUNNEL_CSUM;
+> +
+> +               net_dev->features |= tso;
+> +               net_dev->hw_features |= tso;
+> +               net_dev->hw_enc_features |= tso;
+> +               net_dev->gso_partial_features |= NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_UDP_TUNNEL_CSUM;
+> +       }
+>         efx->num_mac_stats = MCDI_WORD(outbuf,
+>                                        GET_CAPABILITIES_V4_OUT_MAC_STATS_NUM_STATS);
+>         netif_dbg(efx, probe, efx->net_dev,
+> @@ -1101,6 +1109,7 @@ static int ef100_probe_main(struct efx_nic *efx)
+>         nic_data->efx = efx;
+>         net_dev->features |= efx->type->offload_features;
+>         net_dev->hw_features |= efx->type->offload_features;
+> +       net_dev->hw_enc_features |= efx->type->offload_features;
+>
+>         /* Populate design-parameter defaults */
+>         nic_data->tso_max_hdr_len = ESE_EF100_DP_GZ_TSO_MAX_HDR_LEN_DEFAULT;
+> diff --git a/drivers/net/ethernet/sfc/ef100_tx.c b/drivers/net/ethernet/sfc/ef100_tx.c
+> index a90e5a9d2a37..d267b12bdaa0 100644
+> --- a/drivers/net/ethernet/sfc/ef100_tx.c
+> +++ b/drivers/net/ethernet/sfc/ef100_tx.c
+> @@ -54,8 +54,6 @@ static bool ef100_tx_can_tso(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
+>         struct efx_nic *efx = tx_queue->efx;
+>         struct ef100_nic_data *nic_data;
+>         struct efx_tx_buffer *buffer;
+> -       struct tcphdr *tcphdr;
+> -       struct iphdr *iphdr;
+>         size_t header_len;
+>         u32 mss;
+>
+> @@ -98,20 +96,6 @@ static bool ef100_tx_can_tso(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
+>         buffer->unmap_len = 0;
+>         buffer->skb = skb;
+>         ++tx_queue->insert_count;
+> -
+> -       /* Adjust the TCP checksum to exclude the total length, since we set
+> -        * ED_INNER_IP_LEN in the descriptor.
+> -        */
+> -       tcphdr = tcp_hdr(skb);
+> -       if (skb_is_gso_v6(skb)) {
+> -               tcphdr->check = ~csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
+> -                                                &ipv6_hdr(skb)->daddr,
+> -                                                0, IPPROTO_TCP, 0);
+> -       } else {
+> -               iphdr = ip_hdr(skb);
+> -               tcphdr->check = ~csum_tcpudp_magic(iphdr->saddr, iphdr->daddr,
+> -                                                  0, IPPROTO_TCP, 0);
+> -       }
+>         return true;
+>  }
+>
+> @@ -209,17 +193,35 @@ static void ef100_make_tso_desc(struct efx_nic *efx,
+>                 ESE_GZ_TX_DESC_IP4_ID_INC_MOD16;
+>         u16 vlan_enable =  efx->net_dev->features & NETIF_F_HW_VLAN_CTAG_TX ?
+>                 skb_vlan_tag_present(skb) : 0;
+> +       bool gso_partial = skb_shinfo(skb)->gso_type & SKB_GSO_PARTIAL;
+>         unsigned int len, ip_offset, tcp_offset, payload_segs;
+> +       unsigned int outer_ip_offset, outer_l4_offset;
+>         u16 vlan_tci = skb_vlan_tag_get(skb);
+>         u32 mss = skb_shinfo(skb)->gso_size;
+> +       bool encap = skb->encapsulation;
+> +       struct tcphdr *tcp;
+> +       u32 paylen;
+>
+>         len = skb->len - buffer->len;
+>         /* We use 1 for the TSO descriptor and 1 for the header */
+>         payload_segs = segment_count - 2;
+> -       ip_offset =  skb_network_offset(skb);
+> -       tcp_offset = skb_transport_offset(skb);
+> +       if (encap) {
+> +               outer_ip_offset = skb_network_offset(skb);
+> +               outer_l4_offset = skb_transport_offset(skb);
+> +               ip_offset = skb_inner_network_offset(skb);
+> +               tcp_offset = skb_inner_transport_offset(skb);
+> +       } else {
+> +               ip_offset =  skb_network_offset(skb);
+> +               tcp_offset = skb_transport_offset(skb);
+> +               outer_ip_offset = outer_l4_offset = 0;
+> +       }
+> +
+> +       /* subtract TCP payload length from inner checksum */
+> +       tcp = (void *)skb->data + tcp_offset;
+> +       paylen = skb->len - tcp_offset;
+> +       csum_replace_by_diff(&tcp->check, (__force __wsum)htonl(paylen));
+>
+> -       EFX_POPULATE_OWORD_13(*txd,
+> +       EFX_POPULATE_OWORD_17(*txd,
+>                               ESF_GZ_TX_DESC_TYPE, ESE_GZ_TX_DESC_TYPE_TSO,
+>                               ESF_GZ_TX_TSO_MSS, mss,
+>                               ESF_GZ_TX_TSO_HDR_NUM_SEGS, 1,
+> @@ -231,6 +233,11 @@ static void ef100_make_tso_desc(struct efx_nic *efx,
+>                               ESF_GZ_TX_TSO_INNER_L4_OFF_W, tcp_offset >> 1,
+>                               ESF_GZ_TX_TSO_ED_INNER_IP4_ID, mangleid,
+>                               ESF_GZ_TX_TSO_ED_INNER_IP_LEN, 1,
+> +                             ESF_GZ_TX_TSO_OUTER_L3_OFF_W, outer_ip_offset >> 1,
+> +                             ESF_GZ_TX_TSO_OUTER_L4_OFF_W, outer_l4_offset >> 1,
+> +                             ESF_GZ_TX_TSO_ED_OUTER_UDP_LEN, encap && !gso_partial,
 
-Calls to nla_strlcpy are now replaced by calls to nla_strscpy which is the new
-name of this function.
+This is a boolean field to signal whether the NIC needs to fix up the
+udp length field ?
 
-Signed-off-by: Francis Laniel <laniel_francis@privacyrequired.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
----
- drivers/infiniband/core/nldev.c            | 10 +++++-----
- drivers/net/can/vxcan.c                    |  4 ++--
- drivers/net/veth.c                         |  4 ++--
- include/linux/genl_magic_struct.h          |  2 +-
- include/net/netlink.h                      |  4 ++--
- include/net/pkt_cls.h                      |  2 +-
- kernel/taskstats.c                         |  2 +-
- lib/nlattr.c                               |  6 +++---
- net/core/fib_rules.c                       |  4 ++--
- net/core/rtnetlink.c                       | 12 ++++++------
- net/decnet/dn_dev.c                        |  2 +-
- net/ieee802154/nl-mac.c                    |  2 +-
- net/ipv4/devinet.c                         |  2 +-
- net/ipv4/fib_semantics.c                   |  2 +-
- net/ipv4/metrics.c                         |  2 +-
- net/netfilter/ipset/ip_set_hash_netiface.c |  4 ++--
- net/netfilter/nf_tables_api.c              |  6 +++---
- net/netfilter/nfnetlink_acct.c             |  2 +-
- net/netfilter/nfnetlink_cthelper.c         |  4 ++--
- net/netfilter/nft_ct.c                     |  2 +-
- net/netfilter/nft_log.c                    |  2 +-
- net/netlabel/netlabel_mgmt.c               |  2 +-
- net/nfc/netlink.c                          |  2 +-
- net/sched/act_api.c                        |  2 +-
- net/sched/act_ipt.c                        |  2 +-
- net/sched/act_simple.c                     |  4 ++--
- net/sched/cls_api.c                        |  2 +-
- net/sched/sch_api.c                        |  2 +-
- net/tipc/netlink_compat.c                  |  2 +-
- 29 files changed, 49 insertions(+), 49 deletions(-)
+Which in the case of GSO_PARTIAL has already been resolved by the gso
+layer (in __skb_udp_tunnel_segment).
 
-diff --git a/drivers/infiniband/core/nldev.c b/drivers/infiniband/core/nldev.c
-index 12d29d54a081..08366e254b1d 100644
---- a/drivers/infiniband/core/nldev.c
-+++ b/drivers/infiniband/core/nldev.c
-@@ -932,7 +932,7 @@ static int nldev_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (tb[RDMA_NLDEV_ATTR_DEV_NAME]) {
- 		char name[IB_DEVICE_NAME_MAX] = {};
- 
--		nla_strlcpy(name, tb[RDMA_NLDEV_ATTR_DEV_NAME],
-+		nla_strscpy(name, tb[RDMA_NLDEV_ATTR_DEV_NAME],
- 			    IB_DEVICE_NAME_MAX);
- 		if (strlen(name) == 0) {
- 			err = -EINVAL;
-@@ -1529,13 +1529,13 @@ static int nldev_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	    !tb[RDMA_NLDEV_ATTR_LINK_TYPE] || !tb[RDMA_NLDEV_ATTR_NDEV_NAME])
- 		return -EINVAL;
- 
--	nla_strlcpy(ibdev_name, tb[RDMA_NLDEV_ATTR_DEV_NAME],
-+	nla_strscpy(ibdev_name, tb[RDMA_NLDEV_ATTR_DEV_NAME],
- 		    sizeof(ibdev_name));
- 	if (strchr(ibdev_name, '%') || strlen(ibdev_name) == 0)
- 		return -EINVAL;
- 
--	nla_strlcpy(type, tb[RDMA_NLDEV_ATTR_LINK_TYPE], sizeof(type));
--	nla_strlcpy(ndev_name, tb[RDMA_NLDEV_ATTR_NDEV_NAME],
-+	nla_strscpy(type, tb[RDMA_NLDEV_ATTR_LINK_TYPE], sizeof(type));
-+	nla_strscpy(ndev_name, tb[RDMA_NLDEV_ATTR_NDEV_NAME],
- 		    sizeof(ndev_name));
- 
- 	ndev = dev_get_by_name(sock_net(skb->sk), ndev_name);
-@@ -1602,7 +1602,7 @@ static int nldev_get_chardev(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (err || !tb[RDMA_NLDEV_ATTR_CHARDEV_TYPE])
- 		return -EINVAL;
- 
--	nla_strlcpy(client_name, tb[RDMA_NLDEV_ATTR_CHARDEV_TYPE],
-+	nla_strscpy(client_name, tb[RDMA_NLDEV_ATTR_CHARDEV_TYPE],
- 		    sizeof(client_name));
- 
- 	if (tb[RDMA_NLDEV_ATTR_DEV_INDEX]) {
-diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
-index d6ba9426be4d..fa47bab510bb 100644
---- a/drivers/net/can/vxcan.c
-+++ b/drivers/net/can/vxcan.c
-@@ -186,7 +186,7 @@ static int vxcan_newlink(struct net *net, struct net_device *dev,
- 	}
- 
- 	if (ifmp && tbp[IFLA_IFNAME]) {
--		nla_strlcpy(ifname, tbp[IFLA_IFNAME], IFNAMSIZ);
-+		nla_strscpy(ifname, tbp[IFLA_IFNAME], IFNAMSIZ);
- 		name_assign_type = NET_NAME_USER;
- 	} else {
- 		snprintf(ifname, IFNAMSIZ, DRV_NAME "%%d");
-@@ -223,7 +223,7 @@ static int vxcan_newlink(struct net *net, struct net_device *dev,
- 
- 	/* register first device */
- 	if (tb[IFLA_IFNAME])
--		nla_strlcpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
-+		nla_strscpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
- 	else
- 		snprintf(dev->name, IFNAMSIZ, DRV_NAME "%%d");
- 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 8c737668008a..359d3ab33c4d 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -1329,7 +1329,7 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
- 	}
- 
- 	if (ifmp && tbp[IFLA_IFNAME]) {
--		nla_strlcpy(ifname, tbp[IFLA_IFNAME], IFNAMSIZ);
-+		nla_strscpy(ifname, tbp[IFLA_IFNAME], IFNAMSIZ);
- 		name_assign_type = NET_NAME_USER;
- 	} else {
- 		snprintf(ifname, IFNAMSIZ, DRV_NAME "%%d");
-@@ -1379,7 +1379,7 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
- 		eth_hw_addr_random(dev);
- 
- 	if (tb[IFLA_IFNAME])
--		nla_strlcpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
-+		nla_strscpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
- 	else
- 		snprintf(dev->name, IFNAMSIZ, DRV_NAME "%%d");
- 
-diff --git a/include/linux/genl_magic_struct.h b/include/linux/genl_magic_struct.h
-index eeae59d3ceb7..35d21fddaf2d 100644
---- a/include/linux/genl_magic_struct.h
-+++ b/include/linux/genl_magic_struct.h
-@@ -89,7 +89,7 @@ static inline int nla_put_u64_0pad(struct sk_buff *skb, int attrtype, u64 value)
- 			nla_get_u64, nla_put_u64_0pad, false)
- #define __str_field(attr_nr, attr_flag, name, maxlen) \
- 	__array(attr_nr, attr_flag, name, NLA_NUL_STRING, char, maxlen, \
--			nla_strlcpy, nla_put, false)
-+			nla_strscpy, nla_put, false)
- #define __bin_field(attr_nr, attr_flag, name, maxlen) \
- 	__array(attr_nr, attr_flag, name, NLA_BINARY, char, maxlen, \
- 			nla_memcpy, nla_put, false)
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index 446ca182e13d..1ceec518ab49 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -142,7 +142,7 @@
-  * Attribute Misc:
-  *   nla_memcpy(dest, nla, count)	copy attribute into memory
-  *   nla_memcmp(nla, data, size)	compare attribute with memory area
-- *   nla_strlcpy(dst, nla, size)	copy attribute to a sized string
-+ *   nla_strscpy(dst, nla, size)	copy attribute to a sized string
-  *   nla_strcmp(nla, str)		compare attribute with string
-  *
-  * Attribute Parsing:
-@@ -506,7 +506,7 @@ int __nla_parse(struct nlattr **tb, int maxtype, const struct nlattr *head,
- 		struct netlink_ext_ack *extack);
- int nla_policy_len(const struct nla_policy *, int);
- struct nlattr *nla_find(const struct nlattr *head, int len, int attrtype);
--ssize_t nla_strlcpy(char *dst, const struct nlattr *nla, size_t dstsize);
-+ssize_t nla_strscpy(char *dst, const struct nlattr *nla, size_t dstsize);
- char *nla_strdup(const struct nlattr *nla, gfp_t flags);
- int nla_memcpy(void *dest, const struct nlattr *src, int count);
- int nla_memcmp(const struct nlattr *nla, const void *data, size_t size);
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index db9a828f4f4f..133f9ad4d4f9 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -512,7 +512,7 @@ tcf_change_indev(struct net *net, struct nlattr *indev_tlv,
- 	char indev[IFNAMSIZ];
- 	struct net_device *dev;
- 
--	if (nla_strlcpy(indev, indev_tlv, IFNAMSIZ) < 0) {
-+	if (nla_strscpy(indev, indev_tlv, IFNAMSIZ) < 0) {
- 		NL_SET_ERR_MSG_ATTR(extack, indev_tlv,
- 				    "Interface name too long");
- 		return -EINVAL;
-diff --git a/kernel/taskstats.c b/kernel/taskstats.c
-index a2802b6ff4bb..2b4898b4752e 100644
---- a/kernel/taskstats.c
-+++ b/kernel/taskstats.c
-@@ -346,7 +346,7 @@ static int parse(struct nlattr *na, struct cpumask *mask)
- 	data = kmalloc(len, GFP_KERNEL);
- 	if (!data)
- 		return -ENOMEM;
--	nla_strlcpy(data, na, len);
-+	nla_strscpy(data, na, len);
- 	ret = cpulist_parse(data, mask);
- 	kfree(data);
- 	return ret;
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index 447182543c03..09aa181569e0 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -709,7 +709,7 @@ struct nlattr *nla_find(const struct nlattr *head, int len, int attrtype)
- EXPORT_SYMBOL(nla_find);
- 
- /**
-- * nla_strlcpy - Copy string attribute payload into a sized buffer
-+ * nla_strscpy - Copy string attribute payload into a sized buffer
-  * @dst: Where to copy the string to.
-  * @nla: Attribute to copy the string from.
-  * @dstsize: Size of destination buffer.
-@@ -722,7 +722,7 @@ EXPORT_SYMBOL(nla_find);
-  * * -E2BIG - If @dstsize is 0 or greater than U16_MAX or @nla length greater
-  *            than @dstsize.
-  */
--ssize_t nla_strlcpy(char *dst, const struct nlattr *nla, size_t dstsize)
-+ssize_t nla_strscpy(char *dst, const struct nlattr *nla, size_t dstsize)
- {
- 	size_t srclen = nla_len(nla);
- 	char *src = nla_data(nla);
-@@ -749,7 +749,7 @@ ssize_t nla_strlcpy(char *dst, const struct nlattr *nla, size_t dstsize)
- 
- 	return ret;
- }
--EXPORT_SYMBOL(nla_strlcpy);
-+EXPORT_SYMBOL(nla_strscpy);
- 
- /**
-  * nla_strdup - Copy string attribute payload into a newly allocated buffer
-diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
-index 7bcfb16854cb..cd80ffed6d26 100644
---- a/net/core/fib_rules.c
-+++ b/net/core/fib_rules.c
-@@ -563,7 +563,7 @@ static int fib_nl2rule(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		struct net_device *dev;
- 
- 		nlrule->iifindex = -1;
--		nla_strlcpy(nlrule->iifname, tb[FRA_IIFNAME], IFNAMSIZ);
-+		nla_strscpy(nlrule->iifname, tb[FRA_IIFNAME], IFNAMSIZ);
- 		dev = __dev_get_by_name(net, nlrule->iifname);
- 		if (dev)
- 			nlrule->iifindex = dev->ifindex;
-@@ -573,7 +573,7 @@ static int fib_nl2rule(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		struct net_device *dev;
- 
- 		nlrule->oifindex = -1;
--		nla_strlcpy(nlrule->oifname, tb[FRA_OIFNAME], IFNAMSIZ);
-+		nla_strscpy(nlrule->oifname, tb[FRA_OIFNAME], IFNAMSIZ);
- 		dev = __dev_get_by_name(net, nlrule->oifname);
- 		if (dev)
- 			nlrule->oifindex = dev->ifindex;
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 7d7223691783..60917ff4a00b 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -1939,7 +1939,7 @@ static const struct rtnl_link_ops *linkinfo_to_kind_ops(const struct nlattr *nla
- 	if (linfo[IFLA_INFO_KIND]) {
- 		char kind[MODULE_NAME_LEN];
- 
--		nla_strlcpy(kind, linfo[IFLA_INFO_KIND], sizeof(kind));
-+		nla_strscpy(kind, linfo[IFLA_INFO_KIND], sizeof(kind));
- 		ops = rtnl_link_ops_get(kind);
- 	}
- 
-@@ -2953,9 +2953,9 @@ static struct net_device *rtnl_dev_get(struct net *net,
- 	if (!ifname) {
- 		ifname = buffer;
- 		if (ifname_attr)
--			nla_strlcpy(ifname, ifname_attr, IFNAMSIZ);
-+			nla_strscpy(ifname, ifname_attr, IFNAMSIZ);
- 		else if (altifname_attr)
--			nla_strlcpy(ifname, altifname_attr, ALTIFNAMSIZ);
-+			nla_strscpy(ifname, altifname_attr, ALTIFNAMSIZ);
- 		else
- 			return NULL;
- 	}
-@@ -2983,7 +2983,7 @@ static int rtnl_setlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		goto errout;
- 
- 	if (tb[IFLA_IFNAME])
--		nla_strlcpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
-+		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
- 	else
- 		ifname[0] = '\0';
- 
-@@ -3264,7 +3264,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		return err;
- 
- 	if (tb[IFLA_IFNAME])
--		nla_strlcpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
-+		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
- 	else
- 		ifname[0] = '\0';
- 
-@@ -3296,7 +3296,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		memset(linkinfo, 0, sizeof(linkinfo));
- 
- 	if (linkinfo[IFLA_INFO_KIND]) {
--		nla_strlcpy(kind, linkinfo[IFLA_INFO_KIND], sizeof(kind));
-+		nla_strscpy(kind, linkinfo[IFLA_INFO_KIND], sizeof(kind));
- 		ops = rtnl_link_ops_get(kind);
- 	} else {
- 		kind[0] = '\0';
-diff --git a/net/decnet/dn_dev.c b/net/decnet/dn_dev.c
-index 15d42353f1a3..d1c50a48614b 100644
---- a/net/decnet/dn_dev.c
-+++ b/net/decnet/dn_dev.c
-@@ -658,7 +658,7 @@ static int dn_nl_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	ifa->ifa_dev = dn_db;
- 
- 	if (tb[IFA_LABEL])
--		nla_strlcpy(ifa->ifa_label, tb[IFA_LABEL], IFNAMSIZ);
-+		nla_strscpy(ifa->ifa_label, tb[IFA_LABEL], IFNAMSIZ);
- 	else
- 		memcpy(ifa->ifa_label, dev->name, IFNAMSIZ);
- 
-diff --git a/net/ieee802154/nl-mac.c b/net/ieee802154/nl-mac.c
-index 6d091e419d3e..9c640d670ffe 100644
---- a/net/ieee802154/nl-mac.c
-+++ b/net/ieee802154/nl-mac.c
-@@ -149,7 +149,7 @@ static struct net_device *ieee802154_nl_get_dev(struct genl_info *info)
- 	if (info->attrs[IEEE802154_ATTR_DEV_NAME]) {
- 		char name[IFNAMSIZ + 1];
- 
--		nla_strlcpy(name, info->attrs[IEEE802154_ATTR_DEV_NAME],
-+		nla_strscpy(name, info->attrs[IEEE802154_ATTR_DEV_NAME],
- 			    sizeof(name));
- 		dev = dev_get_by_name(&init_net, name);
- 	} else if (info->attrs[IEEE802154_ATTR_DEV_INDEX]) {
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index 123a6d39438f..a50951a90f63 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -881,7 +881,7 @@ static struct in_ifaddr *rtm_to_ifaddr(struct net *net, struct nlmsghdr *nlh,
- 		ifa->ifa_broadcast = nla_get_in_addr(tb[IFA_BROADCAST]);
- 
- 	if (tb[IFA_LABEL])
--		nla_strlcpy(ifa->ifa_label, tb[IFA_LABEL], IFNAMSIZ);
-+		nla_strscpy(ifa->ifa_label, tb[IFA_LABEL], IFNAMSIZ);
- 	else
- 		memcpy(ifa->ifa_label, dev->name, IFNAMSIZ);
- 
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index 1f75dc686b6b..4b505074b24f 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -973,7 +973,7 @@ bool fib_metrics_match(struct fib_config *cfg, struct fib_info *fi)
- 			char tmp[TCP_CA_NAME_MAX];
- 			bool ecn_ca = false;
- 
--			nla_strlcpy(tmp, nla, sizeof(tmp));
-+			nla_strscpy(tmp, nla, sizeof(tmp));
- 			val = tcp_ca_get_key_by_name(fi->fib_net, tmp, &ecn_ca);
- 		} else {
- 			if (nla_len(nla) != sizeof(u32))
-diff --git a/net/ipv4/metrics.c b/net/ipv4/metrics.c
-index 3205d5f7c8c9..25ea6ac44db9 100644
---- a/net/ipv4/metrics.c
-+++ b/net/ipv4/metrics.c
-@@ -31,7 +31,7 @@ static int ip_metrics_convert(struct net *net, struct nlattr *fc_mx,
- 		if (type == RTAX_CC_ALGO) {
- 			char tmp[TCP_CA_NAME_MAX];
- 
--			nla_strlcpy(tmp, nla, sizeof(tmp));
-+			nla_strscpy(tmp, nla, sizeof(tmp));
- 			val = tcp_ca_get_key_by_name(net, tmp, &ecn_ca);
- 			if (val == TCP_CA_UNSPEC) {
- 				NL_SET_ERR_MSG(extack, "Unknown tcp congestion algorithm");
-diff --git a/net/netfilter/ipset/ip_set_hash_netiface.c b/net/netfilter/ipset/ip_set_hash_netiface.c
-index be5e95a0d876..b96fd0c55eaa 100644
---- a/net/netfilter/ipset/ip_set_hash_netiface.c
-+++ b/net/netfilter/ipset/ip_set_hash_netiface.c
-@@ -225,7 +225,7 @@ hash_netiface4_uadt(struct ip_set *set, struct nlattr *tb[],
- 		if (e.cidr > HOST_MASK)
- 			return -IPSET_ERR_INVALID_CIDR;
- 	}
--	nla_strlcpy(e.iface, tb[IPSET_ATTR_IFACE], IFNAMSIZ);
-+	nla_strscpy(e.iface, tb[IPSET_ATTR_IFACE], IFNAMSIZ);
- 
- 	if (tb[IPSET_ATTR_CADT_FLAGS]) {
- 		u32 cadt_flags = ip_set_get_h32(tb[IPSET_ATTR_CADT_FLAGS]);
-@@ -442,7 +442,7 @@ hash_netiface6_uadt(struct ip_set *set, struct nlattr *tb[],
- 
- 	ip6_netmask(&e.ip, e.cidr);
- 
--	nla_strlcpy(e.iface, tb[IPSET_ATTR_IFACE], IFNAMSIZ);
-+	nla_strscpy(e.iface, tb[IPSET_ATTR_IFACE], IFNAMSIZ);
- 
- 	if (tb[IPSET_ATTR_CADT_FLAGS]) {
- 		u32 cadt_flags = ip_set_get_h32(tb[IPSET_ATTR_CADT_FLAGS]);
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 65cb8e3c13d9..c7108ca70bc6 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -1281,7 +1281,7 @@ static struct nft_chain *nft_chain_lookup(struct net *net,
- 	if (nla == NULL)
- 		return ERR_PTR(-EINVAL);
- 
--	nla_strlcpy(search, nla, sizeof(search));
-+	nla_strscpy(search, nla, sizeof(search));
- 
- 	WARN_ON(!rcu_read_lock_held() &&
- 		!lockdep_commit_lock_is_held(net));
-@@ -1721,7 +1721,7 @@ static struct nft_hook *nft_netdev_hook_alloc(struct net *net,
- 		goto err_hook_alloc;
- 	}
- 
--	nla_strlcpy(ifname, attr, IFNAMSIZ);
-+	nla_strscpy(ifname, attr, IFNAMSIZ);
- 	dev = __dev_get_by_name(net, ifname);
- 	if (!dev) {
- 		err = -ENOENT;
-@@ -5734,7 +5734,7 @@ struct nft_object *nft_obj_lookup(const struct net *net,
- 	struct rhlist_head *tmp, *list;
- 	struct nft_object *obj;
- 
--	nla_strlcpy(search, nla, sizeof(search));
-+	nla_strscpy(search, nla, sizeof(search));
- 	k.name = search;
- 
- 	WARN_ON_ONCE(!rcu_read_lock_held() &&
-diff --git a/net/netfilter/nfnetlink_acct.c b/net/netfilter/nfnetlink_acct.c
-index 5bfec829c12f..5e511df8d709 100644
---- a/net/netfilter/nfnetlink_acct.c
-+++ b/net/netfilter/nfnetlink_acct.c
-@@ -112,7 +112,7 @@ static int nfnl_acct_new(struct net *net, struct sock *nfnl,
- 		nfacct->flags = flags;
- 	}
- 
--	nla_strlcpy(nfacct->name, tb[NFACCT_NAME], NFACCT_NAME_MAX);
-+	nla_strscpy(nfacct->name, tb[NFACCT_NAME], NFACCT_NAME_MAX);
- 
- 	if (tb[NFACCT_BYTES]) {
- 		atomic64_set(&nfacct->bytes,
-diff --git a/net/netfilter/nfnetlink_cthelper.c b/net/netfilter/nfnetlink_cthelper.c
-index 5b0d0a77379c..0f94fce1d3ed 100644
---- a/net/netfilter/nfnetlink_cthelper.c
-+++ b/net/netfilter/nfnetlink_cthelper.c
-@@ -146,7 +146,7 @@ nfnl_cthelper_expect_policy(struct nf_conntrack_expect_policy *expect_policy,
- 	    !tb[NFCTH_POLICY_EXPECT_TIMEOUT])
- 		return -EINVAL;
- 
--	nla_strlcpy(expect_policy->name,
-+	nla_strscpy(expect_policy->name,
- 		    tb[NFCTH_POLICY_NAME], NF_CT_HELPER_NAME_LEN);
- 	expect_policy->max_expected =
- 		ntohl(nla_get_be32(tb[NFCTH_POLICY_EXPECT_MAX]));
-@@ -233,7 +233,7 @@ nfnl_cthelper_create(const struct nlattr * const tb[],
- 	if (ret < 0)
- 		goto err1;
- 
--	nla_strlcpy(helper->name,
-+	nla_strscpy(helper->name,
- 		    tb[NFCTH_NAME], NF_CT_HELPER_NAME_LEN);
- 	size = ntohl(nla_get_be32(tb[NFCTH_PRIV_DATA_LEN]));
- 	if (size > sizeof_field(struct nf_conn_help, data)) {
-diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
-index 322bd674963e..a8c4d442231c 100644
---- a/net/netfilter/nft_ct.c
-+++ b/net/netfilter/nft_ct.c
-@@ -990,7 +990,7 @@ static int nft_ct_helper_obj_init(const struct nft_ctx *ctx,
- 	if (!priv->l4proto)
- 		return -ENOENT;
- 
--	nla_strlcpy(name, tb[NFTA_CT_HELPER_NAME], sizeof(name));
-+	nla_strscpy(name, tb[NFTA_CT_HELPER_NAME], sizeof(name));
- 
- 	if (tb[NFTA_CT_HELPER_L3PROTO])
- 		family = ntohs(nla_get_be16(tb[NFTA_CT_HELPER_L3PROTO]));
-diff --git a/net/netfilter/nft_log.c b/net/netfilter/nft_log.c
-index 57899454a530..a06a46b039c5 100644
---- a/net/netfilter/nft_log.c
-+++ b/net/netfilter/nft_log.c
-@@ -152,7 +152,7 @@ static int nft_log_init(const struct nft_ctx *ctx,
- 		priv->prefix = kmalloc(nla_len(nla) + 1, GFP_KERNEL);
- 		if (priv->prefix == NULL)
- 			return -ENOMEM;
--		nla_strlcpy(priv->prefix, nla, nla_len(nla) + 1);
-+		nla_strscpy(priv->prefix, nla, nla_len(nla) + 1);
- 	} else {
- 		priv->prefix = (char *)nft_log_null_prefix;
- 	}
-diff --git a/net/netlabel/netlabel_mgmt.c b/net/netlabel/netlabel_mgmt.c
-index eb1d66d20afb..df1b41ed73fd 100644
---- a/net/netlabel/netlabel_mgmt.c
-+++ b/net/netlabel/netlabel_mgmt.c
-@@ -95,7 +95,7 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
- 			ret_val = -ENOMEM;
- 			goto add_free_entry;
- 		}
--		nla_strlcpy(entry->domain,
-+		nla_strscpy(entry->domain,
- 			    info->attrs[NLBL_MGMT_A_DOMAIN], tmp_size);
- 	}
- 
-diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
-index 8709f3d4e7c4..573b38ad2f8e 100644
---- a/net/nfc/netlink.c
-+++ b/net/nfc/netlink.c
-@@ -1226,7 +1226,7 @@ static int nfc_genl_fw_download(struct sk_buff *skb, struct genl_info *info)
- 	if (!dev)
- 		return -ENODEV;
- 
--	nla_strlcpy(firmware_name, info->attrs[NFC_ATTR_FIRMWARE_NAME],
-+	nla_strscpy(firmware_name, info->attrs[NFC_ATTR_FIRMWARE_NAME],
- 		    sizeof(firmware_name));
- 
- 	rc = nfc_fw_download(dev, firmware_name);
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 541574520c52..eac24a73115f 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -935,7 +935,7 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
- 			NL_SET_ERR_MSG(extack, "TC action kind must be specified");
- 			goto err_out;
- 		}
--		if (nla_strlcpy(act_name, kind, IFNAMSIZ) < 0) {
-+		if (nla_strscpy(act_name, kind, IFNAMSIZ) < 0) {
- 			NL_SET_ERR_MSG(extack, "TC action name too long");
- 			goto err_out;
- 		}
-diff --git a/net/sched/act_ipt.c b/net/sched/act_ipt.c
-index 8dc3bec0d325..ac7297f42355 100644
---- a/net/sched/act_ipt.c
-+++ b/net/sched/act_ipt.c
-@@ -166,7 +166,7 @@ static int __tcf_ipt_init(struct net *net, unsigned int id, struct nlattr *nla,
- 	if (unlikely(!tname))
- 		goto err1;
- 	if (tb[TCA_IPT_TABLE] == NULL ||
--	    nla_strlcpy(tname, tb[TCA_IPT_TABLE], IFNAMSIZ) >= IFNAMSIZ)
-+	    nla_strscpy(tname, tb[TCA_IPT_TABLE], IFNAMSIZ) >= IFNAMSIZ)
- 		strcpy(tname, "mangle");
- 
- 	t = kmemdup(td, td->u.target_size, GFP_KERNEL);
-diff --git a/net/sched/act_simple.c b/net/sched/act_simple.c
-index a4f3d0f0daa9..726cc956d06f 100644
---- a/net/sched/act_simple.c
-+++ b/net/sched/act_simple.c
-@@ -52,7 +52,7 @@ static int alloc_defdata(struct tcf_defact *d, const struct nlattr *defdata)
- 	d->tcfd_defdata = kzalloc(SIMP_MAX_DATA, GFP_KERNEL);
- 	if (unlikely(!d->tcfd_defdata))
- 		return -ENOMEM;
--	nla_strlcpy(d->tcfd_defdata, defdata, SIMP_MAX_DATA);
-+	nla_strscpy(d->tcfd_defdata, defdata, SIMP_MAX_DATA);
- 	return 0;
- }
- 
-@@ -71,7 +71,7 @@ static int reset_policy(struct tc_action *a, const struct nlattr *defdata,
- 	spin_lock_bh(&d->tcf_lock);
- 	goto_ch = tcf_action_set_ctrlact(a, p->action, goto_ch);
- 	memset(d->tcfd_defdata, 0, SIMP_MAX_DATA);
--	nla_strlcpy(d->tcfd_defdata, defdata, SIMP_MAX_DATA);
-+	nla_strscpy(d->tcfd_defdata, defdata, SIMP_MAX_DATA);
- 	spin_unlock_bh(&d->tcf_lock);
- 	if (goto_ch)
- 		tcf_chain_put_by_act(goto_ch);
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index d3787a67b3da..9cf9e175dbc8 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -223,7 +223,7 @@ static inline u32 tcf_auto_prio(struct tcf_proto *tp)
- static bool tcf_proto_check_kind(struct nlattr *kind, char *name)
- {
- 	if (kind)
--		return nla_strlcpy(name, kind, IFNAMSIZ) < 0;
-+		return nla_strscpy(name, kind, IFNAMSIZ) < 0;
- 	memset(name, 0, IFNAMSIZ);
- 	return false;
- }
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index f9b053b30a7b..cb4f30700c74 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -1170,7 +1170,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
- #ifdef CONFIG_MODULES
- 	if (ops == NULL && kind != NULL) {
- 		char name[IFNAMSIZ];
--		if (nla_strlcpy(name, kind, IFNAMSIZ) > 0) {
-+		if (nla_strscpy(name, kind, IFNAMSIZ) > 0) {
- 			/* We dropped the RTNL semaphore in order to
- 			 * perform the module load.  So, even if we
- 			 * succeeded in loading the module we have to
-diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
-index 1c7aa51cc2a3..644c7ec41ddf 100644
---- a/net/tipc/netlink_compat.c
-+++ b/net/tipc/netlink_compat.c
-@@ -695,7 +695,7 @@ static int tipc_nl_compat_link_dump(struct tipc_nl_compat_msg *msg,
- 
- 	link_info.dest = nla_get_flag(link[TIPC_NLA_LINK_DEST]);
- 	link_info.up = htonl(nla_get_flag(link[TIPC_NLA_LINK_UP]));
--	nla_strlcpy(link_info.str, link[TIPC_NLA_LINK_NAME],
-+	nla_strscpy(link_info.str, link[TIPC_NLA_LINK_NAME],
- 		    TIPC_MAX_LINK_NAME);
- 
- 	return tipc_add_tlv(msg->rep, TIPC_TLV_LINK_INFO,
--- 
-2.20.1
+Just curious, is this ever expected to be true? Not based on current
+advertised features, right?
 
+> +                             ESF_GZ_TX_TSO_ED_OUTER_IP4_ID, encap ? mangleid :
+> +                                                                    ESE_GZ_TX_DESC_IP4_ID_NO_OP,
+>                               ESF_GZ_TX_TSO_VLAN_INSERT_EN, vlan_enable,
+>                               ESF_GZ_TX_TSO_VLAN_INSERT_TCI, vlan_tci
+>                 );
+>
