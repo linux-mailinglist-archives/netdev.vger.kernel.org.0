@@ -2,273 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B17829FE85
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 08:38:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5102129FE89
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 08:40:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726007AbgJ3Hh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 03:37:59 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:6993 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725956AbgJ3Hh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 03:37:58 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CMvKx5L1wzhd3K;
-        Fri, 30 Oct 2020 15:37:57 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 30 Oct 2020 15:37:47 +0800
-Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
- <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
- <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
- <1f8ebcde-f5ff-43df-960e-3661706e8d04@huawei.com>
- <CAM_iQpUm91x8Q0G=CXE7S43DKryABkyMTa4mz_oEfEOTFS7BgQ@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <db770012-f22c-dff4-5311-bf4d17cd08e3@huawei.com>
-Date:   Fri, 30 Oct 2020 15:37:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1725961AbgJ3HkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 03:40:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50632 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725780AbgJ3HkD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Oct 2020 03:40:03 -0400
+Received: from dragon (80.251.214.228.16clouds.com [80.251.214.228])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3B0EC221E2;
+        Fri, 30 Oct 2020 07:40:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604043602;
+        bh=eMy334Y1BDRACJxcdODlv/rw+bzkW4+XO8njlGWj3h4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UNE2TmebEYeiX7m9FPwmTffMVGC40Gefog4l8BCrgvTOg15TRVo5GRP3q8z4umxKj
+         2tNWA9t4pF2tp7iO/wXuCShf2/eaX1Sp5LFUPiJKrBWXUg/+X+0T+bMvV1sjR1msh6
+         6/cdMt65/eX+eLXpH541iMhKz85ArtkR71muU/Cw=
+Date:   Fri, 30 Oct 2020 15:39:57 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Madalin Bucur <madalin.bucur@oss.nxp.com>
+Cc:     devicetree@vger.kernel.org, leoyang.li@nxp.com, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        camelia.groza@oss.nxp.com
+Subject: Re: [PATCH] arm64: dts: fsl: DPAA FMan DMA operations are coherent
+Message-ID: <20201030073956.GH28755@dragon>
+References: <1601901999-28280-1-git-send-email-madalin.bucur@oss.nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpUm91x8Q0G=CXE7S43DKryABkyMTa4mz_oEfEOTFS7BgQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1601901999-28280-1-git-send-email-madalin.bucur@oss.nxp.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/10/30 3:05, Cong Wang wrote:
-> On Wed, Oct 28, 2020 at 7:54 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>
->> On 2020/9/18 3:26, Cong Wang wrote:
->>> On Fri, Sep 11, 2020 at 1:13 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>>>
->>>> On 2020/9/11 4:07, Cong Wang wrote:
->>>>> On Tue, Sep 8, 2020 at 4:06 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>>>>>
->>>>>> Currently there is concurrent reset and enqueue operation for the
->>>>>> same lockless qdisc when there is no lock to synchronize the
->>>>>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
->>>>>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
->>>>>> out-of-bounds access for priv->ring[] in hns3 driver if user has
->>>>>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
->>>>>> skb with a larger queue_mapping after the corresponding qdisc is
->>>>>> reset, and call hns3_nic_net_xmit() with that skb later.
->>>>>>
->>>>>> Reused the existing synchronize_net() in dev_deactivate_many() to
->>>>>> make sure skb with larger queue_mapping enqueued to old qdisc(which
->>>>>> is saved in dev_queue->qdisc_sleeping) will always be reset when
->>>>>> dev_reset_queue() is called.
->>>>>>
->>>>>> Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
->>>>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->>>>>> ---
->>>>>> ChangeLog V2:
->>>>>>         Reuse existing synchronize_net().
->>>>>> ---
->>>>>>  net/sched/sch_generic.c | 48 +++++++++++++++++++++++++++++++++---------------
->>>>>>  1 file changed, 33 insertions(+), 15 deletions(-)
->>>>>>
->>>>>> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
->>>>>> index 265a61d..54c4172 100644
->>>>>> --- a/net/sched/sch_generic.c
->>>>>> +++ b/net/sched/sch_generic.c
->>>>>> @@ -1131,24 +1131,10 @@ EXPORT_SYMBOL(dev_activate);
->>>>>>
->>>>>>  static void qdisc_deactivate(struct Qdisc *qdisc)
->>>>>>  {
->>>>>> -       bool nolock = qdisc->flags & TCQ_F_NOLOCK;
->>>>>> -
->>>>>>         if (qdisc->flags & TCQ_F_BUILTIN)
->>>>>>                 return;
->>>>>> -       if (test_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state))
->>>>>> -               return;
->>>>>> -
->>>>>> -       if (nolock)
->>>>>> -               spin_lock_bh(&qdisc->seqlock);
->>>>>> -       spin_lock_bh(qdisc_lock(qdisc));
->>>>>>
->>>>>>         set_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state);
->>>>>> -
->>>>>> -       qdisc_reset(qdisc);
->>>>>> -
->>>>>> -       spin_unlock_bh(qdisc_lock(qdisc));
->>>>>> -       if (nolock)
->>>>>> -               spin_unlock_bh(&qdisc->seqlock);
->>>>>>  }
->>>>>>
->>>>>>  static void dev_deactivate_queue(struct net_device *dev,
->>>>>> @@ -1165,6 +1151,30 @@ static void dev_deactivate_queue(struct net_device *dev,
->>>>>>         }
->>>>>>  }
->>>>>>
->>>>>> +static void dev_reset_queue(struct net_device *dev,
->>>>>> +                           struct netdev_queue *dev_queue,
->>>>>> +                           void *_unused)
->>>>>> +{
->>>>>> +       struct Qdisc *qdisc;
->>>>>> +       bool nolock;
->>>>>> +
->>>>>> +       qdisc = dev_queue->qdisc_sleeping;
->>>>>> +       if (!qdisc)
->>>>>> +               return;
->>>>>> +
->>>>>> +       nolock = qdisc->flags & TCQ_F_NOLOCK;
->>>>>> +
->>>>>> +       if (nolock)
->>>>>> +               spin_lock_bh(&qdisc->seqlock);
->>>>>> +       spin_lock_bh(qdisc_lock(qdisc));
->>>>>
->>>>>
->>>>> I think you do not need this lock for lockless one.
->>>>
->>>> It seems so.
->>>> Maybe another patch to remove qdisc_lock(qdisc) for lockless
->>>> qdisc?
->>>
->>> Yeah, but not sure if we still want this lockless qdisc any more,
->>> it brings more troubles than gains.
->>>
->>>>
->>>>
->>>>>
->>>>>> +
->>>>>> +       qdisc_reset(qdisc);
->>>>>> +
->>>>>> +       spin_unlock_bh(qdisc_lock(qdisc));
->>>>>> +       if (nolock)
->>>>>> +               spin_unlock_bh(&qdisc->seqlock);
->>>>>> +}
->>>>>> +
->>>>>>  static bool some_qdisc_is_busy(struct net_device *dev)
->>>>>>  {
->>>>>>         unsigned int i;
->>>>>> @@ -1213,12 +1223,20 @@ void dev_deactivate_many(struct list_head *head)
->>>>>>                 dev_watchdog_down(dev);
->>>>>>         }
->>>>>>
->>>>>> -       /* Wait for outstanding qdisc-less dev_queue_xmit calls.
->>>>>> +       /* Wait for outstanding qdisc-less dev_queue_xmit calls or
->>>>>> +        * outstanding qdisc enqueuing calls.
->>>>>>          * This is avoided if all devices are in dismantle phase :
->>>>>>          * Caller will call synchronize_net() for us
->>>>>>          */
->>>>>>         synchronize_net();
->>>>>>
->>>>>> +       list_for_each_entry(dev, head, close_list) {
->>>>>> +               netdev_for_each_tx_queue(dev, dev_reset_queue, NULL);
->>>>>> +
->>>>>> +               if (dev_ingress_queue(dev))
->>>>>> +                       dev_reset_queue(dev, dev_ingress_queue(dev), NULL);
->>>>>> +       }
->>>>>> +
->>>>>>         /* Wait for outstanding qdisc_run calls. */
->>>>>>         list_for_each_entry(dev, head, close_list) {
->>>>>>                 while (some_qdisc_is_busy(dev)) {
->>>>>
->>>>> Do you want to reset before waiting for TX action?
->>>>>
->>>>> I think it is safer to do it after, at least prior to commit 759ae57f1b
->>>>> we did after.
->>>>
->>>> The reference to the txq->qdisc is always protected by RCU, so the synchronize_net()
->>>> should be enought to ensure there is no skb enqueued to the old qdisc that is saved
->>>> in the dev_queue->qdisc_sleeping, because __dev_queue_xmit can only see the new qdisc
->>>> after synchronize_net(), which is noop_qdisc, and noop_qdisc will make sure any skb
->>>> enqueued to it will be dropped and freed, right?
->>>
->>> Hmm? In net_tx_action(), we do not hold RCU read lock, and we do not
->>> reference qdisc via txq->qdisc but via sd->output_queue.
->>
->> Sorry for the delay reply, I seems to miss this.
->>
->> I assumed synchronize_net() also wait for outstanding softirq to finish, right?
+On Mon, Oct 05, 2020 at 03:46:39PM +0300, Madalin Bucur wrote:
+> Although the DPAA 1 FMan operations are coherent, the device tree
+> node for the FMan does not indicate that, resulting in a needless
+> loss of performance. Adding the missing dma-coherent property.
 > 
-> I do not see how and why it should. synchronize_net() is merely an optimized
-> version of synchronize_rcu(), it should wait for RCU readers, softirqs are not
-> necessarily RCU readers, net_tx_action() does not take RCU read lock either.
-
-Ok, make sense.
-
-Taking RCU read lock in net_tx_action() does not seems to solve the problem,
-what about the time window between __netif_reschedule() and net_tx_action()?
-
-It seems we need to re-dereference the qdisc whenever RCU read lock is released
-and qdisc is still in sd->output_queue or wait for the sd->output_queue to drain?
-
+> Fixes: 1ffbecdd8321 ("arm64: dts: add DPAA FMan nodes")
 > 
->>
->>>
->>>
->>>>
->>>> If we do any additional reset that is not related to qdisc in dev_reset_queue(), we
->>>> can move it after some_qdisc_is_busy() checking.
->>>
->>> I am not suggesting to do an additional reset, I am suggesting to move
->>> your reset after the busy waiting.
->>
->> There maybe a deadlock here if we reset the qdisc after the some_qdisc_is_busy() checking,
->> because some_qdisc_is_busy() may require the qdisc reset to clear the skb, so that
-> 
-> some_qdisc_is_busy() checks the status of qdisc, not the skb queue.
+> Signed-off-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+> Tested-by: Camelia Groza <camelia.groza@oss.nxp.com>
 
-Is there any reason why we do not check the skb queue in the dqisc?
-It seems there may be skb left when netdev is deactivated, maybe at least warn
-about that when there is still skb left when netdev is deactivated?
-Is that why we call qdisc_reset() to clear the leftover skb in qdisc_destroy()?
-
-> 
-> 
->> some_qdisc_is_busy() can return false. I am not sure this is really a problem, but
->> sch_direct_xmit() may requeue the skb when dev_hard_start_xmit return TX_BUSY.
-> 
-> Sounds like another reason we should move the reset as late as possible?
-
-Why?
-
-There current netdev down order is mainly below:
-
-netif_tx_stop_all_queues()
-
-dev_deactivate_queue()
-
-synchronize_net()
-
-dev_reset_queue()
-
-some_qdisc_is_busy()
-
-
-You suggest to change it to below order, right?
-
-netif_tx_stop_all_queues()
-
-dev_deactivate_queue()
-
-synchronize_net()
-
-some_qdisc_is_busy()
-
-dev_reset_queue()
-
-
-What is the semantics of some_qdisc_is_busy()?
-From my understanding, we can do anything about the old qdisc (including
-destorying the old qdisc) after some_qdisc_is_busy() return false.
-
-> 
-> Thanks.
-> .
-> 
+Applied, thanks.
