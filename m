@@ -2,213 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0137E2A0A60
+	by mail.lfdr.de (Postfix) with ESMTP id 7B3202A0A62
 	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:50:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726871AbgJ3Pu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 11:50:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47512 "EHLO
+        id S1727116AbgJ3Put (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 11:50:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726259AbgJ3PuY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 11:50:24 -0400
-Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B264C0613CF
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:50:23 -0700 (PDT)
-Received: by mail-vk1-xa44.google.com with SMTP id r17so1547488vkf.6
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:50:23 -0700 (PDT)
+        with ESMTP id S1726691AbgJ3Pus (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 11:50:48 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B603FC0613CF;
+        Fri, 30 Oct 2020 08:50:48 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id u62so7971656iod.8;
+        Fri, 30 Oct 2020 08:50:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gtkXqSXeZ0niBcrY1U1mimvyg988mPc0A08k1zPHfyo=;
-        b=Xj6zpqLY6m6TGo2+TWWnmV5XQolSSy2qt4J/xqlbdfCOsimKOYNB2+Ghq7b2ylJoCS
-         PtPUNkiQa/kQ5atpFV/jp7iddjyij2QFdluzGVVffMfPmKGb+yg8xWW2FCpykG/wo2Hh
-         oaUGvDrQo6fk0UAs0CUaECTmW1X/gzRPeymkkWI7hELduvL1uQOwA1PfwQhO+c+LqPg/
-         y2eZOnGVGZ9VvGcoQPWrRcKDgs6o4PpmLwAT577C2SwnR1rJYwalMMQ11ojO8dXZ09Jj
-         dVVBRTILIV78x9eGahkbS7VO/Po2y9MnC5TIrZFduBWzVQSXujX6uSygWzPpgm2dVHIL
-         j+BA==
+        bh=HxnSxsE+M9fmWZ2rJEKUv08v/eoEDXQx96qUIuOYyS0=;
+        b=qVFlWNc/vbn9Ku+VY4QkXb77T4NlUAGQIti4I7K/Ime3KZbaDt9yul/qM8r/71iwSE
+         LIvkw8uzTeaFfvzKamMC8Vuka/JvoavsqRlOS79eCjGCxjUTrELegQPu3BlDoFoROtd2
+         l2RkGqiQb3MjPuKz4tLt7HSk9NWpAWt5oRBi8HwABk+CMzKE1sAYIX//5rYoRsVFQXc2
+         VGE4X1fGubdSmybPE38zbuHPCvCcpu4LGKlersTyXBxreYNd1skHSzCTR91pop72OzMm
+         uplS0jomiOvd4AzIGAau3pm62/UdfIOeO+J2rKTffaooBYRYt7ZWaZ9wLgeLBWiG0HIv
+         VHMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gtkXqSXeZ0niBcrY1U1mimvyg988mPc0A08k1zPHfyo=;
-        b=liRzvVahOEJgWx0GwmkViRKOwuCP4I3c6YL/dCLk387p5Nbf//Iq+ynALHHOIjEqQP
-         dHR0CcAi5cm+kZeYCn9oagUjeB7MCwP4E9U8zhAIzHmNca0aGe6E6GNtHBfAriIed9H1
-         aOoegk+2SCBbSDqDQwDksM1f80hHwWSpdkjpi8W0KY7e+6+4fQMfGmOEl4v9cZZuQstU
-         kZGNU1Ku+Bf9iFD9cjq3WJdsKeaE98S3fp/TNm5xkbPFn6Wz80U1WAUoHNHaKBBVkCPw
-         0YY0AOKaoHoyeTH5qEo+c3WpstUPAs9eJgNYltHnllb3Hlgrda23N6EIvVFFIWV901UZ
-         DvQQ==
-X-Gm-Message-State: AOAM531onUPoD/FWygb+HBqBUo5PawXijVToxvUUMdEjiGwK/BFbGHq/
-        aQQN8Qm4XLs8Y05jNLBHgPK9dvCT/+g=
-X-Google-Smtp-Source: ABdhPJyKU16y0gbr4tLUCiPIv/AxoDkuUKo+qLmL+6Gz7JxxlYe27Ku7JC75AtTiNSVGDGID3zbVCg==
-X-Received: by 2002:a1f:2389:: with SMTP id j131mr7651535vkj.18.1604073022171;
-        Fri, 30 Oct 2020 08:50:22 -0700 (PDT)
-Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com. [209.85.217.44])
-        by smtp.gmail.com with ESMTPSA id c21sm230891vsh.31.2020.10.30.08.50.20
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Oct 2020 08:50:21 -0700 (PDT)
-Received: by mail-vs1-f44.google.com with SMTP id x11so1035903vsx.12
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:50:20 -0700 (PDT)
-X-Received: by 2002:a67:c981:: with SMTP id y1mr7538434vsk.14.1604073020412;
- Fri, 30 Oct 2020 08:50:20 -0700 (PDT)
+        bh=HxnSxsE+M9fmWZ2rJEKUv08v/eoEDXQx96qUIuOYyS0=;
+        b=fLthT5pqgqx++weBfN2ROQPsBp6hrbYzkh2BahmBTS3XO9Ps8aaKRxFJPJmtrWibtZ
+         YGSdUTW6GV0p7UHoSbQ2ZuAF2PVvKSnEnhKj2hP/MJ+SDyE1vIje6aYkpJkjCB53IChK
+         LavJw1hJDHbHgeRxtiW8lCGJcAMPcPwtiBEGP7XrkHGli3BGy8/PjYysxxOH0oPW26uT
+         g0s3TIaHtsj63KUF8Qz+hWh/v7AqQZX11llcIndHExhiIFHipDdmAa/8Iaen6VzdzbVk
+         COPOAqMqlSLDe52GtwWNOwWuPEoCAhGyUnOeDhfIR2siP/pBT1b5Az2DJCDyK5p4trdQ
+         9A/Q==
+X-Gm-Message-State: AOAM533v1fdeKrf1l/+2UR7VoLUqFDPP7t+n6Ur7Z7Vrg2hJ84qAzUwp
+        ChzNtF8iz934wJD/2L6CKM12KeqaxXQJ/kjA+Gs=
+X-Google-Smtp-Source: ABdhPJx92+zYQgqCO6HMYmwyoylayJzqYs5CQtqk+zu86pd1I1sTXQZcfQ6PgmxeAuwewe2P6Z2V9OpcwLcTUcTSzXY=
+X-Received: by 2002:a02:c80a:: with SMTP id p10mr2412474jao.114.1604073047953;
+ Fri, 30 Oct 2020 08:50:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <6e1ea05f-faeb-18df-91ef-572445691d89@solarflare.com> <94ca05ca-2871-3da6-e14f-0a9cb48ed2a5@solarflare.com>
-In-Reply-To: <94ca05ca-2871-3da6-e14f-0a9cb48ed2a5@solarflare.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 30 Oct 2020 11:49:44 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdaPV_ZsU=YfT6vAx-ScGWu1O1Ji1ubNmgxe4PZYYNfZw@mail.gmail.com>
-Message-ID: <CA+FuTSdaPV_ZsU=YfT6vAx-ScGWu1O1Ji1ubNmgxe4PZYYNfZw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/4] sfc: implement encap TSO on EF100
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     linux-net-drivers@solarflare.com, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
+References: <160384954046.698509.132709669068189999.stgit@localhost.localdomain>
+ <160384964803.698509.11020605670605638967.stgit@localhost.localdomain>
+ <CAEf4BzaELDiuHLbSdWdZZcjw5eNCJELBeHUc2CRiursUcUj_kg@mail.gmail.com>
+ <CAKgT0UcQzJ06ayURwpU78ybW+WYRUbbEH++6O9nPUxSSHnU89Q@mail.gmail.com> <CAEf4BzY73uiNE8V_zyhRuMpX8+e6JyR+BkfHqPfztOpm9Orjng@mail.gmail.com>
+In-Reply-To: <CAEf4BzY73uiNE8V_zyhRuMpX8+e6JyR+BkfHqPfztOpm9Orjng@mail.gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 30 Oct 2020 08:50:37 -0700
+Message-ID: <CAKgT0UcRh50K9UvZ61MD3U2PzqKsYaJRWOh_s-p-6YFZgR2YVw@mail.gmail.com>
+Subject: Re: [bpf-next PATCH 4/4] selftests/bpf: Migrate tcpbpf_user.c to use
+ BPF skeleton
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Lawrence Brakmo <brakmo@fb.com>, alexanderduyck@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 9:39 PM Edward Cree <ecree@solarflare.com> wrote:
+On Thu, Oct 29, 2020 at 7:30 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> The NIC only needs to know where the headers it has to edit (TCP and
->  inner and outer IPv4) are, which fits GSO_PARTIAL nicely.
-> It also supports non-PARTIAL offload of UDP tunnels, again just
->  needing to be told the outer transport offset so that it can edit
->  the UDP length field.
-> (It's not clear to me whether the stack will ever use the non-PARTIAL
->  version with the netdev feature flags we're setting here.)
+> On Thu, Oct 29, 2020 at 5:42 PM Alexander Duyck
+> <alexander.duyck@gmail.com> wrote:
+> >
+> > On Thu, Oct 29, 2020 at 4:20 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Thu, Oct 29, 2020 at 12:57 AM Alexander Duyck
+> > > <alexander.duyck@gmail.com> wrote:
+> > > >
+> > > > From: Alexander Duyck <alexanderduyck@fb.com>
+> > > >
+> > > > Update tcpbpf_user.c to make use of the BPF skeleton. Doing this we can
+> > > > simplify test_tcpbpf_user and reduce the overhead involved in setting up
+> > > > the test.
+> > > >
+> > > > Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
+> > > > ---
+> > >
+> > > Few suggestions below, but overall looks good:
+> > >
+> > > Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> > >
+> > > >  .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |   48 +++++++++-----------
+> > > >  1 file changed, 21 insertions(+), 27 deletions(-)
+> > > >
+> > > > diff --git a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > > > index 4e1190894e1e..7e92c37976ac 100644
+> > > > --- a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > > > +++ b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > > > @@ -5,6 +5,7 @@
+> > > >
+> > > >  #include "test_tcpbpf.h"
+> > > >  #include "cgroup_helpers.h"
+> > > > +#include "test_tcpbpf_kern.skel.h"
+> > > >
+> > > >  #define LO_ADDR6 "::1"
+> > > >  #define CG_NAME "/tcpbpf-user-test"
+> > > > @@ -162,39 +163,32 @@ static void run_test(int map_fd, int sock_map_fd)
+> > > >
+> > > >  void test_tcpbpf_user(void)
+> > > >  {
+> > > > -       const char *file = "test_tcpbpf_kern.o";
+> > > > -       int prog_fd, map_fd, sock_map_fd;
+> > > > -       struct bpf_object *obj;
+> > > > +       struct test_tcpbpf_kern *skel;
+> > > > +       int map_fd, sock_map_fd;
+> > > > +       struct bpf_link *link;
+> > > >         int cg_fd = -1;
+> > > > -       int rv;
+> > > > -
+> > > > -       cg_fd = cgroup_setup_and_join(CG_NAME);
+> > > > -       if (CHECK_FAIL(cg_fd < 0))
+> > > > -               goto err;
+> > > >
+> > > > -       if (CHECK_FAIL(bpf_prog_load(file, BPF_PROG_TYPE_SOCK_OPS, &obj, &prog_fd))) {
+> > > > -               fprintf(stderr, "FAILED: load_bpf_file failed for: %s\n", file);
+> > > > -               goto err;
+> > > > -       }
+> > > > +       skel = test_tcpbpf_kern__open_and_load();
+> > > > +       if (CHECK(!skel, "open and load skel", "failed"))
+> > > > +               return;
+> > > >
+> > > > -       rv = bpf_prog_attach(prog_fd, cg_fd, BPF_CGROUP_SOCK_OPS, 0);
+> > > > -       if (CHECK_FAIL(rv)) {
+> > > > -               fprintf(stderr, "FAILED: bpf_prog_attach: %d (%s)\n",
+> > > > -                      errno, strerror(errno));
+> > > > -               goto err;
+> > > > -       }
+> > > > +       cg_fd = test__join_cgroup(CG_NAME);
+> > > > +       if (CHECK_FAIL(cg_fd < 0))
+> > >
+> > > please use either CHECK() or one of the newer ASSERT_xxx() macro (also
+> > > defined in test_progs.h), CHECK_FAIL should be avoided in general.
+> >
+> > So the plan I had was to actually move over to the following:
+> >         cg_fd = test__join_cgroup(CG_NAME);
+> >         if (CHECK_FAIL(cg_fd < 0))
+> >                 goto cleanup_skel;
+> >
+> > It still makes use of CHECK_FAIL but it looks like test__join_cgroup
+> > already takes care of error messaging so using CHECK_FAIL in this case
+> > makes more sense.
 >
-> Signed-off-by: Edward Cree <ecree@solarflare.com>
-> ---
->  drivers/net/ethernet/sfc/ef100_nic.c | 13 ++++++--
->  drivers/net/ethernet/sfc/ef100_tx.c  | 45 ++++++++++++++++------------
->  2 files changed, 37 insertions(+), 21 deletions(-)
->
-> diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-> index 3148fe770356..bf92cdc60cda 100644
-> --- a/drivers/net/ethernet/sfc/ef100_nic.c
-> +++ b/drivers/net/ethernet/sfc/ef100_nic.c
-> @@ -182,8 +182,16 @@ static int efx_ef100_init_datapath_caps(struct efx_nic *efx)
->         if (rc)
->                 return rc;
->
-> -       if (efx_ef100_has_cap(nic_data->datapath_caps2, TX_TSO_V3))
-> -               efx->net_dev->features |= NETIF_F_TSO | NETIF_F_TSO6;
-> +       if (efx_ef100_has_cap(nic_data->datapath_caps2, TX_TSO_V3)) {
-> +               struct net_device *net_dev = efx->net_dev;
-> +               netdev_features_t tso = NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_GSO_PARTIAL |
-> +                                       NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_UDP_TUNNEL_CSUM;
-> +
-> +               net_dev->features |= tso;
-> +               net_dev->hw_features |= tso;
-> +               net_dev->hw_enc_features |= tso;
-> +               net_dev->gso_partial_features |= NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_UDP_TUNNEL_CSUM;
-> +       }
->         efx->num_mac_stats = MCDI_WORD(outbuf,
->                                        GET_CAPABILITIES_V4_OUT_MAC_STATS_NUM_STATS);
->         netif_dbg(efx, probe, efx->net_dev,
-> @@ -1101,6 +1109,7 @@ static int ef100_probe_main(struct efx_nic *efx)
->         nic_data->efx = efx;
->         net_dev->features |= efx->type->offload_features;
->         net_dev->hw_features |= efx->type->offload_features;
-> +       net_dev->hw_enc_features |= efx->type->offload_features;
->
->         /* Populate design-parameter defaults */
->         nic_data->tso_max_hdr_len = ESE_EF100_DP_GZ_TSO_MAX_HDR_LEN_DEFAULT;
-> diff --git a/drivers/net/ethernet/sfc/ef100_tx.c b/drivers/net/ethernet/sfc/ef100_tx.c
-> index a90e5a9d2a37..d267b12bdaa0 100644
-> --- a/drivers/net/ethernet/sfc/ef100_tx.c
-> +++ b/drivers/net/ethernet/sfc/ef100_tx.c
-> @@ -54,8 +54,6 @@ static bool ef100_tx_can_tso(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
->         struct efx_nic *efx = tx_queue->efx;
->         struct ef100_nic_data *nic_data;
->         struct efx_tx_buffer *buffer;
-> -       struct tcphdr *tcphdr;
-> -       struct iphdr *iphdr;
->         size_t header_len;
->         u32 mss;
->
-> @@ -98,20 +96,6 @@ static bool ef100_tx_can_tso(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
->         buffer->unmap_len = 0;
->         buffer->skb = skb;
->         ++tx_queue->insert_count;
-> -
-> -       /* Adjust the TCP checksum to exclude the total length, since we set
-> -        * ED_INNER_IP_LEN in the descriptor.
-> -        */
-> -       tcphdr = tcp_hdr(skb);
-> -       if (skb_is_gso_v6(skb)) {
-> -               tcphdr->check = ~csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
-> -                                                &ipv6_hdr(skb)->daddr,
-> -                                                0, IPPROTO_TCP, 0);
-> -       } else {
-> -               iphdr = ip_hdr(skb);
-> -               tcphdr->check = ~csum_tcpudp_magic(iphdr->saddr, iphdr->daddr,
-> -                                                  0, IPPROTO_TCP, 0);
-> -       }
->         return true;
->  }
->
-> @@ -209,17 +193,35 @@ static void ef100_make_tso_desc(struct efx_nic *efx,
->                 ESE_GZ_TX_DESC_IP4_ID_INC_MOD16;
->         u16 vlan_enable =  efx->net_dev->features & NETIF_F_HW_VLAN_CTAG_TX ?
->                 skb_vlan_tag_present(skb) : 0;
-> +       bool gso_partial = skb_shinfo(skb)->gso_type & SKB_GSO_PARTIAL;
->         unsigned int len, ip_offset, tcp_offset, payload_segs;
-> +       unsigned int outer_ip_offset, outer_l4_offset;
->         u16 vlan_tci = skb_vlan_tag_get(skb);
->         u32 mss = skb_shinfo(skb)->gso_size;
-> +       bool encap = skb->encapsulation;
-> +       struct tcphdr *tcp;
-> +       u32 paylen;
->
->         len = skb->len - buffer->len;
->         /* We use 1 for the TSO descriptor and 1 for the header */
->         payload_segs = segment_count - 2;
-> -       ip_offset =  skb_network_offset(skb);
-> -       tcp_offset = skb_transport_offset(skb);
-> +       if (encap) {
-> +               outer_ip_offset = skb_network_offset(skb);
-> +               outer_l4_offset = skb_transport_offset(skb);
-> +               ip_offset = skb_inner_network_offset(skb);
-> +               tcp_offset = skb_inner_transport_offset(skb);
-> +       } else {
-> +               ip_offset =  skb_network_offset(skb);
-> +               tcp_offset = skb_transport_offset(skb);
-> +               outer_ip_offset = outer_l4_offset = 0;
-> +       }
-> +
-> +       /* subtract TCP payload length from inner checksum */
-> +       tcp = (void *)skb->data + tcp_offset;
-> +       paylen = skb->len - tcp_offset;
-> +       csum_replace_by_diff(&tcp->check, (__force __wsum)htonl(paylen));
->
-> -       EFX_POPULATE_OWORD_13(*txd,
-> +       EFX_POPULATE_OWORD_17(*txd,
->                               ESF_GZ_TX_DESC_TYPE, ESE_GZ_TX_DESC_TYPE_TSO,
->                               ESF_GZ_TX_TSO_MSS, mss,
->                               ESF_GZ_TX_TSO_HDR_NUM_SEGS, 1,
-> @@ -231,6 +233,11 @@ static void ef100_make_tso_desc(struct efx_nic *efx,
->                               ESF_GZ_TX_TSO_INNER_L4_OFF_W, tcp_offset >> 1,
->                               ESF_GZ_TX_TSO_ED_INNER_IP4_ID, mangleid,
->                               ESF_GZ_TX_TSO_ED_INNER_IP_LEN, 1,
-> +                             ESF_GZ_TX_TSO_OUTER_L3_OFF_W, outer_ip_offset >> 1,
-> +                             ESF_GZ_TX_TSO_OUTER_L4_OFF_W, outer_l4_offset >> 1,
-> +                             ESF_GZ_TX_TSO_ED_OUTER_UDP_LEN, encap && !gso_partial,
+> CHECK (and ASSERT) leave a paper-trail in verbose test log, so it
+> makes it easier to debug tests, if something fails. CHECK_FAIL is
+> invisible, unless if fails. So CHECK_FAIL should be used only for
+> things that are happening on the order of hundreds of instances per
+> test, or more.
 
-This is a boolean field to signal whether the NIC needs to fix up the
-udp length field ?
+Okay, well in that case I will go through and replace the CHECK_FAIL
+calls with a CHECK.
 
-Which in the case of GSO_PARTIAL has already been resolved by the gso
-layer (in __skb_udp_tunnel_segment).
-
-Just curious, is this ever expected to be true? Not based on current
-advertised features, right?
-
-> +                             ESF_GZ_TX_TSO_ED_OUTER_IP4_ID, encap ? mangleid :
-> +                                                                    ESE_GZ_TX_DESC_IP4_ID_NO_OP,
->                               ESF_GZ_TX_TSO_VLAN_INSERT_EN, vlan_enable,
->                               ESF_GZ_TX_TSO_VLAN_INSERT_TCI, vlan_tci
->                 );
+> >
+> > > > +               goto cleanup_skel;
+> > > >
+> > > > -       map_fd = bpf_find_map(__func__, obj, "global_map");
+> > > > -       if (CHECK_FAIL(map_fd < 0))
+> > > > -               goto err;
+> > > > +       map_fd = bpf_map__fd(skel->maps.global_map);
+> > > > +       sock_map_fd = bpf_map__fd(skel->maps.sockopt_results);
+> > > >
+> > > > -       sock_map_fd = bpf_find_map(__func__, obj, "sockopt_results");
+> > > > -       if (CHECK_FAIL(sock_map_fd < 0))
+> > > > -               goto err;
+> > > > +       link = bpf_program__attach_cgroup(skel->progs.bpf_testcb, cg_fd);
+> > >
+> > > you can do skel->links.bpf_testcb = bpf_program__attach_cgroup() and
+> > > skeleton's __destroy() call will take care of destroying the link
+> >
+> > Okay, I can look into using that. Actually this has me wondering if
+> > there wouldn't be some way to make use of test_tcpbpf_kern__attach to
+> > achieve this in some standard way. I'll get that sorted before I
+> > submit v2.
 >
+> cgroup BPF programs can't be auto-attached, because they expect cgroup
+> FD, which you can't provide at compilation time (declaratively) in BPF
+> code. So it has to be manually attached. skeleton's attach() will just
+> ignore such programs.
+
+Yeah, I figured that out after reviewing the code further.
+
+Thanks.
+
+- Alex
