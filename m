@@ -2,129 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2591A29FA0D
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 01:54:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A21B129FA64
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 02:14:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726233AbgJ3Ax7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 20:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726163AbgJ3Ax6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 20:53:58 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD664C0613D2
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 17:53:57 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id u16so1712063vsl.13
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 17:53:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8uLSWkRy8VIjtD7hvy6eRjmABjuy8kF+uxS4wTZ2vEI=;
-        b=oa5P/lAefUQ1SyS6LTC+Ed16fEMFneJX/nOZIpj9zHqp9o99w+1gddX2k0JKQeFDPp
-         5avCATPKYrwhcdTIPxjgq/k1UB6GkaAlWgnA6KEqADRFNDGwhhhSTR6w7MnEIlc/lPMS
-         7hT3VJ2AKeBpumPrYjdbDk48OcQHMKiMFyX335bTtNEuIy+9ZQ4xAdka5XOXrK0WmvKO
-         CSBIZH6skxfxt5Z9mQ/ZQORc3DLt5UXvlCe+fRP+su2igD/k1mX4EzDQaSKaJBFMzSdw
-         uNI/41QChcA5Mw2p/DLVEGlbZwuQ6oExqMF4cRbpIuK2/ZAzH09ZDZvdU3Vyb7qJXhzK
-         TiMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8uLSWkRy8VIjtD7hvy6eRjmABjuy8kF+uxS4wTZ2vEI=;
-        b=Xf7gt3Fd/ps9EwcTGEZreRwmmG7ixI88pn4Z3qVLzrEe5D9fCYKbU/ZauOvcYS1vRM
-         rXYVwrTGC73jNooKLUrmx/ZaaY453crq9aYsH3rIPCT1J5PsBNt8v4l+6bJxmiIsfv6y
-         jGRTanqvzYVzebt5L5PXyUXaO9q+uYEjafJmcaoanoWMDUQlna8e2A+lDHnoduE760li
-         qjN+b0Ccc2WTwYGlt8js7WlbKR5J6mBx+9Rpy3+8HMgzEwOqPzMwmN/2e7grgI1jgBEG
-         QguOQEha83f8zcvkYAQBSqUEi2I/FA2XPFBBlYotJTF3cvJ+JB7knQ7fKhpOGOx3OQo9
-         u70Q==
-X-Gm-Message-State: AOAM533wRyq5qjlZegDd5/ElYrLpT8aCTr1oo24iWuvOnbx/z2CGT8jc
-        gjVlh+AsCkpBD2tFDebUDjoMgh4f91k=
-X-Google-Smtp-Source: ABdhPJyAxAUzs35akx7sJVDazxfDyQByGVYTKumDeJlF02s4xHYunltsj+4gmgU3ICqHdEMRL3H0Ww==
-X-Received: by 2002:a05:6102:2ef:: with SMTP id j15mr5689959vsj.19.1604019236583;
-        Thu, 29 Oct 2020 17:53:56 -0700 (PDT)
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com. [209.85.222.48])
-        by smtp.gmail.com with ESMTPSA id 190sm544520vsz.13.2020.10.29.17.53.55
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Oct 2020 17:53:55 -0700 (PDT)
-Received: by mail-ua1-f48.google.com with SMTP id t15so1265522ual.6
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 17:53:55 -0700 (PDT)
-X-Received: by 2002:ab0:5447:: with SMTP id o7mr42107uaa.37.1604019234952;
- Thu, 29 Oct 2020 17:53:54 -0700 (PDT)
+        id S1726017AbgJ3BOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 21:14:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44926 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725771AbgJ3BOW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 21:14:22 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C24AD2072C;
+        Fri, 30 Oct 2020 01:14:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604020461;
+        bh=6XlX9VjXcc098sFei0ZaIwKaKUlm12fGSh08Mypgy/8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uWeClCRt4l/cIeS2dgM4D3VHedAYPH7NaXU8FdU3epCLoQyqhQYD4Jallv1vhtaiu
+         uN20HQKwY9xsCKh/mh1T/I03IVP+QVpTUeDPSCBKjp9r4eX0kFRnfua83KSmNlaYPo
+         1Vb+KnFNFvjpsxshr5bWKO8NyhUIv3sgexjPcIhU=
+Date:   Thu, 29 Oct 2020 18:14:19 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        Stefano Brivio <sbrivio@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCH net] ip_tunnel: fix over-mtu packet send fail without
+ TUNNEL_DONT_FRAGMENT flags
+Message-ID: <20201029181419.0931f7ab@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <057f100e-2b80-f831-0a22-8d2dfe5529bd@ucloud.cn>
+References: <1603272115-25351-1-git-send-email-wenxu@ucloud.cn>
+        <20201023141254.7102795d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <c4dae63c-6a99-922e-5bd0-03ac355779ae@ucloud.cn>
+        <20201026135626.23684484@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <8e24e490-b3bf-5268-4bd5-98b598b36b36@gmail.com>
+        <20201027085548.05b39e0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <057f100e-2b80-f831-0a22-8d2dfe5529bd@ucloud.cn>
 MIME-Version: 1.0
-References: <20201028131807.3371-1-xie.he.0141@gmail.com> <20201028131807.3371-5-xie.he.0141@gmail.com>
- <CA+FuTSeBZWsy4w4gdPU2sb2-njuEiqbXMgfnA5AdsXkNr__xRA@mail.gmail.com>
- <CAJht_EMOxSn-hraig1jnF_KwNsYaCYnwaZvVH7rutdS0Lj0sGA@mail.gmail.com> <CAJht_EPggyhiaROvReNJ4hCwQ6+Z0wf4zHADrSAaT8jBE0J+1w@mail.gmail.com>
-In-Reply-To: <CAJht_EPggyhiaROvReNJ4hCwQ6+Z0wf4zHADrSAaT8jBE0J+1w@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 29 Oct 2020 20:53:17 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdy38GOTKRr9Ze3jvfTQqxR7s_c67J0z75AFZ-yihAVuw@mail.gmail.com>
-Message-ID: <CA+FuTSdy38GOTKRr9Ze3jvfTQqxR7s_c67J0z75AFZ-yihAVuw@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 4/4] net: hdlc_fr: Add support for any Ethertype
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 8:49 PM Xie He <xie.he.0141@gmail.com> wrote:
->
-> On Thu, Oct 29, 2020 at 4:53 PM Xie He <xie.he.0141@gmail.com> wrote:
+On Thu, 29 Oct 2020 10:30:50 +0800 wenxu wrote:
+> On 10/27/2020 11:55 PM, Jakub Kicinski wrote:
+> > On Tue, 27 Oct 2020 08:51:07 -0600 David Ahern wrote: =20
+> >>> Is this another incarnation of 4cb47a8644cc ("tunnels: PMTU discovery
+> >>> support for directly bridged IP packets")? Sounds like non-UDP tunnels
+> >>> need the same treatment to make PMTUD work.
+> >>>
+> >>> RFC2003 seems to clearly forbid ignoring the inner DF:   =20
+> >> I was looking at this patch Sunday night. To me it seems odd that
+> >> packets flowing through the overlay affect decisions in the underlay
+> >> which meant I agree with the proposed change. =20
+> > The RFC was probably written before we invented terms like underlay=20
+> > and overlay, and still considered tunneling to be an inefficient hack ;)
+> > =20
+> >> ip_md_tunnel_xmit is inconsistent right now. tnl_update_pmtu is called
+> >> based on the TUNNEL_DONT_FRAGMENT flag, so why let it be changed later
+> >> based on the inner header? Or, if you agree with RFC 2003 and the DF
+> >> should be propagated outer to inner, then it seems like the df reset
+> >> needs to be moved up before the call to tnl_update_pmtu =20
+> > Looks like TUNNEL_DONT_FRAGMENT is intended to switch between using
+> > PMTU inside the tunnel or just the tunnel dev MTU. ICMP PTB is still
+> > generated based on the inner headers.
 > >
-> > > Does it make sense to define a struct snap_hdr instead of manually
-> > > casting all these bytes?
-> >
-> > > And macros or constant integers to self document these kinds of fields.
-> >
-> > Yes, we can define a struct snap_hdr, like this:
-> >
-> > struct snap_hdr {
-> >         u8 oui[3];
-> >         __be16 pid;
-> > } __packed;
-> >
-> > And then the fr_snap_parse function could be like this:
-> >
-> > static int fr_snap_parse(struct sk_buff *skb, struct pvc_device *pvc)
-> > {
-> >        struct snap_hdr *hdr = (struct snap_hdr *)skb->data;
-> >
-> >        if (hdr->oui[0] == OUI_ETHERTYPE_1 &&
-> >            hdr->oui[1] == OUI_ETHERTYPE_2 &&
-> >            hdr->oui[2] == OUI_ETHERTYPE_3) {
-> >                if (!pvc->main)
-> >                        return -1;
-> >                skb->dev = pvc->main;
-> >                skb->protocol = hdr->pid; /* Ethertype */
-> >                skb_pull(skb, 5);
-> >                skb_reset_mac_header(skb);
-> >                return 0;
-> >
-> >        } else if (hdr->oui[0] == OUI_802_1_1 &&
-> >                   hdr->oui[1] == OUI_802_1_2 &&
-> >                   hdr->oui[2] == OUI_802_1_3) {
-> >                if (hdr->pid == htons(PID_ETHER_WO_FCS)) {
-> >
-> > Would this look cleaner?
->
-> Actually I don't think this is significantly cleaner than the previous
-> version of code. A reader of this code may still wonder what are the
-> values of all these macros, and he/she may still want to look up the
-> values of them. The comment in the previous version of code has made
-> the meaning of these values very clear, and the reader of the code
-> would not need to go to another place of this file to find the values.
->
-> The struct snap_hdr eliminates a cast, but only one cast. So it might
-> not be very necessary, either. Introducing this struct also makes the
-> reader need to go to another place of this file to look up the
-> definition of this struct. So it does not significantly improve the
-> readability (IMHO).
+> > We should be okay to add something like IFLA_GRE_IGNORE_DF to lwt,=20
+> > but IMHO the default should not be violating the RFC. =20
+>=20
+> If we add=C2=A0 TUNNEL_IGNORE_DF to lwt,=C2=A0 the two IGNORE_DF and DONT=
+_FRAGMENT
+>=20
+> flags should not coexist ?=C2=A0=C2=A0 Or DONT_FRAGMENT is prior to the I=
+GNORE_DF?
+>=20
+>=20
+> Also there is inconsistent in the kernel for the tunnel device. For genev=
+e and
+>=20
+> vxlan tunnel (don't send tunnel with ip_md_tunnel_xmit) in the lwt mode s=
+et
+>=20
+> the outer df only based=C2=A0 TUNNEL_DONT_FRAGMENT .
+>=20
+> And this is also the some behavior for gre device before switching to use=
+=20
+> ip_md_tunnel_xmit as the following patch.
+>=20
+> 962924f ip_gre: Refactor collect metatdata mode tunnel xmit to ip_md_tunn=
+el_xmit
 
-Thanks for coding up an example. Yes, seeing the alternative, I agree.
+Ah, that's a lot more convincing, I was looking at the Fixes tag you
+provided, but it seems like Fixes should really point at the commit you
+mention here.
+
+Please mention the change in GRE behavior and the discrepancy between
+handling of DF by different tunnels in the commit message and repost.
