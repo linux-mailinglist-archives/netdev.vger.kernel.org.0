@@ -2,102 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36A472A0B0F
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 17:27:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A57562A0B1C
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 17:30:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbgJ3Q1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 12:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
+        id S1727079AbgJ3QaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 12:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726348AbgJ3Q1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 12:27:22 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B89C0613CF
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 09:27:22 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id t8so893717vsr.2
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 09:27:22 -0700 (PDT)
+        with ESMTP id S1727055AbgJ3QaG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 12:30:06 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19600C0613CF
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 09:30:06 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id u7so3695550vsq.11
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 09:30:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Bep9AfD1MRCjrXXe8vaQR1eGt2W/4JPt3j0HqUAR8Kc=;
-        b=fPPw5/rMgTq6GYM9/CnVQANTQVZj4fqNJLTkqAoJ2XCviiPxhrtlx/USdS0coEyxUq
-         XFk7P5Pr/MiCh0IcK3sUkDUaC8BSucn4H9vxPGcoz7SuomFhAQENjotpHLs8qsUfBYIS
-         ZnFHur0NNGCn5WLxbSTWYp8EVfb1oMhiq+wz/34wN7ekOB0xIwaDpJ4e/E/OLrgryGcm
-         P8nLCh5MvaNhX8uLILR2h3IE4khldnGF/T31OGGDFUbn/lryu+SX9YZEcWHnmueztgig
-         wPVp0DXQHRzJ+jABMCkKGo5fwV43GrLb/yZXsmqb501Je6n6mkAKBHOsupQrI8FGdLzy
-         jLeA==
+        bh=4poLgQBGdsSGDvNJLaT7Dlzjhi4aYmy6o/Lmtq6/qVo=;
+        b=G4SLnL2eYkkiwoS7P5qeqcyMAzOSrF7xu1naInh5Whz77s8PuMbGResfIRFeAqs5HJ
+         /VkMR0vIeT4WKeSU1i4COT9QPAiSZ4oVvUpT2wzY7oixSMC9nmmkNaPHEF3CYQQy1Y47
+         36G91EPoARQdMg1Uzu56UHpM8f3VUJfnB7DVvHmhR9LwZa4jq7xDB3fvj3fJwiPxqhBj
+         CmSKk09dFWYW665Rs1FssjrE0KbkX0/+3HgMCpkTPo8JOU1nipMuFCAzAKXm1vz37/7N
+         YQeOJ7+q4fp/5MMt3A/d4J9jWGHTVAgPe+18PHcL4VwRaVOAgvtwrNsknPAYCAiPh9dl
+         H7GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Bep9AfD1MRCjrXXe8vaQR1eGt2W/4JPt3j0HqUAR8Kc=;
-        b=hD/Y5tCm6P+2cu3lNnyGbUAJUhnEGax9w/Jx5JsXvbG7hmnhRL4ea+xUms8P47Qios
-         sahZCMlK4mTM+kNLV1Cz6M+MPlehLB9lsUIBDIRu8lj5wCurmwiqB9jTOwiMFfLDo7Km
-         27/AOSEVE2Xr9wXx1zZ4AweqvFqasJLzESWTFyRxiKwpoIEUHaE31LJsjktO/IlixQ+a
-         4VFJES6TWzJ0+5b5HDGrdQTNLQgRbyaQ1cEvT0RKQEHqOyEQNT7br6K79dwqDRX4cSMs
-         V+WpUav+XWReef0X8z2+tW8g20Ipl13YGWF1qDf6gIeOA4kqI5wjcanIqr6E/2QF/3nk
-         0inw==
-X-Gm-Message-State: AOAM5312h3ugaB0qZFP898OPejMlvaicBJKOJ0aHyYfazF+U7mkzrDDE
-        zyIPM4s1cso8523z/g3mW9WNBfxU4hE=
-X-Google-Smtp-Source: ABdhPJwAwWCJAYLCf/nzhRVR6puy4F2RIYDVQF47V7kzRjyxHa1IIvLO02SvoDviCwbtFiquJMFt3Q==
-X-Received: by 2002:a67:f8d3:: with SMTP id c19mr1770939vsp.36.1604075241491;
-        Fri, 30 Oct 2020 09:27:21 -0700 (PDT)
-Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com. [209.85.217.53])
-        by smtp.gmail.com with ESMTPSA id 123sm799208vsr.6.2020.10.30.09.27.20
+        bh=4poLgQBGdsSGDvNJLaT7Dlzjhi4aYmy6o/Lmtq6/qVo=;
+        b=R/0b40zBXmwF/jkfDGLSyJO4JkvK/xcSEko/P43dwu2L5JkB2aatjfGri+OhC2coL4
+         sladw6pVrvQ4GFZPG/IYIdbAGOTwYCeGvsbd5WBQHPjpVq1hoxvz6ag4uRPre7Il7OxZ
+         WewrXHZhM0HHZsDNRWYYyLWD3Fg4Xye5PyRgEih7raa1fjZ26guAWLfmqzhQipD8/HSC
+         YXE6MrTsCeJTuwzx019x9aDKtykLy1xCIC4TRyk00+lgENWU5UZshxvZ9bTpCRu1Ys4u
+         sJji8xFmtPEdA55f9+Jqm8o521nYtskzRixtZvXjU5x2xE79ZHQbVYzPm9jL+DpkXmFn
+         JTYw==
+X-Gm-Message-State: AOAM532HNHn9UueqMDqOU0tLms3zm7e2JiLTmZOl5IohwHO/3BTPe9Z3
+        OmZhkB1PKKxmoCNoCV8b/wMwbVJjBFk=
+X-Google-Smtp-Source: ABdhPJwXwdhmHWUICF4fUBAMd/NskvwNzfOFUM5nUExI0AjSlYDyqSH9hxPAbH4icIzqe4AFECzePA==
+X-Received: by 2002:a67:edcb:: with SMTP id e11mr8509954vsp.11.1604075404999;
+        Fri, 30 Oct 2020 09:30:04 -0700 (PDT)
+Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com. [209.85.222.53])
+        by smtp.gmail.com with ESMTPSA id e10sm675835uan.11.2020.10.30.09.30.04
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Oct 2020 09:27:20 -0700 (PDT)
-Received: by mail-vs1-f53.google.com with SMTP id b3so3712906vsc.5
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 09:27:20 -0700 (PDT)
-X-Received: by 2002:a05:6102:2f8:: with SMTP id j24mr8038385vsj.13.1604075240051;
- Fri, 30 Oct 2020 09:27:20 -0700 (PDT)
+        Fri, 30 Oct 2020 09:30:04 -0700 (PDT)
+Received: by mail-ua1-f53.google.com with SMTP id r9so1883724uat.12
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 09:30:04 -0700 (PDT)
+X-Received: by 2002:ab0:5447:: with SMTP id o7mr2256444uaa.37.1604075403498;
+ Fri, 30 Oct 2020 09:30:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <6e1ea05f-faeb-18df-91ef-572445691d89@solarflare.com>
- <94ca05ca-2871-3da6-e14f-0a9cb48ed2a5@solarflare.com> <CA+FuTSdaPV_ZsU=YfT6vAx-ScGWu1O1Ji1ubNmgxe4PZYYNfZw@mail.gmail.com>
- <ca372399-fecb-2e5a-ae92-dca7275be7ab@solarflare.com>
-In-Reply-To: <ca372399-fecb-2e5a-ae92-dca7275be7ab@solarflare.com>
+References: <20201030022839.438135-1-xie.he.0141@gmail.com> <20201030022839.438135-5-xie.he.0141@gmail.com>
+In-Reply-To: <20201030022839.438135-5-xie.he.0141@gmail.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 30 Oct 2020 12:26:43 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdk-UZ92VdpWTAx87xnzhsDKcWfVOOwG_B16HdAuP7PQA@mail.gmail.com>
-Message-ID: <CA+FuTSdk-UZ92VdpWTAx87xnzhsDKcWfVOOwG_B16HdAuP7PQA@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/4] sfc: implement encap TSO on EF100
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        linux-net-drivers@solarflare.com, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
+Date:   Fri, 30 Oct 2020 12:29:26 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSczR03KGNdksH2KyAyzoR9jc6avWNrD+UWyc7sXd44J4w@mail.gmail.com>
+Message-ID: <CA+FuTSczR03KGNdksH2KyAyzoR9jc6avWNrD+UWyc7sXd44J4w@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 4/5] net: hdlc_fr: Do skb_reset_mac_header for
+ skbs received on normal PVC devices
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Krzysztof Halasa <khc@pm.waw.pl>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 12:16 PM Edward Cree <ecree@solarflare.com> wrote:
+On Thu, Oct 29, 2020 at 10:33 PM Xie He <xie.he.0141@gmail.com> wrote:
 >
-> On 30/10/2020 15:49, Willem de Bruijn wrote:
-> > On Wed, Oct 28, 2020 at 9:39 PM Edward Cree <ecree@solarflare.com> wrote:
-> >> +                             ESF_GZ_TX_TSO_ED_OUTER_UDP_LEN, encap && !gso_partial,
-> >
-> > This is a boolean field to signal whether the NIC needs to fix up the
-> > udp length field ?
-> Yes.
-
-Thanks
-
-> > Which in the case of GSO_PARTIAL has already been resolved by the gso
-> > layer (in __skb_udp_tunnel_segment).
-> Indeed.
+> When an skb is received on a normal (non-Ethernet-emulating) PVC device,
+> call skb_reset_mac_header before we pass it to upper layers.
 >
-> > Just curious, is this ever expected to be true? Not based on current
-> > advertised features, right?
-> As I mentioned in the patch description and cover letter, I'm not
->  entirely certain.  I don't _think_ the stack will ever give us an
->  encap skb without GSO_PARTIAL with the features we've advertised,
+> This is because normal PVC devices don't have header_ops, so any header we
+> have would not be visible to upper layer code when sending, so the header
+> shouldn't be visible to upper layer code when receiving, either.
+>
+> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Cc: Krzysztof Halasa <khc@pm.waw.pl>
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
 
-That's my understanding too.
+Acked-by: Willem de Bruijn <willemb@google.com>
 
->  but since the hardware supports it I thought it better to handle
->  that case anyway, just in case I'm mistaken.
-
-Then you could (as follow-up) advertise without GSO_PARTIAL and avoid
-the whole transition through the gso layer?
+Should this go to net if a bugfix though?
