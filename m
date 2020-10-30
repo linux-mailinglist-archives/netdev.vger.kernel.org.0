@@ -2,49 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E46F62A0F44
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 21:13:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4152C2A0F49
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 21:16:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727533AbgJ3UNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 16:13:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45180 "EHLO mail.kernel.org"
+        id S1726904AbgJ3UQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 16:16:53 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55398 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726061AbgJ3UMl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Oct 2020 16:12:41 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AD86520706;
-        Fri, 30 Oct 2020 20:12:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604088761;
-        bh=4MSq+kA3xHz1+rNfANi6IYmdRtmgvieCSPxsSr4PZMQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VqwABozgGEgbqB/ozHqLIdgtViI9WzySgvYVtAnibjsEdgHIcMfiw9Fp4VAy3ZEJC
-         BUm+kIUO4zJg+RzHQ9FGPRPpQKTjpVaLpPFfj9ecLEhXDiHOKkELA9b4ZoEIL1Eot6
-         x7pPB77utzGQnqSsC4Awedce2ygehX+hAQgKyBuI=
-Date:   Fri, 30 Oct 2020 13:12:39 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hoang Huu Le <hoang.h.le@dektech.com.au>
-Cc:     netdev@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>
-Subject: Re: [net-next] tipc: remove dead code in tipc_net and relatives
-Message-ID: <20201030131239.676e6e54@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201028032712.31009-1-hoang.h.le@dektech.com.au>
-References: <20201028032712.31009-1-hoang.h.le@dektech.com.au>
+        id S1725975AbgJ3UPX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Oct 2020 16:15:23 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kYanr-004PQx-Th; Fri, 30 Oct 2020 21:15:15 +0100
+Date:   Fri, 30 Oct 2020 21:15:15 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        robh@kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 4/4] net: phy: dp83td510: Add support for the
+ DP83TD510 Ethernet PHY
+Message-ID: <20201030201515.GE1042051@lunn.ch>
+References: <20201030172950.12767-1-dmurphy@ti.com>
+ <20201030172950.12767-5-dmurphy@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201030172950.12767-5-dmurphy@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Oct 2020 10:27:12 +0700 Hoang Huu Le wrote:
-> dist_queue is no longer used since commit 37922ea4a310
-> ("tipc: permit overlapping service ranges in name table")
-> 
-> Acked-by: Jon Maloy <jmaloy@redhat.com>
-> Acked-by: Ying Xue <ying.xue@windriver.com>
-> Signed-off-by: Hoang Huu Le <hoang.h.le@dektech.com.au>
+> +static int dp83td510_config_init(struct phy_device *phydev)
+> +{
+> +	struct dp83td510_private *dp83td510 = phydev->priv;
+> +	int mst_slave_cfg;
+> +	int ret = 0;
+> +
+> +	if (phy_interface_is_rgmii(phydev)) {
+> +		if (dp83td510->rgmii_delay) {
+> +			ret = phy_set_bits_mmd(phydev, DP83TD510_DEVADDR,
+> +					       DP83TD510_MAC_CFG_1, dp83td510->rgmii_delay);
+> +			if (ret)
+> +				return ret;
+> +		}
+> +	}
 
-Applied, thanks!
+Hi Dan
+
+I'm getting a bit paranoid about RGMII delays...
+
+> +static int dp83td510_read_straps(struct phy_device *phydev)
+> +{
+> +	struct dp83td510_private *dp83td510 = phydev->priv;
+> +	int strap;
+> +
+> +	strap = phy_read_mmd(phydev, DP83TD510_DEVADDR, DP83TD510_SOR_1);
+> +	if (strap < 0)
+> +		return strap;
+> +
+> +	if (strap & DP83TD510_RGMII)
+> +		dp83td510->is_rgmii = true;
+> +
+> +	return 0;
+> +};
+
+So dp83td510->is_rgmii is the strapping configuration. So if one of
+the four RGMII modes is selected, your appear to ignore which of the
+four is selected, and program the hardware with the strapping?
+
+That seems like a bad idea.
+
+> +#if IS_ENABLED(CONFIG_OF_MDIO)
+> +static int dp83td510_of_init(struct phy_device *phydev)
+> +{
+> +	struct dp83td510_private *dp83td510 = phydev->priv;
+> +	struct device *dev = &phydev->mdio.dev;
+> +	struct device_node *of_node = dev->of_node;
+> +	s32 rx_int_delay;
+> +	s32 tx_int_delay;
+> +	int ret;
+> +
+> +	if (!of_node)
+> +		return -ENODEV;
+> +
+> +	ret = dp83td510_read_straps(phydev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	dp83td510->hi_diff_output = device_property_read_bool(&phydev->mdio.dev,
+> +							      "tx-rx-output-high");
+> +
+> +	if (device_property_read_u32(&phydev->mdio.dev, "tx-fifo-depth",
+> +				     &dp83td510->tx_fifo_depth))
+> +		dp83td510->tx_fifo_depth = DP83TD510_FIFO_DEPTH_5_B_NIB;
+
+Please don't use device_property_read_foo API, we don't want to give
+the impression it is O.K. to stuff DT properties in ACPI
+tables. Please use of_ API calls.
+
+	Andrew
