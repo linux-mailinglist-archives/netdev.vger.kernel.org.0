@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1C2829FABB
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 02:49:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A7BF29FABC
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 02:49:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726185AbgJ3Btl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 21:49:41 -0400
-Received: from mail-eopbgr80089.outbound.protection.outlook.com ([40.107.8.89]:30883
+        id S1726197AbgJ3Btm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 21:49:42 -0400
+Received: from mail-eopbgr80044.outbound.protection.outlook.com ([40.107.8.44]:45367
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726117AbgJ3Btk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 21:49:40 -0400
+        id S1725781AbgJ3Btj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 21:49:39 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VBRHIgKBV5lDg27Hu1LgqJyEHTFTKr4EFgigCttGooCvGlKcJKMhoy2AcU2/jyA+WgGujp7Wj1Uoyowfhzins2czhmHEe8yBwgetUwqrnwcWsj6LNRGLxbnqpl4At/j2HGDkJV4a3bJss/E6gCa7QpxkdjXuXzdJMsdx8G8WiUGzCtDR3h2v6gYAF2qfiBYGMippiYq/ojG0vWSD6++5/fY5q2PbchfC+C0Hb9i22ZWDIqbCtYxnkjNMlotqg3WfzXnuRBKPspggW544CagjQBAYFPvX+kWD1PPG76iOQeKQamQhVRRyammecgENUxztZlBGGwBBQpqvUKZLM9OsZA==
+ b=clsR3CBYaNaFX+vteVtSC3wwLHDlSw+IK00zmoweVKOFaMjFLKbLBmbWW0O+jsbpT9HdpzoIko+79i4xMjVHjcvcB/rqBmRI8gCy5Bg22rnDZu4SDtgB4fKGACXc61/mWk+1MWB6sKg9asiTveSley6TWFkCgzN3f8NOxsr6qfRg4L7L5RMZWpxWKhVn3bl0O1MCubaAnYxZt0TOfPYMhUysAvquc0EkAxPAAYzVaJ7kBeW0pbIaD79iGTpRdd+DuXkWySKhYky7+jJnz5dRgks8tQrQvNiTLRhFJN5AC635DiZ6YW1a1TdEfu4THkCSitBC8b2gs/t4psPFhPgDkw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w8Ow8XlFewIzp1wLogHbDgcFyd7uWurfpykhcxpZjJY=;
- b=hEwPQoBKGYILEDrbbGGPTxV+MSZ+NOkpo/h3N1QnEGEmSIGvxmLFD7q5vk/tRaEaGyA82bwYGqhnTwZ9ZpHt2ABh3NEK3CuE9JBmWPubgNsxmkkuDm/ko37MrWXliWOfRP7uESGsD/X8S5E+hCLT01+8AitNu3Zcam3mzsPCnfppYm7rQqI4O3mWBHpER7UbkqndwZF3nyzwLj9ER3/vjYn9kT0v2a7dsn3y6Q2i/YRvy2DI7MmsaX0Kp9L8WCMhOIMM1gv+UBNUEB7FmXEidk5beT2zfhS7f9JcEJEwfUzOktE2dWxtU2kB1JU/xDQpk2RcFm32eoWgkJkrQVUCLQ==
+ bh=/5Inlop7MVTtw2qSaH4auIK1dW6ItrO8k2HBPppeiOA=;
+ b=oV3e2KRd6LhlQ23An6HRgAVBOoHlMrqsV5fvj8S4UoYkK8/cetmb605HqB+gIzTQIj2b7Eqf0Mc9SdpQUAOQL0YzzHuUcKDz72t8ZD/oTyG2o5W/FjKK35rwoAxT5aM8HWTin1mg3JKA99yihV0jAfXKX65InMEv1fCMLvDM7ysc9u651g+nK+Y469a9YCrtzN4rllO2b8cGooHAuVMwZFh7LVnwKl3H/Euqf8Y2LZ4cbkTMYdtjLhnRNwtQ2JgTiNhD3//wNG3dDvKICYPrRCvwhV5NqHMhO3OFv+LPQvrlY9yNFEHlyBJcJ0mHgvz70QJw1BUryUd3SLTjDGsO5Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w8Ow8XlFewIzp1wLogHbDgcFyd7uWurfpykhcxpZjJY=;
- b=RTtOdV1rEwsnJ/dAXghhadc4A/VhzLt9GHnFnofeUyQxGrRNXiL0zahnKqzTXV8pumK7B4etuo0UHoVHFE6hXkX/IDJghP6Z6vrxYiQvSX4MQtdJvC2PfYU2Nq8YYXfcCDWQOy1nADGLLFQNid3KUvCKxOSV8b212Fcm1J+0XHM=
+ bh=/5Inlop7MVTtw2qSaH4auIK1dW6ItrO8k2HBPppeiOA=;
+ b=nSN4oUfYZElRjiqm9lxlC1oOpPP6srDAw3nRu37qVRHjh8kNmC/DTTneH4KIoSAu15mTCv2Ew4c6X6lD249GLL2nGKao0qtQfsyUUnS5GBrxbvchumpTbeW9c7UChuVhuniZqNfOSY7xYMtbYEBmvZDlbWkkKjOWbHfrSJFD1QI=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VI1PR0401MB2509.eurprd04.prod.outlook.com (2603:10a6:800:56::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Fri, 30 Oct
- 2020 01:49:30 +0000
+ 2020 01:49:31 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3499.027; Fri, 30 Oct 2020
- 01:49:30 +0000
+ 01:49:31 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         kuba@kernel.org, Christian Eggers <ceggers@arri.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v2 net-next 03/12] net: dsa: trailer: don't allocate additional memory for padding/tagging
-Date:   Fri, 30 Oct 2020 03:49:01 +0200
-Message-Id: <20201030014910.2738809-4-vladimir.oltean@nxp.com>
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        John Crispin <john@phrozen.org>,
+        Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH v2 net-next 04/12] net: dsa: tag_qca: let DSA core deal with TX reallocation
+Date:   Fri, 30 Oct 2020 03:49:02 +0200
+Message-Id: <20201030014910.2738809-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201030014910.2738809-1-vladimir.oltean@nxp.com>
 References: <20201030014910.2738809-1-vladimir.oltean@nxp.com>
@@ -56,96 +58,61 @@ X-ClientProxiedBy: AM0PR03CA0096.eurprd03.prod.outlook.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.177) by AM0PR03CA0096.eurprd03.prod.outlook.com (2603:10a6:208:69::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Fri, 30 Oct 2020 01:49:29 +0000
+Received: from localhost.localdomain (188.25.2.177) by AM0PR03CA0096.eurprd03.prod.outlook.com (2603:10a6:208:69::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Fri, 30 Oct 2020 01:49:30 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 9edd79c9-a707-4c6a-3088-08d87c760ad6
+X-MS-Office365-Filtering-Correlation-Id: 201101a5-ca91-4f08-1b55-08d87c760b7c
 X-MS-TrafficTypeDiagnostic: VI1PR0401MB2509:
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB25090880618531C8A6C15117E0150@VI1PR0401MB2509.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB2509245527338340AA07C3D7E0150@VI1PR0401MB2509.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IhTBl0tyioqUt1O118NhWDgQR+XEibVMqwtZR6ceEmh6abjBrBI0wnXeea+ZfUefEpZhK82uIMeo+SP9w966n7nJk8ljaAh5sIgY0+/qlc95WdlCYwuThy3z4T6E1SCyUU7GtjZc5V6VDUFeFZf17hbbKjMwKuhPSgSGxgLn0icC+eqaGGGxw/f8VAa0NO09vgLXIxGiyfwlEhMeWuOhcA9WNhlv+RZkAJr1/X16t6rTv9iwMtWtUT392/hkdfK14JWtmT9eMp1zwS6bfZNw5UQsC0ve4xgD+ttRN98BaFMNBCXBbN1PPOabTpD1UlTd701jvr+bRKx0sWFYhN+eSmuKrrSe8Ztpcd+FTwj7DI9tYxKaBf0V5g7nb7LCBpDD
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(136003)(396003)(346002)(376002)(366004)(5660300002)(54906003)(16526019)(6506007)(66946007)(66476007)(1076003)(316002)(186003)(8676002)(69590400008)(36756003)(86362001)(44832011)(52116002)(6512007)(6486002)(66556008)(6666004)(956004)(6916009)(8936002)(478600001)(2616005)(26005)(2906002)(4326008)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Cg/HlTMEn1hQz1tJ2XtE62OOsOs/HLJoRLhNEwxAE55StXK/zeo5cUbe5g2S+ZNFyY7ox70TsTMdBSh1IjxGW6gait5Vf1PU4XS4bLek1wkVXjnrbtVdlJeXEWyMV6xBCJTYEDV8pLPWKJ1ylvt7bJTThVBVCnrT8odTZCWme/pyNsDmZ2qWG7Gx+eQ6fvj8I49b3ueznzhEowyEQMjoTGoPIvp1oMbRwhCVlTrCumuENKN4nzJCEdGNEyTaT9BkYMxSGGyXuOYI+fGX5hxpfzEgRkAY4THKqBUqaCqlH16GSKSrEzoj1XHuVuMWYc74ovfsKiJpuqaYGHwePXim/9klU6fB030qnveWynziRklJsXPXQdGSFbo107/R6yx96PKMojY2JqebGo0P8lCATVtmreNwfkdX8urYURf0aKpp1NYAfnO7fTWQRjnUkzfdSa6DYlyEhL3nWT6wZFwMOjigSppLQVnzHA37rInU2ba6qhGNjCO3PzkirfUn2joxHo0HxheZnXIBAtrW+zNjTzevLUC6qtQ1NnRe+y/jtzMA6J8hYNlSqglZWwhoI3RNiFWb91b8FcphDlxsbsgFglQnCry7ZuesR9Oa/uFX+O/kQ9vh9tfT4Z0taUWy6Rv4JhjItT3fibXKZ46jttyERQ==
+X-Microsoft-Antispam-Message-Info: /jK9xpBTHTwWRmxaWZ0JnMiOhnruOvVgfCQxt2aoDD64FPOywqxoTvm54gXlkZU0wCl0jyEhpJf146fzEwz4yVsJu+Q7nA+3SEXN2oQ/+XJul+8BU8M9kWTA6IdQG2ICt26DLdNb4Asw/uWRdw97YZyvcm74M/w5EiurAv1hNnQPpu6C+Q6lDymaFzD0YB5MUxWAXTFQ1VQynbOLVDbKjuPngusza+Ig+d6/FK4w4gxUzLCVpsmJI3jPelVqoJzya0OpgkorEXl9zy0xTyubwqJiwuhG5YGBiABBrZ5MofR0dkfJlrWkCt/dQhe3Z5rj2FAOX1XJkBvZycV/JHeNvseFuv8hOM7alRaMJYKQLg/Yg7ofq5Aa0zoIWeF7EJ38
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(136003)(396003)(346002)(376002)(366004)(5660300002)(54906003)(4744005)(16526019)(6506007)(66946007)(66476007)(1076003)(316002)(186003)(8676002)(69590400008)(36756003)(86362001)(44832011)(52116002)(6512007)(6486002)(66556008)(6666004)(956004)(6916009)(8936002)(478600001)(2616005)(26005)(2906002)(4326008)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: zsAGRmg8k06RG6Vgx7gzZr5KU60+986KUpsFscrD3XT06TNC1XjerrpWFN6GofXVVfzGBxIwpPHfjRC32hgHmkjW8AOci2F5MlVLgWdhpk+twOvDmmp8UpZYjxZeGNHgzTRgMqq5swIJJXfHls3cOwz+OXl3LqzMEnG2TDD1VmfWILLg0OutuaWJPUiPLHUe/CdFA4Ed9jXJnZOaT6bzXFIAUJswF7xxFdxzdAseRWZO32dvylFnK2L621SIx9hJ8p3ZBN2mLB4wKLBRmkLIbZZS2MHJqEtWgrWapRwAWcsLZNYxtxc0RDEs/IugDq8m/IL3w8YTFoR+MK3LDp6CsVIm96MnWMS/R8DcCqKq2E4jFLs2PP7B4GyJ/Tih+u//esEziltjhT8cUrKJQHpWouXfhC5T42JqRITdrNbO6QWQXaRR3fE0QdhphBsMSYHydaCBH0XyADCzuEywEMZjasdreCuMo6dV/6qRqSudqOKdVWiUpc8/htQkxx5tEvNJV6UMbv4SHcRLkU60JyTYns8tDxA/LuZXibAkYbfArUA2pfNBKGNIp/WgDMRH8ULncOvfDHMUVufl/+JV7omxhZIaWs8PSlDrI4iruVNYEHlMMsP+2AAForCer+BsZOundz5Tys7Mt6/WHGm1gNIQwA==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9edd79c9-a707-4c6a-3088-08d87c760ad6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 201101a5-ca91-4f08-1b55-08d87c760b7c
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2020 01:49:30.4638
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2020 01:49:31.5472
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: H+b4jV76Q7n40uiBzP2NE/vWb4MbqX+oGyrWlRIQP7V8ka9yB277eB76WyuEdhI6bYiKhLdHxV7j/8Jx/8tt2w==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9WcTdpLiE0UYvy1DzKQO1+C+lxNEAsUNwyPriGCFzw3sygrJLh0FKWmkzt5Q//4zsFr6C1N6B1OpqhJceAZThQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2509
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christian Eggers <ceggers@arri.de>
+Now that we have a central TX reallocation procedure that accounts for
+the tagger's needed headroom in a generic way, we can remove the
+skb_cow_head call.
 
-The caller (dsa_slave_xmit) guarantees that the frame length is at least
-ETH_ZLEN and that enough memory for tail tagging is available.
-
-Signed-off-by: Christian Eggers <ceggers@arri.de>
+Cc: John Crispin <john@phrozen.org>
+Cc: Alexander Lobakin <alobakin@pm.me>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v2:
 None.
 
- net/dsa/tag_trailer.c | 31 ++-----------------------------
- 1 file changed, 2 insertions(+), 29 deletions(-)
+ net/dsa/tag_qca.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/net/dsa/tag_trailer.c b/net/dsa/tag_trailer.c
-index 3a1cc24a4f0a..5b97ede56a0f 100644
---- a/net/dsa/tag_trailer.c
-+++ b/net/dsa/tag_trailer.c
-@@ -13,42 +13,15 @@
- static struct sk_buff *trailer_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
--	struct sk_buff *nskb;
--	int padlen;
- 	u8 *trailer;
+diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
+index 1b9e8507112b..88181b52f480 100644
+--- a/net/dsa/tag_qca.c
++++ b/net/dsa/tag_qca.c
+@@ -34,9 +34,6 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	__be16 *phdr;
+ 	u16 hdr;
  
--	/*
--	 * We have to make sure that the trailer ends up as the very
--	 * last 4 bytes of the packet.  This means that we have to pad
--	 * the packet to the minimum ethernet frame size, if necessary,
--	 * before adding the trailer.
--	 */
--	padlen = 0;
--	if (skb->len < 60)
--		padlen = 60 - skb->len;
--
--	nskb = alloc_skb(NET_IP_ALIGN + skb->len + padlen + 4, GFP_ATOMIC);
--	if (!nskb)
+-	if (skb_cow_head(skb, QCA_HDR_LEN) < 0)
 -		return NULL;
--	skb_reserve(nskb, NET_IP_ALIGN);
 -
--	skb_reset_mac_header(nskb);
--	skb_set_network_header(nskb, skb_network_header(skb) - skb->head);
--	skb_set_transport_header(nskb, skb_transport_header(skb) - skb->head);
--	skb_copy_and_csum_dev(skb, skb_put(nskb, skb->len));
--	consume_skb(skb);
--
--	if (padlen) {
--		skb_put_zero(nskb, padlen);
--	}
--
--	trailer = skb_put(nskb, 4);
-+	trailer = skb_put(skb, 4);
- 	trailer[0] = 0x80;
- 	trailer[1] = 1 << dp->index;
- 	trailer[2] = 0x10;
- 	trailer[3] = 0x00;
+ 	skb_push(skb, QCA_HDR_LEN);
  
--	return nskb;
-+	return skb;
- }
- 
- static struct sk_buff *trailer_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	memmove(skb->data, skb->data + QCA_HDR_LEN, 2 * ETH_ALEN);
 -- 
 2.25.1
 
