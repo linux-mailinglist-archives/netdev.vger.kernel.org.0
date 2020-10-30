@@ -2,100 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1DA62A09DE
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:29:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 195F22A09E7
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:32:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbgJ3P3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 11:29:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44002 "EHLO
+        id S1726806AbgJ3Pcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 11:32:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725943AbgJ3P3P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 11:29:15 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54E4C0613CF
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:29:13 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id g25so6249661edm.6
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:29:13 -0700 (PDT)
+        with ESMTP id S1726307AbgJ3Pce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 11:32:34 -0400
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB59FC0613CF
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:32:34 -0700 (PDT)
+Received: by mail-ua1-x933.google.com with SMTP id 52so1835772uaj.4
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:32:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=DNxhZBm7y9kuUgCZkBcBi+SCJDz8hhSGbmLkoj4ek34=;
-        b=smRs/rDHzRojHutfm2Z2cvD/VE6VX4LLtJuZvDk0DjG4Vcf/IAq7ZNoYhpeHUNo0Ts
-         BmcbaZvMHE7rn0iijXYJ4Qj9xBtlWfiKCzNa+JqKpUqPbMCzrmG4FJKBkIGTeUrcgMlM
-         Pt5jF8nt5rpiIQEMlfmNgQ0+Wz7l4Xg1OBDrYhMivgR8tkJSMj5jhQLILPeF6bqvm3nh
-         5/+k96mjP2x+nHSpj0vdH1E9vRVclJ0+kvAt8wfVR8SV4uFxvmChWuUoQftvpvPvSXvM
-         6w6jGFqBN/f94eO1HQirQUeDLk3d+ZxmfH0PmXWgh5oTuJF5CjAyD1kRLF8LFoZay8wS
-         aEDg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qmZi/piocyrZeQVaa3aCb0CCeYlB9CuL/jETIHR05Jk=;
+        b=o/bxphdoFWd5rGObHTl6YAcXiKTAdRvdLlOEtABHCu9l0r8WLorVo9ceVToCIZUIlD
+         O02JeZAY35Ly4gDTtsMm8idElloAXa0wEGVV3w+sG+Tqbn84RqAiMchs74+3jFDTRkOB
+         D47jwbhwPclcYFaCnekSU5f2iJPcUjDB4PEasIj0uN+bPU/04EOSG+VAZFKsGZRDbU9c
+         jPAIrzq7Ed/pdI8JlE/dhDa9NI+kZmz33/wexPqlCOAt6Rk9sPn1z2pKn4FnldpM+YSP
+         KehW/p49VhChQHzXfCGw8fIkMc8vk7Ne6cgvu0PCdgAWXUlQmZBDuoZ7nUbeKBEqCl9K
+         Nb8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=DNxhZBm7y9kuUgCZkBcBi+SCJDz8hhSGbmLkoj4ek34=;
-        b=DwggqvTxTkZHG/kJPbs3xsqrU7TseSnMMBTMfM6Av0y8HBK5qnUdTT2zj9ujeWyiqE
-         Sqfpo10VAYOeNbTNgpbzuaJhAQkfaZ+ntcC70n2JY8FEmPz9uvFTEcFehktTCoVeGVwP
-         XH4pjYOqw7ddL0JOIrJqR6L9Tl5DNxSi5IWoR6MPbzIS5fagm2YAmdPh2havnKTJy4Vq
-         +ALnqQGWu/TIl1w8fqLcQIV1gFgZbqrhJR1W1t4T8wCJmes5rgCToU6Ygs/FkL+QaA5V
-         TACjDROuN0t5aq3vIP6W5wyB+RECnIX/BwLYEgtztvS7Osi8OWZRC0dw3bXPoMtWa5Ht
-         lFSg==
-X-Gm-Message-State: AOAM531dg22Gmy2/iBQNZM1zkdmCJE4mqhhYwCMj6i0ZqpePmepL5Z3n
-        deKrnGeOFxqMlnavPVqtjOH6TF2Ne34=
-X-Google-Smtp-Source: ABdhPJxFUSSyJrnfONyPvbMeBslIuTIplsZAVWziVjwMkG1W61KPk7ntMqo+QstkvH6mT3llhaatZQ==
-X-Received: by 2002:a50:e686:: with SMTP id z6mr2970772edm.188.1604071752525;
-        Fri, 30 Oct 2020 08:29:12 -0700 (PDT)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id ok21sm3075360ejb.96.2020.10.30.08.29.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Oct 2020 08:29:11 -0700 (PDT)
-Date:   Fri, 30 Oct 2020 17:29:10 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v2 0/5] Support for RollBall 10G copper SFP
- modules
-Message-ID: <20201030152910.zmtecfzyxw4nuwud@skbuf>
-References: <20201029222509.27201-1-kabel@kernel.org>
- <20201030150138.GB1551@shell.armlinux.org.uk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qmZi/piocyrZeQVaa3aCb0CCeYlB9CuL/jETIHR05Jk=;
+        b=PHIMp7cvJjkFExNdMiDHXx3nGl4z0G1q4iT9Thb+F30UH+6TvMO7cSUHVV/w8lWrAb
+         34UwkSh4IqXW2R8BcBD68eJk+myHJY3EYtJ/naW96f8Y+jHn3R0Xef/3R5zekNL2/1hq
+         OItR8EKVO6smqr5T8qoZT5Oie/SvwtbgHMw7luhJ3Xi5YRc38xcG8nUCVCQVT52Hl7Nq
+         qkUGmdJ+4cXiHo/GG/GLR4wYpLRhaUDgTjEOpIk968ywaRjX/V4lnFMPoehmkDFwA8nc
+         fAxeh7YFXK5dIB8ljqO5MokfmBVeTMgzmuLe6r6Cc+K2PBPf7AtahzDXfCLCIpeMXLN9
+         8YzA==
+X-Gm-Message-State: AOAM533d4QZ01tS61c3EBOmyiniRlete65bnca/OEdy4cP//M3lFWQIa
+        n2XSgZUBso726G+tjOfZulvRy0GLq8g=
+X-Google-Smtp-Source: ABdhPJyYaPFNvQonFjZCptTA+8ig4CmIS8muJKFcyKU85ZbuXsSJex6RUdsItfCl6rVDYj/Ol3c55w==
+X-Received: by 2002:ab0:20d5:: with SMTP id z21mr1773473ual.84.1604071953348;
+        Fri, 30 Oct 2020 08:32:33 -0700 (PDT)
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
+        by smtp.gmail.com with ESMTPSA id t71sm752626vkb.7.2020.10.30.08.32.31
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 30 Oct 2020 08:32:32 -0700 (PDT)
+Received: by mail-ua1-f49.google.com with SMTP id v27so1844861uau.3
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:32:31 -0700 (PDT)
+X-Received: by 2002:ab0:5447:: with SMTP id o7mr1943106uaa.37.1604071951491;
+ Fri, 30 Oct 2020 08:32:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201030150138.GB1551@shell.armlinux.org.uk>
+References: <20201026072926.3663480-1-liuhangbin@gmail.com>
+ <20201027022833.3697522-1-liuhangbin@gmail.com> <20201027022833.3697522-3-liuhangbin@gmail.com>
+ <c86199a0-9fbc-9360-bbd6-8fc518a85245@cisco.com> <20201027095712.GP2531@dhcp-12-153.nay.redhat.com>
+In-Reply-To: <20201027095712.GP2531@dhcp-12-153.nay.redhat.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 30 Oct 2020 11:31:55 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfSUE8M+TuKkBQbEL7L5Bfd=wrZHEqQ67nWZy8oex1JCw@mail.gmail.com>
+Message-ID: <CA+FuTSfSUE8M+TuKkBQbEL7L5Bfd=wrZHEqQ67nWZy8oex1JCw@mail.gmail.com>
+Subject: Re: [PATCHv5 net 2/2] IPv6: reply ICMP error if the first fragment
+ don't include all headers
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     "Georg Kohmann (geokohma)" <geokohma@cisco.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 03:01:38PM +0000, Russell King - ARM Linux admin wrote:
-> https://blog.thedigitalgroup.com/to-vs-cc-vs-bcc-how-to-use-them-correctly
+On Tue, Oct 27, 2020 at 5:57 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+>
+> On Tue, Oct 27, 2020 at 07:57:06AM +0000, Georg Kohmann (geokohma) wrote:
+> > > +   /* RFC 8200, Section 4.5 Fragment Header:
+> > > +    * If the first fragment does not include all headers through an
+> > > +    * Upper-Layer header, then that fragment should be discarded and
+> > > +    * an ICMP Parameter Problem, Code 3, message should be sent to
+> > > +    * the source of the fragment, with the Pointer field set to zero.
+> > > +    */
+> > > +   nexthdr = hdr->nexthdr;
+> > > +   offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
+> > > +   if (offset >= 0) {
+> > > +           /* Check some common protocols' header */
+> > > +           if (nexthdr == IPPROTO_TCP)
+> > > +                   offset += sizeof(struct tcphdr);
+> > > +           else if (nexthdr == IPPROTO_UDP)
+> > > +                   offset += sizeof(struct udphdr);
+> > > +           else if (nexthdr == IPPROTO_ICMPV6)
+> > > +                   offset += sizeof(struct icmp6hdr);
+> > > +           else
+> > > +                   offset += 1;
+> > > +
+> > > +           if (frag_off == htons(ip6_mf) && offset > skb->len) {
+> >
+> > This do not catch atomic fragments (fragmented packet with only one fragment). frag_off also contains two reserved bits (both 0) that might change in the future.
+>
+> Thanks, I also didn't aware this scenario.
 
-I have to disagree about some of the information provided in this link:
+Sorry, what are atomic fragments?
 
-------------------------------[cut here]------------------------------
-Using the BCC Field:
-
-BCC is for Blind Carbon Copy. It sends copies of the email to multiple
-recipients, the only difference being that none of the recipients are
-made aware of who else has received the email.
-
-The BCC field is used when you want to send an email to multiple
-recipients but do not want any of them to know about the other people
-you have sent them to. There can be many scenarios where the BCC field
-might be used, and the purpose might be a desire to keep the names of
-the recipients a secret to one another and also protect the privacy of
-recipients.
-
-The most common application is for sending an email to a long list of
-people who do not know each other, such as mailing lists. This protects
-the privacy of the recipients as they are not able to view each other’s
-email addresses.
-------------------------------[cut here]------------------------------
-
-It's plain stupid to put a mailing list in Bcc. I have filters that move
-inbound emails from Inbox to separate folders based on the mailing list
-from To: or CC:, except for emails where my address is also in To: or Cc:.
-But when the mailing list is in Bcc, that email evades the filter and
-arrives directly in my inbox, regardless of whether I'm even an intended
-recipient or not.
+Do you mean packets with a fragment header that encapsulates the
+entire packet? If so, isn't that handled in the branch right above?
+("/* It is not a fragmented frame */"). That said, the test based on
+IP6_OFFSET LGTM.
