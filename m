@@ -2,91 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD0A52A0606
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 13:57:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBE582A0622
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 14:02:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726226AbgJ3M5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 08:57:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48496 "EHLO
+        id S1726178AbgJ3NCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 09:02:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725939AbgJ3M5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 08:57:41 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F02C0613CF
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 05:57:40 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id g21so3365650vsp.0
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 05:57:40 -0700 (PDT)
+        with ESMTP id S1726560AbgJ3NCg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 09:02:36 -0400
+Received: from mail-vk1-xa2e.google.com (mail-vk1-xa2e.google.com [IPv6:2607:f8b0:4864:20::a2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A581CC0613CF
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 06:02:34 -0700 (PDT)
+Received: by mail-vk1-xa2e.google.com with SMTP id p16so1428251vkf.13
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 06:02:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=szeredi.hu; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JUx9uIiu2tCRTnXPuJZyo4v9bmIqQhVMjRZOhSyqRjs=;
-        b=BVxFL7LGvAjl3ryWkDoTDiakcJjQHQ0NeB5JbQTmOwsLDsxoYqzgxkSlQM/+AojY6v
-         7zMnLtB5D3jBCEm4KQenHGKd8o1xeZVKZDRXVViUHv65qqvEa5QEeL0Bxzhf1eeCbV4J
-         rZfurLE05Vxmsp4MQuCV+ANGl4yvgfS7wakba+0yzgQGE9WnJas3vue7JRezRHoDHqXM
-         LCOuK7CZ0+Tthrj6tSlBmqKzxhcbH49qtNb9OwJFcSVVabCE5AvKzN6FPXVloNGwQRWc
-         taLncWHwpWOP7OdMDItdA20lQs40FdeArCyohjSmemRMFt/3E/9gb4m3Tbe66xr/nY9k
-         WuZQ==
+        bh=hfUp6uvT0mNo9qOvWz4kadVZif4hwG0EcrIPidc71AU=;
+        b=c/0np4r5fnnReVFjWkDWXo8hF0To3ovSOoxgoL/QWs9VxL86iqjKdadij03d378/T5
+         B7rjoCbR258EwTEX+UW+6QMPF65hDWZsco0RfSUG9stFDcsd6ZZkDH+4oFGIQiro7Wrf
+         /VUafL5CtS83KydlI6lpgD86QMrk86JITh21I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JUx9uIiu2tCRTnXPuJZyo4v9bmIqQhVMjRZOhSyqRjs=;
-        b=Um7zRzEx9Lz/qo1H4snwfHD5wkJTzeiSIf3Xu5dwExrfdpOboZVUyBddKtHQ9SM5xk
-         ULEKG163BAqMrPl/ANHt+9B/TwBwK8aUVrIddQG/FmCPVZLzLcjnK5A9VMHz9mKXTVVq
-         Xh/7kTbZ3pc838XIlnGxdCLs4jKtb1U6q7mrCs1Nx6UgJkFg76cJOibHCtiJwHhngNcy
-         1BnxmVz+kqnJh2jSO3eOccSeA4+CsSBIBAeM1K4m9P+hDcwm5ifZ1SDzjURvOaiw8Sii
-         cmgGXu2II54dqTaSUdrRBEU+iOsdiTrKgDO53XvGs09P5MBP3ZBebG+lQ1KlLyQ+yuA1
-         rRJA==
-X-Gm-Message-State: AOAM531XLe3FTVXtUuDnFLONIEDy9ZyE7W4IZmZOb5mMPOouYdcxvMLc
-        aWZXZLxrMTp70F0reay7H2p35ojLGUs=
-X-Google-Smtp-Source: ABdhPJzxzzMPsvHv3fXbXqM96BqKbuw/1sU61sO95KsNfkNmP2a3K0ZwVcHoLLvAt1CWtwsrlVTaww==
-X-Received: by 2002:a67:f954:: with SMTP id u20mr7036345vsq.5.1604062658945;
-        Fri, 30 Oct 2020 05:57:38 -0700 (PDT)
-Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com. [209.85.217.51])
-        by smtp.gmail.com with ESMTPSA id u185sm700164vke.14.2020.10.30.05.57.37
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Oct 2020 05:57:38 -0700 (PDT)
-Received: by mail-vs1-f51.google.com with SMTP id g21so3365584vsp.0
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 05:57:37 -0700 (PDT)
-X-Received: by 2002:a67:c981:: with SMTP id y1mr6515751vsk.14.1604062657302;
- Fri, 30 Oct 2020 05:57:37 -0700 (PDT)
+        bh=hfUp6uvT0mNo9qOvWz4kadVZif4hwG0EcrIPidc71AU=;
+        b=AmLiEKdBtDMG2pTT4qqQxkwlY3umTV4VWnrFECw5F/TI2jyt4qddVfdUNxYTGyylUJ
+         DrGetudAPcFawF5TDz5hOstgKBoK8PdpSivRsPeT/EVyN/7Y+e56QiUiYh7Z0ilKW22T
+         nsRLSA7LmvqKNrgf2p1w/nfBbuDCFG99uEPE3G6w+vuhw1HkZoBm+VmadSjP7QJMJes6
+         x/rJ+1oOZnaKQ6fKHHjWQHwd9KTg6sl7G/4+uN41vGJGHHg4WIdl1HYlKP5BTRZQrOXm
+         kNCqVt8+LZKFAhcK5C8vrcED2aJqTPczvpTPGy3JaVKBVNbQgnocFLs6SDufTebW0ev5
+         WaeA==
+X-Gm-Message-State: AOAM533c9014ZpiyxUHTQPOMsCCIhxv3bL1zgT2TJUtpKiNlo0hQKH16
+        CURkXnNa883tgZL+4Ly1NL/+KgfUkZv49ZoITzav2w==
+X-Google-Smtp-Source: ABdhPJxPa9+zamc48OrPbKG+5+YeIbGDLouPEl6taVV7SKI2yGqJZrMzqI/DHpB0Je2VEJI3rTxbB6w6g9+fXjI8Kns=
+X-Received: by 2002:a1f:23d0:: with SMTP id j199mr6640364vkj.11.1604062953264;
+ Fri, 30 Oct 2020 06:02:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <72671f94d25e91903f68fa8f00678eb678855b35.1603907878.git.gnault@redhat.com>
- <20201028183416.GA26626@pc-2.home> <CA+FuTSfs1ZsEuu4vKojEU_Bo=DibWDbPPXrw3f=2L6+UAr6UZw@mail.gmail.com>
- <20201030093903.GA5719@pc-2.home>
-In-Reply-To: <20201030093903.GA5719@pc-2.home>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 30 Oct 2020 08:57:00 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe2GYxxX2hckeYwiDjBfCdF-ZXXqizRF=ATboLZAAdaJQ@mail.gmail.com>
-Message-ID: <CA+FuTSe2GYxxX2hckeYwiDjBfCdF-ZXXqizRF=ATboLZAAdaJQ@mail.gmail.com>
-Subject: Re: [PATCH net] selftests: add test script for bareudp tunnels
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Martin Varghese <martin.varghese@nokia.com>
+References: <0000000000008caae305ab9a5318@google.com> <000000000000a726a405ada4b6cf@google.com>
+ <CAFqZXNvQcjp201ahjLBhYJJCuYqZrYLGDA-wE3hXiJpRNgbTKg@mail.gmail.com>
+In-Reply-To: <CAFqZXNvQcjp201ahjLBhYJJCuYqZrYLGDA-wE3hXiJpRNgbTKg@mail.gmail.com>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Fri, 30 Oct 2020 14:02:22 +0100
+Message-ID: <CAJfpegtzQB09ind8tkYzaiu6ODJvhMKj3myxVS75vbjTcOxU8g@mail.gmail.com>
+Subject: Re: general protection fault in security_inode_getattr
+To:     Ondrej Mosnacek <omosnace@redhat.com>
+Cc:     syzbot <syzbot+f07cc9be8d1d226947ed@syzkaller.appspotmail.com>,
+        andriin@fb.com, Alexei Starovoitov <ast@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        James Morris <jmorris@namei.org>, john.fastabend@gmail.com,
+        kafai@fb.com, KP Singh <kpsingh@chromium.org>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>, yhs@fb.com,
+        linux-fsdevel@vger.kernel.org,
+        overlayfs <linux-unionfs@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 5:39 AM Guillaume Nault <gnault@redhat.com> wrote:
+On Mon, Aug 24, 2020 at 11:00 PM Ondrej Mosnacek <omosnace@redhat.com> wrote:
 >
-> On Thu, Oct 29, 2020 at 02:11:38PM -0400, Willem de Bruijn wrote:
-> > On Wed, Oct 28, 2020 at 10:27 PM Guillaume Nault <gnault@redhat.com> wrote:
-> > >
-> > > On Wed, Oct 28, 2020 at 07:05:19PM +0100, Guillaume Nault wrote:
-> > > > Test different encapsulation modes of the bareudp module:
-> > >
-> > > BTW, I was assuming that kselftests were like documentation updates,
-> > > and therefore always suitable for the net tree. If not, the patch
-> > > applies cleanly to net-next (and I can also repost of course).
-> >
-> > I think that's where it belongs.
+> On Mon, Aug 24, 2020 at 9:37 PM syzbot
+> <syzbot+f07cc9be8d1d226947ed@syzkaller.appspotmail.com> wrote:
+> > syzbot has found a reproducer for the following issue on:
 >
-> Hum, do you mean to net or to net-next?
+> Looping in fsdevel and OverlayFS maintainers, as this seems to be
+> FS/OverlayFS related...
 
-Sorry, that wasn't very clear. I meant net-next
+Hmm, the oopsing code is always something like:
+
+All code
+========
+   0: 1b fe                sbb    %esi,%edi
+   2: 49 8d 5e 08          lea    0x8(%r14),%rbx
+   6: 48 89 d8              mov    %rbx,%rax
+   9: 48 c1 e8 03          shr    $0x3,%rax
+   d: 42 80 3c 38 00        cmpb   $0x0,(%rax,%r15,1)
+  12: 74 08                je     0x1c
+  14: 48 89 df              mov    %rbx,%rdi
+  17: e8 bc b4 5b fe        callq  0xfffffffffe5bb4d8
+  1c: 48 8b 1b              mov    (%rbx),%rbx
+  1f: 48 83 c3 68          add    $0x68,%rbx
+  23: 48 89 d8              mov    %rbx,%rax
+  26: 48 c1 e8 03          shr    $0x3,%rax
+  2a:* 42 80 3c 38 00        cmpb   $0x0,(%rax,%r15,1) <-- trapping instruction
+  2f: 74 08                je     0x39
+  31: 48 89 df              mov    %rbx,%rdi
+  34: e8 9f b4 5b fe        callq  0xfffffffffe5bb4d8
+  39: 48 8b 1b              mov    (%rbx),%rbx
+  3c: 48 83 c3 0c          add    $0xc,%rbx
+
+
+And that looks (to me) like the unrolled loop in call_int_hook().  I
+don't see how that could be related to overlayfs, though it's
+definitely interesting why it only triggers from
+overlay->vfs_getattr()->security_inode_getattr()...
+
+Thanks,
+Miklos
