@@ -2,118 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE5712A0901
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:01:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 556232A094B
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 16:09:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726813AbgJ3PBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 11:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
+        id S1727016AbgJ3PJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 11:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726691AbgJ3PBu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 11:01:50 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270F0C0613D5
-        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:01:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=qTamfvc9bl8x721EWWvU55KILuhSYGz7vEiw/2lF/6Y=; b=cY8s81lnH0lHtCmTAvGiM0gor
-        joUsdMl2Gq3vwDacykurHRwI8xAifjfWQiOppLZa+llWoZPxyLTecfb7StRevoubs66aTVP9gB2VY
-        NhecEGAPmFMgbOz8DG3+HaZK1Rej7evPEnITNwYct5PM4PzA6ECTXpEaWTs/16LWv2p4wnlx3z3O0
-        MmA1nrCBI5K8Q+fDHFwdUBS6RP1VcRIy/aDhrDpGebsPns/9oVmokZ9JIoQGLygUTqyX7yKxCVUdE
-        oMBEsy76dlHkYL1iJ+NmS1cWkTkIYbokNc3lSKpJ1OkuMn1zZ5uPdeB4hSyDBYgE/J8tbuUqGN6de
-        mcA1Ql7VA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52926)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kYVuP-0006AU-6i; Fri, 30 Oct 2020 15:01:41 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kYVuM-0007FU-7P; Fri, 30 Oct 2020 15:01:38 +0000
-Date:   Fri, 30 Oct 2020 15:01:38 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v2 0/5] Support for RollBall 10G copper SFP
- modules
-Message-ID: <20201030150138.GB1551@shell.armlinux.org.uk>
-References: <20201029222509.27201-1-kabel@kernel.org>
+        with ESMTP id S1727011AbgJ3PJa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 11:09:30 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B41AC0613D2
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:09:30 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id z7so3514824ybg.10
+        for <netdev@vger.kernel.org>; Fri, 30 Oct 2020 08:09:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=9fkQXWnoPSypfyxvIrXWSyd1r4Ua0eeDJczOBpIf/BU=;
+        b=h7mhMMJyQC+m6Bmn+IYUapYZ8RnGeHVd3ASo+V4hqsoVRmxtRQf5exNgRinJkzi7oa
+         EQki0FkKCMvOBZ3DBk+Gx57E53zyBZKjIblewa466Wt6uUrJYOJfnV+lppVLEXJlaSHl
+         mhP8Kh3huQ9UDUHMFqvJ1PKUne7RW46+SzGJ4Dp0ZyLZDJESzN8v0aS3zE6zPQ+f+QxR
+         FCtIMrM8A/Y4+9f5eEmOhe0x3kmfhSfdmWwmGRUUO/Gey1V+h2tyN1+7jgx14dD6UD+X
+         rusZ6+EHq1NDtbO3m6Zpcwp8fzFoubbix26NVopl6zlXpD4fjtLrj6c1UCrDltM9gdDw
+         tjKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=9fkQXWnoPSypfyxvIrXWSyd1r4Ua0eeDJczOBpIf/BU=;
+        b=MJoz5eyLTlD3sM3JVkE4Fg7F1t8L1cbnPDlySzrBLl9PWF2qvdFlRl+l6h3xDJj55q
+         3LQOk7zaebYqGJ6gutAUb+dPRM9dSTEziFCOhKrQOH/lTLoGV4EmvEQoE1AbwrsNG4na
+         gNQczJqHmWCUNlcuD9ZS1myvTEZQBUrLwkVdfJ0oIYYQRjxP5iVjP8cd4+L3aIyRFNhW
+         TRxhevdmBO5cG/tmWWJ6iuHzlA7R1NqGRofDmLnrKEuL4aE2p5JrvrVPED5ixD7PmPX0
+         +uac/jlvTOABep6iNYRPjrXlMZ0EgtUUk/idHEEcrUhT0zclhZ3vPCd5b2/Tjp1RsPX6
+         dUag==
+X-Gm-Message-State: AOAM532biSE47toaijHpzoMHEHwZ0gGt5xW1Ra2XMJH0h1AIwxldLxQT
+        TcTTCd6R0hId/vQfIDhTvg36gYjEGjGwuYMV9zE=
+X-Google-Smtp-Source: ABdhPJwfui+HkSsbq07Vu0lFxxC8QkIDY6MgdwTu4cRLDciRIJ2HrLvfPTIJw/f+NYt9xXsQIQG0bLFv/Q/Fq+Rujrc=
+X-Received: by 2002:a05:6902:4ea:: with SMTP id w10mr3966802ybs.379.1604070569747;
+ Fri, 30 Oct 2020 08:09:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201029222509.27201-1-kabel@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Received: by 2002:a05:7110:6d2:b029:2b:3c03:52a8 with HTTP; Fri, 30 Oct 2020
+ 08:09:29 -0700 (PDT)
+Reply-To: li.anable85@gmail.com
+From:   Liliane Abel <k.griest05@gmail.com>
+Date:   Fri, 30 Oct 2020 16:09:29 +0100
+Message-ID: <CADvfYkv-jucHbN+N3zbdsYUNQvTgKE6oB32EYHERVmw8VYn9Xw@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A general point: please have me in the To: line rather than the Cc:
-line so that I can find emails better; I've just spent quite a while
-trying to find this series you posted last night amongst all the
-other emails that I'm Cc'd on.
+Dearest
 
-(The difference between To: and Cc: is that you expect those in the To:
-header to be the primary recipients who you expect action from, and
-those in the Cc: to be secondary recipients for information.)
+Greeting my dear, I am Liliane Abel by name, The only daughter of late
+Mr.Benson Abel. My father is one of the top Politician in our country
+and my mother is a farmers and cocoa merchant when they were both
+alive. After the death of my mother, long ago, my father was
+controlling their business until he was poisoned by his business
+associates which he suffered and died.
 
-https://blog.thedigitalgroup.com/to-vs-cc-vs-bcc-how-to-use-them-correctly
-https://www.writebetteremails.com/to-cc.htm
-https://thinkproductive.co.uk/email-using-cc-bcc-to/
-... etc ...
-
-Thanks.
-
-On Thu, Oct 29, 2020 at 11:25:04PM +0100, Marek Behún wrote:
-> Hello,
-> 
-> this is v2 of series adding support for RollBall/Hilink SFP modules.
-> 
-> Checked with:
->   checkpatch.pl --max-line-length=80
-> 
-> Changes from v1:
-> - wrapped to 80 columns as per Russell's request
-> - initialization of RollBall MDIO I2C protocol moved from sfp.c to
->   mdio-i2c.c as per Russell's request
-> - second patch removes the 802.3z check also from phylink_sfp_config
->   as suggested by Russell
-> - creation/destruction of mdiobus for SFP now occurs before probing
->   for PHY/after releasing PHY (as suggested by Russell)
-> - the last patch became a little simpler after the above was done
-> 
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Russell King <rmk+kernel@armlinux.org.uk>
-> 
-> Marek Behún (5):
->   net: phy: mdio-i2c: support I2C MDIO protocol for RollBall SFP modules
->   net: phylink: allow attaching phy for SFP modules on 802.3z mode
->   net: sfp: create/destroy I2C mdiobus before PHY probe/after PHY
->     release
->   net: phy: marvell10g: change MACTYPE if underlying MAC does not
->     support it
->   net: sfp: add support for multigig RollBall transceivers
-> 
->  drivers/net/mdio/mdio-i2c.c   | 232 +++++++++++++++++++++++++++++++++-
->  drivers/net/phy/marvell10g.c  |  31 +++++
->  drivers/net/phy/phylink.c     |   5 +-
->  drivers/net/phy/sfp.c         |  67 ++++++++--
->  include/linux/mdio/mdio-i2c.h |   8 +-
->  5 files changed, 322 insertions(+), 21 deletions(-)
-> 
-> 
-> base-commit: cd29296fdfca919590e4004a7e4905544f4c4a32
-> -- 
-> 2.26.2
-> 
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Before the death of my father, He told me about (two million five
+hundred thousand united states dollars) which he deposited in the bank
+in Lome-Togo, It was the money he intended to transfer overseas for
+investment before he was poisoned. He also instructed me that I should
+seek for foreign partners in any country of my choice who will assist
+me transfer this money in overseas account where the money will be
+wisely invested.
+I am seeking for your kind assistance in the following ways:  (1) to
+provide a safe bank account into where the money will be transferred
+for investment. (2) To serve as a guardian of this fund since I am a
+girl of 19 years old. (3) To make arrangement for me to come over to
+your country to further my education. This is my reason for writing to
+you. Please if you are willing to assist me I will offer you 25% of
+the total money. Reply if  you are interested
+Best regards.
+Liliane Abel.
