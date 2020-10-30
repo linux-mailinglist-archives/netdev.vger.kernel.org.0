@@ -2,92 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE75F29FCAC
-	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 05:20:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D14C929FCB5
+	for <lists+netdev@lfdr.de>; Fri, 30 Oct 2020 05:33:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726404AbgJ3EUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 00:20:17 -0400
-Received: from mail-eopbgr60090.outbound.protection.outlook.com ([40.107.6.90]:28064
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725780AbgJ3EUQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Oct 2020 00:20:16 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QJkFpqeD3g/fuhCH5fwJ22oSSPyzUOa7QTWmUOcZvU62G/1psLCa+4XFD8KfVdBjI3mq3XTcdzK7aeD7GT1ApMXbZZATUl6tVt96PdtMxWuW/xuWJkWNtGAuD7bkWGTOKiImCXR4oa6Sei0GkxZ3aVdd5/NPxtiaE3fJs7yyLAAMSUxXI5na69eFoNzmnkdcLr67uPv2oppCCaq5/DXhHzqBevLjWh9KF08p+BnQSTzR8fd+COlIitVi4Hcm2xoUwCBAUSfnT9himowu9gGr7hPlbXeu/Ss9cMtHJMg0xUkcgIDm+/53+IY9OL5Vokxyk53iFWptncdsIl5qm861UA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y5Wlgc5vmbqklbbdvr57vnUvRabENL3/HkBvy6TXWNk=;
- b=j2OHEeTZ8tMegQCZAZeTLOnfy7YSxjV5TgMRzkwa8M/YqYp6ztpvgeNcF5pUiR0JeBmK7GgLGUepRE8dktTYQvEeJxysQzWHUIv7VFme8EMwukFZJjSPyWHmbqZgD64EpwUm5lZU86P2ujZ7wfnSKaRNnR5CLD7l5U992+EI+bCFK0oLgYS4K8P5PMK0tq8yJnO4PyYnW+PgSgNjAj7k0E8isRT0cY2Gf3FxwIfRsrBrs0lFksVhFSlgkmeKaKlEbZVDwwesXVTq6er2KcqEIUKFLuxvjvOkgqeXVC0F3vTqGRWFVm3YxodSl6ObRFyxnz1m2h51nTzA7A16qo3DOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
- dkim=pass header.d=nokia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
- s=selector1-nokia-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y5Wlgc5vmbqklbbdvr57vnUvRabENL3/HkBvy6TXWNk=;
- b=LOPYCyUfr7yjOFQoyDQsYpdhcOg1U1dgcwU+js3AYHXguwpfMq3Ro47CtUwhVj5oDUYw8nOWXJU7Nx6ILruw2huFKwzbWPrEAeggpBXMNH8tQjvDaDZNNbZQLrnB9fr2E8lk7msAYQpS18elnJc92vqVBsS3Zf84yGl3MV46oQw=
-Received: from HE1PR0701MB2956.eurprd07.prod.outlook.com (2603:10a6:3:4c::15)
- by HE1PR0701MB2841.eurprd07.prod.outlook.com (2603:10a6:3:4e::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.13; Fri, 30 Oct
- 2020 04:20:13 +0000
-Received: from HE1PR0701MB2956.eurprd07.prod.outlook.com
- ([fe80::550c:fd5:b1be:2d62]) by HE1PR0701MB2956.eurprd07.prod.outlook.com
- ([fe80::550c:fd5:b1be:2d62%6]) with mapi id 15.20.3499.029; Fri, 30 Oct 2020
- 04:20:13 +0000
-From:   "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
-To:     Guillaume Nault <gnault@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net] selftests: add test script for bareudp tunnels
-Thread-Topic: [PATCH net] selftests: add test script for bareudp tunnels
-Thread-Index: AQHWrVTx8JQc5GCbqkaYOkhb08rGgqmvjAWQ
-Date:   Fri, 30 Oct 2020 04:20:13 +0000
-Message-ID: <HE1PR0701MB2956A07E30A9ED0DCC2C4A57ED150@HE1PR0701MB2956.eurprd07.prod.outlook.com>
-References: <72671f94d25e91903f68fa8f00678eb678855b35.1603907878.git.gnault@redhat.com>
-In-Reply-To: <72671f94d25e91903f68fa8f00678eb678855b35.1603907878.git.gnault@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=nokia.com;
-x-originating-ip: [2409:4073:402:164d:f520:6268:2e8:9af8]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: fc38f765-05e9-42eb-edde-08d87c8b1918
-x-ms-traffictypediagnostic: HE1PR0701MB2841:
-x-microsoft-antispam-prvs: <HE1PR0701MB284173B50E580BCB27BBECFBED150@HE1PR0701MB2841.eurprd07.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: kSYf3moUjkKyR4W6JjAuijw+Oms6gJ7aNzGzWcXt+NlvOnw/Iy8f2BReeysmfA5GssCrEncGBxq1L3ZJQHag1Mi/ArvzVO7sjPUgX6sKIxY6wnAJfuxHF9yT6LwalWFS4/3wp4bNfSgoRpaQibACSBG7TCbfDnoTFNNWSTNoEcQWoJ8htX3p92mTVKD/xNzbM4FtL/JnnIloivKwRWK7G/kLriKJidiNxLrivteK6c0V4muj92j/spaEHSgHw9NZUimO+XYthJfJaFcL7xcIN4vTogd1zisYExZRka82whZTgR0LbKCh2Ydsw2cptr2C
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0701MB2956.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(136003)(366004)(39860400002)(346002)(6506007)(4326008)(8676002)(55016002)(86362001)(7696005)(9686003)(76116006)(2906002)(66446008)(66556008)(66476007)(8936002)(66946007)(64756008)(33656002)(316002)(71200400001)(110136005)(558084003)(5660300002)(478600001)(186003)(52536014);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: oNMYOhyyKGZaL4h2aJ/uqN/NTszc+LI6FGRLQLv4vMmrWPl+y2Tg5T0evHb7ILzvhoq3scze5RTrM3tc+z/TMe7ACqoJjspHNWYpaJa5qlA5Bv/E8GzVbmKSKs02t44ZcAU/lg4aUajyOnpHT3jfZR+Iy58Eoo/7glnqXQGHhRTvENZUPPLVKv6XTgiy3EIMLBWPymBUKzJlGOxNgwpej3mFAyfZ0HgwLRcrAfbkBDzwtN01DNqt2o8ZPq4KdPIy5k6VXPna5vRNblu74bavPHk2/n9f/I9nH+m31fS0m8708ZXgZStcZ3DavsouEeXcw4eRlQgyPK19g7eWQED5xy3rnlG3iJxnt57J9Xf7aqSggxXhz+5iZMn2sjDDRVITJyJ5XkINwyvb5iGzo0YVt55tmL3HVzLeLyM5Lw9hF/ozs2guUirg9HOjdwSt1UPOGxkA8zfVSSqTmZ6Pf3oiuiVRVag52dftT1zX7oyhfpKwt86LuNART4tlORNBloJBvEpxtcjbPFl5Rk83sPkeLVuMSBvFqK1jgW7VVjOg2ohQbg3YAtEnnrtshF2qOqWW+RYXYyBsjsucnhpZeroSJa1ykgqWx1y5K75ly8SLtIZaw1MWVbZnBZ1sS1uM7zu4cSd9XmNEiZmRZu8KZRoNsM/vZipDg9QUi49qw79L7q8/2iyAPXR8TDA0/3zYsAD7NTYauReLXngZi4Xk5ovqDg==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1725815AbgJ3Ec7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 00:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725379AbgJ3Ec6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Oct 2020 00:32:58 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA31C0613CF
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 21:32:58 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id y12so5010254wrp.6
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 21:32:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=E5OFe0kLsPAdJweLb3dL7wkiXZddlagYNZUuiyNCSK8=;
+        b=BZ+CVyg58mauV4Se48Oman7o68ILmyQUyrB0FNbpg4qIg0FFEa0G3z7n928tgIbtPG
+         t1LoKrY33EWfYBtCIdZdgoyzSyLIrH8QcC9HrciIGYh6Pl+ATF+u+tq8jS8JCWuaub6x
+         BLaquUhUgMCAcjEqPfxH0KpOCkaRbH0RpPL5GenTAqovG9Ctu2vMAWOCmyBPdFm4lP6O
+         DmN6QKZCI49Dp+nnzFIz3yN46CCRk7goNOvG578+/2E9+KZoo+PmqolnaUzDr+dAwSxX
+         x9OoNLdda0GGeUrmPlC43IctZjJ8e3tYhDSnTsd5qu3ioIUGOXV7r9x8ucF+FaAtE1zq
+         7o8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=E5OFe0kLsPAdJweLb3dL7wkiXZddlagYNZUuiyNCSK8=;
+        b=p543aWpu0hCp67Tr+UCVZj5JADaVXxdD2qY6K8xt3fN1G5FtB9LGYunS8JGfIdmeTo
+         xUS6G+ngn7jOviyi9TF1Opc/EfC+hBsUl2YRQxT7ZOTQpA2FqWwIV/y10lNm77IQS/rV
+         cqKpey7ouDTLMeyw0BDWE3izZspfDVAl88y2vMNK7e2hfidnLB1E5ps4/OuTPnpU3tXg
+         WtIt+ecJQOvMBvh43YUiMX9ut5s9TLT2tDEFCIPuSTwXxk1cnmd0ixQuxcLDI47aw3H0
+         Bhm/SCNGqdgT3obIsyN6ri34G6vD2en6SUnbUVw6Q2FG02lLoO+1iSBYgkWZCv2zqB5N
+         c+1w==
+X-Gm-Message-State: AOAM533N8N8qeWOZnbpMANkorNFjo4qcRF0tLbWetqJ5m2GV8iknDl3G
+        +kDILzijA54cezPBgSolWoqK6A==
+X-Google-Smtp-Source: ABdhPJx/qWV2jHBraRZeu2pxbdc4h4ATwa+ki4HCFVSbQF35xKS/qPAP+Pg2rweIwv7bekTP4n6rDg==
+X-Received: by 2002:a5d:424e:: with SMTP id s14mr570753wrr.149.1604032376968;
+        Thu, 29 Oct 2020 21:32:56 -0700 (PDT)
+Received: from apalos.home (athedsl-246545.home.otenet.gr. [85.73.10.175])
+        by smtp.gmail.com with ESMTPSA id q6sm3336559wma.0.2020.10.29.21.32.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 21:32:56 -0700 (PDT)
+Date:   Fri, 30 Oct 2020 06:32:54 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        brouer@redhat.com
+Subject: Re: [PATCH v2 net-next 1/4] net: xdp: introduce bulking for xdp tx
+ return path
+Message-ID: <20201030043254.GA100756@apalos.home>
+References: <cover.1603998519.git.lorenzo@kernel.org>
+ <aaf417930ccfdd57ee3a7339e2fff59b8ad50409.1603998519.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: nokia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: HE1PR0701MB2956.eurprd07.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc38f765-05e9-42eb-edde-08d87c8b1918
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2020 04:20:13.5498
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5d471751-9675-428d-917b-70f44f9630b0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: DiIt0Bi77Jadnx9rsZzRu6X3ZdnZxwU5piN+Uj6CzUdWtt8uysAYAGx5waLPywVeb+m0OsLNHvNwtoXu3umDlr5TzFDZxqBzQDt76vCY3Mk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0701MB2841
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aaf417930ccfdd57ee3a7339e2fff59b8ad50409.1603998519.git.lorenzo@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 07:05:19PM +0100, Guillaume Nault wrote:
->Test different encapsulation modes of the bareudp module:
+Hi Lorenzo, 
 
-Comprehensive tests. Thanks a lot William.
+On Thu, Oct 29, 2020 at 08:28:44PM +0100, Lorenzo Bianconi wrote:
+> XDP bulk APIs introduce a defer/flush mechanism to return
+> pages belonging to the same xdp_mem_allocator object
+> (identified via the mem.id field) in bulk to optimize
+> I-cache and D-cache since xdp_return_frame is usually run
+> inside the driver NAPI tx completion loop.
+> The bulk queue size is set to 16 to be aligned to how
+> XDP_REDIRECT bulking works. The bulk is flushed when
+> it is full or when mem.id changes.
+> xdp_frame_bulk is usually stored/allocated on the function
+> call-stack to avoid locking penalties.
+> Current implementation considers only page_pool memory model.
+> Convert mvneta driver to xdp_return_frame_bulk APIs.
+> 
+> Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/marvell/mvneta.c |  5 ++-
+>  include/net/xdp.h                     |  9 ++++
+>  net/core/xdp.c                        | 61 +++++++++++++++++++++++++++
+>  3 files changed, 74 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index 54b0bf574c05..43ab8a73900e 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -1834,8 +1834,10 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+>  				 struct netdev_queue *nq, bool napi)
+>  {
+>  	unsigned int bytes_compl = 0, pkts_compl = 0;
+> +	struct xdp_frame_bulk bq;
+>  	int i;
+>  
+> +	bq.xa = NULL;
+>  	for (i = 0; i < num; i++) {
+>  		struct mvneta_tx_buf *buf = &txq->buf[txq->txq_get_index];
+>  		struct mvneta_tx_desc *tx_desc = txq->descs +
+> @@ -1857,9 +1859,10 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+>  			if (napi && buf->type == MVNETA_TYPE_XDP_TX)
+>  				xdp_return_frame_rx_napi(buf->xdpf);
+>  			else
+> -				xdp_return_frame(buf->xdpf);
+> +				xdp_return_frame_bulk(buf->xdpf, &bq);
+>  		}
+>  	}
+> +	xdp_flush_frame_bulk(&bq);
+>  
+>  	netdev_tx_completed_queue(nq, pkts_compl, bytes_compl);
+>  }
+
+Sorry I completely forgot to mention this on the v1 review.
+I think this belongs to a patch of it's own similar to mellanox and mvpp2 
+drivers
+
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index 3814fb631d52..a1f48a73e6df 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -104,6 +104,12 @@ struct xdp_frame {
+>  	struct net_device *dev_rx; /* used by cpumap */
+>  };
+>  
+> +#define XDP_BULK_QUEUE_SIZE	16
+> +struct xdp_frame_bulk {
+> +	int count;
+> +	void *xa;
+> +	void *q[XDP_BULK_QUEUE_SIZE];
+> +};
+>  
+>  static inline struct skb_shared_info *
+>  xdp_get_shared_info_from_frame(struct xdp_frame *frame)
+> @@ -194,6 +200,9 @@ struct xdp_frame *xdp_convert_buff_to_frame(struct xdp_buff *xdp)
+>  void xdp_return_frame(struct xdp_frame *xdpf);
+>  void xdp_return_frame_rx_napi(struct xdp_frame *xdpf);
+>  void xdp_return_buff(struct xdp_buff *xdp);
+> +void xdp_flush_frame_bulk(struct xdp_frame_bulk *bq);
+> +void xdp_return_frame_bulk(struct xdp_frame *xdpf,
+> +			   struct xdp_frame_bulk *bq);
+>  
+>  /* When sending xdp_frame into the network stack, then there is no
+>   * return point callback, which is needed to release e.g. DMA-mapping
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 48aba933a5a8..66ac275a0360 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -380,6 +380,67 @@ void xdp_return_frame_rx_napi(struct xdp_frame *xdpf)
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_return_frame_rx_napi);
+>  
+> +/* XDP bulk APIs introduce a defer/flush mechanism to return
+> + * pages belonging to the same xdp_mem_allocator object
+> + * (identified via the mem.id field) in bulk to optimize
+> + * I-cache and D-cache.
+> + * The bulk queue size is set to 16 to be aligned to how
+> + * XDP_REDIRECT bulking works. The bulk is flushed when
+> + * it is full or when mem.id changes.
+> + * xdp_frame_bulk is usually stored/allocated on the function
+> + * call-stack to avoid locking penalties.
+> + */
+> +void xdp_flush_frame_bulk(struct xdp_frame_bulk *bq)
+> +{
+> +	struct xdp_mem_allocator *xa = bq->xa;
+> +	int i;
+> +
+> +	if (unlikely(!xa))
+> +		return;
+> +
+> +	for (i = 0; i < bq->count; i++) {
+> +		struct page *page = virt_to_head_page(bq->q[i]);
+> +
+> +		page_pool_put_full_page(xa->page_pool, page, false);
+> +	}
+> +	bq->count = 0;
+> +}
+> +EXPORT_SYMBOL_GPL(xdp_flush_frame_bulk);
+> +
+> +void xdp_return_frame_bulk(struct xdp_frame *xdpf,
+> +			   struct xdp_frame_bulk *bq)
+> +{
+> +	struct xdp_mem_info *mem = &xdpf->mem;
+> +	struct xdp_mem_allocator *xa;
+> +
+> +	if (mem->type != MEM_TYPE_PAGE_POOL) {
+> +		__xdp_return(xdpf->data, &xdpf->mem, false);
+> +		return;
+> +	}
+> +
+> +	rcu_read_lock();
+> +
+> +	xa = bq->xa;
+> +	if (unlikely(!xa)) {
+> +		xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
+> +		bq->count = 0;
+> +		bq->xa = xa;
+> +	}
+> +
+> +	if (bq->count == XDP_BULK_QUEUE_SIZE)
+> +		xdp_flush_frame_bulk(bq);
+> +
+> +	if (mem->id != xa->mem.id) {
+> +		xdp_flush_frame_bulk(bq);
+> +		bq->xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
+> +	}
+> +
+> +	bq->q[bq->count++] = xdpf->data;
+> +
+> +	rcu_read_unlock();
+> +}
+> +EXPORT_SYMBOL_GPL(xdp_return_frame_bulk);
+> +
+>  void xdp_return_buff(struct xdp_buff *xdp)
+>  {
+>  	__xdp_return(xdp->data, &xdp->rxq->mem, true);
+> -- 
+> 2.26.2
+> 
 
 
+Cheers
+/Ilias
