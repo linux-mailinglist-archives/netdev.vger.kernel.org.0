@@ -2,50 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFDD32A1AA3
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 22:11:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F9CE2A1AA6
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 22:12:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728457AbgJaVLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 17:11:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54390 "EHLO mail.kernel.org"
+        id S1728483AbgJaVMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 17:12:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726254AbgJaVLo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 17:11:44 -0400
+        id S1726254AbgJaVMy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 17:12:54 -0400
 Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C736F206E3;
-        Sat, 31 Oct 2020 21:11:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B0BBC206E9;
+        Sat, 31 Oct 2020 21:12:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604178704;
-        bh=/n7GcZkKh2Cn3Xja7buA2Kw26IBBbLvl3qnt/m9wt7c=;
+        s=default; t=1604178774;
+        bh=O0zZE71jaQQVKJcpkWVn5+kqfmDOAZoBLv2C4aM1hJo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UTJ4kkt1ZrXqAU7w2+a49fGppyIzhPa80qudwSIYiHTyjDgHCCsdKtlAlcDHQh19T
-         GW5VENjJuQsLLOzLVv/ZhOdEc64GLbWVxUELEFYMaRgHSSYnOHyKjGublbk6xYtwBt
-         XeIPxSukF1X3I0GXMu6GzwMyFbKx+kDj9cglA93U=
-Date:   Sat, 31 Oct 2020 14:11:43 -0700
+        b=U8nU3aVRjifpWFtgecdGp4AsQlhzS47rLGv0/3tsJ1i1nEQlHfV5RkTYktL9dGEz6
+         qcphWPW3w/B2jYu5i+4RcoXGhr0Oz6f/NP7V4QXEcLd0C3aicNN825yN5b3De82cUh
+         AbXzULLm324zUZPwGJ3QymIPJk3CYjfwSesa/Ffs=
+Date:   Sat, 31 Oct 2020 14:12:52 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Subject: Re: [PATCH v2] net: usb: usbnet: update __usbnet_{read|write}_cmd()
- to use new API
-Message-ID: <20201031141143.5c8463e1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201029132256.11793-1-anant.thazhemadam@gmail.com>
-References: <20201010065623.10189-1-anant.thazhemadam@gmail.com>
-        <20201029132256.11793-1-anant.thazhemadam@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Georg Kohmann <geokohma@cisco.com>
+Subject: Re: [PATCHv6 net 0/2] IPv6: reply ICMP error if fragment doesn't
+ contain all headers
+Message-ID: <20201031141252.25da81fd@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201027123313.3717941-1-liuhangbin@gmail.com>
+References: <20201027022833.3697522-1-liuhangbin@gmail.com>
+        <20201027123313.3717941-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Oct 2020 18:52:56 +0530 Anant Thazhemadam wrote:
-> +	return usb_control_msg_recv(dev->udev, 0,
-> +			      cmd, reqtype, value, index, data, size,
-> +			      USB_CTRL_GET_TIMEOUT, GFP_KERNEL);
+On Tue, 27 Oct 2020 20:33:11 +0800 Hangbin Liu wrote:
+> When our Engineer run latest IPv6 Core Conformance test, test v6LC.1.3.6:
+> First Fragment Doesn=E2=80=99t Contain All Headers[1] failed. The test pu=
+rpose is to
+> verify that the node(Linux for example) should properly process IPv6 pack=
+ets
+> that don=E2=80=99t include all the headers through the Upper-Layer header.
+>=20
+> Based on RFC 8200, Section 4.5 Fragment Header
+>=20
+>   -  If the first fragment does not include all headers through an
+>      Upper-Layer header, then that fragment should be discarded and
+>      an ICMP Parameter Problem, Code 3, message should be sent to
+>      the source of the fragment, with the Pointer field set to zero.
+>=20
+> The first patch add a definition for ICMPv6 Parameter Problem, code 3.
+> The second patch add a check for the 1st fragment packet to make sure
+> Upper-Layer header exist.
 
-Please align continuation lines after the opening bracket.
+Applied, thank you!
