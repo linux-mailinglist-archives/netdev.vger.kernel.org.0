@@ -2,27 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B3C82A1988
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 19:27:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B5512A1996
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 19:31:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728275AbgJaS1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 14:27:13 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56566 "EHLO vps0.lunn.ch"
+        id S1728338AbgJaSb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 14:31:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56582 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727967AbgJaS1N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:27:13 -0400
+        id S1727967AbgJaSb2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:31:28 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kYvan-004XVY-A9; Sat, 31 Oct 2020 19:27:09 +0100
+        id 1kYves-004XXt-1P; Sat, 31 Oct 2020 19:31:22 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dominique Martinet <asmadeus@codewreck.org>
+To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        v9fs-developer@lists.sourceforge.net, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next] net: 9p: Fix kerneldoc warnings of missing parameters etc
-Date:   Sat, 31 Oct 2020 19:26:55 +0100
-Message-Id: <20201031182655.1082065-1-andrew@lunn.ch>
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Xin Long <lucien.xin@gmail.com>, Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next] net: ipv6: For kerneldoc warnings with W=1
+Date:   Sat, 31 Oct 2020 19:30:44 +0100
+Message-Id: <20201031183044.1082193-1-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -30,149 +32,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-net/9p/client.c:420: warning: Function parameter or member 'c' not described in 'p9_client_cb'
-net/9p/client.c:420: warning: Function parameter or member 'req' not described in 'p9_client_cb'
-net/9p/client.c:420: warning: Function parameter or member 'status' not described in 'p9_client_cb'
-net/9p/client.c:568: warning: Function parameter or member 'uidata' not described in 'p9_check_zc_errors'
-net/9p/trans_common.c:23: warning: Function parameter or member 'nr_pages' not described in 'p9_release_pages'
-net/9p/trans_common.c:23: warning: Function parameter or member 'pages' not described in 'p9_release_pages'
-net/9p/trans_fd.c:132: warning: Function parameter or member 'rreq' not described in 'p9_conn'
-net/9p/trans_fd.c:132: warning: Function parameter or member 'wreq' not described in 'p9_conn'
-net/9p/trans_fd.c:56: warning: Function parameter or member 'privport' not described in 'p9_fd_opts'
-net/9p/trans_rdma.c:113: warning: Function parameter or member 'cqe' not described in 'p9_rdma_context'
-net/9p/trans_rdma.c:129: warning: Function parameter or member 'privport' not described in 'p9_rdma_opts'
-net/9p/trans_virtio.c:215: warning: Function parameter or member 'limit' not described in 'pack_sg_list_p'
-net/9p/trans_virtio.c:83: warning: Function parameter or member 'chan_list' not described in 'virtio_chan'
-net/9p/trans_virtio.c:83: warning: Function parameter or member 'p9_max_pages' not described in 'virtio_chan'
-net/9p/trans_virtio.c:83: warning: Function parameter or member 'ring_bufs_avail' not described in 'virtio_chan'
-net/9p/trans_virtio.c:83: warning: Function parameter or member 'tag' not described in 'virtio_chan'
-net/9p/trans_virtio.c:83: warning: Function parameter or member 'vc_wq' not described in 'virtio_chan'
+From: Xin Long <lucien.xin@gmail.com>
 
+net/ipv6/addrconf.c:2005: warning: Function parameter or member 'dev' not described in 'ipv6_dev_find'
+net/ipv6/ip6_vti.c:138: warning: Function parameter or member 'ip6n' not described in 'vti6_tnl_bucket'
+net/ipv6/ip6_tunnel.c:218: warning: Function parameter or member 'ip6n' not described in 'ip6_tnl_bucket'
+net/ipv6/ip6_tunnel.c:238: warning: Function parameter or member 'ip6n' not described in 'ip6_tnl_link'
+net/ipv6/ip6_tunnel.c:254: warning: Function parameter or member 'ip6n' not described in 'ip6_tnl_unlink'
+net/ipv6/ip6_tunnel.c:427: warning: Function parameter or member 'raw' not described in 'ip6_tnl_parse_tlv_enc_lim'
+net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'skb' not described in 'ip6_tnl_err'
+net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'ipproto' not described in 'ip6_tnl_err'
+net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'opt' not described in 'ip6_tnl_err'
+net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'type' not described in 'ip6_tnl_err'
+net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'code' not described in 'ip6_tnl_err'
+net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'msg' not described in 'ip6_tnl_err'
+net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'info' not described in 'ip6_tnl_err'
+net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'offset' not described in 'ip6_tnl_err'
+
+ip6_tnl_err() is an internal function, so remove the kerneldoc. For
+the others, add the missing parameters.
+
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- net/9p/client.c       | 6 ++++--
- net/9p/trans_common.c | 4 +++-
- net/9p/trans_fd.c     | 4 +++-
- net/9p/trans_rdma.c   | 2 ++
- net/9p/trans_virtio.c | 9 +++++++--
- 5 files changed, 19 insertions(+), 6 deletions(-)
+ net/ipv6/addrconf.c   |  1 +
+ net/ipv6/ip6_tunnel.c | 15 +++++++--------
+ net/ipv6/ip6_vti.c    |  1 +
+ 3 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/net/9p/client.c b/net/9p/client.c
-index 09f1ec589b80..785a7bb6a539 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -412,8 +412,9 @@ static void p9_tag_cleanup(struct p9_client *c)
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 01146b66d666..4211e960130c 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -1997,6 +1997,7 @@ EXPORT_SYMBOL(ipv6_chk_prefix);
+  * ipv6_dev_find - find the first device with a given source address.
+  * @net: the net namespace
+  * @addr: the source address
++ * @dev: used to find the L3 domain of interest
+  *
+  * The caller should be protected by RCU, or RTNL.
+  */
+diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
+index a0217e5bf3bc..e3e7859e2ef7 100644
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
+@@ -204,6 +204,7 @@ ip6_tnl_lookup(struct net *net, int link,
  
  /**
-  * p9_client_cb - call back from transport to client
-- * c: client state
-- * req: request received
-+ * @c: client state
-+ * @req: request received
-+ * @status: request status, one of REQ_STATUS_*
+  * ip6_tnl_bucket - get head of list matching given tunnel parameters
++ *   @ip6n: the private data for ip6_vti in the netns
+  *   @p: parameters containing tunnel end-points
   *
-  */
- void p9_client_cb(struct p9_client *c, struct p9_req_t *req, int status)
-@@ -555,6 +556,7 @@ static int p9_check_errors(struct p9_client *c, struct p9_req_t *req)
-  * p9_check_zc_errors - check 9p packet for error return and process it
-  * @c: current client instance
-  * @req: request to parse and check for error conditions
-+ * @uidata: external buffer containing error
-  * @in_hdrlen: Size of response protocol buffer.
-  *
-  * returns error code if one is discovered, otherwise returns 0
-diff --git a/net/9p/trans_common.c b/net/9p/trans_common.c
-index 3dff68f05fb9..6ea5ea548cd4 100644
---- a/net/9p/trans_common.c
-+++ b/net/9p/trans_common.c
-@@ -17,7 +17,9 @@
- #include "trans_common.h"
+  * Description:
+@@ -230,6 +231,7 @@ ip6_tnl_bucket(struct ip6_tnl_net *ip6n, const struct __ip6_tnl_parm *p)
  
  /**
-- *  p9_release_pages - Release pages after the transaction.
-+ * p9_release_pages - Release pages after the transaction.
-+ * @pages: array of pages to be put
-+ * @nr_pages: size of array
-  */
- void p9_release_pages(struct page **pages, int nr_pages)
- {
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index 8f528e783a6c..fa158397bb63 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -45,7 +45,7 @@ static struct p9_trans_module p9_fd_trans;
-  * @rfd: file descriptor for reading (trans=fd)
-  * @wfd: file descriptor for writing (trans=fd)
-  * @port: port to connect to (trans=tcp)
+  * ip6_tnl_link - add tunnel to hash table
++ *   @ip6n: the private data for ip6_vti in the netns
+  *   @t: tunnel to be added
+  **/
+ 
+@@ -246,6 +248,7 @@ ip6_tnl_link(struct ip6_tnl_net *ip6n, struct ip6_tnl *t)
+ 
+ /**
+  * ip6_tnl_unlink - remove tunnel from hash table
++ *   @ip6n: the private data for ip6_vti in the netns
+  *   @t: tunnel to be removed
+  **/
+ 
+@@ -417,6 +420,7 @@ ip6_tnl_dev_uninit(struct net_device *dev)
+ /**
+  * parse_tvl_tnl_enc_lim - handle encapsulation limit option
+  *   @skb: received socket buffer
++ *   @raw: the ICMPv6 error message data
+  *
+  * Return:
+  *   0 if none was found,
+@@ -485,14 +489,9 @@ __u16 ip6_tnl_parse_tlv_enc_lim(struct sk_buff *skb, __u8 *raw)
+ }
+ EXPORT_SYMBOL(ip6_tnl_parse_tlv_enc_lim);
+ 
+-/**
+- * ip6_tnl_err - tunnel error handler
 - *
-+ * @privport: port is privileged
-  */
+- * Description:
+- *   ip6_tnl_err() should handle errors in the tunnel according
+- *   to the specifications in RFC 2473.
+- **/
+-
++/* ip6_tnl_err() should handle errors in the tunnel according to the
++ * specifications in RFC 2473.
++ */
+ static int
+ ip6_tnl_err(struct sk_buff *skb, __u8 ipproto, struct inet6_skb_parm *opt,
+ 	    u8 *type, u8 *code, int *msg, __u32 *info, int offset)
+diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
+index 5f9c4fdc120d..46d137a693ac 100644
+--- a/net/ipv6/ip6_vti.c
++++ b/net/ipv6/ip6_vti.c
+@@ -125,6 +125,7 @@ vti6_tnl_lookup(struct net *net, const struct in6_addr *remote,
  
- struct p9_fd_opts {
-@@ -95,6 +95,8 @@ struct p9_poll_wait {
-  * @err: error state
-  * @req_list: accounting for requests which have been sent
-  * @unsent_req_list: accounting for requests that haven't been sent
-+ * @rreq: read request
-+ * @wreq: write request
-  * @req: current request being processed (if any)
-  * @tmp_buf: temporary buffer to read in header
-  * @rc: temporary fcall for reading current frame
-diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
-index 2885ff9c76f0..af0a8a6cd3fd 100644
---- a/net/9p/trans_rdma.c
-+++ b/net/9p/trans_rdma.c
-@@ -99,6 +99,7 @@ struct p9_rdma_req;
  /**
-  * struct p9_rdma_context - Keeps track of in-process WR
+  * vti6_tnl_bucket - get head of list matching given tunnel parameters
++ *   @ip6n: the private data for ip6_vti in the netns
+  *   @p: parameters containing tunnel end-points
   *
-+ * @cqe: completion queue entry
-  * @busa: Bus address to unmap when the WR completes
-  * @req: Keeps track of requests (send)
-  * @rc: Keepts track of replies (receive)
-@@ -115,6 +116,7 @@ struct p9_rdma_context {
- /**
-  * struct p9_rdma_opts - Collection of mount options
-  * @port: port of connection
-+ * @privport: Whether a privileged port may be used
-  * @sq_depth: The requested depth of the SQ. This really doesn't need
-  * to be any deeper than the number of threads used in the client
-  * @rq_depth: The depth of the RQ. Should be greater than or equal to SQ depth
-diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index a3cd90a74012..93f2f8654882 100644
---- a/net/9p/trans_virtio.c
-+++ b/net/9p/trans_virtio.c
-@@ -50,7 +50,11 @@ static atomic_t vp_pinned = ATOMIC_INIT(0);
-  * @client: client instance
-  * @vdev: virtio dev associated with this channel
-  * @vq: virtio queue associated with this channel
-+ * @ring_bufs_avail: flag to indicate there is some available in the ring buf
-+ * @vc_wq: wait queue for waiting for thing to be added to ring buf
-+ * @p9_max_pages: maximum number of pinned pages
-  * @sg: scatter gather list which is used to pack a request (protected?)
-+ * @chan_list: linked list of channels
-  *
-  * We keep all per-channel information in a structure.
-  * This structure is allocated within the devices dev->mem space.
-@@ -74,8 +78,8 @@ struct virtio_chan {
- 	unsigned long p9_max_pages;
- 	/* Scatterlist: can be too big for stack. */
- 	struct scatterlist sg[VIRTQUEUE_NUM];
--	/*
--	 * tag name to identify a mount null terminated
-+	/**
-+	 * @tag: name to identify a mount null terminated
- 	 */
- 	char *tag;
- 
-@@ -204,6 +208,7 @@ static int p9_virtio_cancelled(struct p9_client *client, struct p9_req_t *req)
-  * this takes a list of pages.
-  * @sg: scatter/gather list to pack into
-  * @start: which segment of the sg_list to start at
-+ * @limit: maximum number of pages in sg list.
-  * @pdata: a list of pages to add into sg.
-  * @nr_pages: number of pages to pack into the scatter/gather list
-  * @offs: amount of data in the beginning of first page _not_ to pack
+  * Description:
 -- 
 2.28.0
 
