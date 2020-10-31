@@ -2,41 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C56572A11C0
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 00:46:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 298262A11D2
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 01:04:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725904AbgJ3Xqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Oct 2020 19:46:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50402 "EHLO mail.kernel.org"
+        id S1725960AbgJaADy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Oct 2020 20:03:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33142 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725446AbgJ3Xqm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Oct 2020 19:46:42 -0400
+        id S1725806AbgJaADy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Oct 2020 20:03:54 -0400
 Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 71AB9208B6;
-        Fri, 30 Oct 2020 23:46:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D8869208B6;
+        Sat, 31 Oct 2020 00:03:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604101602;
-        bh=voJHJOf9dPBy4fxAMBhVgDxcGEaN2P+DHs0ps8ovIr8=;
+        s=default; t=1604102634;
+        bh=PbVVoVvejXa460x/ZPQ/oOxhItOiWuGafM8frIDYoYM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FJdKogOYBw22C9CQ4xTuDRutEHcr9iI1uO1Xg2FQcBhiXnj8qPvB1zNgu2ubo0lP9
-         uApQW7c0V58yT78WSf1xtyLLjRXXMgBVYy9FDGQOheiaRghFG1ULAZXCF1iGuk98K5
-         iO6RVL9il2esFPCrtTuW1FBfwhTCrOOnWy/5kFcU=
-Date:   Fri, 30 Oct 2020 16:46:40 -0700
+        b=koyDXXVgUnKVNmMxqGuo13izCEG7lHoEfYB3vFtA8oirpNX4axg6U/SrvQ/bgC+VQ
+         YfFmqFLRcY2n6hy8MfJxAgtxvNH1QEadHAJozou2I6DbPUtEgIzDPIGnM+kQf/1Uxg
+         6NRhh4ZVw/ipIKZCHb29Z+yCNqYoaK8paosOMnd0=
+Date:   Fri, 30 Oct 2020 17:03:53 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net,
-        gnault@redhat.com, pabeni@redhat.com,
-        willemdebruijn.kernel@gmail.com
-Subject: Re: [PATCHv5 net-next 00/16] sctp: Implement RFC6951: UDP
- Encapsulation of SCTP
-Message-ID: <20201030164640.4e89902f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <cover.1603955040.git.lucien.xin@gmail.com>
-References: <cover.1603955040.git.lucien.xin@gmail.com>
+To:     Sergej Bauer <sbauer@blackbox.su>
+Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fix for potential NULL pointer dereference with bare
+ lan743x
+Message-ID: <20201030165515.614637a0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201029002845.28984-1-sbauer@blackbox.su>
+References: <20201029002845.28984-1-sbauer@blackbox.su>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,16 +42,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Oct 2020 15:04:54 +0800 Xin Long wrote:
->    This patchset is using the udp4/6 tunnel APIs to implement the UDP
->    Encapsulation of SCTP with not much change in SCTP protocol stack
->    and with all current SCTP features keeped in Linux Kernel.
+On Thu, 29 Oct 2020 03:28:45 +0300 Sergej Bauer wrote:
+>   This is just a minor fix which prevents a kernel NULL pointer
+> dereference when using phy-less lan743x.
 > 
->    1 - 4: Fix some UDP issues that may be triggered by SCTP over UDP.
->    5 - 7: Process incoming UDP encapsulated packets and ICMP packets.
->    8 -10: Remote encap port's update by sysctl, sockopt and packets.
->    11-14: Process outgoing pakects with UDP encapsulated and its GSO.
->    15-16: Add the part from draft-tuexen-tsvwg-sctp-udp-encaps-cons-03.
->       17: Enable this feature.
+> Signed-off-by: Sergej Bauer <sbauer@blackbox.su>
 
-Applied, thanks!
+I take you mean when the device is down netdev->phydev will be NULL?
+
+> diff --git a/drivers/net/ethernet/microchip/lan743x_ethtool.c b/drivers/net/ethernet/microchip/lan743x_ethtool.c
+> index dcde496da7fb..354d72d550f2 100644
+> --- a/drivers/net/ethernet/microchip/lan743x_ethtool.c
+> +++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
+> @@ -793,6 +795,9 @@ static int lan743x_ethtool_set_wol(struct net_device *netdev,
+>  {
+>  	struct lan743x_adapter *adapter = netdev_priv(netdev);
+>  
+> +	if (!netdev->phydev)
+> +		return -EIO;
+
+Does it make sense to just skip the phy_ethtool_set_wol() call instead?
+
+Also doesn't the wol configuration of the PHY get lost across an
+netdev up/down cycle in this driver? Should it be re-applied after phy
+is connected back?
+
+>  	adapter->wolopts = 0;
+>  	if (wol->wolopts & WAKE_UCAST)
+>  		adapter->wolopts |= WAKE_UCAST;
+
