@@ -2,95 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A23862A1950
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 19:15:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99D682A1941
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 19:14:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728271AbgJaSOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 14:14:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56504 "EHLO vps0.lunn.ch"
+        id S1728159AbgJaSOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 14:14:46 -0400
+Received: from correo.us.es ([193.147.175.20]:48002 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728209AbgJaSOr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:14:47 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kYvOn-004XMV-Os; Sat, 31 Oct 2020 19:14:45 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next] drivers: net: wan: lmc: Fix W=1 set but used variable warnings
-Date:   Sat, 31 Oct 2020 19:14:17 +0100
-Message-Id: <20201031181417.1081511-1-andrew@lunn.ch>
-X-Mailer: git-send-email 2.27.0
+        id S1727967AbgJaSOp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:14:45 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 4A0077B551
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 19:14:43 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 3AD2CDA722
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 19:14:43 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 2FBB9DA73D; Sat, 31 Oct 2020 19:14:43 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id F2FAEDA722;
+        Sat, 31 Oct 2020 19:14:40 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sat, 31 Oct 2020 19:14:40 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id CCF5E42EF42B;
+        Sat, 31 Oct 2020 19:14:40 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH net 0/5] Netfilter fixes for net
+Date:   Sat, 31 Oct 2020 19:14:32 +0100
+Message-Id: <20201031181437.12472-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/wan/lmc/lmc_main.c: In function ‘lmc_ioctl’:
-drivers/net/wan/lmc/lmc_main.c:356:25: warning: variable ‘mii’ set but not used [-Wunused-but-set-variable]
-  356 |                     u16 mii;
-      |                         ^~~
-drivers/net/wan/lmc/lmc_main.c:427:25: warning: variable ‘mii’ set but not used [-Wunused-but-set-variable]
-  427 |                     u16 mii;
-      |                         ^~~
-drivers/net/wan/lmc/lmc_main.c: In function ‘lmc_interrupt’:
-drivers/net/wan/lmc/lmc_main.c:1188:9: warning: variable ‘firstcsr’ set but not used [-Wunused-but-set-variable]
- 1188 |     u32 firstcsr;
+Hi,
 
-This file has funky indentation, and makes little use of tabs. Keep
-with this style in the patch, but that makes checkpatch unhappy.
+The following patchset contains Netfilter fixes for net:
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/wan/lmc/lmc_main.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+1) Incorrect netlink report logic in flowtable and genID.
 
-diff --git a/drivers/net/wan/lmc/lmc_main.c b/drivers/net/wan/lmc/lmc_main.c
-index 36600b0a0ab0..93c7e8502845 100644
---- a/drivers/net/wan/lmc/lmc_main.c
-+++ b/drivers/net/wan/lmc/lmc_main.c
-@@ -353,9 +353,8 @@ int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
-             switch(xc.command){
-             case lmc_xilinx_reset: /*fold02*/
-                 {
--                    u16 mii;
- 		    spin_lock_irqsave(&sc->lmc_lock, flags);
--                    mii = lmc_mii_readreg (sc, 0, 16);
-+                    lmc_mii_readreg (sc, 0, 16);
- 
-                     /*
-                      * Make all of them 0 and make input
-@@ -424,10 +423,9 @@ int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
-                 break;
-             case lmc_xilinx_load_prom: /*fold02*/
-                 {
--                    u16 mii;
-                     int timeout = 500000;
- 		    spin_lock_irqsave(&sc->lmc_lock, flags);
--                    mii = lmc_mii_readreg (sc, 0, 16);
-+                    lmc_mii_readreg (sc, 0, 16);
- 
-                     /*
-                      * Make all of them 0 and make input
-@@ -1185,7 +1183,6 @@ static irqreturn_t lmc_interrupt (int irq, void *dev_instance) /*fold00*/
-     int i;
-     s32 stat;
-     unsigned int badtx;
--    u32 firstcsr;
-     int max_work = LMC_RXDESCS;
-     int handled = 0;
- 
-@@ -1203,8 +1200,6 @@ static irqreturn_t lmc_interrupt (int irq, void *dev_instance) /*fold00*/
-         goto lmc_int_fail_out;
-     }
- 
--    firstcsr = csr;
--
-     /* always go through this loop at least once */
-     while (csr & sc->lmc_intrmask) {
- 	handled = 1;
--- 
-2.28.0
+2) Add a selftest to check that wireguard passes the right sk
+   to ip_route_me_harder, from Jason A. Donenfeld.
 
+3) Pass the actual sk to ip_route_me_harder(), also from Jason.
+
+4) Missing expression validation of updates via nft --check.
+
+5) Update byte and packet counters regardless of whether they
+   match, from Stefano Brivio.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 07e0887302450a62f51dba72df6afb5fabb23d1c:
+
+  Merge tag 'fallthrough-fixes-clang-5.10-rc2' of git://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux (2020-10-29 13:02:52 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 7d10e62c2ff8e084c136c94d32d9a94de4d31248:
+
+  netfilter: ipset: Update byte and packet counters regardless of whether they match (2020-10-31 11:11:11 +0100)
+
+----------------------------------------------------------------
+Jason A. Donenfeld (2):
+      wireguard: selftests: check that route_me_harder packets use the right sk
+      netfilter: use actual socket sk rather than skb sk when routing harder
+
+Pablo Neira Ayuso (2):
+      netfilter: nftables: fix netlink report logic in flowtable and genid
+      netfilter: nf_tables: missing validation from the abort path
+
+Stefano Brivio (1):
+      netfilter: ipset: Update byte and packet counters regardless of whether they match
+
+ include/linux/netfilter/nfnetlink.h                |  9 ++++++++-
+ include/linux/netfilter_ipv4.h                     |  2 +-
+ include/linux/netfilter_ipv6.h                     | 10 +++++-----
+ net/ipv4/netfilter.c                               |  8 +++++---
+ net/ipv4/netfilter/iptable_mangle.c                |  2 +-
+ net/ipv4/netfilter/nf_reject_ipv4.c                |  2 +-
+ net/ipv6/netfilter.c                               |  6 +++---
+ net/ipv6/netfilter/ip6table_mangle.c               |  2 +-
+ net/netfilter/ipset/ip_set_core.c                  |  3 ++-
+ net/netfilter/ipvs/ip_vs_core.c                    |  4 ++--
+ net/netfilter/nf_nat_proto.c                       |  4 ++--
+ net/netfilter/nf_synproxy_core.c                   |  2 +-
+ net/netfilter/nf_tables_api.c                      | 19 ++++++++++++-------
+ net/netfilter/nfnetlink.c                          | 22 ++++++++++++++++++----
+ net/netfilter/nft_chain_route.c                    |  4 ++--
+ net/netfilter/utils.c                              |  4 ++--
+ tools/testing/selftests/wireguard/netns.sh         |  8 ++++++++
+ .../testing/selftests/wireguard/qemu/kernel.config |  2 ++
+ 18 files changed, 76 insertions(+), 37 deletions(-)
