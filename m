@@ -2,126 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC7272A177F
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 13:57:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE4FF2A1816
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 15:17:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727372AbgJaM5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 08:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726738AbgJaM5j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 08:57:39 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570AEC0613D5
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 05:57:38 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id h21so10347795iob.10
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 05:57:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+Tgo0iGYgMOSvBvP8uIFYfJAcR1ar/e958CKW4NiYNQ=;
-        b=W5+LdOCQ1YdfA1lXmC679iGk9jhiKExlKYkXmUwducJnyT2NxVV+ZYUyy9DR71m2y1
-         WX7ETqUFRdRzXpagOPBb6h7oAqke5SL2zHbfghKIbidfkI1Sg1gSYokIlAMHOpnokf0H
-         gdjdYGRY8m/dF01kZKK8/qCxnwGuuERQKYpRfMQCo50Weuo8UJL33nX3mv5xaV+rV/h7
-         +yvBNjFMg8quDR//L3hnizyhb6dldXgOPpG5hYty+zr4UTTI07KwDZ2QadWOeguGQtVV
-         iVTng/As6sJy4j6Wu19Z2ohcxhIdTpPfmIS5LcinjHJA8MmaodZwAzhZTqw3U3cv6TXZ
-         vPYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+Tgo0iGYgMOSvBvP8uIFYfJAcR1ar/e958CKW4NiYNQ=;
-        b=Kly5auyf9GdoQfVb9UOVT3IENT/gN/14KlG+Qy1KDVdZB644nlSBAWlRXp/kBieRcR
-         4O1rrW6mEaD1xDlZJAFtJH9g/b6RwUNnzyFCntSCsNDRAfvYY7qlH++1prjCUOltRGkC
-         +LLbkCwTnYbVJXYJ4rAjRiUNgotHJwn13u7ZSPUvyd2tAJdk3bcJQBmRTliCJAUjw9yc
-         ZY08teBCMzshK2DQkqXvbCuowzPdtS6xgFoqZSb6LeDlO36kYWQiv2xo8HAQ8Rj1BfQI
-         wZgf2CvOZDg6BpEiAkpGxLLs/Nyt8rHzcwPjDjCsWsWdDvsO6LTNjqhIIVV9cl4Zqk7j
-         Jovg==
-X-Gm-Message-State: AOAM532y8dUcFEN3lxzKneXZytJYfdK3Lf+EkWeEiSPaoyNqsFoIuvKD
-        033ZTsaylGB1egvxEdGV0mTk/g==
-X-Google-Smtp-Source: ABdhPJzY/9C2ug9DymSL6aSXu+YTcRQ3CMUJa5x7015EyCgGyJ9KA7MZW2eYkVQKleqOiPUdPSXfXQ==
-X-Received: by 2002:a02:5b09:: with SMTP id g9mr5297673jab.89.1604149057573;
-        Sat, 31 Oct 2020 05:57:37 -0700 (PDT)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id k18sm5369915iow.4.2020.10.31.05.57.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 31 Oct 2020 05:57:36 -0700 (PDT)
-Subject: Re: [PATCH v2 net 0/5] net: ipa: minor bug fixes
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, evgreen@chromium.org, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        sujitka@chromium.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20201028194148.6659-1-elder@linaro.org>
- <20201029091137.1ea13ecb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <2f62dbe1-a1b3-a5f9-8cba-82cd8061ff9b@linaro.org>
- <20201030172335.38d39b47@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <4797faea-da31-2dc2-db18-2dcccf4567f3@linaro.org>
-Date:   Sat, 31 Oct 2020 07:57:35 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727672AbgJaORN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 10:17:13 -0400
+Received: from mail-02.mail-europe.com ([51.89.119.103]:36554 "EHLO
+        mail-02.mail-europe.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727460AbgJaORN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 10:17:13 -0400
+Date:   Sat, 31 Oct 2020 14:17:03 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1604153827; bh=NXlWEEClV4m+2Wq5YBkeWG1SXRGlVBbCq04Zf/Sk7C8=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=IBS5UuK0imxu2GUNPPcajRAkiXSaQIHDckCvHh0LPYWjLBC5lLLSCZKEDq4fisWqb
+         wEcR1Q2tr7n2pFC9g644ZcDSq9Dk2k/eR7C1M5awO2mAVYfDqzz/S55Bg30U/B8dPe
+         YJJLQRvcx/u9P/y1MHWYBla2dJ9bd/64G8ua/V9kjm1mzLrVTEG7BTzE/r2fvGk9c2
+         9QWUNIw2SBJ2eN87nJ8rLjRieS4PxMee8y3aOpA3UTyy73E/ouK1a66aLXEQ66Iw3o
+         9+B4JkXnfMYEJmB3QFsUCDjEfaT/I3nUoIu8IQDWFP+yFTP4kL6Kj9TXyj8aKPwoNW
+         5Ajy9nHWG407Q==
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH net-next] net: avoid unneeded UDP L4 and fraglist GSO resegmentation
+Message-ID: <MX6AwRxaXyMi3FALeN1gpN8y4XgaktZM2MHxQMOM@cp4-web-036.plabs.ch>
+In-Reply-To: <TSRRse4RkO_XW4DtdTkz4NeZPwzHXaPOEFU9-J4VlpLbUzlBzuhW8HYfHCfFJ1Ro6FwztEO652tbnSGOE-MjfKez1NvVPM3v3ResWtbK5Rk=@pm.me>
+References: <Mx3BWGop6fGORN6Cpo4mHIHz2b1bb0eLxeMG8vsijnk@cp3-web-020.plabs.ch> <CA+FuTSdiqaZJ3HQHuEEMwKioWGKvGwZ42Oi7FpRf0hqWdZ27pQ@mail.gmail.com> <TSRRse4RkO_XW4DtdTkz4NeZPwzHXaPOEFU9-J4VlpLbUzlBzuhW8HYfHCfFJ1Ro6FwztEO652tbnSGOE-MjfKez1NvVPM3v3ResWtbK5Rk=@pm.me>
 MIME-Version: 1.0
-In-Reply-To: <20201030172335.38d39b47@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/30/20 7:23 PM, Jakub Kicinski wrote:
-> On Thu, 29 Oct 2020 11:50:52 -0500 Alex Elder wrote:
->> On 10/29/20 11:11 AM, Jakub Kicinski wrote:
->>> On Wed, 28 Oct 2020 14:41:43 -0500 Alex Elder wrote:  
->>>> This series fixes several bugs.  They are minor, in that the code
->>>> currently works on supported platforms even without these patches
->>>> applied, but they're bugs nevertheless and should be fixed.  
+From: Alexander Lobakin <alobakin@pm.me>
+Date: Sat, 31 Oct 2020 10:31:31 +0000
+
+> On Saturday, 31 October 2020, 2:12, Willem de Bruijn <willemdebruijn.kern=
+el@gmail.com> wrote:
+>
+> Hi Willem,
+>
+>> On Fri, Oct 30, 2020 at 2:33 PM Alexander Lobakin alobakin@pm.me wrote:
+>>
+>>> Commit 9fd1ff5d2ac7 ("udp: Support UDP fraglist GRO/GSO.") added a supp=
+ort
+>>> for fraglist UDP L4 and fraglist GSO not only for local traffic, but al=
+so
+>>> for forwarding. This works well on simple setups, but when any logical
+>>> netdev (e.g. VLAN) is present, kernel stack always performs software
+>>> resegmentation which actually kills the performance.
+>>> Despite the fact that no mainline drivers currently supports fraglist G=
+SO,
+>>> this should and can be easily fixed by adding UDP L4 and fraglist GSO t=
+o
+>>> the list of GSO types that can be passed-through the logical interfaces
+>>> (NETIF_F_GSO_SOFTWARE). After this change, no resegmentation occurs (if
+>>> a particular driver supports and advertises this), and the performance
+>>> goes on par with e.g. 1:1 forwarding.
+>>> The only logical netdevs that seem to be unaffected to this are bridge
+>>> interfaces, as their code uses full NETIF_F_GSO_MASK.
 >>>
->>> By which you mean "it seems to work just fine most of the time" or "the
->>> current code does not exercise this paths/functionally these bugs don't
->>> matter for current platforms".  
+>>> Tested on MIPS32 R2 router board with a WIP NIC driver in VLAN NAT:
+>>> 20 Mbps baseline, 1 Gbps / link speed with this patch.
+>>>
+>>> Signed-off-by: Alexander Lobakin alobakin@pm.me
+>>> ------------------------------------------------
+>>> include/linux/netdev_features.h | 4 ++--
+>>> 1 file changed, 2 insertions(+), 2 deletions(-)
+>>> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_fea=
+utres.h
+>>> index 0b17c4322b09..934de56644e7 100644
+>>> --- a/include/linux/netdev_features.h
+>>> +++ b/include/linux/netdev_features.h
+>>> @@ -207,8 +207,8 @@ static inline int find_next_netdev_feature(u64 feat=
+ure, unsigned long start)
+>>> NETIF_F_FSO)
+>>> /* List of features with software fallbacks. */
+>>> -#define NETIF_F_GSO_SOFTWARE (NETIF_F_ALL_TSO | \
+>>> -                                  NETIF_F_GSO_SCTP)
+>>> +#define NETIF_F_GSO_SOFTWARE (NETIF_F_ALL_TSO | NETIF_F_GSO_SCTP | \
+>>> -                                  NETIF_F_GSO_UDP_L4 | NETIF_F_GSO_FRA=
+GLIST)
 >>
->> The latter, although for patch 3 I'm not 100% sure.
->>
->> Case by case:
->> Patch 1:
->>    It works.  I inquired what the consequence of passing this
->>    wrong buffer pointer was, and for the way we are using IPA
->>    it seems it's fine--the memory pointer we were assigning is
->>    not used, so it's OK.  But we're assigning the wrong pointer.
->> Patch 2:
->>    It works.  Even though the bit field is 1 bit wide (not two)
->>    we never actually write a value greater than 1, so we don't
->>    cause a problem.  But the definition is incorrect.
->> Patch 3:
->>    It works, but on the SDM845 we should be assigning the endpoints
->>    to use resource group 1 (they are 0 by default).  The way we
->>    currently use this upstream we don't have other endpoints
->>    competing for resources, so I think this is fine.  SC7180 we
->>    will assign endpoints to resource group 0, which is the default.
->> Patch 4:
->>    It works.  This is like patch 2; we define the number of these
->>    things incorrectly, but the way we currently use them we never
->>    exceed the limit in a broken way.
->> Patch 5:
->>    It works.  The maximum number of supported groups is even,
->>    and if a (smaller) odd number are used the remainder are
->>    programmed with 0, which is appropriate for undefined
->>    fields.
->>
->> If you have any concerns about back-porting these fixes I
->> think I'm comfortable posting them for net-next instead.
->> I debated that before sending them out.  Please request that
->> if it's what you think would be best.
-> 
-> Looks like these patches apply cleanly to net-next, so I put them there.
-> 
-> Thanks!
+>> What exactly do you mean by resegmenting?
+>
+> I mean pts 5-6 from the full path:
+> 1. Our NIC driver advertises a support for fraglists, GSO UDP L4, GSO fra=
+glists.
+> 2. User enables fraglisted GRO via Ethtool.
+> 3. GRO subsystem receives UDP frames from driver and merges the packets i=
+nto
+>    fraglisted GSO skb(s).
+> 4. Networking stack queues it up for xmitting.
+> 5. Virtual device like VLAN doesn't advertise a support for GSO UDP L4 an=
+d
+>    GSO fraglists, so skb_gso_check() doesn't allow to pass this skb as is=
+ to
+>    the real driver.
+> 6. Kernel then has to form a bunch of regular UDP skbs from that one and =
+pass
+>    it to the driver instead. This fallback is *extremely* slow for any GS=
+O types,
+>    but especially for GSO fraglists.
+> 7. All further processing performs with a series of plain UDP skbs, and t=
+he
+>    driver gets it one-by-one, despite that it supports UDP L4 and fraglis=
+ted GSO.
+>
+> That's not OK because:
+> a) logical/virtual netdevs like VLANs, bridges etc. should pass GSO skbs =
+as is;
+> b) even if the final driver doesn't support such type of GSO, this softwa=
+re
+>    resegmenting should be performed right before it, not in the middle of
+>    processing -- I think I even saw that note somewhere in kernel documen=
+tation,
+>    and it's totally reasonable in terms of performance.
+>
+>> I think it is fine to reenable this again, now that UDP sockets will
+>> segment unexpected UDP GSO packets that may have looped. We previously
+>> added general software support in commit 83aa025f535f ("udp: add gso
+>> support to virtual devices"). Then reduced its scope to egress only in
+>> 8eea1ca82be9 ("gso: limit udp gso to egress-only virtual devices") to
+>> handle that edge case.
 
-Works for me.  Thank you.	-Alex
+Regarding bonding and teaming: I think they should also use
+NETIF_F_GSO_SOFTWARE mask, not NETIF_F_ALL_TSO, as SCTP also has
+a software fallback. This way we could also remove a separate
+advertising of NETIF_F_GSO_UDP_L4, as it will be included in the first.
 
-> 
+So, if this one:
+1. Add NETIF_F_GSO_UDP_L4 and NETIF_F_GSO_FRAGLIST to
+   NETIF_F_GSO_SOFTWARE;
+2. Change bonding and teaming features mask from NETIF_F_ALL_TSO |
+   NETIF_F_GSO_UDP_L4 to NETIF_F_GSO_SOFTWARE;
+3. Check that every virtual netdev has NETIF_F_GSO_SOFTWARE _or_
+   NETIF_F_GSO_MASK in its advertising.
+
+is fine for everyone, I'll publish more appropriate and polished v2 soon.
+
+>> If we can enable for all virtual devices again, we could revert those
+>> device specific options.
+>
+> Thanks,
+> Al
+
+Al
 
