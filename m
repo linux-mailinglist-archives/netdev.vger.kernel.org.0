@@ -2,95 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB5392A1820
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 15:26:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 653872A184C
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 15:46:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727702AbgJaO0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 10:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58842 "EHLO
+        id S1727870AbgJaOqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 10:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbgJaO0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 10:26:32 -0400
-Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84E5C0617A7
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 07:26:30 -0700 (PDT)
-Received: by mail-ua1-x944.google.com with SMTP id t15so2617824ual.6
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 07:26:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SHI3Q2fOLLrmm4wKuaWbsYixW7vlYPYxYs2uwmG193g=;
-        b=MQ+2Nno/5EgRdUUjWKkb0/1gLXIdbUJ/gLkqb3dmOj2il0PyPjQEUxrEJBQlxTAE4Z
-         2d3FT2s30oFvxAfmmeNRPPyqaxWLDLiCLkI4I1xjKlJCM7zWwcb6YKAkw4bcD3tu7zX4
-         J6SvjzGXzY04o41b+DYFOOC9j43eBhuGqTlGubzVBETwXFeu9icVjt1xsIP3nA2KJFzY
-         hhbXVrprrpENg8f1xtlcjb7Dcotqp4WK2DPLhiGK1+Oj2SXLOjynEJZLvYEUkLB1peFe
-         KhFXNCEp8FNCSZSmpcdJNasHFDWgZj/Ges8sINyHxIS5JeF4p8oXJN6XhfiQ9Nhpzbcy
-         2LOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SHI3Q2fOLLrmm4wKuaWbsYixW7vlYPYxYs2uwmG193g=;
-        b=GfpkUN+VuTco+ykeiuKIQZnZHE3AuqZQyfyKh940eaYS73yWiF3D0dg9FGD/51NZgj
-         xImQN2W/S0xYli641xxHQhFdETqzTXTaXXccXAZux4Tpl+tw57MD03QwpdOdQnHAFBDd
-         dUnahUSscAVudxS8gxQJqo1pzQayZIcQcIHH4j8PdHYh/D2d2zwl49XcK9zx3LOGVuFk
-         eeKHkklAKIL/VLYk5B1eSXTp0g6R3+ree6aWqRbQ7gPYOEf8NytFl69hxyTyoipNM65W
-         Qv+y0rEp2vANHVJTU8fQpsBxr4QkwPJSj0FaBHcPEAkzAZbYO0Jdah+1IQe4rvFR5mWr
-         sOWg==
-X-Gm-Message-State: AOAM531FMnsRwoSujgSlgqKL7KyvNJUhcqvHAht/3NVQ2daaFtmpcuDs
-        8VB4ikE4Rj9M18YxfPtdlAfReHIW/2k=
-X-Google-Smtp-Source: ABdhPJxFJmVEx8dvJprQnbYLPa1jEfwnnS/gHnpx9oHcl3P4nHGF6C1RdkJnu1Zr0nqISAaQ5UTHBg==
-X-Received: by 2002:ab0:36ab:: with SMTP id v11mr4182865uat.5.1604154388917;
-        Sat, 31 Oct 2020 07:26:28 -0700 (PDT)
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
-        by smtp.gmail.com with ESMTPSA id s6sm894672vkk.20.2020.10.31.07.26.27
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 31 Oct 2020 07:26:27 -0700 (PDT)
-Received: by mail-ua1-f52.google.com with SMTP id f15so2605262uaq.9
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 07:26:27 -0700 (PDT)
-X-Received: by 2002:ab0:299a:: with SMTP id u26mr4227896uap.108.1604154387016;
- Sat, 31 Oct 2020 07:26:27 -0700 (PDT)
+        with ESMTP id S1726089AbgJaOqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 10:46:52 -0400
+X-Greylist: delayed 1175 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 31 Oct 2020 07:46:51 PDT
+Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6628C0617A6;
+        Sat, 31 Oct 2020 07:46:51 -0700 (PDT)
+Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.94)
+        (envelope-from <n0-1@orbyte.nwl.cc>)
+        id 1kYrqa-0003gW-K5; Sat, 31 Oct 2020 15:27:12 +0100
+Date:   Sat, 31 Oct 2020 15:27:12 +0100
+From:   Phil Sutter <phil@netfilter.org>
+To:     netfilter@vger.kernel.org, netfilter-devel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org,
+        lwn@lwn.net
+Subject: [ANNOUNCE] iptables 1.8.6 release
+Message-ID: <20201031142712.GA10193@orbyte.nwl.cc>
+Mail-Followup-To: Phil Sutter <phil@netfilter.org>,
+        netfilter@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org,
+        lwn@lwn.net
 MIME-Version: 1.0
-References: <20201031004918.463475-1-xie.he.0141@gmail.com> <20201031004918.463475-5-xie.he.0141@gmail.com>
-In-Reply-To: <20201031004918.463475-5-xie.he.0141@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sat, 31 Oct 2020 10:25:49 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScDa4NEo0xh1Uu+cB8QZ5mbVs6QvP0=xkritTzS9U7TYw@mail.gmail.com>
-Message-ID: <CA+FuTScDa4NEo0xh1Uu+cB8QZ5mbVs6QvP0=xkritTzS9U7TYw@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 4/5] net: hdlc_fr: Improve the initial checks
- when we receive an skb
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; boundary="k+w/mQv8wyuph6w0"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Sender:  <n0-1@orbyte.nwl.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 8:49 PM Xie He <xie.he.0141@gmail.com> wrote:
->
-> 1.
-> Change the skb->len check from "<= 4" to "< 4".
-> At first we only need to ensure a 4-byte header is present. We indeed
-> normally need the 5th byte, too, but it'd be more logical and cleaner
-> to check its existence when we actually need it.
->
-> 2.
-> Add an fh->ea2 check to the initial checks in fr_rx. fh->ea2 == 1 means
-> the second address byte is the final address byte. We only support the
-> case where the address length is 2 bytes. If the address length is not
-> 2 bytes, the control field and the protocol field would not be the 3rd
-> and 4th byte as we assume. (Say it is 3 bytes, then the control field
-> and the protocol field would be the 4th and 5th byte instead.)
->
-> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> Cc: Krzysztof Halasa <khc@pm.waw.pl>
-> Signed-off-by: Xie He <xie.he.0141@gmail.com>
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+--k+w/mQv8wyuph6w0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi!
+
+The Netfilter project proudly presents:
+
+iptables 1.8.6
+
+This release contains the following fixes and enhancements:
+
+iptables-nft:
+- Fix ip6tables error messages, they were incorrectly prefixed
+  'iptables:'.
+- Fix for pointless 'bitwise' expression being added to each IP address
+  match, needlessly slowing down run-time performance (by 50% in worst
+  cases).
+
+iptables-nft-restore:
+- Correctly print the flushed chains in verbose mode, like legacy
+  restore does.
+- Restoring multiple tables could fail if a ruleset flush happened in
+  parallel (e.g. via 'nft flush ruleset').
+- Fix for bogus error messages if a refreshed transaction fails.
+- Support basechain policy value of '-' (indicating to not change the
+  chain's policy).
+- Fix for spurious errors in concurrent restore calls with '--noflush'.
+
+iptables-legacy:
+- Allow to configure lock file location via XTABLES_LOCKFILE environment
+  variable.
+
+xtables-monitor:
+- Fix printing of IP addresses in ip6tables rules.
+
+xtables-translate:
+- Exit gracefully when called with '--help'.
+- Fix some memory leaks.
+- Add support for conntrack '--ctstate' match.
+- Fix translation of ICMP type 'any' match.
+
+libxtables:
+- Fix for lower extension revisions not supported by the kernel anymore
+  being retried each time the extension is used in a rule. This
+  significantly improves performance when restoring large rulesets which
+  extensively use e.g. conntrack match.
+
+tests:
+- Add help text to tests/shell/run-tests.sh.
+- Test ip6tables error messages also, not just return codes.
+
+General:
+- Rejecting packets with ctstate INVALID might close good connections if
+  packet reordering happened. Document this and suggest to use DROP
+  target instead.
+- Fix for iptables-apply script not being installed by 'make install'.
+- Fix 'make uninstall', it was completely broken.
+- Fix compiler warnings when building with NO_SHARED_LIBS.
+- Extend 'make clean' to remove some generated man pages left in place.
+- Fix for gcc-10 zero-length array warnings.
+
+See the attached changelog for more details.
+
+You can download it from:
+
+http://www.netfilter.org/projects/iptables/downloads.html#iptables-1.8.6
+
+To build the code, libnftnl 1.1.6 is required:
+
+* http://netfilter.org/projects/libnftnl/downloads.html#libnftnl-1.1.6
+
+In case of bugs and feature requests, file them via:
+
+* https://bugzilla.netfilter.org
+
+Happy firewalling!
+
+--k+w/mQv8wyuph6w0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: attachment; filename="iptables-1.8.6.txt"
+Content-Transfer-Encoding: 8bit
+
+Arturo Borrero Gonzalez (1):
+  xtables-translate: don't fail if help was requested
+
+Giuseppe Scrivano (1):
+  iptables: accept lock file name at runtime
+
+Jan Engelhardt (2):
+  doc: document danger of applying REJECT to INVALID CTs
+  build: resolve iptables-apply not getting installed
+
+Maciej Żenczykowski (1):
+  libxtables: compiler warning fixes for NO_SHARED_LIBS
+
+Pablo Neira Ayuso (3):
+  extensions: libxt_conntrack: provide translation for DNAT and SNAT
+    --ctstate
+  iptables: replace libnftnl table list by linux list
+  iptables-nft: fix basechain policy configuration
+
+Phil Sutter (31):
+  xtables-restore: Fix verbose mode table flushing
+  build: Fix for failing 'make uninstall'
+  xtables-translate: Use proper clear_cs function
+  tests: shell: Add help output to run-tests.sh
+  nft: Make table creation purely implicit
+  nft: Be lazy when flushing
+  nft: cache: Drop duplicate chain check
+  nft: Drop pointless nft_xt_builtin_init() call
+  nft: Turn nft_chain_save() into a foreach-callback
+  nft: Use nft_chain_find() in two more places
+  nft: Reorder enum nft_table_type
+  nft: Eliminate table list from cache
+  nft: Fix command name in ip6tables error message
+  tests: shell: Merge and extend return codes test
+  xtables-monitor: Fix ip6tables rule printing
+  nft: Fix for ruleset flush while restoring
+  Makefile: Add missing man pages to CLEANFILES
+  nft: cache: Check consistency with NFT_CL_FAKE, too
+  nft: Extend use of nftnl_chain_list_foreach()
+  nft: Fold nftnl_rule_list_chain_save() into caller
+  nft: Use nft_chain_find() in nft_chain_builtin_init()
+  nft: Fix for broken address mask match detection
+  extensions: libipt_icmp: Fix translation of type 'any'
+  libxtables: Make sure extensions register in revision order
+  libxtables: Simplify pending extension registration
+  libxtables: Register multiple extensions in ascending order
+  nft: Make batch_add_chain() return the added batch object
+  nft: Fix error reporting for refreshed transactions
+  libiptc: Avoid gcc-10 zero-length array warning
+  nft: Fix for concurrent noflush restore calls
+  tests: shell: Improve concurrent noflush restore test a bit
+
+--k+w/mQv8wyuph6w0--
