@@ -2,111 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D18A2A1499
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 10:16:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 423CF2A14A2
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 10:18:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbgJaJQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 05:16:17 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:46296 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726456AbgJaJQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 05:16:15 -0400
-Received: by mail-io1-f69.google.com with SMTP id a2so5900063iod.13
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 02:16:14 -0700 (PDT)
+        id S1726580AbgJaJSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 05:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726456AbgJaJSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 05:18:30 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF1BDC0613D5;
+        Sat, 31 Oct 2020 02:18:28 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id s15so11833134ejf.8;
+        Sat, 31 Oct 2020 02:18:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Mxv6t1OOCkxikxnlS/acjLw3eXE0gHOO14C0raf/cWs=;
+        b=mfDt5epUbAW5bpOoMW0zNUCqaOnNUEEIfmkVx6QyltkMNBInh9tsLV9RBS/L00jtGx
+         x0v0nRZeMblVXh8xE23KvEtfdoVpujN0/ZaMNIJEdiNFzx9I9VclWPWxgzeXbdi7doZA
+         OUiK3EOY+GZdXSwQXzKjL1lnvrrceEiwXlK8MRpCnNBK2DeynMjnl329kDY+++k3TgLb
+         NstdwuyOvw6fhGfN5QAc1BxjFl7z1CvwZtZT/2I+PaNoZPtmKmy660pDAYNBWcIJXaE0
+         dGUDskHCT9VPN5wt/ppjX/sJAyjx7OwhFzWUSH35qEf2n+z7vUnW1iRKUbLQxU5xNGb3
+         n5Iw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=xLjHG+oo1mvJiFjz/+5HaW1lg2ZdzALrAQFDD7i6P+4=;
-        b=mgr6DIeyjYstkzL3TiRrb8sj0hTL2QsAvisXY85OSmHHgLTD7YiPRBmKoRtlVsMUOZ
-         mb64zoapNhhJrXkIhayDlskx7hcqwQxbP+Us5wUs7DHVUBuheKp/nOYIczW3dNI39tmR
-         uI7gY81qdIShP4ROXNJ+D0K6Q6nmHj7tjwrFCdmN1Iogz+cYMU1bG6S8ZpQH9FuHgKr9
-         SJqbpzFEEaJPnEpP5r5pwOYyzyLI4ZBaKhsm8xGhRpVhPzDBI2jxFjbxuXN8c457Xqx5
-         UtpGpxyJvELMsi/j4H9IDen6cOrGeUSUjQhG90DoZag6hX5uNR7F5aHxOXuTt+wxjNEi
-         IctQ==
-X-Gm-Message-State: AOAM530PEd+5/MvoYcsW2vfmBb1dybqMITYSY9KxTDJbs0h24FVEiTkv
-        Km3TSRoKGWEns/uA3C7MaUqU0+u+hqsRSbAx1LWe2gJyJpsa
-X-Google-Smtp-Source: ABdhPJyymRLz3SDl7zRbs5Pum0MM1Cng3fL3a2ckPs1cZq+o+VK4NOIZYyiwKy+2K4VJoFKW7mxuyYvpKn/abCHB3q695NImdMwY
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Mxv6t1OOCkxikxnlS/acjLw3eXE0gHOO14C0raf/cWs=;
+        b=QUY/pZp54n18G9HTj5ECO5eJ1tFCeYe/QqasbWY/Jy6wnPysJA4BQsLKEBR9gxYfqB
+         JCJRdMYYBklVqPtxnjGwMKcVdrhcyxX/gz5OhFo4OvknE9E4HjmBpy8R7Xv14pPgJUHs
+         0pQmg1FLGAXDccQzez+/26ovugcuB3Wcsf7/7P6PjspjWRvTgUXHovoMQQ2gJnjx1X+5
+         kPZbhX0qNckWJdRgP52s7IMvWagCUjEY6oC9a0qOj6W3V+Ksn6VcPsxzrJ29lE7iDDjZ
+         9oZHIqBdOSXpiseVFUffUNMXMadqBdkEbMLMMjfY0DGmIywYUbS9/WGwrgMDZqjzKbAB
+         /OvA==
+X-Gm-Message-State: AOAM531TFIUZfiWVYHyh2mdZ4c+LjUEqFffxwd4RC65jUFfnwqICbAH1
+        /IstAyy7Od9UxV4SNpfqPuM=
+X-Google-Smtp-Source: ABdhPJxK/stNwBOlUKRQTJKcTRHO40bN58D2RTa2BNd99y1Y3CC1ytha1e54e05zZHWnXuo6Wj9q/A==
+X-Received: by 2002:a17:906:580e:: with SMTP id m14mr6186777ejq.237.1604135907524;
+        Sat, 31 Oct 2020 02:18:27 -0700 (PDT)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id q22sm4364662ejm.13.2020.10.31.02.18.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 31 Oct 2020 02:18:26 -0700 (PDT)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
+Date:   Sat, 31 Oct 2020 11:18:25 +0200
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, robh@kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 4/4] net: phy: dp83td510: Add support for the
+ DP83TD510 Ethernet PHY
+Message-ID: <20201031091825.uucn2ax2cjzzuy2e@skbuf>
+References: <20201030172950.12767-1-dmurphy@ti.com>
+ <20201030172950.12767-5-dmurphy@ti.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:3f02:: with SMTP id m2mr4953938ila.231.1604135774393;
- Sat, 31 Oct 2020 02:16:14 -0700 (PDT)
-Date:   Sat, 31 Oct 2020 02:16:14 -0700
-In-Reply-To: <00000000000021315205b29353aa@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000011c9b05b2f3f7ce@google.com>
-Subject: Re: WARNING in xfrm_alloc_compat
-From:   syzbot <syzbot+a7e701c8385bd8543074@syzkaller.appspotmail.com>
-To:     0x7f454c46@gmail.com, davem@davemloft.net, dima@arista.com,
-        hdanton@sina.com, herbert@gondor.apana.org.au, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201030172950.12767-5-dmurphy@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Fri, Oct 30, 2020 at 12:29:50PM -0500, Dan Murphy wrote:
+> The DP83TD510E is an ultra-low power Ethernet physical layer transceiver
+> that supports 10M single pair cable.
+> 
+> The device supports both 2.4-V p2p and 1-V p2p output voltage as defined
+> by IEEE 802.3cg 10Base-T1L specfications. These modes can be forced via
+> the device tree or the device is defaulted to auto negotiation to
+> determine the proper p2p voltage.
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> ---
+>  drivers/net/phy/Kconfig     |   6 +
+>  drivers/net/phy/Makefile    |   1 +
+>  drivers/net/phy/dp83td510.c | 681 ++++++++++++++++++++++++++++++++++++
+>  3 files changed, 688 insertions(+)
+>  create mode 100644 drivers/net/phy/dp83td510.c
+>
 
-HEAD commit:    4e78c578 Add linux-next specific files for 20201030
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=13284492500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=83318758268dc331
-dashboard link: https://syzkaller.appspot.com/bug?extid=a7e701c8385bd8543074
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10191ea2500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1172adf4500000
+(...)
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a7e701c8385bd8543074@syzkaller.appspotmail.com
+> +static int dp83td510_ack_interrupt(struct phy_device *phydev)
+> +{
+> +	int ret;
+> +
+> +	ret = phy_read(phydev, DP83TD510_INT_REG1);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = phy_read(phydev, DP83TD510_INT_REG2);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static int dp83td510_config_intr(struct phy_device *phydev)
+> +{
+> +	int int_status;
+> +	int gen_cfg_val;
+> +	int ret;
+> +
+> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
+> +		int_status = phy_read(phydev, DP83TD510_INT_REG1);
+> +		if (int_status < 0)
+> +			return int_status;
+> +
+> +		int_status = (DP83TD510_INT1_ESD_EN | DP83TD510_INT1_LINK_EN |
+> +			      DP83TD510_INT1_RHF_EN);
+> +
+> +		ret = phy_write(phydev, DP83TD510_INT_REG1, int_status);
+> +		if (ret)
+> +			return ret;
+> +
+> +		int_status = phy_read(phydev, DP83TD510_INT_REG2);
+> +		if (int_status < 0)
+> +			return int_status;
+> +
+> +		int_status = (DP83TD510_INT2_POR | DP83TD510_INT2_POL |
+> +				DP83TD510_INT2_PAGE);
+> +
+> +		ret = phy_write(phydev, DP83TD510_INT_REG2, int_status);
+> +		if (ret)
+> +			return ret;
+> +
+> +		gen_cfg_val = phy_read(phydev, DP83TD510_GEN_CFG);
+> +		if (gen_cfg_val < 0)
+> +			return gen_cfg_val;
+> +
+> +		gen_cfg_val |= DP83TD510_INT_OE | DP83TD510_INT_EN;
+> +
+> +	} else {
+> +		ret = phy_write(phydev, DP83TD510_INT_REG1, 0);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = phy_write(phydev, DP83TD510_INT_REG2, 0);
+> +		if (ret)
+> +			return ret;
+> +
+> +		gen_cfg_val = phy_read(phydev, DP83TD510_GEN_CFG);
+> +		if (gen_cfg_val < 0)
+> +			return gen_cfg_val;
+> +
+> +		gen_cfg_val &= ~DP83TD510_INT_EN;
+> +	}
+> +
+> +	return phy_write(phydev, DP83TD510_GEN_CFG, gen_cfg_val);
+> +}
+> +
 
-------------[ cut here ]------------
-unsupported nla_type 0
-WARNING: CPU: 0 PID: 8479 at net/xfrm/xfrm_compat.c:279 xfrm_xlate64_attr net/xfrm/xfrm_compat.c:279 [inline]
-WARNING: CPU: 0 PID: 8479 at net/xfrm/xfrm_compat.c:279 xfrm_xlate64 net/xfrm/xfrm_compat.c:300 [inline]
-WARNING: CPU: 0 PID: 8479 at net/xfrm/xfrm_compat.c:279 xfrm_alloc_compat+0xf39/0x10d0 net/xfrm/xfrm_compat.c:327
-Modules linked in:
-CPU: 1 PID: 8479 Comm: syz-executor174 Not tainted 5.10.0-rc1-next-20201030-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:xfrm_xlate64_attr net/xfrm/xfrm_compat.c:279 [inline]
-RIP: 0010:xfrm_xlate64 net/xfrm/xfrm_compat.c:300 [inline]
-RIP: 0010:xfrm_alloc_compat+0xf39/0x10d0 net/xfrm/xfrm_compat.c:327
-Code: de e8 3b 4a d2 f9 84 db 0f 85 b0 f8 ff ff e8 1e 52 d2 f9 8b 74 24 08 48 c7 c7 20 e5 51 8a c6 05 3b eb 3a 05 01 e8 e3 f2 0e 01 <0f> 0b e9 8d f8 ff ff e8 fb 51 d2 f9 8b 14 24 48 c7 c7 e0 e4 51 8a
-RSP: 0018:ffffc900015cf378 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888021221a80 RSI: ffffffff8158ed95 RDI: fffff520002b9e61
-RBP: 000000000000000c R08: 0000000000000001 R09: ffff8880b9e2005b
-R10: 0000000000000000 R11: 0000000000000000 R12: 00000000ffffffa1
-R13: ffff888143d890f8 R14: ffff88801b8b4780 R15: ffff88802148c000
-FS:  00000000017d3880(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fd917a6b6c0 CR3: 000000001f6a2000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- xfrm_alloc_userspi+0x66a/0xa30 net/xfrm/xfrm_user.c:1388
- xfrm_user_rcv_msg+0x42f/0x8b0 net/xfrm/xfrm_user.c:2752
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- xfrm_netlink_rcv+0x6b/0x90 net/xfrm/xfrm_user.c:2764
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x331/0x810 net/socket.c:2362
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2416
- __sys_sendmmsg+0x195/0x470 net/socket.c:2506
- __do_sys_sendmmsg net/socket.c:2535 [inline]
- __se_sys_sendmmsg net/socket.c:2532 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2532
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x440339
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffcd04d1fc8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440339
-RDX: 00000000000000f1 RSI: 0000000020000180 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 00000000004002c8 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401b40
-R13: 0000000000401bd0 R14: 0000000000000000 R15: 0000000000000000
+I am not really sure if the shared-IRQ work in the below linked patch
+set will go through, but I think it would be cleaner just to ack any
+pending interrupts after you disable them.
 
+https://lore.kernel.org/netdev/20201029100741.462818-1-ciorneiioana@gmail.com/
+
+I see that you are reading the INT_REG1 and INT_REG2 registers
+(basically servicing any pending interrupts) before enabling the IRQ.
+The same reads should be done after the IRQ has been disabled.
+
+> +static struct phy_driver dp83td510_driver[] = {
+> +	{
+> +		PHY_ID_MATCH_MODEL(DP83TD510E_PHY_ID),
+> +		.name		= "TI DP83TD510E",
+> +		.probe          = dp83td510_probe,
+> +		.config_init	= dp83td510_config_init,
+> +		.soft_reset	= dp83td510_phy_reset,
+> +
+> +		/* IRQ related */
+> +		.ack_interrupt	= dp83td510_ack_interrupt,
+> +		.config_intr	= dp83td510_config_intr,
+
+I think the PHY maintainers could comment on this more, but maybe it
+would help if the driver implements the .handle_interrupt() callback
+just so that I wouldn't have to touch a driver that was just added to
+rework it for the shared-IRQ transition.
+
+Ioana
