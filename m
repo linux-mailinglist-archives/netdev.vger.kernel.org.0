@@ -2,64 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 173532A1B16
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 23:50:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFDFE2A1B1F
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 00:09:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726011AbgJaWuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 18:50:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36878 "EHLO mail.kernel.org"
+        id S1725991AbgJaXIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 19:08:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53546 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725809AbgJaWuF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 18:50:05 -0400
-Content-Type: text/plain; charset="utf-8"
+        id S1725809AbgJaXIj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 19:08:39 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 122B02076D;
+        Sat, 31 Oct 2020 23:08:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604184604;
-        bh=ybUcSgC0FCeqUvBfkroFmJy3pBnAI0REyzrWPMlB5cw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=wA1aBw86ls/9y6tzrLL8pA2Dk02ToirV9rxgeCSnM8yMruKLREvdW3ZyQFhKRnv3g
-         SPaacCEwnVDY+7icUw41ESXeg6jfTLNd3WnImCvvFLcKoOwQB/iLQf+YELRvUtpTBe
-         fpzYwwjsWbVluWQOVMh/7pGpcBcPr/cE9vDbTg+A=
+        s=default; t=1604185719;
+        bh=n6RGMuw5YNmilZqWQGqyaoFrZav6Bw3QeR5XS8Ggbv4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ySLB1L7pIlJP9h6xORopwqQLcFtjZACXN13XqvWZXwXtp4pI7VgAbwIONyoA+ZfVM
+         KG3MGzLUYbOZh68dXAHuvf8EdpKmrZthZhv7euijWZkjPJWlBaxnuf03TZt8ANziTV
+         QhuhwHX6ARkzeulo91I1T6N7k3EuEVG+alE1Rn8s=
+Date:   Sat, 31 Oct 2020 16:08:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hayes Wang <hayeswang@realtek.com>
+Cc:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>
+Subject: Re: [PATCH net-next v2] net/usb/r8153_ecm: support ECM mode for
+ RTL8153
+Message-ID: <20201031160838.39586608@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <1394712342-15778-388-Taiwan-albertk@realtek.com>
+References: <1394712342-15778-387-Taiwan-albertk@realtek.com>
+        <1394712342-15778-388-Taiwan-albertk@realtek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] net/smc: improve return codes for SMC-Dv2
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160418460471.3842.2355856936084967249.git-patchwork-notify@kernel.org>
-Date:   Sat, 31 Oct 2020 22:50:04 +0000
-References: <20201031181938.69903-1-kgraul@linux.ibm.com>
-In-Reply-To: <20201031181938.69903-1-kgraul@linux.ibm.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, hca@linux.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Sat, 31 Oct 2020 19:19:38 +0100 you wrote:
-> To allow better problem diagnosis the return codes for SMC-Dv2 are
-> improved by this patch. A few more CLC DECLINE codes are defined and
-> sent to the peer when an SMC connection cannot be established.
-> There are now multiple SMC variations that are offered by the client and
-> the server may encounter problems to initialize all of them.
-> Because only one diagnosis code can be sent to the client the decision
-> was made to send the first code that was encountered. Because the server
-> tries the variations in the order of importance (SMC-Dv2, SMC-D, SMC-R)
-> this makes sure that the diagnosis code of the most important variation
-> is sent.
+On Fri, 30 Oct 2020 11:23:08 +0800 Hayes Wang wrote:
+> Support ECM mode based on cdc_ether with relative mii functions,
+> when CONFIG_USB_RTL8152 is not set, or the device is not supported
+> by r8152 driver.
 > 
-> [...]
+> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
 
-Here is the summary with links:
-  - [net-next,v2] net/smc: improve return codes for SMC-Dv2
-    https://git.kernel.org/netdev/net-next/c/3752404a68e8
+Can you describe the use case in more detail?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+AFAICT r8152 defines a match for the exact same device.
+Does it not mean that which driver is used will be somewhat random 
+if both are built?
 
+> +/* Define these values to match your device */
+> +#define VENDOR_ID_REALTEK		0x0bda
+> +#define VENDOR_ID_MICROSOFT		0x045e
+> +#define VENDOR_ID_SAMSUNG		0x04e8
+> +#define VENDOR_ID_LENOVO		0x17ef
+> +#define VENDOR_ID_LINKSYS		0x13b1
+> +#define VENDOR_ID_NVIDIA		0x0955
+> +#define VENDOR_ID_TPLINK		0x2357
 
+$ git grep 0x2357 | grep -i tplink
+drivers/net/usb/cdc_ether.c:#define TPLINK_VENDOR_ID	0x2357
+drivers/net/usb/r8152.c:#define VENDOR_ID_TPLINK		0x2357
+drivers/usb/serial/option.c:#define TPLINK_VENDOR_ID			0x2357
+
+$ git grep 0x17ef | grep -i lenovo
+drivers/hid/hid-ids.h:#define USB_VENDOR_ID_LENOVO		0x17ef
+drivers/hid/wacom.h:#define USB_VENDOR_ID_LENOVO	0x17ef
+drivers/net/usb/cdc_ether.c:#define LENOVO_VENDOR_ID	0x17ef
+drivers/net/usb/r8152.c:#define VENDOR_ID_LENOVO		0x17ef
+
+Time to consolidate those vendor id defines perhaps?
