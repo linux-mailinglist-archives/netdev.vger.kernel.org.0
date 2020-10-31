@@ -2,80 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B80F2A183A
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 15:36:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5E5B2A183C
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 15:36:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbgJaOgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 10:36:24 -0400
-Received: from 95-31-39-132.broadband.corbina.ru ([95.31.39.132]:55466 "EHLO
-        blackbox.su" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726115AbgJaOgX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 10:36:23 -0400
-Received: from metamini.metanet (metamini.metanet [192.168.2.5])
-        by blackbox.su (Postfix) with ESMTP id 0FE798195C;
-        Sat, 31 Oct 2020 17:36:22 +0300 (MSK)
-From:   Sergej Bauer <sbauer@blackbox.su>
-To:     kuba@kernel.org
-Cc:     sbauer@blackbox.su,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] fix for potential NULL pointer dereference with bare lan743x
-Date:   Sat, 31 Oct 2020 17:36:18 +0300
-Message-Id: <20201031143619.7086-1-sbauer@blackbox.su>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201030165515.614637a0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <20201030165515.614637a0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        id S1727912AbgJaOgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 10:36:51 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56296 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726115AbgJaOgv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 10:36:51 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kYrzq-004W5U-Ua; Sat, 31 Oct 2020 15:36:46 +0100
+Date:   Sat, 31 Oct 2020 15:36:46 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alexandru Ardelean <ardeleanalex@gmail.com>
+Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>, linux@armlinux.org.uk,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v2 1/2] net: phy: adin: disable diag clock & disable
+ standby mode in config_aneg
+Message-ID: <20201031143646.GB1076434@lunn.ch>
+References: <20201022074551.11520-1-alexandru.ardelean@analog.com>
+ <20201023224336.GF745568@lunn.ch>
+ <CA+U=Dsr3pbZspQu13YmZSLthgCeMNx_7guWTwLtb8vETbVsT_A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+U=Dsr3pbZspQu13YmZSLthgCeMNx_7guWTwLtb8vETbVsT_A@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Sergej Bauer <sbauer@blackbox.su>
----
- drivers/net/ethernet/microchip/lan743x_ethtool.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+> So, then re-send for this or just this patch ping?
+> Naturally, this is for net-next.
+> I don't mind doing either way.
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_ethtool.c b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-index dcde496da7fb..ad38fc9e1468 100644
---- a/drivers/net/ethernet/microchip/lan743x_ethtool.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-@@ -780,7 +780,9 @@ static void lan743x_ethtool_get_wol(struct net_device *netdev,
- 
- 	wol->supported = 0;
- 	wol->wolopts = 0;
--	phy_ethtool_get_wol(netdev->phydev, wol);
-+
-+	if (netdev->phydev)
-+		phy_ethtool_get_wol(netdev->phydev, wol);
- 
- 	wol->supported |= WAKE_BCAST | WAKE_UCAST | WAKE_MCAST |
- 		WAKE_MAGIC | WAKE_PHY | WAKE_ARP;
-@@ -792,6 +794,7 @@ static int lan743x_ethtool_set_wol(struct net_device *netdev,
- 				   struct ethtool_wolinfo *wol)
- {
- 	struct lan743x_adapter *adapter = netdev_priv(netdev);
-+	int ret;
- 
- 	adapter->wolopts = 0;
- 	if (wol->wolopts & WAKE_UCAST)
-@@ -809,9 +812,12 @@ static int lan743x_ethtool_set_wol(struct net_device *netdev,
- 
- 	device_set_wakeup_enable(&adapter->pdev->dev, (bool)wol->wolopts);
- 
--	phy_ethtool_set_wol(netdev->phydev, wol);
-+	if (netdev->phydev)
-+		ret = phy_ethtool_set_wol(netdev->phydev, wol);
-+	else
-+		ret = -EIO;
- 
--	return 0;
-+	return ret;
- }
- #endif /* CONFIG_PM */
- 
--- 
-2.20.1
+Please resend, with all the acked-by, reviewed-by added, now that
+net-next is open.
 
+	 Andrew
