@@ -2,55 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F15B62A1ADC
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 22:45:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49E642A1AE7
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 23:04:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbgJaVpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 17:45:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33752 "EHLO mail.kernel.org"
+        id S1725857AbgJaWEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 18:04:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725996AbgJaVpx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 17:45:53 -0400
-Subject: Re: [GIT PULL] vhost,vdpa: fixes
+        id S1725782AbgJaWEA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 18:04:00 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DA77C2072C;
+        Sat, 31 Oct 2020 22:03:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604180753;
-        bh=K1pHC+h1KmbMEQrr0pjOapUULKG871SA5i/eGG5pEnA=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=e3a3E3ALw7FxGXqXJf9uLhhvh28wO9qKWyyXoHJY1JhuEcINp0Ozlls0gutouAxxj
-         EQinLecNxQRfQta/7NdOdEoj2m4CjjveGfNKUbvBEnunf0jEHqnjcjezpswCJJBDx0
-         x892mviiUhRBq7mwbx/jZBrizaycQPVj/q98Rt6g=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20201031155940-mutt-send-email-mst@kernel.org>
-References: <20201031155940-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20201031155940-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-X-PR-Tracked-Commit-Id: 0c86d774883fa17e7c81b0c8838b88d06c2c911e
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c2dc4c073fb71b50904493657a7622b481b346e3
-Message-Id: <160418075297.5586.994529741826670733.pr-tracker-bot@kernel.org>
-Date:   Sat, 31 Oct 2020 21:45:52 +0000
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dan.carpenter@oracle.com, elic@nvidia.com, jasowang@redhat.com,
-        jingxiangfeng@huawei.com, lingshan.zhu@intel.com, lkp@intel.com,
-        lvivier@redhat.com, mst@redhat.com, stable@vger.kernel.org
+        s=default; t=1604181840;
+        bh=vKrIdrKzKmTiUrHQcXrGyvaiTb/mYhEni5U1apPYqrc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bMevfpwqvpLfjFwh8YFzIlZUuC+xTTXqrqJ1Zz+MAr05a53LBKGnO4h5hMG3qvcY0
+         XuWKmRFHo4RjpgGfxOECl0JsfTZ6hbLHi5ljGYSbhgs8THDemi9i10rYCbUjnYMfV2
+         qWl3cPTzVGqp2G2sg2lJcod3+IvwHfR6cGeBgZe8=
+Date:   Sat, 31 Oct 2020 15:03:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Xie He <xie.he.0141@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Subject: Re: [PATCH net-next] net: dlci: Deprecate the DLCI driver (aka the
+ Frame Relay layer)
+Message-ID: <20201031150359.0f944863@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CAK8P3a1kJT50s+BVF8-fmX6ctX2pmVtcg5rnS__EBQvseuqWNA@mail.gmail.com>
+References: <20201028070504.362164-1-xie.he.0141@gmail.com>
+        <20201030200705.6e2039c2@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <CAJht_EOk43LdKVU4qH1MB5pLKcSONazA9XsKJUMTG=79TJ-3Rg@mail.gmail.com>
+        <20201031095146.5e6945a1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <CAK8P3a1kJT50s+BVF8-fmX6ctX2pmVtcg5rnS__EBQvseuqWNA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Sat, 31 Oct 2020 15:59:40 -0400:
+On Sat, 31 Oct 2020 22:41:30 +0100 Arnd Bergmann wrote:
+> On Sat, Oct 31, 2020 at 5:53 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Fri, 30 Oct 2020 22:10:42 -0700 Xie He wrote:  
+> > > > The usual way of getting rid of old code is to move it to staging/
+> > > > for a few releases then delete it, like Arnd just did with wimax.  
+> > >
+> > > Oh. OK. But I see "include/linux/if_frad.h" is included in
+> > > "net/socket.c", and there's still some code in "net/socket.c" related
+> > > to it. If we move all these files to "staging/", we need to change the
+> > > "include" line in "net/socket.c" to point to the new location, and we
+> > > still need to keep a little code in "net/socket.c". So I think if we
+> > > move it to "staging/", we can't do this in a clean way.  
+> >
+> > I'd just place that code under appropriate #ifdef CONFIG_ so we don't
+> > forget to remove it later.  It's just the dlci_ioctl_hook, right?
+> >
+> > Maybe others have better ideas, Arnd?  
+> 
+> I think it can just go in the bin directly.
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+Ack, fine by me.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c2dc4c073fb71b50904493657a7622b481b346e3
+> I actually submitted a couple of patches to clean up drivers/net/wan
+> last year but didn't follow up with a new version after we decided
+> that x.25 is still needed, see
+> https://lore.kernel.org/netdev/20191209151256.2497534-1-arnd@arndb.de/
+> 
+> I can resubmit if you like.
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Let's just leave it at DLCI/SDLA for now, we can revisit once Dave 
+is back :)
