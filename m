@@ -2,140 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C618C2A14CB
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 10:27:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6DD52A14F4
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 10:46:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726650AbgJaJ1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 05:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726451AbgJaJ1s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 05:27:48 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E8C4C0613D5;
-        Sat, 31 Oct 2020 02:27:46 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id t11so9066480edj.13;
-        Sat, 31 Oct 2020 02:27:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YKoG4ZYfmAK75REzHLyFTGpVBZ47HWY/6Oq5Ja2eDV8=;
-        b=g1ggD5kGaKE0e8Gpe94g9evI2iQ15qiOIw20A5nHRKvbHw2sFurRdKgMJI92wwFuxJ
-         jf3h/Hn3ha4jsKHchoFzn0b1Bqrk1R3KcACmXx/WR9GWmL6hDp5e3fQX3hCC5ZaQAfZa
-         LwfnbVVvyBXf79XuSNYd6OPNs6x3WPycrNFbHuc7hCF9mvS2h/8PjCrGCqJJjXK7y+Cw
-         jPEFtujDyZMm5hSpHDnxIvazjspHA282xQsXm+HisbSM1EQd3hbrodwan6bRMw0FJ7iB
-         EzJqF65iKYAZqLsbTeiaTIPDNAAY2Z+73LRUWato+kqAW0QX9cxFYyJud+fX3y9fHtim
-         EJFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YKoG4ZYfmAK75REzHLyFTGpVBZ47HWY/6Oq5Ja2eDV8=;
-        b=PYwtsH5IOeNP9mCCswr0limreP7uTCwHK6oWWA8eMgxX38SOKXQR+CqPEQXnmwRMX/
-         DelU1SK52mxEA0SF4NOxyi3kdqUDU3dYhk/QHHuUX0l6oa2cPHxkajwKFQcpSnrazWDk
-         EY5cQ1qWhVP0rbJ+xu32hkIFliFHPaIUzGZMcBh/NjI7TWdxgvswF6LJe9dlf4pfewiE
-         85BnwQfOJshKMgCLNaWyUdkequEkXi8ACNnOkiLlgXMVWEtOFxgEhlA7O7nUQsDuVrOm
-         Mpjhfn+r1trvbE3qjDRALBBBMWijYTveobiSphYNb25mdgKjyTOmBa3k8UGigAA/Lnii
-         yUeg==
-X-Gm-Message-State: AOAM530LajomWc5oXrSnuNXQTo+YYjn/nB+BomWt46B7tX80s/vWut8n
-        gq1cgJ6UlnZF4Gj2t+7vVL0=
-X-Google-Smtp-Source: ABdhPJxvwRB75NAjxdlPBWLeasxrNiqo6eK4j62FVrQhHtIrYEZKJ1kg9QGuFBTy9KB8Xxkuj86RIQ==
-X-Received: by 2002:a05:6402:1112:: with SMTP id u18mr6902128edv.349.1604136465305;
-        Sat, 31 Oct 2020 02:27:45 -0700 (PDT)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id z20sm4612524edq.90.2020.10.31.02.27.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Oct 2020 02:27:44 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
-Date:   Sat, 31 Oct 2020 11:27:43 +0200
-To:     Dan Murphy <dmurphy@ti.com>
-Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, robh@kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 3/4] dt-bindings: dp83td510: Add binding for
- DP83TD510 Ethernet PHY
-Message-ID: <20201031092743.pfqzear3siw5jn3e@skbuf>
-References: <20201030172950.12767-1-dmurphy@ti.com>
- <20201030172950.12767-4-dmurphy@ti.com>
+        id S1726589AbgJaJqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 05:46:49 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:17882 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726451AbgJaJqt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 05:46:49 -0400
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09V9VFh7068436
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 05:46:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=FURJg89Na+QYhw0UIsR7JteF8en0CtPYX4W0tEq2SE4=;
+ b=eav+Zt3Dg68r7C5TimiS+BQEqnBTy7SGsUY0sFCLlO3JoC4PCWMsJayV71p9vjJIvXHa
+ 3wQx/COUh7LyLlblujj/yR67zYI+M0lQsYFC/bhaiRSYoUv5ZJJawtUkF0wQIt4JNEPY
+ s51bD4j2oNbiR9akQlDSf2R6m7AX9Td+rNpx0n45ViR2l2dayy/YIksFOQe5/YDNwWlS
+ Foytg7Fu9CwPv6Vl2koEuaUfqehMG5Yt6aIAOio2PYpeak+a4VSktkCTCcYSqProwfRm
+ YMS87ZkFDHp1LvdP5OqB4lokVzJ44x/SvzYibPeaT5RsI9P+p5Gnt3BDzD3p4NzZO3ri Rw== 
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34h3wq1uv4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 05:46:47 -0400
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 09V9fbex022470
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 09:46:46 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
+        by ppma04wdc.us.ibm.com with ESMTP id 34h0egt6ja-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 09:46:46 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 09V9kkTg38404452
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 31 Oct 2020 09:46:46 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 10AAEB2065;
+        Sat, 31 Oct 2020 09:46:46 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AFFE0B2064;
+        Sat, 31 Oct 2020 09:46:45 +0000 (GMT)
+Received: from pompom.ibm.com (unknown [9.85.187.5])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Sat, 31 Oct 2020 09:46:45 +0000 (GMT)
+From:   Lijun Pan <ljp@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     sukadev@linux.ibm.com, drt@linux.ibm.com,
+        Lijun Pan <ljp@linux.ibm.com>
+Subject: [PATCH net-next] ibmvnic: merge do_change_param_reset into do_reset
+Date:   Sat, 31 Oct 2020 04:46:45 -0500
+Message-Id: <20201031094645.17255-1-ljp@linux.ibm.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201030172950.12767-4-dmurphy@ti.com>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-10-31_04:2020-10-30,2020-10-31 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
+ mlxlogscore=999 phishscore=0 impostorscore=0 lowpriorityscore=0
+ priorityscore=1501 bulkscore=0 malwarescore=0 adultscore=0 clxscore=1015
+ suspectscore=1 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010310074
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 12:29:49PM -0500, Dan Murphy wrote:
-> The DP83TD510 is a 10M single twisted pair Ethernet PHY
-> 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> ---
->  .../devicetree/bindings/net/ti,dp83td510.yaml | 62 +++++++++++++++++++
->  1 file changed, 62 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/ti,dp83td510.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/ti,dp83td510.yaml b/Documentation/devicetree/bindings/net/ti,dp83td510.yaml
-> new file mode 100644
-> index 000000000000..aef949c1cfdd
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/ti,dp83td510.yaml
-> @@ -0,0 +1,62 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) 2020 Texas Instruments Incorporated
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/net/ti,dp83td510.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: TI DP83TD510 ethernet PHY
-> +
-> +allOf:
-> +  - $ref: "ethernet-controller.yaml#"
-> +  - $ref: "ethernet-phy.yaml#"
-> +
-> +maintainers:
-> +  - Dan Murphy <dmurphy@ti.com>
-> +
-> +description: |
-> +  The PHY is an twisted pair 10Mbps Ethernet PHY that support MII, RMII and
-> +  RGMII interfaces.
-> +
-> +  Specifications about the Ethernet PHY can be found at:
-> +    http://www.ti.com/lit/ds/symlink/dp83td510e.pdf
-> +
-> +properties:
-> +  reg:
-> +    maxItems: 1
-> +
-> +  tx-fifo-depth:
-> +    description: |
-> +       Transmitt FIFO depth for RMII mode.  The PHY only exposes 4 nibble
-> +       depths. The valid nibble depths are 4, 5, 6 and 8.
-> +    enum: [ 4, 5, 6, 8 ]
-> +    default: 5
-> +
-> +  rx-internal-delay-ps:
-> +    description: |
-> +       Setting this property to a non-zero number sets the RX internal delay
-> +       for the PHY.  The internal delay for the PHY is fixed to 30ns relative
-> +       to receive data.
-> +
-> +  tx-internal-delay-ps:
-> +    description: |
-> +       Setting this property to a non-zero number sets the TX internal delay
-> +       for the PHY.  The internal delay for the PHY has a range of -4 to 4ns
-> +       relative to transmit data.
-> +
-> +required:
-> +  - reg
-> +
+Commit b27507bb59ed ("net/ibmvnic: unlock rtnl_lock in reset so
+linkwatch_event can run") introduced do_change_param_reset function to
+solve the rtnl lock issue. Majority of the code in do_change_param_reset
+duplicates do_reset. Also, we can handle the rtnl lock issue in do_reset
+itself. Hence merge do_change_param_reset back into do_reset to clean up
+the code.
 
-I just got this feedback so I am passing it on.
+Fixes: b27507bb59ed ("net/ibmvnic: unlock rtnl_lock in reset so linkwatch_event can run")
+Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 147 +++++++++--------------------
+ 1 file changed, 43 insertions(+), 104 deletions(-)
 
-Every dtbinding should have the additionalProperties set to false so
-that dtbs_check can actually catch if there is a undefined property
-used.
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 8148f796a807..9b35cb46a97c 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1822,86 +1822,6 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
+ 	return rc;
+ }
+ 
+-/**
+- * do_change_param_reset returns zero if we are able to keep processing reset
+- * events, or non-zero if we hit a fatal error and must halt.
+- */
+-static int do_change_param_reset(struct ibmvnic_adapter *adapter,
+-				 struct ibmvnic_rwi *rwi,
+-				 u32 reset_state)
+-{
+-	struct net_device *netdev = adapter->netdev;
+-	int i, rc;
+-
+-	netdev_dbg(adapter->netdev, "Change param resetting driver (%d)\n",
+-		   rwi->reset_reason);
+-
+-	netif_carrier_off(netdev);
+-	adapter->reset_reason = rwi->reset_reason;
+-
+-	ibmvnic_cleanup(netdev);
+-
+-	if (reset_state == VNIC_OPEN) {
+-		rc = __ibmvnic_close(netdev);
+-		if (rc)
+-			return rc;
+-	}
+-
+-	release_resources(adapter);
+-	release_sub_crqs(adapter, 1);
+-	release_crq_queue(adapter);
+-
+-	adapter->state = VNIC_PROBED;
+-
+-	rc = init_crq_queue(adapter);
+-
+-	if (rc) {
+-		netdev_err(adapter->netdev,
+-			   "Couldn't initialize crq. rc=%d\n", rc);
+-		return rc;
+-	}
+-
+-	rc = ibmvnic_reset_init(adapter, true);
+-	if (rc)
+-		return IBMVNIC_INIT_FAILED;
+-
+-	/* If the adapter was in PROBE state prior to the reset,
+-	 * exit here.
+-	 */
+-	if (reset_state == VNIC_PROBED)
+-		return 0;
+-
+-	rc = ibmvnic_login(netdev);
+-	if (rc) {
+-		adapter->state = reset_state;
+-		return rc;
+-	}
+-
+-	rc = init_resources(adapter);
+-	if (rc)
+-		return rc;
+-
+-	ibmvnic_disable_irqs(adapter);
+-
+-	adapter->state = VNIC_CLOSED;
+-
+-	if (reset_state == VNIC_CLOSED)
+-		return 0;
+-
+-	rc = __ibmvnic_open(netdev);
+-	if (rc)
+-		return IBMVNIC_OPEN_FAILED;
+-
+-	/* refresh device's multicast list */
+-	ibmvnic_set_multi(netdev);
+-
+-	/* kick napi */
+-	for (i = 0; i < adapter->req_rx_queues; i++)
+-		napi_schedule(&adapter->napi[i]);
+-
+-	return 0;
+-}
+-
+ /**
+  * do_reset returns zero if we are able to keep processing reset events, or
+  * non-zero if we hit a fatal error and must halt.
+@@ -1917,10 +1837,12 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 	netdev_dbg(adapter->netdev, "Re-setting driver (%d)\n",
+ 		   rwi->reset_reason);
+ 
+-	rtnl_lock();
++	adapter->reset_reason = rwi->reset_reason;
++	/* requestor of VNIC_RESET_CHANGE_PARAM already has the rtnl lock */
++	if (!(adapter->reset_reason == VNIC_RESET_CHANGE_PARAM))
++		rtnl_lock();
+ 
+ 	netif_carrier_off(netdev);
+-	adapter->reset_reason = rwi->reset_reason;
+ 
+ 	old_num_rx_queues = adapter->req_rx_queues;
+ 	old_num_tx_queues = adapter->req_tx_queues;
+@@ -1932,25 +1854,37 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 	if (reset_state == VNIC_OPEN &&
+ 	    adapter->reset_reason != VNIC_RESET_MOBILITY &&
+ 	    adapter->reset_reason != VNIC_RESET_FAILOVER) {
+-		adapter->state = VNIC_CLOSING;
++		if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
++			rc = __ibmvnic_close(netdev);
++			if (rc)
++				goto out;
++		} else {
++			adapter->state = VNIC_CLOSING;
+ 
+-		/* Release the RTNL lock before link state change and
+-		 * re-acquire after the link state change to allow
+-		 * linkwatch_event to grab the RTNL lock and run during
+-		 * a reset.
+-		 */
+-		rtnl_unlock();
+-		rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_DN);
+-		rtnl_lock();
+-		if (rc)
+-			goto out;
++			/* Release the RTNL lock before link state change and
++			 * re-acquire after the link state change to allow
++			 * linkwatch_event to grab the RTNL lock and run during
++			 * a reset.
++			 */
++			rtnl_unlock();
++			rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_DN);
++			rtnl_lock();
++			if (rc)
++				goto out;
+ 
+-		if (adapter->state != VNIC_CLOSING) {
+-			rc = -1;
+-			goto out;
++			if (adapter->state != VNIC_CLOSING) {
++				rc = -1;
++				goto out;
++			}
++
++			adapter->state = VNIC_CLOSED;
+ 		}
++	}
+ 
+-		adapter->state = VNIC_CLOSED;
++	if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
++		release_resources(adapter);
++		release_sub_crqs(adapter, 1);
++		release_crq_queue(adapter);
+ 	}
+ 
+ 	if (adapter->reset_reason != VNIC_RESET_NON_FATAL) {
+@@ -1959,7 +1893,9 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 		 */
+ 		adapter->state = VNIC_PROBED;
+ 
+-		if (adapter->reset_reason == VNIC_RESET_MOBILITY) {
++		if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
++			rc = init_crq_queue(adapter);
++		} else if (adapter->reset_reason == VNIC_RESET_MOBILITY) {
+ 			rc = ibmvnic_reenable_crq_queue(adapter);
+ 			release_sub_crqs(adapter, 1);
+ 		} else {
+@@ -1999,7 +1935,11 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 			goto out;
+ 		}
+ 
+-		if (adapter->req_rx_queues != old_num_rx_queues ||
++		if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
++			rc = init_resources(adapter);
++			if (rc)
++				goto out;
++		} else if (adapter->req_rx_queues != old_num_rx_queues ||
+ 		    adapter->req_tx_queues != old_num_tx_queues ||
+ 		    adapter->req_rx_add_entries_per_subcrq !=
+ 		    old_num_rx_slots ||
+@@ -2060,7 +2000,9 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 	rc = 0;
+ 
+ out:
+-	rtnl_unlock();
++	/* requestor of VNIC_RESET_CHANGE_PARAM should still hold the rtnl lock */
++	if (!(adapter->reset_reason == VNIC_RESET_CHANGE_PARAM))
++		rtnl_unlock();
+ 
+ 	return rc;
+ }
+@@ -2194,10 +2136,7 @@ static void __ibmvnic_reset(struct work_struct *work)
+ 		}
+ 		spin_unlock_irqrestore(&adapter->state_lock, flags);
+ 
+-		if (rwi->reset_reason == VNIC_RESET_CHANGE_PARAM) {
+-			/* CHANGE_PARAM requestor holds rtnl_lock */
+-			rc = do_change_param_reset(adapter, rwi, reset_state);
+-		} else if (adapter->force_reset_recovery) {
++		if (adapter->force_reset_recovery) {
+ 			/* Transport event occurred during previous reset */
+ 			if (adapter->wait_for_reset) {
+ 				/* Previous was CHANGE_PARAM; caller locked */
+-- 
+2.22.0
 
-Ioana
