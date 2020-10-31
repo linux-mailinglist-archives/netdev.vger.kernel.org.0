@@ -2,136 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 265952A151D
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 11:18:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBCBE2A152E
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 11:29:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbgJaKS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 06:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726623AbgJaKS2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 06:18:28 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9EEAC0613D5;
-        Sat, 31 Oct 2020 03:18:26 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id b3so3132263wrx.11;
-        Sat, 31 Oct 2020 03:18:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bBWed7R/d4RzVxBWtktfpkTmcagn0Z+KKOrOtD1H+1Q=;
-        b=EHbR3sgzJLKtqYGA/ZqJ9rVVYLYGEz99q6H/a5xbav4jzbPABW9cfk8C/GwLAW+dvq
-         xE3ithMhpnN29rl6eq4X5IFzDtS3aV2lCwNcRWp0oCAZuK2Q6jO2cCM0oyW+5sjsambi
-         IhAQOfbbL/Ecf7GQoRt/cz82oc0iuTkj0N++vZJhChgmHy/vROKKVyLs4xvdrc4nhQsM
-         WMo8+vaXoKlaDh6hCFW0bzbpcQOD1lkEykX0QQgZZllk7P3ypcaVdfb5H5fBf2Mp40VZ
-         /YZx+NZzV7ji0qW6QqeIlJW6O4JX0bHPYY3v5JvuqCQf3e9qr5LFl5EwA5xgfLeQqdkx
-         qzbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bBWed7R/d4RzVxBWtktfpkTmcagn0Z+KKOrOtD1H+1Q=;
-        b=iiyQpn5ifP1dnnIDogdJJTDqeRyoC7afk4H39HEnVMH/UgMZXC9KHeKcEJnahVxJsu
-         WtM/mQ650pQ7xKSxAOZO/D1uDJnUNo2a74IRNE4u/RH45vOu7qqpwG472p8V/i8FFG45
-         KVu6xyFsOWly8KeO1MCo1xLQ6liAeLoq6QSxJ5GHuz4aJPh2cissblQv6m6wHt5JQ+Qc
-         SxvCH1Q1uZbxw2UafuWPkG4EioJ6vNYeficxsIZmxpduHoJ8mdUmn4FKNMheLky75NEK
-         kDVBtp8EjNVQ/d89B6i0Vzgs+qzz/8KF1YzNKbtUVLAEpm8faCx+i+W21+A0cheqLOxA
-         LlFQ==
-X-Gm-Message-State: AOAM5331hGPKV8pGxyyIZe31KkshkADYxoTsBFXlWZYQtvRKcoXIyLhj
-        bcD3uvp0AUcam0gz/gBpDIQ=
-X-Google-Smtp-Source: ABdhPJy2UDydJW6l5sa13Z/fVhTcgg7ZMdaCUG6UTAOvY+EGxkBpfE80rwyp7bqYhDzLSmOfH0XisA==
-X-Received: by 2002:adf:c101:: with SMTP id r1mr8188182wre.87.1604139504412;
-        Sat, 31 Oct 2020 03:18:24 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:2800:354c:e90a:781b:bae1? (p200300ea8f232800354ce90a781bbae1.dip0.t-ipconnect.de. [2003:ea:8f23:2800:354c:e90a:781b:bae1])
-        by smtp.googlemail.com with ESMTPSA id j127sm8180311wma.31.2020.10.31.03.18.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 31 Oct 2020 03:18:23 -0700 (PDT)
-Subject: Re: [PATCH net-next 00/19] net: phy: add support for shared
- interrupts (part 1)
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ioana Ciornei <ciorneiioana@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
-        Dan Murphy <dmurphy@ti.com>,
-        Divya Koppera <Divya.Koppera@microchip.com>,
+        id S1726736AbgJaK3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 06:29:32 -0400
+Received: from mail-am6eur05on2066.outbound.protection.outlook.com ([40.107.22.66]:21857
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726697AbgJaK3c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 06:29:32 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BCivb7MDsMJpbrEMpx2jETY3mH/jklkVxNmEsga561oCXwC1x0CjOktUvwA5hRPLHDVPkLwdse8jQ8u4iz2cAAPbaoy1IDQdO91ILA5DUPTOvlrqgbBqQrCK6Q8d+6xfpksqKMgqRvhs0lo2k7m3/Ip/mJX91xpTvMxeV2jM3VEfTXw5/SRvS5CTa6ZKkWHeLcGzRzXciiGKdTySPASDZdYErW7h6WWA/+DINN8mpEYw+VFnqrDEU5mFEiYpBKv/8bqViBfyF79Lmw9zFOOKJhCRiFB9BKKFqDKF7mrZHjyUtpgihwRe81uEiqARnlqmtpPgWBiqHrL5YFlGNJw0eQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ScqLLXlvO74C+VrDtEMU/kiYDZ6OmqNnvuwuNwG2kk8=;
+ b=DG+YAFlDtOxZ66R8S6/g7EPlh2jgOOYddU3AJlSRgJjDM1HRnpSY0wgCGi58m9Av6g27H/svzcKzfv0gZmmRBEmFlaoj58n44rhysIplZ/LBU+X0HbmuMjD8pqe5kWEy0ZfIiWWJuy4VQt6evWVCJ0yRVTFmPk0q4xjzk5waLMp/OZ9FClmle8yFvKIE3JPE+wK7g9zNPWRGwf9m8o0IEJTOECNLiwAuvvesz5VvSwf9qAOpd7qcqxcFYeUo95aBf+MQtKMoJp/uu4ybK6lNOjex1ZbNg1VJ3wQ590ifwHenkREgFPqHB1IhjrTjqrfEupzDym2Qf+H2l9fNkALzcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ScqLLXlvO74C+VrDtEMU/kiYDZ6OmqNnvuwuNwG2kk8=;
+ b=d4i1YwyYUOJA0KMEXuP57jCJ0RmAqeSIWnTbMvboKA+T91oUskYVcZuRf1tRzWker9izkqY18yFNBWt+q7FaSKp1j99lTVQowAWvKsIHXVrBs3gqM6n/WTWhCBWUHQ9lZSsDk87erw61ie0YW3bXovGMq1Cb5U2w9sc0iS/pBBY=
+Authentication-Results: microchip.com; dkim=none (message not signed)
+ header.d=none;microchip.com; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VE1PR04MB6637.eurprd04.prod.outlook.com (2603:10a6:803:126::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.27; Sat, 31 Oct
+ 2020 10:29:27 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3499.029; Sat, 31 Oct 2020
+ 10:29:27 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Kavya Sree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Marek Vasut <marex@denx.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Mathias Kresin <dev@kresin.me>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Michael Walle <michael@walle.cc>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Nisar Sayed <Nisar.Sayed@microchip.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Willy Liu <willy.liu@realtek.com>,
-        Yuiko Oshino <yuiko.oshino@microchip.com>
-References: <20201029100741.462818-1-ciorneiioana@gmail.com>
- <d05587fc-0cec-59fb-4e84-65386d0b3d6b@gmail.com>
- <20201030233627.GA1054829@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <fee0997d-f4bc-dfc3-9423-476f04218614@gmail.com>
-Date:   Sat, 31 Oct 2020 11:18:18 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/7] VLAN improvements for Ocelot switch
+Date:   Sat, 31 Oct 2020 12:29:09 +0200
+Message-Id: <20201031102916.667619-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [188.25.2.177]
+X-ClientProxiedBy: VI1PR08CA0170.eurprd08.prod.outlook.com
+ (2603:10a6:800:d1::24) To VI1PR04MB5696.eurprd04.prod.outlook.com
+ (2603:10a6:803:e7::13)
 MIME-Version: 1.0
-In-Reply-To: <20201030233627.GA1054829@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.25.2.177) by VI1PR08CA0170.eurprd08.prod.outlook.com (2603:10a6:800:d1::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Sat, 31 Oct 2020 10:29:26 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: f3280244-dbe1-4a38-ff29-08d87d87d7dc
+X-MS-TrafficTypeDiagnostic: VE1PR04MB6637:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VE1PR04MB6637FF37DC91862931A2A3A0E0120@VE1PR04MB6637.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mTt4zuupIa4yExw9MkTmXq7tXetTGn+MKTVS/RB8uZLCMLLMFpQJfHqME7G3R8woi48rUjC1TIF3qYWP0TglBxKHepRd7Ul9axSU4QPcncvv+J8GwHPYe9eImbdxxeV1yXVQbvf8QR6kIUl2/aovEzR/khMeHJKaPv/BYxz88rTJXmeet+Vr0/6oxpZBhJHdFlp1Uf+a/i7CobJgXATQ09B2fmvNcyN+KZxFuPAGc/kkQHHr9yhhRwVnNXbX/G3YfdnGULqUaD/S4e6kSPtOMVsRHpP3RnZQUhxx+6lxFQ7mWtTBEJfZztp4rB/NdPwOuKC8WNV2e+OgqAv8loY1+9xRUXKVHfxqgq5eNm79fs1SEdcMDRUpR5IWkWsUijDXrBTRyN+nuPOUnamNT7UpyB8k6Lbaf7JU9ZSoDq/vavoICgsHjBfD/VqA3hhIjEWvfUZVw2ca73xBYFVcwwaMaTkSEBTz1MmNynY3oWpgeRc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(136003)(396003)(39850400004)(366004)(66556008)(1076003)(316002)(956004)(86362001)(66476007)(8936002)(83380400001)(2906002)(110136005)(66946007)(8676002)(36756003)(6512007)(6666004)(16526019)(186003)(52116002)(6506007)(44832011)(26005)(966005)(6486002)(69590400008)(478600001)(2616005)(5660300002)(921003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: b6Cl5i8Gdw10+rjj5O/1kbDLlgn+2Jrk7YubXupcHeEr1+Qud7utjSIVheKHRKsspqb/Lc94rX7L1uFayy2LAGix7/LWMm/uX6DlY0oVqzFy5UNnck/bIgKzeVZ9V/vfLZxFhLNFPloOEkbWE14p1y2bfIi42aBIVeJ4UzhT4sDQ08OsEDm3vdZhYOiy/pgHucVmgSh5zyfxOc0ou5/dMC774TPlTzkUSG6IvxAHvm6QvyLLJFtx2JWUkPma54QCk2+uazZxc2I9hopNLiIHKgVUNzDbFodoIpmLkqpz91bhMeYfKmcQ6fOL/nDn4u4F/3cvD3xbzvaYAL27Ed4uCAFGeE2U3FJe3aj4TFWG4+vTE9wtJ6aLsV8LB6rRU4XaZZu6vexsx6nzoJeljjirlL2V2k+9nwu75OhBSMzdT0FMuDrEO1e2/Hw5HtdKHrErJ/9kyxeZoNeT0Ar4RyUGCV7YiOuIaxEg2duiwRpduPoDg1N4poGJv+lj7e4tYm9VT4J3Vf0JrXguDweAqYaYRqL/uw4C5clj6IFYjwvvJVRu4Xtsxplo1eDvlNtQvOq7MWg/qub4KSRj47JF2wzYyotlcdqGP4asFjgqV2o19ASuvTNfSHZRKPjnGXaFr9DxBPE7shC7QRAQ24deAmAB1w==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3280244-dbe1-4a38-ff29-08d87d87d7dc
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2020 10:29:27.1105
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tIQTHsku5XA8pz+/NYec4jLiTxXyTwD4cBr+hCHnTAQuie9wisfATjnnJiXeWl9AAMR8YatNlSOKt8eCdoMBiA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6637
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31.10.2020 00:36, Andrew Lunn wrote:
->>> - Every PHY driver gains a .handle_interrupt() implementation that, for
->>>   the most part, would look like below:
->>>
->>> 	irq_status = phy_read(phydev, INTR_STATUS);
->>> 	if (irq_status < 0) {
->>> 		phy_error(phydev);
->>> 		return IRQ_NONE;
->>> 	}
->>>
->>> 	if (irq_status == 0)
->>
->> Here I have a concern, bits may be set even if the respective interrupt
->> source isn't enabled. Therefore we may falsely blame a device to have
->> triggered the interrupt. irq_status should be masked with the actually
->> enabled irq source bits.
-> 
-> Hi Heiner
-> 
-Hi Andrew,
+The main reason why I started this work is that deleting the bridge mdb
+entries fails when the bridge is deleted, as described here:
+https://lore.kernel.org/netdev/20201015173355.564934-1-vladimir.oltean@nxp.com/
 
-> I would say that is a driver implementation detail, for each driver to
-> handle how it needs to handle it. I've seen some hardware where the
-> interrupt status is already masked with the interrupt enabled
-> bits. I've soon other hardware where it is not.
-> 
-Sure, I just wanted to add the comment before others simply copy and
-paste this (pseudo) code. And in patch 9 (aquantia) and 18 (realtek)
-it is used as is. And IIRC at least the Aquantia PHY doesn't mask
-the interrupt status.
+In short, that happens because the bridge mdb entries are added with a
+vid of 1, but deletion is attempted with a vid of 0. So the deletion
+code fails to find the mdb entries.
 
-> For example code, what is listed above is O.K. The real implementation
-> in a driver need knowledge of the hardware.
-> 
->       Andrew
-> .
-> 
-Heiner
+The solution is to make ocelot use a pvid of 0 when it is under a bridge
+with vlan_filtering 0. When vlan_filtering is 1, the pvid of the bridge
+is what is programmed into the hardware.
+
+The patch series also uncovers more bugs and does some more cleanup, but
+the above is the main idea behind it.
+
+Vladimir Oltean (7):
+  net: mscc: ocelot: use the pvid of zero when bridged with
+    vlan_filtering=0
+  net: mscc: ocelot: don't reset the pvid to 0 when deleting it
+  net: mscc: ocelot: transform the pvid and native vlan values into a
+    structure
+  net: mscc: ocelot: add a "valid" boolean to struct ocelot_vlan
+  net: mscc: ocelot: move the logic to drop 802.1p traffic to the pvid
+    deletion
+  net: mscc: ocelot: deny changing the native VLAN from the prepare
+    phase
+  net: dsa: felix: improve the workaround for multiple native VLANs on
+    NPI port
+
+ drivers/net/dsa/ocelot/felix.c         |  27 ++++-
+ drivers/net/ethernet/mscc/ocelot.c     | 147 +++++++++++++------------
+ drivers/net/ethernet/mscc/ocelot_net.c |  38 +++++--
+ include/soc/mscc/ocelot.h              |  17 ++-
+ 4 files changed, 138 insertions(+), 91 deletions(-)
+
+-- 
+2.25.1
+
