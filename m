@@ -2,121 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EB392A1A5F
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 20:59:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A47892A1A83
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 21:17:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728519AbgJaT7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 15:59:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49857 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728451AbgJaT7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 15:59:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604174387;
+        id S1728498AbgJaURU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 16:17:20 -0400
+Received: from mail.buslov.dev ([199.247.26.29]:54993 "EHLO mail.buslov.dev"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728451AbgJaURU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 16:17:20 -0400
+Received: from vlad-x1g6.localdomain (unknown [IPv6:2a0b:2bc3:193f:1:a5fe:a7d6:6345:fe8d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.buslov.dev (Postfix) with ESMTPSA id 3D8851F8EB;
+        Sat, 31 Oct 2020 22:17:16 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=buslov.dev; s=2019;
+        t=1604175436;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=R4s3Ix2b8SBi7OwErNBrHppcL00yyDMg5NuRWIfw+hI=;
-        b=GcHeJC6O7eZAKsd8lUTkRXvijCn2c4kx+3OuubScauG7l1neqnducr+26egkI/CAkpR+He
-        SpDWgga9G1Iy9BtJlMe4QY3FTqil+LVkEJgg4WG5Pzx2qbCLXa7Uwr+mK31bDX2grMqoZH
-        /dG2ppG/zB7OMnYg8go0Q7Wyr8gzzSg=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-447-9NZDKY9pPjyvbK2Nq4_yGA-1; Sat, 31 Oct 2020 15:59:45 -0400
-X-MC-Unique: 9NZDKY9pPjyvbK2Nq4_yGA-1
-Received: by mail-wm1-f70.google.com with SMTP id r23so1072949wmh.0
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 12:59:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=R4s3Ix2b8SBi7OwErNBrHppcL00yyDMg5NuRWIfw+hI=;
-        b=jnlrGvAj9nyX+UxR5gFiwnqSxn5yNRpCNmmY+Sj8TOkfcTF1KxOxsP0+Pn+FtBy7Po
-         QDcO9RytNkAyKfAmvqX7tZFjnO7gCqu+1Tm5sAzAq1qBTg796PUXnhZKzjRV268vzJzU
-         hmfZIznsBeGNRaXmSxk23VJMxvbJa5Aq2hV1Hg9WhZ0/4pKnXYK8BT5wEnq3aIyztZV+
-         BzJ+UFsD4/C9swNnbVizF9e55bKY15wvsSGj5JbB+BeAjP/L6SFoWk9s2hHN6pbtWKba
-         gcU3N3l8jr5taP9adyeQoyFEXc6dcXENiLI/41nC6MuZNy0sqQLkk35Mh68LqvqNJv2T
-         Tc5Q==
-X-Gm-Message-State: AOAM532me8clIKU8+uz3Dd7ju2RBVexMxNE5oyDNQKNLmZeZ9dJVteD4
-        DFg9paxXMrtC74rpAf1HarEFwN5y1P590nDQ2Ei15LbwXIJIMs34Tn8JQmRaWnAguglspbG6W1/
-        POFcA+XTPmP+Gz28t
-X-Received: by 2002:a1c:e903:: with SMTP id q3mr9643496wmc.42.1604174384684;
-        Sat, 31 Oct 2020 12:59:44 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxzzGUw3AXT6Lwe9xl9B0O7EZNb0u7o6fc3rE2pgvBpY6HuMlhM8rpvMYHBBuwHN4UT+dgoKQ==
-X-Received: by 2002:a1c:e903:: with SMTP id q3mr9643483wmc.42.1604174384498;
-        Sat, 31 Oct 2020 12:59:44 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-118-93.red.bezeqint.net. [79.176.118.93])
-        by smtp.gmail.com with ESMTPSA id x18sm16752967wrg.4.2020.10.31.12.59.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Oct 2020 12:59:43 -0700 (PDT)
-Date:   Sat, 31 Oct 2020 15:59:40 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dan.carpenter@oracle.com, elic@nvidia.com, jasowang@redhat.com,
-        jingxiangfeng@huawei.com, lingshan.zhu@intel.com, lkp@intel.com,
-        lvivier@redhat.com, mst@redhat.com, stable@vger.kernel.org
-Subject: [GIT PULL] vhost,vdpa: fixes
-Message-ID: <20201031155940-mutt-send-email-mst@kernel.org>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/MRsBptjn2ARqX2kGNDWJoXIS7Wq2Lijdo8HX/wnMps=;
+        b=Z5RFMjt36mc6CSBXEGWhuY6zTkTQcV41YtWP//BcG383tG4WHKhLI7Av62ty7T4ZNPn1kJ
+        r11G9hljYeto6eOnKGbSc2mUiDg6xZP4ItZGkkuUGXrMFoVYYWTN+FlwIl1KhAigVcINVu
+        Y/plfiBy3AhwAfW2X+lJocF5s427aIezGqGdmJEqGqTmHltpm1DXXd/YjqwGbULGsIYmXZ
+        +YOCQiTd5dU5BYWTkdkIjnIctReMeSEyfiatw4a7AEF6k1zdo52RNcfAaH4ZhQ0RSF6384
+        96X+Q/uHxMunUb8rmFQfzgQNhgvEDCCWbhc9NSWrYS8rujNChKJnNPMQNgEecw==
+From:   Vlad Buslov <vlad@buslov.dev>
+To:     jhs@mojatatu.com, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        Vlad Buslov <vlad@buslov.dev>
+Subject: [PATCH net-next] net: sched: implement action-specific terse dump
+Date:   Sat, 31 Oct 2020 22:16:44 +0200
+Message-Id: <20201031201644.247605-1-vlad@buslov.dev>
+X-Mailer: git-send-email 2.29.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+Content-Transfer-Encoding: 8bit
+Authentication-Results: ORIGINATING;
+        auth=pass smtp.auth=vlad@buslov.dev smtp.mailfrom=vlad@buslov.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 88a0d60c6445f315fbcfff3db792021bb3a67b28:
+Allow user to request action terse dump with new flag value
+TCA_FLAG_TERSE_DUMP. Only output essential action info in terse dump (kind,
+stats and index). This is different from filter terse dump where index is
+excluded (filter can be identified by its own handle) and cookie is
+included.
 
-  MAINTAINERS: add URL for virtio-mem (2020-10-21 10:48:11 -0400)
+Move tcf_action_dump_terse() function to the beginning of source file in
+order to call it from tcf_dump_walker().
 
-are available in the Git repository at:
+Signed-off-by: Vlad Buslov <vlad@buslov.dev>
+Suggested-by: Jamal Hadi Salim <jhs@mojatatu.com>
+---
+ include/uapi/linux/rtnetlink.h |  4 ++
+ net/sched/act_api.c            | 69 ++++++++++++++++++----------------
+ 2 files changed, 41 insertions(+), 32 deletions(-)
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to 0c86d774883fa17e7c81b0c8838b88d06c2c911e:
-
-  vdpasim: allow to assign a MAC address (2020-10-30 04:04:35 -0400)
-
-----------------------------------------------------------------
-vhost,vdpa: fixes
-
-Fixes all over the place. A new UAPI is borderline: can also be
-considered a new feature but also seems to be the only way we could come
-up with to fix addressing for userspace - and it seems important to
-switch to it now before userspace making assumptions about addressing
-ability of devices is set in stone.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Dan Carpenter (1):
-      vhost_vdpa: Return -EFAULT if copy_from_user() fails
-
-Jason Wang (3):
-      vdpa: introduce config op to get valid iova range
-      vhost: vdpa: report iova range
-      vdpa_sim: implement get_iova_range()
-
-Jing Xiangfeng (1):
-      vdpa/mlx5: Fix error return in map_direct_mr()
-
-Laurent Vivier (3):
-      vdpa_sim: Fix DMA mask
-      vdpasim: fix MAC address configuration
-      vdpasim: allow to assign a MAC address
-
-Michael S. Tsirkin (1):
-      Revert "vhost-vdpa: fix page pinning leakage in error path"
-
-Zhu Lingshan (1):
-      vdpa: handle irq bypass register failure case
-
- drivers/vdpa/mlx5/core/mr.c      |   5 +-
- drivers/vdpa/vdpa_sim/vdpa_sim.c |  33 +++++++-
- drivers/vhost/vdpa.c             | 167 ++++++++++++++++++++++-----------------
- include/linux/vdpa.h             |  15 ++++
- include/uapi/linux/vhost.h       |   4 +
- include/uapi/linux/vhost_types.h |   9 +++
- 6 files changed, 154 insertions(+), 79 deletions(-)
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index fdd408f6a5d2..d1325ffb0060 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -770,8 +770,12 @@ enum {
+  * actions in a dump. All dump responses will contain the number of actions
+  * being dumped stored in for user app's consumption in TCA_ROOT_COUNT
+  *
++ * TCA_FLAG_TERSE_DUMP user->kernel to request terse (brief) dump that only
++ * includes essential action info (kind, index, etc.)
++ *
+  */
+ #define TCA_FLAG_LARGE_DUMP_ON		(1 << 0)
++#define TCA_FLAG_TERSE_DUMP		(1 << 1)
+ 
+ /* New extended info filters for IFLA_EXT_MASK */
+ #define RTEXT_FILTER_VF		(1 << 0)
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index f66417d5d2c3..107e8ce3a57c 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -215,6 +215,36 @@ static size_t tcf_action_fill_size(const struct tc_action *act)
+ 	return sz;
+ }
+ 
++static int
++tcf_action_dump_terse(struct sk_buff *skb, struct tc_action *a, bool from_act)
++{
++	unsigned char *b = skb_tail_pointer(skb);
++	struct tc_cookie *cookie;
++
++	if (nla_put_string(skb, TCA_KIND, a->ops->kind))
++		goto nla_put_failure;
++	if (tcf_action_copy_stats(skb, a, 0))
++		goto nla_put_failure;
++	if (from_act && nla_put_u32(skb, TCA_ACT_INDEX, a->tcfa_index))
++		goto nla_put_failure;
++
++	rcu_read_lock();
++	cookie = rcu_dereference(a->act_cookie);
++	if (cookie && !from_act) {
++		if (nla_put(skb, TCA_ACT_COOKIE, cookie->len, cookie->data)) {
++			rcu_read_unlock();
++			goto nla_put_failure;
++		}
++	}
++	rcu_read_unlock();
++
++	return 0;
++
++nla_put_failure:
++	nlmsg_trim(skb, b);
++	return -1;
++}
++
+ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
+ 			   struct netlink_callback *cb)
+ {
+@@ -248,7 +278,9 @@ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
+ 			index--;
+ 			goto nla_put_failure;
+ 		}
+-		err = tcf_action_dump_1(skb, p, 0, 0);
++		err = (act_flags & TCA_FLAG_TERSE_DUMP) ?
++			tcf_action_dump_terse(skb, p, true) :
++			tcf_action_dump_1(skb, p, 0, 0);
+ 		if (err < 0) {
+ 			index--;
+ 			nlmsg_trim(skb, nest);
+@@ -752,34 +784,6 @@ tcf_action_dump_old(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
+ 	return a->ops->dump(skb, a, bind, ref);
+ }
+ 
+-static int
+-tcf_action_dump_terse(struct sk_buff *skb, struct tc_action *a)
+-{
+-	unsigned char *b = skb_tail_pointer(skb);
+-	struct tc_cookie *cookie;
+-
+-	if (nla_put_string(skb, TCA_KIND, a->ops->kind))
+-		goto nla_put_failure;
+-	if (tcf_action_copy_stats(skb, a, 0))
+-		goto nla_put_failure;
+-
+-	rcu_read_lock();
+-	cookie = rcu_dereference(a->act_cookie);
+-	if (cookie) {
+-		if (nla_put(skb, TCA_ACT_COOKIE, cookie->len, cookie->data)) {
+-			rcu_read_unlock();
+-			goto nla_put_failure;
+-		}
+-	}
+-	rcu_read_unlock();
+-
+-	return 0;
+-
+-nla_put_failure:
+-	nlmsg_trim(skb, b);
+-	return -1;
+-}
+-
+ int
+ tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
+ {
+@@ -787,7 +791,7 @@ tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
+ 	unsigned char *b = skb_tail_pointer(skb);
+ 	struct nlattr *nest;
+ 
+-	if (tcf_action_dump_terse(skb, a))
++	if (tcf_action_dump_terse(skb, a, false))
+ 		goto nla_put_failure;
+ 
+ 	if (a->hw_stats != TCA_ACT_HW_STATS_ANY &&
+@@ -832,7 +836,7 @@ int tcf_action_dump(struct sk_buff *skb, struct tc_action *actions[],
+ 		nest = nla_nest_start_noflag(skb, i + 1);
+ 		if (nest == NULL)
+ 			goto nla_put_failure;
+-		err = terse ? tcf_action_dump_terse(skb, a) :
++		err = terse ? tcf_action_dump_terse(skb, a, false) :
+ 			tcf_action_dump_1(skb, a, bind, ref);
+ 		if (err < 0)
+ 			goto errout;
+@@ -1469,7 +1473,8 @@ static int tcf_action_add(struct net *net, struct nlattr *nla,
+ }
+ 
+ static const struct nla_policy tcaa_policy[TCA_ROOT_MAX + 1] = {
+-	[TCA_ROOT_FLAGS] = NLA_POLICY_BITFIELD32(TCA_FLAG_LARGE_DUMP_ON),
++	[TCA_ROOT_FLAGS] = NLA_POLICY_BITFIELD32(TCA_FLAG_LARGE_DUMP_ON |
++						 TCA_FLAG_TERSE_DUMP),
+ 	[TCA_ROOT_TIME_DELTA]      = { .type = NLA_U32 },
+ };
+ 
+-- 
+2.29.1
 
