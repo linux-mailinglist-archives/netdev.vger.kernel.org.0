@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 020082A15D6
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 12:39:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64D5F2A171C
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 12:52:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727092AbgJaLiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 07:38:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60430 "EHLO
+        id S1727557AbgJaLvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 07:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727124AbgJaLf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 07:35:57 -0400
+        with ESMTP id S1727288AbgJaLkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 07:40:24 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D66C0613D9
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 04:35:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678B0C0613D7
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 04:40:24 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kYpAO-00078k-71; Sat, 31 Oct 2020 12:35:28 +0100
+        id 1kYpEx-0007mN-Le; Sat, 31 Oct 2020 12:40:11 +0100
 Received: from [IPv6:2a03:f580:87bc:d400:dcc0:5662:7742:3902] (unknown [IPv6:2a03:f580:87bc:d400:dcc0:5662:7742:3902])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id EC59F587078;
-        Sat, 31 Oct 2020 11:35:15 +0000 (UTC)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 6B8B9587083;
+        Sat, 31 Oct 2020 11:40:09 +0000 (UTC)
 Subject: Re: [PATCH v7 0/6] CTU CAN FD open-source IP core SocketCAN driver,
  PCI, platform integration and documentation
 To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
@@ -105,15 +105,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <2ccec201-1a84-1837-15a8-d2ad05f5753c@pengutronix.de>
-Date:   Sat, 31 Oct 2020 12:35:11 +0100
+Message-ID: <babcc2a2-8051-b542-3748-18324f2778df@pengutronix.de>
+Date:   Sat, 31 Oct 2020 12:40:05 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
 In-Reply-To: <cover.1604095004.git.pisa@cmp.felk.cvut.cz>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="04tgLaBHSWFaV1pFRgNILpZYRaA30DPBv"
+ boundary="pHGK3qOT5AE1di0F7vN1s8WmJCRRlr4tV"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -123,8 +123,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---04tgLaBHSWFaV1pFRgNILpZYRaA30DPBv
-Content-Type: multipart/mixed; boundary="UpDqIxknZHkUw6dX1i9CjvnpV77RuuRWi";
+--pHGK3qOT5AE1di0F7vN1s8WmJCRRlr4tV
+Content-Type: multipart/mixed; boundary="W5s4VrYBHK1Vx9qcNDS91wyxP3zRIfMeR";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
@@ -137,357 +137,72 @@ Cc: Wolfgang Grandegger <wg@grandegger.com>,
  Ondrej Ille <ondrej.ille@gmail.com>, Jiri Novak <jnovak@fel.cvut.cz>,
  Jaroslav Beran <jara.beran@gmail.com>, Petr Porazil <porazil@pikron.com>,
  Pavel Machek <pavel@ucw.cz>, Drew Fustini <pdp7pdp7@gmail.com>
-Message-ID: <2ccec201-1a84-1837-15a8-d2ad05f5753c@pengutronix.de>
+Message-ID: <babcc2a2-8051-b542-3748-18324f2778df@pengutronix.de>
 Subject: Re: [PATCH v7 0/6] CTU CAN FD open-source IP core SocketCAN driver,
  PCI, platform integration and documentation
 References: <cover.1604095004.git.pisa@cmp.felk.cvut.cz>
 In-Reply-To: <cover.1604095004.git.pisa@cmp.felk.cvut.cz>
 
---UpDqIxknZHkUw6dX1i9CjvnpV77RuuRWi
+--W5s4VrYBHK1Vx9qcNDS91wyxP3zRIfMeR
 Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
+Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
 
 On 10/30/20 11:19 PM, Pavel Pisa wrote:
 > This driver adds support for the CTU CAN FD open-source IP core.
 
-Please fix the following checkpatch warnings/errors:
-
-----------------------------------------
-drivers/net/can/ctucanfd/ctucanfd_base.c
-----------------------------------------
-WARNING: Possible repeated word: 'the'
-#296: FILE: drivers/net/can/ctucanfd/ctucanfd_base.c:296:
-+ * This check the drivers state and calls the
-+ * the corresponding modes to set.
-
-WARNING: Possible repeated word: 'the'
-#445: FILE: drivers/net/can/ctucanfd/ctucanfd_base.c:445:
-+ * This is the CAN error interrupt and it will check the the type of err=
-or
-
-WARNING: quoted string split across lines
-#466: FILE: drivers/net/can/ctucanfd/ctucanfd_base.c:466:
-+		netdev_info(ndev, "%s: ISR =3D 0x%08x, rxerr %d, txerr %d,"
-+			" error type %u, pos %u, ALC id_field %u, bit %u\n",
-
-CHECK: Alignment should match open parenthesis
-#637: FILE: drivers/net/can/ctucanfd/ctucanfd_base.c:637:
-+	ctucan_netdev_dbg(ndev, "%s: from 0x%08x to 0x%08x\n",
-+		   __func__, priv->txb_prio, prio);
-
-CHECK: Alignment should match open parenthesis
-#673: FILE: drivers/net/can/ctucanfd/ctucanfd_base.c:673:
-+			ctucan_netdev_dbg(ndev, "TXI: TXB#%u: status 0x%x\n",
-+				   txb_idx, status);
-
-CHECK: Alignment should match open parenthesis
-#808: FILE: drivers/net/can/ctucanfd/ctucanfd_base.c:808:
-+			ctucan_netdev_dbg(ndev, "some ERR interrupt: clearing 0x%08x\n",
-+				   icr.u32);
-
-total: 0 errors, 3 warnings, 3 checks, 1142 lines checked
-
-NOTE: For some of the reported defects, checkpatch may be able to
-      mechanically convert to the typical style using --fix or --fix-inpl=
-ace.
-
-drivers/net/can/ctucanfd/ctucanfd_base.c has style problems, please revie=
-w.
------------------------------------------
-drivers/net/can/ctucanfd/ctucanfd_frame.h
------------------------------------------
-CHECK: Please don't use multiple blank lines
-#46: FILE: drivers/net/can/ctucanfd/ctucanfd_frame.h:46:
-+
-+
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#49: FILE: drivers/net/can/ctucanfd/ctucanfd_frame.h:49:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#104: FILE: drivers/net/can/ctucanfd/ctucanfd_frame.h:104:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#120: FILE: drivers/net/can/ctucanfd/ctucanfd_frame.h:120:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#128: FILE: drivers/net/can/ctucanfd/ctucanfd_frame.h:128:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#136: FILE: drivers/net/can/ctucanfd/ctucanfd_frame.h:136:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#154: FILE: drivers/net/can/ctucanfd/ctucanfd_frame.h:154:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#172: FILE: drivers/net/can/ctucanfd/ctucanfd_frame.h:172:
-+	uint32_t u32;
-
-total: 0 errors, 0 warnings, 8 checks, 189 lines checked
-
-NOTE: For some of the reported defects, checkpatch may be able to
-      mechanically convert to the typical style using --fix or --fix-inpl=
-ace.
-
-drivers/net/can/ctucanfd/ctucanfd_frame.h has style problems, please revi=
-ew.
------------------------------------
-drivers/net/can/ctucanfd/ctucanfd.h
------------------------------------
-total: 0 errors, 0 warnings, 0 checks, 87 lines checked
-
-drivers/net/can/ctucanfd/ctucanfd.h has no obvious style problems and is =
-ready for submission.
---------------------------------------
-drivers/net/can/ctucanfd/ctucanfd_hw.c
---------------------------------------
-CHECK: Please don't use multiple blank lines
-#30: FILE: drivers/net/can/ctucanfd/ctucanfd_hw.c:30:
-+
-+
-
-WARNING: Possible repeated word: 'from'
-#40: FILE: drivers/net/can/ctucanfd/ctucanfd_hw.c:40:
-+ * generated from from IP-XACT/cactus helps to driver to hardware
-
-CHECK: Alignment should match open parenthesis
-#98: FILE: drivers/net/can/ctucanfd/ctucanfd_hw.c:98:
-+static u32 ctucan_hw_hwid_to_id(union ctu_can_fd_identifier_w hwid,
-+				 enum ctu_can_fd_frame_format_w_ide type)
-
-total: 0 errors, 1 warnings, 2 checks, 751 lines checked
-
-NOTE: For some of the reported defects, checkpatch may be able to
-      mechanically convert to the typical style using --fix or --fix-inpl=
-ace.
-
-drivers/net/can/ctucanfd/ctucanfd_hw.c has style problems, please review.=
-
---------------------------------------
-drivers/net/can/ctucanfd/ctucanfd_hw.h
---------------------------------------
-WARNING: networking block comments don't use an empty /* line, use /* Com=
-ment...
-#56: FILE: drivers/net/can/ctucanfd/ctucanfd_hw.h:56:
-+/*
-+ * Status macros -> pass "ctu_can_get_status" result
-
-WARNING: networking block comments don't use an empty /* line, use /* Com=
-ment...
-#84: FILE: drivers/net/can/ctucanfd/ctucanfd_hw.h:84:
-+/*
-+ * Interrupt macros -> pass "ctu_can_fd_int_sts" result
-
-CHECK: Alignment should match open parenthesis
-#759: FILE: drivers/net/can/ctucanfd/ctucanfd_hw.h:759:
-+static inline void ctucan_hw_txt_buf_give_command(struct ctucan_hw_priv =
-*priv,
-+				union ctu_can_fd_tx_command cmd, u8 buf)
-
-total: 0 errors, 2 warnings, 1 checks, 935 lines checked
-
-NOTE: For some of the reported defects, checkpatch may be able to
-      mechanically convert to the typical style using --fix or --fix-inpl=
-ace.
-
-drivers/net/can/ctucanfd/ctucanfd_hw.h has style problems, please review.=
-
----------------------------------------
-drivers/net/can/ctucanfd/ctucanfd_pci.c
----------------------------------------
-total: 0 errors, 0 warnings, 0 checks, 316 lines checked
-
-drivers/net/can/ctucanfd/ctucanfd_pci.c has no obvious style problems and=
- is ready for submission.
---------------------------------------------
-drivers/net/can/ctucanfd/ctucanfd_platform.c
---------------------------------------------
-total: 0 errors, 0 warnings, 0 checks, 142 lines checked
-
-drivers/net/can/ctucanfd/ctucanfd_platform.c has no obvious style problem=
-s and is ready for submission.
-----------------------------------------
-drivers/net/can/ctucanfd/ctucanfd_regs.h
-----------------------------------------
-CHECK: Please don't use multiple blank lines
-#100: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:100:
-+
-+
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#103: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:103:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#124: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:124:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#217: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:217:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#245: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:245:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#269: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:269:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#305: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:305:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#319: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:319:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#333: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:333:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#347: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:347:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#361: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:361:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#381: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:381:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#407: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:407:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#431: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:431:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#450: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:450:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#465: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:465:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#487: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:487:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#501: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:501:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#515: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:515:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#529: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:529:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#543: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:543:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#557: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:557:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#571: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:571:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#585: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:585:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#599: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:599:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#652: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:652:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#670: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:670:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#688: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:688:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#718: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:718:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#726: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:726:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#756: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:756:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#784: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:784:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#810: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:810:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#863: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:863:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#890: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:890:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#898: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:898:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#906: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:906:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#948: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:948:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#956: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:956:
-+	uint32_t u32;
-
-CHECK: Prefer kernel type 'u32' over 'uint32_t'
-#964: FILE: drivers/net/can/ctucanfd/ctucanfd_regs.h:964:
-+	uint32_t u32;
-
-total: 0 errors, 0 warnings, 40 checks, 971 lines checked
-
-NOTE: For some of the reported defects, checkpatch may be able to
-      mechanically convert to the typical style using --fix or --fix-inpl=
-ace.
-
-drivers/net/can/ctucanfd/ctucanfd_regs.h has style problems, please revie=
-w.
-
-NOTE: If any of the errors are false positives, please report
-      them to the maintainer, see CHECKPATCH in MAINTAINERS.
+Please fix the following spelling mistakes:
+
+--- a/drivers/net/can/ctucanfd/ctucanfd_base.c
++++ b/drivers/net/can/ctucanfd/ctucanfd_base.c
+@@ -752,7 +752,7 @@ static void ctucan_tx_interrupt(struct net_device *nd=
+ev)
+ /**
+  * ctucan_interrupt - CAN Isr
+  * @irq:       irq number
+- * @dev_id:    device id poniter
++ * @dev_id:    device id pointer
+  *
+  * This is the CTU CAN FD ISR. It checks for the type of interrupt
+  * and invokes the corresponding ISR.
+diff --git a/drivers/net/can/ctucanfd/ctucanfd_hw.h b/drivers/net/can/ctu=
+canfd/ctucanfd_hw.h
+index 7d562f41ca52..2fd2416de46d 100644
+--- a/drivers/net/can/ctucanfd/ctucanfd_hw.h
++++ b/drivers/net/can/ctucanfd/ctucanfd_hw.h
+@@ -211,7 +211,7 @@ bool ctucan_hw_set_ret_limit(struct ctucan_hw_priv *p=
+riv, bool enable,
+  *     CAN_CTRLMODE_LISTENONLY - No frame is transmitted, no dominant bi=
+t is
+  *                               sent on the bus.
+  *
+- *     CAN_CTRLMODE_3_SAMPLES  - Tripple sampling mode
++ *     CAN_CTRLMODE_3_SAMPLES  - Triple sampling mode
+  *
+  *     CAN_CTRLMODE_FD         - Flexible data-rate support. When not se=
+t, Core
+  *                               does not accept CAN FD Frames and inter=
+prets,
+@@ -680,7 +680,7 @@ void ctucan_hw_set_rx_tsop(struct ctucan_hw_priv *pri=
+v,
+  *
+  * @priv: Private info
+  *
+- * Return: The firts word of received frame
++ * Return: The first word of received frame
+  */
+ static inline union ctu_can_fd_frame_format_w
+        ctu_can_fd_read_rx_ffw(struct ctucan_hw_priv *priv)
+@@ -908,7 +908,7 @@ static inline union ctu_can_fd_debug_register
+  * ctucan_hw_read_timestamp - Read timestamp value which is used interna=
+lly
+  *                             by CTU CAN FD Core.
+  *
+- * Reads timestamp twice and checks consistency betwen upper and
++ * Reads timestamp twice and checks consistency between upper and
+  * lower timestamp word.
+  *
+  * @priv: Private info
 
 Marc
 
@@ -498,23 +213,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---UpDqIxknZHkUw6dX1i9CjvnpV77RuuRWi--
+--W5s4VrYBHK1Vx9qcNDS91wyxP3zRIfMeR--
 
---04tgLaBHSWFaV1pFRgNILpZYRaA30DPBv
+--pHGK3qOT5AE1di0F7vN1s8WmJCRRlr4tV
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+dS+8ACgkQqclaivrt
-76nhYwf+P7IMNmeMji2DGfhN8jcV/uukmdiEsj52/rFN1rviJC5ax/WNCiy0L/+m
-EkVV7uzdFv2R2dKHHo7NInXfSmslmIYgNn7hF4syItM3NrNAbSGuNP09tMMlKnVk
-TXsLf0ZmvwuGthTO1/Zx/JCgiZwoFSN9dj4xu8ZtmcHNk2tz6vbHLAF30bUiFl8V
-pmGIKL4vbfMlzwRfnJNriMl6qG8jcQoX8mvqDimQodxJcLVsUAT48jS8G3ooo1ZF
-opuUu2MWeeBuMItqbNIJbVbpenJz5Kmi/t3l0tp1FIrIMM+amDRrBl30vm95U9UL
-XnWuPqzf0pLRAHWK4nnSl3SMHJ5P7Q==
-=QBMS
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+dTRUACgkQqclaivrt
+76n8EAf/TvrWWEtWu2fn+uGQPhIZWbXSNVwShThRvcx+pwMvUMtvTcHsmfbpUQND
+EH902MlE/MS35htwyCZBxn5XoqW2wDkFXViabNtliLEqlLz9RLGCSD2MQzGZ1sZX
+fAds1hZpADf7e12ucZRI82zJn+ynRxHX7ClVvgxX/ozNR+tjvBMBi8PHfXCYRPCR
+jX4oNBPNYE275/BUjouEFuqGmL2jlbnN8e7tMw9rNw410tcL8eXFdGg6KjiG+TVw
+FVfJrGfUTNj7K53Q0hgYrardmXRLrPN+fOBOIrhHZVHVRH6FogykJzWrp2l/5rHm
+/ONaoQeNyHCWfRy8aWf6g53WLYa5IQ==
+=W6Nr
 -----END PGP SIGNATURE-----
 
---04tgLaBHSWFaV1pFRgNILpZYRaA30DPBv--
+--pHGK3qOT5AE1di0F7vN1s8WmJCRRlr4tV--
