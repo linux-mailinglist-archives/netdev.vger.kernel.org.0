@@ -2,122 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C5DE2A1467
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 10:08:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D18A2A1499
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 10:16:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbgJaJIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 05:08:01 -0400
-Received: from mail-eopbgr150052.outbound.protection.outlook.com ([40.107.15.52]:4768
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726424AbgJaJIA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 05:08:00 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aqHWvcwWh1aCbpKWqodvbr0CQ9aiSzJ1OYrMpTuyppOdxFncXhUJCVqkeZE86Sw8fU//zHUDzWZw1s1B0nl/W8kHCYnx7+mpVdLWcjjcIwsS5I3pwjxiQtDRrgIqGAeEyVnebyl3mcn5qPbfdwXXKipH93LTXnVKA3zPs0ei5KENSqHD5hNEsxUb0x1M1wMQ2o7JlZ7zNlO6P3E9OG5yBf4kGWxbN3e2elyhTkELCQg/GinT65sLPaWfvN8wGPntSz/7//6Ohs5/Km3jw36a4E6Uqz/4VTCTJnbGcxDJBKvPRy88DKbNkPpTEz5LXa6xeStxStAgcDdm0IA4URb84w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6SeoTq5I7xb24Xh3mH6VzaPebxy3W5Ti/2lZbpmuFJM=;
- b=KvvzmNZSBBrlmzG26PmaMOblFxyN8ZzJLw6gSyIbKxtFXaVYngxTCnp/5d24HkmB5oJtF5ObcDRDtQhjMRrzuPgboPNcdildFC4z/x8ax8m8jFX+IlthkJQlMye9+b5zMzKZlvfimJm2iJh+6KnJhVfXXhTADgZhGPOs5b49GwirvLtPIeVjc2oueUHGXPDfQmkVIH1I/VDPms3eDhJNm3WAGPBYnVR3LAlbhbUf0Un/ufXPxIAIPfntyiQeQlPFM6NcqA2xx7ZEXM3TPHbZrSaR7Ub6+y7PWS4B9OjWvUNagcXi8YFvm2YIkyTgw/k5bNGkNKb41oMWmtOOrONlkQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6SeoTq5I7xb24Xh3mH6VzaPebxy3W5Ti/2lZbpmuFJM=;
- b=j7RVQG2bNrxX8knKLJXVo7b5++MAM4tPkGlmyHMQYBlHT9KiWq58zmVJ38C/d6dndu0XXybV0oRTPzo00Pk9AbWEOyB3sbRWVYvXLlsj/CZOEtqjwOd39VvbT73KdU2Na11KAUrowZxUTS9bMQ5/Ld+brjez6QqteiFKBv7IDU8=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB5344.eurprd04.prod.outlook.com (2603:10a6:803:4b::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Sat, 31 Oct
- 2020 09:07:52 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3499.029; Sat, 31 Oct 2020
- 09:07:52 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 4/5] net: mscc: ocelot: make entry_type a member
- of struct ocelot_multicast
-Thread-Topic: [PATCH net-next 4/5] net: mscc: ocelot: make entry_type a member
- of struct ocelot_multicast
-Thread-Index: AQHWrZsfTNJok4x350yal8NLoCn43Kmw67eAgACDsYA=
-Date:   Sat, 31 Oct 2020 09:07:52 +0000
-Message-ID: <20201031090751.6olljapbivitzf6k@skbuf>
-References: <20201029022738.722794-1-vladimir.oltean@nxp.com>
- <20201029022738.722794-5-vladimir.oltean@nxp.com>
- <20201030181631.20692b43@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201030181631.20692b43@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.2.177]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 044617a7-6948-46cb-de67-08d87d7c7290
-x-ms-traffictypediagnostic: VI1PR04MB5344:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB5344222A4608179EDA7E3382E0120@VI1PR04MB5344.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: xowKTDR0EUc3/iMY8a4kNfGgU63142Cc3diYe1becf3R0j9KGZDTd4+StAbzcXxwmhjk2g4hxQlT7BFEfSslgTg/Q5iyqeEEwjFiyN8YX0rqXhjpP7ozfP1jEcjJtmP1pcSb1dCePEn3IkdMFe5VwsrPbkmXFL5oE8lyoNw2Tm5lAOGfgvhs19v+mT5RfH1rbf7p5GAV2TUZxGJvgVxrgg55RG2iW7yLmYSGEtCyS97pxliGQFCfU2TwsjZi/n85y6vvcLWKGgSBHsNeo1Me8UUtzlKUY5p7bMbZ7COo7FtREaJvRhG9UeJV3KotTULb
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(39850400004)(376002)(396003)(346002)(366004)(136003)(54906003)(71200400001)(66946007)(86362001)(9686003)(316002)(26005)(4744005)(44832011)(33716001)(5660300002)(66446008)(1076003)(66476007)(6512007)(64756008)(66556008)(4326008)(2906002)(6506007)(478600001)(76116006)(8936002)(6916009)(186003)(8676002)(6486002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: EpcmHwR2DM0FV0GITIuJF2fJgAn+FiZ0Hq7rismaYU1XiZhu/QFfVJitNbQ8f4cMCzq0o6WvnN6pQVAr5mUIjQfYZFAXK+6al7AufxKSzhJTqk/WNUGVLOVNwLEs62JuPRRs6nHpz8WWyq1Sqt8puZSGF91X49W4pK8H7aMdoVHpcmLasWxC+IpWnUjHlseQnE9LK5OJ7O2Y/80i/N/syP/Os9kIFQv78PnnH10s6NBjw+BTBTULqZ8xrWuqegwMznVzalUmajr0ZlLrpOyM29QSezGi8DaPgKKBluCcoCoH2x1XL7SwzRgH4X4QWXTpcPReg6614/fBIWeZE2zMTisPWC0zQXkaEyFRsDHUm6MX785W5zR1tcwYXHyajffnfOt3STCPI6oJopHrGDv+0rC47Q0Sb26XEXAFI7chX0M6e77bOv/YaZ5t8/qlc5gh9RL/Ky7QyykX9/3sJIhjSA/3pkW9j4mZFjN7ooBYoH1XVmnf6g3TweWEj3FZl7y4EUmWbmsb00N32Jwy0UK4fblpt7ufPyI8IdRHGTJHSLdxF4NN5Jt9Z3STDoFxYYHVO6TtlLv8z1q1kle3EcsUeBR7RUSYv8mwOqJLh/urO4nFyluNAKZ+htUruWY211JMXl0LIt74no//atZoTG+hCw==
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <A40216A11434064FA283526767F1F8C2@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726557AbgJaJQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 05:16:17 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:46296 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726456AbgJaJQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 05:16:15 -0400
+Received: by mail-io1-f69.google.com with SMTP id a2so5900063iod.13
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 02:16:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=xLjHG+oo1mvJiFjz/+5HaW1lg2ZdzALrAQFDD7i6P+4=;
+        b=mgr6DIeyjYstkzL3TiRrb8sj0hTL2QsAvisXY85OSmHHgLTD7YiPRBmKoRtlVsMUOZ
+         mb64zoapNhhJrXkIhayDlskx7hcqwQxbP+Us5wUs7DHVUBuheKp/nOYIczW3dNI39tmR
+         uI7gY81qdIShP4ROXNJ+D0K6Q6nmHj7tjwrFCdmN1Iogz+cYMU1bG6S8ZpQH9FuHgKr9
+         SJqbpzFEEaJPnEpP5r5pwOYyzyLI4ZBaKhsm8xGhRpVhPzDBI2jxFjbxuXN8c457Xqx5
+         UtpGpxyJvELMsi/j4H9IDen6cOrGeUSUjQhG90DoZag6hX5uNR7F5aHxOXuTt+wxjNEi
+         IctQ==
+X-Gm-Message-State: AOAM530PEd+5/MvoYcsW2vfmBb1dybqMITYSY9KxTDJbs0h24FVEiTkv
+        Km3TSRoKGWEns/uA3C7MaUqU0+u+hqsRSbAx1LWe2gJyJpsa
+X-Google-Smtp-Source: ABdhPJyymRLz3SDl7zRbs5Pum0MM1Cng3fL3a2ckPs1cZq+o+VK4NOIZYyiwKy+2K4VJoFKW7mxuyYvpKn/abCHB3q695NImdMwY
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 044617a7-6948-46cb-de67-08d87d7c7290
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Oct 2020 09:07:52.3459
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YF4sbcOH1UCXj3TLrbT5NsnF2Kh9yva84LOhFgYXLK5PjRj1B5+M3NsXnpW3Ucatw4CLatTTutGHwhf49NgwmA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5344
+X-Received: by 2002:a92:3f02:: with SMTP id m2mr4953938ila.231.1604135774393;
+ Sat, 31 Oct 2020 02:16:14 -0700 (PDT)
+Date:   Sat, 31 Oct 2020 02:16:14 -0700
+In-Reply-To: <00000000000021315205b29353aa@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000011c9b05b2f3f7ce@google.com>
+Subject: Re: WARNING in xfrm_alloc_compat
+From:   syzbot <syzbot+a7e701c8385bd8543074@syzkaller.appspotmail.com>
+To:     0x7f454c46@gmail.com, davem@davemloft.net, dima@arista.com,
+        hdanton@sina.com, herbert@gondor.apana.org.au, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 06:16:31PM -0700, Jakub Kicinski wrote:
-> On Thu, 29 Oct 2020 04:27:37 +0200 Vladimir Oltean wrote:
-> > +		mc =3D devm_kzalloc(ocelot->dev, sizeof(*mc), GFP_KERNEL);
-> > +		if (!mc)
-> > +			return -ENOMEM;
-> > +
-> > +		mc->entry_type =3D ocelot_classify_mdb(mdb->addr);
-> > +		ether_addr_copy(mc->addr, mdb->addr);
-> > +		mc->vid =3D vid;
-> > +
-> > +		pgid =3D ocelot_mdb_get_pgid(ocelot, mc);
-> > =20
-> >  		if (pgid < 0) {
-> >  			dev_err(ocelot->dev,
-> > @@ -1038,24 +1044,19 @@ int ocelot_port_mdb_add(struct ocelot *ocelot, =
-int port,
-> >  			return -ENOSPC;
-> >  		}
->=20
-> Transitionally leaking mc here on pgid < 0
+syzbot has found a reproducer for the following issue on:
 
-Is it a real leakage if it's allocated with devm though? At some point
-it's still going to be freed. Nonetheless I agree there's still a lot of
-work to do. Maybe I didn't choose the best moment to concentrate on a
-new feature, should have focused on cleanup more beforehand, including a
-change from devm to plain allocation/free of resources.=
+HEAD commit:    4e78c578 Add linux-next specific files for 20201030
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=13284492500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=83318758268dc331
+dashboard link: https://syzkaller.appspot.com/bug?extid=a7e701c8385bd8543074
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10191ea2500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1172adf4500000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a7e701c8385bd8543074@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+unsupported nla_type 0
+WARNING: CPU: 0 PID: 8479 at net/xfrm/xfrm_compat.c:279 xfrm_xlate64_attr net/xfrm/xfrm_compat.c:279 [inline]
+WARNING: CPU: 0 PID: 8479 at net/xfrm/xfrm_compat.c:279 xfrm_xlate64 net/xfrm/xfrm_compat.c:300 [inline]
+WARNING: CPU: 0 PID: 8479 at net/xfrm/xfrm_compat.c:279 xfrm_alloc_compat+0xf39/0x10d0 net/xfrm/xfrm_compat.c:327
+Modules linked in:
+CPU: 1 PID: 8479 Comm: syz-executor174 Not tainted 5.10.0-rc1-next-20201030-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:xfrm_xlate64_attr net/xfrm/xfrm_compat.c:279 [inline]
+RIP: 0010:xfrm_xlate64 net/xfrm/xfrm_compat.c:300 [inline]
+RIP: 0010:xfrm_alloc_compat+0xf39/0x10d0 net/xfrm/xfrm_compat.c:327
+Code: de e8 3b 4a d2 f9 84 db 0f 85 b0 f8 ff ff e8 1e 52 d2 f9 8b 74 24 08 48 c7 c7 20 e5 51 8a c6 05 3b eb 3a 05 01 e8 e3 f2 0e 01 <0f> 0b e9 8d f8 ff ff e8 fb 51 d2 f9 8b 14 24 48 c7 c7 e0 e4 51 8a
+RSP: 0018:ffffc900015cf378 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff888021221a80 RSI: ffffffff8158ed95 RDI: fffff520002b9e61
+RBP: 000000000000000c R08: 0000000000000001 R09: ffff8880b9e2005b
+R10: 0000000000000000 R11: 0000000000000000 R12: 00000000ffffffa1
+R13: ffff888143d890f8 R14: ffff88801b8b4780 R15: ffff88802148c000
+FS:  00000000017d3880(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fd917a6b6c0 CR3: 000000001f6a2000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ xfrm_alloc_userspi+0x66a/0xa30 net/xfrm/xfrm_user.c:1388
+ xfrm_user_rcv_msg+0x42f/0x8b0 net/xfrm/xfrm_user.c:2752
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ xfrm_netlink_rcv+0x6b/0x90 net/xfrm/xfrm_user.c:2764
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:671
+ ____sys_sendmsg+0x331/0x810 net/socket.c:2362
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2416
+ __sys_sendmmsg+0x195/0x470 net/socket.c:2506
+ __do_sys_sendmmsg net/socket.c:2535 [inline]
+ __se_sys_sendmmsg net/socket.c:2532 [inline]
+ __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2532
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x440339
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffcd04d1fc8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440339
+RDX: 00000000000000f1 RSI: 0000000020000180 RDI: 0000000000000003
+RBP: 00000000006ca018 R08: 00000000004002c8 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401b40
+R13: 0000000000401bd0 R14: 0000000000000000 R15: 0000000000000000
+
