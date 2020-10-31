@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68CFB2A1947
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 19:15:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5154B2A1949
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 19:15:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728284AbgJaSOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 14:14:53 -0400
-Received: from correo.us.es ([193.147.175.20]:48026 "EHLO mail.us.es"
+        id S1728325AbgJaSOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 14:14:55 -0400
+Received: from correo.us.es ([193.147.175.20]:48038 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728231AbgJaSOv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:14:51 -0400
+        id S1728247AbgJaSOw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:14:52 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 5213F7B553
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 19:14:48 +0100 (CET)
+        by mail.us.es (Postfix) with ESMTP id 326467B565
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 19:14:50 +0100 (CET)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3EEB5DA78A
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 19:14:48 +0100 (CET)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 26084DA78E
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 19:14:50 +0100 (CET)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 342D6DA73F; Sat, 31 Oct 2020 19:14:48 +0100 (CET)
+        id 1B9B3DA78D; Sat, 31 Oct 2020 19:14:50 +0100 (CET)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
         autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id ACB91DA704;
-        Sat, 31 Oct 2020 19:14:45 +0100 (CET)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C9E7BDA722;
+        Sat, 31 Oct 2020 19:14:47 +0100 (CET)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sat, 31 Oct 2020 19:14:45 +0100 (CET)
+ Sat, 31 Oct 2020 19:14:47 +0100 (CET)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from localhost.localdomain (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id 85C0142EF42B;
-        Sat, 31 Oct 2020 19:14:45 +0100 (CET)
+        by entrada.int (Postfix) with ESMTPSA id A521E42EF42B;
+        Sat, 31 Oct 2020 19:14:47 +0100 (CET)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH net 3/5] netfilter: use actual socket sk rather than skb sk when routing harder
-Date:   Sat, 31 Oct 2020 19:14:35 +0100
-Message-Id: <20201031181437.12472-4-pablo@netfilter.org>
+Subject: [PATCH net 4/5] netfilter: nf_tables: missing validation from the abort path
+Date:   Sat, 31 Oct 2020 19:14:36 +0100
+Message-Id: <20201031181437.12472-5-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201031181437.12472-1-pablo@netfilter.org>
 References: <20201031181437.12472-1-pablo@netfilter.org>
@@ -54,296 +54,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+If userspace does not include the trailing end of batch message, then
+nfnetlink aborts the transaction. This allows to check that ruleset
+updates trigger no errors.
 
-If netfilter changes the packet mark when mangling, the packet is
-rerouted using the route_me_harder set of functions. Prior to this
-commit, there's one big difference between route_me_harder and the
-ordinary initial routing functions, described in the comment above
-__ip_queue_xmit():
+After this patch, invoking this command from the prerouting chain:
 
-   /* Note: skb->sk can be different from sk, in case of tunnels */
-   int __ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl,
+ # nft -c add rule x y fib saddr . oif type local
 
-That function goes on to correctly make use of sk->sk_bound_dev_if,
-rather than skb->sk->sk_bound_dev_if. And indeed the comment is true: a
-tunnel will receive a packet in ndo_start_xmit with an initial skb->sk.
-It will make some transformations to that packet, and then it will send
-the encapsulated packet out of a *new* socket. That new socket will
-basically always have a different sk_bound_dev_if (otherwise there'd be
-a routing loop). So for the purposes of routing the encapsulated packet,
-the routing information as it pertains to the socket should come from
-that socket's sk, rather than the packet's original skb->sk. For that
-reason __ip_queue_xmit() and related functions all do the right thing.
+fails since oif is not supported there.
 
-One might argue that all tunnels should just call skb_orphan(skb) before
-transmitting the encapsulated packet into the new socket. But tunnels do
-*not* do this -- and this is wisely avoided in skb_scrub_packet() too --
-because features like TSQ rely on skb->destructor() being called when
-that buffer space is truely available again. Calling skb_orphan(skb) too
-early would result in buffers filling up unnecessarily and accounting
-info being all wrong. Instead, additional routing must take into account
-the new sk, just as __ip_queue_xmit() notes.
+This patch fixes the lack of rule validation from the abort/check path
+to catch configuration errors such as the one above.
 
-So, this commit addresses the problem by fishing the correct sk out of
-state->sk -- it's already set properly in the call to nf_hook() in
-__ip_local_out(), which receives the sk as part of its normal
-functionality. So we make sure to plumb state->sk through the various
-route_me_harder functions, and then make correct use of it following the
-example of __ip_queue_xmit().
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Reviewed-by: Florian Westphal <fw@strlen.de>
+Fixes: a654de8fdc18 ("netfilter: nf_tables: fix chain dependency validation")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/linux/netfilter_ipv4.h       |  2 +-
- include/linux/netfilter_ipv6.h       | 10 +++++-----
- net/ipv4/netfilter.c                 |  8 +++++---
- net/ipv4/netfilter/iptable_mangle.c  |  2 +-
- net/ipv4/netfilter/nf_reject_ipv4.c  |  2 +-
- net/ipv6/netfilter.c                 |  6 +++---
- net/ipv6/netfilter/ip6table_mangle.c |  2 +-
- net/netfilter/ipvs/ip_vs_core.c      |  4 ++--
- net/netfilter/nf_nat_proto.c         |  4 ++--
- net/netfilter/nf_synproxy_core.c     |  2 +-
- net/netfilter/nft_chain_route.c      |  4 ++--
- net/netfilter/utils.c                |  4 ++--
- 12 files changed, 26 insertions(+), 24 deletions(-)
+ include/linux/netfilter/nfnetlink.h |  9 ++++++++-
+ net/netfilter/nf_tables_api.c       | 15 ++++++++++-----
+ net/netfilter/nfnetlink.c           | 22 ++++++++++++++++++----
+ 3 files changed, 36 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/netfilter_ipv4.h b/include/linux/netfilter_ipv4.h
-index 082e2c41b7ff..5b70ca868bb1 100644
---- a/include/linux/netfilter_ipv4.h
-+++ b/include/linux/netfilter_ipv4.h
-@@ -16,7 +16,7 @@ struct ip_rt_info {
- 	u_int32_t mark;
+diff --git a/include/linux/netfilter/nfnetlink.h b/include/linux/netfilter/nfnetlink.h
+index 89016d08f6a2..f6267e2883f2 100644
+--- a/include/linux/netfilter/nfnetlink.h
++++ b/include/linux/netfilter/nfnetlink.h
+@@ -24,6 +24,12 @@ struct nfnl_callback {
+ 	const u_int16_t attr_count;		/* number of nlattr's */
  };
  
--int ip_route_me_harder(struct net *net, struct sk_buff *skb, unsigned addr_type);
-+int ip_route_me_harder(struct net *net, struct sock *sk, struct sk_buff *skb, unsigned addr_type);
- 
- struct nf_queue_entry;
- 
-diff --git a/include/linux/netfilter_ipv6.h b/include/linux/netfilter_ipv6.h
-index 9b67394471e1..48314ade1506 100644
---- a/include/linux/netfilter_ipv6.h
-+++ b/include/linux/netfilter_ipv6.h
-@@ -42,7 +42,7 @@ struct nf_ipv6_ops {
- #if IS_MODULE(CONFIG_IPV6)
- 	int (*chk_addr)(struct net *net, const struct in6_addr *addr,
- 			const struct net_device *dev, int strict);
--	int (*route_me_harder)(struct net *net, struct sk_buff *skb);
-+	int (*route_me_harder)(struct net *net, struct sock *sk, struct sk_buff *skb);
- 	int (*dev_get_saddr)(struct net *net, const struct net_device *dev,
- 		       const struct in6_addr *daddr, unsigned int srcprefs,
- 		       struct in6_addr *saddr);
-@@ -143,9 +143,9 @@ static inline int nf_br_ip6_fragment(struct net *net, struct sock *sk,
- #endif
- }
- 
--int ip6_route_me_harder(struct net *net, struct sk_buff *skb);
-+int ip6_route_me_harder(struct net *net, struct sock *sk, struct sk_buff *skb);
- 
--static inline int nf_ip6_route_me_harder(struct net *net, struct sk_buff *skb)
-+static inline int nf_ip6_route_me_harder(struct net *net, struct sock *sk, struct sk_buff *skb)
- {
- #if IS_MODULE(CONFIG_IPV6)
- 	const struct nf_ipv6_ops *v6_ops = nf_get_ipv6_ops();
-@@ -153,9 +153,9 @@ static inline int nf_ip6_route_me_harder(struct net *net, struct sk_buff *skb)
- 	if (!v6_ops)
- 		return -EHOSTUNREACH;
- 
--	return v6_ops->route_me_harder(net, skb);
-+	return v6_ops->route_me_harder(net, sk, skb);
- #elif IS_BUILTIN(CONFIG_IPV6)
--	return ip6_route_me_harder(net, skb);
-+	return ip6_route_me_harder(net, sk, skb);
- #else
- 	return -EHOSTUNREACH;
- #endif
-diff --git a/net/ipv4/netfilter.c b/net/ipv4/netfilter.c
-index a058213b77a7..7c841037c533 100644
---- a/net/ipv4/netfilter.c
-+++ b/net/ipv4/netfilter.c
-@@ -17,17 +17,19 @@
- #include <net/netfilter/nf_queue.h>
- 
- /* route_me_harder function, used by iptable_nat, iptable_mangle + ip_queue */
--int ip_route_me_harder(struct net *net, struct sk_buff *skb, unsigned int addr_type)
-+int ip_route_me_harder(struct net *net, struct sock *sk, struct sk_buff *skb, unsigned int addr_type)
- {
- 	const struct iphdr *iph = ip_hdr(skb);
- 	struct rtable *rt;
- 	struct flowi4 fl4 = {};
- 	__be32 saddr = iph->saddr;
--	const struct sock *sk = skb_to_full_sk(skb);
--	__u8 flags = sk ? inet_sk_flowi_flags(sk) : 0;
-+	__u8 flags;
- 	struct net_device *dev = skb_dst(skb)->dev;
- 	unsigned int hh_len;
- 
-+	sk = sk_to_full_sk(sk);
-+	flags = sk ? inet_sk_flowi_flags(sk) : 0;
++enum nfnl_abort_action {
++	NFNL_ABORT_NONE		= 0,
++	NFNL_ABORT_AUTOLOAD,
++	NFNL_ABORT_VALIDATE,
++};
 +
- 	if (addr_type == RTN_UNSPEC)
- 		addr_type = inet_addr_type_dev_table(net, dev, saddr);
- 	if (addr_type == RTN_LOCAL || addr_type == RTN_UNICAST)
-diff --git a/net/ipv4/netfilter/iptable_mangle.c b/net/ipv4/netfilter/iptable_mangle.c
-index f703a717ab1d..833079589273 100644
---- a/net/ipv4/netfilter/iptable_mangle.c
-+++ b/net/ipv4/netfilter/iptable_mangle.c
-@@ -62,7 +62,7 @@ ipt_mangle_out(struct sk_buff *skb, const struct nf_hook_state *state)
- 		    iph->daddr != daddr ||
- 		    skb->mark != mark ||
- 		    iph->tos != tos) {
--			err = ip_route_me_harder(state->net, skb, RTN_UNSPEC);
-+			err = ip_route_me_harder(state->net, state->sk, skb, RTN_UNSPEC);
- 			if (err < 0)
- 				ret = NF_DROP_ERR(err);
- 		}
-diff --git a/net/ipv4/netfilter/nf_reject_ipv4.c b/net/ipv4/netfilter/nf_reject_ipv4.c
-index 9dcfa4e461b6..93b07739807b 100644
---- a/net/ipv4/netfilter/nf_reject_ipv4.c
-+++ b/net/ipv4/netfilter/nf_reject_ipv4.c
-@@ -145,7 +145,7 @@ void nf_send_reset(struct net *net, struct sk_buff *oldskb, int hook)
- 				   ip4_dst_hoplimit(skb_dst(nskb)));
- 	nf_reject_ip_tcphdr_put(nskb, oldskb, oth);
- 
--	if (ip_route_me_harder(net, nskb, RTN_UNSPEC))
-+	if (ip_route_me_harder(net, nskb->sk, nskb, RTN_UNSPEC))
- 		goto free_nskb;
- 
- 	niph = ip_hdr(nskb);
-diff --git a/net/ipv6/netfilter.c b/net/ipv6/netfilter.c
-index 6d0e942d082d..ab9a279dd6d4 100644
---- a/net/ipv6/netfilter.c
-+++ b/net/ipv6/netfilter.c
-@@ -20,10 +20,10 @@
- #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
- #include "../bridge/br_private.h"
- 
--int ip6_route_me_harder(struct net *net, struct sk_buff *skb)
-+int ip6_route_me_harder(struct net *net, struct sock *sk_partial, struct sk_buff *skb)
- {
- 	const struct ipv6hdr *iph = ipv6_hdr(skb);
--	struct sock *sk = sk_to_full_sk(skb->sk);
-+	struct sock *sk = sk_to_full_sk(sk_partial);
- 	unsigned int hh_len;
- 	struct dst_entry *dst;
- 	int strict = (ipv6_addr_type(&iph->daddr) &
-@@ -84,7 +84,7 @@ static int nf_ip6_reroute(struct sk_buff *skb,
- 		if (!ipv6_addr_equal(&iph->daddr, &rt_info->daddr) ||
- 		    !ipv6_addr_equal(&iph->saddr, &rt_info->saddr) ||
- 		    skb->mark != rt_info->mark)
--			return ip6_route_me_harder(entry->state.net, skb);
-+			return ip6_route_me_harder(entry->state.net, entry->state.sk, skb);
- 	}
- 	return 0;
+ struct nfnetlink_subsystem {
+ 	const char *name;
+ 	__u8 subsys_id;			/* nfnetlink subsystem ID */
+@@ -31,7 +37,8 @@ struct nfnetlink_subsystem {
+ 	const struct nfnl_callback *cb;	/* callback for individual types */
+ 	struct module *owner;
+ 	int (*commit)(struct net *net, struct sk_buff *skb);
+-	int (*abort)(struct net *net, struct sk_buff *skb, bool autoload);
++	int (*abort)(struct net *net, struct sk_buff *skb,
++		     enum nfnl_abort_action action);
+ 	void (*cleanup)(struct net *net);
+ 	bool (*valid_genid)(struct net *net, u32 genid);
+ };
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 9b70e136fb5d..0f58e98542be 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -8053,12 +8053,16 @@ static void nf_tables_abort_release(struct nft_trans *trans)
+ 	kfree(trans);
  }
-diff --git a/net/ipv6/netfilter/ip6table_mangle.c b/net/ipv6/netfilter/ip6table_mangle.c
-index 1a2748611e00..cee74803d7a1 100644
---- a/net/ipv6/netfilter/ip6table_mangle.c
-+++ b/net/ipv6/netfilter/ip6table_mangle.c
-@@ -57,7 +57,7 @@ ip6t_mangle_out(struct sk_buff *skb, const struct nf_hook_state *state)
- 	     skb->mark != mark ||
- 	     ipv6_hdr(skb)->hop_limit != hop_limit ||
- 	     flowlabel != *((u_int32_t *)ipv6_hdr(skb)))) {
--		err = ip6_route_me_harder(state->net, skb);
-+		err = ip6_route_me_harder(state->net, state->sk, skb);
- 		if (err < 0)
- 			ret = NF_DROP_ERR(err);
+ 
+-static int __nf_tables_abort(struct net *net, bool autoload)
++static int __nf_tables_abort(struct net *net, enum nfnl_abort_action action)
+ {
+ 	struct nft_trans *trans, *next;
+ 	struct nft_trans_elem *te;
+ 	struct nft_hook *hook;
+ 
++	if (action == NFNL_ABORT_VALIDATE &&
++	    nf_tables_validate(net) < 0)
++		return -EAGAIN;
++
+ 	list_for_each_entry_safe_reverse(trans, next, &net->nft.commit_list,
+ 					 list) {
+ 		switch (trans->msg_type) {
+@@ -8190,7 +8194,7 @@ static int __nf_tables_abort(struct net *net, bool autoload)
+ 		nf_tables_abort_release(trans);
  	}
-diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-index cc3c275934f4..c0b8215ab3d4 100644
---- a/net/netfilter/ipvs/ip_vs_core.c
-+++ b/net/netfilter/ipvs/ip_vs_core.c
-@@ -742,12 +742,12 @@ static int ip_vs_route_me_harder(struct netns_ipvs *ipvs, int af,
- 		struct dst_entry *dst = skb_dst(skb);
  
- 		if (dst->dev && !(dst->dev->flags & IFF_LOOPBACK) &&
--		    ip6_route_me_harder(ipvs->net, skb) != 0)
-+		    ip6_route_me_harder(ipvs->net, skb->sk, skb) != 0)
- 			return 1;
- 	} else
- #endif
- 		if (!(skb_rtable(skb)->rt_flags & RTCF_LOCAL) &&
--		    ip_route_me_harder(ipvs->net, skb, RTN_LOCAL) != 0)
-+		    ip_route_me_harder(ipvs->net, skb->sk, skb, RTN_LOCAL) != 0)
- 			return 1;
+-	if (autoload)
++	if (action == NFNL_ABORT_AUTOLOAD)
+ 		nf_tables_module_autoload(net);
+ 	else
+ 		nf_tables_module_autoload_cleanup(net);
+@@ -8203,9 +8207,10 @@ static void nf_tables_cleanup(struct net *net)
+ 	nft_validate_state_update(net, NFT_VALIDATE_SKIP);
+ }
  
- 	return 0;
-diff --git a/net/netfilter/nf_nat_proto.c b/net/netfilter/nf_nat_proto.c
-index 59151dc07fdc..e87b6bd6b3cd 100644
---- a/net/netfilter/nf_nat_proto.c
-+++ b/net/netfilter/nf_nat_proto.c
-@@ -715,7 +715,7 @@ nf_nat_ipv4_local_fn(void *priv, struct sk_buff *skb,
+-static int nf_tables_abort(struct net *net, struct sk_buff *skb, bool autoload)
++static int nf_tables_abort(struct net *net, struct sk_buff *skb,
++			   enum nfnl_abort_action action)
+ {
+-	int ret = __nf_tables_abort(net, autoload);
++	int ret = __nf_tables_abort(net, action);
  
- 		if (ct->tuplehash[dir].tuple.dst.u3.ip !=
- 		    ct->tuplehash[!dir].tuple.src.u3.ip) {
--			err = ip_route_me_harder(state->net, skb, RTN_UNSPEC);
-+			err = ip_route_me_harder(state->net, state->sk, skb, RTN_UNSPEC);
- 			if (err < 0)
- 				ret = NF_DROP_ERR(err);
- 		}
-@@ -953,7 +953,7 @@ nf_nat_ipv6_local_fn(void *priv, struct sk_buff *skb,
+ 	mutex_unlock(&net->nft.commit_mutex);
  
- 		if (!nf_inet_addr_cmp(&ct->tuplehash[dir].tuple.dst.u3,
- 				      &ct->tuplehash[!dir].tuple.src.u3)) {
--			err = nf_ip6_route_me_harder(state->net, skb);
-+			err = nf_ip6_route_me_harder(state->net, state->sk, skb);
- 			if (err < 0)
- 				ret = NF_DROP_ERR(err);
- 		}
-diff --git a/net/netfilter/nf_synproxy_core.c b/net/netfilter/nf_synproxy_core.c
-index 9cca35d22927..d7d34a62d3bf 100644
---- a/net/netfilter/nf_synproxy_core.c
-+++ b/net/netfilter/nf_synproxy_core.c
-@@ -446,7 +446,7 @@ synproxy_send_tcp(struct net *net,
- 
- 	skb_dst_set_noref(nskb, skb_dst(skb));
- 	nskb->protocol = htons(ETH_P_IP);
--	if (ip_route_me_harder(net, nskb, RTN_UNSPEC))
-+	if (ip_route_me_harder(net, nskb->sk, nskb, RTN_UNSPEC))
- 		goto free_nskb;
- 
- 	if (nfct) {
-diff --git a/net/netfilter/nft_chain_route.c b/net/netfilter/nft_chain_route.c
-index 8826bbe71136..edd02cda57fc 100644
---- a/net/netfilter/nft_chain_route.c
-+++ b/net/netfilter/nft_chain_route.c
-@@ -42,7 +42,7 @@ static unsigned int nf_route_table_hook4(void *priv,
- 		    iph->daddr != daddr ||
- 		    skb->mark != mark ||
- 		    iph->tos != tos) {
--			err = ip_route_me_harder(state->net, skb, RTN_UNSPEC);
-+			err = ip_route_me_harder(state->net, state->sk, skb, RTN_UNSPEC);
- 			if (err < 0)
- 				ret = NF_DROP_ERR(err);
- 		}
-@@ -92,7 +92,7 @@ static unsigned int nf_route_table_hook6(void *priv,
- 	     skb->mark != mark ||
- 	     ipv6_hdr(skb)->hop_limit != hop_limit ||
- 	     flowlabel != *((u32 *)ipv6_hdr(skb)))) {
--		err = nf_ip6_route_me_harder(state->net, skb);
-+		err = nf_ip6_route_me_harder(state->net, state->sk, skb);
- 		if (err < 0)
- 			ret = NF_DROP_ERR(err);
+@@ -8836,7 +8841,7 @@ static void __net_exit nf_tables_exit_net(struct net *net)
+ {
+ 	mutex_lock(&net->nft.commit_mutex);
+ 	if (!list_empty(&net->nft.commit_list))
+-		__nf_tables_abort(net, false);
++		__nf_tables_abort(net, NFNL_ABORT_NONE);
+ 	__nft_release_tables(net);
+ 	mutex_unlock(&net->nft.commit_mutex);
+ 	WARN_ON_ONCE(!list_empty(&net->nft.tables));
+diff --git a/net/netfilter/nfnetlink.c b/net/netfilter/nfnetlink.c
+index 2daa1f6ae344..d3df66a39b5e 100644
+--- a/net/netfilter/nfnetlink.c
++++ b/net/netfilter/nfnetlink.c
+@@ -333,7 +333,7 @@ static void nfnetlink_rcv_batch(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		return netlink_ack(skb, nlh, -EINVAL, NULL);
+ replay:
+ 	status = 0;
+-
++replay_abort:
+ 	skb = netlink_skb_clone(oskb, GFP_KERNEL);
+ 	if (!skb)
+ 		return netlink_ack(oskb, nlh, -ENOMEM, NULL);
+@@ -499,7 +499,7 @@ static void nfnetlink_rcv_batch(struct sk_buff *skb, struct nlmsghdr *nlh,
  	}
-diff --git a/net/netfilter/utils.c b/net/netfilter/utils.c
-index cedf47ab3c6f..2182d361e273 100644
---- a/net/netfilter/utils.c
-+++ b/net/netfilter/utils.c
-@@ -191,8 +191,8 @@ static int nf_ip_reroute(struct sk_buff *skb, const struct nf_queue_entry *entry
- 		      skb->mark == rt_info->mark &&
- 		      iph->daddr == rt_info->daddr &&
- 		      iph->saddr == rt_info->saddr))
--			return ip_route_me_harder(entry->state.net, skb,
--						  RTN_UNSPEC);
-+			return ip_route_me_harder(entry->state.net, entry->state.sk,
-+						  skb, RTN_UNSPEC);
+ done:
+ 	if (status & NFNL_BATCH_REPLAY) {
+-		ss->abort(net, oskb, true);
++		ss->abort(net, oskb, NFNL_ABORT_AUTOLOAD);
+ 		nfnl_err_reset(&err_list);
+ 		kfree_skb(skb);
+ 		module_put(ss->owner);
+@@ -510,11 +510,25 @@ static void nfnetlink_rcv_batch(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			status |= NFNL_BATCH_REPLAY;
+ 			goto done;
+ 		} else if (err) {
+-			ss->abort(net, oskb, false);
++			ss->abort(net, oskb, NFNL_ABORT_NONE);
+ 			netlink_ack(oskb, nlmsg_hdr(oskb), err, NULL);
+ 		}
+ 	} else {
+-		ss->abort(net, oskb, false);
++		enum nfnl_abort_action abort_action;
++
++		if (status & NFNL_BATCH_FAILURE)
++			abort_action = NFNL_ABORT_NONE;
++		else
++			abort_action = NFNL_ABORT_VALIDATE;
++
++		err = ss->abort(net, oskb, abort_action);
++		if (err == -EAGAIN) {
++			nfnl_err_reset(&err_list);
++			kfree_skb(skb);
++			module_put(ss->owner);
++			status |= NFNL_BATCH_FAILURE;
++			goto replay_abort;
++		}
  	}
- #endif
- 	return 0;
+ 	if (ss->cleanup)
+ 		ss->cleanup(net);
 -- 
 2.20.1
 
