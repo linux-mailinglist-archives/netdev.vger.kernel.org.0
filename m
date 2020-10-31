@@ -2,66 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F9CE2A1AA6
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 22:12:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2B3E2A1AAB
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 22:16:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728483AbgJaVMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 17:12:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54576 "EHLO mail.kernel.org"
+        id S1728420AbgJaVP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 17:15:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54996 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726254AbgJaVMy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 17:12:54 -0400
+        id S1726254AbgJaVP5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 17:15:57 -0400
 Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B0BBC206E9;
-        Sat, 31 Oct 2020 21:12:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AD102206E9;
+        Sat, 31 Oct 2020 21:15:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604178774;
-        bh=O0zZE71jaQQVKJcpkWVn5+kqfmDOAZoBLv2C4aM1hJo=;
+        s=default; t=1604178957;
+        bh=ZkCYhDBOiB8KC+RIbhnGxjj0Eq/6u19ZNFtvAX16nxk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U8nU3aVRjifpWFtgecdGp4AsQlhzS47rLGv0/3tsJ1i1nEQlHfV5RkTYktL9dGEz6
-         qcphWPW3w/B2jYu5i+4RcoXGhr0Oz6f/NP7V4QXEcLd0C3aicNN825yN5b3De82cUh
-         AbXzULLm324zUZPwGJ3QymIPJk3CYjfwSesa/Ffs=
-Date:   Sat, 31 Oct 2020 14:12:52 -0700
+        b=AEHUG0IVnoqpU6bTmpVh+b2UU9U4dR7dmRBczlPdYcTds2SDz5WsnsxCt/FOT0h9A
+         BZ9tkyxzO/cmguUAQllzCnfq1tdu0QcT80q2Y1PwNv/iEuWtWUuH2kO+GVJQh4VAjd
+         TjcNtTyo/Wn16ICqv0YtPWVkxyhdUOCAD2s0nhdU=
+Date:   Sat, 31 Oct 2020 14:15:56 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Willem de Bruijn <willemb@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Georg Kohmann <geokohma@cisco.com>
-Subject: Re: [PATCHv6 net 0/2] IPv6: reply ICMP error if fragment doesn't
- contain all headers
-Message-ID: <20201031141252.25da81fd@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201027123313.3717941-1-liuhangbin@gmail.com>
-References: <20201027022833.3697522-1-liuhangbin@gmail.com>
-        <20201027123313.3717941-1-liuhangbin@gmail.com>
+To:     Radhey Shyam Pandey <radheys@xilinx.com>
+Cc:     Robert Hancock <robert.hancock@calian.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Michal Simek <michals@xilinx.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v3] net: axienet: Properly handle PCS/PMA PHY
+ for 1000BaseX mode
+Message-ID: <20201031141556.151349a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <SN6PR02MB56460D7AACA73840DF048A8CC7170@SN6PR02MB5646.namprd02.prod.outlook.com>
+References: <20201028171429.1699922-1-robert.hancock@calian.com>
+        <SN6PR02MB56460D7AACA73840DF048A8CC7170@SN6PR02MB5646.namprd02.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Oct 2020 20:33:11 +0800 Hangbin Liu wrote:
-> When our Engineer run latest IPv6 Core Conformance test, test v6LC.1.3.6:
-> First Fragment Doesn=E2=80=99t Contain All Headers[1] failed. The test pu=
-rpose is to
-> verify that the node(Linux for example) should properly process IPv6 pack=
-ets
-> that don=E2=80=99t include all the headers through the Upper-Layer header.
->=20
-> Based on RFC 8200, Section 4.5 Fragment Header
->=20
->   -  If the first fragment does not include all headers through an
->      Upper-Layer header, then that fragment should be discarded and
->      an ICMP Parameter Problem, Code 3, message should be sent to
->      the source of the fragment, with the Pointer field set to zero.
->=20
-> The first patch add a definition for ICMPv6 Parameter Problem, code 3.
-> The second patch add a check for the 1st fragment packet to make sure
-> Upper-Layer header exist.
+On Wed, 28 Oct 2020 17:49:39 +0000 Radhey Shyam Pandey wrote:
+> > Update the axienet driver to properly support the Xilinx PCS/PMA PHY
+> > component which is used for 1000BaseX and SGMII modes, including
+> > properly configuring the auto-negotiation mode of the PHY and reading the
+> > negotiated state from the PHY.
+> > 
+> > Signed-off-by: Robert Hancock <robert.hancock@calian.com>  
+> 
+> Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 
-Applied, thank you!
+Applied, thanks!
