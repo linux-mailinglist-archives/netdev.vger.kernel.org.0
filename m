@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE2F12A153F
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 11:30:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 897F92A1533
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 11:29:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgJaK3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 06:29:38 -0400
-Received: from mail-am6eur05on2066.outbound.protection.outlook.com ([40.107.22.66]:21857
+        id S1726807AbgJaK3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 06:29:43 -0400
+Received: from mail-am6eur05on2083.outbound.protection.outlook.com ([40.107.22.83]:28640
         "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726708AbgJaK3f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 06:29:35 -0400
+        id S1726753AbgJaK3i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 06:29:38 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LhVKWYez6KhmcEq0pFq7FN9r5itUBEennWDln00a7LdE8NeGWStJ379hxG0iNx2UysItG706hjsOKwnAw3f3UBS+7YOhSMHQaV0SJ/1dm2Gtdn9TFu5pvuT3YCqjVDVamslTLL221ND9dmh696DjIe4D2sa9neZ9IouxTns0klQ400zgRD2i1TXou3vZTjYXnSQXwv5YkivVEfrqW4OarbtdksfJunbDxc571Hw8yNTcqDjh6D9Wqw2tI6CcZ5Q97D+dxr3Zm/yIfZo44wqbOnVhnQME9T+oaGPUkdmzRH6yHbF9plvafl+Mg47gCytnvHLOrp2cPPAsOxi5B8cUvw==
+ b=JIbMlOt83zHd/qcWAihWmUzqG+lKmf1WB4XnrYpud+ysqcdEmvh0ZoE/8cQtD4XXxO/Kg/UXRaPEfHaZXwjVUKJ1bv8QoaHFCYa/Bm4zp1N3Anpdo67ZgY/e6p5O0X7hHRZ6BXJsyczRiovOShJbmGUVe84HyzBCSAJ8Z4pqIEGmgdjxAA9Rrvwjps6yE59cyUbe8CnTXvGoAh0rAuyg7a1QNT768kwtIZZtGvfi1xBKuj+mgYfryxG0ZqXUOFeZ1pwBipDmWIIF3Cjq22DwllJrRdLuVuWdnR+e4zhKuYcn5M21hW5FOu4CzWN/Jz24hp0q2GePU+LRmUcXLGXDQg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aKHNZOYVq3p8t98e3+obLAU+JKFfX/yPZDZyROFTsqc=;
- b=JG4+eGlDZSMd/c6NIF39CGEYrFeeZY9LZlDjNbb5aKcngC5AevZ8wnSQtMB65ER4B3ky8YpBBJCQeI4A8X9RH2r9Yn3+/ZdqK+OnJyaYv8ce8Q7MrXtU1wHU2YHhg5BQAwEZnUe/9RUZ0+5SrOvNJW+PaRNi/ZPop3xBR1Ee+6hTO5fGmJ4KH8QYkO8D3rSrHPUXSCJTwZWtfi2V//qBI4kGKJeZf3AcFJmZvOVDVOTBiGeTPLg9gDYslmDJaJBjYorX/t8OCiBMlrCpU4pxDprTerQKt5N5ooR940JvpZTcRoIPKVghtfb6KlPSYNoVXSRAorGycDHwAERxqAax9Q==
+ bh=EfZn2CdJleb1VrEeWX7DxsdfPbGgOUM7dYtYsf1PVIc=;
+ b=OERMC4Q5ZeFTeYsRl7l6YplgUGiKIrkNROCBp21p8nFv0H9BfoipWr4BhM0vVn8Zi4RLDJ8Y/TAPV8JT+n5hilOaFQgJXicu7TBIjZ8zFCzy9nMA1SxFFUvJoUg9Px7954EdYEvwq8VkJ8h70CcpotfjfZYk2vX2HfpL+svVNvykXaq2FxrVZGbqDFt3x4xPLLU7Yf7e7+vI0eMmdLlK0KFuTZZuDXyPthjnAal7iN7lHjeiF1a5D8VsGD0JHzDQhOVHsF0nMM2Oh5wDPDoGmGX9Q+wU0JTpX3JjiiliMv/yCkDyopwvAYfHNCz+yG3SGiF3/QAGFP1uunDn7KH2FA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aKHNZOYVq3p8t98e3+obLAU+JKFfX/yPZDZyROFTsqc=;
- b=b1KGduYKUH0Gw2oNnYEvV2GBpdvjQC8IVfKwvENv8QI6q6b7/K0Q1Ugnm9Dc5b8GH/TpMI6fKDCzCpUnl6IBgMsYMbjfqE+ayvKJJotEwMAqFvgMgdLlRXSA5QvlAg6z4qhvd4gw0OSuMq1tzrZO0Cc5mTU9lAtdqaMdw66TEXE=
+ bh=EfZn2CdJleb1VrEeWX7DxsdfPbGgOUM7dYtYsf1PVIc=;
+ b=CeXVvJfjsy6bhoAPKNpdeyhZuy/MV4t/1WuKdWwh70B5KoLaA15fzHvMYvVT1+bk93i8avLKEOXeaSSlnvVEOHSrmpdnAUy910HxI6Na2DWB7v31UlK+/tV8cUaA5nNxPypnsSCtMLw9UJFOWDXPj06FT7zAJ7EInUdqxJQ8QPs=
 Authentication-Results: microchip.com; dkim=none (message not signed)
  header.d=none;microchip.com; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
@@ -36,7 +36,7 @@ Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3499.029; Sat, 31 Oct 2020
- 10:29:27 +0000
+ 10:29:28 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
@@ -47,9 +47,9 @@ To:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/7] net: mscc: ocelot: use the pvid of zero when bridged with vlan_filtering=0
-Date:   Sat, 31 Oct 2020 12:29:10 +0200
-Message-Id: <20201031102916.667619-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 2/7] net: mscc: ocelot: don't reset the pvid to 0 when deleting it
+Date:   Sat, 31 Oct 2020 12:29:11 +0200
+Message-Id: <20201031102916.667619-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201031102916.667619-1-vladimir.oltean@nxp.com>
 References: <20201031102916.667619-1-vladimir.oltean@nxp.com>
@@ -61,206 +61,83 @@ X-ClientProxiedBy: VI1PR08CA0170.eurprd08.prod.outlook.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.177) by VI1PR08CA0170.eurprd08.prod.outlook.com (2603:10a6:800:d1::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Sat, 31 Oct 2020 10:29:27 +0000
+Received: from localhost.localdomain (188.25.2.177) by VI1PR08CA0170.eurprd08.prod.outlook.com (2603:10a6:800:d1::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Sat, 31 Oct 2020 10:29:28 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 7a6847a1-e30f-4486-8fcd-08d87d87d854
+X-MS-Office365-Filtering-Correlation-Id: d69e79cb-1aaf-4275-20f3-08d87d87d8c3
 X-MS-TrafficTypeDiagnostic: VE1PR04MB6637:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VE1PR04MB66376101C38832B13D61576EE0120@VE1PR04MB6637.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB6637F7F277D6FFBC2812B587E0120@VE1PR04MB6637.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /eUF5k7u39ES7PL/O+AsQ3naLk+5FB4UflfTtZrp6GjCVwRBDTCmUIX6qLbW0pFqMuoBQectjaL3Im8w9pcxG0Vcvz+bYbZhKd703YhZrF1AYCg+gppnzs0/8YEgC8MYpy7l/AP//DUUXBZFSB5MsrvQU45qDSet5wC+XV5hmeWBwPBglp14SfLOeRKkerVp+lIUOVkfzyR3PwefbGcSXgh1tStbCFATYgolLMZAHfQqzr+ZvonONWWZRAFrcN6rtLajdL2UevZqYqcwmZgdsNOA8nBs/GoZP5/F3z2DdJoHl6HqtLRRS6wR2W96W+F1YaSwuhNE7zrRH3aiPGMGbuOB22TXzrdm5PZi41dictE+DCWvq24+8cvErCO2l/Cy3Gv61K1cBGX+jGnOrJ6I3w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(136003)(396003)(39850400004)(366004)(66556008)(1076003)(316002)(956004)(86362001)(66476007)(8936002)(83380400001)(2906002)(110136005)(66946007)(8676002)(36756003)(6512007)(6666004)(16526019)(186003)(52116002)(6506007)(44832011)(26005)(6486002)(69590400008)(478600001)(2616005)(5660300002)(921003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Rlky80xXLqX2ZrYnWU3fDY7mppvocySCxT9M+YtjqO+SpNGLcB/kHJR7AQtVfFKyar09Gbtu08h7uM5raK+Upeg3cyggt8EFZd0XeW3fBh6HXBIkzNoO/Kb0cz8Yx+uIWWBJpOrJcuSmQklnTns7HLe29472iTdN06nt+8Eo/zyjn45ZKQsffbzn2yOWQY9YKCv/jgSgAnS9rMegUXMHT43K0InEnssslaY9FbSO9WwLjAfdQtgdXiZMe06J1TUF3/WIt7UOtkfEq+Wvvn1AJDhVL+gSf3N06KHSzonrgkiOjFqmcDOwr5vd6p+10RKWqykEIzQ8PnUuIQXszmH+g4ZX5XQwnB4SNbUIQGyzPhs/AqOf0ffC/WIHpTwRwfT2dFgmymcNuv85XbqLdDVOGIl9HDU9cAiP/KBuRWNXnjSXz09J3QHqTHRhfXtgoogmB2MUs1gNMtmVXExrinFEQF1neiGXklqQrxxcZbk/7jWJd533H+yqI6RATRbwL19rpEWwxAgZVjVYSX/NYIk7OIuflgOmrWkFY9DosKdmVcCZje8R1uvVSiQkcqFUHVndDmAex8bAVTGp8uqIXsQ1Mx/rr5zf8UMhRRN0UYGp1PdtdyReEC3Vs3IfHwSiOj3rtVmD+pYFDQAg+27TWLXWlA==
+X-Microsoft-Antispam-Message-Info: N+u6Y5oScT0FEQde4YIEhC0p9BY0cWrbHS3cLLv6LwRKqUjxRK4wTDuMtYMk8Du3GVA9jcIOCW8O1MmXVrlS3VlfQYBNWG5JTT9l2HkuBA+10snBGnu0Cky5v/eK2BIe6S5nHiL75lIHm77xXIx/aQdpNZmZyFXbiI3TgPAaiyqcyMHerIXjWcXCV3tkdLsIRrQVBnqo+RDakFtFgkx64gJojTdFHy8ilN/HBlZNxlokcXenqass74uqIIfHkKVqGWTgL8fAOwtg6pZIc8BihGSJpCUnPStKifzx7ICe4+GszuAKmX67KGDf2q/ZYmfoWAQ5MLMJPoEiAOWzkogPpaNDZ0CPzF+dD+csgPkCv5LD+FwrR02IzghSDPaeMzaiuOAD8xEfFAtfZu851hjDxXY4ymdYBBBh+VjQEhnDfKuBXxvN3XLN2aIXQGNULGex8Vh5Ix95jhnSPFBS0T7D8dmU+TZJsO3m9EVw4MwrTmM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(136003)(396003)(39850400004)(366004)(66556008)(1076003)(316002)(956004)(86362001)(66476007)(8936002)(83380400001)(2906002)(110136005)(66946007)(8676002)(36756003)(6512007)(6666004)(16526019)(186003)(52116002)(6506007)(44832011)(26005)(966005)(6486002)(69590400008)(478600001)(2616005)(5660300002)(921003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: PuoZd8IkoaCwRCX42Cg7iAUGyED+w4P6tsc5XeTh5/UuUS1zKsA4C5ZrfNd2h8Y4VZviOMZ/zsacuB1m9LrxhXoMrzoF9ERcLE/vCX5+Gf2tjhysY2ocg0veJx15uaZ0HVjWcbe6VB1gCeGOCAWgli4SGHbBPpbCJaL5Ks1XOLoBTIzuROVfiu2K6i8bwlubnccVHmGtTKcHEPzV8wgj7nGzzzDTT0sL9UeoH1p3I+v1pUj9saWUlyCvMH1/67FYeFhV9CR7RtBj2aA/xW/vdppLa8b0X39DyPTIKRFWZy8HZv5gjBizfV7WVk4p2Ff2UtVtI6BgRkFQrfu4lI6x1/53DosOS4BZwmGWnIDdA5qfuu+AQJdSVKt3OtBH/2wR615JFp2KHDw8WMbxRwDrj2IV7mEkHFoTEOQBPCyIe6M0VDzEhMMI6qB4gbs52jiBE1borZ3tgpINkQ0NR3JOvSDWIKWi3Wof750kDE4A3ylZPRxU5V5VKXDqvx+AOhjs38chqLlz8ICKWYPpO5b6h4QY4siYNqakBmAaO6ZDvByiF/6gDWiucZZropa2HV3cJibuF1ruHreW14Rl5piauG1cBooqkUSmKzXazzvih2Bvfp44uVDyufDZLJw+Ud51UpgO0Zp1OgwMpBGRt6ijQw==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7a6847a1-e30f-4486-8fcd-08d87d87d854
+X-MS-Exchange-CrossTenant-Network-Message-Id: d69e79cb-1aaf-4275-20f3-08d87d87d8c3
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2020 10:29:27.8091
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2020 10:29:28.6167
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jFgy/KGn26zjyZ27kMHTkU1p8fBh89NsKBj/KB9QDlECV6lBICsG5lSAWPFDqAVfG6RJjPAIu4G9+WTbsekb9w==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1l3CMLlyBE6yS3ewfeloPBoXK8UoeL1xJxHHkVqLYnQg1B8zigqYGc8bmntD2Fg40JaXhyY63CXINlCg5XCHIg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6637
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, mscc_ocelot ports configure pvid=0 in standalone mode, and
-inherit the pvid from the bridge when one is present.
+I have no idea why this code is here, but I have 2 hypotheses:
 
-When the bridge has vlan_filtering=0, the software semantics are that
-packets should be received regardless of whether there's a pvid
-configured on the ingress port or not. However, ocelot does not observe
-those semantics today.
+1.
+A desperate attempt to keep untagged traffic working when the bridge
+deletes the pvid on a port.
 
-Moreover, changing the PVID is also a problem with vlan_filtering=0.
-We are privately remapping the VID of FDB, MDB entries to the port's
-PVID when those are VLAN-unaware (i.e. when the VID of these entries
-comes to us as 0). But we have no logic of adjusting that remapping when
-the user changes the pvid and vlan_filtering is 0. So stale entries
-would be left behind, and untagged traffic will stop matching on them.
+There was a fairly okay discussion here:
+https://lore.kernel.org/netdev/CA+h21hrRMrLH-RjBGhEJSTZd6_QPRSd3RkVRQF-wNKkrgKcRSA@mail.gmail.com/#t
+which established that in vlan_filtering=1 mode, the absence of a pvid
+should denote that the ingress port should drop untagged and priority
+tagged traffic. While in vlan_filtering=0 mode, nothing should change.
 
-And even if we were to solve that, there's an even bigger problem. If
-swp0 has pvid 1, and swp1 has pvid 2, and both are under a vlan_filtering=0
-bridge, they should be able to forward traffic between one another.
-However, with ocelot they wouldn't do that.
+So in vlan_filtering=1 mode, we should simply let things happen, and not
+attempt to save the day. And in vlan_filtering=0 mode, the pvid is 0
+anyway, no need to do anything.
 
-The simplest way of fixing this is to never configure the pvid based on
-what the bridge is asking for, when vlan_filtering is 0. Only if there
-was a VLAN that the bridge couldn't mangle, that we could use as pvid....
-So, turns out, there's 0 just for that. And for a reason: IEEE
-802.1Q-2018, page 247, Table 9-2-Reserved VID values says:
+2.
+The driver encodes the native VLAN (ocelot_port->vid) value of 0 as
+special, meaning "not valid". There are checks based on that. But there
+are no such checks for the ocelot_port->pvid value of 0. In fact, that's
+a perfectly valid value, which is used in standalone mode. Maybe there
+was some confusion and the author thought that 0 means "invalid" here as
+well.
 
-	The null VID. Indicates that the tag header contains only
-	priority information; no VID is present in the frame.
-	This VID value shall not be configured as a PVID or a member
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	of a VID Set, or configured in any FDB entry, or used in any
-	Management operation.
+In conclusion, delete the code*.
 
-So, aren't we doing exactly what 802.1Q says not to? Well, in a way, but
-what we're doing here is just driver-level bookkeeping, all for the
-better. The fact that we're using a pvid of 0 is not observable behavior
-from the outside world: the network stack does not see the classified
-VLAN that the switch uses, in vlan_filtering=0 mode. And we're also more
-consistent with the standalone mode now.
-
-And now that we use the pvid of 0 in this mode, there's another advantage:
-we don't need to perform any VID remapping for FDB and MDB entries either,
-we can just use the VID of 0 that the bridge is passing to us.
-
-The only gotcha is that every time we change the vlan_filtering setting,
-we need to reapply the pvid (either to 0, or to the value from the bridge).
-A small side-effect visible in the patch is that ocelot_port_set_pvid
-needs to be moved above ocelot_port_vlan_filtering, so that it can be
-called from there without forward-declarations.
+*in fact we'll add it back later, in a slightly different form, but for
+an entirely different reason than the one for which this exists now.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 53 ++++++++++--------------------
- 1 file changed, 17 insertions(+), 36 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 323dbd30661a..bc5b15d7bce7 100644
+index bc5b15d7bce7..ae25a79bf907 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -199,6 +199,22 @@ static int ocelot_port_set_native_vlan(struct ocelot *ocelot, int port,
- 	return 0;
- }
+@@ -293,10 +293,6 @@ int ocelot_vlan_del(struct ocelot *ocelot, int port, u16 vid)
+ 	if (ret)
+ 		return ret;
  
-+/* Default vlan to clasify for untagged frames (may be zero) */
-+static void ocelot_port_set_pvid(struct ocelot *ocelot, int port, u16 pvid)
-+{
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
-+
-+	ocelot_port->pvid = pvid;
-+
-+	if (!ocelot_port->vlan_aware)
-+		pvid = 0;
-+
-+	ocelot_rmw_gix(ocelot,
-+		       ANA_PORT_VLAN_CFG_VLAN_VID(pvid),
-+		       ANA_PORT_VLAN_CFG_VLAN_VID_M,
-+		       ANA_PORT_VLAN_CFG, port);
-+}
-+
- int ocelot_port_vlan_filtering(struct ocelot *ocelot, int port,
- 			       bool vlan_aware, struct switchdev_trans *trans)
- {
-@@ -233,25 +249,13 @@ int ocelot_port_vlan_filtering(struct ocelot *ocelot, int port,
- 		       ANA_PORT_VLAN_CFG_VLAN_POP_CNT_M,
- 		       ANA_PORT_VLAN_CFG, port);
- 
-+	ocelot_port_set_pvid(ocelot, port, ocelot_port->pvid);
- 	ocelot_port_set_native_vlan(ocelot, port, ocelot_port->vid);
- 
- 	return 0;
- }
- EXPORT_SYMBOL(ocelot_port_vlan_filtering);
- 
--/* Default vlan to clasify for untagged frames (may be zero) */
--static void ocelot_port_set_pvid(struct ocelot *ocelot, int port, u16 pvid)
--{
--	struct ocelot_port *ocelot_port = ocelot->ports[port];
+-	/* Ingress */
+-	if (ocelot_port->pvid == vid)
+-		ocelot_port_set_pvid(ocelot, port, 0);
 -
--	ocelot_rmw_gix(ocelot,
--		       ANA_PORT_VLAN_CFG_VLAN_VID(pvid),
--		       ANA_PORT_VLAN_CFG_VLAN_VID_M,
--		       ANA_PORT_VLAN_CFG, port);
--
--	ocelot_port->pvid = pvid;
--}
--
- int ocelot_vlan_add(struct ocelot *ocelot, int port, u16 vid, bool pvid,
- 		    bool untagged)
- {
-@@ -542,26 +546,11 @@ EXPORT_SYMBOL(ocelot_get_txtstamp);
- int ocelot_fdb_add(struct ocelot *ocelot, int port,
- 		   const unsigned char *addr, u16 vid)
- {
--	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 	int pgid = port;
- 
- 	if (port == ocelot->npi)
- 		pgid = PGID_CPU;
- 
--	if (!vid) {
--		if (!ocelot_port->vlan_aware)
--			/* If the bridge is not VLAN aware and no VID was
--			 * provided, set it to pvid to ensure the MAC entry
--			 * matches incoming untagged packets
--			 */
--			vid = ocelot_port->pvid;
--		else
--			/* If the bridge is VLAN aware a VID must be provided as
--			 * otherwise the learnt entry wouldn't match any frame.
--			 */
--			return -EINVAL;
--	}
--
- 	return ocelot_mact_learn(ocelot, pgid, addr, vid, ENTRYTYPE_LOCKED);
- }
- EXPORT_SYMBOL(ocelot_fdb_add);
-@@ -1048,7 +1037,6 @@ static void ocelot_encode_ports_to_mdb(unsigned char *addr,
- int ocelot_port_mdb_add(struct ocelot *ocelot, int port,
- 			const struct switchdev_obj_port_mdb *mdb)
- {
--	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 	unsigned char addr[ETH_ALEN];
- 	struct ocelot_multicast *mc;
- 	struct ocelot_pgid *pgid;
-@@ -1057,9 +1045,6 @@ int ocelot_port_mdb_add(struct ocelot *ocelot, int port,
- 	if (port == ocelot->npi)
- 		port = ocelot->num_phys_ports;
- 
--	if (!vid)
--		vid = ocelot_port->pvid;
--
- 	mc = ocelot_multicast_get(ocelot, mdb->addr, vid);
- 	if (!mc) {
- 		/* New entry */
-@@ -1108,7 +1093,6 @@ EXPORT_SYMBOL(ocelot_port_mdb_add);
- int ocelot_port_mdb_del(struct ocelot *ocelot, int port,
- 			const struct switchdev_obj_port_mdb *mdb)
- {
--	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 	unsigned char addr[ETH_ALEN];
- 	struct ocelot_multicast *mc;
- 	struct ocelot_pgid *pgid;
-@@ -1117,9 +1101,6 @@ int ocelot_port_mdb_del(struct ocelot *ocelot, int port,
- 	if (port == ocelot->npi)
- 		port = ocelot->num_phys_ports;
- 
--	if (!vid)
--		vid = ocelot_port->pvid;
--
- 	mc = ocelot_multicast_get(ocelot, mdb->addr, vid);
- 	if (!mc)
- 		return -ENOENT;
+ 	/* Egress */
+ 	if (ocelot_port->vid == vid)
+ 		ocelot_port_set_native_vlan(ocelot, port, 0);
 -- 
 2.25.1
 
