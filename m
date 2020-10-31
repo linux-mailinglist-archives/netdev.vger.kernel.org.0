@@ -2,114 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41A562A1851
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 15:51:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55E092A187D
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 16:15:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbgJaOvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 10:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34514 "EHLO
+        id S1727958AbgJaPPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 11:15:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbgJaOvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 10:51:06 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD0DDC0617A6;
-        Sat, 31 Oct 2020 07:51:05 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id s15so12545718ejf.8;
-        Sat, 31 Oct 2020 07:51:05 -0700 (PDT)
+        with ESMTP id S1726089AbgJaPPb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 11:15:31 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6075C0617A6
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 08:15:29 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id u62so10588748iod.8
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 08:15:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xeoqSsCGy6lTHKb5i/FB3Sn7FnwCv5pc3NVImeJNRB8=;
-        b=HTqYXnVAZEYca4dwQIlJytP+mRVD8IFnsBMPMlPmYjk2ikBIo2b31cfj/1J6nkOjGA
-         eSV8BM6Q0jdjN2tTB8E8I4Pcvf4MVdLL6uZ8doy3F2jK4IxmCXL23TJpFVUYsIjTqPQn
-         g0hb/2D/hc6VwQpuXBRED1+Ufty8s/jf+QuTk3uVyYBJfFq9M+Ekn9qAzufolqLAjqxS
-         KGq8toRd8BqqSoz4ICGbS0cLnLidFCUtOYTIyjFEmaZWiTieOfQRdvoDxoS91RV7l63n
-         6lzGPuhzsTj6Gil1b2SUZPo7vFbICOMUsNoxiLOrZoXfeZpU2rkqUYveIbX4rfgaFM+x
-         iv7A==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zB7yqaNrldEgZneTIj0VJhMPYOHInXzygYCi0tQFObQ=;
+        b=fXEktLgrrzV8tvbnYEBIwNqB93RGbxX78MytAJ4EAeEnn1SyOdWnwLNw+XgpLA88ID
+         Dfoq2Rrh4qgHWjQOU38aJmHeZ9gnXSc/h/LxSps2LFS2dSKb+MSrbrdmbJcGi7VMvaSQ
+         d+uFNfT4fDlJyQ1vCNCMrtS25sCKj6hHiaQpSLmZtw+nbVsT9vM0DytVeTnWSOOzaf0O
+         gEnTgZNny40gqLHR0iHcz8vdljGlxk2+wbJI7l/CXmRV1+l9HSLBD319KRxBvsucn+KI
+         3bofJDANzsyHeU3ZKvK3JYlszy+T/uwtbPo3j+u8+WgEMk91DGZYze6XsOmmgDoW8xIv
+         hTCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xeoqSsCGy6lTHKb5i/FB3Sn7FnwCv5pc3NVImeJNRB8=;
-        b=KWg8aKfYrXJwUzsTlelc0Am27/FIgTQtjU+uno0//W0vhJfB6S9UP8sr0lLuZ9hI88
-         KWuZUKKOV0gGSgLlEtVVU3+uxMXAbreo/+Sht6VVxDVfTTHuD9NlFB2g9WjjRdIBp1QZ
-         t7tMVCNjlYo1rFF7TtyMqSt9C/sqKxwc3kJvl3oUaVscHYGK8+JLzb6uDokEBruXjrQr
-         AZeflYQGwtROm9j2hCo0FiBwBuieR/9hPZM/OHyd1phwCHxif+fo5WdTZhqHttGxvDhz
-         Dy8fpXUl8X19Q1BqqhRuweWkScWeLb5yp9yIuwDLlf+hl3GeiCRWKDxU9r39XU13Y9e+
-         f6Jw==
-X-Gm-Message-State: AOAM531HlDWVQjJZ9QG3EUzwS/Y4xidb0thikUVH8ZMCumW4c8Hzwlhz
-        FKSwU0MpCgHiJnde86nQ6yU=
-X-Google-Smtp-Source: ABdhPJxPWUswFvEeDDaxaC/HDhdifsx7MwYbM6jNwquvTyZRGPUxjhxLmDnU66RyuY+jaoldxe+Omg==
-X-Received: by 2002:a17:906:3acd:: with SMTP id z13mr7716765ejd.118.1604155864422;
-        Sat, 31 Oct 2020 07:51:04 -0700 (PDT)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id ok21sm4990707ejb.96.2020.10.31.07.51.02
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zB7yqaNrldEgZneTIj0VJhMPYOHInXzygYCi0tQFObQ=;
+        b=hsjG+GBmk2xvZ+pDCW+rXi+ZSdA9jTfZ8SISPVKgPKSJmRuZHWyXtR1JyqZO9Aww5+
+         eABxL/+aL6Q6SsjowiuHw4dm92kDiN1Xn9dVJACosPX6OJPLRqjr1lXppfdmJyHNfwzl
+         9Ic1gajDdItblMGboh5JhB/sgGdMuXFZ3WDQoUCdzLyIIXd4t72bcrUxd/y9djyBU/HC
+         FtqjSf7bJbEsbwTpLwQOFI2wC7Vgeczm9CT/RpzLtC4mXouCQ+84FmF4N1xcXCAJBbFU
+         3XLCLhOJob+nqsUDrC66WazYERhgvE52o9JVuE6MFxBkJTrjByhu4ewZEpaxUuL7uEqT
+         zdPg==
+X-Gm-Message-State: AOAM533VCUrnaqNVFrv/4nFuvLglfGc3csc5JwAqDimvJkHtazoX+5YW
+        6fltKkunSNq0fsKG57DCnDgZCQ==
+X-Google-Smtp-Source: ABdhPJxf1AKZMrIEfxciAqHwT+3NHE5v840lMxlKaLStFOfGMXr7SlrauDqD+OdZ7fxrj7riNdy7Nw==
+X-Received: by 2002:a02:7:: with SMTP id 7mr5848815jaa.112.1604157329229;
+        Sat, 31 Oct 2020 08:15:29 -0700 (PDT)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id e4sm6777988ils.75.2020.10.31.08.15.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Oct 2020 07:51:03 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
-Date:   Sat, 31 Oct 2020 16:51:01 +0200
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Ioana Ciornei <ciorneiioana@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
-        Dan Murphy <dmurphy@ti.com>,
-        Divya Koppera <Divya.Koppera@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Kavya Sree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Marek Vasut <marex@denx.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Mathias Kresin <dev@kresin.me>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Michael Walle <michael@walle.cc>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Nisar Sayed <Nisar.Sayed@microchip.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Willy Liu <willy.liu@realtek.com>,
-        Yuiko Oshino <yuiko.oshino@microchip.com>
-Subject: Re: [PATCH net-next 00/19] net: phy: add support for shared
- interrupts (part 1)
-Message-ID: <20201031145101.ehxb2boekevppu3d@skbuf>
-References: <20201029100741.462818-1-ciorneiioana@gmail.com>
- <d05587fc-0cec-59fb-4e84-65386d0b3d6b@gmail.com>
- <20201030233627.GA1054829@lunn.ch>
- <fee0997d-f4bc-dfc3-9423-476f04218614@gmail.com>
- <20201031143215.GA1076434@lunn.ch>
+        Sat, 31 Oct 2020 08:15:28 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: ipa: avoid a bogus warning
+Date:   Sat, 31 Oct 2020 10:15:24 -0500
+Message-Id: <20201031151524.32132-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201031143215.GA1076434@lunn.ch>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 31, 2020 at 03:32:15PM +0100, Andrew Lunn wrote:
-> > Sure, I just wanted to add the comment before others simply copy and
-> > paste this (pseudo) code. And in patch 9 (aquantia) and 18 (realtek)
-> > it is used as is. And IIRC at least the Aquantia PHY doesn't mask
-> > the interrupt status.
-> 
-> And that is were we are going to have issues with this patch set, and
-> need review by individual PHY driver maintainers, or a good look at
-> the datasheet.
-> 
+The previous commit added support for IPA having up to six source
+and destination resources.  But currently nothing uses more than
+four.  (Five of each are used in a newer version of the hardware.)
 
-Yep, I already started to comb through all the drivers and their
-datasheets so that I can only check for the interrupts that the driver
-enables.
+I find that in one of my build environments the compiler complains
+about newly-added code in two spots.  Inspection shows that the
+warnings have no merit, but this compiler does not recognize that.
 
-Ioana
+    ipa_main.c:457:39: warning: array index 5 is past the end of the
+        array (which contains 4 elements) [-Warray-bounds]
+    (and the same warning at line 483)
+
+We can make this warning go away by changing the number of elements
+in the source and destination resource limit arrays--now rather than
+waiting until we need it to support the newer hardware.  This change
+was coming soon anyway; make it now to get rid of the warning.
+
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+Sorry about this; I got no warnings on my primary build system.
+
+ drivers/net/ipa/ipa_data.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ipa/ipa_data.h b/drivers/net/ipa/ipa_data.h
+index 0225d81d85028..83c4b78373efb 100644
+--- a/drivers/net/ipa/ipa_data.h
++++ b/drivers/net/ipa/ipa_data.h
+@@ -46,8 +46,8 @@
+  */
+ 
+ /* The maximum value returned by ipa_resource_group_{src,dst}_count() */
+-#define IPA_RESOURCE_GROUP_SRC_MAX	4
+-#define IPA_RESOURCE_GROUP_DST_MAX	4
++#define IPA_RESOURCE_GROUP_SRC_MAX	5
++#define IPA_RESOURCE_GROUP_DST_MAX	5
+ 
+ /**
+  * struct gsi_channel_data - GSI channel configuration data
+-- 
+2.20.1
+
