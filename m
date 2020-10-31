@@ -2,142 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B5512A1996
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 19:31:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09FDD2A1995
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 19:31:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728338AbgJaSb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 14:31:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56582 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727967AbgJaSb2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:31:28 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kYves-004XXt-1P; Sat, 31 Oct 2020 19:31:22 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Xin Long <lucien.xin@gmail.com>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next] net: ipv6: For kerneldoc warnings with W=1
-Date:   Sat, 31 Oct 2020 19:30:44 +0100
-Message-Id: <20201031183044.1082193-1-andrew@lunn.ch>
-X-Mailer: git-send-email 2.27.0
+        id S1728275AbgJaSbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 14:31:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727967AbgJaSbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 14:31:17 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11EABC0617A6
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 11:31:17 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id b12so4640461plr.4
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 11:31:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=vaeJ0RKy5Qs9c7TWIrAwHROLabv4QsvhsnBOhDq3MAc=;
+        b=HrmD4yuMpjGTNW0BgXBxPKuUAFMKB3qsS5es9mC5h6JiW4wIQ0cuAJw82yu1Y/VoFm
+         PkvwTWBgyI0KqSTCt+je9RfJIwdHojAVMqNzjn6rX5omydbnm2W2jG8LAm3M1Qs/C9qn
+         vsY9xnH68238nZfeGfO/zZk460Zgf03YOzGMKjrL1PQ0cRVN+bN9LRNfH+FREyklaIYm
+         ZcjT+MOKgaCqbaVpRXW8SPPmndmHCWF+x4sdwmQiQydlcFl14p17CmskWmMyG4HNaYcB
+         xQseHSxSq6dpZlU6IvzUQC9HDea4KNral7R6gSWjOqaa82wG5IrZcwBPOcvCwtKjhqA5
+         LkpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=vaeJ0RKy5Qs9c7TWIrAwHROLabv4QsvhsnBOhDq3MAc=;
+        b=OEmEstFhvsddebWWkpWBKczjj2lVfGbt/TFEWtfLs+13CdRSqR+lTI+ZfEEl1AbPHz
+         QJKElKQT1cguDlJ9uySAvYsOwKL35vQlbjVgnBRRkfXSHt51yhYUZ8zaLPxMdJ0ZWQsi
+         hIBwOanLdmihKRf6y9RJuLxy4/BNNc/ROtHnCDuDv0MjVh5eD/dSm/u0yl+68CsTVw6A
+         S7v8Gjt0TQLanKkocR1gLr5ZB/+KSLaqHnlNiS3ys3E+G3kRhNUnXkFqDxvG++JqsG/Q
+         tt+Q4O1G0oxFa5PI66EQjbcRoEgVfSu9ay8UoOPXfj1gCkNMZ8dbkzQD98ckLGeARso0
+         5WWQ==
+X-Gm-Message-State: AOAM533nPRXgqzXCsrb52367nTU7HXOkeetxu7iJqj6XViuXKKi9yNNB
+        CWPSRaQXJOyrXLjxaIV8Q2EoQqv/8898zA==
+X-Google-Smtp-Source: ABdhPJwheaNTrU7dHYGwCS7aWHe8VuIytTAq74xAvFLa0FC6w0u894dPXqA0n3j6WxiRRz3ErjFRtg==
+X-Received: by 2002:a17:90a:dc82:: with SMTP id j2mr9480932pjv.68.1604169075511;
+        Sat, 31 Oct 2020 11:31:15 -0700 (PDT)
+Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
+        by smtp.gmail.com with ESMTPSA id t11sm6913578pjs.8.2020.10.31.11.31.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 31 Oct 2020 11:31:14 -0700 (PDT)
+Subject: [bpf-next PATCH v2 0/5] selftests/bpf: Migrate test_tcpbpf_user to be
+ a part of test_progs framework
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        john.fastabend@gmail.com, kernel-team@fb.com,
+        netdev@vger.kernel.org, edumazet@google.com, brakmo@fb.com,
+        andrii.nakryiko@gmail.com, alexanderduyck@fb.com
+Date:   Sat, 31 Oct 2020 11:31:14 -0700
+Message-ID: <160416890683.710453.7723265174628409401.stgit@localhost.localdomain>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+Move the test functionality from test_tcpbpf_user into the test_progs
+framework so that it will be run any time the test_progs framework is run.
+This will help to prevent future test escapes as the individual tests, such
+as test_tcpbpf_user, are less likely to be run by developers and CI
+tests.
 
-net/ipv6/addrconf.c:2005: warning: Function parameter or member 'dev' not described in 'ipv6_dev_find'
-net/ipv6/ip6_vti.c:138: warning: Function parameter or member 'ip6n' not described in 'vti6_tnl_bucket'
-net/ipv6/ip6_tunnel.c:218: warning: Function parameter or member 'ip6n' not described in 'ip6_tnl_bucket'
-net/ipv6/ip6_tunnel.c:238: warning: Function parameter or member 'ip6n' not described in 'ip6_tnl_link'
-net/ipv6/ip6_tunnel.c:254: warning: Function parameter or member 'ip6n' not described in 'ip6_tnl_unlink'
-net/ipv6/ip6_tunnel.c:427: warning: Function parameter or member 'raw' not described in 'ip6_tnl_parse_tlv_enc_lim'
-net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'skb' not described in 'ip6_tnl_err'
-net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'ipproto' not described in 'ip6_tnl_err'
-net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'opt' not described in 'ip6_tnl_err'
-net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'type' not described in 'ip6_tnl_err'
-net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'code' not described in 'ip6_tnl_err'
-net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'msg' not described in 'ip6_tnl_err'
-net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'info' not described in 'ip6_tnl_err'
-net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'offset' not described in 'ip6_tnl_err'
+As a part of moving it over the series goes through and updates the code to
+make use of the existing APIs included in the test_progs framework. This is
+meant to simplify and streamline the test code and avoid duplication of
+effort.
 
-ip6_tnl_err() is an internal function, so remove the kerneldoc. For
-the others, add the missing parameters.
+v2: Dropped test_tcpbpf_user from .gitignore
+    Replaced CHECK_FAIL calls with CHECK calls
+    Minimized changes in patch 1 when moving the file
+    Updated stg mail command line to display renames in submission
+    Added shutdown logic to end of run_test function to guarantee close
+    Added patch that replaces the two maps with use of global variables    
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- net/ipv6/addrconf.c   |  1 +
- net/ipv6/ip6_tunnel.c | 15 +++++++--------
- net/ipv6/ip6_vti.c    |  1 +
- 3 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 01146b66d666..4211e960130c 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -1997,6 +1997,7 @@ EXPORT_SYMBOL(ipv6_chk_prefix);
-  * ipv6_dev_find - find the first device with a given source address.
-  * @net: the net namespace
-  * @addr: the source address
-+ * @dev: used to find the L3 domain of interest
-  *
-  * The caller should be protected by RCU, or RTNL.
-  */
-diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
-index a0217e5bf3bc..e3e7859e2ef7 100644
---- a/net/ipv6/ip6_tunnel.c
-+++ b/net/ipv6/ip6_tunnel.c
-@@ -204,6 +204,7 @@ ip6_tnl_lookup(struct net *net, int link,
- 
- /**
-  * ip6_tnl_bucket - get head of list matching given tunnel parameters
-+ *   @ip6n: the private data for ip6_vti in the netns
-  *   @p: parameters containing tunnel end-points
-  *
-  * Description:
-@@ -230,6 +231,7 @@ ip6_tnl_bucket(struct ip6_tnl_net *ip6n, const struct __ip6_tnl_parm *p)
- 
- /**
-  * ip6_tnl_link - add tunnel to hash table
-+ *   @ip6n: the private data for ip6_vti in the netns
-  *   @t: tunnel to be added
-  **/
- 
-@@ -246,6 +248,7 @@ ip6_tnl_link(struct ip6_tnl_net *ip6n, struct ip6_tnl *t)
- 
- /**
-  * ip6_tnl_unlink - remove tunnel from hash table
-+ *   @ip6n: the private data for ip6_vti in the netns
-  *   @t: tunnel to be removed
-  **/
- 
-@@ -417,6 +420,7 @@ ip6_tnl_dev_uninit(struct net_device *dev)
- /**
-  * parse_tvl_tnl_enc_lim - handle encapsulation limit option
-  *   @skb: received socket buffer
-+ *   @raw: the ICMPv6 error message data
-  *
-  * Return:
-  *   0 if none was found,
-@@ -485,14 +489,9 @@ __u16 ip6_tnl_parse_tlv_enc_lim(struct sk_buff *skb, __u8 *raw)
- }
- EXPORT_SYMBOL(ip6_tnl_parse_tlv_enc_lim);
- 
--/**
-- * ip6_tnl_err - tunnel error handler
-- *
-- * Description:
-- *   ip6_tnl_err() should handle errors in the tunnel according
-- *   to the specifications in RFC 2473.
-- **/
--
-+/* ip6_tnl_err() should handle errors in the tunnel according to the
-+ * specifications in RFC 2473.
-+ */
- static int
- ip6_tnl_err(struct sk_buff *skb, __u8 ipproto, struct inet6_skb_parm *opt,
- 	    u8 *type, u8 *code, int *msg, __u32 *info, int offset)
-diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
-index 5f9c4fdc120d..46d137a693ac 100644
---- a/net/ipv6/ip6_vti.c
-+++ b/net/ipv6/ip6_vti.c
-@@ -125,6 +125,7 @@ vti6_tnl_lookup(struct net *net, const struct in6_addr *remote,
- 
- /**
-  * vti6_tnl_bucket - get head of list matching given tunnel parameters
-+ *   @ip6n: the private data for ip6_vti in the netns
-  *   @p: parameters containing tunnel end-points
-  *
-  * Description:
--- 
-2.28.0
+Alexander Duyck (5):
+      selftests/bpf: Move test_tcppbf_user into test_progs
+      selftests/bpf: Drop python client/server in favor of threads
+      selftests/bpf: Replace EXPECT_EQ with ASSERT_EQ and refactor verify_results
+      selftests/bpf: Migrate tcpbpf_user.c to use BPF skeleton
+      selftest/bpf: Use global variables instead of maps for test_tcpbpf_kern
+
+
+ .../selftests/bpf/prog_tests/tcpbpf_user.c    | 239 +++++++++---------
+ .../selftests/bpf/progs/test_tcpbpf_kern.c    |  86 +------
+ tools/testing/selftests/bpf/tcp_client.py     |  50 ----
+ tools/testing/selftests/bpf/tcp_server.py     |  80 ------
+ tools/testing/selftests/bpf/test_tcpbpf.h     |   2 +
+ 5 files changed, 135 insertions(+), 322 deletions(-)
+ delete mode 100755 tools/testing/selftests/bpf/tcp_client.py
+ delete mode 100755 tools/testing/selftests/bpf/tcp_server.py
+
+--
 
