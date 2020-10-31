@@ -2,118 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3954F2A1A35
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 20:03:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF1D22A1A41
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 20:19:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728434AbgJaTDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 15:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
+        id S1726233AbgJaTTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 15:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726627AbgJaTDo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 15:03:44 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE78C0617A6;
-        Sat, 31 Oct 2020 12:03:44 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id s24so4119885ioj.13;
-        Sat, 31 Oct 2020 12:03:43 -0700 (PDT)
+        with ESMTP id S1725786AbgJaTTu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 15:19:50 -0400
+Received: from mail-vk1-xa42.google.com (mail-vk1-xa42.google.com [IPv6:2607:f8b0:4864:20::a42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC9BC0617A7
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 12:19:49 -0700 (PDT)
+Received: by mail-vk1-xa42.google.com with SMTP id y10so2166990vkl.5
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 12:19:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4GHoNxmQhaPWtFwzqLY/JXeM6GSL91vQMyOuXtLDKn0=;
-        b=EU6NKdOgG4dY0T/NlFWjINfHs2ZMgboVZvgG7heQdH/uhiqs9Luq512YBaKb0L2l9l
-         mh0RCIayPhTTMj1mfn28X2as2nK1ss0SARRLl5CMseWUiY/cP9oVdx3n0LdgGm/4F1xw
-         MewvPppWRUedjQ0fPsWGtqXkYeLZnCp3bUM9kQzqpaCKs05Fl5NxVRreNvIWro3Qui5o
-         xdGCLimwb6zuBhn/9XBAL9HK8Xe/MlBNezbVaskpVoWybdtiSJuVvFiA4y1+6ulalpKH
-         KVGaFZ9UCwamW/masUnEsQ6KcnP5nfEpfmSOJAoX1R6jjPOxrq1hXZu1J7CipHZosXDC
-         Mj6w==
+        bh=wwf1XRuzqH8iDHRAKdxul3V5TY+R1Lm9WGQNmM2sOaM=;
+        b=BNPxEwa+WTE2Lxke8s7Ayr8UVA9ODk8sISCXedOqCyXoDTasLUrAOudyVTHHHIUBm8
+         MTO7HWokQ5KJ3cPE3S8gG9RNkwWrVvvb4WRKRMwYiQgvZYWtLdM6TFzfHFnnnb93DH9o
+         R0CU4iS/o9jwIW7OEreGqoYwTdThGw6ffU7NNxmsywaDEtsEgNda1iBKSp8Gu8Ak6ko4
+         Jx9btHFG04Ubami2QJwSqP8joV7aEgZfvnrMRECLssImVvzFA+9jTBwIA2/yh9P4YNY5
+         1S8MkdYjDZFmVDjqXCGqYj/y52VxUB2Bef8YL9geYZ0GxsHYDPBSi+skjpP0HsoHSe2w
+         28gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4GHoNxmQhaPWtFwzqLY/JXeM6GSL91vQMyOuXtLDKn0=;
-        b=Ll2ESduyWxD7+dWXl1XDVp7qzhrV/7GfUDo8R0WVsgDKyNxJeRtJlYpk9wtyCkp5Q0
-         0ILqbfNkKmGZ5nX9bhgAJNcV4MIagydnZT5ZK2bH/PV0rPkMiKCxBHlThso2ibsmn6m0
-         7l9y4WpzLmVfLona/iZMqR1aj4JVPJFIUSFg+l2nrFY+vZEcSYMu8GrTnLfRSVX6eBr+
-         5cTfW6rHRN2U2Zl4rQgsOcP61pInMqraQhhAghX3yX3FJe228BN9P6htZfHaYL3oCYO5
-         z9Hb9AFiO8ricqngmwpikdUC+0VwABlJkw64H1Z3ckg0fvg1kTQGwUaQw1YSvnmga0HI
-         x5zg==
-X-Gm-Message-State: AOAM533L5mPwQoBAWEqGnN0NKDtpvc4nOU7xRIF+4UtzT5QAtcMBqpKM
-        whPou2k0kCCgaMQaAp/cv7YRqZa+cFS28FDfM5dRchRD8WU=
-X-Google-Smtp-Source: ABdhPJy8DfNfTJsJ+aQVlJOiZG20+C74xUwN+QY9mnlXw6QdU1cVhFiVIaSerHZHFBZ3OnZB3rKAEbvUaw+fPduN6vM=
-X-Received: by 2002:a02:1783:: with SMTP id 125mr6371422jah.121.1604171023017;
- Sat, 31 Oct 2020 12:03:43 -0700 (PDT)
+        bh=wwf1XRuzqH8iDHRAKdxul3V5TY+R1Lm9WGQNmM2sOaM=;
+        b=i50u2OZa9I24p+wnw+J0Sp8kDY64RhTTT3a0UnixMKf1PDgNuc4RTzZDDgzYCSQw9n
+         wDs862nHRhoYl3fndp2+xpmWzTdFIZzzbS6jKsSLn1rlOz4S6UX1fQpeRbAye8GvZ/rj
+         b1p/a/r6y/fucmFsrw2crHVk6IPR2AKNuGdpS/sUFkjaQ8hvtdbmSB9GfD5d543aGxHu
+         t1wWi8YhJJ/kKwgewE8Xl2WgAeg2p0dMe0jDgiJtWMyUpOxdYBWmLEIIB83DL1mUCZ6M
+         NbjOSFGVapphjRzBZRO03I7h1Pk10mIoj/eZikpm5xFx0OWme3AqB4p0MearE9tHLiUR
+         B8Bg==
+X-Gm-Message-State: AOAM532UUQ/6CV1+Gdy96/ltl2dOiRxwzxu5VTz4XoUxPa5puthpyrQh
+        SVvmwaeKfkIu5hVBSrqrw8Mz0mQhV+I=
+X-Google-Smtp-Source: ABdhPJzJRCR11NUWLPlbQv4qLnZppKnFVkhnyUW4sg1+fQs9IRPMajtjEL72WONXFQ9MiL+Xksd12w==
+X-Received: by 2002:a1f:2bd5:: with SMTP id r204mr10150039vkr.8.1604171988338;
+        Sat, 31 Oct 2020 12:19:48 -0700 (PDT)
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com. [209.85.217.51])
+        by smtp.gmail.com with ESMTPSA id 70sm1088715uaj.1.2020.10.31.12.19.46
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 31 Oct 2020 12:19:46 -0700 (PDT)
+Received: by mail-vs1-f51.google.com with SMTP id h5so5287644vsp.3
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 12:19:46 -0700 (PDT)
+X-Received: by 2002:a05:6102:52b:: with SMTP id m11mr1067435vsa.28.1604171985842;
+ Sat, 31 Oct 2020 12:19:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <160416890683.710453.7723265174628409401.stgit@localhost.localdomain>
-In-Reply-To: <160416890683.710453.7723265174628409401.stgit@localhost.localdomain>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Sat, 31 Oct 2020 12:03:32 -0700
-Message-ID: <CAKgT0Ue+E6krF8=uqXDGDC095_mcDKNB1T2kc+uow3ywk3-RSQ@mail.gmail.com>
-Subject: Re: [bpf-next PATCH v2 0/5] selftests/bpf: Migrate test_tcpbpf_user
- to be a part of test_progs framework
-To:     bpf <bpf@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        alexanderduyck@fb.com
+References: <20201028145015.19212-1-schalla@marvell.com> <20201028145015.19212-12-schalla@marvell.com>
+In-Reply-To: <20201028145015.19212-12-schalla@marvell.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sat, 31 Oct 2020 15:19:09 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdVszdtPvpasE2FpZ97WRP1uV5UJMC5KjrnziTUY8UQOw@mail.gmail.com>
+Message-ID: <CA+FuTSdVszdtPvpasE2FpZ97WRP1uV5UJMC5KjrnziTUY8UQOw@mail.gmail.com>
+Subject: Re: [PATCH v8,net-next,11/12] crypto: octeontx2: add support to
+ process the crypto request
+To:     Srujana Challa <schalla@marvell.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-crypto@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
+        schandran@marvell.com, pathreya@marvell.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 31, 2020 at 11:31 AM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
+On Wed, Oct 28, 2020 at 5:52 PM Srujana Challa <schalla@marvell.com> wrote:
 >
-> Move the test functionality from test_tcpbpf_user into the test_progs
-> framework so that it will be run any time the test_progs framework is run.
-> This will help to prevent future test escapes as the individual tests, such
-> as test_tcpbpf_user, are less likely to be run by developers and CI
-> tests.
+> Attach LFs to CPT VF to process the crypto requests and register
+> LF interrupts.
 >
-> As a part of moving it over the series goes through and updates the code to
-> make use of the existing APIs included in the test_progs framework. This is
-> meant to simplify and streamline the test code and avoid duplication of
-> effort.
->
-> v2: Dropped test_tcpbpf_user from .gitignore
->     Replaced CHECK_FAIL calls with CHECK calls
->     Minimized changes in patch 1 when moving the file
->     Updated stg mail command line to display renames in submission
->     Added shutdown logic to end of run_test function to guarantee close
->     Added patch that replaces the two maps with use of global variables
->
+> Signed-off-by: Suheil Chandran <schandran@marvell.com>
+> Signed-off-by: Srujana Challa <schalla@marvell.com>
 > ---
->
-> Alexander Duyck (5):
->       selftests/bpf: Move test_tcppbf_user into test_progs
->       selftests/bpf: Drop python client/server in favor of threads
->       selftests/bpf: Replace EXPECT_EQ with ASSERT_EQ and refactor verify_results
->       selftests/bpf: Migrate tcpbpf_user.c to use BPF skeleton
->       selftest/bpf: Use global variables instead of maps for test_tcpbpf_kern
->
->
->  .../selftests/bpf/prog_tests/tcpbpf_user.c    | 239 +++++++++---------
->  .../selftests/bpf/progs/test_tcpbpf_kern.c    |  86 +------
->  tools/testing/selftests/bpf/tcp_client.py     |  50 ----
->  tools/testing/selftests/bpf/tcp_server.py     |  80 ------
->  tools/testing/selftests/bpf/test_tcpbpf.h     |   2 +
->  5 files changed, 135 insertions(+), 322 deletions(-)
->  delete mode 100755 tools/testing/selftests/bpf/tcp_client.py
->  delete mode 100755 tools/testing/selftests/bpf/tcp_server.py
->
-> --
+>  drivers/crypto/marvell/octeontx2/Makefile     |   2 +-
+>  .../marvell/octeontx2/otx2_cpt_common.h       |   3 +
+>  .../marvell/octeontx2/otx2_cpt_reqmgr.h       | 145 +++++
+>  drivers/crypto/marvell/octeontx2/otx2_cptlf.h |   7 +
+>  .../marvell/octeontx2/otx2_cptvf_main.c       | 196 +++++++
+>  .../marvell/octeontx2/otx2_cptvf_mbox.c       |  26 +
+>  .../marvell/octeontx2/otx2_cptvf_reqmgr.c     | 532 ++++++++++++++++++
+>  7 files changed, 910 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
 
-It looks like the "--to" on the cover page was dropped and it wasn't
-delivered to the bpf mailing list. So I am just going to reply to the
-one that was delivered to netdev so that it is visible for the people
-on the bpf list.
 
-Thanks.
+> +static int init_tasklet_work(struct otx2_cptlfs_info *lfs)
+> +{
+> +       struct otx2_cptlf_wqe *wqe;
+> +       int i, ret = 0;
+> +
+> +       for (i = 0; i < lfs->lfs_num; i++) {
+> +               wqe = kzalloc(sizeof(struct otx2_cptlf_wqe), GFP_KERNEL);
+> +               if (!wqe) {
+> +                       ret = -ENOMEM;
+> +                       goto cleanup_tasklet;
+> +               }
+> +
+> +               tasklet_init(&wqe->work, cptlf_work_handler, (u64) wqe);
+> +               wqe->lfs = lfs;
+> +               wqe->lf_num = i;
+> +               lfs->lf[i].wqe = wqe;
+> +       }
+> +       return 0;
+> +cleanup_tasklet:
 
-- Alex
+nit: here and elsewhere, please leave an empty line between the return
+statement and subsequent label.
