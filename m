@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08FA42A18E4
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 18:08:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9D32A18EB
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 18:12:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728200AbgJaRIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 13:08:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51944 "EHLO mail.kernel.org"
+        id S1728214AbgJaRMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 13:12:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52774 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726586AbgJaRIL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Oct 2020 13:08:11 -0400
+        id S1727120AbgJaRMR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Oct 2020 13:12:17 -0400
 Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C3A6C206DC;
-        Sat, 31 Oct 2020 17:08:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2F444206E5;
+        Sat, 31 Oct 2020 17:12:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604164090;
-        bh=Mw09u45BOHIABzfIiri3F7X5K7CUh0+5Rw6SY0INk3A=;
+        s=default; t=1604164337;
+        bh=twQgN1Y1z8exlY3r71I3ZihQiCAGvG9Gae4RwmXJ/ts=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oSvD+IafsTffY12YssYphnyq1CGSiLQZYrnV0kxDYeAp9B54AcB0s1cbpAYcjabDw
-         zy8wOV8hikf+zUnDgqfhmvMmNAhbqojdd34fXEJWiieRB32Huz2Cs5Aef/EhCK0Uk2
-         AXRUjnPnfa6UuiNSy5YOGzan8ugiyhO1oFrDzePk=
-Date:   Sat, 31 Oct 2020 10:08:09 -0700
+        b=BtU7BEOuk65G9AhsBSbq29tqoeagdjbEzoTanYWmoCtuMCYigAiLgK11D5wMFmwcJ
+         nGdnuDEWBvTemNLvy3iTArF4CpVp2MfmgvvkX5CtfAtpJfwrL7jbbg8oi8TU3fN+AS
+         CjvtkSVxRf+kBaJf3M0H7+fviR9KvGGUqFE5Tcjg=
+Date:   Sat, 31 Oct 2020 10:12:15 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Cc:     netdev@vger.kernel.org, Aymen Sghaier <aymen.sghaier@nxp.com>,
@@ -45,44 +45,65 @@ Cc:     netdev@vger.kernel.org, Aymen Sghaier <aymen.sghaier@nxp.com>,
         Ulrich Kunitz <kune@deine-taler.de>,
         Zhu Yanjun <zyjzyj2000@gmail.com>,
         Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH net-next 00/15] in_interrupt() cleanup, part 2
-Message-ID: <20201031100809.300bf4ab@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201027225454.3492351-1-bigeasy@linutronix.de>
+Subject: Re: [PATCH net-next 14/15] net: dpaa: Replace in_irq() usage.
+Message-ID: <20201031101215.38a13e51@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201027225454.3492351-15-bigeasy@linutronix.de>
 References: <20201027225454.3492351-1-bigeasy@linutronix.de>
+        <20201027225454.3492351-15-bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Oct 2020 23:54:39 +0100 Sebastian Andrzej Siewior wrote:
-> Folks,
-> 
-> in the discussion about preempt count consistency across kernel configurations:
-> 
->   https://lore.kernel.org/r/20200914204209.256266093@linutronix.de/
-> 
-> Linus clearly requested that code in drivers and libraries which changes
-> behaviour based on execution context should either be split up so that
-> e.g. task context invocations and BH invocations have different interfaces
-> or if that's not possible the context information has to be provided by the
-> caller which knows in which context it is executing.
-> 
-> This includes conditional locking, allocation mode (GFP_*) decisions and
-> avoidance of code paths which might sleep.
-> 
-> In the long run, usage of 'preemptible, in_*irq etc.' should be banned from
-> driver code completely.
-> 
-> This is part two addressing remaining drivers except for orinoco-usb.
+On Tue, 27 Oct 2020 23:54:53 +0100 Sebastian Andrzej Siewior wrote:
+> The driver uses in_irq() + in_serving_softirq() magic to decide if NAPI
+> scheduling is required or packet processing.
+>=20
+> The usage of in_*() in drivers is phased out and Linus clearly requested
+> that code which changes behaviour depending on context should either be
+> seperated or the context be conveyed in an argument passed by the caller,
+> which usually knows the context.
+>=20
+> Use the `napi' argument passed by the callback. It is set true if
+> called from the interrupt handler and NAPI should be scheduled.
+>=20
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Cc: "Horia Geant=C4=83" <horia.geanta@nxp.com>
+> Cc: Aymen Sghaier <aymen.sghaier@nxp.com>
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Madalin Bucur <madalin.bucur@nxp.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Li Yang <leoyang.li@nxp.com>
+> Cc: linux-crypto@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linuxppc-dev@lists.ozlabs.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> ---
+>  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net=
+/ethernet/freescale/dpaa/dpaa_eth.c
+> index 27835310b718e..2c949acd74c67 100644
+> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> @@ -2300,9 +2300,9 @@ static void dpaa_tx_conf(struct net_device *net_dev,
+>  }
+> =20
+>  static inline int dpaa_eth_napi_schedule(struct dpaa_percpu_priv *percpu=
+_priv,
+> -					 struct qman_portal *portal)
+> +					 struct qman_portal *portal, bool napi)
+>  {
+> -	if (unlikely(in_irq() || !in_serving_softirq())) {
+> +	if (napi) {
+>  		/* Disable QMan IRQ and invoke NAPI */
+>  		qman_p_irqsource_remove(portal, QM_PIRQ_DQRI);
+> =20
 
-Sebastian, thanks for there, I picked up only the Ethernet patches:
-
-5ce7f3f46f6b net: neterion: s2io: Replace in_interrupt() for context detection
-dc5e8bfcd12e net: forcedeth: Replace context and lock check with a lockdep_assert()
-beca92820dc4 net: tlan: Replace in_irq() usage
-
-Please repost the wireless stuff for Kalle to linux-wireless@vger, 
-and repost the fsl stuff separately (our patchwork queue is huge, 
-I can't keep this waiting for an ack any longer). 
+Nit: some networking drivers have a bool napi which means "are we
+running in napi context", the semantics here feel a little backwards,
+at least to me. But if I'm the only one thinking this, so be it.
