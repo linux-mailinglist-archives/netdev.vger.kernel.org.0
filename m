@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7595C2A1899
-	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 16:37:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53BD22A189A
+	for <lists+netdev@lfdr.de>; Sat, 31 Oct 2020 16:39:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727967AbgJaPhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 11:37:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41686 "EHLO
+        id S1728016AbgJaPi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Oct 2020 11:38:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727355AbgJaPhs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 11:37:48 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15F2C0617A6
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 08:37:47 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id z17so10615383iog.11
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 08:37:47 -0700 (PDT)
+        with ESMTP id S1727355AbgJaPi7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 11:38:59 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED684C0617A6
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 08:38:58 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id g7so9143593ilr.12
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 08:38:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HA9JMVMVy33+WgX26UU86gsuFGgvCzguZle4arn2nVY=;
-        b=cRSnfu0cBOlQ1jYeM5+g5A2K5OjEeZx4Jd7D92fX42N/7clRna+JAQ1e8/KISv/hJy
-         oVu73VxYmafjXpEk05E39KrlJhVOjr88yHCWkBM6TdPX7g8nl+ETmPIDFj5H1CbvzvmU
-         NcZqryV9VTab5iO18dBrHjKmuzs3DKvkVHo543Wtjho7ayVSmpe7GUbe58KHNAR8Q7rR
-         kXJly1UO2qFKzLZJzVcsQQkP4s/XHqoVx08qtQ80MDSEvJK+ZfmXNSNzx0EscfY5tFaB
-         /NpiK/xbdliSS5lOMeOu2TRhVUwvluGUW0D7/71fG3jKBAZvSXThK9PEOr3mpMBGJ0FL
-         KqDg==
+        bh=Vb9ATrbKmpbplTY+dVhgxJJXuILmrawR7JtdeoqVPFY=;
+        b=m7mpPBDZGxhfAW41w5N1zi3BV1yTRZU6sfkKme7Juu/lMXSF9wcdWpjgeyrXIx9aPJ
+         kHOWjOnxvicdzrK1OeWwlHgk7XUTAlMS2dN+UiCkJwyVfvGAuLbVT6qxv+Y/Uh5zPvU6
+         /HnuEX5QzTtfyC7buy7g70Y0OKbqx2xd1KdYg32HnBSf3UQX5tY4/VujnyzWMUSRnrpY
+         qWDNCZbBJVnicsx+zWc7EnyahJJQnMGpNShwL9eQ0y7XuyIpM3IkU7KcAzBd+lMu9+Gv
+         FrJXkOPqkrbmhXoo+PSO5MksBmJNNOWrHrYnW2/ZPUBQBRyEw21z6c6pr/9q9DR3FCV3
+         wW4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=HA9JMVMVy33+WgX26UU86gsuFGgvCzguZle4arn2nVY=;
-        b=fFuuYkMUxw/izrluOUysgGEUNRIrDcKHvtpWVmZKjTUkdFTmchcaw71u/C7L3TYTI0
-         0/V9RYBlIiGkDDwt+i8I6FuaWGc7odg/c251jYUP3NctSuqUrqK7NVMqjWCsx4sGISsH
-         Gpf+wMznxlHDeR0rEM4kvxEe+zx687h09KfQA+TYseOaA0HGyJK9UGxqdbTM+XqyziNM
-         zJuIRYMQz9DPHD9etDOfU+sOetNyIiGz6K5aFJzvGFaCTnzrEWOSuryUCT+PIF6OU9b4
-         Kdg+/zkCvVO6Li0kx5jpk8YNLlL8alClDSa6rzycrrDDFy8NMj3m502Xx5D4vWF9S3fn
-         xg+A==
-X-Gm-Message-State: AOAM530O+BKyx4nWQNtyViG/VFOWi7IFQCbrBq6JQO7JU9bqTvkuK5vG
-        85AV073Ohj7OhyLMIgInPiQ=
-X-Google-Smtp-Source: ABdhPJycl8sq7PnRKnec1To28jNqa1l7X+XbB1zI1o4oeJoWJUs0c3chRlwenyB8T4eZW6pB8drBkw==
-X-Received: by 2002:a5d:9656:: with SMTP id d22mr5409420ios.50.1604158667175;
-        Sat, 31 Oct 2020 08:37:47 -0700 (PDT)
+        bh=Vb9ATrbKmpbplTY+dVhgxJJXuILmrawR7JtdeoqVPFY=;
+        b=NaIfPQnCaN910vvYWXbO2SzqW9fTeiHPngW9dZfAL6xmnwROrT43DnwlombGyL+stg
+         uUymKEM1bjgCoTyBZOl9f0cLJxawrEzISRTCk2XXgIJ5feF43NZOarK43DEPIt9ZKvJd
+         6nd99WSgum/mMgQTnGMja/VbYj/g+61fa/VgUzvDm70axozOpe/w5oIlRhYe33UbRzpv
+         jXU+svw7bPj/REd9qAkgP/zmc2ewPTfIvJI0mlQT/U+e/quYgKybep/4Eqr+eM0vBLLn
+         U2ShC/+uJorpTdqBuXIy7vfi3pSjyMstAoxPoVkf/nyGDRo08HsE8BJZFsRK4xzobXqB
+         Xz+g==
+X-Gm-Message-State: AOAM531XBeBaXicT1d20ddeFpVvpbJNbJbkOOcXwkz0Fg6CpayS4woDW
+        4/R1/uMR2zhuaaROLtc3cts=
+X-Google-Smtp-Source: ABdhPJyzQ4qNIhHiJjg9i1eKAalAEB3oyBMUGwgdpS4937cro4wVW5cVZvbwWyAkS5tKgd/NvuR85g==
+X-Received: by 2002:a92:8e51:: with SMTP id k17mr5324079ilh.270.1604158738463;
+        Sat, 31 Oct 2020 08:38:58 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:10cc:b439:52ba:687f])
-        by smtp.googlemail.com with ESMTPSA id v26sm6462933iot.35.2020.10.31.08.37.46
+        by smtp.googlemail.com with ESMTPSA id c66sm8193118ilg.46.2020.10.31.08.38.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 31 Oct 2020 08:37:46 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v2 02/11] lib: Add parse_one_of(),
- parse_on_off()
+        Sat, 31 Oct 2020 08:38:57 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2 03/11] lib: utils: Add
+ print_on_off_bool()
 To:     Petr Machata <me@pmachata.org>, netdev@vger.kernel.org,
         stephen@networkplumber.org
 Cc:     john.fastabend@gmail.com, jiri@nvidia.com, idosch@nvidia.com,
         Jakub Kicinski <kuba@kernel.org>,
         Roman Mashak <mrv@mojatatu.com>
 References: <cover.1604059429.git.me@pmachata.org>
- <194ae677df465086d6cd1d7962c07d790e6d049d.1604059429.git.me@pmachata.org>
+ <5ed9e2e7cdf9326e8f7ec80f33f0f11eafc3a425.1604059429.git.me@pmachata.org>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a814a899-f811-d634-2f0c-8e3240bfcfa4@gmail.com>
-Date:   Sat, 31 Oct 2020 09:37:45 -0600
+Message-ID: <0f017fbd-b8f5-0ebe-0c16-0d441b1d4310@gmail.com>
+Date:   Sat, 31 Oct 2020 09:38:57 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-In-Reply-To: <194ae677df465086d6cd1d7962c07d790e6d049d.1604059429.git.me@pmachata.org>
+In-Reply-To: <5ed9e2e7cdf9326e8f7ec80f33f0f11eafc3a425.1604059429.git.me@pmachata.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,45 +72,36 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 10/30/20 6:29 AM, Petr Machata wrote:
+> diff --git a/include/utils.h b/include/utils.h
+> index bd62cdcd7122..e3cdb098834a 100644
+> --- a/include/utils.h
+> +++ b/include/utils.h
+> @@ -328,5 +328,6 @@ int do_batch(const char *name, bool force,
+>  int parse_one_of(const char *msg, const char *realval, const char * const *list,
+>  		 size_t len, int *p_err);
+>  int parse_on_off(const char *msg, const char *realval, int *p_err);
+> +void print_on_off_bool(FILE *fp, const char *flag, bool val);
+>  
+>  #endif /* __UTILS_H__ */
 > diff --git a/lib/utils.c b/lib/utils.c
-> index 9815e328c9e0..930877ae0f0d 100644
+> index 930877ae0f0d..8deec86ecbcd 100644
 > --- a/lib/utils.c
 > +++ b/lib/utils.c
-> @@ -1735,3 +1735,31 @@ int do_batch(const char *name, bool force,
+> @@ -1763,3 +1763,11 @@ int parse_on_off(const char *msg, const char *realval, int *p_err)
 >  
->  	return ret;
+>  	return parse_one_of(msg, realval, values_on_off, ARRAY_SIZE(values_on_off), p_err);
 >  }
 > +
-> +int parse_one_of(const char *msg, const char *realval, const char * const *list,
-> +		 size_t len, int *p_err)
+> +void print_on_off_bool(FILE *fp, const char *flag, bool val)
 > +{
-> +	int i;
-> +
-> +	for (i = 0; i < len; i++) {
-> +		if (list[i] && matches(realval, list[i]) == 0) {
-> +			*p_err = 0;
-> +			return i;
-> +		}
-> +	}
-> +
-> +	fprintf(stderr, "Error: argument of \"%s\" must be one of ", msg);
-> +	for (i = 0; i < len; i++)
-> +		if (list[i])
-> +			fprintf(stderr, "\"%s\", ", list[i]);
-> +	fprintf(stderr, "not \"%s\"\n", realval);
-> +	*p_err = -EINVAL;
-> +	return 0;
-> +}
-> +
-> +int parse_on_off(const char *msg, const char *realval, int *p_err)
-> +{
-> +	static const char * const values_on_off[] = { "off", "on" };
-> +
-> +	return parse_one_of(msg, realval, values_on_off, ARRAY_SIZE(values_on_off), p_err);
+> +	if (is_json_context())
+> +		print_bool(PRINT_JSON, flag, NULL, val);
+> +	else
+> +		fprintf(fp, "%s %s ", flag, val ? "on" : "off");
 > +}
 > 
 
-This has weird semantics to me. You have a buried array of strings and
-returning the index of the one that matches. Let's use a 'bool' return
-for parse_on_off that makes it clear that the string is 'off' = false or
-'on' = true.
+I think print_on_off should be fine and aligns with parse_on_off once it
+returns a bool.
+
+
