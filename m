@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E175D2A1DFF
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:52:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D100D2A1E1C
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:55:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbgKAMwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 07:52:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
+        id S1726752AbgKAMw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 07:52:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726670AbgKAMwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:52:21 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79DBC0617A6;
-        Sun,  1 Nov 2020 04:52:20 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id p93so11345018edd.7;
-        Sun, 01 Nov 2020 04:52:20 -0800 (PST)
+        with ESMTP id S1726723AbgKAMwZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:52:25 -0500
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E894C0617A6;
+        Sun,  1 Nov 2020 04:52:23 -0800 (PST)
+Received: by mail-ed1-x544.google.com with SMTP id w25so11396661edx.2;
+        Sun, 01 Nov 2020 04:52:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ITnQoREiD0R8hOb4gJjCxvyKcXTKP7bB6oFRcdeycc0=;
-        b=ET9UHHLDha/cqMvEKHzV/K07aL4AX0NqK+hY7e9676uF9nW+/9zvQB3U7gW7/XXj1J
-         zBAJ4stwnt0X6Auj7HfpGFfO30LalUJwxQ7Dd8KeAbqNjwKF7dFlAA2aYsC28VwnkhfU
-         TuKajePEN47Kpcmpy0Rq+nV9/li8Xnxaussx74TtDR8yZICHi7h+DM79bkCruecK+ba1
-         IZNX/nHvRubeUoM9zm7QN4frBtcHn0IvSm6par4o91HVy+qJFQB8hKrMGl4J6TlqpFs9
-         46RWHAsZKt5yhTBxB9mGlIH2bH4UXcwwEO4av2XPRwWtdzrAfA61stbQk9SbG9kLw6qT
-         bY8A==
+        bh=9GApglWVha/Wm6ZpEPj/3soIrOPKEJEBr7djBJ0S7Zc=;
+        b=lXMiEldW7rgzDtLCQps8xDZ8V3/IUgPnOpcIX9vnQuZk05RQFZmhfMATZJAN+SH6Ag
+         iTBzjB6PiiaW2lFDqG84O7ZFSkss58Uzv8RGCBg+J6mc1Baq0hsg4iph5p7jmzPE30q9
+         mJouEUfcjA1j31k3MC7DgL3jhrzpuLRjVbCFwcDDk4SczwT+4RlrO23OOe2GNOblmibX
+         y7aLTe+a4kpGi/Hc+/RIX8l8YRH/MQuyR+F4RMaykcC8jC4nL+Ze4YD5gwt0CHH3pnxH
+         l2sqrvn6yMwITWzi87OZGMLW1QcCQnJvyjuNUl2sZz5w/UPazI0yNJi62rD9jN6eswfw
+         FhTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ITnQoREiD0R8hOb4gJjCxvyKcXTKP7bB6oFRcdeycc0=;
-        b=QeGoh0nrz14IK2PhNlZSJCb49cDOofv6yfUgfWQnUImb56lobJY3Yyy1Me8j/a2Ggn
-         nRGi8d055Blm1Lfz/Bvx1/gm6sT1WKI+koKJ5tr2McuLlIJ4ttSy3SqfNqrqgyZt2/10
-         FHvIB2X2kfHESLlc/cTR0xWCJ2qieq8RFf4Z0zxijGSDSm8TANX1fk2jH39X1f5DL6Zn
-         W+qNGVVEixtj6xXRiwLfOHISfPl2At9uezSo1Emg9/ANuEwMzk06uIvzvlfY6Bht0ziO
-         tuhpwYwGVh5Iq7CFPk2erM7+MAa8xlBm7xKvrzHg4G/G5x77ilOAU9DTQFvfu0xtI2s5
-         lDLA==
-X-Gm-Message-State: AOAM530GnxOaFawuiHjtmYR0LP0Klw6eGn7Ha/WH4RpfqfMJUnw5Ftv9
-        i1oyirsJaHuiQWLFxSJrmU0=
-X-Google-Smtp-Source: ABdhPJxNVwjkameOvNKYxN7cZ5wwCM5rQd6pEgz/4WXk12m7mBmxj6CT764N0tKbBgg8E3z0DEPBxw==
-X-Received: by 2002:a50:e149:: with SMTP id i9mr12171491edl.56.1604235139679;
-        Sun, 01 Nov 2020 04:52:19 -0800 (PST)
+        bh=9GApglWVha/Wm6ZpEPj/3soIrOPKEJEBr7djBJ0S7Zc=;
+        b=ReDyl4qnAGZ+yYCZrRo954pl0i4bcPjl6YaHEWWiY4jK9t/I7iHZlz7O+OryLDpE8Y
+         hBwGtrB7wxDqaHZ9AUJkYPn0wIyEkUnsYktk6AWOmnsc0vuzm5xDwsOuq1W0G0CkZ7CI
+         Nl2oO7BAKOEViFG+v03v7pZezKx1cT3OkgqLrQpWTeRLLCpMWVWhe03H4UOZP58TlALM
+         E0i9urebtn5a1uUn0Hlm2NZB+cnYrD9E2Yun15zvHuuorPvBx1283McQ7ySLaSanZJUt
+         jeXQ/YO+woTohMc7dQb7CKIvc0S6Vu5iFTyePmB0YS0goMw3HfFCQAnMklVBwcDi7qyj
+         j7gw==
+X-Gm-Message-State: AOAM530jAmmVOsxCpL+fvN2wi0LeBltxKppS7IvqdeZdAyzoNxkKq12z
+        YBh9XoprX0ZI5IIIRMw5Mo8=
+X-Google-Smtp-Source: ABdhPJz/pCpsWrsyO2fhSFmCi48xw34OkxhYxZ/bv7m/tfwSOzlmBh8b3HYZyzXH0dmXTT0NkNdMFg==
+X-Received: by 2002:a50:fd99:: with SMTP id o25mr11355025edt.6.1604235142065;
+        Sun, 01 Nov 2020 04:52:22 -0800 (PST)
 Received: from yoga-910.localhost ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id c5sm8133603edx.58.2020.11.01.04.52.17
+        by smtp.gmail.com with ESMTPSA id c5sm8133603edx.58.2020.11.01.04.52.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Nov 2020 04:52:19 -0800 (PST)
+        Sun, 01 Nov 2020 04:52:21 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -78,9 +78,9 @@ Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
         Philippe Schenker <philippe.schenker@toradex.com>,
         Willy Liu <willy.liu@realtek.com>,
         Yuiko Oshino <yuiko.oshino@microchip.com>
-Subject: [PATCH net-next v2 01/19] net: phy: export phy_error and phy_trigger_machine
-Date:   Sun,  1 Nov 2020 14:50:56 +0200
-Message-Id: <20201101125114.1316879-2-ciorneiioana@gmail.com>
+Subject: [PATCH net-next v2 02/19] net: phy: add a shutdown procedure
+Date:   Sun,  1 Nov 2020 14:50:57 +0200
+Message-Id: <20201101125114.1316879-3-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201101125114.1316879-1-ciorneiioana@gmail.com>
 References: <20201101125114.1316879-1-ciorneiioana@gmail.com>
@@ -92,10 +92,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-These functions are currently used by phy_interrupt() to either signal
-an error condition or to trigger the link state machine. In an attempt
-to actually support shared PHY IRQs, export these two functions so that
-the actual PHY drivers can use them.
+In case of a board which uses a shared IRQ we can easily end up with an
+IRQ storm after a forced reboot.
+
+For example, a 'reboot -f' will trigger a call to the .shutdown()
+callbacks of all devices. Because phylib does not implement that hook,
+the PHY is not quiesced, thus it can very well leave its IRQ enabled.
+
+At the next boot, if that IRQ line is found asserted by the first PHY
+driver that uses it, but _before_ the driver that is _actually_ keeping
+the shared IRQ asserted is probed, the IRQ is not going to be
+acknowledged, thus it will keep being fired preventing the boot process
+of the kernel to continue. This is even worse when the second PHY driver
+is a module.
+
+To fix this, implement the .shutdown() callback and disable the
+interrupts if these are used.
+
+Note that we are still susceptible to IRQ storms if the previous kernel
+exited with a panic or if the bootloader left the shared IRQ active, but
+there is absolutely nothing we can do about these cases.
 
 Cc: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Cc: Andre Edich <andre.edich@microchip.com>
@@ -127,59 +143,35 @@ Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 Changes in v2:
  - none
 
- drivers/net/phy/phy.c | 6 ++++--
- include/linux/phy.h   | 2 ++
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/phy/phy_device.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 35525a671400..477bdf2f94df 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -493,10 +493,11 @@ EXPORT_SYMBOL(phy_queue_state_machine);
-  *
-  * @phydev: the phy_device struct
-  */
--static void phy_trigger_machine(struct phy_device *phydev)
-+void phy_trigger_machine(struct phy_device *phydev)
- {
- 	phy_queue_state_machine(phydev, 0);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 5dab6be6fc38..413a0a2c5d51 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -2947,6 +2947,13 @@ static int phy_remove(struct device *dev)
+ 	return 0;
  }
-+EXPORT_SYMBOL(phy_trigger_machine);
  
- static void phy_abort_cable_test(struct phy_device *phydev)
- {
-@@ -924,7 +925,7 @@ void phy_stop_machine(struct phy_device *phydev)
-  * Must not be called from interrupt context, or while the
-  * phydev->lock is held.
-  */
--static void phy_error(struct phy_device *phydev)
-+void phy_error(struct phy_device *phydev)
- {
- 	WARN_ON(1);
- 
-@@ -934,6 +935,7 @@ static void phy_error(struct phy_device *phydev)
- 
- 	phy_trigger_machine(phydev);
- }
-+EXPORT_SYMBOL(phy_error);
- 
++static void phy_shutdown(struct device *dev)
++{
++	struct phy_device *phydev = to_phy_device(dev);
++
++	phy_disable_interrupts(phydev);
++}
++
  /**
-  * phy_disable_interrupts - Disable the PHY interrupts from the PHY side
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index eb3cb1a98b45..566b39f6cd64 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1570,8 +1570,10 @@ void phy_drivers_unregister(struct phy_driver *drv, int n);
- int phy_driver_register(struct phy_driver *new_driver, struct module *owner);
- int phy_drivers_register(struct phy_driver *new_driver, int n,
- 			 struct module *owner);
-+void phy_error(struct phy_device *phydev);
- void phy_state_machine(struct work_struct *work);
- void phy_queue_state_machine(struct phy_device *phydev, unsigned long jiffies);
-+void phy_trigger_machine(struct phy_device *phydev);
- void phy_mac_interrupt(struct phy_device *phydev);
- void phy_start_machine(struct phy_device *phydev);
- void phy_stop_machine(struct phy_device *phydev);
+  * phy_driver_register - register a phy_driver with the PHY layer
+  * @new_driver: new phy_driver to register
+@@ -2970,6 +2977,7 @@ int phy_driver_register(struct phy_driver *new_driver, struct module *owner)
+ 	new_driver->mdiodrv.driver.bus = &mdio_bus_type;
+ 	new_driver->mdiodrv.driver.probe = phy_probe;
+ 	new_driver->mdiodrv.driver.remove = phy_remove;
++	new_driver->mdiodrv.driver.shutdown = phy_shutdown;
+ 	new_driver->mdiodrv.driver.owner = owner;
+ 	new_driver->mdiodrv.driver.probe_type = PROBE_FORCE_SYNCHRONOUS;
+ 
 -- 
 2.28.0
 
