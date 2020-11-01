@@ -2,157 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 642642A212E
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 20:54:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70EE82A2148
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 21:15:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727071AbgKATys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 14:54:48 -0500
-Received: from 95-31-39-132.broadband.corbina.ru ([95.31.39.132]:56296 "EHLO
-        blackbox.su" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726790AbgKATyr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 1 Nov 2020 14:54:47 -0500
-Received: from metabook.localnet (metabook.metanet [192.168.2.2])
+        id S1727264AbgKAUPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 15:15:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57156 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726848AbgKAUPv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 1 Nov 2020 15:15:51 -0500
+Received: from localhost (host-213-179-129-39.customer.m-online.net [213.179.129.39])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by blackbox.su (Postfix) with ESMTPSA id 43C308195C;
-        Sun,  1 Nov 2020 22:54:48 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=blackbox.su;
-        s=201811; t=1604260488;
-        bh=oNZMqbgbsDMWxKYkOfEGxb9tRrpD4bAcxYCfempUXKQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DB4Im3DydvbkO8IntZcKAQvHx1nDWsLQljNedXMBWp/7NORd8Ew3gx/2JXbTLyImg
-         4I5k7y2vdnT7yGyM4+IQwH2AH/WL7RepfAwRR19LxRBLp6vzu35a1U5uPbPVLBv69W
-         WE1j4VcfPfqtGmGfAdc1qdin2DqKqTS+aQ14hKKhQ90B8Scsv1zLtJEsgzVoFGuFV1
-         aModXSN/t6E3LUX1RQFpzNSbh5/acfA6h9H5QArIQ/6tFsSPva0EniXa2LsduDi9fF
-         Py7Q8VBIQ1JFm9jowY9Cj7lFW4dT4LRjm8sTHXKecI0shEnDZhpI4OykCbfWEb5MiZ
-         kVJeaSCtjdInQ==
-From:   Sergej Bauer <sbauer@blackbox.su>
-To:     Markus Elfring <Markus.Elfring@web.de>, netdev@vger.kernel.org
-Cc:     UNGLinuxDriver@microchip.com, linux-kernel@vger.kernel.org,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2] lan743x: Fix for potential null pointer dereference
-Date:   Sun, 01 Nov 2020 22:54:38 +0300
-Message-ID: <145853726.prPdODYtnq@metabook>
-In-Reply-To: <dabea6fc-2f2d-7864-721b-3c950265f764@web.de>
-References: <20201031143619.7086-1-sbauer@blackbox.su> <dabea6fc-2f2d-7864-721b-3c950265f764@web.de>
+        by mail.kernel.org (Postfix) with ESMTPSA id 75F4B208B6;
+        Sun,  1 Nov 2020 20:15:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604261751;
+        bh=bLA0ev2Kwh6uGquFheDvSSBq9w7KOIljOSNWPIWB5Ck=;
+        h=From:To:Cc:Subject:Date:From;
+        b=huv9rtKkUhey6AamSaXCXbtImWrQjVRiNn7errL5az2kng2obK+UpzHMgRoTggLer
+         1dBBKOeF5LUNXfpJc8oH/xshEX5x5c1wRB20IYPUR9hZXO1LgTIPCJD8CZWVC6KF0K
+         mklVx1CS0NWIH+Tn9mTb693ZRQ9UFxuyrKijadxs=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        gregkh <gregkh@linuxfoundation.org>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Wang <jasowang@redhat.com>, linux-rdma@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        Parav Pandit <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        virtualization@lists.linux-foundation.org,
+        alsa-devel@alsa-project.org, tiwai@suse.de, broonie@kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        ranjani.sridharan@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, fred.oh@linux.intel.com,
+        shiraz.saleem@intel.com, dan.j.williams@intel.com,
+        kiran.patil@intel.com, linux-kernel@vger.kernel.org
+Subject: [PATCH mlx5-next v1 00/11] Convert mlx5 to use auxiliary bus
+Date:   Sun,  1 Nov 2020 22:15:31 +0200
+Message-Id: <20201101201542.2027568-1-leon@kernel.org>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Signed-off-by: Sergej Bauer <sbauer@blackbox.su>
->=20
-> * I miss a change description here.
-The reason for the fix is when the device is down netdev->phydev will be NU=
-LL=20
-and there is no checking for this situation. So 'ethtool ethN' leads to ker=
-nel=20
-panic.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-$ sudo ethtool eth7
+Changelog:
+v1:
+ * Renamed _mlx5_rescan_driver to be mlx5_rescan_driver_locked like in
+   other parts of the mlx5 driver.
+ * Renamed MLX5_INTERFACE_PROTOCOL_VDPA to tbe MLX5_INTERFACE_PROTOCOL_VNET as
+   a preparation to coming series from Eli C.
+ * Some small naming renames in mlx5_vdpa.
+ * Refactored adev index code to make Parav's SF series to apply more easily.
+ * Fixed devlink reload bug that caused to lost TCP connection.
+v0:
+https://lore.kernel.org/lkml/20201026111849.1035786-1-leon@kernel.org/
 
-[  103.510336] BUG: kernel NULL pointer dereference, address: 0000000000000=
-340
-[  103.510454] #PF: supervisor read access in kernel mode
-[  103.510530] #PF: error_code(0x0000) - not-present page
-[  103.510600] PGD 0 P4D 0=20
-[  103.510635] Oops: 0000 [#1] SMP PTI
-[  103.510675] CPU: 1 PID: 7182 Comm: ethtool Not tainted 5.9.0upstream+ #5
-[  103.510737] Hardware name: Gigabyte Technology Co., Ltd. H110-D3/H110-D3-
-CF, BIOS F24 04/11/2018
-[  103.510836] RIP: 0010:phy_ethtool_get_wol+0x5/0x30 [libphy]
-[  103.510892] Code: 00 48 85 c0 74 11 48 8b 80 40 01 00 00 48 85 c0 74 05 =
-e9=20
-8e 7a 6f dd b8 a1 ff ff ff c3 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 <48> 8=
-b 87=20
-40 03 00 00 48 85 c0 74 11 48 8b 80 48 01 00 00 48 85 c0
-[  103.511054] RSP: 0018:ffffb6cd85123cf0 EFLAGS: 00010286
-[  103.511106] RAX: ffffffffc03f0d00 RBX: ffffb6cd85123d90 RCX: ffffffff9e6=
-fdd20
-[  103.511171] RDX: 0000000000000001 RSI: ffffb6cd85123d90 RDI: 00000000000=
-00000
-[  103.511237] RBP: ffff946f811b4000 R08: 0000000000001000 R09: 00000000000=
-00000
-[  103.511302] R10: 0000000000000000 R11: 0000000000000089 R12:=20
-00007ffde92be040
-[  103.511367] R13: 0000000000000005 R14: ffff946f811b4000 R15: 00000000000=
-00000
-[  103.511434] FS:  00007f54a9bc7740(0000) GS:ffff9470b6c80000(0000) knlGS:
-0000000000000000
-[  103.511508] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  103.511564] CR2: 0000000000000340 CR3: 000000011d366001 CR4:=20
-00000000003706e0
-[  103.511629] Call Trace:
-[  103.511666]  lan743x_ethtool_get_wol+0x21/0x40 [lan743x]
-[  103.511724]  dev_ethtool+0x1507/0x29d0
-[  103.511769]  ? avc_has_extended_perms+0x17f/0x440
-[  103.511820]  ? tomoyo_init_request_info+0x84/0x90
-[  103.511870]  ? tomoyo_path_number_perm+0x68/0x1e0
-[  103.511919]  ? tty_insert_flip_string_fixed_flag+0x82/0xe0
-[  103.511973]  ? inet_ioctl+0x187/0x1d0
-[  103.512016]  dev_ioctl+0xb5/0x560
-[  103.512055]  sock_do_ioctl+0xa0/0x140
-[  103.512098]  sock_ioctl+0x2cb/0x3c0
-[  103.512139]  __x64_sys_ioctl+0x84/0xc0
-[  103.512183]  do_syscall_64+0x33/0x80
-[  103.512224]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[  103.512274] RIP: 0033:0x7f54a9cba427
-[  103.512313] Code: 00 00 90 48 8b 05 69 aa 0c 00 64 c7 00 26 00 00 00 48 =
-c7=20
-c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3=
-d 01 f0=20
-ff ff 73 01 c3 48 8b 0d 39 aa 0c 00 f7 d8 64 89 01 48
-=2E..
-=2D--
-So changes - is just to check a pointer for NULL;
+--------------------------------------------------------------
 
-> * Should a prefix be specified in the patch subject?
->=20
-as far as I understand subject should be "[PATCH v2] lan743x: fix for poten=
-tial=20
-NULL pointer dereference with bare lan743x"?
+Hi,
 
-ok, I've got it.
+This patch set converts mlx5 driver to use auxiliary bus [1].
 
->=20
-> =E2=80=A6
->=20
-> > +++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
->=20
-> =E2=80=A6
->=20
-> > @@ -809,9 +812,12 @@ static int lan743x_ethtool_set_wol(struct net_devi=
-ce
-> > *netdev,>=20
-> >  	device_set_wakeup_enable(&adapter->pdev->dev, (bool)wol->wolopts);
-> >=20
-> > -	phy_ethtool_set_wol(netdev->phydev, wol);
-> > +	if (netdev->phydev)
-> > +		ret =3D phy_ethtool_set_wol(netdev->phydev, wol);
-> > +	else
-> > +		ret =3D -EIO;
-> >=20
-> > -	return 0;
-> > +	return ret;
-> >=20
-> >  }
-> >  #endif /* CONFIG_PM */
->=20
-> How do you think about to use the following code variant?
->=20
-> +	return netdev->phydev ? phy_ethtool_set_wol(netdev->phydev, wol) : -EIO;
->=20
-It will be quite shorter, thanks.
+In this series, we are connecting three subsystems (VDPA, netdev and
+RDMA) through mlx5_core PCI driver. That driver is responsible to create
+proper devices based on supported firmware.
 
-> Regards,
-> Markus
+First four patches are preparitions and fixes that were spotted during
+code development, rest is the conversion itself.
 
-                Regards.
-                        Sergej.
+Thanks
 
+[1]
+https://lore.kernel.org/lkml/20201023003338.1285642-1-david.m.ertman@intel.com
 
+Leon Romanovsky (11):
+  net/mlx5: Don't skip vport check
+  net/mlx5: Properly convey driver version to firmware
+  net/mlx5_core: Clean driver version and name
+  vdpa/mlx5: Make hardware definitions visible to all mlx5 devices
+  net/mlx5: Register mlx5 devices to auxiliary virtual bus
+  vdpa/mlx5: Connect mlx5_vdpa to auxiliary bus
+  net/mlx5e: Connect ethernet part to auxiliary bus
+  RDMA/mlx5: Convert mlx5_ib to use auxiliary bus
+  net/mlx5: Delete custom device management logic
+  net/mlx5: Simplify eswitch mode check
+  RDMA/mlx5: Remove IB representors dead code
 
+ drivers/infiniband/hw/mlx5/counters.c         |   7 -
+ drivers/infiniband/hw/mlx5/ib_rep.c           | 113 ++--
+ drivers/infiniband/hw/mlx5/ib_rep.h           |  45 +-
+ drivers/infiniband/hw/mlx5/main.c             | 148 +++--
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/Kconfig   |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c | 567 ++++++++++++------
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |   4 +-
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 135 ++---
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  42 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rep.h  |   6 +-
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   |   8 +-
+ .../mellanox/mlx5/core/esw/devlink_port.c     |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |  28 +-
+ .../mellanox/mlx5/core/eswitch_offloads.c     |   6 +
+ .../mellanox/mlx5/core/ipoib/ethtool.c        |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c |  58 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  50 +-
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  33 +-
+ drivers/vdpa/mlx5/Makefile                    |   2 +-
+ drivers/vdpa/mlx5/net/main.c                  |  76 ---
+ drivers/vdpa/mlx5/net/mlx5_vnet.c             |  53 +-
+ drivers/vdpa/mlx5/net/mlx5_vnet.h             |  24 -
+ include/linux/mlx5/driver.h                   |  34 +-
+ include/linux/mlx5/eswitch.h                  |   8 +-
+ .../linux/mlx5/mlx5_ifc_vdpa.h                |   6 +-
+ 27 files changed, 818 insertions(+), 648 deletions(-)
+ delete mode 100644 drivers/vdpa/mlx5/net/main.c
+ delete mode 100644 drivers/vdpa/mlx5/net/mlx5_vnet.h
+ rename drivers/vdpa/mlx5/core/mlx5_vdpa_ifc.h => include/linux/mlx5/mlx5_ifc_vdpa.h (97%)
+
+--
+2.28.0
 
