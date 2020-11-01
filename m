@@ -2,69 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 306D82A1C23
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 06:40:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD232A1CA0
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 08:43:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725890AbgKAFkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 01:40:13 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:46622 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbgKAFkM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 01:40:12 -0400
-Received: by mail-il1-f198.google.com with SMTP id z8so7893452ilh.13
-        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 22:40:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=23OyltOe5EBhl8ArboyuBXKjLdoO9g+XhjDrucC98XU=;
-        b=N4T7MKmk8EQX4mifeHyQd8qecKchY/YZuntAPTGvVWenuxO5DVK23yY4hrhgnii8Aq
-         evyqVyG0EwGsUJUYskV80SJFdIjpqo3GdAr+RcLfWqiPR75zSadiMQPYTOxfhgDnDmiw
-         BpKVlKak8UV5Km6XQFHPGjCROfUB3tvO2yxx4HiiCH7pE36JNqa4zM4VzHQU7gszRtSh
-         p5Wy7xTrh3depIMxGhM8Y/nLEQBzvQ3YjRbLJcMOnstYyAeqdYs1FZftyGulG97TSNIo
-         kxB393BdVFJ+vjlHAiUJXRdVr2pg8wBN09dgD3TeMG0nMkgy1Z0SegN13GaQN76KRcE9
-         9mCQ==
-X-Gm-Message-State: AOAM533hnZp6Fixbpe36pLveECK6lA7/iwGAA+2yErDd3O7btlZl/8J0
-        ORzB7OZfHeGYZEwAmWBnXcYQJu/iWRD+DbNmfn4wPwB8stKh
-X-Google-Smtp-Source: ABdhPJzop3BnuUmDv/RjS8YKnkYc3J7Hlabiq8WoaIZLlZjQOVQar2LUCPdvTKih8EIFknDVrPx1Mz5a6Yinm5bdbKguNde8y9Ej
+        id S1725951AbgKAHnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 02:43:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37450 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725773AbgKAHnH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 1 Nov 2020 02:43:07 -0500
+Received: from dragon (80.251.214.228.16clouds.com [80.251.214.228])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D8FFE208A9;
+        Sun,  1 Nov 2020 07:43:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604216586;
+        bh=qp7HDhOZNF9cCr2O01GugOZ4lkhXue/Od24USAgscpQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pTJKakq/BSuUPfzoaIBbvyMOlwYO06+ondNa5cVl2/Ln4vOSoNOggCommoc/aXEuy
+         XjTSia9iGweL3fM8G7qaLMgp39Y0l6qNDWjAYanp31Pd3K7DclfzkxnYgz4Y58WOuV
+         XnMDmVZvdNeeLJp8JIGooMQ0NCVqDMScHO+x7Zg0=
+Date:   Sun, 1 Nov 2020 15:43:01 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     mkl@pengutronix.de, robh+dt@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, linux-imx@nxp.com, victor.liu@nxp.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V4 1/6] firmware: imx: always export SCU symbols
+Message-ID: <20201101074300.GF31601@dragon>
+References: <20201021052437.3763-1-qiangqing.zhang@nxp.com>
+ <20201021052437.3763-2-qiangqing.zhang@nxp.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:24cc:: with SMTP id y12mr7386176jat.144.1604209211179;
- Sat, 31 Oct 2020 22:40:11 -0700 (PDT)
-Date:   Sat, 31 Oct 2020 22:40:11 -0700
-In-Reply-To: <00000000000013259505a931dd26@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002d865a05b3051076@google.com>
-Subject: Re: KASAN: use-after-free Read in decode_session6
-From:   syzbot <syzbot+5be8aebb1b7dfa90ef31@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, lucien.xin@gmail.com,
-        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
-        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201021052437.3763-2-qiangqing.zhang@nxp.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Wed, Oct 21, 2020 at 01:24:32PM +0800, Joakim Zhang wrote:
+> From: Liu Ying <victor.liu@nxp.com>
+> 
+> Always export SCU symbols for both SCU SoCs and non-SCU SoCs to avoid
+> build error.
+> 
+> Signed-off-by: Liu Ying <victor.liu@nxp.com>
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> ---
+>  include/linux/firmware/imx/ipc.h      | 15 +++++++++++++++
 
-commit bcd623d8e9fa5f82bbd8cd464dc418d24139157b
-Author: Xin Long <lucien.xin@gmail.com>
-Date:   Thu Oct 29 07:05:05 2020 +0000
+Could you rebase it to my imx/drivers branch?  There is one patch from
+Peng Fan that already changed ipc.h.
 
-    sctp: call sk_setup_caps in sctp_packet_transmit instead
+Shawn
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14df9cb8500000
-start commit:   68bb4665 Merge branch 'l2-multicast-forwarding-for-ocelot-..
-git tree:       net-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=16df9cb8500000
-console output: https://syzkaller.appspot.com/x/log.txt?x=12df9cb8500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=eac680ae76558a0e
-dashboard link: https://syzkaller.appspot.com/bug?extid=5be8aebb1b7dfa90ef31
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11286398500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11bbf398500000
-
-Reported-by: syzbot+5be8aebb1b7dfa90ef31@syzkaller.appspotmail.com
-Fixes: bcd623d8e9fa ("sctp: call sk_setup_caps in sctp_packet_transmit instead")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+>  include/linux/firmware/imx/svc/misc.h | 23 +++++++++++++++++++++++
+>  2 files changed, 38 insertions(+)
+> 
+> diff --git a/include/linux/firmware/imx/ipc.h b/include/linux/firmware/imx/ipc.h
+> index 891057434858..300fa253fc30 100644
+> --- a/include/linux/firmware/imx/ipc.h
+> +++ b/include/linux/firmware/imx/ipc.h
+> @@ -34,6 +34,7 @@ struct imx_sc_rpc_msg {
+>  	uint8_t func;
+>  };
+>  
+> +#if IS_ENABLED(CONFIG_IMX_SCU)
+>  /*
+>   * This is an function to send an RPC message over an IPC channel.
+>   * It is called by client-side SCFW API function shims.
+> @@ -55,4 +56,18 @@ int imx_scu_call_rpc(struct imx_sc_ipc *ipc, void *msg, bool have_resp);
+>   * @return Returns an error code (0 = success, failed if < 0)
+>   */
+>  int imx_scu_get_handle(struct imx_sc_ipc **ipc);
+> +
+> +#else
+> +static inline int
+> +imx_scu_call_rpc(struct imx_sc_ipc *ipc, void *msg, bool have_resp)
+> +{
+> +	return -EIO;
+> +}
+> +
+> +static inline int imx_scu_get_handle(struct imx_sc_ipc **ipc)
+> +{
+> +	return -EIO;
+> +}
+> +#endif
+> +
+>  #endif /* _SC_IPC_H */
+> diff --git a/include/linux/firmware/imx/svc/misc.h b/include/linux/firmware/imx/svc/misc.h
+> index 031dd4d3c766..d255048f17de 100644
+> --- a/include/linux/firmware/imx/svc/misc.h
+> +++ b/include/linux/firmware/imx/svc/misc.h
+> @@ -46,6 +46,7 @@ enum imx_misc_func {
+>   * Control Functions
+>   */
+>  
+> +#if IS_ENABLED(CONFIG_IMX_SCU)
+>  int imx_sc_misc_set_control(struct imx_sc_ipc *ipc, u32 resource,
+>  			    u8 ctrl, u32 val);
+>  
+> @@ -55,4 +56,26 @@ int imx_sc_misc_get_control(struct imx_sc_ipc *ipc, u32 resource,
+>  int imx_sc_pm_cpu_start(struct imx_sc_ipc *ipc, u32 resource,
+>  			bool enable, u64 phys_addr);
+>  
+> +#else
+> +static inline int
+> +imx_sc_misc_set_control(struct imx_sc_ipc *ipc, u32 resource,
+> +			u8 ctrl, u32 val)
+> +{
+> +	return -EIO;
+> +}
+> +
+> +static inline int
+> +imx_sc_misc_get_control(struct imx_sc_ipc *ipc, u32 resource,
+> +			u8 ctrl, u32 *val)
+> +{
+> +	return -EIO;
+> +}
+> +
+> +static inline int imx_sc_pm_cpu_start(struct imx_sc_ipc *ipc, u32 resource,
+> +				      bool enable, u64 phys_addr)
+> +{
+> +	return -EIO;
+> +}
+> +#endif
+> +
+>  #endif /* _SC_MISC_API_H */
+> -- 
+> 2.17.1
+> 
