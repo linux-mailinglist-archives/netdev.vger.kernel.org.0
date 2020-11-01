@@ -2,122 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C2FD2A2258
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 00:23:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19AF42A2264
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 00:34:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727471AbgKAXXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 18:23:24 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:55398 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727322AbgKAXXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 18:23:22 -0500
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1604272999;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1JCFBfexZTaTxNTJc/bdU0DkFV3ialzSAY95hXbQ9KA=;
-        b=iUViDm8NvlIWcJSV36zfgPtmec6C8UofAUybKpXMq0+4u1mAdzCAp0Wt64uviukSsd5VOb
-        zPfRieYKxNwIni3RPTGF+hT6wZYqTrAFFXJmiaFm0gNsNnZoXC+VCIRZ9SIiLN1NTEu/Qf
-        LCrqn77SiTmUnx+ehl2EQjnbgDxHCa8MSxA1sYBVB+E8T/OslzjeuFdh0W46rv8fTJjUKB
-        GJAZ12Gb+o/5DK6N2dp4/4itmTXhaHZDIBOBR9E/hOr+UMAIaqAb+T29xJ+G5SWaNwEiZI
-        INLgqeAaMH9VcrHjoC/GmGzmDlkJMrdoOAReRH6dqYG68JsP8ER3GCwIDnjAVQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1604272999;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1JCFBfexZTaTxNTJc/bdU0DkFV3ialzSAY95hXbQ9KA=;
-        b=24m4nSr5As29K9Az1qCoaLo2NV+Umtfhb0UjgQX17Y8Dl3GP0N35SLzhCUHME7cTXqQKnj
-        IE/zY44MlDEqtdDA==
-To:     netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
-        Aymen Sghaier <aymen.sghaier@nxp.com>,
+        id S1727401AbgKAXeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 18:34:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727062AbgKAXeP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 18:34:15 -0500
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02269C0617A6;
+        Sun,  1 Nov 2020 15:34:15 -0800 (PST)
+Received: by mail-wr1-x442.google.com with SMTP id a9so12495087wrg.12;
+        Sun, 01 Nov 2020 15:34:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nB17pwnP57+tQkhNWeBukL2LccU7GhHBJWPWrm23bd8=;
+        b=Q8B3+lhAFq8lPty1RxuU9aYRmf1hAmGt4bliiJFz+86Ubmn93MgaUB/vznfzZaQsqn
+         gJMPUnDGzjcGRtWJhn+TIabl51oYJgBR/uelQsuWh3DT0t9HOQKuF9c3niRjoSoSduZM
+         RbQ934G+x8PUx7JP7vQ/qL2XcZz8ijFR1z4MXkriEn77GzkpU+wlABxryOPC+q1EJnVQ
+         W6uOQb2EVx5P9UydE02hPBpgT5mruz+KRgOCsH6LsvjNbNKr6dA+HpSh6Xpv1EhVwufY
+         smvarHS5G8v9+Lhs+cDuMLICOCGcx2SOskmSrWZGF035n5v8U6MUEqDJUkclf1XcYzXq
+         vPZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nB17pwnP57+tQkhNWeBukL2LccU7GhHBJWPWrm23bd8=;
+        b=dAPUzgPVP0nYKx29Ge6+9zwQ6LeVfNCzTmJ1Uuun22os8IRdeFr09q6fMjyll8rJAo
+         9BrD3pYROMgFDynD3rPO61PM63M5BMlJnxRQdg+GirHRaDc9cv6Sb16BDVKnTl5nOMbq
+         OkuohU/bpsZnJ6qzRvyRXn1UPdWkfIUVz6PK4GloELgObZrvbCr5UW85pAXxNP5DQJOp
+         bD0DUZS0H5Ekr4Wj4QHs75YBZFGG+BM/avosRU54zQZrlu519xGfddnQ9k43IirCXD0N
+         0pqHiUzEko7MCcMP7YJ7gx0vhayFVNB+CIRjHtKf7k6/DcJ3x4z8OU3acM8YKM5VzBg0
+         gb8g==
+X-Gm-Message-State: AOAM533A8UhSzXVI2gB7o1BHElO03+AMsFXYOI/bQr0f33I9e0GSUQYK
+        3roRk+RDyvN/im+8g9NTi8g=
+X-Google-Smtp-Source: ABdhPJyCWs7cgF14HN/r+6VxCNSItinGyqgNmvq8VSl3sUK1kGJtanF0dqMXUF58AwX7bcXEcnM9TQ==
+X-Received: by 2002:a5d:6cc9:: with SMTP id c9mr18057648wrc.276.1604273653756;
+        Sun, 01 Nov 2020 15:34:13 -0800 (PST)
+Received: from ?IPv6:2a02:8084:e84:2480:228:f8ff:fe6f:83a8? ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
+        by smtp.gmail.com with ESMTPSA id v67sm13380559wma.17.2020.11.01.15.34.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 Nov 2020 15:34:13 -0800 (PST)
+Subject: Re: [PATCH] xfrm/compat: Remove use of kmalloc_track_caller
+To:     Alistair Delva <adelva@google.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-crypto@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 net-next 3/3] crypto: caam: Replace in_irq() usage.
-Date:   Mon,  2 Nov 2020 00:22:57 +0100
-Message-Id: <20201101232257.3028508-4-bigeasy@linutronix.de>
-In-Reply-To: <20201101232257.3028508-1-bigeasy@linutronix.de>
-References: <20201101232257.3028508-1-bigeasy@linutronix.de>
+        kernel-team@android.com,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+References: <20201101220845.2391858-1-adelva@google.com>
+From:   Dmitry Safonov <0x7f454c46@gmail.com>
+Message-ID: <1a85a545-a663-828a-387e-fd4a0e2ae747@gmail.com>
+Date:   Sun, 1 Nov 2020 23:34:11 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20201101220845.2391858-1-adelva@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver uses in_irq() + in_serving_softirq() magic to decide if NAPI
-scheduling is required or packet processing.
+On 11/1/20 10:08 PM, Alistair Delva wrote:
+> The __kmalloc_track_caller symbol is not exported if SLUB/SLOB are
+> enabled instead of SLAB, which breaks the build on such configs when
+> CONFIG_XFRM_USER_COMPAT=m.
+> 
+> ERROR: "__kmalloc_track_caller" [net/xfrm/xfrm_compat.ko] undefined!
+> 
+> Other users of this symbol are 'bool' options, but changing this to
+> bool would require XFRM_USER to be built in as well, which doesn't
+> seem worth it. Go back to kmalloc().
+> 
+> Fixes: 96392ee5a13b9 ("xfrm/compat: Translate 32-bit user_policy from sockptr")
+> Cc: Dmitry Safonov <0x7f454c46@gmail.com>
+> Cc: Maciej Żenczykowski <maze@google.com>
+> Cc: Steffen Klassert <steffen.klassert@secunet.com>
+> Signed-off-by: Alistair Delva <adelva@google.com>
 
-The usage of in_*() in drivers is phased out and Linus clearly requested
-that code which changes behaviour depending on context should either be
-separated or the context be conveyed in an argument passed by the caller,
-which usually knows the context.
+Reviewed-by: Dmitry Safonov <0x7f454c46@gmail.com>
 
-Use the `sched_napi' argument passed by the callback. It is set true if
-called from the interrupt handler and NAPI should be scheduled.
+Thank you!
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: "Horia Geant=C4=83" <horia.geanta@nxp.com>
-Cc: Aymen Sghaier <aymen.sghaier@nxp.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Madalin Bucur <madalin.bucur@nxp.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Li Yang <leoyang.li@nxp.com>
-Cc: linux-crypto@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: linux-arm-kernel@lists.infradead.org
----
- drivers/crypto/caam/qi.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/crypto/caam/qi.c b/drivers/crypto/caam/qi.c
-index 57f6ab6bfb56a..8163f5df8ebf7 100644
---- a/drivers/crypto/caam/qi.c
-+++ b/drivers/crypto/caam/qi.c
-@@ -545,14 +545,10 @@ static void cgr_cb(struct qman_portal *qm, struct qma=
-n_cgr *cgr, int congested)
- 	}
- }
-=20
--static int caam_qi_napi_schedule(struct qman_portal *p, struct caam_napi *=
-np)
-+static int caam_qi_napi_schedule(struct qman_portal *p, struct caam_napi *=
-np,
-+				 bool sched_napi)
- {
--	/*
--	 * In case of threaded ISR, for RT kernels in_irq() does not return
--	 * appropriate value, so use in_serving_softirq to distinguish between
--	 * softirq and irq contexts.
--	 */
--	if (unlikely(in_irq() || !in_serving_softirq())) {
-+	if (sched_napi) {
- 		/* Disable QMan IRQ source and invoke NAPI */
- 		qman_p_irqsource_remove(p, QM_PIRQ_DQRI);
- 		np->p =3D p;
-@@ -574,7 +570,7 @@ static enum qman_cb_dqrr_result caam_rsp_fq_dqrr_cb(str=
-uct qman_portal *p,
- 	struct caam_drv_private *priv =3D dev_get_drvdata(qidev);
- 	u32 status;
-=20
--	if (caam_qi_napi_schedule(p, caam_napi))
-+	if (caam_qi_napi_schedule(p, caam_napi, sched_napi))
- 		return qman_cb_dqrr_stop;
-=20
- 	fd =3D &dqrr->fd;
---=20
-2.29.1
-
+--
+          Dmitry
