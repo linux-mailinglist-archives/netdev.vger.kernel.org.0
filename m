@@ -2,121 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96F742A2101
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 20:17:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 642642A212E
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 20:54:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727273AbgKATR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 14:17:28 -0500
-Received: from mail-eopbgr130045.outbound.protection.outlook.com ([40.107.13.45]:31354
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727153AbgKATRV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 1 Nov 2020 14:17:21 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jTehu5b9+Lg0sqYVt4Tlk1qSdLtqqPHkSaZ/Nvm4xXZ1sthu4bZPYpLAn+ilCNF3te/kOiJu7iozc7caAo4pTWM5gva5qudjhQAwnmFSTHc0Va8oJx/+2aMvoRPGmyg0IylHMPV+bz5AsOxAaTc8skA0sDclycS6JkIj3/7x1HwYbsPaE3qyRqrkp3Qn6qXzT15J/zzEi7t804FtT3K3RbzSA4nFFTyaYm8ACLCi80gBqKW6EU8UKavIQWAa9MpyQJGemXiCaZKobdhrvs7Oc/HZqimNbKM0LNuXGV4Ho6kFY3IJMf16jzMG5UQpv2n6fLbQ4gCLF/275cCl+Qkc1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2lMXv/JySk41a0EdK6MbX7MsMtOw0nuUEKX98T0E0fc=;
- b=eesUU25wIDZQG4G+nT50SMoB9D2wYbFq0CRdevtDGHe/kygNkhOoQTc4Qpm0svPDXrbNDKWK5nx3UOfJvXsuyxnWcBJtGcegC6b5wIP9ToXfxPd9sKS0VxsV4Azu2rfyN8mbRpsynImNRz2Lfbu5M5QqeA33SFrVVkKcKa1+bdQJWy7XUOShySZ2kwYdMPS53r9VQrrq3OobDEs4cmKrZHSDnIeoHjblpBd3EFMtB9UfuLLJdoaGOK3/VboIMuKu9Ehb0+y7ipYs/NDgKaO+AOir0NXrjPswpN9UIlX9Dcja/KDeQ6/1mxheSTxtK760KGmdey49n9kHCWNJ0+5tYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2lMXv/JySk41a0EdK6MbX7MsMtOw0nuUEKX98T0E0fc=;
- b=NilnH51EyGmOuknlxIGADx92w44cTHtDOBtbOm+qjeT7hNGlJJuGMFo8SRLXjCoX+0wol6xHzExod4viT4wfflH0xJxTaLZpo6Z8CE3jv8uG9sVwyuNz4HLWbOQFwUx9U4ptTXHjob9TV7AA5c0eZPUryR8w9xnzTFgC1IXiTLg=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR0402MB2861.eurprd04.prod.outlook.com (2603:10a6:800:b5::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.27; Sun, 1 Nov
- 2020 19:17:00 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3499.029; Sun, 1 Nov 2020
- 19:16:59 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        kuba@kernel.org, Christian Eggers <ceggers@arri.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Per Forlin <per.forlin@axis.com>,
-        Oleksij Rempel <linux@rempel-privat.de>
-Subject: [PATCH v3 net-next 12/12] net: dsa: tag_ar9331: let DSA core deal with TX reallocation
-Date:   Sun,  1 Nov 2020 21:16:20 +0200
-Message-Id: <20201101191620.589272-13-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201101191620.589272-1-vladimir.oltean@nxp.com>
-References: <20201101191620.589272-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [188.25.2.177]
-X-ClientProxiedBy: VI1PR0401CA0001.eurprd04.prod.outlook.com
- (2603:10a6:800:4a::11) To VI1PR04MB5696.eurprd04.prod.outlook.com
- (2603:10a6:803:e7::13)
+        id S1727071AbgKATys (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 14:54:48 -0500
+Received: from 95-31-39-132.broadband.corbina.ru ([95.31.39.132]:56296 "EHLO
+        blackbox.su" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726790AbgKATyr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 1 Nov 2020 14:54:47 -0500
+Received: from metabook.localnet (metabook.metanet [192.168.2.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by blackbox.su (Postfix) with ESMTPSA id 43C308195C;
+        Sun,  1 Nov 2020 22:54:48 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=blackbox.su;
+        s=201811; t=1604260488;
+        bh=oNZMqbgbsDMWxKYkOfEGxb9tRrpD4bAcxYCfempUXKQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DB4Im3DydvbkO8IntZcKAQvHx1nDWsLQljNedXMBWp/7NORd8Ew3gx/2JXbTLyImg
+         4I5k7y2vdnT7yGyM4+IQwH2AH/WL7RepfAwRR19LxRBLp6vzu35a1U5uPbPVLBv69W
+         WE1j4VcfPfqtGmGfAdc1qdin2DqKqTS+aQ14hKKhQ90B8Scsv1zLtJEsgzVoFGuFV1
+         aModXSN/t6E3LUX1RQFpzNSbh5/acfA6h9H5QArIQ/6tFsSPva0EniXa2LsduDi9fF
+         Py7Q8VBIQ1JFm9jowY9Cj7lFW4dT4LRjm8sTHXKecI0shEnDZhpI4OykCbfWEb5MiZ
+         kVJeaSCtjdInQ==
+From:   Sergej Bauer <sbauer@blackbox.su>
+To:     Markus Elfring <Markus.Elfring@web.de>, netdev@vger.kernel.org
+Cc:     UNGLinuxDriver@microchip.com, linux-kernel@vger.kernel.org,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v2] lan743x: Fix for potential null pointer dereference
+Date:   Sun, 01 Nov 2020 22:54:38 +0300
+Message-ID: <145853726.prPdODYtnq@metabook>
+In-Reply-To: <dabea6fc-2f2d-7864-721b-3c950265f764@web.de>
+References: <20201031143619.7086-1-sbauer@blackbox.su> <dabea6fc-2f2d-7864-721b-3c950265f764@web.de>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.177) by VI1PR0401CA0001.eurprd04.prod.outlook.com (2603:10a6:800:4a::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Sun, 1 Nov 2020 19:16:59 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: f3f64b6b-f892-4b4a-daaf-08d87e9ab4de
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB2861:
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB2861ACCB1EB4E63F50440E87E0130@VI1PR0402MB2861.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: euG6Nsfa+/uf+j5MYhCa3D4J82UWYFqOsJIRzpeC4VP2PoMJw8BjSrrxtw/BY6S2qYwwnnPgwJKBIiIbjyjlEss44M0q/Ew8ETM4z7kFkNJxh912BO9eqPJ2PBspzg+94mGmcT0Mxe4v3xDpnEM3JytnusYbw36pReHgJluDaZxvLmyloP9MvtTc7KnClcc0PQQmrD3HOYdUcb9j1/TJ6rlz4UMcTscZovZl6wUHXpsaFT7xztUCvSi9jBNG43a3DJvG3zbW0nvIs7ArzFjrPw+mRZrCW0NGzAfk1jLT1nxg/lKcY+cF5jLcvgsVKM6HPVCn1be6bHIpL3uegIGvDADiD15N7vQ/ddv2IiH2swM8dgrKESCg9P5dpcdjnE2D
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(346002)(39850400004)(396003)(366004)(2906002)(8936002)(16526019)(6916009)(186003)(6506007)(86362001)(2616005)(4744005)(8676002)(26005)(36756003)(66556008)(956004)(66946007)(5660300002)(478600001)(66476007)(6486002)(6666004)(52116002)(6512007)(4326008)(1076003)(83380400001)(44832011)(69590400008)(54906003)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: S6QIvhe/uKWkrS7piHV8y4/b7s8V5RsjQMdvkoYRgmHRbMu1XHyAs496B1OWS/c9V3wENNJ2r1rYjhMco017rUYm7qecAAOeWpr4JX4z3WwWWsAXrBGpF0C/3qmPUTEZUgh7430i3+ZlreojYWu/4tjt6CXMw9Wzw8wq6bOeG10dfrx4KfYBMFG7pG4qKo3RhdDZAeBQsF96nEdlbhoesZD54kZrGi0nhAIudMb2rh7UD2VrbSA00PcSb+E8wZZon3Wc0QZ9SyvUW+Qo2ESP4HvraIMpQYdAAGr03oPzKWO50OMMP3e2ZQGV2pdrhMM5asuuruzCGn83VHQYjpEzmsJbPqgPA0dhFhCgXUZARehCHZF8XesnS82ADEEIpeDdwOJesqfA8LoDxrYjibJ2FPqCfaph5Be9Qv4ajy5SflZL5ODkXgSgJOPChOR6dt4UY1Tsd/QlwpwXg7mTPN++FeW6ob0yv5FOzfMuZhzJ2lcplXuCwEb8uYoxozvcRS0MtV3dTCEDn6qEjC39t4TuK85erPQdUiHxAz7mRAZVFTxd0+H8j7m24LYHeXt4FMME302dgzrpzE4jcI+dpVQKld0ReYuRiUx1j2AfA36LBEFlvkXjMgw6Vot/0OcMs95Ha7nYIxmE1zmG8xusfrI28g==
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3f64b6b-f892-4b4a-daaf-08d87e9ab4de
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2020 19:16:59.9571
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VBSsguxdva5/7GTJoI6Dsrz0e30Wa72vDTRoTpAIMFuAX0Q4S6t8gyFvK6sOQyO8hwRIHIKnByxjtydOCT+vjQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2861
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we have a central TX reallocation procedure that accounts for
-the tagger's needed headroom in a generic way, we can remove the
-skb_cow_head call.
+> > Signed-off-by: Sergej Bauer <sbauer@blackbox.su>
+>=20
+> * I miss a change description here.
+The reason for the fix is when the device is down netdev->phydev will be NU=
+LL=20
+and there is no checking for this situation. So 'ethtool ethN' leads to ker=
+nel=20
+panic.
 
-Cc: Per Forlin <per.forlin@axis.com>
-Cc: Oleksij Rempel <linux@rempel-privat.de>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Tested-by: Oleksij Rempel <linux@rempel-privat.de>
----
-Changes in v3:
-None.
+$ sudo ethtool eth7
 
-Changes in v2:
-None.
+[  103.510336] BUG: kernel NULL pointer dereference, address: 0000000000000=
+340
+[  103.510454] #PF: supervisor read access in kernel mode
+[  103.510530] #PF: error_code(0x0000) - not-present page
+[  103.510600] PGD 0 P4D 0=20
+[  103.510635] Oops: 0000 [#1] SMP PTI
+[  103.510675] CPU: 1 PID: 7182 Comm: ethtool Not tainted 5.9.0upstream+ #5
+[  103.510737] Hardware name: Gigabyte Technology Co., Ltd. H110-D3/H110-D3-
+CF, BIOS F24 04/11/2018
+[  103.510836] RIP: 0010:phy_ethtool_get_wol+0x5/0x30 [libphy]
+[  103.510892] Code: 00 48 85 c0 74 11 48 8b 80 40 01 00 00 48 85 c0 74 05 =
+e9=20
+8e 7a 6f dd b8 a1 ff ff ff c3 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 <48> 8=
+b 87=20
+40 03 00 00 48 85 c0 74 11 48 8b 80 48 01 00 00 48 85 c0
+[  103.511054] RSP: 0018:ffffb6cd85123cf0 EFLAGS: 00010286
+[  103.511106] RAX: ffffffffc03f0d00 RBX: ffffb6cd85123d90 RCX: ffffffff9e6=
+fdd20
+[  103.511171] RDX: 0000000000000001 RSI: ffffb6cd85123d90 RDI: 00000000000=
+00000
+[  103.511237] RBP: ffff946f811b4000 R08: 0000000000001000 R09: 00000000000=
+00000
+[  103.511302] R10: 0000000000000000 R11: 0000000000000089 R12:=20
+00007ffde92be040
+[  103.511367] R13: 0000000000000005 R14: ffff946f811b4000 R15: 00000000000=
+00000
+[  103.511434] FS:  00007f54a9bc7740(0000) GS:ffff9470b6c80000(0000) knlGS:
+0000000000000000
+[  103.511508] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  103.511564] CR2: 0000000000000340 CR3: 000000011d366001 CR4:=20
+00000000003706e0
+[  103.511629] Call Trace:
+[  103.511666]  lan743x_ethtool_get_wol+0x21/0x40 [lan743x]
+[  103.511724]  dev_ethtool+0x1507/0x29d0
+[  103.511769]  ? avc_has_extended_perms+0x17f/0x440
+[  103.511820]  ? tomoyo_init_request_info+0x84/0x90
+[  103.511870]  ? tomoyo_path_number_perm+0x68/0x1e0
+[  103.511919]  ? tty_insert_flip_string_fixed_flag+0x82/0xe0
+[  103.511973]  ? inet_ioctl+0x187/0x1d0
+[  103.512016]  dev_ioctl+0xb5/0x560
+[  103.512055]  sock_do_ioctl+0xa0/0x140
+[  103.512098]  sock_ioctl+0x2cb/0x3c0
+[  103.512139]  __x64_sys_ioctl+0x84/0xc0
+[  103.512183]  do_syscall_64+0x33/0x80
+[  103.512224]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  103.512274] RIP: 0033:0x7f54a9cba427
+[  103.512313] Code: 00 00 90 48 8b 05 69 aa 0c 00 64 c7 00 26 00 00 00 48 =
+c7=20
+c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3=
+d 01 f0=20
+ff ff 73 01 c3 48 8b 0d 39 aa 0c 00 f7 d8 64 89 01 48
+=2E..
+=2D--
+So changes - is just to check a pointer for NULL;
 
- net/dsa/tag_ar9331.c | 3 ---
- 1 file changed, 3 deletions(-)
+> * Should a prefix be specified in the patch subject?
+>=20
+as far as I understand subject should be "[PATCH v2] lan743x: fix for poten=
+tial=20
+NULL pointer dereference with bare lan743x"?
 
-diff --git a/net/dsa/tag_ar9331.c b/net/dsa/tag_ar9331.c
-index 55b00694cdba..002cf7f952e2 100644
---- a/net/dsa/tag_ar9331.c
-+++ b/net/dsa/tag_ar9331.c
-@@ -31,9 +31,6 @@ static struct sk_buff *ar9331_tag_xmit(struct sk_buff *skb,
- 	__le16 *phdr;
- 	u16 hdr;
- 
--	if (skb_cow_head(skb, AR9331_HDR_LEN) < 0)
--		return NULL;
--
- 	phdr = skb_push(skb, AR9331_HDR_LEN);
- 
- 	hdr = FIELD_PREP(AR9331_HDR_VERSION_MASK, AR9331_HDR_VERSION);
--- 
-2.25.1
+ok, I've got it.
+
+>=20
+> =E2=80=A6
+>=20
+> > +++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
+>=20
+> =E2=80=A6
+>=20
+> > @@ -809,9 +812,12 @@ static int lan743x_ethtool_set_wol(struct net_devi=
+ce
+> > *netdev,>=20
+> >  	device_set_wakeup_enable(&adapter->pdev->dev, (bool)wol->wolopts);
+> >=20
+> > -	phy_ethtool_set_wol(netdev->phydev, wol);
+> > +	if (netdev->phydev)
+> > +		ret =3D phy_ethtool_set_wol(netdev->phydev, wol);
+> > +	else
+> > +		ret =3D -EIO;
+> >=20
+> > -	return 0;
+> > +	return ret;
+> >=20
+> >  }
+> >  #endif /* CONFIG_PM */
+>=20
+> How do you think about to use the following code variant?
+>=20
+> +	return netdev->phydev ? phy_ethtool_set_wol(netdev->phydev, wol) : -EIO;
+>=20
+It will be quite shorter, thanks.
+
+> Regards,
+> Markus
+
+                Regards.
+                        Sergej.
+
+
+
 
