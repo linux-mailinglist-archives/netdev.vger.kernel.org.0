@@ -2,94 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 603A92A1BA9
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 03:02:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 306D82A1C23
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 06:40:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726601AbgKACCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Oct 2020 22:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726438AbgKACCc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Oct 2020 22:02:32 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992AAC0617A6;
-        Sat, 31 Oct 2020 19:02:30 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id r3so4982490plo.1;
-        Sat, 31 Oct 2020 19:02:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Dbp4d9VwR1A0nOp60T+uohgWaLBk9nOmKzpDG8Qbx/8=;
-        b=ZLbgrhc+7nOSB8eh8mP31c2+KarmkUSuGXGAqbqJfB9ZvXOafCv1aGdwAd2Z6NP6G0
-         dNW+T1uCn+qM8+XXrR5yhHLMAQ5XVPJGmOmDIT01hwyv6kCmgoJLWhntJOMwLJayQPuS
-         vIsDH+r16BemiYtyCKrW3avwyqImz4svzyVsQo2AMKUGl8sLfscwU9triryPsJBKZ8Rj
-         gxDF/h2j4bal60JLhR0xG7hDShl+Fh13S+YDNylh2m3GL9GTflkSOlpO1wWaTXD1uipl
-         TBYKRLgdFWn6AzBd26cPRYU0Ka4YXmgz+0Rh2Wobh69Js55bBYxkIAXQy+7Kwffi2MiX
-         CKZg==
+        id S1725890AbgKAFkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 01:40:13 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:46622 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725783AbgKAFkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 01:40:12 -0400
+Received: by mail-il1-f198.google.com with SMTP id z8so7893452ilh.13
+        for <netdev@vger.kernel.org>; Sat, 31 Oct 2020 22:40:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Dbp4d9VwR1A0nOp60T+uohgWaLBk9nOmKzpDG8Qbx/8=;
-        b=bmyiQCg2h+4rb6+enr3LgcLERQzE9W+DfVFLFyiZu/lewABnq0hIBN9l+nOLEmRECZ
-         l+rcWZuBgG6f7vb6vuN5y4eY5klLX4SH/PmXoeX/23g9l+TXGISaSWcek4XUFjcquiSf
-         PNFop+YFqqsDnVswKgrFTUvyz0lT1DgLpqccwDoJfjbJcp69hjfu0db9j3oY1AU/fjtm
-         /JqI9+/d/FeUVMQxFE4sIfxy7xNhI75fShGj5j4JUGbNXNprqJ6Z5CtSP7FNMflGR/TR
-         JlFRGz1oxZb8v01l1g4TKMcv5S/XC8ETsHsnu+bh6o6mx0dgRvB+rVM14paJIxezEKA0
-         X6Ww==
-X-Gm-Message-State: AOAM5304qlCXHrJxRhJUW+BX0lxGNsy1/dugOjcE20YnjrTvVMQZEELI
-        h7K+PQBJfIXF81Thu8/KWa9MLYrHQCU=
-X-Google-Smtp-Source: ABdhPJwHPjvIgQsUSXdGSRnIvPhUIFAs56oi/mTngVauv94fJGqREA2H1wsoJYVwm7tZXDG53t1SsA==
-X-Received: by 2002:a17:90b:a4e:: with SMTP id gw14mr510551pjb.48.1604196150196;
-        Sat, 31 Oct 2020 19:02:30 -0700 (PDT)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id u5sm3008933pgk.80.2020.10.31.19.02.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Oct 2020 19:02:29 -0700 (PDT)
-Date:   Sat, 31 Oct 2020 19:02:27 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org
-Subject: Re: [PATCH] net: ethernet: ti: cpsw: disable PTPv1 hw timestamping
- advertisement
-Message-ID: <20201101020227.GB2683@hoboy.vegasvil.org>
-References: <20201029190910.30789-1-grygorii.strashko@ti.com>
- <20201031114042.7ccdf507@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=23OyltOe5EBhl8ArboyuBXKjLdoO9g+XhjDrucC98XU=;
+        b=N4T7MKmk8EQX4mifeHyQd8qecKchY/YZuntAPTGvVWenuxO5DVK23yY4hrhgnii8Aq
+         evyqVyG0EwGsUJUYskV80SJFdIjpqo3GdAr+RcLfWqiPR75zSadiMQPYTOxfhgDnDmiw
+         BpKVlKak8UV5Km6XQFHPGjCROfUB3tvO2yxx4HiiCH7pE36JNqa4zM4VzHQU7gszRtSh
+         p5Wy7xTrh3depIMxGhM8Y/nLEQBzvQ3YjRbLJcMOnstYyAeqdYs1FZftyGulG97TSNIo
+         kxB393BdVFJ+vjlHAiUJXRdVr2pg8wBN09dgD3TeMG0nMkgy1Z0SegN13GaQN76KRcE9
+         9mCQ==
+X-Gm-Message-State: AOAM533hnZp6Fixbpe36pLveECK6lA7/iwGAA+2yErDd3O7btlZl/8J0
+        ORzB7OZfHeGYZEwAmWBnXcYQJu/iWRD+DbNmfn4wPwB8stKh
+X-Google-Smtp-Source: ABdhPJzop3BnuUmDv/RjS8YKnkYc3J7Hlabiq8WoaIZLlZjQOVQar2LUCPdvTKih8EIFknDVrPx1Mz5a6Yinm5bdbKguNde8y9Ej
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201031114042.7ccdf507@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a05:6638:24cc:: with SMTP id y12mr7386176jat.144.1604209211179;
+ Sat, 31 Oct 2020 22:40:11 -0700 (PDT)
+Date:   Sat, 31 Oct 2020 22:40:11 -0700
+In-Reply-To: <00000000000013259505a931dd26@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000002d865a05b3051076@google.com>
+Subject: Re: KASAN: use-after-free Read in decode_session6
+From:   syzbot <syzbot+5be8aebb1b7dfa90ef31@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, lucien.xin@gmail.com,
+        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
+        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 31, 2020 at 11:40:42AM -0700, Jakub Kicinski wrote:
-> On Thu, 29 Oct 2020 21:09:10 +0200 Grygorii Strashko wrote:
-> > The TI CPTS does not natively support PTPv1, only PTPv2. But, as it
-> > happens, the CPTS can provide HW timestamp for PTPv1 Sync messages, because
-> > CPTS HW parser looks for PTP messageType id in PTP message octet 0 which
-> > value is 0 for PTPv1. As result, CPTS HW can detect Sync messages for PTPv1
-> > and PTPv2 (Sync messageType = 0 for both), but it fails for any other PTPv1
-> > messages (Delay_req/resp) and will return PTP messageType id 0 for them.
-> > 
-> > The commit e9523a5a32a1 ("net: ethernet: ti: cpsw: enable
-> > HWTSTAMP_FILTER_PTP_V1_L4_EVENT filter") added PTPv1 hw timestamping
-> > advertisement by mistake, only to make Linux Kernel "timestamping" utility
-> > work, and this causes issues with only PTPv1 compatible HW/SW - Sync HW
-> > timestamped, but Delay_req/resp are not.
-> > 
-> > Hence, fix it disabling PTPv1 hw timestamping advertisement, so only PTPv1
-> > compatible HW/SW can properly roll back to SW timestamping.
-> > 
-> > Fixes: e9523a5a32a1 ("net: ethernet: ti: cpsw: enable HWTSTAMP_FILTER_PTP_V1_L4_EVENT filter")
-> > Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> 
-> CC: Richard
+syzbot has bisected this issue to:
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+commit bcd623d8e9fa5f82bbd8cd464dc418d24139157b
+Author: Xin Long <lucien.xin@gmail.com>
+Date:   Thu Oct 29 07:05:05 2020 +0000
+
+    sctp: call sk_setup_caps in sctp_packet_transmit instead
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14df9cb8500000
+start commit:   68bb4665 Merge branch 'l2-multicast-forwarding-for-ocelot-..
+git tree:       net-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=16df9cb8500000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12df9cb8500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=eac680ae76558a0e
+dashboard link: https://syzkaller.appspot.com/bug?extid=5be8aebb1b7dfa90ef31
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11286398500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11bbf398500000
+
+Reported-by: syzbot+5be8aebb1b7dfa90ef31@syzkaller.appspotmail.com
+Fixes: bcd623d8e9fa ("sctp: call sk_setup_caps in sctp_packet_transmit instead")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
