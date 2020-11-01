@@ -2,94 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C5952A1EDB
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 16:04:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBA2E2A1F27
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 16:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726529AbgKAPEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 10:04:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726458AbgKAPEt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 10:04:49 -0500
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D215C0617A6
-        for <netdev@vger.kernel.org>; Sun,  1 Nov 2020 07:04:46 -0800 (PST)
-Received: by mail-ej1-x644.google.com with SMTP id 7so15120050ejm.0
-        for <netdev@vger.kernel.org>; Sun, 01 Nov 2020 07:04:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3X/lPFEvigjBKi9WSbgYI8nd1qcO82zJQqf+5l7Q7P4=;
-        b=oPdq5AP10thldtOJ2syi6/nl5aQso8C73Qb+kBRXQoWq8UQnBc5jHjvzYZ6qVXk45B
-         yFf7PJ6i/hUYCtRAOuod2snhKGsdhanTzTxUJpnOT1HZXkkUwfQTpLNLousP/ESxFeiu
-         mt3yvV1EoJ6d/51UdGxxlXiTDvx3Wi1ASAw8hdDFwQNzKuH4AjPmmPqSSP0yzwqk5FmZ
-         AQU8lqjnUdVNilS69d0oZEx/dKrDxNb6GsE6+K09odPVlWQLqeELfvq2mTgpfI5lCYTS
-         jqFKatl8t+dBx0Wi9pITjshmQH9zI1zwv4zztnqsmX77LIe82ouwzmkfJ1AzCdyxat8U
-         0i/g==
+        id S1726839AbgKAPhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 10:37:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43851 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726832AbgKAPgz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 10:36:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604245015;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=hwjkYy0oMIlzhgFEst/3xJBrxsRxNCTNm6w0ht7u03Q=;
+        b=NrliIV6ZL3P4Iu/TYTd5iQnqh4JnYn1FpHUiPuzKoMNqxEHReXmzjg5dB6xiSsmu3k8lNR
+        MkH21MLnVT0PxYIvWNe8eU1oIDZDeCJOa8vup1hrVeKawI+oIrnwnPjNnfPwAINTycBbFz
+        P2E1HZw7l9pHLUx9j6NH47IWNIRmbKg=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-50-dxzir3ygMDOfbRj0WpXWVw-1; Sun, 01 Nov 2020 10:36:53 -0500
+X-MC-Unique: dxzir3ygMDOfbRj0WpXWVw-1
+Received: by mail-ot1-f70.google.com with SMTP id u8so1947483otg.18
+        for <netdev@vger.kernel.org>; Sun, 01 Nov 2020 07:36:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3X/lPFEvigjBKi9WSbgYI8nd1qcO82zJQqf+5l7Q7P4=;
-        b=rVNCYiF0iPmDXR5/el3SJSZH6AnwTbAynB0pc4RRZ5i8/NMvZTWf03uGnzB5MUyCkb
-         sMlIgA5XdNbggupUt6yBTwkHVkZDtPUFXxfYUwvJFsf3HICdlAnxVtoL/mtNixNv1NNi
-         t3p7HAhotMAvcmwYsP4KDu18LoIWKsauq4hNBXvZHHw6W6Orp8pCQTp7KitdYoSf82z1
-         7YH2JO9LlCkVdMfmSH170eO7qVyABTFfz0MDsx7vqeA0bQfpKv2xfIjCdHiW9eRYnOCI
-         qAw9cOS9QKRhBRZCyWu740TbCQhtCn7RR+jnSchjFz9s1SqmuHOQ9qUjr5SGPYdGqrLi
-         FVxw==
-X-Gm-Message-State: AOAM533DxnOOALs7xDNjuJo9OgbeibaEZTL9Xya97yXcwO6lDY88/y92
-        YVTv2vCzoNn0yftRGrFjwE0=
-X-Google-Smtp-Source: ABdhPJyT9VWDFOca9W+pMIW4b4YkZnJwuF2vl67yBl5l11e1DNM7TBzEzYr0DKY3XdBMnXLwBGfUtg==
-X-Received: by 2002:a17:906:8398:: with SMTP id p24mr11620814ejx.401.1604243084754;
-        Sun, 01 Nov 2020 07:04:44 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id op24sm7571215ejb.56.2020.11.01.07.04.43
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=hwjkYy0oMIlzhgFEst/3xJBrxsRxNCTNm6w0ht7u03Q=;
+        b=tB5z61t+WAe1k/UEPRDRifKwfa+g4eVXdsSNa3AeTJ3P07/pgQjP+Bfs7ihjtk50V2
+         iMaT9bNlZzDuY2KQWYI6VKc5VwReXMOz1/lTThxOynPRdf1j9W8QPxJ7F93o4LQb6PAV
+         sL3jBYOWks9Ndt4HbkjBFVaK+RjfX385uBwcihjY9yQ6+gNWx/JATXrX5WoEQwtNcYEo
+         P6UbMg36inUuL52tcPYZiY/QlhP5o1atI4fxNRZCmKCkrczMBWNY7jikQ/pwSL59s7Yd
+         foilnIhVZiiYIut0rd6tgof2q7JmRrbe8ouOeufwavX+JXMq3dkja5fKnyRogWVdrvmR
+         0xqg==
+X-Gm-Message-State: AOAM53017XdfCjWiyMK0LgWZQyaE/jnVpgi/7+p6pUgM1r/U0SQD3G59
+        RQmujiutOMw84EkwMqjoP5oarUiSi2eKdLbnBXSTUFwYIIAapRscg0rTc4hllYnw9e9S6lpilZi
+        eDZjUZ1C2fXMcolVP
+X-Received: by 2002:a4a:b40a:: with SMTP id y10mr8958310oon.71.1604245012757;
+        Sun, 01 Nov 2020 07:36:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzDmgVMwQdGVfOkJr+SFXDfJRq7GUTFZALzFI65I0ihDwrRqBXQudZ/NYikp8OBelhe3WAlSw==
+X-Received: by 2002:a4a:b40a:: with SMTP id y10mr8958295oon.71.1604245012597;
+        Sun, 01 Nov 2020 07:36:52 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id w25sm2902114otq.58.2020.11.01.07.36.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Nov 2020 07:04:44 -0800 (PST)
-Date:   Sun, 1 Nov 2020 17:04:42 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ivan Vecera <ivecera@redhat.com>, vyasevich@gmail.com,
-        netdev <netdev@vger.kernel.org>, UNGLinuxDriver@microchip.com,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Subject: Re: [PATCH RFC net-next 00/13] RX filtering for DSA switches
-Message-ID: <20201101150442.as7qfa2qh7figmsn@skbuf>
-References: <CA+h21hqTxbPyQGcfm3qWeD80qAZ_c3xf2FNdSBBdtOu2Hz9FTw@mail.gmail.com>
- <20200528143718.GA1569168@splinter>
- <20200720100037.vsb4kqcgytyacyhz@skbuf>
- <20200727165638.GA1910935@shredder>
- <20201027115249.hghcrzomx7oknmoq@skbuf>
- <20201028144338.GA487915@shredder>
- <20201028184644.p6zm4apo7v4g2xqn@skbuf>
- <20201101112731.GA698347@shredder>
- <20201101120644.c23mfjty562t5xue@skbuf>
- <20201101144217.GA714146@shredder>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201101144217.GA714146@shredder>
+        Sun, 01 Nov 2020 07:36:52 -0800 (PST)
+From:   trix@redhat.com
+To:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        andriin@fb.com, edumazet@google.com, ap420073@gmail.com,
+        xiyou.wangcong@gmail.com, jiri@mellanox.com, maximmi@mellanox.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] net: core: remove unneeded semicolon
+Date:   Sun,  1 Nov 2020 07:36:47 -0800
+Message-Id: <20201101153647.2292322-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 01, 2020 at 04:42:17PM +0200, Ido Schimmel wrote:
-> If the goal of this thread is to get packet sockets to work with
-> offloaded traffic, then I think you need to teach these sockets to
-> instruct the bound device to trap / mirror incoming traffic to the CPU.
-> Maybe via a new ndo.
+From: Tom Rix <trix@redhat.com>
 
-A new ndo that does what? It would be exclusively called by sockets?
-We have packet traps with tc, packet traps with devlink, a mechanism for
-switchdev host MDBs, and from the discussion with you I also gather that
-there should be an equivalent switchdev object for host FDBs, that the
-bridge would use. So we would need yet another mechanism to extract
-packets from the hardware data path? I am simply lacking the clarity
-about what the new ndo you're talking about should do.
+A semicolon is not needed after a switch statement.
+
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ net/core/dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 751e5264fd49..10f5d0c3d0d7 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8898,7 +8898,7 @@ static bpf_op_t dev_xdp_bpf_op(struct net_device *dev, enum bpf_xdp_mode mode)
+ 		return dev->netdev_ops->ndo_bpf;
+ 	default:
+ 		return NULL;
+-	};
++	}
+ }
+ 
+ static struct bpf_xdp_link *dev_xdp_link(struct net_device *dev,
+-- 
+2.18.1
+
