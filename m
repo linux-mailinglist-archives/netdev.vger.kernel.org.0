@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F3FA2A1DEC
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:38:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE3062A1DEE
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:38:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbgKAMia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 07:38:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36532 "EHLO
+        id S1726637AbgKAMig (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 07:38:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726496AbgKAMi3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:38:29 -0500
+        with ESMTP id S1726617AbgKAMia (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:38:30 -0500
 Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C59C061A04
-        for <netdev@vger.kernel.org>; Sun,  1 Nov 2020 04:38:28 -0800 (PST)
-Received: by mail-wr1-x442.google.com with SMTP id n18so11392979wrs.5
-        for <netdev@vger.kernel.org>; Sun, 01 Nov 2020 04:38:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6391AC061A04
+        for <netdev@vger.kernel.org>; Sun,  1 Nov 2020 04:38:30 -0800 (PST)
+Received: by mail-wr1-x442.google.com with SMTP id a9so11376914wrg.12
+        for <netdev@vger.kernel.org>; Sun, 01 Nov 2020 04:38:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4Y0FVVw9FTTHNqxeo8AUqCL86XfRYk9cyqhsJGZGas4=;
-        b=qTziHirIIwexlmqSBuv5dN/wYAoA828Y8v6HIaUKwSA4YNgM+op54En0NvAF8vKhUU
-         4EV/ZbfxteUbCxqv1awa8RPdMW+M9Saxm2NEX7lkMh/0zjE0V8qyePlrSeIrgWgPd/FP
-         CSomszvn9nH0gI8ibUVPj/9FwkhG6EL4hi7Vw65LLKh5XGhk6jJulRnaa0s+gesv93ov
-         rCS5+K28Fx3DHx8t9lUouAIywYnV7mKYyKPTym2gHlDKTHkPu5stAweYWKmjx/uDgpsf
-         8L8v55uL8xvRoXI6Pi8CVBGtHAhkwJ4sDvttr4vXRYkItm5GFEuAX0EPX5wERewmaUuQ
-         HQhA==
+        bh=HsLl/dvlpOEe2HirwRDBJ/wm3sQ0ERvQpQRUSaiMGUI=;
+        b=m1lQcJsFqAxlHtC8pZLgdb0EUaCaZKTaTTIfeRTZ3T38LDmdIE2pd3+txzjJMVXW/p
+         1Xi2f/oHhsWXRcpTZ40OnMnVsEFV1oUHZc24AAZfFJ8Iu/dCfTCfTk1xkgJHZ1enPaVN
+         4YR5Y3AjMge5RtBQW4zCa0j8+yoZWOESu87rKNZ75mVfs8SdEzIp5fsTXo88m1DirevY
+         6OBt3cJFr0bZBXJHqA9K0GCX4b+1VfvELai3GaCAa+Orkzw/1DmjGwsViET0ZWY0MugV
+         RtdaQLWb553cqdQR6qMQ77V4fD+DD7WHvpcXY+Cw6sM2Pf0LZE9LnDxtQh0jWN/h0vkz
+         CZDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=4Y0FVVw9FTTHNqxeo8AUqCL86XfRYk9cyqhsJGZGas4=;
-        b=ZFEpQpNv4LFBMP/WH/0ls/ZlZDAfmYNFv1NKCIJ3elK84ryKb5OqhgF95GcoK5Z8oU
-         1VFfxX8W4hQlcsKblpY/cAlIII8bu59c7JdUvsEUAVHR7Fne3KKQZxvewfzj0NVe3OEK
-         ap3Gg+FThXbLcmLTijmmyn0rXN1BGHczdMRu6nYHXXgWxQJS19qPvCGAjq1uvM0DpnNi
-         qzXLhW1+VnmIABOLKseUKPTeTr5BPGh/6R7OtUP2gUiMGkb5kSHaGeM+oI+8NcdIgU9R
-         oSI2Z9SBaRXgZQ51QkUmJSKo2DNwRWNyK68rqmgrclmeRDF1ukcdgtcPXVLu0QWyzugv
-         Qb6Q==
-X-Gm-Message-State: AOAM533GFrhu3Lx2GBmxXYQrN7IwqNzvCm8c5Ie+td/hi+cZNMs0/0FT
-        82WqvWwi3gsQBJyRRaNTsTEpGUEHY5w=
-X-Google-Smtp-Source: ABdhPJymIo/9gBPihISbSn+bazQe7uzEE0x68eQuaCf50/cSE3xUTVuZpBl41wMd+OjyWcZSCfnidQ==
-X-Received: by 2002:a5d:498a:: with SMTP id r10mr14606356wrq.106.1604234307111;
-        Sun, 01 Nov 2020 04:38:27 -0800 (PST)
+        bh=HsLl/dvlpOEe2HirwRDBJ/wm3sQ0ERvQpQRUSaiMGUI=;
+        b=tum+Qp9ZmSXRZTrzEsHtSUSwjMry0Y1YtVatW83fWAMSmBKEzCP2clonXVsWdXYrPD
+         Z6JZge0MJW0ZbaMekbHFU5JdqwJNpHhpLeayaMqp2zLkFvyboXPI/qzjWufJfpxXquBQ
+         F9fcZgsg8m8HcAZqvJVjWV9nlR51bAPd7exteQ+YBzwYuOsiK+q5ic6LK7oREFg8cZq3
+         Mk0V2NzqadZOkhzJTZmNgNIQoykSrm0sYEtNSAAEw36YW7JTwzdXTd4CH8zI/cGuP/s5
+         0ML8I6eHO3oWBokKDsLT05TwhIDllV7IBPykPDI9PJ/bZ1U58iZc3Iw73G8WHsRAc9Oh
+         +K8A==
+X-Gm-Message-State: AOAM531OTHh4wifECHy239rGtCRH/Bu0Wem69Wy0n9vSN5ExLSPkse1k
+        tKW4lWvD6foN1pGHpc9KaaFeME36MQA=
+X-Google-Smtp-Source: ABdhPJxs9qKEsfbnFDEoBcoznmNXvZnIVBScggyNIp21qdMbzd5qXrxWg7GSolqP5MI3mXNxH1cOJw==
+X-Received: by 2002:a5d:4083:: with SMTP id o3mr13441121wrp.44.1604234308393;
+        Sun, 01 Nov 2020 04:38:28 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f23:2800:dc4f:e3f6:2803:90d0? (p200300ea8f232800dc4fe3f6280390d0.dip0.t-ipconnect.de. [2003:ea:8f23:2800:dc4f:e3f6:2803:90d0])
-        by smtp.googlemail.com with ESMTPSA id k18sm18053873wrx.96.2020.11.01.04.38.26
+        by smtp.googlemail.com with ESMTPSA id u10sm17595090wrw.36.2020.11.01.04.38.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Nov 2020 04:38:26 -0800 (PST)
-Subject: [PATCH net-next 4/5] net: dsa: use net core stats64 handling
+        Sun, 01 Nov 2020 04:38:27 -0800 (PST)
+Subject: [PATCH net-next 5/5] tun: switch to net core provided statistics
+ counters
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
@@ -61,8 +62,8 @@ To:     Jakub Kicinski <kuba@kernel.org>,
         Russell King <linux@armlinux.org.uk>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <25c7e008-c3fb-9fcd-f518-5d36e181c0cb@gmail.com>
-Message-ID: <d5091440-3fe2-4d14-dfed-3d030bd09633@gmail.com>
-Date:   Sun, 1 Nov 2020 13:37:03 +0100
+Message-ID: <b31f864d-55cf-57ad-112f-a9a092bb1527@gmail.com>
+Date:   Sun, 1 Nov 2020 13:38:05 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.4.0
 MIME-Version: 1.0
@@ -74,146 +75,339 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use netdev->tstats instead of a member of dsa_slave_priv for storing
-a pointer to the per-cpu counters. This allows us to use core
-functionality for statistics handling.
+Switch tun to the standard statistics pattern:
+- use netdev->stats for the less frequently accessed counters
+- use netdev->tstats for the frequently accessed per-cpu counters
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- net/dsa/dsa.c      |  7 +------
- net/dsa/dsa_priv.h |  2 --
- net/dsa/slave.c    | 29 +++++++----------------------
- 3 files changed, 8 insertions(+), 30 deletions(-)
+ drivers/net/tun.c | 127 +++++++++++-----------------------------------
+ 1 file changed, 31 insertions(+), 96 deletions(-)
 
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index 2131bf2b3..a1b1dc8a4 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -201,7 +201,6 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
- {
- 	struct dsa_port *cpu_dp = dev->dsa_ptr;
- 	struct sk_buff *nskb = NULL;
--	struct pcpu_sw_netstats *s;
- 	struct dsa_slave_priv *p;
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index be69d2720..504bdf501 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -107,17 +107,6 @@ struct tap_filter {
  
- 	if (unlikely(!cpu_dp)) {
-@@ -234,11 +233,7 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
- 		skb = nskb;
- 	}
+ #define TUN_FLOW_EXPIRE (3 * HZ)
  
--	s = this_cpu_ptr(p->stats64);
--	u64_stats_update_begin(&s->syncp);
--	s->rx_packets++;
--	s->rx_bytes += skb->len;
--	u64_stats_update_end(&s->syncp);
-+	dev_sw_netstats_rx_add(skb->dev, skb->len);
- 
- 	if (dsa_skb_defer_rx_timestamp(p, skb))
- 		return 0;
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 12998bf04..7c96aae90 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -78,8 +78,6 @@ struct dsa_slave_priv {
- 	struct sk_buff *	(*xmit)(struct sk_buff *skb,
- 					struct net_device *dev);
- 
--	struct pcpu_sw_netstats	__percpu *stats64;
+-struct tun_pcpu_stats {
+-	u64_stats_t rx_packets;
+-	u64_stats_t rx_bytes;
+-	u64_stats_t tx_packets;
+-	u64_stats_t tx_bytes;
+-	struct u64_stats_sync syncp;
+-	u32 rx_dropped;
+-	u32 tx_dropped;
+-	u32 rx_frame_errors;
+-};
 -
- 	struct gro_cells	gcells;
+ /* A tun_file connects an open character device to a tuntap netdevice. It
+  * also contains all socket related structures (except sock_fprog and tap_filter)
+  * to serve as one transmit queue for tuntap device. The sock_fprog and
+@@ -207,7 +196,6 @@ struct tun_struct {
+ 	void *security;
+ 	u32 flow_count;
+ 	u32 rx_batched;
+-	struct tun_pcpu_stats __percpu *pcpu_stats;
+ 	struct bpf_prog __rcu *xdp_prog;
+ 	struct tun_prog __rcu *steering_prog;
+ 	struct tun_prog __rcu *filter_prog;
+@@ -1066,7 +1054,7 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	return NETDEV_TX_OK;
  
- 	/* DSA port data, such as switch, port index, etc. */
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 3bc5ca40c..c6a797d75 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -551,14 +551,9 @@ EXPORT_SYMBOL_GPL(dsa_enqueue_skb);
- static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct dsa_slave_priv *p = netdev_priv(dev);
--	struct pcpu_sw_netstats *s;
- 	struct sk_buff *nskb;
- 
--	s = this_cpu_ptr(p->stats64);
--	u64_stats_update_begin(&s->syncp);
--	s->tx_packets++;
--	s->tx_bytes += skb->len;
--	u64_stats_update_end(&s->syncp);
-+	dev_sw_netstats_tx_add(dev, 1, skb->len);
- 
- 	DSA_SKB_CB(skb)->clone = NULL;
- 
-@@ -679,7 +674,6 @@ static void dsa_slave_get_ethtool_stats(struct net_device *dev,
- 					uint64_t *data)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
--	struct dsa_slave_priv *p = netdev_priv(dev);
- 	struct dsa_switch *ds = dp->ds;
- 	struct pcpu_sw_netstats *s;
- 	unsigned int start;
-@@ -688,7 +682,7 @@ static void dsa_slave_get_ethtool_stats(struct net_device *dev,
- 	for_each_possible_cpu(i) {
- 		u64 tx_packets, tx_bytes, rx_packets, rx_bytes;
- 
--		s = per_cpu_ptr(p->stats64, i);
-+		s = per_cpu_ptr(dev->tstats, i);
- 		do {
- 			start = u64_stats_fetch_begin_irq(&s->syncp);
- 			tx_packets = s->tx_packets;
-@@ -1217,15 +1211,6 @@ static int dsa_slave_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 	return ds->ops->port_setup_tc(ds, dp->index, type, type_data);
+ drop:
+-	this_cpu_inc(tun->pcpu_stats->tx_dropped);
++	dev->stats.tx_dropped++;
+ 	skb_tx_error(skb);
+ 	kfree_skb(skb);
+ 	rcu_read_unlock();
+@@ -1100,42 +1088,6 @@ static void tun_set_headroom(struct net_device *dev, int new_hr)
+ 	tun->align = new_hr;
  }
  
--static void dsa_slave_get_stats64(struct net_device *dev,
--				  struct rtnl_link_stats64 *stats)
+-static void
+-tun_net_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
 -{
--	struct dsa_slave_priv *p = netdev_priv(dev);
+-	u32 rx_dropped = 0, tx_dropped = 0, rx_frame_errors = 0;
+-	struct tun_struct *tun = netdev_priv(dev);
+-	struct tun_pcpu_stats *p;
+-	int i;
 -
--	netdev_stats_to_stats64(stats, &dev->stats);
--	dev_fetch_sw_netstats(stats, p->stats64);
+-	for_each_possible_cpu(i) {
+-		u64 rxpackets, rxbytes, txpackets, txbytes;
+-		unsigned int start;
+-
+-		p = per_cpu_ptr(tun->pcpu_stats, i);
+-		do {
+-			start = u64_stats_fetch_begin(&p->syncp);
+-			rxpackets	= u64_stats_read(&p->rx_packets);
+-			rxbytes		= u64_stats_read(&p->rx_bytes);
+-			txpackets	= u64_stats_read(&p->tx_packets);
+-			txbytes		= u64_stats_read(&p->tx_bytes);
+-		} while (u64_stats_fetch_retry(&p->syncp, start));
+-
+-		stats->rx_packets	+= rxpackets;
+-		stats->rx_bytes		+= rxbytes;
+-		stats->tx_packets	+= txpackets;
+-		stats->tx_bytes		+= txbytes;
+-
+-		/* u32 counters */
+-		rx_dropped	+= p->rx_dropped;
+-		rx_frame_errors	+= p->rx_frame_errors;
+-		tx_dropped	+= p->tx_dropped;
+-	}
+-	stats->rx_dropped  = rx_dropped;
+-	stats->rx_frame_errors = rx_frame_errors;
+-	stats->tx_dropped = tx_dropped;
 -}
 -
- static int dsa_slave_get_rxnfc(struct net_device *dev,
- 			       struct ethtool_rxnfc *nfc, u32 *rule_locs)
+ static int tun_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ 		       struct netlink_ext_ack *extack)
  {
-@@ -1601,7 +1586,7 @@ static const struct net_device_ops dsa_slave_netdev_ops = {
- #endif
- 	.ndo_get_phys_port_name	= dsa_slave_get_phys_port_name,
- 	.ndo_setup_tc		= dsa_slave_setup_tc,
--	.ndo_get_stats64	= dsa_slave_get_stats64,
+@@ -1199,7 +1151,7 @@ static const struct net_device_ops tun_netdev_ops = {
+ 	.ndo_fix_features	= tun_net_fix_features,
+ 	.ndo_select_queue	= tun_select_queue,
+ 	.ndo_set_rx_headroom	= tun_set_headroom,
+-	.ndo_get_stats64	= tun_net_get_stats64,
 +	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_get_port_parent_id	= dsa_slave_get_port_parent_id,
- 	.ndo_vlan_rx_add_vid	= dsa_slave_vlan_rx_add_vid,
- 	.ndo_vlan_rx_kill_vid	= dsa_slave_vlan_rx_kill_vid,
-@@ -1801,8 +1786,8 @@ int dsa_slave_create(struct dsa_port *port)
- 	slave_dev->vlan_features = master->vlan_features;
+ 	.ndo_change_carrier	= tun_net_change_carrier,
+ };
  
- 	p = netdev_priv(slave_dev);
--	p->stats64 = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
--	if (!p->stats64) {
-+	slave_dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
-+	if (!slave_dev->tstats) {
- 		free_netdev(slave_dev);
- 		return -ENOMEM;
+@@ -1247,7 +1199,7 @@ static int tun_xdp_xmit(struct net_device *dev, int n,
+ 		void *frame = tun_xdp_to_ptr(xdp);
+ 
+ 		if (__ptr_ring_produce(&tfile->tx_ring, frame)) {
+-			this_cpu_inc(tun->pcpu_stats->tx_dropped);
++			dev->stats.tx_dropped++;
+ 			xdp_return_frame_rx_napi(xdp);
+ 			drops++;
+ 		}
+@@ -1283,7 +1235,7 @@ static const struct net_device_ops tap_netdev_ops = {
+ 	.ndo_select_queue	= tun_select_queue,
+ 	.ndo_features_check	= passthru_features_check,
+ 	.ndo_set_rx_headroom	= tun_set_headroom,
+-	.ndo_get_stats64	= tun_net_get_stats64,
++	.ndo_get_stats64	= dev_get_tstats64,
+ 	.ndo_bpf		= tun_xdp,
+ 	.ndo_xdp_xmit		= tun_xdp_xmit,
+ 	.ndo_change_carrier	= tun_net_change_carrier,
+@@ -1577,7 +1529,7 @@ static int tun_xdp_act(struct tun_struct *tun, struct bpf_prog *xdp_prog,
+ 		trace_xdp_exception(tun->dev, xdp_prog, act);
+ 		fallthrough;
+ 	case XDP_DROP:
+-		this_cpu_inc(tun->pcpu_stats->rx_dropped);
++		tun->dev->stats.rx_dropped++;
+ 		break;
  	}
-@@ -1864,7 +1849,7 @@ int dsa_slave_create(struct dsa_port *port)
- out_gcells:
- 	gro_cells_destroy(&p->gcells);
- out_free:
--	free_percpu(p->stats64);
-+	free_percpu(slave_dev->tstats);
- 	free_netdev(slave_dev);
- 	port->slave = NULL;
- 	return ret;
-@@ -1886,7 +1871,7 @@ void dsa_slave_destroy(struct net_device *slave_dev)
- 	dsa_slave_notify(slave_dev, DSA_PORT_UNREGISTER);
- 	phylink_destroy(dp->pl);
- 	gro_cells_destroy(&p->gcells);
--	free_percpu(p->stats64);
-+	free_percpu(slave_dev->tstats);
- 	free_netdev(slave_dev);
- }
  
+@@ -1683,7 +1635,6 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 	size_t total_len = iov_iter_count(from);
+ 	size_t len = total_len, align = tun->align, linear;
+ 	struct virtio_net_hdr gso = { 0 };
+-	struct tun_pcpu_stats *stats;
+ 	int good_linear;
+ 	int copylen;
+ 	bool zerocopy = false;
+@@ -1752,7 +1703,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 		 */
+ 		skb = tun_build_skb(tun, tfile, from, &gso, len, &skb_xdp);
+ 		if (IS_ERR(skb)) {
+-			this_cpu_inc(tun->pcpu_stats->rx_dropped);
++			tun->dev->stats.rx_dropped++;
+ 			return PTR_ERR(skb);
+ 		}
+ 		if (!skb)
+@@ -1781,7 +1732,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 
+ 		if (IS_ERR(skb)) {
+ 			if (PTR_ERR(skb) != -EAGAIN)
+-				this_cpu_inc(tun->pcpu_stats->rx_dropped);
++				tun->dev->stats.rx_dropped++;
+ 			if (frags)
+ 				mutex_unlock(&tfile->napi_mutex);
+ 			return PTR_ERR(skb);
+@@ -1795,7 +1746,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 		if (err) {
+ 			err = -EFAULT;
+ drop:
+-			this_cpu_inc(tun->pcpu_stats->rx_dropped);
++			tun->dev->stats.rx_dropped++;
+ 			kfree_skb(skb);
+ 			if (frags) {
+ 				tfile->napi.skb = NULL;
+@@ -1807,7 +1758,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 	}
+ 
+ 	if (virtio_net_hdr_to_skb(skb, &gso, tun_is_little_endian(tun))) {
+-		this_cpu_inc(tun->pcpu_stats->rx_frame_errors);
++		tun->dev->stats.rx_frame_errors++;
+ 		kfree_skb(skb);
+ 		if (frags) {
+ 			tfile->napi.skb = NULL;
+@@ -1830,7 +1781,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 				pi.proto = htons(ETH_P_IPV6);
+ 				break;
+ 			default:
+-				this_cpu_inc(tun->pcpu_stats->rx_dropped);
++				tun->dev->stats.rx_dropped++;
+ 				kfree_skb(skb);
+ 				return -EINVAL;
+ 			}
+@@ -1910,7 +1861,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 					  skb_headlen(skb));
+ 
+ 		if (unlikely(headlen > skb_headlen(skb))) {
+-			this_cpu_inc(tun->pcpu_stats->rx_dropped);
++			tun->dev->stats.rx_dropped++;
+ 			napi_free_frags(&tfile->napi);
+ 			rcu_read_unlock();
+ 			mutex_unlock(&tfile->napi_mutex);
+@@ -1942,12 +1893,9 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 	}
+ 	rcu_read_unlock();
+ 
+-	stats = get_cpu_ptr(tun->pcpu_stats);
+-	u64_stats_update_begin(&stats->syncp);
+-	u64_stats_inc(&stats->rx_packets);
+-	u64_stats_add(&stats->rx_bytes, len);
+-	u64_stats_update_end(&stats->syncp);
+-	put_cpu_ptr(stats);
++	preempt_disable();
++	dev_sw_netstats_rx_add(tun->dev, len);
++	preempt_enable();
+ 
+ 	if (rxhash)
+ 		tun_flow_update(tun, rxhash, tfile);
+@@ -1979,7 +1927,6 @@ static ssize_t tun_put_user_xdp(struct tun_struct *tun,
+ {
+ 	int vnet_hdr_sz = 0;
+ 	size_t size = xdp_frame->len;
+-	struct tun_pcpu_stats *stats;
+ 	size_t ret;
+ 
+ 	if (tun->flags & IFF_VNET_HDR) {
+@@ -1996,12 +1943,9 @@ static ssize_t tun_put_user_xdp(struct tun_struct *tun,
+ 
+ 	ret = copy_to_iter(xdp_frame->data, size, iter) + vnet_hdr_sz;
+ 
+-	stats = get_cpu_ptr(tun->pcpu_stats);
+-	u64_stats_update_begin(&stats->syncp);
+-	u64_stats_inc(&stats->tx_packets);
+-	u64_stats_add(&stats->tx_bytes, ret);
+-	u64_stats_update_end(&stats->syncp);
+-	put_cpu_ptr(tun->pcpu_stats);
++	preempt_disable();
++	dev_sw_netstats_tx_add(tun->dev, 1, ret);
++	preempt_enable();
+ 
+ 	return ret;
+ }
+@@ -2013,7 +1957,6 @@ static ssize_t tun_put_user(struct tun_struct *tun,
+ 			    struct iov_iter *iter)
+ {
+ 	struct tun_pi pi = { 0, skb->protocol };
+-	struct tun_pcpu_stats *stats;
+ 	ssize_t total;
+ 	int vlan_offset = 0;
+ 	int vlan_hlen = 0;
+@@ -2091,12 +2034,9 @@ static ssize_t tun_put_user(struct tun_struct *tun,
+ 
+ done:
+ 	/* caller is in process context, */
+-	stats = get_cpu_ptr(tun->pcpu_stats);
+-	u64_stats_update_begin(&stats->syncp);
+-	u64_stats_inc(&stats->tx_packets);
+-	u64_stats_add(&stats->tx_bytes, skb->len + vlan_hlen);
+-	u64_stats_update_end(&stats->syncp);
+-	put_cpu_ptr(tun->pcpu_stats);
++	preempt_disable();
++	dev_sw_netstats_tx_add(tun->dev, 1, skb->len + vlan_hlen);
++	preempt_enable();
+ 
+ 	return total;
+ }
+@@ -2235,11 +2175,11 @@ static void tun_free_netdev(struct net_device *dev)
+ 
+ 	BUG_ON(!(list_empty(&tun->disabled)));
+ 
+-	free_percpu(tun->pcpu_stats);
+-	/* We clear pcpu_stats so that tun_set_iff() can tell if
++	free_percpu(dev->tstats);
++	/* We clear tstats so that tun_set_iff() can tell if
+ 	 * tun_free_netdev() has been called from register_netdevice().
+ 	 */
+-	tun->pcpu_stats = NULL;
++	dev->tstats = NULL;
+ 
+ 	tun_flow_uninit(tun);
+ 	security_tun_dev_free_security(tun->security);
+@@ -2370,7 +2310,6 @@ static int tun_xdp_one(struct tun_struct *tun,
+ 	unsigned int datasize = xdp->data_end - xdp->data;
+ 	struct tun_xdp_hdr *hdr = xdp->data_hard_start;
+ 	struct virtio_net_hdr *gso = &hdr->gso;
+-	struct tun_pcpu_stats *stats;
+ 	struct bpf_prog *xdp_prog;
+ 	struct sk_buff *skb = NULL;
+ 	u32 rxhash = 0, act;
+@@ -2428,7 +2367,7 @@ static int tun_xdp_one(struct tun_struct *tun,
+ 	skb_put(skb, xdp->data_end - xdp->data);
+ 
+ 	if (virtio_net_hdr_to_skb(skb, gso, tun_is_little_endian(tun))) {
+-		this_cpu_inc(tun->pcpu_stats->rx_frame_errors);
++		tun->dev->stats.rx_frame_errors++;
+ 		kfree_skb(skb);
+ 		err = -EINVAL;
+ 		goto out;
+@@ -2451,14 +2390,10 @@ static int tun_xdp_one(struct tun_struct *tun,
+ 
+ 	netif_receive_skb(skb);
+ 
+-	/* No need for get_cpu_ptr() here since this function is
++	/* No need to disable preemption here since this function is
+ 	 * always called with bh disabled
+ 	 */
+-	stats = this_cpu_ptr(tun->pcpu_stats);
+-	u64_stats_update_begin(&stats->syncp);
+-	u64_stats_inc(&stats->rx_packets);
+-	u64_stats_add(&stats->rx_bytes, datasize);
+-	u64_stats_update_end(&stats->syncp);
++	dev_sw_netstats_rx_add(tun->dev, datasize);
+ 
+ 	if (rxhash)
+ 		tun_flow_update(tun, rxhash, tfile);
+@@ -2751,8 +2686,8 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+ 		tun->rx_batched = 0;
+ 		RCU_INIT_POINTER(tun->steering_prog, NULL);
+ 
+-		tun->pcpu_stats = netdev_alloc_pcpu_stats(struct tun_pcpu_stats);
+-		if (!tun->pcpu_stats) {
++		dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
++		if (!dev->tstats) {
+ 			err = -ENOMEM;
+ 			goto err_free_dev;
+ 		}
+@@ -2807,16 +2742,16 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+ 	tun_detach_all(dev);
+ 	/* We are here because register_netdevice() has failed.
+ 	 * If register_netdevice() already called tun_free_netdev()
+-	 * while dealing with the error, tun->pcpu_stats has been cleared.
++	 * while dealing with the error, dev->stats has been cleared.
+ 	 */
+-	if (!tun->pcpu_stats)
++	if (!dev->tstats)
+ 		goto err_free_dev;
+ 
+ err_free_flow:
+ 	tun_flow_uninit(tun);
+ 	security_tun_dev_free_security(tun->security);
+ err_free_stat:
+-	free_percpu(tun->pcpu_stats);
++	free_percpu(dev->tstats);
+ err_free_dev:
+ 	free_netdev(dev);
+ 	return err;
 -- 
 2.29.2
 
