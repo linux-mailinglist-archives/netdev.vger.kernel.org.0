@@ -2,93 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22F832A1CA8
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 09:22:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9259A2A1CF4
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 10:36:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726138AbgKAIWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 03:22:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726100AbgKAIWL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 03:22:11 -0500
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E8EC0617A6
-        for <netdev@vger.kernel.org>; Sun,  1 Nov 2020 01:22:09 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id f16so10300332ilr.0
-        for <netdev@vger.kernel.org>; Sun, 01 Nov 2020 01:22:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TK++KPYDroVf9ubvezv0Y64RhMyfa8VbuIjgSzK+73I=;
-        b=Y6p3sJnttBbEC2/VOqD5i162COFCnmjZIZLHRTZausIgYXmBLtEXrX3+9XqMOws2Ye
-         +q/1lMTxn7mdx1E38hwK/tjPxsQqHelPngMsuMPSWexH+IVb/XDxkIMk/2DY+xwcB8Up
-         GLZgad0ou2NdIsfaM5sTQR5a+Y+u8i8yPKgCl3R84GoYLNBwARw1bx++/BKu7AEkmtWw
-         1Xy49vmErDLfE0R5REnRt1lTePviYpFa09vwtw6e3SWuDFZNnvVLkh7fXrVjmqh9yzn8
-         thyNCtSiLecy1cqdoljQ2wip6T9pdQYtN3otLuepsqRrDqZCky8RanXao/6VJYjts5y9
-         eQLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TK++KPYDroVf9ubvezv0Y64RhMyfa8VbuIjgSzK+73I=;
-        b=bEkfpE+d9/D6JqAA3O5c0X5d8uZzJ6KcnDpatlm2jaUWCPFKMPk8JFr0YKgS2VA9H7
-         Onub4bXolCphvoWxXRx60e/wooQuarSnq4IJv0mE95clJ8EB6vdcYqyAb2FHG45Zyb2z
-         Fbs5r7H3LXKn/At6wl1Q2nWZUCeg52oiHHHqWwBDjVerDtb4O5uxbBC7fZlfEp5Afvq4
-         7KPHmrE0N14y7QqxvAcBrliICJ2TA1XxPrOywHXQ+YE3LME1EeEGnhrrcJZWqsXweXzx
-         Ii490xyzB5P/6xQ/ghR4iANso3kEoH4VG1nQxd2MW9SjzRY+hlOFYzynW0kwqKccv2ld
-         Lm4w==
-X-Gm-Message-State: AOAM532L+Mp5J/InHL2+LvswolzbNzecWQZMixh/ca8oJwR50vLa8vW0
-        c6i8/SmL5LtLDQcs+nOBkdlmwAnGZdvHy3+NZCc=
-X-Google-Smtp-Source: ABdhPJxnfipzEVWoBPmnVm0w+6EJ9sKv6yAVMe3iuPq/b4bTNBFTQBaW+8wmQyW0f6OxoJDZw93PLRj81trBZ5dxHnE=
-X-Received: by 2002:a92:8e51:: with SMTP id k17mr6940368ilh.270.1604218929214;
- Sun, 01 Nov 2020 01:22:09 -0700 (PDT)
+        id S1726339AbgKAJgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 04:36:22 -0500
+Received: from mailout07.rmx.de ([94.199.90.95]:59121 "EHLO mailout07.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726118AbgKAJgV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 1 Nov 2020 04:36:21 -0500
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout07.rmx.de (Postfix) with ESMTPS id 4CP9sX50P3zBvB8;
+        Sun,  1 Nov 2020 10:36:16 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CP9sJ0FQgz2TRlS;
+        Sun,  1 Nov 2020 10:36:04 +0100 (CET)
+Received: from n95hx1g2.localnet (192.168.54.14) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Sun, 1 Nov
+ 2020 10:35:02 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add hardware time stamping support
+Date:   Sun, 1 Nov 2020 10:35:01 +0100
+Message-ID: <4928494.XgmExmOR0V@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <20201030182447.2day7x3vad7xgcah@skbuf>
+References: <20201019172435.4416-1-ceggers@arri.de> <1680734.pGj3N1mgWS@n95hx1g2> <20201030182447.2day7x3vad7xgcah@skbuf>
 MIME-Version: 1.0
-References: <1603948549-781-1-git-send-email-sundeep.lkml@gmail.com> <20201031150552.006e2c93@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201031150552.006e2c93@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   sundeep subbaraya <sundeep.lkml@gmail.com>
-Date:   Sun, 1 Nov 2020 13:51:57 +0530
-Message-ID: <CALHRZurzg1VTvxCG+vgFBhAQF=VnHX35Aoc8FX7NDrM3GT+4xA@mail.gmail.com>
-Subject: Re: [v2 net-next PATCH 00/10] Support for OcteonTx2 98xx silcion
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        netdev@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.14]
+X-RMX-ID: 20201101-103604-4CP9sJ0FQgz2TRlS-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks Jakub,
+Hi Vladimir,
 
-Sundeep
+On Friday, 30 October 2020, 19:24:47 CET, Vladimir Oltean wrote:
+> On Thu, Oct 22, 2020 at 12:17:48PM +0200, Christian Eggers wrote:
+> > I tried to study the effect of setting the ocmode bit on the KSZ either to
+> > master or to slave. The main visible change is, that some PTP message
+> > types
+> > are be filtered out on RX:
+> > - in "master" mode, "Sync" messages from other nodes will not be received
+> > (but everything else like "Announce" seem to work)
+> > - in "slave" mode, "Delay_Req" messages from other nodes will not be
+> > received
+> Could you dump the contents of your REG_PTP_MSG_CONF2 register?
+runtime register value is 0x1004 (matches default value from the data sheet).
+The Linux driver doesn't touch this register. Below is a dump of all PTP
+related (global) registers.
 
-On Sun, Nov 1, 2020 at 3:35 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 29 Oct 2020 10:45:39 +0530 sundeep.lkml@gmail.com wrote:
-> > From: Subbaraya Sundeep <sbhatta@marvell.com>
-> >
-> > OcteonTx2 series of silicons have multiple variants, the
-> > 98xx variant has two network interface controllers (NIX blocks)
-> > each of which supports upto 100Gbps. Similarly 98xx supports
-> > two crypto blocks (CPT) to double the crypto performance.
-> > The current RVU drivers support a single NIX and
-> > CPT blocks, this patchset adds support for multiple
-> > blocks of same type to be active at the same time.
-> >
-> > Also the number of serdes controllers (CGX) have increased
-> > from three to five on 98xx. Each of the CGX block supports
-> > upto 4 physical interfaces depending on the serdes mode ie
-> > upto 20 physical interfaces. At a time each CGX block can
-> > be mapped to a single NIX. The HW configuration to map CGX
-> > and NIX blocks is done by firmware.
-> >
-> > NPC has two new interfaces added NIX1_RX and NIX1_TX
-> > similar to NIX0 interfaces. Also MCAM entries is increased
-> > from 4k to 16k. To support the 16k entries extended set
-> > is added in hardware which are at completely different
-> > register offsets. Fortunately new constant registers
-> > can be read to figure out the extended set is present
-> > or not.
->
-> Applied, thanks!
+regards
+Christian
+
+    KSZ9563 (Ethernet switch)
+
+      Global
+
+        IEEE 1588 PTP
+        CLKCTRL      0002      SWFA         enabled        CLKSADJ        NOP              PTPSD        subtract
+                               CLKREAD      NOP            CLKWRITE       NOP              CLKCADJ      disabled
+                               EN           enabled        RESET          normal
+        RTCCP        0002      PHASE        16ns
+        RTCNS        17D72FF0  NANOSECONDS    399978480
+        RTCS         00000023  SECONDS               35
+        RTCSUBNS     00000000  RATEDIR      subtract       TEMPADJ        permanent
+                               SUBNS                  0
+        RTCTMPADJ    00000000  CYCLES                 0
+        MSGCFG1      007D      MODEEN       enabled        IEEE802.3      enabled          UDPv4        enabled
+                               UDPv6        enabled        TCMODE         P2P              OCMODE       slave
+        MSGCFG2      1004      UNICASTEN    both           ALTMASTER      disabled         PRIOTX       event only
+                               CHKSYNFU     disabled       CHKDLY         disabled         CHKPDLY      disabled
+                               DROP         disabled       CHKDOM         disabled         IPv4CHKSUM   calc
+        DOMVER       0200      VERSION      2              DOMAIN            0
+        UNITIDX      00000000  GPIO_IDX     GPIO_1         TS_IDX         Unit 0           TRIG_IDX     Unit 0
+
+
+
+
