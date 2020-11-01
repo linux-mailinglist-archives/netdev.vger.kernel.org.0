@@ -2,110 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E3D72A2272
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 00:55:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA3282A2275
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 00:56:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727335AbgKAXzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 18:55:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
+        id S1727517AbgKAX4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 18:56:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727119AbgKAXzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 18:55:46 -0500
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CB6AC0617A6
-        for <netdev@vger.kernel.org>; Sun,  1 Nov 2020 15:55:44 -0800 (PST)
-Received: by mail-il1-x142.google.com with SMTP id z2so11361341ilh.11
-        for <netdev@vger.kernel.org>; Sun, 01 Nov 2020 15:55:44 -0800 (PST)
+        with ESMTP id S1727119AbgKAX4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 18:56:03 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22515C0617A6;
+        Sun,  1 Nov 2020 15:56:03 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id p5so16535688ejj.2;
+        Sun, 01 Nov 2020 15:56:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0bvVNl+CAzJQWM/F2enQD5qzCbEPVKEGPP3S4xOLldQ=;
-        b=EuAaCpuZtMO6WXwuvkp3K8m3Tb++ytMaVJxkcnxG/ARh6bwJhv4bUV0Alt/FYrRSJZ
-         shpXSPb2xBmEnZy2cSbQ/gnWMbUFzAX6fND34ozjXqASADflH2Zp1Dlux85u2IpfW4BB
-         lNnkrJhtsaAuqetmDzyNIIOe7/cexKomWjTpEJ6yKuH2vTPvU6lbH6Q9GkhASZp4cM7+
-         T/pU856WvudZfK0NAw923Y3vH9A1z2a5Uwe9d+AIPxih01xzg8P8/x49L2nqvQV/x4Gj
-         kXZpIWnbXD4kw2Zr2ZiXRPQzHzKDCmYqjL0WIlJGeqC9d79eusbd/zPjEMoLIbQzpZkx
-         3cqw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hxNCmXN+Np0a9fyk4jNL6uxWJrRHqB5tuMS990NxiFA=;
+        b=eNEVhVKuq4LSWiX81LodotFKxhiO06l0LHgrGgBSCmI3o/660wqAWCLwj7vASYoTO0
+         mqYrxuGAsnr2iIHSWFGeNpZ4xhJdcN7CWJ0zbhi4NSOJX1wNwrv6rChNizGdaLr/z++9
+         y8isFlTl3AhvW/kcvpgsanwttUSXhfWzJOSxhu3N0MYHvfn5OV+ARLgov4UTOOLZFApJ
+         MIVniKopBmGpvlbvKooUvMvZwjemXDaL2bh9edZP5QLlne1HfNCCNe841DKRg14FmFYr
+         eqbT3g4pTmb2unORLo1CAirM8saJg+EzmFryZqKxXnWiqorHi8XF69IGRjgmn5Ihpqhh
+         D36w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0bvVNl+CAzJQWM/F2enQD5qzCbEPVKEGPP3S4xOLldQ=;
-        b=sY5fAursB8GAX6hsk1jTjdFrPcvJOOY9pIFsfcDDktkJlTibPe3dbaEpp63sWMTPm2
-         AqntaKPGg5e+bXdYEjeQ55TrgbqrWS2mF6eAOv9mnJTHm1D2/nPUKa3RLozmyJl9wMWP
-         ejIWkLgqlkDm0GvCFZoFW97mzjYeE+m6UhMYjMQ4OTwmcLCsDLnaOJoq9DIMaSqWWl4J
-         ThpHDrY00iNRGPlsANaNCMXyqAyWJ03kvafkj5kENWrUhxBhXwy4QT5G9YfmsUer3kv8
-         +2Egv1sdgVg2juWx9g/KqtVvGhA1xuFkX17/evNV7YzaSAwA1KkuN93AL75aMZ/NT+cN
-         78Cg==
-X-Gm-Message-State: AOAM533s5fWRqQVIIjfsNqyQpEj8gpzZhNykm0fxGTJe9iG/Mh/oAT5N
-        d2XdGopaZYAyT9eRN1mNipM=
-X-Google-Smtp-Source: ABdhPJz3YOqZei+4kL/mz6CS6adjMJMZdztVKzWpjhwxjnb86Gv/5sQanLSqRGiUOUjOyNYwjAcZgg==
-X-Received: by 2002:a92:dccb:: with SMTP id b11mr1011507ilr.6.1604274943765;
-        Sun, 01 Nov 2020 15:55:43 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:4ca9:ddcf:e3b:9c54])
-        by smtp.googlemail.com with ESMTPSA id q1sm1145676iot.48.2020.11.01.15.55.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Nov 2020 15:55:43 -0800 (PST)
-Subject: Re: [PATCH iproute2-next v2 03/11] lib: utils: Add
- print_on_off_bool()
-To:     Petr Machata <me@pmachata.org>, David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        john.fastabend@gmail.com, jiri@nvidia.com, idosch@nvidia.com,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hxNCmXN+Np0a9fyk4jNL6uxWJrRHqB5tuMS990NxiFA=;
+        b=WxqXyRvNVVHcCth1AgQdxKQfHdOvhnoFGKBJMOK5aeguEz3wfVcL62BT2g8A2o0OXU
+         kNFNaTUz0iMSVH+N8McXYlMJj4I0AJmKy4X6j4HGsyU9ALTsdN0J8oxhsevy77I4a2EG
+         o94Ax9Sqjde9FH1K5j+9zrTLNsrEdnoJY4YYyLq7O6TSIIRP0pwduwroWrDrkBk+PqoZ
+         X2j2Ro2pxoie986Or70XyMBzcxMLzUK30jNXKEl37MB6cwsHVCTiffDaMZ96mKJjq8fO
+         sOKokBWl+9Hw5w0wvN1An/WRxKRdRmRoUCXgraIXEXK/wqPfFexUBT2fznU05gNFyNVX
+         Si1A==
+X-Gm-Message-State: AOAM5329s+DaTzSscbPsrgfonqTETPoZvGKgFEUOIfKf/OJWIJOErvkD
+        QywsFfqz8BOosCieSw0v8rE=
+X-Google-Smtp-Source: ABdhPJwEYitE1WK+4CHeQD3modQC6TZN69oVu0YWKz1Ht+dHeo8jkIBZ3fFK4SnCLj2PDdrjiLMuUw==
+X-Received: by 2002:a17:906:3413:: with SMTP id c19mr12512644ejb.421.1604274961855;
+        Sun, 01 Nov 2020 15:56:01 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id k22sm9425259edr.12.2020.11.01.15.56.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 Nov 2020 15:56:01 -0800 (PST)
+Date:   Mon, 2 Nov 2020 01:55:59 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Leon Romanovsky <leon@kernel.org>
-References: <cover.1604059429.git.me@pmachata.org>
- <5ed9e2e7cdf9326e8f7ec80f33f0f11eafc3a425.1604059429.git.me@pmachata.org>
- <0f017fbd-b8f5-0ebe-0c16-0d441b1d4310@gmail.com> <87o8kihyy9.fsf@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <b0cc6bd4-e4e6-22ba-429d-4cea7996ccd4@gmail.com>
-Date:   Sun, 1 Nov 2020 16:55:42 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        Rob Herring <robh+dt@kernel.org>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add
+ hardware time stamping support
+Message-ID: <20201101235559.wcdns4kmy6ri7kmz@skbuf>
+References: <20201019172435.4416-1-ceggers@arri.de>
+ <4928494.XgmExmOR0V@n95hx1g2>
+ <20201101111008.vl4lj4iqmqjdpbyg@skbuf>
+ <3355013.oZEI4y40TO@n95hx1g2>
+ <20201101234149.rrhrjiyt7l4orkm7@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <87o8kihyy9.fsf@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201101234149.rrhrjiyt7l4orkm7@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/31/20 3:23 PM, Petr Machata wrote:
-> 
-> David Ahern <dsahern@gmail.com> writes:
-> 
->> On 10/30/20 6:29 AM, Petr Machata wrote:
->>> diff --git a/lib/utils.c b/lib/utils.c
->>> index 930877ae0f0d..8deec86ecbcd 100644
->>> --- a/lib/utils.c
->>> +++ b/lib/utils.c
->>> @@ -1763,3 +1763,11 @@ int parse_on_off(const char *msg, const char *realval, int *p_err)
->>>
->>>  	return parse_one_of(msg, realval, values_on_off, ARRAY_SIZE(values_on_off), p_err);
->>>  }
->>> +
->>> +void print_on_off_bool(FILE *fp, const char *flag, bool val)
->>> +{
->>> +	if (is_json_context())
->>> +		print_bool(PRINT_JSON, flag, NULL, val);
->>> +	else
->>> +		fprintf(fp, "%s %s ", flag, val ? "on" : "off");
->>> +}
->>>
->>
->> I think print_on_off should be fine and aligns with parse_on_off once it
->> returns a bool.
-> 
-> print_on_off() is already used in the RDMA tool, and actually outputs
-> "on" and "off", unlike this. So I chose this instead.
-> 
-> I could rename the RDMA one though -- it's used in two places, whereas
-> this is used in about two dozen instances across the codebase.
-> 
+On Mon, Nov 02, 2020 at 01:41:49AM +0200, Vladimir Oltean wrote:
+> In principle I don't see any reason why this switch would not be able
+> to operate as a one-step peer delay BC.
 
-yes, the rdma utils are using generic function names. The rdma version
-should be renamed; perhaps rd_print_on_off. That seems to be once common
-prefix. Added Leon.
+What I meant to say was "one-step E2E BC", since I was talking about
+having to receive both Sync and Delay_Req at the same time, of course.
