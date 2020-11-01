@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF2DC2A1E27
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:55:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EBAC2A1E1F
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:55:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726917AbgKAMzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 07:55:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
+        id S1726730AbgKAMwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 07:52:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726670AbgKAMw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:52:26 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B8AC061A04;
-        Sun,  1 Nov 2020 04:52:25 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id v4so11399871edi.0;
-        Sun, 01 Nov 2020 04:52:25 -0800 (PST)
+        with ESMTP id S1726496AbgKAMw1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:52:27 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A4AC0617A6;
+        Sun,  1 Nov 2020 04:52:27 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id o9so12738088ejg.1;
+        Sun, 01 Nov 2020 04:52:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=n5W+ROLvWRCB6lTVb9DWGVA66kjGHAbhcZbQXXZedOg=;
-        b=rNoYRpHigSkIPHKK39F4fwHBL8HBSpM4cGUhzwwZRnq+uPy9cA93A5uOuQL7Z/ykLS
-         JJkHT5zeOtOr63pmuhVb4TGCpJhIM2XN2hm0eEvQqTACLqGBLthyVxj/eFwFe1/JbpBI
-         58c0QO4QQUbPqbZgkFF7ELbQeffSt1gNt8+eMcprPZkJXjgKPfbyzh7wQcMBtt8Dofpc
-         aE020KmdbIVrSBqiKKAZcx5YrAf7CWrh0ESQaNuQi3p6JijFoAd6mn2hx47jyi5lndH5
-         MnmRhbzDNBolFBXGmhpzL1QI+a3ujUoTYKX3JeQNHgXHfyQybA/Oh6icQVyt4tII2gtb
-         ic3g==
+        bh=zAr2ZpROTUIh8AyndHrw65H5Tjuc6RrJxRTm7QHUC9c=;
+        b=kgPmBeJMeW0hJeo7er3LfchxAFxmGI/4Yb5AzlL6EpKM2mzcMolBfkLTL2cAdhv9IB
+         pAOD7+6KO6FpijBMsw+jcwkJ9a2WTwqkASBBodgHog9Sf3+rOEYdrlb9AxJKSJttSgLL
+         R/qfDNgYc42NjiC+NXj5tkTj//tWpvrUuWvOeGZDV839J6/PP20mII9dFzFOugUbrLT4
+         Jh8fvAKlmRRfGP5JMrLd4VRprUvYQ7P7AEGNyhzWsxoINfLtveY3xEg/geN6siEsX02z
+         Js8PhPwtWpQCB+maBIYs9V2mtBXR7gIB/zvdKTOyzYgaQjqnijnLYNacCQCmcrTleyi6
+         DG4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=n5W+ROLvWRCB6lTVb9DWGVA66kjGHAbhcZbQXXZedOg=;
-        b=Q1eiXgezzgjqDidhRx2LQ3we/ckmDRfJBPcenMyXRqwONxQbSzsj84MgoZhQc/5/WM
-         Yw3QqX5WLaQXiyNNUbACiol3LhMRzSY80JoJIvkRHJ5C38o3A/7Q3Fz+VCjys1YIC8kJ
-         m0zI2+PieBU6w4wT50akLBxRrnzzQPH13ZNlztCmOVcgCxPuOGPDnVmWytBgPjuSnoqM
-         iEgubcJs8egoMbCJ4/4yQaDBRkHP04jil4zE5JHvxXmrw36WnrESEDzS4SyzRNXrhog4
-         r3+Wa/O9g5Rl2Lq4+SwrRA3aYrWkgV98RXHwXnrPU7BVocLewonAuap40ZKOOjly1mvV
-         kD/A==
-X-Gm-Message-State: AOAM530egoVxNlWKPNkVv/LL5oEN0eiWvZq1td8o8gId/IIym/el/Wav
-        LxXlVuU1PQ8EuIVaOjBQI9o=
-X-Google-Smtp-Source: ABdhPJzAYNkrYyPQUNa/4pLKbBoV50SqCed2+gaF+KvDzxLnOQcFSGxfLD8M1LjHo5Axh5MLHGvKiA==
-X-Received: by 2002:aa7:d1d5:: with SMTP id g21mr12071763edp.348.1604235144548;
-        Sun, 01 Nov 2020 04:52:24 -0800 (PST)
+        bh=zAr2ZpROTUIh8AyndHrw65H5Tjuc6RrJxRTm7QHUC9c=;
+        b=QNCKS0smjgrgjNoHIoQjMbbtFeQudOM6dxlwD4lCXpX/jy9uMjfOBmEdujCEvi7SPs
+         IHENWpryS+9QufK6Hn2W3D6b9kyQZYOoouN2sIJ0ktJzojcz6lM12NiFPqa+Q7lHcFDs
+         8MUrL74ZqHTCfm/6WZkXS6WINboRlhkys5LhZi/jRW5V25uVkFR3Ewx571w/typZEbHd
+         pBblEJaOHTyMkDAVcgddmHqjHq17FNPFB4OnYw2Ov+2s1rP84nN7VQQ0r1YsfNT6u/YP
+         lSA1CB7wSl6xefWCn59E1GlQw6cRDVDl7zPPrbCivW77wT2u2zynmVL22cq+w2A80JCy
+         yCAg==
+X-Gm-Message-State: AOAM533Zig5x/PJSjM2r2YaTSQrVC4Buk7UmCpG4Xo2IyQHARGkHEKhE
+        jy/wA+rRwVm2b0LBb/ACP6c=
+X-Google-Smtp-Source: ABdhPJzryKXM/CZpRt22sJbREQXlV5y8WsJJxu3+mXkcAAzZAGZH5yM6kvF0BndBVI5VbsWm75/SVg==
+X-Received: by 2002:a17:906:260a:: with SMTP id h10mr4506040ejc.159.1604235146026;
+        Sun, 01 Nov 2020 04:52:26 -0800 (PST)
 Received: from yoga-910.localhost ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id c5sm8133603edx.58.2020.11.01.04.52.22
+        by smtp.gmail.com with ESMTPSA id c5sm8133603edx.58.2020.11.01.04.52.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Nov 2020 04:52:23 -0800 (PST)
+        Sun, 01 Nov 2020 04:52:25 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -55,32 +55,11 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
-        Dan Murphy <dmurphy@ti.com>,
-        Divya Koppera <Divya.Koppera@microchip.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Kavya Sree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Marek Vasut <marex@denx.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Mathias Kresin <dev@kresin.me>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Michael Walle <michael@walle.cc>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Nisar Sayed <Nisar.Sayed@microchip.com>,
         Oleksij Rempel <o.rempel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Willy Liu <willy.liu@realtek.com>,
-        Yuiko Oshino <yuiko.oshino@microchip.com>
-Subject: [PATCH net-next v2 03/19] net: phy: make .ack_interrupt() optional
-Date:   Sun,  1 Nov 2020 14:50:58 +0200
-Message-Id: <20201101125114.1316879-4-ciorneiioana@gmail.com>
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next v2 04/19] net: phy: at803x: implement generic .handle_interrupt() callback
+Date:   Sun,  1 Nov 2020 14:50:59 +0200
+Message-Id: <20201101125114.1316879-5-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201101125114.1316879-1-ciorneiioana@gmail.com>
 References: <20201101125114.1316879-1-ciorneiioana@gmail.com>
@@ -92,60 +71,102 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-As a first step into making phylib and all PHY drivers to actually
-have support for shared IRQs, make the .ack_interrupt() callback
-optional.
+In an attempt to actually support shared IRQs in phylib, we now move the
+responsibility of triggering the phylib state machine or just returning
+IRQ_NONE, based on the IRQ status register, to the PHY driver. Having
+3 different IRQ handling callbacks (.handle_interrupt(),
+.did_interrupt() and .ack_interrupt() ) is confusing so let the PHY
+driver implement directly an IRQ handler like any other device driver.
+Make this driver follow the new convention.
 
-After all drivers have been moved to implement the generic
-interrupt handle, the phy_drv_supports_irq() check will be
-changed again to only require the .handle_interrupts() callback.
-
-Cc: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc: Andre Edich <andre.edich@microchip.com>
-Cc: Antoine Tenart <atenart@kernel.org>
-Cc: Baruch Siach <baruch@tkos.co.il>
-Cc: Christophe Leroy <christophe.leroy@c-s.fr>
-Cc: Dan Murphy <dmurphy@ti.com>
-Cc: Divya Koppera <Divya.Koppera@microchip.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Hauke Mehrtens <hauke@hauke-m.de>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Jerome Brunet <jbrunet@baylibre.com>
-Cc: Kavya Sree Kotagiri <kavyasree.kotagiri@microchip.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Marco Felsch <m.felsch@pengutronix.de>
-Cc: Marek Vasut <marex@denx.de>
-Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: Mathias Kresin <dev@kresin.me>
-Cc: Maxim Kochetkov <fido_max@inbox.ru>
-Cc: Michael Walle <michael@walle.cc>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Cc: Nisar Sayed <Nisar.Sayed@microchip.com>
 Cc: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Philippe Schenker <philippe.schenker@toradex.com>
-Cc: Willy Liu <willy.liu@realtek.com>
-Cc: Yuiko Oshino <yuiko.oshino@microchip.com>
+Cc: Michael Walle <michael@walle.cc>
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 Changes in v2:
- - none
+ - adjust .handle_interrupt() so that we only take into account the
+   enabled IRQs.
 
- drivers/net/phy/phy_device.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/at803x.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 413a0a2c5d51..f54f483d7fd6 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -2815,7 +2815,7 @@ EXPORT_SYMBOL(phy_get_internal_delay);
- 
- static bool phy_drv_supports_irq(struct phy_driver *phydrv)
- {
--	return phydrv->config_intr && phydrv->ack_interrupt;
-+	return phydrv->config_intr && (phydrv->ack_interrupt || phydrv->handle_interrupt);
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index ed601a7e46a0..c7f91934cf82 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -628,6 +628,32 @@ static int at803x_config_intr(struct phy_device *phydev)
+ 	return err;
  }
  
- /**
++static irqreturn_t at803x_handle_interrupt(struct phy_device *phydev)
++{
++	int irq_status, int_enabled;
++
++	irq_status = phy_read(phydev, AT803X_INTR_STATUS);
++	if (irq_status < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	/* Read the current enabled interrupts */
++	int_enabled = phy_read(phydev, AT803X_INTR_ENABLE);
++	if (int_enabled < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	/* See if this was one of our enabled interrupts */
++	if (!(irq_status & int_enabled))
++		return IRQ_NONE;
++
++	phy_trigger_machine(phydev);
++
++	return IRQ_HANDLED;
++}
++
+ static void at803x_link_change_notify(struct phy_device *phydev)
+ {
+ 	/*
+@@ -1064,6 +1090,7 @@ static struct phy_driver at803x_driver[] = {
+ 	.read_status		= at803x_read_status,
+ 	.ack_interrupt		= at803x_ack_interrupt,
+ 	.config_intr		= at803x_config_intr,
++	.handle_interrupt	= at803x_handle_interrupt,
+ 	.get_tunable		= at803x_get_tunable,
+ 	.set_tunable		= at803x_set_tunable,
+ 	.cable_test_start	= at803x_cable_test_start,
+@@ -1084,6 +1111,7 @@ static struct phy_driver at803x_driver[] = {
+ 	/* PHY_BASIC_FEATURES */
+ 	.ack_interrupt		= at803x_ack_interrupt,
+ 	.config_intr		= at803x_config_intr,
++	.handle_interrupt	= at803x_handle_interrupt,
+ }, {
+ 	/* Qualcomm Atheros AR8031/AR8033 */
+ 	PHY_ID_MATCH_EXACT(ATH8031_PHY_ID),
+@@ -1102,6 +1130,7 @@ static struct phy_driver at803x_driver[] = {
+ 	.aneg_done		= at803x_aneg_done,
+ 	.ack_interrupt		= &at803x_ack_interrupt,
+ 	.config_intr		= &at803x_config_intr,
++	.handle_interrupt	= at803x_handle_interrupt,
+ 	.get_tunable		= at803x_get_tunable,
+ 	.set_tunable		= at803x_set_tunable,
+ 	.cable_test_start	= at803x_cable_test_start,
+@@ -1122,6 +1151,7 @@ static struct phy_driver at803x_driver[] = {
+ 	/* PHY_BASIC_FEATURES */
+ 	.ack_interrupt		= at803x_ack_interrupt,
+ 	.config_intr		= at803x_config_intr,
++	.handle_interrupt	= at803x_handle_interrupt,
+ 	.cable_test_start	= at803x_cable_test_start,
+ 	.cable_test_get_status	= at803x_cable_test_get_status,
+ }, {
+@@ -1134,6 +1164,7 @@ static struct phy_driver at803x_driver[] = {
+ 	/* PHY_BASIC_FEATURES */
+ 	.ack_interrupt		= &at803x_ack_interrupt,
+ 	.config_intr		= &at803x_config_intr,
++	.handle_interrupt	= at803x_handle_interrupt,
+ 	.cable_test_start	= at803x_cable_test_start,
+ 	.cable_test_get_status	= at803x_cable_test_get_status,
+ 	.read_status		= at803x_read_status,
 -- 
 2.28.0
 
