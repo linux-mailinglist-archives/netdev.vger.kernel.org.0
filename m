@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 314CA2A1E0D
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:53:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 875E02A1E0A
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:53:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727043AbgKAMxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 07:53:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38754 "EHLO
+        id S1727042AbgKAMw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 07:52:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726973AbgKAMwp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:52:45 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66344C061A04;
-        Sun,  1 Nov 2020 04:52:44 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id l24so11347704edj.8;
-        Sun, 01 Nov 2020 04:52:44 -0800 (PST)
+        with ESMTP id S1726980AbgKAMwq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:52:46 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AE0C061A47;
+        Sun,  1 Nov 2020 04:52:45 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id o21so7777519ejb.3;
+        Sun, 01 Nov 2020 04:52:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hO8iEAWXFC7W/MF6vT8UKXWiO7uCrbk5wP0QUGzUSFk=;
-        b=pIqD7R0EAHt+2uEyvaVLLyrbWqgJtipiyZxV7FZ+O//0GDRRnkcS/EbwMbisPEqvvA
-         uBlrsNXQbDJkb25jFG16C5Ref4vi+9MxYomFNnS5tGtM8jVSK2MmaipDLGff/aQefZ7n
-         cm4rIUgVMEnY1LaW05o64w/9h4hcPLsEdHnwkQq61dtfiGxp8NcRrx2rF4fLJEd+ESlz
-         BNcTv4gQa/hH1A2o/aiObIJ3vAXoTtFH7Gc8QnZfP9z+b7NZ0S0g5uNTj0bqbHR+r5hP
-         c8LfgPdTKazgfKiB963b21Ze6rNGFtFrgctpVWs5xS8lAVJdV8TRNFfzrH4Z9+5dp6Yx
-         /3RA==
+        bh=BE/4+zMoaGoG+Y2qJFFSFExn1Z28yG9OqagJu4uYRWs=;
+        b=BHGwvMyDdX4LFcgIqboA6AtP4BVoXwwFL3kGRYLqtoE2T+1cnT0bmlHcRLR60YNXEz
+         F7/YItk9yXoGvFJ2AS5HEVucdR3gfPOpR9BcJG8CWVpPDU7+kCfl7SYTfoYsSskQMJqD
+         gELrZhNsRaKoBi42C3ejvrJ8QJZKGOZrlIICHT/kzU0DNGm4iH4/xeaJdv3IfJu7w0Zg
+         pLrfbNivxIBNFPqA7JvivE+RO3/ag7E2k2sbOu9FiA31ZPjxAqwLWHrkxuPeexx4GEP5
+         Y3P4yjd3jfcbJ9unyNeqOUM07krgzr5v0koxCg4hu6fDYA69okdGyufOL2tmU2BZfnuc
+         7LkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hO8iEAWXFC7W/MF6vT8UKXWiO7uCrbk5wP0QUGzUSFk=;
-        b=txiPmOJjLV67pWBghfP3c7ucLbDg/x3Zy7MppGfM+yX4OplsIdEZVIFiYz1c2vK33V
-         Otq8XCjt7B0D1txVUD6zXqwVNe3sk4tU5OE7I24HStnPYlPrtHSzKpeMcXI41PzMFbas
-         vvSdqnN8UHRRL33SLs0DBcbG6ltFM0F/VCmv63M7Tk7mQkOrjvfGI5v1FetEnThOK3Ay
-         DHhc0jzxDNfbTAWbLQlPzZtbhgB0+Tr+5TPKJVC3Ilbad5Cbk4E1uZNvdIwb6PBuMe16
-         GZNKT7RhQXrghCHStYrVrkVY2DCWhEvjP36pb8m/Xp8ifAAIPWUe11pYaPrOWpoW/5rF
-         ahtQ==
-X-Gm-Message-State: AOAM532yD6Ub/vZW8/iJxoVTv9OCHy3R3q504WaGDpZJCbrFaqMp6u7W
-        p2TKpuUDq/isNqtA3x1Y0O4zzBbwHmR5+gp7
-X-Google-Smtp-Source: ABdhPJwbj4EMYmNcxY9i11I4L1ZfHpEkP004uta9h4LdRM+a54UvUf7owtkrnjLdrnfhz50IT/tgig==
-X-Received: by 2002:a05:6402:3136:: with SMTP id dd22mr378857edb.256.1604235163120;
-        Sun, 01 Nov 2020 04:52:43 -0800 (PST)
+        bh=BE/4+zMoaGoG+Y2qJFFSFExn1Z28yG9OqagJu4uYRWs=;
+        b=lOOwbeCMDuLwJO8g7kCauNw3WbdbIjBrMVvVFRGYQ69faf5siqzlui/dm4EwKpIa9X
+         uv91XtgpQ4IgHOSiXdzRYFl3skJ1OQ9gqkrkWWhA6qoOviUpwAK1W01LnLSfq7f+6+M9
+         +Xoi+A4zCabmQ6ZiVsRu+ZTgtCv+Ce0+XfUMXFrxjgXazBIzw3Gj4TnQaRVcpe0voXzJ
+         ZhcXw/Vxx4rsJoDioZJaCZBHFMnlfv29GPnw0Fhi2KX/G8ZmANHcAekQ5kRDWe/OnkBx
+         qQYc+JxyOPP1DhYN1pOMOShGtd0XL8lHeUdJDlwhzOWK2zpOPMEtKBuPCFcW85NZXq/u
+         iQuw==
+X-Gm-Message-State: AOAM531a5G5pOGZEod944EdEqMNs6yoK9X8nsNMQfwictjAEX/oLi8cp
+        ANdfTGswa1dlFOdvodAVCY8=
+X-Google-Smtp-Source: ABdhPJzF2Yr5TIx71MQA1KXIERry6MKXDlF50xCO0pVSq2oDph5GWmmD2WVExkokJx/d1CrfwYaRjg==
+X-Received: by 2002:a17:906:cb2:: with SMTP id k18mr11336819ejh.71.1604235164410;
+        Sun, 01 Nov 2020 04:52:44 -0800 (PST)
 Received: from yoga-910.localhost ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id c5sm8133603edx.58.2020.11.01.04.52.42
+        by smtp.gmail.com with ESMTPSA id c5sm8133603edx.58.2020.11.01.04.52.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Nov 2020 04:52:42 -0800 (PST)
+        Sun, 01 Nov 2020 04:52:43 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -54,10 +54,12 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v2 17/19] net: phy: add genphy_handle_interrupt_no_ack()
-Date:   Sun,  1 Nov 2020 14:51:12 +0200
-Message-Id: <20201101125114.1316879-18-ciorneiioana@gmail.com>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Willy Liu <willy.liu@realtek.com>
+Subject: [PATCH net-next v2 18/19] net: phy: realtek: implement generic .handle_interrupt() callback
+Date:   Sun,  1 Nov 2020 14:51:13 +0200
+Message-Id: <20201101125114.1316879-19-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201101125114.1316879-1-ciorneiioana@gmail.com>
 References: <20201101125114.1316879-1-ciorneiioana@gmail.com>
@@ -69,57 +71,157 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-It seems there are cases where the interrupts are handled by another
-entity (ie an IRQ controller embedded inside the PHY) and do not need
-any other interraction from phylib. For this kind of PHYs, like the
-RTL8366RB, add the genphy_handle_interrupt_no_ack() function which just
-triggers the link state machine.
+In an attempt to actually support shared IRQs in phylib, we now move the
+responsibility of triggering the phylib state machine or just returning
+IRQ_NONE, based on the IRQ status register, to the PHY driver. Having
+3 different IRQ handling callbacks (.handle_interrupt(),
+.did_interrupt() and .ack_interrupt() ) is confusing so let the PHY
+driver implement directly an IRQ handler like any other device driver.
+Make this driver follow the new convention.
 
+Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: Willy Liu <willy.liu@realtek.com>
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 Changes in v2:
- - none
+ - Adjust .handle_interrupt() so that we only take into account the
+   enabled IRQs.
 
- drivers/net/phy/phy_device.c | 13 +++++++++++++
- include/linux/phy.h          |  1 +
- 2 files changed, 14 insertions(+)
+ drivers/net/phy/realtek.c | 72 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 72 insertions(+)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index f54f483d7fd6..e13a46c25437 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -2463,6 +2463,19 @@ int genphy_soft_reset(struct phy_device *phydev)
- }
- EXPORT_SYMBOL(genphy_soft_reset);
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index fb1db713b7fb..820b4e8ef23a 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -41,6 +41,12 @@
+ #define RTL8211E_RX_DELAY			BIT(11)
  
-+irqreturn_t genphy_handle_interrupt_no_ack(struct phy_device *phydev)
+ #define RTL8201F_ISR				0x1e
++#define RTL8201F_ISR_ANERR			BIT(15)
++#define RTL8201F_ISR_DUPLEX			BIT(13)
++#define RTL8201F_ISR_LINK			BIT(11)
++#define RTL8201F_ISR_MASK			(RTL8201F_ISR_ANERR | \
++						 RTL8201F_ISR_DUPLEX | \
++						 RTL8201F_ISR_LINK)
+ #define RTL8201F_IER				0x13
+ 
+ #define RTL8366RB_POWER_SAVE			0x15
+@@ -149,6 +155,66 @@ static int rtl8211f_config_intr(struct phy_device *phydev)
+ 	return phy_write_paged(phydev, 0xa42, RTL821x_INER, val);
+ }
+ 
++static irqreturn_t rtl8201_handle_interrupt(struct phy_device *phydev)
 +{
-+	/* It seems there are cases where the interrupts are handled by another
-+	 * entity (ie an IRQ controller embedded inside the PHY) and do not
-+	 * need any other interraction from phylib. In this case, just trigger
-+	 * the state machine directly.
-+	 */
++	int irq_status;
++
++	irq_status = phy_read(phydev, RTL8201F_ISR);
++	if (irq_status < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	if (!(irq_status & RTL8201F_ISR_MASK))
++		return IRQ_NONE;
++
 +	phy_trigger_machine(phydev);
 +
-+	return 0;
++	return IRQ_HANDLED;
 +}
-+EXPORT_SYMBOL(genphy_handle_interrupt_no_ack);
 +
- /**
-  * genphy_read_abilities - read PHY abilities from Clause 22 registers
-  * @phydev: target phy_device struct
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 566b39f6cd64..4f158d6352ae 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1510,6 +1510,7 @@ int genphy_suspend(struct phy_device *phydev);
- int genphy_resume(struct phy_device *phydev);
- int genphy_loopback(struct phy_device *phydev, bool enable);
- int genphy_soft_reset(struct phy_device *phydev);
-+irqreturn_t genphy_handle_interrupt_no_ack(struct phy_device *phydev);
- 
- static inline int genphy_config_aneg(struct phy_device *phydev)
++static irqreturn_t rtl821x_handle_interrupt(struct phy_device *phydev)
++{
++	int irq_status, irq_enabled;
++
++	irq_status = phy_read(phydev, RTL821x_INSR);
++	if (irq_status < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	irq_enabled = phy_read(phydev, RTL821x_INER);
++	if (irq_enabled < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	if (!(irq_status & irq_enabled))
++		return IRQ_NONE;
++
++	phy_trigger_machine(phydev);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t rtl8211f_handle_interrupt(struct phy_device *phydev)
++{
++	int irq_status;
++
++	irq_status = phy_read_paged(phydev, 0xa43, RTL8211F_INSR);
++	if (irq_status < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	if (!(irq_status & RTL8211F_INER_LINK_STATUS))
++		return IRQ_NONE;
++
++	phy_trigger_machine(phydev);
++
++	return IRQ_HANDLED;
++}
++
+ static int rtl8211_config_aneg(struct phy_device *phydev)
  {
+ 	int ret;
+@@ -556,6 +622,7 @@ static struct phy_driver realtek_drvs[] = {
+ 		.name		= "RTL8201F Fast Ethernet",
+ 		.ack_interrupt	= &rtl8201_ack_interrupt,
+ 		.config_intr	= &rtl8201_config_intr,
++		.handle_interrupt = rtl8201_handle_interrupt,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.read_page	= rtl821x_read_page,
+@@ -582,6 +649,7 @@ static struct phy_driver realtek_drvs[] = {
+ 		.name		= "RTL8211B Gigabit Ethernet",
+ 		.ack_interrupt	= &rtl821x_ack_interrupt,
+ 		.config_intr	= &rtl8211b_config_intr,
++		.handle_interrupt = rtl821x_handle_interrupt,
+ 		.read_mmd	= &genphy_read_mmd_unsupported,
+ 		.write_mmd	= &genphy_write_mmd_unsupported,
+ 		.suspend	= rtl8211b_suspend,
+@@ -601,6 +669,7 @@ static struct phy_driver realtek_drvs[] = {
+ 		.name		= "RTL8211DN Gigabit Ethernet",
+ 		.ack_interrupt	= rtl821x_ack_interrupt,
+ 		.config_intr	= rtl8211e_config_intr,
++		.handle_interrupt = rtl821x_handle_interrupt,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.read_page	= rtl821x_read_page,
+@@ -611,6 +680,7 @@ static struct phy_driver realtek_drvs[] = {
+ 		.config_init	= &rtl8211e_config_init,
+ 		.ack_interrupt	= &rtl821x_ack_interrupt,
+ 		.config_intr	= &rtl8211e_config_intr,
++		.handle_interrupt = rtl821x_handle_interrupt,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.read_page	= rtl821x_read_page,
+@@ -621,6 +691,7 @@ static struct phy_driver realtek_drvs[] = {
+ 		.config_init	= &rtl8211f_config_init,
+ 		.ack_interrupt	= &rtl8211f_ack_interrupt,
+ 		.config_intr	= &rtl8211f_config_intr,
++		.handle_interrupt = rtl8211f_handle_interrupt,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.read_page	= rtl821x_read_page,
+@@ -670,6 +741,7 @@ static struct phy_driver realtek_drvs[] = {
+ 		 */
+ 		.ack_interrupt	= genphy_no_ack_interrupt,
+ 		.config_intr	= genphy_no_config_intr,
++		.handle_interrupt = genphy_handle_interrupt_no_ack,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 	},
 -- 
 2.28.0
 
