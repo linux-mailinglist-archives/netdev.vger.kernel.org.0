@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4DD42A1DFD
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:52:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E175D2A1DFF
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:52:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726595AbgKAMwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 07:52:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38654 "EHLO
+        id S1726707AbgKAMwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 07:52:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726529AbgKAMwT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:52:19 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4049CC0617A6;
-        Sun,  1 Nov 2020 04:52:19 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id a71so5992405edf.9;
-        Sun, 01 Nov 2020 04:52:19 -0800 (PST)
+        with ESMTP id S1726670AbgKAMwV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:52:21 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79DBC0617A6;
+        Sun,  1 Nov 2020 04:52:20 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id p93so11345018edd.7;
+        Sun, 01 Nov 2020 04:52:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CE8O+iXI0LJQAsd2XN/mBfygYe3MHSbV6Xjjfa6myGg=;
-        b=bY3KGijKaZrE+H+4EsPcZmNIRwa4Vjrq7mHtOlk6+J1WA2vOton0rok6K/p04jo65T
-         3DCp8WpK1mS2PP12IjfvMrBP5+reSuvhg2ynMWm27yaor6SwNNQg/SIkxGK1gZgRCL/f
-         keIZczOna4QAURVs/U6gatYSl1ERiqcUNxBOKw2pDMmNjhwbpFVFg9OCX/b0HVJ7w47Z
-         2FeU52pcu4rLzEkiIm3PpW/X+9gTnBzyERwJ9dJ54pu2y62zXXc/VhYLRyu0ce+ZFqN1
-         wN4HpdvfrATBK2+lThQ4Wf4NlMV5LERSffNDEJRu4PTrcGZPLF9GvGoW/P47pfaNo1xH
-         RL/A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ITnQoREiD0R8hOb4gJjCxvyKcXTKP7bB6oFRcdeycc0=;
+        b=ET9UHHLDha/cqMvEKHzV/K07aL4AX0NqK+hY7e9676uF9nW+/9zvQB3U7gW7/XXj1J
+         zBAJ4stwnt0X6Auj7HfpGFfO30LalUJwxQ7Dd8KeAbqNjwKF7dFlAA2aYsC28VwnkhfU
+         TuKajePEN47Kpcmpy0Rq+nV9/li8Xnxaussx74TtDR8yZICHi7h+DM79bkCruecK+ba1
+         IZNX/nHvRubeUoM9zm7QN4frBtcHn0IvSm6par4o91HVy+qJFQB8hKrMGl4J6TlqpFs9
+         46RWHAsZKt5yhTBxB9mGlIH2bH4UXcwwEO4av2XPRwWtdzrAfA61stbQk9SbG9kLw6qT
+         bY8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CE8O+iXI0LJQAsd2XN/mBfygYe3MHSbV6Xjjfa6myGg=;
-        b=U6WYiGdP+R9WtyYYaUCUvf+5lp1ZpTiPz3naIBqf0lfv058OpZ/DGVXyhL4AV0ZNM/
-         fMVUxdqjpM1WX6o5rJN9fcCShjuh4OnsQReMN+2fkVbK+2uR7O+7gkMVA1Dc46SvYTFI
-         oIOsIEGPUvKpHWNJFeXO+5woPRj8XTTmbjivN77w+ev7eedUwaooe5dEvBt3umqGJ2Qh
-         inVyPH9CC1Ru9KUHFStAlvP5hbv07e3gNn+6zqvw3zAXX0EQqNLmyCPO4leIMw9eQsH+
-         prVFKk6dNUnHiLpkDHoSpfMp033M1nhD4e8PP77b9FcKa6rV658T+petkW+lv1/h5p50
-         MdsQ==
-X-Gm-Message-State: AOAM530yrKw4XjDVraJmUofotSDQd1ndvRSGWS3pIbWkFtq0Yj0Hoq7y
-        PrvJ/rik0I7ZTClXQjAHjlk=
-X-Google-Smtp-Source: ABdhPJzHILBkIMTJrRxPo/2zBo0IQx3U94dogfMJZ3V76uANNJmcFhHb4q8WbExTEKfOoaMnXGixtw==
-X-Received: by 2002:a05:6402:2292:: with SMTP id cw18mr12199049edb.112.1604235137193;
-        Sun, 01 Nov 2020 04:52:17 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ITnQoREiD0R8hOb4gJjCxvyKcXTKP7bB6oFRcdeycc0=;
+        b=QeGoh0nrz14IK2PhNlZSJCb49cDOofv6yfUgfWQnUImb56lobJY3Yyy1Me8j/a2Ggn
+         nRGi8d055Blm1Lfz/Bvx1/gm6sT1WKI+koKJ5tr2McuLlIJ4ttSy3SqfNqrqgyZt2/10
+         FHvIB2X2kfHESLlc/cTR0xWCJ2qieq8RFf4Z0zxijGSDSm8TANX1fk2jH39X1f5DL6Zn
+         W+qNGVVEixtj6xXRiwLfOHISfPl2At9uezSo1Emg9/ANuEwMzk06uIvzvlfY6Bht0ziO
+         tuhpwYwGVh5Iq7CFPk2erM7+MAa8xlBm7xKvrzHg4G/G5x77ilOAU9DTQFvfu0xtI2s5
+         lDLA==
+X-Gm-Message-State: AOAM530GnxOaFawuiHjtmYR0LP0Klw6eGn7Ha/WH4RpfqfMJUnw5Ftv9
+        i1oyirsJaHuiQWLFxSJrmU0=
+X-Google-Smtp-Source: ABdhPJxNVwjkameOvNKYxN7cZ5wwCM5rQd6pEgz/4WXk12m7mBmxj6CT764N0tKbBgg8E3z0DEPBxw==
+X-Received: by 2002:a50:e149:: with SMTP id i9mr12171491edl.56.1604235139679;
+        Sun, 01 Nov 2020 04:52:19 -0800 (PST)
 Received: from yoga-910.localhost ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id c5sm8133603edx.58.2020.11.01.04.52.14
+        by smtp.gmail.com with ESMTPSA id c5sm8133603edx.58.2020.11.01.04.52.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Nov 2020 04:52:16 -0800 (PST)
+        Sun, 01 Nov 2020 04:52:19 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -78,10 +78,12 @@ Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
         Philippe Schenker <philippe.schenker@toradex.com>,
         Willy Liu <willy.liu@realtek.com>,
         Yuiko Oshino <yuiko.oshino@microchip.com>
-Subject: [PATCH net-next v2 00/19] net: phy: add support for shared interrupts (part 1)
-Date:   Sun,  1 Nov 2020 14:50:55 +0200
-Message-Id: <20201101125114.1316879-1-ciorneiioana@gmail.com>
+Subject: [PATCH net-next v2 01/19] net: phy: export phy_error and phy_trigger_machine
+Date:   Sun,  1 Nov 2020 14:50:56 +0200
+Message-Id: <20201101125114.1316879-2-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201101125114.1316879-1-ciorneiioana@gmail.com>
+References: <20201101125114.1316879-1-ciorneiioana@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -90,131 +92,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-This patch set aims to actually add support for shared interrupts in
-phylib and not only for multi-PHY devices. While we are at it,
-streamline the interrupt handling in phylib.
-
-For a bit of context, at the moment, there are multiple phy_driver ops
-that deal with this subject:
-
-- .config_intr() - Enable/disable the interrupt line.
-
-- .ack_interrupt() - Should quiesce any interrupts that may have been
-  fired.  It's also used by phylib in conjunction with .config_intr() to
-  clear any pending interrupts after the line was disabled, and before
-  it is going to be enabled.
-
-- .did_interrupt() - Intended for multi-PHY devices with a shared IRQ
-  line and used by phylib to discern which PHY from the package was the
-  one that actually fired the interrupt.
-
-- .handle_interrupt() - Completely overrides the default interrupt
-  handling logic from phylib. The PHY driver is responsible for checking
-  if any interrupt was fired by the respective PHY and choose
-  accordingly if it's the one that should trigger the link state machine.
-
-From my point of view, the interrupt handling in phylib has become
-somewhat confusing with all these callbacks that actually read the same
-PHY register - the interrupt status.  A more streamlined approach would
-be to just move the responsibility to write an interrupt handler to the
-driver (as any other device driver does) and make .handle_interrupt()
-the only way to deal with interrupts.
-
-Another advantage with this approach would be that phylib would gain
-support for shared IRQs between different PHY (not just multi-PHY
-devices), something which at the moment would require extending every
-PHY driver anyway in order to implement their .did_interrupt() callback
-and duplicate the same logic as in .ack_interrupt(). The disadvantage
-of making .did_interrupt() mandatory would be that we are slightly
-changing the semantics of the phylib API and that would increase
-confusion instead of reducing it.
-
-What I am proposing is the following:
-
-- As a first step, make the .ack_interrupt() callback optional so that
-  we do not break any PHY driver amid the transition.
-
-- Every PHY driver gains a .handle_interrupt() implementation that, for
-  the most part, would look like below:
-
-	irq_status = phy_read(phydev, INTR_STATUS);
-	if (irq_status < 0) {
-		phy_error(phydev);
-		return IRQ_NONE;
-	}
-
-	if (!(irq_status & irq_mask))
-		return IRQ_NONE;
-
-	phy_trigger_machine(phydev);
-
-	return IRQ_HANDLED;
-
-- Remove each PHY driver's implementation of the .ack_interrupt() by
-  actually taking care of quiescing any pending interrupts before
-  enabling/after disabling the interrupt line.
-
-- Finally, after all drivers have been ported, remove the
-  .ack_interrupt() and .did_interrupt() callbacks from phy_driver.
-
-This patch set is part 1 and it addresses the changes needed in phylib
-and 7 PHY drivers. The rest can be found on my Github branch here:
-https://github.com/IoanaCiornei/linux/commits/phylib-shared-irq
-
-I do not have access to most of these PHY's, therefore I Cc-ed the
-latest contributors to the individual PHY drivers in order to have
-access, hopefully, to more regression testing.
-
-Changes in v2:
- - Rework the .handle_interrupt() implementation for each driver so that
-   only the enabled interrupts are taken into account when
-   IRQ_NONE/IRQ_HANDLED it returned. The main idea is so that we avoid
-   falsely blaming a device for triggering an interrupt when this is not
-   the case.
-   The only devices for which I was unable to make this adjustment were
-   the BCM8706, BCM8727, BCMAC131 and BCM5241 since I do not have access
-   to their datasheets.
- - I also updated the pseudo-code added in the cover-letter so that it's
-   more clear how a .handle_interrupt() callback should look like.
-
-Ioana Ciornei (19):
-  net: phy: export phy_error and phy_trigger_machine
-  net: phy: add a shutdown procedure
-  net: phy: make .ack_interrupt() optional
-  net: phy: at803x: implement generic .handle_interrupt() callback
-  net: phy: at803x: remove the use of .ack_interrupt()
-  net: phy: mscc: use phy_trigger_machine() to notify link change
-  net: phy: mscc: implement generic .handle_interrupt() callback
-  net: phy: mscc: remove the use of .ack_interrupt()
-  net: phy: aquantia: implement generic .handle_interrupt() callback
-  net: phy: aquantia: remove the use of .ack_interrupt()
-  net: phy: broadcom: implement generic .handle_interrupt() callback
-  net: phy: broadcom: remove use of ack_interrupt()
-  net: phy: cicada: implement the generic .handle_interrupt() callback
-  net: phy: cicada: remove the use of .ack_interrupt()
-  net: phy: davicom: implement generic .handle_interrupt() calback
-  net: phy: davicom: remove the use of .ack_interrupt()
-  net: phy: add genphy_handle_interrupt_no_ack()
-  net: phy: realtek: implement generic .handle_interrupt() callback
-  net: phy: realtek: remove the use of .ack_interrupt()
-
- drivers/net/phy/aquantia_main.c  |  59 +++++++++----
- drivers/net/phy/at803x.c         |  50 +++++++++--
- drivers/net/phy/bcm-cygnus.c     |   2 +-
- drivers/net/phy/bcm-phy-lib.c    |  49 ++++++++++-
- drivers/net/phy/bcm-phy-lib.h    |   1 +
- drivers/net/phy/bcm54140.c       |  46 +++++++---
- drivers/net/phy/bcm63xx.c        |  20 +++--
- drivers/net/phy/bcm87xx.c        |  50 ++++++-----
- drivers/net/phy/broadcom.c       |  70 +++++++++++-----
- drivers/net/phy/cicada.c         |  35 +++++++-
- drivers/net/phy/davicom.c        |  63 ++++++++++----
- drivers/net/phy/mscc/mscc_main.c |  70 ++++++++--------
- drivers/net/phy/phy.c            |   6 +-
- drivers/net/phy/phy_device.c     |  23 ++++-
- drivers/net/phy/realtek.c        | 140 +++++++++++++++++++++++++++----
- include/linux/phy.h              |   3 +
- 16 files changed, 529 insertions(+), 158 deletions(-)
+These functions are currently used by phy_interrupt() to either signal
+an error condition or to trigger the link state machine. In an attempt
+to actually support shared PHY IRQs, export these two functions so that
+the actual PHY drivers can use them.
 
 Cc: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Cc: Andre Edich <andre.edich@microchip.com>
@@ -241,7 +122,64 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>
 Cc: Philippe Schenker <philippe.schenker@toradex.com>
 Cc: Willy Liu <willy.liu@realtek.com>
 Cc: Yuiko Oshino <yuiko.oshino@microchip.com>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+Changes in v2:
+ - none
 
+ drivers/net/phy/phy.c | 6 ++++--
+ include/linux/phy.h   | 2 ++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 35525a671400..477bdf2f94df 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -493,10 +493,11 @@ EXPORT_SYMBOL(phy_queue_state_machine);
+  *
+  * @phydev: the phy_device struct
+  */
+-static void phy_trigger_machine(struct phy_device *phydev)
++void phy_trigger_machine(struct phy_device *phydev)
+ {
+ 	phy_queue_state_machine(phydev, 0);
+ }
++EXPORT_SYMBOL(phy_trigger_machine);
+ 
+ static void phy_abort_cable_test(struct phy_device *phydev)
+ {
+@@ -924,7 +925,7 @@ void phy_stop_machine(struct phy_device *phydev)
+  * Must not be called from interrupt context, or while the
+  * phydev->lock is held.
+  */
+-static void phy_error(struct phy_device *phydev)
++void phy_error(struct phy_device *phydev)
+ {
+ 	WARN_ON(1);
+ 
+@@ -934,6 +935,7 @@ static void phy_error(struct phy_device *phydev)
+ 
+ 	phy_trigger_machine(phydev);
+ }
++EXPORT_SYMBOL(phy_error);
+ 
+ /**
+  * phy_disable_interrupts - Disable the PHY interrupts from the PHY side
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index eb3cb1a98b45..566b39f6cd64 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1570,8 +1570,10 @@ void phy_drivers_unregister(struct phy_driver *drv, int n);
+ int phy_driver_register(struct phy_driver *new_driver, struct module *owner);
+ int phy_drivers_register(struct phy_driver *new_driver, int n,
+ 			 struct module *owner);
++void phy_error(struct phy_device *phydev);
+ void phy_state_machine(struct work_struct *work);
+ void phy_queue_state_machine(struct phy_device *phydev, unsigned long jiffies);
++void phy_trigger_machine(struct phy_device *phydev);
+ void phy_mac_interrupt(struct phy_device *phydev);
+ void phy_start_machine(struct phy_device *phydev);
+ void phy_stop_machine(struct phy_device *phydev);
 -- 
 2.28.0
 
