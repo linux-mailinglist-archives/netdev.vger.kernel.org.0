@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 995352A1E0F
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:53:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 314CA2A1E0D
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 13:53:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727069AbgKAMxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 07:53:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38748 "EHLO
+        id S1727043AbgKAMxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 07:53:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726942AbgKAMwn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:52:43 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027F5C0617A6;
-        Sun,  1 Nov 2020 04:52:43 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id l24so11347676edj.8;
-        Sun, 01 Nov 2020 04:52:42 -0800 (PST)
+        with ESMTP id S1726973AbgKAMwp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 07:52:45 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66344C061A04;
+        Sun,  1 Nov 2020 04:52:44 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id l24so11347704edj.8;
+        Sun, 01 Nov 2020 04:52:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PnJLOEQTKLqjGEvrG6MYX2BGzArZcrHWdrn4+Hna4UY=;
-        b=hP+KxPtnoByVASH9YQCPOaJeBz9XrZ/1IlIF4fiH4c65HO5qyO4M3KIOMvhr3uDoBD
-         UrasPa0G/0Dzjo6Jr9lbzTVKLflQaSAELz9S6qq1bsYDL1IJ1Ubj7aECXiyWEVp/XcN6
-         yN6jK92tFRfhc/aiKGSZxxfMgK01ykchhrnKLyPv+F+zc+Gelj5qqucIP3BHAKLuSnYa
-         SoyvAEu4EzDtOrkFBlRb9LKh2o0EHuhUgeu76xhAwjfIh0urC5Vk5qWURk98VfujVHWX
-         i/7rWTVSYYhs3x1qLy7NvxcDfu7pCKATgak8h/Gl79B9swsxrKyJNh1pbW34tRGxqm+7
-         qUdg==
+        bh=hO8iEAWXFC7W/MF6vT8UKXWiO7uCrbk5wP0QUGzUSFk=;
+        b=pIqD7R0EAHt+2uEyvaVLLyrbWqgJtipiyZxV7FZ+O//0GDRRnkcS/EbwMbisPEqvvA
+         uBlrsNXQbDJkb25jFG16C5Ref4vi+9MxYomFNnS5tGtM8jVSK2MmaipDLGff/aQefZ7n
+         cm4rIUgVMEnY1LaW05o64w/9h4hcPLsEdHnwkQq61dtfiGxp8NcRrx2rF4fLJEd+ESlz
+         BNcTv4gQa/hH1A2o/aiObIJ3vAXoTtFH7Gc8QnZfP9z+b7NZ0S0g5uNTj0bqbHR+r5hP
+         c8LfgPdTKazgfKiB963b21Ze6rNGFtFrgctpVWs5xS8lAVJdV8TRNFfzrH4Z9+5dp6Yx
+         /3RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PnJLOEQTKLqjGEvrG6MYX2BGzArZcrHWdrn4+Hna4UY=;
-        b=esJA7pAB8YhxCjyaYDoeSRuuoEH9EPMW0mqMvnEAHRaIaj0ZJHLqH0WBQ535hqfvx0
-         vvVg77PK32i0VGthlN7ybv8HR5Q73XWCPWCL7wzeUg1A4wS944CFLsgOpW3ugShhrszy
-         pAhNMEFH7zPl6wPwPJcwrXi0CQvgcShxh7c/rQ5/USUrcKeYr/6aCfOZMOw3g/XHrT7C
-         Fm7y4gfPkeGx4VtvL836TSALSJFmiumI3FlZbYeTWIjfBa2RBwDbkrw6YRWD1Y0C95Ox
-         0kaQXrYUOokKLc2mzCLVJSbSc4Yc5e8nmqUh8MFSo3sNPK3ZJ2S40LHK7tCpiKL3dGw/
-         Zp3w==
-X-Gm-Message-State: AOAM533j00A5aZhzfzL+CendzxrQNH+oRsobFQUSSc2+7ddpwL70odpY
-        /NVEknEyfFwyj7Erz6+GzBw=
-X-Google-Smtp-Source: ABdhPJzuqoy+YhpsNz73akt0iHz7Msd65Xf0JyT5sXK9snKRR4vTS0AHwXRp4AdumPPy7TRsF6qnBg==
-X-Received: by 2002:aa7:d843:: with SMTP id f3mr12173304eds.354.1604235161716;
-        Sun, 01 Nov 2020 04:52:41 -0800 (PST)
+        bh=hO8iEAWXFC7W/MF6vT8UKXWiO7uCrbk5wP0QUGzUSFk=;
+        b=txiPmOJjLV67pWBghfP3c7ucLbDg/x3Zy7MppGfM+yX4OplsIdEZVIFiYz1c2vK33V
+         Otq8XCjt7B0D1txVUD6zXqwVNe3sk4tU5OE7I24HStnPYlPrtHSzKpeMcXI41PzMFbas
+         vvSdqnN8UHRRL33SLs0DBcbG6ltFM0F/VCmv63M7Tk7mQkOrjvfGI5v1FetEnThOK3Ay
+         DHhc0jzxDNfbTAWbLQlPzZtbhgB0+Tr+5TPKJVC3Ilbad5Cbk4E1uZNvdIwb6PBuMe16
+         GZNKT7RhQXrghCHStYrVrkVY2DCWhEvjP36pb8m/Xp8ifAAIPWUe11pYaPrOWpoW/5rF
+         ahtQ==
+X-Gm-Message-State: AOAM532yD6Ub/vZW8/iJxoVTv9OCHy3R3q504WaGDpZJCbrFaqMp6u7W
+        p2TKpuUDq/isNqtA3x1Y0O4zzBbwHmR5+gp7
+X-Google-Smtp-Source: ABdhPJwbj4EMYmNcxY9i11I4L1ZfHpEkP004uta9h4LdRM+a54UvUf7owtkrnjLdrnfhz50IT/tgig==
+X-Received: by 2002:a05:6402:3136:: with SMTP id dd22mr378857edb.256.1604235163120;
+        Sun, 01 Nov 2020 04:52:43 -0800 (PST)
 Received: from yoga-910.localhost ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id c5sm8133603edx.58.2020.11.01.04.52.40
+        by smtp.gmail.com with ESMTPSA id c5sm8133603edx.58.2020.11.01.04.52.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Nov 2020 04:52:41 -0800 (PST)
+        Sun, 01 Nov 2020 04:52:42 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -55,9 +55,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v2 16/19] net: phy: davicom: remove the use of .ack_interrupt()
-Date:   Sun,  1 Nov 2020 14:51:11 +0200
-Message-Id: <20201101125114.1316879-17-ciorneiioana@gmail.com>
+Subject: [PATCH net-next v2 17/19] net: phy: add genphy_handle_interrupt_no_ack()
+Date:   Sun,  1 Nov 2020 14:51:12 +0200
+Message-Id: <20201101125114.1316879-18-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201101125114.1316879-1-ciorneiioana@gmail.com>
 References: <20201101125114.1316879-1-ciorneiioana@gmail.com>
@@ -69,119 +69,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-In preparation of removing the .ack_interrupt() callback, we must replace
-its occurrences (aka phy_clear_interrupt), from the 2 places where it is
-called from (phy_enable_interrupts and phy_disable_interrupts), with
-equivalent functionality.
-
-This means that clearing interrupts now becomes something that the PHY
-driver is responsible of doing, before enabling interrupts and after
-clearing them. Make this driver follow the new contract.
+It seems there are cases where the interrupts are handled by another
+entity (ie an IRQ controller embedded inside the PHY) and do not need
+any other interraction from phylib. For this kind of PHYs, like the
+RTL8366RB, add the genphy_handle_interrupt_no_ack() function which just
+triggers the link state machine.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 Changes in v2:
  - none
 
- drivers/net/phy/davicom.c | 37 +++++++++++++++++++++----------------
- 1 file changed, 21 insertions(+), 16 deletions(-)
+ drivers/net/phy/phy_device.c | 13 +++++++++++++
+ include/linux/phy.h          |  1 +
+ 2 files changed, 14 insertions(+)
 
-diff --git a/drivers/net/phy/davicom.c b/drivers/net/phy/davicom.c
-index bfa6c835070f..a3b3842c67e5 100644
---- a/drivers/net/phy/davicom.c
-+++ b/drivers/net/phy/davicom.c
-@@ -61,24 +61,40 @@ MODULE_AUTHOR("Andy Fleming");
- MODULE_LICENSE("GPL");
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index f54f483d7fd6..e13a46c25437 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -2463,6 +2463,19 @@ int genphy_soft_reset(struct phy_device *phydev)
+ }
+ EXPORT_SYMBOL(genphy_soft_reset);
  
- 
-+static int dm9161_ack_interrupt(struct phy_device *phydev)
++irqreturn_t genphy_handle_interrupt_no_ack(struct phy_device *phydev)
 +{
-+	int err = phy_read(phydev, MII_DM9161_INTR);
++	/* It seems there are cases where the interrupts are handled by another
++	 * entity (ie an IRQ controller embedded inside the PHY) and do not
++	 * need any other interraction from phylib. In this case, just trigger
++	 * the state machine directly.
++	 */
++	phy_trigger_machine(phydev);
 +
-+	return (err < 0) ? err : 0;
++	return 0;
 +}
++EXPORT_SYMBOL(genphy_handle_interrupt_no_ack);
 +
- #define DM9161_DELAY 1
- static int dm9161_config_intr(struct phy_device *phydev)
+ /**
+  * genphy_read_abilities - read PHY abilities from Clause 22 registers
+  * @phydev: target phy_device struct
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 566b39f6cd64..4f158d6352ae 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1510,6 +1510,7 @@ int genphy_suspend(struct phy_device *phydev);
+ int genphy_resume(struct phy_device *phydev);
+ int genphy_loopback(struct phy_device *phydev, bool enable);
+ int genphy_soft_reset(struct phy_device *phydev);
++irqreturn_t genphy_handle_interrupt_no_ack(struct phy_device *phydev);
+ 
+ static inline int genphy_config_aneg(struct phy_device *phydev)
  {
--	int temp;
-+	int temp, err;
- 
- 	temp = phy_read(phydev, MII_DM9161_INTR);
- 
- 	if (temp < 0)
- 		return temp;
- 
--	if (PHY_INTERRUPT_ENABLED == phydev->interrupts)
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		err = dm9161_ack_interrupt(phydev);
-+		if (err)
-+			return err;
-+
- 		temp &= ~(MII_DM9161_INTR_STOP);
--	else
-+		err = phy_write(phydev, MII_DM9161_INTR, temp);
-+	} else {
- 		temp |= MII_DM9161_INTR_STOP;
-+		err = phy_write(phydev, MII_DM9161_INTR, temp);
-+		if (err)
-+			return err;
- 
--	temp = phy_write(phydev, MII_DM9161_INTR, temp);
-+		err = dm9161_ack_interrupt(phydev);
-+	}
- 
--	return temp;
-+	return err;
- }
- 
- static irqreturn_t dm9161_handle_interrupt(struct phy_device *phydev)
-@@ -154,13 +170,6 @@ static int dm9161_config_init(struct phy_device *phydev)
- 	return phy_write(phydev, MII_BMCR, BMCR_ANENABLE);
- }
- 
--static int dm9161_ack_interrupt(struct phy_device *phydev)
--{
--	int err = phy_read(phydev, MII_DM9161_INTR);
--
--	return (err < 0) ? err : 0;
--}
--
- static struct phy_driver dm91xx_driver[] = {
- {
- 	.phy_id		= 0x0181b880,
-@@ -169,7 +178,6 @@ static struct phy_driver dm91xx_driver[] = {
- 	/* PHY_BASIC_FEATURES */
- 	.config_init	= dm9161_config_init,
- 	.config_aneg	= dm9161_config_aneg,
--	.ack_interrupt	= dm9161_ack_interrupt,
- 	.config_intr	= dm9161_config_intr,
- 	.handle_interrupt = dm9161_handle_interrupt,
- }, {
-@@ -179,7 +187,6 @@ static struct phy_driver dm91xx_driver[] = {
- 	/* PHY_BASIC_FEATURES */
- 	.config_init	= dm9161_config_init,
- 	.config_aneg	= dm9161_config_aneg,
--	.ack_interrupt	= dm9161_ack_interrupt,
- 	.config_intr	= dm9161_config_intr,
- 	.handle_interrupt = dm9161_handle_interrupt,
- }, {
-@@ -189,7 +196,6 @@ static struct phy_driver dm91xx_driver[] = {
- 	/* PHY_BASIC_FEATURES */
- 	.config_init	= dm9161_config_init,
- 	.config_aneg	= dm9161_config_aneg,
--	.ack_interrupt	= dm9161_ack_interrupt,
- 	.config_intr	= dm9161_config_intr,
- 	.handle_interrupt = dm9161_handle_interrupt,
- }, {
-@@ -197,7 +203,6 @@ static struct phy_driver dm91xx_driver[] = {
- 	.name		= "Davicom DM9131",
- 	.phy_id_mask	= 0x0ffffff0,
- 	/* PHY_BASIC_FEATURES */
--	.ack_interrupt	= dm9161_ack_interrupt,
- 	.config_intr	= dm9161_config_intr,
- 	.handle_interrupt = dm9161_handle_interrupt,
- } };
 -- 
 2.28.0
 
