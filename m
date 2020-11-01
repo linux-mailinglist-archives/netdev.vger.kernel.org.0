@@ -2,124 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E129A2A1D9C
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 12:31:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32FF22A1DA2
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 12:40:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726407AbgKALbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 06:31:44 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:33093 "EHLO
+        id S1726452AbgKALk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 06:40:28 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:58723 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726341AbgKALbo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 06:31:44 -0500
+        by vger.kernel.org with ESMTP id S1726347AbgKALk1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 06:40:27 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0CC705C008B;
-        Sun,  1 Nov 2020 06:31:43 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 56B305C00D6;
+        Sun,  1 Nov 2020 06:40:26 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 01 Nov 2020 06:31:43 -0500
+  by compute3.internal (MEProxy); Sun, 01 Nov 2020 06:40:26 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=7XEc2g
-        rxHRTPvjD+S2eEeNKOHoG3om/KaxKsBlP/8W0=; b=iftXFYQen2muZDWRGxynfG
-        Oy6wBjLwiOxvXSTpZJ1o8t0FkMI9VMPR9ZlM8tU/V2HTYMCyWttUY7WYtYvbeXNh
-        BxVMSFWRlWbWZd4BKLyLs3977HnUggb1kXIKpfy0lr7ma7hUQbux/DRxmsHAHvso
-        vKbaBLdq0G5gRzmk0GUAcpEK/W0g1btkLww9N29mldUzOo2h0eoNQ0pmJeCGDPCL
-        pPVRFASgANoY0BSny6QQRB0ULP8b+310Bt4cL9NHSCZc9wrAv98l1UCeEiWSxDPj
-        YIprpXoVQiKWhddgYPL7CGDmgBg8MgwgQu13V4fHzIEXcWnk7jJMRXoH0mWOvIBA
-        ==
-X-ME-Sender: <xms:nJyeX7sBRcteZxX2gZnKqvC2NS-vDJl97v0eI97T48Q-zLbWr0_aIQ>
-    <xme:nJyeX8faSZZCHM_ubtwzwbWl1l70hxECmhqp2E0UX3Z8p-hW3Tb3GWK5kTvmlTMPt
-    8txXGPyjIXYlVc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrleelgdefudcutefuodetggdotefrodftvf
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=5LHEyEhzyEE1YXMzP
+        Ef6atbZBUZZoHl+OMWSnWvTuRA=; b=iVRfulfp/vO8fcmxT4mw9F3oTC+/OQ7Mm
+        QtoISyg9e4zAD8pgOCrGh4USAnrxb4zSmecFTtKzD51yhQvU9PslJA5DWjQ/3Bxw
+        qwQ8y6Wz9CoDDuO+Ms7lPC9Mv+46Pt2WLPS1jK4BRtwL64CFZ045u0flVhc7qCdH
+        xmxJbfkuNv9YRNxw2DJeB9tt8apmJXu2cwPMQnIETYWM5euYC0HuYIMOogHLL61b
+        a1oehyyGQEQEG0p77LMrtjDqNxguHRK++aEoqnvzZsbT1E1+W+yxnrZU/42z6I6o
+        TGI5pNYZXcfpvgxG5uF12Ffn35q5SOnYsqOpjoo1+KAE/7YJSAKTA==
+X-ME-Sender: <xms:qp6eX__dquBPJdE7bedWBpTV-lODehZVzTxFrTcnaKPM685UNvfM9Q>
+    <xme:qp6eX7u7PT2HnYnUWz5EpO_ZgU_Z0dOGOhJdLHOYmNhWC4pcbTbAcpsBxEBKyLvWL
+    oX4F2xsiuCW8vA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrleelgdefvdcutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necukfhppeekgedrvddvledrudehhedrudekvdenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:nJyeX-xI1ZCUtn7YDc_JgFz_IfLPcz7MKToeKENYxaBrib3c3B6dFQ>
-    <xmx:nJyeX6OAx3AC70fjhXfAn2ALF2fAhFWs-i6gLLN7LR6lZL5u-jz96A>
-    <xmx:nJyeX7_7C29cdqz7ize0Y9AgseRrWy1Ly9pqh2wyW1swVrU4g13O_g>
-    <xmx:n5yeX9IhTYK3DmvYT5iNJhtjrwkZSJ6MXI71blGkSTUZFtu3CZGN0Q>
-Received: from localhost (igld-84-229-155-182.inter.net.il [84.229.155.182])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 03B81306467D;
-        Sun,  1 Nov 2020 06:31:39 -0500 (EST)
-Date:   Sun, 1 Nov 2020 13:31:37 +0200
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
+    ffieekgeehveefvdegledvffduhfenucfkphepkeegrddvvdelrdduheehrddukedvnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:qp6eX9BIt7tnSfrj_uH6tU5ojuxR38bFqO3AbS5KncBNEdbNgHfedw>
+    <xmx:qp6eX7dMGF0109xYCTfZJ0U1aid4YaBRnOAcfWeNFOn1GmnYVgJc3A>
+    <xmx:qp6eX0PYPB89QkuoArxNugrxHCz0ovN0a7ccg4Sg8OWuv3ZiJMGq1w>
+    <xmx:qp6eX5pqpdBJ7JptBHYIs_DHKCcsh74YKf3kMk5rHeiFYzOYzSlodQ>
+Received: from shredder.mtl.com (igld-84-229-155-182.inter.net.il [84.229.155.182])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4CF1C306467E;
+        Sun,  1 Nov 2020 06:40:24 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 4/4] net: dsa: tag_edsa: support reception of packets
- from lag devices
-Message-ID: <20201101113137.GB698347@shredder>
-References: <20201028120515.gf4yco64qlcwoou2@skbuf>
- <C6OMPK3XEMGG.1243CP066VN7O@wkz-x280>
- <20201028181824.3dccguch7d5iij2r@skbuf>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
+        dsahern@gmail.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next] vxlan: Use a per-namespace nexthop listener instead of a global one
+Date:   Sun,  1 Nov 2020 13:39:26 +0200
+Message-Id: <20201101113926.705630-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201028181824.3dccguch7d5iij2r@skbuf>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 08:18:24PM +0200, Vladimir Oltean wrote:
-> Yes, I expect that the bridge input would need to have one more entry
-> path into it than just br_handle_frame.
-> 
-> I'm a bit confused and undecided right now, so let's look at it from a
-> different perspective. Let's imagine a switchdev driver (DSA or not)
-> which is able to offload IP forwarding. There are some interfaces that
-> are bridged and one that is standalone. The setup looks as below.
-> 
->  IP interfaces
->                 +---------------------------------------------------------+
->                 |                           br0                           |
->                 +---------------------------------------------------------+
-> 
->  +------------+ +------------+ +------------+ +------------+ +------------+
->  |    swp0    | |    swp1    | |    swp2    | |    swp3    | |    eth0    |
->  +------------+ +------------+ +------------+ +------------+ +------------+
-> 
->  Hardware interfaces
-> 
->  +------------+ +------------+ +------------+ +------------+ +------------+
->  | DSA port 0 | | DSA port 1 | | DSA port 2 | | DSA port 3 | |   e1000    |
->  +------------+ +------------+ +------------+ +------------+ +------------+
-> 
-> Let's say you receive a packet on the standalone swp0, and you need to
-> perform IP routing towards the bridged domain br0. Some switchdev/DSA
-> ports are bridged and some aren't.
-> 
-> The switchdev/DSA switch will attempt to do the IP routing step first,
-> and it _can_ do that because it is aware of the br0 interface, so it
-> will decrement the TTL and replace the L2 header.
-> 
-> At this stage we have a modified IP packet, which corresponds with what
-> should be injected into the hardware's view of the br0 interface. The
-> packet is still in the switchdev/DSA hardware data path.
-> 
-> But then, the switchdev/DSA hardware will look up the FDB in the name of
-> br0, in an attempt of finding the destination port for the packet. But
-> the packet should be delivered to a station connected to eth0 (e1000,
-> foreign interface). So that's part of the exception path, the packet
-> should be delivered to the CPU.
-> 
-> But the packet was already modified by the hardware data path (IP
-> forwarding has already taken place)! So how should the DSA/switchdev
-> hardware deliver the packet to the CPU? It has 2 options:
-> 
-> (a) unwind the entire packet modification, cancel the IP forwarding and
->     deliver the unmodified packet to the CPU on behalf of swp0, the
->     ingress port. Then let software IP forwarding plus software bridging
->     deal with it, so that it can reach the e1000.
+From: Ido Schimmel <idosch@nvidia.com>
 
-This is what happens in the Spectrum ASICs. If a packet hits some
-exception in the data path, it is trapped from the Rx port unmodified.
+The nexthop notification chain is a per-namespace chain and not a global
+one like the netdev notification chain.
 
-> (b) deliver the packet to the CPU in the middle of the hardware
->     forwarding data path, where the exception/miss occurred, aka deliver
->     it on behalf of br0. Modified by IP forwarding. This is where we'd
->     have to manually inject skb->dev into br0 somehow.
+Therefore, a single (global) listener cannot be registered to all these
+chains simultaneously as it will result in list corruptions whenever
+listeners are registered / unregistered.
+
+Instead, register a different listener in each namespace.
+
+Currently this is not an issue because only the VXLAN driver registers a
+listener to this chain, but this is going to change with netdevsim and
+mlxsw also registering their own listeners.
+
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ drivers/net/vxlan.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 1a557aeba32b..876679af6f7c 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -66,6 +66,7 @@ struct vxlan_net {
+ 	struct list_head  vxlan_list;
+ 	struct hlist_head sock_list[PORT_HASH_SIZE];
+ 	spinlock_t	  sock_lock;
++	struct notifier_block nexthop_notifier_block;
+ };
+ 
+ /* Forwarding table entry */
+@@ -4693,10 +4694,6 @@ static int vxlan_nexthop_event(struct notifier_block *nb,
+ 	return NOTIFY_DONE;
+ }
+ 
+-static struct notifier_block vxlan_nexthop_notifier_block __read_mostly = {
+-	.notifier_call = vxlan_nexthop_event,
+-};
+-
+ static __net_init int vxlan_init_net(struct net *net)
+ {
+ 	struct vxlan_net *vn = net_generic(net, vxlan_net_id);
+@@ -4704,11 +4701,12 @@ static __net_init int vxlan_init_net(struct net *net)
+ 
+ 	INIT_LIST_HEAD(&vn->vxlan_list);
+ 	spin_lock_init(&vn->sock_lock);
++	vn->nexthop_notifier_block.notifier_call = vxlan_nexthop_event;
+ 
+ 	for (h = 0; h < PORT_HASH_SIZE; ++h)
+ 		INIT_HLIST_HEAD(&vn->sock_list[h]);
+ 
+-	return register_nexthop_notifier(net, &vxlan_nexthop_notifier_block);
++	return register_nexthop_notifier(net, &vn->nexthop_notifier_block);
+ }
+ 
+ static void vxlan_destroy_tunnels(struct net *net, struct list_head *head)
+@@ -4740,8 +4738,11 @@ static void __net_exit vxlan_exit_batch_net(struct list_head *net_list)
+ 	LIST_HEAD(list);
+ 
+ 	rtnl_lock();
+-	list_for_each_entry(net, net_list, exit_list)
+-		unregister_nexthop_notifier(net, &vxlan_nexthop_notifier_block);
++	list_for_each_entry(net, net_list, exit_list) {
++		struct vxlan_net *vn = net_generic(net, vxlan_net_id);
++
++		unregister_nexthop_notifier(net, &vn->nexthop_notifier_block);
++	}
+ 	list_for_each_entry(net, net_list, exit_list)
+ 		vxlan_destroy_tunnels(net, &list);
+ 
+-- 
+2.26.2
+
