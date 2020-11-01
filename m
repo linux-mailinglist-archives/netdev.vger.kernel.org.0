@@ -2,105 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9259A2A1CF4
-	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 10:36:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8F552A1D44
+	for <lists+netdev@lfdr.de>; Sun,  1 Nov 2020 11:30:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726339AbgKAJgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 04:36:22 -0500
-Received: from mailout07.rmx.de ([94.199.90.95]:59121 "EHLO mailout07.rmx.de"
+        id S1726354AbgKAKaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 05:30:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49106 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726118AbgKAJgV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 1 Nov 2020 04:36:21 -0500
-Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726138AbgKAKaO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 1 Nov 2020 05:30:14 -0500
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mailout07.rmx.de (Postfix) with ESMTPS id 4CP9sX50P3zBvB8;
-        Sun,  1 Nov 2020 10:36:16 +0100 (CET)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4CP9sJ0FQgz2TRlS;
-        Sun,  1 Nov 2020 10:36:04 +0100 (CET)
-Received: from n95hx1g2.localnet (192.168.54.14) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Sun, 1 Nov
- 2020 10:35:02 +0100
-From:   Christian Eggers <ceggers@arri.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add hardware time stamping support
-Date:   Sun, 1 Nov 2020 10:35:01 +0100
-Message-ID: <4928494.XgmExmOR0V@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <20201030182447.2day7x3vad7xgcah@skbuf>
-References: <20201019172435.4416-1-ceggers@arri.de> <1680734.pGj3N1mgWS@n95hx1g2> <20201030182447.2day7x3vad7xgcah@skbuf>
+        by mail.kernel.org (Postfix) with ESMTPSA id 49B0320719;
+        Sun,  1 Nov 2020 10:30:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604226613;
+        bh=94+nsV21TCqPoQNytCQG0IKS8G6JKXA1BQCEGgBvOmg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jpl4s+CKL4r7Jo/ROrTKbk7WH77giR+DXA9ycpn/YZUtQEXnLLm2KgPmIssT6S/1l
+         5BjCDWlhWRZceVpWT9effRu4xVM0PeSLqsE+83M8aAdhpsMS7vAKLmDqbrE1f28ZmD
+         aoOAqclViZSIqB+0+QbNQtknNj/EczDOR13YEOGk=
+Received: by mail-qk1-f179.google.com with SMTP id r7so9066382qkf.3;
+        Sun, 01 Nov 2020 02:30:13 -0800 (PST)
+X-Gm-Message-State: AOAM532O3ZWU310DC6kXc3TctrQw7YEsN8fEpAPgU/FjcvpV+DDLeHvN
+        2CKNFBFTOz2sgcvneOYP8tnb28zboodThusx44o=
+X-Google-Smtp-Source: ABdhPJxrDcnNF+ZfUz7cZqBpqxU984u3Rvdm9pSv7LtkG0JvPMTpve03xqgR9kGYa+LCzYjLy+h4BNbmfcixsRWJG1E=
+X-Received: by 2002:a37:4e57:: with SMTP id c84mr10050470qkb.394.1604226612532;
+ Sun, 01 Nov 2020 02:30:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.14]
-X-RMX-ID: 20201101-103604-4CP9sJ0FQgz2TRlS-0@kdin02
-X-RMX-SOURCE: 217.111.95.66
+References: <20201028070504.362164-1-xie.he.0141@gmail.com>
+ <20201030200705.6e2039c2@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAJht_EOk43LdKVU4qH1MB5pLKcSONazA9XsKJUMTG=79TJ-3Rg@mail.gmail.com>
+ <20201031095146.5e6945a1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAK8P3a1kJT50s+BVF8-fmX6ctX2pmVtcg5rnS__EBQvseuqWNA@mail.gmail.com> <CAJht_EO0Wp=TVdLZ_8XK7ShXTUAmX-wb0UssTtn51DkPE266yQ@mail.gmail.com>
+In-Reply-To: <CAJht_EO0Wp=TVdLZ_8XK7ShXTUAmX-wb0UssTtn51DkPE266yQ@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Sun, 1 Nov 2020 11:29:56 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1s58-u-T5cax+eW7_Q0=Yj7T3mfnBZSw24RErV5vCBJw@mail.gmail.com>
+Message-ID: <CAK8P3a1s58-u-T5cax+eW7_Q0=Yj7T3mfnBZSw24RErV5vCBJw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dlci: Deprecate the DLCI driver (aka the
+ Frame Relay layer)
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
+On Sun, Nov 1, 2020 at 12:37 AM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> On Sat, Oct 31, 2020 at 2:41 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> >
+> > I think it can just go in the bin directly. I actually submitted a couple of
+> > patches to clean up drivers/net/wan last year but didn't follow up
+> > with a new version after we decided that x.25 is still needed, see
+> > https://lore.kernel.org/netdev/20191209151256.2497534-1-arnd@arndb.de/
+> >
+> > I can resubmit if you like.
+>
+> Should we also remove the two macro definitions in
+> "include/uapi/linux/sockios.h" (SIOCADDDLCI / SIOCDELDLCI), too? It
+> seems to be not included in your original patch.
 
-On Friday, 30 October 2020, 19:24:47 CET, Vladimir Oltean wrote:
-> On Thu, Oct 22, 2020 at 12:17:48PM +0200, Christian Eggers wrote:
-> > I tried to study the effect of setting the ocmode bit on the KSZ either to
-> > master or to slave. The main visible change is, that some PTP message
-> > types
-> > are be filtered out on RX:
-> > - in "master" mode, "Sync" messages from other nodes will not be received
-> > (but everything else like "Announce" seem to work)
-> > - in "slave" mode, "Delay_Req" messages from other nodes will not be
-> > received
-> Could you dump the contents of your REG_PTP_MSG_CONF2 register?
-runtime register value is 0x1004 (matches default value from the data sheet).
-The Linux driver doesn't touch this register. Below is a dump of all PTP
-related (global) registers.
+Not sure, it should probably at least be marked as 'obsolete' in the header
+like SIOCGIFDIVERT, but removing the definitions might risk that someone
+later reuses the numbers for a new command. I don't know if there is an
+official policy for this. I see a couple of other definitions in the same file
+that have no apparent implementation:
+SIOCGIFCOUNT, SIOCDRARP, SIOCGRARP and SIOCSRARP. These
+were still referenced in 2.6.12, but only in dead code that has since
+been removed.
 
-regards
-Christian
-
-    KSZ9563 (Ethernet switch)
-
-      Global
-
-        IEEE 1588 PTP
-        CLKCTRL      0002      SWFA         enabled        CLKSADJ        NOP              PTPSD        subtract
-                               CLKREAD      NOP            CLKWRITE       NOP              CLKCADJ      disabled
-                               EN           enabled        RESET          normal
-        RTCCP        0002      PHASE        16ns
-        RTCNS        17D72FF0  NANOSECONDS    399978480
-        RTCS         00000023  SECONDS               35
-        RTCSUBNS     00000000  RATEDIR      subtract       TEMPADJ        permanent
-                               SUBNS                  0
-        RTCTMPADJ    00000000  CYCLES                 0
-        MSGCFG1      007D      MODEEN       enabled        IEEE802.3      enabled          UDPv4        enabled
-                               UDPv6        enabled        TCMODE         P2P              OCMODE       slave
-        MSGCFG2      1004      UNICASTEN    both           ALTMASTER      disabled         PRIOTX       event only
-                               CHKSYNFU     disabled       CHKDLY         disabled         CHKPDLY      disabled
-                               DROP         disabled       CHKDOM         disabled         IPv4CHKSUM   calc
-        DOMVER       0200      VERSION      2              DOMAIN            0
-        UNITIDX      00000000  GPIO_IDX     GPIO_1         TS_IDX         Unit 0           TRIG_IDX     Unit 0
-
-
-
-
+      arnd
