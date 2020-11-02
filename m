@@ -2,94 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 816282A3108
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 18:12:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F401C2A3127
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 18:15:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727665AbgKBRMF convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 2 Nov 2020 12:12:05 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:35980 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727589AbgKBRMF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 12:12:05 -0500
-Received: by mail-oi1-f196.google.com with SMTP id d9so9395314oib.3;
-        Mon, 02 Nov 2020 09:12:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=eA1YHLSLEbKjVZd8ZPCYquKLICIoPYEsjcgwYwIXONM=;
-        b=oGOtSZAPljOnzyKnWieVFzHNL2VnMXFStXtLw7gPc4/ZPxcilAsZCHGvVd9vA4p5zn
-         F290/zgHeu09Gl+jZCL1qsjLWvkNxZKi26snR39lhFzl5EsgnWDUHbFip0zAxMExCLwN
-         Kql0rHBYHeNwFi50A2Anrcw+Sjh5qKByVyEdrbT+EzrVss7wP7QfIMOlOh8uN6RptIMr
-         ipIzqh8V3Lp5dDvtX8pK/rH3axYFEMnv3tlpvFoHw5sJJswhWVUmfFtVkCtxyiR6iiQb
-         FJMH1bcpEHRNuvjSyKk0w2WkaXZk5WgjRvacbuZfhvz2/dS/45lCjtQMBDCNy7c9V6lt
-         BsXQ==
-X-Gm-Message-State: AOAM532SAAlZ2zvjkcwNWybWDFJfhYQ1GN9YXyHbsPY4OADiDJMy/t9x
-        TWoHljNCOjRtrtfCM6mKEQ==
-X-Google-Smtp-Source: ABdhPJwIP7A0eJV2FdnAxV4GkQDkNlw2WxhwivkI2jfqP/w6eBmV9pOv23Sc+uKXnoHc+lmzjesN3Q==
-X-Received: by 2002:aca:a906:: with SMTP id s6mr1968252oie.59.1604337124008;
-        Mon, 02 Nov 2020 09:12:04 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id j23sm3806127otk.56.2020.11.02.09.12.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 09:12:03 -0800 (PST)
-Received: (nullmailer pid 4059886 invoked by uid 1000);
-        Mon, 02 Nov 2020 17:12:02 -0000
-Date:   Mon, 2 Nov 2020 11:12:02 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Dan Murphy <dmurphy@ti.com>
-Cc:     devicetree@vger.kernel.org, hkallweit1@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org, f.fainelli@gmail.com,
-        linux-kernel@vger.kernel.org, andrew@lunn.ch
-Subject: Re: [PATCH net-next v3 3/4] dt-bindings: dp83td510: Add binding for
- DP83TD510 Ethernet PHY
-Message-ID: <20201102171202.GA4059031@bogus>
-References: <20201030172950.12767-1-dmurphy@ti.com>
- <20201030172950.12767-4-dmurphy@ti.com>
+        id S1727708AbgKBRPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 12:15:33 -0500
+Received: from z5.mailgun.us ([104.130.96.5]:52775 "EHLO z5.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727665AbgKBRPd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 12:15:33 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1604337332; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=GK/1Mr2kF0Nc9OODRidv+8GJ+vdyOPdP+l+eWo/8/U0=; b=S/VqbvB7rMD+dsFV6U/ZIgrqkhlM6sU9Iy3JrFIsnK+NSBsjQq9bQGBQf50a9SOGzKnFvkAb
+ q95hcQknmjwfmmkt76t1kkUgWz5jDLBiud23lFxud60fCv/YEh/8UaXJSWc/u+tp7ckikvGA
+ H4lFFSzR+yHmwsh6JsHcmddPrtc=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 5fa03eb493c4278c7237355c (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 02 Nov 2020 17:15:32
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 6AED4C433A1; Mon,  2 Nov 2020 17:15:32 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C038EC433C6;
+        Mon,  2 Nov 2020 17:15:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C038EC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Seung-Woo Kim <sw0312.kim@samsung.com>
+Cc:     arend.vanspriel@broadcom.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@cypress.com,
+        wright.feng@cypress.com, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, smoch@web.de,
+        sandals@crustytoothpaste.net, rafal@milecki.pl, digetx@gmail.com,
+        double.lo@cypress.com, amsr@cypress.com, stanley.hsu@cypress.com,
+        saravanan.shanmugham@cypress.com, jean-philippe@linaro.org,
+        frank.kao@cypress.com, netdev@vger.kernel.org,
+        jh80.chung@samsung.com
+Subject: Re: [PATCH v2] brcmfmac: Fix memory leak for unpaired brcmf_{alloc/free}
+References: <CGME20201028015033epcas1p4f3d9b38b037ff6d4432e1a2866544e38@epcas1p4.samsung.com>
+        <1603849967-22817-1-git-send-email-sw0312.kim@samsung.com>
+Date:   Mon, 02 Nov 2020 19:15:23 +0200
+In-Reply-To: <1603849967-22817-1-git-send-email-sw0312.kim@samsung.com>
+        (Seung-Woo Kim's message of "Wed, 28 Oct 2020 10:52:47 +0900")
+Message-ID: <87pn4vof2s.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20201030172950.12767-4-dmurphy@ti.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Oct 2020 12:29:49 -0500, Dan Murphy wrote:
-> The DP83TD510 is a 10M single twisted pair Ethernet PHY
-> 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> ---
->  .../devicetree/bindings/net/ti,dp83td510.yaml | 62 +++++++++++++++++++
->  1 file changed, 62 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/ti,dp83td510.yaml
-> 
+Seung-Woo Kim <sw0312.kim@samsung.com> writes:
 
+> There are missig brcmf_free() for brcmf_alloc(). Fix memory leak
+> by adding missed brcmf_free().
+>
+> Reported-by: Jaehoon Chung <jh80.chung@samsung.com>
+> Fixes: commit 450914c39f88 ("brcmfmac: split brcmf_attach() and brcmf_detach() functions")
 
-My bot found errors running 'make dt_binding_check' on your patch:
+This should be:
 
-yamllint warnings/errors:
+Fixes: 450914c39f88 ("brcmfmac: split brcmf_attach() and brcmf_detach() functions")
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,dp83td510.yaml: {'$id': 'http://devicetree.org/schemas/net/ti,dp83td510.yaml#', '$schema': 'http://devicetree.org/meta-schemas/core.yaml#', 'title': 'TI DP83TD510 ethernet PHY', 'allOf': [{'$ref': 'ethernet-controller.yaml#'}, {'$ref': 'ethernet-phy.yaml#'}], 'maintainers': ['Dan Murphy <dmurphy@ti.com>'], 'description': 'The PHY is an twisted pair 10Mbps Ethernet PHY that support MII, RMII and\nRGMII interfaces.\n\nSpecifications about the Ethernet PHY can be found at:\n  http://www.ti.com/lit/ds/symlink/dp83td510e.pdf\n', 'properties': {'reg': {'maxItems': 1}, 'tx-fifo-depth': {'description': 'Transmitt FIFO depth for RMII mode.  The PHY only exposes 4 nibble\ndepths. The valid nibble depths are 4, 5, 6 and 8.\n', 'enum': [4, 5, 6, 8], 'default': 5}, 'rx-internal-delay-ps': {'description': 'Setting this property to a non-zero number sets the RX internal delay\nfor the PHY.  The internal delay for the PHY is fixed to 30ns relative\nto receive data.\n'}, 'tx-internal-delay-ps': {'description': 'Setting this property to a non-zero number sets the TX internal delay\nfor the PHY.  The internal delay for the PHY has a range of -4 to 4ns\nrelative to transmit data.\n'}}, 'required': ['reg'], 'examples': ['mdio0 {\n  #address-cells = <1>;\n  #size-cells = <0>;\n  ethphy0: ethernet-phy@0 {\n    reg = <0>;\n    tx-rx-output-high;\n    tx-fifo-depth = <5>;\n    rx-internal-delay-ps = <1>;\n    tx-internal-delay-ps = <1>;\n  };\n};\n']} is not valid under any of the given schemas
-{'oneOf': [{'required': ['unevaluatedProperties']},
-           {'required': ['additionalProperties']}]} (Possible causes of the failure):
-	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,dp83td510.yaml: 'unevaluatedProperties' is a required property
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,dp83td510.yaml: ignoring, error in schema: 
-warning: no schema found in file: ./Documentation/devicetree/bindings/net/ti,dp83td510.yaml
+But I can fix that, no need to resend because of this.
 
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-See https://patchwork.ozlabs.org/patch/1391184
-
-The base for the patch is generally the last rc1. Any dependencies
-should be noted.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
