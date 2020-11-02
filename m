@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30B202A29E9
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:49:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B71BA2A29E8
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:48:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728852AbgKBLsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 06:48:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
+        id S1728859AbgKBLst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 06:48:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728610AbgKBLpa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:45:30 -0500
+        with ESMTP id S1728616AbgKBLpb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:45:31 -0500
 Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48BC8C061A48
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 03:45:28 -0800 (PST)
-Received: by mail-wr1-x444.google.com with SMTP id g12so14188530wrp.10
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:45:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B2EC061A49
+        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 03:45:29 -0800 (PST)
+Received: by mail-wr1-x444.google.com with SMTP id y12so14217308wrp.6
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:45:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=S8vpnZmXz9iLnkLUB3C6XR52IXLaRp3UFxZH+gyvs48=;
-        b=Isl9bk4BepGjbjN2Gsn8Amc0qbhI3yVqYtwyU13dln8QhJx46A+HtaRtz8cef2AqIg
-         jqwcA06LcgAd03VDbCjuWcosIbL27KVy6ElOVejAn4DIHU5NDfuV0u7J/u5oDjpD+5fI
-         apB69q5qusne9jhbuWe/6KItNRgQ6eXMj4VZJ+kEoS7u0OIflKpeZGXfSyc04ZrUYnUB
-         7BDrLFUjOMMgiIXjpLQhXHhSTVfd19q9TzBehpXveYyoxhQbmsiixu29i+yBekWABtst
-         7Ic8apkazKDrGzryyoeqJ+Snh2XfzBoEFtiLxishAjYdyFE+WuBTI101PcsPH5GcX/gL
-         Gj1w==
+        bh=ovie+dxspvrU5u8+4wDypRlKJmG6Xumo/oagtBBwY2g=;
+        b=bKwIQdAnp/kv2/fCVRgBZpe17vYm8/pAkopdSiLaVAAEeqtSNnYKfQojLimBEUYe6F
+         TnwQ0/R0n3TuTnVFSZD2O+pnB3SzYIhkJUjB+HnKrT7+4aHfZKwQj+Quc6WhHFSHI0Oe
+         t2ah0F5oBlLM3HHGdA0fiH0FELST3HRKp7wKkeFVgJNm227dSWcSFiKzKQqeX+6zO7R/
+         SxxhjOsHT2PFKxWNst0iONDkLkkVfR7SMGzSQRbU9VMbSNdXl9SBRsxDEMXMGy/QAixH
+         +qsZ1wB7hICLkWTkKCzun+BLDx20BTZ3oJ8hBz2nFRRFOGuFQHJ8OVQ/vpH4SWEUL+fg
+         dQCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=S8vpnZmXz9iLnkLUB3C6XR52IXLaRp3UFxZH+gyvs48=;
-        b=ZyAlx5SVz7bgGhMNeE3trv/bs7DNtF97wyP4kW5Cc8u3+60ZDDOaoT51MCqqxGEMex
-         kl/Sy17S+34XOOiKoaEhRD9P5Ll9ChX8zFLGDfC824Pto5vZY+QEpI0xrJzWHvI4qOMU
-         FbSv0M8JG2HsA2zBNqTq4/k7Zzh942X54UV/QGlXl74SF+i/TAcC/zrAN4eqw1j7UuqF
-         cM0RJkPkGA1yXa3FvFZdgh5a3tKuTwn27xAB69vbraUTOTI/6oWUSmfqcOZEUMgh7V0E
-         9iwNJZsZW2AnKYjL6iWzXUil/md+L0YoyM3nn0TUpP4a9eVtSF5308+IVkNG5TYRf0b1
-         CCeQ==
-X-Gm-Message-State: AOAM532N1OaIfr/3pBtQ2h9gX3EYFTRLYPOxa3ISHR50ul/cQQFwBYlH
-        WCcgH6EKNMmwMcwwwIdAJeCPEZu/2FHi0Q==
-X-Google-Smtp-Source: ABdhPJwRTx0erMAvX+JBVQyr1LqvyNTp2cMUC+akvqWOQ0BhhuBie6CoqGiBGKIMRKrWphWdaTiWOA==
-X-Received: by 2002:adf:fe48:: with SMTP id m8mr19495866wrs.127.1604317527059;
-        Mon, 02 Nov 2020 03:45:27 -0800 (PST)
+        bh=ovie+dxspvrU5u8+4wDypRlKJmG6Xumo/oagtBBwY2g=;
+        b=XzKMhUH8lH4yC8lgLtSQ2YqtXyaK1sXQxNOd2tx0MQSYWKVRUR8w8t5GdytG1i5X0w
+         9vRaqNwmvlbr6OcOrpq7b7dSQs1K77ysHvIkOP5G/sztIdi4HXJFOKjlGuT3P/tNKxS5
+         qUgKwh5tNDI1mYNnafEW9LEk6kPj7/mrrt1PfymYqOvKtfBEhyCkcRUvgNjTFyYwtSPR
+         88ZxIgmyv3srmbDd84Jmth79G4qEWhWl8HBJcJJ6i8eEqFwlxfzVBzucMSGrQvgMxZ0Y
+         8DEx98y2mzWadJOZPoVqPL21BZNXdSuqCSDLbv+tQNN3SUXR25X5XpSDs/c+1eZOIgmO
+         hrYQ==
+X-Gm-Message-State: AOAM530tWEvzSfrx4DGn6t6i6St9vF+c8TNv9wdAGdOxdajKvHT4v0WO
+        nSwN6r1AoxySe4tzIcIbXQsNPA==
+X-Google-Smtp-Source: ABdhPJz77Ti9iG1aZnh7BZeK40/QFiM41qDrrepDbBJsPnTPjLG6Kl4EnPZomOQL1Gxcl1oTyav9Aw==
+X-Received: by 2002:adf:f20f:: with SMTP id p15mr20042117wro.339.1604317528202;
+        Mon, 02 Nov 2020 03:45:28 -0800 (PST)
 Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id g66sm15545352wmg.37.2020.11.02.03.45.26
+        by smtp.gmail.com with ESMTPSA id g66sm15545352wmg.37.2020.11.02.03.45.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 03:45:26 -0800 (PST)
+        Mon, 02 Nov 2020 03:45:27 -0800 (PST)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     davem@davemloft.net
 Cc:     Lee Jones <lee.jones@linaro.org>,
         Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
         linux-wimax@intel.com, Jakub Kicinski <kuba@kernel.org>,
+        Yanir Lubetkin <yanirx.lubetkin@intel.com>,
         netdev@vger.kernel.org
-Subject: [PATCH 05/30] net: wimax: i2400m: driver: Demote some non-conformant kernel-docs, fix others
-Date:   Mon,  2 Nov 2020 11:44:47 +0000
-Message-Id: <20201102114512.1062724-6-lee.jones@linaro.org>
+Subject: [PATCH 06/30] net: wimax: i2400m: fw: Fix some function header misdemeanours
+Date:   Mon,  2 Nov 2020 11:44:48 +0000
+Message-Id: <20201102114512.1062724-7-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201102114512.1062724-1-lee.jones@linaro.org>
 References: <20201102114512.1062724-1-lee.jones@linaro.org>
@@ -67,70 +68,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/wimax/i2400m/driver.c:681: warning: Function parameter or member 'i2400m' not described in 'i2400m_dev_reset_handle'
- drivers/net/wimax/i2400m/driver.c:681: warning: Function parameter or member 'reason' not described in 'i2400m_dev_reset_handle'
- drivers/net/wimax/i2400m/driver.c:775: warning: Function parameter or member 'i2400m' not described in 'i2400m_init'
- drivers/net/wimax/i2400m/driver.c:842: warning: Function parameter or member 'bm_flags' not described in 'i2400m_setup'
- drivers/net/wimax/i2400m/driver.c:942: warning: Function parameter or member 'i2400m' not described in 'i2400m_release'
+ drivers/net/wimax/i2400m/fw.c:584: warning: Function parameter or member 'i2400m' not described in 'i2400m_bm_cmd'
+ drivers/net/wimax/i2400m/fw.c:584: warning: Excess function parameter 'returns' description in 'i2400m_bm_cmd'
+ drivers/net/wimax/i2400m/fw.c:646: warning: Function parameter or member 'chunk' not described in 'i2400m_download_chunk'
+ drivers/net/wimax/i2400m/fw.c:646: warning: Function parameter or member '__chunk_len' not described in 'i2400m_download_chunk'
+ drivers/net/wimax/i2400m/fw.c:646: warning: Excess function parameter 'buf' description in 'i2400m_download_chunk'
+ drivers/net/wimax/i2400m/fw.c:646: warning: Excess function parameter 'buf_len' description in 'i2400m_download_chunk'
+ drivers/net/wimax/i2400m/fw.c:1548: warning: Function parameter or member 'flags' not described in 'i2400m_dev_bootstrap'
 
 Cc: Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
 Cc: linux-wimax@intel.com
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Yanir Lubetkin <yanirx.lubetkin@intel.com>
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/staging/wimax/i2400m/driver.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/staging/wimax/i2400m/fw.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/wimax/i2400m/driver.c b/drivers/staging/wimax/i2400m/driver.c
-index dc8939ff78c0e..f5186458bb3d4 100644
---- a/drivers/staging/wimax/i2400m/driver.c
-+++ b/drivers/staging/wimax/i2400m/driver.c
-@@ -665,7 +665,7 @@ void __i2400m_dev_reset_handle(struct work_struct *ws)
- }
- 
- 
--/**
-+/*
-  * i2400m_dev_reset_handle - Handle a device's reset in a thread context
+diff --git a/drivers/staging/wimax/i2400m/fw.c b/drivers/staging/wimax/i2400m/fw.c
+index 6c9a41bff2e0a..9970857063374 100644
+--- a/drivers/staging/wimax/i2400m/fw.c
++++ b/drivers/staging/wimax/i2400m/fw.c
+@@ -534,6 +534,7 @@ ssize_t __i2400m_bm_ack_verify(struct i2400m *i2400m, int opcode,
+ /**
+  * i2400m_bm_cmd - Execute a boot mode command
   *
-  * Schedule a device reset handling out on a thread context, so it
-@@ -685,7 +685,7 @@ int i2400m_dev_reset_handle(struct i2400m *i2400m, const char *reason)
- EXPORT_SYMBOL_GPL(i2400m_dev_reset_handle);
- 
- 
-- /*
-+/*
-  * The actual work of error recovery.
++ * @i2400m: device descriptor
+  * @cmd: buffer containing the command data (pointing at the header).
+  *     This data can be ANYWHERE (for USB, we will copy it to an
+  *     specific buffer). Make sure everything is in proper little
+@@ -566,7 +567,7 @@ ssize_t __i2400m_bm_ack_verify(struct i2400m *i2400m, int opcode,
   *
-  * The current implementation of error recovery is to trigger a bus reset.
-@@ -766,7 +766,7 @@ void i2400m_bm_buf_free(struct i2400m *i2400m)
- }
- 
- 
--/**
-+/*
-  * i2400m_init - Initialize a 'struct i2400m' from all zeroes
+  * @flags: see I2400M_BM_CMD_* above.
   *
-  * This is a bus-generic API call.
-@@ -831,6 +831,7 @@ EXPORT_SYMBOL_GPL(i2400m_reset);
-  * i2400m_setup - bus-generic setup function for the i2400m device
+- * @returns: bytes received by the notification; if < 0, an errno code
++ * Returns: bytes received by the notification; if < 0, an errno code
+  *     denoting an error or:
   *
-  * @i2400m: device descriptor (bus-specific parts have been initialized)
-+ * @bm_flags: boot mode flags
+  *     -ERESTARTSYS  The device has rebooted
+@@ -634,8 +635,8 @@ ssize_t i2400m_bm_cmd(struct i2400m *i2400m,
+  * i2400m_download_chunk - write a single chunk of data to the device's memory
   *
-  * Returns: 0 if ok, < 0 errno code on error.
+  * @i2400m: device descriptor
+- * @buf: the buffer to write
+- * @buf_len: length of the buffer to write
++ * @chunk: the buffer to write
++ * @chunk_len: length of the buffer to write
+  * @addr: address in the device memory space
+  * @direct: bootrom write mode
+  * @do_csum: should a checksum validation be performed
+@@ -1533,6 +1534,13 @@ void i2400m_fw_put(struct i2400m_fw *i2400m_fw)
+  * i2400m_dev_bootstrap - Bring the device to a known state and upload firmware
   *
-@@ -933,7 +934,7 @@ int i2400m_setup(struct i2400m *i2400m, enum i2400m_bri bm_flags)
- EXPORT_SYMBOL_GPL(i2400m_setup);
- 
- 
--/**
-+/*
-  * i2400m_release - release the bus-generic driver resources
+  * @i2400m: device descriptor
++ * @flags:
++ *      I2400M_BRI_SOFT: a reboot barker has been seen
++ *          already, so don't wait for it.
++ *
++ *      I2400M_BRI_NO_REBOOT: Don't send a reboot command, but wait
++ *          for a reboot barker notification. This is a one shot; if
++ *          the state machine needs to send a reboot command it will.
   *
-  * Sends a disconnect message and undoes any setup done by i2400m_setup()
+  * Returns: >= 0 if ok, < 0 errno code on error.
+  *
 -- 
 2.25.1
 
