@@ -2,96 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 720C72A265D
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 09:47:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53B252A2668
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 09:52:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728248AbgKBIrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 03:47:47 -0500
-Received: from mslow2.mail.gandi.net ([217.70.178.242]:55492 "EHLO
-        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728104AbgKBIrr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 03:47:47 -0500
-Received: from relay10.mail.gandi.net (unknown [217.70.178.230])
-        by mslow2.mail.gandi.net (Postfix) with ESMTP id 96B6D3A6BD0
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 08:47:45 +0000 (UTC)
-Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 83E55240016;
-        Mon,  2 Nov 2020 08:47:20 +0000 (UTC)
-Date:   Mon, 2 Nov 2020 09:47:20 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/7] net: mscc: ocelot: use the pvid of zero
- when bridged with vlan_filtering=0
-Message-ID: <20201102084720.GA7761@piout.net>
-References: <20201031102916.667619-1-vladimir.oltean@nxp.com>
- <20201031102916.667619-2-vladimir.oltean@nxp.com>
+        id S1728166AbgKBIw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 03:52:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34787 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727806AbgKBIw1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 03:52:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604307146;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M8L52r0cFEeeVAVbV60vymrevzQJGA//H7vC0s5Cf+E=;
+        b=deuWvpiAJKj+U7iK1ALwzwY7ze2OWG76CL0L2YVPUnuQXj1jr3usvMVRAJmPgCpT0JPpJx
+        DBsoBbSehwDWe1NURWkgWoGt5Ab3aIh/u9r5LVrk9tkGzGoZJtnZ++OJ/lx/XCUfx7tpwc
+        BbNHm/cOm0I6LUgB7Dck4avAgTVN6nQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-595-wXgWDCU9N4qiYBHcfN7OCg-1; Mon, 02 Nov 2020 03:52:23 -0500
+X-MC-Unique: wXgWDCU9N4qiYBHcfN7OCg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 48AED1074651;
+        Mon,  2 Nov 2020 08:52:22 +0000 (UTC)
+Received: from [10.36.112.137] (ovpn-112-137.ams2.redhat.com [10.36.112.137])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4F0105DA60;
+        Mon,  2 Nov 2020 08:52:21 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dev@openvswitch.org
+Subject: Re: [PATCH net] net: openvswitch: silence suspicious RCU usage
+ warning
+Date:   Mon, 02 Nov 2020 09:52:19 +0100
+Message-ID: <AFFC5913-5595-464B-9B1B-EB25E730C2E2@redhat.com>
+In-Reply-To: <20201030142852.7d41eecc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+References: <160398318667.8898.856205445259063348.stgit@ebuild>
+ <20201030142852.7d41eecc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201031102916.667619-2-vladimir.oltean@nxp.com>
+Content-Type: text/plain; format=flowed
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-On 31/10/2020 12:29:10+0200, Vladimir Oltean wrote:
-> Currently, mscc_ocelot ports configure pvid=0 in standalone mode, and
-> inherit the pvid from the bridge when one is present.
-> 
-> When the bridge has vlan_filtering=0, the software semantics are that
-> packets should be received regardless of whether there's a pvid
-> configured on the ingress port or not. However, ocelot does not observe
-> those semantics today.
-> 
-> Moreover, changing the PVID is also a problem with vlan_filtering=0.
-> We are privately remapping the VID of FDB, MDB entries to the port's
-> PVID when those are VLAN-unaware (i.e. when the VID of these entries
-> comes to us as 0). But we have no logic of adjusting that remapping when
-> the user changes the pvid and vlan_filtering is 0. So stale entries
-> would be left behind, and untagged traffic will stop matching on them.
-> 
-> And even if we were to solve that, there's an even bigger problem. If
-> swp0 has pvid 1, and swp1 has pvid 2, and both are under a vlan_filtering=0
-> bridge, they should be able to forward traffic between one another.
-> However, with ocelot they wouldn't do that.
-> 
-> The simplest way of fixing this is to never configure the pvid based on
-> what the bridge is asking for, when vlan_filtering is 0. Only if there
-> was a VLAN that the bridge couldn't mangle, that we could use as pvid....
-> So, turns out, there's 0 just for that. And for a reason: IEEE
-> 802.1Q-2018, page 247, Table 9-2-Reserved VID values says:
-> 
-> 	The null VID. Indicates that the tag header contains only
-> 	priority information; no VID is present in the frame.
-> 	This VID value shall not be configured as a PVID or a member
-> 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 	of a VID Set, or configured in any FDB entry, or used in any
-> 	Management operation.
-> 
-> So, aren't we doing exactly what 802.1Q says not to? Well, in a way, but
-> what we're doing here is just driver-level bookkeeping, all for the
-> better. The fact that we're using a pvid of 0 is not observable behavior
-> from the outside world: the network stack does not see the classified
-> VLAN that the switch uses, in vlan_filtering=0 mode. And we're also more
-> consistent with the standalone mode now.
-> 
-
-IIRC, we are using pvid 1 because else bridging breaks when
-CONFIG_VLAN_8021Q is not enabled. Did you test that configuration?
 
 
+On 30 Oct 2020, at 22:28, Jakub Kicinski wrote:
 
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+> On Thu, 29 Oct 2020 15:53:21 +0100 Eelco Chaudron wrote:
+>> Silence suspicious RCU usage warning in 
+>> ovs_flow_tbl_masks_cache_resize()
+>> by replacing rcu_dereference() with rcu_dereference_ovsl().
+>>
+>> In addition, when creating a new datapath, make sure it's configured 
+>> under
+>> the ovs_lock.
+>>
+>> Fixes: 9bf24f594c6a ("net: openvswitch: make masks cache size 
+>> configurable")
+>> Reported-by: syzbot+9a8f8bfcc56e8578016c@syzkaller.appspotmail.com
+>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>> ---
+>>  net/openvswitch/datapath.c   |    8 ++++----
+>>  net/openvswitch/flow_table.c |    2 +-
+>>  2 files changed, 5 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+>> index 832f898edb6a..020f8539fede 100644
+>> --- a/net/openvswitch/datapath.c
+>> +++ b/net/openvswitch/datapath.c
+>> @@ -1695,6 +1695,9 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, 
+>> struct genl_info *info)
+>>  	if (err)
+>>  		goto err_destroy_ports;
+>>
+>> +	/* So far only local changes have been made, now need the lock. */
+>> +	ovs_lock();
+>
+> Should we move the lock below assignments to param?
+>
+> Looks a little strange to protect stack variables with a global lock.
+
+You are right, I should have moved it down after the assignment. I will 
+send out a v2.
+
+>>  	/* Set up our datapath device. */
+>>  	parms.name = nla_data(a[OVS_DP_ATTR_NAME]);
+>>  	parms.type = OVS_VPORT_TYPE_INTERNAL;
+>> @@ -1707,9 +1710,6 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, 
+>> struct genl_info *info)
+>>  	if (err)
+>>  		goto err_destroy_meters;
+>>
+>> -	/* So far only local changes have been made, now need the lock. */
+>> -	ovs_lock();
+>> -
+>>  	vport = new_vport(&parms);
+>>  	if (IS_ERR(vport)) {
+>>  		err = PTR_ERR(vport);
+>> @@ -1725,7 +1725,6 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, 
+>> struct genl_info *info)
+>>  				ovs_dp_reset_user_features(skb, info);
+>>  		}
+>>
+>> -		ovs_unlock();
+>>  		goto err_destroy_meters;
+>>  	}
+>>
+>> @@ -1742,6 +1741,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, 
+>> struct genl_info *info)
+>>  	return 0;
+>>
+>>  err_destroy_meters:
+>
+> Let's update the name of the label.
+
+Guess now it is, unlock and destroy meters, so what label are you 
+looking for?
+
+err_unlock_and_destroy_meters: which looks a bit long, or just 
+err_unlock:
+
+>> +	ovs_unlock();
+>>  	ovs_meters_exit(dp);
+>>  err_destroy_ports:
+>>  	kfree(dp->ports);
+>> diff --git a/net/openvswitch/flow_table.c 
+>> b/net/openvswitch/flow_table.c
+>> index f3486a37361a..c89c8da99f1a 100644
+>> --- a/net/openvswitch/flow_table.c
+>> +++ b/net/openvswitch/flow_table.c
+>> @@ -390,7 +390,7 @@ static struct mask_cache 
+>> *tbl_mask_cache_alloc(u32 size)
+>>  }
+>>  int ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32 
+>> size)
+>>  {
+>> -	struct mask_cache *mc = rcu_dereference(table->mask_cache);
+>> +	struct mask_cache *mc = rcu_dereference_ovsl(table->mask_cache);
+>>  	struct mask_cache *new;
+>>
+>>  	if (size == mc->cache_size)
+>>
+
