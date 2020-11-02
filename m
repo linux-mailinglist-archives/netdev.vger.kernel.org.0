@@ -2,288 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CDDD2A36D7
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 23:58:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B20472A36D8
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 23:58:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725997AbgKBW6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 17:58:06 -0500
-Received: from mx2.suse.de ([195.135.220.15]:40382 "EHLO mx2.suse.de"
+        id S1726196AbgKBW6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 17:58:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58318 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725883AbgKBW6F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 17:58:05 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id A566DAC53;
-        Mon,  2 Nov 2020 22:58:03 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 62012603A8; Mon,  2 Nov 2020 23:58:03 +0100 (CET)
-Date:   Mon, 2 Nov 2020 23:58:03 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH ethtool] ethtool: Improve compatibility between
- netlink and ioctl interfaces
-Message-ID: <20201102225803.pcrqf6nhjlvmfxwt@lion.mk-sys.cz>
-References: <20201102184036.866513-1-idosch@idosch.org>
+        id S1725883AbgKBW6J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 17:58:09 -0500
+Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EF0C921D40;
+        Mon,  2 Nov 2020 22:58:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604357889;
+        bh=hpOJ+h1Ej7N12FaBAMcsQd789LVLRp/i1lDjzeuFVM8=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=p14VO7A/a6fv5A/ilifAxZ+teGIHmGqeIOzYs2luS0o9EfWg8pPuXfrkvY+Y0Yre/
+         +nzKWEYG48Sxw4Ifr+lHW1asTD61Qa2O0tYssv03QC6nkRzZPbGZK5Rfvjv9l+dgFn
+         6dAwQfJzsWbD9ft6+ux9dzAHtnPDQnT637LMqWdY=
+Message-ID: <5e7fc3cade26bee5633b8d58c9b9627da8d920c9.camel@kernel.org>
+Subject: Re: [net-next 00/15][pull request] 100GbE Intel Wired LAN Driver
+ Updates 2020-11-02
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, sassmann@redhat.com
+Date:   Mon, 02 Nov 2020 14:58:08 -0800
+In-Reply-To: <20201102222338.1442081-1-anthony.l.nguyen@intel.com>
+References: <20201102222338.1442081-1-anthony.l.nguyen@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201102184036.866513-1-idosch@idosch.org>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 02, 2020 at 08:40:36PM +0200, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
+On Mon, 2020-11-02 at 14:23 -0800, Tony Nguyen wrote:
+> This series contains updates to ice driver only.
+
+...
+
+> Tony renames Flow Director functions to be more generic as their use
+> is expanded.
 > 
-> With the ioctl interface, when autoneg is enabled, but without
-> specifying speed, duplex or link modes, the advertised link modes are
-> set to the supported link modes by the ethtool user space utility.
+> Real expands ntuple support to allow for mask values to be specified.
+> This
+> is done by implementing ACL filtering in HW.
 > 
-> This does not happen when using the netlink interface. Fix this
-> incompatibility problem by having ethtool query the supported link modes
-> from the kernel and advertise all of them when only "autoneg on" is
-> specified.
-> 
-> Before:
-> 
-> # ethtool -s eth0 advertise 0xC autoneg on
-> # ethtool -s eth0 autoneg on
-> # ethtool eth0
-> Settings for eth0:
-> 	Supported ports: [ TP ]
-> 	Supported link modes:   10baseT/Half 10baseT/Full
-> 	                        100baseT/Half 100baseT/Full
-> 	                        1000baseT/Full
-> 	Supported pause frame use: No
-> 	Supports auto-negotiation: Yes
-> 	Supported FEC modes: Not reported
-> 	Advertised link modes:  100baseT/Half 100baseT/Full
-> 	Advertised pause frame use: No
-> 	Advertised auto-negotiation: Yes
-> 	Advertised FEC modes: Not reported
-> 	Speed: 1000Mb/s
-> 	Duplex: Full
-> 	Auto-negotiation: on
-> 	Port: Twisted Pair
-> 	PHYAD: 0
-> 	Transceiver: internal
-> 	MDI-X: off (auto)
-> 	Supports Wake-on: umbg
-> 	Wake-on: d
->         Current message level: 0x00000007 (7)
->                                drv probe link
-> 	Link detected: yes
-> 
-> After:
-> 
-> # ethtool -s eth0 advertise 0xC autoneg on
-> # ethtool -s eth0 autoneg on
-> # ethtool eth0
-> Settings for eth0:
-> 	Supported ports: [ TP ]
-> 	Supported link modes:   10baseT/Half 10baseT/Full
-> 	                        100baseT/Half 100baseT/Full
-> 	                        1000baseT/Full
-> 	Supported pause frame use: No
-> 	Supports auto-negotiation: Yes
-> 	Supported FEC modes: Not reported
-> 	Advertised link modes:  10baseT/Half 10baseT/Full
-> 	                        100baseT/Half 100baseT/Full
-> 	                        1000baseT/Full
-> 	Advertised pause frame use: No
-> 	Advertised auto-negotiation: Yes
-> 	Advertised FEC modes: Not reported
-> 	Speed: 1000Mb/s
-> 	Duplex: Full
-> 	Auto-negotiation: on
-> 	Port: Twisted Pair
-> 	PHYAD: 0
-> 	Transceiver: internal
-> 	MDI-X: on (auto)
-> 	Supports Wake-on: umbg
-> 	Wake-on: d
->         Current message level: 0x00000007 (7)
->                                drv probe link
-> 	Link detected: yes
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
-> Michal / Jakub, let me know if you see a better way. Sending as RFC
-> since I want to run it through regression first.
-> ---
->  netlink/settings.c | 115 +++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 115 insertions(+)
-> 
-> diff --git a/netlink/settings.c b/netlink/settings.c
-> index 41a2e5af1945..1f856b1b14d5 100644
-> --- a/netlink/settings.c
-> +++ b/netlink/settings.c
-> @@ -1110,6 +1110,113 @@ static const struct param_parser sset_params[] = {
->  	{}
->  };
->  
-> +static bool sset_is_autoneg_only(const struct nl_context *nlctx)
-> +{
-> +	return nlctx->argc == 2 && !strcmp(nlctx->argp[0], "autoneg") &&
-> +	       !strcmp(nlctx->argp[1], "on");
-> +}
 
-This would only return true if there is only "autoneg on" on command
-line; the ioctl parser fills all supported modes whenever none of
-"speed", "duplex" and "advertise" is present, even if there are other
-parameters not related to advertised modes selection (e.g. "wol").
+This is a lot of code with only 2 liner commit messages!
 
-Doing this properly from command line would require us to duplicate the
-parser here which would be very inconvenient and impractical w.r.t.
-future extensions.
+Can you please shed more light on what user interface is being used to
+program and manage those ACLs, i see it is ethtool from the code but
+the cover letter and commit messages do not provide any information 
+about that.
 
-What would probably make more sense would be modifying nl_parse() not to
-send the messages itself in PARSER_GROUP_MSG case but return them back
-to caller (like it does in other cases when there is only one message).
-Then we could check the ETHTOOL_MSG_LINKMODES_SET message (if there is
-one) for presence of ETHTOOL_A_LINKMODES_AUTONEG,
-ETHTOOL_A_LINKMODES_OURS, ETHTOOL_A_LINKMODES_SPEED and
-ETHTOOL_A_LINKMODES_DUPLEX (and value of ETHTOOL_A_LINKMODES_AUTONEG)
-and add ETHTOOL_A_LINKMODES_OURS if needed.
+Also could you please explain what ethtool interfaces/commands are
+being implemented, in the commit messages or cover letter, either is
+fine.
 
-I'll prepare a proof of concept of such nl_parse() rework. Fortunately
-this is the only subcommand using PARSER_GROUP_MSG so that there are no
-other callers that would need adjusting.
+Thanks!
 
-> +static int linkmodes_reply_adver_all_cb(const struct nlmsghdr *nlhdr,
-
-                              ^^^^^ advert?
-
-> +					void *data)
-> +{
-> +	const struct nlattr *bitset_tb[ETHTOOL_A_BITSET_MAX + 1] = {};
-> +	const struct nlattr *tb[ETHTOOL_A_LINKMODES_MAX + 1] = {};
-> +	DECLARE_ATTR_TB_INFO(bitset_tb);
-> +	struct nl_context *nlctx = data;
-> +	struct nl_msg_buff *msgbuff;
-> +	DECLARE_ATTR_TB_INFO(tb);
-> +	struct nl_socket *nlsk;
-> +	struct nlattr *nest;
-> +	int ret;
-> +
-> +	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (!tb[ETHTOOL_A_LINKMODES_OURS])
-> +		return -EINVAL;
-> +
-> +	ret = mnl_attr_parse_nested(tb[ETHTOOL_A_LINKMODES_OURS], attr_cb,
-> +				    &bitset_tb_info);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (!bitset_tb[ETHTOOL_A_BITSET_SIZE] ||
-> +	    !bitset_tb[ETHTOOL_A_BITSET_VALUE] ||
-> +	    !bitset_tb[ETHTOOL_A_BITSET_MASK])
-> +		return -EINVAL;
-> +
-> +	ret = netlink_init_ethnl2_socket(nlctx);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	nlsk = nlctx->ethnl2_socket;
-> +	msgbuff = &nlsk->msgbuff;
-> +
-> +	ret = msg_init(nlctx, msgbuff, ETHTOOL_MSG_LINKMODES_SET,
-> +		       NLM_F_REQUEST | NLM_F_ACK);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ethnla_fill_header(msgbuff, ETHTOOL_A_LINKMODES_HEADER,
-> +			       nlctx->devname, 0))
-> +		return -EMSGSIZE;
-> +
-> +	if (ethnla_put_u8(msgbuff, ETHTOOL_A_LINKMODES_AUTONEG, AUTONEG_ENABLE))
-> +		return -EMSGSIZE;
-> +
-> +	/* Use the size and mask from the reply and set the value to the mask,
-> +	 * so that all supported link modes will be advertised.
-> +	 */
-> +	ret = -EMSGSIZE;
-> +	nest = ethnla_nest_start(msgbuff, ETHTOOL_A_LINKMODES_OURS);
-> +	if (!nest)
-> +		return -EMSGSIZE;
-> +
-> +	if (ethnla_put_u32(msgbuff, ETHTOOL_A_BITSET_SIZE,
-> +			   mnl_attr_get_u32(bitset_tb[ETHTOOL_A_BITSET_SIZE])))
-> +		goto err;
-> +
-> +	if (ethnla_put(msgbuff, ETHTOOL_A_BITSET_VALUE,
-> +		       mnl_attr_get_payload_len(bitset_tb[ETHTOOL_A_BITSET_MASK]),
-> +		       mnl_attr_get_payload(bitset_tb[ETHTOOL_A_BITSET_MASK])))
-> +		goto err;
-> +
-> +	if (ethnla_put(msgbuff, ETHTOOL_A_BITSET_MASK,
-> +		       mnl_attr_get_payload_len(bitset_tb[ETHTOOL_A_BITSET_MASK]),
-> +		       mnl_attr_get_payload(bitset_tb[ETHTOOL_A_BITSET_MASK])))
-> +		goto err;
-> +
-> +	ethnla_nest_end(msgbuff, nest);
-
-To fully replicate ioctl code behaviour, we should only set the bits
-corresponding to "real" link modes, not "special" ones (e.g.
-ETHTOOL_LINK_MODE_TP_BIT).
-
-> +
-> +	ret = nlsock_sendmsg(nlsk, NULL);
-> +	if (ret < 0)
-> +		return ret;
-> +	ret = nlsock_process_reply(nlsk, nomsg_reply_cb, nlctx);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return MNL_CB_OK;
-> +
-> +err:
-> +	ethnla_nest_cancel(msgbuff, nest);
-> +	return ret;
-> +}
-> +
-> +static int sset_adver_all(struct nl_context *nlctx)
-
-                   ^^^^^ advert?
-
-Michal
-
-> +{
-> +	struct nl_socket *nlsk = nlctx->ethnl_socket;
-> +	int ret;
-> +
-> +	if (netlink_cmd_check(nlctx->ctx, ETHTOOL_MSG_LINKMODES_GET, false) ||
-> +	    netlink_cmd_check(nlctx->ctx, ETHTOOL_MSG_LINKMODES_SET, false))
-> +		return -EOPNOTSUPP;
-> +
-> +	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_LINKMODES_GET,
-> +				      ETHTOOL_A_LINKMODES_HEADER,
-> +				      ETHTOOL_FLAG_COMPACT_BITSETS);
-> +	if (ret < 0)
-> +		return ret;
-> +	return nlsock_send_get_request(nlsk, linkmodes_reply_adver_all_cb);
-> +}
-> +
->  int nl_sset(struct cmd_context *ctx)
->  {
->  	struct nl_context *nlctx = ctx->nlctx;
-> @@ -1120,6 +1227,14 @@ int nl_sset(struct cmd_context *ctx)
->  	nlctx->argc = ctx->argc;
->  	nlctx->devname = ctx->devname;
->  
-> +	/* For compatibility reasons with ioctl-based ethtool, when "autoneg
-> +	 * on" is specified without "advertise", "speed" and "duplex", we need
-> +	 * to query the supported link modes from the kernel and advertise all
-> +	 * of them.
-> +	 */
-> +	if (sset_is_autoneg_only(nlctx))
-> +		return sset_adver_all(nlctx);
-> +
->  	ret = nl_parser(nlctx, sset_params, NULL, PARSER_GROUP_MSG);
->  	if (ret < 0)
->  		return 1;
-> -- 
-> 2.26.2
-> 
