@@ -2,157 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A04972A3100
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 18:11:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 816282A3108
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 18:12:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727442AbgKBRLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 12:11:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27260 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727150AbgKBRLM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 12:11:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604337071;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qe9HtNbCEgI8DjOjklRgoiEgF3X7IiclvAtTrYaenm8=;
-        b=HWACDyWRQAsj9E4AxtQseVwe71ejy4NiblNEpVbsRohgu3/RajGALxi2q+A5U8hhV7cgZo
-        6/iY42vA2NFZZ22wAPdPkDosYXND3wXHn6lGat/N8GZgcO4d2OS/5qZs/6vRmaaWSD9XMU
-        B+A79s7kle/7Nf9cNxPFYsfEOzLfxwc=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-542-89wM4WsUP6uy3sCUPwSiHA-1; Mon, 02 Nov 2020 12:11:10 -0500
-X-MC-Unique: 89wM4WsUP6uy3sCUPwSiHA-1
-Received: by mail-wm1-f72.google.com with SMTP id 13so3586268wmf.0
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 09:11:09 -0800 (PST)
+        id S1727665AbgKBRMF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 2 Nov 2020 12:12:05 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:35980 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727589AbgKBRMF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 12:12:05 -0500
+Received: by mail-oi1-f196.google.com with SMTP id d9so9395314oib.3;
+        Mon, 02 Nov 2020 09:12:04 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=qe9HtNbCEgI8DjOjklRgoiEgF3X7IiclvAtTrYaenm8=;
-        b=oeURPKKNkaHpnmOeuUB2lXNXQBuBEYYsKBs7WUXy6UuS00ncy4NNFExm/DC8T3iKhx
-         1n4/pVU91Rn7spUJGQkkjl13LwfsbqWdNxZRep8aVeTUKw7sYXzTAgVbY9KJAaQn5+tj
-         n3zV3vct467NUv5wNQ3bnRbS1b2CwVhVf7kg2Su/xZeKMx49NJch+YYoXjFIIqLWF0KQ
-         E/FcVk1YpIkz1hlX1YYz+oxpVc8TiQ5FbT4+R44b8buGQcMl7Jx2hTD/mdls4z3OLWcv
-         fPqwYY8Pfnn0K0x/rIdBXmRHVSBC74cO5f7INj8ooKQzGx+29+N33nEe49YvqAyeEdNS
-         9mSA==
-X-Gm-Message-State: AOAM533bIyuLQa9N5NO+bigzYtoPimWYNnli6GBr8uLuUd2hcSlHIVYD
-        t1QMN+T9pEutl5pXBD9aNV3wTfcw/3g5293dydTCtKKbawwNNjN0/V+brA1PAd9fvVChQk1SXcG
-        /v1qvR/VyZq+1GSlz
-X-Received: by 2002:a1c:2441:: with SMTP id k62mr19529351wmk.10.1604337068048;
-        Mon, 02 Nov 2020 09:11:08 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxftVuRDvqXD+CO65Xi6YzLd9A4FBJz+cftSjYhfrG9NB/4h4AS+WlFGmto5fs0nWE6W+uFJQ==
-X-Received: by 2002:a1c:2441:: with SMTP id k62mr19529323wmk.10.1604337067797;
-        Mon, 02 Nov 2020 09:11:07 -0800 (PST)
-Received: from steredhat (host-79-22-200-33.retail.telecomitalia.it. [79.22.200.33])
-        by smtp.gmail.com with ESMTPSA id c9sm9435227wrp.65.2020.11.02.09.11.06
+        bh=eA1YHLSLEbKjVZd8ZPCYquKLICIoPYEsjcgwYwIXONM=;
+        b=oGOtSZAPljOnzyKnWieVFzHNL2VnMXFStXtLw7gPc4/ZPxcilAsZCHGvVd9vA4p5zn
+         F290/zgHeu09Gl+jZCL1qsjLWvkNxZKi26snR39lhFzl5EsgnWDUHbFip0zAxMExCLwN
+         Kql0rHBYHeNwFi50A2Anrcw+Sjh5qKByVyEdrbT+EzrVss7wP7QfIMOlOh8uN6RptIMr
+         ipIzqh8V3Lp5dDvtX8pK/rH3axYFEMnv3tlpvFoHw5sJJswhWVUmfFtVkCtxyiR6iiQb
+         FJMH1bcpEHRNuvjSyKk0w2WkaXZk5WgjRvacbuZfhvz2/dS/45lCjtQMBDCNy7c9V6lt
+         BsXQ==
+X-Gm-Message-State: AOAM532SAAlZ2zvjkcwNWybWDFJfhYQ1GN9YXyHbsPY4OADiDJMy/t9x
+        TWoHljNCOjRtrtfCM6mKEQ==
+X-Google-Smtp-Source: ABdhPJwIP7A0eJV2FdnAxV4GkQDkNlw2WxhwivkI2jfqP/w6eBmV9pOv23Sc+uKXnoHc+lmzjesN3Q==
+X-Received: by 2002:aca:a906:: with SMTP id s6mr1968252oie.59.1604337124008;
+        Mon, 02 Nov 2020 09:12:04 -0800 (PST)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id j23sm3806127otk.56.2020.11.02.09.12.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 09:11:06 -0800 (PST)
-Date:   Mon, 2 Nov 2020 18:11:04 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, netdev@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vhost/vsock: add IOTLB API support
-Message-ID: <20201102171104.eiovmkj23fle5ioj@steredhat>
-References: <20201029174351.134173-1-sgarzare@redhat.com>
- <751cc074-ae68-72c8-71de-a42458058761@redhat.com>
- <20201030105422.ju2aj2bmwsckdufh@steredhat>
- <278f4732-e561-2b4f-03ee-b26455760b01@redhat.com>
+        Mon, 02 Nov 2020 09:12:03 -0800 (PST)
+Received: (nullmailer pid 4059886 invoked by uid 1000);
+        Mon, 02 Nov 2020 17:12:02 -0000
+Date:   Mon, 2 Nov 2020 11:12:02 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     devicetree@vger.kernel.org, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org, f.fainelli@gmail.com,
+        linux-kernel@vger.kernel.org, andrew@lunn.ch
+Subject: Re: [PATCH net-next v3 3/4] dt-bindings: dp83td510: Add binding for
+ DP83TD510 Ethernet PHY
+Message-ID: <20201102171202.GA4059031@bogus>
+References: <20201030172950.12767-1-dmurphy@ti.com>
+ <20201030172950.12767-4-dmurphy@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <278f4732-e561-2b4f-03ee-b26455760b01@redhat.com>
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20201030172950.12767-4-dmurphy@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 07:44:43PM +0800, Jason Wang wrote:
->
->On 2020/10/30 下午6:54, Stefano Garzarella wrote:
->>On Fri, Oct 30, 2020 at 06:02:18PM +0800, Jason Wang wrote:
->>>
->>>On 2020/10/30 上午1:43, Stefano Garzarella wrote:
->>>>This patch enables the IOTLB API support for vhost-vsock devices,
->>>>allowing the userspace to emulate an IOMMU for the guest.
->>>>
->>>>These changes were made following vhost-net, in details this patch:
->>>>- exposes VIRTIO_F_ACCESS_PLATFORM feature and inits the iotlb
->>>>  device if the feature is acked
->>>>- implements VHOST_GET_BACKEND_FEATURES and
->>>>  VHOST_SET_BACKEND_FEATURES ioctls
->>>>- calls vq_meta_prefetch() before vq processing to prefetch vq
->>>>  metadata address in IOTLB
->>>>- provides .read_iter, .write_iter, and .poll callbacks for the
->>>>  chardev; they are used by the userspace to exchange IOTLB messages
->>>>
->>>>This patch was tested with QEMU and a patch applied [1] to fix a
->>>>simple issue:
->>>>    $ qemu -M q35,accel=kvm,kernel-irqchip=split \
->>>>           -drive file=fedora.qcow2,format=qcow2,if=virtio \
->>>>           -device intel-iommu,intremap=on \
->>>>           -device vhost-vsock-pci,guest-cid=3,iommu_platform=on
->>>
->>>
->>>Patch looks good, but a question:
->>>
->>>It looks to me you don't enable ATS which means vhost won't get 
->>>any invalidation request or did I miss anything?
->>>
->>
->>You're right, I didn't see invalidation requests, only miss and updates.
->>Now I have tried to enable 'ats' and 'device-iotlb' but I still 
->>don't see any invalidation.
->>
->>How can I test it? (Sorry but I don't have much experience yet with 
->>vIOMMU)
->
->
->I guess it's because the batched unmap. Maybe you can try to use 
->"intel_iommu=strict" in guest kernel command line to see if it works.
->
->Btw, make sure the qemu contains the patch [1]. Otherwise ATS won't be 
->enabled for recent Linux Kernel in the guest.
-
-The problem was my kernel, it was built with a tiny configuration.
-Using fedora stock kernel I can see the 'invalidate' requests, but I 
-also had the following issues.
-
-Do they make you ring any bells?
-
-$ ./qemu -m 4G -smp 4 -M q35,accel=kvm,kernel-irqchip=split \
-     -drive file=fedora.qcow2,format=qcow2,if=virtio \
-     -device intel-iommu,intremap=on,device-iotlb=on \
-     -device vhost-vsock-pci,guest-cid=6,iommu_platform=on,ats=on,id=v1
-
-     qemu-system-x86_64: vtd_iova_to_slpte: detected IOVA overflow 
-     (iova=0x1d40000030c0)
-     qemu-system-x86_64: vtd_iommu_translate: detected translation 
-     failure (dev=00:03:00, iova=0x1d40000030c0)
-     qemu-system-x86_64: New fault is not recorded due to compression of 
-     faults
-
-Guest kernel messages:
-     [   44.940872] DMAR: DRHD: handling fault status reg 2
-     [   44.941989] DMAR: [DMA Read] Request device [00:03.0] PASID 
-     ffffffff fault addr ffff88W
-     [   49.785884] DMAR: DRHD: handling fault status reg 2
-     [   49.788874] DMAR: [DMA Read] Request device [00:03.0] PASID 
-     ffffffff fault addr ffff88W
+On Fri, 30 Oct 2020 12:29:49 -0500, Dan Murphy wrote:
+> The DP83TD510 is a 10M single twisted pair Ethernet PHY
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> ---
+>  .../devicetree/bindings/net/ti,dp83td510.yaml | 62 +++++++++++++++++++
+>  1 file changed, 62 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/ti,dp83td510.yaml
+> 
 
 
-QEMU: b149dea55c Merge remote-tracking branch 
-'remotes/cschoenebeck/tags/pull-9p-20201102' into staging
+My bot found errors running 'make dt_binding_check' on your patch:
 
-Linux guest: 5.8.16-200.fc32.x86_64
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,dp83td510.yaml: {'$id': 'http://devicetree.org/schemas/net/ti,dp83td510.yaml#', '$schema': 'http://devicetree.org/meta-schemas/core.yaml#', 'title': 'TI DP83TD510 ethernet PHY', 'allOf': [{'$ref': 'ethernet-controller.yaml#'}, {'$ref': 'ethernet-phy.yaml#'}], 'maintainers': ['Dan Murphy <dmurphy@ti.com>'], 'description': 'The PHY is an twisted pair 10Mbps Ethernet PHY that support MII, RMII and\nRGMII interfaces.\n\nSpecifications about the Ethernet PHY can be found at:\n  http://www.ti.com/lit/ds/symlink/dp83td510e.pdf\n', 'properties': {'reg': {'maxItems': 1}, 'tx-fifo-depth': {'description': 'Transmitt FIFO depth for RMII mode.  The PHY only exposes 4 nibble\ndepths. The valid nibble depths are 4, 5, 6 and 8.\n', 'enum': [4, 5, 6, 8], 'default': 5}, 'rx-internal-delay-ps': {'description': 'Setting this property to a non-zero number sets the RX internal delay\nfor the PHY.  The internal delay for the PHY is fixed to 30ns relative\nto receive data.\n'}, 'tx-internal-delay-ps': {'description': 'Setting this property to a non-zero number sets the TX internal delay\nfor the PHY.  The internal delay for the PHY has a range of -4 to 4ns\nrelative to transmit data.\n'}}, 'required': ['reg'], 'examples': ['mdio0 {\n  #address-cells = <1>;\n  #size-cells = <0>;\n  ethphy0: ethernet-phy@0 {\n    reg = <0>;\n    tx-rx-output-high;\n    tx-fifo-depth = <5>;\n    rx-internal-delay-ps = <1>;\n    tx-internal-delay-ps = <1>;\n  };\n};\n']} is not valid under any of the given schemas
+{'oneOf': [{'required': ['unevaluatedProperties']},
+           {'required': ['additionalProperties']}]} (Possible causes of the failure):
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,dp83td510.yaml: 'unevaluatedProperties' is a required property
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,dp83td510.yaml: ignoring, error in schema: 
+warning: no schema found in file: ./Documentation/devicetree/bindings/net/ti,dp83td510.yaml
 
 
-Thanks,
-Stefano
+See https://patchwork.ozlabs.org/patch/1391184
+
+The base for the patch is generally the last rc1. Any dependencies
+should be noted.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
