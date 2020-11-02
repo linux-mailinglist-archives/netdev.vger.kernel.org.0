@@ -2,63 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62E0D2A2927
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:26:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC5B2A2924
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:26:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728875AbgKBLZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 06:25:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
+        id S1728963AbgKBLZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 06:25:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728870AbgKBLZH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:25:07 -0500
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB605C061A4B
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 03:25:05 -0800 (PST)
-Received: by mail-wr1-x442.google.com with SMTP id w1so14166092wrm.4
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:25:05 -0800 (PST)
+        with ESMTP id S1728877AbgKBLZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:25:09 -0500
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08781C061A4E
+        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 03:25:07 -0800 (PST)
+Received: by mail-wm1-x343.google.com with SMTP id h22so9152260wmb.0
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:25:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CShQQ12PBsg4lhgdWNuYQU+7cmtXNk/NI77thbS/j9M=;
-        b=JlhFoJuMAj9F/e61O3Mhvl/I2ScHj1PNuWyCQK3xSUVNOZxJDsPtA72x9vNeMaNvtV
-         xatTQqTIiNB/CR9h9jS2FMe9ZJflyKbuXb4laQiuFtVx60jyT/Bs30RKUahJeIJyNVFt
-         XrRhLSSEPFI6KVksCWt7K+vt7J5jZTHjffUJoYyYxU0DSfrjgBXpggFwOzwudIq4yK2i
-         +YfH1kV+6gil38pjYtWr4ibLTbFNPVbhAB9B+Gk2dSp0JtueRe1sxE6C2hmrO13Y9OPO
-         ujFzdc0YIP3oJo8Ck3HNP/e6tktwNT8Bn4ZEnRmCghtwB5coRT9Xu8uH15bAEWhHW82s
-         qplQ==
+        bh=LpWKESLTGBe7YeMGrN5FmJYCFJcGpFNookfaDX/IDGg=;
+        b=r5dRwCOBEnNkEhSvcu8ebuTtLZMpAlfj59ZOipi6qoNBtJVyZFxR/ENjeGQ7/AcNso
+         cqOfRNxCPcTLrEYICbEKEu1tydiDfltsD/8KVFTImadOsSiZqCbZmEKrKyE6koP3ttbO
+         0SHnXVSM/w+uWw11b9MM5F4CtPo/MirlBPwz7VCzzrtBkxS5js9Z2k5TFRcwhD5Dwza2
+         FeVKfh8hLHloz3hOKbA5m7Sp/Pj8qsWYVD9NFrWSC8ousDTAwYhIV0OXx9QqYTchAsxZ
+         qnsEq8fgZrn8ElXazGnLAaVRbnI+UOgpNPqS6xWE/ermyTsylsJ0TlRi2kSvC/lrfLEh
+         9EWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CShQQ12PBsg4lhgdWNuYQU+7cmtXNk/NI77thbS/j9M=;
-        b=p2r3/JVuBavu1dKp0BCM8ED/z6GTjbH8elSkRHchR7UF4HhtjUjlI+h+ucuvx07oJ4
-         SmPCsZYrUGtm6gkydHNoq76IPSZdrZHDAHXGyiAFqRXu/Ftu3X6LZfJFTc8Pa27hWXE/
-         AAHp0xRbynINY0V3bQbPqLJK/TtL0qZTfnafD0hCRv2iiEyR8AGtgIhXKW0fHmOXQAOd
-         Zp8/G+4KTkBj5S2nGsNL5cE6zhNL2OLSFY54dkicIcP2PPFJS7mJMDDftO8zL7hUOT3B
-         1U2+BuJUP/KIe/GwmOi1/Z42ZF7IvXDDKTCOfewXkmrEaVMFWQXgOH0eYcaz1TYhcO7N
-         toHw==
-X-Gm-Message-State: AOAM531LmiRftTajat0TfdlHn+pJVs6PCYKcTbdGLAMTORbaVukvyk0y
-        /FhmB07NLfjJlcBzMBMhGhZW2A==
-X-Google-Smtp-Source: ABdhPJxBYj5usmi4qGlUfaqjEb9+wgXLgztUDnuNady/I5Qdqzo4kKXtcfwR2Bj62eeSOzRpXaj8bw==
-X-Received: by 2002:a5d:60c4:: with SMTP id x4mr20763543wrt.175.1604316304609;
-        Mon, 02 Nov 2020 03:25:04 -0800 (PST)
+        bh=LpWKESLTGBe7YeMGrN5FmJYCFJcGpFNookfaDX/IDGg=;
+        b=MFpNab1UxuA9NWseEb7EfRcZAJOBmOrnMrNtY25m38gRUWEbs16d0Y/NKQZOrIAVpK
+         5HxE6viR1/+kec5n5RttqaOAlXsRYfg7N7Uxp9j8Vlw5ZqjXCdCmOq0kbuDFi6TMRikx
+         N14RNnxiSC/k9izZqKjQwFDaBNZmvfOyTzcryuQGKhRkhTsAYmj0vhySal6YfoBNxzFQ
+         rUKTx801O7JU/Bc71N0vC3ZnFDJdBMgT8teEqg1Bl1sUVG8o3ZbqZh8Y3qHFcjpFhMvX
+         3vBpwoXk/RTR+MrSCjT8OkvwenzG+//hBWN2nHdFfUlaHFagMwbsoYyYLXgEoLu/0qeL
+         9Pfg==
+X-Gm-Message-State: AOAM530RXLvGWRvztOyYuAQdQQglUYr2+cks6LjIenmNoD19trSl3wIw
+        jrYrSZY303cW4jPQ437lSll9nw==
+X-Google-Smtp-Source: ABdhPJyyfs4HJbOnKkn7LRYpmCrrd1Eh+uguAsVZJ8Pk+IFH4jzNRMFjuc3acSYojh6656kuXXXSLA==
+X-Received: by 2002:a1c:2901:: with SMTP id p1mr17665790wmp.170.1604316305760;
+        Mon, 02 Nov 2020 03:25:05 -0800 (PST)
 Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id m14sm21867354wro.43.2020.11.02.03.25.03
+        by smtp.gmail.com with ESMTPSA id m14sm21867354wro.43.2020.11.02.03.25.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 03:25:04 -0800 (PST)
+        Mon, 02 Nov 2020 03:25:05 -0800 (PST)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     kvalo@codeaurora.org
 Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Yan-Hsuan Chuang <yhchuang@realtek.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Luciano Coelho <luciano.coelho@nokia.com>,
-        Juuso Oikarinen <juuso.oikarinen@nokia.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 35/41] wlcore: spi: Demote a non-compliant function header, fix another
-Date:   Mon,  2 Nov 2020 11:24:04 +0000
-Message-Id: <20201102112410.1049272-36-lee.jones@linaro.org>
+Subject: [PATCH 36/41] rtw8822b: Return type is not const
+Date:   Mon,  2 Nov 2020 11:24:05 +0000
+Message-Id: <20201102112410.1049272-37-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201102112410.1049272-1-lee.jones@linaro.org>
 References: <20201102112410.1049272-1-lee.jones@linaro.org>
@@ -70,44 +68,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/wireless/ti/wlcore/spi.c:403: warning: Function parameter or member 'child' not described in 'wl12xx_spi_set_block_size'
- drivers/net/wireless/ti/wlcore/spi.c:403: warning: Function parameter or member 'blksz' not described in 'wl12xx_spi_set_block_size'
- drivers/net/wireless/ti/wlcore/spi.c:440: warning: Excess function parameter 'res' description in 'wlcore_probe_of'
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c:90:8: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
 
+Cc: Yan-Hsuan Chuang <yhchuang@realtek.com>
 Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Luciano Coelho <luciano.coelho@nokia.com>
-Cc: Juuso Oikarinen <juuso.oikarinen@nokia.com>
 Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/wireless/ti/wlcore/spi.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ti/wlcore/spi.c b/drivers/net/wireless/ti/wlcore/spi.c
-index 18c4d998ce4b9..f26fc150ecd01 100644
---- a/drivers/net/wireless/ti/wlcore/spi.c
-+++ b/drivers/net/wireless/ti/wlcore/spi.c
-@@ -391,7 +391,7 @@ static int wl12xx_spi_set_power(struct device *child, bool enable)
- 	return ret;
- }
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822b.c b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+index 22d0dd640ac94..b420eb9148796 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+@@ -87,7 +87,7 @@ static const u32 rtw8822b_txscale_tbl[RTW_TXSCALE_SIZE] = {
+ 	0x2d3, 0x2fe, 0x32b, 0x35c, 0x38e, 0x3c4, 0x3fe
+ };
  
--/**
-+/*
-  * wl12xx_spi_set_block_size
-  *
-  * This function is not needed for spi mode, but need to be present.
-@@ -431,7 +431,6 @@ MODULE_DEVICE_TABLE(of, wlcore_spi_of_match_table);
- /**
-  * wlcore_probe_of - DT node parsing.
-  * @spi: SPI slave device parameters.
-- * @res: resource parameters.
-  * @glue: wl12xx SPI bus to slave device glue parameters.
-  * @pdev_data: wlcore device parameters
-  */
+-static const u8 rtw8822b_get_swing_index(struct rtw_dev *rtwdev)
++static u8 rtw8822b_get_swing_index(struct rtw_dev *rtwdev)
+ {
+ 	u8 i = 0;
+ 	u32 swing, table_value;
 -- 
 2.25.1
 
