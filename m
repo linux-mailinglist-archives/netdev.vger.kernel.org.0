@@ -2,79 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 850132A2C0C
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 14:51:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EFE82A2C0A
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 14:51:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726041AbgKBNvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 08:51:24 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:58568 "EHLO vps0.lunn.ch"
+        id S1726012AbgKBNvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 08:51:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47994 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725797AbgKBNvW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 08:51:22 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kZaEx-004p3N-LP; Mon, 02 Nov 2020 14:51:19 +0100
-Date:   Mon, 2 Nov 2020 14:51:19 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Simek <michal.simek@xilinx.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Subject: Re: [PATCH net-next 2/3] drivers: net: xilinx_emaclite: Fix
- -Wpointer-to-int-cast warnings with W=1
-Message-ID: <20201102135119.GI1109407@lunn.ch>
-References: <20201031174721.1080756-1-andrew@lunn.ch>
- <20201031174721.1080756-3-andrew@lunn.ch>
- <c0553efe-73a1-9e13-21e9-71c15d5099b9@xilinx.com>
+        id S1725797AbgKBNvK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 08:51:10 -0500
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8C0442231B;
+        Mon,  2 Nov 2020 13:51:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604325067;
+        bh=9qIUbE3lwH4ZvgtTC9bbV3+9hXUEaYm6WiiqQ4WE/Co=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rpbg/1lEiVgNn9Ysvs/9LknHZYACC7zXQOCGCw264IRu8ax1gLK6WH9zSjr+uRe43
+         j5PkmmIzKYvzuR6uPdj0UxdnGNyDn2tiAsnr4m+Rc6wtDwZreVMVedmDOCqs8DpK24
+         uLH4O6s20Bi63bMTeguJmmwdpc+o+rm+otUlIokQ=
+Date:   Mon, 2 Nov 2020 14:52:02 +0100
+From:   'Greg KH' <gregkh@linuxfoundation.org>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'David Hildenbrand' <david@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Message-ID: <20201102135202.GA1016272@kroah.com>
+References: <20201022121849.GA1664412@kroah.com>
+ <98d9df88-b7ef-fdfb-7d90-2fa7a9d7bab5@redhat.com>
+ <20201022125759.GA1685526@kroah.com>
+ <20201022135036.GA1787470@kroah.com>
+ <134f162d711d466ebbd88906fae35b33@AcuMS.aculab.com>
+ <935f7168-c2f5-dd14-7124-412b284693a2@redhat.com>
+ <999e2926-9a75-72fd-007a-1de0af341292@redhat.com>
+ <35d0ec90ef4f4a35a75b9df7d791f719@AcuMS.aculab.com>
+ <20201023144718.GA2525489@kroah.com>
+ <0ab5ac71f28d459db2f350c2e07b88ca@AcuMS.aculab.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c0553efe-73a1-9e13-21e9-71c15d5099b9@xilinx.com>
+In-Reply-To: <0ab5ac71f28d459db2f350c2e07b88ca@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 02, 2020 at 08:20:47AM +0100, Michal Simek wrote:
-> 
-> 
-> On 31. 10. 20 18:47, Andrew Lunn wrote:
-> > drivers/net/ethernet//xilinx/xilinx_emaclite.c:341:35: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-> >   341 |   addr = (void __iomem __force *)((u32 __force)addr ^
+On Mon, Nov 02, 2020 at 09:06:38AM +0000, David Laight wrote:
+> From: 'Greg KH'
+> > Sent: 23 October 2020 15:47
 > > 
-> > Use long instead of u32 to avoid problems on 64 bit systems.
+> > On Fri, Oct 23, 2020 at 02:39:24PM +0000, David Laight wrote:
+> > > From: David Hildenbrand
+> > > > Sent: 23 October 2020 15:33
+> > > ...
+> > > > I just checked against upstream code generated by clang 10 and it
+> > > > properly discards the upper 32bit via a mov w23 w2.
+> > > >
+> > > > So at least clang 10 indeed properly assumes we could have garbage and
+> > > > masks it off.
+> > > >
+> > > > Maybe the issue is somewhere else, unrelated to nr_pages ... or clang 11
+> > > > behaves differently.
+> > >
+> > > We'll need the disassembly from a failing kernel image.
+> > > It isn't that big to hand annotate.
 > > 
-> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> > ---
-> >  drivers/net/ethernet/xilinx/xilinx_emaclite.c | 10 +++++-----
-> >  1 file changed, 5 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> > index 2c98e4cc07a5..f56c1fd01061 100644
-> > --- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> > +++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> > @@ -97,7 +97,7 @@
-> >  #define ALIGNMENT		4
-> >  
-> >  /* BUFFER_ALIGN(adr) calculates the number of bytes to the next alignment. */
-> > -#define BUFFER_ALIGN(adr) ((ALIGNMENT - ((u32)adr)) % ALIGNMENT)
-> > +#define BUFFER_ALIGN(adr) ((ALIGNMENT - ((long)adr)) % ALIGNMENT)
+> > I've worked around the merge at the moment in the android tree, but it
+> > is still quite reproducable, and will try to get a .o file to
+> > disassemble on Monday or so...
 > 
-> I can't see any reason to change unsigned type to signed one.
+> Did this get properly resolved?
 
-I just found out that the kernel has uintptr_t. I will change it to
-that.
+For some reason, 5.10-rc2 fixed all of this up.  I backed out all of the
+patches I had to revert to get 5.10-rc1 to work properly, and then did
+the merge and all is well.
 
-> >  	}
-> >  
-> >  	dev_info(dev,
-> > -		 "Xilinx EmacLite at 0x%08X mapped to 0x%08X, irq=%d\n",
-> > +		 "Xilinx EmacLite at 0x%08X mapped to 0x%08lX, irq=%d\n",
-> >  		 (unsigned int __force)ndev->mem_start,
-> > -		 (unsigned int __force)lp->base_addr, ndev->irq);
-> > +		 (unsigned long __force)lp->base_addr, ndev->irq);
-> 
-> This is different case but I don't think address can be signed type here
-> too.
+It must have been something to do with the compat changes in this same
+area that went in after 5.10-rc1, and something got reorganized in the
+files somehow.  I really do not know, and at the moment, don't have the
+time to track it down anymore.  So for now, I'd say it's all good, sorry
+for the noise.
 
-So unsigned long.
-
-   Andrew
+greg k-h
