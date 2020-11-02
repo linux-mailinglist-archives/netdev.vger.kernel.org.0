@@ -2,89 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1A832A2AA6
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 13:26:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE472A2AAC
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 13:28:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728578AbgKBM0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 07:26:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
+        id S1728698AbgKBM2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 07:28:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728359AbgKBM0H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 07:26:07 -0500
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56964C0617A6
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 04:26:07 -0800 (PST)
-Received: by mail-qt1-x844.google.com with SMTP id p12so1678708qtp.7
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 04:26:07 -0800 (PST)
+        with ESMTP id S1728423AbgKBM2Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 07:28:16 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18ACC0617A6;
+        Mon,  2 Nov 2020 04:28:15 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id gn41so1336392ejc.4;
+        Mon, 02 Nov 2020 04:28:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aUQj2V64RB7RoN7QABG9by5K/7a1K8A2JYfWs4jDWPI=;
-        b=VN+GRa38LzFFtDiA1QHxmdTCffEDz/JdmS4aI4uNchAThzwYZUBCN61pMK78O688+3
-         UqqSeF9xjie1VShxpVaGBIFB7UUvBtQdKVg2SNZfFLEBtrqwLilt3ARVPuI+ZJs0lagc
-         yYVcEKmNsHfzjcQnWVoB3xach3ZPfPNyGMDpr5iyl4fXqsowt4pZiQVX4JlCi+J2D98n
-         03FU2lhfHJcDXuthw1T4PHtsUhOk9pcY/1ELxqrOtwps4SMfaDkPOkm0bnprFKAu606m
-         8ffgqiCLc7p5RMO/4SJbJllACb4v5gUgyedA62+qVk61Jw409FwbLThiQbfoSzEXUgIV
-         4Brw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=r0EmSEXf/0XT40e873mQz4YprX1O3VYLukb1wmj/kec=;
+        b=idjZtWV4vatTj1nTg40BZZrUZKoyrh2xih0VCjsRyQD+kqyvhjiuHzgtMckah9x32J
+         1JQ43tyR/7HdM2acmEdbNRojx4Qety/TF0q5PV3OsQ1W0OU+BOI34nhRU7XMJZ/2DrFI
+         7xABIONySe0YdUBkMEdtn9sTeKQKg/DR2krm+HyvPpTtWecmi9sNt7EHqlTprjuO2Ga0
+         igs+b1ddS0kyCRp47mimsVet+LP/bSYKVpD2jDFlJxQsGeFPlVtT/Mw3IaSNAZJISXKk
+         whJGJONiJb6g0suucDjrj/23xblMUfVIqRjg3mS3zqlzYW5gOguzqgB46EG0DHI4Kq3J
+         4J0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aUQj2V64RB7RoN7QABG9by5K/7a1K8A2JYfWs4jDWPI=;
-        b=JW9ZBs/gla7LkhcTKnoNMgBXYq1fSma77B5rplOGpz4u3za9GWOKtyA2//LELWKOBP
-         Er7b0DYrwIoA5s1+ZQatYlvFfImFVzD5ttKIQx3JjeY/b+klmTlEgtUfMTg0B35w9/rz
-         IcEPmI+q3OqDJqdgiudx8nYpzgulY8zrhzgsfnn6M9Eb6aWWiDKHqqZPhHu+lQBZ8WSp
-         CioINAeYuaT3i61kTY3Iw5KMzqQXOrJ2fq9PR6G0CBOguWcYrqNdBzGAMQyZA5q35ct0
-         ydF5Kp3gWfIlc4vgOWM2pDkJCDSXHxtV6X8hwAXvViHjMMjul/an7An94IVzlIqOM0bj
-         XV8w==
-X-Gm-Message-State: AOAM530DLVAHNEBg81hoDdjYDerUClT64ULVReSnU0CN1HTajgPHqNQ+
-        LLzBGTIGxpyDjnPkC37BisM3JA==
-X-Google-Smtp-Source: ABdhPJy/mxYecyThCU7tstBUMJ70TpesxIMYUQZ/emH3OqGfZtaJPz0iIjXZ6QJASITSGZuiWMJ1Xg==
-X-Received: by 2002:aed:3b2a:: with SMTP id p39mr13470256qte.211.1604319966646;
-        Mon, 02 Nov 2020 04:26:06 -0800 (PST)
-Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
-        by smtp.googlemail.com with ESMTPSA id t18sm3588207qtr.1.2020.11.02.04.26.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Nov 2020 04:26:05 -0800 (PST)
-Subject: Re: [PATCH net-next] net: sched: implement action-specific terse dump
-To:     Vlad Buslov <vlad@buslov.dev>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     xiyou.wangcong@gmail.com, jiri@resnulli.us
-References: <20201031201644.247605-1-vlad@buslov.dev>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <96c51cbb-1a72-d89d-5746-2930786f8afb@mojatatu.com>
-Date:   Mon, 2 Nov 2020 07:26:05 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=r0EmSEXf/0XT40e873mQz4YprX1O3VYLukb1wmj/kec=;
+        b=IaVxS9yoo2wRdFly6EVVQHsGHwrfP3G8/bgQevugURR34YyzuthnBh8ZxWmpLw+aDA
+         C4elpIElcWVKNsShTOlVCT6u36utpXDp41frM2/fwBq3MLDduHtfcj+Cy6AeRJSO3rmy
+         ysqKKMH3lVpvhnfD2UXmcKRmMcAtMuUCcmjCJQvDHOHC57BY9mJKJazIxUYqg+TZjMCp
+         8+hhc7gt2IhHUZEhf280vTDqo5KHdWO8TtrcKq9eK12NvXO987Kr07G6eV5zCfyFpN0Q
+         VN7vG/Dc2T6Ih54UrBEKxoImjHJCtJBxw/EA5h9xwxa+oBwbB8/ERRTJBCuQNrYVwLiF
+         vbiQ==
+X-Gm-Message-State: AOAM533ewUO8ug6fBrR0ea0WR84hYefCSdtKqYAJXAlPh8TpTBaaji1A
+        vFU6tsW0cq1XdWBNzOzyJzw=
+X-Google-Smtp-Source: ABdhPJw23VHbuAGhOxMG2Gc/6a2gOIQAOHe/f1S9hf1JWKLklZBygJPWmUQTxaX6u7SQJ0Vn4QOWMQ==
+X-Received: by 2002:a17:906:b043:: with SMTP id bj3mr14724258ejb.338.1604320094629;
+        Mon, 02 Nov 2020 04:28:14 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id p9sm9488174ejo.75.2020.11.02.04.28.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Nov 2020 04:28:13 -0800 (PST)
+Date:   Mon, 2 Nov 2020 14:28:12 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add
+ hardware time stamping support
+Message-ID: <20201102122812.cwu7ptmcc7vpfmrc@skbuf>
+References: <20201019172435.4416-1-ceggers@arri.de>
+ <3355013.oZEI4y40TO@n95hx1g2>
+ <20201101234149.rrhrjiyt7l4orkm7@skbuf>
+ <1779456.uGjeJ53Q7B@n95hx1g2>
 MIME-Version: 1.0
-In-Reply-To: <20201031201644.247605-1-vlad@buslov.dev>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1779456.uGjeJ53Q7B@n95hx1g2>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Nov 02, 2020 at 11:35:00AM +0100, Christian Eggers wrote:
+> Maybe my mail from October, 22 was ambiguous. I meant that despite of the
+> presence of filtering, a BCMA algorithm should be about to work (as no
+> Announce messages are filtered out).
+> 
+> Additionally I said, that switching between "master" and "slave" mode could
+> not be done automatically by the driver, as the driver could at most detect
+> the presence of Sync messages (indication for master mode), but would do hard
+> to detect a transition to slave mode.
+> 
+> I see a chance that user space (ptp4l) could configure the appropriate
+> "hardware filter setup" for master/slave mode.
 
-Thanks Vlad. Ive run the basic test and it looks good.
-One thing i discovered while testing is that if the
-cookie is set, we also want it in the dump. Your earlier
-comment that it only costs if it was set is on point.
+The concept that you want from user space is hard to define.
+You want ptp4l to make the driver aware of the port state, which is
+something that happens at runtime and is not part of the "hardware
+filter setup" as you say. Then, even if ptp4l notifies the driver of
+port state, E2E BC setups would still be broken because that's how the
+hardware works and no user space assistance can help with that. Also,
+what abstraction do you plan using for programming the PTP port state
+into the kernel.
 
-So please remove that check below:
+Maybe you should optimize for what you plan to use. If you need to use
+an E2E profile, maybe it would be worth the effort to find an
+appropriate abstraction for this port state thing. If you only use it
+for testing, then maybe it would be a good idea to keep the sysfs in
+your tree.
 
+> > Why am I mentioning this? Because the setting that's causing trouble for
+> > us is 'port state of the host port OC', which in the context of what I
+> > said above is nonsense. There _is_ no host port OC. There are 2 switch
+> > ports which can act as individual OCs, or as a BC, or as a TC.
+> But the switch has only one clock at all. I assume that the switch cannot be a
+> boundary clock, only TC seems possible.
 
- > +	if (cookie && !from_act) {
- > +		if (nla_put(skb, TCA_ACT_COOKIE, cookie->len, cookie->data)) {
- > +			rcu_read_unlock();
- > +			goto nla_put_failure;
- > +		}
+Why would a P2P BC not work? It does not require more than one clock.
 
+> As said above, having "filter setups" for E2E/P2P and for MASTER/SLAVE would
+> probably fit well for this kind of hardware.
 
-cheers,
-jamal
-
-
-
+For E2E/P2P is one thing, for master/slave is a completely different
+thing.
