@@ -2,95 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C61CC2A29CA
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:47:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F9032A29CB
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:47:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728637AbgKBLra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 06:47:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51376 "EHLO
+        id S1728685AbgKBLrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 06:47:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728693AbgKBLqC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:46:02 -0500
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CA6C0401C4
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 03:45:56 -0800 (PST)
-Received: by mail-wr1-x442.google.com with SMTP id s9so14199918wro.8
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:45:56 -0800 (PST)
+        with ESMTP id S1728689AbgKBLqB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:46:01 -0500
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C70C0401C6
+        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 03:45:57 -0800 (PST)
+Received: by mail-wr1-x444.google.com with SMTP id 33so3428599wrl.7
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:45:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=QwG68V9MoarwqZHiGt0L1iQ02kmf6AVMeQn4KDmuzCk=;
-        b=QsVFsIkmbkm8kUDo4iMhPtRk0lqsVk/OO+HtLIKaS/d/HE3DjqR0ZMAG3Pa/3oBJB6
-         4kZ2OYOrhDtBapWw/onwlsgS5vDEdirqO0uO053mbPSOkKaZtgHIzme5+KLlIjpzvX8p
-         LrlYKdFqub0FqXYShTqL1wUhJ3pMfZyMmF5Y5ULT1vwc0tfZQAKP6X1iOPpFrwAQMtBc
-         UGAtxqwR9lw7lqxoeA2QS16bhpjSlGFcPCSeJOCBTEKJTZe2Fov/5uxB7LvjpldTNwiA
-         x60ehNrybDS3SbjLeQqsk6OdaozmELdwQCUA/CQP94A71eA+XFL8A0OSBHwxV3Eo4pmj
-         tj+w==
+        bh=PCJb8WRZZMprUiDuUrCCgk0qpYM+re9rQeuSrQaWY/Y=;
+        b=jzCNUlgPqonybZGC9xi6yfUkXjrLgYS6Y7E0FluwJYKBuaSC55hE9+6HTGWXXasTVQ
+         6PYP//yPFBxL+EPmhuVDOP/fLknimjudGTxtWw+b30dXehEq8woplqI6gSJBOyxyCg9w
+         nZkMigvlHJkx8zzxPyBRu8YrhRil58NV14HYbifDU+aFIx8P9SG48UcsG7L7CaK4mIK1
+         qZ5ABtHzZmBr472oSWyGjL+MVsIVdDaov0mo2ZT6f9ray7ul2k4VUddmDEsYG0rxtcZl
+         iRA6D0XmWzuJypSBT28JJKhiVOYKuEzv3oxiBVmOOVL91fipPjncZr8WhC6ShVllZMgq
+         fmsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=QwG68V9MoarwqZHiGt0L1iQ02kmf6AVMeQn4KDmuzCk=;
-        b=oxWZ00ESchPCHWm4x3hWC5JVAsvipXYzsQjWT5lBQnIZm+4XrLHpJvR2Uz/k7NDu1v
-         VkAmIdeGyG1tG12I3cgmfTay+pNLPKrtCZeqVT0lWujTXYJi7qd7FZBDxOCHM69E/95f
-         tCwTSpGL15TOcA/0xx+GEm3PBbfghyXRUxkPGMZRTe0sPv7RiCxGazzYemtOFjqG0ZNe
-         x++yQGuLchURntxmaE0exsQtKKJHi5ZkVwgiwYpoOlSOMqccVUs05YsS4tkrlGKo9jaq
-         BhlyIk7OfU+3AqXV16qM+6+EbWYzPDtZYVm3VQljVswxgSnHUfJF2mnhn0vZTleflo0J
-         y82Q==
-X-Gm-Message-State: AOAM530quQN7SKBxTFFDxTJeZMXJ/x58XzU2FsByRk8B2pe84JgrvZd6
-        zs322C3ZWFSp2pI879BLhyel/A==
-X-Google-Smtp-Source: ABdhPJy2EACqzIzHB9Q+zHtwKZLr8whwEeebgXGyZL/f0jkbsJlckM9ox4cmxubumfYqpabDdHTcBg==
-X-Received: by 2002:a5d:4001:: with SMTP id n1mr20205511wrp.426.1604317555130;
-        Mon, 02 Nov 2020 03:45:55 -0800 (PST)
+        bh=PCJb8WRZZMprUiDuUrCCgk0qpYM+re9rQeuSrQaWY/Y=;
+        b=E9JDBbhI70ySmrtqwxfZWLE11nxdz94R5g5JWj/kNgVukZHUk9TMz3HQKhCB+MaATO
+         UGXDjtZ1wzK0EHuHuXdLiYTfaRgbbOvgaemDi4RJJ51EU4vnBfHSBESPpCp8QlQE/uOJ
+         SHSHrazKggVSlB67Cz7TZk0VlvpGwRGghfcoKyzMMMH3djv+LxBT/xDIWMKXCZomap+v
+         ZWo0hKHWn7kQDeoC+ljwLtTYkrS00kZ7soSVX8QLemEnDLW/M9ReBRlVXc05E2dta1Mx
+         /3SK4ytHAqHWtSj0ti2ODmCRHEORxYIeQng7FD09wCj7jw6sjZqkO8jGEYxalgZx6lef
+         xh/A==
+X-Gm-Message-State: AOAM533zl9A44g9XfMhPxeBjorSJ/VRKUWnxu9YFvcWJB/14aB75i+D8
+        /4o4rqfEqRwlMz5d0aZDTQNwtg==
+X-Google-Smtp-Source: ABdhPJxcxe2k7Y3U2mdQ5lLdFpWzE9sCSbTrnu9RLba5DQPaSQe+9Mm8Lnvu+2wktpZcupxuZRPutw==
+X-Received: by 2002:adf:eb4d:: with SMTP id u13mr18862571wrn.146.1604317556383;
+        Mon, 02 Nov 2020 03:45:56 -0800 (PST)
 Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id g66sm15545352wmg.37.2020.11.02.03.45.54
+        by smtp.gmail.com with ESMTPSA id g66sm15545352wmg.37.2020.11.02.03.45.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 03:45:54 -0800 (PST)
+        Mon, 02 Nov 2020 03:45:55 -0800 (PST)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     davem@davemloft.net
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 29/30] net: net_failover: Correct parameter name 'standby_dev'
-Date:   Mon,  2 Nov 2020 11:45:11 +0000
-Message-Id: <20201102114512.1062724-30-lee.jones@linaro.org>
+Cc:     Lee Jones <lee.jones@linaro.org>, Nicolas Pitre <nico@fluxnic.net>,
+        Jakub Kicinski <kuba@kernel.org>, Erik Stahlman <erik@vt.edu>,
+        Peter Cammaert <pc@denkart.be>,
+        Daris A Nevil <dnevil@snmc.com>,
+        Russell King <rmk@arm.linux.org.uk>, netdev@vger.kernel.org
+Subject: [PATCH 30/30] net: ethernet: smsc: smc91x: Mark 'pkt_len' as __maybe_unused
+Date:   Mon,  2 Nov 2020 11:45:12 +0000
+Message-Id: <20201102114512.1062724-31-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201102114512.1062724-1-lee.jones@linaro.org>
 References: <20201102114512.1062724-1-lee.jones@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+'pkt_len' is used to interact with a hardware register.  It might not
+be safe to remove it entirely.  Mark it as __maybe_unused instead.
+
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/net_failover.c:711: warning: Function parameter or member 'standby_dev' not described in 'net_failover_create'
- drivers/net/net_failover.c:711: warning: Excess function parameter 'dev' description in 'net_failover_create'
+ drivers/net/ethernet/smsc/smc91x.c: In function ‘smc_tx’:
+ drivers/net/ethernet/smsc/smc91x.c:706:51: warning: variable ‘pkt_len’ set but not used [-Wunused-but-set-variable]
 
-Cc: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Cc: Nicolas Pitre <nico@fluxnic.net>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Erik Stahlman <erik@vt.edu>
+Cc: Peter Cammaert <pc@denkart.be>
+Cc: Daris A Nevil <dnevil@snmc.com>
+Cc: Russell King <rmk@arm.linux.org.uk>
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/net_failover.c | 2 +-
+ drivers/net/ethernet/smsc/smc91x.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/net_failover.c b/drivers/net/net_failover.c
-index fb182bec8f062..2a4892402ed8c 100644
---- a/drivers/net/net_failover.c
-+++ b/drivers/net/net_failover.c
-@@ -697,7 +697,7 @@ static struct failover_ops net_failover_ops = {
- /**
-  * net_failover_create - Create and register a failover instance
-  *
-- * @dev: standby netdev
-+ * @standby_dev: standby netdev
-  *
-  * Creates a failover netdev and registers a failover instance for a standby
-  * netdev. Used by paravirtual drivers that use 3-netdev model.
+diff --git a/drivers/net/ethernet/smsc/smc91x.c b/drivers/net/ethernet/smsc/smc91x.c
+index b5d053292e717..a3f37b1f86491 100644
+--- a/drivers/net/ethernet/smsc/smc91x.c
++++ b/drivers/net/ethernet/smsc/smc91x.c
+@@ -703,7 +703,7 @@ static void smc_tx(struct net_device *dev)
+ {
+ 	struct smc_local *lp = netdev_priv(dev);
+ 	void __iomem *ioaddr = lp->base;
+-	unsigned int saved_packet, packet_no, tx_status, pkt_len;
++	unsigned int saved_packet, packet_no, tx_status, __maybe_unused pkt_len;
+ 
+ 	DBG(3, dev, "%s\n", __func__);
+ 
 -- 
 2.25.1
 
