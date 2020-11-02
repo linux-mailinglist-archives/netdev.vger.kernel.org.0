@@ -2,279 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A53C2A2D72
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 15:55:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 681322A2DA5
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 16:07:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726121AbgKBOzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 09:55:01 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:5003 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725925AbgKBOzA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 09:55:00 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fa01dc70000>; Mon, 02 Nov 2020 06:55:03 -0800
-Received: from [172.27.13.219] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 2 Nov
- 2020 14:54:51 +0000
-Subject: Re: [PATCH mlx5-next v1 10/11] net/mlx5: Simplify eswitch mode check
-To:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        gregkh <gregkh@linuxfoundation.org>
-CC:     Leon Romanovsky <leonro@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Wang <jasowang@redhat.com>, <linux-rdma@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, <netdev@vger.kernel.org>,
-        Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <alsa-devel@alsa-project.org>, <tiwai@suse.de>,
-        <broonie@kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        <ranjani.sridharan@linux.intel.com>,
-        <pierre-louis.bossart@linux.intel.com>, <fred.oh@linux.intel.com>,
-        <shiraz.saleem@intel.com>, <dan.j.williams@intel.com>,
-        <kiran.patil@intel.com>, <linux-kernel@vger.kernel.org>
-References: <20201101201542.2027568-1-leon@kernel.org>
- <20201101201542.2027568-11-leon@kernel.org>
-From:   Roi Dayan <roid@nvidia.com>
-Message-ID: <bf8e48b5-fab6-054c-c49f-38423f795f26@nvidia.com>
-Date:   Mon, 2 Nov 2020 16:54:49 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S1726337AbgKBPH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 10:07:27 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:48302 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725791AbgKBPHY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 10:07:24 -0500
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A2F2BqL017658;
+        Mon, 2 Nov 2020 10:07:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : reply-to : references : mime-version : content-type
+ : in-reply-to; s=pp1; bh=ej00TIy/LHYCfZ0dOvBL2CZGGwy/uU70D7NYwppsmbI=;
+ b=CeaooSde8P9MLJGQKN7VpxuBW/kugZ0Ubk8qYGUGVzkeohHArRsAJfqjFGzuwYnrSWTi
+ /ptajn1Z7ZgrR3zZo31N4TxfYQu4DwGZIM9MOdp/Y+Dsb/J7RVxYpG/UlZjrBsr38JMO
+ QU2XYT4rgLfb/wu/r4f3NmrOWsd4bjbrs6bQe/3v6mVbSf7UsID1yUh0YKSXWWRY7S5G
+ u7rS5ryqq0f4CSoaiy5ymxKzUUuttHCjWDDJlWCNeRqBInxF3obTc89/GHKBGSfpbGvF
+ v2/iDtwKFAbGThkzyRZhk+yph3cAassBbG/Fw51NpGogJLBtisfxJdZunU8gGohvdF9x Dg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34jf03ayb2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 Nov 2020 10:06:59 -0500
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0A2F2FeQ018031;
+        Mon, 2 Nov 2020 10:06:59 -0500
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34jf03aya2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 Nov 2020 10:06:59 -0500
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A2EvfuO018377;
+        Mon, 2 Nov 2020 15:06:57 GMT
+Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
+        by ppma04wdc.us.ibm.com with ESMTP id 34h0ehdquv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 Nov 2020 15:06:57 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A2F6u9U6554070
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 2 Nov 2020 15:06:56 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6DB85C6057;
+        Mon,  2 Nov 2020 15:06:56 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B6B42C605F;
+        Mon,  2 Nov 2020 15:06:55 +0000 (GMT)
+Received: from sofia.ibm.com (unknown [9.199.57.175])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon,  2 Nov 2020 15:06:55 +0000 (GMT)
+Received: by sofia.ibm.com (Postfix, from userid 1000)
+        id 06C7A2E323C; Mon,  2 Nov 2020 20:36:52 +0530 (IST)
+Date:   Mon, 2 Nov 2020 20:36:51 +0530
+From:   Gautham R Shenoy <ego@linux.vnet.ibm.com>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Javier =?iso-8859-1?Q?Gonz=E1lez?= <javier@javigon.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Benson Leung <bleung@chromium.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bruno Meneguele <bmeneg@redhat.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Konstantin Khlebnikov <koct9i@gmail.com>,
+        Kranthi Kuntala <kranthi.kuntala@intel.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Len Brown <lenb@kernel.org>,
+        Leonid Maksymchuk <leonmaxx@gmail.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Mario Limonciello <mario.limonciello@dell.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Oleh Kravchenko <oleg@kaa.org.ua>,
+        Orson Zhai <orsonzhai@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Peter Rosin <peda@axentia.se>, Petr Mladek <pmladek@suse.com>,
+        Philippe Bergheaud <felix@linux.ibm.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-pm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, xen-devel@lists.xenproject.org
+Subject: Re: [PATCH 20/33] docs: ABI: testing: make the files compatible with
+ ReST output
+Message-ID: <20201102150651.GA4379@in.ibm.com>
+Reply-To: ego@linux.vnet.ibm.com
+References: <cover.1603893146.git.mchehab+huawei@kernel.org>
+ <4ebaaa0320101479e392ce2db4b62e24fdf15ef1.1603893146.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20201101201542.2027568-11-leon@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1604328903; bh=w4bgReo+JKb2pj4MQ9s4f16lHoHnoUxnw6BPra7Cqjg=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=R3mZWX49X8p9g0TQ8x4I+hrP7SQW+CHkMfHMiUFZIjkYdZU+uYR55D3WYm/JfILn/
-         F3/r2/JAmIBGFUCLt/vyiCuFMOnlQneYNBBtlUlplYhof3y52PuC1+hillCaXjotQE
-         drjS+Ei0xx9SOy0tntjurCSdFA3uF9xNVczu7+7injtRV1OIOvkhPgf3U3f/Is3NJU
-         QJhQhEFL+0wpfyZDlm6yYL7HXAmxIWSPQzw0ZmdjC0ANwHe7/ddGu5tTzL2MgXSPgD
-         WPu6KHDS5nOYZGJbxDr1maDtHZ2INw3Wjm/lPfiViCz4XODOERUyyniZCs8nICG55e
-         N3jX1/H08UCpA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4ebaaa0320101479e392ce2db4b62e24fdf15ef1.1603893146.git.mchehab+huawei@kernel.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-02_07:2020-11-02,2020-11-02 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
+ clxscore=1011 lowpriorityscore=0 adultscore=0 mlxlogscore=999 spamscore=0
+ suspectscore=0 malwarescore=0 mlxscore=0 priorityscore=1501 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011020116
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Oct 28, 2020 at 03:23:18PM +0100, Mauro Carvalho Chehab wrote:
+> From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+> 
+> Some files over there won't parse well by Sphinx.
+> 
+
+[..snip..]
 
 
-On 2020-11-01 10:15 PM, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+
+> diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
+> index b555df825447..274c337ec6a9 100644
+> --- a/Documentation/ABI/testing/sysfs-devices-system-cpu
+> +++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
+> @@ -151,23 +151,28 @@ Description:
+>  		The processor idle states which are available for use have the
+>  		following attributes:
 > 
-> Provide mlx5_core device instead of "priv" pointer while checking
-> eswith mode.
+> -		name: (RO) Name of the idle state (string).
+> +		======== ==== =================================================
+> +		name:	 (RO) Name of the idle state (string).
 > 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->   drivers/infiniband/hw/mlx5/counters.c             | 7 -------
->   drivers/infiniband/hw/mlx5/ib_rep.c               | 5 -----
->   drivers/infiniband/hw/mlx5/ib_rep.h               | 6 ------
->   drivers/net/ethernet/mellanox/mlx5/core/dev.c     | 4 ++--
->   drivers/net/ethernet/mellanox/mlx5/core/devlink.c | 2 +-
->   drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 2 +-
->   drivers/net/ethernet/mellanox/mlx5/core/en_tc.c   | 8 +++-----
->   drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 4 +++-
->   include/linux/mlx5/eswitch.h                      | 8 ++++++--
->   9 files changed, 16 insertions(+), 30 deletions(-)
+>  		latency: (RO) The latency to exit out of this idle state (in
+> -		microseconds).
+> +			      microseconds).
 > 
-> diff --git a/drivers/infiniband/hw/mlx5/counters.c b/drivers/infiniband/hw/mlx5/counters.c
-> index 70c8fd67ee2f..084652e2b15a 100644
-> --- a/drivers/infiniband/hw/mlx5/counters.c
-> +++ b/drivers/infiniband/hw/mlx5/counters.c
-> @@ -138,13 +138,6 @@ static int mlx5_ib_create_counters(struct ib_counters *counters,
->   }
+> -		power: (RO) The power consumed while in this idle state (in
+> -		milliwatts).
+> +		power:   (RO) The power consumed while in this idle state (in
+> +			      milliwatts).
 > 
+> -		time: (RO) The total time spent in this idle state (in microseconds).
+> +		time:    (RO) The total time spent in this idle state
+> +			      (in microseconds).
 > 
-> -static bool is_mdev_switchdev_mode(const struct mlx5_core_dev *mdev)
-> -{
-> -	return MLX5_ESWITCH_MANAGER(mdev) &&
-> -	       mlx5_ib_eswitch_mode(mdev->priv.eswitch) ==
-> -		       MLX5_ESWITCH_OFFLOADS;
-> -}
-> -
->   static const struct mlx5_ib_counters *get_counters(struct mlx5_ib_dev *dev,
->   						   u8 port_num)
->   {
-> diff --git a/drivers/infiniband/hw/mlx5/ib_rep.c b/drivers/infiniband/hw/mlx5/ib_rep.c
-> index 0dc15757cc66..9810bdd7f3bc 100644
-> --- a/drivers/infiniband/hw/mlx5/ib_rep.c
-> +++ b/drivers/infiniband/hw/mlx5/ib_rep.c
-> @@ -102,11 +102,6 @@ static const struct mlx5_eswitch_rep_ops rep_ops = {
->   	.get_proto_dev = mlx5_ib_vport_get_proto_dev,
->   };
+> -		usage: (RO) Number of times this state was entered (a count).
+> +		usage:	 (RO) Number of times this state was entered (a count).
 > 
-> -u8 mlx5_ib_eswitch_mode(struct mlx5_eswitch *esw)
-> -{
-> -	return mlx5_eswitch_mode(esw);
-> -}
-> -
->   struct mlx5_ib_dev *mlx5_ib_get_rep_ibdev(struct mlx5_eswitch *esw,
->   					  u16 vport_num)
->   {
-> diff --git a/drivers/infiniband/hw/mlx5/ib_rep.h b/drivers/infiniband/hw/mlx5/ib_rep.h
-> index 94bf51ddd422..93f562735e89 100644
-> --- a/drivers/infiniband/hw/mlx5/ib_rep.h
-> +++ b/drivers/infiniband/hw/mlx5/ib_rep.h
-> @@ -12,7 +12,6 @@
->   extern const struct mlx5_ib_profile raw_eth_profile;
+> -		above: (RO) Number of times this state was entered, but the
+> -		       observed CPU idle duration was too short for it (a count).
+> +		above:	 (RO) Number of times this state was entered, but the
+> +			      observed CPU idle duration was too short for it
+> +			      (a count).
 > 
->   #ifdef CONFIG_MLX5_ESWITCH
-> -u8 mlx5_ib_eswitch_mode(struct mlx5_eswitch *esw);
->   struct mlx5_ib_dev *mlx5_ib_get_rep_ibdev(struct mlx5_eswitch *esw,
->   					  u16 vport_num);
->   struct mlx5_ib_dev *mlx5_ib_get_uplink_ibdev(struct mlx5_eswitch *esw);
-> @@ -26,11 +25,6 @@ struct mlx5_flow_handle *create_flow_rule_vport_sq(struct mlx5_ib_dev *dev,
->   struct net_device *mlx5_ib_get_rep_netdev(struct mlx5_eswitch *esw,
->   					  u16 vport_num);
->   #else /* CONFIG_MLX5_ESWITCH */
-> -static inline u8 mlx5_ib_eswitch_mode(struct mlx5_eswitch *esw)
-> -{
-> -	return MLX5_ESWITCH_NONE;
-> -}
-> -
->   static inline
->   struct mlx5_ib_dev *mlx5_ib_get_rep_ibdev(struct mlx5_eswitch *esw,
->   					  u16 vport_num)
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-> index 3a81c2f1971b..b051417ede67 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-> @@ -47,7 +47,7 @@ static bool is_eth_rep_supported(struct mlx5_core_dev *dev)
->   	if (!MLX5_ESWITCH_MANAGER(dev))
->   		return false;
+> -		below: (RO) Number of times this state was entered, but the
+> -		       observed CPU idle duration was too long for it (a count).
+> +		below: 	 (RO) Number of times this state was entered, but the
+> +			      observed CPU idle duration was too long for it
+> +			      (a count).
+> +		======== ==== =================================================
 > 
-> -	if (mlx5_eswitch_mode(dev->priv.eswitch) != MLX5_ESWITCH_OFFLOADS)
-> +	if (!is_mdev_switchdev_mode(dev))
->   		return false;
-> 
->   	return true;
-> @@ -144,7 +144,7 @@ static bool is_ib_rep_supported(struct mlx5_core_dev *dev)
->   	if (!MLX5_ESWITCH_MANAGER(dev))
->   		return false;
-> 
-> -	if (mlx5_eswitch_mode(dev->priv.eswitch) != MLX5_ESWITCH_OFFLOADS)
-> +	if (!is_mdev_switchdev_mode(dev))
->   		return false;
-> 
->   	if (mlx5_core_mp_enabled(dev))
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-> index 1a351e2f6ace..aeffb6b135ee 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-> @@ -221,7 +221,7 @@ static int mlx5_devlink_fs_mode_validate(struct devlink *devlink, u32 id,
->   		u8 eswitch_mode;
->   		bool smfs_cap;
-> 
-> -		eswitch_mode = mlx5_eswitch_mode(dev->priv.eswitch);
-> +		eswitch_mode = mlx5_eswitch_mode(dev);
->   		smfs_cap = mlx5_fs_dr_is_supported(dev);
-> 
->   		if (!smfs_cap) {
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> index 3c4f880c6329..8d65ac888a28 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -3135,7 +3135,7 @@ static void mlx5e_modify_admin_state(struct mlx5_core_dev *mdev,
-> 
->   	mlx5_set_port_admin_status(mdev, state);
-> 
-> -	if (!MLX5_ESWITCH_MANAGER(mdev) ||  mlx5_eswitch_mode(esw) == MLX5_ESWITCH_OFFLOADS)
-> +	if (mlx5_eswitch_mode(mdev) != MLX5_ESWITCH_LEGACY)
->   		return;
-> 
->   	if (state == MLX5_PORT_UP)
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> index e3a968e9e2a0..7548bab78654 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> @@ -271,8 +271,6 @@ mlx5e_tc_match_to_reg_set(struct mlx5_core_dev *mdev,
->   	return 0;
->   }
-> 
-> -#define esw_offloads_mode(esw) (mlx5_eswitch_mode(esw) == MLX5_ESWITCH_OFFLOADS)
-> -
->   static struct mlx5_tc_ct_priv *
->   get_ct_priv(struct mlx5e_priv *priv)
->   {
-> @@ -280,7 +278,7 @@ get_ct_priv(struct mlx5e_priv *priv)
->   	struct mlx5_rep_uplink_priv *uplink_priv;
->   	struct mlx5e_rep_priv *uplink_rpriv;
-> 
-> -	if (esw_offloads_mode(esw)) {
-> +	if (is_mdev_switchdev_mode(priv->mdev)) {
->   		uplink_rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
->   		uplink_priv = &uplink_rpriv->uplink_priv;
-> 
-> @@ -297,7 +295,7 @@ mlx5_tc_rule_insert(struct mlx5e_priv *priv,
->   {
->   	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-> 
-> -	if (esw_offloads_mode(esw))
-> +	if (is_mdev_switchdev_mode(priv->mdev))
->   		return mlx5_eswitch_add_offloaded_rule(esw, spec, attr);
-> 
->   	return	mlx5e_add_offloaded_nic_rule(priv, spec, attr);
-> @@ -310,7 +308,7 @@ mlx5_tc_rule_delete(struct mlx5e_priv *priv,
->   {
->   	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-> 
-> -	if (esw_offloads_mode(esw)) {
-> +	if (is_mdev_switchdev_mode(priv->mdev)) {
->   		mlx5_eswitch_del_offloaded_rule(esw, rule, attr);
-> 
->   		return;
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-> index b652b4bde733..b44f28fb5518 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-> @@ -2439,8 +2439,10 @@ int mlx5_eswitch_get_vport_stats(struct mlx5_eswitch *esw,
->   	return err;
->   }
-> 
-> -u8 mlx5_eswitch_mode(struct mlx5_eswitch *esw)
-> +u8 mlx5_eswitch_mode(struct mlx5_core_dev *dev)
->   {
-> +	struct mlx5_eswitch *esw = dev->priv.eswitch;
+>  What:		/sys/devices/system/cpu/cpuX/cpuidle/stateN/desc
+>  Date:		February 2008
+> @@ -290,6 +295,7 @@ Description:	Processor frequency boosting control
+>  		This switch controls the boost setting for the whole system.
+>  		Boosting allows the CPU and the firmware to run at a frequency
+>  		beyound it's nominal limit.
 > +
->   	return ESW_ALLOWED(esw) ? esw->mode : MLX5_ESWITCH_NONE;
->   }
->   EXPORT_SYMBOL_GPL(mlx5_eswitch_mode);
-> diff --git a/include/linux/mlx5/eswitch.h b/include/linux/mlx5/eswitch.h
-> index b0ae8020f13e..29fd832950e0 100644
-> --- a/include/linux/mlx5/eswitch.h
-> +++ b/include/linux/mlx5/eswitch.h
-> @@ -96,10 +96,10 @@ static inline u32 mlx5_eswitch_get_vport_metadata_mask(void)
-> 
->   u32 mlx5_eswitch_get_vport_metadata_for_match(struct mlx5_eswitch *esw,
->   					      u16 vport_num);
-> -u8 mlx5_eswitch_mode(struct mlx5_eswitch *esw);
-> +u8 mlx5_eswitch_mode(struct mlx5_core_dev *dev);
->   #else  /* CONFIG_MLX5_ESWITCH */
-> 
-> -static inline u8 mlx5_eswitch_mode(struct mlx5_eswitch *esw)
-> +static inline u8 mlx5_eswitch_mode(struct mlx5_core_dev *dev)
->   {
->   	return MLX5_ESWITCH_NONE;
->   }
-> @@ -136,4 +136,8 @@ mlx5_eswitch_get_vport_metadata_mask(void)
->   }
->   #endif /* CONFIG_MLX5_ESWITCH */
-> 
-> +static inline bool is_mdev_switchdev_mode(struct mlx5_core_dev *dev)
-> +{
-> +	return mlx5_eswitch_mode(dev) == MLX5_ESWITCH_OFFLOADS;
-> +}
->   #endif
-> --
-> 2.28.0
+>  		More details can be found in
+>  		Documentation/admin-guide/pm/cpufreq.rst
 > 
 
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+The changes to cpuidle states look good to me.
+
+
+[..snip..]
+
+> @@ -414,30 +434,30 @@ Description:	POWERNV CPUFreq driver's frequency throttle stats directory and
+>  		throttle attributes exported in the 'throttle_stats' directory:
+> 
+>  		- turbo_stat : This file gives the total number of times the max
+> -		frequency is throttled to lower frequency in turbo (at and above
+> -		nominal frequency) range of frequencies.
+> +		  frequency is throttled to lower frequency in turbo (at and above
+> +		  nominal frequency) range of frequencies.
+> 
+>  		- sub_turbo_stat : This file gives the total number of times the
+> -		max frequency is throttled to lower frequency in sub-turbo(below
+> -		nominal frequency) range of frequencies.
+> +		  max frequency is throttled to lower frequency in sub-turbo(below
+> +		  nominal frequency) range of frequencies.
+> 
+>  		- unthrottle : This file gives the total number of times the max
+> -		frequency is unthrottled after being throttled.
+> +		  frequency is unthrottled after being throttled.
+> 
+>  		- powercap : This file gives the total number of times the max
+> -		frequency is throttled due to 'Power Capping'.
+> +		  frequency is throttled due to 'Power Capping'.
+> 
+>  		- overtemp : This file gives the total number of times the max
+> -		frequency is throttled due to 'CPU Over Temperature'.
+> +		  frequency is throttled due to 'CPU Over Temperature'.
+> 
+>  		- supply_fault : This file gives the total number of times the
+> -		max frequency is throttled due to 'Power Supply Failure'.
+> +		  max frequency is throttled due to 'Power Supply Failure'.
+> 
+>  		- overcurrent : This file gives the total number of times the
+> -		max frequency is throttled due to 'Overcurrent'.
+> +		  max frequency is throttled due to 'Overcurrent'.
+> 
+>  		- occ_reset : This file gives the total number of times the max
+> -		frequency is throttled due to 'OCC Reset'.
+> +		  frequency is throttled due to 'OCC Reset'.
+> 
+>  		The sysfs attributes representing different throttle reasons like
+>  		powercap, overtemp, supply_fault, overcurrent and occ_reset map to
+
+
+This hunk for the powernv cpufreq driver looks good to me.
+For these two hunks,
+
+Reviewed-by: Gautham R. Shenoy <ego@linux.vnet.ibm.com>
+
+
