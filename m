@@ -2,108 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA1C2A26CF
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 10:18:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F20B62A2702
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 10:29:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728297AbgKBJSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 04:18:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727818AbgKBJSu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 04:18:50 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582E2C0617A6;
-        Mon,  2 Nov 2020 01:18:50 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id r10so10245970pgb.10;
-        Mon, 02 Nov 2020 01:18:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=C6EWmjCYcjXlVuyLZRKUgfoLilwqmfMB+owPMFBnb9c=;
-        b=lqbbb1CuBH5eNHB+N9qLO4cm8cvi81NiGiv31bIGOb9Z0OAU3l/5nuLwb0vZO5VAnc
-         FEDcOl0s69baIoU66mtPLi4ns3NtJZEeV7tDuQgSWtKg/w6Uy4gsdeKKFNIMegHiwmmY
-         N1X3ePnP/HkuORodQnZZt4m9DBgpWfPfap1fji64okr+4Wr3Xt/gdHEhZX2LFsg6Yb3f
-         6yUIQRr/KxFvD0on0D87mkrrHctXOTUFCbVxIAnkH1Y2Ym+8RP07Ke8Ai/GNOyLnlSe0
-         07a3qX4l36fPErokAgiyKupIL8ICK/Ec6soFM9Kka1GSbGes/buF+kVlYgDlvlrV+j3h
-         EHOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=C6EWmjCYcjXlVuyLZRKUgfoLilwqmfMB+owPMFBnb9c=;
-        b=lz4TM7G424ITt2fH50bbLymL7POe6VcmiOFPkRmhHf5M7/Jz5OG+UzNk/i+lhtGDCn
-         VHZDndhjWIH5qJlL1e5Z3BouBs0SBfA2b9XxKr5GAzBEv5HGGmrQps5tvY/8lcy2z4Ky
-         dvT/4Wd/IpFUgeoV7f3ZDSCNms0AKB/Ha5hKI7KG7+ciA6vEi+3JT1Fwv1hrEFXkIcWh
-         oJ1yMUJffnHRazMO5nAuxm+cfKpItKfkdn4mX7w+oC3NswEIxNAIwzCUFlC4roiHulce
-         A6GlKwpQNVxkO8bl913oZ0CXLlfyIzj7itqeVy44TG9P1vbvz1QobVDRcAnA5kUFQc7z
-         29Vg==
-X-Gm-Message-State: AOAM532FOSiYA9g+lFlmC/HV72uJtfdsqqkI0AZXnXY3UaUWCD1RBfVS
-        /Dv14I/R1px6LeBFNCE2IxM=
-X-Google-Smtp-Source: ABdhPJwzD+VbIsMSXDRvOKgyBYSwbhoC1uwCxcueL1tYtFiAGqBfS4tnG1G/k6VNjo4gFo61zBqJAA==
-X-Received: by 2002:a17:90a:7886:: with SMTP id x6mr16220678pjk.21.1604308729837;
-        Mon, 02 Nov 2020 01:18:49 -0800 (PST)
-Received: from [192.168.1.59] (i60-35-254-237.s41.a020.ap.plala.or.jp. [60.35.254.237])
-        by smtp.gmail.com with ESMTPSA id nh24sm10707447pjb.44.2020.11.02.01.18.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 01:18:49 -0800 (PST)
-Message-ID: <47e149dfbf84e685f8b81e4561b8c9fd375cbcb4.camel@gmail.com>
-Subject: Re: [PATCH 2/3] mwifiex: add allow_ps_mode module parameter
-From:   Tsuchiya Yuto <kitakar@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc:     Brian Norris <briannorris@chromium.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>, verdre@v0yd.nl
-Date:   Mon, 02 Nov 2020 18:18:44 +0900
-In-Reply-To: <20201030110246.GM4077@smile.fi.intel.com>
-References: <20201028142433.18501-1-kitakar@gmail.com>
-         <20201028142433.18501-3-kitakar@gmail.com>
-         <CA+ASDXMXoyOr9oHBjtXZ1w9XxDggv+=XS4nwn0qKWCHQ3kybdw@mail.gmail.com>
-         <837d7ecd6f8a810153d219ec0b4995856abbe458.camel@gmail.com>
-         <20201030110246.GM4077@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1 
+        id S1728364AbgKBJ3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 04:29:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54865 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727953AbgKBJ3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 04:29:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604309344;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=szmDFA/jPNK60esMJjmzsnI1cluZsmFQq0H0E9bib68=;
+        b=OKsoj6BgqXFd3OUa3zgPhg0u220NSUAPNpOZRi8zvs2LdD7DG18AO2qkf3EilggBe95SZn
+        jEPtKqFvywm3RF4seJ9l75BK+L9fiaxkpKH3u3MTlD4F0i8LdmgIci7bMkIUUEg9DbhGKO
+        TdpoRkRqw/GDWd2oumqqNieeLGPsyX0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-238-xBplgDImOayFtPklxT9mdA-1; Mon, 02 Nov 2020 04:29:00 -0500
+X-MC-Unique: xBplgDImOayFtPklxT9mdA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 95D7D802B76;
+        Mon,  2 Nov 2020 09:28:58 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2941855785;
+        Mon,  2 Nov 2020 09:28:51 +0000 (UTC)
+Date:   Mon, 2 Nov 2020 10:28:50 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        brouer@redhat.com
+Subject: Re: [PATCH bpf-next V5 2/5] bpf: bpf_fib_lookup return MTU value as
+ output when looked up
+Message-ID: <20201102102850.1dc3124a@carbon>
+In-Reply-To: <5f9c6c259dfe5_16d420817@john-XPS-13-9370.notmuch>
+References: <160407661383.1525159.12855559773280533146.stgit@firesoul>
+        <160407665728.1525159.18300199766779492971.stgit@firesoul>
+        <5f9c6c259dfe5_16d420817@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-10-30 at 13:02 +0200, Andy Shevchenko wrote:
-> On Fri, Oct 30, 2020 at 04:58:33PM +0900, Tsuchiya Yuto wrote:
-> > On Wed, 2020-10-28 at 15:04 -0700, Brian Norris wrote:
+On Fri, 30 Oct 2020 12:40:21 -0700
+John Fastabend <john.fastabend@gmail.com> wrote:
+
+> Jesper Dangaard Brouer wrote:
+> > The BPF-helpers for FIB lookup (bpf_xdp_fib_lookup and bpf_skb_fib_lookup)
+> > can perform MTU check and return BPF_FIB_LKUP_RET_FRAG_NEEDED.  The BPF-prog
+> > don't know the MTU value that caused this rejection.
+> > 
+> > If the BPF-prog wants to implement PMTU (Path MTU Discovery) (rfc1191) it
+> > need to know this MTU value for the ICMP packet.
+> > 
+> > Patch change lookup and result struct bpf_fib_lookup, to contain this MTU
+> > value as output via a union with 'tot_len' as this is the value used for
+> > the MTU lookup.
+> > 
+> > V5:
+> >  - Fixed uninit value spotted by Dan Carpenter.
+> >  - Name struct output member mtu_result
+> > 
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > ---
+> >  include/uapi/linux/bpf.h       |   11 +++++++++--
+> >  net/core/filter.c              |   22 +++++++++++++++-------
+> >  tools/include/uapi/linux/bpf.h |   11 +++++++++--
+> >  3 files changed, 33 insertions(+), 11 deletions(-)
+> > 
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index e6ceac3f7d62..01b2b17c645a 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -2219,6 +2219,9 @@ union bpf_attr {
+> >   *		* > 0 one of **BPF_FIB_LKUP_RET_** codes explaining why the
+> >   *		  packet is not forwarded or needs assist from full stack
+> >   *
+> > + *		If lookup fails with BPF_FIB_LKUP_RET_FRAG_NEEDED, then the MTU
+> > + *		was exceeded and result params->mtu contains the MTU.
+> > + *  
 > 
-> ...
-> 
-> > On the other hand, I agree that I don't want to break the existing users.
-> > As you mentioned in the reply to the first patch, I can set the default
-> > value of this parameter depending on the chip id (88W8897) or DMI matching.
-> 
-> Since it's a PCIe device you already have ID table where you may add a
-> driver_data with what ever quirks are needed.
+> Do we need to hide this behind a flag? It seems otherwise you might confuse
+> users. I imagine on error we could reuse the params arg, but now we changed
+> the tot_len value underneath them?
 
-Sorry that my comment was misleading. I meant using the quirk framework
-(that is based on DMI matching) I sent in another series. This applies
-to the other replies from me.
+The principle behind this bpf_fib_lookup helper, is that params (struct
+bpf_fib_lookup) is used for both input and output (results). Almost
+every field is change after the lookup. (For performance reasons this
+is kept at 64 bytes (cache-line))  Thus, users of this helper already
+expect/knows the contents of params have changed.
 
-However, thanks to your comment, I remembered that currently, the quirk
-framework can be used only within pcie.c file. For example, the quirk
-initialization is currently done in pcie.c file. The mwifiex driver is
-divided into interface-specific modules (PCIe, SDIO, USB) (e.g.,
-mwifiex_pcie module for PCIe interface) + common module (mwifiex module).
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-So, I need to extend the quirk framework so that it can be used by the
-mwifiex module globally.
 
-I'll make a v2 version of this series with using the updated quirk
-framework so that it won't change behaviors for existing users.
+struct bpf_fib_lookup {
+	/* input:  network family for lookup (AF_INET, AF_INET6)
+	 * output: network family of egress nexthop
+	 */
+	__u8	family;
 
+	/* set if lookup is to consider L4 data - e.g., FIB rules */
+	__u8	l4_protocol;
+	__be16	sport;
+	__be16	dport;
+
+	union {	/* used for MTU check */
+		/* input to lookup */
+		__u16	tot_len; /* total length of packet from network hdr */
+
+		/* output: MTU value (if requested check_mtu) */
+		__u16	mtu_result;
+	};
+	/* input: L3 device index for lookup
+	 * output: device index from FIB lookup
+	 */
+	__u32	ifindex;
+
+	union {
+		/* inputs to lookup */
+		__u8	tos;		/* AF_INET  */
+		__be32	flowinfo;	/* AF_INET6, flow_label + priority */
+
+		/* output: metric of fib result (IPv4/IPv6 only) */
+		__u32	rt_metric;
+	};
+
+	union {
+		__be32		ipv4_src;
+		__u32		ipv6_src[4];  /* in6_addr; network order */
+	};
+
+	/* input to bpf_fib_lookup, ipv{4,6}_dst is destination address in
+	 * network header. output: bpf_fib_lookup sets to gateway address
+	 * if FIB lookup returns gateway route
+	 */
+	union {
+		__be32		ipv4_dst;
+		__u32		ipv6_dst[4];  /* in6_addr; network order */
+	};
+
+	/* output */
+	__be16	h_vlan_proto;
+	__be16	h_vlan_TCI;
+	__u8	smac[6];     /* ETH_ALEN */
+	__u8	dmac[6];     /* ETH_ALEN */
+};
 
