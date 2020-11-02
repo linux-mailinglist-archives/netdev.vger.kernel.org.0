@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D6302A3525
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 21:34:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E0B2A3551
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 21:44:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725929AbgKBUeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 15:34:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49818 "EHLO
+        id S1726581AbgKBUo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 15:44:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbgKBUeO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 15:34:14 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97951C0617A6
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 12:34:14 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id w65so12177876pfd.3
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 12:34:14 -0800 (PST)
+        with ESMTP id S1726945AbgKBUn5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 15:43:57 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27358C0617A6
+        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 12:43:57 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id g12so11795850pgm.8
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 12:43:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=10vxNw+ypTeKOLmhs8IALd1Ix2ks/NpV8pLiVk58YXs=;
-        b=mh0UYVw3ZtVreT+HNzl3mpJHRE8xM+LV5NtW2FSd1Qayf7o4dYzqqYUOUmfTJsBzpz
-         AdaGUjgAHHVlg4CTEbrih6F2yiqGirH7KD3WCbBX3Y1YcH1/feVij/QPqgrt4kyigLS+
-         efFE6Ht3tY9MNjjSiKuxT0xTZyt2N7dxcqMwwqlDidXk5a+uKaiho2A1KFDsQ02P8aLS
-         f4KVh4NfDyyK1Dxc6OSuf6f+9hvTTWDYzgCutHXWGpZ23gOokqQsbVFe0s5zhGuzUfsu
-         5IqJp7Mw/27z+gFYcC5sOjGUXvXoeXTaPXjtiPUmDETaGWSi0l8TbgPxX4y+KjS4m9VK
-         vFBQ==
+        bh=x3x/HrzVIOA7i+J/RozZZntmzD47m/EYqeEyRyC01Xs=;
+        b=PpYGKjpm2dkbQwA2oJBfvPv3LX7xNDkqgkSRE8V/Ub6agcIJa/JtHooCq5zvNMyJZK
+         uswkKAWyTTOiotGhH4LtLfPkJdRlaygahKjFZ8mtcubfgmE6ys7OzTJI9cuCpNfF71XT
+         trsZV7xkfs8fWSFb6ldG8YElhk3WYSHheP6EcX9Yp3i6/Rh2Nhvy35qbW+PQoR1n94Lq
+         2Hy3HlJ+Kx2TSuRVhxo5aW3N0yYdora9oEdg9ukBbyhbUkBEKECzGw940CC1feWawZiW
+         Tghoso31auiGXjqdItt8y8xVPPSznbkgMZb5eJt2YZpSu+izbv1r4Q8nQSD4HXMAILRI
+         rmIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=10vxNw+ypTeKOLmhs8IALd1Ix2ks/NpV8pLiVk58YXs=;
-        b=Z8GFlEPdwYLr4k7LyNs8BMQJ1NAgLQnSE5DFh/2Hq7aqJznU626cctEShJG0e5G55I
-         UKhybvi3jRrkv3cw0XAXsBMXHq9uT/v7Q7z7eOJmNn/EmVAsUINcukconNMCPLCd5NSF
-         wQPZqpSi0nACYOXDtWMgNptf7V/uqTyMbXoGmDVf/JkgbxKwJEzCEuchev4zaOw3JDZQ
-         rVOfAZ7I9u0gi1+Hc462HOQeVUSHTgQv/vHCeuRSaqxP64SoXHDMbiBs/499H9su7dma
-         JcyeHrgySAxdxXx86H50UAiX2Tu+5Zr225nG49GIzcxchtfrTAz1rZG3TZa3up6IhRSC
-         rfDA==
-X-Gm-Message-State: AOAM531jHQJ0mxPF1qkfwsUh9ce2ArLK1SF7jAuYuaQW8wpvqaW/F7EV
-        I48cNkwJeFLr52M+5r18ZTI=
-X-Google-Smtp-Source: ABdhPJw3tIdEVG6r9/HyfKP+D4445jU+uPEgLSdy8l9viYbbOh6h47TsFAWqSbywCGYEmuNo7cPbmA==
-X-Received: by 2002:a63:7f49:: with SMTP id p9mr14473706pgn.185.1604349254124;
-        Mon, 02 Nov 2020 12:34:14 -0800 (PST)
+        bh=x3x/HrzVIOA7i+J/RozZZntmzD47m/EYqeEyRyC01Xs=;
+        b=GyFMJ0dSrQdFKoLrsx2DaEnjOoYJeHZ7tXzARDj9vA3UAHwpIbC1f59FF6j5ROXE6D
+         snIjru9nuEba3f+bSGhcRQPd0HoGWJvxC1Z1lJ0UUpslngxlIKCsrs+7d4W+A4mdIim3
+         ZiEpCdwLq4u/TI0Oh7eOrtw0+k7IDs6qDcXGdOZAFZaC2+XMbXo06cxytKxV3gw8Tuyo
+         VLPE0nGDlCMx3U7N7qWto1XkQU/J20doDdmAc9tTsNPnf/yTARhPNmj1y1tAqoxuAyGV
+         IIeXskJkFplH4IVUMXjK+yJ38a/wvw7bDchQXqM5IBx4dJKtuVNoWBHhIYi1qxv37HC+
+         c5lw==
+X-Gm-Message-State: AOAM532NZwMQckCMmOkKEbjO5UOs3dHRzXbkPK1iGCAU8+UDk9xkSzFP
+        yAvGL8TFAnvq53fpZQyPd60=
+X-Google-Smtp-Source: ABdhPJyjkXdzFsxCAUiASrNQmAkqbmXddt0HP2SU4OiAGiOing59+u+3JlZNB9EvpVKS7Sx4UJi7Tg==
+X-Received: by 2002:a05:6a00:783:b029:156:7d68:637c with SMTP id g3-20020a056a000783b02901567d68637cmr23152223pfu.18.1604349836644;
+        Mon, 02 Nov 2020 12:43:56 -0800 (PST)
 Received: from [10.230.28.234] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i26sm5671305pfq.148.2020.11.02.12.34.12
+        by smtp.gmail.com with ESMTPSA id z12sm473975pfg.123.2020.11.02.12.43.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Nov 2020 12:34:13 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 09/12] net: dsa: tag_brcm: let DSA core deal
- with TX reallocation
+        Mon, 02 Nov 2020 12:43:55 -0800 (PST)
+Subject: Re: [PATCH v3 net-next 01/12] net: dsa: implement a central TX
+ reallocation procedure
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, kuba@kernel.org,
         Christian Eggers <ceggers@arri.de>,
         Kurt Kanzenbach <kurt@linutronix.de>
 References: <20201101191620.589272-1-vladimir.oltean@nxp.com>
- <20201101191620.589272-10-vladimir.oltean@nxp.com>
+ <20201101191620.589272-2-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <10537403-67a4-c64a-705a-61bc5f55f80e@gmail.com>
-Date:   Mon, 2 Nov 2020 12:34:11 -0800
+Message-ID: <0dd6d247-b268-f051-074d-28573f0982f7@gmail.com>
+Date:   Mon, 2 Nov 2020 12:43:55 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.4.0
 MIME-Version: 1.0
-In-Reply-To: <20201101191620.589272-10-vladimir.oltean@nxp.com>
+In-Reply-To: <20201101191620.589272-2-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -73,12 +73,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 11/1/2020 11:16 AM, Vladimir Oltean wrote:
-> Now that we have a central TX reallocation procedure that accounts for
-> the tagger's needed headroom in a generic way, we can remove the
-> skb_cow_head call.
+> At the moment, taggers are left with the task of ensuring that the skb
+> headers are writable (which they aren't, if the frames were cloned for
+> TX timestamping, for flooding by the bridge, etc), and that there is
+> enough space in the skb data area for the DSA tag to be pushed.
 > 
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Moreover, the life of tail taggers is even harder, because they need to
+> ensure that short frames have enough padding, a problem that normal
+> taggers don't have.
+> 
+> The principle of the DSA framework is that everything except for the
+> most intimate hardware specifics (like in this case, the actual packing
+> of the DSA tag bits) should be done inside the core, to avoid having
+> code paths that are very rarely tested.
+> 
+> So provide a TX reallocation procedure that should cover the known needs
+> of DSA today.
+> 
+> Note that this patch also gives the network stack a good hint about the
+> headroom/tailroom it's going to need. Up till now it wasn't doing that.
+> So the reallocation procedure should really be there only for the
+> exceptional cases, and for cloned packets which need to be unshared.
+> 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Tested-by: Christian Eggers <ceggers@arri.de> # For tail taggers only
+> Tested-by: Kurt Kanzenbach <kurt@linutronix.de>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
