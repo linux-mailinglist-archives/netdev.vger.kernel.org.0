@@ -2,90 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA3282A2275
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 00:56:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE3752A2283
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 01:06:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727517AbgKAX4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Nov 2020 18:56:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
+        id S1727526AbgKBAGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Nov 2020 19:06:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727119AbgKAX4D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 18:56:03 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22515C0617A6;
-        Sun,  1 Nov 2020 15:56:03 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id p5so16535688ejj.2;
-        Sun, 01 Nov 2020 15:56:03 -0800 (PST)
+        with ESMTP id S1727309AbgKBAGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Nov 2020 19:06:55 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45C3AC0617A6
+        for <netdev@vger.kernel.org>; Sun,  1 Nov 2020 16:06:55 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id a71so7249336edf.9
+        for <netdev@vger.kernel.org>; Sun, 01 Nov 2020 16:06:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=hxNCmXN+Np0a9fyk4jNL6uxWJrRHqB5tuMS990NxiFA=;
-        b=eNEVhVKuq4LSWiX81LodotFKxhiO06l0LHgrGgBSCmI3o/660wqAWCLwj7vASYoTO0
-         mqYrxuGAsnr2iIHSWFGeNpZ4xhJdcN7CWJ0zbhi4NSOJX1wNwrv6rChNizGdaLr/z++9
-         y8isFlTl3AhvW/kcvpgsanwttUSXhfWzJOSxhu3N0MYHvfn5OV+ARLgov4UTOOLZFApJ
-         MIVniKopBmGpvlbvKooUvMvZwjemXDaL2bh9edZP5QLlne1HfNCCNe841DKRg14FmFYr
-         eqbT3g4pTmb2unORLo1CAirM8saJg+EzmFryZqKxXnWiqorHi8XF69IGRjgmn5Ihpqhh
-         D36w==
+        bh=yW24AEBAMhqFYho18ZDpd5QCNSsbOCt0uotVzU5EYPs=;
+        b=h7LPI96QlhwooEE5zhzyE1+q7JBd2mcZLd7uocNcnQSQP3rFDedLvW78GrY1vUnK4l
+         FGXV9S2hWzTMIMLwUjPfTm7KxGDl9DXN1VmQ+0YIqOyOgoePhz7ltcQCz+IXiT578gXw
+         900aFy+XfXsyBmT0vAhqWb7KVM9fZb+0ZSuqOLKWAcekhC8pjizB9SMI1CFhmNCA2vT4
+         HKwhsBAazNz3L7gvW2GeSr0kEJv6ne+AnUHGkSDpvxmCNZwsFgAAfXVwRV7f031dUZI4
+         +5vcXRaE4n2SS7YeCimTTHcBENnEIOBd37ub5yMZYFvkTemeBYinWov5mnV3PQ5gPyih
+         M0TQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=hxNCmXN+Np0a9fyk4jNL6uxWJrRHqB5tuMS990NxiFA=;
-        b=WxqXyRvNVVHcCth1AgQdxKQfHdOvhnoFGKBJMOK5aeguEz3wfVcL62BT2g8A2o0OXU
-         kNFNaTUz0iMSVH+N8McXYlMJj4I0AJmKy4X6j4HGsyU9ALTsdN0J8oxhsevy77I4a2EG
-         o94Ax9Sqjde9FH1K5j+9zrTLNsrEdnoJY4YYyLq7O6TSIIRP0pwduwroWrDrkBk+PqoZ
-         X2j2Ro2pxoie986Or70XyMBzcxMLzUK30jNXKEl37MB6cwsHVCTiffDaMZ96mKJjq8fO
-         sOKokBWl+9Hw5w0wvN1An/WRxKRdRmRoUCXgraIXEXK/wqPfFexUBT2fznU05gNFyNVX
-         Si1A==
-X-Gm-Message-State: AOAM5329s+DaTzSscbPsrgfonqTETPoZvGKgFEUOIfKf/OJWIJOErvkD
-        QywsFfqz8BOosCieSw0v8rE=
-X-Google-Smtp-Source: ABdhPJwEYitE1WK+4CHeQD3modQC6TZN69oVu0YWKz1Ht+dHeo8jkIBZ3fFK4SnCLj2PDdrjiLMuUw==
-X-Received: by 2002:a17:906:3413:: with SMTP id c19mr12512644ejb.421.1604274961855;
-        Sun, 01 Nov 2020 15:56:01 -0800 (PST)
+        bh=yW24AEBAMhqFYho18ZDpd5QCNSsbOCt0uotVzU5EYPs=;
+        b=eRaqafdKWUeMEQ0xLLfCbe90/1DKHbpQxB48eLQ11zQaW7ssvBdlXu+umi9OMPbf/x
+         pjYVwKrqRw83lq1rgeSLPRLh4FHPWdDI9C8tiUgLNnyqXLOX2k1rIbVLa2B6MMtAVwKi
+         7McWQBsy3rmfPgJGmHVGElm3aDsZEmGCiKZkUTHPiYRsyzdD/f9OFSZWDEhtOBW+nGLu
+         NA2r/QvPcdYfY4KBiXLy+ydW1EXU34uPk095Ukl6WbvWoj6ch0CCU+yS6h7pBLZceiex
+         i2xwzdyFuw8wCVUN/mA2DFqGv8JzhVOEOYOXmT+SeaOjJmSLIEe4NimZyXcm7u3Uh3xc
+         MEbg==
+X-Gm-Message-State: AOAM533oKjx6V3uv6xDlUHBoZOhH/3KDI89six+DD2Z19ANz0CXCEqaM
+        PcmKUxYpNjo+5YD9J5k/isY=
+X-Google-Smtp-Source: ABdhPJyZAu/9HHaYNoD5XinVQPNtzyza3oR2n47Nw2gGkazTuTjTQDMagzBznsQjHbEWVc84FtsLhw==
+X-Received: by 2002:aa7:ce18:: with SMTP id d24mr14543743edv.9.1604275613880;
+        Sun, 01 Nov 2020 16:06:53 -0800 (PST)
 Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id k22sm9425259edr.12.2020.11.01.15.56.00
+        by smtp.gmail.com with ESMTPSA id d6sm9323313edr.26.2020.11.01.16.06.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Nov 2020 15:56:01 -0800 (PST)
-Date:   Mon, 2 Nov 2020 01:55:59 +0200
+        Sun, 01 Nov 2020 16:06:53 -0800 (PST)
+Date:   Mon, 2 Nov 2020 02:06:52 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add
- hardware time stamping support
-Message-ID: <20201101235559.wcdns4kmy6ri7kmz@skbuf>
-References: <20201019172435.4416-1-ceggers@arri.de>
- <4928494.XgmExmOR0V@n95hx1g2>
- <20201101111008.vl4lj4iqmqjdpbyg@skbuf>
- <3355013.oZEI4y40TO@n95hx1g2>
- <20201101234149.rrhrjiyt7l4orkm7@skbuf>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] r8169: set IRQF_NO_THREAD if MSI(X) is enabled
+Message-ID: <20201102000652.5i5o7ig56lymcjsv@skbuf>
+References: <446cf5b8-dddd-197f-cb96-66783141ade4@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201101234149.rrhrjiyt7l4orkm7@skbuf>
+In-Reply-To: <446cf5b8-dddd-197f-cb96-66783141ade4@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 02, 2020 at 01:41:49AM +0200, Vladimir Oltean wrote:
-> In principle I don't see any reason why this switch would not be able
-> to operate as a one-step peer delay BC.
+On Sun, Nov 01, 2020 at 11:30:44PM +0100, Heiner Kallweit wrote:
+> We had to remove flag IRQF_NO_THREAD because it conflicts with shared
+> interrupts in case legacy interrupts are used. Following up on the
+> linked discussion set IRQF_NO_THREAD if MSI or MSI-X is used, because
+> both guarantee that interrupt won't be shared.
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> Link: https://www.spinics.net/lists/netdev/msg695341.html
 
-What I meant to say was "one-step E2E BC", since I was talking about
-having to receive both Sync and Delay_Req at the same time, of course.
+I am not sure if this utilization of the Link: tag is valid. I think it
+has a well-defined meaning and maintainers use it to provide a link to
+the email where the patch was picked from:
+https://lkml.org/lkml/2011/4/6/421
+
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 319399a03..4d6afaf7c 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -4690,6 +4690,7 @@ static int rtl_open(struct net_device *dev)
+>  {
+>  	struct rtl8169_private *tp = netdev_priv(dev);
+>  	struct pci_dev *pdev = tp->pci_dev;
+> +	unsigned long irqflags;
+>  	int retval = -ENOMEM;
+>  
+>  	pm_runtime_get_sync(&pdev->dev);
+> @@ -4714,8 +4715,9 @@ static int rtl_open(struct net_device *dev)
+>  
+>  	rtl_request_firmware(tp);
+>  
+> +	irqflags = pci_dev_msi_enabled(pdev) ? IRQF_NO_THREAD : IRQF_SHARED;
+>  	retval = request_irq(pci_irq_vector(pdev, 0), rtl8169_interrupt,
+> -			     IRQF_SHARED, dev->name, tp);
+> +			     irqflags, dev->name, tp);
+>  	if (retval < 0)
+>  		goto err_release_fw_2;
+>  
+> -- 
+> 2.29.2
+> 
+
+So all things considered, what do you want to achieve with this change?
+Is there other benefit with disabling force threading of the
+rtl8169_interrupt, or are you still looking to add back the
+napi_schedule_irqoff call?
