@@ -2,220 +2,330 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77CE82A371A
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 00:24:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C6502A3720
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 00:24:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726864AbgKBXYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 18:24:18 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:3436 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725831AbgKBXYR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 18:24:17 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A2NKsYX012797;
-        Mon, 2 Nov 2020 15:24:02 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=UOvWB8J/7MDfMl5B2dXQAuKg+t3zqktlUOq3DMiI7fg=;
- b=pSMD4jwq/ah7eqfviKtjYbrsTb1Cu+2JDvl/tbFJOwy5oij51S8IfoCIlozCYh4s1Lzc
- eKUKTIp7U768D16NEENVCgSZEAjzK+VTvBdoI+1+et8rFA1G4xNeEaBLo+PjAu8NEPDO
- 8qfUwRGE4Z7RqeldCc7gVduUKC6Lm0fd+Vw= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 34jexxc72f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 02 Nov 2020 15:24:02 -0800
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 2 Nov 2020 15:24:01 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jdaZWQVqqcJoRgt77Mv+J67AD308idxfw78HeGGXekvEeBlUVZivA59Aa4OtQYGGdVS00g4va7U48hqOhh5zbWKzy/95urweSVv6A1NwemoM2LdsrofUuP/63IBIVuC0MNhPuEP4ZM1Uuv7WiaXmTqK+XfBR/Pnt1zavnfLt6wScJGC16Flb0MsMXTrg4thxcTbyfBm7o/Eq+UR2fzcki+Q9jbw8Yy/N3AYl03oOx3nimWqHrverL5raAcCMZ/vnaOtqLZwPNOrTYQ4xYCxcOge2dGkEnmZJzC/+Huw/Ht9b5fTENdUwFHxSLzku8c4c1Kue6TFrXv+6Lg5O2/aLQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UOvWB8J/7MDfMl5B2dXQAuKg+t3zqktlUOq3DMiI7fg=;
- b=B6w5V53VXnpJn/IPNFEoMDzZq5AjOocAX28gExqw+2vBx3z5k5BDrMDC5wup7B6RRtoDlhWufrgL6o0FmQqerJD+m2ecnD1uEJeIjWdvQWqRjdNfI8CFfjKCiYgVloyVasjAEGGU1u+fCPfWO0tWxJ2S/0Lh9mX7dcawa9RZ1CXmHf+rtUGAt2TyOtKP4IWmZy1xG+q0LClpfJI78sRUFCt9lZSMo6M45VBunGgzA9P9Vhf9m3DBFFQxJMDR8jxUOWyq5wcANxzQRtcpddXRDxDCqJ4vRn53OL30qmB21VvSRUcrohhXK/+Pl9yemfq6Bw8aG+E5wDQ0q61Pb4yUdg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UOvWB8J/7MDfMl5B2dXQAuKg+t3zqktlUOq3DMiI7fg=;
- b=KruVB2mnVvbs/0aIq/I6WIvk/V1OsWNY03weB+7OpsCyaQHtWiZNHztdMnpcu4ubt+PoF95ClmStz7MolcqhQCI204w4hfDJ8pUtqX6ux2kXiZzR1rRnZ10rCA7MqwM24ijJ2ZRN0d8QBAODWCi9RXpbJ3icYgWYxkMiEipY/74=
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB2774.namprd15.prod.outlook.com (2603:10b6:a03:15d::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.29; Mon, 2 Nov
- 2020 23:23:49 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::7d77:205b:bbc4:4c70]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::7d77:205b:bbc4:4c70%6]) with mapi id 15.20.3499.030; Mon, 2 Nov 2020
- 23:23:49 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Andrii Nakryiko <andrii@kernel.org>
-CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 04/11] libbpf: implement basic split BTF support
-Thread-Topic: [PATCH bpf-next 04/11] libbpf: implement basic split BTF support
-Thread-Index: AQHWrY7LDkOlZjem1EymWH+wL8m9Xqm1g0+A
-Date:   Mon, 2 Nov 2020 23:23:49 +0000
-Message-ID: <DE5FDF1D-0E5B-409B-80DF-EDA5349FE3A6@fb.com>
-References: <20201029005902.1706310-1-andrii@kernel.org>
- <20201029005902.1706310-5-andrii@kernel.org>
-In-Reply-To: <20201029005902.1706310-5-andrii@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.120.23.2.4)
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [2620:10d:c090:400::5:c2a2]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f35e163d-4746-42f0-9141-08d87f865a7a
-x-ms-traffictypediagnostic: BYAPR15MB2774:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB27747D1DB60E7F77F6594F9AB3100@BYAPR15MB2774.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7CFW7KuxGq+aaaTgQxO7E3vQjf6D0ThJOMpm9saeUTVa2c/tHiyqsLi7eGipLp8wrJYHqMeD02Zr67kEwmtpHZGl69a4F09GghRTbPFWQiSTvSz8lO/CL347H2KDh01bLARMN3i+kgdnQYpCOdwelY6ecIn8Qcyyjj+S63WEh0Njx3V3InWbg6E9by2s5VRmUSMj6sN5ok9VzAeNdMOhKAHIA9yHpFMORwqtVcp7C5c7Ik6fi6GJQl8+le7SBGlnJuiTEZ1zyKgVyeVLcjg63jztqOVsCsoX+QQ6FIJBz92q5lkEaiIIg+P7RWV6A0OnUkA+cHZDRiniPgDo4F21+g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(396003)(136003)(366004)(39860400002)(186003)(36756003)(91956017)(76116006)(66946007)(478600001)(86362001)(53546011)(6506007)(71200400001)(66476007)(64756008)(66556008)(66446008)(316002)(6512007)(6916009)(8936002)(8676002)(83380400001)(5660300002)(4326008)(33656002)(6486002)(2616005)(2906002)(54906003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: 3CTx5yDpVzl7Dt4Qef+gWwNo26gwH8TwxSYVwceA+uxwgpTCqT+GvkGeamIGhJCjZNtFvwxMDPCboF14v8Lqw+3mG+XaBbAHYM6yS73DVLJd/EbkzTHV7PDsc3h8W+MqR4aC9bF/eo5YV1sxPaKYX5HUfhbWNzEOLXOnAXM0ANiZSL1nPP4bt0MoQa4VAc8pxf7xFW3l30PRJUgoKkCoyO9cqsN2IBBK21yrDDyqP7iBeq2ZOJfuWYH0pzFlB7VTfAakI0QF+Ru3BaEBdlmW6ZHxZ9iIYpglt8CLYkt6NqXaX7gvAIo29pMEo53yzlTeTI6Jr8w5/mZ0X9TbrFOOCk1l/1DyL1lZeb03ZPWVa2jL0G9uIbclMjRi7r/3pbkpyr/7dcf/clU1kkd3PgPcQQd+bcGMXfpFqHxq2aSApK5MevtEC/pRmBN1/eKFpCR1vjsMSka6CoGDRhR7ZVK9IQ5DJvaiwL+AOhQdW+j2Q3uAMg8CnWbIVZgYvya/N34FCrPqELKIOXJ3c5anJUen8iM+XKKLLfCnZ52ktXpOB//SACpd3eRd/jFHjZkuVBjsOUavs7IGPcoHyn5+iYpVrWAFKuYJLf1R+hOut2jOAUArNwMDKMilOLNMcVk1wYPGUOgkjH5RlOD/jk7ihRyg0Mc73wfs7wTbWf9swneFDbBEbcKP1sNWCIrhd+MmD4CP
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <CDE92FC9EDA3A147870EF67BCF45C636@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727091AbgKBXYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 18:24:38 -0500
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:53069 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725864AbgKBXYh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 18:24:37 -0500
+Received: from [192.168.0.2] (ip5f5af1d0.dynamic.kabel-deutschland.de [95.90.241.208])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 8142520646217;
+        Tue,  3 Nov 2020 00:24:34 +0100 (CET)
+Subject: Re: [PATCH 1/2] ethernet: igb: Support PHY BCM5461S
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     Jeffrey Townsend <jeffrey.townsend@bigswitch.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        John W Linville <linville@tuxdriver.com>
+References: <20201102231307.13021-1-pmenzel@molgen.mpg.de>
+ <20201102231307.13021-2-pmenzel@molgen.mpg.de>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Message-ID: <78fb620a-a55b-3078-65c3-9f2f45899661@molgen.mpg.de>
+Date:   Tue, 3 Nov 2020 00:24:34 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f35e163d-4746-42f0-9141-08d87f865a7a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2020 23:23:49.1933
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: p5BP3e6ZDvpT3X03zUtzlkvI9cUmD2Tcvkgj7YzfW4+zYxDDZ0MEdv8I4l0XFrmQ5mF5YHx4gQp7ZOQkPOoYbg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2774
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-02_16:2020-11-02,2020-11-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 spamscore=0
- suspectscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 phishscore=0
- malwarescore=0 lowpriorityscore=0 adultscore=0 priorityscore=1501
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011020179
-X-FB-Internal: deliver
+In-Reply-To: <20201102231307.13021-2-pmenzel@molgen.mpg.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Dear Linux folks,
 
 
-> On Oct 28, 2020, at 5:58 PM, Andrii Nakryiko <andrii@kernel.org> wrote:
->=20
-
-[...]
-
->=20
-> BTF deduplication is not yet supported for split BTF and support for it w=
-ill
-> be added in separate patch.
->=20
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-
-Acked-by: Song Liu <songliubraving@fb.com>
-
-With a couple nits:
-
+Am 03.11.20 um 00:13 schrieb Paul Menzel:
+> From: Jeffrey Townsend <jeffrey.townsend@bigswitch.com>
+> 
+> The BCM5461S PHY is used in switches.
+> 
+> The patch is taken from Open Network Linux, and it was added there as
+> patch
+> 
+>      packages/base/any/kernels/3.16+deb8/patches/driver-support-intel-igb-bcm5461X-phy.patch
+> 
+> in ONL commit f32316c63c (Support the BCM54616 and BCM5461S.) [1]. Part
+> of this commit was already upstreamed in Linux commit eeb0149660 (igb:
+> support BCM54616 PHY) in 2017.
+> 
+> I applied the forward-ported
+> 
+>      packages/base/any/kernels/5.4-lts/patches/0002-driver-support-intel-igb-bcm5461S-phy.patch
+> 
+> added in ONL commit 5ace6bcdb3 (Add 5.4 LTS kernel build.) [2].
+> 
+> [1]: https://github.com/opencomputeproject/OpenNetworkLinux/commit/f32316c63ce3a64de125b7429115c6d45e942bd1
+> [2]: https://github.com/opencomputeproject/OpenNetworkLinux/commit/5ace6bcdb37cb8065dcd1d4404b3dcb6424f6331
+> 
+> Cc: Jeffrey Townsend <jeffrey.townsend@bigswitch.com>
+> Cc: John W Linville <linville@tuxdriver.com>
+> Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
 > ---
-> tools/lib/bpf/btf.c      | 205 ++++++++++++++++++++++++++++++---------
-> tools/lib/bpf/btf.h      |   8 ++
-> tools/lib/bpf/libbpf.map |   9 ++
-> 3 files changed, 175 insertions(+), 47 deletions(-)
->=20
-> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> index db9331fea672..20c64a8441a8 100644
-> --- a/tools/lib/bpf/btf.c
-> +++ b/tools/lib/bpf/btf.c
-> @@ -78,10 +78,32 @@ struct btf {
-> 	void *types_data;
-> 	size_t types_data_cap; /* used size stored in hdr->type_len */
->=20
-> -	/* type ID to `struct btf_type *` lookup index */
-> +	/* type ID to `struct btf_type *` lookup index
-> +	 * type_offs[0] corresponds to the first non-VOID type:
-> +	 *   - for base BTF it's type [1];
-> +	 *   - for split BTF it's the first non-base BTF type.
-> +	 */
-> 	__u32 *type_offs;
-> 	size_t type_offs_cap;
-> +	/* number of types in this BTF instance:
-> +	 *   - doesn't include special [0] void type;
-> +	 *   - for split BTF counts number of types added on top of base BTF.
-> +	 */
-> 	__u32 nr_types;
+>   drivers/net/ethernet/intel/igb/e1000_82575.c  | 23 +++++-
+>   .../net/ethernet/intel/igb/e1000_defines.h    |  1 +
+>   drivers/net/ethernet/intel/igb/e1000_hw.h     |  1 +
+>   drivers/net/ethernet/intel/igb/e1000_phy.c    | 77 +++++++++++++++++++
+>   drivers/net/ethernet/intel/igb/e1000_phy.h    |  2 +
+>   drivers/net/ethernet/intel/igb/igb_main.c     |  8 ++
+>   6 files changed, 111 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/igb/e1000_82575.c b/drivers/net/ethernet/intel/igb/e1000_82575.c
+> index 50863fd87d53..83c14ae689b1 100644
+> --- a/drivers/net/ethernet/intel/igb/e1000_82575.c
+> +++ b/drivers/net/ethernet/intel/igb/e1000_82575.c
+> @@ -308,6 +308,12 @@ static s32 igb_init_phy_params_82575(struct e1000_hw *hw)
+>   		phy->ops.set_d3_lplu_state = igb_set_d3_lplu_state_82580;
+>   		phy->ops.force_speed_duplex = igb_phy_force_speed_duplex_m88;
+>   		break;
+> +	case BCM5461S_PHY_ID:
+> +		phy->type		= e1000_phy_bcm5461s;
 
-This is a little confusing. Maybe add a void type for every split BTF?=20
+Do not align the = with the one on the line below.
 
-> +	/* if not NULL, points to the base BTF on top of which the current
-> +	 * split BTF is based
-> +	 */
-
-[...]
-
->=20
-> @@ -252,12 +274,20 @@ static int btf_parse_str_sec(struct btf *btf)
-> 	const char *start =3D btf->strs_data;
-> 	const char *end =3D start + btf->hdr->str_len;
->=20
-> -	if (!hdr->str_len || hdr->str_len - 1 > BTF_MAX_STR_OFFSET ||
-> -	    start[0] || end[-1]) {
-> -		pr_debug("Invalid BTF string section\n");
-> -		return -EINVAL;
-> +	if (btf->base_btf) {
-> +		if (hdr->str_len =3D=3D 0)
-> +			return 0;
-> +		if (hdr->str_len - 1 > BTF_MAX_STR_OFFSET || end[-1]) {
-> +			pr_debug("Invalid BTF string section\n");
-> +			return -EINVAL;
+> +		phy->ops.check_polarity	= NULL;
+> +		phy->ops.get_cable_length = NULL;
+> +		phy->ops.force_speed_duplex = igb_phy_force_speed_duplex_82580;
+> +		break;
+>   	case BCM54616_E_PHY_ID:
+>   		phy->type = e1000_phy_bcm54616;
+>   		break;
+> @@ -866,6 +872,16 @@ static s32 igb_get_phy_id_82575(struct e1000_hw *hw)
+>   			goto out;
+>   		}
+>   		ret_val = igb_get_phy_id(hw);
+> +		if (ret_val && hw->mac.type == e1000_i354) {
+> +			/* we do a special check for bcm5461s phy by setting
+> +			 * the phy->addr to 5 and doing the phy check again. This
+> +			 * call will succeed and retrieve a valid phy id if we have
+> +			 * the bcm5461s phy
+> +			 */
+> +			phy->addr = 5;
+> +			phy->type = e1000_phy_bcm5461s;
+> +			ret_val = igb_get_phy_id(hw);
 > +		}
-> +	} else {
-> +		if (!hdr->str_len || hdr->str_len - 1 > BTF_MAX_STR_OFFSET ||
-> +		    start[0] || end[-1]) {
-> +			pr_debug("Invalid BTF string section\n");
-> +			return -EINVAL;
-> +		}
-> 	}
-> -
-> 	return 0;
+>   		goto out;
+>   	}
+>   
+> @@ -1253,6 +1269,9 @@ static s32 igb_get_cfg_done_82575(struct e1000_hw *hw)
+>   	    (hw->phy.type == e1000_phy_igp_3))
+>   		igb_phy_init_script_igp3(hw);
+>   
+> +	if (hw->phy.type == e1000_phy_bcm5461s)
+> +		igb_phy_init_script_5461s(hw);
+> +
+>   	return 0;
+>   }
+>   
+> @@ -1582,6 +1601,7 @@ static s32 igb_setup_copper_link_82575(struct e1000_hw *hw)
+>   	case e1000_i350:
+>   	case e1000_i210:
+>   	case e1000_i211:
+> +	case e1000_i354:
 
-I found this function a little difficult to follow. Maybe rearrange it as=20
+Any idea, why e1000_i350 is at the top?
 
-	/* too long, or not \0 terminated */
-	if (hdr->str_len - 1 > BTF_MAX_STR_OFFSET || end[-1])
-		goto err_out;
+>   		phpm_reg = rd32(E1000_82580_PHY_POWER_MGMT);
+>   		phpm_reg &= ~E1000_82580_PM_GO_LINKD;
+>   		wr32(E1000_82580_PHY_POWER_MGMT, phpm_reg);
+> @@ -1627,7 +1647,8 @@ static s32 igb_setup_copper_link_82575(struct e1000_hw *hw)
+>   		ret_val = igb_copper_link_setup_82580(hw);
+>   		break;
+>   	case e1000_phy_bcm54616:
+> -		ret_val = 0;
+> +		break;
+> +	case e1000_phy_bcm5461s:
+>   		break;
 
-	/* for base btf, .... */
-	if (!btf->base_btf && (!hdr->str_len || start[0]))
-		goto err_out;
+John, any idea, why you did not upstream the `ret_val = 0` line?
 
-	return 0;
-err_out:
-	pr_debug("Invalid BTF string section\n");
-	return -EINVAL;
-}
-> }
->=20
-> @@ -372,19 +402,9 @@ static int btf_parse_type_sec(struct btf *btf)
-> 	struct btf_header *hdr =3D btf->hdr;
-> 	void *next_type =3D btf->types_data;
-> 	void *end_type =3D next_type + hdr->type_len;
-> -	int err, i =3D 0, type_size;
+>   	default:
+>   		ret_val = -E1000_ERR_PHY;
+> diff --git a/drivers/net/ethernet/intel/igb/e1000_defines.h b/drivers/net/ethernet/intel/igb/e1000_defines.h
+> index d2e2c50ce257..0561ef6cb29c 100644
+> --- a/drivers/net/ethernet/intel/igb/e1000_defines.h
+> +++ b/drivers/net/ethernet/intel/igb/e1000_defines.h
+> @@ -886,6 +886,7 @@
+>   #define M88E1543_E_PHY_ID    0x01410EA0
+>   #define M88E1512_E_PHY_ID    0x01410DD0
+>   #define BCM54616_E_PHY_ID    0x03625D10
+> +#define BCM5461S_PHY_ID      0x002060C0
 
-[...]
+Should this be `BCM5461S_E_PHY_ID` for consistency? I have no idea, what 
+`_E` means?
 
+>   
+>   /* M88E1000 Specific Registers */
+>   #define M88E1000_PHY_SPEC_CTRL     0x10  /* PHY Specific Control Register */
+> diff --git a/drivers/net/ethernet/intel/igb/e1000_hw.h b/drivers/net/ethernet/intel/igb/e1000_hw.h
+> index 5d87957b2627..a660675d6218 100644
+> --- a/drivers/net/ethernet/intel/igb/e1000_hw.h
+> +++ b/drivers/net/ethernet/intel/igb/e1000_hw.h
+> @@ -110,6 +110,7 @@ enum e1000_phy_type {
+>   	e1000_phy_82580,
+>   	e1000_phy_i210,
+>   	e1000_phy_bcm54616,
+> +	e1000_phy_bcm5461s,
+>   };
+>   
+>   enum e1000_bus_type {
+> diff --git a/drivers/net/ethernet/intel/igb/e1000_phy.c b/drivers/net/ethernet/intel/igb/e1000_phy.c
+> index 8c8eb82e6272..4e0b4ba09a00 100644
+> --- a/drivers/net/ethernet/intel/igb/e1000_phy.c
+> +++ b/drivers/net/ethernet/intel/igb/e1000_phy.c
+> @@ -126,6 +126,13 @@ s32 igb_read_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 *data)
+>   	 * Control register.  The MAC will take care of interfacing with the
+>   	 * PHY to retrieve the desired data.
+>   	 */
+> +	if (phy->type == e1000_phy_bcm5461s) {
+> +		mdic = rd32(E1000_MDICNFG);
+> +		mdic &= ~E1000_MDICNFG_PHY_MASK;
+> +		mdic |= (phy->addr << E1000_MDICNFG_PHY_SHIFT);
+> +		wr32(E1000_MDICNFG, mdic);
+> +	}
+> +
+>   	mdic = ((offset << E1000_MDIC_REG_SHIFT) |
+>   		(phy->addr << E1000_MDIC_PHY_SHIFT) |
+>   		(E1000_MDIC_OP_READ));
+> @@ -182,6 +189,13 @@ s32 igb_write_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 data)
+>   	 * Control register.  The MAC will take care of interfacing with the
+>   	 * PHY to retrieve the desired data.
+>   	 */
+> +	if (phy->type == e1000_phy_bcm5461s) {
+> +		mdic = rd32(E1000_MDICNFG);
+> +		mdic &= ~E1000_MDICNFG_PHY_MASK;
+> +		mdic |= (phy->addr << E1000_MDICNFG_PHY_SHIFT);
+> +		wr32(E1000_MDICNFG, mdic);
+> +	}
+> +
+>   	mdic = (((u32)data) |
+>   		(offset << E1000_MDIC_REG_SHIFT) |
+>   		(phy->addr << E1000_MDIC_PHY_SHIFT) |
+> @@ -2628,3 +2642,66 @@ static s32 igb_set_master_slave_mode(struct e1000_hw *hw)
+>   
+>   	return hw->phy.ops.write_reg(hw, PHY_1000T_CTRL, phy_data);
+>   }
+> +
+> +/**
+> + *  igb_phy_init_script_5461s - Inits the BCM5461S PHY
+> + *  @hw: pointer to the HW structure
+> + *
+> + *  Initializes a Broadcom Gigabit PHY.
+> + **/
+> +s32 igb_phy_init_script_5461s(struct e1000_hw *hw)
+> +{
+> +	u16 mii_reg_led = 0;
+> +
+> +	/* 1. Speed LED (Set the Link LED mode), Shadow 00010, 0x1C.bit2=1 */
+> +	hw->phy.ops.write_reg(hw, 0x1C, 0x0800);
+> +	hw->phy.ops.read_reg(hw, 0x1C, &mii_reg_led);
+> +	mii_reg_led |= 0x0004;
+> +	hw->phy.ops.write_reg(hw, 0x1C, mii_reg_led | 0x8000);
+> +
+> +	/* 2. Active LED (Set the Link LED mode), Shadow 01001, 0x1C.bit4=1, 0x10.bit5=0 */
+> +	hw->phy.ops.write_reg(hw, 0x1C, 0x2400);
+> +	hw->phy.ops.read_reg(hw, 0x1C, &mii_reg_led);
+> +	mii_reg_led |= 0x0010;
+> +	hw->phy.ops.write_reg(hw, 0x1C, mii_reg_led | 0x8000);
+> +	hw->phy.ops.read_reg(hw, 0x10, &mii_reg_led);
+> +	mii_reg_led &= 0xffdf;
+> +	hw->phy.ops.write_reg(hw, 0x10, mii_reg_led);
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + *  igb_get_phy_info_5461s - Retrieve 5461s PHY information
+> + *  @hw: pointer to the HW structure
+> + *
+> + *  Read PHY status to determine if link is up.  If link is up, then
+> + *  set/determine 10base-T extended distance and polarity correction.  Read
+> + *  PHY port status to determine MDI/MDIx and speed.  Based on the speed,
+> + *  determine on the cable length, local and remote receiver.
+> + **/
+> +s32 igb_get_phy_info_5461s(struct e1000_hw *hw)
+> +{
+> +	struct e1000_phy_info *phy = &hw->phy;
+> +	s32 ret_val;
+> +	bool link;
+> +
+> +	ret_val = igb_phy_has_link(hw, 1, 0, &link);
+> +	if (ret_val)
+> +		goto out;
+> +
+> +	if (!link) {
+> +		ret_val = -E1000_ERR_CONFIG;
+> +		goto out;
+> +	}
+> +
+> +	phy->polarity_correction = true;
+> +
+> +	phy->is_mdix = true;
+> +	phy->cable_length = E1000_CABLE_LENGTH_UNDEFINED;
+> +	phy->local_rx = e1000_1000t_rx_status_ok;
+> +	phy->remote_rx = e1000_1000t_rx_status_ok;
+> +
+> +out:
+> +	return ret_val;
+> +}
+> diff --git a/drivers/net/ethernet/intel/igb/e1000_phy.h b/drivers/net/ethernet/intel/igb/e1000_phy.h
+> index 5894e4b1d0a8..aa888efc05f2 100644
+> --- a/drivers/net/ethernet/intel/igb/e1000_phy.h
+> +++ b/drivers/net/ethernet/intel/igb/e1000_phy.h
+> @@ -41,6 +41,8 @@ s32  igb_phy_has_link(struct e1000_hw *hw, u32 iterations,
+>   void igb_power_up_phy_copper(struct e1000_hw *hw);
+>   void igb_power_down_phy_copper(struct e1000_hw *hw);
+>   s32  igb_phy_init_script_igp3(struct e1000_hw *hw);
+> +s32  igb_phy_init_script_5461s(struct e1000_hw *hw);
+> +s32  igb_get_phy_info_5461s(struct e1000_hw *hw);
+>   s32  igb_initialize_M88E1512_phy(struct e1000_hw *hw);
+>   s32  igb_initialize_M88E1543_phy(struct e1000_hw *hw);
+>   s32  igb_read_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 *data);
+> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+> index 5fc2c381da55..275fac4cbf63 100644
+> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> @@ -8923,11 +8923,19 @@ static int igb_mii_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
+>   		data->phy_id = adapter->hw.phy.addr;
+>   		break;
+>   	case SIOCGMIIREG:
+> +		adapter->hw.phy.addr = data->phy_id;
+
+How is this related? No idea, why this is added. Jeffrey, do you remember?
+
+>   		if (igb_read_phy_reg(&adapter->hw, data->reg_num & 0x1F,
+>   				     &data->val_out))
+>   			return -EIO;
+>   		break;
+>   	case SIOCSMIIREG:
+> +		if (!capable(CAP_NET_ADMIN))
+> +			return -EPERM;
+> +		adapter->hw.phy.addr = data->phy_id;
+> +		if (igb_write_phy_reg(&adapter->hw, data->reg_num & 0x1F,
+> +				      data->val_in))
+> +			return -EIO;
+> +		break;
+
+This looks also like an unrelated improvement. Maybe the igb folks could 
+comment, if this is useful. Jeffrey, do you remember, what this is 
+needed for?
+
+>   	default:
+>   		return -EOPNOTSUPP;
+>   	}
+> 
+
+
+Kind regards,
+
+Paul
