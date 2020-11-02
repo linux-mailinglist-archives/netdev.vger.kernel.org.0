@@ -2,66 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51DFC2A2955
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:28:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 152B22A2906
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:24:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728921AbgKBL14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 06:27:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47966 "EHLO
+        id S1728742AbgKBLYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 06:24:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728704AbgKBLYm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:24:42 -0500
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D87C061A49
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 03:24:41 -0800 (PST)
-Received: by mail-wr1-x443.google.com with SMTP id 33so3350871wrl.7
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:24:41 -0800 (PST)
+        with ESMTP id S1728725AbgKBLYp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:24:45 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66BABC061A47
+        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 03:24:45 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id b3so8230285wrx.11
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:24:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qpDdLuf0XmFXhoeCc8tXmAL5epac8Q54EhVeHTK2ADw=;
-        b=QStDp87EefLAQ0xGJp3v1XG9HoP6I2H/6oI26lKpv0EUN4GRH2LcnNrukE05yCl0jp
-         WRCbr02WX3ag4/XpO5So+3kxDEXlavNHMcaCVzy1xxT9isEburuXPrJw4fSCbuqJx+m6
-         BFJbVQgtoYKKs8EYPOxauS4uCH6Xwxh3rnHz4XDOkjUWXGl00sxJTQtIrxSBuL/j61zY
-         FmsZlE8JC6H4CSOUfkFpCgNpJ8fQG1rVBiRwGlYlCLiSS2iDMD0vILqn44ZJEF0JcF6Y
-         S8pz+FOjpFn8lVkphoFj1R27oN+YghlqDmQNRq9ewmXDpXogxFWgB/1p3pUKgDvuP0li
-         J8FA==
+        bh=D3cuHd2jEUylto64ny3My89MZqKNpm0uIQ6VIWr/6yc=;
+        b=dnwc/0wcVwBYP3pEeQaNCoPL1Qzo0Oep6UPa2V7evv+cCkyMgSryELcMxMSWPupDD5
+         NEGtO0y3TBTdq1EelpQn/cRj+lZXhBudOBeGyVz1Kd3AiETmflhUA1LNhvoIkDbHEpFW
+         G9CZ/o5FGS+gx2UtgtoJWOwtBxJWnqMgmql/aM4SyXhMoTAYua2VA9SI70nkOPSv21DN
+         R6sr6qTihcaw4XxI137BWr+lVQ2HXNITZ/Q/e18vfb8nH8XqdVcq4sQtftbyX6hflRB1
+         iysFNqf5927Q16p321KS1SYsv/QhXotxvqEwbJwBRG+gQxlL7WQAmHrjLajjfwUeTClM
+         mvHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qpDdLuf0XmFXhoeCc8tXmAL5epac8Q54EhVeHTK2ADw=;
-        b=Ad6BTdCCr3I6TNVQJIFbjqpGUWAYMCTRVtIrNjSNBG7TEsO31FmCm2CCyHO9mYP1QE
-         FfgUdlU/gnGkGtXt8AGYtQs3usknYXaoHaj8rkkFsE6jprTolC58oix1DubRCH3M4g5j
-         TaqK1xhGj/iqxKTuS4ow1mfy0Hids89ygC7bSLks79qlJhTCWjLSOrNPI4t5G0vmPxV+
-         v+Yx19cpe2OwaLw27vxb+xaE7NZovly7pKFhHbCTn6wX2chWR23Nm7AqzL0OndKT/+yw
-         NVZWKCghR0JO4DJCO1PukuAeR6Sx9rVtm74f/KxuUj1odH+Pr7fx+CRtq/ONW/TQFA4q
-         VuVg==
-X-Gm-Message-State: AOAM531NzqaIWvnkcKEVpoCYpmUcUh/3E1fhf+2dw6+ypTaSiO1a2KpO
-        KxkVsKengaD72vT9RBtvuQ2Dhg==
-X-Google-Smtp-Source: ABdhPJw3NvquUovDiM9NpuyGkN81PEgqbBFf/hSnyh+5ZVhWq0aZtZb3MOCJzu17flNBgogtpH4Tzw==
-X-Received: by 2002:adf:e64e:: with SMTP id b14mr19582007wrn.68.1604316279996;
-        Mon, 02 Nov 2020 03:24:39 -0800 (PST)
+        bh=D3cuHd2jEUylto64ny3My89MZqKNpm0uIQ6VIWr/6yc=;
+        b=FPNpljdt4if/3YcbLqxfGbBAOfrzJ/GTDkbjfoXAsBqO3EyTMTeSFuJh+UZrO8ANyg
+         5EbFRdeW17KMCjAfMeQP113ouwGiE2DnT15EL3RhQwMhHd0x8M91mJ0djGDAjDv0frvE
+         jOz+kyxRKS66BSphMDT5Wfn06prZKEJu1SnpmQNJ+RV+U2/44C3N3SEqb1x0Qmdve8iW
+         kObLMgMqeoQWG/lpvs8L78uOynstjltFoICQ7m07qjchZlQKkS+TsitqoIwK86dcV2WM
+         mFuRdMAVdWzox5q6oJhpbkvyyojIHnFWGEPh3rJC1kzIUFyzTa1ZgQMbqtjoznoQAkK9
+         Fo7g==
+X-Gm-Message-State: AOAM531f9AQWTtT0fE2sS8YHh4Jskb5nYlAby8lxifQcybhkxMLjsp7d
+        QKwBTFBHCARxDRe5UUHthAr+lQ==
+X-Google-Smtp-Source: ABdhPJzDGo9ApX9ptXXbooXzR38IWoiQ+jaCDTlYA2S3+DJNXLpkNLICSrVsVYMycSfTV3hIikIlOw==
+X-Received: by 2002:a5d:4443:: with SMTP id x3mr18862767wrr.190.1604316284171;
+        Mon, 02 Nov 2020 03:24:44 -0800 (PST)
 Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id m14sm21867354wro.43.2020.11.02.03.24.37
+        by smtp.gmail.com with ESMTPSA id m14sm21867354wro.43.2020.11.02.03.24.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 03:24:39 -0800 (PST)
+        Mon, 02 Nov 2020 03:24:43 -0800 (PST)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     kvalo@codeaurora.org
 Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Jouni Malinen <j@w1.fi>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 17/41] intersil: hostap_hw: Prevent incompatible function type cast
-Date:   Mon,  2 Nov 2020 11:23:46 +0000
-Message-Id: <20201102112410.1049272-18-lee.jones@linaro.org>
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+Subject: [PATCH 18/41] brcm80211: fweh: Add missing description for 'gfp'
+Date:   Mon,  2 Nov 2020 11:23:47 +0000
+Message-Id: <20201102112410.1049272-19-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201102112410.1049272-1-lee.jones@linaro.org>
 References: <20201102112410.1049272-1-lee.jones@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -69,64 +74,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/wireless/intersil/hostap/hostap_hw.c: In function ‘prism2_init_local_data’:
- drivers/net/wireless/intersil/hostap/hostap_hw.c:3173:48: warning: cast between incompatible function types from ‘void (*)(struct tasklet_struct *)’ to ‘void (*)(long unsigned int)’ [-Wcast-function-type]
- drivers/net/wireless/intersil/hostap/hostap_hw.c:3175:2: note: in expansion of macro ‘HOSTAP_TASKLET_INIT’
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c:394: warning: Function parameter or member 'gfp' not described in 'brcmf_fweh_process_event'
 
- NB: Repeats lots of times - snipped for brevity
-
-Cc: Jouni Malinen <j@w1.fi>
+Cc: Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc: Franky Lin <franky.lin@broadcom.com>
+Cc: Hante Meuleman <hante.meuleman@broadcom.com>
+Cc: Chi-Hsien Lin <chi-hsien.lin@cypress.com>
+Cc: Wright Feng <wright.feng@cypress.com>
 Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: linux-wireless@vger.kernel.org
+Cc: brcm80211-dev-list.pdl@broadcom.com
+Cc: brcm80211-dev-list@cypress.com
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- .../net/wireless/intersil/hostap/hostap_hw.c  | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/intersil/hostap/hostap_hw.c b/drivers/net/wireless/intersil/hostap/hostap_hw.c
-index 22cfb64526448..c877b677505ed 100644
---- a/drivers/net/wireless/intersil/hostap/hostap_hw.c
-+++ b/drivers/net/wireless/intersil/hostap/hostap_hw.c
-@@ -36,6 +36,7 @@
- #include <linux/proc_fs.h>
- #include <linux/seq_file.h>
- #include <linux/if_arp.h>
-+#include <linux/interrupt.h>
- #include <linux/delay.h>
- #include <linux/random.h>
- #include <linux/wait.h>
-@@ -3169,22 +3170,16 @@ prism2_init_local_data(struct prism2_helper_functions *funcs, int card_idx,
- 
- 	/* Initialize tasklets for handling hardware IRQ related operations
- 	 * outside hw IRQ handler */
--#define HOSTAP_TASKLET_INIT(q, f, d) \
--do { memset((q), 0, sizeof(*(q))); (q)->func = (void(*)(unsigned long))(f); } \
--while (0)
--	HOSTAP_TASKLET_INIT(&local->bap_tasklet, hostap_bap_tasklet,
--			    (unsigned long) local);
--
--	HOSTAP_TASKLET_INIT(&local->info_tasklet, hostap_info_tasklet,
--			    (unsigned long) local);
-+
-+	tasklet_setup(&local->bap_tasklet, hostap_bap_tasklet);
-+
-+	tasklet_setup(&local->info_tasklet, hostap_info_tasklet);
- 	hostap_info_init(local);
- 
--	HOSTAP_TASKLET_INIT(&local->rx_tasklet,
--			    hostap_rx_tasklet, (unsigned long) local);
-+	tasklet_setup(&local->rx_tasklet, hostap_rx_tasklet);
- 	skb_queue_head_init(&local->rx_list);
- 
--	HOSTAP_TASKLET_INIT(&local->sta_tx_exc_tasklet,
--			    hostap_sta_tx_exc_tasklet, (unsigned long) local);
-+	tasklet_setup(&local->sta_tx_exc_tasklet, hostap_sta_tx_exc_tasklet);
- 	skb_queue_head_init(&local->sta_tx_exc_list);
- 
- 	INIT_LIST_HEAD(&local->cmd_queue);
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c
+index 430d2cca98b33..bc3f4e4edcdf9 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c
+@@ -384,6 +384,7 @@ int brcmf_fweh_activate_events(struct brcmf_if *ifp)
+  * @drvr: driver information object.
+  * @event_packet: event packet to process.
+  * @packet_len: length of the packet
++ * @gfp: memory allocation flags.
+  *
+  * If the packet buffer contains a firmware event message it will
+  * dispatch the event to a registered handler (using worker).
 -- 
 2.25.1
 
