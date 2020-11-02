@@ -2,88 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71CCA2A3727
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 00:27:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CE252A372B
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 00:28:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726039AbgKBX1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 18:27:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33798 "EHLO mail.kernel.org"
+        id S1726552AbgKBX2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 18:28:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33862 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725841AbgKBX1x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 18:27:53 -0500
-Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        id S1725841AbgKBX2r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 18:28:47 -0500
+Received: from dragon (80.251.214.228.16clouds.com [80.251.214.228])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7C1A322268;
-        Mon,  2 Nov 2020 23:27:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 28AAE22280;
+        Mon,  2 Nov 2020 23:28:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604359673;
-        bh=UuAkJfEzaECXbsjNNFRbJE8yk5SU++cPwgM2Re7WKuU=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Zi9hhVtgXC2SYgH3NSRVhpt8luwsK69GiYg87Yp9c50ApYFjrBOAfr3aONNyJymwS
-         BBmRZm9GSjNQp32Ct2c0hKBm0EFsUJbw/OkmlKfjEWchLBkasdjwAKtl1kPA1UK4bi
-         PdUfBaYXGGaF5iR+LzspG2kDhs/RjglNlyB70t3k=
-Message-ID: <33cde8903dbe09a8abda1cd2ae7a9d3fdc2bc5e8.camel@kernel.org>
-Subject: Re: [PATCH net-next v2 0/3] net: introduce rps_default_mask
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shuah Khan <shuah@kernel.org>, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Date:   Mon, 02 Nov 2020 15:27:51 -0800
-In-Reply-To: <20201102145447.0074f272@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <cover.1604055792.git.pabeni@redhat.com>
-         <20201102145447.0074f272@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        s=default; t=1604359727;
+        bh=4MjQMzBRiuQQCBZ/m2YpKQucOcQZa7hQO0Ry0R/PWLY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GVqI/0xLl0PHdspUgvrvlEYBzXN3PNAvN+q70ACDQLBvKvTxOJ6TzR0ZoJ+NDPPQG
+         a0olQwsE8XKIkqrfR2VV8fXgY7AxgLy5j5kogO6ts8+ZW5w9AbkbiOKFC+TxslySjE
+         z6tb/dovnpfFNLkfRTfXHYx/9BfVysVqDmi+s13E=
+Date:   Tue, 3 Nov 2020 07:28:41 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     mkl@pengutronix.de, robh+dt@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, linux-imx@nxp.com, victor.liu@nxp.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V4 5/6] dt-bindings: firmware: add IMX_SC_R_CAN(x) macro
+ for CAN
+Message-ID: <20201102232840.GT31601@dragon>
+References: <20201021052437.3763-1-qiangqing.zhang@nxp.com>
+ <20201021052437.3763-6-qiangqing.zhang@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201021052437.3763-6-qiangqing.zhang@nxp.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-11-02 at 14:54 -0800, Jakub Kicinski wrote:
-> On Fri, 30 Oct 2020 12:16:00 +0100 Paolo Abeni wrote:
-> > Real-time setups try hard to ensure proper isolation between time
-> > critical applications and e.g. network processing performed by the
-> > network stack in softirq and RPS is used to move the softirq 
-> > activity away from the isolated core.
-> > 
-> > If the network configuration is dynamic, with netns and devices
-> > routinely created at run-time, enforcing the correct RPS setting
-> > on each newly created device allowing to transient bad
-> > configuration
-> > became complex.
-> > 
-> > These series try to address the above, introducing a new
-> > sysctl knob: rps_default_mask. The new sysctl entry allows
-> > configuring a systemwide RPS mask, to be enforced since receive 
-> > queue creation time without any fourther per device configuration
-> > required.
-> > 
-
-The whole thing can be replaced with a user daemon scripts that
-monitors all newly created devices and assign to them whatever rps mask
-(call it default).
-
-So why do we need this special logic in kernel ? 
-
-I am not sure about this, but if rps queues sysfs are available before
-the netdev is up, then you can also use udevd to assign the rps masks
-before such devices are even brought up, so you would avoid the race
-conditions that you described, which are not really clear to me to be
-honest.
-
-> > Additionally, a simple self-test is introduced to check the 
-> > rps_default_mask behavior.
+On Wed, Oct 21, 2020 at 01:24:36PM +0800, Joakim Zhang wrote:
+> Add IMX_SC_R_CAN(x) macro for CAN.
 > 
-> RPS is disabled by default, the processing is going to happen
-> wherever
-> the IRQ is mapped, and one would hope that the IRQ is not mapped to
-> the
-> core where the critical processing runs.
-> 
-> Would you mind elaborating further on the use case?
+> Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 
+Acked-by: Shawn Guo <shawnguo@kernel.org>
+
+> ---
+>  include/dt-bindings/firmware/imx/rsrc.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/include/dt-bindings/firmware/imx/rsrc.h b/include/dt-bindings/firmware/imx/rsrc.h
+> index 54278d5c1856..43885056557c 100644
+> --- a/include/dt-bindings/firmware/imx/rsrc.h
+> +++ b/include/dt-bindings/firmware/imx/rsrc.h
+> @@ -111,6 +111,7 @@
+>  #define IMX_SC_R_CAN_0			105
+>  #define IMX_SC_R_CAN_1			106
+>  #define IMX_SC_R_CAN_2			107
+> +#define IMX_SC_R_CAN(x)			(IMX_SC_R_CAN_0 + (x))
+>  #define IMX_SC_R_DMA_1_CH0		108
+>  #define IMX_SC_R_DMA_1_CH1		109
+>  #define IMX_SC_R_DMA_1_CH2		110
+> -- 
+> 2.17.1
+> 
