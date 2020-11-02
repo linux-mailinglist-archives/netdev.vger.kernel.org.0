@@ -2,150 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53B252A2668
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 09:52:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DED12A26A6
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 10:08:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728166AbgKBIw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 03:52:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34787 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727806AbgKBIw1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 03:52:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604307146;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M8L52r0cFEeeVAVbV60vymrevzQJGA//H7vC0s5Cf+E=;
-        b=deuWvpiAJKj+U7iK1ALwzwY7ze2OWG76CL0L2YVPUnuQXj1jr3usvMVRAJmPgCpT0JPpJx
-        DBsoBbSehwDWe1NURWkgWoGt5Ab3aIh/u9r5LVrk9tkGzGoZJtnZ++OJ/lx/XCUfx7tpwc
-        BbNHm/cOm0I6LUgB7Dck4avAgTVN6nQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-595-wXgWDCU9N4qiYBHcfN7OCg-1; Mon, 02 Nov 2020 03:52:23 -0500
-X-MC-Unique: wXgWDCU9N4qiYBHcfN7OCg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 48AED1074651;
-        Mon,  2 Nov 2020 08:52:22 +0000 (UTC)
-Received: from [10.36.112.137] (ovpn-112-137.ams2.redhat.com [10.36.112.137])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4F0105DA60;
-        Mon,  2 Nov 2020 08:52:21 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dev@openvswitch.org
-Subject: Re: [PATCH net] net: openvswitch: silence suspicious RCU usage
- warning
-Date:   Mon, 02 Nov 2020 09:52:19 +0100
-Message-ID: <AFFC5913-5595-464B-9B1B-EB25E730C2E2@redhat.com>
-In-Reply-To: <20201030142852.7d41eecc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <160398318667.8898.856205445259063348.stgit@ebuild>
- <20201030142852.7d41eecc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        id S1728325AbgKBJIM convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 2 Nov 2020 04:08:12 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:44092 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728275AbgKBJID (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 04:08:03 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id uk-mta-2-3gt7SuvxPWOqa-ZpIA1B2g-1;
+ Mon, 02 Nov 2020 09:06:39 +0000
+X-MC-Unique: 3gt7SuvxPWOqa-ZpIA1B2g-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 2 Nov 2020 09:06:38 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 2 Nov 2020 09:06:38 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Greg KH' <gregkh@linuxfoundation.org>
+CC:     'David Hildenbrand' <david@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: RE: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Thread-Topic: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Thread-Index: AQHWqE5GNDfnH4y9nkGWtfqJueR1KKmjTCJQgAAN4UiAAAD2IIAASOeCgAF+12CAAB+UKYAAAQNg///yIQCAD2i/YA==
+Date:   Mon, 2 Nov 2020 09:06:38 +0000
+Message-ID: <0ab5ac71f28d459db2f350c2e07b88ca@AcuMS.aculab.com>
+References: <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
+ <20201022104805.GA1503673@kroah.com> <20201022121849.GA1664412@kroah.com>
+ <98d9df88-b7ef-fdfb-7d90-2fa7a9d7bab5@redhat.com>
+ <20201022125759.GA1685526@kroah.com> <20201022135036.GA1787470@kroah.com>
+ <134f162d711d466ebbd88906fae35b33@AcuMS.aculab.com>
+ <935f7168-c2f5-dd14-7124-412b284693a2@redhat.com>
+ <999e2926-9a75-72fd-007a-1de0af341292@redhat.com>
+ <35d0ec90ef4f4a35a75b9df7d791f719@AcuMS.aculab.com>
+ <20201023144718.GA2525489@kroah.com>
+In-Reply-To: <20201023144718.GA2525489@kroah.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: 'Greg KH'
+> Sent: 23 October 2020 15:47
+> 
+> On Fri, Oct 23, 2020 at 02:39:24PM +0000, David Laight wrote:
+> > From: David Hildenbrand
+> > > Sent: 23 October 2020 15:33
+> > ...
+> > > I just checked against upstream code generated by clang 10 and it
+> > > properly discards the upper 32bit via a mov w23 w2.
+> > >
+> > > So at least clang 10 indeed properly assumes we could have garbage and
+> > > masks it off.
+> > >
+> > > Maybe the issue is somewhere else, unrelated to nr_pages ... or clang 11
+> > > behaves differently.
+> >
+> > We'll need the disassembly from a failing kernel image.
+> > It isn't that big to hand annotate.
+> 
+> I've worked around the merge at the moment in the android tree, but it
+> is still quite reproducable, and will try to get a .o file to
+> disassemble on Monday or so...
 
+Did this get properly resolved?
 
-On 30 Oct 2020, at 22:28, Jakub Kicinski wrote:
+	David
 
-> On Thu, 29 Oct 2020 15:53:21 +0100 Eelco Chaudron wrote:
->> Silence suspicious RCU usage warning in 
->> ovs_flow_tbl_masks_cache_resize()
->> by replacing rcu_dereference() with rcu_dereference_ovsl().
->>
->> In addition, when creating a new datapath, make sure it's configured 
->> under
->> the ovs_lock.
->>
->> Fixes: 9bf24f594c6a ("net: openvswitch: make masks cache size 
->> configurable")
->> Reported-by: syzbot+9a8f8bfcc56e8578016c@syzkaller.appspotmail.com
->> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->> ---
->>  net/openvswitch/datapath.c   |    8 ++++----
->>  net/openvswitch/flow_table.c |    2 +-
->>  2 files changed, 5 insertions(+), 5 deletions(-)
->>
->> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
->> index 832f898edb6a..020f8539fede 100644
->> --- a/net/openvswitch/datapath.c
->> +++ b/net/openvswitch/datapath.c
->> @@ -1695,6 +1695,9 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, 
->> struct genl_info *info)
->>  	if (err)
->>  		goto err_destroy_ports;
->>
->> +	/* So far only local changes have been made, now need the lock. */
->> +	ovs_lock();
->
-> Should we move the lock below assignments to param?
->
-> Looks a little strange to protect stack variables with a global lock.
-
-You are right, I should have moved it down after the assignment. I will 
-send out a v2.
-
->>  	/* Set up our datapath device. */
->>  	parms.name = nla_data(a[OVS_DP_ATTR_NAME]);
->>  	parms.type = OVS_VPORT_TYPE_INTERNAL;
->> @@ -1707,9 +1710,6 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, 
->> struct genl_info *info)
->>  	if (err)
->>  		goto err_destroy_meters;
->>
->> -	/* So far only local changes have been made, now need the lock. */
->> -	ovs_lock();
->> -
->>  	vport = new_vport(&parms);
->>  	if (IS_ERR(vport)) {
->>  		err = PTR_ERR(vport);
->> @@ -1725,7 +1725,6 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, 
->> struct genl_info *info)
->>  				ovs_dp_reset_user_features(skb, info);
->>  		}
->>
->> -		ovs_unlock();
->>  		goto err_destroy_meters;
->>  	}
->>
->> @@ -1742,6 +1741,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, 
->> struct genl_info *info)
->>  	return 0;
->>
->>  err_destroy_meters:
->
-> Let's update the name of the label.
-
-Guess now it is, unlock and destroy meters, so what label are you 
-looking for?
-
-err_unlock_and_destroy_meters: which looks a bit long, or just 
-err_unlock:
-
->> +	ovs_unlock();
->>  	ovs_meters_exit(dp);
->>  err_destroy_ports:
->>  	kfree(dp->ports);
->> diff --git a/net/openvswitch/flow_table.c 
->> b/net/openvswitch/flow_table.c
->> index f3486a37361a..c89c8da99f1a 100644
->> --- a/net/openvswitch/flow_table.c
->> +++ b/net/openvswitch/flow_table.c
->> @@ -390,7 +390,7 @@ static struct mask_cache 
->> *tbl_mask_cache_alloc(u32 size)
->>  }
->>  int ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32 
->> size)
->>  {
->> -	struct mask_cache *mc = rcu_dereference(table->mask_cache);
->> +	struct mask_cache *mc = rcu_dereference_ovsl(table->mask_cache);
->>  	struct mask_cache *new;
->>
->>  	if (size == mc->cache_size)
->>
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
