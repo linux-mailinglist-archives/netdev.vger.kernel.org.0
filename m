@@ -2,202 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2DF62A28B6
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:05:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BEF22A28DA
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:16:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728498AbgKBLFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 06:05:33 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:2656 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728253AbgKBLFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:05:32 -0500
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A2B2ptP020099;
-        Mon, 2 Nov 2020 12:04:45 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=STMicroelectronics;
- bh=c46BUwKMyDOK+b3xICLc4SPGOwqFHPWlLu+N0eBiDsc=;
- b=qlgXi6rP2TqaGZFGGpTYwMqvPmL90+2jNgkIDUekhb1daD59BN2gIpspD9UJNonwWatj
- OHUgUW/gkuHA03EmB0FarCr3OF9wq9SA2yCiOWRX+Ek9VIR1j/QRToM/UC2lNjWAf3Kq
- Gq1pybeCkQlXMIpdTOQ7P/iFELEu7O6whhQllNenKEe5/XK6+0VIIemg87dHr4bkgTaI
- jiPcxx/TlvDgIqRR4jdhdt3eOubNpSinANuzNPCvX7gJnJy8bY2eDVhF2FtvabV8/mVh
- TOcw0QoQ4k7AwJJMs4NADeWVkO0Uncs5SNpNP0tOBNteIl80ydQPyt/xaWqAI4BRaYqI hQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 34h031a3kw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 Nov 2020 12:04:45 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 614FF100034;
-        Mon,  2 Nov 2020 12:04:43 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag1node3.st.com [10.75.127.3])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 96E252AD9F8;
-        Mon,  2 Nov 2020 12:04:42 +0100 (CET)
-Received: from [10.211.2.101] (10.75.127.45) by SFHDAG1NODE3.st.com
- (10.75.127.3) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 2 Nov
- 2020 12:04:37 +0100
-Subject: Re: [PATCH v2 20/39] docs: ABI: testing: make the files compatible
- with ReST output
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        =?UTF-8?Q?Javier_Gonz=c3=a1lez?= <javier@javigon.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Benson Leung <bleung@chromium.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Bruno Meneguele <bmeneg@redhat.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Konstantin Khlebnikov <koct9i@gmail.com>,
-        Kranthi Kuntala <kranthi.kuntala@intel.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Len Brown <lenb@kernel.org>,
-        Leonid Maksymchuk <leonmaxx@gmail.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Orson Zhai <orsonzhai@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Peter Rosin <peda@axentia.se>, Petr Mladek <pmladek@suse.com>,
-        Philippe Bergheaud <felix@linux.ibm.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tom Rix <trix@redhat.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        <linux-acpi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mm@kvack.org>, <linux-pm@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-usb@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
-        <netdev@vger.kernel.org>, <xen-devel@lists.xenproject.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-References: <cover.1604042072.git.mchehab+huawei@kernel.org>
- <58cf3c2d611e0197fb215652719ebd82ca2658db.1604042072.git.mchehab+huawei@kernel.org>
- <5326488b-4185-9d67-fc09-79b911fbb3b8@st.com>
- <20201030110925.3e09d59e@coco.lan>
-From:   Fabrice Gasnier <fabrice.gasnier@st.com>
-Message-ID: <cb586ea3-b6e6-4e48-2344-2bd641e5323f@st.com>
-Date:   Mon, 2 Nov 2020 12:04:36 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728387AbgKBLQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 06:16:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43443 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728288AbgKBLQF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:16:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604315762;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RMlHTzqu9dwMlTgXD4m+TiGPhehrYvoCAtcJOkl1hus=;
+        b=T2gUZg/500FXcWWlw95azZqxqBHB8l5pU5CQv3VlHObkuwtAY5u4k0VFUuyztlTVEpTWZc
+        My1biGLgQuPt5RMZKKppzfol/lMnGtRMoH68b9dA6V+yN8a29NgnZarEDcR/7PBSDVXz6c
+        03Fdh+YScD2BM5iJIWBrFTM433RP/90=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-373-D3Sx_8bCOauk1d-s7caCLA-1; Mon, 02 Nov 2020 06:15:59 -0500
+X-MC-Unique: D3Sx_8bCOauk1d-s7caCLA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1972210866C3;
+        Mon,  2 Nov 2020 11:15:57 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1F7915C629;
+        Mon,  2 Nov 2020 11:15:49 +0000 (UTC)
+Date:   Mon, 2 Nov 2020 12:15:48 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        brouer@redhat.com
+Subject: Re: [PATCH bpf-next V5 3/5] bpf: add BPF-helper for MTU checking
+Message-ID: <20201102121548.5e2c36b1@carbon>
+In-Reply-To: <5f9c764fc98c6_16d4208d5@john-XPS-13-9370.notmuch>
+References: <160407661383.1525159.12855559773280533146.stgit@firesoul>
+        <160407666238.1525159.9197344855524540198.stgit@firesoul>
+        <5f9c764fc98c6_16d4208d5@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-In-Reply-To: <20201030110925.3e09d59e@coco.lan>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG4NODE2.st.com (10.75.127.11) To SFHDAG1NODE3.st.com
- (10.75.127.3)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-02_03:2020-11-02,2020-11-02 signatures=0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/30/20 11:09 AM, Mauro Carvalho Chehab wrote:
-> Em Fri, 30 Oct 2020 10:19:12 +0100
-> Fabrice Gasnier <fabrice.gasnier@st.com> escreveu:
-> 
->> Hi Mauro,
->>
->> [...]
->>
->>>  
->>> +What:		/sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available
->>> +KernelVersion:	4.12
->>> +Contact:	benjamin.gaignard@st.com
->>> +Description:
->>> +		Reading returns the list possible quadrature modes.
->>> +
->>> +What:		/sys/bus/iio/devices/iio:deviceX/in_count0_quadrature_mode
->>> +KernelVersion:	4.12
->>> +Contact:	benjamin.gaignard@st.com
->>> +Description:
->>> +		Configure the device counter quadrature modes:
->>> +
->>> +		channel_A:
->>> +			Encoder A input servers as the count input and B as
->>> +			the UP/DOWN direction control input.
->>> +
->>> +		channel_B:
->>> +			Encoder B input serves as the count input and A as
->>> +			the UP/DOWN direction control input.
->>> +
->>> +		quadrature:
->>> +			Encoder A and B inputs are mixed to get direction
->>> +			and count with a scale of 0.25.
->>> +  
->>
-> 
-> Hi Fabrice,
-> 
->> I just noticed that since Jonathan question in v1.
->>
->> Above ABI has been moved in the past as discussed in [1]. You can take a
->> look at:
->> b299d00 IIO: stm32: Remove quadrature related functions from trigger driver
->>
->> Could you please remove the above chunk ?
->>
->> With that, for the stm32 part:
->> Acked-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-> 
-> 
-> Hmm... probably those were re-introduced due to a rebase. This
-> series were originally written about 1,5 years ago.
-> 
-> I'll drop those hunks.
+On Fri, 30 Oct 2020 13:23:43 -0700
+John Fastabend <john.fastabend@gmail.com> wrote:
 
-Hi Mauro, Greg,
-
-I just figured out this patch has been applied with above hunk.
-
-This should be dropped: is there a fix on its way already ?
-(I may have missed it)
-
-Please advise,
-Fabrice
+> Jesper Dangaard Brouer wrote:
+> > This BPF-helper bpf_check_mtu() works for both XDP and TC-BPF programs.
+> > 
+> > The API is designed to help the BPF-programmer, that want to do packet
+> > context size changes, which involves other helpers. These other helpers
+> > usually does a delta size adjustment. This helper also support a delta
+> > size (len_diff), which allow BPF-programmer to reuse arguments needed by
+> > these other helpers, and perform the MTU check prior to doing any actual
+> > size adjustment of the packet context.
+> > 
+> > It is on purpose, that we allow the len adjustment to become a negative
+> > result, that will pass the MTU check. This might seem weird, but it's not
+> > this helpers responsibility to "catch" wrong len_diff adjustments. Other
+> > helpers will take care of these checks, if BPF-programmer chooses to do
+> > actual size adjustment.
+> > 
+> > V4: Lot of changes
+> >  - ifindex 0 now use current netdev for MTU lookup
+> >  - rename helper from bpf_mtu_check to bpf_check_mtu
+> >  - fix bug for GSO pkt length (as skb->len is total len)
+> >  - remove __bpf_len_adj_positive, simply allow negative len adj
+> > 
+> > V3: Take L2/ETH_HLEN header size into account and document it.
+> > 
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > ---  
 > 
-> Thanks!
-> Mauro
+> Sorry for the late feedback here.
 > 
+> This seems like a lot of baked in functionality into the helper? Can you
+> say something about why the simpler and, at least to me, more intuitive
+> helper to simply return the ifindex mtu is not ideal?
+
+I tried to explain this in the patch description.  This is for easier
+collaboration with other helpers, that also have the len_diff parameter.
+This API allow to check the MTU *prior* to doing the size adjustment.
+
+Let me explain what is not in the patch desc:
+
+In the first patchset, I started with the simply implementation of
+returning the MTU.  Then I realized that this puts more work into the
+BPF program (thus increasing BPF code instructions).  As we in BPF-prog
+need to extract the packet length to compare against the returned MTU
+size. Looking at other programs that does the ctx/packet size adjust, we
+don't extract the packet length as ctx is about to change, and we don't
+need the MTU variable in the BPF prog (unless it fails).
+
+
+> Rough pseudo code being,
+> 
+>  my_sender(struct __sk_buff *skb, int fwd_ifindex)
+>  {
+>    mtu = bpf_get_ifindex_mtu(fwd_ifindex, 0);
+>    if (skb->len + HDR_SIZE < mtu)
+>        return send_with_hdrs(skb);
+>    return -EMSGSIZE
+>  }
+> 
+> 
+> >  include/uapi/linux/bpf.h       |   70 +++++++++++++++++++++++
+> >  net/core/filter.c              |  120 ++++++++++++++++++++++++++++++++++++++++
+> >  tools/include/uapi/linux/bpf.h |   70 +++++++++++++++++++++++
+> >  3 files changed, 260 insertions(+)
+> >   
+> 
+> [...]
+> 
+> > + *              **BPF_MTU_CHK_RELAX**
+> > + *			This flag relax or increase the MTU with room for one
+> > + *			VLAN header (4 bytes). This relaxation is also used by
+> > + *			the kernels own forwarding MTU checks.  
+> 
+> I noted below as well, but not sure why this is needed. Seems if user
+> knows to add a flag because they want a vlan header we can just as
+> easily expect BPF program to do it. Also it only works for VLAN headers
+> any other header data wont be accounted for so it seems only useful
+> in one specific case.
+
+This was added because the kernels own forwarding have this relaxation
+build in.  Thus, I though that I should add flag to compatible with the
+kernels forwarding checks.
+
+> > + *
+> > + *		**BPF_MTU_CHK_SEGS**
+> > + *			This flag will only works for *ctx* **struct sk_buff**.
+> > + *			If packet context contains extra packet segment buffers
+> > + *			(often knows as GSO skb), then MTU check is partly
+> > + *			skipped, because in transmit path it is possible for the
+> > + *			skb packet to get re-segmented (depending on net device
+> > + *			features).  This could still be a MTU violation, so this
+> > + *			flag enables performing MTU check against segments, with
+> > + *			a different violation return code to tell it apart.
+> > + *
+> > + *		The *mtu_result* pointer contains the MTU value of the net
+> > + *		device including the L2 header size (usually 14 bytes Ethernet
+> > + *		header). The net device configured MTU is the L3 size, but as
+> > + *		XDP and TX length operate at L2 this helper include L2 header
+> > + *		size in reported MTU.
+> > + *
+> > + *	Return
+> > + *		* 0 on success, and populate MTU value in *mtu_result* pointer.
+> > + *
+> > + *		* < 0 if any input argument is invalid (*mtu_result* not updated)
+> > + *
+> > + *		MTU violations return positive values, but also populate MTU
+> > + *		value in *mtu_result* pointer, as this can be needed for
+> > + *		implementing PMTU handing:
+> > + *
+> > + *		* **BPF_MTU_CHK_RET_FRAG_NEEDED**
+> > + *		* **BPF_MTU_CHK_RET_SEGS_TOOBIG**
+> > + *
+> >   */  
+> 
+> [...]
+> 
+> > +static int __bpf_lookup_mtu(struct net_device *dev_curr, u32 ifindex, u64 flags)
+> > +{
+> > +	struct net *netns = dev_net(dev_curr);
+> > +	struct net_device *dev;
+> > +	int mtu;
+> > +
+> > +	/* Non-redirect use-cases can use ifindex=0 and save ifindex lookup */
+> > +	if (ifindex == 0)
+> > +		dev = dev_curr;
+> > +	else
+> > +		dev = dev_get_by_index_rcu(netns, ifindex);
+> > +
+> > +	if (!dev)
+> > +		return -ENODEV;
+> > +
+> > +	/* XDP+TC len is L2: Add L2-header as dev MTU is L3 size */
+> > +	mtu = dev->mtu + dev->hard_header_len;  
+> 
+> READ_ONCE() on dev->mtu and hard_header_len as well? We don't have
+> any locks.
+
+This is based on similar checks done in the same execution context,
+which don't have these READ_ONCE() macros.  I'm not introducing reading
+these, I'm simply moving when they are read.  If this is really needed,
+then I think we need separate fixes patches, for stable backporting.
+
+While doing this work, I've realized that mtu + hard_header_len is
+located on two different cache-lines, which is unfortunate, but I will
+look at fixing this in followup patches.
+
+
+> > +
+> > +	/*  Same relax as xdp_ok_fwd_dev() and is_skb_forwardable() */
+> > +	if (flags & BPF_MTU_CHK_RELAX)
+> > +		mtu += VLAN_HLEN;  
+> 
+> I'm trying to think about the use case where this might be used?
+> Compared to just adjusting MTU in BPF program side as needed for
+> packet encapsulation/headers/etc.
+
+As I wrote above, this were added because the kernels own forwarding
+have this relaxation in it's checks (in is_skb_forwardable()).  I even
+tried to dig through the history, introduced in [1] and copy-pasted
+in[2].  And this seems to be a workaround, that have become standard,
+that still have practical implications.
+
+My practical experiments showed, that e.g. ixgbe driver with MTU=1500
+(L3-size) will allow and fully send packets with 1504 (L3-size). But
+i40e will not, and drops the packet in hardware/firmware step.  So,
+what is the correct action, strict or relaxed?
+
+My own conclusion is that we should inverse the flag.  Meaning to
+default add this VLAN_HLEN (4 bytes) relaxation, and have a flag to do
+more strict check,  e.g. BPF_MTU_CHK_STRICT. As for historical reasons
+we must act like kernels version of MTU check. Unless you object, I will
+do this in V6.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
+[1] https://git.kernel.org/torvalds/c/57f89bfa2140 ("network: Allow af_packet to transmit +4 bytes for VLAN packets.") (Author: Ben Greear)
+ 
+[2] https://git.kernel.org/torvalds/c/79b569f0ec53 ("netdev: fix mtu check when TSO is enabled") (Author: Daniel Lezcano)
+
