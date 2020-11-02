@@ -2,88 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F401C2A3127
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 18:15:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED54E2A31A6
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 18:34:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727708AbgKBRPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 12:15:33 -0500
-Received: from z5.mailgun.us ([104.130.96.5]:52775 "EHLO z5.mailgun.us"
+        id S1727805AbgKBRec (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 12:34:32 -0500
+Received: from mx2.suse.de ([195.135.220.15]:54476 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727665AbgKBRPd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 12:15:33 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1604337332; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=GK/1Mr2kF0Nc9OODRidv+8GJ+vdyOPdP+l+eWo/8/U0=; b=S/VqbvB7rMD+dsFV6U/ZIgrqkhlM6sU9Iy3JrFIsnK+NSBsjQq9bQGBQf50a9SOGzKnFvkAb
- q95hcQknmjwfmmkt76t1kkUgWz5jDLBiud23lFxud60fCv/YEh/8UaXJSWc/u+tp7ckikvGA
- H4lFFSzR+yHmwsh6JsHcmddPrtc=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 5fa03eb493c4278c7237355c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 02 Nov 2020 17:15:32
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6AED4C433A1; Mon,  2 Nov 2020 17:15:32 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C038EC433C6;
-        Mon,  2 Nov 2020 17:15:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C038EC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Seung-Woo Kim <sw0312.kim@samsung.com>
-Cc:     arend.vanspriel@broadcom.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, chi-hsien.lin@cypress.com,
-        wright.feng@cypress.com, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, smoch@web.de,
-        sandals@crustytoothpaste.net, rafal@milecki.pl, digetx@gmail.com,
-        double.lo@cypress.com, amsr@cypress.com, stanley.hsu@cypress.com,
-        saravanan.shanmugham@cypress.com, jean-philippe@linaro.org,
-        frank.kao@cypress.com, netdev@vger.kernel.org,
-        jh80.chung@samsung.com
-Subject: Re: [PATCH v2] brcmfmac: Fix memory leak for unpaired brcmf_{alloc/free}
-References: <CGME20201028015033epcas1p4f3d9b38b037ff6d4432e1a2866544e38@epcas1p4.samsung.com>
-        <1603849967-22817-1-git-send-email-sw0312.kim@samsung.com>
-Date:   Mon, 02 Nov 2020 19:15:23 +0200
-In-Reply-To: <1603849967-22817-1-git-send-email-sw0312.kim@samsung.com>
-        (Seung-Woo Kim's message of "Wed, 28 Oct 2020 10:52:47 +0900")
-Message-ID: <87pn4vof2s.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1727227AbgKBReb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 12:34:31 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id E1E56AC6A;
+        Mon,  2 Nov 2020 17:34:29 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 5EFE7DA7D2; Mon,  2 Nov 2020 18:32:52 +0100 (CET)
+Date:   Mon, 2 Nov 2020 18:32:50 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Pujin Shi <shipujin.t@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: ethernet: mscc: fix missing brace warning for old
+ compilers
+Message-ID: <20201102173250.GJ6756@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Pujin Shi <shipujin.t@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20201102134136.2565-1-shipujin.t@gmail.com>
+ <20201102135654.gs2fa7q2y3i3sc5k@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201102135654.gs2fa7q2y3i3sc5k@skbuf>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Seung-Woo Kim <sw0312.kim@samsung.com> writes:
+On Mon, Nov 02, 2020 at 01:56:55PM +0000, Vladimir Oltean wrote:
+> On Mon, Nov 02, 2020 at 09:41:36PM +0800, Pujin Shi wrote:
+> > For older versions of gcc, the array = {0}; will cause warnings:
+> > 
+> > drivers/net/ethernet/mscc/ocelot_vcap.c: In function 'is1_entry_set':
+> > drivers/net/ethernet/mscc/ocelot_vcap.c:755:11: warning: missing braces around initializer [-Wmissing-braces]
+> >     struct ocelot_vcap_u16 etype = {0};
+> >            ^
+> > drivers/net/ethernet/mscc/ocelot_vcap.c:755:11: warning: (near initialization for 'etype.value') [-Wmissing-braces]
+> > 
+> > 1 warnings generated
+> > 
+> > Fixes: 75944fda1dfe ("net: mscc: ocelot: offload ingress skbedit and vlan actions to VCAP IS1")
+> > Signed-off-by: Pujin Shi <shipujin.t@gmail.com>
+> > ---
+> >  drivers/net/ethernet/mscc/ocelot_vcap.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
+> > index d8c778ee6f1b..b96eab4583e7 100644
+> > --- a/drivers/net/ethernet/mscc/ocelot_vcap.c
+> > +++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+> > @@ -752,7 +752,7 @@ static void is1_entry_set(struct ocelot *ocelot, int ix,
+> >  					     dport);
+> >  		} else {
+> >  			/* IPv4 "other" frame */
+> > -			struct ocelot_vcap_u16 etype = {0};
+> > +			struct ocelot_vcap_u16 etype = {};
+> >  
+> >  			/* Overloaded field */
+> >  			etype.value[0] = proto.value[0];
+> 
+> Sorry, I don't understand what the problem is, or why your patch fixes
+> it. What version of gcc are you testing with?
 
-> There are missig brcmf_free() for brcmf_alloc(). Fix memory leak
-> by adding missed brcmf_free().
->
-> Reported-by: Jaehoon Chung <jh80.chung@samsung.com>
-> Fixes: commit 450914c39f88 ("brcmfmac: split brcmf_attach() and brcmf_detach() functions")
+Nothing wrong and { 0 } is the right initializer, the reports must be
+from some ancient gcc but we weren't told which one either.
 
-This should be:
-
-Fixes: 450914c39f88 ("brcmfmac: split brcmf_attach() and brcmf_detach() functions")
-
-But I can fix that, no need to resend because of this.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+https://lore.kernel.org/linux-btrfs/fbddb15a-6e46-3f21-23ba-b18f66e3448a@suse.com/
