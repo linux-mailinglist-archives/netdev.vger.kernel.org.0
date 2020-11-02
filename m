@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FAFB2A2E0C
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 16:21:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61BB22A2E28
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 16:22:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726694AbgKBPU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 10:20:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56728 "EHLO
+        id S1726707AbgKBPVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 10:21:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726618AbgKBPU4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 10:20:56 -0500
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D75C061A47
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 07:20:54 -0800 (PST)
-Received: by mail-wm1-x342.google.com with SMTP id p22so9767456wmg.3
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 07:20:54 -0800 (PST)
+        with ESMTP id S1726659AbgKBPU5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 10:20:57 -0500
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E932C061A48
+        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 07:20:56 -0800 (PST)
+Received: by mail-wm1-x341.google.com with SMTP id e2so9870463wme.1
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 07:20:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/Z+wwi/tFfEYyTBQIvrIHI75+eOD/rtT/HKhEUnLNfQ=;
-        b=e5kjyidWL8cmpiZH3KN4gbQ7mPV2yzGx2nkYanw2be0opJ+Vz0F/h7+cASkSpyPvft
-         Cq/QKHKgAn39kkunAelTRvo6+t//6O8sFAxBBIWVN/D/sXHLN0TcApD154vCBfBKfHLt
-         cLayxxCVPglJdryRP0qymWqoSldB8VezR3ze+ww/h6mL64irtmyW1Iv/4QeMsHgFEmU1
-         EnCxPQadIxfRrkqDHNb0AWnJ/TDZd1tbaPxP67i/kRiJU0AadmF8tkFzS5SiBFs65eHd
-         s2porevmNAwd7EJUylR58be5iKdfMpI6Ofog3Lr78MGsAlfmarg/IAiyvFrSdsneofbm
-         aJMQ==
+        bh=J57Co4keOJLPpkOAtm30WeNaGboSbDo7KGbxSzSraLw=;
+        b=WjUcLw8gDcHIiMrch+N57kyIWhFBESoNnwJbo8ozbR4u2s7V8dYOCGUGcrdCQs0A8c
+         eQ33JQCo7FlLI/BSLX3oyaROh6lCmluXX5jsXGGHEInxOXk5kMdE5EkChmFgZmNwn3eb
+         RwlsVtsZQHldyPx0J11ujW5fXjWbCiWcVuULMO77gCNRB/nW03qXSgrnoTEFhuGMBnUK
+         sL+IQo1YUMwYJSK40SS6mEwNb1VtEI53RpcVxfuMkInp0D3aXlaGqbYsVindMPO71Ke3
+         cZCq5fRNyBPIQZcN+ygz0gPhtpG7oZ2WlcrEtOMJ/4DQH9LXLeCfvwg9MCDRBNLrjhq/
+         00Rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/Z+wwi/tFfEYyTBQIvrIHI75+eOD/rtT/HKhEUnLNfQ=;
-        b=CXVbveFWSQI0ZgutsoTBew+4jkYme83oSk7vSp14KKJKJfg8DqcukfUN9lDrNtFKJQ
-         NM1V2sxom5RMlpjdVZjJFVyQY/083EbdDgy6sSRXrGhm6EKq8eBYMNnaGg6hE0HEjJEz
-         Ev2F4Cie/1HB974iLVy50S7NL9Zt1VJmjXl2eLyo8gtW/C4v/W+0+1QkLEQWDIKVjt3D
-         GxrSUJ665qYPWxE5nU+xNCqO5fRGigmR7iiUD0x+BgTfqxAslV3iiOImG23HVedbGlLH
-         uts7V9mX6lRyZsVkidxG8m68TTufZbSnFV1xPaRXnyc5igZ7JZpmyFQjW7RsipYv0J1y
-         jTvg==
-X-Gm-Message-State: AOAM533FUsGcZUttIBRXzgrQHzUWIpczaeegOUoxtnunynfa6hJDoGNR
-        mQiKGPhoQIhfYoW6Ho/fejKtEg==
-X-Google-Smtp-Source: ABdhPJwLl/Yb+dmot3Qj9GobH6d2VSIEqfIwMoXbr9WYE4ZivqBC7akLVHb/L/C2gNGglG2Ytc/IgQ==
-X-Received: by 2002:a1c:1906:: with SMTP id 6mr17871137wmz.87.1604330453311;
-        Mon, 02 Nov 2020 07:20:53 -0800 (PST)
+        bh=J57Co4keOJLPpkOAtm30WeNaGboSbDo7KGbxSzSraLw=;
+        b=XV5Lbt0u7/gVcCKRqljQ51cbO902rLreEv57NNKCwpCvHRH5KMekmFljO3Wrm6J1a+
+         Fy3BaO1Ev08aA+zgCNP278J13aBszRWR2yqEEKyW/QBdlSWD5y3E0nSDL+TJiy8VF53l
+         hUpUfpqtcGaq0G+XqmLtRWL1Kc5jZ0WDkN/XkLjG7tIWchFeABLOJdjUQQp1nLlzSHZ5
+         Q8KEc6H536oAfgk5NZCQXm3L3/toul8Otz9tVy9QyJDRYCmZxvXfmEFZJQ/uh846fpuk
+         iODjvn3nnoRjlWKrRlA8LwPooDpVRoDL74kpQ+IozmNjk22naHWNritCZCg0zdbfNMDg
+         oaWA==
+X-Gm-Message-State: AOAM5337mswfdhWgNQkOR8uGwD+ImNFu8aUddZ7jzwPDJDSczAMh9Fxh
+        AYMcgP96R1PQzHdFRJ7Cc4lhQw==
+X-Google-Smtp-Source: ABdhPJzrGRLOF2/QgV4EgJsGUrSZ+4C2XU14++PTKK4DegXurFNGMqip9Gki2NGq2KA3LkM7jho+gA==
+X-Received: by 2002:a1c:4646:: with SMTP id t67mr18816040wma.40.1604330455334;
+        Mon, 02 Nov 2020 07:20:55 -0800 (PST)
 Received: from debian-brgl.home (amarseille-656-1-4-167.w90-8.abo.wanadoo.fr. [90.8.158.167])
-        by smtp.gmail.com with ESMTPSA id b18sm15138014wmj.41.2020.11.02.07.20.51
+        by smtp.gmail.com with ESMTPSA id b18sm15138014wmj.41.2020.11.02.07.20.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 07:20:52 -0800 (PST)
+        Mon, 02 Nov 2020 07:20:54 -0800 (PST)
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sumit Semwal <sumit.semwal@linaro.org>,
@@ -78,11 +78,10 @@ Cc:     linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
         kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
         netdev@vger.kernel.org, linux-mm@kvack.org,
         alsa-devel@alsa-project.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>
-Subject: [PATCH v2 6/8] drm: atomic: use krealloc_array()
-Date:   Mon,  2 Nov 2020 16:20:35 +0100
-Message-Id: <20201102152037.963-7-brgl@bgdev.pl>
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH v2 7/8] hwtracing: intel: use krealloc_array()
+Date:   Mon,  2 Nov 2020 16:20:36 +0100
+Message-Id: <20201102152037.963-8-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.29.1
 In-Reply-To: <20201102152037.963-1-brgl@bgdev.pl>
 References: <20201102152037.963-1-brgl@bgdev.pl>
@@ -98,25 +97,23 @@ Use the helper that checks for overflows internally instead of manually
 calculating the size of the new array.
 
 Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
 ---
- drivers/gpu/drm/drm_atomic.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/hwtracing/intel_th/msu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/drm_atomic.c b/drivers/gpu/drm/drm_atomic.c
-index 58527f151984..09ad6a2ec17b 100644
---- a/drivers/gpu/drm/drm_atomic.c
-+++ b/drivers/gpu/drm/drm_atomic.c
-@@ -960,7 +960,8 @@ drm_atomic_get_connector_state(struct drm_atomic_state *state,
- 		struct __drm_connnectors_state *c;
- 		int alloc = max(index + 1, config->num_connector);
+diff --git a/drivers/hwtracing/intel_th/msu.c b/drivers/hwtracing/intel_th/msu.c
+index 3a77551fb4fc..7d95242db900 100644
+--- a/drivers/hwtracing/intel_th/msu.c
++++ b/drivers/hwtracing/intel_th/msu.c
+@@ -2002,7 +2002,7 @@ nr_pages_store(struct device *dev, struct device_attribute *attr,
+ 		}
  
--		c = krealloc(state->connectors, alloc * sizeof(*state->connectors), GFP_KERNEL);
-+		c = krealloc_array(state->connectors, alloc,
-+				   sizeof(*state->connectors), GFP_KERNEL);
- 		if (!c)
- 			return ERR_PTR(-ENOMEM);
- 
+ 		nr_wins++;
+-		rewin = krealloc(win, sizeof(*win) * nr_wins, GFP_KERNEL);
++		rewin = krealloc_array(win, nr_wins, sizeof(*win), GFP_KERNEL);
+ 		if (!rewin) {
+ 			kfree(win);
+ 			return -ENOMEM;
 -- 
 2.29.1
 
