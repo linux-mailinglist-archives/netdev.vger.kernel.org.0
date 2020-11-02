@@ -2,72 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE252A372B
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 00:28:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8EA92A3730
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 00:34:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726552AbgKBX2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 18:28:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33862 "EHLO mail.kernel.org"
+        id S1725914AbgKBXeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 18:34:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34278 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725841AbgKBX2r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 18:28:47 -0500
-Received: from dragon (80.251.214.228.16clouds.com [80.251.214.228])
+        id S1725831AbgKBXeB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 18:34:01 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 28AAE22280;
-        Mon,  2 Nov 2020 23:28:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B0962222BA;
+        Mon,  2 Nov 2020 23:34:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604359727;
-        bh=4MjQMzBRiuQQCBZ/m2YpKQucOcQZa7hQO0Ry0R/PWLY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GVqI/0xLl0PHdspUgvrvlEYBzXN3PNAvN+q70ACDQLBvKvTxOJ6TzR0ZoJ+NDPPQG
-         a0olQwsE8XKIkqrfR2VV8fXgY7AxgLy5j5kogO6ts8+ZW5w9AbkbiOKFC+TxslySjE
-         z6tb/dovnpfFNLkfRTfXHYx/9BfVysVqDmi+s13E=
-Date:   Tue, 3 Nov 2020 07:28:41 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     mkl@pengutronix.de, robh+dt@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, linux-imx@nxp.com, victor.liu@nxp.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V4 5/6] dt-bindings: firmware: add IMX_SC_R_CAN(x) macro
- for CAN
-Message-ID: <20201102232840.GT31601@dragon>
-References: <20201021052437.3763-1-qiangqing.zhang@nxp.com>
- <20201021052437.3763-6-qiangqing.zhang@nxp.com>
+        s=default; t=1604360041;
+        bh=K6bvvJGdS8YF6CuShWuFdR+WmqdGi7JDZ90UC/VK2Sg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=xsO3vgF+9+lzxhFYqVWKlnoYFOFw21IQ6MDVONnbANdceVBca7gUvHpxImNwIhvdX
+         gJz6k5ADkvvoRvbkVDLhywqsSvvL02kVow4Kl1CEQshLWO/4nxwGXPwTLXyGKGFPX7
+         bxP4EMOdB5MeieceOhjgXsDGIesacr4IisxsFBd4=
+Date:   Mon, 2 Nov 2020 15:33:59 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, Geliang Tang <geliangtang@gmail.com>,
+        mptcp@lists.01.org, davem@davemloft.net,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next 5/6] mptcp: add a new sysctl add_addr_timeout
+Message-ID: <20201102153359.29c546f1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201030224506.108377-6-mathew.j.martineau@linux.intel.com>
+References: <20201030224506.108377-1-mathew.j.martineau@linux.intel.com>
+        <20201030224506.108377-6-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201021052437.3763-6-qiangqing.zhang@nxp.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 21, 2020 at 01:24:36PM +0800, Joakim Zhang wrote:
-> Add IMX_SC_R_CAN(x) macro for CAN.
+On Fri, 30 Oct 2020 15:45:05 -0700 Mat Martineau wrote:
+> From: Geliang Tang <geliangtang@gmail.com>
 > 
-> Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> This patch added a new sysctl, named add_addr_timeout, to control the
+> timeout value (in seconds) of the ADD_ADDR retransmission.
 
-Acked-by: Shawn Guo <shawnguo@kernel.org>
-
-> ---
->  include/dt-bindings/firmware/imx/rsrc.h | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/include/dt-bindings/firmware/imx/rsrc.h b/include/dt-bindings/firmware/imx/rsrc.h
-> index 54278d5c1856..43885056557c 100644
-> --- a/include/dt-bindings/firmware/imx/rsrc.h
-> +++ b/include/dt-bindings/firmware/imx/rsrc.h
-> @@ -111,6 +111,7 @@
->  #define IMX_SC_R_CAN_0			105
->  #define IMX_SC_R_CAN_1			106
->  #define IMX_SC_R_CAN_2			107
-> +#define IMX_SC_R_CAN(x)			(IMX_SC_R_CAN_0 + (x))
->  #define IMX_SC_R_DMA_1_CH0		108
->  #define IMX_SC_R_DMA_1_CH1		109
->  #define IMX_SC_R_DMA_1_CH2		110
-> -- 
-> 2.17.1
-> 
+Please document the new sysctl.
