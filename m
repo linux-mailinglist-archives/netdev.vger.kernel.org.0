@@ -2,139 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 457712A2E95
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 16:47:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B4FD2A2ED4
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 16:58:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbgKBPrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 10:47:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725837AbgKBPrM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 10:47:12 -0500
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04914C0617A6;
-        Mon,  2 Nov 2020 07:47:12 -0800 (PST)
-Received: by mail-io1-xd42.google.com with SMTP id s24so8564067ioj.13;
-        Mon, 02 Nov 2020 07:47:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EJo4Lc1lqAgthYLdSr5xKFb0sp4iI0l39NPBNmW46vs=;
-        b=GPv3O9DByzQZdM0BsLH9NYfXEDcMS6Um8cZXdmaIvLMxZM+7sIAl6JYljeQVk25dLm
-         lF0eVzmWuMuMM7CU4Wef14YNStS0/FTSSpEKh8js1HJlREOfoPFK4v2b1L8I+Uykrp6d
-         q4ALeD00+GIIRMeyypLLCphf5SqukYazP7DuzFlP3XzZW/rgLk2y/cR0kaPxaTVS9PT5
-         x3MZT51TtvBLdbYcjcQKJHpqEXt/m6BNsxPw2SGy9eMuTxtMWjtpIrZzOxRiqK1HqlyC
-         PT13bSatCRKSl3Xskf1w5v7uqKNkvLMMP4aaL0krNld90NlNMWyZVokLevLc19S1ZTl3
-         6aaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EJo4Lc1lqAgthYLdSr5xKFb0sp4iI0l39NPBNmW46vs=;
-        b=NlUBZhx7K7wA9PD2CxAWwogZJy69AFP/HXiEspA3235xe/uZkzny43V2QkK2V65ANe
-         0U3AygGKqj/xlDHoytz8rb8xjqFTIB9/zljTBu5bLkx3wI1cofsVPA3jAQnQcltgXXFJ
-         syVFmkJT343Mwd+d8PfRxpTaOVLbeqUHMonPPQ4An4dm5rPCCp2z+IIWTkXjsgr5ick4
-         3mvJ5ZrS5xL6WzP+3NzySn+VjUGSc/4/m3XndeL3zckZe54j8wabm1hNOqfTZT4xYMS+
-         4ZHYRd0yAs+tdHr6nb8TgnSR9otFUtMf8CoM2JAm2RfQvH9cwfAPh9e1b+guu9PyO8F3
-         1pbA==
-X-Gm-Message-State: AOAM533/V+GjvmZ1nLYCjQpeclEevzSNojAV8KonHg+7JKuKgS8OrOtR
-        41PRzKq8Fz9CrlQi9Lnan8k=
-X-Google-Smtp-Source: ABdhPJzMJCi9ifw/mE34R3OQrB2zJvTNG9MolOcgzcfeXczJ2hW9xPuvfG3sd9VG6838T2KgWpRfLQ==
-X-Received: by 2002:a02:5e84:: with SMTP id h126mr12207031jab.128.1604332031403;
-        Mon, 02 Nov 2020 07:47:11 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:4ca9:ddcf:e3b:9c54])
-        by smtp.googlemail.com with ESMTPSA id v88sm11255235ila.71.2020.11.02.07.47.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Nov 2020 07:47:10 -0800 (PST)
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
-        <toke@redhat.com>
-References: <20201028132529.3763875-1-haliu@redhat.com>
- <20201029151146.3810859-1-haliu@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
-Date:   Mon, 2 Nov 2020 08:47:08 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        id S1726645AbgKBP6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 10:58:18 -0500
+Received: from m42-4.mailgun.net ([69.72.42.4]:26900 "EHLO m42-4.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726612AbgKBP6R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 10:58:17 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1604332697; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
+ To: From: Sender; bh=kP87ryMp5ujlGNQxxe2/b+S1KvTJacb5RVmVXpD9rUg=; b=xYDiwjLHekZsbhAuuYi86SCTmaW5hKz6QlfFYO03WsE9UA5rgkp6gMPzvUmK20SpQ/BudA+i
+ XmI750xub7XQzEme1xwqKepROb88iYI8yIjaqKkpMNAA026TWDdSdsxJs8rre5BxBaWlNvUU
+ lO2VfPoFV1O6aKfbUigmajEBYQM=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 5fa02c98d8a9d167f347e713 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 02 Nov 2020 15:58:16
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 890B6C433FE; Mon,  2 Nov 2020 15:58:16 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7C085C433C9;
+        Mon,  2 Nov 2020 15:58:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7C085C433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
+Cc:     Rob Herring <robh@kernel.org>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 01/23] dt-bindings: introduce silabs,wfx.yaml
+References: <20201012104648.985256-1-Jerome.Pouiller@silabs.com>
+        <20201012104648.985256-2-Jerome.Pouiller@silabs.com>
+        <20201013164935.GA3646933@bogus> <3929101.dIHeVNgAIR@pc-42>
+Date:   Mon, 02 Nov 2020 17:58:11 +0200
+In-Reply-To: <3929101.dIHeVNgAIR@pc-42> (=?utf-8?B?IkrDqXLDtG1l?=
+ Pouiller"'s message of "Wed,
+        14 Oct 2020 15:49:12 +0200")
+Message-ID: <87imanpx7w.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <20201029151146.3810859-1-haliu@redhat.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/29/20 9:11 AM, Hangbin Liu wrote:
-> This series converts iproute2 to use libbpf for loading and attaching
-> BPF programs when it is available. This means that iproute2 will
-> correctly process BTF information and support the new-style BTF-defined
-> maps, while keeping compatibility with the old internal map definition
-> syntax.
-> 
-> This is achieved by checking for libbpf at './configure' time, and using
-> it if available. By default the system libbpf will be used, but static
-> linking against a custom libbpf version can be achieved by passing
-> LIBBPF_DIR to configure. FORCE_LIBBPF can be set to force configure to
-> abort if no suitable libbpf is found (useful for automatic packaging
-> that wants to enforce the dependency).
-> 
-> The old iproute2 bpf code is kept and will be used if no suitable libbpf
-> is available. When using libbpf, wrapper code ensures that iproute2 will
-> still understand the old map definition format, including populating
-> map-in-map and tail call maps before load.
-> 
-> The examples in bpf/examples are kept, and a separate set of examples
-> are added with BTF-based map definitions for those examples where this
-> is possible (libbpf doesn't currently support declaratively populating
-> tail call maps).
-> 
-> At last, Thanks a lot for Toke's help on this patch set.
-> 
+J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com> writes:
 
-In regards to comments from v2 of the series:
+> On Tuesday 13 October 2020 18:49:35 CEST Rob Herring wrote:
+>> On Mon, Oct 12, 2020 at 12:46:26PM +0200, Jerome Pouiller wrote:
+>> > From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+> [...]
+>> > +  Note that in add of the properties below, the WFx driver also suppo=
+rts
+>> > +  `mac-address` and `local-mac-address` as described in
+>> > +  Documentation/devicetree/bindings/net/ethernet.txt
+>>=20
+>> Note what ethernet.txt contains... This should have a $ref to
+>> ethernet-controller.yaml to express the above.
+>>=20
+>> You can add 'mac-address: true' if you want to be explicit about what
+>> properties are used.
+>
+> Here, only mac-address and local-mac-address are supported. So, would the
+> code below do the job?
+>
+>   local-mac-address:
+>     $ref: ethernet-controller.yaml#/properties/local-mac-address
+>
+>   mac-address:
+>     $ref: ethernet-controller.yaml#/properties/mac-address
+>
+>
+> [...]
+>> > +  spi-max-frequency:
+>> > +    description: (SPI only) Maximum SPI clocking speed of device in H=
+z.
+>>=20
+>> No need to redefine a common property.
+>
+> When a property is specific to a bus, I would have like to explicitly
+> say it. That's why I redefined the description.
+>
+>
+> [...]
+>> > +  config-file:
+>> > +    description: Use an alternative file as PDS. Default is `wf200.pd=
+s`. Only
+>> > +      necessary for development/debug purpose.
+>>=20
+>> 'firmware-name' is typically what we'd use here. Though if just for
+>> debug/dev, perhaps do a debugfs interface for this instead. As DT should
+>> come from the firmware/bootloader, requiring changing the DT for
+>> dev/debug is not the easiest workflow compared to doing something from
+>> userspace.
+>
+> This file is not a firmware. It mainly contains data related to the
+> antenna. At the beginning, this property has been added for
+> development. With the time, I think it can be used to  have one disk
+> image for several devices that differ only in antenna.
+>
+> I am going to remove the part about development/debug purpose.
 
-iproute2 is a stable, production package that requires minimal support
-from external libraries. The external packages it does require are also
-stable with few to no relevant changes.
+config-file doesn't sound right either. So what kind of data is this,
+calibration data or what?
 
-bpf and libbpf on the other hand are under active development and
-rapidly changing month over month. The git submodule approach has its
-conveniences for rapid development but is inappropriate for a package
-like iproute2 and will not be considered.
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-To explicitly state what I think should be obvious to any experienced
-Linux user, iproute2 code should always compile and work *without
-functionality loss* on LTS versions N and N-1 of well known OS’es with
-LTS releases (e.g., Debian, Ubuntu, RHEL). Meaning iproute2 will compile
-and work with the external dependencies as they exist in that OS version.
-
-I believe there are more than enough established compatibility and
-library version checks to find the middle ground to integrate new
-features requiring new versions of libbpf while maintaining stability
-and compatibility with older releases. The biannual releases of Ubuntu
-and Fedora serve as testing grounds for integrating new features
-requiring a newer version of libbpf while continuing to work with
-released versions of libbpf. It appears Debian Bullseye will also fall
-into this category.
-
-Finally, bpf-based features in iproute2 will only be committed once
-relevant support exists in a released version of libbpf (ie., the github
-version, not just commits to the in-kernel tree version). Patches can
-and should be sent for review based on testing with the in-kernel tree
-version of libbpf, but I will not commit them until the library has been
-released.
-
-Thanks for working on this, Hangbin. It is right direction in the long term.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
