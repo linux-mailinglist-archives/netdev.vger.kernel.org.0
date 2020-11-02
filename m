@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4B8E2A2936
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:27:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A3AD2A2944
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:27:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728761AbgKBLYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 06:24:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48018 "EHLO
+        id S1729003AbgKBL1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 06:27:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728657AbgKBLYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:24:51 -0500
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7810EC0617A6
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 03:24:51 -0800 (PST)
-Received: by mail-wr1-x444.google.com with SMTP id k10so12798614wrw.13
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:24:51 -0800 (PST)
+        with ESMTP id S1728750AbgKBLYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:24:53 -0500
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3127C061A04
+        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 03:24:52 -0800 (PST)
+Received: by mail-wm1-x344.google.com with SMTP id e2so9132604wme.1
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:24:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=O6+Wy4iFDi+o50ayVR/RzqW4RGQ8DgYcSYBAfri+vWM=;
-        b=kBUokJkmggzU+k79iTdFrZMjYpcpgw2xTrk0pc63i9oIuSz6281y7DAobifGsbEnsk
-         xIicxLS2Wl/6cy93dhlChVnHNFLBPYZ7xC3cLpUHQsO6gW5SRqvnitqQFQJJGcfLJ2dt
-         KEQh2uZi9wpW2sygcz2xL2yqL+sBEYvAxmGsMEnaZm5i6BqTf5p7NO9V/06gqqMd6zbT
-         vBqIh+52UHZ8gRsEIhECfKKrRcFIm5e7cigDq2bYXhxLpOoxOHTpUVtGHDmf8U1eDJ+r
-         H56qwwyBFSXPEkpFPs3YLqFA4UZkOAasLZuWIxfumMFL1As5C0uJFhkzQILUTEppz1+M
-         4WNA==
+        bh=O00sHeoq7zqB2CJlcbUNyhU2GOaz7UJ685HbihqjKQM=;
+        b=FxCRoUbjgVNKk7HNy0zfK7Ysq7fk/pGHTzojrVEkM6DLmw3ICYot6hqkuW9TacfsS7
+         C1JitGKDV7nsumoh2YZSgBmp8X0Pbhtqo1bcQEHkwWjEDqef70DDjyndMdNy3lv8L8Lv
+         CoivpKFBRslyMBL1Ae1LhHyziMeAPQkfdDVoN3iKlIZ/nOat4K8npipMSv6xug2OjzJC
+         BoRviZDr/B42KExznjrNo3szFW3PcHnRK553HPrEwFHCh4LZRpO8bODHTJDyDaChy1R1
+         ZIwqwnbSJmlup0QvMKaJBM3kKI7rkB0RsVdgF6Dz5Fc/kCoSDGafT72YM6xOf/eiDOze
+         yHFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=O6+Wy4iFDi+o50ayVR/RzqW4RGQ8DgYcSYBAfri+vWM=;
-        b=SaorXT5LXN52sT18wjoYNMf9/f428eEplAH9R3js8fToPxkq6jSgjywynUyJlzUdgl
-         dIsimarMz7e7xSeaH0OioY28rLq/pe3uG2FZeHbxNoEX0BpMHTWjAbUGE/C7QMWm6gF5
-         r3sgZURFHYzUyhC3xeI+qglntJR3RWw44RZ5PZVdbb8fj0kDqUvoGn2mGjSYFSRdBNf5
-         9JQ+3TsWRfKejHnouxYR/mX58Y5fRhyjjAXaYsBW3IUbNd02o8MixM6pR9fpwdoUJV3b
-         6SiULoXUI3LFs+j4/myIClj0EFH0wFvDgSYXIqeXrgeZcU9yPtdJZAeRoT2CM+K6nd2u
-         Pyxw==
-X-Gm-Message-State: AOAM533LiFC/Cf72xw7zfHscQW4+VRwXzzmp6sdKKZeB7iw/y+HCNdcp
-        itDff1Neb6vrBuVYu/Ueiw+rPw==
-X-Google-Smtp-Source: ABdhPJwnLEQLz3pY8tA4hxEMZp/y+V47dybDwlTnafoF0OeZlke8fa+Yu4I7M7yjgvsVLy70yrtMaA==
-X-Received: by 2002:a5d:688c:: with SMTP id h12mr20152408wru.92.1604316290204;
-        Mon, 02 Nov 2020 03:24:50 -0800 (PST)
+        bh=O00sHeoq7zqB2CJlcbUNyhU2GOaz7UJ685HbihqjKQM=;
+        b=YOmiaygYhiS+HwDmF+mCvlBFiZyYtyEUDg+pOHC0M3boKLK46QW/kXMkBMFmY8LZsw
+         BkRJH/u4vV1PxT3+AAYepDi9y1cCK8nSAGnE9S8dJZdeEaQa6RPwg7gLwazdb35auYwE
+         Fb0D5/to8aFxpdjxo8UydeBtLSwdC69FKU1Dt8ixAAPMD4hDY/hdsNJBI2pgQ6ttAtjT
+         momM2v0lR2i2aGFRnGN7VNuBNawmwTrcukB2VtxbCrLFr5O7q/GS8zo0JcjPTzpgonoL
+         B6ciKJVrRISzR44SSv7hQPCNbGnR7oE6AnyX06VrYinfs5a7FLJFY9UwTUHaJ2QqHMMI
+         o99g==
+X-Gm-Message-State: AOAM533xbt4DTrKQVyraWz6JSAMtKxWOblU00nAXXHOVTg68jnj+kKjq
+        JS1cRwEIjeIfyJ5lp1rtuSwh5DLxBuq8wA==
+X-Google-Smtp-Source: ABdhPJyeihrNn2QbmDeQeLSXqwCKFnxhucL/uwRzdauxI7/SvxS5e7FnGW8HV/kyWFK/61MdeNRReg==
+X-Received: by 2002:a1c:103:: with SMTP id 3mr16981441wmb.81.1604316291370;
+        Mon, 02 Nov 2020 03:24:51 -0800 (PST)
 Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id m14sm21867354wro.43.2020.11.02.03.24.49
+        by smtp.gmail.com with ESMTPSA id m14sm21867354wro.43.2020.11.02.03.24.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 03:24:49 -0800 (PST)
+        Mon, 02 Nov 2020 03:24:50 -0800 (PST)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     kvalo@codeaurora.org
 Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Fox Chen <mhchen@golf.ccl.itri.org.tw>,
+        de Melo <acme@conectiva.com.br>,
+        Gustavo Niemeyer <niemeyer@conectiva.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 23/41] iwlwifi: iwl-phy-db: Add missing struct member description for 'trans'
-Date:   Mon,  2 Nov 2020 11:23:52 +0000
-Message-Id: <20201102112410.1049272-24-lee.jones@linaro.org>
+Subject: [PATCH 24/41] wl3501_cs: Fix misspelling and provide missing documentation
+Date:   Mon,  2 Nov 2020 11:23:53 +0000
+Message-Id: <20201102112410.1049272-25-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201102112410.1049272-1-lee.jones@linaro.org>
 References: <20201102112410.1049272-1-lee.jones@linaro.org>
@@ -71,39 +70,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/wireless/intel/iwlwifi/iwl-phy-db.c:97: warning: Function parameter or member 'trans' not described in 'iwl_phy_db'
+ In file included from drivers/net/wireless/wl3501_cs.c:57:
+ drivers/net/wireless/wl3501_cs.c:143: warning: Function parameter or member 'reg_domain' not described in 'iw_valid_channel'
+ drivers/net/wireless/wl3501_cs.c:143: warning: Excess function parameter 'reg_comain' description in 'iw_valid_channel'
+ drivers/net/wireless/wl3501_cs.c:469: warning: Function parameter or member 'data' not described in 'wl3501_send_pkt'
+ drivers/net/wireless/wl3501_cs.c:469: warning: Function parameter or member 'len' not described in 'wl3501_send_pkt'
 
-Cc: Johannes Berg <johannes.berg@intel.com>
-Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Cc: Luca Coelho <luciano.coelho@intel.com>
-Cc: Intel Linux Wireless <linuxwifi@intel.com>
 Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Fox Chen <mhchen@golf.ccl.itri.org.tw>
+Cc: de Melo <acme@conectiva.com.br>
+Cc: Gustavo Niemeyer <niemeyer@conectiva.com>
 Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-phy-db.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/wl3501_cs.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-phy-db.c b/drivers/net/wireless/intel/iwlwifi/iwl-phy-db.c
-index ae83cfdb750e6..c9ce270ceee07 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-phy-db.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-phy-db.c
-@@ -79,11 +79,11 @@ struct iwl_phy_db_entry {
+diff --git a/drivers/net/wireless/wl3501_cs.c b/drivers/net/wireless/wl3501_cs.c
+index 026e88b80bfc4..8ca5789c7b378 100644
+--- a/drivers/net/wireless/wl3501_cs.c
++++ b/drivers/net/wireless/wl3501_cs.c
+@@ -134,7 +134,7 @@ static const struct {
+ 
+ /**
+  * iw_valid_channel - validate channel in regulatory domain
+- * @reg_comain: regulatory domain
++ * @reg_domain: regulatory domain
+  * @channel: channel to validate
   *
-  * @cfg: phy configuration.
-  * @calib_nch: non channel specific calibration data.
-- * @calib_ch: channel specific calibration data.
-  * @n_group_papd: number of entries in papd channel group.
-  * @calib_ch_group_papd: calibration data related to papd channel group.
-  * @n_group_txp: number of entries in tx power channel group.
-  * @calib_ch_group_txp: calibration data related to tx power chanel group.
-+ * @trans: transport layer
+  * Returns 0 if invalid in the specified regulatory domain, non-zero if valid.
+@@ -458,11 +458,9 @@ static int wl3501_pwr_mgmt(struct wl3501_card *this, int suspend)
+ /**
+  * wl3501_send_pkt - Send a packet.
+  * @this: Card
+- *
+- * Send a packet.
+- *
+- * data = Ethernet raw frame.  (e.g. data[0] - data[5] is Dest MAC Addr,
++ * @data: Ethernet raw frame.  (e.g. data[0] - data[5] is Dest MAC Addr,
+  *                                   data[6] - data[11] is Src MAC Addr)
++ * @len: Packet length
+  * Ref: IEEE 802.11
   */
- struct iwl_phy_db {
- 	struct iwl_phy_db_entry	cfg;
+ static int wl3501_send_pkt(struct wl3501_card *this, u8 *data, u16 len)
 -- 
 2.25.1
 
