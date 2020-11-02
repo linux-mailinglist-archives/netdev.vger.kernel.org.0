@@ -2,580 +2,318 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDE582A23EA
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 06:07:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96CD82A23EE
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 06:08:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727944AbgKBFHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 00:07:14 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:65296 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727936AbgKBFHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 00:07:11 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A255agU013142;
-        Sun, 1 Nov 2020 21:07:08 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=lUk3UNJFCYDIPuhv0YuoHtK09VG02PeB8a8INh1IiQk=;
- b=Wi5fE/AWLDTPoKx2QJiKPLezYlcZA0S5xLRVGUH21k5EsgJQFQt0ndpLwufInQRJfN1v
- yYsToxXbqPN5kGkB4J91R3pG3616h3L2lh6NAho0LepgJkcKfU6ShyshlyHCJrYYHw/i
- 04jjq4UfXx0BiELpBeHRpRk/gzViq39dSQ0Wu3DOpf016TbMsGT0y+Gdu2uLedhybZ4L
- FiAWyILrYgLn1D8fsSc9ACK+vWTYqO0o8mAVie/KbPb1/X9gdddrvw0W8heQrZfMLhiS
- GvDEITxTjusa8MFzwuHXDkDmKtbKhZUTuYldPLwfXnvSq4J7V6QhcOxhrx9YQp6rG72M 9A== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 34h7ennyvc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 01 Nov 2020 21:07:07 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 1 Nov
- 2020 21:07:06 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 1 Nov
- 2020 21:07:05 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 1 Nov 2020 21:07:05 -0800
-Received: from hyd1584.caveonetworks.com (unknown [10.29.37.82])
-        by maili.marvell.com (Postfix) with ESMTP id 339F93F7052;
-        Sun,  1 Nov 2020 21:07:01 -0800 (PST)
-From:   George Cherian <george.cherian@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>,
-        <masahiroy@kernel.org>, <george.cherian@marvell.com>
-Subject: [net-next PATCH 3/3] octeontx2-af: Add devlink health reporters for NIX
-Date:   Mon, 2 Nov 2020 10:36:49 +0530
-Message-ID: <20201102050649.2188434-4-george.cherian@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201102050649.2188434-1-george.cherian@marvell.com>
-References: <20201102050649.2188434-1-george.cherian@marvell.com>
+        id S1727902AbgKBFIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 00:08:06 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:16116 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725208AbgKBFIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 00:08:05 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f9f94400000>; Sun, 01 Nov 2020 21:08:16 -0800
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 2 Nov
+ 2020 05:08:02 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.174)
+ by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 2 Nov 2020 05:08:01 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X8vRKMq1Mg7W8J4rptMjhXMgCehgVnFR9AWWhVaFLz5S/HhVbXm7NBHdlwNZEYCGPbw5b5wbxZXuCXvCb90dVzX38m7BlTnP2jDagKnA9GwICqx8YfEHTDozUbaN26aFuBsI67rbNNFeYHcXSJaWYJQF4U/pZKFCU1xaVCODiWOzPaOnjMPAq2y+ZAOZTeen5uBALXw4G65ybq7XOkWhPcCkegd7GBUGhs7Z8Euzf2cBCqi3kb87UH/ILu/TLSRnnfHuEMpY5bQlyjYNJbb+9Q/RANph6ouymFFkdJh5p6XBkkn+c2TulX/Rq5HIWEcsrevKZxQyRVUGQrzwelMYrQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AS0mgjAGyKmcUK+IwlB2YbdMD5Ou6pcZZM9mLRKum5I=;
+ b=X+1T+JOeWfZQ4l4gXBkdPpUHxGsG7CU4ZGZ9s27d9Kr9OdeE78tdsF4XHCkponZMYm4U6ZNb+hE0wLinj0sF1tF28bkKS2F8luU0ViK8E8vGeIvSO9q96s9A2O+/rbADR880wwpoH8H6Wa2REQOKJcHrK8aVxyeJd5x+6XU4n6olgBUu7UXKFYmrsCR6n6P2zPC+Pm/i0/sq38IkGEhy4mT4Lmy2+ShCjrZ4CX5ccKfaBXMmGbkjCYm/tPIta4hyLZdIdOhalwJRXobAcDiu29GLr3iDjc3ngy2DPYXtzSj/o2NFyopGV9Ph4WK9QP9S1sE4LcmBnYuOODYU041ZWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
+ by BY5PR12MB3731.namprd12.prod.outlook.com (2603:10b6:a03:1a7::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.19; Mon, 2 Nov
+ 2020 05:08:00 +0000
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::3c25:6e4c:d506:6105]) by BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::3c25:6e4c:d506:6105%5]) with mapi id 15.20.3499.030; Mon, 2 Nov 2020
+ 05:08:00 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        gregkh <gregkh@linuxfoundation.org>
+CC:     Leon Romanovsky <leonro@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Roi Dayan <roid@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "tiwai@suse.de" <tiwai@suse.de>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "kiran.patil@intel.com" <kiran.patil@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH mlx5-next v1 03/11] net/mlx5_core: Clean driver version
+ and name
+Thread-Topic: [PATCH mlx5-next v1 03/11] net/mlx5_core: Clean driver version
+ and name
+Thread-Index: AQHWsIvhd8tdnUL6WE6lN2kDxOGLDKm0SkSw
+Date:   Mon, 2 Nov 2020 05:07:59 +0000
+Message-ID: <BY5PR12MB4322B244D7AEBDCED43B906EDC100@BY5PR12MB4322.namprd12.prod.outlook.com>
+References: <20201101201542.2027568-1-leon@kernel.org>
+ <20201101201542.2027568-4-leon@kernel.org>
+In-Reply-To: <20201101201542.2027568-4-leon@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [49.207.200.190]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fa711669-0c05-4449-c2cd-08d87eed44e6
+x-ms-traffictypediagnostic: BY5PR12MB3731:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR12MB37315570C4C4BDCFDFEF158EDC100@BY5PR12MB3731.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: pxPzOV+cg+he8Kh+XTYRbVSfaabx7GkcgS1WYY6/+7YOdStOuKFg9tdx60Y6FTbcQN47hFIbegdFZJ/zki7AR0s2iBVUpY86kbhHbONJ7DCazIJopEjOC6bjZDWRMFQ3GJtnHqg2N6BmKGLzlo0Y0n67y+gFjmhzPiHdWDzRVdBICXwimAwCi8RitO+vyEtNYduC5qwR1fam+CPXSNdmMd67ZM7qga936hQrDWunDOUSqB4ESyvX1CM+HOTWzv5izq6/+H3spZ/gfV2gyLQsUyWZPFWNdk2Wqs6MILWkak5/3uXL6r7DtctjQizRb4rNSMFAIZZwCZtP+fHwcOmNjw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(366004)(136003)(396003)(39860400002)(6506007)(8936002)(33656002)(54906003)(110136005)(316002)(55236004)(71200400001)(64756008)(66446008)(83380400001)(5660300002)(52536014)(478600001)(9686003)(66476007)(7416002)(66946007)(76116006)(66556008)(86362001)(55016002)(4326008)(8676002)(186003)(7696005)(2906002)(26005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: IZGDoHjVa+DTDCEtqX8KbayX5y39Y3Pp4it3zMOW9SAjaByPP/PzXb7Yyivyewj8xBrtcpS7t9ATyDBCeme0TZhm89Mndpa+sMkAb/gz5so8txd4tuGkOuiirHNgAKQM0OP+/zPOI2jUwqxFMbVi2osP+PNs3Yk9hKW45gKrdLIwKzkqi7hnNke7vRL/9DB9GvRC2XK2mNkgxx1QC+sfkMhzR1tvOkfRqLOp2956or+surVZHwF/jri5+6ZlvR5GKuArC1/yDW5Aop+f6o/eLzWbhAdilJs3wI0TlTlvqu+auudVuJeNLQhKqEuWezKTJ4zYdzb4x9WNZHkbYIvGFB3UandXyW/nxOhfSKykXsCwGC5GOh3BkaXNGqk/FXtALryAxgeZdaO7am21fNrNFRkba3FJiw4Mo2+o0AX2TjQF5VPeXmk9DAHMWRo9TfWXh8DXGFGHHtnUcksssnbtxHRv1RWEtaFRUJRZO2xKmxUOkAIIsbNvhdX8LqG7E8Vs1uxEbR2qQmmzjs2Lq9BAewiZItbiFJnty2CpDsfcPAXrZxT11W3J5A6anoRaB5jiNFfdq4gX7LCXE6sfYRJ907aadCsLBNf9nRoeMC5YDS0G4eY+XItBe8X7R4Sm6yUgtTujeTHn38APoXopqxtF2w==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-02_01:2020-10-30,2020-11-02 signatures=0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fa711669-0c05-4449-c2cd-08d87eed44e6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2020 05:07:59.9336
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CBDLI9gkSltc2WrMFyUWG6tZTLUCmEiqhe0YdcGHlSblLkCQJcKqAc1erv3LplKrZPt+4O9ykyGLRB7RjpLPQQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3731
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1604293696; bh=AS0mgjAGyKmcUK+IwlB2YbdMD5Ou6pcZZM9mLRKum5I=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
+         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
+         In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
+         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
+         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
+         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
+         x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
+         x-ms-exchange-senderadcheck:x-microsoft-antispam:
+         x-microsoft-antispam-message-info:x-forefront-antispam-report:
+         x-ms-exchange-antispam-messagedata:Content-Type:
+         Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=qaUsMU06nDer5z1fQcVq57Zscb+wbAwZL+e/q9aQ8bDXzC+5XRHiFBBxTzHlpoy7Z
+         SPsV/z5zSxn4Tge3AMeb6FC6qtP6m7stGQAyb8E6VDcV8cMKwoj3yvVQO66OAEFP4R
+         D9oiIv9TI1z+cLqkfuC9d6ofoGCcRIXsmH2X/z+3HvVgNMOL/YtP7v4EbefgF93aYz
+         GWA7aHllsiq4plFzQTOqo+JlFv2KhU4g3a485SjhHQvdqaULtqPSzGPKV/MV33+Zj2
+         CgxpfSUvo4ywkGYNJ5nyn1XN36bt3ZiiN31zRRD0AH+mZ+vdpp8pNp4Rgi8WVnNZ9G
+         YAgY73sRdZsCA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add health reporters for RVU NPA block.
-Only reporter dump is supported.
 
-Output:
- # ./devlink health
- pci/0002:01:00.0:
-   reporter npa
-     state healthy error 0 recover 0
-   reporter nix
-     state healthy error 0 recover 0
- # ./devlink  health dump show pci/0002:01:00.0 reporter nix
-  NIX_AF_GENERAL:
-         Memory Fault on NIX_AQ_INST_S read: 0
-         Memory Fault on NIX_AQ_RES_S write: 0
-         AQ Doorbell error: 0
-         Rx on unmapped PF_FUNC: 0
-         Rx multicast replication error: 0
-         Memory fault on NIX_RX_MCE_S read: 0
-         Memory fault on multicast WQE read: 0
-         Memory fault on mirror WQE read: 0
-         Memory fault on mirror pkt write: 0
-         Memory fault on multicast pkt write: 0
-   NIX_AF_RAS:
-         Poisoned data on NIX_AQ_INST_S read: 0
-         Poisoned data on NIX_AQ_RES_S write: 0
-         Poisoned data on HW context read: 0
-         Poisoned data on packet read from mirror buffer: 0
-         Poisoned data on packet read from mcast buffer: 0
-         Poisoned data on WQE read from mirror buffer: 0
-         Poisoned data on WQE read from multicast buffer: 0
-         Poisoned data on NIX_RX_MCE_S read: 0
-   NIX_AF_RVU:
-         Unmap Slot Error: 0
 
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-Signed-off-by: Jerin Jacob <jerinj@marvell.com>
-Signed-off-by: George Cherian <george.cherian@marvell.com>
----
- .../marvell/octeontx2/af/rvu_devlink.c        | 376 +++++++++++++++++-
- .../marvell/octeontx2/af/rvu_devlink.h        |  24 ++
- .../marvell/octeontx2/af/rvu_struct.h         |  10 +
- 3 files changed, 409 insertions(+), 1 deletion(-)
+> From: Leon Romanovsky <leon@kernel.org>
+> Sent: Monday, November 2, 2020 1:46 AM
+>=20
+> From: Leon Romanovsky <leonro@nvidia.com>
+>=20
+> Remove exposed driver version as it was done in other drivers, so module
+> version will work correctly by displaying the kernel version for which it=
+ is
+> compiled.
+>=20
+> And move mlx5_core module name to general include, so auxiliary drivers
+> will be able to use it as a basis for a name in their device ID tables.
+>=20
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/devlink.c     |  2 +-
+>  drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c  |  4 +---
+>  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c      |  1 -
+>  .../net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c   |  2 +-
+>  drivers/net/ethernet/mellanox/mlx5/core/main.c        | 11 +++++++----
+>  drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h   |  3 ---
+>  include/linux/mlx5/driver.h                           |  2 ++
+>  7 files changed, 12 insertions(+), 13 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> index a28f95df2901..1a351e2f6ace 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> @@ -52,7 +52,7 @@ mlx5_devlink_info_get(struct devlink *devlink, struct
+> devlink_info_req *req,
+>  	u32 running_fw, stored_fw;
+>  	int err;
+>=20
+> -	err =3D devlink_info_driver_name_put(req, DRIVER_NAME);
+> +	err =3D devlink_info_driver_name_put(req, KBUILD_MODNAME);
+>  	if (err)
+>  		return err;
+>=20
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+> b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+> index d25a56ec6876..bcff18a87bcd 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+> @@ -40,9 +40,7 @@ void mlx5e_ethtool_get_drvinfo(struct mlx5e_priv
+> *priv,  {
+>  	struct mlx5_core_dev *mdev =3D priv->mdev;
+>=20
+> -	strlcpy(drvinfo->driver, DRIVER_NAME, sizeof(drvinfo->driver));
+> -	strlcpy(drvinfo->version, DRIVER_VERSION,
+> -		sizeof(drvinfo->version));
+> +	strlcpy(drvinfo->driver, KBUILD_MODNAME, sizeof(drvinfo-
+> >driver));
+>  	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
+>  		 "%d.%d.%04d (%.16s)",
+>  		 fw_rev_maj(mdev), fw_rev_min(mdev),
+> fw_rev_sub(mdev), diff --git
+> a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> index 67247c33b9fd..ef2f8889ba0f 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> @@ -64,7 +64,6 @@ static void mlx5e_rep_get_drvinfo(struct net_device
+> *dev,
+>=20
+>  	strlcpy(drvinfo->driver, mlx5e_rep_driver_name,
+>  		sizeof(drvinfo->driver));
+> -	strlcpy(drvinfo->version, UTS_RELEASE, sizeof(drvinfo->version));
+>  	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
+>  		 "%d.%d.%04d (%.16s)",
+>  		 fw_rev_maj(mdev), fw_rev_min(mdev),
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
+> b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
+> index cac8f085b16d..97d96fc38a65 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
+> @@ -39,7 +39,7 @@ static void mlx5i_get_drvinfo(struct net_device *dev,
+>  	struct mlx5e_priv *priv =3D mlx5i_epriv(dev);
+>=20
+>  	mlx5e_ethtool_get_drvinfo(priv, drvinfo);
+> -	strlcpy(drvinfo->driver, DRIVER_NAME "[ib_ipoib]",
+> +	strlcpy(drvinfo->driver, KBUILD_MODNAME "[ib_ipoib]",
+>  		sizeof(drvinfo->driver));
+>  }
+>=20
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> index 71e210f22f69..9827127cb674 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> @@ -77,7 +77,6 @@
+>  MODULE_AUTHOR("Eli Cohen <eli@mellanox.com>");
+> MODULE_DESCRIPTION("Mellanox 5th generation network adapters
+> (ConnectX series) core driver");  MODULE_LICENSE("Dual BSD/GPL"); -
+> MODULE_VERSION(DRIVER_VERSION);
+>=20
+>  unsigned int mlx5_core_debug_mask;
+>  module_param_named(debug_mask, mlx5_core_debug_mask, uint, 0644);
+> @@ -228,7 +227,7 @@ static void mlx5_set_driver_version(struct
+> mlx5_core_dev *dev)
+>  	strncat(string, ",", remaining_size);
+>=20
+>  	remaining_size =3D max_t(int, 0, driver_ver_sz - strlen(string));
+> -	strncat(string, DRIVER_NAME, remaining_size);
+> +	strncat(string, KBUILD_MODNAME, remaining_size);
+>=20
+>  	remaining_size =3D max_t(int, 0, driver_ver_sz - strlen(string));
+>  	strncat(string, ",", remaining_size);
+> @@ -313,7 +312,7 @@ static int request_bar(struct pci_dev *pdev)
+>  		return -ENODEV;
+>  	}
+>=20
+> -	err =3D pci_request_regions(pdev, DRIVER_NAME);
+> +	err =3D pci_request_regions(pdev, KBUILD_MODNAME);
+>  	if (err)
+>  		dev_err(&pdev->dev, "Couldn't get PCI resources,
+> aborting\n");
+>=20
+> @@ -1617,7 +1616,7 @@ void mlx5_recover_device(struct mlx5_core_dev
+> *dev)  }
+>=20
+>  static struct pci_driver mlx5_core_driver =3D {
+> -	.name           =3D DRIVER_NAME,
+> +	.name           =3D KBUILD_MODNAME,
+>  	.id_table       =3D mlx5_core_pci_table,
+>  	.probe          =3D init_one,
+>  	.remove         =3D remove_one,
+> @@ -1643,6 +1642,10 @@ static int __init init(void)  {
+>  	int err;
+>=20
+> +	WARN_ONCE(strcmp(MLX5_ADEV_NAME, KBUILD_MODNAME) ||
+> +		  strlen(MLX5_ADEV_NAME) !=3D strlen(KBUILD_MODNAME),
+> +		  "mlx5_core name not in sync with kernel module name");
+> +
+In which case, both the strings are same but their length not?
+You likely don't need the string length check.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-index 946e751fb544..c2dd2026c7da 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-@@ -14,6 +14,7 @@
- #define DRV_NAME "octeontx2-af"
- 
- void rvu_npa_unregister_interrupts(struct rvu *rvu);
-+void rvu_nix_unregister_interrupts(struct rvu *rvu);
- 
- int rvu_report_pair_start(struct devlink_fmsg *fmsg, const char *name)
- {
-@@ -37,6 +38,373 @@ int rvu_report_pair_end(struct devlink_fmsg *fmsg)
- 	return devlink_fmsg_pair_nest_end(fmsg);
- }
- 
-+irqreturn_t rvu_nix_af_rvu_intr_handler(int irq, void *rvu_irq)
-+{
-+	struct rvu_nix_event_cnt *nix_event_count;
-+	struct rvu_devlink *rvu_dl = rvu_irq;
-+	struct rvu *rvu;
-+	int blkaddr;
-+	u64 intr;
-+
-+	rvu = rvu_dl->rvu;
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return IRQ_NONE;
-+
-+	nix_event_count = rvu_dl->nix_event_cnt;
-+	intr = rvu_read64(rvu, blkaddr, NIX_AF_RVU_INT);
-+
-+	if (intr & BIT_ULL(0))
-+		nix_event_count->unmap_slot_count++;
-+
-+	/* Clear interrupts */
-+	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT, intr);
-+	return IRQ_HANDLED;
-+}
-+
-+irqreturn_t rvu_nix_af_err_intr_handler(int irq, void *rvu_irq)
-+{
-+	struct rvu_nix_event_cnt *nix_event_count;
-+	struct rvu_devlink *rvu_dl = rvu_irq;
-+	struct rvu *rvu;
-+	int blkaddr;
-+	u64 intr;
-+
-+	rvu = rvu_dl->rvu;
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return IRQ_NONE;
-+
-+	nix_event_count = rvu_dl->nix_event_cnt;
-+	intr = rvu_read64(rvu, blkaddr, NIX_AF_ERR_INT);
-+
-+	if (intr & BIT_ULL(14))
-+		nix_event_count->aq_inst_count++;
-+	if (intr & BIT_ULL(13))
-+		nix_event_count->aq_res_count++;
-+	if (intr & BIT_ULL(12))
-+		nix_event_count->aq_db_count++;
-+	if (intr & BIT_ULL(6))
-+		nix_event_count->rx_on_unmap_pf_count++;
-+	if (intr & BIT_ULL(5))
-+		nix_event_count->rx_mcast_repl_count++;
-+	if (intr & BIT_ULL(4))
-+		nix_event_count->rx_mcast_memfault_count++;
-+	if (intr & BIT_ULL(3))
-+		nix_event_count->rx_mcast_wqe_memfault_count++;
-+	if (intr & BIT_ULL(2))
-+		nix_event_count->rx_mirror_wqe_memfault_count++;
-+	if (intr & BIT_ULL(1))
-+		nix_event_count->rx_mirror_pktw_memfault_count++;
-+	if (intr & BIT_ULL(0))
-+		nix_event_count->rx_mcast_pktw_memfault_count++;
-+
-+	/* Clear interrupts */
-+	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT, intr);
-+	return IRQ_HANDLED;
-+}
-+
-+irqreturn_t rvu_nix_af_ras_intr_handler(int irq, void *rvu_irq)
-+{
-+	struct rvu_nix_event_cnt *nix_event_count;
-+	struct rvu_devlink *rvu_dl = rvu_irq;
-+	struct rvu *rvu;
-+	int blkaddr;
-+	u64 intr;
-+
-+	rvu = rvu_dl->rvu;
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return IRQ_NONE;
-+
-+	nix_event_count = rvu_dl->nix_event_cnt;
-+	intr = rvu_read64(rvu, blkaddr, NIX_AF_RAS);
-+
-+	if (intr & BIT_ULL(34))
-+		nix_event_count->poison_aq_inst_count++;
-+	if (intr & BIT_ULL(33))
-+		nix_event_count->poison_aq_res_count++;
-+	if (intr & BIT_ULL(32))
-+		nix_event_count->poison_aq_cxt_count++;
-+	if (intr & BIT_ULL(4))
-+		nix_event_count->rx_mirror_data_poison_count++;
-+	if (intr & BIT_ULL(3))
-+		nix_event_count->rx_mcast_data_poison_count++;
-+	if (intr & BIT_ULL(2))
-+		nix_event_count->rx_mirror_wqe_poison_count++;
-+	if (intr & BIT_ULL(1))
-+		nix_event_count->rx_mcast_wqe_poison_count++;
-+	if (intr & BIT_ULL(0))
-+		nix_event_count->rx_mce_poison_count++;
-+
-+	/* Clear interrupts */
-+	rvu_write64(rvu, blkaddr, NIX_AF_RAS, intr);
-+	return IRQ_HANDLED;
-+}
-+
-+static bool rvu_nix_af_request_irq(struct rvu *rvu, int offset,
-+				   const char *name, irq_handler_t fn)
-+{
-+	struct rvu_devlink *rvu_dl = rvu->rvu_dl;
-+	int rc;
-+
-+	WARN_ON(rvu->irq_allocated[offset]);
-+	rvu->irq_allocated[offset] = false;
-+	sprintf(&rvu->irq_name[offset * NAME_SIZE], name);
-+	rc = request_irq(pci_irq_vector(rvu->pdev, offset), fn, 0,
-+			 &rvu->irq_name[offset * NAME_SIZE], rvu_dl);
-+	if (rc)
-+		dev_warn(rvu->dev, "Failed to register %s irq\n", name);
-+	else
-+		rvu->irq_allocated[offset] = true;
-+
-+	return rvu->irq_allocated[offset];
-+}
-+
-+static int rvu_nix_blk_register_interrupts(struct rvu *rvu,
-+					   int blkaddr)
-+{
-+	int base;
-+	bool rc;
-+
-+	/* Get NIX AF MSIX vectors offset. */
-+	base = rvu_read64(rvu, blkaddr, NIX_PRIV_AF_INT_CFG) & 0x3ff;
-+	if (!base) {
-+		dev_warn(rvu->dev,
-+			 "Failed to get NIX%d NIX_AF_INT vector offsets\n",
-+			 blkaddr - BLKADDR_NIX0);
-+		return 0;
-+	}
-+	/* Register and enable NIX_AF_RVU_INT interrupt */
-+	rc = rvu_nix_af_request_irq(rvu, base +  NIX_AF_INT_VEC_RVU,
-+				    "NIX_AF_RVU_INT",
-+				    rvu_nix_af_rvu_intr_handler);
-+	if (!rc)
-+		goto err;
-+	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT_ENA_W1S, ~0ULL);
-+
-+	/* Register and enable NIX_AF_ERR_INT interrupt */
-+	rc = rvu_nix_af_request_irq(rvu, base + NIX_AF_INT_VEC_AF_ERR,
-+				    "NIX_AF_ERR_INT",
-+				    rvu_nix_af_err_intr_handler);
-+	if (!rc)
-+		goto err;
-+	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT_ENA_W1S, ~0ULL);
-+
-+	/* Register and enable NIX_AF_RAS interrupt */
-+	rc = rvu_nix_af_request_irq(rvu, base + NIX_AF_INT_VEC_POISON,
-+				    "NIX_AF_RAS",
-+				    rvu_nix_af_ras_intr_handler);
-+	if (!rc)
-+		goto err;
-+	rvu_write64(rvu, blkaddr, NIX_AF_RAS_ENA_W1S, ~0ULL);
-+
-+	return 0;
-+err:
-+	rvu_nix_unregister_interrupts(rvu);
-+	return -1;
-+}
-+
-+int rvu_nix_register_interrupts(struct rvu *rvu)
-+{
-+	int blkaddr = 0;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, blkaddr, 0);
-+	if (blkaddr < 0)
-+		return blkaddr;
-+
-+	rvu_nix_blk_register_interrupts(rvu, blkaddr);
-+
-+	return 0;
-+}
-+
-+static void rvu_nix_blk_unregister_interrupts(struct rvu *rvu,
-+					      int blkaddr)
-+{
-+	struct rvu_devlink *rvu_dl = rvu->rvu_dl;
-+	int offs, i;
-+
-+	offs = rvu_read64(rvu, blkaddr, NIX_PRIV_AF_INT_CFG) & 0x3ff;
-+	if (!offs)
-+		return;
-+
-+	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT_ENA_W1C, ~0ULL);
-+	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT_ENA_W1C, ~0ULL);
-+	rvu_write64(rvu, blkaddr, NIX_AF_RAS_ENA_W1C, ~0ULL);
-+
-+	if (rvu->irq_allocated[offs + NIX_AF_INT_VEC_RVU]) {
-+		free_irq(pci_irq_vector(rvu->pdev, offs + NIX_AF_INT_VEC_RVU),
-+			 rvu_dl);
-+		rvu->irq_allocated[offs + NIX_AF_INT_VEC_RVU] = false;
-+	}
-+
-+	for (i = NIX_AF_INT_VEC_AF_ERR; i < NIX_AF_INT_VEC_CNT; i++)
-+		if (rvu->irq_allocated[offs + i]) {
-+			free_irq(pci_irq_vector(rvu->pdev, offs + i), rvu_dl);
-+			rvu->irq_allocated[offs + i] = false;
-+		}
-+}
-+
-+void rvu_nix_unregister_interrupts(struct rvu *rvu)
-+{
-+	int blkaddr = 0;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return;
-+
-+	rvu_nix_blk_unregister_interrupts(rvu, blkaddr);
-+}
-+
-+static int rvu_nix_report_show(struct devlink_fmsg *fmsg, struct rvu *rvu)
-+{
-+	struct rvu_devlink *rvu_dl = rvu->rvu_dl;
-+	struct rvu_nix_event_cnt *nix_event_count = rvu_dl->nix_event_cnt;
-+	int err;
-+
-+	err = rvu_report_pair_start(fmsg, "NIX_AF_GENERAL");
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\tMemory Fault on NIX_AQ_INST_S read",
-+					nix_event_count->aq_inst_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory Fault on NIX_AQ_RES_S write",
-+					nix_event_count->aq_res_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tAQ Doorbell error",
-+					nix_event_count->aq_db_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tRx on unmapped PF_FUNC",
-+					nix_event_count->rx_on_unmap_pf_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tRx multicast replication error",
-+					nix_event_count->rx_mcast_repl_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory fault on NIX_RX_MCE_S read",
-+					nix_event_count->rx_mcast_memfault_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory fault on multicast WQE read",
-+					nix_event_count->rx_mcast_wqe_memfault_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory fault on mirror WQE read",
-+					nix_event_count->rx_mirror_wqe_memfault_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory fault on mirror pkt write",
-+					nix_event_count->rx_mirror_pktw_memfault_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory fault on multicast pkt write",
-+					nix_event_count->rx_mcast_pktw_memfault_count);
-+	if (err)
-+		return err;
-+	err = rvu_report_pair_end(fmsg);
-+	if (err)
-+		return err;
-+	err = rvu_report_pair_start(fmsg, "NIX_AF_RAS");
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\tPoisoned data on NIX_AQ_INST_S read",
-+					nix_event_count->poison_aq_inst_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on NIX_AQ_RES_S write",
-+					nix_event_count->poison_aq_res_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on HW context read",
-+					nix_event_count->poison_aq_cxt_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on packet read from mirror buffer",
-+					nix_event_count->rx_mirror_data_poison_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on packet read from mcast buffer",
-+					nix_event_count->rx_mcast_data_poison_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on WQE read from mirror buffer",
-+					nix_event_count->rx_mirror_wqe_poison_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on WQE read from multicast buffer",
-+					nix_event_count->rx_mcast_wqe_poison_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on NIX_RX_MCE_S read",
-+					nix_event_count->rx_mce_poison_count);
-+	if (err)
-+		return err;
-+	err = rvu_report_pair_end(fmsg);
-+	if (err)
-+		return err;
-+	err = rvu_report_pair_start(fmsg, "NIX_AF_RVU");
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\tUnmap Slot Error",
-+					nix_event_count->unmap_slot_count);
-+	if (err)
-+		return err;
-+	err = rvu_report_pair_end(fmsg);
-+	if (err)
-+		return err;
-+	return 0;
-+}
-+
-+static int rvu_nix_reporter_dump(struct devlink_health_reporter *reporter,
-+				 struct devlink_fmsg *fmsg, void *ctx,
-+				 struct netlink_ext_ack *netlink_extack)
-+{
-+	struct rvu *rvu = devlink_health_reporter_priv(reporter);
-+
-+	return rvu_nix_report_show(fmsg, rvu);
-+}
-+
-+static const struct devlink_health_reporter_ops rvu_nix_fault_reporter_ops = {
-+		.name = "nix",
-+		.dump = rvu_nix_reporter_dump,
-+};
-+
-+int rvu_nix_health_reporters_create(struct rvu_devlink *rvu_dl)
-+{
-+	struct devlink_health_reporter *rvu_nix_health_reporter;
-+	struct rvu_nix_event_cnt *nix_event_count;
-+	struct rvu *rvu = rvu_dl->rvu;
-+
-+	nix_event_count = kzalloc(sizeof(*nix_event_count), GFP_KERNEL);
-+	if (!nix_event_count)
-+		return -ENOMEM;
-+
-+	rvu_dl->nix_event_cnt = nix_event_count;
-+	rvu_nix_health_reporter = devlink_health_reporter_create(rvu_dl->dl,
-+								 &rvu_nix_fault_reporter_ops,
-+								 0, rvu);
-+	if (IS_ERR(rvu_nix_health_reporter)) {
-+		dev_warn(rvu->dev, "Failed to create nix reporter, err = %ld\n",
-+			 PTR_ERR(rvu_nix_health_reporter));
-+		return PTR_ERR(rvu_nix_health_reporter);
-+	}
-+
-+	rvu_dl->rvu_nix_health_reporter = rvu_nix_health_reporter;
-+	return 0;
-+}
-+
-+void rvu_nix_health_reporters_destroy(struct rvu_devlink *rvu_dl)
-+{
-+	if (!rvu_dl->rvu_nix_health_reporter)
-+		return;
-+
-+	devlink_health_reporter_destroy(rvu_dl->rvu_nix_health_reporter);
-+}
-+
- static irqreturn_t rvu_npa_af_rvu_intr_handler(int irq, void *rvu_irq)
- {
- 	struct rvu_npa_event_cnt *npa_event_count;
-@@ -420,12 +788,17 @@ static void rvu_npa_health_reporters_destroy(struct rvu_devlink *rvu_dl)
- static int rvu_health_reporters_create(struct rvu *rvu)
- {
- 	struct rvu_devlink *rvu_dl;
-+	int err;
- 
- 	if (!rvu->rvu_dl)
- 		return -EINVAL;
- 
- 	rvu_dl = rvu->rvu_dl;
--	return rvu_npa_health_reporters_create(rvu_dl);
-+	err = rvu_npa_health_reporters_create(rvu_dl);
-+	if (err)
-+		return err;
-+
-+	return rvu_nix_health_reporters_create(rvu_dl);
- }
- 
- static void rvu_health_reporters_destroy(struct rvu *rvu)
-@@ -437,6 +810,7 @@ static void rvu_health_reporters_destroy(struct rvu *rvu)
- 
- 	rvu_dl = rvu->rvu_dl;
- 	rvu_npa_health_reporters_destroy(rvu_dl);
-+	rvu_nix_health_reporters_destroy(rvu_dl);
- }
- 
- static int rvu_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h
-index b3ce1a8fff57..15724ad2ed44 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h
-@@ -29,11 +29,35 @@ struct rvu_npa_event_cnt {
- 	unsigned long poison_aq_cxt_count;
- };
- 
-+struct rvu_nix_event_cnt {
-+	unsigned long unmap_slot_count;
-+	unsigned long aq_inst_count;
-+	unsigned long aq_res_count;
-+	unsigned long aq_db_count;
-+	unsigned long rx_on_unmap_pf_count;
-+	unsigned long rx_mcast_repl_count;
-+	unsigned long rx_mcast_memfault_count;
-+	unsigned long rx_mcast_wqe_memfault_count;
-+	unsigned long rx_mirror_wqe_memfault_count;
-+	unsigned long rx_mirror_pktw_memfault_count;
-+	unsigned long rx_mcast_pktw_memfault_count;
-+	unsigned long poison_aq_inst_count;
-+	unsigned long poison_aq_res_count;
-+	unsigned long poison_aq_cxt_count;
-+	unsigned long rx_mirror_data_poison_count;
-+	unsigned long rx_mcast_data_poison_count;
-+	unsigned long rx_mirror_wqe_poison_count;
-+	unsigned long rx_mcast_wqe_poison_count;
-+	unsigned long rx_mce_poison_count;
-+};
-+
- struct rvu_devlink {
- 	struct devlink *dl;
- 	struct rvu *rvu;
- 	struct devlink_health_reporter *rvu_npa_health_reporter;
- 	struct rvu_npa_event_cnt *npa_event_cnt;
-+	struct devlink_health_reporter *rvu_nix_health_reporter;
-+	struct rvu_nix_event_cnt *nix_event_cnt;
- };
- 
- /* Devlink APIs */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-index 995add5d8bff..b5944199faf5 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-@@ -74,6 +74,16 @@ enum npa_af_int_vec_e {
- 	NPA_AF_INT_VEC_CNT	= 0x5,
- };
- 
-+/* NIX Admin function Interrupt Vector Enumeration */
-+enum nix_af_int_vec_e {
-+	NIX_AF_INT_VEC_RVU	= 0x0,
-+	NIX_AF_INT_VEC_GEN	= 0x1,
-+	NIX_AF_INT_VEC_AQ_DONE	= 0x2,
-+	NIX_AF_INT_VEC_AF_ERR	= 0x3,
-+	NIX_AF_INT_VEC_POISON	= 0x4,
-+	NIX_AF_INT_VEC_CNT	= 0x5,
-+};
-+
- /**
-  * RVU PF Interrupt Vector Enumeration
-  */
--- 
-2.25.1
+>  	get_random_bytes(&sw_owner_id, sizeof(sw_owner_id));
+>=20
+>  	mlx5_core_verify_params();
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+> b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+> index 8cec85ab419d..b285f1515e4e 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+> @@ -42,9 +42,6 @@
+>  #include <linux/mlx5/fs.h>
+>  #include <linux/mlx5/driver.h>
+>=20
+> -#define DRIVER_NAME "mlx5_core"
+> -#define DRIVER_VERSION "5.0-0"
+> -
+>  extern uint mlx5_core_debug_mask;
+>=20
+>  #define mlx5_core_dbg(__dev, format, ...)				\
+> diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h in=
+dex
+> 317257f8e0ad..ed1d030658d2 100644
+> --- a/include/linux/mlx5/driver.h
+> +++ b/include/linux/mlx5/driver.h
+> @@ -56,6 +56,8 @@
+>  #include <linux/ptp_clock_kernel.h>
+>  #include <net/devlink.h>
+>=20
+> +#define MLX5_ADEV_NAME "mlx5_core"
+> +
+>  enum {
+>  	MLX5_BOARD_ID_LEN =3D 64,
+>  };
+> --
+> 2.28.0
+
+
+Other than strlen removal check,
+Reviewed-by: Parav Pandit <parav@nvidia.com>
 
