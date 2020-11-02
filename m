@@ -2,109 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5F0A2A2919
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:25:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 623142A296A
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 12:28:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728941AbgKBLZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 06:25:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728909AbgKBLZN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:25:13 -0500
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB938C061A47
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 03:25:12 -0800 (PST)
-Received: by mail-wm1-x343.google.com with SMTP id c16so9132239wmd.2
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:25:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=H6cdhCKSV+e73IF059XTYbnS4xki9YceyWLt1d9tAnQ=;
-        b=kjIRWtT2G1NDh+U38Rv7FfAtYfkysDEGZtHw5TH2vid5+NKIXzmhRCBeUQBm0i6rmD
-         DvEtQF9SB1RCFYbfjkYC6GzPyb5orD2t7povv+ioDwtbaEk6XUMibMktPjJOXDJo6wGf
-         lNJ/KAF89yLrKtfQnIz71cLLcwypx5jB7zAYx3A8P23YT3saMLL7GQLV75BHtiGuoqph
-         xPLBdJVmD+nkUYCDMjRh/sVCz5aTAxm+wpko30RyclSwVR7wwbRRGZ/Il2GF05RE2NaG
-         T45PwQcc9oe0/ekJ26MluU5sESU6motRpIsCfo4vWBNFYlMzWiBPSnverdYvQpbBt1uI
-         bDSQ==
+        id S1729044AbgKBL2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 06:28:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45435 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728658AbgKBLYc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 06:24:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604316271;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=VyaF4YL/qkULf4igPbA343vHojdhHjVv1lCzEFqKg0k=;
+        b=h+fYrusloWsYfjWCP7Id+Ga/GrtABO24sla5+k1RIEXYO6IHvLbfAU8isvvB9Y/VtPhcrp
+        gR54DTDRB1gmK8wwSyf6bj8Phil/Z96J7cjSTc3UA5zFxd8zwN80JjaEofh3i1+KXXB3hJ
+        9hDp8wsrYON/VK52qRBWJh7kBuzfcmQ=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-387-OPAJHY3DPAehMxWfAUdGog-1; Mon, 02 Nov 2020 06:24:29 -0500
+X-MC-Unique: OPAJHY3DPAehMxWfAUdGog-1
+Received: by mail-wr1-f70.google.com with SMTP id f11so6288820wro.15
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 03:24:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=H6cdhCKSV+e73IF059XTYbnS4xki9YceyWLt1d9tAnQ=;
-        b=qUoZz2Gz1/vdWNCYD4j9V9+bwq1YBYWi6XmlwW76i5Y2vS/XQlYyB+/rqobnXWwCa6
-         GNsA9EFeKAELoQKoY86W9WrM9RXlb2oULSUrAGcgJJ/bE0pmEEdrNsEeYs1DxECMhPxF
-         U7QFfqS4rdX7+JWJl8eQomwh+FRyuYCrAC0B+gAV823Lwg54BAqAw5nsrkoZpNu6RZwU
-         0KTLmj6stH5fKn07EEK2OZflxAtFYyRfT6B+Rm6e87o19JVOHKYEmPT5IP6e2tqlhc5S
-         v92Z6ay/2wMAutdVU7zrxv8g18/TfugFa/gxsG5wp0FUqvT6w41mM1UvTeEnZHhgHcn+
-         xWFw==
-X-Gm-Message-State: AOAM533TexPyKhP2AL8coi5bQdFujwtDusfkh1+qfLoYlhnkt7QBBWlJ
-        iOCP5qTun1KSGupOWhlxt/TXEQ==
-X-Google-Smtp-Source: ABdhPJyIwYcuEegu2lamPvWHAIqF6Vi2NTmBnd9CkNt4PE4Bls9W2ZyKizwMFz2Xed+Kelo4AnAbJg==
-X-Received: by 2002:a1c:103:: with SMTP id 3mr16983122wmb.81.1604316311669;
-        Mon, 02 Nov 2020 03:25:11 -0800 (PST)
-Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id m14sm21867354wro.43.2020.11.02.03.25.10
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=VyaF4YL/qkULf4igPbA343vHojdhHjVv1lCzEFqKg0k=;
+        b=NN3WsqaMRrtx9nIVcZSZk4oj3Rdl3pl2tdZHZLGobJYY3+zU1YqunOJp/OFsSL42Xq
+         4amLXjXvvHTfdrC5O7Ow7OkAeioEOBTv8BxINTfZ6xXX3YlGrnBtrkEBMHB3sMVUy7TG
+         Q71XamlodHFT7Sp7Z+cxrWNlW8EF0/ehOvqpBlqzZiOPUIYDwkKAxj3NxXy+1AMqk2JT
+         LBbhNTlx62OQ6PchhBuQw6RaR3E2OFW/ADliFVOBirha7B4ZbJyrH6IVdkGgJe6Ay/0k
+         BPT/p6x3OISd3C4s0y0fnnauChPnCdbjlQwudiL1RcaAqDKc3mqLH3zRdD49qmZvDfo8
+         eiGQ==
+X-Gm-Message-State: AOAM530fRCk+jUFP8DoK9Nc8QoGwU0/bCQMxVwpV/4bKfTfe7o58oc4V
+        IhN6Wta0D3Owlo13NhiXh7/P3F29551yqZfBF9nmASYNOusrISSDhti29O7SckNQbXetLj4jEHH
+        SEHh//iuaNKd4LBqd
+X-Received: by 2002:a5d:54c1:: with SMTP id x1mr20743706wrv.172.1604316267979;
+        Mon, 02 Nov 2020 03:24:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxX7v2H5bXLWIhyMrz50dKJMuhV9Bo1RRTXFDuCQoVpHI2Vrd/NysiyZGMQJQStYB1+MWh2uQ==
+X-Received: by 2002:a5d:54c1:: with SMTP id x1mr20743688wrv.172.1604316267857;
+        Mon, 02 Nov 2020 03:24:27 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id h4sm21749090wrp.52.2020.11.02.03.24.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 03:25:11 -0800 (PST)
-From:   Lee Jones <lee.jones@linaro.org>
-To:     kvalo@codeaurora.org
-Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 41/41] realtek: rtw88: pci: Add prototypes for .probe, .remove and .shutdown
-Date:   Mon,  2 Nov 2020 11:24:10 +0000
-Message-Id: <20201102112410.1049272-42-lee.jones@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201102112410.1049272-1-lee.jones@linaro.org>
-References: <20201102112410.1049272-1-lee.jones@linaro.org>
+        Mon, 02 Nov 2020 03:24:27 -0800 (PST)
+Date:   Mon, 2 Nov 2020 12:24:25 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH iproute2] tc-mpls: fix manpage example and help message string
+Message-ID: <ef7eb4cdf9075eaa9b45baca994ff0d2021e9719.1604316228.git.gnault@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes the following W=1 kernel build warning(s):
+Manpage:
+ * Remove the extra "and to ip packets" part from command description
+   to make it more understandable.
 
- drivers/net/wireless/realtek/rtw88/pci.c:1488:5: warning: no previous prototype for ‘rtw_pci_probe’ [-Wmissing-prototypes]
- 1488 | int rtw_pci_probe(struct pci_dev *pdev,
- | ^~~~~~~~~~~~~
- drivers/net/wireless/realtek/rtw88/pci.c:1568:6: warning: no previous prototype for ‘rtw_pci_remove’ [-Wmissing-prototypes]
- 1568 | void rtw_pci_remove(struct pci_dev *pdev)
- | ^~~~~~~~~~~~~~
- drivers/net/wireless/realtek/rtw88/pci.c:1590:6: warning: no previous prototype for ‘rtw_pci_shutdown’ [-Wmissing-prototypes]
- 1590 | void rtw_pci_shutdown(struct pci_dev *pdev)
- | ^~~~~~~~~~~~~~~~
+ * Redirect packets to eth1, instead of eth0, as told in the
+   description.
 
-Cc: Yan-Hsuan Chuang <yhchuang@realtek.com>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Help string:
+ * "mpls pop" can be followed by a CONTROL keyword.
+
+ * "mpls modify" can also set the MPLS_BOS field.
+
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
 ---
- drivers/net/wireless/realtek/rtw88/pci.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ man/man8/tc-mpls.8 | 6 +++---
+ tc/m_mpls.c        | 5 +++--
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/pci.h b/drivers/net/wireless/realtek/rtw88/pci.h
-index ca17aa9cf7dc7..7cdbb9533a09a 100644
---- a/drivers/net/wireless/realtek/rtw88/pci.h
-+++ b/drivers/net/wireless/realtek/rtw88/pci.h
-@@ -212,6 +212,10 @@ struct rtw_pci {
- 	void __iomem *mmap;
- };
+diff --git a/man/man8/tc-mpls.8 b/man/man8/tc-mpls.8
+index 9e563e98..7f8be221 100644
+--- a/man/man8/tc-mpls.8
++++ b/man/man8/tc-mpls.8
+@@ -147,15 +147,15 @@ a label 123 and sends them out eth1:
+ .EE
+ .RE
  
-+int rtw_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id);
-+void rtw_pci_remove(struct pci_dev *pdev);
-+void rtw_pci_shutdown(struct pci_dev *pdev);
-+
- static inline u32 max_num_of_tx_queue(u8 queue)
+-In this example, incoming MPLS unicast packets on eth0 are decapsulated and to
+-ip packets and output to eth1:
++In this example, incoming MPLS unicast packets on eth0 are decapsulated
++and redirected to eth1:
+ 
+ .RS
+ .EX
+ #tc qdisc add dev eth0 handle ffff: ingress
+ #tc filter add dev eth0 protocol mpls_uc parent ffff: flower \\
+ 	action mpls pop protocol ipv4  \\
+-	action mirred egress redirect dev eth0
++	action mirred egress redirect dev eth1
+ .EE
+ .RE
+ 
+diff --git a/tc/m_mpls.c b/tc/m_mpls.c
+index 2c3752ba..9fee22e3 100644
+--- a/tc/m_mpls.c
++++ b/tc/m_mpls.c
+@@ -23,12 +23,13 @@ static const char * const action_names[] = {
+ static void explain(void)
  {
- 	u32 max_num;
+ 	fprintf(stderr,
+-		"Usage: mpls pop [ protocol MPLS_PROTO ]\n"
++		"Usage: mpls pop [ protocol MPLS_PROTO ] [CONTROL]\n"
+ 		"       mpls push [ protocol MPLS_PROTO ] [ label MPLS_LABEL ] [ tc MPLS_TC ]\n"
+ 		"                 [ ttl MPLS_TTL ] [ bos MPLS_BOS ] [CONTROL]\n"
+ 		"       mpls mac_push [ protocol MPLS_PROTO ] [ label MPLS_LABEL ] [ tc MPLS_TC ]\n"
+ 		"                     [ ttl MPLS_TTL ] [ bos MPLS_BOS ] [CONTROL]\n"
+-		"       mpls modify [ label MPLS_LABEL ] [ tc MPLS_TC ] [ ttl MPLS_TTL ] [CONTROL]\n"
++		"       mpls modify [ label MPLS_LABEL ] [ tc MPLS_TC ] [ ttl MPLS_TTL ]\n"
++		"                   [ bos MPLS_BOS ] [CONTROL]\n"
+ 		"           for pop, MPLS_PROTO is next header of packet - e.g. ip or mpls_uc\n"
+ 		"           for push and mac_push, MPLS_PROTO is one of mpls_uc or mpls_mc\n"
+ 		"               with default: mpls_uc\n"
 -- 
-2.25.1
+2.21.3
 
