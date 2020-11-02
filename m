@@ -2,44 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA8292A3489
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 20:49:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6AA2A3495
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 20:52:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726815AbgKBTsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 14:48:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38104 "EHLO mail.kernel.org"
+        id S1727032AbgKBTw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 14:52:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38680 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726744AbgKBTrZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 14:47:25 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.3])
+        id S1726860AbgKBTvZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 14:51:25 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D594C2072C;
-        Mon,  2 Nov 2020 19:47:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EA2D020731;
+        Mon,  2 Nov 2020 19:51:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604346445;
-        bh=7ZGOwAOPwqS8DzA3ybazC0/S7OIj9MQZxcvy8LdRx20=;
+        s=default; t=1604346685;
+        bh=8wheK2VVxJUMzUSmj16jrZa0I4gVnfsR85RI9adu3KQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SW8hA3RN+ysK8KYGsidvGCSnHjDO0NYRzynEvtNpsFhTWAvwQMzfYrc09zgkuGNOr
-         Z/0vcwDZUN4auG8PQpp+vMr3MBWMtqgO6EwrQqtk3oIPKAi8l405AnKx3si8TXNWEF
-         Ut1dUo5x0xRNPhLlBsEwsYOJ5EjlXJWvftl/xZ5g=
-Date:   Mon, 2 Nov 2020 11:47:18 -0800
+        b=eDHxJ2tKmahEB57DxD+ihqoIP3kKxC7Cg7L3hLsq0gxfqUTHMlusOo9tCcyekbfuP
+         qU5micjrF8/UNG4hbw2QupGnchIOvB34vUjdGwPyRvAmGV3OkTAhE1xu1gq0I8GceU
+         EINEAwpJSH0kA8zgRHCkxzfWcnXQdqhNRIvVkYsc=
+Date:   Mon, 2 Nov 2020 11:51:23 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hayes Wang <hayeswang@realtek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        Oliver Neukum <oliver@neukum.org>
-Subject: Re: [PATCH net-next v2] net/usb/r8153_ecm: support ECM mode for
- RTL8153
-Message-ID: <20201102114718.0118cc12@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <dc7fd1d4d1c544e8898224c7d9b54bda@realtek.com>
-References: <1394712342-15778-387-Taiwan-albertk@realtek.com>
-        <1394712342-15778-388-Taiwan-albertk@realtek.com>
-        <20201031160838.39586608@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <dc7fd1d4d1c544e8898224c7d9b54bda@realtek.com>
+To:     "Eelco Chaudron" <echaudro@redhat.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dev@openvswitch.org
+Subject: Re: [PATCH net] net: openvswitch: silence suspicious RCU usage
+ warning
+Message-ID: <20201102115123.0f7460cc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <AFFC5913-5595-464B-9B1B-EB25E730C2E2@redhat.com>
+References: <160398318667.8898.856205445259063348.stgit@ebuild>
+        <20201030142852.7d41eecc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <AFFC5913-5595-464B-9B1B-EB25E730C2E2@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -47,51 +41,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2 Nov 2020 07:20:15 +0000 Hayes Wang wrote:
-> Jakub Kicinski <kuba@kernel.org>
-> > Can you describe the use case in more detail?
-> > 
-> > AFAICT r8152 defines a match for the exact same device.
-> > Does it not mean that which driver is used will be somewhat random
-> > if both are built?  
+On Mon, 02 Nov 2020 09:52:19 +0100 Eelco Chaudron wrote:
+> On 30 Oct 2020, at 22:28, Jakub Kicinski wrote:
+> >> @@ -1695,6 +1695,9 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, 
+> >> struct genl_info *info)
+> >>  	if (err)
+> >>  		goto err_destroy_ports;
+> >>
+> >> +	/* So far only local changes have been made, now need the lock. */
+> >> +	ovs_lock();  
+> >
+> > Should we move the lock below assignments to param?
+> >
+> > Looks a little strange to protect stack variables with a global lock.  
 > 
-> I export rtl_get_version() from r8152. It would return none zero
-> value if r8152 could support this device. Both r8152 and r8153_ecm
-> would check the return value of rtl_get_version() in porbe().
-> Therefore, if rtl_get_version() return none zero value, the r8152
-> is used for the device with vendor mode. Otherwise, the r8153_ecm
-> is used for the device with ECM mode.
-
-Oh, I see, I missed that the rtl_get_version() checking is the inverse
-of r8152.
-
-> > > +/* Define these values to match your device */
-> > > +#define VENDOR_ID_REALTEK		0x0bda
-> > > +#define VENDOR_ID_MICROSOFT		0x045e
-> > > +#define VENDOR_ID_SAMSUNG		0x04e8
-> > > +#define VENDOR_ID_LENOVO		0x17ef
-> > > +#define VENDOR_ID_LINKSYS		0x13b1
-> > > +#define VENDOR_ID_NVIDIA		0x0955
-> > > +#define VENDOR_ID_TPLINK		0x2357  
-> > 
-> > $ git grep 0x2357 | grep -i tplink
-> > drivers/net/usb/cdc_ether.c:#define TPLINK_VENDOR_ID	0x2357
-> > drivers/net/usb/r8152.c:#define VENDOR_ID_TPLINK		0x2357
-> > drivers/usb/serial/option.c:#define TPLINK_VENDOR_ID			0x2357
-> > 
-> > $ git grep 0x17ef | grep -i lenovo
-> > drivers/hid/hid-ids.h:#define USB_VENDOR_ID_LENOVO		0x17ef
-> > drivers/hid/wacom.h:#define USB_VENDOR_ID_LENOVO	0x17ef
-> > drivers/net/usb/cdc_ether.c:#define LENOVO_VENDOR_ID	0x17ef
-> > drivers/net/usb/r8152.c:#define VENDOR_ID_LENOVO		0x17ef
-> > 
-> > Time to consolidate those vendor id defines perhaps?  
+> You are right, I should have moved it down after the assignment. I will 
+> send out a v2.
 > 
-> It seems that there is no such header file which I could include
-> or add the new vendor IDs.
+> > Let's update the name of the label.  
+> 
+> Guess now it is, unlock and destroy meters, so what label are you 
+> looking for?
+> 
+> err_unlock_and_destroy_meters: which looks a bit long, or just 
+> err_unlock:
 
-Please create one. (Adding Greg KH to the recipients, in case there is
-a reason that USB subsystem doesn't have a common vendor id header.)
+I feel like I saw some names like err_unlock_and_destroy_meters in OvS
+code, but can't find them in this file right now.
 
-Also please make sure to add Oliver to the CC for v3, to make sure the
-reuse of CDC_ETHER is okay.
+I'd personally go for kist err_unlock, or maybe err_unlock_ovs as is
+used in other functions in this file.
+
+But as long as it starts with err_unlock it's fine by me :)
