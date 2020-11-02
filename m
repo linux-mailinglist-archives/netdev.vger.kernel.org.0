@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F8822A251B
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 08:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1AB02A251C
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 08:21:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728051AbgKBHU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 02:20:56 -0500
-Received: from mail-co1nam11on2086.outbound.protection.outlook.com ([40.107.220.86]:32608
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        id S1728077AbgKBHVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 02:21:16 -0500
+Received: from mail-bn8nam12on2058.outbound.protection.outlook.com ([40.107.237.58]:31925
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727902AbgKBHUz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 02:20:55 -0500
+        id S1727848AbgKBHVP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 02:21:15 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aRTrLlusiQrX/O8zKNWDez3gDheD1P7QbjP3mYqlyrNmkctMNmRq8TRDsrckGxaEapH2qfZHDn3rAggduL1rj9bv/LnQy0SfHAig6FR5hvP2XdWqL5IMd+jkSOvsFDFcGRckXC6YqWTQmmgrQXLE/vdHMkGbklzgQ9Q44f8fI6dQxQVzbY4rk54VGfBSdm07uAxaO9TMKoj8CYO88JNnuB5igwE5R20FIPDckJh2E4Zv18s1L56eLVjoZeSX12O2VBTrbaQLdzCy8vhiSWcHom1uuPyiHNDQ9Ohqac2LwMWRDfqwhm6fRUCqiU7+n9Dyla8ANhQ69UZTAhbIIx6BxA==
+ b=Px/H4CWlnxBsIPR14hE68FJqMbc0wp7plzs72AYVT4WIHiSO9vYmE+CW8YcN61yGPJsiPyVjddvzJ6mmREwUsosW/TYhn6Lu4E+l25wWHm9YYIQY9aMsvlgWaOsUagIvSwVaYYCnlXta6H/0igEBW+fjbQOhrhMv1J6gLD817SS9ZPpw3beV/eiUF/TQvWwpauHHujqS9RHtm2aYSg9Pl7QNsEb41gEK5XmaSNgs8+wZHVGWYlJ95hgaZZ5ZBmIw/7gmlPA3e/JzXY4aWr6eBNF3Aq0an+esXTSsyyhSrJaML3UEWMS8zpHR7kAKQidRjDFJKvQwBvM7egtuZEvu9w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6Fh2kFvfmq+g8abbmBcgf4DXFgnuFIMHvArMRjwWtgo=;
- b=SALamsVOwKj+Rap7RPJfUC4eCqKuptZfyk9rpRG1o2vfezazemgGJXQ+1djaec98L2cyhU4PmIn9oq+Tpa5Ij7J2YmwmcWELm6NwL6VG1nwVmN02r/Lr9hrTHH8Hy+H2xd8L6ZbZ7iIg9vmShWSsD+SZcl5J1W/soFZi7kX8DlPTms0TbWeWfxiWXDP/QgOgP5ymkyZC1klU29L4kQGQ9vjK31/ydG1yjglAKqtVC5qXruzhEyHIr4GzDQiO3ksV9qgsYXnXFK7LBi8+lhdy0V0qePegomtaRUuitOR7mNrtuaUyL5ZIF3g2krXu1iI9O6+Jp446H2f3UmR1TDsZQw==
+ bh=ZS4B+YfptDs82IjQlo/EXWgx7J/8UbntkJqCltQX7Lc=;
+ b=Z/JlEURjFXPaD88ATAS5v0LHBV8POoxdTaAYkP8VcQN4ln9IBFy0x3F4rz7F1iE/sblvpgxrEdJNm+o8j2G5HEnY2Ho/ooCaPw5LhyQcOrW8D9J3LtZc4wBJsmpGpkCTv5NOJHhx0OdlweKfMrMAJfX4dYPURZD2lGUkiFvj/8p7JYfByLl7gbYsujf+sQrS7SFkHJDC3P6BFUfr73rGHfPIE2xh9QRzL7k/5NoTCkBup/kYcAjHWM9nEx9+Skv5mHObWZvUJL3ELceGx8CZikE4nMqJZklzcMM5kRKu8ZOVLE0Ox+AUVximNPB9AFNIXtWmHF9/x9k8F2JPmXoP8g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
  dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6Fh2kFvfmq+g8abbmBcgf4DXFgnuFIMHvArMRjwWtgo=;
- b=fDfuctAMs7Cv95S4FhvqoMv8PY3Sd/JH5aLo5nDMWWxThBW6XGZ7c76EeESbTdHNbza7sCP9QCdRlJ+2QlbVD16S2GPn1OOsKg4iFcTH/UOfN66/07FxIYMeYidMwbovt8Mrd0ACLf1QL9HnFKPrT+j8f5kww+rxsfpAH6rdtoY=
-Received: from BL1PR13CA0041.namprd13.prod.outlook.com (2603:10b6:208:257::16)
- by SN6PR02MB4303.namprd02.prod.outlook.com (2603:10b6:805:ac::27) with
+ bh=ZS4B+YfptDs82IjQlo/EXWgx7J/8UbntkJqCltQX7Lc=;
+ b=qjC7alxu9iYLnIOtr2e2T/3mHJyEDvmzLSypC1vf8IOgxGf9gWnoCExLQT5wZHbEB2yqDNjsdkHJmIKQRqW67y6OgczbE3oH/90VHbC3qHKB6jrcY+1GV2Ewjyg5ZuZEOS5mXiG3tos4L3f30eZ1oRkNuZww+eJmpDYGnTfbarU=
+Received: from MN2PR20CA0058.namprd20.prod.outlook.com (2603:10b6:208:235::27)
+ by BYAPR02MB3927.namprd02.prod.outlook.com (2603:10b6:a02:f3::33) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.28; Mon, 2 Nov
- 2020 07:20:51 +0000
-Received: from BL2NAM02FT042.eop-nam02.prod.protection.outlook.com
- (2603:10b6:208:257:cafe::a8) by BL1PR13CA0041.outlook.office365.com
- (2603:10b6:208:257::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.10 via Frontend
- Transport; Mon, 2 Nov 2020 07:20:51 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Mon, 2 Nov
+ 2020 07:21:11 +0000
+Received: from BL2NAM02FT007.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:208:235:cafe::40) by MN2PR20CA0058.outlook.office365.com
+ (2603:10b6:208:235::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend
+ Transport; Mon, 2 Nov 2020 07:21:11 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
  smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
@@ -46,33 +46,33 @@ Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.62.198 as permitted sender) receiver=protection.outlook.com;
  client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
 Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- BL2NAM02FT042.mail.protection.outlook.com (10.152.76.193) with Microsoft SMTP
+ BL2NAM02FT007.mail.protection.outlook.com (10.152.77.46) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.3520.15 via Frontend Transport; Mon, 2 Nov 2020 07:20:51 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ 15.20.3520.15 via Frontend Transport; Mon, 2 Nov 2020 07:21:11 +0000
+Received: from xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1913.5; Sun, 1 Nov 2020 23:20:49 -0800
+ 15.1.1913.5; Sun, 1 Nov 2020 23:21:10 -0800
 Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.1913.5 via Frontend Transport; Sun, 1 Nov 2020 23:20:49 -0800
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server id
+ 15.1.1913.5 via Frontend Transport; Sun, 1 Nov 2020 23:21:10 -0800
 Envelope-to: radhey.shyam.pandey@xilinx.com,
  michal.simek@xilinx.com,
  netdev@vger.kernel.org,
  kuba@kernel.org,
  andrew@lunn.ch
-Received: from [172.30.17.110] (port=45238)
+Received: from [172.30.17.110] (port=45272)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <michal.simek@xilinx.com>)
-        id 1kZU93-0004YN-Et; Sun, 01 Nov 2020 23:20:49 -0800
-Subject: Re: [PATCH net-next 2/3] drivers: net: xilinx_emaclite: Fix
- -Wpointer-to-int-cast warnings with W=1
+        id 1kZU9O-0004lt-8o; Sun, 01 Nov 2020 23:21:10 -0800
+Subject: Re: [PATCH net-next 3/3] drivers: net: xilinx_emaclite: Add
+ COMPILE_TEST support
 To:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
 CC:     netdev <netdev@vger.kernel.org>,
         Michal Simek <michal.simek@xilinx.com>,
         Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 References: <20201031174721.1080756-1-andrew@lunn.ch>
- <20201031174721.1080756-3-andrew@lunn.ch>
+ <20201031174721.1080756-4-andrew@lunn.ch>
 From:   Michal Simek <michal.simek@xilinx.com>
 Autocrypt: addr=michals@xilinx.com; keydata=
  xsFNBFFuvDEBEAC9Amu3nk79+J+4xBOuM5XmDmljuukOc6mKB5bBYOa4SrWJZTjeGRf52VMc
@@ -136,37 +136,37 @@ Autocrypt: addr=michals@xilinx.com; keydata=
  oa0OZXydlVP7wrnJdi3m8DnljxyInPxbxdKGN5XnMq/r9Y70uRVyeqwp97sKLXd9GsxuaSg7
  QJKUaltvN/i7ng1UOT/xsKeVdfXuqDIIElZ+dyEVTweDM011Zv0NN3OWFz6oD+GzyBetuBwD
  0Z1MQlmNcq2bhOMzTxuXX2NDzUZs4aqEyZQ=
-Message-ID: <c0553efe-73a1-9e13-21e9-71c15d5099b9@xilinx.com>
-Date:   Mon, 2 Nov 2020 08:20:47 +0100
+Message-ID: <441f43bb-45fa-4c9e-8d47-a78b35fd4180@xilinx.com>
+Date:   Mon, 2 Nov 2020 08:21:08 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.1
 MIME-Version: 1.0
-In-Reply-To: <20201031174721.1080756-3-andrew@lunn.ch>
+In-Reply-To: <20201031174721.1080756-4-andrew@lunn.ch>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ea30332f-9aa1-489d-b17b-08d87effd419
-X-MS-TrafficTypeDiagnostic: SN6PR02MB4303:
-X-Microsoft-Antispam-PRVS: <SN6PR02MB4303FBEEA7948A455374748BC6100@SN6PR02MB4303.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 073440ec-1825-4733-aad8-08d87effe010
+X-MS-TrafficTypeDiagnostic: BYAPR02MB3927:
+X-Microsoft-Antispam-PRVS: <BYAPR02MB3927BCCE187C14A6C4C4A181C6100@BYAPR02MB3927.namprd02.prod.outlook.com>
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hG0YkGCE3Avb0id6bQAHPVa5+dGy//nCHcezINHyh61lfc2h7oCbOPUMkbXyqQXZtyUVP13aDP9/TogQ0kWl0IUHcQOGOsWP8jrY1Uu2TMdzZHrvKj6R+MR+HhVf28ElThBemvCWA3ixhetf+/7r3sRwvZEDznOjhbN56PMVb1Ht+YUV76pdR33Wm79MyBPl3cE76TS2/P/rZU5jkyj5tDYQiMDdWeNruZvD6+DRYoNW32YcVKTJmGJoMYBCkuDxp0qFGfgHQtTVu8+PHmeJfoP6AidAaZfAVwVl2Ea06j98KM/cl2rK1E0nAqYMg35sx40ShoWNiNOHSebKtjr46sa/weD8I18bSKZAl8lcilJ/tz6gwWyOizLyTHNzK11E15rNnPuyDazPKtb4rpaeDdMK8V3hmU0qEtEtoCMN33s1UmfZ1gFEtmxOzz/bEPNHo65pG+NNUjItuXa/+lgjGg==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(136003)(396003)(39850400004)(346002)(376002)(46966005)(8936002)(9786002)(2906002)(82310400003)(2616005)(356005)(31696002)(26005)(478600001)(8676002)(336012)(186003)(44832011)(426003)(31686004)(107886003)(4326008)(36756003)(47076004)(83380400001)(7636003)(70586007)(70206006)(82740400003)(316002)(54906003)(110136005)(36906005)(5660300002)(50156003)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: gPe7ZPMzGrwEg5oENpSctdhkksIvBAS7yLKrZErE/TfRz+HpMVFep8VQDPwno/+jcZvPdMyxCr2UTZleyjQo3q2tlGv2siR7cjDw1gs71dN3Gkn9JYNRYQRSN3BCoEn7v6AqOkrZU4s6Bo++Qd17JROeUF0z42oa7I5IXKxVAS2htP46ZkNHEOSBthExDJ7NtkYT+63xhiUxSzIHNLTOmv38D4pcA1HYEENQKWVVUf3JrtXTVfXYUZpa4hNkpGjF3Or0Rwzzn6ZJ7gQGbM+PL0Q/nNF90PVlgNlDarDcmvffceO4+TCIpxaU78HatBWTEnHSb9F/vkViTGq08yQsgEvlaz16o+TO7f3NPlqBj2rIu52vZmy5xVWBLpYEijlFBPIBHG+jTEDcABPPIzqZAt1YdVyye7apQyjhj4s6GxFcHPhchK+nd1fcD3mKi3u4Na4YMTryzHlgUc3c34mGMw==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(136003)(396003)(376002)(39850400004)(346002)(46966005)(70206006)(478600001)(54906003)(316002)(2616005)(4744005)(8676002)(31696002)(5660300002)(31686004)(36906005)(4326008)(70586007)(107886003)(47076004)(110136005)(82740400003)(36756003)(9786002)(26005)(2906002)(186003)(8936002)(356005)(44832011)(7636003)(83380400001)(426003)(336012)(82310400003)(50156003)(43740500002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2020 07:20:51.1729
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2020 07:21:11.2464
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea30332f-9aa1-489d-b17b-08d87effd419
+X-MS-Exchange-CrossTenant-Network-Message-Id: 073440ec-1825-4733-aad8-08d87effe010
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BL2NAM02FT042.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BL2NAM02FT007.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB4303
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB3927
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -174,73 +174,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 31. 10. 20 18:47, Andrew Lunn wrote:
-> drivers/net/ethernet//xilinx/xilinx_emaclite.c:341:35: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
->   341 |   addr = (void __iomem __force *)((u32 __force)addr ^
-> 
-> Use long instead of u32 to avoid problems on 64 bit systems.
+> To improve build testing of this driver, add COMPILE_TEST support.
 > 
 > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 > ---
->  drivers/net/ethernet/xilinx/xilinx_emaclite.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
+>  drivers/net/ethernet/xilinx/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> index 2c98e4cc07a5..f56c1fd01061 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> @@ -97,7 +97,7 @@
->  #define ALIGNMENT		4
+> diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
+> index d0d0d4fe9d40..3b2137d1f4c6 100644
+> --- a/drivers/net/ethernet/xilinx/Kconfig
+> +++ b/drivers/net/ethernet/xilinx/Kconfig
+> @@ -18,7 +18,7 @@ if NET_VENDOR_XILINX
 >  
->  /* BUFFER_ALIGN(adr) calculates the number of bytes to the next alignment. */
-> -#define BUFFER_ALIGN(adr) ((ALIGNMENT - ((u32)adr)) % ALIGNMENT)
-> +#define BUFFER_ALIGN(adr) ((ALIGNMENT - ((long)adr)) % ALIGNMENT)
-
-I can't see any reason to change unsigned type to signed one.
-
->  
->  #ifdef __BIG_ENDIAN
->  #define xemaclite_readl		ioread32be
-> @@ -338,7 +338,7 @@ static int xemaclite_send_data(struct net_local *drvdata, u8 *data,
->  		 * if it is configured in HW
->  		 */
->  
-> -		addr = (void __iomem __force *)((u32 __force)addr ^
-> +		addr = (void __iomem __force *)((long __force)addr ^
-
-ditto.
-
->  						 XEL_BUFFER_OFFSET);
->  		reg_data = xemaclite_readl(addr + XEL_TSR_OFFSET);
->  
-> @@ -399,7 +399,7 @@ static u16 xemaclite_recv_data(struct net_local *drvdata, u8 *data, int maxlen)
->  		 * will correct on subsequent calls
->  		 */
->  		if (drvdata->rx_ping_pong != 0)
-> -			addr = (void __iomem __force *)((u32 __force)addr ^
-> +			addr = (void __iomem __force *)((long __force)addr ^
-
-ditto.
-
->  							 XEL_BUFFER_OFFSET);
->  		else
->  			return 0;	/* No data was available */
-> @@ -1192,9 +1192,9 @@ static int xemaclite_of_probe(struct platform_device *ofdev)
->  	}
->  
->  	dev_info(dev,
-> -		 "Xilinx EmacLite at 0x%08X mapped to 0x%08X, irq=%d\n",
-> +		 "Xilinx EmacLite at 0x%08X mapped to 0x%08lX, irq=%d\n",
->  		 (unsigned int __force)ndev->mem_start,
-> -		 (unsigned int __force)lp->base_addr, ndev->irq);
-> +		 (unsigned long __force)lp->base_addr, ndev->irq);
-
-This is different case but I don't think address can be signed type here
-too.
-
->  	return 0;
->  
->  error:
+>  config XILINX_EMACLITE
+>  	tristate "Xilinx 10/100 Ethernet Lite support"
+> -	depends on PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS
+> +	depends on PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || COMPILE_TEST
+>  	select PHYLIB
+>  	help
+>  	  This driver supports the 10/100 Ethernet Lite from Xilinx.
 > 
+
+Acked-by: Michal Simek <michal.simek@xilinx.com>
 
 Thanks,
 Michal
