@@ -2,87 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43A252A25B4
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 08:58:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37C322A25B7
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 08:58:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727972AbgKBH6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 02:58:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38058 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726819AbgKBH6A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 02:58:00 -0500
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 72DB521D91
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 07:57:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604303879;
-        bh=ul6Yol9AQtOcP2zc4IwvOdoGNjakP1DfDt3OURCRsEY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=LedD1T0pIXTHYsn8zazAsQIcO46Smc8P5S7z5rJKGOxIOKrbIaZIkhkxtSMz9Iayx
-         cs2kRRDAVbGDHvtGZbokOh4tvpR2glPQclXYzFjuUFIvukDwim3tcQKWH0erhCesuD
-         KHgikT2x/SCWdrr7uLVtcZ9Rn9h7Z4Uc0vEL865g=
-Received: by mail-wm1-f54.google.com with SMTP id p19so677639wmg.0
-        for <netdev@vger.kernel.org>; Sun, 01 Nov 2020 23:57:59 -0800 (PST)
-X-Gm-Message-State: AOAM531suC8+Dz49IFRxQfXtEAKxAKOBV1W0OvWDiXGKX7jpZSSFkJgy
-        R9EavTkKLJYKoYVNV/PKjBXrBAJP3oRz9GlT5U0=
-X-Google-Smtp-Source: ABdhPJxzXwsv+v4K3L6W0ZwPbgBnc4j4MtP6H5YLqIDkC1eYgx1ACzQpr/AnG9p/StfEbU+9jh6N4C6XfATGu5/cPIM=
-X-Received: by 2002:a7b:c18d:: with SMTP id y13mr16104510wmi.120.1604303878066;
- Sun, 01 Nov 2020 23:57:58 -0800 (PST)
-MIME-Version: 1.0
-References: <20201102072456.20303-1-rdunlap@infradead.org>
-In-Reply-To: <20201102072456.20303-1-rdunlap@infradead.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Mon, 2 Nov 2020 08:57:41 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a39LYjQB=qJfBNsbiALohiHsrwdt6g9XUs5esF3KyV3Mw@mail.gmail.com>
-Message-ID: <CAK8P3a39LYjQB=qJfBNsbiALohiHsrwdt6g9XUs5esF3KyV3Mw@mail.gmail.com>
-Subject: Re: [PATCH] staging: wimax: depends on NET
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        id S1728027AbgKBH6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 02:58:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44388 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726819AbgKBH6f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 02:58:35 -0500
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F60C0617A6
+        for <netdev@vger.kernel.org>; Sun,  1 Nov 2020 23:58:35 -0800 (PST)
+Received: by mail-pf1-x443.google.com with SMTP id 72so3689966pfv.7
+        for <netdev@vger.kernel.org>; Sun, 01 Nov 2020 23:58:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Chy9Awg/iyWx87zCUlGYnR/1wfg6BP9EYAKD619Z2eM=;
+        b=GlHZ9yuMu763hAPwL9OXTKSsD2PtDpmwWHBNjduITh6mfFr59bLzGg4AJuWs2zfl20
+         GnTlt2RTt5kA3K568uKKnIugQrIO/lvEOY+PlIV/s+76dbiIfFr4arFHHeFcV22WE5lH
+         ugkkLEFfJ5KMWllhBmhSkTm7bXNP6c9czJzAnEqgnt1l5A+QOSgZjJpYOb6EMnQnU4NW
+         qYWc+emgdujwjqc1QL+poAw93DdBBSv3Z0Q7KRLiKM7mRKpV4EoYeexoa2jgEmAW2Sna
+         9J9uoVV0wY0BZ0GpvTiX1NAckvxLB+NpUTO/y9ktfHf8XngKVPtjjV5TyWYQbhgJZ6GM
+         OSQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Chy9Awg/iyWx87zCUlGYnR/1wfg6BP9EYAKD619Z2eM=;
+        b=I4ny3K5P8x9+iYTigYjjq4adryroYGyN40H2ZZfuq4PctQNIpjPTbsdtZ+YfVWA+J+
+         z3mEblYFr1sCg3qOjibBNkm/p5gBu6T5u8pdWyf1tZ2hr94OkMJW6ogibsx8LinhJOxV
+         toZ0AOc1jA2IVAL68S/7/8UEb0Igz71uufPMgXvwraMHCUvg1abOORtL/Q2HuKvkhLOB
+         ciRTXyvTHOC7ZojcZ8BwwoCLn7FjKDjtxQG7kSOtvzJsXj7bo3f1+wC3Icbt1Tx2FHUO
+         W0az9gyYFa+pN1fgdxljCrNr3NULonte/XjgAZvefCeJo0fLwdKt3KYVIGuswVAUcrlX
+         syYA==
+X-Gm-Message-State: AOAM532aL5iV8xQio6k7CO2IbWsFGDozvhpOKVcy5uXFwzrrU/lcmPRk
+        PkbWIrjmtoyRidQeZe6OM6SyRmEj2oyMJ+0d
+X-Google-Smtp-Source: ABdhPJzLruIBtfkn8mHwQjChM9zlYmCbZnpKEkTAv7XdYFISucWRefanTtxjT29mkf6lI0NWBMWhdQ==
+X-Received: by 2002:a63:1e05:: with SMTP id e5mr3008pge.435.1604303914831;
+        Sun, 01 Nov 2020 23:58:34 -0800 (PST)
+Received: from container-ubuntu.lan ([240e:398:25dd:4170::b82])
+        by smtp.gmail.com with ESMTPSA id b6sm11618412pgq.58.2020.11.01.23.58.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 Nov 2020 23:58:33 -0800 (PST)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <landen.chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        Chuanhong Guo <gch981213@gmail.com>
+Subject: [PATCH v2 net-next] net: dsa: mt7530: support setting MTU
+Date:   Mon,  2 Nov 2020 15:58:21 +0800
+Message-Id: <20201102075821.26873-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 2, 2020 at 8:25 AM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> Fix build errors when CONFIG_NET is not enabled. E.g. (trimmed):
->
-> ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_alloc':
-> op-msg.c:(.text+0xa9): undefined reference to `__alloc_skb'
-> ld: op-msg.c:(.text+0xcc): undefined reference to `genlmsg_put'
-> ld: op-msg.c:(.text+0xfc): undefined reference to `nla_put'
-> ld: op-msg.c:(.text+0x168): undefined reference to `kfree_skb'
-> ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_data_len':
-> op-msg.c:(.text+0x1ba): undefined reference to `nla_find'
-> ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_send':
-> op-msg.c:(.text+0x311): undefined reference to `init_net'
-> ld: op-msg.c:(.text+0x326): undefined reference to `netlink_broadcast'
-> ld: drivers/staging/wimax/stack.o: in function `__wimax_state_change':
-> stack.c:(.text+0x433): undefined reference to `netif_carrier_off'
-> ld: stack.c:(.text+0x46b): undefined reference to `netif_carrier_on'
-> ld: stack.c:(.text+0x478): undefined reference to `netif_tx_wake_queue'
-> ld: drivers/staging/wimax/stack.o: in function `wimax_subsys_exit':
-> stack.c:(.exit.text+0xe): undefined reference to `genl_unregister_family'
-> ld: drivers/staging/wimax/stack.o: in function `wimax_subsys_init':
-> stack.c:(.init.text+0x1a): undefined reference to `genl_register_family'
->
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: netdev@vger.kernel.org
+MT7530/7531 has a global RX packet length register, which can be used
+to set MTU.
 
-Good catch,
+Supported packet length values are 1522 (1518 if untagged), 1536, 1552,
+and multiple of 1024 (from 2048 to 15360).
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+---
+v1 -> v2:
+	Avoid duplication of mt7530_rmw()
+	Fix code wrapping
+---
+ drivers/net/dsa/mt7530.c | 49 ++++++++++++++++++++++++++++++++++++++++
+ drivers/net/dsa/mt7530.h | 12 ++++++++++
+ 2 files changed, 61 insertions(+)
 
-I wonder if we also need a dependency on NETDEVICES then,
-since that is what the drivers/net/wimax/ implicitly depended on
-before.
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index de7692b763d8..ca39f81de75a 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1021,6 +1021,53 @@ mt7530_port_disable(struct dsa_switch *ds, int port)
+ 	mutex_unlock(&priv->reg_mutex);
+ }
+ 
++static int
++mt7530_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
++{
++	struct mt7530_priv *priv = ds->priv;
++	struct mii_bus *bus = priv->bus;
++	int length;
++	u32 val;
++
++	/* When a new MTU is set, DSA always set the CPU port's MTU to the
++	 * largest MTU of the slave ports. Because the switch only has a global
++	 * RX length register, only allowing CPU port here is enough.
++	 */
++	if (!dsa_is_cpu_port(ds, port))
++		return 0;
++
++	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
++
++	val = mt7530_mii_read(priv, MT7530_GMACCR);
++	val &= ~MAX_RX_PKT_LEN_MASK;
++
++	/* RX length also includes Ethernet header, MTK tag, and FCS length */
++	length = new_mtu + ETH_HLEN + MTK_HDR_LEN + ETH_FCS_LEN;
++	if (length <= 1522)
++		val |= MAX_RX_PKT_LEN_1522;
++	else if (length <= 1536)
++		val |= MAX_RX_PKT_LEN_1536;
++	else if (length <= 1552)
++		val |= MAX_RX_PKT_LEN_1552;
++	else {
++		val &= ~MAX_RX_JUMBO_MASK;
++		val |= MAX_RX_JUMBO(DIV_ROUND_UP(length, 1024));
++		val |= MAX_RX_PKT_LEN_JUMBO;
++	}
++
++	mt7530_mii_write(priv, MT7530_GMACCR, val);
++
++	mutex_unlock(&bus->mdio_lock);
++
++	return 0;
++}
++
++static int
++mt7530_port_max_mtu(struct dsa_switch *ds, int port)
++{
++	return MT7530_MAX_MTU;
++}
++
+ static void
+ mt7530_stp_state_set(struct dsa_switch *ds, int port, u8 state)
+ {
+@@ -2519,6 +2566,8 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
+ 	.get_sset_count		= mt7530_get_sset_count,
+ 	.port_enable		= mt7530_port_enable,
+ 	.port_disable		= mt7530_port_disable,
++	.port_change_mtu	= mt7530_port_change_mtu,
++	.port_max_mtu		= mt7530_port_max_mtu,
+ 	.port_stp_state_set	= mt7530_stp_state_set,
+ 	.port_bridge_join	= mt7530_port_bridge_join,
+ 	.port_bridge_leave	= mt7530_port_bridge_leave,
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 9278a8e3d04e..77a6222d2635 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -11,6 +11,9 @@
+ #define MT7530_NUM_FDB_RECORDS		2048
+ #define MT7530_ALL_MEMBERS		0xff
+ 
++#define MTK_HDR_LEN			4
++#define MT7530_MAX_MTU			(15 * 1024 - ETH_HLEN - ETH_FCS_LEN - MTK_HDR_LEN)
++
+ enum mt753x_id {
+ 	ID_MT7530 = 0,
+ 	ID_MT7621 = 1,
+@@ -289,6 +292,15 @@ enum mt7530_vlan_port_attr {
+ #define MT7531_DBG_CNT(x)		(0x3018 + (x) * 0x100)
+ #define  MT7531_DIS_CLR			BIT(31)
+ 
++#define MT7530_GMACCR			0x30e0
++#define  MAX_RX_JUMBO(x)		((x) << 2)
++#define  MAX_RX_JUMBO_MASK		GENMASK(5, 2)
++#define  MAX_RX_PKT_LEN_MASK		GENMASK(1, 0)
++#define  MAX_RX_PKT_LEN_1522		0x0
++#define  MAX_RX_PKT_LEN_1536		0x1
++#define  MAX_RX_PKT_LEN_1552		0x2
++#define  MAX_RX_PKT_LEN_JUMBO		0x3
++
+ /* Register for MIB */
+ #define MT7530_PORT_MIB_COUNTER(x)	(0x4000 + (x) * 0x100)
+ #define MT7530_MIB_CCR			0x4fe0
+-- 
+2.25.1
 
-       Arnd
