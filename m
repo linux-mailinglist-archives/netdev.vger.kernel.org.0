@@ -2,121 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1975E2A34DE
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 21:06:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A78322A34F1
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 21:12:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726704AbgKBUGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 15:06:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726360AbgKBUFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 15:05:18 -0500
-Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6ADAC0617A6
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 12:05:18 -0800 (PST)
-Received: by mail-vs1-xe43.google.com with SMTP id f7so2388159vsh.10
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 12:05:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m2IVMowfbqKKUzrL12c02A/SfsiLLJUjZ9rRbpPh21U=;
-        b=qPebbXEEdo3NGJQKQOqe8mVzflazVESbXBdlpN5WnTbvvtBh8duuNo4JUucHN2K71P
-         qTghfWs5nRjb4dyCK2OdUGeMMZwjLGA97W4egpGeMMx2V4Lt8ryvYkBvOt4s8CBYODpD
-         a8JZtvEzqWX6alXIB/dT/ZWf0L8qCxP7evNgxXNJKDyY7goBJIxsaKFnVV3MofZ9BSOh
-         vvuHWblS5foxbcZ2kOgyvUAtyGb3dV5hjcXT8ZN23jwKW4tLAfibT0cJxXGrdtYz78Jv
-         UKgGkEHmj8PdDvPIrIDMycBy1FvEW3cFs6mBgznq0aEOVc2afGifnYZDVEtX2wJRChCq
-         WuiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m2IVMowfbqKKUzrL12c02A/SfsiLLJUjZ9rRbpPh21U=;
-        b=KnPoRe4Cip1ZNMXfy4XRvPNdQ85o7RAUrKFQi3SwJLqreKvjqr1TkVHQ2QT8tjR3T2
-         86E8b+qA6X77PjnyGTMWSuSObZk5/oluGvh7fSmtE2+1ycNB237GtKq3HEbMfCYSy+2J
-         w8JK2/1DtH+S2BArbcOITBGK0FlXwDPUMRdJt4Tsxy5albnyCBulIwldkud3WuoKmFKB
-         xfJmSRpsPgv6AzRhzg9HEWdEHBbt/R36xdvgl+GeuG2T8k75b5bNVVinRM+yDDR+NMny
-         aN4ZjIjmknN0PiNvaKHv4SfirI4PUCiTQfgoq02j+6U1EJqs+JVcNxAlzlbnqNqcNG+k
-         dnbA==
-X-Gm-Message-State: AOAM532hgWXWG2Z8BWQNp3cFGuK8XjBlk7JH1xZrJ3Xdt5eIDYGqr4Jx
-        LkmdDhK4TwCgMMTmJpf9RusvWqvfC1c=
-X-Google-Smtp-Source: ABdhPJwijCUyrb49qImIOhlAEI3Q7bp/RMW3oeGo6iHFHeqmCX2Oek6Ycg6IBGoWHpOlZJyOTA2sSg==
-X-Received: by 2002:a67:13c6:: with SMTP id 189mr15796588vst.3.1604347516868;
-        Mon, 02 Nov 2020 12:05:16 -0800 (PST)
-Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com. [209.85.217.49])
-        by smtp.gmail.com with ESMTPSA id w123sm1968406vke.26.2020.11.02.12.05.14
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Nov 2020 12:05:15 -0800 (PST)
-Received: by mail-vs1-f49.google.com with SMTP id t8so5349266vsr.2
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 12:05:14 -0800 (PST)
-X-Received: by 2002:a05:6102:240f:: with SMTP id j15mr6241145vsi.22.1604347514191;
- Mon, 02 Nov 2020 12:05:14 -0800 (PST)
+        id S1726723AbgKBUMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 15:12:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53717 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726299AbgKBUKv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 15:10:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604347850;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WGIbK10Z9+MOpQwKytgwL0i3O6nKvV+A3q1tlV6k+Vw=;
+        b=ay0H052i28ZMDhbXbru4CPJ4ZTjmrpRi+AeIs/rQrTizIom3B+/laaSEoihzxVou5FDncG
+        SZPJP0FcrBy0HvTpkUbZ+B/r3wfRmbY0MjNXpINBac6rulNHiBAjEfoFj1tOa46vDXUQ+W
+        QhR9o/vKeaV/lhCmaAMkfOyFS2QI+r4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-357-mqgl-XmrPTK8678Ea0I3dg-1; Mon, 02 Nov 2020 15:10:46 -0500
+X-MC-Unique: mqgl-XmrPTK8678Ea0I3dg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DB1F21009E26;
+        Mon,  2 Nov 2020 20:10:43 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5EE177366F;
+        Mon,  2 Nov 2020 20:10:37 +0000 (UTC)
+Date:   Mon, 2 Nov 2020 21:10:34 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        brouer@redhat.com
+Subject: Re: [PATCH bpf-next V5 3/5] bpf: add BPF-helper for MTU checking
+Message-ID: <20201102211034.563ef994@carbon>
+In-Reply-To: <5fa04a3c7c173_1ecdb20821@john-XPS-13-9370.notmuch>
+References: <160407661383.1525159.12855559773280533146.stgit@firesoul>
+        <160407666238.1525159.9197344855524540198.stgit@firesoul>
+        <5f9c764fc98c6_16d4208d5@john-XPS-13-9370.notmuch>
+        <20201102121548.5e2c36b1@carbon>
+        <5fa04a3c7c173_1ecdb20821@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-References: <GtgHtyGO5jHKHT6zGMAzg3TDejXZT0HMQVoqNERZRdM@cp3-web-024.plabs.ch>
- <CA+FuTSd1H6+NjSDcin6KQo9y1KEsDACeAvyr0p5JuDWc-aEh+A@mail.gmail.com> <4e2CSI69yKQIvZp3Wwo9pC9lHNAz4osj7w8OdhYUdE@cp7-web-042.plabs.ch>
-In-Reply-To: <4e2CSI69yKQIvZp3Wwo9pC9lHNAz4osj7w8OdhYUdE@cp7-web-042.plabs.ch>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 2 Nov 2020 15:04:37 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSeY7cMKqU_KGoxGJGp1vSiLJ9vUxrh9hoJHQg31W6fYtA@mail.gmail.com>
-Message-ID: <CA+FuTSeY7cMKqU_KGoxGJGp1vSiLJ9vUxrh9hoJHQg31W6fYtA@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 2/2] net: bonding, dummy, ifb, team: advertise NETIF_F_GSO_SOFTWARE
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 2, 2020 at 2:26 PM Alexander Lobakin <alobakin@pm.me> wrote:
->
-> From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> Date: Mon, 2 Nov 2020 11:30:17 -0500
->
-> Hi!
-> Thanks for the Ack.
->
-> > On Sun, Nov 1, 2020 at 8:17 AM Alexander Lobakin <alobakin@pm.me> wrote:
-> >>
-> >> Virtual netdevs should use NETIF_F_GSO_SOFTWARE to forward GSO skbs
-> >> as-is and let the final drivers deal with them when supported.
-> >> Also remove NETIF_F_GSO_UDP_L4 from bonding and team drivers as it's
-> >> now included in the "software" list.
-> >
-> > The rationale is that it is okay to advertise these features with
-> > software fallback as bonding/teaming "hardware" features, because
-> > there will always be a downstream device for which they will be
-> > implemented, possibly in the software fallback, correct?
-> >
-> > That does not apply to dummy or IFB. I guess dummy is fine, because
-> > xmit is a black hole, and IFB because ingress can safely handle these
-> > packets? How did you arrive at the choice of changing these two, of
-> > all virtual devices?
->
-> Two points:
-> 1. Exactly, dummy is just dummy, while ifb is an intermediate netdev to
->    share resources, so it should be as fine as with other virtual devs.
-> 2. They both advertise NETIF_F_ALL_TSO | NETIF_F_GSO_ENCAP_ALL, which
->    assumes that they handle all GSO skbs just like the others (pass
->    them as is to the real drivers in case with ifb).
+On Mon, 02 Nov 2020 10:04:44 -0800
+John Fastabend <john.fastabend@gmail.com> wrote:
 
-There is no real driver in the case of ifb if it forwards to the
-ingress path. But as discussed before, that can handle gso packets for
-all these protocols, too.
+> > > > +
+> > > > +	/*  Same relax as xdp_ok_fwd_dev() and is_skb_forwardable() */
+> > > > +	if (flags & BPF_MTU_CHK_RELAX)
+> > > > +		mtu += VLAN_HLEN;    
+> > > 
+> > > I'm trying to think about the use case where this might be used?
+> > > Compared to just adjusting MTU in BPF program side as needed for
+> > > packet encapsulation/headers/etc.  
+> > 
+> > As I wrote above, this were added because the kernels own forwarding
+> > have this relaxation in it's checks (in is_skb_forwardable()).  I even
+> > tried to dig through the history, introduced in [1] and copy-pasted
+> > in[2].  And this seems to be a workaround, that have become standard,
+> > that still have practical implications.
+> > 
+> > My practical experiments showed, that e.g. ixgbe driver with MTU=1500
+> > (L3-size) will allow and fully send packets with 1504 (L3-size). But
+> > i40e will not, and drops the packet in hardware/firmware step.  So,
+> > what is the correct action, strict or relaxed?
+> > 
+> > My own conclusion is that we should inverse the flag.  Meaning to
+> > default add this VLAN_HLEN (4 bytes) relaxation, and have a flag to do
+> > more strict check,  e.g. BPF_MTU_CHK_STRICT. As for historical reasons
+> > we must act like kernels version of MTU check. Unless you object, I will
+> > do this in V6.  
+> 
+> I'm fine with it either way as long as its documented in the helper
+> description so I have a chance of remembering this discussion in 6 months.
+> But, if you make it default won't this break for XDP cases? I assume the
+> XDP use case doesn't include the VLAN 4-bytes. Would you need to prevent
+> the flag from being used from XDP?
 
-> >>
-> >> Suggested-by: Willem de Bruijn <willemb@google.com>
-> >> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+XDP actually do include the VLAN_HLEN 4-bytes, see xdp_ok_fwd_dev(). I
+was so certain that you John added this code, but looking through git
+blame it pointed back to myself.  Going 5 levels git history deep and
+3+ years, does seem like I move/reused some of Johns code containing
+VLAN_HLEN in the MTU check, introduced for xdp-generic (6103aa96ec077)
+which I acked.  Thus, I guess I cannot push this away and have to take
+blame myself ;-)
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+I conclude that we default need to include this VLAN_HLEN, else the XDP
+bpf_check_mtu could say deny, while it would have passed the check in
+xdp_ok_fwd_dev().  As i40e will drop 1504 this at HW/FW level, I still
+see a need for a BPF_MTU_CHK_STRICT flag for programs that want to
+catch this.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
