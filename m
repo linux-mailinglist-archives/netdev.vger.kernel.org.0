@@ -2,113 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A973B2A30F3
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 18:09:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A04972A3100
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 18:11:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727477AbgKBRJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 12:09:13 -0500
-Received: from mail-eopbgr60081.outbound.protection.outlook.com ([40.107.6.81]:57408
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726860AbgKBRJN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 12:09:13 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CogP1jEXbjVx0OPKfIHAfXJne2kTnU4YcIVs1gqXzP10MaBH+G/sXDPcCjI/SXwo3YcBdnOcEVjY7zetLyTMD/gi4W3AiPVWmmnR6JNygZbNb3WBdEsgDeI2n0PtuihUeSDyDBih99Ryhz27cEeJgMuoNIkjW9/vLaXswtpNm4jULi3+19i48nCKSbIJV66BG8PxijDX1R5nHKBJ1PHA/xe7tmtKM7iuQmSqUCgLVy6wn9knRpXxSpDHZTxISCxNpmbzo+CItKWpoeQZ+EMESFtoIPb9r0j32eqJfNUAFB7pfGtFHiFB9txym/iQR+Yrjmzjz6tQXNxittglADrAAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mHr4qC+gM4V8k2YIlFxJWap6TUZIV0B4gWhpFdkLeAk=;
- b=bDg5aHeKJI+avqluVGIHjywsPPlzs6uxmQTh6VMYGN/HgeYrjCDXbQwf1dqc/SJvaU2A/v2kf1gJ737woRarM7Y9NQX4Fhzigv8zgSr5FZiboXUalMH93sKb49F9BAq+b5gU5UNSbSLB3bHzTAxK0GP2L+uSaG/LrKWT0p0MXYCt/7bvjPDkc2yrhltyvNgcc6nW/NWucIWlWMWZd8rlNyCV7HC9FA3okeV7nbjpebk6Y8Lt4WFwDjBsgjY0x/6glo2JiMBfGiEAzQCWdpMSxP1BvMqWurYpaBbE62Q6B2CiMH+QFYusSfRaq0sPmGv9Szo0xknsrHbAziuehz9INQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mHr4qC+gM4V8k2YIlFxJWap6TUZIV0B4gWhpFdkLeAk=;
- b=pSw3snJplt4JM5jXoMv58P7egK5BTIF6Li/+OTZ8j7iFQRUpe/J5nHlbGNXjZkJaoEIhPBs7egMGfH4bDIwqjZuHD7fdmtXiLWKhkeuCDXY45peIO2v/E0qwBXkkXlgHMse6kZ4yI1I1TT2uwcHYyvzcUl30teY09JEtQNh8PE8=
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
- by VI1PR04MB5965.eurprd04.prod.outlook.com (2603:10a6:803:da::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.28; Mon, 2 Nov
- 2020 17:09:10 +0000
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::41c8:65df:efe8:1f51]) by VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::41c8:65df:efe8:1f51%6]) with mapi id 15.20.3499.030; Mon, 2 Nov 2020
- 17:09:10 +0000
-From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net v2 2/2] dpaa_eth: fix the RX headroom size alignment
-Thread-Topic: [PATCH net v2 2/2] dpaa_eth: fix the RX headroom size alignment
-Thread-Index: AQHWrUkmv1ISD2EXGEWhgHj29onOCKmw8/qAgAQnFiA=
-Date:   Mon, 2 Nov 2020 17:09:09 +0000
-Message-ID: <VI1PR04MB580769648827F02236580080F2100@VI1PR04MB5807.eurprd04.prod.outlook.com>
-References: <cover.1603899392.git.camelia.groza@nxp.com>
-        <5b077d5853123db0c8794af1ed061850b94eae37.1603899392.git.camelia.groza@nxp.com>
- <20201030184347.4a8ad004@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201030184347.4a8ad004@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [82.78.148.61]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: b96980f3-ed68-4ff1-17f8-08d87f5203c4
-x-ms-traffictypediagnostic: VI1PR04MB5965:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB596599F1E2238B610BC8CD9BF2100@VI1PR04MB5965.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VbQxsK7puFvP6sGFJZp4up20jECbuO8S4k1n93F0RYK55V2/iLkrcDBbUTPZ7ifLvRurHinIZNe8nCcFj2AO5roA1BcCrncXlbw7JEn6d4XLsHq30QZGy0PamupQttKw1F5yx9YiIZNvBsiq8tWQYqP9rIvGVd49LU7eOmvf3fE42UpGWa8Kqv3jLzCCwlEoqEonAzUAWzVMnQGL8OyEvbD668rgK13HDWS88WX55bijzqyV+KsqG3KsyUYCNjoZGB10thoO/+KOB2nfAlKGym5s6nGFwK6j26lo+8ZdwMGzybKeWMqALyl/48BJ5Yz2YukKj/jjDA1ZKLI76JbO/g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(376002)(136003)(39840400004)(396003)(8936002)(4744005)(86362001)(6506007)(6916009)(66946007)(66556008)(53546011)(66446008)(64756008)(66476007)(7696005)(316002)(2906002)(54906003)(186003)(52536014)(55016002)(5660300002)(83380400001)(71200400001)(4326008)(8676002)(478600001)(26005)(76116006)(9686003)(33656002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: Bj+oATPH1v/NIKaoWXpX3tmjXIUVo5JGzR0IVGd6wXTP+zPAC7ahJWwIlZlvasqGG9C9OJoIJc3BTN0FJZGZI1TT+6y376deWiPR8h9RRMuj5L0kYm9bCCRkyVcOJHj15atrpqeivKyR/HRICb2tyCPwhlSp5FddiwSeBsxFvCwiIDe5SKFLnX6Gu6SoocojsaX4SHUDnk6pK54iCZMR+GYM0bzo1P6Xmn8dRQqhzNMn8SmNmdBfKOa4XlwnhzoxLE3YFLUiwsPRouspluCqcdF2GZMF/4o4E0gchhjeCtoTiTN0UcW1uMfMAiR7cKFwC8OIf1fMtlqsnasvyZgK51GAgUmRhtQQ3uh9vxazgZWePmYv/8ZlWkYKxhtsC7mfR8nR81B8V1ZO1Y9uKNCH0gIRZToVuytVwyuH0VoUfYUa7D9Su+NqfbkyCv1mlG+LfFNzjx3pBloE9G8NJA9xVP7kX2LBZqTCP/1VqyV3sVB7KfB/bkq4R7ccIlmqqJ9sc3/vH81iG+h9wrMgLKBcm4vteRIvF9bvDt8a1UyNXW0i5CDNV3G2Pv6/IQQlwBRbt7FKTThUgCSJxmap42qlsXbXS3XAyOrzayC+Ca96oETCGS5AFI/LEOUGHE4cTsR7rSM6SnyQFPIM7U0EygA1/A==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727442AbgKBRLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 12:11:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27260 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727150AbgKBRLM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 12:11:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604337071;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qe9HtNbCEgI8DjOjklRgoiEgF3X7IiclvAtTrYaenm8=;
+        b=HWACDyWRQAsj9E4AxtQseVwe71ejy4NiblNEpVbsRohgu3/RajGALxi2q+A5U8hhV7cgZo
+        6/iY42vA2NFZZ22wAPdPkDosYXND3wXHn6lGat/N8GZgcO4d2OS/5qZs/6vRmaaWSD9XMU
+        B+A79s7kle/7Nf9cNxPFYsfEOzLfxwc=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-542-89wM4WsUP6uy3sCUPwSiHA-1; Mon, 02 Nov 2020 12:11:10 -0500
+X-MC-Unique: 89wM4WsUP6uy3sCUPwSiHA-1
+Received: by mail-wm1-f72.google.com with SMTP id 13so3586268wmf.0
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 09:11:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=qe9HtNbCEgI8DjOjklRgoiEgF3X7IiclvAtTrYaenm8=;
+        b=oeURPKKNkaHpnmOeuUB2lXNXQBuBEYYsKBs7WUXy6UuS00ncy4NNFExm/DC8T3iKhx
+         1n4/pVU91Rn7spUJGQkkjl13LwfsbqWdNxZRep8aVeTUKw7sYXzTAgVbY9KJAaQn5+tj
+         n3zV3vct467NUv5wNQ3bnRbS1b2CwVhVf7kg2Su/xZeKMx49NJch+YYoXjFIIqLWF0KQ
+         E/FcVk1YpIkz1hlX1YYz+oxpVc8TiQ5FbT4+R44b8buGQcMl7Jx2hTD/mdls4z3OLWcv
+         fPqwYY8Pfnn0K0x/rIdBXmRHVSBC74cO5f7INj8ooKQzGx+29+N33nEe49YvqAyeEdNS
+         9mSA==
+X-Gm-Message-State: AOAM533bIyuLQa9N5NO+bigzYtoPimWYNnli6GBr8uLuUd2hcSlHIVYD
+        t1QMN+T9pEutl5pXBD9aNV3wTfcw/3g5293dydTCtKKbawwNNjN0/V+brA1PAd9fvVChQk1SXcG
+        /v1qvR/VyZq+1GSlz
+X-Received: by 2002:a1c:2441:: with SMTP id k62mr19529351wmk.10.1604337068048;
+        Mon, 02 Nov 2020 09:11:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxftVuRDvqXD+CO65Xi6YzLd9A4FBJz+cftSjYhfrG9NB/4h4AS+WlFGmto5fs0nWE6W+uFJQ==
+X-Received: by 2002:a1c:2441:: with SMTP id k62mr19529323wmk.10.1604337067797;
+        Mon, 02 Nov 2020 09:11:07 -0800 (PST)
+Received: from steredhat (host-79-22-200-33.retail.telecomitalia.it. [79.22.200.33])
+        by smtp.gmail.com with ESMTPSA id c9sm9435227wrp.65.2020.11.02.09.11.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Nov 2020 09:11:06 -0800 (PST)
+Date:   Mon, 2 Nov 2020 18:11:04 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, netdev@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost/vsock: add IOTLB API support
+Message-ID: <20201102171104.eiovmkj23fle5ioj@steredhat>
+References: <20201029174351.134173-1-sgarzare@redhat.com>
+ <751cc074-ae68-72c8-71de-a42458058761@redhat.com>
+ <20201030105422.ju2aj2bmwsckdufh@steredhat>
+ <278f4732-e561-2b4f-03ee-b26455760b01@redhat.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b96980f3-ed68-4ff1-17f8-08d87f5203c4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2020 17:09:09.9584
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mrUHXnKCCuwcknioI8gMmeezemOSQOYO/njCZPOlNJ+do9dTwLy/CZDQEYaDvy9RrGl61JsNZeuKhPcvxWnPAA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5965
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <278f4732-e561-2b4f-03ee-b26455760b01@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Saturday, October 31, 2020 03:44
-> To: Camelia Alexandra Groza <camelia.groza@nxp.com>
-> Cc: willemdebruijn.kernel@gmail.com; Madalin Bucur (OSS)
-> <madalin.bucur@oss.nxp.com>; davem@davemloft.net;
-> netdev@vger.kernel.org
-> Subject: Re: [PATCH net v2 2/2] dpaa_eth: fix the RX headroom size
-> alignment
->=20
-> On Wed, 28 Oct 2020 18:41:00 +0200 Camelia Groza wrote:
-> > @@ -2842,7 +2842,8 @@ static int dpaa_ingress_cgr_init(struct dpaa_priv
-> *priv)
-> >  	return err;
-> >  }
-> >
-> > -static inline u16 dpaa_get_headroom(struct dpaa_buffer_layout *bl)
-> > +static inline u16 dpaa_get_headroom(struct dpaa_buffer_layout *bl,
-> > +				    enum port_type port)
->=20
-> Please drop the "inline" while you're touching this definition.
->=20
-> The compiler will make the right inlining decision here.
+On Fri, Oct 30, 2020 at 07:44:43PM +0800, Jason Wang wrote:
+>
+>On 2020/10/30 下午6:54, Stefano Garzarella wrote:
+>>On Fri, Oct 30, 2020 at 06:02:18PM +0800, Jason Wang wrote:
+>>>
+>>>On 2020/10/30 上午1:43, Stefano Garzarella wrote:
+>>>>This patch enables the IOTLB API support for vhost-vsock devices,
+>>>>allowing the userspace to emulate an IOMMU for the guest.
+>>>>
+>>>>These changes were made following vhost-net, in details this patch:
+>>>>- exposes VIRTIO_F_ACCESS_PLATFORM feature and inits the iotlb
+>>>>  device if the feature is acked
+>>>>- implements VHOST_GET_BACKEND_FEATURES and
+>>>>  VHOST_SET_BACKEND_FEATURES ioctls
+>>>>- calls vq_meta_prefetch() before vq processing to prefetch vq
+>>>>  metadata address in IOTLB
+>>>>- provides .read_iter, .write_iter, and .poll callbacks for the
+>>>>  chardev; they are used by the userspace to exchange IOTLB messages
+>>>>
+>>>>This patch was tested with QEMU and a patch applied [1] to fix a
+>>>>simple issue:
+>>>>    $ qemu -M q35,accel=kvm,kernel-irqchip=split \
+>>>>           -drive file=fedora.qcow2,format=qcow2,if=virtio \
+>>>>           -device intel-iommu,intremap=on \
+>>>>           -device vhost-vsock-pci,guest-cid=3,iommu_platform=on
+>>>
+>>>
+>>>Patch looks good, but a question:
+>>>
+>>>It looks to me you don't enable ATS which means vhost won't get 
+>>>any invalidation request or did I miss anything?
+>>>
+>>
+>>You're right, I didn't see invalidation requests, only miss and updates.
+>>Now I have tried to enable 'ats' and 'device-iotlb' but I still 
+>>don't see any invalidation.
+>>
+>>How can I test it? (Sorry but I don't have much experience yet with 
+>>vIOMMU)
+>
+>
+>I guess it's because the batched unmap. Maybe you can try to use 
+>"intel_iommu=strict" in guest kernel command line to see if it works.
+>
+>Btw, make sure the qemu contains the patch [1]. Otherwise ATS won't be 
+>enabled for recent Linux Kernel in the guest.
 
-Sure, I'll drop it.
+The problem was my kernel, it was built with a tiny configuration.
+Using fedora stock kernel I can see the 'invalidate' requests, but I 
+also had the following issues.
+
+Do they make you ring any bells?
+
+$ ./qemu -m 4G -smp 4 -M q35,accel=kvm,kernel-irqchip=split \
+     -drive file=fedora.qcow2,format=qcow2,if=virtio \
+     -device intel-iommu,intremap=on,device-iotlb=on \
+     -device vhost-vsock-pci,guest-cid=6,iommu_platform=on,ats=on,id=v1
+
+     qemu-system-x86_64: vtd_iova_to_slpte: detected IOVA overflow 
+     (iova=0x1d40000030c0)
+     qemu-system-x86_64: vtd_iommu_translate: detected translation 
+     failure (dev=00:03:00, iova=0x1d40000030c0)
+     qemu-system-x86_64: New fault is not recorded due to compression of 
+     faults
+
+Guest kernel messages:
+     [   44.940872] DMAR: DRHD: handling fault status reg 2
+     [   44.941989] DMAR: [DMA Read] Request device [00:03.0] PASID 
+     ffffffff fault addr ffff88W
+     [   49.785884] DMAR: DRHD: handling fault status reg 2
+     [   49.788874] DMAR: [DMA Read] Request device [00:03.0] PASID 
+     ffffffff fault addr ffff88W
+
+
+QEMU: b149dea55c Merge remote-tracking branch 
+'remotes/cschoenebeck/tags/pull-9p-20201102' into staging
+
+Linux guest: 5.8.16-200.fc32.x86_64
+
+
+Thanks,
+Stefano
+
