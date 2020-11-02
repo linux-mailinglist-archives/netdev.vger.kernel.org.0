@@ -2,60 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F31A2A36EE
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 00:07:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32A002A36F0
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 00:08:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725883AbgKBXHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 18:07:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59404 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725807AbgKBXHe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 18:07:34 -0500
-Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9DA502225E;
-        Mon,  2 Nov 2020 23:07:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604358454;
-        bh=eE1wfkYKnsfHbpK9kIz/M6a+fpspsbLlOWGMQxHY1+4=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=BGduIqyT7OTQmu+BBlyMGPFyEV8DfjQMoWsoVwu6/VXHdRjfQZ2vo0uSKJdnzHq3j
-         D2Hylh2KdbEi+sNAv8tTQCvff3ntcoS4ejpCQ1NbB2Z+F7fYwgNkhRA1zvFg2DllsR
-         1upS0TbzJW0EkjkyblkJEOF3SHQpE7QbRgyark/U=
-Message-ID: <be6ac7df8079164d8e9cb42e381799629a4479fb.camel@kernel.org>
-Subject: Re: [net-next 14/15] ice: join format strings to same line as
- ice_debug
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, Aaron Brown <aaron.f.brown@intel.com>
-Date:   Mon, 02 Nov 2020 15:07:32 -0800
-In-Reply-To: <20201102222338.1442081-15-anthony.l.nguyen@intel.com>
-References: <20201102222338.1442081-1-anthony.l.nguyen@intel.com>
-         <20201102222338.1442081-15-anthony.l.nguyen@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1726114AbgKBXI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 18:08:28 -0500
+Received: from www62.your-server.de ([213.133.104.62]:57012 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725913AbgKBXI1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 18:08:27 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kZiw4-0006ru-Gj; Tue, 03 Nov 2020 00:08:24 +0100
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kZiw4-000Dwv-8f; Tue, 03 Nov 2020 00:08:24 +0100
+Subject: Re: [PATCH bpf-next 0/5] selftests/xsk: xsk selftests
+To:     Weqaar Janjua <weqaar.janjua@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, magnus.karlsson@gmail.com,
+        bjorn.topel@intel.com
+Cc:     Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
+        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
+        anders.roxell@linaro.org, jonathan.lemon@gmail.com,
+        andrii.nakryiko@gmail.com
+References: <20201030121347.26984-1-weqaar.a.janjua@intel.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <0fef6ce4-86cd-ae3a-0a29-953d87402afe@iogearbox.net>
+Date:   Tue, 3 Nov 2020 00:08:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <20201030121347.26984-1-weqaar.a.janjua@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25976/Mon Nov  2 14:23:56 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-11-02 at 14:23 -0800, Tony Nguyen wrote:
-> From: Jacob Keller <jacob.e.keller@intel.com>
+On 10/30/20 1:13 PM, Weqaar Janjua wrote:
+> This patch set adds AF_XDP selftests based on veth to selftests/xsk/.
 > 
-> When printing messages with ice_debug, align the printed string to
-> the
-> origin line of the message in order to ease debugging and tracking
-> messages back to their source.
+> # Topology:
+> # ---------
+> #                 -----------
+> #               _ | Process | _
+> #              /  -----------  \
+> #             /        |        \
+> #            /         |         \
+> #      -----------     |     -----------
+> #      | Thread1 |     |     | Thread2 |
+> #      -----------     |     -----------
+> #           |          |          |
+> #      -----------     |     -----------
+> #      |  xskX   |     |     |  xskY   |
+> #      -----------     |     -----------
+> #           |          |          |
+> #      -----------     |     ----------
+> #      |  vethX  | --------- |  vethY |
+> #      -----------   peer    ----------
+> #           |          |          |
+> #      namespaceX      |     namespaceY
 > 
+> These selftests test AF_XDP SKB and Native/DRV modes using veth Virtual
+> Ethernet interfaces.
+> 
+> The test program contains two threads, each thread is single socket with
+> a unique UMEM. It validates in-order packet delivery and packet content
+> by sending packets to each other.
+> 
+> Prerequisites setup by script TEST_PREREQUISITES.sh:
+> 
+>     Set up veth interfaces as per the topology shown ^^:
+>     * setup two veth interfaces and one namespace
+>     ** veth<xxxx> in root namespace
+>     ** veth<yyyy> in af_xdp<xxxx> namespace
+>     ** namespace af_xdp<xxxx>
+>     * create a spec file veth.spec that includes this run-time configuration
+>       that is read by test scripts - filenames prefixed with TEST_XSK
+>     *** xxxx and yyyy are randomly generated 4 digit numbers used to avoid
+>         conflict with any existing interface.
+> 
+> The following tests are provided:
+> 
+> 1. AF_XDP SKB mode
+>     Generic mode XDP is driver independent, used when the driver does
+>     not have support for XDP. Works on any netdevice using sockets and
+>     generic XDP path. XDP hook from netif_receive_skb().
+>     a. nopoll - soft-irq processing
+>     b. poll - using poll() syscall
+>     c. Socket Teardown
+>        Create a Tx and a Rx socket, Tx from one socket, Rx on another.
+>        Destroy both sockets, then repeat multiple times. Only nopoll mode
+> 	  is used
+>     d. Bi-directional Sockets
+>        Configure sockets as bi-directional tx/rx sockets, sets up fill
+> 	  and completion rings on each socket, tx/rx in both directions.
+> 	  Only nopoll mode is used
+> 
+> 2. AF_XDP DRV/Native mode
+>     Works on any netdevice with XDP_REDIRECT support, driver dependent.
+>     Processes packets before SKB allocation. Provides better performance
+>     than SKB. Driver hook available just after DMA of buffer descriptor.
+>     a. nopoll
+>     b. poll
+>     c. Socket Teardown
+>     d. Bi-directional Sockets
+>     * Only copy mode is supported because veth does not currently support
+>       zero-copy mode
+> 
+> Total tests: 8.
+> 
+> Flow:
+> * Single process spawns two threads: Tx and Rx
+> * Each of these two threads attach to a veth interface within their
+>    assigned namespaces
+> * Each thread creates one AF_XDP socket connected to a unique umem
+>    for each veth interface
+> * Tx thread transmits 10k packets from veth<xxxx> to veth<yyyy>
+> * Rx thread verifies if all 10k packets were received and delivered
+>    in-order, and have the right content
+> 
+> Structure of the patch set:
+> 
+> Patch 1: This patch adds XSK Selftests framework under
+>           tools/testing/selftests/xsk, and README
+> Patch 2: Adds tests: SKB poll and nopoll mode, mac-ip-udp debug,
+>           and README updates
+> Patch 3: Adds tests: DRV poll and nopoll mode, and README updates
+> Patch 4: Adds tests: SKB and DRV Socket Teardown, and README updates
+> Patch 5: Adds tests: SKB and DRV Bi-directional Sockets, and README
+>           updates
+> 
+> Thanks: Weqaar
+> 
+> Weqaar Janjua (5):
+>    selftests/xsk: xsk selftests framework
+>    selftests/xsk: xsk selftests - SKB POLL, NOPOLL
+>    selftests/xsk: xsk selftests - DRV POLL, NOPOLL
+>    selftests/xsk: xsk selftests - Socket Teardown - SKB, DRV
+>    selftests/xsk: xsk selftests - Bi-directional Sockets - SKB, DRV
 
-Just out of curiosity, you are only re-aligning the code and not the
-printed messages themselves. How would this help ? did you mean help
-with tracking the sources when doing grep like operations on the source
-code ? 
+Thanks a lot for adding the selftests, Weqaar! Given this needs to copy quite
+a bit of BPF selftest base infra e.g. from Makefiles I'd prefer if you could
+place these under selftests/bpf/ instead to avoid duplicating changes into two
+locations. I understand that these tests don't integrate well into test_progs,
+but for example see test_tc_redirect.sh or test_tc_edt.sh for stand-alone tests
+which could be done similarly with the xsk ones. Would be great if you could
+integrate them and spin a v2 with that.
 
-
-
+Thanks,
+Daniel
