@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00CE02A367F
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 23:24:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E09072A3676
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 23:24:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727138AbgKBWYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 17:24:40 -0500
-Received: from mga05.intel.com ([192.55.52.43]:16125 "EHLO mga05.intel.com"
+        id S1726945AbgKBWYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 17:24:23 -0500
+Received: from mga05.intel.com ([192.55.52.43]:16120 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726755AbgKBWYV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 17:24:21 -0500
-IronPort-SDR: 50zOXlwYX9H7jHkqGQ0avxMaXd06WbkZQj619P+cy6URO2yjVD0N+y5O5dM6qK+9zsjb541jU8
- OIkaAdwWcWig==
-X-IronPort-AV: E=McAfee;i="6000,8403,9793"; a="253670969"
+        id S1726784AbgKBWYT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 17:24:19 -0500
+IronPort-SDR: b8vcZjcWsF2xP81QemsoTGJrs/MwMFpY73v6hpN1xj/Xc6ecW3479SoTlu5eVTlS2EUImn82ne
+ mmnCFKNiOP0w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9793"; a="253670972"
 X-IronPort-AV: E=Sophos;i="5.77,446,1596524400"; 
-   d="scan'208";a="253670969"
+   d="scan'208";a="253670972"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2020 14:24:18 -0800
-IronPort-SDR: W/0h9pX+WelZ1dcv65or5OY8ItpPylR8C3chmRydp2qVRvIwL08WmniSrMBabDkua45T7q4tD6
- lHZaiBGx79+w==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2020 14:24:19 -0800
+IronPort-SDR: G0GetADBPa6N42DJCoMlFXbV3SDJbh9tmLHIwj9YnpX2R7vQ3mGV4tgbPhU24qPFZL9IyHkzwd
+ TyTDwKWqHwqw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.77,446,1596524400"; 
-   d="scan'208";a="305591778"
+   d="scan'208";a="305591781"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga008.fm.intel.com with ESMTP; 02 Nov 2020 14:24:17 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 02 Nov 2020 14:24:18 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Real Valiquette <real.valiquette@intel.com>,
         netdev@vger.kernel.org, sassmann@redhat.com,
         anthony.l.nguyen@intel.com, Chinh Cao <chinh.t.cao@intel.com>,
         Brijesh Behera <brijeshx.behera@intel.com>
-Subject: [net-next 06/15] ice: create ACL entry
-Date:   Mon,  2 Nov 2020 14:23:29 -0800
-Message-Id: <20201102222338.1442081-7-anthony.l.nguyen@intel.com>
+Subject: [net-next 07/15] ice: program ACL entry
+Date:   Mon,  2 Nov 2020 14:23:30 -0800
+Message-Id: <20201102222338.1442081-8-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201102222338.1442081-1-anthony.l.nguyen@intel.com>
 References: <20201102222338.1442081-1-anthony.l.nguyen@intel.com>
@@ -47,8 +47,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Real Valiquette <real.valiquette@intel.com>
 
-Create an ACL entry for the mask match data and set the desired action.
-Generate and program the associated extraction sequence.
+Complete the filter programming process; set the flow entry and action into
+the scenario and write it to hardware. Configure the VSI for ACL filters.
 
 Co-developed-by: Chinh Cao <chinh.t.cao@intel.com>
 Signed-off-by: Chinh Cao <chinh.t.cao@intel.com>
@@ -57,1417 +57,1048 @@ Co-developed-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Brijesh Behera <brijeshx.behera@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h          |   4 +
- drivers/net/ethernet/intel/ice/ice_acl.c      | 171 +++++
- drivers/net/ethernet/intel/ice/ice_acl.h      |  29 +
- drivers/net/ethernet/intel/ice/ice_acl_main.c |  66 +-
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   | 121 +++-
- .../net/ethernet/intel/ice/ice_ethtool_fdir.c |  35 +-
- .../net/ethernet/intel/ice/ice_flex_pipe.c    |   4 +-
- .../net/ethernet/intel/ice/ice_flex_pipe.h    |   7 +
- drivers/net/ethernet/intel/ice/ice_flow.c     | 616 +++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_flow.h     |   9 +-
- .../net/ethernet/intel/ice/ice_lan_tx_rx.h    |   3 +
- 11 files changed, 1039 insertions(+), 26 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h          |   3 +
+ drivers/net/ethernet/intel/ice/ice_acl.c      |  48 ++-
+ drivers/net/ethernet/intel/ice/ice_acl.h      |  23 +
+ drivers/net/ethernet/intel/ice/ice_acl_ctrl.c | 260 +++++++++++
+ drivers/net/ethernet/intel/ice/ice_acl_main.c |   4 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   2 +
+ .../net/ethernet/intel/ice/ice_ethtool_fdir.c |  58 ++-
+ drivers/net/ethernet/intel/ice/ice_flow.c     | 406 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_flow.h     |   3 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  10 +-
+ 10 files changed, 805 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index d813a5c765d0..31eea8bd92f2 100644
+index 31eea8bd92f2..fa24826c5af7 100644
 --- a/drivers/net/ethernet/intel/ice/ice.h
 +++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -601,6 +601,10 @@ int ice_del_ntuple_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd);
- int ice_get_ethtool_fdir_entry(struct ice_hw *hw, struct ethtool_rxnfc *cmd);
- u32 ice_ntuple_get_max_fltr_cnt(struct ice_hw *hw);
- int
-+ice_ntuple_set_input_set(struct ice_vsi *vsi, enum ice_block blk,
-+			 struct ethtool_rx_flow_spec *fsp,
-+			 struct ice_fdir_fltr *input);
+@@ -620,6 +620,9 @@ int ice_fdir_create_dflt_rules(struct ice_pf *pf);
+ enum ice_fltr_ptype ice_ethtool_flow_to_fltr(int eth);
+ int ice_aq_wait_for_event(struct ice_pf *pf, u16 opcode, unsigned long timeout,
+ 			  struct ice_rq_event_info *event);
 +int
- ice_ntuple_l4_proto_to_port(enum ice_flow_seg_hdr l4_proto,
- 			    enum ice_flow_field *src_port,
- 			    enum ice_flow_field *dst_port);
++ice_ntuple_update_list_entry(struct ice_pf *pf, struct ice_fdir_fltr *input,
++			     int fltr_idx);
+ int ice_open(struct net_device *netdev);
+ int ice_stop(struct net_device *netdev);
+ void ice_service_task_schedule(struct ice_pf *pf);
 diff --git a/drivers/net/ethernet/intel/ice/ice_acl.c b/drivers/net/ethernet/intel/ice/ice_acl.c
-index 7ff97917aca9..767cccc3ba67 100644
+index 767cccc3ba67..a897dd9bfcde 100644
 --- a/drivers/net/ethernet/intel/ice/ice_acl.c
 +++ b/drivers/net/ethernet/intel/ice/ice_acl.c
-@@ -152,6 +152,177 @@ ice_aq_program_actpair(struct ice_hw *hw, u8 act_mem_idx, u16 act_entry_idx,
- 				  act_mem_idx, act_entry_idx, buf, cd);
+@@ -171,7 +171,8 @@ ice_acl_prof_aq_send(struct ice_hw *hw, u16 opc, u8 prof_id,
+ 
+ 	ice_fill_dflt_direct_cmd_desc(&desc, opc);
+ 	desc.params.profile.profile_id = prof_id;
+-	if (opc == ice_aqc_opc_program_acl_prof_extraction)
++	if (opc == ice_aqc_opc_program_acl_prof_extraction ||
++	    opc == ice_aqc_opc_program_acl_prof_ranges)
+ 		desc.flags |= cpu_to_le16(ICE_AQ_FLAG_RD);
+ 	return ice_aq_send_cmd(hw, &desc, buf, sizeof(*buf), cd);
+ }
+@@ -323,6 +324,51 @@ ice_aq_dealloc_acl_cntrs(struct ice_hw *hw, struct ice_acl_cntrs *cntrs,
+ 	return ice_aq_send_cmd(hw, &desc, NULL, 0, cd);
  }
  
 +/**
-+ * ice_acl_prof_aq_send - sending ACL profile AQ commands
++ * ice_prog_acl_prof_ranges - program ACL profile ranges
 + * @hw: pointer to the HW struct
-+ * @opc: command opcode
-+ * @prof_id: profile ID
-+ * @buf: ptr to buffer
++ * @prof_id: programmed or updated profile ID
++ * @buf: pointer to input buffer
 + * @cd: pointer to command details structure or NULL
 + *
-+ * This function sends ACL profile commands
++ * Program ACL profile ranges (indirect 0x0C1E)
 + */
-+static enum ice_status
-+ice_acl_prof_aq_send(struct ice_hw *hw, u16 opc, u8 prof_id,
-+		     struct ice_aqc_acl_prof_generic_frmt *buf,
-+		     struct ice_sq_cd *cd)
++enum ice_status
++ice_prog_acl_prof_ranges(struct ice_hw *hw, u8 prof_id,
++			 struct ice_aqc_acl_profile_ranges *buf,
++			 struct ice_sq_cd *cd)
 +{
 +	struct ice_aq_desc desc;
 +
-+	ice_fill_dflt_direct_cmd_desc(&desc, opc);
++	ice_fill_dflt_direct_cmd_desc(&desc,
++				      ice_aqc_opc_program_acl_prof_ranges);
 +	desc.params.profile.profile_id = prof_id;
-+	if (opc == ice_aqc_opc_program_acl_prof_extraction)
-+		desc.flags |= cpu_to_le16(ICE_AQ_FLAG_RD);
++	desc.flags |= cpu_to_le16(ICE_AQ_FLAG_RD);
 +	return ice_aq_send_cmd(hw, &desc, buf, sizeof(*buf), cd);
 +}
 +
 +/**
-+ * ice_prgm_acl_prof_xtrct - program ACL profile extraction sequence
++ * ice_query_acl_prof_ranges - query ACL profile ranges
 + * @hw: pointer to the HW struct
-+ * @prof_id: profile ID
-+ * @buf: ptr to buffer
++ * @prof_id: programmed or updated profile ID
++ * @buf: pointer to response buffer
 + * @cd: pointer to command details structure or NULL
 + *
-+ * Program ACL profile extraction (indirect 0x0C1D)
++ * Query ACL profile ranges (indirect 0x0C22)
 + */
 +enum ice_status
-+ice_prgm_acl_prof_xtrct(struct ice_hw *hw, u8 prof_id,
-+			struct ice_aqc_acl_prof_generic_frmt *buf,
-+			struct ice_sq_cd *cd)
++ice_query_acl_prof_ranges(struct ice_hw *hw, u8 prof_id,
++			  struct ice_aqc_acl_profile_ranges *buf,
++			  struct ice_sq_cd *cd)
 +{
-+	return ice_acl_prof_aq_send(hw, ice_aqc_opc_program_acl_prof_extraction,
-+				    prof_id, buf, cd);
-+}
-+
-+/**
-+ * ice_query_acl_prof - query ACL profile
-+ * @hw: pointer to the HW struct
-+ * @prof_id: profile ID
-+ * @buf: ptr to buffer (which will contain response of this command)
-+ * @cd: pointer to command details structure or NULL
-+ *
-+ * Query ACL profile (indirect 0x0C21)
-+ */
-+enum ice_status
-+ice_query_acl_prof(struct ice_hw *hw, u8 prof_id,
-+		   struct ice_aqc_acl_prof_generic_frmt *buf,
-+		   struct ice_sq_cd *cd)
-+{
-+	return ice_acl_prof_aq_send(hw, ice_aqc_opc_query_acl_prof, prof_id,
-+				    buf, cd);
-+}
-+
-+/**
-+ * ice_aq_acl_cntrs_chk_params - Checks ACL counter parameters
-+ * @cntrs: ptr to buffer describing input and output params
-+ *
-+ * This function checks the counter bank range for counter type and returns
-+ * success or failure.
-+ */
-+static enum ice_status ice_aq_acl_cntrs_chk_params(struct ice_acl_cntrs *cntrs)
-+{
-+	enum ice_status status = 0;
-+
-+	if (!cntrs || !cntrs->amount)
-+		return ICE_ERR_PARAM;
-+
-+	switch (cntrs->type) {
-+	case ICE_AQC_ACL_CNT_TYPE_SINGLE:
-+		/* Single counter type - configured to count either bytes
-+		 * or packets, the valid values for byte or packet counters
-+		 * shall be 0-3.
-+		 */
-+		if (cntrs->bank > ICE_AQC_ACL_MAX_CNT_SINGLE)
-+			status = ICE_ERR_OUT_OF_RANGE;
-+		break;
-+	case ICE_AQC_ACL_CNT_TYPE_DUAL:
-+		/* Pair counter type - counts number of bytes and packets
-+		 * The valid values for byte/packet counter duals shall be 0-1
-+		 */
-+		if (cntrs->bank > ICE_AQC_ACL_MAX_CNT_DUAL)
-+			status = ICE_ERR_OUT_OF_RANGE;
-+		break;
-+	default:
-+		/* Unspecified counter type - Invalid or error */
-+		status = ICE_ERR_PARAM;
-+	}
-+
-+	return status;
-+}
-+
-+/**
-+ * ice_aq_alloc_acl_cntrs - allocate ACL counters
-+ * @hw: pointer to the HW struct
-+ * @cntrs: ptr to buffer describing input and output params
-+ * @cd: pointer to command details structure or NULL
-+ *
-+ * Allocate ACL counters (indirect 0x0C16). This function attempts to
-+ * allocate a contiguous block of counters. In case of failures, caller can
-+ * attempt to allocate a smaller chunk. The allocation is considered
-+ * unsuccessful if returned counter value is invalid. In this case it returns
-+ * an error otherwise success.
-+ */
-+enum ice_status
-+ice_aq_alloc_acl_cntrs(struct ice_hw *hw, struct ice_acl_cntrs *cntrs,
-+		       struct ice_sq_cd *cd)
-+{
-+	struct ice_aqc_acl_alloc_counters *cmd;
-+	u16 first_cntr, last_cntr;
 +	struct ice_aq_desc desc;
-+	enum ice_status status;
 +
-+	/* check for invalid params */
-+	status = ice_aq_acl_cntrs_chk_params(cntrs);
-+	if (status)
-+		return status;
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_alloc_acl_counters);
-+	cmd = &desc.params.alloc_counters;
-+	cmd->counter_amount = cntrs->amount;
-+	cmd->counters_type = cntrs->type;
-+	cmd->bank_alloc = cntrs->bank;
-+	status = ice_aq_send_cmd(hw, &desc, NULL, 0, cd);
-+	if (!status) {
-+		first_cntr = le16_to_cpu(cmd->ops.resp.first_counter);
-+		last_cntr = le16_to_cpu(cmd->ops.resp.last_counter);
-+		if (first_cntr == ICE_AQC_ACL_ALLOC_CNT_INVAL ||
-+		    last_cntr == ICE_AQC_ACL_ALLOC_CNT_INVAL)
-+			return ICE_ERR_OUT_OF_RANGE;
-+		cntrs->first_cntr = first_cntr;
-+		cntrs->last_cntr = last_cntr;
-+	}
-+	return status;
-+}
-+
-+/**
-+ * ice_aq_dealloc_acl_cntrs - deallocate ACL counters
-+ * @hw: pointer to the HW struct
-+ * @cntrs: ptr to buffer describing input and output params
-+ * @cd: pointer to command details structure or NULL
-+ *
-+ * De-allocate ACL counters (direct 0x0C17)
-+ */
-+enum ice_status
-+ice_aq_dealloc_acl_cntrs(struct ice_hw *hw, struct ice_acl_cntrs *cntrs,
-+			 struct ice_sq_cd *cd)
-+{
-+	struct ice_aqc_acl_dealloc_counters *cmd;
-+	struct ice_aq_desc desc;
-+	enum ice_status status;
-+
-+	/* check for invalid params */
-+	status = ice_aq_acl_cntrs_chk_params(cntrs);
-+	if (status)
-+		return status;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_dealloc_acl_counters);
-+	cmd = &desc.params.dealloc_counters;
-+	cmd->first_counter = cpu_to_le16(cntrs->first_cntr);
-+	cmd->last_counter = cpu_to_le16(cntrs->last_cntr);
-+	cmd->counters_type = cntrs->type;
-+	cmd->bank_alloc = cntrs->bank;
-+	return ice_aq_send_cmd(hw, &desc, NULL, 0, cd);
++	ice_fill_dflt_direct_cmd_desc(&desc,
++				      ice_aqc_opc_query_acl_prof_ranges);
++	desc.params.profile.profile_id = prof_id;
++	return ice_aq_send_cmd(hw, &desc, buf, sizeof(*buf), cd);
 +}
 +
  /**
   * ice_aq_alloc_acl_scen - allocate ACL scenario
   * @hw: pointer to the HW struct
 diff --git a/drivers/net/ethernet/intel/ice/ice_acl.h b/drivers/net/ethernet/intel/ice/ice_acl.h
-index 9e776f3f749c..8235d16bd162 100644
+index 8235d16bd162..b0bb261b28b7 100644
 --- a/drivers/net/ethernet/intel/ice/ice_acl.h
 +++ b/drivers/net/ethernet/intel/ice/ice_acl.h
-@@ -103,6 +103,21 @@ struct ice_acl_alloc_tbl {
- 	} buf;
+@@ -44,6 +44,7 @@ struct ice_acl_tbl {
+ 	u16 id;
  };
  
-+/* This structure is used to communicate input and output params for
-+ * [de]allocate_acl_counters
-+ */
-+struct ice_acl_cntrs {
-+	u8 amount;
-+	u8 type;
-+	u8 bank;
++#define ICE_MAX_ACL_TCAM_ENTRY (ICE_AQC_ACL_TCAM_DEPTH * ICE_AQC_ACL_SLICES)
+ enum ice_acl_entry_prio {
+ 	ICE_ACL_PRIO_LOW = 0,
+ 	ICE_ACL_PRIO_NORMAL,
+@@ -66,6 +67,11 @@ struct ice_acl_scen {
+ 	 * participate in this scenario
+ 	 */
+ 	DECLARE_BITMAP(act_mem_bitmap, ICE_AQC_MAX_ACTION_MEMORIES);
 +
-+	/* Next 2 variables are used for output in case of alloc_acl_counters
-+	 * and input in case of deallocate_acl_counters
++	/* If nth bit of entry_bitmap is set, then nth entry will
++	 * be available in this scenario
 +	 */
-+	u16 first_cntr;
-+	u16 last_cntr;
-+};
-+
++	DECLARE_BITMAP(entry_bitmap, ICE_MAX_ACL_TCAM_ENTRY);
+ 	u16 first_idx[ICE_ACL_MAX_PRIO];
+ 	u16 last_idx[ICE_ACL_MAX_PRIO];
+ 
+@@ -151,6 +157,14 @@ enum ice_status
+ ice_aq_dealloc_acl_cntrs(struct ice_hw *hw, struct ice_acl_cntrs *cntrs,
+ 			 struct ice_sq_cd *cd);
  enum ice_status
- ice_acl_create_tbl(struct ice_hw *hw, struct ice_acl_tbl_params *params);
- enum ice_status ice_acl_destroy_tbl(struct ice_hw *hw);
-@@ -122,6 +137,20 @@ enum ice_status
- ice_aq_program_actpair(struct ice_hw *hw, u8 act_mem_idx, u16 act_entry_idx,
- 		       struct ice_aqc_actpair *buf, struct ice_sq_cd *cd);
- enum ice_status
-+ice_prgm_acl_prof_xtrct(struct ice_hw *hw, u8 prof_id,
-+			struct ice_aqc_acl_prof_generic_frmt *buf,
-+			struct ice_sq_cd *cd);
-+enum ice_status
-+ice_query_acl_prof(struct ice_hw *hw, u8 prof_id,
-+		   struct ice_aqc_acl_prof_generic_frmt *buf,
-+		   struct ice_sq_cd *cd);
-+enum ice_status
-+ice_aq_alloc_acl_cntrs(struct ice_hw *hw, struct ice_acl_cntrs *cntrs,
-+		       struct ice_sq_cd *cd);
-+enum ice_status
-+ice_aq_dealloc_acl_cntrs(struct ice_hw *hw, struct ice_acl_cntrs *cntrs,
++ice_prog_acl_prof_ranges(struct ice_hw *hw, u8 prof_id,
++			 struct ice_aqc_acl_profile_ranges *buf,
 +			 struct ice_sq_cd *cd);
++enum ice_status
++ice_query_acl_prof_ranges(struct ice_hw *hw, u8 prof_id,
++			  struct ice_aqc_acl_profile_ranges *buf,
++			  struct ice_sq_cd *cd);
 +enum ice_status
  ice_aq_alloc_acl_scen(struct ice_hw *hw, u16 *scen_id,
  		      struct ice_aqc_acl_scen *buf, struct ice_sq_cd *cd);
  enum ice_status
-diff --git a/drivers/net/ethernet/intel/ice/ice_acl_main.c b/drivers/net/ethernet/intel/ice/ice_acl_main.c
-index be97dfb94652..3b56194ab3fc 100644
---- a/drivers/net/ethernet/intel/ice/ice_acl_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_acl_main.c
-@@ -6,6 +6,9 @@
- #include "ice.h"
- #include "ice_lib.h"
+@@ -161,5 +175,14 @@ ice_aq_update_acl_scen(struct ice_hw *hw, u16 scen_id,
+ enum ice_status
+ ice_aq_query_acl_scen(struct ice_hw *hw, u16 scen_id,
+ 		      struct ice_aqc_acl_scen *buf, struct ice_sq_cd *cd);
++enum ice_status
++ice_acl_add_entry(struct ice_hw *hw, struct ice_acl_scen *scen,
++		  enum ice_acl_entry_prio prio, u8 *keys, u8 *inverts,
++		  struct ice_acl_act_entry *acts, u8 acts_cnt, u16 *entry_idx);
++enum ice_status
++ice_acl_prog_act(struct ice_hw *hw, struct ice_acl_scen *scen,
++		 struct ice_acl_act_entry *acts, u8 acts_cnt, u16 entry_idx);
++enum ice_status
++ice_acl_rem_entry(struct ice_hw *hw, struct ice_acl_scen *scen, u16 entry_idx);
  
-+/* Default ACL Action priority */
-+#define ICE_ACL_ACT_PRIO	3
-+
- /* Number of action */
- #define ICE_ACL_NUM_ACT		1
+ #endif /* _ICE_ACL_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_acl_ctrl.c b/drivers/net/ethernet/intel/ice/ice_acl_ctrl.c
+index 84a96ccf40d5..b345c0d5b710 100644
+--- a/drivers/net/ethernet/intel/ice/ice_acl_ctrl.c
++++ b/drivers/net/ethernet/intel/ice/ice_acl_ctrl.c
+@@ -6,6 +6,11 @@
+ /* Determine the TCAM index of entry 'e' within the ACL table */
+ #define ICE_ACL_TBL_TCAM_IDX(e) ((e) / ICE_AQC_ACL_TCAM_DEPTH)
  
-@@ -246,15 +249,76 @@ ice_acl_check_input_set(struct ice_pf *pf, struct ethtool_rx_flow_spec *fsp)
-  */
- int ice_acl_add_rule_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
- {
-+	struct ice_flow_action acts[ICE_ACL_NUM_ACT];
- 	struct ethtool_rx_flow_spec *fsp;
-+	struct ice_fd_hw_prof *hw_prof;
-+	struct ice_fdir_fltr *input;
-+	enum ice_fltr_ptype flow;
-+	enum ice_status status;
-+	struct device *dev;
- 	struct ice_pf *pf;
-+	struct ice_hw *hw;
-+	u64 entry_h = 0;
-+	int act_cnt;
-+	int ret;
++/* Determine the entry index within the TCAM */
++#define ICE_ACL_TBL_TCAM_ENTRY_IDX(e) ((e) % ICE_AQC_ACL_TCAM_DEPTH)
++
++#define ICE_ACL_SCEN_ENTRY_INVAL 0xFFFF
++
+ /**
+  * ice_acl_init_entry
+  * @scen: pointer to the scenario struct
+@@ -29,6 +34,56 @@ static void ice_acl_init_entry(struct ice_acl_scen *scen)
+ 	scen->last_idx[ICE_ACL_PRIO_HIGH] = scen->num_entry / 4 - 1;
+ }
  
- 	if (!vsi || !cmd)
- 		return -EINVAL;
- 
- 	pf = vsi->back;
-+	hw = &pf->hw;
-+	dev = ice_pf_to_dev(pf);
- 
- 	fsp = (struct ethtool_rx_flow_spec *)&cmd->fs;
- 
--	return ice_acl_check_input_set(pf, fsp);
-+	ret = ice_acl_check_input_set(pf, fsp);
-+	if (ret)
-+		return ret;
++/**
++ * ice_acl_scen_assign_entry_idx
++ * @scen: pointer to the scenario struct
++ * @prio: the priority of the flow entry being allocated
++ *
++ * To find the index of an available entry in scenario
++ *
++ * Returns ICE_ACL_SCEN_ENTRY_INVAL if fails
++ * Returns index on success
++ */
++static u16
++ice_acl_scen_assign_entry_idx(struct ice_acl_scen *scen,
++			      enum ice_acl_entry_prio prio)
++{
++	u16 first_idx, last_idx, i;
++	s8 step;
 +
-+	/* Add new rule */
-+	input = devm_kzalloc(dev, sizeof(*input), GFP_KERNEL);
-+	if (!input)
-+		return -ENOMEM;
++	if (prio >= ICE_ACL_MAX_PRIO)
++		return ICE_ACL_SCEN_ENTRY_INVAL;
 +
-+	ret = ice_ntuple_set_input_set(vsi, ICE_BLK_ACL, fsp, input);
-+	if (ret)
-+		goto free_input;
++	first_idx = scen->first_idx[prio];
++	last_idx = scen->last_idx[prio];
++	step = first_idx <= last_idx ? 1 : -1;
 +
-+	memset(&acts, 0, sizeof(acts));
-+	act_cnt = 1;
-+	if (fsp->ring_cookie == RX_CLS_FLOW_DISC) {
-+		acts[0].type = ICE_FLOW_ACT_DROP;
-+		acts[0].data.acl_act.mdid = ICE_MDID_RX_PKT_DROP;
-+		acts[0].data.acl_act.prio = ICE_ACL_ACT_PRIO;
-+		acts[0].data.acl_act.value = cpu_to_le16(0x1);
-+	} else {
-+		acts[0].type = ICE_FLOW_ACT_FWD_QUEUE;
-+		acts[0].data.acl_act.mdid = ICE_MDID_RX_DST_Q;
-+		acts[0].data.acl_act.prio = ICE_ACL_ACT_PRIO;
-+		acts[0].data.acl_act.value = cpu_to_le16(input->q_index);
-+	}
++	for (i = first_idx; i != last_idx + step; i += step)
++		if (!test_and_set_bit(i, scen->entry_bitmap))
++			return i;
 +
-+	flow = ice_ethtool_flow_to_fltr(fsp->flow_type & ~FLOW_EXT);
-+	hw_prof = hw->acl_prof[flow];
++	return ICE_ACL_SCEN_ENTRY_INVAL;
++}
 +
-+	status = ice_flow_add_entry(hw, ICE_BLK_ACL, flow, fsp->location,
-+				    vsi->idx, ICE_FLOW_PRIO_NORMAL, input, acts,
-+				    act_cnt, &entry_h);
-+	if (status) {
-+		dev_err(dev, "Could not add flow entry %d\n", flow);
-+		ret = ice_status_to_errno(status);
-+		goto free_input;
-+	}
++/**
++ * ice_acl_scen_free_entry_idx
++ * @scen: pointer to the scenario struct
++ * @idx: the index of the flow entry being de-allocated
++ *
++ * To mark an entry available in scenario
++ */
++static enum ice_status
++ice_acl_scen_free_entry_idx(struct ice_acl_scen *scen, u16 idx)
++{
++	if (idx >= scen->num_entry)
++		return ICE_ERR_MAX_LIMIT;
 +
-+	if (!hw_prof->cnt || vsi->idx != hw_prof->vsi_h[hw_prof->cnt - 1]) {
-+		hw_prof->vsi_h[hw_prof->cnt] = vsi->idx;
-+		hw_prof->entry_h[hw_prof->cnt++][0] = entry_h;
-+	}
++	if (!test_and_clear_bit(idx, scen->entry_bitmap))
++		return ICE_ERR_DOES_NOT_EXIST;
 +
 +	return 0;
++}
 +
-+free_input:
-+	devm_kfree(dev, input);
-+
-+	return ret;
+ /**
+  * ice_acl_tbl_calc_end_idx
+  * @start: start index of the TCAM entry of this partition
+@@ -883,3 +938,208 @@ enum ice_status ice_acl_destroy_tbl(struct ice_hw *hw)
+ 
+ 	return 0;
  }
++
++/**
++ * ice_acl_add_entry - Add a flow entry to an ACL scenario
++ * @hw: pointer to the HW struct
++ * @scen: scenario to add the entry to
++ * @prio: priority level of the entry being added
++ * @keys: buffer of the value of the key to be programmed to the ACL entry
++ * @inverts: buffer of the value of the key inverts to be programmed
++ * @acts: pointer to a buffer containing formatted actions
++ * @acts_cnt: indicates the number of actions stored in "acts"
++ * @entry_idx: returned scenario relative index of the added flow entry
++ *
++ * Given an ACL table and a scenario, to add the specified key and key invert
++ * to an available entry in the specified scenario.
++ * The "keys" and "inverts" buffers must be of the size which is the same as
++ * the scenario's width
++ */
++enum ice_status
++ice_acl_add_entry(struct ice_hw *hw, struct ice_acl_scen *scen,
++		  enum ice_acl_entry_prio prio, u8 *keys, u8 *inverts,
++		  struct ice_acl_act_entry *acts, u8 acts_cnt, u16 *entry_idx)
++{
++	u8 i, entry_tcam, num_cscd, offset;
++	struct ice_aqc_acl_data buf;
++	enum ice_status status = 0;
++	u16 idx;
++
++	if (!scen)
++		return ICE_ERR_DOES_NOT_EXIST;
++
++	*entry_idx = ice_acl_scen_assign_entry_idx(scen, prio);
++	if (*entry_idx >= scen->num_entry) {
++		*entry_idx = 0;
++		return ICE_ERR_MAX_LIMIT;
++	}
++
++	/* Determine number of cascaded TCAMs */
++	num_cscd = DIV_ROUND_UP(scen->width, ICE_AQC_ACL_KEY_WIDTH_BYTES);
++
++	entry_tcam = ICE_ACL_TBL_TCAM_IDX(scen->start);
++	idx = ICE_ACL_TBL_TCAM_ENTRY_IDX(scen->start + *entry_idx);
++
++	memset(&buf, 0, sizeof(buf));
++	for (i = 0; i < num_cscd; i++) {
++		/* If the key spans more than one TCAM in the case of cascaded
++		 * TCAMs, the key and key inverts need to be properly split
++		 * among TCAMs.E.g.bytes 0 - 4 go to an index in the first TCAM
++		 * and bytes 5 - 9 go to the same index in the next TCAM, etc.
++		 * If the entry spans more than one TCAM in a cascaded TCAM
++		 * mode, the programming of the entries in the TCAMs must be in
++		 * reversed order - the TCAM entry of the rightmost TCAM should
++		 * be programmed first; the TCAM entry of the leftmost TCAM
++		 * should be programmed last.
++		 */
++		offset = num_cscd - i - 1;
++		memcpy(&buf.entry_key.val,
++		       &keys[offset * sizeof(buf.entry_key.val)],
++		       sizeof(buf.entry_key.val));
++		memcpy(&buf.entry_key_invert.val,
++		       &inverts[offset * sizeof(buf.entry_key_invert.val)],
++		       sizeof(buf.entry_key_invert.val));
++		status = ice_aq_program_acl_entry(hw, entry_tcam + offset, idx,
++						  &buf, NULL);
++		if (status) {
++			ice_debug(hw, ICE_DBG_ACL, "aq program acl entry failed status: %d\n",
++				  status);
++			goto out;
++		}
++	}
++
++	/* Program the action memory */
++	status = ice_acl_prog_act(hw, scen, acts, acts_cnt, *entry_idx);
++
++out:
++	if (status) {
++		ice_acl_rem_entry(hw, scen, *entry_idx);
++		*entry_idx = 0;
++	}
++
++	return status;
++}
++
++/**
++ * ice_acl_prog_act - Program a scenario's action memory
++ * @hw: pointer to the HW struct
++ * @scen: scenario to add the entry to
++ * @acts: pointer to a buffer containing formatted actions
++ * @acts_cnt: indicates the number of actions stored in "acts"
++ * @entry_idx: scenario relative index of the added flow entry
++ *
++ * Program a scenario's action memory
++ */
++enum ice_status
++ice_acl_prog_act(struct ice_hw *hw, struct ice_acl_scen *scen,
++		 struct ice_acl_act_entry *acts, u8 acts_cnt,
++		 u16 entry_idx)
++{
++	u8 entry_tcam, num_cscd, i, actx_idx = 0;
++	struct ice_aqc_actpair act_buf;
++	enum ice_status status = 0;
++	u16 idx;
++
++	if (entry_idx >= scen->num_entry)
++		return ICE_ERR_MAX_LIMIT;
++
++	memset(&act_buf, 0, sizeof(act_buf));
++
++	/* Determine number of cascaded TCAMs */
++	num_cscd = DIV_ROUND_UP(scen->width, ICE_AQC_ACL_KEY_WIDTH_BYTES);
++
++	entry_tcam = ICE_ACL_TBL_TCAM_IDX(scen->start);
++	idx = ICE_ACL_TBL_TCAM_ENTRY_IDX(scen->start + entry_idx);
++
++	for_each_set_bit(i, scen->act_mem_bitmap, ICE_AQC_MAX_ACTION_MEMORIES) {
++		struct ice_acl_act_mem *mem = &hw->acl_tbl->act_mems[i];
++
++		if (actx_idx >= acts_cnt)
++			break;
++		if (mem->member_of_tcam >= entry_tcam &&
++		    mem->member_of_tcam < entry_tcam + num_cscd) {
++			memcpy(&act_buf.act[0], &acts[actx_idx],
++			       sizeof(struct ice_acl_act_entry));
++
++			if (++actx_idx < acts_cnt) {
++				memcpy(&act_buf.act[1], &acts[actx_idx],
++				       sizeof(struct ice_acl_act_entry));
++			}
++
++			status = ice_aq_program_actpair(hw, i, idx, &act_buf,
++							NULL);
++			if (status) {
++				ice_debug(hw, ICE_DBG_ACL, "program actpair failed status: %d\n",
++					  status);
++				break;
++			}
++			actx_idx++;
++		}
++	}
++
++	if (!status && actx_idx < acts_cnt)
++		status = ICE_ERR_MAX_LIMIT;
++
++	return status;
++}
++
++/**
++ * ice_acl_rem_entry - Remove a flow entry from an ACL scenario
++ * @hw: pointer to the HW struct
++ * @scen: scenario to remove the entry from
++ * @entry_idx: the scenario-relative index of the flow entry being removed
++ */
++enum ice_status
++ice_acl_rem_entry(struct ice_hw *hw, struct ice_acl_scen *scen, u16 entry_idx)
++{
++	struct ice_aqc_actpair act_buf;
++	struct ice_aqc_acl_data buf;
++	u8 entry_tcam, num_cscd, i;
++	enum ice_status status = 0;
++	u16 idx;
++
++	if (!scen)
++		return ICE_ERR_DOES_NOT_EXIST;
++
++	if (entry_idx >= scen->num_entry)
++		return ICE_ERR_MAX_LIMIT;
++
++	if (!test_bit(entry_idx, scen->entry_bitmap))
++		return ICE_ERR_DOES_NOT_EXIST;
++
++	/* Determine number of cascaded TCAMs */
++	num_cscd = DIV_ROUND_UP(scen->width, ICE_AQC_ACL_KEY_WIDTH_BYTES);
++
++	entry_tcam = ICE_ACL_TBL_TCAM_IDX(scen->start);
++	idx = ICE_ACL_TBL_TCAM_ENTRY_IDX(scen->start + entry_idx);
++
++	/* invalidate the flow entry */
++	memset(&buf, 0, sizeof(buf));
++	for (i = 0; i < num_cscd; i++) {
++		status = ice_aq_program_acl_entry(hw, entry_tcam + i, idx, &buf,
++						  NULL);
++		if (status)
++			ice_debug(hw, ICE_DBG_ACL, "AQ program ACL entry failed status: %d\n",
++				  status);
++	}
++
++	memset(&act_buf, 0, sizeof(act_buf));
++
++	for_each_set_bit(i, scen->act_mem_bitmap, ICE_AQC_MAX_ACTION_MEMORIES) {
++		struct ice_acl_act_mem *mem = &hw->acl_tbl->act_mems[i];
++
++		if (mem->member_of_tcam >= entry_tcam &&
++		    mem->member_of_tcam < entry_tcam + num_cscd) {
++			/* Invalidate allocated action pairs */
++			status = ice_aq_program_actpair(hw, i, idx, &act_buf,
++							NULL);
++			if (status)
++				ice_debug(hw, ICE_DBG_ACL, "program actpair failed status: %d\n",
++					  status);
++		}
++	}
++
++	ice_acl_scen_free_entry_idx(scen, entry_idx);
++
++	return status;
++}
+diff --git a/drivers/net/ethernet/intel/ice/ice_acl_main.c b/drivers/net/ethernet/intel/ice/ice_acl_main.c
+index 3b56194ab3fc..c5d6c26ddbb1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_acl_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_acl_main.c
+@@ -315,6 +315,10 @@ int ice_acl_add_rule_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
+ 		hw_prof->entry_h[hw_prof->cnt++][0] = entry_h;
+ 	}
+ 
++	input->acl_fltr = true;
++	/* input struct is added to the HW filter list */
++	ice_ntuple_update_list_entry(pf, input, fsp->location);
++
+ 	return 0;
+ 
+ free_input:
 diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index f5fdab2b7058..5449c5f6e10c 100644
+index 5449c5f6e10c..ddaf8df23480 100644
 --- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
 +++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -1787,6 +1787,68 @@ struct ice_aqc_acl_scen {
- 	u8 act_mem_cfg[ICE_AQC_MAX_ACTION_MEMORIES];
- };
- 
-+/* Allocate ACL counters (indirect 0x0C16) */
-+struct ice_aqc_acl_alloc_counters {
-+	/* Amount of contiguous counters requested. Min value is 1 and
-+	 * max value is 255
-+	 */
-+	u8 counter_amount;
-+
-+	/* Counter type: 'single counter' which can be configured to count
-+	 * either bytes or packets
-+	 */
-+#define ICE_AQC_ACL_CNT_TYPE_SINGLE	0x0
-+
-+	/* Counter type: 'counter pair' which counts number of bytes and number
-+	 * of packets.
-+	 */
-+#define ICE_AQC_ACL_CNT_TYPE_DUAL	0x1
-+	/* requested counter type, single/dual */
-+	u8 counters_type;
-+
-+	/* counter bank allocation shall be 0-3 for 'byte or packet counter' */
-+#define ICE_AQC_ACL_MAX_CNT_SINGLE	0x3
-+	/* counter bank allocation shall be 0-1 for 'byte and packet counter dual' */
-+#define ICE_AQC_ACL_MAX_CNT_DUAL	0x1
-+	/* requested counter bank allocation */
-+	u8 bank_alloc;
-+
-+	u8 reserved;
-+
-+	union {
-+		/* Applicable only in case of command */
-+		struct {
-+			u8 reserved[12];
-+		} cmd;
-+		/* Applicable only in case of response */
-+#define ICE_AQC_ACL_ALLOC_CNT_INVAL	0xFFFF
-+		struct {
-+			/* Index of first allocated counter. 0xFFFF in case
-+			 * of unsuccessful allocation
-+			 */
-+			__le16 first_counter;
-+			/* Index of last allocated counter. 0xFFFF in case
-+			 * of unsuccessful allocation
-+			 */
-+			__le16 last_counter;
-+			u8 rsvd[8];
-+		} resp;
-+	} ops;
-+};
-+
-+/* De-allocate ACL counters (direct 0x0C17) */
-+struct ice_aqc_acl_dealloc_counters {
-+	/* first counter being released */
-+	__le16 first_counter;
-+	/* last counter being released */
-+	__le16 last_counter;
-+	/* requested counter type, single/dual */
-+	u8 counters_type;
-+	/* requested counter bank allocation */
-+	u8 bank_alloc;
-+	u8 reserved[10];
-+};
-+
- /* Program ACL actionpair (indirect 0x0C1C) */
- struct ice_aqc_acl_actpair {
- 	/* action mem index to program/update */
-@@ -1816,13 +1878,57 @@ struct ice_aqc_actpair {
- 	struct ice_acl_act_entry act[ICE_ACL_NUM_ACT_PER_ACT_PAIR];
- };
- 
--/* The first byte of the byte selection base is reserved to keep the
-- * first byte of the field vector where the packet direction info is
-- * available. Thus we should start at index 1 of the field vector to
-- * map its entries to the byte selection base.
-+/* Generic format used to describe either input or response buffer
-+ * for admin commands related to ACL profile
-  */
-+struct ice_aqc_acl_prof_generic_frmt {
-+	/* The first byte of the byte selection base is reserved to keep the
-+	 * first byte of the field vector where the packet direction info is
-+	 * available. Thus we should start at index 1 of the field vector to
-+	 * map its entries to the byte selection base.
-+	 */
- #define ICE_AQC_ACL_PROF_BYTE_SEL_START_IDX	1
-+	/* In each byte:
-+	 * Bit 0..5 = Byte selection for the byte selection base from the
-+	 * extracted fields (expressed as byte offset in extracted fields).
-+	 * Applicable values are 0..63
-+	 * Bit 6..7 = Reserved
-+	 */
- #define ICE_AQC_ACL_PROF_BYTE_SEL_ELEMS		30
-+	u8 byte_selection[ICE_AQC_ACL_PROF_BYTE_SEL_ELEMS];
-+	/* In each byte:
-+	 * Bit 0..4 = Word selection for the word selection base from the
-+	 * extracted fields (expressed as word offset in extracted fields).
-+	 * Applicable values are 0..31
-+	 * Bit 5..7 = Reserved
-+	 */
-+#define ICE_AQC_ACL_PROF_WORD_SEL_ELEMS		32
-+	u8 word_selection[ICE_AQC_ACL_PROF_WORD_SEL_ELEMS];
-+	/* In each byte:
-+	 * Bit 0..3 = Double word selection for the double-word selection base
-+	 * from the extracted fields (expressed as double-word offset in
-+	 * extracted fields).
-+	 * Applicable values are 0..15
-+	 * Bit 4..7 = Reserved
-+	 */
-+#define ICE_AQC_ACL_PROF_DWORD_SEL_ELEMS	15
-+	u8 dword_selection[ICE_AQC_ACL_PROF_DWORD_SEL_ELEMS];
-+	/* Scenario numbers for individual Physical Function's */
-+#define ICE_AQC_ACL_PROF_PF_SCEN_NUM_ELEMS	8
-+	u8 pf_scenario_num[ICE_AQC_ACL_PROF_PF_SCEN_NUM_ELEMS];
-+};
-+
-+/* Program ACL profile extraction (indirect 0x0C1D)
-+ * Program ACL profile ranges (indirect 0x0C1E)
-+ * Query ACL profile (indirect 0x0C21)
-+ * Query ACL profile ranges (indirect 0x0C22)
-+ */
-+struct ice_aqc_acl_profile {
-+	u8 profile_id; /* Programmed/Updated profile ID */
-+	u8 reserved[7];
-+	__le32 addr_high;
-+	__le32 addr_low;
-+};
- 
- /* Input buffer format for program profile extraction admin command and
-  * response buffer format for query profile admin command is as defined
-@@ -2150,8 +2256,11 @@ struct ice_aq_desc {
- 		struct ice_aqc_acl_alloc_scen alloc_scen;
- 		struct ice_aqc_acl_dealloc_scen dealloc_scen;
- 		struct ice_aqc_acl_update_query_scen update_query_scen;
-+		struct ice_aqc_acl_alloc_counters alloc_counters;
-+		struct ice_aqc_acl_dealloc_counters dealloc_counters;
- 		struct ice_aqc_acl_entry program_query_entry;
- 		struct ice_aqc_acl_actpair program_query_actpair;
-+		struct ice_aqc_acl_profile profile;
- 		struct ice_aqc_add_txqs add_txqs;
- 		struct ice_aqc_dis_txqs dis_txqs;
- 		struct ice_aqc_add_get_update_free_vsi vsi_cmd;
-@@ -2301,9 +2410,13 @@ enum ice_adminq_opc {
- 	ice_aqc_opc_dealloc_acl_tbl			= 0x0C11,
- 	ice_aqc_opc_alloc_acl_scen			= 0x0C14,
- 	ice_aqc_opc_dealloc_acl_scen			= 0x0C15,
-+	ice_aqc_opc_alloc_acl_counters			= 0x0C16,
-+	ice_aqc_opc_dealloc_acl_counters		= 0x0C17,
+@@ -2415,8 +2415,10 @@ enum ice_adminq_opc {
  	ice_aqc_opc_update_acl_scen			= 0x0C1B,
  	ice_aqc_opc_program_acl_actpair			= 0x0C1C,
-+	ice_aqc_opc_program_acl_prof_extraction		= 0x0C1D,
+ 	ice_aqc_opc_program_acl_prof_extraction		= 0x0C1D,
++	ice_aqc_opc_program_acl_prof_ranges		= 0x0C1E,
  	ice_aqc_opc_program_acl_entry			= 0x0C20,
-+	ice_aqc_opc_query_acl_prof			= 0x0C21,
+ 	ice_aqc_opc_query_acl_prof			= 0x0C21,
++	ice_aqc_opc_query_acl_prof_ranges		= 0x0C22,
  	ice_aqc_opc_query_acl_scen			= 0x0C23,
  
  	/* Tx queue handling commands/events */
 diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
-index ef641bc8ca0e..dd495f6a4adf 100644
+index dd495f6a4adf..98261e7e7b85 100644
 --- a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
 +++ b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
-@@ -402,7 +402,7 @@ void ice_fdir_replay_flows(struct ice_hw *hw)
- 							 prof->vsi_h[0],
- 							 prof->vsi_h[j],
- 							 prio, prof->fdir_seg,
--							 &entry_h);
-+							 NULL, 0, &entry_h);
- 				if (err) {
- 					dev_err(ice_hw_to_dev(hw), "Could not replay Flow Director, flow type %d\n",
- 						flow);
-@@ -606,14 +606,14 @@ ice_fdir_set_hw_fltr_rule(struct ice_pf *pf, struct ice_flow_seg_info *seg,
- 		return ice_status_to_errno(status);
- 	status = ice_flow_add_entry(hw, ICE_BLK_FD, prof_id, main_vsi->idx,
- 				    main_vsi->idx, ICE_FLOW_PRIO_NORMAL,
--				    seg, &entry1_h);
-+				    seg, NULL, 0, &entry1_h);
- 	if (status) {
- 		err = ice_status_to_errno(status);
- 		goto err_prof;
- 	}
- 	status = ice_flow_add_entry(hw, ICE_BLK_FD, prof_id, main_vsi->idx,
- 				    ctrl_vsi->idx, ICE_FLOW_PRIO_NORMAL,
--				    seg, &entry2_h);
-+				    seg, NULL, 0, &entry2_h);
- 	if (status) {
- 		err = ice_status_to_errno(status);
- 		goto err_entry;
-@@ -1642,24 +1642,33 @@ static bool ice_is_acl_filter(struct ethtool_rx_flow_spec *fsp)
+@@ -1482,6 +1482,22 @@ void ice_vsi_manage_fdir(struct ice_vsi *vsi, bool ena)
+ 	mutex_unlock(&hw->fdir_fltr_lock);
  }
  
++/**
++ * ice_del_acl_ethtool - Deletes an ACL rule entry.
++ * @hw: pointer to HW instance
++ * @fltr: filter structure
++ *
++ * returns 0 on success and negative value on error
++ */
++static int
++ice_del_acl_ethtool(struct ice_hw *hw, struct ice_fdir_fltr *fltr)
++{
++	u64 entry;
++
++	entry = ice_flow_find_entry(hw, ICE_BLK_ACL, fltr->fltr_id);
++	return ice_status_to_errno(ice_flow_rem_entry(hw, ICE_BLK_ACL, entry));
++}
++
  /**
-- * ice_ntuple_set_input_set - Set the input set for Flow Director
-+ * ice_ntuple_set_input_set - Set the input set for specified block
-  * @vsi: pointer to target VSI
-+ * @blk: filter block to configure
-  * @fsp: pointer to ethtool Rx flow specification
-  * @input: filter structure
+  * ice_fdir_do_rem_flow - delete flow and possibly add perfect flow
+  * @pf: PF structure
+@@ -1515,7 +1531,7 @@ ice_fdir_do_rem_flow(struct ice_pf *pf, enum ice_fltr_ptype flow_type)
+  *
+  * returns 0 on success and negative on errors
   */
 -static int
--ice_ntuple_set_input_set(struct ice_vsi *vsi, struct ethtool_rx_flow_spec *fsp,
 +int
-+ice_ntuple_set_input_set(struct ice_vsi *vsi, enum ice_block blk,
-+			 struct ethtool_rx_flow_spec *fsp,
- 			 struct ice_fdir_fltr *input)
+ ice_ntuple_update_list_entry(struct ice_pf *pf, struct ice_fdir_fltr *input,
+ 			     int fltr_idx)
  {
- 	u16 dest_vsi, q_index = 0;
-+	int flow_type, flow_mask;
- 	struct ice_pf *pf;
- 	struct ice_hw *hw;
--	int flow_type;
- 	u8 dest_ctl;
+@@ -1529,18 +1545,40 @@ ice_ntuple_update_list_entry(struct ice_pf *pf, struct ice_fdir_fltr *input,
  
- 	if (!vsi || !fsp || !input)
- 		return -EINVAL;
- 
-+	if (blk == ICE_BLK_FD)
-+		flow_mask = FLOW_EXT;
-+	else if (blk == ICE_BLK_ACL)
-+		flow_mask = FLOW_MAC_EXT;
-+	else
-+		return -EINVAL;
-+
- 	pf = vsi->back;
- 	hw = &pf->hw;
- 
-@@ -1671,8 +1680,8 @@ ice_ntuple_set_input_set(struct ice_vsi *vsi, struct ethtool_rx_flow_spec *fsp,
- 		u8 vf = ethtool_get_flow_spec_ring_vf(fsp->ring_cookie);
- 
- 		if (vf) {
--			dev_err(ice_pf_to_dev(pf), "Failed to add filter. Flow director filters are not supported on VF queues.\n");
--			return -EINVAL;
-+			dev_err(ice_pf_to_dev(pf), "Failed to add filter. %s filters are not supported on VF queues.\n",
-+				blk == ICE_BLK_FD ? "Flow Director" : "ACL");
- 		}
- 
- 		if (ring >= vsi->num_rxq)
-@@ -1684,7 +1693,7 @@ ice_ntuple_set_input_set(struct ice_vsi *vsi, struct ethtool_rx_flow_spec *fsp,
- 
- 	input->fltr_id = fsp->location;
- 	input->q_index = q_index;
--	flow_type = fsp->flow_type & ~FLOW_EXT;
-+	flow_type = fsp->flow_type & ~flow_mask;
- 
- 	input->dest_vsi = dest_vsi;
- 	input->dest_ctl = dest_ctl;
-@@ -1733,9 +1742,9 @@ ice_ntuple_set_input_set(struct ice_vsi *vsi, struct ethtool_rx_flow_spec *fsp,
- 	case TCP_V6_FLOW:
- 	case UDP_V6_FLOW:
- 	case SCTP_V6_FLOW:
--		memcpy(input->ip.v6.dst_ip, fsp->h_u.usr_ip6_spec.ip6dst,
-+		memcpy(input->ip.v6.dst_ip, fsp->h_u.tcp_ip6_spec.ip6dst,
- 		       sizeof(struct in6_addr));
--		memcpy(input->ip.v6.src_ip, fsp->h_u.usr_ip6_spec.ip6src,
-+		memcpy(input->ip.v6.src_ip, fsp->h_u.tcp_ip6_spec.ip6src,
- 		       sizeof(struct in6_addr));
- 		input->ip.v6.dst_port = fsp->h_u.tcp_ip6_spec.pdst;
- 		input->ip.v6.src_port = fsp->h_u.tcp_ip6_spec.psrc;
-@@ -1840,7 +1849,7 @@ int ice_add_ntuple_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
+ 	old_fltr = ice_fdir_find_fltr_by_idx(hw, fltr_idx);
+ 	if (old_fltr) {
+-		err = ice_fdir_write_all_fltr(pf, old_fltr, false);
+-		if (err)
+-			return err;
+-		ice_fdir_update_cntrs(hw, old_fltr->flow_type,
+-				      false, false);
+-		if (!input && !hw->fdir_fltr_cnt[old_fltr->flow_type])
+-			/* we just deleted the last filter of flow_type so we
+-			 * should also delete the HW filter info.
++		if (!old_fltr->acl_fltr) {
++			/* FD filter */
++			err = ice_fdir_write_all_fltr(pf, old_fltr, false);
++			if (err)
++				return err;
++		} else {
++			/* ACL filter - if the input buffer is present
++			 * then this is an update and we don't want to
++			 * delete the filter from the HW. we've already
++			 * written the change to the HW at this point, so
++			 * just update the SW structures to make sure
++			 * everything is hunky-dory. if no input then this
++			 * is a delete so we should delete the filter from
++			 * the HW and clean up our SW structures.
+ 			 */
++			if (!input) {
++				err = ice_del_acl_ethtool(hw, old_fltr);
++				if (err)
++					return err;
++			}
++		}
++		ice_fdir_update_cntrs(hw, old_fltr->flow_type,
++				      old_fltr->acl_fltr, false);
++		/* Also delete the HW filter info if we have just deleted the
++		 * last filter of flow_type.
++		 */
++		if (!old_fltr->acl_fltr && !input &&
++		    !hw->fdir_fltr_cnt[old_fltr->flow_type])
+ 			ice_fdir_do_rem_flow(pf, old_fltr->flow_type);
++		else if (old_fltr->acl_fltr && !input &&
++			 !hw->acl_fltr_cnt[old_fltr->flow_type])
++			ice_fdir_rem_flow(hw, ICE_BLK_ACL, old_fltr->flow_type);
+ 		list_del(&old_fltr->fltr_node);
+-		devm_kfree(ice_hw_to_dev(hw), old_fltr);
++		devm_kfree(ice_pf_to_dev(pf), old_fltr);
+ 	}
  	if (!input)
- 		return -ENOMEM;
- 
--	ret = ice_ntuple_set_input_set(vsi, fsp, input);
-+	ret = ice_ntuple_set_input_set(vsi, ICE_BLK_FD, fsp, input);
- 	if (ret)
- 		goto free_input;
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-index 696d08e6716d..da9797c11a8d 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-@@ -649,7 +649,7 @@ static bool ice_bits_max_set(const u8 *mask, u16 size, u16 max)
-  *	dc == NULL --> dc mask is all 0's (no don't care bits)
-  *	nm == NULL --> nm mask is all 0's (no never match bits)
-  */
--static enum ice_status
-+enum ice_status
- ice_set_key(u8 *key, u16 size, u8 *val, u8 *upd, u8 *dc, u8 *nm, u16 off,
- 	    u16 len)
- {
-@@ -3847,7 +3847,7 @@ ice_add_prof(struct ice_hw *hw, enum ice_block blk, u64 id, u8 ptypes[],
-  * This will search for a profile tracking ID which was previously added.
-  * The profile map lock should be held before calling this function.
-  */
--static struct ice_prof_map *
-+struct ice_prof_map *
- ice_search_prof_id(struct ice_hw *hw, enum ice_block blk, u64 id)
- {
- 	struct ice_prof_map *entry = NULL;
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
-index 20deddb807c5..61fd8f2fc959 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
-@@ -40,6 +40,13 @@ void ice_free_seg(struct ice_hw *hw);
- void ice_fill_blk_tbls(struct ice_hw *hw);
- void ice_clear_hw_tbls(struct ice_hw *hw);
- void ice_free_hw_tbls(struct ice_hw *hw);
-+struct ice_prof_map *
-+ice_search_prof_id(struct ice_hw *hw, enum ice_block blk, u64 id);
- enum ice_status
- ice_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 id);
-+
-+enum ice_status
-+ice_set_key(u8 *key, u16 size, u8 *val, u8 *upd, u8 *dc, u8 *nm, u16 off,
-+	    u16 len);
-+
- #endif /* _ICE_FLEX_PIPE_H_ */
+ 		return err;
 diff --git a/drivers/net/ethernet/intel/ice/ice_flow.c b/drivers/net/ethernet/intel/ice/ice_flow.c
-index d2df5101ef74..7ea94a627c5d 100644
+index 7ea94a627c5d..bff0ca02f8c6 100644
 --- a/drivers/net/ethernet/intel/ice/ice_flow.c
 +++ b/drivers/net/ethernet/intel/ice/ice_flow.c
-@@ -833,9 +833,161 @@ ice_dealloc_flow_entry(struct ice_hw *hw, struct ice_flow_entry *entry)
- 	if (entry->entry)
- 		devm_kfree(ice_hw_to_dev(hw), entry->entry);
+@@ -1002,6 +1002,16 @@ ice_flow_rem_entry_sync(struct ice_hw *hw, enum ice_block blk,
+ 		return ICE_ERR_BAD_PTR;
  
-+	if (entry->range_buf) {
-+		devm_kfree(ice_hw_to_dev(hw), entry->range_buf);
-+		entry->range_buf = NULL;
-+	}
+ 	if (blk == ICE_BLK_ACL) {
++		enum ice_status status;
 +
-+	if (entry->acts) {
-+		devm_kfree(ice_hw_to_dev(hw), entry->acts);
-+		entry->acts = NULL;
-+		entry->acts_cnt = 0;
-+	}
++		if (!entry->prof)
++			return ICE_ERR_BAD_PTR;
 +
- 	devm_kfree(ice_hw_to_dev(hw), entry);
- }
++		status = ice_acl_rem_entry(hw, entry->prof->cfg.scen,
++					   entry->scen_entry_idx);
++		if (status)
++			return status;
++
+ 		/* Checks if we need to release an ACL counter. */
+ 		if (entry->acts_cnt && entry->acts)
+ 			ice_flow_acl_free_act_cntr(hw, entry->acts,
+@@ -1126,10 +1136,36 @@ ice_flow_rem_prof_sync(struct ice_hw *hw, enum ice_block blk,
+ 	}
  
-+/**
-+ * ice_flow_get_hw_prof - return the HW profile for a specific profile ID handle
-+ * @hw: pointer to the HW struct
-+ * @blk: classification stage
-+ * @prof_id: the profile ID handle
-+ * @hw_prof_id: pointer to variable to receive the HW profile ID
-+ */
-+static enum ice_status
-+ice_flow_get_hw_prof(struct ice_hw *hw, enum ice_block blk, u64 prof_id,
-+		     u8 *hw_prof_id)
-+{
-+	enum ice_status status = ICE_ERR_DOES_NOT_EXIST;
-+	struct ice_prof_map *map;
+ 	if (blk == ICE_BLK_ACL) {
++		struct ice_aqc_acl_profile_ranges query_rng_buf;
++		struct ice_aqc_acl_prof_generic_frmt buf;
++		u8 prof_id = 0;
 +
-+	mutex_lock(&hw->blk[blk].es.prof_map_lock);
-+	map = ice_search_prof_id(hw, blk, prof_id);
-+	if (map) {
-+		*hw_prof_id = map->prof_id;
-+		status = 0;
-+	}
-+	mutex_unlock(&hw->blk[blk].es.prof_map_lock);
-+	return status;
-+}
+ 		/* Disassociate the scenario from the profile for the PF */
+ 		status = ice_flow_acl_disassoc_scen(hw, prof);
+ 		if (status)
+ 			return status;
 +
-+#define ICE_ACL_INVALID_SCEN	0x3f
++		/* Clear the range-checker if the profile ID is no longer
++		 * used by any PF
++		 */
++		status = ice_flow_acl_is_prof_in_use(hw, prof, &buf);
++		if (status && status != ICE_ERR_IN_USE) {
++			return status;
++		} else if (!status) {
++			/* Clear the range-checker value for profile ID */
++			memset(&query_rng_buf, 0,
++			       sizeof(struct ice_aqc_acl_profile_ranges));
 +
-+/**
-+ * ice_flow_acl_is_prof_in_use - Verify if the profile is associated to any PF
-+ * @hw: pointer to the hardware structure
-+ * @prof: pointer to flow profile
-+ * @buf: destination buffer function writes partial extraction sequence to
-+ *
-+ * returns ICE_SUCCESS if no PF is associated to the given profile
-+ * returns ICE_ERR_IN_USE if at least one PF is associated to the given profile
-+ * returns other error code for real error
-+ */
-+static enum ice_status
-+ice_flow_acl_is_prof_in_use(struct ice_hw *hw, struct ice_flow_prof *prof,
-+			    struct ice_aqc_acl_prof_generic_frmt *buf)
-+{
-+	enum ice_status status;
-+	u8 prof_id = 0;
++			status = ice_flow_get_hw_prof(hw, blk, prof->id,
++						      &prof_id);
++			if (status)
++				return status;
 +
-+	status = ice_flow_get_hw_prof(hw, ICE_BLK_ACL, prof->id, &prof_id);
-+	if (status)
-+		return status;
-+
-+	status = ice_query_acl_prof(hw, prof_id, buf, NULL);
-+	if (status)
-+		return status;
-+
-+	/* If all PF's associated scenarios are all 0 or all
-+	 * ICE_ACL_INVALID_SCEN (63) for the given profile then the latter has
-+	 * not been configured yet.
-+	 */
-+	if (buf->pf_scenario_num[0] == 0 && buf->pf_scenario_num[1] == 0 &&
-+	    buf->pf_scenario_num[2] == 0 && buf->pf_scenario_num[3] == 0 &&
-+	    buf->pf_scenario_num[4] == 0 && buf->pf_scenario_num[5] == 0 &&
-+	    buf->pf_scenario_num[6] == 0 && buf->pf_scenario_num[7] == 0)
-+		return 0;
-+
-+	if (buf->pf_scenario_num[0] == ICE_ACL_INVALID_SCEN &&
-+	    buf->pf_scenario_num[1] == ICE_ACL_INVALID_SCEN &&
-+	    buf->pf_scenario_num[2] == ICE_ACL_INVALID_SCEN &&
-+	    buf->pf_scenario_num[3] == ICE_ACL_INVALID_SCEN &&
-+	    buf->pf_scenario_num[4] == ICE_ACL_INVALID_SCEN &&
-+	    buf->pf_scenario_num[5] == ICE_ACL_INVALID_SCEN &&
-+	    buf->pf_scenario_num[6] == ICE_ACL_INVALID_SCEN &&
-+	    buf->pf_scenario_num[7] == ICE_ACL_INVALID_SCEN)
-+		return 0;
-+
-+	return ICE_ERR_IN_USE;
-+}
-+
-+/**
-+ * ice_flow_acl_free_act_cntr - Free the ACL rule's actions
-+ * @hw: pointer to the hardware structure
-+ * @acts: array of actions to be performed on a match
-+ * @acts_cnt: number of actions
-+ */
-+static enum ice_status
-+ice_flow_acl_free_act_cntr(struct ice_hw *hw, struct ice_flow_action *acts,
-+			   u8 acts_cnt)
-+{
-+	int i;
-+
-+	for (i = 0; i < acts_cnt; i++) {
-+		if (acts[i].type == ICE_FLOW_ACT_CNTR_PKT ||
-+		    acts[i].type == ICE_FLOW_ACT_CNTR_BYTES ||
-+		    acts[i].type == ICE_FLOW_ACT_CNTR_PKT_BYTES) {
-+			struct ice_acl_cntrs cntrs;
-+			enum ice_status status;
-+
-+			cntrs.bank = 0; /* Only bank0 for the moment */
-+			cntrs.first_cntr =
-+					le16_to_cpu(acts[i].data.acl_act.value);
-+			cntrs.last_cntr =
-+					le16_to_cpu(acts[i].data.acl_act.value);
-+
-+			if (acts[i].type == ICE_FLOW_ACT_CNTR_PKT_BYTES)
-+				cntrs.type = ICE_AQC_ACL_CNT_TYPE_DUAL;
-+			else
-+				cntrs.type = ICE_AQC_ACL_CNT_TYPE_SINGLE;
-+
-+			status = ice_aq_dealloc_acl_cntrs(hw, &cntrs, NULL);
++			status = ice_prog_acl_prof_ranges(hw, prof_id,
++							  &query_rng_buf, NULL);
 +			if (status)
 +				return status;
 +		}
+ 	}
+ 
+ 	/* Remove all hardware profiles associated with this flow profile */
+@@ -1366,6 +1402,44 @@ ice_flow_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 prof_id)
+ 	return status;
+ }
+ 
++/**
++ * ice_flow_find_entry - look for a flow entry using its unique ID
++ * @hw: pointer to the HW struct
++ * @blk: classification stage
++ * @entry_id: unique ID to identify this flow entry
++ *
++ * This function looks for the flow entry with the specified unique ID in all
++ * flow profiles of the specified classification stage. If the entry is found,
++ * and it returns the handle to the flow entry. Otherwise, it returns
++ * ICE_FLOW_ENTRY_ID_INVAL.
++ */
++u64 ice_flow_find_entry(struct ice_hw *hw, enum ice_block blk, u64 entry_id)
++{
++	struct ice_flow_entry *found = NULL;
++	struct ice_flow_prof *p;
++
++	mutex_lock(&hw->fl_profs_locks[blk]);
++
++	list_for_each_entry(p, &hw->fl_profs[blk], l_entry) {
++		struct ice_flow_entry *e;
++
++		mutex_lock(&p->entries_lock);
++		list_for_each_entry(e, &p->entries, l_entry)
++			if (e->id == entry_id) {
++				found = e;
++				break;
++			}
++		mutex_unlock(&p->entries_lock);
++
++		if (found)
++			break;
 +	}
++
++	mutex_unlock(&hw->fl_profs_locks[blk]);
++
++	return found ? ICE_FLOW_ENTRY_HNDL(found) : ICE_FLOW_ENTRY_HANDLE_INVAL;
++}
++
+ /**
+  * ice_flow_acl_check_actions - Checks the ACL rule's actions
+  * @hw: pointer to the hardware structure
+@@ -1701,6 +1775,333 @@ ice_flow_acl_frmt_entry(struct ice_hw *hw, struct ice_flow_prof *prof,
+ 
+ 	return status;
+ }
++
++/**
++ * ice_flow_acl_find_scen_entry_cond - Find an ACL scenario entry that matches
++ *				       the compared data.
++ * @prof: pointer to flow profile
++ * @e: pointer to the comparing flow entry
++ * @do_chg_action: decide if we want to change the ACL action
++ * @do_add_entry: decide if we want to add the new ACL entry
++ * @do_rem_entry: decide if we want to remove the current ACL entry
++ *
++ * Find an ACL scenario entry that matches the compared data. In the same time,
++ * this function also figure out:
++ * a/ If we want to change the ACL action
++ * b/ If we want to add the new ACL entry
++ * c/ If we want to remove the current ACL entry
++ */
++static struct ice_flow_entry *
++ice_flow_acl_find_scen_entry_cond(struct ice_flow_prof *prof,
++				  struct ice_flow_entry *e, bool *do_chg_action,
++				  bool *do_add_entry, bool *do_rem_entry)
++{
++	struct ice_flow_entry *p, *return_entry = NULL;
++	u8 i, j;
++
++	/* Check if:
++	 * a/ There exists an entry with same matching data, but different
++	 *    priority, then we remove this existing ACL entry. Then, we
++	 *    will add the new entry to the ACL scenario.
++	 * b/ There exists an entry with same matching data, priority, and
++	 *    result action, then we do nothing
++	 * c/ There exists an entry with same matching data, priority, but
++	 *    different, action, then do only change the action's entry.
++	 * d/ Else, we add this new entry to the ACL scenario.
++	 */
++	*do_chg_action = false;
++	*do_add_entry = true;
++	*do_rem_entry = false;
++	list_for_each_entry(p, &prof->entries, l_entry) {
++		if (memcmp(p->entry, e->entry, p->entry_sz))
++			continue;
++
++		/* From this point, we have the same matching_data. */
++		*do_add_entry = false;
++		return_entry = p;
++
++		if (p->priority != e->priority) {
++			/* matching data && !priority */
++			*do_add_entry = true;
++			*do_rem_entry = true;
++			break;
++		}
++
++		/* From this point, we will have matching_data && priority */
++		if (p->acts_cnt != e->acts_cnt)
++			*do_chg_action = true;
++		for (i = 0; i < p->acts_cnt; i++) {
++			bool found_not_match = false;
++
++			for (j = 0; j < e->acts_cnt; j++)
++				if (memcmp(&p->acts[i], &e->acts[j],
++					   sizeof(struct ice_flow_action))) {
++					found_not_match = true;
++					break;
++				}
++
++			if (found_not_match) {
++				*do_chg_action = true;
++				break;
++			}
++		}
++
++		/* (do_chg_action = true) means :
++		 *    matching_data && priority && !result_action
++		 * (do_chg_action = false) means :
++		 *    matching_data && priority && result_action
++		 */
++		break;
++	}
++
++	return return_entry;
++}
++
++/**
++ * ice_flow_acl_convert_to_acl_prio - Convert to ACL priority
++ * @p: flow priority
++ */
++static enum ice_acl_entry_prio
++ice_flow_acl_convert_to_acl_prio(enum ice_flow_priority p)
++{
++	enum ice_acl_entry_prio acl_prio;
++
++	switch (p) {
++	case ICE_FLOW_PRIO_LOW:
++		acl_prio = ICE_ACL_PRIO_LOW;
++		break;
++	case ICE_FLOW_PRIO_NORMAL:
++		acl_prio = ICE_ACL_PRIO_NORMAL;
++		break;
++	case ICE_FLOW_PRIO_HIGH:
++		acl_prio = ICE_ACL_PRIO_HIGH;
++		break;
++	default:
++		acl_prio = ICE_ACL_PRIO_NORMAL;
++		break;
++	}
++
++	return acl_prio;
++}
++
++/**
++ * ice_flow_acl_union_rng_chk - Perform union operation between two
++ *                              range-range checker buffers
++ * @dst_buf: pointer to destination range checker buffer
++ * @src_buf: pointer to source range checker buffer
++ *
++ * For this function, we do the union between dst_buf and src_buf
++ * range checker buffer, and we will save the result back to dst_buf
++ */
++static enum ice_status
++ice_flow_acl_union_rng_chk(struct ice_aqc_acl_profile_ranges *dst_buf,
++			   struct ice_aqc_acl_profile_ranges *src_buf)
++{
++	u8 i, j;
++
++	if (!dst_buf || !src_buf)
++		return ICE_ERR_BAD_PTR;
++
++	for (i = 0; i < ICE_AQC_ACL_PROF_RANGES_NUM_CFG; i++) {
++		struct ice_acl_rng_data *cfg_data = NULL, *in_data;
++		bool will_populate = false;
++
++		in_data = &src_buf->checker_cfg[i];
++
++		if (!in_data->mask)
++			break;
++
++		for (j = 0; j < ICE_AQC_ACL_PROF_RANGES_NUM_CFG; j++) {
++			cfg_data = &dst_buf->checker_cfg[j];
++
++			if (!cfg_data->mask ||
++			    !memcmp(cfg_data, in_data,
++				    sizeof(struct ice_acl_rng_data))) {
++				will_populate = true;
++				break;
++			}
++		}
++
++		if (will_populate) {
++			memcpy(cfg_data, in_data,
++			       sizeof(struct ice_acl_rng_data));
++		} else {
++			/* No available slot left to program range checker */
++			return ICE_ERR_MAX_LIMIT;
++		}
++	}
++
 +	return 0;
 +}
 +
 +/**
-+ * ice_flow_acl_disassoc_scen - Disassociate the scenario from the profile
++ * ice_flow_acl_add_scen_entry_sync - Add entry to ACL scenario sync
 + * @hw: pointer to the hardware structure
 + * @prof: pointer to flow profile
++ * @entry: double pointer to the flow entry
 + *
-+ * Disassociate the scenario from the profile for the PF of the VSI.
++ * For this function, we will look at the current added entries in the
++ * corresponding ACL scenario. Then, we will perform matching logic to
++ * see if we want to add/modify/do nothing with this new entry.
 + */
 +static enum ice_status
-+ice_flow_acl_disassoc_scen(struct ice_hw *hw, struct ice_flow_prof *prof)
++ice_flow_acl_add_scen_entry_sync(struct ice_hw *hw, struct ice_flow_prof *prof,
++				 struct ice_flow_entry **entry)
 +{
-+	struct ice_aqc_acl_prof_generic_frmt buf;
++	bool do_add_entry, do_rem_entry, do_chg_action, do_chg_rng_chk;
++	struct ice_aqc_acl_profile_ranges query_rng_buf, cfg_rng_buf;
++	struct ice_acl_act_entry *acts = NULL;
++	struct ice_flow_entry *exist;
 +	enum ice_status status = 0;
-+	u8 prof_id = 0;
++	struct ice_flow_entry *e;
++	u8 i;
 +
-+	memset(&buf, 0, sizeof(buf));
++	if (!entry || !(*entry) || !prof)
++		return ICE_ERR_BAD_PTR;
 +
-+	status = ice_flow_get_hw_prof(hw, ICE_BLK_ACL, prof->id, &prof_id);
-+	if (status)
-+		return status;
++	e = *entry;
 +
-+	status = ice_query_acl_prof(hw, prof_id, &buf, NULL);
-+	if (status)
-+		return status;
++	do_chg_rng_chk = false;
++	if (e->range_buf) {
++		u8 prof_id = 0;
 +
-+	/* Clear scenario for this PF */
-+	buf.pf_scenario_num[hw->pf_id] = ICE_ACL_INVALID_SCEN;
-+	return ice_prgm_acl_prof_xtrct(hw, prof_id, &buf, NULL);
-+}
++		status = ice_flow_get_hw_prof(hw, ICE_BLK_ACL, prof->id,
++					      &prof_id);
++		if (status)
++			return status;
 +
- /**
-  * ice_flow_rem_entry_sync - Remove a flow entry
-  * @hw: pointer to the HW struct
-@@ -843,12 +995,19 @@ ice_dealloc_flow_entry(struct ice_hw *hw, struct ice_flow_entry *entry)
-  * @entry: flow entry to be removed
-  */
- static enum ice_status
--ice_flow_rem_entry_sync(struct ice_hw *hw, enum ice_block __always_unused blk,
-+ice_flow_rem_entry_sync(struct ice_hw *hw, enum ice_block blk,
- 			struct ice_flow_entry *entry)
- {
- 	if (!entry)
- 		return ICE_ERR_BAD_PTR;
- 
-+	if (blk == ICE_BLK_ACL) {
-+		/* Checks if we need to release an ACL counter. */
-+		if (entry->acts_cnt && entry->acts)
-+			ice_flow_acl_free_act_cntr(hw, entry->acts,
-+						   entry->acts_cnt);
++		/* Query the current range-checker value in FW */
++		status = ice_query_acl_prof_ranges(hw, prof_id, &query_rng_buf,
++						   NULL);
++		if (status)
++			return status;
++		memcpy(&cfg_rng_buf, &query_rng_buf,
++		       sizeof(struct ice_aqc_acl_profile_ranges));
++
++		/* Generate the new range-checker value */
++		status = ice_flow_acl_union_rng_chk(&cfg_rng_buf, e->range_buf);
++		if (status)
++			return status;
++
++		/* Reconfigure the range check if the buffer is changed. */
++		do_chg_rng_chk = false;
++		if (memcmp(&query_rng_buf, &cfg_rng_buf,
++			   sizeof(struct ice_aqc_acl_profile_ranges))) {
++			status = ice_prog_acl_prof_ranges(hw, prof_id,
++							  &cfg_rng_buf, NULL);
++			if (status)
++				return status;
++
++			do_chg_rng_chk = true;
++		}
 +	}
 +
- 	list_del(&entry->l_entry);
- 
- 	ice_dealloc_flow_entry(hw, entry);
-@@ -966,6 +1125,13 @@ ice_flow_rem_prof_sync(struct ice_hw *hw, enum ice_block blk,
- 		mutex_unlock(&prof->entries_lock);
- 	}
- 
-+	if (blk == ICE_BLK_ACL) {
-+		/* Disassociate the scenario from the profile for the PF */
-+		status = ice_flow_acl_disassoc_scen(hw, prof);
++	/* Figure out if we want to (change the ACL action) and/or
++	 * (Add the new ACL entry) and/or (Remove the current ACL entry)
++	 */
++	exist = ice_flow_acl_find_scen_entry_cond(prof, e, &do_chg_action,
++						  &do_add_entry, &do_rem_entry);
++
++	if (do_rem_entry) {
++		status = ice_flow_rem_entry_sync(hw, ICE_BLK_ACL, exist);
 +		if (status)
 +			return status;
 +	}
 +
- 	/* Remove all hardware profiles associated with this flow profile */
- 	status = ice_rem_prof(hw, blk, prof->id);
- 	if (!status) {
-@@ -977,6 +1143,89 @@ ice_flow_rem_prof_sync(struct ice_hw *hw, enum ice_block blk,
- 	return status;
- }
- 
-+/**
-+ * ice_flow_acl_set_xtrct_seq_fld - Populate xtrct seq for single field
-+ * @buf: Destination buffer function writes partial xtrct sequence to
-+ * @info: Info about field
-+ */
-+static void
-+ice_flow_acl_set_xtrct_seq_fld(struct ice_aqc_acl_prof_generic_frmt *buf,
-+			       struct ice_flow_fld_info *info)
-+{
-+	u16 dst, i;
-+	u8 src;
++	/* Prepare the result action buffer */
++	acts = kcalloc(e->entry_sz, sizeof(struct ice_acl_act_entry),
++		       GFP_KERNEL);
++	if (!acts)
++		return ICE_ERR_NO_MEMORY;
 +
-+	src = info->xtrct.idx * ICE_FLOW_FV_EXTRACT_SZ +
-+		info->xtrct.disp / BITS_PER_BYTE;
-+	dst = info->entry.val;
-+	for (i = 0; i < info->entry.last; i++)
-+		/* HW stores field vector words in LE, convert words back to BE
-+		 * so constructed entries will end up in network order
-+		 */
-+		buf->byte_selection[dst++] = src++ ^ 1;
-+}
++	for (i = 0; i < e->acts_cnt; i++)
++		memcpy(&acts[i], &e->acts[i].data.acl_act,
++		       sizeof(struct ice_acl_act_entry));
 +
-+/**
-+ * ice_flow_acl_set_xtrct_seq - Program ACL extraction sequence
-+ * @hw: pointer to the hardware structure
-+ * @prof: pointer to flow profile
-+ */
-+static enum ice_status
-+ice_flow_acl_set_xtrct_seq(struct ice_hw *hw, struct ice_flow_prof *prof)
-+{
-+	struct ice_aqc_acl_prof_generic_frmt buf;
-+	struct ice_flow_fld_info *info;
-+	enum ice_status status;
-+	u8 prof_id = 0;
-+	u16 i;
++	if (do_add_entry) {
++		enum ice_acl_entry_prio prio;
++		u8 *keys, *inverts;
++		u16 entry_idx;
 +
-+	memset(&buf, 0, sizeof(buf));
++		keys = (u8 *)e->entry;
++		inverts = keys + (e->entry_sz / 2);
++		prio = ice_flow_acl_convert_to_acl_prio(e->priority);
 +
-+	status = ice_flow_get_hw_prof(hw, ICE_BLK_ACL, prof->id, &prof_id);
-+	if (status)
-+		return status;
++		status = ice_acl_add_entry(hw, prof->cfg.scen, prio, keys,
++					   inverts, acts, e->acts_cnt,
++					   &entry_idx);
++		if (status)
++			goto out;
 +
-+	status = ice_flow_acl_is_prof_in_use(hw, prof, &buf);
-+	if (status && status != ICE_ERR_IN_USE)
-+		return status;
-+
-+	if (!status) {
-+		/* Program the profile dependent configuration. This is done
-+		 * only once regardless of the number of PFs using that profile
-+		 */
-+		memset(&buf, 0, sizeof(buf));
-+
-+		for (i = 0; i < prof->segs_cnt; i++) {
-+			struct ice_flow_seg_info *seg = &prof->segs[i];
-+			u16 j;
-+
-+			for_each_set_bit(j, (unsigned long *)&seg->match,
-+					 ICE_FLOW_FIELD_IDX_MAX) {
-+				info = &seg->fields[j];
-+
-+				if (info->type == ICE_FLOW_FLD_TYPE_RANGE)
-+					buf.word_selection[info->entry.val] =
-+						info->xtrct.idx;
-+				else
-+					ice_flow_acl_set_xtrct_seq_fld(&buf,
-+								       info);
-+			}
-+
-+			for (j = 0; j < seg->raws_cnt; j++) {
-+				info = &seg->raws[j].info;
-+				ice_flow_acl_set_xtrct_seq_fld(&buf, info);
-+			}
-+		}
-+
-+		memset(&buf.pf_scenario_num[0], ICE_ACL_INVALID_SCEN,
-+		       ICE_AQC_ACL_PROF_PF_SCEN_NUM_ELEMS);
-+	}
-+
-+	/* Update the current PF */
-+	buf.pf_scenario_num[hw->pf_id] = (u8)prof->cfg.scen->id;
-+	return ice_prgm_acl_prof_xtrct(hw, prof_id, &buf, NULL);
-+}
-+
- /**
-  * ice_flow_assoc_prof - associate a VSI with a flow profile
-  * @hw: pointer to the hardware structure
-@@ -994,6 +1243,11 @@ ice_flow_assoc_prof(struct ice_hw *hw, enum ice_block blk,
- 	enum ice_status status = 0;
- 
- 	if (!test_bit(vsi_handle, prof->vsis)) {
-+		if (blk == ICE_BLK_ACL) {
-+			status = ice_flow_acl_set_xtrct_seq(hw, prof);
-+			if (status)
-+				return status;
-+		}
- 		status = ice_add_prof_id_flow(hw, blk,
- 					      ice_get_hw_vsi_num(hw,
- 								 vsi_handle),
-@@ -1112,6 +1366,341 @@ ice_flow_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 prof_id)
- 	return status;
- }
- 
-+/**
-+ * ice_flow_acl_check_actions - Checks the ACL rule's actions
-+ * @hw: pointer to the hardware structure
-+ * @acts: array of actions to be performed on a match
-+ * @acts_cnt: number of actions
-+ * @cnt_alloc: indicates if an ACL counter has been allocated.
-+ */
-+static enum ice_status
-+ice_flow_acl_check_actions(struct ice_hw *hw, struct ice_flow_action *acts,
-+			   u8 acts_cnt, bool *cnt_alloc)
-+{
-+	DECLARE_BITMAP(dup_check, ICE_AQC_TBL_MAX_ACTION_PAIRS * 2);
-+	int i;
-+
-+	bitmap_zero(dup_check, ICE_AQC_TBL_MAX_ACTION_PAIRS * 2);
-+	*cnt_alloc = false;
-+
-+	if (acts_cnt > ICE_FLOW_ACL_MAX_NUM_ACT)
-+		return ICE_ERR_OUT_OF_RANGE;
-+
-+	for (i = 0; i < acts_cnt; i++) {
-+		if (acts[i].type != ICE_FLOW_ACT_NOP &&
-+		    acts[i].type != ICE_FLOW_ACT_DROP &&
-+		    acts[i].type != ICE_FLOW_ACT_CNTR_PKT &&
-+		    acts[i].type != ICE_FLOW_ACT_FWD_QUEUE)
-+			return ICE_ERR_CFG;
-+
-+		/* If the caller want to add two actions of the same type, then
-+		 * it is considered invalid configuration.
-+		 */
-+		if (test_and_set_bit(acts[i].type, dup_check))
-+			return ICE_ERR_PARAM;
-+	}
-+
-+	/* Checks if ACL counters are needed. */
-+	for (i = 0; i < acts_cnt; i++) {
-+		if (acts[i].type == ICE_FLOW_ACT_CNTR_PKT ||
-+		    acts[i].type == ICE_FLOW_ACT_CNTR_BYTES ||
-+		    acts[i].type == ICE_FLOW_ACT_CNTR_PKT_BYTES) {
-+			struct ice_acl_cntrs cntrs;
-+			enum ice_status status;
-+
-+			cntrs.amount = 1;
-+			cntrs.bank = 0; /* Only bank0 for the moment */
-+
-+			if (acts[i].type == ICE_FLOW_ACT_CNTR_PKT_BYTES)
-+				cntrs.type = ICE_AQC_ACL_CNT_TYPE_DUAL;
-+			else
-+				cntrs.type = ICE_AQC_ACL_CNT_TYPE_SINGLE;
-+
-+			status = ice_aq_alloc_acl_cntrs(hw, &cntrs, NULL);
-+			if (status)
-+				return status;
-+			/* Counter index within the bank */
-+			acts[i].data.acl_act.value =
-+						cpu_to_le16(cntrs.first_cntr);
-+			*cnt_alloc = true;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_flow_acl_frmt_entry_range - Format an ACL range checker for a given field
-+ * @fld: number of the given field
-+ * @info: info about field
-+ * @range_buf: range checker configuration buffer
-+ * @data: pointer to a data buffer containing flow entry's match values/masks
-+ * @range: Input/output param indicating which range checkers are being used
-+ */
-+static void
-+ice_flow_acl_frmt_entry_range(u16 fld, struct ice_flow_fld_info *info,
-+			      struct ice_aqc_acl_profile_ranges *range_buf,
-+			      u8 *data, u8 *range)
-+{
-+	u16 new_mask;
-+
-+	/* If not specified, default mask is all bits in field */
-+	new_mask = (info->src.mask == ICE_FLOW_FLD_OFF_INVAL ?
-+		    BIT(ice_flds_info[fld].size) - 1 :
-+		    (*(u16 *)(data + info->src.mask))) << info->xtrct.disp;
-+
-+	/* If the mask is 0, then we don't need to worry about this input
-+	 * range checker value.
-+	 */
-+	if (new_mask) {
-+		u16 new_high =
-+			(*(u16 *)(data + info->src.last)) << info->xtrct.disp;
-+		u16 new_low =
-+			(*(u16 *)(data + info->src.val)) << info->xtrct.disp;
-+		u8 range_idx = info->entry.val;
-+
-+		range_buf->checker_cfg[range_idx].low_boundary =
-+			cpu_to_be16(new_low);
-+		range_buf->checker_cfg[range_idx].high_boundary =
-+			cpu_to_be16(new_high);
-+		range_buf->checker_cfg[range_idx].mask = cpu_to_be16(new_mask);
-+
-+		/* Indicate which range checker is being used */
-+		*range |= BIT(range_idx);
-+	}
-+}
-+
-+/**
-+ * ice_flow_acl_frmt_entry_fld - Partially format ACL entry for a given field
-+ * @fld: number of the given field
-+ * @info: info about the field
-+ * @buf: buffer containing the entry
-+ * @dontcare: buffer containing don't care mask for entry
-+ * @data: pointer to a data buffer containing flow entry's match values/masks
-+ */
-+static void
-+ice_flow_acl_frmt_entry_fld(u16 fld, struct ice_flow_fld_info *info, u8 *buf,
-+			    u8 *dontcare, u8 *data)
-+{
-+	u16 dst, src, mask, k, end_disp, tmp_s = 0, tmp_m = 0;
-+	bool use_mask = false;
-+	u8 disp;
-+
-+	src = info->src.val;
-+	mask = info->src.mask;
-+	dst = info->entry.val - ICE_AQC_ACL_PROF_BYTE_SEL_START_IDX;
-+	disp = info->xtrct.disp % BITS_PER_BYTE;
-+
-+	if (mask != ICE_FLOW_FLD_OFF_INVAL)
-+		use_mask = true;
-+
-+	for (k = 0; k < info->entry.last; k++, dst++) {
-+		/* Add overflow bits from previous byte */
-+		buf[dst] = (tmp_s & 0xff00) >> 8;
-+
-+		/* If mask is not valid, tmp_m is always zero, so just setting
-+		 * dontcare to 0 (no masked bits). If mask is valid, pulls in
-+		 * overflow bits of mask from prev byte
-+		 */
-+		dontcare[dst] = (tmp_m & 0xff00) >> 8;
-+
-+		/* If there is displacement, last byte will only contain
-+		 * displaced data, but there is no more data to read from user
-+		 * buffer, so skip so as not to potentially read beyond end of
-+		 * user buffer
-+		 */
-+		if (!disp || k < info->entry.last - 1) {
-+			/* Store shifted data to use in next byte */
-+			tmp_s = data[src++] << disp;
-+
-+			/* Add current (shifted) byte */
-+			buf[dst] |= tmp_s & 0xff;
-+
-+			/* Handle mask if valid */
-+			if (use_mask) {
-+				tmp_m = (~data[mask++] & 0xff) << disp;
-+				dontcare[dst] |= tmp_m & 0xff;
-+			}
-+		}
-+	}
-+
-+	/* Fill in don't care bits at beginning of field */
-+	if (disp) {
-+		dst = info->entry.val - ICE_AQC_ACL_PROF_BYTE_SEL_START_IDX;
-+		for (k = 0; k < disp; k++)
-+			dontcare[dst] |= BIT(k);
-+	}
-+
-+	end_disp = (disp + ice_flds_info[fld].size) % BITS_PER_BYTE;
-+
-+	/* Fill in don't care bits at end of field */
-+	if (end_disp) {
-+		dst = info->entry.val - ICE_AQC_ACL_PROF_BYTE_SEL_START_IDX +
-+		      info->entry.last - 1;
-+		for (k = end_disp; k < BITS_PER_BYTE; k++)
-+			dontcare[dst] |= BIT(k);
-+	}
-+}
-+
-+/**
-+ * ice_flow_acl_frmt_entry - Format ACL entry
-+ * @hw: pointer to the hardware structure
-+ * @prof: pointer to flow profile
-+ * @e: pointer to the flow entry
-+ * @data: pointer to a data buffer containing flow entry's match values/masks
-+ * @acts: array of actions to be performed on a match
-+ * @acts_cnt: number of actions
-+ *
-+ * Formats the key (and key_inverse) to be matched from the data passed in,
-+ * along with data from the flow profile. This key/key_inverse pair makes up
-+ * the 'entry' for an ACL flow entry.
-+ */
-+static enum ice_status
-+ice_flow_acl_frmt_entry(struct ice_hw *hw, struct ice_flow_prof *prof,
-+			struct ice_flow_entry *e, u8 *data,
-+			struct ice_flow_action *acts, u8 acts_cnt)
-+{
-+	u8 *buf = NULL, *dontcare = NULL, *key = NULL, range = 0, dir_flag_msk;
-+	struct ice_aqc_acl_profile_ranges *range_buf = NULL;
-+	enum ice_status status;
-+	bool cnt_alloc;
-+	u8 prof_id = 0;
-+	u16 i, buf_sz;
-+
-+	status = ice_flow_get_hw_prof(hw, ICE_BLK_ACL, prof->id, &prof_id);
-+	if (status)
-+		return status;
-+
-+	/* Format the result action */
-+
-+	status = ice_flow_acl_check_actions(hw, acts, acts_cnt, &cnt_alloc);
-+	if (status)
-+		return status;
-+
-+	status = ICE_ERR_NO_MEMORY;
-+
-+	e->acts = devm_kmemdup(ice_hw_to_dev(hw), acts,
-+			       acts_cnt * sizeof(*acts), GFP_KERNEL);
-+	if (!e->acts)
-+		goto out;
-+
-+	e->acts_cnt = acts_cnt;
-+
-+	/* Format the matching data */
-+	buf_sz = prof->cfg.scen->width;
-+	buf = kzalloc(buf_sz, GFP_KERNEL);
-+	if (!buf)
-+		goto out;
-+
-+	dontcare = kzalloc(buf_sz, GFP_KERNEL);
-+	if (!dontcare)
-+		goto out;
-+
-+	/* 'key' buffer will store both key and key_inverse, so must be twice
-+	 * size of buf
-+	 */
-+	key = devm_kzalloc(ice_hw_to_dev(hw), buf_sz * 2, GFP_KERNEL);
-+	if (!key)
-+		goto out;
-+
-+	range_buf = devm_kzalloc(ice_hw_to_dev(hw),
-+				 sizeof(struct ice_aqc_acl_profile_ranges),
-+				 GFP_KERNEL);
-+	if (!range_buf)
-+		goto out;
-+
-+	/* Set don't care mask to all 1's to start, will zero out used bytes */
-+	memset(dontcare, 0xff, buf_sz);
-+
-+	for (i = 0; i < prof->segs_cnt; i++) {
-+		struct ice_flow_seg_info *seg = &prof->segs[i];
-+		u8 j;
-+
-+		for_each_set_bit(j, (unsigned long *)&seg->match,
-+				 ICE_FLOW_FIELD_IDX_MAX) {
-+			struct ice_flow_fld_info *info = &seg->fields[j];
-+
-+			if (info->type == ICE_FLOW_FLD_TYPE_RANGE)
-+				ice_flow_acl_frmt_entry_range(j, info,
-+							      range_buf, data,
-+							      &range);
-+			else
-+				ice_flow_acl_frmt_entry_fld(j, info, buf,
-+							    dontcare, data);
-+		}
-+
-+		for (j = 0; j < seg->raws_cnt; j++) {
-+			struct ice_flow_fld_info *info = &seg->raws[j].info;
-+			u16 dst, src, mask, k;
-+			bool use_mask = false;
-+
-+			src = info->src.val;
-+			dst = info->entry.val -
-+					ICE_AQC_ACL_PROF_BYTE_SEL_START_IDX;
-+			mask = info->src.mask;
-+
-+			if (mask != ICE_FLOW_FLD_OFF_INVAL)
-+				use_mask = true;
-+
-+			for (k = 0; k < info->entry.last; k++, dst++) {
-+				buf[dst] = data[src++];
-+				if (use_mask)
-+					dontcare[dst] = ~data[mask++];
-+				else
-+					dontcare[dst] = 0;
-+			}
-+		}
-+	}
-+
-+	buf[prof->cfg.scen->pid_idx] = (u8)prof_id;
-+	dontcare[prof->cfg.scen->pid_idx] = 0;
-+
-+	/* Format the buffer for direction flags */
-+	dir_flag_msk = BIT(ICE_FLG_PKT_DIR);
-+
-+	if (prof->dir == ICE_FLOW_RX)
-+		buf[prof->cfg.scen->pkt_dir_idx] = dir_flag_msk;
-+
-+	if (range) {
-+		buf[prof->cfg.scen->rng_chk_idx] = range;
-+		/* Mark any unused range checkers as don't care */
-+		dontcare[prof->cfg.scen->rng_chk_idx] = ~range;
-+		e->range_buf = range_buf;
++		e->scen_entry_idx = entry_idx;
++		list_add(&e->l_entry, &prof->entries);
 +	} else {
-+		devm_kfree(ice_hw_to_dev(hw), range_buf);
++		if (do_chg_action) {
++			/* For the action memory info, update the SW's copy of
++			 * exist entry with e's action memory info
++			 */
++			devm_kfree(ice_hw_to_dev(hw), exist->acts);
++			exist->acts_cnt = e->acts_cnt;
++			exist->acts = devm_kcalloc(ice_hw_to_dev(hw),
++						   exist->acts_cnt,
++						   sizeof(struct ice_flow_action),
++						   GFP_KERNEL);
++			if (!exist->acts) {
++				status = ICE_ERR_NO_MEMORY;
++				goto out;
++			}
++
++			memcpy(exist->acts, e->acts,
++			       sizeof(struct ice_flow_action) * e->acts_cnt);
++
++			status = ice_acl_prog_act(hw, prof->cfg.scen, acts,
++						  e->acts_cnt,
++						  exist->scen_entry_idx);
++			if (status)
++				goto out;
++		}
++
++		if (do_chg_rng_chk) {
++			/* In this case, we want to update the range checker
++			 * information of the exist entry
++			 */
++			status = ice_flow_acl_union_rng_chk(exist->range_buf,
++							    e->range_buf);
++			if (status)
++				goto out;
++		}
++
++		/* As we don't add the new entry to our SW DB, deallocate its
++		 * memories, and return the exist entry to the caller
++		 */
++		ice_dealloc_flow_entry(hw, e);
++		*entry = exist;
 +	}
-+
-+	status = ice_set_key(key, buf_sz * 2, buf, NULL, dontcare, NULL, 0,
-+			     buf_sz);
-+	if (status)
-+		goto out;
-+
-+	e->entry = key;
-+	e->entry_sz = buf_sz * 2;
-+
 +out:
-+	kfree(buf);
-+	kfree(dontcare);
-+
-+	if (status && key)
-+		devm_kfree(ice_hw_to_dev(hw), key);
-+
-+	if (status && range_buf) {
-+		devm_kfree(ice_hw_to_dev(hw), range_buf);
-+		e->range_buf = NULL;
-+	}
-+
-+	if (status && e->acts) {
-+		devm_kfree(ice_hw_to_dev(hw), e->acts);
-+		e->acts = NULL;
-+		e->acts_cnt = 0;
-+	}
-+
-+	if (status && cnt_alloc)
-+		ice_flow_acl_free_act_cntr(hw, acts, acts_cnt);
++	kfree(acts);
 +
 +	return status;
 +}
++
++/**
++ * ice_flow_acl_add_scen_entry - Add entry to ACL scenario
++ * @hw: pointer to the hardware structure
++ * @prof: pointer to flow profile
++ * @e: double pointer to the flow entry
++ */
++static enum ice_status
++ice_flow_acl_add_scen_entry(struct ice_hw *hw, struct ice_flow_prof *prof,
++			    struct ice_flow_entry **e)
++{
++	enum ice_status status;
++
++	mutex_lock(&prof->entries_lock);
++	status = ice_flow_acl_add_scen_entry_sync(hw, prof, e);
++	mutex_unlock(&prof->entries_lock);
++
++	return status;
++}
++
  /**
   * ice_flow_add_entry - Add a flow entry
   * @hw: pointer to the HW struct
-@@ -1121,17 +1710,24 @@ ice_flow_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 prof_id)
-  * @vsi_handle: software VSI handle for the flow entry
-  * @prio: priority of the flow entry
-  * @data: pointer to a data buffer containing flow entry's match values/masks
-+ * @acts: arrays of actions to be performed on a match
-+ * @acts_cnt: number of actions
-  * @entry_h: pointer to buffer that receives the new flow entry's handle
-  */
- enum ice_status
- ice_flow_add_entry(struct ice_hw *hw, enum ice_block blk, u64 prof_id,
- 		   u64 entry_id, u16 vsi_handle, enum ice_flow_priority prio,
--		   void *data, u64 *entry_h)
-+		   void *data, struct ice_flow_action *acts, u8 acts_cnt,
-+		   u64 *entry_h)
- {
- 	struct ice_flow_entry *e = NULL;
- 	struct ice_flow_prof *prof;
- 	enum ice_status status;
- 
-+	/* ACL entries must indicate an action */
-+	if (blk == ICE_BLK_ACL && (!acts || !acts_cnt))
-+		return ICE_ERR_PARAM;
+@@ -1770,6 +2171,11 @@ ice_flow_add_entry(struct ice_hw *hw, enum ice_block blk, u64 prof_id,
+ 						 acts_cnt);
+ 		if (status)
+ 			goto out;
 +
- 	/* No flow entry data is expected for RSS */
- 	if (!entry_h || (!data && blk != ICE_BLK_RSS))
- 		return ICE_ERR_BAD_PTR;
-@@ -1168,14 +1764,24 @@ ice_flow_add_entry(struct ice_hw *hw, enum ice_block blk, u64 prof_id,
- 	case ICE_BLK_FD:
- 	case ICE_BLK_RSS:
- 		break;
-+	case ICE_BLK_ACL:
-+		/* ACL will handle the entry management */
-+		status = ice_flow_acl_frmt_entry(hw, prof, e, (u8 *)data, acts,
-+						 acts_cnt);
++		status = ice_flow_acl_add_scen_entry(hw, prof, &e);
 +		if (status)
 +			goto out;
-+		break;
++
+ 		break;
  	default:
  		status = ICE_ERR_NOT_IMPL;
- 		goto out;
- 	}
- 
--	mutex_lock(&prof->entries_lock);
--	list_add(&e->l_entry, &prof->entries);
--	mutex_unlock(&prof->entries_lock);
-+	if (blk != ICE_BLK_ACL) {
-+		/* ACL will handle the entry management */
-+		mutex_lock(&prof->entries_lock);
-+		list_add(&e->l_entry, &prof->entries);
-+		mutex_unlock(&prof->entries_lock);
-+	}
- 
- 	*entry_h = ICE_FLOW_ENTRY_HNDL(e);
- 
 diff --git a/drivers/net/ethernet/intel/ice/ice_flow.h b/drivers/net/ethernet/intel/ice/ice_flow.h
-index f0cea38e8e78..ba3ceaf30b93 100644
+index ba3ceaf30b93..31c690051e05 100644
 --- a/drivers/net/ethernet/intel/ice/ice_flow.h
 +++ b/drivers/net/ethernet/intel/ice/ice_flow.h
-@@ -189,11 +189,17 @@ struct ice_flow_entry {
- 
- 	u64 id;
- 	struct ice_flow_prof *prof;
-+	/* Action list */
-+	struct ice_flow_action *acts;
- 	/* Flow entry's content */
- 	void *entry;
-+	/* Range buffer (For ACL only) */
-+	struct ice_aqc_acl_profile_ranges *range_buf;
+@@ -198,6 +198,8 @@ struct ice_flow_entry {
  	enum ice_flow_priority priority;
  	u16 vsi_handle;
  	u16 entry_sz;
-+#define ICE_FLOW_ACL_MAX_NUM_ACT	2
-+	u8 acts_cnt;
++	/* Entry index in the ACL's scenario */
++	u16 scen_entry_idx;
+ #define ICE_FLOW_ACL_MAX_NUM_ACT	2
+ 	u8 acts_cnt;
  };
- 
- #define ICE_FLOW_ENTRY_HNDL(e)	((u64)(uintptr_t)e)
-@@ -257,7 +263,8 @@ ice_flow_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 prof_id);
+@@ -260,6 +262,7 @@ ice_flow_add_prof(struct ice_hw *hw, enum ice_block blk, enum ice_flow_dir dir,
+ 		  struct ice_flow_prof **prof);
+ enum ice_status
+ ice_flow_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 prof_id);
++u64 ice_flow_find_entry(struct ice_hw *hw, enum ice_block blk, u64 entry_id);
  enum ice_status
  ice_flow_add_entry(struct ice_hw *hw, enum ice_block blk, u64 prof_id,
  		   u64 entry_id, u16 vsi, enum ice_flow_priority prio,
--		   void *data, u64 *entry_h);
-+		   void *data, struct ice_flow_action *acts, u8 acts_cnt,
-+		   u64 *entry_h);
- enum ice_status
- ice_flow_rem_entry(struct ice_hw *hw, enum ice_block blk, u64 entry_h);
- void
-diff --git a/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h b/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
-index 4ec24c3e813f..d2360a514e3e 100644
---- a/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
-@@ -309,6 +309,8 @@ enum ice_flex_mdid_pkt_flags {
- enum ice_flex_rx_mdid {
- 	ICE_RX_MDID_FLOW_ID_LOWER	= 5,
- 	ICE_RX_MDID_FLOW_ID_HIGH,
-+	ICE_MDID_RX_PKT_DROP	= 8,
-+	ICE_MDID_RX_DST_Q		= 12,
- 	ICE_RX_MDID_SRC_VSI		= 19,
- 	ICE_RX_MDID_HASH_LOW		= 56,
- 	ICE_RX_MDID_HASH_HIGH,
-@@ -317,6 +319,7 @@ enum ice_flex_rx_mdid {
- /* Rx/Tx Flag64 packet flag bits */
- enum ice_flg64_bits {
- 	ICE_FLG_PKT_DSI		= 0,
-+	ICE_FLG_PKT_DIR		= 4,
- 	ICE_FLG_EVLAN_x8100	= 14,
- 	ICE_FLG_EVLAN_x9100,
- 	ICE_FLG_VLAN_x8100,
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 3df67486d42d..df38fa8a0c7c 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -855,7 +855,7 @@ static void ice_set_fd_vsi_ctx(struct ice_vsi_ctx *ctxt, struct ice_vsi *vsi)
+ 	if (vsi->type != ICE_VSI_PF && vsi->type != ICE_VSI_CTRL)
+ 		return;
+ 
+-	val = ICE_AQ_VSI_PROP_FLOW_DIR_VALID;
++	val = ICE_AQ_VSI_PROP_FLOW_DIR_VALID | ICE_AQ_VSI_PROP_ACL_VALID;
+ 	ctxt->info.valid_sections |= cpu_to_le16(val);
+ 	dflt_q = 0;
+ 	dflt_q_group = 0;
+@@ -885,6 +885,14 @@ static void ice_set_fd_vsi_ctx(struct ice_vsi_ctx *ctxt, struct ice_vsi *vsi)
+ 	val |= ((dflt_q_prio << ICE_AQ_VSI_FD_DEF_PRIORITY_S) &
+ 		ICE_AQ_VSI_FD_DEF_PRIORITY_M);
+ 	ctxt->info.fd_report_opt = cpu_to_le16(val);
++
++#define ICE_ACL_RX_PROF_MISS_CNTR ((2 << ICE_AQ_VSI_ACL_DEF_RX_PROF_S) & \
++				   ICE_AQ_VSI_ACL_DEF_RX_PROF_M)
++#define ICE_ACL_RX_TBL_MISS_CNTR ((3 << ICE_AQ_VSI_ACL_DEF_RX_TABLE_S) & \
++				  ICE_AQ_VSI_ACL_DEF_RX_TABLE_M)
++
++	val = ICE_ACL_RX_PROF_MISS_CNTR | ICE_ACL_RX_TBL_MISS_CNTR;
++	ctxt->info.acl_def_act = cpu_to_le16(val);
+ }
+ 
+ /**
 -- 
 2.26.2
 
