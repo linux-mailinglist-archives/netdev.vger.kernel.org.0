@@ -2,78 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C64E72A2E83
-	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 16:42:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CC3A2A2E89
+	for <lists+netdev@lfdr.de>; Mon,  2 Nov 2020 16:43:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726600AbgKBPlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 10:41:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
+        id S1726614AbgKBPng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 10:43:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726591AbgKBPli (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 10:41:38 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A4A0C0617A6
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 07:41:38 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id s25so5566362ejy.6
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 07:41:38 -0800 (PST)
+        with ESMTP id S1726302AbgKBPnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 10:43:35 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4102DC0617A6
+        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 07:43:35 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id o21so12463293ejb.3
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 07:43:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VYvv4AKgonyBQR0AjmRQ1lEVfkpg+eFpgAy6ueRaH/s=;
-        b=U9k+/cnsKgj56ma6tcphOczg/l0x7T2HvpaGeQ6XvxR1LFnP7uTZkFKp3ppbhSjoJ0
-         XsD2abKQk09EPhDVoheSatotpCH6fMvY1VOAiaZWZb6CAOMMPavEMdbOhrk9PNGfpwzJ
-         oQ3CaoVriezjN0iqLNg7dwSkAGX4/+/OE4Fv50CZtnurknT26UhYnSQUUrUQA99ddze2
-         kyiWFC/LzT6RiFYQtIe2LFRV86uHPNYIZIBltjhfJRrVeJFv7d0wRKSoi2lDcJ4we36U
-         RP8TNLy0R8k4V3Nblgi6God+lwlTHb6YW8zox/S6oM+hsMJfVYnKJ643EBHZVyP+Sd03
-         vjGw==
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nS8GcWnRvgAze9eGONKgTm54dvXOecWjyagLlZce7Is=;
+        b=GeZOTcELL0wHCC2LsYMp4AHDK/U4F0TpiMBx0TLSL9ySl4L4C8XcHcbUz5fZNLjniM
+         TuvyR4acGxkL9PjF4zrWBiY258C6IcsF0J9LR6SowCpPKmCKno9m8GSu4pQU9/WnDZH7
+         7UkFNkQaU4R7nVWteNdPvBIJxPPgU8WHblr0zM6zQdwUqyKaEmqLaDFu3SLFEdkz8070
+         +tw2ItP8FRhBWa/R+2tqWgkisP8VzJCQvEhMDs6cgObDq+FQOIe0RTsRoPUGJizua2af
+         DerEr/5gFY6bKe9hU6ejx4bsKfOsV8bd9SlGakYbkn/eCz8qeemmHfgRz2JwvgXFT4AO
+         tsEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VYvv4AKgonyBQR0AjmRQ1lEVfkpg+eFpgAy6ueRaH/s=;
-        b=DTil5kjlOS7jUP5Y3nNfbjEkrWguF+fX3UAz2UYiP7gPi5TZcm5tGY/gmoprIyYz1F
-         A3za6ggJNixQociSjJyUVVb0elCRNRKOrEYTfrjDklL6ByU42+kXCTp7+5GuRfvDnaYn
-         FOfQzmFjL3WT/O/dl3a5gOp3MVIQs0us6+BuXAAje9naG/BD4HlsdIr892woxIf3RrYT
-         aYWhLRcxRSWzsd7R7NuUwUBPQnW2T06sj5q1ekuRGCN5nAfw6DOvwBKrqyvtSzrAqnkz
-         67V7/Foz2Ku8YFn/cid+ht/UlLQzw05TjQGJ8kIjTmFJWqtKige3i11/cOn97RFwf6O5
-         dHlw==
-X-Gm-Message-State: AOAM533eqMbF9mhGypXM6s+QdSuw0zgPPJhrrsH7XTWMR6U8iUx/WAWx
-        GJFCS+uFAsZlIDwVTCornZo=
-X-Google-Smtp-Source: ABdhPJxJcngr7cgxF/Df/LsTGsBJ4eQ2uKTUklTaLGIOYRHZ+aDEWPHH+dig5FmTGnYRGVtb082MCg==
-X-Received: by 2002:a17:906:b18f:: with SMTP id w15mr16593976ejy.137.1604331696609;
-        Mon, 02 Nov 2020 07:41:36 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id j20sm10536387edt.4.2020.11.02.07.41.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 07:41:33 -0800 (PST)
-Date:   Mon, 2 Nov 2020 17:41:32 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] r8169: set IRQF_NO_THREAD if MSI(X) is enabled
-Message-ID: <20201102154132.gfcd5t5fo4oupmre@skbuf>
-References: <446cf5b8-dddd-197f-cb96-66783141ade4@gmail.com>
- <20201102000652.5i5o7ig56lymcjsv@skbuf>
- <b8d6e0ec-7ccb-3d11-db0a-8f60676a6f8d@gmail.com>
- <20201102124159.hw6iry2wg4ibcggc@skbuf>
- <e67de3a4-d65d-0bbc-d644-25d212c04fdd@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nS8GcWnRvgAze9eGONKgTm54dvXOecWjyagLlZce7Is=;
+        b=E0QKCzI9MVetvD91vmswOYdXcMw2RqBI2Ekri46/c2PJI3VSyXImpWEXBAiCjrfawK
+         t7Mk5ZvBOGqnMIpawDf3dBg7STGHFakvN8nIKrtFg3v/A3ve7d5z5jDyYwRXnZXA/wqh
+         pYctwkTtwVHmb6m7CU6icdanYt01NhALvep6gfWcj9KEklLINlxzj9vgtWNzT5hwFIhl
+         mzyYpbTubkahnxNeAf9j7ot/wcpGnJJ1rqqquAs3ytO0wUKkRTRckQUMXv1ge83M4TiH
+         EWQC9LYkFIww3vET9mBDFb+fRK0RLzrIVsX2nAZEgMEngppAe+JxxkFiwHkJ0RYkxDdk
+         FlRw==
+X-Gm-Message-State: AOAM532DGKDc9/ykmERhJScJ09+0/1NOirQ7Q5XsObxpBop7RG1KQqZm
+        FLiPzAiINHNspNMTX4Uhg5t6N+/b37/HvguBUjr8Sg==
+X-Google-Smtp-Source: ABdhPJyfQCPRUI5fZkO4PkZURO7NzoV9R0m8AUPk0K6Fot5LT+TZuLggUEPGTEcOXrVbpzMXVwNY7147yllEhTQsoPY=
+X-Received: by 2002:a17:906:1c84:: with SMTP id g4mr2189231ejh.155.1604331814011;
+ Mon, 02 Nov 2020 07:43:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e67de3a4-d65d-0bbc-d644-25d212c04fdd@gmail.com>
+References: <20201102152037.963-1-brgl@bgdev.pl> <20201102152037.963-2-brgl@bgdev.pl>
+ <20201102154101.GO27442@casper.infradead.org>
+In-Reply-To: <20201102154101.GO27442@casper.infradead.org>
+From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Mon, 2 Nov 2020 16:43:22 +0100
+Message-ID: <CAMpxmJUOb+tR25_h0R1kq7K0d=4DpmutW_V6UggL-+u8u3271g@mail.gmail.com>
+Subject: Re: [PATCH v2 1/8] mm: slab: provide krealloc_array()
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        linux-media <linux-media@vger.kernel.org>,
+        linux-drm <dri-devel@lists.freedesktop.org>,
+        linaro-mm-sig@lists.linaro.org,
+        LKML <linux-kernel@vger.kernel.org>, linux-edac@vger.kernel.org,
+        linux-gpio <linux-gpio@vger.kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        netdev <netdev@vger.kernel.org>, linux-mm@kvack.org,
+        Linux-ALSA <alsa-devel@alsa-project.org>,
+        Vlastimil Babka <vbabka@suse.cz>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 02, 2020 at 04:18:07PM +0100, Heiner Kallweit wrote:
-> According to my understanding the point is that executing the simple
-> hard irq handler for NAPI drivers doesn't cost significantly more than
-> executing the default hard irq handler (irq_default_primary_handler).
-> Therefore threadifying it means more or less just overhead.
+On Mon, Nov 2, 2020 at 4:41 PM Matthew Wilcox <willy@infradead.org> wrote:
+>
+> On Mon, Nov 02, 2020 at 04:20:30PM +0100, Bartosz Golaszewski wrote:
+> > +Chunks allocated with `kmalloc` can be resized with `krealloc`. Similarly
+> > +to `kmalloc_array`: a helper for resising arrays is provided in the form of
+> > +`krealloc_array`.
+>
+> Is there any reason you chose to `do_this` instead of do_this()?  The
+> automarkup script turns do_this() into a nice link to the documentation
+> which you're adding below.
+>
 
-If that is really true, then sure. You could probably run a cyclictest
-under a ping flood just to make sure though.
+No, I just didn't know better. Thanks for bringing this to my attention.
+
+> Typo 'resising' resizing.
+
+Will fix in the next iteration.
+
+Bartosz
