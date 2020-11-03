@@ -2,124 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 679392A4BAE
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:36:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAC072A4BB5
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:37:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728514AbgKCQgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 11:36:48 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:45260 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728206AbgKCQgr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 11:36:47 -0500
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A3GWTAd024649;
-        Tue, 3 Nov 2020 11:36:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=D6wUaqBtSMUldA2srycpKni9JRf4u/nyapDxt2Q2JMw=;
- b=QfMMaSEDId9IS60AB0eNeaTCDJB5PPcKhuPFHAGyPYAps8eKIKL1A7NhQoD4WU3ovucI
- UwZ4CTzREzpQRlA9iUDtA0lx4i8WaiF+oiIxmsyrISyOlUORKv3edNutIslOfjdDD91C
- sRCO8oVIORVFsyWG2qsO0QGTg5efR9gXT1DdM2nASYWmfQ89rOXyWSJ2a0BbtImeODGa
- 5ZScR5mxNr4aW31wIiKZWOpH4wclyrOQnhrU2mmW8HqQZb/KXPSNOzE6cYe2ofcaXEW5
- Wel1OQ3OwvhyugFrH1u03Fy1jKXPgukrTvQ/uXQPjQOPLhPDlh9L9i5VnHwqpApfcicj hQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34k14uh40p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 03 Nov 2020 11:36:37 -0500
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0A3GXLkb031068;
-        Tue, 3 Nov 2020 11:36:37 -0500
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34k14uh3yc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 03 Nov 2020 11:36:37 -0500
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A3GWW2D001069;
-        Tue, 3 Nov 2020 16:36:34 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma04fra.de.ibm.com with ESMTP id 34h0f6srtc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 03 Nov 2020 16:36:34 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A3GaVcL61538676
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 3 Nov 2020 16:36:31 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BA63011C06C;
-        Tue,  3 Nov 2020 16:36:31 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 16DD111C06E;
-        Tue,  3 Nov 2020 16:36:31 +0000 (GMT)
-Received: from [9.145.53.13] (unknown [9.145.53.13])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  3 Nov 2020 16:36:30 +0000 (GMT)
-Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
- skb_cow_head for PTP
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, james.jurack@ametek.com
-References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
- <20201029081057.8506-1-claudiu.manoil@nxp.com>
- <20201103161319.wisvmjbdqhju6vyh@skbuf>
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-Message-ID: <2b0606ef-71d2-cc85-98db-1e16cc63c9d2@linux.ibm.com>
-Date:   Tue, 3 Nov 2020 18:36:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <20201103161319.wisvmjbdqhju6vyh@skbuf>
-Content-Type: text/plain; charset=utf-8
+        id S1728555AbgKCQha (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 11:37:30 -0500
+Received: from mail-eopbgr60051.outbound.protection.outlook.com ([40.107.6.51]:32790
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727688AbgKCQh3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 11:37:29 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ivx2lITx6p6Ep9VFDju64MmTw/FrfhwqGmqMpivCESnUeY4lJXLSJWRnUWyYxC3Cmwd5LuffEyc3nGGwN1PeheRr3kXYx5ZFR9zvT7dV01nwvnyBacXil5fEKSOT5JHCZOquTo7MCyNVRAD1YsOHqCFF8GgUoMwJB1Gtmp5lO/GGXlE0zOqOEF9DBrBR8F6dARQTUApfD4hdaw8DPCOT2mYPiTx0EeDGQ76fQJfH8PS5xWbhp7BhlYYS5AIQGRDkNG5Pj/FKxBM8wVGPK+GglL1zRLy7TjJKetbHnKxK+pPE5OJEwSbU3qp8+gVwaYBzXD/IYKQ0hO9hLoBs5+97pw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fFdzf3oyz9Glb5dYfuk158AQoa0OJW3UN5g3sK4RRwo=;
+ b=G1ZAd0C9t2pMgKU4QkmkewEYxhaISbK/uGvlcaYVkZlcB6vX4C+JX0heT4EnljgvZ0AQ0m9nTUT6GvKK1/oNcxypqnU7MWsrOWYT+3hSg+oAQ14Dve7dNoN2d1Blyq+hLNHox6LBgmSuYmwVeFl4tDbWsWWEWKvjoBsOTdgjSu5teING6dRU1jE3KNWtfKAmTfI/66SE5V581vlvsGhS1er87KN8VxeajiHN5gz9leweXsDkG/3KNtXTScfFRxAaHZGAPhopsdoRjhixbokfSZ05w9Rk5Dw1oawH3kx4ve5laBWlAiJG0js7PxycJmGYID8VApk7cJJRtJPGNlhxnA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fFdzf3oyz9Glb5dYfuk158AQoa0OJW3UN5g3sK4RRwo=;
+ b=Oedlrfx+8Hxedcy+PJCydXJeD8GfLQrAYFr/S7wdusJAsEQ/2Ot4gTR5QJbT7Xetc6BavdgDTEJNelg62SZJE+sAAxZjyhwg+aJB5vw49QK3Cy/o3SOe9a3qAneCkMiFn64ND2sz8UJkZ9fqfYqZIeC6ScdMPPKXug7YKRGJAfo=
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
+ by VI1PR0402MB3453.eurprd04.prod.outlook.com (2603:10a6:803:6::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Tue, 3 Nov
+ 2020 16:37:26 +0000
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::41c8:65df:efe8:1f51]) by VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::41c8:65df:efe8:1f51%6]) with mapi id 15.20.3499.032; Tue, 3 Nov 2020
+ 16:37:26 +0000
+From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
+To:     "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net v3 0/2] dpaa_eth: buffer layout fixes
+Thread-Topic: [PATCH net v3 0/2] dpaa_eth: buffer layout fixes
+Thread-Index: AQHWsUbTq09p7ZfpSEicfYj7MDbkSqm2luyQ
+Date:   Tue, 3 Nov 2020 16:37:26 +0000
+Message-ID: <VI1PR04MB58073450C08552820A7755AAF2110@VI1PR04MB5807.eurprd04.prod.outlook.com>
+References: <cover.1604339942.git.camelia.groza@nxp.com>
+In-Reply-To: <cover.1604339942.git.camelia.groza@nxp.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-03_08:2020-11-03,2020-11-03 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
- priorityscore=1501 malwarescore=0 bulkscore=0 lowpriorityscore=0
- phishscore=0 spamscore=0 suspectscore=0 clxscore=1011 impostorscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011030108
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [82.78.148.61]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 0b5f2d56-2991-4512-8abc-08d88016bf99
+x-ms-traffictypediagnostic: VI1PR0402MB3453:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB345314E9B94C185FD5CEFAF2F2110@VI1PR0402MB3453.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Ueux0kFNcBlahKT+cw7MSEwi+nSmqhyU3KQIbKlTGVl8jlqaTpUbcf3QMcUe4PVycyAXH4zhROb8NU02KvX09E7JjdwT+CPJqjupNLzgz6cPRvPsYYBgPPhxcIfgZGpGw110PwXnKXbQh9GAh4qJQw9Ecj4OhvtpIxToqPimCEiaZrfobKOUOT//ol0z2ayRTbhhXE0crr1cIBdQCuDBrcfNxV+y5DW58uF5EwQBf5fGLE4fd9LAhpmRQD09ObhC/pC5l8f6MiQIAiHHObZhBHAYCcmj1mLRsU17BnP7EcIDpbOJ0jGpjUV7MQDtUPHDGVphZiC+7rTXcvKQFqeWhg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(366004)(396003)(136003)(346002)(376002)(4744005)(52536014)(8676002)(7696005)(86362001)(8936002)(55016002)(2906002)(9686003)(5660300002)(66446008)(54906003)(478600001)(66556008)(76116006)(33656002)(66946007)(64756008)(316002)(83380400001)(186003)(26005)(6506007)(4326008)(71200400001)(53546011)(66476007)(110136005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: EV5A+WIfVuuMKm4iZjVXMiSpUc2mQG+zJu0KlXWY6xvupVhZtGUv485scAj2MHCksPhTZmf1o0R9D4iqj0+LF+SwAIGVqabNp7f3agOHmSdj33V5d9MLRlWNFG4uOjy5ZZv/ugv8Q7oF3wypBkSQB9Ar/6yZtdUA8V7G2iNyoOmK3RA/uXt3PLZZvJpeCaBpHrheVDjq1H0CswNEKy2c2urbUL5wMsvA06kLY1J/fs6oHZkTIVeDLDe1tRxXwH/Y70go6PaNjbGdGJXe5maphW72zO9SN2Xh/zLkGu5ypsb0f9DJC8bUokMTAuhsRLE5XnK5aHCeM7uDTPBgO8j95z0/vzSz+TnRLOkYXAskC4vQiQBfpZVlBDnZW92+DS86MtYuiIxgRqz88O9vgmMxaTPTrFr3TfsPyEo6madbf4C2LuASZSP2cO41TXUMN9TWblYKqAXpCVo/mQt+hI/FEtt0pwiH0XdK73mRWu6t1hieCxHjASPm01KBlG+9GSj3aZnmEoft0oXwYfWDwmKuRDC6ynfQo5tl7s8KC/wpv9SX7M194XSsmvBPwotX8h2L71/cQEAjKZCJVuY6y8+LSIrz+lXrL6mcMtzvgeXer4r08A1S6jJqTr0kyZjgibm/cdMqcHMKmgi2kIFdBmMD5A==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b5f2d56-2991-4512-8abc-08d88016bf99
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Nov 2020 16:37:26.3792
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SITm/6p/4lTepexfLjicfswPlAPfj7zn2A3PPB8kV0pgMkEueaE9DEvhf4CsiWIKsqhGAxmPiDKylmHSqiyZeQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3453
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.11.20 18:13, Vladimir Oltean wrote:
-> On Thu, Oct 29, 2020 at 10:10:56AM +0200, Claudiu Manoil wrote:
->> When PTP timestamping is enabled on Tx, the controller
->> inserts the Tx timestamp at the beginning of the frame
->> buffer, between SFD and the L2 frame header.  This means
->> that the skb provided by the stack is required to have
->> enough headroom otherwise a new skb needs to be created
->> by the driver to accommodate the timestamp inserted by h/w.
->> Up until now the driver was relying on skb_realloc_headroom()
->> to create new skbs to accommodate PTP frames.  Turns out that
->> this method is not reliable in this context at least, as
->> skb_realloc_headroom() for PTP frames can cause random crashes,
->> mostly in subsequent skb_*() calls, when multiple concurrent
->> TCP streams are run at the same time with the PTP flow
->> on the same device (as seen in James' report).  I also noticed
->> that when the system is loaded by sending multiple TCP streams,
->> the driver receives cloned skbs in large numbers.
->> skb_cow_head() instead proves to be stable in this scenario,
->> and not only handles cloned skbs too but it's also more efficient
->> and widely used in other drivers.
->> The commit introducing skb_realloc_headroom in the driver
->> goes back to 2009, commit 93c1285c5d92
->> ("gianfar: reallocate skb when headroom is not enough for fcb").
->> For practical purposes I'm referencing a newer commit (from 2012)
->> that brings the code to its current structure (and fixes the PTP
->> case).
->>
->> Fixes: 9c4886e5e63b ("gianfar: Fix invalid TX frames returned on error queue when time stamping")
->> Reported-by: James Jurack <james.jurack@ametek.com>
->> Suggested-by: Jakub Kicinski <kuba@kernel.org>
->> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
->> ---
-> 
-> Still crashes for me:
-> 
+> -----Original Message-----
+> From: Camelia Groza <camelia.groza@nxp.com>
+> Sent: Monday, November 2, 2020 20:35
+> To: willemdebruijn.kernel@gmail.com; Madalin Bucur (OSS)
+> <madalin.bucur@oss.nxp.com>; davem@davemloft.net; kuba@kernel.org
+> Cc: netdev@vger.kernel.org; Camelia Alexandra Groza
+> <camelia.groza@nxp.com>
+> Subject: [PATCH net v3 0/2] dpaa_eth: buffer layout fixes
+>=20
+> The patches are related to the software workaround for the A050385
+> erratum.
+> The first patch ensures optimal buffer usage for non-erratum scenarios. T=
+he
+> second patch fixes a currently inconsequential discrepancy between the
+> FMan and Ethernet drivers.
+>=20
 
-Given the various skb modifications in its xmit path, I wonder why
-gianfar doesn't clear IFF_TX_SKB_SHARING.
+Jakub, when are you planning the next merger of net into net-next? I have a=
+ patch set for net-next depending on this one.
+
+Thanks!
+Camelia
