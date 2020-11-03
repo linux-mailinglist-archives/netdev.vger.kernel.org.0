@@ -2,140 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18E602A503F
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:37:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33B642A5053
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:46:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729558AbgKCThM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 14:37:12 -0500
-Received: from userp2120.oracle.com ([156.151.31.85]:46800 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725957AbgKCThM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 14:37:12 -0500
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A3JZ8Vc186834;
-        Tue, 3 Nov 2020 19:37:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2020-01-29;
- bh=YH5qs3ECwIUFehV5nWCcU1wrJlau/0WJfkMsxtIJe9c=;
- b=BVpG3BI8HrP72ZvUl4B2PeIMOmoyNVmQJiHdTzXOqFY3lP0skPEmhtFItMQ2Xn5HNRAB
- AtF6JDOerH2yynwCiP7rC3AAMgkcM1M8KRYpYXgvGERDfj5GygLCmG6OzoMQZlG79tPt
- SnT0XY15HbcRkUihP2MU+TsexDa7e+s/FkufAnmNNWDtOgyVOdPcYjG5qs1hCHz9hm6C
- g1ZpPfZAqro60DgnTDiuO2nXqJOAMIslG13VCGvpu5ff77QNQX3Ru46lVodjMcJSnpDh
- kNVY7OkwqhwLiI8dzfQsFQxwJ6JytoCv4x0VlBEg877Biwh4526xbB3ssd4jgnw07eOi SA== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 34hhw2k5xw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 03 Nov 2020 19:37:02 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A3JYnWx194954;
-        Tue, 3 Nov 2020 19:35:01 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 34jf48y4mj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 Nov 2020 19:35:01 +0000
-Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0A3JYwdD005340;
-        Tue, 3 Nov 2020 19:34:58 GMT
-Received: from localhost.localdomain (/10.211.9.80)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 03 Nov 2020 11:34:57 -0800
-From:   Dongli Zhang <dongli.zhang@oracle.com>
-To:     linux-mm@kvack.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        davem@davemloft.net, kuba@kernel.org, dongli.zhang@oracle.com,
-        aruna.ramakrishna@oracle.com, bert.barbe@oracle.com,
-        rama.nichanamatlu@oracle.com, venkat.x.venkatsubra@oracle.com,
-        manjunath.b.patil@oracle.com, joe.jin@oracle.com,
-        srinivas.eeda@oracle.com
-Subject: [PATCH 1/1] mm: avoid re-using pfmemalloc page in page_frag_alloc()
-Date:   Tue,  3 Nov 2020 11:32:39 -0800
-Message-Id: <20201103193239.1807-1-dongli.zhang@oracle.com>
-X-Mailer: git-send-email 2.17.1
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9794 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=0 mlxscore=0
- bulkscore=0 malwarescore=0 mlxlogscore=999 phishscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011030131
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9794 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 mlxscore=0
- suspectscore=0 clxscore=1011 priorityscore=1501 impostorscore=0
- spamscore=0 lowpriorityscore=0 mlxlogscore=999 phishscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011030131
+        id S1729698AbgKCTqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 14:46:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27254 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727883AbgKCTqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 14:46:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604432778;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hXGHvDYwh9NMkyXNB/mXiydEr8BiB4sd5uCcFnHHQZg=;
+        b=chwpTUtqHwO02E0vi3/Q7iXNI88a/J1qSQNV/ZpXJ8DOipuh0xSFZjIo4qlN9FlCW1PLof
+        P9mmx6hwaluMP2xkOYijiBlxSyka+bF+ZDW60DaeVcnBWPyeOCMlbg1ZjdPcII361h0IW2
+        EyJRna6Q14KM5jGfCYZJuhUGVamgCQ8=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-548-WZqrQo4gPaKcOHIoefnHOA-1; Tue, 03 Nov 2020 14:46:17 -0500
+X-MC-Unique: WZqrQo4gPaKcOHIoefnHOA-1
+Received: by mail-qk1-f197.google.com with SMTP id v134so11505595qka.19
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 11:46:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=hXGHvDYwh9NMkyXNB/mXiydEr8BiB4sd5uCcFnHHQZg=;
+        b=JUZ100t+NFvH+BQgdaAUIsfhpzG7R5xALcvtvRqzQzJSOVxYb620b6xmjaRTgQ6FJQ
+         1fduhESAyLoIj+gaWEsMRcMSsxIqv9YlaIyq7ATjRdBx6sVfsNhI+EFeJruDat+Yxnfo
+         gO2Hbi4saRFmMdbIl3Qu4s25jGw1kTWbyZun1qIfRVdXfZ+DMu83TGI8SeeIJB4jEsa2
+         vgKB1lAfpaszrTF1fuc4moCmb22uNCPIiuB75Yp3GIW0eLtqCQTF7Mppceto2Ut68EM7
+         FzTp+jrHNgLvWdgVeBWXLlaxq/8kELttr+iLpyp9U3flVzDcwOXyFle+w3B9diNQhbV6
+         tt+w==
+X-Gm-Message-State: AOAM531BcqzGYgrCTi2N+sZ4YduKsjWx1GPR6B95UDwpVog9Y8rNzSko
+        UUYkzh1E64smENJVHQfFWAD759/o02Uvem89TKn0LVobTEXQUH6xZvMuuZF3wFOEHX3dtEpbM2G
+        hfH4lhklajGp7kHxL
+X-Received: by 2002:ae9:f402:: with SMTP id y2mr20621899qkl.459.1604432776431;
+        Tue, 03 Nov 2020 11:46:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyHrx/4K1ur2emSikIwCSW6QoSh0HGIlNgos3cwaHoIzJ12L9uFjx7qLeKQUNbiJ0RTQKVuVA==
+X-Received: by 2002:ae9:f402:: with SMTP id y2mr20621874qkl.459.1604432776110;
+        Tue, 03 Nov 2020 11:46:16 -0800 (PST)
+Received: from xz-x1 (bras-vprn-toroon474qw-lp130-20-174-93-89-196.dsl.bell.ca. [174.93.89.196])
+        by smtp.gmail.com with ESMTPSA id i70sm11572985qke.11.2020.11.03.11.46.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2020 11:46:15 -0800 (PST)
+Date:   Tue, 3 Nov 2020 14:46:13 -0500
+From:   Peter Xu <peterx@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Stefano Garzarella <sgarzare@redhat.com>, mst@redhat.com,
+        netdev@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost/vsock: add IOTLB API support
+Message-ID: <20201103194613.GK20600@xz-x1>
+References: <20201029174351.134173-1-sgarzare@redhat.com>
+ <751cc074-ae68-72c8-71de-a42458058761@redhat.com>
+ <20201030105422.ju2aj2bmwsckdufh@steredhat>
+ <278f4732-e561-2b4f-03ee-b26455760b01@redhat.com>
+ <20201102171104.eiovmkj23fle5ioj@steredhat>
+ <8648a2e3-1052-3b5b-11ce-87628ac8dd33@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8648a2e3-1052-3b5b-11ce-87628ac8dd33@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ethernet driver may allocates skb (and skb->data) via napi_alloc_skb().
-This ends up to page_frag_alloc() to allocate skb->data from
-page_frag_cache->va.
+On Tue, Nov 03, 2020 at 05:04:23PM +0800, Jason Wang wrote:
+> 
+> On 2020/11/3 上午1:11, Stefano Garzarella wrote:
+> > On Fri, Oct 30, 2020 at 07:44:43PM +0800, Jason Wang wrote:
+> > > 
+> > > On 2020/10/30 下午6:54, Stefano Garzarella wrote:
+> > > > On Fri, Oct 30, 2020 at 06:02:18PM +0800, Jason Wang wrote:
+> > > > > 
+> > > > > On 2020/10/30 上午1:43, Stefano Garzarella wrote:
+> > > > > > This patch enables the IOTLB API support for vhost-vsock devices,
+> > > > > > allowing the userspace to emulate an IOMMU for the guest.
+> > > > > > 
+> > > > > > These changes were made following vhost-net, in details this patch:
+> > > > > > - exposes VIRTIO_F_ACCESS_PLATFORM feature and inits the iotlb
+> > > > > >   device if the feature is acked
+> > > > > > - implements VHOST_GET_BACKEND_FEATURES and
+> > > > > >   VHOST_SET_BACKEND_FEATURES ioctls
+> > > > > > - calls vq_meta_prefetch() before vq processing to prefetch vq
+> > > > > >   metadata address in IOTLB
+> > > > > > - provides .read_iter, .write_iter, and .poll callbacks for the
+> > > > > >   chardev; they are used by the userspace to exchange IOTLB messages
+> > > > > > 
+> > > > > > This patch was tested with QEMU and a patch applied [1] to fix a
+> > > > > > simple issue:
+> > > > > >     $ qemu -M q35,accel=kvm,kernel-irqchip=split \
+> > > > > >            -drive file=fedora.qcow2,format=qcow2,if=virtio \
+> > > > > >            -device intel-iommu,intremap=on \
+> > > > > >            -device vhost-vsock-pci,guest-cid=3,iommu_platform=on
+> > > > > 
+> > > > > 
+> > > > > Patch looks good, but a question:
+> > > > > 
+> > > > > It looks to me you don't enable ATS which means vhost won't
+> > > > > get any invalidation request or did I miss anything?
+> > > > > 
+> > > > 
+> > > > You're right, I didn't see invalidation requests, only miss and
+> > > > updates.
+> > > > Now I have tried to enable 'ats' and 'device-iotlb' but I still
+> > > > don't see any invalidation.
+> > > > 
+> > > > How can I test it? (Sorry but I don't have much experience yet
+> > > > with vIOMMU)
+> > > 
+> > > 
+> > > I guess it's because the batched unmap. Maybe you can try to use
+> > > "intel_iommu=strict" in guest kernel command line to see if it
+> > > works.
+> > > 
+> > > Btw, make sure the qemu contains the patch [1]. Otherwise ATS won't
+> > > be enabled for recent Linux Kernel in the guest.
+> > 
+> > The problem was my kernel, it was built with a tiny configuration.
+> > Using fedora stock kernel I can see the 'invalidate' requests, but I
+> > also had the following issues.
+> > 
+> > Do they make you ring any bells?
+> > 
+> > $ ./qemu -m 4G -smp 4 -M q35,accel=kvm,kernel-irqchip=split \
+> >     -drive file=fedora.qcow2,format=qcow2,if=virtio \
+> >     -device intel-iommu,intremap=on,device-iotlb=on \
+> >     -device vhost-vsock-pci,guest-cid=6,iommu_platform=on,ats=on,id=v1
+> > 
+> >     qemu-system-x86_64: vtd_iova_to_slpte: detected IOVA overflow    
+> > (iova=0x1d40000030c0)
+> 
+> 
+> It's a hint that IOVA exceeds the AW. It might be worth to check whether the
+> missed IOVA reported from IOTLB is legal.
 
-During the memory pressure, page_frag_cache->va may be allocated as
-pfmemalloc page. As a result, the skb->pfmemalloc is always true as
-skb->data is from page_frag_cache->va. The skb will be dropped if the
-sock (receiver) does not have SOCK_MEMALLOC. This is expected behaviour
-under memory pressure.
+Yeah.  By default the QEMU vIOMMU should only support 39bits width for guest
+iova address space.  To extend it, we can use:
 
-However, once kernel is not under memory pressure any longer (suppose large
-amount of memory pages are just reclaimed), the page_frag_alloc() may still
-re-use the prior pfmemalloc page_frag_cache->va to allocate skb->data. As a
-result, the skb->pfmemalloc is always true unless page_frag_cache->va is
-re-allocated, even the kernel is not under memory pressure any longer.
+  -device intel-iommu,aw-bits=48
 
-Here is how kernel runs into issue.
+So we'll enable 4-level iommu pgtable.
 
-1. The kernel is under memory pressure and allocation of
-PAGE_FRAG_CACHE_MAX_ORDER in __page_frag_cache_refill() will fail. Instead,
-the pfmemalloc page is allocated for page_frag_cache->va.
+Here the iova is obvious longer than this, so it'll be interesting to know why
+that iova is allocated in the guest driver since the driver should know somehow
+that this iova is beyond what's supported (guest iommu driver should be able to
+probe viommu capability on this width information too).
 
-2: All skb->data from page_frag_cache->va (pfmemalloc) will have
-skb->pfmemalloc=true. The skb will always be dropped by sock without
-SOCK_MEMALLOC. This is an expected behaviour.
-
-3. Suppose a large amount of pages are reclaimed and kernel is not under
-memory pressure any longer. We expect skb->pfmemalloc drop will not happen.
-
-4. Unfortunately, page_frag_alloc() does not proactively re-allocate
-page_frag_alloc->va and will always re-use the prior pfmemalloc page. The
-skb->pfmemalloc is always true even kernel is not under memory pressure any
-longer.
-
-Therefore, this patch always checks and tries to avoid re-using the
-pfmemalloc page for page_frag_alloc->va.
-
-Cc: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
-Cc: Bert Barbe <bert.barbe@oracle.com>
-Cc: Rama Nichanamatlu <rama.nichanamatlu@oracle.com>
-Cc: Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>
-Cc: Manjunath Patil <manjunath.b.patil@oracle.com>
-Cc: Joe Jin <joe.jin@oracle.com>
-Cc: SRINIVAS <srinivas.eeda@oracle.com>
-Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
----
- mm/page_alloc.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 23f5066bd4a5..291df2f9f8f3 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5075,6 +5075,16 @@ void *page_frag_alloc(struct page_frag_cache *nc,
- 	struct page *page;
- 	int offset;
- 
-+	/*
-+	 * Try to avoid re-using pfmemalloc page because kernel may already
-+	 * run out of the memory pressure situation at any time.
-+	 */
-+	if (unlikely(nc->va && nc->pfmemalloc)) {
-+		page = virt_to_page(nc->va);
-+		__page_frag_cache_drain(page, nc->pagecnt_bias);
-+		nc->va = NULL;
-+	}
-+
- 	if (unlikely(!nc->va)) {
- refill:
- 		page = __page_frag_cache_refill(nc, gfp_mask);
 -- 
-2.17.1
+Peter Xu
 
