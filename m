@@ -2,128 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3E1E2A3CBE
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 07:24:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8573C2A3CCB
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 07:27:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726018AbgKCGYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 01:24:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47172 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725968AbgKCGYK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 01:24:10 -0500
-Received: from localhost (host-213-179-129-39.customer.m-online.net [213.179.129.39])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C59BA22277;
-        Tue,  3 Nov 2020 06:24:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604384650;
-        bh=6kB46InSxG/66gRSc8otCEZ96cpQl84wUgxNRyyUmKU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dssoV31DMFDsN8cqYY+nSu60WfrolKVXCO3eBz5u3wFp7lriCgf+iBJKonGkEw4ql
-         E64rmBhHB9jQyNNbIIvnBYNZqLeZiWxqK4q7uBPLARnJjQnvSk89SGZBeja2K2QW76
-         0fyjlIqVbLNKZvcSmwJsn9r/jXEQ2F7Zu+LBil2M=
-Date:   Tue, 3 Nov 2020 08:24:06 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Petr Machata <me@pmachata.org>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        stephen@networkplumber.org, john.fastabend@gmail.com,
-        jiri@nvidia.com, idosch@nvidia.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: Re: [PATCH iproute2-next v2 03/11] lib: utils: Add
- print_on_off_bool()
-Message-ID: <20201103062406.GH5429@unreal>
-References: <cover.1604059429.git.me@pmachata.org>
- <5ed9e2e7cdf9326e8f7ec80f33f0f11eafc3a425.1604059429.git.me@pmachata.org>
- <0f017fbd-b8f5-0ebe-0c16-0d441b1d4310@gmail.com>
- <87o8kihyy9.fsf@nvidia.com>
- <b0cc6bd4-e4e6-22ba-429d-4cea7996ccd4@gmail.com>
- <20201102063752.GE5429@unreal>
- <87h7q7iclr.fsf@nvidia.com>
+        id S1727300AbgKCG1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 01:27:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725958AbgKCG1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 01:27:33 -0500
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED58C0617A6;
+        Mon,  2 Nov 2020 22:27:32 -0800 (PST)
+Received: by mail-yb1-xb42.google.com with SMTP id m188so13904784ybf.2;
+        Mon, 02 Nov 2020 22:27:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rTRO4F1w5EMvWqRm9rx/p6VM9VDpE92UT3UmHBF1JwU=;
+        b=IT7npgXArKO4DpXqaLINH76X6L4lhc8pEUQU804tI6S+zPh+qhA86UZ7cwPLjLT/SB
+         fFjRVQUOq1cO2IMFJd6SE2JTMD5QOYv3hXIcTgS3LA/FGZXRL8LAmGcSwhoIg+PhWTNP
+         qzyHwWQ01KVJEb17qHzNCODsDOUN6Oe3dXxIiaZgdc6uS61rVFm5pIlzssvVHzuf9tr+
+         WcnhoknDwGEdCnQfj8IVU2FCXB5MMz+bStd30/QfoxHG1GdSC1N8HLUeuPsf4lzVO0s9
+         mucsAiL+vEphtFmVMg5Ui4Akl3jL4iTaynybtu1rd4xtUPVKYkEevNwRAh5fYnW6ElqU
+         D9ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rTRO4F1w5EMvWqRm9rx/p6VM9VDpE92UT3UmHBF1JwU=;
+        b=sz0ZH6W+DX7NE0K/GlVhhqYz5eaFt8gXG2UZkf83PDQoBtpS8BXz3jFDkIIjVAxWxL
+         ASAGLN9161Aksw8J/6FE2ldkA6xFTJNfltz88boqjTL75RjjH9cHZNYZWXi+2WK6uPMy
+         8fc1wbS2kU0OU5kRD3ImimKFCCcbDT95GyL2YN2N1S7hv1XWyKOvhi9w2QdOdWHJdLxX
+         ltkH5RbFxcPxV7vNZ039H2vmLp67r2JafnG7VglmM9KG51zJmBlotSa1aNauoWhBgX5f
+         AXL1izegbDRrGrtxp3rjhMjr79dmFj88/8H6hcGuyTIc80NxKHCGNYRIT8xQM2DZwwmH
+         e25Q==
+X-Gm-Message-State: AOAM531/r577uLYGmYF/NYIDuOTrMZP/qTBM0C75jHpahg8+IqZ2b8hf
+        rUTGnLK3webJFGjgxPQqkzs04y9sm+2NavCfri0=
+X-Google-Smtp-Source: ABdhPJwYCz8P5u3NALtDms7RyYJ2NlDPRwug9D1wKu/MzfSj9kLAG6jW5SgvKi/OwtgBWxS8HNk/ZW2AX0s8Plg2KOI=
+X-Received: by 2002:a25:c7c6:: with SMTP id w189mr27017276ybe.403.1604384851614;
+ Mon, 02 Nov 2020 22:27:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h7q7iclr.fsf@nvidia.com>
+References: <20201029005902.1706310-1-andrii@kernel.org> <20201029005902.1706310-9-andrii@kernel.org>
+ <20201103051003.i565jv3ph54lw5rj@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201103051003.i565jv3ph54lw5rj@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 2 Nov 2020 22:27:20 -0800
+Message-ID: <CAEf4BzZV8oysWVmkF0K=FBFa5x=98duK8c+ixfiCFFP8dzWg2w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 08/11] libbpf: support BTF dedup of split BTFs
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 12:05:20AM +0100, Petr Machata wrote:
+On Mon, Nov 2, 2020 at 9:10 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Leon Romanovsky <leon@kernel.org> writes:
+> On Wed, Oct 28, 2020 at 05:58:59PM -0700, Andrii Nakryiko wrote:
+> > @@ -2942,6 +2948,13 @@ struct btf_dedup {
+> >       __u32 *hypot_list;
+> >       size_t hypot_cnt;
+> >       size_t hypot_cap;
+> > +     /* Whether hypothethical mapping, if successful, would need to adjust
+> > +      * already canonicalized types (due to a new forward declaration to
+> > +      * concrete type resolution). In such case, during split BTF dedup
+> > +      * candidate type would still be considered as different, because base
+> > +      * BTF is considered to be immutable.
+> > +      */
+> > +     bool hypot_adjust_canon;
 >
-> > On Sun, Nov 01, 2020 at 04:55:42PM -0700, David Ahern wrote:
-> >> On 10/31/20 3:23 PM, Petr Machata wrote:
-> >> >
-> >> > David Ahern <dsahern@gmail.com> writes:
-> >> >
-> >> >> On 10/30/20 6:29 AM, Petr Machata wrote:
-> >> >>> diff --git a/lib/utils.c b/lib/utils.c
-> >> >>> index 930877ae0f0d..8deec86ecbcd 100644
-> >> >>> --- a/lib/utils.c
-> >> >>> +++ b/lib/utils.c
-> >> >>> @@ -1763,3 +1763,11 @@ int parse_on_off(const char *msg, const char *realval, int *p_err)
-> >> >>>
-> >> >>>  	return parse_one_of(msg, realval, values_on_off, ARRAY_SIZE(values_on_off), p_err);
-> >> >>>  }
-> >> >>> +
-> >> >>> +void print_on_off_bool(FILE *fp, const char *flag, bool val)
-> >> >>> +{
-> >> >>> +	if (is_json_context())
-> >> >>> +		print_bool(PRINT_JSON, flag, NULL, val);
-> >> >>> +	else
-> >> >>> +		fprintf(fp, "%s %s ", flag, val ? "on" : "off");
-> >> >>> +}
-> >> >>>
-> >> >>
-> >> >> I think print_on_off should be fine and aligns with parse_on_off once it
-> >> >> returns a bool.
-> >> >
-> >> > print_on_off() is already used in the RDMA tool, and actually outputs
-> >> > "on" and "off", unlike this. So I chose this instead.
-> >> >
-> >> > I could rename the RDMA one though -- it's used in two places, whereas
-> >> > this is used in about two dozen instances across the codebase.
-> >> >
-> >>
-> >> yes, the rdma utils are using generic function names. The rdma version
-> >> should be renamed; perhaps rd_print_on_off. That seems to be once common
-> >> prefix. Added Leon.
-> >
-> > I made fast experiment and the output for the code proposed here and existed
-> > in the RDMAtool - result the same. So the good thing will be to delete the
-> > function from the RDMA after print_on_off_bool() will be improved.
->
-> The RDMAtool uses literal "on" and "off" as values in JSON, not
-> booleans. Moving over to print_on_off_bool() would be a breaking change,
-> which is problematic especially in JSON output.
+> why one flag per dedup session is enough?
 
-Nothing prohibits us from adding extra parameter to this new
-function/json logic/json type that will control JSON behavior. Personally,
-I don't think that json and stdout outputs should be different, e.g. 1/0 for
-the json and on/off for the stdout.
+So the entire hypot_xxx state is reset before each struct/union type
+graph equivalence check. Then for each struct/union type we might do
+potentially many type graph equivalence checks against each of
+potential canonical (already deduplicated) struct. Let's keep that in
+mind for the answer below.
 
->
-> > However I don't understand why print_on_off_bool() is implemented in
-> > utils.c and not in lib/json_print.c that properly handles JSON context,
->
-> There's a whole lot of print_X functions for printing non-fundamental
-> data types in utils.c. Seemed obvious to put it there. I can move it to
-> json_print.c, no problem.
+> Don't you have a case where some fwd are pointing to base btf and shouldn't
+> be adjusted while some are in split btf and should be?
+> It seems when this flag is set to true it will miss fwd in split btf?
 
-It looks like it is worth to cleanup util.c and make sure that all
-prints are gathered in one place. Out of the scope for this series.
+So keeping the above note in mind, let's think about this case. You
+are saying that some FWDs would have candidates in base BTF, right?
+That means that the canonical type we are checking equivalence against
+has to be in the base BTF. That also means that all the canonical type
+graph types are in the base BTF, right? Because no base BTF type can
+reference types from split BTF. This, subsequently, means that no FWDs
+from split BTF graph could have canonical matching types in split BTF,
+because we are comparing split types against only base BTF types.
 
->
-> I think the current function does handle JSON context, what else do
-> you have in mind?a
+With that, if hypot_adjust_canon is triggered, *entire graph*
+shouldn't be matched. No single type in that (connected) graph should
+be matched to base BTF. We essentially pretend that canonical type
+doesn't even exist for us (modulo the subtle bit of still recording
+base BTF's FWD mapping to a concrete type in split BTF for FWD-to-FWD
+resolution at the very end, we can ignore that here, though, it's an
+ephemeral bookkeeping discarded after dedup).
 
-It handles, but does it twice, first time for is_json_context() and
-second time inside print_bool.
+In your example you worry about resolving FWD in split BTF to concrete
+type in split BTF. If that's possible (i.e., we have duplicates and
+enough information to infer the FWD-to-STRUCT mapping), then we'll
+have another canonical type to compare against, at which point we'll
+establish FWD-to-STRUCT mapping, like usual, and hypot_adjust_canon
+will stay false (because we'll be staying with split BTF types only).
 
->
-> > provide colorized output and doesn't require to supply FILE *fp.
->
-> Stephen Hemminger already pointed out the FILE *fp bit, I'll be removing
-> it.
+But honestly, with graphs it can get so complicated that I wouldn't be
+surprised if I'm still missing something. So far, manually checking
+the resulting BTF showed that generated deduped BTF types look
+correct. Few cases where module BTFs had duplicated types from vmlinux
+I was able to easily find where exactly vmlinux had FWD while modules
+had STRUCT/UNION.
+
+But also, by being conservative with hypot_adjust_canon, the worst
+case would be slight duplication of types, which is not the end of the
+world. Everything will keep working, no data will be corrupted, libbpf
+will still perform CO-RE relocation correctly (because memory layout
+of duplicated structs will be consistent across all copies, just like
+it was with task_struct until ring_buffers were renamed).
