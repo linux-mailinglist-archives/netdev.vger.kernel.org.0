@@ -2,192 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB7A32A4A8F
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:01:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC70A2A4ADC
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:11:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbgKCQBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 11:01:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
+        id S1728241AbgKCQLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 11:11:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725982AbgKCQBU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 11:01:20 -0500
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE93C0613D1;
-        Tue,  3 Nov 2020 08:01:20 -0800 (PST)
-Received: by mail-io1-xd41.google.com with SMTP id n12so7283063ioc.2;
-        Tue, 03 Nov 2020 08:01:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4dKUAsXJBZEUrqdUnF/j4ZiY0ub+/LwLLjcRdluZZDw=;
-        b=iCMfic03coleRE/4ylmAhjky/BfHegzHAjSgIclnSUKiu5Ufcq6jSDf2qeA2qsTBTb
-         JLDKgUTXFZEmf7tRJ9UkCxIy7790IT3NdCXNuMAsCarjvjE0me09ywCSL5zsZ8wox+61
-         MzJOBOXleavsmme8+5iCWj65g19Drci6HS9QtDYN7dvKTr0HE4qadbebfwakrSc2umd9
-         FvPmJU4iUc02nXTbcUe/sOBf2nqbFmTax+wcMLf9CojsO9KAoN7M5NyE/+HyqIVGBNyY
-         PmjjdIR2nS+6g+JgY+R2XQMBsQK9ZNpegfdpJvADL6+vr0W+TFNYUbd/fc7u54TY8Fzu
-         g2iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4dKUAsXJBZEUrqdUnF/j4ZiY0ub+/LwLLjcRdluZZDw=;
-        b=emvrgBWk5HKhb1oaWBQwqF4qpxErIsL8c+9S2LJ1RVzmY5tUiZNB+1inncIikCtOqH
-         WKxUSsN5W/5NNKTo9di3w/uUo9u5WSQ7Nuzm6lWtDAjueeh5QrWtTADcZAo8Yrv3VTPu
-         8+LDQEHt3FQC1FTAY8fxcFRW+v8gagnV/xGa1gl8Jbk7RGiD0SFtubn7SF0snJzgxgxq
-         jpJlpfEr11HVa85IhIwZ3SpawJJ4XQ+JUYpOjS6zCddP4oKBU9aZ3geNAxUlQP5sT/Z4
-         XTpAiSOiuH5NlFUB82jZ9+c0lqyXBHAmiinxGM0wDYodG9ZEf+/iCMmGUIbK9UWhlvGF
-         xuig==
-X-Gm-Message-State: AOAM531u8mTjl68wyG5ZnYYyA/1rwAl3mtYMRWR6zvFj4c9phuIZ+R4E
-        RxG0zD1kCNDKKVPlwDNukzHqGAIWPjZKLi/d1fk=
-X-Google-Smtp-Source: ABdhPJyzgj5KUCC5YmsU+8RYrG59gF8arynDcLoU8e9GrUPpPUZrsL3yl7aPJhcOuuZiebPr149/3SR4zF7FfXq0J4o=
-X-Received: by 2002:a02:1783:: with SMTP id 125mr16575634jah.121.1604419279517;
- Tue, 03 Nov 2020 08:01:19 -0800 (PST)
+        with ESMTP id S1728221AbgKCQK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 11:10:59 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE849C0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 08:10:58 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kZytP-0006KD-Ap; Tue, 03 Nov 2020 17:10:43 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:fc98:3f6c:e55:4519] (unknown [IPv6:2a03:f580:87bc:d400:fc98:3f6c:e55:4519])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id A24F05896D5;
+        Tue,  3 Nov 2020 16:10:35 +0000 (UTC)
+Subject: Re: [PATCH v7 0/6] CTU CAN FD open-source IP core SocketCAN driver,
+ PCI, platform integration and documentation
+To:     Ondrej Ille <ondrej.ille@gmail.com>
+Cc:     Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
+        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+        Drew Fustini <pdp7pdp7@gmail.com>
+References: <cover.1604095004.git.pisa@cmp.felk.cvut.cz>
+ <2ccec201-1a84-1837-15a8-d2ad05f5753c@pengutronix.de>
+ <202011031100.35922.pisa@cmp.felk.cvut.cz>
+ <07227792-f75f-6998-bd09-ce6e612de79f@pengutronix.de>
+ <CAA7ZjpaYA0jLaybxq_2amtWOcs3sPE5w_fQK7jMdgaKpA-YoUg@mail.gmail.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJfEWX4BQkQo2czAAoJECte4hHF
+ iupUvfMP/iNtiysSr5yU4tbMBzRkGov1/FjurfH1kPweLVHDwiQJOGBz9HgM5+n8boduRv36
+ 0lU32g3PehN0UHZdHWhygUd6J09YUi2mJo1l2Fz1fQ8elUGUOXpT/xoxNQjslZjJGItCjza8
+ +D1DO+0cNFgElcNPa7DFBnglatOCZRiMjo4Wx0i8njEVRU+4ySRU7rCI36KPts+uVmZAMD7V
+ 3qiR1buYklJaPCJsnXURXYsilBIE9mZRmQjTDVqjLWAit++flqUVmDjaD/pj2AQe2Jcmd2gm
+ sYW5P1moz7ACA1GzMjLDmeFtpJOIB7lnDX0F/vvsG3V713/701aOzrXqBcEZ0E4aWeZJzaXw
+ n1zVIrl/F3RKrWDhMKTkjYy7HA8hQ9SJApFXsgP334Vo0ea82H3dOU755P89+Eoj0y44MbQX
+ 7xUy4UTRAFydPl4pJskveHfg4dO6Yf0PGIvVWOY1K04T1C5dpnHAEMvVNBrfTA8qcahRN82V
+ /iIGB+KSC2xR79q1kv1oYn0GOnWkvZmMhqGLhxIqHYitwH4Jn5uRfanKYWBk12LicsjRiTyW
+ Z9cJf2RgAtQgvMPvmaOL8vB3U4ava48qsRdgxhXMagU618EszVdYRNxGLCqsKVYIDySTrVzu
+ ZGs2ibcRhN4TiSZjztWBAe1MaaGk05Ce4h5IdDLbOOxhuQENBF8SDLABCADohJLQ5yffd8Sq
+ 8Lo9ymzgaLcWboyZ46pY4CCCcAFDRh++QNOJ8l4mEJMNdEa/yrW4lDQDhBWV75VdBuapYoal
+ LFrSzDzrqlHGG4Rt4/XOqMo6eSeSLipYBu4Xhg59S9wZOWbHVT/6vZNmiTa3d40+gBg68dQ8
+ iqWSU5NhBJCJeLYdG6xxeUEtsq/25N1erxmhs/9TD0sIeX36rFgWldMwKmZPe8pgZEv39Sdd
+ B+ykOlRuHag+ySJxwovfdVoWT0o0LrGlHzAYo6/ZSi/Iraa9R/7A1isWOBhw087BMNkRYx36
+ B77E4KbyBPx9h3wVyD/R6T0Q3ZNPu6SQLnsWojMzABEBAAGJAjwEGAEKACYWIQTBQAugs5ie
+ b7x9W1wrXuIRxYrqVAUCXxIMsAIbDAUJAucGAAAKCRArXuIRxYrqVOu0D/48xSLyVZ5NN2Bb
+ yqo3zxdv/PMGJSzM3JqSv7hnMZPQGy9XJaTc5Iz/hyXaNRwpH5X0UNKqhQhlztChuAKZ7iu+
+ 2VKzq4JJe9qmydRUwylluc4HmGwlIrDNvE0N66pRvC3h8tOVIsippAQlt5ciH74bJYXr0PYw
+ Aksw1jugRxMbNRzgGECg4O6EBNaHwDzsVPX1tDj0d9t/7ClzJUy20gg8r9Wm/I/0rcNkQOpV
+ RJLDtSbGSusKxor2XYmVtHGauag4YO6Vdq+2RjArB3oNLgSOGlYVpeqlut+YYHjWpaX/cTf8
+ /BHtIQuSAEu/WnycpM3Z9aaLocYhbp5lQKL6/bcWQ3udd0RfFR/Gv7eR7rn3evfqNTtQdo4/
+ YNmd7P8TS7ALQV/5bNRe+ROLquoAZvhaaa6SOvArcmFccnPeyluX8+o9K3BCdXPwONhsrxGO
+ wrPI+7XKMlwWI3O076NqNshh6mm8NIC0mDUr7zBUITa67P3Q2VoPoiPkCL9RtsXdQx5BI9iI
+ h/6QlzDxcBdw2TVWyGkVTCdeCBpuRndOMVmfjSWdCXXJCLXO6sYeculJyPkuNvumxgwUiK/H
+ AqqdUfy1HqtzP2FVhG5Ce0TeMJepagR2CHPXNg88Xw3PDjzdo+zNpqPHOZVKpLUkCvRv1p1q
+ m1qwQVWtAwMML/cuPga78rkBDQRfEXGWAQgAt0Cq8SRiLhWyTqkf16Zv/GLkUgN95RO5ntYM
+ fnc2Tr3UlRq2Cqt+TAvB928lN3WHBZx6DkuxRM/Y/iSyMuhzL5FfhsICuyiBs5f3QG70eZx+
+ Bdj4I7LpnIAzmBdNWxMHpt0m7UnkNVofA0yH6rcpCsPrdPRJNOLFI6ZqXDQk9VF+AB4HVAJY
+ BDU3NAHoyVGdMlcxev0+gEXfBQswEcysAyvzcPVTAqmrDsupnIB2f0SDMROQCLO6F+/cLG4L
+ Stbz+S6YFjESyXblhLckTiPURvDLTywyTOxJ7Mafz6ZCene9uEOqyd/h81nZOvRd1HrXjiTE
+ 1CBw+Dbvbch1ZwGOTQARAQABiQNyBBgBCgAmFiEEwUALoLOYnm+8fVtcK17iEcWK6lQFAl8R
+ cZYCGwIFCQLnoRoBQAkQK17iEcWK6lTAdCAEGQEKAB0WIQQreQhYm33JNgw/d6GpyVqK+u3v
+ qQUCXxFxlgAKCRCpyVqK+u3vqatQCAC3QIk2Y0g/07xNLJwhWcD7JhIqfe7Qc5Vz9kf8ZpWr
+ +6w4xwRfjUSmrXz3s6e/vrQsfdxjVMDFOkyG8c6DWJo0TVm6Ucrf9G06fsjjE/6cbE/gpBkk
+ /hOVz/a7UIELT+HUf0zxhhu+C9hTSl8Nb0bwtm6JuoY5AW0LP2KoQ6LHXF9KNeiJZrSzG6WE
+ h7nf3KRFS8cPKe+trbujXZRb36iIYUfXKiUqv5xamhohy1hw+7Sy8nLmw8rZPa40bDxX0/Gi
+ 98eVyT4/vi+nUy1gF1jXgNBSkbTpbVwNuldBsGJsMEa8lXnYuLzn9frLdtufUjjCymdcV/iT
+ sFKziU9AX7TLZ5AP/i1QMP9OlShRqERH34ufA8zTukNSBPIBfmSGUe6G2KEWjzzNPPgcPSZx
+ Do4jfQ/m/CiiibM6YCa51Io72oq43vMeBwG9/vLdyev47bhSfMLTpxdlDJ7oXU9e8J61iAF7
+ vBwerBZL94I3QuPLAHptgG8zPGVzNKoAzxjlaxI1MfqAD9XUM80MYBVjunIQlkU/AubdvmMY
+ X7hY1oMkTkC5hZNHLgIsDvWUG0g3sACfqF6gtMHY2lhQ0RxgxAEx+ULrk/svF6XGDe6iveyc
+ z5Mg5SUggw3rMotqgjMHHRtB3nct6XqgPXVDGYR7nAkXitG+nyG5zWhbhRDglVZ0mLlW9hij
+ z3Emwa94FaDhN2+1VqLFNZXhLwrNC5mlA6LUjCwOL+zb9a07HyjekLyVAdA6bZJ5BkSXJ1CO
+ 5YeYolFjr4YU7GXcSVfUR6fpxrb8N+yH+kJhY3LmS9vb2IXxneE/ESkXM6a2YAZWfW8sgwTm
+ 0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
+ HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
+ xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
+Message-ID: <6dabf1e0-683f-d3be-469f-bf4becb11271@pengutronix.de>
+Date:   Tue, 3 Nov 2020 17:10:30 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <160416890683.710453.7723265174628409401.stgit@localhost.localdomain>
- <160417033818.2823.4460428938483935516.stgit@localhost.localdomain>
- <20201103003836.2ngjz6yqewhn7aln@kafai-mbp.dhcp.thefacebook.com>
- <CAKgT0UceQhVGXbkZWj_aj0+Ew8oOEJMAgwAUE5GLN5EexqAhkQ@mail.gmail.com> <20201103013310.wbs7i3jm5vwnrctn@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20201103013310.wbs7i3jm5vwnrctn@kafai-mbp.dhcp.thefacebook.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 3 Nov 2020 08:01:08 -0800
-Message-ID: <CAKgT0Ud4xo0WY9CBesVzgJ06Nw9dnEuYYs_h-WEqzFGXhmJpVw@mail.gmail.com>
-Subject: Re: [bpf-next PATCH v2 2/5] selftests/bpf: Drop python client/server
- in favor of threads
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        alexanderduyck@fb.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAA7ZjpaYA0jLaybxq_2amtWOcs3sPE5w_fQK7jMdgaKpA-YoUg@mail.gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="DEQeGb5aMYFzl9eN4yfnPHOvTp8529vAS"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 2, 2020 at 5:33 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Mon, Nov 02, 2020 at 04:49:42PM -0800, Alexander Duyck wrote:
-> > On Mon, Nov 2, 2020 at 4:38 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > >
-> > > On Sat, Oct 31, 2020 at 11:52:18AM -0700, Alexander Duyck wrote:
-> > > > From: Alexander Duyck <alexanderduyck@fb.com>
-> > > >
-> > > > Drop the tcp_client/server.py files in favor of using a client and server
-> > > > thread within the test case. Specifically we spawn a new thread to play the
-> > > The thread comment may be outdated in v2.
-> > >
-> > > > role of the server, and the main testing thread plays the role of client.
-> > > >
-> > > > Add logic to the end of the run_test function to guarantee that the sockets
-> > > > are closed when we begin verifying results.
-> > > >
-> > > > Doing this we are able to reduce overhead since we don't have two python
-> > > > workers possibly floating around. In addition we don't have to worry about
-> > > > synchronization issues and as such the retry loop waiting for the threads
-> > > > to close the sockets can be dropped as we will have already closed the
-> > > > sockets in the local executable and synchronized the server thread.
-> > > >
-> > > > Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
-> > > > ---
-> > > >  .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |   96 ++++++++++++++++----
-> > > >  tools/testing/selftests/bpf/tcp_client.py          |   50 ----------
-> > > >  tools/testing/selftests/bpf/tcp_server.py          |   80 -----------------
-> > > >  3 files changed, 78 insertions(+), 148 deletions(-)
-> > > >  delete mode 100755 tools/testing/selftests/bpf/tcp_client.py
-> > > >  delete mode 100755 tools/testing/selftests/bpf/tcp_server.py
-> > > >
-> > > > diff --git a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > > > index 54f1dce97729..17d4299435df 100644
-> > > > --- a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > > > +++ b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > > > @@ -1,13 +1,14 @@
-> > > >  // SPDX-License-Identifier: GPL-2.0
-> > > >  #include <inttypes.h>
-> > > >  #include <test_progs.h>
-> > > > +#include <network_helpers.h>
-> > > >
-> > > >  #include "test_tcpbpf.h"
-> > > >
-> > > > +#define LO_ADDR6 "::1"
-> > > >  #define CG_NAME "/tcpbpf-user-test"
-> > > >
-> > > > -/* 3 comes from one listening socket + both ends of the connection */
-> > > > -#define EXPECTED_CLOSE_EVENTS                3
-> > > > +static __u32 duration;
-> > > >
-> > > >  #define EXPECT_EQ(expected, actual, fmt)                     \
-> > > >       do {                                                    \
-> > > > @@ -42,7 +43,9 @@ int verify_result(const struct tcpbpf_globals *result)
-> > > >       EXPECT_EQ(0x80, result->bad_cb_test_rv, PRIu32);
-> > > >       EXPECT_EQ(0, result->good_cb_test_rv, PRIu32);
-> > > >       EXPECT_EQ(1, result->num_listen, PRIu32);
-> > > > -     EXPECT_EQ(EXPECTED_CLOSE_EVENTS, result->num_close_events, PRIu32);
-> > > > +
-> > > > +     /* 3 comes from one listening socket + both ends of the connection */
-> > > > +     EXPECT_EQ(3, result->num_close_events, PRIu32);
-> > > >
-> > > >       return ret;
-> > > >  }
-> > > > @@ -66,6 +69,75 @@ int verify_sockopt_result(int sock_map_fd)
-> > > >       return ret;
-> > > >  }
-> > > >
-> > > > +static int run_test(void)
-> > > > +{
-> > > > +     int listen_fd = -1, cli_fd = -1, accept_fd = -1;
-> > > > +     char buf[1000];
-> > > > +     int err = -1;
-> > > > +     int i;
-> > > > +
-> > > > +     listen_fd = start_server(AF_INET6, SOCK_STREAM, LO_ADDR6, 0, 0);
-> > > > +     if (CHECK(listen_fd == -1, "start_server", "listen_fd:%d errno:%d\n",
-> > > > +               listen_fd, errno))
-> > > > +             goto done;
-> > > > +
-> > > > +     cli_fd = connect_to_fd(listen_fd, 0);
-> > > > +     if (CHECK(cli_fd == -1, "connect_to_fd(listen_fd)",
-> > > > +               "cli_fd:%d errno:%d\n", cli_fd, errno))
-> > > > +             goto done;
-> > > > +
-> > > > +     accept_fd = accept(listen_fd, NULL, NULL);
-> > > > +     if (CHECK(accept_fd == -1, "accept(listen_fd)",
-> > > > +               "accept_fd:%d errno:%d\n", accept_fd, errno))
-> > > > +             goto done;
-> > > > +
-> > > > +     /* Send 1000B of '+'s from cli_fd -> accept_fd */
-> > > > +     for (i = 0; i < 1000; i++)
-> > > > +             buf[i] = '+';
-> > > > +
-> > > > +     err = send(cli_fd, buf, 1000, 0);
-> > > > +     if (CHECK(err != 1000, "send(cli_fd)", "err:%d errno:%d\n", err, errno))
-> > > > +             goto done;
-> > > > +
-> > > > +     err = recv(accept_fd, buf, 1000, 0);
-> > > > +     if (CHECK(err != 1000, "recv(accept_fd)", "err:%d errno:%d\n", err, errno))
-> > > > +             goto done;
-> > > > +
-> > > > +     /* Send 500B of '.'s from accept_fd ->cli_fd */
-> > > > +     for (i = 0; i < 500; i++)
-> > > > +             buf[i] = '.';
-> > > > +
-> > > > +     err = send(accept_fd, buf, 500, 0);
-> > > > +     if (CHECK(err != 500, "send(accept_fd)", "err:%d errno:%d\n", err, errno))
-> > > > +             goto done;
-> > > > +
-> > > > +     err = recv(cli_fd, buf, 500, 0);
-> > > Unlikely, but err from the above send()/recv() could be 0.
-> >
-> > Is that an issue? It would still trigger the check below as that is not 500.
-> Mostly for consistency.  "err" will be returned and tested for non-zero
-> in test_tcpbpf_user().
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--DEQeGb5aMYFzl9eN4yfnPHOvTp8529vAS
+Content-Type: multipart/mixed; boundary="ylA4F9LYT9n880wEfqxNkN9q8FPdAGpny";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Ondrej Ille <ondrej.ille@gmail.com>
+Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
+ devicetree@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
+ Wolfgang Grandegger <wg@grandegger.com>, David Miller <davem@davemloft.net>,
+ Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
+ Carsten Emde <c.emde@osadl.org>, armbru@redhat.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Marin Jerabek <martin.jerabek01@gmail.com>,
+ Jiri Novak <jnovak@fel.cvut.cz>, Jaroslav Beran <jara.beran@gmail.com>,
+ Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+ Drew Fustini <pdp7pdp7@gmail.com>
+Message-ID: <6dabf1e0-683f-d3be-469f-bf4becb11271@pengutronix.de>
+Subject: Re: [PATCH v7 0/6] CTU CAN FD open-source IP core SocketCAN driver,
+ PCI, platform integration and documentation
+References: <cover.1604095004.git.pisa@cmp.felk.cvut.cz>
+ <2ccec201-1a84-1837-15a8-d2ad05f5753c@pengutronix.de>
+ <202011031100.35922.pisa@cmp.felk.cvut.cz>
+ <07227792-f75f-6998-bd09-ce6e612de79f@pengutronix.de>
+ <CAA7ZjpaYA0jLaybxq_2amtWOcs3sPE5w_fQK7jMdgaKpA-YoUg@mail.gmail.com>
+In-Reply-To: <CAA7ZjpaYA0jLaybxq_2amtWOcs3sPE5w_fQK7jMdgaKpA-YoUg@mail.gmail.com>
 
-Okay that makes sense. Now that I have looked it over more it does
-lead to an error in the final product since it will attempt to verify
-data on a failed connection so I will probably just replaced err with
-a new variable such as rv for the send/recv part of the function so
-that err stays at -1 until we are closing the sockets.
+--ylA4F9LYT9n880wEfqxNkN9q8FPdAGpny
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
+
+On 11/3/20 2:36 PM, Ondrej Ille wrote:
+> Hello Marc,
+>=20
+> thank you for review, I appreciate it. We will process all your notes, =
+and get
+> rid of uin32_t and bitfields then.
+>=20
+> As Pavel pointed out, there are user space tests using this stuff, so i=
+t is
+> not just search and replace work. We will extend our IP-XACT generation=
+
+> toolchain (what a strong word for bunch of python scripts...), to gener=
+ate=20
+> Linux specific headers with GEN_MASK and BIT then.
+
+Fine!
+> It will take some time, since we have to modify quite a lot of stuff an=
+d
+> re-test it then, but we will try to do it fast. Btw, do you agree with
+> separation of HW specific part of driver into "_hw" file, or would you
+> preffer to get rid of this abstraction layer? If we should get rid of i=
+t, we
+> will, but it would take even more time to do it.
+
+I haven't looked at the HW abstraction yet, but will do next. Usually Lin=
+ux is
+considered the HW abstraction layer :)
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--ylA4F9LYT9n880wEfqxNkN9q8FPdAGpny--
+
+--DEQeGb5aMYFzl9eN4yfnPHOvTp8529vAS
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+hgPYACgkQqclaivrt
+76lSrggAjr8U94Up39MhE0fLBeiufpYpaPFvhb9Pt87u4LHmSLVtR/5sMYlcsZuq
+YWzlO9sVSoR3ME4jZy0FN7ZtncBAbbEKXw92Je4tii+oBePQOHzCpnhFMZOZHaqv
+cbC7k0WvqE2kvUZHQsjOzsHwND8AZYzxS1JkTcZpsQ0r0aORyerZFxiMjAR9VXIt
+HeCNP/HCZnsAVhc/91JvXcmGMevKJraX4SurfHCu2v3UDWt8bCjuv1zxPwmj/9/w
+EMzRhT+FXQDwrCvNjnPkUqtiDHbsbJqJKL3fDnyy5EqXqbgDD8Q7Gtn4aw36OsiP
+OxA5jSWcThzYKJ4VY0bCMrmKTHBSTw==
+=q2fO
+-----END PGP SIGNATURE-----
+
+--DEQeGb5aMYFzl9eN4yfnPHOvTp8529vAS--
