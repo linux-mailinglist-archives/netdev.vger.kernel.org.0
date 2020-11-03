@@ -2,188 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D94DC2A3BA6
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 06:06:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B9EE2A3BA4
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 06:06:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727352AbgKCFGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 00:06:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgKCFGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 00:06:38 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB891C0617A6
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 21:06:38 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id r10so12729198pgb.10
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 21:06:38 -0800 (PST)
+        id S1727138AbgKCFG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 00:06:28 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:7008 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725980AbgKCFG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 00:06:27 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A355mrY006259;
+        Mon, 2 Nov 2020 21:06:22 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=pfpt0220; bh=o0O26hsEziVBxMSezrcWpOP7FrK3yHhmSKZ9xMma1Jc=;
+ b=X7grOll66c+kHzgEsTwuqD4QycUzGcuwmUZuErtQhT6lJtBAHIQswQGv47h478a0xs/F
+ a6WQoDZ+Uh0+qFg1W0wAEw+m3qIXIbrlZp/ilL2k64NCFii95/n2qcJ7ITrFGZRzPlH9
+ 4JjGFXoTULlmZCj6GEFrnnho4HaV/2P/8xy8RlOcaQl1wre4cNMBIT75XXxrjDw1JQ7h
+ e1k46ErW8qDhjpTsYWjopz3efhxaYNXa16r8eT8vUncgSEYUUDV45hZz1dmreapGJfpk
+ gCPzH/nfCBHYtzenszqxutjhh2A+I3vM68HF+bJUForHhUF1Zm6aKDZGHw2T09FQ9gLW ig== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 34h7enues3-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 02 Nov 2020 21:06:22 -0800
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 2 Nov
+ 2020 21:06:21 -0800
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 2 Nov
+ 2020 21:06:21 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.175)
+ by SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Mon, 2 Nov 2020 21:06:21 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aGTvojaWzr9D2sjNjLF4v8QXdN7qmZCduEVi7G1sXfOBzuhwY/NPXmvF9QrjHrF5XdnuzymAqV1ZV08Jzh6Sc0dtMatIBtulwTNno2sUPmiU3/DQS/fIQW6YMfaO6y8qxIJAhZnWA6F4A4SZTgvJP7kbBv+sY6G4hhXWMSsCtmp8/OrwxVhLs0zQpXk+uBjtBRGmKhBFHqWwytB+ZZabMlQBRiW5nL4Pzouc46UnU//qDYppY6rdQuaM+2IdOkmVmbORG70t5qblZ41lI3UaHZ1/V6nlew0en7iRt3/qW17XeDXvGRtow19IGeNb+pmUaCn6e8f5ckseGTD+O0aupw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o0O26hsEziVBxMSezrcWpOP7FrK3yHhmSKZ9xMma1Jc=;
+ b=QQaKneS9NqFi8ehheVTlA71yw6gPuWfdNzNNMyN9KbNWrcLQ46KASNu2vg6WxPCXBrbLDtdfk/FsyYM/dTlWARcBIKaqb211/OllVuy1phwJZ0q8NGgfbmxHF1vlkI/tZI+ia+vOKqpaSSR0rFG2332owQpftuZc/kq84b+TZRMUljhCAQaN3l9gXtvSbsR2Uvf4HaUAnGGn2pdDHWGYNtokkOM0HGTNfislngTNR2knbiROCRGpD+hIEIioVTKnT0bHPBuUx6z3mNFbY61rC8qsYnxDiCR9hkG/Oj2bkU/cD0TG+VCQUF0UDZuQ4hqgaRl2oTs4atYvAGKJ4VYpxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=c2ZIq/WN5UWW2OyUQcxUPOmFj7jajgdxihthAFs+XBE=;
-        b=fBiVG5PdvjAu4VxWDNtUrqyJ/hRl2Izs2pp1BI5i7cRrhBI+IP+Lq8Z20pAlAP/UQ8
-         w/snYd132m2uhux+2yzZ7qT8M7M7GWRlXDPROyW0jUVxZyJz+TeU6NCgP57lVXpjcBWd
-         1a6/Uho+9l7Pf0Ky1QYDWv5xR9mYVS8O7joGHz4hcStw8mnQ/okgNX7KQqw7+kyeLTFj
-         ssbB2DF/YEcr5/tcPnVHxjXo5ydw2xJson8HKf8iwwAAN/6FJZqr6gLbzzMustIJzeQo
-         fCXAeEDIwTrdGKU3ZlM6poWZdLnPCIOqwHUvv3dv3bkJOCFo/KGxwkb4xy3jisU6z5Qw
-         nDLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=c2ZIq/WN5UWW2OyUQcxUPOmFj7jajgdxihthAFs+XBE=;
-        b=jffeZh6Te5aMi8Ep4dqZYHknXg619EOPwt2ii1ppa80UHBPi8PR4k8zV5SiOM7PZ2P
-         XAApP3QMVHjCrdhqYfogfxSi4r1IKbnpJ5mOJ82BvnrzFSiLk8DJyNNDajyi5mPOEhSc
-         mzASvyEmjFjJ2QuuoKio6IY8lsWNEJnQNldT4MR0lDlX8i+YEV1qqetaE9YH9sPZ/xom
-         mERw6zcTKQprpMV2QS3DByc+w3TZaTJULHWQT3EAF3LFdvbx7giVo9BqQecz4646CRuN
-         3U94nNvt9rCllddnS8TUnsfVCIJbtBDFYwbWbbw3B+p5GPVw3vPlBJC5yLPxxqsmi7V8
-         6WpQ==
-X-Gm-Message-State: AOAM532HT/n+ZWEEiuC4ycoXOW9MwB/b/iOYMNK/uXdlFGNAAHikE8Zz
-        8heX5qjfBdbnZER9xQRxgfJoVcqQDrK7MCZX
-X-Google-Smtp-Source: ABdhPJxtDUAFRByPSy5fBRDXyJjSudM/OAsc+/acVLsKel8cm3l+hv/qgww0vLgSwTp5dCv01ZD8Dw==
-X-Received: by 2002:a17:90a:8d81:: with SMTP id d1mr1903992pjo.174.1604379998046;
-        Mon, 02 Nov 2020 21:06:38 -0800 (PST)
-Received: from container-ubuntu.lan ([240e:398:25dd:4170::b82])
-        by smtp.gmail.com with ESMTPSA id h5sm14962213pfn.12.2020.11.02.21.06.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 21:06:36 -0800 (PST)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <landen.chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        Chuanhong Guo <gch981213@gmail.com>
-Subject: [PATCH v3 net-next] net: dsa: mt7530: support setting MTU
-Date:   Tue,  3 Nov 2020 13:06:18 +0800
-Message-Id: <20201103050618.11419-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o0O26hsEziVBxMSezrcWpOP7FrK3yHhmSKZ9xMma1Jc=;
+ b=rtSEJsuVleNVPIa5kbemv5IaEGmg2JVfHBDmfHm5EF0hnxKOa+WbuMu04p0I0lhVtL1+jqmOA8ZveR2Wk4xHpkz1YCR1/J8G/YTgRmcVhkAGfPNEsF12wsAMertFzABHC8vK0zXJO7jOfyGltZfmKUElFLEb7GLnYKVm1ZrUNBU=
+Received: from DM6PR18MB3212.namprd18.prod.outlook.com (2603:10b6:5:14a::15)
+ by DM5PR18MB1082.namprd18.prod.outlook.com (2603:10b6:3:31::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.29; Tue, 3 Nov
+ 2020 05:06:19 +0000
+Received: from DM6PR18MB3212.namprd18.prod.outlook.com
+ ([fe80::a1ad:948b:abf5:a5ef]) by DM6PR18MB3212.namprd18.prod.outlook.com
+ ([fe80::a1ad:948b:abf5:a5ef%7]) with mapi id 15.20.3499.030; Tue, 3 Nov 2020
+ 05:06:19 +0000
+From:   Naveen Mamindlapalli <naveenm@marvell.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        "Geethasowjanya Akula" <gakula@marvell.com>,
+        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Kiran Kumar Kokkilagadda <kirankumark@marvell.com>
+Subject: Re: [PATCH net-next 02/13] octeontx2-af: Verify MCAM entry channel
+ and PF_FUNC
+Thread-Topic: [PATCH net-next 02/13] octeontx2-af: Verify MCAM entry channel
+ and PF_FUNC
+Thread-Index: AdaxnsyU9PGb60qHSmaKvFDtl8KR/g==
+Date:   Tue, 3 Nov 2020 05:06:19 +0000
+Message-ID: <DM6PR18MB3212BE3C13B421D8865371F6A2110@DM6PR18MB3212.namprd18.prod.outlook.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [124.123.178.65]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 74c1fac3-425a-4459-7f91-08d87fb63371
+x-ms-traffictypediagnostic: DM5PR18MB1082:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM5PR18MB10825A227924A81565449237A2110@DM5PR18MB1082.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1WcfQDYwXfEHwOejhtve7ZgLL4ntWUDfbCzVAri97Xuw1qGopt0VFNC3Be8aPE/qk5CA1oQYF25fA94gS/AzX8oOq9kjUI4l5YEDp/DhFJJtW3rRuE415Tw5+6JBynAoGglmw3oWpPOarjG6Hcj7aw7/VwcNan7fuYU88TlyYZ7Ob2vGmbgMWPUkgncLeU897f/jmVPZq5Zl4sAZVxi4HWM81nRAi+8a2oyBWlmg6eQWlLikTson3RVtVl+y1abPd+l1qMXoPdjj0f4XYOtLOSdAjFW3v8uUWJsXx2tExke/d4a9UuyY2EUre2oQegPtbGuGK3zcjYOOLvworRh0eQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR18MB3212.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39860400002)(376002)(396003)(346002)(136003)(7696005)(66446008)(64756008)(52536014)(83380400001)(54906003)(9686003)(76116006)(66556008)(66476007)(55016002)(8676002)(66946007)(478600001)(5660300002)(316002)(15650500001)(71200400001)(86362001)(107886003)(2906002)(6916009)(186003)(33656002)(53546011)(8936002)(4326008)(6506007)(26005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 7grZEYOuPihs0axYZsPyHbkfsRGUq2bT/ACVyXNZjznFS1DNNzT42HKbmEBWxuZhfiy6XMQyw7nHXJvIAUP0avb4dnF/2VV3XCgh5AFshiEJEb//hjq0rDE+EZhMXV8T7aexOH2BoZjzZb+Xb+c/3PPJ89ddcFuVxE3r7Daxn16u5TnZsASwVQ1kmh/q+KpxHXAhn1OTA+rRRet4bBjjmE1/BUjHQyaAQ5DCJleG5oUWmbDQSMr818KEuJpo1EcA1ZCks+HiSxJMMfTy3C4ATBqMSTSYWm9zHnBZPjzY/zw8Pz6RHrKJ/Ad8/kgnSH4WN4POr9aRtUOx8e/kUOfct9gE4X054+c7AAPZzyDrHCzww3LwiiAOBSQFjMrhJnazx7FOu42KBmwBPWLHFGsqcuuqtYaVnyoRQhAlQRd6qVeD8K6egXci4nULewv9QHWVGPzg+bTivjTjPKgik6z0SwcFU9fGB57qkHZ/PGwOgEX4RGhKedrQfXMKbOGDH4V48xL37EBuXrXL3eVniHSF1csZ9RHcumuaaIz5qn7Z0/kItbfGQOxkgeeyWBWcEpOYC1QVDzdEWhDNqNi9DyrYDhUDP5E8TS6U5OcWZy8d9MriecNNLafCMQMV21SY7rdZzJcX5M7jycoATsiXBbf+7Q==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR18MB3212.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 74c1fac3-425a-4459-7f91-08d87fb63371
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Nov 2020 05:06:19.5037
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YpLXWfvrXykjayEcdAm6xtbJ+qagiZNici/VvKjsq0GVJRf/R4SkGS3TnR16UD/L1L+JEy7msX1aGJhPkLCI2w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR18MB1082
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-03_02:2020-11-02,2020-11-03 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MT7530/7531 has a global RX packet length register, which can be used
-to set MTU.
+Hi Jakub,
 
-Supported packet length values are 1522 (1518 if untagged), 1536,
-1552, and multiple of 1024 (from 2048 to 15360).
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Monday, November 2, 2020 11:23 PM
+> To: Naveen Mamindlapalli <naveenm@marvell.com>
+> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+> davem@davemloft.net; Sunil Kovvuri Goutham <sgoutham@marvell.com>; Linu
+> Cherian <lcherian@marvell.com>; Geethasowjanya Akula
+> <gakula@marvell.com>; Jerin Jacob Kollanukkaran <jerinj@marvell.com>;
+> Subbaraya Sundeep Bhatta <sbhatta@marvell.com>; Hariprasad Kelam
+> <hkelam@marvell.com>; Kiran Kumar Kokkilagadda
+> <kirankumark@marvell.com>
+> Subject: Re: [PATCH net-next 02/13] octeontx2-af: Verify MCAM entry
+> channel and PF_FUNC
+>=20
+> On Mon, 2 Nov 2020 11:41:11 +0530 Naveen Mamindlapalli wrote:
+> > From: Subbaraya Sundeep <sbhatta@marvell.com>
+> >
+> > This patch adds support to verify the channel number sent by mailbox
+> > requester before writing MCAM entry for Ingress packets.
+> > Similarly for Egress packets, verifying the PF_FUNC sent by the
+> > mailbox user.
+> >
+> > Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+> > Signed-off-by: Kiran Kumar K <kirankumark@marvell.com>
+> > Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+> > Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
+>=20
+> drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c:81:17: warning: incor=
+rect
+> type in assignment (different base types)
+> drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c:81:17:    expected
+> unsigned short [assigned] [usertype] pf_func
+> drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c:81:17:    got restric=
+ted
+> __be16 [usertype]
 
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
----
-v2 -> v3:
-	Fix checkpatch.pl warning
-v1 -> v2:
-	Avoid duplication of mt7530_rmw()
-	Fix code wrapping
----
- drivers/net/dsa/mt7530.c | 49 ++++++++++++++++++++++++++++++++++++++++
- drivers/net/dsa/mt7530.h | 12 ++++++++++
- 2 files changed, 61 insertions(+)
+I will fix these warnings in v2
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 771f58f50d61..6408402a44f5 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1021,6 +1021,53 @@ mt7530_port_disable(struct dsa_switch *ds, int port)
- 	mutex_unlock(&priv->reg_mutex);
- }
- 
-+static int
-+mt7530_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
-+{
-+	struct mt7530_priv *priv = ds->priv;
-+	struct mii_bus *bus = priv->bus;
-+	int length;
-+	u32 val;
-+
-+	/* When a new MTU is set, DSA always set the CPU port's MTU to the
-+	 * largest MTU of the slave ports. Because the switch only has a global
-+	 * RX length register, only allowing CPU port here is enough.
-+	 */
-+	if (!dsa_is_cpu_port(ds, port))
-+		return 0;
-+
-+	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+
-+	val = mt7530_mii_read(priv, MT7530_GMACCR);
-+	val &= ~MAX_RX_PKT_LEN_MASK;
-+
-+	/* RX length also includes Ethernet header, MTK tag, and FCS length */
-+	length = new_mtu + ETH_HLEN + MTK_HDR_LEN + ETH_FCS_LEN;
-+	if (length <= 1522) {
-+		val |= MAX_RX_PKT_LEN_1522;
-+	} else if (length <= 1536) {
-+		val |= MAX_RX_PKT_LEN_1536;
-+	} else if (length <= 1552) {
-+		val |= MAX_RX_PKT_LEN_1552;
-+	} else {
-+		val &= ~MAX_RX_JUMBO_MASK;
-+		val |= MAX_RX_JUMBO(DIV_ROUND_UP(length, 1024));
-+		val |= MAX_RX_PKT_LEN_JUMBO;
-+	}
-+
-+	mt7530_mii_write(priv, MT7530_GMACCR, val);
-+
-+	mutex_unlock(&bus->mdio_lock);
-+
-+	return 0;
-+}
-+
-+static int
-+mt7530_port_max_mtu(struct dsa_switch *ds, int port)
-+{
-+	return MT7530_MAX_MTU;
-+}
-+
- static void
- mt7530_stp_state_set(struct dsa_switch *ds, int port, u8 state)
- {
-@@ -2519,6 +2566,8 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
- 	.get_sset_count		= mt7530_get_sset_count,
- 	.port_enable		= mt7530_port_enable,
- 	.port_disable		= mt7530_port_disable,
-+	.port_change_mtu	= mt7530_port_change_mtu,
-+	.port_max_mtu		= mt7530_port_max_mtu,
- 	.port_stp_state_set	= mt7530_stp_state_set,
- 	.port_bridge_join	= mt7530_port_bridge_join,
- 	.port_bridge_leave	= mt7530_port_bridge_leave,
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 9278a8e3d04e..ee3523a7537e 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -11,6 +11,9 @@
- #define MT7530_NUM_FDB_RECORDS		2048
- #define MT7530_ALL_MEMBERS		0xff
- 
-+#define MTK_HDR_LEN	4
-+#define MT7530_MAX_MTU	(15 * 1024 - ETH_HLEN - ETH_FCS_LEN - MTK_HDR_LEN)
-+
- enum mt753x_id {
- 	ID_MT7530 = 0,
- 	ID_MT7621 = 1,
-@@ -289,6 +292,15 @@ enum mt7530_vlan_port_attr {
- #define MT7531_DBG_CNT(x)		(0x3018 + (x) * 0x100)
- #define  MT7531_DIS_CLR			BIT(31)
- 
-+#define MT7530_GMACCR			0x30e0
-+#define  MAX_RX_JUMBO(x)		((x) << 2)
-+#define  MAX_RX_JUMBO_MASK		GENMASK(5, 2)
-+#define  MAX_RX_PKT_LEN_MASK		GENMASK(1, 0)
-+#define  MAX_RX_PKT_LEN_1522		0x0
-+#define  MAX_RX_PKT_LEN_1536		0x1
-+#define  MAX_RX_PKT_LEN_1552		0x2
-+#define  MAX_RX_PKT_LEN_JUMBO		0x3
-+
- /* Register for MIB */
- #define MT7530_PORT_MIB_COUNTER(x)	(0x4000 + (x) * 0x100)
- #define MT7530_MIB_CCR			0x4fe0
--- 
-2.25.1
-
+Thanks,
+Naveen
