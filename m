@@ -2,107 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D22FB2A3F33
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 09:45:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 032EA2A3F40
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 09:46:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727849AbgKCIo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 03:44:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725968AbgKCIo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 03:44:57 -0500
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FB9C0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 00:44:57 -0800 (PST)
-Received: by mail-wm1-x344.google.com with SMTP id c16so11924746wmd.2
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 00:44:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=5/WOZHBmz3EBH3+eCAudlxs+DpqVNBs0AEAQtQF3C0g=;
-        b=D/tNDQgcgZFGx9ufo0kyX0caMAMLaJEDmZZar9aTdI+nTB9DiJS3uimqhClmlkv92N
-         PTN2NgpbaMKPWw/6zwTa4o6wsGYC/QudW8o05fr9c9y3HXkac7wJD+cThiHUxfFGrXIO
-         lUhf0X7R1ls37PqrduWqkrZSUYXq18N4k98mN4fSuvA1l9NqRyBlHyIX4w7jsaUPNOVi
-         gzgTPFzgW9XrKjyCg5rrx4StYlo9blEfSZJUyBQOCS1jNCUaRhhK0oqP9o/MmzZUToJ1
-         7v/Q5bkbJnDFrkGirDBHFrCtnRwV/tMNjQbYRD6NwJtOgvcw2Exk4tZ6mORjpINR9Os8
-         IJmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=5/WOZHBmz3EBH3+eCAudlxs+DpqVNBs0AEAQtQF3C0g=;
-        b=E+0o1od8YjnwgmIJD026kWyyy8VkFslimT8iwvKZ++zQ+k4GiryiVvVliYqwpNYsQq
-         lfutv3snyXJ2DAvI7jByShJb8BCJnHWBsmPpJkBMqClVVFw8SEyOvITJaJQdbokBLdkU
-         oycAlTYqDdpqsvoPC8W4nW46S2cGmcYmX7jNt5l5ysQJizyVyhMvrgvoZVMS3U/wDGxW
-         NxrhwBfjheeWTYzCYh6AcVT9uqIGWY5Tqv+OE2xFG7GVFRRwmHyQ39QFoSA38QsQQnn5
-         7YqoRGCGiP/hACEJBEuQE1LUFX+ecbCxeRO1n6coXazymed1vizyYRyvJrILpcLkXJeC
-         zePg==
-X-Gm-Message-State: AOAM53227FJaebwMemrsg9sSDb1SVGslORmBgPtesG68Jc8SAebVKIXW
-        CnFrFujN5VlaMqozZBKl+SqlCw==
-X-Google-Smtp-Source: ABdhPJz8fx8VQuhvfzqJtAKCb4y9SD7Xt0brjcuk8KmNJ2RedYCauy94oAfQvnsKQQSqF2yMZLA6tA==
-X-Received: by 2002:a7b:c4c3:: with SMTP id g3mr2313652wmk.65.1604393096021;
-        Tue, 03 Nov 2020 00:44:56 -0800 (PST)
-Received: from dell ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id c17sm2084243wml.14.2020.11.03.00.44.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 00:44:55 -0800 (PST)
-Date:   Tue, 3 Nov 2020 08:44:53 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 41/41] realtek: rtw88: pci: Add prototypes for .probe,
- .remove and .shutdown
-Message-ID: <20201103084453.GJ4488@dell>
-References: <20201102112410.1049272-1-lee.jones@linaro.org>
- <20201102112410.1049272-42-lee.jones@linaro.org>
- <CA+ASDXOobW1_qL5SCGS86aoGvhKDMoBzjxbAwn+QjHfkqZhukw@mail.gmail.com>
+        id S1726659AbgKCIqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 03:46:49 -0500
+Received: from www62.your-server.de ([213.133.104.62]:34794 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725982AbgKCIqs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 03:46:48 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kZrxW-0007cZ-IC; Tue, 03 Nov 2020 09:46:30 +0100
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kZrxW-000ARu-8N; Tue, 03 Nov 2020 09:46:30 +0100
+Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        David Ahern <dsahern@gmail.com>
+Cc:     Hangbin Liu <haliu@redhat.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+References: <20201028132529.3763875-1-haliu@redhat.com>
+ <20201029151146.3810859-1-haliu@redhat.com>
+ <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
+ <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
+Date:   Tue, 3 Nov 2020 09:46:29 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+ASDXOobW1_qL5SCGS86aoGvhKDMoBzjxbAwn+QjHfkqZhukw@mail.gmail.com>
+In-Reply-To: <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25976/Mon Nov  2 14:23:56 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 02 Nov 2020, Brian Norris wrote:
+On 11/3/20 7:58 AM, Andrii Nakryiko wrote:
+> On Mon, Nov 2, 2020 at 7:47 AM David Ahern <dsahern@gmail.com> wrote:
+>> On 10/29/20 9:11 AM, Hangbin Liu wrote:
+>>> This series converts iproute2 to use libbpf for loading and attaching
+>>> BPF programs when it is available. This means that iproute2 will
+>>> correctly process BTF information and support the new-style BTF-defined
+>>> maps, while keeping compatibility with the old internal map definition
+>>> syntax.
+>>>
+>>> This is achieved by checking for libbpf at './configure' time, and using
+>>> it if available. By default the system libbpf will be used, but static
+>>> linking against a custom libbpf version can be achieved by passing
+>>> LIBBPF_DIR to configure. FORCE_LIBBPF can be set to force configure to
+>>> abort if no suitable libbpf is found (useful for automatic packaging
+>>> that wants to enforce the dependency).
+>>>
+>>> The old iproute2 bpf code is kept and will be used if no suitable libbpf
+>>> is available. When using libbpf, wrapper code ensures that iproute2 will
+>>> still understand the old map definition format, including populating
+>>> map-in-map and tail call maps before load.
+>>>
+>>> The examples in bpf/examples are kept, and a separate set of examples
+>>> are added with BTF-based map definitions for those examples where this
+>>> is possible (libbpf doesn't currently support declaratively populating
+>>> tail call maps).
+>>>
+>>> At last, Thanks a lot for Toke's help on this patch set.
+>>
+>> In regards to comments from v2 of the series:
+>>
+>> iproute2 is a stable, production package that requires minimal support
+>> from external libraries. The external packages it does require are also
+>> stable with few to no relevant changes.
+>>
+>> bpf and libbpf on the other hand are under active development and
+>> rapidly changing month over month. The git submodule approach has its
+>> conveniences for rapid development but is inappropriate for a package
+>> like iproute2 and will not be considered.
 
-> On Mon, Nov 2, 2020 at 3:25 AM Lee Jones <lee.jones@linaro.org> wrote:
-> > --- a/drivers/net/wireless/realtek/rtw88/pci.h
-> > +++ b/drivers/net/wireless/realtek/rtw88/pci.h
-> > @@ -212,6 +212,10 @@ struct rtw_pci {
-> >         void __iomem *mmap;
-> >  };
-> >
-> > +int rtw_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id);
-> > +void rtw_pci_remove(struct pci_dev *pdev);
-> > +void rtw_pci_shutdown(struct pci_dev *pdev);
-> > +
-> >
-> 
-> These definitions are already in 4 other header files:
-> 
-> drivers/net/wireless/realtek/rtw88/rtw8723de.h
-> drivers/net/wireless/realtek/rtw88/rtw8821ce.h
-> drivers/net/wireless/realtek/rtw88/rtw8822be.h
-> drivers/net/wireless/realtek/rtw88/rtw8822ce.h
-> 
-> Seems like you should be moving them, not just adding yet another duplicate.
-
-I followed the current convention.
-
-Happy to optimise if that's what is required.
-
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+I thought last time this discussion came up there was consensus that the
+submodule could be an explicit opt in for the configure script at least?
