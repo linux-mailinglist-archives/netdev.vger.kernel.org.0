@@ -2,60 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03B8B2A4B8D
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:30:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4802D2A4BA9
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:36:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728350AbgKCQaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 11:30:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53850 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726312AbgKCQaw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 11:30:52 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B53272072C;
-        Tue,  3 Nov 2020 16:30:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604421052;
-        bh=LKI4N1fVLHi2H2rPCMGg8y/dxocDD5dWMprOfvkWL04=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DogVLlc0U2UuCbO4aofA7OK245Sx9wfLbRWXtj8vse+IJOq/UT71xTYTdM2bigqQE
-         8glZeeAzJslxhT5g92kUlWbXRBPd8StpGr4TN/GKOWxXmJjfpNVVh37wC8PN2S+e0u
-         FebxYsNRDKIeJHAlsFH+zZ1DMythGvbf5M7A1bm0=
-Date:   Tue, 3 Nov 2020 08:30:50 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>, james.jurack@ametek.com
-Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
- skb_cow_head for PTP
-Message-ID: <20201103083050.100b2568@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201103161319.wisvmjbdqhju6vyh@skbuf>
-References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
-        <20201029081057.8506-1-claudiu.manoil@nxp.com>
-        <20201103161319.wisvmjbdqhju6vyh@skbuf>
+        id S1728350AbgKCQgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 11:36:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38982 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726212AbgKCQgR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 11:36:17 -0500
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74ACEC0613D1;
+        Tue,  3 Nov 2020 08:36:17 -0800 (PST)
+Received: by mail-ot1-x32d.google.com with SMTP id h62so16501070oth.9;
+        Tue, 03 Nov 2020 08:36:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=qOjuB9yQXP7C641wWPryW22kq2BalJ5tPu+GIQifkY4=;
+        b=hmqVKyWvHooVnj/4kZHvh/H6joHado2yvZt1Djo+bE5z44+ra3hDj5WQzOPf5NOnAJ
+         roMvmZojrXqwwoDXGBCvpz7eDXZ2NpukfXypP4LzjxMKVJi2QwTsZ9GQmL5szBHZCf3u
+         jmUkKOSPFRk07A+cj8gHnAjGP6PHN3rZUgS6dZngsqKKU6rn9iiw/9ccfRK2/dqjlK4r
+         DW3SU0yZcWy2p/JJVTVmARsZd1W/dj8ghYelMQ4NiqBz5LHQo4PchTajUI1GNoQD4O2f
+         HclFIz+iX/2LqJqe7iwv7i1krd/lEzCiFAnqGmV8qcO1LyJyE4DowT3mdyBSIN6iICO6
+         rUeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=qOjuB9yQXP7C641wWPryW22kq2BalJ5tPu+GIQifkY4=;
+        b=EqTk5m8+XSXG31QSRnK5EOFZrcPnlLPNj1gwcXjW8FlctaD4p5DQkDvZHhSrceO83s
+         kEUnKqm9cLHuf9LPX86OnlZsWmkmS6oXwtrDOFDBR2B9AcFk1kKeX9n7XhM8OQMvgx7I
+         c1lOwPy88sbkKlofSLEYBCifPt09ztlNe1uK5nPT/6q1qnREVDTnjUOUNeh8cgHGPyJR
+         613nbNJuLgwYQ1i35z/bgGmYEnjedAQlj0R3pR0bLNSUz7fIOg/SPazNGgQj/sBVS8mu
+         H0Zz0kuwvnBVuzMDx9PMmkOPj6R1bC1En6ELm0+kJSR8QS19+d8Pq9c81W83QKWUg10s
+         wBHw==
+X-Gm-Message-State: AOAM530T8qsOfArirh5DXNNekF1zkMafUNhXWqlSfdb1Ow0uGBD5YysM
+        tfr7bf6PFgSo6Rmfe1V8YEhX5EmRXQfOQNJztRI=
+X-Google-Smtp-Source: ABdhPJwYrtXU7g2SczGLnlQDB9IF5CshbaxR9gpK1/W5xkG0eIDW5YcvMSsB4SQnWRBA7VjWHf2lqwzEA+gELnMEozY=
+X-Received: by 2002:a9d:2487:: with SMTP id z7mr15277413ota.133.1604421376593;
+ Tue, 03 Nov 2020 08:36:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201030202727.1053534-1-cezarsa@gmail.com> <9140ef65-f76d-4bf1-b211-e88c101a5461@ssi.bg>
+In-Reply-To: <9140ef65-f76d-4bf1-b211-e88c101a5461@ssi.bg>
+From:   =?UTF-8?Q?Cezar_S=C3=A1_Espinola?= <cezarsa@gmail.com>
+Date:   Tue, 3 Nov 2020 13:36:05 -0300
+Message-ID: <CA++F93jp=6mfVm9brGOMeBE0EKoJhg4EAuN04jeBnXKsC-rTag@mail.gmail.com>
+Subject: Re: [PATCH RFC] ipvs: add genetlink cmd to dump all services and destinations
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        "open list:IPVS" <netdev@vger.kernel.org>,
+        "open list:IPVS" <lvs-devel@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:NETFILTER" <netfilter-devel@vger.kernel.org>,
+        "open list:NETFILTER" <coreteam@netfilter.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Nov 2020 18:13:19 +0200 Vladimir Oltean wrote:
-> [14538.046926] PC is at skb_release_data+0x6c/0x14c
-> [14538.051518] LR is at consume_skb+0x38/0xd8
-> [14538.055588] pc : [<c10e439c>]    lr : [<c10e3fac>]    psr: 200f0013
-> [14538.061817] sp : c28f1da8  ip : 00000000  fp : c265aa40
-> [14538.067010] r10: 00000000  r9 : 00000000  r8 : c2f98000
-> [14538.072204] r7 : c511d900  r6 : c3d3d900  r5 : c3d3d900  r4 : 00000000
-> [14538.078693] r3 : 000000d3  r2 : 00000001  r1 : 00000000  r0 : 00000000
+Hi,
 
-> [14538.263039] [<c10e439c>] (skb_release_data) from [<c10e3fac>] (consume_skb+0x38/0xd8)
-> [14538.270834] [<c10e3fac>] (consume_skb) from [<c0d529bc>] (gfar_start_xmit+0x704/0x784)
-> [14538.278714] [<c0d529bc>] (gfar_start_xmit) from [<c10fcdf8>] (dev_hard_start_xmit+0xfc/0x254)
-> [14538.287198] [<c10fcdf8>] (dev_hard_start_xmit) from [<c1158524>] (sch_direct_xmit+0x104/0x2e0)
+> > +     if (ctx->idx_svc =3D=3D ctx->start_svc && ctx->last_svc !=3D svc)
+> > +             return 0;
+> > +
+> > +     if (ctx->idx_svc > ctx->start_svc) {
+> > +             if (ip_vs_genl_dump_service(skb, svc, cb) < 0) {
+> > +                     ctx->idx_svc--;
+> > +                     return -EMSGSIZE;
+> > +             }
+> > +             ctx->last_svc =3D svc;
+> > +             ctx->start_dest =3D 0;
+> > +     }
+> > +
+> > +     ctx->idx_dest =3D 0;
+> > +     list_for_each_entry(dest, &svc->destinations, n_list) {
+> > +             if (++ctx->idx_dest <=3D ctx->start_dest)
+> > +                     continue;
+> > +             if (ip_vs_genl_dump_dest(skb, dest, cb) < 0) {
+> > +                     ctx->idx_dest--;
+>
+>         At this point idx_svc is incremented and we
+> stop at the middle of dest list, so we need ctx->idx_svc-- too.
+>
+>         And now what happens if all dests can not fit in a packet?
+> We should start next packet with the same svc? And then
+> user space should merge the dests when multiple packets
+> start with same service?
 
-Looks like one of the error paths freeing a wonky skb.
+My (maybe not so great) idea was to avoid repeating the svc on each
+packet. It's possible for a packet to start with a destination and
+user space must consider then as belonging to the last svc received on
+the previous packet. The comparison "ctx->last_svc !=3D svc" was
+intended to ensure that a packet only starts with destinations if the
+current service is the same as the svc we sent on the previous packet.
 
-Could you decode these addresses to line numbers?
+>
+>         The main points are:
+>
+> - the virtual services are in hash table, their order is
+> not important, user space can sort them
+>
+> - order of dests in a service is important for the schedulers
+>
+> - every packet should contain info for svc, so that we can
+> properly add dests to the right svc
+
+Thanks, I will rework the patch with these points in mind. It does
+sound safer to ensure every packet starts with service information.
+
+> > +nla_put_failure:
+> > +     mutex_unlock(&__ip_vs_mutex);
+> > +     cb->args[0] =3D ctx.idx_svc;
+> > +     cb->args[1] =3D ctx.idx_dest;
+> > +     cb->args[2] =3D (long)ctx.last_svc;
+>
+>         last_svc is used out of __ip_vs_mutex region,
+> so it is not safe. We can get a reference count but this
+> is bad if user space blocks.
+
+I thought it would be relatively safe to store a pointer to the last
+svc since I would only use it for pointer comparison and never
+dereferencing it. But in retrospect it does look unsafe and fragile
+and could probably lead to errors especially if services are modified
+during a dump causing the stored pointer to point to a different
+service.
+
+>         But even if we use just indexes it should be ok.
+> If multiple agents are used in parallel it is not our
+> problem. What can happen is that we can send duplicates
+> or to skip entries (both svcs and dests). It is impossible
+> to keep any kind of references to current entries or even
+> keys to lookup them if another agent can remove them.
+
+Got it. I noticed this behavior while writing this patch and even
+created a few crude validation scripts running parallel agents and
+checking the diff in [1].
+
+[1] - https://github.com/cezarsa/ipvsadm-validate/blob/37ebd39785b1e835c6d4=
+b5c58aaca7be60d5e194/test.sh#L86-L87
+
+Thanks a lot for the review,
+--
+Cezar S=C3=A1 Espinola
