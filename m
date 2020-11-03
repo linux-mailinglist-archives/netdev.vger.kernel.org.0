@@ -2,174 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A7F12A3C70
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 07:02:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E253E2A3C89
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 07:04:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726633AbgKCGCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 01:02:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52780 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725958AbgKCGCH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 01:02:07 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6A5C0617A6;
-        Mon,  2 Nov 2020 22:02:07 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id b138so13841627yba.5;
-        Mon, 02 Nov 2020 22:02:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vuE3QTFrfiF4wmbxx6OC7jkMNtwYpYqyuEMzDotBH8g=;
-        b=PYTNwirRFbE1EMXyt564E0wg4gtcTGU/k8L5QAOH1eF5l0dNtzwbi0Q5Xq62aTDQ7G
-         2jJQ+FAR4YZ5hif5KgZ9L52CZ6FHJZzg2wqY58JsC1awW4iajh6qRM/I0InC+ChL5OJ4
-         80O8qf8t8SvkNO348LVT/ruB9NH0636urUqH6gIhSc4+objhCE/vQ7KLUQq/I7wI3dgO
-         B4yRV54vozKpz3C696R8tI2RnvsKMeBen3w+jpZlv2I+LaBRcG88bLfVRjo4g/1858Mm
-         1N7CRB664YWC4C8JAinDYlxSyWkA7qKLNZoH+xwPh4U2S49RJpx3keyZf8Bkdqcd6M6q
-         Pw9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vuE3QTFrfiF4wmbxx6OC7jkMNtwYpYqyuEMzDotBH8g=;
-        b=LGZYWio7nCQOTXHE/yhF9jIyfbxbYrmVu5kqXqSyILLRyCkqL0vN1FX52j0M4OYrz/
-         pV4jGtCe6epnyyDt8YXXKmuV9WJliOAAQANh0nI2s47OUtLw5GG+jy4Ee48tJF9aJwc5
-         pTlt0VXOAg0uTsfdrMNAY/Sy2tL0VtzdZhk3ogiRdLUYRfzUkL8FZfp9e5mbG7MUSYtA
-         U+nknUQ5/xKGeJLSiYEcy4QLa+pTaXJiSMEJlTOFpfODNkDXj+jOj5KPZo831HJAB1bD
-         YiCnT7qNI+2VO2SSQ7LaSpS1QLoMw5y0f/44P4/GahLbFaIj0adQfawLx7vgH2d8locF
-         CUYA==
-X-Gm-Message-State: AOAM532WCkgKpQj3PeD7opQMHn3H+j/ariFYBz3DpO2rvVnDOKjkQAze
-        u0i6ppLdboL8TljU8ca/psLWFxU/wR8hXJFib1k=
-X-Google-Smtp-Source: ABdhPJwxmc7ZykPF1nffF3uR/zWoH/oLi+zZA3bJA2nabwFFCe538AlFbGmT3jJO2ALBjeZd9kV9LgAA4Rww/WpwJ58=
-X-Received: by 2002:a25:25c2:: with SMTP id l185mr23664805ybl.230.1604383326714;
- Mon, 02 Nov 2020 22:02:06 -0800 (PST)
-MIME-Version: 1.0
-References: <20201029005902.1706310-1-andrii@kernel.org> <20201029005902.1706310-4-andrii@kernel.org>
- <20201103045936.hh7p7mmpf4vffkun@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20201103045936.hh7p7mmpf4vffkun@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 2 Nov 2020 22:01:55 -0800
-Message-ID: <CAEf4BzYD0dJgBVim6errjoNQx-4HnOc1Gc7U57HeYwV2QC_nfg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 03/11] libbpf: unify and speed up BTF string deduplication
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
+        id S1726814AbgKCGE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 01:04:29 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:6010 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725968AbgKCGE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 01:04:28 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A364EI4031790;
+        Mon, 2 Nov 2020 22:04:14 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=i2IJqNMAV3y8SLNEtzuMIVFcD7//HhlDZLXeISTQu1c=;
+ b=BIc1vIYZBiRimeXvXM69pac/1H8VVfTmdu/3BbT2oFQWY3cvbfwuzgT2clGuBDk3Ck1P
+ RhyrxmzWMzVolUgCzai82r5ZtVzqrxDbnT+m2EPviobAkG2RbGr11ZQKtOsF1p9aIN+c
+ cXEC3B4c+F897FA1l//Xam4Dcn5/g0HxIt0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 34hr6p1fmg-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 02 Nov 2020 22:04:14 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 2 Nov 2020 22:03:48 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ctjFGK/JmFmUO0ZonXdQ01VNdM4euUVtf6IPSqut4aBIdYy26gVWsNLaSauF7nY66lMtIYuGMUq49addS3AMeXolgDN1hD673UyiOo9eM3CA12BKVBfg4VD1NRPsPd2K4DktQ6g79zx3awIYFgFyX5yWU+NDKjWcL0jQVWJ2icyLCfySCRLZUTozQ2oLJv6sYIJkVrzNW2G6SSpDSXHgrVAf3IAfhB/rImMeclkOC2vNRtczN+tTzNb7EzGMmUR1q3PqIYyGzWqxElwPYb8YqcvoNSyN9Ns07O4j77HBn0ySlT9koymK7v/fZtgDyBsD9RM1HiL/6iQWXx5NhyeGZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=i2IJqNMAV3y8SLNEtzuMIVFcD7//HhlDZLXeISTQu1c=;
+ b=SF3YdasGuAmDgAuvnDjmJdwRqqy6gkJkud7oBht+HndYY8GsclzKWNdWrT3iYU5nTiYffAttrwMaUShcnBjaa7yr9jmPqAz/46t6sYaacKBErtxaP1pRakopAz2EaRrQ9W+tchw5SDajssmt7D2eaMBv2GreqQzDQqZHn0Bjb/eaP0Di8YPrfeRCbD8TDMkpmLqnSFdvuAVIyQFsRGyYGiP2lyeYTy80NBwln9l7xeXblUFHUJFPxlJtkJo11glZFqwdr7CWTw/Ehn6MRCctOa+HS5jlCul4QAyLiy/cZhCWH6SG3REZEKG/E2HoS0aOVAAYHr1uF0XyFrH0iSw8jA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=i2IJqNMAV3y8SLNEtzuMIVFcD7//HhlDZLXeISTQu1c=;
+ b=FJPsrWQ0E3B8Ljsk6Q/hDnKzVxwCWMvG/Tkf4mmbdaFEX2zMr4kuwR9+lPXSakqAYs3xbQlWD5cQ17QeISdevWMb/jiA79gx7H29z5ijjJv80zhq+RbXPYZXXDfm/hDDmo7XGP64d2087Z3S29wB5EAWknEgmMXQRJH0LnVCMcQ=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Tue, 3 Nov
+ 2020 06:03:44 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::7d77:205b:bbc4:4c70]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::7d77:205b:bbc4:4c70%6]) with mapi id 15.20.3499.030; Tue, 3 Nov 2020
+ 06:03:44 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andrii@kernel.org>
+CC:     bpf <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 11/11] tools/bpftool: add bpftool support for
+ split BTF
+Thread-Topic: [PATCH bpf-next 11/11] tools/bpftool: add bpftool support for
+ split BTF
+Thread-Index: AQHWrY7fk0j3grsiq0upz8EX0y6TV6m18wyA
+Date:   Tue, 3 Nov 2020 06:03:44 +0000
+Message-ID: <42EC1BE8-70F3-4B97-91CC-D2ED2AF310C3@fb.com>
+References: <20201029005902.1706310-1-andrii@kernel.org>
+ <20201029005902.1706310-12-andrii@kernel.org>
+In-Reply-To: <20201029005902.1706310-12-andrii@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.120.23.2.4)
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=fb.com;
+x-originating-ip: [2620:10d:c090:400::5:c2a2]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 160adc8c-546b-447c-d4b0-08d87fbe389b
+x-ms-traffictypediagnostic: BYAPR15MB2999:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB2999EE03508CF3F6C0A8B54CB3110@BYAPR15MB2999.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:172;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0QYbxhUBFp9b/AuwhQV6vUsafWuSOL/n0BZnCkfxb5kngW/ZwAVKRpSyU4znK5jtl47UjIZGmcJZ3KcZhsX7hdADouVY0ono3eCcquYo6L60hIOf5JmQYDYE9A/z/hR1qZ+hnSua5GvaE8cBa11KloOKWVLwdcNESsTSwgANznm/0dZKeq2tgQYfpBgB8cYKU2Ocs9R0E/wWcM2CtVs4JzKpW/HaRovtkSoMfS1T72LWhN8UOCVngJGbHjZ6oRYOXZ4QYHWkTWVz/KNTyFZaSRtxRsIXau/KsGe+ZmDCtezjuQucmEY+JvD18QZqa4hHpA63YuB/7LNh/VIL7ZeU1w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(396003)(376002)(366004)(346002)(136003)(86362001)(2616005)(83380400001)(6512007)(36756003)(33656002)(6506007)(71200400001)(316002)(53546011)(2906002)(478600001)(186003)(6486002)(5660300002)(66946007)(8676002)(66446008)(54906003)(66476007)(76116006)(6916009)(64756008)(66556008)(8936002)(4326008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: xe413ihFbkb9mBGXugNA7RnGYfKvJ2ZoqchXRxW7O0nunpgdIZ0K/lp8YkZ/DKo2ZjCdxqPBzwXEuTx2Za5+s8MRXdVSoour0e622+QUBBapm5lFJ7TATo8zx85qkF5i5cjPmB/rim3RGvJrWht+2wIrpskt29av13EYPRnUmRQRjZcT8cEnSDGtPekPsseB0WBBL001+HqUWHGqCFdL0Ahg8JKLy0h/OHrRP7gAHvm1jrq19gKiDqZCmGGYZbLhAqUqJWVTAWSrM9/foSrEJY4Z1Mv8WTS0H8qN90NPNLfXoqMtE4ErbDwEcILlf5+vUSVeJpzx6T9lsT8BJlNvsw+AiKX9SLB1JZcG07oBjK3cxHQpWou+BnJ6j5G4QUPSBd3fge8WzINVW7T2234mFSkakPy+7ZMUcS7O93ALaKqlbi3fI1v6zcvjO+wZZce9EXL4Dl7EcuMaEu52EMRd45hQCPVzjld6NQmpk3ylOO9Cd6g28SEjotMvbzzOgJlQeUEbzb/cMlJqXJz9hdV1twqVXO4APBlkj6vGzZVzEDMnErAZm15FpOr2S6imFckR8u2h+eXcw+iBoWyfFYzTzCQI/PzKG817Ludkb9B1gpLgMrN340z7AMZne+2ibHQrc6BUz84fGUm7UDJ3hs8SR4rLLh32lgPph2/8X47BkTBPgzqqIZfdh2Z/oorWSO/L
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1441E7B843D5C34FB71CC1B0B41DD8C6@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 160adc8c-546b-447c-d4b0-08d87fbe389b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Nov 2020 06:03:44.1846
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Qne9+aWdMBM0V+tVXkA2T4WsOOw47wF8nfWV7KAM5BcQAUldl4D3rbuKsOrG84CXEfmEbZ8kUBLAt45/xTPweg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2999
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-03_02:2020-11-02,2020-11-03 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ phishscore=0 clxscore=1015 lowpriorityscore=0 adultscore=0 mlxscore=0
+ bulkscore=0 suspectscore=0 mlxlogscore=999 spamscore=0 priorityscore=1501
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011030045
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 2, 2020 at 8:59 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Oct 28, 2020 at 05:58:54PM -0700, Andrii Nakryiko wrote:
-> > From: Andrii Nakryiko <andriin@fb.com>
-> >
-> > Revamp BTF dedup's string deduplication to match the approach of writable BTF
-> > string management. This allows to transfer deduplicated strings index back to
-> > BTF object after deduplication without expensive extra memory copying and hash
-> > map re-construction. It also simplifies the code and speeds it up, because
-> > hashmap-based string deduplication is faster than sort + unique approach.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  tools/lib/bpf/btf.c | 265 +++++++++++++++++---------------------------
-> >  1 file changed, 99 insertions(+), 166 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> > index 89fecfe5cb2b..db9331fea672 100644
-> > --- a/tools/lib/bpf/btf.c
-> > +++ b/tools/lib/bpf/btf.c
-> > @@ -90,6 +90,14 @@ struct btf {
-> >       struct hashmap *strs_hash;
-> >       /* whether strings are already deduplicated */
-> >       bool strs_deduped;
-> > +     /* extra indirection layer to make strings hashmap work with stable
-> > +      * string offsets and ability to transparently choose between
-> > +      * btf->strs_data or btf_dedup->strs_data as a source of strings.
-> > +      * This is used for BTF strings dedup to transfer deduplicated strings
-> > +      * data back to struct btf without re-building strings index.
-> > +      */
-> > +     void **strs_data_ptr;
->
-> I thought one of the ideas of dedup algo was that strings were deduped first,
-> so there is no need to rebuild them.
 
-Ugh.. many things to unpack here. Let's try.
 
-Yes, the idea of dedup is to have only unique strings. But we always
-were rebuilding strings during dedup, here we are just changing the
-algorithm for string dedup from sort+uniq to hash table. We were
-deduping strings unconditionally because we don't know how the BTF
-strings section was created in the first place and if it's already
-deduplicated or not. So we had to always do it before.
+> On Oct 28, 2020, at 5:59 PM, Andrii Nakryiko <andrii@kernel.org> wrote:
+>=20
+> Add ability to work with split BTF by providing extra -B flag, which allo=
+ws to
+> specify the path to the base BTF file.
+>=20
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 
-With BTF write APIs the situation became a bit more nuanced. If we
-create BTF programmatically from scratch (btf_new_empty()), then
-libbpf guarantees (by construction) that all added strings are
-auto-deduped. In such a case btf->strs_deduped will be set to true and
-during btf_dedup() we'll skip string deduplication. It's purely a
-performance improvement and it benefits the main btf_dedup workflow in
-pahole.
+Acked-by: Song Liu <songliubraving@fb.com>
 
-But if ready-built BTF was loaded from somewhere first and then
-modified with BTF write APIs, then it's a bit different. For existing
-strings, when we transition from read-only BTF to writable BTF, we
-build string lookup hashmap, but we don't deduplicate and remap string
-offsets. So if loaded BTF had string duplicates, it will continue
-having string duplicates. The string lookup index will pick arbitrary
-instance of duplicated string as a unique key, but strings data will
-still have duplicates and there will be types that still reference
-duplicated string. Until (and if) we do btf_dedup(). At that time
-we'll create another unique hash table *and* will remap all string
-offsets across all types.
+> ---
+> tools/bpf/bpftool/btf.c  |  9 ++++++---
+> tools/bpf/bpftool/main.c | 15 ++++++++++++++-
+> tools/bpf/bpftool/main.h |  1 +
+> 3 files changed, 21 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+> index 8ab142ff5eac..c96b56e8e3a4 100644
+> --- a/tools/bpf/bpftool/btf.c
+> +++ b/tools/bpf/bpftool/btf.c
+> @@ -358,8 +358,12 @@ static int dump_btf_raw(const struct btf *btf,
+> 		}
+> 	} else {
+> 		int cnt =3D btf__get_nr_types(btf);
+> +		int start_id =3D 1;
+>=20
+> -		for (i =3D 1; i <=3D cnt; i++) {
+> +		if (base_btf)
+> +			start_id =3D btf__get_nr_types(base_btf) + 1;
+> +
+> +		for (i =3D start_id; i <=3D cnt; i++) {
+> 			t =3D btf__type_by_id(btf, i);
+> 			dump_btf_type(btf, i, t);
+> 		}
+> @@ -438,7 +442,6 @@ static int do_dump(int argc, char **argv)
+> 		return -1;
+> 	}
+> 	src =3D GET_ARG();
+> -
+> 	if (is_prefix(src, "map")) {
+> 		struct bpf_map_info info =3D {};
+> 		__u32 len =3D sizeof(info);
+> @@ -499,7 +502,7 @@ static int do_dump(int argc, char **argv)
+> 		}
+> 		NEXT_ARG();
+> 	} else if (is_prefix(src, "file")) {
+> -		btf =3D btf__parse(*argv, NULL);
+> +		btf =3D btf__parse_split(*argv, base_btf);
+> 		if (IS_ERR(btf)) {
+> 			err =3D -PTR_ERR(btf);
+> 			btf =3D NULL;
+> diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
+> index 682daaa49e6a..b86f450e6fce 100644
+> --- a/tools/bpf/bpftool/main.c
+> +++ b/tools/bpf/bpftool/main.c
+> @@ -11,6 +11,7 @@
+>=20
+> #include <bpf/bpf.h>
+> #include <bpf/libbpf.h>
+> +#include <bpf/btf.h>
+>=20
+> #include "main.h"
+>=20
+> @@ -28,6 +29,7 @@ bool show_pinned;
+> bool block_mount;
+> bool verifier_logs;
+> bool relaxed_maps;
+> +struct btf *base_btf;
+> struct pinned_obj_table prog_table;
+> struct pinned_obj_table map_table;
+> struct pinned_obj_table link_table;
+> @@ -391,6 +393,7 @@ int main(int argc, char **argv)
+> 		{ "mapcompat",	no_argument,	NULL,	'm' },
+> 		{ "nomount",	no_argument,	NULL,	'n' },
+> 		{ "debug",	no_argument,	NULL,	'd' },
+> +		{ "base-btf",	required_argument, NULL, 'B' },
+> 		{ 0 }
+> 	};
+> 	int opt, ret;
+> @@ -407,7 +410,7 @@ int main(int argc, char **argv)
+> 	hash_init(link_table.table);
+>=20
+> 	opterr =3D 0;
+> -	while ((opt =3D getopt_long(argc, argv, "Vhpjfmnd",
+> +	while ((opt =3D getopt_long(argc, argv, "VhpjfmndB:",
+> 				  options, NULL)) >=3D 0) {
+> 		switch (opt) {
+> 		case 'V':
+> @@ -441,6 +444,15 @@ int main(int argc, char **argv)
+> 			libbpf_set_print(print_all_levels);
+> 			verifier_logs =3D true;
+> 			break;
+> +		case 'B':
+> +			base_btf =3D btf__parse(optarg, NULL);
+> +			if (libbpf_get_error(base_btf)) {
+> +				p_err("failed to parse base BTF at '%s': %ld\n",
+> +				      optarg, libbpf_get_error(base_btf));
+> +				base_btf =3D NULL;
+> +				return -1;
+> +			}
+> +			break;
+> 		default:
+> 			p_err("unrecognized option '%s'", argv[optind - 1]);
+> 			if (json_output)
+> @@ -465,6 +477,7 @@ int main(int argc, char **argv)
+> 		delete_pinned_obj_table(&map_table);
+> 		delete_pinned_obj_table(&link_table);
+> 	}
+> +	btf__free(base_btf);
+>=20
+> 	return ret;
+> }
+> diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
+> index c46e52137b87..76e91641262b 100644
+> --- a/tools/bpf/bpftool/main.h
+> +++ b/tools/bpf/bpftool/main.h
+> @@ -90,6 +90,7 @@ extern bool show_pids;
+> extern bool block_mount;
+> extern bool verifier_logs;
+> extern bool relaxed_maps;
+> +extern struct btf *base_btf;
+> extern struct pinned_obj_table prog_table;
+> extern struct pinned_obj_table map_table;
+> extern struct pinned_obj_table link_table;
+> --=20
+> 2.24.1
+>=20
 
-I did it this way intentionally (not remapping strings when doing
-read-only -> writable BTF transition) to not accidentally corrupt
-.BTF.ext strings. If I were to do full string dedup for r/o ->
-writable transition, I'd need to add APIs to "link" struct btf_ext to
-struct btf, so that libbpf could remap .BTF.ext strings transparently.
-But I didn't want to add those APIs (yet) and didn't want to deal with
-mutable struct btf_ext (yet).
-
-So, in short, for strings dedup fundamentally nothing changed at all.
-
-> Then split BTF cannot touch base BTF strings and they're immutable.
-
-This is exactly the case right now. Nothing in base BTF changes, ever.
-
-> But the commit log is talking about transfer of strings and
-> hash map re-construction? Why split BTF would reconstruct anything?
-
-This transfer of strings is for split BTF's strings data only. In
-general case, we have some unknown strings data in split BTF. When we
-do dedup, we need to make sure that split BTF strings are deduplicated
-(we don't touch base BTF strings at all). For that we need to
-construct a new hashmap. Once we constructed it, we have new strings
-data with deduplicated strings, so to avoid creating another big copy
-for struct btf, we just "transfer" that data to struct btf from struct
-btf_dedup. void **strs_data_ptr just allows reusing the same (already
-constructed) hashmap, same underlying blog of deduplicated string
-data, same hashing and equality functions.
-
-> It either finds a string in a base BTF or adds to its own strings section.
-> Is it all due to switch to hash? The speedup motivation is clear, but then
-> it sounds like that the speedup is causing all these issues.
-> The strings could have stayed as-is. Just a bit slower ?
-
-Previously we were able to rewrite strings in-place and strings data
-was never reallocated (because BTF was read-only always). So it was
-all a bit simpler. By using double-indirection we don't have to build
-a third hashmap once we are done with strings dedup, we just replace
-struct btf's own string lookup hashmap and string data memory.
-Alternative is another expensive memory allocation and potentially
-pretty big hashmap copy.
-
-Apart from double indirection, the algorithm is much simpler now. If I
-were writing original BTF dedup in C++, I'd use a hashmap approach
-back then. But we didn't have hashmap in libbpf yet, so sort + uniq
-was chosen.
