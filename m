@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53D3B2A572D
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:36:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 204AD2A5729
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:36:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732222AbgKCVg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 16:36:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57430 "EHLO
+        id S1731574AbgKCVgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 16:36:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732301AbgKCVew (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 16:34:52 -0500
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14310C0613D1;
-        Tue,  3 Nov 2020 13:34:52 -0800 (PST)
-Received: by mail-qk1-x742.google.com with SMTP id 12so12802327qkl.8;
-        Tue, 03 Nov 2020 13:34:52 -0800 (PST)
+        with ESMTP id S1731989AbgKCVfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 16:35:00 -0500
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EA3C0613D1;
+        Tue,  3 Nov 2020 13:34:59 -0800 (PST)
+Received: by mail-qk1-x72b.google.com with SMTP id s14so16666603qkg.11;
+        Tue, 03 Nov 2020 13:34:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=NsjjxFZzTXqmInDEDHwBdp0oyW2WVSDONEXFS3a/zfw=;
-        b=fak9GnQTQQFa+0+RVRVzV8h7ZtLK5t32useZat7rXjyTftDRzOu8tLVSCdMG193Zid
-         U8NxJuVv6O2sXlmJAidb35vBRAUi9Xd2aWzlT/wfrY40JMEjoeGyZ4Rm8LoZrmc4aXDm
-         mUw6fe+jpRYWYH9+orVmzhBS4adyAte5joLG6PG32lCCy0+RiDEazKDYL5BynQNB322n
-         KreH8vKdb+iz0rTnXy3ta8RaZdCSIo5DGpB4kDaRhL9EpNQlHF9fHnDGzWQt1n6K+Web
-         s3veyFd8puYF5H77T5WWILehHbZxzYkah8hagvw3oKaiNJc0XFnXgNERhKNSsY5FKx0X
-         6avQ==
+        bh=7sibbl/pyolY+5k2JO50F/H9FtbGtATfpa9g+24S/dg=;
+        b=hUScGbJqCCbkrDJfQn1jw1YGJiaGjbT1n/iTEYK7BiXtr9LRj+yL4iDp3D0frkgha+
+         qt27MG18PeF4Z1xIPMorySN/Y1g0YO0HJuzv41zhvQZi3KWee8ygd8lNsl+oEdwQjOpW
+         0tn3nZhDtRGLsORNOXGgmgPyIrjjaZoubdLw9Q90TBvumNwSPHSUFpI03hIHvhteNi15
+         pQKfnJi9zmde4AyfWc8BWCOLUXaAUkjI6V59PZ4W1jNG1tq0b2GQtwCl1JYK5Tyd73PD
+         xBZyVgcurDPXIqA93liTQsv9W8W+I6jxMbiCNWVwXSSj9ImWY3xCNsIK2X1oZBYjruQr
+         Lztg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=NsjjxFZzTXqmInDEDHwBdp0oyW2WVSDONEXFS3a/zfw=;
-        b=cuZlJGgxkNe99kfG5cgG7moxJaW3I8PaaeD2cdIYtpmyk6K3PxtKtB6yZEic7hJAk0
-         oVd/r89M5PaYYfH8IG+o3YWTGO+ARTUYbM19UCUgQjUVHxSfDbE5wcm62n/VNoAD6o+/
-         HBkwwlEKEmYgT0RRzufUR70CgW5yXWsTzi1wU+2dK/HvKzS2eswpURLtQoNyRtBDZ9b0
-         Rmr/X9mKtzAgc/eD+KIzz0wFYObNnfrU77chlouF6UrBttv3QVSZv/wfJDF52W3muirG
-         UkmmnVgB92u/7NPGiLv9DV0m8bFATP7TDfqQMIGTPhRC+JY1u0Tsx5bOqWvY4B/VmKWk
-         ow+A==
-X-Gm-Message-State: AOAM533cg5u64InriefXSRQ2QAWaNqbOtuWH0DhDV6bmkomiQYQzq4V+
-        9IbWCnwGp0UcStS+IolXELw=
-X-Google-Smtp-Source: ABdhPJyMeaHOqbpGeGVSvQbE6opM32VYsQKDCf0HOG1vq7sF/cJdWefy6ZwYibE8UKlTEom0Cg33kg==
-X-Received: by 2002:a05:620a:112a:: with SMTP id p10mr22167699qkk.446.1604439291158;
-        Tue, 03 Nov 2020 13:34:51 -0800 (PST)
+        bh=7sibbl/pyolY+5k2JO50F/H9FtbGtATfpa9g+24S/dg=;
+        b=YXSwBH2a73hggTAV201EE5NnJJ/Rk+9mZ8THG8GBEKUemzz+k5uFkDrOtGxJ2mYMFy
+         TkRHGsRHYQhGcko3Fen7cDxkpxVA44IaRT2jFDYkNXGTWr6BGjgTcWgPIssD0DaIg9Zj
+         S+V43ywEhQmxZzLsN52fIncoc7KYwcWnHoUvht0arFJzrfqVn16rVLFzbO4rMH+v+//L
+         xe1jwgg0DTihrtJQSKmJ3McIo7ncmWpD8/03vFXU0XCus8vI3rsV1U1KnWuyc3oJZkBx
+         R9zOVwp6VVZnQu9nmC3RN8mhd8p4lj2xayO4EHQl362Xj9EGMmZ6vREL1P7JuZ2+bFfX
+         7OKw==
+X-Gm-Message-State: AOAM532A3bv4Q9nzMMnjZo5mAPf2+CeMC8IPDJbIGpqy8A9h4ri3b+OB
+        Wuj1v/zOCzySIdGbM2AcuB8=
+X-Google-Smtp-Source: ABdhPJwcDs/bKC6RoOZReKvqrOADJePKKJsrYOQ7Hxx8yV7g2kpRZEAtoqU5N3+mGxqRJnGB8FlpMA==
+X-Received: by 2002:ae9:e110:: with SMTP id g16mr12557062qkm.100.1604439298898;
+        Tue, 03 Nov 2020 13:34:58 -0800 (PST)
 Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
-        by smtp.gmail.com with ESMTPSA id 185sm10814635qkm.113.2020.11.03.13.34.49
+        by smtp.gmail.com with ESMTPSA id 6sm5993qks.51.2020.11.03.13.34.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 13:34:50 -0800 (PST)
-Subject: [bpf-next PATCH v3 1/5] selftests/bpf: Move test_tcppbf_user into
- test_progs
+        Tue, 03 Nov 2020 13:34:58 -0800 (PST)
+Subject: [bpf-next PATCH v3 2/5] selftests/bpf: Drop python client/server in
+ favor of threads
 From:   Alexander Duyck <alexander.duyck@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
         john.fastabend@gmail.com, kernel-team@fb.com,
         netdev@vger.kernel.org, edumazet@google.com, brakmo@fb.com,
         andrii.nakryiko@gmail.com, alexanderduyck@fb.com
-Date:   Tue, 03 Nov 2020 13:34:48 -0800
-Message-ID: <160443928881.1086697.17661359319919165370.stgit@localhost.localdomain>
+Date:   Tue, 03 Nov 2020 13:34:56 -0800
+Message-ID: <160443929638.1086697.2430242340980315521.stgit@localhost.localdomain>
 In-Reply-To: <160443914296.1086697.4231574770375103169.stgit@localhost.localdomain>
 References: <160443914296.1086697.4231574770375103169.stgit@localhost.localdomain>
 User-Agent: StGit/0.23
@@ -69,149 +69,321 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexander Duyck <alexanderduyck@fb.com>
 
-Recently a bug was missed due to the fact that test_tcpbpf_user is not a
-part of test_progs. In order to prevent similar issues in the future move
-the test functionality into test_progs. By doing this we can make certain
-that it is a part of standard testing and will not be overlooked.
+Drop the tcp_client/server.py files in favor of using a client and server
+thread within the test case. Specifically we spawn a new thread to play the
+role of the server, and the main testing thread plays the role of client.
 
-As a part of moving the functionality into test_progs it is necessary to
-integrate with the test_progs framework and to drop any redundant code.
-This patch:
-1. Cleans up the include headers
-2. Dropped a duplicate definition of bpf_find_map
-3. Switched over to using test_progs specific cgroup functions
-4. Renamed main to test_tcpbpf_user
-5. Dropped return value in favor of CHECK_FAIL to check for errors
+Add logic to the end of the run_test function to guarantee that the sockets
+are closed when we begin verifying results.
 
-The general idea is that I wanted to keep the changes as small as possible
-while moving the file into the test_progs framework. The follow-on patches
-are meant to clean up the remaining issues such as the use of CHECK_FAIL.
+Doing this we are able to reduce overhead since we don't have two python
+workers possibly floating around. In addition we don't have to worry about
+synchronization issues and as such the retry loop waiting for the threads
+to close the sockets can be dropped as we will have already closed the
+sockets in the local executable and synchronized the server thread.
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
 Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
 ---
- tools/testing/selftests/bpf/.gitignore             |    1 
- tools/testing/selftests/bpf/Makefile               |    3 -
- .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |   42 ++++----------------
- 3 files changed, 10 insertions(+), 36 deletions(-)
- rename tools/testing/selftests/bpf/{test_tcpbpf_user.c => prog_tests/tcpbpf_user.c} (81%)
+ .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |   95 ++++++++++++++++----
+ tools/testing/selftests/bpf/tcp_client.py          |   50 -----------
+ tools/testing/selftests/bpf/tcp_server.py          |   80 -----------------
+ 3 files changed, 78 insertions(+), 147 deletions(-)
+ delete mode 100755 tools/testing/selftests/bpf/tcp_client.py
+ delete mode 100755 tools/testing/selftests/bpf/tcp_server.py
 
-diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-index 3ab1200e172f..395ae040ce1f 100644
---- a/tools/testing/selftests/bpf/.gitignore
-+++ b/tools/testing/selftests/bpf/.gitignore
-@@ -8,7 +8,6 @@ FEATURE-DUMP.libbpf
- fixdep
- test_dev_cgroup
- /test_progs*
--test_tcpbpf_user
- test_verifier_log
- feature
- test_sock
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 542768f5195b..50e5b18fc455 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -32,7 +32,7 @@ LDLIBS += -lcap -lelf -lz -lrt -lpthread
- 
- # Order correspond to 'make run_tests' order
- TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test_progs \
--	test_verifier_log test_dev_cgroup test_tcpbpf_user \
-+	test_verifier_log test_dev_cgroup \
- 	test_sock test_sockmap get_cgroup_id_user test_socket_cookie \
- 	test_cgroup_storage \
- 	test_netcnt test_tcpnotify_user test_sysctl \
-@@ -163,7 +163,6 @@ $(OUTPUT)/test_sock: cgroup_helpers.c
- $(OUTPUT)/test_sock_addr: cgroup_helpers.c
- $(OUTPUT)/test_socket_cookie: cgroup_helpers.c
- $(OUTPUT)/test_sockmap: cgroup_helpers.c
--$(OUTPUT)/test_tcpbpf_user: cgroup_helpers.c
- $(OUTPUT)/test_tcpnotify_user: cgroup_helpers.c trace_helpers.c
- $(OUTPUT)/get_cgroup_id_user: cgroup_helpers.c
- $(OUTPUT)/test_cgroup_storage: cgroup_helpers.c
-diff --git a/tools/testing/selftests/bpf/test_tcpbpf_user.c b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-similarity index 81%
-rename from tools/testing/selftests/bpf/test_tcpbpf_user.c
-rename to tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-index 74a9e49988b6..caa8d3adec8a 100644
---- a/tools/testing/selftests/bpf/test_tcpbpf_user.c
+diff --git a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+index caa8d3adec8a..616269abdb41 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
 +++ b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-@@ -1,21 +1,11 @@
+@@ -1,13 +1,14 @@
  // SPDX-License-Identifier: GPL-2.0
  #include <inttypes.h>
--#include <stdio.h>
--#include <stdlib.h>
--#include <unistd.h>
--#include <errno.h>
--#include <string.h>
--#include <linux/bpf.h>
--#include <sys/types.h>
--#include <bpf/bpf.h>
--#include <bpf/libbpf.h>
--
--#include "bpf_rlimit.h"
--#include "bpf_util.h"
--#include "cgroup_helpers.h"
-+#include <test_progs.h>
+ #include <test_progs.h>
++#include <network_helpers.h>
  
  #include "test_tcpbpf.h"
  
-+#define CG_NAME "/tcpbpf-user-test"
-+
- /* 3 comes from one listening socket + both ends of the connection */
- #define EXPECTED_CLOSE_EVENTS		3
++#define LO_ADDR6 "::1"
+ #define CG_NAME "/tcpbpf-user-test"
  
-@@ -76,25 +66,11 @@ int verify_sockopt_result(int sock_map_fd)
+-/* 3 comes from one listening socket + both ends of the connection */
+-#define EXPECTED_CLOSE_EVENTS		3
++static __u32 duration;
+ 
+ #define EXPECT_EQ(expected, actual, fmt)			\
+ 	do {							\
+@@ -42,7 +43,9 @@ int verify_result(const struct tcpbpf_globals *result)
+ 	EXPECT_EQ(0x80, result->bad_cb_test_rv, PRIu32);
+ 	EXPECT_EQ(0, result->good_cb_test_rv, PRIu32);
+ 	EXPECT_EQ(1, result->num_listen, PRIu32);
+-	EXPECT_EQ(EXPECTED_CLOSE_EVENTS, result->num_close_events, PRIu32);
++
++	/* 3 comes from one listening socket + both ends of the connection */
++	EXPECT_EQ(3, result->num_close_events, PRIu32);
+ 
+ 	return ret;
+ }
+@@ -66,6 +69,75 @@ int verify_sockopt_result(int sock_map_fd)
  	return ret;
  }
  
--static int bpf_find_map(const char *test, struct bpf_object *obj,
--			const char *name)
--{
--	struct bpf_map *map;
--
--	map = bpf_object__find_map_by_name(obj, name);
--	if (!map) {
--		printf("%s:FAIL:map '%s' not found\n", test, name);
--		return -1;
--	}
--	return bpf_map__fd(map);
--}
--
--int main(int argc, char **argv)
-+void test_tcpbpf_user(void)
++static int run_test(void)
++{
++	int listen_fd = -1, cli_fd = -1, accept_fd = -1;
++	char buf[1000];
++	int err = -1;
++	int i, rv;
++
++	listen_fd = start_server(AF_INET6, SOCK_STREAM, LO_ADDR6, 0, 0);
++	if (CHECK(listen_fd == -1, "start_server", "listen_fd:%d errno:%d\n",
++		  listen_fd, errno))
++		goto done;
++
++	cli_fd = connect_to_fd(listen_fd, 0);
++	if (CHECK(cli_fd == -1, "connect_to_fd(listen_fd)",
++		  "cli_fd:%d errno:%d\n", cli_fd, errno))
++		goto done;
++
++	accept_fd = accept(listen_fd, NULL, NULL);
++	if (CHECK(accept_fd == -1, "accept(listen_fd)",
++		  "accept_fd:%d errno:%d\n", accept_fd, errno))
++		goto done;
++
++	/* Send 1000B of '+'s from cli_fd -> accept_fd */
++	for (i = 0; i < 1000; i++)
++		buf[i] = '+';
++
++	rv = send(cli_fd, buf, 1000, 0);
++	if (CHECK(rv != 1000, "send(cli_fd)", "rv:%d errno:%d\n", rv, errno))
++		goto done;
++
++	rv = recv(accept_fd, buf, 1000, 0);
++	if (CHECK(rv != 1000, "recv(accept_fd)", "rv:%d errno:%d\n", rv, errno))
++		goto done;
++
++	/* Send 500B of '.'s from accept_fd ->cli_fd */
++	for (i = 0; i < 500; i++)
++		buf[i] = '.';
++
++	rv = send(accept_fd, buf, 500, 0);
++	if (CHECK(rv != 500, "send(accept_fd)", "rv:%d errno:%d\n", rv, errno))
++		goto done;
++
++	rv = recv(cli_fd, buf, 500, 0);
++	if (CHECK(rv != 500, "recv(cli_fd)", "rv:%d errno:%d\n", rv, errno))
++		goto done;
++
++	/*
++	 * shutdown accept first to guarantee correct ordering for
++	 * bytes_received and bytes_acked when we go to verify the results.
++	 */
++	shutdown(accept_fd, SHUT_WR);
++	err = recv(cli_fd, buf, 1, 0);
++	if (CHECK(err, "recv(cli_fd) for fin", "err:%d errno:%d\n", err, errno))
++		goto done;
++
++	shutdown(cli_fd, SHUT_WR);
++	err = recv(accept_fd, buf, 1, 0);
++	CHECK(err, "recv(accept_fd) for fin", "err:%d errno:%d\n", err, errno);
++done:
++	if (accept_fd != -1)
++		close(accept_fd);
++	if (cli_fd != -1)
++		close(cli_fd);
++	if (listen_fd != -1)
++		close(listen_fd);
++
++	return err;
++}
++
+ void test_tcpbpf_user(void)
  {
  	const char *file = "test_tcpbpf_kern.o";
- 	int prog_fd, map_fd, sock_map_fd;
- 	struct tcpbpf_globals g = {0};
--	const char *cg_path = "/foo";
+@@ -74,7 +146,6 @@ void test_tcpbpf_user(void)
  	int error = EXIT_FAILURE;
  	struct bpf_object *obj;
  	int cg_fd = -1;
-@@ -102,7 +78,7 @@ int main(int argc, char **argv)
+-	int retry = 10;
  	__u32 key = 0;
  	int rv;
  
--	cg_fd = cgroup_setup_and_join(cg_path);
-+	cg_fd = test__join_cgroup(CG_NAME);
- 	if (cg_fd < 0)
- 		goto err;
- 
-@@ -155,11 +131,11 @@ int main(int argc, char **argv)
+@@ -94,11 +165,6 @@ void test_tcpbpf_user(void)
  		goto err;
  	}
  
--	printf("PASSED!\n");
- 	error = 0;
- err:
- 	bpf_prog_detach(cg_fd, BPF_CGROUP_SOCK_OPS);
--	close(cg_fd);
--	cleanup_cgroup_environment();
--	return error;
-+	if (cg_fd != -1)
-+		close(cg_fd);
+-	if (system("./tcp_server.py")) {
+-		printf("FAILED: TCP server\n");
+-		goto err;
+-	}
+-
+ 	map_fd = bpf_find_map(__func__, obj, "global_map");
+ 	if (map_fd < 0)
+ 		goto err;
+@@ -107,20 +173,15 @@ void test_tcpbpf_user(void)
+ 	if (sock_map_fd < 0)
+ 		goto err;
+ 
+-retry_lookup:
++	if (run_test())
++		goto err;
 +
-+	CHECK_FAIL(error);
- }
+ 	rv = bpf_map_lookup_elem(map_fd, &key, &g);
+ 	if (rv != 0) {
+ 		printf("FAILED: bpf_map_lookup_elem returns %d\n", rv);
+ 		goto err;
+ 	}
+ 
+-	if (g.num_close_events != EXPECTED_CLOSE_EVENTS && retry--) {
+-		printf("Unexpected number of close events (%d), retrying!\n",
+-		       g.num_close_events);
+-		usleep(100);
+-		goto retry_lookup;
+-	}
+-
+ 	if (verify_result(&g)) {
+ 		printf("FAILED: Wrong stats\n");
+ 		goto err;
+diff --git a/tools/testing/selftests/bpf/tcp_client.py b/tools/testing/selftests/bpf/tcp_client.py
+deleted file mode 100755
+index bfff82be3fc1..000000000000
+--- a/tools/testing/selftests/bpf/tcp_client.py
++++ /dev/null
+@@ -1,50 +0,0 @@
+-#!/usr/bin/env python3
+-#
+-# SPDX-License-Identifier: GPL-2.0
+-#
+-
+-import sys, os, os.path, getopt
+-import socket, time
+-import subprocess
+-import select
+-
+-def read(sock, n):
+-    buf = b''
+-    while len(buf) < n:
+-        rem = n - len(buf)
+-        try: s = sock.recv(rem)
+-        except (socket.error) as e: return b''
+-        buf += s
+-    return buf
+-
+-def send(sock, s):
+-    total = len(s)
+-    count = 0
+-    while count < total:
+-        try: n = sock.send(s)
+-        except (socket.error) as e: n = 0
+-        if n == 0:
+-            return count;
+-        count += n
+-    return count
+-
+-
+-serverPort = int(sys.argv[1])
+-
+-# create active socket
+-sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+-try:
+-    sock.connect(('::1', serverPort))
+-except socket.error as e:
+-    sys.exit(1)
+-
+-buf = b''
+-n = 0
+-while n < 1000:
+-    buf += b'+'
+-    n += 1
+-
+-sock.settimeout(1);
+-n = send(sock, buf)
+-n = read(sock, 500)
+-sys.exit(0)
+diff --git a/tools/testing/selftests/bpf/tcp_server.py b/tools/testing/selftests/bpf/tcp_server.py
+deleted file mode 100755
+index 42ab8882f00f..000000000000
+--- a/tools/testing/selftests/bpf/tcp_server.py
++++ /dev/null
+@@ -1,80 +0,0 @@
+-#!/usr/bin/env python3
+-#
+-# SPDX-License-Identifier: GPL-2.0
+-#
+-
+-import sys, os, os.path, getopt
+-import socket, time
+-import subprocess
+-import select
+-
+-def read(sock, n):
+-    buf = b''
+-    while len(buf) < n:
+-        rem = n - len(buf)
+-        try: s = sock.recv(rem)
+-        except (socket.error) as e: return b''
+-        buf += s
+-    return buf
+-
+-def send(sock, s):
+-    total = len(s)
+-    count = 0
+-    while count < total:
+-        try: n = sock.send(s)
+-        except (socket.error) as e: n = 0
+-        if n == 0:
+-            return count;
+-        count += n
+-    return count
+-
+-
+-SERVER_PORT = 12877
+-MAX_PORTS = 2
+-
+-serverPort = SERVER_PORT
+-serverSocket = None
+-
+-# create passive socket
+-serverSocket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+-
+-try: serverSocket.bind(('::1', 0))
+-except socket.error as msg:
+-    print('bind fails: ' + str(msg))
+-
+-sn = serverSocket.getsockname()
+-serverPort = sn[1]
+-
+-cmdStr = ("./tcp_client.py %d &") % (serverPort)
+-os.system(cmdStr)
+-
+-buf = b''
+-n = 0
+-while n < 500:
+-    buf += b'.'
+-    n += 1
+-
+-serverSocket.listen(MAX_PORTS)
+-readList = [serverSocket]
+-
+-while True:
+-    readyRead, readyWrite, inError = \
+-        select.select(readList, [], [], 2)
+-
+-    if len(readyRead) > 0:
+-        waitCount = 0
+-        for sock in readyRead:
+-            if sock == serverSocket:
+-                (clientSocket, address) = serverSocket.accept()
+-                address = str(address[0])
+-                readList.append(clientSocket)
+-            else:
+-                sock.settimeout(1);
+-                s = read(sock, 1000)
+-                n = send(sock, buf)
+-                sock.close()
+-                serverSocket.close()
+-                sys.exit(0)
+-    else:
+-        print('Select timeout!')
+-        sys.exit(1)
 
 
