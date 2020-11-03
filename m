@@ -2,206 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C47612A3D47
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:12:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EC902A3D6E
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:17:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727928AbgKCHLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 02:11:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35334 "EHLO
+        id S1727529AbgKCHRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 02:17:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727898AbgKCHLm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 02:11:42 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D16F3C061A4A;
-        Mon,  2 Nov 2020 23:11:41 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1604387500;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zOdndC3insAylzRsSIke11aHMe3UCW6E/WR8+TlsidI=;
-        b=RziyoXHL48GZR5qUNqgkItEzRt/MgB8IWgYV7HjWEgHGaRW2lWz7skTAoyZeHX9UiXEJJl
-        5ES/MIZhVjwR9IfeR57miaHFRupQFzGuM9bSwjvQsl3klnVeidadSTlPGHLSEXuGa50dbg
-        OatgXIv4DdW+7Qt+RgQrEVPesH6fyv5NUy4IdOj4c4EemdpHcdFeAMYBg5deiuYyytQkeC
-        d5MhGyxS15vFcUCLWXDE3rJwRro+y4XDIaXVY2NubzaEgYlD/R7yRYOF3rjmUKwTyf3V5F
-        DtN2YQuXB40EEyhwnlyC/M+MNataZrQTx4O1C4MRbxaNAjgB9nJwrq5KvX6OdQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1604387500;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zOdndC3insAylzRsSIke11aHMe3UCW6E/WR8+TlsidI=;
-        b=dO4DX0Bp6esAtsFdbnynB4FaSCn3XBD91G0mS2cKn69KCIf3L6uK2xW2nK4L2m+Iemk6z4
-        kG1rxTGjkzBHSIBw==
-To:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S1725982AbgKCHRu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 02:17:50 -0500
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF34C0617A6;
+        Mon,  2 Nov 2020 23:17:50 -0800 (PST)
+Received: by mail-ed1-x544.google.com with SMTP id t11so17075382edj.13;
+        Mon, 02 Nov 2020 23:17:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sOrF5iWjGjOzJ1bbgB7wrTZUY6Er8KaofzgtHlCj1a0=;
+        b=Gu4XTBa07Sguxh94nqgkLzd7ozNIPwzQwjjlAIWmOEq8nApZCuAXI39gEfJYKxEFTq
+         1Ge4fhVxlm+DYOkqxxAkb4Lo4Z2LQ+jqRABLaPDUhF7fgTF+x1hZIksP1sHVeX4lzAdj
+         ttCm39GOONS2Nb5NveKRhmOPTvS8dk7o2XscQJjov8qUd0KFNmHAVtgersd+CC4XBigS
+         QXv1PZ8BTYt2/h3I1UH0P6wegPVTiiGWWlRrforvDlaG6uCZrFA9WaAgeNBdD+Fz7Cd9
+         Mw7VoskiXwRBH9TU+JNNqQ99wMR3IIDE1EN32KuWKzCLtz3FlvtX8BEjMpkVQqimrgpA
+         +1ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sOrF5iWjGjOzJ1bbgB7wrTZUY6Er8KaofzgtHlCj1a0=;
+        b=bB31SUYXJn7Dd/PUfChPPzmO2LHo4JE56RyWM+SIoZYJ5BFn7JvMp8Xb6JUHUh0rCc
+         zu2T/HssyIpzGp1h+jZE0CZ+YlG9eNxZQ4Q/QNK2BYkz61ZvlHCAMnLTJ2IPV6n9efMi
+         h5IcYv/rKfAnK1y7etwZGSmGitp8ROPzD1AmiLMuF+4pfVQLmlz5sCIi6ne6g/3DX7sx
+         F13buFdMu3IQrdqzNN9rmzDRDup+LvVwp3RjrDumb2c1EOZS2G3CHqU+3iHCnvA4S8bH
+         pdk39RrZ0VCViMd/SgOo/XtYj3+arD8Y1xx3T5MJBpMr1VdPiWBVQbUy7d243EwW/Nrv
+         2CAA==
+X-Gm-Message-State: AOAM530qy10IW/Wn/FQ/l8W5a/5LkRQE+47U6bEkeef6b17o6hpa3zPk
+        TNbARobQ2sRiTosEp+7gSxo=
+X-Google-Smtp-Source: ABdhPJwEYf7p2R4I9Sp6MVwGjitY5/+WrVY7LzBa7Ch9I/HHrqaNgp9EIS4u7M5n4eeLzY42kimKEQ==
+X-Received: by 2002:a05:6402:1d13:: with SMTP id dg19mr20755551edb.217.1604387868615;
+        Mon, 02 Nov 2020 23:17:48 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id a10sm377628edn.77.2020.11.02.23.17.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Nov 2020 23:17:48 -0800 (PST)
+Date:   Tue, 3 Nov 2020 09:17:45 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Richard Cochran <richardcochran@gmail.com>,
         Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH net-next v8 8/8] dt-bindings: net: dsa: Add documentation for Hellcreek switches
-Date:   Tue,  3 Nov 2020 08:11:01 +0100
-Message-Id: <20201103071101.3222-9-kurt@linutronix.de>
-In-Reply-To: <20201103071101.3222-1-kurt@linutronix.de>
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next v8 1/8] net: dsa: Add tag handling for
+ Hirschmann Hellcreek switches
+Message-ID: <20201103071745.upspd7trljbrvonv@skbuf>
 References: <20201103071101.3222-1-kurt@linutronix.de>
+ <20201103071101.3222-2-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201103071101.3222-2-kurt@linutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add basic documentation and example.
+On Tue, Nov 03, 2020 at 08:10:54AM +0100, Kurt Kanzenbach wrote:
+> The Hirschmann Hellcreek TSN switches have a special tagging protocol for frames
+> exchanged between the CPU port and the master interface. The format is a one
+> byte trailer indicating the destination or origin port.
+> 
+> It's quite similar to the Micrel KSZ tagging. That's why the implementation is
+> based on that code.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> ---
+> diff --git a/net/dsa/tag_hellcreek.c b/net/dsa/tag_hellcreek.c
+> new file mode 100644
+> index 000000000000..2061de06eafb
+> --- /dev/null
+> +++ b/net/dsa/tag_hellcreek.c
+> @@ -0,0 +1,66 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/*
+> + * net/dsa/tag_hellcreek.c - Hirschmann Hellcreek switch tag format handling
+> + *
+> + * Copyright (C) 2019,2020 Linutronix GmbH
+> + * Author Kurt Kanzenbach <kurt@linutronix.de>
+> + *
+> + * Based on tag_ksz.c.
+> + */
+> +
+> +#include <linux/etherdevice.h>
+> +#include <linux/list.h>
+> +#include <linux/slab.h>
 
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- .../net/dsa/hirschmann,hellcreek.yaml         | 127 ++++++++++++++++++
- 1 file changed, 127 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+You probably don't need these includes any longer, but you don't have to
+resend this series just to remove them, you could do that afterwards.
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
-new file mode 100644
-index 000000000000..5592f58fa6f0
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
-@@ -0,0 +1,127 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/dsa/hirschmann,hellcreek.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Hirschmann Hellcreek TSN Switch Device Tree Bindings
-+
-+allOf:
-+  - $ref: dsa.yaml#
-+
-+maintainers:
-+  - Andrew Lunn <andrew@lunn.ch>
-+  - Florian Fainelli <f.fainelli@gmail.com>
-+  - Vivien Didelot <vivien.didelot@gmail.com>
-+  - Kurt Kanzenbach <kurt@linutronix.de>
-+
-+description:
-+  The Hellcreek TSN Switch IP is a 802.1Q Ethernet compliant switch. It supports
-+  the Precision Time Protocol, Hardware Timestamping as well the Time Aware
-+  Shaper.
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: hirschmann,hellcreek-de1soc-r1
-+
-+  reg:
-+    description:
-+      The physical base address and size of TSN and PTP memory base
-+    minItems: 2
-+    maxItems: 2
-+
-+  reg-names:
-+    items:
-+      - const: tsn
-+      - const: ptp
-+
-+  leds:
-+    type: object
-+    properties:
-+      '#address-cells':
-+        const: 1
-+      '#size-cells':
-+        const: 0
-+
-+    patternProperties:
-+      "^led@[01]$":
-+        type: object
-+        description: Hellcreek leds
-+        $ref: ../../leds/common.yaml#
-+
-+        properties:
-+          reg:
-+            items:
-+              - enum: [0, 1]
-+            description: Led number
-+
-+          label: true
-+
-+          default-state: true
-+
-+        required:
-+          - reg
-+
-+        additionalProperties: false
-+
-+    additionalProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - reg-names
-+  - ethernet-ports
-+  - leds
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+        switch0: switch@ff240000 {
-+            compatible = "hirschmann,hellcreek-de1soc-r1";
-+            reg = <0xff240000 0x1000>,
-+                  <0xff250000 0x1000>;
-+            reg-names = "tsn", "ptp";
-+            dsa,member = <0 0>;
-+
-+            ethernet-ports {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                port@0 {
-+                    reg = <0>;
-+                    label = "cpu";
-+                    ethernet = <&gmac0>;
-+                };
-+
-+                port@2 {
-+                    reg = <2>;
-+                    label = "lan0";
-+                    phy-handle = <&phy1>;
-+                };
-+
-+                port@3 {
-+                    reg = <3>;
-+                    label = "lan1";
-+                    phy-handle = <&phy2>;
-+                };
-+            };
-+
-+            leds {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                led@0 {
-+                    reg = <0>;
-+                    label = "sync_good";
-+                    default-state = "on";
-+                };
-+
-+                led@1 {
-+                    reg = <1>;
-+                    label = "is_gm";
-+                    default-state = "off";
-+                };
-+            };
-+        };
--- 
-2.20.1
+> +#include <net/dsa.h>
+> +
+> +#include "dsa_priv.h"
+> +
+> +#define HELLCREEK_TAG_LEN	1
+> +
+> +static struct sk_buff *hellcreek_xmit(struct sk_buff *skb,
+> +				      struct net_device *dev)
+> +{
+> +	struct dsa_port *dp = dsa_slave_to_port(dev);
+> +	u8 *tag;
+> +
+> +	/* Tag encoding */
+> +	tag  = skb_put(skb, HELLCREEK_TAG_LEN);
+> +	*tag = BIT(dp->index);
+> +
+> +	return skb;
+> +}
+> +
+> +static struct sk_buff *hellcreek_rcv(struct sk_buff *skb,
+> +				     struct net_device *dev,
+> +				     struct packet_type *pt)
+> +{
+> +	/* Tag decoding */
+> +	u8 *tag = skb_tail_pointer(skb) - HELLCREEK_TAG_LEN;
+> +	unsigned int port = tag[0] & 0x03;
+> +
+> +	skb->dev = dsa_master_find_slave(dev, 0, port);
+> +	if (!skb->dev) {
+> +		netdev_warn(dev, "Failed to get source port: %d\n", port);
+> +		return NULL;
+> +	}
+> +
+> +	pskb_trim_rcsum(skb, skb->len - HELLCREEK_TAG_LEN);
+> +
+> +	skb->offload_fwd_mark = true;
+> +
+> +	return skb;
+> +}
+> +
+> +static const struct dsa_device_ops hellcreek_netdev_ops = {
+> +	.name	  = "hellcreek",
+> +	.proto	  = DSA_TAG_PROTO_HELLCREEK,
+> +	.xmit	  = hellcreek_xmit,
+> +	.rcv	  = hellcreek_rcv,
+> +	.overhead = HELLCREEK_TAG_LEN,
+> +	.tail_tag = true,
+> +};
+> +
+> +MODULE_LICENSE("Dual MIT/GPL");
+> +MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_HELLCREEK);
+> +
+> +module_dsa_tag_driver(hellcreek_netdev_ops);
+> -- 
+> 2.20.1
+> 
 
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
