@@ -2,78 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DF7F2A4CD8
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:30:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD7792A4D00
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:32:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728697AbgKCRaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 12:30:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47490 "EHLO
+        id S1728983AbgKCRco (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:32:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727688AbgKCRaK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:30:10 -0500
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E82C0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:30:09 -0800 (PST)
-Received: by mail-ej1-x644.google.com with SMTP id k3so25311677ejj.10
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:30:09 -0800 (PST)
+        with ESMTP id S1728970AbgKCRcl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:32:41 -0500
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9C1C0617A6;
+        Tue,  3 Nov 2020 09:32:41 -0800 (PST)
+Received: by mail-io1-xd31.google.com with SMTP id u19so19322774ion.3;
+        Tue, 03 Nov 2020 09:32:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=WCLr1NcOcb3nGONEyUolkVCU02HBtDkANd61Ptf8MKg=;
-        b=AlCP2CRzU/5D4BuA682nevGOv3ydL5HSVD/EgiFQnf7W/JOOGTpLYlm/boxkStHtwx
-         abRldHrrzWy2Q6hl0uHuPZvZej79zMkxE+gSsx2giJPoPmmdEVC4Bram3eobKkf7MH31
-         MyElV2vSLs5ACi6yJ2O9ozm+rRG0ZtXxISPn+Ce41ESnbJ4EdpROfp9a7j/gZW/BubyV
-         RguIOMrDBZrwzc/F2ZGFd4/RhVLgm1EuNWWukJSQdB4lWH1mmzodu2su16sA/G0wk2Ua
-         UMw7CC0wZJWoTFLw7BudL2VziTKBKkL4zwcKzysdgJ2ssjyGsObG1Bh3bP92YhR43Lq4
-         zYHA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ry3XixsGN9DZhazMEEr/FShPsajm2T6AhmyTPRTG07c=;
+        b=V/Z7NqzFFNchES0OEXbbsw6k8/kFsQKBGcQEk6gSaTF3fGnt0FJBpoFW6SdFZWe7NU
+         CtAJQ1QLfUjJy0d70JptX0X0nZmd0cO5sPDtGHf9yKNF/GoKiovLkkqY7ssRXaq7jd7j
+         jOxYnaJIxGy4itoSioYz0vxa1RTDfrhlnofGFOkbLgRysZw4GQa0F9n0btARpdCXbWuy
+         ZdXyoN+LOvMrDrFZTDQJM0UHkWz6HwYkaJDxq7N6TcD6VSyPywTvsnk1vo+Am/1DF80j
+         fJ+8eWU11BKYYnD3MTVGEaKKVmXLxY2YhZVzUM+EzY303z3df/lcMf/PxGZ16IRL6x2Z
+         wphw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WCLr1NcOcb3nGONEyUolkVCU02HBtDkANd61Ptf8MKg=;
-        b=dHl8VgRhZ0o0ZgNW4OHghY+IrIzmvdy+s824cduRuAHYLxp7SXLfN/GcovL10LZMMM
-         c2GltTvbzdKYNLpt2o6qAH5tosiIJ4Uu0HSHZDTlEZ+RQwl8L2U4HrdyV+T/zK7PI8hG
-         ihE4qLTxVGcdUH0rDB7WSHWN3RzHmCxw1KlJYtMhRKV/zbw2QJ4THbj2sqf6VswtnrMm
-         tMcFcyYuptMN1B6aDldb2CqY/8KI0vYgjRDIQqbXmkxqBEvshAaBSCHFVjYdYBmpgdrP
-         I8rsZOrfOpkjiKfot/kOCihDcacUJsGw0VsnPF00Ko940hFMrIufTuGh5ub0vcQ/Jz+d
-         Am+A==
-X-Gm-Message-State: AOAM530nWbqWV4NI6e+UnlOskISP69j28Sa45EuF8/OLKRlTkD4+XYLK
-        /6DW+dQXAP0x9oNeS8CfLBOq+H6tTqI=
-X-Google-Smtp-Source: ABdhPJxTfk1SllBBEPEvt4bWsxLx3NIPsFrke8TQUVDA6lOJXiOea5tcOwiib7AAd4WB57I+MIjD5g==
-X-Received: by 2002:a17:906:3294:: with SMTP id 20mr20833385ejw.322.1604424608579;
-        Tue, 03 Nov 2020 09:30:08 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id m2sm4532669eds.35.2020.11.03.09.30.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 09:30:08 -0800 (PST)
-Date:   Tue, 3 Nov 2020 19:30:07 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "james.jurack@ametek.com" <james.jurack@ametek.com>
-Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
- skb_cow_head for PTP
-Message-ID: <20201103173007.23ttgm3rpmbletee@skbuf>
-References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
- <20201029081057.8506-1-claudiu.manoil@nxp.com>
- <20201103161319.wisvmjbdqhju6vyh@skbuf>
- <20201103083050.100b2568@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <AM0PR04MB6754C8F6D12318EF1DD0CA2B96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ry3XixsGN9DZhazMEEr/FShPsajm2T6AhmyTPRTG07c=;
+        b=LRVlBBm+I8DAharCAChZ7DhabGrKC/JmP4g+nPF3076UIcrnAu7UicYHl0kc8u99nP
+         v71ao1cQ27KRAC82mmZmOjjiREg/4ccGekWHKpYpTFjtI6CyMa+9K32ozz8DatjVTPPh
+         9enFhomkVupyKcmDue0OPXxYRmLmE82wAtC+g7baZvS2XwTQzKHydGIvbNiFMOcB5at6
+         8vgya23OLmqkaBhAwoUELzxcljV8GCQhFZn6XlT4ffwoEK07BIsra4j79+HJq58anfb4
+         Tgy2B0VBE+smB4y5gIvHVR2U19u5Y/R7uEdX2zHQriAO4rGpmKQWiqm8U5DeQh0XOLp0
+         fwEg==
+X-Gm-Message-State: AOAM530WsgWjXewjgCzO5r/GvNaIR9JbiGwTgG4FmHX2PQJCQlr2wD6z
+        PJH/fZQ/eHUd8E3Z7/QxH3A=
+X-Google-Smtp-Source: ABdhPJw+l29fcvur16a7SGZgij0JdtrPGAjAPSb+8zFKH7oa7gxmB5ln5XVBM0sXZEl8jeTM7bTotg==
+X-Received: by 2002:a6b:f808:: with SMTP id o8mr14819473ioh.136.1604424761003;
+        Tue, 03 Nov 2020 09:32:41 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:def:1f9b:2059:ffac])
+        by smtp.googlemail.com with ESMTPSA id c80sm14430806ill.20.2020.11.03.09.32.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Nov 2020 09:32:40 -0800 (PST)
+Subject: Re: [PATCHv3 iproute2-next 1/5] configure: add check_libbpf() for
+ later libbpf support
+To:     Hangbin Liu <haliu@redhat.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
+        <toke@redhat.com>
+References: <20201028132529.3763875-1-haliu@redhat.com>
+ <20201029151146.3810859-1-haliu@redhat.com>
+ <20201029151146.3810859-2-haliu@redhat.com>
+ <78c5df29-bf06-0b60-d914-bdab3d65b198@gmail.com>
+ <20201103055419.GI2408@dhcp-12-153.nay.redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <e3368c04-2887-3daf-8be8-8717960e9a18@gmail.com>
+Date:   Tue, 3 Nov 2020 10:32:37 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM0PR04MB6754C8F6D12318EF1DD0CA2B96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
+In-Reply-To: <20201103055419.GI2408@dhcp-12-153.nay.redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 05:18:25PM +0000, Claudiu Manoil wrote:
-> It's either the dev_kfree_skb_any from the dma mapping error path or the one
-> from skb_cow_head()'s error path.  A confirmation would help indeed.
+On 11/2/20 10:54 PM, Hangbin Liu wrote:
+> On Mon, Nov 02, 2020 at 08:37:37AM -0700, David Ahern wrote:
+>> On 10/29/20 9:11 AM, Hangbin Liu wrote:
+>>> This patch adds a check to see if we support libbpf. By default the
+>>> system libbpf will be used, but static linking against a custom libbpf
+>>> version can be achieved by passing LIBBPF_DIR to configure. FORCE_LIBBPF
+>>> can be set to force configure to abort if no suitable libbpf is found,
+>>> which is useful for automatic packaging that wants to enforce the
+>>> dependency.
+>>>
+>>
+>> Add an option to force libbpf off and use of the legacy code. i.e, yes
+>> it is installed, but don't use it.
+>>
+>> configure script really needs a usage to dump options like disabling libbpf.
+>>
+> 
+> Shouldn't we use libbpf by default if system support? The same like libmnl.
+> There is no options to force libnml off.
+> 
 
-It says "consume", not "kfree", which in my mind would make it point
-towards the only caller of consume_skb from the gianfar driver, i.e. the
-dev_consume_skb_any that you just added.
+configure scripts usually allow you to control options directly,
+overriding the autoprobe.
