@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 364AE2A3D2D
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:10:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 125B82A3D2E
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:10:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727674AbgKCHKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 02:10:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35064 "EHLO
+        id S1727737AbgKCHKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 02:10:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725958AbgKCHKN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 02:10:13 -0500
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88628C0617A6
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 23:10:13 -0800 (PST)
-Received: by mail-pl1-x641.google.com with SMTP id w11so8133679pll.8
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 23:10:13 -0800 (PST)
+        with ESMTP id S1725958AbgKCHKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 02:10:20 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5184CC0617A6
+        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 23:10:19 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id c20so13384227pfr.8
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 23:10:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Gkuxstg5R+uheA6phR4fMLuBUdOEwyAXqM6AKai276Q=;
-        b=jjU2X5BGCjSufVsF6Vf8JaiE09CcuHw3gz+rGFfmWoMig1rsOkioAke1Xip+ZMlSDm
-         MM70okCmAygdERvD9/zV/dxOLyLjclm8xILCiMhHS0Hrigh/ygk37FmaXzxW2D30jFvF
-         B8UpL0AqNbyERTB0X/6yOmdFmACnoSlEp3Ue+E1kr8+mFf85r2GqUoMIWoVLAVS1VLwW
-         U0JkJFtIMICgrM28G5yyDpCrSlFgkVZCDDO/KdzRHZc2bU9MX+EaoRT43V9Oi3vCVR9N
-         doAuC5o0W41G4V+DkO4hMIPlODwJkYVJ90znRWrXgbv47bB3tnN+9S0k2Uh07RDPhznu
-         GOuw==
+        bh=8OpCxwSm3PgNpymlgJjYXIblVA6rebCtOQW9fc/WZ8o=;
+        b=ISRT7LKHDau0TRwmMO4TaC7doQQvZFIYhV6k5dbUcAXu0QAeNNdvBY7F8v1EKXRwYB
+         InRFB+Aaie+bmDjm5wHeHs3yfvYVlt8IepwHuBGdU1pBo8iU0wjXsWH4sLlDTvmH/erE
+         2w4wsFDQQtLCGUlNOltkp5sWc5XIKKVlSjG+kQlu/3sFtECRcKYNPA3gZDtun5Ka+U37
+         SktZ5bRz0F7sZPcjySQ14ZEsVCAOohtIU1oZ7cPvgtCtxYFSsdYJc3YH+xotMImRWcnr
+         n7Hc5gcdkn+0as3EsktCMBDuexm42/f6vR8dlPtnVLWMi1z0e+/mEemldVKZZ3nVD2j0
+         qIJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Gkuxstg5R+uheA6phR4fMLuBUdOEwyAXqM6AKai276Q=;
-        b=pjRfOhMeRlAiqZkzKvPTeaZgpM1IOTPNdh6QNZm+0dq9YGsKuSwnFcCtIaYRjWgFua
-         wmf64UfG7514fbt0kOeWOWnB7pLiko4mYT/DCL2byD0btN5t+A2L5kuZL4AHqDfcdweC
-         K0UOWKpZhJijkgbKg0Zh0iR72rxiGAPsNAcNXpujY3zjzCpqyu93g7GSQVmYZya9OhkH
-         KNrVEK8bjyvNXArTddFWM1F9Y0zltGKCqjbb0IIs+kIHfs2jNtEyUcLRUde3IX91+ScA
-         IotpJ3ut9/mu0tWUqsuJjrDha/r4q06go4qkSe2rUqqgddRfL8CzuEBvnuJj9IBIqAbr
-         h1vA==
-X-Gm-Message-State: AOAM532pk+3Xclit+0DVXSfni8zIjLa6dsSB9vMH/deRuhJlG9bFyOsp
-        V2URJWPlD7kAgpAPmhFzHkc=
-X-Google-Smtp-Source: ABdhPJzB6IjXJmRrcSNmQNZzK5NuQIFihx9hozJBewl6TEL6CxenPnvnR6YueGhc+x5CTbaQFRykhg==
-X-Received: by 2002:a17:902:a584:b029:d6:4a70:3241 with SMTP id az4-20020a170902a584b02900d64a703241mr25151304plb.81.1604387413110;
-        Mon, 02 Nov 2020 23:10:13 -0800 (PST)
+        bh=8OpCxwSm3PgNpymlgJjYXIblVA6rebCtOQW9fc/WZ8o=;
+        b=K1AHDSiO+gyN6fywZ+G1i+1q3Bq2p5/txbcAMZ6PLgydWZ2+dR2A0/Aw/9uc7+vCtJ
+         Psa/kZFWiHg5QXE61zQONx3EP9ikNTQwRUE8fSr8ixxGbAljPN+8csjC3j5cSAEvrLPN
+         Fqil8DbMhkwiblZYiwc9NRwphYM67TYhKzjgX/pbmlrPAUMDFX4ctKiq5TbsRNMQcq0y
+         Ub2804YJd1jWQOXaIVXMsedApwqbjpMku30AzLCqyq82ehfUgcU0U0jL2Lljfb3+bMth
+         ADqwE88xyMEC7RWVbWg1G312NhrlWIDrXmGcO4JQgWTgnkf+wHta0Qzf3ts4FBt7YpeO
+         GTsA==
+X-Gm-Message-State: AOAM533w8Q7BdBmM6sTrOCf6ToYQylPjjWFoGIYEa+j7mz8qVDsBMrte
+        8CKjrmt9G+y09vK3iBylewk=
+X-Google-Smtp-Source: ABdhPJwVa6U6wEW6zm+lAs5GsU3YHvRtxcFClIwhJkgNUR6CF6BgE9hm3kGjhWrsj9CQh739sg0rHQ==
+X-Received: by 2002:a17:90a:af82:: with SMTP id w2mr2391571pjq.77.1604387418975;
+        Mon, 02 Nov 2020 23:10:18 -0800 (PST)
 Received: from localhost.localdomain ([49.207.216.192])
-        by smtp.gmail.com with ESMTPSA id 92sm2020074pjv.32.2020.11.02.23.10.07
+        by smtp.gmail.com with ESMTPSA id 92sm2020074pjv.32.2020.11.02.23.10.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 23:10:12 -0800 (PST)
+        Mon, 02 Nov 2020 23:10:18 -0800 (PST)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
@@ -57,9 +57,9 @@ Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
         steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
         netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [net-next V3 1/8] net: dccp: convert tasklets to use new tasklet_setup() API
-Date:   Tue,  3 Nov 2020 12:39:40 +0530
-Message-Id: <20201103070947.577831-2-allen.lkml@gmail.com>
+Subject: [net-next V3 2/8] net: ipv4: convert tasklets to use new tasklet_setup() API
+Date:   Tue,  3 Nov 2020 12:39:41 +0530
+Message-Id: <20201103070947.577831-3-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201103070947.577831-1-allen.lkml@gmail.com>
 References: <20201103070947.577831-1-allen.lkml@gmail.com>
@@ -79,50 +79,36 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <apais@linux.microsoft.com>
 ---
- net/dccp/timer.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ net/ipv4/tcp_output.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/net/dccp/timer.c b/net/dccp/timer.c
-index a934d2932373..db768f223ef7 100644
---- a/net/dccp/timer.c
-+++ b/net/dccp/timer.c
-@@ -215,13 +215,14 @@ static void dccp_delack_timer(struct timer_list *t)
- 
- /**
-  * dccp_write_xmitlet  -  Workhorse for CCID packet dequeueing interface
-- * @data: Socket to act on
-+ * @t: pointer to the tasklet associated with this handler
-  *
-  * See the comments above %ccid_dequeueing_decision for supported modes.
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index bf48cd73e967..6e998d428ceb 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1038,9 +1038,9 @@ static void tcp_tsq_handler(struct sock *sk)
+  * transferring tsq->head because tcp_wfree() might
+  * interrupt us (non NAPI drivers)
   */
--static void dccp_write_xmitlet(unsigned long data)
-+static void dccp_write_xmitlet(struct tasklet_struct *t)
+-static void tcp_tasklet_func(unsigned long data)
++static void tcp_tasklet_func(struct tasklet_struct *t)
  {
--	struct sock *sk = (struct sock *)data;
-+	struct dccp_sock *dp = from_tasklet(dp, t, dccps_xmitlet);
-+	struct sock *sk = &dp->dccps_inet_connection.icsk_inet.sk;
+-	struct tsq_tasklet *tsq = (struct tsq_tasklet *)data;
++	struct tsq_tasklet *tsq = from_tasklet(tsq,  t, tasklet);
+ 	LIST_HEAD(list);
+ 	unsigned long flags;
+ 	struct list_head *q, *n;
+@@ -1125,9 +1125,7 @@ void __init tcp_tasklet_init(void)
+ 		struct tsq_tasklet *tsq = &per_cpu(tsq_tasklet, i);
  
- 	bh_lock_sock(sk);
- 	if (sock_owned_by_user(sk))
-@@ -235,16 +236,15 @@ static void dccp_write_xmitlet(unsigned long data)
- static void dccp_write_xmit_timer(struct timer_list *t)
- {
- 	struct dccp_sock *dp = from_timer(dp, t, dccps_xmit_timer);
--	struct sock *sk = &dp->dccps_inet_connection.icsk_inet.sk;
- 
--	dccp_write_xmitlet((unsigned long)sk);
-+	dccp_write_xmitlet(&dp->dccps_xmitlet);
+ 		INIT_LIST_HEAD(&tsq->head);
+-		tasklet_init(&tsq->tasklet,
+-			     tcp_tasklet_func,
+-			     (unsigned long)tsq);
++		tasklet_setup(&tsq->tasklet, tcp_tasklet_func);
+ 	}
  }
  
- void dccp_init_xmit_timers(struct sock *sk)
- {
- 	struct dccp_sock *dp = dccp_sk(sk);
- 
--	tasklet_init(&dp->dccps_xmitlet, dccp_write_xmitlet, (unsigned long)sk);
-+	tasklet_setup(&dp->dccps_xmitlet, dccp_write_xmitlet);
- 	timer_setup(&dp->dccps_xmit_timer, dccp_write_xmit_timer, 0);
- 	inet_csk_init_xmit_timers(sk, &dccp_write_timer, &dccp_delack_timer,
- 				  &dccp_keepalive_timer);
 -- 
 2.25.1
 
