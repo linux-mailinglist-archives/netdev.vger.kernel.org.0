@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8451C2A4CC9
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:25:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25C052A4CAA
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:24:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728774AbgKCRY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 12:24:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46534 "EHLO
+        id S1728750AbgKCRYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:24:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728471AbgKCRYX (ORCPT
+        with ESMTP id S1728742AbgKCRYX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:24:23 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E87C0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:24:22 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id v5so107249wmh.1
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:24:22 -0800 (PST)
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406E6C061A04
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:24:23 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id 33so8572277wrl.7
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:24:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=d4X+MzHPwavfeH5vks+WjS48DbZu9bbXsSeUnpDGMKQ=;
-        b=FjUllosqkdGlWR4KVAlsTkE2uYTCktcrQdzP4gNWgWavgYG9TEwxOn6eDl8udqwaXs
-         U47Y4QJz/MAkocHfT2qs7akapff+NyVsuVRt4g5Kz5dmz3bpAcYxhNyRuUC9GrZJ77jv
-         Rx4a+Km3fr5vyy55b35jtNm5jDtKFmdl3+KkwVYPuHFsooLc/3XtsDBrmR9B5LKeNpVZ
-         FoKf2Rbl5/UEOtQy2qrvKVSsnRhZege2DhSP/hXpKhuqw+8gmbOG37IUxofcJIhypj9v
-         Fb8nFyoYcl34rfKvWOXfrcnKU5HBgfnbmLPwGQuh8+pq/cWMxZtGsk1LPOWVgyI1Iwe+
-         Q1rQ==
+        bh=eFw7qsj6z01pcgLzMm8dHLRPOHpj/X67em/halFVu3o=;
+        b=mSA+X10FOUtdTGgVaa8szAyvp7xLUiw5xJzr/sxWIGAgUIFKLzjAPoBb0crIjNqKS7
+         /cQeiw1EIWeX+FO/UOOS6nV318jIDXCdf3tWw2b3GzX2IL/sjdo9YdzEbfOsMYO3Zaan
+         X81dEcprvdVUQHeGdEQCxubMYYam/pFIY/3YCOYVYIgOZ6/38bRrSslBWbvvrHJLzdKp
+         /Q0IA5uyiNC8cKEWYELvM21d6Qt6Ej6O/1aAUbmzHHCh1jU0XH0JDTIUOqx/htH5OTDP
+         rD+VUD0Y0fCR8JQ8DLXyJgRepqrkS6chRK4oaSrI3A1PVt/8n9anXUHNwgUTGQbrATpT
+         0k4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=d4X+MzHPwavfeH5vks+WjS48DbZu9bbXsSeUnpDGMKQ=;
-        b=KVv36QnliEZQmZFj7DQgm3antplROjATxOaocY55AWMec6tLUI/VWgXMC/cLxHtBwx
-         AiHkLUKExUCd1NHHJS5R5jvdO5K/sXx49QAltAVwSU452u/a9zvuEJpaLOAzoLxO/GOZ
-         ecTglaOV5o6ZyR5GDyNhhhTkDj6HJA3twbWUZX1BQfKa9qi30MbJ7NH9VBW6nE7T3BcF
-         MPJIMsQlNct8s34qhkOIujK2I8wsMa+hgjod3Ez5Kb6gwUvD4XfsVwNp/uZNneZli/QH
-         nEGoQstus+YinC89ELNazO21d1YOaczpnICHOYxQOWn7CHY3/vguxUw8rXf7o+Wzp4Y9
-         3jxg==
-X-Gm-Message-State: AOAM530O4bANRNygLZzB83vfjYoS1tjYUSqYVmGLVVLK4TVqCTmhBSt4
-        tlt0TDxFg8gKqTz+MmEvOzx82gfSPEe8DKyh
-X-Google-Smtp-Source: ABdhPJwkGwPgfKhA7iokMUYPfVknlU1XqKX40mLt+0+gPLBCU2x8u/H2li//CaVOP24Phr+f7JeOJQ==
-X-Received: by 2002:a1c:4888:: with SMTP id v130mr218579wma.84.1604424260462;
-        Tue, 03 Nov 2020 09:24:20 -0800 (PST)
+        bh=eFw7qsj6z01pcgLzMm8dHLRPOHpj/X67em/halFVu3o=;
+        b=nhzShSBpr55PXRArA2myZxZcVZnXTVlCnND3cm/9CX3JG/Ovn7F8rP+xGkqjEZz/IW
+         aMGx3oEvu1qo+DdxsD1pMKv+jDmPdkKFin+1xzjqejZicuUmbJvGj/wilrKkCS6wdcXA
+         YBF8aNF+3wgWofvmoPEzEQ3xqF/nn+epZToCJRxcrrBJjGtlOUzpeuYDQ4mmaT13nsu3
+         fpUkq5WpW+KM50DximtPpcrO2JjnYUU3kOHYvLs5+/A5FH+7GzH1R8IlgmJotl6+MC4K
+         jAwovb1GI5cvU7Ci0x6riKLvkTZ71j5Kxw1MfdFoq8Z+S8dR/3rD8sXAmXjK6H36xB/F
+         xeTg==
+X-Gm-Message-State: AOAM532rHH0pQDjm8wchJVC+JrPXNb65YyawylFF+wRJ4icvPh7RxQr3
+        ebPYZ+eJRs0LpTLcgwF38B0DJJHHf3lhiqe5
+X-Google-Smtp-Source: ABdhPJwD1UyhsS3G8BvW6xOfH7zUhBVgT+g24QU1NWMIxSbG8uUXSV7HTKtWK4yY2FNWkPJp5n9YtA==
+X-Received: by 2002:adf:f64f:: with SMTP id x15mr18237203wrp.228.1604424261625;
+        Tue, 03 Nov 2020 09:24:21 -0800 (PST)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id a128sm2650795wmf.5.2020.11.03.09.24.19
+        by smtp.gmail.com with ESMTPSA id a128sm2650795wmf.5.2020.11.03.09.24.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 09:24:19 -0800 (PST)
+        Tue, 03 Nov 2020 09:24:20 -0800 (PST)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, kuba@kernel.org,
         bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next 03/16] selftests: net: bridge: factor out and rename sg state functions
-Date:   Tue,  3 Nov 2020 19:23:59 +0200
-Message-Id: <20201103172412.1044840-4-razor@blackwall.org>
+Subject: [PATCH net-next 04/16] selftests: net: bridge: add initial MLDv2 include test
+Date:   Tue,  3 Nov 2020 19:24:00 +0200
+Message-Id: <20201103172412.1044840-5-razor@blackwall.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20201103172412.1044840-1-razor@blackwall.org>
 References: <20201103172412.1044840-1-razor@blackwall.org>
@@ -66,421 +66,170 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Factor out S,G entry state checking functions for existence, forwarding,
-blocking and timer to lib.sh so they can be later used by MLDv2 tests.
-Add brmcast_ suffix to their name to make the relation to the bridge
-explicit.
+Add the initial setup for MLDv2 tests with the first test of a simple
+is_include report. For MLDv2 we need to setup the bridge properly and we
+also send the full precooked packets instead of relying on mausezahn to
+fill in some parts. For verification we use the generic S,G state checking
+functions from lib.sh.
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- .../selftests/net/forwarding/bridge_igmp.sh   | 179 ++++++------------
- tools/testing/selftests/net/forwarding/lib.sh |  67 +++++++
- 2 files changed, 123 insertions(+), 123 deletions(-)
+ .../selftests/net/forwarding/bridge_mld.sh    | 146 ++++++++++++++++++
+ 1 file changed, 146 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/bridge_mld.sh
 
-diff --git a/tools/testing/selftests/net/forwarding/bridge_igmp.sh b/tools/testing/selftests/net/forwarding/bridge_igmp.sh
-index 50a48ce16ba1..675eff45b037 100755
---- a/tools/testing/selftests/net/forwarding/bridge_igmp.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_igmp.sh
-@@ -137,73 +137,6 @@ v2reportleave_test()
- 	log_test "IGMPv2 leave $TEST_GROUP"
- }
- 
--check_sg_entries()
--{
--	local report=$1; shift
--	local slist=("$@")
--	local sarg=""
--
--	for src in "${slist[@]}"; do
--		sarg="${sarg} and .source_list[].address == \"$src\""
--	done
--	bridge -j -d -s mdb show dev br0 \
--		| jq -e ".[].mdb[] | \
--			 select(.grp == \"$TEST_GROUP\" and .source_list != null $sarg)" &>/dev/null
--	check_err $? "Wrong *,G entry source list after $report report"
--
--	for sgent in "${slist[@]}"; do
--		bridge -j -d -s mdb show dev br0 \
--			| jq -e ".[].mdb[] | \
--				 select(.grp == \"$TEST_GROUP\" and .src == \"$sgent\")" &>/dev/null
--		check_err $? "Missing S,G entry ($sgent, $TEST_GROUP)"
--	done
--}
--
--check_sg_fwding()
--{
--	local should_fwd=$1; shift
--	local sources=("$@")
--
--	for src in "${sources[@]}"; do
--		local retval=0
--
--		mcast_packet_test $TEST_GROUP_MAC $src $TEST_GROUP $h2 $h1
--		retval=$?
--		if [ $should_fwd -eq 1 ]; then
--			check_fail $retval "Didn't forward traffic from S,G ($src, $TEST_GROUP)"
--		else
--			check_err $retval "Forwarded traffic for blocked S,G ($src, $TEST_GROUP)"
--		fi
--	done
--}
--
--check_sg_state()
--{
--	local is_blocked=$1; shift
--	local sources=("$@")
--	local should_fail=1
--
--	if [ $is_blocked -eq 1 ]; then
--		should_fail=0
--	fi
--
--	for src in "${sources[@]}"; do
--		bridge -j -d -s mdb show dev br0 \
--			| jq -e ".[].mdb[] | \
--				 select(.grp == \"$TEST_GROUP\" and .source_list != null) |
--				 .source_list[] |
--				 select(.address == \"$src\") |
--				 select(.timer == \"0.00\")" &>/dev/null
--		check_err_fail $should_fail $? "Entry $src has zero timer"
--
--		bridge -j -d -s mdb show dev br0 \
--			| jq -e ".[].mdb[] | \
--				 select(.grp == \"$TEST_GROUP\" and .src == \"$src\" and \
--				 .flags[] == \"blocked\")" &>/dev/null
--		check_err_fail $should_fail $? "Entry $src has blocked flag"
--	done
--}
--
- v3include_prepare()
- {
- 	local host1_if=$1
-@@ -225,7 +158,7 @@ v3include_prepare()
- 			 select(.grp == \"$TEST_GROUP\" and \
- 				.source_list != null and .filter_mode == \"include\")" &>/dev/null
- 	check_err $? "Wrong *,G entry filter mode"
--	check_sg_entries "is_include" "${X[@]}"
-+	brmcast_check_sg_entries "is_include" "${X[@]}"
- }
- 
- v3exclude_prepare()
-@@ -247,10 +180,10 @@ v3exclude_prepare()
- 				.source_list != null and .filter_mode == \"exclude\")" &>/dev/null
- 	check_err $? "Wrong *,G entry filter mode"
- 
--	check_sg_entries "is_exclude" "${X[@]}" "${Y[@]}"
-+	brmcast_check_sg_entries "is_exclude" "${X[@]}" "${Y[@]}"
- 
--	check_sg_state 0 "${X[@]}"
--	check_sg_state 1 "${Y[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 1 "${Y[@]}"
- 
- 	bridge -j -d -s mdb show dev br0 \
- 		| jq -e ".[].mdb[] | \
-@@ -276,10 +209,10 @@ v3include_test()
- 
- 	v3include_prepare $h1 $ALL_MAC $ALL_GROUP
- 
--	check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
- 
--	check_sg_fwding 1 "${X[@]}"
--	check_sg_fwding 0 "192.0.2.100"
-+	brmcast_check_sg_fwding 1 "${X[@]}"
-+	brmcast_check_sg_fwding 0 "192.0.2.100"
- 
- 	log_test "IGMPv3 report $TEST_GROUP is_include"
- 
-@@ -295,12 +228,12 @@ v3inc_allow_test()
- 
- 	$MZ $h1 -c 1 -b $ALL_MAC -B $ALL_GROUP -t ip "proto=2,p=$MZPKT_ALLOW" -q
- 	sleep 1
--	check_sg_entries "allow" "${X[@]}"
-+	brmcast_check_sg_entries "allow" "${X[@]}"
- 
--	check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
- 
--	check_sg_fwding 1 "${X[@]}"
--	check_sg_fwding 0 "192.0.2.100"
-+	brmcast_check_sg_fwding 1 "${X[@]}"
-+	brmcast_check_sg_fwding 0 "192.0.2.100"
- 
- 	log_test "IGMPv3 report $TEST_GROUP include -> allow"
- 
-@@ -316,12 +249,12 @@ v3inc_is_include_test()
- 
- 	$MZ $h1 -c 1 -b $ALL_MAC -B $ALL_GROUP -t ip "proto=2,p=$MZPKT_IS_INC2" -q
- 	sleep 1
--	check_sg_entries "is_include" "${X[@]}"
-+	brmcast_check_sg_entries "is_include" "${X[@]}"
- 
--	check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
- 
--	check_sg_fwding 1 "${X[@]}"
--	check_sg_fwding 0 "192.0.2.100"
-+	brmcast_check_sg_fwding 1 "${X[@]}"
-+	brmcast_check_sg_fwding 0 "192.0.2.100"
- 
- 	log_test "IGMPv3 report $TEST_GROUP include -> is_include"
- 
-@@ -334,8 +267,8 @@ v3inc_is_exclude_test()
- 
- 	v3exclude_prepare $h1 $ALL_MAC $ALL_GROUP
- 
--	check_sg_fwding 1 "${X[@]}" 192.0.2.100
--	check_sg_fwding 0 "${Y[@]}"
-+	brmcast_check_sg_fwding 1 "${X[@]}" 192.0.2.100
-+	brmcast_check_sg_fwding 0 "${Y[@]}"
- 
- 	log_test "IGMPv3 report $TEST_GROUP include -> is_exclude"
- 
-@@ -361,10 +294,10 @@ v3inc_to_exclude_test()
- 				.source_list != null and .filter_mode == \"exclude\")" &>/dev/null
- 	check_err $? "Wrong *,G entry filter mode"
- 
--	check_sg_entries "to_exclude" "${X[@]}" "${Y[@]}"
-+	brmcast_check_sg_entries "to_exclude" "${X[@]}" "${Y[@]}"
- 
--	check_sg_state 0 "${X[@]}"
--	check_sg_state 1 "${Y[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 1 "${Y[@]}"
- 
- 	bridge -j -d -s mdb show dev br0 \
- 		| jq -e ".[].mdb[] | \
-@@ -379,8 +312,8 @@ v3inc_to_exclude_test()
- 				.source_list[].address == \"192.0.2.21\")" &>/dev/null
- 	check_fail $? "Wrong *,G entry source list, 192.0.2.21 entry still exists"
- 
--	check_sg_fwding 1 "${X[@]}" 192.0.2.100
--	check_sg_fwding 0 "${Y[@]}"
-+	brmcast_check_sg_fwding 1 "${X[@]}" 192.0.2.100
-+	brmcast_check_sg_fwding 0 "${Y[@]}"
- 
- 	log_test "IGMPv3 report $TEST_GROUP include -> to_exclude"
- 
-@@ -399,13 +332,13 @@ v3exc_allow_test()
- 
- 	$MZ $h1 -c 1 -b $ALL_MAC -B $ALL_GROUP -t ip "proto=2,p=$MZPKT_ALLOW2" -q
- 	sleep 1
--	check_sg_entries "allow" "${X[@]}" "${Y[@]}"
-+	brmcast_check_sg_entries "allow" "${X[@]}" "${Y[@]}"
- 
--	check_sg_state 0 "${X[@]}"
--	check_sg_state 1 "${Y[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 1 "${Y[@]}"
- 
--	check_sg_fwding 1 "${X[@]}" 192.0.2.100
--	check_sg_fwding 0 "${Y[@]}"
-+	brmcast_check_sg_fwding 1 "${X[@]}" 192.0.2.100
-+	brmcast_check_sg_fwding 0 "${Y[@]}"
- 
- 	log_test "IGMPv3 report $TEST_GROUP exclude -> allow"
- 
-@@ -422,13 +355,13 @@ v3exc_is_include_test()
- 
- 	$MZ $h1 -c 1 -b $ALL_MAC -B $ALL_GROUP -t ip "proto=2,p=$MZPKT_IS_INC3" -q
- 	sleep 1
--	check_sg_entries "is_include" "${X[@]}" "${Y[@]}"
-+	brmcast_check_sg_entries "is_include" "${X[@]}" "${Y[@]}"
- 
--	check_sg_state 0 "${X[@]}"
--	check_sg_state 1 "${Y[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 1 "${Y[@]}"
- 
--	check_sg_fwding 1 "${X[@]}" 192.0.2.100
--	check_sg_fwding 0 "${Y[@]}"
-+	brmcast_check_sg_fwding 1 "${X[@]}" 192.0.2.100
-+	brmcast_check_sg_fwding 0 "${Y[@]}"
- 
- 	log_test "IGMPv3 report $TEST_GROUP exclude -> is_include"
- 
-@@ -445,13 +378,13 @@ v3exc_is_exclude_test()
- 
- 	$MZ $h1 -c 1 -b $ALL_MAC -B $ALL_GROUP -t ip "proto=2,p=$MZPKT_IS_EXC2" -q
- 	sleep 1
--	check_sg_entries "is_exclude" "${X[@]}" "${Y[@]}"
-+	brmcast_check_sg_entries "is_exclude" "${X[@]}" "${Y[@]}"
- 
--	check_sg_state 0 "${X[@]}"
--	check_sg_state 1 "${Y[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 1 "${Y[@]}"
- 
--	check_sg_fwding 1 "${X[@]}" 192.0.2.100
--	check_sg_fwding 0 "${Y[@]}"
-+	brmcast_check_sg_fwding 1 "${X[@]}" 192.0.2.100
-+	brmcast_check_sg_fwding 0 "${Y[@]}"
- 
- 	log_test "IGMPv3 report $TEST_GROUP exclude -> is_exclude"
- 
-@@ -471,13 +404,13 @@ v3exc_to_exclude_test()
- 
- 	$MZ $h1 -c 1 -b $ALL_MAC -B $ALL_GROUP -t ip "proto=2,p=$MZPKT_TO_EXC" -q
- 	sleep 1
--	check_sg_entries "to_exclude" "${X[@]}" "${Y[@]}"
-+	brmcast_check_sg_entries "to_exclude" "${X[@]}" "${Y[@]}"
- 
--	check_sg_state 0 "${X[@]}"
--	check_sg_state 1 "${Y[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 1 "${Y[@]}"
- 
--	check_sg_fwding 1 "${X[@]}" 192.0.2.100
--	check_sg_fwding 0 "${Y[@]}"
-+	brmcast_check_sg_fwding 1 "${X[@]}" 192.0.2.100
-+	brmcast_check_sg_fwding 0 "${Y[@]}"
- 
- 	log_test "IGMPv3 report $TEST_GROUP exclude -> to_exclude"
- 
-@@ -496,9 +429,9 @@ v3inc_block_test()
- 	$MZ $h1 -c 1 -b $ALL_MAC -B $ALL_GROUP -t ip "proto=2,p=$MZPKT_BLOCK" -q
- 	# make sure the lowered timers have expired (by default 2 seconds)
- 	sleep 3
--	check_sg_entries "block" "${X[@]}"
-+	brmcast_check_sg_entries "block" "${X[@]}"
- 
--	check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
- 
- 	bridge -j -d -s mdb show dev br0 \
- 		| jq -e ".[].mdb[] | \
-@@ -507,8 +440,8 @@ v3inc_block_test()
- 				.source_list[].address == \"192.0.2.1\")" &>/dev/null
- 	check_fail $? "Wrong *,G entry source list, 192.0.2.1 entry still exists"
- 
--	check_sg_fwding 1 "${X[@]}"
--	check_sg_fwding 0 "192.0.2.100"
-+	brmcast_check_sg_fwding 1 "${X[@]}"
-+	brmcast_check_sg_fwding 0 "192.0.2.100"
- 
- 	log_test "IGMPv3 report $TEST_GROUP include -> block"
- 
-@@ -528,13 +461,13 @@ v3exc_block_test()
- 
- 	$MZ $h1 -c 1 -b $ALL_MAC -B $ALL_GROUP -t ip "proto=2,p=$MZPKT_BLOCK" -q
- 	sleep 1
--	check_sg_entries "block" "${X[@]}" "${Y[@]}"
-+	brmcast_check_sg_entries "block" "${X[@]}" "${Y[@]}"
- 
--	check_sg_state 0 "${X[@]}"
--	check_sg_state 1 "${Y[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 1 "${Y[@]}"
- 
--	check_sg_fwding 1 "${X[@]}" 192.0.2.100
--	check_sg_fwding 0 "${Y[@]}"
-+	brmcast_check_sg_fwding 1 "${X[@]}" 192.0.2.100
-+	brmcast_check_sg_fwding 0 "${Y[@]}"
- 
- 	log_test "IGMPv3 report $TEST_GROUP exclude -> block"
- 
-@@ -574,12 +507,12 @@ v3exc_timeout_test()
- 				.source_list[].address == \"192.0.2.2\")" &>/dev/null
- 	check_fail $? "Wrong *,G entry source list, 192.0.2.2 entry still exists"
- 
--	check_sg_entries "allow" "${X[@]}"
-+	brmcast_check_sg_entries "allow" "${X[@]}"
- 
--	check_sg_state 0 "${X[@]}"
-+	brmcast_check_sg_state 0 "${X[@]}"
- 
--	check_sg_fwding 1 "${X[@]}"
--	check_sg_fwding 0 192.0.2.100
-+	brmcast_check_sg_fwding 1 "${X[@]}"
-+	brmcast_check_sg_fwding 0 192.0.2.100
- 
- 	log_test "IGMPv3 group $TEST_GROUP exclude timeout"
- 
-@@ -610,7 +543,7 @@ v3star_ex_auto_add_test()
- 				.flags[] == \"added_by_star_ex\")" &>/dev/null
- 	check_err $? "Auto-added S,G entry doesn't have added_by_star_ex flag"
- 
--	check_sg_fwding 1 192.0.2.3
-+	brmcast_check_sg_fwding 1 192.0.2.3
- 
- 	log_test "IGMPv3 S,G port entry automatic add to a *,G port"
- 
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 0a427b8a039d..98ea37d26c44 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -1310,3 +1310,70 @@ mcast_packet_test()
- 
- 	return $seen
- }
+diff --git a/tools/testing/selftests/net/forwarding/bridge_mld.sh b/tools/testing/selftests/net/forwarding/bridge_mld.sh
+new file mode 100755
+index 000000000000..3d0d579e4e03
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/bridge_mld.sh
+@@ -0,0 +1,146 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
-+brmcast_check_sg_entries()
++ALL_TESTS="mldv2include_test"
++NUM_NETIFS=4
++CHECK_TC="yes"
++TEST_GROUP="ff02::cc"
++TEST_GROUP_MAC="33:33:00:00:00:cc"
++
++# MLDv2 is_in report: grp ff02::cc is_include 2001:db8:1::1,2001:db8:1::2,2001:db8:1::3
++MZPKT_IS_INC="33:33:00:00:00:01:fe:54:00:04:5e:ba:86:dd:60:0a:2d:ae:00:54:00:01:fe:80:00:\
++00:00:00:00:00:fc:54:00:ff:fe:04:5e:ba:ff:02:00:00:00:00:00:00:00:00:00:00:00:00:00:01:3a:\
++00:05:02:00:00:00:00:8f:00:8e:d9:00:00:00:01:01:00:00:03:ff:02:00:00:00:00:00:00:00:00:00:\
++00:00:00:00:cc:20:01:0d:b8:00:01:00:00:00:00:00:00:00:00:00:01:20:01:0d:b8:00:01:00:00:00:\
++00:00:00:00:00:00:02:20:01:0d:b8:00:01:00:00:00:00:00:00:00:00:00:03"
++
++source lib.sh
++
++h1_create()
 +{
-+	local report=$1; shift
-+	local slist=("$@")
-+	local sarg=""
++	simple_if_init $h1 2001:db8:1::1/64
++}
 +
-+	for src in "${slist[@]}"; do
-+		sarg="${sarg} and .source_list[].address == \"$src\""
-+	done
++h1_destroy()
++{
++	simple_if_fini $h1 2001:db8:1::1/64
++}
++
++h2_create()
++{
++	simple_if_init $h2 2001:db8:1::2/64
++}
++
++h2_destroy()
++{
++	simple_if_fini $h2 2001:db8:1::2/64
++}
++
++switch_create()
++{
++	ip link add dev br0 type bridge mcast_snooping 1 mcast_query_response_interval 100 \
++					mcast_mld_version 2 mcast_startup_query_interval 300 \
++					mcast_querier 1
++
++	ip link set dev $swp1 master br0
++	ip link set dev $swp2 master br0
++
++	ip link set dev br0 up
++	ip link set dev $swp1 up
++	ip link set dev $swp2 up
++
++	# make sure a query has been generated
++	sleep 5
++}
++
++switch_destroy()
++{
++	ip link set dev $swp2 down
++	ip link set dev $swp1 down
++
++	ip link del dev br0
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	swp1=${NETIFS[p2]}
++
++	swp2=${NETIFS[p3]}
++	h2=${NETIFS[p4]}
++
++	vrf_prepare
++
++	h1_create
++	h2_create
++
++	switch_create
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	switch_destroy
++
++	h2_destroy
++	h1_destroy
++
++	vrf_cleanup
++}
++
++mldv2include_prepare()
++{
++	local host1_if=$1
++	local X=("2001:db8:1::1" "2001:db8:1::2" "2001:db8:1::3")
++
++	ip link set dev br0 type bridge mcast_mld_version 2
++	check_err $? "Could not change bridge MLD version to 2"
++
++	$MZ $host1_if $MZPKT_IS_INC -q
++	sleep 1
 +	bridge -j -d -s mdb show dev br0 \
 +		| jq -e ".[].mdb[] | \
-+			 select(.grp == \"$TEST_GROUP\" and .source_list != null $sarg)" &>/dev/null
-+	check_err $? "Wrong *,G entry source list after $report report"
-+
-+	for sgent in "${slist[@]}"; do
-+		bridge -j -d -s mdb show dev br0 \
-+			| jq -e ".[].mdb[] | \
-+				 select(.grp == \"$TEST_GROUP\" and .src == \"$sgent\")" &>/dev/null
-+		check_err $? "Missing S,G entry ($sgent, $TEST_GROUP)"
-+	done
++			 select(.grp == \"$TEST_GROUP\" and .source_list != null)" &>/dev/null
++	check_err $? "Missing *,G entry with source list"
++	bridge -j -d -s mdb show dev br0 \
++		| jq -e ".[].mdb[] | \
++			 select(.grp == \"$TEST_GROUP\" and \
++				.source_list != null and .filter_mode == \"include\")" &>/dev/null
++	check_err $? "Wrong *,G entry filter mode"
++	brmcast_check_sg_entries "is_include" "${X[@]}"
 +}
 +
-+brmcast_check_sg_fwding()
++mldv2cleanup()
 +{
-+	local should_fwd=$1; shift
-+	local sources=("$@")
++	local port=$1
 +
-+	for src in "${sources[@]}"; do
-+		local retval=0
-+
-+		mcast_packet_test $TEST_GROUP_MAC $src $TEST_GROUP $h2 $h1
-+		retval=$?
-+		if [ $should_fwd -eq 1 ]; then
-+			check_fail $retval "Didn't forward traffic from S,G ($src, $TEST_GROUP)"
-+		else
-+			check_err $retval "Forwarded traffic for blocked S,G ($src, $TEST_GROUP)"
-+		fi
-+	done
++	bridge mdb del dev br0 port $port grp $TEST_GROUP
++	ip link set dev br0 type bridge mcast_mld_version 1
 +}
 +
-+brmcast_check_sg_state()
++mldv2include_test()
 +{
-+	local is_blocked=$1; shift
-+	local sources=("$@")
-+	local should_fail=1
++	RET=0
++	local X=("2001:db8:1::1" "2001:db8:1::2" "2001:db8:1::3")
 +
-+	if [ $is_blocked -eq 1 ]; then
-+		should_fail=0
-+	fi
++	mldv2include_prepare $h1
 +
-+	for src in "${sources[@]}"; do
-+		bridge -j -d -s mdb show dev br0 \
-+			| jq -e ".[].mdb[] | \
-+				 select(.grp == \"$TEST_GROUP\" and .source_list != null) |
-+				 .source_list[] |
-+				 select(.address == \"$src\") |
-+				 select(.timer == \"0.00\")" &>/dev/null
-+		check_err_fail $should_fail $? "Entry $src has zero timer"
++	brmcast_check_sg_state 0 "${X[@]}"
 +
-+		bridge -j -d -s mdb show dev br0 \
-+			| jq -e ".[].mdb[] | \
-+				 select(.grp == \"$TEST_GROUP\" and .src == \"$src\" and \
-+				 .flags[] == \"blocked\")" &>/dev/null
-+		check_err_fail $should_fail $? "Entry $src has blocked flag"
-+	done
++	brmcast_check_sg_fwding 1 "${X[@]}"
++	brmcast_check_sg_fwding 0 "2001:db8:1::100"
++
++	log_test "MLDv2 report $TEST_GROUP is_include"
++
++	mldv2cleanup $swp1
 +}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++
++tests_run
++
++exit $EXIT_STATUS
 -- 
 2.25.4
 
