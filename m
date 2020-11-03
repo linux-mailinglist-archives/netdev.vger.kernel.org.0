@@ -2,145 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96DD52A4B60
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:26:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03B8B2A4B8D
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:30:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728413AbgKCQ05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 11:26:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728046AbgKCQ05 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 11:26:57 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7716C0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 08:26:55 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id 10so14660774pfp.5
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 08:26:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=q7Rr4h8jgG1g6dQ43vyn0f2NKcgPO6Gve7klvtnHf0s=;
-        b=J9ubuYTM4wXgexKGDyx5JYciBXJNq0bbFDgdls7EoQCTwbFKHnSAFD2TJI7Ec5JX7O
-         OZ4cbbmq6crrPt6VjKIcQC/RLqUJM3Aa2j1/10lEFq9e5xHbSB6J6+fQLfTiBOmbltgh
-         ZC3ziJAx++D8HuedDZY3W/rKv+ovwl0XhCa07vUY2ySXj6XYetFv8MBDNn++2FVLoqY0
-         ufydQyey3HndJhOz6tgv37fVcgskiJexE0dq56W6ewvwzpWbY2N+ykiFpB8jRCLp0bJV
-         Kv4VFnZRVulH17R/J/AftSTYYxV6GGKzgVbARYA/4goaPRHRHYfp95PZ/Pzktqf4PzMM
-         A8ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=q7Rr4h8jgG1g6dQ43vyn0f2NKcgPO6Gve7klvtnHf0s=;
-        b=ht++hhOzZV7y23P+9tA4UBEMZGzT+k3ZSj5kIbGRaOM+0YHKZSqUgOElcJuMOQQrtG
-         ZnTiC2xq+mx23hcmuAHDFt8JGkfr4AhikAmp4eBF2QO+eagyPQAJJ5ZFviDBe+N/9O+/
-         fNB+RMY88byvU5mkUVq3T9hbx8Tq/hcHle/89pdgDpa1R24Dzbtt6KVEI2tAwPVvjDqK
-         1/Aom+dtL8Nyp0ubUGqdkuBeDWO9+cdNNqNGSE75VYp63gHi/OrrWA1y2ZwUf1s5N54v
-         vsYrxO6FKCjsoyqL2AAPRb3JlqzQPGrNmwZonkFf2rs3TBjrdEOgvU2vnwOY5te7eRtm
-         ZPNg==
-X-Gm-Message-State: AOAM533PEiq1JyJOV09YyNDv4oz55CdqvjxdkhSmrDqm124en0GzP9FR
-        s7k4miDXAXqPGMC0aonP1jxKVuJqYCpyJbYU
-X-Google-Smtp-Source: ABdhPJxhWx9gl1NqmlYxOuedOUHwo24YYmoR7jGHmEWzaFrLQP3vF93L//QdiIgl3Rer2/IANGNWKQ==
-X-Received: by 2002:aa7:950b:0:b029:18a:df47:ef90 with SMTP id b11-20020aa7950b0000b029018adf47ef90mr11941628pfp.74.1604420815400;
-        Tue, 03 Nov 2020 08:26:55 -0800 (PST)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id lk13sm3345000pjb.43.2020.11.03.08.26.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 08:26:55 -0800 (PST)
-Date:   Tue, 3 Nov 2020 08:26:51 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     'Jakub Kicinski' <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] drivers: net: sky2: Fix -Wstringop-truncation
- with W=1
-Message-ID: <20201103082651.7edadae6@hermes.local>
-In-Reply-To: <20201103082501.39eac063@hermes.local>
-References: <20201031174028.1080476-1-andrew@lunn.ch>
-        <20201102160106.29edcc11@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <c3c5682a5953429987bb5d30d631daa7@AcuMS.aculab.com>
-        <20201103082501.39eac063@hermes.local>
+        id S1728350AbgKCQaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 11:30:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53850 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726312AbgKCQaw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 11:30:52 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B53272072C;
+        Tue,  3 Nov 2020 16:30:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604421052;
+        bh=LKI4N1fVLHi2H2rPCMGg8y/dxocDD5dWMprOfvkWL04=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DogVLlc0U2UuCbO4aofA7OK245Sx9wfLbRWXtj8vse+IJOq/UT71xTYTdM2bigqQE
+         8glZeeAzJslxhT5g92kUlWbXRBPd8StpGr4TN/GKOWxXmJjfpNVVh37wC8PN2S+e0u
+         FebxYsNRDKIeJHAlsFH+zZ1DMythGvbf5M7A1bm0=
+Date:   Tue, 3 Nov 2020 08:30:50 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>, james.jurack@ametek.com
+Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
+ skb_cow_head for PTP
+Message-ID: <20201103083050.100b2568@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201103161319.wisvmjbdqhju6vyh@skbuf>
+References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
+        <20201029081057.8506-1-claudiu.manoil@nxp.com>
+        <20201103161319.wisvmjbdqhju6vyh@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Nov 2020 08:25:01 -0800
-Stephen Hemminger <stephen@networkplumber.org> wrote:
+On Tue, 3 Nov 2020 18:13:19 +0200 Vladimir Oltean wrote:
+> [14538.046926] PC is at skb_release_data+0x6c/0x14c
+> [14538.051518] LR is at consume_skb+0x38/0xd8
+> [14538.055588] pc : [<c10e439c>]    lr : [<c10e3fac>]    psr: 200f0013
+> [14538.061817] sp : c28f1da8  ip : 00000000  fp : c265aa40
+> [14538.067010] r10: 00000000  r9 : 00000000  r8 : c2f98000
+> [14538.072204] r7 : c511d900  r6 : c3d3d900  r5 : c3d3d900  r4 : 00000000
+> [14538.078693] r3 : 000000d3  r2 : 00000001  r1 : 00000000  r0 : 00000000
 
-> On Tue, 3 Nov 2020 10:19:55 +0000
-> David Laight <David.Laight@ACULAB.COM> wrote:
->=20
-> > From: Jakub Kicinski =20
-> > > Sent: 03 November 2020 00:01
-> > >=20
-> > > On Sat, 31 Oct 2020 18:40:28 +0100 Andrew Lunn wrote:   =20
-> > > > In function =E2=80=98strncpy=E2=80=99,
-> > > >     inlined from =E2=80=98sky2_name=E2=80=99 at drivers/net/etherne=
-t/marvell/sky2.c:4903:3,
-> > > >     inlined from =E2=80=98sky2_probe=E2=80=99 at drivers/net/ethern=
-et/marvell/sky2.c:5049:2:
-> > > > ./include/linux/string.h:297:30: warning: =E2=80=98__builtin_strncp=
-y=E2=80=99 specified bound 16 equals destination   =20
-> > > size [-Wstringop-truncation]   =20
-> > > >
-> > > > None of the device names are 16 characters long, so it was never an
-> > > > issue, but reduce the length of the buffer size by one to avoid the
-> > > > warning.
-> > > >
-> > > > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> > > > ---
-> > > >  drivers/net/ethernet/marvell/sky2.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethe=
-rnet/marvell/sky2.c
-> > > > index 25981a7a43b5..35b0ec5afe13 100644
-> > > > --- a/drivers/net/ethernet/marvell/sky2.c
-> > > > +++ b/drivers/net/ethernet/marvell/sky2.c
-> > > > @@ -4900,7 +4900,7 @@ static const char *sky2_name(u8 chipid, char =
-*buf, int sz)
-> > > >  	};
-> > > >
-> > > >  	if (chipid >=3D CHIP_ID_YUKON_XL && chipid <=3D CHIP_ID_YUKON_OP_=
-2)
-> > > > -		strncpy(buf, name[chipid - CHIP_ID_YUKON_XL], sz);
-> > > > +		strncpy(buf, name[chipid - CHIP_ID_YUKON_XL], sz - 1);   =20
-> > >=20
-> > > Hm. This irks the eye a little. AFAIK the idiomatic code would be:
-> > >=20
-> > > 	strncpy(buf, name..., sz - 1);
-> > > 	buf[sz - 1] =3D '\0';
-> > >=20
-> > > Perhaps it's easier to convert to strscpy()/strscpy_pad()?
-> > >    =20
-> > > >  	else
-> > > >  		snprintf(buf, sz, "(chip %#x)", chipid);
-> > > >  	return buf;   =20
-> >=20
-> > Is the pad needed?
-> > It isn't present in the 'else' branch. =20
->=20
-> Since this is non-critical code and is only ther to print something useful
-> on boot, why not just use snprintf on both sides of statement?
+> [14538.263039] [<c10e439c>] (skb_release_data) from [<c10e3fac>] (consume_skb+0x38/0xd8)
+> [14538.270834] [<c10e3fac>] (consume_skb) from [<c0d529bc>] (gfar_start_xmit+0x704/0x784)
+> [14538.278714] [<c0d529bc>] (gfar_start_xmit) from [<c10fcdf8>] (dev_hard_start_xmit+0xfc/0x254)
+> [14538.287198] [<c10fcdf8>] (dev_hard_start_xmit) from [<c1158524>] (sch_direct_xmit+0x104/0x2e0)
 
-Like this is what I meant...
-diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/mar=
-vell/sky2.c
-index 25981a7a43b5..ebe1406c6e64 100644
---- a/drivers/net/ethernet/marvell/sky2.c
-+++ b/drivers/net/ethernet/marvell/sky2.c
-@@ -4900,7 +4900,7 @@ static const char *sky2_name(u8 chipid, char *buf, in=
-t sz)
-        };
-=20
-        if (chipid >=3D CHIP_ID_YUKON_XL && chipid <=3D CHIP_ID_YUKON_OP_2)
--               strncpy(buf, name[chipid - CHIP_ID_YUKON_XL], sz);
-+               snprintf(buf, sz, "%s", name[chipid - CHIP_ID_YUKON_XL]);
-        else
-                snprintf(buf, sz, "(chip %#x)", chipid);
-        return buf;
+Looks like one of the error paths freeing a wonky skb.
 
-
+Could you decode these addresses to line numbers?
