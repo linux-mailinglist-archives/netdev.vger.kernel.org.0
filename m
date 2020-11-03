@@ -2,71 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A881A2A39CB
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 02:28:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 060DA2A396B
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 02:25:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727402AbgKCBS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 20:18:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60444 "EHLO mail.kernel.org"
+        id S1728371AbgKCBZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 20:25:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34242 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727348AbgKCBSy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 20:18:54 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727910AbgKCBT5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 20:19:57 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 28AE0222B9;
-        Tue,  3 Nov 2020 01:18:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C757922447;
+        Tue,  3 Nov 2020 01:19:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604366334;
-        bh=2wozxo6UzNQ3C09kqq3AQqSe6IwbvNBu7RrW9/B+PFc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=baKsnJ3AdEXD7jJhTRcybbenWtXUO9nKN57+K4RaRKoTeEoV6jgzmp5nhZ5SFCC3q
-         FtNvV+vPtZ6PiJWIXRHI5GHY3YZQRemtSUWNruiSikFQ5l+Y5CuXpckKs4NQVlq1JI
-         wYtWHtVfW678udsJep0+3RJ4brZL0tp4dC+1Ra/w=
-Date:   Mon, 2 Nov 2020 17:18:53 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yuchung Cheng <ycheng@google.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        ncardwell@google.com, nanditad@google.com,
-        Matt Mathis <mattmathis@google.com>
-Subject: Re: [PATCH net-next] tcp: avoid slow start during fast recovery on
- new losses
-Message-ID: <20201102171853.4fe550bb@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201031013412.1973112-1-ycheng@google.com>
-References: <20201031013412.1973112-1-ycheng@google.com>
+        s=default; t=1604366396;
+        bh=y0C3e70PNwnyKwP0EUt2SJF1JuIE0E9iWnli9MBWRKE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0qujF4tr/Z16l4RN5DnyFXydnoQ5Mq89QVt0HxWoEsoUNt590w4oKs5H5WzArlM8v
+         oJjoH1M57ybtfDyGIohYdRBsU0I0LQLjfYIyx3VhpjoaVOuSGosmq8WJGSm2DG+CE8
+         1wgRAJ1bIY0xMwDFuY9v30hofGv1YVTrCs2M1qLE=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jeff Vander Stoep <jeffv@google.com>,
+        Roman Kiryanov <rkir@google.com>,
+        James Morris <jamorris@linux.microsoft.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.8 21/29] vsock: use ns_capable_noaudit() on socket create
+Date:   Mon,  2 Nov 2020 20:19:20 -0500
+Message-Id: <20201103011928.183145-21-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20201103011928.183145-1-sashal@kernel.org>
+References: <20201103011928.183145-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Oct 2020 18:34:12 -0700 Yuchung Cheng wrote:
-> During TCP fast recovery, the congestion control in charge is by
-> default the Proportional Rate Reduction (PRR) unless the congestion
-> control module specified otherwise (e.g. BBR).
-> 
-> Previously when tcp_packets_in_flight() is below snd_ssthresh PRR
-> would slow start upon receiving an ACK that
->    1) cumulatively acknowledges retransmitted data
->    and
->    2) does not detect further lost retransmission
-> 
-> Such conditions indicate the repair is in good steady progress
-> after the first round trip of recovery. Otherwise PRR adopts the
-> packet conservation principle to send only the amount that was
-> newly delivered (indicated by this ACK).
-> 
-> This patch generalizes the previous design principle to include
-> also the newly sent data beside retransmission: as long as
-> the delivery is making good progress, both retransmission and
-> new data should be accounted to make PRR more cautious in slow
-> starting.
-> 
-> Suggested-by: Matt Mathis <mattmathis@google.com>
-> Suggested-by: Neal Cardwell <ncardwell@google.com>
-> Signed-off-by: Yuchung Cheng <ycheng@google.com>
-> Signed-off-by: Neal Cardwell <ncardwell@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+From: Jeff Vander Stoep <jeffv@google.com>
 
-Applied, thanks!
+[ Upstream commit af545bb5ee53f5261db631db2ac4cde54038bdaf ]
+
+During __vsock_create() CAP_NET_ADMIN is used to determine if the
+vsock_sock->trusted should be set to true. This value is used later
+for determing if a remote connection should be allowed to connect
+to a restricted VM. Unfortunately, if the caller doesn't have
+CAP_NET_ADMIN, an audit message such as an selinux denial is
+generated even if the caller does not want a trusted socket.
+
+Logging errors on success is confusing. To avoid this, switch the
+capable(CAP_NET_ADMIN) check to the noaudit version.
+
+Reported-by: Roman Kiryanov <rkir@google.com>
+https://android-review.googlesource.com/c/device/generic/goldfish/+/1468545/
+Signed-off-by: Jeff Vander Stoep <jeffv@google.com>
+Reviewed-by: James Morris <jamorris@linux.microsoft.com>
+Link: https://lore.kernel.org/r/20201023143757.377574-1-jeffv@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/vmw_vsock/af_vsock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 6cd0df1c5caf6..08c9a43e9049c 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -739,7 +739,7 @@ static struct sock *__vsock_create(struct net *net,
+ 		vsk->buffer_min_size = psk->buffer_min_size;
+ 		vsk->buffer_max_size = psk->buffer_max_size;
+ 	} else {
+-		vsk->trusted = capable(CAP_NET_ADMIN);
++		vsk->trusted = ns_capable_noaudit(&init_user_ns, CAP_NET_ADMIN);
+ 		vsk->owner = get_current_cred();
+ 		vsk->connect_timeout = VSOCK_DEFAULT_CONNECT_TIMEOUT;
+ 		vsk->buffer_size = VSOCK_DEFAULT_BUFFER_SIZE;
+-- 
+2.27.0
+
