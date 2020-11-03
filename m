@@ -2,31 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6CF62A4DE5
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:10:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65E892A4DEB
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:10:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728889AbgKCSKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 13:10:08 -0500
-Received: from mail-out.m-online.net ([212.18.0.9]:40866 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727706AbgKCSKI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 13:10:08 -0500
+        id S1729136AbgKCSKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 13:10:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729002AbgKCSKM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 13:10:12 -0500
+Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631F3C0613D1;
+        Tue,  3 Nov 2020 10:10:12 -0800 (PST)
 Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4CQd9K5TJfz1qs0Y;
-        Tue,  3 Nov 2020 19:09:57 +0100 (CET)
+        by mail-out.m-online.net (Postfix) with ESMTP id 4CQd9M5bB2z1rsNT;
+        Tue,  3 Nov 2020 19:09:59 +0100 (CET)
 Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4CQd9K1f27z1qtZ6;
-        Tue,  3 Nov 2020 19:09:57 +0100 (CET)
+        by mail.m-online.net (Postfix) with ESMTP id 4CQd9M0MkDz1qtZB;
+        Tue,  3 Nov 2020 19:09:59 +0100 (CET)
 X-Virus-Scanned: amavisd-new at mnet-online.de
 Received: from mail.mnet-online.de ([192.168.8.182])
         by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id p6lJGzKwqxFx; Tue,  3 Nov 2020 19:09:55 +0100 (CET)
-X-Auth-Info: gGi0xWFnHCJvaoRCQCKJKp3s7WaTZQFo8IXbB2aMlKo=
+        with ESMTP id 6pvLRmTPH3AJ; Tue,  3 Nov 2020 19:09:57 +0100 (CET)
+X-Auth-Info: 1U1MDOVSZ0ZB3wc9xWUKX7BNRDPK2UOjjOtadn9h+fs=
 Received: from localhost.localdomain (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Tue,  3 Nov 2020 19:09:55 +0100 (CET)
+        Tue,  3 Nov 2020 19:09:57 +0100 (CET)
 From:   Marek Vasut <marex@denx.de>
 To:     linux-wireless@vger.kernel.org
 Cc:     Marek Vasut <marex@denx.de>, Angus Ainslie <angus@akkea.ca>,
@@ -37,42 +40,22 @@ Cc:     Marek Vasut <marex@denx.de>, Angus Ainslie <angus@akkea.ca>,
         Martin Kepplinger <martink@posteo.de>,
         Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
         Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH 1/2] rsi: Move card interrupt handling to RX thread
-Date:   Tue,  3 Nov 2020 19:09:40 +0100
-Message-Id: <20201103180941.443528-1-marex@denx.de>
+Subject: [PATCH 2/2] rsi: Clean up loop in the interrupt handler
+Date:   Tue,  3 Nov 2020 19:09:41 +0100
+Message-Id: <20201103180941.443528-2-marex@denx.de>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201103180941.443528-1-marex@denx.de>
+References: <20201103180941.443528-1-marex@denx.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The interrupt handling of the RS911x is particularly heavy. For each RX
-packet, the card does three SDIO transactions, one to read interrupt
-status register, one to RX buffer length, one to read the RX packet(s).
-This translates to ~330 uS per one cycle of interrupt handler. In case
-there is more incoming traffic, this will be more.
-
-The drivers/mmc/core/sdio_irq.c has the following comment, quote "Just
-like traditional hard IRQ handlers, we expect SDIO IRQ handlers to be
-quick and to the point, so that the holding of the host lock does not
-cover too much work that doesn't require that lock to be held."
-
-The RS911x interrupt handler does not fit that. This patch therefore
-changes it such that the entire IRQ handler is moved to the RX thread
-instead, and the interrupt handler only wakes the RX thread.
-
-This is OK, because the interrupt handler only does things which can
-also be done in the RX thread, that is, it checks for firmware loading
-error(s), it checks buffer status, it checks whether a packet arrived
-and if so, reads out the packet and passes it to network stack.
-
-Moreover, this change permits removal of a code which allocated an
-skbuff only to get 4-byte-aligned buffer, read up to 8kiB of data
-into the skbuff, queue this skbuff into local private queue, then in
-RX thread, this buffer is dequeued, the data in the skbuff as passed
-to the RSI driver core, and the skbuff is deallocated. All this is
-replaced by directly calling the RSI driver core with local buffer.
+The inner do { ... } while loop is completely useless, all it does
+is iterate over a switch-case statement, one bit at a time. This
+can easily be replaced by simple if (status & bit) { ... } tests
+for each bit. No functional change.
 
 Signed-off-by: Marek Vasut <marex@denx.de>
 Cc: Angus Ainslie <angus@akkea.ca>
@@ -86,168 +69,153 @@ Cc: Siva Rebbagondla <siva8118@gmail.com>
 Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 ---
- drivers/net/wireless/rsi/rsi_91x_sdio.c     |  6 +--
- drivers/net/wireless/rsi/rsi_91x_sdio_ops.c | 52 ++++++---------------
- drivers/net/wireless/rsi/rsi_sdio.h         |  8 +---
- 3 files changed, 15 insertions(+), 51 deletions(-)
+ drivers/net/wireless/rsi/rsi_91x_sdio_ops.c | 121 ++++++++++----------
+ 1 file changed, 58 insertions(+), 63 deletions(-)
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio.c b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-index 78ad605081ae..d81874eee4b3 100644
---- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-@@ -153,9 +153,7 @@ static void rsi_handle_interrupt(struct sdio_func *function)
- 	if (adapter->priv->fsm_state == FSM_FW_NOT_LOADED)
- 		return;
- 
--	dev->sdio_irq_task = current;
--	rsi_interrupt_handler(adapter);
--	dev->sdio_irq_task = NULL;
-+	rsi_set_event(&dev->rx_thread.event);
- }
- 
- /**
-@@ -1058,8 +1056,6 @@ static int rsi_probe(struct sdio_func *pfunction,
- 		rsi_dbg(ERR_ZONE, "%s: Unable to init rx thrd\n", __func__);
- 		goto fail_kill_thread;
- 	}
--	skb_queue_head_init(&sdev->rx_q.head);
--	sdev->rx_q.num_rx_pkts = 0;
- 
- 	sdio_claim_host(pfunction);
- 	if (sdio_claim_irq(pfunction, rsi_handle_interrupt)) {
 diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio_ops.c b/drivers/net/wireless/rsi/rsi_91x_sdio_ops.c
-index 7825c9a889d3..23e709aabd1f 100644
+index 23e709aabd1f..8ace1874e5cb 100644
 --- a/drivers/net/wireless/rsi/rsi_91x_sdio_ops.c
 +++ b/drivers/net/wireless/rsi/rsi_91x_sdio_ops.c
-@@ -60,39 +60,20 @@ int rsi_sdio_master_access_msword(struct rsi_hw *adapter, u16 ms_word)
- 	return status;
- }
- 
-+static void rsi_rx_handler(struct rsi_hw *adapter);
-+
- void rsi_sdio_rx_thread(struct rsi_common *common)
- {
- 	struct rsi_hw *adapter = common->priv;
- 	struct rsi_91x_sdiodev *sdev = adapter->rsi_dev;
--	struct sk_buff *skb;
--	int status;
- 
- 	do {
- 		rsi_wait_event(&sdev->rx_thread.event, EVENT_WAIT_FOREVER);
- 		rsi_reset_event(&sdev->rx_thread.event);
-+		rsi_rx_handler(adapter);
-+	} while (!atomic_read(&sdev->rx_thread.thread_done));
- 
--		while (true) {
--			if (atomic_read(&sdev->rx_thread.thread_done))
--				goto out;
--
--			skb = skb_dequeue(&sdev->rx_q.head);
--			if (!skb)
--				break;
--			if (sdev->rx_q.num_rx_pkts > 0)
--				sdev->rx_q.num_rx_pkts--;
--			status = rsi_read_pkt(common, skb->data, skb->len);
--			if (status) {
--				rsi_dbg(ERR_ZONE, "Failed to read the packet\n");
--				dev_kfree_skb(skb);
--				break;
--			}
--			dev_kfree_skb(skb);
--		}
--	} while (1);
--
--out:
- 	rsi_dbg(INFO_ZONE, "%s: Terminated SDIO RX thread\n", __func__);
--	skb_queue_purge(&sdev->rx_q.head);
- 	atomic_inc(&sdev->rx_thread.thread_done);
- 	complete_and_exit(&sdev->rx_thread.completion, 0);
- }
-@@ -113,10 +94,6 @@ static int rsi_process_pkt(struct rsi_common *common)
- 	u32 rcv_pkt_len = 0;
- 	int status = 0;
- 	u8 value = 0;
--	struct sk_buff *skb;
--
--	if (dev->rx_q.num_rx_pkts >= RSI_MAX_RX_PKTS)
--		return 0;
- 
- 	num_blks = ((adapter->interrupt_status & 1) |
- 			((adapter->interrupt_status >> RECV_NUM_BLOCKS) << 1));
-@@ -144,22 +121,19 @@ static int rsi_process_pkt(struct rsi_common *common)
- 
- 	rcv_pkt_len = (num_blks * 256);
- 
--	skb = dev_alloc_skb(rcv_pkt_len);
--	if (!skb)
--		return -ENOMEM;
--
--	status = rsi_sdio_host_intf_read_pkt(adapter, skb->data, rcv_pkt_len);
-+	status = rsi_sdio_host_intf_read_pkt(adapter, dev->pktbuffer,
-+					     rcv_pkt_len);
- 	if (status) {
- 		rsi_dbg(ERR_ZONE, "%s: Failed to read packet from card\n",
- 			__func__);
--		dev_kfree_skb(skb);
- 		return status;
- 	}
--	skb_put(skb, rcv_pkt_len);
--	skb_queue_tail(&dev->rx_q.head, skb);
--	dev->rx_q.num_rx_pkts++;
- 
--	rsi_set_event(&dev->rx_thread.event);
-+	status = rsi_read_pkt(common, dev->pktbuffer, rcv_pkt_len);
-+	if (status) {
-+		rsi_dbg(ERR_ZONE, "Failed to read the packet\n");
-+		return status;
-+	}
- 
- 	return 0;
- }
-@@ -251,12 +225,12 @@ int rsi_init_sdio_slave_regs(struct rsi_hw *adapter)
- }
- 
- /**
-- * rsi_interrupt_handler() - This function read and process SDIO interrupts.
-+ * rsi_rx_handler() - Read and process SDIO interrupts.
-  * @adapter: Pointer to the adapter structure.
-  *
-  * Return: None.
-  */
--void rsi_interrupt_handler(struct rsi_hw *adapter)
-+static void rsi_rx_handler(struct rsi_hw *adapter)
- {
- 	struct rsi_common *common = adapter->priv;
+@@ -236,7 +236,6 @@ static void rsi_rx_handler(struct rsi_hw *adapter)
  	struct rsi_91x_sdiodev *dev =
-diff --git a/drivers/net/wireless/rsi/rsi_sdio.h b/drivers/net/wireless/rsi/rsi_sdio.h
-index 9afc1d0d2684..1c756263cf15 100644
---- a/drivers/net/wireless/rsi/rsi_sdio.h
-+++ b/drivers/net/wireless/rsi/rsi_sdio.h
-@@ -107,11 +107,6 @@ struct receive_info {
- 	u32 buf_available_counter;
- };
+ 		(struct rsi_91x_sdiodev *)adapter->rsi_dev;
+ 	int status;
+-	enum sdio_interrupt_type isr_type;
+ 	u8 isr_status = 0;
+ 	u8 fw_status = 0;
  
--struct rsi_sdio_rx_q {
--	u8 num_rx_pkts;
--	struct sk_buff_head head;
--};
+@@ -267,73 +266,69 @@ static void rsi_rx_handler(struct rsi_hw *adapter)
+ 			__func__, isr_status, (1 << MSDU_PKT_PENDING),
+ 			(1 << FW_ASSERT_IND));
+ 
+-		do {
+-			RSI_GET_SDIO_INTERRUPT_TYPE(isr_status, isr_type);
 -
- struct rsi_91x_sdiodev {
- 	struct sdio_func *pfunction;
- 	struct task_struct *sdio_irq_task;
-@@ -124,11 +119,10 @@ struct rsi_91x_sdiodev {
- 	u16 tx_blk_size;
- 	u8 write_fail;
- 	bool buff_status_updated;
--	struct rsi_sdio_rx_q rx_q;
- 	struct rsi_thread rx_thread;
-+	u8 pktbuffer[8192] __aligned(4);
- };
- 
--void rsi_interrupt_handler(struct rsi_hw *adapter);
- int rsi_init_sdio_slave_regs(struct rsi_hw *adapter);
- int rsi_sdio_read_register(struct rsi_hw *adapter, u32 addr, u8 *data);
- int rsi_sdio_host_intf_read_pkt(struct rsi_hw *adapter, u8 *pkt, u32 length);
+-			switch (isr_type) {
+-			case BUFFER_AVAILABLE:
+-				status = rsi_sdio_check_buffer_status(adapter,
+-								      0);
+-				if (status < 0)
+-					rsi_dbg(ERR_ZONE,
+-						"%s: Failed to check buffer status\n",
+-						__func__);
+-				rsi_sdio_ack_intr(common->priv,
+-						  (1 << PKT_BUFF_AVAILABLE));
+-				rsi_set_event(&common->tx_thread.event);
+-
+-				rsi_dbg(ISR_ZONE,
+-					"%s: ==> BUFFER_AVAILABLE <==\n",
+-					__func__);
+-				dev->buff_status_updated = true;
+-				break;
+-
+-			case FIRMWARE_ASSERT_IND:
++		if (isr_status & BIT(PKT_BUFF_AVAILABLE)) {
++			status = rsi_sdio_check_buffer_status(adapter, 0);
++			if (status < 0)
+ 				rsi_dbg(ERR_ZONE,
+-					"%s: ==> FIRMWARE Assert <==\n",
++					"%s: Failed to check buffer status\n",
+ 					__func__);
+-				status = rsi_sdio_read_register(common->priv,
++			rsi_sdio_ack_intr(common->priv,
++					  BIT(PKT_BUFF_AVAILABLE));
++			rsi_set_event(&common->tx_thread.event);
++
++			rsi_dbg(ISR_ZONE, "%s: ==> BUFFER_AVAILABLE <==\n",
++				__func__);
++			dev->buff_status_updated = true;
++
++			isr_status &= ~BIT(PKT_BUFF_AVAILABLE);
++		}
++
++		if (isr_status & BIT(FW_ASSERT_IND)) {
++			rsi_dbg(ERR_ZONE, "%s: ==> FIRMWARE Assert <==\n",
++				__func__);
++			status = rsi_sdio_read_register(common->priv,
+ 							SDIO_FW_STATUS_REG,
+ 							&fw_status);
+-				if (status) {
+-					rsi_dbg(ERR_ZONE,
+-						"%s: Failed to read f/w reg\n",
+-						__func__);
+-				} else {
+-					rsi_dbg(ERR_ZONE,
+-						"%s: Firmware Status is 0x%x\n",
+-						__func__ , fw_status);
+-					rsi_sdio_ack_intr(common->priv,
+-							  (1 << FW_ASSERT_IND));
+-				}
+-
+-				common->fsm_state = FSM_CARD_NOT_READY;
+-				break;
+-
+-			case MSDU_PACKET_PENDING:
+-				rsi_dbg(ISR_ZONE, "Pkt pending interrupt\n");
+-				dev->rx_info.total_sdio_msdu_pending_intr++;
+-
+-				status = rsi_process_pkt(common);
+-				if (status) {
+-					rsi_dbg(ERR_ZONE,
+-						"%s: Failed to read pkt\n",
+-						__func__);
+-					mutex_unlock(&common->rx_lock);
+-					return;
+-				}
+-				break;
+-			default:
+-				rsi_sdio_ack_intr(common->priv, isr_status);
+-				dev->rx_info.total_sdio_unknown_intr++;
+-				isr_status = 0;
+-				rsi_dbg(ISR_ZONE,
+-					"Unknown Interrupt %x\n",
+-					isr_status);
+-				break;
++			if (status) {
++				rsi_dbg(ERR_ZONE,
++					"%s: Failed to read f/w reg\n",
++					__func__);
++			} else {
++				rsi_dbg(ERR_ZONE,
++					"%s: Firmware Status is 0x%x\n",
++					__func__, fw_status);
++				rsi_sdio_ack_intr(common->priv,
++						  BIT(FW_ASSERT_IND));
+ 			}
+-			isr_status ^= BIT(isr_type - 1);
+-		} while (isr_status);
++
++			common->fsm_state = FSM_CARD_NOT_READY;
++
++			isr_status &= ~BIT(FW_ASSERT_IND);
++		}
++
++		if (isr_status & BIT(MSDU_PKT_PENDING)) {
++			rsi_dbg(ISR_ZONE, "Pkt pending interrupt\n");
++			dev->rx_info.total_sdio_msdu_pending_intr++;
++
++			status = rsi_process_pkt(common);
++			if (status) {
++				rsi_dbg(ERR_ZONE, "%s: Failed to read pkt\n",
++					__func__);
++				mutex_unlock(&common->rx_lock);
++				return;
++			}
++
++			isr_status &= ~BIT(MSDU_PKT_PENDING);
++		}
++
++		if (isr_status) {
++			rsi_sdio_ack_intr(common->priv, isr_status);
++			dev->rx_info.total_sdio_unknown_intr++;
++			isr_status = 0;
++			rsi_dbg(ISR_ZONE, "Unknown Interrupt %x\n",
++				isr_status);
++		}
++
+ 		mutex_unlock(&common->rx_lock);
+ 	} while (1);
+ }
 -- 
 2.28.0
 
