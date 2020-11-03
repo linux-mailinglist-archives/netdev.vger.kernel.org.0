@@ -2,163 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FD3C2A55E3
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:24:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2E8A2A5533
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:21:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388039AbgKCVX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 16:23:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733243AbgKCVEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 16:04:35 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C11EC0613D1;
-        Tue,  3 Nov 2020 13:04:35 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id b3so15410552pfo.2;
-        Tue, 03 Nov 2020 13:04:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wrUBzqixMNGges3Fm8LEqTkGr+7Sx/OVd1FP+l0kdS0=;
-        b=tqKpwE9c1XvzM26lsALNljg7czgItn9B2SFh1tA3jWE/ITdxfbUKdt+lGHvc4AqZJG
-         DZ38w2G0ZCOMhepTm9Eowqe4LBfWPO8ILx0Ol+dgIFIwxdAiNzD1wA/i8yt6fsVNOptw
-         SaiYvqBnxP3BX8+Vb8wu9Rwugz6FWLSJfUcENjTtu4V78jIYi59xfrDLTeLYUuG5oxAl
-         NTgLN9RaB/G1pfPbVdSsuGof6GiB/WaIyBDaEjrF7Ha1Z98pSiyS5oXgB6h/IXv9HV1w
-         sOAJhdJr5OPTpCg0tsq/C68T5BgQKFWAUoPDQTzUaXS7gzIxvEKvR4YiROniyFWZyWC3
-         0Sag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wrUBzqixMNGges3Fm8LEqTkGr+7Sx/OVd1FP+l0kdS0=;
-        b=KKka7vYkgz51er8sxIwdP/omGh2lMRt2rA287qwg/ZKH6SFHlbKWoiRXQE1Eko7UCc
-         6Su3w8jPaA8ibD4dZmA6BJfyp8wS3RSuhixDq7O0DrYa2W1okn2bULfsaMeGksyDBzS3
-         VhnCTAarnbQW6aL9PAeGRTyZku0PDuH8okCutJ/lNahW3zD3Qy/3/5LPzYZkSI8r1yBf
-         u5+Y1ozbb8N5RMbneZzU9CTiJ4BnKUoE/6RLpQb80a9K2uFr/SMKZllJpqNvTxS7aeHd
-         l+Hm4KeZmzZIIcT0EiSF+YMhiFpSu8ox/eSCu0f3nMX4Grfd6lvUacQZWEdCELn27UC4
-         Chnw==
-X-Gm-Message-State: AOAM533oYeYM94Bmvw5QjUsKRv4ATMTAX0N8uUUcsbjv1nx0wtL0i5K+
-        LflLpOEpiiaiC1nZkpWi0Cc=
-X-Google-Smtp-Source: ABdhPJwKd9ujaje9lKYp2d86AtKj6fAx/PpwqjE7Ypjdq7qZld+7Ol6iwwjneB60m1H6WrfRfHbdnA==
-X-Received: by 2002:a17:90b:f85:: with SMTP id ft5mr1161462pjb.86.1604437474559;
-        Tue, 03 Nov 2020 13:04:34 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:4055])
-        by smtp.gmail.com with ESMTPSA id y22sm29035pfr.62.2020.11.03.13.04.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 13:04:33 -0800 (PST)
-Date:   Tue, 3 Nov 2020 13:04:18 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kenny Ho <y2kenny@gmail.com>
-Cc:     Kenny Ho <Kenny.Ho@amd.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>
-Subject: Re: [RFC] Add BPF_PROG_TYPE_CGROUP_IOCTL
-Message-ID: <20201103210418.q7hddyl7rvdplike@ast-mbp.dhcp.thefacebook.com>
-References: <20201007152355.2446741-1-Kenny.Ho@amd.com>
- <CAOWid-d=a1Q3R92s7GrzxWhXx7_dc8NQvQg7i7RYTVv3+jHxkQ@mail.gmail.com>
- <20201103053244.khibmr66p7lhv7ge@ast-mbp.dhcp.thefacebook.com>
- <CAOWid-eQSPru0nm8+Xo3r6C0pJGq+5r8mzM8BL2dgNn2c9mt2Q@mail.gmail.com>
- <CAADnVQKuoZDB-Xga5STHdGSxvSP=B6jQ40kLdpL1u+J98bv65A@mail.gmail.com>
- <CAOWid-czZphRz6Y-H3OcObKCH=bLLC3=bOZaSB-6YBE56+Qzrg@mail.gmail.com>
+        id S2388181AbgKCVGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 16:06:35 -0500
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:33277 "EHLO
+        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388169AbgKCVGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 16:06:33 -0500
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20201103210620euoutp027f0613901dfb7109b0f422e4a88689b0~EG3qRygB30258502585euoutp02p;
+        Tue,  3 Nov 2020 21:06:20 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20201103210620euoutp027f0613901dfb7109b0f422e4a88689b0~EG3qRygB30258502585euoutp02p
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1604437580;
+        bh=1oVe+Mzyk4MxJ1ipUcz2F9R5YNk5nRkBDJIrpIbCamY=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=QggSR4jAh0Ch3rHjS/C2jefwaBu1BvHkNd2+q5EGnGEOX3/c8jDfBzeqNt/5fetpv
+         t0o3DC2T4cfNYdeqqhurFRC7AQLmlEg155lQvFVE3i1xcTQnMX43Tb9hf0Um82wyiz
+         U9d52sc5ymq1fl2CnjEiMiNUXQWNbbUk0YI3e20o=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20201103210615eucas1p27309115b25dca3b8522fe12dcd619323~EG3lWFtN50788807888eucas1p2O;
+        Tue,  3 Nov 2020 21:06:15 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 23.E3.06318.746C1AF5; Tue,  3
+        Nov 2020 21:06:15 +0000 (GMT)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20201103210614eucas1p17e1aaa335b9562351bb0a0ed582b2f38~EG3k9OenP1959119591eucas1p1R;
+        Tue,  3 Nov 2020 21:06:14 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20201103210614eusmtrp29f299e0a82b5ce8514deba51666ae20c~EG3k8k5bH1931819318eusmtrp2M;
+        Tue,  3 Nov 2020 21:06:14 +0000 (GMT)
+X-AuditID: cbfec7f5-371ff700000018ae-52-5fa1c6472b7f
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 25.97.06017.646C1AF5; Tue,  3
+        Nov 2020 21:06:14 +0000 (GMT)
+Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20201103210614eusmtip1f7d4140dbb6bb2ecff46c90808b25c5d~EG3kwKB_c0573305733eusmtip17;
+        Tue,  3 Nov 2020 21:06:14 +0000 (GMT)
+From:   Lukasz Stelmach <l.stelmach@samsung.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Wilken Gottwalt <wilken.gottwalt@mailbox.org>,
+        Jeremy Kerr <jk@ozlabs.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Colin Ian King <colin.king@canonical.com>,
+        "Andreas K. Besslein" <besslein.andreas@gmail.com>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: [BUG] ax88179_178a - broken hw checksumming after resume
+Date:   Tue, 03 Nov 2020 22:05:55 +0100
+Message-ID: <dleftjimamrw0c.fsf%l.stelmach@samsung.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOWid-czZphRz6Y-H3OcObKCH=bLLC3=bOZaSB-6YBE56+Qzrg@mail.gmail.com>
+Content-Type: multipart/signed; boundary="=-=-="; micalg="pgp-sha256";
+        protocol="application/pgp-signature"
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Sa0hTURzAO7t3d9fZjeu0+qNZMO1DRuuJ3bAiI+j2+BD5JYSyWRcV3ZRd
+        VxZhBuUrXTXDdIlTMR/T+WKO1GExyiVmS4W0Wkg+MM0eoJGPyFzHoG+/8z+//+twaELxVhpI
+        J2hTBZ1WnaSk5KS9a9697WhXecyOl0aKay5qlHLN1R6S63nyleQW6/IprsR9k+Q6XmzjXtsN
+        Um6gvYTiKqpuEVxX2TpucXJMesiXN2XkU7yt9q2EbzN9kPEtlhyK97xxUHzbw04JX9vfJ+MN
+        NgviZ1o2nvKJlu+/KCQlXBJ02w+el8f3G9JTxoLTPK4KWQYagFzkQwO7BwpbR6lcJKcVbA0C
+        t6t35TCLwDayJPVaCnYGwXzpyX8Zr+YrCSxVI6huvyfD0gQCgyMgF9E0xarAaj3jdQLYGwS8
+        m26ivA7BctDaWvfX92cjYdxy/y+T7GbIKXhPeplh94Kn3oi8vJbdB7ZPwzIc94Pu4jES19FA
+        sXsaeRsAOykDe7aHwtMdgdHbWQRmf5hy2WSYN8BSm1niHQ7Y61BgDMe5eQjsJXMkdiLA82qB
+        wk4kDP8OwrgGhr744bZrwGh/QOAwA9mZCpwYCg13HCtFAiF/qgZh5qG2yEzh1zkLho9fJXfR
+        JtN/y5j+W8a0XJVgt0Bj+3Yc3gpV5Z8JzAegoeEbWYakFrRe0IuaOEHcrRUuq0S1RtRr41QX
+        kjUtaPmT9fx2/XiMOn/FOhFLI+Vq5qm9PEYhVV8Sr2icKHS50khT3WsUSGqTtYIygDnc23NO
+        wVxUX7kq6JJjdPokQXSiIJpUrmd2V0yeVbBx6lQhURBSBN2/WwntE5iBUHe2cyYt/CoinkUV
+        ZlqXBvta9i2qIm5FSyoLROs6s6P7+EJq1OCR4tLqLEOY9tlwyOne2ZG5+lnLNXP6IBl17G7H
+        UFbjN2aPLTH9567gaeZR1kCTMX7Cd1IvH3cG3agcdOnM+uJVeR9e+MfS107uCDnhtuTUPHeE
+        fh+l5ybalaQYr94ZRuhE9R/MSkexbAMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrBIsWRmVeSWpSXmKPExsVy+t/xu7puxxbGGyz4oGmxccZ6VouNy++w
+        WJze/47F4vfqXjaLOedbWCx2n9C1uLCtj9Xi8q45bBaLlrUyWxxbIGbx++UTVgduj1kNvWwe
+        W1beZPLYOesuu8emVZ1sHneu7WHz2Dl7H5PHyksX2T36tqxi9Pi8SS6AM0rPpii/tCRVISO/
+        uMRWKdrQwkjP0NJCz8jEUs/Q2DzWyshUSd/OJiU1J7MstUjfLkEv41JfXcET2Yo7xxexNzBe
+        luhi5OSQEDCROPdzCXMXIxeHkMBSRonGGV/Yuhg5gBJSEivnpkPUCEv8udbFBlHzlFFizp6l
+        rCA1bAJ6EmvXRoDERQS+M0ncm/uXBaSBWcBCYuvW1ewgtrCAo8TTVVPAbBYBVYnOybfBangF
+        zCXurJnECGKLClhKbHlxnx0iLihxcuYTqDnZEl9XP2eewMg3C0lqFpLULKAzmAU0Jdbv0ocI
+        a0ssW/iaGcK2lVi37j3LAkbWVYwiqaXFuem5xUZ6xYm5xaV56XrJ+bmbGIExt+3Yzy07GLve
+        BR9iFOBgVOLhPbBtYbwQa2JZcWXuIUYVoDGPNqy+wCjFkpefl6okwut09nScEG9KYmVValF+
+        fFFpTmrxIUZToN8mMkuJJucD00ReSbyhqaG5haWhubG5sZmFkjhvh8DBGCGB9MSS1OzU1ILU
+        Ipg+Jg5OqQbGmPWJghee2i8+t3aLj/ocW9GKmbZ620xtHHNEbsUeO2rKx952LaDvo1DowrX6
+        kzf6ts9jFRP8MmHd+nenZT/rfe1wP5Ow7cDTj9/PJtfOcfWq3hr/e9KExXYcitM0Pvjuutjc
+        35felinMIBpozB1dfTzk1AP3VarJ0XOllFKS+z9dPBcQJ+WlxFKckWioxVxUnAgABErRcdsC
+        AAA=
+X-CMS-MailID: 20201103210614eucas1p17e1aaa335b9562351bb0a0ed582b2f38
+X-Msg-Generator: CA
+X-RootMTR: 20201103210614eucas1p17e1aaa335b9562351bb0a0ed582b2f38
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20201103210614eucas1p17e1aaa335b9562351bb0a0ed582b2f38
+References: <CGME20201103210614eucas1p17e1aaa335b9562351bb0a0ed582b2f38@eucas1p1.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 02:19:22PM -0500, Kenny Ho wrote:
-> On Tue, Nov 3, 2020 at 12:43 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> > On Mon, Nov 2, 2020 at 9:39 PM Kenny Ho <y2kenny@gmail.com> wrote:
-> > pls don't top post.
-> My apology.
-> 
-> > > Cgroup awareness is desired because the intent
-> > > is to use this for resource management as well (potentially along with
-> > > other cgroup controlled resources.)  I will dig into bpf_lsm and learn
-> > > more about it.
-> >
-> > Also consider that bpf_lsm hooks have a way to get cgroup-id without
-> > being explicitly scoped. So the bpf program can be made cgroup aware.
-> > It's just not as convenient as attaching a prog to cgroup+hook at once.
-> > For prototyping the existing bpf_lsm facility should be enough.
-> > So please try to follow this route and please share more details about
-> > the use case.
-> 
-> Ok.  I will take a look and see if that is sufficient.  My
-> understanding of bpf-cgroup is that it not only makes attaching prog
-> to cgroup easier but it also facilitates hierarchical calling of
-> attached progs which might be useful if users wants to manage gpu
-> resources with bpf cgroup along with other cgroup resources (like
-> cpu/mem/io, etc.)
+--=-=-=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Right. Hierarchical cgroup-bpf logic cannot be replicated inside
-the program. If you're relying on cgv2 hierarchy to containerize
-applications then what I suggested earlier won't work indeed.
+Hi,
 
-> About the use case.  The high level motivation here is to provide the
-> ability to subdivide/share a GPU via cgroups/containers in a way that
-> is similar to other resources like CPU and memory.  Users have been
-> requesting this type of functionality because GPU compute can get
-> expensive and they want to maximize the utilization to get the most
-> bang for their bucks.  A traditional way to do this is via
-> SRIOV/virtualization but that often means time sharing the GPU as a
-> whole unit.  That is useful for some applications but not others due
-> to the flushing and added latency.  We also have a study that
-> identified various GPU compute application types.  These types can
-> benefit from more asymmetrical/granular sharing of the GPU (for
-> example some applications are compute bound while others can be memory
-> bound that can benefit from having more VRAM.)
-> 
-> I have been trying to add a cgroup subsystem for the drm subsystem for
-> this purpose but I ran into two challenges.  First, the composition of
-> a GPU and how some of the subcomponents (like VRAM or shader
-> engines/compute units) can be shared are very much vendor specific so
-> we are unable to arrive at a common interface across all vendors.
-> Because of this and the variety of places a GPU can go into
-> (smartphone, PC, server, HPC), there is also no agreement on how
-> exactly a GPU should be shared.  The best way forward appears to
-> simply provide hooks for users to define how and what they want to
-> share via a bpf program.
+I've got a generic AX88179 based USB ethernet interface and I am
+experiencing a following problem.
 
-Thank you for sharing the details. It certainly helps.
++ After resuming from suspend
++ hw tx-checksuming doesn't work
++ for UDP packets.
 
-> From what I can tell so far (I am still learning), there are multiple
-> pieces that need to fall in place for bpf-cgroup to work for this use
-> case.  First there is resource limit enforcement, which is the
-> motivation for this RFC (I will look into bpf_lsm as the path
-> forward.)  I have also been thinking about instrumenting the drm
-> subsystem with a new BPF program type and have various attach types
-> across the drm subsystem but I am not sure if this is allowed (this
-> one is more for resource usage monitoring.)  Another thing I have been
-> considering is to have the gpu driver provide bpf helper functions for
-> bpf programs to modify drm driver internals.  That was the reason I
-> asked about the potential of BTF support for kernel modules a couple
-> of months ago (and Andrii Nakryiko mentioned that it is being worked
-> on.)
+I've got an RPi4 on the other end of the cable. To test the connection
+I=C2=A0use the following commands
 
-Sounds like either bpf_lsm needs to be made aware of cgv2 (which would
-be a great thing to have regardless) or cgroup-bpf needs a drm/gpu specific hook.
-I think generic ioctl hook is too broad for this use case.
-I suspect drm/gpu internal state would be easier to access inside
-bpf program if the hook is next to gpu/drm. At ioctl level there is 'file'.
-It's probably too abstract for the things you want to do.
-Like how VRAM/shader/etc can be accessed through file?
-Probably possible through a bunch of lookups and dereferences, but
-if the hook is custom to GPU that info is likely readily available.
-Then such cgroup-bpf check would be suitable in execution paths where
-ioctl-based hook would be too slow.
+tcptraceroute -n rpi4
+traceroute -In rpi4   # ICMP probes
+traceroute -n rpi4    # UDP probes
+
+The former two (TCP, ICMP) work fine, the latter does not until I turn
+of tx-checksumming with ethtool(8). I need to turn off both
+tx-checksum-ipv4 and tx-checksum-ipv6. Only then ethtool(8) reports
+tx-checksumming beeing turned off and UDP probing starts working.
+
+The other way to fix the problem is to bring the interface down and up
+again with ip(8). Then hw checksumming may be turned on and works
+fine.
+
+Do tell, if there are any other details I can share to help fixing this
+problem.
+
+Linux darkstar 4.19.0-11-amd64 #1 SMP Debian 4.19.146-1 (2020-09-17) x86_64=
+ GNU/Linux
+
+GNU Make                4.2.1
+Binutils                2.31.1
+Util-linux              2.33.1
+Mount                   2.33.1
+Dynamic linker (ldd)    2.28
+Procps                  3.3.15
+Kbd                     2.0.4
+Console-tools           2.0.4
+Sh-utils                8.30
+Udev                    241
+Modules Loaded          ac aesni_intel aes_x86_64 af_alg ahci algif_hash
+algif_skcipher ansi_cprng arc4 autofs4 ax88179_178a battery binfmt_misc
+bluetooth bnep bonding btbcm btintel btrtl btusb button ccm cfg80211
+cmac coretemp cqhci crc16 crc32c_generic crc32c_intel crc32_pclmul
+crct10dif_pclmul cryptd crypto_simd ctr dcdbas dell_laptop dell_rbtn
+dell_smbios dell_smm_hwmon dell_smo8800 dell_wmi dell_wmi_descriptor
+dm_crypt dm_mod drbg drm drm_kms_helper e1000e ecb ecdh_generic
+efi_pstore efivarfs efivars ehci_hcd ehci_pci evdev ext4 fat fscrypto
+ftdi_sio fuse ghash_clmulni_intel glue_helper gspca_main gspca_zc3xx hid
+hid_generic i2c_algo_bit i2c_i801 i915 intel_cstate intel_powerclamp
+intel_rapl intel_rapl_perf intel_uncore ip_tables ipt_MASQUERADE
+irqbypass iTCO_vendor_support iTCO_wdt iwldvm iwlwifi jbd2 joydev kvm
+kvm_intel libahci libata libcrc32c lp lpc_ich mac80211 mbcache media mei
+mei_me mei_wdt mfd_core mii mmc_core nf_conntrack nf_defrag_ipv4
+nf_defrag_ipv6 nf_nat nf_nat_ipv4 nfnetlink nf_tables nft_chain_nat_ipv4
+nft_compat nft_counter nls_ascii nls_cp437 parport parport_pc pcbc
+pcc_cpufreq ppdev psmouse rfcomm rfkill rng_core scsi_mod sdhci
+sdhci_pci sd_mod serio_raw sg snd snd_hda_codec snd_hda_codec_generic
+snd_hda_codec_hdmi snd_hda_codec_idt snd_hda_core snd_hda_intel
+snd_hwdep snd_pcm snd_rawmidi snd_seq_device snd_timer snd_usb_audio
+snd_usbmidi_lib soundcore sparse_keymap sunrpc thermal tpm tpm_tis
+tpm_tis_core uas usb_common usbcore usbhid usbnet usbserial usb_storage
+uvcvideo vfat video videobuf2_common videobuf2_memops videobuf2_v4l2
+videobuf2_vmalloc videodev wmi wmi_bmof x86_pkg_temp_thermal xhci_hcd
+xhci_pci x_tables xt_conntrack xt_state
+
+Kind regards,
+=2D-=20
+=C5=81ukasz Stelmach
+Samsung R&D Institute Poland
+Samsung Electronics
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEXpuyqjq9kGEVr9UQsK4enJilgBAFAl+hxjMACgkQsK4enJil
+gBC3hgf+OHNIEkXUdeOpU5R/pKTOBBrg+1VJtJYKph5nWWdInHv26pmp0fWMhpX/
+gi/YVwgi9wA0v+kI+fpW3VlYwIMXLu/KT/u/cUtK+EvnV6lj8u82Lfm02k7Bsy2a
+kS7x7YxwIxONwJO+5+sOrFOvBnySejfxafVoDlArHz6ojAx3FST1EEJH1POgKccR
+c0wcqYbYoQrDGAWpsMXcel+xZwqlid7Rbti6thkeXbzaciHtwxF3lRqlZQ7PdxMU
+tDvLs8v1CIuHsu5rKhrNZoQHtk1ac9eTcUtRsNsXrAI1g5Vw8TxFaz+nTXBoz1wk
+ESHuurphREgQIVuaw3FzmuX5qJg/GQ==
+=U09c
+-----END PGP SIGNATURE-----
+--=-=-=--
