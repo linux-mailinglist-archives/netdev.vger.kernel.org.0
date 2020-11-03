@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7806E2A5A91
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 00:28:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 477802A5ACD
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 00:55:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729841AbgKCX2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 18:28:13 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:33786 "EHLO vps0.lunn.ch"
+        id S1729582AbgKCXzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 18:55:04 -0500
+Received: from mx2.suse.de ([195.135.220.15]:41264 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725763AbgKCX2L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 18:28:11 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ka5ig-0057Nu-FH; Wed, 04 Nov 2020 00:28:06 +0100
-Date:   Wed, 4 Nov 2020 00:28:06 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Radhey Shyam Pandey <radheys@xilinx.com>
-Cc:     Michal Simek <michals@xilinx.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/3] drivers: net: xilinx_emaclite: Fix
- -Wpointer-to-int-cast warnings with W=1
-Message-ID: <20201103232806.GL1109407@lunn.ch>
-References: <20201031174721.1080756-1-andrew@lunn.ch>
- <20201031174721.1080756-3-andrew@lunn.ch>
- <c0553efe-73a1-9e13-21e9-71c15d5099b9@xilinx.com>
- <BYAPR02MB56388293FE47BE39604EB115C7100@BYAPR02MB5638.namprd02.prod.outlook.com>
+        id S1726709AbgKCXzD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 18:55:03 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 3A516ACE6;
+        Tue,  3 Nov 2020 23:55:02 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id EF49C60788; Wed,  4 Nov 2020 00:55:01 +0100 (CET)
+Date:   Wed, 4 Nov 2020 00:55:01 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH ethtool] ethtool: Improve compatibility between
+ netlink and ioctl interfaces
+Message-ID: <20201103235501.sw27v355z7f375k3@lion.mk-sys.cz>
+References: <20201102184036.866513-1-idosch@idosch.org>
+ <20201102225803.pcrqf6nhjlvmfxwt@lion.mk-sys.cz>
+ <20201103142430.GA951743@shredder>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BYAPR02MB56388293FE47BE39604EB115C7100@BYAPR02MB5638.namprd02.prod.outlook.com>
+In-Reply-To: <20201103142430.GA951743@shredder>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > >  /* BUFFER_ALIGN(adr) calculates the number of bytes to the next
-> > > alignment. */ -#define BUFFER_ALIGN(adr) ((ALIGNMENT - ((u32)adr)) %
-> > > ALIGNMENT)
-> > > +#define BUFFER_ALIGN(adr) ((ALIGNMENT - ((long)adr)) % ALIGNMENT)
-> > 
-> > I can't see any reason to change unsigned type to signed one.
+On Tue, Nov 03, 2020 at 04:24:30PM +0200, Ido Schimmel wrote:
+> 
+> I have the changes you requested here:
+> https://github.com/idosch/ethtool/commit/b34d15839f2662808c566c04eda726113e20ee59
+> 
+> Do you want to integrate it with your nl_parse() rework or should I?
 
-> Agree. Also, I think we can get rid of this custom BUFFER_ALIGN
-> macro and simply calling skb_reserve(skb, NET_IP_ALIGN)
-> will make the protocol header to be aligned on at 
-> least a 4-byte boundary?
+I pushed the combined series to
 
-Hi Radhey
+  https://git.kernel.org/pub/scm/linux/kernel/git/mkubecek/ethtool.git
 
-I'm just going to replace the long with a uintptr_t. That will fix the
-warnings. I don't have this hardware, so don't want to risk anything
-more invasive which i cannot test.
+as branch mk/master/advertise-all. I only ran few quick tests so far,
+it's not submission ready yet.
 
-Please feel free to add a follow up patch replacing this with 
-skb_reserve(skb, NET_IP_ALIGN).
+First two patches are unrelated fixes found while testing, I'm going to
+submit and push them separately. Third patch reworks nl_parser()
+handling of multiple request messages as indicated in my previous mail.
+Fourth patch is the ioctl compatibility fix.
 
-	 Andrew
+Michal
