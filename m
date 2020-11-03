@@ -2,214 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC70A2A4ADC
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:11:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A7762A4AE5
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:13:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728241AbgKCQLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 11:11:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
+        id S1727975AbgKCQNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 11:13:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728221AbgKCQK7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 11:10:59 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE849C0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 08:10:58 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kZytP-0006KD-Ap; Tue, 03 Nov 2020 17:10:43 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:fc98:3f6c:e55:4519] (unknown [IPv6:2a03:f580:87bc:d400:fc98:3f6c:e55:4519])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id A24F05896D5;
-        Tue,  3 Nov 2020 16:10:35 +0000 (UTC)
-Subject: Re: [PATCH v7 0/6] CTU CAN FD open-source IP core SocketCAN driver,
- PCI, platform integration and documentation
-To:     Ondrej Ille <ondrej.ille@gmail.com>
-Cc:     Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
-        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Drew Fustini <pdp7pdp7@gmail.com>
-References: <cover.1604095004.git.pisa@cmp.felk.cvut.cz>
- <2ccec201-1a84-1837-15a8-d2ad05f5753c@pengutronix.de>
- <202011031100.35922.pisa@cmp.felk.cvut.cz>
- <07227792-f75f-6998-bd09-ce6e612de79f@pengutronix.de>
- <CAA7ZjpaYA0jLaybxq_2amtWOcs3sPE5w_fQK7jMdgaKpA-YoUg@mail.gmail.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <6dabf1e0-683f-d3be-469f-bf4becb11271@pengutronix.de>
-Date:   Tue, 3 Nov 2020 17:10:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1727109AbgKCQNX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 11:13:23 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C57EC0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 08:13:23 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id l24so18868146edj.8
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 08:13:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mUoRul84vOwAQQD3Ky9zccS3L3s1uyt1PSK6na42oSk=;
+        b=l/dn1RMnkh8ux3llyz8s7s56gC+H3NlkueeaAoYjsa8Shx8/lhok4VDE4FWjP1EIYX
+         biKRF9/9+FH0K7kyXyuhYr6xfqUfwszIXLeRovjEnwaqJcPDLAzT+WuRyti5jZGkveOJ
+         z5MkLS99SOPbMxM/mS6/iK3uXnhRBboHKUaWEhP6PGh+PHvBEPsAzpeaBamq5WQlM0SB
+         v1zNONWJJYfwmhO2tJOmRRF9ocg8JuooaCZ1TkkUdRIUulydeUH6oAulruhZ0vkMgNk2
+         DNSW3cQV8Xg/G7OAGowKqsqJNKmAajEE52vH4WV/YIOLkVFtQ5+KhYInk1u5yYAZT3Qe
+         rlgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mUoRul84vOwAQQD3Ky9zccS3L3s1uyt1PSK6na42oSk=;
+        b=HgLTS80kSntTb+ofVpBGzocv1vEphTWNA9RFtcPZKJslabF4vGNP+DJCRa+5pRs8QM
+         R2v4sd7ePuaRwp6LeC4Uam+ChL1129K8Xhe51dWW1zGxauV2JO2U3ilhUFTjiM4pZtgf
+         B//UQOqbgvU6vo5Ea2U92ZsECkZrEH0eF87jL1jMurmC5xZTdnD5f3OOFjMRZD3e7xgj
+         UtcVW9/WfdGQYdtTv5GC6xuB7ciRospL8sKiMXcCXmFtjB1oM3fOEw87ZHUdXogyE6at
+         rcmt82ir6sl4LyPfdp8/yuTOd6xK4bRjTYXOMFLKz/Fa5eXuQHnNZBJ5iMgssYcq6ipF
+         wv+g==
+X-Gm-Message-State: AOAM530RYS3Hq8cD59hEI01wlj6/pE8NltkvZFAALeNgq89VMoIUlgIC
+        hQSTtPCAeMiX0NvCUmu+5wA=
+X-Google-Smtp-Source: ABdhPJw/V7IfQ7NI45dUJdUxMKrZ6Q78P0eeRSOjH8RelixOjxq8TU2aFcqesYC+vWt0mxhSQzj/9w==
+X-Received: by 2002:aa7:cb1a:: with SMTP id s26mr22502594edt.219.1604420001919;
+        Tue, 03 Nov 2020 08:13:21 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id z22sm10961872ejw.107.2020.11.03.08.13.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2020 08:13:21 -0800 (PST)
+Date:   Tue, 3 Nov 2020 18:13:19 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, james.jurack@ametek.com
+Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
+ skb_cow_head for PTP
+Message-ID: <20201103161319.wisvmjbdqhju6vyh@skbuf>
+References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
+ <20201029081057.8506-1-claudiu.manoil@nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <CAA7ZjpaYA0jLaybxq_2amtWOcs3sPE5w_fQK7jMdgaKpA-YoUg@mail.gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="DEQeGb5aMYFzl9eN4yfnPHOvTp8529vAS"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201029081057.8506-1-claudiu.manoil@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---DEQeGb5aMYFzl9eN4yfnPHOvTp8529vAS
-Content-Type: multipart/mixed; boundary="ylA4F9LYT9n880wEfqxNkN9q8FPdAGpny";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Ondrej Ille <ondrej.ille@gmail.com>
-Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
- devicetree@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
- Wolfgang Grandegger <wg@grandegger.com>, David Miller <davem@davemloft.net>,
- Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
- Carsten Emde <c.emde@osadl.org>, armbru@redhat.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, Marin Jerabek <martin.jerabek01@gmail.com>,
- Jiri Novak <jnovak@fel.cvut.cz>, Jaroslav Beran <jara.beran@gmail.com>,
- Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
- Drew Fustini <pdp7pdp7@gmail.com>
-Message-ID: <6dabf1e0-683f-d3be-469f-bf4becb11271@pengutronix.de>
-Subject: Re: [PATCH v7 0/6] CTU CAN FD open-source IP core SocketCAN driver,
- PCI, platform integration and documentation
-References: <cover.1604095004.git.pisa@cmp.felk.cvut.cz>
- <2ccec201-1a84-1837-15a8-d2ad05f5753c@pengutronix.de>
- <202011031100.35922.pisa@cmp.felk.cvut.cz>
- <07227792-f75f-6998-bd09-ce6e612de79f@pengutronix.de>
- <CAA7ZjpaYA0jLaybxq_2amtWOcs3sPE5w_fQK7jMdgaKpA-YoUg@mail.gmail.com>
-In-Reply-To: <CAA7ZjpaYA0jLaybxq_2amtWOcs3sPE5w_fQK7jMdgaKpA-YoUg@mail.gmail.com>
+On Thu, Oct 29, 2020 at 10:10:56AM +0200, Claudiu Manoil wrote:
+> When PTP timestamping is enabled on Tx, the controller
+> inserts the Tx timestamp at the beginning of the frame
+> buffer, between SFD and the L2 frame header.  This means
+> that the skb provided by the stack is required to have
+> enough headroom otherwise a new skb needs to be created
+> by the driver to accommodate the timestamp inserted by h/w.
+> Up until now the driver was relying on skb_realloc_headroom()
+> to create new skbs to accommodate PTP frames.  Turns out that
+> this method is not reliable in this context at least, as
+> skb_realloc_headroom() for PTP frames can cause random crashes,
+> mostly in subsequent skb_*() calls, when multiple concurrent
+> TCP streams are run at the same time with the PTP flow
+> on the same device (as seen in James' report).  I also noticed
+> that when the system is loaded by sending multiple TCP streams,
+> the driver receives cloned skbs in large numbers.
+> skb_cow_head() instead proves to be stable in this scenario,
+> and not only handles cloned skbs too but it's also more efficient
+> and widely used in other drivers.
+> The commit introducing skb_realloc_headroom in the driver
+> goes back to 2009, commit 93c1285c5d92
+> ("gianfar: reallocate skb when headroom is not enough for fcb").
+> For practical purposes I'm referencing a newer commit (from 2012)
+> that brings the code to its current structure (and fixes the PTP
+> case).
+> 
+> Fixes: 9c4886e5e63b ("gianfar: Fix invalid TX frames returned on error queue when time stamping")
+> Reported-by: James Jurack <james.jurack@ametek.com>
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+> ---
 
---ylA4F9LYT9n880wEfqxNkN9q8FPdAGpny
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Still crashes for me:
 
-On 11/3/20 2:36 PM, Ondrej Ille wrote:
-> Hello Marc,
->=20
-> thank you for review, I appreciate it. We will process all your notes, =
-and get
-> rid of uin32_t and bitfields then.
->=20
-> As Pavel pointed out, there are user space tests using this stuff, so i=
-t is
-> not just search and replace work. We will extend our IP-XACT generation=
+[root@LS1021ATSN ~] # ./ptp4l -i eth1 -f /etc/ptp4l_cfg/gPTP.cfg --tx_timestamp_timeout 20 &
+[1] 887
+[root@LS1021ATSN ~] # ./perf record -e cycles iperf3 -c 192.168.1.2 -t 100
+Connecting to host 192.168.1.2, port 5201
+[  5] local 192.168.1.1 port 59152 connected to 192.168.1.2 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   111 MBytes   932 Mbits/sec    0    267 KBytes
+[  5]   1.00-2.00   sec   111 MBytes   935 Mbits/sec    0    298 KBytes
+[  5]   2.00-3.00   sec   112 MBytes   941 Mbits/sec    0    325 KBytes
+[  5]   3.00-4.00   sec   112 MBytes   938 Mbits/sec    0    344 KBytes
+[  5]   4.00-5.01   sec   108 MBytes   898 Mbits/sec    0    352 KBytes
+[  5]   5.01-6.00   sec  93.8 MBytes   789 Mbits/sec    0    354 KBytes
+[  5]   6.00-7.00   sec  93.8 MBytes   786 Mbits/sec    0    354 KBytes
+[  5]   7.00-8.01   sec   101 MBytes   844 Mbits/sec    0    369 KBytes
+[  5]   8.01-9.00   sec   107 MBytes   910 Mbits/sec    0    373 KBytes
+[  5]   9.00-10.00  sec   113 MBytes   944 Mbits/sec    0    396 KBytes
+[  5]  10.00-11.00  sec   112 MBytes   939 Mbits/sec    0    436 KBytes
+[  5]  11.00-12.00  sec   112 MBytes   939 Mbits/sec    0    436 KBytes
+[  5]  12.00-13.00  sec   113 MBytes   944 Mbits/sec    0    462 KBytes
+[  5]  13.00-14.01  sec  96.0 MBytes   799 Mbits/sec    0    492 KBytes
+[  5]  14.01-15.01  sec  93.8 MBytes   788 Mbits/sec    0    570 KBytes
+[  5]  15.01-16.00  sec   106 MBytes   894 Mbits/sec    0    708 KBytes
+[  5]  16.00-17.00  sec   107 MBytes   898 Mbits/sec    0    844 KBytes
+[  5]  17.00-18.00  sec   105 MBytes   882 Mbits/sec    0    997 KBytes
+[  5]  18.00-19.00  sec   103 MBytes   863 Mbits/sec    0   1.07 MBytes
+[14538.007252] 8<--- cut here ---
+[14538.010310] Unable to handle kernel NULL pointer dereference at virtual address 00000008
+[14538.018395] pgd = d79f0b3d
+[14538.021108] [00000008] *pgd=80000080204003, *pmd=00000000
+[14538.026553] Internal error: Oops: 207 [#1] SMP ARM
+[14538.031324] Modules linked in:
+[14538.034368] CPU: 0 PID: 9 Comm: ksoftirqd/0 Not tainted 5.10.0-rc1-00296-g37442a47b604 #707
+[14538.042672] Hardware name: Freescale LS1021A
+[14538.046926] PC is at skb_release_data+0x6c/0x14c
+[14538.051518] LR is at consume_skb+0x38/0xd8
+[14538.055588] pc : [<c10e439c>]    lr : [<c10e3fac>]    psr: 200f0013
+[14538.061817] sp : c28f1da8  ip : 00000000  fp : c265aa40
+[14538.067010] r10: 00000000  r9 : 00000000  r8 : c2f98000
+[14538.072204] r7 : c511d900  r6 : c3d3d900  r5 : c3d3d900  r4 : 00000000
+[14538.078693] r3 : 000000d3  r2 : 00000001  r1 : 00000000  r0 : 00000000
+[14538.085184] Flags: nzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
+[14538.092279] Control: 30c5387d  Table: 848c7d00  DAC: fffffffd
+[14538.097994] Process ksoftirqd/0 (pid: 9, stack limit = 0x6d78b0e1)
+[14538.104139] Stack: (0xc28f1da8 to 0xc28f2000)
+[14538.108472] 1da0:                   c511d900 c511d900 c5271a80 c2f1f900 c2f98000 c10e3fac
+[14538.116606] 1dc0: c2f6d600 c0d529bc c28f1ecc c04aa7d4 00000001 337a26ba 00000018 c2f6e36c
+[14538.124741] 1de0: 00000000 c04aa838 ec05c800 c2406f78 f088c000 c04aee10 c236edac 00000045
+[14538.132876] 1e00: c236edac c511d900 c2f98000 00000000 00000000 c2f1f900 00000044 c2403d00
+[14538.141011] 1e20: c265aa40 c10fcdf8 c0d51064 600f0013 c265aa60 c236eda4 c24087f0 ffffe000
+[14538.149146] 1e40: c240675c c28f1e78 c2f98600 c511d900 c4b95000 c2406708 00000000 c2f1f900
+[14538.157280] 1e60: c2f98000 00000000 c2403080 c1158524 c28f1ecc 0065ac80 00000010 337a26ba
+[14538.165415] 1e80: c4b95000 00000001 c511d900 00000040 c2f1f900 00000000 c265ae20 c1158858
+[14538.173549] 1ea0: 00000000 00000000 c2f98608 c4b95040 c265ae20 ffffe000 c240675c 2903d000
+[14538.181684] 1ec0: ffffe000 c4b95000 00000000 00000000 00000000 ffffe000 c2654040 00000100
+[14538.189818] 1ee0: c2403080 c10f959c c2403088 00000003 0000000c 00000002 ffffe000 c2654040
+[14538.197954] 1f00: 00000100 c04013f0 00000001 c1404ab4 c2364390 c236fdc0 c240675c 00000009
+[14538.206088] 1f20: c236431c 0015ba25 c2403d00 c1608068 04208040 c28db200 ffffe000 c28ab240
+[14538.214222] 1f40: ffffe000 00000000 00000001 c24261a4 00000002 00000000 c28ab2e4 c0450180
+[14538.222357] 1f60: c28ab240 c047022c c28ab2c0 c28ab280 00000000 c28f0000 c047011c c28ab240
+[14538.230491] 1f80: c28cbe34 c046c5c4 00000001 c28ab280 c046c478 00000000 00000000 00000000
+[14538.238625] 1fa0: 00000000 00000000 00000000 c0400278 00000000 00000000 00000000 00000000
+[14538.246758] 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[14538.254892] 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
+[14538.263039] [<c10e439c>] (skb_release_data) from [<c10e3fac>] (consume_skb+0x38/0xd8)
+[14538.270834] [<c10e3fac>] (consume_skb) from [<c0d529bc>] (gfar_start_xmit+0x704/0x784)
+[14538.278714] [<c0d529bc>] (gfar_start_xmit) from [<c10fcdf8>] (dev_hard_start_xmit+0xfc/0x254)
+[14538.287198] [<c10fcdf8>] (dev_hard_start_xmit) from [<c1158524>] (sch_direct_xmit+0x104/0x2e0)
+[14538.295767] [<c1158524>] (sch_direct_xmit) from [<c1158858>] (__qdisc_run+0x158/0x5fc)
+[14538.303644] [<c1158858>] (__qdisc_run) from [<c10f959c>] (net_tx_action+0x144/0x2b8)
+[14538.311350] [<c10f959c>] (net_tx_action) from [<c04013f0>] (__do_softirq+0x130/0x3b8)
+[14538.319145] [<c04013f0>] (__do_softirq) from [<c0450180>] (run_ksoftirqd+0x2c/0x38)
+[14538.326766] [<c0450180>] (run_ksoftirqd) from [<c047022c>] (smpboot_thread_fn+0x110/0x1a8)
+[14538.334991] [<c047022c>] (smpboot_thread_fn) from [<c046c5c4>] (kthread+0x14c/0x150)
+[14538.342696] [<c046c5c4>] (kthread) from [<c0400278>] (ret_from_fork+0x14/0x3c)
+[14538.349877] Exception stack(0xc28f1fb0 to 0xc28f1ff8)
+[14538.354898] 1fa0:                                     00000000 00000000 00000000 00000000
+[14538.363032] 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[14538.371164] 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[14538.377744] Code: 11a05006 13a04000 0a000014 e5950028 (e5903008)
+[14538.383877] ---[ end trace bb4785b99c68319a ]---
+[14538.388529] Kernel panic - not syncing: Fatal exception in interrupt
+[14538.394858] CPU1: stopping
+[14538.397555] CPU: 1 PID: 907 Comm: iperf3 Tainted: G      D           5.10.0-rc1-00296-g37442a47b604 #707
+[14538.406981] Hardware name: Freescale LS1021A
+[14538.411238] [<c04120b8>] (unwind_backtrace) from [<c040c554>] (show_stack+0x10/0x14)
+[14538.418946] [<c040c554>] (show_stack) from [<c13fabfc>] (dump_stack+0xc8/0xdc)
+[14538.426134] [<c13fabfc>] (dump_stack) from [<c040f83c>] (do_handle_IPI+0x320/0x33c)
+[14538.433752] [<c040f83c>] (do_handle_IPI) from [<c040f870>] (ipi_handler+0x18/0x20)
+[14538.441286] [<c040f870>] (ipi_handler) from [<c04b0028>] (handle_percpu_devid_fasteoi_ipi+0x80/0x150)
+[14538.450462] [<c04b0028>] (handle_percpu_devid_fasteoi_ipi) from [<c04a981c>] (generic_handle_irq+0x34/0x44)
+[14538.460156] [<c04a981c>] (generic_handle_irq) from [<c04a9e08>] (__handle_domain_irq+0x5c/0xb4)
+[14538.468814] [<c04a9e08>] (__handle_domain_irq) from [<c08f89dc>] (gic_handle_irq+0x94/0xb4)
+[14538.477125] [<c08f89dc>] (gic_handle_irq) from [<c0400c38>] (__irq_svc+0x58/0x74)
+[14538.484564] Exception stack(0xc4fdbdd0 to 0xc4fdbe18)
+[14538.489587] bdc0:                                     c26e27e8 a00e0013 0000000f 0000f4f6
+[14538.497721] bde0: 00000000 c2afb000 00000000 00000002 00000fff c26e27e8 c3e65e00 c1e55086
+[14538.505854] be00: 0000000a c4fdbe20 c0ad6bb0 c1409670 800e0013 ffffffff
+[14538.512437] [<c0400c38>] (__irq_svc) from [<c1409670>] (_raw_spin_unlock_irqrestore+0x1c/0x20)
+[14538.521007] [<c1409670>] (_raw_spin_unlock_irqrestore) from [<c0ad6bb0>] (uart_write+0xf4/0x1f0)
+[14538.529749] [<c0ad6bb0>] (uart_write) from [<c0ab759c>] (do_output_char+0x160/0x1e4)
+[14538.537453] [<c0ab759c>] (do_output_char) from [<c0ab83ac>] (n_tty_write+0x228/0x480)
+[14538.545243] [<c0ab83ac>] (n_tty_write) from [<c0ab6168>] (tty_write+0x12c/0x33c)
+[14538.552604] [<c0ab6168>] (tty_write) from [<c0602d28>] (vfs_write+0xc4/0x334)
+[14538.559705] [<c0602d28>] (vfs_write) from [<c0603114>] (ksys_write+0xa4/0xd4)
+[14538.566805] [<c0603114>] (ksys_write) from [<c04001a0>] (ret_fast_syscall+0x0/0x4c)
+[14538.574417] Exception stack(0xc4fdbfa8 to 0xc4fdbff0)
+[14538.579440] bfa0:                   0000004f 00022bd0 00000001 00022bd0 0000004f 00000000
+[14538.587574] bfc0: 0000004f 00022bd0 b6f0e6d0 00000004 0000004f b6ed4f7d b6ed2e2c 00000000
+[14538.595707] bfe0: 00000004 be9e1d18 b6b810f7 b6b0c856
+[14538.600736] Rebooting in 3 seconds..
 
-> toolchain (what a strong word for bunch of python scripts...), to gener=
-ate=20
-> Linux specific headers with GEN_MASK and BIT then.
-
-Fine!
-> It will take some time, since we have to modify quite a lot of stuff an=
-d
-> re-test it then, but we will try to do it fast. Btw, do you agree with
-> separation of HW specific part of driver into "_hw" file, or would you
-> preffer to get rid of this abstraction layer? If we should get rid of i=
-t, we
-> will, but it would take even more time to do it.
-
-I haven't looked at the HW abstraction yet, but will do next. Usually Lin=
-ux is
-considered the HW abstraction layer :)
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---ylA4F9LYT9n880wEfqxNkN9q8FPdAGpny--
-
---DEQeGb5aMYFzl9eN4yfnPHOvTp8529vAS
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+hgPYACgkQqclaivrt
-76lSrggAjr8U94Up39MhE0fLBeiufpYpaPFvhb9Pt87u4LHmSLVtR/5sMYlcsZuq
-YWzlO9sVSoR3ME4jZy0FN7ZtncBAbbEKXw92Je4tii+oBePQOHzCpnhFMZOZHaqv
-cbC7k0WvqE2kvUZHQsjOzsHwND8AZYzxS1JkTcZpsQ0r0aORyerZFxiMjAR9VXIt
-HeCNP/HCZnsAVhc/91JvXcmGMevKJraX4SurfHCu2v3UDWt8bCjuv1zxPwmj/9/w
-EMzRhT+FXQDwrCvNjnPkUqtiDHbsbJqJKL3fDnyy5EqXqbgDD8Q7Gtn4aw36OsiP
-OxA5jSWcThzYKJ4VY0bCMrmKTHBSTw==
-=q2fO
------END PGP SIGNATURE-----
-
---DEQeGb5aMYFzl9eN4yfnPHOvTp8529vAS--
+Takes a while to reproduce though.
