@@ -2,179 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7712A56BD
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:31:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 408B42A5648
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:28:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732502AbgKCVap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 16:30:45 -0500
-Received: from aserp2130.oracle.com ([141.146.126.79]:53116 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732086AbgKCU5z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 15:57:55 -0500
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A3KrlH4171947;
-        Tue, 3 Nov 2020 20:57:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=YI6BkSHLxwvNyqU9vC512qENvgOQlE4vTsZXoXMup2M=;
- b=gWkzGabsOUaJkP5mU4M55FvVqzW8Hk7v32dUgiDVsLWT/4RYzY6IZVSzBC1nNdkXT3mc
- dzTHuJ/FSzeKrpOlUcUmYf1LQJ+kFUwSB2Fhh0RFaleH/GPOBOr12Tc3+4pgKwDESHVr
- Yt7ZYG11UdcfDQJI4i/C00jrWI9Mbf7FFLjRUPfqYDMjHMSmWY2qjPnQ9H8oHxrU3Yh0
- riAkt90BHogQ0uKuSMEdwqAqVLHDczZz4n9c2lJapTxSN2sIW7PHKacRWu+TiA2JgWwF
- 5gPLevGpD2d/mQgsG7q6IEyO2qKAUZTOoZyJyDc8bWc9ZF9WhQ6P5p1wRyJB0wj0ip+z xw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2130.oracle.com with ESMTP id 34hhb23hmf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 03 Nov 2020 20:57:41 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A3Ksglb121385;
-        Tue, 3 Nov 2020 20:57:41 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 34hw0e66dm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 Nov 2020 20:57:41 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0A3KvZNJ031275;
-        Tue, 3 Nov 2020 20:57:36 GMT
-Received: from [10.159.227.161] (/10.159.227.161)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 03 Nov 2020 12:57:35 -0800
-Subject: Re: [PATCH 1/1] mm: avoid re-using pfmemalloc page in
- page_frag_alloc()
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        davem@davemloft.net, kuba@kernel.org, aruna.ramakrishna@oracle.com,
-        bert.barbe@oracle.com, rama.nichanamatlu@oracle.com,
-        venkat.x.venkatsubra@oracle.com, manjunath.b.patil@oracle.com,
-        joe.jin@oracle.com, srinivas.eeda@oracle.com
-References: <20201103193239.1807-1-dongli.zhang@oracle.com>
- <20201103203500.GG27442@casper.infradead.org>
-From:   Dongli Zhang <dongli.zhang@oracle.com>
-Message-ID: <7141038d-af06-70b2-9f50-bf9fdf252e22@oracle.com>
-Date:   Tue, 3 Nov 2020 12:57:33 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S2387514AbgKCVBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 16:01:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387502AbgKCVBl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 16:01:41 -0500
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DCDC0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 13:01:40 -0800 (PST)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4CQhzQ3cNlzQl9v;
+        Tue,  3 Nov 2020 22:01:38 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
+        s=MBO0001; t=1604437296;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cNJcSYX21alSBZ027Kkc/qhi+X7jzJygZREuFOLSVVI=;
+        b=Gsyguqz/S73UVHxU6Ufwt+eqFnliBwbzI0XkvacpwbenN9wPuPfXJcZRA2K8+yFELYsqNB
+        2PhqBfiTOGhBZ9HRsR8zLLFM4ImgO/wBbqEU683grOYkTrrU8IgzZD4QdxL5k9RU4Fuy3P
+        1u7LZ+zOpVD5Bq8yDHbGCeSsw92Ml7zmtP4YNmAd4ORBhSVdWmyDFpFic03ycpFY/cd0F+
+        mII7wuWVY/8EkQTDWNcaYhnUcJOZper9b2FiwTKurSsjQhxnoJLzbNdNql4VvbYSYfi0Tp
+        nIM/gDz2wFe2K1XNu3GusjTOcDLRo6d1wTbSOcmGEhDGDyVuhjcb8vK0IIk1Dw==
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by spamfilter06.heinlein-hosting.de (spamfilter06.heinlein-hosting.de [80.241.56.125]) (amavisd-new, port 10030)
+        with ESMTP id z3FDXKkYkpWO; Tue,  3 Nov 2020 22:01:35 +0100 (CET)
+References: <cover.1604059429.git.me@pmachata.org> <5ed9e2e7cdf9326e8f7ec80f33f0f11eafc3a425.1604059429.git.me@pmachata.org> <0f017fbd-b8f5-0ebe-0c16-0d441b1d4310@gmail.com> <87o8kihyy9.fsf@nvidia.com> <b0cc6bd4-e4e6-22ba-429d-4cea7996ccd4@gmail.com> <20201102063752.GE5429@unreal> <87h7q7iclr.fsf@nvidia.com> <20201103062406.GH5429@unreal>
+From:   Petr Machata <me@pmachata.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        stephen@networkplumber.org, john.fastabend@gmail.com,
+        jiri@nvidia.com, idosch@nvidia.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Roman Mashak <mrv@mojatatu.com>
+Subject: Re: [PATCH iproute2-next v2 03/11] lib: utils: Add print_on_off_bool()
+In-reply-to: <20201103062406.GH5429@unreal>
+Date:   Tue, 03 Nov 2020 22:01:32 +0100
+Message-ID: <874km6i28j.fsf@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20201103203500.GG27442@casper.infradead.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9794 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 mlxlogscore=999
- phishscore=0 bulkscore=0 spamscore=0 malwarescore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011030139
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9794 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0 suspectscore=2
- clxscore=1011 mlxlogscore=999 impostorscore=0 malwarescore=0
- lowpriorityscore=0 adultscore=0 spamscore=0 priorityscore=1501 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011030139
+Content-Type: text/plain
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -2.56 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 222BB17E8
+X-Rspamd-UID: 069eb6
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Matthew,
 
-On 11/3/20 12:35 PM, Matthew Wilcox wrote:
-> On Tue, Nov 03, 2020 at 11:32:39AM -0800, Dongli Zhang wrote:
->> The ethernet driver may allocates skb (and skb->data) via napi_alloc_skb().
->> This ends up to page_frag_alloc() to allocate skb->data from
->> page_frag_cache->va.
->>
->> During the memory pressure, page_frag_cache->va may be allocated as
->> pfmemalloc page. As a result, the skb->pfmemalloc is always true as
->> skb->data is from page_frag_cache->va. The skb will be dropped if the
->> sock (receiver) does not have SOCK_MEMALLOC. This is expected behaviour
->> under memory pressure.
->>
->> However, once kernel is not under memory pressure any longer (suppose large
->> amount of memory pages are just reclaimed), the page_frag_alloc() may still
->> re-use the prior pfmemalloc page_frag_cache->va to allocate skb->data. As a
->> result, the skb->pfmemalloc is always true unless page_frag_cache->va is
->> re-allocated, even the kernel is not under memory pressure any longer.
->>
->> Here is how kernel runs into issue.
->>
->> 1. The kernel is under memory pressure and allocation of
->> PAGE_FRAG_CACHE_MAX_ORDER in __page_frag_cache_refill() will fail. Instead,
->> the pfmemalloc page is allocated for page_frag_cache->va.
->>
->> 2: All skb->data from page_frag_cache->va (pfmemalloc) will have
->> skb->pfmemalloc=true. The skb will always be dropped by sock without
->> SOCK_MEMALLOC. This is an expected behaviour.
->>
->> 3. Suppose a large amount of pages are reclaimed and kernel is not under
->> memory pressure any longer. We expect skb->pfmemalloc drop will not happen.
->>
->> 4. Unfortunately, page_frag_alloc() does not proactively re-allocate
->> page_frag_alloc->va and will always re-use the prior pfmemalloc page. The
->> skb->pfmemalloc is always true even kernel is not under memory pressure any
->> longer.
->>
->> Therefore, this patch always checks and tries to avoid re-using the
->> pfmemalloc page for page_frag_alloc->va.
->>
->> Cc: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
->> Cc: Bert Barbe <bert.barbe@oracle.com>
->> Cc: Rama Nichanamatlu <rama.nichanamatlu@oracle.com>
->> Cc: Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>
->> Cc: Manjunath Patil <manjunath.b.patil@oracle.com>
->> Cc: Joe Jin <joe.jin@oracle.com>
->> Cc: SRINIVAS <srinivas.eeda@oracle.com>
->> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
->> ---
->>  mm/page_alloc.c | 10 ++++++++++
->>  1 file changed, 10 insertions(+)
->>
->> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
->> index 23f5066bd4a5..291df2f9f8f3 100644
->> --- a/mm/page_alloc.c
->> +++ b/mm/page_alloc.c
->> @@ -5075,6 +5075,16 @@ void *page_frag_alloc(struct page_frag_cache *nc,
->>  	struct page *page;
->>  	int offset;
->>  
->> +	/*
->> +	 * Try to avoid re-using pfmemalloc page because kernel may already
->> +	 * run out of the memory pressure situation at any time.
->> +	 */
->> +	if (unlikely(nc->va && nc->pfmemalloc)) {
->> +		page = virt_to_page(nc->va);
->> +		__page_frag_cache_drain(page, nc->pagecnt_bias);
->> +		nc->va = NULL;
->> +	}
-> 
-> I think this is the wrong way to solve this problem.  Instead, we should
-> use up this page, but refuse to recycle it.  How about something like this (not even compile tested):
+Leon Romanovsky <leon@kernel.org> writes:
 
-Thank you very much for the feedback. Yes, the option is to use the same page
-until it is used up (offset < 0). Instead of recycling it, the kernel free it
-and allocate new one.
+> On Tue, Nov 03, 2020 at 12:05:20AM +0100, Petr Machata wrote:
+>>
+>> Leon Romanovsky <leon@kernel.org> writes:
+>>
+>> > On Sun, Nov 01, 2020 at 04:55:42PM -0700, David Ahern wrote:
+>> >
+>> >> yes, the rdma utils are using generic function names. The rdma version
+>> >> should be renamed; perhaps rd_print_on_off. That seems to be once common
+>> >> prefix. Added Leon.
+>> >
+>> > I made fast experiment and the output for the code proposed here and existed
+>> > in the RDMAtool - result the same. So the good thing will be to delete the
+>> > function from the RDMA after print_on_off_bool() will be improved.
+>>
+>> The RDMAtool uses literal "on" and "off" as values in JSON, not
+>> booleans. Moving over to print_on_off_bool() would be a breaking change,
+>> which is problematic especially in JSON output.
+>
+> Nothing prohibits us from adding extra parameter to this new
+> function/json logic/json type that will control JSON behavior. Personally,
+> I don't think that json and stdout outputs should be different, e.g. 1/0 for
+> the json and on/off for the stdout.
 
-This depends on whether we will tolerate the packet drop until this page is used up.
+Emitting on/off in JSON as true booleans (true / false, not 1 / 0) does
+make sense. It's programmatically-consumed interface, the values should
+be of the right type.
 
-For virtio-net, the payload (skb->data) is of size 128-byte. The padding and
-alignment will finally make it as 512-byte.
+On the other hand, having a FP output use literal "on" and "off" makes
+sense as well. It's an obvious reference to the command line, you can
+actually cut'n'paste it back to shell and it will do the right thing.
 
-Therefore, for virtio-net, we will have at most 4096/512-1=7 packets dropped
-before the page is used up.
+Many places in iproute2 do do this dual output, and ideally all new
+instances would behave this way as well. So no toggles, please.
 
-Dongli Zhang
+>> I think the current function does handle JSON context, what else do
+>> you have in mind?
+>
+> It handles, but does it twice, first time for is_json_context() and
+> second time inside print_bool.
 
-> 
-> +++ b/mm/page_alloc.c
-> @@ -5139,6 +5139,10 @@ void *page_frag_alloc(struct page_frag_cache *nc,
->  
->                 if (!page_ref_sub_and_test(page, nc->pagecnt_bias))
->                         goto refill;
-> +               if (nc->pfmemalloc) {
-> +                       free_the_page(page);
-> +                       goto refill;
-> +               }
->  
->  #if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
->                 /* if size can vary use size else just use PAGE_SIZE */
-> 
+Gotcha.
