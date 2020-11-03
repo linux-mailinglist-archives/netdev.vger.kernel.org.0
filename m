@@ -2,84 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A56CA2A48E2
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 16:04:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D3502A48EF
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 16:07:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728335AbgKCPEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 10:04:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52564 "EHLO
+        id S1728217AbgKCPHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 10:07:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728323AbgKCPDn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 10:03:43 -0500
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C07C0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 07:03:42 -0800 (PST)
-Received: by mail-lj1-x242.google.com with SMTP id 2so19345200ljj.13
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 07:03:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ct04FNhnTBRZCJDDcsgffT/bJ5Sja3lXBGRYTvBKBIA=;
-        b=nACLGPiFOuBrhOzcXD3cwtg34kV6q1WGcEV5dxrjZGfH9lsrdcfXhHUSl+QW7Y2idY
-         NH1PKMB5j8DPVqBsHkEQImvaocOd65+KA9bfRHfyleUXcjJR0A9N9JWjIvsVfI3aMQrm
-         ME/9OZ02YJcMMDNP8QDVHc+EHrfVEOXleUsVkODNkDTN7bpsCbXVH2aNQlzQSyxveudH
-         tYVtA1IO9qUrbMUXJJU/ifpEqdaE1cKYCA/LuUAd9trBQwON5Kl+nHwDv64KyAFtzxt6
-         I4O32RYbXOe3+vrkPjzzGx0Ei14e1AF6e+ZUEn3WEINFCCBwhfFxy/o4Eafbq6x/9jY7
-         H6cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ct04FNhnTBRZCJDDcsgffT/bJ5Sja3lXBGRYTvBKBIA=;
-        b=qTjtjuC2u2FCpOTjjU8AGFzvPOSEnv9ceown7PAWkU5/UC5zgMbCOZuX4aZyNTQPry
-         W9uBKScWrIIBOh2R7NG+mU5gbi9ilFjIMYThQRp0QvUU0UsWW5h8i1m8AEiUP00tNUzb
-         /kc4XZ49L0zjwhdMWqobw9/DRv3XXPtZPKpfi7s+cS9sNM52nShkTV0bthzr3hW+TSUF
-         N7iGD3F2m13XjUd0YA8ylo0IQcgHWE+g/FiFheB7krx3jw2HnVv6P4QnQM4IxlE6FJvo
-         pPGizCCvkpYwi8NGZlMkgszsE4AHsqEBhPhCuTDpb6BDGCD93iSyWGh2cnBtUR/Jx4L6
-         cXNg==
-X-Gm-Message-State: AOAM533g1545N9kHoQ3dwtBRlvlwdKKDJ2Em+kW5kSRmhC/drONlHwuT
-        Nvv4I0VbEwb9oQeR0P4W+2dWEANAxewnwPtR2uqAL5PFQmyGxw==
-X-Google-Smtp-Source: ABdhPJxcPXKq1w3vxqaeFU1MW1ZWziKAfd/5z9CW+P09mVv9dBcLrA+LA1P4/BLsRycNW8rlC+rGTWSZaT5dXQyzhck=
-X-Received: by 2002:a2e:9c94:: with SMTP id x20mr8161216lji.33.1604415821147;
- Tue, 03 Nov 2020 07:03:41 -0800 (PST)
+        with ESMTP id S1728198AbgKCPHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 10:07:30 -0500
+Received: from mail.buslov.dev (mail.buslov.dev [IPv6:2001:19f0:5001:2e3f:5400:1ff:feed:a259])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263C6C0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 07:07:30 -0800 (PST)
+Received: from vlad-x1g6 (unknown [IPv6:2a0b:2bc3:193f:1:a5fe:a7d6:6345:fe8d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.buslov.dev (Postfix) with ESMTPSA id 0A64D1FFB3;
+        Tue,  3 Nov 2020 17:07:25 +0200 (EET)
+References: <20201031201644.247605-1-vlad@buslov.dev> <20201031202522.247924-1-vlad@buslov.dev> <ddd99541-204c-1b29-266f-2d7f4489d403@gmail.com>
+User-agent: mu4e 1.4.13; emacs 26.3
+From:   Vlad Buslov <vlad@buslov.dev>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     jhs@mojatatu.com, netdev@vger.kernel.org,
+        stephen@networkplumber.org, davem@davemloft.net, kuba@kernel.org,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us
+Subject: Re: [PATCH iproute2-next] tc: implement support for action terse dump
+In-reply-to: <ddd99541-204c-1b29-266f-2d7f4489d403@gmail.com>
+Date:   Tue, 03 Nov 2020 17:07:24 +0200
+Message-ID: <87wnz25vir.fsf@buslov.dev>
 MIME-Version: 1.0
-References: <20201103023217.27685-1-ajderossi@gmail.com> <20201103120515.GA10759@gondor.apana.org.au>
-In-Reply-To: <20201103120515.GA10759@gondor.apana.org.au>
-From:   Anthony DeRossi <ajderossi@gmail.com>
-Date:   Tue, 3 Nov 2020 07:03:29 -0800
-Message-ID: <CAKkLME1ZGj0OQYbe-xhv5c7vyD9WApB7CsGuQmKZLiYRunG6BQ@mail.gmail.com>
-Subject: Re: [PATCH ipsec] xfrm: Pass template address family to xfrm_state_look_at
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     netdev@vger.kernel.org, steffen.klassert@secunet.com,
-        davem@davemloft.net, kuba@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 3, 2020 at 4:05 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
->
-> On Mon, Nov 02, 2020 at 06:32:19PM -0800, Anthony DeRossi wrote:
-> > This fixes a regression where valid selectors are incorrectly skipped
-> > when xfrm_state_find is called with a non-matching address family (e.g.
-> > when using IPv6-in-IPv4 ESP in transport mode).
-> >
-> > The state's address family is matched against the template's family
-> > (encap_family) in xfrm_state_find before checking the selector in
-> > xfrm_state_look_at.  The template's family should also be used for
-> > selector matching, otherwise valid selectors may be skipped.
-> >
-> > Fixes: e94ee171349d ("xfrm: Use correct address family in xfrm_state_find")
-> > Signed-off-by: Anthony DeRossi <ajderossi@gmail.com>
-> > ---
-> >  net/xfrm/xfrm_state.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> Your patch reintroduces the same bug that my patch was trying to
-> fix, namely that when you do the comparison on flow you must use
-> the original family and not some other value.
 
-My mistake, I misunderstood the original bug.
+On Tue 03 Nov 2020 at 03:48, David Ahern <dsahern@gmail.com> wrote:
+> On 10/31/20 2:25 PM, Vlad Buslov wrote:
+>> diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+>> index 5ad84e663d01..b486f52900f0 100644
+>> --- a/include/uapi/linux/rtnetlink.h
+>> +++ b/include/uapi/linux/rtnetlink.h
+>> @@ -768,8 +768,12 @@ enum {
+>>   * actions in a dump. All dump responses will contain the number of actions
+>>   * being dumped stored in for user app's consumption in TCA_ROOT_COUNT
+>>   *
+>> + * TCA_FLAG_TERSE_DUMP user->kernel to request terse (brief) dump that only
+>> + * includes essential action info (kind, index, etc.)
+>> + *
+>>   */
+>>  #define TCA_FLAG_LARGE_DUMP_ON		(1 << 0)
+>> +#define TCA_FLAG_TERSE_DUMP		(1 << 1)
+>>  
+>
+> there is an existing TCA_DUMP_FLAGS_TERSE. How does this differ and if
+> it really is needed please make it different enough and documented to
+> avoid confusion.
 
-Anthony
+TCA_FLAG_TERSE_DUMP is a bit in TCA_ROOT_FLAGS tlv which is basically
+"action flags". TCA_DUMP_FLAGS_TERSE is a bit in TCA_DUMP_FLAGS tlv
+which is dedicated flags attribute for filter dump. We can't just reuse
+existing filter dump constant because its value "1" is already taken by
+TCA_FLAG_LARGE_DUMP_ON. This might look confusing, but what do you
+suggest? Those are two unrelated tlv's. I can rename the constant name
+to TCA_FLAG_ACTION_TERSE_DUMP to signify that the flag is action
+specific, but that would make the naming inconsistent with existing
+TCA_FLAG_LARGE_DUMP_ON.
+
