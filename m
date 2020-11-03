@@ -2,102 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 408B42A5648
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:28:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FD3C2A55E3
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:24:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387514AbgKCVBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 16:01:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
+        id S2388039AbgKCVX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 16:23:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387502AbgKCVBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 16:01:41 -0500
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DCDC0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 13:01:40 -0800 (PST)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4CQhzQ3cNlzQl9v;
-        Tue,  3 Nov 2020 22:01:38 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1604437296;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cNJcSYX21alSBZ027Kkc/qhi+X7jzJygZREuFOLSVVI=;
-        b=Gsyguqz/S73UVHxU6Ufwt+eqFnliBwbzI0XkvacpwbenN9wPuPfXJcZRA2K8+yFELYsqNB
-        2PhqBfiTOGhBZ9HRsR8zLLFM4ImgO/wBbqEU683grOYkTrrU8IgzZD4QdxL5k9RU4Fuy3P
-        1u7LZ+zOpVD5Bq8yDHbGCeSsw92Ml7zmtP4YNmAd4ORBhSVdWmyDFpFic03ycpFY/cd0F+
-        mII7wuWVY/8EkQTDWNcaYhnUcJOZper9b2FiwTKurSsjQhxnoJLzbNdNql4VvbYSYfi0Tp
-        nIM/gDz2wFe2K1XNu3GusjTOcDLRo6d1wTbSOcmGEhDGDyVuhjcb8vK0IIk1Dw==
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter06.heinlein-hosting.de (spamfilter06.heinlein-hosting.de [80.241.56.125]) (amavisd-new, port 10030)
-        with ESMTP id z3FDXKkYkpWO; Tue,  3 Nov 2020 22:01:35 +0100 (CET)
-References: <cover.1604059429.git.me@pmachata.org> <5ed9e2e7cdf9326e8f7ec80f33f0f11eafc3a425.1604059429.git.me@pmachata.org> <0f017fbd-b8f5-0ebe-0c16-0d441b1d4310@gmail.com> <87o8kihyy9.fsf@nvidia.com> <b0cc6bd4-e4e6-22ba-429d-4cea7996ccd4@gmail.com> <20201102063752.GE5429@unreal> <87h7q7iclr.fsf@nvidia.com> <20201103062406.GH5429@unreal>
-From:   Petr Machata <me@pmachata.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        stephen@networkplumber.org, john.fastabend@gmail.com,
-        jiri@nvidia.com, idosch@nvidia.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: Re: [PATCH iproute2-next v2 03/11] lib: utils: Add print_on_off_bool()
-In-reply-to: <20201103062406.GH5429@unreal>
-Date:   Tue, 03 Nov 2020 22:01:32 +0100
-Message-ID: <874km6i28j.fsf@nvidia.com>
+        with ESMTP id S1733243AbgKCVEf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 16:04:35 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C11EC0613D1;
+        Tue,  3 Nov 2020 13:04:35 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id b3so15410552pfo.2;
+        Tue, 03 Nov 2020 13:04:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wrUBzqixMNGges3Fm8LEqTkGr+7Sx/OVd1FP+l0kdS0=;
+        b=tqKpwE9c1XvzM26lsALNljg7czgItn9B2SFh1tA3jWE/ITdxfbUKdt+lGHvc4AqZJG
+         DZ38w2G0ZCOMhepTm9Eowqe4LBfWPO8ILx0Ol+dgIFIwxdAiNzD1wA/i8yt6fsVNOptw
+         SaiYvqBnxP3BX8+Vb8wu9Rwugz6FWLSJfUcENjTtu4V78jIYi59xfrDLTeLYUuG5oxAl
+         NTgLN9RaB/G1pfPbVdSsuGof6GiB/WaIyBDaEjrF7Ha1Z98pSiyS5oXgB6h/IXv9HV1w
+         sOAJhdJr5OPTpCg0tsq/C68T5BgQKFWAUoPDQTzUaXS7gzIxvEKvR4YiROniyFWZyWC3
+         0Sag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wrUBzqixMNGges3Fm8LEqTkGr+7Sx/OVd1FP+l0kdS0=;
+        b=KKka7vYkgz51er8sxIwdP/omGh2lMRt2rA287qwg/ZKH6SFHlbKWoiRXQE1Eko7UCc
+         6Su3w8jPaA8ibD4dZmA6BJfyp8wS3RSuhixDq7O0DrYa2W1okn2bULfsaMeGksyDBzS3
+         VhnCTAarnbQW6aL9PAeGRTyZku0PDuH8okCutJ/lNahW3zD3Qy/3/5LPzYZkSI8r1yBf
+         u5+Y1ozbb8N5RMbneZzU9CTiJ4BnKUoE/6RLpQb80a9K2uFr/SMKZllJpqNvTxS7aeHd
+         l+Hm4KeZmzZIIcT0EiSF+YMhiFpSu8ox/eSCu0f3nMX4Grfd6lvUacQZWEdCELn27UC4
+         Chnw==
+X-Gm-Message-State: AOAM533oYeYM94Bmvw5QjUsKRv4ATMTAX0N8uUUcsbjv1nx0wtL0i5K+
+        LflLpOEpiiaiC1nZkpWi0Cc=
+X-Google-Smtp-Source: ABdhPJwKd9ujaje9lKYp2d86AtKj6fAx/PpwqjE7Ypjdq7qZld+7Ol6iwwjneB60m1H6WrfRfHbdnA==
+X-Received: by 2002:a17:90b:f85:: with SMTP id ft5mr1161462pjb.86.1604437474559;
+        Tue, 03 Nov 2020 13:04:34 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:4055])
+        by smtp.gmail.com with ESMTPSA id y22sm29035pfr.62.2020.11.03.13.04.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2020 13:04:33 -0800 (PST)
+Date:   Tue, 3 Nov 2020 13:04:18 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Kenny Ho <y2kenny@gmail.com>
+Cc:     Kenny Ho <Kenny.Ho@amd.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>
+Subject: Re: [RFC] Add BPF_PROG_TYPE_CGROUP_IOCTL
+Message-ID: <20201103210418.q7hddyl7rvdplike@ast-mbp.dhcp.thefacebook.com>
+References: <20201007152355.2446741-1-Kenny.Ho@amd.com>
+ <CAOWid-d=a1Q3R92s7GrzxWhXx7_dc8NQvQg7i7RYTVv3+jHxkQ@mail.gmail.com>
+ <20201103053244.khibmr66p7lhv7ge@ast-mbp.dhcp.thefacebook.com>
+ <CAOWid-eQSPru0nm8+Xo3r6C0pJGq+5r8mzM8BL2dgNn2c9mt2Q@mail.gmail.com>
+ <CAADnVQKuoZDB-Xga5STHdGSxvSP=B6jQ40kLdpL1u+J98bv65A@mail.gmail.com>
+ <CAOWid-czZphRz6Y-H3OcObKCH=bLLC3=bOZaSB-6YBE56+Qzrg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -2.56 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 222BB17E8
-X-Rspamd-UID: 069eb6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOWid-czZphRz6Y-H3OcObKCH=bLLC3=bOZaSB-6YBE56+Qzrg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Nov 03, 2020 at 02:19:22PM -0500, Kenny Ho wrote:
+> On Tue, Nov 3, 2020 at 12:43 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> > On Mon, Nov 2, 2020 at 9:39 PM Kenny Ho <y2kenny@gmail.com> wrote:
+> > pls don't top post.
+> My apology.
+> 
+> > > Cgroup awareness is desired because the intent
+> > > is to use this for resource management as well (potentially along with
+> > > other cgroup controlled resources.)  I will dig into bpf_lsm and learn
+> > > more about it.
+> >
+> > Also consider that bpf_lsm hooks have a way to get cgroup-id without
+> > being explicitly scoped. So the bpf program can be made cgroup aware.
+> > It's just not as convenient as attaching a prog to cgroup+hook at once.
+> > For prototyping the existing bpf_lsm facility should be enough.
+> > So please try to follow this route and please share more details about
+> > the use case.
+> 
+> Ok.  I will take a look and see if that is sufficient.  My
+> understanding of bpf-cgroup is that it not only makes attaching prog
+> to cgroup easier but it also facilitates hierarchical calling of
+> attached progs which might be useful if users wants to manage gpu
+> resources with bpf cgroup along with other cgroup resources (like
+> cpu/mem/io, etc.)
 
-Leon Romanovsky <leon@kernel.org> writes:
+Right. Hierarchical cgroup-bpf logic cannot be replicated inside
+the program. If you're relying on cgv2 hierarchy to containerize
+applications then what I suggested earlier won't work indeed.
 
-> On Tue, Nov 03, 2020 at 12:05:20AM +0100, Petr Machata wrote:
->>
->> Leon Romanovsky <leon@kernel.org> writes:
->>
->> > On Sun, Nov 01, 2020 at 04:55:42PM -0700, David Ahern wrote:
->> >
->> >> yes, the rdma utils are using generic function names. The rdma version
->> >> should be renamed; perhaps rd_print_on_off. That seems to be once common
->> >> prefix. Added Leon.
->> >
->> > I made fast experiment and the output for the code proposed here and existed
->> > in the RDMAtool - result the same. So the good thing will be to delete the
->> > function from the RDMA after print_on_off_bool() will be improved.
->>
->> The RDMAtool uses literal "on" and "off" as values in JSON, not
->> booleans. Moving over to print_on_off_bool() would be a breaking change,
->> which is problematic especially in JSON output.
->
-> Nothing prohibits us from adding extra parameter to this new
-> function/json logic/json type that will control JSON behavior. Personally,
-> I don't think that json and stdout outputs should be different, e.g. 1/0 for
-> the json and on/off for the stdout.
+> About the use case.  The high level motivation here is to provide the
+> ability to subdivide/share a GPU via cgroups/containers in a way that
+> is similar to other resources like CPU and memory.  Users have been
+> requesting this type of functionality because GPU compute can get
+> expensive and they want to maximize the utilization to get the most
+> bang for their bucks.  A traditional way to do this is via
+> SRIOV/virtualization but that often means time sharing the GPU as a
+> whole unit.  That is useful for some applications but not others due
+> to the flushing and added latency.  We also have a study that
+> identified various GPU compute application types.  These types can
+> benefit from more asymmetrical/granular sharing of the GPU (for
+> example some applications are compute bound while others can be memory
+> bound that can benefit from having more VRAM.)
+> 
+> I have been trying to add a cgroup subsystem for the drm subsystem for
+> this purpose but I ran into two challenges.  First, the composition of
+> a GPU and how some of the subcomponents (like VRAM or shader
+> engines/compute units) can be shared are very much vendor specific so
+> we are unable to arrive at a common interface across all vendors.
+> Because of this and the variety of places a GPU can go into
+> (smartphone, PC, server, HPC), there is also no agreement on how
+> exactly a GPU should be shared.  The best way forward appears to
+> simply provide hooks for users to define how and what they want to
+> share via a bpf program.
 
-Emitting on/off in JSON as true booleans (true / false, not 1 / 0) does
-make sense. It's programmatically-consumed interface, the values should
-be of the right type.
+Thank you for sharing the details. It certainly helps.
 
-On the other hand, having a FP output use literal "on" and "off" makes
-sense as well. It's an obvious reference to the command line, you can
-actually cut'n'paste it back to shell and it will do the right thing.
+> From what I can tell so far (I am still learning), there are multiple
+> pieces that need to fall in place for bpf-cgroup to work for this use
+> case.  First there is resource limit enforcement, which is the
+> motivation for this RFC (I will look into bpf_lsm as the path
+> forward.)  I have also been thinking about instrumenting the drm
+> subsystem with a new BPF program type and have various attach types
+> across the drm subsystem but I am not sure if this is allowed (this
+> one is more for resource usage monitoring.)  Another thing I have been
+> considering is to have the gpu driver provide bpf helper functions for
+> bpf programs to modify drm driver internals.  That was the reason I
+> asked about the potential of BTF support for kernel modules a couple
+> of months ago (and Andrii Nakryiko mentioned that it is being worked
+> on.)
 
-Many places in iproute2 do do this dual output, and ideally all new
-instances would behave this way as well. So no toggles, please.
-
->> I think the current function does handle JSON context, what else do
->> you have in mind?
->
-> It handles, but does it twice, first time for is_json_context() and
-> second time inside print_bool.
-
-Gotcha.
+Sounds like either bpf_lsm needs to be made aware of cgv2 (which would
+be a great thing to have regardless) or cgroup-bpf needs a drm/gpu specific hook.
+I think generic ioctl hook is too broad for this use case.
+I suspect drm/gpu internal state would be easier to access inside
+bpf program if the hook is next to gpu/drm. At ioctl level there is 'file'.
+It's probably too abstract for the things you want to do.
+Like how VRAM/shader/etc can be accessed through file?
+Probably possible through a bunch of lookups and dereferences, but
+if the hook is custom to GPU that info is likely readily available.
+Then such cgroup-bpf check would be suitable in execution paths where
+ioctl-based hook would be too slow.
