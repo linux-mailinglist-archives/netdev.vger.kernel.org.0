@@ -2,335 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39FD82A5725
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:36:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DC272A5730
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:38:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731376AbgKCVgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 16:36:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57514 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731528AbgKCVfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 16:35:22 -0500
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27422C0613D1;
-        Tue,  3 Nov 2020 13:35:22 -0800 (PST)
-Received: by mail-qk1-x742.google.com with SMTP id o205so9919295qke.10;
-        Tue, 03 Nov 2020 13:35:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=JZNeWwfG+RzwsvSKrdXl43pAjm6jFSLlkhpa18kNvDM=;
-        b=R47MB9V27NmluIHEgJr6RpNr9k/k6I+vgvboY4hbvHIsRi/n0oZLWcUl7R2YvJ8sGG
-         CEat9GY+wZigB18fEeDtBHUfIWkDA5kAivcN/yt5l9kxC2q6wjblG2v3VKSzoyQfaTYf
-         BRC45DqzAZCW9nm/tfmr8OlDhrf+v1fO1e7pnXL3VtJI0ziEe7kHRVo2+QMYgeWQQI5k
-         T1BIeDrdCsAFjf46+g0ZIExyJlBzJ5veYwnHy/N3Zm0boEvR266ME1xFJ2XwYts64/bX
-         RqqLeXPqikuOscoayciP185ceo9Cpe3DOiHGZhPJOSNqgAmgI38KnVCqhx+TE2J2MmoJ
-         kqCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=JZNeWwfG+RzwsvSKrdXl43pAjm6jFSLlkhpa18kNvDM=;
-        b=Rjxe6WZrr94uSGP/4a7vsET2owzrkSungm9VyPzy2nSTJj/ht2F73tlwR29I3MTrqR
-         OMZFb/6IgRWWhfUmq/XF/KoBKblcy4W6pAz03ZDbok6tZwGpWbaKTfAYCYS3MqWzSUqw
-         wX8WUZirrUUx1XruOD1u5jpbaDlINl13JHLLnkHt62EZGDBZJ+OLr2Ah2pWI1C4+vZL/
-         idhMe24Bjph5uuVNBYAHMaWV+ATYnTVhY1fIvi6g2V77yrz9HoxmyVlyd7jKnnGdpqIy
-         EtA2OUkMoZLN/V9rBghTkl4XUVtQ5QC0NcRyxWLZ+yTXltP8IbNgWiCw5G13dFSK09X2
-         V8Sw==
-X-Gm-Message-State: AOAM532kw5T1AUpRu1gQw8Y9rBrpDbsRPyHPnwl0FTY/FHKxp5hYJX22
-        U8hd2pi4HENq2zzWM8tE8FA=
-X-Google-Smtp-Source: ABdhPJya7v+iFnrWrxwZkWnm/CkdyNku8yqmjAURJx9aZwYKYhA3NPG35rsu9fAjQI0BRZhkqLfWFA==
-X-Received: by 2002:a37:9acb:: with SMTP id c194mr21833824qke.288.1604439321294;
-        Tue, 03 Nov 2020 13:35:21 -0800 (PST)
-Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
-        by smtp.gmail.com with ESMTPSA id g15sm11675683qki.107.2020.11.03.13.35.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 13:35:20 -0800 (PST)
-Subject: [bpf-next PATCH v3 5/5] selftest/bpf: Use global variables instead of
- maps for test_tcpbpf_kern
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        john.fastabend@gmail.com, kernel-team@fb.com,
-        netdev@vger.kernel.org, edumazet@google.com, brakmo@fb.com,
-        andrii.nakryiko@gmail.com, alexanderduyck@fb.com
-Date:   Tue, 03 Nov 2020 13:35:19 -0800
-Message-ID: <160443931900.1086697.6588858453575682351.stgit@localhost.localdomain>
-In-Reply-To: <160443914296.1086697.4231574770375103169.stgit@localhost.localdomain>
-References: <160443914296.1086697.4231574770375103169.stgit@localhost.localdomain>
-User-Agent: StGit/0.23
+        id S1731741AbgKCViV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 16:38:21 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:60468 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731989AbgKCVh5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 16:37:57 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A3LXgvb135931;
+        Tue, 3 Nov 2020 21:37:48 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=pjGTZnVPVMo+UEn55PVlTgrdUWSHrBw1ub5JyNbZy+0=;
+ b=IlDe3XwPB/vgR9VYxtOf48IbhvcbWIbtH2reWESlQlFnDEG5EipX9/34FLgeAc0zYlVM
+ cg9tNgO7mK3pptqwpS1vVU7cExXG6AME5TiYCJmITHdOfMI6DlbE3S6UfyttZAgSqRhx
+ 8r7GH2yWD/upAC7KhcmnQ5X1gr+qpH5sYawyXlj07rXOTlI10S3tit3umX/ZC3a+YK4a
+ 0lTalB64JZHV4wyuwUK6SeVNyZctNXsFPGUMUnNBEeSbLqJOv3T2oCoIBGg445OtrBer
+ 8XlZpCcBnlJj3SeJLHOkbyYgBgaqUdBlci0v9KBUT7ZoTDlxdZNEcyc0V7j36jT2xtoP fA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 34hhvcbqxk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 03 Nov 2020 21:37:48 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A3LYnRs182419;
+        Tue, 3 Nov 2020 21:37:48 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 34jf493kuv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 Nov 2020 21:37:48 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0A3LblCY000901;
+        Tue, 3 Nov 2020 21:37:47 GMT
+Received: from [10.159.227.161] (/10.159.227.161)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 03 Nov 2020 13:37:47 -0800
+Subject: Re: [PATCH 1/1] mm: avoid re-using pfmemalloc page in
+ page_frag_alloc()
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-mm@kvack.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        davem@davemloft.net, kuba@kernel.org, aruna.ramakrishna@oracle.com,
+        bert.barbe@oracle.com, rama.nichanamatlu@oracle.com,
+        venkat.x.venkatsubra@oracle.com, manjunath.b.patil@oracle.com,
+        joe.jin@oracle.com, srinivas.eeda@oracle.com
+References: <20201103193239.1807-1-dongli.zhang@oracle.com>
+ <20201103203500.GG27442@casper.infradead.org>
+ <7141038d-af06-70b2-9f50-bf9fdf252e22@oracle.com>
+ <20201103211541.GH27442@casper.infradead.org>
+From:   Dongli Zhang <dongli.zhang@oracle.com>
+Message-ID: <7fc532c3-8780-4484-6932-6bfabecda189@oracle.com>
+Date:   Tue, 3 Nov 2020 13:37:45 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20201103211541.GH27442@casper.infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9794 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=2 mlxscore=0
+ bulkscore=0 malwarescore=0 mlxlogscore=999 phishscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011030143
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9794 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=2
+ impostorscore=0 malwarescore=0 priorityscore=1501 mlxlogscore=999
+ bulkscore=0 phishscore=0 adultscore=0 mlxscore=0 lowpriorityscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011030143
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Duyck <alexanderduyck@fb.com>
-
-Use global variables instead of global_map and sockopt_results_map to track
-test data. Doing this greatly simplifies the code as there is not need to
-take the extra steps of updating the maps or looking up elements.
-
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
----
- .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |   51 ++++--------
- .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |   86 +++-----------------
- tools/testing/selftests/bpf/test_tcpbpf.h          |    2 
- 3 files changed, 31 insertions(+), 108 deletions(-)
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-index bef81648797a..ab5281475f44 100644
---- a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-@@ -10,7 +10,7 @@
- 
- static __u32 duration;
- 
--static void verify_result(int map_fd, int sock_map_fd)
-+static void verify_result(struct tcpbpf_globals *result)
- {
- 	__u32 expected_events = ((1 << BPF_SOCK_OPS_TIMEOUT_INIT) |
- 				 (1 << BPF_SOCK_OPS_RWND_INIT) |
-@@ -20,46 +20,31 @@ static void verify_result(int map_fd, int sock_map_fd)
- 				 (1 << BPF_SOCK_OPS_NEEDS_ECN) |
- 				 (1 << BPF_SOCK_OPS_STATE_CB) |
- 				 (1 << BPF_SOCK_OPS_TCP_LISTEN_CB));
--	struct tcpbpf_globals result;
--	__u32 key = 0;
--	int res, rv;
--
--	rv = bpf_map_lookup_elem(map_fd, &key, &result);
--	if (CHECK(rv, "bpf_map_lookup_elem(map_fd)", "err:%d errno:%d",
--		  rv, errno))
--		return;
- 
- 	/* check global map */
--	CHECK(expected_events != result.event_map, "event_map",
-+	CHECK(expected_events != result->event_map, "event_map",
- 	      "unexpected event_map: actual 0x%08x != expected 0x%08x\n",
--	      result.event_map, expected_events);
-+	      result->event_map, expected_events);
- 
--	ASSERT_EQ(result.bytes_received, 501, "bytes_received");
--	ASSERT_EQ(result.bytes_acked, 1002, "bytes_acked");
--	ASSERT_EQ(result.data_segs_in, 1, "data_segs_in");
--	ASSERT_EQ(result.data_segs_out, 1, "data_segs_out");
--	ASSERT_EQ(result.bad_cb_test_rv, 0x80, "bad_cb_test_rv");
--	ASSERT_EQ(result.good_cb_test_rv, 0, "good_cb_test_rv");
--	ASSERT_EQ(result.num_listen, 1, "num_listen");
-+	ASSERT_EQ(result->bytes_received, 501, "bytes_received");
-+	ASSERT_EQ(result->bytes_acked, 1002, "bytes_acked");
-+	ASSERT_EQ(result->data_segs_in, 1, "data_segs_in");
-+	ASSERT_EQ(result->data_segs_out, 1, "data_segs_out");
-+	ASSERT_EQ(result->bad_cb_test_rv, 0x80, "bad_cb_test_rv");
-+	ASSERT_EQ(result->good_cb_test_rv, 0, "good_cb_test_rv");
-+	ASSERT_EQ(result->num_listen, 1, "num_listen");
- 
- 	/* 3 comes from one listening socket + both ends of the connection */
--	ASSERT_EQ(result.num_close_events, 3, "num_close_events");
-+	ASSERT_EQ(result->num_close_events, 3, "num_close_events");
- 
- 	/* check setsockopt for SAVE_SYN */
--	rv = bpf_map_lookup_elem(sock_map_fd, &key, &res);
--	CHECK(rv, "bpf_map_lookup_elem(sock_map_fd)", "err:%d errno:%d",
--	      rv, errno);
--	ASSERT_EQ(res, 0, "bpf_setsockopt(TCP_SAVE_SYN)");
-+	ASSERT_EQ(result->tcp_save_syn, 0, "tcp_save_syn");
- 
- 	/* check getsockopt for SAVED_SYN */
--	key = 1;
--	rv = bpf_map_lookup_elem(sock_map_fd, &key, &res);
--	CHECK(rv, "bpf_map_lookup_elem(sock_map_fd)", "err:%d errno:%d",
--	      rv, errno);
--	ASSERT_EQ(res, 1, "bpf_getsockopt(TCP_SAVED_SYN)");
-+	ASSERT_EQ(result->tcp_saved_syn, 1, "tcp_saved_syn");
- }
- 
--static void run_test(int map_fd, int sock_map_fd)
-+static void run_test(struct tcpbpf_globals *result)
- {
- 	int listen_fd = -1, cli_fd = -1, accept_fd = -1;
- 	char buf[1000];
-@@ -126,13 +111,12 @@ static void run_test(int map_fd, int sock_map_fd)
- 		close(listen_fd);
- 
- 	if (!err)
--		verify_result(map_fd, sock_map_fd);
-+		verify_result(result);
- }
- 
- void test_tcpbpf_user(void)
- {
- 	struct test_tcpbpf_kern *skel;
--	int map_fd, sock_map_fd;
- 	int cg_fd = -1;
- 
- 	skel = test_tcpbpf_kern__open_and_load();
-@@ -144,14 +128,11 @@ void test_tcpbpf_user(void)
- 		  "cg_fd:%d errno:%d", cg_fd, errno))
- 		goto err;
- 
--	map_fd = bpf_map__fd(skel->maps.global_map);
--	sock_map_fd = bpf_map__fd(skel->maps.sockopt_results);
--
- 	skel->links.bpf_testcb = bpf_program__attach_cgroup(skel->progs.bpf_testcb, cg_fd);
- 	if (!ASSERT_OK_PTR(skel->links.bpf_testcb, "attach_cgroup(bpf_testcb)"))
- 		goto err;
- 
--	run_test(map_fd, sock_map_fd);
-+	run_test(&skel->bss->global);
- 
- err:
- 	if (cg_fd != -1)
-diff --git a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-index 3e6912e4df3d..e85e49deba70 100644
---- a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-+++ b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-@@ -14,40 +14,7 @@
- #include <bpf/bpf_endian.h>
- #include "test_tcpbpf.h"
- 
--struct {
--	__uint(type, BPF_MAP_TYPE_ARRAY);
--	__uint(max_entries, 4);
--	__type(key, __u32);
--	__type(value, struct tcpbpf_globals);
--} global_map SEC(".maps");
--
--struct {
--	__uint(type, BPF_MAP_TYPE_ARRAY);
--	__uint(max_entries, 2);
--	__type(key, __u32);
--	__type(value, int);
--} sockopt_results SEC(".maps");
--
--static inline void update_event_map(int event)
--{
--	__u32 key = 0;
--	struct tcpbpf_globals g, *gp;
--
--	gp = bpf_map_lookup_elem(&global_map, &key);
--	if (gp == NULL) {
--		struct tcpbpf_globals g = {0};
--
--		g.event_map |= (1 << event);
--		bpf_map_update_elem(&global_map, &key, &g,
--			    BPF_ANY);
--	} else {
--		g = *gp;
--		g.event_map |= (1 << event);
--		bpf_map_update_elem(&global_map, &key, &g,
--			    BPF_ANY);
--	}
--}
--
-+struct tcpbpf_globals global = {};
- int _version SEC("version") = 1;
- 
- SEC("sockops")
-@@ -105,29 +72,15 @@ int bpf_testcb(struct bpf_sock_ops *skops)
- 
- 	op = (int) skops->op;
- 
--	update_event_map(op);
-+	global.event_map |= (1 << op);
- 
- 	switch (op) {
- 	case BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB:
- 		/* Test failure to set largest cb flag (assumes not defined) */
--		bad_call_rv = bpf_sock_ops_cb_flags_set(skops, 0x80);
-+		global.bad_cb_test_rv = bpf_sock_ops_cb_flags_set(skops, 0x80);
- 		/* Set callback */
--		good_call_rv = bpf_sock_ops_cb_flags_set(skops,
-+		global.good_cb_test_rv = bpf_sock_ops_cb_flags_set(skops,
- 						 BPF_SOCK_OPS_STATE_CB_FLAG);
--		/* Update results */
--		{
--			__u32 key = 0;
--			struct tcpbpf_globals g, *gp;
--
--			gp = bpf_map_lookup_elem(&global_map, &key);
--			if (!gp)
--				break;
--			g = *gp;
--			g.bad_cb_test_rv = bad_call_rv;
--			g.good_cb_test_rv = good_call_rv;
--			bpf_map_update_elem(&global_map, &key, &g,
--					    BPF_ANY);
--		}
- 		break;
- 	case BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB:
- 		skops->sk_txhash = 0x12345f;
-@@ -143,10 +96,8 @@ int bpf_testcb(struct bpf_sock_ops *skops)
- 
- 				thdr = (struct tcphdr *)(header + offset);
- 				v = thdr->syn;
--				__u32 key = 1;
- 
--				bpf_map_update_elem(&sockopt_results, &key, &v,
--						    BPF_ANY);
-+				global.tcp_saved_syn = v;
- 			}
- 		}
- 		break;
-@@ -156,25 +107,16 @@ int bpf_testcb(struct bpf_sock_ops *skops)
- 		break;
- 	case BPF_SOCK_OPS_STATE_CB:
- 		if (skops->args[1] == BPF_TCP_CLOSE) {
--			__u32 key = 0;
--			struct tcpbpf_globals g, *gp;
--
--			gp = bpf_map_lookup_elem(&global_map, &key);
--			if (!gp)
--				break;
--			g = *gp;
- 			if (skops->args[0] == BPF_TCP_LISTEN) {
--				g.num_listen++;
-+				global.num_listen++;
- 			} else {
--				g.total_retrans = skops->total_retrans;
--				g.data_segs_in = skops->data_segs_in;
--				g.data_segs_out = skops->data_segs_out;
--				g.bytes_received = skops->bytes_received;
--				g.bytes_acked = skops->bytes_acked;
-+				global.total_retrans = skops->total_retrans;
-+				global.data_segs_in = skops->data_segs_in;
-+				global.data_segs_out = skops->data_segs_out;
-+				global.bytes_received = skops->bytes_received;
-+				global.bytes_acked = skops->bytes_acked;
- 			}
--			g.num_close_events++;
--			bpf_map_update_elem(&global_map, &key, &g,
--					    BPF_ANY);
-+			global.num_close_events++;
- 		}
- 		break;
- 	case BPF_SOCK_OPS_TCP_LISTEN_CB:
-@@ -182,9 +124,7 @@ int bpf_testcb(struct bpf_sock_ops *skops)
- 		v = bpf_setsockopt(skops, IPPROTO_TCP, TCP_SAVE_SYN,
- 				   &save_syn, sizeof(save_syn));
- 		/* Update global map w/ result of setsock opt */
--		__u32 key = 0;
--
--		bpf_map_update_elem(&sockopt_results, &key, &v, BPF_ANY);
-+		global.tcp_save_syn = v;
- 		break;
- 	default:
- 		rv = -1;
-diff --git a/tools/testing/selftests/bpf/test_tcpbpf.h b/tools/testing/selftests/bpf/test_tcpbpf.h
-index 6220b95cbd02..0ed33521cbbb 100644
---- a/tools/testing/selftests/bpf/test_tcpbpf.h
-+++ b/tools/testing/selftests/bpf/test_tcpbpf.h
-@@ -14,5 +14,7 @@ struct tcpbpf_globals {
- 	__u64 bytes_acked;
- 	__u32 num_listen;
- 	__u32 num_close_events;
-+	__u32 tcp_save_syn;
-+	__u32 tcp_saved_syn;
- };
- #endif
 
 
+On 11/3/20 1:15 PM, Matthew Wilcox wrote:
+> On Tue, Nov 03, 2020 at 12:57:33PM -0800, Dongli Zhang wrote:
+>> On 11/3/20 12:35 PM, Matthew Wilcox wrote:
+>>> On Tue, Nov 03, 2020 at 11:32:39AM -0800, Dongli Zhang wrote:
+>>>> However, once kernel is not under memory pressure any longer (suppose large
+>>>> amount of memory pages are just reclaimed), the page_frag_alloc() may still
+>>>> re-use the prior pfmemalloc page_frag_cache->va to allocate skb->data. As a
+>>>> result, the skb->pfmemalloc is always true unless page_frag_cache->va is
+>>>> re-allocated, even the kernel is not under memory pressure any longer.
+>>>> +	/*
+>>>> +	 * Try to avoid re-using pfmemalloc page because kernel may already
+>>>> +	 * run out of the memory pressure situation at any time.
+>>>> +	 */
+>>>> +	if (unlikely(nc->va && nc->pfmemalloc)) {
+>>>> +		page = virt_to_page(nc->va);
+>>>> +		__page_frag_cache_drain(page, nc->pagecnt_bias);
+>>>> +		nc->va = NULL;
+>>>> +	}
+>>>
+>>> I think this is the wrong way to solve this problem.  Instead, we should
+>>> use up this page, but refuse to recycle it.  How about something like this (not even compile tested):
+>>
+>> Thank you very much for the feedback. Yes, the option is to use the same page
+>> until it is used up (offset < 0). Instead of recycling it, the kernel free it
+>> and allocate new one.
+>>
+>> This depends on whether we will tolerate the packet drop until this page is used up.
+>>
+>> For virtio-net, the payload (skb->data) is of size 128-byte. The padding and
+>> alignment will finally make it as 512-byte.
+>>
+>> Therefore, for virtio-net, we will have at most 4096/512-1=7 packets dropped
+>> before the page is used up.
+> 
+> My thinking is that if the kernel is under memory pressure then freeing
+> the page and allocating a new one is likely to put even more strain
+> on the memory allocator, so we want to do this "soon", rather than at
+> each allocation.
+> 
+> Thanks for providing the numbers.  Do you think that dropping (up to)
+> 7 packets is acceptable?>
+> We could also do something like ...
+> 
+>         if (unlikely(nc->pfmemalloc)) {
+>                 page = alloc_page(GFP_NOWAIT | __GFP_NOWARN);
+>                 if (page)
+>                         nc->pfmemalloc = 0;
+>                 put_page(page);
+>         }
+> 
+> to test if the memory allocator has free pages at the moment.  Not sure
+> whether that's a good idea or not -- hopefully you have a test environment
+> set up where you can reproduce this condition on demand and determine
+> which of these three approaches is best!
+> 
+
+
+From mm's perspective, we expect to reduce the number of page allocation
+(especially under memory pressure).
+
+From networking's perspective, we expect to reduce the number of skb drop.
+
+That's why I CCed netdev folks (including David and Jakub), although the patch
+is for mm/page_alloc.c. The page_frag_alloc() is primarily used by networking
+and nvme-tcp.
+
+
+Unfortunately, so far I do not have the env to reproduce. I reproduced with a
+patch to fail page allocation and set nc->pfmemalloc on purpose.
+
+From mm's perspective, I think to use up the page is a good option. Indeed tt is
+system administrator's duty to avoid memory pressure, in order to avoid the
+extra packet drops.
+
+Dongli Zhang
