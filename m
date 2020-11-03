@@ -2,120 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 468962A415D
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 11:12:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 824332A4176
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 11:16:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728104AbgKCKMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 05:12:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35090 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728079AbgKCKMS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 05:12:18 -0500
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 238FDC061A4A
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 02:12:14 -0800 (PST)
-Received: by mail-il1-x142.google.com with SMTP id a20so15597900ilk.13
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 02:12:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=b9Ktpm35fisVuHEhjhohgaqyboE8BmrrMoCITk9vnK8=;
-        b=0kZJ8Rb9+0/H3MVDUevyCTWAc1pKYDKmZzYacQKCMmC/UQ66qmBgifq30qeC2iVztI
-         ATPY1knKGSXDzJ6+Nm3tm3Ffn81WkUy/sBCmPfD94FibScrq8/Ui+9TUYldHJ7pcnk1t
-         gx+nhhl2zwwSRNNGE6X3g+mK8ICIfWN15TzWFBAm2Ac+Fnp/Nc7mvMvQxol3TgeHLuHe
-         fB2HlcDfVoQUKXEDUTDlyUi1MwQ1IJbHWYhRPhxFdctoJ/ps1THqNVawMwUkgd/uHgQv
-         AYOBJizY9XV1L84dWspkXE7W+jTkhJPV/Ws9WaUAfWMNJujPYu+ExPkpZXByTNBy8wKU
-         VaOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b9Ktpm35fisVuHEhjhohgaqyboE8BmrrMoCITk9vnK8=;
-        b=Jv4DLUNugmOuZYrwcndi4E7F4VTCQiws4GHBjc7zuP1cFFvn4QFq3WBXdNIsFxDJZM
-         NluB1QO30knwGmcEBRCEK+NLjoOs71JSHtLLRFZQenRkwSl6pcMVdIQQ/lBySlIpXX+H
-         FCtxL3KQqyB9ICV7O9SGHwaEtHc+vdTxHJh+BQTVKzxQ2b6fPegeNYmjoi4nh5NFVsjo
-         JUta0n6wpz0ze2jSr0JGYOBHRL0huMXpMf3edTVQK012V9+bLbGCvOkMYz77BZk6iRE5
-         ttyIJqL1lsx/oz+ZPN1i0YgqMPT2h7pXfcB8YAQ/VNxCpWmwnNejFqRbPizS/zcFHTDf
-         hCdQ==
-X-Gm-Message-State: AOAM532wks7aKCAnq/yaz67INXsogZyA8DMsJyUFolNR8H7xbwcZv+hz
-        FPfgtmDQSJmSPX6J5eDxDaMNLiNHBtGmCtN7+XwUHQ==
-X-Google-Smtp-Source: ABdhPJxXaKRnidyqbx6iUG254lVJzvxaSAJ3Y8t7tBOtYCNJcNKDXTe4r/tIo6bcU8qIdoqImm6tntmYdwdU1LT5yRY=
-X-Received: by 2002:a05:6e02:926:: with SMTP id o6mr14285653ilt.287.1604398333472;
- Tue, 03 Nov 2020 02:12:13 -0800 (PST)
+        id S1728032AbgKCKQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 05:16:51 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:43362 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726581AbgKCKQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 05:16:51 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-123-Ux3BzJ5ENca1vfachE3loQ-1; Tue, 03 Nov 2020 10:16:47 +0000
+X-MC-Unique: Ux3BzJ5ENca1vfachE3loQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 3 Nov 2020 10:16:46 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 3 Nov 2020 10:16:46 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jakub Kicinski' <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+CC:     netdev <netdev@vger.kernel.org>, Nicolas Pitre <nico@fluxnic.net>
+Subject: RE: [PATCH net-next 6/7] drivers: net: smc911x: Fix cast from pointer
+ to integer of different size
+Thread-Topic: [PATCH net-next 6/7] drivers: net: smc911x: Fix cast from
+ pointer to integer of different size
+Thread-Index: AQHWsXKUEvmurHYoQUeHf4PDn2uGsam2MToQ
+Date:   Tue, 3 Nov 2020 10:16:46 +0000
+Message-ID: <b470cb64c0354fec8d7db1ca70ba791a@AcuMS.aculab.com>
+References: <20201031004958.1059797-1-andrew@lunn.ch>
+        <20201031004958.1059797-7-andrew@lunn.ch>
+ <20201102154745.39cd54ef@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201102154745.39cd54ef@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-References: <20201102152037.963-1-brgl@bgdev.pl> <21d80265fccfcb5d76851c84d1c2d88e0421ab85.camel@perches.com>
-In-Reply-To: <21d80265fccfcb5d76851c84d1c2d88e0421ab85.camel@perches.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 3 Nov 2020 11:12:02 +0100
-Message-ID: <CAMRc=Me4-4Cmoq3UdpYEEhERP6fvt97bEJsZYhrcFSQf+a_voA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/8] slab: provide and use krealloc_array()
-To:     Joe Perches <joe@perches.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Gustavo Padovan <gustavo@padovan.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>,
-        linaro-mm-sig@lists.linaro.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-edac@vger.kernel.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev <netdev@vger.kernel.org>, linux-mm@kvack.org,
-        Linux-ALSA <alsa-devel@alsa-project.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 3, 2020 at 5:14 AM Joe Perches <joe@perches.com> wrote:
->
-> On Mon, 2020-11-02 at 16:20 +0100, Bartosz Golaszewski wrote:
-> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> >
-> > Andy brought to my attention the fact that users allocating an array of
-> > equally sized elements should check if the size multiplication doesn't
-> > overflow. This is why we have helpers like kmalloc_array().
-> >
-> > However we don't have krealloc_array() equivalent and there are many
-> > users who do their own multiplication when calling krealloc() for arrays.
-> >
-> > This series provides krealloc_array() and uses it in a couple places.
->
-> My concern about this is a possible assumption that __GFP_ZERO will
-> work, and as far as I know, it will not.
->
+RnJvbTogSmFrdWIgS2ljaW5za2kNCj4gU2VudDogMDIgTm92ZW1iZXIgMjAyMCAyMzo0OA0KPiAN
+Cj4gT24gU2F0LCAzMSBPY3QgMjAyMCAwMTo0OTo1NyArMDEwMCBBbmRyZXcgTHVubiB3cm90ZToN
+Cj4gPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9zbXNjL3NtYzkxMXguYzogSW4gZnVuY3Rpb24g4oCY
+c21jOTExeF9oYXJkd2FyZV9zZW5kX3BrdOKAmToNCj4gPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9z
+bXNjL3NtYzkxMXguYzo0NzE6MTE6IHdhcm5pbmc6IGNhc3QgZnJvbSBwb2ludGVyIHRvIGludGVn
+ZXIgb2YgZGlmZmVyZW50IHNpemUNCj4gWy1XcG9pbnRlci10by1pbnQtY2FzdF0NCj4gPiAgIDQ3
+MSB8ICBjbWRBID0gKCgodTMyKXNrYi0+ZGF0YSAmIDB4MykgPDwgMTYpIHwNCj4gPg0KPiA+IFdo
+ZW4gYnVpbHQgb24gNjRiaXQgdGFyZ2V0cywgdGhlIHNrYi0+ZGF0YSBwb2ludGVyIGNhbm5vdCBi
+ZSBjYXN0IHRvIGENCj4gPiB1MzIgaW4gYSBtZWFuaW5nZnVsIHdheS4gVXNlIGxvbmcgaW5zdGVh
+ZC4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEFuZHJldyBMdW5uIDxhbmRyZXdAbHVubi5jaD4N
+Cj4gPiAtLS0NCj4gPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvc21zYy9zbWM5MTF4LmMgfCA2ICsr
+Ky0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygt
+KQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L3Ntc2Mvc21jOTEx
+eC5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvc21zYy9zbWM5MTF4LmMNCj4gPiBpbmRleCA0ZWMy
+OTI1NjNmMzguLmYzNzgzMjU0MDM2NCAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhl
+cm5ldC9zbXNjL3NtYzkxMXguYw0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3Ntc2Mv
+c21jOTExeC5jDQo+ID4gQEAgLTQ2Niw5ICs0NjYsOSBAQCBzdGF0aWMgdm9pZCBzbWM5MTF4X2hh
+cmR3YXJlX3NlbmRfcGt0KHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpDQo+ID4gIAkJCVRYX0NNRF9B
+X0lOVF9GSVJTVF9TRUdfIHwgVFhfQ01EX0FfSU5UX0xBU1RfU0VHXyB8DQo+ID4gIAkJCXNrYi0+
+bGVuOw0KPiA+ICAjZWxzZQ0KPiA+IC0JYnVmID0gKGNoYXIqKSgodTMyKXNrYi0+ZGF0YSAmIH4w
+eDMpOw0KPiA+IC0JbGVuID0gKHNrYi0+bGVuICsgMyArICgodTMyKXNrYi0+ZGF0YSAmIDMpKSAm
+IH4weDM7DQo+ID4gLQljbWRBID0gKCgodTMyKXNrYi0+ZGF0YSAmIDB4MykgPDwgMTYpIHwNCj4g
+PiArCWJ1ZiA9IChjaGFyICopKChsb25nKXNrYi0+ZGF0YSAmIH4weDMpOw0KPiA+ICsJbGVuID0g
+KHNrYi0+bGVuICsgMyArICgobG9uZylza2ItPmRhdGEgJiAzKSkgJiB+MHgzOw0KPiA+ICsJY21k
+QSA9ICgoKGxvbmcpc2tiLT5kYXRhICYgMHgzKSA8PCAxNikgfA0KPiANCj4gUHJvYmFibHkgYmVz
+dCBpZiB5b3Ugc3dhcCB0aGUgKGxvbmcpIGZvciBzb21ldGhpbmcgdW5zaWduZWQgaGVyZSBhcw0K
+PiB3ZWxsLg0KDQpJdCB3b3VsZCBiZSBtdWNoIGNsZWFyZXIgd2l0aCBhIHRlbXBvcmFyeSB2YXJp
+YWJsZToNCglvZmZzZXQgPSAodW5zaWduZWQgbG9uZylza2ItPmRhdGEgJiAzOw0KCWJ1ZiA9IHNr
+Yi0+ZGF0YSAtIG9mZnNldDsNCglsZW4gPSBza2ItPmxlbiArIG9mZnNldDsNCgljbWRBID0gb2Zm
+c2V0IDw8IDE2IHwgLi4uDQoNCiAgIERhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtl
+c2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBV
+Sw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
-Yeah so I had this concern for devm_krealloc() and even sent a patch
-that extended it to honor __GFP_ZERO before I noticed that regular
-krealloc() silently ignores __GFP_ZERO. I'm not sure if this is on
-purpose. Maybe we should either make krealloc() honor __GFP_ZERO or
-explicitly state in its documentation that it ignores it?
-
-This concern isn't really related to this patch as such - it's more of
-a general krealloc() inconsistency.
-
-Bartosz
