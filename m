@@ -2,195 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C1F02A5A36
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 23:43:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 096942A5A43
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 23:46:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730238AbgKCWnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 17:43:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34658 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729342AbgKCWnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 17:43:16 -0500
-Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 928C921534;
-        Tue,  3 Nov 2020 22:43:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604443395;
-        bh=dTjs010gbJ6VVbLK8IglW33sxZXfD2QRUF5cnzBezyo=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=eS20A5CLxPhFskV6advnCEHDXwhqCm+t493GdZRn0qObtv+kRgZW+Gq6hf5SEGHPh
-         Q+9wM5jtPz3YoehUbHXoQNQA39zCOmZazH6B4wq6Ybon70qptlxH5bNmBEVeM87e28
-         PQwk2XW7HYe/gkn7LK8aVCqF0oQsYlArvh4psaJs=
-Message-ID: <f4b03d3c70c2b1e19e42d0209e270110b7668039.camel@kernel.org>
-Subject: Re: [PATCH 1/4] gve: Add support for raw addressing device option
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     David Awogbemila <awogbemila@google.com>, netdev@vger.kernel.org
-Cc:     Catherine Sullivan <csully@google.com>,
-        Yangchun Fu <yangchun@google.com>
-Date:   Tue, 03 Nov 2020 14:43:14 -0800
-In-Reply-To: <20201103174651.590586-2-awogbemila@google.com>
-References: <20201103174651.590586-1-awogbemila@google.com>
-         <20201103174651.590586-2-awogbemila@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1730493AbgKCWqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 17:46:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729575AbgKCWqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 17:46:24 -0500
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7331CC0613D1;
+        Tue,  3 Nov 2020 14:46:24 -0800 (PST)
+Received: by mail-il1-x141.google.com with SMTP id n5so17636486ile.7;
+        Tue, 03 Nov 2020 14:46:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lH5i5uFYniMMbkFnLq314abTav522BASpBwrryyYWwY=;
+        b=tT3lywaupetn0TrYjXdzpPpxeD9U/1IlHZPYYir0qeOhE2FYiVW92l943BHtWSbs2v
+         Df9YMKONfCDMM1nbDOgjntrym7OaJEdA8+oONqvsOKySS4L9Qw/7MuuZWFfm7/BupbCu
+         xbNMTft7hB9pp83NslYC59CPvn1P5Feuxszcb13db+to4mZkXIzpuYTfU/j2W8La/Aiz
+         Cr18py9cDYlTKTlt1nWXzElBMaoS4xpysLNjS8O27SXhh6/caIQxDGgm7Zpb4IFA4L0m
+         YxDDVJQhVwZG/7dlBxY9QYJxSFPK0Ubj5a++0c0RBoO09xg17u1LlAfAy0TZQlpyOLOU
+         UO5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lH5i5uFYniMMbkFnLq314abTav522BASpBwrryyYWwY=;
+        b=Sf4oakqRG0I4j+dI7WkcwIluxZ/uo8i13m+YjRnlBaPb8QEz7/usoiwihRy2VyMbeN
+         NKAEZIM3OafFiKo5QM1qyRSdGAF93ZI/1VAiJcW7qvJI6eM6Vl4F2hbLsmQFpncFLKXo
+         hL4MCJI3yyjMq+x2Z7OsovTY0jMRutKrIi6Xoob3A70mj8Vpu3E9/Q/t0EL3mULbE0t4
+         oCq2kjbY1UI7BseB+oJFVK3N2K/FV03F1FZWyb2f5dZK1dQPMd34vJ3aKGQeD4CAy3VW
+         OmMbYts2xEZ+wj0sn9xNAfEDTUIV8wI8OKtUh1k96iFALEtBVHMwZDxB1vhUfiqSJ8mG
+         TtAQ==
+X-Gm-Message-State: AOAM531Jc5SZrGXioYpua11EOAjWSQflsAZICBxVrPbctR7gGQVsUn1H
+        JIlgiFZ4Vsc0dVYejRhgYcw=
+X-Google-Smtp-Source: ABdhPJxiZRwOga+D4mV8ngi2qwi8CBgjbZ/33tzOxuxZ1xcEHzWJMQ+P7ohOYuUCdzNqc2/HDvjSyA==
+X-Received: by 2002:a92:ae0e:: with SMTP id s14mr6751881ilh.94.1604443583815;
+        Tue, 03 Nov 2020 14:46:23 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:def:1f9b:2059:ffac])
+        by smtp.googlemail.com with ESMTPSA id l18sm94436ioc.31.2020.11.03.14.46.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Nov 2020 14:46:23 -0800 (PST)
+Subject: Re: [net-next,v1,5/5] selftests: add selftest for the SRv6 End.DT4
+ behavior
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+References: <20201103125242.11468-1-andrea.mayer@uniroma2.it>
+ <20201103125242.11468-6-andrea.mayer@uniroma2.it>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2f11e5f5-7010-36e2-1e9b-800dc76d0091@gmail.com>
+Date:   Tue, 3 Nov 2020 15:46:19 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.4.0
 MIME-Version: 1.0
+In-Reply-To: <20201103125242.11468-6-andrea.mayer@uniroma2.it>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-11-03 at 09:46 -0800, David Awogbemila wrote:
-> From: Catherine Sullivan <csully@google.com>
+On 11/3/20 5:52 AM, Andrea Mayer wrote:
+> this selftest is designed for evaluating the new SRv6 End.DT4 behavior
+> used, in this example, for implementing IPv4 L3 VPN use cases.
 > 
-> Add support to describe device for parsing device options. As
-> the first device option, add raw addressing.
-> 
-> "Raw Addressing" mode (as opposed to the current "qpl" mode) is an
-> operational mode which allows the driver avoid bounce buffer copies
-> which it currently performs using pre-allocated qpls
-> (queue_page_lists)
-> when sending and receiving packets.
-> For egress packets, the provided skb data addresses will be
-> dma_map'ed and
-> passed to the device, allowing the NIC can perform DMA directly - the
-> driver will not have to copy the buffer content into pre-allocated
-> buffers/qpls (as in qpl mode).
-> For ingress packets, copies are also eliminated as buffers are handed
-> to
-> the networking stack and then recycled or re-allocated as
-> necessary, avoiding the use of skb_copy_to_linear_data().
-> 
-> This patch only introduces the option to the driver.
-> Subsequent patches will add the ingress and egress functionality.
-> 
-> Reviewed-by: Yangchun Fu <yangchun@google.com>
-> Signed-off-by: Catherine Sullivan <csully@google.com>
-> Signed-off-by: David Awogbemila <awogbemila@google.com>
+> Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 > ---
->  drivers/net/ethernet/google/gve/gve.h        |  1 +
->  drivers/net/ethernet/google/gve/gve_adminq.c | 52
-> ++++++++++++++++++++
->  drivers/net/ethernet/google/gve/gve_adminq.h | 15 ++++--
->  drivers/net/ethernet/google/gve/gve_main.c   |  9 ++++
->  4 files changed, 73 insertions(+), 4 deletions(-)
+>  .../selftests/net/srv6_end_dt4_l3vpn_test.sh  | 494 ++++++++++++++++++
+>  1 file changed, 494 insertions(+)
+>  create mode 100755 tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
 > 
-> diff --git a/drivers/net/ethernet/google/gve/gve.h
-> b/drivers/net/ethernet/google/gve/gve.h
-> index f5c80229ea96..80cdae06ee39 100644
-> --- a/drivers/net/ethernet/google/gve/gve.h
-> +++ b/drivers/net/ethernet/google/gve/gve.h
-> @@ -199,6 +199,7 @@ struct gve_priv {
->  	u64 num_registered_pages; /* num pages registered with NIC */
->  	u32 rx_copybreak; /* copy packets smaller than this */
->  	u16 default_num_queues; /* default num queues to set up */
-> +	bool raw_addressing; /* true if this dev supports raw
-> addressing */
->  
->  	struct gve_queue_config tx_cfg;
->  	struct gve_queue_config rx_cfg;
-> diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c
-> b/drivers/net/ethernet/google/gve/gve_adminq.c
-> index 24ae6a28a806..0b7a2653fe33 100644
-> --- a/drivers/net/ethernet/google/gve/gve_adminq.c
-> +++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-> @@ -460,11 +460,14 @@ int gve_adminq_destroy_rx_queues(struct
-> gve_priv *priv, u32 num_queues)
->  int gve_adminq_describe_device(struct gve_priv *priv)
->  {
->  	struct gve_device_descriptor *descriptor;
-> +	struct gve_device_option *dev_opt;
->  	union gve_adminq_command cmd;
->  	dma_addr_t descriptor_bus;
-> +	u16 num_options;
->  	int err = 0;
->  	u8 *mac;
->  	u16 mtu;
-> +	int i;
->  
->  	memset(&cmd, 0, sizeof(cmd));
->  	descriptor = dma_alloc_coherent(&priv->pdev->dev, PAGE_SIZE,
-> @@ -518,6 +521,55 @@ int gve_adminq_describe_device(struct gve_priv
-> *priv)
->  		priv->rx_desc_cnt = priv->rx_pages_per_qpl;
->  	}
->  	priv->default_num_queues = be16_to_cpu(descriptor-
-> >default_num_queues);
-> +	dev_opt = (void *)(descriptor + 1);
+> diff --git a/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh b/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
+> new file mode 100755
+> index 000000000000..a5547fed5048
+> --- /dev/null
+> +++ b/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
+> @@ -0,0 +1,494 @@
+> +#!/bin/bash
+> +# SPDX-License-Identifier: GPL-2.0
+> +#
+> +# author: Andrea Mayer <andrea.mayer@uniroma2.it>
 > +
-> +	num_options = be16_to_cpu(descriptor->num_device_options);
-> +	for (i = 0; i < num_options; i++) {
-> +		u16 option_length = be16_to_cpu(dev_opt-
-> >option_length);
-> +		u16 option_id = be16_to_cpu(dev_opt->option_id);
-> +		void *option_end;
+> +# This test is designed for evaluating the new SRv6 End.DT4 behavior used for
+> +# implementing IPv4 L3 VPN use cases.
+> +#
+> +# Hereafter a network diagram is shown, where two different tenants (named 100
+> +# and 200) offer IPv4 L3 VPN services allowing hosts to communicate with each
+> +# other across an IPv6 network.
+> +#
+> +# Only hosts belonging to the same tenant (and to the same VPN) can communicate
+> +# with each other. Instead, the communication among hosts of different tenants
+> +# is forbidden.
+> +# In other words, hosts hs-t100-1 and hs-t100-2 are connected through the IPv4
+> +# L3 VPN of tenant 100 while hs-t200-3 and hs-t200-4 are connected using the
+> +# IPv4 L3 VPN of tenant 200. Cross connection between tenant 100 and tenant 200
+> +# is forbidden and thus, for example, hs-t100-1 cannot reach hs-t200-3 and vice
+> +# versa.
+> +#
+> +# Routers rt-1 and rt-2 implement IPv4 L3 VPN services leveraging the SRv6
+> +# architecture. The key components for such VPNs are: a) SRv6 Encap behavior,
+> +# b) SRv6 End.DT4 behavior and c) VRF.
+> +#
+> +# To explain how an IPv4 L3 VPN based on SRv6 works, let us briefly consider an
+> +# example where, within the same domain of tenant 100, the host hs-t100-1 pings
+> +# the host hs-t100-2.
+> +#
+> +# First of all, L2 reachability of the host hs-t100-2 is taken into account by
+> +# the router rt-1 which acts as an arp proxy.
+> +#
+> +# When the host hs-t100-1 sends an IPv4 packet destined to hs-t100-2, the
+> +# router rt-1 receives the packet on the internal veth-t100 interface. Such
+> +# interface is enslaved to the VRF vrf-100 whose associated table contains the
+> +# SRv6 Encap route for encapsulating any IPv4 packet in a IPv6 plus the Segment
+> +# Routing Header (SRH) packet. This packet is sent through the (IPv6) core
+> +# network up to the router rt-2 that receives it on veth0 interface.
+> +#
+> +# The rt-2 router uses the 'localsid' routing table to process incoming
+> +# IPv6+SRH packets which belong to the VPN of the tenant 100. For each of these
+> +# packets, the SRv6 End.DT4 behavior removes the outer IPv6+SRH headers and
+> +# performs the lookup on the vrf-100 table using the destination address of
+> +# the decapsulated IPv4 packet. Afterwards, the packet is sent to the host
+> +# hs-t100-2 through the veth-t100 interface.
+> +#
+> +# The ping response follows the same processing but this time the role of rt-1
+> +# and rt-2 are swapped.
+> +#
+> +# Of course, the IPv4 L3 VPN for tenant 200 works exactly as the IPv4 L3 VPN
+> +# for tenant 100. In this case, only hosts hs-t200-3 and hs-t200-4 are able to
+> +# connect with each other.
+> +#
+> +#
+> +# +-------------------+                                   +-------------------+
+> +# |                   |                                   |                   |
+> +# |  hs-t100-1 netns  |                                   |  hs-t100-2 netns  |
+> +# |                   |                                   |                   |
+> +# |  +-------------+  |                                   |  +-------------+  |
+> +# |  |    veth0    |  |                                   |  |    veth0    |  |
+> +# |  | 10.0.0.1/24 |  |                                   |  | 10.0.0.2/24 |  |
+> +# |  +-------------+  |                                   |  +-------------+  |
+> +# |        .          |                                   |         .         |
+> +# +-------------------+                                   +-------------------+
+> +#          .                                                        .
+> +#          .                                                        .
+> +#          .                                                        .
+> +# +-----------------------------------+   +-----------------------------------+
+> +# |        .                          |   |                         .         |
+> +# | +---------------+                 |   |                 +---------------- |
+> +# | |   veth-t100   |                 |   |                 |   veth-t100   | |
+> +# | | 10.0.0.254/24 |    +----------+ |   | +----------+    | 10.0.0.254/24 | |
+> +# | +-------+-------+    | localsid | |   | | localsid |    +-------+-------- |
+> +# |         |            |   table  | |   | |   table  |            |         |
+> +# |    +----+----+       +----------+ |   | +----------+       +----+----+    |
+> +# |    | vrf-100 |                    |   |                    | vrf-100 |    |
+> +# |    +---------+     +------------+ |   | +------------+     +---------+    |
+> +# |                    |   veth0    | |   | |   veth0    |                    |
+> +# |                    | fd00::1/64 |.|...|.| fd00::2/64 |                    |
+> +# |    +---------+     +------------+ |   | +------------+     +---------+    |
+> +# |    | vrf-200 |                    |   |                    | vrf-200 |    |
+> +# |    +----+----+                    |   |                    +----+----+    |
+> +# |         |                         |   |                         |         |
+> +# | +---------------+                 |   |                 +---------------- |
+> +# | |   veth-t200   |                 |   |                 |   veth-t200   | |
+> +# | | 10.0.0.254/24 |                 |   |                 | 10.0.0.254/24 | |
+> +# | +---------------+      rt-1 netns |   | rt-2 netns      +---------------- |
+> +# |        .                          |   |                          .        |
+> +# +-----------------------------------+   +-----------------------------------+
+> +#          .                                                         .
+> +#          .                                                         .
+> +#          .                                                         .
+> +#          .                                                         .
+> +# +-------------------+                                   +-------------------+
+> +# |        .          |                                   |          .        |
+> +# |  +-------------+  |                                   |  +-------------+  |
+> +# |  |    veth0    |  |                                   |  |    veth0    |  |
+> +# |  | 10.0.0.3/24 |  |                                   |  | 10.0.0.4/24 |  |
+> +# |  +-------------+  |                                   |  +-------------+  |
+> +# |                   |                                   |                   |
+> +# |  hs-t200-3 netns  |                                   |  hs-t200-4 netns  |
+> +# |                   |                                   |                   |
+> +# +-------------------+                                   +-------------------+
+> +#
+> +#
+> +# ~~~~~~~~~~~~~~~~~~~~~~~~~
+> +# | Network configuration |
+> +# ~~~~~~~~~~~~~~~~~~~~~~~~~
+> +#
+> +# rt-1: localsid table (table 90)
+> +# +----------------------------------------------+
+> +# |SID              |Action                      |
+> +# +----------------------------------------------+
+> +# |fc00:21:100::6004|apply SRv6 End.DT4 table 100|
+> +# +----------------------------------------------+
+> +# |fc00:21:200::6004|apply SRv6 End.DT4 table 200|
+> +# +----------------------------------------------+
+> +#
+> +# rt-1: VRF tenant 100 (table 100)
+> +# +---------------------------------------------------+
+> +# |host       |Action                                 |
+> +# +---------------------------------------------------+
+> +# |10.0.0.2   |apply seg6 encap segs fc00:12:100::6004|
+> +# +---------------------------------------------------+
+> +# |10.0.0.0/24|forward to dev veth_t100               |
+> +# +---------------------------------------------------+
+> +#
+> +# rt-1: VRF tenant 200 (table 200)
+> +# +---------------------------------------------------+
+> +# |host       |Action                                 |
+> +# +---------------------------------------------------+
+> +# |10.0.0.4   |apply seg6 encap segs fc00:12:200::6004|
+> +# +---------------------------------------------------+
+> +# |10.0.0.0/24|forward to dev veth_t200               |
+> +# +---------------------------------------------------+
+> +#
+> +#
+> +# rt-2: localsid table (table 90)
+> +# +----------------------------------------------+
+> +# |SID              |Action                      |
+> +# +----------------------------------------------+
+> +# |fc00:12:100::6004|apply SRv6 End.DT4 table 100|
+> +# +----------------------------------------------+
+> +# |fc00:12:200::6004|apply SRv6 End.DT4 table 200|
+> +# +----------------------------------------------+
+> +#
+> +# rt-2: VRF tenant 100 (table 100)
+> +# +---------------------------------------------------+
+> +# |host       |Action                                 |
+> +# +---------------------------------------------------+
+> +# |10.0.0.1   |apply seg6 encap segs fc00:21:100::6004|
+> +# +---------------------------------------------------+
+> +# |10.0.0.0/24|forward to dev veth_t100               |
+> +# +---------------------------------------------------+
+> +#
+> +# rt-2: VRF tenant 200 (table 200)
+> +# +---------------------------------------------------+
+> +# |host       |Action                                 |
+> +# +---------------------------------------------------+
+> +# |10.0.0.3   |apply seg6 encap segs fc00:21:200::6004|
+> +# +---------------------------------------------------+
+> +# |10.0.0.0/24|forward to dev veth_t200               |
+> +# +---------------------------------------------------+
+> +#
 > +
-> +		option_end = (void *)dev_opt + sizeof(*dev_opt) +
-> option_length;
-> +		if (option_end > (void *)descriptor +
-> be16_to_cpu(descriptor->total_length)) {
-> +			dev_err(&priv->dev->dev,
-> +				"options exceed device_descriptor's
-> total length.\n");
-> +			err = -EINVAL;
-> +			goto free_device_descriptor;
-> +		}
-> +
-> +		switch (option_id) {
-> +		case GVE_DEV_OPT_ID_RAW_ADDRESSING:
-> +			/* If the length or feature mask doesn't match,
-> +			 * continue without enabling the feature.
-> +			 */
-> +			if (option_length !=
-> GVE_DEV_OPT_LEN_RAW_ADDRESSING ||
-> +			    dev_opt->feat_mask !=
-> +			    cpu_to_be32(GVE_DEV_OPT_FEAT_MASK_RAW_ADDRE
-> SSING)) {
-> +				dev_warn(&priv->pdev->dev,
-> +					 "Raw addressing option
-> error:\n"
-> +					 "	Expected: length=%d,
-> feature_mask=%x.\n"
-> +					 "	Actual: length=%d,
-> feature_mask=%x.\n",
-> +					 GVE_DEV_OPT_LEN_RAW_ADDRESSING
-> ,
-> +					 cpu_to_be32(GVE_DEV_OPT_FEAT_M
-> ASK_RAW_ADDRESSING),
-> +					 option_length, dev_opt-
-> >feat_mask);
-> +				priv->raw_addressing = false;
-> +			} else {
-> +				dev_info(&priv->pdev->dev,
-> +					 "Raw addressing device option
-> enabled.\n");
-> +				priv->raw_addressing = true;
-> +			}
-> +			break;
-> +		default:
-> +			/* If we don't recognize the option just
-> continue
-> +			 * without doing anything.
-> +			 */
-> +			dev_dbg(&priv->pdev->dev,
-> +				"Unrecognized device option 0x%hx not
-> enabled.\n",
-> +				option_id);
-> +			break;
-> +		}
-> +		dev_opt = (void *)dev_opt + sizeof(*dev_opt) +
-> option_length;
+>
 
-This was already calculated above, "option_end"
+thanks for creating the very well documented test case.
 
-
-Suggestion: you can make an iterator macro to return the next opt
-
-next_opt = GET_NEXT_OPT(descriptor, curr_opt);
-
-you can make it check boundaries and return null on last iteration or
-when total length is exceeded, and just use it in a more readable
-iterator loop.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
 
