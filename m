@@ -2,79 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5623F2A4D7C
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:51:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A072A4D7F
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:52:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727869AbgKCRv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 12:51:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
+        id S1728809AbgKCRwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:52:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725957AbgKCRv0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:51:26 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5A9C0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:51:26 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id o21so18418535ejb.3
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:51:26 -0800 (PST)
+        with ESMTP id S1728690AbgKCRwZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:52:25 -0500
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDD0C0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:52:24 -0800 (PST)
+Received: by mail-wm1-x343.google.com with SMTP id h62so162070wme.3
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:52:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2xZ3OSqt3OKJmFUnSZxKOfcuIvpUVoePdMD+kWkqBMQ=;
-        b=nyWX9Q0fe0ppZ2lch9iosChwuP0lCeKV+Gr0tmaAD2lfuTPCyRronkOnYRdM3rq47U
-         gbvP9N0AQ8H3DgSDU4jYp2+cD3+hGSLQMnbiYCCL5HHA5yfuao0Fg0nDydKc2phHmsRX
-         Uwo+fEPrU2Nh73d6CqZySX/hH2oZ/ee17hwt1TQp5fyk1PmX9N6Mm1Oq7RrnNVoVH2KU
-         3feKjxgEydr1TwbOnnqdUhAQertRJX4WzX4rhrZXBlKalvDHD9Hofs7p+1kMzZJSJk7P
-         fFM0N4N3DNjGRLZa3BodwGEpTEAKZF7YDFHn9SSOyBVOluu1sJR50wh4SxQyGoHMwVY4
-         2/4g==
+        h=from:to:cc:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=e+0jR+QQ65f9mmp7Mm7WjlSL4O1pCjuDPMTZwyibTBk=;
+        b=NV8tNuh59p8lOW2Dg2wtHt9VxTG1FGD6FzA72vIKA+/HO0VTqzkwobiTh+7fd91j0s
+         SozwVoz9oO+Yr3GFZAsL95ehaiG6Vr9lot1tCuVZlElfUUuDM3j5UCailpDnBEm36tgG
+         W0FWGqXHsPsfKmpUTz6eMJdjQN0kgrb4goq5Mo2B7+cNHg5JurIvYE2yrHlvbPlXkUKo
+         Luz59OY4DZ6FB/DGipAe5fsjWXMXDMB7dcXLPQ6AqPhmxozE737KuWorHYmmx+1WZ7CO
+         1wOEkjnkAhkCx6EeqaSlkpvdqg+lUSyWV088AtFZBTn/15ymC+WqJuor7jAiOrIPvljj
+         nZzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2xZ3OSqt3OKJmFUnSZxKOfcuIvpUVoePdMD+kWkqBMQ=;
-        b=sT4x7jT3hNkpohcMPf3Q1/ArdS4t6uALa0fwyckC3KTwGSY2LJB7W/dslWcrYB6he7
-         eT0GsgO55FOE6QBZX/stkBDnQLzSfn/4CXeYPmZhvUZImgFNmmy1lKX1J07OCVeZFQD7
-         62/u9STe8qX4ou0FM7Uy5ZVVlR83fov9f5e3nIwXNoHKxmQMk5bSJLxKYuYEaO2d6WXb
-         CCcqyLF4T6H5yw9xMf8ssTuPtOJcULGFlM8wezJ0d1GJ5ZweRpd5Tfn9cXMb28aJN9FH
-         r0ccaK1GFRhxXfJzmYDewsIHNCjqtJvQxO4wAwAi4/CUnZkrrN2m6sEBiNB1+pcrCglV
-         G3cw==
-X-Gm-Message-State: AOAM533crFHRGye40agHv+Ly8pTwRyuEPNQjzFbGxwySEq8xT3bZ+vvQ
-        sU90mHkjq6jQlZ1EUCufoqg=
-X-Google-Smtp-Source: ABdhPJwPh7b3VRE3UmWl2/CNg5TowX7/3D9DUmjmBHCQQpBllz68ztFHK44Z39u2draz4oYXdvxrzw==
-X-Received: by 2002:a17:906:5052:: with SMTP id e18mr20199129ejk.530.1604425885260;
-        Tue, 03 Nov 2020 09:51:25 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id bx24sm11380220ejb.51.2020.11.03.09.51.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 09:51:24 -0800 (PST)
-Date:   Tue, 3 Nov 2020 19:51:23 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "james.jurack@ametek.com" <james.jurack@ametek.com>
-Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
- skb_cow_head for PTP
-Message-ID: <20201103175123.a5xq2ujd2kovtrnp@skbuf>
-References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
- <20201029081057.8506-1-claudiu.manoil@nxp.com>
- <20201103161319.wisvmjbdqhju6vyh@skbuf>
- <20201103083050.100b2568@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <AM0PR04MB6754C8F6D12318EF1DD0CA2B96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
- <20201103173007.23ttgm3rpmbletee@skbuf>
- <20201103093655.65851a21@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=e+0jR+QQ65f9mmp7Mm7WjlSL4O1pCjuDPMTZwyibTBk=;
+        b=qyLsHx1zqg4EZ4jR8eR/o8qSa8gIzSiSUL8WiQ1XEeKtOmFmiyjS+NWhD9FpCBXutb
+         B0EUzpvNHgSLn0+/uRht8smLYm4D/lua2ISjPxgmGL8Xfr2P4A83Jtkuhvt8Lcl0xu9G
+         gv/YNXwvifMhvX8TjV8Vit75SOjHpheF25zrDdqaW0gnvLFU/vC7NyrGQ/msYOQPXTEd
+         3vyifI3KCB0uvf/PB2ri8fEi+u46rJmIJdK88RMST0ZzJC4aabzx/Pdr4RpDRFt2EcrI
+         GuF0456m7B97yxofRDjg2QUvY+fmlr+NPJPVon67smAb1iCBhWQ5wAokkn6lz/OU2XVG
+         Jw9g==
+X-Gm-Message-State: AOAM533MBLQ4jK5Ou3gLSsJB14Ycx79hK8CYrOLvfjyGZJ6klaNCp5mF
+        JPJ4gIsT4IaLJdCIAO1UNLOGLav4nUjGNA==
+X-Google-Smtp-Source: ABdhPJwXj+1PUnFo5XpWZX2bZkK5YaXUqVTwdYVyNgC0gMzxxYCEZ1IaBFa7pMAdLh8jB4tSZZITHQ==
+X-Received: by 2002:a1c:bdc4:: with SMTP id n187mr295492wmf.185.1604425943621;
+        Tue, 03 Nov 2020 09:52:23 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f23:2800:a5f9:d289:8ac7:4785? (p200300ea8f232800a5f9d2898ac74785.dip0.t-ipconnect.de. [2003:ea:8f23:2800:a5f9:d289:8ac7:4785])
+        by smtp.googlemail.com with ESMTPSA id u195sm3753387wmu.18.2020.11.03.09.52.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Nov 2020 09:52:23 -0800 (PST)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Maxim Plotnikov <wgh@torlan.ru>
+Subject: [PATCH net] r8169: work around short packet hw bug on RTL8125
+Message-ID: <8002c31a-60b9-58f1-f0dd-8fd07239917f@gmail.com>
+Date:   Tue, 3 Nov 2020 18:52:18 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201103093655.65851a21@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 09:36:55AM -0800, Jakub Kicinski wrote:
-> IIRC we did this because too many drivers used dev_kfree_skb
-> incorrectly and made the dropwatch output very noisy.
+Network problems with RTL8125B have been reported [0] and with help
+from Realtek it turned out that this chip version has a hw problem
+with short packets (similar to RTL8168evl). Having said that activate
+the same workaround as for RTL8168evl.
+Realtek suggested to activate the workaround for RTL8125A too, even
+though they're not 100% sure yet which RTL8125 versions are affected.
 
-Nice, so that's why the drop monitor never complains with my misplaced
-dev_kfree_skb_any calls...
+[0] https://bugzilla.kernel.org/show_bug.cgi?id=209839
+
+Fixes: 0439297be951 ("r8169: add support for RTL8125B")
+Reported-by: Maxim Plotnikov <wgh@torlan.ru>
+Tested-by: Maxim Plotnikov <wgh@torlan.ru>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 7e0947e29..07d197141 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4051,9 +4051,17 @@ static int rtl8169_xmit_frags(struct rtl8169_private *tp, struct sk_buff *skb,
+ 	return -EIO;
+ }
+ 
+-static bool rtl_test_hw_pad_bug(struct rtl8169_private *tp, struct sk_buff *skb)
++static bool rtl_test_hw_pad_bug(struct rtl8169_private *tp)
+ {
+-	return skb->len < ETH_ZLEN && tp->mac_version == RTL_GIGA_MAC_VER_34;
++	switch (tp->mac_version) {
++	case RTL_GIGA_MAC_VER_34:
++	case RTL_GIGA_MAC_VER_60:
++	case RTL_GIGA_MAC_VER_61:
++	case RTL_GIGA_MAC_VER_63:
++		return true;
++	default:
++		return false;
++	}
+ }
+ 
+ static void rtl8169_tso_csum_v1(struct sk_buff *skb, u32 *opts)
+@@ -4125,7 +4133,7 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
+ 
+ 		opts[1] |= transport_offset << TCPHO_SHIFT;
+ 	} else {
+-		if (unlikely(rtl_test_hw_pad_bug(tp, skb)))
++		if (unlikely(skb->len < ETH_ZLEN && rtl_test_hw_pad_bug(tp)))
+ 			return !eth_skb_pad(skb);
+ 	}
+ 
+-- 
+2.29.2
+
+
