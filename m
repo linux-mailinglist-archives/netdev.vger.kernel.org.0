@@ -2,139 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 725192A4D95
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:55:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52FA22A4D9C
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:57:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728982AbgKCRzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 12:55:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
+        id S1728855AbgKCR5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:57:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725892AbgKCRzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:55:24 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875D5C0617A6;
-        Tue,  3 Nov 2020 09:55:24 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id x13so14247183pgp.7;
-        Tue, 03 Nov 2020 09:55:24 -0800 (PST)
+        with ESMTP id S1725892AbgKCR5K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:57:10 -0500
+Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2277DC0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:57:10 -0800 (PST)
+Received: by mail-vs1-xe41.google.com with SMTP id f7so4170410vsh.10
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:57:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UfD3DZODM1Q1zxavmaKnOkFrJJUUgVEN3r6HvS0z8PM=;
-        b=WSzueQjTb67p3RAUmPVtNMYtbe9KRxdBSSlIy2vcaAb8/CYv3lyYMX3+q4VxFbTnIB
-         iGZkpoaLP7QhUNj0D6CMea2aQO7Adp4hHA81IzZhe2O0tZf5QIGjwBFYcuMWleli7JSN
-         wamMk8SKrW6Y+M6DPfQDY22K/bDgiFb7nPhim0YD2dp5YopbT/3mB/zv+/X/W8IhJNEu
-         80HhvaPkWZQ7J3jOvgJIuba923Gd0EujFw8hqvgD5IMU5M0FYITPEwk4BLIU2TexyM+F
-         RZ6uHk6qzKdQ2Pydrr6AItrXCID+9OfzfVvHqQqgMyVsHrF/ye7xU0CizDRPj7v2IK1X
-         2s6g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Cmd/vHU2XpWN9RrkikP/uwzcHGztQHriQenbhifoFws=;
+        b=W0iZ2ViLtWiGtTh4tYyeDJSlRjuWrEiPeo9pyaiaeroAkDmBc1BIpf8HUF6uOc3PEv
+         L80UWx65jnFxKYYMS2SWdtr5iLvO3OjvhUduWd0TrBSB93wqKTMdoZBBIoBmcoTurlUa
+         uyLfEY5nW5an1PxqHpGCXvwavubfMieQmbi19LkWDEwqY9B39nMXnUxASOljucw3uQH4
+         VUdDQGs4YMuI/aI2731nXHL7al3f4uWSCy2/uy+j5yxVMnkDw/sJSmOR6SINVeOjQTWN
+         5wQKJy6ogYLCsidNhzl2MTBYahMH+niyTiYdeerSnzuOvXOEcI9bICh6HvlEI9hIpY3R
+         pErA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UfD3DZODM1Q1zxavmaKnOkFrJJUUgVEN3r6HvS0z8PM=;
-        b=YhBycLzkhmuuQAkrAQPCX9vj7Lz43+yHkZ2loAArv1GO2y6JjlBZORcRBDY3CYwDb1
-         jqN3JkY3nTAPyhPzpL4XFvjME4G831baFlB9rCZ0b8n/LHw5zMF6JlNAosNjN6/zcADW
-         9TRMkyVeIeEm+DcRpMzXjyRO+YpG5CdSKlZQmXbpE+nSWyHWB0zAR9LBWKkrgrq4/Y4z
-         2fK38gf9/ALDNsRFJOhHnKKidJa5/tXIMMwP7doVZELEaj21c7NC3s9/94sjxEQBcW9H
-         UXEibpRy4Y9sp+KQD8lvzNrC2cD4DR8b4zxzeosD4p+PwRvEveZGjam+0DMdjJAP9t3u
-         4tnw==
-X-Gm-Message-State: AOAM531iUsg56OxIH2JDvkIhNHGHGT3ml2+J/XvrkaTL1Ai7oHonnf/z
-        0mGs3+vzEsvKSgwc9GmJOfY=
-X-Google-Smtp-Source: ABdhPJwqeS2IsGQJlR2dpwxJHevHLWy3/K+zkzSe54oolrpTyMS/No2hq8Nhy+PmlepD9v1Lp+n0Rw==
-X-Received: by 2002:a17:90a:d503:: with SMTP id t3mr391414pju.10.1604426123982;
-        Tue, 03 Nov 2020 09:55:23 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:4055])
-        by smtp.gmail.com with ESMTPSA id 8sm4115739pjk.20.2020.11.03.09.55.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 09:55:22 -0800 (PST)
-Date:   Tue, 3 Nov 2020 09:55:20 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 08/11] libbpf: support BTF dedup of split BTFs
-Message-ID: <20201103175520.spqvqhohtnietnlt@ast-mbp.dhcp.thefacebook.com>
-References: <20201029005902.1706310-1-andrii@kernel.org>
- <20201029005902.1706310-9-andrii@kernel.org>
- <20201103051003.i565jv3ph54lw5rj@ast-mbp.dhcp.thefacebook.com>
- <CAEf4BzZV8oysWVmkF0K=FBFa5x=98duK8c+ixfiCFFP8dzWg2w@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Cmd/vHU2XpWN9RrkikP/uwzcHGztQHriQenbhifoFws=;
+        b=VferuKgv3oFKnCJbJT3kX4MO9tm/wB1+MRYcHhOOyuuQLgEKQ/B6zmuEJCGR4vohMc
+         Zoo+4bdSiYIOd+GajEcgEdWVQ8oDQu9IWMSItkbj0HyF3rtY1Gt8PRtmSjZyZEKJORXL
+         5GgDYnuC2QHCCC+rv2K2Qp0rHwuG+w7trHvlIbJUovm2ewTKm5SLNpoCFCOOk2qtU/Wj
+         ghxk+Aldri7x4eUGDbrYi3OipsZ+Jn6rwT6XoIPCAASKQ4kQnTEqSd4QOlmo3p+L3Iyu
+         AreqsMwgCT5s4UNBxPwhvuniH3teinzij6eNiIcq3xvCcEVG5Skt7ACguknJxVR9KuKh
+         r/yA==
+X-Gm-Message-State: AOAM532l/WDfabw01CH4PSTgr4wo4p6o/ymoFDQYEj8mh3YecVQqGfVW
+        OIIoMBPm41NZzMHgVFrYaShNOVOcfNc=
+X-Google-Smtp-Source: ABdhPJxeZavHEgzzVAnU/tPws1Es0L1TyMv6kLgaLMuKvZVAvINjzFgAKqtzGCfums8AwRtkCKYUaQ==
+X-Received: by 2002:a67:de03:: with SMTP id q3mr16643836vsk.40.1604426227824;
+        Tue, 03 Nov 2020 09:57:07 -0800 (PST)
+Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com. [209.85.217.47])
+        by smtp.gmail.com with ESMTPSA id g7sm1510314vsp.25.2020.11.03.09.57.02
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Nov 2020 09:57:04 -0800 (PST)
+Received: by mail-vs1-f47.google.com with SMTP id x11so7330183vsx.12
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:57:02 -0800 (PST)
+X-Received: by 2002:a67:c981:: with SMTP id y1mr17877861vsk.14.1604426222523;
+ Tue, 03 Nov 2020 09:57:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZV8oysWVmkF0K=FBFa5x=98duK8c+ixfiCFFP8dzWg2w@mail.gmail.com>
+References: <BYAPR18MB2679A2F3A2CE18CFA2427EEDC5110@BYAPR18MB2679.namprd18.prod.outlook.com>
+In-Reply-To: <BYAPR18MB2679A2F3A2CE18CFA2427EEDC5110@BYAPR18MB2679.namprd18.prod.outlook.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 3 Nov 2020 12:56:25 -0500
+X-Gmail-Original-Message-ID: <CA+FuTScwuWvbdZgAyVSzGnqsF=EzOMYwj4RbwjxCFoAQKG19OQ@mail.gmail.com>
+Message-ID: <CA+FuTScwuWvbdZgAyVSzGnqsF=EzOMYwj4RbwjxCFoAQKG19OQ@mail.gmail.com>
+Subject: Re: [net-next PATCH 2/3] octeontx2-af: Add devlink health reporters
+ for NPA
+To:     George Cherian <gcherian@marvell.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        "masahiroy@kernel.org" <masahiroy@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 02, 2020 at 10:27:20PM -0800, Andrii Nakryiko wrote:
-> On Mon, Nov 2, 2020 at 9:10 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
+On Tue, Nov 3, 2020 at 12:43 PM George Cherian <gcherian@marvell.com> wrote:
+>
+> Hi Willem,
+>
+>
+> > -----Original Message-----
+> > From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> > Sent: Tuesday, November 3, 2020 7:21 PM
+> > To: George Cherian <gcherian@marvell.com>
+> > Cc: Network Development <netdev@vger.kernel.org>; linux-kernel <linux-
+> > kernel@vger.kernel.org>; Jakub Kicinski <kuba@kernel.org>; David Miller
+> > <davem@davemloft.net>; Sunil Kovvuri Goutham
+> > <sgoutham@marvell.com>; Linu Cherian <lcherian@marvell.com>;
+> > Geethasowjanya Akula <gakula@marvell.com>; masahiroy@kernel.org
+> > Subject: [EXT] Re: [net-next PATCH 2/3] octeontx2-af: Add devlink health
+> > reporters for NPA
 > >
-> > On Wed, Oct 28, 2020 at 05:58:59PM -0700, Andrii Nakryiko wrote:
-> > > @@ -2942,6 +2948,13 @@ struct btf_dedup {
-> > >       __u32 *hypot_list;
-> > >       size_t hypot_cnt;
-> > >       size_t hypot_cap;
-> > > +     /* Whether hypothethical mapping, if successful, would need to adjust
-> > > +      * already canonicalized types (due to a new forward declaration to
-> > > +      * concrete type resolution). In such case, during split BTF dedup
-> > > +      * candidate type would still be considered as different, because base
-> > > +      * BTF is considered to be immutable.
-> > > +      */
-> > > +     bool hypot_adjust_canon;
+> > External Email
 > >
-> > why one flag per dedup session is enough?
-> 
-> So the entire hypot_xxx state is reset before each struct/union type
-> graph equivalence check. Then for each struct/union type we might do
-> potentially many type graph equivalence checks against each of
-> potential canonical (already deduplicated) struct. Let's keep that in
-> mind for the answer below.
-> 
-> > Don't you have a case where some fwd are pointing to base btf and shouldn't
-> > be adjusted while some are in split btf and should be?
-> > It seems when this flag is set to true it will miss fwd in split btf?
-> 
-> So keeping the above note in mind, let's think about this case. You
-> are saying that some FWDs would have candidates in base BTF, right?
-> That means that the canonical type we are checking equivalence against
-> has to be in the base BTF. That also means that all the canonical type
-> graph types are in the base BTF, right? Because no base BTF type can
-> reference types from split BTF. This, subsequently, means that no FWDs
-> from split BTF graph could have canonical matching types in split BTF,
-> because we are comparing split types against only base BTF types.
-> 
-> With that, if hypot_adjust_canon is triggered, *entire graph*
-> shouldn't be matched. No single type in that (connected) graph should
-> be matched to base BTF. We essentially pretend that canonical type
-> doesn't even exist for us (modulo the subtle bit of still recording
-> base BTF's FWD mapping to a concrete type in split BTF for FWD-to-FWD
-> resolution at the very end, we can ignore that here, though, it's an
-> ephemeral bookkeeping discarded after dedup).
-> 
-> In your example you worry about resolving FWD in split BTF to concrete
-> type in split BTF. If that's possible (i.e., we have duplicates and
-> enough information to infer the FWD-to-STRUCT mapping), then we'll
-> have another canonical type to compare against, at which point we'll
-> establish FWD-to-STRUCT mapping, like usual, and hypot_adjust_canon
-> will stay false (because we'll be staying with split BTF types only).
-> 
-> But honestly, with graphs it can get so complicated that I wouldn't be
-> surprised if I'm still missing something. So far, manually checking
-> the resulting BTF showed that generated deduped BTF types look
-> correct. Few cases where module BTFs had duplicated types from vmlinux
-> I was able to easily find where exactly vmlinux had FWD while modules
-> had STRUCT/UNION.
-> 
-> But also, by being conservative with hypot_adjust_canon, the worst
-> case would be slight duplication of types, which is not the end of the
-> world. Everything will keep working, no data will be corrupted, libbpf
-> will still perform CO-RE relocation correctly (because memory layout
-> of duplicated structs will be consistent across all copies, just like
-> it was with task_struct until ring_buffers were renamed).
+> > ----------------------------------------------------------------------
+> > > > >  static int rvu_devlink_info_get(struct devlink *devlink, struct
+> > > > devlink_info_req *req,
+> > > > >                                 struct netlink_ext_ack *extack)  { @@
+> > > > > -53,7 +483,8 @@ int rvu_register_dl(struct rvu *rvu)
+> > > > >         rvu_dl->dl = dl;
+> > > > >         rvu_dl->rvu = rvu;
+> > > > >         rvu->rvu_dl = rvu_dl;
+> > > > > -       return 0;
+> > > > > +
+> > > > > +       return rvu_health_reporters_create(rvu);
+> > > >
+> > > > when would this be called with rvu->rvu_dl == NULL?
+> > >
+> > > During initialization.
+> >
+> > This is the only caller, and it is only reached if rvu_dl is non-zero.
+>
+> Did you mean to ask, where is it de-initialized?
+> If so, it should be done in rvu_unregister_dl() after freeing rvu_dl.
 
-Yes. That last part is comforting. The explanation also makes sense.
-Not worried about it anymore.
+No, I meant that rvu_health_reporters_create does not need an
+!rvu->rvu_dl precondition test, as the only callers calls with with a
+non-zero rvu_dl.
