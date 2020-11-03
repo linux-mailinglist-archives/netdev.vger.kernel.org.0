@@ -2,109 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A29E2A4050
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 10:33:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AABE42A4077
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 10:41:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727246AbgKCJcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 04:32:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40408 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725993AbgKCJcq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 04:32:46 -0500
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 69A10223BD;
-        Tue,  3 Nov 2020 09:32:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604395965;
-        bh=IrV4h0rvAGQFEgmyY4cuxqFV+gpefvvnyQJqDUsME3A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1FEPBqXYPwCDlxZrsBNgbv2PQxi4axoAfn6avNNmtBODJlGOZb/OcadPpYwk2CR6o
-         cyuOSWUNaT+gmCmN/IsYKxix5LyehVhBY3imN8/P5g4eWmlAW48qcsczhDHgT1OC8/
-         MIRWMEVLNZ7OL+tWm3mo9pUHqIyF7JjP0DpMhzro=
-Date:   Tue, 3 Nov 2020 10:32:41 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Hayes Wang <hayeswang@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        Oliver Neukum <oliver@neukum.org>
-Subject: Re: [PATCH net-next v2] net/usb/r8153_ecm: support ECM mode for
- RTL8153
-Message-ID: <20201103093241.GA79239@kroah.com>
-References: <1394712342-15778-387-Taiwan-albertk@realtek.com>
- <1394712342-15778-388-Taiwan-albertk@realtek.com>
- <20201031160838.39586608@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <dc7fd1d4d1c544e8898224c7d9b54bda@realtek.com>
- <20201102114718.0118cc12@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201102114718.0118cc12@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        id S1726109AbgKCJl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 04:41:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725988AbgKCJl4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 04:41:56 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A236FC0613D1;
+        Tue,  3 Nov 2020 01:41:56 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id u4so1434343pgr.9;
+        Tue, 03 Nov 2020 01:41:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=71pEoABsLOEAuijMMTA3hRAUwqnBuXZOUGcdfoF5GQ0=;
+        b=UU1TEjmrUmCLXP6heyM5/FGX8qbADy9djjoC56rwgBHcyrdoRNlnQwbxEk/XHVAeI4
+         eciwHUQ9ovyn8rn+Id6xbj/UHY7xXp4lIZ88XuGigjExJZgFv0iBWZdRaESVnqJ3hV9z
+         HxX1oP9wHbYuEEBz9GmNHT5uN65QYuAHAk1it3sUxGwuvxefvjTX5JPtUGsYFH4fNYxQ
+         vVJ9dYPDVwr2xCNZKkXrUrCZLAJgbRxXG5f2LjrSTaouRm8BA/6RsptdHurCuSkH8NXG
+         SC7ZfBFU61Xj3NEcKcZhtGGJldKwOO8pv1zrB4DAkXi63jcX2rnchCZC/xpI45anfvSF
+         cJLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=71pEoABsLOEAuijMMTA3hRAUwqnBuXZOUGcdfoF5GQ0=;
+        b=LEoDVXftjfb5lIeRCz9ctZa6OJ5k882yhQ91b/gSX3GXH7Xr5AlAbw5ycrCVL3BQ1i
+         y9uHMQoaZs43+KlLaeq2IwvhhGt5kITh7mH1TMKIS0bXcwHq3fnYqT2uBbeKcQvrTiAV
+         mdSvdp08NrK4kpzI+++25oiIbhJzX6wCpO+pM09QP5PdsKJuHqD2VuVbUf47++2CGAxo
+         pMpj+tzoMS/h0Ad72lRvW9wKLzbsj7FDjWk1Hb2Ff9wCKLEuHSVgoSg9bAZj2x97Ixka
+         iXb11CWozQKoyQH7Vsu6Wmq7IXZIXUtYIZ/KeWApg3H5XtetfhAjz8rYIMdqV93KVATY
+         9IRQ==
+X-Gm-Message-State: AOAM530RiQ8oUQklI+yP9uhBXygKR88tEFYInGZEiFlqfErZ/mCM/hGJ
+        wceFPFm8/5MKWGWErw2MU++xlZa446BTcAKb9xc=
+X-Google-Smtp-Source: ABdhPJwu0zWoU0g7+5SWR2aoKpI3hIkyU6fCeF+qO7sLpaTKzMBfWWenvQFIOVymjzLG/C8/xmwbOw==
+X-Received: by 2002:a17:90a:540f:: with SMTP id z15mr2860609pjh.111.1604396516323;
+        Tue, 03 Nov 2020 01:41:56 -0800 (PST)
+Received: from VM.ger.corp.intel.com ([192.55.55.41])
+        by smtp.gmail.com with ESMTPSA id b16sm16419842pfp.195.2020.11.03.01.41.52
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 03 Nov 2020 01:41:55 -0800 (PST)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, andrii.nakryiko@gmail.com
+Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>, bpf@vger.kernel.org
+Subject: [PATCH bpf 0/2] libbpf: fix two bugs in xsk_socket__delete
+Date:   Tue,  3 Nov 2020 10:41:28 +0100
+Message-Id: <1604396490-12129-1-git-send-email-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 02, 2020 at 11:47:18AM -0800, Jakub Kicinski wrote:
-> On Mon, 2 Nov 2020 07:20:15 +0000 Hayes Wang wrote:
-> > Jakub Kicinski <kuba@kernel.org>
-> > > Can you describe the use case in more detail?
-> > > 
-> > > AFAICT r8152 defines a match for the exact same device.
-> > > Does it not mean that which driver is used will be somewhat random
-> > > if both are built?  
-> > 
-> > I export rtl_get_version() from r8152. It would return none zero
-> > value if r8152 could support this device. Both r8152 and r8153_ecm
-> > would check the return value of rtl_get_version() in porbe().
-> > Therefore, if rtl_get_version() return none zero value, the r8152
-> > is used for the device with vendor mode. Otherwise, the r8153_ecm
-> > is used for the device with ECM mode.
-> 
-> Oh, I see, I missed that the rtl_get_version() checking is the inverse
-> of r8152.
-> 
-> > > > +/* Define these values to match your device */
-> > > > +#define VENDOR_ID_REALTEK		0x0bda
-> > > > +#define VENDOR_ID_MICROSOFT		0x045e
-> > > > +#define VENDOR_ID_SAMSUNG		0x04e8
-> > > > +#define VENDOR_ID_LENOVO		0x17ef
-> > > > +#define VENDOR_ID_LINKSYS		0x13b1
-> > > > +#define VENDOR_ID_NVIDIA		0x0955
-> > > > +#define VENDOR_ID_TPLINK		0x2357  
-> > > 
-> > > $ git grep 0x2357 | grep -i tplink
-> > > drivers/net/usb/cdc_ether.c:#define TPLINK_VENDOR_ID	0x2357
-> > > drivers/net/usb/r8152.c:#define VENDOR_ID_TPLINK		0x2357
-> > > drivers/usb/serial/option.c:#define TPLINK_VENDOR_ID			0x2357
-> > > 
-> > > $ git grep 0x17ef | grep -i lenovo
-> > > drivers/hid/hid-ids.h:#define USB_VENDOR_ID_LENOVO		0x17ef
-> > > drivers/hid/wacom.h:#define USB_VENDOR_ID_LENOVO	0x17ef
-> > > drivers/net/usb/cdc_ether.c:#define LENOVO_VENDOR_ID	0x17ef
-> > > drivers/net/usb/r8152.c:#define VENDOR_ID_LENOVO		0x17ef
-> > > 
-> > > Time to consolidate those vendor id defines perhaps?  
-> > 
-> > It seems that there is no such header file which I could include
-> > or add the new vendor IDs.
-> 
-> Please create one. (Adding Greg KH to the recipients, in case there is
-> a reason that USB subsystem doesn't have a common vendor id header.)
+This small series fixes two bugs in xsk_socket__delete. Details can be
+found in the individual commit messages, but a brief summary follows:
 
-There is a reason, it's a nightmare to maintain and handle merges for,
-just don't do it.
+Patch 1: fix null pointer dereference in xsk_socket__delete
+Patch 2: fix possible use after free in xsk_socket__delete
 
-Read the comments at the top of the pci_ids.h file if you are curious
-why we don't even do this for PCI device ids anymore for the past 10+
-years.
+This patch has been applied against commit 7a078d2d1880 ("libbpf, hashmap: Fix undefined behavior in hash_bits")
 
-So no, please do not create such a common file, it is not needed or a
-good idea.
+Thanks: Magnus
 
-thanks,
+Magnus Karlsson (2):
+  libbpf: fix null dereference in xsk_socket__delete
+  libbpf: fix possible use after free in xsk_socket__delete
 
-greg k-h
+ tools/lib/bpf/xsk.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+--
+2.7.4
