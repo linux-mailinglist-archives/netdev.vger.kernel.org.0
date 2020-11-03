@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EE742A3D39
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:11:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3CBB2A3D3F
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:12:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727858AbgKCHLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 02:11:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725982AbgKCHLe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 02:11:34 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB5F0C0617A6;
-        Mon,  2 Nov 2020 23:11:33 -0800 (PST)
+        id S1727883AbgKCHLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 02:11:38 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:36044 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725982AbgKCHLg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 02:11:36 -0500
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1604387492;
+        s=2020; t=1604387493;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=0WvRjZxoo+9YpglRSESGC1vfSq5rEcg2GmTXUWl/1WQ=;
-        b=G8CNIqLZ2iso1f9p14OLOg4My7ArsrtEGsLQrIOZ6UxjQ7MVQ+HnaSolgFpT6otCyFaLbI
-        4gx++ke+l8OXBF3Y6wyyjy/NbHmaSSMlX/Kq4b7z2O+OxpM/y4Kgv2MNjC37Qxw26xqlvX
-        i3J11hkZO5RwF2iFi4S1kdB0vrO4C63aUE+2iNJm2M31HV+z6Ov9zG148jMdsY8S1fJCFl
-        83QG+DIjU/XoWJLzImrPkROR/J3u/pAMTSCtygOppBRM6mxcVVqATJ2ALj2BhUTXTKvtww
-        c1lIkKLBCyuH3ZRCU8PkOMOTUZhBsqdB58aqLuB/7Pfjo6lxPKRckdBbkDHifA==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8Cb5CPMyks0SNB+anMkVChyamq93YSY47XdhZK036tQ=;
+        b=a2bw4C3egCxmI3MpTtpQ5SZGc8s5gU/uaF+nMRf6XiVvRCHUsBvvtfQ+RV2jlNiMF4zvEK
+        fB3sZmXWgiuHvb414m0zNbkaUUWoO0k5vAePsCbMIOU4grFovlwa+yfWPVSxVN8NSgQveC
+        degUfMxYIO944mrpKT05WH9F7sMbVv6z9HGfUuv3BxyZAMO7UCm8Ae8HbPrR5oj4kw6jPU
+        7+gQqcqSQUlc5PmpSpPTwWCXI8OQ9+iRbQFUa95SGHZU/yIJ0ou0Kl4QP7FvRhUOcwcEHb
+        /KvSum90dkrSnijwDnZvs7c5OVb8Daj51IUdW44nEcXGkpSuM7vPoNeLmQJi7A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1604387492;
+        s=2020e; t=1604387493;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=0WvRjZxoo+9YpglRSESGC1vfSq5rEcg2GmTXUWl/1WQ=;
-        b=JlWWglN+Yi/++jXgkoEokSkN+gSitzLmiiXBjEbr4Hu/anTog1zkE+dcI19R0PPwW8pMx3
-        liJNDpOS7HEC5jBw==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8Cb5CPMyks0SNB+anMkVChyamq93YSY47XdhZK036tQ=;
+        b=K+F4D+7ptL7ZpROW/qkkRoTYO201/Ij54pjn5Iqh1vPrqHRrIaENxh0DEWPr4xL7wHMdVS
+        JfzBr53w/aqqYeAQ==
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -45,158 +44,154 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Richard Cochran <richardcochran@gmail.com>,
         Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
         ilias.apalodimas@linaro.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH net-next v8 0/8] Hirschmann Hellcreek DSA driver
-Date:   Tue,  3 Nov 2020 08:10:53 +0100
-Message-Id: <20201103071101.3222-1-kurt@linutronix.de>
+Subject: [PATCH net-next v8 1/8] net: dsa: Add tag handling for Hirschmann Hellcreek switches
+Date:   Tue,  3 Nov 2020 08:10:54 +0100
+Message-Id: <20201103071101.3222-2-kurt@linutronix.de>
+In-Reply-To: <20201103071101.3222-1-kurt@linutronix.de>
+References: <20201103071101.3222-1-kurt@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The Hirschmann Hellcreek TSN switches have a special tagging protocol for frames
+exchanged between the CPU port and the master interface. The format is a one
+byte trailer indicating the destination or origin port.
 
-this series adds a DSA driver for the Hirschmann Hellcreek TSN switch
-IP. Characteristics of that IP:
+It's quite similar to the Micrel KSZ tagging. That's why the implementation is
+based on that code.
 
- * Full duplex Ethernet interface at 100/1000 Mbps on three ports
- * IEEE 802.1Q-compliant Ethernet Switch
- * IEEE 802.1Qbv Time-Aware scheduling support
- * IEEE 1588 and IEEE 802.1AS support
-
-That IP is used e.g. in
-
- https://www.arrow.com/en/campaigns/arrow-kairos
-
-Due to the hardware setup the switch driver is implemented using DSA. A special
-tagging protocol is leveraged. Furthermore, this driver supports PTP and
-hardware timestamping.
-
-This work is part of the AccessTSN project: https://www.accesstsn.com/
-
-The previous versions can be found here:
-
- * https://lkml.kernel.org/netdev/20200618064029.32168-1-kurt@linutronix.de/
- * https://lkml.kernel.org/netdev/20200710113611.3398-1-kurt@linutronix.de/
- * https://lkml.kernel.org/netdev/20200723081714.16005-1-kurt@linutronix.de/
- * https://lkml.kernel.org/netdev/20200820081118.10105-1-kurt@linutronix.de/
- * https://lkml.kernel.org/netdev/20200901125014.17801-1-kurt@linutronix.de/
- * https://lkml.kernel.org/netdev/20200904062739.3540-1-kurt@linutronix.de/
- * https://lkml.kernel.org/netdev/20201004112911.25085-1-kurt@linutronix.de/
- * https://lkml.kernel.org/netdev/20201028074221.29326-1-kurt@linutronix.de/
-
-Changes since v7:
-
- * Simplify tagging code (rebase to net-next)
- * Pass info instead of ptr (Florian Fainelli)
- * Fix yamllint warnings (Rob Herring)
-
-Changes since v6:
-
- * Add .tail_tag = true (Vladimir Oltean)
- * Fix vlan_filtering=0 bridges (Vladimir Oltean)
- * Enforce restrictions (Vladimir Oltean)
- * Sort stuff alphabetically (Vladimir Oltean)
- * Rename hellcreek.yaml to hirschmann,hellcreek.yaml
- * Typo fixes
-
-Changes since v5:
-
- * Implement configure_vlan_while_not_filtering behavior (Vladimir Oltean)
- * Minor cleanups
-
-Changes since v4:
-
- * Fix W=1 compiler warnings (kernel test robot)
- * Add tags
-
-Changes since v3:
-
- * Drop TAPRIO support (David Miller)
-   => Switch to mutexes due to the lack of hrtimers
- * Use more specific compatible strings and add platform data (Andrew Lunn)
- * Fix Kconfig ordering (Andrew Lunn)
-
-Changes since v2:
-
- * Make it compile by getting all requirements merged first (Jakub Kicinski, David Miller)
- * Use "tsn" for TSN register set (Rob Herring)
- * Fix DT binding issues (Rob Herring)
-
-Changes since v1:
-
- * Code simplifications (Florian Fainelli, Vladimir Oltean)
- * Fix issues with hellcreek.yaml bindings (Florian Fainelli)
- * Clear reserved field in ptp v2 event messages (Richard Cochran)
- * Make use of generic ptp parsing function (Richard Cochran, Vladimir Oltean)
- * Fix Kconfig (Florian Fainelli)
- * Add tags (Florian Fainelli, Rob Herring, Richard Cochran) 
-
-Changes since RFC ordered by reviewers:
-
- * Andrew Lunn
-   * Use dev_dbg for debug messages
-   * Get rid of __ function names where possible
-   * Use reverse xmas tree variable ordering
-   * Remove redundant/useless checks
-   * Improve comments e.g. for PTP
-   * Fix Kconfig ordering
-   * Make LED handling more generic and provide info via DT
-   * Setup advertisement of PHYs according to hardware
-   * Drop debugfs patch
- * Jakub Kicinski
-   * Fix compiler warnings
- * Florian Fainelli
-   * Switch to YAML DT bindings
- * Richard Cochran
-   * Fix typo
-   * Add missing NULL checks
-
-Kamil Alkhouri (2):
-  net: dsa: hellcreek: Add PTP clock support
-  net: dsa: hellcreek: Add support for hardware timestamping
-
-Kurt Kanzenbach (5):
-  net: dsa: Add tag handling for Hirschmann Hellcreek switches
-  net: dsa: Add DSA driver for Hirschmann Hellcreek switches
-  net: dsa: hellcreek: Add PTP status LEDs
-  dt-bindings: Add vendor prefix for Hirschmann
-  dt-bindings: net: dsa: Add documentation for Hellcreek switches
-
-Vladimir Oltean (1):
-  net: dsa: Give drivers the chance to veto certain upper devices
-
- .../net/dsa/hirschmann,hellcreek.yaml         |  127 ++
- .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
- drivers/net/dsa/Kconfig                       |    2 +
- drivers/net/dsa/Makefile                      |    1 +
- drivers/net/dsa/hirschmann/Kconfig            |    9 +
- drivers/net/dsa/hirschmann/Makefile           |    5 +
- drivers/net/dsa/hirschmann/hellcreek.c        | 1339 +++++++++++++++++
- drivers/net/dsa/hirschmann/hellcreek.h        |  286 ++++
- .../net/dsa/hirschmann/hellcreek_hwtstamp.c   |  479 ++++++
- .../net/dsa/hirschmann/hellcreek_hwtstamp.h   |   58 +
- drivers/net/dsa/hirschmann/hellcreek_ptp.c    |  452 ++++++
- drivers/net/dsa/hirschmann/hellcreek_ptp.h    |   76 +
- .../platform_data/hirschmann-hellcreek.h      |   23 +
- include/net/dsa.h                             |    8 +
- net/dsa/Kconfig                               |    6 +
- net/dsa/Makefile                              |    1 +
- net/dsa/slave.c                               |   12 +
- net/dsa/tag_hellcreek.c                       |   66 +
- 18 files changed, 2952 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
- create mode 100644 drivers/net/dsa/hirschmann/Kconfig
- create mode 100644 drivers/net/dsa/hirschmann/Makefile
- create mode 100644 drivers/net/dsa/hirschmann/hellcreek.c
- create mode 100644 drivers/net/dsa/hirschmann/hellcreek.h
- create mode 100644 drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c
- create mode 100644 drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h
- create mode 100644 drivers/net/dsa/hirschmann/hellcreek_ptp.c
- create mode 100644 drivers/net/dsa/hirschmann/hellcreek_ptp.h
- create mode 100644 include/linux/platform_data/hirschmann-hellcreek.h
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+---
+ include/net/dsa.h       |  2 ++
+ net/dsa/Kconfig         |  6 ++++
+ net/dsa/Makefile        |  1 +
+ net/dsa/tag_hellcreek.c | 66 +++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 75 insertions(+)
  create mode 100644 net/dsa/tag_hellcreek.c
 
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 35429a140dfa..04e93bafb7bd 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -45,6 +45,7 @@ struct phylink_link_state;
+ #define DSA_TAG_PROTO_OCELOT_VALUE		15
+ #define DSA_TAG_PROTO_AR9331_VALUE		16
+ #define DSA_TAG_PROTO_RTL4_A_VALUE		17
++#define DSA_TAG_PROTO_HELLCREEK_VALUE		18
+ 
+ enum dsa_tag_protocol {
+ 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
+@@ -65,6 +66,7 @@ enum dsa_tag_protocol {
+ 	DSA_TAG_PROTO_OCELOT		= DSA_TAG_PROTO_OCELOT_VALUE,
+ 	DSA_TAG_PROTO_AR9331		= DSA_TAG_PROTO_AR9331_VALUE,
+ 	DSA_TAG_PROTO_RTL4_A		= DSA_TAG_PROTO_RTL4_A_VALUE,
++	DSA_TAG_PROTO_HELLCREEK		= DSA_TAG_PROTO_HELLCREEK_VALUE,
+ };
+ 
+ struct packet_type;
+diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
+index 1f9b9b11008c..d975614f7dd6 100644
+--- a/net/dsa/Kconfig
++++ b/net/dsa/Kconfig
+@@ -56,6 +56,12 @@ config NET_DSA_TAG_BRCM_PREPEND
+ 	  Broadcom switches which places the tag before the Ethernet header
+ 	  (prepended).
+ 
++config NET_DSA_TAG_HELLCREEK
++	tristate "Tag driver for Hirschmann Hellcreek TSN switches"
++	help
++	  Say Y or M if you want to enable support for tagging frames
++	  for the Hirschmann Hellcreek TSN switches.
++
+ config NET_DSA_TAG_GSWIP
+ 	tristate "Tag driver for Lantiq / Intel GSWIP switches"
+ 	help
+diff --git a/net/dsa/Makefile b/net/dsa/Makefile
+index 4f47b2025ff5..e25d5457964a 100644
+--- a/net/dsa/Makefile
++++ b/net/dsa/Makefile
+@@ -10,6 +10,7 @@ obj-$(CONFIG_NET_DSA_TAG_BRCM_COMMON) += tag_brcm.o
+ obj-$(CONFIG_NET_DSA_TAG_DSA) += tag_dsa.o
+ obj-$(CONFIG_NET_DSA_TAG_EDSA) += tag_edsa.o
+ obj-$(CONFIG_NET_DSA_TAG_GSWIP) += tag_gswip.o
++obj-$(CONFIG_NET_DSA_TAG_HELLCREEK) += tag_hellcreek.o
+ obj-$(CONFIG_NET_DSA_TAG_KSZ) += tag_ksz.o
+ obj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o
+ obj-$(CONFIG_NET_DSA_TAG_LAN9303) += tag_lan9303.o
+diff --git a/net/dsa/tag_hellcreek.c b/net/dsa/tag_hellcreek.c
+new file mode 100644
+index 000000000000..2061de06eafb
+--- /dev/null
++++ b/net/dsa/tag_hellcreek.c
+@@ -0,0 +1,66 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * net/dsa/tag_hellcreek.c - Hirschmann Hellcreek switch tag format handling
++ *
++ * Copyright (C) 2019,2020 Linutronix GmbH
++ * Author Kurt Kanzenbach <kurt@linutronix.de>
++ *
++ * Based on tag_ksz.c.
++ */
++
++#include <linux/etherdevice.h>
++#include <linux/list.h>
++#include <linux/slab.h>
++#include <net/dsa.h>
++
++#include "dsa_priv.h"
++
++#define HELLCREEK_TAG_LEN	1
++
++static struct sk_buff *hellcreek_xmit(struct sk_buff *skb,
++				      struct net_device *dev)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	u8 *tag;
++
++	/* Tag encoding */
++	tag  = skb_put(skb, HELLCREEK_TAG_LEN);
++	*tag = BIT(dp->index);
++
++	return skb;
++}
++
++static struct sk_buff *hellcreek_rcv(struct sk_buff *skb,
++				     struct net_device *dev,
++				     struct packet_type *pt)
++{
++	/* Tag decoding */
++	u8 *tag = skb_tail_pointer(skb) - HELLCREEK_TAG_LEN;
++	unsigned int port = tag[0] & 0x03;
++
++	skb->dev = dsa_master_find_slave(dev, 0, port);
++	if (!skb->dev) {
++		netdev_warn(dev, "Failed to get source port: %d\n", port);
++		return NULL;
++	}
++
++	pskb_trim_rcsum(skb, skb->len - HELLCREEK_TAG_LEN);
++
++	skb->offload_fwd_mark = true;
++
++	return skb;
++}
++
++static const struct dsa_device_ops hellcreek_netdev_ops = {
++	.name	  = "hellcreek",
++	.proto	  = DSA_TAG_PROTO_HELLCREEK,
++	.xmit	  = hellcreek_xmit,
++	.rcv	  = hellcreek_rcv,
++	.overhead = HELLCREEK_TAG_LEN,
++	.tail_tag = true,
++};
++
++MODULE_LICENSE("Dual MIT/GPL");
++MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_HELLCREEK);
++
++module_dsa_tag_driver(hellcreek_netdev_ops);
 -- 
 2.20.1
 
