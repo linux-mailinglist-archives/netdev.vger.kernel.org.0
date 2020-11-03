@@ -2,165 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EC902A3D6E
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:17:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB4BE2A3D9A
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:24:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727529AbgKCHRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 02:17:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725982AbgKCHRu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 02:17:50 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF34C0617A6;
-        Mon,  2 Nov 2020 23:17:50 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id t11so17075382edj.13;
-        Mon, 02 Nov 2020 23:17:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sOrF5iWjGjOzJ1bbgB7wrTZUY6Er8KaofzgtHlCj1a0=;
-        b=Gu4XTBa07Sguxh94nqgkLzd7ozNIPwzQwjjlAIWmOEq8nApZCuAXI39gEfJYKxEFTq
-         1Ge4fhVxlm+DYOkqxxAkb4Lo4Z2LQ+jqRABLaPDUhF7fgTF+x1hZIksP1sHVeX4lzAdj
-         ttCm39GOONS2Nb5NveKRhmOPTvS8dk7o2XscQJjov8qUd0KFNmHAVtgersd+CC4XBigS
-         QXv1PZ8BTYt2/h3I1UH0P6wegPVTiiGWWlRrforvDlaG6uCZrFA9WaAgeNBdD+Fz7Cd9
-         Mw7VoskiXwRBH9TU+JNNqQ99wMR3IIDE1EN32KuWKzCLtz3FlvtX8BEjMpkVQqimrgpA
-         +1ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sOrF5iWjGjOzJ1bbgB7wrTZUY6Er8KaofzgtHlCj1a0=;
-        b=bB31SUYXJn7Dd/PUfChPPzmO2LHo4JE56RyWM+SIoZYJ5BFn7JvMp8Xb6JUHUh0rCc
-         zu2T/HssyIpzGp1h+jZE0CZ+YlG9eNxZQ4Q/QNK2BYkz61ZvlHCAMnLTJ2IPV6n9efMi
-         h5IcYv/rKfAnK1y7etwZGSmGitp8ROPzD1AmiLMuF+4pfVQLmlz5sCIi6ne6g/3DX7sx
-         F13buFdMu3IQrdqzNN9rmzDRDup+LvVwp3RjrDumb2c1EOZS2G3CHqU+3iHCnvA4S8bH
-         pdk39RrZ0VCViMd/SgOo/XtYj3+arD8Y1xx3T5MJBpMr1VdPiWBVQbUy7d243EwW/Nrv
-         2CAA==
-X-Gm-Message-State: AOAM530qy10IW/Wn/FQ/l8W5a/5LkRQE+47U6bEkeef6b17o6hpa3zPk
-        TNbARobQ2sRiTosEp+7gSxo=
-X-Google-Smtp-Source: ABdhPJwEYf7p2R4I9Sp6MVwGjitY5/+WrVY7LzBa7Ch9I/HHrqaNgp9EIS4u7M5n4eeLzY42kimKEQ==
-X-Received: by 2002:a05:6402:1d13:: with SMTP id dg19mr20755551edb.217.1604387868615;
-        Mon, 02 Nov 2020 23:17:48 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id a10sm377628edn.77.2020.11.02.23.17.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 23:17:48 -0800 (PST)
-Date:   Tue, 3 Nov 2020 09:17:45 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v8 1/8] net: dsa: Add tag handling for
- Hirschmann Hellcreek switches
-Message-ID: <20201103071745.upspd7trljbrvonv@skbuf>
-References: <20201103071101.3222-1-kurt@linutronix.de>
- <20201103071101.3222-2-kurt@linutronix.de>
+        id S1727812AbgKCHYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 02:24:46 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:7447 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725958AbgKCHYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 02:24:46 -0500
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CQLrn1HbCzhd5q;
+        Tue,  3 Nov 2020 15:24:41 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 3 Nov 2020 15:24:32 +0800
+Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
+ <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
+ <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
+ <1f8ebcde-f5ff-43df-960e-3661706e8d04@huawei.com>
+ <CAM_iQpUm91x8Q0G=CXE7S43DKryABkyMTa4mz_oEfEOTFS7BgQ@mail.gmail.com>
+ <db770012-f22c-dff4-5311-bf4d17cd08e3@huawei.com>
+ <CAM_iQpUBytX3qim3rXLkwjdX3DSKeF8YhyX6o=Jwr-R9Onb-HA@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <5472023c-b50b-0cb3-4cb6-7bbea42d3612@huawei.com>
+Date:   Tue, 3 Nov 2020 15:24:32 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201103071101.3222-2-kurt@linutronix.de>
+In-Reply-To: <CAM_iQpUBytX3qim3rXLkwjdX3DSKeF8YhyX6o=Jwr-R9Onb-HA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 08:10:54AM +0100, Kurt Kanzenbach wrote:
-> The Hirschmann Hellcreek TSN switches have a special tagging protocol for frames
-> exchanged between the CPU port and the master interface. The format is a one
-> byte trailer indicating the destination or origin port.
+On 2020/11/3 0:55, Cong Wang wrote:
+> On Fri, Oct 30, 2020 at 12:38 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>
+>> On 2020/10/30 3:05, Cong Wang wrote:
+>>>
+>>> I do not see how and why it should. synchronize_net() is merely an optimized
+>>> version of synchronize_rcu(), it should wait for RCU readers, softirqs are not
+>>> necessarily RCU readers, net_tx_action() does not take RCU read lock either.
+>>
+>> Ok, make sense.
+>>
+>> Taking RCU read lock in net_tx_action() does not seems to solve the problem,
+>> what about the time window between __netif_reschedule() and net_tx_action()?
+>>
+>> It seems we need to re-dereference the qdisc whenever RCU read lock is released
+>> and qdisc is still in sd->output_queue or wait for the sd->output_queue to drain?
 > 
-> It's quite similar to the Micrel KSZ tagging. That's why the implementation is
-> based on that code.
+> Not suggesting you to take RCU read lock. We already wait for TX action with
+> a loop of sleep. To me, the only thing missing is just moving the
+> reset after that
+> wait.
+
+__QDISC_STATE_SCHED is cleared before calling qdisc_run() in net_tx_action(),
+some_qdisc_is_busy does not seem to wait fully for TX action, at least
+qdisc is still being accessed even if __QDISC_STATE_DEACTIVATED is set.
+
 > 
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-> ---
-> diff --git a/net/dsa/tag_hellcreek.c b/net/dsa/tag_hellcreek.c
-> new file mode 100644
-> index 000000000000..2061de06eafb
-> --- /dev/null
-> +++ b/net/dsa/tag_hellcreek.c
-> @@ -0,0 +1,66 @@
-> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> +/*
-> + * net/dsa/tag_hellcreek.c - Hirschmann Hellcreek switch tag format handling
-> + *
-> + * Copyright (C) 2019,2020 Linutronix GmbH
-> + * Author Kurt Kanzenbach <kurt@linutronix.de>
-> + *
-> + * Based on tag_ksz.c.
-> + */
-> +
-> +#include <linux/etherdevice.h>
-> +#include <linux/list.h>
-> +#include <linux/slab.h>
-
-You probably don't need these includes any longer, but you don't have to
-resend this series just to remove them, you could do that afterwards.
-
-> +#include <net/dsa.h>
-> +
-> +#include "dsa_priv.h"
-> +
-> +#define HELLCREEK_TAG_LEN	1
-> +
-> +static struct sk_buff *hellcreek_xmit(struct sk_buff *skb,
-> +				      struct net_device *dev)
-> +{
-> +	struct dsa_port *dp = dsa_slave_to_port(dev);
-> +	u8 *tag;
-> +
-> +	/* Tag encoding */
-> +	tag  = skb_put(skb, HELLCREEK_TAG_LEN);
-> +	*tag = BIT(dp->index);
-> +
-> +	return skb;
-> +}
-> +
-> +static struct sk_buff *hellcreek_rcv(struct sk_buff *skb,
-> +				     struct net_device *dev,
-> +				     struct packet_type *pt)
-> +{
-> +	/* Tag decoding */
-> +	u8 *tag = skb_tail_pointer(skb) - HELLCREEK_TAG_LEN;
-> +	unsigned int port = tag[0] & 0x03;
-> +
-> +	skb->dev = dsa_master_find_slave(dev, 0, port);
-> +	if (!skb->dev) {
-> +		netdev_warn(dev, "Failed to get source port: %d\n", port);
-> +		return NULL;
-> +	}
-> +
-> +	pskb_trim_rcsum(skb, skb->len - HELLCREEK_TAG_LEN);
-> +
-> +	skb->offload_fwd_mark = true;
-> +
-> +	return skb;
-> +}
-> +
-> +static const struct dsa_device_ops hellcreek_netdev_ops = {
-> +	.name	  = "hellcreek",
-> +	.proto	  = DSA_TAG_PROTO_HELLCREEK,
-> +	.xmit	  = hellcreek_xmit,
-> +	.rcv	  = hellcreek_rcv,
-> +	.overhead = HELLCREEK_TAG_LEN,
-> +	.tail_tag = true,
-> +};
-> +
-> +MODULE_LICENSE("Dual MIT/GPL");
-> +MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_HELLCREEK);
-> +
-> +module_dsa_tag_driver(hellcreek_netdev_ops);
-> -- 
-> 2.20.1
+> 
+>>>>>> If we do any additional reset that is not related to qdisc in dev_reset_queue(), we
+>>>>>> can move it after some_qdisc_is_busy() checking.
+>>>>>
+>>>>> I am not suggesting to do an additional reset, I am suggesting to move
+>>>>> your reset after the busy waiting.
+>>>>
+>>>> There maybe a deadlock here if we reset the qdisc after the some_qdisc_is_busy() checking,
+>>>> because some_qdisc_is_busy() may require the qdisc reset to clear the skb, so that
+>>>
+>>> some_qdisc_is_busy() checks the status of qdisc, not the skb queue.
+>>
+>> Is there any reason why we do not check the skb queue in the dqisc?
+>> It seems there may be skb left when netdev is deactivated, maybe at least warn
+>> about that when there is still skb left when netdev is deactivated?
+>> Is that why we call qdisc_reset() to clear the leftover skb in qdisc_destroy()?
+>>
+>>>
+>>>
+>>>> some_qdisc_is_busy() can return false. I am not sure this is really a problem, but
+>>>> sch_direct_xmit() may requeue the skb when dev_hard_start_xmit return TX_BUSY.
+>>>
+>>> Sounds like another reason we should move the reset as late as possible?
+>>
+>> Why?
+> 
+> You said "sch_direct_xmit() may requeue the skb", I agree. I assume you mean
+> net_tx_action() calls sch_direct_xmit() which does the requeue then races with
+> reset. No?
 > 
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Look at current code again, I think there is no race between sch_direct_xmit()
+in net_tx_action() and dev_reset_queue() in dev_deactivate_many(), because
+qdisc_lock(qdisc) or qdisc->seqlock has been taken when calling sch_direct_xmit()
+or dev_reset_queue().
+
+
+> 
+>>
+>> There current netdev down order is mainly below:
+>>
+>> netif_tx_stop_all_queues()
+>>
+>> dev_deactivate_queue()
+>>
+>> synchronize_net()
+>>
+>> dev_reset_queue()
+>>
+>> some_qdisc_is_busy()
+>>
+>>
+>> You suggest to change it to below order, right?
+>>
+>> netif_tx_stop_all_queues()
+>>
+>> dev_deactivate_queue()
+>>
+>> synchronize_net()
+>>
+>> some_qdisc_is_busy()
+>>
+>> dev_reset_queue()
+> 
+> Yes.
+> 
+>>
+>>
+>> What is the semantics of some_qdisc_is_busy()?
+> 
+> Waiting for flying TX action.
+
+It wait for __QDISC_STATE_SCHED to clear and qdisc running to finish, but
+there is still time window between __QDISC_STATE_SCHED clearing and qdisc
+running, right?
+
+> 
+>> From my understanding, we can do anything about the old qdisc (including
+>> destorying the old qdisc) after some_qdisc_is_busy() return false.
+> 
+> But the current code does the reset _before_ some_qdisc_is_busy(). ;)
+
+If lock is taken when doing reset, it does not matter if the reset is
+before some_qdisc_is_busy(), right?
+
+> 
+> Thanks.
+> .
+> 
