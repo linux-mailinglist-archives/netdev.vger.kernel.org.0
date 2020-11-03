@@ -2,165 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 665DD2A4A38
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 16:44:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F6DC2A4A3C
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 16:45:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728267AbgKCPov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 10:44:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59130 "EHLO
+        id S1728317AbgKCPp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 10:45:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727883AbgKCPov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 10:44:51 -0500
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5885C0613D1;
-        Tue,  3 Nov 2020 07:44:50 -0800 (PST)
-Received: by mail-io1-xd41.google.com with SMTP id j12so4269417iow.0;
-        Tue, 03 Nov 2020 07:44:50 -0800 (PST)
+        with ESMTP id S1728083AbgKCPp2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 10:45:28 -0500
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77773C0617A6
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 07:45:28 -0800 (PST)
+Received: by mail-qv1-xf41.google.com with SMTP id d1so7324786qvl.6
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 07:45:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KrZAsJ+84f6f17H2kWvL1rr4BgKZ82QM8UyFCgrCSjY=;
-        b=LTHE7k7LtIvcchE6ZHPiOk4V+Z2pDr0rl08VSiCIMdHtemzIvXX10N9gervkDOpgrw
-         HmX0G0MUC2RkrvVwVUW+MxWOWtyBGlQQed7VMTjWg1+lzWmPxXdzaxa1PWx8oczRpbUC
-         lwi23OL+XARPwDtSMFr6yJZhRahMyyJDXpUR89aBiqKFUHZRycXKD8WQfaMYSNKw+W/S
-         NLdYdurYp8vGpqJ+xFRXt5lRdSgbh5wtW5tc2w1vgXGvoYGKdsQigJxOXJLWiIUNlrpk
-         ylxic3lr9ig8uLviJ4vLozfgaHQbs0xY0A1GWV/JRZbP1/5ShyxtuVJBtKrgFsitxba6
-         qrww==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3wr/kJnGgJjVXv4j45gSDlCME78066E7KvOsuCGgBYM=;
+        b=bXh9b8/hy2W1iREgfIgRL7uYM/L1Ff8B9CaIV6+KCI8gFvzb85lcJYfuJ5NY8YM6HN
+         6PlIZC0SPiwCFiw8Blk+jDBqs35i6186Hb86cZfS5h+eFELZuWe7fyMKWe53fQ/2UGC3
+         SU9cUPhpEpZ8OsFMd0f2KKz243+57XxdbO6nwIYYW8jcUjqH69YHiRUAqi8pflCezl+3
+         8N0r5qPYKh5qXwuFg6RZI9pb0XDami7XP/r1GnVMt4Z/0Betcmrh1Mfz9PfQjb5y2nuZ
+         MJhW02wMuv1uEgAsOcM62B+EB8XlwEVd0eFn5V8VZfqER2BocXGduwInbJ0p92DXG0ri
+         SdaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KrZAsJ+84f6f17H2kWvL1rr4BgKZ82QM8UyFCgrCSjY=;
-        b=rrmK4w6/Av1tBJ07JDh5QoGstBFoTbBmYcvjhETuLrzNQDows96nVAthNJgohaZ8jk
-         izik49qC805WGk+/wZ67H/tyazi6/dRVF3CBzFjpTZv4XARbcCcB9VZwnf9eNpajt2ge
-         qKvxMhC5b9ivbHFprK5wq6Qh0VQvryhCmR5bz7gXPq5pcOhz2B4rWJomg7G31+vUzzId
-         8wleCIEFFAEZQWzFu2Xzg7uVOekpX9W+ZkePgI85iTUG+9iFhxsQGE4GX/jbi2kr+A63
-         Giv+W6kTzydrcp1mywkOk9v3BaeaI1cI02qlt197CtXvKwCg3BhA0UmsS5rdiNKw7pVD
-         5frA==
-X-Gm-Message-State: AOAM531hTAC6r9HmKeLm5ouIlDBEe3IxHVd4cBMzP07D8GALeSLviHXF
-        wMEqFVbw+mguINWqOzGNQlVmeYSSLSSpWSuB/qY=
-X-Google-Smtp-Source: ABdhPJxiDa7bDkPP9H/vTqWiBLfCyaOSfPJgX+QT8Io+t03Q5jNPsTxykPN8E3XkbS9CD1+cFvk3n/O/5IwOVvY4Rgs=
-X-Received: by 2002:a6b:b2c4:: with SMTP id b187mr14612595iof.187.1604418290238;
- Tue, 03 Nov 2020 07:44:50 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3wr/kJnGgJjVXv4j45gSDlCME78066E7KvOsuCGgBYM=;
+        b=tqYiEe7gVmUcqwBPXdm0RxBIjoe6fRFCogLNPv+rT0yvtslU1aAVpzXQ03JuPgYuSg
+         O2UU36rUWIh3vY3ZNHE1+VNVHF1OnwfTd/OWmf3WIaW/3ELfBZXBKeIS6pcm6QhbK5Zv
+         EDRDVysCxShHbazJpTkCK05RMI9RcXeYendDUDdnQ3bivtcibsGeH/3kfpL5rxqFr6kf
+         dNmMTI6aTLsS9ueAK0EQoYGc4Ki+KvvmRCGyhFUQBJlkCM84wppj6E1iLxnkEgvnbf3z
+         x6RIfqyXnZCMSc/vRnxoJUTTwd8PHQx40YdbqoPX+8H9NVyK+KWXTC35dytOE+d1O7Sg
+         vVgQ==
+X-Gm-Message-State: AOAM5307oww9zJNqGWy7U5e6oU4iSAgR7BhfPXN7+B2kvL6YzzJuMBjU
+        xo8gvOVJvEQ+agSoVfeC/b1B7w==
+X-Google-Smtp-Source: ABdhPJz3S5UU3ilQyTYYox6+go2q28UHJ7dlganza0B5QQoayqoYF2WFeh5AeDtzdiCHK7WNbTpzsA==
+X-Received: by 2002:ad4:464f:: with SMTP id y15mr24492069qvv.52.1604418326596;
+        Tue, 03 Nov 2020 07:45:26 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
+        by smtp.gmail.com with ESMTPSA id 19sm9771171qkj.69.2020.11.03.07.45.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2020 07:45:25 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1kZyUv-00FwNv-89; Tue, 03 Nov 2020 11:45:25 -0400
+Date:   Tue, 3 Nov 2020 11:45:25 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>,
+        gregkh <gregkh@linuxfoundation.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Wang <jasowang@redhat.com>, linux-rdma@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        Parav Pandit <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        virtualization@lists.linux-foundation.org,
+        alsa-devel@alsa-project.org, tiwai@suse.de, broonie@kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        ranjani.sridharan@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, fred.oh@linux.intel.com,
+        shiraz.saleem@intel.com, dan.j.williams@intel.com,
+        kiran.patil@intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH mlx5-next v1 06/11] vdpa/mlx5: Connect mlx5_vdpa to
+ auxiliary bus
+Message-ID: <20201103154525.GO36674@ziepe.ca>
+References: <20201101201542.2027568-1-leon@kernel.org>
+ <20201101201542.2027568-7-leon@kernel.org>
 MIME-Version: 1.0
-References: <160416890683.710453.7723265174628409401.stgit@localhost.localdomain>
- <160417035105.2823.2453428685023319711.stgit@localhost.localdomain> <20201103005547.buhyl6tsi5shm374@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20201103005547.buhyl6tsi5shm374@kafai-mbp.dhcp.thefacebook.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 3 Nov 2020 07:44:38 -0800
-Message-ID: <CAKgT0UeV4OKC8dhMgA-RvRfa4kr6NsqF=CCdW-Oe2mx+E4MPEg@mail.gmail.com>
-Subject: Re: [bpf-next PATCH v2 4/5] selftests/bpf: Migrate tcpbpf_user.c to
- use BPF skeleton
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        alexanderduyck@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201101201542.2027568-7-leon@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 2, 2020 at 4:55 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Sat, Oct 31, 2020 at 11:52:31AM -0700, Alexander Duyck wrote:
-> > From: Alexander Duyck <alexanderduyck@fb.com>
-> >
-> > Update tcpbpf_user.c to make use of the BPF skeleton. Doing this we can
-> > simplify test_tcpbpf_user and reduce the overhead involved in setting up
-> > the test.
-> >
-> > In addition we can clean up the remaining bits such as the one remaining
-> > CHECK_FAIL at the end of test_tcpbpf_user so that the function only makes
-> > use of CHECK as needed.
-> >
-> > Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> > Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
->
-> > ---
-> >  .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |   48 ++++++++------------
-> >  1 file changed, 18 insertions(+), 30 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > index d96f4084d2f5..c7a61b0d616a 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > @@ -4,6 +4,7 @@
-> >  #include <network_helpers.h>
-> >
-> >  #include "test_tcpbpf.h"
-> > +#include "test_tcpbpf_kern.skel.h"
-> >
-> >  #define LO_ADDR6 "::1"
-> >  #define CG_NAME "/tcpbpf-user-test"
-> > @@ -133,44 +134,31 @@ static void run_test(int map_fd, int sock_map_fd)
-> >
-> >  void test_tcpbpf_user(void)
-> >  {
-> > -     const char *file = "test_tcpbpf_kern.o";
-> > -     int prog_fd, map_fd, sock_map_fd;
-> > -     int error = EXIT_FAILURE;
-> > -     struct bpf_object *obj;
-> > +     struct test_tcpbpf_kern *skel;
-> > +     int map_fd, sock_map_fd;
-> >       int cg_fd = -1;
-> > -     int rv;
-> > -
-> > -     cg_fd = test__join_cgroup(CG_NAME);
-> > -     if (cg_fd < 0)
-> > -             goto err;
-> >
-> > -     if (bpf_prog_load(file, BPF_PROG_TYPE_SOCK_OPS, &obj, &prog_fd)) {
-> > -             fprintf(stderr, "FAILED: load_bpf_file failed for: %s\n", file);
-> > -             goto err;
-> > -     }
-> > +     skel = test_tcpbpf_kern__open_and_load();
-> > +     if (CHECK(!skel, "open and load skel", "failed"))
-> > +             return;
-> >
-> > -     rv = bpf_prog_attach(prog_fd, cg_fd, BPF_CGROUP_SOCK_OPS, 0);
-> > -     if (rv) {
-> > -             fprintf(stderr, "FAILED: bpf_prog_attach: %d (%s)\n",
-> > -                    errno, strerror(errno));
-> > -             goto err;
-> > -     }
-> > +     cg_fd = test__join_cgroup(CG_NAME);
-> > +     if (CHECK(cg_fd < 0, "test__join_cgroup(" CG_NAME ")",
-> > +               "cg_fd:%d errno:%d", cg_fd, errno))
-> > +             goto cleanup_skel;
-> >
-> > -     map_fd = bpf_find_map(__func__, obj, "global_map");
-> > -     if (map_fd < 0)
-> > -             goto err;
-> > +     map_fd = bpf_map__fd(skel->maps.global_map);
-> > +     sock_map_fd = bpf_map__fd(skel->maps.sockopt_results);
-> >
-> > -     sock_map_fd = bpf_find_map(__func__, obj, "sockopt_results");
-> > -     if (sock_map_fd < 0)
-> > -             goto err;
-> > +     skel->links.bpf_testcb = bpf_program__attach_cgroup(skel->progs.bpf_testcb, cg_fd);
-> > +     if (ASSERT_OK_PTR(skel->links.bpf_testcb, "attach_cgroup(bpf_testcb)"))
-> > +             goto cleanup_namespace;
-> >
-> >       run_test(map_fd, sock_map_fd);
-> >
-> > -     error = 0;
-> > -err:
-> > -     bpf_prog_detach(cg_fd, BPF_CGROUP_SOCK_OPS);
-> > +cleanup_namespace:
-> nit.
->
-> may be "cleanup_cgroup" instead?
->
-> or only have one jump label to handle failure since "cg_fd != -1" has been
-> tested already.
+On Sun, Nov 01, 2020 at 10:15:37PM +0200, Leon Romanovsky wrote:
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> index 6c218b47b9f1..5316e51e72d4 100644
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -1,18 +1,27 @@
+>  // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+>  /* Copyright (c) 2020 Mellanox Technologies Ltd. */
+> 
+> +#include <linux/module.h>
+>  #include <linux/vdpa.h>
+> +#include <linux/vringh.h>
+> +#include <uapi/linux/virtio_net.h>
+>  #include <uapi/linux/virtio_ids.h>
+>  #include <linux/virtio_config.h>
+> +#include <linux/auxiliary_bus.h>
+> +#include <linux/mlx5/cq.h>
+>  #include <linux/mlx5/qp.h>
+>  #include <linux/mlx5/device.h>
+> +#include <linux/mlx5/driver.h>
+>  #include <linux/mlx5/vport.h>
+>  #include <linux/mlx5/fs.h>
+> -#include <linux/mlx5/device.h>
+>  #include <linux/mlx5/mlx5_ifc_vdpa.h>
+> -#include "mlx5_vnet.h"
+>  #include "mlx5_vdpa.h"
+> 
+> +MODULE_AUTHOR("Eli Cohen <eli@mellanox.com>");
+> +MODULE_DESCRIPTION("Mellanox VDPA driver");
+> +MODULE_LICENSE("Dual BSD/GPL");
+> +
+> +#define to_mlx5_vdpa_ndev(__mvdev) container_of(__mvdev, struct mlx5_vdpa_net, mvdev)
+>  #define to_mvdev(__vdev) container_of((__vdev), struct mlx5_vdpa_dev, vdev)
+> 
+>  #define VALID_FEATURES_MASK                                                                        \
+> @@ -159,6 +168,11 @@ static bool mlx5_vdpa_debug;
+>  			mlx5_vdpa_info(mvdev, "%s\n", #_status);                                   \
+>  	} while (0)
+> 
+> +static inline u32 mlx5_vdpa_max_qps(int max_vqs)
+> +{
+> +	return max_vqs / 2;
+> +}
+> +
+>  static void print_status(struct mlx5_vdpa_dev *mvdev, u8 status, bool set)
+>  {
+>  	if (status & ~VALID_STATUS_MASK)
+> @@ -1928,8 +1942,11 @@ static void init_mvqs(struct mlx5_vdpa_net *ndev)
+>  	}
+>  }
+> 
+> -void *mlx5_vdpa_add_dev(struct mlx5_core_dev *mdev)
+> +static int mlx5v_probe(struct auxiliary_device *adev,
+> +		       const struct auxiliary_device_id *id)
+>  {
+> +	struct mlx5_adev *madev = container_of(adev, struct mlx5_adev, adev);
+> +	struct mlx5_core_dev *mdev = madev->mdev;
+>  	struct virtio_net_config *config;
+>  	struct mlx5_vdpa_dev *mvdev;
+>  	struct mlx5_vdpa_net *ndev;
+> @@ -1943,7 +1960,7 @@ void *mlx5_vdpa_add_dev(struct mlx5_core_dev *mdev)
+>  	ndev = vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device, &mlx5_vdpa_ops,
+>  				 2 * mlx5_vdpa_max_qps(max_vqs));
+>  	if (IS_ERR(ndev))
+> -		return ndev;
+> +		return PTR_ERR(ndev);
+> 
+>  	ndev->mvdev.max_vqs = max_vqs;
+>  	mvdev = &ndev->mvdev;
+> @@ -1972,7 +1989,8 @@ void *mlx5_vdpa_add_dev(struct mlx5_core_dev *mdev)
+>  	if (err)
+>  		goto err_reg;
+> 
+> -	return ndev;
+> +	dev_set_drvdata(&adev->dev, ndev);
+> +	return 0;
+> 
+>  err_reg:
+>  	free_resources(ndev);
+> @@ -1981,10 +1999,29 @@ void *mlx5_vdpa_add_dev(struct mlx5_core_dev *mdev)
+>  err_mtu:
+>  	mutex_destroy(&ndev->reslock);
+>  	put_device(&mvdev->vdev.dev);
+> -	return ERR_PTR(err);
+> +	return err;
+>  }
+> 
+> -void mlx5_vdpa_remove_dev(struct mlx5_vdpa_dev *mvdev)
+> +static int mlx5v_remove(struct auxiliary_device *adev)
+>  {
+> +	struct mlx5_vdpa_dev *mvdev = dev_get_drvdata(&adev->dev);
+> +
+>  	vdpa_unregister_device(&mvdev->vdev);
+> +	return 0;
+>  }
+> +
+> +static const struct auxiliary_device_id mlx5v_id_table[] = {
+> +	{ .name = MLX5_ADEV_NAME ".vnet", },
+> +	{},
+> +};
+> +
+> +MODULE_DEVICE_TABLE(auxiliary, mlx5v_id_table);
+> +
+> +static struct auxiliary_driver mlx5v_driver = {
+> +	.name = "vnet",
+> +	.probe = mlx5v_probe,
+> +	.remove = mlx5v_remove,
+> +	.id_table = mlx5v_id_table,
+> +};
 
-Good point. I can go through and just drop the second label and
-simplify this. Will fix for v3.
+It is hard to see from the diff, but when this patch is applied the
+vdpa module looks like I imagined things would look with the auxiliary
+bus. It is very similar in structure to a PCI driver with the probe()
+function cleanly registering with its subsystem. This is what I'd like
+to see from the new Intel RDMA driver.
+
+Greg, I think this patch is the best clean usage example.
+
+I've looked over this series and it has the right idea and
+parts. There is definitely more that can be done to improve mlx5 in
+this area, but this series is well scoped and cleans a good part of
+it.
+
+Jason
