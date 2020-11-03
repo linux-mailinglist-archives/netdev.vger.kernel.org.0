@@ -2,65 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F6082A3AF7
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 04:17:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B74CD2A3B09
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 04:29:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727146AbgKCDRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 22:17:00 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:59956 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725940AbgKCDRA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 22:17:00 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kZmoN-004vq4-Us; Tue, 03 Nov 2020 04:16:43 +0100
-Date:   Tue, 3 Nov 2020 04:16:43 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Pavana Sharma <pavana.sharma@digi.com>, ashkan.boldaji@digi.com,
-        davem@davemloft.net, gregkh@linuxfoundation.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, marek.behun@nic.cz,
-        netdev@vger.kernel.org, vivien.didelot@gmail.com
-Subject: Re: [PATCH v7 2/4] net: phy: Add 5GBASER interface mode
-Message-ID: <20201103031643.GJ1109407@lunn.ch>
-References: <20201102130905.GE1109407@lunn.ch>
- <20201103013446.1220-1-pavana.sharma@digi.com>
- <7aef297e-cbee-6f04-9d74-82cf97579880@gmail.com>
+        id S1727063AbgKCD3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 22:29:18 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:6737 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725952AbgKCD3S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 22:29:18 -0500
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CQFd43f75zkdnT;
+        Tue,  3 Nov 2020 11:29:12 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.58) by
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 3 Nov 2020 11:29:07 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <stable@vger.kernel.org>
+CC:     <vpai@akamai.com>, <Joakim.Tjernlund@infinera.com>,
+        <xiyou.wangcong@gmail.com>, <johunt@akamai.com>,
+        <jhs@mojatatu.com>, <jiri@resnulli.us>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <john.fastabend@gmail.com>, <eric.dumazet@gmail.com>,
+        <dsahern@gmail.com>
+Subject: [PATCH stable] net: sch_generic: fix the missing new qdisc assignment bug
+Date:   Tue, 3 Nov 2020 11:25:38 +0800
+Message-ID: <1604373938-211588-1-git-send-email-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7aef297e-cbee-6f04-9d74-82cf97579880@gmail.com>
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 02, 2020 at 06:12:32PM -0800, Florian Fainelli wrote:
-> 
-> 
-> On 11/2/2020 5:34 PM, Pavana Sharma wrote:
-> >> How many times have i asked for you to add kerneldoc for this new
-> >> value? How many times have you not done so?
-> > 
-> > I have added kerneldoc comment for the new value added.
-> > 
-> >> NACK.
-> > 
-> >> If you don't understand a comment, please ask.
-> > 
-> > Ok, explain what do you expect by that comment.
-> 
-> What Andrew wants you to do is add a comment like this:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/include/linux/phy.h#n88
+commit 2fb541c862c9 ("net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc")
 
-Hi Pavana
+When the above upstream commit is backported to stable kernel,
+one assignment is missing, which causes two problems reported
+by Joakim and Vishwanath, see [1] and [2].
 
-This should also help:
+So add the assignment back to fix it.
 
-https://www.kernel.org/doc/html/latest/doc-guide/kernel-doc.html
+1. https://www.spinics.net/lists/netdev/msg693916.html
+2. https://www.spinics.net/lists/netdev/msg695131.html
 
-And please compile the kernel with the W=1 flag. Make sure changes you
-make don't add new warnings. You will see a warning from this new enum
-valu you are adding because it is not correctly documented.
+Fixes: 749cc0b0c7f3 ("net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc")
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+---
+ net/sched/sch_generic.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-       Andrew
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 0e275e1..6e6147a 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1127,10 +1127,13 @@ static void dev_deactivate_queue(struct net_device *dev,
+ 				 void *_qdisc_default)
+ {
+ 	struct Qdisc *qdisc = rtnl_dereference(dev_queue->qdisc);
++	struct Qdisc *qdisc_default = _qdisc_default;
+ 
+ 	if (qdisc) {
+ 		if (!(qdisc->flags & TCQ_F_BUILTIN))
+ 			set_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state);
++
++		rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
+ 	}
+ }
+ 
+-- 
+2.7.4
+
