@@ -2,61 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 964C92A4D28
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:36:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFA1C2A4D31
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:38:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728636AbgKCRg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 12:36:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54692 "EHLO mail.kernel.org"
+        id S1728819AbgKCRiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:38:22 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:33114 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726581AbgKCRg5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 12:36:57 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1B25520773;
-        Tue,  3 Nov 2020 17:36:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604425016;
-        bh=FXJo+RN0j3Eecvm/NaUubnvAwOgaT+yxftfQxYhtmzc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JVwKjYhMPJTzud0o7eyJRavkuOz1zWboAuV+ZE1E36cvm7Z6S6bd0lqQFVajH5Sft
-         yn678saf0xC6RpzMFcr4k5lmBomhXt6L1GPr3lG7C3I7CST1GfxzQEta2oD31AGNF3
-         J7u9vUi1MKqfdaX360wEKpuI0fF/F3czAM8OF34w=
-Date:   Tue, 3 Nov 2020 09:36:55 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "james.jurack@ametek.com" <james.jurack@ametek.com>
-Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
- skb_cow_head for PTP
-Message-ID: <20201103093655.65851a21@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201103173007.23ttgm3rpmbletee@skbuf>
-References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
-        <20201029081057.8506-1-claudiu.manoil@nxp.com>
-        <20201103161319.wisvmjbdqhju6vyh@skbuf>
-        <20201103083050.100b2568@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <AM0PR04MB6754C8F6D12318EF1DD0CA2B96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
-        <20201103173007.23ttgm3rpmbletee@skbuf>
+        id S1727857AbgKCRiW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 12:38:22 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ka0G9-0054Fm-Bj; Tue, 03 Nov 2020 18:38:17 +0100
+Date:   Tue, 3 Nov 2020 18:38:17 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, robh@kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 4/4] net: phy: dp83td510: Add support for the
+ DP83TD510 Ethernet PHY
+Message-ID: <20201103173817.GP1042051@lunn.ch>
+References: <20201030172950.12767-1-dmurphy@ti.com>
+ <20201030172950.12767-5-dmurphy@ti.com>
+ <20201030160330.622c55a7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <5b32a56b-f054-5790-c5cf-bf1e86403bad@ti.com>
+ <20201103172153.GO1042051@lunn.ch>
+ <d51ef446-1528-5d3f-8548-831598a005a7@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d51ef446-1528-5d3f-8548-831598a005a7@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Nov 2020 19:30:07 +0200 Vladimir Oltean wrote:
-> On Tue, Nov 03, 2020 at 05:18:25PM +0000, Claudiu Manoil wrote:
-> > It's either the dev_kfree_skb_any from the dma mapping error path or the one
-> > from skb_cow_head()'s error path.  A confirmation would help indeed.  
-> 
-> It says "consume", not "kfree", which in my mind would make it point
-> towards the only caller of consume_skb from the gianfar driver, i.e. the
-> dev_consume_skb_any that you just added.
+> > > > drivers/net/phy/dp83td510.c:70:11: warning: symbol 'dp83td510_feature_array' was not declared. Should it be static?
+> > > I did not see this warning. Did you use W=1?
+> > I _think_ that one is W=1. All the PHY drivers are W=1 clean, and i
+> > want to keep it that way. And i hope to make it the default in a lot
+> > of the network code soon.
+> OK I built with the W=1 before submission I did not see this but I will try
+> some other things.
 
-#define dev_kfree_skb(a)	consume_skb(a)
+Then it might be sparse. Try C=1.
 
-IIRC we did this because too many drivers used dev_kfree_skb
-incorrectly and made the dropwatch output very noisy.
+     Andrew
