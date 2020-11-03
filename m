@@ -2,161 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33B642A5053
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:46:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE2122A5055
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:48:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729698AbgKCTqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 14:46:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27254 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727883AbgKCTqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 14:46:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604432778;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hXGHvDYwh9NMkyXNB/mXiydEr8BiB4sd5uCcFnHHQZg=;
-        b=chwpTUtqHwO02E0vi3/Q7iXNI88a/J1qSQNV/ZpXJ8DOipuh0xSFZjIo4qlN9FlCW1PLof
-        P9mmx6hwaluMP2xkOYijiBlxSyka+bF+ZDW60DaeVcnBWPyeOCMlbg1ZjdPcII361h0IW2
-        EyJRna6Q14KM5jGfCYZJuhUGVamgCQ8=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-548-WZqrQo4gPaKcOHIoefnHOA-1; Tue, 03 Nov 2020 14:46:17 -0500
-X-MC-Unique: WZqrQo4gPaKcOHIoefnHOA-1
-Received: by mail-qk1-f197.google.com with SMTP id v134so11505595qka.19
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 11:46:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=hXGHvDYwh9NMkyXNB/mXiydEr8BiB4sd5uCcFnHHQZg=;
-        b=JUZ100t+NFvH+BQgdaAUIsfhpzG7R5xALcvtvRqzQzJSOVxYb620b6xmjaRTgQ6FJQ
-         1fduhESAyLoIj+gaWEsMRcMSsxIqv9YlaIyq7ATjRdBx6sVfsNhI+EFeJruDat+Yxnfo
-         gO2Hbi4saRFmMdbIl3Qu4s25jGw1kTWbyZun1qIfRVdXfZ+DMu83TGI8SeeIJB4jEsa2
-         vgKB1lAfpaszrTF1fuc4moCmb22uNCPIiuB75Yp3GIW0eLtqCQTF7Mppceto2Ut68EM7
-         FzTp+jrHNgLvWdgVeBWXLlaxq/8kELttr+iLpyp9U3flVzDcwOXyFle+w3B9diNQhbV6
-         tt+w==
-X-Gm-Message-State: AOAM531BcqzGYgrCTi2N+sZ4YduKsjWx1GPR6B95UDwpVog9Y8rNzSko
-        UUYkzh1E64smENJVHQfFWAD759/o02Uvem89TKn0LVobTEXQUH6xZvMuuZF3wFOEHX3dtEpbM2G
-        hfH4lhklajGp7kHxL
-X-Received: by 2002:ae9:f402:: with SMTP id y2mr20621899qkl.459.1604432776431;
-        Tue, 03 Nov 2020 11:46:16 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyHrx/4K1ur2emSikIwCSW6QoSh0HGIlNgos3cwaHoIzJ12L9uFjx7qLeKQUNbiJ0RTQKVuVA==
-X-Received: by 2002:ae9:f402:: with SMTP id y2mr20621874qkl.459.1604432776110;
-        Tue, 03 Nov 2020 11:46:16 -0800 (PST)
-Received: from xz-x1 (bras-vprn-toroon474qw-lp130-20-174-93-89-196.dsl.bell.ca. [174.93.89.196])
-        by smtp.gmail.com with ESMTPSA id i70sm11572985qke.11.2020.11.03.11.46.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 11:46:15 -0800 (PST)
-Date:   Tue, 3 Nov 2020 14:46:13 -0500
-From:   Peter Xu <peterx@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Stefano Garzarella <sgarzare@redhat.com>, mst@redhat.com,
-        netdev@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vhost/vsock: add IOTLB API support
-Message-ID: <20201103194613.GK20600@xz-x1>
-References: <20201029174351.134173-1-sgarzare@redhat.com>
- <751cc074-ae68-72c8-71de-a42458058761@redhat.com>
- <20201030105422.ju2aj2bmwsckdufh@steredhat>
- <278f4732-e561-2b4f-03ee-b26455760b01@redhat.com>
- <20201102171104.eiovmkj23fle5ioj@steredhat>
- <8648a2e3-1052-3b5b-11ce-87628ac8dd33@redhat.com>
+        id S1729572AbgKCTr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 14:47:58 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:7294 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728157AbgKCTr6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 14:47:58 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fa1b3f10000>; Tue, 03 Nov 2020 11:48:01 -0800
+Received: from sx1.mtl.com (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 3 Nov
+ 2020 19:47:57 +0000
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        "Saeed Mahameed" <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/12] mlx5 updates-2020-11-03
+Date:   Tue, 3 Nov 2020 11:47:26 -0800
+Message-ID: <20201103194738.64061-1-saeedm@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8648a2e3-1052-3b5b-11ce-87628ac8dd33@redhat.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1604432881; bh=0iEULZRQOduIDL9m7A192UR+zD+znsauGpsAt6wvQUc=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=AfoFAW3P5SCBPOokP0T+vKcMF3h5F7kQVeHAz0dBR3Z5TyJMFq6LbWh7U/hsBZ7MZ
+         jbS2ulb5xmoPIQGiRm+NkPps8Ol0pHmrNteBGT8DrTaIMMiSyBuGSxjDv39ljBJpxW
+         exvNrLhNWX7VtfPbiAw2BQvLVjgUqb7hsSqSWe0nOzTgTEcxr9lV2nDS7efrjhJFss
+         R67RmrSOEQ8IvEnQ53O276uoCsDCfvSPNyQGd2ecvC7Ai4r+9PC2WQsAaL6l20TKyy
+         H3DGzcxyhWhUWR38ytsnwzi7WChnmhclnnamr4N4DgAVt4R5VHadOI0kwkggO9fw2V
+         VTRV6EgmOknoQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 05:04:23PM +0800, Jason Wang wrote:
-> 
-> On 2020/11/3 上午1:11, Stefano Garzarella wrote:
-> > On Fri, Oct 30, 2020 at 07:44:43PM +0800, Jason Wang wrote:
-> > > 
-> > > On 2020/10/30 下午6:54, Stefano Garzarella wrote:
-> > > > On Fri, Oct 30, 2020 at 06:02:18PM +0800, Jason Wang wrote:
-> > > > > 
-> > > > > On 2020/10/30 上午1:43, Stefano Garzarella wrote:
-> > > > > > This patch enables the IOTLB API support for vhost-vsock devices,
-> > > > > > allowing the userspace to emulate an IOMMU for the guest.
-> > > > > > 
-> > > > > > These changes were made following vhost-net, in details this patch:
-> > > > > > - exposes VIRTIO_F_ACCESS_PLATFORM feature and inits the iotlb
-> > > > > >   device if the feature is acked
-> > > > > > - implements VHOST_GET_BACKEND_FEATURES and
-> > > > > >   VHOST_SET_BACKEND_FEATURES ioctls
-> > > > > > - calls vq_meta_prefetch() before vq processing to prefetch vq
-> > > > > >   metadata address in IOTLB
-> > > > > > - provides .read_iter, .write_iter, and .poll callbacks for the
-> > > > > >   chardev; they are used by the userspace to exchange IOTLB messages
-> > > > > > 
-> > > > > > This patch was tested with QEMU and a patch applied [1] to fix a
-> > > > > > simple issue:
-> > > > > >     $ qemu -M q35,accel=kvm,kernel-irqchip=split \
-> > > > > >            -drive file=fedora.qcow2,format=qcow2,if=virtio \
-> > > > > >            -device intel-iommu,intremap=on \
-> > > > > >            -device vhost-vsock-pci,guest-cid=3,iommu_platform=on
-> > > > > 
-> > > > > 
-> > > > > Patch looks good, but a question:
-> > > > > 
-> > > > > It looks to me you don't enable ATS which means vhost won't
-> > > > > get any invalidation request or did I miss anything?
-> > > > > 
-> > > > 
-> > > > You're right, I didn't see invalidation requests, only miss and
-> > > > updates.
-> > > > Now I have tried to enable 'ats' and 'device-iotlb' but I still
-> > > > don't see any invalidation.
-> > > > 
-> > > > How can I test it? (Sorry but I don't have much experience yet
-> > > > with vIOMMU)
-> > > 
-> > > 
-> > > I guess it's because the batched unmap. Maybe you can try to use
-> > > "intel_iommu=strict" in guest kernel command line to see if it
-> > > works.
-> > > 
-> > > Btw, make sure the qemu contains the patch [1]. Otherwise ATS won't
-> > > be enabled for recent Linux Kernel in the guest.
-> > 
-> > The problem was my kernel, it was built with a tiny configuration.
-> > Using fedora stock kernel I can see the 'invalidate' requests, but I
-> > also had the following issues.
-> > 
-> > Do they make you ring any bells?
-> > 
-> > $ ./qemu -m 4G -smp 4 -M q35,accel=kvm,kernel-irqchip=split \
-> >     -drive file=fedora.qcow2,format=qcow2,if=virtio \
-> >     -device intel-iommu,intremap=on,device-iotlb=on \
-> >     -device vhost-vsock-pci,guest-cid=6,iommu_platform=on,ats=on,id=v1
-> > 
-> >     qemu-system-x86_64: vtd_iova_to_slpte: detected IOVA overflow    
-> > (iova=0x1d40000030c0)
-> 
-> 
-> It's a hint that IOVA exceeds the AW. It might be worth to check whether the
-> missed IOVA reported from IOTLB is legal.
+Hi Jakub,
 
-Yeah.  By default the QEMU vIOMMU should only support 39bits width for guest
-iova address space.  To extend it, we can use:
+This series makes some updates to mlx5 software steering.
+and some other misc trivial changes.
 
-  -device intel-iommu,aw-bits=48
+For more information please see tag log below.
 
-So we'll enable 4-level iommu pgtable.
+For the DR memory buddy allocator series, Yevgeny has updated
+the implementation according to Dave's request [1] and got rid of
+the bit array optimization and moved back to standard buddy
+allocator implementation.
 
-Here the iova is obvious longer than this, so it'll be interesting to know why
-that iova is allocated in the guest driver since the driver should know somehow
-that this iova is beyond what's supported (guest iommu driver should be able to
-probe viommu capability on this width information too).
+[1] https://patchwork.ozlabs.org/project/netdev/patch/20200925193809.463047=
+-2-saeed@kernel.org/
 
--- 
-Peter Xu
+Please pull and let me know if there is any problem.
 
+Thanks,
+Saeed.
+
+---
+The following changes since commit 6d89076e6ef09337a29a7b1ea4fdf2d892be9650=
+:
+
+  Merge branch 'net-mac80211-kernel-enable-kcov-remote-coverage-collection-=
+for-802-11-frame-handling' (2020-11-02 18:01:46 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-u=
+pdates-2020-11-03
+
+for you to fetch changes up to 1c4cdf9aca10e949829ae56f4ab2f7dfa8098096:
+
+  net: mlx5: Replace in_irq() usage (2020-11-03 11:40:03 -0800)
+
+----------------------------------------------------------------
+mlx5-updates-2020-11-03
+
+This series includes updates to mlx5 software steering component.
+
+1) Few improvements in the DR area, such as removing unneeded checks,
+  renaming to better general names, refactor in some places, etc.
+
+2) Software steering (DR) Memory management improvements
+
+This patch series contains SW Steering memory management improvements:
+using buddy allocator instead of an existing bucket allocator, and
+several other optimizations.
+
+The buddy system is a memory allocation and management algorithm
+that manages memory in power of two increments.
+
+The algorithm is well-known and well-described, such as here:
+https://en.wikipedia.org/wiki/Buddy_memory_allocation
+
+Linux uses this algorithm for managing and allocating physical pages,
+as described here:
+https://www.kernel.org/doc/gorman/html/understand/understand009.html
+
+In our case, although the algorithm in principal is similar to the
+Linux physical page allocator, the "building blocks" and the circumstances
+are different: in SW steering, buddy allocator doesn't really allocates
+a memory, but rather manages ICM (Interconnect Context Memory) that was
+previously allocated and registered.
+
+The ICM memory that is used in SW steering is always power
+of 2 (order), so buddy system is a good fit for this.
+
+Patches in this series:
+
+[PATH 4] net/mlx5: DR, Add buddy allocator utilities
+  This patch adds a modified implementation of a well-known buddy allocator=
+,
+  adjusted for SW steering needs: the algorithm in principal is similar to
+  the Linux physical page allocator, but in our case buddy allocator doesn'=
+t
+  really allocate a memory, but rather manages ICM memory that was previous=
+ly
+  allocated and registered.
+
+[PATH 5] net/mlx5: DR, Handle ICM memory via buddy allocation instead of bu=
+cket management
+  This patch changes ICM management of SW steering to use buddy-system mech=
+anism
+  Instead of the previous bucket management.
+
+[PATH 6] net/mlx5: DR, Sync chunks only during free
+  This patch makes syncing happen only when freeing memory chunks.
+
+[PATH 7] net/mlx5: DR, ICM memory pools sync optimization
+  This patch adds tracking of pool's "hot" memory and makes the
+  check whether steering sync is required much shorter and faster.
+
+[PATH 8] net/mlx5: DR, Free buddy ICM memory if it is unused
+  This patch adds tracking buddy's used ICM memory,
+  and frees the buddy if all its memory becomes unused.
+
+3) Misc code cleanups
+
+----------------------------------------------------------------
+Saeed Mahameed (2):
+      net/mlx4: Cleanup kernel-doc warnings
+      net/mlx5: Cleanup kernel-doc warnings
+
+Sebastian Andrzej Siewior (1):
+      net: mlx5: Replace in_irq() usage
+
+Vladyslav Tarasiuk (1):
+      net/mlx5e: Validate stop_room size upon user input
+
+Yevgeny Kliteynik (8):
+      net/mlx5: DR, Remove unused member of action struct
+      net/mlx5: DR, Rename builders HW specific names
+      net/mlx5: DR, Rename matcher functions to be more HW agnostic
+      net/mlx5: DR, Add buddy allocator utilities
+      net/mlx5: DR, Handle ICM memory via buddy allocation instead of bucke=
+ts
+      net/mlx5: DR, Sync chunks only during free
+      net/mlx5: DR, ICM memory pools sync optimization
+      net/mlx5: DR, Free unused buddy ICM memory
+
+ drivers/net/ethernet/mellanox/mlx4/fw_qos.h        |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/params.c    |  34 ++
+ .../net/ethernet/mellanox/mlx5/core/en/params.h    |   4 +
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c |   8 +-
+ .../mellanox/mlx5/core/en_accel/ktls_txrx.h        |   2 +-
+ .../mellanox/mlx5/core/en_accel/tls_rxtx.c         |   6 +-
+ .../mellanox/mlx5/core/en_accel/tls_rxtx.h         |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |   5 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  30 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c       |  18 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fpga/sdk.h |   8 +-
+ .../mellanox/mlx5/core/steering/dr_buddy.c         | 170 +++++++
+ .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |   4 +-
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c      | 501 ++++++++---------=
+----
+ .../mellanox/mlx5/core/steering/dr_matcher.c       | 107 +++--
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  |  42 +-
+ .../mellanox/mlx5/core/steering/dr_types.h         |  79 ++--
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |  32 ++
+ 19 files changed, 591 insertions(+), 467 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_bud=
+dy.c
