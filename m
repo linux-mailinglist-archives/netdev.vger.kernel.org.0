@@ -2,82 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18F4E2A3BAC
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 06:10:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DEE42A3BAE
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 06:10:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727186AbgKCFKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 00:10:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
+        id S1727401AbgKCFKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 00:10:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725958AbgKCFKG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 00:10:06 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7BEC0617A6;
-        Mon,  2 Nov 2020 21:10:06 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id w65so13182194pfd.3;
-        Mon, 02 Nov 2020 21:10:06 -0800 (PST)
+        with ESMTP id S1725958AbgKCFKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 00:10:20 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BABD4C0617A6;
+        Mon,  2 Nov 2020 21:10:18 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id h196so13780890ybg.4;
+        Mon, 02 Nov 2020 21:10:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tCyGkq/pHteVAh0HIDT7egDnjjzBOE7dZIpKsnhRnsM=;
-        b=etNDRHh0vuI9pqe4UUpt/3cX9ZGv/0D5ySVu4E5ayITnJPmyVjLJ29aHzsLWT4CYnp
-         ewXSLKkexigwdSTrG3Pdd7OLPdALbFDX/QU9huvOeOUgMb6ZNNG2R9oB3QkBi1Ncxhhd
-         Z1iVjRPXnnHixMgNs+SUjwJp/P1GJW9392gsolU+AwbWZVPx/j4E858An7jCIsRaYNJH
-         LOfb4uhr/qGf71+HE3dwjN62SNmKMjyYTOm997UpJRG8EEqpLKUs30liHmyfgVqEKIl+
-         kfQBPtMtIlzJlHaofm9/O1RofswfIgLyTaLfRheSm5ZqV8MBzwMXbQK03tgFvqZPba/W
-         +RzA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YY5S0KYNCfOLFnTIvP4ucZEpZyH9RAvDMVKfJXAVlGo=;
+        b=S4bp0sd1zGyEmdQ1nXLxX1pBPoQqqPJogxE+uUW620154sdYD1I1RfN37bHpN7l/my
+         78YiwfwHPHUsf8BiudYfTcc1Ty0BDMtjccOGIw1pnumQiyOhAV4BXelV3lp3tMPMtqk4
+         ju/0j2/fsvx/2wrXjkcynv7vL5o3VfbsV5F68a6zL9UjPbl2KpdDqJmn0QwTWm1o+O2c
+         Set19LhewGzQRNahG2R67FijtOq/IH4ZJ1eIbKcX08bS2KdYUd7LhgdwK+o9lbEnj/oo
+         l3D/D6EgR4bub0xjGyeWQHfum4ZOxGDgpb72KgPaH4Ujd1KEu0/uL84oBuDMLEJUi7dE
+         YyYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tCyGkq/pHteVAh0HIDT7egDnjjzBOE7dZIpKsnhRnsM=;
-        b=M16fTPgu3H+Rg73k4tSO93ObTIDdJxMwufzOKVFL7AKvqGft9ztNX3bzRLQpb3qIsd
-         XRykihYePi301LOoTiqlH0iSs8LR9i00uzWSM8l+8rM9PsSOxSFiUWidtfMpwoKh1Pcx
-         ycBUkWd0tAuwmfKlvs/dcPfmk2AktYf0fBc3mVV/qV4pf/IrQeEMXCRl54ADqERRHuaK
-         pQSW/ntPm1U7NG8IfPajkmKz1jeDeDv8I3L21W2i6n7takiBYSUEeYLWIuMhp6LEPgpf
-         OoQufpqJXwrJKuk8MbR98oVBqfgAgMhsXtFItEfvVSqVUBlB/mhuM2JEZEfZ40kJkHfG
-         wF+A==
-X-Gm-Message-State: AOAM531Xuezg1XAz441ErohFiVY/7mLdtL5YjDACKlr0V1LUxSifQ723
-        MpS0EpiSkpevbrTo0kX9AV4=
-X-Google-Smtp-Source: ABdhPJxdAZ9knOjZVXZk9desjGLDSbJ9bzfrYQjovHhCJhcQruH8pe8JufMTU6EKZxQPeJe0kloP3A==
-X-Received: by 2002:a17:90a:b63:: with SMTP id 90mr2006281pjq.154.1604380206267;
-        Mon, 02 Nov 2020 21:10:06 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:4055])
-        by smtp.gmail.com with ESMTPSA id f21sm3733267pga.32.2020.11.02.21.10.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 21:10:05 -0800 (PST)
-Date:   Mon, 2 Nov 2020 21:10:03 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 08/11] libbpf: support BTF dedup of split BTFs
-Message-ID: <20201103051003.i565jv3ph54lw5rj@ast-mbp.dhcp.thefacebook.com>
-References: <20201029005902.1706310-1-andrii@kernel.org>
- <20201029005902.1706310-9-andrii@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YY5S0KYNCfOLFnTIvP4ucZEpZyH9RAvDMVKfJXAVlGo=;
+        b=JdpKaVZu23jlYjwmyZEwLaiFAaatvWOwDB9L24PZGSDUILFYfM9EyR9I4fxdABHVan
+         Ofr/+IswSe4dYiajz/W5Plmu2jECfGlyLZldcpj+KcDRPvMmI61SvFyaVMgbt9qUKDsq
+         OS/tA80PADKKupdO3FyDddPyH5YFPXx0XnkT8qNQQNUpXgQuAICzGBdrQJ4l4C7E5r+4
+         2TMzCL1CBA8z/C1AophVuxGma+7PU6/Ht0zriFCVbAh/ZWZqZ4FN9GnkRkAIB8MtiOjc
+         zW1zOETiTghnPpomp3csdsVHuVMa97MRElCWn4oSVxyZ3oRQfVxzIL6vyabFj6r6TRhs
+         PEcg==
+X-Gm-Message-State: AOAM533+NMq/Q2MOVldcNQAVRdYVNp9O40JjvopvwddOthee+OlkjDeC
+        s8KpcR5bcWRcLTYrXbzWKzpHiCcUDvU4UH7spvE7F/Fx06k=
+X-Google-Smtp-Source: ABdhPJwTO2ZkpXJoswBO4g9T6AFCoGyA/bB2yyHrbDwx4Sc47dK+C+T/RVk1MNXRWnqPWE6eHYmdao8XAUpx5/kb/4M=
+X-Received: by 2002:a25:bdc7:: with SMTP id g7mr26936152ybk.260.1604380218107;
+ Mon, 02 Nov 2020 21:10:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201029005902.1706310-9-andrii@kernel.org>
+References: <20201029005902.1706310-1-andrii@kernel.org> <20201029005902.1706310-6-andrii@kernel.org>
+ <62331693-EDCE-4173-86C0-D9E771DA5C22@fb.com>
+In-Reply-To: <62331693-EDCE-4173-86C0-D9E771DA5C22@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 2 Nov 2020 21:10:07 -0800
+Message-ID: <CAEf4BzZVSQahEa6b5=7Xv3iwjavrzz3z1QHTNjruuTHS_LEb7w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 05/11] selftests/bpf: add split BTF basic test
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 05:58:59PM -0700, Andrii Nakryiko wrote:
-> @@ -2942,6 +2948,13 @@ struct btf_dedup {
->  	__u32 *hypot_list;
->  	size_t hypot_cnt;
->  	size_t hypot_cap;
-> +	/* Whether hypothethical mapping, if successful, would need to adjust
-> +	 * already canonicalized types (due to a new forward declaration to
-> +	 * concrete type resolution). In such case, during split BTF dedup
-> +	 * candidate type would still be considered as different, because base
-> +	 * BTF is considered to be immutable.
-> +	 */
-> +	bool hypot_adjust_canon;
+On Mon, Nov 2, 2020 at 3:36 PM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Oct 28, 2020, at 5:58 PM, Andrii Nakryiko <andrii@kernel.org> wrote:
+> >
+> > Add selftest validating ability to programmatically generate and then dump
+> > split BTF.
+> >
+> > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+>
+> Acked-by: Song Liu <songliubraving@fb.com>
+>
+> With a nit:
+>
+> [...]
+> >
+> > +
+> > +static void btf_dump_printf(void *ctx, const char *fmt, va_list args)
+> > +{
+> > +     vfprintf(ctx, fmt, args);
+> > +}
+> > +
+> > +void test_btf_split() {
+> > +     struct btf_dump_opts opts;
+> > +     struct btf_dump *d = NULL;
+> > +     const struct btf_type *t;
+> > +     struct btf *btf1, *btf2 = NULL;
+>
+> No need to initialize btf2 to NULL.
 
-why one flag per dedup session is enough?
-Don't you have a case where some fwd are pointing to base btf and shouldn't
-be adjusted while some are in split btf and should be?
-It seems when this flag is set to true it will miss fwd in split btf?
+yep, must be a leftover from earlier version, I'll remove initialization.
+
+>
+> > +     int str_off, i, err;
+> > +
+> > +     btf1 = btf__new_empty();
+> > +     if (!ASSERT_OK_PTR(btf1, "empty_main_btf"))
+> > +             return;
+> > +
+> >
+>
+> [...]
+>
