@@ -2,149 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3054D2A4B5B
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:26:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96DD52A4B60
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:26:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728352AbgKCQ0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 11:26:31 -0500
-Received: from nat-hk.nvidia.com ([203.18.50.4]:22047 "EHLO nat-hk.nvidia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728302AbgKCQ0a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 11:26:30 -0500
-Received: from HKMAIL101.nvidia.com (Not Verified[10.18.92.100]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fa184b50000>; Wed, 04 Nov 2020 00:26:29 +0800
-Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL101.nvidia.com
- (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 3 Nov
- 2020 16:26:29 +0000
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.105)
- by HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Tue, 3 Nov 2020 16:26:28 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aPDFVR1c41RSTJb4p9Im6hEFjb3QFOYbPbmMsQHgAAmwMjA2TjQjSI0ytEDziPxgf6Vdm/yDfoohV4ohux422i2PfLrydbhBrIBQBpNJk6Xacs5N4qDlBVJvppHz7nLOjpLIfi1DC1l63wnI9/ikD2hQG3pPlYEucNupCggp4lQws480gl/KEHnzC1FW5hZDqENTk4rKWAiqPVnkbfUGBeHvgEwWLAu3yr7a8RO4ddFdNOoGfsaYaKVjKIoaHHdGrJuKHIJRip8fIDYGtW4I3PvV5Y0CgbWzMfFatoUY2T02594W3X8ZpXZyurJznib59n6gRwNsOnWZac28WmeEug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e1tATsxgREHFZSoWYxz7YKJIHFSOswzbNqM3WpL7Fok=;
- b=XuAvpwpCIAY2KqApdJWYa+gtZCeuBy371d/uYvDsyrezFiTo8W283XKdiCZrX6TBp042A8bSWK09tm1MtFJFqtFiT3f/+MwDSFoS/6mZPrUiX2lMaUuxk6XgkJ9VfXWzRve2cP1+Oycz8BoabyJBKuJQGkmIB/ewHeoUsh2LxMzLy+6QG3iuORUiGQVmeMFPfureTYkikD0j7Not9jMFEJiF19y3bquLSjzHomGGj72TqleNXRx5WxEDtkw7yo7D33tRyAVURUv3nULSxkxG5CRifz+OJ98w7FIlp+fqZlpDPFLMLXJggs9NMc1DKEtn1lb1x6Cb4kXv08+riHCJwA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM5PR12MB1244.namprd12.prod.outlook.com (2603:10b6:3:73::15) by
- DM5PR1201MB2488.namprd12.prod.outlook.com (2603:10b6:3:e1::15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3499.18; Tue, 3 Nov 2020 16:26:26 +0000
-Received: from DM5PR12MB1244.namprd12.prod.outlook.com
- ([fe80::a164:31dd:cebe:4d49]) by DM5PR12MB1244.namprd12.prod.outlook.com
- ([fe80::a164:31dd:cebe:4d49%12]) with mapi id 15.20.3499.029; Tue, 3 Nov 2020
- 16:26:26 +0000
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-To:     "menglong8.dong@gmail.com" <menglong8.dong@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>
-CC:     "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "dong.menglong@zte.com.cn" <dong.menglong@zte.com.cn>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net: bridge: disable multicast while delete bridge
-Thread-Topic: [PATCH] net: bridge: disable multicast while delete bridge
-Thread-Index: AQHWsSXrHRI1tvW7iUS7+/80e/6fF6m2mdgA
-Date:   Tue, 3 Nov 2020 16:26:25 +0000
-Message-ID: <067c94269abed15f777ac078a216be314c935fd5.camel@nvidia.com>
-References: <20201102143828.5286-1-menglong8.dong@gmail.com>
-In-Reply-To: <20201102143828.5286-1-menglong8.dong@gmail.com>
-Reply-To: Nikolay Aleksandrov <nikolay@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [84.238.136.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a3653253-377b-4282-0dcb-08d880153603
-x-ms-traffictypediagnostic: DM5PR1201MB2488:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR1201MB2488351A3A379C4DE106B698DF110@DM5PR1201MB2488.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1388;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: D9a/ktX2cIqRbf1XGWB0Vqbq8ml1INh1Q4vaNDY2v3ufZEdVJm+P4ibII6moX1/BS3z0xPi15IH6aOpSXtcGsSsqGn7at1mOZae2AfBW/+ZHoLxZAtiKIAzFdxLDPYmPpfuufPGcPZM6hkxv9ieT0qZ3nik0d2qwXDrOsZn8Wxgnty1FZMc50Wj0GmYKDdkiCHYauksg0LWkTYPqV1UfDHeStlmcms/ft/F4WUXXnTBuCr84Z6V3CuMYXHxiNnRWLrU3BFv2D3Btj05avUVcLeMBo1EwUgovkYr9ac3ZDRNcJ5MNHYzYSJx3TSp40TbQNswa85N3mir81nMespEYnQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1244.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(136003)(396003)(346002)(39860400002)(54906003)(316002)(110136005)(2906002)(478600001)(36756003)(26005)(5660300002)(186003)(71200400001)(2616005)(4326008)(3450700001)(6636002)(83380400001)(76116006)(6512007)(91956017)(66446008)(64756008)(66556008)(66946007)(8936002)(86362001)(66476007)(8676002)(6486002)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: oQczqZM6P9n53wO8+kALGlOXPCk63ZGECA3t02Rid4AOQNzOS/AnmVl1FkEq//anMtuI1qO9y5eUIuc7e0lNXtidGQHc6mjHB24mo+P64za3rxiplP7H0h03W/Q+7iglpLY5jCuJDIB6FKNikrPsrdDTU2FZMmTiMi5O6P6wcQGeDHx3zdCpq2JgKa31UI2utkcLW7gEBtH8ZjP3F7w3DqaaPL8c0EfDYxB7cWfCdsLjJIHkb603sNI0+AvH5oyaqXnj21NNswEgUywnwcUzr9tSKFe9hpmnkUsn0rpwaXueReq4LkidSbFyiC4OcZvThqBx/ylQCzXcCtFkchsm5Z9nueCg59TnMQsOtIEMfDTH73OAQPfPT69Hl7SPnoe7EKIIteBU18iJp51mdftiEGv+PfkdOgsiFs46AM/eQ+TSDc8h0+4iPLn9X/riLodi2YanzRvIHsyga1IXW2jqUaUB5LPudUGdDkNbwrBO4XnmQhb0VkbiHHu40U0CCuHsH6bMRG8Z+kidFzM4K30wyB4R6P7OWPGSQxYuXN9sgRk5fSao4l7x9/uPvO8I5aC/i60Vecaa/C/IsGoOjrTzBaDbW1tVUeuOYM9PuvZCO3G05aSEwSud21k454cPTZKhEauKxkTcdylhGIxVzjYFzg==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <680D0BE04AACBD4292520B4598C416B7@namprd12.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728413AbgKCQ05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 11:26:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728046AbgKCQ05 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 11:26:57 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7716C0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 08:26:55 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id 10so14660774pfp.5
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 08:26:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=q7Rr4h8jgG1g6dQ43vyn0f2NKcgPO6Gve7klvtnHf0s=;
+        b=J9ubuYTM4wXgexKGDyx5JYciBXJNq0bbFDgdls7EoQCTwbFKHnSAFD2TJI7Ec5JX7O
+         OZ4cbbmq6crrPt6VjKIcQC/RLqUJM3Aa2j1/10lEFq9e5xHbSB6J6+fQLfTiBOmbltgh
+         ZC3ziJAx++D8HuedDZY3W/rKv+ovwl0XhCa07vUY2ySXj6XYetFv8MBDNn++2FVLoqY0
+         ufydQyey3HndJhOz6tgv37fVcgskiJexE0dq56W6ewvwzpWbY2N+ykiFpB8jRCLp0bJV
+         Kv4VFnZRVulH17R/J/AftSTYYxV6GGKzgVbARYA/4goaPRHRHYfp95PZ/Pzktqf4PzMM
+         A8ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=q7Rr4h8jgG1g6dQ43vyn0f2NKcgPO6Gve7klvtnHf0s=;
+        b=ht++hhOzZV7y23P+9tA4UBEMZGzT+k3ZSj5kIbGRaOM+0YHKZSqUgOElcJuMOQQrtG
+         ZnTiC2xq+mx23hcmuAHDFt8JGkfr4AhikAmp4eBF2QO+eagyPQAJJ5ZFviDBe+N/9O+/
+         fNB+RMY88byvU5mkUVq3T9hbx8Tq/hcHle/89pdgDpa1R24Dzbtt6KVEI2tAwPVvjDqK
+         1/Aom+dtL8Nyp0ubUGqdkuBeDWO9+cdNNqNGSE75VYp63gHi/OrrWA1y2ZwUf1s5N54v
+         vsYrxO6FKCjsoyqL2AAPRb3JlqzQPGrNmwZonkFf2rs3TBjrdEOgvU2vnwOY5te7eRtm
+         ZPNg==
+X-Gm-Message-State: AOAM533PEiq1JyJOV09YyNDv4oz55CdqvjxdkhSmrDqm124en0GzP9FR
+        s7k4miDXAXqPGMC0aonP1jxKVuJqYCpyJbYU
+X-Google-Smtp-Source: ABdhPJxhWx9gl1NqmlYxOuedOUHwo24YYmoR7jGHmEWzaFrLQP3vF93L//QdiIgl3Rer2/IANGNWKQ==
+X-Received: by 2002:aa7:950b:0:b029:18a:df47:ef90 with SMTP id b11-20020aa7950b0000b029018adf47ef90mr11941628pfp.74.1604420815400;
+        Tue, 03 Nov 2020 08:26:55 -0800 (PST)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id lk13sm3345000pjb.43.2020.11.03.08.26.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2020 08:26:55 -0800 (PST)
+Date:   Tue, 3 Nov 2020 08:26:51 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     'Jakub Kicinski' <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] drivers: net: sky2: Fix -Wstringop-truncation
+ with W=1
+Message-ID: <20201103082651.7edadae6@hermes.local>
+In-Reply-To: <20201103082501.39eac063@hermes.local>
+References: <20201031174028.1080476-1-andrew@lunn.ch>
+        <20201102160106.29edcc11@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <c3c5682a5953429987bb5d30d631daa7@AcuMS.aculab.com>
+        <20201103082501.39eac063@hermes.local>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1244.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a3653253-377b-4282-0dcb-08d880153603
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Nov 2020 16:26:26.0384
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gp1RErNGirDjAl5U9+j77dj2QAlklUHSVd1F1yZWPEmZB8/p62EB2/riNfcY9BVdUe+7ErHolsicgbyI8ilpZQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB2488
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1604420789; bh=e1tATsxgREHFZSoWYxz7YKJIHFSOswzbNqM3WpL7Fok=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
-         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
-         In-Reply-To:Reply-To:Accept-Language:Content-Language:
-         X-MS-Has-Attach:X-MS-TNEF-Correlator:user-agent:
-         authentication-results:x-originating-ip:x-ms-publictraffictype:
-         x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
-         x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
-         x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
-         x-microsoft-antispam:x-microsoft-antispam-message-info:
-         x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
-         Content-Type:Content-ID:Content-Transfer-Encoding:MIME-Version:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-originalarrivaltime:
-         X-MS-Exchange-CrossTenant-fromentityheader:
-         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-         X-MS-Exchange-CrossTenant-userprincipalname:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=T9fiDLVXHn+bSQ3JVHTmryS/wfQgRS0ZUDK94dzm46ygJIRNqh7l/FcOLuCQYtTq2
-         PEuPkXTA4nucld7raOuMzpLS/afdanfTcgPSKwjm1OhdhptAONYlFWbnIGMILrvCZP
-         EgpWD1wbLT754vuZd6iasLFx0xZhzaIJdTGUHhQ0JfqP64RL19a+SV16F6UVazzvyr
-         EWcF4+VZuwVNLZ59U9FZtsxC9Wn0gKKILpzw+0VZ/LJio1FokANeUHOSV39/VDojj4
-         MOII4K9/zOjX+VQWVwNlYYKKmqsSXojPqo7cn+0u4ZbV/3AQWMb8pyCbcgS7rc15Sj
-         MCGP6mzSZg0Yw==
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDIwLTExLTAyIGF0IDIyOjM4ICswODAwLCBNZW5nbG9uZyBEb25nIHdyb3RlOg0K
-PiBGcm9tOiBNZW5nbG9uZyBEb25nIDxkb25nLm1lbmdsb25nQHp0ZS5jb20uY24+DQo+IA0KPiBU
-aGlzIGNvbW1pdCBzZWVtcyBtYWtlIG5vIHNlbnNlLCBhcyBicmlkZ2UgaXMgZGVzdHJveWVkIHdo
-ZW4NCj4gYnJfbXVsdGljYXN0X2Rldl9kZWwgaXMgY2FsbGVkLg0KPiANCj4gSW4gY29tbWl0IGIx
-YjlkMzY2MDI4Zg0KPiAoImJyaWRnZTogbW92ZSBicmlkZ2UgbXVsdGljYXN0IGNsZWFudXAgdG8g
-bmRvX3VuaW5pdCIpLCBYaW4gTG9uZw0KPiBmaXhlZCB0aGUgdXNlLWFmdGVyLWZyZWUgcGFuaWMg
-aW4gYnJfbXVsdGljYXN0X2dyb3VwX2V4cGlyZWQgYnkNCj4gbW92aW5nIGJyX211bHRpY2FzdF9k
-ZXZfZGVsIHRvIG5kb191bmluaXQuIEhvd2V2ZXIsIHRoYXQgcGF0Y2ggaXMNCj4gbm90IGFwcGxp
-ZWQgdG8gNC40LlgsIGFuZCB0aGUgYnVnIGV4aXN0cy4NCj4gDQo+IEZpeCB0aGF0IGJ1ZyBieSBk
-aXNhYmxpbmcgbXVsdGljYXN0IGluIGJyX211bHRpY2FzdF9kZXZfZGVsIGZvcg0KPiA0LjQuWCwg
-YW5kIHRoZXJlIGlzIG5vIGhhcm0gZm9yIG90aGVyIGJyYW5jaGVzLg0KPiANCj4gU2lnbmVkLW9m
-Zi1ieTogTWVuZ2xvbmcgRG9uZyA8ZG9uZy5tZW5nbG9uZ0B6dGUuY29tLmNuPg0KPiAtLS0NCj4g
-IG5ldC9icmlkZ2UvYnJfbXVsdGljYXN0LmMgfCAxICsNCj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGlu
-c2VydGlvbigrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL25ldC9icmlkZ2UvYnJfbXVsdGljYXN0LmMg
-Yi9uZXQvYnJpZGdlL2JyX211bHRpY2FzdC5jDQo+IGluZGV4IGVhZTg5OGMzY2ZmNy4uOTk5MmZk
-ZmYyOTUxIDEwMDY0NA0KPiAtLS0gYS9uZXQvYnJpZGdlL2JyX211bHRpY2FzdC5jDQo+ICsrKyBi
-L25ldC9icmlkZ2UvYnJfbXVsdGljYXN0LmMNCj4gQEAgLTMzNjksNiArMzM2OSw3IEBAIHZvaWQg
-YnJfbXVsdGljYXN0X2Rldl9kZWwoc3RydWN0IG5ldF9icmlkZ2UgKmJyKQ0KPiAgCWhsaXN0X2Zv
-cl9lYWNoX2VudHJ5X3NhZmUobXAsIHRtcCwgJmJyLT5tZGJfbGlzdCwgbWRiX25vZGUpDQo+ICAJ
-CWJyX211bHRpY2FzdF9kZWxfbWRiX2VudHJ5KG1wKTsNCj4gIAlobGlzdF9tb3ZlX2xpc3QoJmJy
-LT5tY2FzdF9nY19saXN0LCAmZGVsZXRlZF9oZWFkKTsNCj4gKwlicl9vcHRfdG9nZ2xlKGJyLCBC
-Uk9QVF9NVUxUSUNBU1RfRU5BQkxFRCwgZmFsc2UpOw0KPiAgCXNwaW5fdW5sb2NrX2JoKCZici0+
-bXVsdGljYXN0X2xvY2spOw0KPiAgDQo+ICAJYnJfbXVsdGljYXN0X2djKCZkZWxldGVkX2hlYWQp
-Ow0KDQpUaGlzIGRvZXNuJ3QgbWFrZSBhbnkgc2Vuc2UuIEl0IGRvZXNuJ3QgZml4IGFueXRoaW5n
-Lg0KSWYgNC40IGhhcyBhIHByb2JsZW0gdGhlbiB0aGUgcmVsZXZhbnQgcGF0Y2hlcyBzaG91bGQg
-Z2V0IGJhY2twb3J0ZWQgdG8gaXQuDQpXZSBkb24ndCBhZGQgcmFuZG9tIGNoYW5nZXMgdG8gZml4
-IG9sZGVyIHJlbGVhc2VzLg0KDQpDaGVlcnMsDQogTmlrDQoNCk5hY2tlZC1ieTogTmlrb2xheSBB
-bGVrc2FuZHJvdiA8bmlrb2xheUBudmlkaWEuY29tPg0K
+On Tue, 3 Nov 2020 08:25:01 -0800
+Stephen Hemminger <stephen@networkplumber.org> wrote:
+
+> On Tue, 3 Nov 2020 10:19:55 +0000
+> David Laight <David.Laight@ACULAB.COM> wrote:
+>=20
+> > From: Jakub Kicinski =20
+> > > Sent: 03 November 2020 00:01
+> > >=20
+> > > On Sat, 31 Oct 2020 18:40:28 +0100 Andrew Lunn wrote:   =20
+> > > > In function =E2=80=98strncpy=E2=80=99,
+> > > >     inlined from =E2=80=98sky2_name=E2=80=99 at drivers/net/etherne=
+t/marvell/sky2.c:4903:3,
+> > > >     inlined from =E2=80=98sky2_probe=E2=80=99 at drivers/net/ethern=
+et/marvell/sky2.c:5049:2:
+> > > > ./include/linux/string.h:297:30: warning: =E2=80=98__builtin_strncp=
+y=E2=80=99 specified bound 16 equals destination   =20
+> > > size [-Wstringop-truncation]   =20
+> > > >
+> > > > None of the device names are 16 characters long, so it was never an
+> > > > issue, but reduce the length of the buffer size by one to avoid the
+> > > > warning.
+> > > >
+> > > > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> > > > ---
+> > > >  drivers/net/ethernet/marvell/sky2.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethe=
+rnet/marvell/sky2.c
+> > > > index 25981a7a43b5..35b0ec5afe13 100644
+> > > > --- a/drivers/net/ethernet/marvell/sky2.c
+> > > > +++ b/drivers/net/ethernet/marvell/sky2.c
+> > > > @@ -4900,7 +4900,7 @@ static const char *sky2_name(u8 chipid, char =
+*buf, int sz)
+> > > >  	};
+> > > >
+> > > >  	if (chipid >=3D CHIP_ID_YUKON_XL && chipid <=3D CHIP_ID_YUKON_OP_=
+2)
+> > > > -		strncpy(buf, name[chipid - CHIP_ID_YUKON_XL], sz);
+> > > > +		strncpy(buf, name[chipid - CHIP_ID_YUKON_XL], sz - 1);   =20
+> > >=20
+> > > Hm. This irks the eye a little. AFAIK the idiomatic code would be:
+> > >=20
+> > > 	strncpy(buf, name..., sz - 1);
+> > > 	buf[sz - 1] =3D '\0';
+> > >=20
+> > > Perhaps it's easier to convert to strscpy()/strscpy_pad()?
+> > >    =20
+> > > >  	else
+> > > >  		snprintf(buf, sz, "(chip %#x)", chipid);
+> > > >  	return buf;   =20
+> >=20
+> > Is the pad needed?
+> > It isn't present in the 'else' branch. =20
+>=20
+> Since this is non-critical code and is only ther to print something useful
+> on boot, why not just use snprintf on both sides of statement?
+
+Like this is what I meant...
+diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/mar=
+vell/sky2.c
+index 25981a7a43b5..ebe1406c6e64 100644
+--- a/drivers/net/ethernet/marvell/sky2.c
++++ b/drivers/net/ethernet/marvell/sky2.c
+@@ -4900,7 +4900,7 @@ static const char *sky2_name(u8 chipid, char *buf, in=
+t sz)
+        };
+=20
+        if (chipid >=3D CHIP_ID_YUKON_XL && chipid <=3D CHIP_ID_YUKON_OP_2)
+-               strncpy(buf, name[chipid - CHIP_ID_YUKON_XL], sz);
++               snprintf(buf, sz, "%s", name[chipid - CHIP_ID_YUKON_XL]);
+        else
+                snprintf(buf, sz, "(chip %#x)", chipid);
+        return buf;
+
+
