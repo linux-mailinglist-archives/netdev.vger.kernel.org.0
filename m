@@ -2,85 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2A452A4FF0
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:19:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEAA52A4FEC
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:19:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729674AbgKCTTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 14:19:23 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:4565 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729652AbgKCTTR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 14:19:17 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fa1ad380001>; Tue, 03 Nov 2020 11:19:20 -0800
-Received: from sx1.mtl.com (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 3 Nov
- 2020 19:19:06 +0000
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        "Maxim Mikityanskiy" <maximmi@mellanox.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "Saeed Mahameed" <saeedm@nvidia.com>
-Subject: [net 9/9] net/mlx5e: Fix incorrect access of RCU-protected xdp_prog
-Date:   Tue, 3 Nov 2020 11:18:30 -0800
-Message-ID: <20201103191830.60151-10-saeedm@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201103191830.60151-1-saeedm@nvidia.com>
-References: <20201103191830.60151-1-saeedm@nvidia.com>
+        id S1729653AbgKCTTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 14:19:14 -0500
+Received: from mg.ssi.bg ([178.16.128.9]:45192 "EHLO mg.ssi.bg"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729570AbgKCTTK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 14:19:10 -0500
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id B70F42A4DD;
+        Tue,  3 Nov 2020 21:19:06 +0200 (EET)
+Received: from ink.ssi.bg (ink.ssi.bg [178.16.128.7])
+        by mg.ssi.bg (Proxmox) with ESMTP id B7AC12A5C1;
+        Tue,  3 Nov 2020 21:19:05 +0200 (EET)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id BF6403C09C1;
+        Tue,  3 Nov 2020 21:19:02 +0200 (EET)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 0A3JIv8w008680;
+        Tue, 3 Nov 2020 21:19:00 +0200
+Date:   Tue, 3 Nov 2020 21:18:57 +0200 (EET)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     =?UTF-8?Q?Cezar_S=C3=A1_Espinola?= <cezarsa@gmail.com>
+cc:     Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        "open list:IPVS" <netdev@vger.kernel.org>,
+        "open list:IPVS" <lvs-devel@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:NETFILTER" <netfilter-devel@vger.kernel.org>,
+        "open list:NETFILTER" <coreteam@netfilter.org>
+Subject: Re: [PATCH RFC] ipvs: add genetlink cmd to dump all services and
+ destinations
+In-Reply-To: <CA++F93jp=6mfVm9brGOMeBE0EKoJhg4EAuN04jeBnXKsC-rTag@mail.gmail.com>
+Message-ID: <5b911129-e3de-f198-625a-8998cd6cdf0@ssi.bg>
+References: <20201030202727.1053534-1-cezarsa@gmail.com> <9140ef65-f76d-4bf1-b211-e88c101a5461@ssi.bg> <CA++F93jp=6mfVm9brGOMeBE0EKoJhg4EAuN04jeBnXKsC-rTag@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1604431160; bh=Me4k3oBtLi1R1bUzXFhth6SnIPa/YVgeeB1Nn0ImP/A=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=jtsGutuSViqt/TjVdJiuCGlI2kp5oqv0Md4qGYPpsrTuauvUvj1mCPEKO3l+as4tF
-         PghbFhofYYb8sf/zzVv+SRUIT4In8MabwEunYTrWTcUNBLlcMC2ICJ28isaClveNj6
-         Cg77ZkmnQx0RRKtl2qQYxSls8QNlRX2bCw2ySdebtZKEHzVVH1PYcJDVZW0BVMBd5j
-         M8z7x8o82Uc1waP8J2FksDGXBxWiXfz95qEEFuGTO8R5vojGw7sJgHnIYY0DtV71Cp
-         mbmtkgyHjuAI1ZI7PIc0oLxvJ6V4O55bpNi64BQDL84BjirX6Y6UOAUg5dDAMgMn3a
-         c2jLQ3kg5RpVg==
+Content-Type: multipart/mixed; boundary="-1463811672-1624316750-1604431142=:3799"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@mellanox.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-rq->xdp_prog is RCU-protected and should be accessed only with
-rcu_access_pointer for the NULL check in mlx5e_poll_rx_cq.
+---1463811672-1624316750-1604431142=:3799
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-rq->xdp_prog may change on the fly only from one non-NULL value to
-another non-NULL value, so the checks in mlx5e_xdp_handle and
-mlx5e_poll_rx_cq will have the same result during one NAPI cycle,
-meaning that no additional synchronization is needed.
 
-Fixes: fe45386a2082 ("net/mlx5e: Use RCU to protect rq->xdp_prog")
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+	Hello,
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/=
-ethernet/mellanox/mlx5/core/en_rx.c
-index 599f5b5ebc97..6628a0197b4e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1584,7 +1584,7 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget)
- 	} while ((++work_done < budget) && (cqe =3D mlx5_cqwq_get_cqe(cqwq)));
-=20
- out:
--	if (rq->xdp_prog)
-+	if (rcu_access_pointer(rq->xdp_prog))
- 		mlx5e_xdp_rx_poll_complete(rq);
-=20
- 	mlx5_cqwq_update_db_record(cqwq);
---=20
-2.26.2
+On Tue, 3 Nov 2020, Cezar Sá Espinola wrote:
+
+> >         And now what happens if all dests can not fit in a packet?
+> > We should start next packet with the same svc? And then
+> > user space should merge the dests when multiple packets
+> > start with same service?
+> 
+> My (maybe not so great) idea was to avoid repeating the svc on each
+> packet. It's possible for a packet to start with a destination and
+> user space must consider then as belonging to the last svc received on
+> the previous packet. The comparison "ctx->last_svc != svc" was
+> intended to ensure that a packet only starts with destinations if the
+> current service is the same as the svc we sent on the previous packet.
+
+	You can also consider the idea of having 3 coordinates
+for start svc: idx_svc_tab (0 or 1), idx_svc_row (0..IP_VS_SVC_TAB_SIZE-1)
+and idx_svc for index in row's chain. On new packet this will
+indicate the htable and its row and we have to skip svcs in
+this row to find our starting svc. I think, this will still fit in
+the netlink_callback's args area. If not, we can always kmalloc
+our context in args[0]. In single table, this should speedup
+the start svc lookup 128 times in average (we have 256 rows).
+In setup with 1024 svcs (average 4 in each of the 256 rows)
+we should skip these 0..3 entries instead of 512 in average.
+
+> >         last_svc is used out of __ip_vs_mutex region,
+> > so it is not safe. We can get a reference count but this
+> > is bad if user space blocks.
+> 
+> I thought it would be relatively safe to store a pointer to the last
+> svc since I would only use it for pointer comparison and never
+> dereferencing it. But in retrospect it does look unsafe and fragile
+> and could probably lead to errors especially if services are modified
+> during a dump causing the stored pointer to point to a different
+> service.
+
+	Yes, nobody is using such pointers. We should create
+packets that correctly identify svc for the dests. The drawback
+is that user space may need more work for merging. We can always
+create a sorted array of pointers to svcs, so that we can binary
+search with bsearch() the svc from every received packet. Then we
+will know if this is a new svc or an old one (with dests in
+multiple packets). Should we also check for dest duplicates in
+the svc? The question is how much safe we should play. In
+user space the max work we can do is to avoid duplicates
+and to put dests to their correct svc.
+
+> >         But even if we use just indexes it should be ok.
+> > If multiple agents are used in parallel it is not our
+> > problem. What can happen is that we can send duplicates
+> > or to skip entries (both svcs and dests). It is impossible
+> > to keep any kind of references to current entries or even
+> > keys to lookup them if another agent can remove them.
+> 
+> Got it. I noticed this behavior while writing this patch and even
+> created a few crude validation scripts running parallel agents and
+> checking the diff in [1].
+
+	Ok, make sure your tests cover cases with multiple
+dests, so that single service occupies multiple packets,
+I'm not sure if 100 dests fit in one packet or not.
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
+---1463811672-1624316750-1604431142=:3799--
 
