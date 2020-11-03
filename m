@@ -2,78 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED4FF2A4D76
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:48:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D62F42A4D7A
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:49:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728717AbgKCRsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 12:48:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
+        id S1729033AbgKCRtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:49:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727706AbgKCRsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:48:30 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECFAC0613D1;
-        Tue,  3 Nov 2020 09:48:29 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id a7so23335240lfk.9;
-        Tue, 03 Nov 2020 09:48:29 -0800 (PST)
+        with ESMTP id S1727901AbgKCRtK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:49:10 -0500
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF55C0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:49:09 -0800 (PST)
+Received: by mail-ed1-x544.google.com with SMTP id a10so2045093edt.12
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:49:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mYXorWBr8zWL+PHmzYaHbLemVXqGBhRfqAs8l+ZRgEE=;
-        b=kjnXBbqL8Ln18ggUu5jM7UkT1rA3vT2wWjABXMSj8pISDYROm8tmHzYZcoPGPS8rAa
-         o2gNNuKqDRaAL7XpLC2jsyZnouaf8HaQrym6sWf9U722yuwOGlg9vsxIWT4W9Ce/pE95
-         ZSWDEveq/M8BXhVskMyD5XhAlXuSOxtVzImNCHRPepkG9oWPF06Pav29O6/RqvtR4rv5
-         kjDA74l/z5ELKDXNYUh2TB2kbGh/JhltDBF6+xHQ/HNvjD5MFuuf8fJg6LEZ6Mg6SvLq
-         SBz/aE4YGi8w0+OQhpc0QPETZPVtP+EY5rs5ApOOb6zNMcBF2oUdVwfQFnkZLD0XkK+e
-         ZQ1Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=V42qrGNK8bW6VmirlyLhPtqTBkW10a/gFQKVHJaN6G0=;
+        b=UwgfPq5kdLtSIAPmNyPKCIjYlGis4noAqqafR7I9RRFkeIRPksfSLYCWJHRCUKEgku
+         zGPRsdImmlyOwCOQLui1g43nl9O6PSdAkGp9ZMSs9qD+m6bK91MnsIVXCaO3Ms4C9rfB
+         Lbfm4JYZiFFo9sffQtGeS4oX0w9qUmhe8GOZIt8Sm0IPmRPyYZ4TF3zFgwBTyfieG0xt
+         EjPI4LzVySsDnqR/DLC7B85tXO4FnVoz4NkIndMYMyF4+r6RlWibskXQZOVpltOSNQKp
+         jXxZo+G7HK9ylSwr4Rl/uGSQw/Hla1Z+V/X3ZKbdRRA7Xuk2sDkcjPLNZDm2LUwKSkns
+         nAlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mYXorWBr8zWL+PHmzYaHbLemVXqGBhRfqAs8l+ZRgEE=;
-        b=jLeMIV9OqS+hBsCVgz04/BOSKHgdldkGbXnUqQEmOZSTx2Gou+BNxuVp5K5ob0q0Rp
-         ttSVzsdtar2hvlTOp9JN+l47qgG6At1vRuHacduDHKWGCiUZ3pDmPSYuIUVwOCVGkob7
-         ibcUeQH3TpZAZ78NqgOzsK1yWvOA25XZctIhFA9OS6HBgLt60CX4COdsT4vWP1nkE+mn
-         WHfz5RRmtgHeTvhBn6tJ3ww6m8LMZNE4PijjW7P6E9CrMwKfXdnFumhoZwGA15P8+UL5
-         RNnmWp3XAcJD90qztLP1njtUHNxQe9+kGzLCfOi87jbahZ3PVuXsQ63VieZlUFAAAyPT
-         dzfg==
-X-Gm-Message-State: AOAM533aoX+0w3QTbbxzhX0OSQesoumMG4o3KQgDsaQVftX/6H0VkTCS
-        zUGGmogKJPjtg/Um2c1EOHTFQk1EgMbBqt5EVyEni9STo3U=
-X-Google-Smtp-Source: ABdhPJwa6l65rSy3oL6HS27i7jYIn8x6QRck7WvFA84GxNvJZS2Qk0jPMgt4E9FfOm1MNkn7u5JZ0kltzcieR7ipf1c=
-X-Received: by 2002:a19:6912:: with SMTP id e18mr7799428lfc.196.1604425707620;
- Tue, 03 Nov 2020 09:48:27 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=V42qrGNK8bW6VmirlyLhPtqTBkW10a/gFQKVHJaN6G0=;
+        b=Dx5AwBJKhNqkpQMgZYqczsU4QK30B87JDqkhCt+lFFUz4vfImTo+do6KFIQ9xfb2pR
+         d/nhy0Yg5Nospn8bUvf4WjDLraqLd3ktMWV8wkk4HqV1XuEdPViPcVW64T0CilFj3LAa
+         tt5CWtOnLcj1yeOdbsZYQTBPU9hzuw2yQx3Ba+HKUZSc16hF3CztK6fs20jJfvHmzuSg
+         FunZ+VRIXy/2ZSLs/mZygg877M7+kxDN+/ST11qnFam7gHPROyKjujZrxc0WrLunZCqo
+         acZoFVKLuRUMLetf6VNzEhwIe/8Q7uKAdBC4gO8ZhgX7jg1f09Xq2Gl/AA+QDj0B3KDI
+         sH3A==
+X-Gm-Message-State: AOAM531zkne+bpC0CeB5sq5jIO2du0sBgwPXLi3vzJriyRwV2reJ6zKJ
+        RfY1NsySUtsh5QDnbnOBVzk=
+X-Google-Smtp-Source: ABdhPJxU8m+0KXIzoelIQhJ7AjaeBccLiwNbL8JsYYDhbqG+FDMqsyixfv5lBiALWjinGwjabnDX2A==
+X-Received: by 2002:a05:6402:1750:: with SMTP id v16mr21289827edx.241.1604425748526;
+        Tue, 03 Nov 2020 09:49:08 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id i14sm12205852edu.40.2020.11.03.09.49.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2020 09:49:08 -0800 (PST)
+Date:   Tue, 3 Nov 2020 19:49:06 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "james.jurack@ametek.com" <james.jurack@ametek.com>
+Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
+ skb_cow_head for PTP
+Message-ID: <20201103174906.ttncbiqvlvfjibyl@skbuf>
+References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
+ <20201029081057.8506-1-claudiu.manoil@nxp.com>
+ <20201103161319.wisvmjbdqhju6vyh@skbuf>
+ <20201103083050.100b2568@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <AM0PR04MB6754C8F6D12318EF1DD0CA2B96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
+ <20201103173007.23ttgm3rpmbletee@skbuf>
+ <AM0PR04MB6754E51184163B357DAACDFB96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-References: <20201028132529.3763875-1-haliu@redhat.com> <20201029151146.3810859-1-haliu@redhat.com>
- <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com> <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
- <20201103094224.6de1470d@redhat.com>
-In-Reply-To: <20201103094224.6de1470d@redhat.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 3 Nov 2020 09:48:15 -0800
-Message-ID: <CAADnVQ+3Q850dmSssaQCa9yi-d3G3FCHPkVd2N8y8OMJ0++E=w@mail.gmail.com>
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Jiri Benc <jbenc@redhat.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM0PR04MB6754E51184163B357DAACDFB96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 3, 2020 at 12:42 AM Jiri Benc <jbenc@redhat.com> wrote:
-> sight, this sounds easier for the developers. Why bother with dynamic
-> linking at all? Everything can be linked statically.
+On Tue, Nov 03, 2020 at 05:41:36PM +0000, Claudiu Manoil wrote:
+> This is the patch:
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=d145c9031325fed963a887851d9fa42516efd52b
+> 
+> are you sure you have it applied?
 
-That's exactly what some companies do.
-Linking everything statically provides stronger security.
+Actually? No, I didn't have it applied... I had thought that net had
+been already merged into net-next, for some reason :-/
+Let me run the test for a few more tens of minutes with the patch
+applied.
