@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D00C22A38C0
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 02:21:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0C522A38E6
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 02:22:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728252AbgKCBUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 20:20:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35982 "EHLO mail.kernel.org"
+        id S1728326AbgKCBVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 20:21:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36372 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728235AbgKCBUv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 20:20:51 -0500
+        id S1727278AbgKCBVF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 20:21:05 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8B3F5222B9;
-        Tue,  3 Nov 2020 01:20:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9789E2242E;
+        Tue,  3 Nov 2020 01:21:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604366450;
-        bh=XTmybn5wyFPtf882US9JVHzfb8JSXrqmCqIheLZ7jm0=;
+        s=default; t=1604366464;
+        bh=Y6ko1wyJWPyxRON9IYngFtGYAUUZW4EoWK7n9Zwbcqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H9pm3YRrz629r5HJsa7Xumryj9TRGTrdC7KtMot+T+ibaXagYsSEE5I75DzAs7No6
-         RkJBptDxPVtHQcLJ8TLN8Bexj3+oa0B1uohHhald9LAjSFLC179IWm4twSPWOufzL4
-         fg8T/kDx7hpSDmTUH61dBOd8uI25/DXZTrTergU8=
+        b=SVPkFQhf0fcW4qqSo6gIUgsYg4te3RQDWhcsmnJKM0WxtWI03wDEYzLqU5v+TwRTG
+         FT5WttgatmFQt0PcWuYL97EfdnRzf4XVbS2Bu9GFBD207zDuIWMVOq100c10mIyiFL
+         I3QEJdcx1u45brAmql584PBWh/mt5oJJQ2zJMna8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jeff Vander Stoep <jeffv@google.com>,
@@ -30,12 +30,12 @@ Cc:     Jeff Vander Stoep <jeffv@google.com>,
         James Morris <jamorris@linux.microsoft.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 08/11] vsock: use ns_capable_noaudit() on socket create
-Date:   Mon,  2 Nov 2020 20:20:36 -0500
-Message-Id: <20201103012039.183672-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 07/10] vsock: use ns_capable_noaudit() on socket create
+Date:   Mon,  2 Nov 2020 20:20:51 -0500
+Message-Id: <20201103012054.183811-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201103012039.183672-1-sashal@kernel.org>
-References: <20201103012039.183672-1-sashal@kernel.org>
+In-Reply-To: <20201103012054.183811-1-sashal@kernel.org>
+References: <20201103012054.183811-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -70,10 +70,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index c88dc8ee3144b..02374459c4179 100644
+index f297a427b421b..29f7491acb354 100644
 --- a/net/vmw_vsock/af_vsock.c
 +++ b/net/vmw_vsock/af_vsock.c
-@@ -629,7 +629,7 @@ struct sock *__vsock_create(struct net *net,
+@@ -636,7 +636,7 @@ struct sock *__vsock_create(struct net *net,
  		vsk->owner = get_cred(psk->owner);
  		vsk->connect_timeout = psk->connect_timeout;
  	} else {
