@@ -2,68 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 372032A4B04
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:19:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A5B52A4B0A
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:20:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727971AbgKCQTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 11:19:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726212AbgKCQTM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 11:19:12 -0500
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BF8C0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 08:19:12 -0800 (PST)
-Received: from localhost.localdomain (p200300e9d729b09a69789643056dba7d.dip0.t-ipconnect.de [IPv6:2003:e9:d729:b09a:6978:9643:56d:ba7d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id D810AC3DB1;
-        Tue,  3 Nov 2020 17:19:08 +0100 (CET)
-Subject: Re: [PATCH 23/30] net: ieee802154: ca8210: Fix incorrectly named
- function param doc
-To:     Lee Jones <lee.jones@linaro.org>, davem@davemloft.net
-Cc:     Harry Morris <h.morris@cascoda.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20201102114512.1062724-1-lee.jones@linaro.org>
- <20201102114512.1062724-24-lee.jones@linaro.org>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <d21d7c3c-66f8-bcdb-cc9f-bd87c5dbd6e7@datenfreihafen.org>
-Date:   Tue, 3 Nov 2020 17:19:08 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S1728133AbgKCQUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 11:20:40 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:32782 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727323AbgKCQUk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 11:20:40 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kZz2r-0053Ht-9O; Tue, 03 Nov 2020 17:20:29 +0100
+Date:   Tue, 3 Nov 2020 17:20:29 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, michal.simek@xilinx.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, git@xilinx.com,
+        Shravya Kumbham <shravya.kumbham@xilinx.com>
+Subject: Re: [PATCH net-next] net: emaclite: Add error handling for
+ of_address_ and phy read functions
+Message-ID: <20201103162029.GK1042051@lunn.ch>
+References: <1604410265-30246-1-git-send-email-radhey.shyam.pandey@xilinx.com>
 MIME-Version: 1.0
-In-Reply-To: <20201102114512.1062724-24-lee.jones@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1604410265-30246-1-git-send-email-radhey.shyam.pandey@xilinx.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
-
-On 02.11.20 12:45, Lee Jones wrote:
-> Fixes the following W=1 kernel build warning(s):
+On Tue, Nov 03, 2020 at 07:01:05PM +0530, Radhey Shyam Pandey wrote:
+> From: Shravya Kumbham <shravya.kumbham@xilinx.com>
 > 
->   drivers/net/ieee802154/ca8210.c:724: warning: Function parameter or member 'cas_ctl' not described in 'ca8210_rx_done'
->   drivers/net/ieee802154/ca8210.c:724: warning: Excess function parameter 'cas_ctrl' description in 'ca8210_rx_done'
+> Add ret variable, conditions to check the return value and it's error
+> path for of_address_to_resource() and phy_read() functions.
 > 
-> Cc: Harry Morris <h.morris@cascoda.com>
-> Cc: Alexander Aring <alex.aring@gmail.com>
-> Cc: Stefan Schmidt <stefan@datenfreihafen.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: linux-wpan@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> Addresses-Coverity: Event check_return value.
 
+Hi Radhey
 
-Acked-by: Stefan Schmidt <stefan@datenfreihafen.org>
+This is well out of scope of a Coverity fix, but looking at the patch
+i noticed some bad things.
 
-regards
-Stefan Schmidt
+> @@ -923,7 +929,7 @@ static int xemaclite_open(struct net_device *dev)
+>  	xemaclite_disable_interrupts(lp);
+>  
+>  	if (lp->phy_node) {
+> -		u32 bmcr;
+> +		int bmcr;
+>  
+>  		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
+>  					     xemaclite_adjust_link, 0,
+> @@ -945,6 +951,13 @@ static int xemaclite_open(struct net_device *dev)
+>  
+>  		/* Restart auto negotiation */
+>  		bmcr = phy_read(lp->phy_dev, MII_BMCR);
+> +		if (bmcr < 0) {
+> +			dev_err(&lp->ndev->dev, "phy_read failed\n");
+> +			phy_disconnect(lp->phy_dev);
+> +			lp->phy_dev = NULL;
+> +
+> +			return bmcr;
+> +		}
+>  		bmcr |= (BMCR_ANENABLE | BMCR_ANRESTART);
+>  		phy_write(lp->phy_dev, MII_BMCR, bmcr);
 
+A MAC driver should not be touching the PHY. The call to
+phy_set_max_speed() should prevent the PHY from advertising 1G speeds,
+so there is no need to poke the advertise registers. And phy_start()
+will start auto-get if it is enabled.
+
+It would be nice if this code got cleaned up.
+
+   Andrew
