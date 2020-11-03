@@ -2,128 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A4BF2A4E1B
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:15:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E77F2A4E1F
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:16:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728939AbgKCSPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 13:15:36 -0500
-Received: from mail-eopbgr10050.outbound.protection.outlook.com ([40.107.1.50]:30087
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727706AbgKCSPg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 13:15:36 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jfeWi7rPp6GLW19FBF7kB6zLmGg/p96kAEJOP3fLPKsYmfTASYxd2f94++CvZc0PJrZdZVRelrg2nvS6LVDkcUpSv1oDDLMhcmm39kX+WoqOfkawVjEuR5XW17e2T3vJfAal55YmaYaYX9V5dFf+91I/YZSZ/RlwZ0Ojdm0Uj6pXbLPd8ZCMzP/fO8Z1v1j9wtxVxijsbIstyC3HudnE2xSbiPHXK5UIn3q9j4zJ7wJu3GyPxtRAygabD1eGRIZwqH+/YVbfdxl9+nE/Xk/7j0CqJcbSGel3OfauPMd7rEFohKDtkI5ANMgGSes6mYNJiFcvK+1zTLesbXL37VI0MQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4z3Qde5l+6ECLnQK+V3i66ryjmnNN8A1aHbuzYHY9h0=;
- b=I6HgraL7/M1rW+Rz4BBJLSty3NLd6vMzURYFQPy09P82/H20pKhgfiVJSaS8YbbQ/974OWdhfIarWz2HdI+gs+n9pOMbU01x/qf/K1o8mucebKQZ3RnhdNgvnRnba4+RYjhm+cf15xh90g8wIzc07a/ASeOHtrioqvTOK4xkqNCJ2J93feJO/q3/n2Xn39i+UR7NyqDKbADKRluUfR94JpFd7rTn0wjlDGDa4MqJWC73MRXQUnyryo1kldILW+XLTMfRXhdZuHI4lbuwa+qxQe91oOooepzMhdOjNijGpQB9YoUnyZSJWy4n/MQMJco8IRgQ5Ccu2qDjcUcwnfhGjQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4z3Qde5l+6ECLnQK+V3i66ryjmnNN8A1aHbuzYHY9h0=;
- b=Aj+FEr9TfsFG/YOOVY5OMyHrjOZI/CgI4WL2/gxgp+KvR/5UwIwMkSjnjdIR0NeoVgmArRRf3jkn+xbGo3a0V/E6oev3gxc6KugqsL1QrVnYrXAn/AERRS8RTo+eYMa0/jmEzTA1sZw6akJbLd4Igl9sHsM19aWF8kCAv6pGIZ4=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR0402MB3552.eurprd04.prod.outlook.com (2603:10a6:803:9::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Tue, 3 Nov
- 2020 18:15:29 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3499.032; Tue, 3 Nov 2020
- 18:15:29 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Florian Fainelli <f.fainelli@gmail.com>,
+        id S1728667AbgKCSQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 13:16:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725385AbgKCSQd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 13:16:33 -0500
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB8BC0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 10:16:32 -0800 (PST)
+Received: by mail-wm1-x342.google.com with SMTP id h22so238541wmb.0
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 10:16:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=I09KzPQvkis8PkKizwbhy7q3S2vVghUZJ/0kEo4CnXs=;
+        b=hw7bkZxoYtW6BHqk8Z1gNBJuiyGXWRCZ3wqJb8T9EKVc1O5tayu3IsvWCSCA22q2wq
+         SOzt4opGJaRZMIfHAx9Zhiht5WxUHnYoyaCQbbLlN99fu/tuWU8qgRoQtxBWMB/u0d1v
+         vu//CxyLKWHVYWXzGXmdfbz3msfIagbAtjhIS0zZbrjo/qUojbN+RK/VNx+6mW7Kyrfo
+         zejMB7MlR8ev1Bzx9m9YYwf8QjlaJ23DYuU/5SOQdt9TXL8jczRLjABp4me7w26M8A4c
+         ydRNc22xOe28v3ihOjpc277iQ+TVX1YXMZJnx3qzm7l3GGL7GljpDZWNeUV57WwUysKi
+         y1Eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=I09KzPQvkis8PkKizwbhy7q3S2vVghUZJ/0kEo4CnXs=;
+        b=maq8af9b6HJE2dbhMaMKKS+c2uosj1GjNFiNYPWCCx+AtVceVhsrv9ugd0DqXm1PTo
+         o7fybuZMgjH+zDxSaqSag+feWlCnEK17CQSRlLe/J0VIkfTZZDaXx4DxQ3EFwLbYnmYB
+         WCdFP1uGrDQiF9Q7OWX9dJSPwtCyHspVdwZEQsfRg7C5XR7eiFwQGmQD9qDbUZJ4L33o
+         axjiaK+MmPrr0w9s+x4HTLJeH0DcReUaFA4siIrgEqcVZURYZ9IMw7WcgfyAOUIq5FWS
+         f1vS7Rq5p/VbOC1MgAhwz/JubBueMTSul2EqCyXqlWFnBGASaeqZ2qyj+a+VkaBkpihG
+         B3Dg==
+X-Gm-Message-State: AOAM531kYAketoPMDKeoqeKACBmB8d9M5J+6suqxrfOYf2++V4oDAp/O
+        Srg0W7Ysw4VwWyDQw9Zfd9U=
+X-Google-Smtp-Source: ABdhPJznqhUT4a9ghpV/OZZHN+l+gXJXF70JgJXh4rTRJpYZVoBvwhkYXSnKbABLo2aBNNnFXjSfjA==
+X-Received: by 2002:a1c:7e82:: with SMTP id z124mr466768wmc.8.1604427391626;
+        Tue, 03 Nov 2020 10:16:31 -0800 (PST)
+Received: from [192.168.8.114] ([37.171.35.74])
+        by smtp.gmail.com with ESMTPSA id n22sm3162911wmk.40.2020.11.03.10.16.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Nov 2020 10:16:30 -0800 (PST)
+Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
+ skb_cow_head for PTP
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        Christian Eggers <ceggers@arri.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [PATCH v3 net-next 09/12] net: dsa: tag_brcm: let DSA core deal
- with TX reallocation
-Thread-Topic: [PATCH v3 net-next 09/12] net: dsa: tag_brcm: let DSA core deal
- with TX reallocation
-Thread-Index: AQHWsIORA0PhHKt4BUWPz2Nre8xYCKm1TgOAgADvY4CAAGhFgIAAE+sA
-Date:   Tue, 3 Nov 2020 18:15:29 +0000
-Message-ID: <20201103181528.tyvythhy2ynyjx4a@skbuf>
-References: <20201101191620.589272-1-vladimir.oltean@nxp.com>
- <20201101191620.589272-10-vladimir.oltean@nxp.com>
- <10537403-67a4-c64a-705a-61bc5f55f80e@gmail.com>
- <20201103105059.t66xhok5elgx4r4h@skbuf>
- <20201103090411.64f785cc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201103090411.64f785cc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.2.177]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: af14d565-782b-4904-e3f0-08d880247230
-x-ms-traffictypediagnostic: VI1PR0402MB3552:
-x-microsoft-antispam-prvs: <VI1PR0402MB355293E246BE089CB0F4607DE0110@VI1PR0402MB3552.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: T6lyzJgGxqvsoDCk37OEnUL0oQD03gVDCyGcH/6CaxFs3Uovv6GDzncGiJVNfh9+HKMKhOFOjcFChcYBVj6jUMUZocWa2lJ/rnSS1gVEuKa1SI4MMlfzx1kg2dsIbjPoHLzsylQx/zqS+PCLJrnjuMVjRqRTpP1RvkCx/brMtsestlggHLI5O49wXs7prN1NbUSqvMYLcR3jxKbrmM8fwGI307f5bzEtarh5shL8Azy2p2MJzVXU+ds2AfTfLhscM7Ixryo1+BDmH+kv2svqw/ggP6FH5nL+bggznIm8NDiyBr6W0kxfXlWyfF6qB2rs
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(346002)(136003)(366004)(376002)(39850400004)(396003)(64756008)(66446008)(8676002)(8936002)(91956017)(66556008)(316002)(66476007)(66946007)(4326008)(86362001)(1076003)(76116006)(54906003)(5660300002)(6512007)(478600001)(6916009)(2906002)(6506007)(33716001)(26005)(186003)(71200400001)(6486002)(44832011)(9686003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: y0AFeNMu3YnxS4UjjC2iwlp+xE7UgOR0SjT2h43KxkjzKgNI4LTLvE0n1pmQ3IfAWhtDpMSuTiTFBEtfOWMbxTCejW/beJJwhC6vI235zJ+waWAQOqrCL49MjnJ4Hb90LKZDmD0RkkqrR08s49BkPqjKTswF5qoWKz0G9IJrrKo7Lvsl75tUovMZNcbeUIiM0QqNaknyxZoitIDcD6lzB2nW4bQntxYB3N3bu8/c9m79/a2GL9rrNrBnrIW07Uv5s1DLUdbe/aOBvodY4Ubc7EJ/6U+MW2ELqL2+V6bgFzXQzKOA0h1ekFTCsb41kvS9B440y69lgbtF4RsTQSNLMm+LrenKWjFHQQbhS6SoxDnO69Dj/F1yeFM5gSsnZymR/6Nt+QDDTRNBQVGnlcVe2MeTlAd+Qw0BShAHsSGQZdNC/YQYTF9gqxatQjZr6wjs1cpZNQRniKQVJNHnRaDcZtgTqOqnTTLxvDA6VK+x+WSehIfuCkfOWWhRVTNSWaEqcSd/zenzaJ8Az0NxuoRVfPtTNnBMKo+sM38gEb0Wx5TdeWQ223vi9leInBA+W8+1nrsaT4F/mV788kCmMOtpJ8vfHoBap1HOJPuB/wTcXAyfuG1NtgojepSx8J0ndmI5peKaE6VBH0VX+vfw3c8+Mg==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <BBC1D66B546D4F4EAEABC039D8CDCC10@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        "David S . Miller" <davem@davemloft.net>,
+        "james.jurack@ametek.com" <james.jurack@ametek.com>
+References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
+ <20201029081057.8506-1-claudiu.manoil@nxp.com>
+ <20201103161319.wisvmjbdqhju6vyh@skbuf>
+ <20201103083050.100b2568@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <AM0PR04MB6754C8F6D12318EF1DD0CA2B96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
+ <20201103173007.23ttgm3rpmbletee@skbuf>
+ <AM0PR04MB6754E51184163B357DAACDFB96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
+ <20201103174906.ttncbiqvlvfjibyl@skbuf>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <19c3385d-7974-b5bd-3d5a-51d3d87919b0@gmail.com>
+Date:   Tue, 3 Nov 2020 19:16:29 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: af14d565-782b-4904-e3f0-08d880247230
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Nov 2020 18:15:29.5090
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MeAi+MUlnJVAX12NuDwajY40q4Uz1tkQMSgR30fInDYCYe+r2so2d9ruE92xqIox8l7e6ecXXnEpKQ7hTVXWlA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3552
+In-Reply-To: <20201103174906.ttncbiqvlvfjibyl@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 09:04:11AM -0800, Jakub Kicinski wrote:
-> In a recent discussion I was wondering if it makes sense to add the
-> padding len to struct net_device, with similar best-effort semantics
-> to needed_*room. It'd be a u8, so little worry about struct size.
 
-What would that mean in practice? Modify the existing alloc_skb calls
-which have an expression e that depends on LL_RESERVED_SPACE(dev), into
-max(e, dev->padding_len)? There's a lot of calls to alloc_skb to modify
-though...
 
-> You could also make sure DSA always provisions for padding if it has to
-> reallocate, you don't need to actually pad:
->=20
-> @@ -568,6 +568,9 @@ static int dsa_realloc_skb(struct sk_buff *skb, struc=
-t net_device *dev)
->                 /* No reallocation needed, yay! */
->                 return 0;
-> =20
-> +       if (skb->len < ETH_ZLEN)
-> +               needed_tailroom +=3D ETH_ZLEN;
-> +
->         return pskb_expand_head(skb, needed_headroom, needed_tailroom,
->                                 GFP_ATOMIC);
->  }
->=20
-> That should save the realloc for all reasonable drivers while not
-> costing anything (other than extra if()) to drivers which don't care.
+On 11/3/20 6:49 PM, Vladimir Oltean wrote:
+> On Tue, Nov 03, 2020 at 05:41:36PM +0000, Claudiu Manoil wrote:
+>> This is the patch:
+>> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=d145c9031325fed963a887851d9fa42516efd52b
+>>
+>> are you sure you have it applied?
+> 
+> Actually? No, I didn't have it applied... I had thought that net had
+> been already merged into net-next, for some reason :-/
+> Let me run the test for a few more tens of minutes with the patch
+> applied.
+> 
 
-DSA does already provision for padding if it has to reallocate, but only
-for the case where it needs to add a frame header at the end of the skb
-(i.e. "tail taggers"). My question here was whether there would be any
-drawback to doing that for all types of switches, including ones that
-might deal with padding in some other way (i.e. in hardware).=
+I find strange that the local TCP traffic can end up calling skb_realloc_headromm() in the old kernels.
+
+Normally TCP reserves a lot of bytes for headers.
+
+#define MAX_TCP_HEADER     L1_CACHE_ALIGN(128 + MAX_HEADER)
+
+It should accommodate the gianfar needs for additional 24 bytes,
+even if LL_MAX_HEADER is 32 in your kernel build perhaps.
+
+
