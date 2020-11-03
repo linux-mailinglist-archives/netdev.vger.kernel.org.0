@@ -2,105 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 388272A4C01
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:53:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50EC62A4C36
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:04:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728535AbgKCQxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 11:53:12 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:40310 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727901AbgKCQxL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 11:53:11 -0500
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0A3Gr4oZ061462;
-        Tue, 3 Nov 2020 10:53:04 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1604422384;
-        bh=0Tkp6HLRVCB/7ivjFJeStRM6yrcVsh9/LqVVSNK0ysQ=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=Anuz5tKbBGuCx0poQrMYXF/O5541STenRpOVtBf9We3N7ok2idb0GrDCk/Mxsox29
-         McVsSzhmdTxAUg7ONgpcec2G+4FFLg30BDwBWUtwepx3vU5hg+ZusFLMGS9z8Tj8Qg
-         4Z7NnvX8E2K2zUIuE/lg2VxytxpmMUxSrlEedoJw=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0A3Gr4Iu015522
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 3 Nov 2020 10:53:04 -0600
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 3 Nov
- 2020 10:53:03 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 3 Nov 2020 10:53:04 -0600
-Received: from [10.250.36.55] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0A3Gr3ej016284;
-        Tue, 3 Nov 2020 10:53:03 -0600
-Subject: Re: [PATCH net-next v3 2/4] dt-bindings: net: Add Rx/Tx output
- configuration for 10base T1L
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <f.fainelli@gmail.com>,
-        <hkallweit1@gmail.com>, <robh@kernel.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20201030172950.12767-1-dmurphy@ti.com>
- <20201030172950.12767-3-dmurphy@ti.com> <20201030195655.GD1042051@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <a50fe8f3-2ca1-8969-08ac-013704a5a617@ti.com>
-Date:   Tue, 3 Nov 2020 10:52:58 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728046AbgKCREO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:04:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32974 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725993AbgKCREN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 12:04:13 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A386C2080D;
+        Tue,  3 Nov 2020 17:04:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604423053;
+        bh=ZaGxcm2dEynExECVdP9BrXOzGOMSQyCJK2VwxCvRmrM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=1SrxpOII6z3cwkYcgQ3k17pa8f69AMh+8lx70Am4Ld78vjcB4bxy9bPSUrkF7uTMY
+         S8/G8RtqLjMUHvPGIVjisBVOusQS1jxIk/o/Uh45BzxGlKKcVorhotE7IHGRchhruR
+         GKMvBfBy9dBGgUPg56Rvxi29gHw9cjPMYPDbyFIs=
+Date:   Tue, 3 Nov 2020 09:04:11 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        Christian Eggers <ceggers@arri.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [PATCH v3 net-next 09/12] net: dsa: tag_brcm: let DSA core deal
+ with TX reallocation
+Message-ID: <20201103090411.64f785cc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201103105059.t66xhok5elgx4r4h@skbuf>
+References: <20201101191620.589272-1-vladimir.oltean@nxp.com>
+        <20201101191620.589272-10-vladimir.oltean@nxp.com>
+        <10537403-67a4-c64a-705a-61bc5f55f80e@gmail.com>
+        <20201103105059.t66xhok5elgx4r4h@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20201030195655.GD1042051@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew
+On Tue, 3 Nov 2020 10:51:00 +0000 Vladimir Oltean wrote:
+> On Mon, Nov 02, 2020 at 12:34:11PM -0800, Florian Fainelli wrote:
+> > On 11/1/2020 11:16 AM, Vladimir Oltean wrote:  
+> > > Now that we have a central TX reallocation procedure that accounts for
+> > > the tagger's needed headroom in a generic way, we can remove the
+> > > skb_cow_head call.
+> > >
+> > > Cc: Florian Fainelli <f.fainelli@gmail.com>
+> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>  
+> >
+> > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>  
+> 
+> Florian, I just noticed that tag_brcm.c has an __skb_put_padto call,
+> even though it is not a tail tagger. This comes from commit:
+> 
+> commit bf08c34086d159edde5c54902dfa2caa4d9fbd8c
+> Author: Florian Fainelli <f.fainelli@gmail.com>
+> Date:   Wed Jan 3 22:13:00 2018 -0800
+> 
+>     net: dsa: Move padding into Broadcom tagger
+> 
+>     Instead of having the different master network device drivers
+>     potentially used by DSA/Broadcom tags, move the padding necessary for
+>     the switches to accept short packets where it makes most sense: within
+>     tag_brcm.c. This avoids multiplying the number of similar commits to
+>     e.g: bgmac, bcmsysport, etc.
+> 
+>     Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+>     Signed-off-by: David S. Miller <davem@davemloft.net>
+> 
+> Do you remember why this was needed?
+> As far as I understand, either the DSA master driver or the MAC itself
+> should pad frames automatically. Is that not happening on Broadcom SoCs,
+> or why do you need to pad from DSA?
+> How should we deal with this? Having tag_brcm.c still do some potential
+> reallocation defeats the purpose of doing it centrally, in a way. I was
+> trying to change the prototype of struct dsa_device_ops::xmit to stop
+> returning a struct sk_buff *, and I stumbled upon this.
+> Should we just go ahead and pad everything unconditionally in DSA?
 
-On 10/30/20 2:56 PM, Andrew Lunn wrote:
-> On Fri, Oct 30, 2020 at 12:29:48PM -0500, Dan Murphy wrote:
->> Per the 802.3cg spec the 10base T1L can operate at 2 different
->> differential voltages 1v p2p and 2.4v p2p. The abiility of the PHY to
->> drive that output is dependent on the PHY's on board power supply.
-> Hi Dan
->
-> So this property is about the board being able to support the needed
-> voltages? The PHY is not forced into 2.4v p2p, it just says the PHY
-> can operate at 2.4v and the board will not melt, blow a fuse, etc?
->
-> I actually think it is normal to specify the reverse. List the maximum
-> that device can do because of board restrictions. e.g.
->
-> - maximum-power-milliwatt : Maximum module power consumption
->    Specifies the maximum power consumption allowable by a module in the
->    slot, in milli-Watts.  Presently, modules can be up to 1W, 1.5W or 2W.
->
-> - max-link-speed:
->     If present this property specifies PCI gen for link capability.  Host
->     drivers could add this as a strategy to avoid unnecessary operation for
->     unsupported link speed, for instance, trying to do training for
->     unsupported link speed, etc.  Must be '4' for gen4, '3' for gen3, '2'
->     for gen2, and '1' for gen1. Any other values are invalid.
->
->   - max-microvolt : The maximum voltage value supplied to the haptic motor.
->                  [The unit of the voltage is a micro]
->
-> So i think this property should be
->
->     max-tx-rx-p2p = <1000>;
+In a recent discussion I was wondering if it makes sense to add the
+padding len to struct net_device, with similar best-effort semantics
+to needed_*room. It'd be a u8, so little worry about struct size.
 
-When I was re-writing the code I couldn't come up with a better property 
-name but I like this one.
+You could also make sure DSA always provisions for padding if it has to
+reallocate, you don't need to actually pad:
 
-I will implement it.
+@@ -568,6 +568,9 @@ static int dsa_realloc_skb(struct sk_buff *skb, struct net_device *dev)
+                /* No reallocation needed, yay! */
+                return 0;
+ 
++       if (skb->len < ETH_ZLEN)
++               needed_tailroom += ETH_ZLEN;
++
+        return pskb_expand_head(skb, needed_headroom, needed_tailroom,
+                                GFP_ATOMIC);
+ }
 
-Do you have any issue with the property being in the ethernet-phy.yaml?
-
-Dan
-
-
+That should save the realloc for all reasonable drivers while not
+costing anything (other than extra if()) to drivers which don't care.
