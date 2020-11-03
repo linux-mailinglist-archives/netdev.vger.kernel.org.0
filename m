@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FDD52A3DA0
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:27:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F31292A3DB1
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:31:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727688AbgKCH1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 02:27:40 -0500
-Received: from mga05.intel.com ([192.55.52.43]:54208 "EHLO mga05.intel.com"
+        id S1727877AbgKCHah (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 02:30:37 -0500
+Received: from mga05.intel.com ([192.55.52.43]:54466 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725968AbgKCH1k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 02:27:40 -0500
-IronPort-SDR: /2utq46E4krC0GMEuJuwh5q/ZNlzysmrAvJxi4gYok16FF9eNu3y19wKk/5Y+rIJKT2CnDqnX5
- tL6iPxJ4W2AA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9793"; a="253720287"
+        id S1727483AbgKCHag (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 02:30:36 -0500
+IronPort-SDR: 5AapjAqofzmXFjGHyVy1QKcK5giwTZLxoOHfWAWqj1NQ+oWCnL3xaSxUEMmb6tDgQ7vy681vwF
+ LCN06HlChr+A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9793"; a="253720559"
 X-IronPort-AV: E=Sophos;i="5.77,447,1596524400"; 
-   d="gz'50?scan'50,208,50";a="253720287"
+   d="gz'50?scan'50,208,50";a="253720559"
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2020 23:27:32 -0800
-IronPort-SDR: tqPa6ZPqXojQyY7PBS/AtDDeJEgYPOrqr8Ve0lgqYP+UhIELysBCmnWbR9bVtaRkZRURJZqsfZ
- xunrXaC0XL3g==
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2020 23:30:34 -0800
+IronPort-SDR: HaW5gG0h1xWRi34SNUTLfVAn4TjlsgGh5rOmsAUn2m01vwhf/iIHFeO+Fxx+/W/V0ActKjOhOO
+ vuve6g+uABhQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.77,447,1596524400"; 
-   d="gz'50?scan'50,208,50";a="353113029"
+   d="gz'50?scan'50,208,50";a="363509938"
 Received: from lkp-server02.sh.intel.com (HELO e61783667810) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 02 Nov 2020 23:27:27 -0800
+  by orsmga007.jf.intel.com with ESMTP; 02 Nov 2020 23:30:28 -0800
 Received: from kbuild by e61783667810 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1kZqj1-00004h-5X; Tue, 03 Nov 2020 07:27:27 +0000
-Date:   Tue, 3 Nov 2020 15:26:49 +0800
+        id 1kZqlv-00004u-PC; Tue, 03 Nov 2020 07:30:27 +0000
+Date:   Tue, 3 Nov 2020 15:30:14 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     George Cherian <george.cherian@marvell.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     kbuild-all@lists.01.org, kuba@kernel.org, davem@davemloft.net,
         sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
         masahiroy@kernel.org, george.cherian@marvell.com
-Subject: Re: [net-next PATCH 2/3] octeontx2-af: Add devlink health reporters
- for NPA
-Message-ID: <202011031504.qUlYDWkF-lkp@intel.com>
-References: <20201102050649.2188434-3-george.cherian@marvell.com>
+Subject: Re: [net-next PATCH 3/3] octeontx2-af: Add devlink health reporters
+ for NIX
+Message-ID: <202011031544.I4qbSnOY-lkp@intel.com>
+References: <20201102050649.2188434-4-george.cherian@marvell.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="Qxx1br4bt0+wmkIi"
+Content-Type: multipart/mixed; boundary="17pEHd4RhPHOinZp"
 Content-Disposition: inline
-In-Reply-To: <20201102050649.2188434-3-george.cherian@marvell.com>
+In-Reply-To: <20201102050649.2188434-4-george.cherian@marvell.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---Qxx1br4bt0+wmkIi
+--17pEHd4RhPHOinZp
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -67,10 +67,10 @@ base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git c43fd
 config: x86_64-allyesconfig (attached as .config)
 compiler: gcc-9 (Debian 9.3.0-15) 9.3.0
 reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/b407a9eab03c85981a41a1e03c88d04036a860d6
+        # https://github.com/0day-ci/linux/commit/bdffba84e2716a5f218840ac6a80052587e48c59
         git remote add linux-review https://github.com/0day-ci/linux
         git fetch --no-tags linux-review George-Cherian/Add-devlink-and-devlink-health-reporters-to/20201102-130844
-        git checkout b407a9eab03c85981a41a1e03c88d04036a860d6
+        git checkout bdffba84e2716a5f218840ac6a80052587e48c59
         # save the attached .config to linux build tree
         make W=1 ARCH=x86_64 
 
@@ -79,268 +79,228 @@ Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
->> drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:18:5: warning: no previous prototype for 'rvu_report_pair_start' [-Wmissing-prototypes]
-      18 | int rvu_report_pair_start(struct devlink_fmsg *fmsg, const char *name)
+   drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:19:5: warning: no previous prototype for 'rvu_report_pair_start' [-Wmissing-prototypes]
+      19 | int rvu_report_pair_start(struct devlink_fmsg *fmsg, const char *name)
          |     ^~~~~~~~~~~~~~~~~~~~~
->> drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:29:5: warning: no previous prototype for 'rvu_report_pair_end' [-Wmissing-prototypes]
-      29 | int rvu_report_pair_end(struct devlink_fmsg *fmsg)
+   drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:30:5: warning: no previous prototype for 'rvu_report_pair_end' [-Wmissing-prototypes]
+      30 | int rvu_report_pair_end(struct devlink_fmsg *fmsg)
          |     ^~~~~~~~~~~~~~~~~~~
->> drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:201:5: warning: no previous prototype for 'rvu_npa_register_interrupts' [-Wmissing-prototypes]
-     201 | int rvu_npa_register_interrupts(struct rvu *rvu)
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:41:13: warning: no previous prototype for 'rvu_nix_af_rvu_intr_handler' [-Wmissing-prototypes]
+      41 | irqreturn_t rvu_nix_af_rvu_intr_handler(int irq, void *rvu_irq)
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:65:13: warning: no previous prototype for 'rvu_nix_af_err_intr_handler' [-Wmissing-prototypes]
+      65 | irqreturn_t rvu_nix_af_err_intr_handler(int irq, void *rvu_irq)
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:107:13: warning: no previous prototype for 'rvu_nix_af_ras_intr_handler' [-Wmissing-prototypes]
+     107 | irqreturn_t rvu_nix_af_ras_intr_handler(int irq, void *rvu_irq)
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:208:5: warning: no previous prototype for 'rvu_nix_register_interrupts' [-Wmissing-prototypes]
+     208 | int rvu_nix_register_interrupts(struct rvu *rvu)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:376:5: warning: no previous prototype for 'rvu_nix_health_reporters_create' [-Wmissing-prototypes]
+     376 | int rvu_nix_health_reporters_create(struct rvu_devlink *rvu_dl)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:400:6: warning: no previous prototype for 'rvu_nix_health_reporters_destroy' [-Wmissing-prototypes]
+     400 | void rvu_nix_health_reporters_destroy(struct rvu_devlink *rvu_dl)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c:569:5: warning: no previous prototype for 'rvu_npa_register_interrupts' [-Wmissing-prototypes]
+     569 | int rvu_npa_register_interrupts(struct rvu *rvu)
          |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-vim +/rvu_report_pair_start +18 drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+vim +/rvu_nix_af_rvu_intr_handler +41 drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
 
-    17	
-  > 18	int rvu_report_pair_start(struct devlink_fmsg *fmsg, const char *name)
-    19	{
-    20		int err;
-    21	
-    22		err = devlink_fmsg_pair_nest_start(fmsg, name);
-    23		if (err)
-    24			return err;
-    25	
-    26		return  devlink_fmsg_obj_nest_start(fmsg);
-    27	}
-    28	
-  > 29	int rvu_report_pair_end(struct devlink_fmsg *fmsg)
-    30	{
-    31		int err;
-    32	
-    33		err = devlink_fmsg_obj_nest_end(fmsg);
-    34		if (err)
-    35			return err;
-    36	
-    37		return devlink_fmsg_pair_nest_end(fmsg);
-    38	}
-    39	
-    40	static irqreturn_t rvu_npa_af_rvu_intr_handler(int irq, void *rvu_irq)
-    41	{
-    42		struct rvu_npa_event_cnt *npa_event_count;
-    43		struct rvu_devlink *rvu_dl = rvu_irq;
-    44		struct rvu *rvu;
-    45		int blkaddr;
-    46		u64 intr;
-    47	
-    48		rvu = rvu_dl->rvu;
-    49		blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPA, 0);
-    50		if (blkaddr < 0)
-    51			return IRQ_NONE;
-    52	
-    53		npa_event_count = rvu_dl->npa_event_cnt;
-    54		intr = rvu_read64(rvu, blkaddr, NPA_AF_RVU_INT);
-    55	
-    56		if (intr & BIT_ULL(0))
-    57			npa_event_count->unmap_slot_count++;
-    58		/* Clear interrupts */
-    59		rvu_write64(rvu, blkaddr, NPA_AF_RVU_INT, intr);
-    60		return IRQ_HANDLED;
-    61	}
-    62	
-    63	static int rvu_npa_inpq_to_cnt(u16 in,
-    64				       struct rvu_npa_event_cnt *npa_event_count)
-    65	{
-    66		switch (in) {
-    67		case 0:
-    68			return 0;
-    69		case BIT(NPA_INPQ_NIX0_RX):
-    70			return npa_event_count->free_dis_nix0_rx_count++;
-    71		case BIT(NPA_INPQ_NIX0_TX):
-    72			return npa_event_count->free_dis_nix0_tx_count++;
-    73		case BIT(NPA_INPQ_NIX1_RX):
-    74			return npa_event_count->free_dis_nix1_rx_count++;
-    75		case BIT(NPA_INPQ_NIX1_TX):
-    76			return npa_event_count->free_dis_nix1_tx_count++;
-    77		case BIT(NPA_INPQ_SSO):
-    78			return npa_event_count->free_dis_sso_count++;
-    79		case BIT(NPA_INPQ_TIM):
-    80			return npa_event_count->free_dis_tim_count++;
-    81		case BIT(NPA_INPQ_DPI):
-    82			return npa_event_count->free_dis_dpi_count++;
-    83		case BIT(NPA_INPQ_AURA_OP):
-    84			return npa_event_count->free_dis_aura_count++;
-    85		case BIT(NPA_INPQ_INTERNAL_RSV):
-    86			return npa_event_count->free_dis_rsvd_count++;
-    87		}
-    88	
-    89		return npa_event_count->alloc_dis_rsvd_count++;
-    90	}
-    91	
-    92	static irqreturn_t rvu_npa_af_gen_intr_handler(int irq, void *rvu_irq)
-    93	{
-    94		struct rvu_npa_event_cnt *npa_event_count;
-    95		struct rvu_devlink *rvu_dl = rvu_irq;
-    96		struct rvu *rvu;
-    97		int blkaddr, val;
-    98		u64 intr;
-    99	
-   100		rvu = rvu_dl->rvu;
-   101		blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPA, 0);
-   102		if (blkaddr < 0)
-   103			return IRQ_NONE;
-   104	
-   105		npa_event_count = rvu_dl->npa_event_cnt;
-   106		intr = rvu_read64(rvu, blkaddr, NPA_AF_GEN_INT);
-   107	
-   108		if (intr & BIT_ULL(32))
-   109			npa_event_count->unmap_pf_count++;
-   110	
-   111		val = FIELD_GET(GENMASK(31, 16), intr);
-   112		rvu_npa_inpq_to_cnt(val, npa_event_count);
-   113	
-   114		val = FIELD_GET(GENMASK(15, 0), intr);
-   115		rvu_npa_inpq_to_cnt(val, npa_event_count);
-   116	
-   117		/* Clear interrupts */
-   118		rvu_write64(rvu, blkaddr, NPA_AF_GEN_INT, intr);
-   119		return IRQ_HANDLED;
-   120	}
-   121	
-   122	static irqreturn_t rvu_npa_af_err_intr_handler(int irq, void *rvu_irq)
-   123	{
-   124		struct rvu_npa_event_cnt *npa_event_count;
-   125		struct rvu_devlink *rvu_dl = rvu_irq;
-   126		struct rvu *rvu;
-   127		int blkaddr;
-   128		u64 intr;
-   129	
-   130		rvu = rvu_dl->rvu;
-   131		blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPA, 0);
-   132		if (blkaddr < 0)
-   133			return IRQ_NONE;
-   134	
-   135		npa_event_count = rvu_dl->npa_event_cnt;
-   136		intr = rvu_read64(rvu, blkaddr, NPA_AF_ERR_INT);
-   137	
-   138		if (intr & BIT_ULL(14))
-   139			npa_event_count->aq_inst_count++;
-   140	
-   141		if (intr & BIT_ULL(13))
-   142			npa_event_count->aq_res_count++;
-   143	
-   144		if (intr & BIT_ULL(12))
-   145			npa_event_count->aq_db_count++;
-   146	
-   147		/* Clear interrupts */
-   148		rvu_write64(rvu, blkaddr, NPA_AF_ERR_INT, intr);
-   149		return IRQ_HANDLED;
-   150	}
-   151	
-   152	static irqreturn_t rvu_npa_af_ras_intr_handler(int irq, void *rvu_irq)
-   153	{
-   154		struct rvu_npa_event_cnt *npa_event_count;
-   155		struct rvu_devlink *rvu_dl = rvu_irq;
-   156		struct rvu *rvu;
-   157		int blkaddr;
-   158		u64 intr;
-   159	
-   160		rvu = rvu_dl->rvu;
-   161		blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPA, 0);
-   162		if (blkaddr < 0)
-   163			return IRQ_NONE;
-   164	
-   165		npa_event_count = rvu_dl->npa_event_cnt;
-   166		intr = rvu_read64(rvu, blkaddr, NPA_AF_RAS);
-   167	
-   168		if (intr & BIT_ULL(34))
-   169			npa_event_count->poison_aq_inst_count++;
-   170	
-   171		if (intr & BIT_ULL(33))
-   172			npa_event_count->poison_aq_res_count++;
-   173	
-   174		if (intr & BIT_ULL(32))
-   175			npa_event_count->poison_aq_cxt_count++;
-   176	
-   177		/* Clear interrupts */
-   178		rvu_write64(rvu, blkaddr, NPA_AF_RAS, intr);
-   179		return IRQ_HANDLED;
-   180	}
-   181	
-   182	static bool rvu_npa_af_request_irq(struct rvu *rvu, int blkaddr, int offset,
-   183					   const char *name, irq_handler_t fn)
-   184	{
-   185		struct rvu_devlink *rvu_dl = rvu->rvu_dl;
-   186		int rc;
-   187	
-   188		WARN_ON(rvu->irq_allocated[offset]);
-   189		rvu->irq_allocated[offset] = false;
-   190		sprintf(&rvu->irq_name[offset * NAME_SIZE], name);
-   191		rc = request_irq(pci_irq_vector(rvu->pdev, offset), fn, 0,
-   192				 &rvu->irq_name[offset * NAME_SIZE], rvu_dl);
-   193		if (rc)
-   194			dev_warn(rvu->dev, "Failed to register %s irq\n", name);
-   195		else
-   196			rvu->irq_allocated[offset] = true;
-   197	
-   198		return rvu->irq_allocated[offset];
-   199	}
-   200	
- > 201	int rvu_npa_register_interrupts(struct rvu *rvu)
-   202	{
-   203		int blkaddr, base;
-   204		bool rc;
-   205	
-   206		blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPA, 0);
-   207		if (blkaddr < 0)
-   208			return blkaddr;
-   209	
-   210		/* Get NPA AF MSIX vectors offset. */
-   211		base = rvu_read64(rvu, blkaddr, NPA_PRIV_AF_INT_CFG) & 0x3ff;
-   212		if (!base) {
-   213			dev_warn(rvu->dev,
-   214				 "Failed to get NPA_AF_INT vector offsets\n");
-   215			return 0;
-   216		}
+    40	
+  > 41	irqreturn_t rvu_nix_af_rvu_intr_handler(int irq, void *rvu_irq)
+    42	{
+    43		struct rvu_nix_event_cnt *nix_event_count;
+    44		struct rvu_devlink *rvu_dl = rvu_irq;
+    45		struct rvu *rvu;
+    46		int blkaddr;
+    47		u64 intr;
+    48	
+    49		rvu = rvu_dl->rvu;
+    50		blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
+    51		if (blkaddr < 0)
+    52			return IRQ_NONE;
+    53	
+    54		nix_event_count = rvu_dl->nix_event_cnt;
+    55		intr = rvu_read64(rvu, blkaddr, NIX_AF_RVU_INT);
+    56	
+    57		if (intr & BIT_ULL(0))
+    58			nix_event_count->unmap_slot_count++;
+    59	
+    60		/* Clear interrupts */
+    61		rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT, intr);
+    62		return IRQ_HANDLED;
+    63	}
+    64	
+  > 65	irqreturn_t rvu_nix_af_err_intr_handler(int irq, void *rvu_irq)
+    66	{
+    67		struct rvu_nix_event_cnt *nix_event_count;
+    68		struct rvu_devlink *rvu_dl = rvu_irq;
+    69		struct rvu *rvu;
+    70		int blkaddr;
+    71		u64 intr;
+    72	
+    73		rvu = rvu_dl->rvu;
+    74		blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
+    75		if (blkaddr < 0)
+    76			return IRQ_NONE;
+    77	
+    78		nix_event_count = rvu_dl->nix_event_cnt;
+    79		intr = rvu_read64(rvu, blkaddr, NIX_AF_ERR_INT);
+    80	
+    81		if (intr & BIT_ULL(14))
+    82			nix_event_count->aq_inst_count++;
+    83		if (intr & BIT_ULL(13))
+    84			nix_event_count->aq_res_count++;
+    85		if (intr & BIT_ULL(12))
+    86			nix_event_count->aq_db_count++;
+    87		if (intr & BIT_ULL(6))
+    88			nix_event_count->rx_on_unmap_pf_count++;
+    89		if (intr & BIT_ULL(5))
+    90			nix_event_count->rx_mcast_repl_count++;
+    91		if (intr & BIT_ULL(4))
+    92			nix_event_count->rx_mcast_memfault_count++;
+    93		if (intr & BIT_ULL(3))
+    94			nix_event_count->rx_mcast_wqe_memfault_count++;
+    95		if (intr & BIT_ULL(2))
+    96			nix_event_count->rx_mirror_wqe_memfault_count++;
+    97		if (intr & BIT_ULL(1))
+    98			nix_event_count->rx_mirror_pktw_memfault_count++;
+    99		if (intr & BIT_ULL(0))
+   100			nix_event_count->rx_mcast_pktw_memfault_count++;
+   101	
+   102		/* Clear interrupts */
+   103		rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT, intr);
+   104		return IRQ_HANDLED;
+   105	}
+   106	
+ > 107	irqreturn_t rvu_nix_af_ras_intr_handler(int irq, void *rvu_irq)
+   108	{
+   109		struct rvu_nix_event_cnt *nix_event_count;
+   110		struct rvu_devlink *rvu_dl = rvu_irq;
+   111		struct rvu *rvu;
+   112		int blkaddr;
+   113		u64 intr;
+   114	
+   115		rvu = rvu_dl->rvu;
+   116		blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
+   117		if (blkaddr < 0)
+   118			return IRQ_NONE;
+   119	
+   120		nix_event_count = rvu_dl->nix_event_cnt;
+   121		intr = rvu_read64(rvu, blkaddr, NIX_AF_RAS);
+   122	
+   123		if (intr & BIT_ULL(34))
+   124			nix_event_count->poison_aq_inst_count++;
+   125		if (intr & BIT_ULL(33))
+   126			nix_event_count->poison_aq_res_count++;
+   127		if (intr & BIT_ULL(32))
+   128			nix_event_count->poison_aq_cxt_count++;
+   129		if (intr & BIT_ULL(4))
+   130			nix_event_count->rx_mirror_data_poison_count++;
+   131		if (intr & BIT_ULL(3))
+   132			nix_event_count->rx_mcast_data_poison_count++;
+   133		if (intr & BIT_ULL(2))
+   134			nix_event_count->rx_mirror_wqe_poison_count++;
+   135		if (intr & BIT_ULL(1))
+   136			nix_event_count->rx_mcast_wqe_poison_count++;
+   137		if (intr & BIT_ULL(0))
+   138			nix_event_count->rx_mce_poison_count++;
+   139	
+   140		/* Clear interrupts */
+   141		rvu_write64(rvu, blkaddr, NIX_AF_RAS, intr);
+   142		return IRQ_HANDLED;
+   143	}
+   144	
+   145	static bool rvu_nix_af_request_irq(struct rvu *rvu, int offset,
+   146					   const char *name, irq_handler_t fn)
+   147	{
+   148		struct rvu_devlink *rvu_dl = rvu->rvu_dl;
+   149		int rc;
+   150	
+   151		WARN_ON(rvu->irq_allocated[offset]);
+   152		rvu->irq_allocated[offset] = false;
+   153		sprintf(&rvu->irq_name[offset * NAME_SIZE], name);
+   154		rc = request_irq(pci_irq_vector(rvu->pdev, offset), fn, 0,
+   155				 &rvu->irq_name[offset * NAME_SIZE], rvu_dl);
+   156		if (rc)
+   157			dev_warn(rvu->dev, "Failed to register %s irq\n", name);
+   158		else
+   159			rvu->irq_allocated[offset] = true;
+   160	
+   161		return rvu->irq_allocated[offset];
+   162	}
+   163	
+   164	static int rvu_nix_blk_register_interrupts(struct rvu *rvu,
+   165						   int blkaddr)
+   166	{
+   167		int base;
+   168		bool rc;
+   169	
+   170		/* Get NIX AF MSIX vectors offset. */
+   171		base = rvu_read64(rvu, blkaddr, NIX_PRIV_AF_INT_CFG) & 0x3ff;
+   172		if (!base) {
+   173			dev_warn(rvu->dev,
+   174				 "Failed to get NIX%d NIX_AF_INT vector offsets\n",
+   175				 blkaddr - BLKADDR_NIX0);
+   176			return 0;
+   177		}
+   178		/* Register and enable NIX_AF_RVU_INT interrupt */
+   179		rc = rvu_nix_af_request_irq(rvu, base +  NIX_AF_INT_VEC_RVU,
+   180					    "NIX_AF_RVU_INT",
+   181					    rvu_nix_af_rvu_intr_handler);
+   182		if (!rc)
+   183			goto err;
+   184		rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT_ENA_W1S, ~0ULL);
+   185	
+   186		/* Register and enable NIX_AF_ERR_INT interrupt */
+   187		rc = rvu_nix_af_request_irq(rvu, base + NIX_AF_INT_VEC_AF_ERR,
+   188					    "NIX_AF_ERR_INT",
+   189					    rvu_nix_af_err_intr_handler);
+   190		if (!rc)
+   191			goto err;
+   192		rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT_ENA_W1S, ~0ULL);
+   193	
+   194		/* Register and enable NIX_AF_RAS interrupt */
+   195		rc = rvu_nix_af_request_irq(rvu, base + NIX_AF_INT_VEC_POISON,
+   196					    "NIX_AF_RAS",
+   197					    rvu_nix_af_ras_intr_handler);
+   198		if (!rc)
+   199			goto err;
+   200		rvu_write64(rvu, blkaddr, NIX_AF_RAS_ENA_W1S, ~0ULL);
+   201	
+   202		return 0;
+   203	err:
+   204		rvu_nix_unregister_interrupts(rvu);
+   205		return -1;
+   206	}
+   207	
+ > 208	int rvu_nix_register_interrupts(struct rvu *rvu)
+   209	{
+   210		int blkaddr = 0;
+   211	
+   212		blkaddr = rvu_get_blkaddr(rvu, blkaddr, 0);
+   213		if (blkaddr < 0)
+   214			return blkaddr;
+   215	
+   216		rvu_nix_blk_register_interrupts(rvu, blkaddr);
    217	
-   218		/* Register and enable NPA_AF_RVU_INT interrupt */
-   219		rc = rvu_npa_af_request_irq(rvu, blkaddr, base +  NPA_AF_INT_VEC_RVU,
-   220					    "NPA_AF_RVU_INT",
-   221					    rvu_npa_af_rvu_intr_handler);
-   222		if (!rc)
-   223			goto err;
-   224		rvu_write64(rvu, blkaddr, NPA_AF_RVU_INT_ENA_W1S, ~0ULL);
-   225	
-   226		/* Register and enable NPA_AF_GEN_INT interrupt */
-   227		rc = rvu_npa_af_request_irq(rvu, blkaddr, base + NPA_AF_INT_VEC_GEN,
-   228					    "NPA_AF_RVU_GEN",
-   229					    rvu_npa_af_gen_intr_handler);
-   230		if (!rc)
-   231			goto err;
-   232		rvu_write64(rvu, blkaddr, NPA_AF_GEN_INT_ENA_W1S, ~0ULL);
-   233	
-   234		/* Register and enable NPA_AF_ERR_INT interrupt */
-   235		rc = rvu_npa_af_request_irq(rvu, blkaddr, base + NPA_AF_INT_VEC_AF_ERR,
-   236					    "NPA_AF_ERR_INT",
-   237					    rvu_npa_af_err_intr_handler);
-   238		if (!rc)
-   239			goto err;
-   240		rvu_write64(rvu, blkaddr, NPA_AF_ERR_INT_ENA_W1S, ~0ULL);
-   241	
-   242		/* Register and enable NPA_AF_RAS interrupt */
-   243		rc = rvu_npa_af_request_irq(rvu, blkaddr, base + NPA_AF_INT_VEC_POISON,
-   244					    "NPA_AF_RAS",
-   245					    rvu_npa_af_ras_intr_handler);
-   246		if (!rc)
-   247			goto err;
-   248		rvu_write64(rvu, blkaddr, NPA_AF_RAS_ENA_W1S, ~0ULL);
-   249	
-   250		return 0;
-   251	err:
-   252		rvu_npa_unregister_interrupts(rvu);
-   253		return rc;
-   254	}
-   255	
+   218		return 0;
+   219	}
+   220	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
 https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
---Qxx1br4bt0+wmkIi
+--17pEHd4RhPHOinZp
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICGT+oF8AAy5jb25maWcAlDzJdty2svt8RR9nkyySK8my4px3tABJsBtukqABsAdtcBS5
+H4sICH//oF8AAy5jb25maWcAlDzJdty2svt8RR9nkyySK8my4px3tABJsBtukqABsAdtcBS5
 7eg8W/LVcK/9968K4FAA0YqfF4lYVZgLNaN//unnBXt+uv9y/XR7c/358/fFp8Pd4eH66fBh
 8fH28+F/FoVcNNIseCHM70Bc3d49f/vXt7cX9uJ88eb305PfT357uDldrA8Pd4fPi/z+7uPt
 p2fo4Pb+7qeff8plU4qlzXO74UoL2VjDd+by1aebm9/+XPxSHP66vb5b/Pn7a+jm9M2v/q9X
@@ -1769,4 +1729,4 @@ CZmGEIZQdghpL/n6QRJvjausiAQ0cKlmJm6chbD1k4MpTfZxqc2FeFLSdK0rDJ7LJo5QiDMP
 usukUNE+N0vudhy+FYrwLcykfSeq/iQHWWeXbcc7J3/epM9Rs0RhJNc2KkItRrEY/z8Nnm8V
 aPUEAA==
 
---Qxx1br4bt0+wmkIi--
+--17pEHd4RhPHOinZp--
