@@ -2,88 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E30DA2A4E2C
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:17:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEB3E2A4E3E
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:19:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729254AbgKCSRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 13:17:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54866 "EHLO
+        id S1729217AbgKCSTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 13:19:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbgKCSRC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 13:17:02 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DA6EC0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 10:17:02 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id oq3so23721951ejb.7
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 10:17:02 -0800 (PST)
+        with ESMTP id S1729170AbgKCSTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 13:19:17 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F57C0613D1;
+        Tue,  3 Nov 2020 10:19:17 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id s89so15634010ybi.12;
+        Tue, 03 Nov 2020 10:19:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yM/fnA3BSatr1JIEs8SCgV9+oa5PifIAS9nwhN5Pb0k=;
-        b=b/yNiYj56kayma2L+CgTQwulL+nOjQV1sNHlVfvhOysD9Suv6Y3hMG9vmsfr/85+Kv
-         hzYVqEjUgKwzA2iphCxPNIQi/tWst7YgXVZ/V4Z/uMv5kEk01hJvf7LQXGJnJf6lVlsr
-         OuOYSuD04/D93W2r4pQo55YRcpLGiyJ7ApnO8fm0GsVIIYtIitbe9Pg/4/3YGCnn658r
-         3BrHuyLL+Ia0b0JPKnGEYUFsAKjxOjgDfhLczbR3/pUoMVzTsep9VcxYEWtDxS8Fdbt+
-         054VhP58jlrxhf3huBIPMW1YVS9HvWre43dfYY4V7cJNAwp72U/HQUDSewejrO8xu2sh
-         ACPQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+MnVRGp1lkEU8jeFVY9M5pC4CJoPd8hOwGMGI5wGX8Y=;
+        b=NLt5+QMBlK6xmkhKZ9Pd3e1QjMZ6sQPK4is1SEZ/HHMZt2FdrPMBZopSM4drn+pENV
+         Al09VYjPrBSq6VSOO6VetvscwLEv2J7YmUKRCczB94YLbv+EZRBHOL10odCv6X6EvcZ5
+         ZZK2mBrRMPXyvOxFpnIqsdZHmZvwY8bdiewMpGWLCrYcJ4aX/Yh0VycyY71TAifeGXpY
+         CH5vYQet1zsFoCOy2Qi8krVQLLOpM8q8EPI2Mxgn3POO0W+Cfbg0dJBnavm67AP5p3ZT
+         71NXSnE6O9x0ScCgr09WofAxfvilC1tIOpxzFsnGt6ysEb5GmDg8OAhjI+Q02SYTXQcl
+         CQgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yM/fnA3BSatr1JIEs8SCgV9+oa5PifIAS9nwhN5Pb0k=;
-        b=SZxvIgZalyqgwVJauSJ8GO6Jg8GY6NtZC/2S6cOV0PeEeHdCxVBLBQOfTn1ILzA5ze
-         0aZowAPOoQdfJOKEwzc8nE9o33uFNDQs/sNPAhhbBCUlDzZN/zp2Q3eA0sDJfEdeucs/
-         WK3Gbl75M6qvIvUJ7k42YDXLOYdIFtCzWU/rBqYYHMqiF9RHXdiNcSycJND6HKDMWhxS
-         ELJchgEv2G/9i1ant3nSCs+BLgp4zersZ2gwL4LiEWyl1ZxuYZBR6Wj7lU39B6vXAZ+P
-         uaPKYMY/n4szwGqeN7ZjlKT4/kpH3w/Bk6RavezJwEdgHhFpJwvpZVBC/1SDOC8zd12U
-         +SVQ==
-X-Gm-Message-State: AOAM530DoaFxypCJ7pLPBwLhsy1Xi17IbUDK1om5qJ7lOtAmxvTkgDpj
-        CMzDM3FCY13ZGj4tuuyyQNU=
-X-Google-Smtp-Source: ABdhPJwbzDD3pnuRvz8Crlp4VG6r9iEZ4cEjM72VOxzt3Eqb8qO7Po+dvP6wS++yo/6LdR4e2ojWMw==
-X-Received: by 2002:a17:906:3689:: with SMTP id a9mr21238269ejc.403.1604427421122;
-        Tue, 03 Nov 2020 10:17:01 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id f13sm11217424ejf.42.2020.11.03.10.17.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 10:17:00 -0800 (PST)
-Date:   Tue, 3 Nov 2020 20:16:59 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "james.jurack@ametek.com" <james.jurack@ametek.com>
-Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
- skb_cow_head for PTP
-Message-ID: <20201103181659.qigc7zmx7fiuoyp2@skbuf>
-References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
- <20201029081057.8506-1-claudiu.manoil@nxp.com>
- <20201103161319.wisvmjbdqhju6vyh@skbuf>
- <20201103083050.100b2568@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <AM0PR04MB6754C8F6D12318EF1DD0CA2B96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
- <20201103173007.23ttgm3rpmbletee@skbuf>
- <AM0PR04MB6754E51184163B357DAACDFB96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
- <20201103174906.ttncbiqvlvfjibyl@skbuf>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+MnVRGp1lkEU8jeFVY9M5pC4CJoPd8hOwGMGI5wGX8Y=;
+        b=BKwvwFKnoLwJyNhovqger1RX045DmLgNw0YHavpZva0K77JvGh1gAvzDCD/0yQbhwj
+         Ert4WGBjMY5hCshwaGZbNeMbuCxv9V4kf4bWShjszZWYn9TPYO5dsxP9jt+S2vLxxcLj
+         ch0r0J3/StWvOavgQfTh6QJLHAnQg6q85dAXBtpNijHajJPlxEIlcej6MikdyNDsTpuS
+         mBMGjFQWDKORVzCYpuztIBxxFJGv8i2V2Kjh+x+NoCrFbchjKlBvyvwuVxr/Ws/X6GvB
+         khjhwm1RPh4t6BJCfgMtmbvIvQJJm+FGT1ttz8Ph2QHWtxUjWaHEeNTa1kS+Rh9CP5HR
+         BVAw==
+X-Gm-Message-State: AOAM530jmMeth8ug8iHoqKnu12fA1xA5xlzDiW2LutHB+5Yd+F70Kk88
+        TMHxIISC855sK2Bm8OufI1rmJpWB7xrO7CbGsycvLFcLPdIsQw==
+X-Google-Smtp-Source: ABdhPJzH7EixjMFatBDaUL1G/hXUSJa9a+R9KPXKbC+OBmV+WDHem73Isk6SQd9U+WpGdl6auIjdqx5elKEfn1nnWZg=
+X-Received: by 2002:a25:c001:: with SMTP id c1mr28393208ybf.27.1604427557002;
+ Tue, 03 Nov 2020 10:19:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201103174906.ttncbiqvlvfjibyl@skbuf>
+References: <20201027221324.27894-1-david.verbeiren@tessares.net> <20201103154738.29809-1-david.verbeiren@tessares.net>
+In-Reply-To: <20201103154738.29809-1-david.verbeiren@tessares.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 3 Nov 2020 10:19:06 -0800
+Message-ID: <CAEf4Bzajj+1Kh+YcWH2K0i21ZGM7q=gt6EXGY_YsFwTcmt0nKw@mail.gmail.com>
+Subject: Re: [PATCH bpf v3] bpf: zero-fill re-used per-cpu map element
+To:     David Verbeiren <david.verbeiren@tessares.net>
+Cc:     bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, Song Liu <song@kernel.org>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 07:49:06PM +0200, Vladimir Oltean wrote:
-> On Tue, Nov 03, 2020 at 05:41:36PM +0000, Claudiu Manoil wrote:
-> > This is the patch:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=d145c9031325fed963a887851d9fa42516efd52b
-> > 
-> > are you sure you have it applied?
-> 
-> Actually? No, I didn't have it applied... I had thought that net had
-> been already merged into net-next, for some reason :-/
-> Let me run the test for a few more tens of minutes with the patch
-> applied.
+On Tue, Nov 3, 2020 at 7:49 AM David Verbeiren
+<david.verbeiren@tessares.net> wrote:
+>
+> Zero-fill element values for all other cpus than current, just as
+> when not using prealloc. This is the only way the bpf program can
+> ensure known initial values for all cpus ('onallcpus' cannot be
+> set when coming from the bpf program).
+>
+> The scenario is: bpf program inserts some elements in a per-cpu
+> map, then deletes some (or userspace does). When later adding
+> new elements using bpf_map_update_elem(), the bpf program can
+> only set the value of the new elements for the current cpu.
+> When prealloc is enabled, previously deleted elements are re-used.
+> Without the fix, values for other cpus remain whatever they were
+> when the re-used entry was previously freed.
+>
+> A selftest is added to validate correct operation in above
+> scenario as well as in case of LRU per-cpu map element re-use.
+>
+> Fixes: 6c9059817432 ("bpf: pre-allocate hash map elements")
+> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Signed-off-by: David Verbeiren <david.verbeiren@tessares.net>
+> ---
+>
 
-The test has been running for 30 minutes with the cherry-pick from net.
-Sorry for the noise.
+Tests look really nice, thanks! I'm worried about still racy once
+check, see suggestions below. Otherwise looks great!
+
+> Notes:
+>     v3:
+>       - Added selftest that was initially provided as separate
+>         patch, and reworked to
+>         * use skeleton (Andrii, Song Liu)
+>         * skip test if <=1 CPU (Song Liu)
+>
+>     v2:
+>       - Moved memset() to separate pcpu_init_value() function,
+>         which replaces pcpu_copy_value() but delegates to it
+>         for the cases where no memset() is needed (Andrii).
+>       - This function now also avoids doing the memset() for
+>         the current cpu for which the value must be set
+>         anyhow (Andrii).
+>       - Same pcpu_init_value() used for per-cpu LRU map
+>         (Andrii).
+>
+>  kernel/bpf/hashtab.c                          |  30 ++-
+>  .../selftests/bpf/prog_tests/map_init.c       | 213 ++++++++++++++++++
+>  .../selftests/bpf/progs/test_map_init.c       |  34 +++
+>  3 files changed, 275 insertions(+), 2 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/map_init.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_map_init.c
+>
+
+[...]
+
+> diff --git a/tools/testing/selftests/bpf/prog_tests/map_init.c b/tools/testing/selftests/bpf/prog_tests/map_init.c
+> new file mode 100644
+> index 000000000000..386d9439bad9
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/map_init.c
+> @@ -0,0 +1,213 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +// Copyright (c) 2020 Tessares SA <http://www.tessares.net>
+> +
+
+nit: see below, /* */
+
+> +#include <test_progs.h>
+> +#include "test_map_init.skel.h"
+> +
+
+[...]
+
+> diff --git a/tools/testing/selftests/bpf/progs/test_map_init.c b/tools/testing/selftests/bpf/progs/test_map_init.c
+> new file mode 100644
+> index 000000000000..280a45e366d6
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_map_init.c
+> @@ -0,0 +1,34 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +// Copyright (c) 2020 Tessares SA <http://www.tessares.net>
+
+nit: I think copyright line has to be in /* */ comment block
+
+> +
+> +#include "vmlinux.h"
+> +#include <bpf/bpf_helpers.h>
+> +
+> +__u64 inKey = 0;
+> +__u64 inValue = 0;
+> +__u32 once = 0;
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_PERCPU_HASH);
+> +       __uint(max_entries, 2);
+> +       __type(key, __u64);
+> +       __type(value, __u64);
+> +} hashmap1 SEC(".maps");
+> +
+> +
+> +SEC("raw_tp/sys_enter")
+> +int sys_enter(const void *ctx)
+> +{
+> +       /* Just do it once so the value is only updated for a single CPU.
+> +        * Indeed, this tracepoint will quickly be hit from different CPUs.
+> +        */
+> +       if (!once) {
+> +               __sync_fetch_and_add(&once, 1);
+
+This is quite racy, actually, especially for the generic sys_enter
+tracepoint. The way I did this before (see progs/trigger_bench.c) was
+through doing a "tp/syscalls/sys_enter_getpgid" tracepoint program and
+checking for thread id. Or you can use bpf_test_run, probably, with a
+different type of BPF program. I just find bpf_test_run() too
+inconvenient with all the extra setup, so I usually stick to
+tracepoints.
+
+> +
+> +               bpf_map_update_elem(&hashmap1, &inKey, &inValue, BPF_NOEXIST);
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +char _license[] SEC("license") = "GPL";
+> --
+> 2.29.0
+>
