@@ -2,108 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D81AC2A3F28
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 09:45:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D22FB2A3F33
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 09:45:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727570AbgKCImp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 03:42:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38537 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725997AbgKCImp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 03:42:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604392964;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hrCT/XemvFvlhZnm+062tCDMJvlkgHd9UbXAuXqPsXI=;
-        b=eJ7hQyYE+3RcFvZCbV+Vhj9zaruS50SPRLKTY3K46s5IN/FsJK1Q8BB+TEJXKKPfsdIwxC
-        nKsTPwoTE610FNXNGxxq1931W/SyTNs3rdYfrMtE2umBFe0dYp+ennqRjMe1D2ZzQ+C4wb
-        4tzgf8EN4vs93qvN41d9YSelbQYIMN8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-422-W_zeLT4DMaujKlpogxh6Ow-1; Tue, 03 Nov 2020 03:42:42 -0500
-X-MC-Unique: W_zeLT4DMaujKlpogxh6Ow-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7018D800050;
-        Tue,  3 Nov 2020 08:42:40 +0000 (UTC)
-Received: from localhost (unknown [10.40.194.154])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E67BE60BF1;
-        Tue,  3 Nov 2020 08:42:26 +0000 (UTC)
-Date:   Tue, 3 Nov 2020 09:42:24 +0100
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>, Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-Message-ID: <20201103094224.6de1470d@redhat.com>
-In-Reply-To: <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
-References: <20201028132529.3763875-1-haliu@redhat.com>
-        <20201029151146.3810859-1-haliu@redhat.com>
-        <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
-        <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
+        id S1727849AbgKCIo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 03:44:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725968AbgKCIo5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 03:44:57 -0500
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FB9C0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 00:44:57 -0800 (PST)
+Received: by mail-wm1-x344.google.com with SMTP id c16so11924746wmd.2
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 00:44:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=5/WOZHBmz3EBH3+eCAudlxs+DpqVNBs0AEAQtQF3C0g=;
+        b=D/tNDQgcgZFGx9ufo0kyX0caMAMLaJEDmZZar9aTdI+nTB9DiJS3uimqhClmlkv92N
+         PTN2NgpbaMKPWw/6zwTa4o6wsGYC/QudW8o05fr9c9y3HXkac7wJD+cThiHUxfFGrXIO
+         lUhf0X7R1ls37PqrduWqkrZSUYXq18N4k98mN4fSuvA1l9NqRyBlHyIX4w7jsaUPNOVi
+         gzgTPFzgW9XrKjyCg5rrx4StYlo9blEfSZJUyBQOCS1jNCUaRhhK0oqP9o/MmzZUToJ1
+         7v/Q5bkbJnDFrkGirDBHFrCtnRwV/tMNjQbYRD6NwJtOgvcw2Exk4tZ6mORjpINR9Os8
+         IJmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=5/WOZHBmz3EBH3+eCAudlxs+DpqVNBs0AEAQtQF3C0g=;
+        b=E+0o1od8YjnwgmIJD026kWyyy8VkFslimT8iwvKZ++zQ+k4GiryiVvVliYqwpNYsQq
+         lfutv3snyXJ2DAvI7jByShJb8BCJnHWBsmPpJkBMqClVVFw8SEyOvITJaJQdbokBLdkU
+         oycAlTYqDdpqsvoPC8W4nW46S2cGmcYmX7jNt5l5ysQJizyVyhMvrgvoZVMS3U/wDGxW
+         NxrhwBfjheeWTYzCYh6AcVT9uqIGWY5Tqv+OE2xFG7GVFRRwmHyQ39QFoSA38QsQQnn5
+         7YqoRGCGiP/hACEJBEuQE1LUFX+ecbCxeRO1n6coXazymed1vizyYRyvJrILpcLkXJeC
+         zePg==
+X-Gm-Message-State: AOAM53227FJaebwMemrsg9sSDb1SVGslORmBgPtesG68Jc8SAebVKIXW
+        CnFrFujN5VlaMqozZBKl+SqlCw==
+X-Google-Smtp-Source: ABdhPJz8fx8VQuhvfzqJtAKCb4y9SD7Xt0brjcuk8KmNJ2RedYCauy94oAfQvnsKQQSqF2yMZLA6tA==
+X-Received: by 2002:a7b:c4c3:: with SMTP id g3mr2313652wmk.65.1604393096021;
+        Tue, 03 Nov 2020 00:44:56 -0800 (PST)
+Received: from dell ([91.110.221.242])
+        by smtp.gmail.com with ESMTPSA id c17sm2084243wml.14.2020.11.03.00.44.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2020 00:44:55 -0800 (PST)
+Date:   Tue, 3 Nov 2020 08:44:53 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 41/41] realtek: rtw88: pci: Add prototypes for .probe,
+ .remove and .shutdown
+Message-ID: <20201103084453.GJ4488@dell>
+References: <20201102112410.1049272-1-lee.jones@linaro.org>
+ <20201102112410.1049272-42-lee.jones@linaro.org>
+ <CA+ASDXOobW1_qL5SCGS86aoGvhKDMoBzjxbAwn+QjHfkqZhukw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+ASDXOobW1_qL5SCGS86aoGvhKDMoBzjxbAwn+QjHfkqZhukw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2 Nov 2020 22:58:06 -0800, Andrii Nakryiko wrote:
-> But I don't think I got a real answer as to what's the exact reason
-> against the submodule. Like what "inappropriate" even means in this
-> case? Jesper's security argument so far was the only objective
-> criteria, as far as I can tell.
+On Mon, 02 Nov 2020, Brian Norris wrote:
 
-It's the fundamental objection. Distributions in general have the "no
-bundled libraries" policy. It is sometimes annoying but it helps to
-understand that the policy is not a whim of distros, it's coming from
-years of experience with package maintenance for security and stability.
+> On Mon, Nov 2, 2020 at 3:25 AM Lee Jones <lee.jones@linaro.org> wrote:
+> > --- a/drivers/net/wireless/realtek/rtw88/pci.h
+> > +++ b/drivers/net/wireless/realtek/rtw88/pci.h
+> > @@ -212,6 +212,10 @@ struct rtw_pci {
+> >         void __iomem *mmap;
+> >  };
+> >
+> > +int rtw_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id);
+> > +void rtw_pci_remove(struct pci_dev *pdev);
+> > +void rtw_pci_shutdown(struct pci_dev *pdev);
+> > +
+> >
+> 
+> These definitions are already in 4 other header files:
+> 
+> drivers/net/wireless/realtek/rtw88/rtw8723de.h
+> drivers/net/wireless/realtek/rtw88/rtw8821ce.h
+> drivers/net/wireless/realtek/rtw88/rtw8822be.h
+> drivers/net/wireless/realtek/rtw88/rtw8822ce.h
+> 
+> Seems like you should be moving them, not just adding yet another duplicate.
 
-> But I also see that using libbpf through submodule gives iproute2
-> exact control over which version of libbpf is being used. And that
-> does not depend at all on any specific Linux distribution, its
-> version, LTS vs non-LTS, etc. iproute2 will just work the same across
-> all of them. So matches your stated goals very directly and
-> explicitly.
+I followed the current convention.
 
-If you take this route, the end result would be all dependencies for
-all projects being included as submodules and bundled. At the first
-sight, this sounds easier for the developers. Why bother with dynamic
-linking at all? Everything can be linked statically.
+Happy to optimise if that's what is required.
 
-The result would be nightmare for both distros and users. No timely
-security updates possible, critical bugs not being fixed in some
-programs, etc. There is enough experience with this kind of setup to
-conclude it is not the right way to go.
-
-Yes, dynamic linking is initially more work for developers of both apps
-and libraries. However, it pays off over time - there's no need to keep
-track of security and other important fixes in the dependencies, it
-comes for free from the distro work.
-
-Btw, taking the bundling to the extreme, every app could bundle its own
-well tested and compatible kernel version and be run in a VM. This
-might sound far fetched but there were actual attempts to do that. It
-didn't take off; I think part of the reason was that the Linux kernel
-is very good in keeping its APIs stable.
-
-And I'm convinced this is the way to go for libraries, too: put an
-emphasis on API stability. Make it easy to get consumed and updated
-under the hood. Everybody wins this way.
-
- Jiri
-
+-- 
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
