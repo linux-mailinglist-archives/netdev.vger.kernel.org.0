@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 915242A4A1A
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 16:42:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 665DD2A4A38
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 16:44:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728208AbgKCPm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 10:42:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58834 "EHLO
+        id S1728267AbgKCPov (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 10:44:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726690AbgKCPm5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 10:42:57 -0500
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB264C0613D1;
-        Tue,  3 Nov 2020 07:42:57 -0800 (PST)
-Received: by mail-io1-xd42.google.com with SMTP id y20so18936500iod.5;
-        Tue, 03 Nov 2020 07:42:57 -0800 (PST)
+        with ESMTP id S1727883AbgKCPov (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 10:44:51 -0500
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5885C0613D1;
+        Tue,  3 Nov 2020 07:44:50 -0800 (PST)
+Received: by mail-io1-xd41.google.com with SMTP id j12so4269417iow.0;
+        Tue, 03 Nov 2020 07:44:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VdmSmJMhivqis7yO4uZkZnYxSZ1rhGx/M+hRTu2KaCw=;
-        b=eP7qJu0SIIeL/FkFShebN6p9imHE41gvEeHiIo/Sm2xiDhh+482PvqUzVeTxCqmErG
-         lPYOjj77mt26Hn6Nu3x5972vBlg4GClVW95YWPtkfkImrCl0NQ9FFLUl46Z8LioqDe/s
-         G36P8ltFymTUAvNB5au8qxwHlvm8BgcdpbEsB7DrgN1gnFWhWBJtKHJYa992y/E+RCaG
-         UiBA3EYWiLiif5M0f8WW6Bbibou4esTuJg6FIpvzoLP8+iwju/ePdnJbt37hRHva2xsZ
-         vC0a/3MRIOLYiOQBuQbL+yvrFdlNfgwlpE9KpoLPv78RM3u9txrd51qQoZSO7cb+ngN1
-         lN1Q==
+        bh=KrZAsJ+84f6f17H2kWvL1rr4BgKZ82QM8UyFCgrCSjY=;
+        b=LTHE7k7LtIvcchE6ZHPiOk4V+Z2pDr0rl08VSiCIMdHtemzIvXX10N9gervkDOpgrw
+         HmX0G0MUC2RkrvVwVUW+MxWOWtyBGlQQed7VMTjWg1+lzWmPxXdzaxa1PWx8oczRpbUC
+         lwi23OL+XARPwDtSMFr6yJZhRahMyyJDXpUR89aBiqKFUHZRycXKD8WQfaMYSNKw+W/S
+         NLdYdurYp8vGpqJ+xFRXt5lRdSgbh5wtW5tc2w1vgXGvoYGKdsQigJxOXJLWiIUNlrpk
+         ylxic3lr9ig8uLviJ4vLozfgaHQbs0xY0A1GWV/JRZbP1/5ShyxtuVJBtKrgFsitxba6
+         qrww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VdmSmJMhivqis7yO4uZkZnYxSZ1rhGx/M+hRTu2KaCw=;
-        b=LRYB5boctdvDz0LRehl5tBaTHdSbCFZ9Mk/QurEOLfPr82iYm8IxzOs3BJJBKzQd7Z
-         oIAxFS8w+JijvBZND859qPVWivccYI5tBIEyXnl90Jl2YgFd33d5M5lOC00G0jsXckQr
-         Sah1rWX8XLGlFOL1oN6Eq7PZg9IUHzVL/CkwMOIfbVKR1AQhmTDbkV94CZgKoJDBnbVy
-         Nb/cs0PaZBHH9Is3oUmXoSMSH04khsKAFP1K6RAhfYMuwR+KstwGZ1KFUHx3tj40Oozp
-         bDh72MrG7ei6u6kl/nWUUu21ZghkdwYBOolrE4aCoQsrQpADQhumqlSnoQCW2PTMiHaM
-         30uA==
-X-Gm-Message-State: AOAM532fWHXxkuMRqLyBHLjIoA1H4gAVlQGbTo/V965kqY3L/6ngr4zm
-        t4ykTdeYN+UfbpH8dPS47z/inE16QD5Aa3kZkek3mzKCRIQ=
-X-Google-Smtp-Source: ABdhPJwehzRbRW8I9ao3mxCRkvH9Gf+Im/+BLIxS0F7f7cc8o7bRP0Mz9Y0GgtqB8a0eS3tBpixQbzHHsmTpkejiN7w=
-X-Received: by 2002:a6b:780b:: with SMTP id j11mr14499603iom.5.1604418177097;
- Tue, 03 Nov 2020 07:42:57 -0800 (PST)
+        bh=KrZAsJ+84f6f17H2kWvL1rr4BgKZ82QM8UyFCgrCSjY=;
+        b=rrmK4w6/Av1tBJ07JDh5QoGstBFoTbBmYcvjhETuLrzNQDows96nVAthNJgohaZ8jk
+         izik49qC805WGk+/wZ67H/tyazi6/dRVF3CBzFjpTZv4XARbcCcB9VZwnf9eNpajt2ge
+         qKvxMhC5b9ivbHFprK5wq6Qh0VQvryhCmR5bz7gXPq5pcOhz2B4rWJomg7G31+vUzzId
+         8wleCIEFFAEZQWzFu2Xzg7uVOekpX9W+ZkePgI85iTUG+9iFhxsQGE4GX/jbi2kr+A63
+         Giv+W6kTzydrcp1mywkOk9v3BaeaI1cI02qlt197CtXvKwCg3BhA0UmsS5rdiNKw7pVD
+         5frA==
+X-Gm-Message-State: AOAM531hTAC6r9HmKeLm5ouIlDBEe3IxHVd4cBMzP07D8GALeSLviHXF
+        wMEqFVbw+mguINWqOzGNQlVmeYSSLSSpWSuB/qY=
+X-Google-Smtp-Source: ABdhPJxiDa7bDkPP9H/vTqWiBLfCyaOSfPJgX+QT8Io+t03Q5jNPsTxykPN8E3XkbS9CD1+cFvk3n/O/5IwOVvY4Rgs=
+X-Received: by 2002:a6b:b2c4:: with SMTP id b187mr14612595iof.187.1604418290238;
+ Tue, 03 Nov 2020 07:44:50 -0800 (PST)
 MIME-Version: 1.0
 References: <160416890683.710453.7723265174628409401.stgit@localhost.localdomain>
- <160417035730.2823.6697632421519908152.stgit@localhost.localdomain> <20201103012552.twbqzgbhc35nushq@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20201103012552.twbqzgbhc35nushq@kafai-mbp.dhcp.thefacebook.com>
+ <160417035105.2823.2453428685023319711.stgit@localhost.localdomain> <20201103005547.buhyl6tsi5shm374@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201103005547.buhyl6tsi5shm374@kafai-mbp.dhcp.thefacebook.com>
 From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 3 Nov 2020 07:42:46 -0800
-Message-ID: <CAKgT0UebGOEf4aqAqsisUVKzU6+pas+qFkHy-OoHeHYTCAE_+A@mail.gmail.com>
-Subject: Re: [bpf-next PATCH v2 5/5] selftest/bpf: Use global variables
- instead of maps for test_tcpbpf_kern
+Date:   Tue, 3 Nov 2020 07:44:38 -0800
+Message-ID: <CAKgT0UeV4OKC8dhMgA-RvRfa4kr6NsqF=CCdW-Oe2mx+E4MPEg@mail.gmail.com>
+Subject: Re: [bpf-next PATCH v2 4/5] selftests/bpf: Migrate tcpbpf_user.c to
+ use BPF skeleton
 To:     Martin KaFai Lau <kafai@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -67,106 +67,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 2, 2020 at 5:26 PM Martin KaFai Lau <kafai@fb.com> wrote:
+On Mon, Nov 2, 2020 at 4:55 PM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> On Sat, Oct 31, 2020 at 11:52:37AM -0700, Alexander Duyck wrote:
-> [ ... ]
+> On Sat, Oct 31, 2020 at 11:52:31AM -0700, Alexander Duyck wrote:
+> > From: Alexander Duyck <alexanderduyck@fb.com>
+> >
+> > Update tcpbpf_user.c to make use of the BPF skeleton. Doing this we can
+> > simplify test_tcpbpf_user and reduce the overhead involved in setting up
+> > the test.
+> >
+> > In addition we can clean up the remaining bits such as the one remaining
+> > CHECK_FAIL at the end of test_tcpbpf_user so that the function only makes
+> > use of CHECK as needed.
+> >
+> > Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> > Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
 >
-> > +struct tcpbpf_globals global = { 0 };
-> >  int _version SEC("version") = 1;
+> > ---
+> >  .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |   48 ++++++++------------
+> >  1 file changed, 18 insertions(+), 30 deletions(-)
 > >
-> >  SEC("sockops")
-> > @@ -105,29 +72,15 @@ int bpf_testcb(struct bpf_sock_ops *skops)
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > index d96f4084d2f5..c7a61b0d616a 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
+> > @@ -4,6 +4,7 @@
+> >  #include <network_helpers.h>
 > >
-> >       op = (int) skops->op;
+> >  #include "test_tcpbpf.h"
+> > +#include "test_tcpbpf_kern.skel.h"
 > >
-> > -     update_event_map(op);
-> > +     global.event_map |= (1 << op);
+> >  #define LO_ADDR6 "::1"
+> >  #define CG_NAME "/tcpbpf-user-test"
+> > @@ -133,44 +134,31 @@ static void run_test(int map_fd, int sock_map_fd)
 > >
-> >       switch (op) {
-> >       case BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB:
-> >               /* Test failure to set largest cb flag (assumes not defined) */
-> > -             bad_call_rv = bpf_sock_ops_cb_flags_set(skops, 0x80);
-> > +             global.bad_cb_test_rv = bpf_sock_ops_cb_flags_set(skops, 0x80);
-> >               /* Set callback */
-> > -             good_call_rv = bpf_sock_ops_cb_flags_set(skops,
-> > +             global.good_cb_test_rv = bpf_sock_ops_cb_flags_set(skops,
-> >                                                BPF_SOCK_OPS_STATE_CB_FLAG);
-> > -             /* Update results */
-> > -             {
-> > -                     __u32 key = 0;
-> > -                     struct tcpbpf_globals g, *gp;
+> >  void test_tcpbpf_user(void)
+> >  {
+> > -     const char *file = "test_tcpbpf_kern.o";
+> > -     int prog_fd, map_fd, sock_map_fd;
+> > -     int error = EXIT_FAILURE;
+> > -     struct bpf_object *obj;
+> > +     struct test_tcpbpf_kern *skel;
+> > +     int map_fd, sock_map_fd;
+> >       int cg_fd = -1;
+> > -     int rv;
 > > -
-> > -                     gp = bpf_map_lookup_elem(&global_map, &key);
-> > -                     if (!gp)
-> > -                             break;
-> > -                     g = *gp;
-> > -                     g.bad_cb_test_rv = bad_call_rv;
-> > -                     g.good_cb_test_rv = good_call_rv;
-> > -                     bpf_map_update_elem(&global_map, &key, &g,
-> > -                                         BPF_ANY);
-> > -             }
-> >               break;
-> >       case BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB:
-> >               skops->sk_txhash = 0x12345f;
-> > @@ -143,10 +96,8 @@ int bpf_testcb(struct bpf_sock_ops *skops)
+> > -     cg_fd = test__join_cgroup(CG_NAME);
+> > -     if (cg_fd < 0)
+> > -             goto err;
 > >
-> >                               thdr = (struct tcphdr *)(header + offset);
-> >                               v = thdr->syn;
-> > -                             __u32 key = 1;
+> > -     if (bpf_prog_load(file, BPF_PROG_TYPE_SOCK_OPS, &obj, &prog_fd)) {
+> > -             fprintf(stderr, "FAILED: load_bpf_file failed for: %s\n", file);
+> > -             goto err;
+> > -     }
+> > +     skel = test_tcpbpf_kern__open_and_load();
+> > +     if (CHECK(!skel, "open and load skel", "failed"))
+> > +             return;
 > >
-> > -                             bpf_map_update_elem(&sockopt_results, &key, &v,
-> > -                                                 BPF_ANY);
-> > +                             global.tcp_saved_syn = v;
-> >                       }
-> >               }
-> >               break;
-> > @@ -156,25 +107,16 @@ int bpf_testcb(struct bpf_sock_ops *skops)
-> >               break;
-> >       case BPF_SOCK_OPS_STATE_CB:
-> >               if (skops->args[1] == BPF_TCP_CLOSE) {
-> > -                     __u32 key = 0;
-> > -                     struct tcpbpf_globals g, *gp;
-> > -
-> > -                     gp = bpf_map_lookup_elem(&global_map, &key);
-> > -                     if (!gp)
-> > -                             break;
-> > -                     g = *gp;
-> >                       if (skops->args[0] == BPF_TCP_LISTEN) {
-> > -                             g.num_listen++;
-> > +                             global.num_listen++;
-> >                       } else {
-> > -                             g.total_retrans = skops->total_retrans;
-> > -                             g.data_segs_in = skops->data_segs_in;
-> > -                             g.data_segs_out = skops->data_segs_out;
-> > -                             g.bytes_received = skops->bytes_received;
-> > -                             g.bytes_acked = skops->bytes_acked;
-> > +                             global.total_retrans = skops->total_retrans;
-> > +                             global.data_segs_in = skops->data_segs_in;
-> > +                             global.data_segs_out = skops->data_segs_out;
-> > +                             global.bytes_received = skops->bytes_received;
-> > +                             global.bytes_acked = skops->bytes_acked;
-> >                       }
-> > -                     g.num_close_events++;
-> > -                     bpf_map_update_elem(&global_map, &key, &g,
-> > -                                         BPF_ANY);
-> It is interesting that there is no race in the original "g.num_close_events++"
-> followed by the bpf_map_update_elem().  It seems quite fragile though.
-
-How would it race with the current code though? At this point we are
-controlling the sockets in a single thread. As such the close events
-should already be serialized shouldn't they? This may have been a
-problem with the old code, but even then it was only two sockets so I
-don't think there was much risk of them racing against each other
-since the two sockets were linked anyway.
-
-> > +                     global.num_close_events++;
-> There is __sync_fetch_and_add().
+> > -     rv = bpf_prog_attach(prog_fd, cg_fd, BPF_CGROUP_SOCK_OPS, 0);
+> > -     if (rv) {
+> > -             fprintf(stderr, "FAILED: bpf_prog_attach: %d (%s)\n",
+> > -                    errno, strerror(errno));
+> > -             goto err;
+> > -     }
+> > +     cg_fd = test__join_cgroup(CG_NAME);
+> > +     if (CHECK(cg_fd < 0, "test__join_cgroup(" CG_NAME ")",
+> > +               "cg_fd:%d errno:%d", cg_fd, errno))
+> > +             goto cleanup_skel;
+> >
+> > -     map_fd = bpf_find_map(__func__, obj, "global_map");
+> > -     if (map_fd < 0)
+> > -             goto err;
+> > +     map_fd = bpf_map__fd(skel->maps.global_map);
+> > +     sock_map_fd = bpf_map__fd(skel->maps.sockopt_results);
+> >
+> > -     sock_map_fd = bpf_find_map(__func__, obj, "sockopt_results");
+> > -     if (sock_map_fd < 0)
+> > -             goto err;
+> > +     skel->links.bpf_testcb = bpf_program__attach_cgroup(skel->progs.bpf_testcb, cg_fd);
+> > +     if (ASSERT_OK_PTR(skel->links.bpf_testcb, "attach_cgroup(bpf_testcb)"))
+> > +             goto cleanup_namespace;
+> >
+> >       run_test(map_fd, sock_map_fd);
+> >
+> > -     error = 0;
+> > -err:
+> > -     bpf_prog_detach(cg_fd, BPF_CGROUP_SOCK_OPS);
+> > +cleanup_namespace:
+> nit.
 >
-> not sure about the global.event_map though, may be use an individual
-> variable for each _CB.  Thoughts?
+> may be "cleanup_cgroup" instead?
+>
+> or only have one jump label to handle failure since "cg_fd != -1" has been
+> tested already.
 
-I think this may be overkill for what we actually need. Since we are
-closing the sockets in a single threaded application there isn't much
-risk of the sockets all racing against each other in the close is
-there?
+Good point. I can go through and just drop the second label and
+simplify this. Will fix for v3.
