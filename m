@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AB632A3D31
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:10:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA1242A3D32
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:10:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727782AbgKCHKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 02:10:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35148 "EHLO
+        id S1727798AbgKCHKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 02:10:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725958AbgKCHKk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 02:10:40 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D60C0617A6
-        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 23:10:40 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id z3so7010348pfz.6
-        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 23:10:40 -0800 (PST)
+        with ESMTP id S1725958AbgKCHKq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 02:10:46 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF0BC0617A6
+        for <netdev@vger.kernel.org>; Mon,  2 Nov 2020 23:10:45 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id t6so8129857plq.11
+        for <netdev@vger.kernel.org>; Mon, 02 Nov 2020 23:10:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=eLTansvwhuS/FSHqhj49yYp2DNG3ITpf5pPmyBMM/GU=;
-        b=HcsdxSelfgsTNqiS3e6nT+6IRElsdVhoCztDGNXRWoOsyU2ds2QlUl59vlBL3fXxyQ
-         /1Dq68iB54L+7unzijvHQcSOyCYidsZ7aG44uD8Pc+QNlClg9nTxSf8EdopNAe4Xgsly
-         eF+x8HQtJBFquOOA16B1RPaps6uUzBud/oC5vCuhh9Vw/FOVR3i0Pwuyu0fl7wZT6Ve7
-         kGKFWKHxKLpqByDtGm5M7hBFB1LiOPsBhTDvdh7fNeV0v5WQ6CW/baXcfhkynXJJOhJm
-         ZLwnKBPfWFAlE7svAITssU6K2HdccV0cQ63eTPp5IaAag1b2NMrhZjxuChiBLVbMWj24
-         1zFQ==
+        bh=Ge4cLiEBpSy5TOrMrj/Ga+3tavq0F26wgBOD5vzjV8U=;
+        b=RFNudsiGoK+LANJ0iVEYmDYmPB/IE5RuM5obRqEh3XYHcmq+S7jWF/E2liz8AGBBQi
+         msLYjyAEHboQkHW1uI1REuudFlZ/iIDzGy5qK+ynGw2h/QE9Gyo+BcVF9hz6MCbnIWj4
+         cFSe/uoyU8z9LvHY7hYp8DS2NzsgMJBDg2n64ya/uliJRrklJlIo2kf/b0helJJrWKDu
+         t3cDtiUDO+frsWaJ0moLr0NzC2Gc8THs9rwQE1/M2G75Bst2iTJSw+E2db7FzQmR1Ok/
+         g09szASQF2+QR1+MCDf0ekiVKvW+KRSxYpJMsdUn8m81I+E26ErLWG2RDTpvKEkyq53Y
+         6uEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=eLTansvwhuS/FSHqhj49yYp2DNG3ITpf5pPmyBMM/GU=;
-        b=ug3pR20EKBAHhJSEN8ffP2tYI6nFBMfhI/oqd0LP3FM4TI3PyABvWJLWMnXkZ68LKi
-         DKOkAn6s2mVeKO3hNp0NIq6wSzuIC4wVbLQlXX/PZK1s2YrABBIGuitFkV6XEAkzg9eG
-         /jptKnMkMrDy7MPZZ0mtFeBZxhFguYA9bcHTSX2SKB5yFfOy4TwXRrKVFbYuO2uTRFJS
-         FC3EAwdjjCI7Srar/chP5+y2JmdkRD8GzKHz630PjHrh3kLDeZkKylFpD8jlENlxMBHU
-         nwtlRHHDaR6ByCBmtcxWv9e88wcEDbRZhJvTQtredwBMBQwUQmFfo9dYbHuuasOhhiX8
-         nvAw==
-X-Gm-Message-State: AOAM530KlKAy7FmgzCIrPuULDXHCVTKigxpaOxLypEMNCbXslTwiS/ru
-        /JmjsyRlnl/ojnaWowKjG5c=
-X-Google-Smtp-Source: ABdhPJws5qpdmLQNPB+JrywpPPGMx/f3h9R88/kj7yebjeBsmSsiaBbRxhwEQOKhD+lxAW2X+5ymCA==
-X-Received: by 2002:a17:90a:ea8a:: with SMTP id h10mr2385718pjz.142.1604387439839;
-        Mon, 02 Nov 2020 23:10:39 -0800 (PST)
+        bh=Ge4cLiEBpSy5TOrMrj/Ga+3tavq0F26wgBOD5vzjV8U=;
+        b=daMSX75piOoyBf8e23PCFqwAFQbSRsjd2x1+zedBVVl5O0TTL6KLjZmd04fGc5QVgU
+         E3wu6kyxwd19AGw3fgY55fWm625uAcsIlrTwVl53TKye0yawqWoThSkP2vPUpV5QFiOB
+         LJ5AJ/wscblN8dHBJRj4eFJn1nv1rFlJyLhGtfqOcXrb3B1GKH2BkDvCk1ZJayXuuOry
+         QfVLOfnlK4WPrACDWEa9kwaaNxyky09gr2PbjUzXB/ciTRFJZkoF6pYiFZZByvwbiWnd
+         2bmGjhomugFyH1GkYJSUkfl9ACUDPY0Pu6TPdwoH49/oCcXjBsSN/8I6dUkWtdxfqxGD
+         /iIA==
+X-Gm-Message-State: AOAM531aaFVhCItPG/AIuP29gHexmncPxkidEqr7yhEDCjFF4MM97bSL
+        Fs5njP+p2HpbhFEf2fFxL1A=
+X-Google-Smtp-Source: ABdhPJzZwWj26cQwZ8/57guLBoKNkwCKwybgeCJpb6VVtp8dZdyzLiGhpeSS7hAzS5VxHrNvwelP6A==
+X-Received: by 2002:a17:902:76cc:b029:d6:6007:9372 with SMTP id j12-20020a17090276ccb02900d660079372mr23305695plt.50.1604387445603;
+        Mon, 02 Nov 2020 23:10:45 -0800 (PST)
 Received: from localhost.localdomain ([49.207.216.192])
-        by smtp.gmail.com with ESMTPSA id 92sm2020074pjv.32.2020.11.02.23.10.32
+        by smtp.gmail.com with ESMTPSA id 92sm2020074pjv.32.2020.11.02.23.10.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 23:10:39 -0800 (PST)
+        Mon, 02 Nov 2020 23:10:45 -0800 (PST)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
@@ -57,9 +57,9 @@ Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
         steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
         netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [net-next V3 5/8] net: rds: convert tasklets to use new tasklet_setup() API
-Date:   Tue,  3 Nov 2020 12:39:44 +0530
-Message-Id: <20201103070947.577831-6-allen.lkml@gmail.com>
+Subject: [net-next V3 6/8] net: sched: convert tasklets to use new tasklet_setup() API
+Date:   Tue,  3 Nov 2020 12:39:45 +0530
+Message-Id: <20201103070947.577831-7-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201103070947.577831-1-allen.lkml@gmail.com>
 References: <20201103070947.577831-1-allen.lkml@gmail.com>
@@ -79,50 +79,36 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <apais@linux.microsoft.com>
 ---
- net/rds/ib_cm.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ net/sched/sch_atm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/rds/ib_cm.c b/net/rds/ib_cm.c
-index b36b60668b1d..d06398be4b80 100644
---- a/net/rds/ib_cm.c
-+++ b/net/rds/ib_cm.c
-@@ -314,9 +314,9 @@ static void poll_scq(struct rds_ib_connection *ic, struct ib_cq *cq,
- 	}
+diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
+index 1c281cc81f57..390d972bb2f0 100644
+--- a/net/sched/sch_atm.c
++++ b/net/sched/sch_atm.c
+@@ -466,10 +466,10 @@ drop: __maybe_unused
+  * non-ATM interfaces.
+  */
+ 
+-static void sch_atm_dequeue(unsigned long data)
++static void sch_atm_dequeue(struct tasklet_struct *t)
+ {
+-	struct Qdisc *sch = (struct Qdisc *)data;
+-	struct atm_qdisc_data *p = qdisc_priv(sch);
++	struct atm_qdisc_data *p = from_tasklet(p, t, task);
++	struct Qdisc *sch = (struct Qdisc *)((char *)p - sizeof(struct Qdisc));
+ 	struct atm_flow_data *flow;
+ 	struct sk_buff *skb;
+ 
+@@ -563,7 +563,7 @@ static int atm_tc_init(struct Qdisc *sch, struct nlattr *opt,
+ 	if (err)
+ 		return err;
+ 
+-	tasklet_init(&p->task, sch_atm_dequeue, (unsigned long)sch);
++	tasklet_setup(&p->task, sch_atm_dequeue);
+ 	return 0;
  }
  
--static void rds_ib_tasklet_fn_send(unsigned long data)
-+static void rds_ib_tasklet_fn_send(struct tasklet_struct *t)
- {
--	struct rds_ib_connection *ic = (struct rds_ib_connection *)data;
-+	struct rds_ib_connection *ic = from_tasklet(ic, t, i_send_tasklet);
- 	struct rds_connection *conn = ic->conn;
- 
- 	rds_ib_stats_inc(s_ib_tasklet_call);
-@@ -354,9 +354,9 @@ static void poll_rcq(struct rds_ib_connection *ic, struct ib_cq *cq,
- 	}
- }
- 
--static void rds_ib_tasklet_fn_recv(unsigned long data)
-+static void rds_ib_tasklet_fn_recv(struct tasklet_struct *t)
- {
--	struct rds_ib_connection *ic = (struct rds_ib_connection *)data;
-+	struct rds_ib_connection *ic = from_tasklet(ic, t, i_recv_tasklet);
- 	struct rds_connection *conn = ic->conn;
- 	struct rds_ib_device *rds_ibdev = ic->rds_ibdev;
- 	struct rds_ib_ack_state state;
-@@ -1219,10 +1219,8 @@ int rds_ib_conn_alloc(struct rds_connection *conn, gfp_t gfp)
- 	}
- 
- 	INIT_LIST_HEAD(&ic->ib_node);
--	tasklet_init(&ic->i_send_tasklet, rds_ib_tasklet_fn_send,
--		     (unsigned long)ic);
--	tasklet_init(&ic->i_recv_tasklet, rds_ib_tasklet_fn_recv,
--		     (unsigned long)ic);
-+	tasklet_setup(&ic->i_send_tasklet, rds_ib_tasklet_fn_send);
-+	tasklet_setup(&ic->i_recv_tasklet, rds_ib_tasklet_fn_recv);
- 	mutex_init(&ic->i_recv_mutex);
- #ifndef KERNEL_HAS_ATOMIC64
- 	spin_lock_init(&ic->i_ack_lock);
 -- 
 2.25.1
 
