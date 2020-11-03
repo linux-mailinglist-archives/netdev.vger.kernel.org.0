@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 270622A57E3
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:46:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4898D2A571A
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 22:34:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731996AbgKCVqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 16:46:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47460 "EHLO mail.kernel.org"
+        id S1732169AbgKCVeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 16:34:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58590 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731203AbgKCUvt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 15:51:49 -0500
+        id S1731929AbgKCU4j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 15:56:39 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A736A2236F;
-        Tue,  3 Nov 2020 20:51:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6874A2053B;
+        Tue,  3 Nov 2020 20:56:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604436709;
-        bh=RbG8BEayeDOLy1d5GJe6IeOENyppy7McuHZnW2CuuxE=;
+        s=default; t=1604436998;
+        bh=TcyQb0TCBUDS0ej6dkKIdHcPAnKe8NGWWMa05VJTxAg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IcwtH2bp02+HupW+Ga0jxmSObUzLi7ocHLXziYnPOPXrGxq5LK3tZOIho5P801Ykc
-         ZbPL2zC6s/6H4FhqCeMqhhRVvbFB+UOzvrCrlryC2puW9GVrQDOJyJsAFVnFsB6cGA
-         sn71xKXqltdGQt9aB0Em/HxDdk1zRradtved9SlE=
-Date:   Tue, 3 Nov 2020 12:51:47 -0800
+        b=DXFtVmOQQcqMn3kZGy9gK1S0goG14ywMuvWqTzC+BMbyNuFCHhk2uM86bsIzc6oVz
+         2vL/U//QZElZ1/A9/TWQYm7+2GTl4zOIScnoFng1oeQ2QvDS+tXU1d6T/MvFg44Osc
+         pSE/4pou0RaOMjXD3ptaQ+iNbQ0c0qOKuJ2rvgv0=
+Date:   Tue, 3 Nov 2020 12:56:37 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rohit Maheshwari <rohitm@chelsio.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, secdev@chelsio.com
-Subject: Re: [net v4 07/10] ch_ktls: packet handling prior to start marker
-Message-ID: <20201103125147.565dbf0c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201030180225.11089-8-rohitm@chelsio.com>
-References: <20201030180225.11089-1-rohitm@chelsio.com>
-        <20201030180225.11089-8-rohitm@chelsio.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Martin Varghese <martin.varghese@nokia.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        David Ahern <dsa@cumulusnetworks.com>
+Subject: Re: [PATCH net-next] mpls: drop skb's dst in mpls_forward()
+Message-ID: <20201103125637.37838cf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <f8c2784c13faa54469a2aac339470b1049ca6b63.1604102750.git.gnault@redhat.com>
+References: <f8c2784c13faa54469a2aac339470b1049ca6b63.1604102750.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,12 +42,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Oct 2020 23:32:22 +0530 Rohit Maheshwari wrote:
-> There could be a case where ACK for tls exchanges prior to start
-> marker is missed out, and by the time tls is offloaded. This pkt
-> should not be discarded and handled carefully. It could be
-> plaintext alone or plaintext + finish as well.
+On Sat, 31 Oct 2020 01:07:25 +0100 Guillaume Nault wrote:
+> Commit 394de110a733 ("net: Added pointer check for
+> dst->ops->neigh_lookup in dst_neigh_lookup_skb") added a test in
+> dst_neigh_lookup_skb() to avoid a NULL pointer dereference. The root
+> cause was the MPLS forwarding code, which doesn't call skb_dst_drop()
+> on incoming packets. That is, if the packet is received from a
+> collect_md device, it has a metadata_dst attached to it that doesn't
+> implement any dst_ops function.
+> 
+> To align the MPLS behaviour with IPv4 and IPv6, let's drop the dst in
+> mpls_forward(). This way, dst_neigh_lookup_skb() doesn't need to test
+> ->neigh_lookup any more. Let's keep a WARN condition though, to  
+> document the precondition and to ease detection of such problems in the
+> future.
+> 
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
 
-By plaintext + finish you mean the start of offload falls in the middle
-of a TCP skb? That should never happen. We force EOR when we turn on
-TLS, so you should never see a TCP skb that needs to be half-encrypted.
+Applied, thanks!
