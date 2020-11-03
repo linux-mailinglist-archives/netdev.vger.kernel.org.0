@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BA002A4596
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 13:54:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31E5E2A459B
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 13:54:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729070AbgKCMyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 07:54:06 -0500
-Received: from smtp.uniroma2.it ([160.80.6.22]:46052 "EHLO smtp.uniroma2.it"
+        id S1729100AbgKCMyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 07:54:12 -0500
+Received: from smtp.uniroma2.it ([160.80.6.22]:46056 "EHLO smtp.uniroma2.it"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728582AbgKCMyD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 07:54:03 -0500
+        id S1728995AbgKCMyF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 07:54:05 -0500
 Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0A3CquXn020392
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0A3CquXo020392
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Tue, 3 Nov 2020 13:52:59 +0100
 From:   Andrea Mayer <andrea.mayer@uniroma2.it>
@@ -35,9 +35,9 @@ Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
         Paolo Lungaroni <paolo.lungaroni@cnit.it>,
         Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
         Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net-next,v1,1/5] vrf: add mac header for tunneled packets when sniffer is attached
-Date:   Tue,  3 Nov 2020 13:52:38 +0100
-Message-Id: <20201103125242.11468-2-andrea.mayer@uniroma2.it>
+Subject: [net-next,v1,2/5] seg6: improve management of behavior attributes
+Date:   Tue,  3 Nov 2020 13:52:39 +0100
+Message-Id: <20201103125242.11468-3-andrea.mayer@uniroma2.it>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201103125242.11468-1-andrea.mayer@uniroma2.it>
 References: <20201103125242.11468-1-andrea.mayer@uniroma2.it>
@@ -49,131 +49,226 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before this patch, a sniffer attached to a VRF used as the receiving
-interface of L3 tunneled packets detects them as malformed packets and
-it complains about that (i.e.: tcpdump shows bogus packets).
+Depending on the attribute (i.e.: SEG6_LOCAL_SRH, SEG6_LOCAL_TABLE, etc),
+the parse() callback performs some validity checks on the provided input
+and updates the tunnel state (slwt) with the result of the parsing
+operation. However, an attribute may also need to reserve some additional
+resources (i.e.: memory or setting up an eBPF program) in the parse()
+callback to complete the parsing operation.
 
-The reason is that a tunneled L3 packet does not carry any L2
-information and when the VRF is set as the receiving interface of a
-decapsulated L3 packet, no mac header is currently set or valid.
-Therefore, the purpose of this patch consists of adding a MAC header to
-any packet which is directly received on the VRF interface ONLY IF:
+The parse() callbacks are invoked by the parse_nla_action() for each
+attribute belonging to a specific behavior. Given a behavior with N
+attributes, if the parsing of the i-th attribute fails, the
+parse_nla_action() returns immediately with an error. Nonetheless, the
+resources acquired during the parsing of the i-1 attributes are not freed
+by the parse_nla_action().
 
- i) a sniffer is attached on the VRF and ii) the mac header is not set.
+Attributes which acquire resources must release them *in an explicit way*
+in both the seg6_local_{build/destroy}_state(). However, adding a new
+attribute of this type requires changes to
+seg6_local_{build/destroy}_state() to release the resources correctly.
 
-In this case, the mac address of the VRF is copied in both the
-destination and the source address of the ethernet header. The protocol
-type is set either to IPv4 or IPv6, depending on which L3 packet is
-received.
+The seg6local infrastructure still lacks a simple and structured way to
+release the resources acquired in the parse() operations.
+
+We introduced a new callback in the struct seg6_action_param named
+destroy(). This callback releases any resource which may have been acquired
+in the parse() counterpart. Each attribute may or may not implement the
+destroy() callback depending on whether it needs to free some acquired
+resources.
+
+The destroy() callback comes with several of advantages:
+
+ 1) we can have many attributes as we want for a given behavior with no
+    need to explicitly free the taken resources;
+
+ 2) As in case of the seg6_local_build_state(), the
+    seg6_local_destroy_state() does not need to handle the release of
+    resources directly. Indeed, it calls the destroy_attrs() function which
+    is in charge of calling the destroy() callback for every set attribute.
+    We do not need to patch seg6_local_{build/destroy}_state() anymore as
+    we add new attributes;
+
+ 3) the code is more readable and better structured. Indeed, all the
+    information needed to handle a given attribute are contained in only
+    one place;
+
+ 4) it facilitates the integration with new features introduced in further
+    patches.
 
 Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 ---
- drivers/net/vrf.c | 78 +++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 72 insertions(+), 6 deletions(-)
+ net/ipv6/seg6_local.c | 103 ++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 93 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index 60c1aadece89..26f2ed02a5c1 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -1263,6 +1263,61 @@ static void vrf_ip6_input_dst(struct sk_buff *skb, struct net_device *vrf_dev,
- 	skb_dst_set(skb, &rt6->dst);
+diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+index eba23279912d..63a82e2fdea9 100644
+--- a/net/ipv6/seg6_local.c
++++ b/net/ipv6/seg6_local.c
+@@ -710,6 +710,12 @@ static int cmp_nla_srh(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
+ 	return memcmp(a->srh, b->srh, len);
  }
  
-+static int vrf_prepare_mac_header(struct sk_buff *skb,
-+				  struct net_device *vrf_dev, u16 proto)
++static void destroy_attr_srh(struct seg6_local_lwt *slwt)
 +{
-+	struct ethhdr *eth;
-+	int err;
-+
-+	/* in general, we do not know if there is enough space in the head of
-+	 * the packet for hosting the mac header.
-+	 */
-+	err = skb_cow_head(skb, LL_RESERVED_SPACE(vrf_dev));
-+	if (unlikely(err))
-+		/* no space in the skb head */
-+		return -ENOBUFS;
-+
-+	__skb_push(skb, ETH_HLEN);
-+	eth = (struct ethhdr *)skb->data;
-+
-+	skb_reset_mac_header(skb);
-+
-+	/* we set the ethernet destination and the source addresses to the
-+	 * address of the VRF device.
-+	 */
-+	ether_addr_copy(eth->h_dest, vrf_dev->dev_addr);
-+	ether_addr_copy(eth->h_source, vrf_dev->dev_addr);
-+	eth->h_proto = htons(proto);
-+
-+	/* the destination address of the Ethernet frame corresponds to the
-+	 * address set on the VRF interface; therefore, the packet is intended
-+	 * to be processed locally.
-+	 */
-+	skb->protocol = eth->h_proto;
-+	skb->pkt_type = PACKET_HOST;
-+
-+	skb_postpush_rcsum(skb, skb->data, ETH_HLEN);
-+
-+	skb_pull_inline(skb, ETH_HLEN);
-+
-+	return 0;
++	kfree(slwt->srh);
++	slwt->srh = NULL;
 +}
 +
-+/* prepare and add the mac header to the packet if it was not set previously.
-+ * In this way, packet sniffers such as tcpdump can parse the packet correctly.
-+ * If the mac header was already set, the original mac header is left
-+ * untouched and the function returns immediately.
-+ */
-+static int vrf_add_mac_header_if_unset(struct sk_buff *skb,
-+				       struct net_device *vrf_dev,
-+				       u16 proto)
-+{
-+	if (skb_mac_header_was_set(skb))
-+		return 0;
-+
-+	return vrf_prepare_mac_header(skb, vrf_dev, proto);
-+}
-+
- static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- 				   struct sk_buff *skb)
+ static int parse_nla_table(struct nlattr **attrs, struct seg6_local_lwt *slwt)
  {
-@@ -1289,9 +1344,15 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- 		skb->skb_iif = vrf_dev->ifindex;
+ 	slwt->table = nla_get_u32(attrs[SEG6_LOCAL_TABLE]);
+@@ -901,16 +907,33 @@ static int cmp_nla_bpf(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
+ 	return strcmp(a->bpf.name, b->bpf.name);
+ }
  
- 		if (!list_empty(&vrf_dev->ptype_all)) {
--			skb_push(skb, skb->mac_len);
--			dev_queue_xmit_nit(skb, vrf_dev);
--			skb_pull(skb, skb->mac_len);
-+			int err;
++static void destroy_attr_bpf(struct seg6_local_lwt *slwt)
++{
++	kfree(slwt->bpf.name);
++	if (slwt->bpf.prog)
++		bpf_prog_put(slwt->bpf.prog);
 +
-+			err = vrf_add_mac_header_if_unset(skb, vrf_dev,
-+							  ETH_P_IPV6);
-+			if (likely(!err)) {
-+				skb_push(skb, skb->mac_len);
-+				dev_queue_xmit_nit(skb, vrf_dev);
-+				skb_pull(skb, skb->mac_len);
-+			}
++	slwt->bpf.name = NULL;
++	slwt->bpf.prog = NULL;
++}
++
+ struct seg6_action_param {
+ 	int (*parse)(struct nlattr **attrs, struct seg6_local_lwt *slwt);
+ 	int (*put)(struct sk_buff *skb, struct seg6_local_lwt *slwt);
+ 	int (*cmp)(struct seg6_local_lwt *a, struct seg6_local_lwt *b);
++
++	/* optional destroy() callback useful for releasing resources which
++	 * have been previously acquired in the corresponding parse()
++	 * function.
++	 */
++	void (*destroy)(struct seg6_local_lwt *slwt);
+ };
+ 
+ static struct seg6_action_param seg6_action_params[SEG6_LOCAL_MAX + 1] = {
+ 	[SEG6_LOCAL_SRH]	= { .parse = parse_nla_srh,
+ 				    .put = put_nla_srh,
+-				    .cmp = cmp_nla_srh },
++				    .cmp = cmp_nla_srh,
++				    .destroy = destroy_attr_srh },
+ 
+ 	[SEG6_LOCAL_TABLE]	= { .parse = parse_nla_table,
+ 				    .put = put_nla_table,
+@@ -934,13 +957,68 @@ static struct seg6_action_param seg6_action_params[SEG6_LOCAL_MAX + 1] = {
+ 
+ 	[SEG6_LOCAL_BPF]	= { .parse = parse_nla_bpf,
+ 				    .put = put_nla_bpf,
+-				    .cmp = cmp_nla_bpf },
++				    .cmp = cmp_nla_bpf,
++				    .destroy = destroy_attr_bpf },
+ 
+ };
+ 
++/* call the destroy() callback (if available) for each set attribute in
++ * @parsed_attrs, starting from attribute index @start up to @end excluded.
++ */
++static void __destroy_attrs(unsigned long parsed_attrs, int start, int end,
++			    struct seg6_local_lwt *slwt)
++{
++	struct seg6_action_param *param;
++	int i;
++
++	/* Every seg6local attribute is identified by an ID which is encoded as
++	 * a flag (i.e: 1 << ID) in the @parsed_attrs bitmask; such bitmask
++	 * keeps track of the attributes parsed so far.
++
++	 * We scan the @parsed_attrs bitmask, starting from the attribute
++	 * identified by @start up to the attribute identified by @end
++	 * excluded. For each set attribute, we retrieve the corresponding
++	 * destroy() callback.
++	 * If the callback is not available, then we skip to the next
++	 * attribute; otherwise, we call the destroy() callback.
++	 */
++	for (i = start; i < end; ++i) {
++		if (!(parsed_attrs & (1 << i)))
++			continue;
++
++		param = &seg6_action_params[i];
++
++		if (param->destroy)
++			param->destroy(slwt);
++	}
++}
++
++/* release all the resources that may have been acquired during parsing
++ * operations.
++ */
++static void destroy_attrs(struct seg6_local_lwt *slwt)
++{
++	struct seg6_action_desc *desc;
++	unsigned long attrs;
++
++	desc = slwt->desc;
++	if (!desc) {
++		WARN_ONCE(1,
++			  "seg6local: seg6_action_desc* for action %d is NULL",
++			  slwt->action);
++		return;
++	}
++
++	/* get the attributes for the current behavior instance */
++	attrs = desc->attrs;
++
++	__destroy_attrs(attrs, 0, SEG6_LOCAL_MAX + 1, slwt);
++}
++
+ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+ {
+ 	struct seg6_action_param *param;
++	unsigned long parsed_attrs = 0;
+ 	struct seg6_action_desc *desc;
+ 	int i, err;
+ 
+@@ -963,11 +1041,22 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+ 
+ 			err = param->parse(attrs, slwt);
+ 			if (err < 0)
+-				return err;
++				goto parse_err;
++
++			/* current attribute has been parsed correctly */
++			parsed_attrs |= (1 << i);
  		}
- 
- 		IP6CB(skb)->flags |= IP6SKB_L3SLAVE;
-@@ -1334,9 +1395,14 @@ static struct sk_buff *vrf_ip_rcv(struct net_device *vrf_dev,
- 	vrf_rx_stats(vrf_dev, skb->len);
- 
- 	if (!list_empty(&vrf_dev->ptype_all)) {
--		skb_push(skb, skb->mac_len);
--		dev_queue_xmit_nit(skb, vrf_dev);
--		skb_pull(skb, skb->mac_len);
-+		int err;
-+
-+		err = vrf_add_mac_header_if_unset(skb, vrf_dev, ETH_P_IP);
-+		if (likely(!err)) {
-+			skb_push(skb, skb->mac_len);
-+			dev_queue_xmit_nit(skb, vrf_dev);
-+			skb_pull(skb, skb->mac_len);
-+		}
  	}
  
- 	skb = vrf_rcv_nfhook(NFPROTO_IPV4, NF_INET_PRE_ROUTING, skb, vrf_dev);
+ 	return 0;
++
++parse_err:
++	/* release any resource that may have been acquired during the i-1
++	 * parse() operations.
++	 */
++	__destroy_attrs(parsed_attrs, 0, i, slwt);
++
++	return err;
+ }
+ 
+ static int seg6_local_build_state(struct net *net, struct nlattr *nla,
+@@ -1012,7 +1101,6 @@ static int seg6_local_build_state(struct net *net, struct nlattr *nla,
+ 	return 0;
+ 
+ out_free:
+-	kfree(slwt->srh);
+ 	kfree(newts);
+ 	return err;
+ }
+@@ -1021,12 +1109,7 @@ static void seg6_local_destroy_state(struct lwtunnel_state *lwt)
+ {
+ 	struct seg6_local_lwt *slwt = seg6_local_lwtunnel(lwt);
+ 
+-	kfree(slwt->srh);
+-
+-	if (slwt->desc->attrs & (1 << SEG6_LOCAL_BPF)) {
+-		kfree(slwt->bpf.name);
+-		bpf_prog_put(slwt->bpf.prog);
+-	}
++	destroy_attrs(slwt);
+ 
+ 	return;
+ }
 -- 
 2.20.1
 
