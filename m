@@ -2,122 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95B652A3DC2
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:35:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99C612A3DC3
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 08:35:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727787AbgKCHfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 02:35:15 -0500
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:33287 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725968AbgKCHfO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 02:35:14 -0500
-Received: from [192.168.0.2] (ip5f5af1b7.dynamic.kabel-deutschland.de [95.90.241.183])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 35C6020646DD7;
-        Tue,  3 Nov 2020 08:35:10 +0100 (CET)
-Subject: Re: [PATCH 2/2] ethernet: igb: e1000_phy: Check for
- ops.force_speed_duplex existence
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jeffrey Townsend <jeffrey.townsend@bigswitch.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        John W Linville <linville@tuxdriver.com>
-References: <20201102231307.13021-1-pmenzel@molgen.mpg.de>
- <20201102231307.13021-3-pmenzel@molgen.mpg.de>
- <20201102161943.343586b1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <36ce1f2e-843c-4995-8bb2-2c2676f01b9d@molgen.mpg.de>
-Date:   Tue, 3 Nov 2020 08:35:09 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S1727887AbgKCHf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 02:35:29 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:53752 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727861AbgKCHf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 02:35:28 -0500
+Received: from [192.168.0.114] (unknown [49.207.216.192])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 681AC20B4905;
+        Mon,  2 Nov 2020 23:35:25 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 681AC20B4905
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1604388928;
+        bh=ih9ZiV/+m1a4u66NjJRUECF/WudDRLXa9Ud3sqbo1wU=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=fngvWTf5lX/PQrgJi0VtxZ5dfaIhHlQcoxLhWUSksXKq3J0YjeJMvR0wRt1bNwEbS
+         KFSK/hRuuLQ6QGMj0gBvFxSMmNtaXMxfqjv+3wBbAwqC7EQkEkgdbRfhvCBhDoZRy8
+         C/8Iwe6LSz3hZwNFTl+S6ezNQRgzo7ftmvUxBP28=
+Subject: Re: [PATCH v2 0/3] wireless: convert tasklets to use new
+To:     Allen Pais <allen.lkml@gmail.com>, kvalo@codeaurora.org
+Cc:     davem@davemloft.net, nbd@nbd.name, lorenzo.bianconi83@gmail.com,
+        ryder.lee@mediatek.com, kuba@kernel.org, matthias.bgg@gmail.com,
+        ath11k@lists.infradead.org, linux-mediatek@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <20201007103309.363737-1-allen.lkml@gmail.com>
+From:   Allen Pais <apais@linux.microsoft.com>
+Message-ID: <c3d71677-a428-f215-2ba8-4dd277a69fb6@linux.microsoft.com>
+Date:   Tue, 3 Nov 2020 13:05:23 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20201102161943.343586b1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201007103309.363737-1-allen.lkml@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Jakub,
 
 
-Am 03.11.20 um 01:19 schrieb Jakub Kicinski:
-> On Tue,  3 Nov 2020 00:13:07 +0100 Paul Menzel wrote:
->> From: Jeffrey Townsend <jeffrey.townsend@bigswitch.com>
->>
->> The ops field might no be defined, so add a check.
 > 
-> This change should be first, otherwise AFAIU if someone builds the
-> kernel in between the commits (e.g. for bisection) it will crash.
-
-Patch `[PATCH 1/2] ethernet: igb: Support PHY BCM5461S` has
-
-     phy->ops.force_speed_duplex = igb_phy_force_speed_duplex_82580;
-
-so the ordering does not matter. I do not know, if Jeffrey can comment, 
-but probably the check was just adding during development. Maybe an 
-assert should be added instead?
-
->> The patch is taken from Open Network Linux (ONL), and it was added there
->> as part of the patch
->>
->>      packages/base/any/kernels/3.16+deb8/patches/driver-support-intel-igb-bcm5461X-phy.patch
->>
->> in ONL commit f32316c63c (Support the BCM54616 and BCM5461S.) [1]. Part
->> of this commit was already upstreamed in Linux commit eeb0149660 (igb:
->> support BCM54616 PHY) in 2017.
->>
->> I applied the forward-ported
->>
->>      packages/base/any/kernels/5.4-lts/patches/0002-driver-support-intel-igb-bcm5461S-phy.patch
->>
->> added in ONL commit 5ace6bcdb3 (Add 5.4 LTS kernel build.) [2].
->>
->> [1]: https://github.com/opencomputeproject/OpenNetworkLinux/commit/f32316c63ce3a64de125b7429115c6d45e942bd1
->> [2]: https://github.com/opencomputeproject/OpenNetworkLinux/commit/5ace6bcdb37cb8065dcd1d4404b3dcb6424f6331
+> This series converts the remaining drivers to use new
+> tasklet_setup() API.
 > 
-> No need to put this in every commit message.
+> The patches are based on wireless-drivers-next (c2568c8c9e63)
+
+  Is this series queue? I haven't seen any email. This is the last
+series as part of the tasklet conversion effort.
+
+Thanks.
+
 > 
-> We preserve the cover letter in tree as a merge commit message, so
-> explaining things once in the cover letter is sufficient.
-
-I remember, but still find it confusing. If I look at a commit with `git 
-show …`, I normally do not think of also looking at a possible cover 
-letter as not many subsystems/projects do it, and I assume a commit is 
-self-contained.
-
-Could you share your development process
-
->> Cc: Jeffrey Townsend <jeffrey.townsend@bigswitch.com>
+> v2:
+>    Split mt76 and mt7601u
 > 
-> Jefferey will need to provide a sign-off as the author.
-
-According to *Developer's Certificate of Origin 1.1* [3], it’s my 
-understanding, that it is *not* required. The items (a), (b), and (c) 
-are connected by an *or*.
-
->         (b) The contribution is based upon previous work that, to the best
->             of my knowledge, is covered under an appropriate open source
->             license and I have the right under that license to submit that
->             work with modifications, whether created in whole or in part 
->             by me, under the same open source license (unless I am
->             permitted to submit under a different license), as indicated
->             in the file; or
-
->> Cc: John W Linville <linville@tuxdriver.com>
->> Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
-
-
-Kind regards,
-
-Paul
-
-
-[3]: 
-https://www.kernel.org/doc/html/v5.9/process/submitting-patches.html#sign-your-work-the-developer-s-certificate-of-origin
+> Allen Pais (3):
+>    wireless: mt76: convert tasklets to use new tasklet_setup() API
+>    wireless: mt7601u: convert tasklets to use new tasklet_setup() API
+>    ath11k: convert tasklets to use new tasklet_setup() API
+> 
+>   drivers/net/wireless/ath/ath11k/pci.c              |  7 +++----
+>   drivers/net/wireless/mediatek/mt76/mt7603/beacon.c |  4 ++--
+>   drivers/net/wireless/mediatek/mt76/mt7603/init.c   |  3 +--
+>   drivers/net/wireless/mediatek/mt76/mt7603/mt7603.h |  2 +-
+>   drivers/net/wireless/mediatek/mt76/mt7615/mmio.c   |  6 +++---
+>   drivers/net/wireless/mediatek/mt76/mt76x02_dfs.c   | 10 +++++-----
+>   drivers/net/wireless/mediatek/mt76/mt76x02_mmio.c  |  7 +++----
+>   drivers/net/wireless/mediatek/mt76/usb.c           |  6 +++---
+>   drivers/net/wireless/mediatek/mt7601u/dma.c        | 12 ++++++------
+>   9 files changed, 27 insertions(+), 30 deletions(-)
+> 
