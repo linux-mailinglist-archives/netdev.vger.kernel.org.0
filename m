@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 861D62A45A8
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 13:54:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ABFD2A459E
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 13:54:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729034AbgKCMyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 07:54:03 -0500
-Received: from smtp.uniroma2.it ([160.80.6.22]:46050 "EHLO smtp.uniroma2.it"
+        id S1729134AbgKCMyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 07:54:22 -0500
+Received: from smtp.uniroma2.it ([160.80.6.22]:46053 "EHLO smtp.uniroma2.it"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726388AbgKCMyC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 07:54:02 -0500
+        id S1728993AbgKCMyD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 07:54:03 -0500
 Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0A3CquXp020392
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0A3CquXq020392
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Tue, 3 Nov 2020 13:52:59 +0100
 From:   Andrea Mayer <andrea.mayer@uniroma2.it>
@@ -35,9 +35,9 @@ Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
         Paolo Lungaroni <paolo.lungaroni@cnit.it>,
         Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
         Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net-next,v1,3/5] seg6: add callbacks for customizing the creation/destruction of a behavior
-Date:   Tue,  3 Nov 2020 13:52:40 +0100
-Message-Id: <20201103125242.11468-4-andrea.mayer@uniroma2.it>
+Subject: [net-next,v1,4/5] seg6: add support for the SRv6 End.DT4 behavior
+Date:   Tue,  3 Nov 2020 13:52:41 +0100
+Message-Id: <20201103125242.11468-5-andrea.mayer@uniroma2.it>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201103125242.11468-1-andrea.mayer@uniroma2.it>
 References: <20201103125242.11468-1-andrea.mayer@uniroma2.it>
@@ -49,133 +49,275 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We introduce two callbacks used for customizing the creation/destruction of
-a SRv6 behavior. Such callbacks are defined in the new struct
-seg6_local_lwtunnel_ops and hereafter we provide a brief description of
-them:
+SRv6 End.DT4 is defined in the SRv6 Network Programming [1].
 
- - build_state(...): used for calling the custom constructor of the
-   behavior during its initialization phase and after all the attributes
-   have been parsed successfully;
+The SRv6 End.DT4 is used to implement IPv4 L3VPN use-cases in
+multi-tenants environments. It decapsulates the received packets and it
+performs IPv4 routing lookup in the routing table of the tenant.
 
- - destroy_state(...): used for calling the custom destructor of the
-   behavior before it is completely destroyed.
+The SRv6 End.DT4 Linux implementation leverages a VRF device in order to
+force the routing lookup into the associated routing table.
+
+To make the End.DT4 work properly, it must be guaranteed that the routing
+table used for routing lookup operations is bound to one and only one
+VRF during the tunnel creation. Such constraint has to be enforced by
+enabling the VRF strict_mode sysctl parameter, i.e:
+ $ sysctl -wq net.vrf.strict_mode=1.
+
+At JANOG44, LINE corporation presented their multi-tenant DC architecture
+using SRv6 [2]. In the slides, they reported that the Linux kernel is
+missing the support of SRv6 End.DT4 behavior.
+
+The iproute2 counterpart required for configuring the SRv6 End.DT4
+behavior is already implemented along with the other supported SRv6
+behaviors [3].
+
+[1] https://tools.ietf.org/html/draft-ietf-spring-srv6-network-programming
+[2] https://speakerdeck.com/line_developers/line-data-center-networking-with-srv6
+[3] https://patchwork.ozlabs.org/patch/799837/
 
 Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 ---
- net/ipv6/seg6_local.c | 64 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 64 insertions(+)
+ net/ipv6/seg6_local.c | 205 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 205 insertions(+)
 
 diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-index 63a82e2fdea9..4b0f155d641d 100644
+index 4b0f155d641d..a41074acd43e 100644
 --- a/net/ipv6/seg6_local.c
 +++ b/net/ipv6/seg6_local.c
-@@ -33,11 +33,23 @@
- 
- struct seg6_local_lwt;
- 
-+typedef int (*slwt_build_state_t)(struct seg6_local_lwt *slwt, const void *cfg,
-+				  struct netlink_ext_ack *extack);
-+typedef void (*slwt_destroy_state_t)(struct seg6_local_lwt *slwt);
-+
-+/* callbacks used for customizing the creation and destruction of a behavior */
-+struct seg6_local_lwtunnel_ops {
-+	slwt_build_state_t build_state;
-+	slwt_destroy_state_t destroy_state;
-+};
-+
- struct seg6_action_desc {
- 	int action;
- 	unsigned long attrs;
- 	int (*input)(struct sk_buff *skb, struct seg6_local_lwt *slwt);
- 	int static_headroom;
-+
-+	struct seg6_local_lwtunnel_ops slwt_ops;
+@@ -57,6 +57,14 @@ struct bpf_lwt_prog {
+ 	char *name;
  };
  
- struct bpf_lwt_prog {
-@@ -1015,6 +1027,45 @@ static void destroy_attrs(struct seg6_local_lwt *slwt)
- 	__destroy_attrs(attrs, 0, SEG6_LOCAL_MAX + 1, slwt);
++struct seg6_end_dt4_info {
++	struct net *net;
++	/* VRF device associated to the routing table used by the SRv6 End.DT4
++	 * behavior for routing IPv4 packets.
++	 */
++	int vrf_ifindex;
++};
++
+ struct seg6_local_lwt {
+ 	int action;
+ 	struct ipv6_sr_hdr *srh;
+@@ -66,6 +74,7 @@ struct seg6_local_lwt {
+ 	int iif;
+ 	int oif;
+ 	struct bpf_lwt_prog bpf;
++	struct seg6_end_dt4_info dt4_info;
+ 
+ 	int headroom;
+ 	struct seg6_action_desc *desc;
+@@ -413,6 +422,194 @@ static int input_action_end_dx4(struct sk_buff *skb,
+ 	return -EINVAL;
  }
  
-+/* call the custom constructor of the behavior during its initialization phase
-+ * and after that all its attributes have been parsed successfully.
-+ */
-+static int
-+seg6_local_lwtunnel_build_state(struct seg6_local_lwt *slwt, const void *cfg,
-+				struct netlink_ext_ack *extack)
++#ifdef CONFIG_NET_L3_MASTER_DEV
++
++static struct net *fib6_config_get_net(const struct fib6_config *fib6_cfg)
 +{
-+	slwt_build_state_t build_func;
-+	struct seg6_action_desc *desc;
-+	int err = 0;
++	const struct nl_info *nli = &fib6_cfg->fc_nlinfo;
 +
-+	desc = slwt->desc;
-+	if (!desc)
-+		return -EINVAL;
-+
-+	build_func = desc->slwt_ops.build_state;
-+	if (build_func)
-+		err = build_func(slwt, cfg, extack);
-+
-+	return err;
++	return nli->nl_net;
 +}
 +
-+/* call the custom destructor of the behavior which is invoked before the
-+ * tunnel is going to be destroyed.
-+ */
-+static void seg6_local_lwtunnel_destroy_state(struct seg6_local_lwt *slwt)
++static int seg6_end_dt4_build(struct seg6_local_lwt *slwt, const void *cfg,
++			      struct netlink_ext_ack *extack)
 +{
-+	slwt_destroy_state_t destroy_func;
-+	struct seg6_action_desc *desc;
++	struct seg6_end_dt4_info *info = &slwt->dt4_info;
++	int vrf_ifindex;
++	struct net *net;
 +
-+	desc = slwt->desc;
-+	if (!desc)
-+		return;
++	net = fib6_config_get_net(cfg);
 +
-+	destroy_func = desc->slwt_ops.destroy_state;
-+	if (destroy_func)
-+		destroy_func(slwt);
++	vrf_ifindex = l3mdev_ifindex_lookup_by_table_id(L3MDEV_TYPE_VRF, net,
++							slwt->table);
++	if (vrf_ifindex < 0) {
++		if (vrf_ifindex == -EPERM) {
++			NL_SET_ERR_MSG(extack,
++				       "Strict mode for VRF is disabled");
++		} else if (vrf_ifindex == -ENODEV) {
++			NL_SET_ERR_MSG(extack, "No such device");
++		} else {
++			NL_SET_ERR_MSG(extack, "Unknown error");
++
++			pr_debug("seg6local: SRv6 End.DT4 creation error=%d\n",
++				 vrf_ifindex);
++		}
++
++		return vrf_ifindex;
++	}
++
++	info->net = net;
++	info->vrf_ifindex = vrf_ifindex;
++
++	return 0;
 +}
 +
- static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
++/* The SRv6 End.DT4 behavior extracts the inner (IPv4) packet and routes the
++ * IPv4 packet by looking at the configured routing table.
++ *
++ * In the SRv6 End.DT4 use case, we can receive traffic (IPv6+Segment Routing
++ * Header packets) from several interfaces and the IPv6 destination address (DA)
++ * is used for retrieving the specific instance of the End.DT4 behavior that
++ * should process the packets.
++ *
++ * However, the inner IPv4 packet is not really bound to any receiving
++ * interface and thus the End.DT4 sets the VRF (associated with the
++ * corresponding routing table) as the *receiving* interface.
++ * In other words, the End.DT4 processes a packet as if it has been received
++ * directly by the VRF (and not by one of its slave devices, if any).
++ * In this way, the VRF interface is used for routing the IPv4 packet in
++ * according to the routing table configured by the End.DT4 instance.
++ *
++ * This design allows you to get some interesting features like:
++ *  1) the statistics on rx packets;
++ *  2) the possibility to install a packet sniffer on the receiving interface
++ *     (the VRF one) for looking at the incoming packets;
++ *  3) the possibility to leverage the netfilter prerouting hook for the inner
++ *     IPv4 packet.
++ *
++ * This function returns:
++ *  - the sk_buff* when the VRF rcv handler has processed the packet correctly;
++ *  - NULL when the skb is consumed by the VRF rcv handler;
++ *  - a pointer which encodes a negative error number in case of error.
++ *    Note that in this case, the function takes care of freeing the skb.
++ */
++static struct sk_buff *end_dt4_vrf_rcv(struct sk_buff *skb,
++				       struct net_device *dev)
++{
++	/* based on l3mdev_ip_rcv; we are only interested in the master */
++	if (unlikely(!netif_is_l3_master(dev) && !netif_has_l3_rx_handler(dev)))
++		goto drop;
++
++	if (unlikely(!dev->l3mdev_ops->l3mdev_l3_rcv))
++		goto drop;
++
++	/* the decap packet (IPv4) does not come with any mac header info.
++	 * We must unset the mac header to allow the VRF device to rebuild it,
++	 * just in case there is a sniffer attached on the device.
++	 */
++	skb_unset_mac_header(skb);
++
++	skb = dev->l3mdev_ops->l3mdev_l3_rcv(dev, skb, AF_INET);
++	if (!skb)
++		/* the skb buffer was consumed by the handler */
++		return NULL;
++
++	/* when a packet is received by a VRF or by one of its slaves, the
++	 * master device reference is set into the skb.
++	 */
++	if (unlikely(skb->dev != dev || skb->skb_iif != dev->ifindex))
++		goto drop;
++
++	return skb;
++
++drop:
++	kfree_skb(skb);
++	return ERR_PTR(-EINVAL);
++}
++
++static struct net_device *end_dt4_get_vrf_rcu(struct sk_buff *skb,
++					      struct seg6_end_dt4_info *info)
++{
++	int vrf_ifindex = info->vrf_ifindex;
++	struct net *net = info->net;
++
++	if (unlikely(vrf_ifindex < 0))
++		goto error;
++
++	if (unlikely(!net_eq(dev_net(skb->dev), net)))
++		goto error;
++
++	return dev_get_by_index_rcu(net, vrf_ifindex);
++
++error:
++	return NULL;
++}
++
++static int input_action_end_dt4(struct sk_buff *skb,
++				struct seg6_local_lwt *slwt)
++{
++	struct net_device *vrf;
++	struct iphdr *iph;
++	int err;
++
++	if (!decap_and_validate(skb, IPPROTO_IPIP))
++		goto drop;
++
++	if (!pskb_may_pull(skb, sizeof(struct iphdr)))
++		goto drop;
++
++	vrf = end_dt4_get_vrf_rcu(skb, &slwt->dt4_info);
++	if (unlikely(!vrf))
++		goto drop;
++
++	skb->protocol = htons(ETH_P_IP);
++
++	skb_dst_drop(skb);
++
++	skb_set_transport_header(skb, sizeof(struct iphdr));
++
++	skb = end_dt4_vrf_rcv(skb, vrf);
++	if (!skb)
++		/* packet has been processed and consumed by the VRF */
++		return 0;
++
++	if (IS_ERR(skb)) {
++		err = PTR_ERR(skb);
++		return err;
++	}
++
++	iph = ip_hdr(skb);
++
++	err = ip_route_input(skb, iph->daddr, iph->saddr, 0, skb->dev);
++	if (err)
++		goto drop;
++
++	return dst_input(skb);
++
++drop:
++	kfree_skb(skb);
++	return -EINVAL;
++}
++
++#else
++
++static int seg6_end_dt4_build(struct seg6_local_lwt *slwt, const void *cfg,
++			      struct netlink_ext_ack *extack)
++{
++	NL_SET_ERR_MSG(extack, "Operation is not supported");
++
++	return -EOPNOTSUPP;
++}
++
++static int input_action_end_dt4(struct sk_buff *skb,
++				struct seg6_local_lwt *slwt)
++{
++	kfree_skb(skb);
++	return -EOPNOTSUPP;
++}
++
++#endif
++
+ static int input_action_end_dt6(struct sk_buff *skb,
+ 				struct seg6_local_lwt *slwt)
  {
- 	struct seg6_action_param *param;
-@@ -1090,8 +1141,16 @@ static int seg6_local_build_state(struct net *net, struct nlattr *nla,
- 
- 	err = parse_nla_action(tb, slwt);
- 	if (err < 0)
-+		/* In case of error, the parse_nla_action() takes care of
-+		 * releasing resources which have been acquired during the
-+		 * processing of attributes.
-+		 */
- 		goto out_free;
- 
-+	err = seg6_local_lwtunnel_build_state(slwt, cfg, extack);
-+	if (err < 0)
-+		goto free_attrs;
-+
- 	newts->type = LWTUNNEL_ENCAP_SEG6_LOCAL;
- 	newts->flags = LWTUNNEL_STATE_INPUT_REDIRECT;
- 	newts->headroom = slwt->headroom;
-@@ -1100,6 +1159,9 @@ static int seg6_local_build_state(struct net *net, struct nlattr *nla,
- 
- 	return 0;
- 
-+free_attrs:
-+	destroy_attrs(slwt);
-+
- out_free:
- 	kfree(newts);
- 	return err;
-@@ -1109,6 +1171,8 @@ static void seg6_local_destroy_state(struct lwtunnel_state *lwt)
- {
- 	struct seg6_local_lwt *slwt = seg6_local_lwtunnel(lwt);
- 
-+	seg6_local_lwtunnel_destroy_state(slwt);
-+
- 	destroy_attrs(slwt);
- 
- 	return;
+@@ -601,6 +798,14 @@ static struct seg6_action_desc seg6_action_table[] = {
+ 		.attrs		= (1 << SEG6_LOCAL_NH4),
+ 		.input		= input_action_end_dx4,
+ 	},
++	{
++		.action		= SEG6_LOCAL_ACTION_END_DT4,
++		.attrs		= (1 << SEG6_LOCAL_TABLE),
++		.input		= input_action_end_dt4,
++		.slwt_ops	= {
++					.build_state = seg6_end_dt4_build,
++				  },
++	},
+ 	{
+ 		.action		= SEG6_LOCAL_ACTION_END_DT6,
+ 		.attrs		= (1 << SEG6_LOCAL_TABLE),
 -- 
 2.20.1
 
