@@ -2,134 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DCC22A4BFE
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:52:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 388272A4C01
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 17:53:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728431AbgKCQws (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 11:52:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58018 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727999AbgKCQws (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 11:52:48 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 961E920870;
-        Tue,  3 Nov 2020 16:52:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604422367;
-        bh=ATUgDepSx8znfuwBCpbqINr4q8BPefrp2EOWlxQiwf0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U7qwLuRDXQeVl45mOrGV5DelyKEA5ux4Uyj0Dyjj5HcYPgjIyGK95KTG1rc303hgo
-         79NR5ue3xm2GfDt5nuig5H2iyhJxzPE4H/DH/Jw7sHeGs/dEZKsvUMBeVPJx47a3KM
-         4Q/JqmNC6gb2CIefRPEi7lwCSNzUvfwYjo18S0qs=
-Date:   Tue, 3 Nov 2020 08:52:45 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>, netdev@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shuah Khan <shuah@kernel.org>, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH net-next v2 0/3] net: introduce rps_default_mask
-Message-ID: <20201103085245.3397defa@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <86c37d881a93d5690faf20de3bccceca1493fd74.camel@redhat.com>
-References: <cover.1604055792.git.pabeni@redhat.com>
-        <20201102145447.0074f272@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <86c37d881a93d5690faf20de3bccceca1493fd74.camel@redhat.com>
+        id S1728535AbgKCQxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 11:53:12 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:40310 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727901AbgKCQxL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 11:53:11 -0500
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0A3Gr4oZ061462;
+        Tue, 3 Nov 2020 10:53:04 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1604422384;
+        bh=0Tkp6HLRVCB/7ivjFJeStRM6yrcVsh9/LqVVSNK0ysQ=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=Anuz5tKbBGuCx0poQrMYXF/O5541STenRpOVtBf9We3N7ok2idb0GrDCk/Mxsox29
+         McVsSzhmdTxAUg7ONgpcec2G+4FFLg30BDwBWUtwepx3vU5hg+ZusFLMGS9z8Tj8Qg
+         4Z7NnvX8E2K2zUIuE/lg2VxytxpmMUxSrlEedoJw=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0A3Gr4Iu015522
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 3 Nov 2020 10:53:04 -0600
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 3 Nov
+ 2020 10:53:03 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 3 Nov 2020 10:53:04 -0600
+Received: from [10.250.36.55] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0A3Gr3ej016284;
+        Tue, 3 Nov 2020 10:53:03 -0600
+Subject: Re: [PATCH net-next v3 2/4] dt-bindings: net: Add Rx/Tx output
+ configuration for 10base T1L
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <davem@davemloft.net>, <f.fainelli@gmail.com>,
+        <hkallweit1@gmail.com>, <robh@kernel.org>,
+        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20201030172950.12767-1-dmurphy@ti.com>
+ <20201030172950.12767-3-dmurphy@ti.com> <20201030195655.GD1042051@lunn.ch>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <a50fe8f3-2ca1-8969-08ac-013704a5a617@ti.com>
+Date:   Tue, 3 Nov 2020 10:52:58 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201030195655.GD1042051@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 03 Nov 2020 16:22:07 +0100 Paolo Abeni wrote:
-> On Mon, 2020-11-02 at 14:54 -0800, Jakub Kicinski wrote:
-> > On Fri, 30 Oct 2020 12:16:00 +0100 Paolo Abeni wrote:  
-> > > Real-time setups try hard to ensure proper isolation between time
-> > > critical applications and e.g. network processing performed by the
-> > > network stack in softirq and RPS is used to move the softirq 
-> > > activity away from the isolated core.
-> > > 
-> > > If the network configuration is dynamic, with netns and devices
-> > > routinely created at run-time, enforcing the correct RPS setting
-> > > on each newly created device allowing to transient bad configuration
-> > > became complex.
-> > > 
-> > > These series try to address the above, introducing a new
-> > > sysctl knob: rps_default_mask. The new sysctl entry allows
-> > > configuring a systemwide RPS mask, to be enforced since receive 
-> > > queue creation time without any fourther per device configuration
-> > > required.
-> > > 
-> > > Additionally, a simple self-test is introduced to check the 
-> > > rps_default_mask behavior.  
-> > 
-> > RPS is disabled by default, the processing is going to happen wherever
-> > the IRQ is mapped, and one would hope that the IRQ is not mapped to the
-> > core where the critical processing runs.
-> > 
-> > Would you mind elaborating further on the use case?  
-> 
-> On Mon, 2020-11-02 at 15:27 -0800, Saeed Mahameed wrote:
-> > The whole thing can be replaced with a user daemon scripts that
-> > monitors all newly created devices and assign to them whatever rps mask
-> > (call it default).
-> > 
-> > So why do we need this special logic in kernel ? 
-> > 
-> > I am not sure about this, but if rps queues sysfs are available before
-> > the netdev is up, then you can also use udevd to assign the rps masks
-> > before such devices are even brought up, so you would avoid the race
-> > conditions that you described, which are not really clear to me to be
-> > honest.  
-> 
-> Thank you for the feedback.
-> 
-> Please allow me to answer you both here, as your questions are related.
-> 
-> The relevant use case is an host running containers (with the related
-> orchestration tools) in a RT environment. Virtual devices (veths, ovs
-> ports, etc.) are created by the orchestration tools at run-time.
-> Critical processes are allowed to send packets/generate outgoing
-> network traffic - but any interrupt is moved away from the related
-> cores, so that usual incoming network traffic processing does not
-> happen there.
-> 
-> Still an xmit operation on a virtual devices may be transmitted via ovs
-> or veth, with the relevant forwarding operation happening in a softirq
-> on the same CPU originating the packet. 
-> 
-> RPS is configured (even) on such virtual devices to move away the
-> forwarding from the relevant CPUs.
-> 
-> As Saeed noted, such configuration could be possibly performed via some
-> user-space daemon monitoring network devices and network namespaces
-> creation. That will be anyway prone to some race: the orchestation tool
-> may create and enable the netns and virtual devices before the daemon
-> has properly set the RPS mask.
-> 
-> In the latter scenario some packet forwarding could still slip in the
-> relevant CPU, causing measurable latency. In all non RT scenarios the
-> above will be likely irrelevant, but in the RT context that is not
-> acceptable - e.g. it causes in real environments latency above the
-> defined limits, while the proposed patches avoid the issue.
-> 
-> Do you see any other simple way to avoid the above race?
-> 
-> Please let me know if the above answers your doubts,
+Andrew
 
-Thanks, that makes it clearer now.
+On 10/30/20 2:56 PM, Andrew Lunn wrote:
+> On Fri, Oct 30, 2020 at 12:29:48PM -0500, Dan Murphy wrote:
+>> Per the 802.3cg spec the 10base T1L can operate at 2 different
+>> differential voltages 1v p2p and 2.4v p2p. The abiility of the PHY to
+>> drive that output is dependent on the PHY's on board power supply.
+> Hi Dan
+>
+> So this property is about the board being able to support the needed
+> voltages? The PHY is not forced into 2.4v p2p, it just says the PHY
+> can operate at 2.4v and the board will not melt, blow a fuse, etc?
+>
+> I actually think it is normal to specify the reverse. List the maximum
+> that device can do because of board restrictions. e.g.
+>
+> - maximum-power-milliwatt : Maximum module power consumption
+>    Specifies the maximum power consumption allowable by a module in the
+>    slot, in milli-Watts.  Presently, modules can be up to 1W, 1.5W or 2W.
+>
+> - max-link-speed:
+>     If present this property specifies PCI gen for link capability.  Host
+>     drivers could add this as a strategy to avoid unnecessary operation for
+>     unsupported link speed, for instance, trying to do training for
+>     unsupported link speed, etc.  Must be '4' for gen4, '3' for gen3, '2'
+>     for gen2, and '1' for gen1. Any other values are invalid.
+>
+>   - max-microvolt : The maximum voltage value supplied to the haptic motor.
+>                  [The unit of the voltage is a micro]
+>
+> So i think this property should be
+>
+>     max-tx-rx-p2p = <1000>;
 
-Depending on how RT-aware your container management is it may or may not
-be the right place to configure this, as it creates the veth interface.
-Presumably it's the container management which does the placement of
-the tasks to cores, why is it not setting other attributes, like RPS?
+When I was re-writing the code I couldn't come up with a better property 
+name but I like this one.
 
-Also I wonder if it would make sense to turn this knob into something
-more generic. When we arrive at the threaded NAPIs - could it make
-sense for the threads to inherit your mask as the CPUs they are allowed
-to run on?
+I will implement it.
+
+Do you have any issue with the property being in the ethernet-phy.yaml?
+
+Dan
+
+
