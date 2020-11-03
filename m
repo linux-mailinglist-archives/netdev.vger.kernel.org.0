@@ -2,120 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9686A2A4FA8
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:05:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0DEA2A4FB2
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:06:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729626AbgKCTFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 14:05:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729618AbgKCTF3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 14:05:29 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCDFC0613D1;
-        Tue,  3 Nov 2020 11:05:29 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id o70so15815134ybc.1;
-        Tue, 03 Nov 2020 11:05:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sKLt9YXgDPSIyALmmWTUZKWktUXxvPCs3PqzBJAVioM=;
-        b=QjJV/9pBD/jLf94VijrB8uYcxZo/vxq94tTDkgpBsRa9GrtSyfQhE1AMoZ86ZyK4PG
-         84zo9TJ+8u0Q9+bnjWxZwowhu6FEDkuA+uBET5LAtU3K+Vjj/zAmQxPa0MhbF7Qda4dY
-         joPCQXnTD0YWgk0JB0j/0PPraJ5HmMrqmoNrimwgmK/H7XFXmY6xV/8Hrl2BUELeYGgN
-         UFplhqrAskFXquIzeSFv7DcoNiwzRtAzjswspjAC3aebnX2H1qdkyYOzTN5vOBO+bVeP
-         bf/nySFT22E/eYejx4ZCtHUPvzYqlnYIQFESnxHDKNr6/497FiBeZ+Y9Jtkd0g3RlAVL
-         Mj6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sKLt9YXgDPSIyALmmWTUZKWktUXxvPCs3PqzBJAVioM=;
-        b=fAKojckQ6eJ6JJ+fnw9GwgqswS3U0w9bAWPQl8dcP19ebo9eQTWRRPLZBXg/yNP0Hh
-         i10ivOFAPf312os1CgS+jTUbUMOw5VMBJKia4lrFOsJxkfZdgHZAPlVxlJMmVkZxZYPD
-         fY7u6H0mv0/r4sRHPdBlvqbDym1/wvVjlZtIqPBgl1QvseW6eHxyXMCPgX1UlfsJOXtV
-         /mFGxfR9ZLZcoDtp5eh1M4yDzG8gvQSoFSi6dIwqhlTRpIU/Q449mFweU8aBLelgU4wI
-         AumNfh/XxnZIwv1YXmxsYwlI6ybGLzYLmijkIXMnvG4T20iuDzqliRoIQ9oxFFmJ/ssm
-         WnTA==
-X-Gm-Message-State: AOAM532Kju9l2dXN2vxhEdnQ05LFFqnIhcVNsh9VvSETqGQDwoH1mdUY
-        2UxZHO501CDh2mGCI7tFAXPaEdTok1QAoKjyKCI=
-X-Google-Smtp-Source: ABdhPJy9hhLxa5CZ1z7Psy/GqVxdW6WsKPxEBM0KU3JDGpS2tnjUQO+Wc24oKchU8xF0HtI0TWSsxlxC9BNrdzt0KRk=
-X-Received: by 2002:a25:b0d:: with SMTP id 13mr31274067ybl.347.1604430328891;
- Tue, 03 Nov 2020 11:05:28 -0800 (PST)
+        id S1729635AbgKCTGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 14:06:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55762 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727852AbgKCTGS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 14:06:18 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 506C32074B;
+        Tue,  3 Nov 2020 19:06:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604430377;
+        bh=O4tzWsceM+EicjZDWWaCFCmvVgWSvK/e5QxW68BvAEA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gjL36NCstFyCcg4iSzkApJpED4wi8whZrV6dHqpkxE4LgXmNzTH5nhmjhbBxoS+Xv
+         +RdmJbD4waCm3t8hAX3/GkeiuEd5/iCELGhzw1PGn0nNNg7tRCXxPQYrt/V+eRCaKh
+         aT76FGPIJD/heUQQ1Hh0S2nBMPNQONOmAA6Du5cs=
+Date:   Tue, 3 Nov 2020 11:06:14 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     <gregkh@linuxfoundation.org>, <stable@vger.kernel.org>,
+        <vpai@akamai.com>, <Joakim.Tjernlund@infinera.com>,
+        <xiyou.wangcong@gmail.com>, <johunt@akamai.com>,
+        <jhs@mojatatu.com>, <jiri@resnulli.us>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <john.fastabend@gmail.com>,
+        <eric.dumazet@gmail.com>, <dsahern@gmail.com>
+Subject: Re: [PATCH stable] net: sch_generic: fix the missing new qdisc
+ assignment bug
+Message-ID: <20201103110614.49116c3c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <1604373938-211588-1-git-send-email-linyunsheng@huawei.com>
+References: <1604373938-211588-1-git-send-email-linyunsheng@huawei.com>
 MIME-Version: 1.0
-References: <1604396490-12129-1-git-send-email-magnus.karlsson@gmail.com> <1604396490-12129-3-git-send-email-magnus.karlsson@gmail.com>
-In-Reply-To: <1604396490-12129-3-git-send-email-magnus.karlsson@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 3 Nov 2020 11:05:17 -0800
-Message-ID: <CAEf4Bzah-7akFkjUAJR=ovXLAnLd6EvLMMOy+GBbc4R28TY-eg@mail.gmail.com>
-Subject: Re: [PATCH bpf 2/2] libbpf: fix possible use after free in xsk_socket__delete
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 3, 2020 at 1:42 AM Magnus Karlsson
-<magnus.karlsson@gmail.com> wrote:
->
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
->
-> Fix a possible use after free in xsk_socket__delete that will happen
-> if xsk_put_ctx() frees the ctx. To fix, save the umem reference taken
-> from the context and just use that instead.
->
-> Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> ---
->  tools/lib/bpf/xsk.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index 504b7a8..9bc537d 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -892,6 +892,7 @@ void xsk_socket__delete(struct xsk_socket *xsk)
->  {
->         size_t desc_sz = sizeof(struct xdp_desc);
->         struct xdp_mmap_offsets off;
-> +       struct xsk_umem *umem;
->         struct xsk_ctx *ctx;
->         int err;
->
-> @@ -899,6 +900,7 @@ void xsk_socket__delete(struct xsk_socket *xsk)
->                 return;
->
->         ctx = xsk->ctx;
-> +       umem = ctx->umem;
->         if (ctx->prog_fd != -1) {
->                 xsk_delete_bpf_maps(xsk);
->                 close(ctx->prog_fd);
-> @@ -918,11 +920,11 @@ void xsk_socket__delete(struct xsk_socket *xsk)
->
->         xsk_put_ctx(ctx);
->
-> -       ctx->umem->refcount--;
-> +       umem->refcount--;
+On Tue, 3 Nov 2020 11:25:38 +0800 Yunsheng Lin wrote:
+> commit 2fb541c862c9 ("net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc")
+> 
+> When the above upstream commit is backported to stable kernel,
+> one assignment is missing, which causes two problems reported
+> by Joakim and Vishwanath, see [1] and [2].
+> 
+> So add the assignment back to fix it.
+> 
+> 1. https://www.spinics.net/lists/netdev/msg693916.html
+> 2. https://www.spinics.net/lists/netdev/msg695131.html
+> 
+> Fixes: 749cc0b0c7f3 ("net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc")
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 
-if you moved ctx->umem->refcount--; to before xdk_put_ctx(ctx), would
-that also work?
-
->         /* Do not close an fd that also has an associated umem connected
->          * to it.
->          */
-> -       if (xsk->fd != ctx->umem->fd)
-> +       if (xsk->fd != umem->fd)
->                 close(xsk->fd);
->         free(xsk);
->  }
-> --
-> 2.7.4
->
+Acked-by: Jakub Kicinski <kuba@kernel.org>
