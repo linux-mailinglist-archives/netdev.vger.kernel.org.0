@@ -2,113 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 667EB2A4383
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 11:57:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 318E32A43C1
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 12:11:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728119AbgKCKy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 05:54:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726312AbgKCKyZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 05:54:25 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88F3C0613D1;
-        Tue,  3 Nov 2020 02:54:25 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id y14so13837800pfp.13;
-        Tue, 03 Nov 2020 02:54:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Pr70uaXWQ5V9OEnpZUw1+PkE5bFME26YS/kMKBh3/j4=;
-        b=Z1nxH0jDHYEqq8hm0bVNqvQCGIZiEpIpb3zSwcYXQieBLtra1nCwDJgpu5pP89uJzE
-         AkhrBgNlD6HCyN456iYZGK8zXMn2VqjNio/0ngfT65e6vFKeH9P/k+YNx0fz0NX90SQM
-         JId+N9RTHwMw0LwsVjrJ0K/iWTlm+/5RRX+O/Qjs6Unhw7bP80fuwGuRg+eAD4HDASkn
-         xBbZ2MPC8C7aomhpP8xQDtCO64OoJw54a0Ax1nTLubP8Yh2DLws0e+6UO7/9eRpRrt3U
-         p4wJZFBQok7bOE/bbaJc+Lng79kYbok1iizF3WW9gFugdQUddODfxMzleDA0d88pCHQj
-         0aaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Pr70uaXWQ5V9OEnpZUw1+PkE5bFME26YS/kMKBh3/j4=;
-        b=KhYowi0p4JPdFuQDL4U9C4tbhOF93OAKZnlct2EApYZEkm/24aWOSHYQST80UYw9Yr
-         Hz01mQ38VeKsuixq6djqtVEoXAlbimS/G/zPd50fUq7s0C/pxudSwE3FQOzVzJo8CnfV
-         iy61KrGMAsAafRBFNq6k1+rqPSr6r7WIyenCwsw1XDuuVJqijnJEsH9jdb2PStpPicKK
-         uDTrXLeVkXzIiTOIByj7cSE+E9UGQItmNd1Z4BbFgAdJqpTIPeAhCzELhISZiLioM3Sf
-         jSSm7nk0JPTdIbz9lMiiKM3jZovJY6MKPKF3jsnV4fayJzJsC7/+iAij1IPup5UdBJ4p
-         tsJw==
-X-Gm-Message-State: AOAM531idUhQ0JUOmkBoRSoMwZZ/WLb3JPWwg3u/SYLz0VIGF8kiZbut
-        p/DvF7A2AeJcQI+yQoEGswWkx0SmSbiCDSRpoCE=
-X-Google-Smtp-Source: ABdhPJzFEjyEEdc+kSmf/T1nHeNhjOJHPnuC+7t9Znx2RJFmaAHHYOf4fCTxwiGuX4v/1cJJtqmJw1ySNSiuUS5bxLE=
-X-Received: by 2002:a17:90a:430b:: with SMTP id q11mr3222009pjg.129.1604400865170;
- Tue, 03 Nov 2020 02:54:25 -0800 (PST)
+        id S1728175AbgKCLJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 06:09:17 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7581 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725988AbgKCLJQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 06:09:16 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CQRqm0QTfzLqkX;
+        Tue,  3 Nov 2020 19:09:08 +0800 (CST)
+Received: from [10.174.179.62] (10.174.179.62) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 3 Nov 2020 19:09:02 +0800
+Subject: Re: [PATCH] fsl/fman: add missing put_devcie() call in
+ fman_port_probe()
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <madalin.bucur@nxp.com>, <davem@davemloft.net>,
+        <florinel.iordache@nxp.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20201031105418.2304011-1-yukuai3@huawei.com>
+ <20201102173041.7624b7fb@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <cf2e0c7c-ba3e-b04f-488d-4dd0fcb81f7a@huawei.com>
+Date:   Tue, 3 Nov 2020 19:09:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20201102152037.963-1-brgl@bgdev.pl> <21d80265fccfcb5d76851c84d1c2d88e0421ab85.camel@perches.com>
- <CAMRc=Me4-4Cmoq3UdpYEEhERP6fvt97bEJsZYhrcFSQf+a_voA@mail.gmail.com>
-In-Reply-To: <CAMRc=Me4-4Cmoq3UdpYEEhERP6fvt97bEJsZYhrcFSQf+a_voA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 3 Nov 2020 12:55:14 +0200
-Message-ID: <CAHp75VdpriwuktGrMpcXXQuHgfDL6SzqmQTsGFNKLBb=QiKuGg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/8] slab: provide and use krealloc_array()
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Joe Perches <joe@perches.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Gustavo Padovan <gustavo@padovan.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>,
-        linaro-mm-sig@lists.linaro.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-edac@vger.kernel.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        netdev <netdev@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
-        Linux-ALSA <alsa-devel@alsa-project.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201102173041.7624b7fb@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.62]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 3, 2020 at 12:13 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
-> On Tue, Nov 3, 2020 at 5:14 AM Joe Perches <joe@perches.com> wrote:
-> > On Mon, 2020-11-02 at 16:20 +0100, Bartosz Golaszewski wrote:
-> > > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-> Yeah so I had this concern for devm_krealloc() and even sent a patch
-> that extended it to honor __GFP_ZERO before I noticed that regular
-> krealloc() silently ignores __GFP_ZERO. I'm not sure if this is on
-> purpose. Maybe we should either make krealloc() honor __GFP_ZERO or
-> explicitly state in its documentation that it ignores it?
+On 2020/11/03 9:30, Jakub Kicinski wrote:
+> On Sat, 31 Oct 2020 18:54:18 +0800 Yu Kuai wrote:
+>> if of_find_device_by_node() succeed, fman_port_probe() doesn't have a
+>> corresponding put_device(). Thus add jump target to fix the exception
+>> handling for this function implementation.
+>>
+>> Fixes: 0572054617f3 ("fsl/fman: fix dereference null return value")
+>> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+> 
+>> diff --git a/drivers/net/ethernet/freescale/fman/fman_port.c b/drivers/net/ethernet/freescale/fman/fman_port.c
+>> index d9baac0dbc7d..576ce6df3fce 100644
+>> --- a/drivers/net/ethernet/freescale/fman/fman_port.c
+>> +++ b/drivers/net/ethernet/freescale/fman/fman_port.c
+>> @@ -1799,13 +1799,13 @@ static int fman_port_probe(struct platform_device *of_dev)
+>>   	of_node_put(fm_node);
+>>   	if (!fm_pdev) {
+>>   		err = -EINVAL;
+>> -		goto return_err;
+>> +		goto put_device;
+>>   	}
+> 
+>> @@ -1898,6 +1898,8 @@ static int fman_port_probe(struct platform_device *of_dev)
+>>   
+>>   return_err:
+>>   	of_node_put(port_node);
+>> +put_device:
+>> +	put_device(&fm_pdev->dev);
+>>   free_port:
+>>   	kfree(port);
+>>   	return err;
+> 
+> This does not look right. You're jumping to put_device() when fm_pdev
+> is NULL?
+> 
+Hi,
 
-And my voice here is to ignore for the same reasons: respect
-realloc(3) and making common sense with the idea of REallocating
-(capital letters on purpose).
+oops, it's a silly mistake. Will fix it in V2 patch.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
+Yu Kuai
+
+> The order of error handling should be the reverse of the order of
+> execution of the function.
+> .
+> 
