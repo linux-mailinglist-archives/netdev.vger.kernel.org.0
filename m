@@ -2,71 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D66512A4F1D
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:42:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C74622A4F1F
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:42:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729111AbgKCSmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 13:42:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725892AbgKCSmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 13:42:11 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0313CC0613D1;
-        Tue,  3 Nov 2020 10:42:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=YXZpVNwL/dLpoF4pzz/IhdjtjMqDWoU1YThxJJXLyEE=; b=HcXUbLLe/5DD24k7gLkgoWtF47
-        N/BdNAnK5efaY7Y4mTQRxUAVGgmp17qAjZz+J1FnU/GnBwU8E8LPPwVIm3zRqkkvIo3zV0wINOI4q
-        XYFr5512GTutDblcNmsZ6eC24+eQznruWiVrjykYAOWO1voX0S84xH2I2tUndVapFWg4VCMQYWD/r
-        tZiTvCtxTNEZAah+j+0aEduJ6WwVh2xSE0KBkcJDZ1gXWGLd0tIGhRJ/6Mt2ijjykyLbRpqSBbeHE
-        tgQNfW907UpBY92lOHg4IYQB9+4wXiE8GBgjgSU/ou70BntuKLUbW0coUEU6jNF/WnDpPHl6FEV0y
-        QTDfJhfw==;
-Received: from [2601:1c0:6280:3f0::60d5]
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1ka1Fu-0004nl-Ky; Tue, 03 Nov 2020 18:42:07 +0000
-Subject: Re: linux-next: Tree for Nov 3
- (drivers/net/ethernet/marvell/prestera/prestera_switchdev.o)
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
+        id S1729306AbgKCSmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 13:42:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49646 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725892AbgKCSmN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 13:42:13 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 30EA7223C6;
+        Tue,  3 Nov 2020 18:42:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604428933;
+        bh=d5gRTQP0dGkK59avyt40Hks9mGeJh+ZVf02YieS2DOM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZJHA7DdYENeqkpxzuSab8PYMzJeNTYDzczlTsoqlAI1kEPtc2EoKKPWRtx5ylEEwq
+         nDuJ0c3eyeZt9DWbpaPR1l/3s1mx2IjDPeFnzsTBAaCdOEhK1UX6rJ9etARf5fU+It
+         ytXNTGKfoAnRKb1h3+5nwa04r9oUPwEfiodBrj/Y=
+Date:   Tue, 3 Nov 2020 10:42:12 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Camelia Alexandra Groza <camelia.groza@nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20201103181931.0ea86551@canb.auug.org.au>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <0fcb653e-8a8c-350e-abf7-d802867ef0e9@infradead.org>
-Date:   Tue, 3 Nov 2020 10:42:02 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+Subject: Re: [PATCH net v3 0/2] dpaa_eth: buffer layout fixes
+Message-ID: <20201103104212.3be43311@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <VI1PR04MB58073450C08552820A7755AAF2110@VI1PR04MB5807.eurprd04.prod.outlook.com>
+References: <cover.1604339942.git.camelia.groza@nxp.com>
+        <VI1PR04MB58073450C08552820A7755AAF2110@VI1PR04MB5807.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20201103181931.0ea86551@canb.auug.org.au>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/2/20 11:19 PM, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Changes since 20201102:
-> 
+On Tue, 3 Nov 2020 16:37:26 +0000 Camelia Alexandra Groza wrote:
+> > Subject: [PATCH net v3 0/2] dpaa_eth: buffer layout fixes
+> > 
+> > The patches are related to the software workaround for the A050385
+> > erratum.
+> > The first patch ensures optimal buffer usage for non-erratum scenarios. The
+> > second patch fixes a currently inconsequential discrepancy between the
+> > FMan and Ethernet drivers.
 
-on x86_64:
+Hm, looks like the bot didn't reply, these are applied to net, as you
+probably noticed.
+ 
+> Jakub, when are you planning the next merger of net into net-next? I
+> have a patch set for net-next depending on this one.
 
-when CONFIG_BRIDGE=m:
-
-ld: drivers/net/ethernet/marvell/prestera/prestera_switchdev.o: in function `prestera_bridge_port_event':
-prestera_switchdev.c:(.text+0x2ebd): undefined reference to `br_vlan_enabled'
-
-
-Also please add drivers/net/ethernet/marvell/prestera/ to the
-MAINTAINERS file.
-
-thanks.
--- 
-~Randy
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Thursday afternoon PST, or Friday. Depends on when Linus pulls from net.
