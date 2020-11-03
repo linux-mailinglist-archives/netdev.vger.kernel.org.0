@@ -2,111 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F4E92A3ECA
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 09:20:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C890E2A3ED6
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 09:26:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgKCIUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 03:20:15 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:59370 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725982AbgKCIUO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 03:20:14 -0500
-Received: from [192.168.0.114] (unknown [49.207.216.192])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 2C66920B4905;
-        Tue,  3 Nov 2020 00:20:08 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2C66920B4905
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1604391614;
-        bh=HbEbQz+EauvQoznebwDeRtdchvf0ccH1vXyEBqePynI=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=o7H296iXCemOmtcOaSOA1R4y7gkYxXRBAacpjbj1C8j/ik3lOvsvhlz5D3IyvnYF7
-         8fmvhlDDiZ1bRvuwzHUNTM4d7rbGAeShJjfG6dd7qdUDh+x1oBFNhaMzdMaO7RFZF1
-         9Q4/fNWs4cO4/+Rk7oHqgaURA6CjVMDIqdl2SShs=
-Subject: Re: [net-next V3 6/8] net: sched: convert tasklets to use new
- tasklet_setup() API
-To:     Eric Dumazet <edumazet@google.com>,
-        Allen Pais <allen.lkml@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Alexander Aring <alex.aring@gmail.com>,
-        stefan@datenfreihafen.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev <netdev@vger.kernel.org>,
-        Romain Perier <romain.perier@gmail.com>
-References: <20201103070947.577831-1-allen.lkml@gmail.com>
- <20201103070947.577831-7-allen.lkml@gmail.com>
- <CANn89iJ4Z=Z+iSHoQQhTS+QGyfU_TOeWNC3Sjszc=DeZ3-bJUw@mail.gmail.com>
-From:   Allen Pais <apais@linux.microsoft.com>
-Message-ID: <4e8b4ddb-bccd-ddad-3071-afef1b1590c9@linux.microsoft.com>
-Date:   Tue, 3 Nov 2020 13:50:06 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726312AbgKCI0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 03:26:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:33784 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725968AbgKCI0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 03:26:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604391959;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=F3Q6OwRRuOv3Iqdl0fc7MADaK1OnFq88ajJ4vbl3/iM=;
+        b=BaqDPvhyKwEhKRl06TZ2kRElKi84EAaBo+K9Itpi2RB+tyZEXQBiA+UBN+oy59Cn7Dtjk9
+        x7/OuJb28Xh5UXCH/yv/6G4PDvkVNZDRmrUj1gHe/ve079E5faOKwk4hUhWBBidgQ8PIqU
+        ssdr6sb/ft59ExFYrcfV8TG20xgYAKs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-566-PmJrK8sLPg-hc5fFyfGr1g-1; Tue, 03 Nov 2020 03:25:55 -0500
+X-MC-Unique: PmJrK8sLPg-hc5fFyfGr1g-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 848F31006CA0;
+        Tue,  3 Nov 2020 08:25:54 +0000 (UTC)
+Received: from ebuild.redhat.com (ovpn-114-253.ams2.redhat.com [10.36.114.253])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 566EF60BF1;
+        Tue,  3 Nov 2020 08:25:53 +0000 (UTC)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, dev@openvswitch.org, kuba@kernel.org
+Subject: [PATCH net v2] net: openvswitch: silence suspicious RCU usage warning
+Date:   Tue,  3 Nov 2020 09:25:49 +0100
+Message-Id: <160439190002.56943.1418882726496275961.stgit@ebuild>
+User-Agent: StGit/0.21
 MIME-Version: 1.0
-In-Reply-To: <CANn89iJ4Z=Z+iSHoQQhTS+QGyfU_TOeWNC3Sjszc=DeZ3-bJUw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->>
->> In preparation for unconditionally passing the
->> struct tasklet_struct pointer to all tasklet
->> callbacks, switch to using the new tasklet_setup()
->> and from_tasklet() to pass the tasklet pointer explicitly.
->>
->> Signed-off-by: Romain Perier <romain.perier@gmail.com>
->> Signed-off-by: Allen Pais <apais@linux.microsoft.com>
->> ---
->>   net/sched/sch_atm.c | 8 ++++----
->>   1 file changed, 4 insertions(+), 4 deletions(-)
->>
->> diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
->> index 1c281cc81f57..390d972bb2f0 100644
->> --- a/net/sched/sch_atm.c
->> +++ b/net/sched/sch_atm.c
->> @@ -466,10 +466,10 @@ drop: __maybe_unused
->>    * non-ATM interfaces.
->>    */
->>
->> -static void sch_atm_dequeue(unsigned long data)
->> +static void sch_atm_dequeue(struct tasklet_struct *t)
->>   {
->> -       struct Qdisc *sch = (struct Qdisc *)data;
->> -       struct atm_qdisc_data *p = qdisc_priv(sch);
->> +       struct atm_qdisc_data *p = from_tasklet(p, t, task);
->> +       struct Qdisc *sch = (struct Qdisc *)((char *)p - sizeof(struct Qdisc));
-> 
-> Hmm... I think I prefer not burying implementation details in
-> net/sched/sch_atm.c and instead
-> define a helper in include/net/pkt_sched.h
-> 
-> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-> index 4ed32e6b020145afb015c3c07d2ec3a613f1311d..15b1b30f454e4837cd1fc07bb3ff6b4f178b1d39
-> 100644
-> --- a/include/net/pkt_sched.h
-> +++ b/include/net/pkt_sched.h
-> @@ -24,6 +24,11 @@ static inline void *qdisc_priv(struct Qdisc *q)
->          return &q->privdata;
->   }
-> 
-> +static inline struct Qdisc *qdisc_from_priv(void *priv)
-> +{
-> +       return container_of(priv, struct Qdisc, privdata);
-> +}
-> +
->   /*
->      Timer resolution MUST BE < 10% of min_schedulable_packet_size/bandwidth
-> 
+Silence suspicious RCU usage warning in ovs_flow_tbl_masks_cache_resize()
+by replacing rcu_dereference() with rcu_dereference_ovsl().
 
-Sure, I will have it updated and resent. Thanks.
+In addition, when creating a new datapath, make sure it's configured under
+the ovs_lock.
+
+Fixes: 9bf24f594c6a ("net: openvswitch: make masks cache size configurable")
+Reported-by: syzbot+9a8f8bfcc56e8578016c@syzkaller.appspotmail.com
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+---
+v2: - Moved local variable initialization above lock
+    - Renamed jump label to indicate unlocking
+
+ net/openvswitch/datapath.c   |   14 +++++++-------
+ net/openvswitch/flow_table.c |    2 +-
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index 832f898edb6a..9d6ef6cb9b26 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -1703,13 +1703,13 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	parms.port_no = OVSP_LOCAL;
+ 	parms.upcall_portids = a[OVS_DP_ATTR_UPCALL_PID];
+ 
+-	err = ovs_dp_change(dp, a);
+-	if (err)
+-		goto err_destroy_meters;
+-
+ 	/* So far only local changes have been made, now need the lock. */
+ 	ovs_lock();
+ 
++	err = ovs_dp_change(dp, a);
++	if (err)
++		goto err_unlock_and_destroy_meters;
++
+ 	vport = new_vport(&parms);
+ 	if (IS_ERR(vport)) {
+ 		err = PTR_ERR(vport);
+@@ -1725,8 +1725,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 				ovs_dp_reset_user_features(skb, info);
+ 		}
+ 
+-		ovs_unlock();
+-		goto err_destroy_meters;
++		goto err_unlock_and_destroy_meters;
+ 	}
+ 
+ 	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
+@@ -1741,7 +1740,8 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	ovs_notify(&dp_datapath_genl_family, reply, info);
+ 	return 0;
+ 
+-err_destroy_meters:
++err_unlock_and_destroy_meters:
++	ovs_unlock();
+ 	ovs_meters_exit(dp);
+ err_destroy_ports:
+ 	kfree(dp->ports);
+diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
+index f3486a37361a..c89c8da99f1a 100644
+--- a/net/openvswitch/flow_table.c
++++ b/net/openvswitch/flow_table.c
+@@ -390,7 +390,7 @@ static struct mask_cache *tbl_mask_cache_alloc(u32 size)
+ }
+ int ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32 size)
+ {
+-	struct mask_cache *mc = rcu_dereference(table->mask_cache);
++	struct mask_cache *mc = rcu_dereference_ovsl(table->mask_cache);
+ 	struct mask_cache *new;
+ 
+ 	if (size == mc->cache_size)
+
