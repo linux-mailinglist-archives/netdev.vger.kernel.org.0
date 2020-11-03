@@ -2,79 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E32982A4CC7
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:24:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A33E2A4CCE
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:27:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728940AbgKCRYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 12:24:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
+        id S1728241AbgKCR1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:27:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728902AbgKCRYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:24:44 -0500
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54545C0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:24:44 -0800 (PST)
-Received: by mail-ej1-x644.google.com with SMTP id 7so25387153ejm.0
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:24:44 -0800 (PST)
+        with ESMTP id S1727688AbgKCR1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:27:44 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42D3C0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:27:44 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id oq3so23505505ejb.7
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:27:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=dyXS/pgIDJBIIkfQq9A66S4gnFLSaXr+vsZuoZ3kDv8=;
-        b=fmc/uyqFRb9RB73ZMzagsrY3UN+/vPVhFGN4c5xL5zYocIe+PX3rmOpQV0n1y7P/D9
-         ISrDjj0bUAoa3O18IsXq62RzeB2bJK4t5FsPvy3rMQ7CppG3LURcJEKfYeC+womS00Jc
-         TZNDI7TWNvID/NFxuz2Gj9MDkW2SdLl3sV4JgypyBi0jOziPESkWzFpF2mjFHnSg0SLE
-         uJxCKJ14JlIYMxaLpjvsr8QH2OvIZYZd9g6oU5LSGOcf5hBo1Mdm19zNq3n+kX+z80qP
-         A8p+24lsPheZHtBezQYe4w4cRBAFIYUHzSQixSoOZvoCm1seKHh1Dc4TF81qnYj04YLA
-         T9xQ==
+        bh=goJyBGc/9lpstUUyzYhttl/flQVCi9q27C8UA+cdDYo=;
+        b=lB+4RK8zftqkngCODPpZEt0wRGqOBKvA3MfMM/vtcLUKPgHEK0nGiQtexLlNcmlaSN
+         Sz4rtVisd0cBN8OklMqn8sewXZpveIkdMqm66+KvVfpgwvKupmetNANrn7Pb3fTYkYUo
+         2aniPs0tZOaYHBsYQvC+cAmGEFxlxjV2inkpKQJ/aGdaj3HTKTYzoljv/202H5z8vwd9
+         7lM9nGV4lsSvUuTWxaNzEFgqF5+NjjiDcltyJ3KwbXuPXHbwrBiYSMrw0pmGtutBkvZc
+         9oBtoIeWNQl+ReehJMcaYzp71GFT3mjHLhPt5zJNGCIJp2p0Ot7tUlLfm9gkpMtFhjmj
+         28Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=dyXS/pgIDJBIIkfQq9A66S4gnFLSaXr+vsZuoZ3kDv8=;
-        b=CCaufqj1vfG0r8mZbkxryTteDKYmD8UOHNTgsFoJySsnVPquwgbp4EwJ+z7rW3o8GA
-         qaV+uMhAD7betrer16defXES2Cn2qaJy8/dkSRiTs67M9kSIHvUIkU/mRaB1RE+7qUDu
-         aLfchX2SE7YYi9Zsq0aeVGlTZ7yb0tcArSMhj5U31j1peZMxxVL6fN9JCUABpn3E6RbT
-         X9XvBcVFC77kB8x+uf/l3bMdtm32pKc7PYkMdEEAXVK0JQJEp1pSzDa9J/opDYAEa7zH
-         RtZn2d6RrmZZpyvtqI5x7QTPLpLzr0bEw3bkt8vYvmQ50cOfbZ5Kp369GQxWYUaEnq9Z
-         HLdg==
-X-Gm-Message-State: AOAM531eXv2pJSDIf+G5lk0ZZt+U7QpqxKnidCuH4+nZq48buCxzJ6q1
-        AEe9/6r4vrLAW5h13YMOoYw=
-X-Google-Smtp-Source: ABdhPJxEmeWoiZBlko0bG4bbjaq44qAoGCee9J/YkRpwVqZ7/vo84ulrVLTb9dZQyFH48Ntw3EoHgw==
-X-Received: by 2002:a17:906:7e43:: with SMTP id z3mr22056877ejr.143.1604424283111;
-        Tue, 03 Nov 2020 09:24:43 -0800 (PST)
+        bh=goJyBGc/9lpstUUyzYhttl/flQVCi9q27C8UA+cdDYo=;
+        b=iEj1ryHxSnCgbCz2Rc/dhdsMapbRx30szf/tX3yqIL+miHWcaZk3RzErSeQEze95xL
+         fZouyhzFp/w1BRJdb8PjFR9ZyT3Nhb4nEfIpxgAcjsRsTdFZEDQuvCquh8RRhAlNlnMf
+         Kk0cpehDA027ExHHmYf8cDBGmxYp9pS0dtVQVz7BOIRzejDMpLTXvcetl3Wrn4427mu4
+         2zkJ2/ulPvoP+4kfzxgtRnnuOv08A6zC2qmI6zRo5YXq/kjACclj4Gv4YeLuyvKCg4+X
+         yM+B1BPbIEb+5lVZuTq4F5Fb0hOCJShakWPNQSBmy2zIv0fZAZkDCfUJ/vztU7TbChZE
+         LcAw==
+X-Gm-Message-State: AOAM531gkD8SsGGScr3Nh0ID0kk3bWyzCXUxVlpLlv2dOnaWw6ShBeeE
+        FutD22Ay9j4aeHzcOzWn1zLCmECsfDs=
+X-Google-Smtp-Source: ABdhPJx1jJnyqU4oj4SUj31PvkBZkCNlSf4OQQ+2kghJrrdE/01nzKMg1XwunyRiL1M7qmeBanjECQ==
+X-Received: by 2002:a17:906:134e:: with SMTP id x14mr21521095ejb.173.1604424463188;
+        Tue, 03 Nov 2020 09:27:43 -0800 (PST)
 Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id k23sm11130927ejo.108.2020.11.03.09.24.42
+        by smtp.gmail.com with ESMTPSA id nd5sm10889803ejb.37.2020.11.03.09.27.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 09:24:42 -0800 (PST)
-Date:   Tue, 3 Nov 2020 19:24:41 +0200
+        Tue, 03 Nov 2020 09:27:42 -0800 (PST)
+Date:   Tue, 3 Nov 2020 19:27:41 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+To:     Julian Wiedmann <jwi@linux.ibm.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>, netdev@vger.kernel.org,
         "David S . Miller" <davem@davemloft.net>,
-        "james.jurack@ametek.com" <james.jurack@ametek.com>
+        Jakub Kicinski <kuba@kernel.org>, james.jurack@ametek.com
 Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
  skb_cow_head for PTP
-Message-ID: <20201103172441.2xyyr3dkabtgfeao@skbuf>
+Message-ID: <20201103172741.iia5joaxeww6c454@skbuf>
 References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
  <20201029081057.8506-1-claudiu.manoil@nxp.com>
  <20201103161319.wisvmjbdqhju6vyh@skbuf>
  <2b0606ef-71d2-cc85-98db-1e16cc63c9d2@linux.ibm.com>
- <AM0PR04MB67540916FABD7D801C9DF82496110@AM0PR04MB6754.eurprd04.prod.outlook.com>
- <20201103091226.2d82c90c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20201103171849.vthpu7beenzeayrs@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201103091226.2d82c90c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201103171849.vthpu7beenzeayrs@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 09:12:26AM -0800, Jakub Kicinski wrote:
-> While it is something to be fixed - is anything other than pktgen
-> making use of IFF_TX_SKB_SHARING? Are you running pktgen, Vladimir?
+On Tue, Nov 03, 2020 at 07:18:49PM +0200, Vladimir Oltean wrote:
+> On Tue, Nov 03, 2020 at 06:36:30PM +0200, Julian Wiedmann wrote:
+> > Given the various skb modifications in its xmit path, I wonder why
+> > gianfar doesn't clear IFF_TX_SKB_SHARING.
+> 
+> Thanks for the hint Julian :) I'll try to see if it makes any
+> difference.
 
-Nope, just iperf3 TCP and PTP. The problem is actually with PTP, I've
-been testing gianfar with just TCP for a long while.
+And unsurprisingly given what Jakub said, it crashed again, even with
+this change.
+
+diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
+index 41dd3d0f3452..7cc8986910f8 100644
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -3337,6 +3337,7 @@ static int gfar_probe(struct platform_device *ofdev)
+ 	dev->mtu = 1500;
+ 	dev->min_mtu = 50;
+ 	dev->max_mtu = GFAR_JUMBO_FRAME_SIZE - ETH_HLEN;
++	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
+ 	dev->netdev_ops = &gfar_netdev_ops;
+ 	dev->ethtool_ops = &gfar_ethtool_ops;
+ 
