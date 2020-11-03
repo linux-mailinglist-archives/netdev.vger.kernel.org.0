@@ -2,96 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CFDF2A4EF4
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:34:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76B6E2A4F08
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:38:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729159AbgKCSei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 13:34:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48100 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728471AbgKCSeh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 13:34:37 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DB70C20757;
-        Tue,  3 Nov 2020 18:34:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604428477;
-        bh=5HTsQEhN3dMFJV+EaD/jk8OWcfI88rKKhA6wJnPwdFo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TfGM0uV2F3C6oP7hdk2uxUt7iNcGWEqRhUYR7P2t3imv6JFvnu8ErW8XSDOYlLbCi
-         U6macm48RopS89m5OaRAQG2pESGPEUi4+lTtOnu17NdazBmdCzA8rXqR4LhWt46oFs
-         c/EPVpV/yInEYWITs9tLkn+Bcl4pxjRGTL7pT/b4=
-Date:   Tue, 3 Nov 2020 10:34:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        Christian Eggers <ceggers@arri.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [PATCH v3 net-next 09/12] net: dsa: tag_brcm: let DSA core deal
- with TX reallocation
-Message-ID: <20201103103436.486e9339@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201103181528.tyvythhy2ynyjx4a@skbuf>
-References: <20201101191620.589272-1-vladimir.oltean@nxp.com>
-        <20201101191620.589272-10-vladimir.oltean@nxp.com>
-        <10537403-67a4-c64a-705a-61bc5f55f80e@gmail.com>
-        <20201103105059.t66xhok5elgx4r4h@skbuf>
-        <20201103090411.64f785cc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <20201103181528.tyvythhy2ynyjx4a@skbuf>
+        id S1729061AbgKCSiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 13:38:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725892AbgKCSiY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 13:38:24 -0500
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F62C0613D1;
+        Tue,  3 Nov 2020 10:38:23 -0800 (PST)
+Received: by mail-yb1-xb42.google.com with SMTP id f6so15760525ybr.0;
+        Tue, 03 Nov 2020 10:38:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jneL8MPC5rNVRFrvszgK7JhEwgVGSd4T313AsWNvH4M=;
+        b=c7JaPiAa/OfN9iQzjrg2wJPLWeWr784NcIrVeFzruUIa/03XetElg1FjMFOc7jyLSL
+         lIKvD1kC21hVPGmtqmgZFKnRd1oLNm09Jz2oY2KAGSTz/gbVN1ocbX14ApRyBd/gJKyj
+         M0mHQTKx1pSrMJMSybQybGpLdnLVslF+oCxxEUwaEHsqVE4dUe33TTF7ufv6mzeOjHHn
+         NZjqz1yrBs3m3Ii2mUMYasErkX1TkybdVnwIs5/JOmg6OLkUe2tKAyqNxhLn1tsUiNiB
+         JlOsJmAseZTOK4rBvbLDc6+p8mYJyMdsT8Z6L6gT1fM5F+gS7WEvqhWw+lmATb142J82
+         1fSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jneL8MPC5rNVRFrvszgK7JhEwgVGSd4T313AsWNvH4M=;
+        b=YD8DyE7dcXEHZiEmm8x+M4XBvGIoiuhcxAXIJiF250fJ+f0vGN+AxHlFoulGrm2MPA
+         Ksxb9lP8QNNkmr5ERI6Mak2SG4ZN9zrrZLkVNJvbAvAfea1yBZxs1dV2em5XpKQH/c/F
+         zMjy2uchJEjV5PC0F5vWN4h3+qc+u4HKcRVj8bz0uCQ6wiRgHOnda4V6Pb4VKZKMBddE
+         MUFN0r9M9IR10N0Pd00xIEIAkhLhln9HiU/V7FG1ZKiCOfFLYIK6QsxfP0Oh8bSEuot7
+         MFX73JBwmacgynupyzm+hEjs2NhVHgi79zOxMP3Rhcq8anSVMLrTy2ykucSIJ27GRs4D
+         6YTg==
+X-Gm-Message-State: AOAM530aY+c3rTwBwtYNSI0dStB5ckoM4odThTXi9oLeaqCplG8CLqRe
+        L4q3iAAqhiw4UAXw+ayVu0EfX4v7HGdPZ5K6bkY=
+X-Google-Smtp-Source: ABdhPJyYMv7sBOFtfOghPZyQE0FkV7MkDrx6BX2kXGLE/5KxogoIbW9eoMAUV5CwcvKHLoE/1rtfkTDfgbAfHnBcQRU=
+X-Received: by 2002:a25:b0d:: with SMTP id 13mr31096731ybl.347.1604428703140;
+ Tue, 03 Nov 2020 10:38:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <160416890683.710453.7723265174628409401.stgit@localhost.localdomain>
+ <160417034457.2823.10600750891200038944.stgit@localhost.localdomain>
+In-Reply-To: <160417034457.2823.10600750891200038944.stgit@localhost.localdomain>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 3 Nov 2020 10:38:12 -0800
+Message-ID: <CAEf4BzbauAT-ujG4LQDUY3WUkwGqMZb2JL3xuwXAu2Ot3e4w6Q@mail.gmail.com>
+Subject: Re: [bpf-next PATCH v2 3/5] selftests/bpf: Replace EXPECT_EQ with
+ ASSERT_EQ and refactor verify_results
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Lawrence Brakmo <brakmo@fb.com>, alexanderduyck@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Nov 2020 18:15:29 +0000 Vladimir Oltean wrote:
-> On Tue, Nov 03, 2020 at 09:04:11AM -0800, Jakub Kicinski wrote:
-> > In a recent discussion I was wondering if it makes sense to add the
-> > padding len to struct net_device, with similar best-effort semantics
-> > to needed_*room. It'd be a u8, so little worry about struct size.  
-> 
-> What would that mean in practice? Modify the existing alloc_skb calls
-> which have an expression e that depends on LL_RESERVED_SPACE(dev), into
-> max(e, dev->padding_len)? There's a lot of calls to alloc_skb to modify
-> though...
+On Sat, Oct 31, 2020 at 11:52 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> From: Alexander Duyck <alexanderduyck@fb.com>
+>
+> There is already logic in test_progs.h for asserting that a value is
+> expected to be another value. So instead of reinventing it we should just
+> make use of ASSERT_EQ in tcpbpf_user.c. This will allow for better
+> debugging and integrates much more closely with the test_progs framework.
+>
+> In addition we can refactor the code a bit to merge together the two
+> verify functions and tie them together into a single function. Doing this
+> helps to clean the code up a bit and makes it more readable as all the
+> verification is now done in one function.
+>
+> Lastly we can relocate the verification to the end of the run_test since it
+> is logically part of the test itself. With this we can drop the need for a
+> return value from run_test since verification becomes the last step of the
+> call and then immediately following is the tear down of the test setup.
+>
+> Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
+> ---
+>  .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |  114 ++++++++------------
+>  1 file changed, 44 insertions(+), 70 deletions(-)
+>
 
-Yeah, separate helper would probably be warranted, so we don't have to
-touch multiple sites every time we adjust things.
+[...]
 
-> > You could also make sure DSA always provisions for padding if it has to
-> > reallocate, you don't need to actually pad:
-> > 
-> > @@ -568,6 +568,9 @@ static int dsa_realloc_skb(struct sk_buff *skb, struct net_device *dev)
-> >                 /* No reallocation needed, yay! */
-> >                 return 0;
-> >  
-> > +       if (skb->len < ETH_ZLEN)
-> > +               needed_tailroom += ETH_ZLEN;
-> > +
-> >         return pskb_expand_head(skb, needed_headroom, needed_tailroom,
-> >                                 GFP_ATOMIC);
-> >  }
-> > 
-> > That should save the realloc for all reasonable drivers while not
-> > costing anything (other than extra if()) to drivers which don't care.  
-> 
-> DSA does already provision for padding if it has to reallocate, but only
-> for the case where it needs to add a frame header at the end of the skb
-> (i.e. "tail taggers"). My question here was whether there would be any
-> drawback to doing that for all types of switches, including ones that
-> might deal with padding in some other way (i.e. in hardware).
+> +       rv = bpf_map_lookup_elem(map_fd, &key, &result);
+> +       if (CHECK(rv, "bpf_map_lookup_elem(map_fd)", "err:%d errno:%d",
+> +                 rv, errno))
+> +               return;
+> +
+> +       /* check global map */
+> +       CHECK(expected_events != result.event_map, "event_map",
+> +             "unexpected event_map: actual %#" PRIx32" != expected %#" PRIx32 "\n",
+> +             result.event_map, expected_events);
 
-Well, we may re-alloc unnecessarily if we provision for padding of all
-frames.
+nit: libbpf and selftests don't use PRI modifiers approach. Just cast
+to a consistent long, int, unsigned, whichever matches the needs and
+use appropriate explicit % specifier.
 
-So what I was trying to achieve was to add the padding space _after_
-the "do we need to realloc" check.
+> +
+> +       ASSERT_EQ(result.bytes_received, 501, "bytes_received");
+> +       ASSERT_EQ(result.bytes_acked, 1002, "bytes_acked");
+> +       ASSERT_EQ(result.data_segs_in, 1, "data_segs_in");
+> +       ASSERT_EQ(result.data_segs_out, 1, "data_segs_out");
+> +       ASSERT_EQ(result.bad_cb_test_rv, 0x80, "bad_cb_test_rv");
+> +       ASSERT_EQ(result.good_cb_test_rv, 0, "good_cb_test_rv");
+> +       ASSERT_EQ(result.num_listen, 1, "num_listen");
+> +
 
-	/* over-provision space for pad, if we realloc anyway */
-	if (!needed_tailroom && skb->len < ETH_ZLEN)
-		needed_tailroom = ETH_ZLEN - skb->len;
+[...]
