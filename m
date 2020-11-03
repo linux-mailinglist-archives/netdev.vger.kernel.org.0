@@ -2,87 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F35D2A4D24
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:36:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 964C92A4D28
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:36:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728974AbgKCRgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 12:36:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726581AbgKCRgA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:36:00 -0500
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D012C0613D1;
-        Tue,  3 Nov 2020 09:36:00 -0800 (PST)
-Received: by mail-il1-x12d.google.com with SMTP id a20so16839142ilk.13;
-        Tue, 03 Nov 2020 09:36:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=y0hqlzASuEgoXbRy4gWLWWG8iRng1vxoIPmcNQyvmQI=;
-        b=nbsX3eVzPwqnb7Sgr0dM5o//OVnDmSqHJiKOPvj8Gxxu0CJDOpHmVvKPYg4rXgH2qP
-         BoSPEnlkh2X9xy7MHpUlROkrATjrKpPSkq6JZ9ZI+KblrCo7200dJ5sPbDjPwBC0UxEx
-         dyI0AKCydghhtE2L/73XQTgLkjIX1FipT/R0n46hvxFcoS5YV++khoLrZGaKa9GVj5P6
-         xnG3o7ucUHoIAmWy/POl0Uh7uxEwDEB9FxgfQvsuz+QmdD115h5odzSLdE0nc/+CrBuH
-         53NuDLt7dU7b3ayfPYhzRYt2aWPCUNxImRyukIILQKhtWPROqIcgly+KYXcF3FwrdHsO
-         soog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=y0hqlzASuEgoXbRy4gWLWWG8iRng1vxoIPmcNQyvmQI=;
-        b=KDszlw8DRTzQpIA3O6gV3IvJ4n27sQlBnf0RoQLNq8+a0c02PYpoQ3Nrpwy3NI9MaY
-         Ha0V2t5SOVq/daZHV/dc1WUKtgPi3qyMMh2pxLGrEtDFml3uDMIseZlDeez22PXGYLWF
-         4TuO1KCt3CCiSiOUMAmEdfFsojRCBoo5y8oHXU3CfUx7iwlWD9OjgIhrh7rBlsWgKrpC
-         hTcskHsxS/+j5iMNLvdjWjKI76AtBF8PLJ4CkW5SG9Vsle7ecgG02FhkBisxB2QgrAtc
-         zDNnwicRatwj96xbtyu6YUZyh9YOfTNDE2PtWHiZMI65dDBBI4CtRQRqOOlcRjYzuPEU
-         xLeQ==
-X-Gm-Message-State: AOAM530cOhEaiOx9WdX7VuZQ7N8NmMXQTu6Rhswn0w0BuCq8L7uCYNbF
-        eHlzHTJDytPSLRkE8GvCvno=
-X-Google-Smtp-Source: ABdhPJyxfXgLUI1h0aMq+Cpk9/R1ftYGoPvwlG1FRWU2wnA5Adp+zpzo8mZy/kzDEeYUPzpW8ioieg==
-X-Received: by 2002:a92:cd0e:: with SMTP id z14mr15244968iln.135.1604424959802;
-        Tue, 03 Nov 2020 09:35:59 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:def:1f9b:2059:ffac])
-        by smtp.googlemail.com with ESMTPSA id n15sm13438574ilt.58.2020.11.03.09.35.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Nov 2020 09:35:59 -0800 (PST)
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-References: <20201028132529.3763875-1-haliu@redhat.com>
- <20201029151146.3810859-1-haliu@redhat.com>
- <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
- <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
- <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
-Date:   Tue, 3 Nov 2020 10:35:57 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        id S1728636AbgKCRg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:36:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54692 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726581AbgKCRg5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 12:36:57 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1B25520773;
+        Tue,  3 Nov 2020 17:36:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604425016;
+        bh=FXJo+RN0j3Eecvm/NaUubnvAwOgaT+yxftfQxYhtmzc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JVwKjYhMPJTzud0o7eyJRavkuOz1zWboAuV+ZE1E36cvm7Z6S6bd0lqQFVajH5Sft
+         yn678saf0xC6RpzMFcr4k5lmBomhXt6L1GPr3lG7C3I7CST1GfxzQEta2oD31AGNF3
+         J7u9vUi1MKqfdaX360wEKpuI0fF/F3czAM8OF34w=
+Date:   Tue, 3 Nov 2020 09:36:55 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "james.jurack@ametek.com" <james.jurack@ametek.com>
+Subject: Re: [PATCH net v2 1/2] gianfar: Replace skb_realloc_headroom with
+ skb_cow_head for PTP
+Message-ID: <20201103093655.65851a21@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201103173007.23ttgm3rpmbletee@skbuf>
+References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
+        <20201029081057.8506-1-claudiu.manoil@nxp.com>
+        <20201103161319.wisvmjbdqhju6vyh@skbuf>
+        <20201103083050.100b2568@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <AM0PR04MB6754C8F6D12318EF1DD0CA2B96110@AM0PR04MB6754.eurprd04.prod.outlook.com>
+        <20201103173007.23ttgm3rpmbletee@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/3/20 1:46 AM, Daniel Borkmann wrote:
-> I thought last time this discussion came up there was consensus that the
-> submodule could be an explicit opt in for the configure script at least?
+On Tue, 3 Nov 2020 19:30:07 +0200 Vladimir Oltean wrote:
+> On Tue, Nov 03, 2020 at 05:18:25PM +0000, Claudiu Manoil wrote:
+> > It's either the dev_kfree_skb_any from the dma mapping error path or the one
+> > from skb_cow_head()'s error path.  A confirmation would help indeed.  
+> 
+> It says "consume", not "kfree", which in my mind would make it point
+> towards the only caller of consume_skb from the gianfar driver, i.e. the
+> dev_consume_skb_any that you just added.
 
-I do not recall Stephen agreeing to that, and I certainly did not.
+#define dev_kfree_skb(a)	consume_skb(a)
+
+IIRC we did this because too many drivers used dev_kfree_skb
+incorrectly and made the dropwatch output very noisy.
