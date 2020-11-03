@@ -2,62 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA8D92A3781
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 01:11:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F6592A378A
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 01:13:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726533AbgKCALI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 19:11:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38960 "EHLO mail.kernel.org"
+        id S1727243AbgKCANT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 19:13:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39280 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725910AbgKCALI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Nov 2020 19:11:08 -0500
+        id S1727193AbgKCANT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Nov 2020 19:13:19 -0500
 Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1F98722268;
-        Tue,  3 Nov 2020 00:11:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9652222268;
+        Tue,  3 Nov 2020 00:13:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604362268;
-        bh=xYlt+o/tjn9ZZRxb1tIfDPKyepwiOGaJb6Uca7kGR3c=;
+        s=default; t=1604362398;
+        bh=BY3coVs3vobSctQRzoySqpCGeKlBiiKbx4QQAQa4D8s=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=zcnaO81e0v7Y9y1sUUuFFckrNwPQkecprrQFmU+Y7cP7bdyeSX/iPgXxEM6Nn1bjB
-         WzkI4fUTKNQ2cao+RjHo3zHc7+AyYgIB2nHuYrqeo2Is2tJHTMep9aT3v1ndMcXNlN
-         +6AfX4Pfdb/TVLNX/W07hKnM4Sp3yZOJB58WfN/Y=
-Date:   Mon, 2 Nov 2020 16:11:07 -0800
+        b=GyumUN6wKyZYGpQSPcTeW8sWp6ENPY8hQGL6xsZB9Ur8NeRUr7D3owC7ztyr0kwJW
+         ssPKxj7Xwa9ontZcBlmbs/4FKzgvXSg/uOh9W7VY2Bii3ziNDkIKPu37O/jM6d/pg1
+         YCd1HuTxtsX6Y6kMJCX/8tCJ/7vTdx+a7bJDRSOI=
+Date:   Mon, 2 Nov 2020 16:13:18 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: driver: hamradio: Fix potential
- unterminated string
-Message-ID: <20201102161107.1293263f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201031181700.1081693-1-andrew@lunn.ch>
-References: <20201031181700.1081693-1-andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Xin Long <lucien.xin@gmail.com>
+Subject: Re: [PATCH net-next] net: ipv6: For kerneldoc warnings with W=1
+Message-ID: <20201102161318.75cceff9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201031183044.1082193-1-andrew@lunn.ch>
+References: <20201031183044.1082193-1-andrew@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 31 Oct 2020 19:17:00 +0100 Andrew Lunn wrote:
-> With W=3D1 the following error is reported:
->=20
-> In function =E2=80=98strncpy=E2=80=99,
->     inlined from =E2=80=98hdlcdrv_ioctl=E2=80=99 at drivers/net/hamradio/=
-hdlcdrv.c:600:4:
-> ./include/linux/string.h:297:30: warning: =E2=80=98__builtin_strncpy=E2=
-=80=99 specified bound 32 equals destination size [-Wstringop-truncation]
->   297 | #define __underlying_strncpy __builtin_strncpy
->       |                              ^
-> ./include/linux/string.h:307:9: note: in expansion of macro =E2=80=98__un=
-derlying_strncpy=E2=80=99
->   307 |  return __underlying_strncpy(p, q, size);
->=20
-> Replace strncpy with strlcpy to guarantee the string is terminated.
->=20
+On Sat, 31 Oct 2020 19:30:44 +0100 Andrew Lunn wrote:
+> From: Xin Long <lucien.xin@gmail.com>
+> 
+> net/ipv6/addrconf.c:2005: warning: Function parameter or member 'dev' not described in 'ipv6_dev_find'
+> net/ipv6/ip6_vti.c:138: warning: Function parameter or member 'ip6n' not described in 'vti6_tnl_bucket'
+> net/ipv6/ip6_tunnel.c:218: warning: Function parameter or member 'ip6n' not described in 'ip6_tnl_bucket'
+> net/ipv6/ip6_tunnel.c:238: warning: Function parameter or member 'ip6n' not described in 'ip6_tnl_link'
+> net/ipv6/ip6_tunnel.c:254: warning: Function parameter or member 'ip6n' not described in 'ip6_tnl_unlink'
+> net/ipv6/ip6_tunnel.c:427: warning: Function parameter or member 'raw' not described in 'ip6_tnl_parse_tlv_enc_lim'
+> net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'skb' not described in 'ip6_tnl_err'
+> net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'ipproto' not described in 'ip6_tnl_err'
+> net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'opt' not described in 'ip6_tnl_err'
+> net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'type' not described in 'ip6_tnl_err'
+> net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'code' not described in 'ip6_tnl_err'
+> net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'msg' not described in 'ip6_tnl_err'
+> net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'info' not described in 'ip6_tnl_err'
+> net/ipv6/ip6_tunnel.c:499: warning: Function parameter or member 'offset' not described in 'ip6_tnl_err'
+> 
+> ip6_tnl_err() is an internal function, so remove the kerneldoc. For
+> the others, add the missing parameters.
+> 
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-
-Looks like the longest name in tree is 14, so there should be no
-truncation and therefore uAPI change.
 
 Applied, thanks!
