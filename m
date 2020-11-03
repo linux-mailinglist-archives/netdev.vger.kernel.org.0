@@ -2,91 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D26AD2A4D6A
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:45:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A09FE2A4D6C
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:46:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728717AbgKCRpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 12:45:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49898 "EHLO
+        id S1728241AbgKCRq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:46:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727857AbgKCRpX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:45:23 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95236C0613D1;
-        Tue,  3 Nov 2020 09:45:23 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id n12so7653226ioc.2;
-        Tue, 03 Nov 2020 09:45:23 -0800 (PST)
+        with ESMTP id S1727688AbgKCRq5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:46:57 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD51C0613D1
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:46:55 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id q8so18751732ybk.18
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:46:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qDfU0t4F/POl1oSh41vkV5vL8aH/oLSJnnxRJVTTqCw=;
-        b=tVrT4vO2nnUaA2st4pPmL/hxfg2Kp1a+25Y0Ga/5uVUFcdYJP9oO57C/voE3iw/cJX
-         nti/oR9cqj1n//sAJDUj3S3HRjmBrUg90c+LYB20rQfpB958tJC+R/YUT85pGl2qDKMF
-         2pzSiEFBUqNv+9euzL7xu2vqgSgpsvs12eq5nmndbLo1JgfbbUfgP6fr0KB48ls+idza
-         EnsVDY7BIAzGMS6ejJqHZna9mPPf7E1ok9vs/wmVrLkglwIyu8sgnkPTguTFE6i25cQ4
-         V3DG9Mj7Pp6TAk/PjZeEW3m37zzZASOfpInXA83whD8r7c3XK2YzoSRS8KUgvN4wmy+K
-         KO4Q==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=0khbfCjA1AQGPgXKvEHMsryQ8F3Uy3EJ2rCFVDHOT68=;
+        b=aC+mws7uFPQlylPW7Jar19j3bbdWaeiQf0iH9us5UbbCvT2oMx3ZaMKlh1l9J5Py4j
+         9CwZB7dDAkW4QM6VBjJyPVtWHfD+bY4HIVz3lZfD8vfqCk+wUbAhd5MQgqKpWt9WWDiz
+         suX4IAxG1BI6NhUjgSZa9u7ic1Nnej4/D1EaE7TFksitwIU00TaGO+CRGgqe2yFIoqio
+         uJMGUZ/iOifmj+NvFqy7LCUKUxDEheR3whJ8fae6POdvd4t1gzq8qCS2N+KXVbr9YXxH
+         ZtJkL7fgqMgQSxLgTk31MGAdgjmxP5EB+Q5WzYMWcvlhapR7xiCGw/qim82zg3THZdKZ
+         DMHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qDfU0t4F/POl1oSh41vkV5vL8aH/oLSJnnxRJVTTqCw=;
-        b=K+HoqfRhi8eiG0beXkN590QwvWzxrLZ1omJ07+TMEvRfEANq+/hsf9Bk8uEW32YwmL
-         LRjDX1seMhT6G5f0be45KV2UL4xONgqsR/yC/h/8Hl+PsZwpMoKo4+5CVYFfD1gOFjJv
-         c48LJmQCj/TxTxHdpS1DvczdEoDtWzlyQJ59a6LKAmW8xbv0ozl2WjGm6h3O4+8wgCjV
-         wbdyHXlv8tZ07+zetKWG8q+R8G4bZo/wIrgMMeMEkHH3WLATjq+/TH5yS6FS4FoRXfXe
-         0e+ffcyPIxHayTiqLpAS6hkBbPTrvkLGQRT7KrkSfImILFcTsQqNj/mKAsTSQj7Rfxb7
-         a3ug==
-X-Gm-Message-State: AOAM531gHKkrlZDqP6fc7oKMyLPeHfL7QuidoiuAN3/KFo29QbYT1NlC
-        9GBYGSE8W70o7/lL+fRgmsw=
-X-Google-Smtp-Source: ABdhPJzlMi4XEK+R4jKZLBvF5HOOuOliid7941qNpH1X3f1Qm7dyEqDOfsvv8Nldpcm5iEjy/Wtk7Q==
-X-Received: by 2002:a02:6a59:: with SMTP id m25mr14829567jaf.132.1604425523085;
-        Tue, 03 Nov 2020 09:45:23 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:def:1f9b:2059:ffac])
-        by smtp.googlemail.com with ESMTPSA id n4sm5632507iox.6.2020.11.03.09.45.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Nov 2020 09:45:22 -0800 (PST)
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
-        <toke@redhat.com>
-References: <20201028132529.3763875-1-haliu@redhat.com>
- <20201029151146.3810859-1-haliu@redhat.com>
- <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
- <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
- <20201103094224.6de1470d@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <417988c1-e774-e16a-f6af-170e3b11b5f3@gmail.com>
-Date:   Tue, 3 Nov 2020 10:45:20 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
-MIME-Version: 1.0
-In-Reply-To: <20201103094224.6de1470d@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=0khbfCjA1AQGPgXKvEHMsryQ8F3Uy3EJ2rCFVDHOT68=;
+        b=bdXVm0to02jCT03ll+cbMbuzm1sPUTX5LKXJ1lI43/ZmEhFIedh789YD1Ym+AoHK+Y
+         rsX323FwhdDOhNPkEieJEwcQAh2rROS2JhHzNoWgFMDzLukNpZg2dMhOMTeVllueHhKf
+         bVXu/bVrJgwiQDIjQlPiHu0+t06p73+9DoQmn7YdP9qCIqBIqbsMJfRXv/s4weN+n/07
+         0p7ub896od5F8TJveoevtIxMhvhr6KoIPiHXYQocMGakPJ4aPT3wtFQ/GOD2EcY3Icyo
+         yg5H4kAwby1IZAXaMzOPeCavcbnj9tbMq7vAdB+8kq89r64jyA/ePd7IvIHm9y1iuqap
+         myHg==
+X-Gm-Message-State: AOAM533pzMcQ8V7z+Q8UkRfOdWuaafMdLTTc++YmFQJY4YEcWf4kjIo7
+        XDpBLIXjifDQIlyxBhIM6XcWt0qP+b7MGKgCprwtL2pxVS6bS2GLhO0FDFI/7K/f43zlgbqBbFt
+        y4Xs4NzZI3qwiJSpQitsBGLp6WXDYU6GHHByAQxlNlLHPUqftO4I436ahJvJvyL/LROlTvcEL
+X-Google-Smtp-Source: ABdhPJxWVKjqVDpJA/Ahay7V2oKiWo6fiSxwnygNeRInyW+X+tCUT/IC9+rbZkixVuFc9/ZB8a8uw3hC1548UQXW
+Sender: "awogbemila via sendgmr" <awogbemila@awogbemila.sea.corp.google.com>
+X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:1ea0:b8ff:fe73:6cc0])
+ (user=awogbemila job=sendgmr) by 2002:a25:9209:: with SMTP id
+ b9mr28413385ybo.400.1604425614813; Tue, 03 Nov 2020 09:46:54 -0800 (PST)
+Date:   Tue,  3 Nov 2020 09:46:47 -0800
+Message-Id: <20201103174651.590586-1-awogbemila@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.1.341.ge80a0c044ae-goog
+Subject: [PATCH net-next v5 0/4] GVE Raw Addressing
+From:   David Awogbemila <awogbemila@google.com>
+To:     netdev@vger.kernel.org
+Cc:     David Awogbemila <awogbemila@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/3/20 1:42 AM, Jiri Benc wrote:
-> And I'm convinced this is the way to go for libraries, too: put an
-> emphasis on API stability. Make it easy to get consumed and updated
-> under the hood. Everybody wins this way.
+Changes from v4:
+Patch 2: Removed "#include <linux/device-mapper.h>" gve_rx.c - it was added
+	by accident.
+	Removed unused rx_no_refill_dropped_pkt field in gve_priv struct.
 
-exactly. Libraries should export well thought out, easy to use, stable
-APIs. Maintainers do not need to be concerned about how the code is
-consumed by projects.
+Catherine Sullivan (3):
+  gve: Add support for raw addressing device option
+  gve: Add support for raw addressing to the rx path
+  gve: Add support for raw addressing in the tx path
+
+David Awogbemila (1):
+  gve: Rx Buffer Recycling
+
+ drivers/net/ethernet/google/gve/gve.h        |  40 +-
+ drivers/net/ethernet/google/gve/gve_adminq.c |  70 +++-
+ drivers/net/ethernet/google/gve/gve_adminq.h |  15 +-
+ drivers/net/ethernet/google/gve/gve_desc.h   |  18 +-
+ drivers/net/ethernet/google/gve/gve_main.c   |  12 +-
+ drivers/net/ethernet/google/gve/gve_rx.c     | 374 ++++++++++++++-----
+ drivers/net/ethernet/google/gve/gve_tx.c     | 207 ++++++++--
+ 7 files changed, 581 insertions(+), 155 deletions(-)
+
+-- 
+2.29.0.rc1.297.gfa9743e501-goog
+
