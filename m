@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31E5E2A459B
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 13:54:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 861D62A45A8
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 13:54:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729100AbgKCMyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 07:54:12 -0500
-Received: from smtp.uniroma2.it ([160.80.6.22]:46056 "EHLO smtp.uniroma2.it"
+        id S1729034AbgKCMyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 07:54:03 -0500
+Received: from smtp.uniroma2.it ([160.80.6.22]:46050 "EHLO smtp.uniroma2.it"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728995AbgKCMyF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 07:54:05 -0500
+        id S1726388AbgKCMyC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 07:54:02 -0500
 Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0A3CquXo020392
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0A3CquXp020392
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Tue, 3 Nov 2020 13:52:59 +0100
 From:   Andrea Mayer <andrea.mayer@uniroma2.it>
@@ -35,9 +35,9 @@ Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
         Paolo Lungaroni <paolo.lungaroni@cnit.it>,
         Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
         Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net-next,v1,2/5] seg6: improve management of behavior attributes
-Date:   Tue,  3 Nov 2020 13:52:39 +0100
-Message-Id: <20201103125242.11468-3-andrea.mayer@uniroma2.it>
+Subject: [net-next,v1,3/5] seg6: add callbacks for customizing the creation/destruction of a behavior
+Date:   Tue,  3 Nov 2020 13:52:40 +0100
+Message-Id: <20201103125242.11468-4-andrea.mayer@uniroma2.it>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201103125242.11468-1-andrea.mayer@uniroma2.it>
 References: <20201103125242.11468-1-andrea.mayer@uniroma2.it>
@@ -49,226 +49,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Depending on the attribute (i.e.: SEG6_LOCAL_SRH, SEG6_LOCAL_TABLE, etc),
-the parse() callback performs some validity checks on the provided input
-and updates the tunnel state (slwt) with the result of the parsing
-operation. However, an attribute may also need to reserve some additional
-resources (i.e.: memory or setting up an eBPF program) in the parse()
-callback to complete the parsing operation.
+We introduce two callbacks used for customizing the creation/destruction of
+a SRv6 behavior. Such callbacks are defined in the new struct
+seg6_local_lwtunnel_ops and hereafter we provide a brief description of
+them:
 
-The parse() callbacks are invoked by the parse_nla_action() for each
-attribute belonging to a specific behavior. Given a behavior with N
-attributes, if the parsing of the i-th attribute fails, the
-parse_nla_action() returns immediately with an error. Nonetheless, the
-resources acquired during the parsing of the i-1 attributes are not freed
-by the parse_nla_action().
+ - build_state(...): used for calling the custom constructor of the
+   behavior during its initialization phase and after all the attributes
+   have been parsed successfully;
 
-Attributes which acquire resources must release them *in an explicit way*
-in both the seg6_local_{build/destroy}_state(). However, adding a new
-attribute of this type requires changes to
-seg6_local_{build/destroy}_state() to release the resources correctly.
-
-The seg6local infrastructure still lacks a simple and structured way to
-release the resources acquired in the parse() operations.
-
-We introduced a new callback in the struct seg6_action_param named
-destroy(). This callback releases any resource which may have been acquired
-in the parse() counterpart. Each attribute may or may not implement the
-destroy() callback depending on whether it needs to free some acquired
-resources.
-
-The destroy() callback comes with several of advantages:
-
- 1) we can have many attributes as we want for a given behavior with no
-    need to explicitly free the taken resources;
-
- 2) As in case of the seg6_local_build_state(), the
-    seg6_local_destroy_state() does not need to handle the release of
-    resources directly. Indeed, it calls the destroy_attrs() function which
-    is in charge of calling the destroy() callback for every set attribute.
-    We do not need to patch seg6_local_{build/destroy}_state() anymore as
-    we add new attributes;
-
- 3) the code is more readable and better structured. Indeed, all the
-    information needed to handle a given attribute are contained in only
-    one place;
-
- 4) it facilitates the integration with new features introduced in further
-    patches.
+ - destroy_state(...): used for calling the custom destructor of the
+   behavior before it is completely destroyed.
 
 Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 ---
- net/ipv6/seg6_local.c | 103 ++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 93 insertions(+), 10 deletions(-)
+ net/ipv6/seg6_local.c | 64 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
 
 diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-index eba23279912d..63a82e2fdea9 100644
+index 63a82e2fdea9..4b0f155d641d 100644
 --- a/net/ipv6/seg6_local.c
 +++ b/net/ipv6/seg6_local.c
-@@ -710,6 +710,12 @@ static int cmp_nla_srh(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
- 	return memcmp(a->srh, b->srh, len);
- }
+@@ -33,11 +33,23 @@
  
-+static void destroy_attr_srh(struct seg6_local_lwt *slwt)
-+{
-+	kfree(slwt->srh);
-+	slwt->srh = NULL;
-+}
-+
- static int parse_nla_table(struct nlattr **attrs, struct seg6_local_lwt *slwt)
- {
- 	slwt->table = nla_get_u32(attrs[SEG6_LOCAL_TABLE]);
-@@ -901,16 +907,33 @@ static int cmp_nla_bpf(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
- 	return strcmp(a->bpf.name, b->bpf.name);
- }
+ struct seg6_local_lwt;
  
-+static void destroy_attr_bpf(struct seg6_local_lwt *slwt)
-+{
-+	kfree(slwt->bpf.name);
-+	if (slwt->bpf.prog)
-+		bpf_prog_put(slwt->bpf.prog);
++typedef int (*slwt_build_state_t)(struct seg6_local_lwt *slwt, const void *cfg,
++				  struct netlink_ext_ack *extack);
++typedef void (*slwt_destroy_state_t)(struct seg6_local_lwt *slwt);
 +
-+	slwt->bpf.name = NULL;
-+	slwt->bpf.prog = NULL;
-+}
++/* callbacks used for customizing the creation and destruction of a behavior */
++struct seg6_local_lwtunnel_ops {
++	slwt_build_state_t build_state;
++	slwt_destroy_state_t destroy_state;
++};
 +
- struct seg6_action_param {
- 	int (*parse)(struct nlattr **attrs, struct seg6_local_lwt *slwt);
- 	int (*put)(struct sk_buff *skb, struct seg6_local_lwt *slwt);
- 	int (*cmp)(struct seg6_local_lwt *a, struct seg6_local_lwt *b);
+ struct seg6_action_desc {
+ 	int action;
+ 	unsigned long attrs;
+ 	int (*input)(struct sk_buff *skb, struct seg6_local_lwt *slwt);
+ 	int static_headroom;
 +
-+	/* optional destroy() callback useful for releasing resources which
-+	 * have been previously acquired in the corresponding parse()
-+	 * function.
-+	 */
-+	void (*destroy)(struct seg6_local_lwt *slwt);
++	struct seg6_local_lwtunnel_ops slwt_ops;
  };
  
- static struct seg6_action_param seg6_action_params[SEG6_LOCAL_MAX + 1] = {
- 	[SEG6_LOCAL_SRH]	= { .parse = parse_nla_srh,
- 				    .put = put_nla_srh,
--				    .cmp = cmp_nla_srh },
-+				    .cmp = cmp_nla_srh,
-+				    .destroy = destroy_attr_srh },
+ struct bpf_lwt_prog {
+@@ -1015,6 +1027,45 @@ static void destroy_attrs(struct seg6_local_lwt *slwt)
+ 	__destroy_attrs(attrs, 0, SEG6_LOCAL_MAX + 1, slwt);
+ }
  
- 	[SEG6_LOCAL_TABLE]	= { .parse = parse_nla_table,
- 				    .put = put_nla_table,
-@@ -934,13 +957,68 @@ static struct seg6_action_param seg6_action_params[SEG6_LOCAL_MAX + 1] = {
- 
- 	[SEG6_LOCAL_BPF]	= { .parse = parse_nla_bpf,
- 				    .put = put_nla_bpf,
--				    .cmp = cmp_nla_bpf },
-+				    .cmp = cmp_nla_bpf,
-+				    .destroy = destroy_attr_bpf },
- 
- };
- 
-+/* call the destroy() callback (if available) for each set attribute in
-+ * @parsed_attrs, starting from attribute index @start up to @end excluded.
++/* call the custom constructor of the behavior during its initialization phase
++ * and after that all its attributes have been parsed successfully.
 + */
-+static void __destroy_attrs(unsigned long parsed_attrs, int start, int end,
-+			    struct seg6_local_lwt *slwt)
++static int
++seg6_local_lwtunnel_build_state(struct seg6_local_lwt *slwt, const void *cfg,
++				struct netlink_ext_ack *extack)
 +{
-+	struct seg6_action_param *param;
-+	int i;
-+
-+	/* Every seg6local attribute is identified by an ID which is encoded as
-+	 * a flag (i.e: 1 << ID) in the @parsed_attrs bitmask; such bitmask
-+	 * keeps track of the attributes parsed so far.
-+
-+	 * We scan the @parsed_attrs bitmask, starting from the attribute
-+	 * identified by @start up to the attribute identified by @end
-+	 * excluded. For each set attribute, we retrieve the corresponding
-+	 * destroy() callback.
-+	 * If the callback is not available, then we skip to the next
-+	 * attribute; otherwise, we call the destroy() callback.
-+	 */
-+	for (i = start; i < end; ++i) {
-+		if (!(parsed_attrs & (1 << i)))
-+			continue;
-+
-+		param = &seg6_action_params[i];
-+
-+		if (param->destroy)
-+			param->destroy(slwt);
-+	}
-+}
-+
-+/* release all the resources that may have been acquired during parsing
-+ * operations.
-+ */
-+static void destroy_attrs(struct seg6_local_lwt *slwt)
-+{
++	slwt_build_state_t build_func;
 +	struct seg6_action_desc *desc;
-+	unsigned long attrs;
++	int err = 0;
 +
 +	desc = slwt->desc;
-+	if (!desc) {
-+		WARN_ONCE(1,
-+			  "seg6local: seg6_action_desc* for action %d is NULL",
-+			  slwt->action);
++	if (!desc)
++		return -EINVAL;
++
++	build_func = desc->slwt_ops.build_state;
++	if (build_func)
++		err = build_func(slwt, cfg, extack);
++
++	return err;
++}
++
++/* call the custom destructor of the behavior which is invoked before the
++ * tunnel is going to be destroyed.
++ */
++static void seg6_local_lwtunnel_destroy_state(struct seg6_local_lwt *slwt)
++{
++	slwt_destroy_state_t destroy_func;
++	struct seg6_action_desc *desc;
++
++	desc = slwt->desc;
++	if (!desc)
 +		return;
-+	}
 +
-+	/* get the attributes for the current behavior instance */
-+	attrs = desc->attrs;
-+
-+	__destroy_attrs(attrs, 0, SEG6_LOCAL_MAX + 1, slwt);
++	destroy_func = desc->slwt_ops.destroy_state;
++	if (destroy_func)
++		destroy_func(slwt);
 +}
 +
  static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
  {
  	struct seg6_action_param *param;
-+	unsigned long parsed_attrs = 0;
- 	struct seg6_action_desc *desc;
- 	int i, err;
+@@ -1090,8 +1141,16 @@ static int seg6_local_build_state(struct net *net, struct nlattr *nla,
  
-@@ -963,11 +1041,22 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+ 	err = parse_nla_action(tb, slwt);
+ 	if (err < 0)
++		/* In case of error, the parse_nla_action() takes care of
++		 * releasing resources which have been acquired during the
++		 * processing of attributes.
++		 */
+ 		goto out_free;
  
- 			err = param->parse(attrs, slwt);
- 			if (err < 0)
--				return err;
-+				goto parse_err;
++	err = seg6_local_lwtunnel_build_state(slwt, cfg, extack);
++	if (err < 0)
++		goto free_attrs;
 +
-+			/* current attribute has been parsed correctly */
-+			parsed_attrs |= (1 << i);
- 		}
- 	}
+ 	newts->type = LWTUNNEL_ENCAP_SEG6_LOCAL;
+ 	newts->flags = LWTUNNEL_STATE_INPUT_REDIRECT;
+ 	newts->headroom = slwt->headroom;
+@@ -1100,6 +1159,9 @@ static int seg6_local_build_state(struct net *net, struct nlattr *nla,
  
  	return 0;
-+
-+parse_err:
-+	/* release any resource that may have been acquired during the i-1
-+	 * parse() operations.
-+	 */
-+	__destroy_attrs(parsed_attrs, 0, i, slwt);
-+
-+	return err;
- }
  
- static int seg6_local_build_state(struct net *net, struct nlattr *nla,
-@@ -1012,7 +1101,6 @@ static int seg6_local_build_state(struct net *net, struct nlattr *nla,
- 	return 0;
- 
++free_attrs:
++	destroy_attrs(slwt);
++
  out_free:
--	kfree(slwt->srh);
  	kfree(newts);
  	return err;
- }
-@@ -1021,12 +1109,7 @@ static void seg6_local_destroy_state(struct lwtunnel_state *lwt)
+@@ -1109,6 +1171,8 @@ static void seg6_local_destroy_state(struct lwtunnel_state *lwt)
  {
  	struct seg6_local_lwt *slwt = seg6_local_lwtunnel(lwt);
  
--	kfree(slwt->srh);
--
--	if (slwt->desc->attrs & (1 << SEG6_LOCAL_BPF)) {
--		kfree(slwt->bpf.name);
--		bpf_prog_put(slwt->bpf.prog);
--	}
-+	destroy_attrs(slwt);
++	seg6_local_lwtunnel_destroy_state(slwt);
++
+ 	destroy_attrs(slwt);
  
  	return;
- }
 -- 
 2.20.1
 
