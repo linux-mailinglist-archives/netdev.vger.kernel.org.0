@@ -2,205 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F6DC2A4A3C
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 16:45:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F36A12A4A49
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 16:46:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728317AbgKCPp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 10:45:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
+        id S1728249AbgKCPqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 10:46:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728083AbgKCPp2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 10:45:28 -0500
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77773C0617A6
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 07:45:28 -0800 (PST)
-Received: by mail-qv1-xf41.google.com with SMTP id d1so7324786qvl.6
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 07:45:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3wr/kJnGgJjVXv4j45gSDlCME78066E7KvOsuCGgBYM=;
-        b=bXh9b8/hy2W1iREgfIgRL7uYM/L1Ff8B9CaIV6+KCI8gFvzb85lcJYfuJ5NY8YM6HN
-         6PlIZC0SPiwCFiw8Blk+jDBqs35i6186Hb86cZfS5h+eFELZuWe7fyMKWe53fQ/2UGC3
-         SU9cUPhpEpZ8OsFMd0f2KKz243+57XxdbO6nwIYYW8jcUjqH69YHiRUAqi8pflCezl+3
-         8N0r5qPYKh5qXwuFg6RZI9pb0XDami7XP/r1GnVMt4Z/0Betcmrh1Mfz9PfQjb5y2nuZ
-         MJhW02wMuv1uEgAsOcM62B+EB8XlwEVd0eFn5V8VZfqER2BocXGduwInbJ0p92DXG0ri
-         SdaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3wr/kJnGgJjVXv4j45gSDlCME78066E7KvOsuCGgBYM=;
-        b=tqYiEe7gVmUcqwBPXdm0RxBIjoe6fRFCogLNPv+rT0yvtslU1aAVpzXQ03JuPgYuSg
-         O2UU36rUWIh3vY3ZNHE1+VNVHF1OnwfTd/OWmf3WIaW/3ELfBZXBKeIS6pcm6QhbK5Zv
-         EDRDVysCxShHbazJpTkCK05RMI9RcXeYendDUDdnQ3bivtcibsGeH/3kfpL5rxqFr6kf
-         dNmMTI6aTLsS9ueAK0EQoYGc4Ki+KvvmRCGyhFUQBJlkCM84wppj6E1iLxnkEgvnbf3z
-         x6RIfqyXnZCMSc/vRnxoJUTTwd8PHQx40YdbqoPX+8H9NVyK+KWXTC35dytOE+d1O7Sg
-         vVgQ==
-X-Gm-Message-State: AOAM5307oww9zJNqGWy7U5e6oU4iSAgR7BhfPXN7+B2kvL6YzzJuMBjU
-        xo8gvOVJvEQ+agSoVfeC/b1B7w==
-X-Google-Smtp-Source: ABdhPJz3S5UU3ilQyTYYox6+go2q28UHJ7dlganza0B5QQoayqoYF2WFeh5AeDtzdiCHK7WNbTpzsA==
-X-Received: by 2002:ad4:464f:: with SMTP id y15mr24492069qvv.52.1604418326596;
-        Tue, 03 Nov 2020 07:45:26 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id 19sm9771171qkj.69.2020.11.03.07.45.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 07:45:25 -0800 (PST)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1kZyUv-00FwNv-89; Tue, 03 Nov 2020 11:45:25 -0400
-Date:   Tue, 3 Nov 2020 11:45:25 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>,
-        gregkh <gregkh@linuxfoundation.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Wang <jasowang@redhat.com>, linux-rdma@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        Parav Pandit <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        virtualization@lists.linux-foundation.org,
-        alsa-devel@alsa-project.org, tiwai@suse.de, broonie@kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        ranjani.sridharan@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, fred.oh@linux.intel.com,
-        shiraz.saleem@intel.com, dan.j.williams@intel.com,
-        kiran.patil@intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH mlx5-next v1 06/11] vdpa/mlx5: Connect mlx5_vdpa to
- auxiliary bus
-Message-ID: <20201103154525.GO36674@ziepe.ca>
-References: <20201101201542.2027568-1-leon@kernel.org>
- <20201101201542.2027568-7-leon@kernel.org>
+        with ESMTP id S1726312AbgKCPqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 10:46:54 -0500
+Received: from mx0b-00190b01.pphosted.com (mx0b-00190b01.pphosted.com [IPv6:2620:100:9005:57f::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66170C0613D1;
+        Tue,  3 Nov 2020 07:46:54 -0800 (PST)
+Received: from pps.filterd (m0122331.ppops.net [127.0.0.1])
+        by mx0b-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A3FTsAT027253;
+        Tue, 3 Nov 2020 15:46:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=RnVOJCENc6qbHet0OD2KAbaT7ByBVdARSO3pp4wh3+A=;
+ b=oHyGjl+e83shdNfXLEOtrkQaFIYWGJNmVRuEG7+UwRo+k1cqH3YZnxNi529c6s/uIACr
+ KANw6Rly6wEqQ1h0ciqBpj0Ce3hAwNqpox6fkG+hwqU5H8TjLnIYjpmk7uEglaw4puFp
+ Zba3wW8Ua/0J/BryfaTfvSVrJ/Qul/ui7B6TxQDMBE+YzT1ARSAaB+zDpyKR8TjpjUKb
+ A93ZPLqSNqzPH9GqghcdULmUmxbFn7hWXhbHIO6hQyLF7aiuYD+5wp5xWR/OSQ5xbe3U
+ q+oMk48+LJ/qFzobfci8QSa7cAOmCwKbO0mQF46oMZZ18ttgQrs8JC1l1anOzysxEqgZ bg== 
+Received: from prod-mail-ppoint6 (prod-mail-ppoint6.akamai.com [184.51.33.61] (may be forged))
+        by mx0b-00190b01.pphosted.com with ESMTP id 34jhkaurjb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 03 Nov 2020 15:46:29 +0000
+Received: from pps.filterd (prod-mail-ppoint6.akamai.com [127.0.0.1])
+        by prod-mail-ppoint6.akamai.com (8.16.0.42/8.16.0.42) with SMTP id 0A3FZIkF011393;
+        Tue, 3 Nov 2020 10:46:28 -0500
+Received: from prod-mail-relay10.akamai.com ([172.27.118.251])
+        by prod-mail-ppoint6.akamai.com with ESMTP id 34h38xqm4j-1;
+        Tue, 03 Nov 2020 10:46:28 -0500
+Received: from [0.0.0.0] (prod-ssh-gw01.bos01.corp.akamai.com [172.27.119.138])
+        by prod-mail-relay10.akamai.com (Postfix) with ESMTP id 1E7E33DBC5;
+        Tue,  3 Nov 2020 15:46:28 +0000 (GMT)
+Subject: Re: [PATCH stable] net: sch_generic: fix the missing new qdisc
+ assignment bug
+To:     Yunsheng Lin <linyunsheng@huawei.com>, gregkh@linuxfoundation.org,
+        stable@vger.kernel.org
+Cc:     Joakim.Tjernlund@infinera.com, xiyou.wangcong@gmail.com,
+        johunt@akamai.com, jhs@mojatatu.com, jiri@resnulli.us,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+        john.fastabend@gmail.com, eric.dumazet@gmail.com, dsahern@gmail.com
+References: <1604373938-211588-1-git-send-email-linyunsheng@huawei.com>
+From:   Vishwanath Pai <vpai@akamai.com>
+Message-ID: <aed8d765-6ac7-bc8b-b8c2-e2c8832865bf@akamai.com>
+Date:   Tue, 3 Nov 2020 10:46:28 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201101201542.2027568-7-leon@kernel.org>
+In-Reply-To: <1604373938-211588-1-git-send-email-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-03_08:2020-11-03,2020-11-03 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 spamscore=0
+ adultscore=0 mlxlogscore=999 suspectscore=0 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011030107
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-03_08:2020-11-03,2020-11-03 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 adultscore=0
+ lowpriorityscore=0 mlxlogscore=999 spamscore=0 clxscore=1011
+ malwarescore=0 mlxscore=0 impostorscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011030107
+X-Agari-Authentication-Results: mx.akamai.com; spf=${SPFResult} (sender IP is 184.51.33.61)
+ smtp.mailfrom=vpai@akamai.com smtp.helo=prod-mail-ppoint6
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 01, 2020 at 10:15:37PM +0200, Leon Romanovsky wrote:
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index 6c218b47b9f1..5316e51e72d4 100644
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -1,18 +1,27 @@
->  // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
->  /* Copyright (c) 2020 Mellanox Technologies Ltd. */
-> 
-> +#include <linux/module.h>
->  #include <linux/vdpa.h>
-> +#include <linux/vringh.h>
-> +#include <uapi/linux/virtio_net.h>
->  #include <uapi/linux/virtio_ids.h>
->  #include <linux/virtio_config.h>
-> +#include <linux/auxiliary_bus.h>
-> +#include <linux/mlx5/cq.h>
->  #include <linux/mlx5/qp.h>
->  #include <linux/mlx5/device.h>
-> +#include <linux/mlx5/driver.h>
->  #include <linux/mlx5/vport.h>
->  #include <linux/mlx5/fs.h>
-> -#include <linux/mlx5/device.h>
->  #include <linux/mlx5/mlx5_ifc_vdpa.h>
-> -#include "mlx5_vnet.h"
->  #include "mlx5_vdpa.h"
-> 
-> +MODULE_AUTHOR("Eli Cohen <eli@mellanox.com>");
-> +MODULE_DESCRIPTION("Mellanox VDPA driver");
-> +MODULE_LICENSE("Dual BSD/GPL");
-> +
-> +#define to_mlx5_vdpa_ndev(__mvdev) container_of(__mvdev, struct mlx5_vdpa_net, mvdev)
->  #define to_mvdev(__vdev) container_of((__vdev), struct mlx5_vdpa_dev, vdev)
-> 
->  #define VALID_FEATURES_MASK                                                                        \
-> @@ -159,6 +168,11 @@ static bool mlx5_vdpa_debug;
->  			mlx5_vdpa_info(mvdev, "%s\n", #_status);                                   \
->  	} while (0)
-> 
-> +static inline u32 mlx5_vdpa_max_qps(int max_vqs)
-> +{
-> +	return max_vqs / 2;
-> +}
-> +
->  static void print_status(struct mlx5_vdpa_dev *mvdev, u8 status, bool set)
->  {
->  	if (status & ~VALID_STATUS_MASK)
-> @@ -1928,8 +1942,11 @@ static void init_mvqs(struct mlx5_vdpa_net *ndev)
->  	}
->  }
-> 
-> -void *mlx5_vdpa_add_dev(struct mlx5_core_dev *mdev)
-> +static int mlx5v_probe(struct auxiliary_device *adev,
-> +		       const struct auxiliary_device_id *id)
->  {
-> +	struct mlx5_adev *madev = container_of(adev, struct mlx5_adev, adev);
-> +	struct mlx5_core_dev *mdev = madev->mdev;
->  	struct virtio_net_config *config;
->  	struct mlx5_vdpa_dev *mvdev;
->  	struct mlx5_vdpa_net *ndev;
-> @@ -1943,7 +1960,7 @@ void *mlx5_vdpa_add_dev(struct mlx5_core_dev *mdev)
->  	ndev = vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device, &mlx5_vdpa_ops,
->  				 2 * mlx5_vdpa_max_qps(max_vqs));
->  	if (IS_ERR(ndev))
-> -		return ndev;
-> +		return PTR_ERR(ndev);
-> 
->  	ndev->mvdev.max_vqs = max_vqs;
->  	mvdev = &ndev->mvdev;
-> @@ -1972,7 +1989,8 @@ void *mlx5_vdpa_add_dev(struct mlx5_core_dev *mdev)
->  	if (err)
->  		goto err_reg;
-> 
-> -	return ndev;
-> +	dev_set_drvdata(&adev->dev, ndev);
-> +	return 0;
-> 
->  err_reg:
->  	free_resources(ndev);
-> @@ -1981,10 +1999,29 @@ void *mlx5_vdpa_add_dev(struct mlx5_core_dev *mdev)
->  err_mtu:
->  	mutex_destroy(&ndev->reslock);
->  	put_device(&mvdev->vdev.dev);
-> -	return ERR_PTR(err);
-> +	return err;
->  }
-> 
-> -void mlx5_vdpa_remove_dev(struct mlx5_vdpa_dev *mvdev)
-> +static int mlx5v_remove(struct auxiliary_device *adev)
->  {
-> +	struct mlx5_vdpa_dev *mvdev = dev_get_drvdata(&adev->dev);
-> +
->  	vdpa_unregister_device(&mvdev->vdev);
-> +	return 0;
->  }
-> +
-> +static const struct auxiliary_device_id mlx5v_id_table[] = {
-> +	{ .name = MLX5_ADEV_NAME ".vnet", },
-> +	{},
-> +};
-> +
-> +MODULE_DEVICE_TABLE(auxiliary, mlx5v_id_table);
-> +
-> +static struct auxiliary_driver mlx5v_driver = {
-> +	.name = "vnet",
-> +	.probe = mlx5v_probe,
-> +	.remove = mlx5v_remove,
-> +	.id_table = mlx5v_id_table,
-> +};
+On 11/2/20 10:25 PM, Yunsheng Lin wrote:
+ > commit 2fb541c862c9 ("net: sch_generic: aviod concurrent reset and 
+enqueue op for lockless qdisc")
+ >
+ > When the above upstream commit is backported to stable kernel,
+ > one assignment is missing, which causes two problems reported
+ > by Joakim and Vishwanath, see [1] and [2].
+ >
+ > So add the assignment back to fix it.
+ >
+ > 1. 
+https://urldefense.com/v3/__https://www.spinics.net/lists/netdev/msg693916.html__;!!GjvTz_vk!AqzcoNtwXeDu-vDNRKnOiOWYmi4B-2atZZExjZTvpp2jeJ9asOyQBVUtQyBp$
+ > 2. 
+https://urldefense.com/v3/__https://www.spinics.net/lists/netdev/msg695131.html__;!!GjvTz_vk!AqzcoNtwXeDu-vDNRKnOiOWYmi4B-2atZZExjZTvpp2jeJ9asOyQBQlaitCQ$
+ >
+ > Fixes: 749cc0b0c7f3 ("net: sch_generic: aviod concurrent reset and 
+enqueue op for lockless qdisc")
+ > Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+ > ---
+ >  net/sched/sch_generic.c | 3 +++
+ >  1 file changed, 3 insertions(+)
+ >
+ > diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+ > index 0e275e1..6e6147a 100644
+ > --- a/net/sched/sch_generic.c
+ > +++ b/net/sched/sch_generic.c
+ > @@ -1127,10 +1127,13 @@ static void dev_deactivate_queue(struct 
+net_device *dev,
+ >                   void *_qdisc_default)
+ >  {
+ >      struct Qdisc *qdisc = rtnl_dereference(dev_queue->qdisc);
+ > +    struct Qdisc *qdisc_default = _qdisc_default;
+ >
+ >      if (qdisc) {
+ >          if (!(qdisc->flags & TCQ_F_BUILTIN))
+ >              set_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state);
+ > +
+ > +        rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
+ >      }
+ >  }
+ >
 
-It is hard to see from the diff, but when this patch is applied the
-vdpa module looks like I imagined things would look with the auxiliary
-bus. It is very similar in structure to a PCI driver with the probe()
-function cleanly registering with its subsystem. This is what I'd like
-to see from the new Intel RDMA driver.
+I have tested the patch on v5.4.71 and it fixes our issues.
 
-Greg, I think this patch is the best clean usage example.
+Tested-by: Vishwanath Pai <vpai@akamai.com>
 
-I've looked over this series and it has the right idea and
-parts. There is definitely more that can be done to improve mlx5 in
-this area, but this series is well scoped and cleans a good part of
-it.
-
-Jason
