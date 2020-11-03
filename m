@@ -2,113 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0754E2A5A30
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 23:39:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C1F02A5A36
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 23:43:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730404AbgKCWjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 17:39:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729342AbgKCWjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 17:39:54 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A08C0613D1;
-        Tue,  3 Nov 2020 14:39:54 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id j12so5578406iow.0;
-        Tue, 03 Nov 2020 14:39:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Q1fSjRxkdgdb3dJlgs3KGwewyjQPFNHGcFMIqXb2OR4=;
-        b=FtZ8meo6Wv84NAh6ucBYC7C/wgd/hEk9mTHFtOuiif/RFtLceP/O8Njl5qH4GlaZK3
-         mWUXMMu6Dxh7p/3wYZoSRnMtXvmj+412+q6EOPfZ9MTMhCLBG4L5QE+AA97muzLyC8Bn
-         p+k4EEPAqpM01xqsvoAYknkFPJUDdneKW/qaPDoINySAeFtg2WPB8gMfmAhiYNtHaZ4W
-         69kY8o6gmn0czqOkSVBTcVY3YQSl9FAPkXU6AMLSrK96WbH3Yo5xnm68XTILCjRj0I59
-         vzqr58gktr/posU2xzosEWNt6mevU6FM5HUjC+hxWyR+tzuf8dKdYgolt8IPhnXXP4Wj
-         IKmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Q1fSjRxkdgdb3dJlgs3KGwewyjQPFNHGcFMIqXb2OR4=;
-        b=bZk+BlJqR6Z7N/33CAsARUD9gi21cvTUq+E9EPti9BXDLF2C0/1Hu1a40Bqi5+GA2H
-         mOS1PPzUhIC8SWRdcvtfYhMBo2vYEP+NIQgQOeEgCBiPJISXmPfMJna/da5gbhSV1eJm
-         K6M8K/I3+x/FxQmoR5VDiTyFbKWN4q/t4AXtnM0sgNuBbl7jg6cd3MgNKHF+vz38P6RB
-         2LsKg9qog2TG452upabOpHu7kppZqjq5zzb1okT5tFbThPPkuVtaiq219QM0Lf/IOjD8
-         48V8+aQmkOXOvxHrYIp0H9JOD5inyWu3S7KWOQoF6md3r7bUfY+VTNU/So2G+oCjUoEO
-         O7ig==
-X-Gm-Message-State: AOAM530gKdF9vjh7NCN5rQWIjtbm8n82EYGSNQmcrvR/x1Xsiz1I81lp
-        5GqMSFSfP9WdlzGsHJReOEw=
-X-Google-Smtp-Source: ABdhPJwBfNahtlMkZcIhW0aghCVUqt9HwT/BxbSJ9uFwMnqZsMn3CrvvtI8CruKf+qXlR8xD6CMGkw==
-X-Received: by 2002:a6b:6016:: with SMTP id r22mr14997218iog.93.1604443193936;
-        Tue, 03 Nov 2020 14:39:53 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:def:1f9b:2059:ffac])
-        by smtp.googlemail.com with ESMTPSA id u18sm78660iob.53.2020.11.03.14.39.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Nov 2020 14:39:53 -0800 (PST)
-Subject: Re: [net-next,v1,1/5] vrf: add mac header for tunneled packets when
- sniffer is attached
-To:     Andrea Mayer <andrea.mayer@uniroma2.it>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Shrijeet Mukherjee <shrijeet@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
-References: <20201103125242.11468-1-andrea.mayer@uniroma2.it>
- <20201103125242.11468-2-andrea.mayer@uniroma2.it>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <bf69c702-db2f-b9f2-148e-17a325a3cbda@gmail.com>
-Date:   Tue, 3 Nov 2020 15:39:50 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.0
+        id S1730238AbgKCWnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 17:43:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34658 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729342AbgKCWnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 17:43:16 -0500
+Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 928C921534;
+        Tue,  3 Nov 2020 22:43:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604443395;
+        bh=dTjs010gbJ6VVbLK8IglW33sxZXfD2QRUF5cnzBezyo=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=eS20A5CLxPhFskV6advnCEHDXwhqCm+t493GdZRn0qObtv+kRgZW+Gq6hf5SEGHPh
+         Q+9wM5jtPz3YoehUbHXoQNQA39zCOmZazH6B4wq6Ybon70qptlxH5bNmBEVeM87e28
+         PQwk2XW7HYe/gkn7LK8aVCqF0oQsYlArvh4psaJs=
+Message-ID: <f4b03d3c70c2b1e19e42d0209e270110b7668039.camel@kernel.org>
+Subject: Re: [PATCH 1/4] gve: Add support for raw addressing device option
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     David Awogbemila <awogbemila@google.com>, netdev@vger.kernel.org
+Cc:     Catherine Sullivan <csully@google.com>,
+        Yangchun Fu <yangchun@google.com>
+Date:   Tue, 03 Nov 2020 14:43:14 -0800
+In-Reply-To: <20201103174651.590586-2-awogbemila@google.com>
+References: <20201103174651.590586-1-awogbemila@google.com>
+         <20201103174651.590586-2-awogbemila@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-In-Reply-To: <20201103125242.11468-2-andrea.mayer@uniroma2.it>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/3/20 5:52 AM, Andrea Mayer wrote:
-> Before this patch, a sniffer attached to a VRF used as the receiving
-> interface of L3 tunneled packets detects them as malformed packets and
-> it complains about that (i.e.: tcpdump shows bogus packets).
+On Tue, 2020-11-03 at 09:46 -0800, David Awogbemila wrote:
+> From: Catherine Sullivan <csully@google.com>
 > 
-> The reason is that a tunneled L3 packet does not carry any L2
-> information and when the VRF is set as the receiving interface of a
-> decapsulated L3 packet, no mac header is currently set or valid.
-> Therefore, the purpose of this patch consists of adding a MAC header to
-> any packet which is directly received on the VRF interface ONLY IF:
+> Add support to describe device for parsing device options. As
+> the first device option, add raw addressing.
 > 
->  i) a sniffer is attached on the VRF and ii) the mac header is not set.
+> "Raw Addressing" mode (as opposed to the current "qpl" mode) is an
+> operational mode which allows the driver avoid bounce buffer copies
+> which it currently performs using pre-allocated qpls
+> (queue_page_lists)
+> when sending and receiving packets.
+> For egress packets, the provided skb data addresses will be
+> dma_map'ed and
+> passed to the device, allowing the NIC can perform DMA directly - the
+> driver will not have to copy the buffer content into pre-allocated
+> buffers/qpls (as in qpl mode).
+> For ingress packets, copies are also eliminated as buffers are handed
+> to
+> the networking stack and then recycled or re-allocated as
+> necessary, avoiding the use of skb_copy_to_linear_data().
 > 
-> In this case, the mac address of the VRF is copied in both the
-> destination and the source address of the ethernet header. The protocol
-> type is set either to IPv4 or IPv6, depending on which L3 packet is
-> received.
+> This patch only introduces the option to the driver.
+> Subsequent patches will add the ingress and egress functionality.
 > 
-> Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+> Reviewed-by: Yangchun Fu <yangchun@google.com>
+> Signed-off-by: Catherine Sullivan <csully@google.com>
+> Signed-off-by: David Awogbemila <awogbemila@google.com>
 > ---
->  drivers/net/vrf.c | 78 +++++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 72 insertions(+), 6 deletions(-)
+>  drivers/net/ethernet/google/gve/gve.h        |  1 +
+>  drivers/net/ethernet/google/gve/gve_adminq.c | 52
+> ++++++++++++++++++++
+>  drivers/net/ethernet/google/gve/gve_adminq.h | 15 ++++--
+>  drivers/net/ethernet/google/gve/gve_main.c   |  9 ++++
+>  4 files changed, 73 insertions(+), 4 deletions(-)
 > 
+> diff --git a/drivers/net/ethernet/google/gve/gve.h
+> b/drivers/net/ethernet/google/gve/gve.h
+> index f5c80229ea96..80cdae06ee39 100644
+> --- a/drivers/net/ethernet/google/gve/gve.h
+> +++ b/drivers/net/ethernet/google/gve/gve.h
+> @@ -199,6 +199,7 @@ struct gve_priv {
+>  	u64 num_registered_pages; /* num pages registered with NIC */
+>  	u32 rx_copybreak; /* copy packets smaller than this */
+>  	u16 default_num_queues; /* default num queues to set up */
+> +	bool raw_addressing; /* true if this dev supports raw
+> addressing */
+>  
+>  	struct gve_queue_config tx_cfg;
+>  	struct gve_queue_config rx_cfg;
+> diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c
+> b/drivers/net/ethernet/google/gve/gve_adminq.c
+> index 24ae6a28a806..0b7a2653fe33 100644
+> --- a/drivers/net/ethernet/google/gve/gve_adminq.c
+> +++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+> @@ -460,11 +460,14 @@ int gve_adminq_destroy_rx_queues(struct
+> gve_priv *priv, u32 num_queues)
+>  int gve_adminq_describe_device(struct gve_priv *priv)
+>  {
+>  	struct gve_device_descriptor *descriptor;
+> +	struct gve_device_option *dev_opt;
+>  	union gve_adminq_command cmd;
+>  	dma_addr_t descriptor_bus;
+> +	u16 num_options;
+>  	int err = 0;
+>  	u8 *mac;
+>  	u16 mtu;
+> +	int i;
+>  
+>  	memset(&cmd, 0, sizeof(cmd));
+>  	descriptor = dma_alloc_coherent(&priv->pdev->dev, PAGE_SIZE,
+> @@ -518,6 +521,55 @@ int gve_adminq_describe_device(struct gve_priv
+> *priv)
+>  		priv->rx_desc_cnt = priv->rx_pages_per_qpl;
+>  	}
+>  	priv->default_num_queues = be16_to_cpu(descriptor-
+> >default_num_queues);
+> +	dev_opt = (void *)(descriptor + 1);
+> +
+> +	num_options = be16_to_cpu(descriptor->num_device_options);
+> +	for (i = 0; i < num_options; i++) {
+> +		u16 option_length = be16_to_cpu(dev_opt-
+> >option_length);
+> +		u16 option_id = be16_to_cpu(dev_opt->option_id);
+> +		void *option_end;
+> +
+> +		option_end = (void *)dev_opt + sizeof(*dev_opt) +
+> option_length;
+> +		if (option_end > (void *)descriptor +
+> be16_to_cpu(descriptor->total_length)) {
+> +			dev_err(&priv->dev->dev,
+> +				"options exceed device_descriptor's
+> total length.\n");
+> +			err = -EINVAL;
+> +			goto free_device_descriptor;
+> +		}
+> +
+> +		switch (option_id) {
+> +		case GVE_DEV_OPT_ID_RAW_ADDRESSING:
+> +			/* If the length or feature mask doesn't match,
+> +			 * continue without enabling the feature.
+> +			 */
+> +			if (option_length !=
+> GVE_DEV_OPT_LEN_RAW_ADDRESSING ||
+> +			    dev_opt->feat_mask !=
+> +			    cpu_to_be32(GVE_DEV_OPT_FEAT_MASK_RAW_ADDRE
+> SSING)) {
+> +				dev_warn(&priv->pdev->dev,
+> +					 "Raw addressing option
+> error:\n"
+> +					 "	Expected: length=%d,
+> feature_mask=%x.\n"
+> +					 "	Actual: length=%d,
+> feature_mask=%x.\n",
+> +					 GVE_DEV_OPT_LEN_RAW_ADDRESSING
+> ,
+> +					 cpu_to_be32(GVE_DEV_OPT_FEAT_M
+> ASK_RAW_ADDRESSING),
+> +					 option_length, dev_opt-
+> >feat_mask);
+> +				priv->raw_addressing = false;
+> +			} else {
+> +				dev_info(&priv->pdev->dev,
+> +					 "Raw addressing device option
+> enabled.\n");
+> +				priv->raw_addressing = true;
+> +			}
+> +			break;
+> +		default:
+> +			/* If we don't recognize the option just
+> continue
+> +			 * without doing anything.
+> +			 */
+> +			dev_dbg(&priv->pdev->dev,
+> +				"Unrecognized device option 0x%hx not
+> enabled.\n",
+> +				option_id);
+> +			break;
+> +		}
+> +		dev_opt = (void *)dev_opt + sizeof(*dev_opt) +
+> option_length;
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+This was already calculated above, "option_end"
+
+
+Suggestion: you can make an iterator macro to return the next opt
+
+next_opt = GET_NEXT_OPT(descriptor, curr_opt);
+
+you can make it check boundaries and return null on last iteration or
+when total length is exceeded, and just use it in a more readable
+iterator loop.
 
 
