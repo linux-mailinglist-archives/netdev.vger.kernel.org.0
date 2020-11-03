@@ -2,115 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 944932A4FAC
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:05:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4FFA2A4FA3
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:05:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729629AbgKCTFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 14:05:37 -0500
-Received: from mga12.intel.com ([192.55.52.136]:49624 "EHLO mga12.intel.com"
+        id S1729581AbgKCTFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 14:05:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55376 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729596AbgKCTF0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 14:05:26 -0500
-IronPort-SDR: jcrSS942onwmChazvmQD6m9BtcqxVqYPfHEkZqKQDOK6i4OtKOW+bq94QBaL/o7ls0IVYuHYQ+
- KF6HPlBB84tg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9794"; a="148386936"
-X-IronPort-AV: E=Sophos;i="5.77,448,1596524400"; 
-   d="scan'208";a="148386936"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2020 11:05:15 -0800
-IronPort-SDR: H3M3Txunn8qciUsb7XmHM+qBfh5qXpW6Y8ycSSf5s2Ec+ox1PLp+VPA8Lq5Qy8ISRQ9l94qgha
- +GXtgiJ8vXWw==
-X-IronPort-AV: E=Sophos;i="5.77,448,1596524400"; 
-   d="scan'208";a="352430152"
-Received: from mjmartin-nuc02.amr.corp.intel.com ([10.251.18.188])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2020 11:05:14 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        mptcp@lists.01.org, kuba@kernel.org, davem@davemloft.net,
-        Geliang Tang <geliangtang@gmail.com>
-Subject: [PATCH net-next v2 6/7] docs: networking: mptcp: Add MPTCP sysctl entries
-Date:   Tue,  3 Nov 2020 11:05:08 -0800
-Message-Id: <20201103190509.27416-7-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201103190509.27416-1-mathew.j.martineau@linux.intel.com>
-References: <20201103190509.27416-1-mathew.j.martineau@linux.intel.com>
+        id S1729391AbgKCTFM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 14:05:12 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C46452074B;
+        Tue,  3 Nov 2020 19:05:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604430311;
+        bh=FcUM5b5zIIcbNgSiyZrMSCtOG1CxHKvZpGQJoyIJf2E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=a6P/R/ASD6vLJQ3ct2QW51s1KD4lzM81aydDN53dHoRkNQoUwL4sYLyIsWxJsgHSW
+         wTvkl6RXHOG6YlOmf8Z5R3YBlZ7IsWfdhuo1rxDbDhrvlHQFjaim+NPzSWmijE0jR0
+         DEpGwnxWW6KJawvko8qi55at5hyOmUoqHsqb1s7k=
+Date:   Tue, 3 Nov 2020 11:05:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Pujin Shi <shipujin.t@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2] net: ethernet: mscc: fix missing brace warning for
+ old compilers
+Message-ID: <20201103110509.6bb18273@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201103025519.1916-1-shipujin.t@gmail.com>
+References: <20201103025519.1916-1-shipujin.t@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Describe the two MPTCP sysctls, what the values mean, and the default
-settings.
+On Tue,  3 Nov 2020 10:55:19 +0800 Pujin Shi wrote:
+> For older versions of gcc, the array = {0}; will cause warnings:
 
-Acked-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- Documentation/networking/index.rst        |  1 +
- Documentation/networking/mptcp-sysctl.rst | 26 +++++++++++++++++++++++
- MAINTAINERS                               |  1 +
- 3 files changed, 28 insertions(+)
- create mode 100644 Documentation/networking/mptcp-sysctl.rst
+Please include the version of gcc which generates this warning here.
 
-diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index 63ef386afd0a..70c71c9206e2 100644
---- a/Documentation/networking/index.rst
-+++ b/Documentation/networking/index.rst
-@@ -70,6 +70,7 @@ Contents:
-    lapb-module
-    mac80211-injection
-    mpls-sysctl
-+   mptcp-sysctl
-    multiqueue
-    netconsole
-    netdev-features
-diff --git a/Documentation/networking/mptcp-sysctl.rst b/Documentation/networking/mptcp-sysctl.rst
-new file mode 100644
-index 000000000000..6af0196c4297
---- /dev/null
-+++ b/Documentation/networking/mptcp-sysctl.rst
-@@ -0,0 +1,26 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+=====================
-+MPTCP Sysfs variables
-+=====================
-+
-+/proc/sys/net/mptcp/* Variables
-+===============================
-+
-+enabled - INTEGER
-+	Control whether MPTCP sockets can be created.
-+
-+	MPTCP sockets can be created if the value is nonzero. This is
-+	a per-namespace sysctl.
-+
-+	Default: 1
-+
-+add_addr_timeout - INTEGER (seconds)
-+	Set the timeout after which an ADD_ADDR control message will be
-+	resent to an MPTCP peer that has not acknowledged a previous
-+	ADD_ADDR message.
-+
-+	The default value matches TCP_RTO_MAX. This is a per-namespace
-+	sysctl.
-+
-+	Default: 120
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 17f5571788c9..badaaa815aa3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12265,6 +12265,7 @@ L:	mptcp@lists.01.org
- S:	Maintained
- W:	https://github.com/multipath-tcp/mptcp_net-next/wiki
- B:	https://github.com/multipath-tcp/mptcp_net-next/issues
-+F:	Documentation/networking/mptcp-sysctl.rst
- F:	include/net/mptcp.h
- F:	include/uapi/linux/mptcp.h
- F:	net/mptcp/
--- 
-2.29.2
+> drivers/net/ethernet/mscc/ocelot_vcap.c: In function 'is1_entry_set':
+> drivers/net/ethernet/mscc/ocelot_vcap.c:755:11: warning: missing braces around initializer [-Wmissing-braces]
+>     struct ocelot_vcap_u16 etype = {0};
+>            ^
+> drivers/net/ethernet/mscc/ocelot_vcap.c:755:11: warning: (near initialization for 'etype.value') [-Wmissing-braces]
+> 
+> 1 warnings generated
+> 
+> Fixes: 75944fda1dfe ("net: mscc: ocelot: offload ingress skbedit and vlan actions to VCAP IS1")
+> Signed-off-by: Pujin Shi <shipujin.t@gmail.com>
+> ---
+>  drivers/net/ethernet/mscc/ocelot_vcap.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
+> index d8c778ee6f1b..b5167570521c 100644
+> --- a/drivers/net/ethernet/mscc/ocelot_vcap.c
+> +++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+> @@ -752,7 +752,7 @@ static void is1_entry_set(struct ocelot *ocelot, int ix,
+>  					     dport);
+>  		} else {
+>  			/* IPv4 "other" frame */
+> -			struct ocelot_vcap_u16 etype = {0};
+> +			struct ocelot_vcap_u16 etype = {{0}};
+
+I believe Vladimir asked to use a memset instead;
+
+			struct ocelot_vcap_u16 etype;
+
+			memset(&etype, 0, sizeof(etype));
+>  			/* Overloaded field */
+>  			etype.value[0] = proto.value[0];
 
