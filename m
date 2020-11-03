@@ -2,107 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 501B32A4EF3
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:34:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CFDF2A4EF4
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 19:34:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729091AbgKCSeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 13:34:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57702 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725892AbgKCSeN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 13:34:13 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC4FC0613D1;
-        Tue,  3 Nov 2020 10:34:13 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id a12so15671493ybg.9;
-        Tue, 03 Nov 2020 10:34:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f5gZDG7PJd1ojE4K5U9IsMyGTaYwuZZg5TPUY7S9wyw=;
-        b=aLE/md7NGzZXyeCYzLrc3GrGk7NpJrcNSUZLFZrRoGZF2MAhCxBvytkUNqTK9IXEZ9
-         1Nl3UVkd7Vq130KRpBrnd9l6zAarLEUbsNnvtuso+DP/um7dhNhdRFd78/yH++gw1sWh
-         BgYMIfW7dHJ1bH+da+GXhj1kbuBME76I1gmCQOgBQUNr1TeuHNmzdZz6cqwvsd0E9RIr
-         HcJeURHY501S1AHG/TnuVS6WZ/e9XVHfWAHJdDpJMlD6yKJ5SBOCWEf3dg/8fC9nWu1X
-         YLSIzRkwf6E+2LGhJw7H6/Wvp+qxZ/dNeKeCSwUfjWFwJm6MUkjvxY8h1wWfcZTrkCrV
-         AdgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f5gZDG7PJd1ojE4K5U9IsMyGTaYwuZZg5TPUY7S9wyw=;
-        b=atsZ54sD5GzM2F7lLWj8L76AripFQPwiumllx/M+5hQG1KNfKOWWcQefL0Q4RGUhDG
-         ttPeBrpydYnsRuSYWT7tWQ7GkoFDfdoRGG3a3uxdPNqc7Ssg4F0oswsIpr/sqDqKpM2N
-         Q/retwAQC3eQ2OullWq2jX2GTfod3xiIkiR/RDpU99tFAl8ocAfpBMPJmolExZUn7S1l
-         MnqyJihPsVCmSkQPgiO07LKZ0EYHVXPeVs+rOI/xDFVovba475rl8nA5RwF6lsihE63y
-         YTZL7ZJgK/YWsa6JdXemrIQpioeR0GGKLfxP13+53UqNiZtcvJeAS8yCksTLiZI848mt
-         u8JA==
-X-Gm-Message-State: AOAM531jfLnKua95Hzc1RTWmzQPIBZwj2tuS0mwQH0TO9BhLMRAP0DAj
-        WT1VvHK07h3fpjHrYLMr9zcmU0fZEfvsgp5WKVM=
-X-Google-Smtp-Source: ABdhPJzGSw2t/jV+XII12ttHjVo9klroF+FwG2mww/Jx67EFlfiZMfM7/PHwWZ9pQDCj1E6M3+fWqe/LMmesNKCbRs0=
-X-Received: by 2002:a05:6902:72e:: with SMTP id l14mr1351502ybt.230.1604428453019;
- Tue, 03 Nov 2020 10:34:13 -0800 (PST)
+        id S1729159AbgKCSei (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 13:34:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48100 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728471AbgKCSeh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 13:34:37 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DB70C20757;
+        Tue,  3 Nov 2020 18:34:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604428477;
+        bh=5HTsQEhN3dMFJV+EaD/jk8OWcfI88rKKhA6wJnPwdFo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TfGM0uV2F3C6oP7hdk2uxUt7iNcGWEqRhUYR7P2t3imv6JFvnu8ErW8XSDOYlLbCi
+         U6macm48RopS89m5OaRAQG2pESGPEUi4+lTtOnu17NdazBmdCzA8rXqR4LhWt46oFs
+         c/EPVpV/yInEYWITs9tLkn+Bcl4pxjRGTL7pT/b4=
+Date:   Tue, 3 Nov 2020 10:34:36 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        Christian Eggers <ceggers@arri.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [PATCH v3 net-next 09/12] net: dsa: tag_brcm: let DSA core deal
+ with TX reallocation
+Message-ID: <20201103103436.486e9339@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201103181528.tyvythhy2ynyjx4a@skbuf>
+References: <20201101191620.589272-1-vladimir.oltean@nxp.com>
+        <20201101191620.589272-10-vladimir.oltean@nxp.com>
+        <10537403-67a4-c64a-705a-61bc5f55f80e@gmail.com>
+        <20201103105059.t66xhok5elgx4r4h@skbuf>
+        <20201103090411.64f785cc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <20201103181528.tyvythhy2ynyjx4a@skbuf>
 MIME-Version: 1.0
-References: <160416890683.710453.7723265174628409401.stgit@localhost.localdomain>
- <160417033167.2823.10759249192027767614.stgit@localhost.localdomain>
-In-Reply-To: <160417033167.2823.10759249192027767614.stgit@localhost.localdomain>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 3 Nov 2020 10:34:02 -0800
-Message-ID: <CAEf4BzbyNVfkEe+X4ZW-vnWS_XhiD8sh059dNehGpX5eZrxaoQ@mail.gmail.com>
-Subject: Re: [bpf-next PATCH v2 1/5] selftests/bpf: Move test_tcppbf_user into test_progs
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Lawrence Brakmo <brakmo@fb.com>, alexanderduyck@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 31, 2020 at 11:52 AM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> From: Alexander Duyck <alexanderduyck@fb.com>
->
-> Recently a bug was missed due to the fact that test_tcpbpf_user is not a
-> part of test_progs. In order to prevent similar issues in the future move
-> the test functionality into test_progs. By doing this we can make certain
-> that it is a part of standard testing and will not be overlooked.
->
-> As a part of moving the functionality into test_progs it is necessary to
-> integrate with the test_progs framework and to drop any redundant code.
-> This patch:
-> 1. Cleans up the include headers
-> 2. Dropped a duplicate definition of bpf_find_map
-> 3. Switched over to using test_progs specific cgroup functions
-> 4. Replaced printf calls with fprintf to stderr
+On Tue, 3 Nov 2020 18:15:29 +0000 Vladimir Oltean wrote:
+> On Tue, Nov 03, 2020 at 09:04:11AM -0800, Jakub Kicinski wrote:
+> > In a recent discussion I was wondering if it makes sense to add the
+> > padding len to struct net_device, with similar best-effort semantics
+> > to needed_*room. It'd be a u8, so little worry about struct size.  
+> 
+> What would that mean in practice? Modify the existing alloc_skb calls
+> which have an expression e that depends on LL_RESERVED_SPACE(dev), into
+> max(e, dev->padding_len)? There's a lot of calls to alloc_skb to modify
+> though...
 
-This is not necessary. test_progs intercept both stdout and stderr, so
-you could have kept the code as is and minimize this diff further. But
-it also doesn't matter all that much, so:
+Yeah, separate helper would probably be warranted, so we don't have to
+touch multiple sites every time we adjust things.
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> > You could also make sure DSA always provisions for padding if it has to
+> > reallocate, you don't need to actually pad:
+> > 
+> > @@ -568,6 +568,9 @@ static int dsa_realloc_skb(struct sk_buff *skb, struct net_device *dev)
+> >                 /* No reallocation needed, yay! */
+> >                 return 0;
+> >  
+> > +       if (skb->len < ETH_ZLEN)
+> > +               needed_tailroom += ETH_ZLEN;
+> > +
+> >         return pskb_expand_head(skb, needed_headroom, needed_tailroom,
+> >                                 GFP_ATOMIC);
+> >  }
+> > 
+> > That should save the realloc for all reasonable drivers while not
+> > costing anything (other than extra if()) to drivers which don't care.  
+> 
+> DSA does already provision for padding if it has to reallocate, but only
+> for the case where it needs to add a frame header at the end of the skb
+> (i.e. "tail taggers"). My question here was whether there would be any
+> drawback to doing that for all types of switches, including ones that
+> might deal with padding in some other way (i.e. in hardware).
 
-> 5. Renamed main to test_tcpbpf_user
-> 6. Dropped return value in favor of CHECK_FAIL to check for errors
->
-> The general idea is that I wanted to keep the changes as small as possible
-> while moving the file into the test_progs framework. The follow-on patches
-> are meant to clean up the remaining issues such as the use of CHECK_FAIL.
->
-> Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
-> ---
->  tools/testing/selftests/bpf/.gitignore             |    1
->  tools/testing/selftests/bpf/Makefile               |    3 -
->  .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |   63 ++++++--------------
->  3 files changed, 21 insertions(+), 46 deletions(-)
->  rename tools/testing/selftests/bpf/{test_tcpbpf_user.c => prog_tests/tcpbpf_user.c} (70%)
->
+Well, we may re-alloc unnecessarily if we provision for padding of all
+frames.
 
-[...]
+So what I was trying to achieve was to add the padding space _after_
+the "do we need to realloc" check.
+
+	/* over-provision space for pad, if we realloc anyway */
+	if (!needed_tailroom && skb->len < ETH_ZLEN)
+		needed_tailroom = ETH_ZLEN - skb->len;
