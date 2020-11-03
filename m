@@ -2,85 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E55602A3B5D
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 05:14:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4A4C2A3B66
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 05:29:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727043AbgKCEO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Nov 2020 23:14:26 -0500
-Received: from smtprelay0169.hostedemail.com ([216.40.44.169]:42348 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725940AbgKCEOZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 23:14:25 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 3C52818223256;
-        Tue,  3 Nov 2020 04:14:23 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1539:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2693:2828:2893:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3870:3871:3872:3874:4321:5007:6119:6737:6738:6742:7576:7903:8603:10004:10400:10848:11232:11658:11914:12048:12297:12740:12760:12895:13069:13160:13229:13311:13357:13439:14181:14659:14721:21080:21451:21611:21627:21740:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: low21_3f05160272b5
-X-Filterd-Recvd-Size: 2781
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf05.hostedemail.com (Postfix) with ESMTPA;
-        Tue,  3 Nov 2020 04:14:17 +0000 (UTC)
-Message-ID: <21d80265fccfcb5d76851c84d1c2d88e0421ab85.camel@perches.com>
-Subject: Re: [PATCH v2 0/8] slab: provide and use krealloc_array()
-From:   Joe Perches <joe@perches.com>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Gustavo Padovan <gustavo@padovan.org>,
-        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        alsa-devel@alsa-project.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Date:   Mon, 02 Nov 2020 20:14:16 -0800
-In-Reply-To: <20201102152037.963-1-brgl@bgdev.pl>
-References: <20201102152037.963-1-brgl@bgdev.pl>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S1725980AbgKCE31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Nov 2020 23:29:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38576 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725940AbgKCE31 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Nov 2020 23:29:27 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C84C0617A6;
+        Mon,  2 Nov 2020 20:29:26 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id u2so2025580pls.10;
+        Mon, 02 Nov 2020 20:29:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9yJafI9JzO1hsUL/IVtMBiZmlV+MWNs1li/SRBTAGFc=;
+        b=RYBdNi+kLm1a2p+43ST8IpXxrsEeZ4mpmdwbFJMve/Ia59IpU+TPyGHq2H0UaZ8iXq
+         i6tvGdQy5jfDGXTKMDBhMBCFcijaz8yTbL+CDyk00mlYSFxF6SJRKEWzHRthF0aX1eNu
+         Ho3YZ+0EL5deQrdvXUd6qOWqdniXE0kR+g/kI/2OpfCeqRh/UNtOS+jdbMUapUBXPxfO
+         LJDdUIf4Z7YZn3Y44bdcTi/IySvRNzfisv6cA1D3Kfy0FGN3aGdDpdpULtGFOKLGqF7q
+         rPEjBUD/rh3UTCC+ph0AA9ds683Zu5RXvTvMkXIeD2G6JkfgAhq/oJvHccNmGoW/EJyw
+         H9DA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9yJafI9JzO1hsUL/IVtMBiZmlV+MWNs1li/SRBTAGFc=;
+        b=QZ7MWIDRalQ572YnygSXtPBbQVT79H5J+YncBhe4u6fkGP2rZjjxPuV23h9fEihMiw
+         m4iybxkWdK+u7HKso77lKDEdU3/gUbHWXWFWE9G4rzGpw6hTNQ77Z2VtiFZnX4ATrpr3
+         uU++B5Ip4FAI7YdZ0ND6NNNi7b7mVEZMU5AXvFMNIXHGqTL5RQfHiv12kY0ycuV8YXYP
+         QT3Ke572QPaO+s44sXKw3/35LMozT3lQuOJ1MWxIN+U3RJKk+4GGBjyS3AXZdkyE6Kbb
+         CTd6w5teXE2VoFi2S7AIT5ywboocSFeQHgXf5ORthOJxdO9k08MBgL2AKhEtk+r2tQM2
+         ySIg==
+X-Gm-Message-State: AOAM531Pb4aU/G4Mv4NlE6rtBMqq2YghbSVIi9lENbb1QT8Ldt7uTQ+9
+        Jn7GoN7fAP0QDBnYRqhzm24fu2jJOol5E6gk
+X-Google-Smtp-Source: ABdhPJyOsne5KS/h4dyUSqu5G1qPHXnWhApA9IBMtDIUJz43h2u+u/OJPQ9JV7JOoCS75QRGKXXDvA==
+X-Received: by 2002:a17:902:7298:b029:d4:c71a:357a with SMTP id d24-20020a1709027298b02900d4c71a357amr23695229pll.38.1604377765269;
+        Mon, 02 Nov 2020 20:29:25 -0800 (PST)
+Received: from localhost.localdomain.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id b6sm13683279pgq.58.2020.11.02.20.29.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Nov 2020 20:29:24 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     William Tu <u9012063@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH bpf-next 0/2] selftest/bpf: improve bpf tunnel test
+Date:   Tue,  3 Nov 2020 12:29:06 +0800
+Message-Id: <20201103042908.2825734-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-11-02 at 16:20 +0100, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> 
-> Andy brought to my attention the fact that users allocating an array of
-> equally sized elements should check if the size multiplication doesn't
-> overflow. This is why we have helpers like kmalloc_array().
-> 
-> However we don't have krealloc_array() equivalent and there are many
-> users who do their own multiplication when calling krealloc() for arrays.
-> 
-> This series provides krealloc_array() and uses it in a couple places.
+In comment 173ca26e9b51 ("samples/bpf: add comprehensive ipip, ipip6,
+ip6ip6 test") we added some bpf tunnel tests. In commit 933a741e3b82
+("selftests/bpf: bpf tunnel test.") when we moved it to the current
+folder, we missed some points:
 
-My concern about this is a possible assumption that __GFP_ZERO will
-work, and as far as I know, it will not.
+1. ip6ip6 test is not added
+2. forgot to remove test_ipip.sh in sample folder
+3. TCP test code is not removed in test_tunnel_kern.c
 
+In this patch set I add back ip6ip6 test and remove unused code.
+As I'm not sure if this should be a fixup, I didn't add the Fixes flag.
+
+Here is the test result:
+```
+  Testing IP6IP6 tunnel...
+  PING ::11(::11) 56 data bytes
+
+  --- ::11 ping statistics ---
+  3 packets transmitted, 3 received, 0% packet loss, time 47ms
+  rtt min/avg/max/mdev = 0.031/1023.035/2044.975/834.846 ms, pipe 2
+  PING 1::11(1::11) 56 data bytes
+
+  --- 1::11 ping statistics ---
+  3 packets transmitted, 3 received, 0% packet loss, time 47ms
+  rtt min/avg/max/mdev = 0.027/0.046/0.058/0.013 ms
+  PING 1::22(1::22) 56 data bytes
+
+  --- 1::22 ping statistics ---
+  3 packets transmitted, 3 received, 0% packet loss, time 47ms
+  rtt min/avg/max/mdev = 0.041/0.056/0.074/0.014 ms
+  PASS: ip6ip6tnl
+```
+
+Hangbin Liu (2):
+  selftest/bpf: add missed ip6ip6 test back
+  selftest/bpf: remove unused bpf tunnel testing code
+
+ samples/bpf/test_ipip.sh                      | 179 ------------------
+ .../selftests/bpf/progs/test_tunnel_kern.c    |  87 +--------
+ tools/testing/selftests/bpf/test_tunnel.sh    |  39 +++-
+ 3 files changed, 40 insertions(+), 265 deletions(-)
+ delete mode 100755 samples/bpf/test_ipip.sh
+
+-- 
+2.25.4
 
