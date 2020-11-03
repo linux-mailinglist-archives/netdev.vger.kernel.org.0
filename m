@@ -2,121 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0A072A4D7F
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:52:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 725192A4D95
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:55:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728809AbgKCRwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 12:52:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
+        id S1728982AbgKCRzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:55:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728690AbgKCRwZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:52:25 -0500
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDD0C0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:52:24 -0800 (PST)
-Received: by mail-wm1-x343.google.com with SMTP id h62so162070wme.3
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:52:24 -0800 (PST)
+        with ESMTP id S1725892AbgKCRzY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:55:24 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875D5C0617A6;
+        Tue,  3 Nov 2020 09:55:24 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id x13so14247183pgp.7;
+        Tue, 03 Nov 2020 09:55:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=e+0jR+QQ65f9mmp7Mm7WjlSL4O1pCjuDPMTZwyibTBk=;
-        b=NV8tNuh59p8lOW2Dg2wtHt9VxTG1FGD6FzA72vIKA+/HO0VTqzkwobiTh+7fd91j0s
-         SozwVoz9oO+Yr3GFZAsL95ehaiG6Vr9lot1tCuVZlElfUUuDM3j5UCailpDnBEm36tgG
-         W0FWGqXHsPsfKmpUTz6eMJdjQN0kgrb4goq5Mo2B7+cNHg5JurIvYE2yrHlvbPlXkUKo
-         Luz59OY4DZ6FB/DGipAe5fsjWXMXDMB7dcXLPQ6AqPhmxozE737KuWorHYmmx+1WZ7CO
-         1wOEkjnkAhkCx6EeqaSlkpvdqg+lUSyWV088AtFZBTn/15ymC+WqJuor7jAiOrIPvljj
-         nZzw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UfD3DZODM1Q1zxavmaKnOkFrJJUUgVEN3r6HvS0z8PM=;
+        b=WSzueQjTb67p3RAUmPVtNMYtbe9KRxdBSSlIy2vcaAb8/CYv3lyYMX3+q4VxFbTnIB
+         iGZkpoaLP7QhUNj0D6CMea2aQO7Adp4hHA81IzZhe2O0tZf5QIGjwBFYcuMWleli7JSN
+         wamMk8SKrW6Y+M6DPfQDY22K/bDgiFb7nPhim0YD2dp5YopbT/3mB/zv+/X/W8IhJNEu
+         80HhvaPkWZQ7J3jOvgJIuba923Gd0EujFw8hqvgD5IMU5M0FYITPEwk4BLIU2TexyM+F
+         RZ6uHk6qzKdQ2Pydrr6AItrXCID+9OfzfVvHqQqgMyVsHrF/ye7xU0CizDRPj7v2IK1X
+         2s6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=e+0jR+QQ65f9mmp7Mm7WjlSL4O1pCjuDPMTZwyibTBk=;
-        b=qyLsHx1zqg4EZ4jR8eR/o8qSa8gIzSiSUL8WiQ1XEeKtOmFmiyjS+NWhD9FpCBXutb
-         B0EUzpvNHgSLn0+/uRht8smLYm4D/lua2ISjPxgmGL8Xfr2P4A83Jtkuhvt8Lcl0xu9G
-         gv/YNXwvifMhvX8TjV8Vit75SOjHpheF25zrDdqaW0gnvLFU/vC7NyrGQ/msYOQPXTEd
-         3vyifI3KCB0uvf/PB2ri8fEi+u46rJmIJdK88RMST0ZzJC4aabzx/Pdr4RpDRFt2EcrI
-         GuF0456m7B97yxofRDjg2QUvY+fmlr+NPJPVon67smAb1iCBhWQ5wAokkn6lz/OU2XVG
-         Jw9g==
-X-Gm-Message-State: AOAM533MBLQ4jK5Ou3gLSsJB14Ycx79hK8CYrOLvfjyGZJ6klaNCp5mF
-        JPJ4gIsT4IaLJdCIAO1UNLOGLav4nUjGNA==
-X-Google-Smtp-Source: ABdhPJwXj+1PUnFo5XpWZX2bZkK5YaXUqVTwdYVyNgC0gMzxxYCEZ1IaBFa7pMAdLh8jB4tSZZITHQ==
-X-Received: by 2002:a1c:bdc4:: with SMTP id n187mr295492wmf.185.1604425943621;
-        Tue, 03 Nov 2020 09:52:23 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:a5f9:d289:8ac7:4785? (p200300ea8f232800a5f9d2898ac74785.dip0.t-ipconnect.de. [2003:ea:8f23:2800:a5f9:d289:8ac7:4785])
-        by smtp.googlemail.com with ESMTPSA id u195sm3753387wmu.18.2020.11.03.09.52.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Nov 2020 09:52:23 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Maxim Plotnikov <wgh@torlan.ru>
-Subject: [PATCH net] r8169: work around short packet hw bug on RTL8125
-Message-ID: <8002c31a-60b9-58f1-f0dd-8fd07239917f@gmail.com>
-Date:   Tue, 3 Nov 2020 18:52:18 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UfD3DZODM1Q1zxavmaKnOkFrJJUUgVEN3r6HvS0z8PM=;
+        b=YhBycLzkhmuuQAkrAQPCX9vj7Lz43+yHkZ2loAArv1GO2y6JjlBZORcRBDY3CYwDb1
+         jqN3JkY3nTAPyhPzpL4XFvjME4G831baFlB9rCZ0b8n/LHw5zMF6JlNAosNjN6/zcADW
+         9TRMkyVeIeEm+DcRpMzXjyRO+YpG5CdSKlZQmXbpE+nSWyHWB0zAR9LBWKkrgrq4/Y4z
+         2fK38gf9/ALDNsRFJOhHnKKidJa5/tXIMMwP7doVZELEaj21c7NC3s9/94sjxEQBcW9H
+         UXEibpRy4Y9sp+KQD8lvzNrC2cD4DR8b4zxzeosD4p+PwRvEveZGjam+0DMdjJAP9t3u
+         4tnw==
+X-Gm-Message-State: AOAM531iUsg56OxIH2JDvkIhNHGHGT3ml2+J/XvrkaTL1Ai7oHonnf/z
+        0mGs3+vzEsvKSgwc9GmJOfY=
+X-Google-Smtp-Source: ABdhPJwqeS2IsGQJlR2dpwxJHevHLWy3/K+zkzSe54oolrpTyMS/No2hq8Nhy+PmlepD9v1Lp+n0Rw==
+X-Received: by 2002:a17:90a:d503:: with SMTP id t3mr391414pju.10.1604426123982;
+        Tue, 03 Nov 2020 09:55:23 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:4055])
+        by smtp.gmail.com with ESMTPSA id 8sm4115739pjk.20.2020.11.03.09.55.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2020 09:55:22 -0800 (PST)
+Date:   Tue, 3 Nov 2020 09:55:20 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 08/11] libbpf: support BTF dedup of split BTFs
+Message-ID: <20201103175520.spqvqhohtnietnlt@ast-mbp.dhcp.thefacebook.com>
+References: <20201029005902.1706310-1-andrii@kernel.org>
+ <20201029005902.1706310-9-andrii@kernel.org>
+ <20201103051003.i565jv3ph54lw5rj@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZV8oysWVmkF0K=FBFa5x=98duK8c+ixfiCFFP8dzWg2w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZV8oysWVmkF0K=FBFa5x=98duK8c+ixfiCFFP8dzWg2w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Network problems with RTL8125B have been reported [0] and with help
-from Realtek it turned out that this chip version has a hw problem
-with short packets (similar to RTL8168evl). Having said that activate
-the same workaround as for RTL8168evl.
-Realtek suggested to activate the workaround for RTL8125A too, even
-though they're not 100% sure yet which RTL8125 versions are affected.
+On Mon, Nov 02, 2020 at 10:27:20PM -0800, Andrii Nakryiko wrote:
+> On Mon, Nov 2, 2020 at 9:10 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Wed, Oct 28, 2020 at 05:58:59PM -0700, Andrii Nakryiko wrote:
+> > > @@ -2942,6 +2948,13 @@ struct btf_dedup {
+> > >       __u32 *hypot_list;
+> > >       size_t hypot_cnt;
+> > >       size_t hypot_cap;
+> > > +     /* Whether hypothethical mapping, if successful, would need to adjust
+> > > +      * already canonicalized types (due to a new forward declaration to
+> > > +      * concrete type resolution). In such case, during split BTF dedup
+> > > +      * candidate type would still be considered as different, because base
+> > > +      * BTF is considered to be immutable.
+> > > +      */
+> > > +     bool hypot_adjust_canon;
+> >
+> > why one flag per dedup session is enough?
+> 
+> So the entire hypot_xxx state is reset before each struct/union type
+> graph equivalence check. Then for each struct/union type we might do
+> potentially many type graph equivalence checks against each of
+> potential canonical (already deduplicated) struct. Let's keep that in
+> mind for the answer below.
+> 
+> > Don't you have a case where some fwd are pointing to base btf and shouldn't
+> > be adjusted while some are in split btf and should be?
+> > It seems when this flag is set to true it will miss fwd in split btf?
+> 
+> So keeping the above note in mind, let's think about this case. You
+> are saying that some FWDs would have candidates in base BTF, right?
+> That means that the canonical type we are checking equivalence against
+> has to be in the base BTF. That also means that all the canonical type
+> graph types are in the base BTF, right? Because no base BTF type can
+> reference types from split BTF. This, subsequently, means that no FWDs
+> from split BTF graph could have canonical matching types in split BTF,
+> because we are comparing split types against only base BTF types.
+> 
+> With that, if hypot_adjust_canon is triggered, *entire graph*
+> shouldn't be matched. No single type in that (connected) graph should
+> be matched to base BTF. We essentially pretend that canonical type
+> doesn't even exist for us (modulo the subtle bit of still recording
+> base BTF's FWD mapping to a concrete type in split BTF for FWD-to-FWD
+> resolution at the very end, we can ignore that here, though, it's an
+> ephemeral bookkeeping discarded after dedup).
+> 
+> In your example you worry about resolving FWD in split BTF to concrete
+> type in split BTF. If that's possible (i.e., we have duplicates and
+> enough information to infer the FWD-to-STRUCT mapping), then we'll
+> have another canonical type to compare against, at which point we'll
+> establish FWD-to-STRUCT mapping, like usual, and hypot_adjust_canon
+> will stay false (because we'll be staying with split BTF types only).
+> 
+> But honestly, with graphs it can get so complicated that I wouldn't be
+> surprised if I'm still missing something. So far, manually checking
+> the resulting BTF showed that generated deduped BTF types look
+> correct. Few cases where module BTFs had duplicated types from vmlinux
+> I was able to easily find where exactly vmlinux had FWD while modules
+> had STRUCT/UNION.
+> 
+> But also, by being conservative with hypot_adjust_canon, the worst
+> case would be slight duplication of types, which is not the end of the
+> world. Everything will keep working, no data will be corrupted, libbpf
+> will still perform CO-RE relocation correctly (because memory layout
+> of duplicated structs will be consistent across all copies, just like
+> it was with task_struct until ring_buffers were renamed).
 
-[0] https://bugzilla.kernel.org/show_bug.cgi?id=209839
-
-Fixes: 0439297be951 ("r8169: add support for RTL8125B")
-Reported-by: Maxim Plotnikov <wgh@torlan.ru>
-Tested-by: Maxim Plotnikov <wgh@torlan.ru>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 7e0947e29..07d197141 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4051,9 +4051,17 @@ static int rtl8169_xmit_frags(struct rtl8169_private *tp, struct sk_buff *skb,
- 	return -EIO;
- }
- 
--static bool rtl_test_hw_pad_bug(struct rtl8169_private *tp, struct sk_buff *skb)
-+static bool rtl_test_hw_pad_bug(struct rtl8169_private *tp)
- {
--	return skb->len < ETH_ZLEN && tp->mac_version == RTL_GIGA_MAC_VER_34;
-+	switch (tp->mac_version) {
-+	case RTL_GIGA_MAC_VER_34:
-+	case RTL_GIGA_MAC_VER_60:
-+	case RTL_GIGA_MAC_VER_61:
-+	case RTL_GIGA_MAC_VER_63:
-+		return true;
-+	default:
-+		return false;
-+	}
- }
- 
- static void rtl8169_tso_csum_v1(struct sk_buff *skb, u32 *opts)
-@@ -4125,7 +4133,7 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
- 
- 		opts[1] |= transport_offset << TCPHO_SHIFT;
- 	} else {
--		if (unlikely(rtl_test_hw_pad_bug(tp, skb)))
-+		if (unlikely(skb->len < ETH_ZLEN && rtl_test_hw_pad_bug(tp)))
- 			return !eth_skb_pad(skb);
- 	}
- 
--- 
-2.29.2
-
-
+Yes. That last part is comforting. The explanation also makes sense.
+Not worried about it anymore.
