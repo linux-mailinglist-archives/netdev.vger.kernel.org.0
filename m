@@ -2,105 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E50C52A4353
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 11:44:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB592A4367
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 11:50:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728007AbgKCKlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 05:41:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39748 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726388AbgKCKlf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 05:41:35 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6190CC0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 02:41:35 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id e18so6576038edy.6
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 02:41:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=DdP01kHO5B04yVuNt92/IDiHRHDJ7JwNe7PcFsJrYmk=;
-        b=WvCv/rZn7Xvbbi5AK8cMax1kEf84lelp7CX450VvDwPOgcVQ2RpYm8Dh7Wq/Ln6WoX
-         tdB4SqFPpGd25SMRFXtMo3kTEwO/iNgQQRG5tJaADoea9Fv4ZYD/4izHMroAeKCUTiIN
-         B04g4P89FiERa+nmTNMxwQxvtQTGYiZFR8qEvMd8cPknkegK39gXHdrivl//Nw8XLQZd
-         Zar3DSbmhtENCqILCSeRzrDrvNSMnXW778crhXOcVFtUvK9JeddZJJsLIpaRne0kEV0y
-         Cu/0Jd55Tn6Ux4EX3YyFr7xEv/k9MXA6G0D5REDNRFq63YbxkU6L/xKPcYpModljMEf6
-         gfRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=DdP01kHO5B04yVuNt92/IDiHRHDJ7JwNe7PcFsJrYmk=;
-        b=VLD/f9GIzXBU4B8FcsWwGg7DcBTDHJB+EuyBwee6o+MooSGLHXH5/8MeXcHWc4y89z
-         /5dakvAsV07DJ4f3IEz07DuftH3qtEFLNAAmI64S70w5lwOuZIPuzc9rOrd7DzFpWSiz
-         +gYv7ykDnjf85CQzGj4b+RmFA3CsVYKWTkwl3eCiUABqVOD/BLHcjh2BBZxnVnak4PJQ
-         0nTbzs0G+atz7mJ+HprXsaEmt8c3JxKA0SCyDp2kG8rSSCqeZ4/be89YUgCiInv/KB1B
-         cJmbwMwIrx7ELridUrp+U0weODKTJejUyPKkP4p7hlyDfJaLQRBGvE3G8L7/EdR6Rwe4
-         GD/Q==
-X-Gm-Message-State: AOAM530Q4RuRsaMQVaBWqJTJ/u1bAJHSlmn4xW1BU6kajiEjr0PQmJhO
-        wBbdUoyZgU9FJk5prO72e6E=
-X-Google-Smtp-Source: ABdhPJwECbZL4FTydIr6k0DNz8tCGiFSNfZVjGgABin9vsplOCC+ehjYJufbqSmi2qUKtyEx3NaXxw==
-X-Received: by 2002:a05:6402:144b:: with SMTP id d11mr21397779edx.195.1604400094105;
-        Tue, 03 Nov 2020 02:41:34 -0800 (PST)
-Received: from tws ([2a0f:6480:3:1:6c3b:b371:86f7:b3f1])
-        by smtp.gmail.com with ESMTPSA id bx12sm8357175ejc.71.2020.11.03.02.41.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2020 02:41:33 -0800 (PST)
-Date:   Tue, 3 Nov 2020 11:41:33 +0100
-From:   Oliver Herms <oliver.peter.herms@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org
-Subject: [PATCH] IPv6: Set SIT tunnel hard_header_len to zero
-Message-ID: <20201103104133.GA1573211@tws>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        id S1727706AbgKCKuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 05:50:01 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:39618 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726058AbgKCKuA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 05:50:00 -0500
+Received: from localhost.localdomain (vardah.blr.asicdesigners.com [10.193.186.1])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 0A3Ann4W008411;
+        Tue, 3 Nov 2020 02:49:49 -0800
+From:   Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        borisp@nvidia.com
+Cc:     secdev@chelsio.com, Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+Subject: [PATCH net] net/tls: Fix kernel panic when socket is in TLS ULP
+Date:   Tue,  3 Nov 2020 16:17:03 +0530
+Message-Id: <20201103104702.798-1-vinay.yadav@chelsio.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Due to the legacy usage of hard_header_len for SIT tunnels while
-already using infrastructure from net/ipv4/ip_tunnel.c the
-calculation of the path MTU in tnl_update_pmtu is incorrect.
-This leads to unnecessary creation of MTU exceptions for any
-flow going over a SIT tunnel.
+user can initialize tls ulp using setsockopt call on socket
+before listen() in case of tls-toe (TLS_HW_RECORD) and same
+setsockopt call on connected socket in case of kernel tls (TLS_SW).
+In presence of tls-toe devices, TLS ulp is initialized, tls context
+is allocated per listen socket and socket is listening at adapter
+as well as kernel tcp stack. now consider the scenario, connections
+are established in kernel stack.
+on every connection close which is established in kernel stack,
+it clears tls context which is created on listen socket causing
+kernel panic.
+Addressed the issue by setting child socket to base (non TLS ULP)
+when tls ulp is initialized on parent socket (listen socket).
 
-As SIT tunnels do not have a header themsevles other than their
-transport (L3, L2) headers we're leaving hard_header_len set to zero
-as tnl_update_pmtu is already taking care of the transport headers
-sizes.
-
-This will also help avoiding unnecessary IPv6 GC runs and spinlock
-contention seen when using SIT tunnels and for more than
-net.ipv6.route.gc_thresh flows.
-
-Fixes: c54419321455 ("GRE: Refactor GRE tunneling code.")
-Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
+Fixes: 76f7164d02d4 ("net/tls: free ctx in sock destruct")
+Signed-off-by: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
 ---
- net/ipv6/sit.c | 2 --
- 1 file changed, 2 deletions(-)
+ .../chelsio/inline_crypto/chtls/chtls_cm.c    |  3 +++
+ net/tls/tls_main.c                            | 23 ++++++++++++++++++-
+ 2 files changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index 5e2c34c0ac97..5e7983cb6154 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -1128,7 +1128,6 @@ static void ipip6_tunnel_bind_dev(struct net_device *dev)
- 	if (tdev && !netif_is_l3_master(tdev)) {
- 		int t_hlen = tunnel->hlen + sizeof(struct iphdr);
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+index 63aacc184f68..c56cd9c1e40c 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+@@ -1206,6 +1206,9 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
+ 	sk_setup_caps(newsk, dst);
+ 	ctx = tls_get_ctx(lsk);
+ 	newsk->sk_destruct = ctx->sk_destruct;
++	newsk->sk_prot = lsk->sk_prot;
++	inet_csk(newsk)->icsk_ulp_ops = inet_csk(lsk)->icsk_ulp_ops;
++	rcu_assign_pointer(inet_csk(newsk)->icsk_ulp_data, ctx);
+ 	csk->sk = newsk;
+ 	csk->passive_reap_next = oreq;
+ 	csk->tx_chan = cxgb4_port_chan(ndev);
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 8d93cea99f2c..9682dacae30c 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -715,7 +715,7 @@ static int tls_init(struct sock *sk)
+ 	tls_build_proto(sk);
  
--		dev->hard_header_len = tdev->hard_header_len + sizeof(struct iphdr);
- 		dev->mtu = tdev->mtu - t_hlen;
- 		if (dev->mtu < IPV6_MIN_MTU)
- 			dev->mtu = IPV6_MIN_MTU;
-@@ -1426,7 +1425,6 @@ static void ipip6_tunnel_setup(struct net_device *dev)
- 	dev->priv_destructor	= ipip6_dev_free;
+ #ifdef CONFIG_TLS_TOE
+-	if (tls_toe_bypass(sk))
++	if (sk->sk_state == TCP_CLOSE && tls_toe_bypass(sk))
+ 		return 0;
+ #endif
  
- 	dev->type		= ARPHRD_SIT;
--	dev->hard_header_len	= LL_MAX_HEADER + t_hlen;
- 	dev->mtu		= ETH_DATA_LEN - t_hlen;
- 	dev->min_mtu		= IPV6_MIN_MTU;
- 	dev->max_mtu		= IP6_MAX_MTU - t_hlen;
+@@ -744,6 +744,24 @@ static int tls_init(struct sock *sk)
+ 	return rc;
+ }
+ 
++#ifdef CONFIG_TLS_TOE
++static void tls_clone(const struct request_sock *req,
++		      struct sock *newsk, const gfp_t priority)
++{
++	struct tls_context *ctx = tls_get_ctx(newsk);
++	struct inet_connection_sock *icsk = inet_csk(newsk);
++
++	/* In presence of TLS TOE devices, TLS ulp is initialized on listen
++	 * socket so lets child socket back to non tls ULP mode because tcp
++	 * connections can happen in non TLS TOE mode.
++	 */
++	newsk->sk_prot = ctx->sk_proto;
++	newsk->sk_destruct = ctx->sk_destruct;
++	icsk->icsk_ulp_ops = NULL;
++	rcu_assign_pointer(icsk->icsk_ulp_data, NULL);
++}
++#endif
++
+ static void tls_update(struct sock *sk, struct proto *p,
+ 		       void (*write_space)(struct sock *sk))
+ {
+@@ -857,6 +875,9 @@ static struct tcp_ulp_ops tcp_tls_ulp_ops __read_mostly = {
+ 	.update			= tls_update,
+ 	.get_info		= tls_get_info,
+ 	.get_info_size		= tls_get_info_size,
++#ifdef CONFIG_TLS_TOE
++	.clone                  = tls_clone
++#endif
+ };
+ 
+ static int __init tls_register(void)
 -- 
-2.25.1
+2.18.1
 
