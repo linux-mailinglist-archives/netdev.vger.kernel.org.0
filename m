@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82F802A5059
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:48:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45B4F2A505A
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 20:48:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729719AbgKCTsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 14:48:04 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:9512 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727688AbgKCTsD (ORCPT
+        id S1729725AbgKCTsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 14:48:05 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:18814 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728621AbgKCTsD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 14:48:03 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fa1b3f30000>; Tue, 03 Nov 2020 11:48:03 -0800
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fa1b3f20007>; Tue, 03 Nov 2020 11:48:02 -0800
 Received: from sx1.mtl.com (10.124.1.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 3 Nov
- 2020 19:47:58 +0000
+ 2020 19:48:01 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
         "Yevgeny Kliteynik" <kliteyn@nvidia.com>,
         Alex Vesker <valex@nvidia.com>,
         "Saeed Mahameed" <saeedm@nvidia.com>
-Subject: [net-next 02/12] net/mlx5: DR, Rename builders HW specific names
-Date:   Tue, 3 Nov 2020 11:47:28 -0800
-Message-ID: <20201103194738.64061-3-saeedm@nvidia.com>
+Subject: [net-next 03/12] net/mlx5: DR, Rename matcher functions to be more HW agnostic
+Date:   Tue, 3 Nov 2020 11:47:29 -0800
+Message-ID: <20201103194738.64061-4-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201103194738.64061-1-saeedm@nvidia.com>
 References: <20201103194738.64061-1-saeedm@nvidia.com>
@@ -35,397 +35,206 @@ X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1604432883; bh=rq6PWq11BfejZhig3WUJMpUTotqp4JdDPFWggDOS57U=;
+        t=1604432882; bh=S3zGRchQhlVV191Wbar6zRiiBgA0G892LJEMcsxRw1A=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=q2B4fi3DMRNqbWnN8Y2e7RkDq/D+lQqVkDQjrr8yxFOFcJx8thV4Z/ibN0naxLy0w
-         DWCszceg0wEpndsUNfCa9CNFt1FxfxzA3MLAHYi35lR0AdN/fA4CszI+FLU059iP8F
-         HCdq/Ht1ZJuY75CZPKRMmeubVNRBSOBcm1cTfz+3iSaxYDPeGZvngvara7TZ5nyLcv
-         z7IqQw/8yRTiSgaA3yyAPQgj/LsL8QuMGQPMqi+8pS8SnmbUTHq8F5inKDznW4fuCB
-         WrCXk6lUbf+uridWOkpSkEIOpDogFEwliQJZpELcrXAHvbKhnUbTmYD7LAmc1oHssF
-         ORU8Ow163DVeA==
+        b=e+ZHvUFFLq7zQhWcXyf7RcaIFt2yPMeR0+g22OyH1aLy0SfgbTCeEtOjdnZ9zGfYd
+         YIIxmIkdkE83AnWdiEvgzWYJyAoVy2y2KoHwOg+LaaSYUJx9qCIVEXaynrir8myjd9
+         9NL19zOrHi1jiBvICHGhUdtWd4pqUC0aqvSB0LZLjuUU1vPp1lU0oi/zLjdzpW7/oK
+         T/qxrwFucJr8R5n+j7vBPySmtJeh/2Z6Qh6atFkHCpVwfB79MJ6ZuFAkc+b5y0G/T+
+         JKdLYSLT4WZryDKaIjhXwY/9hJWsxAC7kifqTNHVr1Q8jCXww+glX42P1XXy8z8tNz
+         9ahzk0dSZN6Zw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-We will support multiple STE versions.
-The existing naming is not suitable for newer versions.
-Removed the HW specific details and renamed with a more
-general names.
+Remove flex parser from the matcher function names since
+the matcher should not be aware of such HW specific details.
 
 Signed-off-by: Alex Vesker <valex@nvidia.com>
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_matcher.c  | 63 ++++++++++---------
- .../mellanox/mlx5/core/steering/dr_ste.c      | 42 ++++++-------
- .../mellanox/mlx5/core/steering/dr_types.h    | 42 ++++++-------
- 3 files changed, 76 insertions(+), 71 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_cmd.c      |  4 +-
+ .../mellanox/mlx5/core/steering/dr_matcher.c  | 54 +++++++++++--------
+ .../mellanox/mlx5/core/steering/dr_types.h    | 12 -----
+ 3 files changed, 33 insertions(+), 37 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/dr=
+ivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+index 6bd34b293007..ebc879052e42 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+@@ -93,12 +93,12 @@ int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
+ 	caps->gvmi		=3D MLX5_CAP_GEN(mdev, vhca_id);
+ 	caps->flex_protocols	=3D MLX5_CAP_GEN(mdev, flex_parser_protocols);
+=20
+-	if (mlx5dr_matcher_supp_flex_parser_icmp_v4(caps)) {
++	if (caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V4_ENABLED) {
+ 		caps->flex_parser_id_icmp_dw0 =3D MLX5_CAP_GEN(mdev, flex_parser_id_icmp=
+_dw0);
+ 		caps->flex_parser_id_icmp_dw1 =3D MLX5_CAP_GEN(mdev, flex_parser_id_icmp=
+_dw1);
+ 	}
+=20
+-	if (mlx5dr_matcher_supp_flex_parser_icmp_v6(caps)) {
++	if (caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V6_ENABLED) {
+ 		caps->flex_parser_id_icmpv6_dw0 =3D
+ 			MLX5_CAP_GEN(mdev, flex_parser_id_icmpv6_dw0);
+ 		caps->flex_parser_id_icmpv6_dw1 =3D
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c =
 b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-index 7df883686d46..752afdb20e23 100644
+index 752afdb20e23..cb5202e17856 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-@@ -85,7 +85,7 @@ static bool dr_mask_is_ttl_set(struct mlx5dr_match_spec *=
-spec)
- 	(_misc2)._inner_outer##_first_mpls_s_bos || \
- 	(_misc2)._inner_outer##_first_mpls_ttl)
-=20
--static bool dr_mask_is_gre_set(struct mlx5dr_match_misc *misc)
-+static bool dr_mask_is_tnl_gre_set(struct mlx5dr_match_misc *misc)
- {
- 	return (misc->gre_key_h || misc->gre_key_l ||
- 		misc->gre_protocol || misc->gre_c_present ||
-@@ -98,7 +98,7 @@ static bool dr_mask_is_gre_set(struct mlx5dr_match_misc *=
-misc)
- 	(_misc2).outer_first_mpls_over_##gre_udp##_s_bos || \
- 	(_misc2).outer_first_mpls_over_##gre_udp##_ttl)
-=20
--#define DR_MASK_IS_FLEX_PARSER_0_SET(_misc2) ( \
-+#define DR_MASK_IS_TNL_MPLS_SET(_misc2) ( \
- 	DR_MASK_IS_OUTER_MPLS_OVER_GRE_UDP_SET((_misc2), gre) || \
+@@ -103,7 +103,7 @@ static bool dr_mask_is_tnl_gre_set(struct mlx5dr_match_=
+misc *misc)
  	DR_MASK_IS_OUTER_MPLS_OVER_GRE_UDP_SET((_misc2), udp))
 =20
-@@ -148,12 +148,23 @@ dr_mask_is_flex_parser_tnl_geneve_set(struct mlx5dr_m=
-atch_param *mask,
- 	       dr_matcher_supp_flex_parser_geneve(&dmn->info.caps);
+ static bool
+-dr_mask_is_misc3_vxlan_gpe_set(struct mlx5dr_match_misc3 *misc3)
++dr_mask_is_vxlan_gpe_set(struct mlx5dr_match_misc3 *misc3)
+ {
+ 	return (misc3->outer_vxlan_gpe_vni ||
+ 		misc3->outer_vxlan_gpe_next_protocol ||
+@@ -111,21 +111,20 @@ dr_mask_is_misc3_vxlan_gpe_set(struct mlx5dr_match_mi=
+sc3 *misc3)
  }
 =20
--static bool dr_mask_is_flex_parser_icmpv6_set(struct mlx5dr_match_misc3 *m=
-isc3)
-+static bool dr_mask_is_icmpv6_set(struct mlx5dr_match_misc3 *misc3)
+ static bool
+-dr_matcher_supp_flex_parser_vxlan_gpe(struct mlx5dr_cmd_caps *caps)
++dr_matcher_supp_vxlan_gpe(struct mlx5dr_cmd_caps *caps)
  {
- 	return (misc3->icmpv6_type || misc3->icmpv6_code ||
+-	return caps->flex_protocols &
+-	       MLX5_FLEX_PARSER_VXLAN_GPE_ENABLED;
++	return caps->flex_protocols & MLX5_FLEX_PARSER_VXLAN_GPE_ENABLED;
+ }
+=20
+ static bool
+-dr_mask_is_flex_parser_tnl_vxlan_gpe_set(struct mlx5dr_match_param *mask,
+-					 struct mlx5dr_domain *dmn)
++dr_mask_is_tnl_vxlan_gpe(struct mlx5dr_match_param *mask,
++			 struct mlx5dr_domain *dmn)
+ {
+-	return dr_mask_is_misc3_vxlan_gpe_set(&mask->misc3) &&
+-	       dr_matcher_supp_flex_parser_vxlan_gpe(&dmn->info.caps);
++	return dr_mask_is_vxlan_gpe_set(&mask->misc3) &&
++	       dr_matcher_supp_vxlan_gpe(&dmn->info.caps);
+ }
+=20
+-static bool dr_mask_is_misc_geneve_set(struct mlx5dr_match_misc *misc)
++static bool dr_mask_is_tnl_geneve_set(struct mlx5dr_match_misc *misc)
+ {
+ 	return misc->geneve_vni ||
+ 	       misc->geneve_oam ||
+@@ -134,18 +133,27 @@ static bool dr_mask_is_misc_geneve_set(struct mlx5dr_=
+match_misc *misc)
+ }
+=20
+ static bool
+-dr_matcher_supp_flex_parser_geneve(struct mlx5dr_cmd_caps *caps)
++dr_matcher_supp_tnl_geneve(struct mlx5dr_cmd_caps *caps)
+ {
+-	return caps->flex_protocols &
+-	       MLX5_FLEX_PARSER_GENEVE_ENABLED;
++	return caps->flex_protocols & MLX5_FLEX_PARSER_GENEVE_ENABLED;
+ }
+=20
+ static bool
+-dr_mask_is_flex_parser_tnl_geneve_set(struct mlx5dr_match_param *mask,
+-				      struct mlx5dr_domain *dmn)
++dr_mask_is_tnl_geneve(struct mlx5dr_match_param *mask,
++		      struct mlx5dr_domain *dmn)
+ {
+-	return dr_mask_is_misc_geneve_set(&mask->misc) &&
+-	       dr_matcher_supp_flex_parser_geneve(&dmn->info.caps);
++	return dr_mask_is_tnl_geneve_set(&mask->misc) &&
++	       dr_matcher_supp_tnl_geneve(&dmn->info.caps);
++}
++
++static int dr_matcher_supp_icmp_v4(struct mlx5dr_cmd_caps *caps)
++{
++	return caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V4_ENABLED;
++}
++
++static int dr_matcher_supp_icmp_v6(struct mlx5dr_cmd_caps *caps)
++{
++	return caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V6_ENABLED;
+ }
+=20
+ static bool dr_mask_is_icmpv6_set(struct mlx5dr_match_misc3 *misc3)
+@@ -154,13 +162,13 @@ static bool dr_mask_is_icmpv6_set(struct mlx5dr_match=
+_misc3 *misc3)
  		misc3->icmpv6_header_data);
  }
 =20
-+static bool dr_mask_is_flex_parser_icmp_set(struct mlx5dr_match_param *mas=
+-static bool dr_mask_is_flex_parser_icmp_set(struct mlx5dr_match_param *mas=
 k,
-+					    struct mlx5dr_domain *dmn)
-+{
-+	if (DR_MASK_IS_ICMPV4_SET(&mask->misc3))
-+		return mlx5dr_matcher_supp_flex_parser_icmp_v4(&dmn->info.caps);
-+	else if (dr_mask_is_icmpv6_set(&mask->misc3))
-+		return mlx5dr_matcher_supp_flex_parser_icmp_v6(&dmn->info.caps);
-+
-+	return false;
-+}
-+
- static bool dr_mask_is_wqe_metadata_set(struct mlx5dr_match_misc2 *misc2)
+-					    struct mlx5dr_domain *dmn)
++static bool dr_mask_is_icmp(struct mlx5dr_match_param *mask,
++			    struct mlx5dr_domain *dmn)
  {
- 	return misc2->metadata_reg_a;
-@@ -257,7 +268,7 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_ma=
-tcher *matcher,
+ 	if (DR_MASK_IS_ICMPV4_SET(&mask->misc3))
+-		return mlx5dr_matcher_supp_flex_parser_icmp_v4(&dmn->info.caps);
++		return dr_matcher_supp_icmp_v4(&dmn->info.caps);
+ 	else if (dr_mask_is_icmpv6_set(&mask->misc3))
+-		return mlx5dr_matcher_supp_flex_parser_icmp_v6(&dmn->info.caps);
++		return dr_matcher_supp_icmp_v6(&dmn->info.caps);
 =20
- 		if (dr_mask_is_smac_set(&mask.outer) &&
- 		    dr_mask_is_dmac_set(&mask.outer)) {
--			mlx5dr_ste_build_eth_l2_src_des(&sb[idx++], &mask,
-+			mlx5dr_ste_build_eth_l2_src_dst(&sb[idx++], &mask,
- 							inner, rx);
- 		}
-=20
-@@ -277,8 +288,8 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_ma=
-tcher *matcher,
- 								 inner, rx);
-=20
- 			if (DR_MASK_IS_ETH_L4_SET(mask.outer, mask.misc, outer))
--				mlx5dr_ste_build_ipv6_l3_l4(&sb[idx++], &mask,
--							    inner, rx);
-+				mlx5dr_ste_build_eth_ipv6_l3_l4(&sb[idx++], &mask,
-+								inner, rx);
- 		} else {
- 			if (dr_mask_is_ipv4_5_tuple_set(&mask.outer))
- 				mlx5dr_ste_build_eth_l3_ipv4_5_tuple(&sb[idx++], &mask,
-@@ -290,13 +301,11 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_=
+ 	return false;
+ }
+@@ -300,10 +308,10 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_=
 matcher *matcher,
+ 								  inner, rx);
  		}
 =20
- 		if (dr_mask_is_flex_parser_tnl_vxlan_gpe_set(&mask, dmn))
--			mlx5dr_ste_build_flex_parser_tnl_vxlan_gpe(&sb[idx++],
--								   &mask,
--								   inner, rx);
-+			mlx5dr_ste_build_tnl_vxlan_gpe(&sb[idx++], &mask,
-+						       inner, rx);
- 		else if (dr_mask_is_flex_parser_tnl_geneve_set(&mask, dmn))
--			mlx5dr_ste_build_flex_parser_tnl_geneve(&sb[idx++],
--								&mask,
--								inner, rx);
-+			mlx5dr_ste_build_tnl_geneve(&sb[idx++], &mask,
-+						    inner, rx);
+-		if (dr_mask_is_flex_parser_tnl_vxlan_gpe_set(&mask, dmn))
++		if (dr_mask_is_tnl_vxlan_gpe(&mask, dmn))
+ 			mlx5dr_ste_build_tnl_vxlan_gpe(&sb[idx++], &mask,
+ 						       inner, rx);
+-		else if (dr_mask_is_flex_parser_tnl_geneve_set(&mask, dmn))
++		else if (dr_mask_is_tnl_geneve(&mask, dmn))
+ 			mlx5dr_ste_build_tnl_geneve(&sb[idx++], &mask,
+ 						    inner, rx);
 =20
- 		if (DR_MASK_IS_ETH_L4_MISC_SET(mask.misc3, outer))
- 			mlx5dr_ste_build_eth_l4_misc(&sb[idx++], &mask, inner, rx);
-@@ -304,22 +313,18 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_=
-matcher *matcher,
- 		if (DR_MASK_IS_FIRST_MPLS_SET(mask.misc2, outer))
- 			mlx5dr_ste_build_mpls(&sb[idx++], &mask, inner, rx);
-=20
--		if (DR_MASK_IS_FLEX_PARSER_0_SET(mask.misc2))
--			mlx5dr_ste_build_flex_parser_0(&sb[idx++], &mask,
--						       inner, rx);
-+		if (DR_MASK_IS_TNL_MPLS_SET(mask.misc2))
-+			mlx5dr_ste_build_tnl_mpls(&sb[idx++], &mask, inner, rx);
-=20
--		if ((DR_MASK_IS_FLEX_PARSER_ICMPV4_SET(&mask.misc3) &&
--		     mlx5dr_matcher_supp_flex_parser_icmp_v4(&dmn->info.caps)) ||
--		    (dr_mask_is_flex_parser_icmpv6_set(&mask.misc3) &&
--		     mlx5dr_matcher_supp_flex_parser_icmp_v6(&dmn->info.caps))) {
--			ret =3D mlx5dr_ste_build_flex_parser_1(&sb[idx++],
--							     &mask, &dmn->info.caps,
--							     inner, rx);
-+		if (dr_mask_is_flex_parser_icmp_set(&mask, dmn)) {
-+			ret =3D mlx5dr_ste_build_icmp(&sb[idx++],
-+						    &mask, &dmn->info.caps,
-+						    inner, rx);
- 			if (ret)
- 				return ret;
- 		}
--		if (dr_mask_is_gre_set(&mask.misc))
--			mlx5dr_ste_build_gre(&sb[idx++], &mask, inner, rx);
-+		if (dr_mask_is_tnl_gre_set(&mask.misc))
-+			mlx5dr_ste_build_tnl_gre(&sb[idx++], &mask, inner, rx);
- 	}
-=20
- 	/* Inner */
-@@ -334,7 +339,7 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_ma=
+@@ -316,7 +324,7 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_ma=
 tcher *matcher,
+ 		if (DR_MASK_IS_TNL_MPLS_SET(mask.misc2))
+ 			mlx5dr_ste_build_tnl_mpls(&sb[idx++], &mask, inner, rx);
 =20
- 		if (dr_mask_is_smac_set(&mask.inner) &&
- 		    dr_mask_is_dmac_set(&mask.inner)) {
--			mlx5dr_ste_build_eth_l2_src_des(&sb[idx++],
-+			mlx5dr_ste_build_eth_l2_src_dst(&sb[idx++],
- 							&mask, inner, rx);
- 		}
-=20
-@@ -354,8 +359,8 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_ma=
-tcher *matcher,
- 								 inner, rx);
-=20
- 			if (DR_MASK_IS_ETH_L4_SET(mask.inner, mask.misc, inner))
--				mlx5dr_ste_build_ipv6_l3_l4(&sb[idx++], &mask,
--							    inner, rx);
-+				mlx5dr_ste_build_eth_ipv6_l3_l4(&sb[idx++], &mask,
-+								inner, rx);
- 		} else {
- 			if (dr_mask_is_ipv4_5_tuple_set(&mask.inner))
- 				mlx5dr_ste_build_eth_l3_ipv4_5_tuple(&sb[idx++], &mask,
-@@ -372,8 +377,8 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_ma=
-tcher *matcher,
- 		if (DR_MASK_IS_FIRST_MPLS_SET(mask.misc2, inner))
- 			mlx5dr_ste_build_mpls(&sb[idx++], &mask, inner, rx);
-=20
--		if (DR_MASK_IS_FLEX_PARSER_0_SET(mask.misc2))
--			mlx5dr_ste_build_flex_parser_0(&sb[idx++], &mask, inner, rx);
-+		if (DR_MASK_IS_TNL_MPLS_SET(mask.misc2))
-+			mlx5dr_ste_build_tnl_mpls(&sb[idx++], &mask, inner, rx);
- 	}
- 	/* Empty matcher, takes all */
- 	if (matcher->match_criteria =3D=3D DR_MATCHER_CRITERIA_EMPTY)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/dr=
-ivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-index b01aaec75622..d275823bff2f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-@@ -1090,7 +1090,7 @@ static int dr_ste_build_eth_l2_src_des_tag(struct mlx=
-5dr_match_param *value,
- 	return 0;
- }
-=20
--void mlx5dr_ste_build_eth_l2_src_des(struct mlx5dr_ste_build *sb,
-+void mlx5dr_ste_build_eth_l2_src_dst(struct mlx5dr_ste_build *sb,
- 				     struct mlx5dr_match_param *mask,
- 				     bool inner, bool rx)
- {
-@@ -1594,9 +1594,9 @@ static int dr_ste_build_ipv6_l3_l4_tag(struct mlx5dr_=
-match_param *value,
- 	return 0;
- }
-=20
--void mlx5dr_ste_build_ipv6_l3_l4(struct mlx5dr_ste_build *sb,
--				 struct mlx5dr_match_param *mask,
--				 bool inner, bool rx)
-+void mlx5dr_ste_build_eth_ipv6_l3_l4(struct mlx5dr_ste_build *sb,
-+				     struct mlx5dr_match_param *mask,
-+				     bool inner, bool rx)
- {
- 	dr_ste_build_ipv6_l3_l4_bit_mask(mask, inner, sb->bit_mask);
-=20
-@@ -1693,8 +1693,8 @@ static int dr_ste_build_gre_tag(struct mlx5dr_match_p=
-aram *value,
- 	return 0;
- }
-=20
--void mlx5dr_ste_build_gre(struct mlx5dr_ste_build *sb,
--			  struct mlx5dr_match_param *mask, bool inner, bool rx)
-+void mlx5dr_ste_build_tnl_gre(struct mlx5dr_ste_build *sb,
-+			      struct mlx5dr_match_param *mask, bool inner, bool rx)
- {
- 	dr_ste_build_gre_bit_mask(mask, inner, sb->bit_mask);
-=20
-@@ -1771,9 +1771,9 @@ static int dr_ste_build_flex_parser_0_tag(struct mlx5=
-dr_match_param *value,
- 	return 0;
- }
-=20
--void mlx5dr_ste_build_flex_parser_0(struct mlx5dr_ste_build *sb,
--				    struct mlx5dr_match_param *mask,
--				    bool inner, bool rx)
-+void mlx5dr_ste_build_tnl_mpls(struct mlx5dr_ste_build *sb,
-+			       struct mlx5dr_match_param *mask,
-+			       bool inner, bool rx)
- {
- 	dr_ste_build_flex_parser_0_bit_mask(mask, inner, sb->bit_mask);
-=20
-@@ -1792,8 +1792,8 @@ static int dr_ste_build_flex_parser_1_bit_mask(struct=
- mlx5dr_match_param *mask,
- 					       struct mlx5dr_cmd_caps *caps,
- 					       u8 *bit_mask)
- {
-+	bool is_ipv4_mask =3D DR_MASK_IS_ICMPV4_SET(&mask->misc3);
- 	struct mlx5dr_match_misc3 *misc_3_mask =3D &mask->misc3;
--	bool is_ipv4_mask =3D DR_MASK_IS_FLEX_PARSER_ICMPV4_SET(misc_3_mask);
- 	u32 icmp_header_data_mask;
- 	u32 icmp_type_mask;
- 	u32 icmp_code_mask;
-@@ -1869,7 +1869,7 @@ static int dr_ste_build_flex_parser_1_tag(struct mlx5=
-dr_match_param *value,
- 	u32 icmp_code;
- 	bool is_ipv4;
-=20
--	is_ipv4 =3D DR_MASK_IS_FLEX_PARSER_ICMPV4_SET(misc_3);
-+	is_ipv4 =3D DR_MASK_IS_ICMPV4_SET(misc_3);
- 	if (is_ipv4) {
- 		icmp_header_data	=3D misc_3->icmpv4_header_data;
- 		icmp_type		=3D misc_3->icmpv4_type;
-@@ -1928,10 +1928,10 @@ static int dr_ste_build_flex_parser_1_tag(struct ml=
-x5dr_match_param *value,
- 	return 0;
- }
-=20
--int mlx5dr_ste_build_flex_parser_1(struct mlx5dr_ste_build *sb,
--				   struct mlx5dr_match_param *mask,
--				   struct mlx5dr_cmd_caps *caps,
--				   bool inner, bool rx)
-+int mlx5dr_ste_build_icmp(struct mlx5dr_ste_build *sb,
-+			  struct mlx5dr_match_param *mask,
-+			  struct mlx5dr_cmd_caps *caps,
-+			  bool inner, bool rx)
- {
- 	int ret;
-=20
-@@ -2069,9 +2069,9 @@ dr_ste_build_flex_parser_tnl_vxlan_gpe_tag(struct mlx=
-5dr_match_param *value,
- 	return 0;
- }
-=20
--void mlx5dr_ste_build_flex_parser_tnl_vxlan_gpe(struct mlx5dr_ste_build *s=
-b,
--						struct mlx5dr_match_param *mask,
--						bool inner, bool rx)
-+void mlx5dr_ste_build_tnl_vxlan_gpe(struct mlx5dr_ste_build *sb,
-+				    struct mlx5dr_match_param *mask,
-+				    bool inner, bool rx)
- {
- 	dr_ste_build_flex_parser_tnl_vxlan_gpe_bit_mask(mask, inner,
- 							sb->bit_mask);
-@@ -2122,9 +2122,9 @@ dr_ste_build_flex_parser_tnl_geneve_tag(struct mlx5dr=
-_match_param *value,
- 	return 0;
- }
-=20
--void mlx5dr_ste_build_flex_parser_tnl_geneve(struct mlx5dr_ste_build *sb,
--					     struct mlx5dr_match_param *mask,
--					     bool inner, bool rx)
-+void mlx5dr_ste_build_tnl_geneve(struct mlx5dr_ste_build *sb,
-+				 struct mlx5dr_match_param *mask,
-+				 bool inner, bool rx)
- {
- 	dr_ste_build_flex_parser_tnl_geneve_bit_mask(mask, sb->bit_mask);
- 	sb->rx =3D rx;
+-		if (dr_mask_is_flex_parser_icmp_set(&mask, dmn)) {
++		if (dr_mask_is_icmp(&mask, dmn)) {
+ 			ret =3D mlx5dr_ste_build_icmp(&sb[idx++],
+ 						    &mask, &dmn->info.caps,
+ 						    inner, rx);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/=
 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 5caf082b7000..562c72aad733 100644
+index 562c72aad733..5642484b3a5b 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -288,7 +288,7 @@ int mlx5dr_ste_build_ste_arr(struct mlx5dr_matcher *mat=
-cher,
- 			     struct mlx5dr_matcher_rx_tx *nic_matcher,
- 			     struct mlx5dr_match_param *value,
- 			     u8 *ste_arr);
--void mlx5dr_ste_build_eth_l2_src_des(struct mlx5dr_ste_build *builder,
-+void mlx5dr_ste_build_eth_l2_src_dst(struct mlx5dr_ste_build *builder,
- 				     struct mlx5dr_match_param *mask,
- 				     bool inner, bool rx);
- void mlx5dr_ste_build_eth_l3_ipv4_5_tuple(struct mlx5dr_ste_build *sb,
-@@ -312,31 +312,31 @@ void mlx5dr_ste_build_eth_l2_dst(struct mlx5dr_ste_bu=
-ild *sb,
- void mlx5dr_ste_build_eth_l2_tnl(struct mlx5dr_ste_build *sb,
- 				 struct mlx5dr_match_param *mask,
- 				 bool inner, bool rx);
--void mlx5dr_ste_build_ipv6_l3_l4(struct mlx5dr_ste_build *sb,
--				 struct mlx5dr_match_param *mask,
--				 bool inner, bool rx);
-+void mlx5dr_ste_build_eth_ipv6_l3_l4(struct mlx5dr_ste_build *sb,
-+				     struct mlx5dr_match_param *mask,
-+				     bool inner, bool rx);
- void mlx5dr_ste_build_eth_l4_misc(struct mlx5dr_ste_build *sb,
- 				  struct mlx5dr_match_param *mask,
- 				  bool inner, bool rx);
--void mlx5dr_ste_build_gre(struct mlx5dr_ste_build *sb,
--			  struct mlx5dr_match_param *mask,
--			  bool inner, bool rx);
-+void mlx5dr_ste_build_tnl_gre(struct mlx5dr_ste_build *sb,
-+			      struct mlx5dr_match_param *mask,
-+			      bool inner, bool rx);
- void mlx5dr_ste_build_mpls(struct mlx5dr_ste_build *sb,
- 			   struct mlx5dr_match_param *mask,
- 			   bool inner, bool rx);
--void mlx5dr_ste_build_flex_parser_0(struct mlx5dr_ste_build *sb,
-+void mlx5dr_ste_build_tnl_mpls(struct mlx5dr_ste_build *sb,
-+			       struct mlx5dr_match_param *mask,
-+			       bool inner, bool rx);
-+int mlx5dr_ste_build_icmp(struct mlx5dr_ste_build *sb,
-+			  struct mlx5dr_match_param *mask,
-+			  struct mlx5dr_cmd_caps *caps,
-+			  bool inner, bool rx);
-+void mlx5dr_ste_build_tnl_vxlan_gpe(struct mlx5dr_ste_build *sb,
- 				    struct mlx5dr_match_param *mask,
- 				    bool inner, bool rx);
--int mlx5dr_ste_build_flex_parser_1(struct mlx5dr_ste_build *sb,
--				   struct mlx5dr_match_param *mask,
--				   struct mlx5dr_cmd_caps *caps,
--				   bool inner, bool rx);
--void mlx5dr_ste_build_flex_parser_tnl_vxlan_gpe(struct mlx5dr_ste_build *s=
-b,
--						struct mlx5dr_match_param *mask,
--						bool inner, bool rx);
--void mlx5dr_ste_build_flex_parser_tnl_geneve(struct mlx5dr_ste_build *sb,
--					     struct mlx5dr_match_param *mask,
--					     bool inner, bool rx);
-+void mlx5dr_ste_build_tnl_geneve(struct mlx5dr_ste_build *sb,
-+				 struct mlx5dr_match_param *mask,
-+				 bool inner, bool rx);
- void mlx5dr_ste_build_general_purpose(struct mlx5dr_ste_build *sb,
- 				      struct mlx5dr_match_param *mask,
- 				      bool inner, bool rx);
-@@ -588,9 +588,9 @@ struct mlx5dr_match_param {
- 	struct mlx5dr_match_misc3 misc3;
- };
+@@ -839,18 +839,6 @@ static inline void mlx5dr_domain_unlock(struct mlx5dr_=
+domain *dmn)
+ 	mlx5dr_domain_nic_unlock(&dmn->info.rx);
+ }
 =20
--#define DR_MASK_IS_FLEX_PARSER_ICMPV4_SET(_misc3) ((_misc3)->icmpv4_type |=
-| \
--						   (_misc3)->icmpv4_code || \
--						   (_misc3)->icmpv4_header_data)
-+#define DR_MASK_IS_ICMPV4_SET(_misc3) ((_misc3)->icmpv4_type || \
-+				       (_misc3)->icmpv4_code || \
-+				       (_misc3)->icmpv4_header_data)
-=20
- struct mlx5dr_esw_caps {
- 	u64 drop_icm_address_rx;
+-static inline int
+-mlx5dr_matcher_supp_flex_parser_icmp_v4(struct mlx5dr_cmd_caps *caps)
+-{
+-	return caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V4_ENABLED;
+-}
+-
+-static inline int
+-mlx5dr_matcher_supp_flex_parser_icmp_v6(struct mlx5dr_cmd_caps *caps)
+-{
+-	return caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V6_ENABLED;
+-}
+-
+ int mlx5dr_matcher_select_builders(struct mlx5dr_matcher *matcher,
+ 				   struct mlx5dr_matcher_rx_tx *nic_matcher,
+ 				   enum mlx5dr_ipv outer_ipv,
 --=20
 2.26.2
 
