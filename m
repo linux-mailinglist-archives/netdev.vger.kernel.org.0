@@ -2,121 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0364A2A4CA5
-	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:24:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B61C2A4CA8
+	for <lists+netdev@lfdr.de>; Tue,  3 Nov 2020 18:24:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728630AbgKCRYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 12:24:04 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:46512 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727323AbgKCRYD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:24:03 -0500
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0A3HNwPW072377;
-        Tue, 3 Nov 2020 11:23:58 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1604424238;
-        bh=9kuksq4yFMyIjn0oeqUqnIj/lw1ExH8Ewm915oA7JAI=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=TtMneYH2VgghEwI9nWETot7BPBuBdB3i7CNjLMQ0OwX3Rn+gs3YrgYmy4pk+JSJS4
-         JD7SSFz1DXufR2BjXT8b8HZRu8Kmpz/8TlYZ8O/KrkuN6YXV2K1bymWi72KDDvLdb+
-         rTqdgtDIsL0TCSaPEfiCkvLm+uI+/Gu8nePsrVeE=
-Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0A3HNw1M058948
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 3 Nov 2020 11:23:58 -0600
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 3 Nov
- 2020 11:23:57 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 3 Nov 2020 11:23:57 -0600
-Received: from [10.250.36.55] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0A3HNvJs041617;
-        Tue, 3 Nov 2020 11:23:57 -0600
-Subject: Re: [PATCH net-next v3 4/4] net: phy: dp83td510: Add support for the
- DP83TD510 Ethernet PHY
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>,
-        <f.fainelli@gmail.com>, <hkallweit1@gmail.com>, <robh@kernel.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20201030172950.12767-1-dmurphy@ti.com>
- <20201030172950.12767-5-dmurphy@ti.com>
- <20201030160330.622c55a7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <5b32a56b-f054-5790-c5cf-bf1e86403bad@ti.com>
- <20201103172153.GO1042051@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <d51ef446-1528-5d3f-8548-831598a005a7@ti.com>
-Date:   Tue, 3 Nov 2020 11:23:57 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728735AbgKCRYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 12:24:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728550AbgKCRYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 12:24:19 -0500
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F9EC0617A6
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 09:24:19 -0800 (PST)
+Received: by mail-wm1-x344.google.com with SMTP id p22so99244wmg.3
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 09:24:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xBm95jl2xW7HhQ7hwk4jZB0S0Y7wQfebO/eBHZqjNWo=;
+        b=MqzUiWrQhY5xpB2YoBUurz8HpgeL4rD0U/WPxFKSRrv83ZBc6jSVrCVdx8rk/Pq3CS
+         I8jdO2PTuajjv7UegAo7D6AnccQFOkWAOSDQ+SiLDG4OTFynJhx9izQO2/nbr1dQQBxE
+         3yoq7NqaeFfhln1CNJOI067Zqmcpd0Vy8xWAtJ0jGRx/BywDQHiGY1jnPA1cfSpUaV7m
+         USgfyueHQ64pmPimxsOsz9h9IQYUzAOGDKAdXg+78ZOkiz++2HeXCnpf0C9Bb5z/Kleb
+         lfYzoLM8Wk3DAGSHOTUjMsEumGKT7h5t7r4GuBb8e30w0K4wUi78bmE6r9QASRUP5L+L
+         kvpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xBm95jl2xW7HhQ7hwk4jZB0S0Y7wQfebO/eBHZqjNWo=;
+        b=UQFlzdgSnsDGYBxUjGTCfV9QT9YOXAwOS+btXLRGNNv+aZajx3raqsGN8bv42bib7M
+         xDPa0JGfLnFd8uEEFnMSMahXAv17Mcdl8vGcIoSF+7a7AT1HHGu00gwR+Mf6z+umgepj
+         z1T7Ir1eEStvN6w0Bf2tZ4r6YatiOAO0BHY6bA6akKxqwvZumjngZ1X2aN4wRrBXS4qq
+         OOSerzexO7aJkL0t+iRTJvkce98CgqURSW93TqjUo0JUjqaI1+fcoeDU4CnqaJ0ltbum
+         dOUifiZXNMbumSeKdS+gGhKYAe/pC6UDzxNEDbBFJgPTs7qqQ6HFbfJLnkRR/plR34Pm
+         /j7w==
+X-Gm-Message-State: AOAM532xJaq9qyz0bHAUJcOvH7kvVbZHZJKbMmeTIZNeTw7+PPa3UlW7
+        656Ci+NLTiXQQrSrVjvNvZuNO7M9d+c5oaOr
+X-Google-Smtp-Source: ABdhPJwCmHQRlzOe8Sz/VWtIyaNseKz0zgnrUmtmbUdUByHCZrPtIFFD6fMCz/oy1M+X9RNK7nhj8A==
+X-Received: by 2002:a7b:cd92:: with SMTP id y18mr202822wmj.178.1604424258113;
+        Tue, 03 Nov 2020 09:24:18 -0800 (PST)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id a128sm2650795wmf.5.2020.11.03.09.24.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2020 09:24:17 -0800 (PST)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, kuba@kernel.org,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net-next 01/16] selftests: net: bridge: factor out mcast_packet_test
+Date:   Tue,  3 Nov 2020 19:23:57 +0200
+Message-Id: <20201103172412.1044840-2-razor@blackwall.org>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20201103172412.1044840-1-razor@blackwall.org>
+References: <20201103172412.1044840-1-razor@blackwall.org>
 MIME-Version: 1.0
-In-Reply-To: <20201103172153.GO1042051@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-On 11/3/20 11:21 AM, Andrew Lunn wrote:
-> On Tue, Nov 03, 2020 at 11:09:44AM -0600, Dan Murphy wrote:
->> Hello
->>
->> On 10/30/20 6:03 PM, Jakub Kicinski wrote:
->>> On Fri, 30 Oct 2020 12:29:50 -0500 Dan Murphy wrote:
->>>> The DP83TD510E is an ultra-low power Ethernet physical layer transceiver
->>>> that supports 10M single pair cable.
->>>>
->>>> The device supports both 2.4-V p2p and 1-V p2p output voltage as defined
->>>> by IEEE 802.3cg 10Base-T1L specfications. These modes can be forced via
->>>> the device tree or the device is defaulted to auto negotiation to
->>>> determine the proper p2p voltage.
->>>>
->>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->>> drivers/net/phy/dp83td510.c:70:11: warning: symbol 'dp83td510_feature_array' was not declared. Should it be static?
->> I did not see this warning. Did you use W=1?
-> I _think_ that one is W=1. All the PHY drivers are W=1 clean, and i
-> want to keep it that way. And i hope to make it the default in a lot
-> of the network code soon.
-OK I built with the W=1 before submission I did not see this but I will 
-try some other things.
->>> Also this:
->>>
->>> WARNING: ENOTSUPP is not a SUSV4 error code, prefer EOPNOTSUPP
->>> #429: FILE: drivers/net/phy/dp83td510.c:371:
->>> +		return -ENOTSUPP;
->>>
->>> WARNING: ENOTSUPP is not a SUSV4 error code, prefer EOPNOTSUPP
->>> #524: FILE: drivers/net/phy/dp83td510.c:466:
->>> +		return -ENOTSUPP;
->> Same with these warnings how where they reproduced?
-Same as above
->>> ERROR: space required before the open parenthesis '('
->>> #580: FILE: drivers/net/phy/dp83td510.c:522:
->>> +		if(phydev->autoneg) {
->>>
->>> ERROR: space required before the open parenthesis '('
->>> #588: FILE: drivers/net/phy/dp83td510.c:530:
->>> +		if(phydev->autoneg) {
->>>
-> These look like checkpatch.
-These I missed
->>> And please try to wrap the code on 80 chars on the non trivial lines:
->> What is the LoC limit for networking just for my clarification and I will
->> align with that.
-> 80. I would not be too surprised to see checkpatch getting a patch to
-> set it to 80 for networking code.
+Factor out mcast_packet_test into lib.sh so it can be later extended and
+reused by MLDv2 tests.
 
-OK I will align the lines to 80 then.
+Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+---
+ .../selftests/net/forwarding/bridge_igmp.sh   | 32 -------------------
+ tools/testing/selftests/net/forwarding/lib.sh | 32 +++++++++++++++++++
+ 2 files changed, 32 insertions(+), 32 deletions(-)
 
-Dan
+diff --git a/tools/testing/selftests/net/forwarding/bridge_igmp.sh b/tools/testing/selftests/net/forwarding/bridge_igmp.sh
+index 0e71abdd7a03..50a48ce16ba1 100755
+--- a/tools/testing/selftests/net/forwarding/bridge_igmp.sh
++++ b/tools/testing/selftests/net/forwarding/bridge_igmp.sh
+@@ -105,38 +105,6 @@ cleanup()
+ 	vrf_cleanup
+ }
+ 
+-# return 0 if the packet wasn't seen on host2_if or 1 if it was
+-mcast_packet_test()
+-{
+-	local mac=$1
+-	local src_ip=$2
+-	local ip=$3
+-	local host1_if=$4
+-	local host2_if=$5
+-	local seen=0
+-
+-	# Add an ACL on `host2_if` which will tell us whether the packet
+-	# was received by it or not.
+-	tc qdisc add dev $host2_if ingress
+-	tc filter add dev $host2_if ingress protocol ip pref 1 handle 101 \
+-		flower ip_proto udp dst_mac $mac action drop
+-
+-	$MZ $host1_if -c 1 -p 64 -b $mac -A $src_ip -B $ip -t udp "dp=4096,sp=2048" -q
+-	sleep 1
+-
+-	tc -j -s filter show dev $host2_if ingress \
+-		| jq -e ".[] | select(.options.handle == 101) \
+-		| select(.options.actions[0].stats.packets == 1)" &> /dev/null
+-	if [[ $? -eq 0 ]]; then
+-		seen=1
+-	fi
+-
+-	tc filter del dev $host2_if ingress protocol ip pref 1 handle 101 flower
+-	tc qdisc del dev $host2_if ingress
+-
+-	return $seen
+-}
+-
+ v2reportleave_test()
+ {
+ 	RET=0
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index 927f9ba49e08..bb3ccc6d2165 100644
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -1270,3 +1270,35 @@ tcpdump_show()
+ {
+ 	tcpdump -e -n -r $capfile 2>&1
+ }
++
++# return 0 if the packet wasn't seen on host2_if or 1 if it was
++mcast_packet_test()
++{
++	local mac=$1
++	local src_ip=$2
++	local ip=$3
++	local host1_if=$4
++	local host2_if=$5
++	local seen=0
++
++	# Add an ACL on `host2_if` which will tell us whether the packet
++	# was received by it or not.
++	tc qdisc add dev $host2_if ingress
++	tc filter add dev $host2_if ingress protocol ip pref 1 handle 101 \
++		flower ip_proto udp dst_mac $mac action drop
++
++	$MZ $host1_if -c 1 -p 64 -b $mac -A $src_ip -B $ip -t udp "dp=4096,sp=2048" -q
++	sleep 1
++
++	tc -j -s filter show dev $host2_if ingress \
++		| jq -e ".[] | select(.options.handle == 101) \
++		| select(.options.actions[0].stats.packets == 1)" &> /dev/null
++	if [[ $? -eq 0 ]]; then
++		seen=1
++	fi
++
++	tc filter del dev $host2_if ingress protocol ip pref 1 handle 101 flower
++	tc qdisc del dev $host2_if ingress
++
++	return $seen
++}
+-- 
+2.25.4
 
-
->      Andrew
