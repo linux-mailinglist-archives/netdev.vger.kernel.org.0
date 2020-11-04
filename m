@@ -2,77 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 231D62A64C8
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 14:02:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4AF92A64DE
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 14:11:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729677AbgKDNC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 08:02:26 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:34590 "EHLO vps0.lunn.ch"
+        id S1729772AbgKDNLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 08:11:14 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:34618 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726350AbgKDNC0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Nov 2020 08:02:26 -0500
+        id S1726350AbgKDNLN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Nov 2020 08:11:13 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kaIQW-005CkT-OD; Wed, 04 Nov 2020 14:02:12 +0100
-Date:   Wed, 4 Nov 2020 14:02:12 +0100
+        id 1kaIZ6-005CpL-Au; Wed, 04 Nov 2020 14:11:04 +0100
+Date:   Wed, 4 Nov 2020 14:11:04 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lukasz Stelmach <l.stelmach@samsung.com>
-Cc:     jim.cromie@gmail.com, Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewicz?= 
-        <b.zolnierkie@samsung.com>
-Subject: Re: [PATCH v5 3/5] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter
- Driver
-Message-ID: <20201104130212.GU933237@lunn.ch>
-References: <20201104024211.GS933237@lunn.ch>
- <CGME20201104102048eucas1p1e3b29b66c497ee38656acf9ba5df10eb@eucas1p1.samsung.com>
- <dleftj361ps9sa.fsf%l.stelmach@samsung.com>
+To:     "Badel, Laurent" <LaurentBadel@eaton.com>
+Cc:     Marco Felsch <m.felsch@pengutronix.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "richard.leitner@skidata.com" <richard.leitner@skidata.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "Quette, Arnaud" <ArnaudQuette@Eaton.com>
+Subject: Re: [EXTERNAL]  Re: [PATCH net 0/4] Restore and fix PHY reset for
+ SMSC LAN8720
+Message-ID: <20201104131104.GV933237@lunn.ch>
+References: <CY4PR1701MB1878B85B9E1C5B4FDCBA2860DF160@CY4PR1701MB1878.namprd17.prod.outlook.com>
+ <20201029081626.wtnhctobwvlhmfan@pengutronix.de>
+ <CY4PR1701MB187881808BA7836EE5EDFE06DFEF0@CY4PR1701MB1878.namprd17.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <dleftj361ps9sa.fsf%l.stelmach@samsung.com>
+In-Reply-To: <CY4PR1701MB187881808BA7836EE5EDFE06DFEF0@CY4PR1701MB1878.namprd17.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> +static int
-> >> +ax88796c_set_tunable(struct net_device *ndev, const struct ethtool_tunable *tuna,
-> >> +		     const void *data)
-> >> +{
-> >> +	struct ax88796c_device *ax_local = to_ax88796c_device(ndev);
-> >> +
-> >> +	switch (tuna->id) {
-> >> +	case ETHTOOL_SPI_COMPRESSION:
-> >> +		if (netif_running(ndev))
-> >> +			return -EBUSY;
-> >> +		ax_local->capabilities &= ~AX_CAP_COMP;
-> >> +		ax_local->capabilities |= *(u32 *)data ? AX_CAP_COMP : 0;
-> >
-> > You should probably validate here that data is 0 or 1. That is what
-> > ax88796c_get_tunable() will return.
-> >
-> > It seems like this controls two hardware bits:
-> >
-> > SPICR_RCEN | SPICR_QCEN
-> >
-> > Maybe at some point it would make sense to allow these bits to be set
-> > individually? If you never validate the tunable, you cannot make use
-> > of other values to control the bits individually.
+> > > (ii) This defeats the purpose of a previous commit [2] that disabled
+> > > the ref clock for power saving reasons. If a ref clock for the PHY is
+> > > specified in DT, the SMSC driver will keep it always on (confirmed
+> > > with scope).
+> > 
+> > NACK, the clock provider can be any clock. This has nothing to do with the
+> > FEC clocks. The FEC _can_ be used as clock provider.
 > 
-> Good point. What is your recommendation for the userland facing
-> interface, so that future changes will be least disruptive?
+> I'm sure you understand this much better than I do. What I can say is that I 
+> directly measured the ref clk and found that when I add the clock to the DT
+> the clock stays on forever. Basically it seems like the FEC calls to 
+> clk_disable_unprepare() don't work in this case, though I'm not sure about the
+> reason behind this.
 
-I would KISS and just validate data is 0 or 1, and leave it at that.
-That then later gives you the option to have other values, if that is
-ever interesting.
+The reason is easy to explain. The clock API is reference counted. It
+counts how many times a clock is turned on and off. A clock has to be
+turned off as many times as it was turned on before the hardware
+actually turns off. So you have the FEC turning the clock on during
+probe, followed by the phy turning the clock on. Some time later the
+FEC turns the clock off for run time power saving, but there is still
+one reference to the clock held by the PHY, so the hardware is left
+ticking.
 
-     Andrew
+	Andrew
