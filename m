@@ -2,109 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E9972A5F2C
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 09:15:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 439002A5F35
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 09:17:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728328AbgKDIPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 03:15:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44272 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726232AbgKDIPc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Nov 2020 03:15:32 -0500
-Received: from localhost (host-213-179-129-39.customer.m-online.net [213.179.129.39])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 793D922384;
-        Wed,  4 Nov 2020 08:15:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604477732;
-        bh=znTuSh2MZarrT9XQfjVV7kEfJ1h//tiqqUjMylJUUac=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ph7Tvm9I7bXM+F5Kz0wnyGXWS6dNfUmX8ru/sXnN03SCxykE8wYr/cm5LcB3fJB3m
-         T1zvb8uryMUeWpZrc934QHhTFad99r0/clXKSfQqy7hd1VSVWrUlwOBClzViT8lNnv
-         2qVb7zqEeg0NgTDvAM5lpHmJWLf8t0NXJ1q6ZCRY=
-Date:   Wed, 4 Nov 2020 10:15:28 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Petr Machata <me@pmachata.org>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        stephen@networkplumber.org, john.fastabend@gmail.com,
-        jiri@nvidia.com, idosch@nvidia.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: Re: [PATCH iproute2-next v2 03/11] lib: utils: Add
- print_on_off_bool()
-Message-ID: <20201104081528.GL5429@unreal>
-References: <cover.1604059429.git.me@pmachata.org>
- <5ed9e2e7cdf9326e8f7ec80f33f0f11eafc3a425.1604059429.git.me@pmachata.org>
- <0f017fbd-b8f5-0ebe-0c16-0d441b1d4310@gmail.com>
- <87o8kihyy9.fsf@nvidia.com>
- <b0cc6bd4-e4e6-22ba-429d-4cea7996ccd4@gmail.com>
- <20201102063752.GE5429@unreal>
- <87h7q7iclr.fsf@nvidia.com>
- <20201103062406.GH5429@unreal>
- <874km6i28j.fsf@nvidia.com>
+        id S1727851AbgKDIRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 03:17:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43520 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725896AbgKDIRK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 03:17:10 -0500
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E3AC061A4D
+        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 00:17:10 -0800 (PST)
+Received: by mail-io1-xd42.google.com with SMTP id u62so21342238iod.8
+        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 00:17:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GJUWAY2xwnHDXZb6q+y92fQ+8JQreu9EFvW1bS2gJz4=;
+        b=Ja+CBP19FaVQQB03iH6mV2ThTPHWINukkanRxKJ9fUv069/mdE0Op5+ve8QwUgi9K0
+         dC0R9/SBFJJtB39gT/M/9tnhKNFlPVKtQwRCvkkZSVm6VID151j7W375qRS4YaI+PieH
+         LZ5neOIsCbeJfROSGG1s6f0ZtvgBIUq2rLlNa7IYrWLuyCLjgrJP4DxAWA6XZl39eap1
+         3oR3mRKgU+DkpwBakllRIPREYLZQ5HlAg/5VepbfNN7/0khzFAilSyUzcXybDc+mXB6S
+         ILfg8/ukCAkiRKxzPWg0iCQkGbiq4FT1pSP7lGWabSmmdTuoloYjON8LdiFDNVuNPA14
+         jRdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GJUWAY2xwnHDXZb6q+y92fQ+8JQreu9EFvW1bS2gJz4=;
+        b=EBYhvFEspwkaBsfxeRmeIUTT9IHvPoO/fKKQvcG9it0hguYRw9QTsDqF+uKjD2Y5+g
+         PG43HTTetqmlnKoe9FUxtsQOAM9o6IvawTQ3wKzKzXJspezL1d8IOucwyLrVyqlhMAZY
+         pN/rJpEnGiWdULGd18aZt3o7nPhDdIzZBqfS3C4n+gx4kH2NqBzW9xCnTKGf1Rx77Ozy
+         wJ6mT5bCcB+A0luBey8SA2NGqmVY4uAffYgCg25iQ5sPA+XRDqP/XRlO/lveRne/149J
+         oSnzdYvU1F1DczUHYmOKsqiEcX2bCxqFjnh9/+t4IRGd6VoMy98H3Zj4tdE5fvRanypt
+         6B4A==
+X-Gm-Message-State: AOAM530VuOYMBUCvjCRyZUPGl/t4KqCmoyEtjaemBFBpEVsytznwxbvk
+        NlhX12z3OhssO2h4FysqNhv5WzfzmbJ1sCTzwbqOLX+O2nsyBQ==
+X-Google-Smtp-Source: ABdhPJw7/6qBxdy636QLBWMOZZHGp1rtY9V/tyrE9061OHNSi3ITXXq3V0BHmKwqJfC3L0me2VABQDPakM6r2RjL3ZE=
+X-Received: by 2002:a02:6948:: with SMTP id e69mr19545743jac.6.1604477829334;
+ Wed, 04 Nov 2020 00:17:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <874km6i28j.fsf@nvidia.com>
+References: <20201103220636.972106-1-mkl@pengutronix.de> <20201103220636.972106-6-mkl@pengutronix.de>
+ <20201103172102.3d75cb96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201103172102.3d75cb96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 4 Nov 2020 09:16:57 +0100
+Message-ID: <CANn89iK5xqYmLT=DZk0S15pRObSJbo2-zrO7_A0Q46Ujg1RxYg@mail.gmail.com>
+Subject: Re: [net 05/27] can: dev: can_get_echo_skb(): prevent call to
+ kfree_skb() in hard IRQ context
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
+        kernel@pengutronix.de, Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 10:01:32PM +0100, Petr Machata wrote:
+On Wed, Nov 4, 2020 at 2:21 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Leon Romanovsky <leon@kernel.org> writes:
->
-> > On Tue, Nov 03, 2020 at 12:05:20AM +0100, Petr Machata wrote:
-> >>
-> >> Leon Romanovsky <leon@kernel.org> writes:
-> >>
-> >> > On Sun, Nov 01, 2020 at 04:55:42PM -0700, David Ahern wrote:
-> >> >
-> >> >> yes, the rdma utils are using generic function names. The rdma version
-> >> >> should be renamed; perhaps rd_print_on_off. That seems to be once common
-> >> >> prefix. Added Leon.
-> >> >
-> >> > I made fast experiment and the output for the code proposed here and existed
-> >> > in the RDMAtool - result the same. So the good thing will be to delete the
-> >> > function from the RDMA after print_on_off_bool() will be improved.
-> >>
-> >> The RDMAtool uses literal "on" and "off" as values in JSON, not
-> >> booleans. Moving over to print_on_off_bool() would be a breaking change,
-> >> which is problematic especially in JSON output.
+> On Tue,  3 Nov 2020 23:06:14 +0100 Marc Kleine-Budde wrote:
+> > From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 > >
-> > Nothing prohibits us from adding extra parameter to this new
-> > function/json logic/json type that will control JSON behavior. Personally,
-> > I don't think that json and stdout outputs should be different, e.g. 1/0 for
-> > the json and on/off for the stdout.
->
-> Emitting on/off in JSON as true booleans (true / false, not 1 / 0) does
-> make sense. It's programmatically-consumed interface, the values should
-> be of the right type.
-
-As long as you don't need to use those fields to "set .." after that.
-
->
-> On the other hand, having a FP output use literal "on" and "off" makes
-> sense as well. It's an obvious reference to the command line, you can
-> actually cut'n'paste it back to shell and it will do the right thing.
-
-Maybe it is not so bad to change RDMAtool to general function, this
-on/of print is not widely use yet, just need to decide what is the right one.
-
->
-> Many places in iproute2 do do this dual output, and ideally all new
-> instances would behave this way as well. So no toggles, please.
-
-Good example why all utilities in iproute2 are better to use same
-input/output code and any attempt to make custom variants should be
-banned.
-
->
-> >> I think the current function does handle JSON context, what else do
-> >> you have in mind?
+> > If a driver calls can_get_echo_skb() during a hardware IRQ (which is often, but
+> > not always, the case), the 'WARN_ON(in_irq)' in
+> > net/core/skbuff.c#skb_release_head_state() might be triggered, under network
+> > congestion circumstances, together with the potential risk of a NULL pointer
+> > dereference.
 > >
-> > It handles, but does it twice, first time for is_json_context() and
-> > second time inside print_bool.
+> > The root cause of this issue is the call to kfree_skb() instead of
+> > dev_kfree_skb_irq() in net/core/dev.c#enqueue_to_backlog().
+> >
+> > This patch prevents the skb to be freed within the call to netif_rx() by
+> > incrementing its reference count with skb_get(). The skb is finally freed by
+> > one of the in-irq-context safe functions: dev_consume_skb_any() or
+> > dev_kfree_skb_any(). The "any" version is used because some drivers might call
+> > can_get_echo_skb() in a normal context.
+> >
+> > The reason for this issue to occur is that initially, in the core network
+> > stack, loopback skb were not supposed to be received in hardware IRQ context.
+> > The CAN stack is an exeption.
+> >
+> > This bug was previously reported back in 2017 in [1] but the proposed patch
+> > never got accepted.
+> >
+> > While [1] directly modifies net/core/dev.c, we try to propose here a
+> > smoother modification local to CAN network stack (the assumption
+> > behind is that only CAN devices are affected by this issue).
+> >
+> > [1] http://lore.kernel.org/r/57a3ffb6-3309-3ad5-5a34-e93c3fe3614d@cetitec.com
+> >
+> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> > Link: https://lore.kernel.org/r/20201002154219.4887-2-mailhol.vincent@wanadoo.fr
+> > Fixes: 39549eef3587 ("can: CAN Network device driver and Netlink interface")
+> > Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 >
-> Gotcha.
+> Hm... Why do we receive a skb with a socket attached?
+>
+> At a quick glance this is some loopback, so shouldn't we skb_orphan()
+> in the xmit function instead?
+
+Yes this would work, this seems the safest way, loopback_xmit() is a
+good template for this.
+
+>
+> Otherwise we should probably fix this in enqueue_to_backlog().
+
+This is dangerous.
+
+If we drop packets under flood because the per-cpu backlog is full,
+we might also be in _big_ trouble if the per-cpu
+softnet_data.completion_queue is filling,
+since we do not have a limit on this list.
+
+What could happen is that when the memory is finally exhausted and no
+more skb can be fed
+to netif_rx(), a big latency spike would happen when
+softnet_data.completion_queue
+can finally be purged in one shot.
+
+So skb_orphan(skb) in CAN before calling netif_rx() is better IMO.
+
+>
+> > diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
+> > index b70ded3760f2..73cfcd7e9517 100644
+> > --- a/drivers/net/can/dev.c
+> > +++ b/drivers/net/can/dev.c
+> > @@ -538,7 +538,11 @@ unsigned int can_get_echo_skb(struct net_device *dev, unsigned int idx)
+> >       if (!skb)
+> >               return 0;
+> >
+> > -     netif_rx(skb);
+> > +     skb_get(skb);
+> > +     if (netif_rx(skb) == NET_RX_SUCCESS)
+> > +             dev_consume_skb_any(skb);
+> > +     else
+> > +             dev_kfree_skb_any(skb);
+> >
+> >       return len;
+> >  }
+>
