@@ -2,71 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 689FF2A6A11
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:42:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C232A6A16
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:43:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731175AbgKDQmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 11:42:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
+        id S1731225AbgKDQnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 11:43:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728999AbgKDQma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 11:42:30 -0500
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0697DC0613D3;
-        Wed,  4 Nov 2020 08:42:30 -0800 (PST)
-Received: by mail-pf1-x444.google.com with SMTP id 10so17741390pfp.5;
-        Wed, 04 Nov 2020 08:42:30 -0800 (PST)
+        with ESMTP id S1731210AbgKDQnF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 11:43:05 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C77C7C0613D3;
+        Wed,  4 Nov 2020 08:43:05 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id w11so10538276pll.8;
+        Wed, 04 Nov 2020 08:43:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=dco432F/StZ/3+Ux08tZ5ex29m6sc0CeFbawMQihOpA=;
-        b=BKr6gEHP8Gu8if4iLjwmkU3/yea8B91wdyMAXxZi5Hy+//aAzYjyzOLELzbdQn4lNr
-         N7Ts3cqqFYN/KX7uNKwqBlUTjBSqo3JrP1kbwBJd9l7hV6aRrCzelcuxGrfD+MPg5HYq
-         honbXrUI3yPmOKobYn/3ID9w11do4AlPcpISIpfKwiyseEAIHYpjbDLwVQfZT3Z4UbzM
-         +87OueonkMdLzfljz0mrdXXdt/OL1+DHDv6P3MhOCvJDSWdE2w17bVID8bklYH3NaRSx
-         Q7+GO4MEWa0UNeqzna36vfVy0FGulndaFTI2qF5UXxrWiAj/Vpvw0PUCLyXULlOg8bkj
-         zK1Q==
+        bh=bH66Ulkk+HNzi+h3l2238xPbIOr76DAq74H0dqLHkJE=;
+        b=i3hIQiTfi6MwakQg00IBO0+XxpQet27JULd1t67pA8emnMB9MmNlOrE3Jpxt63nlfI
+         Dr9OYTkFKKvAlXg9g3yVV4mte+dUvi/QtiXiH6iPWAePcOa8mwf7fVwPs+cfm7sEXy3a
+         uuSYytEnOlDOzwMFFRPSrjv7u816Dx9tUO98ZFTpjUs0/+mukX9CPkWKTMpstVInyfDn
+         FprOcdSFpKOaqqWaEdboluVP08yQClePYPx5jpx4rBeG9I20BORAKBSbV8IlJnypvuol
+         VGRiReFGm6wySqtrYwbR9W9d7f20UDe7vqFCMZXkT5H8LeUF3Rzcm4R9CtNWm8eOMQ43
+         5kPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=dco432F/StZ/3+Ux08tZ5ex29m6sc0CeFbawMQihOpA=;
-        b=S4DfgdF3DmRMjrXyuPyOIOxPrupwNHYgGNIUEUMAPSoPFV/cKSVM49Blt8o+3CAeje
-         f/D389/PTx2TGtGaFE01BO+7/7HEJZKQFV1EgffQkLowxMF0/PtGZzHHeWBE/TZszYzd
-         X3ISXpDqDnUEwWN0LrtMLNae6uwBcpeACz52XFx8Uf2GzRCFHU35ils1xaM2+CwAmhMX
-         efk59ZF+r2o9DY2NmXBb89FTqug7UwOnfBxTPQ5ueoVqZxaktV5ELK4m3aDFE2hh3syY
-         +6D1LSJOdSlgkdtbj5T1D0f+lgwSkRISaoGEQM/z3uUJjVbKTDXAgnjy4qy0rPGmxhOR
-         DbUw==
-X-Gm-Message-State: AOAM5318Vw/O21pZaZV5UJN2jMG7ixHAjNaGrSoU2L7dp4mYwaqnpbLE
-        +++o5dkqdKOl5Am6s0krQkEuAgniQYw=
-X-Google-Smtp-Source: ABdhPJzkV9+ajlDqMuhmMHY/j5X0pJB3CkTEzl4Bs2S/7TZpm27xitkz29SWNwSnUQ7WS8z3dYYYpw==
-X-Received: by 2002:a17:90b:3882:: with SMTP id mu2mr5044499pjb.112.1604508149634;
-        Wed, 04 Nov 2020 08:42:29 -0800 (PST)
+        bh=bH66Ulkk+HNzi+h3l2238xPbIOr76DAq74H0dqLHkJE=;
+        b=dZarTqWytNSJ+DCGLG8RsZfQQHohY95J/Ch4bTdAamdGbR3KxV9pHvEu9ro/peyErD
+         EmuwlCgNu2dBR2XlJYPKa5VzwA3BndJzuPwADT+wFcRnhI4LzLgIF/gH7BsQzgdW+e1h
+         iMXhyl4wrkK5VPiP8jKI2vhn4tsyNPGKDKzdG2E1npKt+DXGDbM4nYSO16ycRTBawX+W
+         cDvkiK0w+Rl2rWzJYIXlH4Dqu07tNVcuykbsU5E7pVSDtcXjsUO8Sg26jn305JvWlq7j
+         xBHV3RHMAiy7Tf5n4ZEHppjYHhbRhkSq59TstK2tdSCs8pQ5boifNQ4+RKhSpZMz/TLi
+         X6Vw==
+X-Gm-Message-State: AOAM533tEe5QQL3U1/nmUxanYYqMv7n5gRtJJzYneH2kpIkKffouXpxS
+        Pgl0PkPuwLR4UW63U6yP32xTtl1RrUQ=
+X-Google-Smtp-Source: ABdhPJxu7Ium/wh2eBLH4ViiefTKA/mHeeQp7x3AeB7Y1ivlnwb+fsE3A4Gp+o1oZvHG0ftYsdCTbQ==
+X-Received: by 2002:a17:902:7402:b029:d6:8558:7920 with SMTP id g2-20020a1709027402b02900d685587920mr29612126pll.8.1604508184718;
+        Wed, 04 Nov 2020 08:43:04 -0800 (PST)
 Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id r8sm2838184pgl.57.2020.11.04.08.42.28
+        by smtp.gmail.com with ESMTPSA id s6sm2903548pgo.8.2020.11.04.08.43.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 08:42:28 -0800 (PST)
-Date:   Wed, 4 Nov 2020 08:42:26 -0800
+        Wed, 04 Nov 2020 08:43:04 -0800 (PST)
+Date:   Wed, 4 Nov 2020 08:43:01 -0800
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     min.li.xe@renesas.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] ptp: idt82p33: add adjphase support
-Message-ID: <20201104164226.GC16105@hoboy.vegasvil.org>
+Subject: Re: [PATCH net-next 2/3] ptp: idt82p33: use i2c_master_send for bus
+ write
+Message-ID: <20201104164301.GD16105@hoboy.vegasvil.org>
 References: <1604505709-5483-1-git-send-email-min.li.xe@renesas.com>
+ <1604505709-5483-2-git-send-email-min.li.xe@renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1604505709-5483-1-git-send-email-min.li.xe@renesas.com>
+In-Reply-To: <1604505709-5483-2-git-send-email-min.li.xe@renesas.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 04, 2020 at 11:01:47AM -0500, min.li.xe@renesas.com wrote:
+On Wed, Nov 04, 2020 at 11:01:48AM -0500, min.li.xe@renesas.com wrote:
 > From: Min Li <min.li.xe@renesas.com>
 > 
-> Add idt82p33_adjphase() to support PHC write phase mode.
+> Refactor idt82p33_xfer and use i2c_master_send for write operation.
+> Because some I2C controllers are only working with single-burst write
+> transaction.
 > 
 > Signed-off-by: Min Li <min.li.xe@renesas.com>
 
