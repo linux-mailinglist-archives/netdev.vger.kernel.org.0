@@ -2,86 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD5C32A6C20
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 18:47:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34AEF2A6C40
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 18:55:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732107AbgKDRq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 12:46:58 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:15633 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730391AbgKDRq5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 12:46:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1604512015;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=9PwnxAdiDEoKZFqmxj00eY5F/YtQiIx5b1HQwtg0zTU=;
-        b=PhaQ0LjdogrTxoOzBKKFKkIOhdStxpQDpD1EFmF0AKEhgnZJpakgwqdzHin4Ju1dn8
-        EhsRxJtf27J8CvedfqxNEG74JIC/SCMhv/yyoJ+r8sTT72NbPWnbJQBwTlHShVIosbc+
-        LZ9FM2zt/JYqpja0z6M9JN3pyEgroJ75akVSGqeZyZphEOGy8Tx+mc90Isyf8/g/VIG7
-        eKmvZZ/sPafHaMvTULKaDT1BkWab6Ri9zgd+t95i2c8LZk9kYAk4FY/8c3eiWVfqyNZJ
-        ocmNM/No0ml9itR5Ro9dEyWXnyePIZ0cI16S7B7eVZIwK6i34GRzv0hJh8CAqewb3b1b
-        m2Jw==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3HMbEWKONeXSNI="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.50.177]
-        by smtp.strato.de (RZmta 47.3.2 DYNA|AUTH)
-        with ESMTPSA id j0816awA4Hki0F2
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Wed, 4 Nov 2020 18:46:44 +0100 (CET)
-Subject: Re: [net 05/27] can: dev: can_get_echo_skb(): prevent call to
- kfree_skb() in hard IRQ context
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Eric Dumazet <edumazet@google.com>,
-        netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-References: <20201103220636.972106-1-mkl@pengutronix.de>
- <20201103220636.972106-6-mkl@pengutronix.de>
- <20201103172102.3d75cb96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANn89iK5xqYmLT=DZk0S15pRObSJbo2-zrO7_A0Q46Ujg1RxYg@mail.gmail.com>
- <988aea6a-c6b6-5d58-3a8e-604a52df0320@hartkopp.net>
- <20201104080237.4d6605ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <550bf8d4-bf4c-b1ef-cd41-78c2b71514e3@hartkopp.net>
-Date:   Wed, 4 Nov 2020 18:46:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1732129AbgKDRyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 12:54:53 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:23054 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726152AbgKDRyx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 12:54:53 -0500
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A4HXnx0018078;
+        Wed, 4 Nov 2020 12:54:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version : date :
+ from : to : cc : subject : in-reply-to : references : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=uoGKHjVI9qCmgMT7Z13+wCWlgoPk1FdTmCEv9WQfshk=;
+ b=aeEWS0hb1HQX8G0wD6qXlogTejASPSaHGEYeXKnii7xoNkWjNlXDIXRiqCvxxiS0mQ3F
+ lwoh/SjoFBfEXjGySionVF5nw7I0zJ5JLnFe1TsMbb44wWY8GQBc5Q1fFAlP630tya2X
+ S2vhuMKZwSOelDOU4e8OdJ7iYZiZ4arCegcl2uLy9G6Sr1SFVlEzYIiRHmSWWnfMUWZ5
+ TO+WuxZfSx/yFJKLiJ9TcfAvxWsmmnCB5CPEvuisU/gCpwBhKNtqMhg/sqzCWIvpbejP
+ ND1HO3uU+PY0D/DYeehu4sF3Ab5w7/HWuJJexawo8rf2wb7vefBYXx2rDCcl/jyCqF4w lA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 34kxep5vcv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 Nov 2020 12:54:15 -0500
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0A4HXxCZ019183;
+        Wed, 4 Nov 2020 12:54:15 -0500
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 34kxep5vcm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 Nov 2020 12:54:15 -0500
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A4HppCV001558;
+        Wed, 4 Nov 2020 17:54:14 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma04wdc.us.ibm.com with ESMTP id 34h0ej06xw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 Nov 2020 17:54:14 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A4HsEkb4260454
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 4 Nov 2020 17:54:14 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 35A59124054;
+        Wed,  4 Nov 2020 17:54:14 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BF419124052;
+        Wed,  4 Nov 2020 17:54:12 +0000 (GMT)
+Received: from ltc.linux.ibm.com (unknown [9.16.170.189])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed,  4 Nov 2020 17:54:12 +0000 (GMT)
 MIME-Version: 1.0
-In-Reply-To: <20201104080237.4d6605ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Date:   Wed, 04 Nov 2020 09:54:12 -0800
+From:   drt <drt@linux.vnet.ibm.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Lee Jones <lee.jones@linaro.org>, davem@davemloft.net,
+        kuba@kernel.org, Thomas Falcon <tlfalcon@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Santiago Leon <santi_leon@yahoo.com>,
+        John Allen <jallen@linux.vnet.ibm.com>, netdev@vger.kernel.org,
+        Lijun Pan <ljp@linux.ibm.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Dany Madden <drt@linux.ibm.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 09/12] net: ethernet: ibm: ibmvnic: Fix some kernel-doc
+ misdemeanours
+In-Reply-To: <20201104133815.GC933237@lunn.ch>
+References: <20201104090610.1446616-1-lee.jones@linaro.org>
+ <20201104090610.1446616-10-lee.jones@linaro.org>
+ <20201104133815.GC933237@lunn.ch>
+Message-ID: <85bc60fb363b95bc87627607d20b3616@linux.vnet.ibm.com>
+X-Sender: drt@linux.vnet.ibm.com
+User-Agent: Roundcube Webmail/1.0.1
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-04_11:2020-11-04,2020-11-04 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=999
+ impostorscore=0 malwarescore=0 suspectscore=0 adultscore=0 clxscore=1011
+ phishscore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011040126
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04.11.20 17:02, Jakub Kicinski wrote:
-> On Wed, 4 Nov 2020 15:59:25 +0100 Oliver Hartkopp wrote:
->> On 04.11.20 09:16, Eric Dumazet wrote:
-
->>> So skb_orphan(skb) in CAN before calling netif_rx() is better IMO.
->>>    
->>
->> Unfortunately you missed the answer from Vincent, why skb_orphan() does
->> not work here:
->>
->> https://lore.kernel.org/linux-can/CAMZ6RqJyZTcqZcq6jEzm5LLM_MMe=dYDbwvv=Y+dBR0drWuFmw@mail.gmail.com/
+On 2020-11-04 05:38, Andrew Lunn wrote:
+> On Wed, Nov 04, 2020 at 09:06:07AM +0000, Lee Jones wrote:
+>> Fixes the following W=1 kernel build warning(s):
+>> 
+>>  from drivers/net/ethernet/ibm/ibmvnic.c:35:
+>>  inlined from ‘handle_vpd_rsp’ at 
+>> drivers/net/ethernet/ibm/ibmvnic.c:4124:3:
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1362: warning: Function parameter 
+>> or member 'hdr_field' not described in 'build_hdr_data'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1362: warning: Function parameter 
+>> or member 'skb' not described in 'build_hdr_data'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1362: warning: Function parameter 
+>> or member 'hdr_len' not described in 'build_hdr_data'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1362: warning: Function parameter 
+>> or member 'hdr_data' not described in 'build_hdr_data'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1423: warning: Function parameter 
+>> or member 'hdr_field' not described in 'create_hdr_descs'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1423: warning: Function parameter 
+>> or member 'hdr_data' not described in 'create_hdr_descs'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1423: warning: Function parameter 
+>> or member 'len' not described in 'create_hdr_descs'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1423: warning: Function parameter 
+>> or member 'hdr_len' not described in 'create_hdr_descs'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1423: warning: Function parameter 
+>> or member 'scrq_arr' not described in 'create_hdr_descs'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1474: warning: Function parameter 
+>> or member 'txbuff' not described in 'build_hdr_descs_arr'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1474: warning: Function parameter 
+>> or member 'num_entries' not described in 'build_hdr_descs_arr'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1474: warning: Function parameter 
+>> or member 'hdr_field' not described in 'build_hdr_descs_arr'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1832: warning: Function parameter 
+>> or member 'adapter' not described in 'do_change_param_reset'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1832: warning: Function parameter 
+>> or member 'rwi' not described in 'do_change_param_reset'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1832: warning: Function parameter 
+>> or member 'reset_state' not described in 'do_change_param_reset'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1911: warning: Function parameter 
+>> or member 'adapter' not described in 'do_reset'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1911: warning: Function parameter 
+>> or member 'rwi' not described in 'do_reset'
+>>  drivers/net/ethernet/ibm/ibmvnic.c:1911: warning: Function parameter 
+>> or member 'reset_state' not described in 'do_reset'
+>> 
+>> Cc: Dany Madden <drt@linux.ibm.com>
+>> Cc: Lijun Pan <ljp@linux.ibm.com>
+>> Cc: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+>> Cc: Michael Ellerman <mpe@ellerman.id.au>
+>> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+>> Cc: Paul Mackerras <paulus@samba.org>
+>> Cc: "David S. Miller" <davem@davemloft.net>
+>> Cc: Jakub Kicinski <kuba@kernel.org>
+>> Cc: Santiago Leon <santi_leon@yahoo.com>
+>> Cc: Thomas Falcon <tlfalcon@linux.vnet.ibm.com>
+>> Cc: John Allen <jallen@linux.vnet.ibm.com>
+>> Cc: netdev@vger.kernel.org
+>> Cc: linuxppc-dev@lists.ozlabs.org
+>> Signed-off-by: Lee Jones <lee.jones@linaro.org>
 > 
-> Okay, we can take this as a quick fix but to me it seems a little
-> strange to be dropping what is effectively locally generated frames.
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Thanks! So this patch doesn't hinder Marc's PR :-)
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
 
-> Can we use a NAPI poll model here and back pressure TX if the echo
-> is not keeping up?
-
-Some of the CAN network drivers already support NAPI.
-
-@Marc: Can we also use NAPI for echo'ing the skbs?
-
-Best regards,
-Oliver
+Thanks, Lee.
+Dany
+> 
+>     Andrew
