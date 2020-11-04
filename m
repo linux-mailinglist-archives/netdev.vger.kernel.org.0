@@ -2,66 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C912A6042
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 10:09:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 294812A603E
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 10:09:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729027AbgKDJJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 04:09:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51126 "EHLO
+        id S1728902AbgKDJIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 04:08:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728821AbgKDJGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 04:06:31 -0500
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2408C040203
-        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 01:06:30 -0800 (PST)
-Received: by mail-wr1-x444.google.com with SMTP id w14so21152117wrs.9
-        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 01:06:30 -0800 (PST)
+        with ESMTP id S1728851AbgKDJGc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 04:06:32 -0500
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05125C061A4A
+        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 01:06:32 -0800 (PST)
+Received: by mail-wr1-x442.google.com with SMTP id x7so21205905wrl.3
+        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 01:06:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PvDQ8jiSdggfocg7QevhSStHyCThX2E8vELTACyHnVM=;
-        b=O+gghJDvfp86xHKWNgfCUbwJBZer6plfg8irRb7mhXGvdo7nvbxcHUd63h6bvqOdkS
-         tSUboDCoCYlt9DCY7qiK941vY9cWWcrT5dhUFhaoj+IwczKKPvBRX+IcCuLvSThGRsjC
-         D58ezTytuMvEmOQY2bTv2oJzSy7M8A1Ra31v/4WhDJ/gdw2Ed9Acb+z0jHdgaSO/RfzF
-         aUbBPxkvtygM9zIr6Vg1dDhySOxbbryxrnmEFSg9EURVG1o51j2usPgmkNmwHgmn7/fp
-         pBtT9CLc2nU/2WTyzWyLqGfkFnDvqMLpQf/WYFc17TlKpg2vLmamvONRa7oY8mjJW1dG
-         wp2w==
+        bh=szFDNNaKEVDZSNkDXGPen7gT5j56LfEHgacJ/wxEkwY=;
+        b=N/4knhJ7uTG/9yLA1FSuCU1flqXLayCobZP7LJXfq0bxqg/f2LQPv0S3+gwUmPrlvH
+         ZcTQ8cmH725ndJazq3KjmCYX/gRdGKIjWOqFDqJ6Ca3yHBeMCHLvqP7MbavdbqsWv3p7
+         tp/mtcK62uAtazyujW3FsYwtTv4ejBYtpMZufYjm5/EBuvnxhGiyARiEFh4oHYBpof1m
+         FLMvr9ZE4WvZuj6VUoTmr+5MZIXNoqFQDTh/Kl6S82TH08rzQYQ/zWqOYCHsy8sFvrDU
+         fZFsELF54BVdt4TghACs9PCg0x+aj2lcb0j+QMwz5ImUWToz4/E/k+BHprYQ7ZeD/4CF
+         aBsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PvDQ8jiSdggfocg7QevhSStHyCThX2E8vELTACyHnVM=;
-        b=FJ7nSeZj6w+CTMcFWuTUSUcAOqphgXGavxzAkFKwwurFuIVjQaHbDiUouv2/bPyJ5i
-         Ja11w1VgHEERvbS3PeleHqqEf7DOrP0JOdDgJ4Uy76mrU5mUIc1s0P5MyzOKykSxdttc
-         sK1iP+9dHlMCx55a8Gd7pPDfStBFj2DELMjCR3yp8SojXwVlkQyeHpf25DGQH1wfnDtx
-         +/gC5TaiBylqlzmPvn8G+q0Zvvgt64esSHrEIrVcQnbfwKx+i212dYL1KiMnkCGMC62B
-         O45mDGSdRvvfRyztV1Q6msTCHJtFexY+ZCJsNmH3iWYwmUOhy7l62/bY6VZfXFb2eBfK
-         PA9Q==
-X-Gm-Message-State: AOAM530YpcqERFjmudLNBun4qRsJvSjSyzmNhjp5a9NYqkQDxojnxGrY
-        hRINXTVynzvmr4ymOhxLPZSel/5rjqXcJKH9
-X-Google-Smtp-Source: ABdhPJxJr4EKzyziM/kfu7bfvSRJog/0BPh5wKW3PHtRCRM2FSGZw1LpbirvmDeO5VkFIi4ChKf8FQ==
-X-Received: by 2002:a5d:490a:: with SMTP id x10mr30228709wrq.289.1604480789629;
-        Wed, 04 Nov 2020 01:06:29 -0800 (PST)
+        bh=szFDNNaKEVDZSNkDXGPen7gT5j56LfEHgacJ/wxEkwY=;
+        b=biFORNsBmk/AxkDn0vZNEsk+WhdxPfaA2GKEwLj4/aadl4lHpfDJiQJY62d0zY1DIn
+         ama2toSWxZdXGybLaf3H10+q7/bVWMesEBM44O+ZYPWSf39+5bET4su8baa83Je5w0xW
+         9i1Vp2N31Rm8N9oU9BVci4wjvIqjxsgQt4zQgUprCNV/8Wxdid2xfcjn+ssFJt8MUujM
+         zr5Y+ncUuFoDuwAHTyCGTvGlVvnUvjW/Awsr0WPLyR3LJXWCIFcnokBTKCw/LzIn0qyN
+         mLRnOQSKqEpRdvngOFTeYjB764pGyNPI/nGP5hdTfZYX0uuUKk5treZL3ge0pjTqlyPE
+         UqKw==
+X-Gm-Message-State: AOAM532A6Nj+KQ6fcemwrU36WQvpw8Q9Ww4qRPMEnMx1YUmDkUVXJ+ap
+        kqnzzqms4hnwUdrJP1+F82ac7A==
+X-Google-Smtp-Source: ABdhPJzIJXs0rqnpGfYOPLHG8ZWucjsENoRrdaQl4vWak5XVOqN2jes5DesM6dPTbX7FugMpqk+Mjg==
+X-Received: by 2002:adf:80c8:: with SMTP id 66mr31727752wrl.415.1604480790781;
+        Wed, 04 Nov 2020 01:06:30 -0800 (PST)
 Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id e25sm1607823wrc.76.2020.11.04.01.06.28
+        by smtp.gmail.com with ESMTPSA id e25sm1607823wrc.76.2020.11.04.01.06.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 01:06:29 -0800 (PST)
+        Wed, 04 Nov 2020 01:06:30 -0800 (PST)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH 05/12] net: xen-netback: xenbus: Demote nonconformant kernel-doc headers
-Date:   Wed,  4 Nov 2020 09:06:03 +0000
-Message-Id: <20201104090610.1446616-6-lee.jones@linaro.org>
+        Lee Jones <lee.jones@linaro.org>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        netdev@vger.kernel.org
+Subject: [PATCH 06/12] net: ethernet: ti: am65-cpsw-qos: Demote non-conformant function header
+Date:   Wed,  4 Nov 2020 09:06:04 +0000
+Message-Id: <20201104090610.1446616-7-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201104090610.1446616-1-lee.jones@linaro.org>
 References: <20201104090610.1446616-1-lee.jones@linaro.org>
@@ -73,50 +68,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/xen-netback/xenbus.c:419: warning: Function parameter or member 'dev' not described in 'frontend_changed'
- drivers/net/xen-netback/xenbus.c:419: warning: Function parameter or member 'frontend_state' not described in 'frontend_changed'
- drivers/net/xen-netback/xenbus.c:1001: warning: Function parameter or member 'dev' not described in 'netback_probe'
- drivers/net/xen-netback/xenbus.c:1001: warning: Function parameter or member 'id' not described in 'netback_probe'
+ drivers/net/ethernet/ti/am65-cpsw-qos.c:364: warning: Function parameter or member 'ndev' not described in 'am65_cpsw_timer_set'
+ drivers/net/ethernet/ti/am65-cpsw-qos.c:364: warning: Function parameter or member 'est_new' not described in 'am65_cpsw_timer_set'
 
-Cc: Wei Liu <wei.liu@kernel.org>
-Cc: Paul Durrant <paul@xen.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jesper Dangaard Brouer <hawk@kernel.org>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Rusty Russell <rusty@rustcorp.com.au>
-Cc: xen-devel@lists.xenproject.org
+Cc: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 Cc: netdev@vger.kernel.org
-Cc: bpf@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/xen-netback/xenbus.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/ti/am65-cpsw-qos.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-index f1c1624cec8f5..de1b5471d929b 100644
---- a/drivers/net/xen-netback/xenbus.c
-+++ b/drivers/net/xen-netback/xenbus.c
-@@ -411,7 +411,7 @@ static void read_xenbus_frontend_xdp(struct backend_info *be,
- 	vif->xdp_headroom = headroom;
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-qos.c b/drivers/net/ethernet/ti/am65-cpsw-qos.c
+index 3bdd4dbcd2ff1..ebcc6386cc34a 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-qos.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-qos.c
+@@ -356,7 +356,7 @@ static void am65_cpsw_est_set_sched_list(struct net_device *ndev,
+ 		writel(~all_fetch_allow & AM65_CPSW_FETCH_ALLOW_MSK, ram_addr);
  }
  
 -/**
 +/*
-  * Callback received when the frontend's state changes.
+  * Enable ESTf periodic output, set cycle start time and interval.
   */
- static void frontend_changed(struct xenbus_device *dev,
-@@ -992,7 +992,7 @@ static int netback_remove(struct xenbus_device *dev)
- 	return 0;
- }
- 
--/**
-+/*
-  * Entry point to this code when a new device is created.  Allocate the basic
-  * structures and switch to InitWait.
-  */
+ static int am65_cpsw_timer_set(struct net_device *ndev,
 -- 
 2.25.1
 
