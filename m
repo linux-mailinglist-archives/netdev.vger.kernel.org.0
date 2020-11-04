@@ -2,96 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F3E82A5BF8
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 02:31:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D85F2A5C04
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 02:37:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729802AbgKDBbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 20:31:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56556 "EHLO mail.kernel.org"
+        id S1729149AbgKDBhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 20:37:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57868 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725769AbgKDBbe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 20:31:34 -0500
-Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        id S1725769AbgKDBhF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 20:37:05 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E21BE223BD;
-        Wed,  4 Nov 2020 01:31:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4E1B7223C7;
+        Wed,  4 Nov 2020 01:37:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604453494;
-        bh=HlQTrnq00kQjQryBCORiCzaZQwc7cb4XSeBMTAveR2U=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=I+/uhbnpw/tH64S548Zvc3NlRhGaBuHdJOt74oGGqH6lJ3xm0serDXkkMYDoSjysT
-         8//uAApG89+TdhNLD/QVxpVy3gsOuGq6zhyBvrSkvMe3GNFQFPJznxAtASh6IeNLDf
-         RfnmdSyUZsR3DwejSkl7Sqw6VCqxxXEOVOEROCwk=
-Message-ID: <eca09b4aee1d4526e1ee772adbfaafab2afa1f20.camel@kernel.org>
-Subject: Re: [PATCH net-next v2 12/15] net/smc: Add support for obtaining
- SMCD device list
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Karsten Graul <kgraul@linux.ibm.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        hca@linux.ibm.com, raspl@linux.ibm.com
-Date:   Tue, 03 Nov 2020 17:31:33 -0800
-In-Reply-To: <20201103102531.91710-13-kgraul@linux.ibm.com>
-References: <20201103102531.91710-1-kgraul@linux.ibm.com>
-         <20201103102531.91710-13-kgraul@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        s=default; t=1604453825;
+        bh=qELd+oak9OzROH7b+3q/6L2jVNFEXZoqqfSbtdDbKTA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hkhEDRUR67Q5RN8F+GzqNQqOKvnMNdzgTCm7Orf6+GWW4Qu6lyKKhTjxXwHk9qqZh
+         UY6JvR3hAi/aWOkIrEqnta+n5ddb+tU/KtZUh/PRS3Ixs/oCGwQJh4fgiuDK99uAJG
+         TDIlAH307KibCZA8+xX3bwvB/0MTZiMZA/yP1FCk=
+Date:   Tue, 3 Nov 2020 17:37:04 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] r8169: align number of tx descriptors with
+ vendor driver
+Message-ID: <20201103173704.3bc28fbd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a52a6de4-f792-5038-ae2f-240d3b7860eb@gmail.com>
+References: <a52a6de4-f792-5038-ae2f-240d3b7860eb@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-11-03 at 11:25 +0100, Karsten Graul wrote:
-> From: Guvenc Gulce <guvenc@linux.ibm.com>
+On Sun, 1 Nov 2020 23:23:52 +0100 Heiner Kallweit wrote:
+> Lowest number of tx descriptors used in the vendor drivers is 256 in
+> r8169. r8101/r8168/r8125 use 1024 what seems to be the hw limit. Stay
+> on the safe side and go with 256, same as number of rx descriptors.
 > 
-> Deliver SMCD device information via netlink based
-> diagnostic interface.
-> 
-> Signed-off-by: Guvenc Gulce <guvenc@linux.ibm.com>
-> Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
-> ---
->  include/uapi/linux/smc.h      |  2 +
->  include/uapi/linux/smc_diag.h | 20 +++++++++
->  net/smc/smc_core.h            | 27 +++++++++++++
->  net/smc/smc_diag.c            | 76
-> +++++++++++++++++++++++++++++++++++
->  net/smc/smc_ib.h              |  1 -
->  5 files changed, 125 insertions(+), 1 deletion(-)
-> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-> +
-> +static int smc_diag_prep_smcd_dev(struct smcd_dev_list *dev_list,
-> +				  struct sk_buff *skb,
-> +				  struct netlink_callback *cb,
-> +				  struct smc_diag_req_v2 *req)
-> +{
-> +	struct smc_diag_dump_ctx *cb_ctx = smc_dump_context(cb);
-> +	int snum = cb_ctx->pos[0];
-> +	struct smcd_dev *smcd;
-> +	int rc = 0, num = 0;
-> +
-> +	mutex_lock(&dev_list->mutex);
-> +	list_for_each_entry(smcd, &dev_list->list, list) {
-> +		if (num < snum)
-> +			goto next;
-> +		rc = smc_diag_handle_smcd_dev(smcd, skb, cb, req);
-> +		if (rc < 0)
-> +			goto errout;
-> +next:
-> +		num++;
-> +	}
-> +errout:
-> +	mutex_unlock(&dev_list->mutex);
-> +	cb_ctx->pos[0] = num;
-> +	return rc;
-> +}
-> +
-
-this function pattern repeats at least 4 times in this series and the
-only difference is the diag handler function, just abstract this
-function out and pass a function pointer as handler to reduce code
-repetition. 
-
-
-
+Applied, thanks!
