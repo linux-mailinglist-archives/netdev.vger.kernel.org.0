@@ -2,175 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98DCE2A6C4A
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 19:00:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CED3A2A6C7D
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 19:10:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731591AbgKDR7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 12:59:52 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:18822 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726779AbgKDR7w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 12:59:52 -0500
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A4HXkqL018009;
-        Wed, 4 Nov 2020 12:59:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version : date :
- from : to : cc : subject : in-reply-to : references : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=Ry0S8lE7aCcBbrMFlZnOC1nefhJ7JoRFCkaP7QYMGCE=;
- b=Z+ojBvHU1bNFmNUjt20i8Xbw0QK0l/un9a9ytBu7Cvo62H3esi96KqkQlHX/o3eviXqg
- C6Mhea2lyhhAvZz8i/VEI41iS7RwqudoBDgBSwTXup83D7nHIA0ALqbrFxxk8pCFUReq
- 342K0yw/bC6UhU9FUWRLbB06/pI6le0igk5Q1369f7yxiiTf1TOILKfd2RHYa2s8o4nf
- G1F0M6ewvu6TQUt/wTL+KndJAFmTJdVKn5XzbFdVh+48jql9ptp++RbdFDdbgvaYyCLj
- phdKrn48igFZ/J74YxL1CxXwEC+vWum1kcvoikyr295YPw1ufOtctfPiqjpNXWfG2r2D tw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 34kxep616q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 Nov 2020 12:59:19 -0500
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0A4HuJdg101458;
-        Wed, 4 Nov 2020 12:59:19 -0500
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 34kxep616b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 Nov 2020 12:59:19 -0500
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A4Hb9Ix030131;
-        Wed, 4 Nov 2020 17:59:18 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma01wdc.us.ibm.com with ESMTP id 34h024rdkb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 Nov 2020 17:59:18 +0000
-Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A4HxH4Y4784786
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 4 Nov 2020 17:59:17 GMT
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EA13EBE053;
-        Wed,  4 Nov 2020 17:59:16 +0000 (GMT)
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 773A8BE04F;
-        Wed,  4 Nov 2020 17:59:16 +0000 (GMT)
-Received: from ltc.linux.ibm.com (unknown [9.16.170.189])
-        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed,  4 Nov 2020 17:59:16 +0000 (GMT)
+        id S1730323AbgKDSJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 13:09:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728403AbgKDSJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 13:09:40 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21266C0613D3
+        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 10:09:40 -0800 (PST)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kaNDk-0007Ga-Ve; Wed, 04 Nov 2020 19:09:20 +0100
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kaNDj-00049W-SI; Wed, 04 Nov 2020 19:09:19 +0100
+Date:   Wed, 4 Nov 2020 19:09:19 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Ioana Ciornei <ciorneiioana@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH net-next v2 04/19] net: phy: at803x: implement generic
+ .handle_interrupt() callback
+Message-ID: <20201104180919.ytvsekksjcldpkqd@pengutronix.de>
+References: <20201101125114.1316879-1-ciorneiioana@gmail.com>
+ <20201101125114.1316879-5-ciorneiioana@gmail.com>
 MIME-Version: 1.0
-Date:   Wed, 04 Nov 2020 09:59:16 -0800
-From:   drt <drt@linux.vnet.ibm.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Santiago Leon <santi_leon@yahoo.com>,
-        Thomas Falcon <tlfalcon@linux.vnet.ibm.com>,
-        John Allen <jallen@linux.vnet.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 12/12] net: ethernet: ibm: ibmvnic: Fix some kernel-doc
- issues
-In-Reply-To: <20201104090610.1446616-13-lee.jones@linaro.org>
-References: <20201104090610.1446616-1-lee.jones@linaro.org>
- <20201104090610.1446616-13-lee.jones@linaro.org>
-Message-ID: <1dcfe1124b90cd50d5f9f9fd53ca6baa@linux.vnet.ibm.com>
-X-Sender: drt@linux.vnet.ibm.com
-User-Agent: Roundcube Webmail/1.0.1
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-04_11:2020-11-04,2020-11-04 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=999
- impostorscore=0 malwarescore=0 suspectscore=0 adultscore=0 clxscore=1015
- phishscore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011040126
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201101125114.1316879-5-ciorneiioana@gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 19:08:44 up 355 days,  9:27, 376 users,  load average: 0.07, 0.06,
+ 0.01
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-04 01:06, Lee Jones wrote:
-> Fixes the following W=1 kernel build warning(s):
+On Sun, Nov 01, 2020 at 02:50:59PM +0200, Ioana Ciornei wrote:
+> From: Ioana Ciornei <ioana.ciornei@nxp.com>
 > 
->  from drivers/net/ethernet/ibm/ibmvnic.c:35:
->  inlined from ‘handle_vpd_rsp’ at 
-> drivers/net/ethernet/ibm/ibmvnic.c:4124:3:
->  drivers/net/ethernet/ibm/ibmvnic.c:1362: warning: Function parameter
-> or member 'hdr_data' not described in 'build_hdr_data'
->  drivers/net/ethernet/ibm/ibmvnic.c:1362: warning: Excess function
-> parameter 'tot_len' description in 'build_hdr_data'
->  drivers/net/ethernet/ibm/ibmvnic.c:1423: warning: Function parameter
-> or member 'hdr_data' not described in 'create_hdr_descs'
->  drivers/net/ethernet/ibm/ibmvnic.c:1423: warning: Excess function
-> parameter 'data' description in 'create_hdr_descs'
->  drivers/net/ethernet/ibm/ibmvnic.c:1474: warning: Function parameter
-> or member 'txbuff' not described in 'build_hdr_descs_arr'
->  drivers/net/ethernet/ibm/ibmvnic.c:1474: warning: Excess function
-> parameter 'skb' description in 'build_hdr_descs_arr'
->  drivers/net/ethernet/ibm/ibmvnic.c:1474: warning: Excess function
-> parameter 'subcrq' description in 'build_hdr_descs_arr'
+> In an attempt to actually support shared IRQs in phylib, we now move the
+> responsibility of triggering the phylib state machine or just returning
+> IRQ_NONE, based on the IRQ status register, to the PHY driver. Having
+> 3 different IRQ handling callbacks (.handle_interrupt(),
+> .did_interrupt() and .ack_interrupt() ) is confusing so let the PHY
+> driver implement directly an IRQ handler like any other device driver.
+> Make this driver follow the new convention.
 > 
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> Cc: Paul Mackerras <paulus@samba.org>
-> Cc: Dany Madden <drt@linux.ibm.com>
-> Cc: Lijun Pan <ljp@linux.ibm.com>
-> Cc: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Santiago Leon <santi_leon@yahoo.com>
-> Cc: Thomas Falcon <tlfalcon@linux.vnet.ibm.com>
-> Cc: John Allen <jallen@linux.vnet.ibm.com>
-> Cc: linuxppc-dev@lists.ozlabs.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+> Cc: Michael Walle <michael@walle.cc>
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Reviewed-by: Dany Madden <drt@linux.ibm.com>
-
-Thanks, Lee.
-Dany
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
 > ---
->  drivers/net/ethernet/ibm/ibmvnic.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
+> Changes in v2:
+>  - adjust .handle_interrupt() so that we only take into account the
+>    enabled IRQs.
 > 
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
-> b/drivers/net/ethernet/ibm/ibmvnic.c
-> index b30e1f5784bad..08dab7a94b7ea 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -1360,7 +1360,7 @@ static int ibmvnic_close(struct net_device 
-> *netdev)
->   * @hdr_field: bitfield determining needed headers
->   * @skb: socket buffer
->   * @hdr_len: array of header lengths
-> - * @tot_len: total length of data
-> + * @hdr_data: buffer to write the header to
->   *
->   * Reads hdr_field to determine which headers are needed by firmware.
->   * Builds a buffer containing these headers.  Saves individual header
-> @@ -1418,7 +1418,7 @@ static int build_hdr_data(u8 hdr_field, struct
-> sk_buff *skb,
->  /**
->   * create_hdr_descs - create header and header extension descriptors
->   * @hdr_field: bitfield determining needed headers
-> - * @data: buffer containing header data
-> + * @hdr_data: buffer containing header data
->   * @len: length of data buffer
->   * @hdr_len: array of individual header lengths
->   * @scrq_arr: descriptor array
-> @@ -1469,9 +1469,8 @@ static int create_hdr_descs(u8 hdr_field, u8
-> *hdr_data, int len, int *hdr_len,
+>  drivers/net/phy/at803x.c | 31 +++++++++++++++++++++++++++++++
+>  1 file changed, 31 insertions(+)
 > 
->  /**
->   * build_hdr_descs_arr - build a header descriptor array
-> - * @skb: socket buffer
-> + * @txbuff: tx buffer
->   * @num_entries: number of descriptors to be sent
-> - * @subcrq: first TX descriptor
->   * @hdr_field: bit field determining which headers will be sent
->   *
->   * This function will build a TX descriptor array with applicable
+> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> index ed601a7e46a0..c7f91934cf82 100644
+> --- a/drivers/net/phy/at803x.c
+> +++ b/drivers/net/phy/at803x.c
+> @@ -628,6 +628,32 @@ static int at803x_config_intr(struct phy_device *phydev)
+>  	return err;
+>  }
+>  
+> +static irqreturn_t at803x_handle_interrupt(struct phy_device *phydev)
+> +{
+> +	int irq_status, int_enabled;
+> +
+> +	irq_status = phy_read(phydev, AT803X_INTR_STATUS);
+> +	if (irq_status < 0) {
+> +		phy_error(phydev);
+> +		return IRQ_NONE;
+> +	}
+> +
+> +	/* Read the current enabled interrupts */
+> +	int_enabled = phy_read(phydev, AT803X_INTR_ENABLE);
+> +	if (int_enabled < 0) {
+> +		phy_error(phydev);
+> +		return IRQ_NONE;
+> +	}
+> +
+> +	/* See if this was one of our enabled interrupts */
+> +	if (!(irq_status & int_enabled))
+> +		return IRQ_NONE;
+> +
+> +	phy_trigger_machine(phydev);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+>  static void at803x_link_change_notify(struct phy_device *phydev)
+>  {
+>  	/*
+> @@ -1064,6 +1090,7 @@ static struct phy_driver at803x_driver[] = {
+>  	.read_status		= at803x_read_status,
+>  	.ack_interrupt		= at803x_ack_interrupt,
+>  	.config_intr		= at803x_config_intr,
+> +	.handle_interrupt	= at803x_handle_interrupt,
+>  	.get_tunable		= at803x_get_tunable,
+>  	.set_tunable		= at803x_set_tunable,
+>  	.cable_test_start	= at803x_cable_test_start,
+> @@ -1084,6 +1111,7 @@ static struct phy_driver at803x_driver[] = {
+>  	/* PHY_BASIC_FEATURES */
+>  	.ack_interrupt		= at803x_ack_interrupt,
+>  	.config_intr		= at803x_config_intr,
+> +	.handle_interrupt	= at803x_handle_interrupt,
+>  }, {
+>  	/* Qualcomm Atheros AR8031/AR8033 */
+>  	PHY_ID_MATCH_EXACT(ATH8031_PHY_ID),
+> @@ -1102,6 +1130,7 @@ static struct phy_driver at803x_driver[] = {
+>  	.aneg_done		= at803x_aneg_done,
+>  	.ack_interrupt		= &at803x_ack_interrupt,
+>  	.config_intr		= &at803x_config_intr,
+> +	.handle_interrupt	= at803x_handle_interrupt,
+>  	.get_tunable		= at803x_get_tunable,
+>  	.set_tunable		= at803x_set_tunable,
+>  	.cable_test_start	= at803x_cable_test_start,
+> @@ -1122,6 +1151,7 @@ static struct phy_driver at803x_driver[] = {
+>  	/* PHY_BASIC_FEATURES */
+>  	.ack_interrupt		= at803x_ack_interrupt,
+>  	.config_intr		= at803x_config_intr,
+> +	.handle_interrupt	= at803x_handle_interrupt,
+>  	.cable_test_start	= at803x_cable_test_start,
+>  	.cable_test_get_status	= at803x_cable_test_get_status,
+>  }, {
+> @@ -1134,6 +1164,7 @@ static struct phy_driver at803x_driver[] = {
+>  	/* PHY_BASIC_FEATURES */
+>  	.ack_interrupt		= &at803x_ack_interrupt,
+>  	.config_intr		= &at803x_config_intr,
+> +	.handle_interrupt	= at803x_handle_interrupt,
+>  	.cable_test_start	= at803x_cable_test_start,
+>  	.cable_test_get_status	= at803x_cable_test_get_status,
+>  	.read_status		= at803x_read_status,
+> -- 
+> 2.28.0
+> 
+> 
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
