@@ -2,107 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E97232A6E52
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 20:53:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A7282A6E63
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 20:56:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728815AbgKDTxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 14:53:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
+        id S1730788AbgKDT4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 14:56:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725889AbgKDTxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 14:53:34 -0500
-Received: from mail-ua1-x943.google.com (mail-ua1-x943.google.com [IPv6:2607:f8b0:4864:20::943])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8670C0613D3
-        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 11:53:34 -0800 (PST)
-Received: by mail-ua1-x943.google.com with SMTP id a10so3059563uan.12
-        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 11:53:34 -0800 (PST)
+        with ESMTP id S1727013AbgKDT4O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 14:56:14 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A296FC0613D3
+        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 11:56:14 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id x13so17453541pgp.7
+        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 11:56:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LJxPUcNSutStqK4O6mBjyWrgm1FTQ0U03ti+bTVMVpQ=;
-        b=Kh2rpj15LcOhoHo76drsegQNj3TRyVrGlfM7yH2VK8yX+x2liWRY1PNqxl2U4kW8j6
-         +HodthpUcvJM6L/ydCM4pwiqIAP9ydVL8O/VAb/22kBQ/PK/6gLZbYV2Yrf7iEPr/TcK
-         A5GgoaKlKwwbuiPXfaacppIFQmCFrLriG4RNaGKOTdgYcecnuurYRJfx9HxLhVR/BU6o
-         7wM6JS8NF4Ltta5ZRMv31TNcFCc+utJmwdUyE8jay7qfaPElzcXjUwWg4fvmD+8sKHnQ
-         q+F0WVoK71S7jIOBiGO6toYjod7R2iTCrXxV89myp30btpEv1u/G82uOM6wkrBiRVRRN
-         kmfg==
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=dlWR8rXO8RJ2Um8n7DA+PW+7Z257b+9h7LCZ9VZ9/3I=;
+        b=XenlT/EwY2KhvEIx6YEnBS1Vb8S18pkpjo3tstceq+L7X1+XSzA5MKPHYhdwCr0yAA
+         l8Z93m9FVx+yzqeapFJq4AP6wgw9qGzsbpNdH5II8ys34gX5nKDAftgoerv7Z7K1bWFr
+         y4EpryjDuo2juEaJJiuPHhhsFg8qZ4EaAPCCznUmQecETXeSlxe8h/iWNxMwxs3Zd+2u
+         m6OAwvv7yU6XVUsy+xU8jAKOLGkV8xk3TEO5KoANZ/zyKc/y32TDSxp4feW5QZ88MH8K
+         oLm4GEsG4UXBn7Gsls+7YVNIZe/tJxHdIG33PfkYiS8HEA9UR2894gTGjFt8eDErYxEr
+         I1eQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LJxPUcNSutStqK4O6mBjyWrgm1FTQ0U03ti+bTVMVpQ=;
-        b=EeqCQedw/6QSXIAIBP8eevf1z4+DYsnkUUTj7dQf5gLDFEA+C0GdXmpfEIGTYWvLp1
-         Lc/XGJctRzc4o2E/0BiG5dG54hjF4wqoxfvoeldrf0YQCif4LbcHL3DbYG941yFISU0Y
-         GvYwDw0T9vd2Ph0krMk2Bj9y0Sb50M4iYUFP8Vq5TruBtUf1Jn0rsWOFP/udJPzU06Q8
-         2b0jiUljPIbJFy/7mK0yfh5KNtGmkMnMR6ihWfOEAE1VNgfNKtpwSwpY945rP8PqtOsB
-         8Odwn5MywudB5Yubdat87elheneaGGaSTSxnaYBiEY/cKUgDF7S8UpaJSjGImofF45nc
-         tLFA==
-X-Gm-Message-State: AOAM532UgGbIIDXr3C/9CScDcplCztnH/Bdbpfuc9lW1hHjWnCDo3MH7
-        mei61PZ6znQXHIYFRnaF9ArLFJ7RzzU=
-X-Google-Smtp-Source: ABdhPJz6ZSKXpITXWxuMc1fMDtO9F1PS2Ye5zT35yH7SI++1m7WRltvRGZKcYneLBqel4m0Iacm5kQ==
-X-Received: by 2002:ab0:84f:: with SMTP id b15mr11811277uaf.55.1604519612052;
-        Wed, 04 Nov 2020 11:53:32 -0800 (PST)
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
-        by smtp.gmail.com with ESMTPSA id z1sm393011vka.37.2020.11.04.11.53.27
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Nov 2020 11:53:29 -0800 (PST)
-Received: by mail-ua1-f41.google.com with SMTP id k12so6403905uad.11
-        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 11:53:27 -0800 (PST)
-X-Received: by 2002:a9f:28a7:: with SMTP id d36mr10511313uad.37.1604519606890;
- Wed, 04 Nov 2020 11:53:26 -0800 (PST)
-MIME-Version: 1.0
-References: <20201103104133.GA1573211@tws> <CA+FuTSdf35EqALizep-65_sF46pk46_RqmEhS9gjw_5rF5cr1Q@mail.gmail.com>
- <dc8f00ff-d484-f5cf-97a3-9f6d8984160e@gmail.com>
-In-Reply-To: <dc8f00ff-d484-f5cf-97a3-9f6d8984160e@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 4 Nov 2020 14:52:50 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSeqv=SJ=5sXCrWWiA=nUnLvCgX4wjcoqZm93VSyJQO1jg@mail.gmail.com>
-Message-ID: <CA+FuTSeqv=SJ=5sXCrWWiA=nUnLvCgX4wjcoqZm93VSyJQO1jg@mail.gmail.com>
-Subject: Re: [PATCH] IPv6: Set SIT tunnel hard_header_len to zero
-To:     Oliver Herms <oliver.peter.herms@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=dlWR8rXO8RJ2Um8n7DA+PW+7Z257b+9h7LCZ9VZ9/3I=;
+        b=Cel7JSXQDJfkEq+BspKHimxl6HVTb8LNQkoCjYFpPYjTGFFmPBlBsjvwQuB215UCAg
+         otW2r8xLOTmE1WTConZ15eVgp9Z5rRC0s8nsVQVCdws88LKYezOdNGyWV68cvig3kknH
+         ZqjNb0eRREyYb4daFwBkrNQ52pXarNc8WZsXu63wa8bmVfEeB5glUoBFB2ccMSwK0Kyi
+         fl0dBEYxyNY0p7ofy/FL762E7TY7EIupokeGbkog/VZstuEPeUIyyFq4epZK6na624hP
+         ic0MtFzFv2jsi9p+EqveQTgdTyDJqkqe9p7HmEu3FcGim4taDIEDJ+7Z715j5HofYV2p
+         VN2w==
+X-Gm-Message-State: AOAM533Yl8MYgiAMa3mJIZksJdqn6pavwOWKizrgLz8tUGK7CmrXrC14
+        6CJCxowhZ1fmqyM6jwWG06F8/13XOE20Jg==
+X-Google-Smtp-Source: ABdhPJwlkHj41XKJFyFv6C1YuVyBFecol7ZYmphPwUcyEp0xCd6B24lBOqF+TKPkUAtsRLhEg/6EiA==
+X-Received: by 2002:a17:90a:4a15:: with SMTP id e21mr5716533pjh.130.1604519773836;
+        Wed, 04 Nov 2020 11:56:13 -0800 (PST)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id t5sm2904359pjq.7.2020.11.04.11.56.12
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 04 Nov 2020 11:56:13 -0800 (PST)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net] ionic: check port ptr before use
+Date:   Wed,  4 Nov 2020 11:56:06 -0800
+Message-Id: <20201104195606.61184-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 4, 2020 at 2:30 PM Oliver Herms
-<oliver.peter.herms@gmail.com> wrote:
->
-> On 03.11.20 19:42, Willem de Bruijn wrote:
-> > Thanks. Yes, this is long overdue.
-> >
-> > The hard_header_len issue was also recently discussed in the context
-> > of GRE in commit fdafed459998 ("ip_gre: set dev->hard_header_len and
-> > dev->needed_headroom properly").
-> >
-> > Question is whether we should reserve room in needed_headroom instead.
-> > AFAIK this existing update logic in ip6_tnl_xmit is sufficient
-> >
-> > "
-> >         /* Calculate max headroom for all the headers and adjust
-> >          * needed_headroom if necessary.
-> >          */
-> >         max_headroom = LL_RESERVED_SPACE(dst->dev) + sizeof(struct ipv6hdr)
-> >                         + dst->header_len + t->hlen;
-> >         if (max_headroom > dev->needed_headroom)
-> >                 dev->needed_headroom = max_headroom;
-> > "I think that's enough. At least it definitely works in my test and prod environment.
-> Would be good to get another opinion on this though.
+Check for corner case of port_init failure before using
+the port_info pointer.
 
-Sit should behave the same as other tunnels. At least in ip6_tunnel.c
-and ip6_gre.c I do not see explicit initialization of needed_headroom.
+Fixes: 4d03e00a2140 ("ionic: Add initial ethtool support")
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+---
+ drivers/net/ethernet/pensando/ionic/ionic_ethtool.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-> >> Fixes: c54419321455 ("GRE: Refactor GRE tunneling code.")
-> >
-> > How did you arrive at this SHA1?
-> I think the legacy usage of hard_header_len in ipv6/sit.c was overseen in c54419321455.
-> Please correct me if I'm wrong.
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+index ed9808fc743b..35c72d4a78b3 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+@@ -126,6 +126,11 @@ static int ionic_get_link_ksettings(struct net_device *netdev,
+ 
+ 	ethtool_link_ksettings_zero_link_mode(ks, supported);
+ 
++	if (!idev->port_info) {
++		netdev_err(netdev, "port_info not initialized\n");
++		return -EOPNOTSUPP;
++	}
++
+ 	/* The port_info data is found in a DMA space that the NIC keeps
+ 	 * up-to-date, so there's no need to request the data from the
+ 	 * NIC, we already have it in our memory space.
+-- 
+2.17.1
 
-I don't see anything in that patch assign or modify hard_header_len.
