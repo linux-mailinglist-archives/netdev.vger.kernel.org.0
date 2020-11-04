@@ -2,119 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E783C2A6111
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 11:02:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08A172A6125
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 11:05:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728607AbgKDKCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 05:02:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:20882 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728522AbgKDKCP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 05:02:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604484133;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cWSDEz+pocGgc9hLdmtEOkQnVJuh949rPPfTOBgDI2I=;
-        b=jK1mcxBiZi9UScPptcbX/jjK7ogRIbMVdBOzcadh9QI27tq16BiWQYr+v7Dxok3HurguWY
-        H7zX9BTaH8KiOQIimEmSS44bovPwIiRcydBPMXFSdsrKk9X+U4amdeC39uoAV/0OAa/Sp1
-        L+L8MfHTYU/tZFo7qhXXxRdQCjN6f0o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-590-QTg0I3EUMnmoBkxjsxgz7g-1; Wed, 04 Nov 2020 05:02:12 -0500
-X-MC-Unique: QTg0I3EUMnmoBkxjsxgz7g-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ACF08804746;
-        Wed,  4 Nov 2020 10:02:09 +0000 (UTC)
-Received: from localhost (unknown [10.40.194.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BE26510589AF;
-        Wed,  4 Nov 2020 10:01:59 +0000 (UTC)
-Date:   Wed, 4 Nov 2020 11:01:57 +0100
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Hangbin Liu <haliu@redhat.com>, David Ahern <dsahern@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-Message-ID: <20201104110157.52f661eb@redhat.com>
-In-Reply-To: <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
-References: <20201028132529.3763875-1-haliu@redhat.com>
-        <20201029151146.3810859-1-haliu@redhat.com>
-        <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
-        <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
-        <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
-        <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
-        <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
-        <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com>
-        <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
-        <20201104021730.GK2408@dhcp-12-153.nay.redhat.com>
-        <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
+        id S1728687AbgKDKFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 05:05:20 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:47039 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728066AbgKDKFU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 05:05:20 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id DFB735C00A6;
+        Wed,  4 Nov 2020 05:05:18 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 04 Nov 2020 05:05:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=+3zEKZ
+        K0bipjuN+620fy3Gez1qenS1d4jPq+6p4Azfs=; b=IMBn3Aok7aVi5gJvsmHWwS
+        N+wdeXEg6A+ghKYCDL8ut1YqT8rl2PggulRb/Z+a41xO3pOaaqzQXR7bBgqYvxOc
+        bzzhUH5n+oc3GVDc/Hvmojk0R3oE+AKRBVJVmyK07SAz1yfUr/66CPimeyD/sO1U
+        YloOfHx5VmSQKl3E9yUCMNtRm6k3YcP1ida/oULYQchcjygCIom0uy9Cv2NL4iQA
+        U2KgpY1J+7Bc3w3xD6hBaThZCRgjHyg92nUA8/DkLvn0NO2roYd19gIQyUKKIqMR
+        jawutw/or0L22MoJQd6NT1l0ic8A/iXR58Xzs4VxJgTCnqLBf70HamJbaj4kWXgw
+        ==
+X-ME-Sender: <xms:3nyiX5EqRuO3TsMahiyLsTAoWihzdEUcjxWygxkdFVLnndivgsoOVA>
+    <xme:3nyiX-WBwBKkhHFmahPd9N5q0jKa-BREOo5B1qcdx_G_XKlahDDtH_v__EMzSge1f
+    LXieksM4Haz7vs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedruddthedguddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeefieehjeegheeuieeiiedvjeeuvefgfeeiteelieevfeeigfdtjeeglefgieel
+    ffenucffohhmrghinhepghhithhhuhgsrdgtohhmpdhkvghrnhgvlhdrohhrghenucfkph
+    epkeegrddvvdelrdduhedvrddvheehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghr
+    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:3nyiX7JkJz0fNYAj6EVuMNZ0es1V-O8Pt28DY0ncDeytIf75KR6cqg>
+    <xmx:3nyiX_E3OeNVuNUFo0JpgsN1ZS8BRaqqxE2UylULqUI43FfwogcNhg>
+    <xmx:3nyiX_UbD_TzUxAQSDuGB3RmMlCGPQavoROZRIkBTzKbX_PlVaREmg>
+    <xmx:3nyiX2fwSrSPAWv_n8fJWmn3bYZD2GsdcYHroOF602wzPZruVouzTA>
+Received: from localhost (unknown [84.229.152.255])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 311E13064682;
+        Wed,  4 Nov 2020 05:05:18 -0500 (EST)
+Date:   Wed, 4 Nov 2020 12:05:15 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH ethtool] ethtool: Improve compatibility between
+ netlink and ioctl interfaces
+Message-ID: <20201104100515.GA988778@shredder>
+References: <20201102184036.866513-1-idosch@idosch.org>
+ <20201102225803.pcrqf6nhjlvmfxwt@lion.mk-sys.cz>
+ <20201103142430.GA951743@shredder>
+ <20201103235501.sw27v355z7f375k3@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201103235501.sw27v355z7f375k3@lion.mk-sys.cz>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Nov 2020 19:11:45 -0800, Alexei Starovoitov wrote:
-> When we release new version of libbpf it goes through rigorous testing.
-> bpftool gets a lot of test coverage as well.
-> iproute2 with shared libbpf will get nothing. It's the same random roll of dice.
+On Wed, Nov 04, 2020 at 12:55:01AM +0100, Michal Kubecek wrote:
+> On Tue, Nov 03, 2020 at 04:24:30PM +0200, Ido Schimmel wrote:
+> > 
+> > I have the changes you requested here:
+> > https://github.com/idosch/ethtool/commit/b34d15839f2662808c566c04eda726113e20ee59
+> > 
+> > Do you want to integrate it with your nl_parse() rework or should I?
+> 
+> I pushed the combined series to
+> 
+>   https://git.kernel.org/pub/scm/linux/kernel/git/mkubecek/ethtool.git
+> 
+> as branch mk/master/advertise-all. I only ran few quick tests so far,
+> it's not submission ready yet.
+> 
+> First two patches are unrelated fixes found while testing, I'm going to
+> submit and push them separately. Third patch reworks nl_parser()
+> handling of multiple request messages as indicated in my previous mail.
+> Fourth patch is the ioctl compatibility fix.
 
-"Random roll of dice" would be true only if libbpf did incredibly bad
-job in keeping backward compatibility. In my experience it is not the
-case. Sure, a bug in retaining the compatibility may occasionally
-appear; after all, any software tends to contain bugs in various
-places. You are right that such bug may not be caught by your testing.
-
-I also believe that if there is a bug in backward compatibility
-reported by someone, it will be fixed (if possible). So this is really
-just a matter of testing, not a fundamental problem of ABI
-compatibility.
-
-Let the distros worry about the testing. Upstream may test (and
-even recommend!) certain combinations of iproute2 + libbpf, such as the
-latest of both at the time of testing. If distros want to use a
-different combination, they can and should do their own testing. If
-their testing reveals a bug in backward compatibility and a patch to
-fix it is accepted, everything will work smoothly for the distro users.
-
-Non-distro users (or small distros) may just rely on the upstream
-tested combination of iproute2 + libbpf.
-
-> Few years from now the situation could be different and shared libbpf would
-> be the most appropriate choice. But that day is not today.
-
-Interestingly, the major compatibility problems we had were with llvm
-updates. After llvm update while keeping the same kernel version, llvm
-started to emit code that the verifier did not accept. Meaning a bpf
-program that was previously accepted by the kernel was rejected after
-recompilation. This was solved by adding a translation code to libbpf
-(which nicely demonstrates that indeed libbpf cares about backward
-compatibility).
-
-Now, with dynamically linked libbpf, a single package update was able
-to solve the problem for everything on the system, including users' own
-programs. All that was needed was making the llvm package force update
-the libbpf package (which rpm can do easily with its Conflicts
-dependency).
-
-So, at least for us, there was so far no disadvantage (and no problem)
-with dynamic linking and a quite substantial advantage.
-
- Jiri
-
+Great, thank you. I pushed the patches to our regression. Will go over
+the results tomorrow and let you know.
