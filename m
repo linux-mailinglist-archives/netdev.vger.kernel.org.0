@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 067712A65C1
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 15:01:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B83642A65C3
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 15:01:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726900AbgKDOBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 09:01:15 -0500
-Received: from mga01.intel.com ([192.55.52.88]:47942 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730162AbgKDOAf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1730159AbgKDOAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 4 Nov 2020 09:00:35 -0500
-IronPort-SDR: 2h5XEzWXYmTl4+WyGv/DrxlH313AAdJtfGdp9sjBBpFJ6UGoR/cYdnVA1QLkl+iJvEvhIEhEdA
- 57KawJYYXFoQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9794"; a="187077837"
+Received: from mga11.intel.com ([192.55.52.93]:11983 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730074AbgKDOAe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Nov 2020 09:00:34 -0500
+IronPort-SDR: yGGcITX5S5aUVzuNfIu10xaHHyvhrORMg7CCWSTapSKNHpAQPUrdIec468AVK5uV21iKJh+bR4
+ FU3mLDcfWxzg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9794"; a="165711170"
 X-IronPort-AV: E=Sophos;i="5.77,451,1596524400"; 
-   d="scan'208";a="187077837"
+   d="scan'208";a="165711170"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2020 06:00:34 -0800
-IronPort-SDR: 55+C+FN/VNIl1oZWAZxxdiMnvgqPJSBeYe6RX+dPqR5NF9aPwEMGmiPwLtbU+4JjNLWk2xrSgE
- v/yxAvjeWL3w==
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2020 06:00:33 -0800
+IronPort-SDR: SMt0g0IDCdg3TgoxxBQ+WVpNwYkpkSq/7d90U6faiPxZnf5ffOfgpsqBGirdeqTfia6/b9Cq2G
+ XuQ9ctNSkOXA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.77,451,1596524400"; 
-   d="scan'208";a="352684827"
+   d="scan'208";a="306424180"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 04 Nov 2020 06:00:31 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 04 Nov 2020 06:00:31 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id DB8D512A; Wed,  4 Nov 2020 16:00:30 +0200 (EET)
+        id F19411C5; Wed,  4 Nov 2020 16:00:30 +0200 (EET)
 From:   Mika Westerberg <mika.westerberg@linux.intel.com>
 To:     linux-usb@vger.kernel.org
 Cc:     Michael Jamet <michael.jamet@intel.com>,
@@ -39,9 +39,9 @@ Cc:     Michael Jamet <michael.jamet@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         netdev@vger.kernel.org
-Subject: [PATCH 01/10] thunderbolt: Do not clear USB4 router protocol adapter IFC and ISE bits
-Date:   Wed,  4 Nov 2020 17:00:21 +0300
-Message-Id: <20201104140030.6853-2-mika.westerberg@linux.intel.com>
+Subject: [PATCH 03/10] thunderbolt: Create XDomain devices for loops back to the host
+Date:   Wed,  4 Nov 2020 17:00:23 +0300
+Message-Id: <20201104140030.6853-4-mika.westerberg@linux.intel.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201104140030.6853-1-mika.westerberg@linux.intel.com>
 References: <20201104140030.6853-1-mika.westerberg@linux.intel.com>
@@ -51,40 +51,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These fields are marked as vendor defined in the USB4 spec and should
-not be modified by the software, so only clear them when we are dealing
-with pre-USB4 hardware.
+It is perfectly possible to have loops back from the routers to the
+host, or even from one host port to another. Instead of ignoring these,
+we create XDomain devices for each. This allows creating services such
+as DMA traffic test that is used in manufacturing for example.
 
 Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 ---
- drivers/thunderbolt/path.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/thunderbolt/xdomain.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/thunderbolt/path.c b/drivers/thunderbolt/path.c
-index 03e7b714deab..7c2c45d9ba4a 100644
---- a/drivers/thunderbolt/path.c
-+++ b/drivers/thunderbolt/path.c
-@@ -406,10 +406,17 @@ static int __tb_path_deactivate_hop(struct tb_port *port, int hop_index,
+diff --git a/drivers/thunderbolt/xdomain.c b/drivers/thunderbolt/xdomain.c
+index e2866248f389..7c61d2aeaac9 100644
+--- a/drivers/thunderbolt/xdomain.c
++++ b/drivers/thunderbolt/xdomain.c
+@@ -960,10 +960,8 @@ static void tb_xdomain_get_uuid(struct work_struct *work)
+ 		return;
+ 	}
  
- 		if (!hop.pending) {
- 			if (clear_fc) {
--				/* Clear flow control */
--				hop.ingress_fc = 0;
-+				/*
-+				 * Clear flow control. Protocol adapters
-+				 * IFC and ISE bits are vendor defined
-+				 * in the USB4 spec so we clear them
-+				 * only for pre-USB4 adapters.
-+				 */
-+				if (!tb_switch_is_usb4(port->sw)) {
-+					hop.ingress_fc = 0;
-+					hop.ingress_shared_buffer = 0;
-+				}
- 				hop.egress_fc = 0;
--				hop.ingress_shared_buffer = 0;
- 				hop.egress_shared_buffer = 0;
+-	if (uuid_equal(&uuid, xd->local_uuid)) {
++	if (uuid_equal(&uuid, xd->local_uuid))
+ 		dev_dbg(&xd->dev, "intra-domain loop detected\n");
+-		return;
+-	}
  
- 				return tb_port_write(port, &hop, TB_CFG_HOPS,
+ 	/*
+ 	 * If the UUID is different, there is another domain connected
 -- 
 2.28.0
 
