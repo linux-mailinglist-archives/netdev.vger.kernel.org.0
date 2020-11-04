@@ -2,125 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C0FE2A6BD7
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 18:36:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD5C32A6C20
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 18:47:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730535AbgKDRgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 12:36:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:47780 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730254AbgKDRgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 12:36:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604511378;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Egp5/piH9cLQbhOxqBiQ6oUXBo8D99rZQxLNpy2SM8g=;
-        b=JgTVihE2urYmSTbc+eD5bMkiY/6E3tSxzc+hiVAebZPri/g+SqINY6xb0vjsIdVsM3Ou6h
-        amw78FihQbHWrF3NvaZIqwFcx+xGps1l6wsECzVYs3v+q6oy+bZtJgGTlv8lZXHvrAXzwE
-        YR4fiS4X2SOUfNodaJoYh5uKWMPPVb0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-156-Bbwo2LBhNzG7tSnCvjq0hw-1; Wed, 04 Nov 2020 12:36:14 -0500
-X-MC-Unique: Bbwo2LBhNzG7tSnCvjq0hw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E287F804745;
-        Wed,  4 Nov 2020 17:36:12 +0000 (UTC)
-Received: from ovpn-114-21.ams2.redhat.com (ovpn-114-21.ams2.redhat.com [10.36.114.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C7D781084273;
-        Wed,  4 Nov 2020 17:36:09 +0000 (UTC)
-Message-ID: <79c58e6cf23196b73887b20802daebd59fe89476.camel@redhat.com>
-Subject: Re: [PATCH net-next v2 0/3] net: introduce rps_default_mask
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Saeed Mahameed <saeed@kernel.org>, netdev@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shuah Khan <shuah@kernel.org>, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Date:   Wed, 04 Nov 2020 18:36:08 +0100
-In-Reply-To: <20201103085245.3397defa@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <cover.1604055792.git.pabeni@redhat.com>
-         <20201102145447.0074f272@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-         <86c37d881a93d5690faf20de3bccceca1493fd74.camel@redhat.com>
-         <20201103085245.3397defa@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1732107AbgKDRq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 12:46:58 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:15633 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730391AbgKDRq5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 12:46:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1604512015;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=9PwnxAdiDEoKZFqmxj00eY5F/YtQiIx5b1HQwtg0zTU=;
+        b=PhaQ0LjdogrTxoOzBKKFKkIOhdStxpQDpD1EFmF0AKEhgnZJpakgwqdzHin4Ju1dn8
+        EhsRxJtf27J8CvedfqxNEG74JIC/SCMhv/yyoJ+r8sTT72NbPWnbJQBwTlHShVIosbc+
+        LZ9FM2zt/JYqpja0z6M9JN3pyEgroJ75akVSGqeZyZphEOGy8Tx+mc90Isyf8/g/VIG7
+        eKmvZZ/sPafHaMvTULKaDT1BkWab6Ri9zgd+t95i2c8LZk9kYAk4FY/8c3eiWVfqyNZJ
+        ocmNM/No0ml9itR5Ro9dEyWXnyePIZ0cI16S7B7eVZIwK6i34GRzv0hJh8CAqewb3b1b
+        m2Jw==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3HMbEWKONeXSNI="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.50.177]
+        by smtp.strato.de (RZmta 47.3.2 DYNA|AUTH)
+        with ESMTPSA id j0816awA4Hki0F2
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Wed, 4 Nov 2020 18:46:44 +0100 (CET)
+Subject: Re: [net 05/27] can: dev: can_get_echo_skb(): prevent call to
+ kfree_skb() in hard IRQ context
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Eric Dumazet <edumazet@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+References: <20201103220636.972106-1-mkl@pengutronix.de>
+ <20201103220636.972106-6-mkl@pengutronix.de>
+ <20201103172102.3d75cb96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CANn89iK5xqYmLT=DZk0S15pRObSJbo2-zrO7_A0Q46Ujg1RxYg@mail.gmail.com>
+ <988aea6a-c6b6-5d58-3a8e-604a52df0320@hartkopp.net>
+ <20201104080237.4d6605ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <550bf8d4-bf4c-b1ef-cd41-78c2b71514e3@hartkopp.net>
+Date:   Wed, 4 Nov 2020 18:46:44 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
+In-Reply-To: <20201104080237.4d6605ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-11-03 at 08:52 -0800, Jakub Kicinski wrote:
-> On Tue, 03 Nov 2020 16:22:07 +0100 Paolo Abeni wrote:
-> > The relevant use case is an host running containers (with the related
-> > orchestration tools) in a RT environment. Virtual devices (veths, ovs
-> > ports, etc.) are created by the orchestration tools at run-time.
-> > Critical processes are allowed to send packets/generate outgoing
-> > network traffic - but any interrupt is moved away from the related
-> > cores, so that usual incoming network traffic processing does not
-> > happen there.
-> > 
-> > Still an xmit operation on a virtual devices may be transmitted via ovs
-> > or veth, with the relevant forwarding operation happening in a softirq
-> > on the same CPU originating the packet. 
-> > 
-> > RPS is configured (even) on such virtual devices to move away the
-> > forwarding from the relevant CPUs.
-> > 
-> > As Saeed noted, such configuration could be possibly performed via some
-> > user-space daemon monitoring network devices and network namespaces
-> > creation. That will be anyway prone to some race: the orchestation tool
-> > may create and enable the netns and virtual devices before the daemon
-> > has properly set the RPS mask.
-> > 
-> > In the latter scenario some packet forwarding could still slip in the
-> > relevant CPU, causing measurable latency. In all non RT scenarios the
-> > above will be likely irrelevant, but in the RT context that is not
-> > acceptable - e.g. it causes in real environments latency above the
-> > defined limits, while the proposed patches avoid the issue.
-> > 
-> > Do you see any other simple way to avoid the above race?
-> > 
-> > Please let me know if the above answers your doubts,
+On 04.11.20 17:02, Jakub Kicinski wrote:
+> On Wed, 4 Nov 2020 15:59:25 +0100 Oliver Hartkopp wrote:
+>> On 04.11.20 09:16, Eric Dumazet wrote:
+
+>>> So skb_orphan(skb) in CAN before calling netif_rx() is better IMO.
+>>>    
+>>
+>> Unfortunately you missed the answer from Vincent, why skb_orphan() does
+>> not work here:
+>>
+>> https://lore.kernel.org/linux-can/CAMZ6RqJyZTcqZcq6jEzm5LLM_MMe=dYDbwvv=Y+dBR0drWuFmw@mail.gmail.com/
 > 
-> Thanks, that makes it clearer now.
-> 
-> Depending on how RT-aware your container management is it may or may not
-> be the right place to configure this, as it creates the veth interface.
-> Presumably it's the container management which does the placement of
-> the tasks to cores, why is it not setting other attributes, like RPS?
+> Okay, we can take this as a quick fix but to me it seems a little
+> strange to be dropping what is effectively locally generated frames.
 
-The container orchestration is quite complex, and I'm unsure isolation
-and networking configuration are performed (or can be performed) by the
-same precess (without an heavy refactor).
+Thanks! So this patch doesn't hinder Marc's PR :-)
 
-On the flip hand, the global rps mask knob looked quite
-straightforward to me.
+> Can we use a NAPI poll model here and back pressure TX if the echo
+> is not keeping up?
 
-Possibly I can reduce the amount of new code introduced by this
-patchset removing some code duplication
-between rps_default_mask_sysctl() and flow_limit_cpu_sysctl(). Would
-that make this change more acceptable? Or should I drop this
-altogether?
+Some of the CAN network drivers already support NAPI.
 
-> Also I wonder if it would make sense to turn this knob into something
-> more generic. When we arrive at the threaded NAPIs - could it make
-> sense for the threads to inherit your mask as the CPUs they are allowed
-> to run on?
+@Marc: Can we also use NAPI for echo'ing the skbs?
 
-I personally *think* this would be fine - and good. But isn't a bit
-premature discussing the integration of 2 missing pieces ? :)
-
-Thanks,
-
-Paolo
-
+Best regards,
+Oliver
