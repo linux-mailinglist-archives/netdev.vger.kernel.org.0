@@ -2,74 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 545AF2A5EA0
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 08:15:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 457AE2A5EB5
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 08:28:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728922AbgKDHPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 02:15:03 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:38512 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727851AbgKDHPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 02:15:02 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 0A47EubY6006108, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb01.realtek.com.tw[172.21.6.94])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 0A47EubY6006108
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 4 Nov 2020 15:14:56 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.36) by
- RTEXMB01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Wed, 4 Nov 2020 15:14:56 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXMBS01.realtek.com.tw (172.21.6.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 4 Nov 2020 15:14:55 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa]) by
- RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa%3]) with mapi id
- 15.01.2044.006; Wed, 4 Nov 2020 15:14:55 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     =?utf-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: RE: [PATCH net-next 1/5] r8152: use generic USB macros to define product table
-Thread-Topic: [PATCH net-next 1/5] r8152: use generic USB macros to define
- product table
-Thread-Index: AQHWshavui7U4I+gmkudpd9bR0wfLqm3NRPA///A5ICAAJWLQA==
-Date:   Wed, 4 Nov 2020 07:14:55 +0000
-Message-ID: <2c5c23b4cbae499e82a307b95685fed1@realtek.com>
-References: <20201103192226.2455-1-kabel@kernel.org>
-        <20201103192226.2455-2-kabel@kernel.org>
-        <b83ddcca96cb40cf8785e6b44f9838e0@realtek.com>
- <20201104070251.52fe638e@kernel.org>
-In-Reply-To: <20201104070251.52fe638e@kernel.org>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.146]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728263AbgKDH2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 02:28:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726152AbgKDH2f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 02:28:35 -0500
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7132C061A4D
+        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 23:28:34 -0800 (PST)
+Received: by mail-wr1-x443.google.com with SMTP id w14so20875023wrs.9
+        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 23:28:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=wLEXV0pXYo3fgedAIDk4DzbNdcsQTd/XNKAap/2HYcc=;
+        b=oCaaMmweyhhj6XXvSe2s7Sis2BaWG66BfxypLRIj+WM1b9mIvQQE1K3IYD/nwihYfY
+         clUZOu7Mxt5CJI87BHPBo9rKoLdlsu8kZTQLopWa0ppSkemO0Q/6AOXixGvFhcCIvt+2
+         isnYdmzagvtkz1v0tP45gxGTk+NhDm1HulwBiHgynWgcRMdf7Tjvs+uN8MLRrwxjzbtl
+         enIdPXepqR/nOk8jHyYR53EqbG/psVMpi/IPjEHQXS0O3n5BmuMcdF3ByYaTnwqH8rlI
+         7RlpowENlWKlhnqdkrrtbaDLLAIIVzE5pavbXKAsUWS32QK9G1bWyMQabEEu+hzlPaXB
+         zL4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=wLEXV0pXYo3fgedAIDk4DzbNdcsQTd/XNKAap/2HYcc=;
+        b=XCQUDBRQ+EpicG+tORPpNn/TtXYq44UT7m60LSGNDsC7xp/6jAa3WrVD/uhF8KsWtR
+         kEnbrdCdFiDSdfS9YlRnhT3+9eSbbTIyQtjbkyGUqKZfdrbOe9pGooCCifbj+R9Rl54o
+         0wAkEezyA0LHB1nn84ZNLQAHxxvGfm5tWBz591l7Ct1CBUjpfshfuLWERKNzV1L/dWmT
+         XVw8GF6EC649D/jwO+V+aWHMibi2TK/gWn1BD3Na7344BUVRc9RF7ajdik2imXKJ/R/S
+         8ujRTh2ap/l0ytb2ZN+T/4cY4FdLoV0yEnsBoc+AkuFzNvJdc03YWIJKXTslhHIHJ8JG
+         hLNg==
+X-Gm-Message-State: AOAM531kfNZ6JU8Pa9DmusAVoWPNe9wx24BA+pUTmjNmrLh9KWv30Bec
+        b+yzFAoUR5Zp73TcgFI90+7WKw==
+X-Google-Smtp-Source: ABdhPJwF1ggFJCrMvOcflb/7vBIIieWYv/iSuCk2b96wcd8ZmgAhpbQBvQhyYTE5gmGKJfkrHU8mgw==
+X-Received: by 2002:a5d:67ca:: with SMTP id n10mr29926841wrw.209.1604474913582;
+        Tue, 03 Nov 2020 23:28:33 -0800 (PST)
+Received: from dell ([91.110.221.242])
+        by smtp.gmail.com with ESMTPSA id c8sm1284855wrv.26.2020.11.03.23.28.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2020 23:28:32 -0800 (PST)
+Date:   Wed, 4 Nov 2020 07:28:31 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH 01/30] net: fddi: skfp: ecm: Protect 'if' when AIX_EVENT
+ is not defined
+Message-ID: <20201104072831.GP4488@dell>
+References: <20201102114512.1062724-1-lee.jones@linaro.org>
+ <20201102114512.1062724-2-lee.jones@linaro.org>
+ <20201103164610.249af38c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201103164610.249af38c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TWFyZWsgQmVow7puIDxrYWJlbEBrZXJuZWwub3JnPg0KPiBTZW50OiBXZWRuZXNkYXksIE5vdmVt
-YmVyIDQsIDIwMjAgMjowMyBQTQ0KWy4uLl0gDQo+IEJUVyBIYXllcywgaXMgaXQgcG9zc2libGUg
-Zm9yIG1lIGdhaW5pbmcgYWNjZXNzIHRvIFJlYWx0ZWsNCj4gZG9jdW1lbnRhdGlvbiBmb3IgdGhl
-c2UgY2hpcHMgdW5kZXIgTkRBPyBGb3IgZXhhbXBsZSB2aWEgbXkgZW1wbG95ZXIsDQo+IENaLk5J
-Qz8gSSBjYW4ndCBmaW5kIGFueSBzdWNoIGluZm9ybWF0aW9uIG9uIFJlYWx0ZWsgd2Vic2l0ZS4N
-Cg0KSSBoYXZlIHRvIGFzayBteSBib3NzLg0KTWF5YmUgSSByZXBseSB5b3UgaW4gcHJpdmF0ZSB3
-aGVuIEkgZ2V0IHRoZSBhbnN3ZXIuDQoNCj4gQWxzbyBJIGNvdWxkIG5vdCBkb3dubG9hZCB0aGUg
-ZHJpdmVyIGZyb20gUmVhbHRlaydzIHdlYnNpdGUsIEkgaGFkIHRvDQo+IGZpbmQgaXQgb24gZ2l0
-aHViLiBXaGVuIGNsaWNraW5nIHRoZSBkb3dubG9hZCBidXR0b24gb24gWzFdLCBpdCBzYXlzOg0K
-PiAgIFdhcm5pbmcNCj4gICBUaGUgZm9ybSAjMTAgZG9lcyBub3QgZXhpc3Qgb3IgaXQgaXMgbm90
-IHB1Ymxpc2hlZC4NCg0KSSB0cnkgdG8gZG93bmxvYWQgdGhlIGRyaXZlciBmcm9tIG91ciB3ZWJz
-aXRlLg0KQW5kIGl0IHNlZW0gdG8gd29yayBmaW5lLg0KSSB3aWxsIHNlbmQgaXQgdG8geW91IGxh
-dGVyLg0KDQo+IEJUVzIgSSBhbSBpbnRlcmVzdGVkIHdoZXRoZXIgd2UgY2FuIG1ha2UgdGhlIGlu
-dGVybmFsIFBIWSB2aXNpYmxlIHRvDQo+IHRoZSBMaW51eCBQSFkgc3Vic3lzdGVtLg0KDQpJIHRo
-aW5rIGl0IGlzIHBvc3NpYmxlLg0KSSBhbSBub3QgZmFtaWxpYXIgd2l0aCB0aGUgTGludXggUEhZ
-IHN1YnN5c3RlbSwgc28gSSBoYXZlIG5vIGlkZWEgYWJvdXQNCmhvdyB0byBzdGFydC4NCg0KQmVz
-dCBSZWdhcmRzLA0KSGF5ZXMNCg0KDQoNCg==
+On Tue, 03 Nov 2020, Jakub Kicinski wrote:
+
+> On Mon,  2 Nov 2020 11:44:43 +0000 Lee Jones wrote:
+> > When AIX_EVENT is not defined, the 'if' body will be empty, which
+> > makes GCC complain.  Place bracketing around the invocation to protect
+> > it.
+> > 
+> > Fixes the following W=1 kernel build warning(s):
+> > 
+> >  drivers/net/fddi/skfp/ecm.c: In function ‘ecm_fsm’:
+> >  drivers/net/fddi/skfp/ecm.c:153:29: warning: suggest braces around empty body in an ‘if’ statement [-Wempty-body]
+> > 
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: netdev@vger.kernel.org
+> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> 
+> Okay, I applied most of these,
+
+Thank you.
+
+> but please don't post series larger than 15 patches in the future.
+
+No problem.
+
+> Also each patch series should have a cover letter.
+
+https://lore.kernel.org/lkml/20200817081630.GR4354@dell/
+
+> I did not apply:
+> 
+>  - wimax - it should go to staging
+>  - tulip - does not apply
+>  - lan79xx - has checkpatch warnings
+>  - smsc - I'm expecting a patch from Andew there
+
+I'll look into these.
+
+Thanks again Jakub.
+
+-- 
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
