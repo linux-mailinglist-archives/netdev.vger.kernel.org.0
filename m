@@ -2,140 +2,525 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4D2A2A70EC
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 00:05:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA52B2A7103
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 00:14:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729911AbgKDXF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 18:05:57 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.48]:53998 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728301AbgKDXF4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 18:05:56 -0500
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.61])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id EA0C2600BD;
-        Wed,  4 Nov 2020 23:05:55 +0000 (UTC)
-Received: from us4-mdac16-23.ut7.mdlocal (unknown [10.7.65.247])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id E66188009E;
-        Wed,  4 Nov 2020 23:05:55 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.90])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 6628B8006A;
-        Wed,  4 Nov 2020 23:05:55 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id F03729C005E;
-        Wed,  4 Nov 2020 23:05:54 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 4 Nov 2020
- 23:05:44 +0000
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Hangbin Liu <haliu@redhat.com>, David Ahern <dsahern@gmail.com>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-References: <20201028132529.3763875-1-haliu@redhat.com>
- <20201029151146.3810859-1-haliu@redhat.com>
- <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
- <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
- <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
- <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
- <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
- <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com>
- <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
- <20201104021730.GK2408@dhcp-12-153.nay.redhat.com>
- <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
- <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com>
- <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com>
-Date:   Wed, 4 Nov 2020 23:05:41 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1732545AbgKDXOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 18:14:22 -0500
+Received: from pbmsgap01.intersil.com ([192.157.179.201]:53128 "EHLO
+        pbmsgap01.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728416AbgKDXOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 18:14:20 -0500
+Received: from pps.filterd (pbmsgap01.intersil.com [127.0.0.1])
+        by pbmsgap01.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0A4N51n0026537;
+        Wed, 4 Nov 2020 18:14:14 -0500
+Received: from pbmxdp03.intersil.corp (pbmxdp03.pb.intersil.com [132.158.200.224])
+        by pbmsgap01.intersil.com with ESMTP id 34h3f1a8nd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 04 Nov 2020 18:14:14 -0500
+Received: from pbmxdp01.intersil.corp (132.158.200.222) by
+ pbmxdp03.intersil.corp (132.158.200.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.1979.3; Wed, 4 Nov 2020 18:14:13 -0500
+Received: from localhost (132.158.202.109) by pbmxdp01.intersil.corp
+ (132.158.200.222) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Wed, 4 Nov 2020 18:14:12 -0500
+From:   <min.li.xe@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH v2 net-next 1/3] ptp: idt82p33: add adjphase support
+Date:   Wed, 4 Nov 2020 18:13:44 -0500
+Message-ID: <1604531626-17644-1-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25766.003
-X-TM-AS-Result: No-1.515600-8.000000-10
-X-TMASE-MatchedRID: Jm7Yxmmj9OnmLzc6AOD8DfHkpkyUphL9WDtrCb/B2hARGC0rW8q1Xa2k
-        qu8N8Z6gjbUqhuP4DgE/a3iI4EhF3zy85MOgqDd3GctYiGlVjB/ahA35D/bWBFp3Ei6xxmePXvb
-        V/VnUv0qcdgImt2fnOLC8HNjVMLYUFOKk4UrUPgXmXEF3MwNZbn2K69afcnwqVWQnHKxp38ihcU
-        SGWPyoCQPfHajKM2sCBaafuX8ZUps1mB4DwaTV1qOknopQLzTu8qeI5MA2SKR727cs+BZZRrcwZ
-        LpPFTtAaOBJAM+wLRw4LxgJSVfCdYFLOlyz97WhNDrSVZCgbSumUoJ5iJZBr7EtLGRAe3PGesS+
-        g/Zq0C76DxBeqeXlOqqWalXMgUb91zJTsMOHLjrnVHXBUzVvZNBQpvv5cj0gJJjt/ngrkz8k1mQ
-        4C5BObp6fbj1zw/ix2CZ7T0FVcRTFVSBMr2cm9MzSKGx9g8xhywXStpqWmJZ7eGs179ltWZ5wam
-        ltgCNJm+k82PC+tGTRMuzjTM1Wt8RBLZ5x+SkXngIgpj8eDcByZ8zcONpAscRB0bsfrpPIcSqbx
-        BgG0w7KpO6qO1dZZL39VMPFRmMT0r4EyuzY7XFNEE+ml4S71fDzwTlmVMdjuO8r3cBqcThWu9cr
-        rsVGVRk8KNSxhtI48LUy05gu3pDUNewp4E2/TgSpmVYGQlZ3sxk1kV1Ja8fhIo573pBCBw==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.515600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25766.003
-X-MDID: 1604531155-b2pbJnnWe2I2
-X-PPE-DISP: 1604531155;b2pbJnnWe2I2
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-04_15:2020-11-04,2020-11-04 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 adultscore=0 mlxscore=0
+ mlxlogscore=999 suspectscore=4 spamscore=0 phishscore=0 malwarescore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011040164
+X-Proofpoint-Spam-Reason: mlx
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/11/2020 22:10, Alexei Starovoitov wrote:
-> On Wed, Nov 4, 2020 at 1:16 PM Edward Cree <ecree@solarflare.com> wrote:
->> On 04/11/2020 03:11, Alexei Starovoitov wrote:
->>> The user will do 'tc -V'. Does version mean anything from bpf loading pov?
->>> It's not. The user will do "ldd `which tc`" and then what?
->> Is it beyond the wit of man for 'tc -V' to output somethingabout
->>  libbpf version?
->> Other libraries seem to solve these problems all the time, I
->>  haven't seen anyone explain what makes libbpf so special that it
->>  has to be different.
-> slow vger? Please see Daniel and Andrii detailed explanations.
-Nah, I've seen that subthread(vger is fine).  I felt that subthread
- was missing this point about -V which is why I replied where it was
- brought up.
-Daniel and Andrii have only explained why users will want to have an
- up-to-date libbpf, they (and you) haven't connected it to any
- argument about why static linking is the way to achieve that.
-> libbpf is not your traditional library.
-This has only been asserted, not explained.
-I'm fully willing to entertain the possibility that libbpf is indeed
- special.  But if you want to win people over, you'll need to
- explain *why* it's special.
-"Look at bfd and think why" is not enough, be more explicit.
+From: Min Li <min.li.xe@renesas.com>
 
-AIUI the API between iproute2 and libbpf isn't changing, all that's
- happening is that libbpf is gaining new capabilities in things that
- are totally transparent to iproute2 (e.g. BTF fixups).  So the
- reasonable thing for users to expect is "I need new BPF features,
- I'll upgrade my libbpf", and with dynamic linking that works fine
- whether they upgrade iproute2 too or not.
-This narrative is, on the face of it, just as plausible as "I'm
- getting an error from iproute2, I'll upgrade that".  And if distros
- decide that that's a common enough mistake to matter, then they can
- make the newer iproute2 package depend on a newer libbpf package,
- and apt or yum or whatever will automagically DTRT.
-Whereas if you tightly couple them from the start, distros can't
- then go the other way if it turns out you made the wrong choice.
- (What if someone can't use the latest iproute2 release because it
- has a regression bug that breaks their use-case, but they need the
- latest libbpf for one of your shiny new features?)
+Add idt82p33_adjphase() to support PHC write phase mode.
 
-Don't get me wrong, I'd love a world in which static linking was the
- norm and we all rebuilt our binaries locally every time we upgraded
- a piece.  But that's not the world we live in, and consistency
- *within* a distro matters too...
+Changes since v1:
+-Fix broken build
 
--ed
+Signed-off-by: Min Li <min.li.xe@renesas.com>
+---
+ drivers/ptp/ptp_idt82p33.c | 224 ++++++++++++++++++++++++++++++++-------------
+ drivers/ptp/ptp_idt82p33.h |   2 +
+ 2 files changed, 163 insertions(+), 63 deletions(-)
+
+diff --git a/drivers/ptp/ptp_idt82p33.c b/drivers/ptp/ptp_idt82p33.c
+index 179f6c4..0cc4953 100644
+--- a/drivers/ptp/ptp_idt82p33.c
++++ b/drivers/ptp/ptp_idt82p33.c
+@@ -21,6 +21,7 @@ MODULE_DESCRIPTION("Driver for IDT 82p33xxx clock devices");
+ MODULE_AUTHOR("IDT support-1588 <IDT-support-1588@lm.renesas.com>");
+ MODULE_VERSION("1.0");
+ MODULE_LICENSE("GPL");
++MODULE_FIRMWARE(FW_FILENAME);
+ 
+ /* Module Parameters */
+ static u32 sync_tod_timeout = SYNC_TOD_TIMEOUT_SEC;
+@@ -129,11 +130,12 @@ static int idt82p33_page_offset(struct idt82p33 *idt82p33, unsigned char val)
+ static int idt82p33_rdwr(struct idt82p33 *idt82p33, unsigned int regaddr,
+ 			 unsigned char *buf, unsigned int count, bool write)
+ {
+-	u8 offset, page;
+ 	int err;
++	u8 page;
++	u8 offset;
+ 
+ 	page = _PAGE(regaddr);
+-	offset = _OFFSET(regaddr);
++	offset = _OFFSET(regaddr);	
+ 
+ 	err = idt82p33_page_offset(idt82p33, page);
+ 	if (err)
+@@ -145,13 +147,13 @@ static int idt82p33_rdwr(struct idt82p33 *idt82p33, unsigned int regaddr,
+ }
+ 
+ static int idt82p33_read(struct idt82p33 *idt82p33, unsigned int regaddr,
+-			unsigned char *buf, unsigned int count)
++			 unsigned char *buf, unsigned int count)
+ {
+ 	return idt82p33_rdwr(idt82p33, regaddr, buf, count, false);
+ }
+ 
+ static int idt82p33_write(struct idt82p33 *idt82p33, unsigned int regaddr,
+-			unsigned char *buf, unsigned int count)
++			  unsigned char *buf, unsigned int count)
+ {
+ 	return idt82p33_rdwr(idt82p33, regaddr, buf, count, true);
+ }
+@@ -448,8 +450,11 @@ static int idt82p33_measure_tod_write_overhead(struct idt82p33_channel *channel)
+ 
+ 	err = idt82p33_measure_settime_gettime_gap_overhead(channel, &gap_ns);
+ 
+-	if (err)
++	if (err) {
++		dev_err(&idt82p33->client->dev,
++			"Failed in %s with err %d!\n", __func__, err);
+ 		return err;
++	}
+ 
+ 	err = idt82p33_measure_one_byte_write_overhead(channel,
+ 						       &one_byte_write_ns);
+@@ -518,13 +523,10 @@ static int idt82p33_sync_tod(struct idt82p33_channel *channel, bool enable)
+ 	u8 sync_cnfg;
+ 	int err;
+ 
+-	if (enable == channel->sync_tod_on) {
+-		if (enable && sync_tod_timeout) {
+-			mod_delayed_work(system_wq, &channel->sync_tod_work,
+-					 sync_tod_timeout * HZ);
+-		}
+-		return 0;
+-	}
++	/* Turn it off after sync_tod_timeout seconds */
++	if (enable && sync_tod_timeout)
++		ptp_schedule_worker(channel->ptp_clock,
++				    sync_tod_timeout * HZ);
+ 
+ 	err = idt82p33_read(idt82p33, channel->dpll_sync_cnfg,
+ 			    &sync_cnfg, sizeof(sync_cnfg));
+@@ -541,20 +543,13 @@ static int idt82p33_sync_tod(struct idt82p33_channel *channel, bool enable)
+ 	if (err)
+ 		return err;
+ 
+-	channel->sync_tod_on = enable;
+-
+-	if (enable && sync_tod_timeout) {
+-		mod_delayed_work(system_wq, &channel->sync_tod_work,
+-				 sync_tod_timeout * HZ);
+-	}
+-
+ 	return 0;
+ }
+ 
+-static void idt82p33_sync_tod_work_handler(struct work_struct *work)
++static long idt82p33_sync_tod_work_handler(struct ptp_clock_info *ptp)
+ {
+ 	struct idt82p33_channel *channel =
+-		container_of(work, struct idt82p33_channel, sync_tod_work.work);
++			container_of(ptp, struct idt82p33_channel, caps);
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+ 
+ 	mutex_lock(&idt82p33->reg_lock);
+@@ -562,35 +557,51 @@ static void idt82p33_sync_tod_work_handler(struct work_struct *work)
+ 	(void)idt82p33_sync_tod(channel, false);
+ 
+ 	mutex_unlock(&idt82p33->reg_lock);
++
++	/* Return a negative value here to not reschedule */
++	return -1;
+ }
+ 
+-static int idt82p33_pps_enable(struct idt82p33_channel *channel, bool enable)
++static int idt82p33_output_enable(struct idt82p33_channel *channel,
++				  bool enable, unsigned int outn)
+ {
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+-	u8 mask, outn, val;
+ 	int err;
++	u8 val;
++
++	err = idt82p33_read(idt82p33, OUT_MUX_CNFG(outn), &val, sizeof(val));
++
++	if (err)
++		return err;
++
++	if (enable)
++		val &= ~SQUELCH_ENABLE;
++	else
++		val |= SQUELCH_ENABLE;
++
++	return idt82p33_write(idt82p33, OUT_MUX_CNFG(outn), &val, sizeof(val));
++}
++
++static int idt82p33_output_mask_enable(struct idt82p33_channel *channel,
++				       bool enable)
++{
++	u16 mask;
++	int err;
++	u8 outn;
+ 
+ 	mask = channel->output_mask;
+ 	outn = 0;
+ 
+ 	while (mask) {
+-		if (mask & 0x1) {
+-			err = idt82p33_read(idt82p33, OUT_MUX_CNFG(outn),
+-					    &val, sizeof(val));
+-			if (err)
+-				return err;
+ 
+-			if (enable)
+-				val &= ~SQUELCH_ENABLE;
+-			else
+-				val |= SQUELCH_ENABLE;
++		if (mask & 0x1) {
+ 
+-			err = idt82p33_write(idt82p33, OUT_MUX_CNFG(outn),
+-					     &val, sizeof(val));
++			err = idt82p33_output_enable(channel, enable, outn);
+ 
+ 			if (err)
+ 				return err;
+ 		}
++
+ 		mask >>= 0x1;
+ 		outn++;
+ 	}
+@@ -598,6 +609,20 @@ static int idt82p33_pps_enable(struct idt82p33_channel *channel, bool enable)
+ 	return 0;
+ }
+ 
++static int idt82p33_perout_enable(struct idt82p33_channel *channel,
++				  bool enable,
++				  struct ptp_perout_request *perout)
++{
++	unsigned int flags = perout->flags;
++
++	/* Enable/disable output based on output_mask */
++	if (flags == PEROUT_ENABLE_OUTPUT_MASK)
++		return idt82p33_output_mask_enable(channel, enable);
++
++	/* Enable/disable individual output instead */
++	return idt82p33_output_enable(channel, enable, perout->index);
++}
++
+ static int idt82p33_enable_tod(struct idt82p33_channel *channel)
+ {
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+@@ -611,15 +636,13 @@ static int idt82p33_enable_tod(struct idt82p33_channel *channel)
+ 	if (err)
+ 		return err;
+ 
+-	err = idt82p33_pps_enable(channel, false);
+-
+-	if (err)
+-		return err;
+-
+ 	err = idt82p33_measure_tod_write_overhead(channel);
+ 
+-	if (err)
++	if (err) {
++		dev_err(&idt82p33->client->dev,
++			"Failed in %s with err %d!\n", __func__, err);
+ 		return err;
++	}
+ 
+ 	err = _idt82p33_settime(channel, &ts);
+ 
+@@ -638,10 +661,8 @@ static void idt82p33_ptp_clock_unregister_all(struct idt82p33 *idt82p33)
+ 
+ 		channel = &idt82p33->channel[i];
+ 
+-		if (channel->ptp_clock) {
++		if (channel->ptp_clock)
+ 			ptp_clock_unregister(channel->ptp_clock);
+-			cancel_delayed_work_sync(&channel->sync_tod_work);
+-		}
+ 	}
+ }
+ 
+@@ -659,14 +680,16 @@ static int idt82p33_enable(struct ptp_clock_info *ptp,
+ 
+ 	if (rq->type == PTP_CLK_REQ_PEROUT) {
+ 		if (!on)
+-			err = idt82p33_pps_enable(channel, false);
++			err = idt82p33_perout_enable(channel, false,
++						     &rq->perout);
+ 
+ 		/* Only accept a 1-PPS aligned to the second. */
+ 		else if (rq->perout.start.nsec || rq->perout.period.sec != 1 ||
+ 		    rq->perout.period.nsec) {
+ 			err = -ERANGE;
+ 		} else
+-			err = idt82p33_pps_enable(channel, true);
++			err = idt82p33_perout_enable(channel, true,
++						     &rq->perout);
+ 	}
+ 
+ 	mutex_unlock(&idt82p33->reg_lock);
+@@ -674,6 +697,49 @@ static int idt82p33_enable(struct ptp_clock_info *ptp,
+ 	return err;
+ }
+ 
++static int idt82p33_adjwritephase(struct ptp_clock_info *ptp, s32 offsetNs)
++{
++	struct idt82p33_channel *channel =
++		container_of(ptp, struct idt82p33_channel, caps);
++	struct idt82p33 *idt82p33 = channel->idt82p33;
++	s64 offsetInFs;
++	s64 offsetRegVal;
++	u8 val[4] = {0};
++	int err;
++
++	offsetInFs = (s64)(-offsetNs) * 1000000;
++
++	if (offsetInFs > WRITE_PHASE_OFFSET_LIMIT)
++		offsetInFs = WRITE_PHASE_OFFSET_LIMIT;
++	else if (offsetInFs < -WRITE_PHASE_OFFSET_LIMIT)
++		offsetInFs = -WRITE_PHASE_OFFSET_LIMIT;
++
++	/* Convert from phaseOffsetInFs to register value */
++	offsetRegVal = div_s64(offsetInFs * 1000, IDT_T0DPLL_PHASE_RESOL);
++
++	val[0] = offsetRegVal & 0xFF;
++	val[1] = (offsetRegVal >> 8) & 0xFF;
++	val[2] = (offsetRegVal >> 16) & 0xFF;
++	val[3] = (offsetRegVal >> 24) & 0x1F;
++	val[3] |= PH_OFFSET_EN;
++
++	mutex_lock(&idt82p33->reg_lock);
++
++	err = idt82p33_dpll_set_mode(channel, PLL_MODE_WPH);
++	if (err) {
++		dev_err(&idt82p33->client->dev,
++			"Failed in %s with err %d!\n", __func__, err);
++		goto out;
++	}
++
++	err = idt82p33_write(idt82p33, channel->dpll_phase_cnfg, val,
++			     sizeof(val));
++
++out:
++	mutex_unlock(&idt82p33->reg_lock);
++	return err;
++}
++
+ static int idt82p33_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ {
+ 	struct idt82p33_channel *channel =
+@@ -683,6 +749,9 @@ static int idt82p33_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ 
+ 	mutex_lock(&idt82p33->reg_lock);
+ 	err = _idt82p33_adjfine(channel, scaled_ppm);
++	if (err)
++		dev_err(&idt82p33->client->dev,
++			"Failed in %s with err %d!\n", __func__, err);
+ 	mutex_unlock(&idt82p33->reg_lock);
+ 
+ 	return err;
+@@ -706,10 +775,15 @@ static int idt82p33_adjtime(struct ptp_clock_info *ptp, s64 delta_ns)
+ 
+ 	if (err) {
+ 		mutex_unlock(&idt82p33->reg_lock);
++		dev_err(&idt82p33->client->dev,
++			"Adjtime failed in %s with err %d!\n", __func__, err);
+ 		return err;
+ 	}
+ 
+ 	err = idt82p33_sync_tod(channel, true);
++	if (err)
++		dev_err(&idt82p33->client->dev,
++			"Sync_tod failed in %s with err %d!\n", __func__, err);
+ 
+ 	mutex_unlock(&idt82p33->reg_lock);
+ 
+@@ -725,6 +799,9 @@ static int idt82p33_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+ 
+ 	mutex_lock(&idt82p33->reg_lock);
+ 	err = _idt82p33_gettime(channel, ts);
++	if (err)
++		dev_err(&idt82p33->client->dev,
++			"Failed in %s with err %d!\n", __func__, err);
+ 	mutex_unlock(&idt82p33->reg_lock);
+ 
+ 	return err;
+@@ -740,6 +817,9 @@ static int idt82p33_settime(struct ptp_clock_info *ptp,
+ 
+ 	mutex_lock(&idt82p33->reg_lock);
+ 	err = _idt82p33_settime(channel, ts);
++	if (err)
++		dev_err(&idt82p33->client->dev,
++			"Failed in %s with err %d!\n", __func__, err);
+ 	mutex_unlock(&idt82p33->reg_lock);
+ 
+ 	return err;
+@@ -772,9 +852,6 @@ static int idt82p33_channel_init(struct idt82p33_channel *channel, int index)
+ 		return -EINVAL;
+ 	}
+ 
+-	INIT_DELAYED_WORK(&channel->sync_tod_work,
+-			  idt82p33_sync_tod_work_handler);
+-	channel->sync_tod_on = false;
+ 	channel->current_freq_ppb = 0;
+ 
+ 	return 0;
+@@ -784,11 +861,14 @@ static void idt82p33_caps_init(struct ptp_clock_info *caps)
+ {
+ 	caps->owner = THIS_MODULE;
+ 	caps->max_adj = 92000;
++	caps->n_per_out = 11;
++	caps->adjphase = idt82p33_adjwritephase;
+ 	caps->adjfine = idt82p33_adjfine;
+ 	caps->adjtime = idt82p33_adjtime;
+ 	caps->gettime64 = idt82p33_gettime;
+ 	caps->settime64 = idt82p33_settime;
+ 	caps->enable = idt82p33_enable;
++	caps->do_aux_work = idt82p33_sync_tod_work_handler;
+ }
+ 
+ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
+@@ -802,23 +882,18 @@ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
+ 	channel = &idt82p33->channel[index];
+ 
+ 	err = idt82p33_channel_init(channel, index);
+-	if (err)
++	if (err) {
++		dev_err(&idt82p33->client->dev,
++			"Channel_init failed in %s with err %d!\n",
++			__func__, err);
+ 		return err;
++	}
+ 
+ 	channel->idt82p33 = idt82p33;
+ 
+ 	idt82p33_caps_init(&channel->caps);
+ 	snprintf(channel->caps.name, sizeof(channel->caps.name),
+ 		 "IDT 82P33 PLL%u", index);
+-	channel->caps.n_per_out = hweight8(channel->output_mask);
+-
+-	err = idt82p33_dpll_set_mode(channel, PLL_MODE_DCO);
+-	if (err)
+-		return err;
+-
+-	err = idt82p33_enable_tod(channel);
+-	if (err)
+-		return err;
+ 
+ 	channel->ptp_clock = ptp_clock_register(&channel->caps, NULL);
+ 
+@@ -831,6 +906,22 @@ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
+ 	if (!channel->ptp_clock)
+ 		return -ENOTSUPP;
+ 
++	err = idt82p33_dpll_set_mode(channel, PLL_MODE_DCO);
++	if (err) {
++		dev_err(&idt82p33->client->dev,
++			"Dpll_set_mode failed in %s with err %d!\n",
++			__func__, err);
++		return err;
++	}
++
++	err = idt82p33_enable_tod(channel);
++	if (err) {
++		dev_err(&idt82p33->client->dev,
++			"Enable_tod failed in %s with err %d!\n",
++			__func__, err);
++		return err;
++	}
++
+ 	dev_info(&idt82p33->client->dev, "PLL%d registered as ptp%d\n",
+ 		 index, channel->ptp_clock->index);
+ 
+@@ -839,19 +930,22 @@ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
+ 
+ static int idt82p33_load_firmware(struct idt82p33 *idt82p33)
+ {
++	char fname[128] = FW_FILENAME;
+ 	const struct firmware *fw;
+ 	struct idt82p33_fwrc *rec;
+ 	u8 loaddr, page, val;
+ 	int err;
+ 	s32 len;
+ 
+-	dev_dbg(&idt82p33->client->dev,
+-		"requesting firmware '%s'\n", FW_FILENAME);
++	dev_dbg(&idt82p33->client->dev, "requesting firmware '%s'\n", fname);
+ 
+-	err = request_firmware(&fw, FW_FILENAME, &idt82p33->client->dev);
++	err = request_firmware(&fw, fname, &idt82p33->client->dev);
+ 
+-	if (err)
++	if (err) {
++		dev_err(&idt82p33->client->dev,
++			"Failed in %s with err %d!\n", __func__, err);
+ 		return err;
++	}
+ 
+ 	dev_dbg(&idt82p33->client->dev, "firmware size %zu bytes\n", fw->size);
+ 
+@@ -935,8 +1029,12 @@ static int idt82p33_probe(struct i2c_client *client,
+ 		for (i = 0; i < MAX_PHC_PLL; i++) {
+ 			if (idt82p33->pll_mask & (1 << i)) {
+ 				err = idt82p33_enable_channel(idt82p33, i);
+-				if (err)
++				if (err) {
++					dev_err(&idt82p33->client->dev,
++						"Failed in %s with err %d!\n",
++						__func__, err);
+ 					break;
++				}
+ 			}
+ 		}
+ 	} else {
+diff --git a/drivers/ptp/ptp_idt82p33.h b/drivers/ptp/ptp_idt82p33.h
+index 9d46966..3a0e001 100644
+--- a/drivers/ptp/ptp_idt82p33.h
++++ b/drivers/ptp/ptp_idt82p33.h
+@@ -56,6 +56,8 @@
+ #define PLL_MODE_SHIFT                    (0)
+ #define PLL_MODE_MASK                     (0x1F)
+ 
++#define PEROUT_ENABLE_OUTPUT_MASK         (0xdeadbeef)
++
+ enum pll_mode {
+ 	PLL_MODE_MIN = 0,
+ 	PLL_MODE_AUTOMATIC = PLL_MODE_MIN,
+-- 
+2.7.4
+
