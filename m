@@ -2,93 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B812A6E4C
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 20:46:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF5DB2A6E4E
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 20:46:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729783AbgKDTqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 14:46:35 -0500
-Received: from mail.zx2c4.com ([192.95.5.64]:53447 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725889AbgKDTqf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Nov 2020 14:46:35 -0500
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 55ac07e3
-        for <netdev@vger.kernel.org>;
-        Wed, 4 Nov 2020 19:44:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=A3txSEFLmhKqctZhBsIbAmC27m4=; b=YZ0Tui
-        B294RZlMp3QLM3Ri3JNXVOGFuWXm59fll9PFQbjflCH4iIqHSuP9Z8petTgmMsoa
-        SYbiicDRJ07VU2USeeAHNCxPXmve1Apkqxc2QSqq56SCB5oDAhRL9G8qX5ELPRAl
-        54WzpqWLpl51bZ18F02TkblOIVULgtTHAnmPCkQj7KUZEp1nFOpeB7z7821tZ+Cs
-        d4R9vFfZ9lrK8MTI1fhIo66OpbCgYcENeFySwtOV6gsfTWVeMOqVYmJVQde4Dmq/
-        7KXYw7NydK/I3c7Kc51z6FfX96jcuI8qpyujURHaLwNUi72UpnTdRv8h0yarEddf
-        MIBiq3jLEgYQu1Rw==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 86c24bc2 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Wed, 4 Nov 2020 19:44:21 +0000 (UTC)
-Received: by mail-yb1-f172.google.com with SMTP id c18so6201544ybj.10
-        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 11:46:32 -0800 (PST)
-X-Gm-Message-State: AOAM530AhIXIt0WZEHAYTVCcy+AdSwEK+sR+unIBxsoedRp9WLfBpanL
-        qR5C9KdALpehiOWHAWThJ43QDu7A1Bh7iDkejlo=
-X-Google-Smtp-Source: ABdhPJwrKS1Qe6FXigKFOooqaDL+07TCiLCBrWPsMRVnWDv3P9m/KovJNUleFszPuWdGWRHEv9qhIoS2MVT6MLp9zZs=
-X-Received: by 2002:a25:4943:: with SMTP id w64mr27765905yba.178.1604519191132;
- Wed, 04 Nov 2020 11:46:31 -0800 (PST)
+        id S1730295AbgKDTqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 14:46:48 -0500
+Received: from 95-31-39-132.broadband.corbina.ru ([95.31.39.132]:60412 "EHLO
+        blackbox.su" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725889AbgKDTqs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Nov 2020 14:46:48 -0500
+Received: from metabook.localnet (metabook.metanet [192.168.2.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by blackbox.su (Postfix) with ESMTPSA id D857982D09;
+        Wed,  4 Nov 2020 22:46:48 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=blackbox.su;
+        s=201811; t=1604519208;
+        bh=Wl6jFLMihoNHO2Bwe8IWK0SHn3NOrqmaBZlfC3hUrls=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NRQ2JmzXv52J8V1gZdmJ+zv9EMM0n+6F5VPaaffvldcIxmW9bqmWAY1uRCP6IHv81
+         XLId0TauVuWi8SGtZKcqaiZMnT7ycs7Huo7wyndMibbp84dkA6YZdt+6jch8kQvQME
+         zdyqgKtRubPcIfZwBdO8JitPbY6kVdY81IJkZUXAygrfR3ARt5J77XEH/eskZIrS9p
+         qgD7sEuiXPdg/pDeofWlagQJm9UKltD2HeZ1sOCoVqe8xT1XlgbWykqGOPOPsY4OdC
+         PIio3wWUATRr3j6VPrvnz/Hh5ZvM9+8E+QmKakAV/fJhrEYgQ4Ygd5dVNeFsl0vOYw
+         BflKPcu84PDOw==
+From:   Sergej Bauer <sbauer@blackbox.su>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     andrew@lunn.ch, Markus.Elfring@web.de,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] lan743x: fix for potential NULL pointer dereference with bare card
+Date:   Wed, 04 Nov 2020 22:46:35 +0300
+Message-ID: <2039725.TBXjNvtEQf@metabook>
+In-Reply-To: <20201103173815.506db576@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <220201101203820.GD1109407@lunn.ch> <20201101223556.16116-1-sbauer@blackbox.su> <20201103173815.506db576@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <059fcb95-fba8-673e-0cd6-fb26e8ed4861@gmail.com> <4f731535-2a51-a673-5daf-d9ec2536a8f8@gmail.com>
-In-Reply-To: <4f731535-2a51-a673-5daf-d9ec2536a8f8@gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 4 Nov 2020 20:46:20 +0100
-X-Gmail-Original-Message-ID: <CAHmME9qkPLwO4+H=+GAvWXDMQz-tHhyK1mmmtmb5Waph7fTiCw@mail.gmail.com>
-Message-ID: <CAHmME9qkPLwO4+H=+GAvWXDMQz-tHhyK1mmmtmb5Waph7fTiCw@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 07/10] wireguard: switch to dev_get_tstats64
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Harald Welte <laforge@gnumonks.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        osmocom-net-gprs@lists.osmocom.org,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 4, 2020 at 3:31 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->
-> Replace ip_tunnel_get_stats64() with the new identical core fucntion
-> dev_get_tstats64().
->
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  drivers/net/wireguard/device.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-> index c9f65e96c..a3ed49cd9 100644
-> --- a/drivers/net/wireguard/device.c
-> +++ b/drivers/net/wireguard/device.c
-> @@ -215,7 +215,7 @@ static const struct net_device_ops netdev_ops = {
->         .ndo_open               = wg_open,
->         .ndo_stop               = wg_stop,
->         .ndo_start_xmit         = wg_xmit,
-> -       .ndo_get_stats64        = ip_tunnel_get_stats64
-> +       .ndo_get_stats64        = dev_get_tstats64
->  };
->
->  static void wg_destruct(struct net_device *dev)
-> --
-> 2.29.2
+On Wednesday, November 4, 2020 4:38:33 AM MSK Jakub Kicinski wrote:
+> On Mon,  2 Nov 2020 01:35:55 +0300 Sergej Bauer wrote:
+> > This is the 3rd revision of the patch fix for potential null pointer
+> > dereference with lan743x card.
+> > 
+> > The simpliest way to reproduce: boot with bare lan743x and issue "ethtool
+> > ethN" commant where ethN is the interface with lan743x card. Example:
+> > 
+> > $ sudo ethtool eth7
+> > dmesg:
+> > [  103.510336] BUG: kernel NULL pointer dereference, address:
+> > 0000000000000340 ...
+> > [  103.510836] RIP: 0010:phy_ethtool_get_wol+0x5/0x30 [libphy]
+> > ...
+> > [  103.511629] Call Trace:
+> > [  103.511666]  lan743x_ethtool_get_wol+0x21/0x40 [lan743x]
+> > [  103.511724]  dev_ethtool+0x1507/0x29d0
+> > [  103.511769]  ? avc_has_extended_perms+0x17f/0x440
+> > [  103.511820]  ? tomoyo_init_request_info+0x84/0x90
+> > [  103.511870]  ? tomoyo_path_number_perm+0x68/0x1e0
+> > [  103.511919]  ? tty_insert_flip_string_fixed_flag+0x82/0xe0
+> > [  103.511973]  ? inet_ioctl+0x187/0x1d0
+> > [  103.512016]  dev_ioctl+0xb5/0x560
+> > [  103.512055]  sock_do_ioctl+0xa0/0x140
+> > [  103.512098]  sock_ioctl+0x2cb/0x3c0
+> > [  103.512139]  __x64_sys_ioctl+0x84/0xc0
+> > [  103.512183]  do_syscall_64+0x33/0x80
+> > [  103.512224]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > [  103.512274] RIP: 0033:0x7f54a9cba427
+> 
+> Applied, thanks!
 
-Looks fine to me.
+Hi, Jakub!
+Thank you for taking the time to review my patch
 
-Reviewed-by: Jason A. Donenfeld <Jason@zx2c4.com>
+                Regards,
+                        Sergej.
+
+
+
