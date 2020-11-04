@@ -2,118 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FA3C2A6E45
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 20:42:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B96F2A6E49
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 20:43:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730168AbgKDTma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 14:42:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47168 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725889AbgKDTm3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Nov 2020 14:42:29 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B6ADF206F9;
-        Wed,  4 Nov 2020 19:42:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604518948;
-        bh=hnEIJUynmmgvhXM6LNWJ3AbWQehuvhEF6/0d7tVxPgk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OywGmDa2wkQkk/FhsD+bRB9zR6KglkyRoMbANXBzP4e4dx6FgMPNTyaIhnIarG7zu
-         oFglqRYw1+Uwz3W6VMPysiR2T770vJnQAWj26vk5kLUVdEpzNHizPnxCIsJBjXgatC
-         pHCqqFYQZ/G2oxBfooxmn412DtuvdrvbNp+CcbM4=
-Date:   Wed, 4 Nov 2020 11:42:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>, netdev@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shuah Khan <shuah@kernel.org>, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH net-next v2 0/3] net: introduce rps_default_mask
-Message-ID: <20201104114226.250a4e85@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <79c58e6cf23196b73887b20802daebd59fe89476.camel@redhat.com>
-References: <cover.1604055792.git.pabeni@redhat.com>
-        <20201102145447.0074f272@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <86c37d881a93d5690faf20de3bccceca1493fd74.camel@redhat.com>
-        <20201103085245.3397defa@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <79c58e6cf23196b73887b20802daebd59fe89476.camel@redhat.com>
+        id S1729946AbgKDTnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 14:43:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725889AbgKDTnH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 14:43:07 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227E4C0613D3;
+        Wed,  4 Nov 2020 11:43:06 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id h196so19061169ybg.4;
+        Wed, 04 Nov 2020 11:43:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WjTjCXElFnEr9OHvxQOceWPjvEGPkIs3Wf6wPRplaK4=;
+        b=CkXUlDj3sVxfOcF/pOyG6S2l94WPUs96xGVUjxYyTkWRBRBcxmO4yaW+84og6KTtH1
+         WKIqO5D7NUjxCst8+trH4KIfDo7M7A9wRRIv3otadX9QUx38ygygJ/ADULYLbdnayuq8
+         FzqgWI/FKdEECL26wZwJBUSSXWhxdNN5hw52UCIuhG5x9j/GSIf3Lj7HjwjQ3oN63Hnr
+         dw/fAfuLYFAEs66kCQvrfx0e9UTue0UnFTugXIYPg2WerD9jHWnsiIsz5WLhcVF2e3jh
+         b/ulaI/klEzFspog+qVAORRXxgv5eN4+0EFA1zHcItaMqGoNxbRGA/I9OUmLpOICRZe7
+         uv5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WjTjCXElFnEr9OHvxQOceWPjvEGPkIs3Wf6wPRplaK4=;
+        b=XW4GJDZ/PKgXejRIUcnd3ZlJKfn4NNw1lsvnuWEdpotut86MOrDeuSXNat/Uz0TIZ7
+         wPyF/6qtjweSnTZkjAR4sqc94KXM8runKGQbrfN3kGzbbppbP7ZZOMGy7NI9V1ImjOV3
+         RtWYKJp8Rko9TdzjLEPC/lsK5ceyMaOL3WQV2GuNVrP8V+HbxHy+keQqqHeQ4AWGyI45
+         5KFsMnhlPsyrha4+ksis8Bf9U+2wbX9LxvjNAfKaPP6Z1C2N7N1tPmJfm2JL+Rt2OSTJ
+         iiabOOashnkx21yVZW+JVu+885AOHZqOAulpWJjrti9HxuPIhhYIHDyA6jB6mYKEK4dm
+         s9Rg==
+X-Gm-Message-State: AOAM533vUqxAi2kOUZE6NPH2eDArnZk0IAG7UID6J1GnOheuiZBHY+tJ
+        WJGbwB91mgIFkXg7+Zbvp0w2RdhnQIkJrdUuSGo=
+X-Google-Smtp-Source: ABdhPJyvgNOUYUHJcGD+hE68gDiC+YC83DKko1JXPNrvhK4YisSgKwgJ6TiPnqu9e4xTBBSetlFtcRuULhemCfaTfQM=
+X-Received: by 2002:a25:b0d:: with SMTP id 13mr39195887ybl.347.1604518984966;
+ Wed, 04 Nov 2020 11:43:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <1604396490-12129-1-git-send-email-magnus.karlsson@gmail.com>
+ <1604396490-12129-3-git-send-email-magnus.karlsson@gmail.com>
+ <CAEf4Bzah-7akFkjUAJR=ovXLAnLd6EvLMMOy+GBbc4R28TY-eg@mail.gmail.com> <CAJ8uoz2Cqtw0gPpuyk79z4Rt8dYLmxd9DsSeAB4fQFJWMHLHVw@mail.gmail.com>
+In-Reply-To: <CAJ8uoz2Cqtw0gPpuyk79z4Rt8dYLmxd9DsSeAB4fQFJWMHLHVw@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 4 Nov 2020 11:42:54 -0800
+Message-ID: <CAEf4Bzazw67MNAE9gkFLKLdQnDSvvnmuNrPb7gMf51LkK3pYpg@mail.gmail.com>
+Subject: Re: [PATCH bpf 2/2] libbpf: fix possible use after free in xsk_socket__delete
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 04 Nov 2020 18:36:08 +0100 Paolo Abeni wrote:
-> On Tue, 2020-11-03 at 08:52 -0800, Jakub Kicinski wrote:
-> > On Tue, 03 Nov 2020 16:22:07 +0100 Paolo Abeni wrote:  
-> > > The relevant use case is an host running containers (with the related
-> > > orchestration tools) in a RT environment. Virtual devices (veths, ovs
-> > > ports, etc.) are created by the orchestration tools at run-time.
-> > > Critical processes are allowed to send packets/generate outgoing
-> > > network traffic - but any interrupt is moved away from the related
-> > > cores, so that usual incoming network traffic processing does not
-> > > happen there.
-> > > 
-> > > Still an xmit operation on a virtual devices may be transmitted via ovs
-> > > or veth, with the relevant forwarding operation happening in a softirq
-> > > on the same CPU originating the packet. 
-> > > 
-> > > RPS is configured (even) on such virtual devices to move away the
-> > > forwarding from the relevant CPUs.
-> > > 
-> > > As Saeed noted, such configuration could be possibly performed via some
-> > > user-space daemon monitoring network devices and network namespaces
-> > > creation. That will be anyway prone to some race: the orchestation tool
-> > > may create and enable the netns and virtual devices before the daemon
-> > > has properly set the RPS mask.
-> > > 
-> > > In the latter scenario some packet forwarding could still slip in the
-> > > relevant CPU, causing measurable latency. In all non RT scenarios the
-> > > above will be likely irrelevant, but in the RT context that is not
-> > > acceptable - e.g. it causes in real environments latency above the
-> > > defined limits, while the proposed patches avoid the issue.
-> > > 
-> > > Do you see any other simple way to avoid the above race?
-> > > 
-> > > Please let me know if the above answers your doubts,  
-> > 
-> > Thanks, that makes it clearer now.
-> > 
-> > Depending on how RT-aware your container management is it may or may not
-> > be the right place to configure this, as it creates the veth interface.
-> > Presumably it's the container management which does the placement of
-> > the tasks to cores, why is it not setting other attributes, like RPS?  
-> 
-> The container orchestration is quite complex, and I'm unsure isolation
-> and networking configuration are performed (or can be performed) by the
-> same precess (without an heavy refactor).
-> 
-> On the flip hand, the global rps mask knob looked quite
-> straightforward to me.
+On Wed, Nov 4, 2020 at 12:27 AM Magnus Karlsson
+<magnus.karlsson@gmail.com> wrote:
+>
+> On Tue, Nov 3, 2020 at 8:05 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Tue, Nov 3, 2020 at 1:42 AM Magnus Karlsson
+> > <magnus.karlsson@gmail.com> wrote:
+> > >
+> > > From: Magnus Karlsson <magnus.karlsson@intel.com>
+> > >
+> > > Fix a possible use after free in xsk_socket__delete that will happen
+> > > if xsk_put_ctx() frees the ctx. To fix, save the umem reference taken
+> > > from the context and just use that instead.
+> > >
+> > > Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
+> > > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > > ---
+> > >  tools/lib/bpf/xsk.c | 6 ++++--
+> > >  1 file changed, 4 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> > > index 504b7a8..9bc537d 100644
+> > > --- a/tools/lib/bpf/xsk.c
+> > > +++ b/tools/lib/bpf/xsk.c
+> > > @@ -892,6 +892,7 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+> > >  {
+> > >         size_t desc_sz = sizeof(struct xdp_desc);
+> > >         struct xdp_mmap_offsets off;
+> > > +       struct xsk_umem *umem;
+> > >         struct xsk_ctx *ctx;
+> > >         int err;
+> > >
+> > > @@ -899,6 +900,7 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+> > >                 return;
+> > >
+> > >         ctx = xsk->ctx;
+> > > +       umem = ctx->umem;
+> > >         if (ctx->prog_fd != -1) {
+> > >                 xsk_delete_bpf_maps(xsk);
+> > >                 close(ctx->prog_fd);
+> > > @@ -918,11 +920,11 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+> > >
+> > >         xsk_put_ctx(ctx);
+> > >
+> > > -       ctx->umem->refcount--;
+> > > +       umem->refcount--;
+> >
+> > if you moved ctx->umem->refcount--; to before xdk_put_ctx(ctx), would
+> > that also work?
+>
+> Yes, it would for that statement, but I still need the umem pointer
+> for the statement below. And this statement of potentially closing the
+> fd needs to be after xsk_put_ctx(). So we might as well keep
+> ujmem->refcount-- where it is, if that is ok with you?
 
-I understand, but I can't shake the feeling this is a hack.
+Ah, missed the umem->fd below. Then it makes sense, thanks.
 
-Whatever sets the CPU isolation should take care of the RPS settings.
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-> Possibly I can reduce the amount of new code introduced by this
-> patchset removing some code duplication
-> between rps_default_mask_sysctl() and flow_limit_cpu_sysctl(). Would
-> that make this change more acceptable? Or should I drop this
-> altogether?
-
-I'm leaning towards drop altogether, unless you can get some
-support/review tags from other netdev developers. So far it
-appears we only got a down vote from Saeed.
-
-> > Also I wonder if it would make sense to turn this knob into something
-> > more generic. When we arrive at the threaded NAPIs - could it make
-> > sense for the threads to inherit your mask as the CPUs they are allowed
-> > to run on?  
-> 
-> I personally *think* this would be fine - and good. But isn't a bit
-> premature discussing the integration of 2 missing pieces ? :)
+>
+> > >         /* Do not close an fd that also has an associated umem connected
+> > >          * to it.
+> > >          */
+> > > -       if (xsk->fd != ctx->umem->fd)
+> > > +       if (xsk->fd != umem->fd)
+> > >                 close(xsk->fd);
+> > >         free(xsk);
+> > >  }
+> > > --
+> > > 2.7.4
+> > >
