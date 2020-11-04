@@ -2,105 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 456F82A5FDC
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 09:50:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EF642A5FE0
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 09:52:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727852AbgKDIug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 03:50:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48670 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725812AbgKDIug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 03:50:36 -0500
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44360C0613D3;
-        Wed,  4 Nov 2020 00:50:34 -0800 (PST)
-Received: by mail-wr1-x442.google.com with SMTP id p1so1975778wrf.12;
-        Wed, 04 Nov 2020 00:50:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rb5+9Uu5Pextlzz28MhD13qyqn/S8yH6ObfjNiHXu9M=;
-        b=OsMZKWk6API99ut4fdwjboNr+6mH122uBWsHSEeLEzBJ2/JHKBZMheoHwcEmiaCJ+a
-         6zgXIKL5hWM/tTnynAFcCrYAShQ/EV11D+LvWEGbBCKmiTx1zMRI1eIfyBEtnztem5MZ
-         KeZ1qR3O4HRdg7PPkdSMUuxhlCukI711ZtwwGEnvOSyawakesItvR57naIzLJ7IWSSZQ
-         7rUQ3l61niHRazUr0u93egm8VpkEtNsvTRmos4TzPDIFWr2OQxXSUOThBqUoBNV3qVmH
-         M33dtj14JicyN31dudzygBMkchcX2rGnt3KVma9k5e6G4EN89c04Xi3SxWLi2Mh+3Lh5
-         I05A==
+        id S1726844AbgKDIwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 03:52:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:20359 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726029AbgKDIwG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 03:52:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604479924;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xEUt5EUH16YvaUhu9JLMer/1MWLivZjYY/q1IODAmqs=;
+        b=BjJCyAtK6Pk4VFJY3kALAeNEr3HoRW5WpXvmecYpipVB21usXFtFBCdWu3YYDU1cnS8RgT
+        fvNiPhR8sTi7rkVj4qHNVYw9xhloZ182D7hyk/tsoupgBKhfTR2PBMRjsMT6lzQha1Ta7T
+        rRBXzx7mEpQc/9SnxUxPDobrBUHngWA=
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
+ [209.85.215.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-48-dpm_DJ5GO26xbfcSWuA49g-1; Wed, 04 Nov 2020 03:52:03 -0500
+X-MC-Unique: dpm_DJ5GO26xbfcSWuA49g-1
+Received: by mail-pg1-f197.google.com with SMTP id b17so13396932pgd.16
+        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 00:52:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rb5+9Uu5Pextlzz28MhD13qyqn/S8yH6ObfjNiHXu9M=;
-        b=cdKu5MT273Ud3SBTt+532OphaQNdQ9Fe5+rgQZinZieHran+5bBS9eKwEZBE9V8Ja1
-         sulrssdcYSA9n+S89z45jpSXmttB8TGzaH3L0sxIg2zoSbLngrXTk/VzUeuU1vtYTuud
-         4lrYL7sluAlpzU6L9bozYHmGmyBRQHL5nEC/oLQp51WyuEzV/tZKRHZjVuAhkyUyTH9E
-         zilftptPLTzc555PNqRkT4lSZmMVb8yzQ/ECxmWefhY4buwPtysJuzrFYKuxpjf+ys5O
-         HCH1LQp/v7+XwN6Uwl36DSQetUFgz4jGIkb5zzpifRrngFx2x/AN1pyvO6zbsxldTGQ/
-         8gIw==
-X-Gm-Message-State: AOAM533dV3unCW0CfPujazcn5X/yZiuzmt6aQkqW0O0l3DU/eKkPwOg4
-        Cwku99RQnUFkxdBot6pw7Yw=
-X-Google-Smtp-Source: ABdhPJwIaJwaDd5dlm6XkBJ424PxxvIm7rtGoOuLm192Wv1qUSuLJ3vrfQjzeQLqxYUXNvHGOAC9FA==
-X-Received: by 2002:adf:ebc6:: with SMTP id v6mr29596142wrn.427.1604479833095;
-        Wed, 04 Nov 2020 00:50:33 -0800 (PST)
-Received: from [192.168.212.98] (104.160.185.81.rev.sfr.net. [81.185.160.104])
-        by smtp.gmail.com with ESMTPSA id k18sm1608302wrx.96.2020.11.04.00.50.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Nov 2020 00:50:32 -0800 (PST)
-Subject: Re: [PATCH 1/1] mm: avoid re-using pfmemalloc page in
- page_frag_alloc()
-To:     Rama Nichanamatlu <rama.nichanamatlu@oracle.com>,
-        Matthew Wilcox <willy@infradead.org>
-Cc:     Dongli Zhang <dongli.zhang@oracle.com>, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, davem@davemloft.net, kuba@kernel.org,
-        aruna.ramakrishna@oracle.com, bert.barbe@oracle.com,
-        venkat.x.venkatsubra@oracle.com, manjunath.b.patil@oracle.com,
-        joe.jin@oracle.com, srinivas.eeda@oracle.com
-References: <20201103193239.1807-1-dongli.zhang@oracle.com>
- <20201103203500.GG27442@casper.infradead.org>
- <7141038d-af06-70b2-9f50-bf9fdf252e22@oracle.com>
- <20201103211541.GH27442@casper.infradead.org>
- <20201104011640.GE2445@rnichana-ThinkPad-T480>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <2bce996a-0a62-9d14-4310-a4c5cb1ddeae@gmail.com>
-Date:   Wed, 4 Nov 2020 09:50:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xEUt5EUH16YvaUhu9JLMer/1MWLivZjYY/q1IODAmqs=;
+        b=SXfLZiajUmtMew1vuuy5skUB4NOnv9Z0JefZ4WjTtdcHBL0jcdU9jqfxODwtPGtlLV
+         qoougXW2sHd9tQSAvCD3qyV+yu4115RXWnBPH87Dq61IOklvaSRkefBA58siWeQ+vgIc
+         1l7Ubwc7wqr5NObl/L15m2KFVGIilrp69K6FARUSrRRJZA8ggyFdT1gkB6twL11SOuCA
+         2TRn2sZmrz0d9LMEDJ53U7Fp7zd7RlOc6PJMdDZY0A7oU/fcyk7y0nXERHYedpzUImuF
+         7AWzXVqP0h078Hwsko+AY986NOEYF/ZfwMvCoD3TM8tEZEmQm8VnxLRFUnHO7kEseeDD
+         Vcww==
+X-Gm-Message-State: AOAM53383dX5KtPRGuWOQR5L1YC6glu6Y9WuGyXiLKqKPzZ/EhrqxTD5
+        g5vhcFdsFTr3qrBJArVCDcrRoCjdo5qhZi0hendtJ08xQGMhoCxIQJsYXvOHLxucdQvPD30Gsfi
+        zAQhhw2ldUSkrngU=
+X-Received: by 2002:a17:90b:1642:: with SMTP id il2mr2678197pjb.81.1604479922129;
+        Wed, 04 Nov 2020 00:52:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxCQhWYERz6hxQnPPSTbwhK08O8t2kDESGcVJbn64vjo7BnJ8Ci65snM49uwBfRwT/tIVeA9g==
+X-Received: by 2002:a17:90b:1642:: with SMTP id il2mr2678176pjb.81.1604479921809;
+        Wed, 04 Nov 2020 00:52:01 -0800 (PST)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id nh24sm1511767pjb.44.2020.11.04.00.51.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Nov 2020 00:52:01 -0800 (PST)
+Date:   Wed, 4 Nov 2020 16:51:49 +0800
+From:   Hangbin Liu <haliu@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCHv3 iproute2-next 1/5] configure: add check_libbpf() for
+ later libbpf support
+Message-ID: <20201104085149.GQ2408@dhcp-12-153.nay.redhat.com>
+References: <20201028132529.3763875-1-haliu@redhat.com>
+ <20201029151146.3810859-1-haliu@redhat.com>
+ <20201029151146.3810859-2-haliu@redhat.com>
+ <78c5df29-bf06-0b60-d914-bdab3d65b198@gmail.com>
+ <20201103055419.GI2408@dhcp-12-153.nay.redhat.com>
+ <e3368c04-2887-3daf-8be8-8717960e9a18@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20201104011640.GE2445@rnichana-ThinkPad-T480>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e3368c04-2887-3daf-8be8-8717960e9a18@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Nov 03, 2020 at 10:32:37AM -0700, David Ahern wrote:
+> configure scripts usually allow you to control options directly,
+> overriding the autoprobe.
+
+What do you think of the follow update? It's a little rough and only controls
+libbpf.
+
+$ git diff
+diff --git a/configure b/configure
+index 711bb69c..be35c024 100755
+--- a/configure
++++ b/configure
+@@ -442,6 +442,35 @@ endif
+ EOF
+ }
+
++usage()
++{
++       cat <<EOF
++Usage: $0 [OPTIONS]
++  -h | --help                  Show this usage info
++  --no-libbpf                  build the package without libbpf
++  --libbpf-dir=DIR             build the package with self defined libbpf dir
++EOF
++       exit $1
++}
++
++while true; do
++       case "$1" in
++               --libbpf-dir)
++                       LIBBPF_DIR="$2"
++                       shift 2 ;;
++               --no-libbpf)
++                       NO_LIBBPF_CHECK=1
++                       shift ;;
++               -h | --help)
++                       usage 0 ;;
++               "")
++                       break ;;
++               *)
++                       usage 1 ;;
++       esac
++done
++
++
+ echo "# Generated config based on" $INCLUDE >$CONFIG
+ quiet_config >> $CONFIG
+
+@@ -476,8 +505,10 @@ check_setns
+ echo -n "SELinux support: "
+ check_selinux
+
+-echo -n "libbpf support: "
+-check_libbpf
++if [ -z $NO_LIBBPF_CHECK ]; then
++       echo -n "libbpf support: "
++       check_libbpf
++fi
+
+ echo -n "ELF support: "
+ check_elf
 
 
-On 11/4/20 2:16 AM, Rama Nichanamatlu wrote:
->> Thanks for providing the numbers.  Do you think that dropping (up to)
->> 7 packets is acceptable?
-> 
-> net.ipv4.tcp_syn_retries = 6
-> 
-> tcp clients wouldn't even get that far leading to connect establish issues.
+$ ./configure -h
+Usage: ./configure [OPTIONS]
+  -h | --help                   Show this usage info
+  --no-libbpf                   build the package without libbpf
+  --libbpf-dir=DIR              build the package with self defined libbpf dir
 
-This does not really matter. If host was under memory pressure,
-dropping a few packets is really not an issue.
-
-Please do not add expensive checks in fast path, just to "not drop a packet"
-even if the world is collapsing.
-
-Also consider that NIC typically have thousands of pre-allocated page/frags
-for their RX ring buffers, they might all have pfmemalloc set, so we are speaking
-of thousands of packet drops before the RX-ring can be refilled with normal (non pfmemalloc) page/frags.
-
-If we want to solve this issue more generically, we would have to try
-to copy data into a non pfmemalloc frag instead of dropping skb that
-had frags allocated minutes ago under memory pressure.
-
-This copy could happen in core networking stack, but this seems adding
-more pressure to mm layer under pressure.
+Thanks
+Hangbin
 
