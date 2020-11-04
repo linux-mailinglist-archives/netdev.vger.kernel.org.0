@@ -2,157 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1098E2A6613
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 15:13:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17A4C2A662A
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 15:14:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730359AbgKDOMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 09:12:19 -0500
-Received: from correo.us.es ([193.147.175.20]:35820 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730101AbgKDOMF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Nov 2020 09:12:05 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 9D1DDB60E8
-        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 15:12:03 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8C875DA78E
-        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 15:12:03 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 816F0DA78A; Wed,  4 Nov 2020 15:12:03 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 477A0DA72F;
-        Wed,  4 Nov 2020 15:12:01 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 04 Nov 2020 15:12:01 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id 0AE5642EF9E2;
-        Wed,  4 Nov 2020 15:12:01 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 8/8] netfilter: nft_reject_inet: allow to use reject from inet ingress
-Date:   Wed,  4 Nov 2020 15:11:49 +0100
-Message-Id: <20201104141149.30082-9-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201104141149.30082-1-pablo@netfilter.org>
-References: <20201104141149.30082-1-pablo@netfilter.org>
+        id S1729768AbgKDOOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 09:14:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42456 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726762AbgKDOOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 09:14:49 -0500
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB70FC0613D3;
+        Wed,  4 Nov 2020 06:14:48 -0800 (PST)
+Received: by mail-lf1-x144.google.com with SMTP id 141so27329673lfn.5;
+        Wed, 04 Nov 2020 06:14:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S4tBycIgGpMbcu0VMkG4KdXUec3BMb9c9CGZHnWqcbY=;
+        b=Uby3FcRKI9yEd+t292wdoGg6qfKgNlGfPsu1x0mVGxqu4Y47S9/9jU5Vxln+Ev3Qhx
+         QbyLO4xbXEt4pFY2a6mKUgkwVQd8WgbDmCqx2kIdEjJ02R7HeuRwxSJPlT7xxEDIDXuB
+         BWexSWV6ahCPrWKjTIXgATLahYkMiPwplw5+TyHp2UIwyIXwY1U2G6kx/jypkG/dWjJI
+         3rXYCOA7tQeqDXObwuVj2T52B7EBFN44hOsCOKfkH06qOtYgOvqf/oqzYihC2vhVVubS
+         DDE+VGcMLLIizqcQ+bRTmv8Bc3vRrrV/Ij/sPzOUEo6F3pc2QmtXHDqPP9GtETPHGBy5
+         Bodg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S4tBycIgGpMbcu0VMkG4KdXUec3BMb9c9CGZHnWqcbY=;
+        b=tPTectZPSSOQxtLRMrS60dR1ysdU2KwEvmW5PmlUtOcNQzSIcrzpZHSUa9JkR4ay7Y
+         PAQju79J18kBVE0DPQAuT9lidAut9yDVarAS6iqUmhrRapq78xuxmzKQkjUYfiWuT2iB
+         LrXbmK8nCnvMFV0K561fkI/VOBsie88Og4NxGzYMEaIMIeh/eH5FBf8geFOA5D3ln5h8
+         9L3WzQZyMjtdg8BcUYhgXZOxOq4Tl9asy64AEhNUrJTNRLU3oinMr81MUMUpvhxJqPud
+         L43vVIYYwUXJP0Ort9r3Yhbcqg/fXPwnSlSK3e3a9B5fsfMWd0ppmiGklHVwnrm4ClR/
+         pa8Q==
+X-Gm-Message-State: AOAM531rmbd5rQtqv5lZ0cUCrWmw+PfXDXLEfKSNn0KlhJvReyQTZVZb
+        ujwoV4ev4oN/gL6DGcGFAIlBPrl5wjlW0oqOLaM=
+X-Google-Smtp-Source: ABdhPJxEdf8jIlmGFSZss8OzuKYQRSQfRi7r+QLtsgBNuf5OdXFYraddLIW7vnv6yeGfmeHJX8IG9l5UycMrveELxFs=
+X-Received: by 2002:a19:220d:: with SMTP id i13mr9204844lfi.37.1604499287209;
+ Wed, 04 Nov 2020 06:14:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <20201102143828.5286-1-menglong8.dong@gmail.com> <067c94269abed15f777ac078a216be314c935fd5.camel@nvidia.com>
+In-Reply-To: <067c94269abed15f777ac078a216be314c935fd5.camel@nvidia.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 4 Nov 2020 22:14:35 +0800
+Message-ID: <CADxym3bWqziz1-rHEZXC10JBgfO0Jc5S9nWEW2s3G09VvWioTA@mail.gmail.com>
+Subject: Re: [PATCH] net: bridge: disable multicast while delete bridge
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "dong.menglong@zte.com.cn" <dong.menglong@zte.com.cn>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enhance validation to support for reject from inet ingress chains.
+Dear Nik,
 
-Note that, reject from inet ingress and netdev ingress differ.
+On Wed, Nov 4, 2020 at 12:26 AM Nikolay Aleksandrov <nikolay@nvidia.com> wrote:
+>
+> On Mon, 2020-11-02 at 22:38 +0800, Menglong Dong wrote:
+> > From: Menglong Dong <dong.menglong@zte.com.cn>
+> >
+> > This commit seems make no sense, as bridge is destroyed when
+> > br_multicast_dev_del is called.
+> >
+> > In commit b1b9d366028f
+> > ("bridge: move bridge multicast cleanup to ndo_uninit"), Xin Long
+> > fixed the use-after-free panic in br_multicast_group_expired by
+> > moving br_multicast_dev_del to ndo_uninit. However, that patch is
+> > not applied to 4.4.X, and the bug exists.
+> >
+> > Fix that bug by disabling multicast in br_multicast_dev_del for
+> > 4.4.X, and there is no harm for other branches.
+> >
+> > Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+> > ---
+> >  net/bridge/br_multicast.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+> > index eae898c3cff7..9992fdff2951 100644
+> > --- a/net/bridge/br_multicast.c
+> > +++ b/net/bridge/br_multicast.c
+> > @@ -3369,6 +3369,7 @@ void br_multicast_dev_del(struct net_bridge *br)
+> >       hlist_for_each_entry_safe(mp, tmp, &br->mdb_list, mdb_node)
+> >               br_multicast_del_mdb_entry(mp);
+> >       hlist_move_list(&br->mcast_gc_list, &deleted_head);
+> > +     br_opt_toggle(br, BROPT_MULTICAST_ENABLED, false);
+> >       spin_unlock_bh(&br->multicast_lock);
+> >
+> >       br_multicast_gc(&deleted_head);
+>
+> This doesn't make any sense. It doesn't fix anything.
+> If 4.4 has a problem then the relevant patches should get backported to it.
+> We don't add random changes to fix older releases.
+>
+> Cheers,
+>  Nik
+>
+> Nacked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Reject packets from inet ingress are sent through ip_local_out() since
-inet reject emulates the IP layer receive path. So the reject packet
-follows to classic IP output and postrouting paths.
+Thanks for your patient explanation, and I see it now~
 
-The reject action from netdev ingress assumes the packet not yet entered
-the IP layer, so the reject packet is sent through dev_queue_xmit().
-Therefore, reject packets from netdev ingress do not follow the classic
-IP output and postrouting paths.
-
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/ipv4/netfilter/nf_reject_ipv4.c |  6 ++++--
- net/ipv6/netfilter/nf_reject_ipv6.c |  5 +++--
- net/netfilter/nft_reject_inet.c     | 14 +++++++++++++-
- 3 files changed, 20 insertions(+), 5 deletions(-)
-
-diff --git a/net/ipv4/netfilter/nf_reject_ipv4.c b/net/ipv4/netfilter/nf_reject_ipv4.c
-index 8ca99342879c..04e5e0bfd86a 100644
---- a/net/ipv4/netfilter/nf_reject_ipv4.c
-+++ b/net/ipv4/netfilter/nf_reject_ipv4.c
-@@ -246,7 +246,8 @@ void nf_send_reset(struct net *net, struct sk_buff *oldskb, int hook)
- 	if (!oth)
- 		return;
- 
--	if (hook == NF_INET_PRE_ROUTING && nf_reject_fill_skb_dst(oldskb))
-+	if ((hook == NF_INET_PRE_ROUTING || hook == NF_INET_INGRESS) &&
-+	    nf_reject_fill_skb_dst(oldskb) < 0)
- 		return;
- 
- 	if (skb_rtable(oldskb)->rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST))
-@@ -315,7 +316,8 @@ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
- 	if (iph->frag_off & htons(IP_OFFSET))
- 		return;
- 
--	if (hook == NF_INET_PRE_ROUTING && nf_reject_fill_skb_dst(skb_in))
-+	if ((hook == NF_INET_PRE_ROUTING || hook == NF_INET_INGRESS) &&
-+	    nf_reject_fill_skb_dst(skb_in) < 0)
- 		return;
- 
- 	if (skb_csum_unnecessary(skb_in) || !nf_reject_verify_csum(proto)) {
-diff --git a/net/ipv6/netfilter/nf_reject_ipv6.c b/net/ipv6/netfilter/nf_reject_ipv6.c
-index 8dcceda6c32a..aa35e6e37c1f 100644
---- a/net/ipv6/netfilter/nf_reject_ipv6.c
-+++ b/net/ipv6/netfilter/nf_reject_ipv6.c
-@@ -304,7 +304,7 @@ void nf_send_reset6(struct net *net, struct sk_buff *oldskb, int hook)
- 	fl6.fl6_sport = otcph->dest;
- 	fl6.fl6_dport = otcph->source;
- 
--	if (hook == NF_INET_PRE_ROUTING) {
-+	if (hook == NF_INET_PRE_ROUTING || hook == NF_INET_INGRESS) {
- 		nf_ip6_route(net, &dst, flowi6_to_flowi(&fl6), false);
- 		if (!dst)
- 			return;
-@@ -402,7 +402,8 @@ void nf_send_unreach6(struct net *net, struct sk_buff *skb_in,
- 	if (hooknum == NF_INET_LOCAL_OUT && skb_in->dev == NULL)
- 		skb_in->dev = net->loopback_dev;
- 
--	if (hooknum == NF_INET_PRE_ROUTING && nf_reject6_fill_skb_dst(skb_in))
-+	if ((hooknum == NF_INET_PRE_ROUTING || hooknum == NF_INET_INGRESS) &&
-+	    nf_reject6_fill_skb_dst(skb_in) < 0)
- 		return;
- 
- 	icmpv6_send(skb_in, ICMPV6_DEST_UNREACH, code, 0);
-diff --git a/net/netfilter/nft_reject_inet.c b/net/netfilter/nft_reject_inet.c
-index ffd1aa1f9576..32f3ea398ddf 100644
---- a/net/netfilter/nft_reject_inet.c
-+++ b/net/netfilter/nft_reject_inet.c
-@@ -58,6 +58,18 @@ static void nft_reject_inet_eval(const struct nft_expr *expr,
- 	regs->verdict.code = NF_DROP;
- }
- 
-+static int nft_reject_inet_validate(const struct nft_ctx *ctx,
-+				    const struct nft_expr *expr,
-+				    const struct nft_data **data)
-+{
-+	return nft_chain_validate_hooks(ctx->chain,
-+					(1 << NF_INET_LOCAL_IN) |
-+					(1 << NF_INET_FORWARD) |
-+					(1 << NF_INET_LOCAL_OUT) |
-+					(1 << NF_INET_PRE_ROUTING) |
-+					(1 << NF_INET_INGRESS));
-+}
-+
- static struct nft_expr_type nft_reject_inet_type;
- static const struct nft_expr_ops nft_reject_inet_ops = {
- 	.type		= &nft_reject_inet_type,
-@@ -65,7 +77,7 @@ static const struct nft_expr_ops nft_reject_inet_ops = {
- 	.eval		= nft_reject_inet_eval,
- 	.init		= nft_reject_init,
- 	.dump		= nft_reject_dump,
--	.validate	= nft_reject_validate,
-+	.validate	= nft_reject_inet_validate,
- };
- 
- static struct nft_expr_type nft_reject_inet_type __read_mostly = {
--- 
-2.20.1
-
+Cheers,
+Menglong Dong
