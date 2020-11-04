@@ -2,133 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1F72A5D5B
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 05:29:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 707352A5DB5
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 06:24:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728225AbgKDE3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 23:29:32 -0500
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:36475 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727385AbgKDE3c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 23:29:32 -0500
-Received: by mail-yb1-f194.google.com with SMTP id f140so16917716ybg.3;
-        Tue, 03 Nov 2020 20:29:31 -0800 (PST)
+        id S1729438AbgKDFYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 00:24:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45258 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725535AbgKDFYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 00:24:10 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAA4C061A4D;
+        Tue,  3 Nov 2020 21:24:10 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id r186so15604609pgr.0;
+        Tue, 03 Nov 2020 21:24:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=91u4hMKCioER+EVyR6ml/jbfnIzrfjbmRinIZZGx/xk=;
+        b=YdrYyZxcjjJt9mRl+pDu6vYGZ6X9OdzKmF9UISwtxNdI1+2wRyPND+EdZsLzMB1eQb
+         gPY5BgFTUC8tdjVSathNHE44d2ZYqfAQrViiN+xFKaAXh8Aaim88RGUtvczEd6p3DNWJ
+         rVbM9lSgpcgkoYkswuWi7gxMH0VPMZuJu1G0uvtYOUXYeSBzqjkRO9XNY+2BwKgG/60l
+         he1PlENgTcr4NyVbAVScMSuh7zOa4ix2a1HA0baZr8aIsdbju959GzbWZKLIg0MiQQzb
+         KKkm0p+nGVAWoNHmDRdtT0wnzvN1wUnkgKmhpEYN7ixV0dBbrCop+IHxOT/HsCjwOAWX
+         ZIqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j1H8bjADKFf0HV60cY3jZWoO7AXzACUzFAVA6zN+pP4=;
-        b=gVuTvXBgAEWgvigx/AVRXQS2U9w1KVVXwCQW7qC4jX6HJg748Hmv4V/FnZm6DAQP6d
-         YsPsNys4iUS2DRbGM+4zVxsarV+Sim1IPhC2HIQX0+RD50N0Jc4+bZNxiyvOxbiagiqT
-         TXL8//PUpyisatQV4NTmM4Xnx05Abcbwkl4eAlDaFfCOgdTe9+jM07qlqSGsP2WSEPqD
-         VR2zUBP7n9OdGRwYhfp7PYNl9+ESko7xKCCkWkR2jIcfgMiH555yHQQ/QZIuAVX9fAwB
-         TeSiZIUcm2jCNvlkA0xZx0McXUzYnPTM7wZ5aWX/uKQKzC2rFjYFhSYRHKdmFGT6NLOo
-         8Niw==
-X-Gm-Message-State: AOAM5336SocZaCap08DeEGpXcL9QEDhpcG66b0d6WoNJ3f75GcJjs4Xf
-        II+FfT12GfZ4ijuzkCFWOEnYgi65C2Ahh+9HOKs=
-X-Google-Smtp-Source: ABdhPJyqlyMXnaXMAV9bfBdbMr8H7F6FvAE4TPMuj0LDWLiAa1OMHkyJearqaIZBQBMSzHTkABXLablsYuz3nD6Hb3U=
-X-Received: by 2002:a5b:c43:: with SMTP id d3mr31935441ybr.487.1604464171040;
- Tue, 03 Nov 2020 20:29:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20201103220636.972106-1-mkl@pengutronix.de> <20201103220636.972106-6-mkl@pengutronix.de>
- <20201103172102.3d75cb96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201103172102.3d75cb96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Wed, 4 Nov 2020 13:29:19 +0900
-Message-ID: <CAMZ6RqJyZTcqZcq6jEzm5LLM_MMe=dYDbwvv=Y+dBR0drWuFmw@mail.gmail.com>
-Subject: Re: [net 05/27] can: dev: can_get_echo_skb(): prevent call to
- kfree_skb() in hard IRQ context
-To:     Jakub Kicinski <kuba@kernel.org>,
-        linux-can <linux-can@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kernel@pengutronix.de,
-        Eric Dumazet <edumazet@google.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=91u4hMKCioER+EVyR6ml/jbfnIzrfjbmRinIZZGx/xk=;
+        b=DUbnxZ6k6jqEh38EqZGGw0nOa2Xt66W2N6HfR6gtpc/Io8DrEPRTFH0o5Ls+sHbM8K
+         pNPa9/NaErKlG2XZDI+qMRAaQojPbrcUp25kb69ETNF6TNSF+2n9EchZFCN4ty2Ky4gt
+         ozwHjSCp2BxlBBxGZcm4WB8lf9TBtcIIJTJ38iO1/GLMKsrOC6bTMeeKPYr/Ef7wBJyw
+         a2svu5jOWlutCjkx7OsSh8O2sQBi4YmSclTxm4HOA5+qVO/z+YSZDMUy0xnOLK6oiXd2
+         qKIwnEP1+83PJJs93Xi/EV3HhWcRV02oxOS6pUNe1IuSEAFugRHNaLS49IddND+pJbkW
+         T/sw==
+X-Gm-Message-State: AOAM5319wtvfCI6ckAWztHA3caa4ikj/ttRV8d0Z2anNNx5Bg0evyCux
+        rBXlB8qM4cbLt6CnHOSLlg==
+X-Google-Smtp-Source: ABdhPJwu0/AM5hs9TYJFACJ9YsbS/FKUL3zVeZ9X/vgkQ8dMsKbSWVHHFANUcPZsDkfjPjp8OMzJVQ==
+X-Received: by 2002:aa7:80d9:0:b029:164:be9b:2b13 with SMTP id a25-20020aa780d90000b0290164be9b2b13mr26917386pfn.12.1604467449919;
+        Tue, 03 Nov 2020 21:24:09 -0800 (PST)
+Received: from he-cluster.localdomain (67.216.221.250.16clouds.com. [67.216.221.250])
+        by smtp.gmail.com with ESMTPSA id b6sm701778pgq.58.2020.11.03.21.24.08
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 03 Nov 2020 21:24:09 -0800 (PST)
+From:   xiakaixu1987@gmail.com
+X-Google-Original-From: kaixuxia@tencent.com
+To:     vishal@chelsio.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kaixu Xia <kaixuxia@tencent.com>
+Subject: [PATCH] cxgb4: Fix the -Wmisleading-indentation warning
+Date:   Wed,  4 Nov 2020 13:24:04 +0800
+Message-Id: <1604467444-23043-1-git-send-email-kaixuxia@tencent.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed. 4 Nov 2020 10:21, Jakub Kicinski wrote:
-> On Tue,  3 Nov 2020 23:06:14 +0100 Marc Kleine-Budde wrote:
->> From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
->>
->> If a driver calls can_get_echo_skb() during a hardware IRQ (which is often, but
->> not always, the case), the 'WARN_ON(in_irq)' in
->> net/core/skbuff.c#skb_release_head_state() might be triggered, under network
->> congestion circumstances, together with the potential risk of a NULL pointer
->> dereference.
->>
->> The root cause of this issue is the call to kfree_skb() instead of
->> dev_kfree_skb_irq() in net/core/dev.c#enqueue_to_backlog().
->>
->> This patch prevents the skb to be freed within the call to netif_rx() by
->> incrementing its reference count with skb_get(). The skb is finally freed by
->> one of the in-irq-context safe functions: dev_consume_skb_any() or
->> dev_kfree_skb_any(). The "any" version is used because some drivers might call
->> can_get_echo_skb() in a normal context.
->>
->> The reason for this issue to occur is that initially, in the core network
->> stack, loopback skb were not supposed to be received in hardware IRQ context.
->> The CAN stack is an exception.
->>
->> This bug was previously reported back in 2017 in [1] but the proposed patch
->> never got accepted.
->>
->> While [1] directly modifies net/core/dev.c, we try to propose here a
->> smoother modification local to CAN network stack (the assumption
->> behind is that only CAN devices are affected by this issue).
->>
->> [1] http://lore.kernel.org/r/57a3ffb6-3309-3ad5-5a34-e93c3fe3614d@cetitec.com
->>
->> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
->> Link: https://lore.kernel.org/r/20201002154219.4887-2-mailhol.vincent@wanadoo.fr
->> Fixes: 39549eef3587 ("can: CAN Network device driver and Netlink interface")
->> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
->
-> Hm... Why do we receive a skb with a socket attached?
->
-> At a quick glance this is some loopback, so shouldn't we skb_orphan()
-> in the xmit function instead?
+From: Kaixu Xia <kaixuxia@tencent.com>
 
-This is a specific feature of SocketCAN. See:
-https://www.kernel.org/doc/html/latest/networking/can.html#local-loopback-of-sent-frames
+Fix the gcc warning:
 
-By default, each socket will receive the loopback packets from other
-sockets but not its own sent frames. This behaviour can be controlled
-by the socket option CAN_RAW_RECV_OWN_MSGS (c.f. member 'recv_own_msg'
-in 'struct raw_sok':
-https://elixir.bootlin.com/linux/latest/source/net/can/raw.c#L88)
+drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c:2673:9: warning: this 'for' clause does not guard... [-Wmisleading-indentation]
+ 2673 |         for (i = 0; i < n; ++i) \
 
-This feature requires to have the socket attached to the skb.
-Orphaning the skb would break it (c.f. function raw_rcv():
-https://elixir.bootlin.com/linux/latest/source/net/can/raw.c#L116).
+Reported-by: Tosk Robot <tencent_os_robot@tencent.com>
+Signed-off-by: Kaixu Xia <kaixuxia@tencent.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Otherwise we should probably fix this in enqueue_to_backlog().
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+index 0273f40b85f7..c24d34a937c8 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+@@ -2671,7 +2671,7 @@ do { \
+ 	seq_printf(seq, "%-12s", s); \
+ 	for (i = 0; i < n; ++i) \
+ 		seq_printf(seq, " %16" fmt_spec, v); \
+-		seq_putc(seq, '\n'); \
++	seq_putc(seq, '\n'); \
+ } while (0)
+ #define S(s, v) S3("s", s, v)
+ #define T3(fmt_spec, s, v) S3(fmt_spec, s, tx[i].v)
+-- 
+2.20.0
 
-To my knowledge, this issue only occurs in SocketCAN, thus the idea to
-try to fix it locally. But yes, replacing kfree_skb() with
-dev_kfree_skb_any() in enqueue_to_backlog() would fix the issue as
-well.
-
->> diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
->> index b70ded3760f2..73cfcd7e9517 100644
->> --- a/drivers/net/can/dev.c
->> +++ b/drivers/net/can/dev.c
->> @@ -538,7 +538,11 @@ unsigned int can_get_echo_skb(struct net_device *dev, unsigned int idx)
->>       if (!skb)
->>               return 0;
->>
->> -     netif_rx(skb);
->> +     skb_get(skb);
->> +     if (netif_rx(skb) == NET_RX_SUCCESS)
->> +             dev_consume_skb_any(skb);
->> +     else
->> +             dev_kfree_skb_any(skb);
->>
->>       return len;
->>  }
->
-
-Yours sincerely,
-Vincent Mailhol
