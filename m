@@ -2,125 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2802A6649
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 15:23:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A66012A6656
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 15:27:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726843AbgKDOXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 09:23:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726636AbgKDOXP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 09:23:15 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC16FC0613D3
-        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 06:23:14 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id k18so2477631wmj.5
-        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 06:23:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=sAFLjN4ixxy17kgbFWahJMbPyXmphyBag2SqscTf81U=;
-        b=QtgT+zS0egP5DPQ1l06MHd/ZoaweA4XkqKLQqOOODh89FNmYsrIHcKFLRCmzXZmo/x
-         w8keMj7G8YEk8ozSzHRY5ZrDz9iFAZRAbhq59u/2olT7o9cI17KTWT37hpZqns9q4X8Z
-         eyd2KlVHieVzZgNP9lec3P3A5BHXwVoJW+c1YX2Ci5dzfxEpBRl5+HdaZtna3a1Eh/LU
-         ENjQU0oXHIwZYqdYLcyaD6Uyw4S8E4QZgjWL4PHKo6ZBg0Ql3KCnA5IGJ86/ELFRMPXT
-         mnCz6vwUq/zD2sVs8DmUDnZM2lL05HRU2RpO003y7vQCU+PTqL20DkYSeYNw0yXkzzzj
-         E73w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=sAFLjN4ixxy17kgbFWahJMbPyXmphyBag2SqscTf81U=;
-        b=IArJ7Gth68fnCyWii8K0RGFBNyA3khGDH9mNigfBdy6QDJGThd01NTJ+6Q6ixCx26H
-         XIuaY178p/zhk6R+KAOI9kTSJCceskpHnc+AWFfgF56CV+FnRiea6H4U/qm9qgxdj3KY
-         ZTomaYX8F1GVkN88djqqVzFmuE2vOINjFebXzTTo6nKL5B24ip4KHlOgQv9ZaNocs0YQ
-         ihsgjGF6n9mlM16+gE7Eur/P5T9XKDTFVeKanYP4gz45XDGsob/FNS0u4GpnUfuAqboL
-         L9l+qa6y3V9R20ZteXd5JUdrbeRS5gc7+HINL9QoM/fAuynvaPwIuox1BHTRNXpw8ksd
-         PqzA==
-X-Gm-Message-State: AOAM5334g+NCbwBe03c8JkfQMDqkHGqdodvHZL6EDH/xYZGG7isnSnmx
-        hrPLpXZAH2G4ezBC9EZO5PY=
-X-Google-Smtp-Source: ABdhPJyIXiEIUfwfazgmJaWSHB/oz7V51EN1FrvzBr4dTC9NTfkCsHD2QEpvmenUDs3pPo9PQGaEow==
-X-Received: by 2002:a1c:3502:: with SMTP id c2mr5022741wma.79.1604499793388;
-        Wed, 04 Nov 2020 06:23:13 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:d177:63da:d01d:cf70? (p200300ea8f232800d17763dad01dcf70.dip0.t-ipconnect.de. [2003:ea:8f23:2800:d177:63da:d01d:cf70])
-        by smtp.googlemail.com with ESMTPSA id m126sm2356252wmm.0.2020.11.04.06.23.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Nov 2020 06:23:12 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next v2 00/10] net: add and use dev_get_tstats64
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Harald Welte <laforge@gnumonks.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        osmocom-net-gprs@lists.osmocom.org, wireguard@lists.zx2c4.com,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Message-ID: <059fcb95-fba8-673e-0cd6-fb26e8ed4861@gmail.com>
-Date:   Wed, 4 Nov 2020 15:23:04 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+        id S1726950AbgKDO1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 09:27:08 -0500
+Received: from foss.arm.com ([217.140.110.172]:37946 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726756AbgKDO1I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Nov 2020 09:27:08 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 88D57139F;
+        Wed,  4 Nov 2020 06:27:07 -0800 (PST)
+Received: from [10.57.54.223] (unknown [10.57.54.223])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 085C53F719;
+        Wed,  4 Nov 2020 06:27:05 -0800 (PST)
+Subject: Re: [PATCH] net: stmmac: Don't log error message in case of
+ -EPROBE_DEFER.
+To:     Markus Bauer <mb@karo-electronics.de>
+Cc:     Alexandre Torgue <alexandre.torgue@st.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org
+References: <20201104141524.13044-1-mb@karo-electronics.de>
+From:   Robin Murphy <robin.murphy@arm.com>
+Message-ID: <05031e00-18b0-ae43-2345-9f7eaf679828@arm.com>
+Date:   Wed, 4 Nov 2020 14:27:05 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
  Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <20201104141524.13044-1-mb@karo-electronics.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's a frequent pattern to use netdev->stats for the less frequently
-accessed counters and per-cpu counters for the frequently accessed
-counters (rx/tx bytes/packets). Add a default ndo_get_stats64()
-implementation for this use case. Subsequently switch more drivers
-to use this pattern.
+On 2020-11-04 14:15, Markus Bauer wrote:
+> Remove error messages that might confuse users when error is just -517 / -EPROBE_DEFER.
+> 
+> [...]
+> imx-dwmac 30bf0000.ethernet: Cannot register the MDIO bus
+> imx-dwmac 30bf0000.ethernet: stmmac_dvr_probe: MDIO bus (id: 0) registration failed
+> [...]
 
-v2:
-- add patches for replacing ip_tunnel_get_stats64
-  Requested additional migrations will come in a separate series.
+FYI we have dev_err_probe() for this now.
 
-Heiner Kallweit (10):
-  net: core: add dev_get_tstats64 as a ndo_get_stats64 implementation
-  net: dsa: use net core stats64 handling
-  tun: switch to net core provided statistics counters
-  ip6_tunnel: switch to dev_get_tstats64
-  net: switch to dev_get_tstats64
-  gtp: switch to dev_get_tstats64
-  wireguard: switch to dev_get_tstats64
-  vti: switch to dev_get_tstats64
-  ipv4/ipv6: switch to dev_get_tstats64
-  net: remove ip_tunnel_get_stats64
+Robin.
 
- drivers/net/bareudp.c          |   2 +-
- drivers/net/geneve.c           |   2 +-
- drivers/net/gtp.c              |   2 +-
- drivers/net/tun.c              | 127 ++++++++-------------------------
- drivers/net/vxlan.c            |   4 +-
- drivers/net/wireguard/device.c |   2 +-
- include/linux/netdevice.h      |   1 +
- include/net/ip_tunnels.h       |   2 -
- net/core/dev.c                 |  15 ++++
- net/dsa/dsa.c                  |   7 +-
- net/dsa/dsa_priv.h             |   2 -
- net/dsa/slave.c                |  29 ++------
- net/ipv4/ip_gre.c              |   6 +-
- net/ipv4/ip_tunnel_core.c      |   9 ---
- net/ipv4/ip_vti.c              |   2 +-
- net/ipv4/ipip.c                |   2 +-
- net/ipv6/ip6_gre.c             |   6 +-
- net/ipv6/ip6_tunnel.c          |  32 +--------
- net/ipv6/ip6_vti.c             |   2 +-
- net/ipv6/sit.c                 |   2 +-
- 20 files changed, 72 insertions(+), 184 deletions(-)
-
--- 
-2.29.2
-
+> ---
+>   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 7 ++++---
+>   drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 6 ++++--
+>   2 files changed, 8 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 33272a12989a..7d1cdd576b91 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -4857,9 +4857,10 @@ int stmmac_dvr_probe(struct device *device,
+>   		/* MDIO bus Registration */
+>   		ret = stmmac_mdio_register(ndev);
+>   		if (ret < 0) {
+> -			dev_err(priv->device,
+> -				"%s: MDIO bus (id: %d) registration failed",
+> -				__func__, priv->plat->bus_id);
+> +			if (ret != -EPROBE_DEFER)
+> +				dev_err(priv->device,
+> +					"%s: MDIO bus (id: %d) registration failed, err=%d",
+> +					__func__, priv->plat->bus_id, ret);
+>   			goto error_mdio_register;
+>   		}
+>   	}
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+> index 226e5a4bf21c..8e202f63da31 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+> @@ -401,8 +401,10 @@ int stmmac_mdio_register(struct net_device *ndev)
+>   	new_bus->parent = priv->device;
+>   
+>   	err = of_mdiobus_register(new_bus, mdio_node);
+> -	if (err != 0) {
+> -		dev_err(dev, "Cannot register the MDIO bus\n");
+> +	if (err) {
+> +		if (err != -EPROBE_DEFER)
+> +			dev_err(dev,
+> +				"Cannot register the MDIO bus, err=%d\n", err);
+>   		goto bus_register_fail;
+>   	}
+>   
+> 
