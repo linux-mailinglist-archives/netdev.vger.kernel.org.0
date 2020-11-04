@@ -2,139 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 010D02A68EB
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:01:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 860982A69BF
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:29:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730424AbgKDQBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 11:01:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60274 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726801AbgKDQBr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 11:01:47 -0500
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9F5C0613D3;
-        Wed,  4 Nov 2020 08:01:47 -0800 (PST)
-Received: by mail-pf1-x444.google.com with SMTP id c20so17625014pfr.8;
-        Wed, 04 Nov 2020 08:01:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2u1iCwu3NUExL8v9uHwy0KlSiN494f+zV9SSy+u0HpA=;
-        b=Fn5jqnTJCAviROi/YLFeUOFV9JK+CsbPo5Q7hWQTh0o7ltr2I3IsSPlZTRSl7jZnE6
-         9DO3aobg6ksT/EwJyT/rAViPpeelmCu3GZKq+YGsjRcUZOCMbNzwMuTvKrkcU49sXqav
-         EQbUTn2qh9Z6FD1iD/Eg2Y8zYooSW1luC2GSwOHe6TOCltfhACqnWTju+70qmGlb1B57
-         qtKEiWj7wfg/Csz6qdTdwcv2tSNbM8cRQWe4ZuSDRJuWrOXxDgrKoHK+kdN8Mr744BFo
-         aUkJXBSH4RsPLKO2VrBlYpQbA383yzYpj0zBYIe/kCGuwJH+TGR7xua7oWH4X2rCRhOC
-         P56g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2u1iCwu3NUExL8v9uHwy0KlSiN494f+zV9SSy+u0HpA=;
-        b=gRoN3CKpDSqvxtcJ178aqfNohEB9qQPhdqeTL/JpckK9pJN4L/CoZdvi8ZrKroMdtd
-         zUcPDGECjryvTSoV8kflaQznSmkltzwrA3+FtMQoLi3mDqR/IFviqMv7RsLdFregMxLO
-         s5tB5IZ8tdjsVMW1i2o90EmXoEdxsvlKQPufVL8tRvmPYk5o8m82mYvU4rXCam1vN2uA
-         QnUxVwTwUxY3SjYqCgqL560ZNZPrwjPjsLikdVJxf8x67kJj6gRAVQkOBQEIx6tfWcqo
-         RGpDl7VOb5fdnnf05zRanIWVaAECt2fK6x5CRrl9HaBj7Yl8CjFXIAW9nvvH7vvRI1l8
-         TkEg==
-X-Gm-Message-State: AOAM532FFHwfPVLYM+dRE0XTDB7Rm6Ct5FrKvPeIT/5wXPLsQ43R1tSk
-        vVN1JkgsEUewO1i/XK6mqP0=
-X-Google-Smtp-Source: ABdhPJyX05Y9HcDtz4Imtc3239h3VaP7aGo3GntRwUCM8jkGOlxSbh69LBp8l9NLQJxAIu+SoAaYQg==
-X-Received: by 2002:a63:2b53:: with SMTP id r80mr22106711pgr.439.1604505706821;
-        Wed, 04 Nov 2020 08:01:46 -0800 (PST)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id j19sm2855155pfn.107.2020.11.04.08.01.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Nov 2020 08:01:46 -0800 (PST)
-Subject: Re: [EXTERNAL] Re: [PATCH net 2/4] net:phy:smsc: expand documentation
- of clocks property
-To:     "Badel, Laurent" <LaurentBadel@eaton.com>,
-        Rob Herring <robh@kernel.org>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "m.felsch@pengutronix.de" <m.felsch@pengutronix.de>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "richard.leitner@skidata.com" <richard.leitner@skidata.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Quette, Arnaud" <ArnaudQuette@Eaton.com>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <CY4PR1701MB187834A07970380742371D78DF160@CY4PR1701MB1878.namprd17.prod.outlook.com>
- <20201030191910.GA4174476@bogus>
- <CY4PR1701MB18789E4C1FE2C3FBCB1FC010DFEF0@CY4PR1701MB1878.namprd17.prod.outlook.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <da87e8d5-01f9-50c2-5583-3876f9c12c8f@gmail.com>
-Date:   Wed, 4 Nov 2020 08:01:44 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.4.0
+        id S1731008AbgKDQ2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 11:28:53 -0500
+Received: from pbmsgap02.intersil.com ([192.157.179.202]:38190 "EHLO
+        pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727285AbgKDQ2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 11:28:52 -0500
+X-Greylist: delayed 1607 seconds by postgrey-1.27 at vger.kernel.org; Wed, 04 Nov 2020 11:28:52 EST
+Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
+        by pbmsgap02.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0A4G1vm9028830;
+        Wed, 4 Nov 2020 11:02:03 -0500
+Received: from pbmxdp02.intersil.corp (pbmxdp02.pb.intersil.com [132.158.200.223])
+        by pbmsgap02.intersil.com with ESMTP id 34h23fa026-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 04 Nov 2020 11:02:03 -0500
+Received: from pbmxdp01.intersil.corp (132.158.200.222) by
+ pbmxdp02.intersil.corp (132.158.200.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.1979.3; Wed, 4 Nov 2020 11:02:01 -0500
+Received: from localhost (132.158.202.109) by pbmxdp01.intersil.corp
+ (132.158.200.222) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Wed, 4 Nov 2020 11:02:01 -0500
+From:   <min.li.xe@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH net-next 2/3] ptp: idt82p33: use i2c_master_send for bus write
+Date:   Wed, 4 Nov 2020 11:01:48 -0500
+Message-ID: <1604505709-5483-2-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1604505709-5483-1-git-send-email-min.li.xe@renesas.com>
+References: <1604505709-5483-1-git-send-email-min.li.xe@renesas.com>
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-In-Reply-To: <CY4PR1701MB18789E4C1FE2C3FBCB1FC010DFEF0@CY4PR1701MB1878.namprd17.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-04_11:2020-11-04,2020-11-04 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 mlxscore=0 adultscore=0
+ malwarescore=0 bulkscore=0 spamscore=0 mlxlogscore=999 phishscore=0
+ suspectscore=4 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011040117
+X-Proofpoint-Spam-Reason: mlx
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Min Li <min.li.xe@renesas.com>
 
+Refactor idt82p33_xfer and use i2c_master_send for write operation.
+Because some I2C controllers are only working with single-burst write
+transaction.
 
-On 11/4/2020 4:11 AM, Badel, Laurent wrote:
-> ﻿> 
-> 
-> -----------------------------
-> Eaton Industries Manufacturing GmbH ~ Registered place of business: Route de la Longeraie 7, 1110, Morges, Switzerland 
-> 
-> -----------------------------
-> 
-> -----Original Message-----
->> From: Rob Herring <robh@kernel.org>
->> Sent: Friday, October 30, 2020 8:19 PM
->> To: Badel, Laurent <LaurentBadel@eaton.com>
->> Cc: davem@davemloft.net; fugang.duan@nxp.com; andrew@lunn.ch;
->> lgirdwood@gmail.com; m.felsch@pengutronix.de; robh+dt@kernel.org;
->> kuba@kernel.org; linux@armlinux.org.uk; richard.leitner@skidata.com;
->> netdev@vger.kernel.org; Quette, Arnaud <ArnaudQuette@Eaton.com>;
->> p.zabel@pengutronix.de; devicetree@vger.kernel.org; f.fainelli@gmail.com;
->> broonie@kernel.org; Heiner Kallweit <hkallweit1@gmail.com>
->> Subject: [EXTERNAL] Re: [PATCH net 2/4] net:phy:smsc: expand
->> documentation of clocks property
->>
->> On Tue, 27 Oct 2020 23:27:42 +0000, Badel, Laurent wrote:
->>> ﻿Subject: [PATCH net 2/4] net:phy:smsc: expand documentation of clocks
->>> property
->>>
->>> Description: The ref clock is managed differently when added to the DT
->>> entry for SMSC PHY. Thus, specify this more clearly in the documentation.
->>>
->>> Signed-off-by: Laurent Badel <laurentbadel@eaton.com>
->>> ---
->>>  Documentation/devicetree/bindings/net/smsc-lan87xx.txt | 3 ++-
->>>  1 file changed, 2 insertions(+), 1 deletion(-)
->>>
->>
->> Acked-by: Rob Herring <robh@kernel.org>
-> 
-> Thank you very much.
-> I'm guessing perhaps I should re-send this as a single patch since there 
-> are issues with the patch series?
-> I realize now that I should have splitted things differently.
+Signed-off-by: Min Li <min.li.xe@renesas.com>
+---
+ drivers/ptp/ptp_idt82p33.c | 52 +++++++++++++++++++++++++++++++++-------------
+ drivers/ptp/ptp_idt82p33.h |  1 +
+ 2 files changed, 39 insertions(+), 14 deletions(-)
 
-There are several things with your patch series that make it very hard
-to be followed or to even know what is the latest version of your patch
-series. If you can resubmit everything targeting the 'net' tree along
-with a cover letter explaining the differences between v1 and v2 that
-would help. Please make sure that all of your patches reference the
-cover letter's Message-Id which is the default if you use git
-format-patch --cover-letter .
-
-Thanks
+diff --git a/drivers/ptp/ptp_idt82p33.c b/drivers/ptp/ptp_idt82p33.c
+index 556cf6c..b1528a0 100644
+--- a/drivers/ptp/ptp_idt82p33.c
++++ b/drivers/ptp/ptp_idt82p33.c
+@@ -78,11 +78,10 @@ static void idt82p33_timespec_to_byte_array(struct timespec64 const *ts,
+ 	}
+ }
+ 
+-static int idt82p33_xfer(struct idt82p33 *idt82p33,
+-			 unsigned char regaddr,
+-			 unsigned char *buf,
+-			 unsigned int count,
+-			 int write)
++static int idt82p33_xfer_read(struct idt82p33 *idt82p33,
++			      unsigned char regaddr,
++			      unsigned char *buf,
++			      unsigned int count)
+ {
+ 	struct i2c_client *client = idt82p33->client;
+ 	struct i2c_msg msg[2];
+@@ -94,7 +93,7 @@ static int idt82p33_xfer(struct idt82p33 *idt82p33,
+ 	msg[0].buf = &regaddr;
+ 
+ 	msg[1].addr = client->addr;
+-	msg[1].flags = write ? 0 : I2C_M_RD;
++	msg[1].flags = I2C_M_RD;
+ 	msg[1].len = count;
+ 	msg[1].buf = buf;
+ 
+@@ -110,6 +109,31 @@ static int idt82p33_xfer(struct idt82p33 *idt82p33,
+ 	return 0;
+ }
+ 
++static int idt82p33_xfer_write(struct idt82p33 *idt82p33,
++			       u8 regaddr,
++			       u8 *buf,
++			       u16 count)
++{
++	struct i2c_client *client = idt82p33->client;
++	/* we add 1 byte for device register */
++	u8 msg[IDT82P33_MAX_WRITE_COUNT + 1];
++	int err;
++
++	if (count > IDT82P33_MAX_WRITE_COUNT)
++		return -EINVAL;
++
++	msg[0] = regaddr;
++	memcpy(&msg[1], buf, count);
++
++	err = i2c_master_send(client, msg, count + 1);
++	if (err < 0) {
++		dev_err(&client->dev, "i2c_master_send returned %d\n", err);
++		return err;
++	}
++
++	return 0;
++}
++
+ static int idt82p33_page_offset(struct idt82p33 *idt82p33, unsigned char val)
+ {
+ 	int err;
+@@ -117,7 +141,7 @@ static int idt82p33_page_offset(struct idt82p33 *idt82p33, unsigned char val)
+ 	if (idt82p33->page_offset == val)
+ 		return 0;
+ 
+-	err = _idt82p33_xfer(idt82p33, PAGE_ADDR, &val, sizeof(val), 1);
++	err = idt82p33_xfer_write(idt82p33, PAGE_ADDR, &val, sizeof(val));
+ 	if (err)
+ 		dev_err(&idt82p33->client->dev,
+ 			"failed to set page offset %d\n", val);
+@@ -130,20 +154,20 @@ static int idt82p33_page_offset(struct idt82p33 *idt82p33, unsigned char val)
+ static int idt82p33_rdwr(struct idt82p33 *idt82p33, unsigned int regaddr,
+ 			 unsigned char *buf, unsigned int count, bool write)
+ {
++	u8 offset, page;
+ 	int err;
+-	u8 page;
+-	u8 offset;
+ 
+ 	page = _PAGE(regaddr);
+-	offset = _OFFSET(regaddr);	
++	offset = _OFFSET(regaddr);
+ 
+ 	err = idt82p33_page_offset(idt82p33, page);
+ 	if (err)
+-		goto out;
++		return err;
+ 
+-	err = idt82p33_xfer(idt82p33, offset, buf, count, write);
+-out:
+-	return err;
++	if (write)
++		return idt82p33_xfer_write(idt82p33, offset, buf, count);
++
++	return idt82p33_xfer_read(idt82p33, offset, buf, count);
+ }
+ 
+ static int idt82p33_read(struct idt82p33 *idt82p33, unsigned int regaddr,
+diff --git a/drivers/ptp/ptp_idt82p33.h b/drivers/ptp/ptp_idt82p33.h
+index 3a0e001..1c7a0f0 100644
+--- a/drivers/ptp/ptp_idt82p33.h
++++ b/drivers/ptp/ptp_idt82p33.h
+@@ -95,6 +95,7 @@ enum hw_tod_trig_sel {
+ #define MAX_MEASURMENT_COUNT (5)
+ #define SNAP_THRESHOLD_NS (150000)
+ #define SYNC_TOD_TIMEOUT_SEC (5)
++#define IDT82P33_MAX_WRITE_COUNT (512)
+ 
+ #define PLLMASK_ADDR_HI	0xFF
+ #define PLLMASK_ADDR_LO	0xA5
 -- 
-Florian
+2.7.4
+
