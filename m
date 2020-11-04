@@ -2,599 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A0472A60DD
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 10:46:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E783C2A6111
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 11:02:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728986AbgKDJql (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 04:46:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726434AbgKDJqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 04:46:37 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305BEC061A4A;
-        Wed,  4 Nov 2020 01:46:37 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id 126so26259317lfi.8;
-        Wed, 04 Nov 2020 01:46:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5D8s8lOGoht1T7MgOsqdaqa01uXmfNeXrOnkLYYVPyc=;
-        b=OGU/N17otDXhzfp13EoTAICJMGUCSXTxqbQHIWyeOvsPY+zvXxo41H7WCDYqxzYi2u
-         3aYwOiNDLI4gJmKJVqW5HvCI5TMOv/nqJDzIdEFXN0nup3K4hcRwCw21MNTcl8ogP+p5
-         uGD3CyMmOZRKQGhwWuemjtuhNvvMKKoZnpUfR09dCrJE8pBlBrPBWJ8sLE8Wl7slhjNU
-         uIveTbp7y1dC0Bo2Mi4rjXhcoGlwgZf+2uumHF3UPkbXNtVUahPBUJx9momrVO0k8C2B
-         OQxF8ZHkpAFdBhqGNajW0PqxIqz7TvuCh2ayinUZ07lJ4AofembFtu+W/G7c2qYvfTnM
-         sMfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5D8s8lOGoht1T7MgOsqdaqa01uXmfNeXrOnkLYYVPyc=;
-        b=P7GJea5fWCnyh00lC/Zbhmy/JgbsHaItH+vW+4F/p2cyjikyCBl7zln7mNTs2oMtUl
-         CpRxPGXGq3zN04vnnFAO5KkkaphVzgY+y5pQdkUHjuwJ09cfinzGRvWLDF7gXTUw0XJa
-         trw04/L5coF7K92ag8mkmPzd9UlLZM1+N+t+NwRHsG0/NR57BiIe5bFa2fGwHlVHrRiD
-         kaguegyXNIgdgZnLuYt4M0d8ryMdWltEwmUzCx9Cxalnf4ci4PcqTCip4z/W+K/BYbJF
-         LKhsK/gjnRbuWBUB2KQXnQdb/WtUE1slqNvFiUZLD5L09nEma1jTlML+moMD78rdozs7
-         qY6w==
-X-Gm-Message-State: AOAM533TP4kLnCHWJtjihMTTDpg4dRpK8wUdqVI9+yZzZF5/5JQ71aRF
-        mDqtKy0hamVsQa4D3qm29G4=
-X-Google-Smtp-Source: ABdhPJwyxICgjQXExwXKcdKdi94mzx4P/+CkgiR8sxfe0TMJSdnvkK2evNfhnbxQF0TcEpvzC1uVaw==
-X-Received: by 2002:ac2:505b:: with SMTP id a27mr9037226lfm.264.1604483195579;
-        Wed, 04 Nov 2020 01:46:35 -0800 (PST)
-Received: from localhost.localdomain (host-89-229-233-64.dynamic.mm.pl. [89.229.233.64])
-        by smtp.gmail.com with ESMTPSA id x18sm355624lfc.73.2020.11.04.01.46.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 01:46:34 -0800 (PST)
-From:   mariusz.dudek@gmail.com
-X-Google-Original-From: mariuszx.dudek@intel.com
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com
-Cc:     bpf@vger.kernel.org, Mariusz Dudek <mariuszx.dudek@intel.com>
-Subject: [PATCH bpf-next 2/2] samples/bpf: sample application for eBPF load and socket creation split
-Date:   Wed,  4 Nov 2020 10:46:26 +0100
-Message-Id: <20201104094626.3406-3-mariuszx.dudek@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201104094626.3406-1-mariuszx.dudek@intel.com>
-References: <20201104094626.3406-1-mariuszx.dudek@intel.com>
+        id S1728607AbgKDKCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 05:02:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:20882 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728522AbgKDKCP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 05:02:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604484133;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cWSDEz+pocGgc9hLdmtEOkQnVJuh949rPPfTOBgDI2I=;
+        b=jK1mcxBiZi9UScPptcbX/jjK7ogRIbMVdBOzcadh9QI27tq16BiWQYr+v7Dxok3HurguWY
+        H7zX9BTaH8KiOQIimEmSS44bovPwIiRcydBPMXFSdsrKk9X+U4amdeC39uoAV/0OAa/Sp1
+        L+L8MfHTYU/tZFo7qhXXxRdQCjN6f0o=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-590-QTg0I3EUMnmoBkxjsxgz7g-1; Wed, 04 Nov 2020 05:02:12 -0500
+X-MC-Unique: QTg0I3EUMnmoBkxjsxgz7g-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ACF08804746;
+        Wed,  4 Nov 2020 10:02:09 +0000 (UTC)
+Received: from localhost (unknown [10.40.194.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BE26510589AF;
+        Wed,  4 Nov 2020 10:01:59 +0000 (UTC)
+Date:   Wed, 4 Nov 2020 11:01:57 +0100
+From:   Jiri Benc <jbenc@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Hangbin Liu <haliu@redhat.com>, David Ahern <dsahern@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
+Message-ID: <20201104110157.52f661eb@redhat.com>
+In-Reply-To: <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
+References: <20201028132529.3763875-1-haliu@redhat.com>
+        <20201029151146.3810859-1-haliu@redhat.com>
+        <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
+        <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
+        <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
+        <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
+        <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
+        <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com>
+        <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
+        <20201104021730.GK2408@dhcp-12-153.nay.redhat.com>
+        <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mariusz Dudek <mariuszx.dudek@intel.com>
+On Tue, 3 Nov 2020 19:11:45 -0800, Alexei Starovoitov wrote:
+> When we release new version of libbpf it goes through rigorous testing.
+> bpftool gets a lot of test coverage as well.
+> iproute2 with shared libbpf will get nothing. It's the same random roll of dice.
 
-    Introduce a sample program to demonstrate the control and data
-    plane split. For the control plane part a new program called
-    xdpsock_ctrl_proc is introduced. For the data plane part, some code
-    was added to xdpsock_user.c to act as the data plane entity.
+"Random roll of dice" would be true only if libbpf did incredibly bad
+job in keeping backward compatibility. In my experience it is not the
+case. Sure, a bug in retaining the compatibility may occasionally
+appear; after all, any software tends to contain bugs in various
+places. You are right that such bug may not be caught by your testing.
 
-    Application xdpsock_ctrl_proc works as control entity with sudo
-    privileges (CAP_SYS_ADMIN and CAP_NET_ADMIN are sufficient) and the
-    extended xdpsock as data plane entity with CAP_NET_RAW capability
-    only.
+I also believe that if there is a bug in backward compatibility
+reported by someone, it will be fixed (if possible). So this is really
+just a matter of testing, not a fundamental problem of ABI
+compatibility.
 
-    Usage example:
+Let the distros worry about the testing. Upstream may test (and
+even recommend!) certain combinations of iproute2 + libbpf, such as the
+latest of both at the time of testing. If distros want to use a
+different combination, they can and should do their own testing. If
+their testing reveals a bug in backward compatibility and a patch to
+fix it is accepted, everything will work smoothly for the distro users.
 
-    sudo ./samples/bpf/xdpsock_ctrl_proc -i <interface>
+Non-distro users (or small distros) may just rely on the upstream
+tested combination of iproute2 + libbpf.
 
-    sudo ./samples/bpf/xdpsock -i <interface> -q <queue_id>
-    	-n <interval> -N -l -R
+> Few years from now the situation could be different and shared libbpf would
+> be the most appropriate choice. But that day is not today.
 
-Signed-off-by: Mariusz Dudek <mariuszx.dudek@intel.com>
----
- samples/bpf/Makefile            |   4 +-
- samples/bpf/xdpsock.h           |   8 ++
- samples/bpf/xdpsock_ctrl_proc.c | 184 ++++++++++++++++++++++++++++++++
- samples/bpf/xdpsock_user.c      | 146 +++++++++++++++++++++++--
- 4 files changed, 332 insertions(+), 10 deletions(-)
- create mode 100644 samples/bpf/xdpsock_ctrl_proc.c
+Interestingly, the major compatibility problems we had were with llvm
+updates. After llvm update while keeping the same kernel version, llvm
+started to emit code that the verifier did not accept. Meaning a bpf
+program that was previously accepted by the kernel was rejected after
+recompilation. This was solved by adding a translation code to libbpf
+(which nicely demonstrates that indeed libbpf cares about backward
+compatibility).
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index aeebf5d12f32..8fb8be1c0144 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -48,6 +48,7 @@ tprogs-y += syscall_tp
- tprogs-y += cpustat
- tprogs-y += xdp_adjust_tail
- tprogs-y += xdpsock
-+tprogs-y += xdpsock_ctrl_proc
- tprogs-y += xsk_fwd
- tprogs-y += xdp_fwd
- tprogs-y += task_fd_query
-@@ -105,6 +106,7 @@ syscall_tp-objs := syscall_tp_user.o
- cpustat-objs := cpustat_user.o
- xdp_adjust_tail-objs := xdp_adjust_tail_user.o
- xdpsock-objs := xdpsock_user.o
-+xdpsock_ctrl_proc-objs := xdpsock_ctrl_proc.o
- xsk_fwd-objs := xsk_fwd.o
- xdp_fwd-objs := xdp_fwd_user.o
- task_fd_query-objs := bpf_load.o task_fd_query_user.o $(TRACE_HELPERS)
-@@ -204,7 +206,7 @@ TPROGLDLIBS_tracex4		+= -lrt
- TPROGLDLIBS_trace_output	+= -lrt
- TPROGLDLIBS_map_perf_test	+= -lrt
- TPROGLDLIBS_test_overhead	+= -lrt
--TPROGLDLIBS_xdpsock		+= -pthread
-+TPROGLDLIBS_xdpsock		+= -pthread -lcap
- TPROGLDLIBS_xsk_fwd		+= -pthread
- 
- # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
-diff --git a/samples/bpf/xdpsock.h b/samples/bpf/xdpsock.h
-index b7eca15c78cc..fd70cce60712 100644
---- a/samples/bpf/xdpsock.h
-+++ b/samples/bpf/xdpsock.h
-@@ -8,4 +8,12 @@
- 
- #define MAX_SOCKS 4
- 
-+#define SOCKET_NAME "sock_cal_bpf_fd"
-+#define MAX_NUM_OF_CLIENTS 10
-+
-+#define CLOSE_CONN  1
-+
-+typedef __u64 u64;
-+typedef __u32 u32;
-+
- #endif /* XDPSOCK_H */
-diff --git a/samples/bpf/xdpsock_ctrl_proc.c b/samples/bpf/xdpsock_ctrl_proc.c
-new file mode 100644
-index 000000000000..c841aca59a96
---- /dev/null
-+++ b/samples/bpf/xdpsock_ctrl_proc.c
-@@ -0,0 +1,184 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2017 - 2018 Intel Corporation. */
-+
-+#include <errno.h>
-+#include <getopt.h>
-+#include <libgen.h>
-+#include <net/if.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <sys/socket.h>
-+#include <sys/un.h>
-+#include <unistd.h>
-+
-+#include <bpf/bpf.h>
-+#include <bpf/xsk.h>
-+#include "xdpsock.h"
-+
-+static const char *opt_if = "";
-+
-+static struct option long_options[] = {
-+	{"interface", required_argument, 0, 'i'},
-+	{0, 0, 0, 0}
-+};
-+
-+static void usage(const char *prog)
-+{
-+	const char *str =
-+		"  Usage: %s [OPTIONS]\n"
-+		"  Options:\n"
-+		"  -i, --interface=n	Run on interface n\n"
-+		"\n";
-+	fprintf(stderr, "%s\n", str);
-+
-+	exit(0);
-+}
-+
-+static void parse_command_line(int argc, char **argv)
-+{
-+	int option_index, c;
-+
-+	opterr = 0;
-+
-+	for (;;) {
-+		c = getopt_long(argc, argv, "i:",
-+				long_options, &option_index);
-+		if (c == -1)
-+			break;
-+
-+		switch (c) {
-+		case 'i':
-+			opt_if = optarg;
-+			break;
-+		default:
-+			usage(basename(argv[0]));
-+		}
-+	}
-+}
-+
-+static int send_xsks_map_fd(int sock, int fd)
-+{
-+	char cmsgbuf[CMSG_SPACE(sizeof(int))];
-+	struct msghdr msg;
-+	struct iovec iov;
-+	int value = 0;
-+
-+	if (fd == -1) {
-+		fprintf(stderr, "Incorrect fd = %d\n", fd);
-+		return -1;
-+	}
-+	iov.iov_base = &value;
-+	iov.iov_len = sizeof(int);
-+
-+	msg.msg_name = NULL;
-+	msg.msg_namelen = 0;
-+	msg.msg_iov = &iov;
-+	msg.msg_iovlen = 1;
-+	msg.msg_flags = 0;
-+	msg.msg_control = cmsgbuf;
-+	msg.msg_controllen = CMSG_LEN(sizeof(int));
-+
-+	struct cmsghdr *cmsg = CMSG_FIRSTHDR(&msg);
-+
-+	cmsg->cmsg_level = SOL_SOCKET;
-+	cmsg->cmsg_type = SCM_RIGHTS;
-+	cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-+
-+	*(int *)CMSG_DATA(cmsg) = fd;
-+	int ret = sendmsg(sock, &msg, 0);
-+
-+	if (ret == -1) {
-+		fprintf(stderr, "Sendmsg failed with %s", strerror(errno));
-+		return -errno;
-+	}
-+
-+	return ret;
-+}
-+
-+int
-+main(int argc, char **argv)
-+{
-+	struct sockaddr_un server;
-+	int listening = 1;
-+	int rval, msgsock;
-+	int ifindex = 0;
-+	int flag = 1;
-+	int cmd = 0;
-+	int sock;
-+	int err;
-+	int xsks_map_fd;
-+
-+	parse_command_line(argc, argv);
-+
-+	ifindex = if_nametoindex(opt_if);
-+	if (ifindex == 0)
-+		return -errno;
-+
-+	sock = socket(AF_UNIX, SOCK_STREAM, 0);
-+	if (sock < 0) {
-+		fprintf(stderr, "Opening socket stream failed: %s", strerror(errno));
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	server.sun_family = AF_UNIX;
-+	strcpy(server.sun_path, SOCKET_NAME);
-+
-+	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(int));
-+
-+	if (bind(sock, (struct sockaddr *)&server, sizeof(struct sockaddr_un))) {
-+		fprintf(stderr, "Binding to socket stream failed: %s", strerror(errno));
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	listen(sock, MAX_NUM_OF_CLIENTS);
-+
-+	err = xsk_setup_xdp_prog(ifindex, NULL, &xsks_map_fd);
-+	if (err) {
-+		fprintf(stderr, "Setup of xdp program failed\n");
-+		goto close_sock;
-+	}
-+
-+	while (listening) {
-+		msgsock = accept(sock, 0, 0);
-+		if (msgsock == -1) {
-+			fprintf(stderr, "Error accepting connection: %s", strerror(errno));
-+			err = -errno;
-+			goto close_sock;
-+		}
-+		err = send_xsks_map_fd(msgsock, xsks_map_fd);
-+		if (err <= 0) {
-+			fprintf(stderr, "Error %d sending xsks_map_fd\n", err);
-+			goto cleanup;
-+		}
-+		do {
-+			rval = read(msgsock, &cmd, sizeof(int));
-+			if (rval < 0) {
-+				fprintf(stderr, "Error reading stream message");
-+			} else {
-+				if (cmd != CLOSE_CONN)
-+					fprintf(stderr, "Recv unknown cmd = %d\n", cmd);
-+				listening = 0;
-+				break;
-+			}
-+		} while (rval > 0);
-+	}
-+	close(msgsock);
-+	close(sock);
-+	unlink(SOCKET_NAME);
-+
-+	/* Unset fd for given ifindex */
-+	err = bpf_set_link_xdp_fd(ifindex, -1, 0);
-+	if (err) {
-+		fprintf(stderr, "Error when unsetting bpf prog_fd for ifindex(%d)\n", ifindex);
-+		return err;
-+	}
-+
-+	return 0;
-+
-+cleanup:
-+	close(msgsock);
-+close_sock:
-+	close(sock);
-+	unlink(SOCKET_NAME);
-+	return err;
-+}
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index 1149e94ca32f..c3ca5304fce4 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -24,10 +24,12 @@
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
-+#include <sys/capability.h>
- #include <sys/mman.h>
- #include <sys/resource.h>
- #include <sys/socket.h>
- #include <sys/types.h>
-+#include <sys/un.h>
- #include <time.h>
- #include <unistd.h>
- 
-@@ -95,6 +97,7 @@ static int opt_timeout = 1000;
- static bool opt_need_wakeup = true;
- static u32 opt_num_xsks = 1;
- static u32 prog_id;
-+static bool opt_reduced_cap;
- 
- struct xsk_ring_stats {
- 	unsigned long rx_npkts;
-@@ -153,6 +156,7 @@ struct xsk_socket_info {
- 
- static int num_socks;
- struct xsk_socket_info *xsks[MAX_SOCKS];
-+int sock;
- 
- static unsigned long get_nsecs(void)
- {
-@@ -460,6 +464,7 @@ static void *poller(void *arg)
- static void remove_xdp_program(void)
- {
- 	u32 curr_prog_id = 0;
-+	int cmd = CLOSE_CONN;
- 
- 	if (bpf_get_link_xdp_id(opt_ifindex, &curr_prog_id, opt_xdp_flags)) {
- 		printf("bpf_get_link_xdp_id failed\n");
-@@ -471,6 +476,13 @@ static void remove_xdp_program(void)
- 		printf("couldn't find a prog id on a given interface\n");
- 	else
- 		printf("program on interface changed, not removing\n");
-+
-+	if (opt_reduced_cap) {
-+		if (write(sock, &cmd, sizeof(int)) < 0) {
-+			fprintf(stderr, "Error writing into stream socket: %s", strerror(errno));
-+			exit(EXIT_FAILURE);
-+		}
-+	}
- }
- 
- static void int_exit(int sig)
-@@ -853,7 +865,7 @@ static struct xsk_socket_info *xsk_configure_socket(struct xsk_umem_info *umem,
- 	xsk->umem = umem;
- 	cfg.rx_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
- 	cfg.tx_size = XSK_RING_PROD__DEFAULT_NUM_DESCS;
--	if (opt_num_xsks > 1)
-+	if (opt_num_xsks > 1 || opt_reduced_cap)
- 		cfg.libbpf_flags = XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD;
- 	else
- 		cfg.libbpf_flags = 0;
-@@ -911,6 +923,7 @@ static struct option long_options[] = {
- 	{"quiet", no_argument, 0, 'Q'},
- 	{"app-stats", no_argument, 0, 'a'},
- 	{"irq-string", no_argument, 0, 'I'},
-+	{"reduce-cap", no_argument, 0, 'R'},
- 	{0, 0, 0, 0}
- };
- 
-@@ -933,7 +946,7 @@ static void usage(const char *prog)
- 		"  -m, --no-need-wakeup Turn off use of driver need wakeup flag.\n"
- 		"  -f, --frame-size=n   Set the frame size (must be a power of two in aligned mode, default is %d).\n"
- 		"  -u, --unaligned	Enable unaligned chunk placement\n"
--		"  -M, --shared-umem	Enable XDP_SHARED_UMEM\n"
-+		"  -M, --shared-umem	Enable XDP_SHARED_UMEM (cannot be used with -R)\n"
- 		"  -F, --force		Force loading the XDP prog\n"
- 		"  -d, --duration=n	Duration in secs to run command.\n"
- 		"			Default: forever.\n"
-@@ -949,6 +962,7 @@ static void usage(const char *prog)
- 		"  -Q, --quiet          Do not display any stats.\n"
- 		"  -a, --app-stats	Display application (syscall) statistics.\n"
- 		"  -I, --irq-string	Display driver interrupt statistics for interface associated with irq-string.\n"
-+		"  -R, --reduce-cap	Use reduced capabilities (cannot be used with -M)\n"
- 		"\n";
- 	fprintf(stderr, str, prog, XSK_UMEM__DEFAULT_FRAME_SIZE,
- 		opt_batch_size, MIN_PKT_SIZE, MIN_PKT_SIZE,
-@@ -964,7 +978,7 @@ static void parse_command_line(int argc, char **argv)
- 	opterr = 0;
- 
- 	for (;;) {
--		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:xQaI:",
-+		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:xQaI:R",
- 				long_options, &option_index);
- 		if (c == -1)
- 			break;
-@@ -1063,6 +1077,9 @@ static void parse_command_line(int argc, char **argv)
- 				usage(basename(argv[0]));
- 			}
- 
-+			break;
-+		case 'R':
-+			opt_reduced_cap = true;
- 			break;
- 		default:
- 			usage(basename(argv[0]));
-@@ -1085,6 +1102,11 @@ static void parse_command_line(int argc, char **argv)
- 			opt_xsk_frame_size);
- 		usage(basename(argv[0]));
- 	}
-+
-+	if (opt_reduced_cap && opt_num_xsks > 1) {
-+		fprintf(stderr, "ERROR: -M and -R cannot be used together\n");
-+		usage(basename(argv[0]));
-+	}
- }
- 
- static void kick_tx(struct xsk_socket_info *xsk)
-@@ -1461,26 +1483,117 @@ static void enter_xsks_into_map(struct bpf_object *obj)
- 	}
- }
- 
-+static int recv_xsks_map_fd_from_ctrl_node(int sock, int *_fd)
-+{
-+	char cms[CMSG_SPACE(sizeof(int))];
-+	struct cmsghdr *cmsg;
-+	struct msghdr msg;
-+	struct iovec iov;
-+	int value;
-+	int len;
-+
-+	iov.iov_base = &value;
-+	iov.iov_len = sizeof(int);
-+
-+	msg.msg_name = 0;
-+	msg.msg_namelen = 0;
-+	msg.msg_iov = &iov;
-+	msg.msg_iovlen = 1;
-+	msg.msg_flags = 0;
-+	msg.msg_control = (caddr_t)cms;
-+	msg.msg_controllen = sizeof(cms);
-+
-+	len = recvmsg(sock, &msg, 0);
-+
-+	if (len < 0) {
-+		fprintf(stderr, "Recvmsg failed length incorrect.\n");
-+		return -EINVAL;
-+	}
-+
-+	if (len == 0) {
-+		fprintf(stderr, "Recvmsg failed no data\n");
-+		return -EINVAL;
-+	}
-+
-+	cmsg = CMSG_FIRSTHDR(&msg);
-+	*_fd = *(int *)CMSG_DATA(cmsg);
-+
-+	return 0;
-+}
-+
-+static int
-+recv_xsks_map_fd(int *xsks_map_fd)
-+{
-+	struct sockaddr_un server;
-+	int err;
-+
-+	sock = socket(AF_UNIX, SOCK_STREAM, 0);
-+	if (sock < 0) {
-+		fprintf(stderr, "Error opening socket stream: %s", strerror(errno));
-+		return errno;
-+	}
-+
-+	server.sun_family = AF_UNIX;
-+	strcpy(server.sun_path, SOCKET_NAME);
-+
-+	if (connect(sock, (struct sockaddr *)&server, sizeof(struct sockaddr_un)) < 0) {
-+		close(sock);
-+		fprintf(stderr, "Error connecting stream socket: %s", strerror(errno));
-+		return errno;
-+	}
-+
-+	err = recv_xsks_map_fd_from_ctrl_node(sock, xsks_map_fd);
-+	if (err) {
-+		fprintf(stderr, "Error %d recieving fd\n", err);
-+		return err;
-+	}
-+	return 0;
-+}
-+
- int main(int argc, char **argv)
- {
-+	struct __user_cap_header_struct hdr = { _LINUX_CAPABILITY_VERSION_3, 0 };
-+	struct __user_cap_data_struct data[2] = { { 0 } };
- 	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
- 	bool rx = false, tx = false;
- 	struct xsk_umem_info *umem;
- 	struct bpf_object *obj;
-+	int xsks_map_fd = 0;
- 	pthread_t pt;
- 	int i, ret;
- 	void *bufs;
- 
- 	parse_command_line(argc, argv);
- 
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
--			strerror(errno));
--		exit(EXIT_FAILURE);
-+	if (opt_reduced_cap) {
-+		if (capget(&hdr, data)  < 0)
-+			fprintf(stderr, "Error getting capabilities\n");
-+
-+		data->effective &= CAP_TO_MASK(CAP_NET_RAW);
-+		data->permitted &= CAP_TO_MASK(CAP_NET_RAW);
-+
-+		if (capset(&hdr, data) < 0)
-+			fprintf(stderr, "Setting capabilities failed\n");
-+
-+		if (capget(&hdr, data)  < 0) {
-+			fprintf(stderr, "Error getting capabilities\n");
-+		} else {
-+			fprintf(stderr, "Capabilities EFF %x Caps INH %x Caps Per %x\n",
-+				data[0].effective, data[0].inheritable, data[0].permitted);
-+			fprintf(stderr, "Capabilities EFF %x Caps INH %x Caps Per %x\n",
-+				data[1].effective, data[1].inheritable, data[1].permitted);
-+		}
-+	} else {
-+		if (setrlimit(RLIMIT_MEMLOCK, &r)) {
-+			fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
-+				strerror(errno));
-+			exit(EXIT_FAILURE);
-+		}
-+
-+		if (opt_num_xsks > 1)
-+			load_xdp_program(argv, &obj);
- 	}
- 
--	if (opt_num_xsks > 1)
--		load_xdp_program(argv, &obj);
- 
- 	/* Reserve memory for the umem. Use hugepages if unaligned chunk mode */
- 	bufs = mmap(NULL, NUM_FRAMES * opt_xsk_frame_size,
-@@ -1512,6 +1625,21 @@ int main(int argc, char **argv)
- 	if (opt_num_xsks > 1 && opt_bench != BENCH_TXONLY)
- 		enter_xsks_into_map(obj);
- 
-+	if (opt_reduced_cap) {
-+		ret = recv_xsks_map_fd(&xsks_map_fd);
-+		if (ret) {
-+			fprintf(stderr, "Error %d receiving xsks_map_fd\n", ret);
-+			exit_with_error(ret);
-+		}
-+		if (xsks[0]->xsk) {
-+			ret = xsk_update_xskmap(xsks[0]->xsk, xsks_map_fd);
-+			if (ret) {
-+				fprintf(stderr, "Update of BPF map failed(%d)\n", ret);
-+				exit_with_error(ret);
-+			}
-+		}
-+	}
-+
- 	signal(SIGINT, int_exit);
- 	signal(SIGTERM, int_exit);
- 	signal(SIGABRT, int_exit);
--- 
-2.20.1
+Now, with dynamically linked libbpf, a single package update was able
+to solve the problem for everything on the system, including users' own
+programs. All that was needed was making the llvm package force update
+the libbpf package (which rpm can do easily with its Conflicts
+dependency).
+
+So, at least for us, there was so far no disadvantage (and no problem)
+with dynamic linking and a quite substantial advantage.
+
+ Jiri
 
