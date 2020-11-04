@@ -2,108 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89C032A62F5
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 12:11:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CCCB2A6302
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 12:12:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729435AbgKDLLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 06:11:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53632 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728066AbgKDLLI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Nov 2020 06:11:08 -0500
-Received: from localhost (otava-0257.koleje.cuni.cz [78.128.181.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1729399AbgKDLMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 06:12:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51290 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728741AbgKDLMP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 06:12:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604488333;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cPyO+MueesNQTpWeBHBm3FGq5qnHU+yFUkP8PGijvH8=;
+        b=PGUc1UlDg6PeKbG4AaoGqLGsdoEsahlQLrFxjYsiRhglZxK+TvbbpwytmTSgit6DIjCwfA
+        ALAD3OFUuyvsdUKIscWJDEayBFknSuM4bNfkFO4c2s9JDthB35l3jlVeUU5VSkDjQUqmFU
+        H/IWmg0FmXaKrLkYS/I9Ybgrqjy8aMU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-460-ebjSSPuJNkqp3IwlpRw-Ew-1; Wed, 04 Nov 2020 06:12:11 -0500
+X-MC-Unique: ebjSSPuJNkqp3IwlpRw-Ew-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 974F321556;
-        Wed,  4 Nov 2020 11:11:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604488267;
-        bh=nXUVAtygmawESmSumrMZwvlAPKxOTm6KcoJ271qgeno=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OiHaZda5laecmxqHg9f/Ocpu4QDX5BN8FbjJUF/0iJWrb+8lJGE9hdHl79sZNKyiH
-         FTFqf4LuL1HdmKLLL3v38Lb8Ljx2qt2OI4x+6g6Jql43bJkaAYMxZxdVmjkPrSw5UD
-         TfLTaJsPBRvLw3JUjdsj5CS6G71CSMf2FMJH0iJE=
-Date:   Wed, 4 Nov 2020 12:10:53 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Hayes Wang <hayeswang@realtek.com>
-Subject: Re: [PATCH net-next 3/5] r8152: add MCU typed read/write functions
-Message-ID: <20201104121053.44fae8c7@kernel.org>
-In-Reply-To: <20201104110059.whkku3zlck6spnzj@skbuf>
-References: <20201103192226.2455-1-kabel@kernel.org>
-        <20201103192226.2455-4-kabel@kernel.org>
-        <20201103214712.dzwpkj6d5val6536@skbuf>
-        <20201104065524.36a85743@kernel.org>
-        <20201104084710.wr3eq4orjspwqvss@skbuf>
-        <20201104112511.78643f6e@kernel.org>
-        <20201104113545.0428f3fe@kernel.org>
-        <20201104110059.whkku3zlck6spnzj@skbuf>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AFF2F186840A;
+        Wed,  4 Nov 2020 11:12:09 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 27DFF6CE4F;
+        Wed,  4 Nov 2020 11:11:59 +0000 (UTC)
+Date:   Wed, 4 Nov 2020 12:11:58 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ilias.apalodimas@linaro.org, brouer@redhat.com,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Subject: Re: [PATCH v3 net-next 1/5] net: xdp: introduce bulking for xdp tx
+ return path
+Message-ID: <20201104121158.597fa64d@carbon>
+In-Reply-To: <5ef0c2886518d8ae1577c8b60ea6ef55d031673e.1604484917.git.lorenzo@kernel.org>
+References: <cover.1604484917.git.lorenzo@kernel.org>
+        <5ef0c2886518d8ae1577c8b60ea6ef55d031673e.1604484917.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 4 Nov 2020 13:00:59 +0200
-Vladimir Oltean <olteanv@gmail.com> wrote:
+On Wed,  4 Nov 2020 11:22:54 +0100
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-> On Wed, Nov 04, 2020 at 11:35:45AM +0100, Marek Beh=C3=BAn wrote:
-> > Or something like this?
-> >=20
-> > #define DEF_R_FUNC(_t, _r, _r_i, _mcu)				\
-> > static inline _t _r(struct r8152 *tp, u16 index)		\
-> > {								\
-> > 	return _r_i(tp, _mcu, index);				\
-> > }
-> >=20
-> > #define DEF_W_FUNC(_t, _w, _w_i, _mcu)				\
-> > static inline void _w(struct r8152 *tp, u16 index, _t data)	\
-> > {								\
-> > 	_w_i(tp, _mcu, index, data);				\
-> > }
-> >=20
-> > DEF_R_FUNC(u8, pla_ocp_read_byte, ocp_read_byte, MCU_TYPE_PLA)
-> > DEF_W_FUNC(u8, pla_ocp_write_byte, ocp_write_byte, MCU_TYPE_PLA)
-> > DEF_R_FUNC(u16, pla_ocp_read_word, ocp_read_word, MCU_TYPE_PLA)
-> > DEF_W_FUNC(u16, pla_ocp_write_word, ocp_write_word, MCU_TYPE_PLA)
-> > DEF_R_FUNC(u32, pla_ocp_read_dword, ocp_read_dword, MCU_TYPE_PLA)
-> > DEF_W_FUNC(u32, pla_ocp_write_dword, ocp_write_dword, MCU_TYPE_PLA)
-> >=20
-> > DEF_R_FUNC(u8, usb_ocp_read_byte, ocp_read_byte, MCU_TYPE_USB)
-> > DEF_W_FUNC(u8, usb_ocp_write_byte, ocp_write_byte, MCU_TYPE_USB)
-> > DEF_R_FUNC(u16, usb_ocp_read_word, ocp_read_word, MCU_TYPE_USB)
-> > DEF_W_FUNC(u16, usb_ocp_write_word, ocp_write_word, MCU_TYPE_USB)
-> > DEF_R_FUNC(u32, usb_ocp_read_dword, ocp_read_dword, MCU_TYPE_USB)
-> > DEF_W_FUNC(u32, usb_ocp_write_dword, ocp_write_dword, MCU_TYPE_USB) =20
->=20
-> I'm not sure it's worth the change :(
-> Let's put it another way, your diffstat has 338 insertions and 335
-> deletions. Aka you're saving 3 lines overall.
-> With this new approach that doesn't use token concatenation at all,
-> you're probably not saving anything at all.
-> Also, I'm not sure that you need to make the functions inline. The
-> compiler should be smart enough to not generate functions for
-> usb_ocp_read_byte etc. You can check with
-> "make drivers/net/usb/r8152.lst".
+> XDP bulk APIs introduce a defer/flush mechanism to return
+> pages belonging to the same xdp_mem_allocator object
+> (identified via the mem.id field) in bulk to optimize
+> I-cache and D-cache since xdp_return_frame is usually run
+> inside the driver NAPI tx completion loop.
+> The bulk queue size is set to 16 to be aligned to how
+> XDP_REDIRECT bulking works. The bulk is flushed when
+> it is full or when mem.id changes.
+> xdp_frame_bulk is usually stored/allocated on the function
+> call-stack to avoid locking penalties.
+> Current implementation considers only page_pool memory model.
+> 
+> Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  include/net/xdp.h |  9 +++++++
+>  net/core/xdp.c    | 61 +++++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 70 insertions(+)
+> 
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index 3814fb631d52..a1f48a73e6df 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -104,6 +104,12 @@ struct xdp_frame {
+>  	struct net_device *dev_rx; /* used by cpumap */
+>  };
+>  
+> +#define XDP_BULK_QUEUE_SIZE	16
+> +struct xdp_frame_bulk {
+> +	int count;
+> +	void *xa;
+> +	void *q[XDP_BULK_QUEUE_SIZE];
+> +};
+>  
+>  static inline struct skb_shared_info *
+>  xdp_get_shared_info_from_frame(struct xdp_frame *frame)
+> @@ -194,6 +200,9 @@ struct xdp_frame *xdp_convert_buff_to_frame(struct xdp_buff *xdp)
+>  void xdp_return_frame(struct xdp_frame *xdpf);
+>  void xdp_return_frame_rx_napi(struct xdp_frame *xdpf);
+>  void xdp_return_buff(struct xdp_buff *xdp);
+> +void xdp_flush_frame_bulk(struct xdp_frame_bulk *bq);
+> +void xdp_return_frame_bulk(struct xdp_frame *xdpf,
+> +			   struct xdp_frame_bulk *bq);
+>  
+>  /* When sending xdp_frame into the network stack, then there is no
+>   * return point callback, which is needed to release e.g. DMA-mapping
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 48aba933a5a8..66ac275a0360 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -380,6 +380,67 @@ void xdp_return_frame_rx_napi(struct xdp_frame *xdpf)
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_return_frame_rx_napi);
+>  
+> +/* XDP bulk APIs introduce a defer/flush mechanism to return
+> + * pages belonging to the same xdp_mem_allocator object
+> + * (identified via the mem.id field) in bulk to optimize
+> + * I-cache and D-cache.
+> + * The bulk queue size is set to 16 to be aligned to how
+> + * XDP_REDIRECT bulking works. The bulk is flushed when
 
-Vladimir, the purpose of this patch isn't to save lines, but to save us
-from always writing MCU_TYPE_USB / MCU_TYPE_PLA.
-It just transforms forms of
-  ocp_read_word(tp, MCU_TYPE_USB, idx);
-  ocp_write_dword(tp, MCU_TYPE_PLA, idx, val);
-into
-  usb_ocp_read_word(tp, idx);
-  pla_ocp_write_dword(tp, idx, val);
+If this is connected, then why have you not redefined DEV_MAP_BULK_SIZE?
 
-The fifth patch of this series saves lines by adding _modify functions,
-to transform
-  val =3D *_read(idx);
-  val &=3D ~clr;
-  val |=3D set;
-  *_write(idx, val);
-into
-  *_modify(idx, clr, set);
+Cc. DPAA2 maintainers as they use this define in their drivers.
+You want to make sure this driver is flexible enough for future changes.
+
+Like:
+
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 3814fb631d52..44440a36f96f 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -245,6 +245,6 @@ bool xdp_attachment_flags_ok(struct xdp_attachment_info *info,
+ void xdp_attachment_setup(struct xdp_attachment_info *info,
+                          struct netdev_bpf *bpf);
+ 
+-#define DEV_MAP_BULK_SIZE 16
++#define DEV_MAP_BULK_SIZE XDP_BULK_QUEUE_SIZE
+ 
+ #endif /* __LINUX_NET_XDP_H__ */
+
+
+> + * it is full or when mem.id changes.
+> + * xdp_frame_bulk is usually stored/allocated on the function
+> + * call-stack to avoid locking penalties.
+> + */
+> +void xdp_flush_frame_bulk(struct xdp_frame_bulk *bq)
+> +{
+> +	struct xdp_mem_allocator *xa = bq->xa;
+> +	int i;
+> +
+> +	if (unlikely(!xa))
+> +		return;
+> +
+> +	for (i = 0; i < bq->count; i++) {
+> +		struct page *page = virt_to_head_page(bq->q[i]);
+> +
+> +		page_pool_put_full_page(xa->page_pool, page, false);
+> +	}
+> +	bq->count = 0;
+> +}
+> +EXPORT_SYMBOL_GPL(xdp_flush_frame_bulk);
+> +
+> +void xdp_return_frame_bulk(struct xdp_frame *xdpf,
+> +			   struct xdp_frame_bulk *bq)
+> +{
+> +	struct xdp_mem_info *mem = &xdpf->mem;
+> +	struct xdp_mem_allocator *xa;
+> +
+> +	if (mem->type != MEM_TYPE_PAGE_POOL) {
+> +		__xdp_return(xdpf->data, &xdpf->mem, false);
+> +		return;
+> +	}
+>
+
+I cannot make up my mind: It would be a micro-optimization to move
+this if-statement to include/net/xdp.h, but it will make code harder to
+read/follow, and the call you replace xdp_return_frame() is also in
+xdp.c with same call to _xdp_return().  Let keep it as-is. (we can
+followup with micro-optimizations)
+
+
+> +	rcu_read_lock();
+> +
+> +	xa = bq->xa;
+> +	if (unlikely(!xa)) {
+> +		xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
+> +		bq->count = 0;
+> +		bq->xa = xa;
+> +	}
+> +
+> +	if (bq->count == XDP_BULK_QUEUE_SIZE)
+> +		xdp_flush_frame_bulk(bq);
+> +
+> +	if (mem->id != xa->mem.id) {
+> +		xdp_flush_frame_bulk(bq);
+> +		bq->xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
+> +	}
+> +
+> +	bq->q[bq->count++] = xdpf->data;
+> +
+> +	rcu_read_unlock();
+> +}
+> +EXPORT_SYMBOL_GPL(xdp_return_frame_bulk);
+> +
+>  void xdp_return_buff(struct xdp_buff *xdp)
+>  {
+>  	__xdp_return(xdp->data, &xdp->rxq->mem, true);
+
+
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
