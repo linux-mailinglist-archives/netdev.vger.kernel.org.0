@@ -2,83 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C7AB2A5C10
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 02:40:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C10D72A5C14
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 02:40:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730484AbgKDBkJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 3 Nov 2020 20:40:09 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:53261 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728567AbgKDBkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 20:40:09 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 0A41dqJW3023388, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb03.realtek.com.tw[172.21.6.96])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 0A41dqJW3023388
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 4 Nov 2020 09:39:52 +0800
-Received: from RTEXMBS03.realtek.com.tw (172.21.6.34) by
- RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Wed, 4 Nov 2020 09:39:52 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXMBS03.realtek.com.tw (172.21.6.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 4 Nov 2020 09:39:52 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa]) by
- RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa%3]) with mapi id
- 15.01.2044.006; Wed, 4 Nov 2020 09:39:52 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        Oliver Neukum <oliver@neukum.org>
-Subject: RE: [PATCH net-next v2] net/usb/r8153_ecm: support ECM mode for RTL8153
-Thread-Topic: [PATCH net-next v2] net/usb/r8153_ecm: support ECM mode for
- RTL8153
-Thread-Index: AQHWrmwDnKDexsPDxUiMgOTBbfR/C6mx0pMAgAJFC4CAAKdeAIAA5pyAgABwkoCAASNjcA==
-Date:   Wed, 4 Nov 2020 01:39:52 +0000
-Message-ID: <db4c6b3b30284206a6f131e922760e1e@realtek.com>
-References: <1394712342-15778-387-Taiwan-albertk@realtek.com>
-        <1394712342-15778-388-Taiwan-albertk@realtek.com>
-        <20201031160838.39586608@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <dc7fd1d4d1c544e8898224c7d9b54bda@realtek.com>
-        <20201102114718.0118cc12@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <20201103093241.GA79239@kroah.com>
- <20201103081535.7e92a495@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201103081535.7e92a495@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.146]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1730508AbgKDBks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 20:40:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728567AbgKDBks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 20:40:48 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77306C061A4D;
+        Tue,  3 Nov 2020 17:40:48 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id o11so9289811ioo.11;
+        Tue, 03 Nov 2020 17:40:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5PXhtPDP8zBwGol0twdKLwlVKUnyORjj759fS8L0cL8=;
+        b=SVgZCOZuQDiSMXV46BXv6oVu2NF3+Jc3waS7CUGkoqj5lBH8qSXozoGh6e3fp14Pp/
+         7zNveyuU+Br2YEOMjxRef+rp8JgWuu82HotT7LprnZK9yf4y2fN2FL8z6U4IqDPMMogc
+         WI7xQjsLEgGwAVB3kehMNVdQLmElVslT3J8E4sX9LowvVac3sNCibHQ67w/Fr2tP3Vp/
+         du37fNlS/ov8N3FHXyT68iCydlR0XOiXoU8IRUAvfl0IH7RqKv9/Tt7v5AQNrfAvMsSt
+         h8AWkcGrikdi+1BLEITu/eVOrXK11vsWpc0pIaChuoGQKu4+s7d62J5k/w2ieFLIiHeV
+         21zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5PXhtPDP8zBwGol0twdKLwlVKUnyORjj759fS8L0cL8=;
+        b=jwa6KXxWoOlh7Sv4cZwHShZMf7j342/u8BPVcb8O6ly5khwvgU3zRrThHkcZG4Xh0w
+         qD4Bh4wuohyZBNiaUaoSiCvmjA5l41oLXtgqdkjYpfv8LjzzaJ2XVDZtyrfNO7eIY/Ni
+         StT7lIJbEnKKjoTi/ysjkkog8/wNJZ87TTYJbTjBH9d9OsNtGgqShZO0UdquNhIrWHIv
+         DYSDCwnNn1kHSYcsJ/J29WgSouuEM7+ci8vfLn8Fa2Q2HWuIXaf8lX/eyLFh+bf76WIo
+         ldNh+teQSUCEEitIAxJ//knzr+xYoIAJ5IkQqhYslLZCDB2iTf+ofMzjycImrUGBJq/y
+         uWVg==
+X-Gm-Message-State: AOAM533HjdZvP6bbln3nQBcUp6u0xglZeqrKgybI7NYNCGp+hHpuo/Wm
+        xHxD+WHiR4nTGc11z+cSVAQ=
+X-Google-Smtp-Source: ABdhPJwI1cRc0z1QBpsrhAJ7Sy5pAxdJumP54YcdCaukup1VU2REueaQk692d7NS6ZkWx/vidfe4wQ==
+X-Received: by 2002:a02:cbde:: with SMTP id u30mr8557917jaq.69.1604454047867;
+        Tue, 03 Nov 2020 17:40:47 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:def:1f9b:2059:ffac])
+        by smtp.googlemail.com with ESMTPSA id n28sm366580ila.52.2020.11.03.17.40.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Nov 2020 17:40:47 -0800 (PST)
+Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Hangbin Liu <haliu@redhat.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+References: <20201028132529.3763875-1-haliu@redhat.com>
+ <20201029151146.3810859-1-haliu@redhat.com>
+ <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
+ <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
+ <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
+ <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
+ <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
+ <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com>
+ <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <ce441cb4-0e36-eae6-ca19-efebb6fb55f1@gmail.com>
+Date:   Tue, 3 Nov 2020 18:40:44 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.4.0
 MIME-Version: 1.0
+In-Reply-To: <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org>
-> Sent: Wednesday, November 4, 2020 12:16 AM
-[...]
-> > So no, please do not create such a common file, it is not needed or a
-> > good idea.
-> 
-> I wouldn't go that far, PCI subsystem just doesn't want everyone to add
-> IDs to the shared file unless there is a reason.
-> 
->  *	Do not add new entries to this file unless the definitions
->  *	are shared between multiple drivers.
-> 
-> Which seems quite reasonable. But it is most certainly your call :)
+On 11/3/20 3:55 PM, Alexei Starovoitov wrote:
+> The bpf support in "tc" command instead of being obviously old and obsolete
+> will be sort-of working with unpredictable delay between released kernel
+> and released iproute2 version. The iproute2 release that suppose to match kernel
+> release will be meaningless.
 
-Do I have to resend this patch?
-
-Best Regards,
-Hayes
+iproute2, like all userspace commands, is written to an API and for well
+written APIs the commands should be backward and forward compatible
+across kernel versions. Kernel upgrades do not force an update of the
+entire ecosystem. New userspace on old kernels should again just work.
+New functionality in the new userpsace will not, but detection of that
+is a different problem and relies on kernel APIs doing proper data
+validation.
 
 
+> More so, the upgrade of shared libbpf.so can make older iproute2/tc to do 
+> something new and unpredictable.
+
+How so? If libbpf is written against kernel APIs and properly versioned,
+it should just work. A new version of libbpf changes the .so version, so
+old commands will not load it.
