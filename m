@@ -2,98 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AB562A703A
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 23:08:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 717292A7040
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 23:10:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732330AbgKDWId (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 17:08:33 -0500
-Received: from mail-oo1-f66.google.com ([209.85.161.66]:43537 "EHLO
-        mail-oo1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726777AbgKDWId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 17:08:33 -0500
-Received: by mail-oo1-f66.google.com with SMTP id z14so11858oom.10;
-        Wed, 04 Nov 2020 14:08:32 -0800 (PST)
+        id S1731941AbgKDWKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 17:10:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33436 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726777AbgKDWKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 17:10:39 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D8FC0613D3;
+        Wed,  4 Nov 2020 14:10:39 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id e27so6409676lfn.7;
+        Wed, 04 Nov 2020 14:10:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Yk2mj75i8xa8ayUVBQ83JlZDKWwjs6t8SW4iIqQ0FL8=;
+        b=KANFOam0HlCtXCJKxEuU+poGR57CGLU6/zmeHIPrjcjIfkW00DexlF9LqBPk1p5pXq
+         vxp8ESNn3E0OZNZeYDdCUJSLW/qJZx22Cf416XUH8J3ANooFmsCb8UIwmcc5XL22E5kO
+         937DmY/OO5bps0pihshlNQy8MSGL+w5FjluXGJBdE9IkQZsYz85TASPkatJwHsR1x3in
+         GZna+Lwq6va5sQtb6limwg+TU3Olwwbr5g1aaJKKfjcTOqYDdkXo6Hud1Jv0hxQJWGqg
+         QA7HxRzsUkeCYRL5Acfx/1VySgVdi5cVudimmEe5fbvpuJpMu+QHbeNf0jKJT4xNcxk1
+         Up+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cUpVQds8DCOsEY6f9AUbNrj5fsXMdU/YU8tvU+q5oco=;
-        b=gNATklkRs/ozvJWGjlIBK1ijbZyf5MVC74ysCZ37Ss8sm4US27AIU4PWxIq7R18Hq8
-         YKnAMEE28zMsTUfek6mjv0QMdTjFqJ3FpiBjAPhRfqziMovQvEd+x7g1t+P68MxsCe9T
-         14XjCQngDlRgq+K3SlZBuwLeb2bpFQk449vkrI3IK7/qmD2/vf9/eKTe4hjeUeixE8n3
-         tkb47tyY1U1HbrIF8a1PjJa9ZotavwOuf46+W0Md0q37zfN+hKeiy8LG5ZFeS62iZZew
-         sSFSQoQqjaMlAH5GSO/zpychy6g9ozaRvCorsIX83IeydDDSYF/ms9SkKLi+DCuphThe
-         gEmg==
-X-Gm-Message-State: AOAM531F02yZfMuzAyop7j4orC0MZipsHDrMHxeAHOaGjayWBdZNQIHD
-        d17MojnKHHJio8Gl2cYtXq6HztRylg==
-X-Google-Smtp-Source: ABdhPJwlVBWqAnaWTc0kRKqZp6PjxlWuv66zncIa54/soy0ziGh46mHILrMtnDZOUzvyTKu4aiY+Tg==
-X-Received: by 2002:a4a:6f4d:: with SMTP id i13mr189550oof.25.1604527712393;
-        Wed, 04 Nov 2020 14:08:32 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id p126sm750613oia.24.2020.11.04.14.08.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 14:08:31 -0800 (PST)
-Received: (nullmailer pid 13892 invoked by uid 1000);
-        Wed, 04 Nov 2020 22:08:31 -0000
-Date:   Wed, 4 Nov 2020 16:08:31 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Dan Murphy <dmurphy@ti.com>, davem@davemloft.net,
-        f.fainelli@gmail.com, hkallweit1@gmail.com,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 2/4] dt-bindings: net: Add Rx/Tx output
- configuration for 10base T1L
-Message-ID: <20201104220831.GA10591@bogus>
-References: <20201030172950.12767-1-dmurphy@ti.com>
- <20201030172950.12767-3-dmurphy@ti.com>
- <20201030195655.GD1042051@lunn.ch>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Yk2mj75i8xa8ayUVBQ83JlZDKWwjs6t8SW4iIqQ0FL8=;
+        b=RKRRQGQ1mdFEiiLnOPCxy7sTYICFvpNtius7i4LYUaCEgiRkR2YKLOQ4k7lR8eRT3t
+         GoMrOpFGrnevqrP2LqRmDvbiJdHrByjwrxwYEC3jjh1Hk4HLq6z9LWdt2yRImia8+038
+         MU09nqvTfT9G3uTDaId8hc36eJUnHtyICopwxOKMQ3DKDYC2SCxqRLoH0HqlRX5vhj0F
+         jaIYQ5uE7qTnTfNN159h3N8+W+I1lrmtripd3JGa4OFB+w3gb9N9V95twEt5YNFD6moo
+         d3k01mdtrxv0k+IXYMKLQQknvT+ycpVPyihHdGkE1HvoxZ8/39aIfhpNWO7ji++qMVoZ
+         Ahbw==
+X-Gm-Message-State: AOAM531FWnPzNNsuuCg3DXku6FASwtlBXijA5zNzXQOZR3GXkWNCjBsq
+        +tQ5+EmRZXpyZnmDFPsdzdex93TeLkyEsc2XUEM=
+X-Google-Smtp-Source: ABdhPJz5XSkiQ1cv/9X7KUiC72fGiP+TjMWeNoh7HI4hGLD2ZP40tU35M5i5UPWTJDnGhRPZVmqhsgMlFOMeEjT3+pc=
+X-Received: by 2002:ac2:5e83:: with SMTP id b3mr9823957lfq.119.1604527837537;
+ Wed, 04 Nov 2020 14:10:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201030195655.GD1042051@lunn.ch>
+References: <20201028132529.3763875-1-haliu@redhat.com> <20201029151146.3810859-1-haliu@redhat.com>
+ <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com> <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
+ <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net> <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
+ <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
+ <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com> <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
+ <20201104021730.GK2408@dhcp-12-153.nay.redhat.com> <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
+ <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com>
+In-Reply-To: <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 4 Nov 2020 14:10:25 -0800
+Message-ID: <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
+Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Hangbin Liu <haliu@redhat.com>, David Ahern <dsahern@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 08:56:55PM +0100, Andrew Lunn wrote:
-> On Fri, Oct 30, 2020 at 12:29:48PM -0500, Dan Murphy wrote:
-> > Per the 802.3cg spec the 10base T1L can operate at 2 different
-> > differential voltages 1v p2p and 2.4v p2p. The abiility of the PHY to
-> > drive that output is dependent on the PHY's on board power supply.
-> 
-> Hi Dan
-> 
-> So this property is about the board being able to support the needed
-> voltages? The PHY is not forced into 2.4v p2p, it just says the PHY
-> can operate at 2.4v and the board will not melt, blow a fuse, etc?
-> 
-> I actually think it is normal to specify the reverse. List the maximum
-> that device can do because of board restrictions. e.g.
-> 
-> - maximum-power-milliwatt : Maximum module power consumption
->   Specifies the maximum power consumption allowable by a module in the
->   slot, in milli-Watts.  Presently, modules can be up to 1W, 1.5W or 2W.
-> 
-> - max-link-speed:
->    If present this property specifies PCI gen for link capability.  Host
->    drivers could add this as a strategy to avoid unnecessary operation for
->    unsupported link speed, for instance, trying to do training for
->    unsupported link speed, etc.  Must be '4' for gen4, '3' for gen3, '2'
->    for gen2, and '1' for gen1. Any other values are invalid.
-> 
->  - max-microvolt : The maximum voltage value supplied to the haptic motor.
->                 [The unit of the voltage is a micro]
-> 
-> So i think this property should be
-> 
->    max-tx-rx-p2p = <1000>;
-> 
-> to limit it to 1000mv p2p because of board PSU limitations, and it is
-> free to do 22000mv is the property is not present.
+On Wed, Nov 4, 2020 at 1:16 PM Edward Cree <ecree@solarflare.com> wrote:
+>
+> On 04/11/2020 03:11, Alexei Starovoitov wrote:
+> > The user will do 'tc -V'. Does version mean anything from bpf loading pov?
+> > It's not. The user will do "ldd `which tc`" and then what?
+> Is it beyond the wit of man for 'tc -V' to output somethingabout
+>  libbpf version?
+> Other libraries seem to solve these problems all the time, I
+>  haven't seen anyone explain what makes libbpf so special that it
+>  has to be different.
 
-'-microvolt' suffix please.
+slow vger? Please see Daniel and Andrii detailed explanations.
 
-> 
->    Andrew
-> 
+libbpf is not your traditional library.
+Looking through the installed libraries on my devserver in /lib64/ directory
+I think the closest is libbfd.so
+Then think why gdb always statically links it.
