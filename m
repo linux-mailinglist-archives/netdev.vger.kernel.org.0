@@ -2,133 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68AF92A64A9
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 13:51:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B28BA2A64B5
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 13:54:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729484AbgKDMve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 07:51:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728922AbgKDMve (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 07:51:34 -0500
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9108BC0613D3;
-        Wed,  4 Nov 2020 04:51:33 -0800 (PST)
-Received: by mail-wr1-x443.google.com with SMTP id k10so20595877wrw.13;
-        Wed, 04 Nov 2020 04:51:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pLlGk+cZ5H+bPN4ICXizwdh/rPzTm72DYXYeQwOXCr0=;
-        b=Tk7tVGSahYOHlMXSNvEBkehn7INsUSuXVmTxbRu96ErkVy5nIkklFOpdHV8jo1+tXS
-         kDb8fdQqrhfXeXPgkSbBiHSAJrMMd6cdjk4kBzXWg361UcfiTMW0KHUWAzsjK3kcSc2P
-         jqOhsSbafcy5rZ4v5FJOQs6/F/k4guUtiBWbQWrehexn8pBd4lcidjOKbVRi2cd/SuTQ
-         fNyO+8TkixUa/czAyI4GikrMfOpN8JuAH9Au+ys8w2HZQSW3uypjPxzQ0VyQuielg6VX
-         alg+kydyXHFYrMpma1rsmkP/TAoCcugwydAOCEElr7mjDy49c5gzu8Xu2iUVtbnBYhL1
-         t+xA==
+        id S1729782AbgKDMyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 07:54:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:21642 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729783AbgKDMyB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 07:54:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604494438;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=U3GfiVmojJ/giml1Tqa4nmxIiU4dmaRVwJTGJun6v7A=;
+        b=H53uoGXgB5T858glinYI8OwBhp63a8C9rWPnOSG0tpFoKDfBPIzHTaxNQeKcYVUZjtwyd8
+        VsvewDnoPVCBu0OPhEPbjEzhCTErxbVVIxkIKvT49teztv82YZy7f7gj8OKB7W9AjiqQbE
+        UYA5zFt8vZb4rMszrpFsEIYf/Vs4lhU=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-24-Vkqcwv_sOTC9Sz0M96stRQ-1; Wed, 04 Nov 2020 07:53:54 -0500
+X-MC-Unique: Vkqcwv_sOTC9Sz0M96stRQ-1
+Received: by mail-wm1-f71.google.com with SMTP id y187so1179088wmy.3
+        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 04:53:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pLlGk+cZ5H+bPN4ICXizwdh/rPzTm72DYXYeQwOXCr0=;
-        b=LFZyy0gbD51ccp0bBo/dIUk9yhzgswpiEwcBGie2uwtOlJy6A1wswE2zeX8SesXVl4
-         n79o4gOwAr0HgwjNGr9RZcytSWloKkRcum1jGP9dtLB4aav3I6Q+bXo44naSJ4zoy8ZW
-         wLVeQIyd4A76rTKQPOIO8EpY/WqggLBe+nEJsTtNp6NHwuCyHjayl/ZoDRUB3fKblv6A
-         7TrT45iCYtz1/4h78UNNuutog89MiTgBkGlTbL65GVnJrCtzmM8s9tq7XNquuPyKfb3/
-         ZI5DB9GqJ/B57JuXd7rWV3PO1ip11515gzPnG9KFgSGEpiqsHrt0HQ9xPA7WaqJP+JmO
-         cI6g==
-X-Gm-Message-State: AOAM53219GnNLvThBc3cSd374Xh4ILW0kobXSlwQA0ttPX31ElzUIn1l
-        d/EqQFYYl6DA5tfgfyf2VBU=
-X-Google-Smtp-Source: ABdhPJzOQ0NRbvYHtqTnDIRsY8tJqtdseDoZpKi1RFjwxdMac8x7eWhLibNCb4s785rNtv6INKWLCQ==
-X-Received: by 2002:a5d:5083:: with SMTP id a3mr31111254wrt.93.1604494292254;
-        Wed, 04 Nov 2020 04:51:32 -0800 (PST)
-Received: from [192.168.8.114] ([37.172.5.208])
-        by smtp.gmail.com with ESMTPSA id c18sm2330160wrt.10.2020.11.04.04.51.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Nov 2020 04:51:31 -0800 (PST)
-Subject: Re: [PATCH 1/1] mm: avoid re-using pfmemalloc page in
- page_frag_alloc()
-To:     Matthew Wilcox <willy@infradead.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Rama Nichanamatlu <rama.nichanamatlu@oracle.com>,
-        Dongli Zhang <dongli.zhang@oracle.com>, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, davem@davemloft.net, kuba@kernel.org,
-        aruna.ramakrishna@oracle.com, bert.barbe@oracle.com,
-        venkat.x.venkatsubra@oracle.com, manjunath.b.patil@oracle.com,
-        joe.jin@oracle.com, srinivas.eeda@oracle.com
-References: <20201103193239.1807-1-dongli.zhang@oracle.com>
- <20201103203500.GG27442@casper.infradead.org>
- <7141038d-af06-70b2-9f50-bf9fdf252e22@oracle.com>
- <20201103211541.GH27442@casper.infradead.org>
- <20201104011640.GE2445@rnichana-ThinkPad-T480>
- <2bce996a-0a62-9d14-4310-a4c5cb1ddeae@gmail.com>
- <20201104123659.GA17076@casper.infradead.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <053d1d51-430a-2fa9-fb72-fee5d2f9785c@gmail.com>
-Date:   Wed, 4 Nov 2020 13:51:29 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=U3GfiVmojJ/giml1Tqa4nmxIiU4dmaRVwJTGJun6v7A=;
+        b=HLql2NlNHix0GTb45/2prg9v2rBuQEy21Bi7IGfevgNAFDpskdd3Cqx1TKR7dirTTZ
+         PjEviYTkry9+5bbgrnWRX4jsjcQBOFZmWg18WWQrc4U/uqcsm2Y6a/jBbQuLwUDM6cXh
+         rfiQsFzfvvL3/TlGcX6A5702E87EO9r3uORV4CASe7lYNcileqwNknQ9aLmcJcr+dVF7
+         qPp5VQ0XmoVGwnjmYmT1Tbr6N+ryKXbuYoJey+RSFFHgO8Z1uR1VMZZ5dGKvwcM0Z3/0
+         OLRTqCcKzC2zmCn+mvzy28+GcuePRZwC1s9AziwbUha5KvwSG+cBwPlZLkCv17OEBu/0
+         4zOg==
+X-Gm-Message-State: AOAM531ki8xe4ObVFKwHHWsz9A7mzBrTESK30MPAFsx7aQqBAc+Rm2d6
+        UK2GC62DxppMOvKjL8MxU9JFtAeB6qkOd1ubb7N5UrJNA5wyMAMkG/7geUZtmOQ/oKvMCCC4Tr8
+        zx79Xzjfw87Wrev7Z
+X-Received: by 2002:a1c:2d8f:: with SMTP id t137mr4373166wmt.26.1604494433176;
+        Wed, 04 Nov 2020 04:53:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwqhue0FYtSpv7hREqFpU9VyHO+M/sHtBrZN1EZbG/t1LwNg38tJ9Yv3FhYG32ejNKMr9khhA==
+X-Received: by 2002:a1c:2d8f:: with SMTP id t137mr4373147wmt.26.1604494432988;
+        Wed, 04 Nov 2020 04:53:52 -0800 (PST)
+Received: from localhost ([151.66.8.153])
+        by smtp.gmail.com with ESMTPSA id a128sm2080408wmf.5.2020.11.04.04.53.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Nov 2020 04:53:52 -0800 (PST)
+Date:   Wed, 4 Nov 2020 13:53:48 +0100
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ilias.apalodimas@linaro.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Subject: Re: [PATCH v3 net-next 1/5] net: xdp: introduce bulking for xdp tx
+ return path
+Message-ID: <20201104125348.GB11993@lore-desk>
+References: <cover.1604484917.git.lorenzo@kernel.org>
+ <5ef0c2886518d8ae1577c8b60ea6ef55d031673e.1604484917.git.lorenzo@kernel.org>
+ <20201104121158.597fa64d@carbon>
+ <20201104111902.GA11993@lore-desk>
+ <20201104132834.07fc3dfd@carbon>
 MIME-Version: 1.0
-In-Reply-To: <20201104123659.GA17076@casper.infradead.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="QTprm0S8XgL7H0Dt"
+Content-Disposition: inline
+In-Reply-To: <20201104132834.07fc3dfd@carbon>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--QTprm0S8XgL7H0Dt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 11/4/20 1:36 PM, Matthew Wilcox wrote:
-> On Wed, Nov 04, 2020 at 09:50:30AM +0100, Eric Dumazet wrote:
->> On 11/4/20 2:16 AM, Rama Nichanamatlu wrote:
->>>> Thanks for providing the numbers.  Do you think that dropping (up to)
->>>> 7 packets is acceptable?
->>>
->>> net.ipv4.tcp_syn_retries = 6
->>>
->>> tcp clients wouldn't even get that far leading to connect establish issues.
->>
->> This does not really matter. If host was under memory pressure,
->> dropping a few packets is really not an issue.
->>
->> Please do not add expensive checks in fast path, just to "not drop a packet"
->> even if the world is collapsing.
-> 
-> Right, that was my first patch -- to only recheck if we're about to
-> reuse the page.  Do you think that's acceptable, or is that still too
-> close to the fast path?
+> On Wed, 4 Nov 2020 12:19:02 +0100
+> Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
+>=20
+> > > On Wed,  4 Nov 2020 11:22:54 +0100
+> > > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> > >  =20
+> >=20
+> > [...]
+> >=20
+> > > > +/* XDP bulk APIs introduce a defer/flush mechanism to return
+> > > > + * pages belonging to the same xdp_mem_allocator object
+> > > > + * (identified via the mem.id field) in bulk to optimize
+> > > > + * I-cache and D-cache.
+> > > > + * The bulk queue size is set to 16 to be aligned to how
+> > > > + * XDP_REDIRECT bulking works. The bulk is flushed when =20
+> > >=20
+> > > If this is connected, then why have you not redefined DEV_MAP_BULK_SI=
+ZE?
+> > >=20
+> > > Cc. DPAA2 maintainers as they use this define in their drivers.
+> > > You want to make sure this driver is flexible enough for future chang=
+es.
+> > >=20
+> > > Like:
+> > >=20
+> > > diff --git a/include/net/xdp.h b/include/net/xdp.h
+> > > index 3814fb631d52..44440a36f96f 100644
+> > > --- a/include/net/xdp.h
+> > > +++ b/include/net/xdp.h
+> > > @@ -245,6 +245,6 @@ bool xdp_attachment_flags_ok(struct xdp_attachmen=
+t_info *info,
+> > >  void xdp_attachment_setup(struct xdp_attachment_info *info,
+> > >                           struct netdev_bpf *bpf);
+> > > =20
+> > > -#define DEV_MAP_BULK_SIZE 16
+> > > +#define DEV_MAP_BULK_SIZE XDP_BULK_QUEUE_SIZE =20
+> >=20
+> > my idea was to address it in a separated patch, but if you prefer I can=
+ merge
+> > this change in v4
 
-I think it is totally acceptable.
+sure, will do in v4.
 
-The same strategy is used in NIC drivers, before recycling a page.
+Regards,
+Lorenzo
 
-If page_is_pfmemalloc() returns true, they simply release the 'problematic'page
-and attempt a new allocation.
+>=20
+> Please merge in V4.  As this patch contains the explanation, and we
+> want to avoid too much churn (remember our colleagues need to backport
+> and review this).
+>=20
+> --=20
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>=20
 
-( git grep -n page_is_pfmemalloc -- drivers/net/ethernet/ )
+--QTprm0S8XgL7H0Dt
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-> 
->> Also consider that NIC typically have thousands of pre-allocated page/frags
->> for their RX ring buffers, they might all have pfmemalloc set, so we are speaking
->> of thousands of packet drops before the RX-ring can be refilled with normal (non pfmemalloc) page/frags.
->>
->> If we want to solve this issue more generically, we would have to try
->> to copy data into a non pfmemalloc frag instead of dropping skb that
->> had frags allocated minutes ago under memory pressure.
-> 
-> I don't think we need to copy anything.  We need to figure out if the
-> system is still under memory pressure, and if not, we can clear the
-> pfmemalloc bit on the frag, as in my second patch.  The 'least change'
-> way of doing that is to try to allocate a page, but the VM could export
-> a symbol that says "we're not under memory pressure any more".
-> 
-> Did you want to move checking that into the networking layer, or do you
-> want to keep it in the pagefrag allocator?
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX6KkWQAKCRA6cBh0uS2t
+rJUnAP9J5wjqs75zYlgbQ24TkJx8NSzweAzGYMQBt1gMf5tQkQEAoz/fT9pUm+1D
+dTIddZzlYGfm0TUgPT/SDrOU91LYnQg=
+=MpCz
+-----END PGP SIGNATURE-----
 
-I think your proposal is fine, thanks !
+--QTprm0S8XgL7H0Dt--
 
