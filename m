@@ -2,203 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BB4D2A690C
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:06:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E56BB2A691C
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:09:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726900AbgKDQGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 11:06:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32816 "EHLO
+        id S1730012AbgKDQIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 11:08:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725889AbgKDQGl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 11:06:41 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CF2C0613D3
-        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 08:06:40 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kaLIz-0000ZK-3Q; Wed, 04 Nov 2020 17:06:37 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:20b7:b0a1:f6b2:524e] (unknown [IPv6:2a03:f580:87bc:d400:20b7:b0a1:f6b2:524e])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id CF59258A601;
-        Wed,  4 Nov 2020 16:06:34 +0000 (UTC)
-Subject: Re: [PATCH] can: j1939: add tables for the CAN identifier and its
- fields
-To:     yegorslists@googlemail.com, linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, dev.kurt@vandijck-laurijssen.be
-References: <20201104155730.25196-1-yegorslists@googlemail.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <a52292a5-3782-21af-adba-686ad2659ff2@pengutronix.de>
-Date:   Wed, 4 Nov 2020 17:06:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <20201104155730.25196-1-yegorslists@googlemail.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="7nNYYxuAFsYSjdNz8Zbtt8lqNEz5t5Pmd"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        with ESMTP id S1729840AbgKDQIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 11:08:52 -0500
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529AFC0613D3;
+        Wed,  4 Nov 2020 08:08:52 -0800 (PST)
+Received: by mail-il1-x141.google.com with SMTP id x7so19826938ili.5;
+        Wed, 04 Nov 2020 08:08:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=MganMYMYYjybcpcU88wzK3c1493PmTVrCCHT7bNkP+U=;
+        b=SebTzKO0r84f/cdrZXygNg5FqSsLQ/DXpHqmL8oCIx5iKZayWP/jwE5V4mdQkK6ngF
+         FAvxEn88FjDVR+lApK5YN6kZPBP9dUmgMnUC/oX/OLB+BSEcNJdDnrpmPdrAkbHeDRsN
+         QCvdoI9Ol4KEQbGlnYpkWUYyQ/gv5eyiCEqILUr6LONFMJgrxOf8FDHdnxu2Sn8jyWYT
+         RG5+rwb7AOnwBsbTfy9SuU/eJiP2CVOReHSLU4SfDj6s4KH39SzDUXWaQdjmDfORfpsG
+         aiXbUx8t4Z994+g1aYo/9i0flj1RZajjFF7FJQOF8OSPJ3bN77fcjqgXPmV7I518AlzL
+         xrLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=MganMYMYYjybcpcU88wzK3c1493PmTVrCCHT7bNkP+U=;
+        b=t7/a+QXLXQ+U7MRkK8cqeFSi6PDcwwYpfP3yX8TNSLAvWqXXO9K6vR+wDHTnhgzmw9
+         AawjQX1lu8xdnnG5sx4nczOey0MwSf5wy+JHYXxOkZ/lExqxeIlXCYzEdpdN6v+sk4sD
+         V0VYPp03et5haA7RlEm9YukYn1GC6PwEOIdjEY48ephrLXJpiAPJzUt7N3oW0qlu64//
+         x9+W2Dry1rY+06ZV0X6c/K8XJvNyNpG6Y76rZyBpKpLffp9m6OpZHj7JP0Nw4/wPYqn4
+         Pn6MQpTP6B0pHwVV3ZkqX9wOCaZSva01E7gR+y5YKLhBHl4k2kRPt5FzKwD9Mc8UIlam
+         YssQ==
+X-Gm-Message-State: AOAM532RQW+pirQJ3ghmKmpZtWCDyGh3CuAG0s6Rd/nkUv0DlzRVV+67
+        KeB+DbAo570d5RKNJn1jA8T1CatGkX0=
+X-Google-Smtp-Source: ABdhPJxKqTfBuBcOcWOv7poRFlax8YlsF1nPYSPoLc0L2aTYuhV9xPRNSg3PH1xSdMb9wD9lPv0gTg==
+X-Received: by 2002:a92:c8c4:: with SMTP id c4mr12740652ilq.161.1604506131566;
+        Wed, 04 Nov 2020 08:08:51 -0800 (PST)
+Received: from localhost.localdomain ([198.52.185.246])
+        by smtp.gmail.com with ESMTPSA id m86sm1705076ilb.44.2020.11.04.08.08.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Nov 2020 08:08:50 -0800 (PST)
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
+To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        David S Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Roelof Berg <rberg@berg-solutions.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1] lan743x: correctly handle chips with internal PHY
+Date:   Wed,  4 Nov 2020 11:08:47 -0500
+Message-Id: <20201104160847.30049-1-TheSven73@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---7nNYYxuAFsYSjdNz8Zbtt8lqNEz5t5Pmd
-Content-Type: multipart/mixed; boundary="3SejVAjsJtz9aEx6fRe5rZLKI8YwPq7KX";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: yegorslists@googlemail.com, linux-can@vger.kernel.org
-Cc: netdev@vger.kernel.org, dev.kurt@vandijck-laurijssen.be
-Message-ID: <a52292a5-3782-21af-adba-686ad2659ff2@pengutronix.de>
-Subject: Re: [PATCH] can: j1939: add tables for the CAN identifier and its
- fields
-References: <20201104155730.25196-1-yegorslists@googlemail.com>
-In-Reply-To: <20201104155730.25196-1-yegorslists@googlemail.com>
+Commit 6f197fb63850 ("lan743x: Added fixed link and RGMII support")
+assumes that chips with an internal PHY will not have a devicetree
+entry. This is incorrect: even for these chips, a devicetree entry
+can be useful e.g. to pass the mac address from bootloader to chip:
 
---3SejVAjsJtz9aEx6fRe5rZLKI8YwPq7KX
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+    &pcie {
+            status = "okay";
 
-On 11/4/20 4:57 PM, yegorslists@googlemail.com wrote:
-> From: Yegor Yefremov <yegorslists@googlemail.com>
->=20
-> Use table markup to show the structure of the CAN identifier, PGN, PDU1=
-,
-> and PDU2 formats. Also add introductory sentence.
->=20
-> Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
-> ---
->  Documentation/networking/j1939.rst | 46 +++++++++++++++++++++++++++---=
+            host@0 {
+                    reg = <0 0 0 0 0>;
 
->  1 file changed, 42 insertions(+), 4 deletions(-)
->=20
-> diff --git a/Documentation/networking/j1939.rst b/Documentation/network=
-ing/j1939.rst
-> index 0a4b73b03b99..19d9878d7194 100644
-> --- a/Documentation/networking/j1939.rst
-> +++ b/Documentation/networking/j1939.rst
-> @@ -69,18 +69,56 @@ J1939 concepts
->  PGN
->  ---
-> =20
-> +The J1939 protocol uses the 29-bit CAN identifier with the following s=
-tructure:
-> +
-> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+                    #address-cells = <3>;
+                    #size-cells = <2>;
 
-> +  29 bit CAN-ID                                    =20
-> +  --------------------------------------------------
-> +  Bit positions within the CAN-ID                  =20
-> +  --------------------------------------------------
-> +  28 ... 26     25 ... 8        7 ... 0            =20
-> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+                    lan7430: ethernet@0 {
+                            /* LAN7430 with internal PHY */
+                            compatible = "microchip,lan743x";
+                            status = "okay";
+                            reg = <0 0 0 0 0>;
+                            /* filled in by bootloader */
+                            local-mac-address = [00 00 00 00 00 00];
+                    };
+            };
+    };
 
-> +  Priority      PGN             SA (Source Address)=20
-> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+If a devicetree entry is present, the driver will not attach the chip
+to its internal phy, and the chip will be non-operational.
 
+Fix by tweaking the phy connection algorithm:
+- first try to connect to a phy specified in the devicetree
+  (could be 'real' phy, or just a 'fixed-link')
+- if that doesn't succeed, try to connect to an internal phy, even
+  if the chip has a devnode
 
-Here you introduce trailing whitespace. I've removed them while applying =
-the
-patch to linux-can/testing
+This method no longer explicitly exposes the phy mode, but we can
+get around that by querying the phy mode from the phydev. The
+phy_mode member in the adapter private struct can then be removed.
 
-Marc
+Note that as a side-effect, the devicetree phy mode now no longer
+has a default, and always needs to be specified explicitly (via
+'phy-connection-type').
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Tested on a LAN7430 with internal PHY. I cannot test a device using
+fixed-link, as I do not have access to one.
 
+Fixes: 6f197fb63850 ("lan743x: Added fixed link and RGMII support")
+Tested-by: Sven Van Asbroeck <TheSven73@gmail.com> # lan7430
+Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
+---
 
---3SejVAjsJtz9aEx6fRe5rZLKI8YwPq7KX--
+Tree: v5.10-rc2
 
---7nNYYxuAFsYSjdNz8Zbtt8lqNEz5t5Pmd
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+To: Bryan Whitehead <bryan.whitehead@microchip.com>
+To: "David S. Miller" <davem@davemloft.net>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Roelof Berg <rberg@berg-solutions.de>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
------BEGIN PGP SIGNATURE-----
+ drivers/net/ethernet/microchip/lan743x_main.c | 32 ++++++-------------
+ drivers/net/ethernet/microchip/lan743x_main.h |  1 -
+ 2 files changed, 9 insertions(+), 24 deletions(-)
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+i0YYACgkQqclaivrt
-76ndhwf/cMKi61tiTVscC0r0Rzd/l1dbK8FIrGk15oF7EyjbKJIZjDSiqO2tV6vj
-W95b4xg0/5tjBMGYmiSg+nRTDwZNYCteZf0Zb+RKv/DLHY6em3hWfx133Qjg2chI
-lpBy5qQoeTFcYv+LDAQvpDEmS/0P65h6UJ/j2EAtpXNg2ZlA/pV0deQctOfkJ8OZ
-wIOjvsPFMJMztw5tKfL4cAW/qtykeUGVV1SaaZ3LRVGccjJfvWjFrfqJTN3w3cA6
-nuT2BNQAaG7Xg9AbZuyrw8rPYsBzZJzlbpYU44hEVO8GQZkaoNq5cjf/HdsS+th1
-uQ7gPaSUapEDvlApQqYuprt7Ox7Y0A==
-=gjsO
------END PGP SIGNATURE-----
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index f2d13e8d20f0..eb990e036611 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -957,7 +957,7 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
+ 		data = lan743x_csr_read(adapter, MAC_CR);
+ 
+ 		/* set interface mode */
+-		if (phy_interface_mode_is_rgmii(adapter->phy_mode))
++		if (phy_interface_is_rgmii(phydev))
+ 			/* RGMII */
+ 			data &= ~MAC_CR_MII_EN_;
+ 		else
+@@ -1021,34 +1021,19 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
+ 
+ 	netdev = adapter->netdev;
+ 	phynode = of_node_get(adapter->pdev->dev.of_node);
+-	adapter->phy_mode = PHY_INTERFACE_MODE_GMII;
+-
+-	if (phynode) {
+-		of_get_phy_mode(phynode, &adapter->phy_mode);
+-
+-		if (of_phy_is_fixed_link(phynode)) {
+-			ret = of_phy_register_fixed_link(phynode);
+-			if (ret) {
+-				netdev_err(netdev,
+-					   "cannot register fixed PHY\n");
+-				of_node_put(phynode);
+-				goto return_error;
+-			}
+-		}
+-		phydev = of_phy_connect(netdev, phynode,
+-					lan743x_phy_link_status_change, 0,
+-					adapter->phy_mode);
+-		of_node_put(phynode);
+-		if (!phydev)
+-			goto return_error;
+-	} else {
++
++	/* try devicetree phy, or fixed link */
++	phydev = of_phy_get_and_connect(netdev, phynode,
++					lan743x_phy_link_status_change);
++	if (!phydev) {
++		/* try internal PHY */
+ 		phydev = phy_find_first(adapter->mdiobus);
+ 		if (!phydev)
+ 			goto return_error;
+ 
+ 		ret = phy_connect_direct(netdev, phydev,
+ 					 lan743x_phy_link_status_change,
+-					 adapter->phy_mode);
++					 PHY_INTERFACE_MODE_GMII);
+ 		if (ret)
+ 			goto return_error;
+ 	}
+@@ -1063,6 +1048,7 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
+ 
+ 	phy_start(phydev);
+ 	phy_start_aneg(phydev);
++	phy_attached_info(phydev);
+ 	return 0;
+ 
+ return_error:
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
+index a536f4a4994d..3a0e70daa88f 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.h
++++ b/drivers/net/ethernet/microchip/lan743x_main.h
+@@ -703,7 +703,6 @@ struct lan743x_rx {
+ struct lan743x_adapter {
+ 	struct net_device       *netdev;
+ 	struct mii_bus		*mdiobus;
+-	phy_interface_t		phy_mode;
+ 	int                     msg_enable;
+ #ifdef CONFIG_PM
+ 	u32			wolopts;
+-- 
+2.17.1
 
---7nNYYxuAFsYSjdNz8Zbtt8lqNEz5t5Pmd--
