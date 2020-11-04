@@ -2,100 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B0EA2A6369
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 12:37:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB39C2A6381
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 12:41:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729488AbgKDLh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 06:37:29 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:59316 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728999AbgKDLh3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 06:37:29 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0A4Bb078112623;
-        Wed, 4 Nov 2020 05:37:00 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1604489820;
-        bh=AwkvLhaXrghbbWxPBS9gIMMUxlhuwRQE4R6mRTlyB9o=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=QTFiYGerDk7a4WxT3V88okZt7XVcgbDyg0GbDnVdxLdCZqBa6MEsbAT4AiPv6apPV
-         7qJk7FJ0phcnU6QUAh1PmhpDNu8fM0zQmW+IYnNzKO/MeTjHhF4ScHS67mOqtE2MjD
-         4cBFEasPU4S27u9gV//CX5B7yNFmLsiXCYdFwUlA=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0A4Bb02r013556
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 4 Nov 2020 05:37:00 -0600
-Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 4 Nov
- 2020 05:37:00 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 4 Nov 2020 05:37:00 -0600
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0A4Baw08092005;
-        Wed, 4 Nov 2020 05:36:58 -0600
-Subject: Re: [PATCH 07/12] net: ethernet: ti: am65-cpts: Document
- am65_cpts_rx_enable()'s 'en' parameter
-To:     Lee Jones <lee.jones@linaro.org>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>, <netdev@vger.kernel.org>
-References: <20201104090610.1446616-1-lee.jones@linaro.org>
- <20201104090610.1446616-8-lee.jones@linaro.org>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <dfddd6d2-6e71-775e-c121-981a21f97950@ti.com>
-Date:   Wed, 4 Nov 2020 13:37:08 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1729536AbgKDLkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 06:40:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33150 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729508AbgKDLki (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 06:40:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604490037;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BbXtJr1dHD0dQcJP1qBIGeMvFCv/x6tlJ+vHdKbEP2c=;
+        b=MhoBzpPkUrwWiOayJfRu0fbUaiuPbcXAnSFQSNyD9LHUmpzshEK8Rw6zUjkkY51ZfMpqIy
+        jZGoYaijGL4Ozk3SaBx0xIpEufkA4KVnFss+XrBas4p/2Hw0ENbYW3yHPm04ZbrOjQkqcA
+        EElsUE9B2zSpN75WwNtmQc0nCRNfd0w=
+Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
+ [209.85.210.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-163-NCUo8-p5OjCiVQTtm1QfJw-1; Wed, 04 Nov 2020 06:40:35 -0500
+X-MC-Unique: NCUo8-p5OjCiVQTtm1QfJw-1
+Received: by mail-pf1-f200.google.com with SMTP id a27so14517455pfl.17
+        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 03:40:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=BbXtJr1dHD0dQcJP1qBIGeMvFCv/x6tlJ+vHdKbEP2c=;
+        b=RpWbKxHFJeOSguqmiutX7RteBpQFyOSCKp4diZ6bYh/mBHYPAuopEAgtUYescu3fV5
+         eaURhM2UWu60psTc0qQQd4ifiEwNPQxQU86Sr8yxqS2yODFRRw9FqbLX+ORhJhD5XtlQ
+         1tp/fuyCNQixtI9QifJATAlGdLgrqUEs2oIgxeTAb/MzRM/OIVV5b4v0cW7LgbZ8fc6G
+         Ka53oU6o2gyBZ05QxfakYGBS9NBD1LkN75JSYslo8Eg5Bd7gGSTxg3xUmX5YTFp+8wrv
+         hftQ4/xT2UZqsYloGbzoTN9bDmMJNw6gRmlJRg7cJM+01shecGkDzRR22pDRcIPT9GHa
+         IBlg==
+X-Gm-Message-State: AOAM533EMckZWERLpd12aNCxHyQqUh0tbML065T0WedDc7iOLDeWNfbS
+        hrjGxjtNSdgJXaMXUh89van692Ixu2YEI98mQOPoAhBQyQkuYljinLlTGBgrgpRMX0JqIFmjV0D
+        j2jt7YN13c2oyOvs=
+X-Received: by 2002:a17:902:aa97:b029:d5:ac09:c5ec with SMTP id d23-20020a170902aa97b02900d5ac09c5ecmr28486705plr.78.1604490034685;
+        Wed, 04 Nov 2020 03:40:34 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzK1HpR5JogT3rQBpkEAcWfj0+LSPy8jNWpuodh+nKorkF/EJJoBpmGfvlQGlsW9ufuWBJ6Eg==
+X-Received: by 2002:a17:902:aa97:b029:d5:ac09:c5ec with SMTP id d23-20020a170902aa97b02900d5ac09c5ecmr28486686plr.78.1604490034389;
+        Wed, 04 Nov 2020 03:40:34 -0800 (PST)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y141sm2158651pfb.17.2020.11.04.03.40.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Nov 2020 03:40:33 -0800 (PST)
+Date:   Wed, 4 Nov 2020 19:40:22 +0800
+From:   Hangbin Liu <haliu@redhat.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: Re: [PATCHv3 iproute2-next 1/5] configure: add check_libbpf() for
+ later libbpf support
+Message-ID: <20201104114022.GS2408@dhcp-12-153.nay.redhat.com>
+References: <20201028132529.3763875-1-haliu@redhat.com>
+ <20201029151146.3810859-1-haliu@redhat.com>
+ <20201029151146.3810859-2-haliu@redhat.com>
+ <78c5df29-bf06-0b60-d914-bdab3d65b198@gmail.com>
+ <20201103055419.GI2408@dhcp-12-153.nay.redhat.com>
+ <e3368c04-2887-3daf-8be8-8717960e9a18@gmail.com>
+ <20201104085149.GQ2408@dhcp-12-153.nay.redhat.com>
+ <87361pwf8k.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20201104090610.1446616-8-lee.jones@linaro.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87361pwf8k.fsf@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 04/11/2020 11:06, Lee Jones wrote:
-> Fixes the following W=1 kernel build warning(s):
+On Wed, Nov 04, 2020 at 12:09:15PM +0100, Toke Høiland-Jørgensen wrote:
+> > +usage()
+> > +{
+> > +       cat <<EOF
+> > +Usage: $0 [OPTIONS]
+> > +  -h | --help                  Show this usage info
+> > +  --no-libbpf                  build the package without libbpf
+> > +  --libbpf-dir=DIR             build the package with self defined libbpf dir
+> > +EOF
+> > +       exit $1
+> > +}
 > 
->   drivers/net/ethernet/ti/am65-cpts.c:736: warning: Function parameter or member 'en' not described in 'am65_cpts_rx_enable'
->   drivers/net/ethernet/ti/am65-cpts.c:736: warning: Excess function parameter 'skb' description in 'am65_cpts_rx_enable'
-> 
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Grygorii Strashko <grygorii.strashko@ti.com>
-> Cc: Kurt Kanzenbach <kurt@linutronix.de>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> ---
->   drivers/net/ethernet/ti/am65-cpts.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
-> index 75056c14b161b..bb2b8e4919feb 100644
-> --- a/drivers/net/ethernet/ti/am65-cpts.c
-> +++ b/drivers/net/ethernet/ti/am65-cpts.c
-> @@ -727,7 +727,7 @@ static long am65_cpts_ts_work(struct ptp_clock_info *ptp)
->   /**
->    * am65_cpts_rx_enable - enable rx timestamping
->    * @cpts: cpts handle
-> - * @skb: packet
-> + * @en: enable
->    *
->    * This functions enables rx packets timestamping. The CPTS can timestamp all
->    * rx packets.
-> 
+> This would be the only command line arg that configure takes; all other
+> options are passed via the environment. I think we should be consistent
+> here; and since converting the whole configure script is probably out of
+> scope for this patch, why not just use the existing FORCE_LIBBPF
+> variable?
 
-Thank you.
-Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Yes, converting the whole configure script should be split as another patch
+work.
+> 
+> I.e., FORCE_LIBBPF=on will fail if not libbpf is present,
+> FORCE_LIBBPF=off will disable libbpf entirely, and if the variable is
+> unset, libbpf will be used if found?
 
--- 
-Best regards,
-grygorii
+I like this one, with only one variable. I will check how to re-organize the
+script.
+
+> 
+> Alternatively, keep them as two separate variables (FORCE_LIBBPF and
+> DISABLE_LIBBPF?). I don't have any strong preference as to which of
+> those is best, but I think they'd both be more consistent with the
+> existing configure script logic...
+
+Please tell me if others have any other ideas.
+
+Thanks
+Hnagbin
+
