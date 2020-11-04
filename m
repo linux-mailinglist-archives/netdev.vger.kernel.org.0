@@ -2,204 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5C362A6433
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 13:24:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8C332A6445
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 13:28:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729795AbgKDMYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 07:24:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:34742 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726344AbgKDMYx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 07:24:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604492692;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OoCAW5bYOrSTsyToPsJ15TqE4jwYO9Qy/CvnKeekXrI=;
-        b=Sg361rPKy3F+nkuhZcyYnBtyAfrpIywc+CdoiOMmEvPKWSj3fSZBNSQIMDsYaQMLzs/vPF
-        a7/Bd6iWUACkKwpN5Q3ExBO6xsJkvpD2wgaLCc6B7UvR3fBg6sUjxBotSbmuaLRjIKfWrm
-        xmLkLKrnjyPGRmbGI9B6oFMc45TRXyQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-542-qx5xiX-UOju6eqjokG9sVA-1; Wed, 04 Nov 2020 07:24:48 -0500
-X-MC-Unique: qx5xiX-UOju6eqjokG9sVA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 84DEB8797D3;
-        Wed,  4 Nov 2020 12:24:46 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.25])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B94DF6266E;
-        Wed,  4 Nov 2020 12:24:32 +0000 (UTC)
-Date:   Wed, 4 Nov 2020 13:24:30 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ilias.apalodimas@linaro.org, brouer@redhat.com
-Subject: Re: [PATCH v3 net-next 2/5] net: page_pool: add bulk support for
- ptr_ring
-Message-ID: <20201104132430.73594bb6@carbon>
-In-Reply-To: <b8638a44f1aee8feb3a1f6b949653e2125eb0867.1604484917.git.lorenzo@kernel.org>
-References: <cover.1604484917.git.lorenzo@kernel.org>
-        <b8638a44f1aee8feb3a1f6b949653e2125eb0867.1604484917.git.lorenzo@kernel.org>
+        id S1729880AbgKDM2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 07:28:09 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:30662 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726344AbgKDM2I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 07:28:08 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A4CFYdF003064;
+        Wed, 4 Nov 2020 04:28:05 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=06ZFklaZlFlEyXXVGhlAwXoIGkGPWoumDBv6Dc62Z2w=;
+ b=KIOamuWlitMlCZ4W1ip46yXA5jcFWXWwt1kwM8KTaAj2VRfIIKmrxfCD47LhN+06jQ3k
+ Heb3lA+GqzvfP8+emr5PSvmtJl6oihtqPGdkhynoOe9PQmyeo2cULRbXfLqou/+sn9i2
+ FOmk3zyVpm8FoKkoJK03PpxKHHMcfWfWvxSUN3kLuy49M+1yiTO/dHTf6jGjfh8fJBdV
+ yadhtv7hdj1tpHfQhujem3sxQ1py3/4dui2hSv5gzNWcRFzRpnkb7g9T6W98YlkXPimY
+ FucsPgL9IOfW9bSwONSx1se2P8cS8AT6Lw0l8Kt35x5AKllT2RdaEpcblVc23zvS+qum qA== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 34h59n2udg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 04 Nov 2020 04:28:05 -0800
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 4 Nov
+ 2020 04:28:04 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 4 Nov
+ 2020 04:28:04 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 4 Nov 2020 04:28:04 -0800
+Received: from hyd1584.caveonetworks.com (unknown [10.29.37.82])
+        by maili.marvell.com (Postfix) with ESMTP id 29CF23F703F;
+        Wed,  4 Nov 2020 04:27:57 -0800 (PST)
+From:   George Cherian <george.cherian@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>,
+        <masahiroy@kernel.org>, <george.cherian@marvell.com>,
+        <willemdebruijn.kernel@gmail.com>
+Subject: [PATCH v2 net-next 0/3] Add devlink and devlink health reporters to
+Date:   Wed, 4 Nov 2020 17:57:52 +0530
+Message-ID: <20201104122755.753241-1-george.cherian@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-04_08:2020-11-04,2020-11-04 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  4 Nov 2020 11:22:55 +0100 Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+Add basic devlink and devlink health reporters.
+Devlink health reporters are added for NPA and NIX blocks.
+These reporters report the error count in respective blocks.
 
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index ef98372facf6..236c5ed3aa66 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-[...]
-> @@ -408,6 +410,39 @@ void page_pool_put_page(struct page_pool *pool, struct page *page,
->  }
->  EXPORT_SYMBOL(page_pool_put_page);
->  
-> +void page_pool_put_page_bulk(struct page_pool *pool, void **data,
-> +			     int count)
-> +{
-> +	int i, len = 0;
-> +
-> +	for (i = 0; i < count; i++) {
-> +		struct page *page = virt_to_head_page(data[i]);
-> +
-> +		if (likely(page_ref_count(page) == 1 &&
-> +			   pool_page_reusable(pool, page))) {
-> +			if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
-> +				page_pool_dma_sync_for_device(pool, page, -1);
-> +
-> +			/* bulk pages for ptr_ring cache */
-> +			data[len++] = page;
-> +		} else {
-> +			page_pool_release_page(pool, page);
-> +			put_page(page);
-> +		}
-> +	}
-> +
-> +	/* Grab the producer spinlock for concurrent access to
-> +	 * ptr_ring page_pool cache
-> +	 */
-> +	page_pool_ring_lock(pool);
-> +	for (i = 0; i < len; i++) {
-> +		if (__ptr_ring_produce(&pool->ring, data[i]))
-> +			page_pool_return_page(pool, data[i]);
-> +	}
-> +	page_pool_ring_unlock(pool);
-> +}
-> +EXPORT_SYMBOL(page_pool_put_page_bulk);
+Address Jakub's comment to add devlink support for error reporting.
+https://www.spinics.net/lists/netdev/msg670712.html
 
-I don't like that you are replicating the core logic from
-page_pool_put_page() in this function.  This means that we as
-maintainers need to keep both of this places up-to-date.
+Change-log:
+- Address Willem's comments on v1.
+- Fixed the sparse issues, reported by Jakub.
 
-Let me try to re-implement this, while sharing the refcnt logic:
-(completely untested, not even compiled)
+George Cherian (3):
+  octeontx2-af: Add devlink suppoort to af driver
+  octeontx2-af: Add devlink health reporters for NPA
+  octeontx2-af: Add devlink health reporters for NIX
 
----
- net/core/page_pool.c |   58 +++++++++++++++++++++++++++++++++++++++++++-------
- 2 files changed, 51 insertions(+), 9 deletions(-)
-
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index ef98372facf6..c785e9825a0d 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -362,8 +362,9 @@ static bool pool_page_reusable(struct page_pool *pool, struct page *page)
-  * If the page refcnt != 1, then the page will be returned to memory
-  * subsystem.
-  */
--void page_pool_put_page(struct page_pool *pool, struct page *page,
--			unsigned int dma_sync_size, bool allow_direct)
-+static struct page*
-+__page_pool_put_page(struct page_pool *pool, struct page *page,
-+		     unsigned int dma_sync_size, bool allow_direct)
- {
- 	/* This allocator is optimized for the XDP mode that uses
- 	 * one-frame-per-page, but have fallbacks that act like the
-@@ -381,13 +382,10 @@ void page_pool_put_page(struct page_pool *pool, struct page *page,
- 
- 		if (allow_direct && in_serving_softirq())
- 			if (page_pool_recycle_in_cache(page, pool))
--				return;
-+				return NULL;
- 
--		if (!page_pool_recycle_in_ring(pool, page)) {
--			/* Cache full, fallback to free pages */
--			page_pool_return_page(pool, page);
--		}
--		return;
-+		/* Page found as candidate for recycling */
-+		return page;
- 	}
- 	/* Fallback/non-XDP mode: API user have elevated refcnt.
- 	 *
-@@ -405,9 +403,53 @@ void page_pool_put_page(struct page_pool *pool, struct page *page,
- 	/* Do not replace this with page_pool_return_page() */
- 	page_pool_release_page(pool, page);
- 	put_page(page);
-+	return NULL;
-+}
-+
-+void page_pool_put_page(struct page_pool *pool, struct page *page,
-+			unsigned int dma_sync_size, bool allow_direct)
-+{
-+	page = __page_pool_put_page(pool, page, dma_sync_size, allow_direct);
-+
-+	if (page && !page_pool_recycle_in_ring(pool, page)) {
-+		/* Cache full, fallback to free pages */
-+		page_pool_return_page(pool, page);
-+	}
- }
- EXPORT_SYMBOL(page_pool_put_page);
- 
-+/* Caller must not use data area after call, as this function overwrites it */
-+void page_pool_put_page_bulk(struct page_pool *pool, void **data, int count)
-+{
-+	int i, len = 0, len2 = 0;
-+
-+	for (i = 0; i < count; i++) {
-+		struct page *page = virt_to_head_page(data[i]);
-+
-+		page = __page_pool_put_page(pool, page, -1 , false);
-+
-+		/* Approved for recycling for ptr_ring cache */
-+		if (page)
-+			data[len++] = page;
-+	}
-+
-+	/* Bulk producer into ptr_ring page_pool cache */
-+	page_pool_ring_lock(pool);
-+	for (i = 0; i < len; i++) {
-+		if (__ptr_ring_produce(&pool->ring, data[i]))
-+			data[len2++] = data[i];
-+	}
-+	page_pool_ring_unlock(pool);
-+
-+	/* Unlikely case of ptr_ring cache full, free pages outside producer
-+	 * lock, given put_page() with refcnt==1 can be an expensive operation.
-+	 */
-+	for (i = 0; i < len2; i++) {
-+		page_pool_return_page(pool, data[i]);
-+	}
-+}
-+EXPORT_SYMBOL(page_pool_put_page_bulk);
-+
- static void page_pool_empty_ring(struct page_pool *pool)
- {
- 	struct page *page;
-
+ .../net/ethernet/marvell/octeontx2/Kconfig    |   1 +
+ .../ethernet/marvell/octeontx2/af/Makefile    |   3 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |   9 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   4 +
+ .../marvell/octeontx2/af/rvu_devlink.c        | 860 ++++++++++++++++++
+ .../marvell/octeontx2/af/rvu_devlink.h        |  67 ++
+ .../marvell/octeontx2/af/rvu_struct.h         |  33 +
+ 7 files changed, 975 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.25.4
 
