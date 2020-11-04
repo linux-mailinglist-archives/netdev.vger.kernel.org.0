@@ -2,75 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00DE02A5C0B
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 02:38:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C7AB2A5C10
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 02:40:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730392AbgKDBif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 20:38:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59890 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725769AbgKDBif (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Nov 2020 20:38:35 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6C245223C7;
-        Wed,  4 Nov 2020 01:38:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604453914;
-        bh=jQgE/0pucSK3LjEq/yuZZ4XSP3lXt1KAarBQYP4Mnik=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gy2U9jwsZvAofnWPSB0U9KmT+hyhssTCdqVaJ99WWd3oKLH+YKSVKmNJ6wgAC5lYG
-         9JZJXomS6E1OPsKbH8Uisc3/DBdJzZl2P9uCXEtMMRflOIDv2hkMeLJwRH8Y7FJ/5b
-         nYxcu5RT/CJUJe/nr39+w6CqwZt/O0olp66DfFVU=
-Date:   Tue, 3 Nov 2020 17:38:33 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sergej Bauer <sbauer@blackbox.su>
-Cc:     andrew@lunn.ch, Markus.Elfring@web.de,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] lan743x: fix for potential NULL pointer dereference
- with bare card
-Message-ID: <20201103173815.506db576@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201101223556.16116-1-sbauer@blackbox.su>
-References: <220201101203820.GD1109407@lunn.ch>
-        <20201101223556.16116-1-sbauer@blackbox.su>
+        id S1730484AbgKDBkJ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 3 Nov 2020 20:40:09 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:53261 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728567AbgKDBkJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 20:40:09 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 0A41dqJW3023388, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb03.realtek.com.tw[172.21.6.96])
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 0A41dqJW3023388
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 4 Nov 2020 09:39:52 +0800
+Received: from RTEXMBS03.realtek.com.tw (172.21.6.34) by
+ RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Wed, 4 Nov 2020 09:39:52 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS03.realtek.com.tw (172.21.6.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 4 Nov 2020 09:39:52 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa]) by
+ RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa%3]) with mapi id
+ 15.01.2044.006; Wed, 4 Nov 2020 09:39:52 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        Oliver Neukum <oliver@neukum.org>
+Subject: RE: [PATCH net-next v2] net/usb/r8153_ecm: support ECM mode for RTL8153
+Thread-Topic: [PATCH net-next v2] net/usb/r8153_ecm: support ECM mode for
+ RTL8153
+Thread-Index: AQHWrmwDnKDexsPDxUiMgOTBbfR/C6mx0pMAgAJFC4CAAKdeAIAA5pyAgABwkoCAASNjcA==
+Date:   Wed, 4 Nov 2020 01:39:52 +0000
+Message-ID: <db4c6b3b30284206a6f131e922760e1e@realtek.com>
+References: <1394712342-15778-387-Taiwan-albertk@realtek.com>
+        <1394712342-15778-388-Taiwan-albertk@realtek.com>
+        <20201031160838.39586608@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <dc7fd1d4d1c544e8898224c7d9b54bda@realtek.com>
+        <20201102114718.0118cc12@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <20201103093241.GA79239@kroah.com>
+ <20201103081535.7e92a495@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201103081535.7e92a495@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.146]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  2 Nov 2020 01:35:55 +0300 Sergej Bauer wrote:
-> This is the 3rd revision of the patch fix for potential null pointer dereference
-> with lan743x card.
+Jakub Kicinski <kuba@kernel.org>
+> Sent: Wednesday, November 4, 2020 12:16 AM
+[...]
+> > So no, please do not create such a common file, it is not needed or a
+> > good idea.
 > 
-> The simpliest way to reproduce: boot with bare lan743x and issue "ethtool ethN"
-> commant where ethN is the interface with lan743x card. Example:
+> I wouldn't go that far, PCI subsystem just doesn't want everyone to add
+> IDs to the shared file unless there is a reason.
 > 
-> $ sudo ethtool eth7
-> dmesg:
-> [  103.510336] BUG: kernel NULL pointer dereference, address: 0000000000000340
-> ...
-> [  103.510836] RIP: 0010:phy_ethtool_get_wol+0x5/0x30 [libphy]
-> ...
-> [  103.511629] Call Trace:
-> [  103.511666]  lan743x_ethtool_get_wol+0x21/0x40 [lan743x]
-> [  103.511724]  dev_ethtool+0x1507/0x29d0
-> [  103.511769]  ? avc_has_extended_perms+0x17f/0x440
-> [  103.511820]  ? tomoyo_init_request_info+0x84/0x90
-> [  103.511870]  ? tomoyo_path_number_perm+0x68/0x1e0
-> [  103.511919]  ? tty_insert_flip_string_fixed_flag+0x82/0xe0
-> [  103.511973]  ? inet_ioctl+0x187/0x1d0
-> [  103.512016]  dev_ioctl+0xb5/0x560
-> [  103.512055]  sock_do_ioctl+0xa0/0x140
-> [  103.512098]  sock_ioctl+0x2cb/0x3c0
-> [  103.512139]  __x64_sys_ioctl+0x84/0xc0
-> [  103.512183]  do_syscall_64+0x33/0x80
-> [  103.512224]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> [  103.512274] RIP: 0033:0x7f54a9cba427
+>  *	Do not add new entries to this file unless the definitions
+>  *	are shared between multiple drivers.
+> 
+> Which seems quite reasonable. But it is most certainly your call :)
 
-Applied, thanks!
+Do I have to resend this patch?
+
+Best Regards,
+Hayes
+
+
