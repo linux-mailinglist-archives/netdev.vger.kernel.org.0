@@ -2,133 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9F8C2A5AE8
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 01:11:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4242A5AFB
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 01:22:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729902AbgKDALl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 19:11:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53604 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729866AbgKDALl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 19:11:41 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4332AC0613D1
-        for <netdev@vger.kernel.org>; Tue,  3 Nov 2020 16:11:41 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id g11so2886672pll.13
-        for <netdev@vger.kernel.org>; Tue, 03 Nov 2020 16:11:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=M5dyxk00EUi5nsJLqKIv0ilpqpkj+h/iOALw2hVQx/c=;
-        b=odMhejInl2vZemN55IFmT9BZF4xy64J5yjW6ZRFrWHm14avhBLHAcZzsntWdUb1Ncq
-         vSk78wj27mG9gVxx7pNYrC/4zNxclli01U454mwd0T/0kdf1FK5c2PsvMFggiDj78qqt
-         jbMAhV8xlZZ2vCdjrffhRUqb+sKgnfbUoUt7bcKjzqUiHsyPaNwrgS51mYI/F3lSMq3J
-         EuYnRLSGifFGF12dg6u3ti2+BgEHOamQgXopT2a8h10O/f2WnB44NAbqf14W3T5428rx
-         7UNY5hmVaJtb7INXxhcw6ImeFYzL0DsaZScVHecrux+Fzs5ol9NiQxdRoHgD3O0pibaz
-         A93g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=M5dyxk00EUi5nsJLqKIv0ilpqpkj+h/iOALw2hVQx/c=;
-        b=UctFaC9rGy46bUrV1e2qrbG/4UGZ2ckfnO5EFaszW93DUKPKAKwE3NXZP1A0U9UVXx
-         4MzA5x7LS45z3o5rvT71KRPQYyvjt5wtKo0Ax8iGYGx5bHuQJaEuCNfUuPIcGmW173gd
-         e+nZ7TbNHOQHpQSgFWfdsUoIYw62Ru0Ux9k5RNzs5DAGzLV01O1ARZpF0u6JdHvXd1Fo
-         3FSm4qPZKQ7d/b8WCbshgEdNPyB/HCwGp7RxhaSoJQewljlFNLzAumoNIIzPANUeQZ6N
-         Y0aSsa3N1s5/lCV7RD+54JdUcTvs21IUNB/SpZhxptY3r+bOb+4s+93s5eKworfc+qFZ
-         rNmA==
-X-Gm-Message-State: AOAM531I2otyL/L9aXE/00LEuORRZAVFcGqY4NpQgNIH3aSHKr5VOmZh
-        pLgqzPCN2TRVy81D8YzcKz0UVJ+PUZY=
-X-Google-Smtp-Source: ABdhPJwAeyDYXSFeWF0000mav+wuU0ifWICzX1SbNqy1sZ4sQdjUBSxjGE5H2JxBwXvmGdrb2Rnd1Q==
-X-Received: by 2002:a17:902:eb14:b029:d6:5a66:aa31 with SMTP id l20-20020a170902eb14b02900d65a66aa31mr25755803plb.53.1604448700552;
-        Tue, 03 Nov 2020 16:11:40 -0800 (PST)
-Received: from vm-main.eng.vmware.com ([66.170.99.2])
-        by smtp.gmail.com with ESMTPSA id u4sm128054pga.36.2020.11.03.16.11.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 03 Nov 2020 16:11:40 -0800 (PST)
-From:   Yi-Hung Wei <yihung.wei@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Yi-Hung Wei <yihung.wei@gmail.com>
-Subject: [PATCH net] openvswitch: Fix upcall OVS_TUNNEL_KEY_ATTR_GENEVE_OPTS
-Date:   Tue,  3 Nov 2020 16:11:34 -0800
-Message-Id: <1604448694-19351-1-git-send-email-yihung.wei@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1729936AbgKDAWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 19:22:00 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:35530 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729869AbgKDAUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 19:20:44 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A408N43014338;
+        Tue, 3 Nov 2020 16:20:29 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=18s34da/ueGMFmi6/dpc+F3M40J9kevbe0COjHYj5HA=;
+ b=FcsMlyAvYQq9t122xDzt/g2Y6E2PIGnOs+p5iTV4UrjfeeSKauFjBpePCsopBplyQVmu
+ tvPhMLXo6mlE07UBumNWLrnvoqxaGXB1ZIHwvO4NsecSPVnJBYtAFto7LlC/FBthVovH
+ lSwvugmxm12UH6bTHTkeZ4oEbIvFQZMavZw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 34hr6p6wq6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 03 Nov 2020 16:20:28 -0800
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 3 Nov 2020 16:20:27 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cfalobBvaUsmEQcOksUpehfsWwZ0d5TMM4GURSAzflEj9Lmq6poMFspiG2wc+DfVWaDOihBSezYEsrqJU7T584VmYyJz6by3UKLldkx0EmkyqcyE9QsSDk3BjMK/0yhYG1Tn9QgaUtTrTf0HBuNJ7hXGMgURzX1YwVF5L7ZtoYfFFuIhVg+CoX/RPuYTvz05A1oRgrs73HjCPgUVrAO0m83HXe5/AMFv76klqYReVNsLxTbnK43jxDeV0ghGE7o4/XNm8AkIshBenQCL+3YLnJMI5cfTswwVsgXtLZECbL1LxwfaRwycFtCMs0xhkgVwtQA8L8MDYcEn0eDZA+vPig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=18s34da/ueGMFmi6/dpc+F3M40J9kevbe0COjHYj5HA=;
+ b=jIO2kvRV8UmqFnLEGG0Pzf9qdoCPmO/zZ2CHNnvjr7S9QLcRpU06yzsEsKiRUVq2R5n4x3VTIxSs3PgpFjUAJwC0LecmYhufWUE5FBaROh3eXg9r3dwlONZPsAVNQ2EbboCvdLU356zvCDFoyczpbl5VBwQZotpSkVEOQpUkKLpbJgkQoiS+3VtzzVwqfrfzwwsi1FrhcZ4vjObcaci9Jx4oKzSztriPQme80y6iUEfEfTEN4H/m2tjguSeiJgzuai7WuJB1ZNLWfMVO9d+tQxv1fdm+s9bYhOg6jQrj/ZC599hpmmQZAncFlgMxKF3lJ/oZidlCa/mzNqmW8eEArA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=18s34da/ueGMFmi6/dpc+F3M40J9kevbe0COjHYj5HA=;
+ b=QwpdgYbcpQ11M/m0XH0tijNXY/6uhHtj4jDF2LImMIn3KA3offWKoRkaMpnaBWUW5y78x2lvZb/OyjMg2da4Tl94FUoLeql5pLmAIh/jA3kzA1UWK0nGzVrVfu4+UYDWOmPrGQAc6JJDkGzm7G1yXA+T8GlAoXSvTuXN1LbPF/Y=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB3464.namprd15.prod.outlook.com (2603:10b6:a03:10a::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Wed, 4 Nov
+ 2020 00:20:22 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee%4]) with mapi id 15.20.3499.032; Wed, 4 Nov 2020
+ 00:20:22 +0000
+Date:   Tue, 3 Nov 2020 16:20:14 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     <bpf@vger.kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>, <edumazet@google.com>, <brakmo@fb.com>,
+        <andrii.nakryiko@gmail.com>, <alexanderduyck@fb.com>
+Subject: Re: [bpf-next PATCH v3 0/5] selftests/bpf: Migrate test_tcpbpf_user
+ to be a part of test_progs framework
+Message-ID: <20201104002014.tohvmzsxr2hhxjkt@kafai-mbp.dhcp.thefacebook.com>
+References: <160443914296.1086697.4231574770375103169.stgit@localhost.localdomain>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <160443914296.1086697.4231574770375103169.stgit@localhost.localdomain>
+X-Originating-IP: [2620:10d:c090:400::5:1da0]
+X-ClientProxiedBy: CO2PR18CA0053.namprd18.prod.outlook.com
+ (2603:10b6:104:2::21) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:1da0) by CO2PR18CA0053.namprd18.prod.outlook.com (2603:10b6:104:2::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Wed, 4 Nov 2020 00:20:20 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e63d13f4-bd2a-44bb-8e68-08d880576adf
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3464:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB34645A25C4EC86B5A6529ED9D5EF0@BYAPR15MB3464.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zBFs8wWiJODu/x+249UssHO5dFUQ+ET+txMAL7O96wagWwtII00TeIPFFpdx7H9YmaMSscbIvCDp3MbxvUs31u9JKBCEknpE6No6O0AGU9jV0QloUgD6XahEKcOPT4/47hXOSyfnvVZ2bKVILYkOYUViH88X5gF4Lq9LSdyMqlGO6ngY9Zxbqo27C0lPmxOeAt8JL59tbEWHeGQUN/yxKV58Z+VchB1/Ji3olx66l0n9fhlVJEXQAFeG5GbSW8a/sL3qp3QLPHDN2f1eVNvbavEIwNd/kmImdI06oMqDTMz3I5fKSRfnsYQjRH6WydHBLUXLHSNchuEbs2+4OZ2VMA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(366004)(136003)(396003)(376002)(346002)(316002)(8936002)(5660300002)(6666004)(16526019)(478600001)(55016002)(1076003)(9686003)(186003)(6916009)(2906002)(83380400001)(66556008)(66946007)(66476007)(86362001)(7696005)(8676002)(6506007)(52116002)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: V2wmmQKPfZo5Fuwdn/RGmptP3xu4D36Gz5wCbKcLpS6F27DwlaIPr88A0ODomagy1j62vmDRptou1vbsyrjHDz7w8X5NasQBlAXbV7p2VPLdReWI//nvL9mOuAvfAFzNbAVoJhcQy7DeuE7mWCbrnh9MokqXHSb7zuVgR5SXVxeSUtX0YYT5Y2KhB3FvkqHOyOC5XkKYqKVLKQCaQ9RShnslFq7TTITHLwCp+Aq/7zMFE3LPYN2SuFaTJ/FXGgM4l+wFIZjgho3HzvOarkReCGl7oxCzsKr5U8yMS46bW+pO2XWZRoav/ZOLUTYcI5YBnBd/VPQxp4w0k609paVwL1c/dLIcV2AsF3JAoE/r9Prc9DpU/M+gaxubHCJCn+nYjSKSBfGdogH93AOkBJ02vQY1fNSJNAwjIQrpbzg6zPsFVdRJLIlhPEHhUhpNSvsI/NrjlOdP8hLEnQvRmNOP5XUIEnUU4/9/74cl+usNOLjhlKFkc1fFN71Lg2jaWb+vlxiaAdH4lv87hAYW1DnvxiQS0jBseMwri+uqvd1O5BbmMu1xcbKRAoqJkPzULhI0WanRe9x78J8agV9eHvxHvm23fXzdkhmqfpO0qCZvmNOCeYl2vW1qV6d2CHxycum5iQp5MwzOJojF8m2upvCe+1tZiU+Y6uE0z/Ev9efLGTc=
+X-MS-Exchange-CrossTenant-Network-Message-Id: e63d13f4-bd2a-44bb-8e68-08d880576adf
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Nov 2020 00:20:22.1008
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KUUrJKDhKdnTRLYr/06VvBszp+wGV0uB1e+a5hMNxN8zGR9HxHTRCTjPqdgBwKj1
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3464
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-03_17:2020-11-03,2020-11-03 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ phishscore=0 clxscore=1015 lowpriorityscore=0 adultscore=0 mlxscore=0
+ bulkscore=0 suspectscore=1 mlxlogscore=928 spamscore=0 priorityscore=1501
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011040000
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TUNNEL_GENEVE_OPT is set on tun_flags in struct sw_flow_key when
-a packet is coming from a geneve tunnel no matter the size of geneve
-option is zero or not.  On the other hand, TUNNEL_VXLAN_OPT or
-TUNNEL_ERSPAN_OPT is set when the VXLAN or ERSPAN option is available.
-Currently, ovs kernel module only generates
-OVS_TUNNEL_KEY_ATTR_GENEVE_OPTS when the tun_opts_len is non-zero.
-As a result, for a geneve packet without tun_metadata, when the packet
-is reinserted from userspace after upcall, we miss the TUNNEL_GENEVE_OPT
-in the tun_flags on struct sw_flow_key, and that will further cause
-megaflow matching issue.
-
-This patch changes the way that we deal with the upcall netlink message
-generation to make sure the geneve tun_flags is set consistently
-as the packet is firstly received from the geneve tunnel in order to
-avoid megaflow matching issue demonstrated by the following flows.
-This issue is only observed on ovs kernel datapath.
-
-Consider the following two flows, and the two cases.
-* flow1: icmp traffic from gnv0 to gnv1, without any tun_metadata
-* flow2: icmp traffic form gnv0 to gnv1 with tun_metadata0
-
-Case 1)
-Send flow2 first, and then send flow1.  When both flows are running,
-both the following two flows are hit, which is expected.
-
-table=2, priority=200, in_port=gnv0, icmp, ct_state=+trk+est, reg9=0x0/0xff action=output:gnv1
-table=2, priority=200, in_port=gnv0, icmp, ct_state=+trk+est, reg9=0x1/0xff action=output:gnv1
-
-Case 2)
-Send flow1 first, then send flow2.  When both flows are running,
-only the following flow is hit.
-table=2, priority=200, in_port=gnv0, icmp, ct_state=+trk+est, reg9=0x0/0xff action=output:gnv1
-
-Example flows)
-
-table=0, arp, actions=NORMAL
-table=0, in_port=gnv1, icmp, action=ct(table=1)
-table=0, in_port=gnv0, icmp  action=move:NXM_NX_TUN_METADATA0[0..7]->NXM_NX_REG9[0..7], resubmit(,1)
-table=1, in_port=gnv1, icmp, action=output:gnv0
-table=1, in_port=gnv0, icmp  action=ct(table=2)
-table=2, priority=300, in_port=gnv0, icmp, ct_state=+trk+new, action=ct(commit),output:gnv1
-table=2, priority=200, in_port=gnv0, icmp, ct_state=+trk+est, reg9=0x0/0xff action=output:gnv1
-table=2, priority=200, in_port=gnv0, icmp, ct_state=+trk+est, reg9=0x1/0xff action=output:gnv1
-
-Fixes: fc4099f17240 ("openvswitch: Fix egress tunnel info.")
-Signed-off-by: Yi-Hung Wei <yihung.wei@gmail.com>
----
- net/openvswitch/flow_netlink.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index 9d3e50c4d29f..b03ec6a1a1fa 100644
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -912,13 +912,13 @@ static int __ip_tun_to_nlattr(struct sk_buff *skb,
- 	if ((output->tun_flags & TUNNEL_OAM) &&
- 	    nla_put_flag(skb, OVS_TUNNEL_KEY_ATTR_OAM))
- 		return -EMSGSIZE;
--	if (swkey_tun_opts_len) {
--		if (output->tun_flags & TUNNEL_GENEVE_OPT &&
--		    nla_put(skb, OVS_TUNNEL_KEY_ATTR_GENEVE_OPTS,
-+	if (output->tun_flags & TUNNEL_GENEVE_OPT) {
-+		if (nla_put(skb, OVS_TUNNEL_KEY_ATTR_GENEVE_OPTS,
- 			    swkey_tun_opts_len, tun_opts))
- 			return -EMSGSIZE;
--		else if (output->tun_flags & TUNNEL_VXLAN_OPT &&
--			 vxlan_opt_to_nlattr(skb, tun_opts, swkey_tun_opts_len))
-+	} else if (swkey_tun_opts_len) {
-+		if (output->tun_flags & TUNNEL_VXLAN_OPT &&
-+		    vxlan_opt_to_nlattr(skb, tun_opts, swkey_tun_opts_len))
- 			return -EMSGSIZE;
- 		else if (output->tun_flags & TUNNEL_ERSPAN_OPT &&
- 			 nla_put(skb, OVS_TUNNEL_KEY_ATTR_ERSPAN_OPTS,
--- 
-2.7.4
-
+On Tue, Nov 03, 2020 at 01:34:40PM -0800, Alexander Duyck wrote:
+> Move the test functionality from test_tcpbpf_user into the test_progs 
+> framework so that it will be run any time the test_progs framework is run.
+> This will help to prevent future test escapes as the individual tests, such
+> as test_tcpbpf_user, are less likely to be run by developers and CI
+> tests.
+> 
+> As a part of moving it over the series goes through and updates the code to 
+> make use of the existing APIs included in the test_progs framework. This is
+> meant to simplify and streamline the test code and avoid duplication of
+> effort. 
+> 
+> v2: Dropped test_tcpbpf_user from .gitignore
+>     Replaced CHECK_FAIL calls with CHECK calls
+>     Minimized changes in patch 1 when moving the file
+>     Updated stg mail command line to display renames in submission
+>     Added shutdown logic to end of run_test function to guarantee close
+>     Added patch that replaces the two maps with use of global variables
+> v3: Left err at -1 while we are performing send/recv calls w/ data
+>     Drop extra labels from test_tcpbpf_user in favor of keeping err label
+>     Dropped redundant zero init for tcpbpf_globals result and key
+>     Dropped replacing of "printf(" with "fprintf(stderr, "
+>     Fixed error in use of ASSERT_OK_PTR which was skipping of run_test
+>     Replaced "{ 0 }" with "{}" in init of global in test_tcpbpf_kern.c
+>     Added "Acked-by" from Martin KaiFai Lau and Andrii Nakryiko
+Acked-by: Martin KaFai Lau <kafai@fb.com>
