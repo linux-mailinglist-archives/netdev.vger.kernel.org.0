@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 862812A60DB
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 10:46:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A0472A60DD
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 10:46:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728941AbgKDJqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 04:46:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57346 "EHLO
+        id S1728986AbgKDJql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 04:46:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726564AbgKDJqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 04:46:35 -0500
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C738CC0613D3;
-        Wed,  4 Nov 2020 01:46:34 -0800 (PST)
-Received: by mail-lf1-x143.google.com with SMTP id l2so26333644lfk.0;
-        Wed, 04 Nov 2020 01:46:34 -0800 (PST)
+        with ESMTP id S1726434AbgKDJqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 04:46:37 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305BEC061A4A;
+        Wed,  4 Nov 2020 01:46:37 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id 126so26259317lfi.8;
+        Wed, 04 Nov 2020 01:46:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YSOL2BPcG5OaEO/RGSF7Sr1oAx6ujG4LTa5tHG1Uyaw=;
-        b=fHGDbRvY2Rgwf7qHY1ocj5eKoo05g2F4zB53+1kblEYVI8yu3ZPZQ8hYyszh1EKDFV
-         PrcdcZFtatLCSz5n0tqcvQxXo291PcVkXsDWZWTg08lBCZ1iaHUP2zp1ieSuKTCT5EJN
-         4xbFezISiQ1lnSupHQj7Jssh35qUiWr3cxtl1bGcQ4sBePQIfV8Or4dntxMkb3T/kbIf
-         qb3GWKLoncPlNqnGwBce8Hyy0W2OCh6vTR25xtXzAasSaHHL49c5cr2ud0OHVHOQlYrL
-         h64p0hr5jx9JZgh94lgYSir9CFJZdgc+Gx6ceMLVva0HKTZHcHGLPeApz6HwOl5iwedI
-         TR7Q==
+        bh=5D8s8lOGoht1T7MgOsqdaqa01uXmfNeXrOnkLYYVPyc=;
+        b=OGU/N17otDXhzfp13EoTAICJMGUCSXTxqbQHIWyeOvsPY+zvXxo41H7WCDYqxzYi2u
+         3aYwOiNDLI4gJmKJVqW5HvCI5TMOv/nqJDzIdEFXN0nup3K4hcRwCw21MNTcl8ogP+p5
+         uGD3CyMmOZRKQGhwWuemjtuhNvvMKKoZnpUfR09dCrJE8pBlBrPBWJ8sLE8Wl7slhjNU
+         uIveTbp7y1dC0Bo2Mi4rjXhcoGlwgZf+2uumHF3UPkbXNtVUahPBUJx9momrVO0k8C2B
+         OQxF8ZHkpAFdBhqGNajW0PqxIqz7TvuCh2ayinUZ07lJ4AofembFtu+W/G7c2qYvfTnM
+         sMfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YSOL2BPcG5OaEO/RGSF7Sr1oAx6ujG4LTa5tHG1Uyaw=;
-        b=sgVwI18kXXtd0hmuy+HvRGT4/qWpepAhyrTWgyXOpEkLrRO15croBaTlL+6+w3YgwR
-         dvVtzYKQUWhFab0xDtBiJkL0YSTOsxjywxQF//9n9pZNJFuo3fd6kU8jXHySCMXJ5iIa
-         LP622BR1URMhZl3LqfcT5xspe7kAdKtuV38UUV0Gx9HuioBWAQv5fsk9uExWgcoJereR
-         Ck5dRr5DBzVs9zPb2NoIpV9eeQHkT3yfFRN7GerIfPIj/Q6pwj1Cj9d1JmpFQxtWeocZ
-         Hoy8mjuOQ173upbHOjGgjkI5Jd89AqKdaxZ8ud58NOBv1g6XOJuSvOsi/5cU8a12I6v2
-         rX5w==
-X-Gm-Message-State: AOAM530IOWnnDys65pq461iutyT0yNnBSdCFmP86xfev1mMqMuniyxSU
-        S69ear9F4m8rJjLu9lTDJgo=
-X-Google-Smtp-Source: ABdhPJzF+5ie86ITZEA+qk1EJZStI9qzQ7+JYNr1x+mODDFTVf40Jn8Fl6uFMEtLyUxKB5dj5vPKGA==
-X-Received: by 2002:ac2:443c:: with SMTP id w28mr8838538lfl.405.1604483193270;
-        Wed, 04 Nov 2020 01:46:33 -0800 (PST)
+        bh=5D8s8lOGoht1T7MgOsqdaqa01uXmfNeXrOnkLYYVPyc=;
+        b=P7GJea5fWCnyh00lC/Zbhmy/JgbsHaItH+vW+4F/p2cyjikyCBl7zln7mNTs2oMtUl
+         CpRxPGXGq3zN04vnnFAO5KkkaphVzgY+y5pQdkUHjuwJ09cfinzGRvWLDF7gXTUw0XJa
+         trw04/L5coF7K92ag8mkmPzd9UlLZM1+N+t+NwRHsG0/NR57BiIe5bFa2fGwHlVHrRiD
+         kaguegyXNIgdgZnLuYt4M0d8ryMdWltEwmUzCx9Cxalnf4ci4PcqTCip4z/W+K/BYbJF
+         LKhsK/gjnRbuWBUB2KQXnQdb/WtUE1slqNvFiUZLD5L09nEma1jTlML+moMD78rdozs7
+         qY6w==
+X-Gm-Message-State: AOAM533TP4kLnCHWJtjihMTTDpg4dRpK8wUdqVI9+yZzZF5/5JQ71aRF
+        mDqtKy0hamVsQa4D3qm29G4=
+X-Google-Smtp-Source: ABdhPJwyxICgjQXExwXKcdKdi94mzx4P/+CkgiR8sxfe0TMJSdnvkK2evNfhnbxQF0TcEpvzC1uVaw==
+X-Received: by 2002:ac2:505b:: with SMTP id a27mr9037226lfm.264.1604483195579;
+        Wed, 04 Nov 2020 01:46:35 -0800 (PST)
 Received: from localhost.localdomain (host-89-229-233-64.dynamic.mm.pl. [89.229.233.64])
-        by smtp.gmail.com with ESMTPSA id x18sm355624lfc.73.2020.11.04.01.46.31
+        by smtp.gmail.com with ESMTPSA id x18sm355624lfc.73.2020.11.04.01.46.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 01:46:32 -0800 (PST)
+        Wed, 04 Nov 2020 01:46:34 -0800 (PST)
 From:   mariusz.dudek@gmail.com
 X-Google-Original-From: mariuszx.dudek@intel.com
 To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         jonathan.lemon@gmail.com
 Cc:     bpf@vger.kernel.org, Mariusz Dudek <mariuszx.dudek@intel.com>
-Subject: [PATCH bpf-next 1/2] libbpf: separate XDP program load with xsk socket creation
-Date:   Wed,  4 Nov 2020 10:46:25 +0100
-Message-Id: <20201104094626.3406-2-mariuszx.dudek@intel.com>
+Subject: [PATCH bpf-next 2/2] samples/bpf: sample application for eBPF load and socket creation split
+Date:   Wed,  4 Nov 2020 10:46:26 +0100
+Message-Id: <20201104094626.3406-3-mariuszx.dudek@intel.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201104094626.3406-1-mariuszx.dudek@intel.com>
 References: <20201104094626.3406-1-mariuszx.dudek@intel.com>
@@ -67,318 +67,534 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mariusz Dudek <mariuszx.dudek@intel.com>
 
-        Add support for separation of eBPF program load and xsk socket
-        creation.
+    Introduce a sample program to demonstrate the control and data
+    plane split. For the control plane part a new program called
+    xdpsock_ctrl_proc is introduced. For the data plane part, some code
+    was added to xdpsock_user.c to act as the data plane entity.
 
-        This is needed for use-case when you want to privide as little
-        privileges as possible to the data plane application that will
-        handle xsk socket creation and incoming traffic.
+    Application xdpsock_ctrl_proc works as control entity with sudo
+    privileges (CAP_SYS_ADMIN and CAP_NET_ADMIN are sufficient) and the
+    extended xdpsock as data plane entity with CAP_NET_RAW capability
+    only.
 
-        With this patch the data entity container can be run with only
-        CAP_NET_RAW capability to fulfill its purpose of creating xsk
-        socket and handling packages. In case your umem is larger or
-        equal process limit for MEMLOCK you need either increase the
-        limit or CAP_IPC_LOCK capability.
+    Usage example:
 
-        To resolve privileges issue two APIs are introduced:
+    sudo ./samples/bpf/xdpsock_ctrl_proc -i <interface>
 
-        - xsk_setup_xdp_prog - prepares bpf program if given and
-        loads it on a selected network interface or loads the built in
-        XDP program, if no XDP program is supplied. It can also return
-        xsks_map_fd which is needed by unprivileged process to update
-        xsks_map with AF_XDP socket "fd"
-
-        - xsk_update_xskmap - inserts an AF_XDP socket into an xskmap
-	for a particular xsk_socket
+    sudo ./samples/bpf/xdpsock -i <interface> -q <queue_id>
+    	-n <interval> -N -l -R
 
 Signed-off-by: Mariusz Dudek <mariuszx.dudek@intel.com>
 ---
- tools/lib/bpf/libbpf.map |   2 +
- tools/lib/bpf/xsk.c      | 157 ++++++++++++++++++++++++++++++++-------
- tools/lib/bpf/xsk.h      |  13 ++++
- 3 files changed, 146 insertions(+), 26 deletions(-)
+ samples/bpf/Makefile            |   4 +-
+ samples/bpf/xdpsock.h           |   8 ++
+ samples/bpf/xdpsock_ctrl_proc.c | 184 ++++++++++++++++++++++++++++++++
+ samples/bpf/xdpsock_user.c      | 146 +++++++++++++++++++++++--
+ 4 files changed, 332 insertions(+), 10 deletions(-)
+ create mode 100644 samples/bpf/xdpsock_ctrl_proc.c
 
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 4ebfadf45b47..4b938de1ca39 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -336,4 +336,6 @@ LIBBPF_0.2.0 {
- 		perf_buffer__epoll_fd;
- 		perf_buffer__consume_buffer;
- 		xsk_socket__create_shared;
-+		xsk_setup_xdp_prog;
-+		xsk_update_xskmap;
- } LIBBPF_0.1.0;
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index e3c98c007825..8c5219ceca45 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -351,13 +351,8 @@ int xsk_umem__create_v0_0_2(struct xsk_umem **umem_ptr, void *umem_area,
- COMPAT_VERSION(xsk_umem__create_v0_0_2, xsk_umem__create, LIBBPF_0.0.2)
- DEFAULT_VERSION(xsk_umem__create_v0_0_4, xsk_umem__create, LIBBPF_0.0.4)
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index aeebf5d12f32..8fb8be1c0144 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -48,6 +48,7 @@ tprogs-y += syscall_tp
+ tprogs-y += cpustat
+ tprogs-y += xdp_adjust_tail
+ tprogs-y += xdpsock
++tprogs-y += xdpsock_ctrl_proc
+ tprogs-y += xsk_fwd
+ tprogs-y += xdp_fwd
+ tprogs-y += task_fd_query
+@@ -105,6 +106,7 @@ syscall_tp-objs := syscall_tp_user.o
+ cpustat-objs := cpustat_user.o
+ xdp_adjust_tail-objs := xdp_adjust_tail_user.o
+ xdpsock-objs := xdpsock_user.o
++xdpsock_ctrl_proc-objs := xdpsock_ctrl_proc.o
+ xsk_fwd-objs := xsk_fwd.o
+ xdp_fwd-objs := xdp_fwd_user.o
+ task_fd_query-objs := bpf_load.o task_fd_query_user.o $(TRACE_HELPERS)
+@@ -204,7 +206,7 @@ TPROGLDLIBS_tracex4		+= -lrt
+ TPROGLDLIBS_trace_output	+= -lrt
+ TPROGLDLIBS_map_perf_test	+= -lrt
+ TPROGLDLIBS_test_overhead	+= -lrt
+-TPROGLDLIBS_xdpsock		+= -pthread
++TPROGLDLIBS_xdpsock		+= -pthread -lcap
+ TPROGLDLIBS_xsk_fwd		+= -pthread
  
--static int xsk_load_xdp_prog(struct xsk_socket *xsk)
-+static int get_bpf_prog(struct bpf_prog_cfg *cfg_ptr, int xsks_map_fd)
- {
--	static const int log_buf_size = 16 * 1024;
--	struct xsk_ctx *ctx = xsk->ctx;
--	char log_buf[log_buf_size];
--	int err, prog_fd;
--
- 	/* This is the C-program:
- 	 * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
- 	 * {
-@@ -382,7 +377,7 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
- 		/* *(u32 *)(r10 - 4) = r2 */
- 		BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_2, -4),
- 		/* r1 = xskmap[] */
--		BPF_LD_MAP_FD(BPF_REG_1, ctx->xsks_map_fd),
-+		BPF_LD_MAP_FD(BPF_REG_1, xsks_map_fd),
- 		/* r3 = XDP_PASS */
- 		BPF_MOV64_IMM(BPF_REG_3, 2),
- 		/* call bpf_redirect_map */
-@@ -394,7 +389,7 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
- 		/* r2 += -4 */
- 		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -4),
- 		/* r1 = xskmap[] */
--		BPF_LD_MAP_FD(BPF_REG_1, ctx->xsks_map_fd),
-+		BPF_LD_MAP_FD(BPF_REG_1, xsks_map_fd),
- 		/* call bpf_map_lookup_elem */
- 		BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
- 		/* r1 = r0 */
-@@ -406,7 +401,7 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
- 		/* r2 = *(u32 *)(r10 - 4) */
- 		BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_10, -4),
- 		/* r1 = xskmap[] */
--		BPF_LD_MAP_FD(BPF_REG_1, ctx->xsks_map_fd),
-+		BPF_LD_MAP_FD(BPF_REG_1, xsks_map_fd),
- 		/* r3 = 0 */
- 		BPF_MOV64_IMM(BPF_REG_3, 0),
- 		/* call bpf_redirect_map */
-@@ -414,17 +409,42 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
- 		/* The jumps are to this instruction */
- 		BPF_EXIT_INSN(),
- 	};
--	size_t insns_cnt = sizeof(prog) / sizeof(struct bpf_insn);
+ # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
+diff --git a/samples/bpf/xdpsock.h b/samples/bpf/xdpsock.h
+index b7eca15c78cc..fd70cce60712 100644
+--- a/samples/bpf/xdpsock.h
++++ b/samples/bpf/xdpsock.h
+@@ -8,4 +8,12 @@
  
--	prog_fd = bpf_load_program(BPF_PROG_TYPE_XDP, prog, insns_cnt,
--				   "LGPL-2.1 or BSD-2-Clause", 0, log_buf,
-+	cfg_ptr->prog = malloc(sizeof(prog));
-+	if (!cfg_ptr->prog)
-+		return -ENOMEM;
-+	memcpy(cfg_ptr->prog, prog, sizeof(prog));
-+	cfg_ptr->license = "LGPL-2.1 or BSD-2-Clause";
-+	cfg_ptr->insns_cnt = sizeof(prog) / sizeof(struct bpf_insn);
-+
-+	return 0;
-+}
-+
-+static int xsk_load_xdp_prog(struct xsk_socket *xsk, struct bpf_prog_cfg *user_cfg)
-+{
-+	static const int log_buf_size = 16 * 1024;
-+	struct xsk_ctx *ctx = xsk->ctx;
-+	char log_buf[log_buf_size];
-+	struct bpf_prog_cfg cfg;
-+	int err, prog_fd;
-+
-+	if (user_cfg && user_cfg->insns_cnt) {
-+		cfg = *user_cfg;
-+	} else {
-+		err = get_bpf_prog(&cfg, ctx->xsks_map_fd);
-+		if (err)
-+			return err;
-+	}
-+
-+	prog_fd = bpf_load_program(BPF_PROG_TYPE_XDP, cfg.prog, cfg.insns_cnt,
-+				   cfg.license, 0, log_buf,
- 				   log_buf_size);
- 	if (prog_fd < 0) {
- 		pr_warn("BPF log buffer:\n%s", log_buf);
- 		return prog_fd;
- 	}
+ #define MAX_SOCKS 4
  
--	err = bpf_set_link_xdp_fd(xsk->ctx->ifindex, prog_fd,
-+	err = bpf_set_link_xdp_fd(ctx->ifindex, prog_fd,
- 				  xsk->config.xdp_flags);
- 	if (err) {
- 		close(prog_fd);
-@@ -566,8 +586,43 @@ static int xsk_set_bpf_maps(struct xsk_socket *xsk)
- 				   &xsk->fd, 0);
- }
- 
--static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
-+static int xsk_create_xsk_struct(int ifindex, struct xsk_socket *xsk)
-+{
-+	char ifname[IFNAMSIZ];
-+	struct xsk_ctx *ctx;
-+	char *interface;
-+	int res = -1;
++#define SOCKET_NAME "sock_cal_bpf_fd"
++#define MAX_NUM_OF_CLIENTS 10
 +
-+	ctx = calloc(1, sizeof(*ctx));
-+	if (!ctx)
-+		goto error_ctx;
++#define CLOSE_CONN  1
 +
-+	interface = if_indextoname(ifindex, &ifname[0]);
-+	if (!interface) {
-+		res = -errno;
-+		goto error_ifindex;
-+	}
++typedef __u64 u64;
++typedef __u32 u32;
 +
-+	ctx->ifindex = ifindex;
-+	strncpy(ctx->ifname, ifname, IFNAMSIZ - 1);
-+	ctx->ifname[IFNAMSIZ - 1] = 0;
+ #endif /* XDPSOCK_H */
+diff --git a/samples/bpf/xdpsock_ctrl_proc.c b/samples/bpf/xdpsock_ctrl_proc.c
+new file mode 100644
+index 000000000000..c841aca59a96
+--- /dev/null
++++ b/samples/bpf/xdpsock_ctrl_proc.c
+@@ -0,0 +1,184 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright(c) 2017 - 2018 Intel Corporation. */
 +
-+	xsk->ctx = ctx;
++#include <errno.h>
++#include <getopt.h>
++#include <libgen.h>
++#include <net/if.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <sys/socket.h>
++#include <sys/un.h>
++#include <unistd.h>
 +
-+	return 0;
++#include <bpf/bpf.h>
++#include <bpf/xsk.h>
++#include "xdpsock.h"
 +
-+error_ifindex:
-+	free(ctx);
-+error_ctx:
-+	return res;
-+}
++static const char *opt_if = "";
 +
-+static int __xsk_setup_xdp_prog(struct xsk_socket *_xdp,
-+				struct bpf_prog_cfg *cfg,
-+				bool force_set_map,
-+				int *xsks_map_fd)
- {
-+	struct xsk_socket *xsk = _xdp;
- 	struct xsk_ctx *ctx = xsk->ctx;
- 	__u32 prog_id = 0;
- 	int err;
-@@ -578,14 +633,17 @@ static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
- 		return err;
- 
- 	if (!prog_id) {
--		err = xsk_create_bpf_maps(xsk);
--		if (err)
--			return err;
-+		if (!cfg || !cfg->insns_cnt) {
-+			err = xsk_create_bpf_maps(xsk);
-+			if (err)
-+				return err;
-+		} else {
-+			ctx->xsks_map_fd = cfg->xsks_map_fd;
-+		}
- 
--		err = xsk_load_xdp_prog(xsk);
-+		err = xsk_load_xdp_prog(xsk, cfg);
- 		if (err) {
--			xsk_delete_bpf_maps(xsk);
--			return err;
-+			goto err_load_xdp_prog;
- 		}
- 	} else {
- 		ctx->prog_fd = bpf_prog_get_fd_by_id(prog_id);
-@@ -598,15 +656,29 @@ static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
- 		}
- 	}
- 
--	if (xsk->rx)
-+	if (xsk->rx || force_set_map) {
- 		err = xsk_set_bpf_maps(xsk);
--	if (err) {
--		xsk_delete_bpf_maps(xsk);
--		close(ctx->prog_fd);
--		return err;
-+		if (err) {
-+			if (!prog_id) {
-+				goto err_set_bpf_maps;
-+			} else {
-+				close(ctx->prog_fd);
-+				return err;
-+			}
-+		}
- 	}
-+	if (xsks_map_fd)
-+		*xsks_map_fd = ctx->xsks_map_fd;
- 
- 	return 0;
-+
-+err_set_bpf_maps:
-+	close(ctx->prog_fd);
-+	bpf_set_link_xdp_fd(ctx->ifindex, -1, 0);
-+err_load_xdp_prog:
-+	xsk_delete_bpf_maps(xsk);
-+
-+	return err;
- }
- 
- static struct xsk_ctx *xsk_get_ctx(struct xsk_umem *umem, int ifindex,
-@@ -689,6 +761,39 @@ static struct xsk_ctx *xsk_create_ctx(struct xsk_socket *xsk,
- 	return ctx;
- }
- 
-+static void xsk_destroy_xsk_struct(struct xsk_socket *xsk)
-+{
-+	free(xsk->ctx);
-+	free(xsk);
-+}
-+
-+int xsk_update_xskmap(struct xsk_socket *xsk, int fd)
-+{
-+	xsk->ctx->xsks_map_fd = fd;
-+	return xsk_set_bpf_maps(xsk);
-+}
-+
-+int xsk_setup_xdp_prog(int ifindex, struct bpf_prog_cfg *cfg,
-+		       int *xsks_map_fd)
-+{
-+	struct xsk_socket *xsk;
-+	int res = -1;
-+
-+	xsk = calloc(1, sizeof(*xsk));
-+	if (!xsk)
-+		return res;
-+
-+	res = xsk_create_xsk_struct(ifindex, xsk);
-+	if (res)
-+		return -EINVAL;
-+
-+	res = __xsk_setup_xdp_prog(xsk, cfg, false, xsks_map_fd);
-+
-+	xsk_destroy_xsk_struct(xsk);
-+
-+	return res;
-+}
-+
- int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 			      const char *ifname,
- 			      __u32 queue_id, struct xsk_umem *umem,
-@@ -838,7 +943,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 	ctx->prog_fd = -1;
- 
- 	if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
--		err = xsk_setup_xdp_prog(xsk);
-+		err = __xsk_setup_xdp_prog(xsk, NULL, false, NULL);
- 		if (err)
- 			goto out_mmap_tx;
- 	}
-diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-index 1069c46364ff..c42b91935d3c 100644
---- a/tools/lib/bpf/xsk.h
-+++ b/tools/lib/bpf/xsk.h
-@@ -201,6 +201,19 @@ struct xsk_umem_config {
- 	__u32 flags;
- };
- 
-+struct bpf_prog_cfg {
-+	struct bpf_insn *prog;
-+	const char *license;
-+	size_t insns_cnt;
-+	int xsks_map_fd;
++static struct option long_options[] = {
++	{"interface", required_argument, 0, 'i'},
++	{0, 0, 0, 0}
 +};
 +
-+LIBBPF_API int xsk_setup_xdp_prog(int ifindex,
-+				  struct bpf_prog_cfg *cfg,
-+				  int *xsks_map_fd);
-+LIBBPF_API int xsk_update_xskmap(struct xsk_socket *xsk,
-+				 int xsks_map_fd);
++static void usage(const char *prog)
++{
++	const char *str =
++		"  Usage: %s [OPTIONS]\n"
++		"  Options:\n"
++		"  -i, --interface=n	Run on interface n\n"
++		"\n";
++	fprintf(stderr, "%s\n", str);
 +
- /* Flags for the libbpf_flags field. */
- #define XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD (1 << 0)
++	exit(0);
++}
++
++static void parse_command_line(int argc, char **argv)
++{
++	int option_index, c;
++
++	opterr = 0;
++
++	for (;;) {
++		c = getopt_long(argc, argv, "i:",
++				long_options, &option_index);
++		if (c == -1)
++			break;
++
++		switch (c) {
++		case 'i':
++			opt_if = optarg;
++			break;
++		default:
++			usage(basename(argv[0]));
++		}
++	}
++}
++
++static int send_xsks_map_fd(int sock, int fd)
++{
++	char cmsgbuf[CMSG_SPACE(sizeof(int))];
++	struct msghdr msg;
++	struct iovec iov;
++	int value = 0;
++
++	if (fd == -1) {
++		fprintf(stderr, "Incorrect fd = %d\n", fd);
++		return -1;
++	}
++	iov.iov_base = &value;
++	iov.iov_len = sizeof(int);
++
++	msg.msg_name = NULL;
++	msg.msg_namelen = 0;
++	msg.msg_iov = &iov;
++	msg.msg_iovlen = 1;
++	msg.msg_flags = 0;
++	msg.msg_control = cmsgbuf;
++	msg.msg_controllen = CMSG_LEN(sizeof(int));
++
++	struct cmsghdr *cmsg = CMSG_FIRSTHDR(&msg);
++
++	cmsg->cmsg_level = SOL_SOCKET;
++	cmsg->cmsg_type = SCM_RIGHTS;
++	cmsg->cmsg_len = CMSG_LEN(sizeof(int));
++
++	*(int *)CMSG_DATA(cmsg) = fd;
++	int ret = sendmsg(sock, &msg, 0);
++
++	if (ret == -1) {
++		fprintf(stderr, "Sendmsg failed with %s", strerror(errno));
++		return -errno;
++	}
++
++	return ret;
++}
++
++int
++main(int argc, char **argv)
++{
++	struct sockaddr_un server;
++	int listening = 1;
++	int rval, msgsock;
++	int ifindex = 0;
++	int flag = 1;
++	int cmd = 0;
++	int sock;
++	int err;
++	int xsks_map_fd;
++
++	parse_command_line(argc, argv);
++
++	ifindex = if_nametoindex(opt_if);
++	if (ifindex == 0)
++		return -errno;
++
++	sock = socket(AF_UNIX, SOCK_STREAM, 0);
++	if (sock < 0) {
++		fprintf(stderr, "Opening socket stream failed: %s", strerror(errno));
++		exit(EXIT_FAILURE);
++	}
++
++	server.sun_family = AF_UNIX;
++	strcpy(server.sun_path, SOCKET_NAME);
++
++	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(int));
++
++	if (bind(sock, (struct sockaddr *)&server, sizeof(struct sockaddr_un))) {
++		fprintf(stderr, "Binding to socket stream failed: %s", strerror(errno));
++		exit(EXIT_FAILURE);
++	}
++
++	listen(sock, MAX_NUM_OF_CLIENTS);
++
++	err = xsk_setup_xdp_prog(ifindex, NULL, &xsks_map_fd);
++	if (err) {
++		fprintf(stderr, "Setup of xdp program failed\n");
++		goto close_sock;
++	}
++
++	while (listening) {
++		msgsock = accept(sock, 0, 0);
++		if (msgsock == -1) {
++			fprintf(stderr, "Error accepting connection: %s", strerror(errno));
++			err = -errno;
++			goto close_sock;
++		}
++		err = send_xsks_map_fd(msgsock, xsks_map_fd);
++		if (err <= 0) {
++			fprintf(stderr, "Error %d sending xsks_map_fd\n", err);
++			goto cleanup;
++		}
++		do {
++			rval = read(msgsock, &cmd, sizeof(int));
++			if (rval < 0) {
++				fprintf(stderr, "Error reading stream message");
++			} else {
++				if (cmd != CLOSE_CONN)
++					fprintf(stderr, "Recv unknown cmd = %d\n", cmd);
++				listening = 0;
++				break;
++			}
++		} while (rval > 0);
++	}
++	close(msgsock);
++	close(sock);
++	unlink(SOCKET_NAME);
++
++	/* Unset fd for given ifindex */
++	err = bpf_set_link_xdp_fd(ifindex, -1, 0);
++	if (err) {
++		fprintf(stderr, "Error when unsetting bpf prog_fd for ifindex(%d)\n", ifindex);
++		return err;
++	}
++
++	return 0;
++
++cleanup:
++	close(msgsock);
++close_sock:
++	close(sock);
++	unlink(SOCKET_NAME);
++	return err;
++}
+diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
+index 1149e94ca32f..c3ca5304fce4 100644
+--- a/samples/bpf/xdpsock_user.c
++++ b/samples/bpf/xdpsock_user.c
+@@ -24,10 +24,12 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <sys/capability.h>
+ #include <sys/mman.h>
+ #include <sys/resource.h>
+ #include <sys/socket.h>
+ #include <sys/types.h>
++#include <sys/un.h>
+ #include <time.h>
+ #include <unistd.h>
  
+@@ -95,6 +97,7 @@ static int opt_timeout = 1000;
+ static bool opt_need_wakeup = true;
+ static u32 opt_num_xsks = 1;
+ static u32 prog_id;
++static bool opt_reduced_cap;
+ 
+ struct xsk_ring_stats {
+ 	unsigned long rx_npkts;
+@@ -153,6 +156,7 @@ struct xsk_socket_info {
+ 
+ static int num_socks;
+ struct xsk_socket_info *xsks[MAX_SOCKS];
++int sock;
+ 
+ static unsigned long get_nsecs(void)
+ {
+@@ -460,6 +464,7 @@ static void *poller(void *arg)
+ static void remove_xdp_program(void)
+ {
+ 	u32 curr_prog_id = 0;
++	int cmd = CLOSE_CONN;
+ 
+ 	if (bpf_get_link_xdp_id(opt_ifindex, &curr_prog_id, opt_xdp_flags)) {
+ 		printf("bpf_get_link_xdp_id failed\n");
+@@ -471,6 +476,13 @@ static void remove_xdp_program(void)
+ 		printf("couldn't find a prog id on a given interface\n");
+ 	else
+ 		printf("program on interface changed, not removing\n");
++
++	if (opt_reduced_cap) {
++		if (write(sock, &cmd, sizeof(int)) < 0) {
++			fprintf(stderr, "Error writing into stream socket: %s", strerror(errno));
++			exit(EXIT_FAILURE);
++		}
++	}
+ }
+ 
+ static void int_exit(int sig)
+@@ -853,7 +865,7 @@ static struct xsk_socket_info *xsk_configure_socket(struct xsk_umem_info *umem,
+ 	xsk->umem = umem;
+ 	cfg.rx_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
+ 	cfg.tx_size = XSK_RING_PROD__DEFAULT_NUM_DESCS;
+-	if (opt_num_xsks > 1)
++	if (opt_num_xsks > 1 || opt_reduced_cap)
+ 		cfg.libbpf_flags = XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD;
+ 	else
+ 		cfg.libbpf_flags = 0;
+@@ -911,6 +923,7 @@ static struct option long_options[] = {
+ 	{"quiet", no_argument, 0, 'Q'},
+ 	{"app-stats", no_argument, 0, 'a'},
+ 	{"irq-string", no_argument, 0, 'I'},
++	{"reduce-cap", no_argument, 0, 'R'},
+ 	{0, 0, 0, 0}
+ };
+ 
+@@ -933,7 +946,7 @@ static void usage(const char *prog)
+ 		"  -m, --no-need-wakeup Turn off use of driver need wakeup flag.\n"
+ 		"  -f, --frame-size=n   Set the frame size (must be a power of two in aligned mode, default is %d).\n"
+ 		"  -u, --unaligned	Enable unaligned chunk placement\n"
+-		"  -M, --shared-umem	Enable XDP_SHARED_UMEM\n"
++		"  -M, --shared-umem	Enable XDP_SHARED_UMEM (cannot be used with -R)\n"
+ 		"  -F, --force		Force loading the XDP prog\n"
+ 		"  -d, --duration=n	Duration in secs to run command.\n"
+ 		"			Default: forever.\n"
+@@ -949,6 +962,7 @@ static void usage(const char *prog)
+ 		"  -Q, --quiet          Do not display any stats.\n"
+ 		"  -a, --app-stats	Display application (syscall) statistics.\n"
+ 		"  -I, --irq-string	Display driver interrupt statistics for interface associated with irq-string.\n"
++		"  -R, --reduce-cap	Use reduced capabilities (cannot be used with -M)\n"
+ 		"\n";
+ 	fprintf(stderr, str, prog, XSK_UMEM__DEFAULT_FRAME_SIZE,
+ 		opt_batch_size, MIN_PKT_SIZE, MIN_PKT_SIZE,
+@@ -964,7 +978,7 @@ static void parse_command_line(int argc, char **argv)
+ 	opterr = 0;
+ 
+ 	for (;;) {
+-		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:xQaI:",
++		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:xQaI:R",
+ 				long_options, &option_index);
+ 		if (c == -1)
+ 			break;
+@@ -1063,6 +1077,9 @@ static void parse_command_line(int argc, char **argv)
+ 				usage(basename(argv[0]));
+ 			}
+ 
++			break;
++		case 'R':
++			opt_reduced_cap = true;
+ 			break;
+ 		default:
+ 			usage(basename(argv[0]));
+@@ -1085,6 +1102,11 @@ static void parse_command_line(int argc, char **argv)
+ 			opt_xsk_frame_size);
+ 		usage(basename(argv[0]));
+ 	}
++
++	if (opt_reduced_cap && opt_num_xsks > 1) {
++		fprintf(stderr, "ERROR: -M and -R cannot be used together\n");
++		usage(basename(argv[0]));
++	}
+ }
+ 
+ static void kick_tx(struct xsk_socket_info *xsk)
+@@ -1461,26 +1483,117 @@ static void enter_xsks_into_map(struct bpf_object *obj)
+ 	}
+ }
+ 
++static int recv_xsks_map_fd_from_ctrl_node(int sock, int *_fd)
++{
++	char cms[CMSG_SPACE(sizeof(int))];
++	struct cmsghdr *cmsg;
++	struct msghdr msg;
++	struct iovec iov;
++	int value;
++	int len;
++
++	iov.iov_base = &value;
++	iov.iov_len = sizeof(int);
++
++	msg.msg_name = 0;
++	msg.msg_namelen = 0;
++	msg.msg_iov = &iov;
++	msg.msg_iovlen = 1;
++	msg.msg_flags = 0;
++	msg.msg_control = (caddr_t)cms;
++	msg.msg_controllen = sizeof(cms);
++
++	len = recvmsg(sock, &msg, 0);
++
++	if (len < 0) {
++		fprintf(stderr, "Recvmsg failed length incorrect.\n");
++		return -EINVAL;
++	}
++
++	if (len == 0) {
++		fprintf(stderr, "Recvmsg failed no data\n");
++		return -EINVAL;
++	}
++
++	cmsg = CMSG_FIRSTHDR(&msg);
++	*_fd = *(int *)CMSG_DATA(cmsg);
++
++	return 0;
++}
++
++static int
++recv_xsks_map_fd(int *xsks_map_fd)
++{
++	struct sockaddr_un server;
++	int err;
++
++	sock = socket(AF_UNIX, SOCK_STREAM, 0);
++	if (sock < 0) {
++		fprintf(stderr, "Error opening socket stream: %s", strerror(errno));
++		return errno;
++	}
++
++	server.sun_family = AF_UNIX;
++	strcpy(server.sun_path, SOCKET_NAME);
++
++	if (connect(sock, (struct sockaddr *)&server, sizeof(struct sockaddr_un)) < 0) {
++		close(sock);
++		fprintf(stderr, "Error connecting stream socket: %s", strerror(errno));
++		return errno;
++	}
++
++	err = recv_xsks_map_fd_from_ctrl_node(sock, xsks_map_fd);
++	if (err) {
++		fprintf(stderr, "Error %d recieving fd\n", err);
++		return err;
++	}
++	return 0;
++}
++
+ int main(int argc, char **argv)
+ {
++	struct __user_cap_header_struct hdr = { _LINUX_CAPABILITY_VERSION_3, 0 };
++	struct __user_cap_data_struct data[2] = { { 0 } };
+ 	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
+ 	bool rx = false, tx = false;
+ 	struct xsk_umem_info *umem;
+ 	struct bpf_object *obj;
++	int xsks_map_fd = 0;
+ 	pthread_t pt;
+ 	int i, ret;
+ 	void *bufs;
+ 
+ 	parse_command_line(argc, argv);
+ 
+-	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
+-		fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
+-			strerror(errno));
+-		exit(EXIT_FAILURE);
++	if (opt_reduced_cap) {
++		if (capget(&hdr, data)  < 0)
++			fprintf(stderr, "Error getting capabilities\n");
++
++		data->effective &= CAP_TO_MASK(CAP_NET_RAW);
++		data->permitted &= CAP_TO_MASK(CAP_NET_RAW);
++
++		if (capset(&hdr, data) < 0)
++			fprintf(stderr, "Setting capabilities failed\n");
++
++		if (capget(&hdr, data)  < 0) {
++			fprintf(stderr, "Error getting capabilities\n");
++		} else {
++			fprintf(stderr, "Capabilities EFF %x Caps INH %x Caps Per %x\n",
++				data[0].effective, data[0].inheritable, data[0].permitted);
++			fprintf(stderr, "Capabilities EFF %x Caps INH %x Caps Per %x\n",
++				data[1].effective, data[1].inheritable, data[1].permitted);
++		}
++	} else {
++		if (setrlimit(RLIMIT_MEMLOCK, &r)) {
++			fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
++				strerror(errno));
++			exit(EXIT_FAILURE);
++		}
++
++		if (opt_num_xsks > 1)
++			load_xdp_program(argv, &obj);
+ 	}
+ 
+-	if (opt_num_xsks > 1)
+-		load_xdp_program(argv, &obj);
+ 
+ 	/* Reserve memory for the umem. Use hugepages if unaligned chunk mode */
+ 	bufs = mmap(NULL, NUM_FRAMES * opt_xsk_frame_size,
+@@ -1512,6 +1625,21 @@ int main(int argc, char **argv)
+ 	if (opt_num_xsks > 1 && opt_bench != BENCH_TXONLY)
+ 		enter_xsks_into_map(obj);
+ 
++	if (opt_reduced_cap) {
++		ret = recv_xsks_map_fd(&xsks_map_fd);
++		if (ret) {
++			fprintf(stderr, "Error %d receiving xsks_map_fd\n", ret);
++			exit_with_error(ret);
++		}
++		if (xsks[0]->xsk) {
++			ret = xsk_update_xskmap(xsks[0]->xsk, xsks_map_fd);
++			if (ret) {
++				fprintf(stderr, "Update of BPF map failed(%d)\n", ret);
++				exit_with_error(ret);
++			}
++		}
++	}
++
+ 	signal(SIGINT, int_exit);
+ 	signal(SIGTERM, int_exit);
+ 	signal(SIGABRT, int_exit);
 -- 
 2.20.1
 
