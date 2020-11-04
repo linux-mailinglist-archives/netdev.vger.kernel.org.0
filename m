@@ -2,367 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA6E62A5CA8
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 03:19:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2ADE2A5CC7
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 03:42:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730611AbgKDCTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 21:19:49 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:35440 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730019AbgKDCTt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 21:19:49 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 0A42JbrL6009421, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb04.realtek.com.tw[172.21.6.97])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 0A42JbrL6009421
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 4 Nov 2020 10:19:37 +0800
-Received: from fc32.localdomain (172.21.177.102) by RTEXMB04.realtek.com.tw
- (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Wed, 4 Nov 2020
- 10:19:36 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     <netdev@vger.kernel.org>
-CC:     <nic_swsd@realtek.com>, <linux-kernel@vger.kernel.org>,
-        <oliver@neukum.org>, <linux-usb@vger.kernel.org>,
-        Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net-next v2 RESEND] net/usb/r8153_ecm: support ECM mode for RTL8153
-Date:   Wed, 4 Nov 2020 10:19:22 +0800
-Message-ID: <1394712342-15778-392-Taiwan-albertk@realtek.com>
-X-Mailer: Microsoft Office Outlook 11
-In-Reply-To: <1394712342-15778-387-Taiwan-albertk@realtek.com>
-References: <1394712342-15778-387-Taiwan-albertk@realtek.com>
+        id S1730658AbgKDCm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 21:42:26 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:33914 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730153AbgKDCm0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 21:42:26 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ka8kV-0058ru-C2; Wed, 04 Nov 2020 03:42:11 +0100
+Date:   Wed, 4 Nov 2020 03:42:11 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?utf-8?Q?=C5=81ukasz?= Stelmach <l.stelmach@samsung.com>
+Cc:     jim.cromie@gmail.com, Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewicz?= 
+        <b.zolnierkie@samsung.com>
+Subject: Re: [PATCH v5 3/5] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter
+ Driver
+Message-ID: <20201104024211.GS933237@lunn.ch>
+References: <20201103151536.26472-1-l.stelmach@samsung.com>
+ <CGME20201103151540eucas1p1d45bc7fdc9ddb07607b5268d50f567ca@eucas1p1.samsung.com>
+ <20201103151536.26472-4-l.stelmach@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.177.102]
-X-ClientProxiedBy: RTEXMB01.realtek.com.tw (172.21.6.94) To
- RTEXMB04.realtek.com.tw (172.21.6.97)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201103151536.26472-4-l.stelmach@samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support ECM mode based on cdc_ether with relative mii functions,
-when CONFIG_USB_RTL8152 is not set, or the device is not supported
-by r8152 driver.
+> +config SPI_AX88796C_COMPRESSION
+> +	bool "SPI transfer compression"
+> +	default n
+> +	depends on SPI_AX88796C
+> +	help
+> +	  Say Y here to enable SPI transfer compression. It saves up
+> +	  to 24 dummy cycles during each transfer which may noticably
+> +	  speed up short transfers. This sets the default value that is
+> +	  inherited by network interfecase during probe. It can be
 
-Both r8152 and r8153_ecm would check the return value of
-rtl8152_get_version() in porbe(). If rtl8152_get_version()
-return none zero value, the r8152 is used for the device
-with vendor mode. Otherwise, the r8153_ecm is used for the
-device with ECM mode.
+interface
 
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
----
- drivers/net/usb/Makefile    |   2 +-
- drivers/net/usb/r8152.c     |  30 +------
- drivers/net/usb/r8153_ecm.c | 162 ++++++++++++++++++++++++++++++++++++
- include/linux/usb/r8152.h   |  37 ++++++++
- 4 files changed, 204 insertions(+), 27 deletions(-)
- create mode 100644 drivers/net/usb/r8153_ecm.c
- create mode 100644 include/linux/usb/r8152.h
 
-diff --git a/drivers/net/usb/Makefile b/drivers/net/usb/Makefile
-index 99fd12be2111..99381e6bea78 100644
---- a/drivers/net/usb/Makefile
-+++ b/drivers/net/usb/Makefile
-@@ -13,7 +13,7 @@ obj-$(CONFIG_USB_LAN78XX)	+= lan78xx.o
- obj-$(CONFIG_USB_NET_AX8817X)	+= asix.o
- asix-y := asix_devices.o asix_common.o ax88172a.o
- obj-$(CONFIG_USB_NET_AX88179_178A)      += ax88179_178a.o
--obj-$(CONFIG_USB_NET_CDCETHER)	+= cdc_ether.o
-+obj-$(CONFIG_USB_NET_CDCETHER)	+= cdc_ether.o r8153_ecm.o
- obj-$(CONFIG_USB_NET_CDC_EEM)	+= cdc_eem.o
- obj-$(CONFIG_USB_NET_DM9601)	+= dm9601.o
- obj-$(CONFIG_USB_NET_SR9700)	+= sr9700.o
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index b9b3d19a2e98..c448d6089821 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -26,6 +26,7 @@
- #include <linux/acpi.h>
- #include <linux/firmware.h>
- #include <crypto/hash.h>
-+#include <linux/usb/r8152.h>
- 
- /* Information for net-next */
- #define NETNEXT_VERSION		"11"
-@@ -653,18 +654,6 @@ enum rtl_register_content {
- 
- #define INTR_LINK		0x0004
- 
--#define RTL8152_REQT_READ	0xc0
--#define RTL8152_REQT_WRITE	0x40
--#define RTL8152_REQ_GET_REGS	0x05
--#define RTL8152_REQ_SET_REGS	0x05
--
--#define BYTE_EN_DWORD		0xff
--#define BYTE_EN_WORD		0x33
--#define BYTE_EN_BYTE		0x11
--#define BYTE_EN_SIX_BYTES	0x3f
--#define BYTE_EN_START_MASK	0x0f
--#define BYTE_EN_END_MASK	0xf0
--
- #define RTL8153_MAX_PACKET	9216 /* 9K */
- #define RTL8153_MAX_MTU		(RTL8153_MAX_PACKET - VLAN_ETH_HLEN - \
- 				 ETH_FCS_LEN)
-@@ -689,21 +678,9 @@ enum rtl8152_flags {
- 	LENOVO_MACPASSTHRU,
- };
- 
--/* Define these values to match your device */
--#define VENDOR_ID_REALTEK		0x0bda
--#define VENDOR_ID_MICROSOFT		0x045e
--#define VENDOR_ID_SAMSUNG		0x04e8
--#define VENDOR_ID_LENOVO		0x17ef
--#define VENDOR_ID_LINKSYS		0x13b1
--#define VENDOR_ID_NVIDIA		0x0955
--#define VENDOR_ID_TPLINK		0x2357
--
- #define DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2	0x3082
- #define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2		0xa387
- 
--#define MCU_TYPE_PLA			0x0100
--#define MCU_TYPE_USB			0x0000
--
- struct tally_counter {
- 	__le64	tx_packets;
- 	__le64	rx_packets;
-@@ -6621,7 +6598,7 @@ static int rtl_fw_init(struct r8152 *tp)
- 	return 0;
- }
- 
--static u8 rtl_get_version(struct usb_interface *intf)
-+u8 rtl8152_get_version(struct usb_interface *intf)
- {
- 	struct usb_device *udev = interface_to_usbdev(intf);
- 	u32 ocp_data = 0;
-@@ -6679,12 +6656,13 @@ static u8 rtl_get_version(struct usb_interface *intf)
- 
- 	return version;
- }
-+EXPORT_SYMBOL_GPL(rtl8152_get_version);
- 
- static int rtl8152_probe(struct usb_interface *intf,
- 			 const struct usb_device_id *id)
- {
- 	struct usb_device *udev = interface_to_usbdev(intf);
--	u8 version = rtl_get_version(intf);
-+	u8 version = rtl8152_get_version(intf);
- 	struct r8152 *tp;
- 	struct net_device *netdev;
- 	int ret;
-diff --git a/drivers/net/usb/r8153_ecm.c b/drivers/net/usb/r8153_ecm.c
-new file mode 100644
-index 000000000000..2c3fabd38b16
---- /dev/null
-+++ b/drivers/net/usb/r8153_ecm.c
-@@ -0,0 +1,162 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+#include <linux/module.h>
-+#include <linux/netdevice.h>
-+#include <linux/mii.h>
-+#include <linux/usb.h>
-+#include <linux/usb/cdc.h>
-+#include <linux/usb/usbnet.h>
-+#include <linux/usb/r8152.h>
-+
-+#define OCP_BASE		0xe86c
-+
-+static int pla_read_word(struct usbnet *dev, u16 index)
-+{
-+	u16 byen = BYTE_EN_WORD;
-+	u8 shift = index & 2;
-+	__le32 tmp;
-+	int ret;
-+
-+	if (shift)
-+		byen <<= shift;
-+
-+	index &= ~3;
-+
-+	ret = usbnet_read_cmd(dev, RTL8152_REQ_GET_REGS, RTL8152_REQT_READ, index,
-+			      MCU_TYPE_PLA | byen, &tmp, sizeof(tmp));
-+	if (ret < 0)
-+		goto out;
-+
-+	ret = __le32_to_cpu(tmp);
-+	ret >>= (shift * 8);
-+	ret &= 0xffff;
-+
-+out:
-+	return ret;
-+}
-+
-+static int pla_write_word(struct usbnet *dev, u16 index, u32 data)
-+{
-+	u32 mask = 0xffff;
-+	u16 byen = BYTE_EN_WORD;
-+	u8 shift = index & 2;
-+	__le32 tmp;
-+	int ret;
-+
-+	data &= mask;
-+
-+	if (shift) {
-+		byen <<= shift;
-+		mask <<= (shift * 8);
-+		data <<= (shift * 8);
-+	}
-+
-+	index &= ~3;
-+
-+	ret = usbnet_read_cmd(dev, RTL8152_REQ_GET_REGS, RTL8152_REQT_READ, index,
-+			      MCU_TYPE_PLA | byen, &tmp, sizeof(tmp));
-+
-+	if (ret < 0)
-+		goto out;
-+
-+	data |= __le32_to_cpu(tmp) & ~mask;
-+	tmp = __cpu_to_le32(data);
-+
-+	ret = usbnet_write_cmd(dev, RTL8152_REQ_SET_REGS, RTL8152_REQT_WRITE, index,
-+			       MCU_TYPE_PLA | byen, &tmp, sizeof(tmp));
-+
-+out:
-+	return ret;
-+}
-+
-+static int r8153_ecm_mdio_read(struct net_device *netdev, int phy_id, int reg)
-+{
-+	struct usbnet *dev = netdev_priv(netdev);
-+	int ret;
-+
-+	ret = pla_write_word(dev, OCP_BASE, 0xa000);
-+	if (ret < 0)
-+		goto out;
-+
-+	ret = pla_read_word(dev, 0xb400 + reg * 2);
-+
-+out:
-+	return ret;
-+}
-+
-+static void r8153_ecm_mdio_write(struct net_device *netdev, int phy_id, int reg, int val)
-+{
-+	struct usbnet *dev = netdev_priv(netdev);
-+	int ret;
-+
-+	ret = pla_write_word(dev, OCP_BASE, 0xa000);
-+	if (ret < 0)
-+		return;
-+
-+	ret = pla_write_word(dev, 0xb400 + reg * 2, val);
-+}
-+
-+static int r8153_bind(struct usbnet *dev, struct usb_interface *intf)
-+{
-+	int status;
-+
-+	status = usbnet_cdc_bind(dev, intf);
-+	if (status < 0)
-+		return status;
-+
-+	dev->mii.dev = dev->net;
-+	dev->mii.mdio_read = r8153_ecm_mdio_read;
-+	dev->mii.mdio_write = r8153_ecm_mdio_write;
-+	dev->mii.reg_num_mask = 0x1f;
-+	dev->mii.supports_gmii = 1;
-+
-+	return status;
-+}
-+
-+static const struct driver_info r8153_info = {
-+	.description =	"RTL8153 ECM Device",
-+	.flags =	FLAG_ETHER,
-+	.bind =		r8153_bind,
-+	.unbind =	usbnet_cdc_unbind,
-+	.status =	usbnet_cdc_status,
-+	.manage_power =	usbnet_manage_power,
-+};
-+
-+static const struct usb_device_id products[] = {
-+{
-+	USB_DEVICE_AND_INTERFACE_INFO(VENDOR_ID_REALTEK, 0x8153, USB_CLASS_COMM,
-+				      USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
-+	.driver_info = (unsigned long)&r8153_info,
-+},
-+
-+	{ },		/* END */
-+};
-+MODULE_DEVICE_TABLE(usb, products);
-+
-+static int rtl8153_ecm_probe(struct usb_interface *intf,
-+			     const struct usb_device_id *id)
-+{
-+#if IS_REACHABLE(CONFIG_USB_RTL8152)
-+	if (rtl8152_get_version(intf))
-+		return -ENODEV;
-+#endif
-+
-+	return usbnet_probe(intf, id);
-+}
-+
-+static struct usb_driver r8153_ecm_driver = {
-+	.name =		"r8153_ecm",
-+	.id_table =	products,
-+	.probe =	rtl8153_ecm_probe,
-+	.disconnect =	usbnet_disconnect,
-+	.suspend =	usbnet_suspend,
-+	.resume =	usbnet_resume,
-+	.reset_resume =	usbnet_resume,
-+	.supports_autosuspend = 1,
-+	.disable_hub_initiated_lpm = 1,
-+};
-+
-+module_usb_driver(r8153_ecm_driver);
-+
-+MODULE_AUTHOR("Hayes Wang");
-+MODULE_DESCRIPTION("Realtek USB ECM device");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/usb/r8152.h b/include/linux/usb/r8152.h
-new file mode 100644
-index 000000000000..20d88b1defc3
---- /dev/null
-+++ b/include/linux/usb/r8152.h
-@@ -0,0 +1,37 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ *  Copyright (c) 2020 Realtek Semiconductor Corp. All rights reserved.
-+ */
-+
-+#ifndef	__LINUX_R8152_H
-+#define __LINUX_R8152_H
-+
-+#define RTL8152_REQT_READ		0xc0
-+#define RTL8152_REQT_WRITE		0x40
-+#define RTL8152_REQ_GET_REGS		0x05
-+#define RTL8152_REQ_SET_REGS		0x05
-+
-+#define BYTE_EN_DWORD			0xff
-+#define BYTE_EN_WORD			0x33
-+#define BYTE_EN_BYTE			0x11
-+#define BYTE_EN_SIX_BYTES		0x3f
-+#define BYTE_EN_START_MASK		0x0f
-+#define BYTE_EN_END_MASK		0xf0
-+
-+#define MCU_TYPE_PLA			0x0100
-+#define MCU_TYPE_USB			0x0000
-+
-+/* Define these values to match your device */
-+#define VENDOR_ID_REALTEK		0x0bda
-+#define VENDOR_ID_MICROSOFT		0x045e
-+#define VENDOR_ID_SAMSUNG		0x04e8
-+#define VENDOR_ID_LENOVO		0x17ef
-+#define VENDOR_ID_LINKSYS		0x13b1
-+#define VENDOR_ID_NVIDIA		0x0955
-+#define VENDOR_ID_TPLINK		0x2357
-+
-+#if IS_REACHABLE(CONFIG_USB_RTL8152)
-+extern u8 rtl8152_get_version(struct usb_interface *intf);
-+#endif
-+
-+#endif /* __LINUX_R8152_H */
--- 
-2.26.2
+> +	  changed in run time via spi-compression ethtool tunable.
 
+changed _at_ run time...
+
+> +static int
+> +ax88796c_set_tunable(struct net_device *ndev, const struct ethtool_tunable *tuna,
+> +		     const void *data)
+> +{
+> +	struct ax88796c_device *ax_local = to_ax88796c_device(ndev);
+> +
+> +	switch (tuna->id) {
+> +	case ETHTOOL_SPI_COMPRESSION:
+> +		if (netif_running(ndev))
+> +			return -EBUSY;
+> +		ax_local->capabilities &= ~AX_CAP_COMP;
+> +		ax_local->capabilities |= *(u32 *)data ? AX_CAP_COMP : 0;
+
+You should probably validate here that data is 0 or 1. That is what
+ax88796c_get_tunable() will return.
+
+It seems like this controls two hardware bits:
+
+SPICR_RCEN | SPICR_QCEN
+
+Maybe at some point it would make sense to allow these bits to be set
+individually? If you never validate the tunable, you cannot make use
+of other values to control the bits individually.
+
+   Andrew
