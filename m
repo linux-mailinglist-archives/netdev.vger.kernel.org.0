@@ -2,146 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 439002A5F35
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 09:17:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D76B32A5F42
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 09:22:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727851AbgKDIRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 03:17:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43520 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725896AbgKDIRK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 03:17:10 -0500
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E3AC061A4D
-        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 00:17:10 -0800 (PST)
-Received: by mail-io1-xd42.google.com with SMTP id u62so21342238iod.8
-        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 00:17:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GJUWAY2xwnHDXZb6q+y92fQ+8JQreu9EFvW1bS2gJz4=;
-        b=Ja+CBP19FaVQQB03iH6mV2ThTPHWINukkanRxKJ9fUv069/mdE0Op5+ve8QwUgi9K0
-         dC0R9/SBFJJtB39gT/M/9tnhKNFlPVKtQwRCvkkZSVm6VID151j7W375qRS4YaI+PieH
-         LZ5neOIsCbeJfROSGG1s6f0ZtvgBIUq2rLlNa7IYrWLuyCLjgrJP4DxAWA6XZl39eap1
-         3oR3mRKgU+DkpwBakllRIPREYLZQ5HlAg/5VepbfNN7/0khzFAilSyUzcXybDc+mXB6S
-         ILfg8/ukCAkiRKxzPWg0iCQkGbiq4FT1pSP7lGWabSmmdTuoloYjON8LdiFDNVuNPA14
-         jRdQ==
+        id S1725946AbgKDIWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 03:22:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55470 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725812AbgKDIWU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 03:22:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604478138;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0rRMbD9qVHc0o9yWb4QjRcw9fAM73631vYZJD6kplJY=;
+        b=KJKNPRWQ00zXANXJ4I24AknBQfbwWhu6Xh/i4aBwg2486b1P0AS4E1npK3+3HD38/LSpId
+        p4IqT1N71AxukbbpwOXR/RrGKrYUZz9qVbNhI5r564I/V2wNmHJWDbOJJmc7oApWcuQ9Tu
+        zbZfk2F9oc+rFC8kcfk7AahJu7T60fc=
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
+ [209.85.215.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-165-Gi6oP3QPPd-M8MkOjsGafw-1; Wed, 04 Nov 2020 03:22:17 -0500
+X-MC-Unique: Gi6oP3QPPd-M8MkOjsGafw-1
+Received: by mail-pg1-f197.google.com with SMTP id j10so13346887pgc.6
+        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 00:22:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GJUWAY2xwnHDXZb6q+y92fQ+8JQreu9EFvW1bS2gJz4=;
-        b=EBYhvFEspwkaBsfxeRmeIUTT9IHvPoO/fKKQvcG9it0hguYRw9QTsDqF+uKjD2Y5+g
-         PG43HTTetqmlnKoe9FUxtsQOAM9o6IvawTQ3wKzKzXJspezL1d8IOucwyLrVyqlhMAZY
-         pN/rJpEnGiWdULGd18aZt3o7nPhDdIzZBqfS3C4n+gx4kH2NqBzW9xCnTKGf1Rx77Ozy
-         wJ6mT5bCcB+A0luBey8SA2NGqmVY4uAffYgCg25iQ5sPA+XRDqP/XRlO/lveRne/149J
-         oSnzdYvU1F1DczUHYmOKsqiEcX2bCxqFjnh9/+t4IRGd6VoMy98H3Zj4tdE5fvRanypt
-         6B4A==
-X-Gm-Message-State: AOAM530VuOYMBUCvjCRyZUPGl/t4KqCmoyEtjaemBFBpEVsytznwxbvk
-        NlhX12z3OhssO2h4FysqNhv5WzfzmbJ1sCTzwbqOLX+O2nsyBQ==
-X-Google-Smtp-Source: ABdhPJw7/6qBxdy636QLBWMOZZHGp1rtY9V/tyrE9061OHNSi3ITXXq3V0BHmKwqJfC3L0me2VABQDPakM6r2RjL3ZE=
-X-Received: by 2002:a02:6948:: with SMTP id e69mr19545743jac.6.1604477829334;
- Wed, 04 Nov 2020 00:17:09 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0rRMbD9qVHc0o9yWb4QjRcw9fAM73631vYZJD6kplJY=;
+        b=Ff6pIEbhbjNqgGhWZL5jyVv2zTOmLLhWmBotL+0tqKwBDTPOEpntCefK/kYXeGmt8h
+         1BzgUaX/nkUn3JdcUqmMIl/AHl2ucpK/44U2UBd/agAO4LU+g17xRmXdG30cQhW8P+mE
+         WXV8OOE0QOBSz4V7zLZqwigX2CGvlDvugaFFT73RsnoYSFL3a62/EyzIDF6WGIqT8d8f
+         aS8smoV8mxxBbn/KogxRej+cglRZhEfYDWMBgQZ0t/dDpte98FmmNhnT7UcoXpQ7M3/y
+         ALHH8v58KY0SH5QBiqSg18hZBSKJ0oKZN47tzzNdLw0HmtvaurmUYDBIMbQ7517GRsVw
+         nlLQ==
+X-Gm-Message-State: AOAM530ixH5YwKkFOXB2lNnkgmaOLvkGxdVisAezZRvinmMpV+UuyDa7
+        2RAdXgxoUISmUHs6aT4GwcNEBt+v+UOytF6z4LN/q3j6vJISw6kf4aBZStmVBq0HP65tww+3782
+        X8Ytd91iE5vBaPqI=
+X-Received: by 2002:a17:902:6bc2:b029:d6:e0ba:f2ff with SMTP id m2-20020a1709026bc2b02900d6e0baf2ffmr7475711plt.10.1604478136229;
+        Wed, 04 Nov 2020 00:22:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzfLh4HROldjTqHGlCJSe2gxrVWFlzxRqzxOsnP/Snxqrs+kwwFE6YqQtzdw8IZqm84UJ84Bw==
+X-Received: by 2002:a17:902:6bc2:b029:d6:e0ba:f2ff with SMTP id m2-20020a1709026bc2b02900d6e0baf2ffmr7475690plt.10.1604478135972;
+        Wed, 04 Nov 2020 00:22:15 -0800 (PST)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id s18sm1389573pgh.60.2020.11.04.00.22.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Nov 2020 00:22:15 -0800 (PST)
+Date:   Wed, 4 Nov 2020 16:22:03 +0800
+From:   Hangbin Liu <haliu@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCHv3 iproute2-next 3/5] lib: add libbpf support
+Message-ID: <20201104082203.GP2408@dhcp-12-153.nay.redhat.com>
+References: <20201028132529.3763875-1-haliu@redhat.com>
+ <20201029151146.3810859-1-haliu@redhat.com>
+ <20201029151146.3810859-4-haliu@redhat.com>
+ <db14a227-1d5e-ed3a-9ada-ecf99b526bf6@gmail.com>
 MIME-Version: 1.0
-References: <20201103220636.972106-1-mkl@pengutronix.de> <20201103220636.972106-6-mkl@pengutronix.de>
- <20201103172102.3d75cb96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201103172102.3d75cb96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 4 Nov 2020 09:16:57 +0100
-Message-ID: <CANn89iK5xqYmLT=DZk0S15pRObSJbo2-zrO7_A0Q46Ujg1RxYg@mail.gmail.com>
-Subject: Re: [net 05/27] can: dev: can_get_echo_skb(): prevent call to
- kfree_skb() in hard IRQ context
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <db14a227-1d5e-ed3a-9ada-ecf99b526bf6@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 4, 2020 at 2:21 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue,  3 Nov 2020 23:06:14 +0100 Marc Kleine-Budde wrote:
-> > From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> >
-> > If a driver calls can_get_echo_skb() during a hardware IRQ (which is often, but
-> > not always, the case), the 'WARN_ON(in_irq)' in
-> > net/core/skbuff.c#skb_release_head_state() might be triggered, under network
-> > congestion circumstances, together with the potential risk of a NULL pointer
-> > dereference.
-> >
-> > The root cause of this issue is the call to kfree_skb() instead of
-> > dev_kfree_skb_irq() in net/core/dev.c#enqueue_to_backlog().
-> >
-> > This patch prevents the skb to be freed within the call to netif_rx() by
-> > incrementing its reference count with skb_get(). The skb is finally freed by
-> > one of the in-irq-context safe functions: dev_consume_skb_any() or
-> > dev_kfree_skb_any(). The "any" version is used because some drivers might call
-> > can_get_echo_skb() in a normal context.
-> >
-> > The reason for this issue to occur is that initially, in the core network
-> > stack, loopback skb were not supposed to be received in hardware IRQ context.
-> > The CAN stack is an exeption.
-> >
-> > This bug was previously reported back in 2017 in [1] but the proposed patch
-> > never got accepted.
-> >
-> > While [1] directly modifies net/core/dev.c, we try to propose here a
-> > smoother modification local to CAN network stack (the assumption
-> > behind is that only CAN devices are affected by this issue).
-> >
-> > [1] http://lore.kernel.org/r/57a3ffb6-3309-3ad5-5a34-e93c3fe3614d@cetitec.com
-> >
-> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> > Link: https://lore.kernel.org/r/20201002154219.4887-2-mailhol.vincent@wanadoo.fr
-> > Fixes: 39549eef3587 ("can: CAN Network device driver and Netlink interface")
-> > Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
->
-> Hm... Why do we receive a skb with a socket attached?
->
-> At a quick glance this is some loopback, so shouldn't we skb_orphan()
-> in the xmit function instead?
-
-Yes this would work, this seems the safest way, loopback_xmit() is a
-good template for this.
-
->
-> Otherwise we should probably fix this in enqueue_to_backlog().
-
-This is dangerous.
-
-If we drop packets under flood because the per-cpu backlog is full,
-we might also be in _big_ trouble if the per-cpu
-softnet_data.completion_queue is filling,
-since we do not have a limit on this list.
-
-What could happen is that when the memory is finally exhausted and no
-more skb can be fed
-to netif_rx(), a big latency spike would happen when
-softnet_data.completion_queue
-can finally be purged in one shot.
-
-So skb_orphan(skb) in CAN before calling netif_rx() is better IMO.
-
->
-> > diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
-> > index b70ded3760f2..73cfcd7e9517 100644
-> > --- a/drivers/net/can/dev.c
-> > +++ b/drivers/net/can/dev.c
-> > @@ -538,7 +538,11 @@ unsigned int can_get_echo_skb(struct net_device *dev, unsigned int idx)
-> >       if (!skb)
-> >               return 0;
-> >
-> > -     netif_rx(skb);
-> > +     skb_get(skb);
-> > +     if (netif_rx(skb) == NET_RX_SUCCESS)
-> > +             dev_consume_skb_any(skb);
-> > +     else
-> > +             dev_kfree_skb_any(skb);
-> >
-> >       return len;
+On Mon, Nov 02, 2020 at 08:41:09AM -0700, David Ahern wrote:
+> On 10/29/20 9:11 AM, Hangbin Liu wrote:
+> > diff --git a/ip/ipvrf.c b/ip/ipvrf.c
+> > index 33150ac2..afaf1de7 100644
+> > --- a/ip/ipvrf.c
+> > +++ b/ip/ipvrf.c
+> > @@ -28,8 +28,14 @@
+> >  #include "rt_names.h"
+> >  #include "utils.h"
+> >  #include "ip_common.h"
+> > +
+> >  #include "bpf_util.h"
+> >  
+> > +#ifdef HAVE_LIBBPF
+> > +#include <bpf/bpf.h>
+> > +#include <bpf/libbpf.h>
+> > +#endif
+> > +
+> >  #define CGRP_PROC_FILE  "/cgroup.procs"
+> >  
+> >  static struct link_filter vrf_filter;
+> > @@ -256,8 +262,13 @@ static int prog_load(int idx)
+> >  		BPF_EXIT_INSN(),
+> >  	};
+> >  
+> > +#ifdef HAVE_LIBBPF
+> > +	return bpf_load_program(BPF_PROG_TYPE_CGROUP_SOCK, prog, sizeof(prog),
+> > +				"GPL", 0, bpf_log_buf, sizeof(bpf_log_buf));
+> > +#else
+> >  	return bpf_prog_load_buf(BPF_PROG_TYPE_CGROUP_SOCK, prog, sizeof(prog),
+> >  			         "GPL", bpf_log_buf, sizeof(bpf_log_buf));
+> > +#endif
 > >  }
->
+> >  
+> >  static int vrf_configure_cgroup(const char *path, int ifindex)
+> > @@ -288,7 +299,11 @@ static int vrf_configure_cgroup(const char *path, int ifindex)
+> >  		goto out;
+> >  	}
+> >  
+> > +#ifdef HAVE_LIBBPF
+> > +	if (bpf_prog_attach(prog_fd, cg_fd, BPF_CGROUP_INET_SOCK_CREATE, 0)) {
+> > +#else
+> >  	if (bpf_prog_attach_fd(prog_fd, cg_fd, BPF_CGROUP_INET_SOCK_CREATE)) {
+> > +#endif
+> >  		fprintf(stderr, "Failed to attach prog to cgroup: '%s'\n",
+> >  			strerror(errno));
+> >  		goto out;
+> 
+> I would prefer to have these #ifdef .. #endif checks consolidated in the
+> lib code. Create a bpf_compat file for these. e.g.,
+> 
+> int bpf_program_load(enum bpf_prog_type type, const struct bpf_insn *insns,
+>                      size_t size_insns, const char *license, char *log,
+>                      size_t size_log)
+> {
+> +#ifdef HAVE_LIBBPF
+> +	return bpf_load_program(BPF_PROG_TYPE_CGROUP_SOCK, prog, sizeof(prog),
+> +				"GPL", 0, bpf_log_buf, sizeof(bpf_log_buf));
+> +#else
+>  	return bpf_prog_load_buf(BPF_PROG_TYPE_CGROUP_SOCK, prog, sizeof(prog),
+>  			         "GPL", bpf_log_buf, sizeof(bpf_log_buf));
+> +#endif
+> }
+> 
+> Similarly for bpf_program_attach.
+> 
+> 
+> I think even the includes can be done once in bpf_util.h with a single
+> +#ifdef HAVE_LIBBPF
+> +#include <bpf/bpf.h>
+> +#include <bpf/libbpf.h>
+> +#endif
+> +
+
+Oh, I just found why I didn't include libbpf.h in bpf_legacy.c.
+The reason is there are more function conflicts. e.g.
+bpf_obj_get, bpf_obj_pin, bpf_prog_attach.
+
+If we move this #ifdef HAVE_LIBBPF to bpf_legacy.c, we need to rename
+them all. With current patch, we limit all the legacy functions in bpf_legacy
+and doesn't mix them with libbpf.h. What do you think?
+
+Thanks
+Hangbin
+
