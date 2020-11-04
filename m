@@ -2,137 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B4242A5AFB
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 01:22:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B6DF2A5B0B
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 01:36:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729936AbgKDAWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 19:22:00 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:35530 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729869AbgKDAUo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 19:20:44 -0500
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A408N43014338;
-        Tue, 3 Nov 2020 16:20:29 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=18s34da/ueGMFmi6/dpc+F3M40J9kevbe0COjHYj5HA=;
- b=FcsMlyAvYQq9t122xDzt/g2Y6E2PIGnOs+p5iTV4UrjfeeSKauFjBpePCsopBplyQVmu
- tvPhMLXo6mlE07UBumNWLrnvoqxaGXB1ZIHwvO4NsecSPVnJBYtAFto7LlC/FBthVovH
- lSwvugmxm12UH6bTHTkeZ4oEbIvFQZMavZw= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 34hr6p6wq6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 03 Nov 2020 16:20:28 -0800
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 3 Nov 2020 16:20:27 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cfalobBvaUsmEQcOksUpehfsWwZ0d5TMM4GURSAzflEj9Lmq6poMFspiG2wc+DfVWaDOihBSezYEsrqJU7T584VmYyJz6by3UKLldkx0EmkyqcyE9QsSDk3BjMK/0yhYG1Tn9QgaUtTrTf0HBuNJ7hXGMgURzX1YwVF5L7ZtoYfFFuIhVg+CoX/RPuYTvz05A1oRgrs73HjCPgUVrAO0m83HXe5/AMFv76klqYReVNsLxTbnK43jxDeV0ghGE7o4/XNm8AkIshBenQCL+3YLnJMI5cfTswwVsgXtLZECbL1LxwfaRwycFtCMs0xhkgVwtQA8L8MDYcEn0eDZA+vPig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=18s34da/ueGMFmi6/dpc+F3M40J9kevbe0COjHYj5HA=;
- b=jIO2kvRV8UmqFnLEGG0Pzf9qdoCPmO/zZ2CHNnvjr7S9QLcRpU06yzsEsKiRUVq2R5n4x3VTIxSs3PgpFjUAJwC0LecmYhufWUE5FBaROh3eXg9r3dwlONZPsAVNQ2EbboCvdLU356zvCDFoyczpbl5VBwQZotpSkVEOQpUkKLpbJgkQoiS+3VtzzVwqfrfzwwsi1FrhcZ4vjObcaci9Jx4oKzSztriPQme80y6iUEfEfTEN4H/m2tjguSeiJgzuai7WuJB1ZNLWfMVO9d+tQxv1fdm+s9bYhOg6jQrj/ZC599hpmmQZAncFlgMxKF3lJ/oZidlCa/mzNqmW8eEArA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=18s34da/ueGMFmi6/dpc+F3M40J9kevbe0COjHYj5HA=;
- b=QwpdgYbcpQ11M/m0XH0tijNXY/6uhHtj4jDF2LImMIn3KA3offWKoRkaMpnaBWUW5y78x2lvZb/OyjMg2da4Tl94FUoLeql5pLmAIh/jA3kzA1UWK0nGzVrVfu4+UYDWOmPrGQAc6JJDkGzm7G1yXA+T8GlAoXSvTuXN1LbPF/Y=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BYAPR15MB3464.namprd15.prod.outlook.com (2603:10b6:a03:10a::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Wed, 4 Nov
- 2020 00:20:22 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::bc1d:484f:cb1f:78ee]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::bc1d:484f:cb1f:78ee%4]) with mapi id 15.20.3499.032; Wed, 4 Nov 2020
- 00:20:22 +0000
-Date:   Tue, 3 Nov 2020 16:20:14 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-CC:     <bpf@vger.kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>, <edumazet@google.com>, <brakmo@fb.com>,
-        <andrii.nakryiko@gmail.com>, <alexanderduyck@fb.com>
-Subject: Re: [bpf-next PATCH v3 0/5] selftests/bpf: Migrate test_tcpbpf_user
- to be a part of test_progs framework
-Message-ID: <20201104002014.tohvmzsxr2hhxjkt@kafai-mbp.dhcp.thefacebook.com>
-References: <160443914296.1086697.4231574770375103169.stgit@localhost.localdomain>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <160443914296.1086697.4231574770375103169.stgit@localhost.localdomain>
-X-Originating-IP: [2620:10d:c090:400::5:1da0]
-X-ClientProxiedBy: CO2PR18CA0053.namprd18.prod.outlook.com
- (2603:10b6:104:2::21) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+        id S1728966AbgKDAg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 19:36:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49334 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728319AbgKDAfC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 19:35:02 -0500
+Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CD87B223C7;
+        Wed,  4 Nov 2020 00:35:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604450102;
+        bh=iaDCxc4Txew7JaAp2sBWUN8ZenvYBN/cmW2TMh2T2KE=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=km0uL0a6RlXAI8AqlMLXqWk5bzOynJNRhhXBi+aC8l6DNNC4dU3LDbYvOnmvc9ryx
+         pws3JcLYz/oDc4WppGG88NRXT7YOZWQHNxJEa3ioWEBt1M0wrtyR9hMdqiKTIBfY53
+         1v4nnpq8h10fo1aecBQe4+q7XN+LB8pNiHXmPMy0=
+Message-ID: <62b6f6ffc874938072b914fbc9969dd437a9745e.camel@kernel.org>
+Subject: Re: [PATCH 4/4] gve: Add support for raw addressing in the tx path
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     David Awogbemila <awogbemila@google.com>, netdev@vger.kernel.org
+Cc:     Catherine Sullivan <csully@google.com>,
+        Yangchun Fu <yangchun@google.com>
+Date:   Tue, 03 Nov 2020 16:35:01 -0800
+In-Reply-To: <20201103174651.590586-5-awogbemila@google.com>
+References: <20201103174651.590586-1-awogbemila@google.com>
+         <20201103174651.590586-5-awogbemila@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:1da0) by CO2PR18CA0053.namprd18.prod.outlook.com (2603:10b6:104:2::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Wed, 4 Nov 2020 00:20:20 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e63d13f4-bd2a-44bb-8e68-08d880576adf
-X-MS-TrafficTypeDiagnostic: BYAPR15MB3464:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB34645A25C4EC86B5A6529ED9D5EF0@BYAPR15MB3464.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zBFs8wWiJODu/x+249UssHO5dFUQ+ET+txMAL7O96wagWwtII00TeIPFFpdx7H9YmaMSscbIvCDp3MbxvUs31u9JKBCEknpE6No6O0AGU9jV0QloUgD6XahEKcOPT4/47hXOSyfnvVZ2bKVILYkOYUViH88X5gF4Lq9LSdyMqlGO6ngY9Zxbqo27C0lPmxOeAt8JL59tbEWHeGQUN/yxKV58Z+VchB1/Ji3olx66l0n9fhlVJEXQAFeG5GbSW8a/sL3qp3QLPHDN2f1eVNvbavEIwNd/kmImdI06oMqDTMz3I5fKSRfnsYQjRH6WydHBLUXLHSNchuEbs2+4OZ2VMA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(366004)(136003)(396003)(376002)(346002)(316002)(8936002)(5660300002)(6666004)(16526019)(478600001)(55016002)(1076003)(9686003)(186003)(6916009)(2906002)(83380400001)(66556008)(66946007)(66476007)(86362001)(7696005)(8676002)(6506007)(52116002)(4326008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: V2wmmQKPfZo5Fuwdn/RGmptP3xu4D36Gz5wCbKcLpS6F27DwlaIPr88A0ODomagy1j62vmDRptou1vbsyrjHDz7w8X5NasQBlAXbV7p2VPLdReWI//nvL9mOuAvfAFzNbAVoJhcQy7DeuE7mWCbrnh9MokqXHSb7zuVgR5SXVxeSUtX0YYT5Y2KhB3FvkqHOyOC5XkKYqKVLKQCaQ9RShnslFq7TTITHLwCp+Aq/7zMFE3LPYN2SuFaTJ/FXGgM4l+wFIZjgho3HzvOarkReCGl7oxCzsKr5U8yMS46bW+pO2XWZRoav/ZOLUTYcI5YBnBd/VPQxp4w0k609paVwL1c/dLIcV2AsF3JAoE/r9Prc9DpU/M+gaxubHCJCn+nYjSKSBfGdogH93AOkBJ02vQY1fNSJNAwjIQrpbzg6zPsFVdRJLIlhPEHhUhpNSvsI/NrjlOdP8hLEnQvRmNOP5XUIEnUU4/9/74cl+usNOLjhlKFkc1fFN71Lg2jaWb+vlxiaAdH4lv87hAYW1DnvxiQS0jBseMwri+uqvd1O5BbmMu1xcbKRAoqJkPzULhI0WanRe9x78J8agV9eHvxHvm23fXzdkhmqfpO0qCZvmNOCeYl2vW1qV6d2CHxycum5iQp5MwzOJojF8m2upvCe+1tZiU+Y6uE0z/Ev9efLGTc=
-X-MS-Exchange-CrossTenant-Network-Message-Id: e63d13f4-bd2a-44bb-8e68-08d880576adf
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Nov 2020 00:20:22.1008
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KUUrJKDhKdnTRLYr/06VvBszp+wGV0uB1e+a5hMNxN8zGR9HxHTRCTjPqdgBwKj1
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3464
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-03_17:2020-11-03,2020-11-03 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- phishscore=0 clxscore=1015 lowpriorityscore=0 adultscore=0 mlxscore=0
- bulkscore=0 suspectscore=1 mlxlogscore=928 spamscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011040000
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 01:34:40PM -0800, Alexander Duyck wrote:
-> Move the test functionality from test_tcpbpf_user into the test_progs 
-> framework so that it will be run any time the test_progs framework is run.
-> This will help to prevent future test escapes as the individual tests, such
-> as test_tcpbpf_user, are less likely to be run by developers and CI
-> tests.
+On Tue, 2020-11-03 at 09:46 -0800, David Awogbemila wrote:
+> From: Catherine Sullivan <csully@google.com>
 > 
-> As a part of moving it over the series goes through and updates the code to 
-> make use of the existing APIs included in the test_progs framework. This is
-> meant to simplify and streamline the test code and avoid duplication of
-> effort. 
+> During TX, skbs' data addresses are dma_map'ed and passed to the NIC.
+> This means that the device can perform DMA directly from these
+> addresses
+> and the driver does not have to copy the buffer content into
+> pre-allocated buffers/qpls (as in qpl mode).
 > 
-> v2: Dropped test_tcpbpf_user from .gitignore
->     Replaced CHECK_FAIL calls with CHECK calls
->     Minimized changes in patch 1 when moving the file
->     Updated stg mail command line to display renames in submission
->     Added shutdown logic to end of run_test function to guarantee close
->     Added patch that replaces the two maps with use of global variables
-> v3: Left err at -1 while we are performing send/recv calls w/ data
->     Drop extra labels from test_tcpbpf_user in favor of keeping err label
->     Dropped redundant zero init for tcpbpf_globals result and key
->     Dropped replacing of "printf(" with "fprintf(stderr, "
->     Fixed error in use of ASSERT_OK_PTR which was skipping of run_test
->     Replaced "{ 0 }" with "{}" in init of global in test_tcpbpf_kern.c
->     Added "Acked-by" from Martin KaiFai Lau and Andrii Nakryiko
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+> Reviewed-by: Yangchun Fu <yangchun@google.com>
+> Signed-off-by: Catherine Sullivan <csully@google.com>
+> Signed-off-by: David Awogbemila <awogbemila@google.com>
+> ---
+>  drivers/net/ethernet/google/gve/gve.h        |  18 +-
+>  drivers/net/ethernet/google/gve/gve_adminq.c |   4 +-
+>  drivers/net/ethernet/google/gve/gve_desc.h   |   8 +-
+>  drivers/net/ethernet/google/gve/gve_tx.c     | 207 +++++++++++++++
+> ----
+>  4 files changed, 194 insertions(+), 43 deletions(-)
+> 
+
+>  static inline u32 gve_num_tx_qpls(struct gve_priv *priv)
+>  {
+> -	return priv->tx_cfg.num_queues;
+> +	if (priv->raw_addressing)
+> +		return 0;
+> +	else
+> +		return priv->tx_cfg.num_queues;
+
+redundant else statement.
+ 
+>  
+> -static void gve_dma_sync_for_device(struct device *dev, dma_addr_t
+> *page_buses,
+> +static void gve_dma_sync_for_device(struct gve_priv *priv,
+> +				    dma_addr_t *page_buses,
+>  				    u64 iov_offset, u64 iov_len)
+>  {
+>  	u64 last_page = (iov_offset + iov_len - 1) / PAGE_SIZE;
+>  	u64 first_page = iov_offset / PAGE_SIZE;
+> -	dma_addr_t dma;
+>  	u64 page;
+>  
+>  	for (page = first_page; page <= last_page; page++) {
+> -		dma = page_buses[page];
+> -		dma_sync_single_for_device(dev, dma, PAGE_SIZE,
+> DMA_TO_DEVICE);
+> +		dma_addr_t dma = page_buses[page];
+> +
+> +		dma_sync_single_for_device(&priv->pdev->dev, dma,
+> PAGE_SIZE, DMA_TO_DEVICE);
+
+Why did you change the function params to pass priv here ? 
+I don't see any valid reason.
+
+...
+
+> 
+> -	gve_dma_sync_for_device(dev, tx->tx_fifo.qpl->page_buses,
+> +	gve_dma_sync_for_device(priv, tx->tx_fifo.qpl->page_buses,
+>  				info->iov[hdr_nfrags - 1].iov_offset,
+>  				info->iov[hdr_nfrags - 1].iov_len);
+> 
+...
+
+> -		gve_dma_sync_for_device(dev, tx->tx_fifo.qpl-
+> >page_buses,
+> +		gve_dma_sync_for_device(priv, tx->tx_fifo.qpl-
+> >page_buses,
+>  					info->iov[i].iov_offset,
+>  					info->iov[i].iov_len);
+>  		copy_offset += info->iov[i].iov_len;
+> @@ -472,6 +499,98 @@ static int gve_tx_add_skb(struct gve_tx_ring
+> *tx, struct sk_buff *skb,
+>  	return 1 + payload_nfrags;
+>  }
+>  
+> +static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct
+> gve_tx_ring *tx,
+> +				  struct sk_buff *skb)
+> +{
+> +	const struct skb_shared_info *shinfo = skb_shinfo(skb);
+> +	int hlen, payload_nfrags, l4_hdr_offset, seg_idx_bias;
+> +	union gve_tx_desc *pkt_desc, *seg_desc;
+> +	struct gve_tx_buffer_state *info;
+> +	bool is_gso = skb_is_gso(skb);
+> +	u32 idx = tx->req & tx->mask;
+> +	struct gve_tx_dma_buf *buf;
+> +	int last_mapped = 0;
+> +	u64 addr;
+> +	u32 len;
+> +	int i;
+> +
+> +	info = &tx->info[idx];
+> +	pkt_desc = &tx->desc[idx];
+> +
+> +	l4_hdr_offset = skb_checksum_start_offset(skb);
+> +	/* If the skb is gso, then we want only up to the tcp header in
+> the first segment
+> +	 * to efficiently replicate on each segment otherwise we want
+> the linear portion
+> +	 * of the skb (which will contain the checksum because skb-
+> >csum_start and
+> +	 * skb->csum_offset are given relative to skb->head) in the
+> first segment.
+> +	 */
+> +	hlen = is_gso ? l4_hdr_offset + tcp_hdrlen(skb) :
+> +			skb_headlen(skb);
+> +	len = skb_headlen(skb);
+> +
+> +	info->skb =  skb;
+> +
+> +	addr = dma_map_single(tx->dev, skb->data, len, DMA_TO_DEVICE);
+> +	if (unlikely(dma_mapping_error(tx->dev, addr))) {
+> +		priv->dma_mapping_error++;
+> +		goto drop;
+> +	}
+> +	buf = &info->buf;
+> +	dma_unmap_len_set(buf, len, len);
+> +	dma_unmap_addr_set(buf, dma, addr);
+> +
+> +	payload_nfrags = shinfo->nr_frags;
+> +	if (hlen < len) {
+> +		/* For gso the rest of the linear portion of the skb
+> needs to
+> +		 * be in its own descriptor.
+> +		 */
+> +		payload_nfrags++;
+> +		gve_tx_fill_pkt_desc(pkt_desc, skb, is_gso,
+> l4_hdr_offset,
+> +				     1 + payload_nfrags, hlen, addr);
+> +
+> +		len -= hlen;
+> +		addr += hlen;
+> +		seg_desc = &tx->desc[(tx->req + 1) & tx->mask];
+> +		seg_idx_bias = 2;
+> +		gve_tx_fill_seg_desc(seg_desc, skb, is_gso, len, addr);
+> +	} else {
+> +		seg_idx_bias = 1;
+> +		gve_tx_fill_pkt_desc(pkt_desc, skb, is_gso,
+> l4_hdr_offset,
+> +				     1 + payload_nfrags, hlen, addr);
+> +	}
+> +	idx = (tx->req + seg_idx_bias) & tx->mask;
+> +
+> +	for (i = 0; i < payload_nfrags - (seg_idx_bias - 1); i++) {
+> +		const skb_frag_t *frag = &shinfo->frags[i];
+> +
+> +		seg_desc = &tx->desc[idx];
+> +		len = skb_frag_size(frag);
+> +		addr = skb_frag_dma_map(tx->dev, frag, 0, len,
+> DMA_TO_DEVICE);
+> +		if (unlikely(dma_mapping_error(tx->dev, addr))) {
+> +			priv->dma_mapping_error++;
+
+don't you need to protect this from parallel access ? 
+> +			goto unmap_drop;
+> +		}
+> +		buf = &tx->info[idx].buf;
+> +		tx->info[idx].skb = NULL;
+> +		dma_unmap_len_set(buf, len, len);
+> +		dma_unmap_addr_set(buf, dma, addr);
+> +
+> +		gve_tx_fill_seg_desc(seg_desc, skb, is_gso, len, addr);
+> +		idx = (idx + 1) & tx->mask;
+> +	}
+> +
+> +	return 1 + payload_nfrags;
+> +
+> +unmap_drop:
+> +	i--;
+> +	for (last_mapped = i + seg_idx_bias; last_mapped >= 0;
+> last_mapped--) {
+> +		idx = (tx->req + last_mapped) & tx->mask;
+> +		gve_tx_unmap_buf(tx->dev, &tx->info[idx]);
+> +	}
+> +drop:
+> +	tx->dropped_pkt++;
+> +	return 0;
+> +}
+> +
+...
+
+
