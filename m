@@ -2,92 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E2BD2A6DB7
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 20:17:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 849322A6DDB
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 20:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730713AbgKDTRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 14:17:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40716 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726564AbgKDTRo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Nov 2020 14:17:44 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EBDCA206ED;
-        Wed,  4 Nov 2020 19:17:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604517463;
-        bh=U8ozNp5ifQlNXX/adooj82tLzOu1cZZm3u/AWu7tK7U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jRKrJ3CsHrC5T01auRWtdHl2thKKgEHFtp0udRp1L2h+HnAjdGFnpcYKiHqqUt6r+
-         H9H2JbFHlBM25tFku7AeI8Ny9GOPhSWJ2jTLZAtUDlmRb2xirbEfafx31jTKLcEWvA
-         Hz0ZXe8S70zDBkGNWCupOs0qhcRyDNq5OS3Eycfk=
-Date:   Wed, 4 Nov 2020 11:17:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        id S1730737AbgKDTaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 14:30:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725889AbgKDTaY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 14:30:24 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D37C0613D3
+        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 11:30:24 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id b9so13468046edu.10
+        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 11:30:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QQyPadoUOHYBOoA5+l0Qrj97nqWwN8g6Qn0Ly8GOILk=;
+        b=sKUP9T/VP1HDyxmJMLmeedQceCZ+UirBA7rRDhDU9jwg+PGFAKXSQQLEQJaDgFImTw
+         SHflBh6ALFo5ibgx5gVz0CmUTv6Fw5u668+8FxLfos8F09tCqqAsdFVIbmzyfgoKGPRi
+         4vRqAnGuNRAELs0QFo5QNZCPA+mmOmj+pltr4c0LNlm+freczQTOa3qI2k83+dIR+UwO
+         Quo6wpVynvRdO4/5UYfKLAvpGmyJgjd3c1pqcPOkcA7BPtwJIaEuKqRECWdWrezmKv7C
+         5++r5u8GGc1uDfy7ONUax9NjnwGT/oJD0tPbtWljTD1EsHJAx5cRal02eNMYSOwkg9Cp
+         6wzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QQyPadoUOHYBOoA5+l0Qrj97nqWwN8g6Qn0Ly8GOILk=;
+        b=oUlT/t+3CbDiHlxO6q9ss5YLffZwp4eYuAvtNnV83HU+lDACH6JKXxEp2+ePkLScmI
+         kNhqOBW8qjUdCjfdIj1Amsk5CBc21w1K2YqmptQ3JTs5J5XOStrY2qaGdTGo9eYKqqZO
+         qP7Ma5py8OS+yqFrk8oGccuUnfYzbsUJynUE0ckwoetvNKce8F8yQ9mpcCSyO4LEuHj5
+         pryBCbHLJJegTW7UaRP7PFqoXjjVW4cfo8fI29usDfvl0vm2mVR2QMzr+CvsR22yNxhD
+         M2EwVqADZy6/SCLH7Jzp32Q+Pez6r1raaBw4BCDl9Quk0bs8DtVZthe3Fug7SnDWu0Pq
+         4pLQ==
+X-Gm-Message-State: AOAM530Ogfjs6cryVvykKhvVWrzfQ/gap+JInSku3psR/paaE870HRt7
+        tZva8zn+Tslifs3kJZgtItU=
+X-Google-Smtp-Source: ABdhPJzJeJg5G08oNTmWbeLyhn052UMiUZ7x+uLPy8kAODYPc8llwtUG/O/dB2biolTQF10wfNgvkw==
+X-Received: by 2002:a05:6402:1112:: with SMTP id u18mr29254635edv.349.1604518223047;
+        Wed, 04 Nov 2020 11:30:23 -0800 (PST)
+Received: from ?IPv6:2a0f:6480:3:1:6c3b:b371:86f7:b3f1? ([2a0f:6480:3:1:6c3b:b371:86f7:b3f1])
+        by smtp.gmail.com with ESMTPSA id z14sm1454847ejl.110.2020.11.04.11.30.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Nov 2020 11:30:22 -0800 (PST)
+Subject: Re: [PATCH] IPv6: Set SIT tunnel hard_header_len to zero
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
         David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-Message-ID: <20201104111708.0595e2a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <5de7eb11-010b-e66e-c72d-07ece638c25e@iogearbox.net>
-References: <20201028132529.3763875-1-haliu@redhat.com>
-        <20201029151146.3810859-1-haliu@redhat.com>
-        <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
-        <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
-        <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
-        <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
-        <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
-        <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com>
-        <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
-        <20201104021730.GK2408@dhcp-12-153.nay.redhat.com>
-        <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
-        <2e8ba0be-51bf-9060-e1f7-2148fbaf0f1d@iogearbox.net>
-        <87zh3xv04o.fsf@toke.dk>
-        <5de7eb11-010b-e66e-c72d-07ece638c25e@iogearbox.net>
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20201103104133.GA1573211@tws>
+ <CA+FuTSdf35EqALizep-65_sF46pk46_RqmEhS9gjw_5rF5cr1Q@mail.gmail.com>
+From:   Oliver Herms <oliver.peter.herms@gmail.com>
+Message-ID: <dc8f00ff-d484-f5cf-97a3-9f6d8984160e@gmail.com>
+Date:   Wed, 4 Nov 2020 20:30:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <CA+FuTSdf35EqALizep-65_sF46pk46_RqmEhS9gjw_5rF5cr1Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 4 Nov 2020 14:12:47 +0100 Daniel Borkmann wrote:
-> If we would have done lib/bpf.c as a dynamic library back then, we wouldn't be
-> where we are today since users might be able to start consuming BPF functionality
-> just now, don't you agree? This was an explicit design choice back then for exactly
-> this reason. If we extend lib/bpf.c or import libbpf one way or another then there
-> is consistency across distros and users would be able to consume it in a predictable
-> way starting from next major releases. And you could start making this assumption
-> on all major distros in say, 3 months from now. The discussion is somehow focused
-> on the PoV of /a/ distro which is all nice and good, but the ones consuming the
-> loader shipping software /across/ distros are users writing BPF progs, all I'm
-> trying to say is that the _user experience_ should be the focus of this discussion
-> and right now we're trying hard making it rather painful for them to consume it.
+On 03.11.20 19:42, Willem de Bruijn wrote:
+> Thanks. Yes, this is long overdue.
+> 
+> The hard_header_len issue was also recently discussed in the context
+> of GRE in commit fdafed459998 ("ip_gre: set dev->hard_header_len and
+> dev->needed_headroom properly").
+> 
+> Question is whether we should reserve room in needed_headroom instead.
+> AFAIK this existing update logic in ip6_tnl_xmit is sufficient
+> 
+> "
+>         /* Calculate max headroom for all the headers and adjust
+>          * needed_headroom if necessary.
+>          */
+>         max_headroom = LL_RESERVED_SPACE(dst->dev) + sizeof(struct ipv6hdr)
+>                         + dst->header_len + t->hlen;
+>         if (max_headroom > dev->needed_headroom)
+>                 dev->needed_headroom = max_headroom;
+> "I think that's enough. At least it definitely works in my test and prod environment.
+Would be good to get another opinion on this though.
 
-IIUC you're saying that we cannot depend on libbpf updates from distro.
-Isn't that a pretty bad experience for all users who would like to link
-against it? There are 4 components (kernel, lib, tools, compiler) all
-need to be kept up to date for optimal user experience. Cutting corners
-with one of them leads nowhere medium term IMHO.
-
-Unless what you guys are saying is that libbpf is _not_ supposed to be
-backward compatible from the user side, and must be used a submodule.
-But then why bother defining ABI versions, or build it as an .so at all.
-
-I'm also confused by the testing argument. Surely the solution is to
-add unit / system tests for iproute2. Distros will rebuild packages
-when dependencies change and retest. If we have 0 tests doesn't matter
-what update strategy there is.
+>> Fixes: c54419321455 ("GRE: Refactor GRE tunneling code.")
+> 
+> How did you arrive at this SHA1?
+I think the legacy usage of hard_header_len in ipv6/sit.c was overseen in c54419321455.
+Please correct me if I'm wrong.
