@@ -2,130 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D022A68F1
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:02:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BB4D2A690C
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:06:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730246AbgKDQCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 11:02:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50684 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725889AbgKDQCj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Nov 2020 11:02:39 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 00D3220782;
-        Wed,  4 Nov 2020 16:02:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604505758;
-        bh=F8joUcU8b5cCCKZVdifOGtzr1xT7T9RC/8b1vk/OZ68=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=g1NtW5Gx2gCGCxb0qFiUG2HuZxpgWxLl7Kz4CS06eQXFVORtBzy5QjKJKcGcHC2uG
-         2HUNuJb67e1fRYaeNFankEORQJ6aAsTHpUlebfkQucxK5G8XXMekORMXVyJkR1VJ95
-         KsHPI9B6gQ51QyZFZV8a4kewCKKlkGRLA5O91HuY=
-Date:   Wed, 4 Nov 2020 08:02:37 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: [net 05/27] can: dev: can_get_echo_skb(): prevent call to
- kfree_skb() in hard IRQ context
-Message-ID: <20201104080237.4d6605ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <988aea6a-c6b6-5d58-3a8e-604a52df0320@hartkopp.net>
-References: <20201103220636.972106-1-mkl@pengutronix.de>
-        <20201103220636.972106-6-mkl@pengutronix.de>
-        <20201103172102.3d75cb96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iK5xqYmLT=DZk0S15pRObSJbo2-zrO7_A0Q46Ujg1RxYg@mail.gmail.com>
-        <988aea6a-c6b6-5d58-3a8e-604a52df0320@hartkopp.net>
+        id S1726900AbgKDQGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 11:06:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32816 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725889AbgKDQGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 11:06:41 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CF2C0613D3
+        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 08:06:40 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kaLIz-0000ZK-3Q; Wed, 04 Nov 2020 17:06:37 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:20b7:b0a1:f6b2:524e] (unknown [IPv6:2a03:f580:87bc:d400:20b7:b0a1:f6b2:524e])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id CF59258A601;
+        Wed,  4 Nov 2020 16:06:34 +0000 (UTC)
+Subject: Re: [PATCH] can: j1939: add tables for the CAN identifier and its
+ fields
+To:     yegorslists@googlemail.com, linux-can@vger.kernel.org
+Cc:     netdev@vger.kernel.org, dev.kurt@vandijck-laurijssen.be
+References: <20201104155730.25196-1-yegorslists@googlemail.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <a52292a5-3782-21af-adba-686ad2659ff2@pengutronix.de>
+Date:   Wed, 4 Nov 2020 17:06:30 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20201104155730.25196-1-yegorslists@googlemail.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="7nNYYxuAFsYSjdNz8Zbtt8lqNEz5t5Pmd"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 4 Nov 2020 15:59:25 +0100 Oliver Hartkopp wrote:
-> Hello Eric,
-> 
-> On 04.11.20 09:16, Eric Dumazet wrote:
-> > On Wed, Nov 4, 2020 at 2:21 AM Jakub Kicinski <kuba@kernel.org> wrote:  
-> >>
-> >> On Tue,  3 Nov 2020 23:06:14 +0100 Marc Kleine-Budde wrote:  
-> >>> From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> >>>
-> >>> If a driver calls can_get_echo_skb() during a hardware IRQ (which is often, but
-> >>> not always, the case), the 'WARN_ON(in_irq)' in
-> >>> net/core/skbuff.c#skb_release_head_state() might be triggered, under network
-> >>> congestion circumstances, together with the potential risk of a NULL pointer
-> >>> dereference.
-> >>>
-> >>> The root cause of this issue is the call to kfree_skb() instead of
-> >>> dev_kfree_skb_irq() in net/core/dev.c#enqueue_to_backlog().
-> >>>
-> >>> This patch prevents the skb to be freed within the call to netif_rx() by
-> >>> incrementing its reference count with skb_get(). The skb is finally freed by
-> >>> one of the in-irq-context safe functions: dev_consume_skb_any() or
-> >>> dev_kfree_skb_any(). The "any" version is used because some drivers might call
-> >>> can_get_echo_skb() in a normal context.
-> >>>
-> >>> The reason for this issue to occur is that initially, in the core network
-> >>> stack, loopback skb were not supposed to be received in hardware IRQ context.
-> >>> The CAN stack is an exeption.
-> >>>
-> >>> This bug was previously reported back in 2017 in [1] but the proposed patch
-> >>> never got accepted.
-> >>>
-> >>> While [1] directly modifies net/core/dev.c, we try to propose here a
-> >>> smoother modification local to CAN network stack (the assumption
-> >>> behind is that only CAN devices are affected by this issue).
-> >>>
-> >>> [1] http://lore.kernel.org/r/57a3ffb6-3309-3ad5-5a34-e93c3fe3614d@cetitec.com
-> >>>
-> >>> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> >>> Link: https://lore.kernel.org/r/20201002154219.4887-2-mailhol.vincent@wanadoo.fr
-> >>> Fixes: 39549eef3587 ("can: CAN Network device driver and Netlink interface")
-> >>> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>  
-> >>
-> >> Hm... Why do we receive a skb with a socket attached?
-> >>
-> >> At a quick glance this is some loopback, so shouldn't we skb_orphan()
-> >> in the xmit function instead?  
-> > 
-> > Yes this would work, this seems the safest way, loopback_xmit() is a
-> > good template for this.
-> >   
-> >>
-> >> Otherwise we should probably fix this in enqueue_to_backlog().  
-> > 
-> > This is dangerous.
-> > 
-> > If we drop packets under flood because the per-cpu backlog is full,
-> > we might also be in _big_ trouble if the per-cpu
-> > softnet_data.completion_queue is filling,
-> > since we do not have a limit on this list.
-> > 
-> > What could happen is that when the memory is finally exhausted and no
-> > more skb can be fed
-> > to netif_rx(), a big latency spike would happen when
-> > softnet_data.completion_queue
-> > can finally be purged in one shot.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--7nNYYxuAFsYSjdNz8Zbtt8lqNEz5t5Pmd
+Content-Type: multipart/mixed; boundary="3SejVAjsJtz9aEx6fRe5rZLKI8YwPq7KX";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: yegorslists@googlemail.com, linux-can@vger.kernel.org
+Cc: netdev@vger.kernel.org, dev.kurt@vandijck-laurijssen.be
+Message-ID: <a52292a5-3782-21af-adba-686ad2659ff2@pengutronix.de>
+Subject: Re: [PATCH] can: j1939: add tables for the CAN identifier and its
+ fields
+References: <20201104155730.25196-1-yegorslists@googlemail.com>
+In-Reply-To: <20201104155730.25196-1-yegorslists@googlemail.com>
 
-Thanks, that makes sense. So no to the enqueue_to_backlog() idea.
+--3SejVAjsJtz9aEx6fRe5rZLKI8YwPq7KX
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-> > So skb_orphan(skb) in CAN before calling netif_rx() is better IMO.
-> >   
-> 
-> Unfortunately you missed the answer from Vincent, why skb_orphan() does 
-> not work here:
-> 
-> https://lore.kernel.org/linux-can/CAMZ6RqJyZTcqZcq6jEzm5LLM_MMe=dYDbwvv=Y+dBR0drWuFmw@mail.gmail.com/
+On 11/4/20 4:57 PM, yegorslists@googlemail.com wrote:
+> From: Yegor Yefremov <yegorslists@googlemail.com>
+>=20
+> Use table markup to show the structure of the CAN identifier, PGN, PDU1=
+,
+> and PDU2 formats. Also add introductory sentence.
+>=20
+> Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+> ---
+>  Documentation/networking/j1939.rst | 46 +++++++++++++++++++++++++++---=
 
-Okay, we can take this as a quick fix but to me it seems a little
-strange to be dropping what is effectively locally generated frames.
+>  1 file changed, 42 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/Documentation/networking/j1939.rst b/Documentation/network=
+ing/j1939.rst
+> index 0a4b73b03b99..19d9878d7194 100644
+> --- a/Documentation/networking/j1939.rst
+> +++ b/Documentation/networking/j1939.rst
+> @@ -69,18 +69,56 @@ J1939 concepts
+>  PGN
+>  ---
+> =20
+> +The J1939 protocol uses the 29-bit CAN identifier with the following s=
+tructure:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 
-Can we use a NAPI poll model here and back pressure TX if the echo
-is not keeping up?
+> +  29 bit CAN-ID                                    =20
+> +  --------------------------------------------------
+> +  Bit positions within the CAN-ID                  =20
+> +  --------------------------------------------------
+> +  28 ... 26     25 ... 8        7 ... 0            =20
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+
+> +  Priority      PGN             SA (Source Address)=20
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+
+
+Here you introduce trailing whitespace. I've removed them while applying =
+the
+patch to linux-can/testing
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--3SejVAjsJtz9aEx6fRe5rZLKI8YwPq7KX--
+
+--7nNYYxuAFsYSjdNz8Zbtt8lqNEz5t5Pmd
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+i0YYACgkQqclaivrt
+76ndhwf/cMKi61tiTVscC0r0Rzd/l1dbK8FIrGk15oF7EyjbKJIZjDSiqO2tV6vj
+W95b4xg0/5tjBMGYmiSg+nRTDwZNYCteZf0Zb+RKv/DLHY6em3hWfx133Qjg2chI
+lpBy5qQoeTFcYv+LDAQvpDEmS/0P65h6UJ/j2EAtpXNg2ZlA/pV0deQctOfkJ8OZ
+wIOjvsPFMJMztw5tKfL4cAW/qtykeUGVV1SaaZ3LRVGccjJfvWjFrfqJTN3w3cA6
+nuT2BNQAaG7Xg9AbZuyrw8rPYsBzZJzlbpYU44hEVO8GQZkaoNq5cjf/HdsS+th1
+uQ7gPaSUapEDvlApQqYuprt7Ox7Y0A==
+=gjsO
+-----END PGP SIGNATURE-----
+
+--7nNYYxuAFsYSjdNz8Zbtt8lqNEz5t5Pmd--
