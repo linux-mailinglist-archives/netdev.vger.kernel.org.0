@@ -2,206 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E56BB2A691C
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF36F2A6926
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:10:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730012AbgKDQIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 11:08:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729840AbgKDQIw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 11:08:52 -0500
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529AFC0613D3;
-        Wed,  4 Nov 2020 08:08:52 -0800 (PST)
-Received: by mail-il1-x141.google.com with SMTP id x7so19826938ili.5;
-        Wed, 04 Nov 2020 08:08:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=MganMYMYYjybcpcU88wzK3c1493PmTVrCCHT7bNkP+U=;
-        b=SebTzKO0r84f/cdrZXygNg5FqSsLQ/DXpHqmL8oCIx5iKZayWP/jwE5V4mdQkK6ngF
-         FAvxEn88FjDVR+lApK5YN6kZPBP9dUmgMnUC/oX/OLB+BSEcNJdDnrpmPdrAkbHeDRsN
-         QCvdoI9Ol4KEQbGlnYpkWUYyQ/gv5eyiCEqILUr6LONFMJgrxOf8FDHdnxu2Sn8jyWYT
-         RG5+rwb7AOnwBsbTfy9SuU/eJiP2CVOReHSLU4SfDj6s4KH39SzDUXWaQdjmDfORfpsG
-         aiXbUx8t4Z994+g1aYo/9i0flj1RZajjFF7FJQOF8OSPJ3bN77fcjqgXPmV7I518AlzL
-         xrLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=MganMYMYYjybcpcU88wzK3c1493PmTVrCCHT7bNkP+U=;
-        b=t7/a+QXLXQ+U7MRkK8cqeFSi6PDcwwYpfP3yX8TNSLAvWqXXO9K6vR+wDHTnhgzmw9
-         AawjQX1lu8xdnnG5sx4nczOey0MwSf5wy+JHYXxOkZ/lExqxeIlXCYzEdpdN6v+sk4sD
-         V0VYPp03et5haA7RlEm9YukYn1GC6PwEOIdjEY48ephrLXJpiAPJzUt7N3oW0qlu64//
-         x9+W2Dry1rY+06ZV0X6c/K8XJvNyNpG6Y76rZyBpKpLffp9m6OpZHj7JP0Nw4/wPYqn4
-         Pn6MQpTP6B0pHwVV3ZkqX9wOCaZSva01E7gR+y5YKLhBHl4k2kRPt5FzKwD9Mc8UIlam
-         YssQ==
-X-Gm-Message-State: AOAM532RQW+pirQJ3ghmKmpZtWCDyGh3CuAG0s6Rd/nkUv0DlzRVV+67
-        KeB+DbAo570d5RKNJn1jA8T1CatGkX0=
-X-Google-Smtp-Source: ABdhPJxKqTfBuBcOcWOv7poRFlax8YlsF1nPYSPoLc0L2aTYuhV9xPRNSg3PH1xSdMb9wD9lPv0gTg==
-X-Received: by 2002:a92:c8c4:: with SMTP id c4mr12740652ilq.161.1604506131566;
-        Wed, 04 Nov 2020 08:08:51 -0800 (PST)
-Received: from localhost.localdomain ([198.52.185.246])
-        by smtp.gmail.com with ESMTPSA id m86sm1705076ilb.44.2020.11.04.08.08.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 08:08:50 -0800 (PST)
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
-To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Roelof Berg <rberg@berg-solutions.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1] lan743x: correctly handle chips with internal PHY
-Date:   Wed,  4 Nov 2020 11:08:47 -0500
-Message-Id: <20201104160847.30049-1-TheSven73@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1730266AbgKDQKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 11:10:39 -0500
+Received: from mga04.intel.com ([192.55.52.120]:25123 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728975AbgKDQKi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Nov 2020 11:10:38 -0500
+IronPort-SDR: qpqVR/YPFrjOLI15mJUdnWidAbsLwLGF1iDt6YFNixlahJflk8OanTOvmkok7rF5fMWOthf/Ln
+ uBw5jBm0r1mg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9795"; a="166650427"
+X-IronPort-AV: E=Sophos;i="5.77,451,1596524400"; 
+   d="scan'208";a="166650427"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2020 08:10:36 -0800
+IronPort-SDR: OVlaNLuuhBA03nEwTN8JlVV8SooWKFqBQ5GGJ0hDGHbyMl5Cqa3irhSLmHDeS04po779TJidsc
+ U1OqiUL/cByw==
+X-IronPort-AV: E=Sophos;i="5.77,451,1596524400"; 
+   d="scan'208";a="528985709"
+Received: from bjvandec-mobl1.amr.corp.intel.com (HELO [10.212.97.86]) ([10.212.97.86])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2020 08:10:35 -0800
+Subject: Re: [PATCH v6] lib: optimize cpumask_local_spread()
+To:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Yuqi Jin <jinyuqi@huawei.com>,
+        Rusty Russell <rusty@rustcorp.com.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Juergen Gross <jgross@suse.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>
+References: <1604410767-55947-1-git-send-email-zhangshaokun@hisilicon.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+ z5cecg==
+Message-ID: <3e2e760d-e4b9-8bd0-a279-b23bd7841ae7@intel.com>
+Date:   Wed, 4 Nov 2020 08:10:35 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <1604410767-55947-1-git-send-email-zhangshaokun@hisilicon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 6f197fb63850 ("lan743x: Added fixed link and RGMII support")
-assumes that chips with an internal PHY will not have a devicetree
-entry. This is incorrect: even for these chips, a devicetree entry
-can be useful e.g. to pass the mac address from bootloader to chip:
+On 11/3/20 5:39 AM, Shaokun Zhang wrote:
+> Currently, Intel DDIO affects only local sockets, so its performance
+> improvement is due to the relative difference in performance between the
+> local socket I/O and remote socket I/O.To ensure that Intel DDIO’s
+> benefits are available to applications where they are most useful, the
+> irq can be pinned to particular sockets using Intel DDIO.
+> This arrangement is called socket affinityi. So this patch can help
+> Intel DDIO work. The same I/O stash function for most processors
 
-    &pcie {
-            status = "okay";
+A great changelog would probably include a bit of context about DDIO.
+Even being from Intel, I'd heard about this, but I didn't immediately
+know what the acronym was.
 
-            host@0 {
-                    reg = <0 0 0 0 0>;
+The thing that matters here is that DDIO allows devices to use processor
+caches instead of having them always do uncached accesses to main
+memory.  That's a pretty important detail left out of the changelog.
 
-                    #address-cells = <3>;
-                    #size-cells = <2>;
+> On Huawei Kunpeng 920 server, there are 4 NUMA node(0 - 3) in the 2-cpu
+> system(0 - 1). The topology of this server is followed:
 
-                    lan7430: ethernet@0 {
-                            /* LAN7430 with internal PHY */
-                            compatible = "microchip,lan743x";
-                            status = "okay";
-                            reg = <0 0 0 0 0>;
-                            /* filled in by bootloader */
-                            local-mac-address = [00 00 00 00 00 00];
-                    };
-            };
-    };
+This is with a feature enabled that Intel calls sub-NUMA-clustering
+(SNC), right?  Explaining *that* feature would also be great context for
+why this gets triggered on your system and not normally on others and
+why nobody noticed this until now.
 
-If a devicetree entry is present, the driver will not attach the chip
-to its internal phy, and the chip will be non-operational.
+> The IRQ from 369-392 will be bound from NUMA node0 to NUMA node3 with this
+> patch, before the patch:
+> 
+> Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
+> 0
+> Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
+> 1
+> ...
+> Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
+> 22
+> Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
+> 23
+> After the patch:
 
-Fix by tweaking the phy connection algorithm:
-- first try to connect to a phy specified in the devicetree
-  (could be 'real' phy, or just a 'fixed-link')
-- if that doesn't succeed, try to connect to an internal phy, even
-  if the chip has a devnode
+I _think_ what you are trying to convey here is that IRQs 369 and 370
+are from devices plugged in to one socket, but their IRQs are bound to
+CPUs 0 and 1 which are in the other socket.  Once device traffic leaves
+the socket, it can no longer use DDIO and performance suffers.
 
-This method no longer explicitly exposes the phy mode, but we can
-get around that by querying the phy mode from the phydev. The
-phy_mode member in the adapter private struct can then be removed.
+The same situation is true for IRQs 391/392 and CPUs 22/23.
 
-Note that as a side-effect, the devicetree phy mode now no longer
-has a default, and always needs to be specified explicitly (via
-'phy-connection-type').
+You don't come out and say it, but I assume that the root of this issue
+is that once we fill up a NUMA node worth of CPUs with an affinitized
+IRQ per CPU, we go looking for CPUs in other NUMA nodes.  In this case,
+we have the processor in this weird mode that chops sockets into two
+NUMA nodes, which makes the device's NUMA node fill up faster.
 
-Tested on a LAN7430 with internal PHY. I cannot test a device using
-fixed-link, as I do not have access to one.
+The current behavior just "wraps around" to find a new node.  But, this
+wrap around behavior is nasty in this case because it might cross a socket.
 
-Fixes: 6f197fb63850 ("lan743x: Added fixed link and RGMII support")
-Tested-by: Sven Van Asbroeck <TheSven73@gmail.com> # lan7430
-Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
----
+> +static void calc_node_distance(int *node_dist, int node)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < nr_node_ids; i++)
+> +		node_dist[i] = node_distance(node, i);
+> +}
 
-Tree: v5.10-rc2
+This appears to be the only place node_dist[] is written.  That means it
+always contains a one-dimensional slice of the two-dimensional data
+represented by node_distance().
 
-To: Bryan Whitehead <bryan.whitehead@microchip.com>
-To: "David S. Miller" <davem@davemloft.net>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Roelof Berg <rberg@berg-solutions.de>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+Why is a copy of this data needed?
 
- drivers/net/ethernet/microchip/lan743x_main.c | 32 ++++++-------------
- drivers/net/ethernet/microchip/lan743x_main.h |  1 -
- 2 files changed, 9 insertions(+), 24 deletions(-)
+> +static int find_nearest_node(int *node_dist, bool *used)
+> +{
+> +	int i, min_dist = node_dist[0], node_id = -1;
+> +
+> +	/* Choose the first unused node to compare */
+> +	for (i = 0; i < nr_node_ids; i++) {
+> +		if (used[i] == 0) {
+> +			min_dist = node_dist[i];
+> +			node_id = i;
+> +			break;
+> +		}
+> +	}
+> +
+> +	/* Compare and return the nearest node */
+> +	for (i = 0; i < nr_node_ids; i++) {
+> +		if (node_dist[i] < min_dist && used[i] == 0) {
+> +			min_dist = node_dist[i];
+> +			node_id = i;
+> +		}
+> +	}
+> +
+> +	return node_id;
+> +}
+> +
+>  /**
+>   * cpumask_local_spread - select the i'th cpu with local numa cpu's first
+>   * @i: index number
+> @@ -206,7 +238,11 @@ void __init free_bootmem_cpumask_var(cpumask_var_t mask)
+>   */
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index f2d13e8d20f0..eb990e036611 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -957,7 +957,7 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
- 		data = lan743x_csr_read(adapter, MAC_CR);
- 
- 		/* set interface mode */
--		if (phy_interface_mode_is_rgmii(adapter->phy_mode))
-+		if (phy_interface_is_rgmii(phydev))
- 			/* RGMII */
- 			data &= ~MAC_CR_MII_EN_;
- 		else
-@@ -1021,34 +1021,19 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
- 
- 	netdev = adapter->netdev;
- 	phynode = of_node_get(adapter->pdev->dev.of_node);
--	adapter->phy_mode = PHY_INTERFACE_MODE_GMII;
--
--	if (phynode) {
--		of_get_phy_mode(phynode, &adapter->phy_mode);
--
--		if (of_phy_is_fixed_link(phynode)) {
--			ret = of_phy_register_fixed_link(phynode);
--			if (ret) {
--				netdev_err(netdev,
--					   "cannot register fixed PHY\n");
--				of_node_put(phynode);
--				goto return_error;
--			}
--		}
--		phydev = of_phy_connect(netdev, phynode,
--					lan743x_phy_link_status_change, 0,
--					adapter->phy_mode);
--		of_node_put(phynode);
--		if (!phydev)
--			goto return_error;
--	} else {
-+
-+	/* try devicetree phy, or fixed link */
-+	phydev = of_phy_get_and_connect(netdev, phynode,
-+					lan743x_phy_link_status_change);
-+	if (!phydev) {
-+		/* try internal PHY */
- 		phydev = phy_find_first(adapter->mdiobus);
- 		if (!phydev)
- 			goto return_error;
- 
- 		ret = phy_connect_direct(netdev, phydev,
- 					 lan743x_phy_link_status_change,
--					 adapter->phy_mode);
-+					 PHY_INTERFACE_MODE_GMII);
- 		if (ret)
- 			goto return_error;
- 	}
-@@ -1063,6 +1048,7 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
- 
- 	phy_start(phydev);
- 	phy_start_aneg(phydev);
-+	phy_attached_info(phydev);
- 	return 0;
- 
- return_error:
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index a536f4a4994d..3a0e70daa88f 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.h
-+++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -703,7 +703,6 @@ struct lan743x_rx {
- struct lan743x_adapter {
- 	struct net_device       *netdev;
- 	struct mii_bus		*mdiobus;
--	phy_interface_t		phy_mode;
- 	int                     msg_enable;
- #ifdef CONFIG_PM
- 	u32			wolopts;
--- 
-2.17.1
+The diff missed some important context:
+
+>  * This function selects an online CPU according to a numa aware policy;
+>  * local cpus are returned first, followed by non-local ones, then it
+>  * wraps around.
+
+This patch changes that behavior but doesn't update the comment.
+
+
+>  unsigned int cpumask_local_spread(unsigned int i, int node)
+>  {
+> -	int cpu, hk_flags;
+> +	static DEFINE_SPINLOCK(spread_lock);
+> +	static int node_dist[MAX_NUMNODES];
+> +	static bool used[MAX_NUMNODES];
+
+Not to be *too* picky, but there is a reason we declare nodemask_t as a
+bitmap and not an array of bools.  Isn't this just wasteful?
+
+> +	unsigned long flags;
+> +	int cpu, hk_flags, j, id;
+>  	const struct cpumask *mask;
+>  
+>  	hk_flags = HK_FLAG_DOMAIN | HK_FLAG_MANAGED_IRQ;
+> @@ -220,20 +256,28 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
+>  				return cpu;
+>  		}
+>  	} else {
+> -		/* NUMA first. */
+> -		for_each_cpu_and(cpu, cpumask_of_node(node), mask) {
+> -			if (i-- == 0)
+> -				return cpu;
+> -		}
+> +		spin_lock_irqsave(&spread_lock, flags);
+> +		memset(used, 0, nr_node_ids * sizeof(bool));
+> +		calc_node_distance(node_dist, node);
+> +		/* Local node first then the nearest node is used */
+
+Is this comment really correct?  This makes it sound like there is only
+fallback to a single node.  Doesn't the _code_ fall back basically
+without limit?
+
+> +		for (j = 0; j < nr_node_ids; j++) {
+> +			id = find_nearest_node(node_dist, used);
+> +			if (id < 0)
+> +				break;
+>  
+> -		for_each_cpu(cpu, mask) {
+> -			/* Skip NUMA nodes, done above. */
+> -			if (cpumask_test_cpu(cpu, cpumask_of_node(node)))
+> -				continue;
+> +			for_each_cpu_and(cpu, cpumask_of_node(id), mask)
+> +				if (i-- == 0) {
+> +					spin_unlock_irqrestore(&spread_lock,
+> +							       flags);
+> +					return cpu;
+> +				}
+> +			used[id] = 1;
+> +		}
+> +		spin_unlock_irqrestore(&spread_lock, flags);
+
+The existing code was pretty sparsely commented.  This looks to me to
+make it more complicated and *less* commented.  Not the best combo.
+
+> +		for_each_cpu(cpu, mask)
+>  			if (i-- == 0)
+>  				return cpu;
+> -		}
+>  	}
+>  	BUG();
+>  }
+> 
 
