@@ -2,77 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16E062A708C
+	by mail.lfdr.de (Postfix) with ESMTP id 164032A708B
 	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 23:34:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731576AbgKDWeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 17:34:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
+        id S1732089AbgKDWeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 17:34:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726777AbgKDWeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 17:34:03 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40645C0613CF
-        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 14:34:03 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id z3so3105725pfb.10
-        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 14:34:03 -0800 (PST)
+        with ESMTP id S1726777AbgKDWeE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 17:34:04 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401A7C0613CF
+        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 14:34:04 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id 62so46494pgg.12
+        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 14:34:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=E1T4sPL3vLwt9SglNdxfOo3TjEF9/se397GTzA62bg4=;
-        b=03xFRP66pEg8uj6qyKtY0UPqP8KbgVOP4EYAnWIFY+/uE6iz9mVAI5AUE6oXBoY5dr
-         yGZVvYlOsnx+w8RWD2TMOREZqY2zYDU+tnR3BXeWnx/niw/j14AfgVGb/WLxT22DlLKz
-         R995r//pCNTtLdANSlihUbpvEVau/sK6tc3fEHq2XYfm2S5A6ut/XAsPft6zKidtne55
-         RxUtLJbJSC58ESd/J0nXcdvBAxHFLKC8ld9zzTD9s64qnEjP6A56Joa9MiW0idMbCzf5
-         uUxlTUKAvWlG9v9P/W5w5Iovz8Xw8USm3h4tq1tpf/1imVTsRzNLEQvyk66E8GFwiOrW
-         56Xw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=2aWkMqo1r20Pi2OEYli1mBai8fEL99UyV8cr7SGRY3c=;
+        b=zN25aHG8qzPSs09dSEr9A7pFvBy5+CmvGFlDUD63Qlk+qZ3VvZ/JYNh7uuL+5p8sqn
+         AiOztMvWh+6wybyfoLfxfDGbtoqmNXwGTW1ZFV32F2A1u1vKa9Gbnsd3pihRcKsPx8YA
+         BM5UZ/sKRedMGj6xEVOitw5vTy2ISmXOuikQZWMLtggts0tek3Eotz46uA2w4G2B2qVu
+         0fkerOZo6LTB0parWWtUdue3veQNj+zAkFAxx9ipHHlSWf/i6Sd9NsldTkCql/MUNqvG
+         IaI7Cq34xMK2d9E+l2xNUOVb+274mZXOn2v72+QZpy3WJMtewi7pmV0IJH++Dri1MnXm
+         PyBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=E1T4sPL3vLwt9SglNdxfOo3TjEF9/se397GTzA62bg4=;
-        b=YmH5ypEv/TOk36V0qCjU8OxYGFsTxFLguyuarev4PVVw+mGS9pz9+agft4Y3Ttsm/v
-         uNUfDQjogis0hSAvGGkVppjK9/MsUQMXeViw+FQkaWYdbqpDLFe+bUaUtN5I0goqVd2u
-         AX6ZLTJVf19I1epauCX69jQAIEjOUfmPU7DDAYuOgkdztt2NAimWxyz55qY6CLHbh6YR
-         YCALRefy8owi0BzWL5gc3WEvL/Piyo5qibQ1LtuhyTuYPDeh21Cgt4Cz6sN3T7HCCHFn
-         eAXKTNszlvrB436I4jJacmKehJoiERMW4e+I26sgeerBWc68gwpICbKP2J/j3H6KZAB/
-         Txxw==
-X-Gm-Message-State: AOAM5323VGk12ea77RzHzio/CvoVNae8VttGGSQ/CQBgZOlL/qldzETe
-        jM3KL26EcnHEX+Sozt6Yt/fAWvNhJ+NTAg==
-X-Google-Smtp-Source: ABdhPJzXw1FPGzgTKorPH3bKqkxxxGDiOaTIf3wmNGQtgBgzh+uF5y68WpfAXMHagny3RNdTNUZjAg==
-X-Received: by 2002:a63:8d4b:: with SMTP id z72mr142346pgd.327.1604529242556;
-        Wed, 04 Nov 2020 14:34:02 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=2aWkMqo1r20Pi2OEYli1mBai8fEL99UyV8cr7SGRY3c=;
+        b=FOxDMKq6sJL5iWm2bUF0/WRHfWQKvhKTrjJZoQZ+7RcNe6d9SqE0ewBSEvsZd2M9Mb
+         tTLKwxRgPR5HT7wnceItHs64+E1YHvkmVVNiTcQuVbED1vdPQQWVEOsbnj3Glgcn9S1G
+         ea80v+CK8DyhiK6flAUma/EsiGVD8YomZYBslm2iSPCY7bcFIgkfLtgE8uCAf0BTyoes
+         ITnbF1e313V04addQv5S/BbmhlvuwEq0m6HY8KjT6g99nB7E0xiILf6pRHL1ua0O+Bwe
+         lzg/pCFctNAGB989WCCJMggsPqU5NUyR8WQdEyGnAmZXZusni5mxE4GF6NaGtvE8GLo2
+         RbAg==
+X-Gm-Message-State: AOAM532vnQjmR4H5ETJH4HrbcVXX28hJknDlEPeTVhEeY9sSRda0SOSn
+        S6f9VKjO7982a9e+wCSn91ClUbbzbX05cA==
+X-Google-Smtp-Source: ABdhPJwIi4Y4TVDsWiQmKBcEDrDuKDwKyaOlHLJTU6vKmxStBL5goBbGkw1OaZJqukxZtJLHDYJ+uA==
+X-Received: by 2002:a63:9d8d:: with SMTP id i135mr150846pgd.213.1604529243603;
+        Wed, 04 Nov 2020 14:34:03 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id z10sm3284559pff.218.2020.11.04.14.34.01
+        by smtp.gmail.com with ESMTPSA id z10sm3284559pff.218.2020.11.04.14.34.02
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 Nov 2020 14:34:01 -0800 (PST)
+        Wed, 04 Nov 2020 14:34:03 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 0/6] ionic updates
-Date:   Wed,  4 Nov 2020 14:33:48 -0800
-Message-Id: <20201104223354.63856-1-snelson@pensando.io>
+Subject: [PATCH net-next 1/6] ionic: start queues before announcing link up
+Date:   Wed,  4 Nov 2020 14:33:49 -0800
+Message-Id: <20201104223354.63856-2-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201104223354.63856-1-snelson@pensando.io>
+References: <20201104223354.63856-1-snelson@pensando.io>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These updates are a bit of code cleaning and a minor
-bit of performance tweaking.
+Change the order of operations in the link_up handling to be
+sure that the queues are up and ready before we announce that
+the link is up.
 
-Shannon Nelson (6):
-  ionic: start queues before announcing link up
-  ionic: check for link after netdev registration
-  ionic: add lif quiesce
-  ionic: batch rx buffer refilling
-  ionic: use mc sync for multicast filters
-  ionic: useful names for booleans
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+---
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
- .../net/ethernet/pensando/ionic/ionic_dev.h   |  4 +-
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 64 ++++++++++++++-----
- .../net/ethernet/pensando/ionic/ionic_lif.h   |  8 +++
- .../net/ethernet/pensando/ionic/ionic_txrx.c  | 18 +++---
- 4 files changed, 70 insertions(+), 24 deletions(-)
-
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index a12df3946a07..5457fb5d69ed 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -123,6 +123,12 @@ static void ionic_link_status_check(struct ionic_lif *lif)
+ 	link_up = link_status == IONIC_PORT_OPER_STATUS_UP;
+ 
+ 	if (link_up) {
++		if (lif->netdev->flags & IFF_UP && netif_running(lif->netdev)) {
++			mutex_lock(&lif->queue_lock);
++			ionic_start_queues(lif);
++			mutex_unlock(&lif->queue_lock);
++		}
++
+ 		if (!netif_carrier_ok(netdev)) {
+ 			u32 link_speed;
+ 
+@@ -132,12 +138,6 @@ static void ionic_link_status_check(struct ionic_lif *lif)
+ 				    link_speed / 1000);
+ 			netif_carrier_on(netdev);
+ 		}
+-
+-		if (lif->netdev->flags & IFF_UP && netif_running(lif->netdev)) {
+-			mutex_lock(&lif->queue_lock);
+-			ionic_start_queues(lif);
+-			mutex_unlock(&lif->queue_lock);
+-		}
+ 	} else {
+ 		if (netif_carrier_ok(netdev)) {
+ 			netdev_info(netdev, "Link down\n");
 -- 
 2.17.1
 
