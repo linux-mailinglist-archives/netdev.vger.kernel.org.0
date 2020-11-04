@@ -2,135 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA6F52A6A30
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:46:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7591D2A6A35
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 17:47:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731368AbgKDQqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 11:46:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33871 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730987AbgKDQqE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 11:46:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604508362;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1cW8DZx44Ft/UJKyMxnwWKu5EBpXA6JwZoQX8qWDLTE=;
-        b=FHbImQZ1Ywb0LLFfA9fBhjAhUaQp89l/VbJIBgc4o9lKjGfvz9y04z0eTHaElprYT+u4Ci
-        ifIXsSUHU9BV87PnaSftKF3GNc17sSXAQq67gjd821E4dpj2PnVp63tSBtmjoMDPm3GXk6
-        5LDdns/2TzFos8G66w5jsHN8R+Xw0qI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-235-4dMxcShON1yrcemzc-s_bg-1; Wed, 04 Nov 2020 11:45:58 -0500
-X-MC-Unique: 4dMxcShON1yrcemzc-s_bg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 120106D243;
-        Wed,  4 Nov 2020 16:45:57 +0000 (UTC)
-Received: from krava (unknown [10.40.192.118])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 58FF955784;
-        Wed,  4 Nov 2020 16:45:54 +0000 (UTC)
-Date:   Wed, 4 Nov 2020 17:45:53 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 3/4] selftests/bpf: Add profiler test
-Message-ID: <20201104164215.GH3861143@krava>
-References: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
- <20201009011240.48506-4-alexei.starovoitov@gmail.com>
- <20201013195622.GB1305928@krava>
- <CAADnVQLYSk0YgK7_dUSF-5Rau10vOdDgosVhE9xmEr1dp+=2vg@mail.gmail.com>
- <CAEf4BzbWO3fgWxAWQw4Pee=F7=UqU+N6LtKYV7V9ZZrfkPZ3gw@mail.gmail.com>
- <561A9F0C-BDAE-406A-8B93-011ECAB22B1C@fb.com>
+        id S1731395AbgKDQrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 11:47:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39292 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730973AbgKDQrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 11:47:00 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8096EC0613D3;
+        Wed,  4 Nov 2020 08:47:00 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id 133so17738648pfx.11;
+        Wed, 04 Nov 2020 08:47:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=4BiqyjCfkwLMqfM2F+PRcW4/yrG0vhDBPTZnaKc2B14=;
+        b=SpHPN5sxujb2Z5x4hetvs4nayl573NQgBTdNr2U8tpZ0Mki6koIEMJGduNq6IMBmZd
+         c0OepXoOYMaBEy6TDuWgk0truIygFka096WMYnPtaFMeXpDXz0LTRvtopH6iFigL5RvL
+         8GyJZwyqnqFhy29yX9/icgtj5B+oa1XjmMo+BnmkR4v/1Gv33HvzLEXOMr2+Ml17KcMU
+         ERjOsCTFeOlmDPWR+s4s+HDN7OW8M+nUd8M3VmLLxFb5w2WO84FaYZQt4Y5oTd08HNbD
+         8qaHA0ZigxHamHFLQA5fA8MMJbe+nqrJXFSjBoC5t+vFInUCAFKVAdfCovF7MYPSig4a
+         3lZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=4BiqyjCfkwLMqfM2F+PRcW4/yrG0vhDBPTZnaKc2B14=;
+        b=PcQy0ryeWQ7fSkc3liPx9GnbWbCeyensVhWluxgb5/fKCRpUa08ZiolSWD2sLBDzR4
+         JrcgiS3B6W+YmsbWY7g+M2c22r7/VDlSws4KAPajIgqVoGr587YltD+ymLdLJFFrSmcW
+         tl9OIcoYLoYwEpHQUJmB4QPspqno+uAETm567fm6zo+uCXLRWjnNTIkSlZPTDCX0J9dw
+         v0EuEjbU+Oadi+3arHi1KA0URcW19zPYGZChuk8IzETwpMP6s5cfwOYdeT3Yh9NDoNk6
+         GsaXdmK5+3b3DKt664xhLgkeDOilxjgAjX7Fi6l44ZM4yFbCoqcgYGEvBD9vAPAwSGih
+         ljVA==
+X-Gm-Message-State: AOAM532yAJZafTwsZaOY6hiDCf0ZVydQY6LGub4FEAS6kGqwFJN6NcKJ
+        HlLQr8kPlv1GcoWqw9zvP0M=
+X-Google-Smtp-Source: ABdhPJxtmfifAJ9/aztbiCudxhF8tpGMkXiLbaOvoqiYQjN7WgAdCnirOAPU73KB+jfaKkszFFzG8g==
+X-Received: by 2002:a63:4d0e:: with SMTP id a14mr11235349pgb.91.1604508420067;
+        Wed, 04 Nov 2020 08:47:00 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id k7sm2913535pfa.184.2020.11.04.08.46.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Nov 2020 08:46:59 -0800 (PST)
+Date:   Wed, 4 Nov 2020 08:46:57 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     min.li.xe@renesas.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/3] ptp: idt82p33: optimize _idt82p33_adjfine
+Message-ID: <20201104164657.GE16105@hoboy.vegasvil.org>
+References: <1604505709-5483-1-git-send-email-min.li.xe@renesas.com>
+ <1604505709-5483-3-git-send-email-min.li.xe@renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <561A9F0C-BDAE-406A-8B93-011ECAB22B1C@fb.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <1604505709-5483-3-git-send-email-min.li.xe@renesas.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 15, 2020 at 06:09:14AM +0000, Song Liu wrote:
+On Wed, Nov 04, 2020 at 11:01:49AM -0500, min.li.xe@renesas.com wrote:
+> From: Min Li <min.li.xe@renesas.com>
 > 
-> 
-> > On Oct 13, 2020, at 2:56 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> 
-> [...]
-> 
-> > 
-> > I'd go with Kconfig + bpf_core_enum_value(), as it's shorter and
-> > nicer. This compiles and works with my Kconfig, but I haven't checked
-> > with CONFIG_CGROUP_PIDS defined.
-> 
-> Tested with CONFIG_CGROUP_PIDS, it looks good. 
-> 
-> Tested-by: Song Liu <songliubraving@fb.com>
+> Use div_s64 so that the neg_adj is not needed.
 
-hi,
-I still need to apply my workaround to compile tests,
-so I wonder this fell through cracks
+Back in the day, I coded the neg_adj because there was some issue with
+signed 64 bit division that I can't recall now.  Either div_s64 didn't
+exist or it was buggy on some archs... there was _some_ reason.
 
-thanks,
-jirka
+So unless you are sure that this works on all platforms, I would leave
+it alone.
 
+Thanks,
+Richard
+
+
+> Signed-off-by: Min Li <min.li.xe@renesas.com>
+> ---
+>  drivers/ptp/ptp_idt82p33.c | 10 +---------
+>  1 file changed, 1 insertion(+), 9 deletions(-)
 > 
-> > 
-> > 
-> > diff --git a/tools/testing/selftests/bpf/progs/profiler.inc.h
-> > b/tools/testing/selftests/bpf/progs/profiler.inc.h
-> > index 00578311a423..79b8d2860a5c 100644
-> > --- a/tools/testing/selftests/bpf/progs/profiler.inc.h
-> > +++ b/tools/testing/selftests/bpf/progs/profiler.inc.h
-> > @@ -243,7 +243,11 @@ static ino_t get_inode_from_kernfs(struct
-> > kernfs_node* node)
-> >        }
-> > }
-> > 
-> > -int pids_cgrp_id = 1;
-> > +extern bool CONFIG_CGROUP_PIDS __kconfig __weak;
-> > +
-> > +enum cgroup_subsys_id___local {
-> > +       pids_cgrp_id___local = 1, /* anything but zero */
-> > +};
-> > 
-> > static INLINE void* populate_cgroup_info(struct cgroup_data_t* cgroup_data,
-> >                                         struct task_struct* task,
-> > @@ -253,7 +257,9 @@ static INLINE void* populate_cgroup_info(struct
-> > cgroup_data_t* cgroup_data,
-> >                BPF_CORE_READ(task, nsproxy, cgroup_ns, root_cset,
-> > dfl_cgrp, kn);
-> >        struct kernfs_node* proc_kernfs = BPF_CORE_READ(task, cgroups,
-> > dfl_cgrp, kn);
-> > 
-> > -       if (ENABLE_CGROUP_V1_RESOLVER) {
-> > +       if (ENABLE_CGROUP_V1_RESOLVER && CONFIG_CGROUP_PIDS) {
-> > +               int cgrp_id = bpf_core_enum_value(enum
-> > cgroup_subsys_id___local, pids_cgrp_id___local);
-> > +
-> > #ifdef UNROLL
-> > #pragma unroll
-> > #endif
-> > @@ -262,7 +268,7 @@ static INLINE void* populate_cgroup_info(struct
-> > cgroup_data_t* cgroup_data,
-> >                                BPF_CORE_READ(task, cgroups, subsys[i]);
-> >                        if (subsys != NULL) {
-> >                                int subsys_id = BPF_CORE_READ(subsys, ss, id);
-> > -                               if (subsys_id == pids_cgrp_id) {
-> > +                               if (subsys_id == cgrp_id) {
-> >                                        proc_kernfs =
-> > BPF_CORE_READ(subsys, cgroup, kn);
-> >                                        root_kernfs =
-> > BPF_CORE_READ(subsys, ss, root, kf_root, kn);
-> >                                        break;
+> diff --git a/drivers/ptp/ptp_idt82p33.c b/drivers/ptp/ptp_idt82p33.c
+> index b1528a0..e970379d 100644
+> --- a/drivers/ptp/ptp_idt82p33.c
+> +++ b/drivers/ptp/ptp_idt82p33.c
+> @@ -320,7 +320,6 @@ static int _idt82p33_adjfine(struct idt82p33_channel *channel, long scaled_ppm)
+>  {
+>  	struct idt82p33 *idt82p33 = channel->idt82p33;
+>  	unsigned char buf[5] = {0};
+> -	int neg_adj = 0;
+>  	int err, i;
+>  	s64 fcw;
+>  
+> @@ -340,16 +339,9 @@ static int _idt82p33_adjfine(struct idt82p33_channel *channel, long scaled_ppm)
+>  	 * FCW = -------------
+>  	 *         168 * 2^4
+>  	 */
+> -	if (scaled_ppm < 0) {
+> -		neg_adj = 1;
+> -		scaled_ppm = -scaled_ppm;
+> -	}
+>  
+>  	fcw = scaled_ppm * 244140625ULL;
+> -	fcw = div_u64(fcw, 2688);
+> -
+> -	if (neg_adj)
+> -		fcw = -fcw;
+> +	fcw = div_s64(fcw, 2688);
+>  
+>  	for (i = 0; i < 5; i++) {
+>  		buf[i] = fcw & 0xff;
+> -- 
+> 2.7.4
 > 
-
