@@ -2,96 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BB7C2A6DB1
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 20:16:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E2BD2A6DB7
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 20:17:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731520AbgKDTP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 14:15:57 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:45408 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726564AbgKDTP5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 14:15:57 -0500
-Received: by mail-ot1-f67.google.com with SMTP id k3so8488354otp.12;
-        Wed, 04 Nov 2020 11:15:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=xUeu7OjzCkWfl0q9Q0C25b2gAmYnfpfRf6sdmrxWckA=;
-        b=rRM4TTTc4LvENo1QxdeVaqhJBEYUiMMzLaGf/8Ex7eFnhAr1o8Vndeqetms8/n8UQn
-         8NO806T8W0IvwzeEQTMO1uO3z1E71vDcFtxZGJFrAiyLz3WxD+3KCwZiToQwLDLc/V4q
-         0/rVXl02ls7xivvjx9102Bhl2G3XW98WpxUnDLYJWvQeAD66AAqZyq5u0z6L6Ruhi39i
-         UhPGR6vVpkdG79F5C4oZiuSKXYJxwZnLosVUzwF4LGGLZSKS9zAnNjX+OsTAAe+AFiRE
-         8qSHAtakSgfzmYoZrphQ0SvvkcJWaczwEjtaXqjBQugFeEfoT0ZdYxvfRn8maAibphWe
-         znUQ==
-X-Gm-Message-State: AOAM532ovnEl3SOShAV1uAZImHcpsoDCC93Ruw36Vdi0NEB/7vwOR5MB
-        JvrMXBqx9sbAeaqQJZz9Fw==
-X-Google-Smtp-Source: ABdhPJwyVB6Vxpun9Hwox5/cSocl9xkTao6ENUk5Rm2F/NY+qCi/4EYMETnsGog5AJNAArHDE5FN3w==
-X-Received: by 2002:a9d:2283:: with SMTP id y3mr18865146ota.164.1604517355878;
-        Wed, 04 Nov 2020 11:15:55 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id x21sm660177otk.39.2020.11.04.11.15.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 11:15:55 -0800 (PST)
-Received: (nullmailer pid 3972960 invoked by uid 1000);
-        Wed, 04 Nov 2020 19:15:54 -0000
-Date:   Wed, 4 Nov 2020 13:15:54 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        linux-mmc@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org,
-        devicetree@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v3 02/24] dt-bindings: introduce silabs,wfx.yaml
-Message-ID: <20201104191554.GA3972736@bogus>
-References: <20201104155207.128076-1-Jerome.Pouiller@silabs.com>
- <20201104155207.128076-3-Jerome.Pouiller@silabs.com>
+        id S1730713AbgKDTRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 14:17:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40716 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726564AbgKDTRo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Nov 2020 14:17:44 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EBDCA206ED;
+        Wed,  4 Nov 2020 19:17:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604517463;
+        bh=U8ozNp5ifQlNXX/adooj82tLzOu1cZZm3u/AWu7tK7U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jRKrJ3CsHrC5T01auRWtdHl2thKKgEHFtp0udRp1L2h+HnAjdGFnpcYKiHqqUt6r+
+         H9H2JbFHlBM25tFku7AeI8Ny9GOPhSWJ2jTLZAtUDlmRb2xirbEfafx31jTKLcEWvA
+         Hz0ZXe8S70zDBkGNWCupOs0qhcRyDNq5OS3Eycfk=
+Date:   Wed, 4 Nov 2020 11:17:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Hangbin Liu <haliu@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
+Message-ID: <20201104111708.0595e2a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <5de7eb11-010b-e66e-c72d-07ece638c25e@iogearbox.net>
+References: <20201028132529.3763875-1-haliu@redhat.com>
+        <20201029151146.3810859-1-haliu@redhat.com>
+        <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
+        <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
+        <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
+        <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
+        <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
+        <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com>
+        <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
+        <20201104021730.GK2408@dhcp-12-153.nay.redhat.com>
+        <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
+        <2e8ba0be-51bf-9060-e1f7-2148fbaf0f1d@iogearbox.net>
+        <87zh3xv04o.fsf@toke.dk>
+        <5de7eb11-010b-e66e-c72d-07ece638c25e@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201104155207.128076-3-Jerome.Pouiller@silabs.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 04 Nov 2020 16:51:45 +0100, Jerome Pouiller wrote:
-> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> 
-> Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> ---
->  .../bindings/net/wireless/silabs,wfx.yaml     | 131 ++++++++++++++++++
->  1 file changed, 131 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-> 
+On Wed, 4 Nov 2020 14:12:47 +0100 Daniel Borkmann wrote:
+> If we would have done lib/bpf.c as a dynamic library back then, we wouldn't be
+> where we are today since users might be able to start consuming BPF functionality
+> just now, don't you agree? This was an explicit design choice back then for exactly
+> this reason. If we extend lib/bpf.c or import libbpf one way or another then there
+> is consistency across distros and users would be able to consume it in a predictable
+> way starting from next major releases. And you could start making this assumption
+> on all major distros in say, 3 months from now. The discussion is somehow focused
+> on the PoV of /a/ distro which is all nice and good, but the ones consuming the
+> loader shipping software /across/ distros are users writing BPF progs, all I'm
+> trying to say is that the _user experience_ should be the focus of this discussion
+> and right now we're trying hard making it rather painful for them to consume it.
 
+IIUC you're saying that we cannot depend on libbpf updates from distro.
+Isn't that a pretty bad experience for all users who would like to link
+against it? There are 4 components (kernel, lib, tools, compiler) all
+need to be kept up to date for optimal user experience. Cutting corners
+with one of them leads nowhere medium term IMHO.
 
-My bot found errors running 'make dt_binding_check' on your patch:
+Unless what you guys are saying is that libbpf is _not_ supposed to be
+backward compatible from the user side, and must be used a submodule.
+But then why bother defining ABI versions, or build it as an .so at all.
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml: 'additionalProperties' is a required property
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml: ignoring, error in schema: 
-warning: no schema found in file: ./Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-
-
-See https://patchwork.ozlabs.org/patch/1394182
-
-The base for the patch is generally the last rc1. Any dependencies
-should be noted.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+I'm also confused by the testing argument. Surely the solution is to
+add unit / system tests for iproute2. Distros will rebuild packages
+when dependencies change and retest. If we have 0 tests doesn't matter
+what update strategy there is.
