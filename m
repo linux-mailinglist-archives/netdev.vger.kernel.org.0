@@ -2,93 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 717292A7040
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 23:10:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97BB52A7048
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 23:17:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731941AbgKDWKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 17:10:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33436 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726777AbgKDWKj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 17:10:39 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D8FC0613D3;
-        Wed,  4 Nov 2020 14:10:39 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id e27so6409676lfn.7;
-        Wed, 04 Nov 2020 14:10:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Yk2mj75i8xa8ayUVBQ83JlZDKWwjs6t8SW4iIqQ0FL8=;
-        b=KANFOam0HlCtXCJKxEuU+poGR57CGLU6/zmeHIPrjcjIfkW00DexlF9LqBPk1p5pXq
-         vxp8ESNn3E0OZNZeYDdCUJSLW/qJZx22Cf416XUH8J3ANooFmsCb8UIwmcc5XL22E5kO
-         937DmY/OO5bps0pihshlNQy8MSGL+w5FjluXGJBdE9IkQZsYz85TASPkatJwHsR1x3in
-         GZna+Lwq6va5sQtb6limwg+TU3Olwwbr5g1aaJKKfjcTOqYDdkXo6Hud1Jv0hxQJWGqg
-         QA7HxRzsUkeCYRL5Acfx/1VySgVdi5cVudimmEe5fbvpuJpMu+QHbeNf0jKJT4xNcxk1
-         Up+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Yk2mj75i8xa8ayUVBQ83JlZDKWwjs6t8SW4iIqQ0FL8=;
-        b=RKRRQGQ1mdFEiiLnOPCxy7sTYICFvpNtius7i4LYUaCEgiRkR2YKLOQ4k7lR8eRT3t
-         GoMrOpFGrnevqrP2LqRmDvbiJdHrByjwrxwYEC3jjh1Hk4HLq6z9LWdt2yRImia8+038
-         MU09nqvTfT9G3uTDaId8hc36eJUnHtyICopwxOKMQ3DKDYC2SCxqRLoH0HqlRX5vhj0F
-         jaIYQ5uE7qTnTfNN159h3N8+W+I1lrmtripd3JGa4OFB+w3gb9N9V95twEt5YNFD6moo
-         d3k01mdtrxv0k+IXYMKLQQknvT+ycpVPyihHdGkE1HvoxZ8/39aIfhpNWO7ji++qMVoZ
-         Ahbw==
-X-Gm-Message-State: AOAM531FWnPzNNsuuCg3DXku6FASwtlBXijA5zNzXQOZR3GXkWNCjBsq
-        +tQ5+EmRZXpyZnmDFPsdzdex93TeLkyEsc2XUEM=
-X-Google-Smtp-Source: ABdhPJz5XSkiQ1cv/9X7KUiC72fGiP+TjMWeNoh7HI4hGLD2ZP40tU35M5i5UPWTJDnGhRPZVmqhsgMlFOMeEjT3+pc=
-X-Received: by 2002:ac2:5e83:: with SMTP id b3mr9823957lfq.119.1604527837537;
- Wed, 04 Nov 2020 14:10:37 -0800 (PST)
+        id S1729068AbgKDWPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 17:15:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47624 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732110AbgKDWOL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Nov 2020 17:14:11 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5EEA20870;
+        Wed,  4 Nov 2020 22:14:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604528051;
+        bh=p8WZNXhT84AyErnmCYGqiG2iQip7NSsmnxBg8O6JURI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jZ5+/TTE/rTQmNr4fSkxmBofK8zLbqT8HfOrqVmUgB+lpJmR5z25wXsv3xKRKneIm
+         2IauI0ExQHu0kAbNCdmd9KQdTkiPFlJQnbivY/6xR7wQIDDEo9q22tuhluwEncceq0
+         geenxQB3y6UGIWiUhJSZye5fGichA6LA5//3nfgk=
+Date:   Wed, 4 Nov 2020 14:14:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     drt <drt@linux.vnet.ibm.com>
+Cc:     Lijun Pan <ljp@linux.ibm.com>, netdev@vger.kernel.org,
+        sukadev@linux.ibm.com, drt@linux.ibm.com
+Subject: Re: [PATCH net-next] ibmvnic: merge do_change_param_reset into
+ do_reset
+Message-ID: <20201104141409.1a451f33@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <63365b7e683e2c3b1b8e41c51668b401@linux.vnet.ibm.com>
+References: <20201031094645.17255-1-ljp@linux.ibm.com>
+        <20201103150915.4411306e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <63365b7e683e2c3b1b8e41c51668b401@linux.vnet.ibm.com>
 MIME-Version: 1.0
-References: <20201028132529.3763875-1-haliu@redhat.com> <20201029151146.3810859-1-haliu@redhat.com>
- <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com> <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
- <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net> <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
- <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
- <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com> <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
- <20201104021730.GK2408@dhcp-12-153.nay.redhat.com> <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
- <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com>
-In-Reply-To: <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 4 Nov 2020 14:10:25 -0800
-Message-ID: <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Hangbin Liu <haliu@redhat.com>, David Ahern <dsahern@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 4, 2020 at 1:16 PM Edward Cree <ecree@solarflare.com> wrote:
->
-> On 04/11/2020 03:11, Alexei Starovoitov wrote:
-> > The user will do 'tc -V'. Does version mean anything from bpf loading pov?
-> > It's not. The user will do "ldd `which tc`" and then what?
-> Is it beyond the wit of man for 'tc -V' to output somethingabout
->  libbpf version?
-> Other libraries seem to solve these problems all the time, I
->  haven't seen anyone explain what makes libbpf so special that it
->  has to be different.
+On Wed, 04 Nov 2020 13:56:09 -0800 drt wrote:
+> On 2020-11-03 15:09, Jakub Kicinski wrote:
+> > On Sat, 31 Oct 2020 04:46:45 -0500 Lijun Pan wrote:  
+> >> Commit b27507bb59ed ("net/ibmvnic: unlock rtnl_lock in reset so
+> >> linkwatch_event can run") introduced do_change_param_reset function to
+> >> solve the rtnl lock issue. Majority of the code in 
+> >> do_change_param_reset
+> >> duplicates do_reset. Also, we can handle the rtnl lock issue in 
+> >> do_reset
+> >> itself. Hence merge do_change_param_reset back into do_reset to clean 
+> >> up
+> >> the code.
+> >> 
+> >> Fixes: b27507bb59ed ("net/ibmvnic: unlock rtnl_lock in reset so 
+> >> linkwatch_event can run")
+> >> Signed-off-by: Lijun Pan <ljp@linux.ibm.com>  
+> > 
+> > Applied, thanks!  
+> 
+> Hi Jakub,
+> 
+> Thank you for applying this patch so promptly. However, I would like to 
+> ask that this patch be withdrawn.
+> 
+> 1. It needs more time in testing.
+> 2. There are a number of bug fix patches being tested. This patch would 
+> require rework of those patches.
+> 3. As the lead maintainer for ibmvnic, I failed to communicate this to 
+> Lijun. I will do better going forward.
+> 
+> Please revert this commit. We will resubmit this patch later.
+> 
+> I sincerely apologize for any trouble this may have caused.
 
-slow vger? Please see Daniel and Andrii detailed explanations.
+No worries, please just send a revert patch with this information in
+the commit message, and I'll apply right away.
 
-libbpf is not your traditional library.
-Looking through the installed libraries on my devserver in /lib64/ directory
-I think the closest is libbfd.so
-Then think why gdb always statically links it.
+BTW feel free to send a note if you need more time to review a
+particular patch. Because of the volume of patches we get, I try to
+apply things after a day or two. Otherwise the queue gets unmanageable.
