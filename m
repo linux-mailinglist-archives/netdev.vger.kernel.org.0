@@ -2,140 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 052302A5BC0
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 02:19:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 909602A5BD1
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 02:21:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730423AbgKDBTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Nov 2020 20:19:10 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:35868 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730381AbgKDBTK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Nov 2020 20:19:10 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A41GC9u166601;
-        Wed, 4 Nov 2020 01:18:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=gJQLTwlXCcujwtSP+cbUgq0oYqCQI1AU9Frvz2gh8FI=;
- b=PJnONpOgcYuW+XADb68dFOF3/T0ODsobWtBqJEicKZLyVKYPkucTryXWrVuQcbe862eT
- e4P/ptmibWR9I8TBCf8MttYcKeVdutK5KLkgesBvay+kXLZnxNClSnFooRrZKhCHFPvu
- 5dH+i0MIbYtUwJQRDTIlq7HqcdZ9+yU0b37Ex7lRlaZeHuRgIixhIHIdsXnK9cMYvOI+
- 98qp1OdVFkqgmgQyDNkRsG5vY1xKRssQOvAkoFHQ4hZPrBo6W0tQBIo7x5+bGJV4sbbA
- IKeyayG8526XPPNc+JYs6ecxL/FNeIBJjZiUaZg5ShLrYnnqN2uFoQi2ZCHknHfVuDqw Og== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 34hhvccbky-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 04 Nov 2020 01:18:51 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A41Egji013517;
-        Wed, 4 Nov 2020 01:16:50 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3020.oracle.com with ESMTP id 34hw0ee1g7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 04 Nov 2020 01:16:50 +0000
-Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0A41GmI1009435;
-        Wed, 4 Nov 2020 01:16:49 GMT
-Received: from rnichana-ThinkPad-T480 (/10.159.241.204)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 03 Nov 2020 17:16:48 -0800
-Date:   Tue, 3 Nov 2020 17:16:40 -0800
-From:   Rama Nichanamatlu <rama.nichanamatlu@oracle.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Dongli Zhang <dongli.zhang@oracle.com>, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, davem@davemloft.net, kuba@kernel.org,
-        aruna.ramakrishna@oracle.com, bert.barbe@oracle.com,
-        venkat.x.venkatsubra@oracle.com, manjunath.b.patil@oracle.com,
-        joe.jin@oracle.com, srinivas.eeda@oracle.com
-Subject: Re: [PATCH 1/1] mm: avoid re-using pfmemalloc page in
- page_frag_alloc()
-Message-ID: <20201104011640.GE2445@rnichana-ThinkPad-T480>
-References: <20201103193239.1807-1-dongli.zhang@oracle.com>
- <20201103203500.GG27442@casper.infradead.org>
- <7141038d-af06-70b2-9f50-bf9fdf252e22@oracle.com>
- <20201103211541.GH27442@casper.infradead.org>
+        id S1730349AbgKDBVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Nov 2020 20:21:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52832 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729246AbgKDBVE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Nov 2020 20:21:04 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 31E052242A;
+        Wed,  4 Nov 2020 01:21:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604452863;
+        bh=PouRaEaxeS/9UqZsJtyROw/LJe348pI8+fryV7p2N9k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pqXIJRVKQNas4TN3uLC/oM70IRvpYu1UM5yHA0OXbMSBPd1tclFoo9EaNn3ZUAIkR
+         GqvgaZ4368gt5aWCM1x+xZ2mVH64+ZS8Vdj3Z1+FgOsyR/r6CBXr6of0DCPGGY4Hl/
+         CjrGL9vMs1MBAqJdQswYaEktGmAQwcV/NML2cRxM=
+Date:   Tue, 3 Nov 2020 17:21:02 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [net 05/27] can: dev: can_get_echo_skb(): prevent call to
+ kfree_skb() in hard IRQ context
+Message-ID: <20201103172102.3d75cb96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201103220636.972106-6-mkl@pengutronix.de>
+References: <20201103220636.972106-1-mkl@pengutronix.de>
+        <20201103220636.972106-6-mkl@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20201103211541.GH27442@casper.infradead.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9794 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 mlxlogscore=999
- phishscore=0 bulkscore=0 spamscore=0 malwarescore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011040006
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9794 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=2
- impostorscore=0 malwarescore=0 priorityscore=1501 mlxlogscore=999
- bulkscore=0 phishscore=0 adultscore=0 mlxscore=0 lowpriorityscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011040006
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->Thanks for providing the numbers.  Do you think that dropping (up to)
->7 packets is acceptable?
+On Tue,  3 Nov 2020 23:06:14 +0100 Marc Kleine-Budde wrote:
+> From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> 
+> If a driver calls can_get_echo_skb() during a hardware IRQ (which is often, but
+> not always, the case), the 'WARN_ON(in_irq)' in
+> net/core/skbuff.c#skb_release_head_state() might be triggered, under network
+> congestion circumstances, together with the potential risk of a NULL pointer
+> dereference.
+> 
+> The root cause of this issue is the call to kfree_skb() instead of
+> dev_kfree_skb_irq() in net/core/dev.c#enqueue_to_backlog().
+> 
+> This patch prevents the skb to be freed within the call to netif_rx() by
+> incrementing its reference count with skb_get(). The skb is finally freed by
+> one of the in-irq-context safe functions: dev_consume_skb_any() or
+> dev_kfree_skb_any(). The "any" version is used because some drivers might call
+> can_get_echo_skb() in a normal context.
+> 
+> The reason for this issue to occur is that initially, in the core network
+> stack, loopback skb were not supposed to be received in hardware IRQ context.
+> The CAN stack is an exeption.
+> 
+> This bug was previously reported back in 2017 in [1] but the proposed patch
+> never got accepted.
+> 
+> While [1] directly modifies net/core/dev.c, we try to propose here a
+> smoother modification local to CAN network stack (the assumption
+> behind is that only CAN devices are affected by this issue).
+> 
+> [1] http://lore.kernel.org/r/57a3ffb6-3309-3ad5-5a34-e93c3fe3614d@cetitec.com
+> 
+> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> Link: https://lore.kernel.org/r/20201002154219.4887-2-mailhol.vincent@wanadoo.fr
+> Fixes: 39549eef3587 ("can: CAN Network device driver and Netlink interface")
+> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 
-net.ipv4.tcp_syn_retries = 6
+Hm... Why do we receive a skb with a socket attached?
 
-tcp clients wouldn't even get that far leading to connect establish issues.
+At a quick glance this is some loopback, so shouldn't we skb_orphan()
+in the xmit function instead?
 
--rama
-On Tue, Nov 03, 2020 at 09:15:41PM +0000, Matthew Wilcox wrote:
->On Tue, Nov 03, 2020 at 12:57:33PM -0800, Dongli Zhang wrote:
->> On 11/3/20 12:35 PM, Matthew Wilcox wrote:
->> > On Tue, Nov 03, 2020 at 11:32:39AM -0800, Dongli Zhang wrote:
->> >> However, once kernel is not under memory pressure any longer (suppose large
->> >> amount of memory pages are just reclaimed), the page_frag_alloc() may still
->> >> re-use the prior pfmemalloc page_frag_cache->va to allocate skb->data. As a
->> >> result, the skb->pfmemalloc is always true unless page_frag_cache->va is
->> >> re-allocated, even the kernel is not under memory pressure any longer.
->> >> +	/*
->> >> +	 * Try to avoid re-using pfmemalloc page because kernel may already
->> >> +	 * run out of the memory pressure situation at any time.
->> >> +	 */
->> >> +	if (unlikely(nc->va && nc->pfmemalloc)) {
->> >> +		page = virt_to_page(nc->va);
->> >> +		__page_frag_cache_drain(page, nc->pagecnt_bias);
->> >> +		nc->va = NULL;
->> >> +	}
->> >
->> > I think this is the wrong way to solve this problem.  Instead, we should
->> > use up this page, but refuse to recycle it.  How about something like this (not even compile tested):
->>
->> Thank you very much for the feedback. Yes, the option is to use the same page
->> until it is used up (offset < 0). Instead of recycling it, the kernel free it
->> and allocate new one.
->>
->> This depends on whether we will tolerate the packet drop until this page is used up.
->>
->> For virtio-net, the payload (skb->data) is of size 128-byte. The padding and
->> alignment will finally make it as 512-byte.
->>
->> Therefore, for virtio-net, we will have at most 4096/512-1=7 packets dropped
->> before the page is used up.
->
->My thinking is that if the kernel is under memory pressure then freeing
->the page and allocating a new one is likely to put even more strain
->on the memory allocator, so we want to do this "soon", rather than at
->each allocation.
->
->Thanks for providing the numbers.  Do you think that dropping (up to)
->7 packets is acceptable?
->
->We could also do something like ...
->
->        if (unlikely(nc->pfmemalloc)) {
->                page = alloc_page(GFP_NOWAIT | __GFP_NOWARN);
->                if (page)
->                        nc->pfmemalloc = 0;
->                put_page(page);
->        }
->
->to test if the memory allocator has free pages at the moment.  Not sure
->whether that's a good idea or not -- hopefully you have a test environment
->set up where you can reproduce this condition on demand and determine
->which of these three approaches is best!
+Otherwise we should probably fix this in enqueue_to_backlog().
+
+> diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
+> index b70ded3760f2..73cfcd7e9517 100644
+> --- a/drivers/net/can/dev.c
+> +++ b/drivers/net/can/dev.c
+> @@ -538,7 +538,11 @@ unsigned int can_get_echo_skb(struct net_device *dev, unsigned int idx)
+>  	if (!skb)
+>  		return 0;
+>  
+> -	netif_rx(skb);
+> +	skb_get(skb);
+> +	if (netif_rx(skb) == NET_RX_SUCCESS)
+> +		dev_consume_skb_any(skb);
+> +	else
+> +		dev_kfree_skb_any(skb);
+>  
+>  	return len;
+>  }
+
