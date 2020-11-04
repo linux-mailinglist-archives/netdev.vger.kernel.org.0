@@ -2,118 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C672A6F27
-	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 21:46:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 121EB2A6F2D
+	for <lists+netdev@lfdr.de>; Wed,  4 Nov 2020 21:50:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732342AbgKDUqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 15:46:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48434 "EHLO
+        id S1731226AbgKDUuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 15:50:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730383AbgKDUqC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 15:46:02 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE82CC0613D3;
-        Wed,  4 Nov 2020 12:46:01 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id f140so32252ybg.3;
-        Wed, 04 Nov 2020 12:46:01 -0800 (PST)
+        with ESMTP id S1728815AbgKDUuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 15:50:37 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB830C0613D3;
+        Wed,  4 Nov 2020 12:50:36 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id n142so23349ybf.7;
+        Wed, 04 Nov 2020 12:50:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=xeC3eavaM2yNhTls+Kq7UzrspacL6oZ/uq/pDoYl6Xw=;
-        b=Z+ToEU+X0ph2r5Jxy+5hi7KZCTa50JzJRBnyuHbbxrifWe3iCLGdDelPNnYZaVqS6w
-         /AFIZuQlHPlxcQRqC/T2gXBuHZJUuB4o+njYFsUxPyyMDVOdRt/Poo3V+PjkidL1Jryl
-         cJ5nLizZPcXVnrtaayJzj4QNDbznZ98KDYsFjKME1WPt3dLJm8F5OCkQjDWGOESK2r6e
-         s42X7VQxNHxy5oE+sePZSasI6EQRnZv5RDG2yT3GMhgyz+Qh0sMWElzuvCxaKEYRLkqZ
-         W9ei7lzv21EzuBT0IpKXn2YZ4xiVdYMG8nAKcv8o5+4VZnSV6deNqU91a84pigvlaKLr
-         bdGQ==
+        bh=wDpBtkx/IQaLSwvU9IJBZpBWHgQXXfzDxZ7n4MKg6hQ=;
+        b=IqFwuk35iIAnGCtNv7LEH2qb6XYrZRYW5oPYuAqsiozqKa4PKj2RYkUuYMrc68DwYv
+         8vGcbo3o3tGut4kQkj7PDYYzthDnBYwR/BbXUnRTn1cld026r5G2bVGWndewsHSSWylH
+         oUk7leDy0qPKdL17b4+xz1stgVCQm8mN93uG79NOMty+tQZ2OfGpCRnh4kTUlhKK+WvO
+         r0YdL9WMDA5+6+0lpYE0R8LbqAMIOEqX8SkV+fSO5aBY15CWtDOQuzzYvHWSrtwwzRwY
+         9xy117fB9xGsacwUsS7zpPmBz91pVlvj3qiVyWAhnConN1N2/lYIcTwc5ph/1VJT90Ec
+         lyyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xeC3eavaM2yNhTls+Kq7UzrspacL6oZ/uq/pDoYl6Xw=;
-        b=tLVX6pWw9mDxRpRhdgq/TS78+sG9tLP3eCvTyocouVjXd6NbqD0MyJIvbAcQ+u8IoN
-         oIRpCX+lNZ+2WrP1KsUng9fjr42A7K3X0yQEgb4x+aQOVroKezpap23eMVBc5hPMJ/oJ
-         muwjLbBj9qWntt+TmfEP12v/koy5uWBOd/KD0O9KTpAqv4hZ3rj2bn9aScXkOxgDN9HT
-         WrkgBVcgijBBz2lFcl9HnZ8/ap0RIP3uUPHKWRTY+Lf4IZfSBqTRyNOTjC1awnYAjDDS
-         QObx5ao+tMgmpBrQu2aAjaYhk7LyG6hjRIWyARGNaCeDYpl5Yi7MVoBDw6wF8vemWr5n
-         4OWg==
-X-Gm-Message-State: AOAM533IaLJSKeVH447FR4jq/mS1bjHTwkohnG+Q/H7L/4MvE++jGyBf
-        8MZt4AOjopBH7NpY0WOWeMfyJKM8pUXWuCiWqAg=
-X-Google-Smtp-Source: ABdhPJwbOHF/k2mngURR4oGNmkM1WGT8naCIo8V34wTp1Kg7Dsk1+GoWC4jw1T8ZL5d7KCXrjfcIyH5RDQlOt5TJTnA=
-X-Received: by 2002:a25:3443:: with SMTP id b64mr37146820yba.510.1604522761227;
- Wed, 04 Nov 2020 12:46:01 -0800 (PST)
+        bh=wDpBtkx/IQaLSwvU9IJBZpBWHgQXXfzDxZ7n4MKg6hQ=;
+        b=Tz9Qxlt6niru0AyuUM4NxsCaraYay81OR/NsH+F9vwBigNHBEpf4E3ilBJ4NTBKHRT
+         lOzyp4qC7xVnfAblRJcZUOESXTmsGJrLD8P8PT+uK28WbZb1J2t7GZOne38SQs0Xoj8M
+         m6qnLf8bavqM7oh1HOp19c+QQV+oiHTMwhHBwp+MOBsSzAZip+Ygz6U0qa2SZ0WWHyOT
+         VOV6IVSWjAdF7HWCRwHmC4LGtvdY+vY58oQYtmx7BJvJ27B6u+Xcm9OJT4Viajr5EGKd
+         pM8Uh6vuemTdZDA8lH6jRSI4DMUGuKvPrw6XXH6Qj2bpRgXRaCps0XIrW3hnhnidRhgj
+         +L2A==
+X-Gm-Message-State: AOAM532TkRISpgoeTlH0osbaZaLSOKr7WLHxmQdpW1AMy5+J85/ZtnSC
+        3ADVTbSjiLSanZgEDqsUppCOKdGXi0SNNDjpAr0=
+X-Google-Smtp-Source: ABdhPJyZQTun7PPm5sMWC7kS42O7xCAUXYmijtWjLcZP2MpK0sRKW5DWIwHcN5UCsKqQd6nYrydCjgtFC1uwDr9G/Tc=
+X-Received: by 2002:a25:b0d:: with SMTP id 13mr39602661ybl.347.1604523036195;
+ Wed, 04 Nov 2020 12:50:36 -0800 (PST)
 MIME-Version: 1.0
-References: <20201103154738.29809-1-david.verbeiren@tessares.net> <20201104112332.15191-1-david.verbeiren@tessares.net>
-In-Reply-To: <20201104112332.15191-1-david.verbeiren@tessares.net>
+References: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
+ <20201009011240.48506-4-alexei.starovoitov@gmail.com> <20201013195622.GB1305928@krava>
+ <CAADnVQLYSk0YgK7_dUSF-5Rau10vOdDgosVhE9xmEr1dp+=2vg@mail.gmail.com>
+ <CAEf4BzbWO3fgWxAWQw4Pee=F7=UqU+N6LtKYV7V9ZZrfkPZ3gw@mail.gmail.com>
+ <561A9F0C-BDAE-406A-8B93-011ECAB22B1C@fb.com> <20201104164215.GH3861143@krava>
+In-Reply-To: <20201104164215.GH3861143@krava>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 4 Nov 2020 12:45:50 -0800
-Message-ID: <CAEf4BzaK4Lbac=A8dsRyCLCbdwTbXEJFXFU113kYv1UVCV9TyQ@mail.gmail.com>
-Subject: Re: [PATCH bpf v4] bpf: zero-fill re-used per-cpu map element
-To:     David Verbeiren <david.verbeiren@tessares.net>
-Cc:     bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
+Date:   Wed, 4 Nov 2020 12:50:25 -0800
+Message-ID: <CAEf4BzacV0TpXSk4giLKmLBCvARH-Jpgp6Pa5br2wHO3_A2-9w@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 3/4] selftests/bpf: Add profiler test
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <Kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 4, 2020 at 3:26 AM David Verbeiren
-<david.verbeiren@tessares.net> wrote:
+On Wed, Nov 4, 2020 at 8:46 AM Jiri Olsa <jolsa@redhat.com> wrote:
 >
-> Zero-fill element values for all other cpus than current, just as
-> when not using prealloc. This is the only way the bpf program can
-> ensure known initial values for all cpus ('onallcpus' cannot be
-> set when coming from the bpf program).
+> On Thu, Oct 15, 2020 at 06:09:14AM +0000, Song Liu wrote:
+> >
+> >
+> > > On Oct 13, 2020, at 2:56 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> >
+> > [...]
+> >
+> > >
+> > > I'd go with Kconfig + bpf_core_enum_value(), as it's shorter and
+> > > nicer. This compiles and works with my Kconfig, but I haven't checked
+> > > with CONFIG_CGROUP_PIDS defined.
+> >
+> > Tested with CONFIG_CGROUP_PIDS, it looks good.
+> >
+> > Tested-by: Song Liu <songliubraving@fb.com>
 >
-> The scenario is: bpf program inserts some elements in a per-cpu
-> map, then deletes some (or userspace does). When later adding
-> new elements using bpf_map_update_elem(), the bpf program can
-> only set the value of the new elements for the current cpu.
-> When prealloc is enabled, previously deleted elements are re-used.
-> Without the fix, values for other cpus remain whatever they were
-> when the re-used entry was previously freed.
->
-> A selftest is added to validate correct operation in above
-> scenario as well as in case of LRU per-cpu map element re-use.
->
-> Fixes: 6c9059817432 ("bpf: pre-allocate hash map elements")
-> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Signed-off-by: David Verbeiren <david.verbeiren@tessares.net>
-> ---
->
-> Notes:
->     v4:
->       - Replaced racy "once" test by getpgid syscall with
->         check on pid. (Andrii)
->       - Copyright lines use /* */ (Andrii)
+> hi,
+> I still need to apply my workaround to compile tests,
+> so I wonder this fell through cracks
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+
+The fix was already applied ([0]). Do you still see issues?
+
+  [0] https://patchwork.kernel.org/project/netdevbpf/patch/20201022202739.3667367-1-andrii@kernel.org/
 
 >
->     v3:
->       - Added selftest that was initially provided as separate
->         patch, and reworked to
->         * use skeleton (Andrii, Song Liu)
->         * skip test if <=1 CPU (Song Liu)
+> thanks,
+> jirka
 >
->     v2:
->       - Moved memset() to separate pcpu_init_value() function,
->         which replaces pcpu_copy_value() but delegates to it
->         for the cases where no memset() is needed (Andrii).
->       - This function now also avoids doing the memset() for
->         the current cpu for which the value must be set
->         anyhow (Andrii).
->       - Same pcpu_init_value() used for per-cpu LRU map
->         (Andrii).
+> >
+> > >
+> > >
+> > > diff --git a/tools/testing/selftests/bpf/progs/profiler.inc.h
+> > > b/tools/testing/selftests/bpf/progs/profiler.inc.h
+> > > index 00578311a423..79b8d2860a5c 100644
+> > > --- a/tools/testing/selftests/bpf/progs/profiler.inc.h
+> > > +++ b/tools/testing/selftests/bpf/progs/profiler.inc.h
+> > > @@ -243,7 +243,11 @@ static ino_t get_inode_from_kernfs(struct
+> > > kernfs_node* node)
+> > >        }
+> > > }
+> > >
+> > > -int pids_cgrp_id = 1;
+> > > +extern bool CONFIG_CGROUP_PIDS __kconfig __weak;
+> > > +
+> > > +enum cgroup_subsys_id___local {
+> > > +       pids_cgrp_id___local = 1, /* anything but zero */
+> > > +};
+> > >
+> > > static INLINE void* populate_cgroup_info(struct cgroup_data_t* cgroup_data,
+> > >                                         struct task_struct* task,
+> > > @@ -253,7 +257,9 @@ static INLINE void* populate_cgroup_info(struct
+> > > cgroup_data_t* cgroup_data,
+> > >                BPF_CORE_READ(task, nsproxy, cgroup_ns, root_cset,
+> > > dfl_cgrp, kn);
+> > >        struct kernfs_node* proc_kernfs = BPF_CORE_READ(task, cgroups,
+> > > dfl_cgrp, kn);
+> > >
+> > > -       if (ENABLE_CGROUP_V1_RESOLVER) {
+> > > +       if (ENABLE_CGROUP_V1_RESOLVER && CONFIG_CGROUP_PIDS) {
+> > > +               int cgrp_id = bpf_core_enum_value(enum
+> > > cgroup_subsys_id___local, pids_cgrp_id___local);
+> > > +
+> > > #ifdef UNROLL
+> > > #pragma unroll
+> > > #endif
+> > > @@ -262,7 +268,7 @@ static INLINE void* populate_cgroup_info(struct
+> > > cgroup_data_t* cgroup_data,
+> > >                                BPF_CORE_READ(task, cgroups, subsys[i]);
+> > >                        if (subsys != NULL) {
+> > >                                int subsys_id = BPF_CORE_READ(subsys, ss, id);
+> > > -                               if (subsys_id == pids_cgrp_id) {
+> > > +                               if (subsys_id == cgrp_id) {
+> > >                                        proc_kernfs =
+> > > BPF_CORE_READ(subsys, cgroup, kn);
+> > >                                        root_kernfs =
+> > > BPF_CORE_READ(subsys, ss, root, kf_root, kn);
+> > >                                        break;
+> >
 >
->  kernel/bpf/hashtab.c                          |  30 ++-
->  .../selftests/bpf/prog_tests/map_init.c       | 214 ++++++++++++++++++
->  .../selftests/bpf/progs/test_map_init.c       |  33 +++
->  3 files changed, 275 insertions(+), 2 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/map_init.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_map_init.c
->
-
-[...]
