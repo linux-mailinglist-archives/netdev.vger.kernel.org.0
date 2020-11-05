@@ -2,111 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6E7F2A81DA
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 16:07:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C28662A821A
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 16:22:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731006AbgKEPHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 10:07:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56174 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728371AbgKEPHN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 10:07:13 -0500
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C1CE522210;
-        Thu,  5 Nov 2020 15:07:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604588832;
-        bh=iGxDjGpgZgvh1at2/59sSPdVCtzZKM9jCmS50+iMi3E=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=RL8Yxi3b4nBNd50oejfwXK6xegX1iflPA7ERuLp1Ndd/RGOer8n4zqguIpdDv7REL
-         0D3kedysHHVG0MONILeThjZnfZ70toRQGAo7rzWFijqay/AGv/7vkSSoSxNO8E855z
-         Ze9Tjix7M53/tgPRrifDZ7YcBCnX0e9ZHhiU88x4=
-Received: by mail-wm1-f51.google.com with SMTP id h22so1941146wmb.0;
-        Thu, 05 Nov 2020 07:07:11 -0800 (PST)
-X-Gm-Message-State: AOAM531MS8gqn2Sc82PFxSTq9rnsoeiNip5JXCAeubGeANB2mbbl4sIl
-        G1J1qKz/lKrBaIFZ5P+ak90sy/b0acmaQ0UFIgI=
-X-Google-Smtp-Source: ABdhPJwFJINOEnDFfpK3PkNNsRXbOb9RCrfaMzLA61u9jqh2TFcDUA6ZjaE9FjcClJZlpFBXwreXQg11d88l56RHWWc=
-X-Received: by 2002:a1c:e919:: with SMTP id q25mr3176667wmc.142.1604588830214;
- Thu, 05 Nov 2020 07:07:10 -0800 (PST)
+        id S1731224AbgKEPW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 10:22:26 -0500
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:8483 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731204AbgKEPW0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 10:22:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1604589745; x=1636125745;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=8Nee0VCzpk0Vgp0nXh8FG89MS98QQe0yg6mbF5jma2Q=;
+  b=C1C75RdWAhR01vy01CP5fDyakF2YC/M4Z9El5QXrcwyVnQHWhi+2UzAu
+   /8AjLzxrLVDRZpDW8el1pI1o+UaNugZ9XD+KzVumWP7yCBOjOKzngi0HB
+   1joQxoDf3zXa7d5X78HIHlOzZ3Pnxg6PDHXA4nTgRn663bGvN/u7vJZZt
+   2WasOPeGYoRqAJIuGPnQYXmSehTTIOMdSHwUfhMu6eBJcrjdC+X3uBlHX
+   N1aZ53rTxkzD6sdBB6g3kZLvhTgfg5d6TvN0+0JCBZNJYBeYtXHNtHprX
+   vXkJ0t7KZZcZpQucy7t5o8JtnFZ5FiOSvLYFLYv4NDD1hWeFiFARrWTuR
+   A==;
+IronPort-SDR: YEpKQPsDcnaR5QPmdVQeMheN9WFfnUtorYWNbGEfQOvcKZFyiOWnugCGRND5AuUStOGEKzGAEk
+ fzRFhdf/x7+zS4bDx2HZy5xzG/V/OKXa29ptuQ5lAWaAHTncNQNgIYJiDbIrgqUej0SsVvvDjV
+ pk5ak9f81gQqDqNi8bsngbf74STF0R2ONX0otRj6U5iUHhedMmLYEn0Gw5lib4xOhWU8XldXSQ
+ Pz/IpXLwuSxS7o4COwvnlKXUib7JNDE25UwgBzBgB9Ens4P5CIG8QFcWJ+xtFhoJmVKHt67LYb
+ Lec=
+X-IronPort-AV: E=Sophos;i="5.77,453,1596524400"; 
+   d="scan'208";a="32571915"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Nov 2020 08:22:24 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 5 Nov 2020 08:22:24 -0700
+Received: from [10.171.246.99] (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Thu, 5 Nov 2020 08:22:19 -0700
+Subject: Re: [PATCH] net: macb: fix NULL dereference due to no pcs_config
+ method
+To:     Parshuram Thombare <pthombar@cadence.com>, <kuba@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <linux@armlinux.org.uk>
+CC:     <Claudiu.Beznea@microchip.com>, <Santiago.Esteban@microchip.com>,
+        <andrew@lunn.ch>, <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>, <harini.katakam@xilinx.com>,
+        <michal.simek@xilinx.com>
+References: <1604587039-5646-1-git-send-email-pthombar@cadence.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+Message-ID: <6873cf12-456b-c121-037b-d2c5a6138cb3@microchip.com>
+Date:   Thu, 5 Nov 2020 16:22:18 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20201105073434.429307-1-xie.he.0141@gmail.com>
-In-Reply-To: <20201105073434.429307-1-xie.he.0141@gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 5 Nov 2020 16:06:54 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2bk9ZpoEvmhDpSv8ByyO-LevmF-W4Or_6RPRtV6gTQ1w@mail.gmail.com>
-Message-ID: <CAK8P3a2bk9ZpoEvmhDpSv8ByyO-LevmF-W4Or_6RPRtV6gTQ1w@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: x25_asy: Delete the x25_asy driver
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Martin Schiller <ms@dev.tdt.de>,
-        Andrew Hendry <andrew.hendry@gmail.com>,
-        linux-x25@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1604587039-5646-1-git-send-email-pthombar@cadence.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 5, 2020 at 8:34 AM Xie He <xie.he.0141@gmail.com> wrote:
->
-> This driver transports LAPB (X.25 link layer) frames over TTY links.
->
-> I can safely say that this driver has no actual user because it was
-> not working at all until:
-> commit 8fdcabeac398 ("drivers/net/wan/x25_asy: Fix to make it work")
->
-> The code in its current state still has problems:
->
-> 1.
-> The uses of "struct x25_asy" in x25_asy_unesc (when receiving) and in
-> x25_asy_write_wakeup (when sending) are not protected by locks against
-> x25_asy_change_mtu's changing of the transmitting/receiving buffers.
-> Also, all "netif_running" checks in this driver are not protected by
-> locks against the ndo_stop function.
->
-> 2.
-> The driver stops all TTY read/write when the netif is down.
-> I think this is not right because this may cause the last outgoing frame
-> before the netif goes down to be incompletely transmitted, and the first
-> incoming frame after the netif goes up to be incompletely received.
->
-> And there may also be other problems.
->
-> I was planning to fix these problems but after recent discussions about
-> deleting other old networking code, I think we may just delete this
-> driver, too.
->
-> Signed-off-by: Xie He <xie.he.0141@gmail.com>
+On 05/11/2020 at 15:37, Parshuram Thombare wrote:
+> This patch fixes NULL pointer dereference due to NULL pcs_config
+> in pcs_ops.
+> 
+> Fixes: e4e143e26ce8 ("net: macb: add support for high speed interface")
+
+What is this tag? In linux-next? As patch is not yet in Linus' tree, you 
+cannot refer to it like this.
+
+> Reported-by: Nicolas Ferre <Nicolas.Ferre@microchip.com>
+> Link: https://lkml.org/lkml/2020/11/4/482
+
+You might need to change this to a "lore" link:
+https://lore.kernel.org/netdev/2db854c7-9ffb-328a-f346-f68982723d29@microchip.com/
+
+> Signed-off-by: Parshuram Thombare <pthombar@cadence.com>
+
+This fix looks a bit weird to me. What about proposing a patch to 
+Russell like the chunk that you already identified in function 
+phylink_major_config()?
+
+
 > ---
->  Documentation/process/magic-number.rst        |   1 -
->  .../it_IT/process/magic-number.rst            |   1 -
->  .../zh_CN/process/magic-number.rst            |   1 -
->  arch/mips/configs/gpr_defconfig               |   1 -
->  arch/mips/configs/mtx1_defconfig              |   1 -
->  drivers/net/wan/Kconfig                       |  15 -
->  drivers/net/wan/Makefile                      |   1 -
->  drivers/net/wan/x25_asy.c                     | 836 ------------------
->  drivers/net/wan/x25_asy.h                     |  46 -
->  9 files changed, 903 deletions(-)
->  delete mode 100644 drivers/net/wan/x25_asy.c
->  delete mode 100644 drivers/net/wan/x25_asy.h
+>   drivers/net/ethernet/cadence/macb_main.c | 17 +++++++++++++++--
+>   1 file changed, 15 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index b7bc160..130a5af 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -633,6 +633,15 @@ static void macb_pcs_an_restart(struct phylink_pcs *pcs)
+>          /* Not supported */
+>   }
+> 
+> +static int macb_pcs_config(struct phylink_pcs *pcs,
+> +                          unsigned int mode,
+> +                          phy_interface_t interface,
+> +                          const unsigned long *advertising,
+> +                          bool permit_pause_to_mac)
+> +{
+> +       return 0;
+> +}
 
-Adding Martin Schiller and Andrew Hendry, plus the linux-x25 mailing
-list to Cc. When I last looked at the wan drivers, I think I concluded
-that this should still be kept around, but I do not remember why.
-OTOH if it was broken for a long time, that is a clear indication that
-it was in fact unused.
+Russell, is the requirement for this void function intended?
 
-Since you did the bugfix mentioned above, do you have an idea
-when it could have last worked? I see it was originally merged in
-linux-2.3.21, and Stephen Hemminger did a cleanup for
-linux-2.6.0-rc3 that he apparently tested but also said "Not sure
-if anyone ever uses this.".
+> +
+>   static const struct phylink_pcs_ops macb_phylink_usx_pcs_ops = {
+>          .pcs_get_state = macb_usx_pcs_get_state,
+>          .pcs_config = macb_usx_pcs_config,
+> @@ -642,6 +651,7 @@ static const struct phylink_pcs_ops macb_phylink_usx_pcs_ops = {
+>   static const struct phylink_pcs_ops macb_phylink_pcs_ops = {
+>          .pcs_get_state = macb_pcs_get_state,
+>          .pcs_an_restart = macb_pcs_an_restart,
+> +       .pcs_config = macb_pcs_config,
+>   };
+> 
+>   static void macb_mac_config(struct phylink_config *config, unsigned int mode,
+> @@ -776,10 +786,13 @@ static int macb_mac_prepare(struct phylink_config *config, unsigned int mode,
+> 
+>          if (interface == PHY_INTERFACE_MODE_10GBASER)
+>                  bp->phylink_pcs.ops = &macb_phylink_usx_pcs_ops;
+> -       else
+> +       else if (interface == PHY_INTERFACE_MODE_SGMII)
+>                  bp->phylink_pcs.ops = &macb_phylink_pcs_ops;
 
-Hopefully Martin or Andrew can provide a definite Ack or Nack on this.
+Do you confirm that all SGMII type interfaces need phylink_pcs.ops?
 
-      Arnd
+> +       else
+> +               bp->phylink_pcs.ops = NULL;
+> 
+> -       phylink_set_pcs(bp->phylink, &bp->phylink_pcs);
+> +       if (bp->phylink_pcs.ops)
+> +               phylink_set_pcs(bp->phylink, &bp->phylink_pcs);
+> 
+>          return 0;
+>   }
+
+Regards,
+   Nicolas
+
+-- 
+Nicolas Ferre
