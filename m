@@ -2,160 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 998942A82B9
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 16:54:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68DB72A8278
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 16:45:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731563AbgKEPya (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 10:54:30 -0500
-Received: from mmnxfpmta1.iai.co.il ([212.235.98.150]:10400 "EHLO
-        mmnxfpmta1.iai.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731074AbgKEPy1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 10:54:27 -0500
-X-Greylist: delayed 954 seconds by postgrey-1.27 at vger.kernel.org; Thu, 05 Nov 2020 10:54:26 EST
-DKIM-Signature: v=1; a=rsa-sha1; c=simple/simple; d=iai.co.il; s=dk18122020;
-        t=1604591666; i=@iai.co.il; bh=FIBaLnkSa78VYAnxN8VGdw3lxbA=; l=8750;
-        h=From;
-        b=ajks9QRLfdGHRQKEb3olJE0Gv8iLnemzNmBjWZHWzZKdTMV0+NyXX8b9ykdnK33Kq
-         WT2xScB8kHHMIz21ZCh1Ble0KAs+lNLDT+KnCM6xl/4U2L9NNGBQmFTiPxoi0mdqOV
-         eSEeV/TG4ow6XizBDyAyV9AA0YXsqaIDlMqq6kuM=
-Received: from EXMAIL1.iai.co.il (unknown [172.21.48.103])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        id S1731323AbgKEPpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 10:45:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34542 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731202AbgKEPpO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 10:45:14 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by Forcepoint Email with ESMTPS id CC4D7B23B6F4EF90B8D2;
-        Thu,  5 Nov 2020 17:38:26 +0200 (IST)
-Received: from exs12.iai.co.il ([169.254.3.222]) by EXMAIL1.iai.co.il
- ([172.21.48.103]) with mapi id 14.03.0266.001; Thu, 5 Nov 2020 17:38:26 +0200
-From:   Alayev Michael <malayev@iai.co.il>
-To:     "mic.al.linux@gmail.com" <mic.al.linux@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: net: dsa: mv88e6xxx : linux v5.4 crash
-Thread-Topic: net: dsa: mv88e6xxx : linux v5.4 crash
-Thread-Index: AdazhaD1GyilujQQT+aqctfhMGhrRA==
-Date:   Thu, 5 Nov 2020 15:38:26 +0000
-Message-ID: <48F7D4389F30BA4383F214EE802BA47101C2E0DB75@EXS12.iai.co.il>
-Accept-Language: he-IL, en-US
-Content-Language: he-IL
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.48.107]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        by mail.kernel.org (Postfix) with ESMTPSA id 9FF3B206FA;
+        Thu,  5 Nov 2020 15:45:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604591113;
+        bh=RYfcojP3xQPdgNO24dCEuSYbe3kFwBI9UaElG668AGk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WUwkmm5MK3MfjMJKe/ZGRT7ERL++vJOrKm12aDuXQEi30a6pVcfAU6unoYTvoEOlF
+         I+zYBqAGCEYm9vIR+7awtLUxv0p75nKTNY/qrgObV4Ns3gOD1775K0cM1XKiYZM6bd
+         P6Pq35Qn0c69LObw3Lo2vkRNCDgGpXO27/tg2Q84=
+Date:   Thu, 5 Nov 2020 07:45:11 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFQ=?= =?UTF-8?B?w7ZwZWw=?= 
+        <bjorn.topel@intel.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>, jeffrey.t.kirsher@intel.com,
+        anthony.l.nguyen@intel.com,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [PATCH bpf-next 1/6] i40e: introduce lazy Tx completions for
+ AF_XDP zero-copy
+Message-ID: <20201105074511.6935e8b7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAJ8uoz3-tjXekU=kR+HfMhGBcHtAFnKGq1ZvpFq99T_S-mknPg@mail.gmail.com>
+References: <1604498942-24274-1-git-send-email-magnus.karlsson@gmail.com>
+        <1604498942-24274-2-git-send-email-magnus.karlsson@gmail.com>
+        <20201104153320.66cecba8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAJ8uoz3-tjXekU=kR+HfMhGBcHtAFnKGq1ZvpFq99T_S-mknPg@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8gQW5kcmV3LA0KDQpUaGlzIGlzIG15IHN5c3RlbSdzIG5ldHdvcmsgdG9wb2xvZ3kuIEl0
-IHJlbGllcyBvbiBYaWxpbngncyBaeW5xLTcwMDAgc29jLg0KDQp6eW5xLTcwMDAgICAgICBzd2l0
-Y2gwICAgICAgIHN3aXRjaDENCiAoY3B1KSAgICAgICBtdjg4ZTYzOTB4ICAgIG12ODhlNjM5MHgN
-CiAgLS0tLS0tLSAgICAgICAgICAgICAgLS0tLS0tLS0tICAgICAgICAgICAtLS0tLS0tLS0NCnwg
-ICAgICAgICAgIHwgICAgICAgIHwgICAgICAgICAgICAgfCAgICAgICB8ICAgICAgICAgICB8DQp8
-IGdlbTB8LS0tLS0tfHAwICBwMTB8LS0tLS18cDEwICAgIHwNCnwgICAgICAgICAgIHwgICAgICAg
-IHwgICAgICAgICAgICAgfCAgICAgICB8ICAgICAgICAgICB8DQp8ICAgICAgICAgICB8ICAgICAg
-ICAgIC0tLS0tLS0tLSAgICAgICAgICAgIC0tLS0tLS0tLQ0KfCAgICAgICAgICAgfCAgICAgICAg
-ICAgfG1kaW9fYWRkcj0yICAgIHwgbWRpb19hZGRyPTMNCnwgICAgICAgICAgIHwgICAgICAgICAg
-IHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgfA0KfCAgICAgICAgICAgfC0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS18DQp8ICAgICAgICAgICB8ICAgIHwgICAgICAgICAgICAgICAg
-IA0KfCAgICAgICAgICAgfCAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgIG12ODhlMTUx
-MChkZWJ1Z19waHkpDQp8ICAgICAgICAgICB8ICAgIHwgIG1kaW9fYWRkcj0xICAtLS0tLS0tLQ0K
-fCAgICAgICAgICAgfCAgICAgLS0tLS0tLS0tLS0tLS0tLS0tLS18ICAgICAgICAgICB8IA0KfCAg
-ICAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAgfCAN
-CnwgZ2VtMXwtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS18ICAgICAgICAgICB8DQp8ICAgICAgICAg
-ICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgICB8DQp8ICAgICAg
-ICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0tLS0tLS0tDQogICAtLS0t
-LS0tICAgICAgICAgICAgICAgICAgIA0KDQpJIGhhdmUgYnVpbHQgYSB2NS40IGxpbnV4IGtlcm5l
-bCBmb3IgaXQgYW5kIGl0cyBldGhlcm5ldCBuZXR3b3JrIGRlZmluZWQgaW4gdGhlIGRldmljZS10
-cmVlIGFzIGZvbGxvd3MgDQooYXJjaC9hcm0vYm9vdC9kdHMvenlucS16ZWQuZHRzIGdlbTAgYW5k
-IGdlbTEpICAgOg0KDQo+IFBsZWFzZSBmaXggeW91ciBlbWFpbCBjbGllbnQgYW5kDQo+IHBvc3Qg
-dGhlIERUIGZpbGUgZm9yIHJldmlldy4gSSB3aWxsDQo+IHRoZW4gcG9pbnQgb3V0IHNvbWUgb2Yg
-dGhlIGVycm9ycy4NCg0KVHJpZWQgdG8gZml4IGl0LCBhbmQgaW5kZW50ZWQgaXQgYWdhaW46DQoN
-Cg0KJmdlbTAgew0KCXN0YXR1cyA9ICJva2F5IjsNCglwaHktbW9kZSA9ICJyZ21paS1pZCI7DQoJ
-cGh5LWhhbmRsZSA9IDwmcGh5MD47CQ0KCWZpeGVkLWxpbmsgew0KCQlzcGVlZCA9IDwxMDAwPjsN
-CgkJZnVsbC1kdXBsZXg7DQoJfTsNCg0KPiBUaGUgZGlhZ3JhbSB5b3Ugc2hvd2VkIGhhZCBnZW0w
-IGNvbm5lY3RlZCBkaXJlY3RseSB0byB0aGUgc3dpdGNoLiBTbw0KPiB0aGlzIHBoeS1oYW5kbGUg
-aXMgd3JvbmcuIE9yIHRoZSBkaWFncmFtIGlzIHdyb25nLg0KVGhlIGRpYWdyYW0gaXMgY29ycmVj
-dC4gSSBoYXZlIGNvbW1lbnRlZCB0aGUgcGh5LW1vZGUgYW5kIHBoeS1oYW5kbGUgaW4gJ2dlbTAn
-IGRlZmluaXRpb24gYW5kIGdvdCBlcnJvcjoNCidtYWNiIGUwMDBiMDAwLmV0aGVybmV0IGV0aDA6
-IG5vIFBIWSBmb3VuZCcNCg0KDQoJZGJnX3BoeTogcGh5QDEgew0KCQlyZWcgPSA8MT47DQoJCWxh
-YmVsID0gImRlYnVnIjsNCgl9Ow0KDQoJc3dpdGNoMDogc3dpdGNoQDIgew0KCQljb21wYXRpYmxl
-ID0gIm1hcnZlbGwsbXY4OGU2MTkwIjsNCgkJI2FkZHJlc3MtY2VsbHMgPSA8MT47DQoJCSNzaXpl
-LWNlbGxzID0gPDA+Ow0KCQlyZWcgPSA8Mj47DQoNCgkJZHNhLG1lbWJlciA9IDwwIDA+Ow0KDQoJ
-CXBvcnRzIHsNCgkJCSNhZGRyZXNzLWNlbGxzID0gPDE+Ow0KCQkJI3NpemUtY2VsbHMgPSA8MD47
-DQoNCgkJCXN3aXRjaDBwaHkxOiBwb3J0QDAgew0KCQkJCXJlZyA9IDwwPjsNCgkJCQlsYWJlbCA9
-ICJ1aWQyMDgtY3B1IjsNCgkJCQlldGhlcm5ldCA9IDwmZ2VtMD47DQoJCQkJcGh5LW1vZGUgPSAi
-cmdtaWktaWQiOw0KDQo+IFlvdSBoYXZlIGdlbTAgdXNpbmcgcGh5LW1vZGUgPSAicmdtaWktaWQi
-IGFzIHdlbGwuIEJvdGggZG9pbmcgZGVsYXlzDQo+IHdpbGwgbm90IHdvcmsuIFlvdSBzaG91bGQg
-ZHJvcCB0aGUgb25lIGluIGdlbTAuDQpBcyBJJ3ZlIG1lbnRpb25lZCBhYm92ZSwgSSBkcm9wcGVk
-IGl0IGJ1dCBnb3QgZXJyb3IuDQoNCgkJCQlmaXhlZC1saW5rIHsNCgkJCQkJc3BlZWQgPSA8MTAw
-MD47DQoJCQkJCWZ1bGwtZHVwbGV4Ow0KCQkJCX07DQoJCQl9Ow0KDQoJCQlwb3J0QDEgew0KCQkJ
-CXJlZyA9IDwxPjsNCgkJCQlsYWJlbCA9ICJ1aWQyMDEtMUEiOw0KCQkJfTsNCgkJCQkJDQoJCQlw
-b3J0QDIgew0KCQkJCXJlZyA9IDwyPjsNCgkJCQlsYWJlbCA9ICJ1aWQyMDItMkEtcDktMUEiOw0K
-CQkJCXBoeS1tb2RlID0gIjEwMDBiYXNlLXgiOw0KCSAJCQlmaXhlZC1saW5rIHsNCgkJCQkJc3Bl
-ZWQgPSA8MTAwMD47DQoJCQkJCWZ1bGwtZHVwbGV4Ow0KCQkJCX07DQoJCQl9Ow0KDQoJCQlwb3J0
-QDMgew0KCQkJCXJlZyA9IDwzPjsNCgkJCQlsYWJlbCA9ICJ1aWQyMDMtM0EtcDktMkEiOw0KCQkJ
-CXBoeS1tb2RlID0gIjEwMDBiYXNlLXgiOw0KCQkJIAlmaXhlZC1saW5rIHsNCgkJCQkJc3BlZWQg
-PSA8MTAwMD47DQoJCQkJCWZ1bGwtZHVwbGV4Ow0KCQkJCX07DQoJCQl9Ow0KCQkJCQkNCgkJCXBv
-cnRANCB7DQoJCQkJcmVnID0gPDQ+Ow0KCQkJCWxhYmVsID0gInVpZDIwNC00QS1wOS0zQSI7DQoJ
-CQkJcGh5LW1vZGUgPSAiMTAwMGJhc2UteCI7DQoJCQkJZml4ZWQtbGluayB7DQoJCQkJCXNwZWVk
-ID0gPDEwMDA+Ow0KCQkJCQlmdWxsLWR1cGxleDsNCgkJCQl9Ow0KCQkJfTsNCg0KCQkJcG9ydEA1
-IHsNCgkJCQlyZWcgPSA8NT47DQoJCQkJbGFiZWwgPSAidWlkMjA1LTVBIjsNCgkJCX07DQoJCQkN
-CgkJCXBvcnRANiB7DQoJCQkJcmVnID0gPDY+Ow0KCQkJCWxhYmVsID0gInVpZDIwNi02QSI7DQoJ
-CQl9Ow0KDQoJCQlwb3J0QDcgew0KCQkJCXJlZyA9IDw3PjsNCgkJCQlsYWJlbCA9ICJ1aWQyMDct
-N0EiOw0KCQkJfTsNCgkJCQ0KCQkJcG9ydEA4IHsNCgkJCQlyZWcgPSA8OD47DQoJCQkJbGFiZWwg
-PSAidWlkMjA4LThBIjsNCgkJCX07DQoNCgkJCXBvcnRAOSB7DQoJCQkJcmVnID0gPDk+Ow0KCQkJ
-CWxhYmVsID0gInVpZDIwOS05QS1wOS0wQSI7DQoJCQkJcGh5LW1vZGUgPSAiMTAwMGJhc2UteCI7
-DQoJIAkJCWZpeGVkLWxpbmsgew0KCQkJCQlzcGVlZCA9IDwxMDAwPjsNCgkJCQkJZnVsbC1kdXBs
-ZXg7DQoJCQkJfTsNCgkJCX07CQkJDQoNCj4gV2h5IGJvdGggMTAwMGJhc2UteCBhbmQgZml4ZWQg
-bGluaz8gRG8geW91IGhhdmUgYW4gU0ZQIGNvbm5lY3RlZD8gSWYNCj4gc28sIGRlc2NyaWJlIHRo
-ZSBTRlAgaW4gRFQuDQpJIGRvIGhhdmUgU0ZQIGNvbm5lY3RlZC4gSW4gbXkgcHJldmlvdXMgRFQg
-b24gbGludXggdjQuMTQgSSBkaWRu4oCZdCBoYXZlIGl0IG9uIERUIGFuZCBpdCB3b3JrZWQgZmlu
-ZS4NCkhvdyBkbyBJIGRlc2NyaWJlIGl0IGhlcmU/DQoNCgkJCXN3aXRjaDBwb3J0MTA6IHBvcnRA
-MTAgew0KCQkJCXJlZyA9IDwxMD47DQoJCQkJbGFiZWwgPSAiZHNhIjsNCgkJCQlsaW5rID0gPCZz
-d2l0Y2gxcG9ydDEwPjsgDQoJCQkJcGh5LW1vZGUgPSAiMTAwMGJhc2UteCI7DQoJIAkJCWZpeGVk
-LWxpbmsgew0KCQkJCQlzcGVlZCA9IDwxMDAwPjsNCgkJCQkJZnVsbC1kdXBsZXg7DQoJCQkJfTsN
-CgkJCX07DQoNCg0KCQl9Oy8vcG9ydHMNCg0KCX07Ly9zd2l0Y2gwDQoNCg0KCXN3aXRjaDE6IHN3
-aXRjaEAzIHsNCgkJY29tcGF0aWJsZSA9ICJtYXJ2ZWxsLG12ODhlNjE5MCI7DQoJCSNhZGRyZXNz
-LWNlbGxzID0gPDE+Ow0KCQkjc2l6ZS1jZWxscyA9IDwwPjsNCgkJcmVnID0gPDM+Ow0KDQoJCWRz
-YSxtZW1iZXIgPSA8MCAxPjsNCg0KCQlwb3J0cyB7DQoJCQkjYWRkcmVzcy1jZWxscyA9IDwxPjsN
-CgkJCSNzaXplLWNlbGxzID0gPDA+Ow0KDQoJCQlwb3J0QDEgew0KCQkJCXJlZyA9IDwxPjsNCgkJ
-CQlsYWJlbCA9ICJ1aWQyMTEtMUIiOw0KCQkJfTsNCg0KCQkJcG9ydEAyIHsNCgkJCQlyZWcgPSA8
-Mj47DQoJCQkJbGFiZWwgPSAidWlkMjEyLTJCLXA5LTFCIjsNCgkJCQlwaHktbW9kZSA9ICIxMDAw
-YmFzZS14IjsNCgkgCQkJZml4ZWQtbGluayB7DQoJCQkJCXNwZWVkID0gPDEwMDA+Ow0KCQkJCQlm
-dWxsLWR1cGxleDsNCgkJCQl9Ow0KCQkJfTsNCg0KCQkJcG9ydEAzIHsNCgkJCQlyZWcgPSA8Mz47
-DQoJCQkJbGFiZWwgPSAidWlkMjEzLTNCLXA5LTJCIjsNCgkJCQlwaHktbW9kZSA9ICIxMDAwYmFz
-ZS14IjsNCgkgCQkJZml4ZWQtbGluayB7DQoJCQkJCXNwZWVkID0gPDEwMDA+Ow0KCQkJCQlmdWxs
-LWR1cGxleDsNCgkJCQl9Ow0KCQkJfTsNCg0KCQkJcG9ydEA0IHsNCgkJCQlyZWcgPSA8ND47DQoJ
-CQkJbGFiZWwgPSAidWlkMjE0LTRCLXA5LTNCIjsNCgkJCQlwaHktbW9kZSA9ICIxMDAwYmFzZS14
-IjsNCgkgCQkJZml4ZWQtbGluayB7DQoJCQkJCXNwZWVkID0gPDEwMDA+Ow0KCQkJCQlmdWxsLWR1
-cGxleDsNCgkJCQl9Ow0KCQkJfTsNCg0KCQkJcG9ydEA1IHsNCgkJCQlyZWcgPSA8NT47DQoJCQkJ
-bGFiZWwgPSAidWlkMjE1LTVCIjsNCgkJCX07DQoNCgkJCXBvcnRANiB7DQoJCQkJcmVnID0gPDY+
-Ow0KCQkJCWxhYmVsID0gInVpZDIxNi02QiI7DQoJCQl9Ow0KDQoJCQlwb3J0QDcgew0KCQkJCXJl
-ZyA9IDw3PjsNCgkJCQlsYWJlbCA9ICJ1aWQyMTctN0IiOw0KCQkJfTsNCg0KCQkJcG9ydEA4IHsN
-CgkJCQlyZWcgPSA8OD47DQoJCQkJbGFiZWwgPSAidWlkMjE4LThCIjsNCgkJCX07DQoNCgkJCXBv
-cnRAOSB7DQoJCQkJcmVnID0gPDk+Ow0KCQkJCWxhYmVsID0gInVpZDIxOS05Qi1wOS0wQiI7DQoJ
-CQkJcGh5LW1vZGUgPSAiMTAwMGJhc2UteCI7DQoJIAkJCWZpeGVkLWxpbmsgew0KCQkJCQlzcGVl
-ZCA9IDwxMDAwPjsNCgkJCQkJZnVsbC1kdXBsZXg7DQoJCQkJfTsNCgkJCX07DQoNCgkJCXN3aXRj
-aDFwb3J0MTA6IHBvcnRAMTAgew0KCQkJCXJlZyA9IDwxMD47DQoJCQkJbGFiZWwgPSAiZHNhIjsN
-CgkJCQlsaW5rID0gPCZzd2l0Y2gwcG9ydDEwPjsgDQoJCQkJcGh5LW1vZGUgPSAiMTAwMGJhc2Ut
-eCI7DQoJCQkgCWZpeGVkLWxpbmsgew0KCQkJCQlzcGVlZCA9IDwxMDAwPjsNCgkJCQkJZnVsbC1k
-dXBsZXg7DQoJCQkJfTsNCgkJCX07DQoNCgkJfTsvL3BvcnRzDQoJfTsvL3N3aXRjaDENCn07Ly9n
-ZW0wDQoNCg0KJmdlbTEgew0KCXN0YXR1cyA9ICJva2F5IjsNCglwaHktaGFuZGxlID0gPCZkYmdf
-cGh5PjsNCn07DQoNCj4gVGhpcyBpcyBhIDYzOTBYIHJpZ2h0PyBXaHkgbGltaXQgaXQgdG8gMTAw
-MGJhc2UtWCB3aGVuIGl0IGNvdWxkIGJlDQo+IGRvaW5nIDEwRz8NClllcy4gSW4gdGhlIDQuMTQg
-RFQgSSd2ZSB0cmllZCB0byBwdXQgc3BlZWQ9MjUwMCBidXQgaXQgZGlkbuKAmXQgd29yay4NCg0K
-SXRzIGNyYXNoZXMgb24gbGludXggc3RhcnR1cC4gV2hhdCBzaG91bGQgYmUgZml4ZWQgaW4gbXkg
-ZHRzL2R0c2k/DQoNClRoYW5rIHlvdQ0KTWljaGFlbCBBbGF5ZXYNCg0KKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKiogUGxlYXNlIGNvbnNpZGVyIHRoZSBlbnZpcm9ubWVudCBi
-ZWZvcmUgcHJpbnRpbmcgdGhpcyBlbWFpbCAhIFRoZSBpbmZvcm1hdGlvbiBjb250YWluZWQgaW4g
-dGhpcyBjb21tdW5pY2F0aW9uIGlzIHByb3ByaWV0YXJ5IHRvIElzcmFlbCBBZXJvc3BhY2UgSW5k
-dXN0cmllcyBMdGQuIGFuZC9vciB0aGlyZCBwYXJ0aWVzLCBtYXkgY29udGFpbiBjb25maWRlbnRp
-YWwgb3IgcHJpdmlsZWdlZCBpbmZvcm1hdGlvbiwgYW5kIGlzIGludGVuZGVkIG9ubHkgZm9yIHRo
-ZSB1c2Ugb2YgdGhlIGludGVuZGVkIGFkZHJlc3NlZSB0aGVyZW9mLiBJZiB5b3UgYXJlIG5vdCB0
-aGUgaW50ZW5kZWQgYWRkcmVzc2VlLCBwbGVhc2UgYmUgYXdhcmUgdGhhdCBhbnkgdXNlLCBkaXNj
-bG9zdXJlLCBkaXN0cmlidXRpb24gYW5kL29yIGNvcHlpbmcgb2YgdGhpcyBjb21tdW5pY2F0aW9u
-IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSByZWNlaXZlIHRoaXMgY29tbXVuaWNhdGlv
-biBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVkaWF0ZWx5IGFuZCBkZWxl
-dGUgaXQgZnJvbSB5b3VyIGNvbXB1dGVyLiBUaGFuayB5b3UuIFZpc2l0IHVzIGF0OiB3d3cuaWFp
-LmNvLmlsDQo=
+On Thu, 5 Nov 2020 15:17:50 +0100 Magnus Karlsson wrote:
+> > I feel like this needs a big fat warning somewhere.
+> >
+> > It's perfectly fine to never complete TCP packets, but AF_XDP could be
+> > used to implement protocols in user space. What if someone wants to
+> > implement something like TSQ?  
+> 
+> I might misunderstand you, but with TSQ here (for something that
+> bypasses qdisk and any buffering and just goes straight to the driver)
+> you mean the ability to have just a few buffers outstanding and
+> continuously reuse these? If so, that is likely best achieved by
+> setting a low Tx queue size on the NIC. Note that even without this
+> patch, completions could be delayed. Though this patch makes that the
+> normal case. In any way, I think this calls for some improved
+> documentation.
+
+TSQ tries to limit the amount of data the TCP stack queues into TC/sched
+and drivers. Say 1MB ~ 16 GSO frames. It will not queue more data until
+some of the transfer is reported as completed. 
+
+IIUC you're allowing up to 64 descriptors to linger without reporting
+back that the transfer is done. That means that user space implementing
+a scheme similar to TSQ may see its transfers stalled.
