@@ -2,89 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8A62A8419
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 17:56:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19E982A8447
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 17:59:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731533AbgKEQ4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 11:56:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51926 "EHLO mail.kernel.org"
+        id S1731642AbgKEQ6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 11:58:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52452 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726214AbgKEQ4Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 11:56:16 -0500
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        id S1730862AbgKEQ6U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 11:58:20 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A773C2073A;
-        Thu,  5 Nov 2020 16:56:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5683A2073A;
+        Thu,  5 Nov 2020 16:58:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604595375;
-        bh=rveaLrZ2VekMaBIfhcAvnGUg2fcFO3veOvwCKc6KlV8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=p0zlCIJSZLU+hIGO/1OT9CsKyGQRT9xRqtuEOEJYahXBjO2R63qCOEBzaoC2jvC/W
-         b3CyZRYfIxq8nHLYW+R8WfeBMZfDYBVEuMJK7rNNLj7g5UvHMQPmTC8sRuIQAKq6bJ
-         KIIuiYd6H/ssEmRFS4YipJuNXx5/cC0UxgvuXAYQ=
-Date:   Thu, 5 Nov 2020 17:57:01 +0100
-From:   gregkh <gregkh@linuxfoundation.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Netdev <netdev@vger.kernel.org>, Parav Pandit <parav@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        virtualization@lists.linux-foundation.org,
-        alsa-devel@alsa-project.org, Takashi Iwai <tiwai@suse.de>,
-        Mark Brown <broonie@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David M Ertman <david.m.ertman@intel.com>
-Subject: Re: [PATCH mlx5-next v1 06/11] vdpa/mlx5: Connect mlx5_vdpa to
- auxiliary bus
-Message-ID: <20201105165701.GA1243785@kroah.com>
-References: <20201101201542.2027568-1-leon@kernel.org>
- <20201101201542.2027568-7-leon@kernel.org>
- <20201103154525.GO36674@ziepe.ca>
- <CAPcyv4jP9nFAGdvB7agg3x7Y7moHGcxLd5=f5=5CXnJRUf3n9w@mail.gmail.com>
- <20201105073302.GA3415673@kroah.com>
- <20201105164738.GD36674@ziepe.ca>
+        s=default; t=1604595500;
+        bh=WPfKbYRANsaYY5+y24dfY+e9RC7MfQyTqEBf6L+3aEU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZH2FZ7NzGwDzL2Er6PUXZVBDRy83tC97s/FO6GPnUd/nmdTIXGPib4KGpPYhAEB6t
+         qegoWzpJgUEUXW7lz3lnfMtK3ZPE0ZVOhz8xiBliQeK8B08zvX4+6gK4u2WQvj4MgQ
+         wB/htahwttIct/GH6qQWrodaV+WODv+klzsRNeRM=
+Date:   Thu, 5 Nov 2020 08:58:18 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net,
+        kernel-team@fb.com, Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [RFC PATCH bpf-next 4/5] bpf: load and verify kernel module
+ BTFs
+Message-ID: <20201105085818.4f20f3ed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201105164616.GA1201462@kroah.com>
+References: <20201105045140.2589346-1-andrii@kernel.org>
+        <20201105045140.2589346-5-andrii@kernel.org>
+        <20201105083925.68433e51@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201105164616.GA1201462@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201105164738.GD36674@ziepe.ca>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 05, 2020 at 12:47:38PM -0400, Jason Gunthorpe wrote:
-> On Thu, Nov 05, 2020 at 08:33:02AM +0100, gregkh wrote:
-> > > Were there any additional changes you wanted to see happen? I'll go
-> > > give the final set another once over, but David has been diligently
-> > > fixing up all the declared major issues so I expect to find at most
-> > > minor incremental fixups.
+On Thu, 5 Nov 2020 17:46:16 +0100 Greg Kroah-Hartman wrote:
+> On Thu, Nov 05, 2020 at 08:39:25AM -0800, Jakub Kicinski wrote:
+> > On Wed, 4 Nov 2020 20:51:39 -0800 Andrii Nakryiko wrote:  
+> > > Add kernel module listener that will load/validate and unload module BTF.
+> > > Module BTFs gets ID generated for them, which makes it possible to iterate
+> > > them with existing BTF iteration API. They are given their respective module's
+> > > names, which will get reported through GET_OBJ_INFO API. They are also marked
+> > > as in-kernel BTFs for tooling to distinguish them from user-provided BTFs.
+> > > 
+> > > Also, similarly to vmlinux BTF, kernel module BTFs are exposed through
+> > > sysfs as /sys/kernel/btf/<module-name>. This is convenient for user-space
+> > > tools to inspect module BTF contents and dump their types with existing tools:  
 > > 
-> > This is in my to-review pile, along with a load of other stuff at the
-> > moment:
-> > 	$ ~/bin/mdfrm -c ~/mail/todo/
-> > 	1709 messages in /home/gregkh/mail/todo/
-> > 
-> > So give me a chance.  There is no rush on my side for this given the
-> > huge delays that have happened here on the authorship side many times in
-> > the past :)
+> > Is there any precedent for creating per-module files under a new
+> > sysfs directory structure? My intuition would be that these files 
+> > belong under /sys/module/  
 > 
-> On the other hand Leon and his team did invest alot of time and
-> effort, very quickly, to build and QA this large mlx5 series here to
-> give a better/second example as you requested only a few weeks ago.
+> Ick, why?  What's wrong with them under btf?  The module core code
+> "owns" the /sys/modules/ tree.  If you want others to mess with that, 
+> it will get tricky.
 
-Leon and his team have done a great job, and I never said otherwise.
+It's debug info, that's where I would look for it. 
 
-greg k-h
+Clearly I'd be wrong to do so :)
