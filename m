@@ -2,121 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8DE72A7B74
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 11:15:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB5052A7B82
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 11:20:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726777AbgKEKPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 05:15:18 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:5910 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725827AbgKEKPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 05:15:18 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fa3d0b90000>; Thu, 05 Nov 2020 02:15:21 -0800
-Received: from [172.27.15.55] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 5 Nov
- 2020 10:15:07 +0000
-Subject: Re: [net 4/9] net/mlx5e: Fix refcount leak on kTLS RX resync
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        "Maxim Mikityanskiy" <maximmi@mellanox.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-References: <20201103191830.60151-1-saeedm@nvidia.com>
- <20201103191830.60151-5-saeedm@nvidia.com>
- <20201104145927.3e7efaa2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-Message-ID: <0c929b0f-750a-3618-3891-4fa40dd14104@nvidia.com>
-Date:   Thu, 5 Nov 2020 12:15:04 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S1726665AbgKEKU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 05:20:26 -0500
+Received: from mout.gmx.net ([212.227.17.20]:57875 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725308AbgKEKU0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 05:20:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1604571622;
+        bh=J60Hs08ctBMGnu8VYEei//B33PVRybH0LWEN5EqOdZk=;
+        h=X-UI-Sender-Class:Subject:To:References:From:Date:In-Reply-To;
+        b=IIMhubYpsATwnXOOPCXRLtomHQNTW4HJ1eXThoUQRJQewuodC3ohW0uV+5XCq6g/n
+         3eQDDCHV5A2+JTVl4Wt6ep9NlZD2rkLpj7SrP9r+TKLTxAxN69vCsWvDO+SZIodQLT
+         WS/VO08LcvUwSi0syvYWVbkDvlm3G18TbW6XSlTw=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [0.0.0.0] ([149.28.201.231]) by mail.gmx.com (mrgmx105
+ [212.227.17.174]) with ESMTPSA (Nemesis) id 1MF3HU-1kYRa94BHE-00FQ85; Thu, 05
+ Nov 2020 11:20:22 +0100
+Subject: Re: Very slow realtek 8169 ethernet performance, but only one
+ interface, on ThinkPad T14.
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org
+References: <57f16fe7-2052-72cc-6628-bbb04f146ce0@gmx.com>
+ <7ee6a86c-5aca-3931-73cc-2ab72d8dd8a7@gmail.com>
+ <c4c063eb-d20b-8bc7-bbd7-b8df70c69a11@gmx.com>
+ <9f8785d2-76b2-f0ad-7fa1-a8a38d7df3af@gmail.com>
+From:   Qu Wenruo <quwenruo.btrfs@gmx.com>
+Autocrypt: addr=quwenruo.btrfs@gmx.com; prefer-encrypt=mutual; keydata=
+ mQENBFnVga8BCACyhFP3ExcTIuB73jDIBA/vSoYcTyysFQzPvez64TUSCv1SgXEByR7fju3o
+ 8RfaWuHCnkkea5luuTZMqfgTXrun2dqNVYDNOV6RIVrc4YuG20yhC1epnV55fJCThqij0MRL
+ 1NxPKXIlEdHvN0Kov3CtWA+R1iNN0RCeVun7rmOrrjBK573aWC5sgP7YsBOLK79H3tmUtz6b
+ 9Imuj0ZyEsa76Xg9PX9Hn2myKj1hfWGS+5og9Va4hrwQC8ipjXik6NKR5GDV+hOZkktU81G5
+ gkQtGB9jOAYRs86QG/b7PtIlbd3+pppT0gaS+wvwMs8cuNG+Pu6KO1oC4jgdseFLu7NpABEB
+ AAG0IlF1IFdlbnJ1byA8cXV3ZW5ydW8uYnRyZnNAZ214LmNvbT6JAU4EEwEIADgCGwMFCwkI
+ BwIGFQgJCgsCBBYCAwECHgECF4AWIQQt33LlpaVbqJ2qQuHCPZHzoSX+qAUCXZw1oQAKCRDC
+ PZHzoSX+qCY6CACd+mWu3okGwRKXju6bou+7VkqCaHTdyXwWFTsr+/0ly5nUdDtT3yEVggPJ
+ 3VP70wjlrxUjNjFb6iIvGYxiPOrop1NGwGYvQktgRhaIhALG6rPoSSAhGNjwGVRw0km0PlIN
+ D29BTj/lYEk+jVM1YL0QLgAE1AI3krihg/lp/fQT53wLhR8YZIF8ETXbClQG1vJ0cllPuEEv
+ efKxRyiTSjB+PsozSvYWhXsPeJ+KKjFen7ebE5reQTPFzSHctCdPnoR/4jSPlnTlnEvLeqcD
+ ZTuKfQe1gWrPeevQzgCtgBF/WjIOeJs41klnYzC3DymuQlmFubss0jShLOW8eSOOWhLRuQEN
+ BFnVga8BCACqU+th4Esy/c8BnvliFAjAfpzhI1wH76FD1MJPmAhA3DnX5JDORcgaCbPEwhLj
+ 1xlwTgpeT+QfDmGJ5B5BlrrQFZVE1fChEjiJvyiSAO4yQPkrPVYTI7Xj34FnscPj/IrRUUka
+ 68MlHxPtFnAHr25VIuOS41lmYKYNwPNLRz9Ik6DmeTG3WJO2BQRNvXA0pXrJH1fNGSsRb+pK
+ EKHKtL1803x71zQxCwLh+zLP1iXHVM5j8gX9zqupigQR/Cel2XPS44zWcDW8r7B0q1eW4Jrv
+ 0x19p4P923voqn+joIAostyNTUjCeSrUdKth9jcdlam9X2DziA/DHDFfS5eq4fEvABEBAAGJ
+ ATwEGAEIACYCGwwWIQQt33LlpaVbqJ2qQuHCPZHzoSX+qAUCXZw1rgUJCWpOfwAKCRDCPZHz
+ oSX+qFcEB/95cs8cM1OQdE/GgOfCGxwgckMeWyzOR7bkAWW0lDVp2hpgJuxBW/gyfmtBnUai
+ fnggx3EE3ev8HTysZU9q0h+TJwwJKGv6sUc8qcTGFDtavnnl+r6xDUY7A6GvXEsSoCEEynby
+ 72byGeSovfq/4AWGNPBG1L61Exl+gbqfvbECP3ziXnob009+z9I4qXodHSYINfAkZkA523JG
+ ap12LndJeLk3gfWNZfXEWyGnuciRGbqESkhIRav8ootsCIops/SqXm0/k+Kcl4gGUO/iD/T5
+ oagaDh0QtOd8RWSMwLxwn8uIhpH84Q4X1LadJ5NCgGa6xPP5qqRuiC+9gZqbq4Nj
+Message-ID: <57b01490-7131-b845-81b0-14d64e83d316@gmx.com>
+Date:   Thu, 5 Nov 2020 18:20:19 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20201104145927.3e7efaa2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1604571321; bh=a4Ucl1t5AvX1mIgRQqjEwNII9lNygzf1TnIAsqV00UU=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=pL2RVWy7JvDLQBFQVdWTGT6RK4gbTTkDoEa5Lw2N2//XE5IKhkGhWLj5svHYHn0lk
-         zEv0Zntb9Syw8ZZ7jZcy5D3sxwvBro7C0zX/mepuE041CeLTd+wSd0PGJBpEQtedIT
-         t4OsCbx13F0GqCYYHTwnd9CoUtSKsPzFmCwdYzwa28rUBrmI5/K7LYAfS3WsQ+X3Bb
-         OWKxhu9sioinJI+vh8Vcty83jGzkvg6+jAfoZZhks0ly75ItZpsz4BhIzfr+tNlH7I
-         mizJAs5JX3jfN25GSCSR1qttRsjfBWbP8HZJGqSa7BSRPa/+o4q4tUT6QH0fi9st/v
-         /25JUgU/IsghQ==
+In-Reply-To: <9f8785d2-76b2-f0ad-7fa1-a8a38d7df3af@gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="weZFtWHdsGDjdghiI3EptHmQuqGvNuFC5"
+X-Provags-ID: V03:K1:lSwYX1KfJseE/jhMUBWNz9yRpl2lpNiyzo6o31gXz5PtrhBwWto
+ olj6NTGirJX8YroBMn8iP5pcr/DN25H/ohn4BuhYHOSnc9arossdf0avRbG3JyyrhFlB1mW
+ yMzI4vqwB4oYyz8aaTU+UCxsDYcuS29cE40D4Sh+RjhPWSdmO9uvPW54QPNez5WJW4PiqsS
+ bryOS5Bjj0qEw7IgIrm/g==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:s+sipxVpYfE=:iiSENiUbVCS03RnvrDG5c+
+ Pn0TNdaOfCLZmsOa9SQyhdFE0+NpcEDCo4L+y9uYS1RX5vQnZ8PFLHDZnvvDiKb4cvyvDPFvJ
+ DIu6HA2f7yfTeTe4dM/IOINjw4cFT0oAN//D2/aPzTcrljeRrJ/tMS+TcvpaymiDe4+SMdqlp
+ beH2e5LJieJr5no2zPkWzXLfrU6hX3A7PMNjqibTFE2o5rEtwUrQP/n6LcAsVVZXuf9swvT3r
+ 08GKz/E32IizUUKBu955n/Ai3XpX3IBnvHpPH148r0GCMVv9jGC6W4BBJD8wy5xsqr8dNzJtr
+ LHEsTR9NCzJpzKbJki3ejXrjF4ENfFSZwuKJhwxKygQ+0hKlvmq7JfncZzLRxP93CIgiR6D9s
+ DdUdMYev2sHr2c+xTN+5XMTCfX3/QzVvJINmhPCUXed67Y42x7D1y3tgsxNKDZnB0nzb+JIbo
+ psX+qKWY+IO1sR7qBfYuP98Pq5hx5BUCorpetVuI61NIpBT8ml88T6PdE+hZ8pmG96MryTWBs
+ ihka5kq8aSjEHXXcTUt3m648OO/eAuKYctaVrVXBvbHWzKcJYI2MAum5rn/+8D9WX1QyN/TFu
+ eR+ODI3LDBYu7eqFZ88A3HMBfaGoIRN4LOH6QAnmeUZEPynojsJxIkGotBCJK8Co4/hruht/4
+ +5hPKHbm6fiXgwudQmBqZQGMsBMVeC524HpkiUSjHU6ZP0cgzDlDrpdhLnoOpZZgXCSzCWWXz
+ 6zAXzyEQlBTdlmhM2cBapFyapq2e/g8h15ipAa4j1k9j9bWPZ8kGhYU5ZBlTmEnwI6NG8ESj8
+ ffzMB4lWayCBg8IbYD+RRpLdyoJcTsa0AGv9WtXQ39pD7Ma4O00DLlhvP+Ol6r6f+aa3vCBGC
+ J65UTQDUXbE6QiBBAV0Q==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-05 00:59, Jakub Kicinski wrote:
-> On Tue, 3 Nov 2020 11:18:25 -0800 Saeed Mahameed wrote:
->> From: Maxim Mikityanskiy <maximmi@mellanox.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--weZFtWHdsGDjdghiI3EptHmQuqGvNuFC5
+Content-Type: multipart/mixed; boundary="TEmQDuz14bPA62p4mFqjpnRG5Aqe9SAml"
+
+--TEmQDuz14bPA62p4mFqjpnRG5Aqe9SAml
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+
+
+
+On 2020/11/5 =E4=B8=8B=E5=8D=885:13, Heiner Kallweit wrote:
+> On 05.11.2020 08:42, Qu Wenruo wrote:
 >>
->> On resync, the driver calls inet_lookup_established
->> (__inet6_lookup_established) that increases sk_refcnt of the socket. To
->> decrease it, the driver set skb->destructor to sock_edemux. However, it
->> didn't work well, because the TCP stack also sets this destructor for
->> early demux, and the refcount gets decreased only once
-> 
-> Why is the stack doing early_demux if there is already a socket
-> assigned? Or is it not early_demux but something else?
-> Can you point us at the code?
+>>
+>> On 2020/11/5 =E4=B8=8B=E5=8D=883:01, Heiner Kallweit wrote:
+>>> On 05.11.2020 03:48, Qu Wenruo wrote:
+>>>> Hi,
+>>>>
+>>>> Not sure if this is a regression or not, but just find out that afte=
+r upgrading to v5.9 kernel, one of my ethernet port on my ThinkPad T14 (r=
+yzen version) becomes very slow.
+>>>>
+>>>> Only *2~3* Mbps.
+>>>>
+>>>> The laptop has two ethernet interfaces, one needs a passive adapter,=
+ the other one is a standard RJ45.
+>>>>
+>>>> The offending one is the one which needs the adapter (eth0).
+>>>> While the RJ45 one is completely fine.
+>>>>
+>>>> 02:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111=
+/8168/8411 PCI Express Gigabit Ethernet Controller (rev 0e)
+>>>> 05:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111=
+/8168/8411 PCI Express Gigabit Ethernet Controller (rev 15)
+>>>>
+>>>> The 02:00.0 one is the affected one.
+>>>>
+>>>> The related dmesgs are:
+>>>> [   38.110293] r8169 0000:02:00.0: can't disable ASPM; OS doesn't ha=
+ve ASPM control
+>>>> [   38.126069] libphy: r8169: probed
+>>>> [   38.126250] r8169 0000:02:00.0 eth0: RTL8168ep/8111ep, 00:2b:67:b=
+3:d9:20, XID 502, IRQ 105
+>>>> [   38.126252] r8169 0000:02:00.0 eth0: jumbo features [frames: 9194=
+ bytes, tx checksumming: ko]
+>>>> [   38.126294] r8169 0000:05:00.0: can't disable ASPM; OS doesn't ha=
+ve ASPM control
+>>>> [   38.126300] r8169 0000:05:00.0: enabling device (0000 -> 0003)
+>>>> [   38.139355] libphy: r8169: probed
+>>>> [   38.139523] r8169 0000:05:00.0 eth1: RTL8168h/8111h, 00:2b:67:b3:=
+d9:1f, XID 541, IRQ 107
+>>>> [   38.139525] r8169 0000:05:00.0 eth1: jumbo features [frames: 9194=
+ bytes, tx checksumming: ko]
+>>>> [   42.120935] Generic FE-GE Realtek PHY r8169-200:00: attached PHY =
+driver [Generic FE-GE Realtek PHY] (mii_bus:phy_addr=3Dr8169-200:00, irq=3D=
+IGNORE)
+>>>> [   42.247646] r8169 0000:02:00.0 eth0: Link is Down
+>>>> [   42.280799] Generic FE-GE Realtek PHY r8169-500:00: attached PHY =
+driver [Generic FE-GE Realtek PHY] (mii_bus:phy_addr=3Dr8169-500:00, irq=3D=
+IGNORE)
+>>>> [   42.477616] r8169 0000:05:00.0 eth1: Link is Down
+>>>> [   76.479569] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - fl=
+ow control rx/tx
+>>>> [   91.271894] r8169 0000:02:00.0 eth0: Link is Down
+>>>> [   99.873390] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - fl=
+ow control rx/tx
+>>>> [   99.878938] r8169 0000:02:00.0 eth0: Link is Down
+>>>> [  102.579290] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - fl=
+ow control rx/tx
+>>>> [  185.086002] r8169 0000:02:00.0 eth0: Link is Down
+>>>> [  392.884584] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - fl=
+ow control rx/tx
+>>>> [  392.891208] r8169 0000:02:00.0 eth0: Link is Down
+>>>> [  395.889047] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - fl=
+ow control rx/tx
+>>>> [  406.670738] r8169 0000:02:00.0 eth0: Link is Down
+>>>>
+>>>> Really nothing strange, even it negotiates to 1Gbps.
+>>>>
+>>>> But during iperf3, it only goes up to miserable 3Mbps.
+>>>>
+>>>> Is this some known bug or something special related to the passive a=
+dapter?
+>>>>
+>>>> Since the adapter is passive, and hasn't experience anything wrong f=
+or a long time, I really doubt that.
+>>>>
+>>>> Thanks,
+>>>> Qu
+>>>>
+>>>>
+>>> Thanks for the report. From which kernel version did you upgrade?
+>>
+>> Tested back to v5.7, which still shows the miserable performance.
+>>
+>> So I guess it could be a faulty adapter?
+>>
+>>> Please test
+>>> with the prior kernel version and report behavior (link stability and=
+ speed).
+>>> Under 5.9, does ethtool -S eth0 report packet errors?
+>>>
+>> Nope, no tx/rx_errors, no missed/aborted/underrun.
+>>
+>> Adding that the adapter is completely passive (no chip, just convertin=
+g
+>> RJ45 pins to the I shaped pins), I'm not sure that the adapter itself
+>> can fail.
+>>
+> Each additional mechanical connection may cause reflections or other si=
+gnal
+> disturbance. You could try to restrict the speed to 100Mbps via ethtool=
+,
+> and see what the effective speed is then. 100Mbps uses two wire pairs o=
+nly.
 
-I thought this was the code that was in conflict with setting 
-skb->destructor in the driver:
+OK, you're right, now I can get around 60Mbps.
 
-void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
-{
-         skb_orphan(skb);
-         skb->sk = sk;
-#ifdef CONFIG_INET
-         if (unlikely(!sk_fullsock(sk))) {
-                 skb->destructor = sock_edemux;
-                 sock_hold(sk);
-                 return;
-         }
-#endif
+So definitely something wrong with the adapter.
 
-However, after taking another look, it seems that the root cause is 
-somewhere else. This piece of code actually calls skb_orphan before 
-reassigning the destructor.
+Will use the RJ45 one and avoid use the ThinkPad proprietary interface.
 
-I'll debug it further to try to find where the destructor is replaced or 
-just not called.
+Thanks,
+Qu
+>=20
+>> THanks,
+>> Qu
+>>
+>=20
 
-> IPv4:
-> 	if (net->ipv4.sysctl_ip_early_demux &&
-> 	    !skb_dst(skb) &&
-> 	    !skb->sk &&                              <============
-> 	    !ip_is_fragment(iph)) {
-> 		const struct net_protocol *ipprot;
-> 		int protocol = iph->protocol;
-> 
-> 		ipprot = rcu_dereference(inet_protos[protocol]);
-> 		if (ipprot && (edemux = READ_ONCE(ipprot->early_demux))) {
-> 			err = INDIRECT_CALL_2(edemux, tcp_v4_early_demux,
-> 					      udp_v4_early_demux, skb);
-> 			if (unlikely(err))
-> 				goto drop_error;
-> 			/* must reload iph, skb->head might have changed */
-> 			iph = ip_hdr(skb);
-> 		}
-> 	}
-> 
-> IPv6:
-> 	if (net->ipv4.sysctl_ip_early_demux && !skb_dst(skb) && skb->sk == NULL) {
->                                                                  ~~~~~~~~~~~~~~~
-> 		const struct inet6_protocol *ipprot;
-> 
-> 		ipprot = rcu_dereference(inet6_protos[ipv6_hdr(skb)->nexthdr]);
-> 		if (ipprot && (edemux = READ_ONCE(ipprot->early_demux)))
-> 			INDIRECT_CALL_2(edemux, tcp_v6_early_demux,
-> 					udp_v6_early_demux, skb);
-> 	}
-> 
 
+--TEmQDuz14bPA62p4mFqjpnRG5Aqe9SAml--
+
+--weZFtWHdsGDjdghiI3EptHmQuqGvNuFC5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEELd9y5aWlW6idqkLhwj2R86El/qgFAl+j0eMACgkQwj2R86El
+/qhtkggAlL8gqogEU0MAgoxn1hAoyxsSq2zBtjZi19Pj94qRnW7QI+DmvbtFueAi
+3OeVbzSR03OOlvjGP7ICLA29LFP7hJSoSzqe3E1sayDMHr4QXyIWctqxwT5gisaG
+X39WIftMEMCWo+UM03MJ0bXEIjhYl69lZxvXyaclr7cXoofK7qKUOZgBESFt7ljQ
+9WhH+5O+G/L3UXfOwYh5w5i/IFlQUWNFnyH7ELqJUGdyz4M6ZX6ajUU8QqlSqOm4
+W/IWd1+XK2PMi05IIMfipqfg+OZKbCYDDsXQQfaCvwyREmWb3w3DAcu4VjKTgGub
+psVPP2gNiaPoq3pTJQqkb5ARaJpMoQ==
+=aZxd
+-----END PGP SIGNATURE-----
+
+--weZFtWHdsGDjdghiI3EptHmQuqGvNuFC5--
