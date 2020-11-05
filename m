@@ -2,126 +2,509 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D206C2A8879
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 21:59:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBFB72A8878
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 21:59:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732293AbgKEU7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 15:59:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732265AbgKEU7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 15:59:31 -0500
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A611C0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 12:59:31 -0800 (PST)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S1732200AbgKEU7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 15:59:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50980 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726801AbgKEU7Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 15:59:25 -0500
+Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4CRwqx735lzQkKv;
-        Thu,  5 Nov 2020 21:59:25 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1604609964;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=R4j3+zEcuhUOiDtJ6pNyNrUUKZfNv+1CgkW+NK5D070=;
-        b=nPLucI1eAstHNJ51uh5/mMM0J6R8SlTCrk8JFbtCzm6IcxoXBxBxCMB0wQp8pWvVDtAFXe
-        qYY1Bk5DQLZS/g2qOrrQSV6G5pI9Gm1bxvMQ6wGe5juQjqx+O+Xd5JT8OWFxb2omtMEv/W
-        RSNdp2dKTmrPXHFQQVn4LWVL5Z5BoDG0EHCAi89ENYBY+B6C4dpjUdevKKQyKuGrcoVAMt
-        NZ/FcLQfjfZqXbbCk9i+gWIuQcgGgDplLgXapl99uTY/RLMCYrB2GCVPZJ6p10PNQDOBpn
-        mi7AQH54GAVW1SK1EbJ7m13sR7FQP/u4Nza8f32s50JlIXqFU54VHe+tLvp6sg==
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
-        with ESMTP id iXlKwk3xcVDM; Thu,  5 Nov 2020 21:59:22 +0100 (CET)
-References: <cover.1604059429.git.me@pmachata.org> <5ed9e2e7cdf9326e8f7ec80f33f0f11eafc3a425.1604059429.git.me@pmachata.org> <0f017fbd-b8f5-0ebe-0c16-0d441b1d4310@gmail.com> <87o8kihyy9.fsf@nvidia.com> <b0cc6bd4-e4e6-22ba-429d-4cea7996ccd4@gmail.com> <20201102063752.GE5429@unreal> <87h7q7iclr.fsf@nvidia.com> <20201103062406.GH5429@unreal> <874km6i28j.fsf@nvidia.com> <20201104081528.GL5429@unreal>
-From:   Petr Machata <me@pmachata.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        stephen@networkplumber.org, john.fastabend@gmail.com,
-        jiri@nvidia.com, idosch@nvidia.com,
+        by mail.kernel.org (Postfix) with ESMTPSA id D803120719;
+        Thu,  5 Nov 2020 20:59:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604609963;
+        bh=DRNl3UpSeodOLfeM+mn+V6LFTVAs94M33BnMQXxp74U=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=zpSpNwA2dgS6fJ+B3dMKuscWCUALftl/jghIIz+UBAaXGmwNUQvYCnRqRa6zQJz25
+         yiqapd3x1bT55OkjGFZoKE/7/a1x/kBEtAudGHZxpNvAswRS0pD1rLUZkRZxeleGub
+         gRtcneWhJDOrkAvTeXNBS4DuFPGKJQo84UouINRQ=
+Message-ID: <d10e7a08200458c1bddb72fc983a5917daebc8f1.camel@kernel.org>
+Subject: Re: [PATCH mlx5-next v1 05/11] net/mlx5: Register mlx5 devices to
+ auxiliary virtual bus
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        gregkh <gregkh@linuxfoundation.org>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: Re: [PATCH iproute2-next v2 03/11] lib: utils: Add print_on_off_bool()
-In-reply-to: <20201104081528.GL5429@unreal>
-Date:   Thu, 05 Nov 2020 21:59:19 +0100
-Message-ID: <87y2jfh654.fsf@nvidia.com>
+        Jason Wang <jasowang@redhat.com>, linux-rdma@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        Parav Pandit <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        virtualization@lists.linux-foundation.org,
+        alsa-devel@alsa-project.org, tiwai@suse.de, broonie@kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        ranjani.sridharan@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, fred.oh@linux.intel.com,
+        shiraz.saleem@intel.com, dan.j.williams@intel.com,
+        kiran.patil@intel.com, linux-kernel@vger.kernel.org
+Date:   Thu, 05 Nov 2020 12:59:20 -0800
+In-Reply-To: <20201101201542.2027568-6-leon@kernel.org>
+References: <20201101201542.2027568-1-leon@kernel.org>
+         <20201101201542.2027568-6-leon@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -3.87 / 15.00 / 15.00
-X-Rspamd-Queue-Id: D0A3514AF
-X-Rspamd-UID: b70b70
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, 2020-11-01 at 22:15 +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> Create auxiliary devices under new virtual bus. This will replace
+> the custom-made mlx5 ->add()/->remove() interfaces and next patches
+> will fill the missing callback and remove the old interface logic.
+> 
+> The attachment of auxiliary drivers to the devices is possible in
+> 1-to-1 manner only and it requires us to create device for every
+> protocol,
+> so that device (module) will be able to connect to it.
+> 
+> System with 2 IB and 1 RoCE cards:
+> [leonro@vm ~]$ lspci |grep nox
+> 00:09.0 Ethernet controller: Mellanox Technologies MT27800 Family
+> [ConnectX-5]
+> 00:0a.0 Ethernet controller: Mellanox Technologies MT28908 Family
+> [ConnectX-6]
+> 00:0b.0 Ethernet controller: Mellanox Technologies MT2910 Family
+> [ConnectX-7]
+> [leonro@vm ~]$ ls -l /sys/bus/auxiliary/devices/
+>  mlx5_core.eth.2 ->
+> ../../../devices/pci0000:00/0000:00:0b.0/mlx5_core.eth.2
+>  mlx5_core.rdma.0 ->
+> ../../../devices/pci0000:00/0000:00:09.0/mlx5_core.rdma.0
+>  mlx5_core.rdma.1 ->
+> ../../../devices/pci0000:00/0000:00:0a.0/mlx5_core.rdma.1
+>  mlx5_core.rdma.2 ->
+> ../../../devices/pci0000:00/0000:00:0b.0/mlx5_core.rdma.2
+>  mlx5_core.vdpa.1 ->
+> ../../../devices/pci0000:00/0000:00:0a.0/mlx5_core.vdpa.1
+>  mlx5_core.vdpa.2 ->
+> ../../../devices/pci0000:00/0000:00:0b.0/mlx5_core.vdpa.2
+> [leonro@vm ~]$ rdma dev
+> 0: ibp0s9: node_type ca fw 4.6.9999 node_guid 5254:00c0:fe12:3455
+> sys_image_guid 5254:00c0:fe12:3455
+> 1: ibp0s10: node_type ca fw 4.6.9999 node_guid 5254:00c0:fe12:3456
+> sys_image_guid 5254:00c0:fe12:3456
+> 2: rdmap0s11: node_type ca fw 4.6.9999 node_guid 5254:00c0:fe12:3457
+> sys_image_guid 5254:00c0:fe12:3457
+> 
+> System with RoCE SR-IOV card with 4 VFs:
+> [leonro@vm ~]$ lspci |grep nox
+> 01:00.0 Ethernet controller: Mellanox Technologies MT28908 Family
+> [ConnectX-6]
+> 01:00.1 Ethernet controller: Mellanox Technologies MT28908 Family
+> [ConnectX-6 Virtual Function]
+> 01:00.2 Ethernet controller: Mellanox Technologies MT28908 Family
+> [ConnectX-6 Virtual Function]
+> 01:00.3 Ethernet controller: Mellanox Technologies MT28908 Family
+> [ConnectX-6 Virtual Function]
+> 01:00.4 Ethernet controller: Mellanox Technologies MT28908 Family
+> [ConnectX-6 Virtual Function]
+> [leonro@vm ~]$ ls -l /sys/bus/auxiliary/devices/
+>  mlx5_core.eth.0 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.0/mlx5_core.eth.0
+>  mlx5_core.eth.1 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.1/mlx5_core.eth.1
+>  mlx5_core.eth.2 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.2/mlx5_core.eth.2
+>  mlx5_core.eth.3 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.3/mlx5_core.eth.3
+>  mlx5_core.eth.4 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.4/mlx5_core.eth.4
+>  mlx5_core.rdma.0 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.0/mlx5_core.rdma.
+> 0
+>  mlx5_core.rdma.1 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.1/mlx5_core.rdma.
+> 1
+>  mlx5_core.rdma.2 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.2/mlx5_core.rdma.
+> 2
+>  mlx5_core.rdma.3 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.3/mlx5_core.rdma.
+> 3
+>  mlx5_core.rdma.4 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.4/mlx5_core.rdma.
+> 4
+>  mlx5_core.vdpa.1 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.1/mlx5_core.vdpa.
+> 1
+>  mlx5_core.vdpa.2 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.2/mlx5_core.vdpa.
+> 2
+>  mlx5_core.vdpa.3 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.3/mlx5_core.vdpa.
+> 3
+>  mlx5_core.vdpa.4 ->
+> ../../../devices/pci0000:00/0000:00:09.0/0000:01:00.4/mlx5_core.vdpa.
+> 4
+> [leonro@vm ~]$ rdma dev
+> 0: rocep1s0f0: node_type ca fw 4.6.9999 node_guid 5254:00c0:fe12:3455
+> sys_image_guid 5254:00c0:fe12:3455
+> 1: rocep1s0f0v0: node_type ca fw 4.6.9999 node_guid
+> 0000:0000:0000:0000 sys_image_guid 5254:00c0:fe12:3456
+> 2: rocep1s0f0v1: node_type ca fw 4.6.9999 node_guid
+> 0000:0000:0000:0000 sys_image_guid 5254:00c0:fe12:3457
+> 3: rocep1s0f0v2: node_type ca fw 4.6.9999 node_guid
+> 0000:0000:0000:0000 sys_image_guid 5254:00c0:fe12:3458
+> 4: rocep1s0f0v3: node_type ca fw 4.6.9999 node_guid
+> 0000:0000:0000:0000 sys_image_guid 5254:00c0:fe12:3459
+> 
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  .../net/ethernet/mellanox/mlx5/core/Kconfig   |   1 +
+>  drivers/net/ethernet/mellanox/mlx5/core/dev.c | 265
+> +++++++++++++++++-
+>  .../net/ethernet/mellanox/mlx5/core/main.c    |  24 +-
+>  .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  20 +-
+>  include/linux/mlx5/driver.h                   |  26 +-
+>  5 files changed, 325 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+> b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+> index 99f1ec3b2575..485478979b1a 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+> @@ -6,6 +6,7 @@
+>  config MLX5_CORE
+>  	tristate "Mellanox 5th generation network adapters (ConnectX
+> series) core driver"
+>  	depends on PCI
+> +	select AUXILIARY_BUS
+>  	select NET_DEVLINK
+>  	depends on VXLAN || !VXLAN
+>  	depends on MLXFW || !MLXFW
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
+> b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
+> index 1972ddd12704..8ddf469b2d05 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
+> @@ -37,6 +37,7 @@ static LIST_HEAD(intf_list);
+>  static LIST_HEAD(mlx5_dev_list);
+>  /* intf dev list mutex */
+>  static DEFINE_MUTEX(mlx5_intf_mutex);
+> +static DEFINE_IDA(mlx5_adev_ida);
+> 
+>  struct mlx5_device_context {
+>  	struct list_head	list;
+> @@ -50,6 +51,39 @@ enum {
+>  	MLX5_INTERFACE_ATTACHED,
+>  };
+> 
+> +static const struct mlx5_adev_device {
+> +	const char *suffix;
+> +	bool (*is_supported)(struct mlx5_core_dev *dev);
+> +} mlx5_adev_devices[1] = {};
+> +
+> +int mlx5_adev_idx_alloc(void)
+> +{
+> +	return ida_alloc(&mlx5_adev_ida, GFP_KERNEL);
+> +}
+> +
+> +void mlx5_adev_idx_free(int idx)
+> +{
+> +	ida_free(&mlx5_adev_ida, idx);
+> +}
+> +
+> +int mlx5_adev_init(struct mlx5_core_dev *dev)
+> +{
+> +	struct mlx5_priv *priv = &dev->priv;
+> +
+> +	priv->adev = kcalloc(ARRAY_SIZE(mlx5_adev_devices),
+> +			     sizeof(struct mlx5_adev *), GFP_KERNEL);
+> +	if (!priv->adev)
+> +		return -ENOMEM;
+> +
+> +	return 0;
+> +}
+> +
+> +void mlx5_adev_cleanup(struct mlx5_core_dev *dev)
+> +{
+> +	struct mlx5_priv *priv = &dev->priv;
+> +
+> +	kfree(priv->adev);
+> +}
+> 
+>  void mlx5_add_device(struct mlx5_interface *intf, struct mlx5_priv
+> *priv)
+>  {
+> @@ -135,15 +169,99 @@ static void mlx5_attach_interface(struct
+> mlx5_interface *intf, struct mlx5_priv
+>  	}
+>  }
+> 
+> -void mlx5_attach_device(struct mlx5_core_dev *dev)
+> +static void adev_release(struct device *dev)
+> +{
+> +	struct mlx5_adev *mlx5_adev =
+> +		container_of(dev, struct mlx5_adev, adev.dev);
+> +	struct mlx5_priv *priv = &mlx5_adev->mdev->priv;
+> +	int idx = mlx5_adev->idx;
+> +
+> +	kfree(mlx5_adev);
+> +	priv->adev[idx] = NULL;
+> +}
+> +
+> +static struct mlx5_adev *add_adev(struct mlx5_core_dev *dev, int
+> idx)
+> +{
+> +	const char *suffix = mlx5_adev_devices[idx].suffix;
+> +	struct auxiliary_device *adev;
+> +	struct mlx5_adev *madev;
+> +	int ret;
+> +
+> +	madev = kzalloc(sizeof(*madev), GFP_KERNEL);
+> +	if (!madev)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	adev = &madev->adev;
+> +	adev->id = dev->priv.adev_idx;
+> +	adev->name = suffix;
+> +	adev->dev.parent = dev->device;
+> +	adev->dev.release = adev_release;
+> +	madev->mdev = dev;
+> +	madev->idx = idx;
+> +
+> +	ret = auxiliary_device_init(adev);
+> +	if (ret) {
+> +		kfree(madev);
+> +		return ERR_PTR(ret);
+> +	}
+> +
+> +	ret = auxiliary_device_add(adev);
+> +	if (ret) {
+> +		auxiliary_device_uninit(adev);
+> +		return ERR_PTR(ret);
+> +	}
+> +	return madev;
+> +}
+> +
+> +static void del_adev(struct auxiliary_device *adev)
+> +{
+> +	auxiliary_device_delete(adev);
+> +	auxiliary_device_uninit(adev);
+> +}
+> +
+> +int mlx5_attach_device(struct mlx5_core_dev *dev)
+>  {
+>  	struct mlx5_priv *priv = &dev->priv;
+> +	struct auxiliary_device *adev;
+> +	struct auxiliary_driver *adrv;
+>  	struct mlx5_interface *intf;
+> +	int ret = 0, i;
+> 
+>  	mutex_lock(&mlx5_intf_mutex);
+> +	for (i = 0; i < ARRAY_SIZE(mlx5_adev_devices); i++) {
+> +		if (!priv->adev[i]) {
+> +			bool is_supported = false;
+> +
+> +			if (mlx5_adev_devices[i].is_supported)
+> +				is_supported =
+> mlx5_adev_devices[i].is_supported(dev);
+> +
+> +			if (!is_supported)
+> +				continue;
+> +
+> +			priv->adev[i] = add_adev(dev, i);
+> +			if (IS_ERR(priv->adev[i])) {
+> +				ret = PTR_ERR(priv->adev[i]);
+> +				priv->adev[i] = NULL;
+> +			}
+> +		} else {
+> +			adev = &priv->adev[i]->adev;
+> +			adrv = to_auxiliary_drv(adev->dev.driver);
+> +
+> +			if (adrv->resume)
+> +				ret = adrv->resume(adev);
+> +		}
+> +		if (ret) {
+> +			mlx5_core_warn(dev, "Device[%d] (%s) failed to
+> load\n",
+> +				       i, mlx5_adev_devices[i].suffix);
+> +
+> +			break;
+> +		}
+> +	}
+> +
+>  	list_for_each_entry(intf, &intf_list, list)
+>  		mlx5_attach_interface(intf, priv);
+>  	mutex_unlock(&mlx5_intf_mutex);
+> +	return ret;
+>  }
+> 
+>  static void mlx5_detach_interface(struct mlx5_interface *intf,
+> struct mlx5_priv *priv)
+> @@ -171,9 +289,29 @@ static void mlx5_detach_interface(struct
+> mlx5_interface *intf, struct mlx5_priv
+>  void mlx5_detach_device(struct mlx5_core_dev *dev)
+>  {
+>  	struct mlx5_priv *priv = &dev->priv;
+> +	struct auxiliary_device *adev;
+> +	struct auxiliary_driver *adrv;
+>  	struct mlx5_interface *intf;
+> +	pm_message_t pm = {};
+> +	int i;
+> 
+>  	mutex_lock(&mlx5_intf_mutex);
+> +	for (i = ARRAY_SIZE(mlx5_adev_devices) - 1; i >= 0; i--) {
+> +		if (!priv->adev[i])
+> +			continue;
+> +
+> +		adev = &priv->adev[i]->adev;
+> +		adrv = to_auxiliary_drv(adev->dev.driver);
+> +
+> +		if (adrv->suspend) {
+> +			adrv->suspend(adev, pm);
+> +			continue;
+> +		}
+> +
+> +		del_adev(&priv->adev[i]->adev);
+> +		priv->adev[i] = NULL;
+> +	}
+> +
+>  	list_for_each_entry(intf, &intf_list, list)
+>  		mlx5_detach_interface(intf, priv);
+>  	mutex_unlock(&mlx5_intf_mutex);
+> @@ -193,16 +331,30 @@ bool mlx5_device_registered(struct
+> mlx5_core_dev *dev)
+>  	return found;
+>  }
+> 
+> -void mlx5_register_device(struct mlx5_core_dev *dev)
+> +int mlx5_register_device(struct mlx5_core_dev *dev)
+>  {
+>  	struct mlx5_priv *priv = &dev->priv;
+>  	struct mlx5_interface *intf;
+> +	int ret;
+> +
+> +	mutex_lock(&mlx5_intf_mutex);
+> +	dev->priv.flags &= ~MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV;
+> +	ret = mlx5_rescan_drivers_locked(dev);
+> +	mutex_unlock(&mlx5_intf_mutex);
+> +	if (ret)
+> +		goto add_err;
+> 
+>  	mutex_lock(&mlx5_intf_mutex);
+>  	list_add_tail(&priv->dev_list, &mlx5_dev_list);
+>  	list_for_each_entry(intf, &intf_list, list)
+>  		mlx5_add_device(intf, priv);
+>  	mutex_unlock(&mlx5_intf_mutex);
+> +
+> +	return 0;
+> +
+> +add_err:
+> +	mlx5_unregister_device(dev);
+> +	return ret;
+>  }
+> 
+>  void mlx5_unregister_device(struct mlx5_core_dev *dev)
+> @@ -214,6 +366,9 @@ void mlx5_unregister_device(struct mlx5_core_dev
+> *dev)
+>  	list_for_each_entry_reverse(intf, &intf_list, list)
+>  		mlx5_remove_device(intf, priv);
+>  	list_del(&priv->dev_list);
+> +
+> +	dev->priv.flags |= MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV;
+> +	mlx5_rescan_drivers_locked(dev);
+>  	mutex_unlock(&mlx5_intf_mutex);
+>  }
+> 
+> @@ -246,6 +401,77 @@ void mlx5_unregister_interface(struct
+> mlx5_interface *intf)
+>  }
+>  EXPORT_SYMBOL(mlx5_unregister_interface);
+> 
+> +static int add_drivers(struct mlx5_core_dev *dev)
+> +{
+> +	struct mlx5_priv *priv = &dev->priv;
+> +	int i, ret = 0;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(mlx5_adev_devices); i++) {
+> +		bool is_supported = false;
+> +
+> +		if (priv->adev[i])
+> +			continue;
+> +
+> +		if (mlx5_adev_devices[i].is_supported)
+> +			is_supported =
+> mlx5_adev_devices[i].is_supported(dev);
+> +
+> +		if (!is_supported)
+> +			continue;
+> +
 
-Leon Romanovsky <leon@kernel.org> writes:
+I think this is wrong for two reasons.
 
-> On Tue, Nov 03, 2020 at 10:01:32PM +0100, Petr Machata wrote:
->>
->> Leon Romanovsky <leon@kernel.org> writes:
->>
->> > On Tue, Nov 03, 2020 at 12:05:20AM +0100, Petr Machata wrote:
->> >>
->> >> Leon Romanovsky <leon@kernel.org> writes:
->> >>
->> >> > On Sun, Nov 01, 2020 at 04:55:42PM -0700, David Ahern wrote:
->> >> >
->> >> >> yes, the rdma utils are using generic function names. The rdma version
->> >> >> should be renamed; perhaps rd_print_on_off. That seems to be once common
->> >> >> prefix. Added Leon.
->> >> >
->> >> > I made fast experiment and the output for the code proposed here and existed
->> >> > in the RDMAtool - result the same. So the good thing will be to delete the
->> >> > function from the RDMA after print_on_off_bool() will be improved.
->> >>
->> >> The RDMAtool uses literal "on" and "off" as values in JSON, not
->> >> booleans. Moving over to print_on_off_bool() would be a breaking change,
->> >> which is problematic especially in JSON output.
->> >
->> > Nothing prohibits us from adding extra parameter to this new
->> > function/json logic/json type that will control JSON behavior. Personally,
->> > I don't think that json and stdout outputs should be different, e.g. 1/0 for
->> > the json and on/off for the stdout.
->>
->> Emitting on/off in JSON as true booleans (true / false, not 1 / 0) does
->> make sense. It's programmatically-consumed interface, the values should
->> be of the right type.
->
-> As long as you don't need to use those fields to "set .." after that.
->>
->> On the other hand, having a FP output use literal "on" and "off" makes
->> sense as well. It's an obvious reference to the command line, you can
->> actually cut'n'paste it back to shell and it will do the right thing.
->
-> Maybe it is not so bad to change RDMAtool to general function, this
-> on/of print is not widely use yet
+1. is_supported should belong to the ulp aux device itself, and must be
+performed before probe. drivers should be added unconditionally and
+is_supproted should be checked only prior to probe.
 
-OK, if you think the API breakage is acceptable, I'll roll this into the
-patchset.
+2. you can always load a driver without its underlying device existed.
+for example, you can load a pci device driver/module and it will load
+and wait for pci devices to pop up, the subsysetem infrastructure will
+match between drivers and devices and probe them.
 
-> just need to decide what is the right one.
+Aux should be the same with the small change that all ulp aux devices
+should implement is_supported if they need, since they are virtual
+devices they might have some other constrains other than just matching
+device ids.
 
-Yeah, it's kinda fuzzy. Where JSON has an obvious type to use, use it:
-arrays should probably be arrays, numbers should probably be numbers.
-I'm not so sure about enums, but I guess represent them as strings? As
-numbers they will not be more meaningful or easy to consume, and it does
-not make sense to do arithmetic on enums.
 
-On/off toggles could be considered enums. But they are also booleans.
-Representing on as true and off as false is straightforward and from
-this perspective booleans are the obvious type to use.
 
->> Many places in iproute2 do do this dual output, and ideally all new
->> instances would behave this way as well. So no toggles, please.
->
-> Good example why all utilities in iproute2 are better to use same
-> input/output code and any attempt to make custom variants should be
-> banned.
+I would suggest the following infra/API semantics changes:
 
-Yes, I have a clean-up patch that converts these custom on/off helpers
-to the new central one. I'll send this together with other refactorings
-of this sort after this patch set.
+Aux bus parent device:
+mlx5_core pci device load/probe(pci_dev) 
+{
+  struct aux_device *mlx5_aux_dev = alloc_aux_device()
+
+  mlx5_aux_dev->priv = pci_dev;
+  register_aux_device("mlx5_core", mlx5_aux_dev);
+}
+
+
+
+Aux ULP driver:
+
+struct aux_driver mlx5_vpda_aux_driver {
+
+      .name = "vdpa",
+       /* match this driver with mlx5_core devices */
+      .id_table = {"mlx5_core"}, 
+      .ops {
+            /* called before probe on actual aux mlx5_core device */
+           .is_supported(struct aux_device); 
+
+           .probe = mlx5v_probe,
+           .remove = mlx5v_remove,
+        }
+}
+
+mlx5_vdpa_module_init():
+    register_aux_driver(mlx5_vpda_aux_driver);
+
+
+
+Aux infrastructure semantics:
+
+  a) on  register_aux_device("mlx5_core", mlx5_aux_dev); 
+     it will match all drivers and probe them if is_supported is true,
+     reveres flow on unregister_aux_device()
+
+  b) on register_aux_driver(); probe driver on all current devices with
+matching ids if is_supported() returned ture
+
+
+So you don't really need to re-implement mlx5_rescan_drivers_locked and
+mlx5_add_drivers in each and every aux device/driver providers, this
+should be a aux bus infra' logic.
+
+
