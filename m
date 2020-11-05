@@ -2,117 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A1482A741C
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 01:56:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E0692A7429
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 01:58:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387912AbgKEA4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 19:56:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59312 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727923AbgKEA4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 19:56:18 -0500
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD86C0613CF;
-        Wed,  4 Nov 2020 16:56:16 -0800 (PST)
-Received: by mail-qk1-x742.google.com with SMTP id 12so319910qkl.8;
-        Wed, 04 Nov 2020 16:56:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=76+46/j8d+HhUpqLdqtrqj06kMZC9lIAszaftzrzrbA=;
-        b=cCzrPQyEWo7u8s7NeF891HqdMDHyzf30LEvc6NJiR74N7Hs6dWqvJGrOKhOBI5E4/o
-         IIUiN+USEvzVZcuT+LuG8quJqG0c6bJpx0QJaDl05Dd8fwPA6WnvMM4b1yAOeeup2pCj
-         +M8RTZxT6A78NHzsxgDgyDWu4lITnyjl3CYrG0OQvrnQ7cDp+68oTtLyGfdpcn+NqzDt
-         X/wQztuwyCPax/iPQEDlJMhHLJEWNAvvwqMaZE+xQwxF+wKhL/uAJXmKHPAAkYJidmxg
-         KEnMvs1YJpHgZw9E30xt1obeFvWAEptcvnT8JS+hZ7ugkoRRcP1eoh/dWQVHam2VEVdH
-         zkTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=76+46/j8d+HhUpqLdqtrqj06kMZC9lIAszaftzrzrbA=;
-        b=cmpH3hmSqB9WB6471wzSKqYw0H0MFXE1szZnP4g928hw8F0pPK16yAAXZUoYaf8ZeB
-         ZI79qvyXqDzpTTWXjEU5VZgtjw/NDuAH3WDYJztsfyazAJ70gbJaTI8uFEOfonoyH7Mm
-         4IkUthwjp6ei22zSwXmU3/QAA8GROrhAPNOpzyyrBIf9VMYL64pENtzTkdU1t28t3L3L
-         Yydi5DYsP21T2f6KA79UD/Ua5fS7QoWIdFHjqo2/GZo9vSySGe3xuHmHPXsPvcYokgso
-         x4VJhdMyJuhsYAgAX7uKV6ctWH3BxpR4QTy+pEn6qhN7dCpnihKxA6ovewTW8EnfjjtR
-         W5Jg==
-X-Gm-Message-State: AOAM531jxqUHWGGaJb1NkMmFJYhaIVxFdjyqvXmn4dqYOtJc+K7At/Lj
-        E7bak8v85eMwJ67QmDe6/DI=
-X-Google-Smtp-Source: ABdhPJxVkmSiQ9WCIF/VhMI7BfIsXAtPjTGcBrfOpLZax/EaPn7jdHV8n3BSlkhf+0NXyyPzpLJ21Q==
-X-Received: by 2002:a37:e0e:: with SMTP id 14mr859793qko.455.1604537775951;
-        Wed, 04 Nov 2020 16:56:15 -0800 (PST)
-Received: from ubuntu-m3-large-x86 ([2604:1380:45f1:1d00::1])
-        by smtp.gmail.com with ESMTPSA id n3sm1403764qta.10.2020.11.04.16.56.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 16:56:15 -0800 (PST)
-Date:   Wed, 4 Nov 2020 17:56:13 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, stable@vger.kernel.org,
-        Chen Yu <yu.chen.surf@gmail.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH] compiler-clang: remove version check for BPF Tracing
-Message-ID: <20201105005613.GA1840301@ubuntu-m3-large-x86>
-References: <20201104191052.390657-1-ndesaulniers@google.com>
+        id S1731511AbgKEA6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 19:58:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53604 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732099AbgKEA6i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Nov 2020 19:58:38 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A359A2072E;
+        Thu,  5 Nov 2020 00:58:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604537917;
+        bh=OvKVeunpCGu7hkS0Lk0dXb/miDXw7CVsk1xe7Gi6Qiw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SjK+bbDxrfWtLRGXpSlGTTFnkBRgQDjTO0H7YSr7f3VKI2D0Y5vEreIHsUM9haPap
+         yFIorjlP3NsAwMbEh+2BLIA4MiGS9O5rRLSnC1GbFmslkuODVNZGP/eSswlXjpPUub
+         n2/C3ZYUt9KpjBgdlBwa0RTPIVW2wDtRfO4kvqmg=
+Date:   Wed, 4 Nov 2020 16:58:36 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, roopa@nvidia.com,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: Re: [PATCH net-next 00/16] selftests: net: bridge: add tests for
+ MLDv2
+Message-ID: <20201104165836.4f0f721d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201103172412.1044840-1-razor@blackwall.org>
+References: <20201103172412.1044840-1-razor@blackwall.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201104191052.390657-1-ndesaulniers@google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 04, 2020 at 11:10:51AM -0800, Nick Desaulniers wrote:
-> bpftrace parses the kernel headers and uses Clang under the hood. Remove
-> the version check when __BPF_TRACING__ is defined (as bpftrace does) so
-> that this tool can continue to parse kernel headers, even with older
-> clang sources.
+On Tue,  3 Nov 2020 19:23:56 +0200 Nikolay Aleksandrov wrote:
+> This is the second selftests patch-set for the new multicast functionality
+> which adds tests for the bridge's MLDv2 support. The tests use full
+> precooked packets which are sent via mausezahn and the resulting state
+> after each test is checked for proper X,Y sets, (*,G) source list, source
+> list entry timers, (S,G) existence and flags, packet forwarding and
+> blocking, exclude group expiration and (*,G) auto-add. The first 3 patches
+> factor out common functions which are used by IGMPv3 tests in lib.sh and
+> add support for IPv6 test UDP packet, then patch 4 adds the first test with
+> the initial MLDv2 setup.
+> The following new tests are added:
+>  - base case: MLDv2 report ff02::cc is_include
+>  - include -> allow report
+>  - include -> is_include report
+>  - include -> is_exclude report
+>  - include -> to_exclude report
+>  - exclude -> allow report
+>  - exclude -> is_include report
+>  - exclude -> is_exclude report
+>  - exclude -> to_exclude report
+>  - include -> block report
+>  - exclude -> block report
+>  - exclude timeout (move to include + entry deletion)
+>  - S,G port entry automatic add to a *,G,exclude port
 > 
-> Cc: <stable@vger.kernel.org>
-> Fixes: commit 1f7a44f63e6c ("compiler-clang: add build check for clang 10.0.1")
-> Reported-by: Chen Yu <yu.chen.surf@gmail.com>
-> Reported-by: Jarkko Sakkinen <jarkko@kernel.org>
-> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> The variable names and set notation are the same as per RFC 3810,
+> for more information check RFC 3810 sections 2.3 and 7.
 
-Acked-by: Nathan Chancellor <natechancellor@gmail.com>
-
-> ---
->  include/linux/compiler-clang.h | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/include/linux/compiler-clang.h b/include/linux/compiler-clang.h
-> index dd7233c48bf3..98cff1b4b088 100644
-> --- a/include/linux/compiler-clang.h
-> +++ b/include/linux/compiler-clang.h
-> @@ -8,8 +8,10 @@
->  		     + __clang_patchlevel__)
->  
->  #if CLANG_VERSION < 100001
-> +#ifndef __BPF_TRACING__
->  # error Sorry, your version of Clang is too old - please use 10.0.1 or newer.
->  #endif
-> +#endif
->  
->  /* Compiler specific definitions for Clang compiler */
->  
-> -- 
-> 2.29.1.341.ge80a0c044ae-goog
-> 
+Applied, thank you!
