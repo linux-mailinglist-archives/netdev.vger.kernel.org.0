@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B8742A76A9
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 05:52:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E9AE2A76A8
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 05:51:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731307AbgKEEv7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 4 Nov 2020 23:51:59 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2666 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731451AbgKEEv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 23:51:58 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A54nwBm008704
-        for <netdev@vger.kernel.org>; Wed, 4 Nov 2020 20:51:58 -0800
+        id S1731429AbgKEEv5 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 4 Nov 2020 23:51:57 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:23010 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731307AbgKEEv5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 23:51:57 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A54oesJ026370
+        for <netdev@vger.kernel.org>; Wed, 4 Nov 2020 20:51:56 -0800
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 34kg7kymx2-2
+        by mx0a-00082601.pphosted.com with ESMTP id 34m5r5h6hs-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 20:51:58 -0800
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 20:51:55 -0800
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 4 Nov 2020 20:51:57 -0800
+ 15.1.1979.3; Wed, 4 Nov 2020 20:51:55 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 4736C2EC8E08; Wed,  4 Nov 2020 20:51:51 -0800 (PST)
+        id 7417D2EC8E08; Wed,  4 Nov 2020 20:51:53 -0800 (PST)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [RFC PATCH bpf-next 2/5] bpf: assign ID to vmlinux BTF and return extra info for BTF in GET_OBJ_INFO
-Date:   Wed, 4 Nov 2020 20:51:37 -0800
-Message-ID: <20201105045140.2589346-3-andrii@kernel.org>
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: [RFC PATCH bpf-next 3/5] kbuild: Add CONFIG_DEBUG_INFO_BTF_MODULES option or module BTFs
+Date:   Wed, 4 Nov 2020 20:51:38 -0800
+Message-ID: <20201105045140.2589346-4-andrii@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20201105045140.2589346-1-andrii@kernel.org>
 References: <20201105045140.2589346-1-andrii@kernel.org>
@@ -41,142 +42,160 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-11-05_01:2020-11-05,2020-11-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- priorityscore=1501 phishscore=0 suspectscore=75 impostorscore=0
- lowpriorityscore=0 adultscore=0 malwarescore=0 spamscore=0 mlxscore=0
- mlxlogscore=658 clxscore=1015 classifier=spam adjust=0 reason=mlx
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
+ malwarescore=0 phishscore=0 bulkscore=0 lowpriorityscore=0
+ priorityscore=1501 mlxlogscore=999 suspectscore=9 clxscore=1015
+ spamscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-2009150000 definitions=main-2011050035
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allocate ID for vmlinux BTF. This makes it visible when iterating over all
-BTF objects in the system. To allow distinguishing vmlinux BTF (and later
-kernel module BTF) from user-provided BTFs, expose extra kernel_btf flag, as
-well as BTF name (empty for vmlinux BTF, but will be used for kernel module
-BTF). We might want to later allow specifying BTF name for user-provided BTFs
-as well, if that makes sense. But currently this is reserved only for
-in-kernel BTFs.
+Add Kconfig option to generate kernel module split BTFs, if pahole's version
+support it. Kernel module BTF has to be re-grenerated if either vmlinux's BTF
+changes or .ko changes. To achieve that, I needed a helper similar to
+if_changed, but that would allow to filter out vmlinux from the list of
+updated dependencies for .ko building. I've put it next to the only place that
+uses and needs it, but it might be a better idea to just add it along the
+other if_changed variants into scripts/Kbuild.include.
 
-Having in-kernel BTFs exposed IDs will allow to extend BPF APIs that require
-in-kernel BTF type with ability to specify BTF types from kernel modules, not
-just vmlinux BTF. This will be implemented in a follow up patch set for
-fentry/fexit/fmod_ret/lsm/etc.
+Each kernel module's BTF deduplication is pretty fast, as it does only
+incremental BTF deduplication on top of already deduplicated vmlinux BTF. To
+show the added build time, I've first ran make only just built kernel (to
+establish the baseline) and then forced only BTF re-generation, without
+regenerating .ko files. The build was performed with -j60 parallelization on
+56-core machine. The final time also includes bzImage building, so it's not
+a pure BTF overhead.
 
+$ time make -j60
+...
+make -j60  27.65s user 10.96s system 782% cpu 4.933 total
+$ touch ~/linux-build/default/vmlinux && time make -j60
+...
+make -j60  123.69s user 27.85s system 1566% cpu 9.675 total
+
+So 4.6 seconds real time, with noticeable part spent in compressed vmlinux and
+bzImage building.
+
+To show size savings, I've built my kernel configuration with about 700 kernel
+modules with full BTF per each kernel module (without deduplicating against
+vmlinux) and with split BTF against deduplicated vmlinux (approach in this
+patch). Below are top 10 modules with biggest BTF sizes. And total size of BTF
+data across all kernel modules.
+
+It shows that split BTF "compresses" 115MB down to 5MB total. And the biggest
+kernel modules get a downsize from 500-570KB down to 200-300KB.
+
+FULL BTF
+========
+
+$ for f in $(find . -name '*.ko'); do size -A -d $f | grep BTF | awk '{print $2}'; done | awk '{ s += $1 } END { print s }'
+115710691
+
+$ for f in $(find . -name '*.ko'); do printf "%s %d\n" $f $(size -A -d $f | grep BTF | awk '{print $2}'); done | sort -nr -k2 | head -n10
+./drivers/gpu/drm/i915/i915.ko 570570
+./drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko 520240
+./drivers/gpu/drm/radeon/radeon.ko 503849
+./drivers/infiniband/hw/mlx5/mlx5_ib.ko 491777
+./fs/xfs/xfs.ko 411544
+./drivers/net/ethernet/intel/i40e/i40e.ko 403904
+./drivers/net/ethernet/broadcom/bnx2x/bnx2x.ko 398754
+./drivers/infiniband/core/ib_core.ko 397224
+./fs/cifs/cifs.ko 386249
+./fs/nfsd/nfsd.ko 379738
+
+SPLIT BTF
+=========
+
+$ for f in $(find . -name '*.ko'); do size -A -d $f | grep BTF | awk '{print $2}'; done | awk '{ s += $1 } END { print s }'
+5194047
+
+$ for f in $(find . -name '*.ko'); do printf "%s %d\n" $f $(size -A -d $f | grep BTF | awk '{print $2}'); done | sort -nr -k2 | head -n10
+./drivers/gpu/drm/i915/i915.ko 293206
+./drivers/gpu/drm/radeon/radeon.ko 282103
+./fs/xfs/xfs.ko 222150
+./drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko 198503
+./drivers/infiniband/hw/mlx5/mlx5_ib.ko 198356
+./drivers/net/ethernet/broadcom/bnx2x/bnx2x.ko 113444
+./fs/cifs/cifs.ko 109379
+./arch/x86/kvm/kvm.ko 100225
+./drivers/gpu/drm/drm.ko 94827
+./drivers/infiniband/core/ib_core.ko 91188
+
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- include/uapi/linux/bpf.h       |  3 +++
- kernel/bpf/btf.c               | 38 ++++++++++++++++++++++++++++++++--
- tools/include/uapi/linux/bpf.h |  3 +++
- 3 files changed, 42 insertions(+), 2 deletions(-)
+ lib/Kconfig.debug         | 10 ++++++++++
+ scripts/Makefile.modfinal | 20 ++++++++++++++++++--
+ 2 files changed, 28 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index e6ceac3f7d62..7955b144f267 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -4418,6 +4418,9 @@ struct bpf_btf_info {
- 	__aligned_u64 btf;
- 	__u32 btf_size;
- 	__u32 id;
-+	__aligned_u64 name;
-+	__u32 name_len;
-+	__u32 kernel_btf;
- } __attribute__((aligned(8)));
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index d7a7bc3b6098..d3303ed58ff0 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -265,6 +265,9 @@ config DEBUG_INFO_DWARF4
+ 	  But it significantly improves the success of resolving
+ 	  variables in gdb on optimized code.
  
- struct bpf_link_info {
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index f61944a3873b..6a99677e57c0 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -215,6 +215,8 @@ struct btf {
- 	struct btf *base_btf;
- 	u32 start_id; /* first type ID in this BTF (0 for base BTF) */
- 	u32 start_str_off; /* first string offset (0 for base BTF) */
-+	char name[MODULE_NAME_LEN];
-+	bool kernel_btf;
- };
- 
- enum verifier_phase {
-@@ -4441,6 +4443,7 @@ struct btf *btf_parse_vmlinux(void)
- 
- 	btf->data = __start_BTF;
- 	btf->data_size = __stop_BTF - __start_BTF;
-+	btf->kernel_btf = true;
- 
- 	err = btf_parse_hdr(env);
- 	if (err)
-@@ -4466,8 +4469,13 @@ struct btf *btf_parse_vmlinux(void)
- 
- 	bpf_struct_ops_init(btf, log);
- 
--	btf_verifier_env_free(env);
- 	refcount_set(&btf->refcnt, 1);
++config PAHOLE_HAS_SPLIT_BTF
++	def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'` -ge "119")
 +
-+	err = btf_alloc_id(btf);
-+	if (err)
-+		goto errout;
-+
-+	btf_verifier_env_free(env);
- 	return btf;
+ config DEBUG_INFO_BTF
+ 	bool "Generate BTF typeinfo"
+ 	depends on !DEBUG_INFO_SPLIT && !DEBUG_INFO_REDUCED
+@@ -274,6 +277,13 @@ config DEBUG_INFO_BTF
+ 	  Turning this on expects presence of pahole tool, which will convert
+ 	  DWARF type info into equivalent deduplicated BTF type info.
  
- errout:
-@@ -5565,7 +5573,8 @@ int btf_get_info_by_fd(const struct btf *btf,
- 	struct bpf_btf_info info;
- 	u32 info_copy, btf_copy;
- 	void __user *ubtf;
--	u32 uinfo_len;
-+	char __user *uname;
-+	u32 uinfo_len, uname_len, name_len;
++config DEBUG_INFO_BTF_MODULES
++	bool "Generate BTF for kernel modules"
++	def_bool y
++	depends on DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF
++	help
++	  Generate compact split BTF type information for kernel modules.
++
+ config GDB_SCRIPTS
+ 	bool "Provide GDB scripts for kernel debugging"
+ 	help
+diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
+index ae01baf96f4e..02b892421f7a 100644
+--- a/scripts/Makefile.modfinal
++++ b/scripts/Makefile.modfinal
+@@ -6,6 +6,7 @@
+ PHONY := __modfinal
+ __modfinal:
  
- 	uinfo = u64_to_user_ptr(attr->info.info);
- 	uinfo_len = attr->info.info_len;
-@@ -5582,6 +5591,31 @@ int btf_get_info_by_fd(const struct btf *btf,
- 		return -EFAULT;
- 	info.btf_size = btf->data_size;
++include include/config/auto.conf
+ include $(srctree)/scripts/Kbuild.include
  
-+	info.kernel_btf = btf->kernel_btf;
-+
-+	uname = u64_to_user_ptr(info.name);
-+	uname_len = info.name_len;
-+	if (!uname ^ !uname_len)
-+		return -EINVAL;
-+
-+	name_len = strlen(btf->name);
-+	info.name_len = name_len;
-+
-+	if (uname) {
-+		if (uname_len >= name_len + 1) {
-+			if (copy_to_user(uname, btf->name, name_len + 1))
-+				return -EFAULT;
-+		} else {
-+			char zero = '\0';
-+
-+			if (copy_to_user(uname, btf->name, uname_len - 1))
-+				return -EFAULT;
-+			if (put_user(zero, uname + uname_len - 1))
-+				return -EFAULT;
-+			return -ENOSPC;
-+		}
-+	}
-+
- 	if (copy_to_user(uinfo, &info, info_copy) ||
- 	    put_user(info_copy, &uattr->info.info_len))
- 		return -EFAULT;
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index e6ceac3f7d62..7955b144f267 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -4418,6 +4418,9 @@ struct bpf_btf_info {
- 	__aligned_u64 btf;
- 	__u32 btf_size;
- 	__u32 id;
-+	__aligned_u64 name;
-+	__u32 name_len;
-+	__u32 kernel_btf;
- } __attribute__((aligned(8)));
+ # for c_flags
+@@ -36,8 +37,23 @@ quiet_cmd_ld_ko_o = LD [M]  $@
+ 		-T scripts/module.lds -o $@ $(filter %.o, $^);		\
+ 	$(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) $@, true)
  
- struct bpf_link_info {
+-$(modules): %.ko: %.o %.mod.o scripts/module.lds FORCE
+-	+$(call if_changed,ld_ko_o)
++quiet_cmd_btf_ko = BTF [M] $@
++      cmd_btf_ko = LLVM_OBJCOPY=$(OBJCOPY) $(PAHOLE) -J --btf_base vmlinux $@
++
++# Same as newer-prereqs, but allows to exclude specified extra dependencies
++newer_prereqs_except = $(filter-out $(PHONY) $(1),$?)
++
++# Same as if_changed, but allows to exclude specified extra dependencies
++if_changed_except = $(if $(call newer_prereqs_except,$(2))$(cmd-check),      \
++	$(cmd);                                                              \
++	printf '%s\n' 'cmd_$@ := $(make-cmd)' > $(dot-target).cmd, @:)
++
++# Re-generate module BTFs if either module's .ko or vmlinux changed
++$(modules): %.ko: %.o %.mod.o scripts/module.lds vmlinux FORCE
++	+$(call if_changed_except,ld_ko_o,vmlinux)
++ifdef CONFIG_DEBUG_INFO_BTF_MODULES
++	+$(if $(newer-prereqs),$(call cmd,btf_ko))
++endif
+ 
+ targets += $(modules) $(modules:.ko=.mod.o)
+ 
 -- 
 2.24.1
 
