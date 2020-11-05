@@ -2,111 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23BA52A8885
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 22:10:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC2662A88E3
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 22:22:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732200AbgKEVJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 16:09:56 -0500
-Received: from nat-hk.nvidia.com ([203.18.50.4]:23934 "EHLO nat-hk.nvidia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726729AbgKEVJ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 16:09:56 -0500
-Received: from HKMAIL102.nvidia.com (Not Verified[10.18.92.100]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fa46a220000>; Fri, 06 Nov 2020 05:09:54 +0800
-Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL102.nvidia.com
- (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 5 Nov
- 2020 21:09:52 +0000
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.106)
- by HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Thu, 5 Nov 2020 21:09:52 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l7Mm8rjmSxgUjiEKPG+2C2ztLxyMxJD8g4JqIscbI9IcVuiOymBJ9Zw2OceEa5XQcmqxs+FSZsHWqgUBBwM5NmaLj0t3siT/KUrqUrfWlj4ncLFilLUjo5ulfN3CSt/+/bcOJgIPF2PDsutbCCBDduc/WtiUCCwMx2tkYSG1QpGqFVw8NAkqZGkUMxUibgxLMJh5CwyvLZqtaRBb00fUMnOhiWCfQvwziAKDOGnhy5zGJUSQ98BWM9s8yJmuWHaD0ayVq8fc8lZa+BiR43rsjYo3jgmNoXY3hITse5wwB+nkxxIPRH6Hkoea/U5axI+YNYyxPbEHoUjwd5TsCEZVZg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UTpSXDMNYpq/ZlPjrRPFdXrTNx19FUH06M+gwR9NKyc=;
- b=dslCMAGAOpYGxSqUDx40LVedgBfzDAWlXCqsEo4aE4mv6yMMl4yMhUaaoYI/wiuT1dCgckj6NIyVc6L/jp/GOPjrbs0fDkRx0BpT10MS9HLlDBbRHSFv8+W0F6fiDxvtxDPoN3G64CZCy9iWc/wF6USUwMazba1nc0ntippw44OPuBRkrnz2dmgbjkAoqs22UZtKIM9MEsyXNxLc+vPwu+4XDLr8VN7LFJBc4PbDX/PIIOyrtlVhUk496fg2JRWZszUrA4M7Lbog2/bbHaGxr5cK4DBkBVxULRzs+aYWOglE8xX4W5myAAipXwM6FHC22DG0vGaVz1zSWpQJRf8vnw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB3305.namprd12.prod.outlook.com (2603:10b6:5:189::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.27; Thu, 5 Nov
- 2020 21:09:50 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::cdbe:f274:ad65:9a78]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::cdbe:f274:ad65:9a78%7]) with mapi id 15.20.3499.032; Thu, 5 Nov 2020
- 21:09:50 +0000
-Date:   Thu, 5 Nov 2020 17:09:48 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        gregkh <gregkh@linuxfoundation.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Wang <jasowang@redhat.com>, <linux-rdma@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, <netdev@vger.kernel.org>,
-        Parav Pandit <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <alsa-devel@alsa-project.org>, <tiwai@suse.de>,
-        <broonie@kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        <ranjani.sridharan@linux.intel.com>,
-        <pierre-louis.bossart@linux.intel.com>, <fred.oh@linux.intel.com>,
-        <shiraz.saleem@intel.com>, <dan.j.williams@intel.com>,
-        <kiran.patil@intel.com>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH mlx5-next v1 05/11] net/mlx5: Register mlx5 devices to
- auxiliary virtual bus
-Message-ID: <20201105210948.GS2620339@nvidia.com>
-References: <20201101201542.2027568-1-leon@kernel.org>
- <20201101201542.2027568-6-leon@kernel.org>
- <d10e7a08200458c1bddb72fc983a5917daebc8f1.camel@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <d10e7a08200458c1bddb72fc983a5917daebc8f1.camel@kernel.org>
-X-ClientProxiedBy: MN2PR15CA0052.namprd15.prod.outlook.com
- (2603:10b6:208:237::21) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1732397AbgKEVW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 16:22:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732376AbgKEVWY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 16:22:24 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BE2DC0613CF;
+        Thu,  5 Nov 2020 13:22:24 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id f6so2621164ybr.0;
+        Thu, 05 Nov 2020 13:22:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yYTJTg53Xg72p1C4V5hEjWcSKiZADCrOXW0m2fuo9GE=;
+        b=eiiijZeoUcBS817KDPsT9SKp76IEUMs+bkmu5gYhjVGvRSi1aqfxFUHeeZlzcj9Zhd
+         iClnf1Y5MPW6JeJ4Bm7yq5cOjKPQr3BX3y5+ErkTCByzpaF0SLTR3TOnSu0tt2XdYoYs
+         8VNd5Bb6/x7REIO0l6/0pv/ZHV9P4Zenv8k71bhenyPxXPT8uaVspJYvmoAielZ/vMxa
+         dwpNW93MJHpbwemSPrhEKF/lnRJXOjdqX3OsbkLslUCZWr+tvNlz10NyBK/Uyle8n64O
+         kRo8qFV9Lz9nRjJjFw/88KR8L3nDm7G9vZB6rAeul7a/uvF2zSgl1V+kgdD06hKaxZOZ
+         USAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yYTJTg53Xg72p1C4V5hEjWcSKiZADCrOXW0m2fuo9GE=;
+        b=RK5p4S1tsicHcXqcDiJLpaFuhtoGHKwb5HvF37bV6Djo9bzS7nc0QeReZ4uoerHDYW
+         0lpl30kDcQY/9JYaOrJVQUbV5voS/fTB3GKB4geJyEa7tLmtqMffu8FeiIq4CKwyvjR4
+         3lHyhGXgpDw+/9g2+ET4QDiwEIevlzPZVwK7d26+koCEg6mpoO8R4XVmHJb23mVOT1IC
+         Tpocy+V4nr4mnHKotTTyNjhMeDk2UDr6k1jEwn9qVA2B340HGMezAXywALkuirpS1Pc6
+         Se2GY+7NAZmPOGtSVwYIlS0wRD5jZpRlZYpUxTZOnK2e+LH7ihEQ6f23NYQraBbQYN5o
+         gV+A==
+X-Gm-Message-State: AOAM531lkHKXIPTvjnloGWfhHQTzaNAp1erVbF37mAVEDkJ9ihOpsY9G
+        kZGd53Dj7dwk+SEXciFnLonEl7f+h+QtAge8ifM=
+X-Google-Smtp-Source: ABdhPJzjVmcUWNfVdInEO4HN37HghE7iCcS5LufYOXUcvmtgdykotx8xDuT03Aw36bGkH5MEZWV37+tcvXHIx7ZFOwA=
+X-Received: by 2002:a25:afc1:: with SMTP id d1mr5986684ybj.27.1604611343541;
+ Thu, 05 Nov 2020 13:22:23 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (156.34.48.30) by MN2PR15CA0052.namprd15.prod.outlook.com (2603:10b6:208:237::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.19 via Frontend Transport; Thu, 5 Nov 2020 21:09:49 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kamVw-000OcU-51; Thu, 05 Nov 2020 17:09:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1604610594; bh=UTpSXDMNYpq/ZlPjrRPFdXrTNx19FUH06M+gwR9NKyc=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=SUx0ceXcIW2zyJzHeYJoQGPTM/viv1DoGfTPcR0+or2v9digYGZK78iY9mTNpmef7
-         eUtw7hgBMufh50UwcciJQ8V2m7eaCVfamyaldJ8oynQvlS2KpW3k6O42mi39+Tjz28
-         EgfhLlS304zbVNNTXO4RlSkKNHCUCZLAmD9Wu7k3z8sHagGO2c0AyuUxtwgMGqg+Tv
-         sDF6YnUQPt9cLhjFOB4x1uUNGN2qrHxOc9wiQzSsAI3U2RrNHywHlSUvRv12EAd5Y5
-         MhrzRRKuj94zXBaNHtf1YY6rZP9GT6oOgpknv5oJu5B4Oda3hgFQlqRy9g18EgdqIH
-         CNI51dBK3rr0w==
+References: <20200423195850.1259827-1-andriin@fb.com> <20201105170202.5bb47fef@redhat.com>
+In-Reply-To: <20201105170202.5bb47fef@redhat.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 5 Nov 2020 13:22:12 -0800
+Message-ID: <CAEf4Bzb7r-9TEAnQC3gwiwX52JJJuoRd_ZHrkGviiuFKvy8qJg@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next] bpf: make verifier log more relevant by default
+To:     Jiri Benc <jbenc@redhat.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 05, 2020 at 12:59:20PM -0800, Saeed Mahameed wrote:
+On Thu, Nov 5, 2020 at 8:02 AM Jiri Benc <jbenc@redhat.com> wrote:
+>
+> On Thu, 23 Apr 2020 12:58:50 -0700, Andrii Nakryiko wrote:
+> > To make BPF verifier verbose log more releavant and easier to use to debug
+> > verification failures, "pop" parts of log that were successfully verified.
+> > This has effect of leaving only verifier logs that correspond to code branches
+> > that lead to verification failure, which in practice should result in much
+> > shorter and more relevant verifier log dumps. This behavior is made the
+> > default behavior and can be overriden to do exhaustive logging by specifying
+> > BPF_LOG_LEVEL2 log level.
+>
+> This patch broke the test_offload.py selftest:
+>
+> [...]
+> Test TC offloads work...
+> FAIL: Missing or incorrect message from netdevsim in verifier log
+> [...]
+>
+> The selftest expects to receive "[netdevsim] Hello from netdevsim!" in
+> the log (coming from nsim_bpf_verify_insn) but that part of the log is
+> cleared by bpf_vlog_reset added by this patch.
 
-> 2. you can always load a driver without its underlying device existed.
-> for example, you can load a pci device driver/module and it will load
-> and wait for pci devices to pop up, the subsysetem infrastructure will
-> match between drivers and devices and probe them.
+Should we just drop check_verifier_log() checks?
 
-Yes, this works fine with this design
+>
+> How can this be fixed? The log level 1 comes from the "verbose" keyword
+> passed to tc, I don't think it should be increased to 2.
+>
+> On a related note, the selftest had to start failing after this commit.
+> It's a bit surprising it did not get caught, is there a bug somewhere
+> in the test matrix?
 
-> struct aux_driver mlx5_vpda_aux_driver {
-> 
->       .name = "vdpa",
->        /* match this driver with mlx5_core devices */
->       .id_table = {"mlx5_core"}, 
->       .ops {
->             /* called before probe on actual aux mlx5_core device */
->            .is_supported(struct aux_device); 
+test_progs is the only test runner that's run continuously on every
+patch. libbpf CI also runs test_maps and test_verifier. All the other
+test binaries/scripts rely on humans to not forget about them. Which
+works so-so, as you can see :)
 
-This means module auto loading is impossible, we can't tell to load
-the module until we load the module to call the is_supported code ..
-
-Jason
+>
+> Thanks,
+>
+>  Jiri
+>
