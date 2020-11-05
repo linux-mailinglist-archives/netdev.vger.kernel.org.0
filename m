@@ -2,71 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19E982A8447
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 17:59:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D9132A845D
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 18:02:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731642AbgKEQ6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 11:58:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52452 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730862AbgKEQ6U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 11:58:20 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5683A2073A;
-        Thu,  5 Nov 2020 16:58:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604595500;
-        bh=WPfKbYRANsaYY5+y24dfY+e9RC7MfQyTqEBf6L+3aEU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZH2FZ7NzGwDzL2Er6PUXZVBDRy83tC97s/FO6GPnUd/nmdTIXGPib4KGpPYhAEB6t
-         qegoWzpJgUEUXW7lz3lnfMtK3ZPE0ZVOhz8xiBliQeK8B08zvX4+6gK4u2WQvj4MgQ
-         wB/htahwttIct/GH6qQWrodaV+WODv+klzsRNeRM=
-Date:   Thu, 5 Nov 2020 08:58:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net,
-        kernel-team@fb.com, Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [RFC PATCH bpf-next 4/5] bpf: load and verify kernel module
- BTFs
-Message-ID: <20201105085818.4f20f3ed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201105164616.GA1201462@kroah.com>
-References: <20201105045140.2589346-1-andrii@kernel.org>
-        <20201105045140.2589346-5-andrii@kernel.org>
-        <20201105083925.68433e51@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201105164616.GA1201462@kroah.com>
+        id S1731492AbgKERCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 12:02:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40368 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726801AbgKERCI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 12:02:08 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B3AC0613D2;
+        Thu,  5 Nov 2020 09:02:08 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id g7so1557317pfc.2;
+        Thu, 05 Nov 2020 09:02:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=1E/GdSgvT+IfKnf/MQnxEpHIqbogE7oTSfYMSoG+muE=;
+        b=py845HUDSn6lrlHMzWWLdBEnBIvv7pnBrtqYEs7F4lClin5wEfNwRsfuebyIhBrs0F
+         yq9wBocpigv9ECrczLtxDjmUTDnMWAR786Vx64Yy2bcRd0gtj84/iWFHKTy+ijgW6ZI1
+         JrcddhmYxQlPyOV178ghPINfaS/SzV9Vuwt8T6XlEebjsecz8PGvI7iD1VNlX4P+4uuC
+         P1j2qqd4+L1rJYPT+AXVskMPbQcW4lV5iyF2Id5QoygLx+5h7zkId0VSLBUnQMktUKfZ
+         GLYoVbrP/pRMAb9Re49tHlMWnwh+TOtzdxMIKpFx0kLjncq1PXFKQ0CrwtQk0GLv4zXz
+         C98g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1E/GdSgvT+IfKnf/MQnxEpHIqbogE7oTSfYMSoG+muE=;
+        b=bwNLdkqwi3/NqTcZP8wNee9n4NxMH7f8WR4l+kC9/pmtN6zso9gze3gclLnsipH0tX
+         aGbcPGepBwhM7i/F8owT4WfR8gfY7ujq5jnt4btE+gTBSgQFzEO5Vtis3ahLidJSt1LT
+         eFL58stUqIouQSP7jGdkkm+h3Iijyd6zVWZ9yTiS9/OoG8dZfEHw0DvWV15Rp6w9K/Jh
+         cDyq9LUDhlkH4cXXToKQr4PPMjoBKt94Di4vqkio95BHSX6QOvPVzeLuXak97JE7quyM
+         aT8AKxfe/Mc8U0UrZnwB7feD9ywsLL1rwNXljZe2EBCnH7zeSnUXfV4VljGgljLKdpQ5
+         S5bg==
+X-Gm-Message-State: AOAM531umHwoDEw9vuhYffAT0rx94wWRozMpvdLAD+h2GuGVbLaXEiZP
+        clImbAGLsKNS/m3rZYmoORg=
+X-Google-Smtp-Source: ABdhPJwbvoK5kkf0kxlXbmOFQ64ONheTWuD39VvDwGzob7HSOf95ha2r81Of2Bb41jZos3/aE9Ds2w==
+X-Received: by 2002:a65:67c2:: with SMTP id b2mr3214406pgs.39.1604595728164;
+        Thu, 05 Nov 2020 09:02:08 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id f21sm2970903pga.32.2020.11.05.09.02.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Nov 2020 09:02:07 -0800 (PST)
+Date:   Thu, 5 Nov 2020 09:02:04 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     min.li.xe@renesas.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/3] ptp: idt82p33: optimize _idt82p33_adjfine
+Message-ID: <20201105170204.GA5258@hoboy.vegasvil.org>
+References: <1604505709-5483-1-git-send-email-min.li.xe@renesas.com>
+ <1604505709-5483-3-git-send-email-min.li.xe@renesas.com>
+ <20201104164657.GE16105@hoboy.vegasvil.org>
+ <20201105003556.tpgvlh3ponyxzjjl@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201105003556.tpgvlh3ponyxzjjl@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 Nov 2020 17:46:16 +0100 Greg Kroah-Hartman wrote:
-> On Thu, Nov 05, 2020 at 08:39:25AM -0800, Jakub Kicinski wrote:
-> > On Wed, 4 Nov 2020 20:51:39 -0800 Andrii Nakryiko wrote:  
-> > > Add kernel module listener that will load/validate and unload module BTF.
-> > > Module BTFs gets ID generated for them, which makes it possible to iterate
-> > > them with existing BTF iteration API. They are given their respective module's
-> > > names, which will get reported through GET_OBJ_INFO API. They are also marked
-> > > as in-kernel BTFs for tooling to distinguish them from user-provided BTFs.
-> > > 
-> > > Also, similarly to vmlinux BTF, kernel module BTFs are exposed through
-> > > sysfs as /sys/kernel/btf/<module-name>. This is convenient for user-space
-> > > tools to inspect module BTF contents and dump their types with existing tools:  
-> > 
-> > Is there any precedent for creating per-module files under a new
-> > sysfs directory structure? My intuition would be that these files 
-> > belong under /sys/module/  
-> 
-> Ick, why?  What's wrong with them under btf?  The module core code
-> "owns" the /sys/modules/ tree.  If you want others to mess with that, 
-> it will get tricky.
+On Thu, Nov 05, 2020 at 02:35:56AM +0200, Vladimir Oltean wrote:
+> On the other hand and with all due respect, saying that it may have been
+> 'buggy on some archs back in the day' and then not bringing any evidence
+> is a bit of a strange claim to make.
 
-It's debug info, that's where I would look for it. 
+You're right.  I made the effort to look back into the days of v3.0,
+and the only thing I could find is that the 32 bit implementation of
+div_s64 does extra operations and invokes an additional function call.
+But the difference in performance, if any, is probably not very large.
+ 
+> I am actively using div_s64 in drivers/net/dsa/sja1105/sja1105_ptp.c
+> successfully on arm and arm64.
 
-Clearly I'd be wrong to do so :)
+Yeah, I see div_s64 has found its way into the ntp code, too, so it
+must be fine.
+
+Thanks,
+Richard
