@@ -2,121 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9C782A7616
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 04:33:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D47F32A7617
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 04:33:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388605AbgKEDdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 22:33:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55226 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728511AbgKEDdJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 22:33:09 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F988C0613CF;
-        Wed,  4 Nov 2020 19:33:08 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id za3so528307ejb.5;
-        Wed, 04 Nov 2020 19:33:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2QtdhLn6dbQgBdJcNj2XZy1nXB4zinTDtHIxteWe2Ok=;
-        b=lekAQ+Vs/f1h1OIgWwz9UDPTUe8NXyK8/7tmffXxLp/lB7jC3Zj1n1UGEnvyQrRzYS
-         MOh/pTyY1ylDqIdyeQNIzj/7k1nvZ0DE619EG7fU6GJ4mKBHrCm13lHLeVPoOAtLEwk1
-         p0v8klJ+jGnr+/HP5CYX1oGXvrCiKmlf5Jgme5q4fSLfvXtQvrDrSWimMi9637HHAEKN
-         WRQbsS6JEwzzs1oycmHxxlZBSCWrrBEtJ0hFllLaoVpaYB1diIhPShHBLat7VINQ4jSQ
-         xaU943CCmAhii1WjYWRevNxwIEyVyl1056y89u9Up8GjPjeixL+bxyyS0uXZ/D9Hmcbb
-         KZZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2QtdhLn6dbQgBdJcNj2XZy1nXB4zinTDtHIxteWe2Ok=;
-        b=OLzzNiMEAzEecZL145OMhHE3D9c0Z0eNxOEbpLHDA+UK19rl2elSOZ3mroYLB7Xt4S
-         CWLFrwd5ornI3urJgTMqwInAzLodgWkW0TQv2bMN/rSbb4IQkxqUjz/SDA1jSnCPs7uN
-         2NsL9EjWIEjZlpEb08WwaJFU81HaWZYJFZn4CGe/2QvdiEp2oUn+yGtwNo1fMo9oC2aA
-         +vzq0b+qkiKt5vwpauCo+LzDFyDCB/iPrUL0hW8wRExk9QOyidfE/kMXE96XgY907alB
-         /s26SjOH5iD65pumx4R5M5IJQAgESQ2vm5Cx1yZOwZHo7mhPPyD9hTFQYw9Ns7wOLvtn
-         ZPDw==
-X-Gm-Message-State: AOAM532udaf8Q13w4JO7EOFMVBzkHwmbEMaE6VdLfiKt1uqn//UcdDct
-        wyfEvv8tbCj0etdTGJTtx+8=
-X-Google-Smtp-Source: ABdhPJz33zUbd7p88ljjIkMQymD5KG2hCMCIWaIJbp3CfYs48WqFdFha53Paf0Napi+obr0g0qFg1Q==
-X-Received: by 2002:a17:906:74c6:: with SMTP id z6mr378220ejl.448.1604547187200;
-        Wed, 04 Nov 2020 19:33:07 -0800 (PST)
-Received: from andrea (host-87-7-71-164.retail.telecomitalia.it. [87.7.71.164])
-        by smtp.gmail.com with ESMTPSA id k11sm101717edh.72.2020.11.04.19.33.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 19:33:06 -0800 (PST)
-Date:   Thu, 5 Nov 2020 04:32:58 +0100
-From:   Andrea Parri <parri.andrea@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
-        Andres Beltran <lkmlabelt@gmail.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Saruhan Karademir <skarade@microsoft.com>,
-        Juan Vazquez <juvazq@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH v8 3/3] hv_netvsc: Use vmbus_requestor to generate
- transaction IDs for VMBus hardening
-Message-ID: <20201105033258.GA3079@andrea>
-References: <20201104154027.319432-1-parri.andrea@gmail.com>
- <20201104154027.319432-4-parri.andrea@gmail.com>
- <20201104134348.39feba74@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201104134505.44d8c4d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S2388619AbgKEDdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 22:33:24 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:47172 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387643AbgKEDdY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 22:33:24 -0500
+Received: from [192.168.0.114] (unknown [49.207.198.216])
+        by linux.microsoft.com (Postfix) with ESMTPSA id E10CF20B4905;
+        Wed,  4 Nov 2020 19:33:20 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E10CF20B4905
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1604547204;
+        bh=Oe/MfzqV2v9zkGZtZkogWbchmVLqgIEFJ/RW772EC/c=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=Nu6XJ2VormhUSq9kLwFfSbjzHyC68StGlGoTNgXV+mwIaCsOe5JAOdRQgx3i/5hQ2
+         GgPMRq4avNV/vXNXYCGRoml/CspyCPj033Yz6s3SMvg4XtehZgIKysuxvq6NFFJlri
+         UA8dXYoP3hB+GLehJy4OQovzioUu3lSZFZlHbub0=
+Subject: Re: [PATCH v2 0/3] wireless: convert tasklets to use new
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Allen Pais <allen.lkml@gmail.com>, ryder.lee@mediatek.com,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        ath11k@lists.infradead.org, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi83@gmail.com,
+        kuba@kernel.org, davem@davemloft.net, nbd@nbd.name
+References: <20201007103309.363737-1-allen.lkml@gmail.com>
+ <c3d71677-a428-f215-2ba8-4dd277a69fb6@linux.microsoft.com>
+ <87blgdqdpb.fsf@codeaurora.org>
+From:   Allen Pais <apais@linux.microsoft.com>
+Message-ID: <9e9219d9-fab7-404b-0f40-f5721f781a1d@linux.microsoft.com>
+Date:   Thu, 5 Nov 2020 09:03:10 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201104134505.44d8c4d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87blgdqdpb.fsf@codeaurora.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 04, 2020 at 01:45:05PM -0800, Jakub Kicinski wrote:
-> On Wed, 4 Nov 2020 13:43:48 -0800 Jakub Kicinski wrote:
-> > On Wed,  4 Nov 2020 16:40:27 +0100 Andrea Parri (Microsoft) wrote:
-> > > From: Andres Beltran <lkmlabelt@gmail.com>
-> > > 
-> > > Currently, pointers to guest memory are passed to Hyper-V as
-> > > transaction IDs in netvsc. In the face of errors or malicious
-> > > behavior in Hyper-V, netvsc should not expose or trust the transaction
-> > > IDs returned by Hyper-V to be valid guest memory addresses. Instead,
-> > > use small integers generated by vmbus_requestor as requests
-> > > (transaction) IDs.
-> > > 
-> > > Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
-> > > Co-developed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> > > Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> > > Reviewed-by: Michael Kelley <mikelley@microsoft.com>  
-> > 
-> > I'm assuming this is targeting net-next? If so could you please tag it
-> > as [PATCH net-next vN]?
+>>>
+>>> This series converts the remaining drivers to use new
+>>> tasklet_setup() API.
+>>>
+>>> The patches are based on wireless-drivers-next (c2568c8c9e63)
+>>
+>>   Is this series queue? I haven't seen any email. This is the last
+>> series as part of the tasklet conversion effort.
 > 
-> Ah, you don't 'cause you only sent us the third patch. In that case with
-> the nit below addressed:
+> They are queued in linux-wireless patchwork, see the link below. I have
+> lots of patches pending but hopefully I'll tackle most of them soon.
 > 
-> Acked-by: Jakub Kicinski <kuba@kernel.org>
 
-I fixed the declarations locally.  Thank you for the review, Jakub.
+Thank you very much.
 
-(Yes, FWIW, I was imaging the series to go via hyperv-next...)
-
-Thanks,
-  Andrea
-
-
-> 
-> > > @@ -695,10 +695,19 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
-> > >  				    const struct vmpacket_descriptor *desc,
-> > >  				    int budget)
-> > >  {
-> > > -	struct sk_buff *skb = (struct sk_buff *)(unsigned long)desc->trans_id;
-> > > +	struct sk_buff *skb;
-> > >  	struct net_device_context *ndev_ctx = netdev_priv(ndev);  
-> > 
-> > Swap these two lines please to keep the variables declaration lines
-> > longest to shortest.
-> 
