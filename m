@@ -2,99 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4B792A8A06
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 23:41:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC5662A8A0F
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 23:47:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732046AbgKEWl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 17:41:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36980 "EHLO
+        id S1732329AbgKEWrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 17:47:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726729AbgKEWlZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 17:41:25 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9BBC0613CF;
-        Thu,  5 Nov 2020 14:41:23 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id g15so2310284ybq.6;
-        Thu, 05 Nov 2020 14:41:23 -0800 (PST)
+        with ESMTP id S1726729AbgKEWrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 17:47:16 -0500
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F371C0613CF;
+        Thu,  5 Nov 2020 14:47:15 -0800 (PST)
+Received: by mail-pl1-x642.google.com with SMTP id u2so1483086pls.10;
+        Thu, 05 Nov 2020 14:47:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=IBg+B0rdAMqhMwTgaI8LziA2jYJLHwjFSBV29scAohA=;
-        b=rUrahyxuN6kfjFp229eJ/LTfObTNtvtTIHiIWb7au6TG74Whyq9VUBDlxK9GC654eo
-         mP824ODmongdaZg1WVqDncjRalMWCAc/VN2rVP0PL35P6F4RZLOOTvWygja8wsrqI2CL
-         QCqv5PXTWmBuycuQrA8TtJeflkjwOVfSz0sZme1S4OeS3VAhY80FeyjJxJM3S1udAzHM
-         cyZKyruU2zKR9/M3dFSUejIZQI1kfXjVCGrgGm3AzksdAzJiORDJJsrZ+qzYUej1vbax
-         5rtncLCiVrwOJqDk0gP0zddgHQpDk2IcRC844mAOvlOuVbuY5Fm/ABhwqOuOw/vYAhWb
-         qc/g==
+        bh=NiwtAJxk3DiCJ+r4eVQGFjV0z1XntuCtQoo0S11y+7A=;
+        b=MMGpnr3PrDRqR5Ke0YO8vYcdGQ+FkiVx3KR7DkpSgGM3+QVniVa8szs5Qx/Mc7YvOA
+         Vwh8bpM4SH8Z57535YhR8nfWNNNFKVxHAvzNKZkMRYZrWjSR8wQaSB1mnXbBq8IbB3Zn
+         hpAQJIeFouOiSJhaYA0JqS6qsJ78xneUemI+QZy7LEOXPBSLLXSVQ7JC/t8xVZFytNVU
+         YqbxiwZDf6yvhG08lSuN/QlNsVJ9FkElX1ChzZ3/fLJQTbt5IXNEGphpIVvjQbjvWjsp
+         4DN0yY3Wnlqr4T05ROW9UwhtSWlRT754FNJbIsLD0BwdKWMYfRNJOYCdZi5D82VwZKXh
+         Ivqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=IBg+B0rdAMqhMwTgaI8LziA2jYJLHwjFSBV29scAohA=;
-        b=WhB0Zfxy2zZxzuJZOiEyXx2/ICxLeUUIYyXri9BVSiuNj7pPQhfx7+H+i/DncUGCms
-         h2enOOHdv15mJjWPOJ/xGjI0AOdFUviFxL5908A4nqYtzZYQa+x9dzD5uBR7RE+jxWGp
-         D1eVP5XVdqWWqZzbW+/4NJYKgkE42qz4Jc/G6F23/I6cBsvic6iRHDG6+hniMIPSKFRk
-         WP/YTrgQ5VjPtrlKlYTdkklg2ZWeIzkrFMn7gVXe6KujFvd3pRjv3FtKTKEDd6/fy+Le
-         Qon19Oqtp+bDllXUsdj7OOD0T6r1bV+HqpmWhbfoGF+EDAsyOEvag3ncF97MLrOUEHgt
-         zrEg==
-X-Gm-Message-State: AOAM533dmVrh3OXklE0oq4AC1AQSe1LzysV4Z882Dw0X2gChN/bhCCE1
-        6XLEjkXnm3XBNiCLgONcCjdUof0SBdih2rTJs0RiOSplUEUmYA==
-X-Google-Smtp-Source: ABdhPJwtPxU64n9y4j0lyNA0hiiUGXVvYBD9vOWJ7De2/xeDWk5IiKwPrufiTv3Bd7JhIboXkvewPF9jjOCSlfiF3/k=
-X-Received: by 2002:a05:6902:72e:: with SMTP id l14mr6266826ybt.230.1604616083224;
- Thu, 05 Nov 2020 14:41:23 -0800 (PST)
+        bh=NiwtAJxk3DiCJ+r4eVQGFjV0z1XntuCtQoo0S11y+7A=;
+        b=RHtc4sjT4k/w0qYfvdn58uRQvns+9gZAjan0RosHyiLaWKBKPEyQINasxhG7vtMVnr
+         ik281kERpJ5z+AdqWlsku+kariQ2iacXzVUCc6hbcLmAMV1XA1HjI+JRutmnv7pMBNoi
+         02sXyEB2lIWMwXPt8mLEw6TjlRjKzBFQP/v3f1qDQw4VB9FcKfzfKmIFREHUuWQkPjI3
+         DTSQ72mMcV63sWTe7A0mDMu+qNEGLiqRT2u/V9O4RzEtFKi+WpGO5d2rxqhrBFgiLusp
+         vGtBYZKK7nV8m6GA0vA6LoQTs+U9Jh3TkvrjRHqA6pZqnvx7n+/pVsh6tV7M735dWEbZ
+         nZMA==
+X-Gm-Message-State: AOAM531HlokqLXglfmCawM2WkglYlts9RzcNlymijsXobbzTjMNMKjmz
+        SLe3aWgKM43/2T8p9/NEH0BQm0+eyYdpnDRl369C9bc6Ed4=
+X-Google-Smtp-Source: ABdhPJzzX2fpSgqZ/nz1pwpxUWWTCeJ2U245UUdRooO1TtbCzRlyakgbCRMHyABoyASjxNZyNvVuhxFdAtG6MoneWdA=
+X-Received: by 2002:a17:902:c410:b029:d6:ad08:baa0 with SMTP id
+ k16-20020a170902c410b02900d6ad08baa0mr4267552plk.78.1604616434882; Thu, 05
+ Nov 2020 14:47:14 -0800 (PST)
 MIME-Version: 1.0
-References: <20200423195850.1259827-1-andriin@fb.com> <20201105170202.5bb47fef@redhat.com>
- <CAEf4Bzb7r-9TEAnQC3gwiwX52JJJuoRd_ZHrkGviiuFKvy8qJg@mail.gmail.com> <20201105135338.316e1677@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201105135338.316e1677@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 5 Nov 2020 14:41:12 -0800
-Message-ID: <CAEf4BzZgXO1Uv49cGQ6PMoe6gXiF8obJr9uKBTeE2MzzHEr=PA@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next] bpf: make verifier log more relevant by default
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jiri Benc <jbenc@redhat.com>, Andrii Nakryiko <andriin@fb.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+References: <20201105073434.429307-1-xie.he.0141@gmail.com>
+ <CAK8P3a2bk9ZpoEvmhDpSv8ByyO-LevmF-W4Or_6RPRtV6gTQ1w@mail.gmail.com>
+ <CAJht_EPP_otbU226Ub5mC_OZPXO4h0O2-URkpsrMBFovcdDHWQ@mail.gmail.com> <CAK8P3a2jd3w=k9HC-kFWZYuzAf2D4npkWdrUn6UBj6JzrrVkpQ@mail.gmail.com>
+In-Reply-To: <CAK8P3a2jd3w=k9HC-kFWZYuzAf2D4npkWdrUn6UBj6JzrrVkpQ@mail.gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Thu, 5 Nov 2020 14:47:04 -0800
+Message-ID: <CAJht_EPAqy_+Cfh1TXoNeC_j7JDgPWrG-=mMMmQ3ot2gNZuB8A@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: x25_asy: Delete the x25_asy driver
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Martin Schiller <ms@dev.tdt.de>,
+        Andrew Hendry <andrew.hendry@gmail.com>,
+        Linux X25 <linux-x25@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 5, 2020 at 1:53 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Thu, Nov 5, 2020 at 12:40 PM Arnd Bergmann <arnd@kernel.org> wrote:
 >
-> On Thu, 5 Nov 2020 13:22:12 -0800 Andrii Nakryiko wrote:
-> > On Thu, Nov 5, 2020 at 8:02 AM Jiri Benc <jbenc@redhat.com> wrote:
-> > > On Thu, 23 Apr 2020 12:58:50 -0700, Andrii Nakryiko wrote:
-> > > > To make BPF verifier verbose log more releavant and easier to use to debug
-> > > > verification failures, "pop" parts of log that were successfully verified.
-> > > > This has effect of leaving only verifier logs that correspond to code branches
-> > > > that lead to verification failure, which in practice should result in much
-> > > > shorter and more relevant verifier log dumps. This behavior is made the
-> > > > default behavior and can be overriden to do exhaustive logging by specifying
-> > > > BPF_LOG_LEVEL2 log level.
-> > >
-> > > This patch broke the test_offload.py selftest:
-> > >
-> > > [...]
-> > > Test TC offloads work...
-> > > FAIL: Missing or incorrect message from netdevsim in verifier log
-> > > [...]
-> > >
-> > > The selftest expects to receive "[netdevsim] Hello from netdevsim!" in
-> > > the log (coming from nsim_bpf_verify_insn) but that part of the log is
-> > > cleared by bpf_vlog_reset added by this patch.
+> > I think this driver never worked. Looking at the original code in
+> > Linux 2.1.31, it already has the problems I fixed in commit
+> > 8fdcabeac398.
 > >
-> > Should we just drop check_verifier_log() checks?
+> > I guess when people (or bots) say they "tested", they have not
+> > necessarily used this driver to actually try transporting data. They
+> > may just have tested open/close, etc. to confirm that the particular
+> > problem/issue they saw had been fixed.
 >
-> Drivers only print error messages when something goes wrong, so the
-> messages are high priority. IIUC this change was just supposed to
-> decrease verbosity, right?
+> It didn't sound like that from the commit message, but it could be.
+> For reference:
+> https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git/commit?id=aa2b4427c355acaf86d2c7e6faea3472005e3cff
 
-Seems like check_verifier_log() in test_offline.py is only called for
-successful cases. This patch truncates parts of the verifier log that
-correspond to successfully validated code paths, so that in case if
-verification fails, only relevant parts are left. So for completely
-successful verification the log will be almost empty, with only final
-stats available.
+I see. The author of this commit said "I tested by bringing up an x.25
+async line using a modified version of slattach." Maybe he only
+switched TTY ports from the N_TTY line discipline to the N_X25 line
+discipline. To actually test transporting data, we need to either use
+AF_PACKET sockets, or use AF_X25 sockets with the X.25 routing table
+properly set up. The author of this commit didn't clearly indicate
+that he did these.
