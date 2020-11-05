@@ -2,126 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42A292A77A9
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 08:02:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACF942A77D5
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 08:16:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727483AbgKEHB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 02:01:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59244 "EHLO
+        id S1728119AbgKEHQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 02:16:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725294AbgKEHB6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 02:01:58 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DEBC0613CF;
-        Wed,  4 Nov 2020 23:01:57 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id w1so382718edv.11;
-        Wed, 04 Nov 2020 23:01:57 -0800 (PST)
+        with ESMTP id S1725320AbgKEHQg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 02:16:36 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC94C0613CF;
+        Wed,  4 Nov 2020 23:16:36 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id t14so751282pgg.1;
+        Wed, 04 Nov 2020 23:16:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=j0cItyzXnN05PEymUiVPpxa/gRPBRWPOMzuhzGbrfhs=;
-        b=mGMRHmoakWbpA8XNBnhpRjgaRsK+Cypk5WrDGfifG4aBbuHcSaKJKDSLIUkT4VlkOO
-         f2KaBrW097DjB9qDZ0qD7Vob1ElCRyHyUBdsrqt9lTEBvMw6FHGKB4jUkFNiTSsVRS21
-         6PmJ8lbrjlnAQpiwNiU/JW9Gh7g2NuU4pq+TD/uSzW8Si17RuiqdZuqBEIOYpm+nNLhj
-         xuFoWGiMWRL0Xxvui2Q0t0VoMAGJHuiBCkzlj6w76tp05kEhIVH5lvKgjAWMif++Hqhw
-         0Q7PDgZHqW39Etu6DY8UPniSHdRnE5dMA5tBvvSBHBtFFayaV7tEKqW4VhdHi8i/iokX
-         WJZw==
+        h=from:to:cc:subject:date:message-id;
+        bh=hhbXWfzilHdlKVGC5rdQz6fKDU4k96FjnaKvZh4pRPo=;
+        b=KtQjXMIoa3kotTG08yMMohy77IZBW6/R1ScqxPo8C4t7hagywAIZU9qgstzLYldm4B
+         TnVJoKFI4xPlDZZ+ofM5hn/wcODKe0CaxQqEY3B/HFRXkC8NWc6mXVlgwMaN8F7Mx6Vj
+         45WRNWbTR6LU8aIoUFr1v13ykxRMytM+YNELrBunYMAzNqCmwcVo/Cmf7Qh5GGschiEg
+         LcSX4KCKnvaCzN+sVq/jEF/VpNc36XXzKU0oUggZuek6isaPNR3lecwZPGNVwNwARCX7
+         8TtUIxjUAQA+lpTPip7afmqlrEF8WLxrtwhYtRVSw26++/bZ4WiqfYwiYMkMAAgL1Bce
+         LDCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=j0cItyzXnN05PEymUiVPpxa/gRPBRWPOMzuhzGbrfhs=;
-        b=brn3utoRVgzmYh7Jpfn60Dm8QjFHQwHYN0XWzlASPqGvFLrD6dMxNb5QvIdBXLS4wR
-         l3OnEIfYBgrHS3hDUmAIaQJpGNjuci9kM9zpTxFqWuOrnQYWbzqOHgK7yKCGZIvoF8zW
-         gmqlKMt0ZF5BYzXxyC6FZhbcuju4F4S6awb9GuwbKoj6Mb/1G7iRaNiMxAScfA7JBcYI
-         RGhYlcjYfnZzsQ6I7F3UP9SU3QG7Gozk7Eo5q0h2BiBsr39XKtg0xDHUyTEnXTRuyZLU
-         0SF2E38IHUYhSc8Nfyt0PTVm6hE+mofkG9GcjjjAWOF51/E0NRkSJzeItHMFw9q4ycxE
-         ZYIQ==
-X-Gm-Message-State: AOAM530venIQoxH/YO5yzhQIR8UIkSN1+jbU2YbbT/a+ywWEJ06HKHbY
-        FPw2/QMU7daaTR4vgwTAmrxEu90gu525Bg==
-X-Google-Smtp-Source: ABdhPJyQUE3RG6WaUUqXf8jbzaWEha3q0KZsE7n8WJ3SFoeXOLGOk6hNri8lt/3zVMmXBsu1w3Sd9w==
-X-Received: by 2002:a50:e789:: with SMTP id b9mr1153052edn.272.1604559715778;
-        Wed, 04 Nov 2020 23:01:55 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:59d0:7417:1e79:f522? (p200300ea8f23280059d074171e79f522.dip0.t-ipconnect.de. [2003:ea:8f23:2800:59d0:7417:1e79:f522])
-        by smtp.googlemail.com with ESMTPSA id a17sm330462eda.45.2020.11.04.23.01.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Nov 2020 23:01:55 -0800 (PST)
-Subject: Re: Very slow realtek 8169 ethernet performance, but only one
- interface, on ThinkPad T14.
-To:     Qu Wenruo <quwenruo.btrfs@gmx.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-References: <57f16fe7-2052-72cc-6628-bbb04f146ce0@gmx.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <7ee6a86c-5aca-3931-73cc-2ab72d8dd8a7@gmail.com>
-Date:   Thu, 5 Nov 2020 08:01:49 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
-MIME-Version: 1.0
-In-Reply-To: <57f16fe7-2052-72cc-6628-bbb04f146ce0@gmx.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=hhbXWfzilHdlKVGC5rdQz6fKDU4k96FjnaKvZh4pRPo=;
+        b=ktSh6OAtRH2CEw7KLXsXmVnZ6lrWxjXWdQWdYoo+z0y8uLEMU655Ux/5zM42i2UFKD
+         uxte7+PQpVxn1UevMFHGfBRLQViVUA7ESrJxcOZxuSzKOg/7mfiaJFG8yxxlgZtw8wwJ
+         JkShcBZhqZinHQaZYh1qzZFcDW7gpt+8l4APpm8iD1FqGEVNNaU6BUMl40K2GHo2ZVb2
+         NCIOe+qBhRpgx3gy6eNWWIxMScfVOWcfpm+UcvCWqMhd0hc7ttJzLvBTZ+RS1+UyTZ+K
+         /t6E9Zu9bt3buuJzGlOdte5547Qp108Wk6AQtDpP6bv6hcd685IXR6lLMKfFfexaPaxu
+         SClg==
+X-Gm-Message-State: AOAM533IYrEMkN7FO+pV74RmTupLyNpqM6z2pKFdg8Twby9spzpFAaa6
+        qflA6DpmupN/Y6uAJtXF05U=
+X-Google-Smtp-Source: ABdhPJzxHugkfa+j5PNotCy8pVz0Vci/3VvGxr+rhyJ/VwmT5saMSC4vZNMrGdK/JnyTDs89EvlUxQ==
+X-Received: by 2002:a63:1103:: with SMTP id g3mr1254098pgl.48.1604560595915;
+        Wed, 04 Nov 2020 23:16:35 -0800 (PST)
+Received: from localhost.localdomain ([154.93.3.113])
+        by smtp.gmail.com with ESMTPSA id p19sm968155pjv.32.2020.11.04.23.16.34
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 04 Nov 2020 23:16:35 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: dong.menglong@zte.com.cn
+To:     kuba@kernel.org
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, davem@davemloft.net,
+        ycheng@google.com, ncardwell@google.com, priyarjha@google.com,
+        edumazet@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Menglong Dong <dong.menglong@zte.com.cn>
+Subject: [PATCH net-next] net: udp: introduce UDP_MIB_MEMERRORS for udp_mem
+Date:   Thu,  5 Nov 2020 02:16:11 -0500
+Message-Id: <1604560572-18582-1-git-send-email-dong.menglong@zte.com.cn>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05.11.2020 03:48, Qu Wenruo wrote:
-> Hi,
-> 
-> Not sure if this is a regression or not, but just find out that after upgrading to v5.9 kernel, one of my ethernet port on my ThinkPad T14 (ryzen version) becomes very slow.
-> 
-> Only *2~3* Mbps.
-> 
-> The laptop has two ethernet interfaces, one needs a passive adapter, the other one is a standard RJ45.
-> 
-> The offending one is the one which needs the adapter (eth0).
-> While the RJ45 one is completely fine.
-> 
-> 02:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 0e)
-> 05:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 15)
-> 
-> The 02:00.0 one is the affected one.
-> 
-> The related dmesgs are:
-> [   38.110293] r8169 0000:02:00.0: can't disable ASPM; OS doesn't have ASPM control
-> [   38.126069] libphy: r8169: probed
-> [   38.126250] r8169 0000:02:00.0 eth0: RTL8168ep/8111ep, 00:2b:67:b3:d9:20, XID 502, IRQ 105
-> [   38.126252] r8169 0000:02:00.0 eth0: jumbo features [frames: 9194 bytes, tx checksumming: ko]
-> [   38.126294] r8169 0000:05:00.0: can't disable ASPM; OS doesn't have ASPM control
-> [   38.126300] r8169 0000:05:00.0: enabling device (0000 -> 0003)
-> [   38.139355] libphy: r8169: probed
-> [   38.139523] r8169 0000:05:00.0 eth1: RTL8168h/8111h, 00:2b:67:b3:d9:1f, XID 541, IRQ 107
-> [   38.139525] r8169 0000:05:00.0 eth1: jumbo features [frames: 9194 bytes, tx checksumming: ko]
-> [   42.120935] Generic FE-GE Realtek PHY r8169-200:00: attached PHY driver [Generic FE-GE Realtek PHY] (mii_bus:phy_addr=r8169-200:00, irq=IGNORE)
-> [   42.247646] r8169 0000:02:00.0 eth0: Link is Down
-> [   42.280799] Generic FE-GE Realtek PHY r8169-500:00: attached PHY driver [Generic FE-GE Realtek PHY] (mii_bus:phy_addr=r8169-500:00, irq=IGNORE)
-> [   42.477616] r8169 0000:05:00.0 eth1: Link is Down
-> [   76.479569] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - flow control rx/tx
-> [   91.271894] r8169 0000:02:00.0 eth0: Link is Down
-> [   99.873390] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - flow control rx/tx
-> [   99.878938] r8169 0000:02:00.0 eth0: Link is Down
-> [  102.579290] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - flow control rx/tx
-> [  185.086002] r8169 0000:02:00.0 eth0: Link is Down
-> [  392.884584] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - flow control rx/tx
-> [  392.891208] r8169 0000:02:00.0 eth0: Link is Down
-> [  395.889047] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - flow control rx/tx
-> [  406.670738] r8169 0000:02:00.0 eth0: Link is Down
-> 
-> Really nothing strange, even it negotiates to 1Gbps.
-> 
-> But during iperf3, it only goes up to miserable 3Mbps.
-> 
-> Is this some known bug or something special related to the passive adapter?
-> 
-> Since the adapter is passive, and hasn't experience anything wrong for a long time, I really doubt that.
-> 
-> Thanks,
-> Qu
-> 
-> 
-Thanks for the report. From which kernel version did you upgrade? Please test
-with the prior kernel version and report behavior (link stability and speed).
-Under 5.9, does ethtool -S eth0 report packet errors?
+From: Menglong Dong <dong.menglong@zte.com.cn>
+
+When udp_memory_allocated is at the limit, __udp_enqueue_schedule_skb
+will return a -ENOBUFS, and skb will be dropped in __udp_queue_rcv_skb
+without any counters being done. It's hard to find out what happened
+once this happen.
+
+So we introduce a UDP_MIB_MEMERRORS to do this job. Well, this change
+looks friendly to the existing users, such as netstat:
+
+$ netstat -u -s
+Udp:
+    0 packets received
+    639 packets to unknown port received.
+    158689 packet receive errors
+    180022 packets sent
+    RcvbufErrors: 20930
+    MemErrors: 137759
+UdpLite:
+IpExt:
+    InOctets: 257426235
+    OutOctets: 257460598
+    InNoECTPkts: 181177
+
+Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+---
+ include/uapi/linux/snmp.h | 1 +
+ net/ipv4/proc.c           | 1 +
+ net/ipv4/udp.c            | 3 +++
+ net/ipv6/proc.c           | 2 ++
+ net/ipv6/udp.c            | 3 +++
+ 5 files changed, 10 insertions(+)
+
+diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+index f84e7bcad6de..26fc60ce9298 100644
+--- a/include/uapi/linux/snmp.h
++++ b/include/uapi/linux/snmp.h
+@@ -159,6 +159,7 @@ enum
+ 	UDP_MIB_SNDBUFERRORS,			/* SndbufErrors */
+ 	UDP_MIB_CSUMERRORS,			/* InCsumErrors */
+ 	UDP_MIB_IGNOREDMULTI,			/* IgnoredMulti */
++	UDP_MIB_MEMERRORS,			/* MemErrors */
+ 	__UDP_MIB_MAX
+ };
+ 
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index 8d5e1695b9aa..63cd370ea29d 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -167,6 +167,7 @@ static const struct snmp_mib snmp4_udp_list[] = {
+ 	SNMP_MIB_ITEM("SndbufErrors", UDP_MIB_SNDBUFERRORS),
+ 	SNMP_MIB_ITEM("InCsumErrors", UDP_MIB_CSUMERRORS),
+ 	SNMP_MIB_ITEM("IgnoredMulti", UDP_MIB_IGNOREDMULTI),
++	SNMP_MIB_ITEM("MemErrors", UDP_MIB_MEMERRORS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 09f0a23d1a01..aa1bd53dd9f9 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -2038,6 +2038,9 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ 		if (rc == -ENOMEM)
+ 			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
+ 					is_udplite);
++		else
++			UDP_INC_STATS(sock_net(sk), UDP_MIB_MEMERRORS,
++					is_udplite);
+ 		UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
+ 		kfree_skb(skb);
+ 		trace_udp_fail_queue_rcv_skb(rc, sk);
+diff --git a/net/ipv6/proc.c b/net/ipv6/proc.c
+index bbff3e02e302..d6306aa46bb1 100644
+--- a/net/ipv6/proc.c
++++ b/net/ipv6/proc.c
+@@ -126,6 +126,7 @@ static const struct snmp_mib snmp6_udp6_list[] = {
+ 	SNMP_MIB_ITEM("Udp6SndbufErrors", UDP_MIB_SNDBUFERRORS),
+ 	SNMP_MIB_ITEM("Udp6InCsumErrors", UDP_MIB_CSUMERRORS),
+ 	SNMP_MIB_ITEM("Udp6IgnoredMulti", UDP_MIB_IGNOREDMULTI),
++	SNMP_MIB_ITEM("Udp6MemErrors", UDP_MIB_MEMERRORS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+@@ -137,6 +138,7 @@ static const struct snmp_mib snmp6_udplite6_list[] = {
+ 	SNMP_MIB_ITEM("UdpLite6RcvbufErrors", UDP_MIB_RCVBUFERRORS),
+ 	SNMP_MIB_ITEM("UdpLite6SndbufErrors", UDP_MIB_SNDBUFERRORS),
+ 	SNMP_MIB_ITEM("UdpLite6InCsumErrors", UDP_MIB_CSUMERRORS),
++	SNMP_MIB_ITEM("UdpLite6MemErrors", UDP_MIB_MEMERRORS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 29d9691359b9..e6158e04e15c 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -637,6 +637,9 @@ static int __udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ 		if (rc == -ENOMEM)
+ 			UDP6_INC_STATS(sock_net(sk),
+ 					 UDP_MIB_RCVBUFERRORS, is_udplite);
++		else
++			UDP6_INC_STATS(sock_net(sk),
++					 UDP_MIB_MEMERRORS, is_udplite);
+ 		UDP6_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
+ 		kfree_skb(skb);
+ 		return -1;
+-- 
+2.25.1
+
+
