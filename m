@@ -2,182 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5547A2A87D9
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 21:19:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66EC82A87D8
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 21:19:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731922AbgKEUTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 15:19:25 -0500
-Received: from mailout12.rmx.de ([94.199.88.78]:35910 "EHLO mailout12.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730973AbgKEUTY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 15:19:24 -0500
-Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout12.rmx.de (Postfix) with ESMTPS id 4CRvxg4GVwzRpXp;
-        Thu,  5 Nov 2020 21:19:19 +0100 (CET)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4CRvxQ6K0Kz2xDW;
-        Thu,  5 Nov 2020 21:19:06 +0100 (CET)
-Received: from n95hx1g2.localnet (192.168.54.22) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 5 Nov
- 2020 21:18:05 +0100
-From:   Christian Eggers <ceggers@arri.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add hardware time stamping support
-Date:   Thu, 5 Nov 2020 21:18:04 +0100
-Message-ID: <5844018.3araiXeC39@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <20201022113243.4shddtywgvpcqq6c@skbuf>
-References: <20201019172435.4416-1-ceggers@arri.de> <2541271.Km786uMvHt@n95hx1g2> <20201022113243.4shddtywgvpcqq6c@skbuf>
+        id S1728137AbgKEUTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 15:19:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726214AbgKEUTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 15:19:12 -0500
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDC8C0613CF;
+        Thu,  5 Nov 2020 12:19:12 -0800 (PST)
+Received: by mail-yb1-xb42.google.com with SMTP id c129so2449299yba.8;
+        Thu, 05 Nov 2020 12:19:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZRc+lwpQtmI1B2kI1XfJ2V0KbeFadRbQ6DPKKmtERAU=;
+        b=nuOQs/u+y4geJClghNI+WMjRymNCen3mHJThoHzO2WfdLLkiz5LyLU89E98thOWJB/
+         Mjiyg0YSq0nVzam8uO6k69kp0pj0rhe3bEUTC5+NksobRTbDxx+DrbfhK35fo87daa3v
+         mmjOPmcIRTEblleYnO3STXBHMrsr2VXSGXzUSzbfJ9xmNoaAMGf0SEvrnsK99Ncfb+r0
+         1hMJwbGHQssuWmrZ60jcSG+xu78cBZTPqLOt6e+za6z120yMpUOY6f8Gvp9xQfwRe+KT
+         mRnIsKJNAwD7k3uY5TsrjrrexCWrPGEsKjfoXQguHdKDLR1kITzk+4QQ9DFazeWQicqh
+         gwxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZRc+lwpQtmI1B2kI1XfJ2V0KbeFadRbQ6DPKKmtERAU=;
+        b=Alrlw0zOkVO/TpjWx2ueNAaSxlgdu4jZ66U/1Hkiwe4bcejb/86I/Nvjz/X7pJbrsf
+         krlOjDmShoQ/jrev4N2SI1l7dbkMFSRDh033NUtnWZElyo4SeWpwrf9roomgOHvynUUu
+         GgPXjjUxzcyir8e7plevnPduZIu5R4TRRbmNshO3aujs5YUG+rh54WfwkMsKpbgPeRWW
+         VAlIeP0NzOgKTUsrz3Yp19gTo5hYFdmCuVQciRtSd30zoCZTBe/lpEMRz7KYeQVPN5SH
+         zWxU7lnoKD8uCBfk57uNOXwCGfOYqxfNrRJUKXZHKISiKZRFP0rWG+Ra2iOY0T7RqZ9i
+         soEw==
+X-Gm-Message-State: AOAM5335X9mv82oVdWaLVTalA+teVZDbnVpdXDFBqpRG409holwFNbJL
+        ScGwtFs//YiWWtdGQmDV82i3/SaZm2BXa+DEUT8=
+X-Google-Smtp-Source: ABdhPJyR//iCYVDy0SiWfHnQK1KODaO1shA1G38SNp6g2ougV1qSR3mIsJVyaGqY+kZAApV+xtlbIX+DON6BjnPvUu0=
+X-Received: by 2002:a25:c7c6:: with SMTP id w189mr6125144ybe.403.1604607551242;
+ Thu, 05 Nov 2020 12:19:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.22]
-X-RMX-ID: 20201105-211906-4CRvxQ6K0Kz2xDW-0@kdin01
-X-RMX-SOURCE: 217.111.95.66
+References: <20201028132529.3763875-1-haliu@redhat.com> <20201029151146.3810859-1-haliu@redhat.com>
+ <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com> <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
+ <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net> <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
+ <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
+ <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com> <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
+ <20201104021730.GK2408@dhcp-12-153.nay.redhat.com> <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
+ <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com> <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
+ <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com>
+In-Reply-To: <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 5 Nov 2020 12:19:00 -0800
+Message-ID: <CAEf4BzaSfutBt3McEPjmu_FyxyzJa_xVGfhP_7v0oGuqG_HBEw@mail.gmail.com>
+Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Hangbin Liu <haliu@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
+On Wed, Nov 4, 2020 at 3:05 PM Edward Cree <ecree@solarflare.com> wrote:
+>
+> On 04/11/2020 22:10, Alexei Starovoitov wrote:
+> > On Wed, Nov 4, 2020 at 1:16 PM Edward Cree <ecree@solarflare.com> wrote:
+> >> On 04/11/2020 03:11, Alexei Starovoitov wrote:
+> >>> The user will do 'tc -V'. Does version mean anything from bpf loading pov?
+> >>> It's not. The user will do "ldd `which tc`" and then what?
+> >> Is it beyond the wit of man for 'tc -V' to output somethingabout
+> >>  libbpf version?
+> >> Other libraries seem to solve these problems all the time, I
+> >>  haven't seen anyone explain what makes libbpf so special that it
+> >>  has to be different.
+> > slow vger? Please see Daniel and Andrii detailed explanations.
+> Nah, I've seen that subthread(vger is fine).  I felt that subthread
+>  was missing this point about -V which is why I replied where it was
+>  brought up.
+> Daniel and Andrii have only explained why users will want to have an
+>  up-to-date libbpf, they (and you) haven't connected it to any
+>  argument about why static linking is the way to achieve that.
 
-On Thursday, 22 October 2020, 13:32:43 CET, Vladimir Oltean wrote:
-> On Thu, Oct 22, 2020 at 01:11:40PM +0200, Christian Eggers wrote:
-> > On Thursday, 22 October 2020, 12:50:14 CEST, Vladimir Oltean wrote:
-> > after applying the RX timestamp correctly to the correction field
-> > (shifting
-> > the nanoseconds by 16),
-> 
-> That modification should have been done anyway, since the unit of
-> measurement for correctionField is scaled ppb (48 bits nanoseconds, 16
-> bits scaled nanoseconds), and not nanoseconds.
-> 
-> > it seems that "moving" the timestamp back to the tail tag on TX is not
-> > required anymore. Keeping the RX timestamp simply in the correction
-> > field (negative value), works fine now. So this halves the effort in
-> > the tag_ksz driver.
+I'll just quote myself here for your convenience.
 
-unfortunately I made a mistake when testing. Actually the timestamp *must* be
-moved from the correction field (negative) to the egress tail tag.
+  Submodule is a way that I know of to make this better for end users.
+  If there are other ways to pull this off with shared library use, I'm
+  all for it, it will save the security angle that distros are arguing
+  for. E.g., if distributions will always have the latest libbpf
+  available almost as soon as it's cut upstream *and* new iproute2
+  versions enforce the latest libbpf when they are packaged/released,
+  then this might work equivalently for end users. If Linux distros
+  would be willing to do this faithfully and promptly, I have no
+  objections whatsoever. Because all that matters is BPF end user
+  experience, as Daniel explained above.
 
-> Ok, this makes sense.
-> Depending on what Richard responds, it now looks like the cleanest
-> approach would be to move your implementation that is currently in
-> ksz9477_update_ptp_correction_field() into a generic function called
-> 
-> static inline void ptp_onestep_p2p_move_t2_to_correction(struct sk_buff
-> *skb, unsigned int ptp_type,
->  struct ptp_header *ptp_header,
-> ktime_t t2)
-I have implemented this in ptp_classify.h. Passing t2 instead of the correction
-field itself is fine for rx, but as this function is now still required for
-transmit, it looks a little bit misused there (see below).
-
-Shall I keep it as below, or revert it to passing value of the correction field
-itself?
-
-regards
-Christian
+No one replied to that, unfortunately.
 
 
-static void ksz9477_xmit_timestamp(struct sk_buff *skb)
-{
-	struct sk_buff *clone = DSA_SKB_CB(skb)->clone;
-	struct ptp_header *ptp_hdr;
-	u32 tstamp_raw = 0;
-	u64 correction;
-
-	if (!clone)
-		goto out_put_tag;
-
-	/* Use cached PTP header and type from ksz9477_ptp_should_tstamp(). Note
-	 * that KSZ9477_SKB_CB(clone)->ptp_header != NULL implies that this is a
-	 * Pdelay_resp message.
-	 */
-	ptp_hdr = KSZ9477_SKB_CB(clone)->ptp_header;
-	if (!ptp_hdr)
-		goto out_put_tag;
-
-	correction = get_unaligned_be64(&ptp_hdr->correction);
-
-	/* For PDelay_Resp messages we will likely have a negative value in the
-	 * correction field (see ksz9477_rcv()). The switch hardware cannot
-	 * correctly update such values, so it must be moved to the time stamp
-	 * field in the tail tag.
-	 */
-	if ((s64)correction < 0) {
-		unsigned int ptp_type = KSZ9477_SKB_CB(clone)->ptp_type;
-		struct timespec64 ts;
-		u64 ns;
-
-		/* Move ingress time stamp from PTP header's correction field to
-		 * tail tag. Format of the correction filed is 48 bit ns + 16
-		 * bit fractional ns.  Avoid shifting negative numbers.
-		 */
-		ns = -((s64)correction) >> 16;
-		ts = ns_to_timespec64(ns);
-		tstamp_raw = ((ts.tv_sec & 3) << 30) | ts.tv_nsec;
-
->>>		/* Set correction field to 0 (by subtracting the negative value)
->>>		 * and update UDP checksum.
->>>		 */
->>>		ptp_onestep_p2p_move_t2_to_correction(skb, ptp_type, ptp_hdr, ns_to_ktime(-ns));
-	}
-
-out_put_tag:
-	put_unaligned_be32(tstamp_raw, skb_put(skb, KSZ9477_PTP_TAG_LEN));
-}
-
-
-Addtionally ptp_onestep_p2p_move_t2_to_correction() must be able to handle negative values:
-
-static inline
-void ptp_onestep_p2p_move_t2_to_correction(struct sk_buff *skb,
-					   unsigned int type,
-					   struct ptp_header *hdr,
-					   ktime_t t2)
-{
-	u8 *ptr = skb_mac_header(skb);
-	struct udphdr *uhdr = NULL;
-	s64 ns = ktime_to_ns(t2);
-	__be64 correction_old;
-	s64 correction;
-
-	/* previous correction value is required for checksum update. */
-	memcpy(&correction_old,  &hdr->correction, sizeof(correction_old));
-	correction = (s64)be64_to_cpu(correction_old);
-
-	/* PTP correction field consists of 32 bit nanoseconds and 16 bit
-	 * fractional nanoseconds.  Avoid shifting negative numbers.
-	 */
->>>	if (ns >= 0)
->>>		correction -= ns << 16;
->>>	else
->>>		correction += -ns << 16;
-
-	/* write new correction value */
-	put_unaligned_be64((u64)correction, &hdr->correction);
-...
-}
-
-
+> > libbpf is not your traditional library.
+> This has only been asserted, not explained.
+> I'm fully willing to entertain the possibility that libbpf is indeed
+>  special.  But if you want to win people over, you'll need to
+>  explain *why* it's special.
+> "Look at bfd and think why" is not enough, be more explicit.
+>
+> AIUI the API between iproute2 and libbpf isn't changing, all that's
+>  happening is that libbpf is gaining new capabilities in things that
+>  are totally transparent to iproute2 (e.g. BTF fixups).  So the
+>  reasonable thing for users to expect is "I need new BPF features,
+>  I'll upgrade my libbpf", and with dynamic linking that works fine
+>  whether they upgrade iproute2 too or not.
+> This narrative is, on the face of it, just as plausible as "I'm
+>  getting an error from iproute2, I'll upgrade that".  And if distros
+>  decide that that's a common enough mistake to matter, then they can
+>  make the newer iproute2 package depend on a newer libbpf package,
+>  and apt or yum or whatever will automagically DTRT.
+> Whereas if you tightly couple them from the start, distros can't
+>  then go the other way if it turns out you made the wrong choice.
+>  (What if someone can't use the latest iproute2 release because it
+>  has a regression bug that breaks their use-case, but they need the
+>  latest libbpf for one of your shiny new features?)
+>
+> Don't get me wrong, I'd love a world in which static linking was the
+>  norm and we all rebuilt our binaries locally every time we upgraded
+>  a piece.  But that's not the world we live in, and consistency
+>  *within* a distro matters too...
+>
+> -ed
