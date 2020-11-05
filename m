@@ -2,88 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BABB2A777B
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 07:33:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 577E12A777D
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 07:34:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730381AbgKEGdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 01:33:16 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7592 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730361AbgKEGdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 01:33:12 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CRYc72dk8zLv0V;
-        Thu,  5 Nov 2020 14:32:55 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 5 Nov 2020 14:32:52 +0800
-Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
- <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
- <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
- <1f8ebcde-f5ff-43df-960e-3661706e8d04@huawei.com>
- <CAM_iQpUm91x8Q0G=CXE7S43DKryABkyMTa4mz_oEfEOTFS7BgQ@mail.gmail.com>
- <db770012-f22c-dff4-5311-bf4d17cd08e3@huawei.com>
- <CAM_iQpUBytX3qim3rXLkwjdX3DSKeF8YhyX6o=Jwr-R9Onb-HA@mail.gmail.com>
- <5472023c-b50b-0cb3-4cb6-7bbea42d3612@huawei.com>
- <CAM_iQpVGm_Mz-yYUhhvn+p8H7mXHWHAuBNfyNj-251eY3Vr9iA@mail.gmail.com>
- <CAM_iQpXZHPSW9j+DaUDZdqm+wGrmy4nLL8gPEm7g3XndPn90+Q@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <feea91bc-c189-f28b-ca5d-d0bc6c031c3f@huawei.com>
-Date:   Thu, 5 Nov 2020 14:32:52 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1730061AbgKEGej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 01:34:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725861AbgKEGej (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 01:34:39 -0500
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E4CC0613CF
+        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 22:34:38 -0800 (PST)
+Received: by mail-il1-x144.google.com with SMTP id z2so402471ilh.11
+        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 22:34:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oCaMrOHH4xrnuGU6GOnuJLAZKZJkXd4m10ZBlU0hpEw=;
+        b=hKENIChLsaI9gYgGg4jESwqrKIO09KSkgEhRLJGYJRBaQmrjxQSSKreUCAL15vXWsD
+         c4mhh5ACaip2hP4kuIJFfxc6zbFtz+CjEKAtdoavGqkVK7/1MC9VzbmwjAdwUJ/Ap9GH
+         pWqqZvVRaB/ekKFj3Zh7aDT29galmigcO2lUFRyJC+8w7IIG3s+dc0d6/EXvKxNTV3II
+         ISfAhGuRdF/OViBgUZgZfTozPFqxkeaTV76DF820PyK9XisJUCjVxwj/77d1keofIGe8
+         yCMuW0UYjZ7dF9FmCZOKDprsSscmmzJt4i2oNTJi3rp/SVVMQiWYeryG3fXY9TxK/f4A
+         DT1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oCaMrOHH4xrnuGU6GOnuJLAZKZJkXd4m10ZBlU0hpEw=;
+        b=SDWmNFieTZ6oLNf2mao+vLVmX30bfdf9y6IFw6pq+n6f4s8+0WgH9VJppwe8GHk1gx
+         B2qx2oE716qetsQOFmjtJSf0Q0E4F2Cmkr/A33Rqyh0reF84sKbcHC8IDScHiM+tQZ0R
+         QU+Yljkb/kdFFeynDlXF/E3evwcrrT504WgXobkvTl+/lEleI0LqodjTRW7X4c0ri4x7
+         96yCoNqoOKT9p6OpuyFZUffoQPwjat3iXvaa9yxaSZR43YIg2sVXqYLy4ANXhEy/oBxz
+         jq8hq7mO5pLz821ONIeTedqP3qxPGIv9ewuikLJ1O/07FOWH+BnTWUKkbhLaJZ3Pu0Ge
+         e04g==
+X-Gm-Message-State: AOAM531VD0iHyTvlQr6nnHF6VasJw7JvTkGbVeZ1WOK5wz+KqTFRczXq
+        ToFmo9rOLjh+eanPr0LvjRpuoOoaajoZIOgh9YR3vp4Gc5M=
+X-Google-Smtp-Source: ABdhPJwjd5HhQ8DVkGWDJJsday8+tpkdDIYu+5X0rBEvIRnuTEYILsGgCh5p6ZgY4OcUBB3Y8vPcLkjM3V+EYzO14Ig=
+X-Received: by 2002:a92:c04c:: with SMTP id o12mr861196ilf.22.1604558078335;
+ Wed, 04 Nov 2020 22:34:38 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpXZHPSW9j+DaUDZdqm+wGrmy4nLL8gPEm7g3XndPn90+Q@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+References: <20201102201243.287486-1-vlad@buslov.dev> <20201104163916.4cf9b2dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201104163916.4cf9b2dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 4 Nov 2020 22:34:27 -0800
+Message-ID: <CAM_iQpUn2v94cUeE9MmK2__Hsf+rumq-cRNrnRN2iyUn1M1hug@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net: sched: implement action-specific terse dump
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Vlad Buslov <vlad@buslov.dev>, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/11/5 14:16, Cong Wang wrote:
-> On Wed, Nov 4, 2020 at 10:04 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->>
->> On Mon, Nov 2, 2020 at 11:24 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>>>> From my understanding, we can do anything about the old qdisc (including
->>>>> destorying the old qdisc) after some_qdisc_is_busy() return false.
->>>>
->>>> But the current code does the reset _before_ some_qdisc_is_busy(). ;)
->>>
->>> If lock is taken when doing reset, it does not matter if the reset is
->>> before some_qdisc_is_busy(), right?
->>
->> Why not? How about the following scenario?
->>
->> CPU0:                   CPU1:
->> dev_reset_queue()
->>                         net_tx_action()
->>                          -> sch_direct_xmit()
->>                            -> dev_requeue_skb()
->> some_qdisc_is_busy()
->> // waiting for TX action on CPU1
->> // now some packets are requeued
-> 
-> Never mind, the skb_bad_txq is also cleared by dev_reset_queue().
-> TX action after resetting should get NULL.
+On Wed, Nov 4, 2020 at 4:39 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon,  2 Nov 2020 22:12:43 +0200 Vlad Buslov wrote:
+> > Allow user to request action terse dump with new flag value
+> > TCA_FLAG_TERSE_DUMP. Only output essential action info in terse dump (kind,
+> > stats, index and cookie, if set by the user when creating the action). This
+> > is different from filter terse dump where index is excluded (filter can be
+> > identified by its own handle).
+> >
+> > Move tcf_action_dump_terse() function to the beginning of source file in
+> > order to call it from tcf_dump_walker().
+> >
+> > Signed-off-by: Vlad Buslov <vlad@buslov.dev>
+> > Suggested-by: Jamal Hadi Salim <jhs@mojatatu.com>
+>
+> Jiri, Cong, can I get an ack?
+>
+> The previous terse dump made sense because it fulfilled the need of
+> an important user (OvS). IDK if this is as clear-cut, and I haven't
+> followed the iproute2 thread closely enough, so please weigh in.
 
-Yes, maybe it is safe to remove qdisc_reset() now? or issue a warning
-if there are still skb in the qdisc.
+Like I said in the previous discussion, I am not a fan of terse dump,
+but before we have a better solution here, using this flag is probably
+the best we have on the table, so at least for a temporary solution:
 
-> 
-> Thanks.
-> .
-> 
+Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+
+Thanks.
