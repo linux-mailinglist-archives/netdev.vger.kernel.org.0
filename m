@@ -2,136 +2,374 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F25D2A86E4
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 20:16:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44CAC2A86EB
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 20:18:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732083AbgKETQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 14:16:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33322 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727376AbgKETQb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 14:16:31 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A577C0613CF;
-        Thu,  5 Nov 2020 11:16:31 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id s8so128100yba.13;
-        Thu, 05 Nov 2020 11:16:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UQDWwq8QvMqdJVjzKGOETKiS1dHDi+D7vZxRLNj3byE=;
-        b=azygivsUO3WQ3joNx+4dX4Nbmg2PNAghBNk/vpB/zvr95CQWczH5VKrdKtgSmtZ76Q
-         mEXaKtXwJ2FUDibZdfn/c4DWWfu+lw3bdhv7lZK0gWtgtEMgNR+AEyu3fM67BtvWDpAU
-         uwHVmEIQL7VfJ93hX0RpFkirXlB0yyqWL6JmDM2uYlMbDP2BUiss5aJyxyWFSaIl6ts/
-         byqnNf25QOP53SxZ1IzachOloGnOGiq6TCRTpeZrihj1lkipfIkMN3zODz6EPugNN2Kq
-         f7NIgu9a1N44TFllgqC/IMQbQyy2zwgvtyuct2hRzo1F+P2DuWHCHgw5GN6qYWyPk4lo
-         FLbA==
+        id S1732091AbgKETRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 14:17:49 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:40113 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727017AbgKETRt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 14:17:49 -0500
+Received: by mail-ot1-f67.google.com with SMTP id 79so2470468otc.7;
+        Thu, 05 Nov 2020 11:17:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UQDWwq8QvMqdJVjzKGOETKiS1dHDi+D7vZxRLNj3byE=;
-        b=fJSCMFUZdlYIKtzuuqij/i69+Cnor86h4PVDX5o4cRy+wLvp+cmUjkYyP90CTw6KqI
-         m1Mez89XLr+cffc48hvfWmSw31ERxeCwwUAo10zagF5p6uf5Jb3O9zOojNyiNW/tRuYZ
-         DJ6NtG1kjcuQazHocOdOBbB/bA9jLU9xnoVDDwbBZAxTvNb1hJX2DgQ9swIW6Wsr94JT
-         s56ehMI8oOGawBKcFVgppJqCbXvgN5rojn2gMadsSpWI5Z5rGh9ZEdAw4aHqhgivwXec
-         FS+XqtGgc3qKQq7Tj2ox/ogH2qyIHtD22ceCe+qwNtC+8UstY9bNlMxtdthTZMsRiOsR
-         juoQ==
-X-Gm-Message-State: AOAM531G35oG81OyTbFIW14PcUumVm6RbsEfQurYknIZydnbgSNJHetn
-        xlgf/3Y9ikDX05cfpttPoMbMyfRzJW4Jp+hyccA=
-X-Google-Smtp-Source: ABdhPJyCyz06QqQEAxYz9uaHbc6oT73ifk10hhdeAkNDkDovRgGK1ZtVOdvbeHkjfe1kT0ho0uvoZ4IuZ+ucRo50c1U=
-X-Received: by 2002:a25:c7c6:: with SMTP id w189mr5738478ybe.403.1604603790660;
- Thu, 05 Nov 2020 11:16:30 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qVltVS4xRbJ5oOqamRg6RIBu2eNc5lyLtJjVEFCDWcw=;
+        b=aYHUhudtEbcEAtu1x8il6TMMEl8qNNt8xwP3ov3f1bnbkYY659dVTvvhJJ3ot9IBCb
+         d1KvC8zHSzT1KSYtcAAuEJ1LIinhoSIWahuYo/roFCXbAJfKpRLoiTCLxXj1aXSAOyy7
+         2WdINqP5HheEEWiZ1rNSLxRXPr33at+DgN5NLvLQbukxWpRhmpAmqWykoSs3+KedjzFd
+         dToetocTzGHazz4gNa+5E7Ad8M8NjgG9ZvxT7AroJJLIsRibZ+v3EzyaS3wgEPRRhzaL
+         kUZwcrok/+NbhB+zyADjom7rvFzOweqq8WCqh7IT3RBqVi2yNVxP8ZjPDrI2H0mO87cG
+         A66w==
+X-Gm-Message-State: AOAM532EPADfv3XPpGKuL+a9q748WYiMw0FgGbiR/TLq3GAiRkdyZ63y
+        Yr1OXTZPYhPnErBc4UO0zQ==
+X-Google-Smtp-Source: ABdhPJzK1T8CXWpiwEOmLHa7iNUwPU0tvxWa/VTOiqQbBWkM9ZMxmM18EymWSKz6ITFMNCnosRq+6g==
+X-Received: by 2002:a9d:5547:: with SMTP id h7mr2835685oti.248.1604603867398;
+        Thu, 05 Nov 2020 11:17:47 -0800 (PST)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id q18sm515428otf.46.2020.11.05.11.17.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Nov 2020 11:17:46 -0800 (PST)
+Received: (nullmailer pid 1659013 invoked by uid 1000);
+        Thu, 05 Nov 2020 19:17:45 -0000
+Date:   Thu, 5 Nov 2020 13:17:45 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc:     leoyang.li@nxp.com, corbet@lwn.net,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linuxppc-dev@lists.ozlabs.org, ioana.ciornei@nxp.com,
+        Ionut-robert Aron <ionut-robert.aron@nxp.com>
+Subject: Re: [PATCH 2/2] dt-bindings: misc: convert fsl,qoriq-mc from txt to
+ YAML
+Message-ID: <20201105191745.GB1644330@bogus>
+References: <20201105141114.18161-1-laurentiu.tudor@nxp.com>
+ <20201105141114.18161-2-laurentiu.tudor@nxp.com>
 MIME-Version: 1.0
-References: <20201105043402.2530976-1-andrii@kernel.org> <20201105105254.27c84b78@carbon>
-In-Reply-To: <20201105105254.27c84b78@carbon>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 5 Nov 2020 11:16:19 -0800
-Message-ID: <CAEf4BzYOcQt1dv2f5UmVqCGWJVqM95DoUAumH+sRuXW3rzejMg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 00/11] libbpf: split BTF support
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Anton Protopopov <aspsk2@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201105141114.18161-2-laurentiu.tudor@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 5, 2020 at 1:53 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
->
-> On Wed, 4 Nov 2020 20:33:50 -0800
-> Andrii Nakryiko <andrii@kernel.org> wrote:
->
-> > This patch set adds support for generating and deduplicating split BTF. This
-> > is an enhancement to the BTF, which allows to designate one BTF as the "base
-> > BTF" (e.g., vmlinux BTF), and one or more other BTFs as "split BTF" (e.g.,
-> > kernel module BTF), which are building upon and extending base BTF with extra
-> > types and strings.
-> >
-> > Once loaded, split BTF appears as a single unified BTF superset of base BTF,
-> > with continuous and transparent numbering scheme. This allows all the existing
-> > users of BTF to work correctly and stay agnostic to the base/split BTFs
-> > composition.  The only difference is in how to instantiate split BTF: it
-> > requires base BTF to be alread instantiated and passed to btf__new_xxx_split()
-> > or btf__parse_xxx_split() "constructors" explicitly.
-> >
-> > This split approach is necessary if we are to have a reasonably-sized kernel
-> > module BTFs. By deduping each kernel module's BTF individually, resulting
-> > module BTFs contain copies of a lot of kernel types that are already present
-> > in vmlinux BTF. Even those single copies result in a big BTF size bloat. On my
-> > kernel configuration with 700 modules built, non-split BTF approach results in
-> > 115MBs of BTFs across all modules. With split BTF deduplication approach,
-> > total size is down to 5.2MBs total, which is on part with vmlinux BTF (at
-> > around 4MBs). This seems reasonable and practical. As to why we'd need kernel
-> > module BTFs, that should be pretty obvious to anyone using BPF at this point,
-> > as it allows all the BTF-powered features to be used with kernel modules:
-> > tp_btf, fentry/fexit/fmod_ret, lsm, bpf_iter, etc.
->
-> I love to see this work going forward.
->
+On Thu, Nov 05, 2020 at 04:11:14PM +0200, Laurentiu Tudor wrote:
+> From: Ionut-robert Aron <ionut-robert.aron@nxp.com>
+> 
+> Convert fsl,qoriq-mc to YAML in order to automate the verification
+> process of dts files. In addition, update MAINTAINERS accordingly
+> and, while at it, add some missing files.
+> 
+> Signed-off-by: Ionut-robert Aron <ionut-robert.aron@nxp.com>
+> [laurentiu.tudor@nxp.com: update MINTAINERS, updates & fixes in schema]
+> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> ---
+>  .../devicetree/bindings/misc/fsl,qoriq-mc.txt | 196 ----------------
+>  .../bindings/misc/fsl,qoriq-mc.yaml           | 218 ++++++++++++++++++
+>  .../ethernet/freescale/dpaa2/overview.rst     |   5 +-
+>  MAINTAINERS                                   |   4 +-
+>  4 files changed, 225 insertions(+), 198 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+>  create mode 100644 Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
 
-Thanks.
+[...]
 
-> My/Our (+Saeed +Ahern) use-case is for NIC-driver kernel modules.  I
-> want drivers to define a BTF struct that describe a meta-data area that
-> can be consumed/used by XDP, also available during xdp_frame to SKB
-> transition, which happens in net-core. So, I hope BTF-IDs are also
-> "available" from core kernel code?
+> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
+> new file mode 100644
+> index 000000000000..9e89fd8eb635
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
+> @@ -0,0 +1,218 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +# Copyright 2020 NXP
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/misc/fsl,qoriq-mc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +maintainers:
+> +  - Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> +
+> +title: Freescale Management Complex
+> +
+> +description: |
+> +  The Freescale Management Complex (fsl-mc) is a hardware resource
+> +  manager that manages specialized hardware objects used in
+> +  network-oriented packet processing applications. After the fsl-mc
+> +  block is enabled, pools of hardware resources are available, such as
+> +  queues, buffer pools, I/O interfaces. These resources are building
+> +  blocks that can be used to create functional hardware objects/devices
+> +  such as network interfaces, crypto accelerator instances, L2 switches,
+> +  etc.
+> +
+> +  For an overview of the DPAA2 architecture and fsl-mc bus see:
+> +  Documentation/networking/device_drivers/freescale/dpaa2/overview.rst
+> +
+> +  As described in the above overview, all DPAA2 objects in a DPRC share the
+> +  same hardware "isolation context" and a 10-bit value called an ICID
+> +  (isolation context id) is expressed by the hardware to identify
+> +  the requester.
+> +
+> +  The generic 'iommus' property is insufficient to describe the relationship
+> +  between ICIDs and IOMMUs, so an iommu-map property is used to define
+> +  the set of possible ICIDs under a root DPRC and how they map to
+> +  an IOMMU.
+> +
+> +  For generic IOMMU bindings, see:
+> +  Documentation/devicetree/bindings/iommu/iommu.txt.
+> +
+> +  For arm-smmu binding, see:
+> +  Documentation/devicetree/bindings/iommu/arm,smmu.yaml.
+> +
+> +  MC firmware binary images can be found here:
+> +  https://github.com/NXP/qoriq-mc-binary
+> +
+> +properties:
+> +  compatible:
+> +    const: "fsl,qoriq-mc"
 
-I'll probably need a more specific example to understand what exactly
-you are asking and how you see everything working together, sorry.
+Don't need quotes.
 
-If you are asking about support for using BTF_ID_LIST() macro in a
-kernel module, then right now we don't call resolve_btfids on modules,
-so it's not supported there yet. It's trivial to add, but we'll
-probably need to teach resolve_btfids to understand split BTF. We can
-do that separately after the basic "infra" lands, though.
+> +    description: "Must be 'fsl,qoriq-mc'. A Freescale Management Complex
 
->
->
-> > This patch set is a pre-requisite to adding split BTF support to pahole, which
-> > is a prerequisite to integrating split BTF into the Linux kernel build setup
-> > to generate BTF for kernel modules. The latter will come as a follow-up patch
-> > series once this series makes it to the libbpf and pahole makes use of it.
-> >
-> > Patch #4 introduces necessary basic support for split BTF into libbpf APIs.
-> > Patch #8 implements minimal changes to BTF dedup algorithm to allow
-> > deduplicating split BTFs. Patch #11 adds extra -B flag to bpftool to allow to
-> > specify the path to base BTF for cases when one wants to dump or inspect split
-> > BTF. All the rest are refactorings, clean ups, bug fixes and selftests.
-> >
-> > v1->v2:
-> >   - addressed Song's feedback.
-> --
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->
+Drop                ^^^^^^^^^^^^^^^^^^^^^^^^
+
+The schema says that.
+
+> +                compatible with this binding must have Block Revision
+> +                Registers BRR1 and BRR2 at offset 0x0BF8 and 0x0BFC in
+> +                the MC control register region."
+> +
+> +  reg:
+> +    description: "A standard property. Specifies one or two regions defining
+
+Don't need quotes. You need '|' for a literal block to keep formatting.
+
+But all this should be expressed as schema...
+
+> +                the MC's registers:
+> +
+> +                - the first region is the command portal for the this machine
+> +                  and must always be present
+> +
+> +                - the second region is the MC control registers. This region
+> +                  may not be present in some scenarios, such as in the device
+> +                  tree presented to a virtual machine."
+
+reg:
+  minItems: 1
+  items:
+    - description: the command portal for the this machine
+    - description: MC control registers. This region may not be present 
+        in some scenarios, such as in the device tree presented to a 
+        virtual machine.
+
+> +
+> +  ranges:
+> +    description: "A standard property. Defines the mapping between the child
+> +                MC address space and the parent system address space.
+> +
+> +                The MC address space is defined by 3 components:
+> +                <region type> <offset hi> <offset lo>
+> +
+> +                Valid values for region type are:
+> +                  0x0 - MC portals
+> +                  0x1 - QBMAN portals"
+> +
+> +  '#address-cells':
+> +    const: 3
+> +
+> +  '#size-cells':
+> +    const: 1
+> +
+> +  dpmacs:
+> +    type: object
+> +    description: "The fsl-mc node may optionally have dpmac sub-nodes that
+> +                describe the relationship between the Ethernet MACs which belong
+> +                to the MC and the Ethernet PHYs on the system board.
+> +
+> +                The dpmac nodes must be under a node named 'dpmacs' which
+> +                contains the following properties:
+> +
+> +                - '#address-cells'
+> +                  const: 1
+> +                  description: Must be present if dpmac sub-nodes are defined
+> +                              and must have a value of 1.
+> +
+> +                - '#size-cells'
+> +                  const: 0
+> +                  description: Must be present if dpmac sub-nodes are defined
+> +                              and must have a value of 0."
+
+Drop whatever description can be expressed in schemas.
+
+> +
+> +    properties:
+> +      '#address-cells':
+> +        const: 1
+> +
+> +      '#size-cells':
+> +        const: 0
+> +
+> +    patternProperties:
+> +      "^dpmac@[0-9a-f]+$":
+> +        type: object
+> +
+> +        description: "dpmac sub-node that describes the relationship between the
+> +                    Ethernet MACs which belong to the MC and the Ethernet PHYs
+> +                    on the system board."
+> +
+> +        properties:
+> +          compatible:
+> +            const: "fsl,qoriq-mc-dpmac"
+> +
+> +          reg:
+> +            description: Specifies the id of the dpmac
+
+Constraints on the value?
+
+> +
+> +          phy-handle:
+> +            $ref: /schemas/types.yaml#definitions/phandle
+> +            description: "Specifies the phandle to the PHY device node
+> +                        associated with the this dpmac."
+> +
+> +        required:
+> +        - compatible
+> +        - reg
+> +        - phy-handle
+> +
+> +  iommu-map:
+> +    description: |
+> +      Maps an ICID to an IOMMU and associated iommu-specifier data.
+> +
+> +      The property is an arbitrary number of tuples of
+> +      (icid-base, iommu, iommu-base, length).
+> +
+> +      Any ICID i in the interval [icid-base, icid-base + length) is
+> +      associated with the listed IOMMU, with the iommu-specifier
+> +      (i - icid-base + iommu-base).
+> +
+> +  msi-map:
+> +    description: |
+> +      Maps an ICID to a GIC ITS and associated msi-specifier data.
+> +
+> +      The property is an arbitrary number of tuples of
+> +      (icid-base, gic-its, msi-base, length).
+> +
+> +      Any ICID in the interval [icid-base, icid-base + length) is
+> +      associated with the listed GIC ITS, with the msi-specifier
+> +      (i - icid-base + msi-base).
+> +
+> +  msi-parent:
+> +    deprecated: true
+> +    description: "Points to the MSI controller node handling message interrupts
+> +                for the MC."
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - iommu-map
+> +  - msi-map
+> +  - ranges
+> +  - '#address-cells'
+> +  - '#size-cells'
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    soc {
+> +      #address-cells = <2>;
+> +      #size-cells = <2>;
+> +
+> +      smmu: iommu@5000000 {
+> +        compatible = "arm,mmu-500";
+> +        #global-interrupts = <1>;
+> +        #iommu-cells = <1>;
+> +        reg = <0 0x5000000 0 0x800000>;
+> +        stream-match-mask = <0x7c00>;
+> +        interrupts = <0 13 4>,
+> +                     <0 146 4>, <0 147 4>,
+> +                     <0 148 4>, <0 149 4>,
+> +                     <0 150 4>, <0 151 4>,
+> +                     <0 152 4>, <0 153 4>;
+> +      };
+> +
+> +      fsl_mc: fsl-mc@80c000000 {
+> +        compatible = "fsl,qoriq-mc";
+> +        reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
+> +        <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
+> +        /* define map for ICIDs 23-64 */
+> +        iommu-map = <23 &smmu 23 41>;
+> +        /* define msi map for ICIDs 23-64 */
+> +        msi-map = <23 &its 23 41>;
+> +        #address-cells = <3>;
+> +        #size-cells = <1>;
+> +
+> +        /*
+> +        * Region type 0x0 - MC portals
+> +        * Region type 0x1 - QBMAN portals
+> +        */
+> +        ranges = <0x0 0x0 0x0 0x8 0x0c000000 0x4000000
+> +                  0x1 0x0 0x0 0x8 0x18000000 0x8000000>;
+> +
+> +        dpmacs {
+> +          #address-cells = <1>;
+> +          #size-cells = <0>;
+> +
+> +          dpmac@1 {
+> +            compatible = "fsl,qoriq-mc-dpmac";
+> +            reg = <1>;
+> +            phy-handle = <&mdio0_phy0>;
+> +          };
+> +        };
+> +      };
+> +    };
+> diff --git a/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
+> index d638b5a8aadd..b3261c5871cc 100644
+> --- a/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
+> +++ b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
+> @@ -28,6 +28,9 @@ interfaces, an L2 switch, or accelerator instances.
+>  The MC provides memory-mapped I/O command interfaces (MC portals)
+>  which DPAA2 software drivers use to operate on DPAA2 objects.
+>  
+> +MC firmware binary images can be found here:
+> +https://github.com/NXP/qoriq-mc-binary
+> +
+>  The diagram below shows an overview of the DPAA2 resource management
+>  architecture::
+>  
+> @@ -338,7 +341,7 @@ Key functions include:
+>    a bind of the root DPRC to the DPRC driver
+>  
+>  The binding for the MC-bus device-tree node can be consulted at
+> -*Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt*.
+> +*Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml*.
+>  The sysfs bind/unbind interfaces for the MC-bus can be consulted at
+>  *Documentation/ABI/testing/sysfs-bus-fsl-mc*.
+>  
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index b43b59542d15..400a17c90edb 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -14409,9 +14409,11 @@ M:	Stuart Yoder <stuyoder@gmail.com>
+>  M:	Laurentiu Tudor <laurentiu.tudor@nxp.com>
+>  L:	linux-kernel@vger.kernel.org
+>  S:	Maintained
+> -F:	Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> +F:	Documentation/devicetree/bindings/misc/fsl,dpaa2-console.yaml
+> +F:	Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
+>  F:	Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
+>  F:	drivers/bus/fsl-mc/
+> +F:	include/linux/fsl/mc.h
+>  
+>  QT1010 MEDIA DRIVER
+>  M:	Antti Palosaari <crope@iki.fi>
+> -- 
+> 2.17.1
+> 
