@@ -2,91 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E76042A8909
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 22:29:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2A3E2A894B
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 22:53:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbgKEV3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 16:29:16 -0500
-Received: from mail2.protonmail.ch ([185.70.40.22]:11060 "EHLO
-        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732090AbgKEV3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 16:29:13 -0500
-Date:   Thu, 05 Nov 2020 21:29:01 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1604611750; bh=TlTCVc4GsAeJhqQaL3Nb2ua0fbsIOLGFOUjiApOTEkY=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=Qj0/1xbD/DgV5a4CaDmO/eF3yFtVAiacxsFsvvWc92lHdbDAPBmdJqPQxViInw66w
-         gsbbwwWdSgO/r5aBPmTCABQYgyDvshldXrPnrN1soieb/uaENRiXiMxwxRtUhd3fvo
-         gXJUS8r+HTsS6MCqnXwCik+K+RvAV73elV40HgjLAPjsWlDjqDJ5Pg44RL0mxlrxGX
-         9m6aVUGjvZh2yP7f3tDAgNeZmsGBjRf/ocpD6LmZwWoD959VqmncrFFqZyjg5ea4Zl
-         7PxkBSCR1NodfrzQoVt7attstz4x+Q7OCtD04NQ6L5PBY8DAdaP3HRoePV+R5xMoU6
-         lmOtgOE5/JaIw==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Florian Westphal <fw@strlen.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net-next] net: skb_vlan_untag(): don't reset transport offset if set by GRO layer
-Message-ID: <zYurwsZRN7BkqSoikWQLVqHyxz18h4LhHU4NFa2Vw@cp4-web-038.plabs.ch>
+        id S1732482AbgKEVxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 16:53:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55790 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731508AbgKEVxl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 16:53:41 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D2ECF2080D;
+        Thu,  5 Nov 2020 21:53:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604613220;
+        bh=kT732eXeXvpQOZkP7sHcwHnMaCo4/gCoi7XxP4AhVcw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=g/SpMkdapSZcg0SLvg1Y57+3E6a9K6OL8Z2aLxpCgnnKYHmNhDa6FCPZw7zoTJ2zj
+         KtTyX6Cpewcq107QqkJ056W7vo52UjwQRKsBsjTGuEZBw0tHo7xMxnbg3kNFtcKBUp
+         jhN0Ij3Di/QIa9znffpExV58LvOfFBRgQ3E3R6oM=
+Date:   Thu, 5 Nov 2020 13:53:38 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Benc <jbenc@redhat.com>, Andrii Nakryiko <andriin@fb.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH v3 bpf-next] bpf: make verifier log more relevant by
+ default
+Message-ID: <20201105135338.316e1677@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAEf4Bzb7r-9TEAnQC3gwiwX52JJJuoRd_ZHrkGviiuFKvy8qJg@mail.gmail.com>
+References: <20200423195850.1259827-1-andriin@fb.com>
+        <20201105170202.5bb47fef@redhat.com>
+        <CAEf4Bzb7r-9TEAnQC3gwiwX52JJJuoRd_ZHrkGviiuFKvy8qJg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to commit fda55eca5a33f
-("net: introduce skb_transport_header_was_set()"), avoid resetting
-transport offsets that were already set by GRO layer. This not only
-mirrors the behavior of __netif_receive_skb_core(), but also makes
-sense when it comes to UDP GSO fraglists forwarding: transport offset
-of such skbs is set only once by GRO receive callback and remains
-untouched and correct up to the xmitting driver in 1:1 case, but
-becomes junk after untagging in ingress VLAN case and breaks UDP
-GSO offload. This does not happen after this change, and all types
-of forwarding of UDP GSO fraglists work as expected.
+On Thu, 5 Nov 2020 13:22:12 -0800 Andrii Nakryiko wrote:
+> On Thu, Nov 5, 2020 at 8:02 AM Jiri Benc <jbenc@redhat.com> wrote:
+> > On Thu, 23 Apr 2020 12:58:50 -0700, Andrii Nakryiko wrote:  
+> > > To make BPF verifier verbose log more releavant and easier to use to debug
+> > > verification failures, "pop" parts of log that were successfully verified.
+> > > This has effect of leaving only verifier logs that correspond to code branches
+> > > that lead to verification failure, which in practice should result in much
+> > > shorter and more relevant verifier log dumps. This behavior is made the
+> > > default behavior and can be overriden to do exhaustive logging by specifying
+> > > BPF_LOG_LEVEL2 log level.  
+> >
+> > This patch broke the test_offload.py selftest:
+> >
+> > [...]
+> > Test TC offloads work...
+> > FAIL: Missing or incorrect message from netdevsim in verifier log
+> > [...]
+> >
+> > The selftest expects to receive "[netdevsim] Hello from netdevsim!" in
+> > the log (coming from nsim_bpf_verify_insn) but that part of the log is
+> > cleared by bpf_vlog_reset added by this patch.  
+> 
+> Should we just drop check_verifier_log() checks?
 
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- net/core/skbuff.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index c5e6c0b83a92..39c13b9cf79d 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5441,9 +5441,11 @@ struct sk_buff *skb_vlan_untag(struct sk_buff *skb)
- =09=09goto err_free;
-=20
- =09skb_reset_network_header(skb);
--=09skb_reset_transport_header(skb);
- =09skb_reset_mac_len(skb);
-=20
-+=09if (!skb_transport_header_was_set(skb))
-+=09=09skb_reset_transport_header(skb);
-+
- =09return skb;
-=20
- err_free:
---=20
-2.29.2
-
-
+Drivers only print error messages when something goes wrong, so the
+messages are high priority. IIUC this change was just supposed to
+decrease verbosity, right?
