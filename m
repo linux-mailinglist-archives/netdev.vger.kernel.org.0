@@ -2,29 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E730B2A87FB
+	by mail.lfdr.de (Postfix) with ESMTP id 78CFF2A87FA
 	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 21:22:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732553AbgKEUWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 15:22:25 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:19778 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732499AbgKEUWW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 15:22:22 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fa45f000003>; Thu, 05 Nov 2020 12:22:24 -0800
+        id S1732538AbgKEUWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 15:22:24 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:6732 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732498AbgKEUWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 15:22:13 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fa45ef60000>; Thu, 05 Nov 2020 12:22:14 -0800
 Received: from sx1.mtl.com (10.124.1.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 5 Nov
- 2020 20:22:11 +0000
+ 2020 20:22:12 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        "Maxim Mikityanskiy" <maximmi@mellanox.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "Saeed Mahameed" <saeedm@nvidia.com>
-Subject: [net v2 3/7] net/mlx5e: Use spin_lock_bh for async_icosq_lock
-Date:   Thu, 5 Nov 2020 12:21:25 -0800
-Message-ID: <20201105202129.23644-4-saeedm@nvidia.com>
+        "Maor Gottlieb" <maorg@nvidia.com>, Mark Bloch <mbloch@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net v2 4/7] net/mlx5: Fix deletion of duplicate rules
+Date:   Thu, 5 Nov 2020 12:21:26 -0800
+Message-ID: <20201105202129.23644-5-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201105202129.23644-1-saeedm@nvidia.com>
 References: <20201105202129.23644-1-saeedm@nvidia.com>
@@ -35,142 +34,59 @@ X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1604607744; bh=HvkJGvqSTDQgfNa66Tch1FhEJA+qstmQCWDTIJd/ODs=;
+        t=1604607734; bh=hZw4cR2iwc3qCOadGAQRRSPM4uxfq7okWlnuj2wf6/c=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=Hv+UefsxEbG0d3SWY05uO9iEUmABlMwkhMkkFWZ2oSGeKPvmZ/HzylkCa162+HAnl
-         x2mzsijN5QokLWHf7UtRNf1NYHZo3B1UIq0dKMUOQf2ZMla0Gqkf6+BDJTFXbZ6b6x
-         Y2bQ+ZDyE2na8vnRCmT5kjFxhTGfWRGmLvYZ06+5zRaTEEgacGKcUXrbcHPDz843gi
-         N039oEtYt0eEX7cNZFnwG/Ewl0e+Dz9O5lRl/zHC+m6kalCVa3iA4+QqO0kwFD7fwn
-         g1GvrwLWa7wevpYH5Za1/Inb44SWD+fRcx9Gob6kgHaJ28zZ3yeqwzxG04QJ589/C+
-         2f4zZF8LsCwDw==
+        b=Y90l9eZ6+0PEXnf81dZSL/ANmLCmoMIv5RsO9IMvMkP8NHdgu/PfBBtE2+7ZjgHny
+         ygQQzfj7lt/9D6TkSBYDgMos0nuO4HXyO6mETcFHA30ixtrU78B14m1DQgf5IXx3BJ
+         ex/LtsJYv0PAF5RijNnUsiCAmQVp8Jt51B7/Y4emZikJw86w+om08HiSDVr8t/vl4U
+         aM9LPF3Pt9AkFpENyV7KD36/tNN7sd25oTzti6IYxQRT1vojaa+6KjAXgsc4LfDOxD
+         isSdYegDlPjlTsIUE+xQUyF0hz+Txcu61Q3gX57tHl5P9WnRRUAuhKc+eDhZlUdi+X
+         qL0UMlwAfzgVA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@mellanox.com>
+From: Maor Gottlieb <maorg@nvidia.com>
 
-async_icosq_lock may be taken from softirq and non-softirq contexts. It
-requires protection with spin_lock_bh, otherwise a softirq may be
-triggered in the middle of the critical section, and it may deadlock if
-it tries to take the same lock. This patch fixes such a scenario by
-using spin_lock_bh to disable softirqs on that CPU while inside the
-critical section.
+When a rule is duplicated, the refcount of the rule is increased so only
+the second deletion of the rule should cause destruction of the FTE.
+Currently, the FTE will be destroyed in the first deletion of rule since
+the modify_mask will be 0.
+Fix it and call to destroy FTE only if all the rules (FTE's children)
+have been removed.
 
-Fixes: 8d94b590f1e4 ("net/mlx5e: Turn XSK ICOSQ into a general asynchronous=
- one")
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Fixes: 718ce4d601db ("net/mlx5: Consolidate update FTE for all removal chan=
+ges")
+Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
+Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |  4 ++--
- .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.c    |  4 ++--
- .../ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c | 14 +++++++-------
- 3 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c b/drive=
-rs/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-index 4e574ac73019..be3465ba38ca 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-@@ -122,9 +122,9 @@ void mlx5e_activate_xsk(struct mlx5e_channel *c)
- 	set_bit(MLX5E_RQ_STATE_ENABLED, &c->xskrq.state);
- 	/* TX queue is created active. */
-=20
--	spin_lock(&c->async_icosq_lock);
-+	spin_lock_bh(&c->async_icosq_lock);
- 	mlx5e_trigger_irq(&c->async_icosq);
--	spin_unlock(&c->async_icosq_lock);
-+	spin_unlock_bh(&c->async_icosq_lock);
- }
-=20
- void mlx5e_deactivate_xsk(struct mlx5e_channel *c)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c b/drivers/=
-net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-index fb671a457129..8e96260fce1d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-@@ -36,9 +36,9 @@ int mlx5e_xsk_wakeup(struct net_device *dev, u32 qid, u32=
- flags)
- 		if (test_and_set_bit(MLX5E_SQ_STATE_PENDING_XSK_TX, &c->async_icosq.stat=
-e))
- 			return 0;
-=20
--		spin_lock(&c->async_icosq_lock);
-+		spin_lock_bh(&c->async_icosq_lock);
- 		mlx5e_trigger_irq(&c->async_icosq);
--		spin_unlock(&c->async_icosq_lock);
-+		spin_unlock_bh(&c->async_icosq_lock);
- 	}
-=20
- 	return 0;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c b/d=
-rivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-index ccaccb9fc2f7..7f6221b8b1f7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-@@ -188,7 +188,7 @@ static int post_rx_param_wqes(struct mlx5e_channel *c,
-=20
- 	err =3D 0;
- 	sq =3D &c->async_icosq;
--	spin_lock(&c->async_icosq_lock);
-+	spin_lock_bh(&c->async_icosq_lock);
-=20
- 	cseg =3D post_static_params(sq, priv_rx);
- 	if (IS_ERR(cseg))
-@@ -199,7 +199,7 @@ static int post_rx_param_wqes(struct mlx5e_channel *c,
-=20
- 	mlx5e_notify_hw(&sq->wq, sq->pc, sq->uar_map, cseg);
- unlock:
--	spin_unlock(&c->async_icosq_lock);
-+	spin_unlock_bh(&c->async_icosq_lock);
-=20
- 	return err;
-=20
-@@ -265,10 +265,10 @@ resync_post_get_progress_params(struct mlx5e_icosq *s=
-q,
-=20
- 	BUILD_BUG_ON(MLX5E_KTLS_GET_PROGRESS_WQEBBS !=3D 1);
-=20
--	spin_lock(&sq->channel->async_icosq_lock);
-+	spin_lock_bh(&sq->channel->async_icosq_lock);
-=20
- 	if (unlikely(!mlx5e_wqc_has_room_for(&sq->wq, sq->cc, sq->pc, 1))) {
--		spin_unlock(&sq->channel->async_icosq_lock);
-+		spin_unlock_bh(&sq->channel->async_icosq_lock);
- 		err =3D -ENOSPC;
- 		goto err_dma_unmap;
- 	}
-@@ -299,7 +299,7 @@ resync_post_get_progress_params(struct mlx5e_icosq *sq,
- 	icosq_fill_wi(sq, pi, &wi);
- 	sq->pc++;
- 	mlx5e_notify_hw(&sq->wq, sq->pc, sq->uar_map, cseg);
--	spin_unlock(&sq->channel->async_icosq_lock);
-+	spin_unlock_bh(&sq->channel->async_icosq_lock);
-=20
- 	return 0;
-=20
-@@ -360,7 +360,7 @@ static int resync_handle_seq_match(struct mlx5e_ktls_of=
-fload_context_rx *priv_rx
- 	err =3D 0;
-=20
- 	sq =3D &c->async_icosq;
--	spin_lock(&c->async_icosq_lock);
-+	spin_lock_bh(&c->async_icosq_lock);
-=20
- 	cseg =3D post_static_params(sq, priv_rx);
- 	if (IS_ERR(cseg)) {
-@@ -372,7 +372,7 @@ static int resync_handle_seq_match(struct mlx5e_ktls_of=
-fload_context_rx *priv_rx
- 	mlx5e_notify_hw(&sq->wq, sq->pc, sq->uar_map, cseg);
- 	priv_rx->stats->tls_resync_res_ok++;
- unlock:
--	spin_unlock(&c->async_icosq_lock);
-+	spin_unlock_bh(&c->async_icosq_lock);
-=20
- 	return err;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/fs_core.c
+index 16091838bfcf..325a5b0d6829 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -2010,10 +2010,11 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *h=
+andle)
+ 	down_write_ref_node(&fte->node, false);
+ 	for (i =3D handle->num_rules - 1; i >=3D 0; i--)
+ 		tree_remove_node(&handle->rule[i]->node, true);
+-	if (fte->modify_mask && fte->dests_size) {
+-		modify_fte(fte);
++	if (fte->dests_size) {
++		if (fte->modify_mask)
++			modify_fte(fte);
+ 		up_write_ref_node(&fte->node, false);
+-	} else {
++	} else if (list_empty(&fte->node.children)) {
+ 		del_hw_fte(&fte->node);
+ 		/* Avoid double call to del_hw_fte */
+ 		fte->node.del_hw_func =3D NULL;
 --=20
 2.26.2
 
