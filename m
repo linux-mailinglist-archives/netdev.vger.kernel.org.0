@@ -2,156 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CBFE2A877B
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 20:40:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 113BD2A8784
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 20:47:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732129AbgKETki (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 14:40:38 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:2922 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726729AbgKETkh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 14:40:37 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fa455330000>; Thu, 05 Nov 2020 11:40:35 -0800
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 5 Nov
- 2020 19:40:35 +0000
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.108)
- by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Thu, 5 Nov 2020 19:40:35 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q4bLIoXCGToxBQvSgPC1V9x0SbVjgNNToQWU8bsFyTGC5kt8M4pWE9qqHYXa9yMKjEqS7gfqkKgVegHhNC3OfI6R5ditw/yxCct0hmmrMzPswgxCt1mTYdpIim78kCZNPyxT/UIxyra2yAoPQvBv+0cWNfP6FW5lqYt4RWjsGfrTB0KJ7vVLszENAQ+1pl2+WA8s3W/M2fMIT20zZsTy5b2DB29qmU5j06KdBdNspDLpeH95Kk1AP7a8pqihMkCGnFOoHofXBsWzvPiLokgUOd186kJUf+KFygG2qC73rKFZmyt7WYRzv9uLPimMGLF6QWBIAoE3VIWuOAF0W+pp1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ckTWAVJcmJHIdB9un+jGwufqMIGOqNbXGvDxXKMPzYY=;
- b=SSByxIqaILa8zRybH1PZ65wr76hiIjlg1acz/Hx5V8yssjLSI35EduU1UfcIu5WkE9I/niHNFoLBf4d+xrNI3C7K2WwZvUG9io6DaWAmuJG3hShXVrq20dcB1aXzbvVCsqsokoxcc80MdZtTME+tWW29PvYO6EyyZB0aBkMJk6AZ2qKyVWrx9fNimzMdJSpl6B9MLOoGCWyKPDIPjAKPujhtb5+V+1r/+GFLdVqxqM0m5Hg8CjkaqaABAandDsNFhTFx91BLHCVUpoQ/ZV/GMc34yvT+AnSqjQOtz4gVSvTcZe6M/wQvKvwFoqoEnKRngbpT5Trk1t6pfusTz9wEiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
- by BYAPR12MB3432.namprd12.prod.outlook.com (2603:10b6:a03:ac::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.28; Thu, 5 Nov
- 2020 19:40:34 +0000
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::3c25:6e4c:d506:6105]) by BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::3c25:6e4c:d506:6105%5]) with mapi id 15.20.3499.032; Thu, 5 Nov 2020
- 19:40:34 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     "Ertman, David M" <david.m.ertman@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>
-CC:     "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        Takashi Iwai <tiwai@suse.de>, Mark Brown <broonie@kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: RE: [PATCH v3 01/10] Add auxiliary bus support
-Thread-Topic: [PATCH v3 01/10] Add auxiliary bus support
-Thread-Index: AQHWqNRzAuOUFv+0MUGnf97WP/Ijmam5V8WAgACqGACAAAJYUA==
-Date:   Thu, 5 Nov 2020 19:40:34 +0000
-Message-ID: <BY5PR12MB43228923300FDE8B087DC4E9DCEE0@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20201023003338.1285642-1-david.m.ertman@intel.com>
- <20201023003338.1285642-2-david.m.ertman@intel.com>
- <CAPcyv4i9s=CsO5VJOhPnS77K=bD0LTQ8TUAbhLd+0OmyU8YQ3g@mail.gmail.com>
- <DM6PR11MB284191BAA817540E52E4E2C4DDEE0@DM6PR11MB2841.namprd11.prod.outlook.com>
-In-Reply-To: <DM6PR11MB284191BAA817540E52E4E2C4DDEE0@DM6PR11MB2841.namprd11.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [49.207.209.17]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8cbbd395-4d7c-4423-0f94-08d881c2a9ad
-x-ms-traffictypediagnostic: BYAPR12MB3432:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR12MB3432611CA7B0B0C3824EF49CDCEE0@BYAPR12MB3432.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: P8RZOnIycGiVVWOVZ6t830qi8FiBWVVRUqkHaPEb72TYeWG1YJJ9HIc3cDCdUVH0clv1ocaR5UOFfU5Qpb5vNUuTN8duTzLDEw4iCTgx9r8NELFmFGT5zXjJk4QtBZ6PWgbePUpZvjD70ViZFhCf3VRsKartRJEPR8f55DDzTyG0P9vPK+DeZqkOw+9wHqSEeWhhxb1dNloxa961HYbLadFQNA1qiQ4IC+U7KXeujg66Qz8XSgMnY9eGPdt8Y30KZiXdZy1LggXCQWZIH/h/vLurKfCargmk3kL3aQG2U+IMABXY4HHVxGm+4RJaEOu5DDBPcrd5uxbcNXFHZhXHQQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(346002)(376002)(366004)(2906002)(316002)(66556008)(64756008)(52536014)(4326008)(66446008)(26005)(71200400001)(83380400001)(8676002)(9686003)(110136005)(55016002)(54906003)(107886003)(55236004)(6506007)(66946007)(53546011)(66476007)(7416002)(5660300002)(76116006)(478600001)(186003)(7696005)(33656002)(8936002)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: GmN1Ttlo/CQEUtnb2lJiJFaOtH8hjGZX+W74ei0B1KFimq6GPFNL+/7vgGwPhtX+7pAfLkwHdAEcG+mdQqt+5yy71AeqWNBkHiO1swFg7cIUIGSrPFSFjJfydosFpmw/z9XWsZ9k1d4s6cn8ewiqm6kjDVsSw9Joo2Ai3nxEjGNqKky6u6MJN5+tdn9bkNEod07BToTLtICSkDLtYva9aIOadGmi1h/7aApGBA2PjWioTqQY/9cLEUI9/A8myK83xb8ftwVsn6Ld6uKO101tvkCV8v27b9uHmVxNEQ6xi+jT1KxA5ETdvaAlD0nG4zaGqhivM8Nit97moaVuNkrMmmt+Ekjzm4IC666BeNeRlhJmE6BdM2Sibcp9vCcN3blkaoXFgmlfw8/D+7C596WbnZH5G4X48POtJrLbXD4/QQL5bgoQfuCEROZ6+0TtGv+X74GY88U+JbFx9j/fGG0JttvC4fhkpSBIUpkne38JaJoHjzcIEap1TV0efK3QSti1jAQuIb+9dPkFc6kcdvvuiBSJX5F45VTGPgEB0LuSkV2q9rKMGJdl46yUV4qlL3vUHKE9vorhfrSF35l1xFpugSNxjTCZMOADmOp2w5OQrsqASTEOHDXm76+YCD8lytxIjxgKTMZVNFzCntXoIO9/Ow==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728137AbgKETrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 14:47:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726729AbgKETrl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 14:47:41 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D2CC0613CF
+        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 11:47:41 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id i7so2056556pgh.6
+        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 11:47:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=1LOTo8UUi+aPq+8VNE9d8RB8luDDjM4KCS3eWO+QWDo=;
+        b=uFjtqE5zriykFejhpQWNJbOvAtxj7TD908/c4l4VN8f4TEW9CBhkH9EF1qgrs2i4FO
+         Dtf9eqdWQcdJEP6k9Zij9cH1OjQfgyoFpUpr182hxIVBFc3Z0FTPX3vzy6RcFj7vVj7D
+         oMGNguH1r2S85OtUPNQVD47e4GtOOSUQqoIfIE+UrQvP4vKPQ6goxLQK90Ulb9IZ8Z5U
+         b8Ug9W6OntT0vFu3lSxhdbAjZuWeS+OIsIOxDoa9ahGbya2I4rkIv1Y15KDYerrIxfuJ
+         +RMuslHvl667105wNV8HZdMRL+cbAw7rzfN0j0+3qKJ84m4dSFVhOjpmcjG9U0PBQ1TW
+         +ERA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1LOTo8UUi+aPq+8VNE9d8RB8luDDjM4KCS3eWO+QWDo=;
+        b=D9FsGF1N1YfbjFHbO7yZDL/CWyB0NopMTxEuqmy5P5B2oOm0YbZKhds24MlBjEzXbI
+         QxC6UF7mVmsh+eNaZEXELdtrPAVnLlEf3X5qyWCbG1IsS9aKJ0rNv/WK92zJ0i1EgNCH
+         jejw036YBAbZWaG1ugppuyDhoLgRD+8L98VHZkk64crT21hizLQl2tlIOsrfN4/ipik4
+         prszFXTsjjqQXRYdccWJH0w5dE7/kl48tljTzKamxNwt3LB6MUh5KSh7YB4yAvqL2Exy
+         wTVJcTdoE8S1HF2/veRz+Azx2IcVJSOH3Th+lWrFRIOag7HMmmpE+y9mqkGg9s1z6+3d
+         4rPw==
+X-Gm-Message-State: AOAM53181xBLGLeYqITrNIJlaAskIJoMMG3QDlUWhy2+IzZ4IVUwjFGg
+        7w2VU/AsYwKKT6wUHXp41L+y3tyGZKzUhQ==
+X-Google-Smtp-Source: ABdhPJzOvDm/KwbAzBaHzKjYXwVb6b46Bqumk3SDyWr3pTJmBHczXLlHHiTFMTGp+E9mH2wP7vnydg==
+X-Received: by 2002:a17:90b:4a10:: with SMTP id kk16mr3988183pjb.77.1604605660193;
+        Thu, 05 Nov 2020 11:47:40 -0800 (PST)
+Received: from [192.168.0.16] (97-115-80-55.ptld.qwest.net. [97.115.80.55])
+        by smtp.gmail.com with ESMTPSA id x18sm3116218pgj.49.2020.11.05.11.47.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Nov 2020 11:47:39 -0800 (PST)
+Subject: Re: [PATCH net] openvswitch: Fix upcall
+ OVS_TUNNEL_KEY_ATTR_GENEVE_OPTS
+To:     Yi-Hung Wei <yihung.wei@gmail.com>, netdev@vger.kernel.org
+References: <1604448694-19351-1-git-send-email-yihung.wei@gmail.com>
+From:   Gregory Rose <gvrose8192@gmail.com>
+Message-ID: <32f58804-4f52-9893-2666-7e1b71acb55e@gmail.com>
+Date:   Thu, 5 Nov 2020 11:47:37 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8cbbd395-4d7c-4423-0f94-08d881c2a9ad
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Nov 2020 19:40:34.1612
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +e3Z0ntovn8/3e4IPiPxBI7OUazovBS6n343cKerKxgk5QpmAzJIg8+5falUhIMqFDgndYfuD7/fTbdt+yQkYg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3432
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1604605235; bh=ckTWAVJcmJHIdB9un+jGwufqMIGOqNbXGvDxXKMPzYY=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
-         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
-         In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
-         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
-         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
-         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
-         x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
-         x-ms-exchange-senderadcheck:x-microsoft-antispam:
-         x-microsoft-antispam-message-info:x-forefront-antispam-report:
-         x-ms-exchange-antispam-messagedata:Content-Type:
-         Content-Transfer-Encoding:MIME-Version:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-originalarrivaltime:
-         X-MS-Exchange-CrossTenant-fromentityheader:
-         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-         X-MS-Exchange-CrossTenant-userprincipalname:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=cz0+I50qC/Y5g6pZScjcvegtZUZO2LorilG1h8bpx4DnbGFpR6NLA6+Z9kcwBUqo6
-         ZsAgk/ecY7ITvZ6xl3VMnb77odOfTPCGqF/Bo0TuiubGZ+R9gYOsg+8z+tNEWhdwzp
-         jHAhMng6befKbbMl23Rvy3BqV93EVZFDGzIxc5hDdetkytFLKSdK1CLw8Jx9lg+mbb
-         uwgma1eFRIesxfdUaGKv3+Iy83E9rmR4Ororc2W9k0J+X0QdpVqeQ78aqI6jRPJn68
-         G8Tebkxl4UGYKIszsX6E1T6hf7meuNOtZr58ZAS/Am83LYrMa5jUVHe91z3Flp3ExP
-         UmuojWmSjg7sA==
+In-Reply-To: <1604448694-19351-1-git-send-email-yihung.wei@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gRnJvbTogRXJ0bWFuLCBEYXZpZCBNIDxkYXZpZC5tLmVydG1hbkBpbnRlbC5jb20+DQo+
-IFNlbnQ6IEZyaWRheSwgTm92ZW1iZXIgNiwgMjAyMCAxMjo1OCBBTQ0KPiBTdWJqZWN0OiBSRTog
-W1BBVENIIHYzIDAxLzEwXSBBZGQgYXV4aWxpYXJ5IGJ1cyBzdXBwb3J0DQo+IA0KPiA+IC0tLS0t
-T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gRnJvbTogRGFuIFdpbGxpYW1zIDxkYW4uai53aWxs
-aWFtc0BpbnRlbC5jb20+DQo+ID4gU2VudDogVGh1cnNkYXksIE5vdmVtYmVyIDUsIDIwMjAgMTox
-OSBBTQ0KPiA+DQoNClsuLl0NCj4gPiA+ICsNCj4gPiA+ICtBbm90aGVyIHVzZSBjYXNlIGlzIGZv
-ciB0aGUgUENJIGRldmljZSB0byBiZSBzcGxpdCBvdXQgaW50bw0KPiA+ID4gK211bHRpcGxlIHN1
-YiBmdW5jdGlvbnMuICBGb3IgZWFjaCBzdWIgZnVuY3Rpb24gYW4gYXV4aWxpYXJ5X2RldmljZQ0K
-PiA+ID4gK3dpbGwgYmUgY3JlYXRlZC4gIEEgUENJIHN1YiBmdW5jdGlvbiBkcml2ZXIgd2lsbCBi
-aW5kIHRvIHN1Y2gNCj4gPiA+ICtkZXZpY2VzIHRoYXQgd2lsbCBjcmVhdGUgaXRzIG93biBvbmUg
-b3IgbW9yZSBjbGFzcyBkZXZpY2VzLiAgQSBQQ0kNCj4gPiA+ICtzdWIgZnVuY3Rpb24gYXV4aWxp
-YXJ5IGRldmljZSB3aWxsIGxpa2VseSBiZSBjb250YWluZWQgaW4gYSBzdHJ1Y3QNCj4gPiA+ICt3
-aXRoIGFkZGl0aW9uYWwgYXR0cmlidXRlcyBzdWNoIGFzIHVzZXIgZGVmaW5lZCBzdWIgZnVuY3Rp
-b24gbnVtYmVyDQo+ID4gPiArYW5kIG9wdGlvbmFsIGF0dHJpYnV0ZXMgc3VjaCBhcyByZXNvdXJj
-ZXMgYW5kIGEgbGluayB0bw0KPiA+IHRoZQ0KPiA+ID4gK3BhcmVudCBkZXZpY2UuICBUaGVzZSBh
-dHRyaWJ1dGVzIGNvdWxkIGJlIHVzZWQgYnkgc3lzdGVtZC91ZGV2OyBhbmQNCj4gPiBoZW5jZSBz
-aG91bGQNCj4gPiA+ICtiZSBpbml0aWFsaXplZCBiZWZvcmUgYSBkcml2ZXIgYmluZHMgdG8gYW4g
-YXV4aWxpYXJ5X2RldmljZS4NCj4gPg0KPiA+IFRoaXMgZG9lcyBub3QgcmVhZCBsaWtlIGFuIGV4
-cGxpY2l0IGV4YW1wbGUgbGlrZSB0aGUgcHJldmlvdXMgMi4gRGlkDQo+ID4geW91IGhhdmUgc29t
-ZXRoaW5nIHNwZWNpZmljIGluIG1pbmQ/DQo+ID4NCj4gDQo+IFRoaXMgd2FzIGFkZGVkIGJ5IHJl
-cXVlc3Qgb2YgUGFyYXYuDQo+IA0KVGhpcyBleGFtcGxlIGRlc2NyaWJlcyB0aGUgbWx4NSBQQ0kg
-c3ViZnVuY3Rpb24gdXNlIGNhc2UuDQpJIGRpZG4ndCBmb2xsb3cgeW91ciBxdWVzdGlvbiBhYm91
-dCAnZXhwbGljaXQgZXhhbXBsZScuDQpXaGF0IHBhcnQgaXMgbWlzc2luZyB0byBpZGVudGlmeSBp
-dCBhcyBleHBsaWNpdCBleGFtcGxlPw0K
+
+On 11/3/2020 4:11 PM, Yi-Hung Wei wrote:
+> TUNNEL_GENEVE_OPT is set on tun_flags in struct sw_flow_key when
+> a packet is coming from a geneve tunnel no matter the size of geneve
+> option is zero or not.  On the other hand, TUNNEL_VXLAN_OPT or
+> TUNNEL_ERSPAN_OPT is set when the VXLAN or ERSPAN option is available.
+> Currently, ovs kernel module only generates
+> OVS_TUNNEL_KEY_ATTR_GENEVE_OPTS when the tun_opts_len is non-zero.
+> As a result, for a geneve packet without tun_metadata, when the packet
+> is reinserted from userspace after upcall, we miss the TUNNEL_GENEVE_OPT
+> in the tun_flags on struct sw_flow_key, and that will further cause
+> megaflow matching issue.
+> 
+> This patch changes the way that we deal with the upcall netlink message
+> generation to make sure the geneve tun_flags is set consistently
+> as the packet is firstly received from the geneve tunnel in order to
+> avoid megaflow matching issue demonstrated by the following flows.
+> This issue is only observed on ovs kernel datapath.
+> 
+> Consider the following two flows, and the two cases.
+> * flow1: icmp traffic from gnv0 to gnv1, without any tun_metadata
+> * flow2: icmp traffic form gnv0 to gnv1 with tun_metadata0
+> 
+> Case 1)
+> Send flow2 first, and then send flow1.  When both flows are running,
+> both the following two flows are hit, which is expected.
+> 
+> table=2, priority=200, in_port=gnv0, icmp, ct_state=+trk+est, reg9=0x0/0xff action=output:gnv1
+> table=2, priority=200, in_port=gnv0, icmp, ct_state=+trk+est, reg9=0x1/0xff action=output:gnv1
+> 
+> Case 2)
+> Send flow1 first, then send flow2.  When both flows are running,
+> only the following flow is hit.
+> table=2, priority=200, in_port=gnv0, icmp, ct_state=+trk+est, reg9=0x0/0xff action=output:gnv1
+> 
+> Example flows)
+> 
+> table=0, arp, actions=NORMAL
+> table=0, in_port=gnv1, icmp, action=ct(table=1)
+> table=0, in_port=gnv0, icmp  action=move:NXM_NX_TUN_METADATA0[0..7]->NXM_NX_REG9[0..7], resubmit(,1)
+> table=1, in_port=gnv1, icmp, action=output:gnv0
+> table=1, in_port=gnv0, icmp  action=ct(table=2)
+> table=2, priority=300, in_port=gnv0, icmp, ct_state=+trk+new, action=ct(commit),output:gnv1
+> table=2, priority=200, in_port=gnv0, icmp, ct_state=+trk+est, reg9=0x0/0xff action=output:gnv1
+> table=2, priority=200, in_port=gnv0, icmp, ct_state=+trk+est, reg9=0x1/0xff action=output:gnv1
+> 
+> Fixes: fc4099f17240 ("openvswitch: Fix egress tunnel info.")
+> Signed-off-by: Yi-Hung Wei <yihung.wei@gmail.com>
+> ---
+>   net/openvswitch/flow_netlink.c | 10 +++++-----
+>   1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+> index 9d3e50c4d29f..b03ec6a1a1fa 100644
+> --- a/net/openvswitch/flow_netlink.c
+> +++ b/net/openvswitch/flow_netlink.c
+> @@ -912,13 +912,13 @@ static int __ip_tun_to_nlattr(struct sk_buff *skb,
+>   	if ((output->tun_flags & TUNNEL_OAM) &&
+>   	    nla_put_flag(skb, OVS_TUNNEL_KEY_ATTR_OAM))
+>   		return -EMSGSIZE;
+> -	if (swkey_tun_opts_len) {
+> -		if (output->tun_flags & TUNNEL_GENEVE_OPT &&
+> -		    nla_put(skb, OVS_TUNNEL_KEY_ATTR_GENEVE_OPTS,
+> +	if (output->tun_flags & TUNNEL_GENEVE_OPT) {
+> +		if (nla_put(skb, OVS_TUNNEL_KEY_ATTR_GENEVE_OPTS,
+>   			    swkey_tun_opts_len, tun_opts))
+>   			return -EMSGSIZE;
+> -		else if (output->tun_flags & TUNNEL_VXLAN_OPT &&
+> -			 vxlan_opt_to_nlattr(skb, tun_opts, swkey_tun_opts_len))
+> +	} else if (swkey_tun_opts_len) {
+> +		if (output->tun_flags & TUNNEL_VXLAN_OPT &&
+> +		    vxlan_opt_to_nlattr(skb, tun_opts, swkey_tun_opts_len))
+>   			return -EMSGSIZE;
+>   		else if (output->tun_flags & TUNNEL_ERSPAN_OPT &&
+>   			 nla_put(skb, OVS_TUNNEL_KEY_ATTR_ERSPAN_OPTS,
+> 
+
+Applies and builds cleanly.
+
+Passes OVS kernel test suite geneve tunnel tests.
+
+  17: datapath - ping over geneve tunnel              ok
+  18: datapath - flow resume with geneve tun_metadata ok
+  19: datapath - ping over geneve6 tunnel             ok
+
+Code looks good to me.
+
+Acked-by: Greg Rose <gvrose8192@gmail.com>
