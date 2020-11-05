@@ -2,244 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CE8E2A7B72
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 11:14:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8DE72A7B74
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 11:15:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726688AbgKEKOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 05:14:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32802 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726152AbgKEKOP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 05:14:15 -0500
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD78C0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 02:14:15 -0800 (PST)
-Received: by mail-lj1-x244.google.com with SMTP id l10so976141lji.4
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 02:14:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H0Jh8qFmzOTKB0vQ8d8hXJG9B1KbcleeafSmKKRtics=;
-        b=YSYYTbBO0wZo1vAHR9ZLQfGYmv8h8IoUbAt6YaLOU2TLLygIk7GP3N/MXkogruMFN/
-         Rla+tcIBT/WIAZbopVjbamILlDtS2I5bBJmHy85EUs1wZqkEN6vPX+mLeyNOGrnGPLCW
-         w6WwlhgVDF0R00e3zpp1kbg9Yiiw/75aoqMtr7E0uz5QXQ8H/qWpH3hTV06QF9BodoEL
-         dCHBmNWLArrY8aXhvso2R67ubPkiX7I41YV2xtBgZGdRNBnqGgnNfkt0Tsm+nATBf5Xn
-         t0tIIixr7KNZ5pf1IoutK+s4q2NTMvXrtxQBL2Hvgq02dBIISroOupQYgn20Yp0Qm2wN
-         /dGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H0Jh8qFmzOTKB0vQ8d8hXJG9B1KbcleeafSmKKRtics=;
-        b=Ip4ysdkK8jlov/JQdqvTRK/yr1zouyauGBKS3eTkVq8xUR2HoX2p6lVIIqkQ8emA5M
-         x/JCYsEs2NBRu/FCZeA8bF3hGsrmKp2kkfdQQW43nUtvvoICQ9d6op2PzSCWINR/jMaG
-         Pm304Ef+sb28cj14uKmAU2ztgUo8twQrabl4Q18kzp4PGRM0+MTdtHHktkIGcly/k8Z2
-         wi0JU0/1y6Ov2hFOJ2wv7Tt2h9NoFfz/FIpY8q1sgDnRtBFbAtdhcKuyc0rIei1CFoIs
-         716zmORKKqyKaJIm2zoPL8YiH35O0NwZKmajbEtwHeuIS3BZqlWouWg05qYAjw7HlAJz
-         vRug==
-X-Gm-Message-State: AOAM532Rd9nLDawbc5EQopmk17Qx2NK4c2qv3/e3+zMnj1Qx+954Sq6K
-        mBNMUJBhvM2ouMLiwpUhjWM7o6SRD96Pyg==
-X-Google-Smtp-Source: ABdhPJwdVLDVFD/zcBwyUGCda6KSIOEeBG9wpDxya7yW0LyHHHy9CapSplM1yWKkrQBsob+XWWFt6w==
-X-Received: by 2002:a2e:88cb:: with SMTP id a11mr669969ljk.304.1604571253216;
-        Thu, 05 Nov 2020 02:14:13 -0800 (PST)
-Received: from mtpad.i.jakstys.lt ([88.223.105.124])
-        by smtp.gmail.com with ESMTPSA id n20sm132545lfl.249.2020.11.05.02.14.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2020 02:14:12 -0800 (PST)
-From:   =?UTF-8?q?Motiejus=20Jak=C5=A1tys?= <desired.mta@gmail.com>
-To:     netdev@vger.kernel.org, kuba@kernel.org
-Cc:     trivial@kernel.org,
-        =?UTF-8?q?Motiejus=20Jak=C5=A1tys?= <desired.mta@gmail.com>
-Subject: [PATCH] Documentation: tproxy: more gentle intro
-Date:   Thu,  5 Nov 2020 12:13:59 +0200
-Message-Id: <20201105101359.106730-1-desired.mta@gmail.com>
-X-Mailer: git-send-email 2.28.0
+        id S1726777AbgKEKPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 05:15:18 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:5910 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725827AbgKEKPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 05:15:18 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fa3d0b90000>; Thu, 05 Nov 2020 02:15:21 -0800
+Received: from [172.27.15.55] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 5 Nov
+ 2020 10:15:07 +0000
+Subject: Re: [net 4/9] net/mlx5e: Fix refcount leak on kTLS RX resync
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>
+CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        "Maxim Mikityanskiy" <maximmi@mellanox.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+References: <20201103191830.60151-1-saeedm@nvidia.com>
+ <20201103191830.60151-5-saeedm@nvidia.com>
+ <20201104145927.3e7efaa2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+Message-ID: <0c929b0f-750a-3618-3891-4fa40dd14104@nvidia.com>
+Date:   Thu, 5 Nov 2020 12:15:04 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201104145927.3e7efaa2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1604571321; bh=a4Ucl1t5AvX1mIgRQqjEwNII9lNygzf1TnIAsqV00UU=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
+        b=pL2RVWy7JvDLQBFQVdWTGT6RK4gbTTkDoEa5Lw2N2//XE5IKhkGhWLj5svHYHn0lk
+         zEv0Zntb9Syw8ZZ7jZcy5D3sxwvBro7C0zX/mepuE041CeLTd+wSd0PGJBpEQtedIT
+         t4OsCbx13F0GqCYYHTwnd9CoUtSKsPzFmCwdYzwa28rUBrmI5/K7LYAfS3WsQ+X3Bb
+         OWKxhu9sioinJI+vh8Vcty83jGzkvg6+jAfoZZhks0ly75ItZpsz4BhIzfr+tNlH7I
+         mizJAs5JX3jfN25GSCSR1qttRsjfBWbP8HZJGqSa7BSRPa/+o4q4tUT6QH0fi9st/v
+         /25JUgU/IsghQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clarify tproxy odcumentation, so it's easier to read/understand without
-a-priori in-kernel transparent proxying knowledge.
+On 2020-11-05 00:59, Jakub Kicinski wrote:
+> On Tue, 3 Nov 2020 11:18:25 -0800 Saeed Mahameed wrote:
+>> From: Maxim Mikityanskiy <maximmi@mellanox.com>
+>>
+>> On resync, the driver calls inet_lookup_established
+>> (__inet6_lookup_established) that increases sk_refcnt of the socket. To
+>> decrease it, the driver set skb->destructor to sock_edemux. However, it
+>> didn't work well, because the TCP stack also sets this destructor for
+>> early demux, and the refcount gets decreased only once
+> 
+> Why is the stack doing early_demux if there is already a socket
+> assigned? Or is it not early_demux but something else?
+> Can you point us at the code?
 
-Remove a reference to linux 2.2 and cosmetic Sphinx changes.
+I thought this was the code that was in conflict with setting 
+skb->destructor in the driver:
 
-Signed-off-by: Motiejus Jakštys <desired.mta@gmail.com>
----
- Documentation/networking/tproxy.rst | 119 +++++++++++++++-------------
- 1 file changed, 63 insertions(+), 56 deletions(-)
+void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
+{
+         skb_orphan(skb);
+         skb->sk = sk;
+#ifdef CONFIG_INET
+         if (unlikely(!sk_fullsock(sk))) {
+                 skb->destructor = sock_edemux;
+                 sock_hold(sk);
+                 return;
+         }
+#endif
 
-diff --git a/Documentation/networking/tproxy.rst b/Documentation/networking/tproxy.rst
-index 00dc3a1a66b4..a15e9651e3df 100644
---- a/Documentation/networking/tproxy.rst
-+++ b/Documentation/networking/tproxy.rst
-@@ -1,42 +1,45 @@
- .. SPDX-License-Identifier: GPL-2.0
- 
--=========================
--Transparent proxy support
--=========================
-+==========================
-+Transparent proxy (TPROXY)
-+==========================
- 
--This feature adds Linux 2.2-like transparent proxy support to current kernels.
--To use it, enable the socket match and the TPROXY target in your kernel config.
--You will need policy routing too, so be sure to enable that as well.
-+TPROXY enables forwarding and intercepting packets that were destined for other
-+endpoints, without using NAT chain or REDIRECT targets.
- 
--From Linux 4.18 transparent proxy support is also available in nf_tables.
-+Intercepting non-local packets
-+==============================
- 
--1. Making non-local sockets work
--================================
-+To identify packets with destination address matching a local socket on your
-+box, set the packet mark to a certain value:
- 
--The idea is that you identify packets with destination address matching a local
--socket on your box, set the packet mark to a certain value::
-+.. code-block:: sh
- 
--    # iptables -t mangle -N DIVERT
--    # iptables -t mangle -A PREROUTING -p tcp -m socket -j DIVERT
--    # iptables -t mangle -A DIVERT -j MARK --set-mark 1
--    # iptables -t mangle -A DIVERT -j ACCEPT
-+    iptables -t mangle -N DIVERT
-+    iptables -t mangle -A PREROUTING -p tcp -m socket -j DIVERT
-+    iptables -t mangle -A DIVERT -j MARK --set-mark 1
-+    iptables -t mangle -A DIVERT -j ACCEPT
- 
--Alternatively you can do this in nft with the following commands::
-+Alternatively in nft:
- 
--    # nft add table filter
--    # nft add chain filter divert "{ type filter hook prerouting priority -150; }"
--    # nft add rule filter divert meta l4proto tcp socket transparent 1 meta mark set 1 accept
-+.. code-block:: sh
- 
--And then match on that value using policy routing to have those packets
--delivered locally::
-+    nft add table filter
-+    nft add chain filter divert "{ type filter hook prerouting priority -150; }"
-+    nft add rule filter divert meta l4proto tcp socket transparent 1 meta mark set 1 accept
- 
--    # ip rule add fwmark 1 lookup 100
--    # ip route add local 0.0.0.0/0 dev lo table 100
-+Then match on that value using policy routing to deliver those packets locally:
- 
--Because of certain restrictions in the IPv4 routing output code you'll have to
--modify your application to allow it to send datagrams _from_ non-local IP
--addresses. All you have to do is enable the (SOL_IP, IP_TRANSPARENT) socket
--option before calling bind::
-+.. code-block:: sh
-+
-+    ip rule add fwmark 1 lookup 100
-+    ip route add local 0.0.0.0/0 dev lo table 100
-+
-+Because of certain restrictions in the IPv4 routing application will need to be
-+modified to allow it to send datagrams *from* non-local IP addresses. Enable
-+the ``SOL_IP``, ``IP_TRANSPARENT`` socket options before calling ``bind``:
-+
-+.. code-block:: c
- 
-     fd = socket(AF_INET, SOCK_STREAM, 0);
-     /* - 8< -*/
-@@ -51,9 +54,21 @@ option before calling bind::
- A trivial patch for netcat is available here:
- http://people.netfilter.org/hidden/tproxy/netcat-ip_transparent-support.patch
- 
-+Kernel configuration
-+====================
- 
--2. Redirecting traffic
--======================
-+To use tproxy you'll need to have the following modules compiled for iptables:
-+
-+ - ``NETFILTER_XT_MATCH_SOCKET``
-+ - ``NETFILTER_XT_TARGET_TPROXY``
-+
-+For nf_tables:
-+
-+ - ``NFT_TPROXY``
-+ - ``NFT_SOCKET``
-+
-+Redirecting traffic
-+===================
- 
- Transparent proxying often involves "intercepting" traffic on a router. This is
- usually done with the iptables REDIRECT target; however, there are serious
-@@ -63,47 +78,39 @@ acceptable in certain situations. (Think of proxying UDP for example: you won't
- be able to find out the original destination address. Even in case of TCP
- getting the original destination address is racy.)
- 
--The 'TPROXY' target provides similar functionality without relying on NAT. Simply
--add rules like this to the iptables ruleset above::
-+The ``TPROXY`` target provides similar functionality without relying on NAT.
-+Simply add rules like this to the iptables ruleset:
- 
--    # iptables -t mangle -A PREROUTING -p tcp --dport 80 -j TPROXY \
-+.. code-block:: sh
-+
-+    iptables -t mangle -A PREROUTING -p tcp --dport 80 -j TPROXY \
-       --tproxy-mark 0x1/0x1 --on-port 50080
- 
- Or the following rule to nft:
- 
--# nft add rule filter divert tcp dport 80 tproxy to :50080 meta mark set 1 accept
-+.. code-block:: sh
-+
-+    nft add rule filter divert tcp dport 80 tproxy to :50080 meta mark set 1 accept
- 
--Note that for this to work you'll have to modify the proxy to enable (SOL_IP,
--IP_TRANSPARENT) for the listening socket.
-+Note that for this to work you'll have to modify the proxy to enable
-+(``SOL_IP``, ``IP_TRANSPARENT``) for the listening socket.
- 
- As an example implementation, tcprdr is available here:
- https://git.breakpoint.cc/cgit/fw/tcprdr.git/
- This tool is written by Florian Westphal and it was used for testing during the
- nf_tables implementation.
- 
--3. Iptables and nf_tables extensions
--====================================
--
--To use tproxy you'll need to have the following modules compiled for iptables:
--
-- - NETFILTER_XT_MATCH_SOCKET
-- - NETFILTER_XT_TARGET_TPROXY
--
--Or the floowing modules for nf_tables:
- 
-- - NFT_SOCKET
-- - NFT_TPROXY
--
--4. Application support
-+Application support
- ======================
- 
--4.1. Squid
------------
-+Squid
-+-----
-+
-+Squid 3.1+ has built-in support for TPROXY. To use it, pass
-+``--enable-linux-netfilter`` to configure and set the 'tproxy' option on the
-+HTTP listener you redirect traffic to with the TPROXY iptables target.
- 
--Squid 3.HEAD has support built-in. To use it, pass
--'--enable-linux-netfilter' to configure and set the 'tproxy' option on
--the HTTP listener you redirect traffic to with the TPROXY iptables
--target.
-+For more information please consult the `Squid wiki`_.
- 
--For more information please consult the following page on the Squid
--wiki: http://wiki.squid-cache.org/Features/Tproxy4
-+.. _`Squid wiki`: http://wiki.squid-cache.org/Features/Tproxy4
--- 
-2.28.0
+However, after taking another look, it seems that the root cause is 
+somewhere else. This piece of code actually calls skb_orphan before 
+reassigning the destructor.
+
+I'll debug it further to try to find where the destructor is replaced or 
+just not called.
+
+> IPv4:
+> 	if (net->ipv4.sysctl_ip_early_demux &&
+> 	    !skb_dst(skb) &&
+> 	    !skb->sk &&                              <============
+> 	    !ip_is_fragment(iph)) {
+> 		const struct net_protocol *ipprot;
+> 		int protocol = iph->protocol;
+> 
+> 		ipprot = rcu_dereference(inet_protos[protocol]);
+> 		if (ipprot && (edemux = READ_ONCE(ipprot->early_demux))) {
+> 			err = INDIRECT_CALL_2(edemux, tcp_v4_early_demux,
+> 					      udp_v4_early_demux, skb);
+> 			if (unlikely(err))
+> 				goto drop_error;
+> 			/* must reload iph, skb->head might have changed */
+> 			iph = ip_hdr(skb);
+> 		}
+> 	}
+> 
+> IPv6:
+> 	if (net->ipv4.sysctl_ip_early_demux && !skb_dst(skb) && skb->sk == NULL) {
+>                                                                  ~~~~~~~~~~~~~~~
+> 		const struct inet6_protocol *ipprot;
+> 
+> 		ipprot = rcu_dereference(inet6_protos[ipv6_hdr(skb)->nexthdr]);
+> 		if (ipprot && (edemux = READ_ONCE(ipprot->early_demux)))
+> 			INDIRECT_CALL_2(edemux, tcp_v6_early_demux,
+> 					udp_v6_early_demux, skb);
+> 	}
+> 
 
