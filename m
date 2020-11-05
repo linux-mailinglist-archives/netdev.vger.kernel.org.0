@@ -2,87 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D64152A7FC3
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 14:40:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 409652A7FD6
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 14:45:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729113AbgKENkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 08:40:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725468AbgKENks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 08:40:48 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C581C0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 05:40:47 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id u62so1806617iod.8
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 05:40:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qEKdqAfGTmW30k1XWvYZCcm59Epg8FtdNjTuIk383BA=;
-        b=fY5vNxHYfx5xOgFnkvUSi0+5A6vW8Bd1RFy1QW/Ghb7nSkAtLtdLCAIxkfnKHvcvE1
-         agnoHGPip4x3Pi2LSt7C4mOmv0YRV9FQmoVCmkJkrQyzwYuYQnZ6IQ9NghyMAhzQ8vO0
-         OBd3gxyjjG6qwDQq2e37RWCqfjbvxhniinOPJc0u8Y91LWP2IQNsfM9fR9/yrDbDqUrf
-         t3/eeou0/gn9ocYw6PKxPWCUp5L6WXKbtasZGSQ36sQv7XvYeK7n1hxRKL+kbHddhP19
-         mXtgeliR1jjryWkXM9+WubA9IdbPekwP6BR77zrXE7zdieWnX2639OHLeHsa3uu1cEj0
-         U3gQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qEKdqAfGTmW30k1XWvYZCcm59Epg8FtdNjTuIk383BA=;
-        b=MVrTRxm2G+BsqzdtzhJq1v7lpcnDU4cVX6Xw2Q9Exzl+Htu7bSsd/DGRYY7hs34lNu
-         x4HYTmfuT7U9piuOIv3sy6BjbFqRQBvV0X/GiaFri9ovxKIa9t5e55xpQZpdKvZegDy1
-         mx3KayGGxbQ/CAgjVV3amTfVxuF8JW4EjZimbYbHfwdPiH4SPEjfPRuUJMAOGZKlxI39
-         KHx99/5vtUKK+LOww8AbfaRu21euHGUa9PS1juyQKDDvD5hq+pt90lMsLd25nqbYFtVb
-         V7NyPNsxLE0ogOSuArCabUWZNJwQQN7S64f+xsE25srN9MEafG7I1IKorljrYcP525X8
-         3A4w==
-X-Gm-Message-State: AOAM5332SNWv5zAPSBGczornpvbqRKpUEQebUJ2CVCVuikvEttaQCOhn
-        ZaD6afeyF3bc+L1fETs1BGHGZQ==
-X-Google-Smtp-Source: ABdhPJzR4+r3/BfoQYUUl4h05nAE3j1Dernt7E5EJQ+nNf3nJBBvOBBWzH3fLJYXKmylvkONdGH/Ag==
-X-Received: by 2002:a02:708:: with SMTP id f8mr1989941jaf.143.1604583646586;
-        Thu, 05 Nov 2020 05:40:46 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id y17sm1200674ilj.7.2020.11.05.05.40.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Nov 2020 05:40:45 -0800 (PST)
-Subject: Re: [PATCH net-next 0/6] net: ipa: tell GSI the IPA version
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, evgreen@chromium.org, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20201102175400.6282-1-elder@linaro.org>
- <20201104163138.6c5d534d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <9805bd9f-aafb-d148-ad67-09e74bac127f@linaro.org>
-Date:   Thu, 5 Nov 2020 07:40:44 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1730754AbgKENpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 08:45:18 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:37210 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725468AbgKENpS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 08:45:18 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kafZg-005Pek-EM; Thu, 05 Nov 2020 14:45:12 +0100
+Date:   Thu, 5 Nov 2020 14:45:12 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ioana Ciornei <ciorneiioana@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [RFC 6/9] staging: dpaa2-switch: add .ndo_start_xmit() callback
+Message-ID: <20201105134512.GJ933237@lunn.ch>
+References: <20201104165720.2566399-1-ciorneiioana@gmail.com>
+ <20201104165720.2566399-7-ciorneiioana@gmail.com>
+ <20201105010439.GH933237@lunn.ch>
+ <20201105082557.c43odnzis35y7khj@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20201104163138.6c5d534d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201105082557.c43odnzis35y7khj@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/4/20 6:31 PM, Jakub Kicinski wrote:
->> Note:  the last patch in this series depends on this patch posted
->> for review earlier today:
->>    https://lore.kernel.org/netdev/20201102173435.5987-1-elder@linaro.org
-> But in the future please don't post dependent changes like this. The
-> build bots cannot figure this out and give up on checking your series.
+> > Where is the TX confirm which uses this stored pointer. I don't see it
+> > in this file.
+> > 
+> 
+> The Tx confirm - dpaa2_switch_tx_conf() - is added in patch 5/9.
 
-Sorry about that, I didn't realize this would be a problem.
-I will avoid this in the future.
+Not so obvious. Could it be moved here?
 
-I will be sending a steady stream of patches in the coming
-weeks.  If you have any other comments or suggestions that
-would make that easier to manage, please let me know.
+> > It can be expensive to store pointer like this in buffers used for
+> > DMA.
+> 
+> Yes, it is. But the hardware does not give us any other indication that
+> a packet was actually sent so that we can move ahead with consuming the
+> initial skb.
+> 
+> > It has to be flushed out of the cache here as part of the
+> > send. Then the TX complete needs to invalidate and then read it back
+> > into the cache. Or you use coherent memory which is just slow.
+> > 
+> > It can be cheaper to keep a parallel ring in cacheable memory which
+> > never gets flushed.
+> 
+> I'm afraid I don't really understand your suggestion. In this parallel
+> ring I would keep the skb pointers of all frames which are in-flight?
+> Then, when a packet is received on the Tx confirmation queue I would
+> have to loop over the parallel ring and determine somehow which skb was
+> this packet initially associated to. Isn't this even more expensive?
 
-Thank you.
+I don't know this particular hardware, so i will talk in general
+terms. Generally, you have a transmit ring. You add new frames to be
+sent to the beginning of the ring, and you take off completed frames
+from the end of the ring. This is kept in 'expensive' memory, in that
+either it is coherent, or you need to do flushed/invalidates.
 
-					-Alex
+It is expected that the hardware keeps to ring order. It does not pick
+and choose which frames it sends, it does them in order. That means
+completion also happens in ring order. So the driver can keep a simple
+linear array the size of the ring, in cachable memory, with pointers
+to the skbuf. And it just needs a counting index to know which one
+just completed.
+
+Now, your hardware is more complex. You have one queue feeding
+multiple switch ports. Maybe it does not keep to ring order? If you
+have one port running at 10M/Half, and another at 10G/Full, does it
+leave frames for the 10/Half port in the ring when its egress queue it
+full? That is probably a bad idea, since the 10G/Full port could then
+starve for lack of free slots in the ring? So my guess would be, the
+frames get dropped. And so ring order is maintained.
+
+If you are paranoid it could get out of sync, keep an array of tuples,
+address of the frame descriptor and the skbuf. If the fd address does
+not match what you expect, then do the linear search of the fd
+address, and increment a counter that something odd has happened.
+
+	 Andrew
