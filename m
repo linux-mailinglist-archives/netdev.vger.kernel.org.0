@@ -2,66 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EDD82A786D
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 09:00:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E62BB2A7882
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 09:03:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729344AbgKEIAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 03:00:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729149AbgKEIAS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 03:00:18 -0500
-Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EB3C0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 00:00:18 -0800 (PST)
-Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.89)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1kaaBh-00065B-1j; Thu, 05 Nov 2020 09:00:05 +0100
-Received: from laforge by localhost.localdomain with local (Exim 4.94)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1kaaAB-004eo7-DZ; Thu, 05 Nov 2020 08:58:31 +0100
-Date:   Thu, 5 Nov 2020 08:58:31 +0100
-From:   Harald Welte <laforge@gnumonks.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        osmocom-net-gprs@lists.osmocom.org, wireguard@lists.zx2c4.com,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: Re: [PATCH net-next v2 06/10] gtp: switch to dev_get_tstats64
-Message-ID: <20201105075831.GD1078888@nataraja>
-References: <059fcb95-fba8-673e-0cd6-fb26e8ed4861@gmail.com>
- <52d228fe-9ed3-7cd0-eebc-051c38b5e45f@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <52d228fe-9ed3-7cd0-eebc-051c38b5e45f@gmail.com>
+        id S1727114AbgKEIDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 03:03:33 -0500
+Received: from m9785.mail.qiye.163.com ([220.181.97.85]:28805 "EHLO
+        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726371AbgKEIDc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 03:03:32 -0500
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 233805C195E;
+        Thu,  5 Nov 2020 15:52:28 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     kuba@kernel.org, marcelo.leitner@gmail.com
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH v2 net-next 1/2] net/sched: act_mirred: refactor the handle of xmit
+Date:   Thu,  5 Nov 2020 15:52:26 +0800
+Message-Id: <1604562747-14802-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
+        oVCBIfWUFZGBpJTklNHxkZSR0aVkpNS09OTUlMT0NJQ01VGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0hOT1VLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PBA6Kzo*NT04PjpDEhgoEC4C
+        MTkKCRpVSlVKTUtPTk1JTE9DT0NDVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUlNTE03Bg++
+X-HM-Tid: 0a75976483032087kuqy233805c195e
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Looks good to me.
+From: wenxu <wenxu@ucloud.cn>
 
-On Wed, Nov 04, 2020 at 03:27:47PM +0100, Heiner Kallweit wrote:
-> Replace ip_tunnel_get_stats64() with the new identical core fucntion
-> dev_get_tstats64().
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+This one is prepare for the next patch.
 
-Acked-by: Harald Welte <laforge@gnumonks.org>
+Signed-off-by: wenxu <wenxu@ucloud.cn>
+---
+v2: no change
 
+ include/net/sch_generic.h |  5 -----
+ net/sched/act_mirred.c    | 21 +++++++++++++++------
+ 2 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index d8fd867..dd74f06 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -1281,9 +1281,4 @@ void mini_qdisc_pair_init(struct mini_Qdisc_pair *miniqp, struct Qdisc *qdisc,
+ void mini_qdisc_pair_block_init(struct mini_Qdisc_pair *miniqp,
+ 				struct tcf_block *block);
+ 
+-static inline int skb_tc_reinsert(struct sk_buff *skb, struct tcf_result *res)
+-{
+-	return res->ingress ? netif_receive_skb(skb) : dev_queue_xmit(skb);
+-}
+-
+ #endif
+diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+index e24b7e2..17d0095 100644
+--- a/net/sched/act_mirred.c
++++ b/net/sched/act_mirred.c
+@@ -205,6 +205,18 @@ static int tcf_mirred_init(struct net *net, struct nlattr *nla,
+ 	return err;
+ }
+ 
++static int tcf_mirred_forward(bool want_ingress, struct sk_buff *skb)
++{
++	int err;
++
++	if (!want_ingress)
++		err = dev_queue_xmit(skb);
++	else
++		err = netif_receive_skb(skb);
++
++	return err;
++}
++
+ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+ 			  struct tcf_result *res)
+ {
+@@ -287,18 +299,15 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+ 		/* let's the caller reinsert the packet, if possible */
+ 		if (use_reinsert) {
+ 			res->ingress = want_ingress;
+-			if (skb_tc_reinsert(skb, res))
++			err = tcf_mirred_forward(res->ingress, skb);
++			if (err)
+ 				tcf_action_inc_overlimit_qstats(&m->common);
+ 			__this_cpu_dec(mirred_rec_level);
+ 			return TC_ACT_CONSUMED;
+ 		}
+ 	}
+ 
+-	if (!want_ingress)
+-		err = dev_queue_xmit(skb2);
+-	else
+-		err = netif_receive_skb(skb2);
+-
++	err = tcf_mirred_forward(want_ingress, skb2);
+ 	if (err) {
+ out:
+ 		tcf_action_inc_overlimit_qstats(&m->common);
 -- 
-- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
-============================================================================
-"Privacy in residential applications is a desirable marketing option."
-                                                  (ETSI EN 300 175-7 Ch. A6)
+1.8.3.1
+
