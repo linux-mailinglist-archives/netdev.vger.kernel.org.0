@@ -2,257 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EEE82A85C2
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 19:11:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6533D2A85ED
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 19:15:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731813AbgKESLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 13:11:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51282 "EHLO
+        id S1731591AbgKESOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 13:14:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731740AbgKESLL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 13:11:11 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00A1C0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 10:11:10 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id w14so2839723wrs.9
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 10:11:10 -0800 (PST)
+        with ESMTP id S1726777AbgKESOO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 13:14:14 -0500
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D6CC0613D2
+        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 10:14:12 -0800 (PST)
+Received: by mail-il1-x141.google.com with SMTP id p10so2220567ile.3
+        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 10:14:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nuviainc-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=s5LSMB+TyTM2xlf60SYdhlpCj4oc87epI00cKZYjqqE=;
-        b=jaDSiJqlIHL667GQqE6Oy1mQhmwU4o9EUfD2YJgMX3F5ZIwlPyUzpzLp6W8v2twWxw
-         snXfVB9xHu49az0t/ENMUcxzsnWBW50pUrElB8ASRhCSAv58z16Iik2CwkRyroOoJahV
-         oun1NahWt93E/D0VxllaXKPfLp2FsZfREv4FSy8C5/I7E8eUx8rt1945V3z9cGqrUSLI
-         Xco9xWy1orMB2diHeuqM+yjLFPHExTPzHj0zUNgynZkxKC2BPcwUDBYxpTUmmeMPac18
-         Eh+9gnORg17El13oWP9dKsF5UnEC38iREtwHqXNQXSUB9n6OeHUL/S/YS0BGIeKLvd/U
-         Ov8A==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8fUu2nSRz/rQdKPD/n7O1Q6q1SAGSyes98Tm7yI3SBM=;
+        b=BLAJm2ZsjEld2uw0/svOVf7hWTZnSLqt8ZRThDTVJz+n7r8ye/EGkj/7FccKP18OjR
+         gnNqeJ/r+q2c7tG23y3bqMd6Y4SoiTesKM+xkTP+ICMYSS9pBw2ZC6mvYOXjzifvw3uL
+         N+0c33H4OkI0PxY1voOMVnYkC6iTBUzDR3yawNyhwQJ8gXBz4Ri/PRu8NyTpW9iXAJXF
+         XmmH13CXteHxEnHkCApQLkS+xlenZaZ80UEa/kaPTFtWLiwrhHmdLut5rYqdkysp790Y
+         DGbb6Emxh9ZZwygaxxYRPVFCkgrELn5ZrzzbMHGsLG3d2z2vpqD949wGClwzdHvzJbOA
+         GN+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=s5LSMB+TyTM2xlf60SYdhlpCj4oc87epI00cKZYjqqE=;
-        b=e3EuXB9W2no50T5v6CVNzku3ASo/cCgNpPO8qnOpqX79u6vwjt5gM1sqpFHn1Pq+vC
-         Z7912Htjc9okt4RQtTm8YHStIWlrXAW94KHl6OsAQQBe/t92xknpUABlPP53GY2aYOrM
-         on7HjhNlC2tPfp5eBUTqie+86Nf5IRy66TtVJGJ8/UYM8ukASSDnr3EzmrX9zKQrJWMm
-         3s+YzQNGyytCO2kaz5/Rco6MC2YT6WMxgrW+Z0Hc4/lzEf3HRzDDy2g3gJccixB1ut6l
-         MPVox8o3ocrjJ1t+C6Z7GvhvA+NEX3DMKCQnTHgptBP6OmEpQRtIbEc9N6qm/8vH7hjk
-         tsgw==
-X-Gm-Message-State: AOAM533wnxBwpH+kMkrpbewXewNWAuJyAQgJcmdjmfNmKlzq01Lp7HYA
-        H6wtCA1iGehPOcOga6Jqf/D2Sc6C2x8i0esp
-X-Google-Smtp-Source: ABdhPJwSNz9sudYKXTHcFsIytl9Qll0U0uPvtXkL8BfGbZDrWPwdnYSnmlIP0MAIPKeDSNfgGFKo8g==
-X-Received: by 2002:adf:9204:: with SMTP id 4mr4585432wrj.241.1604599869684;
-        Thu, 05 Nov 2020 10:11:09 -0800 (PST)
-Received: from localhost ([82.44.17.50])
-        by smtp.gmail.com with ESMTPSA id h4sm3615212wrq.3.2020.11.05.10.11.08
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8fUu2nSRz/rQdKPD/n7O1Q6q1SAGSyes98Tm7yI3SBM=;
+        b=UPM0+9MUjYogyWT+2yW68QsPI/EsCyp+Gvt4OHImFWhWXTd1B+1TVuFbgkP4MfZoO3
+         uM+LYTeglHaY1VnJ1lzYfMpQoCU4Ngl9Pn7M4ldwztjZCWYWq3BsjBtYBpdwWtlcF8AA
+         7RdNIzyCGevHFSPuSWcdHLEi2kYwm63glRwQ/yb11bhOjLGNJLqGhB5tKytaMZCCns2B
+         6N3HszMFjoyqWTay5gaIAoH6rfj3kv9tOuVrD6euVua4OTSVCH8ixPpV6wPtVf/37sRY
+         rkt2XLKgxKGyQb9DgNkGEfAoVnpFTsoGVEqU2oLhukZz1mW/Fez+b09KFiuGE1U9HT0z
+         FeeQ==
+X-Gm-Message-State: AOAM531FOPqJdABAAYmKAigzApQkpB8o22vYYz1Fd0hYQuKbw2OrbFuI
+        QOpc7kzauo5IbhfPM4Db+SgyYQ==
+X-Google-Smtp-Source: ABdhPJwfPfeclJ6Osaq8WyAre/vaZ8nlCm2Fy6ydBB9gjro2ggyY3g+kGjyjXjkSlJ8odvN/omSIhw==
+X-Received: by 2002:a92:a182:: with SMTP id b2mr2779229ill.148.1604600051791;
+        Thu, 05 Nov 2020 10:14:11 -0800 (PST)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id o19sm1554136ilt.24.2020.11.05.10.14.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2020 10:11:09 -0800 (PST)
-Date:   Thu, 5 Nov 2020 18:11:08 +0000
-From:   Jamie Iles <jamie@nuviainc.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Jamie Iles <jamie@nuviainc.com>, netdev@vger.kernel.org,
-        Qiushi Wu <wu000273@umn.edu>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [RESEND PATCH] bonding: wait for sysfs kobject destruction
- before freeing struct slave
-Message-ID: <20201105181108.GA2360@poplar>
-References: <20201105084108.3432509-1-jamie@nuviainc.com>
- <89416a2d-8a9b-f225-3c2a-16210df25e61@gmail.com>
+        Thu, 05 Nov 2020 10:14:10 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 00/13] net: ipa: constrain GSI interrupts
+Date:   Thu,  5 Nov 2020 12:13:54 -0600
+Message-Id: <20201105181407.8006-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <89416a2d-8a9b-f225-3c2a-16210df25e61@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+The goal of this series is to more tightly control when GSI
+interrupts are enabled.  This is a long-ish series, so I'll
+describe it in parts.
 
-On Thu, Nov 05, 2020 at 01:49:03PM +0100, Eric Dumazet wrote:
-> On 11/5/20 9:41 AM, Jamie Iles wrote:
-> > syzkaller found that with CONFIG_DEBUG_KOBJECT_RELEASE=y, releasing a
-> > struct slave device could result in the following splat:
-> > 
-> >
-> 
-> > This is a potential use-after-free if the sysfs nodes are being accessed
-> > whilst removing the struct slave, so wait for the object destruction to
-> > complete before freeing the struct slave itself.
-> > 
-> > Fixes: 07699f9a7c8d ("bonding: add sysfs /slave dir for bond slave devices.")
-> > Fixes: a068aab42258 ("bonding: Fix reference count leak in bond_sysfs_slave_add.")
-> > Cc: Qiushi Wu <wu000273@umn.edu>
-> > Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-> > Cc: Veaceslav Falico <vfalico@gmail.com>
-> > Cc: Andy Gospodarek <andy@greyhouse.net>
-> > Signed-off-by: Jamie Iles <jamie@nuviainc.com>
-> > ---
-...
-> This seems weird, are we going to wait for a completion while RTNL is held ?
-> I am pretty sure this could be exploited by malicious user/syzbot.
-> 
-> The .release() handler could instead perform a refcounted
-> bond_free_slave() action.
+The first patch is actually unrelated...  I forgot to include
+it in my previous series (which exposed the GSI layer to the
+IPA version).  It is a trivial comments-only update patch.
 
-Okay, so were you thinking along the lines of this moving the lifetime 
-of the slave to the kobject?
+The second patch defers registering the GSI interrupt handler
+until *after* all of the resources that handler touches have
+been initialized.  In practice, we don't see this interrupt
+that early, but this precludes an obvious problem.
 
-Thanks,
+The next two patches are simple changes.  The first just
+trivially renames a field.  The second switches from using
+constant mask values to using an enumerated type of bit
+positions to represent each GSI interrupt type.
 
-Jamie
+The rest implement the "real work."  First, all interrupts
+are disabled at initialization time.  Next, we keep track of
+a bitmask of enabled GSI interrupt types, updating it each
+time we enable or disable one of them.  From there we have
+a set of patches that one-by-one enable each interrupt type
+only during the period it is required.  This includes allowing
+a channel to generate IEOB interrupts only when it has been
+enabled.  And finally, the last patch simplifies some code
+now that all GSI interrupt types are handled uniformly.
 
-diff --git i/drivers/net/bonding/bond_main.c w/drivers/net/bonding/bond_main.c
-index 84ecbc6fa0ff..ea8ecc6e87c2 100644
---- i/drivers/net/bonding/bond_main.c
-+++ w/drivers/net/bonding/bond_main.c
-@@ -1481,7 +1481,7 @@ static struct slave *bond_alloc_slave(struct bonding *bond)
- 	return slave;
- }
- 
--static void bond_free_slave(struct slave *slave)
-+void bond_free_slave(struct slave *slave)
- {
- 	struct bonding *bond = bond_get_bond_by_slave(slave);
- 
-@@ -1691,6 +1691,10 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 	 */
- 	new_slave->queue_id = 0;
- 
-+	res = bond_slave_kobj_init(new_slave);
-+	if (res)
-+		goto err_free;
-+
- 	/* Save slave's original mtu and then set it to match the bond */
- 	new_slave->original_mtu = slave_dev->mtu;
- 	res = dev_set_mtu(slave_dev, bond->dev->mtu);
-@@ -1912,7 +1916,7 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 		if (bond_dev->flags & IFF_PROMISC) {
- 			res = dev_set_promiscuity(slave_dev, 1);
- 			if (res)
--				goto err_sysfs_del;
-+				goto err_upper_unlink;
- 		}
- 
- 		/* set allmulti level to new slave */
-@@ -1921,7 +1925,7 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 			if (res) {
- 				if (bond_dev->flags & IFF_PROMISC)
- 					dev_set_promiscuity(slave_dev, -1);
--				goto err_sysfs_del;
-+				goto err_upper_unlink;
- 			}
- 		}
- 
-@@ -1961,9 +1965,6 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 	return 0;
- 
- /* Undo stages on error */
--err_sysfs_del:
--	bond_sysfs_slave_del(new_slave);
--
- err_upper_unlink:
- 	bond_upper_dev_unlink(bond, new_slave);
- 
-@@ -2007,7 +2008,7 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 	dev_set_mtu(slave_dev, new_slave->original_mtu);
- 
- err_free:
--	bond_free_slave(new_slave);
-+	bond_slave_kobj_put(new_slave);
- 
- err_undo_flags:
- 	/* Enslave of first slave has failed and we need to fix master's mac */
-@@ -2066,8 +2067,6 @@ static int __bond_release_one(struct net_device *bond_dev,
- 
- 	bond_set_slave_inactive_flags(slave, BOND_SLAVE_NOTIFY_NOW);
- 
--	bond_sysfs_slave_del(slave);
--
- 	/* recompute stats just before removing the slave */
- 	bond_get_stats(bond->dev, &bond->bond_stats);
- 
-@@ -2187,7 +2186,7 @@ static int __bond_release_one(struct net_device *bond_dev,
- 	if (!netif_is_bond_master(slave_dev))
- 		slave_dev->priv_flags &= ~IFF_BONDING;
- 
--	bond_free_slave(slave);
-+	bond_slave_kobj_put(slave);
- 
- 	return 0;
- }
-diff --git i/drivers/net/bonding/bond_sysfs_slave.c w/drivers/net/bonding/bond_sysfs_slave.c
-index 9b8346638f69..67732078ef26 100644
---- i/drivers/net/bonding/bond_sysfs_slave.c
-+++ w/drivers/net/bonding/bond_sysfs_slave.c
-@@ -136,24 +136,35 @@ static const struct sysfs_ops slave_sysfs_ops = {
- 	.show = slave_show,
- };
- 
-+static void slave_release(struct kobject *kobj)
-+{
-+	struct slave *slave = to_slave(kobj);
-+
-+	bond_free_slave(slave);
-+}
-+
- static struct kobj_type slave_ktype = {
-+	.release = slave_release,
- #ifdef CONFIG_SYSFS
- 	.sysfs_ops = &slave_sysfs_ops,
- #endif
- };
- 
-+int bond_slave_kobj_init(struct slave *slave)
-+{
-+	int err = kobject_init_and_add(&slave->kobj, &slave_ktype,
-+				       &(slave->dev->dev.kobj), "bonding_slave");
-+	if (err)
-+		kobject_put(&slave->kobj);
-+
-+	return err;
-+}
-+
- int bond_sysfs_slave_add(struct slave *slave)
- {
- 	const struct slave_attribute **a;
- 	int err;
- 
--	err = kobject_init_and_add(&slave->kobj, &slave_ktype,
--				   &(slave->dev->dev.kobj), "bonding_slave");
--	if (err) {
--		kobject_put(&slave->kobj);
--		return err;
--	}
--
- 	for (a = slave_attrs; *a; ++a) {
- 		err = sysfs_create_file(&slave->kobj, &((*a)->attr));
- 		if (err) {
-@@ -165,7 +176,7 @@ int bond_sysfs_slave_add(struct slave *slave)
- 	return 0;
- }
- 
--void bond_sysfs_slave_del(struct slave *slave)
-+void bond_slave_kobj_put(struct slave *slave)
- {
- 	const struct slave_attribute **a;
- 
-diff --git i/include/net/bonding.h w/include/net/bonding.h
-index 7d132cc1e584..ccb07e3e495e 100644
---- i/include/net/bonding.h
-+++ w/include/net/bonding.h
-@@ -622,10 +622,12 @@ int bond_create(struct net *net, const char *name);
- int bond_create_sysfs(struct bond_net *net);
- void bond_destroy_sysfs(struct bond_net *net);
- void bond_prepare_sysfs_group(struct bonding *bond);
-+int bond_slave_kobj_init(struct slave *slave);
- int bond_sysfs_slave_add(struct slave *slave);
--void bond_sysfs_slave_del(struct slave *slave);
-+void bond_slave_kobj_put(struct slave *slave);
- int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 		 struct netlink_ext_ack *extack);
-+void bond_free_slave(struct slave *slave);
- int bond_release(struct net_device *bond_dev, struct net_device *slave_dev);
- u32 bond_xmit_hash(struct bonding *bond, struct sk_buff *skb);
- int bond_set_carrier(struct bonding *bond);
+					-Alex
+
+Alex Elder (13):
+  net: ipa: refer to IPA versions, not GSI
+
+  net: ipa: request GSI IRQ later
+
+  net: ipa: rename gsi->event_enable_bitmap
+  net: ipa: define GSI interrupt types with an enum
+
+  net: ipa: disable all GSI interrupt types initially
+  net: ipa: cache last-saved GSI IRQ enabled type
+  net: ipa: only enable GSI channel control IRQs when needed
+  net: ipa: only enable GSI event control IRQs when needed
+  net: ipa: only enable generic command completion IRQ when needed
+  net: ipa: only enable GSI IEOB IRQs when needed
+  net: ipa: explicitly disallow inter-EE interrupts
+  net: ipa: only enable GSI general IRQs when needed
+  net: ipa: pass a value to gsi_irq_type_update()
+
+ drivers/net/ipa/gsi.c     | 257 +++++++++++++++++++++++++++-----------
+ drivers/net/ipa/gsi.h     |   7 +-
+ drivers/net/ipa/gsi_reg.h |  31 +++--
+ 3 files changed, 205 insertions(+), 90 deletions(-)
+
+-- 
+2.20.1
+
