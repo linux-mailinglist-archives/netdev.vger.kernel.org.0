@@ -2,68 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70D872A80B9
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 15:21:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 466BD2A80D9
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 15:28:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730854AbgKEOVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 09:21:01 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:33284 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728371AbgKEOVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 09:21:01 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-184-tq6AhFg1PzKetDtINwwp3Q-1; Thu, 05 Nov 2020 14:20:57 +0000
-X-MC-Unique: tq6AhFg1PzKetDtINwwp3Q-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 5 Nov 2020 14:20:56 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 5 Nov 2020 14:20:56 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Heiner Kallweit' <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S1730906AbgKEO2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 09:28:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727275AbgKEO2v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 09:28:51 -0500
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D53BC0613CF
+        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 06:28:51 -0800 (PST)
+Received: by mail-wm1-x341.google.com with SMTP id h62so1805069wme.3
+        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 06:28:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=OW/+lX09YizACTS6icuE/7YpsLFFjdwuqBw/nslXytM=;
+        b=sR8Fw/HFyNv/8eMwyXa4N4HVPLVuBbuoY1B10CqP2JZ1WUhQiHatt0reT4dEbWYqAT
+         qoPIeS0890xHiroLXOCQGKzPiE4vugIkBImVod6Kjcy6Y1fkMWTD6opSGDBKS7HTmaBs
+         bLC5qOqZnjXG7mJi8/k51uIfWI8SBDUs87Ad0DFJd4QAlenIkpBetDJsL2ctOgVOVIT1
+         SNJE7hBdRPxsYvi5rvy22yaRNhG5JdvwUG41wwxe54l4HOLwJnJ/p1qFziZoF0ELmEla
+         F50FLyfXudumBGlwRmMYhnyIhZZ7t/UoAaSplhVdRZVRGB6/zhuHUD3SzgePzhsM0FeC
+         sNsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=OW/+lX09YizACTS6icuE/7YpsLFFjdwuqBw/nslXytM=;
+        b=FLxz5hI8uMwQKnZEm0WXwgJTT/T3m0iAuHs1sfzed4qDS2LXn0ahZXR4f1/XFSRkje
+         eyKljru19Ff8JKCyukTlAaNSxUI/y26/OmXh/SFPUDvQeWHTanV+kCrqyIMUZdJKa5gL
+         eJ0Vgrx3w6Mp/iwmHhtJppNJhaAFXhW2reu/cSCiFqPTxMMc1+qduxxS8hNmqA94okC6
+         RPXrPgg0+ve57ATlvAMGiEAaD8zJ69uDops6dp9DPMDsJWHY31YihtJpHWWtlTT4VkU/
+         0++YHkpviMYWAgbFEQN842ySIlW4Xtp09vPyRIUY1VgWZrJGoznewoCrd2RstTRXwLHx
+         TVWw==
+X-Gm-Message-State: AOAM531fQlA0iTIPQjqf5frfX3Bycwd5D+xmqauZj7TWJYWgY4Ctyy37
+        Vw8v2Ww5v1Vh0bwp/LJViQEmWBgwxej8mg==
+X-Google-Smtp-Source: ABdhPJxI79kl20PVCKSay7nJl9UI1ZyNAzjmCw8Md7xJOq4cnJGYnVp03y4Dwx7YZcmASPs1RKk4Ow==
+X-Received: by 2002:a1c:f209:: with SMTP id s9mr2933571wmc.115.1604586530084;
+        Thu, 05 Nov 2020 06:28:50 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f23:2800:59d0:7417:1e79:f522? (p200300ea8f23280059d074171e79f522.dip0.t-ipconnect.de. [2003:ea:8f23:2800:59d0:7417:1e79:f522])
+        by smtp.googlemail.com with ESMTPSA id x7sm2698034wrt.78.2020.11.05.06.28.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Nov 2020 06:28:49 -0800 (PST)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
-        "Realtek linux nic maintainers" <nic_swsd@realtek.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net] r8169: disable hw csum for short packets and chip
- versions with hw padding bug
-Thread-Topic: [PATCH net] r8169: disable hw csum for short packets and chip
- versions with hw padding bug
-Thread-Index: AQHWs3u0hhejhqJ3R0Win5AW1pXPBKm5lgJw
-Date:   Thu, 5 Nov 2020 14:20:56 +0000
-Message-ID: <1a20cb5755db4916b873d88460ccf19e@AcuMS.aculab.com>
-References: <e82f7f4d-8d45-1e7c-a2ef-5a8bfc3992c6@gmail.com>
-In-Reply-To: <e82f7f4d-8d45-1e7c-a2ef-5a8bfc3992c6@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH net] r8169: fix potential skb double free in an error path
+Message-ID: <f7e68191-acff-9ded-4263-c016428a8762@gmail.com>
+Date:   Thu, 5 Nov 2020 15:28:42 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSGVpbmVyIEthbGx3ZWl0DQo+IFNlbnQ6IDA1IE5vdmVtYmVyIDIwMjAgMTM6NTgNCj4g
-DQo+IFJUTDgxMjVCIGhhcyBzYW1lIG9yIHNpbWlsYXIgc2hvcnQgcGFja2V0IGh3IHBhZGRpbmcg
-YnVnIGFzIFJUTDgxNjhldmwuDQo+IFRoZSBtYWluIHdvcmthcm91bmQgaGFzIGJlZW4gZXh0ZW5k
-ZWQgYWNjb3JkaW5nbHksIGhvd2V2ZXIgd2UgaGF2ZSB0bw0KPiBkaXNhYmxlIGFsc28gaHcgY2hl
-Y2tzdW1taW5nIGZvciBzaG9ydCBwYWNrZXRzIG9uIGFmZmVjdGVkIG5ldyBjaGlwDQo+IHZlcnNp
-b25zLiBDaGFuZ2UgdGhlIGNvZGUgaW4gYSB3YXkgdGhhdCBpbiBjYXNlIG9mIGZ1cnRoZXIgYWZm
-ZWN0ZWQNCj4gY2hpcCB2ZXJzaW9ucyB3ZSBoYXZlIHRvIGFkZCB0aGVtIGluIG9uZSBwbGFjZSBv
-bmx5Lg0KDQpXaHkgbm90IGp1c3QgZGlzYWJsZSBodyBjaGVja3N1bW1pbmcgZm9yIHNob3J0IHBh
-Y2tldHMgb24NCmFsbCBkZXZpY2VzICh0aGF0IHVzZSB0aGlzIGRyaXZlcikuDQoNCkl0IGNhbid0
-IG1ha2UgbXVjaCBkaWZmZXJlbmNlIHRvIHRoZSBwZXJmb3JtYW5jZS4NClRoZSBsYWNrIG9mIGNv
-bmRpdGlvbmFscyBtYXkgZXZlbiBtYWtlIGl0IGZhc3Rlci4NCg0KCURhdmlkDQoNCi0NClJlZ2lz
-dGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24g
-S2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+The caller of rtl8169_tso_csum_v2() frees the skb if false is returned.
+eth_skb_pad() internally frees the skb on error what would result in a
+double free. Therefore use __skb_put_padto() directly and instruct it
+to not free the skb on error.
+
+Fixes: 	25e992a4603c ("r8169: rename r8169.c to r8169_main.c")
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+The Fixes tag refers to the change from which on the patch applies.
+However it will apply with a little fuzz only on versions up to 5.9.
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 07d197141..c5d5c1cfc 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4134,7 +4134,8 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
+ 		opts[1] |= transport_offset << TCPHO_SHIFT;
+ 	} else {
+ 		if (unlikely(skb->len < ETH_ZLEN && rtl_test_hw_pad_bug(tp)))
+-			return !eth_skb_pad(skb);
++			/* eth_skb_pad would free the skb on error */
++			return !__skb_put_padto(skb, ETH_ZLEN, false);
+ 	}
+ 
+ 	return true;
+-- 
+2.29.2
 
