@@ -2,137 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00BFA2A87CC
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 21:13:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84A632A87D4
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 21:14:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732231AbgKEUNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 15:13:17 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:6030 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732086AbgKEUNF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 15:13:05 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fa45ccf0000>; Thu, 05 Nov 2020 12:13:03 -0800
-Received: from sx1.mtl.com (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 5 Nov
- 2020 20:13:04 +0000
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next v2 12/12] net: mlx5: Replace in_irq() usage
-Date:   Thu, 5 Nov 2020 12:12:42 -0800
-Message-ID: <20201105201242.21716-13-saeedm@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201105201242.21716-1-saeedm@nvidia.com>
-References: <20201105201242.21716-1-saeedm@nvidia.com>
+        id S1732260AbgKEUOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 15:14:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727017AbgKEUOe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 15:14:34 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB56C0613CF;
+        Thu,  5 Nov 2020 12:14:33 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id c18so2434256ybj.10;
+        Thu, 05 Nov 2020 12:14:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=az/qZItMbUayACmUa8L1eqKzRCjHhHA8aWj3m+BO0lY=;
+        b=TrP/3FL8GspsKarV4VYXYaezlJaTxrOJFdFM5sjWjLBMXhnFJ00OX2Qlv0uBpKpShy
+         iu0AHlDWWBvxPLAF+yV58mNuPMdSjJyKCeiXL/Dtr0bqm7DUyFAeIMFtnW9SRg733MgZ
+         w4ydlIVsQqOdX11GUZ7Sop9OWluIr8aNtrhqO19dM5N6Ru6fkLLRp2gf70WWRWcTOj5L
+         VdN6f41xRFyZgD+fNy5wBFIzVqmHVM+Cd+BoPKQ18pg0LGhq8w3tpAQoz7MsWq7U4GsZ
+         6IggtQmyonukoxixeS7INjs161fvqPL5VC4XPGLfKnVa57DyAjjCY549dis7FL9IlYjO
+         KXSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=az/qZItMbUayACmUa8L1eqKzRCjHhHA8aWj3m+BO0lY=;
+        b=DTN5TD9VWAvkNw8WNMdWffX18/tw1vzRczRXtiH7wk9/KBQNorTb5d9qvtxBSM60Qh
+         FJUYLXVNyPQkgtDNczWhcrndN8SpZcjXC8HYuRKaqR0GzBewX39U85TXxNEaKOo0ant1
+         38DNUbXsziHFJZETnNE5s6ooMh4ijGD1y6ZzlAnI6fB5TzWB7Vy/FEtLLwGUJdvYLez2
+         pMVmL/zmldc7z60WaSg3HdInABJGb10Rqmr6JUx9Z+sGUeh3MOPRcUIleBmAFFgrv6u+
+         v/yi+4jSvyqoVZFwmF5+N3rpXqi8BRZXettBdjtXJ5HVwTOcHdYoU+NLHgq5VJzW6Rw8
+         6L3g==
+X-Gm-Message-State: AOAM532B09ZeJYRmI09U7omv5U5406I3hG+d5CnsGGJJ8thyrJObi0pp
+        8gXwS7jGitaBOWwryf2wN+GREHSD7UX59v7hCvU=
+X-Google-Smtp-Source: ABdhPJz6YWgzSycmbpjkXtT+LEG5J7S9lcSs8/DHkXG9U598pZOyrTWbh6szeBXF5lZboxNFmHJcd8oMTgLqnWwx++U=
+X-Received: by 2002:a25:c7c6:: with SMTP id w189mr6095641ybe.403.1604607272664;
+ Thu, 05 Nov 2020 12:14:32 -0800 (PST)
 MIME-Version: 1.0
+References: <20201028132529.3763875-1-haliu@redhat.com> <20201029151146.3810859-1-haliu@redhat.com>
+ <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com> <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
+ <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net> <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
+ <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
+ <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com> <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
+ <20201104021730.GK2408@dhcp-12-153.nay.redhat.com> <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
+ <2e8ba0be-51bf-9060-e1f7-2148fbaf0f1d@iogearbox.net> <87zh3xv04o.fsf@toke.dk>
+ <5de7eb11-010b-e66e-c72d-07ece638c25e@iogearbox.net> <20201104111708.0595e2a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAEf4BzY2pAaEmv_x_nGQC83373ZWUuNv-wcYRye+vfZ3Fa2qbw@mail.gmail.com> <87ft5ovjz5.fsf@toke.dk>
+In-Reply-To: <87ft5ovjz5.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 5 Nov 2020 12:14:21 -0800
+Message-ID: <CAEf4BzZh90FY4V+8uAgScb6rmk0r9cpSfidvM+xEGWzF129cTA@mail.gmail.com>
+Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Hangbin Liu <haliu@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1604607183; bh=tYBWU2IyxwrCdASESpmKvCDGl/9PVUjCt8yXH4B3SZA=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=S4QOd0rLn/RCglSh/SVRLf8au90xd5AT2f716YQcmgz8EdEGNlgy1x8C8gGF6u8bw
-         arPFBVKvrsCfScq8PDYLexsthnuW1VX4X5jo1ki4wphVV3mUE/jpVtIBk60ur4lwdf
-         4ffQOskrDEZQCdB6afSbdXOQpmyrqpJDRDxwhhSb4/TGhCE1zli8Swo/0RU+0wCm5i
-         JkcxV27igeGX85EI1bPoFRS4HZKSZl9sVKYtHJPK0r2fQwzyziLJSWr9N5UD0/tpCf
-         ATRkxWI9ujpsuegflxRrsdEU8oZKLERoudrccfIj3hL0t3tfUNgRGPJFGAPZqmhZQc
-         eGVQVORXgIsFg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+On Wed, Nov 4, 2020 at 2:24 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
+>
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>
+> > Some of the most important APIs of libbpf are, arguably,
+> > bpf_object__open() and bpf_object__load(). They accept a BPF ELF file,
+> > do some preprocessing and in the end load BPF instructions into the
+> > kernel for verification. But while API doesn't change across libbpf
+> > versions, BPF-side code features supported changes quite a lot.
+>
+> Yes, which means that nothing has to change in iproute2 *at all* to get
+> this; not the version, not even a rebuild: just update the system
+> libbpf, and you'll automatically gain all these features. How is that an
+> argument for *not* linking dynamically? It's a user *benefit* to not
+> have to care about the iproute2 version, but only have to care about
+> keeping libbpf up to date.
+>
+> I mean, if iproute2 had started out by linking dynamically against
+> libbpf (setting aside the fact that libbpf didn't exist back then), we
+> wouldn't even be having this conversation: In that case its support for
+> new features in the BPF format would just automatically have kept up
+> along with the rest of the system as the library got upgraded...
+>
 
-mlx5_eq_async_int() uses in_irq() to decide whether eq::lock needs to be
-acquired and released with spin_[un]lock() or the irq saving/restoring
-variants.
+I think it's a difference in the perspective.
 
-The usage of in_*() in drivers is phased out and Linus clearly requested
-that code which changes behaviour depending on context should either be
-seperated or the context be conveyed in an argument passed by the caller,
-which usually knows the context.
+You are seeing iproute2 as an explicit proxy to libbpf. Users should
+be aware of the fact that iproute2 just uses libbpf to load whatever
+BPF ELF file user provides. At that point iproute2 versions almost
+doesn't matter. Whatever BPF application users provide (that rely on
+iproute2 to load it) should still be very conscious about libbpf
+version and depend on that explicitly.
 
-mlx5_eq_async_int() knows the context via the action argument already so
-using it for the lock variant decision is a straight forward replacement
-for in_irq().
+I saw it differently. For me, the fact that iproute2 is using libbpf
+is an implementation detail. User developing BPF application is
+providing a BPF ELF file that follows a de facto BPF "spec" (all those
+SEC() conventions, global variables, map references, etc). Yes, that
+"spec" is being driven by libbpf currently, but libbpf is not the only
+library that supports it. Go BPF library is trying to keep up and
+support most of the same features. So in that sense, iproute2 is
+another BPF loader, just like Go library and libbpf library. The fact
+that it defers to libbpf should be not important to the end user. With
+that view, if a user tested their BPF program with a specific iproute2
+version, it should be enough.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/eq.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+But clearly that's not the view that most people on this thread hold
+and prefer end users to know and care about libbpf versioning
+explicitly. That's fine.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/eth=
-ernet/mellanox/mlx5/core/eq.c
-index 8ebfe782f95e..4ea5d6ddf56a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -189,19 +189,21 @@ u32 mlx5_eq_poll_irq_disabled(struct mlx5_eq_comp *eq=
-)
- 	return count_eqe;
- }
-=20
--static void mlx5_eq_async_int_lock(struct mlx5_eq_async *eq, unsigned long=
- *flags)
-+static void mlx5_eq_async_int_lock(struct mlx5_eq_async *eq, bool recovery=
-,
-+				   unsigned long *flags)
- 	__acquires(&eq->lock)
- {
--	if (in_irq())
-+	if (!recovery)
- 		spin_lock(&eq->lock);
- 	else
- 		spin_lock_irqsave(&eq->lock, *flags);
- }
-=20
--static void mlx5_eq_async_int_unlock(struct mlx5_eq_async *eq, unsigned lo=
-ng *flags)
-+static void mlx5_eq_async_int_unlock(struct mlx5_eq_async *eq, bool recove=
-ry,
-+				     unsigned long *flags)
- 	__releases(&eq->lock)
- {
--	if (in_irq())
-+	if (!recovery)
- 		spin_unlock(&eq->lock);
- 	else
- 		spin_unlock_irqrestore(&eq->lock, *flags);
-@@ -223,11 +225,13 @@ static int mlx5_eq_async_int(struct notifier_block *n=
-b,
- 	struct mlx5_eqe *eqe;
- 	unsigned long flags;
- 	int num_eqes =3D 0;
-+	bool recovery;
-=20
- 	dev =3D eq->dev;
- 	eqt =3D dev->priv.eq_table;
-=20
--	mlx5_eq_async_int_lock(eq_async, &flags);
-+	recovery =3D action =3D=3D ASYNC_EQ_RECOVER;
-+	mlx5_eq_async_int_lock(eq_async, recovery, &flags);
-=20
- 	eqe =3D next_eqe_sw(eq);
- 	if (!eqe)
-@@ -249,9 +253,9 @@ static int mlx5_eq_async_int(struct notifier_block *nb,
-=20
- out:
- 	eq_update_ci(eq, 1);
--	mlx5_eq_async_int_unlock(eq_async, &flags);
-+	mlx5_eq_async_int_unlock(eq_async, recovery, &flags);
-=20
--	return unlikely(action =3D=3D ASYNC_EQ_RECOVER) ? num_eqes : 0;
-+	return unlikely(recovery) ? num_eqes : 0;
- }
-=20
- void mlx5_cmd_eq_recover(struct mlx5_core_dev *dev)
---=20
-2.26.2
+But can we at least make sure that when libbpf is integrated with
+iproute2, it specifies the latest libbpf (v0.2) as a dependency?
 
+
+> -Toke
+>
