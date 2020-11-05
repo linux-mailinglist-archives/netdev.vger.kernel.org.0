@@ -2,87 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5A442A7607
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 04:20:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9C782A7616
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 04:33:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387723AbgKEDUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 22:20:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53284 "EHLO
+        id S2388605AbgKEDdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 22:33:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728511AbgKEDUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 22:20:19 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC86C0613CF;
-        Wed,  4 Nov 2020 19:20:19 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id j18so273315pfa.0;
-        Wed, 04 Nov 2020 19:20:19 -0800 (PST)
+        with ESMTP id S1728511AbgKEDdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 22:33:09 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F988C0613CF;
+        Wed,  4 Nov 2020 19:33:08 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id za3so528307ejb.5;
+        Wed, 04 Nov 2020 19:33:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=RWhsZukF3wxR9G9dqgPdfhoRJe3o6eJlTweOM5Ck3ks=;
-        b=A4sDp2GiKP/OR35CMFeLLO3H0LSZzOyH3UowTbYxB9E5oEJHq66Q4tC/ZLwJCg+2p4
-         Ev0ZHMVJyDwzmhT/poKEnHu0ndNG3EUV7vVwS7KGWGq/3Bo1hHX3E6oYvt96tHIqKFbl
-         2ADRT8Q7tG+ohf8/YANchRvUl46xQ7UxnqXTPJJuyTHHroik8OposMQc8mkTW+R7yWEY
-         73GfX0xnA0c7UBtHEEx6F6d/KYRHRaKwtIq5k+23WVx8iUfRkbfiKmOYClv2VB3O2q3B
-         ymJtIOvIOXned4OM1hhJvaRtkK0SxA0p/9+SzFqmQ0kGE6HDlslsFy1/o0G0JYDGQJf2
-         +WJA==
+        bh=2QtdhLn6dbQgBdJcNj2XZy1nXB4zinTDtHIxteWe2Ok=;
+        b=lekAQ+Vs/f1h1OIgWwz9UDPTUe8NXyK8/7tmffXxLp/lB7jC3Zj1n1UGEnvyQrRzYS
+         MOh/pTyY1ylDqIdyeQNIzj/7k1nvZ0DE619EG7fU6GJ4mKBHrCm13lHLeVPoOAtLEwk1
+         p0v8klJ+jGnr+/HP5CYX1oGXvrCiKmlf5Jgme5q4fSLfvXtQvrDrSWimMi9637HHAEKN
+         WRQbsS6JEwzzs1oycmHxxlZBSCWrrBEtJ0hFllLaoVpaYB1diIhPShHBLat7VINQ4jSQ
+         xaU943CCmAhii1WjYWRevNxwIEyVyl1056y89u9Up8GjPjeixL+bxyyS0uXZ/D9Hmcbb
+         KZZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=RWhsZukF3wxR9G9dqgPdfhoRJe3o6eJlTweOM5Ck3ks=;
-        b=BAfi7D8DuHAnrRFeCHBaoKtpZzQZG7YPMxG1/IB1dGtpCx3Haw5Fkpp/Z1RCVlZYIH
-         UDDAiDrAI+sPc+UO/nobwChjuuqHwXKfDBfSr25tkwLLnOrQ6do9ZDCRseknaqsMbFa6
-         sNOotfB4LJ1MDjPmYS9h2iFMeFOLQUHvUcVZYPos8M6kYzEGj/Stid0R4gLif0Gy4oAU
-         FKDL43ev1jjrFTRPOmFkZh70JebMylpqLHrCSqYSUgusHxyt2YqPKLkzmq42Ag3EzJhX
-         58HsOXw6I/HdMgDzcgcZ7/cJxVZ0WMV9oPpMPHUg4DnOKNT+qvkYl4eed3SocQYjH8ln
-         mG1g==
-X-Gm-Message-State: AOAM531YYp0K0hVMggUtL3rtN5hVT2sPWLcHe7vI8gXIJN8pAX5zugRo
-        kU+4P0AQ6i9kzTcWF6LGnD2WJnRpazQLSuYQ
-X-Google-Smtp-Source: ABdhPJxpdoaP5v7K9p4mvDG6aBPWxjput0LuYRxmWTUq0yTN7sB0dVaamf8vQ9dnjjoiytZ/pJy3kw==
-X-Received: by 2002:a62:75c6:0:b029:18a:d510:ff60 with SMTP id q189-20020a6275c60000b029018ad510ff60mr385547pfc.35.1604546418841;
-        Wed, 04 Nov 2020 19:20:18 -0800 (PST)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id v126sm300083pfb.137.2020.11.04.19.20.16
+        bh=2QtdhLn6dbQgBdJcNj2XZy1nXB4zinTDtHIxteWe2Ok=;
+        b=OLzzNiMEAzEecZL145OMhHE3D9c0Z0eNxOEbpLHDA+UK19rl2elSOZ3mroYLB7Xt4S
+         CWLFrwd5ornI3urJgTMqwInAzLodgWkW0TQv2bMN/rSbb4IQkxqUjz/SDA1jSnCPs7uN
+         2NsL9EjWIEjZlpEb08WwaJFU81HaWZYJFZn4CGe/2QvdiEp2oUn+yGtwNo1fMo9oC2aA
+         +vzq0b+qkiKt5vwpauCo+LzDFyDCB/iPrUL0hW8wRExk9QOyidfE/kMXE96XgY907alB
+         /s26SjOH5iD65pumx4R5M5IJQAgESQ2vm5Cx1yZOwZHo7mhPPyD9hTFQYw9Ns7wOLvtn
+         ZPDw==
+X-Gm-Message-State: AOAM532udaf8Q13w4JO7EOFMVBzkHwmbEMaE6VdLfiKt1uqn//UcdDct
+        wyfEvv8tbCj0etdTGJTtx+8=
+X-Google-Smtp-Source: ABdhPJz33zUbd7p88ljjIkMQymD5KG2hCMCIWaIJbp3CfYs48WqFdFha53Paf0Napi+obr0g0qFg1Q==
+X-Received: by 2002:a17:906:74c6:: with SMTP id z6mr378220ejl.448.1604547187200;
+        Wed, 04 Nov 2020 19:33:07 -0800 (PST)
+Received: from andrea (host-87-7-71-164.retail.telecomitalia.it. [87.7.71.164])
+        by smtp.gmail.com with ESMTPSA id k11sm101717edh.72.2020.11.04.19.33.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 19:20:18 -0800 (PST)
-Date:   Thu, 5 Nov 2020 11:20:08 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     netdev@vger.kernel.org, William Tu <u9012063@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next 1/2] selftest/bpf: add missed ip6ip6 test back
-Message-ID: <20201105032008.GS2531@dhcp-12-153.nay.redhat.com>
-References: <20201103042908.2825734-1-liuhangbin@gmail.com>
- <20201103042908.2825734-2-liuhangbin@gmail.com>
- <20201104184034.c2fse6kj2nwer3kv@kafai-mbp.dhcp.thefacebook.com>
+        Wed, 04 Nov 2020 19:33:06 -0800 (PST)
+Date:   Thu, 5 Nov 2020 04:32:58 +0100
+From:   Andrea Parri <parri.andrea@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
+        Andres Beltran <lkmlabelt@gmail.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Saruhan Karademir <skarade@microsoft.com>,
+        Juan Vazquez <juvazq@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH v8 3/3] hv_netvsc: Use vmbus_requestor to generate
+ transaction IDs for VMBus hardening
+Message-ID: <20201105033258.GA3079@andrea>
+References: <20201104154027.319432-1-parri.andrea@gmail.com>
+ <20201104154027.319432-4-parri.andrea@gmail.com>
+ <20201104134348.39feba74@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201104134505.44d8c4d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201104184034.c2fse6kj2nwer3kv@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201104134505.44d8c4d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 04, 2020 at 10:40:34AM -0800, Martin KaFai Lau wrote:
-> > +	check $TYPE
-> > +	config_device
-> > +	add_ipip6tnl_tunnel
-> > +	ip link set dev veth1 mtu 1500
-> > +	attach_bpf $DEV ipip6_set_tunnel ipip6_get_tunnel
-> From looking at the ipip6_set_tunnel in test_tunnel_kern.c.
-> I don't think they are testing an ip6ip6 packet.
-> If the intention is to test ip6ip6, why the existing
-> ip6ip6_set_tunnel does not need to be exercised?
+On Wed, Nov 04, 2020 at 01:45:05PM -0800, Jakub Kicinski wrote:
+> On Wed, 4 Nov 2020 13:43:48 -0800 Jakub Kicinski wrote:
+> > On Wed,  4 Nov 2020 16:40:27 +0100 Andrea Parri (Microsoft) wrote:
+> > > From: Andres Beltran <lkmlabelt@gmail.com>
+> > > 
+> > > Currently, pointers to guest memory are passed to Hyper-V as
+> > > transaction IDs in netvsc. In the face of errors or malicious
+> > > behavior in Hyper-V, netvsc should not expose or trust the transaction
+> > > IDs returned by Hyper-V to be valid guest memory addresses. Instead,
+> > > use small integers generated by vmbus_requestor as requests
+> > > (transaction) IDs.
+> > > 
+> > > Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
+> > > Co-developed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> > > Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> > > Reviewed-by: Michael Kelley <mikelley@microsoft.com>  
+> > 
+> > I'm assuming this is targeting net-next? If so could you please tag it
+> > as [PATCH net-next vN]?
+> 
+> Ah, you don't 'cause you only sent us the third patch. In that case with
+> the nit below addressed:
+> 
+> Acked-by: Jakub Kicinski <kuba@kernel.org>
 
-Hi Martin,
+I fixed the declarations locally.  Thank you for the review, Jakub.
 
-Maybe I missed something. But I saw both ipip6_set_tunnel and
-ip6ip6_set_tunnel in test_tunnel_kern.c. only set remote IPv6 address.
-They didn't do anything else. The only difference between
-ipip6 and ip6ip6 are in overlay network, using IPv4 or IPv6.
+(Yes, FWIW, I was imaging the series to go via hyperv-next...)
+
+Thanks,
+  Andrea
 
 
-Thanks
-Hangbin
+> 
+> > > @@ -695,10 +695,19 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
+> > >  				    const struct vmpacket_descriptor *desc,
+> > >  				    int budget)
+> > >  {
+> > > -	struct sk_buff *skb = (struct sk_buff *)(unsigned long)desc->trans_id;
+> > > +	struct sk_buff *skb;
+> > >  	struct net_device_context *ndev_ctx = netdev_priv(ndev);  
+> > 
+> > Swap these two lines please to keep the variables declaration lines
+> > longest to shortest.
+> 
