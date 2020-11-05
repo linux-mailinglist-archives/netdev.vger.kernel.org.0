@@ -2,104 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B06922A7C15
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 11:42:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A3202A7C11
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 11:41:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729916AbgKEKmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 05:42:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727731AbgKEKma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 05:42:30 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F91C0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 02:42:30 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id i19so1893275ejx.9
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 02:42:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=malat-biz.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2LczsVk+9KnBIoU2kGVEtIN/d3ykScNgtF9myRWt2BE=;
-        b=sxH0VQ9LsmCqBEh36Md+jDI84/cUS6/ExbEeJpMqt25TRt3OdtRoIsEAVH/mMYRCuR
-         MDB4MnE5xF5eYdTPzubvU2GJ3XaLgYeaIbA6o+Vg/+hM3sXcnvxqnvLWUTNVaOzcqW4l
-         fO0oojmYdSEg0Xteeqh0Px1WgafShCjHI5Ks09lWp4FwzVE0RSrCuSvkN33kSk3HMr4R
-         2kbQjefLhUrC9ZC9xy/pnphk63ciIZL48lZcsQBCubUoQ5ZEvw1awHUY5b9xdsGvEpcb
-         OPSlKawicSLvejkOn66/dp+eqyk7FMTGd4Na5IcMFcaq2ZXPkaou2nxO/a/1jlNTuvsI
-         GNIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2LczsVk+9KnBIoU2kGVEtIN/d3ykScNgtF9myRWt2BE=;
-        b=krGL+440oiM/5OYigJhCa8XKIsmdEvMSuS8n9N4CrLPFnlRbUBQOJWMKYzu3INn3FZ
-         YjTtC7074L2T8KP0a+Q0g9phQn5gd6yLVOftmjicmJHQkXpUb8KMV4LSC5D9k3O+DFJN
-         JSDEIrv8xDeCrHSVXPJYVpFfqCePoE3kjf1FTjxvVh06c3tiSLfubAdbm2H1Rsp3TbK3
-         d5IgOH58roFkpDZ+qlwEmKhg6SIO8HrF9o/IjVE4En4S0oXpDDUGpu5VYBwxrkA1LJKs
-         RU2BX0ANIedarwIyH25KTDPbZYJXe9S4DGLRPH7I5hgPYhUsJJQ586BO7lOzpEfJrMZN
-         8Oaw==
-X-Gm-Message-State: AOAM530HxHFaKUhugBpSbz07DL+WBQF3WcWDp0DuDxMMQnaa5pAiPONH
-        WflSgKU15gswYAZ20uEtPkjpLQ==
-X-Google-Smtp-Source: ABdhPJyBMpzU7Ahb1JvtUHQmFY5cw8AkzmV5qvw7WUjZ2egmnOPvYSy3BGzOmbHjtnZA0eINlyloWg==
-X-Received: by 2002:a17:906:5247:: with SMTP id y7mr1552389ejm.503.1604572949188;
-        Thu, 05 Nov 2020 02:42:29 -0800 (PST)
-Received: from ntb.petris.klfree.cz (snat2.klfree.cz. [81.201.48.25])
-        by smtp.googlemail.com with ESMTPSA id by8sm648864edb.49.2020.11.05.02.42.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2020 02:42:28 -0800 (PST)
-From:   Petr Malat <oss@malat.biz>
-To:     linux-sctp@vger.kernel.org
-Cc:     Petr Malat <oss@malat.biz>, Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] sctp: Fix sending when PMTU is less than SCTP_DEFAULT_MINSEGMENT
-Date:   Thu,  5 Nov 2020 11:39:47 +0100
-Message-Id: <20201105103946.18771-1-oss@malat.biz>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1729768AbgKEKlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 05:41:44 -0500
+Received: from m9785.mail.qiye.163.com ([220.181.97.85]:27064 "EHLO
+        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726067AbgKEKlo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 05:41:44 -0500
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 0A17B5C1CC6;
+        Thu,  5 Nov 2020 18:41:34 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     kuba@kernel.org, marcelo.leitner@gmail.com
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH v3 net-next 1/2] net/sched: act_mirred: refactor the handle of xmit
+Date:   Thu,  5 Nov 2020 18:41:32 +0800
+Message-Id: <1604572893-16156-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
+        oVCBIfWUFZTE9ISkhMHhlOTx9DVkpNS09OTElDQk9KSkJVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0hOT1VLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MyI6Vgw6KT06EDoQPjYZSBId
+        GVEaFDdVSlVKTUtPTkxJQ0JPSU9MVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUlNTE03Bg++
+X-HM-Tid: 0a7597ff53692087kuqy0a17b5c1cc6
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function sctp_dst_mtu() never returns lower MTU than
-SCTP_TRUNC4(SCTP_DEFAULT_MINSEGMENT) even when the actual MTU is less,
-in which case we rely on the IP fragmentation and must enable it.
+From: wenxu <wenxu@ucloud.cn>
 
-Signed-off-by: Petr Malat <oss@malat.biz>
+This one is prepare for the next patch.
+
+Signed-off-by: wenxu <wenxu@ucloud.cn>
 ---
- net/sctp/output.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+v3: no change
 
-diff --git a/net/sctp/output.c b/net/sctp/output.c
-index 1441eaf460bb..87a96cf6bfa4 100644
---- a/net/sctp/output.c
-+++ b/net/sctp/output.c
-@@ -552,6 +552,7 @@ int sctp_packet_transmit(struct sctp_packet *packet, gfp_t gfp)
- 	struct sk_buff *head;
- 	struct sctphdr *sh;
- 	struct sock *sk;
-+	u32 pmtu;
+ include/net/sch_generic.h |  5 -----
+ net/sched/act_mirred.c    | 21 +++++++++++++++------
+ 2 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index d8fd867..dd74f06 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -1281,9 +1281,4 @@ void mini_qdisc_pair_init(struct mini_Qdisc_pair *miniqp, struct Qdisc *qdisc,
+ void mini_qdisc_pair_block_init(struct mini_Qdisc_pair *miniqp,
+ 				struct tcf_block *block);
  
- 	pr_debug("%s: packet:%p\n", __func__, packet);
- 	if (list_empty(&packet->chunk_list))
-@@ -559,6 +560,13 @@ int sctp_packet_transmit(struct sctp_packet *packet, gfp_t gfp)
- 	chunk = list_entry(packet->chunk_list.next, struct sctp_chunk, list);
- 	sk = chunk->skb->sk;
+-static inline int skb_tc_reinsert(struct sk_buff *skb, struct tcf_result *res)
+-{
+-	return res->ingress ? netif_receive_skb(skb) : dev_queue_xmit(skb);
+-}
+-
+ #endif
+diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+index e24b7e2..17d0095 100644
+--- a/net/sched/act_mirred.c
++++ b/net/sched/act_mirred.c
+@@ -205,6 +205,18 @@ static int tcf_mirred_init(struct net *net, struct nlattr *nla,
+ 	return err;
+ }
  
-+	/* Fragmentation on the IP level if the actual PMTU could be less
-+	 * than SCTP_DEFAULT_MINSEGMENT. See sctp_dst_mtu().
-+	 */
-+	pmtu = tp->asoc ? tp->asoc->pathmtu : tp->pathmtu;
-+	if (pmtu <= SCTP_DEFAULT_MINSEGMENT)
-+		packet->ipfragok = 1;
++static int tcf_mirred_forward(bool want_ingress, struct sk_buff *skb)
++{
++	int err;
 +
- 	/* check gso */
- 	if (packet->size > tp->pathmtu && !packet->ipfragok) {
- 		if (!sk_can_gso(sk)) {
++	if (!want_ingress)
++		err = dev_queue_xmit(skb);
++	else
++		err = netif_receive_skb(skb);
++
++	return err;
++}
++
+ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+ 			  struct tcf_result *res)
+ {
+@@ -287,18 +299,15 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+ 		/* let's the caller reinsert the packet, if possible */
+ 		if (use_reinsert) {
+ 			res->ingress = want_ingress;
+-			if (skb_tc_reinsert(skb, res))
++			err = tcf_mirred_forward(res->ingress, skb);
++			if (err)
+ 				tcf_action_inc_overlimit_qstats(&m->common);
+ 			__this_cpu_dec(mirred_rec_level);
+ 			return TC_ACT_CONSUMED;
+ 		}
+ 	}
+ 
+-	if (!want_ingress)
+-		err = dev_queue_xmit(skb2);
+-	else
+-		err = netif_receive_skb(skb2);
+-
++	err = tcf_mirred_forward(want_ingress, skb2);
+ 	if (err) {
+ out:
+ 		tcf_action_inc_overlimit_qstats(&m->common);
 -- 
-2.20.1
+1.8.3.1
 
