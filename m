@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D482A8971
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 23:01:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0EEA2A8997
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 23:16:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732585AbgKEWA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 17:00:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732295AbgKEWAz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 17:00:55 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5757EC0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 14:00:55 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id cw8so4854632ejb.8
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 14:00:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kkrL6/jK3eJFpTLVXsZRPhI+a3UIbjZsmKJ9Y1LYQJ0=;
-        b=l1zyt1jYkTklLUA4dKaMEI57G5m3V/WrJO9UWEROVOt1ialjv5+aPaK+2azNEcKZm0
-         vrcxfUIr6eZ8Kun/So75Mc20VmON8d5xdIS2rpzD+CsMBd2VqqhnemRqlDOnL66sjr1P
-         Ecc5lreu6+8+82eLvbrs02WwGF4FFHLHcePgPZ8d4QfyEF9+q7bmSY/+90lZC5kIEp4O
-         5u8S7sFHPozXs0wKAV3gQx9l3oe6/V92olWejfApaKFk3N1zIixtWQeU33iTAoGmromx
-         XUW+nJIH2V3f6sE6BWIFVXi1z/N5WJiO7KgF5iUw/PsjqHrTRre+btTWTFt0ilKSzUBm
-         fn3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kkrL6/jK3eJFpTLVXsZRPhI+a3UIbjZsmKJ9Y1LYQJ0=;
-        b=fnkUZawYeMFvApEj5fgnvMsD6hMz9wIPtoXEJH0M2x/qZbyERRCeAqRJujmtXS4l7X
-         jxzwvB3idMcjSGRHbDDmAmwmtXS+7MjFjh4k/0GbCj0ioe4GGziAKU/0jK2EE03LdB5K
-         ZaExdaZKMheW2GE2ICLYsyYYBvcTp+VrbBdjDlWka1m11TjTkGH75jDdKit6TFdVZaTx
-         iVNUZp84q4Ak9xVJcavGzWIV+/D8yOo1N1rNE6B0hAp1W71bPhUQ8P0pNA+lP4Lpp7fC
-         tS4a9ZFC2KYvWdUixdMWVkCMs8Z+m0Vt7ftTNKMQZ84ibdy6xxldb08ujQFapeMvE7CA
-         wTBg==
-X-Gm-Message-State: AOAM531+mGxMp4cIsEBtlz9jo77o+GJOMFkWgDPx7D+dXTPZmAi6pgtF
-        LIc4kh4WXgd1uCB6/FmLVxRtcTtIbQp54MMn4uvqLA==
-X-Google-Smtp-Source: ABdhPJythImg+6Su9fzxeATyfrRJDwfwiTfRoJbZhE2LPNRyXKMolHFGhd5ZFcfi1TtxdV0OdBNkOfUeah9GASwsFOs=
-X-Received: by 2002:a17:906:ad8e:: with SMTP id la14mr4221902ejb.264.1604613654118;
- Thu, 05 Nov 2020 14:00:54 -0800 (PST)
+        id S1732603AbgKEWQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 17:16:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36286 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731508AbgKEWQH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 17:16:07 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1109E20735;
+        Thu,  5 Nov 2020 22:16:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604614566;
+        bh=imUVBYp5M4wmbLeT+9vciE49oS3Kkp42AlSUoxHmZhk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VaJUVC2N2nUyV5925zEvK9jTWTGCpvlU1B0Vi/qCSuzJGlipDyRr1nXj11CqWWtea
+         JsgkIA+VtMpZOSrKLvXhYoqKYBo3fEBkGTnxvv8tNQ5Rck4+1n6x4tLjCOt5xIemWJ
+         rK25gTTc+/T3jYUPZV4eOobiMOQQh2EaSzL8ndDM=
+Date:   Thu, 5 Nov 2020 14:16:05 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     menglong8.dong@gmail.com
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, davem@davemloft.net,
+        ycheng@google.com, ncardwell@google.com, priyarjha@google.com,
+        edumazet@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Menglong Dong <dong.menglong@zte.com.cn>
+Subject: Re: [PATCH net-next] net: udp: introduce UDP_MIB_MEMERRORS for
+ udp_mem
+Message-ID: <20201105141605.06b936f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1604560572-18582-1-git-send-email-dong.menglong@zte.com.cn>
+References: <1604560572-18582-1-git-send-email-dong.menglong@zte.com.cn>
 MIME-Version: 1.0
-References: <20201023003338.1285642-1-david.m.ertman@intel.com>
- <20201023003338.1285642-2-david.m.ertman@intel.com> <CAPcyv4i9s=CsO5VJOhPnS77K=bD0LTQ8TUAbhLd+0OmyU8YQ3g@mail.gmail.com>
- <DM6PR11MB284191BAA817540E52E4E2C4DDEE0@DM6PR11MB2841.namprd11.prod.outlook.com>
-In-Reply-To: <DM6PR11MB284191BAA817540E52E4E2C4DDEE0@DM6PR11MB2841.namprd11.prod.outlook.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Thu, 5 Nov 2020 14:00:00 -0800
-Message-ID: <CAPcyv4hjCmaCEUhgchkJO7WaGQeTz8gtS2YgMtBAvoGBksvvSg@mail.gmail.com>
-Subject: Re: [PATCH v3 01/10] Add auxiliary bus support
-To:     "Ertman, David M" <david.m.ertman@intel.com>
-Cc:     "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        Takashi Iwai <tiwai@suse.de>, Mark Brown <broonie@kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 5, 2020 at 11:28 AM Ertman, David M
-<david.m.ertman@intel.com> wrote:
-[..]
-> > > Each auxiliary_device represents a part of its parent
-> > > +functionality. The generic behavior can be extended and specialized as
-> > needed
-> > > +by encapsulating an auxiliary_device within other domain-specific
-> > structures and
-> > > +the use of .ops callbacks. Devices on the auxiliary bus do not share any
-> > > +structures and the use of a communication channel with the parent is
-> > > +domain-specific.
-> >
-> > Should there be any guidance here on when to use ops and when to just
-> > export functions from parent driver to child. EXPORT_SYMBOL_NS() seems
-> > a perfect fit for publishing shared routines between parent and child.
-> >
->
-> I would leave this up the driver writers to determine what is best for them.
+On Thu,  5 Nov 2020 02:16:11 -0500 menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <dong.menglong@zte.com.cn>
+> 
+> When udp_memory_allocated is at the limit, __udp_enqueue_schedule_skb
+> will return a -ENOBUFS, and skb will be dropped in __udp_queue_rcv_skb
+> without any counters being done. It's hard to find out what happened
+> once this happen.
+> 
+> So we introduce a UDP_MIB_MEMERRORS to do this job. Well, this change
+> looks friendly to the existing users, such as netstat:
+> 
+> $ netstat -u -s
+> Udp:
+>     0 packets received
+>     639 packets to unknown port received.
+>     158689 packet receive errors
+>     180022 packets sent
+>     RcvbufErrors: 20930
+>     MemErrors: 137759
+> UdpLite:
+> IpExt:
+>     InOctets: 257426235
+>     OutOctets: 257460598
+>     InNoECTPkts: 181177
+> 
+> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
 
-I think there is a pathological case that can be avoided with a
-statement like the following:
+Please CC Paolo since he have you feedback on v1 and Willem de Bruijn
+<willemb@google.com>.
 
-"Note that ops are intended as a way to augment instance behavior
-within a class of auxiliary devices, it is not the mechanism for
-exporting common infrastructure from the parent. Consider
-EXPORT_SYMBOL_NS() to convey infrastructure from the parent module to
-the auxiliary module(s)."
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index 09f0a23d1a01..aa1bd53dd9f9 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -2038,6 +2038,9 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+>  		if (rc == -ENOMEM)
+>  			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
+>  					is_udplite);
+> +		else
+> +			UDP_INC_STATS(sock_net(sk), UDP_MIB_MEMERRORS,
+> +					is_udplite);
 
-As for your other dispositions of the feedback, looks good to me.
+The alignment of the line above is off, just ignore it and align the
+new code correctly so that checkpatch does not complain.
