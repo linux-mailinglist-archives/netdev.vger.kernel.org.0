@@ -2,241 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB5052A7B82
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 11:20:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77C5E2A7BB3
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 11:27:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726665AbgKEKU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 05:20:26 -0500
-Received: from mout.gmx.net ([212.227.17.20]:57875 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725308AbgKEKU0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 05:20:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1604571622;
-        bh=J60Hs08ctBMGnu8VYEei//B33PVRybH0LWEN5EqOdZk=;
-        h=X-UI-Sender-Class:Subject:To:References:From:Date:In-Reply-To;
-        b=IIMhubYpsATwnXOOPCXRLtomHQNTW4HJ1eXThoUQRJQewuodC3ohW0uV+5XCq6g/n
-         3eQDDCHV5A2+JTVl4Wt6ep9NlZD2rkLpj7SrP9r+TKLTxAxN69vCsWvDO+SZIodQLT
-         WS/VO08LcvUwSi0syvYWVbkDvlm3G18TbW6XSlTw=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [0.0.0.0] ([149.28.201.231]) by mail.gmx.com (mrgmx105
- [212.227.17.174]) with ESMTPSA (Nemesis) id 1MF3HU-1kYRa94BHE-00FQ85; Thu, 05
- Nov 2020 11:20:22 +0100
-Subject: Re: Very slow realtek 8169 ethernet performance, but only one
- interface, on ThinkPad T14.
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-References: <57f16fe7-2052-72cc-6628-bbb04f146ce0@gmx.com>
- <7ee6a86c-5aca-3931-73cc-2ab72d8dd8a7@gmail.com>
- <c4c063eb-d20b-8bc7-bbd7-b8df70c69a11@gmx.com>
- <9f8785d2-76b2-f0ad-7fa1-a8a38d7df3af@gmail.com>
-From:   Qu Wenruo <quwenruo.btrfs@gmx.com>
-Autocrypt: addr=quwenruo.btrfs@gmx.com; prefer-encrypt=mutual; keydata=
- mQENBFnVga8BCACyhFP3ExcTIuB73jDIBA/vSoYcTyysFQzPvez64TUSCv1SgXEByR7fju3o
- 8RfaWuHCnkkea5luuTZMqfgTXrun2dqNVYDNOV6RIVrc4YuG20yhC1epnV55fJCThqij0MRL
- 1NxPKXIlEdHvN0Kov3CtWA+R1iNN0RCeVun7rmOrrjBK573aWC5sgP7YsBOLK79H3tmUtz6b
- 9Imuj0ZyEsa76Xg9PX9Hn2myKj1hfWGS+5og9Va4hrwQC8ipjXik6NKR5GDV+hOZkktU81G5
- gkQtGB9jOAYRs86QG/b7PtIlbd3+pppT0gaS+wvwMs8cuNG+Pu6KO1oC4jgdseFLu7NpABEB
- AAG0IlF1IFdlbnJ1byA8cXV3ZW5ydW8uYnRyZnNAZ214LmNvbT6JAU4EEwEIADgCGwMFCwkI
- BwIGFQgJCgsCBBYCAwECHgECF4AWIQQt33LlpaVbqJ2qQuHCPZHzoSX+qAUCXZw1oQAKCRDC
- PZHzoSX+qCY6CACd+mWu3okGwRKXju6bou+7VkqCaHTdyXwWFTsr+/0ly5nUdDtT3yEVggPJ
- 3VP70wjlrxUjNjFb6iIvGYxiPOrop1NGwGYvQktgRhaIhALG6rPoSSAhGNjwGVRw0km0PlIN
- D29BTj/lYEk+jVM1YL0QLgAE1AI3krihg/lp/fQT53wLhR8YZIF8ETXbClQG1vJ0cllPuEEv
- efKxRyiTSjB+PsozSvYWhXsPeJ+KKjFen7ebE5reQTPFzSHctCdPnoR/4jSPlnTlnEvLeqcD
- ZTuKfQe1gWrPeevQzgCtgBF/WjIOeJs41klnYzC3DymuQlmFubss0jShLOW8eSOOWhLRuQEN
- BFnVga8BCACqU+th4Esy/c8BnvliFAjAfpzhI1wH76FD1MJPmAhA3DnX5JDORcgaCbPEwhLj
- 1xlwTgpeT+QfDmGJ5B5BlrrQFZVE1fChEjiJvyiSAO4yQPkrPVYTI7Xj34FnscPj/IrRUUka
- 68MlHxPtFnAHr25VIuOS41lmYKYNwPNLRz9Ik6DmeTG3WJO2BQRNvXA0pXrJH1fNGSsRb+pK
- EKHKtL1803x71zQxCwLh+zLP1iXHVM5j8gX9zqupigQR/Cel2XPS44zWcDW8r7B0q1eW4Jrv
- 0x19p4P923voqn+joIAostyNTUjCeSrUdKth9jcdlam9X2DziA/DHDFfS5eq4fEvABEBAAGJ
- ATwEGAEIACYCGwwWIQQt33LlpaVbqJ2qQuHCPZHzoSX+qAUCXZw1rgUJCWpOfwAKCRDCPZHz
- oSX+qFcEB/95cs8cM1OQdE/GgOfCGxwgckMeWyzOR7bkAWW0lDVp2hpgJuxBW/gyfmtBnUai
- fnggx3EE3ev8HTysZU9q0h+TJwwJKGv6sUc8qcTGFDtavnnl+r6xDUY7A6GvXEsSoCEEynby
- 72byGeSovfq/4AWGNPBG1L61Exl+gbqfvbECP3ziXnob009+z9I4qXodHSYINfAkZkA523JG
- ap12LndJeLk3gfWNZfXEWyGnuciRGbqESkhIRav8ootsCIops/SqXm0/k+Kcl4gGUO/iD/T5
- oagaDh0QtOd8RWSMwLxwn8uIhpH84Q4X1LadJ5NCgGa6xPP5qqRuiC+9gZqbq4Nj
-Message-ID: <57b01490-7131-b845-81b0-14d64e83d316@gmx.com>
-Date:   Thu, 5 Nov 2020 18:20:19 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1728999AbgKEK14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 05:27:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34918 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725308AbgKEK14 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 05:27:56 -0500
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021E2C0613CF
+        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 02:27:56 -0800 (PST)
+Received: by mail-lf1-x144.google.com with SMTP id f9so1539388lfq.2
+        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 02:27:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/hpvIiwrNMtYSLTsQfuYSEJ8uD28oo11HkFz3i7yCF4=;
+        b=p+0H1XTYwSBkHE4AIKqUBrj8WjMq+7Ljho7zbG1YD5z65Pyj3mfadpRPYo6o6AXSZx
+         y7EesABNwUnXb0pft8tJ7jJ53vSPDq9pUSlHSN00fpDk6CM1uaILjupka4cJPsAmXgiG
+         15WhTUxI3NGp7KKLh+RE6jkX+NzO8WLjLS/g7myeAs42iNLhAaXITXFlkKgW6NnOM0k5
+         HnY65K+GWWTZg73a2rrdqZnTAWBxzwHO0tBcVhLtvWTyUGeBm7aWSpkyF2xwawIuoml6
+         z3FXXNpMCKCH5B1tP7lmc5BI78las4ZMcATCfNyknYtgZ72u07YsJuY/IlR+BWfuSskp
+         AzFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/hpvIiwrNMtYSLTsQfuYSEJ8uD28oo11HkFz3i7yCF4=;
+        b=O66irxjy4IJyPCtapT+9arPNJqkVmrCFCpKoyOa7wDMT5iM05tgsfcDpP099A6QtcP
+         IpHyZCkZy6poZqfeDKLwp4dm5QPywL2iyxGh+gNLO/wzPA/LjZ8xztDiGpYHyr2+M9eR
+         a9kkBbWH8SgwZaiyUhpwcbq+L+id6a6OjkjYGU9f6F64hfit8GozI7H6jmb81yiuR/8R
+         jKiuvp9HWPMQXGfX6Y9N9UoHDaoJGFCPcbAxKutY1ByZpb9iYGeI1w6OIhsUwYJ7Cb4e
+         WrzLKfsYbeBb5JdgOpfO7ACyWiQyflJ5mUkuYPEFgWRs7BuePk0a5CyxtrCFlTaAwrGF
+         dwRg==
+X-Gm-Message-State: AOAM530kn0bPoccn8pg+JFBnQIxIQ6fe91vLIsr32xCjklfiexjmeuT7
+        1/QGiii8MbjzJmVQOfLa3lbXj9RzkGhPWg==
+X-Google-Smtp-Source: ABdhPJyjrMyJc7/eMpEYj96VBKLT9td7TQRPjPJ4KfwazvyxsEB9hjF5EXiuJaVMI3jJqlTzzX+uSA==
+X-Received: by 2002:a19:4a90:: with SMTP id x138mr665782lfa.174.1604572074003;
+        Thu, 05 Nov 2020 02:27:54 -0800 (PST)
+Received: from mtpad.i.jakstys.lt ([88.223.105.124])
+        by smtp.gmail.com with ESMTPSA id c4sm140188lfh.60.2020.11.05.02.27.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Nov 2020 02:27:53 -0800 (PST)
+From:   =?UTF-8?q?Motiejus=20Jak=C5=A1tys?= <desired.mta@gmail.com>
+To:     netdev@vger.kernel.org, kuba@kernel.org
+Cc:     trivial@kernel.org,
+        =?UTF-8?q?Motiejus=20Jak=C5=A1tys?= <desired.mta@gmail.com>
+Subject: [PATCH] Documentation: tproxy: more gentle intro (re-post #2)
+Date:   Thu,  5 Nov 2020 12:26:04 +0200
+Message-Id: <20201105102602.109991-1-desired.mta@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <9f8785d2-76b2-f0ad-7fa1-a8a38d7df3af@gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="weZFtWHdsGDjdghiI3EptHmQuqGvNuFC5"
-X-Provags-ID: V03:K1:lSwYX1KfJseE/jhMUBWNz9yRpl2lpNiyzo6o31gXz5PtrhBwWto
- olj6NTGirJX8YroBMn8iP5pcr/DN25H/ohn4BuhYHOSnc9arossdf0avRbG3JyyrhFlB1mW
- yMzI4vqwB4oYyz8aaTU+UCxsDYcuS29cE40D4Sh+RjhPWSdmO9uvPW54QPNez5WJW4PiqsS
- bryOS5Bjj0qEw7IgIrm/g==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:s+sipxVpYfE=:iiSENiUbVCS03RnvrDG5c+
- Pn0TNdaOfCLZmsOa9SQyhdFE0+NpcEDCo4L+y9uYS1RX5vQnZ8PFLHDZnvvDiKb4cvyvDPFvJ
- DIu6HA2f7yfTeTe4dM/IOINjw4cFT0oAN//D2/aPzTcrljeRrJ/tMS+TcvpaymiDe4+SMdqlp
- beH2e5LJieJr5no2zPkWzXLfrU6hX3A7PMNjqibTFE2o5rEtwUrQP/n6LcAsVVZXuf9swvT3r
- 08GKz/E32IizUUKBu955n/Ai3XpX3IBnvHpPH148r0GCMVv9jGC6W4BBJD8wy5xsqr8dNzJtr
- LHEsTR9NCzJpzKbJki3ejXrjF4ENfFSZwuKJhwxKygQ+0hKlvmq7JfncZzLRxP93CIgiR6D9s
- DdUdMYev2sHr2c+xTN+5XMTCfX3/QzVvJINmhPCUXed67Y42x7D1y3tgsxNKDZnB0nzb+JIbo
- psX+qKWY+IO1sR7qBfYuP98Pq5hx5BUCorpetVuI61NIpBT8ml88T6PdE+hZ8pmG96MryTWBs
- ihka5kq8aSjEHXXcTUt3m648OO/eAuKYctaVrVXBvbHWzKcJYI2MAum5rn/+8D9WX1QyN/TFu
- eR+ODI3LDBYu7eqFZ88A3HMBfaGoIRN4LOH6QAnmeUZEPynojsJxIkGotBCJK8Co4/hruht/4
- +5hPKHbm6fiXgwudQmBqZQGMsBMVeC524HpkiUSjHU6ZP0cgzDlDrpdhLnoOpZZgXCSzCWWXz
- 6zAXzyEQlBTdlmhM2cBapFyapq2e/g8h15ipAa4j1k9j9bWPZ8kGhYU5ZBlTmEnwI6NG8ESj8
- ffzMB4lWayCBg8IbYD+RRpLdyoJcTsa0AGv9WtXQ39pD7Ma4O00DLlhvP+Ol6r6f+aa3vCBGC
- J65UTQDUXbE6QiBBAV0Q==
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---weZFtWHdsGDjdghiI3EptHmQuqGvNuFC5
-Content-Type: multipart/mixed; boundary="TEmQDuz14bPA62p4mFqjpnRG5Aqe9SAml"
+Clarify tproxy odcumentation, so it's easier to read/understand without
+a-priori in-kernel transparent proxying knowledge.
 
---TEmQDuz14bPA62p4mFqjpnRG5Aqe9SAml
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Remove a reference to linux 2.2 and cosmetic Sphinx changes and address
+comments from kuba@.
 
+Sorry for re-posting, I realized I left a gap just after sending.
 
+Signed-off-by: Motiejus Jakštys <desired.mta@gmail.com>
+---
+ Documentation/networking/tproxy.rst | 120 +++++++++++++++-------------
+ 1 file changed, 64 insertions(+), 56 deletions(-)
 
-On 2020/11/5 =E4=B8=8B=E5=8D=885:13, Heiner Kallweit wrote:
-> On 05.11.2020 08:42, Qu Wenruo wrote:
->>
->>
->> On 2020/11/5 =E4=B8=8B=E5=8D=883:01, Heiner Kallweit wrote:
->>> On 05.11.2020 03:48, Qu Wenruo wrote:
->>>> Hi,
->>>>
->>>> Not sure if this is a regression or not, but just find out that afte=
-r upgrading to v5.9 kernel, one of my ethernet port on my ThinkPad T14 (r=
-yzen version) becomes very slow.
->>>>
->>>> Only *2~3* Mbps.
->>>>
->>>> The laptop has two ethernet interfaces, one needs a passive adapter,=
- the other one is a standard RJ45.
->>>>
->>>> The offending one is the one which needs the adapter (eth0).
->>>> While the RJ45 one is completely fine.
->>>>
->>>> 02:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111=
-/8168/8411 PCI Express Gigabit Ethernet Controller (rev 0e)
->>>> 05:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111=
-/8168/8411 PCI Express Gigabit Ethernet Controller (rev 15)
->>>>
->>>> The 02:00.0 one is the affected one.
->>>>
->>>> The related dmesgs are:
->>>> [   38.110293] r8169 0000:02:00.0: can't disable ASPM; OS doesn't ha=
-ve ASPM control
->>>> [   38.126069] libphy: r8169: probed
->>>> [   38.126250] r8169 0000:02:00.0 eth0: RTL8168ep/8111ep, 00:2b:67:b=
-3:d9:20, XID 502, IRQ 105
->>>> [   38.126252] r8169 0000:02:00.0 eth0: jumbo features [frames: 9194=
- bytes, tx checksumming: ko]
->>>> [   38.126294] r8169 0000:05:00.0: can't disable ASPM; OS doesn't ha=
-ve ASPM control
->>>> [   38.126300] r8169 0000:05:00.0: enabling device (0000 -> 0003)
->>>> [   38.139355] libphy: r8169: probed
->>>> [   38.139523] r8169 0000:05:00.0 eth1: RTL8168h/8111h, 00:2b:67:b3:=
-d9:1f, XID 541, IRQ 107
->>>> [   38.139525] r8169 0000:05:00.0 eth1: jumbo features [frames: 9194=
- bytes, tx checksumming: ko]
->>>> [   42.120935] Generic FE-GE Realtek PHY r8169-200:00: attached PHY =
-driver [Generic FE-GE Realtek PHY] (mii_bus:phy_addr=3Dr8169-200:00, irq=3D=
-IGNORE)
->>>> [   42.247646] r8169 0000:02:00.0 eth0: Link is Down
->>>> [   42.280799] Generic FE-GE Realtek PHY r8169-500:00: attached PHY =
-driver [Generic FE-GE Realtek PHY] (mii_bus:phy_addr=3Dr8169-500:00, irq=3D=
-IGNORE)
->>>> [   42.477616] r8169 0000:05:00.0 eth1: Link is Down
->>>> [   76.479569] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - fl=
-ow control rx/tx
->>>> [   91.271894] r8169 0000:02:00.0 eth0: Link is Down
->>>> [   99.873390] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - fl=
-ow control rx/tx
->>>> [   99.878938] r8169 0000:02:00.0 eth0: Link is Down
->>>> [  102.579290] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - fl=
-ow control rx/tx
->>>> [  185.086002] r8169 0000:02:00.0 eth0: Link is Down
->>>> [  392.884584] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - fl=
-ow control rx/tx
->>>> [  392.891208] r8169 0000:02:00.0 eth0: Link is Down
->>>> [  395.889047] r8169 0000:02:00.0 eth0: Link is Up - 1Gbps/Full - fl=
-ow control rx/tx
->>>> [  406.670738] r8169 0000:02:00.0 eth0: Link is Down
->>>>
->>>> Really nothing strange, even it negotiates to 1Gbps.
->>>>
->>>> But during iperf3, it only goes up to miserable 3Mbps.
->>>>
->>>> Is this some known bug or something special related to the passive a=
-dapter?
->>>>
->>>> Since the adapter is passive, and hasn't experience anything wrong f=
-or a long time, I really doubt that.
->>>>
->>>> Thanks,
->>>> Qu
->>>>
->>>>
->>> Thanks for the report. From which kernel version did you upgrade?
->>
->> Tested back to v5.7, which still shows the miserable performance.
->>
->> So I guess it could be a faulty adapter?
->>
->>> Please test
->>> with the prior kernel version and report behavior (link stability and=
- speed).
->>> Under 5.9, does ethtool -S eth0 report packet errors?
->>>
->> Nope, no tx/rx_errors, no missed/aborted/underrun.
->>
->> Adding that the adapter is completely passive (no chip, just convertin=
-g
->> RJ45 pins to the I shaped pins), I'm not sure that the adapter itself
->> can fail.
->>
-> Each additional mechanical connection may cause reflections or other si=
-gnal
-> disturbance. You could try to restrict the speed to 100Mbps via ethtool=
-,
-> and see what the effective speed is then. 100Mbps uses two wire pairs o=
-nly.
+diff --git a/Documentation/networking/tproxy.rst b/Documentation/networking/tproxy.rst
+index 00dc3a1a66b4..d2673de0e408 100644
+--- a/Documentation/networking/tproxy.rst
++++ b/Documentation/networking/tproxy.rst
+@@ -1,42 +1,45 @@
+ .. SPDX-License-Identifier: GPL-2.0
+ 
+-=========================
+-Transparent proxy support
+-=========================
++==========================
++Transparent proxy (TPROXY)
++==========================
+ 
+-This feature adds Linux 2.2-like transparent proxy support to current kernels.
+-To use it, enable the socket match and the TPROXY target in your kernel config.
+-You will need policy routing too, so be sure to enable that as well.
++TPROXY enables forwarding and intercepting packets that were destined for other
++endpoints, without using NAT chain or REDIRECT targets.
+ 
+-From Linux 4.18 transparent proxy support is also available in nf_tables.
++Intercepting non-local packets
++==============================
+ 
+-1. Making non-local sockets work
+-================================
++To identify packets with destination address matching a local socket on your
++box, set the packet mark to a certain value:
+ 
+-The idea is that you identify packets with destination address matching a local
+-socket on your box, set the packet mark to a certain value::
++.. code-block:: sh
+ 
+-    # iptables -t mangle -N DIVERT
+-    # iptables -t mangle -A PREROUTING -p tcp -m socket -j DIVERT
+-    # iptables -t mangle -A DIVERT -j MARK --set-mark 1
+-    # iptables -t mangle -A DIVERT -j ACCEPT
++    iptables -t mangle -N DIVERT
++    iptables -t mangle -A PREROUTING -p tcp -m socket -j DIVERT
++    iptables -t mangle -A DIVERT -j MARK --set-mark 1
++    iptables -t mangle -A DIVERT -j ACCEPT
+ 
+-Alternatively you can do this in nft with the following commands::
++Alternatively in nft:
+ 
+-    # nft add table filter
+-    # nft add chain filter divert "{ type filter hook prerouting priority -150; }"
+-    # nft add rule filter divert meta l4proto tcp socket transparent 1 meta mark set 1 accept
++.. code-block:: sh
+ 
+-And then match on that value using policy routing to have those packets
+-delivered locally::
++    nft add table filter
++    nft add chain filter divert "{ type filter hook prerouting priority -150; }"
++    nft add rule filter divert meta l4proto tcp socket transparent 1 meta mark set 1 accept
+ 
+-    # ip rule add fwmark 1 lookup 100
+-    # ip route add local 0.0.0.0/0 dev lo table 100
++Then match on that value using policy routing to deliver those packets locally:
+ 
+-Because of certain restrictions in the IPv4 routing output code you'll have to
+-modify your application to allow it to send datagrams _from_ non-local IP
+-addresses. All you have to do is enable the (SOL_IP, IP_TRANSPARENT) socket
+-option before calling bind::
++.. code-block:: sh
++
++    ip rule add fwmark 1 lookup 100
++    ip route add local 0.0.0.0/0 dev lo table 100
++
++Because of certain restrictions in the IPv4 routing application will need to be
++modified to allow it to send datagrams *from* non-local IP addresses. Enable
++the ``SOL_IP``, ``IP_TRANSPARENT`` socket options before calling ``bind``:
++
++.. code-block:: c
+ 
+     fd = socket(AF_INET, SOCK_STREAM, 0);
+     /* - 8< -*/
+@@ -51,9 +54,22 @@ option before calling bind::
+ A trivial patch for netcat is available here:
+ http://people.netfilter.org/hidden/tproxy/netcat-ip_transparent-support.patch
+ 
++Kernel configuration
++====================
+ 
+-2. Redirecting traffic
+-======================
++To use tproxy you'll need to have the following modules compiled for iptables:
++
++- ``NETFILTER_XT_MATCH_POLICY``
++- ``NETFILTER_XT_MATCH_SOCKET``
++- ``NETFILTER_XT_TARGET_TPROXY``
++
++For nf_tables:
++
++- ``NFT_TPROXY``
++- ``NFT_SOCKET``
++
++Redirecting traffic
++===================
+ 
+ Transparent proxying often involves "intercepting" traffic on a router. This is
+ usually done with the iptables REDIRECT target; however, there are serious
+@@ -63,47 +79,39 @@ acceptable in certain situations. (Think of proxying UDP for example: you won't
+ be able to find out the original destination address. Even in case of TCP
+ getting the original destination address is racy.)
+ 
+-The 'TPROXY' target provides similar functionality without relying on NAT. Simply
+-add rules like this to the iptables ruleset above::
++The ``TPROXY`` target provides similar functionality without relying on NAT.
++Simply add rules like this to the iptables ruleset:
+ 
+-    # iptables -t mangle -A PREROUTING -p tcp --dport 80 -j TPROXY \
++.. code-block:: sh
++
++    iptables -t mangle -A PREROUTING -p tcp --dport 80 -j TPROXY \
+       --tproxy-mark 0x1/0x1 --on-port 50080
+ 
+ Or the following rule to nft:
+ 
+-# nft add rule filter divert tcp dport 80 tproxy to :50080 meta mark set 1 accept
++.. code-block:: sh
++
++    nft add rule filter divert tcp dport 80 tproxy to :50080 meta mark set 1 accept
+ 
+-Note that for this to work you'll have to modify the proxy to enable (SOL_IP,
+-IP_TRANSPARENT) for the listening socket.
++Note that for this to work you'll have to modify the proxy to enable
++(``SOL_IP``, ``IP_TRANSPARENT``) for the listening socket.
+ 
+ As an example implementation, tcprdr is available here:
+ https://git.breakpoint.cc/cgit/fw/tcprdr.git/
+ This tool is written by Florian Westphal and it was used for testing during the
+ nf_tables implementation.
+ 
+-3. Iptables and nf_tables extensions
+-====================================
+-
+-To use tproxy you'll need to have the following modules compiled for iptables:
+-
+- - NETFILTER_XT_MATCH_SOCKET
+- - NETFILTER_XT_TARGET_TPROXY
+-
+-Or the floowing modules for nf_tables:
+ 
+- - NFT_SOCKET
+- - NFT_TPROXY
+-
+-4. Application support
++Application support
+ ======================
+ 
+-4.1. Squid
+-----------
++Squid
++-----
++
++Squid 3.1+ has built-in support for TPROXY. To use it, pass
++``--enable-linux-netfilter`` to configure and set the 'tproxy' option on the
++HTTP listener you redirect traffic to with the TPROXY iptables target.
+ 
+-Squid 3.HEAD has support built-in. To use it, pass
+-'--enable-linux-netfilter' to configure and set the 'tproxy' option on
+-the HTTP listener you redirect traffic to with the TPROXY iptables
+-target.
++For more information please consult the `Squid wiki`_.
+ 
+-For more information please consult the following page on the Squid
+-wiki: http://wiki.squid-cache.org/Features/Tproxy4
++.. _`Squid wiki`: http://wiki.squid-cache.org/Features/Tproxy4
+-- 
+2.28.0
 
-OK, you're right, now I can get around 60Mbps.
-
-So definitely something wrong with the adapter.
-
-Will use the RJ45 one and avoid use the ThinkPad proprietary interface.
-
-Thanks,
-Qu
->=20
->> THanks,
->> Qu
->>
->=20
-
-
---TEmQDuz14bPA62p4mFqjpnRG5Aqe9SAml--
-
---weZFtWHdsGDjdghiI3EptHmQuqGvNuFC5
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEELd9y5aWlW6idqkLhwj2R86El/qgFAl+j0eMACgkQwj2R86El
-/qhtkggAlL8gqogEU0MAgoxn1hAoyxsSq2zBtjZi19Pj94qRnW7QI+DmvbtFueAi
-3OeVbzSR03OOlvjGP7ICLA29LFP7hJSoSzqe3E1sayDMHr4QXyIWctqxwT5gisaG
-X39WIftMEMCWo+UM03MJ0bXEIjhYl69lZxvXyaclr7cXoofK7qKUOZgBESFt7ljQ
-9WhH+5O+G/L3UXfOwYh5w5i/IFlQUWNFnyH7ELqJUGdyz4M6ZX6ajUU8QqlSqOm4
-W/IWd1+XK2PMi05IIMfipqfg+OZKbCYDDsXQQfaCvwyREmWb3w3DAcu4VjKTgGub
-psVPP2gNiaPoq3pTJQqkb5ARaJpMoQ==
-=aZxd
------END PGP SIGNATURE-----
-
---weZFtWHdsGDjdghiI3EptHmQuqGvNuFC5--
