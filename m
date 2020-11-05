@@ -2,88 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FF0F2A8746
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 20:33:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7161D2A874E
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 20:35:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732033AbgKETcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 14:32:43 -0500
-Received: from mga05.intel.com ([192.55.52.43]:36334 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726996AbgKETcn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 14:32:43 -0500
-IronPort-SDR: EI809Ta3QPLihzHLwPuVX4GkOcI+Zf48bjGh14JcfJXJJbWf11ograuLHc0yvkHOitDG80cAzK
- WAcPHjxndaag==
-X-IronPort-AV: E=McAfee;i="6000,8403,9796"; a="254153466"
-X-IronPort-AV: E=Sophos;i="5.77,454,1596524400"; 
-   d="scan'208";a="254153466"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2020 11:32:42 -0800
-IronPort-SDR: X+y1wice22ze5u8UH/r7/Lhh3EMQSy98/maUv2UJizrrh8Ql/VDQInL/x1alfiquMX9XlC00Zs
- a0fb1L7MzXxA==
-X-IronPort-AV: E=Sophos;i="5.77,454,1596524400"; 
-   d="scan'208";a="471774404"
-Received: from umedepal-mobl2.amr.corp.intel.com (HELO [10.254.6.114]) ([10.254.6.114])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2020 11:32:41 -0800
-Subject: Re: [PATCH v3 01/10] Add auxiliary bus support
-To:     "Ertman, David M" <david.m.ertman@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>
-Cc:     "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        Takashi Iwai <tiwai@suse.de>, Mark Brown <broonie@kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>
-References: <20201023003338.1285642-1-david.m.ertman@intel.com>
- <20201023003338.1285642-2-david.m.ertman@intel.com>
- <CAPcyv4i9s=CsO5VJOhPnS77K=bD0LTQ8TUAbhLd+0OmyU8YQ3g@mail.gmail.com>
- <DM6PR11MB284191BAA817540E52E4E2C4DDEE0@DM6PR11MB2841.namprd11.prod.outlook.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Message-ID: <f37a2b37-2fda-948d-1b8f-617395d43a08@linux.intel.com>
-Date:   Thu, 5 Nov 2020 13:32:40 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1732046AbgKETfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 14:35:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726996AbgKETfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 14:35:15 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9D9C0613CF;
+        Thu,  5 Nov 2020 11:35:14 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id 62so2009924pgg.12;
+        Thu, 05 Nov 2020 11:35:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cAfagP6TptglHcLWx7VFwM6m74Lt2pq3ChoS3N6uj8U=;
+        b=Zcw0GfYhdne29HCTrnIEk0TkhM73039JthrNHXghC30fSft9V2EsPLVoCPCRKDAZbO
+         ynwmyHAqac97AVrqyPH/i6kD0YsmRhJDdBp4315/8WJCDXhgAAVM8e0BjIURDJH1X/Hq
+         QC8US1CfvJuTMGwiQrJWhqYkT8DJBUwFB2E6nCXOYFb1UkKHzrY0hC59Qknpw7tc56nt
+         gDYOS5tmN8bWP4OZ6hhhj9mxGF0GPZs+kIF+g4GGTySBrjdsdnizWcd/43b0pP7lqcWD
+         io6WVjBkfjX50qUI5uisTAsHeOG/9UHf9VOu2qgrsu+RUhGae2WAHzAl+fRcIFFKq4VX
+         Lcxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cAfagP6TptglHcLWx7VFwM6m74Lt2pq3ChoS3N6uj8U=;
+        b=XmkMb45wXUn6JGBr3F7VsjEx4RRR5G/BLdXb+9QbmNxAZrHK8Xju6PUQucgTYi9Sgt
+         e+GIcNMDsjpmeHMn/bRMLnV9hWMjs0nfwqPm6WYqWclF6kZQr7wfbQSZsCeTXHhEnya5
+         xSowBnviajMFWee2v6aTMaUxtUW4HSteM71OF3/Rk+jy1wFFccGfQL4hYVDWA+I8hNo8
+         73eGpW7yElHkxqnZ2cxjDxzm1KAzUDCh/sfzXPfIgI97LFdne5A/fPlFl0LdYDT6ijtO
+         G6c5EVhv23NtUAGmU1gjpbxfZ04kB9Og2AsCrNuPPXrsjiiSD55dxs0auguG7k6O5QX/
+         CNPw==
+X-Gm-Message-State: AOAM530Vf7m+tXdEyJu7S3SDl8PDJy77s8OrDcKborasO91Hmnj87G+X
+        xNUw2P39l9x7qJM+p+euxIy4Kp1jRJkskw2wEaHPkSg2
+X-Google-Smtp-Source: ABdhPJwuSlGa4EaJUDEsPQqaKLhqqhHPZKlV3e2nlshqrKsNUdm+GzhG38tEQnm1CJZWT0v26yw6SWggKb8fMGjwBWE=
+X-Received: by 2002:a17:90a:f2c5:: with SMTP id gt5mr3996781pjb.66.1604604914542;
+ Thu, 05 Nov 2020 11:35:14 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <DM6PR11MB284191BAA817540E52E4E2C4DDEE0@DM6PR11MB2841.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20201105073434.429307-1-xie.he.0141@gmail.com> <1d7f669ba4e444f1b35184264e5da601@AcuMS.aculab.com>
+In-Reply-To: <1d7f669ba4e444f1b35184264e5da601@AcuMS.aculab.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Thu, 5 Nov 2020 11:35:05 -0800
+Message-ID: <CAJht_EM6rXw2Y6NOw9npqUx-MSscwaZ54q7KM4V2ip_CCQsdeg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: x25_asy: Delete the x25_asy driver
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Nov 5, 2020 at 1:10 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> > This driver transports LAPB (X.25 link layer) frames over TTY links.
+>
+> I don't remember any requests to run LAPB over anything other
+> than synchronous links when I was writing LAPB implementation(s)
+> back in the mid 1980's.
+>
+> If you need to run 'comms over async uart links' there
+> are better options.
+>
+> I wonder what the actual use case was?
 
->>> +module_init(auxiliary_bus_init);
->>> +module_exit(auxiliary_bus_exit);
->>> +
->>> +MODULE_LICENSE("GPL");
->>
->> Per above SPDX is v2 only, so...
->>
->> MODULE_LICENSE("GPL v2");
->>
-> 
-> added v2.
-
-"GPL v2" is the same as "GPL" here, it does not have any additional meaning.
-
-https://www.kernel.org/doc/html/latest/process/license-rules.html
-
-“GPL”	Module is licensed under GPL version 2. This does not express any 
-distinction between GPL-2.0-only or GPL-2.0-or-later. The exact license 
-information can only be determined via the license information in the 
-corresponding source files.
-
-“GPL v2”	Same as “GPL”. It exists for historic reasons.
-
+I think this driver was just for experimental purposes. According to
+the author's comment at the beginning of x25_asy.c, this driver didn't
+implement FCS (frame check sequence), which was required by CCITT's
+standard. So I think this driver was not suitable for real-world use
+anyway.
