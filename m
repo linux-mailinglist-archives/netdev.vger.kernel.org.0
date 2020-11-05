@@ -2,99 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C9E22A8226
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 16:25:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 998942A82B9
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 16:54:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731008AbgKEPZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 10:25:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53226 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730721AbgKEPZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 10:25:16 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6E8C0613CF;
-        Thu,  5 Nov 2020 07:25:15 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id r9so2179413ioo.7;
-        Thu, 05 Nov 2020 07:25:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fYavb5trObhAZPZIPglmd9BvENDlMnE/9++hUv1/9ac=;
-        b=fauSHxDPuxFa3mR9spZXxGmskcC2M0B1MtHI44ogSAF3GwqMTuIoFwMa7Nn06sMq/r
-         SCklE7Klxb3+hHUhl1l4y6AOVZlPE8sgZ/kFGLpOOpSZiw3q1IZhi8h3bSO/B8wJn2zG
-         0X8ZuRY8kyqt7bkmsHNCKKBVgcc6k2AeVPLWKdLDG4fMo47t1KaWJQ1Dvt9deuWWgstD
-         KY12PenH69CzRKkeGjdgEPgSFl2uWN/mVWki30HPAGpy7yvOOeL2fDgU6FR1pajGPpQ1
-         LYGI7b/htGwFHs9Q+JUPSkcSszRsRcW4drw9ZFUBCUT3L18XKXtLwbqTwyAX/W7lXRDz
-         h5kA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fYavb5trObhAZPZIPglmd9BvENDlMnE/9++hUv1/9ac=;
-        b=TA4BFuGHGVQA2ef2yQD54OigIX+X1fo4BlwHJph481ZZuperAc2AsMbv66DWFrpv7c
-         KMvCq7XEVQRlT7bARNeNsBLM7lnbaILJ2+FYoqiIs9hchUa4RIa8mBs7Vy5AsOOptL1c
-         zV8OuNi8UL2EfabSTCV6Tj2zoJOjWe54LKhScIbh6N6QcHbE9q6eLj8M4JwWxVV4CptY
-         HyNqqOuuk/Az2BdAyIyBhhA59MJ90aO4gfGF9hP1dLHdQEcgPgTw8nDzJ2nBE4crdWns
-         6FxEloK4T82hmRonbERoHAU+3QKqsJyv4nzfzje3+IRnaB6ytg826YmCOQNgk7Mz4Naa
-         Vhzw==
-X-Gm-Message-State: AOAM530okS2ZsVuS9p9TvwRlXZU0L5vD9xk7aGf/xAie1OYwCr8DTEy9
-        YY0EoKyXWRJGbN15tiC9W9w9R/8nuNA=
-X-Google-Smtp-Source: ABdhPJzn7DUPgiNnR8flZSQblZpiL33g12D0+ddegq4SNmdFSVkTEeWkMwxNRSuMDfFV2PDG1ZUirg==
-X-Received: by 2002:a05:6638:206:: with SMTP id e6mr2521378jaq.64.1604589914872;
-        Thu, 05 Nov 2020 07:25:14 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:291c:9506:5e60:11ce])
-        by smtp.googlemail.com with ESMTPSA id t17sm1272849ilm.8.2020.11.05.07.25.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Nov 2020 07:25:14 -0800 (PST)
-Subject: Re: [PATCHv3 iproute2-next 3/5] lib: add libbpf support
-To:     Hangbin Liu <haliu@redhat.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-References: <20201028132529.3763875-1-haliu@redhat.com>
- <20201029151146.3810859-1-haliu@redhat.com>
- <20201029151146.3810859-4-haliu@redhat.com>
- <db14a227-1d5e-ed3a-9ada-ecf99b526bf6@gmail.com>
- <20201104082203.GP2408@dhcp-12-153.nay.redhat.com>
- <61a678ce-e4bc-021b-ab4e-feb90e76a66c@gmail.com>
- <20201105075121.GV2408@dhcp-12-153.nay.redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3c3f892a-6137-d176-0006-e5ddaeeed2b5@gmail.com>
-Date:   Thu, 5 Nov 2020 08:25:12 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.0
+        id S1731563AbgKEPya (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 10:54:30 -0500
+Received: from mmnxfpmta1.iai.co.il ([212.235.98.150]:10400 "EHLO
+        mmnxfpmta1.iai.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731074AbgKEPy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 10:54:27 -0500
+X-Greylist: delayed 954 seconds by postgrey-1.27 at vger.kernel.org; Thu, 05 Nov 2020 10:54:26 EST
+DKIM-Signature: v=1; a=rsa-sha1; c=simple/simple; d=iai.co.il; s=dk18122020;
+        t=1604591666; i=@iai.co.il; bh=FIBaLnkSa78VYAnxN8VGdw3lxbA=; l=8750;
+        h=From;
+        b=ajks9QRLfdGHRQKEb3olJE0Gv8iLnemzNmBjWZHWzZKdTMV0+NyXX8b9ykdnK33Kq
+         WT2xScB8kHHMIz21ZCh1Ble0KAs+lNLDT+KnCM6xl/4U2L9NNGBQmFTiPxoi0mdqOV
+         eSEeV/TG4ow6XizBDyAyV9AA0YXsqaIDlMqq6kuM=
+Received: from EXMAIL1.iai.co.il (unknown [172.21.48.103])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by Forcepoint Email with ESMTPS id CC4D7B23B6F4EF90B8D2;
+        Thu,  5 Nov 2020 17:38:26 +0200 (IST)
+Received: from exs12.iai.co.il ([169.254.3.222]) by EXMAIL1.iai.co.il
+ ([172.21.48.103]) with mapi id 14.03.0266.001; Thu, 5 Nov 2020 17:38:26 +0200
+From:   Alayev Michael <malayev@iai.co.il>
+To:     "mic.al.linux@gmail.com" <mic.al.linux@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: net: dsa: mv88e6xxx : linux v5.4 crash
+Thread-Topic: net: dsa: mv88e6xxx : linux v5.4 crash
+Thread-Index: AdazhaD1GyilujQQT+aqctfhMGhrRA==
+Date:   Thu, 5 Nov 2020 15:38:26 +0000
+Message-ID: <48F7D4389F30BA4383F214EE802BA47101C2E0DB75@EXS12.iai.co.il>
+Accept-Language: he-IL, en-US
+Content-Language: he-IL
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.48.107]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20201105075121.GV2408@dhcp-12-153.nay.redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/5/20 12:51 AM, Hangbin Liu wrote:
-> On Wed, Nov 04, 2020 at 07:33:40PM -0700, David Ahern wrote:
->> On 11/4/20 1:22 AM, Hangbin Liu wrote:
->>> If we move this #ifdef HAVE_LIBBPF to bpf_legacy.c, we need to rename
->>> them all. With current patch, we limit all the legacy functions in bpf_legacy
->>> and doesn't mix them with libbpf.h. What do you think?
->>
->> Let's rename conflicts with a prefix -- like legacy. In fact, those
->> iproute2_ functions names could use the legacy_ prefix as well.
->>
-> 
-> Sorry, when trying to rename the functions. I just found another issue.
-> Even we fix the conflicts right now. What if libbpf add new functions
-> and we got another conflict in future? There are too much bpf functions
-> in bpf_legacy.c which would have more risks for naming conflicts..
-> 
-> With bpf_libbpf.c, there are less functions and has less risk for naming
-> conflicts. So I think it maybe better to not include libbpf.h in bpf_legacy.c.
-> What do you think?
-> 
->
-
-Is there a way to sort the code such that bpf_legacy.c is not used when
-libbpf is enabled and bpf_libbpf.c is not compiled when libbpf is disabled.
+SGVsbG8gQW5kcmV3LA0KDQpUaGlzIGlzIG15IHN5c3RlbSdzIG5ldHdvcmsgdG9wb2xvZ3kuIEl0
+IHJlbGllcyBvbiBYaWxpbngncyBaeW5xLTcwMDAgc29jLg0KDQp6eW5xLTcwMDAgICAgICBzd2l0
+Y2gwICAgICAgIHN3aXRjaDENCiAoY3B1KSAgICAgICBtdjg4ZTYzOTB4ICAgIG12ODhlNjM5MHgN
+CiAgLS0tLS0tLSAgICAgICAgICAgICAgLS0tLS0tLS0tICAgICAgICAgICAtLS0tLS0tLS0NCnwg
+ICAgICAgICAgIHwgICAgICAgIHwgICAgICAgICAgICAgfCAgICAgICB8ICAgICAgICAgICB8DQp8
+IGdlbTB8LS0tLS0tfHAwICBwMTB8LS0tLS18cDEwICAgIHwNCnwgICAgICAgICAgIHwgICAgICAg
+IHwgICAgICAgICAgICAgfCAgICAgICB8ICAgICAgICAgICB8DQp8ICAgICAgICAgICB8ICAgICAg
+ICAgIC0tLS0tLS0tLSAgICAgICAgICAgIC0tLS0tLS0tLQ0KfCAgICAgICAgICAgfCAgICAgICAg
+ICAgfG1kaW9fYWRkcj0yICAgIHwgbWRpb19hZGRyPTMNCnwgICAgICAgICAgIHwgICAgICAgICAg
+IHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgfA0KfCAgICAgICAgICAgfC0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS18DQp8ICAgICAgICAgICB8ICAgIHwgICAgICAgICAgICAgICAg
+IA0KfCAgICAgICAgICAgfCAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgIG12ODhlMTUx
+MChkZWJ1Z19waHkpDQp8ICAgICAgICAgICB8ICAgIHwgIG1kaW9fYWRkcj0xICAtLS0tLS0tLQ0K
+fCAgICAgICAgICAgfCAgICAgLS0tLS0tLS0tLS0tLS0tLS0tLS18ICAgICAgICAgICB8IA0KfCAg
+ICAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAgfCAN
+CnwgZ2VtMXwtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS18ICAgICAgICAgICB8DQp8ICAgICAgICAg
+ICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgICB8DQp8ICAgICAg
+ICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0tLS0tLS0tDQogICAtLS0t
+LS0tICAgICAgICAgICAgICAgICAgIA0KDQpJIGhhdmUgYnVpbHQgYSB2NS40IGxpbnV4IGtlcm5l
+bCBmb3IgaXQgYW5kIGl0cyBldGhlcm5ldCBuZXR3b3JrIGRlZmluZWQgaW4gdGhlIGRldmljZS10
+cmVlIGFzIGZvbGxvd3MgDQooYXJjaC9hcm0vYm9vdC9kdHMvenlucS16ZWQuZHRzIGdlbTAgYW5k
+IGdlbTEpICAgOg0KDQo+IFBsZWFzZSBmaXggeW91ciBlbWFpbCBjbGllbnQgYW5kDQo+IHBvc3Qg
+dGhlIERUIGZpbGUgZm9yIHJldmlldy4gSSB3aWxsDQo+IHRoZW4gcG9pbnQgb3V0IHNvbWUgb2Yg
+dGhlIGVycm9ycy4NCg0KVHJpZWQgdG8gZml4IGl0LCBhbmQgaW5kZW50ZWQgaXQgYWdhaW46DQoN
+Cg0KJmdlbTAgew0KCXN0YXR1cyA9ICJva2F5IjsNCglwaHktbW9kZSA9ICJyZ21paS1pZCI7DQoJ
+cGh5LWhhbmRsZSA9IDwmcGh5MD47CQ0KCWZpeGVkLWxpbmsgew0KCQlzcGVlZCA9IDwxMDAwPjsN
+CgkJZnVsbC1kdXBsZXg7DQoJfTsNCg0KPiBUaGUgZGlhZ3JhbSB5b3Ugc2hvd2VkIGhhZCBnZW0w
+IGNvbm5lY3RlZCBkaXJlY3RseSB0byB0aGUgc3dpdGNoLiBTbw0KPiB0aGlzIHBoeS1oYW5kbGUg
+aXMgd3JvbmcuIE9yIHRoZSBkaWFncmFtIGlzIHdyb25nLg0KVGhlIGRpYWdyYW0gaXMgY29ycmVj
+dC4gSSBoYXZlIGNvbW1lbnRlZCB0aGUgcGh5LW1vZGUgYW5kIHBoeS1oYW5kbGUgaW4gJ2dlbTAn
+IGRlZmluaXRpb24gYW5kIGdvdCBlcnJvcjoNCidtYWNiIGUwMDBiMDAwLmV0aGVybmV0IGV0aDA6
+IG5vIFBIWSBmb3VuZCcNCg0KDQoJZGJnX3BoeTogcGh5QDEgew0KCQlyZWcgPSA8MT47DQoJCWxh
+YmVsID0gImRlYnVnIjsNCgl9Ow0KDQoJc3dpdGNoMDogc3dpdGNoQDIgew0KCQljb21wYXRpYmxl
+ID0gIm1hcnZlbGwsbXY4OGU2MTkwIjsNCgkJI2FkZHJlc3MtY2VsbHMgPSA8MT47DQoJCSNzaXpl
+LWNlbGxzID0gPDA+Ow0KCQlyZWcgPSA8Mj47DQoNCgkJZHNhLG1lbWJlciA9IDwwIDA+Ow0KDQoJ
+CXBvcnRzIHsNCgkJCSNhZGRyZXNzLWNlbGxzID0gPDE+Ow0KCQkJI3NpemUtY2VsbHMgPSA8MD47
+DQoNCgkJCXN3aXRjaDBwaHkxOiBwb3J0QDAgew0KCQkJCXJlZyA9IDwwPjsNCgkJCQlsYWJlbCA9
+ICJ1aWQyMDgtY3B1IjsNCgkJCQlldGhlcm5ldCA9IDwmZ2VtMD47DQoJCQkJcGh5LW1vZGUgPSAi
+cmdtaWktaWQiOw0KDQo+IFlvdSBoYXZlIGdlbTAgdXNpbmcgcGh5LW1vZGUgPSAicmdtaWktaWQi
+IGFzIHdlbGwuIEJvdGggZG9pbmcgZGVsYXlzDQo+IHdpbGwgbm90IHdvcmsuIFlvdSBzaG91bGQg
+ZHJvcCB0aGUgb25lIGluIGdlbTAuDQpBcyBJJ3ZlIG1lbnRpb25lZCBhYm92ZSwgSSBkcm9wcGVk
+IGl0IGJ1dCBnb3QgZXJyb3IuDQoNCgkJCQlmaXhlZC1saW5rIHsNCgkJCQkJc3BlZWQgPSA8MTAw
+MD47DQoJCQkJCWZ1bGwtZHVwbGV4Ow0KCQkJCX07DQoJCQl9Ow0KDQoJCQlwb3J0QDEgew0KCQkJ
+CXJlZyA9IDwxPjsNCgkJCQlsYWJlbCA9ICJ1aWQyMDEtMUEiOw0KCQkJfTsNCgkJCQkJDQoJCQlw
+b3J0QDIgew0KCQkJCXJlZyA9IDwyPjsNCgkJCQlsYWJlbCA9ICJ1aWQyMDItMkEtcDktMUEiOw0K
+CQkJCXBoeS1tb2RlID0gIjEwMDBiYXNlLXgiOw0KCSAJCQlmaXhlZC1saW5rIHsNCgkJCQkJc3Bl
+ZWQgPSA8MTAwMD47DQoJCQkJCWZ1bGwtZHVwbGV4Ow0KCQkJCX07DQoJCQl9Ow0KDQoJCQlwb3J0
+QDMgew0KCQkJCXJlZyA9IDwzPjsNCgkJCQlsYWJlbCA9ICJ1aWQyMDMtM0EtcDktMkEiOw0KCQkJ
+CXBoeS1tb2RlID0gIjEwMDBiYXNlLXgiOw0KCQkJIAlmaXhlZC1saW5rIHsNCgkJCQkJc3BlZWQg
+PSA8MTAwMD47DQoJCQkJCWZ1bGwtZHVwbGV4Ow0KCQkJCX07DQoJCQl9Ow0KCQkJCQkNCgkJCXBv
+cnRANCB7DQoJCQkJcmVnID0gPDQ+Ow0KCQkJCWxhYmVsID0gInVpZDIwNC00QS1wOS0zQSI7DQoJ
+CQkJcGh5LW1vZGUgPSAiMTAwMGJhc2UteCI7DQoJCQkJZml4ZWQtbGluayB7DQoJCQkJCXNwZWVk
+ID0gPDEwMDA+Ow0KCQkJCQlmdWxsLWR1cGxleDsNCgkJCQl9Ow0KCQkJfTsNCg0KCQkJcG9ydEA1
+IHsNCgkJCQlyZWcgPSA8NT47DQoJCQkJbGFiZWwgPSAidWlkMjA1LTVBIjsNCgkJCX07DQoJCQkN
+CgkJCXBvcnRANiB7DQoJCQkJcmVnID0gPDY+Ow0KCQkJCWxhYmVsID0gInVpZDIwNi02QSI7DQoJ
+CQl9Ow0KDQoJCQlwb3J0QDcgew0KCQkJCXJlZyA9IDw3PjsNCgkJCQlsYWJlbCA9ICJ1aWQyMDct
+N0EiOw0KCQkJfTsNCgkJCQ0KCQkJcG9ydEA4IHsNCgkJCQlyZWcgPSA8OD47DQoJCQkJbGFiZWwg
+PSAidWlkMjA4LThBIjsNCgkJCX07DQoNCgkJCXBvcnRAOSB7DQoJCQkJcmVnID0gPDk+Ow0KCQkJ
+CWxhYmVsID0gInVpZDIwOS05QS1wOS0wQSI7DQoJCQkJcGh5LW1vZGUgPSAiMTAwMGJhc2UteCI7
+DQoJIAkJCWZpeGVkLWxpbmsgew0KCQkJCQlzcGVlZCA9IDwxMDAwPjsNCgkJCQkJZnVsbC1kdXBs
+ZXg7DQoJCQkJfTsNCgkJCX07CQkJDQoNCj4gV2h5IGJvdGggMTAwMGJhc2UteCBhbmQgZml4ZWQg
+bGluaz8gRG8geW91IGhhdmUgYW4gU0ZQIGNvbm5lY3RlZD8gSWYNCj4gc28sIGRlc2NyaWJlIHRo
+ZSBTRlAgaW4gRFQuDQpJIGRvIGhhdmUgU0ZQIGNvbm5lY3RlZC4gSW4gbXkgcHJldmlvdXMgRFQg
+b24gbGludXggdjQuMTQgSSBkaWRu4oCZdCBoYXZlIGl0IG9uIERUIGFuZCBpdCB3b3JrZWQgZmlu
+ZS4NCkhvdyBkbyBJIGRlc2NyaWJlIGl0IGhlcmU/DQoNCgkJCXN3aXRjaDBwb3J0MTA6IHBvcnRA
+MTAgew0KCQkJCXJlZyA9IDwxMD47DQoJCQkJbGFiZWwgPSAiZHNhIjsNCgkJCQlsaW5rID0gPCZz
+d2l0Y2gxcG9ydDEwPjsgDQoJCQkJcGh5LW1vZGUgPSAiMTAwMGJhc2UteCI7DQoJIAkJCWZpeGVk
+LWxpbmsgew0KCQkJCQlzcGVlZCA9IDwxMDAwPjsNCgkJCQkJZnVsbC1kdXBsZXg7DQoJCQkJfTsN
+CgkJCX07DQoNCg0KCQl9Oy8vcG9ydHMNCg0KCX07Ly9zd2l0Y2gwDQoNCg0KCXN3aXRjaDE6IHN3
+aXRjaEAzIHsNCgkJY29tcGF0aWJsZSA9ICJtYXJ2ZWxsLG12ODhlNjE5MCI7DQoJCSNhZGRyZXNz
+LWNlbGxzID0gPDE+Ow0KCQkjc2l6ZS1jZWxscyA9IDwwPjsNCgkJcmVnID0gPDM+Ow0KDQoJCWRz
+YSxtZW1iZXIgPSA8MCAxPjsNCg0KCQlwb3J0cyB7DQoJCQkjYWRkcmVzcy1jZWxscyA9IDwxPjsN
+CgkJCSNzaXplLWNlbGxzID0gPDA+Ow0KDQoJCQlwb3J0QDEgew0KCQkJCXJlZyA9IDwxPjsNCgkJ
+CQlsYWJlbCA9ICJ1aWQyMTEtMUIiOw0KCQkJfTsNCg0KCQkJcG9ydEAyIHsNCgkJCQlyZWcgPSA8
+Mj47DQoJCQkJbGFiZWwgPSAidWlkMjEyLTJCLXA5LTFCIjsNCgkJCQlwaHktbW9kZSA9ICIxMDAw
+YmFzZS14IjsNCgkgCQkJZml4ZWQtbGluayB7DQoJCQkJCXNwZWVkID0gPDEwMDA+Ow0KCQkJCQlm
+dWxsLWR1cGxleDsNCgkJCQl9Ow0KCQkJfTsNCg0KCQkJcG9ydEAzIHsNCgkJCQlyZWcgPSA8Mz47
+DQoJCQkJbGFiZWwgPSAidWlkMjEzLTNCLXA5LTJCIjsNCgkJCQlwaHktbW9kZSA9ICIxMDAwYmFz
+ZS14IjsNCgkgCQkJZml4ZWQtbGluayB7DQoJCQkJCXNwZWVkID0gPDEwMDA+Ow0KCQkJCQlmdWxs
+LWR1cGxleDsNCgkJCQl9Ow0KCQkJfTsNCg0KCQkJcG9ydEA0IHsNCgkJCQlyZWcgPSA8ND47DQoJ
+CQkJbGFiZWwgPSAidWlkMjE0LTRCLXA5LTNCIjsNCgkJCQlwaHktbW9kZSA9ICIxMDAwYmFzZS14
+IjsNCgkgCQkJZml4ZWQtbGluayB7DQoJCQkJCXNwZWVkID0gPDEwMDA+Ow0KCQkJCQlmdWxsLWR1
+cGxleDsNCgkJCQl9Ow0KCQkJfTsNCg0KCQkJcG9ydEA1IHsNCgkJCQlyZWcgPSA8NT47DQoJCQkJ
+bGFiZWwgPSAidWlkMjE1LTVCIjsNCgkJCX07DQoNCgkJCXBvcnRANiB7DQoJCQkJcmVnID0gPDY+
+Ow0KCQkJCWxhYmVsID0gInVpZDIxNi02QiI7DQoJCQl9Ow0KDQoJCQlwb3J0QDcgew0KCQkJCXJl
+ZyA9IDw3PjsNCgkJCQlsYWJlbCA9ICJ1aWQyMTctN0IiOw0KCQkJfTsNCg0KCQkJcG9ydEA4IHsN
+CgkJCQlyZWcgPSA8OD47DQoJCQkJbGFiZWwgPSAidWlkMjE4LThCIjsNCgkJCX07DQoNCgkJCXBv
+cnRAOSB7DQoJCQkJcmVnID0gPDk+Ow0KCQkJCWxhYmVsID0gInVpZDIxOS05Qi1wOS0wQiI7DQoJ
+CQkJcGh5LW1vZGUgPSAiMTAwMGJhc2UteCI7DQoJIAkJCWZpeGVkLWxpbmsgew0KCQkJCQlzcGVl
+ZCA9IDwxMDAwPjsNCgkJCQkJZnVsbC1kdXBsZXg7DQoJCQkJfTsNCgkJCX07DQoNCgkJCXN3aXRj
+aDFwb3J0MTA6IHBvcnRAMTAgew0KCQkJCXJlZyA9IDwxMD47DQoJCQkJbGFiZWwgPSAiZHNhIjsN
+CgkJCQlsaW5rID0gPCZzd2l0Y2gwcG9ydDEwPjsgDQoJCQkJcGh5LW1vZGUgPSAiMTAwMGJhc2Ut
+eCI7DQoJCQkgCWZpeGVkLWxpbmsgew0KCQkJCQlzcGVlZCA9IDwxMDAwPjsNCgkJCQkJZnVsbC1k
+dXBsZXg7DQoJCQkJfTsNCgkJCX07DQoNCgkJfTsvL3BvcnRzDQoJfTsvL3N3aXRjaDENCn07Ly9n
+ZW0wDQoNCg0KJmdlbTEgew0KCXN0YXR1cyA9ICJva2F5IjsNCglwaHktaGFuZGxlID0gPCZkYmdf
+cGh5PjsNCn07DQoNCj4gVGhpcyBpcyBhIDYzOTBYIHJpZ2h0PyBXaHkgbGltaXQgaXQgdG8gMTAw
+MGJhc2UtWCB3aGVuIGl0IGNvdWxkIGJlDQo+IGRvaW5nIDEwRz8NClllcy4gSW4gdGhlIDQuMTQg
+RFQgSSd2ZSB0cmllZCB0byBwdXQgc3BlZWQ9MjUwMCBidXQgaXQgZGlkbuKAmXQgd29yay4NCg0K
+SXRzIGNyYXNoZXMgb24gbGludXggc3RhcnR1cC4gV2hhdCBzaG91bGQgYmUgZml4ZWQgaW4gbXkg
+ZHRzL2R0c2k/DQoNClRoYW5rIHlvdQ0KTWljaGFlbCBBbGF5ZXYNCg0KKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKiogUGxlYXNlIGNvbnNpZGVyIHRoZSBlbnZpcm9ubWVudCBi
+ZWZvcmUgcHJpbnRpbmcgdGhpcyBlbWFpbCAhIFRoZSBpbmZvcm1hdGlvbiBjb250YWluZWQgaW4g
+dGhpcyBjb21tdW5pY2F0aW9uIGlzIHByb3ByaWV0YXJ5IHRvIElzcmFlbCBBZXJvc3BhY2UgSW5k
+dXN0cmllcyBMdGQuIGFuZC9vciB0aGlyZCBwYXJ0aWVzLCBtYXkgY29udGFpbiBjb25maWRlbnRp
+YWwgb3IgcHJpdmlsZWdlZCBpbmZvcm1hdGlvbiwgYW5kIGlzIGludGVuZGVkIG9ubHkgZm9yIHRo
+ZSB1c2Ugb2YgdGhlIGludGVuZGVkIGFkZHJlc3NlZSB0aGVyZW9mLiBJZiB5b3UgYXJlIG5vdCB0
+aGUgaW50ZW5kZWQgYWRkcmVzc2VlLCBwbGVhc2UgYmUgYXdhcmUgdGhhdCBhbnkgdXNlLCBkaXNj
+bG9zdXJlLCBkaXN0cmlidXRpb24gYW5kL29yIGNvcHlpbmcgb2YgdGhpcyBjb21tdW5pY2F0aW9u
+IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSByZWNlaXZlIHRoaXMgY29tbXVuaWNhdGlv
+biBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVkaWF0ZWx5IGFuZCBkZWxl
+dGUgaXQgZnJvbSB5b3VyIGNvbXB1dGVyLiBUaGFuayB5b3UuIFZpc2l0IHVzIGF0OiB3d3cuaWFp
+LmNvLmlsDQo=
