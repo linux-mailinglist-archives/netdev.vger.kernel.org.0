@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7CCB2A745A
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 02:04:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C013D2A747F
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 02:07:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731322AbgKEBEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 20:04:47 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:36188 "EHLO vps0.lunn.ch"
+        id S2388110AbgKEBHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 20:07:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55882 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730543AbgKEBEm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Nov 2020 20:04:42 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kaThf-005JCz-HJ; Thu, 05 Nov 2020 02:04:39 +0100
-Date:   Thu, 5 Nov 2020 02:04:39 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Ciornei <ciorneiioana@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: [RFC 6/9] staging: dpaa2-switch: add .ndo_start_xmit() callback
-Message-ID: <20201105010439.GH933237@lunn.ch>
-References: <20201104165720.2566399-1-ciorneiioana@gmail.com>
- <20201104165720.2566399-7-ciorneiioana@gmail.com>
+        id S1726018AbgKEBHA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Nov 2020 20:07:00 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AC7CF20BED;
+        Thu,  5 Nov 2020 01:06:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604538419;
+        bh=xrNNbuSiVgRenrPPmM3aEUhBPnU96ggJX5c8ysDtjx0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=V+2TqU+dPu3+Ii5F98IC8vCXfkk0ZC8fS32kF06hoYTLrlAPvKKJmg3JSLQjGZU5c
+         ib4YfgV6WFxr2dNEutwqHWYP/RnnCvHYcs0yLpWUIeyiLddSaD4p2uR/MdK4GgHYtA
+         6AVKV1dlGNclhJYl2gXyfT9SGlAQQJbKiQevT5Nc=
+Date:   Wed, 4 Nov 2020 17:06:57 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <alexaundru.ardelean@analog.com>, <andrew@lunn.ch>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <ardeleanalex@gmail.com>
+Subject: Re: [PATCH net-next v2 1/2][RESEND] net: phy: adin: disable diag
+ clock & disable standby mode in config_aneg
+Message-ID: <20201104170657.06696417@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201103074436.93790-1-alexandru.ardelean@analog.com>
+References: <20201103074436.93790-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201104165720.2566399-7-ciorneiioana@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int dpaa2_switch_build_single_fd(struct ethsw_core *ethsw,
-> +					struct sk_buff *skb,
-> +					struct dpaa2_fd *fd)
-> +{
-> +	struct device *dev = ethsw->dev;
-> +	struct sk_buff **skbh;
-> +	dma_addr_t addr;
-> +	u8 *buff_start;
-> +	void *hwa;
-> +
-> +	buff_start = PTR_ALIGN(skb->data - DPAA2_SWITCH_TX_DATA_OFFSET -
-> +			       DPAA2_SWITCH_TX_BUF_ALIGN,
-> +			       DPAA2_SWITCH_TX_BUF_ALIGN);
-> +
-> +	/* Clear FAS to have consistent values for TX confirmation. It is
-> +	 * located in the first 8 bytes of the buffer's hardware annotation
-> +	 * area
-> +	 */
-> +	hwa = buff_start + DPAA2_SWITCH_SWA_SIZE;
-> +	memset(hwa, 0, 8);
-> +
-> +	/* Store a backpointer to the skb at the beginning of the buffer
-> +	 * (in the private data area) such that we can release it
-> +	 * on Tx confirm
-> +	 */
-> +	skbh = (struct sk_buff **)buff_start;
-> +	*skbh = skb;
+On Tue, 3 Nov 2020 09:44:35 +0200 Alexandru Ardelean wrote:
+> When the PHY powers up, the diagnostics clock isn't enabled (bit 2 in
+> register PHY_CTRL_1 (0x0012)).
+> Also, the PHY is not in standby mode, so bit 13 in PHY_CTRL_3 (0x0017) is
+> always set at power up.
+> 
+> The standby mode and the diagnostics clock are both meant to be for the
+> cable diagnostics feature of the PHY (in phylib this would be equivalent to
+> the cable-test support), and for the frame-generator feature of the PHY.
+> 
+> In standby mode, the PHY doesn't negotiate links or manage links.
+> 
+> To use the cable diagnostics/test (or frame-generator), the PHY must be
+> first set in standby mode, so that the link operation doesn't interfere.
+> Then, the diagnostics clock must be enabled.
+> 
+> For the cable-test feature, when the operation finishes, the PHY goes into
+> PHY_UP state, and the config_aneg hook is called.
+> 
+> For the ADIN PHY, we need to make sure that during autonegotiation
+> configuration/setup the PHY is removed from standby mode and the
+> diagnostics clock is disabled, so that normal operation is resumed.
+> 
+> This change does that by moving the set of the ADIN1300_LINKING_EN bit (2)
+> in the config_aneg (to disable standby mode).
+> Previously, this was set in the downshift setup, because the downshift
+> retry value and the ADIN1300_LINKING_EN are in the same register.
+> 
+> And the ADIN1300_DIAG_CLK_EN bit (13) is cleared, to disable the
+> diagnostics clock.
+> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-Where is the TX confirm which uses this stored pointer. I don't see it
-in this file.
-
-It can be expensive to store pointer like this in buffers used for
-DMA. It has to be flushed out of the cache here as part of the
-send. Then the TX complete needs to invalidate and then read it back
-into the cache. Or you use coherent memory which is just slow.
-
-It can be cheaper to keep a parallel ring in cacheable memory which
-never gets flushed.
-
-      Andrew
+Applied both, thanks.
