@@ -2,78 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21B1B2A8554
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 18:53:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84A752A8570
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 18:57:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727376AbgKERxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 12:53:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37682 "EHLO mail.kernel.org"
+        id S1725862AbgKER5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 12:57:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725862AbgKERxs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 12:53:48 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726214AbgKER5o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 12:57:44 -0500
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D160120709;
-        Thu,  5 Nov 2020 17:53:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A60FA20936;
+        Thu,  5 Nov 2020 17:57:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604598827;
-        bh=aWk23RoG/q2I9hI1+3STHfRXlrFIPvZBFjmYdVDSUGU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Qi2D/N6cPltdD3uTy09WmDK8mXmdcwh7hm2lmYMQtxuxz3T76pG+NxiQkS5iOlxdy
-         fOHax2mgdcqFWMvlmZkcxVRoV68ejJ4xpDBLnhAaYp/QEG4BctWIrhn7BRT7WO+WJB
-         YnsVA3pffqYSE5p2NkxC9sE/5vDbrHx3shzXfhiw=
-Date:   Thu, 5 Nov 2020 09:53:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vinay Kumar Yadav <vinay.yadav@chelsio.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, borisp@nvidia.com,
-        secdev@chelsio.com
-Subject: Re: [PATCH net] net/tls: Fix kernel panic when socket is in TLS ULP
-Message-ID: <20201105095344.0edecafa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <976e0bb7-1846-94cc-0be7-9a9e62563130@chelsio.com>
-References: <20201103104702.798-1-vinay.yadav@chelsio.com>
-        <20201104171609.78d410db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <976e0bb7-1846-94cc-0be7-9a9e62563130@chelsio.com>
+        s=default; t=1604599064;
+        bh=U0DJ+fGoceNGEJQ8jALWaiQGwxbXijhBlc1CwbmDS0U=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=vkjsbF4wwfPfyPLkBD097pMiSMmx06nIQQR56owlkYXAoR22BJhzF0G6aSH9C9uAb
+         ZnjWQps3ZaeilFVrJrevvftEvHSuITj/YQQpya6/H8+K0oDDo4SlFS3Q5M7o02r2cy
+         dtYHCzQjePLcdhiN3icYfl6QCm9HinImNTiMgsMM=
+Received: by mail-lf1-f42.google.com with SMTP id l28so3554534lfp.10;
+        Thu, 05 Nov 2020 09:57:43 -0800 (PST)
+X-Gm-Message-State: AOAM531fl5GKph0Aeb9hNOHB338azOyq6ProkgHiA0C5EI8cXccAo8Ll
+        0nFeyxIiPHtRuuUWcYjKNhpklOFamB4cNH6B+p4=
+X-Google-Smtp-Source: ABdhPJwjk5DLpTdQOjI0YutL4jwBKuBWCpRo0UR7+oxL8TdnZtrsndy2HKXNfC176dQG94laITaxaHbci3r4wFjBLlo=
+X-Received: by 2002:a05:6512:3156:: with SMTP id s22mr1364509lfi.273.1604599061868;
+ Thu, 05 Nov 2020 09:57:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201105115230.296657-1-lmb@cloudflare.com>
+In-Reply-To: <20201105115230.296657-1-lmb@cloudflare.com>
+From:   Song Liu <song@kernel.org>
+Date:   Thu, 5 Nov 2020 09:57:30 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW45MMnHHSpAKXB9iOrHxujiO_DroBmqEsRYXq6sKVso8g@mail.gmail.com>
+Message-ID: <CAPhsuW45MMnHHSpAKXB9iOrHxujiO_DroBmqEsRYXq6sKVso8g@mail.gmail.com>
+Subject: Re: [PATCH bpf] tools/bpftool: fix attaching flow dissector
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team@cloudflare.com, Jiri Benc <jbenc@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 Nov 2020 23:20:13 +0530 Vinay Kumar Yadav wrote:
-> On 11/5/2020 6:46 AM, Jakub Kicinski wrote:
-> > On Tue,  3 Nov 2020 16:17:03 +0530 Vinay Kumar Yadav wrote:  
-> >> user can initialize tls ulp using setsockopt call on socket
-> >> before listen() in case of tls-toe (TLS_HW_RECORD) and same
-> >> setsockopt call on connected socket in case of kernel tls (TLS_SW).
-> >> In presence of tls-toe devices, TLS ulp is initialized, tls context
-> >> is allocated per listen socket and socket is listening at adapter
-> >> as well as kernel tcp stack. now consider the scenario, connections
-> >> are established in kernel stack.
-> >> on every connection close which is established in kernel stack,
-> >> it clears tls context which is created on listen socket causing
-> >> kernel panic.
-> >> Addressed the issue by setting child socket to base (non TLS ULP)
-> >> when tls ulp is initialized on parent socket (listen socket).
-> >>
-> >> Fixes: 76f7164d02d4 ("net/tls: free ctx in sock destruct")
-> >> Signed-off-by: Vinay Kumar Yadav <vinay.yadav@chelsio.com>  
-> > 
-> > We should prevent from the socket getting into LISTEN state in the
-> > first place. Can we make a copy of proto_ops (like tls_sw_proto_ops)
-> > and set listen to sock_no_listen?
-> 
-> Once tls-toe (TLS_HW_RECORD) is configured on a socket, listen() call 
-> from user on same socket will create hash at two places.
+On Thu, Nov 5, 2020 at 3:54 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> My earlier patch to reject non-zero arguments to flow dissector attach
+> broke attaching via bpftool. Instead of 0 it uses -1 for target_fd.
+> Fix this by passing a zero argument when attaching the flow dissector.
+>
+> Fixes: 1b514239e859 ("bpf: flow_dissector: Check value of unused flags to BPF_PROG_ATTACH")
+> Reported-by: Jiri Benc <jbenc@redhat.com>
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
 
-What I'm saying is - disallow listen calls on sockets with tls-toe
-installed on them. Is that not possible?
+Acked-by: Song Liu <songliubraving@fb.com>
 
-> tls_toe_hash() ---> ctx->sk_proto->hash(sk); dev->hash(dev, sk);
-> 
-> when connection establishes, same sock is cloned in case of both
-> (connection in adapter or kernel stack).
-> 
-> Please suggest if we can handle it other way?
-
+> ---
+>  tools/bpf/bpftool/prog.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+> index d942c1e3372c..acdb2c245f0a 100644
+> --- a/tools/bpf/bpftool/prog.c
+> +++ b/tools/bpf/bpftool/prog.c
+> @@ -940,7 +940,7 @@ static int parse_attach_detach_args(int argc, char **argv, int *progfd,
+>         }
+>
+>         if (*attach_type == BPF_FLOW_DISSECTOR) {
+> -               *mapfd = -1;
+> +               *mapfd = 0;
+>                 return 0;
+>         }
+>
+> --
+> 2.25.1
+>
