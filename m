@@ -2,117 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B597B2A7C3F
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 11:52:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D98D52A7C4A
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 11:52:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730052AbgKEKv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 05:51:58 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:55497 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729947AbgKEKv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 05:51:58 -0500
-Received: from mail-pf1-f200.google.com ([209.85.210.200])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <po-hsu.lin@canonical.com>)
-        id 1kacrz-0001dD-Ru
-        for netdev@vger.kernel.org; Thu, 05 Nov 2020 10:51:56 +0000
-Received: by mail-pf1-f200.google.com with SMTP id z125so1214227pfc.12
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 02:51:55 -0800 (PST)
+        id S1730188AbgKEKwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 05:52:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38858 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726152AbgKEKwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 05:52:42 -0500
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C52C0613D2
+        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 02:52:42 -0800 (PST)
+Received: by mail-lj1-x244.google.com with SMTP id d24so1070596ljg.10
+        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 02:52:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IbC7h6sutytvBKVgRkW8YBm4v4oQThhwvuIz3XlFJpw=;
+        b=d/RC4QlHsEU0Pk+87b5hebgQR1nvUbGfz+KWgyYPw8avJty+oHtYWwRBfI9ZwNnjQk
+         6x1f9VNEkjxS+WacQizm9QFnRFRoNTRgXz7J8hUL7gDHTr1r0B4CDTIH++hxOUWPbRHA
+         faB9Z1G3wfURCCb570cPMFzwdpYsz5NNLR9grwb6NletLAXur80zPGuj6TnPTgqIsI6W
+         73tvdQLbSeHs/ZIHScGvMbbglljfvtEcmDpRr1SmCjt0Cs2115AxcxEJIltrAcsJpAIs
+         i7f4CKXDgFTYIlx2Oia+shgKsQ9vbBqcm5RZnKYsE+6tO+5eUkPHBV9yZoGBsu8zWwxP
+         sFlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=alpUZmQGLbMuYK81rXNRCcjvcowcPh9T6MSx82lKiec=;
-        b=kXRm0sc3E2S6LasbX5QNMHWG0gUSGgcQqgmnLCG88snfO/NauH+yNqLgRNF2iaih8x
-         JzdV8oaAjla6Z37V/uE2QjF2LtSZ+tDfoEt/eODU+OscbGG9i4Y24ESFH1geXfVl65Ac
-         XDP/DLulWMgVABqKqxudwDu3+hYby5gj/LcXDGnq0ozyP+hyG2DgGUJ3lH7r+KhXw6es
-         YWJH0BME1gLSFJR1ylGjnMVE4bA3GCYiinfuuNtYov1qFGYj1mGQqHc5Tf+7eHG99Ym7
-         oGzhrmE7e8Zt5Q2s8sQzkPWaPw0Sldcv6l+VXF42C8/c6NSsOCs8rPuGUQ8QxGXRQoBy
-         ljhg==
-X-Gm-Message-State: AOAM531pbahjfqR//Eu7FL3sv1nr3xV+iieiEIwJeZUPWnaaJ+jiGkPX
-        rvtmY0e9hFa0lMZB193OCnrodjOYgkJRXkh+P3hOwBk/VkaFOXj44t3TcMS4DJjAZb6Qf38cVW0
-        /dHGy6IsVXRVkrvlbi+QW2gzEv68sQ1sT
-X-Received: by 2002:a62:a20f:0:b029:18b:70ec:c75b with SMTP id m15-20020a62a20f0000b029018b70ecc75bmr1869752pff.56.1604573514100;
-        Thu, 05 Nov 2020 02:51:54 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxm6D6AphgKi9umY76yGJvo+o3+E9e0cfpUr3OX61bXWYmCDZDOWKSumpKxjjcUertxQ3u01w==
-X-Received: by 2002:a62:a20f:0:b029:18b:70ec:c75b with SMTP id m15-20020a62a20f0000b029018b70ecc75bmr1869733pff.56.1604573513836;
-        Thu, 05 Nov 2020 02:51:53 -0800 (PST)
-Received: from localhost.localdomain ([2001:67c:1560:8007::aac:c227])
-        by smtp.gmail.com with ESMTPSA id c3sm1866852pjv.27.2020.11.05.02.51.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2020 02:51:53 -0800 (PST)
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-To:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, skhan@linuxfoundation.org,
-        po-hsu.lin@canonical.com
-Subject: [PATCH 2/2] selftests: pmtu.sh: improve the test result processing
-Date:   Thu,  5 Nov 2020 18:50:51 +0800
-Message-Id: <20201105105051.64258-3-po-hsu.lin@canonical.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201105105051.64258-1-po-hsu.lin@canonical.com>
-References: <20201105105051.64258-1-po-hsu.lin@canonical.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IbC7h6sutytvBKVgRkW8YBm4v4oQThhwvuIz3XlFJpw=;
+        b=Lv9FyIZk6lJ0U287AHTgFZY630D6BT2dz6o6j0OHHENbfTXDRWhxzshma4znEszyhc
+         HkcfOOY1CX20eH2+WIV6vGJ9SiStCGjpiBpZNs9IT3m99MTIOi4wKB75WS6cIcYhW65X
+         z90OFLmQ37H3UiljyboixroGdiLL3TgAIVz1Mr+d/+W0/T9JUFHoKvTwO/nypYrhbMxx
+         SVy/k3vqaAZu1Bv1nBs7uN99Tw9acEV37MtIqXN4jni9gTW8nQjark8sVHbjZ31t4s+i
+         j1JbXQzX/GPKb3ZIOQe3F1qlPJEsu1ycBe1oxux46TDVScIqN43K6zAA7tV/v/2Z+CZy
+         cfZw==
+X-Gm-Message-State: AOAM533KxgJxmQEggHZ1fUrnA3DHq+yfXV5qULMVgvfldaRe0fEQwesd
+        BgigQPC+SpZzp4c7AscCFbcpiYCWHR2FaioKE0ljnQ==
+X-Google-Smtp-Source: ABdhPJwMZsQSFYx3yHXvvtRlVkabm7C64j8LuP2+XUU2+XVFwAx/DWoa4YDvNPprZ43yAgspd5XcguY3mqI1O9Ir5Vs=
+X-Received: by 2002:a05:651c:1205:: with SMTP id i5mr726163lja.283.1604573560846;
+ Thu, 05 Nov 2020 02:52:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201027121725.24660-1-brgl@bgdev.pl>
+In-Reply-To: <20201027121725.24660-1-brgl@bgdev.pl>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 5 Nov 2020 11:52:30 +0100
+Message-ID: <CACRpkdYbpOZGmWONeOQFY7DE+t2ev30DQQ-8cxrJNoK9fVVunA@mail.gmail.com>
+Subject: Re: [PATCH 0/8] slab: provide and use krealloc_array()
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>,
+        linaro-mm-sig@lists.linaro.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-edac@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev <netdev@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
+        <alsa-devel@alsa-project.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test will treat all non-zero return codes as failures, it will
-make the pmtu.sh test script being marked as FAILED when some
-sub-test got skipped.
+On Tue, Oct 27, 2020 at 1:17 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
 
-Improve the result processing by
-  * Only mark the whole test script as SKIP when all of the
-    sub-tests were skipped
-  * If the sub-tests were either passed or skipped, the overall
-    result will be PASS
-  * If any of them has failed, the overall result will be FAIL
-  * Treat other return codes (e.g. 127 for command not found) as FAIL
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+>
+> Andy brought to my attention the fact that users allocating an array of
+> equally sized elements should check if the size multiplication doesn't
+> overflow. This is why we have helpers like kmalloc_array().
+>
+> However we don't have krealloc_array() equivalent and there are many
+> users who do their own multiplication when calling krealloc() for arrays.
+>
+> This series provides krealloc_array() and uses it in a couple places.
+>
+> A separate series will follow adding devm_krealloc_array() which is
+> needed in the xilinx adc driver.
 
-Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
----
- tools/testing/selftests/net/pmtu.sh | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+The series:
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index fb53987..5c86fb1 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -1652,7 +1652,23 @@ run_test() {
- 	return $ret
- 	)
- 	ret=$?
--	[ $ret -ne 0 ] && exitcode=1
-+	case $ret in
-+		0)
-+			all_skipped=false
-+			[ $exitcode=$ksft_skip ] && exitcode=0
-+		;;
-+		1)
-+			all_skipped=false
-+			exitcode=1
-+		;;
-+		$ksft_skip)
-+			[ $all_skipped = true ] && exitcode=$ksft_skip
-+		;;
-+		*)
-+			all_skipped=false
-+			exitcode=1
-+		;;
-+	esac
- 
- 	return $ret
- }
-@@ -1786,6 +1802,7 @@ usage() {
- #
- exitcode=0
- desc=0
-+all_skipped=true
- 
- while getopts :ptv o
- do
--- 
-2.7.4
+I really like this.
 
+Yours,
+Linus Walleij
