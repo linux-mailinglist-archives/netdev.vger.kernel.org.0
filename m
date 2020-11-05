@@ -2,84 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BE242A82ED
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 17:02:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E0FB2A82F2
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 17:02:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731391AbgKEQCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 11:02:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43057 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725308AbgKEQCL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 11:02:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604592130;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7n7s4CcoYzzsxrI8cFoyqhkSkqzPJ3hlumXdPdudtBo=;
-        b=iSv1eKCQKplQMYaWHMJtdj8Nd3oDCM46JEAmI+PL8pzxjFtlc0k8xh4Y1QZNA90chMF/i+
-        6uuR8chXikz+FCz/OyYUrUgbd7g+9mbrdGPnUWAlzXPOBhJ/MTg7aJuYn4uvVCyr0U6vAs
-        +eowsjNkX55SD5F4TqoN4yOrGOaTDVg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-159-H73a57wPO3e0W5f99H6hxw-1; Thu, 05 Nov 2020 11:02:07 -0500
-X-MC-Unique: H73a57wPO3e0W5f99H6hxw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4324E10866AD;
-        Thu,  5 Nov 2020 16:02:06 +0000 (UTC)
-Received: from localhost (unknown [10.40.192.150])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6E2195B4CA;
-        Thu,  5 Nov 2020 16:02:04 +0000 (UTC)
-Date:   Thu, 5 Nov 2020 17:02:02 +0100
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <andrii.nakryiko@gmail.com>,
-        <kernel-team@fb.com>
-Subject: Re: [PATCH v3 bpf-next] bpf: make verifier log more relevant by
- default
-Message-ID: <20201105170202.5bb47fef@redhat.com>
-In-Reply-To: <20200423195850.1259827-1-andriin@fb.com>
-References: <20200423195850.1259827-1-andriin@fb.com>
+        id S1731452AbgKEQCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 11:02:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59122 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725308AbgKEQCS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 11:02:18 -0500
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E718C0613CF;
+        Thu,  5 Nov 2020 08:02:18 -0800 (PST)
+Received: by mail-io1-xd2a.google.com with SMTP id u62so2291069iod.8;
+        Thu, 05 Nov 2020 08:02:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MAHLshw60eEwdm37ATqaQRT7lcxyOw4IoZI+r9s+npo=;
+        b=Val3pzDUUT5h643nG0XfwDd2Cuq87OCzVWCY57vXYfe29bMYLitJ2W+4aM43gSWOJz
+         OADVNuuZ/PGARZR93yMcQyVUvvzKnoLiuRJ5RYA3wuEP/VlV0zjzr2wQkH9zJlY7Wfw/
+         CrJQFjIPr9YNdEhALNWzyPfYy9380REU0odePPmow9r3iRfES1koiKfqwkzVrvne26zF
+         M+VH93f3yRKPkwBKYh7cljowVFRle/CCaEGqsp7e7RZ5XoLCMhuMLtaLUnPVf42l+Dl7
+         nNN8FHbO9s/qAyKslfBbI1mO1XHbUvOKe/8vRCgBTiXibuADKCL/8u3cfrA4TMGYGpvh
+         IspQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MAHLshw60eEwdm37ATqaQRT7lcxyOw4IoZI+r9s+npo=;
+        b=tDSTfeg+F1eDKVfh65eYqmhvrylMpf7tNefe+NotzghXNxMfCUITngBoPXihHtJEKZ
+         KysSfmEQB6tdxHYGfHFeZPa+KMu6LSAKQ1SNHKp7QVKauebaaTbSn/hKBMpDCzKN/prU
+         txsADWZTqTbUpreS5OLTMnG09xiSeCVXwLJwchgqEiQROhh4UB052A0ByF47nsu/7xQg
+         Lbio4M+RVIFGWQwfdnuH+61gkt6rzi41SirGeB+32mVS+FZWzAd6NUER8r7i1raCfjLl
+         LZ4ufYQ9e+HSvtDq0G6FGsrDs0mow/VeUiFnH3uMH/rzv5igdO68xutJz08FlmxRXlZ6
+         uLfQ==
+X-Gm-Message-State: AOAM531g14Ho/HrYcejwHavHCF4fgyyTWexrMDZl6TaHdnOc7KKScS68
+        x0VdS7+7L8jm5Jdv/sL9PO8KRQ4phds=
+X-Google-Smtp-Source: ABdhPJx2BG6R6fonv2lCeZzkQrFoeMk8Xmc+gJoeNIFTIcUwi3K6iXLxTxeajzGrbsA92B115uFy6g==
+X-Received: by 2002:a6b:dc0f:: with SMTP id s15mr2182871ioc.180.1604592137899;
+        Thu, 05 Nov 2020 08:02:17 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:291c:9506:5e60:11ce])
+        by smtp.googlemail.com with ESMTPSA id j3sm1343072ilq.85.2020.11.05.08.02.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Nov 2020 08:02:17 -0800 (PST)
+Subject: Re: [PATCHv3 iproute2-next 3/5] lib: add libbpf support
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Hangbin Liu <haliu@redhat.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20201028132529.3763875-1-haliu@redhat.com>
+ <20201029151146.3810859-1-haliu@redhat.com>
+ <20201029151146.3810859-4-haliu@redhat.com>
+ <db14a227-1d5e-ed3a-9ada-ecf99b526bf6@gmail.com>
+ <20201104082203.GP2408@dhcp-12-153.nay.redhat.com>
+ <61a678ce-e4bc-021b-ab4e-feb90e76a66c@gmail.com>
+ <20201105075121.GV2408@dhcp-12-153.nay.redhat.com>
+ <3c3f892a-6137-d176-0006-e5ddaeeed2b5@gmail.com> <87sg9nssn0.fsf@toke.dk>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <9cd3ed2a-48e2-8d2a-3223-51f47c4f6cbc@gmail.com>
+Date:   Thu, 5 Nov 2020 09:02:15 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <87sg9nssn0.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Apr 2020 12:58:50 -0700, Andrii Nakryiko wrote:
-> To make BPF verifier verbose log more releavant and easier to use to debug
-> verification failures, "pop" parts of log that were successfully verified.
-> This has effect of leaving only verifier logs that correspond to code branches
-> that lead to verification failure, which in practice should result in much
-> shorter and more relevant verifier log dumps. This behavior is made the
-> default behavior and can be overriden to do exhaustive logging by specifying
-> BPF_LOG_LEVEL2 log level.
+On 11/5/20 8:57 AM, Toke Høiland-Jørgensen wrote:
+> I guess we could split it further into lib/bpf_{libbpf,legacy,glue}.c
+> and have the two former ones be completely devoid of ifdefs and
+> conditionally included based on whether or not libbpf support is
+> enabled?
 
-This patch broke the test_offload.py selftest:
-
-[...]
-Test TC offloads work...
-FAIL: Missing or incorrect message from netdevsim in verifier log
-[...]
-
-The selftest expects to receive "[netdevsim] Hello from netdevsim!" in
-the log (coming from nsim_bpf_verify_insn) but that part of the log is
-cleared by bpf_vlog_reset added by this patch.
-
-How can this be fixed? The log level 1 comes from the "verbose" keyword
-passed to tc, I don't think it should be increased to 2.
-
-On a related note, the selftest had to start failing after this commit.
-It's a bit surprising it did not get caught, is there a bug somewhere
-in the test matrix?
-
-Thanks,
-
- Jiri
-
+that sounds reasonable.
