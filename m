@@ -2,84 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58AA02A82E2
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 17:00:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE242A82ED
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 17:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729481AbgKEQA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 11:00:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40538 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725308AbgKEQA1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 11:00:27 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.3])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1731391AbgKEQCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 11:02:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43057 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725308AbgKEQCL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 11:02:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604592130;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7n7s4CcoYzzsxrI8cFoyqhkSkqzPJ3hlumXdPdudtBo=;
+        b=iSv1eKCQKplQMYaWHMJtdj8Nd3oDCM46JEAmI+PL8pzxjFtlc0k8xh4Y1QZNA90chMF/i+
+        6uuR8chXikz+FCz/OyYUrUgbd7g+9mbrdGPnUWAlzXPOBhJ/MTg7aJuYn4uvVCyr0U6vAs
+        +eowsjNkX55SD5F4TqoN4yOrGOaTDVg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-159-H73a57wPO3e0W5f99H6hxw-1; Thu, 05 Nov 2020 11:02:07 -0500
+X-MC-Unique: H73a57wPO3e0W5f99H6hxw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 867C72087D;
-        Thu,  5 Nov 2020 16:00:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604592026;
-        bh=o56ev0zmgq63tK5Zw4wGWNNTE6ic1u4IRv6L1oyPU6M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rkNVMg73EcGu44kEcc5jmciEzVU5VGUBs9LjQZ9+m/Eq8+4aCcJwKPKJLSj9MZv60
-         WJPt55hHRTF6q45lfbWJ/4jdBI7fLFFPKFcddiJS1x8s9JdAJLw/BkPPXtYxcA+MaC
-         3GEN2fLslBb0Ak07o2Sm/onNoeLg1eqp6v+jqT68=
-Date:   Thu, 5 Nov 2020 08:00:19 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Boris Pismenny <borisp@nvidia.com>
-Subject: Re: [PATCH net] net: Disable NETIF_F_HW_TLS_TX when HW_CSUM is
- disabled
-Message-ID: <20201105080019.24bd43fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <2f95eb05-6a2e-de29-4fd8-1dcff0ab0cfa@gmail.com>
-References: <20201104102141.3489-1-tariqt@nvidia.com>
-        <20201104132521.2f7c3690@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <2f95eb05-6a2e-de29-4fd8-1dcff0ab0cfa@gmail.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4324E10866AD;
+        Thu,  5 Nov 2020 16:02:06 +0000 (UTC)
+Received: from localhost (unknown [10.40.192.150])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6E2195B4CA;
+        Thu,  5 Nov 2020 16:02:04 +0000 (UTC)
+Date:   Thu, 5 Nov 2020 17:02:02 +0100
+From:   Jiri Benc <jbenc@redhat.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <andrii.nakryiko@gmail.com>,
+        <kernel-team@fb.com>
+Subject: Re: [PATCH v3 bpf-next] bpf: make verifier log more relevant by
+ default
+Message-ID: <20201105170202.5bb47fef@redhat.com>
+In-Reply-To: <20200423195850.1259827-1-andriin@fb.com>
+References: <20200423195850.1259827-1-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 Nov 2020 15:22:53 +0200 Tariq Toukan wrote:
-> On 11/4/2020 11:25 PM, Jakub Kicinski wrote:
-> > On Wed,  4 Nov 2020 12:21:41 +0200 Tariq Toukan wrote:  
-> >> With NETIF_F_HW_TLS_TX packets are encrypted in HW. This cannot be
-> >> logically done when HW_CSUM offload is off.  
-> > 
-> > Right. Do you expect drivers to nack clearing NETIF_F_HW_TLS_TX when
-> > there are active connections, then?  I don't think NFP does.  We either
-> > gotta return -EBUSY when there are offloaded connections, or at least
-> > clearly document the expected behavior.
-> 
-> As I see from code, today drivers and TLS stack allow clearing 
-> NETIF_F_HW_TLS_TX without doing anything to change behavior in existing 
-> sockets, so they continue to do HW offload. Only new sockets will be 
-> affected.
+On Thu, 23 Apr 2020 12:58:50 -0700, Andrii Nakryiko wrote:
+> To make BPF verifier verbose log more releavant and easier to use to debug
+> verification failures, "pop" parts of log that were successfully verified.
+> This has effect of leaving only verifier logs that correspond to code branches
+> that lead to verification failure, which in practice should result in much
+> shorter and more relevant verifier log dumps. This behavior is made the
+> default behavior and can be overriden to do exhaustive logging by specifying
+> BPF_LOG_LEVEL2 log level.
 
-Right, we want to let users turn off the offload when it misbehaves,
-and we don't have a way of un-offloading connections.
+This patch broke the test_offload.py selftest:
 
-> I think the same behavior should apply when NETIF_F_HW_TLS_TX is cleared 
-> implicitly (due to clearing HW_CSUM).
+[...]
+Test TC offloads work...
+FAIL: Missing or incorrect message from netdevsim in verifier log
+[...]
 
-Right, I don't mind either way. My thinking with the tls feature was
-that offload is likely to be broken, at least initially. Checksum
-offload should work, one would hope, so its less of a risk.
+The selftest expects to receive "[netdevsim] Hello from netdevsim!" in
+the log (coming from nsim_bpf_verify_insn) but that part of the log is
+cleared by bpf_vlog_reset added by this patch.
 
-The question is perhaps - do we care more about consistency with the
-behavior of the TLS feature, or current expectation that csum offload
-off will actually turn it off.
+How can this be fixed? The log level 1 comes from the "verbose" keyword
+passed to tc, I don't think it should be increased to 2.
 
-> If the existing behavior is not expected, and we should force fallback 
-> to SW kTLS for existing sockets, then I think this should be fixed 
-> independently to this patch, as it introduces no new regression.
-> 
-> What do you think?
+On a related note, the selftest had to start failing after this commit.
+It's a bit surprising it did not get caught, is there a bug somewhere
+in the test matrix?
 
-The current behavior of the TLS features is documented in
-tls-offload.rst, you can do what you're doing in this patch, 
-but you need to document it there.
+Thanks,
+
+ Jiri
+
