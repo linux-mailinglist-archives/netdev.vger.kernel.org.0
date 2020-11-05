@@ -2,214 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E49112A75FD
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 04:13:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99B3C2A7605
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 04:19:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388556AbgKEDNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 22:13:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
+        id S2388563AbgKEDTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 22:19:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730888AbgKEDNr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 22:13:47 -0500
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A07C0613CF;
-        Wed,  4 Nov 2020 19:13:46 -0800 (PST)
-Received: by mail-pg1-x541.google.com with SMTP id z24so284318pgk.3;
-        Wed, 04 Nov 2020 19:13:46 -0800 (PST)
+        with ESMTP id S1731990AbgKEDTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 22:19:32 -0500
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73171C0613CF;
+        Wed,  4 Nov 2020 19:19:30 -0800 (PST)
+Received: by mail-il1-x131.google.com with SMTP id p10so121524ile.3;
+        Wed, 04 Nov 2020 19:19:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=7ZW/P8m/wP7Uq6FxGtIgAnrwS9HoTp1U2UA8xNrpeMU=;
-        b=qSCIofcCq5WwkXfT/ybpYb8vJOnPqU8q1XIe2O5ujGVskta3/MYQVo8M77n4MNGe27
-         uK6XeyQYaGOg1BMZJ2Fk1/XpfsFJMJ02mI9Vq1LkPYbLJDs0BhEcM/lB54+xR8+SOhJS
-         BcgFHLU8fzExvfks6LJGwJt86nn/SxEsg1WswqkNnSXVyOM9rznppYMNw0f1W3W+lsem
-         nPc+nwgO36MRwroD7aPQ74qqP8KqkleaPvgFlUji/yd0CTL1TrtCyTuQulIfCXawguKF
-         MqqF9T/VhbcqwWAc+1aMvYAtQRMwkBL9MtXdXlf3YwHjcTWscxXS2eNnpQ+1uHUc6ffX
-         UyXQ==
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ieXOE+6edpx9/IxryG4IPFsJTE/8GyQPQvlpXXBPp/k=;
+        b=JGTWCLWXFDGqBYyxf1Nom7sTHwHVvsjSYiFz0o4yI2wCb43vVXoXvxeoNnxSitrVvH
+         PEB83eSkBa05atyC6QL8NYoBKvWE9wHPoi4PXWzP5yDB629VXwaxFCRJrZz1d0DT4h3i
+         DNreOUpjK/3/65drCWuBHpTNedipQG7UgvKCHyNTEHMAs7ROKFboldAEwcV1krP4XrK9
+         kjv8tofLAjUZNz7bJ6DvCRd9WaLtEUv69pAjJ0zUTnQ6EzOz20/HYi/29GVVEXQpZq5Q
+         WaGX1Jyx1xKUW+bmbBqHlqrmduqeDc91Dn9gIVSehgSVcQ4RGxFJK5mTmNhBMvdwczDI
+         KaeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=7ZW/P8m/wP7Uq6FxGtIgAnrwS9HoTp1U2UA8xNrpeMU=;
-        b=pMDDd6eqvy5h7DSEkQUgv3ZQtI7NQ1pWFUArbLngigEXkykhAumPyW4e9AnC9vCUZc
-         e4K7CYpq3nHKJFFbVBgppQ5OaJmYQowia5inb1x2NzDVLAY7viXPTx5zbbzb11d6PTel
-         A+mH9uUYTUXG1N5f51ML2XwClnRS1zeM3Nm+kfCiO9mE32F9ItdOIpD8X8zGXMWQKz4H
-         l4Vhr4XQXU0eXr5fNW71RTVWZ6xHiXgpWAO4yFtoBuvOwIbcFh+56N0q4ea1DWRcnlxb
-         FMjNzfPtvpdwq3fjXQqj5zIGPz+ibHS6NdvvkzBqjlLRh7RFNZlTpFeF2ryN/s+rDm6L
-         /4fA==
-X-Gm-Message-State: AOAM530SkiA8Kus53wqV5wWZ/5oNY1CaB347mVt2jFR9lMlyfpJwFMc7
-        WvARlKG31of+gkmBBsuGrDr6YRjQZkNn3tbPrJk=
-X-Google-Smtp-Source: ABdhPJyazpFcx7YIHd6w7bQyqP4NCdpcBn45WCXeadNspdIsXCewqr56fOv4ynTvXTuCdJIVo4n5Xg==
-X-Received: by 2002:a17:90b:ec9:: with SMTP id gz9mr284993pjb.105.1604546025413;
-        Wed, 04 Nov 2020 19:13:45 -0800 (PST)
-Received: from [192.168.0.104] ([49.207.201.182])
-        by smtp.gmail.com with ESMTPSA id s6sm315164pfh.9.2020.11.04.19.13.41
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ieXOE+6edpx9/IxryG4IPFsJTE/8GyQPQvlpXXBPp/k=;
+        b=g0AntJC75bDAtK0TM+htr0ujndUO67gHwqB9Id+yijsjIfVabRXxTdLXFa+0wMcKdq
+         u27RAIR57iX0IP2FssY9RL8O7Cuv7iOIPjyro/o6h1bD8tYLzVVG+G3XzUgJBB8PZvra
+         kgoZ+D6Z01oVHAotSniQTVgL0wXUbz7T/WiXXqf/Q5hite9t0ITl3b38Qx3a6zmjiN3C
+         cuvd2ZYWcwlzFGs7jcxhYRwC881qEpgpsPSxLRSIJ47TVQpKWS7niwYicYkkyss9AFRE
+         eQRAFJXX3wWZ6SBiYkcTxemhRSjZzdKDd1xvn5asroeNOUwl6bliOg/atxJVMi7TCMf2
+         EDwg==
+X-Gm-Message-State: AOAM53197y0wxmFZreI/5fkm8Lo1qpcopuG/c5n8u9noWPiYp7+PavY2
+        phFwPj17JbDATMD7fG15XNY=
+X-Google-Smtp-Source: ABdhPJzVoh3PLVXIgP1TwYbQ76jUqLMA5CdpYmvMHmWKe1vlYTTV9izshqfNPzM1J9jSvF8rsKYO/A==
+X-Received: by 2002:a92:d84a:: with SMTP id h10mr467896ilq.39.1604546369706;
+        Wed, 04 Nov 2020 19:19:29 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:6dfd:4f87:68ce:497b])
+        by smtp.googlemail.com with ESMTPSA id y2sm200481ioc.46.2020.11.04.19.19.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Nov 2020 19:13:44 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 07/21] net: usb: aqc111: Add support for
- getting and setting of MAC address
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>
-References: <cover.1542794577.git.igor.russkikh@aquantia.com>
- <8f92711d8479a3df65849e60fd92c727e1e1f78a.1542794577.git.igor.russkikh@aquantia.com>
-From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Message-ID: <7a866553-1333-4952-5fe6-45336235ebb2@gmail.com>
-Date:   Thu, 5 Nov 2020 08:43:40 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Wed, 04 Nov 2020 19:19:28 -0800 (PST)
+Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Hangbin Liu <haliu@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+References: <20201028132529.3763875-1-haliu@redhat.com>
+ <20201029151146.3810859-1-haliu@redhat.com>
+ <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
+ <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
+ <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
+ <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
+ <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
+ <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com>
+ <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
+ <20201104021730.GK2408@dhcp-12-153.nay.redhat.com>
+ <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
+ <2e8ba0be-51bf-9060-e1f7-2148fbaf0f1d@iogearbox.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <ec50328d-61ab-71fb-f266-5e49e9dbf98e@gmail.com>
+Date:   Wed, 4 Nov 2020 20:19:25 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.4.0
 MIME-Version: 1.0
-In-Reply-To: <8f92711d8479a3df65849e60fd92c727e1e1f78a.1542794577.git.igor.russkikh@aquantia.com>
+In-Reply-To: <2e8ba0be-51bf-9060-e1f7-2148fbaf0f1d@iogearbox.net>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 11/4/20 3:21 AM, Daniel Borkmann wrote:
+> 
+>> Then libbpf release process can incorporate proper testing of libbpf
+>> and iproute2 combination.
+>> Or iproute2 should stay as-is with obsolete bpf support.
+>>
+>> Few years from now the situation could be different and shared libbpf
+>> would
+>> be the most appropriate choice. But that day is not today.
+> 
+> Yep, for libbpf to be in same situation as libelf or libmnl basically
+> feature
+> development would have to pretty much come to a stop so that even minor
+> or exotic
+> distros get to a point where they ship same libbpf version as major
+> distros where
+> then users can start to rely on the base feature set for developing
+> programs
+> against it.
 
-I only recently browsed through the code, and had some queries regarding
-the changes introduced by this commit.
+User experience keeps getting brought up, but I also keep reading the
+stance that BPF users can not expect a consistent experience unless they
+are constantly chasing latest greatest versions of *ALL* S/W related to
+BPF. That is not a realistic expectation for users. Distributions exist
+for a reason. They solve real packaging problems.
 
-On 21/11/18 3:43 pm, Igor Russkikh wrote:
-> From: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
->
-> Signed-off-by: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
-> Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
-> ---
->  drivers/net/usb/aqc111.c | 47 ++++++++++++++++++++++++++++++++++++++++
->  drivers/net/usb/aqc111.h |  1 +
->  2 files changed, 48 insertions(+)
->
-> diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
-> index e33be16b506c..390ed6cbc3fd 100644
-> --- a/drivers/net/usb/aqc111.c
-> +++ b/drivers/net/usb/aqc111.c
-> @@ -11,6 +11,7 @@
->  #include <linux/netdevice.h>
->  #include <linux/mii.h>
->  #include <linux/usb.h>
-> +#include <linux/if_vlan.h>
->  #include <linux/usb/cdc.h>
->  #include <linux/usb/usbnet.h>
->  
-> @@ -204,11 +205,43 @@ static void aqc111_set_phy_speed(struct usbnet *dev, u8 autoneg, u16 speed)
->  	aqc111_write32_cmd(dev, AQ_PHY_OPS, 0, 0, &aqc111_data->phy_cfg);
->  }
->  
-> +static int aqc111_set_mac_addr(struct net_device *net, void *p)
-> +{
-> +	struct usbnet *dev = netdev_priv(net);
-> +	int ret = 0;
-> +
-> +	ret = eth_mac_addr(net, p);
-> +	if (ret < 0)
-> +		return ret;
-> +
+As libbpf and bpf in general reach a broader audience, the requirements
+to use, deploy and even tryout BPF features needs to be more user
+friendly and that starts with maintainers of the BPF code and how they
+approach extensions and features. Telling libbpf consumers to make
+libbpf a submodule of their project and update the reference point every
+time a new release comes out is not user friendly.
 
-When eth_mac_addr() fails, from what I can see, it returns either -EBUSY, or
--EADDRNOTAVAIL.
-Wouldn't it be a better idea to set a random MAC address instead, when
--EADDRNOTAVAIL is returned, so that the interface still comes up and is
-usable?
+Similarly, it is not realistic or user friendly to *require* general
+Linux users to constantly chase latest versions of llvm, clang, dwarves,
+bcc, bpftool, libbpf, (I am sure I am missing more), and, by extension
+of what you want here, iproute2 just to upgrade their production kernel
+to say v5.10, the next LTS, or to see what relevant new ebpf features
+exists in the new kernel. As a specific example BTF extensions are added
+in a way that is all or nothing. Meaning, you want to compile kernel
+version X with CONFIG_DEBUG_INFO_BTF enabled, update your toolchain.
+Sure, you are using the latest LTS of $distro, and it worked fine with
+kernel version X-1 last week, but now compile fails completely unless
+the pahole version is updated. Horrible user experience. Again, just an
+example and one I brought up in July. I am sure there more.
 
-I'm only asking because this feels similar to the discussion that can be found here.
-    https://lkml.org/lkml/2020/10/2/305
-
-> +	/* Set the MAC address */
-> +	return aqc111_write_cmd(dev, AQ_ACCESS_MAC, SFR_NODE_ID, ETH_ALEN,
-> +				ETH_ALEN, net->dev_addr);
-> +}
-> +
->  static const struct net_device_ops aqc111_netdev_ops = {
->  	.ndo_open		= usbnet_open,
->  	.ndo_stop		= usbnet_stop,
-> +	.ndo_set_mac_address	= aqc111_set_mac_addr,
-> +	.ndo_validate_addr	= eth_validate_addr,
->  };
->  
-> +static int aqc111_read_perm_mac(struct usbnet *dev)
-> +{
-> +	u8 buf[ETH_ALEN];
-> +	int ret;
-> +
-> +	ret = aqc111_read_cmd(dev, AQ_FLASH_PARAMETERS, 0, 0, ETH_ALEN, buf);
-> +	if (ret < 0)
-> +		goto out;
-> +
-> +	ether_addr_copy(dev->net->perm_addr, buf);
-> +
-> +	return 0;
-> +out:
-> +	return ret;
-> +}
-> +
->  static void aqc111_read_fw_version(struct usbnet *dev,
->  				   struct aqc111_data *aqc111_data)
->  {
-> @@ -251,6 +284,12 @@ static int aqc111_bind(struct usbnet *dev, struct usb_interface *intf)
->  	/* store aqc111_data pointer in device data field */
->  	dev->driver_priv = aqc111_data;
->  
-> +	/* Init the MAC address */
-> +	ret = aqc111_read_perm_mac(dev);
-> +	if (ret)
-> +		goto out;
-> +
-> +	ether_addr_copy(dev->net->dev_addr, dev->net->perm_addr);
->  	dev->net->netdev_ops = &aqc111_netdev_ops;
->  
->  	aqc111_read_fw_version(dev, aqc111_data);
-> @@ -259,6 +298,10 @@ static int aqc111_bind(struct usbnet *dev, struct usb_interface *intf)
->  					 SPEED_5000 : SPEED_1000;
->  
->  	return 0;
-> +
-> +out:
-> +	kfree(aqc111_data);
-> +	return ret;
->  }
->  
->  static void aqc111_unbind(struct usbnet *dev, struct usb_interface *intf)
-> @@ -467,6 +510,10 @@ static int aqc111_reset(struct usbnet *dev)
->  	aqc111_write32_cmd(dev, AQ_PHY_OPS, 0, 0,
->  			   &aqc111_data->phy_cfg);
->  
-> +	/* Set the MAC address */
-> +	aqc111_write_cmd(dev, AQ_ACCESS_MAC, SFR_NODE_ID, ETH_ALEN,
-> +			 ETH_ALEN, dev->net->dev_addr);
-> +
-
-There's a chance that aqc111_write_cmd() can end up writing only a
-part of the required amount of data too.
-Wouldn't it be a better idea to enforce a sanity check here, and set a
-random mac address instead if this write fails?
-
->  	reg8 = 0xFF;
->  	aqc111_write_cmd(dev, AQ_ACCESS_MAC, SFR_BM_INT_MASK, 1, 1, &reg8);
->  
-> diff --git a/drivers/net/usb/aqc111.h b/drivers/net/usb/aqc111.h
-> index f3b45d8ca4e3..0c8e1ee29893 100644
-> --- a/drivers/net/usb/aqc111.h
-> +++ b/drivers/net/usb/aqc111.h
-> @@ -11,6 +11,7 @@
->  #define __LINUX_USBNET_AQC111_H
->  
->  #define AQ_ACCESS_MAC			0x01
-> +#define AQ_FLASH_PARAMETERS		0x20
->  #define AQ_PHY_POWER			0x31
->  #define AQ_PHY_OPS			0x61
->
-
-If any of these changes sound like a good idea, I'd be happy to write a
-patch implementing them. :)
-
-Thanks,
-Anant
-
+Linux APIs are about stability and consistency. Commands and libraries
+that work on v5.9 should work exactly the same on v5.10, 5.11, 5.12, ...
+*IF* I want a new feature (kernel, bpf or libbpf), then the requirement
+to upgrade is justified. But if I am just updating my kernel, or
+updating my compiler, or updating iproute2 because I want to try out
+some new nexthop feature, I should not be cornered into an all or
+nothing scheme.
