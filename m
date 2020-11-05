@@ -2,74 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC3102A7C99
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 12:08:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 608612A7C8A
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 12:04:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726762AbgKELI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 06:08:29 -0500
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:25675 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726067AbgKELI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 06:08:29 -0500
-Received: from [192.168.188.14] (unknown [106.75.220.2])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 34F305C18FA;
-        Thu,  5 Nov 2020 18:44:39 +0800 (CST)
-Subject: Re: [PATCH v2 net-next 2/2] net/sched: act_frag: add implict packet
- fragment support.
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org
-References: <1604562747-14802-1-git-send-email-wenxu@ucloud.cn>
- <1604562747-14802-2-git-send-email-wenxu@ucloud.cn>
- <20201105081445.GQ3837@localhost.localdomain>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <b4ef6031-7a8b-a834-790b-781f6c0fb97e@ucloud.cn>
-Date:   Thu, 5 Nov 2020 18:44:36 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S1726762AbgKELEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 06:04:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27805 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725827AbgKELEE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 06:04:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604574243;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qKwC5oYtZeyEk6aZcV8s9CkbpjIS4Ri4uRpxpj9enZo=;
+        b=cWT1Jq3DiVtbKJBty2wfu7bgFIp/rlYNCgu8JRZVBX1kD6nVsZrG1FEiNJUJs214WoMb1g
+        KQxlJFwRr5SIQzyeyuuuf6lZ6w4tRpHf+qC3zPFM3LmyqYtudeZ9+I3B7eAMAJ/qMXiJac
+        ESJJTBWJAKNMBYF+ION6i4fG/vrL5oc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-524-xHX6SLAaN2ymihpa-tEFvg-1; Thu, 05 Nov 2020 06:03:59 -0500
+X-MC-Unique: xHX6SLAaN2ymihpa-tEFvg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 277841006C9C;
+        Thu,  5 Nov 2020 11:03:58 +0000 (UTC)
+Received: from [10.40.193.36] (unknown [10.40.193.36])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F407E5DA6B;
+        Thu,  5 Nov 2020 11:03:56 +0000 (UTC)
+Message-ID: <b3713e6060246fd1649643fe29df8968be2fbbaa.camel@redhat.com>
+Subject: Re: [PATCH v3 net-next 2/2] net/sched: act_frag: add implict
+ packet fragment support.
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     wenxu@ucloud.cn, kuba@kernel.org, marcelo.leitner@gmail.com
+Cc:     netdev@vger.kernel.org
+In-Reply-To: <1604572893-16156-2-git-send-email-wenxu@ucloud.cn>
+References: <1604572893-16156-1-git-send-email-wenxu@ucloud.cn>
+         <1604572893-16156-2-git-send-email-wenxu@ucloud.cn>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Thu, 05 Nov 2020 12:03:55 +0100
 MIME-Version: 1.0
-In-Reply-To: <20201105081445.GQ3837@localhost.localdomain>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Evolution 3.38.1 (3.38.1-1.fc33) 
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZGktCSUhOGExMTENLVkpNS09OTEhLTEJITElVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hNSlVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MDI6Qyo5Hj0zCDoILiozMykZ
-        DEtPChJVSlVKTUtPTkxIS0xCTkNJVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
-        TlVJSUtVSVlXWQgBWUFJTU9INwY+
-X-HM-Tid: 0a759802272c2087kuqy34f305c18fa
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+hello wenxu!
 
-On 11/5/2020 4:14 PM, Marcelo Ricardo Leitner wrote:
-> On Thu, Nov 05, 2020 at 03:52:27PM +0800, wenxu@ucloud.cn wrote:
->
-> We cross-posted :)
-> I think my comments on the v1 still applies, btw.
->
-> ...
->> This patch add support for a xmit hook to mirred, that gets executed before
->> xmiting the packet. Then, when act_ct gets loaded, it configs that hook.
->> The frag xmit hook maybe reused by other modules.
-> ...
->> --- a/include/net/act_api.h
->> +++ b/include/net/act_api.h
->> @@ -239,6 +239,29 @@ int tcf_action_check_ctrlact(int action, struct tcf_proto *tp,
->>  			     struct netlink_ext_ack *newchain);
->>  struct tcf_chain *tcf_action_set_ctrlact(struct tc_action *a, int action,
->>  					 struct tcf_chain *newchain);
->> +
->> +#if IS_ENABLED(CONFIG_NET_ACT_FRAG)
->> +int tcf_exec_frag_xmit_hook(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb));
->> +void tcf_set_frag_xmit_hook(void);
->> +void tcf_clear_frag_xmit_hook(void);
->> +bool tcf_frag_xmit_hook_enabled(void);
-> Now it's naming the hook after frag action, but it's meant to be
-> generic. It got confusing on what is local to act_frag or not due to
-> that.
+On Thu, 2020-11-05 at 18:41 +0800, wenxu@ucloud.cn wrote:
+> From: wenxu <wenxu@ucloud.cn>
+> 
+> Currently kernel tc subsystem can do conntrack in act_ct. But when several
+> fragment packets go through the act_ct, function tcf_ct_handle_fragments
+> will defrag the packets to a big one. But the last action will redirect
+> mirred to a device which maybe lead the reassembly big packet over the mtu
+> of target device.
+> 
+> This patch add support for a xmit hook to mirred, that gets executed before
+> xmiting the packet. Then, when act_ct gets loaded, it configs that hook.
+> The frag xmit hook maybe reused by other modules.
+> 
+> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> ---
 
-You are right. For more gneric the tcf_xx-xmit_hook should put back to common place and not only used for act_frag.
+[...]
 
->
+> +
+> +static int tcf_fragment(struct net *net, struct sk_buff *skb,
+> +			u16 mru, int (*xmit)(struct sk_buff *skb))
+> +{
+> +	if (skb_network_offset(skb) > VLAN_ETH_HLEN) {
+> +		net_warn_ratelimited("L2 header too long to fragment\n");
+> +		goto err;
+> +	}
+> +
+> +	if (skb->protocol == htons(ETH_P_IP)) {
+
+small nit: use of skb->protocol here may lead to "ambiguous" results: a
+VLAN "accelerated" packet is properly processed, while the same VLAN
+packet with "non-accelerated" tag is not processed because skb->protocol
+is htons(ETH_P_8021Q). Can I suggest use of skb_protocol(), that has
+been introduced recently by Toke [1] ?
+
+> +		ip_do_fragment(net, skb->sk, skb, tcf_frag_xmit);
+> +		refdst_drop(orig_dst);
+> +	} else if (skb->protocol == htons(ETH_P_IPV6)) {
+
+same here,
+
+> +		unsigned long orig_dst;
+> +		struct rt6_info tcf_frag_rt;
+> +
+> +		tcf_frag_prepare_frag(skb, xmit);
+> +		memset(&tcf_frag_rt, 0, sizeof(tcf_frag_rt));
+> +		dst_init(&tcf_frag_rt.dst, &tcf_frag_dst_ops, NULL, 1,
+> +			 DST_OBSOLETE_NONE, DST_NOCOUNT);
+> +		tcf_frag_rt.dst.dev = skb->dev;
+> +
+> +		orig_dst = skb->_skb_refdst;
+> +		skb_dst_set_noref(skb, &tcf_frag_rt.dst);
+> +		IP6CB(skb)->frag_max_size = mru;
+> +
+> +		ipv6_stub->ipv6_fragment(net, skb->sk, skb, tcf_frag_xmit);
+> +		refdst_drop(orig_dst);
+> +	} else {
+> +		net_warn_ratelimited("Failed fragment ->%s: eth=%04x, MRU=%d, MTU=%d.\n",
+> +				     netdev_name(skb->dev), ntohs(skb->protocol),
+> +				     mru, skb->dev->mtu);
+
+and here (even though it's just a printout).
+
+
+thanks!
+-- 
+davide
+
+[1] https://lore.kernel.org/netdev/20200707110325.86731-1-toke@redhat.com/
+
