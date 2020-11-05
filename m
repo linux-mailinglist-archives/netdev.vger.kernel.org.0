@@ -2,57 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F7422A73EC
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 01:41:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81AC92A73F0
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 01:45:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730296AbgKEAlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 19:41:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50800 "EHLO mail.kernel.org"
+        id S1732576AbgKEApU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 19:45:20 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:36162 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729024AbgKEAlg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Nov 2020 19:41:36 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9C3772080D;
-        Thu,  5 Nov 2020 00:41:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604536896;
-        bh=dsiCjsRG+KfXz9bu/BUOhaBgXGuvZcCIvn2UmZQXN5M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NTE+zO4EsBAoVSXANmKKb569ZrmmiW3IG92V/eGgWmpyOFMHDQSdCJuJaLVrb9vtN
-         8zNi6OcW5+zCfmK4hYHVoQ5F+nCFqiZFWVWJ7Um5JjWNF3jMOAaxVPZmEMfgddpW+W
-         oABlW6EPtZ6Z33jsLKnWI/j9/K+j9+MNRTOf5Y8c=
-Date:   Wed, 4 Nov 2020 16:41:34 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <landen.chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        =?UTF-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
-        Chuanhong Guo <gch981213@gmail.com>
-Subject: Re: [PATCH v3 net-next] net: dsa: mt7530: support setting MTU
-Message-ID: <20201104164134.6cc8f817@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201103050618.11419-1-dqfext@gmail.com>
-References: <20201103050618.11419-1-dqfext@gmail.com>
+        id S1729024AbgKEApU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Nov 2020 19:45:20 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kaTOu-005J54-SD; Thu, 05 Nov 2020 01:45:16 +0100
+Date:   Thu, 5 Nov 2020 01:45:16 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ioana Ciornei <ciorneiioana@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [RFC 5/9] staging: dpaa2-switch: handle Rx path on control
+ interface
+Message-ID: <20201105004516.GG933237@lunn.ch>
+References: <20201104165720.2566399-1-ciorneiioana@gmail.com>
+ <20201104165720.2566399-6-ciorneiioana@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201104165720.2566399-6-ciorneiioana@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  3 Nov 2020 13:06:18 +0800 DENG Qingfang wrote:
-> MT7530/7531 has a global RX packet length register, which can be used
-> to set MTU.
-> 
-> Supported packet length values are 1522 (1518 if untagged), 1536,
-> 1552, and multiple of 1024 (from 2048 to 15360).
-> 
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> +/* Manage all NAPI instances for the control interface.
+> + *
+> + * We only have one RX queue and one Tx Conf queue for all
+> + * switch ports. Therefore, we only need to enable the NAPI instance once, the
+> + * first time one of the switch ports runs .dev_open().
+> + */
+> +
+> +static void dpaa2_switch_enable_ctrl_if_napi(struct ethsw_core *ethsw)
+> +{
+> +	int i;
+> +
+> +	/* a new interface is using the NAPI instance */
+> +	ethsw->napi_users++;
+> +
+> +	/* if there is already a user of the instance, return */
+> +	if (ethsw->napi_users > 1)
+> +		return;
 
-Applied, thank you!
+Does there need to be any locking here? Or does it rely on RTNL?
+Maybe a comment would be nice, or a check that RTNL is actually held.
+
+> +
+> +	if (!dpaa2_switch_has_ctrl_if(ethsw))
+> +		return;
+> +
+> +	for (i = 0; i < DPAA2_SWITCH_RX_NUM_FQS; i++)
+> +		napi_enable(&ethsw->fq[i].napi);
+> +}
+
+> +static void dpaa2_switch_rx(struct dpaa2_switch_fq *fq,
+> +			    const struct dpaa2_fd *fd)
+> +{
+> +	struct ethsw_core *ethsw = fq->ethsw;
+> +	struct ethsw_port_priv *port_priv;
+> +	struct net_device *netdev;
+> +	struct vlan_ethhdr *hdr;
+> +	struct sk_buff *skb;
+> +	u16 vlan_tci, vid;
+> +	int if_id = -1;
+> +	int err;
+> +
+> +	/* prefetch the frame descriptor */
+> +	prefetch(fd);
+
+Does this actually do any good, given that the next call:
+
+> +
+> +	/* get switch ingress interface ID */
+> +	if_id = upper_32_bits(dpaa2_fd_get_flc(fd)) & 0x0000FFFF;
+
+is accessing the frame descriptor? The idea of prefetch is to let it
+bring it into the cache while you are busy doing something else,
+hopefully with something which is already cache hot.
+
+	  Andrew
