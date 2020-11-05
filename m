@@ -2,91 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F37122A883E
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 21:41:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFF562A8842
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 21:42:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732090AbgKEUk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 15:40:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44246 "EHLO mail.kernel.org"
+        id S1732176AbgKEUmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 15:42:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44748 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726729AbgKEUk6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 15:40:58 -0500
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1731234AbgKEUmH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 15:42:07 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 623AC2080D;
-        Thu,  5 Nov 2020 20:40:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 84661206F7;
+        Thu,  5 Nov 2020 20:42:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604608857;
-        bh=TgwgzL3gCmE/OP4X//j+s0Yme9DG1pB50W5qMwmYL94=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=zRvHM0aKiHjOEjd72/ArPN+v0sO3/VlkCe63IjwxtoDrWoGbpK+VxUsDPnApX1iGz
-         8mWO8D6IVop3rTFtGmvq4Z9DrkoK/SRzG7cT9KiwaFJK9+z8SckszHRdKZ4qQ2YnZa
-         2C5a4LHFMssOrgzBBlhU3Vxd4sNzT1ThV9+gRdTo=
-Received: by mail-wr1-f41.google.com with SMTP id n18so3299463wrs.5;
-        Thu, 05 Nov 2020 12:40:57 -0800 (PST)
-X-Gm-Message-State: AOAM532HAehfeHnSKJZWTz97mq84wl3wGLsL1KS+UhXLm38d/jtBE6YT
-        SMHp//SBHvXmyLOr+4ahkGMcEqwWZGDBNmzBrp0=
-X-Google-Smtp-Source: ABdhPJzyqI4I3ON713HulJx8wyyySNDvQ2Cw8rsmJNeLnigyEmWfwoYXrjLBRbhf/q+Pj0vFz44LHSUpIVhCm7gZ6a8=
-X-Received: by 2002:adf:fb12:: with SMTP id c18mr4716517wrr.99.1604608855828;
- Thu, 05 Nov 2020 12:40:55 -0800 (PST)
-MIME-Version: 1.0
-References: <20201105073434.429307-1-xie.he.0141@gmail.com>
- <CAK8P3a2bk9ZpoEvmhDpSv8ByyO-LevmF-W4Or_6RPRtV6gTQ1w@mail.gmail.com> <CAJht_EPP_otbU226Ub5mC_OZPXO4h0O2-URkpsrMBFovcdDHWQ@mail.gmail.com>
-In-Reply-To: <CAJht_EPP_otbU226Ub5mC_OZPXO4h0O2-URkpsrMBFovcdDHWQ@mail.gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 5 Nov 2020 21:40:39 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2jd3w=k9HC-kFWZYuzAf2D4npkWdrUn6UBj6JzrrVkpQ@mail.gmail.com>
-Message-ID: <CAK8P3a2jd3w=k9HC-kFWZYuzAf2D4npkWdrUn6UBj6JzrrVkpQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: x25_asy: Delete the x25_asy driver
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
+        s=default; t=1604608926;
+        bh=gcniyV4BLIOdDD2xhp++Udmuw/hzW6PcHHy7tEZfv4Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ffEqWGOHT6yhDNYGQz03MfWqeypVqAPk9Hisq0JVRyZ9RvnseqFLW7qH/G8eKKMUc
+         Y2PlqAOCCMxn1KyPF2Rrw0sGleWH+zzrSQEjrZhStqTkYGKSbBq/Y2zEgsY2/D4Wfa
+         latkZbUby7M2e6cd3cXxnjqAdYLiC15V3OQdBj8U=
+Date:   Thu, 5 Nov 2020 12:42:04 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     George Cherian <gcherian@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Martin Schiller <ms@dev.tdt.de>,
-        Andrew Hendry <andrew.hendry@gmail.com>,
-        Linux X25 <linux-x25@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Pirko <jiri@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        "masahiroy@kernel.org" <masahiroy@kernel.org>,
+        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>
+Subject: Re: [PATCH v2 net-next 3/3] octeontx2-af: Add devlink health
+ reporters for NIX
+Message-ID: <20201105124204.4dbea042@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <011c4d4e2227df793f615b7638165c266763e24a.camel@kernel.org>
+References: <BYAPR18MB2679EC3507BD90B93B37A3F8C5EE0@BYAPR18MB2679.namprd18.prod.outlook.com>
+        <20201105090724.761a033d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <011c4d4e2227df793f615b7638165c266763e24a.camel@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 5, 2020 at 9:06 PM Xie He <xie.he.0141@gmail.com> wrote:
->
-> On Thu, Nov 5, 2020 at 7:07 AM Arnd Bergmann <arnd@kernel.org> wrote:
-> >
-> > Adding Martin Schiller and Andrew Hendry, plus the linux-x25 mailing
-> > list to Cc.
->
-> The linux-x25 mail list has stopped working for a long time.
->
-> > When I last looked at the wan drivers, I think I concluded
-> > that this should still be kept around, but I do not remember why.
->
-> I think we only decided that X.25 as a whole was still needed. We
-> didn't decide that this particular driver was necessary.
+On Thu, 05 Nov 2020 11:23:54 -0800 Saeed Mahameed wrote:
+> If you report an error without recovering, devlink health will report a
+> bad device state
+> 
+> $ ./devlink health
+>    pci/0002:01:00.0:
+>      reporter npa
+>        state error error 1 recover 0
 
-Right, I agree that would be the most likely case given the
-state of the driver.
+Actually, the counter in the driver is unnecessary, right? Devlink
+counts errors.
+ 
+> So you will need to implement an empty recover op.
+> so if these events are informational only and they don't indicate
+> device health issues, why would you report them via devlink health ?
 
-> > Since you did the bugfix mentioned above, do you have an idea
-> > when it could have last worked? I see it was originally merged in
-> > linux-2.3.21, and Stephen Hemminger did a cleanup for
-> > linux-2.6.0-rc3 that he apparently tested but also said "Not sure
-> > if anyone ever uses this.".
->
-> I think this driver never worked. Looking at the original code in
-> Linux 2.1.31, it already has the problems I fixed in commit
-> 8fdcabeac398.
->
-> I guess when people (or bots) say they "tested", they have not
-> necessarily used this driver to actually try transporting data. They
-> may just have tested open/close, etc. to confirm that the particular
-> problem/issue they saw had been fixed.
+I see devlink health reporters a way of collecting errors reports which
+for the most part are just shared with the vendor. IOW firmware (or
+hardware) bugs.
 
-It didn't sound like that from the commit message, but it could be.
-For reference:
-https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git/commit?id=aa2b4427c355acaf86d2c7e6faea3472005e3cff
+Obviously as you say without recover and additional context in the
+report the value is quite diminished. But _if_ these are indeed "report
+me to the vendor" kind of events then at least they should use our
+current mechanics for such reports - which is dl-health.
 
-     Arnd
+Without knowing what these events are it's quite hard to tell if
+devlink health is an overkill or counter is sufficient.
+
+Either way - printing these to the logs is definitely the worst choice
+:)
