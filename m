@@ -2,126 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 608612A7C8A
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 12:04:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B2432A7CA6
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 12:12:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726762AbgKELEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 06:04:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27805 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725827AbgKELEE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 06:04:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604574243;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qKwC5oYtZeyEk6aZcV8s9CkbpjIS4Ri4uRpxpj9enZo=;
-        b=cWT1Jq3DiVtbKJBty2wfu7bgFIp/rlYNCgu8JRZVBX1kD6nVsZrG1FEiNJUJs214WoMb1g
-        KQxlJFwRr5SIQzyeyuuuf6lZ6w4tRpHf+qC3zPFM3LmyqYtudeZ9+I3B7eAMAJ/qMXiJac
-        ESJJTBWJAKNMBYF+ION6i4fG/vrL5oc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-524-xHX6SLAaN2ymihpa-tEFvg-1; Thu, 05 Nov 2020 06:03:59 -0500
-X-MC-Unique: xHX6SLAaN2ymihpa-tEFvg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 277841006C9C;
-        Thu,  5 Nov 2020 11:03:58 +0000 (UTC)
-Received: from [10.40.193.36] (unknown [10.40.193.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F407E5DA6B;
-        Thu,  5 Nov 2020 11:03:56 +0000 (UTC)
-Message-ID: <b3713e6060246fd1649643fe29df8968be2fbbaa.camel@redhat.com>
-Subject: Re: [PATCH v3 net-next 2/2] net/sched: act_frag: add implict
- packet fragment support.
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     wenxu@ucloud.cn, kuba@kernel.org, marcelo.leitner@gmail.com
-Cc:     netdev@vger.kernel.org
-In-Reply-To: <1604572893-16156-2-git-send-email-wenxu@ucloud.cn>
-References: <1604572893-16156-1-git-send-email-wenxu@ucloud.cn>
-         <1604572893-16156-2-git-send-email-wenxu@ucloud.cn>
-Organization: red hat
-Content-Type: text/plain; charset="UTF-8"
-Date:   Thu, 05 Nov 2020 12:03:55 +0100
-MIME-Version: 1.0
-User-Agent: Evolution 3.38.1 (3.38.1-1.fc33) 
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+        id S1729887AbgKELMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 06:12:20 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:49761 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726067AbgKELMU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 06:12:20 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from yanjunz@mellanox.com)
+        with SMTP; 5 Nov 2020 13:12:14 +0200
+Received: from bc-vnc02.mtbc.labs.mlnx (bc-vnc02.mtbc.labs.mlnx [10.75.68.111])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0A5BCDcF008779;
+        Thu, 5 Nov 2020 13:12:14 +0200
+Received: from bc-vnc02.mtbc.labs.mlnx (localhost [127.0.0.1])
+        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4) with ESMTP id 0A5BCDd7002567;
+        Thu, 5 Nov 2020 19:12:13 +0800
+Received: (from yanjunz@localhost)
+        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4/Submit) id 0A5BCBjL002549;
+        Thu, 5 Nov 2020 19:12:11 +0800
+From:   Zhu Yanjun <yanjunz@nvidia.com>
+To:     yanjunz@nvidia.com, dledford@redhat.com, jgg@ziepe.ca,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 1/1] RDMA/rxe: Fetch skb packets from ethernet layer
+Date:   Thu,  5 Nov 2020 19:12:01 +0800
+Message-Id: <1604574721-2505-1-git-send-email-yanjunz@nvidia.com>
+X-Mailer: git-send-email 1.7.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hello wenxu!
+In the original design, in rx, skb packet would pass ethernet
+layer and IP layer, eventually reach udp tunnel.
 
-On Thu, 2020-11-05 at 18:41 +0800, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
-> 
-> Currently kernel tc subsystem can do conntrack in act_ct. But when several
-> fragment packets go through the act_ct, function tcf_ct_handle_fragments
-> will defrag the packets to a big one. But the last action will redirect
-> mirred to a device which maybe lead the reassembly big packet over the mtu
-> of target device.
-> 
-> This patch add support for a xmit hook to mirred, that gets executed before
-> xmiting the packet. Then, when act_ct gets loaded, it configs that hook.
-> The frag xmit hook maybe reused by other modules.
-> 
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
+Now rxe fetches the skb packets from the ethernet layer directly.
+So this bypasses the IP and UDP layer. As such, the skb packets
+are sent to the upper protocals directly from the ethernet layer.
 
-[...]
+This increases bandwidth and decreases latency.
 
-> +
-> +static int tcf_fragment(struct net *net, struct sk_buff *skb,
-> +			u16 mru, int (*xmit)(struct sk_buff *skb))
-> +{
-> +	if (skb_network_offset(skb) > VLAN_ETH_HLEN) {
-> +		net_warn_ratelimited("L2 header too long to fragment\n");
-> +		goto err;
-> +	}
-> +
-> +	if (skb->protocol == htons(ETH_P_IP)) {
+Signed-off-by: Zhu Yanjun <yanjunz@nvidia.com>
+---
+ drivers/infiniband/sw/rxe/rxe_net.c |   45 ++++++++++++++++++++++++++++++++++-
+ 1 files changed, 44 insertions(+), 1 deletions(-)
 
-small nit: use of skb->protocol here may lead to "ambiguous" results: a
-VLAN "accelerated" packet is properly processed, while the same VLAN
-packet with "non-accelerated" tag is not processed because skb->protocol
-is htons(ETH_P_8021Q). Can I suggest use of skb_protocol(), that has
-been introduced recently by Toke [1] ?
-
-> +		ip_do_fragment(net, skb->sk, skb, tcf_frag_xmit);
-> +		refdst_drop(orig_dst);
-> +	} else if (skb->protocol == htons(ETH_P_IPV6)) {
-
-same here,
-
-> +		unsigned long orig_dst;
-> +		struct rt6_info tcf_frag_rt;
-> +
-> +		tcf_frag_prepare_frag(skb, xmit);
-> +		memset(&tcf_frag_rt, 0, sizeof(tcf_frag_rt));
-> +		dst_init(&tcf_frag_rt.dst, &tcf_frag_dst_ops, NULL, 1,
-> +			 DST_OBSOLETE_NONE, DST_NOCOUNT);
-> +		tcf_frag_rt.dst.dev = skb->dev;
-> +
-> +		orig_dst = skb->_skb_refdst;
-> +		skb_dst_set_noref(skb, &tcf_frag_rt.dst);
-> +		IP6CB(skb)->frag_max_size = mru;
-> +
-> +		ipv6_stub->ipv6_fragment(net, skb->sk, skb, tcf_frag_xmit);
-> +		refdst_drop(orig_dst);
-> +	} else {
-> +		net_warn_ratelimited("Failed fragment ->%s: eth=%04x, MRU=%d, MTU=%d.\n",
-> +				     netdev_name(skb->dev), ntohs(skb->protocol),
-> +				     mru, skb->dev->mtu);
-
-and here (even though it's just a printout).
-
-
-thanks!
+diff --git a/drivers/infiniband/sw/rxe/rxe_net.c b/drivers/infiniband/sw/rxe/rxe_net.c
+index 2e490e5..8ea68b6 100644
+--- a/drivers/infiniband/sw/rxe/rxe_net.c
++++ b/drivers/infiniband/sw/rxe/rxe_net.c
+@@ -18,6 +18,7 @@
+ #include "rxe_loc.h"
+ 
+ static struct rxe_recv_sockets recv_sockets;
++static struct net_device *g_ndev;
+ 
+ struct device *rxe_dma_device(struct rxe_dev *rxe)
+ {
+@@ -113,7 +114,7 @@ static int rxe_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
+ 	}
+ 
+ 	tnl_cfg.encap_type = 1;
+-	tnl_cfg.encap_rcv = rxe_udp_encap_recv;
++	tnl_cfg.encap_rcv = NULL;
+ 
+ 	/* Setup UDP tunnel */
+ 	setup_udp_tunnel_sock(net, sock, &tnl_cfg);
+@@ -357,6 +358,38 @@ struct sk_buff *rxe_init_packet(struct rxe_dev *rxe, struct rxe_av *av,
+ 	return rxe->ndev->name;
+ }
+ 
++static rx_handler_result_t rxe_handle_frame(struct sk_buff **pskb)
++{
++	struct sk_buff *skb = *pskb;
++	struct iphdr *iph;
++	struct udphdr *udph;
++
++	if (unlikely(skb->pkt_type == PACKET_LOOPBACK))
++		return RX_HANDLER_PASS;
++
++	if (!is_valid_ether_addr(eth_hdr(skb)->h_source)) {
++		kfree(skb);
++		return RX_HANDLER_CONSUMED;
++	}
++
++	if (eth_hdr(skb)->h_proto != cpu_to_be16(ETH_P_IP))
++		return RX_HANDLER_PASS;
++
++	iph = ip_hdr(skb);
++
++	if (iph->protocol != IPPROTO_UDP)
++		return RX_HANDLER_PASS;
++
++	udph = udp_hdr(skb);
++
++	if (udph->dest != cpu_to_be16(ROCE_V2_UDP_DPORT))
++		return RX_HANDLER_PASS;
++
++	rxe_udp_encap_recv(NULL, skb);
++
++	return RX_HANDLER_CONSUMED;
++}
++
+ int rxe_net_add(const char *ibdev_name, struct net_device *ndev)
+ {
+ 	int err;
+@@ -367,6 +400,7 @@ int rxe_net_add(const char *ibdev_name, struct net_device *ndev)
+ 		return -ENOMEM;
+ 
+ 	rxe->ndev = ndev;
++	g_ndev = ndev;
+ 
+ 	err = rxe_add(rxe, ndev->mtu, ibdev_name);
+ 	if (err) {
+@@ -374,6 +408,12 @@ int rxe_net_add(const char *ibdev_name, struct net_device *ndev)
+ 		return err;
+ 	}
+ 
++	rtnl_lock();
++	err = netdev_rx_handler_register(ndev, rxe_handle_frame, rxe);
++	rtnl_unlock();
++	if (err)
++		return err;
++
+ 	return 0;
+ }
+ 
+@@ -498,6 +538,9 @@ static int rxe_net_ipv6_init(void)
+ 
+ void rxe_net_exit(void)
+ {
++	rtnl_lock();
++	netdev_rx_handler_unregister(g_ndev);
++	rtnl_unlock();
+ 	rxe_release_udp_tunnel(recv_sockets.sk6);
+ 	rxe_release_udp_tunnel(recv_sockets.sk4);
+ 	unregister_netdevice_notifier(&rxe_net_notifier);
 -- 
-davide
-
-[1] https://lore.kernel.org/netdev/20200707110325.86731-1-toke@redhat.com/
+1.7.1
 
