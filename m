@@ -2,89 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABA7F2A7D8E
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 12:53:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B74B72A7D9E
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 12:56:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730270AbgKELxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 06:53:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730231AbgKELxL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 06:53:11 -0500
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B89C0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 03:53:10 -0800 (PST)
-Received: by mail-wr1-x443.google.com with SMTP id x7so1432300wrl.3
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 03:53:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GXF1SqOriWJ7aOraSXefzzIqR43tkx0ONzj50WfCuDg=;
-        b=zGTLcxiZZV78qsG3GcPQhbs6hZm9UW+qwSl1J9Rc4mi0VpXJEpe9I/xGZ+PmvUDj1Q
-         eHQEBduQhpnLeffenHiQUpr7Psk+RKNcSMVhvUv/VE2CgLiGsalgOjAVXwPl3lzVxLgk
-         ysd/6nRrijW0em5Tj92Aku24eVxfTorX8oNkY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GXF1SqOriWJ7aOraSXefzzIqR43tkx0ONzj50WfCuDg=;
-        b=lhk7M6KqXZdT6rWuYrgHjBXfjF01KBogln4kmqIRds7q1rUrf7RAQaYPX0dP41r9jn
-         tVeXrmCKNCexwToOKf3G4xBZCJHPAbVDuWW+VvO7s8C21LSh9cv1KJy1oYxy9e364Ltp
-         RYtcacJdR4pYWMIPF42c/0yl+86fA4oXTjRmXAHRvGfvK1AJ5US+jdjt8OdBg6CCqu4s
-         dyUiifexkeQDYhihlosAyrN2yNdWiF11oCw1iICF+t9aIlTbn1Qun16ZjxJbQ1xrM5BG
-         S/vrmCn79sv7Hd6JnBHsuqZgaczsZqhl8c2BSS9tIo7lB7GFAFJlVBmmRdQkftPUHsNL
-         xiug==
-X-Gm-Message-State: AOAM531lMUznoQQIhxdeIxUDwtK7FyqvxYG5h4U0YIe0QS51d5HdHtaP
-        L96LaSH5mWVZByUgaIqneshEpg==
-X-Google-Smtp-Source: ABdhPJzzNkmxfb9gJuURyKkFNJ0rPyrbz1mHyaZcFFdgejmsCf3LvQME3YFn2QGfmCcxQxs7+t/AEg==
-X-Received: by 2002:a5d:4207:: with SMTP id n7mr2466805wrq.76.1604577189172;
-        Thu, 05 Nov 2020 03:53:09 -0800 (PST)
-Received: from antares.lan (b.f.7.4.3.0.f.a.d.b.3.c.e.c.d.3.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:3dce:c3bd:af03:47fb])
-        by smtp.gmail.com with ESMTPSA id r10sm2264214wmg.16.2020.11.05.03.53.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2020 03:53:08 -0800 (PST)
-From:   Lorenz Bauer <lmb@cloudflare.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Cc:     kernel-team@cloudflare.com, Jiri Benc <jbenc@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf] tools/bpftool: fix attaching flow dissector
-Date:   Thu,  5 Nov 2020 11:52:30 +0000
-Message-Id: <20201105115230.296657-1-lmb@cloudflare.com>
-X-Mailer: git-send-email 2.25.1
+        id S1730246AbgKEL4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 06:56:46 -0500
+Received: from mx2.suse.de ([195.135.220.15]:55088 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726067AbgKEL4p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 06:56:45 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id D880EAF26;
+        Thu,  5 Nov 2020 11:56:43 +0000 (UTC)
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        Dongli Zhang <dongli.zhang@oracle.com>
+Cc:     Aruna Ramakrishna <aruna.ramakrishna@oracle.com>,
+        Bert Barbe <bert.barbe@oracle.com>,
+        Rama Nichanamatlu <rama.nichanamatlu@oracle.com>,
+        Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>,
+        Manjunath Patil <manjunath.b.patil@oracle.com>,
+        Joe Jin <joe.jin@oracle.com>,
+        SRINIVAS <srinivas.eeda@oracle.com>, stable@vger.kernel.org,
+        Jann Horn <jannh@google.com>
+References: <20201105042140.5253-1-willy@infradead.org>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH] page_frag: Recover from memory pressure
+Message-ID: <83d68f28-cae7-012d-0f4b-82960b248bd8@suse.cz>
+Date:   Thu, 5 Nov 2020 12:56:43 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
+In-Reply-To: <20201105042140.5253-1-willy@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My earlier patch to reject non-zero arguments to flow dissector attach
-broke attaching via bpftool. Instead of 0 it uses -1 for target_fd.
-Fix this by passing a zero argument when attaching the flow dissector.
+On 11/5/20 5:21 AM, Matthew Wilcox (Oracle) wrote:
+> When the machine is under extreme memory pressure, the page_frag allocator
+> signals this to the networking stack by marking allocations with the
+> 'pfmemalloc' flag, which causes non-essential packets to be dropped.
+> Unfortunately, even after the machine recovers from the low memory
+> condition, the page continues to be used by the page_frag allocator,
+> so all allocations from this page will continue to be dropped.
+> > Fix this by freeing and re-allocating the page instead of recycling it.
+> 
+> Reported-by: Dongli Zhang <dongli.zhang@oracle.com>
+> Cc: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
+> Cc: Bert Barbe <bert.barbe@oracle.com>
+> Cc: Rama Nichanamatlu <rama.nichanamatlu@oracle.com>
+> Cc: Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>
+> Cc: Manjunath Patil <manjunath.b.patil@oracle.com>
+> Cc: Joe Jin <joe.jin@oracle.com>
+> Cc: SRINIVAS <srinivas.eeda@oracle.com>
+> Cc: stable@vger.kernel.org
+> Fixes: 79930f5892e ("net: do not deplete pfmemalloc reserve")
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> ---
+>   mm/page_alloc.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 778e815130a6..631546ae1c53 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -5139,6 +5139,10 @@ void *page_frag_alloc(struct page_frag_cache *nc,
+>   
+>   		if (!page_ref_sub_and_test(page, nc->pagecnt_bias))
+>   			goto refill;
+> +		if (nc->pfmemalloc) {
+> +			free_the_page(page, compound_order(page));
+> +			goto refill;
 
-Fixes: 1b514239e859 ("bpf: flow_dissector: Check value of unused flags to BPF_PROG_ATTACH")
-Reported-by: Jiri Benc <jbenc@redhat.com>
-Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
----
- tools/bpf/bpftool/prog.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Theoretically the refill can fail and we return NULL while leaving nc->va 
+pointing to a freed page, so I think you should set nc->va to NULL.
 
-diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-index d942c1e3372c..acdb2c245f0a 100644
---- a/tools/bpf/bpftool/prog.c
-+++ b/tools/bpf/bpftool/prog.c
-@@ -940,7 +940,7 @@ static int parse_attach_detach_args(int argc, char **argv, int *progfd,
- 	}
- 
- 	if (*attach_type == BPF_FLOW_DISSECTOR) {
--		*mapfd = -1;
-+		*mapfd = 0;
- 		return 0;
- 	}
- 
--- 
-2.25.1
+Geez, can't the same thing already happen after we sub the nc->pagecnt_bias from 
+page ref, and last users of the page fragments then return them and dec the ref 
+to zero and the page gets freed?
+
+> +		}
+>   
+>   #if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
+>   		/* if size can vary use size else just use PAGE_SIZE */
+> 
 
