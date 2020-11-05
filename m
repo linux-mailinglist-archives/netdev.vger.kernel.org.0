@@ -2,365 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F7352A870D
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 20:25:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F06F2A8712
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 20:26:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732156AbgKETZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 14:25:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40580 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726729AbgKETZM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 14:25:12 -0500
-Received: from cakuba.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9F5032083B;
-        Thu,  5 Nov 2020 19:25:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604604309;
-        bh=wRlsVlmFSl6RWi9sN14uRixMDSccSC9oLOYe7CNDhk4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=N2J+XbHE75SaqCzg6wusJ9wacEbVv22D9BMlIY2nXJFEv3NKhvCQ9yum2EQqWTxma
-         fa52g7mE/r+cFUOFuwQW0cDsWJXFe/CCACDqK2R+UyLwxXSTc8AfUpILfowUPSdXr2
-         /vLxH8h2IkD8DTHHfzVBjnjGnvr5z0WytXh6/AuI=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Networking
-Date:   Thu,  5 Nov 2020 11:25:08 -0800
-Message-Id: <20201105192508.1699334-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1732120AbgKET0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 14:26:18 -0500
+Received: from mail-vi1eur05on2086.outbound.protection.outlook.com ([40.107.21.86]:48929
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726729AbgKET0S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 14:26:18 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LmtZBBBKtoB9brS8h3bJLwmfnLoSuTJBAHtAW+Tuhuvav7H47lvALEIAfau8qhxrYhBC+98PGpPex7JsptI9MZFs6tv0GWvi5vEm87KIBfoQJRvLkIa8QKDY3qIlRHmuASNV1X+N54L5CJ4CbRGUIfO8owwlRO74dL7KcODXpLIS/k+I/6dSekutHmbrYHAEz5t6OPGBjXzPeqVwz4tE5fXlEClG135K0KZZwt75mxtGCIPdVPsRIUWcOVMZUOd5Ev3WFiez9qzdMDnBpM8xLUiOcoZ+TN03xwKD/iQe96XQ1h43Fw2A+TdzY5eTBX9qxzfye7ylHr086uwJcxDRfw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HyRCiY5e3/7e12i+4Kc5sNUcdNdVjpzs6GbOeUd0qGM=;
+ b=QeiTbthpwspBfUbOO2Ar2Oh/aY0ygUbCA4nde32Eu/lycevZ6JUuXQms0/y4K54tAGruB8humehantEDYeQstqc7gvkrOnkvxX3CI9XdZFMDdKoIMilt2YMcCkbGmNHMpfdKclPCfXQSmaTBQY0f5oXUbn01PMiVZ4EKD7QnYsH5p/TdGQgGNmKFexUar/hTubDG4qUmEv6jBpf/OUbo7zB9o3C8dt+maI0SQkRMUENtPvZdgs3CoaKtocYuMduHYLNuWfN+m12QjcdwQ+VRHz/UE3G3iLD2cfIpsE3Vx1s+ZlF2u6g7c0NT0Be0H9e3RikW1kpYuZ6iMazITarbPw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HyRCiY5e3/7e12i+4Kc5sNUcdNdVjpzs6GbOeUd0qGM=;
+ b=ZMdGVlpVgU8ZXwc9UckMShw03OVmUf8JWKGrNy3ysHgid2sONBgdixL+uDxaLWVttIx3HlXCaOnGNJi45uM2Y39cKXTTEhdJXEu7wa0VQnQSyAgYSMZBCifFPuAzQbXGMnYKAtWxV9XswDMPfZM91BeERvRMHhPe7E3Qah6M5vk=
+Authentication-Results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR0402MB3405.eurprd04.prod.outlook.com (2603:10a6:803:3::26)
+ by VI1PR04MB6142.eurprd04.prod.outlook.com (2603:10a6:803:fe::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21; Thu, 5 Nov
+ 2020 19:26:14 +0000
+Received: from VI1PR0402MB3405.eurprd04.prod.outlook.com
+ ([fe80::f557:4dcb:4d4d:57f3]) by VI1PR0402MB3405.eurprd04.prod.outlook.com
+ ([fe80::f557:4dcb:4d4d:57f3%2]) with mapi id 15.20.3541.021; Thu, 5 Nov 2020
+ 19:26:13 +0000
+Subject: Re: [PATCH 2/2] dt-bindings: misc: convert fsl,qoriq-mc from txt to
+ YAML
+To:     Rob Herring <robh@kernel.org>
+Cc:     leoyang.li@nxp.com, corbet@lwn.net,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linuxppc-dev@lists.ozlabs.org, ioana.ciornei@nxp.com,
+        Ionut-robert Aron <ionut-robert.aron@nxp.com>
+References: <20201105141114.18161-1-laurentiu.tudor@nxp.com>
+ <20201105141114.18161-2-laurentiu.tudor@nxp.com>
+ <20201105191745.GB1644330@bogus>
+From:   Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Message-ID: <07d9db34-d6bc-bce8-c1bd-cbf738af9547@nxp.com>
+Date:   Thu, 5 Nov 2020 21:26:09 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
+In-Reply-To: <20201105191745.GB1644330@bogus>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [82.78.235.173]
+X-ClientProxiedBy: AM0PR06CA0125.eurprd06.prod.outlook.com
+ (2603:10a6:208:ab::30) To VI1PR0402MB3405.eurprd04.prod.outlook.com
+ (2603:10a6:803:3::26)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.105] (82.78.235.173) by AM0PR06CA0125.eurprd06.prod.outlook.com (2603:10a6:208:ab::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.32 via Frontend Transport; Thu, 5 Nov 2020 19:26:12 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 836eb7cf-c28f-4b90-7f47-08d881c0a89a
+X-MS-TrafficTypeDiagnostic: VI1PR04MB6142:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR04MB61424507609D5E31A9A17FE1ECEE0@VI1PR04MB6142.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: C29dpjK2ZnlaPNAmPTTvVv2Agf9r4TD/2Irh2MbH/Ux72QFCd+Jcxa7W9Q3iY0w5K0bRasjHsOtraHVW8vwWd23synSunH8DuVNF3ycNLfN+1iK2NBu+jAPsBzyArx/jqYNgV5jbxNO26KLPIs+0U+/8rIDFjF0UM9Ma8dZ01+ZUWYFcNjYhXYUCow9BQ3mVpHiDGcGft3htPQrxJYFhsiu11JDjkEp1bDrzsVQkCc1BZ6//O0aXrvcFfxwGvrWrEdGkQI+bM5wbl6imILFS/6jehdp0Z2abCT2XEiUa4TUqdTzP/K1uB9PuXyX9kRkk0Ipv1xacPUuw0V+1Azctdv2GZCbiDAkI8nNPMEVb/kdCZUSW4Xd2NAndmjuSZY3AwpytNZ83xgJDY6a+3u2O20TXDGJpINY5d1NnRZj+duh/uZUDrwezku4Islk10bMj2z2iSpiV3c46bXlF4OlAnw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3405.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(366004)(376002)(346002)(8676002)(31686004)(44832011)(7416002)(8936002)(36756003)(86362001)(6916009)(2906002)(956004)(26005)(52116002)(16576012)(6486002)(6666004)(4326008)(66556008)(66476007)(478600001)(45080400002)(31696002)(66946007)(966005)(16526019)(2616005)(53546011)(186003)(5660300002)(316002)(83380400001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: l6O90qDTCUTyH89OVVuLSvQ7ytyncwfGFFM2VHjVuMOq3+pvwVSyQhkdDso/iYMbc7DQDVflOHQVGx12wmBUl7lPwwtnQsv+oHLNQoYfJlMfl6M2dxgnSz8aOc5hY96sSy31BTG8KIvQWNzoqwTd2yUlzKH01+jwdmFjQUSD4FrcRLlMXNCphLYY+0aOEFrahzhUtqqjI/AD6p4jT9+YwEpJPsgPL9/inHo+MrQ0SxxAnk8/e/UgwPU28xNXbcXrFPQx9T1mOffbAWLwa3RMTATnqPDM+PfVqbwYsyHRCirya7Dh0rPkkPk3HVNdRMVIfxVytTePNxzGEjcxgP3QfvPuoFAa/GI1qCY4n0qI+JbIXO1vxStx+mjx51JtRgrnom/a1ceCPgg91nSbbFGhPjSIi+DcFkhN/ceVTIlJwqPZue6HV6cAzqX25S3atKQRzCVQmrBAIfTz8CaWTGyJfZzv7NSu4U1+GAKC2enHYIbFvI7IJeh5kaUaPSKSn7Hs631S0GcoP0p1fQ6e5YJSuWBaUM59Ud4maufXg2hqNhW8pf4WmVNebU+D2IVZ5tp/h/lcFXHgQnW3BoNeyjLV3Uyyd34YsQQw7r0uj5gRTB5mvaODb+1aeUVbUnL3cD5YudphdbtIQjxqx+sDauyw2w==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 836eb7cf-c28f-4b90-7f47-08d881c0a89a
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3405.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2020 19:26:13.7875
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oeFivD6B48wg/v9Wy1sN+aXp409i2qeSdixe7PhXrhtN3Y+ESvkrKAAwXTaf2x1FQiOiBVC9eeo/9xzKXmDhSw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6142
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 07e0887302450a62f51dba72df6afb5fabb23d1c:
-
-  Merge tag 'fallthrough-fixes-clang-5.10-rc2' of git://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux (2020-10-29 13:02:52 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.10-rc3
-
-for you to fetch changes up to 2bcbf42add911ef63a6d90e92001dc2bcb053e68:
-
-  ionic: check port ptr before use (2020-11-05 09:58:25 -0800)
-
-----------------------------------------------------------------
-Networking fixes for 5.10-rc3, including fixes from wireless, can,
-and netfilter subtrees.
-
-Current release - bugs in new features:
-
- - can: isotp: isotp_rcv_cf(): enable RX timeout handling in
-   listen-only mode
-
-Previous release - regressions:
-
- - mac80211:
-   - don't require VHT elements for HE on 2.4 GHz
-   - fix regression where EAPOL frames were sent in plaintext
-
- - netfilter:
-   - ipset: Update byte and packet counters regardless of whether
-     they match
-
- - ip_tunnel: fix over-mtu packet send by allowing fragmenting even
-   if inner packet has IP_DF (don't fragment) set in its header
-   (when TUNNEL_DONT_FRAGMENT flag is not set on the tunnel dev)
-
- - net: fec: fix MDIO probing for some FEC hardware blocks
-
- - ip6_tunnel: set inner ipproto before ip6_tnl_encap to un-break
-   gso support
-
- - sctp: Fix COMM_LOST/CANT_STR_ASSOC err reporting on big-endian
-   platforms, sparse-related fix used the wrong integer size
-
-Previous release - always broken:
-
- - netfilter: use actual socket sk rather than skb sk when routing
-   harder
-
- - r8169: work around short packet hw bug on RTL8125 by padding frames
-
- - net: ethernet: ti: cpsw: disable PTPv1 hw timestamping
-   advertisement, the hardware does not support it
-
- - chelsio/chtls: fix always leaking ctrl_skb and another leak caused
-   by a race condition
-
- - fix drivers incorrectly writing into skbs on TX:
-   - cadence: force nonlinear buffers to be cloned
-   - gianfar: Account for Tx PTP timestamp in the skb headroom
-   - gianfar: Replace skb_realloc_headroom with skb_cow_head for PTP
-
- - can: flexcan:
-   - remove FLEXCAN_QUIRK_DISABLE_MECR quirk for LS1021A
-   - add ECC initialization for VF610 and LX2160A
-   - flexcan_remove(): disable wakeup completely
-
- - can: fix packet echo functionality:
-   - peak_canfd: fix echo management when loopback is on
-   - make sure skbs are not freed in IRQ context in case they need
-     to be dropped
-   - always clone the skbs to make sure they have a reference on
-     the socket, and prevent it from disappearing
-   - fix real payload length return value for RTR frames
-
- - can: j1939: return failure on bind if netdev is down, rather than
-   waiting indefinitely
-
-Misc:
-
- - IPv6: reply ICMP error if the first fragment don't include all
-   headers to improve compliance with RFC 8200
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Alexander Ovechkin (1):
-      ip6_tunnel: set inner ipproto before ip6_tnl_encap
-
-Camelia Groza (2):
-      dpaa_eth: update the buffer layout for non-A050385 erratum scenarios
-      dpaa_eth: fix the RX headroom size alignment
-
-Claudiu Manoil (2):
-      gianfar: Replace skb_realloc_headroom with skb_cow_head for PTP
-      gianfar: Account for Tx PTP timestamp in the skb headroom
-
-Colin Ian King (2):
-      net: atm: fix update of position index in lec_seq_next
-      can: isotp: padlen(): make const array static, makes object smaller
-
-Dan Carpenter (1):
-      can: peak_usb: add range checking in decode operations
-
-Daniele Palmas (1):
-      net: usb: qmi_wwan: add Telit LE910Cx 0x1230 composition
-
-Davide Caratti (1):
-      mptcp: token: fix unititialized variable
-
-Eelco Chaudron (1):
-      net: openvswitch: silence suspicious RCU usage warning
-
-Geert Uytterhoeven (1):
-      can: isotp: Explain PDU in CAN_ISOTP help text
-
-Greg Ungerer (1):
-      net: fec: fix MDIO probing for some FEC hardware blocks
-
-Grygorii Strashko (1):
-      net: ethernet: ti: cpsw: disable PTPv1 hw timestamping advertisement
-
-Hangbin Liu (2):
-      ICMPv6: Add ICMPv6 Parameter Problem, code 3 definition
-      IPv6: reply ICMP error if the first fragment don't include all headers
-
-Heiner Kallweit (1):
-      r8169: work around short packet hw bug on RTL8125
-
-Jakub Kicinski (6):
-      Merge branch 'ipv6-reply-icmp-error-if-fragment-doesn-t-contain-all-headers'
-      Merge git://git.kernel.org/.../pablo/nf
-      Merge tag 'mac80211-for-net-2020-10-30' of git://git.kernel.org/.../jberg/mac80211
-      Merge branch 'dpaa_eth-buffer-layout-fixes'
-      Merge branch 'master' of git://git.kernel.org/.../klassert/ipsec
-      Merge tag 'linux-can-fixes-for-5.10-20201103' of git://git.kernel.org/.../mkl/linux-can
-
-Jason A. Donenfeld (2):
-      wireguard: selftests: check that route_me_harder packets use the right sk
-      netfilter: use actual socket sk rather than skb sk when routing harder
-
-Joakim Zhang (4):
-      can: flexcan: remove FLEXCAN_QUIRK_DISABLE_MECR quirk for LS1021A
-      can: flexcan: add ECC initialization for LX2160A
-      can: flexcan: add ECC initialization for VF610
-      can: flexcan: flexcan_remove(): disable wakeup completely
-
-Johannes Berg (4):
-      mac80211: fix use of skb payload instead of header
-      cfg80211: initialize wdev data earlier
-      mac80211: always wind down STA state
-      mac80211: don't require VHT elements for HE on 2.4 GHz
-
-Jonathan McDowell (1):
-      net: dsa: qca8k: Fix port MTU setting
-
-Marc Kleine-Budde (2):
-      can: rx-offload: don't call kfree_skb() from IRQ context
-      can: mcp251xfd: mcp251xfd_regmap_crc_read(): increase severity of CRC read error messages
-
-Marek Szyprowski (1):
-      net: stmmac: Fix channel lock initialization
-
-Mark Deneen (1):
-      cadence: force nonlinear buffers to be cloned
-
-Mathy Vanhoef (1):
-      mac80211: fix regression where EAPOL frames were sent in plaintext
-
-Mauro Carvalho Chehab (1):
-      mac80211: fix kernel-doc markups
-
-Navid Emamdoost (1):
-      can: xilinx_can: handle failure cases of pm_runtime_get_sync
-
-Oleksij Rempel (3):
-      dt-bindings: can: add can-controller.yaml
-      dt-bindings: can: flexcan: convert fsl,*flexcan bindings to yaml
-      can: can_create_echo_skb(): fix echo skb generation: always use skb_clone()
-
-Oliver Hartkopp (2):
-      can: dev: __can_get_echo_skb(): fix real payload length return value for RTR frames
-      can: isotp: isotp_rcv_cf(): enable RX timeout handling in listen-only mode
-
-Pablo Neira Ayuso (2):
-      netfilter: nftables: fix netlink report logic in flowtable and genid
-      netfilter: nf_tables: missing validation from the abort path
-
-Petr Malat (1):
-      sctp: Fix COMM_LOST/CANT_STR_ASSOC err reporting on big-endian platforms
-
-Shannon Nelson (1):
-      ionic: check port ptr before use
-
-Stefano Brivio (1):
-      netfilter: ipset: Update byte and packet counters regardless of whether they match
-
-Stephane Grosjean (2):
-      can: peak_usb: peak_usb_get_ts_time(): fix timestamp wrapping
-      can: peak_canfd: pucan_handle_can_rx(): fix echo management when loopback is on
-
-Sukadev Bhattiprolu (1):
-      powerpc/vnic: Extend "failover pending" window
-
-Tom Rix (1):
-      can: mcp251xfd: remove unneeded break
-
-Vinay Kumar Yadav (2):
-      chelsio/chtls: fix memory leaks caused by a race
-      chelsio/chtls: fix always leaking ctrl_skb
-
-Vincent Mailhol (1):
-      can: dev: can_get_echo_skb(): prevent call to kfree_skb() in hard IRQ context
-
-Wong Vee Khee (1):
-      stmmac: intel: Fix kernel panic on pci probe
-
-Xin Long (1):
-      xfrm: interface: fix the priorities for ipip and ipv6 tunnels
-
-Ye Bin (1):
-      cfg80211: regulatory: Fix inconsistent format argument
-
-Yegor Yefremov (4):
-      can: j1939: rename jacd tool
-      can: j1939: fix syntax and spelling
-      can: j1939: swap addr and pgn in the send example
-      can: j1939: use backquotes for code samples
-
-YueHaibing (1):
-      sfp: Fix error handing in sfp_probe()
-
-Zhang Changzhong (3):
-      can: proc: can_remove_proc(): silence remove_proc_entry warning
-      can: j1939: j1939_sk_bind(): return failure if netdev is down
-      can: ti_hecc: ti_hecc_probe(): add missed clk_disable_unprepare() in error path
-
-kernel test robot (1):
-      can: mcp251xfd: mcp251xfd_regmap_nocrc_read(): fix semicolon.cocci warnings
-
-wenxu (1):
-      ip_tunnel: fix over-mtu packet send fail without TUNNEL_DONT_FRAGMENT flags
-
-zhuoliang zhang (1):
-      net: xfrm: fix a race condition during allocing spi
-
- .../bindings/net/can/can-controller.yaml           |  18 +++
- .../devicetree/bindings/net/can/fsl,flexcan.yaml   | 135 +++++++++++++++++++++
- .../devicetree/bindings/net/can/fsl-flexcan.txt    |  57 ---------
- Documentation/networking/j1939.rst                 | 120 +++++++++---------
- drivers/net/can/dev.c                              |  14 ++-
- drivers/net/can/flexcan.c                          |  12 +-
- drivers/net/can/peak_canfd/peak_canfd.c            |  11 +-
- drivers/net/can/rx-offload.c                       |   4 +-
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c     |  22 ++--
- drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c   |  18 +--
- drivers/net/can/ti_hecc.c                          |   8 +-
- drivers/net/can/usb/peak_usb/pcan_usb_core.c       |  51 +++++++-
- drivers/net/can/usb/peak_usb/pcan_usb_fd.c         |  48 ++++++--
- drivers/net/can/xilinx_can.c                       |   6 +-
- drivers/net/dsa/qca8k.c                            |   4 +-
- drivers/net/ethernet/cadence/macb_main.c           |   3 +-
- .../chelsio/inline_crypto/chtls/chtls_cm.c         |   2 +-
- .../chelsio/inline_crypto/chtls/chtls_hw.c         |   3 +
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c     |  28 +++--
- drivers/net/ethernet/freescale/fec.h               |   6 +
- drivers/net/ethernet/freescale/fec_main.c          |  29 +++--
- drivers/net/ethernet/freescale/gianfar.c           |  14 +--
- drivers/net/ethernet/ibm/ibmvnic.c                 |  36 +++++-
- .../net/ethernet/pensando/ionic/ionic_ethtool.c    |   5 +
- drivers/net/ethernet/realtek/r8169_main.c          |  14 ++-
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c  |  14 +--
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |   1 +
- drivers/net/ethernet/ti/cpsw_ethtool.c             |   1 -
- drivers/net/ethernet/ti/cpsw_priv.c                |   5 +-
- drivers/net/phy/sfp.c                              |   3 +-
- drivers/net/usb/qmi_wwan.c                         |   1 +
- include/linux/can/skb.h                            |  20 ++-
- include/linux/netfilter/nfnetlink.h                |   9 +-
- include/linux/netfilter_ipv4.h                     |   2 +-
- include/linux/netfilter_ipv6.h                     |  10 +-
- include/net/cfg80211.h                             |   9 +-
- include/net/mac80211.h                             |   7 +-
- include/uapi/linux/icmpv6.h                        |   1 +
- net/atm/lec.c                                      |   5 +-
- net/can/Kconfig                                    |   5 +-
- net/can/isotp.c                                    |  26 ++--
- net/can/j1939/socket.c                             |   6 +
- net/can/proc.c                                     |   6 +-
- net/ipv4/ip_tunnel.c                               |   3 -
- net/ipv4/netfilter.c                               |   8 +-
- net/ipv4/netfilter/iptable_mangle.c                |   2 +-
- net/ipv4/netfilter/nf_reject_ipv4.c                |   2 +-
- net/ipv4/xfrm4_tunnel.c                            |   4 +-
- net/ipv6/icmp.c                                    |   8 +-
- net/ipv6/ip6_tunnel.c                              |   4 +-
- net/ipv6/netfilter.c                               |   6 +-
- net/ipv6/netfilter/ip6table_mangle.c               |   2 +-
- net/ipv6/reassembly.c                              |  33 ++++-
- net/ipv6/xfrm6_tunnel.c                            |   4 +-
- net/mac80211/mlme.c                                |   3 +-
- net/mac80211/sta_info.c                            |  18 +++
- net/mac80211/sta_info.h                            |   9 +-
- net/mac80211/tx.c                                  |  44 ++++---
- net/mptcp/token.c                                  |   2 +-
- net/netfilter/ipset/ip_set_core.c                  |   3 +-
- net/netfilter/ipvs/ip_vs_core.c                    |   4 +-
- net/netfilter/nf_nat_proto.c                       |   4 +-
- net/netfilter/nf_synproxy_core.c                   |   2 +-
- net/netfilter/nf_tables_api.c                      |  19 +--
- net/netfilter/nfnetlink.c                          |  22 +++-
- net/netfilter/nft_chain_route.c                    |   4 +-
- net/netfilter/utils.c                              |   4 +-
- net/openvswitch/datapath.c                         |  14 +--
- net/openvswitch/flow_table.c                       |   2 +-
- net/sctp/sm_sideeffect.c                           |   4 +-
- net/wireless/core.c                                |  57 +++++----
- net/wireless/core.h                                |   5 +-
- net/wireless/nl80211.c                             |   3 +-
- net/wireless/reg.c                                 |   2 +-
- net/xfrm/xfrm_interface.c                          |   8 +-
- net/xfrm/xfrm_state.c                              |   8 +-
- tools/testing/selftests/wireguard/netns.sh         |   8 ++
- .../testing/selftests/wireguard/qemu/kernel.config |   2 +
- 78 files changed, 744 insertions(+), 382 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/can/can-controller.yaml
- create mode 100644 Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
+Hi Rob,
+
+On 11/5/2020 9:17 PM, Rob Herring wrote:
+> On Thu, Nov 05, 2020 at 04:11:14PM +0200, Laurentiu Tudor wrote:
+>> From: Ionut-robert Aron <ionut-robert.aron@nxp.com>
+>>
+>> Convert fsl,qoriq-mc to YAML in order to automate the verification
+>> process of dts files. In addition, update MAINTAINERS accordingly
+>> and, while at it, add some missing files.
+>>
+>> Signed-off-by: Ionut-robert Aron <ionut-robert.aron@nxp.com>
+>> [laurentiu.tudor@nxp.com: update MINTAINERS, updates & fixes in schema]
+>> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+>> ---
+>>  .../devicetree/bindings/misc/fsl,qoriq-mc.txt | 196 ----------------
+>>  .../bindings/misc/fsl,qoriq-mc.yaml           | 218 ++++++++++++++++++
+>>  .../ethernet/freescale/dpaa2/overview.rst     |   5 +-
+>>  MAINTAINERS                                   |   4 +-
+>>  4 files changed, 225 insertions(+), 198 deletions(-)
+>>  delete mode 100644 Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+>>  create mode 100644 Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
+> 
+> [...]
+> 
+>> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
+>> new file mode 100644
+>> index 000000000000..9e89fd8eb635
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
+>> @@ -0,0 +1,218 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +# Copyright 2020 NXP
+>> +%YAML 1.2
+>> +---
+>> +$id: https://eur01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fdevicetree.org%2Fschemas%2Fmisc%2Ffsl%2Cqoriq-mc.yaml%23&amp;data=04%7C01%7Claurentiu.tudor%40nxp.com%7C64a5aeb6fee5459041db08d881bf7bf2%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C637402006701140599%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=fkXEIYUqXK1Dn6AqZtYLzro8nwJNCPJFI1Q9F9fRYxE%3D&amp;reserved=0
+>> +$schema: https://eur01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fdevicetree.org%2Fmeta-schemas%2Fcore.yaml%23&amp;data=04%7C01%7Claurentiu.tudor%40nxp.com%7C64a5aeb6fee5459041db08d881bf7bf2%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C637402006701140599%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=X7k0Sxh7uPo11GgkGCeaKKMzHdu0gtphKheyJeROZ9Q%3D&amp;reserved=0
+>> +
+>> +maintainers:
+>> +  - Laurentiu Tudor <laurentiu.tudor@nxp.com>
+>> +
+>> +title: Freescale Management Complex
+>> +
+>> +description: |
+>> +  The Freescale Management Complex (fsl-mc) is a hardware resource
+>> +  manager that manages specialized hardware objects used in
+>> +  network-oriented packet processing applications. After the fsl-mc
+>> +  block is enabled, pools of hardware resources are available, such as
+>> +  queues, buffer pools, I/O interfaces. These resources are building
+>> +  blocks that can be used to create functional hardware objects/devices
+>> +  such as network interfaces, crypto accelerator instances, L2 switches,
+>> +  etc.
+>> +
+>> +  For an overview of the DPAA2 architecture and fsl-mc bus see:
+>> +  Documentation/networking/device_drivers/freescale/dpaa2/overview.rst
+>> +
+>> +  As described in the above overview, all DPAA2 objects in a DPRC share the
+>> +  same hardware "isolation context" and a 10-bit value called an ICID
+>> +  (isolation context id) is expressed by the hardware to identify
+>> +  the requester.
+>> +
+>> +  The generic 'iommus' property is insufficient to describe the relationship
+>> +  between ICIDs and IOMMUs, so an iommu-map property is used to define
+>> +  the set of possible ICIDs under a root DPRC and how they map to
+>> +  an IOMMU.
+>> +
+>> +  For generic IOMMU bindings, see:
+>> +  Documentation/devicetree/bindings/iommu/iommu.txt.
+>> +
+>> +  For arm-smmu binding, see:
+>> +  Documentation/devicetree/bindings/iommu/arm,smmu.yaml.
+>> +
+>> +  MC firmware binary images can be found here:
+>> +  https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgithub.com%2FNXP%2Fqoriq-mc-binary&amp;data=04%7C01%7Claurentiu.tudor%40nxp.com%7C64a5aeb6fee5459041db08d881bf7bf2%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C637402006701140599%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=QKyEydXdS2AzqS7BlXVXDXpdjHfGL1%2BEdx95F1j5OHM%3D&amp;reserved=0
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: "fsl,qoriq-mc"
+> 
+> Don't need quotes.
+> 
+>> +    description: "Must be 'fsl,qoriq-mc'. A Freescale Management Complex
+> 
+> Drop                ^^^^^^^^^^^^^^^^^^^^^^^^
+> 
+> The schema says that.
+> 
+>> +                compatible with this binding must have Block Revision
+>> +                Registers BRR1 and BRR2 at offset 0x0BF8 and 0x0BFC in
+>> +                the MC control register region."
+>> +
+>> +  reg:
+>> +    description: "A standard property. Specifies one or two regions defining
+> 
+> Don't need quotes. You need '|' for a literal block to keep formatting.
+> 
+> But all this should be expressed as schema...
+> 
+>> +                the MC's registers:
+>> +
+>> +                - the first region is the command portal for the this machine
+>> +                  and must always be present
+>> +
+>> +                - the second region is the MC control registers. This region
+>> +                  may not be present in some scenarios, such as in the device
+>> +                  tree presented to a virtual machine."
+> 
+> reg:
+>   minItems: 1
+>   items:
+>     - description: the command portal for the this machine
+>     - description: MC control registers. This region may not be present 
+>         in some scenarios, such as in the device tree presented to a 
+>         virtual machine.
+> 
+>> +
+>> +  ranges:
+>> +    description: "A standard property. Defines the mapping between the child
+>> +                MC address space and the parent system address space.
+>> +
+>> +                The MC address space is defined by 3 components:
+>> +                <region type> <offset hi> <offset lo>
+>> +
+>> +                Valid values for region type are:
+>> +                  0x0 - MC portals
+>> +                  0x1 - QBMAN portals"
+>> +
+>> +  '#address-cells':
+>> +    const: 3
+>> +
+>> +  '#size-cells':
+>> +    const: 1
+>> +
+>> +  dpmacs:
+>> +    type: object
+>> +    description: "The fsl-mc node may optionally have dpmac sub-nodes that
+>> +                describe the relationship between the Ethernet MACs which belong
+>> +                to the MC and the Ethernet PHYs on the system board.
+>> +
+>> +                The dpmac nodes must be under a node named 'dpmacs' which
+>> +                contains the following properties:
+>> +
+>> +                - '#address-cells'
+>> +                  const: 1
+>> +                  description: Must be present if dpmac sub-nodes are defined
+>> +                              and must have a value of 1.
+>> +
+>> +                - '#size-cells'
+>> +                  const: 0
+>> +                  description: Must be present if dpmac sub-nodes are defined
+>> +                              and must have a value of 0."
+> 
+> Drop whatever description can be expressed in schemas.
+> 
+>> +
+>> +    properties:
+>> +      '#address-cells':
+>> +        const: 1
+>> +
+>> +      '#size-cells':
+>> +        const: 0
+>> +
+>> +    patternProperties:
+>> +      "^dpmac@[0-9a-f]+$":
+>> +        type: object
+>> +
+>> +        description: "dpmac sub-node that describes the relationship between the
+>> +                    Ethernet MACs which belong to the MC and the Ethernet PHYs
+>> +                    on the system board."
+>> +
+>> +        properties:
+>> +          compatible:
+>> +            const: "fsl,qoriq-mc-dpmac"
+>> +
+>> +          reg:
+>> +            description: Specifies the id of the dpmac
+> 
+> Constraints on the value?
+> 
+
+Thanks a lot for taking a look. Will take care in the next spin.
+
+PS. Nice work on the validation tools. My ~1 month old version didn't
+catch those errors.
+
+---
+Best Regards, Laurentiu
