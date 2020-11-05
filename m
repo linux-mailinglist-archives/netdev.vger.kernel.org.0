@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78CFF2A87FA
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 21:22:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9262A87F6
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 21:22:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732538AbgKEUWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 15:22:24 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:6732 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732498AbgKEUWN (ORCPT
+        id S1732527AbgKEUWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 15:22:16 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:19757 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732511AbgKEUWN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 15:22:13 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fa45ef60000>; Thu, 05 Nov 2020 12:22:14 -0800
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fa45ef90000>; Thu, 05 Nov 2020 12:22:17 -0800
 Received: from sx1.mtl.com (10.124.1.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 5 Nov
  2020 20:22:12 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        "Maor Gottlieb" <maorg@nvidia.com>, Mark Bloch <mbloch@nvidia.com>,
+        "Parav Pandit" <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net v2 4/7] net/mlx5: Fix deletion of duplicate rules
-Date:   Thu, 5 Nov 2020 12:21:26 -0800
-Message-ID: <20201105202129.23644-5-saeedm@nvidia.com>
+Subject: [net v2 5/7] net/mlx5: E-switch, Avoid extack error log for disabled vport
+Date:   Thu, 5 Nov 2020 12:21:27 -0800
+Message-ID: <20201105202129.23644-6-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201105202129.23644-1-saeedm@nvidia.com>
 References: <20201105202129.23644-1-saeedm@nvidia.com>
@@ -34,59 +34,50 @@ X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1604607734; bh=hZw4cR2iwc3qCOadGAQRRSPM4uxfq7okWlnuj2wf6/c=;
+        t=1604607737; bh=j7LWYgUNBaxUHkIVrP5NdUjX6NIjV8mO/ie4oV5iAeA=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=Y90l9eZ6+0PEXnf81dZSL/ANmLCmoMIv5RsO9IMvMkP8NHdgu/PfBBtE2+7ZjgHny
-         ygQQzfj7lt/9D6TkSBYDgMos0nuO4HXyO6mETcFHA30ixtrU78B14m1DQgf5IXx3BJ
-         ex/LtsJYv0PAF5RijNnUsiCAmQVp8Jt51B7/Y4emZikJw86w+om08HiSDVr8t/vl4U
-         aM9LPF3Pt9AkFpENyV7KD36/tNN7sd25oTzti6IYxQRT1vojaa+6KjAXgsc4LfDOxD
-         isSdYegDlPjlTsIUE+xQUyF0hz+Txcu61Q3gX57tHl5P9WnRRUAuhKc+eDhZlUdi+X
-         qL0UMlwAfzgVA==
+        b=aRhx4RgsHCqYt5rYyv8P6WB64bIBAA4QSlvk1trWsFVRmCLh6uicMeZclCJQvPi0G
+         JvjwYdXzjDNjP0ewZz23HhomoISuKYeY/SF1qbIh6Hjm5obBP+NkezYm2fYueVQNlw
+         6n+IU80be3ebGx+SvVg8e4elI20zukzlGzwsB4PQov1Wbgj5FufJZdpUjNdrqe+AnA
+         h8oDCFCpQb4xyWq808cmiW2nB2CBKEUXrvONB7foTqUbcj8J3523nnDU/ODz0WyEFV
+         AWgOWPeTXdhsw3qABVWC5kFwNgrOJWYr2cuA3HUGrRRJxG0eAGBWzgMWwtjcnrR05a
+         QgQStmESXdnWQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Gottlieb <maorg@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
 
-When a rule is duplicated, the refcount of the rule is increased so only
-the second deletion of the rule should cause destruction of the FTE.
-Currently, the FTE will be destroyed in the first deletion of rule since
-the modify_mask will be 0.
-Fix it and call to destroy FTE only if all the rules (FTE's children)
-have been removed.
+When E-switch vport is disabled, querying its hardware address is
+unsupported.
+Avoid setting extack error log message in such case.
 
-Fixes: 718ce4d601db ("net/mlx5: Consolidate update FTE for all removal chan=
-ges")
-Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Fixes: f099fde16db3 ("net/mlx5: E-switch, Support querying port function ma=
+c address")
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/fs_core.c
-index 16091838bfcf..325a5b0d6829 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -2010,10 +2010,11 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *h=
-andle)
- 	down_write_ref_node(&fte->node, false);
- 	for (i =3D handle->num_rules - 1; i >=3D 0; i--)
- 		tree_remove_node(&handle->rule[i]->node, true);
--	if (fte->modify_mask && fte->dests_size) {
--		modify_fte(fte);
-+	if (fte->dests_size) {
-+		if (fte->modify_mask)
-+			modify_fte(fte);
- 		up_write_ref_node(&fte->node, false);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/eswitch.c
+index 6e6a9a563992..e8e6294c7cca 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -1902,8 +1902,6 @@ int mlx5_devlink_port_function_hw_addr_get(struct dev=
+link *devlink,
+ 		ether_addr_copy(hw_addr, vport->info.mac);
+ 		*hw_addr_len =3D ETH_ALEN;
+ 		err =3D 0;
 -	} else {
-+	} else if (list_empty(&fte->node.children)) {
- 		del_hw_fte(&fte->node);
- 		/* Avoid double call to del_hw_fte */
- 		fte->node.del_hw_func =3D NULL;
+-		NL_SET_ERR_MSG_MOD(extack, "Eswitch vport is disabled");
+ 	}
+ 	mutex_unlock(&esw->state_lock);
+ 	return err;
 --=20
 2.26.2
 
