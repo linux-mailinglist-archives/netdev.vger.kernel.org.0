@@ -2,84 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 295772A7D17
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 12:34:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A70AE2A7D7B
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 12:49:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730073AbgKELcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 06:32:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53490 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729898AbgKELa6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 06:30:58 -0500
-Received: from localhost (otava-0257.koleje.cuni.cz [78.128.181.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6C0B32078E;
-        Thu,  5 Nov 2020 11:30:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604575857;
-        bh=Dxd/asuG1ffxD38m+faQ2D4wqGfZEZQQ/iK88SC6Vgw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RuUqKC6ALvHpg5g/xQ+Ff2j1vo5BlQDeHcKnmMHuDGGZXP76xIeJ9k6cXVTXNLYLD
-         9QX0GPbw2eYrNmMAm2KlDegUoCrLdR13v+rmerXMdwylI3ENeYH1OvU3JhHjjq4lGe
-         hkt2hXzrZ8O8onQz8m7gIiJqOilzosJd95iPf+gw=
-Date:   Thu, 5 Nov 2020 12:30:43 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Hayes Wang <hayeswang@realtek.com>
-Subject: Re: [PATCH net-next 3/5] r8152: add MCU typed read/write functions
-Message-ID: <20201105123043.3b114bec@kernel.org>
-In-Reply-To: <20201105105642.pgdxxlytpindj5fq@skbuf>
-References: <20201103192226.2455-4-kabel@kernel.org>
-        <20201103214712.dzwpkj6d5val6536@skbuf>
-        <20201104065524.36a85743@kernel.org>
-        <20201104084710.wr3eq4orjspwqvss@skbuf>
-        <20201104112511.78643f6e@kernel.org>
-        <20201104113545.0428f3fe@kernel.org>
-        <20201104110059.whkku3zlck6spnzj@skbuf>
-        <20201104121053.44fae8c7@kernel.org>
-        <20201104121424.th4v6b3ucjhro5d3@skbuf>
-        <20201105105418.555d6e54@kernel.org>
-        <20201105105642.pgdxxlytpindj5fq@skbuf>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1730344AbgKELsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 06:48:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726067AbgKELsx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 06:48:53 -0500
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8791AC0613CF
+        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 03:48:51 -0800 (PST)
+Received: by mail-qk1-x744.google.com with SMTP id l2so855195qkf.0
+        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 03:48:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=m+Zufvd54wO3VEEFDq424VjNE7m32M25R3h/w4VcU88=;
+        b=iMVIvcfjTxQ8VtqTVMSln4OLsGDQ48LJ/xZ//Bw5KRzy2znbpPyx51u292jpFQ0R46
+         SFzzqkhdifNThpgtBpFFhGKkWqaIe3+EDUJtpOnoWQPBYbhRCFViEbRRG/WaSMPZzxtq
+         rAWTTzCrseedrt2k0D4COsrwdRlNTaPoKgLnCYIyW6kvARugJ3RKTVLJAzcOEaYLaAPQ
+         AqzYLPUb66IohJl+/1KGZev0iOmtfC6vBz8ULJ+UOgBJi6vuTWbub79baanklK7RUZj/
+         7NLJI9BUBAzHBRLXnX6cfX9zoXH5CjgLnNyXGbQTcachnbIEF1HG6B0t6vauzs0TngnU
+         Eh6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=m+Zufvd54wO3VEEFDq424VjNE7m32M25R3h/w4VcU88=;
+        b=lRxWVa74BemJj7bxMksZ/VcPdSEM+1LgBRmGaSwjGDkhzyjXv3507YREDpX8JUK8Jp
+         xnz5xoJVkOGdUWFF1Yw3wSnRB85lxOEzPAjEasLbyVtpIXlfzwCr6ywHxW5WYV9+lsBg
+         RMHKba1pijpBQEK1Lp1qt22fvQ9dXv++F1++EjZwt86ikIyNVbfe7pXlWDBNhZhDs/fa
+         TZDXs7HGqVmlqCSOfpneYBUwBJfx6J8X4Kq3umpk/1NA5T9bO5apYsgUmKTMTw2ZDdvN
+         llfGR/LqH8WjIwAxfUnt+T+qtSrTdmp2ki/ASL+MOMFBz8N+kO0ODMxKvpL2Etuvi2KY
+         ZrBw==
+X-Gm-Message-State: AOAM530ikF++3SdnROv+GwBPvU5Lr1e48qSoEKmLoA1E1Jjt4w0IBdZu
+        zl/RBT3O4ODn0IRjjKuTkrV1QJHUcZTSoQ==
+X-Google-Smtp-Source: ABdhPJz92RGDJmARIYWI2RWMNNun0cdnZqloth8A0C/Wp95rkj5XaPBF6cOXZQylUxXEVoa5k3hrTg==
+X-Received: by 2002:a37:8903:: with SMTP id l3mr1504133qkd.219.1604576930793;
+        Thu, 05 Nov 2020 03:48:50 -0800 (PST)
+Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
+        by smtp.googlemail.com with ESMTPSA id l16sm662779qtr.21.2020.11.05.03.48.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Nov 2020 03:48:49 -0800 (PST)
+Subject: Re: [PATCH net-next v2] net: sched: implement action-specific terse
+ dump
+To:     Jakub Kicinski <kuba@kernel.org>, Vlad Buslov <vlad@buslov.dev>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us
+References: <20201102201243.287486-1-vlad@buslov.dev>
+ <20201104163916.4cf9b2dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <ba0251f7-e3d4-5197-3a09-8598418e10dc@mojatatu.com>
+Date:   Thu, 5 Nov 2020 06:48:48 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20201104163916.4cf9b2dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 Nov 2020 12:56:42 +0200
-Vladimir Oltean <olteanv@gmail.com> wrote:
-
-> On Thu, Nov 05, 2020 at 10:54:18AM +0100, Marek Beh=C3=BAn wrote:
-> > I thought that static inline functions are preferred to macros, since
-> > compiler warns better if they are used incorrectly... =20
->=20
-> Citation needed.
-
-Just search for substring "instead of macro" in git log, there are
-multiple such changes that were accepted since it provides better
-typechecking. I am not saying it is documented anywhere, just that I
-thought it was preffered.
-
-> Also, how do static inline functions wrapped in macros
-> (i.e. your patch) stack up against your claim about better warnings?
-
-If they are defined as functions (they don't have to be inline,
-of course) instead of macros and they are used incorrectly, the compiler
-provides more readable warnings. (Yes, in current versions of gcc it is
-much better than in the past, but still there are more lines of
-warnings printed: "in expansion of macro"...).
+On 2020-11-04 7:39 p.m., Jakub Kicinski wrote:
+> On Mon,  2 Nov 2020 22:12:43 +0200 Vlad Buslov wrote:
+>> Allow user to request action terse dump with new flag value
+>> TCA_FLAG_TERSE_DUMP. Only output essential action info in terse dump (kind,
+>> stats, index and cookie, if set by the user when creating the action). This
+>> is different from filter terse dump where index is excluded (filter can be
+>> identified by its own handle).
+>>
+>> Move tcf_action_dump_terse() function to the beginning of source file in
+>> order to call it from tcf_dump_walker().
+>>
+>> Signed-off-by: Vlad Buslov <vlad@buslov.dev>
+>> Suggested-by: Jamal Hadi Salim <jhs@mojatatu.com>
+> 
+> Jiri, Cong, can I get an ack?
+> 
+> The previous terse dump made sense because it fulfilled the need of
+> an important user (OvS). 
 
 
-> I guess ease of maintainership should prevail here, and Hayes should
-> have the final word. I don't really have any stake here.
+The requirement is to save on how much data crosses between user
+space and the kernel. If you are polling the kernel every second
+for stats and you can shave say 32B per rule - it is not a big
+deal if you have a few rules. If you have 1M rules thats 32MB/s
+removed.
+So how do you get the stats? You can poll the rules (which have actions
+that embed the stats). That approach is taken by Ovs and some others.
+Or you can poll the actions instead (approach we have taken to cut
+further on data crossing). Polling the actions has also got a lot of
+other features built in for this precise purpose (example time-of-use
+filtering).
+Terse is useful in both cases because it cuts the amount of data
+further.
 
-Vladimir, your arguments are valid and I accept the reasoning.
-I too can see that the resulting code is a little awkward.
+Hope that clarifies.
 
-Marek
-
-
+cheers,
+jamal
