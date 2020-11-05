@@ -2,126 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B2D02A768D
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 05:42:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12DA72A7691
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 05:48:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730361AbgKEEl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Nov 2020 23:41:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728784AbgKEEl5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 23:41:57 -0500
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8953C0613CF
-        for <netdev@vger.kernel.org>; Wed,  4 Nov 2020 20:41:55 -0800 (PST)
-Received: by mail-io1-xd44.google.com with SMTP id o11so465397ioo.11
-        for <netdev@vger.kernel.org>; Wed, 04 Nov 2020 20:41:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Duq9dQW5Jzdb3ujMdT0fiNUQPULoX6VzrLszCWfIuRA=;
-        b=mj7WaTYLQl8Z8R2+cxErwAk6QYCYtuk0BSwcy4Vo6G0ibhWEaIHAlS9ZYRLPxt+FCx
-         Ehwxe3anN94g13po/UTX3cYHwWT4ZbCnWjCnCH9k2rHZXv4p+2T1zSd7KTQhEGsiNqDL
-         z/BB4MVSBP/8yJStYTBVtCP72D+noVuyGO1qFuFka+VAnKVKL7lF5R7BrKeFDZdfiZOn
-         sHHoU8m7LaCUdbERPUlYZ0YudsrKxdNhNthytEuK4SJiXAsU99bI537BL0UE9YN0cWNy
-         sDTdTQWAMMIEftHdjNxEL+SE6RyqW9gln7MNiTb2LiXaDtzkU65EEilv3cmgskHuQ5vN
-         JKmQ==
+        id S1728632AbgKEEsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Nov 2020 23:48:05 -0500
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:35759 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730497AbgKEEsE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Nov 2020 23:48:04 -0500
+Received: by mail-yb1-f196.google.com with SMTP id m188so225253ybf.2;
+        Wed, 04 Nov 2020 20:48:04 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Duq9dQW5Jzdb3ujMdT0fiNUQPULoX6VzrLszCWfIuRA=;
-        b=i/lpT5NeMuPDqMpo2UUBeiLHFWNxq0ExLoNIft9e6eCmOPBI9M7E1a12VMaShmaqi4
-         YU66hnKh9SUVPcoNuGjcfHbbXfzSt2n8EbqJsWcbABC/5LhJEXDWTrtWkxU7mDHwA1+q
-         IjkcUHXUDzalr4M1ttpHWgHsSP+HsbDznGye8LVh8ydRy/GQrJE9FJHamJLHYHQ6wU20
-         QWj60eiqSgGyDQk5ZX15PrPEJZJsvAHMDGiUf5HakUOHlhlu93h/IHjEEaN3qL46Sx8g
-         RNnkAf2v6FoZcvJM3w751enXO6TzMWFG3kkbhefvLzyZHNvsNLBcKaxncETwG5ykJSWV
-         Ot2Q==
-X-Gm-Message-State: AOAM533TUkblKC5xorHl9mcoGv0e83+tGw8oy0BSR5IW9jbzZQrMhfXC
-        se1oY6v1kf7Oj2cnBo/zTJFv1idu6ADdJZoWRn6zlg==
-X-Google-Smtp-Source: ABdhPJx1PyyQdfrnX4KUFq0a8rT1VNgnT1Ph8zJ9ue/a9y+4slW5/MkhfLkG8nrxOVPwFfwBEqkdYaKGgzycLmiPxEY=
-X-Received: by 2002:a02:cc77:: with SMTP id j23mr722712jaq.20.1604551314784;
- Wed, 04 Nov 2020 20:41:54 -0800 (PST)
+        bh=7wB2b/r7dgRZxbZt4PlWrfyH3nOLSlGXHJIyVgaDqTM=;
+        b=Zfw2hXcm5w01zJ0ibFB8FvxE4JqdPUCbotFqx6XGxs8tPmWK26cLqCVhQNX18DVpsv
+         UWy+k/BgMOwMtDHg2B691xYdGJixhK8Xtv3SV13dDzHuvVgxiVFRr8O72KQEoUDF5EN/
+         Yiqoon8EOSPQMm2Vze8J0c2M9gJqSgTuTg5gW2NbhotcxDvKvt9zgQxxy3hsjPLSDHDz
+         svD48Eg7w5qm3+qaeaSZAxET1uhTaUvvm6m/gzsfi7zRt6zkXD8JbsBVFsxfGgPVA+zR
+         2edmWjfbZGIpxgAMcBB2a6Z4xXXXMZ5yOjK8hpUEjhzwFjCWR8I+tzU84ZUvSIr7H28a
+         pxSQ==
+X-Gm-Message-State: AOAM533WY+83jkqkMY73FoLsRwru+7F5kjODAd09/od91V4l8uDamYfb
+        tXCcbTuIb5tmlROZuTEBPiFjzbjlVL5tov2mxFAkqR200+AmAg==
+X-Google-Smtp-Source: ABdhPJxGisx4EgH6crQuSHCu5Cu0I9k4PZRlumt1YdXuQLae+BqhrT+FlSwsRIn1avaPqPXPMP2aFEif1vw9zfaDTYM=
+X-Received: by 2002:a5b:f4f:: with SMTP id y15mr1268688ybr.226.1604551684103;
+ Wed, 04 Nov 2020 20:48:04 -0800 (PST)
 MIME-Version: 1.0
-References: <20200909062613.18604-1-lina.wang@mediatek.com>
- <20200915073006.GR20687@gauss3.secunet.de> <1600160722.5295.15.camel@mbjsdccf07>
- <20200915093230.GS20687@gauss3.secunet.de> <1600172260.2494.2.camel@mbjsdccf07>
- <20200917074637.GV20687@gauss3.secunet.de> <1600341549.32639.5.camel@mbjsdccf07>
- <1604547381.23648.14.camel@mbjsdccf07>
-In-Reply-To: <1604547381.23648.14.camel@mbjsdccf07>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Wed, 4 Nov 2020 20:41:43 -0800
-Message-ID: <CANP3RGfvadfLabY9vVFxcWioEBUURRSx3GHgbO2KHO180wX=bw@mail.gmail.com>
-Subject: Re: [PATCH] xfrm:fragmented ipv4 tunnel packets in inner interface
-To:     "lina.wang" <lina.wang@mediatek.com>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Kernel hackers <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Greg Kroah-Hartman <gregkh@google.com>
+References: <20201103220636.972106-1-mkl@pengutronix.de> <20201103220636.972106-6-mkl@pengutronix.de>
+ <20201103172102.3d75cb96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CANn89iK5xqYmLT=DZk0S15pRObSJbo2-zrO7_A0Q46Ujg1RxYg@mail.gmail.com>
+ <988aea6a-c6b6-5d58-3a8e-604a52df0320@hartkopp.net> <20201104080237.4d6605ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <550bf8d4-bf4c-b1ef-cd41-78c2b71514e3@hartkopp.net>
+In-Reply-To: <550bf8d4-bf4c-b1ef-cd41-78c2b71514e3@hartkopp.net>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Thu, 5 Nov 2020 13:47:53 +0900
+Message-ID: <CAMZ6RqK=oEn3pgHb2byMC_SOVdG3Bbsfzssu9Fd-jDpSzEbrwQ@mail.gmail.com>
+Subject: Re: [net 05/27] can: dev: can_get_echo_skb(): prevent call to
+ kfree_skb() in hard IRQ context
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Eric Dumazet <edumazet@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        linux-can <linux-can@vger.kernel.org>, kernel@pengutronix.de
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 4, 2020 at 7:53 PM lina.wang <lina.wang@mediatek.com> wrote:
+On Wed, 5 Nov 2020 02:46, Oliver Hartkopp wrote:
+> On 04.11.20 17:02, Jakub Kicinski wrote:
+>> On Wed, 4 Nov 2020 15:59:25 +0100 Oliver Hartkopp wrote:
+>>> On 04.11.20 09:16, Eric Dumazet wrote:
 >
-> Besides several operators donot fragment packets even DF bit is not set,
-> and instead just drop packets which they think big, maybe they have a
-> consideration--- fragmentation is expensive for both the router that
-> fragments and for the host that reassembles.
->
-> BTW, ipv6 has the different behaviour when it meets such scenary, which
-> is what we expected,ipv4 should follow the same thing. otherwise,
-> packets are drop, it is a serious thing, and there is no hints. What we
-> do is just fragmenting smaller packets, or is it possible to give us
-> some flag or a sysctl to allow us to change the behaviour?
->
-> On Thu, 2020-09-17 at 19:19 +0800, lina.wang wrote:
-> > But it is not just one operator's broken router or misconfigured
-> > router.In the whole network, it is common to meet that router will drop
-> > bigger packet silently.I think we should make code more compatible.and
-> > the scenary is wifi calling, which mostly used udp,you know, udp
-> > wouldnot retransmit.It is serious when packet is dropped
-> >
-> > On Thu, 2020-09-17 at 09:46 +0200, Steffen Klassert wrote:
-> > > On Tue, Sep 15, 2020 at 08:17:40PM +0800, lina.wang wrote:
-> > > > We didnot get the router's log, which is some operator's.Actually, after
-> > > > we patched, there is no such issue. Sometimes,router will return
-> > > > packet-too-big, most of times nothing returned,dropped silently
-> > >
-> > > This looks like a broken router, we can't fix that in the code.
-> > >
-> > > > On Tue, 2020-09-15 at 11:32 +0200, Steffen Klassert wrote:
-> > > > > On Tue, Sep 15, 2020 at 05:05:22PM +0800, lina.wang wrote:
-> > > > > >
-> > > > > > Yes, DF bit is not set.
-> > > > >
-> > > > > ...
-> > > > >
-> > > > > > Those two packets are fragmented to one big udp packet, which payload is 1516B.
-> > > > > > After getting rid of tunnel header, it is also a udp packet, which payload is
-> > > > > > 1466 bytes.It didnot get any response for this packet.We guess it is dropped
-> > > > > > by router. Because if we reduced the length, it got response.
-> > > > >
-> > > > > If the DF bit is not set, the router should fragment the packet. If it
-> > > > > does not do so, it is misconfigured. Do you have access to that router?
+>>>> So skb_orphan(skb) in CAN before calling netif_rx() is better IMO.
+>>>>
+>>>
+>>> Unfortunately you missed the answer from Vincent, why skb_orphan() does
+>>> not work here:
 
-I'm afraid I don't really understand the exact scenario from the
-description of the patch.
+Hope that my answer did not go to the spam box.
 
-However... a few questions come to mind.
-(a) why not set the DF flag, does the protocol require > mtu udp frames
-(b) what is the mtu of the inner tunnel device, and what is the mtu on
-the route through the device?
-- shouldn't we be udp fragmenting to the route/device mtu?
-maybe stuff is simply misconfigured...
+>>> https://lore.kernel.org/linux-can/CAMZ6RqJyZTcqZcq6jEzm5LLM_MMe=dYDbwvv=Y+dBR0drWuFmw@mail.gmail.com/
+>>
+>> Okay, we can take this as a quick fix but to me it seems a little
+>> strange to be dropping what is effectively locally generated frames.
+
+For those who are not familiar with SocketCAN and to make sure that we
+are all aligned here, let me give a bit of context of how the echo on CAN
+skbs is usually implement in the drivers:
+ * In the xmit() branch, the driver would queue the skb using
+   can_put_echo_skb().
+ * Whenever the driver gets notified of a successful TX, it will loopback
+   the skb using can_get_echo_skb().
+
+This is why the loopback is usually done in hardware IRQ context (but
+drivers are also free to skip the second step and directly loopback the
+skb in the xmit() branch).
+
+> Thanks! So this patch doesn't hinder Marc's PR :-)
+>
+>> Can we use a NAPI poll model here and back pressure TX if the echo
+>> is not keeping up?
+>
+> Some of the CAN network drivers already support NAPI.
+
+I had a quick look at NAPI in the past and my understanding is that it
+requires the ability to turn off hardware interrupts meaning that it can
+be only used on some NIC, not but not, for example, on USB devices.
+
+It would be nice to extend the NAPI with skb loopback for drivers which
+already supports it but I am not sure how to include the other drivers.
+
+> @Marc: Can we also use NAPI for echo'ing the skbs?
+
+
+Yours sincerely,
+Vincent Mailhol
