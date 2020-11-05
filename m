@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B85AC2A7A8E
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 10:30:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B41F2A7A7D
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 10:29:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731309AbgKEJaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 04:30:01 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:60222 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731225AbgKEJ25 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 04:28:57 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A59PpfL017351;
-        Thu, 5 Nov 2020 01:28:53 -0800
+        id S1731429AbgKEJ3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 04:29:02 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:23368 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731348AbgKEJ3A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 04:29:00 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A59PwNC011455;
+        Thu, 5 Nov 2020 01:28:56 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=VqxjRT4aTosNWb53hu//aRNKlkjNJcYbAY0g81AMJeo=;
- b=ekms+pAvmb2ZOPeKejwpAnZzEajwjDOQPKGVHMXRcjYLgW881HE2M3UxmDeTHbYiactZ
- Ud+UBXbCqo2K/bDHmCM87S+qe+Zl5eaEO54DmJLoKmPOtkLh8VDagxdVCr3PIlgfQE8l
- WKgF9QVX3yvgRnpmm7D3Pn6DKB4tavs1e66FxNmq4dqicTZymmlVRYV5pBludQC1amIh
- ltXTv8Vdng6fYFr9LF6GzEYGn5ehV1958eUg/CaIQISO9ZHddWGATydKNtrB/Bm7/hH7
- Gs3TcMg/XNsfQZLfGwuj5j4Bh5cSPkLXaYhxt3AtO2CgHHANbArNNLeqHOcj7r80RKl+ NA== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 34h7ep6me5-1
+ content-type; s=pfpt0220; bh=ie5C+32mO3H94OyjnKwnEWwy+9pk6g2Q4eF3/nLPXBk=;
+ b=NtNsStw/ApVyRtbpejvVsRvUYxtg60bnnmHyxDVolVimS7hS24cV0/ADmVlBv7sB1nh9
+ ZTLDP64/CrcfRBG/SY8fCSReOIeATarQGJUXS9E89ppxOXsqRLpTr3GtStsILBJuKiNV
+ QGyn1x/jUyWt5zDaiwR6XLVUZE6jtJlp3EPGA26TjWNsccPOqAZrpJULF8aWx6eLjFrK
+ YqdPc1mT5eGTXqiw4fSdbQ7OAn3b1UWRkfBQiL8FYwLTVYvM/qYxfgiKJgPjfmwybDQd
+ aCg5Cg0kMlzUDMZ9cDwhYRMTtZQh4RH1bbmkWxIJf1tdNfnlXb31HqaK1NmSWKRf94fk Xw== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 34mbfcrr9c-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 05 Nov 2020 01:28:53 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 5 Nov
- 2020 01:28:51 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 5 Nov
- 2020 01:28:51 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 5 Nov 2020 01:28:51 -0800
+        Thu, 05 Nov 2020 01:28:56 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 5 Nov
+ 2020 01:28:55 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 5 Nov 2020 01:28:55 -0800
 Received: from hyd1583.caveonetworks.com (unknown [10.29.37.44])
-        by maili.marvell.com (Postfix) with ESMTP id 601783F703F;
-        Thu,  5 Nov 2020 01:28:48 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 3F1193F703F;
+        Thu,  5 Nov 2020 01:28:52 -0800 (PST)
 From:   Naveen Mamindlapalli <naveenm@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
         <sbhatta@marvell.com>, <hkelam@marvell.com>,
         Naveen Mamindlapalli <naveenm@marvell.com>
-Subject: [PATCH v2 net-next 06/13] octeontx2-pf: Add support for unicast MAC address filtering
-Date:   Thu, 5 Nov 2020 14:58:09 +0530
-Message-ID: <20201105092816.819-7-naveenm@marvell.com>
+Subject: [PATCH v2 net-next 07/13] octeontx2-af: Add debugfs entry to dump the MCAM rules
+Date:   Thu, 5 Nov 2020 14:58:10 +0530
+Message-ID: <20201105092816.819-8-naveenm@marvell.com>
 X-Mailer: git-send-email 2.16.5
 In-Reply-To: <20201105092816.819-1-naveenm@marvell.com>
 References: <20201105092816.819-1-naveenm@marvell.com>
@@ -58,256 +55,252 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hariprasad Kelam <hkelam@marvell.com>
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-Add unicast MAC address filtering support using install flow
-message. Total of 8 MCAM entries are allocated for adding
-unicast mac filtering rules. If the MCAM allocation fails,
-the unicast filtering support will not be advertised.
+Add debugfs support to dump the MCAM rules installed using
+NPC_INSTALL_FLOW mbox message. Debugfs file can display mcam
+entry, counter if any, flow type and counter hits.
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Ethtool will dump the ntuple flows related to the PF only.
+The debugfs file gives systemwide view of the MCAM rules
+installed by all the PF's.
+
+Below is the example output when the debugfs file is read:
+~ # mount -t debugfs none /sys/kernel/debug
+~ # cat /sys/kernel/debug/octeontx2/npc/mcam_rules
+
+	Installed by: PF1
+	direction: RX
+        mcam entry: 227
+	udp source port 23 mask 0xffff
+	Forward to: PF1 VF0
+        action: Direct to queue 0
+	enabled: yes
+        counter: 1
+        hits: 0
+
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  10 ++
- .../ethernet/marvell/octeontx2/nic/otx2_flows.c    | 138 +++++++++++++++++++--
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |   5 +
- 3 files changed, 146 insertions(+), 7 deletions(-)
+ .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    | 197 +++++++++++++++++++++
+ 1 file changed, 197 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 0f33bbba4e2b..f36972d46771 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -229,10 +229,17 @@ struct otx2_ptp {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index b7b6b6f8865a..39e1a614aaf8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -1770,6 +1770,198 @@ static int rvu_dbg_npc_rx_miss_stats_display(struct seq_file *filp,
  
- #define OTX2_HW_TIMESTAMP_LEN	8
+ RVU_DEBUG_SEQ_FOPS(npc_rx_miss_act, npc_rx_miss_stats_display, NULL);
  
-+struct otx2_mac_table {
-+	u8 addr[ETH_ALEN];
-+	u16 mcam_entry;
-+	bool inuse;
-+};
-+
- struct otx2_flow_config {
- 	u16			entry[NPC_MAX_NONCONTIG_ENTRIES];
- 	u32			nr_flows;
- 	u32			ntuple_offset;
-+	u32			unicast_offset;
- 	u32                     ntuple_max_flows;
- 	struct list_head	flow_list;
- };
-@@ -249,6 +256,7 @@ struct otx2_nic {
- #define OTX2_FLAG_INTF_DOWN			BIT_ULL(2)
- #define OTX2_FLAG_MCAM_ENTRIES_ALLOC		BIT_ULL(3)
- #define OTX2_FLAG_NTUPLE_SUPPORT		BIT_ULL(4)
-+#define OTX2_FLAG_UCAST_FLTR_SUPPORT		BIT_ULL(5)
- #define OTX2_FLAG_RX_PAUSE_ENABLED		BIT_ULL(9)
- #define OTX2_FLAG_TX_PAUSE_ENABLED		BIT_ULL(10)
- 	u64			flags;
-@@ -674,5 +682,7 @@ int otx2_add_flow(struct otx2_nic *pfvf,
- int otx2_remove_flow(struct otx2_nic *pfvf, u32 location);
- int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
- 			      struct npc_install_flow_req *req);
-+int otx2_del_macfilter(struct net_device *netdev, const u8 *mac);
-+int otx2_add_macfilter(struct net_device *netdev, const u8 *mac);
- 
- #endif /* OTX2_COMMON_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-index a66b19c58f51..8851f8cd3822 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-@@ -10,8 +10,10 @@
- 
- /* helper macros to support mcam flows */
- #define OTX2_MAX_NTUPLE_FLOWS	32
-+#define OTX2_MAX_UNICAST_FLOWS	8
- 
--#define OTX2_MCAM_COUNT		OTX2_MAX_NTUPLE_FLOWS
-+#define OTX2_MCAM_COUNT		(OTX2_MAX_NTUPLE_FLOWS + \
-+				 OTX2_MAX_UNICAST_FLOWS)
- 
- #define OTX2_DEFAULT_ACTION	0x1
- 
-@@ -35,7 +37,13 @@ int otx2_mcam_flow_init(struct otx2_nic *pf)
- 
- 	pf->flow_cfg->ntuple_max_flows = OTX2_MAX_NTUPLE_FLOWS;
- 
--	pf->flags |= OTX2_FLAG_NTUPLE_SUPPORT;
-+	pf->flags |= OTX2_FLAG_NTUPLE_SUPPORT |
-+		     OTX2_FLAG_UCAST_FLTR_SUPPORT;
-+
-+	pf->mac_table = devm_kzalloc(pf->dev, sizeof(struct otx2_mac_table)
-+					* OTX2_MAX_UNICAST_FLOWS, GFP_KERNEL);
-+	if (!pf->mac_table)
-+		return -ENOMEM;
- 
- 	return 0;
- }
-@@ -77,13 +85,19 @@ int otx2_alloc_mcam_entries(struct otx2_nic *pfvf)
- 	rsp = (struct npc_mcam_alloc_entry_rsp *)otx2_mbox_get_rsp
- 	       (&pfvf->mbox.mbox, 0, &req->hdr);
- 
--	if (rsp->count != req->count)
-+	if (rsp->count != req->count) {
- 		netdev_info(pfvf->netdev, "number of rules truncated to %d\n",
- 			    rsp->count);
--
--	/* support only ntuples here */
--	flow_cfg->ntuple_max_flows = rsp->count;
--	flow_cfg->ntuple_offset = 0;
-+		/* support only ntuples here */
-+		flow_cfg->ntuple_max_flows = rsp->count;
-+		flow_cfg->ntuple_offset = 0;
-+		pfvf->netdev->priv_flags &= ~IFF_UNICAST_FLT;
-+		pfvf->flags &= ~OTX2_FLAG_UCAST_FLTR_SUPPORT;
-+	} else {
-+		flow_cfg->ntuple_offset = 0;
-+		flow_cfg->unicast_offset = flow_cfg->ntuple_offset +
-+						OTX2_MAX_NTUPLE_FLOWS;
-+	}
- 
- 	for (i = 0; i < rsp->count; i++)
- 		flow_cfg->entry[i] = rsp->entry_list[i];
-@@ -94,6 +108,116 @@ int otx2_alloc_mcam_entries(struct otx2_nic *pfvf)
- 	return 0;
- }
- 
-+/*  On success adds mcam entry
-+ *  On failure enable promisous mode
-+ */
-+static int otx2_do_add_macfilter(struct otx2_nic *pf, const u8 *mac)
++static void rvu_dbg_npc_mcam_show_flows(struct seq_file *s,
++					struct rvu_npc_mcam_rule *rule)
 +{
-+	struct otx2_flow_config *flow_cfg = pf->flow_cfg;
-+	struct npc_install_flow_req *req;
-+	int err, i;
++	u8 bit;
 +
-+	if (!(pf->flags & OTX2_FLAG_MCAM_ENTRIES_ALLOC)) {
-+		err = otx2_alloc_mcam_entries(pf);
-+		if (err)
-+			return err;
++	for_each_set_bit(bit, (unsigned long *)&rule->features, 64) {
++		seq_printf(s, "\t%s  ", npc_get_field_name(bit));
++		switch (bit) {
++		case NPC_DMAC:
++			seq_printf(s, "%pM ", rule->packet.dmac);
++			seq_printf(s, "mask %pM\n", rule->mask.dmac);
++			break;
++		case NPC_SMAC:
++			seq_printf(s, "%pM ", rule->packet.smac);
++			seq_printf(s, "mask %pM\n", rule->mask.smac);
++			break;
++		case NPC_ETYPE:
++			seq_printf(s, "0x%x ", ntohs(rule->packet.etype));
++			seq_printf(s, "mask 0x%x\n", ntohs(rule->mask.etype));
++			break;
++		case NPC_OUTER_VID:
++			seq_printf(s, "%d ", ntohs(rule->packet.vlan_tci));
++			seq_printf(s, "mask 0x%x\n",
++				   ntohs(rule->mask.vlan_tci));
++			break;
++		case NPC_TOS:
++			seq_printf(s, "%d ", rule->packet.tos);
++			seq_printf(s, "mask 0x%x\n", rule->mask.tos);
++			break;
++		case NPC_SIP_IPV4:
++			seq_printf(s, "%pI4 ", &rule->packet.ip4src);
++			seq_printf(s, "mask %pI4\n", &rule->mask.ip4src);
++			break;
++		case NPC_DIP_IPV4:
++			seq_printf(s, "%pI4 ", &rule->packet.ip4dst);
++			seq_printf(s, "mask %pI4\n", &rule->mask.ip4dst);
++			break;
++		case NPC_SIP_IPV6:
++			seq_printf(s, "%pI6 ", rule->packet.ip6src);
++			seq_printf(s, "mask %pI6\n", rule->mask.ip6src);
++			break;
++		case NPC_DIP_IPV6:
++			seq_printf(s, "%pI6 ", rule->packet.ip6dst);
++			seq_printf(s, "mask %pI6\n", rule->mask.ip6dst);
++			break;
++		case NPC_SPORT_TCP:
++		case NPC_SPORT_UDP:
++		case NPC_SPORT_SCTP:
++			seq_printf(s, "%d ", ntohs(rule->packet.sport));
++			seq_printf(s, "mask 0x%x\n", ntohs(rule->mask.sport));
++			break;
++		case NPC_DPORT_TCP:
++		case NPC_DPORT_UDP:
++		case NPC_DPORT_SCTP:
++			seq_printf(s, "%d ", ntohs(rule->packet.dport));
++			seq_printf(s, "mask 0x%x\n", ntohs(rule->mask.dport));
++			break;
++		default:
++			break;
++		}
 +	}
++}
 +
-+	if (!(pf->flags & OTX2_FLAG_UCAST_FLTR_SUPPORT))
-+		return -ENOMEM;
-+
-+	/* dont have free mcam entries or uc list is greater than alloted */
-+	if (netdev_uc_count(pf->netdev) > OTX2_MAX_UNICAST_FLOWS)
-+		return -ENOMEM;
-+
-+	mutex_lock(&pf->mbox.lock);
-+	req = otx2_mbox_alloc_msg_npc_install_flow(&pf->mbox);
-+	if (!req) {
-+		mutex_unlock(&pf->mbox.lock);
-+		return -ENOMEM;
++static void rvu_dbg_npc_mcam_show_action(struct seq_file *s,
++					 struct rvu_npc_mcam_rule *rule)
++{
++	if (rule->intf == NIX_INTF_TX) {
++		switch (rule->tx_action.op) {
++		case NIX_TX_ACTIONOP_DROP:
++			seq_puts(s, "\taction: Drop\n");
++			break;
++		case NIX_TX_ACTIONOP_UCAST_DEFAULT:
++			seq_puts(s, "\taction: Unicast to default channel\n");
++			break;
++		case NIX_TX_ACTIONOP_UCAST_CHAN:
++			seq_printf(s, "\taction: Unicast to channel %d\n",
++				   rule->tx_action.index);
++			break;
++		case NIX_TX_ACTIONOP_MCAST:
++			seq_puts(s, "\taction: Multicast\n");
++			break;
++		case NIX_TX_ACTIONOP_DROP_VIOL:
++			seq_puts(s, "\taction: Lockdown Violation Drop\n");
++			break;
++		default:
++			break;
++		};
++	} else {
++		switch (rule->rx_action.op) {
++		case NIX_RX_ACTIONOP_DROP:
++			seq_puts(s, "\taction: Drop\n");
++			break;
++		case NIX_RX_ACTIONOP_UCAST:
++			seq_printf(s, "\taction: Direct to queue %d\n",
++				   rule->rx_action.index);
++			break;
++		case NIX_RX_ACTIONOP_RSS:
++			seq_puts(s, "\taction: RSS\n");
++			break;
++		case NIX_RX_ACTIONOP_UCAST_IPSEC:
++			seq_puts(s, "\taction: Unicast ipsec\n");
++			break;
++		case NIX_RX_ACTIONOP_MCAST:
++			seq_puts(s, "\taction: Multicast\n");
++			break;
++		default:
++			break;
++		};
 +	}
++}
 +
-+	/* unicast offset starts with 32 0..31 for ntuple */
-+	for (i = 0; i <  OTX2_MAX_UNICAST_FLOWS; i++) {
-+		if (pf->mac_table[i].inuse)
-+			continue;
-+		ether_addr_copy(pf->mac_table[i].addr, mac);
-+		pf->mac_table[i].inuse = true;
-+		pf->mac_table[i].mcam_entry =
-+			flow_cfg->entry[i + flow_cfg->unicast_offset];
-+		req->entry =  pf->mac_table[i].mcam_entry;
++static const char *rvu_dbg_get_intf_name(int intf)
++{
++	switch (intf) {
++	case NIX_INTFX_RX(0):
++		return "NIX0_RX";
++	case NIX_INTFX_RX(1):
++		return "NIX1_RX";
++	case NIX_INTFX_TX(0):
++		return "NIX0_TX";
++	case NIX_INTFX_TX(1):
++		return "NIX1_TX";
++	default:
 +		break;
 +	}
 +
-+	ether_addr_copy(req->packet.dmac, mac);
-+	eth_broadcast_addr((u8 *)&req->mask.dmac);
-+	req->features = BIT_ULL(NPC_DMAC);
-+	req->channel = pf->hw.rx_chan_base;
-+	req->intf = NIX_INTF_RX;
-+	req->op = NIX_RX_ACTION_DEFAULT;
-+	req->set_cntr = 1;
-+
-+	err = otx2_sync_mbox_msg(&pf->mbox);
-+	mutex_unlock(&pf->mbox.lock);
-+
-+	return err;
++	return "unknown";
 +}
 +
-+int otx2_add_macfilter(struct net_device *netdev, const u8 *mac)
++static int rvu_dbg_npc_mcam_show_rules(struct seq_file *s, void *unused)
 +{
-+	struct otx2_nic *pf = netdev_priv(netdev);
-+	int err;
++	struct rvu_npc_mcam_rule *iter;
++	struct rvu *rvu = s->private;
++	struct npc_mcam *mcam;
++	int pf, vf = -1;
++	int blkaddr;
++	u16 target;
++	u64 hits;
 +
-+	err = otx2_do_add_macfilter(pf, mac);
-+	if (err) {
-+		netdev->flags |= IFF_PROMISC;
-+		return err;
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, 0);
++	if (blkaddr < 0)
++		return 0;
++
++	mcam = &rvu->hw->mcam;
++
++	mutex_lock(&mcam->lock);
++	list_for_each_entry(iter, &mcam->mcam_rules, list) {
++		pf = (iter->owner >> RVU_PFVF_PF_SHIFT) & RVU_PFVF_PF_MASK;
++		seq_printf(s, "\n\tInstalled by: PF%d ", pf);
++
++		if (iter->owner & RVU_PFVF_FUNC_MASK) {
++			vf = (iter->owner & RVU_PFVF_FUNC_MASK) - 1;
++			seq_printf(s, "VF%d", vf);
++		}
++		seq_puts(s, "\n");
++
++		seq_printf(s, "\tdirection: %s\n", is_npc_intf_rx(iter->intf) ?
++						    "RX" : "TX");
++		seq_printf(s, "\tinterface: %s\n",
++			   rvu_dbg_get_intf_name(iter->intf));
++		seq_printf(s, "\tmcam entry: %d\n", iter->entry);
++
++		rvu_dbg_npc_mcam_show_flows(s, iter);
++		if (iter->intf == NIX_INTF_RX) {
++			target = iter->rx_action.pf_func;
++			pf = (target >> RVU_PFVF_PF_SHIFT) & RVU_PFVF_PF_MASK;
++			seq_printf(s, "\tForward to: PF%d ", pf);
++
++			if (target & RVU_PFVF_FUNC_MASK) {
++				vf = (target & RVU_PFVF_FUNC_MASK) - 1;
++				seq_printf(s, "VF%d", vf);
++			}
++			seq_puts(s, "\n");
++		}
++
++		rvu_dbg_npc_mcam_show_action(s, iter);
++		seq_printf(s, "\tenabled: %s\n", iter->enable ? "yes" : "no");
++
++		if (!iter->has_cntr)
++			continue;
++		seq_printf(s, "\tcounter: %d\n", iter->cntr);
++
++		hits = rvu_read64(rvu, blkaddr, NPC_AF_MATCH_STATX(iter->cntr));
++		seq_printf(s, "\thits: %lld\n", hits);
 +	}
++	mutex_unlock(&mcam->lock);
++
 +	return 0;
 +}
 +
-+static bool otx2_get_mcamentry_for_mac(struct otx2_nic *pf, const u8 *mac,
-+				       int *mcam_entry)
-+{
-+	int i;
++RVU_DEBUG_SEQ_FOPS(npc_mcam_rules, npc_mcam_show_rules, NULL);
 +
-+	for (i = 0; i < OTX2_MAX_UNICAST_FLOWS; i++) {
-+		if (!pf->mac_table[i].inuse)
-+			continue;
-+
-+		if (ether_addr_equal(pf->mac_table[i].addr, mac)) {
-+			*mcam_entry = pf->mac_table[i].mcam_entry;
-+			pf->mac_table[i].inuse = false;
-+			return true;
-+		}
-+	}
-+	return false;
-+}
-+
-+int otx2_del_macfilter(struct net_device *netdev, const u8 *mac)
-+{
-+	struct otx2_nic *pf = netdev_priv(netdev);
-+	struct npc_delete_flow_req *req;
-+	int err, mcam_entry;
-+
-+	/* check does mcam entry exists for given mac */
-+	if (!otx2_get_mcamentry_for_mac(pf, mac, &mcam_entry))
-+		return 0;
-+
-+	mutex_lock(&pf->mbox.lock);
-+	req = otx2_mbox_alloc_msg_npc_delete_flow(&pf->mbox);
-+	if (!req) {
-+		mutex_unlock(&pf->mbox.lock);
-+		return -ENOMEM;
-+	}
-+	req->entry = mcam_entry;
-+	/* Send message to AF */
-+	err = otx2_sync_mbox_msg(&pf->mbox);
-+	mutex_unlock(&pf->mbox.lock);
-+
-+	return err;
-+}
-+
- static struct otx2_flow *otx2_find_flow(struct otx2_nic *pfvf, u32 location)
+ static void rvu_dbg_npc_init(struct rvu *rvu)
  {
- 	struct otx2_flow *iter;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index f85073528eb9..8f9b5f539069 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1724,6 +1724,10 @@ void otx2_do_set_rx_mode(struct work_struct *work)
- 	if (!(netdev->flags & IFF_UP))
- 		return;
+ 	const struct device *dev = &rvu->pdev->dev;
+@@ -1784,6 +1976,11 @@ static void rvu_dbg_npc_init(struct rvu *rvu)
+ 	if (!pfile)
+ 		goto create_failed;
  
-+	/* Write unicast address to mcam entries or del from mcam */
-+	if (netdev->priv_flags & IFF_UNICAST_FLT)
-+		__dev_uc_sync(netdev, otx2_add_macfilter, otx2_del_macfilter);
++	pfile = debugfs_create_file("mcam_rules", 0444, rvu->rvu_dbg.npc,
++				    rvu, &rvu_dbg_npc_mcam_rules_fops);
++	if (!pfile)
++		goto create_failed;
 +
- 	mutex_lock(&pf->mbox.lock);
- 	req = otx2_mbox_alloc_msg_nix_set_rx_mode(&pf->mbox);
- 	if (!req) {
-@@ -2118,6 +2122,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	netdev->hw_features |= NETIF_F_LOOPBACK | NETIF_F_NTUPLE |
- 			       NETIF_F_RXALL;
-+	netdev->priv_flags |= IFF_UNICAST_FLT;
- 
- 	netdev->gso_max_segs = OTX2_MAX_GSO_SEGS;
- 	netdev->watchdog_timeo = OTX2_TX_TIMEOUT;
+ 	pfile = debugfs_create_file("rx_miss_act_stats", 0444, rvu->rvu_dbg.npc,
+ 				    rvu, &rvu_dbg_npc_rx_miss_act_fops);
+ 	if (!pfile)
 -- 
 2.16.5
 
