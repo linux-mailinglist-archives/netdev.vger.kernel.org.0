@@ -2,170 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 017CF2A7EEE
-	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 13:49:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81B1F2A7F74
+	for <lists+netdev@lfdr.de>; Thu,  5 Nov 2020 14:07:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730429AbgKEMtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 07:49:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
+        id S1730618AbgKENHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 08:07:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725468AbgKEMtG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 07:49:06 -0500
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E96C0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 04:49:06 -0800 (PST)
-Received: by mail-wm1-x344.google.com with SMTP id c18so1473022wme.2
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 04:49:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MZYX1Jtswi9EobHzQrigCKEKpGP1HMr8FYDPquGnRcA=;
-        b=IuQeH70ueg96pzZ86GvnOwHZKNzd5sUpIpV+SJJQqlpmf9trKGfipnGDoL5cvwSOzS
-         QqoetynU8x1TRkSOIQ3a9o5Ye6gHP8D9DSHyuh5sWIfqJp7+08XOuc8dLkYIXGBu0X16
-         WrV+p+hPCqYCXG9OU5XuIVBHrZNcpK6MJfSfE4ymjfnbcJCpgIDnsRHipSg5mbWyvq8y
-         pGoISYBfrqoaj/pefu8gpK3LOjL3gKISm3IFHUoQo9J8pgkxgml7WOeo7Lka4XjGc2Rh
-         iNQTRKw+ooWlioXE+bLEnaVyyoiSS6C8kk8dz+02ZyhZNhWELvI7po29gdSMUepvbQ8I
-         ESZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MZYX1Jtswi9EobHzQrigCKEKpGP1HMr8FYDPquGnRcA=;
-        b=CkzQeiyWmlREchv8x3hk1jPL4vmSgM15GqOKG4TP7KFme8EM/kNwV6H/Zeaeo7pR82
-         /AOKOhIy0K3svOcrMLh5yPzCjieCh6g7SoB6GKIHOnfw+ujehxwuotJgFOO+Wm3p/cIk
-         xe+600J5Mn2u7Kto2r3yP2VtvM22ZXcjFk1msKtZDSomazh/Iqi1WwwowxqO6ntDA1Yl
-         NJJvVoQlnq+CB0NWbC5LlYYrwIUgorMRGrD1xr3c/SbUl5vFyD/yaf9Pu/5nbTOSTSII
-         +mP2HbpPGnS3HTkiDTq8HmMM5txsMu4Vun+oJCla+/H8Xi4q1rmWs3DxR7hjVa8e3B5A
-         yHBA==
-X-Gm-Message-State: AOAM532tlZFR+khfyydh8mhduswhShbFxRblThWRwYoOWxLxKFT27AZ6
-        TTsRo/F2ZkUapjGftVrtmyM=
-X-Google-Smtp-Source: ABdhPJyVOVTq3sWxEvd3mKymwNEBK/xQEeF1i8CKqgBSjkIeR6Rk0iOUzvbhszGn4q0VSmJfmOdzEA==
-X-Received: by 2002:a1c:9695:: with SMTP id y143mr2601687wmd.70.1604580545170;
-        Thu, 05 Nov 2020 04:49:05 -0800 (PST)
-Received: from [192.168.8.114] ([37.172.191.42])
-        by smtp.gmail.com with ESMTPSA id o3sm2361092wru.15.2020.11.05.04.49.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Nov 2020 04:49:04 -0800 (PST)
-Subject: Re: [RESEND PATCH] bonding: wait for sysfs kobject destruction before
- freeing struct slave
-To:     Jamie Iles <jamie@nuviainc.com>, netdev@vger.kernel.org
-Cc:     Qiushi Wu <wu000273@umn.edu>, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-References: <20201105084108.3432509-1-jamie@nuviainc.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <89416a2d-8a9b-f225-3c2a-16210df25e61@gmail.com>
-Date:   Thu, 5 Nov 2020 13:49:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.1
+        with ESMTP id S1730511AbgKENHp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 08:07:45 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D0AC0613D2
+        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 05:07:45 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kaezI-0006cV-1X; Thu, 05 Nov 2020 14:07:36 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:74d6:79:dc8d:9bc9] (unknown [IPv6:2a03:f580:87bc:d400:74d6:79:dc8d:9bc9])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 36A8058B5AE;
+        Thu,  5 Nov 2020 13:07:31 +0000 (UTC)
+Subject: Re: [PATCH][next] can: usb: fix potential integer overflow on shift
+ of a int
+To:     Colin King <colin.king@canonical.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stephane Grosjean <s.grosjean@peak-system.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201105112427.40688-1-colin.king@canonical.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <8d13950d-bd89-7184-7ec7-d1b308a51069@pengutronix.de>
+Date:   Thu, 5 Nov 2020 14:07:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20201105084108.3432509-1-jamie@nuviainc.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20201105112427.40688-1-colin.king@canonical.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="fKFLKQqxjuHZ7Rc0ZeeosIM82x3wmgzvW"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--fKFLKQqxjuHZ7Rc0ZeeosIM82x3wmgzvW
+Content-Type: multipart/mixed; boundary="UzuUnkocISsTmrvIHSR6pwGpUAdKvcZOK";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Colin King <colin.king@canonical.com>,
+ Wolfgang Grandegger <wg@grandegger.com>,
+ "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+ Stephane Grosjean <s.grosjean@peak-system.com>, linux-can@vger.kernel.org,
+ netdev@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <8d13950d-bd89-7184-7ec7-d1b308a51069@pengutronix.de>
+Subject: Re: [PATCH][next] can: usb: fix potential integer overflow on shift
+ of a int
+References: <20201105112427.40688-1-colin.king@canonical.com>
+In-Reply-To: <20201105112427.40688-1-colin.king@canonical.com>
+
+--UzuUnkocISsTmrvIHSR6pwGpUAdKvcZOK
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
+
+On 11/5/20 12:24 PM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+>=20
+> The left shift of int 32 bit integer constant 1 is evaluated using
+> 32 bit arithmetic and then assigned to a signed 64 bit variable. In
+> the case where time_ref->adapter->ts_used_bits is 32 or more this
+> can lead to an oveflow. Avoid this by shifting using the BIT_ULL macro
+> instead.
+>=20
+> Addresses-Coverity: ("Unintentional integer overflow")
+> Fixes: bb4785551f64 ("can: usb: PEAK-System Technik USB adapters driver=
+ core")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+
+Applied to linux-can/testing (not to next).
+
+Thanks,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
-On 11/5/20 9:41 AM, Jamie Iles wrote:
-> syzkaller found that with CONFIG_DEBUG_KOBJECT_RELEASE=y, releasing a
-> struct slave device could result in the following splat:
-> 
->
+--UzuUnkocISsTmrvIHSR6pwGpUAdKvcZOK--
 
-> This is a potential use-after-free if the sysfs nodes are being accessed
-> whilst removing the struct slave, so wait for the object destruction to
-> complete before freeing the struct slave itself.
-> 
-> Fixes: 07699f9a7c8d ("bonding: add sysfs /slave dir for bond slave devices.")
-> Fixes: a068aab42258 ("bonding: Fix reference count leak in bond_sysfs_slave_add.")
-> Cc: Qiushi Wu <wu000273@umn.edu>
-> Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-> Cc: Veaceslav Falico <vfalico@gmail.com>
-> Cc: Andy Gospodarek <andy@greyhouse.net>
-> Signed-off-by: Jamie Iles <jamie@nuviainc.com>
-> ---
->  drivers/net/bonding/bond_sysfs_slave.c | 12 ++++++++++++
->  include/net/bonding.h                  |  2 ++
->  2 files changed, 14 insertions(+)
-> 
-> diff --git a/drivers/net/bonding/bond_sysfs_slave.c b/drivers/net/bonding/bond_sysfs_slave.c
-> index 9b8346638f69..2fdbcf9692c5 100644
-> --- a/drivers/net/bonding/bond_sysfs_slave.c
-> +++ b/drivers/net/bonding/bond_sysfs_slave.c
-> @@ -136,7 +136,15 @@ static const struct sysfs_ops slave_sysfs_ops = {
->  	.show = slave_show,
->  };
->  
-> +static void slave_release(struct kobject *kobj)
-> +{
-> +	struct slave *slave = to_slave(kobj);
-> +
-> +	complete(&slave->kobj_unregister_done);
-> +}
-> +
->  static struct kobj_type slave_ktype = {
-> +	.release = slave_release,
->  #ifdef CONFIG_SYSFS
->  	.sysfs_ops = &slave_sysfs_ops,
->  #endif
-> @@ -147,10 +155,12 @@ int bond_sysfs_slave_add(struct slave *slave)
->  	const struct slave_attribute **a;
->  	int err;
->  
-> +	init_completion(&slave->kobj_unregister_done);
->  	err = kobject_init_and_add(&slave->kobj, &slave_ktype,
->  				   &(slave->dev->dev.kobj), "bonding_slave");
->  	if (err) {
->  		kobject_put(&slave->kobj);
-> +		wait_for_completion(&slave->kobj_unregister_done);
->  		return err;
->  	}
->  
-> @@ -158,6 +168,7 @@ int bond_sysfs_slave_add(struct slave *slave)
->  		err = sysfs_create_file(&slave->kobj, &((*a)->attr));
->  		if (err) {
->  			kobject_put(&slave->kobj);
-> +			wait_for_completion(&slave->kobj_unregister_done);
->  			return err;
->  		}
->  	}
-> @@ -173,4 +184,5 @@ void bond_sysfs_slave_del(struct slave *slave)
->  		sysfs_remove_file(&slave->kobj, &((*a)->attr));
->  
->  	kobject_put(&slave->kobj);
-> +	wait_for_completion(&slave->kobj_unregister_done);
->  }
-> diff --git a/include/net/bonding.h b/include/net/bonding.h
-> index 7d132cc1e584..78d771d2ffd3 100644
-> --- a/include/net/bonding.h
-> +++ b/include/net/bonding.h
-> @@ -25,6 +25,7 @@
->  #include <linux/etherdevice.h>
->  #include <linux/reciprocal_div.h>
->  #include <linux/if_link.h>
-> +#include <linux/completion.h>
->  
->  #include <net/bond_3ad.h>
->  #include <net/bond_alb.h>
-> @@ -182,6 +183,7 @@ struct slave {
->  #endif
->  	struct delayed_work notify_work;
->  	struct kobject kobj;
-> +	struct completion kobj_unregister_done;
->  	struct rtnl_link_stats64 slave_stats;
->  };
+--fKFLKQqxjuHZ7Rc0ZeeosIM82x3wmgzvW
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-This seems weird, are we going to wait for a completion while RTNL is held ?
-I am pretty sure this could be exploited by malicious user/syzbot.
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+j+Q4ACgkQqclaivrt
+76lDAAgAmVS/8BHbRxhbJFsf90ZpCLXW2O8xQzYxVfGCDekpKN7zmOJbbUI10JP4
+uDteyJfwK6v7VoxdXuS5l4txDmUZJKcrp3GBrU+UBwD0f4zI6DMrX+F1rXLkoMUM
+KI1pGjZQmf8QueXO8fsP1MIPh2shRHTbbOb1OL1bQK5/lpjiclnJj8F9Z1mdE1ll
+wVSnye1cXHE8r+ojIZYZN59Arw4bjA4t9zeMVry44j1VP4XjwNxvgDrjAsp2dAyf
+wqT7lSerPFKEEf2UaTj1EHuUk8SD+VX25FxJrb/BB7LO4DgNoaI1JS7D280IO1lO
+yVDmJCfaOR7jN1C2DDyL23EtOKOWYw==
+=oerU
+-----END PGP SIGNATURE-----
 
-The .release() handler could instead perform a refcounted
-bond_free_slave() action.
-
-
-
+--fKFLKQqxjuHZ7Rc0ZeeosIM82x3wmgzvW--
