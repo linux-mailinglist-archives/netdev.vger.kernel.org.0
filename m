@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C5B42A9AE9
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 18:34:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D6A72A9AE7
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 18:34:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727742AbgKFRc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 12:32:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45090 "EHLO mail.kernel.org"
+        id S1727718AbgKFRcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 12:32:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45158 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727610AbgKFRct (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Nov 2020 12:32:49 -0500
+        id S1727674AbgKFRcw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Nov 2020 12:32:52 -0500
 Received: from localhost.localdomain (HSI-KBW-46-223-126-90.hsi.kabel-badenwuerttemberg.de [46.223.126.90])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6535B208C7;
-        Fri,  6 Nov 2020 17:32:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0F1B52151B;
+        Fri,  6 Nov 2020 17:32:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604683968;
-        bh=ffEVquCSMWpRc6D61TaaU+vK0F4lMUvh6PRi0Z3P3e8=;
+        s=default; t=1604683971;
+        bh=yEza5hTzjZgoh6zJHNuUl5eqkfjxO5JNXXNYliXmprw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p5ytTdpGsTl2aRiL4J/Cnt5cYLRLIxiaufNj6O8Ltgw3MBlbK3YUP93XPSqPoXzRU
-         9+i47NeCGzxOAJjnMZOP3UacG3HYlY4U/B2+eRo13/B4IwoIFICePXc+XpPpF7KKFV
-         MYU3II+9N4/5LEqtCyTdjfJ6B2r7fHsl9AhOE5Os=
+        b=Z0nJsLaqRdODljru/MdCAClQc4u6miA5F8vH9JiRrL1/S+JfZXgV5CFyR5staPRrf
+         KEsmfmewdolwHjtNmiAJVGklIpDlshwORotCCOfOucSQQytFA0kdhSVZoBaXQRxOxM
+         UjcxZqhZ8W2NJRpgx9nO33nuFT0hetEdEfo+k5EA=
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     Arnd Bergmann <arnd@arndb.de>,
@@ -34,9 +34,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         Eric Dumazet <edumazet@google.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 2/4] net: socket: rework SIOC?IFMAP ioctls
-Date:   Fri,  6 Nov 2020 18:32:29 +0100
-Message-Id: <20201106173231.3031349-3-arnd@kernel.org>
+Subject: [PATCH net-next v3 3/4] net: socket: simplify dev_ifconf handling
+Date:   Fri,  6 Nov 2020 18:32:30 +0100
+Message-Id: <20201106173231.3031349-4-arnd@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201106173231.3031349-1-arnd@kernel.org>
 References: <20201106173231.3031349-1-arnd@kernel.org>
@@ -48,217 +48,322 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-SIOCGIFMAP and SIOCSIFMAP currently require compat_alloc_user_space()
-and copy_in_user() for compat mode.
-
-Move the compat handling into the location where the structures are
-actually used, to avoid using those interfaces and get a clearer
-implementation.
+The dev_ifconf() calling conventions make compat handling
+more complicated than necessary, simplify this by moving
+the in_compat_syscall() check into the function.
+The implementation can be simplified further, based on the
+knowledge that the dynamic registration is only ever used
+for IPv4.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
-changes in v3:
- - complete rewrite
+ include/linux/inetdevice.h |  8 ++++
+ include/linux/netdevice.h  | 10 +----
+ net/core/dev_ioctl.c       | 92 +++++++++++++++-----------------------
+ net/ipv4/devinet.c         |  4 +-
+ net/socket.c               | 59 ++++++------------------
+ 5 files changed, 60 insertions(+), 113 deletions(-)
 
-changes in v2:
- - fix building with CONFIG_COMPAT disabled (0day bot)
- - split up dev_ifmap() into more readable helpers (hch)
- - move rcu_read_unlock() for readability (hch)
----
- include/linux/compat.h | 18 ++++++------
- net/core/dev_ioctl.c   | 64 +++++++++++++++++++++++++++++++++---------
- net/socket.c           | 39 ++-----------------------
- 3 files changed, 62 insertions(+), 59 deletions(-)
-
-diff --git a/include/linux/compat.h b/include/linux/compat.h
-index 08dbd34bb7a5..47496c5eb5eb 100644
---- a/include/linux/compat.h
-+++ b/include/linux/compat.h
-@@ -96,6 +96,15 @@ struct compat_iovec {
- 	compat_size_t	iov_len;
- };
+diff --git a/include/linux/inetdevice.h b/include/linux/inetdevice.h
+index 3515ca64e638..e8a957ca80f8 100644
+--- a/include/linux/inetdevice.h
++++ b/include/linux/inetdevice.h
+@@ -178,6 +178,14 @@ static inline struct net_device *ip_dev_find(struct net *net, __be32 addr)
  
-+struct compat_ifmap {
-+	compat_ulong_t mem_start;
-+	compat_ulong_t mem_end;
-+	unsigned short base_addr;
-+	unsigned char irq;
-+	unsigned char dma;
-+	unsigned char port;
-+};
-+
- #ifdef CONFIG_COMPAT
- 
- #ifndef compat_user_stack_pointer
-@@ -314,15 +323,6 @@ typedef struct compat_sigevent {
- 	} _sigev_un;
- } compat_sigevent_t;
- 
--struct compat_ifmap {
--	compat_ulong_t mem_start;
--	compat_ulong_t mem_end;
--	unsigned short base_addr;
--	unsigned char irq;
--	unsigned char dma;
--	unsigned char port;
--};
--
- struct compat_if_settings {
- 	unsigned int type;	/* Type of physical device or protocol */
- 	unsigned int size;	/* Size of the data allocated by the caller */
-diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-index 205e92e604ef..1c6da044754a 100644
---- a/net/core/dev_ioctl.c
-+++ b/net/core/dev_ioctl.c
-@@ -98,6 +98,55 @@ int dev_ifconf(struct net *net, struct ifconf *ifc, int size)
- 	return 0;
- }
- 
-+static int dev_getifmap(struct net_device *dev, struct ifreq *ifr)
+ int inet_addr_onlink(struct in_device *in_dev, __be32 a, __be32 b);
+ int devinet_ioctl(struct net *net, unsigned int cmd, struct ifreq *);
++#ifdef CONFIG_INET
++int inet_gifconf(struct net_device *dev, char __user *buf, int len, int size);
++#else
++static inline inet_gifconf(struct net_device *dev, char __user *buf, int len, int size)
 +{
-+	struct ifmap *ifmap = &ifr->ifr_map;
-+	struct compat_ifmap *cifmap = (struct compat_ifmap *)&ifr->ifr_map;
-+
-+	if (in_compat_syscall()) {
-+		cifmap->mem_start = dev->mem_start;
-+		cifmap->mem_end   = dev->mem_end;
-+		cifmap->base_addr = dev->base_addr;
-+		cifmap->irq       = dev->irq;
-+		cifmap->dma       = dev->dma;
-+		cifmap->port      = dev->if_port;
-+
-+		return 0;
-+	}
-+
-+	ifmap->mem_start  = dev->mem_start;
-+	ifmap->mem_end    = dev->mem_end;
-+	ifmap->base_addr  = dev->base_addr;
-+	ifmap->irq        = dev->irq;
-+	ifmap->dma        = dev->dma;
-+	ifmap->port       = dev->if_port;
-+
 +	return 0;
 +}
-+
-+static int dev_setifmap(struct net_device *dev, struct ifreq *ifr)
-+{
-+	struct compat_ifmap *cifmap = (struct compat_ifmap *)&ifr->ifr_map;
-+
-+	if (!dev->netdev_ops->ndo_set_config)
-+		return -EOPNOTSUPP;
-+
++#endif
+ void devinet_init(void);
+ struct in_device *inetdev_by_index(struct net *, int);
+ __be32 inet_select_addr(const struct net_device *dev, __be32 dst, int scope);
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 964b494b0e8d..b54d5308087d 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3137,14 +3137,6 @@ static inline bool dev_validate_header(const struct net_device *dev,
+ 	return false;
+ }
+ 
+-typedef int gifconf_func_t(struct net_device * dev, char __user * bufptr,
+-			   int len, int size);
+-int register_gifconf(unsigned int family, gifconf_func_t *gifconf);
+-static inline int unregister_gifconf(unsigned int family)
+-{
+-	return register_gifconf(family, NULL);
+-}
+-
+ #ifdef CONFIG_NET_FLOW_LIMIT
+ #define FLOW_LIMIT_HISTORY	(1 << 7)  /* must be ^2 and !overflow buckets */
+ struct sd_flow_limit {
+@@ -3837,7 +3829,7 @@ void netdev_rx_handler_unregister(struct net_device *dev);
+ bool dev_valid_name(const char *name);
+ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr,
+ 		bool *need_copyout);
+-int dev_ifconf(struct net *net, struct ifconf *, int);
++int dev_ifconf(struct net *net, struct ifconf __user *ifc);
+ int dev_ethtool(struct net *net, struct ifreq *);
+ unsigned int dev_get_flags(const struct net_device *);
+ int __dev_change_flags(struct net_device *dev, unsigned int flags,
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index 1c6da044754a..5822737a78f4 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include <linux/kmod.h>
+ #include <linux/netdevice.h>
++#include <linux/inetdevice.h>
+ #include <linux/etherdevice.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/net_tstamp.h>
+@@ -25,77 +26,56 @@ static int dev_ifname(struct net *net, struct ifreq *ifr)
+ 	return netdev_get_name(net, ifr->ifr_name, ifr->ifr_ifindex);
+ }
+ 
+-static gifconf_func_t *gifconf_list[NPROTO];
+-
+-/**
+- *	register_gifconf	-	register a SIOCGIF handler
+- *	@family: Address family
+- *	@gifconf: Function handler
+- *
+- *	Register protocol dependent address dumping routines. The handler
+- *	that is passed must not be freed or reused until it has been replaced
+- *	by another handler.
+- */
+-int register_gifconf(unsigned int family, gifconf_func_t *gifconf)
+-{
+-	if (family >= NPROTO)
+-		return -EINVAL;
+-	gifconf_list[family] = gifconf;
+-	return 0;
+-}
+-EXPORT_SYMBOL(register_gifconf);
+-
+ /*
+  *	Perform a SIOCGIFCONF call. This structure will change
+  *	size eventually, and there is nothing I can do about it.
+  *	Thus we will need a 'compatibility mode'.
+  */
+-
+-int dev_ifconf(struct net *net, struct ifconf *ifc, int size)
++int dev_ifconf(struct net *net, struct ifconf __user *uifc)
+ {
+ 	struct net_device *dev;
+-	char __user *pos;
+-	int len;
+-	int total;
+-	int i;
++	void __user *pos;
++	size_t size;
++	int len, total = 0, done;
+ 
+-	/*
+-	 *	Fetch the caller's info block.
+-	 */
++	/* both the ifconf and the ifreq structures are slightly different */
 +	if (in_compat_syscall()) {
-+		struct ifmap ifmap = {
-+			.mem_start  = cifmap->mem_start,
-+			.mem_end    = cifmap->mem_end,
-+			.base_addr  = cifmap->base_addr,
-+			.irq        = cifmap->irq,
-+			.dma        = cifmap->dma,
-+			.port       = cifmap->port,
-+		};
++		struct compat_ifconf ifc32;
+ 
+-	pos = ifc->ifc_buf;
+-	len = ifc->ifc_len;
++		if (copy_from_user(&ifc32, uifc, sizeof(struct compat_ifconf)))
++			return -EFAULT;
+ 
+-	/*
+-	 *	Loop over the interfaces, and write an info block for each.
+-	 */
++		pos = compat_ptr(ifc32.ifcbuf);
++		len = ifc32.ifc_len;
++		size = sizeof(struct compat_ifreq);
++	} else {
++		struct ifconf ifc;
+ 
+-	total = 0;
++		if (copy_from_user(&ifc, uifc, sizeof(struct ifconf)))
++			return -EFAULT;
 +
-+		return dev->netdev_ops->ndo_set_config(dev, &ifmap);
++		pos = ifc.ifc_buf;
++		len = ifc.ifc_len;
++		size = sizeof(struct ifreq);
 +	}
 +
-+	return dev->netdev_ops->ndo_set_config(dev, &ifr->ifr_map);
-+}
-+
- /*
-  *	Perform the SIOCxIFxxx calls, inside rcu_read_lock()
-  */
-@@ -139,13 +188,7 @@ static int dev_ifsioc_locked(struct net *net, struct ifreq *ifr, unsigned int cm
- 		break;
++	/* Loop over the interfaces, and write an info block for each. */
++	rtnl_lock();
+ 	for_each_netdev(net, dev) {
+-		for (i = 0; i < NPROTO; i++) {
+-			if (gifconf_list[i]) {
+-				int done;
+-				if (!pos)
+-					done = gifconf_list[i](dev, NULL, 0, size);
+-				else
+-					done = gifconf_list[i](dev, pos + total,
+-							       len - total, size);
+-				if (done < 0)
+-					return -EFAULT;
+-				total += done;
+-			}
++		if (!pos)
++			done = inet_gifconf(dev, NULL, 0, size);
++		else
++			done = inet_gifconf(dev, pos + total,
++					    len - total, size);
++		if (done < 0) {
++			rtnl_unlock();
++			return -EFAULT;
+ 		}
++		total += done;
+ 	}
++	rtnl_unlock();
  
- 	case SIOCGIFMAP:
--		ifr->ifr_map.mem_start = dev->mem_start;
--		ifr->ifr_map.mem_end   = dev->mem_end;
--		ifr->ifr_map.base_addr = dev->base_addr;
--		ifr->ifr_map.irq       = dev->irq;
--		ifr->ifr_map.dma       = dev->dma;
--		ifr->ifr_map.port      = dev->if_port;
--		return 0;
-+		return dev_getifmap(dev, ifr);
+-	/*
+-	 *	All done.  Write the updated control block back to the caller.
+-	 */
+-	ifc->ifc_len = total;
+-
+-	/*
+-	 * 	Both BSD and Solaris return 0 here, so we do too.
+-	 */
+-	return 0;
++	return put_user(total, &uifc->ifc_len);
+ }
  
- 	case SIOCGIFINDEX:
- 		ifr->ifr_ifindex = dev->ifindex;
-@@ -286,12 +329,7 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
- 		return 0;
+ static int dev_getifmap(struct net_device *dev, struct ifreq *ifr)
+diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+index 123a6d39438f..3e910dedcb80 100644
+--- a/net/ipv4/devinet.c
++++ b/net/ipv4/devinet.c
+@@ -1244,7 +1244,7 @@ int devinet_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr)
+ 	return ret;
+ }
  
- 	case SIOCSIFMAP:
--		if (ops->ndo_set_config) {
--			if (!netif_device_present(dev))
--				return -ENODEV;
--			return ops->ndo_set_config(dev, &ifr->ifr_map);
--		}
--		return -EOPNOTSUPP;
-+		return dev_setifmap(dev, ifr);
+-static int inet_gifconf(struct net_device *dev, char __user *buf, int len, int size)
++int inet_gifconf(struct net_device *dev, char __user *buf, int len, int size)
+ {
+ 	struct in_device *in_dev = __in_dev_get_rtnl(dev);
+ 	const struct in_ifaddr *ifa;
+@@ -2762,8 +2762,6 @@ void __init devinet_init(void)
+ 		INIT_HLIST_HEAD(&inet_addr_lst[i]);
  
- 	case SIOCADDMULTI:
- 		if (!ops->ndo_set_rx_mode ||
+ 	register_pernet_subsys(&devinet_ops);
+-
+-	register_gifconf(PF_INET, inet_gifconf);
+ 	register_netdevice_notifier(&ip_netdev_notifier);
+ 
+ 	queue_delayed_work(system_power_efficient_wq, &check_lifetime_work, 0);
 diff --git a/net/socket.c b/net/socket.c
-index 1670bc86a53c..2b58b1d87cad 100644
+index 2b58b1d87cad..f26ef299b6c5 100644
 --- a/net/socket.c
 +++ b/net/socket.c
-@@ -3212,40 +3212,6 @@ static int compat_ifreq_ioctl(struct net *net, struct socket *sock,
+@@ -1041,6 +1041,8 @@ EXPORT_SYMBOL(dlci_ioctl_set);
+ static long sock_do_ioctl(struct net *net, struct socket *sock,
+ 			  unsigned int cmd, unsigned long arg)
+ {
++	struct ifreq ifr;
++	bool need_copyout;
+ 	int err;
+ 	void __user *argp = (void __user *)arg;
+ 
+@@ -1053,25 +1055,13 @@ static long sock_do_ioctl(struct net *net, struct socket *sock,
+ 	if (err != -ENOIOCTLCMD)
+ 		return err;
+ 
+-	if (cmd == SIOCGIFCONF) {
+-		struct ifconf ifc;
+-		if (copy_from_user(&ifc, argp, sizeof(struct ifconf)))
+-			return -EFAULT;
+-		rtnl_lock();
+-		err = dev_ifconf(net, &ifc, sizeof(struct ifreq));
+-		rtnl_unlock();
+-		if (!err && copy_to_user(argp, &ifc, sizeof(struct ifconf)))
+-			err = -EFAULT;
+-	} else {
+-		struct ifreq ifr;
+-		bool need_copyout;
+-		if (copy_from_user(&ifr, argp, sizeof(struct ifreq)))
++	if (copy_from_user(&ifr, argp, sizeof(struct ifreq)))
++		return -EFAULT;
++	err = dev_ioctl(net, cmd, &ifr, &need_copyout);
++	if (!err && need_copyout)
++		if (copy_to_user(argp, &ifr, sizeof(struct ifreq)))
+ 			return -EFAULT;
+-		err = dev_ioctl(net, cmd, &ifr, &need_copyout);
+-		if (!err && need_copyout)
+-			if (copy_to_user(argp, &ifr, sizeof(struct ifreq)))
+-				return -EFAULT;
+-	}
++
  	return err;
  }
  
--static int compat_sioc_ifmap(struct net *net, unsigned int cmd,
--			struct compat_ifreq __user *uifr32)
+@@ -1194,6 +1184,11 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
+ 						   cmd == SIOCGSTAMP_NEW,
+ 						   false);
+ 			break;
++
++		case SIOCGIFCONF:
++			err = dev_ifconf(net, argp);
++			break;
++
+ 		default:
+ 			err = sock_do_ioctl(net, sock, cmd, arg);
+ 			break;
+@@ -3098,31 +3093,6 @@ void socket_seq_show(struct seq_file *seq)
+ #endif				/* CONFIG_PROC_FS */
+ 
+ #ifdef CONFIG_COMPAT
+-static int compat_dev_ifconf(struct net *net, struct compat_ifconf __user *uifc32)
 -{
--	struct ifreq ifr;
--	struct compat_ifmap __user *uifmap32;
+-	struct compat_ifconf ifc32;
+-	struct ifconf ifc;
 -	int err;
 -
--	uifmap32 = &uifr32->ifr_ifru.ifru_map;
--	err = copy_from_user(&ifr, uifr32, sizeof(ifr.ifr_name));
--	err |= get_user(ifr.ifr_map.mem_start, &uifmap32->mem_start);
--	err |= get_user(ifr.ifr_map.mem_end, &uifmap32->mem_end);
--	err |= get_user(ifr.ifr_map.base_addr, &uifmap32->base_addr);
--	err |= get_user(ifr.ifr_map.irq, &uifmap32->irq);
--	err |= get_user(ifr.ifr_map.dma, &uifmap32->dma);
--	err |= get_user(ifr.ifr_map.port, &uifmap32->port);
--	if (err)
+-	if (copy_from_user(&ifc32, uifc32, sizeof(struct compat_ifconf)))
 -		return -EFAULT;
 -
--	err = dev_ioctl(net, cmd, &ifr, NULL);
+-	ifc.ifc_len = ifc32.ifc_len;
+-	ifc.ifc_req = compat_ptr(ifc32.ifcbuf);
 -
--	if (cmd == SIOCGIFMAP && !err) {
--		err = copy_to_user(uifr32, &ifr, sizeof(ifr.ifr_name));
--		err |= put_user(ifr.ifr_map.mem_start, &uifmap32->mem_start);
--		err |= put_user(ifr.ifr_map.mem_end, &uifmap32->mem_end);
--		err |= put_user(ifr.ifr_map.base_addr, &uifmap32->base_addr);
--		err |= put_user(ifr.ifr_map.irq, &uifmap32->irq);
--		err |= put_user(ifr.ifr_map.dma, &uifmap32->dma);
--		err |= put_user(ifr.ifr_map.port, &uifmap32->port);
--		if (err)
--			err = -EFAULT;
--	}
--	return err;
+-	rtnl_lock();
+-	err = dev_ifconf(net, &ifc, sizeof(struct compat_ifreq));
+-	rtnl_unlock();
+-	if (err)
+-		return err;
+-
+-	ifc32.ifc_len = ifc.ifc_len;
+-	if (copy_to_user(uifc32, &ifc32, sizeof(struct compat_ifconf)))
+-		return -EFAULT;
+-
+-	return 0;
 -}
 -
- /* Since old style bridge ioctl's endup using SIOCDEVPRIVATE
-  * for some operations; this forces use of the newer bridge-utils that
-  * use compatible ioctls
-@@ -3279,9 +3245,6 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
- 		return compat_dev_ifconf(net, argp);
+ static int compat_siocwandev(struct net *net, struct compat_ifreq __user *uifr32)
+ {
+ 	compat_uptr_t uptr32;
+@@ -3241,8 +3211,6 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
+ 	case SIOCSIFBR:
+ 	case SIOCGIFBR:
+ 		return old_bridge_ioctl(argp);
+-	case SIOCGIFCONF:
+-		return compat_dev_ifconf(net, argp);
  	case SIOCWANDEV:
  		return compat_siocwandev(net, argp);
--	case SIOCGIFMAP:
--	case SIOCSIFMAP:
--		return compat_sioc_ifmap(net, cmd, argp);
  	case SIOCGSTAMP_OLD:
- 	case SIOCGSTAMPNS_OLD:
- 		if (!sock->ops->gettstamp)
-@@ -3313,6 +3276,8 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
+@@ -3272,6 +3240,7 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
+ 	case SIOCGSKNS:
+ 	case SIOCGSTAMP_NEW:
+ 	case SIOCGSTAMPNS_NEW:
++	case SIOCGIFCONF:
+ 		return sock_ioctl(file, cmd, arg);
  
  	case SIOCGIFFLAGS:
- 	case SIOCSIFFLAGS:
-+	case SIOCGIFMAP:
-+	case SIOCSIFMAP:
- 	case SIOCGIFMETRIC:
- 	case SIOCSIFMETRIC:
- 	case SIOCGIFMTU:
 -- 
 2.27.0
 
