@@ -2,118 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D56392A94C0
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 11:53:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92AEF2A94DA
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 11:56:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727055AbgKFKx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 05:53:28 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:52111 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726642AbgKFKx0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 05:53:26 -0500
-Received: by mail-il1-f197.google.com with SMTP id f8so670144ilj.18
-        for <netdev@vger.kernel.org>; Fri, 06 Nov 2020 02:53:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=DDSyTW0cXmYYVcRPO4w8oETTjvfxbaLefaEF1z3VOqw=;
-        b=sW7bgQfdHZOQLt0XtZUToCrcsefR5cynLAvsXh/g8aHjBa4KucMtD7h2uN3IlxU8Sq
-         gLyXFfups1//S085n+t0VPAIL3kqGNcoTELENt8Fw02I7nglKlZpFyMOq5AoZH19oedn
-         93lsjTD6Uj0a3UPfMJVIN8MSYhd6RzFepP1TMVZsJL7ynepSnGTGvH4XAl4zxFoSuv7N
-         pYxSuHNgtVvvk2XKsWETsEP1D5FRTg/oYTIhtcn798xxPN+RGXBPkby7neh5vox0tOFE
-         DaLZpZcpC8n/6C0snopthxV1Pu63XHDIVf5VaYMmRDFYKDFV7mOlIzscRp2nIutB+ZRZ
-         bMvQ==
-X-Gm-Message-State: AOAM531ZeEotEMhWtcNh4WyWDXBBywhPFBt+mMLzocmGXL7JaZqxrECx
-        BO43WSiV9NDKz+ELz3RUe358BDcAI1dx6ug/RefI3LXZNtyb
-X-Google-Smtp-Source: ABdhPJyW6YXkMYU74RkWHcekbpdxFTrNthZb9JCrArTwPLfB6vH6p3Oj1st3EsqwF3G89qvqNXHc4U3zgyZNV9Uh1STyXsK9LMjX
+        id S1726925AbgKFK4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 05:56:09 -0500
+Received: from mail-eopbgr10065.outbound.protection.outlook.com ([40.107.1.65]:41045
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726201AbgKFK4J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Nov 2020 05:56:09 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lJcNGGabIro1drEownpvhBYlsePAwT1b436ct4X/TnmQTBPxZKNakCRwKGbs1Eq5isWxbEHFDN6Xujwhv6fzD/b8QcsG8Yaqm4MmgJ3iXp+ArilklXmKiC+uqOXt1toVUAXCj6d3sDwQL2TurHed0omM3M7JRfuzipOk4r47frBQEO5TELFMYvLpbadyt68+mUsPR4Mg0xj9lFwbIeye+uCH1mbfK8bq26PeWciEP1DOtnQl1teNVrxgNzTn56mgVSA2HYJUTNVWPdDX815arxV6hinltGOsQA7BSTRBSAJH2bTtajCN8eARdotOo+Ab9y6cW/DEkHfVnvM5Co8XIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GHjZkg9KbkH24snn0GaNZtSlHoocCgFJWZCPJRIb7xw=;
+ b=BuwNtxPA6irs9OSe2wl/bM+yZpUfbrEDVJhdlQUi+FNza28Kttq2upyWB42LZC6pfSo5OQhlxgn+fAeQVBJNnEGI0/R8UZ8Zz/+84b9PEa7y5s73PJKtqOuoZyxPWJ2+6obsYyp8MIkOK5KNGtiitdsvI5/bHOU9qRP+zgEm0iBJRFYlVhIhVkx2baQqOYS/llDH6Qy0rR4q8FqHfMnbM0ZImW30ieNIneAYT9VKBT9QPJEJyI/8QzOixC+l/Jw+0dRgweEuoIejajq3ZITuUtiAE4lCgC4Gcd9RVAjEedS+JIuhwL3xsHMX0itMdrsFjmO8+UWBxWrSelSTkPF73A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GHjZkg9KbkH24snn0GaNZtSlHoocCgFJWZCPJRIb7xw=;
+ b=dcOu91rmXr0cz7TqljI70XoMH5eBs8gTzWxxxMm+P/64G0ivloiFj85f1aBnVc7iDOzdrI6LC7ty/6e24mCOHKEzzcFvpewh/9nejTBStohuOog4MTfoy/payHfW6PLBXdm3CZ17kWwZUPJX643F6+Ca2d9iCYYn7GquvKXinrA=
+Authentication-Results: pengutronix.de; dkim=none (message not signed)
+ header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB7PR04MB4282.eurprd04.prod.outlook.com (2603:10a6:5:19::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.27; Fri, 6 Nov
+ 2020 10:56:04 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3c3a:58b9:a1cc:cbcc]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3c3a:58b9:a1cc:cbcc%9]) with mapi id 15.20.3541.021; Fri, 6 Nov 2020
+ 10:56:04 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     mkl@pengutronix.de, robh+dt@kernel.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de
+Cc:     kernel@pengutronix.de, linux-imx@nxp.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V5 0/5] can: flexcan: add stop mode support for i.MX8QM
+Date:   Fri,  6 Nov 2020 18:56:22 +0800
+Message-Id: <20201106105627.31061-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [119.31.174.71]
+X-ClientProxiedBy: SG2PR02CA0055.apcprd02.prod.outlook.com
+ (2603:1096:4:54::19) To DB8PR04MB6795.eurprd04.prod.outlook.com
+ (2603:10a6:10:fa::15)
 MIME-Version: 1.0
-X-Received: by 2002:a5e:9604:: with SMTP id a4mr973198ioq.61.1604660004200;
- Fri, 06 Nov 2020 02:53:24 -0800 (PST)
-Date:   Fri, 06 Nov 2020 02:53:24 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000892b3905b36e059b@google.com>
-Subject: WARNING: bad unlock balance in ieee80211_unregister_hw
-From:   syzbot <syzbot+a6e9e84a19d90b996a65@syzkaller.appspotmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        gnault@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (119.31.174.71) by SG2PR02CA0055.apcprd02.prod.outlook.com (2603:1096:4:54::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21 via Frontend Transport; Fri, 6 Nov 2020 10:56:01 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 1ca481b4-7a6c-4ffc-3f06-08d882428e2d
+X-MS-TrafficTypeDiagnostic: DB7PR04MB4282:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB7PR04MB428218DCE4A1654716B180B7E6ED0@DB7PR04MB4282.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:183;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /C9yHENVQ4ldsInjPOmg9k/SRhR3C7jN5JKF1m3l6VA+0JeU2XHEe7PigHtCwIqRfR/NM1IFewvbL6bHQ7qD68nfFd30LNGswVhL+EHzaCLngjGY5tnRK6w1lqiiicnEzIPSmC38du6yeQdxCbXQM5OcTdSOdai9WcSy7XqHAY6OuTGejEZmY63zMZJhTYbczWBLXrexC/lUXkUQIKrHZLJRT9GDYVNDJgTRzTi1QiZ1ekvSI22FF2Vk89NUkB2u1aa01A/S6AszMxorr4TxS6c0il5aTjZQgz25vkMIsB1bmniSDRxpAndWdMiE6lHWG4c1pCKREGdbUZjFe0UNhjVX8/9NzgnSt3iQt4JJKlLVzg+uGyXQHQbCuvfLWXa7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(346002)(396003)(39860400002)(136003)(6486002)(5660300002)(478600001)(6666004)(26005)(4326008)(83380400001)(6506007)(956004)(36756003)(66476007)(66946007)(8676002)(69590400008)(52116002)(6512007)(86362001)(186003)(1076003)(2906002)(2616005)(8936002)(16526019)(316002)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 2SyIp+Qalh+ghT+Ty50lEoXRFGLgh/v43MGzQLdbbQzdVHlbk+cPjvzeYQds15t5w2Ho4EV0orlvhSJzgGu24mfcfO/XoKwDyGZ5CxJfwa5yCBMsV/QIMcNdK4fIS7Ytibymmu0G4zrsNi6nr1hoQTGiTGA0rB6zTgVnzUWSSvlOzcwZJm/sz5/uERhMIbk+fSZVjpkeZtgcexBlU4ErYT6netIxHKuUiENjYA8boLfIdSfP9btxBK+kEPfFxrDGK6vI44Tzbrmt/vcr4YKIKVDK9jD3NFRoozieRiBQtKZjBoByd+WHL1wQ73uJ27/D0bkSighoiXqKF8g8GGH3wIyNc8C4EN32Glgl/glTlsBY4/Csy8UxOfRkzZApd2GVA45TCqjKCfOKnXLym/kB5T6Tzll56oeqG8YqP8rO99BR2R3VGHv79G/K8gAa2Vr+GrE+I16LsonYB+Wgsei4iJ4YRBzdZKmKeiIMrnIxJzuSIKHE0LXUGbJIiMgky3COh1piH/bwRM472/KXg9qRuHCCw1GSFLiLlVNKL9P2gzZIHPwy+TBZMvbMTkQIzuxxFDSWacIHLE3wz58T79xC8DPoy7n4bjirNSC8VCGOGSDPaMA/vskdreWVkbzEZl9g0UGkb8U1d/FHF/Md2eeKwA==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ca481b4-7a6c-4ffc-3f06-08d882428e2d
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2020 10:56:04.0684
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kYTLrEF3TlxKpW3EFYFHbjYu28BxC2xbrpBmkadFEwq57ZCi1D7tEkef0DkfqyXxd5/uUqnAAAxnrmv9Rp7/pg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4282
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Add stop mode support for i.MX8QM.
 
-syzbot found the following issue on:
+ChangeLogs:
+V4->V5:
+	* remove patch:firmware: imx: always export SCU symbols, since
+	it done by commit: 95de5094f5ac firmware: imx: add dummy functions
+	* rebase to fsl,flexcan.yaml
 
-HEAD commit:    cb5dc5b0 Merge branch 'bpf: safeguard hashtab locking in N..
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=13498a0c500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=58a4ca757d776bfe
-dashboard link: https://syzkaller.appspot.com/bug?extid=a6e9e84a19d90b996a65
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+V3->V4:
+	* can_idx->scu_idx.
+	* return imx_scu_get_handle(&priv->sc_ipc_handle);
+	* failed_canregister->failed_setup_stop_mode.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+V2->V3:
+	* define IMX_SC_R_CAN(x) in rsrc.h
+	* remove error message on -EPROBE_DEFER.
+	* split disable wakeup patch into separate one.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a6e9e84a19d90b996a65@syzkaller.appspotmail.com
+V1->V2:
+	* split ECC fix patches into separate patches.
+	* free can dev if failed to setup stop mode.
+	* disable wakeup on flexcan_remove.
+	* add FLEXCAN_IMX_SC_R_CAN macro helper.
+	* fsl,can-index->fsl,scu-index.
+	* move fsl,scu-index and priv->can_idx into
+	* flexcan_setup_stop_mode_scfw()
+	* prove failed if failed to setup stop mode.
 
-=====================================
-WARNING: bad unlock balance detected!
-5.9.0-syzkaller #0 Not tainted
--------------------------------------
-kworker/u4:3/24893 is trying to release lock ((wq_completion)phy264) at:
-[<ffffffff81476be1>] flush_workqueue+0xe1/0x13e0 kernel/workqueue.c:2780
-but there are no more locks to release!
+Joakim Zhang (5):
+  dt-bindings: can: flexcan: fix fsl,clk-source property
+  dt-bindings: can: flexcan: add fsl,scu-index property to indicate a
+    resource
+  can: flexcan: rename macro FLEXCAN_QUIRK_SETUP_STOP_MODE ->
+    FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR
+  dt-bindings: firmware: add IMX_SC_R_CAN(x) macro for CAN
+  can: flexcan: add CAN wakeup function for i.MX8QM
 
-other info that might help us debug this:
-3 locks held by kworker/u4:3/24893:
- #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
- #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
- #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
- #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
- #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x821/0x15a0 kernel/workqueue.c:2243
- #1: ffffc9000218fda8 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work+0x854/0x15a0 kernel/workqueue.c:2247
- #2: ffffffff8c914010 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0xa00 net/core/net_namespace.c:566
+ .../bindings/net/can/fsl,flexcan.yaml         |  15 +-
+ drivers/net/can/flexcan.c                     | 131 +++++++++++++++---
+ include/dt-bindings/firmware/imx/rsrc.h       |   1 +
+ 3 files changed, 124 insertions(+), 23 deletions(-)
 
-stack backtrace:
-CPU: 1 PID: 24893 Comm: kworker/u4:3 Not tainted 5.9.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:118
- print_unlock_imbalance_bug include/trace/events/lock.h:58 [inline]
- __lock_release kernel/locking/lockdep.c:5126 [inline]
- lock_release.cold+0x34/0x4e kernel/locking/lockdep.c:5462
- flush_workqueue+0x125/0x13e0 kernel/workqueue.c:2784
- drain_workqueue+0x1a5/0x3c0 kernel/workqueue.c:2948
- destroy_workqueue+0x71/0x760 kernel/workqueue.c:4372
- ieee80211_unregister_hw+0x1a2/0x210 net/mac80211/main.c:1388
- mac80211_hwsim_del_radio drivers/net/wireless/mac80211_hwsim.c:3360 [inline]
- hwsim_exit_net+0x56b/0xc90 drivers/net/wireless/mac80211_hwsim.c:4115
- ops_exit_list+0xb0/0x160 net/core/net_namespace.c:187
- cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:604
- process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
- kthread+0x3af/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-device hsr_slave_1 left promiscuous mode
-batman_adv: batadv0: Removing interface: batadv_slave_0
-batman_adv: batadv0: Interface deactivated: batadv_slave_1
-batman_adv: batadv0: Removing interface: batadv_slave_1
-bridge0: port 2(bridge_slave_1) entered disabled state
-device bridge_slave_0 left promiscuous mode
-bridge0: port 1(bridge_slave_0) entered disabled state
-device veth0_macvtap left promiscuous mode
+-- 
+2.17.1
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
