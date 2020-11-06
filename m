@@ -2,68 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53ECA2A99A1
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 17:40:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1311B2A99A6
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 17:41:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727498AbgKFQjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 11:39:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35918 "EHLO
+        id S1727402AbgKFQkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 11:40:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726320AbgKFQjg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 11:39:36 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EC8C0613CF;
-        Fri,  6 Nov 2020 08:39:36 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id f38so1351798pgm.2;
-        Fri, 06 Nov 2020 08:39:36 -0800 (PST)
+        with ESMTP id S1726139AbgKFQkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 11:40:17 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D222C0613CF;
+        Fri,  6 Nov 2020 08:40:17 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id j12so2115243iow.0;
+        Fri, 06 Nov 2020 08:40:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=E8ZXU1sB2LM2Qvs2eXs5LsyiKHVfmc6ejsqLG55A13A=;
-        b=Qr1okamuqR2eM6OvhTiZaB1uMByc4kz2azxSxjYXj7w6VJkeBVZ+8D7nLbRocKH1nJ
-         +tBW5Yr7EwvXgytTEqI1U5PIygNKwCcaMiSMB9hfcQZ+XURWefz7vIKgUWLwGeNamlX5
-         Xn9z/b9uINKgQMnTPcXiNx8TXwxeh8ocUxiPdKDXwZMTzRTXyE4iMbgu8sOQIkBqU4Gw
-         7aTbQy1GH42h07P1h9KLl2lLepqcUXzpMleFzUR3S4bUSdvsXsovE23tCEraEwiyVgNY
-         JWnopqBhVroT1NFvHrUvs13n7PurmApxT2XLBWgjuE4Jx4rXvf0WhEvXp7Ktki/kyKF4
-         0DDg==
+        bh=wFLtKUwT5ZvmDcv5zrEJNSopht3kHGBwLH6MG+aoAb8=;
+        b=Vg5nKxDZu895ttIHrDM477LtUq2tTMuNvYBCp/tR8Xl2m2lIeak6kqji6iOpxtSjmb
+         KU+29HSyzpytGLDR2uJVWBSnhoeLDlYTUaoiNnRn5xm2PN0uP6DqN0ixhKt2vtzFjyeE
+         8XW7IDHpaKvXbEt701jGTvOdmPV9XPpkcXO9Mf8rqKlDB9/mVgff8oK17QXddT80Zm0Z
+         PAqj8LqYsRNzh+iJ1Go36LS+ou5dbAtAqEx+jwIwA+QvuEtVpXL5Yo5uv/99RUZ/Skgd
+         vo+s9Jk8zg+VJOEToB4bUnjRjt9v2kedXGY0n8hSQnHegamgwRMZY4O5FgzvN6TqatV0
+         8tkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=E8ZXU1sB2LM2Qvs2eXs5LsyiKHVfmc6ejsqLG55A13A=;
-        b=TIGGiB3Zq1US7ScQ8rRks50Rf1hT8v6++AcPB6rYUFb9zZXDVZIu71dRn0Bi9emZX8
-         9equmOTR9wYM2nuDUg59lxBQd8RGR7LQtVWhcx7A/RjfgtGh5qOwdZfNhRdD+SMCZgq4
-         i20Tvbl0PK8JNqcA57T71EjmQQVC5hTIbqKSwXQbKwYFVYXNgsdVkGty1FDUikiB2Y+B
-         /6p8IgaDGMqzdzjbC6JMFmeT41aX9Ym2ZWEPX07Ws3ipYyLYGnATRPzCbnF3HkoRXP6D
-         bRd3Co/BLb3q4DpUINzd6MOtWN5VmMFO6bFpsRfw0Ah86eWSVBTKU9tL2RE1tbM49mun
-         zO6A==
-X-Gm-Message-State: AOAM533aMcWSBqpH4zd3taHkZqzFSeU/DOpzQBB4eTtmQwgQEpOwV/dT
-        D5/qZbQ8qUn7E9G4h8ZGpBCX/FSp7OQ=
-X-Google-Smtp-Source: ABdhPJyivRJJz31AEDBGRqZm67j3SSe7W/EejIf85pjmhWKxAIEqwZcCohCO/CquCUqSDOYp3fk2iQ==
-X-Received: by 2002:a63:2051:: with SMTP id r17mr2355935pgm.191.1604680775583;
-        Fri, 06 Nov 2020 08:39:35 -0800 (PST)
-Received: from [10.230.28.234] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id v27sm2674776pfi.204.2020.11.06.08.39.34
+        bh=wFLtKUwT5ZvmDcv5zrEJNSopht3kHGBwLH6MG+aoAb8=;
+        b=NfJ0C6hZZEWpMq4SsYVxnqLKOwVCn4S5ibgzYhMfCRruSl5Rxk6z6PSVyr8bIs/SgK
+         2LgShXvbPP0TS0uOT0MZauiyk1Ii6UwlolxYK2pmh+qvrkAsNHwmPAbJgZniNMRGG6Tt
+         RwiRoYia1ScHBBHLV8DHIVg3yKqJU5f6/4Ph2/ekqqCaeiyzyq0XG4T1ybW3TatJICgh
+         eX9uGw4QLR/8D4Vjcd3gWr5q+ZABsBpExlJLIEc4A1x+G0PeKOfisCusBcg1+x5Ya3r4
+         encgRCTR2Yzv1K6rh7yJObJbPOPdA3qIfWN4fURA/Z34S5QgW4oLcmEHv2oNSbFlmrHE
+         TULw==
+X-Gm-Message-State: AOAM530V6cYwyVV/v12KSnSgR0M0ZOxXzWb3KZYefuHLfxLy5bwWzHOd
+        HBWHJIzn8gqwSBVq67SX0QA=
+X-Google-Smtp-Source: ABdhPJzkJbtdTj466ZCI8mKcmOme9VuesNIVUd10qMJjwA15AHpdZtiCSDPM0/9n2ZtbofRm8ZnBng==
+X-Received: by 2002:a6b:3e83:: with SMTP id l125mr2071092ioa.151.1604680816504;
+        Fri, 06 Nov 2020 08:40:16 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:59f:e9df:76ab:8876])
+        by smtp.googlemail.com with ESMTPSA id n15sm1376010ilt.58.2020.11.06.08.40.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Nov 2020 08:39:34 -0800 (PST)
-Subject: Re: [PATCH] net/dsa: remove unused macros to tame gcc warning
-To:     Andrew Lunn <andrew@lunn.ch>, Alex Shi <alex.shi@linux.alibaba.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        Fri, 06 Nov 2020 08:40:15 -0800 (PST)
+Subject: Re: [PATCH v2 iproute2-next] bridge: add support for L2 multicast
+ groups
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <1604641050-6004-1-git-send-email-alex.shi@linux.alibaba.com>
- <20201106141820.GP933237@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <24690741-cc10-eec1-33c6-7960c8b7fac6@gmail.com>
-Date:   Fri, 6 Nov 2020 08:39:34 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.4.1
+Cc:     Stephen Hemminger <stephen@networkplumber.org>, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, jiri@mellanox.com,
+        idosch@idosch.org
+References: <20201029222828.2149980-1-olteanv@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2f127ed7-a816-bb13-0be2-68b19eef78fb@gmail.com>
+Date:   Fri, 6 Nov 2020 09:40:12 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.4.0
 MIME-Version: 1.0
-In-Reply-To: <20201106141820.GP933237@lunn.ch>
+In-Reply-To: <20201029222828.2149980-1-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,82 +76,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 10/29/20 4:28 PM, Vladimir Oltean wrote:
+> @@ -168,9 +176,14 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
+>  	print_string(PRINT_ANY, "port", " port %s",
+>  		     ll_index_to_name(e->ifindex));
+>  
+> +	if (af == AF_INET || af == AF_INET6)
+> +		addr = inet_ntop(af, grp, abuf, sizeof(abuf));
+> +	else
+> +		addr = ll_addr_n2a(grp, ETH_ALEN, 0, abuf, sizeof(abuf));
+> +
 
+The above can be replaced with a single call to rt_addr_n2a_r.
 
-On 11/6/2020 6:18 AM, Andrew Lunn wrote:
-> On Fri, Nov 06, 2020 at 01:37:30PM +0800, Alex Shi wrote:
->> There are some macros unused, they causes much gcc warnings. Let's
->> remove them to tame gcc.
->>
->> net/dsa/tag_brcm.c:51:0: warning: macro "BRCM_EG_RC_SWITCH" is not used
->> [-Wunused-macros]
->> net/dsa/tag_brcm.c:53:0: warning: macro "BRCM_EG_RC_MIRROR" is not used
->> [-Wunused-macros]
->> net/dsa/tag_brcm.c:55:0: warning: macro "BRCM_EG_TC_MASK" is not used
->> [-Wunused-macros]
->> net/dsa/tag_brcm.c:35:0: warning: macro "BRCM_IG_TS_SHIFT" is not used
->> [-Wunused-macros]
->> net/dsa/tag_brcm.c:46:0: warning: macro "BRCM_EG_RC_MASK" is not used
->> [-Wunused-macros]
->> net/dsa/tag_brcm.c:49:0: warning: macro "BRCM_EG_RC_PROT_SNOOP" is not
->> used [-Wunused-macros]
->> net/dsa/tag_brcm.c:34:0: warning: macro "BRCM_IG_TE_MASK" is not used
->> [-Wunused-macros]
->> net/dsa/tag_brcm.c:43:0: warning: macro "BRCM_EG_CID_MASK" is not used
->> [-Wunused-macros]
->> net/dsa/tag_brcm.c:50:0: warning: macro "BRCM_EG_RC_PROT_TERM" is not
->> used [-Wunused-macros]
->> net/dsa/tag_brcm.c:54:0: warning: macro "BRCM_EG_TC_SHIFT" is not used
->> [-Wunused-macros]
->> net/dsa/tag_brcm.c:52:0: warning: macro "BRCM_EG_RC_MAC_LEARN" is not
->> used [-Wunused-macros]
->> net/dsa/tag_brcm.c:48:0: warning: macro "BRCM_EG_RC_EXCEPTION" is not
->> used [-Wunused-macros]
->>
->> Signed-off-by: Alex Shi <alex.shi@linux.alibaba.com>
->> Cc: Andrew Lunn <andrew@lunn.ch> 
->> Cc: Vivien Didelot <vivien.didelot@gmail.com> 
->> Cc: Florian Fainelli <f.fainelli@gmail.com> 
->> Cc: Vladimir Oltean <olteanv@gmail.com> 
->> Cc: "David S. Miller" <davem@davemloft.net> 
->> Cc: Jakub Kicinski <kuba@kernel.org> 
->> Cc: netdev@vger.kernel.org 
->> Cc: linux-kernel@vger.kernel.org 
->> ---
->>  net/dsa/tag_brcm.c | 15 ---------------
->>  1 file changed, 15 deletions(-)
->>
->> diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
->> index e934dace3922..ce23b5d4c6b8 100644
->> --- a/net/dsa/tag_brcm.c
->> +++ b/net/dsa/tag_brcm.c
->> @@ -30,29 +30,14 @@
->>  /* 1st byte in the tag */
->>  #define BRCM_IG_TC_SHIFT	2
->>  #define BRCM_IG_TC_MASK		0x7
->> -/* 2nd byte in the tag */
->> -#define BRCM_IG_TE_MASK		0x3
->> -#define BRCM_IG_TS_SHIFT	7
->>  /* 3rd byte in the tag */
->>  #define BRCM_IG_DSTMAP2_MASK	1
->>  #define BRCM_IG_DSTMAP1_MASK	0xff
-> 
-> Hi Alex
-> 
-> It is good to remember that there are multiple readers of source
-> files. There is the compiler which generates code from it, and there
-> is the human trying to understand what is going on, what the hardware
-> can do, how we could maybe extend the code in the future to make use
-> of bits are currently don't, etc.
-> 
-> The compiler has no use of these macros, at the moment. But i as a
-> human do. It is valuable documentation, given that there is no open
-> datasheet for this hardware.
-> 
-> I would say these warnings are bogus, and the code should be left
-> alone.
+>  	print_color_string(PRINT_ANY, ifa_family_color(af),
+> -			    "grp", " grp %s",
+> -			    inet_ntop(af, grp, abuf, sizeof(abuf)));
+> +			    "grp", " grp %s", addr);
+> +
+>  	if (tb && tb[MDBA_MDB_EATTR_SOURCE]) {
+>  		src = (const void *)RTA_DATA(tb[MDBA_MDB_EATTR_SOURCE]);
+>  		print_color_string(PRINT_ANY, ifa_family_color(af),
 
-Agreed, these definitions are intended to document what the hardware
-does. These warnings are getting too far.
--- 
-Florian
+I think the rest is ok.
