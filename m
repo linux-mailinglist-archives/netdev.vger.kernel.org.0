@@ -2,134 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 093172A9EC6
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 21:58:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 899782A9ECB
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 22:02:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728546AbgKFU62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 15:58:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43058 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727129AbgKFU62 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Nov 2020 15:58:28 -0500
-Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D521B20B1F;
-        Fri,  6 Nov 2020 20:58:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604696307;
-        bh=Qs7s5PkEVmcdFdJtVbfQaSH2HwSKtixNCGABo8gZLzs=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=1dqdahWq+6ZNk3JsBrpONfOl6UrsPPEYH3unW+weooG8ff3Jrasf9jFVwDGZPdxlk
-         Vnn5VWmgHeGv+JUNIateSldplxtFpDXASFS/9r2imGmFS/0aVeOxtmgBZu6GjreXYd
-         HbWzgLebNjS/BHoajFR/rI6ImeVW8eobS9zm4SLY=
-Message-ID: <f1266f7f732d5222b69b8c29ec1d8071f9f16b25.camel@kernel.org>
-Subject: Re: [PATCH v2 net-next 3/3] octeontx2-af: Add devlink health
- reporters for NIX
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Cc:     George Cherian <gcherian@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        "masahiroy@kernel.org" <masahiroy@kernel.org>,
-        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 06 Nov 2020 12:58:25 -0800
-In-Reply-To: <CA+sq2Cc9-vvF8K_FASca5FGYyFc_53QWqyEtoHAx6xVCs41LiQ@mail.gmail.com>
-References: <BYAPR18MB2679EC3507BD90B93B37A3F8C5EE0@BYAPR18MB2679.namprd18.prod.outlook.com>
-         <1dd085b9f7013e9a28057f3080ee7b920bfbc9fc.camel@kernel.org>
-         <CA+sq2Cc9-vvF8K_FASca5FGYyFc_53QWqyEtoHAx6xVCs41LiQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1728476AbgKFVCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 16:02:38 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:7062 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727129AbgKFVCi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 16:02:38 -0500
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A6Kb5DQ162691;
+        Fri, 6 Nov 2020 16:02:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version : date :
+ from : to : cc : subject : in-reply-to : references : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=SXpYmCvvUiF836r6Iz01TeufGvsPo/Gs8jXJV547tnU=;
+ b=c+FcpGWJVWvMKtiUMVb6A6W7ffJqZvumy2BvHLJnA+qD8a3FYWjSQTOS9n/2DNq5bexW
+ 3hd+dPth3a4J+RfcP9l9gsP4EziJAqutuFKwnvFQYgbebmcdnPmZKbHLrBAX17ywPUL2
+ LB9Ac6T7ePQwne6UStIxGWUzNHMSCjwmTXz9jooTsilf33d8+jf8Q+pZPANFm+IupDU6
+ d7GP6XArwItL03MO3hGyYHaYNQPj1nWFw6zMRXi8zOMKaGTm2Xb2aFd8z+zNYsvfgdWn
+ IbzYxYvDAtOsNHqxGnNNqjDiBqKYIYlYIvMSPjDdMtiZVvqU0TxMoLoZYG8DlEc/rU0U zg== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34nd8msa5m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 Nov 2020 16:02:30 -0500
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A6L1P6Y000749;
+        Fri, 6 Nov 2020 21:02:29 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma03wdc.us.ibm.com with ESMTP id 34h0fkjqrj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 Nov 2020 21:02:29 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A6L2MSY38273724
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 6 Nov 2020 21:02:22 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 35C7A6E050;
+        Fri,  6 Nov 2020 21:02:28 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ECCE46E054;
+        Fri,  6 Nov 2020 21:02:27 +0000 (GMT)
+Received: from ltc.linux.ibm.com (unknown [9.16.170.189])
+        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Fri,  6 Nov 2020 21:02:27 +0000 (GMT)
 MIME-Version: 1.0
+Date:   Fri, 06 Nov 2020 15:02:27 -0600
+From:   ljp <ljp@linux.vnet.ibm.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     wvoigt@us.ibm.com, netdev@vger.kernel.org,
+        Linuxppc-dev 
+        <linuxppc-dev-bounces+ljp=linux.ibm.com@lists.ozlabs.org>,
+        Dany Madden <drt@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org,
+        davem@davemloft.net
+Subject: Re: [PATCH net-next] Revert ibmvnic merge do_change_param_reset into
+ do_reset
+In-Reply-To: <20201106114208.4b0e8eec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201106191745.1679846-1-drt@linux.ibm.com>
+ <0ff353cbada91b031d1bbae250a975d5@linux.vnet.ibm.com>
+ <20201106114208.4b0e8eec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <ba446b20f6c90e4db68127238f83f231@linux.vnet.ibm.com>
+X-Sender: ljp@linux.vnet.ibm.com
+User-Agent: Roundcube Webmail/1.0.1
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-06_06:2020-11-05,2020-11-06 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ phishscore=0 suspectscore=0 bulkscore=0 clxscore=1015 impostorscore=0
+ malwarescore=0 mlxlogscore=999 adultscore=0 spamscore=0 priorityscore=1501
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011060144
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-11-06 at 00:59 +0530, Sunil Kovvuri wrote:
-> > > > > Output:
-> > > > >  # ./devlink health
-> > > > >  pci/0002:01:00.0:
-> > > > >    reporter npa
-> > > > >      state healthy error 0 recover 0
-> > > > >    reporter nix
-> > > > >      state healthy error 0 recover 0
-> > > > >  # ./devlink  health dump show pci/0002:01:00.0 reporter nix
-> > > > >   NIX_AF_GENERAL:
-> > > > >          Memory Fault on NIX_AQ_INST_S read: 0
-> > > > >          Memory Fault on NIX_AQ_RES_S write: 0
-> > > > >          AQ Doorbell error: 0
-> > > > >          Rx on unmapped PF_FUNC: 0
-> > > > >          Rx multicast replication error: 0
-> > > > >          Memory fault on NIX_RX_MCE_S read: 0
-> > > > >          Memory fault on multicast WQE read: 0
-> > > > >          Memory fault on mirror WQE read: 0
-> > > > >          Memory fault on mirror pkt write: 0
-> > > > >          Memory fault on multicast pkt write: 0
-> > > > >    NIX_AF_RAS:
-> > > > >          Poisoned data on NIX_AQ_INST_S read: 0
-> > > > >          Poisoned data on NIX_AQ_RES_S write: 0
-> > > > >          Poisoned data on HW context read: 0
-> > > > >          Poisoned data on packet read from mirror buffer: 0
-> > > > >          Poisoned data on packet read from mcast buffer: 0
-> > > > >          Poisoned data on WQE read from mirror buffer: 0
-> > > > >          Poisoned data on WQE read from multicast buffer: 0
-> > > > >          Poisoned data on NIX_RX_MCE_S read: 0
-> > > > >    NIX_AF_RVU:
-> > > > >          Unmap Slot Error: 0
-> > > > > 
-> > > > 
-> > > > Now i am a little bit skeptic here, devlink health reporter
-> > > > infrastructure was
-> > > > never meant to deal with dump op only, the main purpose is to
-> > > > diagnose/dump and recover.
-> > > > 
-> > > > especially in your use case where you only report counters, i
-> > > > don't
-> > > > believe
-> > > > devlink health dump is a proper interface for this.
-> > > These are not counters. These are error interrupts raised by HW
-> > > blocks.
-> > > The count is provided to understand on how frequently the errors
-> > > are
-> > > seen.
-> > > Error recovery for some of the blocks happen internally. That is
-> > > the
-> > > reason,
-> > > Currently only dump op is added.
-> > 
-> > So you are counting these events in driver, sounds like a counter
-> > to
-> > me, i really think this shouldn't belong to devlink, unless you
-> > really
-> > utilize devlink health ops for actual reporting and recovery.
-> > 
-> > what's wrong with just dumping these counters to ethtool ?
+On 2020-11-06 13:42, Jakub Kicinski wrote:
+> On Fri, 06 Nov 2020 13:30:25 -0600 ljp wrote:
+>> On 2020-11-06 13:17, Dany Madden wrote:
+>> > This reverts commit 16b5f5ce351f8709a6b518cc3cbf240c378305bf
+>> > where it restructures do_reset. There are patches being tested that
+>> > would require major rework if this is committed first.
+>> >
+>> > We will resend this after the other patches have been applied.
+>> 
+>> I discussed with my manager, and he has agreed not revert this one
+>> since it is in the net-next tree and will not affect net tree for
+>> current bug fix patches.
 > 
-> This driver is a administrative driver which handles all the
-> resources
-> in the system and doesn't do any IO.
-> NIX and NPA are key co-processor blocks which this driver handles.
-> With NIX and NPA, there are pieces
-> which gets attached to a PCI device to make it a networking device.
-> We
-> have netdev drivers registered to this
-> networking device. Some more information about the drivers is
-> available at
-> https://www.kernel.org/doc/html/latest/networking/device_drivers/ethernet/marvell/octeontx2.html
+> We merge net into net-next periodically (~every week or so) so if you
+> keep making changes to both branches I will have to deal with the
+> fallout.
 > 
-> So we don't have a netdev here to report these co-processor block
-> level errors over ethtool.
+> I'm assuming that the resolution for the current conflict which Stephen
+> Rothwell sent from linux-next is correct. Please confirm.
 > 
+> I will resolve it like he did when Linus pulls from net (hopefully
+> later today).
+> 
+> But if you know you have more fixes I'd rather revert this, get all the
+> relevant fixed into net, wait for net to be merged into net-next and
+> then redo the refactoring.
+> 
+> Hope that makes sense.
 
-but AF driver can't be standalone to operate your hw, it must have a
-PF/VF with netdev interface to do io, so even if your model is modular,
-a common user of this driver will always see a netdev.
+Jakub,
 
+We had further discussion in the team based on your comments above.
+You can revert it for now.
+Thanks for your efforts.
 
+Lijun
