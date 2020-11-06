@@ -2,87 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 464B02A8EA5
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 06:14:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E16F22A8EE8
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 06:30:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726116AbgKFFOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 00:14:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725837AbgKFFOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 00:14:01 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45188C0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 21:14:01 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id h6so34151pgk.4
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 21:14:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/05wysRivKJ7maKrDsxGNEnT+wBLM5WdoBotDY7c+Ls=;
-        b=nQnwRKDLdqSqPkY0Eas1l8ukEnerMs9KUBmaXLKszObMWwkT8sp2dq4yb8k7yZxLkN
-         MbXF4jJZm9rudR/dzXQxWSsJTdEbAYSfo6/NvzTFRmrO2wFPYvYlfeFee0SNc+oarcMg
-         C4dWHTUBM2oWAegr4/CBbDB1f7Y8Bbs52a+igSADvY67jgq5LQ65x04N7fY1UYAODOgt
-         rGMP+sbjFVUxw1J12x+RAMtChFgqs7E+Dd7qxV++hoCAfw9toyuRNwaeilCs/2C6JAJL
-         paU9zjS4NsmQDOngv21DQ6TpZ5TWxnNT2IqGq6ZQtQB8+WOy7B4rlipfAn1qgN6rNtUW
-         oPfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/05wysRivKJ7maKrDsxGNEnT+wBLM5WdoBotDY7c+Ls=;
-        b=uaZPM+GbtIJQOQYeuhaF8Iv7wj3VCxwDRU7biKpsYNd42zvVNEELopSmV2JcA5TvYy
-         nkA38+bBeM0Q4t91ZKJ2bztDYIUnAvEPrhfPZUr5KQ9Jpi4turHR0owxotfQJQGXG/Xt
-         rrOC+JORDWc31qbl+LW42G2UAZmmupTGCiOXEr9pOBWGPBSOr9f0ESuh1FvCVOmFMtMh
-         3KJ5Y2NSyWoQjUwAcnTJfVm63uuDCfPuX4fTDUUTKZzPQWNvSYtQDAv/BP82KPt3ctQV
-         VRqesYRN5dNUL/tv6G9uby2hgtjUSUtnT7PhrokhMd2jk3Ye6vLVcIUSmWcbzu1pUirJ
-         wxOw==
-X-Gm-Message-State: AOAM530cUe68gSrcsCZKVFN7lDPrNreP4fxf9UqeyjUmnEJl/2IEfzKe
-        2G7dUXNkVUfuGxQEEXnzJHP9
-X-Google-Smtp-Source: ABdhPJzOgy39t5BfZ8DQ8IKKa65asGIGM8V/uwQ7kJKOHlelIMFI4c0wBjWSazQ2Fu5mO52mY08orw==
-X-Received: by 2002:a17:90a:eb12:: with SMTP id j18mr534319pjz.15.1604639640724;
-        Thu, 05 Nov 2020 21:14:00 -0800 (PST)
-Received: from work ([103.59.133.81])
-        by smtp.gmail.com with ESMTPSA id t1sm417607pjw.42.2020.11.05.21.13.57
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 05 Nov 2020 21:13:59 -0800 (PST)
-Date:   Fri, 6 Nov 2020 10:43:53 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Loic Poulain <loic.poulain@linaro.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        bbhatt@codeaurora.org, willemdebruijn.kernel@gmail.com,
-        jhugo@codeaurora.org, hemantk@codeaurora.org
-Subject: Re: [PATCH v10 1/2] bus: mhi: Add mhi_queue_is_full function
-Message-ID: <20201106051353.GA3473@work>
-References: <1604424234-24446-1-git-send-email-loic.poulain@linaro.org>
- <20201105165708.31d24782@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201105165708.31d24782@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1726142AbgKFFaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 00:30:00 -0500
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:44699 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725842AbgKFF37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 00:29:59 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=alex.shi@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UEOgfMD_1604640596;
+Received: from aliy80.localdomain(mailfrom:alex.shi@linux.alibaba.com fp:SMTPD_---0UEOgfMD_1604640596)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 06 Nov 2020 13:29:56 +0800
+From:   Alex Shi <alex.shi@linux.alibaba.com>
+To:     davem@davemloft.net
+Cc:     Jakub Kicinski <kuba@kernel.org>, Tom Parkin <tparkin@katalix.com>,
+        James Chapman <jchapman@katalix.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net/l2tp: remove unused macros to tame gcc warning
+Date:   Fri,  6 Nov 2020 13:29:54 +0800
+Message-Id: <1604640594-5750-1-git-send-email-alex.shi@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 05, 2020 at 04:57:08PM -0800, Jakub Kicinski wrote:
-> On Tue,  3 Nov 2020 18:23:53 +0100 Loic Poulain wrote:
-> > This function can be used by client driver to determine whether it's
-> > possible to queue new elements in a channel ring.
-> > 
-> > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> > Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> 
-> Applied.
+There some unused macros cause gcc complain:
 
-Oops. I should've mentioned this (my bad) that we should use an immutable
-branch to take this change. Because, there are changes going to get merged
-into the MHI tree which will introduce merge conflicts. And moreover, we
-planned to have an immutable branch to handle a similar case with ath11k.
+net/l2tp/l2tp_core.c:73:0: warning: macro "L2TP_HDRFLAG_P" is not used
+[-Wunused-macros]
+net/l2tp/l2tp_core.c:80:0: warning: macro "L2TP_SLFLAG_S" is not used
+[-Wunused-macros]
+net/l2tp/l2tp_core.c:81:0: warning: macro "L2TP_SL_SEQ_MASK" is not used
+[-Wunused-macros]
 
-Since you've applied now, what would you propose?
+Let's remove them to tame gcc.
 
-Thanks,
-Mani
+Signed-off-by: Alex Shi <alex.shi@linux.alibaba.com>
+Cc: "David S. Miller" <davem@davemloft.net> 
+Cc: Jakub Kicinski <kuba@kernel.org> 
+Cc: Tom Parkin <tparkin@katalix.com> 
+Cc: James Chapman <jchapman@katalix.com> 
+Cc: netdev@vger.kernel.org 
+Cc: linux-kernel@vger.kernel.org 
+---
+ net/l2tp/l2tp_core.c | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index 7be5103ff2a8..672a53f602b5 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -73,16 +73,11 @@
+ #define L2TP_HDRFLAG_L	   0x4000
+ #define L2TP_HDRFLAG_S	   0x0800
+ #define L2TP_HDRFLAG_O	   0x0200
+-#define L2TP_HDRFLAG_P	   0x0100
+ 
+ #define L2TP_HDR_VER_MASK  0x000F
+ #define L2TP_HDR_VER_2	   0x0002
+ #define L2TP_HDR_VER_3	   0x0003
+ 
+-/* L2TPv3 default L2-specific sublayer */
+-#define L2TP_SLFLAG_S	   0x40000000
+-#define L2TP_SL_SEQ_MASK   0x00ffffff
+-
+ #define L2TP_HDR_SIZE_MAX		14
+ 
+ /* Default trace flags */
+-- 
+1.8.3.1
+
