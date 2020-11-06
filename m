@@ -2,88 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D89FE2A9AA2
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 18:17:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93B162A9ABB
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 18:27:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727608AbgKFRRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 12:17:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42350 "EHLO
+        id S1726880AbgKFR1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 12:27:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727569AbgKFRRV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 12:17:21 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B98C0613CF
-        for <netdev@vger.kernel.org>; Fri,  6 Nov 2020 09:17:21 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id 13so1924658pfy.4
-        for <netdev@vger.kernel.org>; Fri, 06 Nov 2020 09:17:21 -0800 (PST)
+        with ESMTP id S1726075AbgKFR1H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 12:27:07 -0500
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4536EC0613CF
+        for <netdev@vger.kernel.org>; Fri,  6 Nov 2020 09:27:07 -0800 (PST)
+Received: by mail-wm1-x342.google.com with SMTP id v5so2207148wmh.1
+        for <netdev@vger.kernel.org>; Fri, 06 Nov 2020 09:27:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=kHXd+f6wsACiiEFKkCc7f8tpTMwMlQ140PnYPzDuSsQ=;
-        b=J5BHiJJtZ/39aOxYr2bZpsdtvPnsKoJN4knF1+T1EzehA/gbqrDypzQSawr1f4FfjL
-         snkk9hLxJtKvxDWO7UE3w+yqOe9k8PJu1r46Aqz0mLsKcU7OIGG2g3krn8tAohQ+zVQU
-         +WdjU6O70DdrFm8gePQh25u6EGXyI88iXFXjE/eLemoveupZ1Bhtmcwcs7evUeWkBjWF
-         DfHuudl/ZN5sR0QZzW1UwZCMdPbXsGamEUZzBGLUdwo0gDi1FcCV1fSuxfH0X13DCGQO
-         pP0VK3Er3mn8qblCA/I+7KNxnfWEKUcRSHUxIhPrcANfWTT7yZmy67auilFkDiVZKbRE
-         0rxQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=yXm0xOR5OX89U7FdRHq+y/V+ys5qn2trNwjFl4kc4pg=;
+        b=qi48DDrUGKKk4FN4+ns8paiZrgtdd8Tot2xquWY7sAJS9rvuXA1skHUX6NjUQ7RbGJ
+         Nupv6jkEPoBHahsGboDe4sMUcJQqUikBHV2iYToi/Mr3sTqUxhZVjQn1+zIQgO9pAs7j
+         WYN0IZwbQZ3J48AEJdUdt4X0RC3ZYz5jyGK7rud/2CjSSu+JJs+BjwAOKMi49pRWCpZ/
+         zqCqVdwFVrPOkAU+iu/LXgeQc3xPPEqpw25K8VotSV2uZyYk+cgb2uQaxIWf8K4yEnNR
+         1/YE5fb77kIujnmElhsWtM3YkLa6U23DkWZkV29BOznDuVJyjtf9F7N23OPG8r4RCnxJ
+         EQww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=kHXd+f6wsACiiEFKkCc7f8tpTMwMlQ140PnYPzDuSsQ=;
-        b=O+kprHp83MARMKtiW+RGf6MkarsvqKUQalyh8bPL8+p8VfZUjt3ew/rgwoG3lKI6L0
-         VMdX9UPzYjxP1//sk+Ye5gFIp3vTXoWCLKVJYBGoE9jgGPzj3O44tlc30xC9K0QhW1L2
-         YkAFUWR+cVR7aTEiLXCG2AZFomLIhCY11vjnlqHirYcUMNi9+8oBQjBs8MphbburxXpJ
-         xuTULkyZBDUFQEx+XOtD0pDzaVmf5jkTq1Ezwff/hYuHdzrExEb1/1jHcTwQo5HMSoa+
-         LencQSv6aVYD7+3Wojq8+GWca54H5zffapGOit5XIsbM85wEsLWYiIFnN2I43F+6Yc81
-         pZ8w==
-X-Gm-Message-State: AOAM533H7nnWuD2K1n4Lhun7QG34wYhdDHPJZ52hzmrGcNwmgyvX8PN6
-        msxvEwmFo/Mh58dm6MR1AOM9c2zZiRUtdQ==
-X-Google-Smtp-Source: ABdhPJwv6I9cSMPu0ecApmGZLfFmsBBrTQu1eU5BUdSrbzDixTXAYfCJwrLeJeEW7O1Kg3DBbP3fqw==
-X-Received: by 2002:a17:90a:7522:: with SMTP id q31mr597499pjk.158.1604683041250;
-        Fri, 06 Nov 2020 09:17:21 -0800 (PST)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id m11sm2412973pgs.56.2020.11.06.09.17.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Nov 2020 09:17:20 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 6/8] ionic: flatten calls to ionic_lif_rx_mode
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20201106001220.68130-1-snelson@pensando.io>
- <20201106001220.68130-7-snelson@pensando.io>
- <20201106090341.02ac148c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <ab750bf3-2e7f-d64a-f2c4-863feacfec04@pensando.io>
-Date:   Fri, 6 Nov 2020 09:17:52 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.0
-MIME-Version: 1.0
-In-Reply-To: <20201106090341.02ac148c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=yXm0xOR5OX89U7FdRHq+y/V+ys5qn2trNwjFl4kc4pg=;
+        b=QybBt8koyr0AKUpGSUviK2PIWSwLW1scyqpGeGeW4UbTLZ0ygQWReNUEKWAGfE6p7a
+         Ss1hsp8llMMq6LO3g3klTN2/wrzUpzQuhYLvt58CD1rZYlvOEnpnn77cuCCQtSRpQXS1
+         jhVhob68tOqA/i7F3qwxmcLf49PG8i+l4dy6jnm4k9huYwZ4R+itBHF7f1Qr20hHYPqT
+         w/2l/3Obea0xpg4ti2ifc2cy0ss4KU+CJGOKUrmx0iS1TTaqd3h2aJfy+pcldsnC858k
+         ZdS4WdcCdw54JJSKjBPfingSZN5FQ2l7CXppKtWmC1/t7pWQ4uReIVWTVmyDbP+0Bgjr
+         rccA==
+X-Gm-Message-State: AOAM533ioEtFTGuYkmnyXu/gw81c3HYUNG6kFnCk0TA2oKdiHkqT5ys6
+        AilK8Ht0sbrR5dPdfz2aPs+CMg==
+X-Google-Smtp-Source: ABdhPJwc7+07pE0P7DZXQ9MGA3aPf+2c3WClaee/Uz24R2bdlpxVdnrjEra0qScYxpUMKdjzWRlSAA==
+X-Received: by 2002:a05:600c:2949:: with SMTP id n9mr640578wmd.29.1604683625004;
+        Fri, 06 Nov 2020 09:27:05 -0800 (PST)
+Received: from localhost.localdomain ([88.122.66.28])
+        by smtp.gmail.com with ESMTPSA id z191sm3183266wme.30.2020.11.06.09.27.03
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 06 Nov 2020 09:27:04 -0800 (PST)
+From:   Loic Poulain <loic.poulain@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org,
+        cjhuang@codeaurora.org, netdev@vger.kernel.org,
+        Loic Poulain <loic.poulain@linaro.org>
+Subject: [PATCH v2 0/5] net: qrtr: Add distant node support
+Date:   Fri,  6 Nov 2020 18:33:25 +0100
+Message-Id: <1604684010-24090-1-git-send-email-loic.poulain@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/6/20 9:03 AM, Jakub Kicinski wrote:
-> On Thu,  5 Nov 2020 16:12:18 -0800 Shannon Nelson wrote:
->> +			work = kzalloc(sizeof(*work), GFP_ATOMIC);
->> +			if (!work) {
->> +				netdev_err(lif->netdev, "%s OOM\n", __func__);
->> +				return;
->> +			}
-> Can you drop this message (can be a follow up, since you're just moving
-> it).
->
-> AFAICT ATOMIC doesn't imply NOWARN so the message is redundant no?
+QRTR protocol allows a node to communicate with an other non-immediate 
+node via an intermdediate immediate node acting as a 'bridge':
 
-Yes, this can probably be cleaned up.  There are several of these left 
-over from the very early version of this driver that I'd like to clean 
-up, but haven't yet bubbled up high enough on my priority-vs-time list.  
-I'll try to get to them in the next week or so.
+node-0 <=> node-1 <=> node-2
 
-sln
+This is currently not supported in this upstream version and this
+series aim to fix that.
+
+This series is V2 because changes 1, 2 and 3 have already been submitted
+separately on LKML.
+
+Changes in v2:
+- Add reviewed-by tags from Bjorn and Mani
+- Fixing checkpatch issue reported by Jakub
+
+Loic Poulain (5):
+  net: qrtr: Fix port ID for control messages
+  net: qrtr: Allow forwarded services
+  net: qrtr: Allow non-immediate node routing
+  net: qrtr: Add GFP flags parameter to qrtr_alloc_ctrl_packet
+  net: qrtr: Release distant nodes along the bridge node
+
+ net/qrtr/ns.c   |  8 --------
+ net/qrtr/qrtr.c | 51 ++++++++++++++++++++++++++++++++++++++-------------
+ 2 files changed, 38 insertions(+), 21 deletions(-)
+
+-- 
+2.7.4
 
