@@ -2,86 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 787112A91C9
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 09:48:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3341C2A91CE
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 09:52:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726558AbgKFIsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 03:48:53 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:35585 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725830AbgKFIsw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 03:48:52 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-113-DayvrsIxPBecSkDdjKOROQ-1; Fri, 06 Nov 2020 08:48:48 +0000
-X-MC-Unique: DayvrsIxPBecSkDdjKOROQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 6 Nov 2020 08:48:47 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 6 Nov 2020 08:48:47 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jakub Kicinski' <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-CC:     netdev <netdev@vger.kernel.org>, Nicolas Pitre <nico@fluxnic.net>,
-        "Lee Jones" <lee.jones@linaro.org>
-Subject: RE: [PATCH net-next v2 1/7] drivers: net: smc91x: Fix set but unused
- W=1 warning
-Thread-Topic: [PATCH net-next v2 1/7] drivers: net: smc91x: Fix set but unused
- W=1 warning
-Thread-Index: AQHWs8RIsLQXTg3BjUib5tEgD+0g66m6yq0w
-Date:   Fri, 6 Nov 2020 08:48:47 +0000
-Message-ID: <749857e283f04d3b8f84f603fa065cd6@AcuMS.aculab.com>
-References: <20201104154858.1247725-1-andrew@lunn.ch>
-        <20201104154858.1247725-2-andrew@lunn.ch>
- <20201105143742.047959ed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201105143742.047959ed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726124AbgKFIwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 03:52:18 -0500
+Received: from smtprelay0031.hostedemail.com ([216.40.44.31]:59746 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725868AbgKFIwS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 03:52:18 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id D6ECC837F253;
+        Fri,  6 Nov 2020 08:52:16 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:152:355:379:599:968:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2691:2827:3138:3139:3140:3141:3142:3352:3622:3865:3867:3868:3872:3873:4321:5007:6119:6120:7901:7903:8531:8660:10004:10400:10848:11232:11658:11783:11914:12297:12555:12740:12895:13069:13138:13148:13230:13231:13311:13357:13894:14659:14721:21060:21080:21627:21660:21939:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: hope57_0d0ff78272d1
+X-Filterd-Recvd-Size: 2210
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf19.hostedemail.com (Postfix) with ESMTPA;
+        Fri,  6 Nov 2020 08:52:15 +0000 (UTC)
+Message-ID: <1662b333dd72369af4c1173035d43590fbc45292.camel@perches.com>
+Subject: Re: [PATCH] net/dsa: remove unused macros to tame gcc warning
+From:   Joe Perches <joe@perches.com>
+To:     Alex Shi <alex.shi@linux.alibaba.com>, andrew@lunn.ch
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 06 Nov 2020 00:52:14 -0800
+In-Reply-To: <8e0fac45-9107-cdfe-de9e-ccf3abd416a4@linux.alibaba.com>
+References: <1604641050-6004-1-git-send-email-alex.shi@linux.alibaba.com>
+         <71dc38c1646980840fb83d82fc588501af72e05f.camel@perches.com>
+         <8e0fac45-9107-cdfe-de9e-ccf3abd416a4@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSmFrdWIgS2ljaW5za2kNCj4gU2VudDogMDUgTm92ZW1iZXIgMjAyMCAyMjozOA0KPiBP
-biBXZWQsICA0IE5vdiAyMDIwIDE2OjQ4OjUyICswMTAwIEFuZHJldyBMdW5uIHdyb3RlOg0KPiA+
-IGRyaXZlcnMvbmV0L2V0aGVybmV0L3Ntc2Mvc21jOTF4LmM6NzA2OjUxOiB3YXJuaW5nOiB2YXJp
-YWJsZSDigJhwa3RfbGVu4oCZIHNldCBidXQgbm90IHVzZWQgWy1XdW51c2VkLQ0KPiBidXQtc2V0
-LXZhcmlhYmxlXQ0KPiA+ICAgNzA2IHwgIHVuc2lnbmVkIGludCBzYXZlZF9wYWNrZXQsIHBhY2tl
-dF9ubywgdHhfc3RhdHVzLCBwa3RfbGVuOw0KPiA+DQo+ID4gQWRkIGEgbmV3IG1hY3JvIGZvciBn
-ZXR0aW5nIGZpZWxkcyBvdXQgb2YgdGhlIGhlYWRlciwgd2hpY2ggb25seSBnZXRzDQo+ID4gdGhl
-IHN0YXR1cywgbm90IHRoZSBsZW5ndGggd2hpY2ggaW4gdGhpcyBjYXNlIGlzIG5vdCBuZWVkZWQu
-DQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBBbmRyZXcgTHVubiA8YW5kcmV3QGx1bm4uY2g+DQo+
-IA0KPiBTb3JyeSBJIG1pc3NlZCBzb21ldGhpbmcgb24gdjENCj4gDQo+ID4gKyNkZWZpbmUgU01D
-X0dFVF9QS1RfSERSX1NUQVRVUyhscCwgc3RhdHVzKQkJCQlcDQo+ID4gKwlkbyB7CQkJCQkJCQlc
-DQo+ID4gKwkJaWYgKFNNQ18zMkJJVChscCkpIHsJCQkJCVwNCj4gPiArCQkJdW5zaWduZWQgaW50
-IF9fdmFsID0gU01DX2lubChpb2FkZHIsIERBVEFfUkVHKGxwKSk7IFwNCj4gPiArCQkJKHN0YXR1
-cykgPSBfX3ZhbCAmIDB4ZmZmZjsJCQlcDQo+ID4gKwkJfSBlbHNlIHsJCQkJCQlcDQo+ID4gKwkJ
-CShzdGF0dXMpID0gU01DX2ludyhpb2FkZHIsIERBVEFfUkVHKGxwKSk7CVwNCj4gPiArCQl9CQkJ
-CQkJCVwNCj4gPiArCX0gd2hpbGUgKDApDQo+IA0KPiBUaGlzIGlzIHRoZSBvcmlnaW5hbC9mdWxs
-IG1hY3JvOg0KPiANCj4gI2RlZmluZSBTTUNfR0VUX1BLVF9IRFIobHAsIHN0YXR1cywgbGVuZ3Ro
-KQkJCQlcDQo+IAlkbyB7CQkJCQkJCQlcDQo+IAkJaWYgKFNNQ18zMkJJVChscCkpIHsJCQkJXA0K
-PiAJCQl1bnNpZ25lZCBpbnQgX192YWwgPSBTTUNfaW5sKGlvYWRkciwgREFUQV9SRUcobHApKTsg
-XA0KPiAJCQkoc3RhdHVzKSA9IF9fdmFsICYgMHhmZmZmOwkJCVwNCj4gCQkJKGxlbmd0aCkgPSBf
-X3ZhbCA+PiAxNjsJCQkJXA0KPiAJCX0gZWxzZSB7CQkJCQkJXA0KPiAJCQkoc3RhdHVzKSA9IFNN
-Q19pbncoaW9hZGRyLCBEQVRBX1JFRyhscCkpOwlcDQo+IAkJCShsZW5ndGgpID0gU01DX2ludyhp
-b2FkZHIsIERBVEFfUkVHKGxwKSk7CVwNCj4gCQl9CQkJCQkJCVwNCj4gCX0gd2hpbGUgKDApDQo+
-IA0KPiBOb3RlIHRoYXQgaXQgcmVhZHMgdGhlIHNhbWUgYWRkcmVzcyB0d2ljZSBpbiB0aGUgZWxz
-ZSBicmFuY2guDQo+IA0KPiBJJ20gOTAlIHN1cmUgd2UgY2FuJ3QgcmVtb3ZlIHRoZSByZWFkIGhl
-cmUgZWl0aGVyIHNvIGJlc3QgdHJlYXQgaXQNCj4gbGlrZSB0aGUgb25lcyBpbiBwYXRjaCAzLCBy
-aWdodD8NCg0KT25lIG9mIHRoZSB0d28gU01DX2ludygpIG5lZWRzIHRvIHVzZSAnaW9hZGRyICsg
-MicuDQpQcm9iYWJseSB0aGUgb25lIGZvciAobGVuZ3RoKS4NCg0KVGhlIGNvZGUgbWF5IGFsc28g
-YmUgYnVnZ3kgb24gQkUgc3lzdGVtcy4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVz
-cyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEg
-MVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+On Fri, 2020-11-06 at 16:28 +0800, Alex Shi wrote:
+> 
+> 在 2020/11/6 下午2:36, Joe Perches 写道:
+> > On Fri, 2020-11-06 at 13:37 +0800, Alex Shi wrote:
+> > > There are some macros unused, they causes much gcc warnings. Let's
+> > > remove them to tame gcc.
+> > 
+> > I believe these to be essentially poor warnings.
+> > 
+> > Aren't these warnings generated only when adding  W=2 to the make
+> > command line?
+> > 
+> > Perhaps it's better to move the warning to level 3
+> > ---
+> > diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
+> > index 95e4cdb94fe9..5c3c220ddb32 100644
+> > --- a/scripts/Makefile.extrawarn
+> > +++ b/scripts/Makefile.extrawarn
+> > @@ -68,7 +68,6 @@ KBUILD_CFLAGS += $(call cc-option, -Wlogical-op)
+> >  KBUILD_CFLAGS += -Wmissing-field-initializers
+> >  KBUILD_CFLAGS += -Wtype-limits
+> >  KBUILD_CFLAGS += $(call cc-option, -Wmaybe-uninitialized)
+> > -KBUILD_CFLAGS += $(call cc-option, -Wunused-macros)
+> 
+> This changed too much, and impact others. May not good. :)
+
+Can you clarify what you mean?
+
 
