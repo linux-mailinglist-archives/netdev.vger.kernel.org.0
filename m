@@ -2,61 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCC592A8CF5
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 03:30:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D38C42A8CF7
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 03:33:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726081AbgKFCaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 21:30:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39920 "EHLO mail.kernel.org"
+        id S1725837AbgKFCc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 21:32:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40314 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725842AbgKFCaF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Nov 2020 21:30:05 -0500
-Content-Type: text/plain; charset="utf-8"
+        id S1725616AbgKFCc4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 21:32:56 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B58252075A;
+        Fri,  6 Nov 2020 02:32:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604629804;
-        bh=bMss37PW0DjL+F105uZIF8AohlK/nn3hxT9D8pRtYjo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HF9SZSMRYFDXCCfWp4kFzC7kgKN7n4J4865wsEXrebCmd3z4e9I6kpScuGMzL+1le
-         vWVu/dmyhSusMEx4uaMIJyS80AZbQN8v4ihUv/gK2gtiwBNNxCmjnrMYleEiw8dQvm
-         wdl/0LAcABARrHfF6WVMgaDcrIrWF4GWRV2mc358=
+        s=default; t=1604629975;
+        bh=thdbS7abPuEJeJJKUg4NsgGJNqB+SjBm48UpesNADk4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dyz+TMBQ+QVLjI/xJNmh2mY04YmUVyjCawVQ/rv++L2mPsjwHTpYh+WrwDREmVCOP
+         Dq+3iAGxKDTKwhaU1d6fTbZAKpeuI1KumHD5L7buhyNYnWoZPkl74/Apuy7zRX8hmF
+         paD+3nDTnQhwU0kpaZX8EUpZRLmI9pvKrCLAS4WA=
+Date:   Thu, 5 Nov 2020 18:32:54 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>
+Subject: Re: [pull request][net-next v2 00/12] mlx5 updates 2020-11-03
+Message-ID: <20201105183254.00dee895@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201105201242.21716-1-saeedm@nvidia.com>
+References: <20201105201242.21716-1-saeedm@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] tools/bpftool: fix attaching flow dissector
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160462980468.24579.17001075213935602324.git-patchwork-notify@kernel.org>
-Date:   Fri, 06 Nov 2020 02:30:04 +0000
-References: <20201105115230.296657-1-lmb@cloudflare.com>
-In-Reply-To: <20201105115230.296657-1-lmb@cloudflare.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, kernel-team@cloudflare.com,
-        jbenc@redhat.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf.git (refs/heads/master):
-
-On Thu,  5 Nov 2020 11:52:30 +0000 you wrote:
-> My earlier patch to reject non-zero arguments to flow dissector attach
-> broke attaching via bpftool. Instead of 0 it uses -1 for target_fd.
-> Fix this by passing a zero argument when attaching the flow dissector.
+On Thu, 5 Nov 2020 12:12:30 -0800 Saeed Mahameed wrote:
+> This series makes some updates to mlx5 software steering.
+> and some other misc trivial changes.
 > 
-> Fixes: 1b514239e859 ("bpf: flow_dissector: Check value of unused flags to BPF_PROG_ATTACH")
-> Reported-by: Jiri Benc <jbenc@redhat.com>
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> v1->v2:
+>    - use %zu for size_t printk in patch 9.
 > 
-> [...]
+> For more information please see tag log below.
+> 
+> For the DR memory buddy allocator series, Yevgeny has updated
+> the implementation according to Dave's request [1] and got rid of
+> the bit array optimization and moved back to standard buddy
+> allocator implementation.
+> 
+> [1] https://patchwork.ozlabs.org/project/netdev/patch/20200925193809.463047-2-saeed@kernel.org/
+> 
+> Please pull and let me know if there is any problem.
 
-Here is the summary with links:
-  - [bpf] tools/bpftool: fix attaching flow dissector
-    https://git.kernel.org/bpf/bpf/c/f9b7ff0d7f7a
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Pulled, thanks!
