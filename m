@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 927782A9FDB
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 23:20:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69FDE2A9FDF
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 23:20:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729008AbgKFWSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 17:18:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41792 "EHLO mail.kernel.org"
+        id S1729045AbgKFWSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 17:18:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41844 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728967AbgKFWS1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Nov 2020 17:18:27 -0500
+        id S1729003AbgKFWS3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Nov 2020 17:18:29 -0500
 Received: from localhost.localdomain (HSI-KBW-46-223-126-90.hsi.kabel-badenwuerttemberg.de [46.223.126.90])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BEFC121556;
-        Fri,  6 Nov 2020 22:18:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9637021707;
+        Fri,  6 Nov 2020 22:18:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604701106;
-        bh=zfW+TstbaETCjrecVXCK2p+9uJMUmc8aN3NLStSQrjM=;
+        s=default; t=1604701109;
+        bh=PWlbZt8wWlmn+LUnXGXuQMunnnfW/Ks/7SA6eyhM52Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0+NDqiGAoaCCJhFts1rR200TkCd/gvtVzXpkBVmN5w7aYl97WcN+0oY3wBoZqBqGW
-         3F0gisLN/XVWNo8Xk4PtuyDrHuXyTQndBIFv0SmwZq2zOKLIPxKyo15BnVOPBRB8Oh
-         Dln9WnKUO8/Ivp5n2dSR3tdfIYmdp0Ds4CprnUqc=
+        b=oMzwQM4OVxtFFKwcgJNzxD9lIMwZ8Ldhj6OoNVtOTOlOh07hOQA+sAtQsWuuZsZMl
+         Wm3NC7wnZyJ4/XOyMbyFrK5kwowihD1Dxi7Y2+QvxXFEfzDs/z2M9LCIo5TP+B0Y1v
+         B/nHoqZZhKRPrZkbQ0sSnUs1ZV1HjFJLUxZOnGDQ=
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
@@ -33,9 +33,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
         Johannes Berg <johannes@sipsolutions.net>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [RFC net-next 11/28] hamachi: use ndo_siocdevprivate
-Date:   Fri,  6 Nov 2020 23:17:26 +0100
-Message-Id: <20201106221743.3271965-12-arnd@kernel.org>
+Subject: [RFC net-next 12/28] tehuti: use ndo_siocdevprivate
+Date:   Fri,  6 Nov 2020 23:17:27 +0100
+Message-Id: <20201106221743.3271965-13-arnd@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201106221743.3271965-1-arnd@kernel.org>
 References: <20201106221743.3271965-1-arnd@kernel.org>
@@ -47,110 +47,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-hamachi has one command that overloads the ifreq argument
-and requires a conversion to ndo_siocdevprivate in order to
-make compat mode work, so split it from ndo_ioctl.
+Tehuti only implements private ioctl commands, and implements
+them by overriding the ifreq layout, which is broken in
+compat mode.
+
+Move it to the ndo_siocdevprivate callback in order to fix this.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/packetengines/hamachi.c | 63 ++++++++++++--------
- 1 file changed, 38 insertions(+), 25 deletions(-)
+ drivers/net/ethernet/tehuti/tehuti.c | 18 +++++-------------
+ 1 file changed, 5 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/packetengines/hamachi.c b/drivers/net/ethernet/packetengines/hamachi.c
-index d058a63602a9..f6980fac8407 100644
---- a/drivers/net/ethernet/packetengines/hamachi.c
-+++ b/drivers/net/ethernet/packetengines/hamachi.c
-@@ -546,7 +546,9 @@ static int read_eeprom(void __iomem *ioaddr, int location);
- static int mdio_read(struct net_device *dev, int phy_id, int location);
- static void mdio_write(struct net_device *dev, int phy_id, int location, int value);
- static int hamachi_open(struct net_device *dev);
--static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
-+static int hamachi_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
-+static int hamachi_siocdevprivate(struct net_device *dev, struct ifreq *rq,
-+				  void __user *data, int cmd);
- static void hamachi_timer(struct timer_list *t);
- static void hamachi_tx_timeout(struct net_device *dev, unsigned int txqueue);
- static void hamachi_init_ring(struct net_device *dev);
-@@ -571,7 +573,8 @@ static const struct net_device_ops hamachi_netdev_ops = {
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_set_mac_address 	= eth_mac_addr,
- 	.ndo_tx_timeout		= hamachi_tx_timeout,
--	.ndo_do_ioctl		= netdev_ioctl,
-+	.ndo_do_ioctl		= hamachi_ioctl,
-+	.ndo_siocdevprivate	= hamachi_siocdevprivate,
- };
- 
- 
-@@ -1867,7 +1870,36 @@ static const struct ethtool_ops ethtool_ops_no_mii = {
- 	.get_drvinfo = hamachi_get_drvinfo,
- };
- 
--static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
-+/* private ioctl: set rx,tx intr params */
-+static int hamachi_siocdevprivate(struct net_device *dev, struct ifreq *rq,
-+				  void __user *data, int cmd)
-+{
-+	struct hamachi_private *np = netdev_priv(dev);
-+	u32 *d = (u32 *)&rq->ifr_ifru;
-+
-+	if (!netif_running(dev))
-+		return -EINVAL;
-+
-+	if (cmd != SIOCDEVPRIVATE+3)
-+		return -EOPNOTSUPP;
-+
-+	/* Should add this check here or an ordinary user can do nasty
-+	 * things. -KDU
-+	 *
-+	 * TODO: Shut down the Rx and Tx engines while doing this.
-+	 */
-+	if (!capable(CAP_NET_ADMIN))
-+		return -EPERM;
-+	writel(d[0], np->base + TxIntrCtrl);
-+	writel(d[1], np->base + RxIntrCtrl);
-+	printk(KERN_NOTICE "%s: tx %08x, rx %08x intr\n", dev->name,
-+		(u32) readl(np->base + TxIntrCtrl),
-+		(u32) readl(np->base + RxIntrCtrl));
-+
-+	return 0;
-+}
-+
-+static int hamachi_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
- {
- 	struct hamachi_private *np = netdev_priv(dev);
- 	struct mii_ioctl_data *data = if_mii(rq);
-@@ -1876,28 +1908,9 @@ static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
- 	if (!netif_running(dev))
- 		return -EINVAL;
- 
--	if (cmd == (SIOCDEVPRIVATE+3)) { /* set rx,tx intr params */
--		u32 *d = (u32 *)&rq->ifr_ifru;
--		/* Should add this check here or an ordinary user can do nasty
--		 * things. -KDU
--		 *
--		 * TODO: Shut down the Rx and Tx engines while doing this.
--		 */
--		if (!capable(CAP_NET_ADMIN))
--			return -EPERM;
--		writel(d[0], np->base + TxIntrCtrl);
--		writel(d[1], np->base + RxIntrCtrl);
--		printk(KERN_NOTICE "%s: tx %08x, rx %08x intr\n", dev->name,
--		  (u32) readl(np->base + TxIntrCtrl),
--		  (u32) readl(np->base + RxIntrCtrl));
--		rc = 0;
--	}
--
--	else {
--		spin_lock_irq(&np->lock);
--		rc = generic_mii_ioctl(&np->mii_if, data, cmd, NULL);
--		spin_unlock_irq(&np->lock);
--	}
-+	spin_lock_irq(&np->lock);
-+	rc = generic_mii_ioctl(&np->mii_if, data, cmd, NULL);
-+	spin_unlock_irq(&np->lock);
- 
- 	return rc;
+diff --git a/drivers/net/ethernet/tehuti/tehuti.c b/drivers/net/ethernet/tehuti/tehuti.c
+index b8f4f419173f..e25524081a30 100644
+--- a/drivers/net/ethernet/tehuti/tehuti.c
++++ b/drivers/net/ethernet/tehuti/tehuti.c
+@@ -637,7 +637,8 @@ static int bdx_range_check(struct bdx_priv *priv, u32 offset)
+ 		-EINVAL : 0;
  }
+ 
+-static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
++static int bdx_siocdevprivate(struct net_device *ndev, struct ifreq *ifr,
++			      void __user *udata, int cmd)
+ {
+ 	struct bdx_priv *priv = netdev_priv(ndev);
+ 	u32 data[3];
+@@ -647,7 +648,7 @@ static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
+ 
+ 	DBG("jiffies=%ld cmd=%d\n", jiffies, cmd);
+ 	if (cmd != SIOCDEVPRIVATE) {
+-		error = copy_from_user(data, ifr->ifr_data, sizeof(data));
++		error = copy_from_user(data, udata, sizeof(data));
+ 		if (error) {
+ 			pr_err("can't copy from user\n");
+ 			RET(-EFAULT);
+@@ -669,7 +670,7 @@ static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
+ 		data[2] = READ_REG(priv, data[1]);
+ 		DBG("read_reg(0x%x)=0x%x (dec %d)\n", data[1], data[2],
+ 		    data[2]);
+-		error = copy_to_user(ifr->ifr_data, data, sizeof(data));
++		error = copy_to_user(udata, data, sizeof(data));
+ 		if (error)
+ 			RET(-EFAULT);
+ 		break;
+@@ -688,15 +689,6 @@ static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
+ 	return 0;
+ }
+ 
+-static int bdx_ioctl(struct net_device *ndev, struct ifreq *ifr, int cmd)
+-{
+-	ENTER;
+-	if (cmd >= SIOCDEVPRIVATE && cmd <= (SIOCDEVPRIVATE + 15))
+-		RET(bdx_ioctl_priv(ndev, ifr, cmd));
+-	else
+-		RET(-EOPNOTSUPP);
+-}
+-
+ /**
+  * __bdx_vlan_rx_vid - private helper for adding/killing VLAN vid
+  * @ndev: network device
+@@ -1860,7 +1852,7 @@ static const struct net_device_ops bdx_netdev_ops = {
+ 	.ndo_stop		= bdx_close,
+ 	.ndo_start_xmit		= bdx_tx_transmit,
+ 	.ndo_validate_addr	= eth_validate_addr,
+-	.ndo_do_ioctl		= bdx_ioctl,
++	.ndo_siocdevprivate	= bdx_siocdevprivate,
+ 	.ndo_set_rx_mode	= bdx_setmulti,
+ 	.ndo_change_mtu		= bdx_change_mtu,
+ 	.ndo_set_mac_address	= bdx_set_mac,
 -- 
 2.27.0
 
