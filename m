@@ -2,120 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0B0D2A9938
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 17:14:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72DAF2A994A
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 17:17:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726422AbgKFQOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 11:14:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:57881 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726074AbgKFQOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 11:14:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604679244;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EFW0/AjI5D48SWseHJMzco2NAKnAG+greLgwTvNixSU=;
-        b=LM2PfXz6a1Gyu0otTn8kLN94ErjZ0cAbyxdF8DxITs4ou5gX5F2YtPZbdLES0TQGb6teZV
-        7ZgJH6qaViva2rYhXeXovI6qPpJHEsVZxEsAWhof30ezRgELUpiS19fwPj3kzNrTuaxMxp
-        D5KAgHdHBV0jniL6EvRyC8GF+KyGcuM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-590-P6_JqA-JOW-edsjyXRGGtA-1; Fri, 06 Nov 2020 11:14:00 -0500
-X-MC-Unique: P6_JqA-JOW-edsjyXRGGtA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6CD13E06A1;
-        Fri,  6 Nov 2020 16:13:58 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.25])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 986331002C18;
-        Fri,  6 Nov 2020 16:13:55 +0000 (UTC)
-Date:   Fri, 6 Nov 2020 17:13:52 +0100
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-To:     Alex Shi <alex.shi@linux.alibaba.com>
-Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/xdp: remove unused macro REG_STATE_NEW
-Message-ID: <20201106171352.5c51342d@carbon>
-In-Reply-To: <1604641431-6295-1-git-send-email-alex.shi@linux.alibaba.com>
-References: <1604641431-6295-1-git-send-email-alex.shi@linux.alibaba.com>
-Organization: Red Hat Inc.
+        id S1727170AbgKFQRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 11:17:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727095AbgKFQRS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 11:17:18 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73972C0613CF
+        for <netdev@vger.kernel.org>; Fri,  6 Nov 2020 08:17:16 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id p1so1875664wrf.12
+        for <netdev@vger.kernel.org>; Fri, 06 Nov 2020 08:17:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Fc1sSmAvWcSw7mgK9PzbvDNnj1DKq7i0rcvlvMAKsXE=;
+        b=LeA7xfrOsL2/EtYpgOlZJbBcINZIxJsFCNaRYLhwotDeKBrrQV0W5ZAIQMu9q4S20w
+         xkMr+ZB7o2z4q6kEftSYOzP9+6s71iAMpwosWRFJ9rnL4yt06MtCc7eAuLTUI5eo9Yf6
+         m/jGp8WlHbBK+E8EzbwNrBPDe3wMTKVKmqQ9qWLdz03eyuU+vq/sQ019H9cXUBT7eJjM
+         jX2kjfQDUjzvHJ/8s+rMrBJhn31plJysb3/dskItZleAq0FrmqRQKV2+iVYY3w3jmHLj
+         51o5/Ps1AnvTK3xGb0Uf+63snv2oeO/mMViZIkB7RGLUv1mdV6G1HGys1OC4kG0diI+r
+         bxTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Fc1sSmAvWcSw7mgK9PzbvDNnj1DKq7i0rcvlvMAKsXE=;
+        b=gqNjo51C+xh0MkOoM/T1EYt27joQ6Wze5Y2HQJk4rlHqxLzTOeKausyp3S0cyONfrV
+         WXyNYxhGJ5YHW+yGw/KGEKp/HrBpao1ryBjfm2hozoLmVAdJKzUbCzl/e2YRgM/TX4y5
+         TnI9ZBreLQEUhlFGi0yfetgWqwEXXN7ecuUGoXjsDpvBdXBz4SeFeEnAKyJ4p1uZmXZr
+         YBox/wgrf2CM+Le2MbxJdRfqaEhp6DmCTSTP6/cYs2LW5ivyiwWo/dVMhnwjYMBq6hBR
+         iQ/TthZHyts1UJHK+Q1HH2P0M+edhLDAXNgztrKaAXNeRpDCpVlQ368eBT2AgG1p5p8X
+         bwKw==
+X-Gm-Message-State: AOAM531WYVcSrFXJVlnO3ueDUXaZMAAwNcRFwR5x3GtFmmC6lbBv+QCG
+        mqnOCXArT0QHL26xG33sunY=
+X-Google-Smtp-Source: ABdhPJxqiPeeYU14SHMQeTqimJXKYq0LfRsNqDPGzymPFbc8P/5ulmbQJmYRxRzcW5kwswx0Z5o8Yw==
+X-Received: by 2002:adf:a343:: with SMTP id d3mr3500217wrb.91.1604679434721;
+        Fri, 06 Nov 2020 08:17:14 -0800 (PST)
+Received: from [192.168.8.114] ([37.170.181.66])
+        by smtp.gmail.com with ESMTPSA id l16sm2763485wrx.5.2020.11.06.08.17.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Nov 2020 08:17:13 -0800 (PST)
+Subject: Re: [RESEND PATCH] bonding: wait for sysfs kobject destruction before
+ freeing struct slave
+To:     Jamie Iles <jamie@nuviainc.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org, Qiushi Wu <wu000273@umn.edu>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+References: <20201105084108.3432509-1-jamie@nuviainc.com>
+ <89416a2d-8a9b-f225-3c2a-16210df25e61@gmail.com>
+ <20201105181108.GA2360@poplar>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d4b96330-4ee1-6393-1096-03a06abd3889@gmail.com>
+Date:   Fri, 6 Nov 2020 17:17:12 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201105181108.GA2360@poplar>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  6 Nov 2020 13:43:51 +0800
-Alex Shi <alex.shi@linux.alibaba.com> wrote:
-
-> To tame gcc warning on it:
-> net/core/xdp.c:20:0: warning: macro "REG_STATE_NEW" is not used
-> [-Wunused-macros]
-
-Hmm... REG_STATE_NEW is zero, so it is implicitly set via memset zero.
-But it is true that it is technically not directly used or referenced.
-
-It is mentioned in a comment, so please send V2 with this additional change:
-
-$ git diff
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 48aba933a5a8..6e1430971ac2 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -175,7 +175,7 @@ int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
-                return -ENODEV;
-        }
- 
--       /* State either UNREGISTERED or NEW */
-+       /* State either UNREGISTERED or zero */
-        xdp_rxq_info_init(xdp_rxq);
-        xdp_rxq->dev = dev;
-        xdp_rxq->queue_index = queue_index;
 
 
-> Signed-off-by: Alex Shi <alex.shi@linux.alibaba.com>
-> Cc: "David S. Miller" <davem@davemloft.net> 
-> Cc: Jakub Kicinski <kuba@kernel.org> 
-> Cc: Alexei Starovoitov <ast@kernel.org> 
-> Cc: Daniel Borkmann <daniel@iogearbox.net> 
-> Cc: Jesper Dangaard Brouer <hawk@kernel.org> 
-> Cc: John Fastabend <john.fastabend@gmail.com> 
-> Cc: netdev@vger.kernel.org 
-> Cc: bpf@vger.kernel.org 
-> Cc: linux-kernel@vger.kernel.org 
-> ---
->  net/core/xdp.c | 1 -
->  1 file changed, 1 deletion(-)
+On 11/5/20 7:11 PM, Jamie Iles wrote:
+> Hi Eric,
 > 
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index 48aba933a5a8..3d88aab19c89 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -19,7 +19,6 @@
->  #include <trace/events/xdp.h>
->  #include <net/xdp_sock_drv.h>
->  
-> -#define REG_STATE_NEW		0x0
->  #define REG_STATE_REGISTERED	0x1
->  #define REG_STATE_UNREGISTERED	0x2
->  #define REG_STATE_UNUSED	0x3
+> On Thu, Nov 05, 2020 at 01:49:03PM +0100, Eric Dumazet wrote:
+>> On 11/5/20 9:41 AM, Jamie Iles wrote:
+>>> syzkaller found that with CONFIG_DEBUG_KOBJECT_RELEASE=y, releasing a
+>>> struct slave device could result in the following splat:
+>>>
+>>>
+>>
+>>> This is a potential use-after-free if the sysfs nodes are being accessed
+>>> whilst removing the struct slave, so wait for the object destruction to
+>>> complete before freeing the struct slave itself.
+>>>
+>>> Fixes: 07699f9a7c8d ("bonding: add sysfs /slave dir for bond slave devices.")
+>>> Fixes: a068aab42258 ("bonding: Fix reference count leak in bond_sysfs_slave_add.")
+>>> Cc: Qiushi Wu <wu000273@umn.edu>
+>>> Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+>>> Cc: Veaceslav Falico <vfalico@gmail.com>
+>>> Cc: Andy Gospodarek <andy@greyhouse.net>
+>>> Signed-off-by: Jamie Iles <jamie@nuviainc.com>
+>>> ---
+> ...
+>> This seems weird, are we going to wait for a completion while RTNL is held ?
+>> I am pretty sure this could be exploited by malicious user/syzbot.
+>>
+>> The .release() handler could instead perform a refcounted
+>> bond_free_slave() action.
+> 
+> Okay, so were you thinking along the lines of this moving the lifetime 
+> of the slave to the kobject?
+> 
+
+This seems a bit too complex for a bug fix.
+
+Instead of adding a completion, you could add a refcount_t, and
+make bond_free_slave() a wrapper like
+
+static inline void bond_free_slave(struct slave *slave)
+{
+   if (refcount_dec_and_test(&slave->refcnt))
+       __bond_free_slave(slave);
+}
+
+Once the kobj is successfully activated, you would
+need a refcount_inc(&slave->refcount);
+
+Total patch would be smaller and easier to review.
+
+The kobj .release handler would simply call bond_free_slave(slave);
 
 
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
 
