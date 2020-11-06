@@ -2,143 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC912A988A
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 16:29:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0872D2A98A7
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 16:40:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727524AbgKFP3c convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 6 Nov 2020 10:29:32 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:46900 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726812AbgKFP3c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 10:29:32 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-232-nGrs4ePMNNaOWXMtK-gYYg-1; Fri, 06 Nov 2020 15:29:28 +0000
-X-MC-Unique: nGrs4ePMNNaOWXMtK-gYYg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 6 Nov 2020 15:29:27 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 6 Nov 2020 15:29:27 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Nicolas Pitre' <nico@fluxnic.net>
-CC:     'Jakub Kicinski' <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        netdev <netdev@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>
-Subject: RE: [PATCH net-next v2 6/7] drivers: net: smc911x: Fix cast from
- pointer to integer of different size
-Thread-Topic: [PATCH net-next v2 6/7] drivers: net: smc911x: Fix cast from
- pointer to integer of different size
-Thread-Index: AQHWs8Wc9clo0WoJVE6rwm6TlnJJWam6x96AgABtQYCAAAQJQA==
-Date:   Fri, 6 Nov 2020 15:29:27 +0000
-Message-ID: <4892cf6d877c4e529d941345dcdb015a@AcuMS.aculab.com>
-References: <20201104154858.1247725-1-andrew@lunn.ch>
- <20201104154858.1247725-7-andrew@lunn.ch>
- <20201105144711.40a2f8f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <babda61688af4f42b4a9e0fb41808272@AcuMS.aculab.com>
- <nycvar.YSQ.7.78.906.2011060942360.2184@knanqh.ubzr>
-In-Reply-To: <nycvar.YSQ.7.78.906.2011060942360.2184@knanqh.ubzr>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1727561AbgKFPka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 10:40:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726812AbgKFPk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 10:40:29 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E880AC0613CF;
+        Fri,  6 Nov 2020 07:40:28 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id o23so2509654ejn.11;
+        Fri, 06 Nov 2020 07:40:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bKIJ50PdgwgAwP/V0//eIhaUmG6dnst+EUp5L+hwnTA=;
+        b=SeeVVyYdNacRU44UQ1B3hEASTXd8FfRWywCm17l9zMe+Or/BqJi3dnzHPZAlZt0OZK
+         2nhuJpOd79difwmfPRDzfH6m0Bgv6AGEyhWnpBia95Er0EgoH6I1Hs+qGnnlqb0FXSN0
+         g3e938GrK9h1Zd31YsCCOgs9dhUv1p0CsBecH3sF9scBBxCrRG5ywmFwRIy3taXw7q34
+         m5CVYOoz01tNmjsdOaud49k440IuVMx15dwSWIjcSTT0ujP8YPyDByZpNSirJZnwhZ32
+         GVaqBpyxyUSiEZqZHKgd5JY5U0L6gTCBmKQG5+2YpXKptOt4G3XtAcp0wtbsYUtyQVVT
+         2SJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bKIJ50PdgwgAwP/V0//eIhaUmG6dnst+EUp5L+hwnTA=;
+        b=bwBF9PXnds9ry5BudGZqAwxQO7RHz2wnRzzWFrNN6ZcPeqiWkeSmGCgjHBoLIdIvzn
+         CcG7v8j02f2vj4dV98UiYcaFKprLl9Yd8EYJuvJtSo13P6Fzm3bt8tGWr16kJFFZi3wo
+         ichgfk+Qs+WIB5M8pgnxwnhp7HEE0KDIl2zZ03PSHcXAH1d+a4NJVQXfDZuEWi+2fqgS
+         OvcnRl8XDNjWJDwVmKSc/HH4lpYNiMcN7iY2bGrWGhLSL/VUWOEKtTUa6xm4ounmfB9R
+         MTIH/PMnUyC05E+l7yEV9LTwows38KRFiFv+ym2M6smI84I0n6U1duGN9AjsJRVA2EOn
+         eC+g==
+X-Gm-Message-State: AOAM530YVw1vGDqLkJyf8AE8htGcsF2MJ6FX3gUAj36BvbTxDTeUqIF3
+        CqDjfzUP52v9hJSsoYrIXWo=
+X-Google-Smtp-Source: ABdhPJwGSjY7RtlCT8WKIcdPooMW1LiwS7Fm5EaWsga2Xl8WFPo5pIMB6myzWgsMEkPOxyOTb41pqA==
+X-Received: by 2002:a17:906:c8d8:: with SMTP id gc24mr2705955ejb.417.1604677227257;
+        Fri, 06 Nov 2020 07:40:27 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id r21sm1206458edp.92.2020.11.06.07.40.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Nov 2020 07:40:26 -0800 (PST)
+Date:   Fri, 6 Nov 2020 17:40:25 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, vinicius.gomes@intel.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        kuba@kernel.org, Jose.Abreu@synopsys.com,
+        allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
+        UNGLinuxDriver@microchip.com, po.liu@nxp.com,
+        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
+        vladimir.oltean@nxp.com, leoyang.li@nxp.com, mingkai.hu@nxp.com
+Subject: Re: [RFC, net-next 2/3] net: dsa: felix: add preempt queues set
+ support for vsc9959
+Message-ID: <20201106154025.qx6am5ybknjuwzsn@skbuf>
+References: <20201020040458.39794-1-xiaoliang.yang_1@nxp.com>
+ <20201020040458.39794-3-xiaoliang.yang_1@nxp.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201020040458.39794-3-xiaoliang.yang_1@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nicolas Pitre
-> Sent: 06 November 2020 15:06
-> 
-> On Fri, 6 Nov 2020, David Laight wrote:
-> 
-> > From: Jakub Kicinski
-> > > Sent: 05 November 2020 22:47
-> > >
-> > > On Wed,  4 Nov 2020 16:48:57 +0100 Andrew Lunn wrote:
-> > > > -	buf = (char*)((u32)skb->data & ~0x3);
-> > > > -	len = (skb->len + 3 + ((u32)skb->data & 3)) & ~0x3;
-> > > > -	cmdA = (((u32)skb->data & 0x3) << 16) |
-> > > > +	offset = (unsigned long)skb->data & 3;
-> > > > +	buf = skb->data - offset;
-> > > > +	len = skb->len + offset;
-> > > > +	cmdA = (offset << 16) |
-> > >
-> > > The len calculation is wrong, you trusted people on the mailing list
-> > > too much ;)
-> >
-> > I misread what the comment-free convoluted code was doing....
-> >
-> > Clearly it is rounding the base address down to a multiple of 4
-> > and passing the offset in cmdA.
-> > This is fine - but quite why the (I assume) hardware doesn't do
-> > this itself and just document that it does a 32bit read is
-> > another matter - the logic will be much the same and I doubt
-> > anything modern is that pushed for space.
-> >
-> > However rounding the length up to a multiple of 4 is buggy.
-> > If this is an ethernet chipset it must (honest) be able to
-> > send frames that don't end on a 4 byte boundary.
-> > So rounding up the length is very dubious.
-> 
-> I probably wrote that code. Probably something like 20 years ago at this
-> point. I no longer have access to the actual hardware either.
-> 
-> But my recollection is that this ethernet chip had the ability to do 1,
-> 2 or 4 byte wide data transfers.
-> 
-> To be able to efficiently use I/O helpers like readsl()/writesl() on
-> ARM, the host memory pointer had to be aligned to a 32-bit boundary
-> because misaligned accesses were not supported by the hardware and
-> therefore were very costly to perform in software with a bytewise
-> approach. Remember that back then, the CPU clock was very close to the
-> actual ethernet throughput and PIO was the only option.
-> 
-> This was made even worse by the fact that, on some boards, the hw
-> designers didn't consider connecting the byte select signals as a
-> worthwhile thing to do. That means only 32-bit wide access to the chip
-> were possible.
-> 
-> So to work around this, the skb buffer address was rounded down, the
-> length was rounded up, and
-> the on-chip pointer was adjusted to refer to the actual data
-> payload accordingly with the original length. Therefore the proposed
-> patch is indeed wrong.
+On Tue, Oct 20, 2020 at 12:04:57PM +0800, Xiaoliang Yang wrote:
+> +static int vsc9959_port_get_preempt(struct ocelot *ocelot, int port,
+> +				    struct ethtool_fp *fpcmd)
+> +{
+> +	struct ocelot_port *ocelot_port = ocelot->ports[port];
+> +	u32 val;
+> +
+> +	val = ocelot_port_readl(ocelot_port, DEV_MM_VERIF_CONFIG);
+> +	val &= DEV_MM_CONFIG_VERIF_CONFIG_PRM_VERIFY_DIS;
+> +	fpcmd->enabled = (val ? 0 : 1);
+> +
+> +	val = ocelot_read(ocelot, QSYS_PREEMPTION_CFG);
 
-Which one, the one that rounds the length up.
-Or the one that just adds 'initial padding'.
+You have a bug here. This should be:
 
-> Just to say that, although the code might look suspicious, there was a
-> reason for that and it did work correctly for a long long time at this
-> point. Obviously those were only 32- bit systems (I really doubt those
-> ethernet chips were ever used on 64-bit systems).
+	val = ocelot_read_rix(ocelot, QSYS_PREEMPTION_CFG, port);
 
-Oh, OK, this is one of the ethernet chips that had an on-chip fifo
-that the software had to use PIO to fill.
-(I remember them well! Mostly 16bit ISA ones and the odd EISA one.)
+otherwise you're always retrieving the frame preemption configuration of
+port 0, regardless of the port passed as argument.
 
-So you can 'cheat' at the start of the frame to do aligned 32-bit writes.
-(Unless the skb has odd fragmentation - unlikely for IP.)
-
-The end of frame is more problematic if the byte enables are missing.
-Depending exactly on how the end of frame is signalled.
-If the frame length is passed (which probably needs to include the
-initial pad) then it may not matter about extra bytes in the tx fifo.
-(Provided they don't end up in the following frame.)
-
-I wonder when this was last used?
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+> +	fpcmd->min_frag_size_mult = QSYS_PREEMPTION_CFG_MM_ADD_FRAG_SIZE_X(val);
+> +
+> +	return 0;
+> +}
