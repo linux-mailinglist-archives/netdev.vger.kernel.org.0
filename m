@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C30DF2AA042
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 23:25:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCE9B2A9FE2
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 23:20:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729328AbgKFWVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 17:21:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41964 "EHLO mail.kernel.org"
+        id S1729070AbgKFWSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 17:18:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42002 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729023AbgKFWSf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Nov 2020 17:18:35 -0500
+        id S1729049AbgKFWSi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Nov 2020 17:18:38 -0500
 Received: from localhost.localdomain (HSI-KBW-46-223-126-90.hsi.kabel-badenwuerttemberg.de [46.223.126.90])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4C48121D7F;
-        Fri,  6 Nov 2020 22:18:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1DC1421D81;
+        Fri,  6 Nov 2020 22:18:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604701114;
-        bh=AjIS9Fwp+9zwOieexErSSkVefl0S4aqIyIhbjJBo8ns=;
+        s=default; t=1604701117;
+        bh=/cpDjwa8dOkb01yFtUHo3+36yqs3G0WmNes6UhKpcxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XbeSOZuoctGdFTTctZYTPX/FZjuaNYEXLdm25I7crH1V5VQZOVT0UApSiH/I5+cwP
-         t7VZxDeNGE7nZoOrCDqGufbZQlQCAgH5NLZroopgIQ8g/RH2lVRa8Mh+NPVk/qh+Eq
-         nczzE6xnkVg8lqpFXIG6tp/IDPcrq7vgbV6Sme/E=
+        b=TbTQSTmHZ0f7QKkEEQGaFRuwKQy1MxygJVIz6jojqveklKc4+zOzk9u3OWxiBvSSq
+         4Uudn8oPtMe4nsAthvwJKH6FjYr4nluegVUd/PmHn9cNTSzJqu9jX0yIOAAkKX9hQi
+         r2tYL6RbzFOcphYfGdo5Dxv0xP2zBr/GLGZxgr8w=
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
@@ -33,9 +33,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
         Johannes Berg <johannes@sipsolutions.net>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [RFC net-next 14/28] fddi: use ndo_siocdevprivate
-Date:   Fri,  6 Nov 2020 23:17:29 +0100
-Message-Id: <20201106221743.3271965-15-arnd@kernel.org>
+Subject: [RFC net-next 15/28] net: usb: use ndo_siocdevprivate
+Date:   Fri,  6 Nov 2020 23:17:30 +0100
+Message-Id: <20201106221743.3271965-16-arnd@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201106221743.3271965-1-arnd@kernel.org>
 References: <20201106221743.3271965-1-arnd@kernel.org>
@@ -47,76 +47,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The skfddi driver has a private ioctl and passes the data correctly
-through ifr_data, but the use of a pointer in s_skfp_ioctl is
-broken in compat mode.
+The pegasus and rtl8150 drivers use SIOCDEVPRIVATE ioctls
+to access their MII registers, in place of the normal
+commands. This is broken for all compat ioctls today.
 
-Change the driver to use ndo_siocdevprivate and disallow calling
-it in compat mode until a conversion handler is added.
+Change to ndo_siocdevprivate to fix it.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/fddi/skfp/skfddi.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+ drivers/net/usb/pegasus.c | 4 ++--
+ drivers/net/usb/rtl8150.c | 5 +++--
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/fddi/skfp/skfddi.c b/drivers/net/fddi/skfp/skfddi.c
-index 69c29a2ef95d..fe3b1d041142 100644
---- a/drivers/net/fddi/skfp/skfddi.c
-+++ b/drivers/net/fddi/skfp/skfddi.c
-@@ -103,7 +103,8 @@ static struct net_device_stats *skfp_ctl_get_stats(struct net_device *dev);
- static void skfp_ctl_set_multicast_list(struct net_device *dev);
- static void skfp_ctl_set_multicast_list_wo_lock(struct net_device *dev);
- static int skfp_ctl_set_mac_address(struct net_device *dev, void *addr);
--static int skfp_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
-+static int skfp_siocdevprivate(struct net_device *dev, struct ifreq *rq,
-+			       void __user *data, int cmd);
- static netdev_tx_t skfp_send_pkt(struct sk_buff *skb,
- 				       struct net_device *dev);
- static void send_queued_packets(struct s_smc *smc);
-@@ -164,7 +165,7 @@ static const struct net_device_ops skfp_netdev_ops = {
- 	.ndo_get_stats		= skfp_ctl_get_stats,
- 	.ndo_set_rx_mode	= skfp_ctl_set_multicast_list,
- 	.ndo_set_mac_address	= skfp_ctl_set_mac_address,
--	.ndo_do_ioctl		= skfp_ioctl,
-+	.ndo_siocdevprivate	= skfp_siocdevprivate,
+diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+index 32e1335c94ad..7cc0727eee1a 100644
+--- a/drivers/net/usb/pegasus.c
++++ b/drivers/net/usb/pegasus.c
+@@ -988,7 +988,7 @@ static const struct ethtool_ops ops = {
+ 	.set_link_ksettings = pegasus_set_link_ksettings,
  };
  
- /*
-@@ -932,9 +933,9 @@ static int skfp_ctl_set_mac_address(struct net_device *dev, void *addr)
- 
- 
- /*
-- * ==============
-- * = skfp_ioctl =
-- * ==============
-+ * =======================
-+ * = skfp_siocdevprivate =
-+ * =======================
-  *   
-  * Overview:
-  *
-@@ -954,16 +955,19 @@ static int skfp_ctl_set_mac_address(struct net_device *dev, void *addr)
-  */
- 
- 
--static int skfp_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
-+static int skfp_siocdevprivate(struct net_device *dev, struct ifreq *rq, void __user *data, int cmd)
+-static int pegasus_ioctl(struct net_device *net, struct ifreq *rq, int cmd)
++static int pegasus_siocdevprivate(struct net_device *net, struct ifreq *rq, void __user *udata, int cmd)
  {
- 	struct s_smc *smc = netdev_priv(dev);
- 	skfddi_priv *lp = &smc->os;
- 	struct s_skfp_ioctl ioc;
- 	int status = 0;
+ 	__u16 *data = (__u16 *) &rq->ifr_ifru;
+ 	pegasus_t *pegasus = netdev_priv(net);
+@@ -1246,7 +1246,7 @@ static int pegasus_resume(struct usb_interface *intf)
+ static const struct net_device_ops pegasus_netdev_ops = {
+ 	.ndo_open =			pegasus_open,
+ 	.ndo_stop =			pegasus_close,
+-	.ndo_do_ioctl =			pegasus_ioctl,
++	.ndo_siocdevprivate =		pegasus_siocdevprivate,
+ 	.ndo_start_xmit =		pegasus_start_xmit,
+ 	.ndo_set_rx_mode =		pegasus_set_multicast,
+ 	.ndo_tx_timeout =		pegasus_tx_timeout,
+diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
+index bf8a60533f3e..bb37fb24f7d7 100644
+--- a/drivers/net/usb/rtl8150.c
++++ b/drivers/net/usb/rtl8150.c
+@@ -822,7 +822,8 @@ static const struct ethtool_ops ops = {
+ 	.get_link_ksettings = rtl8150_get_link_ksettings,
+ };
  
--	if (copy_from_user(&ioc, rq->ifr_data, sizeof(struct s_skfp_ioctl)))
-+	if (copy_from_user(&ioc, data, sizeof(struct s_skfp_ioctl)))
- 		return -EFAULT;
- 
-+	if (in_compat_syscall())
-+		return -EOPNOTSUPP;
-+
- 	switch (ioc.cmd) {
- 	case SKFP_GET_STATS:	/* Get the driver statistics */
- 		ioc.len = sizeof(lp->MacStat);
+-static int rtl8150_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
++static int rtl8150_siocdevprivate(struct net_device *netdev, struct ifreq *rq,
++				  void __user *udata, int cmd)
+ {
+ 	rtl8150_t *dev = netdev_priv(netdev);
+ 	u16 *data = (u16 *) & rq->ifr_ifru;
+@@ -850,7 +851,7 @@ static int rtl8150_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
+ static const struct net_device_ops rtl8150_netdev_ops = {
+ 	.ndo_open		= rtl8150_open,
+ 	.ndo_stop		= rtl8150_close,
+-	.ndo_do_ioctl		= rtl8150_ioctl,
++	.ndo_siocdevprivate	= rtl8150_siocdevprivate,
+ 	.ndo_start_xmit		= rtl8150_start_xmit,
+ 	.ndo_tx_timeout		= rtl8150_tx_timeout,
+ 	.ndo_set_rx_mode	= rtl8150_set_multicast,
 -- 
 2.27.0
 
