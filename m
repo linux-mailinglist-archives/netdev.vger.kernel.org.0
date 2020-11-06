@@ -2,68 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E82482AA173
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 00:31:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C1DC2AA179
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 00:38:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729122AbgKFXaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 18:30:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44474 "EHLO
+        id S1728766AbgKFXiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 18:38:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728214AbgKFXau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 18:30:50 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CFCC0613CF;
-        Fri,  6 Nov 2020 15:30:50 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id c129so2581845yba.8;
-        Fri, 06 Nov 2020 15:30:50 -0800 (PST)
+        with ESMTP id S1727859AbgKFXiS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 18:38:18 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CB0C0613CF;
+        Fri,  6 Nov 2020 15:38:17 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id y17so2528400ilg.4;
+        Fri, 06 Nov 2020 15:38:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8qGjZ0TwV8QoKSWq4vsmvBlOOlAUFNrZ9fB5btaray4=;
-        b=bg6zh9HBYW8L29N/8MEPwJ1MdUCsjvQRCRLCqvSRwlkuNmWZG3N5vhCrhS9JStSUhP
-         2xf4qG4cvWJJqBmv+MCWua+JtjU4hwrlON+tnd4aiKEH0mBxQhbsLDFsVMqtFvFivbVF
-         74MFxSRlvLkFXqRHTeH/jUiGgxvSLMyrATdFl3CR6LWgjLCI2DEXCEUO7fI6e49rCAVy
-         fca4rvLPzuM/0NrGWlQ6jzIKXe7ahP7SOvJ9uQVu4EHS3ylfMM8N4GWQOXYwj/D4Lboi
-         l76Ck1rcuxeZWebf6e/cVL6EKBFK4++gp78Bq1NWdhdgMRav/dUZR3D+cTEtkaSC2G5I
-         e4QQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cMDUSUSOJpaSH9CWWq2vM22j2LvwSDCD82Y7MWOuiM0=;
+        b=joz2Pg4QmVOHmoaOx6PXRXtt3vZis4TQCgK4Qwq+Jgn6bTyUYxl1tfHGypnTywZa18
+         S+1O7KjSyVjcxG1+zo6EW3ntoZ/qnQ6Zd4S2c6nBOCqtP2U39T6BjGVqj3kfZ32sgbVy
+         LL/6iF2A+ostM0RojMAQ5saWyNybUtPqKzZMqSLL0P6BqiNY7/DDhjIo41LOREdpsO+h
+         zXNclpygvTulNHxljUVbKfXIKs2feBb172NaN/Q2gkP1DH8TD1ecGmSU1ijNiv98bOmV
+         CkJUSSwxcqqI7EUeMxztC3OT/RzFLHmLiOcSzUI5LINUYgwt2ept8s5vHaIe+/T9GNPj
+         /PgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8qGjZ0TwV8QoKSWq4vsmvBlOOlAUFNrZ9fB5btaray4=;
-        b=iCq6eaB7mGNrG2I6i4UtP0xrp8wtVpJt0b+EtR+T5mCvLBPWZJ/lZOlWUzA/q4h8Xw
-         /uJu7LlWRT6Gvofdz3EECQmytHUa0bXztI6eet+VHEP04CPo0BmBKYUd4mKHrcgr58N1
-         IhjzQS5ySM3UKR6FGdmfNfKt/uQpzziIAcFNX3LqBS5Sr+2UqJqoXtZLCcrg3tikZX6N
-         j9QabaLeIANfuRcOIn1j29dPOl1/t5NXlXY+YFQ9oHDjRhQjlSvPMkcQU4MJ9CpCDFi4
-         WNMztIApfK46h1mHBjgSH7U0pCaj9y/2tGlloPH8tFJ8w8/RGIgZlaalV2NbzdoKEKOM
-         k8YA==
-X-Gm-Message-State: AOAM530DxCyQf/JXQYASwvlCdQqHHd4+5nw9RRSuxVqhpyXl6AkLE7ob
-        016AS0cGT5FKcNBuwPfP9JpVDI3apgycvUobdk8XWWbumlcV9yZd
-X-Google-Smtp-Source: ABdhPJyXaOV8P70kbslC4szGjr4BXGMcBdekeh16dsJsl2r1UMJGusFksfLqfbYyRLb7WTuxEBgXWg9Z97JxPK1UX64=
-X-Received: by 2002:a05:6902:72e:: with SMTP id l14mr5738862ybt.230.1604705449235;
- Fri, 06 Nov 2020 15:30:49 -0800 (PST)
-MIME-Version: 1.0
-References: <20201028132529.3763875-1-haliu@redhat.com> <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
- <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net> <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
- <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
- <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com> <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
- <20201104021730.GK2408@dhcp-12-153.nay.redhat.com> <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
- <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com> <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
- <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com> <CAEf4BzaSfutBt3McEPjmu_FyxyzJa_xVGfhP_7v0oGuqG_HBEw@mail.gmail.com>
- <20201106094425.5cc49609@redhat.com> <CAEf4Bzb2fuZ+Mxq21HEUKcOEba=rYZHc+1FTQD98=MPxwj8R3g@mail.gmail.com>
- <CAADnVQ+S7fusZ6RgXBKJL7aCtt3jpNmCnCkcXd0fLayu+Rw_6Q@mail.gmail.com> <20201106152537.53737086@hermes.local>
-In-Reply-To: <20201106152537.53737086@hermes.local>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 6 Nov 2020 15:30:38 -0800
-Message-ID: <CAEf4BzY6iqkJZOnPNwVp3Q+UYu=XA7CKo83aD60RvcAapWb0eQ@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cMDUSUSOJpaSH9CWWq2vM22j2LvwSDCD82Y7MWOuiM0=;
+        b=N+jSw3R/64JqN/XH2WAWH6ffQn8AO8R8h5SP8+YtTAuKxI9Evz/9VtCQTnKwl4s2D0
+         2qbycbkEtP8ewrzXKt6THxAL8+2A1rJry1YAPp0RxqFAPX+fcqYUuy2H47fChoqJxiVr
+         wsmMB0+cRIlxkw+RUinXDlcUuFBjbyizt37UUWbTRNyItDvivX+JlRdWW0zujvJuqZhy
+         n3Nv61Q5duHjYpWslcfED9z5cSn1UfVG3SVxYrdUWTFrYGK8K3U7N6WbF7FvXVuZtW0m
+         pqrHIm0kfIy0rfWkahZ7H1khxrw5+jCoLV6ha8WCtQEWFVw9ruhSlwhrBeyIDWnLiIlg
+         qxVg==
+X-Gm-Message-State: AOAM532FuE5lyr7LNgvCYAB6vAHLr9sUKq5bqzElrz7cI15h2Y7E9tR3
+        L/I7Nwd0BdPnxzcs9k2PUMA=
+X-Google-Smtp-Source: ABdhPJy7XnjwPCPz2NHxqJM6u5YGzHmtg2Z8zcAwJ4OM84ZOUHTEM1jp70rQf0hkz4FM9jlrBVhDoQ==
+X-Received: by 2002:a92:40d2:: with SMTP id d79mr3217980ill.7.1604705896410;
+        Fri, 06 Nov 2020 15:38:16 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:59f:e9df:76ab:8876])
+        by smtp.googlemail.com with ESMTPSA id r16sm1495830ioc.45.2020.11.06.15.38.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Nov 2020 15:38:15 -0800 (PST)
 Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Jiri Benc <jbenc@redhat.com>,
         Edward Cree <ecree@solarflare.com>,
         Hangbin Liu <haliu@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
@@ -72,63 +63,49 @@ Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
+        <toke@redhat.com>
+References: <20201028132529.3763875-1-haliu@redhat.com>
+ <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
+ <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
+ <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
+ <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
+ <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com>
+ <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
+ <20201104021730.GK2408@dhcp-12-153.nay.redhat.com>
+ <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
+ <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com>
+ <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
+ <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com>
+ <CAEf4BzaSfutBt3McEPjmu_FyxyzJa_xVGfhP_7v0oGuqG_HBEw@mail.gmail.com>
+ <20201106094425.5cc49609@redhat.com>
+ <CAEf4Bzb2fuZ+Mxq21HEUKcOEba=rYZHc+1FTQD98=MPxwj8R3g@mail.gmail.com>
+ <CAADnVQ+S7fusZ6RgXBKJL7aCtt3jpNmCnCkcXd0fLayu+Rw_6Q@mail.gmail.com>
+ <20201106152537.53737086@hermes.local>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <45d88ca7-b22a-a117-5743-b965ccd0db35@gmail.com>
+Date:   Fri, 6 Nov 2020 16:38:13 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.4.0
+MIME-Version: 1.0
+In-Reply-To: <20201106152537.53737086@hermes.local>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 6, 2020 at 3:25 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Fri, 6 Nov 2020 13:04:16 -0800
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
->
-> > On Fri, Nov 6, 2020 at 12:58 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Fri, Nov 6, 2020 at 12:44 AM Jiri Benc <jbenc@redhat.com> wrote:
-> > > >
-> > > > On Thu, 5 Nov 2020 12:19:00 -0800, Andrii Nakryiko wrote:
-> > > > > I'll just quote myself here for your convenience.
-> > > >
-> > > > Sorry, I missed your original email for some reason.
-> > > >
-> > > > >   Submodule is a way that I know of to make this better for end users.
-> > > > >   If there are other ways to pull this off with shared library use, I'm
-> > > > >   all for it, it will save the security angle that distros are arguing
-> > > > >   for. E.g., if distributions will always have the latest libbpf
-> > > > >   available almost as soon as it's cut upstream *and* new iproute2
-> > > > >   versions enforce the latest libbpf when they are packaged/released,
-> > > > >   then this might work equivalently for end users. If Linux distros
-> > > > >   would be willing to do this faithfully and promptly, I have no
-> > > > >   objections whatsoever. Because all that matters is BPF end user
-> > > > >   experience, as Daniel explained above.
-> > > >
-> > > > That's basically what we already do, for both Fedora and RHEL.
-> > > >
-> > > > Of course, it follows the distro release cycle, i.e. no version
-> > > > upgrades - or very limited ones - during lifetime of a particular
-> > > > release. But that would not be different if libbpf was bundled in
-> > > > individual projects.
-> > >
-> > > Alright. Hopefully this would be sufficient in practice.
-> >
-> > I think bumping the minimal version of libbpf with every iproute2 release
-> > is necessary as well.
-> > Today iproute2-next should require 0.2.0. The cycle after it should be 0.3.0
-> > and so on.
-> > This way at least some correlation between iproute2 and libbpf will be
-> > established.
-> > Otherwise it's a mess of versions and functionality from user point of view.
->
-> As long as iproute2 6.0 and libbpf 0.11.0 continues to work on older kernel
-> (like oldest living LTS 4.19 in 2023?); then it is fine.
->
-> Just don't want libbpf to cause visible breakage for users.
+On 11/6/20 4:25 PM, Stephen Hemminger wrote:
+>>
+>> I think bumping the minimal version of libbpf with every iproute2 release
+>> is necessary as well.
+>> Today iproute2-next should require 0.2.0. The cycle after it should be 0.3.0
+>> and so on.
+>> This way at least some correlation between iproute2 and libbpf will be
+>> established.
+>> Otherwise it's a mess of versions and functionality from user point of view.
 
-libbpf CI validates a bunch of selftests on 4.9 kernel, see [0]. It
-should work on even older ones. Not all BPF programs would load and be
-verified successfully, but libbpf itself should work regardless.
-
-  [0] https://travis-ci.com/github/libbpf/libbpf/jobs/429362146
+If existing bpf features in iproute2 work fine with version 0.1.0, what
+is the justification for an arbitrary requirement for iproute2 to force
+users to bump libbpf versions just to use iproute2 from v5.11?
