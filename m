@@ -2,65 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC432A90D1
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 08:57:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE4A2A90F1
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 09:04:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726558AbgKFH5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 02:57:00 -0500
-Received: from m176115.mail.qiye.163.com ([59.111.176.115]:34733 "EHLO
-        m176115.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725830AbgKFH5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 02:57:00 -0500
-X-Greylist: delayed 384 seconds by postgrey-1.27 at vger.kernel.org; Fri, 06 Nov 2020 02:56:59 EST
-Received: from vivo-HP-ProDesk-680-G4-PCI-MT.vivo.xyz (unknown [58.251.74.231])
-        by m176115.mail.qiye.163.com (Hmail) with ESMTPA id 2488966734C;
-        Fri,  6 Nov 2020 15:56:56 +0800 (CST)
-From:   Wang Qing <wangqing@vivo.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Samuel Zou <zou_wei@huawei.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Wang Qing <wangqing@vivo.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net/ethernet: update ret when ptp_clock is ERROR
-Date:   Fri,  6 Nov 2020 15:56:45 +0800
-Message-Id: <1604649411-24886-1-git-send-email-wangqing@vivo.com>
-X-Mailer: git-send-email 2.7.4
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZHhlIQxgaHxhPQ0hDVkpNS09NT0JPSk1MSExVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS09ISVVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MBg6NRw*GD8oPx0wNCpMSj5R
-        TyhPChhVSlVKTUtPTU9CT0pMSkpDVTMWGhIXVQwaFRwKEhUcOw0SDRRVGBQWRVlXWRILWUFZTkNV
-        SU5KVUxPVUlISllXWQgBWUFKQk1CNwY+
-X-HM-Tid: 0a759c8ef7869373kuws2488966734c
+        id S1726598AbgKFIEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 03:04:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726050AbgKFIEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 03:04:22 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1ABDC0613CF;
+        Fri,  6 Nov 2020 00:04:21 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id u4so333229pgr.9;
+        Fri, 06 Nov 2020 00:04:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IfU3/CU1AdH87+GtFKI7/7gtMjHfHgkK9/+d0aU89dk=;
+        b=r1zhPVlh+UJLh9AID112eb+bDe5u7mDZqKju7VlMokWNIx57pz33LCnwYsuCkXspJ9
+         Kur+/b+tv7rYi1hTacn4Suf6d6oA0LnnS4g6G9C4SYW4S+F5UTHRzsjDWkN1Nzq7tJ1F
+         TNvAjaGkaMD/dS4MVkC1O+WXb9l2Wr5X+JXPYlUR6/FhdoQOTOai/HlBWIddrk3D93YR
+         A9tWzez6oEBqxAJJ0Jf/aF/BPvdBLrcsd12B/pOPkOjNQoHbNgLRM9zw0C8JG0Q9uTmd
+         6zSsCrtTUgf9XDUmwUgWjkLJl6YjL23ui2SxKZKOhKoMGF+DG8cZkUfL1V5wXWb7lruF
+         DxfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IfU3/CU1AdH87+GtFKI7/7gtMjHfHgkK9/+d0aU89dk=;
+        b=FpDZ7xctpwgzCB13aD2827xRb4FghtX65XIzyH82lJvl53fLiKMC0wcX/CmqS4Pbns
+         emDfHlHXj28Y/xBKY3ZIyRjuHKDmkge+gZMukQXjidmQIlw1ZPu3QuxzUMtXtEcdplgL
+         HwaJSenPxpXqCtkGq8EDTLWOEJpv/2bAZwG4qQSCeRl1UmRAbsdcWfvHQ0f0n5II02IS
+         prtIV/HaQfCz2UHz/db232W2D4ajXrpKmC0EKcHjeGpNVY63Ntuy2ncm2YC+yYRI/raq
+         SqUmsEa1FGM+5ixJ4Dv5rA8MXGuTVzI0wJ3hl8LSy3zZ4gpTMuC2/kCg1f7knXFB4iyl
+         2svg==
+X-Gm-Message-State: AOAM531E7wdj7vwpeyG7VgE7180Q2JJPcfVgB+HjvFEM+t/mbPKbUqnH
+        V0MG1f7sNa0s/jhv7/uB5LA=
+X-Google-Smtp-Source: ABdhPJzMhoy7UYxrEjyR6jOW8tkdAuPIdktWw68nqvTA9BV/lwOTZFoTJDZjVBYUcOJjhAB9SdJckg==
+X-Received: by 2002:a63:fe0f:: with SMTP id p15mr757017pgh.343.1604649861449;
+        Fri, 06 Nov 2020 00:04:21 -0800 (PST)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id a123sm1011800pfd.218.2020.11.06.00.04.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Nov 2020 00:04:21 -0800 (PST)
+Date:   Fri, 6 Nov 2020 16:04:11 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     netdev@vger.kernel.org, William Tu <u9012063@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next 2/2] selftest/bpf: remove unused bpf tunnel
+ testing code
+Message-ID: <20201106080411.GU2531@dhcp-12-153.nay.redhat.com>
+References: <20201103042908.2825734-1-liuhangbin@gmail.com>
+ <20201103042908.2825734-3-liuhangbin@gmail.com>
+ <20201106073035.w2x4szk7m6nkx5yj@kafai-mbp.dhcp.thefacebook.com>
+ <20201106075536.GT2531@dhcp-12-153.nay.redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201106075536.GT2531@dhcp-12-153.nay.redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We always have to update the value of ret, otherwise the
- error value may be the previous one.
+On Fri, Nov 06, 2020 at 03:55:47PM +0800, Hangbin Liu wrote:
+> > > -	key.remote_ipv6[0] = bpf_htonl(0x2401db00);
+> > > -	key.tunnel_ttl = 64;
+> 
+> The code logic is same. It set tunnel remote addr to dst IPv6 address, as
+> they are both testing IP(v4 or v6) over IPv6 tunnel.
 
-Signed-off-by: Wang Qing <wangqing@vivo.com>
----
- drivers/net/ethernet/ti/am65-cpts.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+OK, I decide to keep the kernel ip6ip6 code as using ipip6_set_tunnel obj in
+ip6ip6 testing may cause user confused.
 
-diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
-index 75056c1..b77ff61
---- a/drivers/net/ethernet/ti/am65-cpts.c
-+++ b/drivers/net/ethernet/ti/am65-cpts.c
-@@ -1001,8 +1001,7 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
- 	if (IS_ERR_OR_NULL(cpts->ptp_clock)) {
- 		dev_err(dev, "Failed to register ptp clk %ld\n",
- 			PTR_ERR(cpts->ptp_clock));
--		if (!cpts->ptp_clock)
--			ret = -ENODEV;
-+		ret = cpts->ptp_clock ? cpts->ptp_clock : (-ENODEV);
- 		goto refclk_disable;
- 	}
- 	cpts->phc_index = ptp_clock_index(cpts->ptp_clock);
--- 
-2.7.4
-
+Thanks
+Hangbin
