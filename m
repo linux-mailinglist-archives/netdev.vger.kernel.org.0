@@ -2,100 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1311B2A99A6
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 17:41:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BE162A99B0
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 17:44:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727402AbgKFQkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 11:40:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726139AbgKFQkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 11:40:17 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D222C0613CF;
-        Fri,  6 Nov 2020 08:40:17 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id j12so2115243iow.0;
-        Fri, 06 Nov 2020 08:40:17 -0800 (PST)
+        id S1727142AbgKFQn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 11:43:57 -0500
+Received: from mail-bn7nam10on2068.outbound.protection.outlook.com ([40.107.92.68]:31456
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726867AbgKFQnz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Nov 2020 11:43:55 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Slxl8l++G/OGuwNPkWlKr0dxxEd+7O1t60VhXzCqvVUD4uarNuH1YjbWE/Jhi4J24yz4peJfw3wZollxIsoDn/wU9PtK5x2HpPIyYCchO2at0DELZ8fEMYwt1xzvpSEu/mD6ggBKL6O+GwwY6KpkiiG0uOdNwk1eDJw8jX1gr/MsI3Sqq/9FsyQ1D+4w4bt/1O2RdHwAZfGWjcsqtxFPPOLoNW15FDqEhnB3uyCUjpdtghQsFJqFCZdX3b1TmsJaH/HVh7fobl0GviGsd4yNdQZFw+nNVP67fvMkISqA1NxXSew/cuRzBS+1lrUrdMgnabdR2ZX4OqupaKUYWv1sFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kn0DkCT1+fyVMdV+/liiuE177Ba5DLLcEWYElxtGbA0=;
+ b=AqCAyMtdvTTDjS518PM5/t4inPn/tMkQ4hgkZvfDssQpp6WzCvQ1j0bD0k0hVpdiCXZpnaQk7uEW6xdmvTmOSLfUpqsO4zT8OV5w5DStqhFk7MK3CxFXQk8UV6FOWcW/qhMRuYSNOgM9kZmIEjEjThbFEOrUnb/t9lyAYnOpLTMYb9WuyefUJY96VLrWBE7jMRG7jPzWmM2t7GRm6gS0nbgUS9k+sg+DzJnoP6YrCa2rb4n7odkWx7cFO3swP3EV8dsJoGBRkKgTZERMjIRogb6vgIZlVT9YyPsG8uA8IQD10qVZ+wkSOctevwdRImcC8038xZGU2ncEtYw+0gFcPQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wFLtKUwT5ZvmDcv5zrEJNSopht3kHGBwLH6MG+aoAb8=;
-        b=Vg5nKxDZu895ttIHrDM477LtUq2tTMuNvYBCp/tR8Xl2m2lIeak6kqji6iOpxtSjmb
-         KU+29HSyzpytGLDR2uJVWBSnhoeLDlYTUaoiNnRn5xm2PN0uP6DqN0ixhKt2vtzFjyeE
-         8XW7IDHpaKvXbEt701jGTvOdmPV9XPpkcXO9Mf8rqKlDB9/mVgff8oK17QXddT80Zm0Z
-         PAqj8LqYsRNzh+iJ1Go36LS+ou5dbAtAqEx+jwIwA+QvuEtVpXL5Yo5uv/99RUZ/Skgd
-         vo+s9Jk8zg+VJOEToB4bUnjRjt9v2kedXGY0n8hSQnHegamgwRMZY4O5FgzvN6TqatV0
-         8tkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wFLtKUwT5ZvmDcv5zrEJNSopht3kHGBwLH6MG+aoAb8=;
-        b=NfJ0C6hZZEWpMq4SsYVxnqLKOwVCn4S5ibgzYhMfCRruSl5Rxk6z6PSVyr8bIs/SgK
-         2LgShXvbPP0TS0uOT0MZauiyk1Ii6UwlolxYK2pmh+qvrkAsNHwmPAbJgZniNMRGG6Tt
-         RwiRoYia1ScHBBHLV8DHIVg3yKqJU5f6/4Ph2/ekqqCaeiyzyq0XG4T1ybW3TatJICgh
-         eX9uGw4QLR/8D4Vjcd3gWr5q+ZABsBpExlJLIEc4A1x+G0PeKOfisCusBcg1+x5Ya3r4
-         encgRCTR2Yzv1K6rh7yJObJbPOPdA3qIfWN4fURA/Z34S5QgW4oLcmEHv2oNSbFlmrHE
-         TULw==
-X-Gm-Message-State: AOAM530V6cYwyVV/v12KSnSgR0M0ZOxXzWb3KZYefuHLfxLy5bwWzHOd
-        HBWHJIzn8gqwSBVq67SX0QA=
-X-Google-Smtp-Source: ABdhPJzkJbtdTj466ZCI8mKcmOme9VuesNIVUd10qMJjwA15AHpdZtiCSDPM0/9n2ZtbofRm8ZnBng==
-X-Received: by 2002:a6b:3e83:: with SMTP id l125mr2071092ioa.151.1604680816504;
-        Fri, 06 Nov 2020 08:40:16 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:59f:e9df:76ab:8876])
-        by smtp.googlemail.com with ESMTPSA id n15sm1376010ilt.58.2020.11.06.08.40.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Nov 2020 08:40:15 -0800 (PST)
-Subject: Re: [PATCH v2 iproute2-next] bridge: add support for L2 multicast
- groups
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kn0DkCT1+fyVMdV+/liiuE177Ba5DLLcEWYElxtGbA0=;
+ b=Uxw5FkeAgggNXJ2pnOjck99Vj9SsvuKd0i31FEW1Bfj4Thsa3kNSuqubjZ9BeMD4SNRr1V/PaQ7KL2z0f1QjWqRV9/cCqXBjKZKuZ9pxzJD5MSnmtVFm1cUppLcqwgyjsJ/+sDhbQIw/uJJGBk32dsfKcWbZZlWw+mR1fhVvAYU=
+Received: from BYAPR02MB5638.namprd02.prod.outlook.com (2603:10b6:a03:9f::18)
+ by BY5PR02MB6404.namprd02.prod.outlook.com (2603:10b6:a03:1f8::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.27; Fri, 6 Nov
+ 2020 16:43:51 +0000
+Received: from BYAPR02MB5638.namprd02.prod.outlook.com
+ ([fe80::c04a:e001:49fc:9780]) by BYAPR02MB5638.namprd02.prod.outlook.com
+ ([fe80::c04a:e001:49fc:9780%4]) with mapi id 15.20.3541.021; Fri, 6 Nov 2020
+ 16:43:50 +0000
+From:   Radhey Shyam Pandey <radheys@xilinx.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Michal Simek <michals@xilinx.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com, jiri@mellanox.com,
-        idosch@idosch.org
-References: <20201029222828.2149980-1-olteanv@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2f127ed7-a816-bb13-0be2-68b19eef78fb@gmail.com>
-Date:   Fri, 6 Nov 2020 09:40:12 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.0
-MIME-Version: 1.0
-In-Reply-To: <20201029222828.2149980-1-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
+        netdev <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next 2/3] drivers: net: xilinx_emaclite: Fix
+ -Wpointer-to-int-cast warnings with W=1
+Thread-Topic: [PATCH net-next 2/3] drivers: net: xilinx_emaclite: Fix
+ -Wpointer-to-int-cast warnings with W=1
+Thread-Index: AQHWr63uS/hX4KZfZEO8S/T67co/NKm0cgKAgAACKYCAAp5vAIAERaIw
+Date:   Fri, 6 Nov 2020 16:43:50 +0000
+Message-ID: <BYAPR02MB5638FFA54D46ACED52AB1A52C7ED0@BYAPR02MB5638.namprd02.prod.outlook.com>
+References: <20201031174721.1080756-1-andrew@lunn.ch>
+ <20201031174721.1080756-3-andrew@lunn.ch>
+ <c0553efe-73a1-9e13-21e9-71c15d5099b9@xilinx.com>
+ <BYAPR02MB56388293FE47BE39604EB115C7100@BYAPR02MB5638.namprd02.prod.outlook.com>
+ <20201103232806.GL1109407@lunn.ch>
+In-Reply-To: <20201103232806.GL1109407@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=xilinx.com;
+x-originating-ip: [47.9.173.93]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 783cfc51-61b0-4432-1a08-08d882732406
+x-ms-traffictypediagnostic: BY5PR02MB6404:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR02MB64046BBF55A8D5F537259F7CC7ED0@BY5PR02MB6404.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wb/FNxQhScTiivorEfXA6D6iX8OiJN5UvSVKbsBSXK3LGLgAaRRhHQlaBJnrYH99auwAmJhbzlk5kMvw7rUbMoQ8CX8cjugFf+/eORu3qdGEsxcIIb57g2yjC8twDFx/zN50e0lJ9Wp2gnStnFCDg9a3muyCZSbpmHwSIIeaHkDn0IkkDOytrAvbvm5tgXdoxu5/+Jdomy0eS4meFft8rKshDNx7sq/OKJhjE3pLAhw0qkckOYk2UtqBsiUsR/sjkZptCmj1AV6NM9A9LAEUuxeYYPNLzXycKHnsQRvKqNdOdomE2t2Q4EmJRm+ovbjvDdbLJsuuKdb6lzq7TFiXtg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR02MB5638.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(366004)(396003)(39860400002)(136003)(8936002)(2906002)(33656002)(5660300002)(316002)(186003)(83380400001)(4326008)(64756008)(53546011)(6506007)(26005)(8676002)(55016002)(54906003)(52536014)(9686003)(66446008)(76116006)(66946007)(86362001)(71200400001)(6916009)(7696005)(478600001)(66476007)(66556008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: E8CS0yupv8F+og2wGI50KhCm/AitFqTtAijtUuy/k08mlD8U+0Ptetrf+eWv+J9ahwKhLYP1152B9fJU6vnStD/ubzmZPJFJK/V4AeyeP0SMS5DzN90ovqM1pUbdzwf1bbTyfpDlCkzNzPxgTWAtWrnM9oMA2IoUZumuMiWTE69vlmJgUWsXLN4ZUZBTU39kMKeLl3kBS1Nkyp6ji079xXznMM7sQoR1iUoFWhs8E8DwgWCzRwiBhSHKx7CNWcYpx1mf5i4HQP70j3mh/9J+L9fA7ojy30tp+rB5a/sup1rIDHFAuPiioJuOkW3Og9mkjeKlqDGhrwXL+R/13U/sZrlTajWp8/9+97cWYSt9gUgPxx6/rbxwWUzAQpWH/dPVwQag0jk4JoR+bE/4s1gj88e2CgUmuPQfC47taeLt7iW5udGF5eIvpEDNyeP9sCHyVWb3qvkSMyo2Z/4HapYmWpFjzKjUgrA5tdPzOpjNaiUwoWPFXKFivm1xD4mn2vL04CymsoZHQQJ4p0j9lWKjHj/nf3oraoA6ski/cw1n07zjRjQaU3vcJ1r/kEDJ+70RUg25LB+7/3mK42xdGUf3Q1eahtTaLXyebzOzK/p9UEJX5P7s1D2aBeFf4hmuEWpnnIOZilZz9K9XFcW81H0bqw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR02MB5638.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 783cfc51-61b0-4432-1a08-08d882732406
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2020 16:43:50.7759
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tttaJ43F14ag19UN1DgkEjkHGm+rQpLCP4Qn4Q5l4FxuP0OdJjjhvOqcxTE/HJuxbrO206pE8b+CEYo8kQRgoQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR02MB6404
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/29/20 4:28 PM, Vladimir Oltean wrote:
-> @@ -168,9 +176,14 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
->  	print_string(PRINT_ANY, "port", " port %s",
->  		     ll_index_to_name(e->ifindex));
->  
-> +	if (af == AF_INET || af == AF_INET6)
-> +		addr = inet_ntop(af, grp, abuf, sizeof(abuf));
-> +	else
-> +		addr = ll_addr_n2a(grp, ETH_ALEN, 0, abuf, sizeof(abuf));
-> +
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Wednesday, November 4, 2020 4:58 AM
+> To: Radhey Shyam Pandey <radheys@xilinx.com>
+> Cc: Michal Simek <michals@xilinx.com>; Jakub Kicinski <kuba@kernel.org>;
+> netdev <netdev@vger.kernel.org>
+> Subject: Re: [PATCH net-next 2/3] drivers: net: xilinx_emaclite: Fix -Wpo=
+inter-
+> to-int-cast warnings with W=3D1
+>=20
+> > > >  /* BUFFER_ALIGN(adr) calculates the number of bytes to the next
+> > > > alignment. */ -#define BUFFER_ALIGN(adr) ((ALIGNMENT - ((u32)adr))
+> %
+> > > > ALIGNMENT)
+> > > > +#define BUFFER_ALIGN(adr) ((ALIGNMENT - ((long)adr)) %
+> ALIGNMENT)
+> > >
+> > > I can't see any reason to change unsigned type to signed one.
+>=20
+> > Agree. Also, I think we can get rid of this custom BUFFER_ALIGN
+> > macro and simply calling skb_reserve(skb, NET_IP_ALIGN)
+> > will make the protocol header to be aligned on at
+> > least a 4-byte boundary?
+>=20
+> Hi Radhey
+>=20
+> I'm just going to replace the long with a uintptr_t. That will fix the
+> warnings. I don't have this hardware, so don't want to risk anything
+> more invasive which i cannot test.
+>=20
+> Please feel free to add a follow up patch replacing this with
+> skb_reserve(skb, NET_IP_ALIGN).
 
-The above can be replaced with a single call to rt_addr_n2a_r.
-
->  	print_color_string(PRINT_ANY, ifa_family_color(af),
-> -			    "grp", " grp %s",
-> -			    inet_ntop(af, grp, abuf, sizeof(abuf)));
-> +			    "grp", " grp %s", addr);
-> +
->  	if (tb && tb[MDBA_MDB_EATTR_SOURCE]) {
->  		src = (const void *)RTA_DATA(tb[MDBA_MDB_EATTR_SOURCE]);
->  		print_color_string(PRINT_ANY, ifa_family_color(af),
-
-I think the rest is ok.
+Ok, thanks. I will send out a patch to remove this buffer align macro.
+>=20
+> 	 Andrew
