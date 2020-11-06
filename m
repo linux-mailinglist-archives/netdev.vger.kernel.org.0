@@ -2,117 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A06C2A9671
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 13:50:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02DE82A968D
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 13:58:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727320AbgKFMuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 07:50:20 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:31636 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727258AbgKFMuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 07:50:20 -0500
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A6CWNPH167691;
-        Fri, 6 Nov 2020 07:50:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pp1;
- bh=s5tgr6K5eJosaeBuZ5BF4PrqR+Rsk4mT8Q9l7QcUGjE=;
- b=TDIQ9cZqLuFSAjJ6QSf8K7H85g+QRH965O20L0b6XekjxRwynY+kDjsNnOEwnR3CnUHW
- 6+fuWk7umhXmtXp9W+cY9WGRdslDyLQtw2Efpi/IpK60TvjXdmj153fpfw+BwOEMoAJb
- lGwWSEYL/nXgfOj96b7e1DZhBysRZtE2F9dqfnJTLaRlsJeEHHALLDhB0B5guj8e+WKu
- Fh6xxP/ZQox49jfHdPCZ6xSQ5n2PJoJQzEas0BlPzhoLH4gkTcLCJcT5XSr48JC5kDv2
- HIlxYihFCB13WVh4udzzrAlAMIRUW0JCZ6A+WAci7jUCzHkRrEYHmBdZj0NRe26p1N6K 2w== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 34mhywfa7d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 Nov 2020 07:50:16 -0500
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A6CVg91009630;
-        Fri, 6 Nov 2020 12:50:14 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04fra.de.ibm.com with ESMTP id 34h0f6uba1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 Nov 2020 12:50:14 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A6CoBHx8782352
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 6 Nov 2020 12:50:11 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6C166A4054;
-        Fri,  6 Nov 2020 12:50:11 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 18EFAA405C;
-        Fri,  6 Nov 2020 12:50:11 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  6 Nov 2020 12:50:11 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>
-Subject: [PATCH net 2/2] MAINTAINERS: remove Ursula Braun as s390 network maintainer
-Date:   Fri,  6 Nov 2020 13:50:08 +0100
-Message-Id: <20201106125008.36478-3-jwi@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201106125008.36478-1-jwi@linux.ibm.com>
-References: <20201106125008.36478-1-jwi@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-06_04:2020-11-05,2020-11-06 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 mlxlogscore=750 suspectscore=0 lowpriorityscore=0 adultscore=0
- phishscore=0 malwarescore=0 mlxscore=0 clxscore=1015 impostorscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011060088
+        id S1727357AbgKFM6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 07:58:32 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:35266 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726939AbgKFM6b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 07:58:31 -0500
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1604667508;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=shG7AJpj82cx0oUcROwbU9VWQmTdciDrS6ngB9yxIsI=;
+        b=XT8ck3tdgI8gpazP3uo9gZ3YlqtdHmdo+MHdiKukS1mBakVCU1hSQkmwy7SWadArJSVIPI
+        +IsVliIg1BTkXIUCBY6fsctAv2AHc91I+tScG0CwKi12MxqQmKxkrIYk+3iQPZPYZPtIQq
+        NzKnQ/lHnW5iMU0qwC83y1qRwkoPz+0KxeTMKoA7CsiypTkueTL1YD16tkRYfrsdVrF1oR
+        EGO520h3I1JW5GhC/A9Yw4Osig43uVqrpaX105PlgOPKHVciocqHxDV4ZZ40eZU5Oa0kLP
+        hqy8BN6a41+/ApkdXLes2EXIwFXZGbZHEiZ/nd77wqskP6D2JhFfgQdFVeX/+A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1604667508;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=shG7AJpj82cx0oUcROwbU9VWQmTdciDrS6ngB9yxIsI=;
+        b=l1jx89VfA8343zcD85kbWd3IMbrAPDVCx+SenZX7zqcDAWEdOEYgfwru8Pl46clgdLkGfE
+        kIJK+0WdY0yfNRAQ==
+To:     Arnd Bergmann <arnd@kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     Wang Qing <wangqing@vivo.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Samuel Zou <zou_wei@huawei.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net/ethernet: update ret when ptp_clock is ERROR
+In-Reply-To: <CAK8P3a0Dce3dYER0oJ+2FcV8UbJqCaAv7zSS6JZBdb6ewfnE7g@mail.gmail.com>
+References: <1604649411-24886-1-git-send-email-wangqing@vivo.com> <fd46310f-0b4e-ac8b-b187-98438ee6bb60@ti.com> <CAK8P3a0Dce3dYER0oJ+2FcV8UbJqCaAv7zSS6JZBdb6ewfnE7g@mail.gmail.com>
+Date:   Fri, 06 Nov 2020 13:58:18 +0100
+Message-ID: <87pn4qmyl1.fsf@kurt>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ursula Braun <ubraun@linux.ibm.com>
+--=-=-=
+Content-Type: text/plain
 
-I am retiring soon. Thus this patch removes myself from the
-MAINTAINERS file (s390 network).
+On Fri Nov 06 2020, Arnd Bergmann wrote:
+> On Fri, Nov 6, 2020 at 12:35 PM Grygorii Strashko
+> <grygorii.strashko@ti.com> wrote:
+>> On 06/11/2020 09:56, Wang Qing wrote:
+>
+>> > +++ b/drivers/net/ethernet/ti/am65-cpts.c
+>> > @@ -1001,8 +1001,7 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
+>>
+>> there is
+>>         cpts->ptp_clock = ptp_clock_register(&cpts->ptp_info, cpts->dev);
+>>
+>>
+>> >       if (IS_ERR_OR_NULL(cpts->ptp_clock)) {
+>>
+>> And ptp_clock_register() can return NULL only if PTP support is disabled.
+>> In which case, we should not even get here.
+>>
+>> So, I'd propose to s/IS_ERR_OR_NULL/IS_ERR above,
+>> and just assign ret = PTR_ERR(cpts->ptp_clock) here.
+>
+> Right, using IS_ERR_OR_NULL() is almost ever a mistake, either
+> from misunderstanding the interface, or from a badly designed
+> interface that needs to be changed.
 
-Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
-[jwi: fix up the subject]
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- MAINTAINERS | 3 ---
- 1 file changed, 3 deletions(-)
+The NULL case should be handled differently and it is documented:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e73636b75f29..d4462d7e2077 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15259,7 +15259,6 @@ F:	drivers/iommu/s390-iommu.c
- S390 IUCV NETWORK LAYER
- M:	Julian Wiedmann <jwi@linux.ibm.com>
- M:	Karsten Graul <kgraul@linux.ibm.com>
--M:	Ursula Braun <ubraun@linux.ibm.com>
- L:	linux-s390@vger.kernel.org
- S:	Supported
- W:	http://www.ibm.com/developerworks/linux/linux390/
-@@ -15270,7 +15269,6 @@ F:	net/iucv/
- S390 NETWORK DRIVERS
- M:	Julian Wiedmann <jwi@linux.ibm.com>
- M:	Karsten Graul <kgraul@linux.ibm.com>
--M:	Ursula Braun <ubraun@linux.ibm.com>
- L:	linux-s390@vger.kernel.org
- S:	Supported
- W:	http://www.ibm.com/developerworks/linux/linux390/
-@@ -15844,7 +15842,6 @@ S:	Maintained
- F:	drivers/misc/sgi-xp/
- 
- SHARED MEMORY COMMUNICATIONS (SMC) SOCKETS
--M:	Ursula Braun <ubraun@linux.ibm.com>
- M:	Karsten Graul <kgraul@linux.ibm.com>
- L:	linux-s390@vger.kernel.org
- S:	Supported
--- 
-2.17.1
+/**
+ * ptp_clock_register() - register a PTP hardware clock driver
+[...]
+ * Returns a valid pointer on success or PTR_ERR on failure.  If PHC
+ * support is missing at the configuration level, this function
+ * returns NULL, and drivers are expected to gracefully handle that
+ * case separately.
+ */
 
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+lSGoACgkQeSpbgcuY
+8KZp9BAAqQMVJ3ieO7c2694yqOwaG7+VL38Jv7x6L1Tjr1AFq1pnroPnS1oP+EPj
+ESSOG5Zrdtya/+E3k8a+hbHpbrljlvkLlCv6SSZwRQuxSzuoeY+EDtqCTnYLXJqT
+XtVwWWHRNWvFQivXSfbvfFAcP+TsL/1EMgehZgAcRD8LnmyCJgXeSaUY/NkHTIer
+kIu0KPsfkFYFsTWdHcgzGh1n7PRZx9SLZTetJH4xqUd2YDE7WzFcrvBVrYutCGg/
+Bu+aLOodUK1z0JJTIzAIl/Ug9O//10d1uiVdLF209wgUuDcIzN3HT6LNzZNfcPCE
+IobDVvg09w+MayGx2wg1FROhsGLLmjbCtGc+wf+MySeTCXOlACvfVSsw7ULoKgCh
+bE0CnOTg+5c0iYYMtavM6PwabO3XJTUTFfxYTtJpQ9GNDipjJZMqxfqXCUO4HuNQ
+33fSBfmI54VWRb88ATVAYyLzosJzpNgYR5lbiw8A/zbBtynHQoCh9jpQXink78Y/
+3xLxtDvWQQuSmRnPLrbcPc+T2Er3RVKNd9ZxeNGZbgu8OQmm75Zk01PNRL18tKwn
+KO3EtDSyHFVJEmIa338qY+6x4GTuCa0L152og7kX4u8gECbK1WBOTS0pPeDbRcrq
+cAVAy2/xPt5aG2/ygJpfHdNvMP740uix9g4lDxMNBpCNsEy/yr8=
+=Dvwr
+-----END PGP SIGNATURE-----
+--=-=-=--
