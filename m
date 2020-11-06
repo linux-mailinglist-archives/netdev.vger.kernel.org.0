@@ -2,62 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 167BB2A958D
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 12:41:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11EB72A9602
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 13:11:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726813AbgKFLlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 06:41:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25914 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726010AbgKFLlE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 06:41:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604662863;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wrZ4oLrRKAlkIXCkiskrapF3SJUeI8FJdBVtlw792IE=;
-        b=RaQqK++jWookrCWlMqAtM09/4ylW9rwEpi9Kl9xCjYDHWV3rsj+9TTCgJbvYAUz+ao8mjr
-        0THr1KPQPPHL9nRyMHMHvdkxmBOgGo8x5wzGOnGxa8mGTmuipYBg1eOlKVKbGciViQsvBn
-        MCGAS3b+M6JKjfCsArDfSAW2m3134JM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-226-wkLnwCPxMuO8w8QgqW3KOg-1; Fri, 06 Nov 2020 06:41:01 -0500
-X-MC-Unique: wkLnwCPxMuO8w8QgqW3KOg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1727293AbgKFMLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 07:11:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54900 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726317AbgKFMLd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Nov 2020 07:11:33 -0500
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D4E8218CBC7A;
-        Fri,  6 Nov 2020 11:40:57 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-115-47.rdu2.redhat.com [10.10.115.47])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 16D7F380;
-        Fri,  6 Nov 2020 11:40:53 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <000000000000e0a53705b2d7ec44@google.com>
-References: <000000000000e0a53705b2d7ec44@google.com>
-To:     syzbot <syzbot+d2b6e8cc299748fecf25@syzkaller.appspotmail.com>
-Cc:     dhowells@redhat.com, a@unstable.cc,
-        b.a.t.m.a.n@lists.open-mesh.org, davem@davemloft.net,
-        fweisbec@gmail.com, ktkhai@virtuozzo.com,
-        linux-afs@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        miklos@szeredi.hu, mingo@kernel.org, mszeredi@redhat.com,
-        netdev@vger.kernel.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
-Subject: Re: INFO: rcu detected stall in security_file_open (3)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5A2E32100A;
+        Fri,  6 Nov 2020 12:11:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604664692;
+        bh=uEOhfTfCBXqrs13X3avrkvywnW2eWiyf1LB3yk8KXlE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=pv6U9ZZ7FthqDuJGcOYZ3uv+NlHL7YPJjaJly0QyPBb+CvohysudBdVK/3dVc7eiy
+         1DDVZJ8uqTHjuJNySIwJUf8zYTYE4OFMxVwqBjvlzfl9cjk6ljfMGZ+vYNJvWGUsTb
+         unVEBtel6WTxhRmHpw1ZFIvjzszjPgofJAxipo+A=
+Received: by mail-wm1-f52.google.com with SMTP id s13so1119853wmh.4;
+        Fri, 06 Nov 2020 04:11:32 -0800 (PST)
+X-Gm-Message-State: AOAM532OzHlTPfLMLrCPzsZyHkU8ehV7xK3bGwe9dpdeBHhuvAy3Eo2C
+        4RwuCiUZduEUzoRxOEOwFA1RHCRwUzyqJI6dJ5M=
+X-Google-Smtp-Source: ABdhPJzv2EmRP8CYUYmU3H3MT9wpk8xr+uYi4DIu4bJTYIGgo1Vpv9woMA6d2Gldiu9Bnsvu9XMUY+Db9OR7x/ZBtT0=
+X-Received: by 2002:a05:600c:256:: with SMTP id 22mr2121841wmj.120.1604664689730;
+ Fri, 06 Nov 2020 04:11:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1797847.1604662853.1@warthog.procyon.org.uk>
-Date:   Fri, 06 Nov 2020 11:40:53 +0000
-Message-ID: <1797848.1604662853@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <1604649411-24886-1-git-send-email-wangqing@vivo.com> <fd46310f-0b4e-ac8b-b187-98438ee6bb60@ti.com>
+In-Reply-To: <fd46310f-0b4e-ac8b-b187-98438ee6bb60@ti.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Fri, 6 Nov 2020 13:11:13 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0Dce3dYER0oJ+2FcV8UbJqCaAv7zSS6JZBdb6ewfnE7g@mail.gmail.com>
+Message-ID: <CAK8P3a0Dce3dYER0oJ+2FcV8UbJqCaAv7zSS6JZBdb6ewfnE7g@mail.gmail.com>
+Subject: Re: [PATCH] net/ethernet: update ret when ptp_clock is ERROR
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     Wang Qing <wangqing@vivo.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Samuel Zou <zou_wei@huawei.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz fix: afs: Fix cell removal
+On Fri, Nov 6, 2020 at 12:35 PM Grygorii Strashko
+<grygorii.strashko@ti.com> wrote:
+> On 06/11/2020 09:56, Wang Qing wrote:
 
+> > +++ b/drivers/net/ethernet/ti/am65-cpts.c
+> > @@ -1001,8 +1001,7 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
+>
+> there is
+>         cpts->ptp_clock = ptp_clock_register(&cpts->ptp_info, cpts->dev);
+>
+>
+> >       if (IS_ERR_OR_NULL(cpts->ptp_clock)) {
+>
+> And ptp_clock_register() can return NULL only if PTP support is disabled.
+> In which case, we should not even get here.
+>
+> So, I'd propose to s/IS_ERR_OR_NULL/IS_ERR above,
+> and just assign ret = PTR_ERR(cpts->ptp_clock) here.
+
+Right, using IS_ERR_OR_NULL() is almost ever a mistake, either
+from misunderstanding the interface, or from a badly designed
+interface that needs to be changed.
+
+     Arnd
