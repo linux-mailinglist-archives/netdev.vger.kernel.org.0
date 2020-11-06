@@ -2,90 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 619412A9E8C
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 21:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51FBF2A9E90
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 21:28:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728365AbgKFUZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 15:25:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43666 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728237AbgKFUZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 15:25:23 -0500
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E6AC0613CF
-        for <netdev@vger.kernel.org>; Fri,  6 Nov 2020 12:25:23 -0800 (PST)
-Received: by mail-io1-xd41.google.com with SMTP id o11so2771946ioo.11
-        for <netdev@vger.kernel.org>; Fri, 06 Nov 2020 12:25:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7NR9QiFYySIFJLA+EZpoPTRYNeDJVq7JXlgdpLtMXnU=;
-        b=PZpLW9oOwf0TH3dF9AzGNxTrXH+UsGKrMwaplXTdrneZ/++/vIa26AUYxDtiRdmYH4
-         R+ImlNHH6nbpHoXjXfkfjhS1f0cfgdezo0SVSYnIg6FPgxxjaWS9Xrvln4XgeCR2ma0J
-         UouFKSc9WmIuG1Q9xk9IAum4z+FchbMChP0aWhxBJBloVGz6EmLPuP+Rry7/oqgsY35P
-         lQvLwDDtZCtGzNdNxhYRlfSlT2/0RqDbUqLNAMewUMC98fmCezxrWAfaz+Trupt7+7lf
-         f7QP/PCPlShfgl2fVy/loBeNdYlznuU3rAYru1fCqG36od/aLJgZHNV7fOxjggGm9kOC
-         SoTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7NR9QiFYySIFJLA+EZpoPTRYNeDJVq7JXlgdpLtMXnU=;
-        b=NLGbs9rPFobAyEKUZsL6UQn9DRRcn1vxxTMZR7SO15RdQsvMqSaWuq32Cd24Tumz9Y
-         H40rzoFBG2J/jC2/xLnD8+jDaTH52x1nzI9LXOe7rNkxLOfH5AZ169ONdnwwiCF7C0mj
-         Yw+OosxRfREw0jwcwkIsaBOvx5q3bGfpDKDYsHdc0+AocZlarbwNSIr3vP6aUlFw+CKR
-         CxDPjCgq6GMhhUI3q4mc7TYCQZqAsCcjevDA12qQ5ySop5vdXOr8fIhf843o5SabfpIQ
-         lmLqr+scPwGnG+l4LbxOpJS7SOLNMPdqJlkxwQmkBBpWACh8owNXqIihhwkt9sPbHNHS
-         dscQ==
-X-Gm-Message-State: AOAM532o2mIEgM6tPmTnazmdVwuQZqxqgPn0TBHZ18HtuX7l8iEbjcmJ
-        cSoM+9MPZwPlQ7jaSwOuNCQ=
-X-Google-Smtp-Source: ABdhPJwKXVuegbwOM87rQuy4dMDoWWMH+amREGfNpS2tP9TCqeFdQmhx+X3i3eOhk4tceLLYCP7U6A==
-X-Received: by 2002:a05:6602:1682:: with SMTP id s2mr2816435iow.174.1604694322277;
-        Fri, 06 Nov 2020 12:25:22 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:59f:e9df:76ab:8876])
-        by smtp.googlemail.com with ESMTPSA id v88sm1621014ila.71.2020.11.06.12.25.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Nov 2020 12:25:21 -0800 (PST)
-Subject: Re: [PATCH iproute2-next] tc: implement support for action terse dump
-To:     Vlad Buslov <vlad@buslov.dev>, Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        davem@davemloft.net, kuba@kernel.org, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us
-References: <20201031201644.247605-1-vlad@buslov.dev>
- <20201031202522.247924-1-vlad@buslov.dev>
- <ddd99541-204c-1b29-266f-2d7f4489d403@gmail.com> <87wnz25vir.fsf@buslov.dev>
- <178bdf87-8513-625f-1b2e-79ad435bcdf3@mojatatu.com>
- <87y2je9tya.fsf@buslov.dev>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0599db33-3821-dc78-95da-4814fbbb877a@gmail.com>
-Date:   Fri, 6 Nov 2020 13:25:19 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.0
+        id S1728402AbgKFU2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 15:28:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60558 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728140AbgKFU2e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Nov 2020 15:28:34 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C0B3C208C7;
+        Fri,  6 Nov 2020 20:28:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604694513;
+        bh=MGVZBTqufO5uh7eBnSQ8a7Z89hL5Id9O1CZs3+Wz3X0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OPiVtJ0+86lJvv5m0ayCYxs+5BSaEg8zdym5ffxA3N/OZiYIlEUeRn7yP5GAVwsI6
+         f+6VIFk2L0sYLb0z0asTaQPFe5ff1mqMSnFNAczIzDAvYImk5rvBAmnm3+0jFY5ogk
+         NM8s9rtYDf7CmuVkKWLbvAbAMv1P947zqA0xDDsA=
+Date:   Fri, 6 Nov 2020 12:28:31 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, borisp@nvidia.com,
+        secdev@chelsio.com
+Subject: Re: [PATCH net] net/tls: Fix kernel panic when socket is in TLS ULP
+Message-ID: <20201106122831.5fccebe3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a9d6ec03-1638-6282-470a-3a6b09b96652@chelsio.com>
+References: <20201103104702.798-1-vinay.yadav@chelsio.com>
+        <20201104171609.78d410db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <976e0bb7-1846-94cc-0be7-9a9e62563130@chelsio.com>
+        <20201105095344.0edecafa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <043b91f8-60e0-b890-7ce2-557299ee745d@chelsio.com>
+        <20201105104658.4f96cc90@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a9d6ec03-1638-6282-470a-3a6b09b96652@chelsio.com>
 MIME-Version: 1.0
-In-Reply-To: <87y2je9tya.fsf@buslov.dev>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/6/20 12:16 PM, Vlad Buslov wrote:
->>>
->>
->> Its unfortunate that the TCA_ prefix ended being used for both filters
->> and actions. Since we only have a couple of flags maybe it is not too
->> late to have a prefix TCAA_ ? For existing flags something like a
->> #define TCAA_FLAG_LARGE_DUMP_ON TCA_FLAG_LARGE_DUMP_ON
->> in the uapi header will help. Of course that would be a separate
->> patch which will require conversion code in both the kernel and user
->> space.
-> 
-> I can send a followup patch, assuming David is satisfied with proposed
-> change.
-> 
+On Sat, 7 Nov 2020 02:02:42 +0530 Vinay Kumar Yadav wrote:
+> On 11/6/2020 12:16 AM, Jakub Kicinski wrote:
+> > On Thu, 5 Nov 2020 23:55:15 +0530 Vinay Kumar Yadav wrote:  
+> >>>>> We should prevent from the socket getting into LISTEN state in the
+> >>>>> first place. Can we make a copy of proto_ops (like tls_sw_proto_ops)
+> >>>>> and set listen to sock_no_listen?  
+> >>>>
+> >>>> Once tls-toe (TLS_HW_RECORD) is configured on a socket, listen() call
+> >>>> from user on same socket will create hash at two places.  
+> >>>
+> >>> What I'm saying is - disallow listen calls on sockets with tls-toe
+> >>> installed on them. Is that not possible?
+> >>>     
+> >> You mean socket with tls-toe installed shouldn't be listening at other
+> >> than adapter? basically avoid ctx->sk_proto->hash(sk) call.  
+> > 
+> > No, replace the listen callback, like I said. Why are you talking about
+> > hash???
+> >As per my understanding we can't avoid socket listen.  
+> Not sure how replacing listen callback solve the issue,
+> can you please elaborate ?
 
-fine with me.
-
+TLS sockets are not supposed to get into listen state. IIUC the problem
+is that the user is able to set TLS TOE on a socket which then starts
+to listen and the state gets cloned improperly.
