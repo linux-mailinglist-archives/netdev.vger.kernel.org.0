@@ -2,109 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B0362A9EC4
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 21:58:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 093172A9EC6
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 21:58:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728511AbgKFU6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 15:58:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728464AbgKFU6J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 15:58:09 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE89CC0613CF;
-        Fri,  6 Nov 2020 12:58:08 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id c129so2296519yba.8;
-        Fri, 06 Nov 2020 12:58:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DfgNiqc7FPmeRo9u5EBrE/Hi/TlplGpHLKs32RAKO9A=;
-        b=bepPv6HgX29aP/hxS6S+e5bYm5n7fZwl6jNHkmbVO0WKZ9h73tYy0/5p7JPW4wVy6c
-         JYND6sCJ4bh2Nj/f2aS0wD3MLdEDP+lsS03iCru6gZPzcLlGJcXPPgNvNsb/celt3idk
-         5CRhfi2Nn8uTaBCd0beMCqv0+TFLQ8Z2C6N8sf5hJupJc0Itv96hoDkajgYlZtAmtp3v
-         FR/u3RQiw0R1Gcny6k+E0hek9ttpTiHFJht7fRef5C3b8Kld70E2Egp6cWzE7MRRV7WL
-         QRawtynLvbFADOficETyZMsOsx+3J2aYmZ0TpBCEF3n3Lh3lJP+rGyBSCvwSXVoh5Ebj
-         8kCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DfgNiqc7FPmeRo9u5EBrE/Hi/TlplGpHLKs32RAKO9A=;
-        b=kkxDbzMcJOux4Y3qlV2pOSbAdnCc8rfRHiUsmZkUdvdXnYBKaiAJQTarLUb+6iHLSi
-         XBA7WVdfDCzNj7N0r3MbTejexgUfNsEbTDwtZUBJAe78rLtetJfdZ1fyn2mpbJOHBDwS
-         JB0vmJWlZqolL7V7mf1St85m3sPBeuA0Lh4pdfpae6EI4qi20ShNQuSFB0/MMFtmb30v
-         h4FRESPoPI022bLND4SHMzuyLhN9+8s2GRV0XuWJgsK87Ev9md9t+hIVFU2KpDshTtFm
-         mR7xfutT0M0i7fbOV1tifg6YEbZ1HOHMAx8qpobuLxhjq9hqbBL1GswHRq7SHh9TzU/z
-         RvzA==
-X-Gm-Message-State: AOAM531vmM/zc4PDtrGy8MnwFZL5C7+D79idXHOTk8jxuRSPNaRpM9hO
-        TJv/iZN9j+MbGr8Qm5rCOITECWiZf2spbFVHWKk=
-X-Google-Smtp-Source: ABdhPJzspGMaJW4V4XJJYR980bkplhP3rJhpEkhpWaiVMlZ8syf2P6GJj5KRClEz7Df2+C7nNCvVgDTeAgQG6UZFfLA=
-X-Received: by 2002:a25:da4e:: with SMTP id n75mr5424442ybf.425.1604696288129;
- Fri, 06 Nov 2020 12:58:08 -0800 (PST)
-MIME-Version: 1.0
-References: <20201028132529.3763875-1-haliu@redhat.com> <20201029151146.3810859-1-haliu@redhat.com>
- <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com> <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
- <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net> <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
- <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
- <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com> <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
- <20201104021730.GK2408@dhcp-12-153.nay.redhat.com> <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
- <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com> <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
- <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com> <CAEf4BzaSfutBt3McEPjmu_FyxyzJa_xVGfhP_7v0oGuqG_HBEw@mail.gmail.com>
- <20201106094425.5cc49609@redhat.com>
-In-Reply-To: <20201106094425.5cc49609@redhat.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 6 Nov 2020 12:57:56 -0800
-Message-ID: <CAEf4Bzb2fuZ+Mxq21HEUKcOEba=rYZHc+1FTQD98=MPxwj8R3g@mail.gmail.com>
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Jiri Benc <jbenc@redhat.com>
-Cc:     Edward Cree <ecree@solarflare.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+        id S1728546AbgKFU62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 15:58:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43058 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727129AbgKFU62 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Nov 2020 15:58:28 -0500
+Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D521B20B1F;
+        Fri,  6 Nov 2020 20:58:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604696307;
+        bh=Qs7s5PkEVmcdFdJtVbfQaSH2HwSKtixNCGABo8gZLzs=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=1dqdahWq+6ZNk3JsBrpONfOl6UrsPPEYH3unW+weooG8ff3Jrasf9jFVwDGZPdxlk
+         Vnn5VWmgHeGv+JUNIateSldplxtFpDXASFS/9r2imGmFS/0aVeOxtmgBZu6GjreXYd
+         HbWzgLebNjS/BHoajFR/rI6ImeVW8eobS9zm4SLY=
+Message-ID: <f1266f7f732d5222b69b8c29ec1d8071f9f16b25.camel@kernel.org>
+Subject: Re: [PATCH v2 net-next 3/3] octeontx2-af: Add devlink health
+ reporters for NIX
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Cc:     George Cherian <gcherian@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        "masahiroy@kernel.org" <masahiroy@kernel.org>,
+        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 06 Nov 2020 12:58:25 -0800
+In-Reply-To: <CA+sq2Cc9-vvF8K_FASca5FGYyFc_53QWqyEtoHAx6xVCs41LiQ@mail.gmail.com>
+References: <BYAPR18MB2679EC3507BD90B93B37A3F8C5EE0@BYAPR18MB2679.namprd18.prod.outlook.com>
+         <1dd085b9f7013e9a28057f3080ee7b920bfbc9fc.camel@kernel.org>
+         <CA+sq2Cc9-vvF8K_FASca5FGYyFc_53QWqyEtoHAx6xVCs41LiQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 6, 2020 at 12:44 AM Jiri Benc <jbenc@redhat.com> wrote:
->
-> On Thu, 5 Nov 2020 12:19:00 -0800, Andrii Nakryiko wrote:
-> > I'll just quote myself here for your convenience.
->
-> Sorry, I missed your original email for some reason.
->
-> >   Submodule is a way that I know of to make this better for end users.
-> >   If there are other ways to pull this off with shared library use, I'm
-> >   all for it, it will save the security angle that distros are arguing
-> >   for. E.g., if distributions will always have the latest libbpf
-> >   available almost as soon as it's cut upstream *and* new iproute2
-> >   versions enforce the latest libbpf when they are packaged/released,
-> >   then this might work equivalently for end users. If Linux distros
-> >   would be willing to do this faithfully and promptly, I have no
-> >   objections whatsoever. Because all that matters is BPF end user
-> >   experience, as Daniel explained above.
->
-> That's basically what we already do, for both Fedora and RHEL.
->
-> Of course, it follows the distro release cycle, i.e. no version
-> upgrades - or very limited ones - during lifetime of a particular
-> release. But that would not be different if libbpf was bundled in
-> individual projects.
+On Fri, 2020-11-06 at 00:59 +0530, Sunil Kovvuri wrote:
+> > > > > Output:
+> > > > >  # ./devlink health
+> > > > >  pci/0002:01:00.0:
+> > > > >    reporter npa
+> > > > >      state healthy error 0 recover 0
+> > > > >    reporter nix
+> > > > >      state healthy error 0 recover 0
+> > > > >  # ./devlink  health dump show pci/0002:01:00.0 reporter nix
+> > > > >   NIX_AF_GENERAL:
+> > > > >          Memory Fault on NIX_AQ_INST_S read: 0
+> > > > >          Memory Fault on NIX_AQ_RES_S write: 0
+> > > > >          AQ Doorbell error: 0
+> > > > >          Rx on unmapped PF_FUNC: 0
+> > > > >          Rx multicast replication error: 0
+> > > > >          Memory fault on NIX_RX_MCE_S read: 0
+> > > > >          Memory fault on multicast WQE read: 0
+> > > > >          Memory fault on mirror WQE read: 0
+> > > > >          Memory fault on mirror pkt write: 0
+> > > > >          Memory fault on multicast pkt write: 0
+> > > > >    NIX_AF_RAS:
+> > > > >          Poisoned data on NIX_AQ_INST_S read: 0
+> > > > >          Poisoned data on NIX_AQ_RES_S write: 0
+> > > > >          Poisoned data on HW context read: 0
+> > > > >          Poisoned data on packet read from mirror buffer: 0
+> > > > >          Poisoned data on packet read from mcast buffer: 0
+> > > > >          Poisoned data on WQE read from mirror buffer: 0
+> > > > >          Poisoned data on WQE read from multicast buffer: 0
+> > > > >          Poisoned data on NIX_RX_MCE_S read: 0
+> > > > >    NIX_AF_RVU:
+> > > > >          Unmap Slot Error: 0
+> > > > > 
+> > > > 
+> > > > Now i am a little bit skeptic here, devlink health reporter
+> > > > infrastructure was
+> > > > never meant to deal with dump op only, the main purpose is to
+> > > > diagnose/dump and recover.
+> > > > 
+> > > > especially in your use case where you only report counters, i
+> > > > don't
+> > > > believe
+> > > > devlink health dump is a proper interface for this.
+> > > These are not counters. These are error interrupts raised by HW
+> > > blocks.
+> > > The count is provided to understand on how frequently the errors
+> > > are
+> > > seen.
+> > > Error recovery for some of the blocks happen internally. That is
+> > > the
+> > > reason,
+> > > Currently only dump op is added.
+> > 
+> > So you are counting these events in driver, sounds like a counter
+> > to
+> > me, i really think this shouldn't belong to devlink, unless you
+> > really
+> > utilize devlink health ops for actual reporting and recovery.
+> > 
+> > what's wrong with just dumping these counters to ethtool ?
+> 
+> This driver is a administrative driver which handles all the
+> resources
+> in the system and doesn't do any IO.
+> NIX and NPA are key co-processor blocks which this driver handles.
+> With NIX and NPA, there are pieces
+> which gets attached to a PCI device to make it a networking device.
+> We
+> have netdev drivers registered to this
+> networking device. Some more information about the drivers is
+> available at
+> https://www.kernel.org/doc/html/latest/networking/device_drivers/ethernet/marvell/octeontx2.html
+> 
+> So we don't have a netdev here to report these co-processor block
+> level errors over ethtool.
+> 
 
-Alright. Hopefully this would be sufficient in practice.
+but AF driver can't be standalone to operate your hw, it must have a
+PF/VF with netdev interface to do io, so even if your model is modular,
+a common user of this driver will always see a netdev.
 
->
->  Jiri
->
+
