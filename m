@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EB9B2A8B28
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 01:12:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C32512A8B29
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 01:12:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732680AbgKFAMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 19:12:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
+        id S1732701AbgKFAMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 19:12:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732660AbgKFAMe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 19:12:34 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2721EC0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 16:12:34 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id v12so2650733pfm.13
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 16:12:34 -0800 (PST)
+        with ESMTP id S1732660AbgKFAMg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 19:12:36 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AF1C0613CF
+        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 16:12:35 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id g7so2388531pfc.2
+        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 16:12:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=H4nDhqegF0EjT05ul4Hwr7UIDTMUmNY72Ijv6z2hAS0=;
-        b=31zQo4w/qe1ztrYsbSVkHOm7mv6ghuMskhV8VvFg22P3ZVhJ9TD/lxJsHuZ21XtEvi
-         WjXdHqmFxkQHrvDJ393p0/xaix54uXaEbEBeTjWpFMWLb6Rggqhxj9YquT0Vc6AOCDXu
-         l2FJAV6EzJwS+zpl9B4jtRO5eRXOwLzK0xDJh9gh6dQ0f9yXU/dOTdOdLDUKCn5EeW/n
-         FYJc3lmZhVPV1yrei9tvpJvOUzaaJ7u9hD1jD4e4eckJUuBx4sllPqz4KUaB4o87XgQj
-         kbG9xBYtUGyLT5k61CSm+h3K1b6XBnwBikKM+yRhHjBEGqZPXCTKXRT3Sy0s4foZfm98
-         Lf/g==
+        bh=ZTTdvHFepw40UzyfBUYLlofllO40qi0wrEoklyhrPBg=;
+        b=WitwLI8UcsLXlRmUrzeq4d9h9ADr5appgpqGPoir5ROBq/8DghMoENFeiQvb1VyNSO
+         UTfuzLedFuDoI4L2RGQQ+yvzc9TGyBfey8N7SOAPhQiayXj3aTFb4bP0524mMHhNHxut
+         b13tsuuAqCkyKfKX3wYr8udCb5Dfnc7AOPDhw4QV94xMiIbll7qcPHgA2enD+4S/Ady2
+         gDQ1TU5S9bLGnZ7aMRkSN7ArHL+jMGOP1IQfs0UysBBiO/blx18jXAwWJLrV2l4icMI/
+         eDwvR/BuPXMfYqFS7tzOr/dgL+cLzoYiVy5S/uqSxxDo6tYykNByFL2YZ82Zk5rnuTGi
+         XSeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=H4nDhqegF0EjT05ul4Hwr7UIDTMUmNY72Ijv6z2hAS0=;
-        b=IQgP07V2gtRdG9v970RNCKh78DxvyLrytfNE5oDiuNplkn9qe9qRXNPx3Qp/H36sKZ
-         v+/ZxXafn2keJNFE95NuLRsISd3cbzwe9Q9qqCTVb37inz6hktPCStD3D2PQhjyYuGrE
-         tlN9S4X0XmB38tU6JjoISibL5sTub1cqSuUUhLcGRhu0ro0j5T7XdPLlUR2/kcWjwzbA
-         LjODtVAdVQjimJ2en5SeP3AtU8oD/OXn/MAgddiGUdslX1b/BXr2RYIU9B0y6IHKOn+3
-         SiWN8MFSp9yKBhbLSa4+L7Yh6w7cZwZg087j/cBToeeC7Rn5G1gHt3EuiD7NEscle8/p
-         LJiQ==
-X-Gm-Message-State: AOAM533O62DyrdXPASBTQRH/gNzoxl5uojQebQUCCu0A1AvJwib+S5qM
-        uFXhfR9FJYUtxCRExG11H3rfCdudTPMV2w==
-X-Google-Smtp-Source: ABdhPJxtuGsCbR8nHf5g+pPfXJsJZrcwODxPvINWMu/Bf8lE92Dw3jiKi4xTd/WVnW2CA40bmIJePw==
-X-Received: by 2002:a62:8f8b:0:b029:164:9e98:c0e with SMTP id n133-20020a628f8b0000b02901649e980c0emr4981323pfd.80.1604621553290;
-        Thu, 05 Nov 2020 16:12:33 -0800 (PST)
+        bh=ZTTdvHFepw40UzyfBUYLlofllO40qi0wrEoklyhrPBg=;
+        b=MgyqTKi6U1IxKbbBZTlm6cBdc4DeokKyNkaIENq0ersHFufUYuxY1EAxqMwh/QCrCd
+         4bRNvhUZK3UhXBNsAygfUdlEBCBusQTYDCLYlh/sivzXq6L+j0uj9HBDzFGJdo0jmQ4g
+         EDWP6i8viI3qkrqqVJ31oJKvHVPgIGxOQ82Jm3DJXJvKEg1L53jcecTHF4kZpD49zOV1
+         Li8OSrrfroJvKiOWo1lEJHDtlpeJhV9FWcuF0TObUnA4K8XxA2q7mo25Opdr70yZ7bC8
+         t7hlSaHaKH47Xmwn0bBF7Jf19oFx+KHYNY1wksXgZGBYEsxa3P29E3L3udwVCO7LXmCK
+         rf9A==
+X-Gm-Message-State: AOAM533diTIVfpF4H4pNrNbZD5ljZl2HcVabkGJY9U8+c4lPxCthfx3M
+        nXT81zqMwXPAaaesieuLBAjuzr6GPr6Uxw==
+X-Google-Smtp-Source: ABdhPJzt0zcfc0dy0aUp+BNiNeKOXgj0oSzBZrcBchlnO+0dYILFg3+6XYvE0cvv1gdRXkGJLGaJuw==
+X-Received: by 2002:a17:90b:942:: with SMTP id dw2mr4714450pjb.14.1604621554594;
+        Thu, 05 Nov 2020 16:12:34 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id 22sm3236009pjb.40.2020.11.05.16.12.32
+        by smtp.gmail.com with ESMTPSA id 22sm3236009pjb.40.2020.11.05.16.12.33
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 05 Nov 2020 16:12:32 -0800 (PST)
+        Thu, 05 Nov 2020 16:12:34 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 3/8] ionic: add lif quiesce
-Date:   Thu,  5 Nov 2020 16:12:15 -0800
-Message-Id: <20201106001220.68130-4-snelson@pensando.io>
+Subject: [PATCH v2 net-next 4/8] ionic: batch rx buffer refilling
+Date:   Thu,  5 Nov 2020 16:12:16 -0800
+Message-Id: <20201106001220.68130-5-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201106001220.68130-1-snelson@pensando.io>
 References: <20201106001220.68130-1-snelson@pensando.io>
@@ -59,57 +59,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After the queues are stopped, expressly quiesce the lif.
-This assures that even if the queues were in an odd state,
-the firmware will close up everything cleanly.
+We don't need to refill the rx descriptors on every napi
+if only a few were handled.  Waiting until we can batch up
+a few together will save us a few Rx cycles.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 24 +++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ .../net/ethernet/pensando/ionic/ionic_dev.h    |  4 +++-
+ .../net/ethernet/pensando/ionic/ionic_txrx.c   | 18 ++++++++++--------
+ 2 files changed, 13 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 519d544821af..990bd9ce93c2 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1625,6 +1625,28 @@ static void ionic_lif_rss_deinit(struct ionic_lif *lif)
- 	ionic_lif_rss_config(lif, 0x0, NULL, NULL);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+index 6c243b17312c..690768ff0143 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+@@ -12,8 +12,10 @@
+ 
+ #define IONIC_MAX_TX_DESC		8192
+ #define IONIC_MAX_RX_DESC		16384
+-#define IONIC_MIN_TXRX_DESC		16
++#define IONIC_MIN_TXRX_DESC		64
+ #define IONIC_DEF_TXRX_DESC		4096
++#define IONIC_RX_FILL_THRESHOLD		16
++#define IONIC_RX_FILL_DIV		8
+ #define IONIC_LIFS_MAX			1024
+ #define IONIC_WATCHDOG_SECS		5
+ #define IONIC_ITR_COAL_USEC_DEFAULT	64
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+index b3d2250c77d0..9156c9825a16 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+@@ -392,11 +392,6 @@ void ionic_rx_fill(struct ionic_queue *q)
+ 			 q->dbval | q->head_idx);
  }
  
-+static int ionic_lif_quiesce(struct ionic_lif *lif)
-+{
-+	struct ionic_admin_ctx ctx = {
-+		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
-+		.cmd.lif_setattr = {
-+			.opcode = IONIC_CMD_LIF_SETATTR,
-+			.index = cpu_to_le16(lif->index),
-+			.attr = IONIC_LIF_ATTR_STATE,
-+			.state = IONIC_LIF_QUIESCE,
-+		},
-+	};
-+	int err;
-+
-+	err = ionic_adminq_post_wait(lif, &ctx);
-+	if (err) {
-+		netdev_err(lif->netdev, "lif quiesce failed %d\n", err);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
- static void ionic_txrx_disable(struct ionic_lif *lif)
+-static void ionic_rx_fill_cb(void *arg)
+-{
+-	ionic_rx_fill(arg);
+-}
+-
+ void ionic_rx_empty(struct ionic_queue *q)
  {
- 	unsigned int i;
-@@ -1639,6 +1661,8 @@ static void ionic_txrx_disable(struct ionic_lif *lif)
- 		for (i = 0; i < lif->nxqs; i++)
- 			err = ionic_qcq_disable(lif->rxqcqs[i], (err != -ETIMEDOUT));
- 	}
-+
-+	(void)ionic_lif_quiesce(lif);
- }
+ 	struct ionic_desc_info *desc_info;
+@@ -480,6 +475,7 @@ int ionic_rx_napi(struct napi_struct *napi, int budget)
+ 	struct ionic_cq *cq = napi_to_cq(napi);
+ 	struct ionic_dev *idev;
+ 	struct ionic_lif *lif;
++	u16 rx_fill_threshold;
+ 	u32 work_done = 0;
+ 	u32 flags = 0;
  
- static void ionic_txrx_deinit(struct ionic_lif *lif)
+@@ -489,7 +485,9 @@ int ionic_rx_napi(struct napi_struct *napi, int budget)
+ 	work_done = ionic_cq_service(cq, budget,
+ 				     ionic_rx_service, NULL, NULL);
+ 
+-	if (work_done)
++	rx_fill_threshold = min_t(u16, IONIC_RX_FILL_THRESHOLD,
++				  cq->num_descs / IONIC_RX_FILL_DIV);
++	if (work_done && ionic_q_space_avail(cq->bound_q) >= rx_fill_threshold)
+ 		ionic_rx_fill(cq->bound_q);
+ 
+ 	if (work_done < budget && napi_complete_done(napi, work_done)) {
+@@ -518,6 +516,7 @@ int ionic_txrx_napi(struct napi_struct *napi, int budget)
+ 	struct ionic_dev *idev;
+ 	struct ionic_lif *lif;
+ 	struct ionic_cq *txcq;
++	u16 rx_fill_threshold;
+ 	u32 rx_work_done = 0;
+ 	u32 tx_work_done = 0;
+ 	u32 flags = 0;
+@@ -531,8 +530,11 @@ int ionic_txrx_napi(struct napi_struct *napi, int budget)
+ 
+ 	rx_work_done = ionic_cq_service(rxcq, budget,
+ 					ionic_rx_service, NULL, NULL);
+-	if (rx_work_done)
+-		ionic_rx_fill_cb(rxcq->bound_q);
++
++	rx_fill_threshold = min_t(u16, IONIC_RX_FILL_THRESHOLD,
++				  rxcq->num_descs / IONIC_RX_FILL_DIV);
++	if (rx_work_done && ionic_q_space_avail(rxcq->bound_q) >= rx_fill_threshold)
++		ionic_rx_fill(rxcq->bound_q);
+ 
+ 	if (rx_work_done < budget && napi_complete_done(napi, rx_work_done)) {
+ 		ionic_dim_update(qcq);
 -- 
 2.17.1
 
