@@ -2,78 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5B762A9085
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 08:40:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1AE52A908F
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 08:41:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726242AbgKFHkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 02:40:07 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:33275 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725830AbgKFHkG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 02:40:06 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 0A67dxXoB015419, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb03.realtek.com.tw[172.21.6.96])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 0A67dxXoB015419
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 6 Nov 2020 15:39:59 +0800
-Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
- RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Fri, 6 Nov 2020 15:39:59 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Fri, 6 Nov 2020 15:39:59 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa]) by
- RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa%3]) with mapi id
- 15.01.2044.006; Fri, 6 Nov 2020 15:39:59 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     =?utf-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>
-CC:     Vladimir Oltean <olteanv@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
-Subject: RE: [PATCH net-next 3/5] r8152: add MCU typed read/write functions
-Thread-Topic: [PATCH net-next 3/5] r8152: add MCU typed read/write functions
-Thread-Index: AQHWshawQtN/T3fh9kiJgjvtG4xSCKm2a3wAgACIZwCAAC/9AIAAG2OAgAAC9ICAAAcNgIAAAsSAgAARvwCAAWswAIAAEW8AgAGRtDD//7jZgIAAkFAA
-Date:   Fri, 6 Nov 2020 07:39:59 +0000
-Message-ID: <96fee294b4ec41e6a389836cff3513fc@realtek.com>
-References: <20201103192226.2455-4-kabel@kernel.org>
-        <20201103214712.dzwpkj6d5val6536@skbuf> <20201104065524.36a85743@kernel.org>
-        <20201104084710.wr3eq4orjspwqvss@skbuf> <20201104112511.78643f6e@kernel.org>
-        <20201104113545.0428f3fe@kernel.org>    <20201104110059.whkku3zlck6spnzj@skbuf>
-        <20201104121053.44fae8c7@kernel.org>    <20201104121424.th4v6b3ucjhro5d3@skbuf>
-        <20201105105418.555d6e54@kernel.org>    <20201105105642.pgdxxlytpindj5fq@skbuf>
-        <21f6ca0a96d640558633d6296b81271a@realtek.com>
- <20201106073947.6328280d@kernel.org>
-In-Reply-To: <20201106073947.6328280d@kernel.org>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.146]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        id S1726534AbgKFHk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 02:40:57 -0500
+Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:35646 "EHLO
+        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726242AbgKFHk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 02:40:57 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=2;SR=0;TI=SMTPD_---0UEPFJ9B_1604648452;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UEPFJ9B_1604648452)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 06 Nov 2020 15:40:53 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org
+Subject: [PATCH] xdp: auto off xdp by bond fd
+Date:   Fri,  6 Nov 2020 15:40:52 +0800
+Message-Id: <c9649a2463f6ff6d55177498d2d8a36242e51ab7.1604648249.git.xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TWFyZWsgQmVow7puIDxrYWJlbEBrZXJuZWwub3JnPg0KPiBTZW50OiBGcmlkYXksIE5vdmVtYmVy
-IDYsIDIwMjAgMjo0MCBQTQ0KWy4uLl0NCj4gSGkgSGF5ZXMsDQo+IA0KPiBqdXN0IHRvIGJlIGNs
-ZWFyOg0KPiBBcmUgeW91IGFnYWluc3QgZGVmaW5pbmcgdGhlc2UgZnVuY3Rpb25zIHZpYSBtYWNy
-b3M/DQo+IElmIHNvLCBJIGNhbiBzaW1wbHkgcmV3cml0ZSB0aGlzIHNvIHRoYXQgaXQgZG9lcyBu
-b3QgdXNlIG1hY3Jvcy4uLg0KDQpJIHdvdWxkIGxpa2UgdGhlIHdheSB3aGljaCBsZXQgbWUgZmlu
-ZCB0aGUgc291cmNlIG9mIHRoZQ0KZnVuY3Rpb24gZWFzaWx5LiBJIGRvbid0IGxpa2UgdGhhdCBJ
-IGNvdWxkbid0IGZpbmQgd2hlcmUgdGhlc2UNCmZ1bmN0aW9ucyBhcmUgZGVmaW5lZCwgd2hlbiBJ
-IHNlYXJjaCB3aG9sZSB0aGUgc291cmNlIGNvZGUuDQoNCkZvciBleGFtcGxlLCBmb3IgdGhlIG1l
-dGhvZCB3aGljaCBWbGFkaW1pciBPbHRlYW4gcHJvdmlkZXMsDQp3aGVuIEkgc2VhcmNoIHRoZSBr
-ZXl3b3JkICJwbGFfb2NwX3JlYWRfYnl0ZSIsIEkgY291bGQgZWFzaWx5DQpmaW5kIG91dCB0aGF0
-IHRoZSBzb3VyY2UgZnVuY3Rpb24gaXMgIm9jcF9yZWFkX2J5dGUiLg0KSG93ZXZlciwgZm9yIHlv
-dXIgcGF0Y2gsIEkgY291bGQgb25seSBmaW5kIHdoZXJlIHRoZSBmdW5jdGlvbg0KaXMgdXNlZC4g
-SSB0aGluayBpdCBpcyBub3QgZnJpZW5kbHkgZm9yIHRoZSBuZXdiaWUgd2hvIGlzIG5vdA0KZmFt
-aWxpYXIgd2l0aCB0aGlzIGRyaXZlci4NCg0KSG93ZXZlciwgSSBkb24ndCB0aGluayBJIGFtIHRo
-ZSBkZWNpc2lvbiBtYWtlci4gVGhpcyBpcw0KanVzdCBteSB2aWV3Lg0KDQo+IE9yIGFyZSB5b3Ug
-YWdhaW5zdCBpbXBsZW1lbnRpbmcgdGhlc2UgZnVuY3Rpb25zIHRoZW1zZWx2ZXM/DQoNCk5vLg0K
-DQo+IA0KPiBCVFcsIHdoYXQgYWJvdXQgcGF0Y2ggNS81IHdoaWNoIGludHJvZHVjZXMgKl9tb2Rp
-ZnkgaGVscGVycz8NCg0KSXQgaXMgZmluZS4NCg0KQmVzdCBSZWdhcmRzLA0KSGF5ZXMNCg0KDQo=
+By default, off xdp is implemented by actively calling netlink on the
+command line or in the program. This is very inconvenient for apps based
+on xdp. For example, an app based on xdp + xsk exits abnormally, but xdp
+is still working, which may cause some exceptions. And xsk cannot be
+automatically recycled. We need to bind xdp to the process in some
+cases, so that xdp can always be automatically released when the process exits.
+
+Although the signal can be used to handle this problem, it cannot handle
+some signals that cannot be captured. At the same time, it is
+inconvenient to use the signal to process in some cases. For example, a
+library based on xdp + xsk is not very convenient to use the signal solve
+this problem.
+
+This patch requires the app to actively call RTM_GETLINK after setting
+xdp and use RTEXT_FILTER_XDPFD flags to let the kernel generate an fd,
+and return it to the app through netlink. In this way, when the app
+closes fd or the process exits, the release callback of fd can trigger
+to off xdp.
+
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+ include/uapi/linux/if_link.h   |  1 +
+ include/uapi/linux/rtnetlink.h |  1 +
+ net/core/rtnetlink.c           | 71 ++++++++++++++++++++++++++++++++++++++++--
+ 3 files changed, 70 insertions(+), 3 deletions(-)
+
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index c4b23f0..c9f73a9 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -1191,6 +1191,7 @@ enum {
+ 	IFLA_XDP_SKB_PROG_ID,
+ 	IFLA_XDP_HW_PROG_ID,
+ 	IFLA_XDP_EXPECTED_FD,
++	IFLA_XDP_BOND_FD,
+ 	__IFLA_XDP_MAX,
+ };
+ 
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index d1325ff..e74b18c 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -785,6 +785,7 @@ enum {
+ #define RTEXT_FILTER_MRP	(1 << 4)
+ #define RTEXT_FILTER_CFM_CONFIG	(1 << 5)
+ #define RTEXT_FILTER_CFM_STATUS	(1 << 6)
++#define RTEXT_FILTER_XDPFD	(1 << 7)
+ 
+ /* End of information exported to user level */
+ 
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 7d72236..1b36fb8 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -37,6 +37,7 @@
+ #include <linux/pci.h>
+ #include <linux/etherdevice.h>
+ #include <linux/bpf.h>
++#include <linux/anon_inodes.h>
+ 
+ #include <linux/uaccess.h>
+ 
+@@ -982,7 +983,8 @@ static size_t rtnl_xdp_size(void)
+ 	size_t xdp_size = nla_total_size(0) +	/* nest IFLA_XDP */
+ 			  nla_total_size(1) +	/* XDP_ATTACHED */
+ 			  nla_total_size(4) +	/* XDP_PROG_ID (or 1st mode) */
+-			  nla_total_size(4);	/* XDP_<mode>_PROG_ID */
++			  nla_total_size(4) +	/* XDP_<mode>_PROG_ID */
++			  nla_total_size(4);	/* XDP_BOND_FD */
+ 
+ 	return xdp_size;
+ }
+@@ -1412,6 +1414,62 @@ static int rtnl_fill_link_ifmap(struct sk_buff *skb, struct net_device *dev)
+ 	return 0;
+ }
+ 
++static int xdp_release(struct inode *inode, struct file *filp)
++{
++	struct net_device *dev = filp->private_data;
++
++	rtnl_lock();
++
++	dev_change_xdp_fd(dev, NULL, -1, -1, 0);
++	dev_put(dev);
++
++	rtnl_unlock();
++
++	return 0;
++}
++
++static const struct file_operations xdp_fops = {
++	.release	= xdp_release,
++};
++
++static int rtnl_xdp_bond_fd(struct sk_buff *skb, struct net_device *dev)
++{
++	int err = 0, fd = -1, ret;
++	struct file *file;
++
++	if (!capable(CAP_SYS_ADMIN))
++		return -EPERM;
++
++	dev_hold(dev);
++
++	ret = get_unused_fd_flags(O_CLOEXEC);
++	if (ret < 0)
++		goto err;
++
++	fd = ret;
++
++	err = nla_put_u32(skb, IFLA_XDP_BOND_FD, fd);
++	if (err)
++		goto err;
++
++	file = anon_inode_getfile("xdp", &xdp_fops, dev, O_CLOEXEC);
++	if (IS_ERR(file)) {
++		err = PTR_ERR(file);
++		goto err;
++	}
++
++	fd_install(fd, file);
++
++	return 0;
++
++err:
++	if (fd > -1)
++		put_unused_fd(fd);
++
++	dev_put(dev);
++	return err;
++}
++
+ static u32 rtnl_xdp_prog_skb(struct net_device *dev)
+ {
+ 	const struct bpf_prog *generic_xdp_prog;
+@@ -1458,7 +1516,8 @@ static int rtnl_xdp_report_one(struct sk_buff *skb, struct net_device *dev,
+ 	return 0;
+ }
+ 
+-static int rtnl_xdp_fill(struct sk_buff *skb, struct net_device *dev)
++static int rtnl_xdp_fill(struct sk_buff *skb, struct net_device *dev,
++			 u32 ext_filter_mask)
+ {
+ 	struct nlattr *xdp;
+ 	u32 prog_id;
+@@ -1492,6 +1551,12 @@ static int rtnl_xdp_fill(struct sk_buff *skb, struct net_device *dev)
+ 		err = nla_put_u32(skb, IFLA_XDP_PROG_ID, prog_id);
+ 		if (err)
+ 			goto err_cancel;
++
++		if (ext_filter_mask & RTEXT_FILTER_XDPFD) {
++			err = rtnl_xdp_bond_fd(skb, dev);
++			if (err)
++				goto err_cancel;
++		}
+ 	}
+ 
+ 	nla_nest_end(skb, xdp);
+@@ -1787,7 +1852,7 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
+ 	if (rtnl_port_fill(skb, dev, ext_filter_mask))
+ 		goto nla_put_failure;
+ 
+-	if (rtnl_xdp_fill(skb, dev))
++	if (rtnl_xdp_fill(skb, dev, ext_filter_mask))
+ 		goto nla_put_failure;
+ 
+ 	if (dev->rtnl_link_ops || rtnl_have_link_slave_info(dev)) {
+-- 
+1.8.3.1
+
