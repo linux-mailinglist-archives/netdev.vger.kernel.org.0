@@ -2,108 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 639222A91EB
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 10:00:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C69792A91F9
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 10:01:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726201AbgKFJAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 04:00:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44488 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725835AbgKFJAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 04:00:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604653224;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=he4A2qRDDhagMH7Jn8XWRMdBJcrftH5FW7crWt5oWTM=;
-        b=HFGq7pS04UuS5dzwo4F1E2G//B2D8r+p8N09HCbqI3tVr1Hf1vcgiOSBLTBop4A8LWD9GM
-        yrIdjcbB3MfGPV+PlxzT3OhnKFQOjk3dRoEoh1JyKChkJSNcWORXqT0adz86TTz174+9tL
-        W4Ga2N2ThIy8pK2Y2Y4jak7La3MvXow=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-9-WqMMeZOqOv2O7JDkEdZiHg-1; Fri, 06 Nov 2020 04:00:20 -0500
-X-MC-Unique: WqMMeZOqOv2O7JDkEdZiHg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7E207188C124;
-        Fri,  6 Nov 2020 09:00:18 +0000 (UTC)
-Received: from localhost (unknown [10.40.193.217])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EE00F19D6C;
-        Fri,  6 Nov 2020 09:00:08 +0000 (UTC)
-Date:   Fri, 6 Nov 2020 10:00:07 +0100
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1726738AbgKFJBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 04:01:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726530AbgKFJBb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 04:01:31 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7A80C0613CF;
+        Fri,  6 Nov 2020 01:01:31 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id 10so722244pfp.5;
+        Fri, 06 Nov 2020 01:01:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xLQV++ZHx1qqbL6zEREURgZGXxHeqI09SEFEGhlCJ7o=;
+        b=dsCRYe+h+F17dTEpkdCTFLgdv2QAPkhDw6qmPCroOWfMBTWegivgtY0xvpW3HgwUz6
+         NJEIo7hTxR0iFY4SVSYSf0XPHbK6Y9bdkbodN/KZufgvDwKBl8P/5xOlBuqXYyzF3CSJ
+         SAeqqaZbYHXQgNHSUxqNQUslMXdTrFOJKj/QXFDIpo0XhLBDlJZVduWNExaGhFKdJDrG
+         Qlyj1hKJLQmZVlSZ3yfJHVbc5Ar/I8OUTvmTlG2rj9tINYZpZ7oFz28/9VREujRgP4cX
+         7G4yupZ/eHx9bWmlhuEP5xBIIfdlpIb38FoqaCE2JU9Yq7VJl6ycckq0dgyDikvqzy1A
+         BTog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xLQV++ZHx1qqbL6zEREURgZGXxHeqI09SEFEGhlCJ7o=;
+        b=KblOTjfmKNhQZBO/LJIl52nptck9sACjknclS8mdtKMoqOBpDntMDvrPe8D5HEfOQe
+         ruNvtZSypFhgyowHnxRrAd/9TWZ1ZGcqirB5oRCCiAEjTJ/rur9vOlqNr1z6o3+oWQgi
+         Z0zbWr7vw6hTcr91QjwPTIjvPusZde9M4HPZAwV01FtOemcvPUWnEdYRDf8GaUMFWlkL
+         Tm1UWe6ajUlH8LUX4kbup1CLPA1oA2JB0C/Y4YHzo43PoCez15ls6LbRvsm/sRlgrFsW
+         GFmBcFdukbvC0WVmXGYv837FkRiotMWPpOZiTyBitSGwts+AkEX7x8jkSB7wlnbuB32K
+         7xxA==
+X-Gm-Message-State: AOAM532KmE+C8KwN+Q/zM250KUpB5LvPLDe/nd1i9nuikyhlLHkUJT6k
+        DQvI436+m5jFgx6b9DG0WZFH1GZ/IfySAXAy
+X-Google-Smtp-Source: ABdhPJwVAYos+9XH+4uCu5mVyjKsTkVDUizce7BSnXghPXBGFrpXGdptli+xHOldmOTw+KK2eFhciA==
+X-Received: by 2002:a17:90a:6309:: with SMTP id e9mr1320369pjj.115.1604653291079;
+        Fri, 06 Nov 2020 01:01:31 -0800 (PST)
+Received: from localhost.localdomain.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id g3sm985530pgl.55.2020.11.06.01.01.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Nov 2020 01:01:30 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     William Tu <u9012063@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-Message-ID: <20201106100007.10049857@redhat.com>
-In-Reply-To: <CAEf4BzbQz5ZqoB3TEtM-4e=Ndx9WCGN16Be8-JoK+mvUyAGC3w@mail.gmail.com>
-References: <20201028132529.3763875-1-haliu@redhat.com>
-        <20201029151146.3810859-1-haliu@redhat.com>
-        <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
-        <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
-        <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
-        <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
-        <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
-        <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com>
-        <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
-        <20201104021730.GK2408@dhcp-12-153.nay.redhat.com>
-        <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
-        <2e8ba0be-51bf-9060-e1f7-2148fbaf0f1d@iogearbox.net>
-        <ec50328d-61ab-71fb-f266-5e49e9dbf98e@gmail.com>
-        <CAEf4BzbQz5ZqoB3TEtM-4e=Ndx9WCGN16Be8-JoK+mvUyAGC3w@mail.gmail.com>
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv2 net 0/2] Remove unused test_ipip.sh test and add missed ip6ip6 test
+Date:   Fri,  6 Nov 2020 17:01:15 +0800
+Message-Id: <20201106090117.3755588-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20201103042908.2825734-1-liuhangbin@gmail.com>
+References: <20201103042908.2825734-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 Nov 2020 12:45:39 -0800, Andrii Nakryiko wrote:
-> That's not true. If you need new functionality like BTF, CO-RE,
-> function-by-function verification, etc., then yes, you have to update
-> kernel, compiler, libbpf, sometimes pahole. But if you have an BPF
-> application that doesn't use and need any of the newer features, it
-> will keep working just fine with the old kernel, old libbpf, and old
-> compiler.
+In comment 173ca26e9b51 ("samples/bpf: add comprehensive ipip, ipip6,
+ip6ip6 test") we added some bpf tunnel tests. In commit 933a741e3b82
+("selftests/bpf: bpf tunnel test.") when we moved it to the current
+folder, we missed some points:
 
-I'm fine with this.
+1. ip6ip6 test is not added
+2. forgot to remove test_ipip.sh in sample folder
+3. TCP test code is not removed in test_tunnel_kern.c
 
-It doesn't work that well in practice, we've found ourselves chasing
-problems caused by llvm update (problems for older bpf programs, not
-new ones), problems on non-x86_64 caused by kernel updates, etc. It can
-be attributed to living on the edge and it should stabilize over time,
-hopefully. But it's still what the users are experiencing and it's
-probably what David is referring to. I expect it to smooth itself over
-time.
+In this patch set I add back ip6ip6 test and remove unused code. I'm not sure
+if this should be net or net-next, so just set to net.
 
-Add to that the fact that something that is in fact a new feature is
-perceived as a bug fix by some users. For example, a perfectly valid
-and simple C program, not using anything shiny but a basic simple loop,
-compiles just fine but is rejected by the kernel. A newer kernel and a
-newer compiler and a newer libbpf and a newer pahole will cause the
-same program to be accepted. Now, the user does not see that for this,
-a new load of BTF functionality had to be added and all those mentioned
-projects enhanced with substantial code. All they see is their simple
-hello world test program did not work and now it does.
+Here is the test result:
+```
+Testing IP6IP6 tunnel...
+PING ::11(::11) 56 data bytes
 
-I'm not saying I have a solution nor I'm saying you should do something
-about it. Just trying to explain the perception.
+--- ::11 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 63ms
+rtt min/avg/max/mdev = 0.014/1028.308/2060.906/841.361 ms, pipe 2
+PING 1::11(1::11) 56 data bytes
 
- Jiri
+--- 1::11 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 48ms
+rtt min/avg/max/mdev = 0.026/0.029/0.036/0.006 ms
+PING 1::22(1::22) 56 data bytes
+
+--- 1::22 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 47ms
+rtt min/avg/max/mdev = 0.030/0.048/0.067/0.016 ms
+PASS: ip6ip6tnl
+```
+
+v2: Keep ip6ip6 section in test_tunnel_kern.c.
+
+Hangbin Liu (2):
+  selftest/bpf: add missed ip6ip6 test back
+  samples/bpf: remove unused test_ipip.sh
+
+ samples/bpf/test_ipip.sh                      | 179 ------------------
+ .../selftests/bpf/progs/test_tunnel_kern.c    |  44 +----
+ tools/testing/selftests/bpf/test_tunnel.sh    |  43 ++++-
+ 3 files changed, 44 insertions(+), 222 deletions(-)
+ delete mode 100755 samples/bpf/test_ipip.sh
+
+-- 
+2.25.4
 
