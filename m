@@ -2,78 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8153D2A96F8
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 14:25:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 945DA2A96FD
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 14:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727455AbgKFNZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 08:25:26 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:52068 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727442AbgKFNZ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Nov 2020 08:25:26 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id D327C201CA;
-        Fri,  6 Nov 2020 14:25:23 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id uu67ucs3-TKt; Fri,  6 Nov 2020 14:25:23 +0100 (CET)
-Received: from mail-essen-01.secunet.de (unknown [10.53.40.204])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        id S1727423AbgKFN0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 08:26:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34158 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727214AbgKFN0p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 08:26:45 -0500
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332F8C0613CF;
+        Fri,  6 Nov 2020 05:26:45 -0800 (PST)
+Received: from localhost.localdomain (p200300e9d7281e0351f2854eb5bb2248.dip0.t-ipconnect.de [IPv6:2003:e9:d728:1e03:51f2:854e:b5bb:2248])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 53C6C2006F;
-        Fri,  6 Nov 2020 14:25:23 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Fri, 6 Nov 2020 14:25:23 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Fri, 6 Nov 2020
- 14:25:23 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 324DB31844B7;
- Fri,  6 Nov 2020 14:25:23 +0100 (CET)
-Date:   Fri, 6 Nov 2020 14:25:23 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Allen Pais <allen.lkml@gmail.com>, <davem@davemloft.net>,
-        <gerrit@erg.abdn.ac.uk>, <edumazet@google.com>,
-        <kuznet@ms2.inr.ac.ru>, <yoshfuji@linux-ipv6.org>,
-        <johannes@sipsolutions.net>, <alex.aring@gmail.com>,
-        <stefan@datenfreihafen.org>, <santosh.shilimkar@oracle.com>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <herbert@gondor.apana.org.au>, <netdev@vger.kernel.org>,
-        Allen Pais <apais@linux.microsoft.com>,
-        Romain Perier <romain.perier@gmail.com>
-Subject: Re: [net-next v4 8/8] net: xfrm: convert tasklets to use new
- tasklet_setup() API
-Message-ID: <20201106132523.GT26422@gauss3.secunet.de>
-References: <20201103091823.586717-1-allen.lkml@gmail.com>
- <20201103091823.586717-9-allen.lkml@gmail.com>
- <20201105164818.402a2cb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id DA093C24DF;
+        Fri,  6 Nov 2020 14:26:38 +0100 (CET)
+Subject: Re: [PATCH] net/ieee802154: remove unused macros to tame gcc
+To:     Alex Shi <alex.shi@linux.alibaba.com>, alex.aring@gmail.com
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1604650237-22192-1-git-send-email-alex.shi@linux.alibaba.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <b3d4a7bd-bccd-6eb0-f2b8-23f8ced67aab@datenfreihafen.org>
+Date:   Fri, 6 Nov 2020 15:25:39 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20201105164818.402a2cb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <1604650237-22192-1-git-send-email-alex.shi@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 05, 2020 at 04:48:18PM -0800, Jakub Kicinski wrote:
-> On Tue,  3 Nov 2020 14:48:23 +0530 Allen Pais wrote:
-> > From: Allen Pais <apais@linux.microsoft.com>
-> > 
-> > In preparation for unconditionally passing the
-> > struct tasklet_struct pointer to all tasklet
-> > callbacks, switch to using the new tasklet_setup()
-> > and from_tasklet() to pass the tasklet pointer explicitly.
-> > 
-> > Signed-off-by: Romain Perier <romain.perier@gmail.com>
-> > Signed-off-by: Allen Pais <apais@linux.microsoft.com>
-> 
-> Steffen - ack for applying this to net-next?
+Hello.
 
-Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
+On 06.11.20 09:10, Alex Shi wrote:
+> Signed-off-by: Alex Shi <alex.shi@linux.alibaba.com>
+> Cc: Alexander Aring <alex.aring@gmail.com>
+> Cc: Stefan Schmidt <stefan@datenfreihafen.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: linux-wpan@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+>   net/ieee802154/nl802154.c | 4 ----
+>   1 file changed, 4 deletions(-)
+> 
+> diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+> index 7c5a1aa5adb4..1cebdcedc48c 100644
+> --- a/net/ieee802154/nl802154.c
+> +++ b/net/ieee802154/nl802154.c
+> @@ -2098,11 +2098,7 @@ static int nl802154_del_llsec_seclevel(struct sk_buff *skb,
+>   #define NL802154_FLAG_NEED_NETDEV	0x02
+>   #define NL802154_FLAG_NEED_RTNL		0x04
+>   #define NL802154_FLAG_CHECK_NETDEV_UP	0x08
+> -#define NL802154_FLAG_NEED_NETDEV_UP	(NL802154_FLAG_NEED_NETDEV |\
+> -					 NL802154_FLAG_CHECK_NETDEV_UP)
+>   #define NL802154_FLAG_NEED_WPAN_DEV	0x10
+> -#define NL802154_FLAG_NEED_WPAN_DEV_UP	(NL802154_FLAG_NEED_WPAN_DEV |\
+> -					 NL802154_FLAG_CHECK_NETDEV_UP)
+>   
+>   static int nl802154_pre_doit(const struct genl_ops *ops, struct sk_buff *skb,
+>   			     struct genl_info *info)
+> 
+
+
+This patch has been applied to the wpan tree and will be
+part of the next pull request to net. Thanks!
+
+regards
+Stefan Schmidt
