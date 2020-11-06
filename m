@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13C532A9FF1
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 23:20:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CF762A9FEC
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 23:20:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729160AbgKFWTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 17:19:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42446 "EHLO mail.kernel.org"
+        id S1729144AbgKFWTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 17:19:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42508 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728777AbgKFWS6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728853AbgKFWS6 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 6 Nov 2020 17:18:58 -0500
 Received: from localhost.localdomain (HSI-KBW-46-223-126-90.hsi.kabel-badenwuerttemberg.de [46.223.126.90])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 596F6206F9;
-        Fri,  6 Nov 2020 22:18:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 30538221F8;
+        Fri,  6 Nov 2020 22:18:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604701134;
-        bh=5r0Twy0hkZ46Ow4AB53hpgvjT7PSWzsT+mWa0mgW00s=;
+        s=default; t=1604701137;
+        bh=seQyPg/UXirLn5UDyR4QGuqE/EaE7wnQkLvV23VTy/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BUVyYqYJ1u60yxZopNvlHebY97P5pBN9bVymcdNo7MXyiUrR9Uc2POrH7xmodAxhH
-         /0FmfUz1nK/pKTV+UGDchrsJMz8DW/ANxkKq4ApsOOSmZ2fbvQNejc/8kMNw2ZLocv
-         yfN0mACv/WDBKbPluMzBXdQYOHZWI6jNpvnuOmNA=
+        b=0fvaG8eHtqDhlWuLYn5Jw4JHSBqRDPVhgexXPIftkIcR4fphfVJqN1q58Rtl6q2di
+         nivWSGJhlLfnR67yHeMnODWtaOEcwh6W5e4bFk15kwBxaLV0LtXZNaLdaTVARqv9tE
+         oH1rSPZl4F7ZjijKE05cPOyUOcCE3o0K/guDu+UM=
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
@@ -33,9 +33,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
         Johannes Berg <johannes@sipsolutions.net>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [RFC net-next 21/28] wan: use ndo_siocdevprivate
-Date:   Fri,  6 Nov 2020 23:17:36 +0100
-Message-Id: <20201106221743.3271965-22-arnd@kernel.org>
+Subject: [RFC net-next 22/28] hamradio: use ndo_siocdevprivate
+Date:   Fri,  6 Nov 2020 23:17:37 +0100
+Message-Id: <20201106221743.3271965-23-arnd@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201106221743.3271965-1-arnd@kernel.org>
 References: <20201106221743.3271965-1-arnd@kernel.org>
@@ -47,584 +47,511 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The wan drivers each support some custom SIOCDEVPRIVATE
-ioctls, plus the common SIOCWANDEV command.
+hamradio uses a set of private ioctls that do seem to work
+correctly in compat mode, as they only rely on the ifr_data
+pointer.
 
-Split these so the ioctl callback only deals with SIOCWANDEV
-and the rest is handled by ndo_siocdevprivate.
-
-It might make sense to also split out SIOCWANDEV into a
-separate callback in order to eventually remove ndo_do_ioctl
-entirely.
+Move them over to the ndo_siocdevprivate callback as a cleanup.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/wan/c101.c         | 20 +++++++++++++-----
- drivers/net/wan/dlci.c         |  7 ++++---
- drivers/net/wan/farsync.c      | 38 ++++++++++++++++++++++++++--------
- drivers/net/wan/hdlc_fr.c      |  3 +++
- drivers/net/wan/lmc/lmc_main.c | 38 ++++++++++++++++++++--------------
- drivers/net/wan/n2.c           | 18 ++++++++++------
- drivers/net/wan/pc300too.c     | 19 ++++++++++-------
- drivers/net/wan/pci200syn.c    | 19 ++++++++++-------
- drivers/net/wan/sbni.c         | 12 +++++------
- drivers/net/wan/sdla.c         |  8 +++----
- 10 files changed, 120 insertions(+), 62 deletions(-)
+ drivers/net/hamradio/baycom_epp.c     |  9 +++++----
+ drivers/net/hamradio/baycom_par.c     | 12 ++++++------
+ drivers/net/hamradio/baycom_ser_fdx.c | 12 ++++++------
+ drivers/net/hamradio/baycom_ser_hdx.c | 12 ++++++------
+ drivers/net/hamradio/bpqether.c       |  9 +++++----
+ drivers/net/hamradio/dmascc.c         | 17 +++++++----------
+ drivers/net/hamradio/hdlcdrv.c        | 20 +++++++++++---------
+ drivers/net/hamradio/scc.c            | 13 ++++++++-----
+ drivers/net/hamradio/yam.c            | 13 ++++++-------
+ include/linux/hdlcdrv.h               |  2 +-
+ 10 files changed, 61 insertions(+), 58 deletions(-)
 
-diff --git a/drivers/net/wan/c101.c b/drivers/net/wan/c101.c
-index c354a5143e99..9821ead5df8a 100644
---- a/drivers/net/wan/c101.c
-+++ b/drivers/net/wan/c101.c
-@@ -219,14 +219,12 @@ static int c101_close(struct net_device *dev)
- }
+diff --git a/drivers/net/hamradio/baycom_epp.c b/drivers/net/hamradio/baycom_epp.c
+index e4e4981ac1d2..bc045f358128 100644
+--- a/drivers/net/hamradio/baycom_epp.c
++++ b/drivers/net/hamradio/baycom_epp.c
+@@ -1005,7 +1005,8 @@ static int baycom_setmode(struct baycom_state *bc, const char *modestr)
  
+ /* --------------------------------------------------------------------- */
  
--static int c101_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+static int c101_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
-+			       void __user *data, int cmd)
- {
--	const size_t size = sizeof(sync_serial_settings);
--	sync_serial_settings new_line;
--	sync_serial_settings __user *line = ifr->ifr_settings.ifs_ifsu.sync;
-+#ifdef DEBUG_RINGS
- 	port_t *port = dev_to_port(dev);
- 
--#ifdef DEBUG_RINGS
- 	if (cmd == SIOCDEVPRIVATE) {
- 		sca_dump_rings(dev);
- 		printk(KERN_DEBUG "MSCI1: ST: %02x %02x %02x %02x\n",
-@@ -237,6 +235,17 @@ static int c101_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 		return 0;
- 	}
- #endif
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+static int c101_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+{
-+	const size_t size = sizeof(sync_serial_settings);
-+	sync_serial_settings new_line;
-+	sync_serial_settings __user *line = ifr->ifr_settings.ifs_ifsu.sync;
-+	port_t *port = dev_to_port(dev);
-+
- 	if (cmd != SIOCWANDEV)
- 		return hdlc_ioctl(dev, ifr, cmd);
- 
-@@ -300,6 +309,7 @@ static const struct net_device_ops c101_ops = {
- 	.ndo_stop       = c101_close,
- 	.ndo_start_xmit = hdlc_start_xmit,
- 	.ndo_do_ioctl   = c101_ioctl,
-+	.ndo_siocdevprivate = c101_siocdevprivate,
- };
- 
- static int __init c101_run(unsigned long irq, unsigned long winbase)
-diff --git a/drivers/net/wan/dlci.c b/drivers/net/wan/dlci.c
-index 3ca4daf63389..057bf9080536 100644
---- a/drivers/net/wan/dlci.c
-+++ b/drivers/net/wan/dlci.c
-@@ -229,7 +229,8 @@ static int dlci_config(struct net_device *dev, struct dlci_conf __user *conf, in
- 	return 0;
- }
- 
--static int dlci_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+static int dlci_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
-+			       void __user *data, int cmd)
- {
- 	struct dlci_local *dlp;
- 
-@@ -252,7 +253,7 @@ static int dlci_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 			if (!*(short *)(dev->dev_addr))
- 				return -EINVAL;
- 
--			return dlci_config(dev, ifr->ifr_data, cmd == DLCI_GET_CONF);
-+			return dlci_config(dev, data, cmd == DLCI_GET_CONF);
- 
- 		default: 
- 			return -EOPNOTSUPP;
-@@ -458,7 +459,7 @@ static const struct header_ops dlci_header_ops = {
- static const struct net_device_ops dlci_netdev_ops = {
- 	.ndo_open	= dlci_open,
- 	.ndo_stop	= dlci_close,
--	.ndo_do_ioctl	= dlci_dev_ioctl,
-+	.ndo_siocdevprivate = dlci_siocdevprivate,
- 	.ndo_start_xmit	= dlci_transmit,
- 	.ndo_change_mtu	= dlci_change_mtu,
- };
-diff --git a/drivers/net/wan/farsync.c b/drivers/net/wan/farsync.c
-index b50cf11d197d..1ee0245bf30a 100644
---- a/drivers/net/wan/farsync.c
-+++ b/drivers/net/wan/farsync.c
-@@ -1975,7 +1975,7 @@ fst_get_iface(struct fst_card_info *card, struct fst_port_info *port,
- }
- 
- static int
--fst_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+fst_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __user *data, int cmd)
- {
- 	struct fst_card_info *card;
- 	struct fst_port_info *port;
-@@ -1984,7 +1984,7 @@ fst_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	unsigned long flags;
- 	void *buf;
- 
--	dbg(DBG_IOCTL, "ioctl: %x, %p\n", cmd, ifr->ifr_data);
-+	dbg(DBG_IOCTL, "ioctl: %x, %p\n", cmd, data);
- 
- 	port = dev_to_port(dev);
- 	card = port->card;
-@@ -2008,10 +2008,10 @@ fst_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 		/* First copy in the header with the length and offset of data
- 		 * to write
- 		 */
--		if (ifr->ifr_data == NULL) {
-+		if (data == NULL) {
- 			return -EINVAL;
- 		}
--		if (copy_from_user(&wrthdr, ifr->ifr_data,
-+		if (copy_from_user(&wrthdr, data,
- 				   sizeof (struct fstioc_write))) {
- 			return -EFAULT;
- 		}
-@@ -2026,7 +2026,7 @@ fst_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 
- 		/* Now copy the data to the card. */
- 
--		buf = memdup_user(ifr->ifr_data + sizeof(struct fstioc_write),
-+		buf = memdup_user(data + sizeof(struct fstioc_write),
- 				  wrthdr.size);
- 		if (IS_ERR(buf))
- 			return PTR_ERR(buf);
-@@ -2059,13 +2059,13 @@ fst_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 			}
- 		}
- 
--		if (ifr->ifr_data == NULL) {
-+		if (data == NULL) {
- 			return -EINVAL;
- 		}
- 
- 		gather_conf_info(card, port, &info);
- 
--		if (copy_to_user(ifr->ifr_data, &info, sizeof (info))) {
-+		if (copy_to_user(data, &info, sizeof (info))) {
- 			return -EFAULT;
- 		}
- 		return 0;
-@@ -2082,12 +2082,31 @@ fst_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 			       card->card_no, card->state);
- 			return -EIO;
- 		}
--		if (copy_from_user(&info, ifr->ifr_data, sizeof (info))) {
-+		if (copy_from_user(&info, data, sizeof (info))) {
- 			return -EFAULT;
- 		}
- 
- 		return set_conf_from_info(card, port, &info);
-+	default:
-+		return -EINVAL;
-+	}
-+}
- 
-+static int
-+fst_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+{
-+	struct fst_card_info *card;
-+	struct fst_port_info *port;
-+
-+	dbg(DBG_IOCTL, "ioctl: %x, %x\n", cmd, ifr->ifr_settings.type);
-+
-+	port = dev_to_port(dev);
-+	card = port->card;
-+
-+	if (!capable(CAP_NET_ADMIN))
-+		return -EPERM;
-+
-+	switch (cmd) {
- 	case SIOCWANDEV:
- 		switch (ifr->ifr_settings.type) {
- 		case IF_GET_IFACE:
-@@ -2389,7 +2408,8 @@ static const struct net_device_ops fst_ops = {
- 	.ndo_open       = fst_open,
- 	.ndo_stop       = fst_close,
- 	.ndo_start_xmit = hdlc_start_xmit,
--	.ndo_do_ioctl   = fst_ioctl,
-+	.ndo_do_ioctl	= fst_ioctl,
-+	.ndo_siocdevprivate = fst_siocdevprivate,
- 	.ndo_tx_timeout = fst_tx_timeout,
- };
- 
-diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
-index 409e5a7ad8e2..018f608e01d6 100644
---- a/drivers/net/wan/hdlc_fr.c
-+++ b/drivers/net/wan/hdlc_fr.c
-@@ -380,6 +380,9 @@ static int pvc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	struct pvc_device *pvc = dev->ml_priv;
- 	fr_proto_pvc_info info;
- 
-+	if (cmd != SIOCWANDEV)
-+		return -EOPNOTSUPP;
-+
- 	if (ifr->ifr_settings.type == IF_GET_PROTO) {
- 		if (dev->type == ARPHRD_ETHER)
- 			ifr->ifr_settings.type = IF_PROTO_FR_ETH_PVC;
-diff --git a/drivers/net/wan/lmc/lmc_main.c b/drivers/net/wan/lmc/lmc_main.c
-index 36600b0a0ab0..76fcc4bd39c8 100644
---- a/drivers/net/wan/lmc/lmc_main.c
-+++ b/drivers/net/wan/lmc/lmc_main.c
-@@ -105,7 +105,8 @@ static void lmc_driver_timeout(struct net_device *dev, unsigned int txqueue);
-  * linux reserves 16 device specific IOCTLs.  We call them
-  * LMCIOC* to control various bits of our world.
-  */
--int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
-+static int lmc_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
-+			void __user *data, int cmd) /*fold00*/
- {
-     lmc_softc_t *sc = dev_to_sc(dev);
-     lmc_ctl_t ctl;
-@@ -124,7 +125,7 @@ int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
-          * To date internally, just copy this out to the user.
-          */
-     case LMCIOCGINFO: /*fold01*/
--	if (copy_to_user(ifr->ifr_data, &sc->ictl, sizeof(lmc_ctl_t)))
-+	if (copy_to_user(data, &sc->ictl, sizeof(lmc_ctl_t)))
- 		ret = -EFAULT;
- 	else
- 		ret = 0;
-@@ -141,7 +142,7 @@ int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
-             break;
-         }
- 
--	if (copy_from_user(&ctl, ifr->ifr_data, sizeof(lmc_ctl_t))) {
-+	if (copy_from_user(&ctl, data, sizeof(lmc_ctl_t))) {
- 		ret = -EFAULT;
- 		break;
- 	}
-@@ -171,7 +172,7 @@ int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
- 		break;
- 	    }
- 
--	    if (copy_from_user(&new_type, ifr->ifr_data, sizeof(u16))) {
-+	    if (copy_from_user(&new_type, data, sizeof(u16))) {
- 		ret = -EFAULT;
- 		break;
- 	    }
-@@ -211,7 +212,7 @@ int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
- 
-         sc->lmc_xinfo.Magic1 = 0xDEADBEEF;
- 
--        if (copy_to_user(ifr->ifr_data, &sc->lmc_xinfo,
-+        if (copy_to_user(data, &sc->lmc_xinfo,
- 			 sizeof(struct lmc_xinfo)))
- 		ret = -EFAULT;
- 	else
-@@ -245,9 +246,9 @@ int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
- 			    regVal & T1FRAMER_SEF_MASK;
- 	    }
- 	    spin_unlock_irqrestore(&sc->lmc_lock, flags);
--	    if (copy_to_user(ifr->ifr_data, &sc->lmc_device->stats,
-+	    if (copy_to_user(data, &sc->lmc_device->stats,
- 			     sizeof(sc->lmc_device->stats)) ||
--		copy_to_user(ifr->ifr_data + sizeof(sc->lmc_device->stats),
-+		copy_to_user(data + sizeof(sc->lmc_device->stats),
- 			     &sc->extra_stats, sizeof(sc->extra_stats)))
- 		    ret = -EFAULT;
- 	    else
-@@ -282,7 +283,7 @@ int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
-             break;
-         }
- 
--	if (copy_from_user(&ctl, ifr->ifr_data, sizeof(lmc_ctl_t))) {
-+	if (copy_from_user(&ctl, data, sizeof(lmc_ctl_t))) {
- 		ret = -EFAULT;
- 		break;
- 	}
-@@ -314,11 +315,11 @@ int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
- 
- #ifdef DEBUG
-     case LMCIOCDUMPEVENTLOG:
--	if (copy_to_user(ifr->ifr_data, &lmcEventLogIndex, sizeof(u32))) {
-+	if (copy_to_user(data, &lmcEventLogIndex, sizeof(u32))) {
- 		ret = -EFAULT;
- 		break;
- 	}
--	if (copy_to_user(ifr->ifr_data + sizeof(u32), lmcEventLogBuf,
-+	if (copy_to_user(data + sizeof(u32), lmcEventLogBuf,
- 			 sizeof(lmcEventLogBuf)))
- 		ret = -EFAULT;
- 	else
-@@ -346,7 +347,7 @@ int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
-              */
-             netif_stop_queue(dev);
- 
--	    if (copy_from_user(&xc, ifr->ifr_data, sizeof(struct lmc_xilinx_control))) {
-+	    if (copy_from_user(&xc, data, sizeof(struct lmc_xilinx_control))) {
- 		ret = -EFAULT;
- 		break;
- 	    }
-@@ -611,15 +612,21 @@ int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd) /*fold00*/
- 
-         }
-         break;
--    default: /*fold01*/
--        /* If we don't know what to do, give the protocol a shot. */
--        ret = lmc_proto_ioctl (sc, ifr, cmd);
--        break;
-+    default:
-+	break;
-     }
- 
-     return ret;
- }
- 
-+int lmc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+{
-+	if (cmd != SIOCWANDEV)
-+		return -EOPNOTSUPP;
-+
-+	return lmc_proto_ioctl(dev_to_sc(dev), ifr, cmd);
-+}
-+
- 
- /* the watchdog process that cruises around */
- static void lmc_watchdog(struct timer_list *t) /*fold00*/
-@@ -791,6 +798,7 @@ static const struct net_device_ops lmc_ops = {
- 	.ndo_stop       = lmc_close,
- 	.ndo_start_xmit = hdlc_start_xmit,
- 	.ndo_do_ioctl   = lmc_ioctl,
-+	.ndo_siocdevprivate = lmc_siocdevprivate,
- 	.ndo_tx_timeout = lmc_driver_timeout,
- 	.ndo_get_stats  = lmc_get_stats,
- };
-diff --git a/drivers/net/wan/n2.c b/drivers/net/wan/n2.c
-index 5bf4463873b1..c203c4fb29a6 100644
---- a/drivers/net/wan/n2.c
-+++ b/drivers/net/wan/n2.c
-@@ -242,6 +242,17 @@ static int n2_close(struct net_device *dev)
- }
- 
- 
-+static int n2_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
-+			     void __user *data, int cmd)
-+{
-+#ifdef DEBUG_RINGS
-+	if (cmd == SIOCDEVPRIVATE) {
-+		sca_dump_rings(dev);
-+		return 0;
-+	}
-+#endif
-+	return -EOPNOTSUPP;
-+}
- 
- static int n2_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- {
-@@ -250,12 +261,6 @@ static int n2_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	sync_serial_settings __user *line = ifr->ifr_settings.ifs_ifsu.sync;
- 	port_t *port = dev_to_port(dev);
- 
--#ifdef DEBUG_RINGS
--	if (cmd == SIOCDEVPRIVATE) {
--		sca_dump_rings(dev);
--		return 0;
--	}
--#endif
- 	if (cmd != SIOCWANDEV)
- 		return hdlc_ioctl(dev, ifr, cmd);
- 
-@@ -329,6 +334,7 @@ static const struct net_device_ops n2_ops = {
- 	.ndo_stop       = n2_close,
- 	.ndo_start_xmit = hdlc_start_xmit,
- 	.ndo_do_ioctl   = n2_ioctl,
-+	.ndo_siocdevprivate = n2_siocdevprivate,
- };
- 
- static int __init n2_run(unsigned long io, unsigned long irq,
-diff --git a/drivers/net/wan/pc300too.c b/drivers/net/wan/pc300too.c
-index 001fd378d417..17073ed3456c 100644
---- a/drivers/net/wan/pc300too.c
-+++ b/drivers/net/wan/pc300too.c
-@@ -186,7 +186,17 @@ static int pc300_close(struct net_device *dev)
- 	return 0;
- }
- 
--
-+static int pc300_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
-+				void __user *data, int cmd)
-+{
-+#ifdef DEBUG_RINGS
-+	if (cmd == SIOCDEVPRIVATE) {
-+		sca_dump_rings(dev);
-+		return 0;
-+	}
-+#endif
-+	return -EOPNOTSUPP;
-+}
- 
- static int pc300_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- {
-@@ -196,12 +206,6 @@ static int pc300_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	int new_type;
- 	port_t *port = dev_to_port(dev);
- 
--#ifdef DEBUG_RINGS
--	if (cmd == SIOCDEVPRIVATE) {
--		sca_dump_rings(dev);
--		return 0;
--	}
--#endif
- 	if (cmd != SIOCWANDEV)
- 		return hdlc_ioctl(dev, ifr, cmd);
- 
-@@ -290,6 +294,7 @@ static const struct net_device_ops pc300_ops = {
- 	.ndo_stop       = pc300_close,
- 	.ndo_start_xmit = hdlc_start_xmit,
- 	.ndo_do_ioctl   = pc300_ioctl,
-+	.ndo_siocdevprivate = pc300_siocdevprivate,
- };
- 
- static int pc300_pci_init_one(struct pci_dev *pdev,
-diff --git a/drivers/net/wan/pci200syn.c b/drivers/net/wan/pci200syn.c
-index d0062224b216..489453c52d3a 100644
---- a/drivers/net/wan/pci200syn.c
-+++ b/drivers/net/wan/pci200syn.c
-@@ -177,7 +177,17 @@ static int pci200_close(struct net_device *dev)
- 	return 0;
- }
- 
--
-+static int pci200_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
+-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
++static int baycom_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 +				 void __user *data, int cmd)
-+{
-+#ifdef DEBUG_RINGS
-+	if (cmd == SIOCDEVPRIVATE) {
-+		sca_dump_rings(dev);
-+		return 0;
-+	}
-+#endif
-+	return -EOPNOTSUPP;
-+}
- 
- static int pci200_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
  {
-@@ -186,12 +196,6 @@ static int pci200_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	sync_serial_settings __user *line = ifr->ifr_settings.ifs_ifsu.sync;
- 	port_t *port = dev_to_port(dev);
+ 	struct baycom_state *bc = netdev_priv(dev);
+ 	struct hdlcdrv_ioctl hi;
+@@ -1013,7 +1014,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	if (cmd != SIOCDEVPRIVATE)
+ 		return -ENOIOCTLCMD;
  
--#ifdef DEBUG_RINGS
--	if (cmd == SIOCDEVPRIVATE) {
--		sca_dump_rings(dev);
--		return 0;
--	}
--#endif
- 	if (cmd != SIOCWANDEV)
- 		return hdlc_ioctl(dev, ifr, cmd);
+-	if (copy_from_user(&hi, ifr->ifr_data, sizeof(hi)))
++	if (copy_from_user(&hi, data, sizeof(hi)))
+ 		return -EFAULT;
+ 	switch (hi.cmd) {
+ 	default:
+@@ -1104,7 +1105,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 		return HDLCDRV_PARMASK_IOBASE;
  
-@@ -268,6 +272,7 @@ static const struct net_device_ops pci200_ops = {
- 	.ndo_stop       = pci200_close,
- 	.ndo_start_xmit = hdlc_start_xmit,
- 	.ndo_do_ioctl   = pci200_ioctl,
-+	.ndo_siocdevprivate = pci200_siocdevprivate,
- };
- 
- static int pci200_pci_init_one(struct pci_dev *pdev,
-diff --git a/drivers/net/wan/sbni.c b/drivers/net/wan/sbni.c
-index 2fde439543fb..f540578b1349 100644
---- a/drivers/net/wan/sbni.c
-+++ b/drivers/net/wan/sbni.c
-@@ -119,7 +119,7 @@ static int  sbni_open( struct net_device * );
- static int  sbni_close( struct net_device * );
- static netdev_tx_t sbni_start_xmit(struct sk_buff *,
- 					 struct net_device * );
--static int  sbni_ioctl( struct net_device *, struct ifreq *, int );
-+static int  sbni_siocdevprivate( struct net_device *, struct ifreq *, void __user *, int );
- static void  set_multicast_list( struct net_device * );
- 
- static irqreturn_t sbni_interrupt( int, void * );
-@@ -211,7 +211,7 @@ static const struct net_device_ops sbni_netdev_ops = {
- 	.ndo_stop		= sbni_close,
- 	.ndo_start_xmit		= sbni_start_xmit,
- 	.ndo_set_rx_mode	= set_multicast_list,
--	.ndo_do_ioctl		= sbni_ioctl,
-+	.ndo_siocdevprivate	= sbni_siocdevprivate,
- 	.ndo_set_mac_address 	= eth_mac_addr,
- 	.ndo_validate_addr	= eth_validate_addr,
- };
-@@ -1297,7 +1297,7 @@ sbni_card_probe( unsigned long  ioaddr )
- /* -------------------------------------------------------------------------- */
- 
- static int
--sbni_ioctl( struct net_device  *dev,  struct ifreq  *ifr,  int  cmd )
-+sbni_siocdevprivate( struct net_device  *dev,  struct ifreq  *ifr, void __user *data, int  cmd )
- {
- 	struct net_local  *nl = netdev_priv(dev);
- 	struct sbni_flags  flags;
-@@ -1310,7 +1310,7 @@ sbni_ioctl( struct net_device  *dev,  struct ifreq  *ifr,  int  cmd )
-   
- 	switch( cmd ) {
- 	case  SIOCDEVGETINSTATS :
--		if (copy_to_user( ifr->ifr_data, &nl->in_stats,
-+		if (copy_to_user(data, &nl->in_stats,
- 					sizeof(struct sbni_in_stats) ))
- 			error = -EFAULT;
- 		break;
-@@ -1328,7 +1328,7 @@ sbni_ioctl( struct net_device  *dev,  struct ifreq  *ifr,  int  cmd )
- 		flags.rxl	= nl->cur_rxl_index;
- 		flags.fixed_rxl	= nl->delta_rxl == 0;
- 
--		if (copy_to_user( ifr->ifr_data, &flags, sizeof flags ))
-+		if (copy_to_user(data, &flags, sizeof flags ))
- 			error = -EFAULT;
- 		break;
- 
-@@ -1358,7 +1358,7 @@ sbni_ioctl( struct net_device  *dev,  struct ifreq  *ifr,  int  cmd )
- 		if (!capable(CAP_NET_ADMIN))
- 			return  -EPERM;
- 
--		if (copy_from_user( slave_name, ifr->ifr_data, sizeof slave_name ))
-+		if (copy_from_user( slave_name, data, sizeof slave_name ))
- 			return -EFAULT;
- 		slave_dev = dev_get_by_name(&init_net, slave_name );
- 		if( !slave_dev  ||  !(slave_dev->flags & IFF_UP) ) {
-diff --git a/drivers/net/wan/sdla.c b/drivers/net/wan/sdla.c
-index bc2c1c7fb1a4..761e217e9954 100644
---- a/drivers/net/wan/sdla.c
-+++ b/drivers/net/wan/sdla.c
-@@ -1245,7 +1245,7 @@ static int sdla_reconfig(struct net_device *dev)
+ 	}
+-	if (copy_to_user(ifr->ifr_data, &hi, sizeof(hi)))
++	if (copy_to_user(data, &hi, sizeof(hi)))
+ 		return -EFAULT;
  	return 0;
  }
+@@ -1114,7 +1115,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ static const struct net_device_ops baycom_netdev_ops = {
+ 	.ndo_open	     = epp_open,
+ 	.ndo_stop	     = epp_close,
+-	.ndo_do_ioctl	     = baycom_ioctl,
++	.ndo_siocdevprivate  = baycom_siocdevprivate,
+ 	.ndo_start_xmit      = baycom_send_packet,
+ 	.ndo_set_mac_address = baycom_set_mac_address,
+ };
+diff --git a/drivers/net/hamradio/baycom_par.c b/drivers/net/hamradio/baycom_par.c
+index 6a3dc7b3f28a..fd7da5bb1fa5 100644
+--- a/drivers/net/hamradio/baycom_par.c
++++ b/drivers/net/hamradio/baycom_par.c
+@@ -380,7 +380,7 @@ static int par96_close(struct net_device *dev)
+  * ===================== hdlcdrv driver interface =========================
+  */
  
--static int sdla_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+static int sdla_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __user *data, int cmd)
+-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
++static int baycom_ioctl(struct net_device *dev, void __user *data,
+ 			struct hdlcdrv_ioctl *hi, int cmd);
+ 
+ /* --------------------------------------------------------------------- */
+@@ -408,7 +408,7 @@ static int baycom_setmode(struct baycom_state *bc, const char *modestr)
+ 
+ /* --------------------------------------------------------------------- */
+ 
+-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
++static int baycom_ioctl(struct net_device *dev, void __user *data,
+ 			struct hdlcdrv_ioctl *hi, int cmd)
  {
- 	struct frad_local *flp;
+ 	struct baycom_state *bc;
+@@ -428,7 +428,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
  
-@@ -1261,7 +1261,7 @@ static int sdla_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	case HDLCDRVCTL_GETMODE:
+ 		strcpy(hi->data.modename, bc->options ? "par96" : "picpar");
+-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
++		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
+ 			return -EFAULT;
+ 		return 0;
+ 
+@@ -440,7 +440,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
+ 
+ 	case HDLCDRVCTL_MODELIST:
+ 		strcpy(hi->data.modename, "par96,picpar");
+-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
++		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
+ 			return -EFAULT;
+ 		return 0;
+ 
+@@ -449,7 +449,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
+ 
+ 	}
+ 
+-	if (copy_from_user(&bi, ifr->ifr_data, sizeof(bi)))
++	if (copy_from_user(&bi, data, sizeof(bi)))
+ 		return -EFAULT;
+ 	switch (bi.cmd) {
+ 	default:
+@@ -464,7 +464,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
+ #endif /* BAYCOM_DEBUG */
+ 
+ 	}
+-	if (copy_to_user(ifr->ifr_data, &bi, sizeof(bi)))
++	if (copy_to_user(data, &bi, sizeof(bi)))
+ 		return -EFAULT;
+ 	return 0;
+ 
+diff --git a/drivers/net/hamradio/baycom_ser_fdx.c b/drivers/net/hamradio/baycom_ser_fdx.c
+index 04bb409707fc..646f605e358f 100644
+--- a/drivers/net/hamradio/baycom_ser_fdx.c
++++ b/drivers/net/hamradio/baycom_ser_fdx.c
+@@ -462,7 +462,7 @@ static int ser12_close(struct net_device *dev)
+ 
+ /* --------------------------------------------------------------------- */
+ 
+-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
++static int baycom_ioctl(struct net_device *dev, void __user *data,
+ 			struct hdlcdrv_ioctl *hi, int cmd);
+ 
+ /* --------------------------------------------------------------------- */
+@@ -497,7 +497,7 @@ static int baycom_setmode(struct baycom_state *bc, const char *modestr)
+ 
+ /* --------------------------------------------------------------------- */
+ 
+-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
++static int baycom_ioctl(struct net_device *dev, void __user *data,
+ 			struct hdlcdrv_ioctl *hi, int cmd)
+ {
+ 	struct baycom_state *bc;
+@@ -519,7 +519,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
+ 		sprintf(hi->data.modename, "ser%u", bc->baud / 100);
+ 		if (bc->opt_dcd <= 0)
+ 			strcat(hi->data.modename, (!bc->opt_dcd) ? "*" : "+");
+-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
++		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
+ 			return -EFAULT;
+ 		return 0;
+ 
+@@ -531,7 +531,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
+ 
+ 	case HDLCDRVCTL_MODELIST:
+ 		strcpy(hi->data.modename, "ser12,ser3,ser24");
+-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
++		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
+ 			return -EFAULT;
+ 		return 0;
+ 
+@@ -540,7 +540,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
+ 
+ 	}
+ 
+-	if (copy_from_user(&bi, ifr->ifr_data, sizeof(bi)))
++	if (copy_from_user(&bi, data, sizeof(bi)))
+ 		return -EFAULT;
+ 	switch (bi.cmd) {
+ 	default:
+@@ -555,7 +555,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
+ #endif /* BAYCOM_DEBUG */
+ 
+ 	}
+-	if (copy_to_user(ifr->ifr_data, &bi, sizeof(bi)))
++	if (copy_to_user(data, &bi, sizeof(bi)))
+ 		return -EFAULT;
+ 	return 0;
+ 
+diff --git a/drivers/net/hamradio/baycom_ser_hdx.c b/drivers/net/hamradio/baycom_ser_hdx.c
+index a1acb3a47bdb..5d1ab4840753 100644
+--- a/drivers/net/hamradio/baycom_ser_hdx.c
++++ b/drivers/net/hamradio/baycom_ser_hdx.c
+@@ -521,7 +521,7 @@ static int ser12_close(struct net_device *dev)
+ 
+ /* --------------------------------------------------------------------- */
+ 
+-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
++static int baycom_ioctl(struct net_device *dev, void __user *data,
+ 			struct hdlcdrv_ioctl *hi, int cmd);
+ 
+ /* --------------------------------------------------------------------- */
+@@ -551,7 +551,7 @@ static int baycom_setmode(struct baycom_state *bc, const char *modestr)
+ 
+ /* --------------------------------------------------------------------- */
+ 
+-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
++static int baycom_ioctl(struct net_device *dev, void __user *data,
+ 			struct hdlcdrv_ioctl *hi, int cmd)
+ {
+ 	struct baycom_state *bc;
+@@ -573,7 +573,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
+ 		strcpy(hi->data.modename, "ser12");
+ 		if (bc->opt_dcd <= 0)
+ 			strcat(hi->data.modename, (!bc->opt_dcd) ? "*" : (bc->opt_dcd == -2) ? "@" : "+");
+-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
++		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
+ 			return -EFAULT;
+ 		return 0;
+ 
+@@ -585,7 +585,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
+ 
+ 	case HDLCDRVCTL_MODELIST:
+ 		strcpy(hi->data.modename, "ser12");
+-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
++		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
+ 			return -EFAULT;
+ 		return 0;
+ 
+@@ -594,7 +594,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
+ 
+ 	}
+ 
+-	if (copy_from_user(&bi, ifr->ifr_data, sizeof(bi)))
++	if (copy_from_user(&bi, data, sizeof(bi)))
+ 		return -EFAULT;
+ 	switch (bi.cmd) {
+ 	default:
+@@ -609,7 +609,7 @@ static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
+ #endif /* BAYCOM_DEBUG */
+ 
+ 	}
+-	if (copy_to_user(ifr->ifr_data, &bi, sizeof(bi)))
++	if (copy_to_user(data, &bi, sizeof(bi)))
+ 		return -EFAULT;
+ 	return 0;
+ 
+diff --git a/drivers/net/hamradio/bpqether.c b/drivers/net/hamradio/bpqether.c
+index 1ad6085994b1..d648e2fb5ae3 100644
+--- a/drivers/net/hamradio/bpqether.c
++++ b/drivers/net/hamradio/bpqether.c
+@@ -314,9 +314,10 @@ static int bpq_set_mac_address(struct net_device *dev, void *addr)
+  *					source ethernet address (broadcast
+  *					or multicast: accept all)
+  */
+-static int bpq_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
++static int bpq_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
++			      void __user *data, int cmd)
+ {
+-	struct bpq_ethaddr __user *ethaddr = ifr->ifr_data;
++	struct bpq_ethaddr __user *ethaddr = data;
+ 	struct bpqdev *bpq = netdev_priv(dev);
+ 	struct bpq_req req;
+ 
+@@ -325,7 +326,7 @@ static int bpq_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 
+ 	switch (cmd) {
+ 		case SIOCSBPQETHOPT:
+-			if (copy_from_user(&req, ifr->ifr_data, sizeof(struct bpq_req)))
++			if (copy_from_user(&req, data, sizeof(struct bpq_req)))
+ 				return -EFAULT;
+ 			switch (req.cmd) {
+ 				case SIOCGBPQETHPARAM:
+@@ -448,7 +449,7 @@ static const struct net_device_ops bpq_netdev_ops = {
+ 	.ndo_stop	     = bpq_close,
+ 	.ndo_start_xmit	     = bpq_xmit,
+ 	.ndo_set_mac_address = bpq_set_mac_address,
+-	.ndo_do_ioctl	     = bpq_ioctl,
++	.ndo_siocdevprivate  = bpq_siocdevprivate,
+ };
+ 
+ static void bpq_setup(struct net_device *dev)
+diff --git a/drivers/net/hamradio/dmascc.c b/drivers/net/hamradio/dmascc.c
+index c25c8c99c5c7..5227db7a757e 100644
+--- a/drivers/net/hamradio/dmascc.c
++++ b/drivers/net/hamradio/dmascc.c
+@@ -225,7 +225,7 @@ static int read_scc_data(struct scc_priv *priv);
+ 
+ static int scc_open(struct net_device *dev);
+ static int scc_close(struct net_device *dev);
+-static int scc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
++static int scc_siocdevprivate(struct net_device *dev, struct ifreq *ifr, int cmd);
+ static int scc_send_packet(struct sk_buff *skb, struct net_device *dev);
+ static int scc_set_mac_address(struct net_device *dev, void *sa);
+ 
+@@ -432,7 +432,7 @@ static const struct net_device_ops scc_netdev_ops = {
+ 	.ndo_open = scc_open,
+ 	.ndo_stop = scc_close,
+ 	.ndo_start_xmit = scc_send_packet,
+-	.ndo_do_ioctl = scc_ioctl,
++	.ndo_siocdevprivate = scc_siocdevprivate,
+ 	.ndo_set_mac_address = scc_set_mac_address,
+ };
+ 
+@@ -881,15 +881,13 @@ static int scc_close(struct net_device *dev)
+ }
+ 
+ 
+-static int scc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
++static int scc_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __user *data, int cmd)
+ {
+ 	struct scc_priv *priv = dev->ml_priv;
+ 
+ 	switch (cmd) {
+ 	case SIOCGSCCPARAM:
+-		if (copy_to_user
+-		    (ifr->ifr_data, &priv->param,
+-		     sizeof(struct scc_param)))
++		if (copy_to_user(data, &priv->param, sizeof(struct scc_param)))
+ 			return -EFAULT;
+ 		return 0;
+ 	case SIOCSSCCPARAM:
+@@ -897,13 +895,12 @@ static int scc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 			return -EPERM;
+ 		if (netif_running(dev))
+ 			return -EAGAIN;
+-		if (copy_from_user
+-		    (&priv->param, ifr->ifr_data,
+-		     sizeof(struct scc_param)))
++		if (copy_from_user(&priv->param, data,
++				   sizeof(struct scc_param)))
+ 			return -EFAULT;
+ 		return 0;
+ 	default:
+-		return -EINVAL;
++		return -EOPNOTSUPP;
+ 	}
+ }
+ 
+diff --git a/drivers/net/hamradio/hdlcdrv.c b/drivers/net/hamradio/hdlcdrv.c
+index e7413a643929..0311980f9d5f 100644
+--- a/drivers/net/hamradio/hdlcdrv.c
++++ b/drivers/net/hamradio/hdlcdrv.c
+@@ -483,23 +483,25 @@ static int hdlcdrv_close(struct net_device *dev)
+ 
+ /* --------------------------------------------------------------------- */
+ 
+-static int hdlcdrv_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
++static int hdlcdrv_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
++				  void __user *data, int cmd)
+ {
+ 	struct hdlcdrv_state *s = netdev_priv(dev);
+ 	struct hdlcdrv_ioctl bi;
+ 
+-	if (cmd != SIOCDEVPRIVATE) {
+-		if (s->ops && s->ops->ioctl)
+-			return s->ops->ioctl(dev, ifr, &bi, cmd);
++	if (cmd != SIOCDEVPRIVATE)
+ 		return -ENOIOCTLCMD;
+-	}
+-	if (copy_from_user(&bi, ifr->ifr_data, sizeof(bi)))
++
++	if (in_compat_syscall()) /* to be implemented */
++		return -ENOIOCTLCMD;
++
++	if (copy_from_user(&bi, data, sizeof(bi)))
+ 		return -EFAULT;
+ 
+ 	switch (bi.cmd) {
+ 	default:
+ 		if (s->ops && s->ops->ioctl)
+-			return s->ops->ioctl(dev, ifr, &bi, cmd);
++			return s->ops->ioctl(dev, data, &bi, cmd);
+ 		return -ENOIOCTLCMD;
+ 
+ 	case HDLCDRVCTL_GETCHANNELPAR:
+@@ -605,7 +607,7 @@ static int hdlcdrv_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 		break;
+ 		
+ 	}
+-	if (copy_to_user(ifr->ifr_data, &bi, sizeof(bi)))
++	if (copy_to_user(data, &bi, sizeof(bi)))
+ 		return -EFAULT;
+ 	return 0;
+ 
+@@ -617,7 +619,7 @@ static const struct net_device_ops hdlcdrv_netdev = {
+ 	.ndo_open	= hdlcdrv_open,
+ 	.ndo_stop	= hdlcdrv_close,
+ 	.ndo_start_xmit = hdlcdrv_send_packet,
+-	.ndo_do_ioctl	= hdlcdrv_ioctl,
++	.ndo_siocdevprivate  = hdlcdrv_siocdevprivate,
+ 	.ndo_set_mac_address = hdlcdrv_set_mac_address,
+ };
+ 
+diff --git a/drivers/net/hamradio/scc.c b/drivers/net/hamradio/scc.c
+index 36eeb80406f2..abc086de2af4 100644
+--- a/drivers/net/hamradio/scc.c
++++ b/drivers/net/hamradio/scc.c
+@@ -210,7 +210,8 @@ static int scc_net_close(struct net_device *dev);
+ static void scc_net_rx(struct scc_channel *scc, struct sk_buff *skb);
+ static netdev_tx_t scc_net_tx(struct sk_buff *skb,
+ 			      struct net_device *dev);
+-static int scc_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
++static int scc_net_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
++				  void __user *data, int cmd);
+ static int scc_net_set_mac_address(struct net_device *dev, void *addr);
+ static struct net_device_stats * scc_net_get_stats(struct net_device *dev);
+ 
+@@ -1550,7 +1551,7 @@ static const struct net_device_ops scc_netdev_ops = {
+ 	.ndo_start_xmit	     = scc_net_tx,
+ 	.ndo_set_mac_address = scc_net_set_mac_address,
+ 	.ndo_get_stats       = scc_net_get_stats,
+-	.ndo_do_ioctl        = scc_net_ioctl,
++	.ndo_siocdevprivate  = scc_net_siocdevprivate,
+ };
+ 
+ /* ----> Initialize device <----- */
+@@ -1703,7 +1704,8 @@ static netdev_tx_t scc_net_tx(struct sk_buff *skb, struct net_device *dev)
+  * SIOCSCCCAL		- send calib. pattern	arg: (struct scc_calibrate *) arg
+  */
+ 
+-static int scc_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
++static int scc_net_siocdevprivate(struct net_device *dev,
++				  struct ifreq *ifr, void __user *arg, int cmd)
+ {
+ 	struct scc_kiss_cmd kiss_cmd;
+ 	struct scc_mem_config memcfg;
+@@ -1712,8 +1714,6 @@ static int scc_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	struct scc_channel *scc = (struct scc_channel *) dev->ml_priv;
+ 	int chan;
+ 	unsigned char device_name[IFNAMSIZ];
+-	void __user *arg = ifr->ifr_data;
+-	
+ 	
+ 	if (!Driver_Initialized)
  	{
- 		case FRAD_GET_CONF:
- 		case FRAD_SET_CONF:
--			return sdla_config(dev, ifr->ifr_data, cmd == FRAD_GET_CONF);
-+			return sdla_config(dev, data, cmd == FRAD_GET_CONF);
+@@ -1722,6 +1722,9 @@ static int scc_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 			int found = 1;
  
- 		case SDLA_IDENTIFY:
- 			ifr->ifr_flags = flp->type;
-@@ -1298,7 +1298,7 @@ NOTE:  This is rather a useless action right now, as the
- 		case SDLA_READMEM:
- 			if(!capable(CAP_SYS_RAWIO))
- 				return -EPERM;
--			return sdla_xfer(dev, ifr->ifr_data, cmd == SDLA_READMEM);
-+			return sdla_xfer(dev, data, cmd == SDLA_READMEM);
+ 			if (!capable(CAP_SYS_RAWIO)) return -EPERM;
++			if (in_compat_syscall())
++				return -EOPNOTSUPP;
++
+ 			if (!arg) return -EFAULT;
  
- 		case SDLA_START:
- 			sdla_start(dev);
-@@ -1586,7 +1586,7 @@ static int sdla_set_config(struct net_device *dev, struct ifmap *map)
- static const struct net_device_ops sdla_netdev_ops = {
- 	.ndo_open	= sdla_open,
- 	.ndo_stop	= sdla_close,
--	.ndo_do_ioctl	= sdla_ioctl,
-+	.ndo_siocdevprivate = sdla_siocdevprivate,
- 	.ndo_set_config	= sdla_set_config,
- 	.ndo_start_xmit	= sdla_transmit,
- 	.ndo_change_mtu	= sdla_change_mtu,
+ 			if (Nchips >= SCC_MAXCHIPS) 
+diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
+index 5ab53e9942f3..fa86ceaa28db 100644
+--- a/drivers/net/hamradio/yam.c
++++ b/drivers/net/hamradio/yam.c
+@@ -920,14 +920,14 @@ static int yam_close(struct net_device *dev)
+ 
+ /* --------------------------------------------------------------------- */
+ 
+-static int yam_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
++static int yam_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __user *data, int cmd)
+ {
+ 	struct yam_port *yp = netdev_priv(dev);
+ 	struct yamdrv_ioctl_cfg yi;
+ 	struct yamdrv_ioctl_mcs *ym;
+ 	int ioctl_cmd;
+ 
+-	if (copy_from_user(&ioctl_cmd, ifr->ifr_data, sizeof(int)))
++	if (copy_from_user(&ioctl_cmd, data, sizeof(int)))
+ 		 return -EFAULT;
+ 
+ 	if (yp->magic != YAM_MAGIC)
+@@ -947,8 +947,7 @@ static int yam_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	case SIOCYAMSMCS:
+ 		if (netif_running(dev))
+ 			return -EINVAL;		/* Cannot change this parameter when up */
+-		ym = memdup_user(ifr->ifr_data,
+-				 sizeof(struct yamdrv_ioctl_mcs));
++		ym = memdup_user(data, sizeof(struct yamdrv_ioctl_mcs));
+ 		if (IS_ERR(ym))
+ 			return PTR_ERR(ym);
+ 		if (ym->cmd != SIOCYAMSMCS)
+@@ -965,7 +964,7 @@ static int yam_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	case SIOCYAMSCFG:
+ 		if (!capable(CAP_SYS_RAWIO))
+ 			return -EPERM;
+-		if (copy_from_user(&yi, ifr->ifr_data, sizeof(struct yamdrv_ioctl_cfg)))
++		if (copy_from_user(&yi, data, sizeof(struct yamdrv_ioctl_cfg)))
+ 			 return -EFAULT;
+ 
+ 		if (yi.cmd != SIOCYAMSCFG)
+@@ -1045,7 +1044,7 @@ static int yam_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 		yi.cfg.txtail = yp->txtail;
+ 		yi.cfg.persist = yp->pers;
+ 		yi.cfg.slottime = yp->slot;
+-		if (copy_to_user(ifr->ifr_data, &yi, sizeof(struct yamdrv_ioctl_cfg)))
++		if (copy_to_user(data, &yi, sizeof(struct yamdrv_ioctl_cfg)))
+ 			 return -EFAULT;
+ 		break;
+ 
+@@ -1074,7 +1073,7 @@ static const struct net_device_ops yam_netdev_ops = {
+ 	.ndo_open	     = yam_open,
+ 	.ndo_stop	     = yam_close,
+ 	.ndo_start_xmit      = yam_send_packet,
+-	.ndo_do_ioctl 	     = yam_ioctl,
++	.ndo_siocdevprivate  = yam_siocdevprivate,
+ 	.ndo_set_mac_address = yam_set_mac_address,
+ };
+ 
+diff --git a/include/linux/hdlcdrv.h b/include/linux/hdlcdrv.h
+index d4d633a49d36..5d70c3f98f5b 100644
+--- a/include/linux/hdlcdrv.h
++++ b/include/linux/hdlcdrv.h
+@@ -79,7 +79,7 @@ struct hdlcdrv_ops {
+ 	 */
+ 	int (*open)(struct net_device *);
+ 	int (*close)(struct net_device *);
+-	int (*ioctl)(struct net_device *, struct ifreq *, 
++	int (*ioctl)(struct net_device *, void __user *,
+ 		     struct hdlcdrv_ioctl *, int);
+ };
+ 
 -- 
 2.27.0
 
