@@ -2,85 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A8FE2A9271
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 10:24:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 597B32A9286
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 10:27:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726600AbgKFJYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 04:24:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52268 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726201AbgKFJYX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 04:24:23 -0500
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D20C0613CF
-        for <netdev@vger.kernel.org>; Fri,  6 Nov 2020 01:24:23 -0800 (PST)
-Received: by mail-qk1-x743.google.com with SMTP id x20so496871qkn.1
-        for <netdev@vger.kernel.org>; Fri, 06 Nov 2020 01:24:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rsUq3mjhDjY2VoujXVIXpG1O4aqIK/QbGWtOKJXDTVU=;
-        b=SYffHKY7io7q4FNHBDmlfjLZAKdsr5WeFLpP9WFvuvYk5wsRNJaGk90RwU80krCpal
-         ktTjElSGMJK/yr98Gjdrd55YRmqVvhWPmftqE1QacjhoKf8cUMhxXG/7OqWBbBfjGEbt
-         KfrcrFN4ZISSwvLFMNdLAm2IEarWyFRz2sMa2HApg1EXVdc5txAOPkFqLUaDBTplVIoo
-         sMV+lzOiihv8fVUwaEd9CjwUJKtUoAIe0TMqyxDdGPZGC+sjtwrlPFYf+TS6EbvfEOuA
-         c5BkM23lik4jj/5JsyFT4cJFv+y7XjiFG1QNlTSeFS63V3IXFc52o+RZ5K8VJ/n0Cevr
-         0+qQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rsUq3mjhDjY2VoujXVIXpG1O4aqIK/QbGWtOKJXDTVU=;
-        b=fqcFJEnj65HTOpvDR6NDVBGbRIFi/Ph4j75I6ZgXCuxJS6TWhAlxEN7IafwP7tGLag
-         LuDalhIpOhHpfIxsrjqWga1xoJDYeWmUVu2EPhmuygeR09qjc8yYOlcO3ua4lPdqfQqt
-         eEoaqUlVtb6PVy3asStBc1uW9pWfIB5WE7YDKE0/UEtpTWbrBp9+odPOYhM+jhk271s4
-         +xJaMCAY5/fHI2YzYgvJHnYrraXoC3eu355VxECiSxzB65SmZoStRbo2vgouWQ66xvZs
-         AAFB/XzvHeuHQotWQ//EUIftXRwQG6nlrhMtL0YCj221E8CfDQOshbnKQSz1Fm+6KO83
-         y93A==
-X-Gm-Message-State: AOAM531MnzmEJmyNiK6RgwUEM6iG6/APwgNKypRKqp53UDEa0n22IaFF
-        +hJ2Fxab9FXs5KrRvBtxtVxs57gYv96EJA==
-X-Google-Smtp-Source: ABdhPJwYTtCvtsF0k3gX7V6QegcfgSaSn0A9/rWe5qawsdwfg3nwfZIEIDoYj0UVq+k0OAAuakaH5w==
-X-Received: by 2002:a37:4f0b:: with SMTP id d11mr679453qkb.74.1604654662481;
-        Fri, 06 Nov 2020 01:24:22 -0800 (PST)
-Received: from localhost.localdomain ([177.220.172.74])
-        by smtp.gmail.com with ESMTPSA id a3sm243672qtp.63.2020.11.06.01.24.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Nov 2020 01:24:21 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 9BF70C1B80; Fri,  6 Nov 2020 06:24:19 -0300 (-03)
-Date:   Fri, 6 Nov 2020 06:24:19 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     wenxu@ucloud.cn
-Cc:     kuba@kernel.org, dcaratti@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 2/2] net/sched: act_frag: add implict packet
- fragment support.
-Message-ID: <20201106092419.GB3555@localhost.localdomain>
-References: <1604654056-24654-1-git-send-email-wenxu@ucloud.cn>
- <1604654056-24654-2-git-send-email-wenxu@ucloud.cn>
+        id S1726447AbgKFJ1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 04:27:07 -0500
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:28207 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbgKFJ1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 04:27:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1604654825; x=1636190825;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=nK5gvBSWQsXq04DVc5MktE2+AhU4XQkf0tgEdb+ePfA=;
+  b=maFFQLaJVfaiyI2DTjhMazKdtaJjHPQiYJMBtbzlyvT1bSZb2bRcLSPf
+   5KEWE0mM5uBK3DbVI3Fh5aWstBmxDRbHCO7k2eRNgG7S7m/XFWTYjygqM
+   bAoU2H8vyNJpg49IzQAcLhAiFBa9H0Xh/zobRVwSaBC9frcYqEO4Grz9k
+   AxOroAsn/ttbkgIEmyOu+zLrSbYyUS8HiKb9sxknVhm4IqaEBniVHCQB+
+   GjtZZeLgxik7Gh/h0GLiehGwHcexWchj/s/uxsxwCRsZ878XjWSKg60CM
+   RZTttrsUwtzwaNK+1n4aiu51ZiaxCAZKzwpaoyt4upNAbPoL2UdjMgD9K
+   g==;
+IronPort-SDR: EMMYq2lo8UEeeWqrQ9pzg0dF3KUXgPSKMC6DslfhsVfX0dTkW88H6vxyH7ZP0zcSiHql2Kwzvf
+ 3HTR5Ofr8n/t9cb9MXTS387GWvXqSHZ6T/3qoj+WwT2P6+MTt7/InovgWKr7Qq/0fda2/swseW
+ tW5xXjhe2oG9Sddpu0XOq8E9EeEFSeE35N6mUxVpzgxihlw8E4SxcKYrmEk8TFsM2iWcwFbXl9
+ 5z1zvb+eAkbJcLq2SgzJXRc23JLvTkki3idTR6L3VV/t7S4m7JZBJ+3C+vXvBAEd71Ca/pC4nw
+ CGg=
+X-IronPort-AV: E=Sophos;i="5.77,456,1596524400"; 
+   d="scan'208";a="92723596"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Nov 2020 02:27:04 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 6 Nov 2020 02:27:04 -0700
+Received: from [10.171.246.114] (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Fri, 6 Nov 2020 02:27:00 -0700
+Subject: Re: [RESEND PATCH] net: macb: fix NULL dereference due to no
+ pcs_config method
+To:     Parshuram Thombare <pthombar@cadence.com>, <kuba@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>
+CC:     <Claudiu.Beznea@microchip.com>, <Santiago.Esteban@microchip.com>,
+        <andrew@lunn.ch>, <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
+        <harini.katakam@xilinx.com>, <michal.simek@xilinx.com>
+References: <1604599113-2488-1-git-send-email-pthombar@cadence.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+Message-ID: <22c6b5ff-d19e-2af8-d601-341a2101d6ef@microchip.com>
+Date:   Fri, 6 Nov 2020 10:26:59 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1604654056-24654-2-git-send-email-wenxu@ucloud.cn>
+In-Reply-To: <1604599113-2488-1-git-send-email-pthombar@cadence.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 06, 2020 at 05:14:16PM +0800, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
+On 05/11/2020 at 18:58, Parshuram Thombare wrote:
+> This patch fixes NULL pointer dereference due to NULL pcs_config
+> in pcs_ops.
 > 
-> Currently kernel tc subsystem can do conntrack in act_ct. But when several
-> fragment packets go through the act_ct, function tcf_ct_handle_fragments
-> will defrag the packets to a big one. But the last action will redirect
-> mirred to a device which maybe lead the reassembly big packet over the mtu
-> of target device.
-> 
-> This patch add support for a xmit hook to mirred, that gets executed before
-> xmiting the packet. Then, when act_ct gets loaded, it configs that hook.
-> The frag xmit hook maybe reused by other modules.
-> 
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> Reported-by: Nicolas Ferre <Nicolas.Ferre@microchip.com>
+> Link: https://lore.kernel.org/netdev/2db854c7-9ffb-328a-f346-f68982723d29@microchip.com/
+> Signed-off-by: Parshuram Thombare <pthombar@cadence.com>
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Thanks wenxu.
+Thanks Parshuram, best regards,
+   Nicolas
+
+> ---
+>   drivers/net/ethernet/cadence/macb_main.c | 17 +++++++++++++++--
+>   1 file changed, 15 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index b7bc160..130a5af 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -633,6 +633,15 @@ static void macb_pcs_an_restart(struct phylink_pcs *pcs)
+>          /* Not supported */
+>   }
+> 
+> +static int macb_pcs_config(struct phylink_pcs *pcs,
+> +                          unsigned int mode,
+> +                          phy_interface_t interface,
+> +                          const unsigned long *advertising,
+> +                          bool permit_pause_to_mac)
+> +{
+> +       return 0;
+> +}
+> +
+>   static const struct phylink_pcs_ops macb_phylink_usx_pcs_ops = {
+>          .pcs_get_state = macb_usx_pcs_get_state,
+>          .pcs_config = macb_usx_pcs_config,
+> @@ -642,6 +651,7 @@ static const struct phylink_pcs_ops macb_phylink_usx_pcs_ops = {
+>   static const struct phylink_pcs_ops macb_phylink_pcs_ops = {
+>          .pcs_get_state = macb_pcs_get_state,
+>          .pcs_an_restart = macb_pcs_an_restart,
+> +       .pcs_config = macb_pcs_config,
+>   };
+> 
+>   static void macb_mac_config(struct phylink_config *config, unsigned int mode,
+> @@ -776,10 +786,13 @@ static int macb_mac_prepare(struct phylink_config *config, unsigned int mode,
+> 
+>          if (interface == PHY_INTERFACE_MODE_10GBASER)
+>                  bp->phylink_pcs.ops = &macb_phylink_usx_pcs_ops;
+> -       else
+> +       else if (interface == PHY_INTERFACE_MODE_SGMII)
+>                  bp->phylink_pcs.ops = &macb_phylink_pcs_ops;
+> +       else
+> +               bp->phylink_pcs.ops = NULL;
+> 
+> -       phylink_set_pcs(bp->phylink, &bp->phylink_pcs);
+> +       if (bp->phylink_pcs.ops)
+> +               phylink_set_pcs(bp->phylink, &bp->phylink_pcs);
+> 
+>          return 0;
+>   }
+> --
+> 2.7.4
+> 
+
+
+-- 
+Nicolas Ferre
