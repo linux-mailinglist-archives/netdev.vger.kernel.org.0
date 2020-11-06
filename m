@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F1032AA09C
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 00:00:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1E842AA0E0
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 00:19:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728944AbgKFXA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 18:00:26 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:60580 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728624AbgKFXAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 18:00:25 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A6MQNeZ017203;
-        Fri, 6 Nov 2020 15:00:10 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=VxjCo13uGt+1hj1Tqq1bG8LosDfXObGqbpfckypFhLg=;
- b=rnUSBKK6QGlJSlalhqradlkXqy9el7ma5cGtoVfWZZtiVgh7oXTyrjonNkZQzKoH24Ps
- kmZznfznqTxtj2vqx68k/dlNnsuvO4BtX1ASMMYZhqJfkjb7YHwbdzZfk8QSNtyTM0lT
- GfE4gzA7KPInMtQy01RXBMYHYdmlIU74zpo= 
+        id S1728879AbgKFXTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 18:19:04 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:28742 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727315AbgKFXTD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 18:19:03 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A6NIm0L016355;
+        Fri, 6 Nov 2020 15:18:49 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=bqGIVoHoV6VTKX6jgTFQMXeC/Rs7JbBWxiQ3q+kUeR8=;
+ b=bApV8+bIqOMSzb8RHAG7/4z3L4M1Sa9VK1GEjqvgm2sOi5sW+bTfFCSlpVlIwiCyMJEL
+ h1J+ZcrcpdlZM4qJTE3lztp+7ivfXUbmYEjf2dKs5Whd23DxyrHGo/zkS7E1TrwpKU49
+ DN9bVudGO5BL81qbWwMrcBbi+CjVd0TWD0s= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 34mx9pd3s8-3
+        by mx0a-00082601.pphosted.com with ESMTP id 34mr9beyqr-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 06 Nov 2020 15:00:10 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.197) with Microsoft SMTP Server
+        Fri, 06 Nov 2020 15:18:49 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.229) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 6 Nov 2020 14:59:29 -0800
+ 15.1.1979.3; Fri, 6 Nov 2020 15:18:36 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T8/30l1gkAcgawVZZYY7HlnjOll4rLp8tpGoN/IGRdconjS+vnb/3yd/0ppUHA8qfCEwR+mp7kbMjNe7/8M9aItN46d4Ffnq9SXGSC0qckmJXfpsvMBWd1mraSx6kw29gQKPasXr4tRIZlhIiPgcs2pvPY4m0ZzJ/pXy3RJ8vVU/p+SpmtZZh09w/FKCOPW3ewlZa+VifdjmalSobfQ34Db3/f27wr91T1B7dowJVZXKIhTVn94shniS17xHrIW6NJXQ2UeiafUbNM/67oF5mSMRSLyZhikdUnqU0Ho2g5LUhwQS/atIRvarPQAdFAaUIXaovIj6U/WObtxMkojm1A==
+ b=kQPm1ZeVS0M42fVWirGgSGJ9qK6TCKrphMq9aAsvgW7Y285g8YTdVwK28rldixsoiVX8fcJfSRwaUGq+cLhUrKkx7lmZmfYgzw73IgDsVjhYwT6FFFpdMlBsSNg07jGmzDLgNHPe6t4PJ+xPiwUsdKSz5owE6epeXoO5XPRnPfy0xkR/Bv7x+eUj0LzmVOkLNyuconvGDpEDFFKrusov3AabIndJrruqMeBZEniUTVO+uZieNixlxYIvDdCftLiUu6XXgnejQaLK8LA/4bPptORFg+/VP1h8N4zn2/KEFtY9dQ7ApIT4XxXP1dXmXx0AquYoDlEOW46QwfhL7zJ54Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VxjCo13uGt+1hj1Tqq1bG8LosDfXObGqbpfckypFhLg=;
- b=H6A7lQAnqAPSqzn/IFzg6v7HyTxU8D41E5Ziy6WiUZMiDhUE53DxE5Y6Ce3NnwcIDWgpFR9CAy0Ygk9P2N52/DGNYYgznUHsYaoMHBxJTYxC4pjXM6kFlkvqFXoP5DT+muGSXyOs/jhLtBI8wUaD6hWFtlu85QyvSExu9+TlvBk4njou0etRpYmQv8gozNw1+leRgjzlWmm8FNkGsva8EAZhby0FRPgzlWw3n3+sepj64MhAsIdwSYaTJhzBlrFcwp8xdMOF9ylf2+F9j/Fd0r04lcYG9kZXy+pdIuhfWZ62uU50Pc0/b3QNYq9n5+u5tqa0O7qoOqVcWUj8W0cDwg==
+ bh=bqGIVoHoV6VTKX6jgTFQMXeC/Rs7JbBWxiQ3q+kUeR8=;
+ b=JzC8R25ID/GIrAqkoCrp4NJnd4BPmiezpQ6XZP64Yu0SdYio9Vn/W04X/TQ0zyhcNobNqOVacJclWEpJu4ARsCgsRK/Hy4X+MV8kVnfFn6i0G+BaxduhJy1KDa2g1bDtezlQuB+fRzNLGchPe/cy74Wq3CSnoeBZypriU88XCnShpnLPr/cnqSQ/cJMYqlKNo2wwEjpb/gRbeNamJLZcBCKweOWiLj8shWC97GjNx4Vw6CNRfe+rm/kiw/rpufuUk5rWuPB9KdZHWSaBcSCBNYr2gsRZnJ13B+y59RhP63bdE55IgCXD1G26j/JrBn2v6FUIbXbDIJFZHZlwAhS/PA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VxjCo13uGt+1hj1Tqq1bG8LosDfXObGqbpfckypFhLg=;
- b=SNBBFzoqXAkNp50IkleMXQfklOxPizWXLuue5eYzZ8s2L0/NFfSTIo/HH/8nfqsDfQnwI9yJYZt36IUetE2qYe+lSXw8E2PfqglM8mFh+SIISYfbNXnZbTUSJc1uqath5ymo/afjSlfMgad1Y4dl46T7oCmnbPN3ydsaN2a+rB8=
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB3366.namprd15.prod.outlook.com (2603:10b6:a03:10d::21) with
+ bh=bqGIVoHoV6VTKX6jgTFQMXeC/Rs7JbBWxiQ3q+kUeR8=;
+ b=cjl+gCnVkvXRE2Qklw5YQpA5yvi1488c5E+qNG3qo3HBy1PMv9PeZpPDgoapKtYoeDIDoBZwFbdhrOvss37Kejd8GRxMADXb1mYml7JUORfT1PYGUkNrE0BoW2kT2QszRGiw9ouecXZb7mwwRgaA6EKxZ4S+9Z+tlsgG029aXCo=
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2453.namprd15.prod.outlook.com (2603:10b6:a02:8d::30) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Fri, 6 Nov
- 2020 22:59:14 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::7d77:205b:bbc4:4c70]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::7d77:205b:bbc4:4c70%6]) with mapi id 15.20.3499.030; Fri, 6 Nov 2020
- 22:59:14 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Martin Lau <kafai@fb.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.29; Fri, 6 Nov
+ 2020 23:18:35 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee%4]) with mapi id 15.20.3499.032; Fri, 6 Nov 2020
+ 23:18:35 +0000
+Date:   Fri, 6 Nov 2020 15:18:27 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Song Liu <songliubraving@fb.com>
 CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -62,183 +62,182 @@ CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Subject: Re: [PATCH bpf-next 2/3] bpf: Allow using bpf_sk_storage in
  FENTRY/FEXIT/RAW_TP
-Thread-Topic: [PATCH bpf-next 2/3] bpf: Allow using bpf_sk_storage in
- FENTRY/FEXIT/RAW_TP
-Thread-Index: AQHWtIlRNBRBFFP0rUOaRcDTIizKBKm7t9EA
-Date:   Fri, 6 Nov 2020 22:59:14 +0000
-Message-ID: <8FA16B3B-DC01-4FAB-B5F6-1871C5151D67@fb.com>
+Message-ID: <20201106231639.ipyrsxjj3jduw7f6@kafai-mbp.dhcp.thefacebook.com>
 References: <20201106220750.3949423-1-kafai@fb.com>
  <20201106220803.3950648-1-kafai@fb.com>
-In-Reply-To: <20201106220803.3950648-1-kafai@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.120.23.2.4)
-x-originating-ip: [2620:10d:c090:400::5:ca49]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: eb2b5219-0d46-4799-2c4f-08d882a79538
-x-ms-traffictypediagnostic: BYAPR15MB3366:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB3366964AF1A8E5D3FECB98DFB3ED0@BYAPR15MB3366.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zn7LdmAavthASJLhqe6o7p4rW+1Qn98CE6rbjx42gUJnB/YK/VfifjwkivaA5jSWgNLBSSCpptvYlbxnbL3K24YnDqCLwVUscreMQxKH+IzihO52g3dCPgDrwipEtXGoQK9JWcu/wbQmEYYVxpBMUDjZqjda6bs76d/eg2ZQayfours5hS94TsN3pTwuu1YygSUL6BbmgGfileZQKSEVU1U9wNLuRgFt6tWdfFd5DwfDxQMoUEC+rxJTrcwdYYmdXIf0FsRc2tbxnAaz9k09x6XqBqYnTyHhdf+fDWpGPn3PhQpZGivYuTpy/3flYhM6OArVnHe2iGQ1qLfGT9038A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(396003)(376002)(346002)(136003)(39860400002)(5660300002)(6862004)(33656002)(54906003)(6506007)(71200400001)(66946007)(37006003)(6512007)(4326008)(53546011)(8676002)(6486002)(478600001)(186003)(36756003)(83380400001)(76116006)(6636002)(64756008)(2906002)(66556008)(2616005)(66446008)(66476007)(316002)(91956017)(86362001)(8936002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: Vhb+lqtV2swWaxDb1K5z/dwbeoLVvmbT0tP3WJCA/AUX4H/snqjIr/DkxrQ4qwMwiMBfIRiQ38hQjzkSLxJvyzD0yrI5rd15wZJ3Oo20UaMQArsPdziYuAayyvJq83rjn9kDnYhGFdE1f5uo331W1/FHqOkEWqXQrwAMlBKhIDWwm+M8+rKKT4VGumNXLVzFMJbxTzV+XrjtVhFdYrmeH66PuD4f66fTeG7ESQQI6tEsO2sDhqUza+TQZyk00EVQwTgd83vpe98b/xGFhYpLFMeyl+4kL3fjr9yNghVvqijovHFcr4cTHhktEzaRyQmGm79Vmo+yVx4PkRCqyfjBZF9oWuxTmMuh+4yqkhJs6NdIO+5HhpIMEYMnF5jMVSZrT60jr5piVNV4wZJTNIioQBMS0wekAz7p1mP5q+jlmZoBCCEbPA/2fighIWOFelZmOLJ1ZasA9CoHxhu114ZHJOhGxQM7QbB/tWNI3WXkH/Cj+8K4J7W4GH87LnFPmtjZtf9o6iaPsa8Pb3Ps74toN7BB1z/VaQDlMTQvJRU65+asFf5itnMHYAMqfbPqpueqBYUE7jCPYEKVKuN5Ocu/YEplNlaUOIYLNWavQFrOUxXOYOakMBSCRHigy+O6gELwf059hxSuGeEnpFWKX7GIyntWjJwHWkhnpqepfdGKwSXwtduTSOeQ+DSWLTz1cRRY
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <494159FF784B3C4396368D995D218501@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+ <8FA16B3B-DC01-4FAB-B5F6-1871C5151D67@fb.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8FA16B3B-DC01-4FAB-B5F6-1871C5151D67@fb.com>
+X-Originating-IP: [2620:10d:c090:400::5:3041]
+X-ClientProxiedBy: CO2PR04CA0106.namprd04.prod.outlook.com
+ (2603:10b6:104:6::32) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:3041) by CO2PR04CA0106.namprd04.prod.outlook.com (2603:10b6:104:6::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Fri, 6 Nov 2020 23:18:34 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f3edf3f2-f941-4a5f-8e94-08d882aa48a7
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2453:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB245305E11DA3B6CEBA4A2448D5ED0@BYAPR15MB2453.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: edrgV45mSq2rKF3NpljUgfwzNeuXqBpt7x+GCbbnhkEzeM/fuGAIfv8831jKhqaHQybtd6RpIIcDZzlgQsR3uZ3p/EX4bCc5d+lMQMQD3l1uhLvPD7DiW4iGea80CptRFycmhZrfgrTUU85QvpPQqTtgA8QVqFG8tkJlnDHpEUA3GKk98qjdhQ9OKqYbMUNEYzjsHxlNmx4QOl3UxQwT024R4eOmiqI1ZLKeLPTp5n/MdCw0rTw0g1sRNLIehbTAwYei+NhK0JjJLj3r1AyFHuafu8aQfDxLNuG/W9DJSFUe9cQkzuqIa1G0LJJAL1eG+cjqS9noYCJ7ixTV/MWZFw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(366004)(376002)(396003)(39860400002)(66946007)(66476007)(478600001)(8676002)(9686003)(8936002)(7696005)(5660300002)(2906002)(6666004)(83380400001)(86362001)(52116002)(1076003)(66556008)(55016002)(53546011)(6506007)(54906003)(6636002)(6862004)(316002)(186003)(16526019)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: 6tI4y+bg+lk+MlFILOoLvGiDOP7btj5A42IXmtDpnswIAfDavRSVLKWvhj0TQ6SWbBzAOhh7a2Tp8nv/sllgS4E3kb9m84LRTlRT62glwQXyOYlNdxQJ8gPvCWcIqaE6fyla4DmxEtm/qPnY97k/vVyam6J/lXgEHJUZPJ3FogD/hPZY3iJ1RYNOOO8ZHwCBo/G0bgUnbX/ihNRRikQ1RTsn84vNm5EO//vRask/ckqAj0Qcwta0882L7F0F/o5TLx67ixwP+NwNDlAZ5xId2SQl8XCCCDrZPvbUmDJOtyw3fzDO6Wpd10DU3Gv1+J1VYlqo6SSOmcYIMWwXTtfVnc3lTnb0nSuIVqvBJSsX/kErVR2z2PxkJBw8+veV91/3ZEMiVvsO0axfAzWBmkuw3fsP6H+JKU73hsLEpXgTQsxM8hLxYSI8VmBHWG5mRQHsvL+wm70PI0XCol7P28cNmsJwoYgS75Siv/+CZQkT/6FSQYW8YiMsTChHPTQM1autX2onga57NaKquQ60vk5987cOkW6OfOM+0xl2bpGTkFF5IQ86QvmeKSauwqfV//iLiZVnwVbT78ep4iVqh2Vka5Ws9ZedrMDQk0t2xOGl1fMMi4YSG/ozvh/iB1+s0/Y/LuIkiThxhR1o6tWidO1u0Oez/i5jRhVO1vNARbea8UBLAV4Xxrbk6SiymGTMLvUm
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3edf3f2-f941-4a5f-8e94-08d882aa48a7
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eb2b5219-0d46-4799-2c4f-08d882a79538
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2020 22:59:14.5842
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2020 23:18:35.1045
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nBJZFWr+LT3dnQnBM9NpelcoRyrGNZtSYfWZrxMq9QVoc4Qb5t26caw/a9SPtafR0eDk38OeyjguaSA7wQmMsw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3366
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5GFrrbtPYKraYf+yBRkFbX/DtHh4rwQakrY6qtOL7aNsMs4EsX6MPD0UaP7e6iGC
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2453
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-11-06_06:2020-11-05,2020-11-06 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- phishscore=0 spamscore=0 malwarescore=0 impostorscore=0 mlxscore=0
- mlxlogscore=999 suspectscore=0 clxscore=1015 adultscore=0
- priorityscore=1501 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2011060153
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ phishscore=0 clxscore=1015 lowpriorityscore=0 mlxlogscore=999
+ suspectscore=5 mlxscore=0 priorityscore=1501 impostorscore=0 bulkscore=0
+ adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011060156
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Nov 06, 2020 at 02:59:14PM -0800, Song Liu wrote:
+> 
+> 
+> > On Nov 6, 2020, at 2:08 PM, Martin KaFai Lau <kafai@fb.com> wrote:
+> > 
+> > This patch enables the FENTRY/FEXIT/RAW_TP tracing program to use
+> > the bpf_sk_storage_(get|delete) helper, so those tracing programs
+> > can access the sk's bpf_local_storage and the later selftest
+> > will show some examples.
+> > 
+> > The bpf_sk_storage is currently used in bpf-tcp-cc, tc,
+> > cg sockops...etc which is running either in softirq or
+> > task context.
+> > 
+> > This patch adds bpf_sk_storage_get_tracing_proto and
+> > bpf_sk_storage_delete_tracing_proto.  They will check
+> > in runtime that the helpers can only be called when serving
+> > softirq or running in a task context.  That should enable
+> > most common tracing use cases on sk.
+> > 
+> > During the load time, the new tracing_allowed() function
+> > will ensure the tracing prog using the bpf_sk_storage_(get|delete)
+> > helper is not tracing any *sk_storage*() function itself.
+> > The sk is passed as "void *" when calling into bpf_local_storage.
+> > 
+> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > ---
+> > include/net/bpf_sk_storage.h |  2 +
+> > kernel/trace/bpf_trace.c     |  5 +++
+> > net/core/bpf_sk_storage.c    | 73 ++++++++++++++++++++++++++++++++++++
+> > 3 files changed, 80 insertions(+)
+> > 
+> > diff --git a/include/net/bpf_sk_storage.h b/include/net/bpf_sk_storage.h
+> > index 3c516dd07caf..0e85713f56df 100644
+> > --- a/include/net/bpf_sk_storage.h
+> > +++ b/include/net/bpf_sk_storage.h
+> > @@ -20,6 +20,8 @@ void bpf_sk_storage_free(struct sock *sk);
+> > 
+> > extern const struct bpf_func_proto bpf_sk_storage_get_proto;
+> > extern const struct bpf_func_proto bpf_sk_storage_delete_proto;
+> > +extern const struct bpf_func_proto bpf_sk_storage_get_tracing_proto;
+> > +extern const struct bpf_func_proto bpf_sk_storage_delete_tracing_proto;
+> > 
+> > struct bpf_local_storage_elem;
+> > struct bpf_sk_storage_diag;
+> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > index e4515b0f62a8..cfce60ad1cb5 100644
+> > --- a/kernel/trace/bpf_trace.c
+> > +++ b/kernel/trace/bpf_trace.c
+> > @@ -16,6 +16,7 @@
+> > #include <linux/syscalls.h>
+> > #include <linux/error-injection.h>
+> > #include <linux/btf_ids.h>
+> > +#include <net/bpf_sk_storage.h>
+> > 
+> > #include <uapi/linux/bpf.h>
+> > #include <uapi/linux/btf.h>
+> > @@ -1735,6 +1736,10 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> > 		return &bpf_skc_to_tcp_request_sock_proto;
+> > 	case BPF_FUNC_skc_to_udp6_sock:
+> > 		return &bpf_skc_to_udp6_sock_proto;
+> > +	case BPF_FUNC_sk_storage_get:
+> > +		return &bpf_sk_storage_get_tracing_proto;
+> > +	case BPF_FUNC_sk_storage_delete:
+> > +		return &bpf_sk_storage_delete_tracing_proto;
+> > #endif
+> > 	case BPF_FUNC_seq_printf:
+> > 		return prog->expected_attach_type == BPF_TRACE_ITER ?
+> > diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+> > index 001eac65e40f..1a41c917e08d 100644
+> > --- a/net/core/bpf_sk_storage.c
+> > +++ b/net/core/bpf_sk_storage.c
+> > @@ -6,6 +6,7 @@
+> > #include <linux/types.h>
+> > #include <linux/spinlock.h>
+> > #include <linux/bpf.h>
+> > +#include <linux/btf.h>
+> > #include <linux/btf_ids.h>
+> > #include <linux/bpf_local_storage.h>
+> > #include <net/bpf_sk_storage.h>
+> > @@ -378,6 +379,78 @@ const struct bpf_func_proto bpf_sk_storage_delete_proto = {
+> > 	.arg2_type	= ARG_PTR_TO_BTF_ID_SOCK_COMMON,
+> > };
+> > 
+> > +static bool bpf_sk_storage_tracing_allowed(const struct bpf_prog *prog)
+> > +{
+> > +	const struct btf *btf_vmlinux;
+> > +	const struct btf_type *t;
+> > +	const char *tname;
+> > +	u32 btf_id;
+> > +
+> > +	if (prog->aux->dst_prog)
+> > +		return false;
+> > +
+> > +	/* Ensure the tracing program is not tracing
+> > +	 * any *sk_storage*() function and also
+> > +	 * use the bpf_sk_storage_(get|delete) helper.
+> > +	 */
+> > +	switch (prog->expected_attach_type) {
+> > +	case BPF_TRACE_RAW_TP:
+> > +		/* bpf_sk_storage has no trace point */
+> > +		return true;
+> > +	case BPF_TRACE_FENTRY:
+> > +	case BPF_TRACE_FEXIT:
+> > +		btf_vmlinux = bpf_get_btf_vmlinux();
+> > +		btf_id = prog->aux->attach_btf_id;
+> > +		t = btf_type_by_id(btf_vmlinux, btf_id);
+> 
+> What happens to fentry/fexit attach to other BPF programs? I guess
+> we should check for t == NULL?
+It does not support tracing BPF program and using bpf_sk_storage
+at the same time for now, so there is a "if (prog->aux->dst_prog)" test earlier.
+It could be extended to do it later as a follow up.
+I missed to mention that in the commit message.  
 
+"t" should not be NULL here when tracing a kernel function.
+The verifier should have already checked it and ensured "t" is a FUNC.
 
-> On Nov 6, 2020, at 2:08 PM, Martin KaFai Lau <kafai@fb.com> wrote:
->=20
-> This patch enables the FENTRY/FEXIT/RAW_TP tracing program to use
-> the bpf_sk_storage_(get|delete) helper, so those tracing programs
-> can access the sk's bpf_local_storage and the later selftest
-> will show some examples.
->=20
-> The bpf_sk_storage is currently used in bpf-tcp-cc, tc,
-> cg sockops...etc which is running either in softirq or
-> task context.
->=20
-> This patch adds bpf_sk_storage_get_tracing_proto and
-> bpf_sk_storage_delete_tracing_proto.  They will check
-> in runtime that the helpers can only be called when serving
-> softirq or running in a task context.  That should enable
-> most common tracing use cases on sk.
->=20
-> During the load time, the new tracing_allowed() function
-> will ensure the tracing prog using the bpf_sk_storage_(get|delete)
-> helper is not tracing any *sk_storage*() function itself.
-> The sk is passed as "void *" when calling into bpf_local_storage.
->=20
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> ---
-> include/net/bpf_sk_storage.h |  2 +
-> kernel/trace/bpf_trace.c     |  5 +++
-> net/core/bpf_sk_storage.c    | 73 ++++++++++++++++++++++++++++++++++++
-> 3 files changed, 80 insertions(+)
->=20
-> diff --git a/include/net/bpf_sk_storage.h b/include/net/bpf_sk_storage.h
-> index 3c516dd07caf..0e85713f56df 100644
-> --- a/include/net/bpf_sk_storage.h
-> +++ b/include/net/bpf_sk_storage.h
-> @@ -20,6 +20,8 @@ void bpf_sk_storage_free(struct sock *sk);
->=20
-> extern const struct bpf_func_proto bpf_sk_storage_get_proto;
-> extern const struct bpf_func_proto bpf_sk_storage_delete_proto;
-> +extern const struct bpf_func_proto bpf_sk_storage_get_tracing_proto;
-> +extern const struct bpf_func_proto bpf_sk_storage_delete_tracing_proto;
->=20
-> struct bpf_local_storage_elem;
-> struct bpf_sk_storage_diag;
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index e4515b0f62a8..cfce60ad1cb5 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -16,6 +16,7 @@
-> #include <linux/syscalls.h>
-> #include <linux/error-injection.h>
-> #include <linux/btf_ids.h>
-> +#include <net/bpf_sk_storage.h>
->=20
-> #include <uapi/linux/bpf.h>
-> #include <uapi/linux/btf.h>
-> @@ -1735,6 +1736,10 @@ tracing_prog_func_proto(enum bpf_func_id func_id, =
-const struct bpf_prog *prog)
-> 		return &bpf_skc_to_tcp_request_sock_proto;
-> 	case BPF_FUNC_skc_to_udp6_sock:
-> 		return &bpf_skc_to_udp6_sock_proto;
-> +	case BPF_FUNC_sk_storage_get:
-> +		return &bpf_sk_storage_get_tracing_proto;
-> +	case BPF_FUNC_sk_storage_delete:
-> +		return &bpf_sk_storage_delete_tracing_proto;
-> #endif
-> 	case BPF_FUNC_seq_printf:
-> 		return prog->expected_attach_type =3D=3D BPF_TRACE_ITER ?
-> diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-> index 001eac65e40f..1a41c917e08d 100644
-> --- a/net/core/bpf_sk_storage.c
-> +++ b/net/core/bpf_sk_storage.c
-> @@ -6,6 +6,7 @@
-> #include <linux/types.h>
-> #include <linux/spinlock.h>
-> #include <linux/bpf.h>
-> +#include <linux/btf.h>
-> #include <linux/btf_ids.h>
-> #include <linux/bpf_local_storage.h>
-> #include <net/bpf_sk_storage.h>
-> @@ -378,6 +379,78 @@ const struct bpf_func_proto bpf_sk_storage_delete_pr=
-oto =3D {
-> 	.arg2_type	=3D ARG_PTR_TO_BTF_ID_SOCK_COMMON,
-> };
->=20
-> +static bool bpf_sk_storage_tracing_allowed(const struct bpf_prog *prog)
-> +{
-> +	const struct btf *btf_vmlinux;
-> +	const struct btf_type *t;
-> +	const char *tname;
-> +	u32 btf_id;
-> +
-> +	if (prog->aux->dst_prog)
-> +		return false;
-> +
-> +	/* Ensure the tracing program is not tracing
-> +	 * any *sk_storage*() function and also
-> +	 * use the bpf_sk_storage_(get|delete) helper.
-> +	 */
-> +	switch (prog->expected_attach_type) {
-> +	case BPF_TRACE_RAW_TP:
-> +		/* bpf_sk_storage has no trace point */
-> +		return true;
-> +	case BPF_TRACE_FENTRY:
-> +	case BPF_TRACE_FEXIT:
-> +		btf_vmlinux =3D bpf_get_btf_vmlinux();
-> +		btf_id =3D prog->aux->attach_btf_id;
-> +		t =3D btf_type_by_id(btf_vmlinux, btf_id);
-
-What happens to fentry/fexit attach to other BPF programs? I guess
-we should check for t =3D=3D NULL?
-
-Thanks,
-Song
-
-> +		tname =3D btf_name_by_offset(btf_vmlinux, t->name_off);
-> +		return !strstr(tname, "sk_storage");
-> +	default:
-> +		return false;
-> +	}
-> +
-> +	return false;
-> +}
-
-[...]
-
-
+> > +		tname = btf_name_by_offset(btf_vmlinux, t->name_off);
+> > +		return !strstr(tname, "sk_storage");
+> > +	default:
+> > +		return false;
+> > +	}
+> > +
+> > +	return false;
+> > +}
+> 
+> [...]
+> 
+> 
