@@ -2,98 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A222A9F1C
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 22:33:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B87092A9F1E
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 22:33:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728268AbgKFVcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 16:32:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728096AbgKFVcy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 16:32:54 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF531C0613CF;
-        Fri,  6 Nov 2020 13:32:54 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id a12so2372291ybg.9;
-        Fri, 06 Nov 2020 13:32:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cHcHgXcRJlXjahuwxlXNQLlz52MRv1C06pV1zHy8MSY=;
-        b=Rg3fB6qrZs8sy2GckFNiyCIx74uH5F+E9NTYX6KH8N17ObhUlXAPisch75/UgzIsLr
-         6rt8q8JbGgqNbq0NZpzNvRUemywChuv6VU2Lrbm8F5zPZpJnaiUe0PL9rLVpBgEnbCrh
-         ood+6cqWsRHzhHchp9U8MVTsxMnb3+ONSzZS/A4/I8rntqTfBHoDGaj7L00LXEFZfJVw
-         5RH0tvJ2VFBPVmoa1FIlkle6npURscxHBoOLFbvhtJaIdEC8748jeqwYyoCh5lHPw9qp
-         vngsQaV4rvGbRzIFAHrYE0W6zDlTBcVoFvV8q66Xnu1saK4RMJ2NrrLMhV0POuymlOcL
-         UFGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cHcHgXcRJlXjahuwxlXNQLlz52MRv1C06pV1zHy8MSY=;
-        b=X6HX/nhjgjwQ6X5eaNY0fknVXB0+3a+1sY/Ayu0YlRNvDRTlveLrgyxWbbtixhgfn7
-         gJ7f7JZrEoi39FfG1o5f4PJNnADAw0c79R83lQkhT/LlBp3akc8xuYuLWQ7FtegEWMIN
-         yREm/3qH6rzS7aE0E9snYErZznvWXGu/UcC2Xcmih/qIc0V4iRTQkiuqDeSDjcqPNL7d
-         wZjU6bvHzCFwByVfK+LibagOxNt5KxngHPuHYSHNhUeI/5nXV7OBst2NtdSNSQggme9y
-         tpSTzEhzAuSsmi0+FPDk1xlyaW2MJjiTIWrsmf5QdBViHiihmh3ttDglXhvNA7zAPi2C
-         lhFA==
-X-Gm-Message-State: AOAM533+yyDZpCOrWsI6yTsZqokxp6rsupAE5yqLgOkrD2K2z2tHmPvW
-        aSsDeKDTTEsyCzlZJgR/c57fISJnXDgRJfDnXqk=
-X-Google-Smtp-Source: ABdhPJw+xunr/HQDnP2jT985pevV7liCe9lpCITmmzYsfo1cqOjlA2O1DA5spBRlYf1BtDOza9eIYYXXaeiv1ezPyR8=
-X-Received: by 2002:a25:da4e:: with SMTP id n75mr5615969ybf.425.1604698374190;
- Fri, 06 Nov 2020 13:32:54 -0800 (PST)
-MIME-Version: 1.0
-References: <1604646759-785-1-git-send-email-kaixuxia@tencent.com>
-In-Reply-To: <1604646759-785-1-git-send-email-kaixuxia@tencent.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 6 Nov 2020 13:32:43 -0800
-Message-ID: <CAEf4BzZQ6=-h3g1duXFwDLr92z7nE6ajv8Rz_Zv=qx=-F3sRVA@mail.gmail.com>
-Subject: Re: [PATCH] libbpf: Remove unnecessary conversion to bool
-To:     xiakaixu1987@gmail.com
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Kaixu Xia <kaixuxia@tencent.com>
+        id S1728139AbgKFVdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 16:33:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55500 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727270AbgKFVdp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Nov 2020 16:33:45 -0500
+Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8F46E20735;
+        Fri,  6 Nov 2020 21:33:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604698424;
+        bh=JYrd411jLEgnlbtCWgJUXv6BtR0BTLaOn9QUNBsP+yo=;
+        h=Subject:From:To:Date:In-Reply-To:References:From;
+        b=q62qEl52Akk6r0EzQRJ8ZlyQrUhKh6wi41/cwakjB3e42U/ZCFm5Pi8HlonqYq8OA
+         tOBNv7Ze/i0de06Eu2GY4Y4dQAgwKZnKLe3iPCFO8Mf8j9NOgyo1b8a7PkkP4iIKlK
+         hc23sTDGqfe/Eh/+mLVFywgVIH6uMtihG+y2Py3Y=
+Message-ID: <5cf579a6b137b569b5f01871561f83ca2e9ac659.camel@kernel.org>
+Subject: Re: [PATCH v2 net-next 6/8] ionic: flatten calls to
+ ionic_lif_rx_mode
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org
+Date:   Fri, 06 Nov 2020 13:33:43 -0800
+In-Reply-To: <20201106001220.68130-7-snelson@pensando.io>
+References: <20201106001220.68130-1-snelson@pensando.io>
+         <20201106001220.68130-7-snelson@pensando.io>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 5, 2020 at 11:12 PM <xiakaixu1987@gmail.com> wrote:
->
-> From: Kaixu Xia <kaixuxia@tencent.com>
->
-> Fix following warning from coccinelle:
->
-> ./tools/lib/bpf/libbpf.c:1478:43-48: WARNING: conversion to bool not needed here
->
-> Signed-off-by: Kaixu Xia <kaixuxia@tencent.com>
+On Thu, 2020-11-05 at 16:12 -0800, Shannon Nelson wrote:
+> The _ionic_lif_rx_mode() is only used once and really doesn't
+> need to be broken out.
+> 
+> Signed-off-by: Shannon Nelson <snelson@pensando.io>
 > ---
->  tools/lib/bpf/libbpf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 313034117070..fb9625077983 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -1475,7 +1475,7 @@ static int set_kcfg_value_tri(struct extern_desc *ext, void *ext_val,
->                                 ext->name, value);
->                         return -EINVAL;
->                 }
-> -               *(bool *)ext_val = value == 'y' ? true : false;
-> +               *(bool *)ext_val = value == 'y';
-
-I actually did this intentionally. x = y == z; pattern looked too
-obscure to my taste, tbh.
-
->                 break;
->         case KCFG_TRISTATE:
->                 if (value == 'y')
+>  .../net/ethernet/pensando/ionic/ionic_lif.c   | 38 ++++++++---------
 > --
-> 2.20.0
->
+>  1 file changed, 16 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> index a0d26fe4cbc3..ef092ee33e59 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> @@ -1129,29 +1129,10 @@ static void ionic_lif_rx_mode(struct
+> ionic_lif *lif, unsigned int rx_mode)
+>  		lif->rx_mode = rx_mode;
+>  }
+>  
+> -static void _ionic_lif_rx_mode(struct ionic_lif *lif, unsigned int
+> rx_mode,
+> -			       bool from_ndo)
+> -{
+> -	struct ionic_deferred_work *work;
+> -
+> -	if (from_ndo) {
+> -		work = kzalloc(sizeof(*work), GFP_ATOMIC);
+> -		if (!work) {
+> -			netdev_err(lif->netdev, "%s OOM\n", __func__);
+> -			return;
+> -		}
+> -		work->type = IONIC_DW_TYPE_RX_MODE;
+> -		work->rx_mode = rx_mode;
+> -		netdev_dbg(lif->netdev, "deferred: rx_mode\n");
+> -		ionic_lif_deferred_enqueue(&lif->deferred, work);
+> -	} else {
+> -		ionic_lif_rx_mode(lif, rx_mode);
+> -	}
+> -}
+> -
+>  static void ionic_set_rx_mode(struct net_device *netdev, bool
+> from_ndo)
+>  {
+>  	struct ionic_lif *lif = netdev_priv(netdev);
+> +	struct ionic_deferred_work *work;
+>  	unsigned int nfilters;
+>  	unsigned int rx_mode;
+>  
+> @@ -1197,8 +1178,21 @@ static void ionic_set_rx_mode(struct
+> net_device *netdev, bool from_ndo)
+>  			rx_mode &= ~IONIC_RX_MODE_F_ALLMULTI;
+>  	}
+>  
+> -	if (lif->rx_mode != rx_mode)
+> -		_ionic_lif_rx_mode(lif, rx_mode, from_ndo);
+> +	if (lif->rx_mode != rx_mode) {
+> +		if (from_ndo) {
+> +			work = kzalloc(sizeof(*work), GFP_ATOMIC);
+> +			if (!work) {
+> +				netdev_err(lif->netdev, "%s OOM\n",
+> __func__);
+> +				return;
+> +			}
+> +			work->type = IONIC_DW_TYPE_RX_MODE;
+> +			work->rx_mode = rx_mode;
+> +			netdev_dbg(lif->netdev, "deferred: rx_mode\n");
+> +			ionic_lif_deferred_enqueue(&lif->deferred,
+> work);
+> +		} else {
+> +			ionic_lif_rx_mode(lif, rx_mode);
+> +		}
+> +	}
+>  }
+
+You could move this logic one level up and totally eliminate the if
+condition 
+
+ionic_set_rx_mode_needed() {
+      //sync driver data base
+      return lif->rx_mode != rx_mode;
+}
+
+ndo_set_rx_mode() {
+      if (!ionic_set_rx_mode_needed())
+            return; // no change;
+      schedule_work(set_rx_mode_hw);
+}
+
+none_ndo_set_rx_mode() {
+      if (!ionic_set_rx_mode_needed())
+            return; // no change;
+      set_rx_mode_hw();
+}
+
+Future improvement:
+
+One more thing I've noticed about you current ionic_set_rx_mode()
+is that in case of from_ndo, when it syncs mac addresses it will
+schedule a deferred mac address update work to hw per address. which i
+think is an overkill, a simpler design which will totally eliminate the
+need for from_ndo flags, is to do similar to the above but with a minor
+change.
+
+ionic_set_rx_mode_needed() {
+      // Just sync driver mac table here and update hw later
+      // in one deferred work rather than scheduling multi work
+      addr_changed = ionic_dev_uc_sync();
+      addr_changed |= ionic_dev_mc_sync();
+      rx_mode_changed = sync_driver_rx_mode(rx_mode);
+
+      return rx_mode_changed || addr_changed;
+}
+
+/* might sleep */
+set_rx_mode_hw() {
+      commit_addr_change_to_hw();
+      commit_rx_mode_changes_to_hw();
+}
+
+ndo_set_rx_mode() {
+      if (!ionic_set_rx_mode_needed())
+            return; // no change;
+      schedule_work(set_rx_mode_hw);
+}
+
+none_ndo_set_rx_mode() {
+      if (!ionic_set_rx_mode_needed())
+            return; // no change;
+      set_rx_mode_hw();
+} 
+
