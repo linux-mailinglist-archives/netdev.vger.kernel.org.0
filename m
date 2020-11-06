@@ -2,111 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E33592A8E39
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 05:18:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E8012A8E41
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 05:20:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726139AbgKFEQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 23:16:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32804 "EHLO
+        id S1725848AbgKFEUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 23:20:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725828AbgKFEQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 23:16:58 -0500
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A30C0613CF;
-        Thu,  5 Nov 2020 20:16:57 -0800 (PST)
-Received: by mail-lj1-x241.google.com with SMTP id k25so3899513lji.9;
-        Thu, 05 Nov 2020 20:16:57 -0800 (PST)
+        with ESMTP id S1725616AbgKFEUB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 23:20:01 -0500
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0EDC0613CF;
+        Thu,  5 Nov 2020 20:20:00 -0800 (PST)
+Received: by mail-lf1-x143.google.com with SMTP id s30so54681lfc.4;
+        Thu, 05 Nov 2020 20:20:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=AoocLBBvUJrI0bLOOZTh8xYoi/tHgAN+ua/bhX68FM8=;
-        b=sINzjgHvy6ulBGqRGUPhFTT730zcVjTJ63oLbOTnwWTF1dtv+m7Xh8tx18yvhbigwv
-         K+jpB1Z7Me38xpsNnnWGAGqo5I6Dhy4ODfsmaqxXVigyKn13DnoNhggKaoB6OeiRqkte
-         DADDhjdrXimmBRbhVBMJcpH6nwvlDP02GCB2IOy0ZIXbGRKZ9wBI0apeC/YziAXK7Kaw
-         bHXhtm62DVkgDKYrIYHrDummNvSi15N+6xODSxRcU28nxu6fqSWHOA8g103z/NY+foYI
-         oY1XXbuISgUEM9+DR05gTrcTC44RQlwPKqOQFrP6nVHQ2ZeSYGVL/BPwYJ89YWhBzrQe
-         kKuw==
+        bh=emTZ5dm6R54nPEIw1yWZRbyxgTfu03dS6dBWRdBwoy4=;
+        b=PshLDMqb7GgU+1dzAGBlJ/mTWgW8WouF1iavk4FAeuISPid3N5Utrxtxb83CDFrItM
+         tOh1hQeQHaJfwJDvEZi7SgSOG2ly415cUhNBb/ObhjZ6YfwYERXDDsVY0zjHVFDa01cZ
+         6gH4TOe/FRizTLmrwpkxUTzJ1lG9ml8cbT7fubnhKASPBagesTU9dPN4hpb77MyxYhsy
+         TKKgqEmNqB5JQiJ4JwD7cQ2iMYrwMc72ypFEoxqDlwZWOQFa+IYniSNWGs1OO8qUmXHc
+         fjyHpoBAoUh95PS0+cWHFyjFeb29URVUKNrWKYSrrfmk8uHFSoNLTWit8zA03jVHcp1Q
+         lGpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=AoocLBBvUJrI0bLOOZTh8xYoi/tHgAN+ua/bhX68FM8=;
-        b=mIOdPr8M3EcLfLEqdH1ebV/mp3BqPDDEQvhCBCHvaFlqtL+9dwCQaQmL1eR0YriU3H
-         yvufzT4LOwx85w7ExS9+CXKOCnWDsFQhZvdD8D/nuCORJ7k6wlOVkTrvRdggWGdXbhGU
-         IluiFUH61KRMx6xv3FOFhemfPNMM17pG4ZK3jLsR1N3zv79DIXnjilNVc4GkVr9162Gb
-         VYFlIDIj7NelOExffCqhuOITMfZvK0gmtuZOYJkCgrO3iB1SpPz2n0MdNi3UI3VfTpy0
-         qElijBLtkh4APUDj2682QNYs7ZgPQn7Oq64L9482VRLJ4DQZQYip4TuZd8NEyxHfKI/Q
-         mEHw==
-X-Gm-Message-State: AOAM533vnB27p3f/5ayK11SqjYIHSY8kMccaA5DTWDyjhr+5Nig5U73n
-        oPEtbOUnUguVcIaBLZ7yd/dlJ7a0cYT0GubnoYM=
-X-Google-Smtp-Source: ABdhPJzT9gjrVO2QBAMOuWU6fZsr/CDjFypLslG8r4nvEDWzi5MHV9UIGjTVCPYTBekisHpRdbi6Mo2jTxCnzgVzqnE=
-X-Received: by 2002:a2e:9094:: with SMTP id l20mr35819ljg.290.1604636216488;
- Thu, 05 Nov 2020 20:16:56 -0800 (PST)
+        bh=emTZ5dm6R54nPEIw1yWZRbyxgTfu03dS6dBWRdBwoy4=;
+        b=MOzazSQ7kK4zP1tNnQD5dr37nyqffgjIxqjz2vm2pI8SBc+1U9AAo+ZheMlDnXg7Xv
+         swd9n7q6WOVoz/WROL+eeBLg/OPIKQ/+dPm9JrGnKa8p5kQBHAheHLrW2EKpIe9eirF6
+         D6ZFFOihMBblovkIitL/w+ZblDiuSV9/SLkU1Z16RbF9pwTjSPEuJjI6oXBgf6vNS6NU
+         4ZyeA14/SVQqYfo9wHpEcKJ82OmGjk4n3eWnsGcgoQCCKzUhfnxi4Z6/1NKa3/KGrsYT
+         hJNfHBRW/yOEBpYGcpAYTaUPc03la2XtFf3wXVczQsDRkOk4WATFLkUDFB/G1Kinp03T
+         Vlvw==
+X-Gm-Message-State: AOAM531TrkI0RyXvLmwrdIrYOK31+H2gzGDZSq53ofxSJGCRnlT89DYK
+        M9RvORlq6hXqpgIC0lJ4QZ4PPHunqzCGkgHXGRQ=
+X-Google-Smtp-Source: ABdhPJwdcvq8r/YeBlu3V8Sg7c/xde69dtH3nUm+feujc6eRKwbtAbp4fIGu71dXm2iohUDQJ5NTJBr9Dfn9fiOdjnE=
+X-Received: by 2002:a05:6512:32a4:: with SMTP id q4mr104067lfe.477.1604636399357;
+ Thu, 05 Nov 2020 20:19:59 -0800 (PST)
 MIME-Version: 1.0
-References: <20201104191052.390657-1-ndesaulniers@google.com>
-In-Reply-To: <20201104191052.390657-1-ndesaulniers@google.com>
+References: <VI1PR8303MB00802FE5D289E0D7BA95B7DDFBEE0@VI1PR8303MB0080.EURPRD83.prod.outlook.com>
+In-Reply-To: <VI1PR8303MB00802FE5D289E0D7BA95B7DDFBEE0@VI1PR8303MB0080.EURPRD83.prod.outlook.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 5 Nov 2020 20:16:44 -0800
-Message-ID: <CAADnVQL_mP7HNz1n+=S7Tjk8f7efm3_w5+VQVptD2y7Wts_Mig@mail.gmail.com>
-Subject: Re: [PATCH] compiler-clang: remove version check for BPF Tracing
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        stable <stable@vger.kernel.org>,
-        Chen Yu <yu.chen.surf@gmail.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
+Date:   Thu, 5 Nov 2020 20:19:47 -0800
+Message-ID: <CAADnVQLNdDn1jfyEAeKO17vXQiN+VKAvq+VFkY2G_pvSbaPjFA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] Update perf ring buffer to prevent corruption
+To:     Kevin Sheldrake <Kevin.Sheldrake@microsoft.com>,
+        Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>
+Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        KP Singh <kpsingh@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 4, 2020 at 11:11 AM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
+On Thu, Nov 5, 2020 at 7:18 AM Kevin Sheldrake
+<Kevin.Sheldrake@microsoft.com> wrote:
 >
-> bpftrace parses the kernel headers and uses Clang under the hood. Remove
-> the version check when __BPF_TRACING__ is defined (as bpftrace does) so
-> that this tool can continue to parse kernel headers, even with older
-> clang sources.
+> Resent due to some failure at my end.  Apologies if it arrives twice.
 >
-> Cc: <stable@vger.kernel.org>
-> Fixes: commit 1f7a44f63e6c ("compiler-clang: add build check for clang 10.0.1")
-> Reported-by: Chen Yu <yu.chen.surf@gmail.com>
-> Reported-by: Jarkko Sakkinen <jarkko@kernel.org>
-> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-> ---
->  include/linux/compiler-clang.h | 2 ++
->  1 file changed, 2 insertions(+)
+> From 63e34d4106b4dd767f9bfce951f8a35f14b52072 Mon Sep 17 00:00:00 2001
+> From: Kevin Sheldrake <kevin.sheldrake@microsoft.com>
+> Date: Thu, 5 Nov 2020 12:18:53 +0000
+> Subject: [PATCH] Update perf ring buffer to prevent corruption from
+>  bpf_perf_output_event()
 >
-> diff --git a/include/linux/compiler-clang.h b/include/linux/compiler-clang.h
-> index dd7233c48bf3..98cff1b4b088 100644
-> --- a/include/linux/compiler-clang.h
-> +++ b/include/linux/compiler-clang.h
-> @@ -8,8 +8,10 @@
->                      + __clang_patchlevel__)
+> The bpf_perf_output_event() helper takes a sample size parameter of u64, but
+> the underlying perf ring buffer uses a u16 internally. This 64KB maximum size
+> has to also accommodate a variable sized header. Failure to observe this
+> restriction can result in corruption of the perf ring buffer as samples
+> overlap.
 >
->  #if CLANG_VERSION < 100001
-> +#ifndef __BPF_TRACING__
->  # error Sorry, your version of Clang is too old - please use 10.0.1 or newer.
->  #endif
-> +#endif
+> Track the sample size and return -E2BIG if too big to fit into the u16
+> size parameter.
+>
+> Signed-off-by: Kevin Sheldrake <kevin.sheldrake@microsoft.com>
 
-I can take it through the bpf tree if no one objects.
+The fix makes sense to me.
+Peter, Ingo,
+should I take it through the bpf tree or you want to route via tip?
+
+> ---
+>  include/linux/perf_event.h |  2 +-
+>  kernel/events/core.c       | 40 ++++++++++++++++++++++++++--------------
+>  2 files changed, 27 insertions(+), 15 deletions(-)
+>
+> diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+> index 0c19d27..b9802e5 100644
+> --- a/include/linux/perf_event.h
+> +++ b/include/linux/perf_event.h
+> @@ -1060,7 +1060,7 @@ extern void perf_output_sample(struct perf_output_handle *handle,
+>                                struct perf_event_header *header,
+>                                struct perf_sample_data *data,
+>                                struct perf_event *event);
+> -extern void perf_prepare_sample(struct perf_event_header *header,
+> +extern int perf_prepare_sample(struct perf_event_header *header,
+>                                 struct perf_sample_data *data,
+>                                 struct perf_event *event,
+>                                 struct pt_regs *regs);
+> diff --git a/kernel/events/core.c b/kernel/events/core.c
+> index da467e1..c6c4a3c 100644
+> --- a/kernel/events/core.c
+> +++ b/kernel/events/core.c
+> @@ -7016,15 +7016,17 @@ perf_callchain(struct perf_event *event, struct pt_regs *regs)
+>         return callchain ?: &__empty_callchain;
+>  }
+>
+> -void perf_prepare_sample(struct perf_event_header *header,
+> +int perf_prepare_sample(struct perf_event_header *header,
+>                          struct perf_sample_data *data,
+>                          struct perf_event *event,
+>                          struct pt_regs *regs)
+>  {
+>         u64 sample_type = event->attr.sample_type;
+> +       u32 header_size = header->size;
+> +
+>
+>         header->type = PERF_RECORD_SAMPLE;
+> -       header->size = sizeof(*header) + event->header_size;
+> +       header_size = sizeof(*header) + event->header_size;
+>
+>         header->misc = 0;
+>         header->misc |= perf_misc_flags(regs);
+> @@ -7042,7 +7044,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+>
+>                 size += data->callchain->nr;
+>
+> -               header->size += size * sizeof(u64);
+> +               header_size += size * sizeof(u64);
+>         }
+>
+>         if (sample_type & PERF_SAMPLE_RAW) {
+> @@ -7067,7 +7069,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+>                         size = sizeof(u64);
+>                 }
+>
+> -               header->size += size;
+> +               header_size += size;
+>         }
+>
+>         if (sample_type & PERF_SAMPLE_BRANCH_STACK) {
+> @@ -7079,7 +7081,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+>                         size += data->br_stack->nr
+>                               * sizeof(struct perf_branch_entry);
+>                 }
+> -               header->size += size;
+> +               header_size += size;
+>         }
+>
+>         if (sample_type & (PERF_SAMPLE_REGS_USER | PERF_SAMPLE_STACK_USER))
+> @@ -7095,7 +7097,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+>                         size += hweight64(mask) * sizeof(u64);
+>                 }
+>
+> -               header->size += size;
+> +               header_size += size;
+>         }
+>
+>         if (sample_type & PERF_SAMPLE_STACK_USER) {
+> @@ -7108,7 +7110,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+>                 u16 stack_size = event->attr.sample_stack_user;
+>                 u16 size = sizeof(u64);
+>
+> -               stack_size = perf_sample_ustack_size(stack_size, header->size,
+> +               stack_size = perf_sample_ustack_size(stack_size, header_size,
+>                                                      data->regs_user.regs);
+>
+>                 /*
+> @@ -7120,7 +7122,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+>                         size += sizeof(u64) + stack_size;
+>
+>                 data->stack_user_size = stack_size;
+> -               header->size += size;
+> +               header_size += size;
+>         }
+>
+>         if (sample_type & PERF_SAMPLE_REGS_INTR) {
+> @@ -7135,7 +7137,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+>                         size += hweight64(mask) * sizeof(u64);
+>                 }
+>
+> -               header->size += size;
+> +               header_size += size;
+>         }
+>
+>         if (sample_type & PERF_SAMPLE_PHYS_ADDR)
+> @@ -7154,7 +7156,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+>         if (sample_type & PERF_SAMPLE_AUX) {
+>                 u64 size;
+>
+> -               header->size += sizeof(u64); /* size */
+> +               header_size += sizeof(u64); /* size */
+>
+>                 /*
+>                  * Given the 16bit nature of header::size, an AUX sample can
+> @@ -7162,14 +7164,20 @@ void perf_prepare_sample(struct perf_event_header *header,
+>                  * Make sure this doesn't happen by using up to U16_MAX bytes
+>                  * per sample in total (rounded down to 8 byte boundary).
+>                  */
+> -               size = min_t(size_t, U16_MAX - header->size,
+> +               size = min_t(size_t, U16_MAX - header_size,
+>                              event->attr.aux_sample_size);
+>                 size = rounddown(size, 8);
+>                 size = perf_prepare_sample_aux(event, data, size);
+>
+> -               WARN_ON_ONCE(size + header->size > U16_MAX);
+> -               header->size += size;
+> +               WARN_ON_ONCE(size + header_size > U16_MAX);
+> +               header_size += size;
+>         }
+> +
+> +       if (header_size > U16_MAX)
+> +               return -E2BIG;
+> +
+> +       header->size = header_size;
+> +
+>         /*
+>          * If you're adding more sample types here, you likely need to do
+>          * something about the overflowing header::size, like repurpose the
+> @@ -7179,6 +7187,8 @@ void perf_prepare_sample(struct perf_event_header *header,
+>          * do here next.
+>          */
+>         WARN_ON_ONCE(header->size & 7);
+> +
+> +       return 0;
+>  }
+>
+>  static __always_inline int
+> @@ -7196,7 +7206,9 @@ __perf_event_output(struct perf_event *event,
+>         /* protect the callchain buffers */
+>         rcu_read_lock();
+>
+> -       perf_prepare_sample(&header, data, event, regs);
+> +       err = perf_prepare_sample(&header, data, event, regs);
+> +       if (err)
+> +               goto exit;
+>
+>         err = output_begin(&handle, event, header.size);
+>         if (err)
+> --
+> 2.7.4
+>
