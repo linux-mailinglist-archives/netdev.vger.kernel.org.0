@@ -2,137 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19E8D2A9403
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 11:21:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D56392A94C0
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 11:53:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbgKFKVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 05:21:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33028 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726646AbgKFKVK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 05:21:10 -0500
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CB1C0613CF;
-        Fri,  6 Nov 2020 02:21:10 -0800 (PST)
-Received: by mail-qk1-x743.google.com with SMTP id r7so584297qkf.3;
-        Fri, 06 Nov 2020 02:21:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UXqRBQbHsD6Rb/zBf/i8QK+56/Xf9uE8Ats9BY4Fm3o=;
-        b=XPwNVPUCYHjjSo2Tvaxwb5x5k/TJj8hZbWGjTnQwFpFIUpdLY2o8Jpk96X94YiPBpZ
-         msAKLNKEP0U2MRnAg1FPq3klo6pG4o6w8wGK7kxUQASAYdomXPPI5bF+hR+Rg3W5jqpn
-         Vg6ZRmaiTmh28hbSkieVzALqKsyUcy/AfdfV1BFpgCi2YqmbyY7nYDGZDsIOvqCXnXsb
-         l0+v31qH2OH+CAjmkxWuGkrr2ta2SOtUvnPRkzD7nGVhSMGqHMvDJZUGOf5ujMwozkUx
-         sPTw2INqwdeafuYxrEdDUGgzkOK17Jua8BYi+Xfsun2zLpTbra2COCPfEb6ZCT3eaW9b
-         XyCg==
+        id S1727055AbgKFKx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 05:53:28 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:52111 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726642AbgKFKx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 05:53:26 -0500
+Received: by mail-il1-f197.google.com with SMTP id f8so670144ilj.18
+        for <netdev@vger.kernel.org>; Fri, 06 Nov 2020 02:53:24 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UXqRBQbHsD6Rb/zBf/i8QK+56/Xf9uE8Ats9BY4Fm3o=;
-        b=pDKnQX4pWRZFekyCTBi995iwc69134lF2gnGoKK/5z/ieA45K/kw9xg4dxAZ+lZiMP
-         MvXrpb+UOkV6tDFRU7VU2s/jT+dAvYBDSJpzNaIP1xMN6H57c85P8Hm/fMA7hpcVEGwN
-         tKbZm4y/kmH9i0dqx95fBqZPU2MewvABATyyTH95b614tQNVFBcGIBGe18pGx8VHq7ov
-         jwI4afnDnKdJM8pi5WMukh+9nhkUW0xjI3xbfg7p2mu6+hrzEGBjs4lgcuHE2FBEna7f
-         4WYQ/iDzmfvg/msGaX2csImeIibR4E6tHHPcwxEnYTxEE2FTHabgQGe9bhxbpVODNgLX
-         IgKQ==
-X-Gm-Message-State: AOAM531//jrMn+R9ke8uKS9X55srAvQuDja2mzVgHa4seEnE2JGoCctL
-        BrszNaj+ZKxq946zBVeO3rM=
-X-Google-Smtp-Source: ABdhPJw5MppbbUgb3kUr4w/nA0ZljgruhSVMT0SxwI/DEO2YPPQw2Zu1OJkSzp2DGTs1y2mO/sqJpA==
-X-Received: by 2002:a37:6b07:: with SMTP id g7mr770883qkc.265.1604658069161;
-        Fri, 06 Nov 2020 02:21:09 -0800 (PST)
-Received: from localhost.localdomain ([2001:1284:f016:78d6:ae13:4668:2f4c:ca7a])
-        by smtp.gmail.com with ESMTPSA id n7sm264150qtp.93.2020.11.06.02.21.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Nov 2020 02:21:08 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 4C688C1B80; Fri,  6 Nov 2020 07:21:06 -0300 (-03)
-Date:   Fri, 6 Nov 2020 07:21:06 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Petr Malat <oss@malat.biz>
-Cc:     linux-sctp@vger.kernel.org, Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sctp: Fix sending when PMTU is less than
- SCTP_DEFAULT_MINSEGMENT
-Message-ID: <20201106102106.GB3556@localhost.localdomain>
-References: <20201105103946.18771-1-oss@malat.biz>
- <20201106084634.GA3556@localhost.localdomain>
- <20201106094824.GA7570@bordel.klfree.net>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=DDSyTW0cXmYYVcRPO4w8oETTjvfxbaLefaEF1z3VOqw=;
+        b=sW7bgQfdHZOQLt0XtZUToCrcsefR5cynLAvsXh/g8aHjBa4KucMtD7h2uN3IlxU8Sq
+         gLyXFfups1//S085n+t0VPAIL3kqGNcoTELENt8Fw02I7nglKlZpFyMOq5AoZH19oedn
+         93lsjTD6Uj0a3UPfMJVIN8MSYhd6RzFepP1TMVZsJL7ynepSnGTGvH4XAl4zxFoSuv7N
+         pYxSuHNgtVvvk2XKsWETsEP1D5FRTg/oYTIhtcn798xxPN+RGXBPkby7neh5vox0tOFE
+         DaLZpZcpC8n/6C0snopthxV1Pu63XHDIVf5VaYMmRDFYKDFV7mOlIzscRp2nIutB+ZRZ
+         bMvQ==
+X-Gm-Message-State: AOAM531ZeEotEMhWtcNh4WyWDXBBywhPFBt+mMLzocmGXL7JaZqxrECx
+        BO43WSiV9NDKz+ELz3RUe358BDcAI1dx6ug/RefI3LXZNtyb
+X-Google-Smtp-Source: ABdhPJyW6YXkMYU74RkWHcekbpdxFTrNthZb9JCrArTwPLfB6vH6p3Oj1st3EsqwF3G89qvqNXHc4U3zgyZNV9Uh1STyXsK9LMjX
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201106094824.GA7570@bordel.klfree.net>
+X-Received: by 2002:a5e:9604:: with SMTP id a4mr973198ioq.61.1604660004200;
+ Fri, 06 Nov 2020 02:53:24 -0800 (PST)
+Date:   Fri, 06 Nov 2020 02:53:24 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000892b3905b36e059b@google.com>
+Subject: WARNING: bad unlock balance in ieee80211_unregister_hw
+From:   syzbot <syzbot+a6e9e84a19d90b996a65@syzkaller.appspotmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        gnault@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 06, 2020 at 10:48:24AM +0100, Petr Malat wrote:
-> On Fri, Nov 06, 2020 at 05:46:34AM -0300, Marcelo Ricardo Leitner wrote:
-> > On Thu, Nov 05, 2020 at 11:39:47AM +0100, Petr Malat wrote:
-> > > Function sctp_dst_mtu() never returns lower MTU than
-> > > SCTP_TRUNC4(SCTP_DEFAULT_MINSEGMENT) even when the actual MTU is less,
-> > > in which case we rely on the IP fragmentation and must enable it.
-> > 
-> > This should be being handled at sctp_packet_will_fit():
-> 
-> sctp_packet_will_fit() does something a little bit different, it
-> allows fragmentation, if the packet must be longer than the pathmtu
-> set in SCTP structures, which is never less than 512 (see
-> sctp_dst_mtu()) even when the actual mtu is less than 512.
-> 
-> One can test it by setting mtu of an interface to e.g. 300,
-> and sending a longer packet (e.g. 400B):
-> >           psize = packet->size;
-> >           if (packet->transport->asoc)
-> >                   pmtu = packet->transport->asoc->pathmtu;
-> >           else
-> >                   pmtu = packet->transport->pathmtu;
-> here the returned pmtu will be 512
+Hello,
 
-Thing is, your patch is using the same vars to check for it:
-+       pmtu = tp->asoc ? tp->asoc->pathmtu : tp->pathmtu;
+syzbot found the following issue on:
 
-> 
-> > 
-> >           /* Decide if we need to fragment or resubmit later. */
-> >           if (psize + chunk_len > pmtu) {
-> This branch will not be taken as the packet length is less then 512
+HEAD commit:    cb5dc5b0 Merge branch 'bpf: safeguard hashtab locking in N..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=13498a0c500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=58a4ca757d776bfe
+dashboard link: https://syzkaller.appspot.com/bug?extid=a6e9e84a19d90b996a65
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-Right, ok. While then your patch will catch it because pmtu will be
-SCTP_DEFAULT_MINSEGMENT, as it is checking with '<='.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-> 
-> >            }
-> > 
-> And the whole function will return SCTP_XMIT_OK without setting
-> ipfragok.
-> 
-> I think the idea of never going bellow 512 in sctp_dst_mtu() is to
-> reduce overhead of SCTP headers, which is fine, but when we do that,
-> we must be sure to allow the IP fragmentation, which is currently
-> missing.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a6e9e84a19d90b996a65@syzkaller.appspotmail.com
 
-Hmm. ip frag is probably just worse than higher header/payload
-overhead.
+=====================================
+WARNING: bad unlock balance detected!
+5.9.0-syzkaller #0 Not tainted
+-------------------------------------
+kworker/u4:3/24893 is trying to release lock ((wq_completion)phy264) at:
+[<ffffffff81476be1>] flush_workqueue+0xe1/0x13e0 kernel/workqueue.c:2780
+but there are no more locks to release!
 
-> 
-> The other option would be to keep track of the real MTU in pathmtu
-> and perform max(512, pathmtu) in sctp_packet_will_fit() function.
+other info that might help us debug this:
+3 locks held by kworker/u4:3/24893:
+ #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
+ #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
+ #0: ffff8881407aa938 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x821/0x15a0 kernel/workqueue.c:2243
+ #1: ffffc9000218fda8 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work+0x854/0x15a0 kernel/workqueue.c:2247
+ #2: ffffffff8c914010 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0xa00 net/core/net_namespace.c:566
 
-I need to check where this 512 came from. I don't recall it from top
-of my head and it's from before git history. Maybe we should just drop
-this limit, if it's artificial. IPV4_MIN_MTU is 68.
+stack backtrace:
+CPU: 1 PID: 24893 Comm: kworker/u4:3 Not tainted 5.9.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:118
+ print_unlock_imbalance_bug include/trace/events/lock.h:58 [inline]
+ __lock_release kernel/locking/lockdep.c:5126 [inline]
+ lock_release.cold+0x34/0x4e kernel/locking/lockdep.c:5462
+ flush_workqueue+0x125/0x13e0 kernel/workqueue.c:2784
+ drain_workqueue+0x1a5/0x3c0 kernel/workqueue.c:2948
+ destroy_workqueue+0x71/0x760 kernel/workqueue.c:4372
+ ieee80211_unregister_hw+0x1a2/0x210 net/mac80211/main.c:1388
+ mac80211_hwsim_del_radio drivers/net/wireless/mac80211_hwsim.c:3360 [inline]
+ hwsim_exit_net+0x56b/0xc90 drivers/net/wireless/mac80211_hwsim.c:4115
+ ops_exit_list+0xb0/0x160 net/core/net_namespace.c:187
+ cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:604
+ process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
+ kthread+0x3af/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+device hsr_slave_1 left promiscuous mode
+batman_adv: batadv0: Removing interface: batadv_slave_0
+batman_adv: batadv0: Interface deactivated: batadv_slave_1
+batman_adv: batadv0: Removing interface: batadv_slave_1
+bridge0: port 2(bridge_slave_1) entered disabled state
+device bridge_slave_0 left promiscuous mode
+bridge0: port 1(bridge_slave_0) entered disabled state
+device veth0_macvtap left promiscuous mode
 
-> 
-> Not sure when exactly this got broken, but using MTU less than 512
-> used to work in 4.9.
 
-Uhh, that's a bit old already. If you could narrow it down, that would
-be nice.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-  Marcelo
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
