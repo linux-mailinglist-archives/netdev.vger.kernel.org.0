@@ -2,95 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5A252A8B53
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 01:16:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C835A2A8B61
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 01:24:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733062AbgKFAQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 19:16:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732854AbgKFAQH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 19:16:07 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26597C0613CF
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 16:16:07 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id p7so3680612ioo.6
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 16:16:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BspmPg4fxyEB4fnMALROyHJPoPVju7IkIVKuWMZnFlw=;
-        b=mws5KH8LdFgy3LNbKUhIIOUPslo01r+fGG/w6/QRLLiAzFP1JFIubEllLVRBzQn3Kt
-         TqJE15rFQZIDxKxIEBa8CAs9ktS+DIqzLxUiZXsL+RnFrEqTUqrLwsjikuCn77MCBxo2
-         Fglb31l+rs2PpS0gyek0zMtcoLdTOl0/wpXNopcovNeM89lCQMVv/BPWJjCaAvrKlYM3
-         VUUgqBVIGeGDhG13xi33DD7g0p7UUBNMzS4u0+DSuh3vNz8RYxwut+VpU/iYGEbMlSmg
-         qm4hdh5LWBlKvf00nFr11XkhrL2TqKi75SA6m4/FamizRSKEEopPcv9ydiAU1KjulndB
-         uJjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BspmPg4fxyEB4fnMALROyHJPoPVju7IkIVKuWMZnFlw=;
-        b=uSUSlNnRPEah98XGu3yuB/SY1milsaPK1+G5F08fWf+DWCq6QSvibiCjVNhJ9B94KR
-         yV5OYBIKoipA7eDXMvQvDZ5MCtqdAqo0bvDMBdsedGp0RrgOJASuI+oMvdejAzXcW2Ku
-         FJqIkOxaAzojzBbdAnIx82NrRftGJKTfVyqlVTD+eS0TiGiGWvWeApyZ1h+XCMlTDuHc
-         KyulbeWCf/zSt8jgJ30VJ0PCgRxpxFytPlwes3qNa9n6DooEXxsG8d0eDjx2xgCcVgHP
-         5m/bi8Mp00eqUdusqcYKsV2X769YNwcks4EXpji/mPewKlhFd+HhRRetLf8uoAyfdkjW
-         hl9w==
-X-Gm-Message-State: AOAM532KSnM0qU8cDCCNlpGPaeeN5AyCZYmIHQJjKSDFR0zjR2QMptc9
-        q761tQ3Z6E2/o1EvxaV4HE8=
-X-Google-Smtp-Source: ABdhPJx3Uk6zUfWbUVXdm6ZAlZF6LPr2ev4Dqu13zcrszUk0ObGH9ZbmZbAw9SoVck5lkz1bDUv4qw==
-X-Received: by 2002:a05:6602:21c2:: with SMTP id c2mr3753221ioc.184.1604621766486;
-        Thu, 05 Nov 2020 16:16:06 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:ec52:e45a:6d93:a9c])
-        by smtp.googlemail.com with ESMTPSA id o1sm1714797ior.26.2020.11.05.16.16.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Nov 2020 16:16:05 -0800 (PST)
-Subject: Re: [net-next,v1,4/5] seg6: add support for the SRv6 End.DT4 behavior
-To:     Andrea Mayer <andrea.mayer@uniroma2.it>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Shrijeet Mukherjee <shrijeet@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        kbuild-all@lists.01.org, netdev@vger.kernel.org
-Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
-References: <20201103125242.11468-5-andrea.mayer@uniroma2.it>
- <202011040355.ljXTObZi-lkp@intel.com>
- <20201106005742.31985db8c30c89e0b0868170@uniroma2.it>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <13d1b683-de1c-2a6a-4197-e7ba42f6be78@gmail.com>
-Date:   Thu, 5 Nov 2020 17:16:01 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.0
+        id S1732774AbgKFAYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 19:24:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33642 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732712AbgKFAYA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Nov 2020 19:24:00 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9BD772078E;
+        Fri,  6 Nov 2020 00:23:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604622239;
+        bh=HiaBi8UGQLhNe24ZtgZFm08RS+emATH8FZ9vy0jj1N8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=wX6pOEJb0/UOXJ6l2Z2yGOvBoErmSRAujX2InU0Q7L2k4RNFtN0QF7g53+cJ0HkgI
+         3NWgIPjuUn2Sy+BTt5AONf3S4f44ZlvzhU6tmPYMbNNUc9cdSBsDDPMybwjCy416ZM
+         QtE26RHdJEqMLF2yphi2KlmVN5zGNRWuT4OvWG78=
+Date:   Thu, 5 Nov 2020 16:23:57 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     George Cherian <gcherian@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        "masahiroy@kernel.org" <masahiroy@kernel.org>,
+        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>
+Subject: Re: [PATCH v2 net-next 3/3] octeontx2-af: Add devlink health
+ reporters for NIX
+Message-ID: <20201105162357.3c380467@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1b96abb1da9bca4d9f962babad9a0724c1188437.camel@kernel.org>
+References: <BYAPR18MB2679EC3507BD90B93B37A3F8C5EE0@BYAPR18MB2679.namprd18.prod.outlook.com>
+        <20201105090724.761a033d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <011c4d4e2227df793f615b7638165c266763e24a.camel@kernel.org>
+        <20201105124204.4dbea042@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <1b96abb1da9bca4d9f962babad9a0724c1188437.camel@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20201106005742.31985db8c30c89e0b0868170@uniroma2.it>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/5/20 4:57 PM, Andrea Mayer wrote:
-> I spent some time figuring out what happened with this patch. It seems that the
-> patchset was not applied by the kernel test robot in the correct order. In
-> particular, patch 3 is missing from this build attempt.
+On Thu, 05 Nov 2020 15:52:32 -0800 Saeed Mahameed wrote:
+> On Thu, 2020-11-05 at 12:42 -0800, Jakub Kicinski wrote:
+> > On Thu, 05 Nov 2020 11:23:54 -0800 Saeed Mahameed wrote:  
+> > > If you report an error without recovering, devlink health will
+> > > report a
+> > > bad device state
+> > > 
+> > > $ ./devlink health
+> > >    pci/0002:01:00.0:
+> > >      reporter npa
+> > >        state error error 1 recover 0  
+> > 
+> > Actually, the counter in the driver is unnecessary, right? Devlink
+> > counts errors.
 > 
-> I applied one patch after another in the correct order and, each time, I was
-> able to compile the kernel (C=1 W=1) successfully with the .config file provided
-> by the robot.
+> if you mean error and recover counters, then yes. they are managed by
+> devlink health
+> 
+> every call to dl-health-report will do:
+> 
+> devlink_health_report(reporter, err_ctx, msg)
+> {
+>       reproter.error++;
+> 
+>       devlink_trigger_event(reporter, msg);
+> 
+>       reporter.dump(err_ctx, msg);
+>       reporter.diag(err_ctx);
+> 
+>       if (!reporter.recover(err_ctx))
+>              reporter.recover++;
+> }
+> 
+> so dl-health reports without a recover op will confuse the user if user
+> sees error count > recover count.
+> 
+> error count should only be grater than recover count when recover
+> procedure fails which now will indicate the device is not in a healthy
+> state.
 
-Given that, repost the patch set.
+Good point, as is the internal devlink counter mismatch looks pretty
+strange.
 
-Jakub: if v2 with no changes triggers another build robot message, give
-Andrea time to double check whether this problem happened again before
-marking it in patchworks. Thanks,
+> also i want to clarify one small note about devlink dump.
+> 
+> devlink health dump semantics:
+> on devlink health dump, the devlink health will check if previous dump
+> exists and will just return it without actually calling the driver, if
+> not then it will call the driver to perform a new dump and will cache
+> it.
+> 
+> user has to explicitly clear the devlink health dump of that reporter
+> in order to allow for newer dump to get generated.
+> 
+> this is done this way because we want the driver to store the dump of
+> the previously reported errors at the moment the erorrs are reported by
+> driver, so when a user issue  a dump command the dump of the previous
+> error will be reported to user form memory without the need to access
+> driver/hw who might be in a bad state.
+> 
+> so this is why using devlink dump for reporting counters doesn't really
+> work, it will only report the first time the counters are accessed via
+> devlink health dump, after that it will report the same cached values
+> over and over until the user clears it up.
+
+Agreed, if only counters are reported driver should rely on the
+devlink counters. Dump contents are for context of the event.
+
+> > > So you will need to implement an empty recover op.
+> > > so if these events are informational only and they don't indicate
+> > > device health issues, why would you report them via devlink health
+> > > ?  
+> > 
+> > I see devlink health reporters a way of collecting errors reports
+> > which
+> > for the most part are just shared with the vendor. IOW firmware (or
+> > hardware) bugs.
+> > 
+> > Obviously as you say without recover and additional context in the
+> > report the value is quite diminished. But _if_ these are indeed
+> > "report
+> > me to the vendor" kind of events then at least they should use our
+> > current mechanics for such reports - which is dl-health.
+> > 
+> > Without knowing what these events are it's quite hard to tell if
+> > devlink health is an overkill or counter is sufficient.
+> > 
+> > Either way - printing these to the logs is definitely the worst
+> > choice
+> > :)  
+> 
+> Sure, I don't mind using devlink health for dump only, I don't really
+> have strong feelings against this, they can always extend it in the
+> future.
+> 
+> it just doesn't make sense to me to have it mainly used for dumping
+> counters and without using devlik helath utilities, like events,
+> reports and recover.
+> 
+> so maybe Sunil et al. could polish this patchset and provide more
+> devlink health support, like diagnose for these errors, dump HW
+> information and contexts related to these errors so they could debug
+> root causes, etc .. 
+> Then the use for dl health in this series can be truly justified.
+
+That'd indeed be optimal.
