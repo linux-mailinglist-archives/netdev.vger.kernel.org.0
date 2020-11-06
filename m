@@ -2,88 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0312E2A9A16
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 18:00:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D453F2A9A51
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 18:02:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727334AbgKFQ7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 11:59:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56556 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725868AbgKFQ7a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Nov 2020 11:59:30 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727905AbgKFRCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 12:02:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52494 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727557AbgKFRCI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 12:02:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604682126;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZkxJN2pG0H55OfgSG0ZLVwRKHMCCE+bBVgApsriI7dQ=;
+        b=YNwHMstkJWfrwp+/v2ICj1cbzPBWxKHxUd02L1XhKK7EbVYlyU50R4MWnoAcwzB5dJwIX9
+        EERfO/TSnYQ71aWt+wvLUVJEelhxgH0BFE3RkT5aHntcvcQ+uSuw2NgbYtYEBzgyU6n/WK
+        9GfE5T1Fq3qIE4a8j59fm99erH5AFo0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-590-D3TLjyGAMxOk5eZZtYYgDg-1; Fri, 06 Nov 2020 12:01:54 -0500
+X-MC-Unique: D3TLjyGAMxOk5eZZtYYgDg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9A187217A0;
-        Fri,  6 Nov 2020 16:59:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604681970;
-        bh=slj61GUBXi1bmb+n2Tw/4ksqQEdpNsvLndzv+XEqmOc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=I5VYcOXmeeuYNGxRWDNI/oSEL1zxJ70cCYO5It0wHAwi5ORjFPMIMIaY+Y1g0XfX3
-         BhPzWjuZpcz1w/NOoWtSXZdaUDt541An4cALCCVrlrmBbCHOHAZg5AsLH6ycVTmKeD
-         XKH1gtiZhnxtz8o5u/XxaUUNUSHDt0qxL9DQ3xeA=
-Date:   Fri, 6 Nov 2020 08:59:28 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     David Miller <davem@davemloft.net>,
-        linux-netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>
-Subject: Re: [PATCH net 1/2] net/af_iucv: fix null pointer dereference on
- shutdown
-Message-ID: <20201106085928.183e0c77@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201106125008.36478-2-jwi@linux.ibm.com>
-References: <20201106125008.36478-1-jwi@linux.ibm.com>
-        <20201106125008.36478-2-jwi@linux.ibm.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9DB9286ABD3;
+        Fri,  6 Nov 2020 17:01:52 +0000 (UTC)
+Received: from epycfail.redhat.com (unknown [10.36.110.60])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1E7355D9D5;
+        Fri,  6 Nov 2020 17:01:49 +0000 (UTC)
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jianlin Shi <jishi@redhat.com>, David Ahern <dsahern@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Aaron Conole <aconole@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net] tunnels: Fix off-by-one in lower MTU bounds for ICMP/ICMPv6 replies
+Date:   Fri,  6 Nov 2020 17:59:52 +0100
+Message-Id: <4f5fc2f33bfdf8409549fafd4f952b008bf04d63.1604681709.git.sbrivio@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  6 Nov 2020 13:50:07 +0100 Julian Wiedmann wrote:
-> From: Ursula Braun <ubraun@linux.ibm.com>
-> 
-> syzbot reported the following KASAN finding:
-> 
-> BUG: KASAN: nullptr-dereference in iucv_send_ctrl+0x390/0x3f0 net/iucv/af_iucv.c:385
-> Read of size 2 at addr 000000000000021e by task syz-executor907/519
-> 
-> CPU: 0 PID: 519 Comm: syz-executor907 Not tainted 5.9.0-syzkaller-07043-gbcf9877ad213 #0
-> Hardware name: IBM 3906 M04 701 (KVM/Linux)
-> Call Trace:
->  [<00000000c576af60>] unwind_start arch/s390/include/asm/unwind.h:65 [inline]
->  [<00000000c576af60>] show_stack+0x180/0x228 arch/s390/kernel/dumpstack.c:135
->  [<00000000c9dcd1f8>] __dump_stack lib/dump_stack.c:77 [inline]
->  [<00000000c9dcd1f8>] dump_stack+0x268/0x2f0 lib/dump_stack.c:118
->  [<00000000c5fed016>] print_address_description.constprop.0+0x5e/0x218 mm/kasan/report.c:383
->  [<00000000c5fec82a>] __kasan_report mm/kasan/report.c:517 [inline]
->  [<00000000c5fec82a>] kasan_report+0x11a/0x168 mm/kasan/report.c:534
->  [<00000000c98b5b60>] iucv_send_ctrl+0x390/0x3f0 net/iucv/af_iucv.c:385
->  [<00000000c98b6262>] iucv_sock_shutdown+0x44a/0x4c0 net/iucv/af_iucv.c:1457
->  [<00000000c89d3a54>] __sys_shutdown+0x12c/0x1c8 net/socket.c:2204
->  [<00000000c89d3b70>] __do_sys_shutdown net/socket.c:2212 [inline]
->  [<00000000c89d3b70>] __s390x_sys_shutdown+0x38/0x48 net/socket.c:2210
->  [<00000000c9e36eac>] system_call+0xe0/0x28c arch/s390/kernel/entry.S:415
-> 
-> There is nothing to shutdown if a connection has never been established.
-> Besides that iucv->hs_dev is not yet initialized if a socket is in
-> IUCV_OPEN state and iucv->path is not yet initialized if socket is in
-> IUCV_BOUND state.
-> So, just skip the shutdown calls for a socket in these states.
-> 
-> Fixes: eac3731bd04c ("s390: Add AF_IUCV socket support")
-> Fixes: 82492a355fac ("af_iucv: add shutdown for HS transport")
-> Reviewed-by: Vasily Gorbik <gor@linux.ibm.com>
-> Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
-> Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+Jianlin reports that a bridged IPv6 VXLAN endpoint, carrying IPv6
+packets over a link with a PMTU estimation of exactly 1350 bytes,
+won't trigger ICMPv6 Packet Too Big replies when the encapsulated
+datagrams exceed said PMTU value. VXLAN over IPv6 adds 70 bytes of
+overhead, so an ICMPv6 reply indicating 1280 bytes as inner MTU
+would be legitimate and expected.
 
-Fixes tag: Fixes: eac3731bd04c ("s390: Add AF_IUCV socket support")
-Has these problem(s):
-	- Subject does not match target commit subject
-	  Just use
-		git log -1 --format='Fixes: %h ("%s")'
+This comes from an off-by-one error I introduced in checks added
+as part of commit 4cb47a8644cc ("tunnels: PMTU discovery support
+for directly bridged IP packets"), whose purpose was to prevent
+sending ICMPv6 Packet Too Big messages with an MTU lower than the
+smallest permissible IPv6 link MTU, i.e. 1280 bytes.
+
+In iptunnel_pmtud_check_icmpv6(), avoid triggering a reply only if
+the advertised MTU would be less than, and not equal to, 1280 bytes.
+
+Also fix the analogous comparison for IPv4, that is, skip the ICMP
+reply only if the resulting MTU is strictly less than 576 bytes.
+
+This becomes apparent while running the net/pmtu.sh bridged VXLAN
+or GENEVE selftests with adjusted lower-link MTU values. Using
+e.g. GENEVE, setting ll_mtu to the values reported below, in the
+test_pmtu_ipvX_over_bridged_vxlanY_or_geneveY_exception() test
+function, we can see failures on the following tests:
+
+             test                | ll_mtu
+  -------------------------------|--------
+  pmtu_ipv4_br_geneve4_exception |   626
+  pmtu_ipv6_br_geneve4_exception |  1330
+  pmtu_ipv6_br_geneve6_exception |  1350
+
+owing to the different tunneling overheads implied by the
+corresponding configurations.
+
+Reported-by: Jianlin Shi <jishi@redhat.com>
+Fixes: 4cb47a8644cc ("tunnels: PMTU discovery support for directly bridged IP packets")
+Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+---
+ net/ipv4/ip_tunnel_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
+index 25f1caf5abf9..e25be2d01a7a 100644
+--- a/net/ipv4/ip_tunnel_core.c
++++ b/net/ipv4/ip_tunnel_core.c
+@@ -263,7 +263,7 @@ static int iptunnel_pmtud_check_icmp(struct sk_buff *skb, int mtu)
+ 	const struct icmphdr *icmph = icmp_hdr(skb);
+ 	const struct iphdr *iph = ip_hdr(skb);
+ 
+-	if (mtu <= 576 || iph->frag_off != htons(IP_DF))
++	if (mtu < 576 || iph->frag_off != htons(IP_DF))
+ 		return 0;
+ 
+ 	if (ipv4_is_lbcast(iph->daddr)  || ipv4_is_multicast(iph->daddr) ||
+@@ -359,7 +359,7 @@ static int iptunnel_pmtud_check_icmpv6(struct sk_buff *skb, int mtu)
+ 	__be16 frag_off;
+ 	int offset;
+ 
+-	if (mtu <= IPV6_MIN_MTU)
++	if (mtu < IPV6_MIN_MTU)
+ 		return 0;
+ 
+ 	if (stype == IPV6_ADDR_ANY || stype == IPV6_ADDR_MULTICAST ||
+-- 
+2.28.0
+
