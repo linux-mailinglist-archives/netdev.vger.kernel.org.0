@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C47C82A8F96
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 07:44:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B115A2A8F9A
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 07:44:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726379AbgKFGoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 01:44:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55530 "EHLO
+        id S1726440AbgKFGoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 01:44:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726249AbgKFGoC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 01:44:02 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C51C0613CF;
-        Thu,  5 Nov 2020 22:44:02 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id z3so401334pfb.10;
-        Thu, 05 Nov 2020 22:44:02 -0800 (PST)
+        with ESMTP id S1726174AbgKFGoK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 01:44:10 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A110C0613CF;
+        Thu,  5 Nov 2020 22:44:10 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id 13so423939pfy.4;
+        Thu, 05 Nov 2020 22:44:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=wzNWXW0+IF3N8GCMYR4RSS5kyM9XGdTa6wteuIyEpFc=;
-        b=fpNfc75Qq9D/2zSeopStW1hEOtt3LP8/mI29ZBSrkIT3LawBeusAG6S29xoazcRJYr
-         Uv22dHKvDpYBCLWrQWtoL/JAUFRbnNs0qto2N2fWuVs8Ma7klPY3mbW4P9Cd17oI/s0q
-         0ShJDNLJpbNgCwFCqLiZ8pYd28goI3isFcgzJwRH/IsPJdMWcQUgLooLsXHVSZ0SDO9p
-         d9znbFeX11g5P4TeOt8vtvs8ViB54CS37y9ikAhea+dYLrrfsaVGRto0YcP95SpzNYqZ
-         aMTg19QiAPX6W4NSN/yymUmFpfNv8gaDai8skMyLBnOiH9tzixLFgD23IaM9RmcG+Z1e
-         XttQ==
+        bh=sNLPRuw21PItPm6NtDbw6hLmvWCYd5keSz8WF1N4O2Y=;
+        b=Psj4Fnl8VYM3Y6Yef8Rt8q25SQXJ4r5fplJN4OMvpBKgMsw8g/qRTknM5UdgYlfXr7
+         /BkvuzTzZKHpl1tJCsqYarD44CUjKblN5Rkf+NQsxg9mJjQFRMo43cCShytvuCnaJPj5
+         v8N8yNnUlCtgChMxJjyU532/4cQ4nDoS1mvwLuxmeYlg/mFrNsqOWm1XDys/R3V1GnMo
+         NuSNajoEZQIsJngvDyV3mQqk0ysx6pbWTuroi9nSiK6DdIPDtJISU0kfy6R8l8+pfu7K
+         rS9cByI2KcUGjiPKZrHS+ciGnwRhQYPJvj3q4Xfo51kvuSWCyAkvPTERp60nxLOj2LG3
+         oSyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=wzNWXW0+IF3N8GCMYR4RSS5kyM9XGdTa6wteuIyEpFc=;
-        b=E9CiqXrMEJyW939k89AXmZ942DIHFTs3CrcCMoYO8Eaaez9QaySKSyvM8TCBVOX46t
-         0QpufzBhlJLg2cYpcHbrAjNruy5W8VmijJVg/T2bNyYUHNVumRR+0B5EKGC9Ubo5c0+Q
-         WovV2rS5fDF/bznJ91Km/j6vnaz9VzxXFJK5SNwFNehyxlbO4G2z8rpiZjxOBSn2T2hO
-         rBIeGWF7lVxo5ZlBl67eUMscIxZ5a4ihAUx3BWv/0hyy7kDmooccxk3HM14i3nnGqY+G
-         4Euf2p3dtpA3ss3DU5C3L0kOHYsb9pY5LUQJh9gUz8jNf8orrjzRCe5gW6ttSZR6AU5a
-         Eweg==
-X-Gm-Message-State: AOAM533zJ46TAA9EXqj/39m1fe4Yx7UXRuxLTqt/dQRO/bewGV45XyYv
-        bHgqJjg7aRt7+nJbyqPYwC0=
-X-Google-Smtp-Source: ABdhPJwl6RftUneC3jTR45Lmb40ePwhG7xrSJOhyvInKxUCRK5zQhfJorobMZhssxJz2EJxjirGmuw==
-X-Received: by 2002:a17:90b:942:: with SMTP id dw2mr876358pjb.14.1604645042465;
-        Thu, 05 Nov 2020 22:44:02 -0800 (PST)
+        bh=sNLPRuw21PItPm6NtDbw6hLmvWCYd5keSz8WF1N4O2Y=;
+        b=SWyGcee19mcahGpMmSUNnC7YkoHxX0eyQEnxRJTwYWTJC3kow/aieJZY0ijR9BH9VL
+         UU53j97RnN0yViyoLQsl0zTN9g0n8xYctGctczde/4B6BqtFnfQKLU7VtFEXWaDJGiGl
+         6B38LEpezfDqfSVJh0s81xaA7/QDtm861COZj4YRX48w924qCN7ZkToVdofevm2YPFE5
+         xvVTUk9l6rIRNDNQizHZ52/9qKKOcC2NbnA4lr5hWit2+1GJp3TdY3dV0sul7W4WH7vx
+         f0GpM09ROSyGxZozrOCl35U/ALUu+cGgGYL3IOocaLh5JJH7xPg3juwt6OoNKGBOxvN/
+         dQhQ==
+X-Gm-Message-State: AOAM533GUp0WvrnRLhk2KQiT8l5sV5VzzSnbhiXDW3vNMQ6110xWT64S
+        SB+CTyqteuFLVIqPNLUvIeY=
+X-Google-Smtp-Source: ABdhPJyzZ9gn5dQawPxpwGKVEE19XcEnAF92CKNV5/O2WMgqGK1diGGivyD7ply0qyX3YpRJl1pLGg==
+X-Received: by 2002:a17:90a:d182:: with SMTP id fu2mr899635pjb.145.1604645050149;
+        Thu, 05 Nov 2020 22:44:10 -0800 (PST)
 Received: from localhost.localdomain ([154.93.3.113])
-        by smtp.gmail.com with ESMTPSA id g1sm837820pjt.40.2020.11.05.22.44.01
+        by smtp.gmail.com with ESMTPSA id g1sm837820pjt.40.2020.11.05.22.44.05
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 05 Nov 2020 22:44:01 -0800 (PST)
+        Thu, 05 Nov 2020 22:44:09 -0800 (PST)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: dong.menglong@zte.com.cn
 To:     kuba@kernel.org
 Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Menglong Dong <dong.menglong@zte.com.cn>
-Subject: [PATCH] net: udp: remove redundant initialization in udp_gro_complete
-Date:   Fri,  6 Nov 2020 01:42:39 -0500
-Message-Id: <1604644960-48378-3-git-send-email-dong.menglong@zte.com.cn>
+Subject: [PATCH] net: udp: remove redundant initialization in udp_send_skb
+Date:   Fri,  6 Nov 2020 01:42:40 -0500
+Message-Id: <1604644960-48378-4-git-send-email-dong.menglong@zte.com.cn>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1604644960-48378-1-git-send-email-dong.menglong@zte.com.cn>
 References: <1604644960-48378-1-git-send-email-dong.menglong@zte.com.cn>
@@ -64,27 +64,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <dong.menglong@zte.com.cn>
 
-The initialization for 'err' with '-ENOSYS' is redundant and
-can be removed, as it is updated soon and not used.
+The initialization for 'err' with 0 is redundant and can be removed,
+as it is updated by ip_send_skb and not used before that.
 
 Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
 ---
- net/ipv4/udp_offload.c | 2 +-
+ net/ipv4/udp.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-index b8b1fde..65860f8 100644
---- a/net/ipv4/udp_offload.c
-+++ b/net/ipv4/udp_offload.c
-@@ -554,7 +554,7 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
- {
- 	__be16 newlen = htons(skb->len - nhoff);
- 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
--	int err = -ENOSYS;
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index ca04a8a..6953688 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -874,7 +874,7 @@ static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4,
+ 	struct sock *sk = skb->sk;
+ 	struct inet_sock *inet = inet_sk(sk);
+ 	struct udphdr *uh;
+-	int err = 0;
 +	int err;
- 	struct sock *sk;
- 
- 	uh->len = newlen;
+ 	int is_udplite = IS_UDPLITE(sk);
+ 	int offset = skb_transport_offset(skb);
+ 	int len = skb->len - offset;
 -- 
 2.7.4
 
