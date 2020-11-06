@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2F6E2A8B27
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 01:12:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EB9B2A8B28
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 01:12:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732636AbgKFAMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1732680AbgKFAMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 5 Nov 2020 19:12:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51112 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729162AbgKFAMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 19:12:33 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB68FC0613D2
-        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 16:12:32 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id v12so2650709pfm.13
-        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 16:12:32 -0800 (PST)
+        with ESMTP id S1732660AbgKFAMe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 19:12:34 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2721EC0613CF
+        for <netdev@vger.kernel.org>; Thu,  5 Nov 2020 16:12:34 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id v12so2650733pfm.13
+        for <netdev@vger.kernel.org>; Thu, 05 Nov 2020 16:12:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=RzMJ5I54EBNjTKdQhYz0zoJbUVPD0Jjli8LFYU8UorI=;
-        b=j9VGIlz6kxk5ynOxCJdEf0yuZcp8D9wsgHB/c2XkRvAHmEdAvY9Jqz2jsFaOytNfG3
-         iT9n5p0uaAZFgsHvc5Id+RaPWmizI5mYBPew8tlLpcDfz2NsTNhUpLyIQVK5Di5wV8aE
-         VdZ8XMHkQ7ezdHYgclPrPpobUcTgySHurlqx9BLjtKua+pd1TxWCl700bGGqbXv8uJ9r
-         VMGKC1oc+5RD6FjsVtyNlXPzl0wOcjr/k4paNMb48I3q6VObnc8YyKRvULfllq9sRDGr
-         fW1r8RejTzA1Gg4nTOnoeXwvRKGGdEiZLp3S3Cs66FSmKQ3RnDGHzsvxf6HqY1H2+UJz
-         oKZw==
+        bh=H4nDhqegF0EjT05ul4Hwr7UIDTMUmNY72Ijv6z2hAS0=;
+        b=31zQo4w/qe1ztrYsbSVkHOm7mv6ghuMskhV8VvFg22P3ZVhJ9TD/lxJsHuZ21XtEvi
+         WjXdHqmFxkQHrvDJ393p0/xaix54uXaEbEBeTjWpFMWLb6Rggqhxj9YquT0Vc6AOCDXu
+         l2FJAV6EzJwS+zpl9B4jtRO5eRXOwLzK0xDJh9gh6dQ0f9yXU/dOTdOdLDUKCn5EeW/n
+         FYJc3lmZhVPV1yrei9tvpJvOUzaaJ7u9hD1jD4e4eckJUuBx4sllPqz4KUaB4o87XgQj
+         kbG9xBYtUGyLT5k61CSm+h3K1b6XBnwBikKM+yRhHjBEGqZPXCTKXRT3Sy0s4foZfm98
+         Lf/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=RzMJ5I54EBNjTKdQhYz0zoJbUVPD0Jjli8LFYU8UorI=;
-        b=Y/0Num1jV9rQbWJF91knDA8+d1RV68ZzhszYoztXBcJJROCPP9khiygJiw6dWhfoBA
-         OwrfHNJVhHWjFnSd8pQu/UqejaXS2YIgqfcqwzolgi84OP2McF4Lc3N+yDAB97tk/WX+
-         fxuaiINgyKIiGzKloOKVuCaA3u4ot4SVJfQ3C4QphM1QOmOHhrToHCGk3jfWGtZblz1y
-         cIrWgHnAwlPZQ/cVom8i39fOLgjSQhOpWs1eWggCMfDc2CvyuGyr2KVf9YOBxeNu2/oT
-         9n/DbAB94HCP/qQsxTJ5NEfJFE0MaIo8qizn6E4eRaeQiJ5FuWoMkReaE84gLgWm42HP
-         rnoA==
-X-Gm-Message-State: AOAM530EkQ4woH4oZ+Bm1jReFD3/wDIIKmbKmQ7c79MbALYQcLipGZOb
-        G8nMQEHewjSBCCl37kGkUmvq+Vbs2vr0hQ==
-X-Google-Smtp-Source: ABdhPJwEPHxh39/0PjO1rZygNffylevCu/o97s/X4N4K4bAZG+6YJ7PD+wbhez9iYvWNn6vZtiVMgw==
-X-Received: by 2002:a17:90a:c381:: with SMTP id h1mr77998pjt.2.1604621552240;
-        Thu, 05 Nov 2020 16:12:32 -0800 (PST)
+        bh=H4nDhqegF0EjT05ul4Hwr7UIDTMUmNY72Ijv6z2hAS0=;
+        b=IQgP07V2gtRdG9v970RNCKh78DxvyLrytfNE5oDiuNplkn9qe9qRXNPx3Qp/H36sKZ
+         v+/ZxXafn2keJNFE95NuLRsISd3cbzwe9Q9qqCTVb37inz6hktPCStD3D2PQhjyYuGrE
+         tlN9S4X0XmB38tU6JjoISibL5sTub1cqSuUUhLcGRhu0ro0j5T7XdPLlUR2/kcWjwzbA
+         LjODtVAdVQjimJ2en5SeP3AtU8oD/OXn/MAgddiGUdslX1b/BXr2RYIU9B0y6IHKOn+3
+         SiWN8MFSp9yKBhbLSa4+L7Yh6w7cZwZg087j/cBToeeC7Rn5G1gHt3EuiD7NEscle8/p
+         LJiQ==
+X-Gm-Message-State: AOAM533O62DyrdXPASBTQRH/gNzoxl5uojQebQUCCu0A1AvJwib+S5qM
+        uFXhfR9FJYUtxCRExG11H3rfCdudTPMV2w==
+X-Google-Smtp-Source: ABdhPJxtuGsCbR8nHf5g+pPfXJsJZrcwODxPvINWMu/Bf8lE92Dw3jiKi4xTd/WVnW2CA40bmIJePw==
+X-Received: by 2002:a62:8f8b:0:b029:164:9e98:c0e with SMTP id n133-20020a628f8b0000b02901649e980c0emr4981323pfd.80.1604621553290;
+        Thu, 05 Nov 2020 16:12:33 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id 22sm3236009pjb.40.2020.11.05.16.12.31
+        by smtp.gmail.com with ESMTPSA id 22sm3236009pjb.40.2020.11.05.16.12.32
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 05 Nov 2020 16:12:31 -0800 (PST)
+        Thu, 05 Nov 2020 16:12:32 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 2/8] ionic: check for link after netdev registration
-Date:   Thu,  5 Nov 2020 16:12:14 -0800
-Message-Id: <20201106001220.68130-3-snelson@pensando.io>
+Subject: [PATCH v2 net-next 3/8] ionic: add lif quiesce
+Date:   Thu,  5 Nov 2020 16:12:15 -0800
+Message-Id: <20201106001220.68130-4-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201106001220.68130-1-snelson@pensando.io>
 References: <20201106001220.68130-1-snelson@pensando.io>
@@ -59,28 +59,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Request a link check as soon as the netdev is registered rather
-than waiting for the watchdog to go off in order to get the
-interface operational a little more quickly.
+After the queues are stopped, expressly quiesce the lif.
+This assures that even if the queues were in an odd state,
+the firmware will close up everything cleanly.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 24 +++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 5457fb5d69ed..519d544821af 100644
+index 519d544821af..990bd9ce93c2 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -2959,6 +2959,8 @@ int ionic_lif_register(struct ionic_lif *lif)
- 		dev_err(lif->ionic->dev, "Cannot register net device, aborting\n");
- 		return err;
+@@ -1625,6 +1625,28 @@ static void ionic_lif_rss_deinit(struct ionic_lif *lif)
+ 	ionic_lif_rss_config(lif, 0x0, NULL, NULL);
+ }
+ 
++static int ionic_lif_quiesce(struct ionic_lif *lif)
++{
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.lif_setattr = {
++			.opcode = IONIC_CMD_LIF_SETATTR,
++			.index = cpu_to_le16(lif->index),
++			.attr = IONIC_LIF_ATTR_STATE,
++			.state = IONIC_LIF_QUIESCE,
++		},
++	};
++	int err;
++
++	err = ionic_adminq_post_wait(lif, &ctx);
++	if (err) {
++		netdev_err(lif->netdev, "lif quiesce failed %d\n", err);
++		return err;
++	}
++
++	return 0;
++}
++
+ static void ionic_txrx_disable(struct ionic_lif *lif)
+ {
+ 	unsigned int i;
+@@ -1639,6 +1661,8 @@ static void ionic_txrx_disable(struct ionic_lif *lif)
+ 		for (i = 0; i < lif->nxqs; i++)
+ 			err = ionic_qcq_disable(lif->rxqcqs[i], (err != -ETIMEDOUT));
  	}
 +
-+	ionic_link_status_check_request(lif, true);
- 	lif->registered = true;
- 	ionic_lif_set_netdev_info(lif);
++	(void)ionic_lif_quiesce(lif);
+ }
  
+ static void ionic_txrx_deinit(struct ionic_lif *lif)
 -- 
 2.17.1
 
