@@ -2,98 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56CD92A9FBB
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 23:07:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A267A2A9FBF
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 23:09:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728490AbgKFWHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 17:07:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728131AbgKFWHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 17:07:22 -0500
-Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42087C0613CF;
-        Fri,  6 Nov 2020 14:07:22 -0800 (PST)
-Received: by fieldses.org (Postfix, from userid 2815)
-        id 283034F3A; Fri,  6 Nov 2020 17:07:21 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 283034F3A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
-        s=default; t=1604700441;
-        bh=RqLyV+UCWvbwkSg7aU8JV9KDf8m/ioygVluigPiNn7g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zmTKtz6WpAp+LVf2AWC0gv+c8jBiDGrFhtjCQei25OwQIMEKmZSpBaLwokqu+wPhz
-         +THdt+UmBaO1BJivLPyxLVVJCEb2EnQYC5QdVD6jz+xiCHtorpa6lGqsXMULsvYdhp
-         u0ZqOFSEEUPYmCwaP9GwvyW4K9s3MSOcFnvdHanQ=
-Date:   Fri, 6 Nov 2020 17:07:21 -0500
-From:   "J. Bruce Fields" <bfields@fieldses.org>
-To:     Alex Dewar <alex.dewar90@gmail.com>
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Artur Molchanov <arturmolchanov@gmail.com>,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/sunrpc: Fix return value from proc_do_xprt()
-Message-ID: <20201106220721.GE26028@fieldses.org>
-References: <20201024145240.23245-1-alex.dewar90@gmail.com>
+        id S1728685AbgKFWIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 17:08:06 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:45296 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728594AbgKFWIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 17:08:05 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A6Lwom2014244
+        for <netdev@vger.kernel.org>; Fri, 6 Nov 2020 14:08:04 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=Wgy1IYFmaJr062bGS4QL+FI9MGl4k8SGXjbDgz0DL9M=;
+ b=JdDoRtqALH11QxH6NG+51dywUsW5NlA+FSyBV1KRrcgbtQwpEFgdjbOU0Ilmyx6jU8Ag
+ qd+gJxJIsVImKorjbct/cB6R+8lubutCIPUB1L8wrvfnPdPgUGPTKDqJohIU7RGjiRP+
+ qkyZ1QgpL/TYKRFzGofqaf/MXrkfy5HfjjE= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 34mr9ben9m-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 06 Nov 2020 14:08:04 -0800
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 6 Nov 2020 14:08:02 -0800
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id 04CF529463F7; Fri,  6 Nov 2020 14:07:50 -0800 (PST)
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH bpf-next 0/3] bpf: Enable bpf_sk_storage for FENTRY/FEXIT/RAW_TP
+Date:   Fri, 6 Nov 2020 14:07:50 -0800
+Message-ID: <20201106220750.3949423-1-kafai@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201024145240.23245-1-alex.dewar90@gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-06_06:2020-11-05,2020-11-06 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ phishscore=0 clxscore=1015 lowpriorityscore=0 mlxlogscore=395
+ suspectscore=13 mlxscore=0 priorityscore=1501 impostorscore=0 bulkscore=0
+ adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011060151
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Whoops, got 3 independent patches for this and overlooked this one.  See
-https://lore.kernel.org/linux-nfs/20201106205959.GB26028@fieldses.org/T/#t
+This set is to allow the FENTRY/FEXIT/RAW_TP tracing program to use
+bpf_sk_storage.  The first patch is a cleanup.  The last patch is
+tests.  The second patch has the required kernel changes to
+enable bpf_sk_storage for FENTRY/FEXIT/RAW_TP.
 
---b.
+Please see individual patch for details.
 
-On Sat, Oct 24, 2020 at 03:52:40PM +0100, Alex Dewar wrote:
-> Commit c09f56b8f68d ("net/sunrpc: Fix return value for sysctl
-> sunrpc.transports") attempted to add error checking for the call to
-> memory_read_from_buffer(), however its return value was assigned to a
-> size_t variable, so any negative values would be lost in the cast. Fix
-> this.
-> 
-> Addresses-Coverity-ID: 1498033: Control flow issues (NO_EFFECT)
-> Fixes: c09f56b8f68d ("net/sunrpc: Fix return value for sysctl sunrpc.transports")
-> Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
-> ---
->  net/sunrpc/sysctl.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/sunrpc/sysctl.c b/net/sunrpc/sysctl.c
-> index a18b36b5422d..c95a2b84dd95 100644
-> --- a/net/sunrpc/sysctl.c
-> +++ b/net/sunrpc/sysctl.c
-> @@ -62,6 +62,7 @@ rpc_unregister_sysctl(void)
->  static int proc_do_xprt(struct ctl_table *table, int write,
->  			void *buffer, size_t *lenp, loff_t *ppos)
->  {
-> +	ssize_t bytes_read;
->  	char tmpbuf[256];
->  	size_t len;
->  
-> @@ -70,12 +71,14 @@ static int proc_do_xprt(struct ctl_table *table, int write,
->  		return 0;
->  	}
->  	len = svc_print_xprts(tmpbuf, sizeof(tmpbuf));
-> -	*lenp = memory_read_from_buffer(buffer, *lenp, ppos, tmpbuf, len);
-> +	bytes_read = memory_read_from_buffer(buffer, *lenp, ppos, tmpbuf, len);
->  
-> -	if (*lenp < 0) {
-> +	if (bytes_read < 0) {
->  		*lenp = 0;
->  		return -EINVAL;
->  	}
-> +
-> +	*lenp = bytes_read;
->  	return 0;
->  }
->  
-> -- 
-> 2.29.1
+Martin KaFai Lau (3):
+  bpf: Folding omem_charge() into sk_storage_charge()
+  bpf: Allow using bpf_sk_storage in FENTRY/FEXIT/RAW_TP
+  bpf: selftest: Use bpf_sk_storage in FENTRY/FEXIT/RAW_TP
+
+ include/net/bpf_sk_storage.h                  |   2 +
+ kernel/trace/bpf_trace.c                      |   5 +
+ net/core/bpf_sk_storage.c                     |  96 +++++++++++--
+ .../bpf/prog_tests/sk_storage_tracing.c       | 135 ++++++++++++++++++
+ .../bpf/progs/test_sk_storage_trace_itself.c  |  29 ++++
+ .../bpf/progs/test_sk_storage_tracing.c       |  95 ++++++++++++
+ 6 files changed, 349 insertions(+), 13 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/sk_storage_tra=
+cing.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sk_storage_tra=
+ce_itself.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sk_storage_tra=
+cing.c
+
+--=20
+2.24.1
+
