@@ -2,94 +2,287 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3E522A9DC4
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 20:16:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EE1D2A9DD6
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 20:18:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727270AbgKFTQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 14:16:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726447AbgKFTQu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 14:16:50 -0500
-Received: from mail.buslov.dev (mail.buslov.dev [IPv6:2001:19f0:5001:2e3f:5400:1ff:feed:a259])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5832EC0613CF
-        for <netdev@vger.kernel.org>; Fri,  6 Nov 2020 11:16:50 -0800 (PST)
-Received: from vlad-x1g6 (unknown [IPv6:2a0b:2bc3:193f:1:a5fe:a7d6:6345:fe8d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.buslov.dev (Postfix) with ESMTPSA id C75CD1FA9D;
-        Fri,  6 Nov 2020 21:16:46 +0200 (EET)
-References: <20201031201644.247605-1-vlad@buslov.dev> <20201031202522.247924-1-vlad@buslov.dev> <ddd99541-204c-1b29-266f-2d7f4489d403@gmail.com> <87wnz25vir.fsf@buslov.dev> <178bdf87-8513-625f-1b2e-79ad435bcdf3@mojatatu.com>
-User-agent: mu4e 1.4.13; emacs 26.3
-From:   Vlad Buslov <vlad@buslov.dev>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        stephen@networkplumber.org, davem@davemloft.net, kuba@kernel.org,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us
-Subject: Re: [PATCH iproute2-next] tc: implement support for action terse dump
-In-reply-to: <178bdf87-8513-625f-1b2e-79ad435bcdf3@mojatatu.com>
-Date:   Fri, 06 Nov 2020 21:16:45 +0200
-Message-ID: <87y2je9tya.fsf@buslov.dev>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1728190AbgKFTSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 14:18:43 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:62352 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728165AbgKFTSm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 14:18:42 -0500
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A6J1dDP112242;
+        Fri, 6 Nov 2020 14:18:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=ekMRd/BlIUY3PgPZIgZcd3bmR+YvqVLgjNXwwbqsfDU=;
+ b=bElZF/4hNKrLDekBlwJk2xkir8CXf/kTY8W991+IKiZqoxetv1EpUf1rZMvp6srVMspM
+ KGMuDzxzrBePE0dgpoWl7pqTwVw6wPtseWUaL7m+WcZzLFjZrUcTtqygpSXFcCYi+6tV
+ TX1kD4JARhaUESsrE9csC/QyeP3Y8mt/q3pcPsrlDxxQiCzAJzJhgi2gVmVZTrpIn4TL
+ Q0pRApnG04zJZVYiNacG2UKpS4P3vbMT+usNvrCNoVoIQkgauDfaWRNaSg0KzHVY9UzZ
+ s+E6kVvlZjgDQA3iu9ln/hUatugAiKkEjJY3of8Pppym0pb+4NvGEUuLDnYm35YFUT6W /Q== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34n6h8cagc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 Nov 2020 14:18:30 -0500
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A6JDZQO017203;
+        Fri, 6 Nov 2020 19:18:30 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma02dal.us.ibm.com with ESMTP id 34h02390n2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 Nov 2020 19:18:30 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A6JITIj65995074
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 6 Nov 2020 19:18:29 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 65BB3112062;
+        Fri,  6 Nov 2020 19:18:29 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 10D23112061;
+        Fri,  6 Nov 2020 19:18:29 +0000 (GMT)
+Received: from ltcalpine2-lp16.aus.stglabs.ibm.com (unknown [9.40.195.199])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri,  6 Nov 2020 19:18:28 +0000 (GMT)
+From:   Dany Madden <drt@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Dany Madden <drt@linux.ibm.com>
+Subject: [PATCH net-next] Revert ibmvnic merge do_change_param_reset into do_reset
+Date:   Fri,  6 Nov 2020 14:17:45 -0500
+Message-Id: <20201106191745.1679846-1-drt@linux.ibm.com>
+X-Mailer: git-send-email 2.18.2
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-06_06:2020-11-05,2020-11-06 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ malwarescore=0 suspectscore=1 spamscore=0 priorityscore=1501 adultscore=0
+ impostorscore=0 phishscore=0 clxscore=1011 bulkscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011060132
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This reverts commit 16b5f5ce351f8709a6b518cc3cbf240c378305bf
+where it restructures do_reset. There are patches being tested that
+would require major rework if this is committed first. 
 
-On Tue 03 Nov 2020 at 23:59, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> On 2020-11-03 10:07 a.m., Vlad Buslov wrote:
->>
->> On Tue 03 Nov 2020 at 03:48, David Ahern <dsahern@gmail.com> wrote:
->>> On 10/31/20 2:25 PM, Vlad Buslov wrote:
->>>> diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
->>>> index 5ad84e663d01..b486f52900f0 100644
->>>> --- a/include/uapi/linux/rtnetlink.h
->>>> +++ b/include/uapi/linux/rtnetlink.h
->>>> @@ -768,8 +768,12 @@ enum {
->>>>    * actions in a dump. All dump responses will contain the number of actions
->>>>    * being dumped stored in for user app's consumption in TCA_ROOT_COUNT
->>>>    *
->>>> + * TCA_FLAG_TERSE_DUMP user->kernel to request terse (brief) dump that only
->>>> + * includes essential action info (kind, index, etc.)
->>>> + *
->>>>    */
->>>>   #define TCA_FLAG_LARGE_DUMP_ON		(1 << 0)
->>>> +#define TCA_FLAG_TERSE_DUMP		(1 << 1)
->>>>   
->>>
->>> there is an existing TCA_DUMP_FLAGS_TERSE. How does this differ and if
->>> it really is needed please make it different enough and documented to
->>> avoid confusion.
->>
->> TCA_FLAG_TERSE_DUMP is a bit in TCA_ROOT_FLAGS tlv which is basically
->> "action flags". TCA_DUMP_FLAGS_TERSE is a bit in TCA_DUMP_FLAGS tlv
->> which is dedicated flags attribute for filter dump. We can't just reuse
->> existing filter dump constant because its value "1" is already taken by
->> TCA_FLAG_LARGE_DUMP_ON. This might look confusing, but what do you
->> suggest? Those are two unrelated tlv's. I can rename the constant name
->> to TCA_FLAG_ACTION_TERSE_DUMP to signify that the flag is action
->> specific, but that would make the naming inconsistent with existing
->> TCA_FLAG_LARGE_DUMP_ON.
->>
->
-> Its unfortunate that the TCA_ prefix ended being used for both filters
-> and actions. Since we only have a couple of flags maybe it is not too
-> late to have a prefix TCAA_ ? For existing flags something like a
-> #define TCAA_FLAG_LARGE_DUMP_ON TCA_FLAG_LARGE_DUMP_ON
-> in the uapi header will help. Of course that would be a separate
-> patch which will require conversion code in both the kernel and user
-> space.
+We will resend this after the other patches have been applied.
 
-I can send a followup patch, assuming David is satisfied with proposed
-change.
+Signed-off-by: Dany Madden <drt@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 147 ++++++++++++++++++++---------
+ 1 file changed, 104 insertions(+), 43 deletions(-)
 
->
-> FWIW, the patch is good for what i tested. So even if you do send an
-> update with a name change please add:
->
-> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
->
-> cheers,
-> jamal
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index f4167de30461..af4dfbe28d56 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1826,6 +1826,86 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
+ 	return rc;
+ }
+ 
++/**
++ * do_change_param_reset returns zero if we are able to keep processing reset
++ * events, or non-zero if we hit a fatal error and must halt.
++ */
++static int do_change_param_reset(struct ibmvnic_adapter *adapter,
++				 struct ibmvnic_rwi *rwi,
++				 u32 reset_state)
++{
++	struct net_device *netdev = adapter->netdev;
++	int i, rc;
++
++	netdev_dbg(adapter->netdev, "Change param resetting driver (%d)\n",
++		   rwi->reset_reason);
++
++	netif_carrier_off(netdev);
++	adapter->reset_reason = rwi->reset_reason;
++
++	ibmvnic_cleanup(netdev);
++
++	if (reset_state == VNIC_OPEN) {
++		rc = __ibmvnic_close(netdev);
++		if (rc)
++			return rc;
++	}
++
++	release_resources(adapter);
++	release_sub_crqs(adapter, 1);
++	release_crq_queue(adapter);
++
++	adapter->state = VNIC_PROBED;
++
++	rc = init_crq_queue(adapter);
++
++	if (rc) {
++		netdev_err(adapter->netdev,
++			   "Couldn't initialize crq. rc=%d\n", rc);
++		return rc;
++	}
++
++	rc = ibmvnic_reset_init(adapter, true);
++	if (rc)
++		return IBMVNIC_INIT_FAILED;
++
++	/* If the adapter was in PROBE state prior to the reset,
++	 * exit here.
++	 */
++	if (reset_state == VNIC_PROBED)
++		return 0;
++
++	rc = ibmvnic_login(netdev);
++	if (rc) {
++		adapter->state = reset_state;
++		return rc;
++	}
++
++	rc = init_resources(adapter);
++	if (rc)
++		return rc;
++
++	ibmvnic_disable_irqs(adapter);
++
++	adapter->state = VNIC_CLOSED;
++
++	if (reset_state == VNIC_CLOSED)
++		return 0;
++
++	rc = __ibmvnic_open(netdev);
++	if (rc)
++		return IBMVNIC_OPEN_FAILED;
++
++	/* refresh device's multicast list */
++	ibmvnic_set_multi(netdev);
++
++	/* kick napi */
++	for (i = 0; i < adapter->req_rx_queues; i++)
++		napi_schedule(&adapter->napi[i]);
++
++	return 0;
++}
++
+ /**
+  * do_reset returns zero if we are able to keep processing reset events, or
+  * non-zero if we hit a fatal error and must halt.
+@@ -1841,12 +1921,10 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 	netdev_dbg(adapter->netdev, "Re-setting driver (%d)\n",
+ 		   rwi->reset_reason);
+ 
+-	adapter->reset_reason = rwi->reset_reason;
+-	/* requestor of VNIC_RESET_CHANGE_PARAM already has the rtnl lock */
+-	if (!(adapter->reset_reason == VNIC_RESET_CHANGE_PARAM))
+-		rtnl_lock();
++	rtnl_lock();
+ 
+ 	netif_carrier_off(netdev);
++	adapter->reset_reason = rwi->reset_reason;
+ 
+ 	old_num_rx_queues = adapter->req_rx_queues;
+ 	old_num_tx_queues = adapter->req_tx_queues;
+@@ -1858,37 +1936,25 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 	if (reset_state == VNIC_OPEN &&
+ 	    adapter->reset_reason != VNIC_RESET_MOBILITY &&
+ 	    adapter->reset_reason != VNIC_RESET_FAILOVER) {
+-		if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
+-			rc = __ibmvnic_close(netdev);
+-			if (rc)
+-				goto out;
+-		} else {
+-			adapter->state = VNIC_CLOSING;
+-
+-			/* Release the RTNL lock before link state change and
+-			 * re-acquire after the link state change to allow
+-			 * linkwatch_event to grab the RTNL lock and run during
+-			 * a reset.
+-			 */
+-			rtnl_unlock();
+-			rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_DN);
+-			rtnl_lock();
+-			if (rc)
+-				goto out;
++		adapter->state = VNIC_CLOSING;
+ 
+-			if (adapter->state != VNIC_CLOSING) {
+-				rc = -1;
+-				goto out;
+-			}
++		/* Release the RTNL lock before link state change and
++		 * re-acquire after the link state change to allow
++		 * linkwatch_event to grab the RTNL lock and run during
++		 * a reset.
++		 */
++		rtnl_unlock();
++		rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_DN);
++		rtnl_lock();
++		if (rc)
++			goto out;
+ 
+-			adapter->state = VNIC_CLOSED;
++		if (adapter->state != VNIC_CLOSING) {
++			rc = -1;
++			goto out;
+ 		}
+-	}
+ 
+-	if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
+-		release_resources(adapter);
+-		release_sub_crqs(adapter, 1);
+-		release_crq_queue(adapter);
++		adapter->state = VNIC_CLOSED;
+ 	}
+ 
+ 	if (adapter->reset_reason != VNIC_RESET_NON_FATAL) {
+@@ -1897,9 +1963,7 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 		 */
+ 		adapter->state = VNIC_PROBED;
+ 
+-		if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
+-			rc = init_crq_queue(adapter);
+-		} else if (adapter->reset_reason == VNIC_RESET_MOBILITY) {
++		if (adapter->reset_reason == VNIC_RESET_MOBILITY) {
+ 			rc = ibmvnic_reenable_crq_queue(adapter);
+ 			release_sub_crqs(adapter, 1);
+ 		} else {
+@@ -1939,11 +2003,7 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 			goto out;
+ 		}
+ 
+-		if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
+-			rc = init_resources(adapter);
+-			if (rc)
+-				goto out;
+-		} else if (adapter->req_rx_queues != old_num_rx_queues ||
++		if (adapter->req_rx_queues != old_num_rx_queues ||
+ 		    adapter->req_tx_queues != old_num_tx_queues ||
+ 		    adapter->req_rx_add_entries_per_subcrq !=
+ 		    old_num_rx_slots ||
+@@ -2004,9 +2064,7 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 	rc = 0;
+ 
+ out:
+-	/* requestor of VNIC_RESET_CHANGE_PARAM should still hold the rtnl lock */
+-	if (!(adapter->reset_reason == VNIC_RESET_CHANGE_PARAM))
+-		rtnl_unlock();
++	rtnl_unlock();
+ 
+ 	return rc;
+ }
+@@ -2140,7 +2198,10 @@ static void __ibmvnic_reset(struct work_struct *work)
+ 		}
+ 		spin_unlock_irqrestore(&adapter->state_lock, flags);
+ 
+-		if (adapter->force_reset_recovery) {
++		if (rwi->reset_reason == VNIC_RESET_CHANGE_PARAM) {
++			/* CHANGE_PARAM requestor holds rtnl_lock */
++			rc = do_change_param_reset(adapter, rwi, reset_state);
++		} else if (adapter->force_reset_recovery) {
+ 			/* Transport event occurred during previous reset */
+ 			if (adapter->wait_for_reset) {
+ 				/* Previous was CHANGE_PARAM; caller locked */
+-- 
+2.18.2
 
