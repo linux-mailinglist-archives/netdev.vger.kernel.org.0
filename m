@@ -2,65 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 947EA2A91C3
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 09:47:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 787112A91C9
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 09:48:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726597AbgKFIrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 03:47:45 -0500
-Received: from m176115.mail.qiye.163.com ([59.111.176.115]:63913 "EHLO
-        m176115.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726190AbgKFIrp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 03:47:45 -0500
-Received: from vivo-HP-ProDesk-680-G4-PCI-MT.vivo.xyz (unknown [58.251.74.231])
-        by m176115.mail.qiye.163.com (Hmail) with ESMTPA id F2A94666AB2;
-        Fri,  6 Nov 2020 16:47:41 +0800 (CST)
-From:   Wang Qing <wangqing@vivo.com>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Wang Qing <wangqing@vivo.com>
-Subject: [PATCH] trace: Fix passing zero to 'PTR_ERR' warning
-Date:   Fri,  6 Nov 2020 16:47:32 +0800
-Message-Id: <1604652452-11494-1-git-send-email-wangqing@vivo.com>
-X-Mailer: git-send-email 2.7.4
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZGE4YGUNOT09KGUhNVkpNS09NTklPTUlDT0pVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKQ1VLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NTY6Mww6CT8iLx0KDUILTAsJ
-        OChPCTNVSlVKTUtPTU5JT01ISU1IVTMWGhIXVQwaFRwKEhUcOw0SDRRVGBQWRVlXWRILWUFZTkNV
-        SU5KVUxPVUlISllXWQgBWUFKQkxDNwY+
-X-HM-Tid: 0a759cbd72669373kuwsf2a94666ab2
+        id S1726558AbgKFIsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 03:48:53 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:35585 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725830AbgKFIsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 03:48:52 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-113-DayvrsIxPBecSkDdjKOROQ-1; Fri, 06 Nov 2020 08:48:48 +0000
+X-MC-Unique: DayvrsIxPBecSkDdjKOROQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 6 Nov 2020 08:48:47 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 6 Nov 2020 08:48:47 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jakub Kicinski' <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+CC:     netdev <netdev@vger.kernel.org>, Nicolas Pitre <nico@fluxnic.net>,
+        "Lee Jones" <lee.jones@linaro.org>
+Subject: RE: [PATCH net-next v2 1/7] drivers: net: smc91x: Fix set but unused
+ W=1 warning
+Thread-Topic: [PATCH net-next v2 1/7] drivers: net: smc91x: Fix set but unused
+ W=1 warning
+Thread-Index: AQHWs8RIsLQXTg3BjUib5tEgD+0g66m6yq0w
+Date:   Fri, 6 Nov 2020 08:48:47 +0000
+Message-ID: <749857e283f04d3b8f84f603fa065cd6@AcuMS.aculab.com>
+References: <20201104154858.1247725-1-andrew@lunn.ch>
+        <20201104154858.1247725-2-andrew@lunn.ch>
+ <20201105143742.047959ed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201105143742.047959ed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix smatch warning.
-
-Signed-off-by: Wang Qing <wangqing@vivo.com>
----
- kernel/trace/bpf_trace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 4517c8b..2cb9c45
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1198,7 +1198,7 @@ static int bpf_btf_printf_prepare(struct btf_ptr *ptr, u32 btf_ptr_size,
- 	*btf = bpf_get_btf_vmlinux();
- 
- 	if (IS_ERR_OR_NULL(*btf))
--		return PTR_ERR(*btf);
-+		return PTR_ERR_OR_ZERO(*btf);
- 
- 	if (ptr->type_id > 0)
- 		*btf_id = ptr->type_id;
--- 
-2.7.4
+RnJvbTogSmFrdWIgS2ljaW5za2kNCj4gU2VudDogMDUgTm92ZW1iZXIgMjAyMCAyMjozOA0KPiBP
+biBXZWQsICA0IE5vdiAyMDIwIDE2OjQ4OjUyICswMTAwIEFuZHJldyBMdW5uIHdyb3RlOg0KPiA+
+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3Ntc2Mvc21jOTF4LmM6NzA2OjUxOiB3YXJuaW5nOiB2YXJp
+YWJsZSDigJhwa3RfbGVu4oCZIHNldCBidXQgbm90IHVzZWQgWy1XdW51c2VkLQ0KPiBidXQtc2V0
+LXZhcmlhYmxlXQ0KPiA+ICAgNzA2IHwgIHVuc2lnbmVkIGludCBzYXZlZF9wYWNrZXQsIHBhY2tl
+dF9ubywgdHhfc3RhdHVzLCBwa3RfbGVuOw0KPiA+DQo+ID4gQWRkIGEgbmV3IG1hY3JvIGZvciBn
+ZXR0aW5nIGZpZWxkcyBvdXQgb2YgdGhlIGhlYWRlciwgd2hpY2ggb25seSBnZXRzDQo+ID4gdGhl
+IHN0YXR1cywgbm90IHRoZSBsZW5ndGggd2hpY2ggaW4gdGhpcyBjYXNlIGlzIG5vdCBuZWVkZWQu
+DQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBBbmRyZXcgTHVubiA8YW5kcmV3QGx1bm4uY2g+DQo+
+IA0KPiBTb3JyeSBJIG1pc3NlZCBzb21ldGhpbmcgb24gdjENCj4gDQo+ID4gKyNkZWZpbmUgU01D
+X0dFVF9QS1RfSERSX1NUQVRVUyhscCwgc3RhdHVzKQkJCQlcDQo+ID4gKwlkbyB7CQkJCQkJCQlc
+DQo+ID4gKwkJaWYgKFNNQ18zMkJJVChscCkpIHsJCQkJCVwNCj4gPiArCQkJdW5zaWduZWQgaW50
+IF9fdmFsID0gU01DX2lubChpb2FkZHIsIERBVEFfUkVHKGxwKSk7IFwNCj4gPiArCQkJKHN0YXR1
+cykgPSBfX3ZhbCAmIDB4ZmZmZjsJCQlcDQo+ID4gKwkJfSBlbHNlIHsJCQkJCQlcDQo+ID4gKwkJ
+CShzdGF0dXMpID0gU01DX2ludyhpb2FkZHIsIERBVEFfUkVHKGxwKSk7CVwNCj4gPiArCQl9CQkJ
+CQkJCVwNCj4gPiArCX0gd2hpbGUgKDApDQo+IA0KPiBUaGlzIGlzIHRoZSBvcmlnaW5hbC9mdWxs
+IG1hY3JvOg0KPiANCj4gI2RlZmluZSBTTUNfR0VUX1BLVF9IRFIobHAsIHN0YXR1cywgbGVuZ3Ro
+KQkJCQlcDQo+IAlkbyB7CQkJCQkJCQlcDQo+IAkJaWYgKFNNQ18zMkJJVChscCkpIHsJCQkJXA0K
+PiAJCQl1bnNpZ25lZCBpbnQgX192YWwgPSBTTUNfaW5sKGlvYWRkciwgREFUQV9SRUcobHApKTsg
+XA0KPiAJCQkoc3RhdHVzKSA9IF9fdmFsICYgMHhmZmZmOwkJCVwNCj4gCQkJKGxlbmd0aCkgPSBf
+X3ZhbCA+PiAxNjsJCQkJXA0KPiAJCX0gZWxzZSB7CQkJCQkJXA0KPiAJCQkoc3RhdHVzKSA9IFNN
+Q19pbncoaW9hZGRyLCBEQVRBX1JFRyhscCkpOwlcDQo+IAkJCShsZW5ndGgpID0gU01DX2ludyhp
+b2FkZHIsIERBVEFfUkVHKGxwKSk7CVwNCj4gCQl9CQkJCQkJCVwNCj4gCX0gd2hpbGUgKDApDQo+
+IA0KPiBOb3RlIHRoYXQgaXQgcmVhZHMgdGhlIHNhbWUgYWRkcmVzcyB0d2ljZSBpbiB0aGUgZWxz
+ZSBicmFuY2guDQo+IA0KPiBJJ20gOTAlIHN1cmUgd2UgY2FuJ3QgcmVtb3ZlIHRoZSByZWFkIGhl
+cmUgZWl0aGVyIHNvIGJlc3QgdHJlYXQgaXQNCj4gbGlrZSB0aGUgb25lcyBpbiBwYXRjaCAzLCBy
+aWdodD8NCg0KT25lIG9mIHRoZSB0d28gU01DX2ludygpIG5lZWRzIHRvIHVzZSAnaW9hZGRyICsg
+MicuDQpQcm9iYWJseSB0aGUgb25lIGZvciAobGVuZ3RoKS4NCg0KVGhlIGNvZGUgbWF5IGFsc28g
+YmUgYnVnZ3kgb24gQkUgc3lzdGVtcy4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVz
+cyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEg
+MVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
