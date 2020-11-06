@@ -2,104 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8792B2A8DAA
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 04:43:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14ED32A8DBB
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 04:49:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725939AbgKFDnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Nov 2020 22:43:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55838 "EHLO
+        id S1726082AbgKFDs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Nov 2020 22:48:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725830AbgKFDnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 22:43:45 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D97C0613CF;
-        Thu,  5 Nov 2020 19:43:44 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id i186so3273144ybc.11;
-        Thu, 05 Nov 2020 19:43:44 -0800 (PST)
+        with ESMTP id S1725616AbgKFDs7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Nov 2020 22:48:59 -0500
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8B8C0613CF;
+        Thu,  5 Nov 2020 19:48:59 -0800 (PST)
+Received: by mail-yb1-xb42.google.com with SMTP id f6so3319326ybr.0;
+        Thu, 05 Nov 2020 19:48:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zEUZiyNVCu2rw4LbzfPUwkyhBxOxP6YhBuH6NllKzoE=;
-        b=Z7vYk5Jz7z069QaIxluzENW73T0uPxcpllwXDA+gFuFsxaXsSBYSeJdXslUerzLJ0Y
-         bEy/kwoAGfoj5QYz18ETD6Voqca4RHF3xOqzuTEf8bw8gkEB6r4CvjIIe2oHie1h2vhc
-         Qfj3FixnX0bZkNdmegFPSJUGCoItjPfI8G4s7gNYd1Np98gt6wO3ZaIw8rZwXEW2EGEE
-         m80696A7/Oskiv3dx0H+yYY5tJfECQC+vdymQUIWIWdzmXuEksGOnUWL7jOGMAaQNN3o
-         fANE58mVim8aq1cbE6xfZgmVA/fi4a8lR2M32FjsNjfSxruJMV6537etPAm1WoD51HdL
-         XTag==
+        bh=pZ45rvP8wup8PY3/tIl9Kg0r32ehp33pZjMKLY62c5I=;
+        b=AMtGFbOGJsW7sBvljfwu8L3ynwu4hkFJUujeThMpr+alF/5zE2zztmETreJwQvS3W/
+         GgAfpxtbaxxzIB0DLimJt3+++r5A1RQRxjP1/3cEpZBP5ePrRnHBRHvH/D39Gi4EZBVw
+         FGNYypwdt2e48D/eTVeVyxfrOs2CqNZpl4+NbgWvqbhTtgjNAjcxkMqzUplR5tPFX4Oq
+         +04rSA2bObje/vCYE+qRzd824B3D1R1mYHOfhBWyezhIMTk+HsiE7OjlySb4o0YI19iO
+         PENLcmmFrxbg6D4BOhQL86uFvLuqnfINJTLAT92bsRZFosdUf/ggG6But+K2pErMhusf
+         ABLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zEUZiyNVCu2rw4LbzfPUwkyhBxOxP6YhBuH6NllKzoE=;
-        b=opMFBLczvroSLjY9UfFBgRtZn3+nbNPufdHapxjlUGzIj1JlEpv/2SInbzsqeoMxfM
-         lNkkpiGWekScuVG/aTTH9uWrj8Pj9FCVLr7Fyi8+SWx5mAdcuWz6kehrwC57u/bITL3k
-         4N0IoYDOSZDUPk9zl6ZMhXTrtRmjolJal5KWbabD72NNsIwrrjLM/Sj8R6+CPIpMo6T1
-         sOdkg+yZla8gO38rBn0j8ntfvumZzb6y0tpw4MpHgpLZOuv6v7ZbzV0dLImyVZcGXGTE
-         Rd7kA2IYToyc+vuG7JUgD6dSwS5SJGCtYtLK+iC7O4BjSPeoZRa/RPF4HglKYAb+K94o
-         M18Q==
-X-Gm-Message-State: AOAM532cKLxRK2FKUJF6HLPGDqEed0r0t0e8aJzI13z5o33qfpHAFzAX
-        plw0xU3wfUhQetzFIdOqMOf7LEk7w2IP/e0LOQ6iFhxYl54=
-X-Google-Smtp-Source: ABdhPJwaxI7pPRKe6axg+5lg+HoLRhi6CSCFVvF1tLZmfKCBnZjFJfrjYUaVP/MhIlpxrm1f+0rTt48kfWK5+sypFvM=
-X-Received: by 2002:a25:bdc7:: with SMTP id g7mr282234ybk.260.1604634222711;
- Thu, 05 Nov 2020 19:43:42 -0800 (PST)
+        bh=pZ45rvP8wup8PY3/tIl9Kg0r32ehp33pZjMKLY62c5I=;
+        b=fEpZSx/mlCNY+JRqx1tjV8iWsKQj7PuIvLH4alWkbz5bvnSXfbYQ76MLijbURgAInE
+         44QNDdvDVGUcqLJh4o+e+1J7cf7PwXcZ9S616pO5JO8ybTzoaIOfbJ0iLHM15VWd/zmS
+         SGHdQ0O+Gcmq2BgUxSNH3NPEJlZNe9LV4SCATdBfr6MgjaUt77XfVcLaQabld4fUxf+N
+         wn55usrxLUAcBKzxJvAk7yoTX7psriajN5Xak+/QJpXwLjnGO83szPynM8T6N74oY0ry
+         lW++kZep5UUtoo2Jia7XBrWMRqtO9hxF31BDxSNKaoMH3mMoqyFDyhbn5lPoTmiyrx5D
+         lSDQ==
+X-Gm-Message-State: AOAM530xzR8uVJy5rSkymurk8CqZtL5cL0SeESmGW42tnsTky9OYPojw
+        o2V5bzhjncNTohRSnthUvpMrBGJrI8vDAvlyR4k=
+X-Google-Smtp-Source: ABdhPJySqMago37h3P1cr98LDDRN/nIqAYpALz/6LDfrXCrK/KftMR3roYl7ac2qKJDvHy62bK8gJDYAWLtZMMP3SoA=
+X-Received: by 2002:a05:6902:72e:: with SMTP id l14mr244888ybt.230.1604634538723;
+ Thu, 05 Nov 2020 19:48:58 -0800 (PST)
 MIME-Version: 1.0
-References: <20201105045140.2589346-1-andrii@kernel.org> <20201105045140.2589346-3-andrii@kernel.org>
- <20201106031914.dugp23xaiwnjbv7g@ast-mbp>
-In-Reply-To: <20201106031914.dugp23xaiwnjbv7g@ast-mbp>
+References: <20201105045140.2589346-1-andrii@kernel.org> <20201105045140.2589346-4-andrii@kernel.org>
+ <20201106031336.b2cufwpncvft2hs7@ast-mbp>
+In-Reply-To: <20201106031336.b2cufwpncvft2hs7@ast-mbp>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 5 Nov 2020 19:43:31 -0800
-Message-ID: <CAEf4BzbtsaNRJ0pGFFj+yD4NFAzPp3EXp1trabqT+ic1xWajxQ@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 2/5] bpf: assign ID to vmlinux BTF and return
- extra info for BTF in GET_OBJ_INFO
+Date:   Thu, 5 Nov 2020 19:48:47 -0800
+Message-ID: <CAEf4BzbRqmKL3=q+GB=7JvWNxEaOz4CVAcbLQKBxoHF-Gfpv=g@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 3/5] kbuild: Add CONFIG_DEBUG_INFO_BTF_MODULES
+ option or module BTFs
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Kernel Team <kernel-team@fb.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 5, 2020 at 7:19 PM Alexei Starovoitov
+On Thu, Nov 5, 2020 at 7:13 PM Alexei Starovoitov
 <alexei.starovoitov@gmail.com> wrote:
 >
-> On Wed, Nov 04, 2020 at 08:51:37PM -0800, Andrii Nakryiko wrote:
-> > @@ -215,6 +215,8 @@ struct btf {
-> >       struct btf *base_btf;
-> >       u32 start_id; /* first type ID in this BTF (0 for base BTF) */
-> >       u32 start_str_off; /* first string offset (0 for base BTF) */
-> > +     char name[MODULE_NAME_LEN];
-> > +     bool kernel_btf;
-> >  };
+> On Wed, Nov 04, 2020 at 08:51:38PM -0800, Andrii Nakryiko wrote:
 > >
-> >  enum verifier_phase {
-> > @@ -4441,6 +4443,7 @@ struct btf *btf_parse_vmlinux(void)
-> >
-> >       btf->data = __start_BTF;
-> >       btf->data_size = __stop_BTF - __start_BTF;
-> > +     btf->kernel_btf = true;
+> > +config DEBUG_INFO_BTF_MODULES
+> > +     bool "Generate BTF for kernel modules"
+> > +     def_bool y
+> > +     depends on DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF
 >
-> imo it's a bit weird for vmlinux's BTF to be flagged as 'kernel_btf'
-> and empty name, but kernel module's BTFs will not be marked as kernel,
-> but will have a name.
+> Does it need to be a new config ?
+> Can the build ran pahole if DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF ?
 
-module's BTF also has kernel_btf = true, see patch 4; would be weird otherwise
-
-> I think it's more natural to make vmlinux and module's BTF with kernel_btf=true flag
-> and give "vmlinux" name to base kernel BTF.
-
-Yeah, I was wondering if I should name vmlinux BTF as "vmlinux"
-explicitly, for whatever reason I decided to go with an empty name.
-But I think it's not a bad idea to give it an explicit "vmlinux" name.
-I'll do that in the next version. Will make bpftool logic more
-straightforward as well.
-
-
-> If somebody creates a kernel module with "vmlinux" name we will have a conflict,
-> but that name is for human pretty printing only anyway, so I think it's fine.
-
-yep.
+It probably doesn't. If I drop the "bool" line, it will become
+non-configurable calculated Kconfig value, convenient to use
+everywhere. All the rest will stay exactly the same. It's nice to not
+have to do "if defined(DEBUG_INFO_BTF) && defined(MODULES) &&
+defined(PAHOLE_HAS_SPLIT_BTF)" checks, but rather a simple "ifdef
+CONFIG_DEBUG_INFO_BTF_MODULES". Does that work?
