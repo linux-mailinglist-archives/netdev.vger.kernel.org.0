@@ -2,92 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 424112A8F7B
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 07:36:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA1F12A8F7C
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 07:36:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726229AbgKFGgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 01:36:02 -0500
-Received: from m42-4.mailgun.net ([69.72.42.4]:35262 "EHLO m42-4.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725830AbgKFGgC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Nov 2020 01:36:02 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1604644561; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=tM5oyoSHdl+1J/pOwaOVdO0e2S4mJz91rpdSkgpqyx0=;
- b=CEzqJ08SGG8gGfeykWyQyg5R4EJ9CmNApyk22Pflt4Yxn6EcGg/gMO5zPFYCPgOtigd0j+lW
- 6N/iM0WGWEXTAyzTaD1a4STAwXQj0iBYdnKRlcKeO+FUFSPAxN81PKgnzFoCIQoQVXgiWUBG
- WQXZQRBdUSk2vEBye6/bR1LhGf0=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 5fa4eed01baf490ee90e54e8 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 06 Nov 2020 06:36:00
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 91670C433FF; Fri,  6 Nov 2020 06:36:00 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 86CC2C433C8;
-        Fri,  6 Nov 2020 06:35:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 86CC2C433C8
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726248AbgKFGgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 01:36:19 -0500
+Received: from smtprelay0230.hostedemail.com ([216.40.44.230]:46972 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725828AbgKFGgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 01:36:19 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id C07061802EC32;
+        Fri,  6 Nov 2020 06:36:18 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:968:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2691:2828:3138:3139:3140:3141:3142:3352:3622:3865:3867:3872:4321:5007:6119:6120:7901:7903:8660:10004:10400:10848:11026:11232:11473:11658:11914:12296:12297:12555:12740:12760:12895:13069:13138:13148:13230:13231:13311:13357:13439:14096:14097:14659:14721:21060:21080:21627:21660:21939:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: coach54_1604dcf272d0
+X-Filterd-Recvd-Size: 2145
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf11.hostedemail.com (Postfix) with ESMTPA;
+        Fri,  6 Nov 2020 06:36:17 +0000 (UTC)
+Message-ID: <71dc38c1646980840fb83d82fc588501af72e05f.camel@perches.com>
+Subject: Re: [PATCH] net/dsa: remove unused macros to tame gcc warning
+From:   Joe Perches <joe@perches.com>
+To:     Alex Shi <alex.shi@linux.alibaba.com>, andrew@lunn.ch
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 05 Nov 2020 22:36:16 -0800
+In-Reply-To: <1604641050-6004-1-git-send-email-alex.shi@linux.alibaba.com>
+References: <1604641050-6004-1-git-send-email-alex.shi@linux.alibaba.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2] ath10k: sdio: remove redundant check in for loop
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200916165748.20927-1-alex.dewar90@gmail.com>
-References: <20200916165748.20927-1-alex.dewar90@gmail.com>
-To:     Alex Dewar <alex.dewar90@gmail.com>
-Cc:     unlisted-recipients:; (no To-header on input)
-        Alex Dewar <alex.dewar90@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     unlisted-recipients:; (no To-header on input)Alex Dewar <alex.dewar90@gmail.com>
-                                                                     ^-missing end of address
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20201106063600.91670C433FF@smtp.codeaurora.org>
-Date:   Fri,  6 Nov 2020 06:36:00 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alex Dewar <alex.dewar90@gmail.com> wrote:
+On Fri, 2020-11-06 at 13:37 +0800, Alex Shi wrote:
+> There are some macros unused, they causes much gcc warnings. Let's
+> remove them to tame gcc.
 
-> The for loop checks whether cur_section is NULL on every iteration, but
-> we know it can never be NULL as there is another check towards the
-> bottom of the loop body. Refactor to avoid this unnecessary check.
-> 
-> Also, increment the variable i inline for clarity
-> 
-> Addresses-Coverity: 1496984 ("Null pointer dereferences)
-> Suggested-by: Saeed Mahameed <saeedm@nvidia.com>
-> Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+I believe these to be essentially poor warnings.
 
-Patch applied to ath-next branch of ath.git, thanks.
+Aren't these warnings generated only when adding  W=2 to the make
+command line?
 
-dbeb101d28eb ath10k: sdio: remove redundant check in for loop
+Perhaps it's better to move the warning to level 3
+---
+diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
+index 95e4cdb94fe9..5c3c220ddb32 100644
+--- a/scripts/Makefile.extrawarn
++++ b/scripts/Makefile.extrawarn
+@@ -68,7 +68,6 @@ KBUILD_CFLAGS += $(call cc-option, -Wlogical-op)
+ KBUILD_CFLAGS += -Wmissing-field-initializers
+ KBUILD_CFLAGS += -Wtype-limits
+ KBUILD_CFLAGS += $(call cc-option, -Wmaybe-uninitialized)
+-KBUILD_CFLAGS += $(call cc-option, -Wunused-macros)
+ 
+ KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN2
+ 
+@@ -89,6 +88,7 @@ KBUILD_CFLAGS += -Wredundant-decls
+ KBUILD_CFLAGS += -Wsign-compare
+ KBUILD_CFLAGS += -Wswitch-default
+ KBUILD_CFLAGS += $(call cc-option, -Wpacked-bitfield-compat)
++KBUILD_CFLAGS += $(call cc-option, -Wunused-macros)
+ 
+ KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN3
+ 
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20200916165748.20927-1-alex.dewar90@gmail.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
