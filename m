@@ -2,98 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8970D2A8F6C
-	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 07:23:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5391E2A8F77
+	for <lists+netdev@lfdr.de>; Fri,  6 Nov 2020 07:33:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726236AbgKFGXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 01:23:17 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:38517 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725828AbgKFGXR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 01:23:17 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kav9Q-0003pc-FY; Fri, 06 Nov 2020 07:23:08 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kav9P-0004R8-13; Fri, 06 Nov 2020 07:23:07 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 1128724004B;
-        Fri,  6 Nov 2020 07:23:06 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 79F50240049;
-        Fri,  6 Nov 2020 07:23:05 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 12439205F3;
-        Fri,  6 Nov 2020 07:23:05 +0100 (CET)
+        id S1726027AbgKFGda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 01:33:30 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:31338 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725830AbgKFGda (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 01:33:30 -0500
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A663fD2185275;
+        Fri, 6 Nov 2020 01:32:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=a0dzz8t9pBICYe/4ftl4g7u75AeZuT0dXEhVan71oF4=;
+ b=T2IRBJTvY7lf2ua7Vr2ST5Y+BgPKFMXlJdf3OKOCCKPIXKfI9UAGTTho4jt0sk75nF+H
+ qbHAjsOvSnoC+VdaSprVAQBmvahX8ezd6UFy8O4SoiuP/uc3g/9VvoFrD2s9TV42Ovvl
+ ImacKNoFLqJXSvrKgcII8LBkt1VcvMLp4JVAJr7gWpZe809bBQ2ZJfrzovHjlh9WyO4G
+ BLeO/Z0jI/RoSPFzx/aMEllgZ5Cb4WNnR1rw/xvyLoSwAjhO7EBHXPvlwQ02HqmUVksf
+ IYXh4RxA3c5atAPkThQfHnYFznWvFBgyrg/6LxYvuYbRTFS2AchtQSpwzGcByp47kSav Fg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34n0vy0q0d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 Nov 2020 01:32:19 -0500
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0A66RVAK074282;
+        Fri, 6 Nov 2020 01:32:19 -0500
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34n0vy0pyk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 Nov 2020 01:32:18 -0500
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A66NTRa026513;
+        Fri, 6 Nov 2020 06:32:16 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 34h0fcx70d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 Nov 2020 06:32:16 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A66WEK262521734
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 6 Nov 2020 06:32:14 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6901C11C06C;
+        Fri,  6 Nov 2020 06:32:14 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A19E711C058;
+        Fri,  6 Nov 2020 06:32:13 +0000 (GMT)
+Received: from [9.171.11.91] (unknown [9.171.11.91])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  6 Nov 2020 06:32:13 +0000 (GMT)
+Subject: Re: [net-next v4 7/8] net: smc: convert tasklets to use new
+ tasklet_setup() API
+To:     Allen Pais <allen.lkml@gmail.com>, davem@davemloft.net
+Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        johannes@sipsolutions.net, alex.aring@gmail.com,
+        stefan@datenfreihafen.org, santosh.shilimkar@oracle.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
+        Romain Perier <romain.perier@gmail.com>
+References: <20201103091823.586717-1-allen.lkml@gmail.com>
+ <20201103091823.586717-8-allen.lkml@gmail.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+Message-ID: <165d3ee7-4d20-7588-207d-9bc1c7cb0e9e@linux.ibm.com>
+Date:   Fri, 6 Nov 2020 07:32:14 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+In-Reply-To: <20201103091823.586717-8-allen.lkml@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Date:   Fri, 06 Nov 2020 07:23:05 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, xiyuyang19@fudan.edu.cn
-Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net/x25: Fix null-ptr-deref in x25_connect
-Organization: TDT AG
-In-Reply-To: <20201006054558.19453-1-ms@dev.tdt.de>
-References: <20201006054558.19453-1-ms@dev.tdt.de>
-Message-ID: <9751fc51170c9bf776e03d079a3e92e3@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.15
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate-type: clean
-X-purgate-ID: 151534::1604643787-000074F7-2FECC0C1/0/0
-X-purgate: clean
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-06_02:2020-11-05,2020-11-06 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 lowpriorityscore=0 bulkscore=0 phishscore=0
+ priorityscore=1501 spamscore=0 suspectscore=0 malwarescore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011060040
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-10-06 07:45, Martin Schiller wrote:
-> This fixes a regression for blocking connects introduced by commit
-> 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 
-> disconnect").
+On 03/11/2020 10:18, Allen Pais wrote:
+> From: Allen Pais <apais@linux.microsoft.com>
 > 
-> The x25->neighbour is already set to "NULL" by x25_disconnect() now,
-> while a blocking connect is waiting in
-> x25_wait_for_connection_establishment(). Therefore x25->neighbour must
-> not be accessed here again and x25->state is also already set to
-> X25_STATE_0 by x25_disconnect().
+> In preparation for unconditionally passing the
+> struct tasklet_struct pointer to all tasklet
+> callbacks, switch to using the new tasklet_setup()
+> and from_tasklet() to pass the tasklet pointer explicitly.
 > 
-> Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 
-> disconnect")
-> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+> Signed-off-by: Romain Perier <romain.perier@gmail.com>
+> Signed-off-by: Allen Pais <apais@linux.microsoft.com>
 > ---
-> 
-> Change from v1:
-> also handle interrupting signals correctly
-> 
-> ---
->  net/x25/af_x25.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-> index 0bbb283f23c9..046d3fee66a9 100644
-> --- a/net/x25/af_x25.c
-> +++ b/net/x25/af_x25.c
-> @@ -825,7 +825,7 @@ static int x25_connect(struct socket *sock, struct
-> sockaddr *uaddr,
->  	sock->state = SS_CONNECTED;
->  	rc = 0;
->  out_put_neigh:
-> -	if (rc) {
-> +	if (rc && x25->neighbour) {
->  		read_lock_bh(&x25_list_lock);
->  		x25_neigh_put(x25->neighbour);
->  		x25->neighbour = NULL;
 
-@David
-Is there anything left I need to do, to get this fix merged?
-
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
