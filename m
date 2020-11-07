@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9D422AA23D
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 03:44:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4988F2AA250
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 04:28:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728576AbgKGCoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 21:44:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58546 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728136AbgKGCod (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Nov 2020 21:44:33 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1730920724;
-        Sat,  7 Nov 2020 02:44:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604717073;
-        bh=l7oVi3/9hWnqDjktwcHHGQwmn+hpdfTCKlBJdvSChDc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vbWzxkGJU0HH5ywGanSYy+H7/Vmm96ghpifAbMgdzRJN35osqWecSZdg0OiJvFcE1
-         pJSF+YU/sw97zG2Gk4nQD5p1YJOg6rVa/Ry2krElRtq1adTiu7soVXTzgaaEhIvPaC
-         uxzgBKPbauTHy2bgIPlefrcYIX3B8JJnzNq/bcwg=
-Date:   Fri, 6 Nov 2020 18:44:32 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jarod Wilson <jarod@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v4 0/5] bonding: rename bond components
-Message-ID: <20201106184432.07a6ab18@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201106200436.943795-1-jarod@redhat.com>
-References: <20201106200436.943795-1-jarod@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1728274AbgKGD2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 22:28:31 -0500
+Received: from m176115.mail.qiye.163.com ([59.111.176.115]:6707 "EHLO
+        m176115.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727142AbgKGD2b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 22:28:31 -0500
+Received: from vivo-HP-ProDesk-680-G4-PCI-MT.vivo.xyz (unknown [58.251.74.231])
+        by m176115.mail.qiye.163.com (Hmail) with ESMTPA id AD9CD666665;
+        Sat,  7 Nov 2020 11:28:28 +0800 (CST)
+From:   Wang Qing <wangqing@vivo.com>
+To:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Wang Qing <wangqing@vivo.com>
+Subject: [PATCH] pcp_clock: return EOPNOTSUPP if !CONFIG_PTP_1588_CLOCK
+Date:   Sat,  7 Nov 2020 11:28:23 +0800
+Message-Id: <1604719703-31930-1-git-send-email-wangqing@vivo.com>
+X-Mailer: git-send-email 2.7.4
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
+        oVCBIfWUFZH0lOS0NCTENKGkpCVkpNS09MSkJMS0NCTU5VEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS09ISVVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OQg6LRw5Lj8pFRwfCkk*PTkR
+        DDMKCRhVSlVKTUtPTEpCTEtCSElOVTMWGhIXVQwaFRwKEhUcOw0SDRRVGBQWRVlXWRILWUFZTkNV
+        SU5KVUxPVUlISllXWQgBWUFKTUlINwY+
+X-HM-Tid: 0a75a0bf8aaf9373kuwsad9cd666665
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  6 Nov 2020 15:04:31 -0500 Jarod Wilson wrote:
-> The bonding driver's use of master and slave, while largely understood
-> in technical circles, poses a barrier for inclusion to some potential
-> members of the development and user community, due to the historical
-> context of masters and slaves, particularly in the United States. This
-> is a first full pass at replacing those phrases with more socially
-> inclusive ones, opting for bond to replace master and port to
-> replace slave, which is congruent with the bridge and team drivers.
+pcp_clock_register() is checked with IS_ERR(), and will crash if !PTP,
+change return value to ERR_PTR(-EOPNOTSUPP) for the !CONFIG_PTP_1588_CLOCK
+ and so question resolved.
 
-If we decide to go ahead with this, we should probably also use it as
-an opportunity to clean up the more egregious checkpatch warnings, WDYT?
+Signed-off-by: Wang Qing <wangqing@vivo.com>
+---
+ include/linux/ptp_clock_kernel.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Plan minimum - don't add new ones ;)
+diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+index d3e8ba5..05db40c
+--- a/include/linux/ptp_clock_kernel.h
++++ b/include/linux/ptp_clock_kernel.h
+@@ -276,7 +276,7 @@ void ptp_cancel_worker_sync(struct ptp_clock *ptp);
+ #else
+ static inline struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
+ 						   struct device *parent)
+-{ return NULL; }
++{ return ERR_PTR(-EOPNOTSUPP); }
+ static inline int ptp_clock_unregister(struct ptp_clock *ptp)
+ { return 0; }
+ static inline void ptp_clock_event(struct ptp_clock *ptp,
+-- 
+2.7.4
+
