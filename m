@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 821B52AA6E9
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 18:23:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 936472AA6F0
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 18:23:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728519AbgKGRXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 12:23:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40146 "EHLO
+        id S1728555AbgKGRXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 12:23:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726364AbgKGRXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 12:23:11 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51067C0613CF;
-        Sat,  7 Nov 2020 09:23:10 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id m26so62072pgd.9;
-        Sat, 07 Nov 2020 09:23:10 -0800 (PST)
+        with ESMTP id S1726364AbgKGRXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 12:23:19 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0B8C0613CF;
+        Sat,  7 Nov 2020 09:23:19 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id g12so3515326pgm.8;
+        Sat, 07 Nov 2020 09:23:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Wj+0VqG+5SB5oZKbW/GaSo/+ki/3S6i7Eqaup4c2W/g=;
-        b=mewAzy8fCkvVFDTWKRKNDtl/H54rTocRCmAp5/HuryIKGEUBVZt5s2zyjFkpa7B8cI
-         8wv9K03NY/aMJ03JxRsdC3VUxo+huCY4/0mhGDrVs8tFShv1Wwm61xBd2blSRhlrWAYd
-         HKXY3xW1SNwGYfhAx/xzR8xZGkyj7unEHIT1Is8Qm5PBCPsTXwUHsFmmuhZfeFN6e02M
-         Q73IQhY9nGP2NZtUzLxcxLSUMn3rcLKLKCJfnj56r++t0OsaMFp8ZVehRXquB2gSz1Vq
-         vuVuFBR1Np1J1nNDZYl7sUryIXDIN7dVNN5NTjBASuPkjzf5u7Q4+RsJx6g/vG9DSVE0
-         rLBg==
+        bh=tI2A7wrVYPdXVz/TzeQi+IfDXKzGJ3NnGoB/TzjX3uU=;
+        b=gDp8axufFz7PoT/7cEm5Ct8IfswZtCeOYN+FspIWjMhIfQyTfl8lKLEhWT8OZ6gsq+
+         KjEYIX3W+vYc2q71A/WeiKbOOv/JmxkeB/IVNpJhEiA7mR+rMj5umtx99qtizuuQjre+
+         rtKtYFQTsA3ECjQLiKuJG5W5cJWpF6WaeQxU1bbWLe2O5Q8tx/lgsKXDYF3xtQ0l7h7j
+         sTzuPyZJWPdnxCNmQtmd0Etrme/KKn7g6o2V8/kOmam1gWU41po7RYQAyN03vMxrNYTx
+         tWm/lhMT19tgHxuvt+PWjFOgoiQmQQEr+N/35/o8KujOJ/Extf2a6qQNIFEUgcm2hva0
+         qkQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Wj+0VqG+5SB5oZKbW/GaSo/+ki/3S6i7Eqaup4c2W/g=;
-        b=emJx5Ik/XnvafVZbLjln15MrUbX3jRGgWAuK7WAY1DkZiUpJf8cSskVphx4tLAB9lZ
-         yJPodWK5xo73owlbzJnbr+0PNN/u5lgCb9wgSPd6ubUCTp5vAllqrAFSqhvkE63c+7c4
-         Q28ANhKZudJ6mXF1gKq7eJsEOQ+iOqygnmTooqYLaw49RqCP9CSJA/Ri8U+Sx2krZeow
-         njIRA14XJ4Ksf7ztgWJTQ1CzgnKySFgZJVXsy96Ne3YsnfdScBEKiUaymHvxuX7z89eF
-         NpiDVCy/ZEE8TXG76x0+LKN/fljs4otP3H+P92HnwfZy1HZsE2RqpemXe5HnpD0M6vXE
-         2RYQ==
-X-Gm-Message-State: AOAM532OVOmCA1XTuTwXblnh4HgBdGiRIEmzGzUdD+qTRNOM+mmuJqK8
-        pY8l4U+l9AskTqRSYEUHbvQ=
-X-Google-Smtp-Source: ABdhPJyIYLL/8VP94KriZUTOq5Oac2fHtME+PAWpk8Y8ZE/Dd5g84O2dFhwevg0M2Q6uz0DWqMD/5w==
-X-Received: by 2002:aa7:9f0c:0:b029:18a:e524:3b90 with SMTP id g12-20020aa79f0c0000b029018ae5243b90mr6887178pfr.77.1604769789902;
-        Sat, 07 Nov 2020 09:23:09 -0800 (PST)
+        bh=tI2A7wrVYPdXVz/TzeQi+IfDXKzGJ3NnGoB/TzjX3uU=;
+        b=nWabVov/4lfEJu3hgdgaxDVQhu1j1gAmnySFRsPAg0g9nmNtOdqCmUxe1xjEF2St7i
+         R0/x5IuTgnf5CYnFc9OQ0Bo9oFnoTWuaw43aPtRkq4ysUEITiJ3eW5YmNNtkONAAgyjm
+         DKstO9/kPl9lPY92XROOBKxBWoqzyMxoxy0qSDb/RDqqGPhlCulfEmYBJ+JSYQFP8shE
+         S+dh/WIrKO6SqKtsuDLK4gD8xf/Xz97DzsdKvju5eJqyeIQqMnW0EQ16uiebIiLtq80X
+         +2RMywHIYauE4ECODtAYcDPycYX+OYqSrAPAnHrDim5iNO3dOzoUjVWJuxmgOj5kBQ/s
+         o8jQ==
+X-Gm-Message-State: AOAM533DaWVkr0ojzLbHyremuJ5vIzLXyY3GNrLRidX99687BHrXzPto
+        0Q8cSCD3rJTZt51hSeF91K0=
+X-Google-Smtp-Source: ABdhPJyJ5X3qCOo2hy4oJjtEYNBB8jnpwIJ9Ropkke72jm52m3EG2XdEIpAm47tjZJpJHlAe9JBUvA==
+X-Received: by 2002:a62:8043:0:b029:160:b840:b44 with SMTP id j64-20020a6280430000b0290160b8400b44mr6607219pfd.50.1604769798921;
+        Sat, 07 Nov 2020 09:23:18 -0800 (PST)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id m17sm4916962pgu.21.2020.11.07.09.23.01
+        by smtp.gmail.com with ESMTPSA id m17sm4916962pgu.21.2020.11.07.09.23.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Nov 2020 09:23:08 -0800 (PST)
+        Sat, 07 Nov 2020 09:23:18 -0800 (PST)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com, David.Laight@aculab.com,
@@ -66,9 +66,9 @@ Cc:     ap420073@gmail.com, David.Laight@aculab.com,
         franky.lin@broadcom.com, hante.meuleman@broadcom.com,
         chung-hsien.hsu@infineon.com, wright.feng@infineon.com,
         chi-hsien.lin@infineon.com
-Subject: [PATCH net v2 03/21] cfg80211: set .owner to THIS_MODULE
-Date:   Sat,  7 Nov 2020 17:21:34 +0000
-Message-Id: <20201107172152.828-4-ap420073@gmail.com>
+Subject: [PATCH net v2 04/21] netdevsim: set .owner to THIS_MODULE
+Date:   Sat,  7 Nov 2020 17:21:35 +0000
+Message-Id: <20201107172152.828-5-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201107172152.828-1-ap420073@gmail.com>
 References: <20201107172152.828-1-ap420073@gmail.com>
@@ -80,8 +80,10 @@ If THIS_MODULE is not set, the module would be removed while debugfs is
 being used.
 It eventually makes kernel panic.
 
-Fixes: 1ac61302dcd1 ("mac80211/cfg80211: move wiphy specific debugfs entries to cfg80211")
-Fixes: 80a3511d70e8 ("cfg80211: add debugfs HT40 allow map")
+Fixes: 82c93a87bf8b ("netdevsim: implement couple of testing devlink health reporters")
+Fixes: 424be63ad831 ("netdevsim: add UDP tunnel port offload support")
+Fixes: 4418f862d675 ("netdevsim: implement support for devlink region and snapshots")
+Fixes: d3cbb907ae57 ("netdevsim: add ACL trap reporting cookie as a metadata")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
 
@@ -89,29 +91,55 @@ v1 -> v2:
  - Change headline
  - Squash patches into per-driver/subsystem
 
- net/wireless/debugfs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/netdevsim/dev.c         | 2 ++
+ drivers/net/netdevsim/health.c      | 1 +
+ drivers/net/netdevsim/udp_tunnels.c | 1 +
+ 3 files changed, 4 insertions(+)
 
-diff --git a/net/wireless/debugfs.c b/net/wireless/debugfs.c
-index 76b845f68ac8..eb54c0ac4728 100644
---- a/net/wireless/debugfs.c
-+++ b/net/wireless/debugfs.c
-@@ -26,6 +26,7 @@ static const struct file_operations name## _ops = {			\
- 	.read = name## _read,						\
- 	.open = simple_open,						\
- 	.llseek = generic_file_llseek,					\
-+	.owner = THIS_MODULE,						\
- }
- 
- DEBUGFS_READONLY_FILE(rts_threshold, 20, "%d",
-@@ -97,6 +98,7 @@ static const struct file_operations ht40allow_map_ops = {
- 	.read = ht40allow_map_read,
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index d07061417675..e7972e88ffe0 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -96,6 +96,7 @@ static const struct file_operations nsim_dev_take_snapshot_fops = {
  	.open = simple_open,
- 	.llseek = default_llseek,
+ 	.write = nsim_dev_take_snapshot_write,
+ 	.llseek = generic_file_llseek,
 +	.owner = THIS_MODULE,
  };
  
- #define DEBUGFS_ADD(name)						\
+ static ssize_t nsim_dev_trap_fa_cookie_read(struct file *file,
+@@ -188,6 +189,7 @@ static const struct file_operations nsim_dev_trap_fa_cookie_fops = {
+ 	.read = nsim_dev_trap_fa_cookie_read,
+ 	.write = nsim_dev_trap_fa_cookie_write,
+ 	.llseek = generic_file_llseek,
++	.owner = THIS_MODULE,
+ };
+ 
+ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
+diff --git a/drivers/net/netdevsim/health.c b/drivers/net/netdevsim/health.c
+index 62958b238d50..21e2974660e7 100644
+--- a/drivers/net/netdevsim/health.c
++++ b/drivers/net/netdevsim/health.c
+@@ -261,6 +261,7 @@ static const struct file_operations nsim_dev_health_break_fops = {
+ 	.open = simple_open,
+ 	.write = nsim_dev_health_break_write,
+ 	.llseek = generic_file_llseek,
++	.owner = THIS_MODULE,
+ };
+ 
+ int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink)
+diff --git a/drivers/net/netdevsim/udp_tunnels.c b/drivers/net/netdevsim/udp_tunnels.c
+index 6ab023acefd6..02dc3123eb6c 100644
+--- a/drivers/net/netdevsim/udp_tunnels.c
++++ b/drivers/net/netdevsim/udp_tunnels.c
+@@ -124,6 +124,7 @@ static const struct file_operations nsim_udp_tunnels_info_reset_fops = {
+ 	.open = simple_open,
+ 	.write = nsim_udp_tunnels_info_reset_write,
+ 	.llseek = generic_file_llseek,
++	.owner = THIS_MODULE,
+ };
+ 
+ int nsim_udp_tunnels_info_create(struct nsim_dev *nsim_dev,
 -- 
 2.17.1
 
