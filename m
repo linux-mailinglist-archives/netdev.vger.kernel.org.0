@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B4B32AA7D8
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 21:13:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76A802AA7DC
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 21:17:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726614AbgKGUNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 15:13:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50910 "EHLO mail.kernel.org"
+        id S1728649AbgKGUQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 15:16:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51292 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725836AbgKGUNR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Nov 2020 15:13:17 -0500
+        id S1725846AbgKGUQz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Nov 2020 15:16:55 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 85B7520885;
-        Sat,  7 Nov 2020 20:13:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6F54920885;
+        Sat,  7 Nov 2020 20:16:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604779996;
-        bh=PRrCSN/QphS1mxQzbXPEO/rMCZwBHU9ZNIw7eRU3hwI=;
+        s=default; t=1604780214;
+        bh=SclaVh50kOJ0lCamcHNcGBRAlnU+aXdrtrNxzPD0prQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RJvcYgbAdjN4X6TtHtSwgp3VsSczTfMAVxvX3hl+QUmeYJyyUHsEk/TMFreTIknxn
-         iwZ28fjpdwRDDijweaCxWWItFBqI868kDuhjFSVDU6KRZVrjCBuqvMKhfPUTC2FQOQ
-         gmy7/nJFSGKgM2b70wQTBVVKdQyvKIGB1d26R2JI=
-Date:   Sat, 7 Nov 2020 12:13:15 -0800
+        b=fu0qEFgL5xRvB7iGmmq/8VqMl3Gx8PQTuOt+P9aAnjl9qCakqPq9DXDtFN/GK8DMp
+         4GECJO7YW6+Q07PbaXSs5h4GXaYIFbhnIaqJ9MLKS5siYYWrJv/Rtq4yWOsXcbKLmX
+         LazVY1pjlO+738MzEMvYvXGErmSwgHJNcLsNlLWE=
+Date:   Sat, 7 Nov 2020 12:16:53 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     David Miller <davem@davemloft.net>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] r8169: fix potential skb double free in an error
- path
-Message-ID: <20201107121315.4d4068bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <f7e68191-acff-9ded-4263-c016428a8762@gmail.com>
-References: <f7e68191-acff-9ded-4263-c016428a8762@gmail.com>
+Subject: Re: [PATCH v2 net] r8169: disable hw csum for short packets on all
+ chip versions
+Message-ID: <20201107121653.650f333e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <7fbb35f0-e244-ef65-aa55-3872d7d38698@gmail.com>
+References: <7fbb35f0-e244-ef65-aa55-3872d7d38698@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,22 +41,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 Nov 2020 15:28:42 +0100 Heiner Kallweit wrote:
-> The caller of rtl8169_tso_csum_v2() frees the skb if false is returned.
-> eth_skb_pad() internally frees the skb on error what would result in a
-> double free. Therefore use __skb_put_padto() directly and instruct it
-> to not free the skb on error.
+On Thu, 5 Nov 2020 18:14:47 +0100 Heiner Kallweit wrote:
+> RTL8125B has same or similar short packet hw padding bug as RTL8168evl.
+> The main workaround has been extended accordingly, however we have to
+> disable also hw checksumming for short packets on affected new chip
+> versions. Instead of checking for an affected chip version let's
+> simply disable hw checksumming for short packets in general.
 > 
-> Fixes: 25e992a4603c ("r8169: rename r8169.c to r8169_main.c")
-> Reported-by: Jakub Kicinski <kuba@kernel.org>
+> v2:
+> - remove the version checks and disable short packet hw csum in general
+> - reflect this in commit title and message
+> 
+> Fixes: 0439297be951 ("r8169: add support for RTL8125B")
 > Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
-> The Fixes tag refers to the change from which on the patch applies.
-> However it will apply with a little fuzz only on versions up to 5.9.
 
-I think we've been over this, please provide real fixes tags, pointing
-to where bugs were introduced. I swapped the tag for:
-
-Fixes: b423e9ae49d7 ("r8169: fix offloaded tx checksum for small packets.")
-
-and applied, thanks.
+Applied, thanks!
