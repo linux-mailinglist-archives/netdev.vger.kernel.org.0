@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 801762AA7FD
+	by mail.lfdr.de (Postfix) with ESMTP id F19F02AA7FE
 	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 21:56:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728747AbgKGU4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 15:56:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44900 "EHLO
+        id S1728756AbgKGU4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 15:56:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728717AbgKGU4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 15:56:13 -0500
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2744EC0613D4
-        for <netdev@vger.kernel.org>; Sat,  7 Nov 2020 12:56:13 -0800 (PST)
-Received: by mail-wm1-x344.google.com with SMTP id w24so1994297wmi.0
-        for <netdev@vger.kernel.org>; Sat, 07 Nov 2020 12:56:13 -0800 (PST)
+        with ESMTP id S1728729AbgKGU4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 15:56:15 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49D8C0613CF
+        for <netdev@vger.kernel.org>; Sat,  7 Nov 2020 12:56:14 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id g12so4811715wrp.10
+        for <netdev@vger.kernel.org>; Sat, 07 Nov 2020 12:56:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-transfer-encoding;
-        bh=AqDWLm8KXcv4xkeQId6Y5dIQy0TCTVRseOitm1HQ4jk=;
-        b=o5FYj6ZmqzBJ/ivWXmw0usJBDgDyyPssyFiWvYojyryyHUVaxlpBIQhvTj0d2Jq46B
-         D4l6vk4/QpxizZ6JJIf4O+b9j9HczFpBN9Dp+3gjzE+KhmPmswcwvzRV2ii2pGLFA+EA
-         E7G3Dbvisgrnj9ADNpesPuq+eZ2nC2ZGAeyvXy6oYtn4C0/ZFEoQH+TjIZ/l3LwXgLah
-         vPICg7OrR0m4VJFzt5Sss0lLh9jYwlhwLyjOM1jdjADV559ro+xLH9PxXGoCCLXXXkgG
-         slazgJif12aQ9AHHPTuSTpsKyr7QyeihdsP1HuT+fte/J8U/393MV7tBDF3ETCI5AiD2
-         75xg==
+        bh=yvM2zg5ut8RUlOVk41NO5JTWXGYDPLj6ZinwUBXZBNs=;
+        b=YRzVwR3VOYv79vPIg8b5EIMmKfgP9mn6DbFAnIRAS1gmfNezyjCF4Gp2ABv/iexY3a
+         dKnhzyqA48zVqgBgGCmQei1DZ8f9ASml4KMnqwLfEJpWlOMwSmuP5jOsALlsXJafzAjD
+         zuBbbALWsNykrRr2QmM4AzSRGDDjOfmFo1Esj7ImMCkohjQdAJQb379jo0AV7iO2yD3X
+         ifDXNDILYUmNb1GJ7t7N2m03O3aIaSTWC1vQewDKZUD6hi9tiN9g4UZ5VBZB9MKcqQu0
+         Lv21zMIYq7RAq7ugKnUMH4PYEz7op6bSiqGx1MzWNZTEhIwLuBfAkIA8WMhxK/3r9jFN
+         umbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=AqDWLm8KXcv4xkeQId6Y5dIQy0TCTVRseOitm1HQ4jk=;
-        b=Cu/gizL5cutHYMkDm0gKrCJIQ+VzGa4oIYfTOaMNacV1zUwaEVD4+xZi4cbB8gTeTa
-         SKP5oZHdDGbvUxZQVNneeUO21kwBKRL4rn6F5VNu2O3IqdpwS6hBjWUnG7DEPv4f1wfE
-         HlFWvn1SU1sb/csmkLCYsnEtBPMbESe5gXIUWpjR9B0gXcMoiU7dutM7qf4bmBegmzyS
-         n/GHHK1FbKYLg2L0cs+HZWjs2iEkFMqxtx9iOKffxyglr3sToYkNDghwwXMyT6lMpPgi
-         cedXDgao6yyhetFMHHY1VAng8NIIK4Tu5pGL0C9UJAsVdnyzr9+9d4Ra1DVK3/q9etSf
-         amzg==
-X-Gm-Message-State: AOAM53158u2Nll+TRHfnghz8PSzaoArVkztiYCZKHifs1SBUJn1zA6ak
-        3njJnTY2EM8m3xWFoWDnuVY=
-X-Google-Smtp-Source: ABdhPJxKbOxtoWrYoXQo5USaK5yvt3T+8kM2r5oGGLK/j28grM6DP89KLS6rfO4/loYh1jJmON/rnA==
-X-Received: by 2002:a1c:8145:: with SMTP id c66mr6258741wmd.75.1604782571875;
-        Sat, 07 Nov 2020 12:56:11 -0800 (PST)
+        bh=yvM2zg5ut8RUlOVk41NO5JTWXGYDPLj6ZinwUBXZBNs=;
+        b=CbcAZAjocQvPKfzRL2GA0UhwVmb9ENuCYePpGOW8VNxVU1gySQXwhZCrfj3u7t72R3
+         QUGqyqG5cKgypizIzCbMKn6vR7d/3oh7xZ3G+raL/XquD9IPdZsbz1LJZM+Sbasg/cpL
+         hAHwMbc1L9A725Uht+HlAqecrTu0he6UDzPIMZ0MYSQWLHmarCrrrkgM5niCDtm8wkHi
+         yBHjYdqsQDq+b2AL8VGVMPKFQdVsIJbcsytlsUe98ECQ2+oDb3E55AXjO3cWagsV3Uyv
+         CLXIz6mkEO0gLQDKi7zgBUgTT/lDYKFSby4nyzC7evKMQhdDNaCrggLT69lEWSmJsWaq
+         8VCw==
+X-Gm-Message-State: AOAM532pX0qkMcYH0HxfvVyZ+OS3puQ3x2Oq0eQOS212oN3Z5fE9ugvu
+        Ho/m4QG6DpQj1JuHu4AW+YY=
+X-Google-Smtp-Source: ABdhPJzPITSO0TWNyqU0r8yAlKSviyXbqz+nk7MVBML4BCNfoFAcyBZ0IWsUQ0/EoAtu4hmMZ4NIvg==
+X-Received: by 2002:adf:9069:: with SMTP id h96mr10064659wrh.358.1604782573402;
+        Sat, 07 Nov 2020 12:56:13 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f23:2800:7051:31d:251f:edd6? (p200300ea8f2328007051031d251fedd6.dip0.t-ipconnect.de. [2003:ea:8f23:2800:7051:31d:251f:edd6])
-        by smtp.googlemail.com with ESMTPSA id 71sm7973217wrm.20.2020.11.07.12.56.10
+        by smtp.googlemail.com with ESMTPSA id q7sm7128217wrg.95.2020.11.07.12.56.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Nov 2020 12:56:11 -0800 (PST)
-Subject: [PATCH net-next v3 07/10] wireguard: switch to dev_get_tstats64
+        Sat, 07 Nov 2020 12:56:12 -0800 (PST)
+Subject: [PATCH net-next v3 08/10] vti: switch to dev_get_tstats64
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
@@ -66,8 +66,8 @@ Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         osmocom-net-gprs@lists.osmocom.org, wireguard@lists.zx2c4.com,
         Steffen Klassert <steffen.klassert@secunet.com>
 References: <99273e2f-c218-cd19-916e-9161d8ad8c56@gmail.com>
-Message-ID: <79e9a040-c097-1d33-8de1-4833f1c68828@gmail.com>
-Date:   Sat, 7 Nov 2020 21:53:19 +0100
+Message-ID: <f8d8efd4-1bb7-a37f-1c64-23e06538f66a@gmail.com>
+Date:   Sat, 7 Nov 2020 21:53:53 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.4.1
 MIME-Version: 1.0
@@ -81,25 +81,38 @@ X-Mailing-List: netdev@vger.kernel.org
 Replace ip_tunnel_get_stats64() with the new identical core function
 dev_get_tstats64().
 
-Reviewed-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/wireguard/device.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/ip_vti.c  | 2 +-
+ net/ipv6/ip6_vti.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-index c9f65e96c..a3ed49cd9 100644
---- a/drivers/net/wireguard/device.c
-+++ b/drivers/net/wireguard/device.c
-@@ -215,7 +215,7 @@ static const struct net_device_ops netdev_ops = {
- 	.ndo_open		= wg_open,
- 	.ndo_stop		= wg_stop,
- 	.ndo_start_xmit		= wg_xmit,
--	.ndo_get_stats64	= ip_tunnel_get_stats64
-+	.ndo_get_stats64	= dev_get_tstats64
+diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
+index b957cbee2..abc171e79 100644
+--- a/net/ipv4/ip_vti.c
++++ b/net/ipv4/ip_vti.c
+@@ -404,7 +404,7 @@ static const struct net_device_ops vti_netdev_ops = {
+ 	.ndo_start_xmit	= vti_tunnel_xmit,
+ 	.ndo_do_ioctl	= ip_tunnel_ioctl,
+ 	.ndo_change_mtu	= ip_tunnel_change_mtu,
+-	.ndo_get_stats64 = ip_tunnel_get_stats64,
++	.ndo_get_stats64 = dev_get_tstats64,
+ 	.ndo_get_iflink = ip_tunnel_get_iflink,
+ 	.ndo_tunnel_ctl	= vti_tunnel_ctl,
+ };
+diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
+index 46d137a69..0225fd694 100644
+--- a/net/ipv6/ip6_vti.c
++++ b/net/ipv6/ip6_vti.c
+@@ -890,7 +890,7 @@ static const struct net_device_ops vti6_netdev_ops = {
+ 	.ndo_uninit	= vti6_dev_uninit,
+ 	.ndo_start_xmit = vti6_tnl_xmit,
+ 	.ndo_do_ioctl	= vti6_ioctl,
+-	.ndo_get_stats64 = ip_tunnel_get_stats64,
++	.ndo_get_stats64 = dev_get_tstats64,
+ 	.ndo_get_iflink = ip6_tnl_get_iflink,
  };
  
- static void wg_destruct(struct net_device *dev)
 -- 
 2.29.2
 
