@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F10AF2AA6F7
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 18:23:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CB302AA6FB
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 18:23:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728591AbgKGRXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 12:23:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40234 "EHLO
+        id S1728489AbgKGRXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 12:23:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726364AbgKGRXh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 12:23:37 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426FCC0613CF;
-        Sat,  7 Nov 2020 09:23:37 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id h6so3529950pgk.4;
-        Sat, 07 Nov 2020 09:23:37 -0800 (PST)
+        with ESMTP id S1726364AbgKGRXq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 12:23:46 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57564C0613CF;
+        Sat,  7 Nov 2020 09:23:46 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id x15so1643017pll.2;
+        Sat, 07 Nov 2020 09:23:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=DVH7MPV7h31siOUxNvTJ1dlLI6x1csCPhYzRcZFZBc8=;
-        b=lQGPCEMhSdpn9VyK57Qw0PuNHqO5mTKkBF13mjBaMDjgydI/B88u9y0jwohiOGe+7i
-         uTlQYJA/f+bMSqVF2/4MLS+y8upPAoWH0e/KBnSUDcLsfABxErM82t5vLLRbq8uYrZ9D
-         GaA3RNOT/uG9nbHJNqY2dylvfA2n/caSba+ScL1f2A47SNrIQKHq6BHO5qCphQaOwf0l
-         HCedVCA+UoGARrA4O0Uiclo1aJg71ViYTu9kh90umNYDBhBVsKqQV2er9sJZlQAmzvmr
-         2XIgrf4bv/6QDi/I1DMnS6FuN/dMmZisZY9L1UGDhlOfgSuAoIAuy6k6L9sEyOTZOaXL
-         SdsA==
+        bh=eAp0pK4KzjRqqD/baLCKjCsG8PKBRZRcMg8qB8SJ2ys=;
+        b=B4/wE20oItQPSjrj4O0gFoVU1fo1CMtVWbl2Bqs2uJSCLFV63cIsziKsEXwF1grEO3
+         RcVmlswSSM5YUGdzxT4t975xfFv9ucdpNQ3hrC3kW7V2yImt1w4WphzZDVCpzPmGMTBo
+         fUjD6iZi2M0XkyQqB7JH6CF+k37uKSVR6DN4GOro+ZoaXc3ySmlfw1Ii7hZ1sccXp22a
+         +PHT2OVxI4uAmVPyxguP5tXzxJLLdsyEKqxjK0P8i2n6W1GMm+pkBn6mSIJBt0AsERVI
+         qPzntnyXKdmyf7ZbX9EcD+ZO/sJNsdVCd2N85EREwdxasx/VG8VSJa1gBwhSRTXHs4/t
+         6ixg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=DVH7MPV7h31siOUxNvTJ1dlLI6x1csCPhYzRcZFZBc8=;
-        b=EQjsv4vl66UYaGI82D8gUI0j1bFpQqvpcMloL6Yu9kLdHPzRpVeCiOg9cfx91xYAaE
-         ZJ9DN0m3x1xJsV23N4hovWkyWLQuz/GOrMSeVGjMnN+WjrR+dP2RTiKEBBINnpHRwhJ7
-         PUVAJrzEvQFLKjmqA9VVZ8LdORYgoU3D1OOiu/1AMoSsPEAKELNbmbZcF78DvqbLRvT3
-         L7icj9ITlauZ060f6G/9zDflkTOpDerp+Q4RZ3n3bk7Te0AgfOKbGq1p5RPItHRJPseh
-         OGXOxwNtC5UJl7vdC/TEdTd1nGSFNrlJhmxzzUVoq7DSrsMUlFaigqhkskaKlgTTRJM+
-         N/hQ==
-X-Gm-Message-State: AOAM532uMiLMRJCUIPK0sJG586HDKfYoq5jDaVF9pIAj0/aAXENXBXKH
-        d2RgqxTZxZHKehCIb+Jo1c8=
-X-Google-Smtp-Source: ABdhPJyzINbYWbM94zeW9+eAABlqFkL79L0aI0G7kehb6+rW5jRBR/fBzO8v6T539a9r3q3vD8EkIg==
-X-Received: by 2002:a63:1062:: with SMTP id 34mr6224131pgq.78.1604769816862;
-        Sat, 07 Nov 2020 09:23:36 -0800 (PST)
+        bh=eAp0pK4KzjRqqD/baLCKjCsG8PKBRZRcMg8qB8SJ2ys=;
+        b=UYTL2AoYg5jAi84yOkVekjBQ2Nj62uO8H0RbwvSu6vw9TX3jQnh8+FhPadgGSlVHdE
+         crSxtl7eASvZc940M/N82j5xNQprUOUnZX1BHfm1Q2Qb63U+kzNGIBctlQCOTtxFJ3Rn
+         yRmoZQ1AKfN80yhBpDGQvYho+ePvrF+bSuseVhxVBGXqwCIQakNf1KkiK5ny3VKXx6kv
+         Y9a/V0LX/0+6HWxIMD6Ex07Da23JNg/rno7NfQSBpNWTV3Vr7eQ2BTQD3bkeN3TI7nDX
+         nLDsNr29IhPoEZd8DgoWOKQFkeAgz8VAJPLYOXaZOwTDobTzBdKRF3sEFBpriLZSrgNQ
+         012w==
+X-Gm-Message-State: AOAM530P8GxtrFO/OPUCdCTxciYUW3fYwlCFK7QZxchv3vpID5OJhODa
+        2ERwWXQABaM3a0m8RXSbmek=
+X-Google-Smtp-Source: ABdhPJyTpVlXUKFNyQbZ6ITAzYdrTBi92c5vkmRIDCWCay2TvL4Fzbc6jDw0XzuPSo5db5Ef9NA/GA==
+X-Received: by 2002:a17:902:c242:b029:d6:c58c:7fe7 with SMTP id 2-20020a170902c242b02900d6c58c7fe7mr6147931plg.51.1604769825909;
+        Sat, 07 Nov 2020 09:23:45 -0800 (PST)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id m17sm4916962pgu.21.2020.11.07.09.23.28
+        by smtp.gmail.com with ESMTPSA id m17sm4916962pgu.21.2020.11.07.09.23.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Nov 2020 09:23:36 -0800 (PST)
+        Sat, 07 Nov 2020 09:23:45 -0800 (PST)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com, David.Laight@aculab.com,
@@ -66,9 +66,9 @@ Cc:     ap420073@gmail.com, David.Laight@aculab.com,
         franky.lin@broadcom.com, hante.meuleman@broadcom.com,
         chung-hsien.hsu@infineon.com, wright.feng@infineon.com,
         chi-hsien.lin@infineon.com
-Subject: [PATCH net v2 06/21] i2400m: set .owner to THIS_MODULE
-Date:   Sat,  7 Nov 2020 17:21:37 +0000
-Message-Id: <20201107172152.828-7-ap420073@gmail.com>
+Subject: [PATCH net v2 07/21] wlcore: set .owner to THIS_MODULE
+Date:   Sat,  7 Nov 2020 17:21:38 +0000
+Message-Id: <20201107172152.828-8-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201107172152.828-1-ap420073@gmail.com>
 References: <20201107172152.828-1-ap420073@gmail.com>
@@ -80,7 +80,8 @@ If THIS_MODULE is not set, the module would be removed while debugfs is
 being used.
 It eventually makes kernel panic.
 
-Fixes: c71228caf91e ("i2400m: debugfs controls")
+Fixes: f5fc0f86b02a ("wl1271: add wl1271 driver files")
+Fixes: bcca1bbdd412 ("wlcore: add debugfs macro to help print fw statistics arrays")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
 
@@ -88,29 +89,37 @@ v1 -> v2:
  - Change headline
  - Squash patches into per-driver/subsystem
 
- drivers/net/wimax/i2400m/debugfs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/ti/wlcore/debugfs.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wimax/i2400m/debugfs.c b/drivers/net/wimax/i2400m/debugfs.c
-index 1c640b41ea4c..144f8a7e98af 100644
---- a/drivers/net/wimax/i2400m/debugfs.c
-+++ b/drivers/net/wimax/i2400m/debugfs.c
-@@ -87,6 +87,7 @@ const struct file_operations i2400m_rx_stats_fops = {
- 	.read =		i2400m_rx_stats_read,
- 	.write =	i2400m_rx_stats_write,
- 	.llseek =	default_llseek,
-+	.owner =	THIS_MODULE,
+diff --git a/drivers/net/wireless/ti/wlcore/debugfs.h b/drivers/net/wireless/ti/wlcore/debugfs.h
+index b143293e694f..559c93543247 100644
+--- a/drivers/net/wireless/ti/wlcore/debugfs.h
++++ b/drivers/net/wireless/ti/wlcore/debugfs.h
+@@ -35,6 +35,7 @@ static const struct file_operations name## _ops = {			\
+ 	.read = name## _read,						\
+ 	.open = simple_open,						\
+ 	.llseek	= generic_file_llseek,					\
++	.owner = THIS_MODULE,						\
  };
  
- 
-@@ -140,6 +141,7 @@ const struct file_operations i2400m_tx_stats_fops = {
- 	.read =		i2400m_tx_stats_read,
- 	.write =	i2400m_tx_stats_write,
- 	.llseek =	default_llseek,
-+	.owner =	THIS_MODULE,
+ #define DEBUGFS_ADD(name, parent)					\
+@@ -68,6 +69,7 @@ static const struct file_operations sub## _ ##name## _ops = {		\
+ 	.read = sub## _ ##name## _read,					\
+ 	.open = simple_open,						\
+ 	.llseek	= generic_file_llseek,					\
++	.owner = THIS_MODULE,						\
  };
  
+ #define DEBUGFS_FWSTATS_FILE_ARRAY(sub, name, len, struct_type)		\
+@@ -93,6 +95,7 @@ static const struct file_operations sub## _ ##name## _ops = {		\
+ 	.read = sub## _ ##name## _read,					\
+ 	.open = simple_open,						\
+ 	.llseek	= generic_file_llseek,					\
++	.owner = THIS_MODULE,						\
+ };
  
+ #define DEBUGFS_FWSTATS_ADD(sub, name)					\
 -- 
 2.17.1
 
