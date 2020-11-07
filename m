@@ -2,81 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB6892AA4B7
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 12:37:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E77862AA4BA
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 12:37:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727873AbgKGLhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 06:37:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35290 "EHLO mail.kernel.org"
+        id S1727962AbgKGLhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 06:37:39 -0500
+Received: from m42-4.mailgun.net ([69.72.42.4]:12977 "EHLO m42-4.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726242AbgKGLhQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Nov 2020 06:37:16 -0500
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726832AbgKGLhi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Nov 2020 06:37:38 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1604749057; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=j3N3cUP/epqCM8l1NiLYM5eaTMaL1gWjPmUJq6xTRWk=;
+ b=AczA2fX7rl7HRkMiO3odv2nDNGN3T2w4rn2tyfBSSpaEpQYykaLeL1m3r5lsoFABpAgSoWBc
+ 5oj/PUj3GSuUN/Cv9NF9Acbx8aJWT9c/V4dFu8pzUMWcPy9U0OrIKNIqCrjRrbUExYaT9OJV
+ daqn1v5yDgoG3uL+XKt2oVoHWgM=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 5fa687017d4f16f92fc7a66e (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 07 Nov 2020 11:37:37
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 5961FC433FE; Sat,  7 Nov 2020 11:37:37 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 14A99208E4;
-        Sat,  7 Nov 2020 11:37:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604749036;
-        bh=em/e3f6NhTAui/ah/wEifBq4OE2XCU15IP8+VcTiWVs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=jRSsphlTQyEzMj4nfh5g4ew+wZPbj31JGlG4r3HK5Q8La8GFsxmDTs2cB0i7/Bc9K
-         8jA8X1oBRlgjIxuEeSE1AKSYBP4ACGXgmenAdmEFH5p6o1Hm4PFEZC3S1vQCfrHQNi
-         3m3PQGcPniJrRZZNAeFbnECp1TCzCQ/3LrFXcGos=
-Received: by mail-wr1-f52.google.com with SMTP id x7so3928512wrl.3;
-        Sat, 07 Nov 2020 03:37:16 -0800 (PST)
-X-Gm-Message-State: AOAM531UrmbR1msyfUI/Ux09+I4hWGGtDLCqrhSOidsdM1v05z9LxR8b
-        3xVEkBt/AqgoXwGObQvKrbGNkT2/+OPM3grsoWA=
-X-Google-Smtp-Source: ABdhPJyLadVdWsa5ywE5T33VXoMWYPFLyp87yJGDnlr/93XXJ85G8lrPDWIxa/SAWuGTOhN8DkhGHxSthyGmE98lcF0=
-X-Received: by 2002:a5d:5261:: with SMTP id l1mr8115522wrc.105.1604749034668;
- Sat, 07 Nov 2020 03:37:14 -0800 (PST)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 69B49C433C9;
+        Sat,  7 Nov 2020 11:37:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 69B49C433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20201026213040.3889546-1-arnd@kernel.org> <20201026213040.3889546-8-arnd@kernel.org>
- <87tuu7ohbo.fsf@codeaurora.org> <47b04bd1da38a2356546284eb3576156899965de.camel@sipsolutions.net>
- <87tuu1fma5.fsf@codeaurora.org>
-In-Reply-To: <87tuu1fma5.fsf@codeaurora.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Sat, 7 Nov 2020 12:36:58 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1nqFus4Kf_RhmLZCfyhA+dd8eExbm7scmtQq9YnMw_Kg@mail.gmail.com>
-Message-ID: <CAK8P3a1nqFus4Kf_RhmLZCfyhA+dd8eExbm7scmtQq9YnMw_Kg@mail.gmail.com>
-Subject: Re: [PATCH net-next 08/11] ath9k: work around false-positive gcc warning
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 02/11] net: hostap: fix function cast warning
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201026213040.3889546-2-arnd@kernel.org>
+References: <20201026213040.3889546-2-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Jouni Malinen <j@w1.fi>, "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Arnd Bergmann <arnd@arndb.de>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20201107113737.5961FC433FE@smtp.codeaurora.org>
+Date:   Sat,  7 Nov 2020 11:37:37 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 7, 2020 at 12:21 PM Kalle Valo <kvalo@codeaurora.org> wrote:
-> Johannes Berg <johannes@sipsolutions.net> writes:
-> > On Mon, 2020-11-02 at 18:26 +0200, Kalle Valo wrote:
-> >> Arnd Bergmann <arnd@kernel.org> writes:
-> >> Isn't there a better way to handle this? I really would not want
-> >> checking for GCC versions become a common approach in drivers.
-> >>
-> >> I even think that using memcpy() always is better than the ugly ifdef.
-> >
-> > If you put memcpy() always somebody will surely go and clean it up to
-> > use ether_addr_copy() soon ...
->
-> I can always add a comment and hope that the cleanup people read
-> comments :) I did that now in the pending branch:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/commit/?h=pending&id=25cfc077bd7a798d1aa527ad2aa9932bb3284376
->
-> Does that look ok? I prefer that over the ifdef.
+Arnd Bergmann <arnd@kernel.org> wrote:
 
-Fine with me. My original reason for the compiler version check
-was that we can eventually restore the previous version once the
-compiler is fixed for long enough that all broken compilers are
-too old to build the kernel, in maybe six years from now at the
-current rate of deprecating old compilers.
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> gcc -Wextra complains about the function type cast:
+> 
+> drivers/net/wireless/intersil/hostap/hostap_hw.c:3173:48: warning: cast between incompatible function types from ‘void (*)(struct tasklet_struct *)’ to ‘void (*)(long unsigned int)’ [-Wcast-function-type]
+> 
+> Avoid this by just using the regular tasklet_setup() function instead
+> of the incorrect homegrown version.
+> 
+> Fixes: 7433c9690318 ("intersil: convert tasklets to use new tasklet_setup() API")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-       Arnd
+3 patches applied to wireless-drivers-next.git, thanks.
+
+9fdd02aa5988 net: hostap: fix function cast warning
+ef41937631bf rtlwifi: fix -Wpointer-sign warning
+6ac654697301 rtw88: remove extraneous 'const' qualifier
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20201026213040.3889546-2-arnd@kernel.org/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
