@@ -2,137 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0497D2AA318
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 08:56:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E4D72AA31F
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 08:59:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727841AbgKGH4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 02:56:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725985AbgKGH4B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 02:56:01 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725F0C0613CF
-        for <netdev@vger.kernel.org>; Fri,  6 Nov 2020 23:56:01 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id h6so4543184ybk.4
-        for <netdev@vger.kernel.org>; Fri, 06 Nov 2020 23:56:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=jIeEqn8DjifdijUbE9P+939DFnPxPOakX6eDafn0MtI=;
-        b=u1aTvZxAXwdIq/SraXXzIVM2gSKJda052aDlbK0HJEZRPF9zOaOKy2HO0eJkSflTgM
-         92EHWfBwgrgouazSyT95zgWQczY27gtgrYpJV/Pr47LxGGv/AQTNKP8AYMD9+Kk/MxuZ
-         aj2Ijivy27FKXMw9/eY5/LjsubIRHLpTjiSWoTFOHIR32T3DVO+V1LtedCzkokbzV978
-         QSf2hkWbHJr/yQsdpRqsNXaCkolRgWNe5FFNA1ss83DJpOla3DETCMQqRRu9YR6Jkmeg
-         /gRcmFpjaS+ROnP8LQ11ese5jpHmvFdicRhjDdTD5AUaqevkV8w6jkKWhFgA28FN+pjd
-         kzFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=jIeEqn8DjifdijUbE9P+939DFnPxPOakX6eDafn0MtI=;
-        b=UT15aPw21Z5cIiB8LQOyOeL+hz2WklqIcFzWwQIx9vPWTML/B5qSgonI2DI9MO4DPq
-         C5VICpWTuD9Z4sg2L4fywYBNJmh0KxzXu6tGNIHXiNxf6V3JrFpmTARC0Yk7ZvvJlnch
-         6RrnWSW+BpTf97f3y4gOuNsOF7kkwT0I0+3+7Q1s8uNPJSwci23rAVVTnILdYffyqBAM
-         lt/MsZATbzaM8NAaj4DGI3MENBpaeyZyRpSAR2vlgcHtSsN/Aj3YOa8zjM1m7xrM1YhN
-         H7zsBD2gwCMfOSklYN+4OXJqzC2VjLj0RsSdZmdNg8szXXrFv7EiOjVkZB2pm7Cj5CJ4
-         /NAg==
-X-Gm-Message-State: AOAM530dxB4zJrrjQEH/QCTfyYK41XkvhtvtpkUICQSUFE43mMlR9Eg5
-        o9IT0m0cGznyjwOHcFXM4/xDAXAMdo7B7P/vSmM=
-X-Google-Smtp-Source: ABdhPJzR9iuyIm++F87KftDrwL9BVO+hm9aoSe4S8ZbteAFmwgVBnzk+wfReZz0nn6JVHoEo8RCzTot3TWwoyXXRnz0=
-Sender: "ndesaulniers via sendgmr" 
-        <ndesaulniers@ndesaulniers1.mtv.corp.google.com>
-X-Received: from ndesaulniers1.mtv.corp.google.com ([2620:15c:211:202:f693:9fff:fef4:4d25])
- (user=ndesaulniers job=sendgmr) by 2002:a25:7811:: with SMTP id
- t17mr7217154ybc.450.1604735760577; Fri, 06 Nov 2020 23:56:00 -0800 (PST)
-Date:   Fri,  6 Nov 2020 23:55:50 -0800
-Message-Id: <20201107075550.2244055-1-ndesaulniers@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.29.2.222.g5d2a92d10f8-goog
-Subject: [PATCH] netfilter: conntrack: fix -Wformat
-From:   Nick Desaulniers <ndesaulniers@google.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1727950AbgKGH71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 02:59:27 -0500
+Received: from m42-4.mailgun.net ([69.72.42.4]:41382 "EHLO m42-4.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725985AbgKGH70 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Nov 2020 02:59:26 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1604735965; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=Mbg1EqcfnJs+dnP2G29WHj2GAOOOm/rhkT9jO54wR44=;
+ b=jBqBPkLu0hDfnYU5NvkjGBLD6soyfodx9PldCZx0CsV0BEnIACeYuvRifuuk3ZWGHx5m5p/f
+ L6hTfgO5lPDL7FdL/aWPjNVmhY7cAQTsUjmRqth0IfzX3rwbn6Xg7EsBxyMqODcqsP7UAnho
+ IaaWYALCIUTAstiv9Rh3HELFe10=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 5fa653ca82aad55dcb7e6e1f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 07 Nov 2020 07:59:07
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id DBD2BC433C6; Sat,  7 Nov 2020 07:59:06 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 62950C433C8;
+        Sat,  7 Nov 2020 07:59:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 62950C433C8
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2 3/3] ath11k: convert tasklets to use new
+ tasklet_setup()
+ API
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201007103309.363737-4-allen.lkml@gmail.com>
+References: <20201007103309.363737-4-allen.lkml@gmail.com>
+To:     Allen Pais <allen.lkml@gmail.com>
+Cc:     davem@davemloft.net, nbd@nbd.name, lorenzo.bianconi83@gmail.com,
+        ryder.lee@mediatek.com, kuba@kernel.org, matthias.bgg@gmail.com,
+        ath11k@lists.infradead.org, linux-mediatek@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Allen Pais <apais@linux.microsoft.com>,
+        Romain Perier <romain.perier@gmail.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20201107075906.DBD2BC433C6@smtp.codeaurora.org>
+Date:   Sat,  7 Nov 2020 07:59:06 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang is more aggressive about -Wformat warnings when the format flag
-specifies a type smaller than the parameter. Fixes 8 instances of:
+Allen Pais <allen.lkml@gmail.com> wrote:
 
-warning: format specifies type 'unsigned short' but the argument has
-type 'int' [-Wformat]
+> In preparation for unconditionally passing the
+> struct tasklet_struct pointer to all tasklet
+> callbacks, switch to using the new tasklet_setup()
+> and from_tasklet() to pass the tasklet pointer explicitly.
+> 
+> Signed-off-by: Romain Perier <romain.perier@gmail.com>
+> Signed-off-by: Allen Pais <apais@linux.microsoft.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/378
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
----
- net/netfilter/nf_conntrack_standalone.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+Patch applied to ath-next branch of ath.git, thanks.
 
-diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
-index 46c5557c1fec..c5aa45c38eb2 100644
---- a/net/netfilter/nf_conntrack_standalone.c
-+++ b/net/netfilter/nf_conntrack_standalone.c
-@@ -50,38 +50,38 @@ print_tuple(struct seq_file *s, const struct nf_conntrack_tuple *tuple,
- 
- 	switch (l4proto->l4proto) {
- 	case IPPROTO_ICMP:
--		seq_printf(s, "type=%u code=%u id=%u ",
-+		seq_printf(s, "type=%u code=%u id=%hu ",
- 			   tuple->dst.u.icmp.type,
- 			   tuple->dst.u.icmp.code,
--			   ntohs(tuple->src.u.icmp.id));
-+			   (__be16)ntohs(tuple->src.u.icmp.id));
- 		break;
- 	case IPPROTO_TCP:
- 		seq_printf(s, "sport=%hu dport=%hu ",
--			   ntohs(tuple->src.u.tcp.port),
--			   ntohs(tuple->dst.u.tcp.port));
-+			   (__be16)ntohs(tuple->src.u.tcp.port),
-+			   (__be16)ntohs(tuple->dst.u.tcp.port));
- 		break;
- 	case IPPROTO_UDPLITE:
- 	case IPPROTO_UDP:
- 		seq_printf(s, "sport=%hu dport=%hu ",
--			   ntohs(tuple->src.u.udp.port),
--			   ntohs(tuple->dst.u.udp.port));
-+			   (__be16)ntohs(tuple->src.u.udp.port),
-+			   (__be16)ntohs(tuple->dst.u.udp.port));
- 
- 		break;
- 	case IPPROTO_DCCP:
- 		seq_printf(s, "sport=%hu dport=%hu ",
--			   ntohs(tuple->src.u.dccp.port),
--			   ntohs(tuple->dst.u.dccp.port));
-+			   (__be16)ntohs(tuple->src.u.dccp.port),
-+			   (__be16)ntohs(tuple->dst.u.dccp.port));
- 		break;
- 	case IPPROTO_SCTP:
- 		seq_printf(s, "sport=%hu dport=%hu ",
--			   ntohs(tuple->src.u.sctp.port),
--			   ntohs(tuple->dst.u.sctp.port));
-+			   (__be16)ntohs(tuple->src.u.sctp.port),
-+			   (__be16)ntohs(tuple->dst.u.sctp.port));
- 		break;
- 	case IPPROTO_ICMPV6:
--		seq_printf(s, "type=%u code=%u id=%u ",
-+		seq_printf(s, "type=%u code=%u id=%hu ",
- 			   tuple->dst.u.icmp.type,
- 			   tuple->dst.u.icmp.code,
--			   ntohs(tuple->src.u.icmp.id));
-+			   (__be16)ntohs(tuple->src.u.icmp.id));
- 		break;
- 	case IPPROTO_GRE:
- 		seq_printf(s, "srckey=0x%x dstkey=0x%x ",
+0f01dcb89b8b ath11k: convert tasklets to use new tasklet_setup() API
+
 -- 
-2.29.2.222.g5d2a92d10f8-goog
+https://patchwork.kernel.org/project/linux-wireless/patch/20201007103309.363737-4-allen.lkml@gmail.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
