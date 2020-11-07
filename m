@@ -2,99 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E6272AA7A7
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 20:35:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 221802AA7B1
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 20:37:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728634AbgKGTf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 14:35:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46720 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725836AbgKGTf2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Nov 2020 14:35:28 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CA8D620723;
-        Sat,  7 Nov 2020 19:35:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604777728;
-        bh=AjR96+yaBayijL7Wx5/CF+M4oB4bNnVhjNMokSzY7Uk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BrPhYw+rrMLsFZlKDu2tGpqYgtcQjR7sz+Macvy6nbmXUqefoxI4ztwUCMELNqBMH
-         i6hSl2n2KID7nAY0xngZfvLkMO5dpnWzUab61en/NwoK+2RYL+WlIUQDFtyc8FEZ8r
-         JE6onVK4n3YxpYzp/ck2X6YCHRzGZgNcH8S8KWss=
-Date:   Sat, 7 Nov 2020 11:35:27 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Cc:     <davem@davemloft.net>, <michal.simek@xilinx.com>,
-        <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <git@xilinx.com>,
-        Shravya Kumbham <shravya.kumbham@xilinx.com>
-Subject: Re: [PATCH net-next] net: emaclite: Add error handling for
- of_address_ and phy read functions
-Message-ID: <20201107113527.18232c34@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1604410265-30246-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-References: <1604410265-30246-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+        id S1727454AbgKGThu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 14:37:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725911AbgKGTht (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 14:37:49 -0500
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938A6C0613CF;
+        Sat,  7 Nov 2020 11:37:49 -0800 (PST)
+Received: by mail-ot1-x330.google.com with SMTP id i18so4685484ots.0;
+        Sat, 07 Nov 2020 11:37:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=mK8EcpMsyTZuMSNqvmeAlfQ0aQLRFp87PX4fdIGzBn4=;
+        b=gjWxp80gZgE+YGHoTOKnq9YD637wot/YEeto+s1gcMnTYmWKPHYmpeHSszRE196XCI
+         Q1JcP73RP31aT7UbmK50KAHwVC7cNFmajQCFs6tV++dzWJRsXFGnQwWgh2KktJ5lnBFv
+         tlheWaA4+ki0Vh87WTXJgPyB4qY66j6unDSeJshxzzLU8tawo2sOCoIrNb4fhBBjWpQE
+         bV2LVSbg9+yp9Q+XvtJJICfpu+0nQYGybg7X9cL89FK4R8WNmCD/iicnA6F42yrD/2Mi
+         QjFsWeaFiV+/x5CMgD41lugLd319jc4+sSurFPLX6lr6HMk8oZ++5SzMyAy+flKmVMZg
+         ItFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=mK8EcpMsyTZuMSNqvmeAlfQ0aQLRFp87PX4fdIGzBn4=;
+        b=WhjOhMnw3Yfp4jGSmvfCqm0qp7wKk8EMiSfAGO5Wz+TD9liIP83snmFxSEjA+JA+o/
+         K7H6i7cDZwB5F1jpk2g7ukuYUfXGNbrfEPqPP2O57W27CBpv79XCvXPm5FcPSONzbPus
+         5P4G/MRW3j4WBmwt7sVyQjPvbUIjq1HbEpEb7jVfC+yWqKgw1hwqHkHbH89C/DP7BlPx
+         RouVU77zWsPM8FdBUuOdCEM181hNQQSyPZROtyAcvqkLHtmlVXPb1b+xTeyl5UI9GYSg
+         kieDbI7PQ/z0aN3Ttc9bDoBFmRTOnHOeE2FbRzZailaGz/bdTjMJnLPSbE4/f5ybnnri
+         OsuQ==
+X-Gm-Message-State: AOAM53396PGfFjXcAnx/4truZxu3OmVPaQuZ6kLIY8kCBWJOKopa3u44
+        YDHZLXGICgkaNGw+jfuomFg=
+X-Google-Smtp-Source: ABdhPJzTnPbzt8Hxvsh8eVn/z3rxy8SpPgdpqcFqmJP89l+xT1cTRiYjl2IlZ7i784STDv4EXcTvXg==
+X-Received: by 2002:a9d:896:: with SMTP id 22mr5289552otf.55.1604777868857;
+        Sat, 07 Nov 2020 11:37:48 -0800 (PST)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id w79sm1233977oia.28.2020.11.07.11.37.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Nov 2020 11:37:48 -0800 (PST)
+Subject: [bpf PATCH 0/5] sockmap fixes
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, jakub@cloudflare.com
+Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Date:   Sat, 07 Nov 2020 11:37:35 -0800
+Message-ID: <160477770483.608263.6057216691957042088.stgit@john-XPS-13-9370>
+User-Agent: StGit/0.23-36-gc01b
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Nov 2020 19:01:05 +0530 Radhey Shyam Pandey wrote:
-> From: Shravya Kumbham <shravya.kumbham@xilinx.com>
-> 
-> Add ret variable, conditions to check the return value and it's error
-> path for of_address_to_resource() and phy_read() functions.
-> 
-> Addresses-Coverity: Event check_return value.
-> Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+This includes fixes for sockmap found after I started running skmsg and
+verdict programs on systems that I use daily. To date with attached
+series I've been running for multiple weeks without seeing any issues
+on systems doing calls, mail, movies, etc.
 
-Any reason not to apply this to net as a fix?
+Also I started running packetdrill and after this series last remaining
+fix needed is to handle MSG_EOR correctly. This will come as a follow
+up to this, but because we use sendpage to pass pages into TCP stack
+we need to enable TCP side some.
 
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> index 0c26f5b..fc5ccd1 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> @@ -820,7 +820,7 @@ static int xemaclite_mdio_write(struct mii_bus *bus, int phy_id, int reg,
->  static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
->  {
->  	struct mii_bus *bus;
-> -	int rc;
-> +	int rc, ret;
->  	struct resource res;
->  	struct device_node *np = of_get_parent(lp->phy_node);
->  	struct device_node *npp;
-> @@ -834,7 +834,13 @@ static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
->  	}
->  	npp = of_get_parent(np);
->  
-> -	of_address_to_resource(npp, 0, &res);
-> +	ret = of_address_to_resource(npp, 0, &res);
-> +	if (ret) {
-> +		dev_err(dev, "%s resource error!\n",
-> +			dev->of_node->full_name);
-> +		of_node_put(lp->phy_node);
+---
 
-I'm always confused by the of_* refcounting. Why do you need to put
-phy_node here, and nowhere else in this function?
+John Fastabend (5):
+      bpf, sockmap: fix partial copy_page_to_iter so progress can still be made
+      bpf, sockmap: Ensure SO_RCVBUF memory is observed on ingress redirect
+      bpf, sockmap: Avoid returning unneeded EAGAIN when redirecting to self
+      bpf, sockmap: Handle memory acct if skb_verdict prog redirects to self
+      bpf, sockmap: Avoid failures from skb_to_sgvec when skb has frag_list
 
-> +		return ret;
-> +	}
 
->  		/* Restart auto negotiation */
->  		bmcr = phy_read(lp->phy_dev, MII_BMCR);
-> +		if (bmcr < 0) {
-> +			dev_err(&lp->ndev->dev, "phy_read failed\n");
-> +			phy_disconnect(lp->phy_dev);
-> +			lp->phy_dev = NULL;
-> +
-> +			return bmcr;
-> +		}
->  		bmcr |= (BMCR_ANENABLE | BMCR_ANRESTART);
->  		phy_write(lp->phy_dev, MII_BMCR, bmcr);
+ net/core/skmsg.c   | 84 +++++++++++++++++++++++++++++++++++++++-------
+ net/ipv4/tcp_bpf.c |  3 +-
+ 2 files changed, 73 insertions(+), 14 deletions(-)
 
-Does it really make much sense to validate the return value of
-phy_read() but not check any errors from phy_write()s?
+--
+Signature
+
