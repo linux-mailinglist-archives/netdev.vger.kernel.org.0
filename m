@@ -2,84 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C9EF2AA85E
-	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 00:23:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDA122AA861
+	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 00:31:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726470AbgKGXXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 18:23:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59356 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725838AbgKGXXO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Nov 2020 18:23:14 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 484DB2087E;
-        Sat,  7 Nov 2020 23:23:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604791393;
-        bh=e3OLEr/83DVpjBpXHhs04dOi3JUgCsyFLMKa47cxGMo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AUMxBxh/0pXz9OrnoNkiE/15RIAW7cCo0KvLIb4DlCAtp9V0if+i4EIv44UG2Bc3M
-         inWnBtCFvFoaAmF3ViLMh9tczD7Q6a92eCTPkDKiRToOcgnuFHirsj72vJYvmzTNZy
-         t7LSnkFGmOhwASnE9OtzQFSOdBcReEf8h+RSuZ4g=
-Date:   Sat, 7 Nov 2020 15:23:12 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] ethtool: netlink: add missing
- netdev_features_change() call
-Message-ID: <20201107152312.727b2e68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <AlZXQ2o5uuTVHCfNGOiGgJ8vJ3KgO5YIWAnQjH0cDE@cp3-web-009.plabs.ch>
-References: <AlZXQ2o5uuTVHCfNGOiGgJ8vJ3KgO5YIWAnQjH0cDE@cp3-web-009.plabs.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1728437AbgKGXab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 18:30:31 -0500
+Received: from m9785.mail.qiye.163.com ([220.181.97.85]:20455 "EHLO
+        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726099AbgKGXab (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 18:30:31 -0500
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id BA7CD5C10F1;
+        Sun,  8 Nov 2020 07:30:28 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     kuba@kernel.org, marcelo.leitner@gmail.com, dcaratti@redhat.com,
+        vladbu@nvidia.com
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH v5 net-next 0/3] net/sched: fix over mtu packet of defrag in
+Date:   Sun,  8 Nov 2020 07:30:25 +0800
+Message-Id: <1604791828-7431-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
+        oVCBIfWUFZGh5LTUIaGBlKSUpPVkpNS09MQkpDSUNDS01VGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0hKQ1VLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MS46Oio*KD06Ojk1KgJLLzw3
+        PREwCw1VSlVKTUtPTEJKQ0lDQk9KVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUpCSEo3Bg++
+X-HM-Tid: 0a75a50c01322087kuqyba7cd5c10f1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 05 Nov 2020 16:26:58 +0000 Alexander Lobakin wrote:
-> After updating userspace Ethtool from 5.7 to 5.9, I noticed that
-> NETDEV_FEAT_CHANGE is no more raised when changing netdev features
-> through Ethtool.
-> That's because the old Ethtool ioctl interface always calls
-> netdev_features_change() at the end of user request processing to
-> inform the kernel that our netdevice has some features changed, but
-> the new Netlink interface does not. Instead, it just notifies itself
-> with ETHTOOL_MSG_FEATURES_NTF.
-> Replace this ethtool_notify() call with netdev_features_change(), so
-> the kernel will be aware of any features changes, just like in case
-> with the ioctl interface. This does not omit Ethtool notifications,
-> as Ethtool itself listens to NETDEV_FEAT_CHANGE and drops
-> ETHTOOL_MSG_FEATURES_NTF on it
-> (net/ethtool/netlink.c:ethnl_netdev_event()).
-> 
-> Fixes: 0980bfcd6954 ("ethtool: set netdev features with FEATURES_SET request")
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+From: wenxu <wenxu@ucloud.cn>
 
-LGTM, one nit below
+Currently kernel tc subsystem can do conntrack in act_ct. But when several
+fragment packets go through the act_ct, function tcf_ct_handle_fragments
+will defrag the packets to a big one. But the last action will redirect
+mirred to a device which maybe lead the reassembly big packet over the mtu
+of target device.
 
-> diff --git a/net/ethtool/features.c b/net/ethtool/features.c
-> index 8ee4cdbd6b82..38f526f2125d 100644
-> --- a/net/ethtool/features.c
-> +++ b/net/ethtool/features.c
-> @@ -279,8 +279,9 @@ int ethnl_set_features(struct sk_buff *skb, struct genl_info *info)
->  					  wanted_diff_mask, new_active,
->  					  active_diff_mask, compact);
->  	}
-> +
+The first patch fix miss init the qdisc_skb_cb->mru
+The send one refactor the hanle of xmit in act_mirred and prepare for the
+third one
+The last one add implict packet fragment support to fix the over mtu for
+defrag in act_ct.
 
-I think the reply and notification are purposefully grouped, please
-drop this extra new line.
 
->  	if (mod)
-> -		ethtool_notify(dev, ETHTOOL_MSG_FEATURES_NTF, NULL);
-> +		netdev_features_change(dev);
->  
->  out_rtnl:
->  	rtnl_unlock();
+wenxu (3):
+  net/sched: fix miss init the mru in qdisc_skb_cb
+  net/sched: act_mirred: refactor the handle of xmit
+  net/sched: act_frag: add implict packet fragment support.
+
+ include/net/act_api.h     |  16 +++++
+ include/net/sch_generic.h |   5 --
+ net/core/dev.c            |   2 +
+ net/sched/Kconfig         |  13 ++++
+ net/sched/Makefile        |   1 +
+ net/sched/act_api.c       |  51 ++++++++++++++
+ net/sched/act_ct.c        |   7 ++
+ net/sched/act_frag.c      | 164 ++++++++++++++++++++++++++++++++++++++++++++++
+ net/sched/act_mirred.c    |  21 ++++--
+ 9 files changed, 269 insertions(+), 11 deletions(-)
+ create mode 100644 net/sched/act_frag.c
+
+-- 
+1.8.3.1
 
