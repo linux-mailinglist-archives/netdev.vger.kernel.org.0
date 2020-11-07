@@ -2,83 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 181AB2AA5FF
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 15:34:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AD452AA60E
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 15:56:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728180AbgKGOeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 09:34:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42382 "EHLO
+        id S1727494AbgKGO4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 09:56:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725880AbgKGOeQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 09:34:16 -0500
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66587C0613CF;
-        Sat,  7 Nov 2020 06:34:16 -0800 (PST)
-Received: by mail-pg1-x541.google.com with SMTP id x13so3347458pgp.7;
-        Sat, 07 Nov 2020 06:34:16 -0800 (PST)
+        with ESMTP id S1726021AbgKGO4u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 09:56:50 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25166C0613CF;
+        Sat,  7 Nov 2020 06:56:50 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id c20so4271620pfr.8;
+        Sat, 07 Nov 2020 06:56:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7OvZRnx3zKUlFFbuIBaVfPQjLrLtotnEPM1zyk4sAfo=;
-        b=A+Kt5URmOJouiLjmnTpmIunakfrGP5Ok/bFb/URE9mAxaDAIzMJjpFvoWJVmrdsLkE
-         F7Uyo6cZURtP75VOTL7gwuSiMjK934GDKXkeQ7QWLWJtHphtxoU+pjTU7u4ojcgfFEVA
-         RVsmE0qycQJEWQZOwKxScBTxF+j7dTzwgvbhhOJ1aYpH7D3QXOWjXaD6qX+fUUiBzW7z
-         t5LpeT7LHe7Wb/NfWnN3HAcmy5HEf7sXb0VlbQv2+BGiLGaPP5OKwupvdfg8+C3RU7lo
-         hpf5Ci5VJMveJ5V20PhsCLboZpRa0/KGrT7qAutaBwicjfV8KqlrDjEAnQyAn/ewDFJq
-         dtUg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=OAig6VAxVJWLlM9kU+eo4+P+aWW3ULQ0FM1RxfarM9M=;
+        b=CQnZBPYi36lb0zaqTveQEl6aXebyRDAIJNlLG8C+i9z5OJXcDbYzE66OA5u8grgRWY
+         y4zghRJHjrDBmxyrEitK4dIbAF9UZhChahWNLIa08Xcb34mIa7SmntjD60NOZcZdRoyn
+         voBas3u3lMQEOuryON53LvcfQsUEOb33pK5hrvWbOA2rHze8zudkGIlt1Fc/RyvkUOh8
+         h+DStyUukLDve+LyoZlnrr/dTAVPJe5WB9iddJNj4Bkw5i1Etr79OW/eTURHEyQol12i
+         ybgZfX7o2AB7aaS7qLOY9S3Hkrl3W99oFbqP1aFTn8GGH4i0eJbJnVDBsfzhVYUn6HMj
+         5xrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7OvZRnx3zKUlFFbuIBaVfPQjLrLtotnEPM1zyk4sAfo=;
-        b=UnD4fW0WCXiDsnIKmjoft4sPHzpFEbyAxpWERdUokYvz+xQQB7N99jx5K1Gb5HjYwZ
-         OzA/uBJ1kkSm24OaURjZQBsNDOSNd4+7dcRRa7l0lysiS9DsoSYNrvtuhzXTh6EXyOuZ
-         qJiYq9IXcLvWd3HYtakKo2v1q5v+jK0cZ6jmQIlOX40rfVv8K00wPTssyEAs3x+Rmaz8
-         +ep45/BG8YeKFPGVffL73Jzm1bEH6Iet+odHfbOCDBiFuu1KwvjNzkp/glYlYSMLYn4s
-         KCMcDqp2DL7nyp9qWwabpYxmnLl46sm0Ujy/mIn04tBIiSxSiFqFI78XHQlc2eT3e/Av
-         J9GQ==
-X-Gm-Message-State: AOAM530DnSJeygJxvUwBQF6ldbkgGntEym4I4HBl/6QqZBcB2BTRs9LG
-        bhHOIyZnV+CSAARNxNJ6vfNoJvV7WYeQO3yqC0OGZhKB16s=
-X-Google-Smtp-Source: ABdhPJzhsB1cK5mMXuPVRe5FS4R8kJy9pOpcpUEmxAwr/qRkBpDYkAvUqkabzSO+tPQNcsUsrP6KJpdIQ7i5Ta9Zfp8=
-X-Received: by 2002:a62:3004:0:b029:156:47d1:4072 with SMTP id
- w4-20020a6230040000b029015647d14072mr6441940pfw.63.1604759655895; Sat, 07 Nov
- 2020 06:34:15 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=OAig6VAxVJWLlM9kU+eo4+P+aWW3ULQ0FM1RxfarM9M=;
+        b=Je0Einv2w3ZtVuenNMeLa0HVPqv9MpketS+RhJV6StsN6kyap68BRomN8746Kr4d+y
+         zvjm5+9kczkDjR8wtclhTnq1rxrhdseapzUSK6MqU/jJy2e8mnYuhaDPNsroU5lCFP6g
+         f+oa9J1yb3oyVhNPwYAW37g8ggLAOZK9SJ1joiYwu5o2bEeASsrpOiXknrY65XiYJ11f
+         JX25B9iuh7WulPbEAHj6ajr7RdPTQVcM0eNGTh/seBFk9of1kxFvF353D99zXDDnUUY1
+         H9un/N6dJyA4YNNXWYCJrN7+bb5KjB5jdyMUFPPqEo28fY96YaFtys9MfrrZbqxs8MAh
+         oFNA==
+X-Gm-Message-State: AOAM530fz9HShuP+vmwaR1nWVbi8uKhgTnZtnkYU6R0zlCE8O1H7A5R2
+        yTs7UoXYLCgROI6HhVUVNEHlooLvOto=
+X-Google-Smtp-Source: ABdhPJzHVNhsx2ltWm1JiUclfjnuT/COISRTG2bm+R8byiw9EgmM+5ZKTWikBRbc9iTxDbySwLiDPg==
+X-Received: by 2002:a62:1455:0:b029:18b:83a2:768b with SMTP id 82-20020a6214550000b029018b83a2768bmr6516559pfu.3.1604761009403;
+        Sat, 07 Nov 2020 06:56:49 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id i6sm5702909pjt.49.2020.11.07.06.56.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Nov 2020 06:56:48 -0800 (PST)
+Date:   Sat, 7 Nov 2020 06:56:46 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Wang Qing <wangqing@vivo.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pcp_clock: return EOPNOTSUPP if !CONFIG_PTP_1588_CLOCK
+Message-ID: <20201107145646.GA9653@hoboy.vegasvil.org>
+References: <1604719703-31930-1-git-send-email-wangqing@vivo.com>
 MIME-Version: 1.0
-References: <20201031181043.805329-1-xie.he.0141@gmail.com>
- <20201103152216.36ed8495@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CAJht_EMOtSVSeqy93ZsDKZRi+-A7=6Fjqu1nPRVi3O4SZV8Zrw@mail.gmail.com>
-In-Reply-To: <CAJht_EMOtSVSeqy93ZsDKZRi+-A7=6Fjqu1nPRVi3O4SZV8Zrw@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Sat, 7 Nov 2020 06:34:05 -0800
-Message-ID: <CAJht_EPvPW8tSGbhB99c_SpZ7c30yP23Z-tW-6+YjBP8aacr0w@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 0/5] net: hdlc_fr: Improve fr_rx and add
- support for any Ethertype
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1604719703-31930-1-git-send-email-wangqing@vivo.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 3, 2020 at 6:03 PM Xie He <xie.he.0141@gmail.com> wrote:
->
-> On Tue, Nov 3, 2020 at 3:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > Applied, but going forward please limit any refactoring and extensions
-> > to the HDLC code. I thought you are actually using it. If that's not
-> > the case let's leave the code be, it's likely going to be removed in
-> > a few years time.
->
-> OK. I understand.
->
-> Thanks!
+On Sat, Nov 07, 2020 at 11:28:23AM +0800, Wang Qing wrote:
+> pcp_clock_register() is checked with IS_ERR(), and will crash if !PTP,
+> change return value to ERR_PTR(-EOPNOTSUPP) for the !CONFIG_PTP_1588_CLOCK
+>  and so question resolved.
 
-The HDLC layer is still used by X.25 people (to be precise, Martin
-Schiller <ms@dev.tdt.de>). Although we currently have three X.25
-drivers in the kernel (lapbether, x25_asy, hdlc_x25), it seems to me
-that only hdlc_x25 is used in the real world. So I guess the HDLC
-layer will be there as long as the X.25 stack is still there.
+NAK.
+
+Drivers must use the documented interface.
+
+Thanks,
+Richard
