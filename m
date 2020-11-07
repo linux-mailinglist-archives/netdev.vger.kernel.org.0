@@ -2,110 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C1DC2AA179
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 00:38:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88C5E2AA1A1
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 01:03:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728766AbgKFXiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 18:38:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45636 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727859AbgKFXiS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 18:38:18 -0500
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CB0C0613CF;
-        Fri,  6 Nov 2020 15:38:17 -0800 (PST)
-Received: by mail-il1-x12d.google.com with SMTP id y17so2528400ilg.4;
-        Fri, 06 Nov 2020 15:38:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cMDUSUSOJpaSH9CWWq2vM22j2LvwSDCD82Y7MWOuiM0=;
-        b=joz2Pg4QmVOHmoaOx6PXRXtt3vZis4TQCgK4Qwq+Jgn6bTyUYxl1tfHGypnTywZa18
-         S+1O7KjSyVjcxG1+zo6EW3ntoZ/qnQ6Zd4S2c6nBOCqtP2U39T6BjGVqj3kfZ32sgbVy
-         LL/6iF2A+ostM0RojMAQ5saWyNybUtPqKzZMqSLL0P6BqiNY7/DDhjIo41LOREdpsO+h
-         zXNclpygvTulNHxljUVbKfXIKs2feBb172NaN/Q2gkP1DH8TD1ecGmSU1ijNiv98bOmV
-         CkJUSSwxcqqI7EUeMxztC3OT/RzFLHmLiOcSzUI5LINUYgwt2ept8s5vHaIe+/T9GNPj
-         /PgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=cMDUSUSOJpaSH9CWWq2vM22j2LvwSDCD82Y7MWOuiM0=;
-        b=N+jSw3R/64JqN/XH2WAWH6ffQn8AO8R8h5SP8+YtTAuKxI9Evz/9VtCQTnKwl4s2D0
-         2qbycbkEtP8ewrzXKt6THxAL8+2A1rJry1YAPp0RxqFAPX+fcqYUuy2H47fChoqJxiVr
-         wsmMB0+cRIlxkw+RUinXDlcUuFBjbyizt37UUWbTRNyItDvivX+JlRdWW0zujvJuqZhy
-         n3Nv61Q5duHjYpWslcfED9z5cSn1UfVG3SVxYrdUWTFrYGK8K3U7N6WbF7FvXVuZtW0m
-         pqrHIm0kfIy0rfWkahZ7H1khxrw5+jCoLV6ha8WCtQEWFVw9ruhSlwhrBeyIDWnLiIlg
-         qxVg==
-X-Gm-Message-State: AOAM532FuE5lyr7LNgvCYAB6vAHLr9sUKq5bqzElrz7cI15h2Y7E9tR3
-        L/I7Nwd0BdPnxzcs9k2PUMA=
-X-Google-Smtp-Source: ABdhPJy7XnjwPCPz2NHxqJM6u5YGzHmtg2Z8zcAwJ4OM84ZOUHTEM1jp70rQf0hkz4FM9jlrBVhDoQ==
-X-Received: by 2002:a92:40d2:: with SMTP id d79mr3217980ill.7.1604705896410;
-        Fri, 06 Nov 2020 15:38:16 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:59f:e9df:76ab:8876])
-        by smtp.googlemail.com with ESMTPSA id r16sm1495830ioc.45.2020.11.06.15.38.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Nov 2020 15:38:15 -0800 (PST)
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
-        <toke@redhat.com>
-References: <20201028132529.3763875-1-haliu@redhat.com>
- <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
- <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
- <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
- <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
- <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com>
- <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
- <20201104021730.GK2408@dhcp-12-153.nay.redhat.com>
- <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
- <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com>
- <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
- <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com>
- <CAEf4BzaSfutBt3McEPjmu_FyxyzJa_xVGfhP_7v0oGuqG_HBEw@mail.gmail.com>
- <20201106094425.5cc49609@redhat.com>
- <CAEf4Bzb2fuZ+Mxq21HEUKcOEba=rYZHc+1FTQD98=MPxwj8R3g@mail.gmail.com>
- <CAADnVQ+S7fusZ6RgXBKJL7aCtt3jpNmCnCkcXd0fLayu+Rw_6Q@mail.gmail.com>
- <20201106152537.53737086@hermes.local>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <45d88ca7-b22a-a117-5743-b965ccd0db35@gmail.com>
-Date:   Fri, 6 Nov 2020 16:38:13 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.0
+        id S1728111AbgKGADR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 6 Nov 2020 19:03:17 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8036 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728059AbgKGADH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 19:03:07 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A700qqY030020
+        for <netdev@vger.kernel.org>; Fri, 6 Nov 2020 16:03:05 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 34m5r5vp5h-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 06 Nov 2020 16:03:05 -0800
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 6 Nov 2020 16:03:03 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 3945C2EC8FB3; Fri,  6 Nov 2020 16:02:58 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
+        Dmitrii Banshchikov <dbanschikov@fb.com>
+Subject: [PATCH bpf] libbpf: don't attempt to load unused subprog as an entry-point BPF program
+Date:   Fri, 6 Nov 2020 16:02:51 -0800
+Message-ID: <20201107000251.256821-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20201106152537.53737086@hermes.local>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-06_06:2020-11-05,2020-11-06 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
+ malwarescore=0 phishscore=0 bulkscore=0 lowpriorityscore=0
+ priorityscore=1501 mlxlogscore=834 suspectscore=0 clxscore=1015
+ spamscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2011060162
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/6/20 4:25 PM, Stephen Hemminger wrote:
->>
->> I think bumping the minimal version of libbpf with every iproute2 release
->> is necessary as well.
->> Today iproute2-next should require 0.2.0. The cycle after it should be 0.3.0
->> and so on.
->> This way at least some correlation between iproute2 and libbpf will be
->> established.
->> Otherwise it's a mess of versions and functionality from user point of view.
+If BPF code contains unused BPF subprogram and there are no other subprogram
+calls (which can realistically happen in real-world applications given
+sufficiently smart Clang code optimizations), libbpf will erroneously assume
+that subprograms are entry-point programs and will attempt to load them with
+UNSPEC program type.
 
-If existing bpf features in iproute2 work fine with version 0.1.0, what
-is the justification for an arbitrary requirement for iproute2 to force
-users to bump libbpf versions just to use iproute2 from v5.11?
+Fix by not relying on subcall instructions and rather detect it based on the
+structure of BPF object's sections.
+
+Reported-by: Dmitrii Banshchikov <dbanschikov@fb.com>
+Fixes: 9a94f277c4fb ("tools: libbpf: restore the ability to load programs from .text section")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ tools/lib/bpf/libbpf.c                        | 23 +++++++++++--------
+ .../selftests/bpf/prog_tests/subprogs.c       |  6 +++++
+ .../bpf/progs/test_subprogs_unused.c          | 21 +++++++++++++++++
+ 3 files changed, 40 insertions(+), 10 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_subprogs_unused.c
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 313034117070..28baee7ba1ca 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -560,8 +560,6 @@ bpf_object__init_prog(struct bpf_object *obj, struct bpf_program *prog,
+ 		      const char *name, size_t sec_idx, const char *sec_name,
+ 		      size_t sec_off, void *insn_data, size_t insn_data_sz)
+ {
+-	int i;
+-
+ 	if (insn_data_sz == 0 || insn_data_sz % BPF_INSN_SZ || sec_off % BPF_INSN_SZ) {
+ 		pr_warn("sec '%s': corrupted program '%s', offset %zu, size %zu\n",
+ 			sec_name, name, sec_off, insn_data_sz);
+@@ -600,13 +598,6 @@ bpf_object__init_prog(struct bpf_object *obj, struct bpf_program *prog,
+ 		goto errout;
+ 	memcpy(prog->insns, insn_data, insn_data_sz);
+ 
+-	for (i = 0; i < prog->insns_cnt; i++) {
+-		if (insn_is_subprog_call(&prog->insns[i])) {
+-			obj->has_subcalls = true;
+-			break;
+-		}
+-	}
+-
+ 	return 0;
+ errout:
+ 	pr_warn("sec '%s': failed to allocate memory for prog '%s'\n", sec_name, name);
+@@ -3280,7 +3271,19 @@ bpf_object__find_program_by_title(const struct bpf_object *obj,
+ static bool prog_is_subprog(const struct bpf_object *obj,
+ 			    const struct bpf_program *prog)
+ {
+-	return prog->sec_idx == obj->efile.text_shndx && obj->has_subcalls;
++	/* For legacy reasons, libbpf supports an entry-point BPF programs
++	 * without SEC() attribute, i.e., those in the .text section. But if
++	 * there are 2 or more such programs in the .text section, they all
++	 * must be subprograms called from entry-point BPF programs in
++	 * designated SEC()'tions, otherwise there is no way to distinguish
++	 * which of those programs should be loaded vs which are a subprogram.
++	 * Similarly, if there is a function/program in .text and at least one
++	 * other BPF program with custom SEC() attribute, then we just assume
++	 * .text programs are subprograms (even if they are not called from
++	 * other programs), because libbpf never explicitly supported mixing
++	 * SEC()-designated BPF programs and .text entry-point BPF programs.
++	 */
++	return prog->sec_idx == obj->efile.text_shndx && obj->nr_programs > 1;
+ }
+ 
+ struct bpf_program *
+diff --git a/tools/testing/selftests/bpf/prog_tests/subprogs.c b/tools/testing/selftests/bpf/prog_tests/subprogs.c
+index a00abf58c037..3f3d2ac4dd57 100644
+--- a/tools/testing/selftests/bpf/prog_tests/subprogs.c
++++ b/tools/testing/selftests/bpf/prog_tests/subprogs.c
+@@ -3,12 +3,14 @@
+ #include <test_progs.h>
+ #include <time.h>
+ #include "test_subprogs.skel.h"
++#include "test_subprogs_unused.skel.h"
+ 
+ static int duration;
+ 
+ void test_subprogs(void)
+ {
+ 	struct test_subprogs *skel;
++	struct test_subprogs_unused *skel2;
+ 	int err;
+ 
+ 	skel = test_subprogs__open_and_load();
+@@ -26,6 +28,10 @@ void test_subprogs(void)
+ 	CHECK(skel->bss->res3 != 19, "res3", "got %d, exp %d\n", skel->bss->res3, 19);
+ 	CHECK(skel->bss->res4 != 36, "res4", "got %d, exp %d\n", skel->bss->res4, 36);
+ 
++	skel2 = test_subprogs_unused__open_and_load();
++	ASSERT_OK_PTR(skel2, "unused_progs_skel");
++	test_subprogs_unused__destroy(skel2);
++
+ cleanup:
+ 	test_subprogs__destroy(skel);
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_subprogs_unused.c b/tools/testing/selftests/bpf/progs/test_subprogs_unused.c
+new file mode 100644
+index 000000000000..75d975f8cf90
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_subprogs_unused.c
+@@ -0,0 +1,21 @@
++#include "vmlinux.h"
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_core_read.h>
++
++const char LICENSE[] SEC("license") = "GPL";
++
++__attribute__((maybe_unused)) __noinline int unused1(int x)
++{
++	return x + 1;
++}
++
++static __attribute__((maybe_unused)) __noinline int unused2(int x)
++{
++	return x + 2;
++}
++
++SEC("raw_tp/sys_enter")
++int main_prog(void *ctx)
++{
++	return 0;
++}
+-- 
+2.24.1
+
