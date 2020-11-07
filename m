@@ -2,106 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46FFC2AA6AB
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 17:28:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA9AC2AA6B8
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 17:47:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728368AbgKGQ2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 11:28:12 -0500
-Received: from m42-4.mailgun.net ([69.72.42.4]:53133 "EHLO m42-4.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727077AbgKGQ2L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Nov 2020 11:28:11 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1604766490; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=8kmAMZ+csPrpMbMJNA/e5p7nRkQrNNS59KEPN5JBprA=; b=d0cNzxMMm1PfMCJaPFqvNaqnDyv/gkA7go/5R3NG536i6s3XKyCcL16h1tOFiAhFeqmyZvGU
- fpfjBrn9RCwTZHdHg3uaQbOfgLHlSuaq2XYorkiyIir+fmYXTFQE0YR1lLgJ+tB6Ni6Fx6ZK
- Vl9hLhUNh9JbiYBE5e8MlxGVAOY=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 5fa6cb191d3980f7d6d08ae8 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 07 Nov 2020 16:28:09
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 48261C433C8; Sat,  7 Nov 2020 16:28:09 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 53D65C433C6;
-        Sat,  7 Nov 2020 16:28:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 53D65C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Brian Norris <briannorris@chromium.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "\<netdev\@vger.kernel.org\>" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 41/41] realtek: rtw88: pci: Add prototypes for .probe, .remove and .shutdown
-References: <20201102112410.1049272-1-lee.jones@linaro.org>
-        <20201102112410.1049272-42-lee.jones@linaro.org>
-        <CA+ASDXOobW1_qL5SCGS86aoGvhKDMoBzjxbAwn+QjHfkqZhukw@mail.gmail.com>
-        <20201103084453.GJ4488@dell>
-Date:   Sat, 07 Nov 2020 18:28:02 +0200
-In-Reply-To: <20201103084453.GJ4488@dell> (Lee Jones's message of "Tue, 3 Nov
-        2020 08:44:53 +0000")
-Message-ID: <87y2jd5dyl.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1728139AbgKGQre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 11:47:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20970 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726021AbgKGQrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 11:47:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604767651;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=DHS62vo2PjQMnlGUR+ju7tKFuCSwS6A0lH+pddFHEC8=;
+        b=DZKQit2AyLIV3xf7xdQx5tz0TbsPhYJaq8BTsFrVH9qNhGGT7FJt79VjvFztDVeHHMjltD
+        PZ6Ov6mEWO1n0WSsYN95qSRWSR3LA3eHJWpv5noVPPK/FRnIny1hegoXLJUJgXnapqLryX
+        tntZAs/tq6VAkC65PmkdQYclsYLX37E=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-173-EApvY_b2NammEBW8-I15Wg-1; Sat, 07 Nov 2020 11:47:21 -0500
+X-MC-Unique: EApvY_b2NammEBW8-I15Wg-1
+Received: by mail-wr1-f70.google.com with SMTP id h11so1894010wrq.20
+        for <netdev@vger.kernel.org>; Sat, 07 Nov 2020 08:47:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=DHS62vo2PjQMnlGUR+ju7tKFuCSwS6A0lH+pddFHEC8=;
+        b=ImDxycV8YBI8rKSwNw6snmFknQ168059vyiLTy84rBbAm/+1eO9oG0auMJZaPRkKxC
+         0N+hlfdR9ioI32J8qz1xRSCSlrkeGUsh5n35O3/QbQIRSI2giiTULR1c3p+5SLeK8EU2
+         EA1pOeTH4xEeuXhxl3Z813Tb/dadyMgYe6QCdxW8KyaWuKgR0ZIEWAc5PgrZUPOOXGMx
+         aoFquUENtabRo8vZeqEZbXdjIguXgbgEANUvL8vmytDkNq6q/G0NPmxeA/OU5mFjL6Cx
+         uib8jCI91O9ZQ56VNnAbGRo16IgUaPq/fMmU0jpnnfZgmnB3+7CTprUOo/4MmA3Ydzf8
+         qeQg==
+X-Gm-Message-State: AOAM530IWeW/UnVDX6T90QzTO+0bXxugyUDg94KPVSwcqqXSLAapKc+m
+        mzKrzzPNg8xXZXZ8UljNfJKu7NitaELw8O02AALPP9i9D+IjlMKYK+ip8+40bszAooPFS3KqjrR
+        /OE1dQ+mNjCQZ1VNy
+X-Received: by 2002:a05:6000:107:: with SMTP id o7mr8594064wrx.354.1604767640140;
+        Sat, 07 Nov 2020 08:47:20 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzRUsGR4ASmN8QkLO+2M2Eb67ysjHiiJIVe2VQwpzJiF27PMDcy8lRX2HFld+Qy7ZuzWaYwkQ==
+X-Received: by 2002:a05:6000:107:: with SMTP id o7mr8594050wrx.354.1604767639981;
+        Sat, 07 Nov 2020 08:47:19 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id s188sm6960746wmf.45.2020.11.07.08.47.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Nov 2020 08:47:19 -0800 (PST)
+Date:   Sat, 7 Nov 2020 17:47:17 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next] selftests: disable rp_filter when testing bareudp
+Message-ID: <28140b7d20161e4f766b558018fe2718f9bc1117.1604767577.git.gnault@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lee Jones <lee.jones@linaro.org> writes:
+Some systems have rp_filter=1 as default configuration. This breaks
+bareudp.sh as the intermediate namespaces handle part of the routing
+with regular IPv4 routes but the reverse path is done with tc
+(flower/tunnel_key/mirred).
 
-> On Mon, 02 Nov 2020, Brian Norris wrote:
->
->> On Mon, Nov 2, 2020 at 3:25 AM Lee Jones <lee.jones@linaro.org> wrote:
->> > --- a/drivers/net/wireless/realtek/rtw88/pci.h
->> > +++ b/drivers/net/wireless/realtek/rtw88/pci.h
->> > @@ -212,6 +212,10 @@ struct rtw_pci {
->> >         void __iomem *mmap;
->> >  };
->> >
->> > +int rtw_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id);
->> > +void rtw_pci_remove(struct pci_dev *pdev);
->> > +void rtw_pci_shutdown(struct pci_dev *pdev);
->> > +
->> >
->> 
->> These definitions are already in 4 other header files:
->> 
->> drivers/net/wireless/realtek/rtw88/rtw8723de.h
->> drivers/net/wireless/realtek/rtw88/rtw8821ce.h
->> drivers/net/wireless/realtek/rtw88/rtw8822be.h
->> drivers/net/wireless/realtek/rtw88/rtw8822ce.h
->> 
->> Seems like you should be moving them, not just adding yet another duplicate.
->
-> I followed the current convention.
->
-> Happy to optimise if that's what is required.
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+---
+ tools/testing/selftests/net/bareudp.sh | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-I agree with Brian, these and rtw_pm_ops should be moved to pci.h to
-avoid code duplication.
-
+diff --git a/tools/testing/selftests/net/bareudp.sh b/tools/testing/selftests/net/bareudp.sh
+index c6fe22de7d0e..c2b9e990e544 100755
+--- a/tools/testing/selftests/net/bareudp.sh
++++ b/tools/testing/selftests/net/bareudp.sh
+@@ -234,6 +234,12 @@ setup_overlay_ipv4()
+ 	ip netns exec "${NS2}" sysctl -qw net.ipv4.ip_forward=1
+ 	ip -netns "${NS1}" route add 192.0.2.100/32 via 192.0.2.10
+ 	ip -netns "${NS2}" route add 192.0.2.103/32 via 192.0.2.33
++
++	# The intermediate namespaces don't have routes for the reverse path,
++	# as it will be handled by tc. So we need to ensure that rp_filter is
++	# not going to block the traffic.
++	ip netns exec "${NS1}" sysctl -qw net.ipv4.conf.default.rp_filter=0
++	ip netns exec "${NS2}" sysctl -qw net.ipv4.conf.default.rp_filter=0
+ }
+ 
+ setup_overlay_ipv6()
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.21.3
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
