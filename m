@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79A7B2AA81E
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 22:24:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 060022AA823
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 22:30:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727871AbgKGVYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 16:24:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44088 "EHLO mail.kernel.org"
+        id S1727454AbgKGVaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 16:30:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44726 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725836AbgKGVYq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Nov 2020 16:24:46 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4EFFD206DB;
-        Sat,  7 Nov 2020 21:24:45 +0000 (UTC)
+        id S1725836AbgKGVaF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Nov 2020 16:30:05 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604784285;
-        bh=BFT8AiDGiOnrBrmOkHYjI06IqPwJCXPQDbVnQeOlgNY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BoVgnF4d72DKMOD5u+iPh1O00tp9JieqvGf7mPhR9R5y5EHBkBr6Z745QSffNLF+7
-         0XCVsgGRZJlveuGY0cLehzgp6cq+T+4y/OXDe+aR/wZmBoEFokmkJvCVVoaIAOaboe
-         QPWbApSj2o15qv0rNX/P3+o3DHHG6NsDVFuJma3s=
-Date:   Sat, 7 Nov 2020 13:24:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc:     Parshuram Thombare <pthombar@cadence.com>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <Claudiu.Beznea@microchip.com>, <Santiago.Esteban@microchip.com>,
-        <andrew@lunn.ch>, <davem@davemloft.net>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <harini.katakam@xilinx.com>, <michal.simek@xilinx.com>
-Subject: Re: [RESEND PATCH] net: macb: fix NULL dereference due to no
- pcs_config method
-Message-ID: <20201107132444.560cc7c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <22c6b5ff-d19e-2af8-d601-341a2101d6ef@microchip.com>
-References: <1604599113-2488-1-git-send-email-pthombar@cadence.com>
-        <22c6b5ff-d19e-2af8-d601-341a2101d6ef@microchip.com>
+        s=default; t=1604784604;
+        bh=Vktu4yAXE7e/Kvcg9N+cTagizFsTswa9hf/0HBIatEI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uUY7vtbV13TSkq7DcCcuWod8q/Ezdh4f1OzNQylP5d9DMgi3BlqqsT1MYkObbx+Qu
+         6RAKWQKKLHBvwH0jbjUZlaBgOwFGM641bUc8HaiozV3/I4jlMLkijLAgYxe2tA34Jw
+         ZEA77UZbjieshY3N5feusD7zsFnlz4tRRpFfsSQc=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [RESEND PATCH] net: macb: fix NULL dereference due to no pcs_config
+ method
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160478460462.2415.3338273731051881056.git-patchwork-notify@kernel.org>
+Date:   Sat, 07 Nov 2020 21:30:04 +0000
+References: <1604599113-2488-1-git-send-email-pthombar@cadence.com>
+In-Reply-To: <1604599113-2488-1-git-send-email-pthombar@cadence.com>
+To:     Parshuram Thombare <pthombar@cadence.com>
+Cc:     nicolas.ferre@microchip.com, kuba@kernel.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        Claudiu.Beznea@microchip.com, Santiago.Esteban@microchip.com,
+        andrew@lunn.ch, davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, harini.katakam@xilinx.com,
+        michal.simek@xilinx.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 6 Nov 2020 10:26:59 +0100 Nicolas Ferre wrote:
-> On 05/11/2020 at 18:58, Parshuram Thombare wrote:
-> > This patch fixes NULL pointer dereference due to NULL pcs_config
-> > in pcs_ops.
-> > 
-> > Reported-by: Nicolas Ferre <Nicolas.Ferre@microchip.com>
-> > Link: https://lore.kernel.org/netdev/2db854c7-9ffb-328a-f346-f68982723d29@microchip.com/
-> > Signed-off-by: Parshuram Thombare <pthombar@cadence.com>  
+Hello:
+
+This patch was applied to netdev/net-next.git (refs/heads/master):
+
+On Thu, 5 Nov 2020 18:58:33 +0100 you wrote:
+> This patch fixes NULL pointer dereference due to NULL pcs_config
+> in pcs_ops.
 > 
-> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> Reported-by: Nicolas Ferre <Nicolas.Ferre@microchip.com>
+> Link: https://lore.kernel.org/netdev/2db854c7-9ffb-328a-f346-f68982723d29@microchip.com/
+> Signed-off-by: Parshuram Thombare <pthombar@cadence.com>
+> 
+> [...]
 
-Applied.
+Here is the summary with links:
+  - [RESEND] net: macb: fix NULL dereference due to no pcs_config method
+    https://git.kernel.org/netdev/net-next/c/0012eeb370f8
 
-I brought back the fixes tag from the first posting. It's entirely
-reasonable to add fixes tags from the tree you're targeting as long 
-as that tree guarantees commit hashes are stable and won't change on
-their way upstream. Which is the case for net and net-next trees.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Thanks!
+
