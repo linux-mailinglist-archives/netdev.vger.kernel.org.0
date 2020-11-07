@@ -2,63 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 872902AA7E1
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 21:20:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA0D22AA7E2
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 21:20:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728437AbgKGUUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 15:20:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52412 "EHLO mail.kernel.org"
+        id S1728669AbgKGUUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 15:20:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52498 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725836AbgKGUUF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Nov 2020 15:20:05 -0500
-Content-Type: text/plain; charset="utf-8"
+        id S1725836AbgKGUUf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Nov 2020 15:20:35 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 22CF420885;
+        Sat,  7 Nov 2020 20:20:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604780404;
-        bh=P6zCYHZK7DRGRT9TolXwmnMhZA2U+nZvMMt3n/9Kzns=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OmbVtIhWGqwm8+Udi9pE7nuXjVwLE72AixkOg7iMbjBFZ1qzVuwAaVAlVssbp/Pt4
-         PU/tE1dWTpMY5Nbakuhze4zhmynEV/mhC0ESZkT2si95AlDhI1qMJqoBQ52wvuwjAo
-         L86EVuBxXvGFW8ro+89g0tkJ6I58COxnJWIt7eFs=
+        s=default; t=1604780435;
+        bh=vOyP3KUR834aETkN9bxWCDTxVQzO1OujYPpYSapMXF0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sBo8msQcUxlRETRwa92h33b0ovMq172zDMenfb7GM6+kLhOwnoJ9C8IQK9Idp3bBp
+         PKL+2/xtNrlq1oZ8ovI5KlQWeMq5ceQzjK/CCBxiHRl/mB6hOCZMMHMHnByYoTbkcG
+         HtzQDSkHJaLT42zHBPR9VBwt3EHQ92vVC2mAQJ24=
+Date:   Sat, 7 Nov 2020 12:20:34 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     menglong8.dong@gmail.com
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dingtianhong@huawei.com,
+        Menglong Dong <dong.menglong@zte.com.cn>
+Subject: Re: [PATCH v2] net: macvlan: remove redundant initialization in
+ macvlan_dev_netpoll_setup
+Message-ID: <20201107122034.55d527a7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1604541244-3241-1-git-send-email-dong.menglong@zte.com.cn>
+References: <1604541244-3241-1-git-send-email-dong.menglong@zte.com.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net] r8169: disable hw csum for short packets on all chip
- versions
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160478040458.5539.16964128639762448744.git-patchwork-notify@kernel.org>
-Date:   Sat, 07 Nov 2020 20:20:04 +0000
-References: <7fbb35f0-e244-ef65-aa55-3872d7d38698@gmail.com>
-In-Reply-To: <7fbb35f0-e244-ef65-aa55-3872d7d38698@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, nic_swsd@realtek.com,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Thu, 5 Nov 2020 18:14:47 +0100 you wrote:
-> RTL8125B has same or similar short packet hw padding bug as RTL8168evl.
-> The main workaround has been extended accordingly, however we have to
-> disable also hw checksumming for short packets on affected new chip
-> versions. Instead of checking for an affected chip version let's
-> simply disable hw checksumming for short packets in general.
+On Wed,  4 Nov 2020 20:54:04 -0500 menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <dong.menglong@zte.com.cn>
 > 
-> v2:
-> - remove the version checks and disable short packet hw csum in general
-> - reflect this in commit title and message
+> The initialization for err with 0 seems useless, as it is soon updated
+> with -ENOMEM. So, we can remove it.
 > 
-> [...]
+> Changes since v1:
+> -Keep -ENOMEM still.
+> 
+> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
 
-Here is the summary with links:
-  - [v2,net] r8169: disable hw csum for short packets on all chip versions
-    https://git.kernel.org/netdev/net/c/847f0a2bfd2f
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Applied.
