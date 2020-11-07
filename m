@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58E702AA2CA
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 07:31:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B91E2AA2C8
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 07:31:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728179AbgKGGbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 01:31:39 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:6758 "EHLO
+        id S1728160AbgKGGbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 01:31:33 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:6759 "EHLO
         szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727944AbgKGGbP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 01:31:15 -0500
+        with ESMTP id S1727934AbgKGGbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 01:31:17 -0500
 Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CSnT158bqzkdBv;
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CSnT14ywSzkdB9;
         Sat,  7 Nov 2020 14:31:01 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
@@ -23,9 +23,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 10/11] net: hns3: add ethtool priv-flag for EQ/CQ
-Date:   Sat, 7 Nov 2020 14:31:20 +0800
-Message-ID: <1604730681-32559-11-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 11/11] net: hns3: add debugfs support for interrupt coalesce
+Date:   Sat, 7 Nov 2020 14:31:21 +0800
+Message-ID: <1604730681-32559-12-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1604730681-32559-1-git-send-email-tanhuazhong@huawei.com>
 References: <1604730681-32559-1-git-send-email-tanhuazhong@huawei.com>
@@ -37,115 +37,172 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a control private flag in ethtool for switching EQ/CQ mode.
+Since user may need to check the current configuration of the
+interrupt coalesce, so add debugfs support for query this info,
+which includes DIM profile, coalesce configuration of both software
+and hardware.
 
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  2 ++
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 19 ++++++++++++++++--
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 ++
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 23 ++++++++++++++++++++++
- 4 files changed, 44 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c | 124 +++++++++++++++++++++
+ 1 file changed, 124 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 345e8a4..a452874 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -719,6 +719,8 @@ struct hnae3_roce_private_info {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+index a5ebca8..1efeed6 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+@@ -12,6 +12,91 @@
  
- enum hnae3_pflag {
- 	HNAE3_PFLAG_DIM_ENABLE,
-+	HNAE3_PFLAG_TX_CQE_MODE,
-+	HNAE3_PFLAG_RX_CQE_MODE,
- 	HNAE3_PFLAG_MAX
- };
+ static struct dentry *hns3_dbgfs_root;
  
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index d1243ea..93f7731 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -4144,6 +4144,7 @@ static void hns3_info_show(struct hns3_nic_priv *priv)
- 
- static void hns3_state_init(struct hnae3_handle *handle)
- {
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(handle->pdev);
- 	struct net_device *netdev = handle->kinfo.netdev;
- 	struct hns3_nic_priv *priv = netdev_priv(netdev);
- 
-@@ -4151,10 +4152,24 @@ static void hns3_state_init(struct hnae3_handle *handle)
- 	set_bit(HNS3_NIC_STATE_DIM_ENABLE, &priv->state);
- 	handle->priv_flags |= BIT(HNAE3_PFLAG_DIM_ENABLE);
- 	set_bit(HNAE3_PFLAG_DIM_ENABLE, &handle->supported_pflags);
++static ssize_t hns3_dbg_coal_write(struct file *filp, const char __user *buffer,
++				   size_t count, loff_t *ppos)
++{
++	struct hnae3_handle *h = filp->private_data;
++	struct hns3_nic_priv *priv  = h->priv;
++	struct hns3_enet_tqp_vector *tqp_vector;
++	struct hns3_enet_coalesce *coal;
++	int uncopied_bytes;
++	unsigned int idx;
++	struct dim *dim;
++	char *cmd_buf;
 +
-+	/* device version above V3(include V3), GL can switch CQ/EQ period
-+	 * mode.
-+	 */
-+	if (ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3) {
-+		set_bit(HNAE3_PFLAG_TX_CQE_MODE, &handle->supported_pflags);
-+		set_bit(HNAE3_PFLAG_RX_CQE_MODE, &handle->supported_pflags);
++	if (*ppos != 0)
++		return 0;
++
++	if (!test_bit(HNS3_NIC_STATE_INITED, &priv->state)) {
++		dev_err(&h->pdev->dev, "device is not initialized\n");
++		return -EFAULT;
 +	}
 +
-+	if (priv->tx_cqe_mode == DIM_CQ_PERIOD_MODE_START_FROM_CQE)
-+		handle->priv_flags |= BIT(HNAE3_PFLAG_TX_CQE_MODE);
++	cmd_buf = kzalloc(count + 1, GFP_KERNEL);
++	if (!cmd_buf)
++		return -ENOMEM;
 +
-+	if (priv->rx_cqe_mode == DIM_CQ_PERIOD_MODE_START_FROM_CQE)
-+		handle->priv_flags |= BIT(HNAE3_PFLAG_RX_CQE_MODE);
- }
- 
--static void hns3_set_cq_period_mode(struct hns3_nic_priv *priv,
--				    enum dim_cq_period_mode mode, bool is_tx)
-+void hns3_set_cq_period_mode(struct hns3_nic_priv *priv,
-+			     enum dim_cq_period_mode mode, bool is_tx)
++	uncopied_bytes = copy_from_user(cmd_buf, buffer, count);
++	if (uncopied_bytes) {
++		kfree(cmd_buf);
++		return -EFAULT;
++	}
++
++	cmd_buf[count] = '\0';
++
++	if (kstrtouint(cmd_buf, 0, &idx))
++		idx = 0;
++
++	if (idx >= priv->vector_num) {
++		dev_err(&h->pdev->dev,
++			"vector index(%u) is out of range(0-%u)\n", idx,
++			priv->vector_num - 1);
++		kfree(cmd_buf);
++		return -EINVAL;
++	}
++
++	tqp_vector = &priv->tqp_vector[idx];
++	coal = &tqp_vector->tx_group.coal;
++	dim = &tqp_vector->tx_group.dim;
++
++	dev_info(&h->pdev->dev, "vector[%u] interrupt coalesce info:\n", idx);
++	dev_info(&h->pdev->dev,
++		 "TX DIM info state = %d profile_ix = %d mode = %d tune_state = %d steps_right = %d steps_left = %d tired = %d\n",
++		 dim->state, dim->profile_ix, dim->mode, dim->tune_state,
++		 dim->steps_right, dim->steps_left, dim->tired);
++
++	dev_info(&h->pdev->dev, "TX GL info sw_gl = %u, hw_gl = %u\n",
++		 coal->int_gl,
++		 readl(tqp_vector->mask_addr + HNS3_VECTOR_GL1_OFFSET));
++
++	if (coal->ql_enable)
++		dev_info(&h->pdev->dev, "TX QL info sw_ql = %u, hw_ql = %u\n",
++			 coal->int_ql,
++			 readl(tqp_vector->mask_addr + HNS3_VECTOR_TX_QL_OFFSET));
++
++	coal = &tqp_vector->rx_group.coal;
++	dim = &tqp_vector->rx_group.dim;
++
++	dev_info(&h->pdev->dev,
++		 "RX dim_info state = %d profile_ix = %d mode = %d tune_state = %d steps_right = %d steps_left = %d tired = %d\n",
++		 dim->state, dim->profile_ix, dim->mode, dim->tune_state,
++		 dim->steps_right, dim->steps_left, dim->tired);
++
++	dev_info(&h->pdev->dev, "RX GL info sw_gl = %u, hw_gl = %u\n",
++		 coal->int_gl,
++		 readl(tqp_vector->mask_addr + HNS3_VECTOR_GL0_OFFSET));
++
++	if (coal->ql_enable)
++		dev_info(&h->pdev->dev, "RX QL info sw_ql = %u, hw_ql = %u\n",
++			 coal->int_ql,
++			 readl(tqp_vector->mask_addr + HNS3_VECTOR_RX_QL_OFFSET));
++
++	kfree(cmd_buf);
++	cmd_buf = NULL;
++
++	return count;
++}
++
+ static int hns3_dbg_queue_info(struct hnae3_handle *h,
+ 			       const char *cmd_buf)
  {
- 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(priv->ae_handle->pdev);
- 	struct hnae3_handle *handle = priv->ae_handle;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index c6c082a..ecdb544 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -635,4 +635,6 @@ void hns3_dbg_uninit(struct hnae3_handle *handle);
- void hns3_dbg_register_debugfs(const char *debugfs_dir_name);
- void hns3_dbg_unregister_debugfs(void);
- void hns3_shinfo_pack(struct skb_shared_info *shinfo, __u32 *size);
-+void hns3_set_cq_period_mode(struct hns3_nic_priv *priv,
-+			     enum dim_cq_period_mode mode, bool is_tx);
- #endif
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 6904c0a..8de2789 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -417,8 +417,31 @@ static void hns3_update_dim_state(struct net_device *netdev, bool enable)
- 	hns3_update_state(netdev, HNS3_NIC_STATE_DIM_ENABLE, enable);
+@@ -352,6 +437,35 @@ static void hns3_dbg_dev_specs(struct hnae3_handle *h)
+ 	dev_info(priv->dev, "MAX INT GL: %u\n", dev_specs->max_int_gl);
  }
  
-+static void hns3_update_cqe_mode(struct net_device *netdev, bool enable, bool is_tx)
++static ssize_t hns3_dbg_coal_read(struct file *filp, char __user *buffer,
++				  size_t count, loff_t *ppos)
 +{
-+	struct hns3_nic_priv *priv = netdev_priv(netdev);
-+	enum dim_cq_period_mode mode;
++	int uncopy_bytes;
++	char *buf;
++	int len;
 +
-+	mode = enable ? DIM_CQ_PERIOD_MODE_START_FROM_CQE :
-+		DIM_CQ_PERIOD_MODE_START_FROM_EQE;
++	if (*ppos != 0)
++		return 0;
 +
-+	hns3_set_cq_period_mode(priv, mode, is_tx);
++	if (count < HNS3_DBG_READ_LEN)
++		return -ENOSPC;
++
++	buf = kzalloc(HNS3_DBG_READ_LEN, GFP_KERNEL);
++	if (!buf)
++		return -ENOMEM;
++
++	len = scnprintf(buf, HNS3_DBG_READ_LEN, "%s\n",
++			"Please echo index to coal");
++	uncopy_bytes = copy_to_user(buffer, buf, len);
++
++	kfree(buf);
++
++	if (uncopy_bytes)
++		return -EFAULT;
++
++	return (*ppos = len);
 +}
 +
-+static void hns3_update_tx_cqe_mode(struct net_device *netdev, bool enable)
-+{
-+	hns3_update_cqe_mode(netdev, enable, true);
-+}
-+
-+static void hns3_update_rx_cqe_mode(struct net_device *netdev, bool enable)
-+{
-+	hns3_update_cqe_mode(netdev, enable, false);
-+}
-+
- static const struct hns3_pflag_desc hns3_priv_flags[HNAE3_PFLAG_MAX] = {
- 	{ "dim_enable",		hns3_update_dim_state },
-+	{ "tx_cqe_mode",	hns3_update_tx_cqe_mode },
-+	{ "rx_cqe_mode",	hns3_update_rx_cqe_mode },
+ static ssize_t hns3_dbg_cmd_read(struct file *filp, char __user *buffer,
+ 				 size_t count, loff_t *ppos)
+ {
+@@ -452,6 +566,13 @@ static const struct file_operations hns3_dbg_cmd_fops = {
+ 	.write = hns3_dbg_cmd_write,
  };
  
- static int hns3_get_sset_count(struct net_device *netdev, int stringset)
++static const struct file_operations hns3_dbg_coal_fops = {
++	.owner = THIS_MODULE,
++	.open  = simple_open,
++	.read  = hns3_dbg_coal_read,
++	.write = hns3_dbg_coal_write,
++};
++
+ void hns3_dbg_init(struct hnae3_handle *handle)
+ {
+ 	const char *name = pci_name(handle->pdev);
+@@ -460,6 +581,9 @@ void hns3_dbg_init(struct hnae3_handle *handle)
+ 
+ 	debugfs_create_file("cmd", 0600, handle->hnae3_dbgfs, handle,
+ 			    &hns3_dbg_cmd_fops);
++
++	debugfs_create_file("coal", 0600, handle->hnae3_dbgfs, handle,
++			    &hns3_dbg_coal_fops);
+ }
+ 
+ void hns3_dbg_uninit(struct hnae3_handle *handle)
 -- 
 2.7.4
 
