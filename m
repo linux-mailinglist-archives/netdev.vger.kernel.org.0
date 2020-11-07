@@ -2,73 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73A2D2AA83C
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 23:19:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB0422AA848
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 23:33:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728388AbgKGWTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 17:19:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50864 "EHLO mail.kernel.org"
+        id S1726501AbgKGWdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 17:33:13 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:41118 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725838AbgKGWTL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Nov 2020 17:19:11 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 825D320719;
-        Sat,  7 Nov 2020 22:19:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604787550;
-        bh=FsaqO/xu8QA/6NoytEm5unWLYIrB+c6XJPw0FFbxeg0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b1r6xmOIM7yLnWP0aHBgcDImiyqq6PwJPJFMdGD0xQDhh2tMhM9bXe+c5LjspuC1X
-         m2Cm25oCEB8IpMrfTm1rfVuiBT1264XKgyuhWbNJBiOGcYiFHDIPVfuoPeFh6A3kEf
-         Fo7pN1aCrixn1x6IRGHvBMB9sqIY13svuCD6PuAY=
-Date:   Sat, 7 Nov 2020 14:19:09 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Arnd Bergmann <arnd@kernel.org>, Xie He <xie.he.0141@gmail.com>,
+        id S1725838AbgKGWdN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Nov 2020 17:33:13 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kbWlZ-005qOv-8H; Sat, 07 Nov 2020 23:33:01 +0100
+Date:   Sat, 7 Nov 2020 23:33:01 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joe Perches <joe@perches.com>
+Cc:     Alex Shi <alex.shi@linux.alibaba.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Andrew Hendry <andrew.hendry@gmail.com>,
-        linux-x25@vger.kernel.org
-Subject: Re: [PATCH net-next] net: x25_asy: Delete the x25_asy driver
-Message-ID: <20201107141909.05a4c56e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <927918413d7c2e515e61d751b2424886@dev.tdt.de>
-References: <20201105073434.429307-1-xie.he.0141@gmail.com>
-        <CAK8P3a2bk9ZpoEvmhDpSv8ByyO-LevmF-W4Or_6RPRtV6gTQ1w@mail.gmail.com>
-        <927918413d7c2e515e61d751b2424886@dev.tdt.de>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/dsa: remove unused macros to tame gcc warning
+Message-ID: <20201107223301.GY933237@lunn.ch>
+References: <1604641050-6004-1-git-send-email-alex.shi@linux.alibaba.com>
+ <20201106141820.GP933237@lunn.ch>
+ <24690741-cc10-eec1-33c6-7960c8b7fac6@gmail.com>
+ <b3274bdb-5680-0c24-9800-8c025bfa119a@linux.alibaba.com>
+ <6ed68a7898c5505d3106223b7ad47950a0c79dc3.camel@perches.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <6ed68a7898c5505d3106223b7ad47950a0c79dc3.camel@perches.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 06 Nov 2020 06:43:53 +0100 Martin Schiller wrote:
-> On 2020-11-05 16:06, Arnd Bergmann wrote:
-> > ...
-> > Adding Martin Schiller and Andrew Hendry, plus the linux-x25 mailing
-> > list to Cc. When I last looked at the wan drivers, I think I concluded
-> > that this should still be kept around, but I do not remember why.
-> > OTOH if it was broken for a long time, that is a clear indication that
-> > it was in fact unused.  
+On Sat, Nov 07, 2020 at 09:39:42AM -0800, Joe Perches wrote:
+> On Sat, 2020-11-07 at 20:54 +0800, Alex Shi wrote:
+> > 在 2020/11/7 上午12:39, Florian Fainelli 写道:
+> > > > It is good to remember that there are multiple readers of source
+> > > > files. There is the compiler which generates code from it, and there
+> > > > is the human trying to understand what is going on, what the hardware
+> > > > can do, how we could maybe extend the code in the future to make use
+> > > > of bits are currently don't, etc.
+> > > > 
+> > > > The compiler has no use of these macros, at the moment. But i as a
+> > > > human do. It is valuable documentation, given that there is no open
+> > > > datasheet for this hardware.
+> > > > 
+> > > > I would say these warnings are bogus, and the code should be left
+> > > > alone.
+> > > Agreed, these definitions are intended to document what the hardware
+> > > does. These warnings are getting too far.
+> > 
+> > Thanks for all comments! I agree these info are much meaningful.
+> > Is there other way to tame the gcc warning? like put them into a .h file
+> > or covered by comments?
 > 
-> As Xie has already mentioned, the linux-x25 mailing list unfortunately
-> is broken for a long time. Maybe David could have a look at this.
+> Does _any_ version of gcc have this warning on by default?
 > 
-> I still use the X.25 subsystem together with the hdlc-x25 driver and as
-> I wrote some time ago this will continue for some time.
+> I still think my proposal of moving the warning from W=2 to W=3
+> quite reasonable.
 > 
-> I'm also still contributing patches for it (even if only drop by drop).
-> 
-> But I have never used the x25_asy driver.
-> 
-> > Hopefully Martin or Andrew can provide a definite Ack or Nack on this.
-> >   
-> 
-> ACK from my side, even if I'm a bit sorry about the work of Xie.
-> 
-> Acked-by: Martin Schiller <ms@dev.tdt.de>
+> Another possibility is to turn the warning off altogether.
 
-Applied to net-next, thanks!
+Lets tern the question around first. How many real bugs have you found
+with this warning? Places where the #define should of been used, but
+was not? Then we can get an idea of the value of this warning. My
+guess would be, its value is ~ 0 for the kernel. If so, we should just
+turn it off.
+
+     Andrew
