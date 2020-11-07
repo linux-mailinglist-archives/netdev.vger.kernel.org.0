@@ -2,118 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0344D2AA775
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 19:42:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97E372AA777
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 19:47:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728601AbgKGSm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 13:42:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725836AbgKGSm4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 13:42:56 -0500
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3069C0613D2
-        for <netdev@vger.kernel.org>; Sat,  7 Nov 2020 10:42:55 -0800 (PST)
-Received: by mail-wm1-x342.google.com with SMTP id w24so1816944wmi.0
-        for <netdev@vger.kernel.org>; Sat, 07 Nov 2020 10:42:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=yxqmyl67WCvQeMIwKoccf4bZzL/NHq26s0+nbTo7KwE=;
-        b=yHaxWk7OZ/8bNPjGJtgE12wRzGMSUpP0LHHMJmBlM3pINildvwfUf7zKM44Z0+ayxi
-         dYm8U/8Uyn7ZBWJwEZn8LMkK5hmV/VijiEm5y8jq+c+rw/9mBjsB/U3dp30Flk4YTmhd
-         ipj6dPYOMauRXQDPmJ5H9EzlsM1MGxk+6v1Oi1CH/DHrMtCAn8O76sRZ57dmk2cX1lPt
-         gp4hjGVSTNzWejVHXlX/TS6s+k4lu9asrLktFIGPh3Dh0iQ57Ct1YSlNklIiszx71bM0
-         qyCf22qXMDQiNeax1Ez3sSoLRGVZ3+0uSTcgCk5WuoIP5M4LJrvpu39FPLB5IQSo0gYr
-         TNug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=yxqmyl67WCvQeMIwKoccf4bZzL/NHq26s0+nbTo7KwE=;
-        b=SRUmkGeJ4gGRsSp5aIbEdFmXkBTzisiaFTHAE+pSJ2dwb6cWWP9NRhV6Gb0kLrNAot
-         yXA3rmXRFrCS0THe4ZUV7ux2s648PMVvZwVGNLfXt2mlFHoOUKRrBN4gZEZ+OFnGEeMi
-         0ClP5/N50nnvjiwvENg8Jnv+lDeZSleaIb33ZfwPBz798PdH70ilNnGzvfvYZZfONYi8
-         L5DACu6XuWUpBdONptsZWNcq+OmmnJ8cX6fzoPoIVscclwtTGkgtBFsyW086cuJp1yN6
-         rMRTH7dKU77HD2E+hLsPLmuPkB2zNscS7qN/fVEoGhGowuSHYxYSoJawgf2xD15xWme2
-         GGfw==
-X-Gm-Message-State: AOAM533G0jVsqZSDHtgJAvV9F+IvfpcpZoiKKvR7rhgkiaPqRN0QDtPt
-        PIqI/CA3Af1eouh0B5XWFP06wDaq2Ak2BIHy
-X-Google-Smtp-Source: ABdhPJyTo90E+wkDFc5CnRqPxWZxg0Iab+ECawWBxFPgKSL2swBaR69JoZ5rex4sqhxialZ9QevG6Q==
-X-Received: by 2002:a7b:c846:: with SMTP id c6mr5626026wml.143.1604774574501;
-        Sat, 07 Nov 2020 10:42:54 -0800 (PST)
-Received: from dell ([91.110.221.236])
-        by smtp.gmail.com with ESMTPSA id e6sm7093053wrs.7.2020.11.07.10.42.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Nov 2020 10:42:53 -0800 (PST)
-Date:   Sat, 7 Nov 2020 18:42:52 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Brian Norris <briannorris@chromium.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 41/41] realtek: rtw88: pci: Add prototypes for .probe,
- .remove and .shutdown
-Message-ID: <20201107184252.GT2063125@dell>
-References: <20201102112410.1049272-1-lee.jones@linaro.org>
- <20201102112410.1049272-42-lee.jones@linaro.org>
- <CA+ASDXOobW1_qL5SCGS86aoGvhKDMoBzjxbAwn+QjHfkqZhukw@mail.gmail.com>
- <20201103084453.GJ4488@dell>
- <87y2jd5dyl.fsf@tynnyri.adurom.net>
+        id S1727305AbgKGSry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 13:47:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39276 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725836AbgKGSry (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Nov 2020 13:47:54 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 985BB208E4;
+        Sat,  7 Nov 2020 18:47:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604774874;
+        bh=aURX1AqxpSLEPMcVzBUkJsifKaH5eZsH0f6fJk6G0MY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aKDrFJ/Ao5sXVvU8A39oF75G/dvFEQloE69wJkqnu5blMs4tBKTXql2JSPeZ0AiYj
+         JEu9cIWPQbuWrJfGW32oL73jpIg++Ag1ZfcK8FfAx+37PZzmiylQ6OptPysD8qZPPz
+         kz5payywKvTMtinvn1HaSUKl3hFGhnZvEw1H4IH0=
+Date:   Sat, 7 Nov 2020 10:47:52 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Allen Pais <allen.lkml@gmail.com>
+Cc:     davem@davemloft.net, gerrit@erg.abdn.ac.uk, edumazet@google.com,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        johannes@sipsolutions.net, alex.aring@gmail.com,
+        stefan@datenfreihafen.org, santosh.shilimkar@oracle.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>
+Subject: Re: [net-next v4 0/8]net: convert tasklets to use new tasklet_setup
+ API
+Message-ID: <20201107104752.2113e27a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201103091823.586717-1-allen.lkml@gmail.com>
+References: <20201103091823.586717-1-allen.lkml@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87y2jd5dyl.fsf@tynnyri.adurom.net>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 07 Nov 2020, Kalle Valo wrote:
-
-> Lee Jones <lee.jones@linaro.org> writes:
+On Tue,  3 Nov 2020 14:48:15 +0530 Allen Pais wrote:
+> From: Allen Pais <apais@linux.microsoft.com>
 > 
-> > On Mon, 02 Nov 2020, Brian Norris wrote:
-> >
-> >> On Mon, Nov 2, 2020 at 3:25 AM Lee Jones <lee.jones@linaro.org> wrote:
-> >> > --- a/drivers/net/wireless/realtek/rtw88/pci.h
-> >> > +++ b/drivers/net/wireless/realtek/rtw88/pci.h
-> >> > @@ -212,6 +212,10 @@ struct rtw_pci {
-> >> >         void __iomem *mmap;
-> >> >  };
-> >> >
-> >> > +int rtw_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id);
-> >> > +void rtw_pci_remove(struct pci_dev *pdev);
-> >> > +void rtw_pci_shutdown(struct pci_dev *pdev);
-> >> > +
-> >> >
-> >> 
-> >> These definitions are already in 4 other header files:
-> >> 
-> >> drivers/net/wireless/realtek/rtw88/rtw8723de.h
-> >> drivers/net/wireless/realtek/rtw88/rtw8821ce.h
-> >> drivers/net/wireless/realtek/rtw88/rtw8822be.h
-> >> drivers/net/wireless/realtek/rtw88/rtw8822ce.h
-> >> 
-> >> Seems like you should be moving them, not just adding yet another duplicate.
-> >
-> > I followed the current convention.
-> >
-> > Happy to optimise if that's what is required.
+> Commit 12cc923f1ccc ("tasklet: Introduce new initialization API")'
+> introduced a new tasklet initialization API. This series converts
+> all the net/* drivers to use the new tasklet_setup() API
 > 
-> I agree with Brian, these and rtw_pm_ops should be moved to pci.h to
-> avoid code duplication.
+> The following series is based on net-next (9faebeb2d)
 
-Will do, thanks.
+Hi Aleen! I applied everything but the RDS patch to net-next.
+Could you resend the RDS one separately and CC linux-rdma,
+so we can coordinate who takes it?
 
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Thanks!
