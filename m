@@ -2,70 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CF782AA254
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 04:39:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 970B92AA25E
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 04:54:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727525AbgKGDi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 22:38:57 -0500
-Received: from m176115.mail.qiye.163.com ([59.111.176.115]:48927 "EHLO
-        m176115.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726880AbgKGDi5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 22:38:57 -0500
-Received: from vivo-HP-ProDesk-680-G4-PCI-MT.vivo.xyz (unknown [58.251.74.231])
-        by m176115.mail.qiye.163.com (Hmail) with ESMTPA id 1750D6665A0;
-        Sat,  7 Nov 2020 11:38:54 +0800 (CST)
-From:   Wang Qing <wangqing@vivo.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Samuel Zou <zou_wei@huawei.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Wang Qing <wangqing@vivo.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [V2] [PATCH] net/ethernet: update ret when ptp_clock is ERROR
-Date:   Sat,  7 Nov 2020 11:38:38 +0800
-Message-Id: <1604720323-3586-1-git-send-email-wangqing@vivo.com>
-X-Mailer: git-send-email 2.7.4
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZT0keSk0YTBhISkwYVkpNS09MSUtISE9OSEhVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS09ISVVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Kww6Fhw5FT8jDRwyT04*ME0a
-        PAwaFD5VSlVKTUtPTElLSEhPQkhNVTMWGhIXVQwaFRwKEhUcOw0SDRRVGBQWRVlXWRILWUFZTkNV
-        SU5KVUxPVUlISllXWQgBWUFJSEtJNwY+
-X-HM-Tid: 0a75a0c916569373kuws1750d6665a0
+        id S1727985AbgKGDyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 22:54:43 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:35928 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727298AbgKGDyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 22:54:43 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from yanjunz@mellanox.com)
+        with SMTP; 7 Nov 2020 05:54:40 +0200
+Received: from bc-vnc02.mtbc.labs.mlnx (bc-vnc02.mtbc.labs.mlnx [10.75.68.111])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0A73seBn000983;
+        Sat, 7 Nov 2020 05:54:40 +0200
+Received: from bc-vnc02.mtbc.labs.mlnx (localhost [127.0.0.1])
+        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4) with ESMTP id 0A73sdRU023367;
+        Sat, 7 Nov 2020 11:54:39 +0800
+Received: (from yanjunz@localhost)
+        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4/Submit) id 0A73sdP9023347;
+        Sat, 7 Nov 2020 11:54:39 +0800
+From:   Zhu Yanjun <yanjunz@nvidia.com>
+To:     saeedm@nvidia.com, leon@kernel.org, kuba@kernel.org,
+        netdev@vger.kernel.org
+Cc:     Zhu Yanjun <yanjunz@nvidia.com>
+Subject: [PATCH 1/1] net/mlx5e: remove unnecessary memset
+Date:   Sat,  7 Nov 2020 11:54:32 +0800
+Message-Id: <1604721272-23314-1-git-send-email-yanjunz@nvidia.com>
+X-Mailer: git-send-email 1.7.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We always have to update the value of ret, otherwise the error value
- may be the previous one. And ptp_clock_register() never return NULL
- when PTP_1588_CLOCK enable, so we use IS_ERR here.
+Since kvzalloc will initialize the allocated memory, it is not
+necessary to initialize it once again.
 
-Signed-off-by: Wang Qing <wangqing@vivo.com>
+Fixes: 11b717d61526 ("net/mlx5: E-Switch, Get reg_c0 value on CQE")
+Signed-off-by: Zhu Yanjun <yanjunz@nvidia.com>
 ---
- drivers/net/ethernet/ti/am65-cpts.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
-index 75056c1..ec8e56d
---- a/drivers/net/ethernet/ti/am65-cpts.c
-+++ b/drivers/net/ethernet/ti/am65-cpts.c
-@@ -998,11 +998,10 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
- 	am65_cpts_settime(cpts, ktime_to_ns(ktime_get_real()));
- 
- 	cpts->ptp_clock = ptp_clock_register(&cpts->ptp_info, cpts->dev);
--	if (IS_ERR_OR_NULL(cpts->ptp_clock)) {
-+	if (IS_ERR(cpts->ptp_clock)) {
- 		dev_err(dev, "Failed to register ptp clk %ld\n",
- 			PTR_ERR(cpts->ptp_clock));
--		if (!cpts->ptp_clock)
--			ret = -ENODEV;
-+		ret = PTR_ERR(cpts->ptp_clock);
- 		goto refclk_disable;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 1bcf260..35c5629 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -1528,7 +1528,6 @@ static int esw_create_restore_table(struct mlx5_eswitch *esw)
+ 		goto out_free;
  	}
- 	cpts->phc_index = ptp_clock_index(cpts->ptp_clock);
+ 
+-	memset(flow_group_in, 0, inlen);
+ 	match_criteria = MLX5_ADDR_OF(create_flow_group_in, flow_group_in,
+ 				      match_criteria);
+ 	misc = MLX5_ADDR_OF(fte_match_param, match_criteria,
 -- 
-2.7.4
+1.7.1
 
