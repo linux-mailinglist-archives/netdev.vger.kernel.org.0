@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB6E02AA2D3
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 07:32:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C380E2AA2D1
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 07:32:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727973AbgKGGbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 01:31:11 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:7421 "EHLO
+        id S1727861AbgKGGbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 01:31:07 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:7420 "EHLO
         szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726880AbgKGGbK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 01:31:10 -0500
+        with ESMTP id S1727809AbgKGGbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 01:31:06 -0500
 Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CSnSz2gWQz73Pc;
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CSnSz2KV5z73Kt;
         Sat,  7 Nov 2020 14:30:59 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
@@ -23,9 +23,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 03/11] net: hns3: add support for querying maximum value of GL
-Date:   Sat, 7 Nov 2020 14:31:13 +0800
-Message-ID: <1604730681-32559-4-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 04/11] net: hns3: rename gl_adapt_enable in struct hns3_enet_coalesce
+Date:   Sat, 7 Nov 2020 14:31:14 +0800
+Message-ID: <1604730681-32559-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1604730681-32559-1-git-send-email-tanhuazhong@huawei.com>
 References: <1604730681-32559-1-git-send-email-tanhuazhong@huawei.com>
@@ -37,206 +37,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For maintainability and compatibility, add support for querying
-the maximum value of GL.
+Besides GL(Gap Limiting), QL(Quantity Limiting) can be modified
+dynamically when DIM is supported. So rename gl_adapt_enable as
+adapt_enable in struct hns3_enet_coalesce.
 
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h               |  1 +
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c        |  1 +
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h           |  1 -
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c        | 14 ++++++++------
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h    |  8 ++++++++
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   |  6 ++++++
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h  |  8 ++++++++
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c |  6 ++++++
- 8 files changed, 38 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 12 ++++++------
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  8 ++++----
+ 3 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 912c51e..f9d4d23 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -278,6 +278,7 @@ struct hnae3_dev_specs {
- 	u16 rss_ind_tbl_size;
- 	u16 rss_key_size;
- 	u16 int_ql_max; /* max value of interrupt coalesce based on INT_QL */
-+	u16 max_int_gl; /* max value of interrupt coalesce based on INT_GL */
- 	u8 max_non_tso_bd_num; /* max BD number of one non-TSO packet */
- };
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 2813fe5..999a2aa 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -211,8 +211,8 @@ void hns3_set_vector_coalesce_rl(struct hns3_enet_tqp_vector *tqp_vector,
+ 	 * GL and RL(Rate Limiter) are 2 ways to acheive interrupt coalescing
+ 	 */
  
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index dc9a857..a5ebca8 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -349,6 +349,7 @@ static void hns3_dbg_dev_specs(struct hnae3_handle *h)
- 	dev_info(priv->dev, "Desc num per RX queue: %u\n", kinfo->num_rx_desc);
- 	dev_info(priv->dev, "Total number of enabled TCs: %u\n", kinfo->num_tc);
- 	dev_info(priv->dev, "MAX INT QL: %u\n", dev_specs->int_ql_max);
-+	dev_info(priv->dev, "MAX INT GL: %u\n", dev_specs->max_int_gl);
- }
+-	if (rl_reg > 0 && !tqp_vector->tx_group.coal.gl_adapt_enable &&
+-	    !tqp_vector->rx_group.coal.gl_adapt_enable)
++	if (rl_reg > 0 && !tqp_vector->tx_group.coal.adapt_enable &&
++	    !tqp_vector->rx_group.coal.adapt_enable)
+ 		/* According to the hardware, the range of rl_reg is
+ 		 * 0-59 and the unit is 4.
+ 		 */
+@@ -273,8 +273,8 @@ static void hns3_vector_coalesce_init(struct hns3_enet_tqp_vector *tqp_vector,
+ 	 *
+ 	 * Default: enable interrupt coalescing self-adaptive and GL
+ 	 */
+-	tx_coal->gl_adapt_enable = 1;
+-	rx_coal->gl_adapt_enable = 1;
++	tx_coal->adapt_enable = 1;
++	rx_coal->adapt_enable = 1;
  
- static ssize_t hns3_dbg_cmd_read(struct file *filp, char __user *buffer,
+ 	tx_coal->int_gl = HNS3_INT_GL_50K;
+ 	rx_coal->int_gl = HNS3_INT_GL_50K;
+@@ -3384,14 +3384,14 @@ static void hns3_update_new_int_gl(struct hns3_enet_tqp_vector *tqp_vector)
+ 			tqp_vector->last_jiffies + msecs_to_jiffies(1000)))
+ 		return;
+ 
+-	if (rx_group->coal.gl_adapt_enable) {
++	if (rx_group->coal.adapt_enable) {
+ 		rx_update = hns3_get_new_int_gl(rx_group);
+ 		if (rx_update)
+ 			hns3_set_vector_coalesce_rx_gl(tqp_vector,
+ 						       rx_group->coal.int_gl);
+ 	}
+ 
+-	if (tx_group->coal.gl_adapt_enable) {
++	if (tx_group->coal.adapt_enable) {
+ 		tx_update = hns3_get_new_int_gl(tx_group);
+ 		if (tx_update)
+ 			hns3_set_vector_coalesce_tx_gl(tqp_vector,
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index b37635d..4651ad1 100644
+index 4651ad1..8d33652 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -420,7 +420,6 @@ enum hns3_flow_level_range {
- 	HNS3_FLOW_ULTRA = 3,
- };
- 
--#define HNS3_INT_GL_MAX			0x1FE0
- #define HNS3_INT_GL_50K			0x0014
- #define HNS3_INT_GL_20K			0x0032
- #define HNS3_INT_GL_18K			0x0036
+@@ -436,7 +436,7 @@ struct hns3_enet_coalesce {
+ 	u16 int_gl;
+ 	u16 int_ql;
+ 	u16 int_ql_max;
+-	u8 gl_adapt_enable:1;
++	u8 adapt_enable:1;
+ 	u8 ql_enable:1;
+ 	u8 unit_1us:1;
+ 	enum hns3_flow_level_range flow_level;
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 128e9ec..8d5c194 100644
+index 8d5c194..30ffaaf 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1130,19 +1130,21 @@ static int hns3_get_coalesce(struct net_device *netdev,
- static int hns3_check_gl_coalesce_para(struct net_device *netdev,
- 				       struct ethtool_coalesce *cmd)
- {
-+	struct hnae3_handle *handle = hns3_get_handle(netdev);
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(handle->pdev);
- 	u32 rx_gl, tx_gl;
+@@ -1105,9 +1105,9 @@ static int hns3_get_coalesce_per_queue(struct net_device *netdev, u32 queue,
+ 	rx_vector = priv->ring[queue_num + queue].tqp_vector;
  
--	if (cmd->rx_coalesce_usecs > HNS3_INT_GL_MAX) {
-+	if (cmd->rx_coalesce_usecs > ae_dev->dev_specs.max_int_gl) {
- 		netdev_err(netdev,
--			   "Invalid rx-usecs value, rx-usecs range is 0-%d\n",
--			   HNS3_INT_GL_MAX);
-+			   "invalid rx-usecs value, rx-usecs range is 0-%u\n",
-+			   ae_dev->dev_specs.max_int_gl);
- 		return -EINVAL;
- 	}
+ 	cmd->use_adaptive_tx_coalesce =
+-			tx_vector->tx_group.coal.gl_adapt_enable;
++			tx_vector->tx_group.coal.adapt_enable;
+ 	cmd->use_adaptive_rx_coalesce =
+-			rx_vector->rx_group.coal.gl_adapt_enable;
++			rx_vector->rx_group.coal.adapt_enable;
  
--	if (cmd->tx_coalesce_usecs > HNS3_INT_GL_MAX) {
-+	if (cmd->tx_coalesce_usecs > ae_dev->dev_specs.max_int_gl) {
- 		netdev_err(netdev,
--			   "Invalid tx-usecs value, tx-usecs range is 0-%d\n",
--			   HNS3_INT_GL_MAX);
-+			   "invalid tx-usecs value, tx-usecs range is 0-%u\n",
-+			   ae_dev->dev_specs.max_int_gl);
- 		return -EINVAL;
- 	}
+ 	cmd->tx_coalesce_usecs = tx_vector->tx_group.coal.int_gl;
+ 	cmd->rx_coalesce_usecs = rx_vector->rx_group.coal.int_gl;
+@@ -1268,9 +1268,9 @@ static void hns3_set_coalesce_per_queue(struct net_device *netdev,
+ 	tx_vector = priv->ring[queue].tqp_vector;
+ 	rx_vector = priv->ring[queue_num + queue].tqp_vector;
  
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index 096e26a..5b7967c 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -1103,6 +1103,14 @@ struct hclge_dev_specs_0_cmd {
- 	__le32 max_tm_rate;
- };
+-	tx_vector->tx_group.coal.gl_adapt_enable =
++	tx_vector->tx_group.coal.adapt_enable =
+ 				cmd->use_adaptive_tx_coalesce;
+-	rx_vector->rx_group.coal.gl_adapt_enable =
++	rx_vector->rx_group.coal.adapt_enable =
+ 				cmd->use_adaptive_rx_coalesce;
  
-+#define HCLGE_DEF_MAX_INT_GL		0x1FE0U
-+
-+struct hclge_dev_specs_1_cmd {
-+	__le32 rsv0;
-+	__le16 max_int_gl;
-+	u8 rsv1[18];
-+};
-+
- int hclge_cmd_init(struct hclge_dev *hdev);
- static inline void hclge_write_reg(void __iomem *base, u32 reg, u32 value)
- {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 8bcdb28..7102001 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1366,6 +1366,7 @@ static void hclge_set_default_dev_specs(struct hclge_dev *hdev)
- 	ae_dev->dev_specs.rss_ind_tbl_size = HCLGE_RSS_IND_TBL_SIZE;
- 	ae_dev->dev_specs.rss_key_size = HCLGE_RSS_KEY_SIZE;
- 	ae_dev->dev_specs.max_tm_rate = HCLGE_ETHER_MAX_RATE;
-+	ae_dev->dev_specs.max_int_gl = HCLGE_DEF_MAX_INT_GL;
- }
- 
- static void hclge_parse_dev_specs(struct hclge_dev *hdev,
-@@ -1373,8 +1374,10 @@ static void hclge_parse_dev_specs(struct hclge_dev *hdev,
- {
- 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
- 	struct hclge_dev_specs_0_cmd *req0;
-+	struct hclge_dev_specs_1_cmd *req1;
- 
- 	req0 = (struct hclge_dev_specs_0_cmd *)desc[0].data;
-+	req1 = (struct hclge_dev_specs_1_cmd *)desc[1].data;
- 
- 	ae_dev->dev_specs.max_non_tso_bd_num = req0->max_non_tso_bd_num;
- 	ae_dev->dev_specs.rss_ind_tbl_size =
-@@ -1382,6 +1385,7 @@ static void hclge_parse_dev_specs(struct hclge_dev *hdev,
- 	ae_dev->dev_specs.int_ql_max = le16_to_cpu(req0->int_ql_max);
- 	ae_dev->dev_specs.rss_key_size = le16_to_cpu(req0->rss_key_size);
- 	ae_dev->dev_specs.max_tm_rate = le32_to_cpu(req0->max_tm_rate);
-+	ae_dev->dev_specs.max_int_gl = le16_to_cpu(req1->max_int_gl);
- }
- 
- static void hclge_check_dev_specs(struct hclge_dev *hdev)
-@@ -1396,6 +1400,8 @@ static void hclge_check_dev_specs(struct hclge_dev *hdev)
- 		dev_specs->rss_key_size = HCLGE_RSS_KEY_SIZE;
- 	if (!dev_specs->max_tm_rate)
- 		dev_specs->max_tm_rate = HCLGE_ETHER_MAX_RATE;
-+	if (!dev_specs->max_int_gl)
-+		dev_specs->max_int_gl = HCLGE_DEF_MAX_INT_GL;
- }
- 
- static int hclge_query_dev_specs(struct hclge_dev *hdev)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-index 9460c12..f94f5d4 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-@@ -285,6 +285,14 @@ struct hclgevf_dev_specs_0_cmd {
- 	u8 rsv1[5];
- };
- 
-+#define HCLGEVF_DEF_MAX_INT_GL		0x1FE0U
-+
-+struct hclgevf_dev_specs_1_cmd {
-+	__le32 rsv0;
-+	__le16 max_int_gl;
-+	u8 rsv1[18];
-+};
-+
- static inline void hclgevf_write_reg(void __iomem *base, u32 reg, u32 value)
- {
- 	writel(value, base + reg);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 8209be9..71007e7 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -2991,6 +2991,7 @@ static void hclgevf_set_default_dev_specs(struct hclgevf_dev *hdev)
- 					HCLGEVF_MAX_NON_TSO_BD_NUM;
- 	ae_dev->dev_specs.rss_ind_tbl_size = HCLGEVF_RSS_IND_TBL_SIZE;
- 	ae_dev->dev_specs.rss_key_size = HCLGEVF_RSS_KEY_SIZE;
-+	ae_dev->dev_specs.max_int_gl = HCLGEVF_DEF_MAX_INT_GL;
- }
- 
- static void hclgevf_parse_dev_specs(struct hclgevf_dev *hdev,
-@@ -2998,14 +2999,17 @@ static void hclgevf_parse_dev_specs(struct hclgevf_dev *hdev,
- {
- 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
- 	struct hclgevf_dev_specs_0_cmd *req0;
-+	struct hclgevf_dev_specs_1_cmd *req1;
- 
- 	req0 = (struct hclgevf_dev_specs_0_cmd *)desc[0].data;
-+	req1 = (struct hclgevf_dev_specs_1_cmd *)desc[1].data;
- 
- 	ae_dev->dev_specs.max_non_tso_bd_num = req0->max_non_tso_bd_num;
- 	ae_dev->dev_specs.rss_ind_tbl_size =
- 					le16_to_cpu(req0->rss_ind_tbl_size);
- 	ae_dev->dev_specs.int_ql_max = le16_to_cpu(req0->int_ql_max);
- 	ae_dev->dev_specs.rss_key_size = le16_to_cpu(req0->rss_key_size);
-+	ae_dev->dev_specs.max_int_gl = le16_to_cpu(req1->max_int_gl);
- }
- 
- static void hclgevf_check_dev_specs(struct hclgevf_dev *hdev)
-@@ -3018,6 +3022,8 @@ static void hclgevf_check_dev_specs(struct hclgevf_dev *hdev)
- 		dev_specs->rss_ind_tbl_size = HCLGEVF_RSS_IND_TBL_SIZE;
- 	if (!dev_specs->rss_key_size)
- 		dev_specs->rss_key_size = HCLGEVF_RSS_KEY_SIZE;
-+	if (!dev_specs->max_int_gl)
-+		dev_specs->max_int_gl = HCLGEVF_DEF_MAX_INT_GL;
- }
- 
- static int hclgevf_query_dev_specs(struct hclgevf_dev *hdev)
+ 	tx_vector->tx_group.coal.int_gl = cmd->tx_coalesce_usecs;
 -- 
 2.7.4
 
