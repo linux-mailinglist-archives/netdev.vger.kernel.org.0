@@ -2,66 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5C202AA2DA
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 07:35:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B3EA2AA2E7
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 07:54:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727901AbgKGGfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 01:35:06 -0500
-Received: from m176115.mail.qiye.163.com ([59.111.176.115]:8635 "EHLO
-        m176115.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727799AbgKGGfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 01:35:05 -0500
-Received: from vivo-HP-ProDesk-680-G4-PCI-MT.vivo.xyz (unknown [58.251.74.231])
-        by m176115.mail.qiye.163.com (Hmail) with ESMTPA id 245C76664CF;
-        Sat,  7 Nov 2020 14:35:01 +0800 (CST)
-From:   Wang Qing <wangqing@vivo.com>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Wang Qing <wangqing@vivo.com>
-Subject: [V2] trace: Fix passing zero to PTR_ERR()
-Date:   Sat,  7 Nov 2020 14:34:56 +0800
-Message-Id: <1604730896-3335-1-git-send-email-wangqing@vivo.com>
-X-Mailer: git-send-email 2.7.4
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZS0wdSR8ZTElOQ0NPVkpNS09MSEtCS0pMSEtVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKQ1VLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Pgw6PSo*Hj8ZPxwKGB1JCQEO
-        FkMwCxxVSlVKTUtPTEhLQktJSk1KVTMWGhIXVQwaFRwKEhUcOw0SDRRVGBQWRVlXWRILWUFZTkNV
-        SU5KVUxPVUlISllXWQgBWUFJS0lNNwY+
-X-HM-Tid: 0a75a16a54719373kuws245c76664cf
+        id S1727829AbgKGGyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 01:54:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56170 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727782AbgKGGyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 01:54:05 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 653A7C0613CF;
+        Fri,  6 Nov 2020 22:54:05 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id u4so2898571pgr.9;
+        Fri, 06 Nov 2020 22:54:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=+Z83KD4tlH2fFEQRMhMQtKb03AHYu/UAnjkkUKzI9xQ=;
+        b=to6uwmpt+2RfMmgfmq41N6qLqwxPO4len0HT4ZqZbrk4Y5+2wC/TnKTiZhiQzcjGAd
+         VSJFH2No/Jx99fzs9FQ9qI75EZVhEugafWgSLQi68WmGcbHaO0D6Yy66nuEnNzTP81/p
+         3ofFHwKGuVkQ9bp16borptwEc7ivi4avTfoKH5UzBVcoygeqve6XtWfLxU6ntPIGlTy5
+         YI2BPoiSYHI5GgLUQcL0WDHjrl2VqHBlJeD8LnFoHzVQQ+nImmfL2Mjdl+6d1HUJMDJ9
+         LYdqswo52coqPEUGHiflwDgNiq2wGQX7Vv78yvzZi9SQT3mtjvfc5fwt6at5x9h8mcud
+         mDjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+Z83KD4tlH2fFEQRMhMQtKb03AHYu/UAnjkkUKzI9xQ=;
+        b=rrX87qkWMvyE7iGfFmRpfoIX8E0HGa/HPsv/LxYXB9h3SrSpyMYcJ3p4qkXJF0ryI9
+         mGQlQ5c1y+2ORGFm+OpbK67Pbo0NLs6uJrVxgest2Nmbu2z6Dn+4PFFbgsZuMUQSZg/X
+         4n5RV2gkstK614Cq+DrMj5OHZqbvPCUlaT8bdsVNMpwkW3P8QvF0emPwxUV8cFSzCGUK
+         B7Fig6XxjqrwlIKCOZohMIEQ2TvY9gCGWL+tsBWXlgdSS/MIha5dAh2GU8ZDIxohYepy
+         bQg4JBba7Pl0dTCOK6YfsAmrtFRVcl8mhMIKSv58b7BTksghGvQNFbJ0lkLXLs9vWX0f
+         c+Zg==
+X-Gm-Message-State: AOAM532XaeV1DBuVOmTjrB17WdL7M/zehr4OeEHqegHX0v6Ypph169N1
+        5d9VydNElB+lvJEFrgrnxA==
+X-Google-Smtp-Source: ABdhPJwy2zvosEa7WnewbXyKOT4GqcR44MXF929jCV5KI0YI2vbLMpbagjHNF+1ly7QWIRTrmK56yg==
+X-Received: by 2002:a62:790f:0:b029:18a:ae57:353f with SMTP id u15-20020a62790f0000b029018aae57353fmr5087076pfc.78.1604732045012;
+        Fri, 06 Nov 2020 22:54:05 -0800 (PST)
+Received: from he-cluster.localdomain (67.216.221.250.16clouds.com. [67.216.221.250])
+        by smtp.gmail.com with ESMTPSA id j20sm3849419pgh.15.2020.11.06.22.54.03
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 06 Nov 2020 22:54:04 -0800 (PST)
+From:   xiakaixu1987@gmail.com
+X-Google-Original-From: kaixuxia@tencent.com
+To:     tariqt@nvidia.com, tariqt@mellanox.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kaixu Xia <kaixuxia@tencent.com>
+Subject: [PATCH] net/mlx4: Assign boolean values to a bool variable
+Date:   Sat,  7 Nov 2020 14:53:58 +0800
+Message-Id: <1604732038-6057-1-git-send-email-kaixuxia@tencent.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a bug when passing zero to PTR_ERR() and return.
-Fix smatch err.
+From: Kaixu Xia <kaixuxia@tencent.com>
 
-Signed-off-by: Wang Qing <wangqing@vivo.com>
+Fix the following coccinelle warnings:
+
+./drivers/net/ethernet/mellanox/mlx4/en_rx.c:687:1-17: WARNING: Assignment of 0/1 to bool variable
+
+Reported-by: Tosk Robot <tencent_os_robot@tencent.com>
+Signed-off-by: Kaixu Xia <kaixuxia@tencent.com>
 ---
- kernel/trace/bpf_trace.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 4517c8b..5113fd4
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1198,7 +1198,7 @@ static int bpf_btf_printf_prepare(struct btf_ptr *ptr, u32 btf_ptr_size,
- 	*btf = bpf_get_btf_vmlinux();
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+index 502d1b97855c..b0f79a5151cf 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+@@ -684,7 +684,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
+ 	xdp_prog = rcu_dereference(ring->xdp_prog);
+ 	xdp.rxq = &ring->xdp_rxq;
+ 	xdp.frame_sz = priv->frag_info[0].frag_stride;
+-	doorbell_pending = 0;
++	doorbell_pending = false;
  
- 	if (IS_ERR_OR_NULL(*btf))
--		return PTR_ERR(*btf);
-+		return IS_ERR(*btf) ? PTR_ERR(*btf) : -EINVAL;
- 
- 	if (ptr->type_id > 0)
- 		*btf_id = ptr->type_id;
+ 	/* We assume a 1:1 mapping between CQEs and Rx descriptors, so Rx
+ 	 * descriptor offset can be deduced from the CQE index instead of
 -- 
-2.7.4
+2.20.0
 
