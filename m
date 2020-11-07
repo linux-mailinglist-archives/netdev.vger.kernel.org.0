@@ -2,99 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E7532AA4C4
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 12:44:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D8752AA50A
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 13:34:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727866AbgKGLob (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 06:44:31 -0500
-Received: from m42-4.mailgun.net ([69.72.42.4]:54471 "EHLO m42-4.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727380AbgKGLoa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Nov 2020 06:44:30 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1604749469; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=KfrqDO+sqQbyMbQAzatoYRHDEZ40eLbmXaDe9WdEpBQ=;
- b=BCf82n2nI/YxqnSUa9T3MLockUx/4/BQYjdUcH6Jz3oRkY6R5fask2vKDxyIf1I4yw8A2BVN
- TAi2/Ez+CaiPI1FjmyHCeYVsEOdxjE1xhaYYGu6sayiFuCVlQzMtow+fDACxRwPeB5uxSvmA
- CTs7sZ69EUouHRzTelU+lt7XBis=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 5fa6888c1d3980f7d667df5e (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 07 Nov 2020 11:44:12
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 87F8EC43382; Sat,  7 Nov 2020 11:44:12 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 88C16C433C6;
-        Sat,  7 Nov 2020 11:44:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 88C16C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728074AbgKGMeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 07:34:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52092 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727320AbgKGMeE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 07:34:04 -0500
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A862FC0613D3
+        for <netdev@vger.kernel.org>; Sat,  7 Nov 2020 04:34:04 -0800 (PST)
+Received: by mail-qv1-xf44.google.com with SMTP id y11so1361300qvu.10
+        for <netdev@vger.kernel.org>; Sat, 07 Nov 2020 04:34:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=l8o/PxZLRUsXqbfQdaHQ/PhODuJFQTqIyS1z/DNGmXE=;
+        b=l1ywGoAW4jsHMNidMej8v+JF/NWwnvrp2rh27idTagSdz2ME1ph+JKfk6FZDmD8QKo
+         wcXJx7MUGm97zAUDHtLx0HDayVOZ8Ur9OGy41pK3kUtNEuTxCfX86rMLnaPmngLRRPA/
+         mhtDseAezBtNQYTgX/x7nOr3I3AqqnU4EilMMj7nlXv0BJ8Sjg5tA7f1wEP2cw9/J0WL
+         +kfMAOn2g1D4XoHbrsLMxx49yuJC+eOtlmFmIkQIgdNwl/zg2lOTzrnqcO9iHjLTClhC
+         cUxc4RIEJeBX/+MHjTcjwiZlXVRbm5RGFXvTUhIeLUCMVDmaoi3y/jQmBSP0Nzyx8+AN
+         lENg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=l8o/PxZLRUsXqbfQdaHQ/PhODuJFQTqIyS1z/DNGmXE=;
+        b=dQ6crpMm88xShTtWIorLLtzngb12Fs7oLJD+DvtR0F/95u2O/HuTOtU8MXGEGryYZe
+         Ez/wofn3xdhmUAK78m8D+9QZ1uREfps8PXlrkyeRit+4Nmu2Qp3+m1iJz4yzRsxjuecd
+         /j9fYutvnSQNJdbSKCQu5PCW8YMwBiZoTcyXyXa6nbgU7dU8u4Gf5H75Ho1QbiQar7bS
+         zTNKvSgOdmLkUAxfpB81pIvYqh8SMntI0k4TrLWuUN3fBDC+2RUo1IGZWXRqm3mKvVdS
+         fZaPZxtwDEsX4UeF2huHljKHWFC9PEnxz74s8wsUD6zSlw9rPcM3jRsbSBN6eKUGYozP
+         A58A==
+X-Gm-Message-State: AOAM5309xJeHOoebI1fX7+JhtkGKcJXJ6T4RcVQ2uLCWWgSDE15Qhm+m
+        mlyT4DavQDVE3zmaYDgV1GsrVPmwc77LtV7JkvE=
+X-Google-Smtp-Source: ABdhPJxqj1CkDFCIKo8nLsP62RNvpayv0pMKhzb0el3teK+9OV0XODRVIK+Vt2yz768B3mv++J7yNmQVy/8cDcyCDgk=
+X-Received: by 2002:ad4:45ca:: with SMTP id v10mr6031337qvt.36.1604752443718;
+ Sat, 07 Nov 2020 04:34:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtl8192ce: avoid accessing the data mapped to streaming
- DMA
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20201019030931.4796-1-baijiaju1990@gmail.com>
-References: <20201019030931.4796-1-baijiaju1990@gmail.com>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     pkshih@realtek.com, davem@davemloft.net, kuba@kernel.org,
-        straube.linux@gmail.com, Larry.Finger@lwfinger.net,
-        christophe.jaillet@wanadoo.fr, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20201107114412.87F8EC43382@smtp.codeaurora.org>
-Date:   Sat,  7 Nov 2020 11:44:12 +0000 (UTC)
+Sender: gloriapauleric@gmail.com
+Received: by 2002:a0c:f44c:0:0:0:0:0 with HTTP; Sat, 7 Nov 2020 04:34:03 -0800 (PST)
+From:   Donna Louise <donnamcinneslouise@gmail.com>
+Date:   Sat, 7 Nov 2020 00:34:03 -1200
+X-Google-Sender-Auth: piBSC937HOSP6GgdsxDWZELXcH8
+Message-ID: <CAEwunR_P7rwHiPP0WGC55i8wDPHmre=TRTg8DXvAFpw3FzW2Ag@mail.gmail.com>
+Subject: Hello,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
+ Dear Friend,
 
-> In rtl92ce_tx_fill_cmddesc(), skb->data is mapped to streaming DMA on
-> line 530:
->   dma_addr_t mapping = dma_map_single(..., skb->data, ...);
-> 
-> On line 533, skb->data is assigned to hdr after cast:
->   struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
-> 
-> Then hdr->frame_control is accessed on line 534:
->   __le16 fc = hdr->frame_control;
-> 
-> This DMA access may cause data inconsistency between CPU and hardwre.
-> 
-> To fix this bug, hdr->frame_control is accessed before the DMA mapping.
-> 
-> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+  I am glad to know you, but God knows you better and he knows why he
+has directed me to you at this point in time so do not be surprised at
+all. My name is Mrs. Donna Louise McInnes, a widow, i have been
+suffering from ovarian cancer disease. At this moment i am about to
+end the race like this because the illness has gotten to a very bad
+stage, without any family members and no child. I hope that you will
+not expose or betray this trust and confidence that I am about to
+entrust to you for the mutual benefit of the orphans and the less
+privileged ones. I have some funds I inherited from my late husband,
+the sum of ($11.000.000 Eleven million dollars.) deposited in the
+Bank.  Having known my present health status, I decided to entrust
+this fund to you believing that you will utilize it the way i am going
+to instruct herein.
 
-Like Ping said, use "rtlwifi:" prefix and have all rtlwifi patches in
-the same patchset.
+Therefore I need you to assist me and reclaim this money and use it
+for Charity works, for orphanages and giving justice and help to the
+poor, needy and to promote the words of God and the effort that the
+house of God will be maintained says The Lord." Jeremiah 22:15-16.=E2=80=9C
 
-4 patches set to Changes Requested.
+It will be my great pleasure to compensate you with 35 % percent of
+the total money for your personal use, 5 % percent for any expenses
+that may occur during the international transfer process while 60% of
+the money will go to the charity project.
 
-11843533 rtl8192ce: avoid accessing the data mapped to streaming DMA
-11843541 rtl8192de: avoid accessing the data mapped to streaming DMA
-11843553 rtl8723ae: avoid accessing the data mapped to streaming DMA
-11843557 rtl8188ee: avoid accessing the data mapped to streaming DMA
+All I require from you is sincerity and the ability to complete God's
+task without any failure. It will be my pleasure to see that the bank
+has finally released and transferred the fund into your bank account
+therein your country even before I die here in the hospital, because
+of my present health status everything needs to be processed rapidly
+as soon as possible. I am waiting for your immediate reply, if only
+you are interested for further details of the transaction and
+execution of this charitable project.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20201019030931.4796-1-baijiaju1990@gmail.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Best Regards your friend Mrs.
+Donna Louise McInnes.
