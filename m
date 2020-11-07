@@ -2,73 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E27F2AA3EB
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 09:40:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A867C2AA420
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 10:05:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728175AbgKGIky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 03:40:54 -0500
-Received: from m176115.mail.qiye.163.com ([59.111.176.115]:64177 "EHLO
-        m176115.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727833AbgKGIky (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 03:40:54 -0500
-Received: from vivo-HP-ProDesk-680-G4-PCI-MT.vivo.xyz (unknown [58.251.74.231])
-        by m176115.mail.qiye.163.com (Hmail) with ESMTPA id B61B36665F9;
-        Sat,  7 Nov 2020 16:40:49 +0800 (CST)
-From:   Wang Qing <wangqing@vivo.com>
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Joe Perches <joe@perches.com>,
-        Zheng Bin <zhengbin13@huawei.com>,
-        Wang Qing <wangqing@vivo.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] wireless: realtek: fix spelling typo of workaround
-Date:   Sat,  7 Nov 2020 16:40:37 +0800
-Message-Id: <1604738439-24794-1-git-send-email-wangqing@vivo.com>
-X-Mailer: git-send-email 2.7.4
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZSksYSEMdSk5JThpCVkpNS09MSENPTktJTEtVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKQ1VLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OVE6MCo4Fz8oARwyNRc5ITQs
-        LEkaFE9VSlVKTUtPTEhDT05LTUNCVTMWGhIXVQwaFRwKEhUcOw0SDRRVGBQWRVlXWRILWUFZTkNV
-        SU5KVUxPVUlISllXWQgBWUFJTktCNwY+
-X-HM-Tid: 0a75a1dd82e89373kuwsb61b36665f9
+        id S1728381AbgKGJFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 04:05:47 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7194 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727955AbgKGJFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 04:05:46 -0500
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CSrvL6ntjzkf2R;
+        Sat,  7 Nov 2020 17:05:34 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by DGGEMS411-HUB.china.huawei.com
+ (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Sat, 7 Nov 2020
+ 17:05:36 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <madalin.bucur@nxp.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <florinel.iordache@nxp.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
+Subject: [PATCH V3] fsl/fman: add missing put_devcie() call in fman_port_probe()
+Date:   Sat, 7 Nov 2020 17:09:25 +0800
+Message-ID: <20201107090925.1494578-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20201103112323.1077040-1-yukuai3@huawei.com>
+References: <20201103112323.1077040-1-yukuai3@huawei.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-workarould -> workaround
+if of_find_device_by_node() succeed, fman_port_probe() doesn't have a
+corresponding put_device(). Thus add jump target to fix the exception
+handling for this function implementation.
 
-Signed-off-by: Wang Qing <wangqing@vivo.com>
+Fixes: 0572054617f3 ("fsl/fman: fix dereference null return value")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 ---
- drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Changes in V3:
+ - move of_node_put(port_node) backward, so that error handling can be the
+ reverse of the order of execution.
+ - rename retur_err to put_node
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
-index f41a764..b4628b4
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
-@@ -62,7 +62,7 @@ static void rtl8812ae_fixspur(struct ieee80211_hw *hw,
- 			rtl_set_bbreg(hw, RRFMOD, 0xC00, 0x2);
- 			/* 0x8AC[11:10] = 2'b10*/
+ .../net/ethernet/freescale/fman/fman_port.c   | 23 ++++++++++---------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/fman/fman_port.c b/drivers/net/ethernet/freescale/fman/fman_port.c
+index d9baac0dbc7d..9790e483241b 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_port.c
++++ b/drivers/net/ethernet/freescale/fman/fman_port.c
+@@ -1792,20 +1792,20 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 	if (!fm_node) {
+ 		dev_err(port->dev, "%s: of_get_parent() failed\n", __func__);
+ 		err = -ENODEV;
+-		goto return_err;
++		goto free_port;
+ 	}
  
--		/* <20120914, Kordan> A workarould to resolve
-+		/* <20120914, Kordan> A workaround to resolve
- 		 * 2480Mhz spur by setting ADC clock as 160M. (Asked by Binson)
- 		 */
- 		if (band_width == HT_CHANNEL_WIDTH_20 &&
-@@ -82,7 +82,7 @@ static void rtl8812ae_fixspur(struct ieee80211_hw *hw,
- 			/*0x8C4[30] = 0*/
+ 	fm_pdev = of_find_device_by_node(fm_node);
+ 	of_node_put(fm_node);
+ 	if (!fm_pdev) {
+ 		err = -EINVAL;
+-		goto return_err;
++		goto put_node;
+ 	}
+ 
+ 	fman = dev_get_drvdata(&fm_pdev->dev);
+ 	if (!fman) {
+ 		err = -EINVAL;
+-		goto return_err;
++		goto put_device;
+ 	}
+ 
+ 	err = of_property_read_u32(port_node, "cell-index", &val);
+@@ -1813,7 +1813,7 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 		dev_err(port->dev, "%s: reading cell-index for %pOF failed\n",
+ 			__func__, port_node);
+ 		err = -EINVAL;
+-		goto return_err;
++		goto put_device;
+ 	}
+ 	port_id = (u8)val;
+ 	port->dts_params.id = port_id;
+@@ -1847,7 +1847,7 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 	}  else {
+ 		dev_err(port->dev, "%s: Illegal port type\n", __func__);
+ 		err = -EINVAL;
+-		goto return_err;
++		goto put_device;
+ 	}
+ 
+ 	port->dts_params.type = port_type;
+@@ -1861,7 +1861,7 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 			dev_err(port->dev, "%s: incorrect qman-channel-id\n",
+ 				__func__);
+ 			err = -EINVAL;
+-			goto return_err;
++			goto put_device;
  		}
- 	} else if (rtlhal->hw_type == HARDWARE_TYPE_RTL8812AE) {
--		/* <20120914, Kordan> A workarould to resolve
-+		/* <20120914, Kordan> A workaround to resolve
- 		 * 2480Mhz spur by setting ADC clock as 160M.
- 		 */
- 		if (band_width == HT_CHANNEL_WIDTH_20 &&
+ 		port->dts_params.qman_channel_id = qman_channel_id;
+ 	}
+@@ -1871,22 +1871,21 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 		dev_err(port->dev, "%s: of_address_to_resource() failed\n",
+ 			__func__);
+ 		err = -ENOMEM;
+-		goto return_err;
++		goto put_device;
+ 	}
+ 
+ 	port->dts_params.fman = fman;
+ 
+-	of_node_put(port_node);
+-
+ 	dev_res = __devm_request_region(port->dev, &res, res.start,
+ 					resource_size(&res), "fman-port");
+ 	if (!dev_res) {
+ 		dev_err(port->dev, "%s: __devm_request_region() failed\n",
+ 			__func__);
+ 		err = -EINVAL;
+-		goto free_port;
++		goto put_device;
+ 	}
+ 
++	of_node_put(port_node);
+ 	port->dts_params.base_addr = devm_ioremap(port->dev, res.start,
+ 						  resource_size(&res));
+ 	if (!port->dts_params.base_addr)
+@@ -1896,7 +1895,9 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 
+ 	return 0;
+ 
+-return_err:
++put_device:
++	put_device(&fm_pdev->dev);
++put_node:
+ 	of_node_put(port_node);
+ free_port:
+ 	kfree(port);
 -- 
-2.7.4
+2.25.4
 
