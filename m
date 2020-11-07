@@ -2,91 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A182AA831
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 23:08:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C13A72AA833
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 23:09:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728800AbgKGWIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 17:08:55 -0500
-Received: from mout.gmx.net ([212.227.15.18]:36849 "EHLO mout.gmx.net"
+        id S1728772AbgKGWJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 17:09:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50444 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728766AbgKGWIy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Nov 2020 17:08:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1604786917;
-        bh=TF4vJpy3So/YNKjCJQx0HVgrhoU+b2fBxFR5XNF+vyc=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=C5jBAo17rMhVHNZy0Eck+dL2tCXphHu7RLiEkOR4ybP7ULkwu93YRvFL3dHdKzpSq
-         1OQHszdhzmEaNFHVXyDSeBhZ4EJ1ztGdVNzpPt7bfMv4qmsZsq7aSEYquLO8Tpbqmw
-         P9x/GA2mn3KlRsYTB9U3XfqO5GgLhudWrmP61/qI=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([37.201.214.162]) by mail.gmx.com (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M5fMe-1khXjj13Gs-007EeJ; Sat, 07
- Nov 2020 23:08:37 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-doc@vger.kernel.org
-Cc:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] docs: networking: phy: s/2.5 times faster/2.5 times as fast/
-Date:   Sat,  7 Nov 2020 23:08:21 +0100
-Message-Id: <20201107220822.1291215-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.28.0
+        id S1725838AbgKGWJy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Nov 2020 17:09:54 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D258220702;
+        Sat,  7 Nov 2020 22:09:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604786994;
+        bh=P69/MVPtSLlqmmiXEPZLWJik5SF3YokFWmFRfoizsnM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jzwKECuA+biP5vP9ftywRYFSBX+85OieEZlUzsQMEYcAmbfmAO7VFFT0E6Er9GGil
+         fcXzZmkoxlYZA1dhDz71jqWfTZq4bAbZ70mOeqRCfNWxNSMEQezMQHUjZctvLIq7FE
+         qunHfw2O2psUVeH19+7qDT95io7aCKC9ryNEFWqM=
+Date:   Sat, 7 Nov 2020 14:09:53 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     <madalin.bucur@nxp.com>, <davem@davemloft.net>,
+        <florinel.iordache@nxp.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+Subject: Re: [PATCH V3] fsl/fman: add missing put_devcie() call in
+ fman_port_probe()
+Message-ID: <20201107140953.1f04c04e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201107090925.1494578-1-yukuai3@huawei.com>
+References: <20201103112323.1077040-1-yukuai3@huawei.com>
+        <20201107090925.1494578-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:O2nYx4PYNoWB2eYP3TXqgGVNd9IQqrzgS+yNNzOXFoTrpnBIF8p
- 9Jz0UMgFSvFfKE2/HUANUfCBPRaIp9NxmUp5NBxfigsZY+ZEMwMqd5p+BFIrAIkc3mmoIdp
- 90d+H+0rQiSQXBQ2rYtvEhMkMi/1SVmvaOl8MMDaMZ7vG+szDktMlXy6suHtaJGGFxGASuL
- SxbaaQQGkHtfOsGEtEJAA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6N297bKMakU=:XuRQzdLUzawn5G9RMlrdeo
- 3/PWnZciNBquLZ5xA6kvG0PdYqpW1W0S03SxnFmkmHjnd6yUIFj9kTa5Mp27kDY3lFHirsF1c
- 9BDbAnG0mN217jXO6k6qGDVc2JHPYHT3TwDP+Gyceyv1pLTp0zXDgvEMtNh0J60SR/Z0y1a7l
- 3Xy8410clETavfxIaDZk7gniUl/7mTaB73mQfUdN1LT+LRRwlsPTxrKcpdciZ4tirlldPn9Zq
- aWUqarsCXUs+w9oAkv9EMrgmtVzsou39+HmvLZS4AvkdMLwYgGlGK2P7uINt2CZyr4S4hd1BZ
- NP/qgHamOmE9CpMXnhzRxZccHR/5QAbzKBOfP6WEtl8fVirIldwM6sq6k8SNmHeHWMxJ9qyvH
- A/5/kACwWc8i4xMm3y+6bJM5PTZSCEWZlsV76wT8M9hKBB2QDM4Q3vLftBhLHTRsTbrzF0YUD
- wM/su20nLisVgNXbC5n/NdLi/hUl9htii1uta36Ntu7DMjA+l7BF+EJ45eOU8OR5qlMjVv4kM
- GvqLRXYuiTZ29o1xVbsx9YPEEH8HNvsm6Clp3imQOYRpFm44Oe2vLs66vCdsOLGfFTad3abCl
- vMumxtfxi4/ZXCI6DLcIDicM/lzcQRjxNXsSmgHv1sVoNnrlbLrop99Od8y/uzp8/Z8CUnhwe
- v/WLT3FZEtEGrGKqY6EE8KCHcJ3d874jxtiMDkZRdPRx7QFHxu2A3LenPmyGM/YNM8s2JBOnf
- MPy/GZeHOsivP9xyVj+iqbHr6/oujLHlsrxIC7YTat7ZxyeJfj57aRD41ksol/aWrQQ/w0wji
- NRwOxli4sBpxuJQXOA9xe37wXSWtiTD0Oico+fbdHEBEvU44aD6o42YHa/SmMwZPGa2+abrK9
- FkZGPVFRaMG4yPClrHsvehb7yGiyCVDGnG7GDM5ro=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2.5 times faster would be 3.5 Gbps (4.375 Gbaud after 8b/10b encoding).
+On Sat, 7 Nov 2020 17:09:25 +0800 Yu Kuai wrote:
+> if of_find_device_by_node() succeed, fman_port_probe() doesn't have a
+> corresponding put_device(). Thus add jump target to fix the exception
+> handling for this function implementation.
+> 
+> Fixes: 0572054617f3 ("fsl/fman: fix dereference null return value")
+> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
- Documentation/networking/phy.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> @@ -1792,20 +1792,20 @@ static int fman_port_probe(struct platform_device *of_dev)
+>  	if (!fm_node) {
+>  		dev_err(port->dev, "%s: of_get_parent() failed\n", __func__);
+>  		err = -ENODEV;
+> -		goto return_err;
+> +		goto free_port;
 
-diff --git a/Documentation/networking/phy.rst b/Documentation/networking/p=
-hy.rst
-index 256106054c8cb..b2f7ec794bc8b 100644
-=2D-- a/Documentation/networking/phy.rst
-+++ b/Documentation/networking/phy.rst
-@@ -247,8 +247,8 @@ Some of the interface modes are described below:
-     speeds (see below.)
+And now you no longer put port_node if jumping from here...
 
- ``PHY_INTERFACE_MODE_2500BASEX``
--    This defines a variant of 1000BASE-X which is clocked 2.5 times faste=
-r,
--    than the 802.3 standard giving a fixed bit rate of 3.125Gbaud.
-+    This defines a variant of 1000BASE-X which is clocked 2.5 times as fa=
-st
-+    as the 802.3 standard, giving a fixed bit rate of 3.125Gbaud.
+Also does the reference to put_device() not have to be released when
+this function succeeds?
 
- ``PHY_INTERFACE_MODE_SGMII``
-     This is used for Cisco SGMII, which is a modification of 1000BASE-X
-=2D-
-2.28.0
+>  	}
+
+> @@ -1896,7 +1895,9 @@ static int fman_port_probe(struct platform_device *of_dev)
+>  
+>  	return 0;
+>  
+> -return_err:
+> +put_device:
+> +	put_device(&fm_pdev->dev);
+> +put_node:
+>  	of_node_put(port_node);
+>  free_port:
+>  	kfree(port);
 
