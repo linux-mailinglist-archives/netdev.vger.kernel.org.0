@@ -2,294 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A1E2AA53C
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 14:01:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 991322AA53E
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 14:01:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728241AbgKGNBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 08:01:15 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:4998 "EHLO
+        id S1728261AbgKGNBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 08:01:23 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:4990 "EHLO
         mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727950AbgKGNAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 08:00:19 -0500
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A7CVcEB153258;
+        by vger.kernel.org with ESMTP id S1727934AbgKGNAS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 08:00:18 -0500
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A7CXEjk042084;
         Sat, 7 Nov 2020 08:00:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references; s=pp1;
- bh=w6iV6AJPFFj/qpL+9CU0goHSmiEXL/oW2qNFKeOVydU=;
- b=C0xr1uYl8aEF02ThDwypBf6i01keZbrnk6dMIqAiY5ffvrcziDmGY4a5goQRMsiTkm/C
- EXMLkdeg6oZ2d8y8S/41nhl9j+LX/kCSqjdbxR+p6MVBDz/rZ6VBOthrDtWjiYn9R0Jy
- EwK8zJomA0xKANd57FfWbpt6TvdbtDZ7PDg8WLTNNdsaRhkhDGzLwLDje+4kzblh6gsR
- 45/18GUfs8ZO4fM7oBmJsepU3AtqGol4f6bsW7ENEhaI5E/c/SrzNW9QI4GY6fHh8dQf
- zGmQ39Olq4gU11aSIqW2Z86/erYOvwP6as12IIkpn0umsLF+5YM1bI+Fp9QhYCvidHa0 PA== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 34nncv8yw7-1
+ bh=tys1ybwEjU5bNYx7XmuY7rhMsCP9e9yvzI+s0aXxaPY=;
+ b=iyvs3fCHkzx8uQ0aEtmXxA9oMbU07rTxFUR4/zg+uWkZD2ZSUCCn3PQRSeMD2BqReoCt
+ X1rLPkAwGNxQtCtghq+mfFLjssooze3fLk/qTPnrK4bA+9mPeaFhE5k9d+rKMdLMJqc4
+ YS6RlxYtG2GcRVF+dJ1FUK4C4enBfp/mbdCeSI6xLEhBxtWIuBtDlKw8jplkmnEFm6u2
+ Z399Igi+46oz1h8/G2n25VvOcgtJsxupbZUrZUce73fFhddFplFNjAURUV3yBGtNrN2P
+ mfHQDdlsmODzlWCm4q76/nWaW6xU5cwmNzeBS/tqMdWkMFURRqMZ4A6o9jSG3fTpy/2C 9g== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 34nrkhc9tw-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 07 Nov 2020 08:00:16 -0500
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A7Cvv3B030860;
+        Sat, 07 Nov 2020 08:00:15 -0500
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A7CvHST016087;
         Sat, 7 Nov 2020 13:00:14 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 34nk78gaq5-1
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04ams.nl.ibm.com with ESMTP id 34nk788aga-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Sat, 07 Nov 2020 13:00:14 +0000
 Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A7D0BI360359134
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A7D0BJv7537244
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Sat, 7 Nov 2020 13:00:11 GMT
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C4A9FA4076;
-        Sat,  7 Nov 2020 13:00:10 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 50058A4055;
+        Sat,  7 Nov 2020 13:00:11 +0000 (GMT)
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9E732A405F;
-        Sat,  7 Nov 2020 13:00:10 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 294D9A4065;
+        Sat,  7 Nov 2020 13:00:11 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Sat,  7 Nov 2020 13:00:10 +0000 (GMT)
+        Sat,  7 Nov 2020 13:00:11 +0000 (GMT)
 From:   Karsten Graul <kgraul@linux.ibm.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         hca@linux.ibm.com, raspl@linux.ibm.com
-Subject: [PATCH net-next v3 12/15] net/smc: Add support for obtaining SMCD device list
-Date:   Sat,  7 Nov 2020 13:59:55 +0100
-Message-Id: <20201107125958.16384-13-kgraul@linux.ibm.com>
+Subject: [PATCH net-next v3 14/15] net/smc: Refactor smc ism v2 capability handling
+Date:   Sat,  7 Nov 2020 13:59:57 +0100
+Message-Id: <20201107125958.16384-15-kgraul@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201107125958.16384-1-kgraul@linux.ibm.com>
 References: <20201107125958.16384-1-kgraul@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-11-07_07:2020-11-05,2020-11-07 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_spam_definite policy=outbound score=100 priorityscore=1501
- lowpriorityscore=0 clxscore=1015 spamscore=100 bulkscore=0 impostorscore=0
- mlxlogscore=-1000 malwarescore=0 phishscore=0 mlxscore=100 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011070081
+X-Proofpoint-Spam-Details: rule=outbound_spam_definite policy=outbound score=100 suspectscore=0
+ mlxscore=100 malwarescore=0 phishscore=0 clxscore=1015 spamscore=100
+ bulkscore=0 impostorscore=0 lowpriorityscore=0 mlxlogscore=-1000
+ priorityscore=1501 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2011070085
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Guvenc Gulce <guvenc@linux.ibm.com>
 
-Deliver SMCD device information via netlink based
-diagnostic interface.
+Encapsulate the smc ism v2 capability boolean value
+in a function for better information hiding.
 
 Signed-off-by: Guvenc Gulce <guvenc@linux.ibm.com>
 Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
 ---
- include/uapi/linux/smc.h      |  2 +
- include/uapi/linux/smc_diag.h | 20 +++++++++
- net/smc/smc_core.h            | 27 +++++++++++++
- net/smc/smc_diag.c            | 76 +++++++++++++++++++++++++++++++++++
- net/smc/smc_ib.h              |  1 -
- 5 files changed, 125 insertions(+), 1 deletion(-)
+ net/smc/af_smc.c  | 12 ++++++------
+ net/smc/smc_ism.c |  8 +++++++-
+ net/smc/smc_ism.h |  5 ++---
+ 3 files changed, 15 insertions(+), 10 deletions(-)
 
-diff --git a/include/uapi/linux/smc.h b/include/uapi/linux/smc.h
-index 635e2c2aeac5..736e8b98c8a5 100644
---- a/include/uapi/linux/smc.h
-+++ b/include/uapi/linux/smc.h
-@@ -38,4 +38,6 @@ enum {				/* SMC PNET Table commands */
- #define SMC_LGR_ID_SIZE			4
- #define SMC_MAX_HOSTNAME_LEN		32 /* Max length of hostname */
- #define SMC_MAX_EID_LEN			32 /* Max length of eid */
-+#define SMC_MAX_PORTS			2 /* Max # of ports per ib device */
-+#define SMC_PCI_ID_STR_LEN		16 /* Max length of pci id string */
- #endif /* _UAPI_LINUX_SMC_H */
-diff --git a/include/uapi/linux/smc_diag.h b/include/uapi/linux/smc_diag.h
-index 5a80172df757..ab8f76bdd1a4 100644
---- a/include/uapi/linux/smc_diag.h
-+++ b/include/uapi/linux/smc_diag.h
-@@ -74,6 +74,7 @@ enum {
- /* V2 Commands */
- enum {
- 	SMC_DIAG_GET_LGR_INFO = SMC_DIAG_EXTS_PER_CMD,
-+	SMC_DIAG_GET_DEV_INFO,
- 	__SMC_DIAG_EXT_MAX,
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index bc3e45289771..850e6df47a59 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -668,7 +668,7 @@ static int smc_find_proposal_devices(struct smc_sock *smc,
+ 				ini->smc_type_v1 = SMC_TYPE_N;
+ 		} /* else RDMA is supported for this connection */
+ 	}
+-	if (smc_ism_v2_capable && smc_find_ism_v2_device_clnt(smc, ini))
++	if (smc_ism_is_v2_capable() && smc_find_ism_v2_device_clnt(smc, ini))
+ 		ini->smc_type_v2 = SMC_TYPE_N;
+ 
+ 	/* if neither ISM nor RDMA are supported, fallback */
+@@ -920,7 +920,7 @@ static int smc_connect_check_aclc(struct smc_init_info *ini,
+ /* perform steps before actually connecting */
+ static int __smc_connect(struct smc_sock *smc)
+ {
+-	u8 version = smc_ism_v2_capable ? SMC_V2 : SMC_V1;
++	u8 version = smc_ism_is_v2_capable() ? SMC_V2 : SMC_V1;
+ 	struct smc_clc_msg_accept_confirm_v2 *aclc2;
+ 	struct smc_clc_msg_accept_confirm *aclc;
+ 	struct smc_init_info *ini = NULL;
+@@ -945,9 +945,9 @@ static int __smc_connect(struct smc_sock *smc)
+ 						    version);
+ 
+ 	ini->smcd_version = SMC_V1;
+-	ini->smcd_version |= smc_ism_v2_capable ? SMC_V2 : 0;
++	ini->smcd_version |= smc_ism_is_v2_capable() ? SMC_V2 : 0;
+ 	ini->smc_type_v1 = SMC_TYPE_B;
+-	ini->smc_type_v2 = smc_ism_v2_capable ? SMC_TYPE_D : SMC_TYPE_N;
++	ini->smc_type_v2 = smc_ism_is_v2_capable() ? SMC_TYPE_D : SMC_TYPE_N;
+ 
+ 	/* get vlan id from IP device */
+ 	if (smc_vlan_by_tcpsk(smc->clcsock, ini)) {
+@@ -1354,7 +1354,7 @@ static int smc_listen_v2_check(struct smc_sock *new_smc,
+ 		rc = SMC_CLC_DECL_PEERNOSMC;
+ 		goto out;
+ 	}
+-	if (!smc_ism_v2_capable) {
++	if (!smc_ism_is_v2_capable()) {
+ 		ini->smcd_version &= ~SMC_V2;
+ 		rc = SMC_CLC_DECL_NOISM2SUPP;
+ 		goto out;
+@@ -1680,7 +1680,7 @@ static void smc_listen_work(struct work_struct *work)
+ {
+ 	struct smc_sock *new_smc = container_of(work, struct smc_sock,
+ 						smc_listen_work);
+-	u8 version = smc_ism_v2_capable ? SMC_V2 : SMC_V1;
++	u8 version = smc_ism_is_v2_capable() ? SMC_V2 : SMC_V1;
+ 	struct socket *newclcsock = new_smc->clcsock;
+ 	struct smc_clc_msg_accept_confirm *cclc;
+ 	struct smc_clc_msg_proposal_area *buf;
+diff --git a/net/smc/smc_ism.c b/net/smc/smc_ism.c
+index 6abbdd09a580..2456ee8228cd 100644
+--- a/net/smc/smc_ism.c
++++ b/net/smc/smc_ism.c
+@@ -21,7 +21,7 @@ struct smcd_dev_list smcd_dev_list = {
+ 	.mutex = __MUTEX_INITIALIZER(smcd_dev_list.mutex)
  };
  
-@@ -84,6 +85,11 @@ enum {
- 	SMC_DIAG_LGR_INFO_SMCD,
- };
+-bool smc_ism_v2_capable;
++static bool smc_ism_v2_capable;
  
-+/* SMC_DIAG_GET_DEV_INFO command extensions */
-+enum {
-+	SMC_DIAG_DEV_INFO_SMCD = 1,
-+};
+ /* Test if an ISM communication is possible - same CPC */
+ int smc_ism_cantalk(u64 peer_gid, unsigned short vlan_id, struct smcd_dev *smcd)
+@@ -51,6 +51,12 @@ u16 smc_ism_get_chid(struct smcd_dev *smcd)
+ 	return smcd->ops->get_chid(smcd);
+ }
+ 
++/* HW supports ISM V2 and thus System EID is defined */
++bool smc_ism_is_v2_capable(void)
++{
++	return smc_ism_v2_capable;
++}
 +
- #define SMC_DIAG_MAX (__SMC_DIAG_MAX - 1)
- #define SMC_DIAG_EXT_MAX (__SMC_DIAG_EXT_MAX - 1)
+ /* Set a connection using this DMBE. */
+ void smc_ism_set_conn(struct smc_connection *conn)
+ {
+diff --git a/net/smc/smc_ism.h b/net/smc/smc_ism.h
+index 8048e09ddcf8..481a4b7df30b 100644
+--- a/net/smc/smc_ism.h
++++ b/net/smc/smc_ism.h
+@@ -10,6 +10,7 @@
+ #define SMCD_ISM_H
  
-@@ -164,6 +170,20 @@ struct smcd_diag_dmbinfo {		/* SMC-D Socket internals */
- 	struct smc_diag_v2_lgr_info v2_lgr_info; /* SMCv2 info */
- };
- 
-+struct smc_diag_dev_info {
-+	/* Pnet ID per device port */
-+	__u8		pnet_id[SMC_MAX_PORTS][SMC_MAX_PNETID_LEN];
-+	/* whether pnetid is set by user */
-+	__u8		pnetid_by_user[SMC_MAX_PORTS];
-+	__u32		use_cnt;		/* Number of linkgroups */
-+	__u8		is_critical;		/* Is device critical */
-+	__u32		pci_fid;		/* PCI FID */
-+	__u16		pci_pchid;		/* PCI CHID */
-+	__u16		pci_vendor;		/* PCI Vendor */
-+	__u16		pci_device;		/* PCI Device Vendor ID */
-+	__u8		pci_id[SMC_PCI_ID_STR_LEN]; /* PCI ID */
-+};
-+
- struct smc_diag_lgr {
- 	__u8		lgr_id[SMC_LGR_ID_SIZE]; /* Linkgroup identifier */
- 	__u8		lgr_role;		/* Linkgroup role */
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index a705a67d6a39..19680fc6aeeb 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -13,6 +13,7 @@
- #define _SMC_CORE_H
- 
- #include <linux/atomic.h>
-+#include <linux/pci.h>
- #include <rdma/ib_verbs.h>
+ #include <linux/uio.h>
++#include <linux/types.h>
+ #include <linux/mutex.h>
  
  #include "smc.h"
-@@ -383,6 +384,32 @@ static inline void smc_ibdev_cnt_dec(struct smc_link *lnk)
- 	atomic_dec(&lnk->smcibdev->lnk_cnt_by_port[lnk->ibport - 1]);
- }
+@@ -20,9 +21,6 @@ struct smcd_dev_list {	/* List of SMCD devices */
+ };
  
-+struct smc_pci_dev {
-+	__u32		pci_fid;
-+	__u16		pci_pchid;
-+	__u16		pci_vendor;
-+	__u16		pci_device;
-+	__u8		pci_id[SMC_PCI_ID_STR_LEN];
-+};
-+
-+static inline void smc_set_pci_values(struct pci_dev *pci_dev,
-+				      struct smc_pci_dev *smc_dev)
-+{
-+	smc_dev->pci_vendor = pci_dev->vendor;
-+	smc_dev->pci_device = pci_dev->device;
-+	snprintf(smc_dev->pci_id, sizeof(smc_dev->pci_id), "%s",
-+		 pci_name(pci_dev));
-+#if IS_ENABLED(CONFIG_S390)
-+	{
-+	struct zpci_dev *zdev;
-+
-+	zdev = to_zpci(pci_dev);
-+	smc_dev->pci_fid = zdev->fid;
-+	smc_dev->pci_pchid = zdev->pchid;
-+	}
-+#endif
-+}
-+
- struct smc_sock;
- struct smc_clc_msg_accept_confirm;
- struct smc_clc_msg_local;
-diff --git a/net/smc/smc_diag.c b/net/smc/smc_diag.c
-index a644e2299dbc..69e2a6a2b657 100644
---- a/net/smc/smc_diag.c
-+++ b/net/smc/smc_diag.c
-@@ -450,6 +450,78 @@ static int smc_diag_fill_smcd_dev(struct smcd_dev_list *dev_list,
- 	return rc;
- }
+ extern struct smcd_dev_list	smcd_dev_list;	/* list of smcd devices */
+-extern bool	smc_ism_v2_capable;	/* HW supports ISM V2 and thus
+-					 * System EID is defined
+-					 */
  
-+static int smc_diag_handle_smcd_dev(struct smcd_dev *smcd,
-+				    struct sk_buff *skb,
-+				    struct netlink_callback *cb,
-+				    struct smc_diag_req_v2 *req)
-+{
-+	struct smc_diag_dev_info smc_diag_dev;
-+	struct smc_pci_dev smc_pci_dev;
-+	struct nlmsghdr *nlh;
-+	int dummy = 0;
-+	int rc = 0;
-+
-+	nlh = nlmsg_put(skb, NETLINK_CB(cb->skb).portid, MAGIC_SEQ_V2_ACK,
-+			cb->nlh->nlmsg_type, 0, NLM_F_MULTI);
-+	if (!nlh)
-+		return -EMSGSIZE;
-+
-+	memset(&smc_diag_dev, 0, sizeof(smc_diag_dev));
-+	memset(&smc_pci_dev, 0, sizeof(smc_pci_dev));
-+	smc_diag_dev.use_cnt = atomic_read(&smcd->lgr_cnt);
-+	smc_diag_dev.is_critical = (smc_diag_dev.use_cnt > 0);
-+	smc_diag_dev.pnetid_by_user[0] = smcd->pnetid_by_user;
-+	smc_set_pci_values(to_pci_dev(smcd->dev.parent), &smc_pci_dev);
-+	smc_diag_dev.pci_device = smc_pci_dev.pci_device;
-+	smc_diag_dev.pci_fid = smc_pci_dev.pci_fid;
-+	smc_diag_dev.pci_pchid = smc_pci_dev.pci_pchid;
-+	smc_diag_dev.pci_vendor = smc_pci_dev.pci_vendor;
-+	snprintf(smc_diag_dev.pci_id, sizeof(smc_diag_dev.pci_id), "%s",
-+		 smc_pci_dev.pci_id);
-+	snprintf((char *)&smc_diag_dev.pnet_id[0],
-+		 sizeof(smc_diag_dev.pnet_id[0]), "%s", smcd->pnetid);
-+	/* Just a command place holder to signal back the command reply type */
-+	if (nla_put(skb, SMC_DIAG_GET_DEV_INFO, sizeof(dummy), &dummy) < 0)
-+		goto errout;
-+
-+	if (nla_put(skb, SMC_DIAG_DEV_INFO_SMCD,
-+		    sizeof(smc_diag_dev), &smc_diag_dev) < 0)
-+		goto errout;
-+
-+	nlmsg_end(skb, nlh);
-+	return rc;
-+
-+errout:
-+	nlmsg_cancel(skb, nlh);
-+	return -EMSGSIZE;
-+}
-+
-+static int smc_diag_prep_smcd_dev(struct smcd_dev_list *dev_list,
-+				  struct sk_buff *skb,
-+				  struct netlink_callback *cb,
-+				  struct smc_diag_req_v2 *req)
-+{
-+	struct smc_diag_dump_ctx *cb_ctx = smc_dump_context(cb);
-+	int snum = cb_ctx->pos[0];
-+	struct smcd_dev *smcd;
-+	int rc = 0, num = 0;
-+
-+	mutex_lock(&dev_list->mutex);
-+	list_for_each_entry(smcd, &dev_list->list, list) {
-+		if (num < snum)
-+			goto next;
-+		rc = smc_diag_handle_smcd_dev(smcd, skb, cb, req);
-+		if (rc < 0)
-+			goto errout;
-+next:
-+		num++;
-+	}
-+errout:
-+	mutex_unlock(&dev_list->mutex);
-+	cb_ctx->pos[0] = num;
-+	return rc;
-+}
-+
- static int __smc_diag_dump(struct sock *sk, struct sk_buff *skb,
- 			   struct netlink_callback *cb,
- 			   const struct smc_diag_req *req)
-@@ -551,6 +623,10 @@ static int smc_diag_dump_ext(struct sk_buff *skb, struct netlink_callback *cb)
- 		if ((req->cmd_ext & (1 << (SMC_DIAG_LGR_INFO_SMCD - 1))))
- 			smc_diag_fill_smcd_dev(smc_diag_ops->get_smcd_devices(),
- 					       skb, cb, req);
-+	} else if (req->cmd == SMC_DIAG_GET_DEV_INFO) {
-+		if ((req->cmd_ext & (1 << (SMC_DIAG_DEV_INFO_SMCD - 1))))
-+			smc_diag_prep_smcd_dev(smc_diag_ops->get_smcd_devices(),
-+					       skb, cb, req);
- 	}
- 
- 	return skb->len;
-diff --git a/net/smc/smc_ib.h b/net/smc/smc_ib.h
-index 5319496adea0..e36c935bc1ec 100644
---- a/net/smc/smc_ib.h
-+++ b/net/smc/smc_ib.h
-@@ -19,7 +19,6 @@
- #include <rdma/ib_verbs.h>
- #include <net/smc.h>
- 
--#define SMC_MAX_PORTS			2	/* Max # of ports */
- #define SMC_GID_SIZE			sizeof(union ib_gid)
- 
- #define SMC_IB_MAX_SEND_SGE		2
+ struct smc_ism_vlanid {			/* VLAN id set on ISM device */
+ 	struct list_head list;
+@@ -52,5 +50,6 @@ int smc_ism_write(struct smcd_dev *dev, const struct smc_ism_position *pos,
+ int smc_ism_signal_shutdown(struct smc_link_group *lgr);
+ void smc_ism_get_system_eid(struct smcd_dev *dev, u8 **eid);
+ u16 smc_ism_get_chid(struct smcd_dev *dev);
++bool smc_ism_is_v2_capable(void);
+ void smc_ism_init(void);
+ #endif
 -- 
 2.17.1
 
