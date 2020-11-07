@@ -2,155 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A7122AA1F1
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 02:08:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0686A2AA1F5
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 02:14:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728136AbgKGBH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 20:07:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59514 "EHLO
+        id S1728372AbgKGBO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 20:14:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727129AbgKGBH7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 20:07:59 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE1BC0613CF;
-        Fri,  6 Nov 2020 17:07:59 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id i193so2734971yba.1;
-        Fri, 06 Nov 2020 17:07:59 -0800 (PST)
+        with ESMTP id S1727129AbgKGBO1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 20:14:27 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE2CC0613CF;
+        Fri,  6 Nov 2020 17:14:25 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id a12so2742400ybg.9;
+        Fri, 06 Nov 2020 17:14:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=P1lNBUwu8TsZvaTrcu6uKv4aAm0utWC6dvPxKfX6a0w=;
-        b=NV+pRW9jXoHkbnhc0eqDafiS1Jvl5QQ4YsxNLB0LZwDhhr8MkIGpPdcKlChea3PFNH
-         9+FMcY05TZ7KBqVShLwou3PGi0+14g4mU8SeblIWbSXsBv10BNEKfl3zMId+3i17Atz5
-         H4fXfRfsHQuQXAtEH8fpp1oZxP95cWmWnAkpWtKzjYKB3U0Iuyk6xP2FtzxcH2GP8PuX
-         zGXFplVMql3/qOz6ud83R92bSbsu06mCP//XKvLYxagitBNXoqwKyClzVmMy5gXb+6yk
-         JAIkPg/RyppgT1lw0Rz0d5ETcRAceVJgIF1h0XkiNTrL5ooNziK4jPfaYoL9Ru3dfuEM
-         xrMw==
+        bh=KgcSZrLLiNnLdzlKpUep9GqNy0eCFir7HzXKMNzKr54=;
+        b=VgMPit4LTtlNs5ZCRHMWDmZZnp8tjz3fWTMPFJrPdlTuWzeXFVQ/qj/++t6df+67jD
+         TLqqxJngnQBp1QxHIbH5k5i0Dg1UEtbCkwg1umjLuXovcbWkCosDyPEk5CE4e+0aFQgB
+         4B5Yt41c4cpJ1AjriWDYIozwLRLSH0roaeQ7aZbNIFCyRchtZ+d6knF4HhgjlHTBUAOY
+         3VYTdMJKi9qiNvwzzuii/pBxUGNanr3h3y5/F/TRUFFh4KlGzLsqHyLPMYKw8z0yX4Mr
+         KM1HrA1YsAlLEYL+SbDuxMRhPNgqSWO4QWCGAvsFbXNdJHS8QzTmjTRgbSXKEFV0LLiP
+         /5Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=P1lNBUwu8TsZvaTrcu6uKv4aAm0utWC6dvPxKfX6a0w=;
-        b=GNJzO+4zgsnRG9AAqrPwp4TIqsBTtsxs31/9ZDuuAQqQ9nSfksV3PO8a1V4FagXs5v
-         D1Hm/hnMTj3o3KosH+iEQOtVUoNp0gEs0PhxmQoCCQ/h4Pz9miUEyyoGY09Lc6xkow1g
-         5FHKbmZKYSngFOmaUNqHjjv+B2N+pQjnPxPQiy812tv+3AzBrNXLZFehWlK/evB29/N5
-         EIbq6K7/xRsi7cUp79lSkFwoNMm/Mg3FmG9HvmEM1knXyQ9qxz6u7kG/e2hU6LxY3iHU
-         LM/bk7C/yt4jqf8LKt11VdNwktSZukmE42R1Y1eyZ0TGvX7/iNHoyg7BtrLEps22W/qy
-         IpmQ==
-X-Gm-Message-State: AOAM5318OdEDbhy9KusZ6mPRVjxztv2FD1rI9UT/IQIE9UDY+i2DRDwr
-        MvIs//auzMLpIvOCHo4VTY3+gsvLRctFzXXHRPE=
-X-Google-Smtp-Source: ABdhPJwK6e/TVvvWSBGiPwA/lcTGwh9iGHlFhYcpYZRT5ZPEF7FAjBxSSk5PYGnm9jiA2m53T4Wr3C3H1PajbdWOJlI=
-X-Received: by 2002:a25:cb10:: with SMTP id b16mr6703202ybg.459.1604711278307;
- Fri, 06 Nov 2020 17:07:58 -0800 (PST)
+        bh=KgcSZrLLiNnLdzlKpUep9GqNy0eCFir7HzXKMNzKr54=;
+        b=UX+IE8dD4cdVgDCcQeN84vls45kRj8oCFqKpBGvoU5WuX6JJWEIJM33DKt7ReB+nsK
+         CfVAoTQ4wsaRRohJ3JXCTGi9ly84KqQCIQz7AtuxF7lasSJH2lsIr2Yr13dBALqjT7yW
+         WL1bmFkXmz47boyYEqqEvNbh4os+vVINrVrpPNZGjjUTwHyW6mQ3hbAkMbjrBq86yc/2
+         4SHIF5QIrMuc1m7trSRbPGBTKxJMoLV0LhFvcBb8rWo7ktp5u9EULyWrFWftDbUEWmS0
+         7K0PA2Mti7UzRyKtuu8EEeW5hjtYhLV5CDjlhWXT4Yc+7Xx1p5LCa+WIxKhMqO8iDa6L
+         a6ow==
+X-Gm-Message-State: AOAM530t2skdltuVy/cAs6/vDh+qmyOgwrOHgr63TxHq5lhdHqFibr8r
+        bc0FeIfpvLZHmROJl2AfvE39vtjVQKStza6dwPs=
+X-Google-Smtp-Source: ABdhPJwxq74uDpc0OlsH7CexHJp09TiigipgD+5YwG2Xrn3MFOeQXKgxSZQ9BCXB9HocAi+3H5y7IlFIHNYPB8Owj/Q=
+X-Received: by 2002:a25:b0d:: with SMTP id 13mr6535194ybl.347.1604711664888;
+ Fri, 06 Nov 2020 17:14:24 -0800 (PST)
 MIME-Version: 1.0
-References: <20201028132529.3763875-1-haliu@redhat.com> <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
- <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
- <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com> <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
- <20201104021730.GK2408@dhcp-12-153.nay.redhat.com> <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
- <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com> <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
- <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com> <CAEf4BzaSfutBt3McEPjmu_FyxyzJa_xVGfhP_7v0oGuqG_HBEw@mail.gmail.com>
- <20201106094425.5cc49609@redhat.com> <CAEf4Bzb2fuZ+Mxq21HEUKcOEba=rYZHc+1FTQD98=MPxwj8R3g@mail.gmail.com>
- <CAADnVQ+S7fusZ6RgXBKJL7aCtt3jpNmCnCkcXd0fLayu+Rw_6Q@mail.gmail.com>
- <20201106152537.53737086@hermes.local> <CAEf4BzY6iqkJZOnPNwVp3Q+UYu=XA7CKo83aD60RvcAapWb0eQ@mail.gmail.com>
- <20201106164142.6d0955f9@hermes.local>
-In-Reply-To: <20201106164142.6d0955f9@hermes.local>
+References: <20201106220750.3949423-1-kafai@fb.com> <20201106220803.3950648-1-kafai@fb.com>
+In-Reply-To: <20201106220803.3950648-1-kafai@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 6 Nov 2020 17:07:47 -0800
-Message-ID: <CAEf4Bza3GCyagEm7uQ9i0NbGa5WBoo9nTFpB-mUGm+O-SZvEvg@mail.gmail.com>
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
+Date:   Fri, 6 Nov 2020 17:14:14 -0800
+Message-ID: <CAEf4BzaQMcnALQ3rPErQJxVjL-Mi8zB8aSBkL8bkR8mtivro+g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/3] bpf: Allow using bpf_sk_storage in FENTRY/FEXIT/RAW_TP
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 6, 2020 at 4:41 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
+On Fri, Nov 6, 2020 at 2:08 PM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> On Fri, 6 Nov 2020 15:30:38 -0800
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> This patch enables the FENTRY/FEXIT/RAW_TP tracing program to use
+> the bpf_sk_storage_(get|delete) helper, so those tracing programs
+> can access the sk's bpf_local_storage and the later selftest
+> will show some examples.
 >
-> > On Fri, Nov 6, 2020 at 3:25 PM Stephen Hemminger
-> > <stephen@networkplumber.org> wrote:
-> > >
-> > > On Fri, 6 Nov 2020 13:04:16 -0800
-> > > Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > > On Fri, Nov 6, 2020 at 12:58 PM Andrii Nakryiko
-> > > > <andrii.nakryiko@gmail.com> wrote:
-> > > > >
-> > > > > On Fri, Nov 6, 2020 at 12:44 AM Jiri Benc <jbenc@redhat.com> wrote:
-> > > > > >
-> > > > > > On Thu, 5 Nov 2020 12:19:00 -0800, Andrii Nakryiko wrote:
-> > > > > > > I'll just quote myself here for your convenience.
-> > > > > >
-> > > > > > Sorry, I missed your original email for some reason.
-> > > > > >
-> > > > > > >   Submodule is a way that I know of to make this better for end users.
-> > > > > > >   If there are other ways to pull this off with shared library use, I'm
-> > > > > > >   all for it, it will save the security angle that distros are arguing
-> > > > > > >   for. E.g., if distributions will always have the latest libbpf
-> > > > > > >   available almost as soon as it's cut upstream *and* new iproute2
-> > > > > > >   versions enforce the latest libbpf when they are packaged/released,
-> > > > > > >   then this might work equivalently for end users. If Linux distros
-> > > > > > >   would be willing to do this faithfully and promptly, I have no
-> > > > > > >   objections whatsoever. Because all that matters is BPF end user
-> > > > > > >   experience, as Daniel explained above.
-> > > > > >
-> > > > > > That's basically what we already do, for both Fedora and RHEL.
-> > > > > >
-> > > > > > Of course, it follows the distro release cycle, i.e. no version
-> > > > > > upgrades - or very limited ones - during lifetime of a particular
-> > > > > > release. But that would not be different if libbpf was bundled in
-> > > > > > individual projects.
-> > > > >
-> > > > > Alright. Hopefully this would be sufficient in practice.
-> > > >
-> > > > I think bumping the minimal version of libbpf with every iproute2 release
-> > > > is necessary as well.
-> > > > Today iproute2-next should require 0.2.0. The cycle after it should be 0.3.0
-> > > > and so on.
-> > > > This way at least some correlation between iproute2 and libbpf will be
-> > > > established.
-> > > > Otherwise it's a mess of versions and functionality from user point of view.
-> > >
-> > > As long as iproute2 6.0 and libbpf 0.11.0 continues to work on older kernel
-> > > (like oldest living LTS 4.19 in 2023?); then it is fine.
-> > >
-> > > Just don't want libbpf to cause visible breakage for users.
-> >
-> > libbpf CI validates a bunch of selftests on 4.9 kernel, see [0]. It
-> > should work on even older ones. Not all BPF programs would load and be
-> > verified successfully, but libbpf itself should work regardless.
-> >
-> >   [0] https://travis-ci.com/github/libbpf/libbpf/jobs/429362146
+> The bpf_sk_storage is currently used in bpf-tcp-cc, tc,
+> cg sockops...etc which is running either in softirq or
+> task context.
 >
-> Look at the dates in my note, are you willing to promise that compatibility
-> in future versions.
+> This patch adds bpf_sk_storage_get_tracing_proto and
+> bpf_sk_storage_delete_tracing_proto.  They will check
+> in runtime that the helpers can only be called when serving
+> softirq or running in a task context.  That should enable
+> most common tracing use cases on sk.
+>
+> During the load time, the new tracing_allowed() function
+> will ensure the tracing prog using the bpf_sk_storage_(get|delete)
+> helper is not tracing any *sk_storage*() function itself.
+> The sk is passed as "void *" when calling into bpf_local_storage.
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
+>  include/net/bpf_sk_storage.h |  2 +
+>  kernel/trace/bpf_trace.c     |  5 +++
+>  net/core/bpf_sk_storage.c    | 73 ++++++++++++++++++++++++++++++++++++
+>  3 files changed, 80 insertions(+)
 >
 
-I don't understand why after so many emails in this thread it's still
-not clear that backwards compatibility is in libbpf's DNA. And no one
-can even point out where and when exactly libbpf even had a problem
-with backwards compatibility in the first place! Yet, all of this
-insinuation of libbpf API instability...
+[...]
 
-So for the last time (hopefully): yes!
+> +       switch (prog->expected_attach_type) {
+> +       case BPF_TRACE_RAW_TP:
+> +               /* bpf_sk_storage has no trace point */
+> +               return true;
+> +       case BPF_TRACE_FENTRY:
+> +       case BPF_TRACE_FEXIT:
+> +               btf_vmlinux = bpf_get_btf_vmlinux();
+> +               btf_id = prog->aux->attach_btf_id;
+> +               t = btf_type_by_id(btf_vmlinux, btf_id);
+> +               tname = btf_name_by_offset(btf_vmlinux, t->name_off);
+> +               return !strstr(tname, "sk_storage");
 
-We managed to do that for at least 2 last years, why would we suddenly
-break this?
+I'm always feeling uneasy about substring checks... Also, KP just
+fixed the issue with string-based checks for LSM. Can we use a
+BTF_ID_SET of blacklisted functions instead?
+
+> +       default:
+> +               return false;
+> +       }
+> +
+> +       return false;
+> +}
+> +
+
+[...]
