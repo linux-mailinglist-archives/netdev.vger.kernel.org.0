@@ -2,100 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3539A2AA61B
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 16:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E902E2AA653
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 16:33:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728090AbgKGPIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 10:08:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726301AbgKGPIH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 10:08:07 -0500
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331C3C0613CF;
-        Sat,  7 Nov 2020 07:08:07 -0800 (PST)
-Received: by mail-pj1-x1041.google.com with SMTP id ei22so57336pjb.2;
-        Sat, 07 Nov 2020 07:08:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=AHUD2fSWmRWCnVwJ7/g4Q565pbRjksATWCU4DrhoO2w=;
-        b=nrR7ELNUGn6L1HcAGcqBahsXy9FW4LFsKPn+KBQ8wkHZZuBKzrs2MoKkaSQUvO4gpS
-         IaRYWaALBsMyCUOwubt5HYYKAjWESp911JX5zFOLrDya4fPY9VrnSxJuo/6WxyvSzJDt
-         1ytr5W/Tp/1KRY/4SaGMZNvHjlhMPlaOuGinssUQuOyXIP2na/9dBh0YnwYEUamDLeYB
-         0hJt7ogXDxPfNcCTgd2ABHRibrQCz44H9n8KFh6QpJX/fA+LSV1AiPFpAJyCfMT1b6cb
-         /5+GrminvHizmdPZiccOzZtojiEDtnJ+/awmJq0dnl/sCKUQt0NgjXK7/cXWaR6X2Tvy
-         +87g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=AHUD2fSWmRWCnVwJ7/g4Q565pbRjksATWCU4DrhoO2w=;
-        b=fNA9N4VBDBmMmuqc0BK0N/qqDYYP29nZLmr2SPDrrec820Xdokeb7GCkr/BRr1k8NR
-         GR4FxxTJJz4qjg2jaLwdrd+kmviVdOVJ7ULyVGfvn2RqZ71y4edc1GhXGvmC15vtyHum
-         DcR3UCyY7rqTmAnbniCIywsTwa1t+71KjfWEJD12/6FEF9QtJfiZ6K7zMPf4imQFTCxc
-         gRSxin3H/7kpCjO7By+6h/ifiRVT1C0n3Po9Dn2f3pKgUCSgSxPdbf83BWINfAMuZ9TU
-         8RmDDXrYd58aYf2jaTyfiFKE4PcNY8fyaG3PerphZLK14ZJlaVaLruWTYXrcZvcgRdHh
-         6YZg==
-X-Gm-Message-State: AOAM5315k539IVWwVXbCtxljj+vwQMCV2DPpn2SSUlP1Jurc+Y476zAD
-        EqKTZ9qZF5fNI2pxhiTpdxQ=
-X-Google-Smtp-Source: ABdhPJw+o+JKvzKjEARCmDPUYYiMDHuEN2uzQNsnbcjUT1n391HjVsg6Kadv7AD8diHxLYX5GAtf+w==
-X-Received: by 2002:a17:902:788e:b029:d6:9a57:ccab with SMTP id q14-20020a170902788eb02900d69a57ccabmr2776243pll.41.1604761686809;
-        Sat, 07 Nov 2020 07:08:06 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id i130sm5220585pgc.7.2020.11.07.07.08.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Nov 2020 07:08:06 -0800 (PST)
-Date:   Sat, 7 Nov 2020 07:08:03 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Wang Qing <wangqing@vivo.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S1728419AbgKGPdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 10:33:44 -0500
+Received: from smtp.uniroma2.it ([160.80.6.22]:51959 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726043AbgKGPdQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Nov 2020 10:33:16 -0500
+Received: from localhost.localdomain ([160.80.103.126])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0A7FW8qb010493
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sat, 7 Nov 2020 16:32:09 +0100
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Samuel Zou <zou_wei@huawei.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/ethernet: update ret when ptp_clock is ERROR
-Message-ID: <20201107150803.GD9653@hoboy.vegasvil.org>
-References: <1604649411-24886-1-git-send-email-wangqing@vivo.com>
+        Shuah Khan <shuah@kernel.org>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: [net-next,v2,0/5] seg6: add support for SRv6 End.DT4 behavior
+Date:   Sat,  7 Nov 2020 16:31:34 +0100
+Message-Id: <20201107153139.3552-1-andrea.mayer@uniroma2.it>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1604649411-24886-1-git-send-email-wangqing@vivo.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 06, 2020 at 03:56:45PM +0800, Wang Qing wrote:
-> We always have to update the value of ret, otherwise the
->  error value may be the previous one.
-> 
-> Signed-off-by: Wang Qing <wangqing@vivo.com>
+This patchset provides support for the SRv6 End.DT4 behavior.
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+The SRv6 End.DT4 is used to implement multi-tenant IPv4 L3 VPN. It
+decapsulates the received packets and performs IPv4 routing lookup in the
+routing table of the tenant. The SRv6 End.DT4 Linux implementation
+leverages a VRF device. The SRv6 End.DT4 is defined in the SRv6 Network
+Programming [1].
 
+- Patch 1/5 is needed to solve a pre-existing issue with tunneled packets
+  when a sniffer is attached;
 
-> ---
->  drivers/net/ethernet/ti/am65-cpts.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
-> index 75056c1..b77ff61
-> --- a/drivers/net/ethernet/ti/am65-cpts.c
-> +++ b/drivers/net/ethernet/ti/am65-cpts.c
-> @@ -1001,8 +1001,7 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
->  	if (IS_ERR_OR_NULL(cpts->ptp_clock)) {
->  		dev_err(dev, "Failed to register ptp clk %ld\n",
->  			PTR_ERR(cpts->ptp_clock));
-> -		if (!cpts->ptp_clock)
-> -			ret = -ENODEV;
-> +		ret = cpts->ptp_clock ? cpts->ptp_clock : (-ENODEV);
->  		goto refclk_disable;
->  	}
->  	cpts->phc_index = ptp_clock_index(cpts->ptp_clock);
-> -- 
-> 2.7.4
-> 
+- Patch 2/5 improves the management of the seg6local attributes used by the
+  SRv6 behaviors;
+
+- Patch 3/5 introduces two callbacks used for customizing the
+  creation/destruction of a SRv6 behavior;
+
+- Patch 4/5 is the core patch that adds support for the SRv6 End.DT4
+  behavior;
+
+- Patch 5/5 adds the selftest for SRv6 End.DT4 behavior.
+
+I would like to thank David Ahern for his support during the development of
+this patch set.
+
+Comments, suggestions and improvements are very welcome!
+
+Thanks,
+Andrea Mayer
+
+v2
+ no changes made: resubmitted after false build report.
+
+v1
+ improve comments;
+
+ add new patch 2/5 titled: seg6: improve management of behavior attributes
+
+ seg6: add support for the SRv6 End.DT4 behavior
+  - remove the inline keyword in the definition of fib6_config_get_net().
+
+ selftests: add selftest for the SRv6 End.DT4 behavior
+  - add check for the vrf sysctl
+
+[1] https://tools.ietf.org/html/draft-ietf-spring-srv6-network-programming
+
+Andrea Mayer (5):
+  vrf: add mac header for tunneled packets when sniffer is attached
+  seg6: improve management of behavior attributes
+  seg6: add callbacks for customizing the creation/destruction of a
+    behavior
+  seg6: add support for the SRv6 End.DT4 behavior
+  selftests: add selftest for the SRv6 End.DT4 behavior
+
+ drivers/net/vrf.c                             |  78 ++-
+ net/ipv6/seg6_local.c                         | 370 ++++++++++++-
+ .../selftests/net/srv6_end_dt4_l3vpn_test.sh  | 494 ++++++++++++++++++
+ 3 files changed, 927 insertions(+), 15 deletions(-)
+ create mode 100755 tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
+
+-- 
+2.20.1
+
