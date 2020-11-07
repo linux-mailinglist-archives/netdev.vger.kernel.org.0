@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECA772AA6F5
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 18:23:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F10AF2AA6F7
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 18:23:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728559AbgKGRX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 12:23:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
+        id S1728591AbgKGRXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 12:23:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726364AbgKGRX2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 12:23:28 -0500
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C224C0613CF;
-        Sat,  7 Nov 2020 09:23:28 -0800 (PST)
-Received: by mail-pf1-x444.google.com with SMTP id z3so4413206pfb.10;
-        Sat, 07 Nov 2020 09:23:28 -0800 (PST)
+        with ESMTP id S1726364AbgKGRXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 12:23:37 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426FCC0613CF;
+        Sat,  7 Nov 2020 09:23:37 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id h6so3529950pgk.4;
+        Sat, 07 Nov 2020 09:23:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=3hUaI9Zj73c0ME20iVIA+LX+pfMlZzzwZ/KWweKdyWk=;
-        b=Q2tdwVQV1YrQYMK5hlyISpnZQS/QG4SfGs1O3nnAXm614yCmiZFuKMxwNXK2rk2mU4
-         4IMFs1SMrkTIWfdOUr8uz7rt3clKOh9et0v00dQ8qTWqTlND6cVr+bfLpJ7CloBbdNQk
-         9R/oHCp0MVe64gDkPOdswlQWBkx1P1ksaDeEdDe6Sd1WACRUieI4qPI+rEyCYGP6XcAe
-         I75gldvgyAacayMppMtbW6n9D04FI51dxHl5agDxzoCjwFgRTmJsfX7aRKrnONuDItY4
-         QE40CwkwnswAeB9GcVMa8Ww1lle1CRfRnCEBZruUux8h0mAIv7yal/Rzp2WGKVrJqFRW
-         vLlw==
+        bh=DVH7MPV7h31siOUxNvTJ1dlLI6x1csCPhYzRcZFZBc8=;
+        b=lQGPCEMhSdpn9VyK57Qw0PuNHqO5mTKkBF13mjBaMDjgydI/B88u9y0jwohiOGe+7i
+         uTlQYJA/f+bMSqVF2/4MLS+y8upPAoWH0e/KBnSUDcLsfABxErM82t5vLLRbq8uYrZ9D
+         GaA3RNOT/uG9nbHJNqY2dylvfA2n/caSba+ScL1f2A47SNrIQKHq6BHO5qCphQaOwf0l
+         HCedVCA+UoGARrA4O0Uiclo1aJg71ViYTu9kh90umNYDBhBVsKqQV2er9sJZlQAmzvmr
+         2XIgrf4bv/6QDi/I1DMnS6FuN/dMmZisZY9L1UGDhlOfgSuAoIAuy6k6L9sEyOTZOaXL
+         SdsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=3hUaI9Zj73c0ME20iVIA+LX+pfMlZzzwZ/KWweKdyWk=;
-        b=HXaKCOlJS/PzT8YeONxeENCgYQBZAHFvnmn/IXT675FURRUn5YnBzm5exUQ/HMUlwb
-         /NnmUBWTRv1AWv0wWQaaQw3SXmFHqX0JbQ5i+xoBpJOzN8aMuAqOoEZq60TDWiYUVtqv
-         zSMOaiyy+CFHAKNB5cXUzQy4QzSurA4ZG7LWzLkXnSBGMybFDgO/QZj8KgatrIsZMji/
-         4ip8JL0wSLLEPgumnu2qD8BN6CHbaQwClJWoWMHafb143Dz+wInssNWDF1XeBWD/poRD
-         t43gXoNC8Zjfiq2zEAjI8gfZNhf1NRP26mgL8ARAqobZXjFkuYYeaVXltIwXTXKiVOP4
-         SruQ==
-X-Gm-Message-State: AOAM5325CxiHlNxAAa9+bgOCK5duu0pJ2LLCmWfeRtxjbmq7JYRVstU+
-        3JPx5rRv8tFORB5qTwpnGjI=
-X-Google-Smtp-Source: ABdhPJx8EAj5YwxrZKT0XE5bVYHHzJBx6wBfZgKrXC7CjyPZPy0fpWZjLfPo8bO0VKLDKE63JU/JNQ==
-X-Received: by 2002:a63:2021:: with SMTP id g33mr6456482pgg.5.1604769807757;
-        Sat, 07 Nov 2020 09:23:27 -0800 (PST)
+        bh=DVH7MPV7h31siOUxNvTJ1dlLI6x1csCPhYzRcZFZBc8=;
+        b=EQjsv4vl66UYaGI82D8gUI0j1bFpQqvpcMloL6Yu9kLdHPzRpVeCiOg9cfx91xYAaE
+         ZJ9DN0m3x1xJsV23N4hovWkyWLQuz/GOrMSeVGjMnN+WjrR+dP2RTiKEBBINnpHRwhJ7
+         PUVAJrzEvQFLKjmqA9VVZ8LdORYgoU3D1OOiu/1AMoSsPEAKELNbmbZcF78DvqbLRvT3
+         L7icj9ITlauZ060f6G/9zDflkTOpDerp+Q4RZ3n3bk7Te0AgfOKbGq1p5RPItHRJPseh
+         OGXOxwNtC5UJl7vdC/TEdTd1nGSFNrlJhmxzzUVoq7DSrsMUlFaigqhkskaKlgTTRJM+
+         N/hQ==
+X-Gm-Message-State: AOAM532uMiLMRJCUIPK0sJG586HDKfYoq5jDaVF9pIAj0/aAXENXBXKH
+        d2RgqxTZxZHKehCIb+Jo1c8=
+X-Google-Smtp-Source: ABdhPJyzINbYWbM94zeW9+eAABlqFkL79L0aI0G7kehb6+rW5jRBR/fBzO8v6T539a9r3q3vD8EkIg==
+X-Received: by 2002:a63:1062:: with SMTP id 34mr6224131pgq.78.1604769816862;
+        Sat, 07 Nov 2020 09:23:36 -0800 (PST)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id m17sm4916962pgu.21.2020.11.07.09.23.19
+        by smtp.gmail.com with ESMTPSA id m17sm4916962pgu.21.2020.11.07.09.23.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Nov 2020 09:23:26 -0800 (PST)
+        Sat, 07 Nov 2020 09:23:36 -0800 (PST)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com, David.Laight@aculab.com,
@@ -66,9 +66,9 @@ Cc:     ap420073@gmail.com, David.Laight@aculab.com,
         franky.lin@broadcom.com, hante.meuleman@broadcom.com,
         chung-hsien.hsu@infineon.com, wright.feng@infineon.com,
         chi-hsien.lin@infineon.com
-Subject: [PATCH net v2 05/21] ieee802154: set .owner to THIS_MODULE
-Date:   Sat,  7 Nov 2020 17:21:36 +0000
-Message-Id: <20201107172152.828-6-ap420073@gmail.com>
+Subject: [PATCH net v2 06/21] i2400m: set .owner to THIS_MODULE
+Date:   Sat,  7 Nov 2020 17:21:37 +0000
+Message-Id: <20201107172152.828-7-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201107172152.828-1-ap420073@gmail.com>
 References: <20201107172152.828-1-ap420073@gmail.com>
@@ -80,30 +80,37 @@ If THIS_MODULE is not set, the module would be removed while debugfs is
 being used.
 It eventually makes kernel panic.
 
-Fixes: ded845a781a5 ("ieee802154: Add CA8210 IEEE 802.15.4 device driver")
+Fixes: c71228caf91e ("i2400m: debugfs controls")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
 
 v1 -> v2:
  - Change headline
+ - Squash patches into per-driver/subsystem
 
- drivers/net/ieee802154/ca8210.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wimax/i2400m/debugfs.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-index 4eb64709d44c..d7b68c1279e6 100644
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -2672,7 +2672,8 @@ static const struct file_operations test_int_fops = {
- 	.open =           ca8210_test_int_open,
- 	.release =        NULL,
- 	.unlocked_ioctl = ca8210_test_int_ioctl,
--	.poll =           ca8210_test_int_poll
-+	.poll =           ca8210_test_int_poll,
-+	.owner =	  THIS_MODULE,
+diff --git a/drivers/net/wimax/i2400m/debugfs.c b/drivers/net/wimax/i2400m/debugfs.c
+index 1c640b41ea4c..144f8a7e98af 100644
+--- a/drivers/net/wimax/i2400m/debugfs.c
++++ b/drivers/net/wimax/i2400m/debugfs.c
+@@ -87,6 +87,7 @@ const struct file_operations i2400m_rx_stats_fops = {
+ 	.read =		i2400m_rx_stats_read,
+ 	.write =	i2400m_rx_stats_write,
+ 	.llseek =	default_llseek,
++	.owner =	THIS_MODULE,
  };
  
- /* Init/Deinit */
+ 
+@@ -140,6 +141,7 @@ const struct file_operations i2400m_tx_stats_fops = {
+ 	.read =		i2400m_tx_stats_read,
+ 	.write =	i2400m_tx_stats_write,
+ 	.llseek =	default_llseek,
++	.owner =	THIS_MODULE,
+ };
+ 
+ 
 -- 
 2.17.1
 
