@@ -2,213 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B71012AA1F7
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 02:17:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5786A2AA1FE
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 02:20:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728316AbgKGBRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Nov 2020 20:17:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60954 "EHLO
+        id S1728131AbgKGBU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Nov 2020 20:20:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727129AbgKGBRV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 20:17:21 -0500
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87580C0613CF
-        for <netdev@vger.kernel.org>; Fri,  6 Nov 2020 17:17:19 -0800 (PST)
-Received: by mail-pf1-x444.google.com with SMTP id c20so3079688pfr.8
-        for <netdev@vger.kernel.org>; Fri, 06 Nov 2020 17:17:19 -0800 (PST)
+        with ESMTP id S1726987AbgKGBU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Nov 2020 20:20:27 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59ABDC0613CF;
+        Fri,  6 Nov 2020 17:20:27 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id u4so2383238pgr.9;
+        Fri, 06 Nov 2020 17:20:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=9e3g3AOxSGRXtlBNKMRt9yT8I0o3V8bAX9ErKz5h17I=;
-        b=Ubh8USTgrjJvxQ23kZXpLX+lyXQ+/fywazjuNzpk5meado1eTPYb/05bAgTL1gJ26v
-         wM1rziC3+dTL67ZPqyTq6Qyg0U8pP7hgFXxHGu3ARxMbQLdSv+sE0RGzpv0MERgLDGvg
-         ig8soRBiFiy/hxP0Mq+DaI7f3aDRMfYJEvDrGHHrZztYFCifNn0OqsZ4Mvn4s0GqYT7D
-         6rSiY4przYMXZZEuyc+9kCFTxz99c9s8pk2pDxQlJHaBianBJDUZZ3DOVrkZaqph9/IU
-         QbjOQFg2ATcsad/cULbZMovGsCauDAGgIrekJjvSdBPzhuwPisOiNyT4FLi0Fej6HAxN
-         UhRw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vg4UfygjpB1OZcPNgT3WWXdXZfBOXJzBtMpTcRJYFxs=;
+        b=FB/a0ohIU8bZQz/nQMgiNxUp88UtaHBUqqJGTVVpAUXPnd+O9lkAC+VA4oP11BF8eb
+         h2cnf9Au6JQWzwsT9/povyt27F0PFh0LcDVSeoE1O4cmo7PzyvMeVeJg4sKGTR5xzAt0
+         Tdi5A2/RkrVtjiH+VYHJvZ063YHGCZ/DUQI81Mjo+pzbmt7Z7Qr6KgCALPgmHxNx6H+7
+         1KhBJ2UCnOwz0e/fRC8FFrtXCgHs6p4Oxxwu4WmKBt1kx665xbjVnrc26wh3n87A7Wcz
+         EuMO9IYu10rR7O+BZN4zWV64KWLHujnY8QRLejyKalBqekkJoWAbYOglX4H1qy4RHJgD
+         uncw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=9e3g3AOxSGRXtlBNKMRt9yT8I0o3V8bAX9ErKz5h17I=;
-        b=WN358bMJTa3Ep8OPeSsikgZOg26Evt3BK1sEqMwpbVDZgXUD3vkaTALWaAC8f5fOj7
-         p+rFwhhsG+QTk2VbaaSvP2ipKMfnEUiRruzreIQH2vPayFRrXgPz9nUhbx/GjXfeU+Kp
-         L0CJjQKX2T0bwIVqZ3LFCcsQZpvEJa57BmgQavL//0i+oBQ7s9En0XNXt2Up4Ey7iCyM
-         edYyLTzBZqRJGluio05Rslfod6CttBjcs/6SSMEcGnNlO5wlqqL9Ufmct1kRi5TOealc
-         KfQ6GGVsl0DOLSJq2CXCAZ9DrZAQLGSQ1g7O8EzCiUN3rO12RZpuE1F8Xku9YWv79SKs
-         HpIw==
-X-Gm-Message-State: AOAM531xvBeYLoc1Cj6xVXemsT1yJOPxFgsfcH4CpyPPtZiKQ/PDgihs
-        9Sn2nOHYR23pMwq4dgSRWaM7Qw==
-X-Google-Smtp-Source: ABdhPJynxc7CrcvSCcgvqQJTNhdcxGn2aevW6uDSwEhp1VHC+XoTMqRUQ4kBgBbgNOEGxjNhoQN8zQ==
-X-Received: by 2002:a17:90a:80c6:: with SMTP id k6mr2334081pjw.73.1604711838934;
-        Fri, 06 Nov 2020 17:17:18 -0800 (PST)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id f4sm4051143pjs.8.2020.11.06.17.17.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Nov 2020 17:17:18 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 6/8] ionic: flatten calls to ionic_lif_rx_mode
-To:     Saeed Mahameed <saeed@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-References: <20201106001220.68130-1-snelson@pensando.io>
- <20201106001220.68130-7-snelson@pensando.io>
- <5cf579a6b137b569b5f01871561f83ca2e9ac659.camel@kernel.org>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <6ebe62b9-b5ea-0241-acaa-c43def591683@pensando.io>
-Date:   Fri, 6 Nov 2020 17:17:49 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vg4UfygjpB1OZcPNgT3WWXdXZfBOXJzBtMpTcRJYFxs=;
+        b=aJJbD3kd0fXAk4pEwpN81KGZR/PPjFmJRLUOkzLQOC7EBmeSfyPnIJeDM7X9xB7gKR
+         gvmDFwZsHX91ZhDRJfDCCG6msWDZNuw0wR9QoyEG9PMtIsW9ijCgLdwP9/X7Wc1UCgHE
+         eqN4VCtCHIN4xZ7+9xeK89T30igIwEG4kQjD3sWqeWvNs5MMavCa9YmA0J8zhAPZMZCh
+         8+K/U84YYiXioHDgeY/kxYQmIfM3lKJdflOP5EVzkw4ISesZz6CtJQ4jmMRikFMBi3Ph
+         iyDDNCkKcYqrNyJKlHSKi98RzKwYiy49OaG8sg3qPnukrXA98M2ZPYQe6+9nENwG68A7
+         gkOQ==
+X-Gm-Message-State: AOAM532HTotEy0qcvxZm3S7VJn3l3Lx+hm6kaqii7sH6QDNcfanFzcPE
+        ui4hM9jLlFI+Pp6FJsuWwyoPmLn5kuAUs7oW
+X-Google-Smtp-Source: ABdhPJyP+UC6MnW7mzuyzxhlNFVHbNdh0HtixlqCawuhDQTEFGD0R0IiM94ltMeL3P6VBm+LowtXJA==
+X-Received: by 2002:a62:7656:0:b029:18b:c0f:1b7a with SMTP id r83-20020a6276560000b029018b0c0f1b7amr4345030pfc.80.1604712026843;
+        Fri, 06 Nov 2020 17:20:26 -0800 (PST)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id hz18sm3810326pjb.13.2020.11.06.17.20.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Nov 2020 17:20:26 -0800 (PST)
+Date:   Sat, 7 Nov 2020 09:20:16 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, William Tu <u9012063@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCHv2 net 0/2] Remove unused test_ipip.sh test and add missed
+ ip6ip6 test
+Message-ID: <20201107012016.GV2531@dhcp-12-153.nay.redhat.com>
+References: <20201103042908.2825734-1-liuhangbin@gmail.com>
+ <20201106090117.3755588-1-liuhangbin@gmail.com>
+ <20201106105554.02a3142b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <5cf579a6b137b569b5f01871561f83ca2e9ac659.camel@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201106105554.02a3142b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/6/20 1:33 PM, Saeed Mahameed wrote:
-> On Thu, 2020-11-05 at 16:12 -0800, Shannon Nelson wrote:
->> The _ionic_lif_rx_mode() is only used once and really doesn't
->> need to be broken out.
->>
->> Signed-off-by: Shannon Nelson <snelson@pensando.io>
->> ---
->>   .../net/ethernet/pensando/ionic/ionic_lif.c   | 38 ++++++++---------
->> --
->>   1 file changed, 16 insertions(+), 22 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
->> b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
->> index a0d26fe4cbc3..ef092ee33e59 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
->> @@ -1129,29 +1129,10 @@ static void ionic_lif_rx_mode(struct
->> ionic_lif *lif, unsigned int rx_mode)
->>   		lif->rx_mode = rx_mode;
->>   }
->>   
->> -static void _ionic_lif_rx_mode(struct ionic_lif *lif, unsigned int
->> rx_mode,
->> -			       bool from_ndo)
->> -{
->> -	struct ionic_deferred_work *work;
->> -
->> -	if (from_ndo) {
->> -		work = kzalloc(sizeof(*work), GFP_ATOMIC);
->> -		if (!work) {
->> -			netdev_err(lif->netdev, "%s OOM\n", __func__);
->> -			return;
->> -		}
->> -		work->type = IONIC_DW_TYPE_RX_MODE;
->> -		work->rx_mode = rx_mode;
->> -		netdev_dbg(lif->netdev, "deferred: rx_mode\n");
->> -		ionic_lif_deferred_enqueue(&lif->deferred, work);
->> -	} else {
->> -		ionic_lif_rx_mode(lif, rx_mode);
->> -	}
->> -}
->> -
->>   static void ionic_set_rx_mode(struct net_device *netdev, bool
->> from_ndo)
->>   {
->>   	struct ionic_lif *lif = netdev_priv(netdev);
->> +	struct ionic_deferred_work *work;
->>   	unsigned int nfilters;
->>   	unsigned int rx_mode;
->>   
->> @@ -1197,8 +1178,21 @@ static void ionic_set_rx_mode(struct
->> net_device *netdev, bool from_ndo)
->>   			rx_mode &= ~IONIC_RX_MODE_F_ALLMULTI;
->>   	}
->>   
->> -	if (lif->rx_mode != rx_mode)
->> -		_ionic_lif_rx_mode(lif, rx_mode, from_ndo);
->> +	if (lif->rx_mode != rx_mode) {
->> +		if (from_ndo) {
->> +			work = kzalloc(sizeof(*work), GFP_ATOMIC);
->> +			if (!work) {
->> +				netdev_err(lif->netdev, "%s OOM\n",
->> __func__);
->> +				return;
->> +			}
->> +			work->type = IONIC_DW_TYPE_RX_MODE;
->> +			work->rx_mode = rx_mode;
->> +			netdev_dbg(lif->netdev, "deferred: rx_mode\n");
->> +			ionic_lif_deferred_enqueue(&lif->deferred,
->> work);
->> +		} else {
->> +			ionic_lif_rx_mode(lif, rx_mode);
->> +		}
->> +	}
->>   }
-> You could move this logic one level up and totally eliminate the if
-> condition
->
-> ionic_set_rx_mode_needed() {
->        //sync driver data base
->        return lif->rx_mode != rx_mode;
-> }
->
-> ndo_set_rx_mode() {
->        if (!ionic_set_rx_mode_needed())
->              return; // no change;
->        schedule_work(set_rx_mode_hw);
-> }
->
-> none_ndo_set_rx_mode() {
->        if (!ionic_set_rx_mode_needed())
->              return; // no change;
->        set_rx_mode_hw();
-> }
+On Fri, Nov 06, 2020 at 10:56:00AM -0800, Jakub Kicinski wrote:
+> On Fri,  6 Nov 2020 17:01:15 +0800 Hangbin Liu wrote:
+> > In comment 173ca26e9b51 ("samples/bpf: add comprehensive ipip, ipip6,
+> > ip6ip6 test") we added some bpf tunnel tests. In commit 933a741e3b82
+> > ("selftests/bpf: bpf tunnel test.") when we moved it to the current
+> > folder, we missed some points:
+> > 
+> > 1. ip6ip6 test is not added
+> > 2. forgot to remove test_ipip.sh in sample folder
+> > 3. TCP test code is not removed in test_tunnel_kern.c
+> > 
+> > In this patch set I add back ip6ip6 test and remove unused code. I'm not sure
+> > if this should be net or net-next, so just set to net.
+> 
+> I'm assuming you meant to tag this with the bpf tree.
 
-Hmm... yes, that's possible, but I like keeping that bit of logic 
-together with the rest in the main set_rx_mode block.
+Ah, yes, I mean to bpf tree. Sorry for the mistake.
 
-> Future improvement:
->
-> One more thing I've noticed about you current ionic_set_rx_mode()
-> is that in case of from_ndo, when it syncs mac addresses it will
-> schedule a deferred mac address update work to hw per address. which i
-> think is an overkill,
-
-This is much less of an issue with the recent change in 
-ionic_lif_deferred_work() to run through the whole work list in one 
-deferred_work session.
-
-sln
-
-> a simpler design which will totally eliminate the
-> need for from_ndo flags, is to do similar to the above but with a minor
-> change.
->
-> ionic_set_rx_mode_needed() {
->        // Just sync driver mac table here and update hw later
->        // in one deferred work rather than scheduling multi work
->        addr_changed = ionic_dev_uc_sync();
->        addr_changed |= ionic_dev_mc_sync();
->        rx_mode_changed = sync_driver_rx_mode(rx_mode);
->
->        return rx_mode_changed || addr_changed;
-> }
->
-> /* might sleep */
-> set_rx_mode_hw() {
->        commit_addr_change_to_hw();
->        commit_rx_mode_changes_to_hw();
-> }
->
-> ndo_set_rx_mode() {
->        if (!ionic_set_rx_mode_needed())
->              return; // no change;
->        schedule_work(set_rx_mode_hw);
-> }
->
-> none_ndo_set_rx_mode() {
->        if (!ionic_set_rx_mode_needed())
->              return; // no change;
->        set_rx_mode_hw();
-> }
->
-
+Regards
+Hangbin
