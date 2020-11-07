@@ -2,104 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8862AA763
-	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 19:16:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60C0E2AA76E
+	for <lists+netdev@lfdr.de>; Sat,  7 Nov 2020 19:40:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728546AbgKGSQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Nov 2020 13:16:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48486 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726614AbgKGSQw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Nov 2020 13:16:52 -0500
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7CCC0613CF;
-        Sat,  7 Nov 2020 10:16:50 -0800 (PST)
-Received: by mail-lf1-x143.google.com with SMTP id v144so6453809lfa.13;
-        Sat, 07 Nov 2020 10:16:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2LwqPjMniJ2bHWhYS+H6mmpx9vI82/bTwD9mpgG2kIc=;
-        b=fme4JUJVSfEiDvUNK1tsOGLhCEr8WIpvvKHZzARmRasGQ8nIFEJARvYZg/MjG/ps1T
-         szb/6Bh86gGgjZkwqnHyCepUCdaC1/ocueYJGfKU4cI1uvgprfWf+pokCMIgschYnn1X
-         pSyMc4yDDI22nfaEM222OXZP3dfbfF7jWJ3bdejbr32LHnX169sY3hm1Tc7E1xIyiHpu
-         8TK4bg7S8iWmrxbvfa/jIUFTLshWKuIFI3h7Wto9pLSsdUKg8udu/2XssE0t2aBy/aOf
-         A2IrsK7y64pXOSPnNCt3KW8LIw/LEPe/pjbPq1gUzhwxJw9DSIU4GJeKKSAAqu+IIZqX
-         8Vuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2LwqPjMniJ2bHWhYS+H6mmpx9vI82/bTwD9mpgG2kIc=;
-        b=IkyFvDKRnHJ5o1gMnxiwiBd6hxYeozycAvXYhsvEl9fxQU0f/vBBd7zGQoRIZ7WKjw
-         3kOE2RhgvnaiBGi9hgIUPzpyb6HQLrUcuhY+SgN6BLhIf+gVCqYsN8dHw5dUEsz1FdRk
-         79iERzRxW7WdLZIHDU2UbP7l8qhkoRvCOFuRqBdB6YLJ7ACe8cWiS60uyuzezMB+h3Yr
-         13THtlMN4TsVHHL9ObpClFHAWnxVGev8vXRNA2E8u9Us3jL79CXuLWM+v+/Cdnbu5mFv
-         yMVjJ4ZuQCG3sb85dMIEPbFsLT6Gnae0HBjO0sAOjqq09xvao21bu0Wjalw/AJhdOKqY
-         tC8w==
-X-Gm-Message-State: AOAM530YhZVNowCeLbLmhsFLVKSpwmPXHB08lr7hVK6hUWnBLpm3T9Tz
-        Ahy7Sfydai9JsXVHQznWV3ZCH/dq/W7vR/2E8o8=
-X-Google-Smtp-Source: ABdhPJzpf1N1aAxilU+Bqa1H1z/PRlW8XyEItapPopXnFACuXlVupfppOd7pM0FTTKXb6dkMhNHm/EZncUmY7fFHbNo=
-X-Received: by 2002:ac2:5e23:: with SMTP id o3mr691432lfg.52.1604773008794;
- Sat, 07 Nov 2020 10:16:48 -0800 (PST)
+        id S1727332AbgKGSjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Nov 2020 13:39:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38192 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725836AbgKGSjw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Nov 2020 13:39:52 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2EEC120888;
+        Sat,  7 Nov 2020 18:39:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604774391;
+        bh=HhKzWuLOy4BkSb6u8xQ53yeGh9rBlF6vLW5C9Xo1uSk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eOeTDanjgk4t/SEL4eHvpJ/d3pmppFrcnb+Vp8V0fHp/Jame8VAMlaze6ZhxkS2gk
+         vIQqlwglhb6+FfaN1HCdu9pHyEUp4MM5nYMiPs8hgWlvYrQLbQhtZXBc8Wv6t0hC2Z
+         NxfpU11ZU/77pyjIyToEt4D/uFv/XiRtGIF0y3L8=
+Date:   Sat, 7 Nov 2020 10:39:50 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     LIU Yulong <liuyulong.xa@gmail.com>
+Cc:     netdev@vger.kernel.org, LIU Yulong <i@liuyulong.me>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: Re: [PATCH v2] net: bonding: alb disable balance for IPv6 multicast
+ related mac
+Message-ID: <20201107103950.70cf9353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201103130559.0335c353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <1603850163-4563-1-git-send-email-i@liuyulong.me>
+        <1604303803-30660-1-git-send-email-i@liuyulong.me>
+        <20201103130559.0335c353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20201107172152.828-1-ap420073@gmail.com> <20201107172152.828-18-ap420073@gmail.com>
- <175a3cc2738.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
-In-Reply-To: <175a3cc2738.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Sun, 8 Nov 2020 03:16:37 +0900
-Message-ID: <CAMArcTVgw3hN=ffb88hYrOy5jD1W+V1XKDtd_Rs2mkoOSGj5Vw@mail.gmail.com>
-Subject: Re: [PATCH net v2 17/21] brcmfmac: set .owner to THIS_MODULE
-To:     Arend Van Spriel <arend.vanspriel@broadcom.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        David Laight <David.Laight@aculab.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Nicolai Stange <nstange@suse.de>, derosier@gmail.com,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
-        b43-dev@lists.infradead.org, linux-bluetooth@vger.kernel.org,
-        michael.hennerich@analog.com, linux-wpan@vger.kernel.org,
-        stefan@datenfreihafen.org, inaky.perez-gonzalez@intel.com,
-        linux-wimax@intel.com, emmanuel.grumbach@intel.com,
-        Luciano Coelho <luciano.coelho@intel.com>, stf_xl@wp.pl,
-        pkshih@realtek.com, ath11k@lists.infradead.org,
-        ath10k@lists.infradead.org, wcn36xx@lists.infradead.org,
-        merez@codeaurora.org, pizza@shaftnet.org,
-        Larry Finger <Larry.Finger@lwfinger.net>, amitkarwar@gmail.com,
-        ganapathi.bhat@nxp.com, huxinming820@gmail.com,
-        marcel@holtmann.org, johan.hedberg@gmail.com, alex.aring@gmail.com,
-        jukka.rissanen@linux.intel.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, chung-hsien.hsu@infineon.com,
-        wright.feng@infineon.com, chi-hsien.lin@infineon.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 8 Nov 2020 at 02:41, Arend Van Spriel
-<arend.vanspriel@broadcom.com> wrote:
->
+On Tue, 3 Nov 2020 13:05:59 -0800 Jakub Kicinski wrote:
+> On Mon,  2 Nov 2020 15:56:43 +0800 LIU Yulong wrote:
+> > According to the RFC 2464 [1] the prefix "33:33:xx:xx:xx:xx" is defined to
+> > construct the multicast destination MAC address for IPv6 multicast traffic.
+> > The NDP (Neighbor Discovery Protocol for IPv6)[2] will comply with such
+> > rule. The work steps [6] are:
+> >   *) Let's assume a destination address of 2001:db8:1:1::1.
+> >   *) This is mapped into the "Solicited Node Multicast Address" (SNMA)
+> >      format of ff02::1:ffXX:XXXX.
+> >   *) The XX:XXXX represent the last 24 bits of the SNMA, and are derived
+> >      directly from the last 24 bits of the destination address.
+> >   *) Resulting in a SNMA ff02::1:ff00:0001, or ff02::1:ff00:1.
+> >   *) This, being a multicast address, can be mapped to a multicast MAC
+> >      address, using the format 33-33-XX-XX-XX-XX
+> >   *) Resulting in 33-33-ff-00-00-01.
+> >   *) This is a MAC address that is only being listened for by nodes
+> >      sharing the same last 24 bits.
+> >   *) In other words, while there is a chance for a "address collision",
+> >      it is a vast improvement over ARP's guaranteed "collision".
+> > Kernel related code can be found at [3][4][5].  
+> 
+> Please make sure you keep maintainers CCed on your postings, adding bond
+> maintainers now.
 
-Hi Arend,
-Thank you for the review!
+Looks like no reviews are coming in, so I had a closer look.
 
-> On November 7, 2020 6:25:15 PM Taehee Yoo <ap420073@gmail.com> wrote:
->
-> > If THIS_MODULE is not set, the module would be removed while debugfs is
-> > being used.
-> > It eventually makes kernel panic.
->
-> Is this really a valid concern in the context of debugs? I tend to say it
-> is not. Whenever I am using debugs to debug my driver I make sure to avoid
-> removing it.
+It's concerning that we'll disable load balancing for all IPv6 multicast
+addresses now. AFAIU you're only concerned about 33:33:ff:00:00:01, can
+we not compare against that?
 
-I think getting rid of every scenario of the kernel panic is the
-first priority thing.
-So I'm sure that trying to avoid kernel panic is always valid even
-in the debugging context.
-
-Thanks a lot!
-Taehee Yoo
+The way the comparison is written now it does a single 64bit comparison
+per address, so it's the same number of instructions to compare the top
+two bytes or two full addresses.
