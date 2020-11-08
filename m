@@ -2,76 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 318E02AAABD
-	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 12:43:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5227E2AAACA
+	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 13:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728267AbgKHLnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 06:43:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52266 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726021AbgKHLnI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Nov 2020 06:43:08 -0500
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ECC76221FA;
-        Sun,  8 Nov 2020 11:43:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604835786;
-        bh=4qcv3PIZoS9Ti9M9OtYV1punEYgw5Sm+kDyvXqo+hQY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=cDRAdYzLiZ+IhL2nfUuSHGyRVDqNzeN5Fjmlbav0H0lAVvL8TtfEHblAcT4AQ9r7a
-         5k/uNiUCUD/RLIEPkT/eoNdayDgyh4DLf9NojP8NIscEy0H6eZvXrIK/66ZPS5HRLl
-         flfTLVRDxH0PYsg+WKGMIFIIZyanbx2eDzEYoTsg=
-Received: by mail-oi1-f182.google.com with SMTP id j7so6889614oie.12;
-        Sun, 08 Nov 2020 03:43:05 -0800 (PST)
-X-Gm-Message-State: AOAM531dXTpDMZP8zJE9VQ7NcxYU/9/QVI94yvjgUt8Ojsqj4vsfo+qR
-        mCwlVJIMjzb2z7zPE5uG1t0gH6DJ/D/m+SXOmBg=
-X-Google-Smtp-Source: ABdhPJy9Hv8+gtR2q1q9eRdnrQmfMucRJEzdFZAQvvSugW1m7+Tb9RkaOCsD1/ioGJgKBxlUqmoSyklpyawgiwTjzzA=
-X-Received: by 2002:a05:6808:602:: with SMTP id y2mr6405737oih.11.1604835785227;
- Sun, 08 Nov 2020 03:43:05 -0800 (PST)
-MIME-Version: 1.0
-References: <20201106221743.3271965-1-arnd@kernel.org> <20201107160612.2909063a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <87tuu05c23.fsf@tynnyri.adurom.net>
-In-Reply-To: <87tuu05c23.fsf@tynnyri.adurom.net>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Sun, 8 Nov 2020 12:42:49 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3y5WxsibmTzvhv76G+rQ1Zjo_tW0UkXku0VnZdQa-__A@mail.gmail.com>
-Message-ID: <CAK8P3a3y5WxsibmTzvhv76G+rQ1Zjo_tW0UkXku0VnZdQa-__A@mail.gmail.com>
-Subject: Re: [RFC net-next 00/28] ndo_ioctl rework
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        bridge@lists.linux-foundation.org, linux-hams@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728367AbgKHMNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 07:13:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45036 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728346AbgKHMNH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 07:13:07 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9E4C0613CF;
+        Sun,  8 Nov 2020 04:13:07 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id f27so1121797pgl.1;
+        Sun, 08 Nov 2020 04:13:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=sZgtC17MKA2xhKNgWbgYsub6PZlsKHIRcytR5EljA/A=;
+        b=q1FupwcIEATY7EtpNhAYG+Furzmr5KF54ZFCdrq/myzcR4zUFg09b/iieRHagWPoXt
+         CjTmLpeCSRL7Av7IrGrepsllfHdPepC33LjJXGB0ne+xYxXyRgtM4W2cpMmnP3ZERnBB
+         jbB5XZpA50967PraixaiArf8/WlUFCa7xslzZlYJplYs98l0qm53yMUH08xJ1VnKux1Q
+         a6a2NTsswXSA6mnQjCkBnLjc5ERlpMehEq0yleNrVgdHYGGgyBxAZYZ5SMfd+DSgdgO4
+         LJCLWFtczdGi7wuDuL8gXZoi3wXQFuyXSTFLgxv/umPWhLBwc0DID/e6wnfN3bLzjjNh
+         kUCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=sZgtC17MKA2xhKNgWbgYsub6PZlsKHIRcytR5EljA/A=;
+        b=DZYz6MbJOgHRUZgwxeeDxyA17P6CKXwkmjYAVb3f8XGwur73tzJQGmGD/gaSxM3RbD
+         BDlkn9Tg8UMVweZPZjeQjL46yXHWbAE/pUrgW9UWEgpx6TPNafQx4Hm/mCkKEeTA7JjX
+         GOLuOpkZeudcJHYTmWfgBCR+2Bim6T/L7qHcqYF8iLC/G1yG/MJV/2QNohUIbYvbjYgY
+         zt5TuP1pg6fwjPjJiwahTuSqGWWSKUqKKQAMA4YDOJBGZV5svKPsDMF3EljYcUcNPMlT
+         VWnUPd1bDG4x8tpXizUaUEQuvhVZG8Tt8+qV2fHSuTN0c5mcw3Qigi75uV96ipJqOXTK
+         qpDw==
+X-Gm-Message-State: AOAM531QqisvSiu9o6CXo54giR4SCckkFPdG8MdN/Y2A5LC0Wz0OP1D4
+        vflgYJ8LnCc7lyHpTQPbMcEn7vQf3FAe
+X-Google-Smtp-Source: ABdhPJxw3i1OOYT00hJ4cshzn+orNUN3ugzmQcSQK0GTs5qsgdDlmrDZbJhzSNpoAZXZk0bJ8PqZFg==
+X-Received: by 2002:a63:3e05:: with SMTP id l5mr8920664pga.74.1604837586879;
+        Sun, 08 Nov 2020 04:13:06 -0800 (PST)
+Received: from he-cluster.localdomain (67.216.221.250.16clouds.com. [67.216.221.250])
+        by smtp.gmail.com with ESMTPSA id v7sm8048096pfu.39.2020.11.08.04.13.05
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 08 Nov 2020 04:13:05 -0800 (PST)
+From:   xiakaixu1987@gmail.com
+X-Google-Original-From: kaixuxia@tencent.com
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kaixu Xia <kaixuxia@tencent.com>
+Subject: [PATCH] net: pch_gbe: remove unneeded variable retval in __pch_gbe_suspend
+Date:   Sun,  8 Nov 2020 20:13:00 +0800
+Message-Id: <1604837580-12419-1-git-send-email-kaixuxia@tencent.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 8, 2020 at 12:21 PM Kalle Valo <kvalo@codeaurora.org> wrote:
-> Jakub Kicinski <kuba@kernel.org> writes:
->
-> So I don't know what to do. Should we try adding a warning like below? :)
->
->   "This ancient driver will be removed from the kernel in 2022, but if
->    it still works send report to <...@...> to avoid the removal."
->
-> How do other subsystems handle ancient drivers?
+From: Kaixu Xia <kaixuxia@tencent.com>
 
-A good way to get everyone's attention would be to collect as many
-drivers as possible that are almost certainly unused and move them to
-drivers/staging/ with a warning like the above, as I just did for
-drivers/wimax. That would make it to the usual news outlets
-and lead to the remaining users (if any) noticing it so they can then
-ask for the drivers to be moved back -- or decide it's time to let go
-if the hardware can easily be replaced.
+Fix the following coccicheck warning:
 
-      Arnd
+./drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c:2415:5-11: Unneeded variable: "retval". Return "0" on line 2435
+
+Reported-by: Tosk Robot <tencent_os_robot@tencent.com>
+Signed-off-by: Kaixu Xia <kaixuxia@tencent.com>
+---
+ drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
+index ade8c44c01cd..b9e32e4478a8 100644
+--- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
++++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
+@@ -2412,7 +2412,6 @@ static int __pch_gbe_suspend(struct pci_dev *pdev)
+ 	struct pch_gbe_adapter *adapter = netdev_priv(netdev);
+ 	struct pch_gbe_hw *hw = &adapter->hw;
+ 	u32 wufc = adapter->wake_up_evt;
+-	int retval = 0;
+ 
+ 	netif_device_detach(netdev);
+ 	if (netif_running(netdev))
+@@ -2432,7 +2431,7 @@ static int __pch_gbe_suspend(struct pci_dev *pdev)
+ 		pch_gbe_mac_set_wol_event(hw, wufc);
+ 		pci_disable_device(pdev);
+ 	}
+-	return retval;
++	return 0;
+ }
+ 
+ #ifdef CONFIG_PM
+-- 
+2.20.0
+
