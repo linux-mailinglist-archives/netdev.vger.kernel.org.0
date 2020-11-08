@@ -2,120 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A5CC2AAB36
-	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 15:04:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9920E2AAB51
+	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 15:07:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728006AbgKHN7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 08:59:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33042 "EHLO
+        id S1728482AbgKHOHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 09:07:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727570AbgKHN7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 08:59:07 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E50C0613CF
-        for <netdev@vger.kernel.org>; Sun,  8 Nov 2020 05:59:07 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id ay21so5962148edb.2
-        for <netdev@vger.kernel.org>; Sun, 08 Nov 2020 05:59:07 -0800 (PST)
+        with ESMTP id S1727958AbgKHOG7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 09:06:59 -0500
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5DBC0613CF;
+        Sun,  8 Nov 2020 06:06:59 -0800 (PST)
+Received: by mail-qk1-x742.google.com with SMTP id v143so1083130qkb.2;
+        Sun, 08 Nov 2020 06:06:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=FQnmNPDubMBv3HYHLbOC10CgBLSVUI3pQ2wqAzGb2Ew=;
-        b=sttzqSuLPnrmagzPMxuxIBnQMX8d3xfKtfVJvz+GT8+uJPLvrAkwnvh4ugE7qYSoh6
-         etzHCCm0qeY8wmRUAN+0UhE+BE5znMVguVmMGU+nFc8M71Ny12RvvsFn8Kafn4oPic5/
-         6hZppZgp2tZOrI+mCmxN6GXpH/HrJLDmR6oOeLYDrWGV3EgkK13TYp/NMiwjgHx9jwKp
-         Pr7+53NSKrLXjbB5IzOx1Psa7EggSzuyCpW7ittRHDKyDY8prrhZGdyiISSvsGAj7rBG
-         Vf5fD65M/geyWduUOhAPoV92HFGJ+aEfOTf65WIl+qAAf+VbvrOfkE7YctK55soCzhbN
-         zLXw==
+        h=from:to:cc:subject:date:message-id;
+        bh=VNq4s6RSIspVZEj1oA+Z7Yg3dUDGldhxJE/AFhpqYV4=;
+        b=gphR+06wSDl/Eyjj+unEraBqgAWaPWBpfOxB6Gf2HgzxTtIO8xZ/bssGB4Nx2xIA90
+         IzSbD0zSCH1RZuqacoGaE5xQtq6KdYKbhOWroWqd1QZRN9eVykSV1PxtpjM2rLk9aUYy
+         bsCsjcY4VTsp8KLsDKcJHAg3Gs2SQrMR9IL2IUE1o7nc0O2l5mp0Z7StZyEeifv+F8r1
+         NqjYdNHDi+65v4DuHvq1Z9TQIwrDJzwghzX1g/W/CiHKXZhqCIEoBAbpcrsMjnLYQvZv
+         bm0rhqdLqGXbYoP8xlZFfY8P4wUqv92aQOpLEAVgzROiVO1jgvRtjy0OfUzNtPm2dRNg
+         aiag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=FQnmNPDubMBv3HYHLbOC10CgBLSVUI3pQ2wqAzGb2Ew=;
-        b=KST7r86H0WfzC7ySgea9R/nPflOKj1xTq15zOBO/qfEI8wye4I+mM71s1L3gzziwAe
-         dseruUoCnO+C0fJNGB0FRMVH56aAfJzwb9PDI6yIZnWwBWb2Uef+M9bA/LJSw6cNE+Qc
-         Q03Wr2A/WvEm3aOtry2qkDS8hsoEGM3aOWQDDbiHtXmvdvJA7OqEMntfq6f0BoVzC9NW
-         XX5NFkAVtF9XlMzkarCH3MOR8rZJOOyW5eoTTBWvlv3pFI7N5aDvgFFfwBk2y3mp81gA
-         SuYsl/BYgnFDywzbHt3TVvseUc1f1IDcRaip3YNf5XAgP0uZPGPUBjSz2v9BOiD0tqgm
-         fq2A==
-X-Gm-Message-State: AOAM533jDXmjIFKhgIntm+n88Ioa5VsVzcvw7TqP3mpwexRBAvfC2Wlw
-        CQk1aH8gnVpvv7dkgZJsUJw=
-X-Google-Smtp-Source: ABdhPJz1sUCthpNfMXgX4a/E4Z1JjGrvjHMjXnLmg+P+qGYLK7QPagBQjjdjUH+XVvuJ/Jzld3GIiQ==
-X-Received: by 2002:a50:99cd:: with SMTP id n13mr11031795edb.10.1604843946073;
-        Sun, 08 Nov 2020 05:59:06 -0800 (PST)
-Received: from [132.68.43.131] ([132.68.43.131])
-        by smtp.gmail.com with ESMTPSA id s21sm6127093edc.42.2020.11.08.05.59.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Nov 2020 05:59:05 -0800 (PST)
-Subject: Re: [PATCH net-next RFC v1 06/10] nvme-tcp: Add DDP data-path
-To:     Sagi Grimberg <sagi@grimberg.me>,
-        Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
-        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com
-Cc:     Yoray Zack <yorayz@mellanox.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, Or Gerlitz <ogerlitz@mellanox.com>
-References: <20200930162010.21610-1-borisp@mellanox.com>
- <20200930162010.21610-7-borisp@mellanox.com>
- <5a23d221-fd3e-5802-ce68-7edec55068bb@grimberg.me>
- <24ea956e-40a2-8b7b-cf8a-b604e7cd5644@grimberg.me>
-From:   Boris Pismenny <borispismenny@gmail.com>
-Message-ID: <6551237d-104d-1e3f-00a7-a3b479786344@gmail.com>
-Date:   Sun, 8 Nov 2020 15:59:01 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
-MIME-Version: 1.0
-In-Reply-To: <24ea956e-40a2-8b7b-cf8a-b604e7cd5644@grimberg.me>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=VNq4s6RSIspVZEj1oA+Z7Yg3dUDGldhxJE/AFhpqYV4=;
+        b=cFKKYnS1cWc5oJq680DLZuqhxJxQpDiLTnZ3xWePfwan7Qav907b5aVxnYcfWFPaOo
+         dlKSx8zedxim4VoVdKKrEiWYU98fD0I1dwnjd9RYkW3k9AfGs0G7lh+A29gJTviN8+DI
+         J8AygNBLoB+EbNZZyP3SwusoPYOyeD2yiQZHkq04SK7yM0i/j2G9J5pcsnrBCax525S5
+         W8Q0vocnDit4rWJvTJcdtqrLj4tx5MHxmYiXe6n++bimQR4mcaYPsShbjTY+lQeZ3GEd
+         M0EMGMTSvJbCVyf+cV/5ytSza2jQDJ6ZT4bhSSEPu2KvCIjxh4qLetKL/I0MKuY189tY
+         ViIQ==
+X-Gm-Message-State: AOAM533FJdXsFflEn9SJNFkO3Q4C4PuicxKdYVXpqOsAJCM/pLDFnpRG
+        iHISqOVML5fP9yKmiXfQsXs=
+X-Google-Smtp-Source: ABdhPJwb8H5QlCegUQMisBoWAYuxXZKUTL/zEX6wQdZeODHHLGFu4mpqrbtbXOqkUDYvi4rDKCRitw==
+X-Received: by 2002:a37:5347:: with SMTP id h68mr10003194qkb.497.1604844417580;
+        Sun, 08 Nov 2020 06:06:57 -0800 (PST)
+Received: from localhost.localdomain ([198.52.185.246])
+        by smtp.gmail.com with ESMTPSA id r19sm4014319qtm.4.2020.11.08.06.06.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Nov 2020 06:06:57 -0800 (PST)
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        David S Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Roelof Berg <rberg@berg-solutions.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] lan743x: correctly handle chips with internal PHY
+Date:   Sun,  8 Nov 2020 09:06:53 -0500
+Message-Id: <20201108140653.15967-1-TheSven73@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Sven Van Asbroeck <thesven73@gmail.com>
 
+Commit 6f197fb63850 ("lan743x: Added fixed link and RGMII support")
+assumes that chips with an internal PHY will never have a devicetree
+entry. This is incorrect: even for these chips, a devicetree entry
+can be useful e.g. to pass the mac address from bootloader to chip:
 
-On 09/10/2020 2:00, Sagi Grimberg wrote:
->>>   static
->>>   int nvme_tcp_offload_socket(struct nvme_tcp_queue *queue,
->>>                   struct nvme_tcp_config *config)
->>> @@ -630,6 +720,7 @@ static void nvme_tcp_error_recovery(struct 
->>> nvme_ctrl *ctrl)
->>>   static int nvme_tcp_process_nvme_cqe(struct nvme_tcp_queue *queue,
->>>           struct nvme_completion *cqe)
->>>   {
->>> +    struct nvme_tcp_request *req;
->>>       struct request *rq;
->>>       rq = blk_mq_tag_to_rq(nvme_tcp_tagset(queue), cqe->command_id);
->>> @@ -641,8 +732,15 @@ static int nvme_tcp_process_nvme_cqe(struct 
->>> nvme_tcp_queue *queue,
->>>           return -EINVAL;
->>>       }
->>> -    if (!nvme_try_complete_req(rq, cqe->status, cqe->result))
->>> -        nvme_complete_rq(rq);
->>> +    req = blk_mq_rq_to_pdu(rq);
->>> +    if (req->offloaded) {
->>> +        req->status = cqe->status;
->>> +        req->result = cqe->result;
->>> +        nvme_tcp_teardown_ddp(queue, cqe->command_id, rq);
->>> +    } else {
->>> +        if (!nvme_try_complete_req(rq, cqe->status, cqe->result))
->>> +            nvme_complete_rq(rq);
->>> +    }
-> Oh forgot to ask,
->
-> We have places in the driver that we may complete (cancel) one
-> or more requests from the error recovery or timeout flow. We
-> first prevent future incoming RX on the socket such that we
-> can safely cancel requests. This may break with the deferred
-> completion in ddp_teardown_done.
->
-> If I have a request that is waiting for ddp_teardown_done do
-> I have a way to tell the HW to never call ddp_teardown_done
-> on a specific socket?
->
-> If so the place to is in nvme_tcp_stop_queue.
-Interesting and indeed, it is a problem that we haven't considered.
+    &pcie {
+            status = "okay";
+
+            host@0 {
+                    reg = <0 0 0 0 0>;
+
+                    #address-cells = <3>;
+                    #size-cells = <2>;
+
+                    lan7430: ethernet@0 {
+                            /* LAN7430 with internal PHY */
+                            compatible = "microchip,lan743x";
+                            status = "okay";
+                            reg = <0 0 0 0 0>;
+                            /* filled in by bootloader */
+                            local-mac-address = [00 00 00 00 00 00];
+                    };
+            };
+    };
+
+If a devicetree entry is present, the driver will not attach the chip
+to its internal phy, and the chip will be non-operational.
+
+Fix by tweaking the phy connection algorithm:
+- first try to connect to a phy specified in the devicetree
+  (could be 'real' phy, or just a 'fixed-link')
+- if that doesn't succeed, try to connect to an internal phy, even
+  if the chip has a devnode
+
+Tested on a LAN7430 with internal PHY. I cannot test a device using
+fixed-link, as I do not have access to one.
+
+Fixes: 6f197fb63850 ("lan743x: Added fixed link and RGMII support")
+Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # lan7430
+Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+---
+
+v2 -> v3:
+    Andrew Lunn: make patch truly minimal.
+
+v1 -> v2:
+    Andrew Lunn: keep patch minimal and correct, so keep open-coded version
+    of of_phy_get_and_connect().
+
+    Jakub Kicinski: fix e-mail address case.
+
+Tree: v5.10-rc2
+
+To: Andrew Lunn <andrew@lunn.ch>
+To: Bryan Whitehead <bryan.whitehead@microchip.com>
+To: "David S. Miller" <davem@davemloft.net>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Cc: Roelof Berg <rberg@berg-solutions.de>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+ drivers/net/ethernet/microchip/lan743x_main.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index f2d13e8d20f0..54d721ef3084 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -1021,9 +1021,9 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
+ 
+ 	netdev = adapter->netdev;
+ 	phynode = of_node_get(adapter->pdev->dev.of_node);
+-	adapter->phy_mode = PHY_INTERFACE_MODE_GMII;
+ 
+ 	if (phynode) {
++		/* try devicetree phy, or fixed link */
+ 		of_get_phy_mode(phynode, &adapter->phy_mode);
+ 
+ 		if (of_phy_is_fixed_link(phynode)) {
+@@ -1039,13 +1039,15 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
+ 					lan743x_phy_link_status_change, 0,
+ 					adapter->phy_mode);
+ 		of_node_put(phynode);
+-		if (!phydev)
+-			goto return_error;
+-	} else {
++	}
++
++	if (!phydev) {
++		/* try internal phy */
+ 		phydev = phy_find_first(adapter->mdiobus);
+ 		if (!phydev)
+ 			goto return_error;
+ 
++		adapter->phy_mode = PHY_INTERFACE_MODE_GMII;
+ 		ret = phy_connect_direct(netdev, phydev,
+ 					 lan743x_phy_link_status_change,
+ 					 adapter->phy_mode);
+-- 
+2.17.1
 
