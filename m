@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40F032AAD94
-	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 22:15:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71FA62AAD98
+	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 22:15:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728881AbgKHVOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 16:14:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43842 "EHLO
+        id S1728983AbgKHVPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 16:15:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728939AbgKHVOs (ORCPT
+        with ESMTP id S1728941AbgKHVOs (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 16:14:48 -0500
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBAA2C0613CF
-        for <netdev@vger.kernel.org>; Sun,  8 Nov 2020 13:14:47 -0800 (PST)
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49C4C0613D3
+        for <netdev@vger.kernel.org>; Sun,  8 Nov 2020 13:14:48 -0800 (PST)
 Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4CTn2F5DrLzQkZy;
-        Sun,  8 Nov 2020 22:14:45 +0100 (CET)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4CTn2G5yJLzQky8;
+        Sun,  8 Nov 2020 22:14:46 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1604870083;
+        s=MBO0001; t=1604870084;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CFbtoKg0yNPTPNPiJU6eAQZTm+DpY3s42tO2xXgqpCA=;
-        b=MdGUtWZ8Cgmus7B/ZA9s6dEjnlz9/15/ld4GwgAtsh7rg3z8/OKOGz/+79YRvX/JYshbS/
-        r/ntmK3KgzCmMja849D7aR59jIHt0CWje60DY9+zuvIQd82IphYQ2vLNbaIU11MP6xK7OL
-        GrEmY1NMaffRjcSEkLfU276oTJeE15/d4/Y1HfEH4IdCmL6/iqUt9ec4FqX6TnmgkZYx9T
-        6XUFNnDdryrqqvzB/iIJAkttctK4u248U5m2S0CUyHLb2TQFavhCmYn6SrMnNLJ1hMrtoG
-        Nzzni/WcHZ2Y08O/qSGCDMEZUvIux+4D+rR2YcGn2i/AlkF1Mrm/CzVME3e8JQ==
+        bh=knKqnF1zJmuRCXbT34BozvnJMAmwYT+16StvsvU/LEQ=;
+        b=ZKL08ti6WsIWrQYRU6wJKY+dxVfkqi0FThBgq4ZOyV77DFKz60qbZmwCEF5+d1ySksuQxT
+        m6Ygzc9dE1sV6Xyo4v/Py+Emd+TDrTz7erRZ97QPJ6bLfpM2GxHHgFcCod0G65nuLBsR7H
+        BRfokLELnL0k8vvGpjAqHRXdv6iQowC4/y09Z39uY/0U8/Iimi4uPNLyDjWVLEsJ/cO2j6
+        y9TW6SjYQjjrk7irjLQNR8mhx+W/fnWgVG0hm28drGIO2a6NsftNG13oeym0BKlYFPTTky
+        lIVbAo8zlo5073DKQ+eW7TuOtW3FTlwJW2Cw+4dK3S5EwF3eMIC1yUsVG40GZQ==
 Received: from smtp2.mailbox.org ([80.241.60.241])
-        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
-        with ESMTP id pW_USuaWyQCB; Sun,  8 Nov 2020 22:14:42 +0100 (CET)
+        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
+        with ESMTP id IVBjKocHU_Vl; Sun,  8 Nov 2020 22:14:43 +0100 (CET)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
@@ -44,73 +44,90 @@ Cc:     john.fastabend@gmail.com, jiri@nvidia.com, idosch@nvidia.com,
         Roman Mashak <mrv@mojatatu.com>,
         Leon Romanovsky <leon@kernel.org>,
         Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next v4 08/11] lib: parse_mapping: Update argc, argv on error
-Date:   Sun,  8 Nov 2020 22:14:13 +0100
-Message-Id: <c7f122316070b78c1dccf23c86585d03be55d633.1604869679.git.me@pmachata.org>
+Subject: [PATCH iproute2-next v4 09/11] lib: parse_mapping: Recognize a keyword "all"
+Date:   Sun,  8 Nov 2020 22:14:14 +0100
+Message-Id: <7415644e8a733b7984d576a2d3bc2632b79145d0.1604869679.git.me@pmachata.org>
 In-Reply-To: <cover.1604869679.git.me@pmachata.org>
 References: <cover.1604869679.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: *
-X-Rspamd-Score: 1.24 / 15.00 / 15.00
-X-Rspamd-Queue-Id: B4235171D
-X-Rspamd-UID: 66e810
+X-MBO-SPAM-Probability: **
+X-Rspamd-Score: 1.56 / 15.00 / 15.00
+X-Rspamd-Queue-Id: CD024271
+X-Rspamd-UID: 1e29e7
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently argc and argv are not updated unless parsing of all of the
-mapping was successful. However in that case, "ip link" will point at the
-wrong argument when complaining:
+The DCB tool will have to provide an interface to a number of fixed-size
+arrays. Unlike the egress- and ingress-qos-map, it makes good sense to have
+an interface to set all members to the same value. For example to set
+strict priority on all TCs besides select few, or to reset allocated
+bandwidth to all zeroes, again besides several explicitly-given ones.
 
-    # ip link add name eth0.100 link eth0 type vlan id 100 egress 1:1 2:foo
-    Error: argument "1" is wrong: invalid egress-qos-map
+To support this usage, extend the parse_mapping() with a boolean that
+determines whether this special use is supported. If "all" is given and
+recognized, mapping_cb is called with the key of -1.
 
-Update argc and argv even in the case of parsing error, so that the right
-element is indicated.
+Have iplink_vlan pass false for allow_all.
 
 Signed-off-by: Petr Machata <me@pmachata.org>
 ---
- lib/utils.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ include/utils.h  | 2 +-
+ ip/iplink_vlan.c | 2 +-
+ lib/utils.c      | 6 ++++--
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
+diff --git a/include/utils.h b/include/utils.h
+index 2d1a587cb1ef..588fceb72442 100644
+--- a/include/utils.h
++++ b/include/utils.h
+@@ -329,7 +329,7 @@ int parse_one_of(const char *msg, const char *realval, const char * const *list,
+ 		 size_t len, int *p_err);
+ bool parse_on_off(const char *msg, const char *realval, int *p_err);
+ 
+-int parse_mapping(int *argcp, char ***argvp,
++int parse_mapping(int *argcp, char ***argvp, bool allow_all,
+ 		  int (*mapping_cb)(__u32 key, char *value, void *data),
+ 		  void *mapping_cb_data);
+ 
+diff --git a/ip/iplink_vlan.c b/ip/iplink_vlan.c
+index dadc349db16c..1426f2afca23 100644
+--- a/ip/iplink_vlan.c
++++ b/ip/iplink_vlan.c
+@@ -69,7 +69,7 @@ static int vlan_parse_qos_map(int *argcp, char ***argvp, struct nlmsghdr *n,
+ 
+ 	tail = addattr_nest(n, 1024, attrtype);
+ 
+-	if (parse_mapping(argcp, argvp, &parse_qos_mapping, n))
++	if (parse_mapping(argcp, argvp, false, &parse_qos_mapping, n))
+ 		return 1;
+ 
+ 	addattr_nest_end(n, tail);
 diff --git a/lib/utils.c b/lib/utils.c
-index 1dfaaf564915..67d64df7e3e6 100644
+index 67d64df7e3e6..a0ba5181160e 100644
 --- a/lib/utils.c
 +++ b/lib/utils.c
-@@ -1770,6 +1770,7 @@ int parse_mapping(int *argcp, char ***argvp,
- {
- 	int argc = *argcp;
- 	char **argv = *argvp;
-+	int ret = 0;
+@@ -1764,7 +1764,7 @@ bool parse_on_off(const char *msg, const char *realval, int *p_err)
+ 	return parse_one_of(msg, realval, values_on_off, ARRAY_SIZE(values_on_off), p_err);
+ }
  
- 	while (argc > 0) {
- 		char *colon = strchr(*argv, ':');
-@@ -1779,15 +1780,19 @@ int parse_mapping(int *argcp, char ***argvp,
+-int parse_mapping(int *argcp, char ***argvp,
++int parse_mapping(int *argcp, char ***argvp, bool allow_all,
+ 		  int (*mapping_cb)(__u32 key, char *value, void *data),
+ 		  void *mapping_cb_data)
+ {
+@@ -1780,7 +1780,9 @@ int parse_mapping(int *argcp, char ***argvp,
  			break;
  		*colon = '\0';
  
--		if (get_u32(&key, *argv, 0))
--			return 1;
--		if (mapping_cb(key, colon + 1, mapping_cb_data))
--			return 1;
-+		if (get_u32(&key, *argv, 0)) {
-+			ret = 1;
-+			break;
-+		}
-+		if (mapping_cb(key, colon + 1, mapping_cb_data)) {
-+			ret = 1;
-+			break;
-+		}
- 
- 		argc--, argv++;
- 	}
- 
- 	*argcp = argc;
- 	*argvp = argv;
--	return 0;
-+	return ret;
- }
+-		if (get_u32(&key, *argv, 0)) {
++		if (allow_all && matches(*argv, "all") == 0) {
++			key = (__u32) -1;
++		} else if (get_u32(&key, *argv, 0)) {
+ 			ret = 1;
+ 			break;
+ 		}
 -- 
 2.25.1
 
