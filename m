@@ -2,93 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EB6C2AAA81
-	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 11:10:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E89DA2AAAA9
+	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 12:21:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728238AbgKHKK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 05:10:29 -0500
-Received: from smtprelay0142.hostedemail.com ([216.40.44.142]:49930 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726206AbgKHKK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 05:10:29 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id EA59A1730869;
-        Sun,  8 Nov 2020 10:10:27 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2198:2199:2393:2525:2553:2565:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:5007:6119:6742:7557:7903:8957:9025:10004:10400:10848:11232:11658:11914:12043:12294:12297:12438:12555:12740:12760:12895:13069:13095:13311:13357:13439:14181:14659:14721:14777:21080:21433:21451:21627:21811:21939:30012:30054:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:364,LUA_SUMMARY:none
-X-HE-Tag: bone67_5b0d737272e3
-X-Filterd-Recvd-Size: 3142
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf01.hostedemail.com (Postfix) with ESMTPA;
-        Sun,  8 Nov 2020 10:10:25 +0000 (UTC)
-Message-ID: <5e3265c241602bb54286fbaae9222070daa4768e.camel@perches.com>
-Subject: Re: [PATCH] netfilter: conntrack: fix -Wformat
-From:   Joe Perches <joe@perches.com>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Date:   Sun, 08 Nov 2020 02:10:24 -0800
-In-Reply-To: <alpine.DEB.2.21.2011080829080.4909@felia>
-References: <20201107075550.2244055-1-ndesaulniers@google.com>
-         <4910042649a4f3ab22fac93191b8c1fa0a2e17c3.camel@perches.com>
-         <alpine.DEB.2.21.2011080829080.4909@felia>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S1728254AbgKHLVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 06:21:55 -0500
+Received: from m42-4.mailgun.net ([69.72.42.4]:15806 "EHLO m42-4.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726021AbgKHLVz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Nov 2020 06:21:55 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1604834514; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=+a2nw8TOnWhGkjW2VdGmo04dSuvzksPHyNngfg5RaIM=; b=JBroZhUh/jHG/QNRITWzFahR3OxBqT6g5aK/mNYX5afjIXm4JBdUxxaKPbQRPx480e1cjFUO
+ IbiH3qIzBFKAIDKo7H6LM6iX/V2b/9JaxAQhkZQ78Og+illqo26gHz0lKzKQdq4CpvpcN+Sp
+ TxkOUzKSxXuAbUFSUozfRr9gaeQ=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 5fa7d4be9d6b206d94f27085 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 08 Nov 2020 11:21:34
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id BCCD7C43385; Sun,  8 Nov 2020 11:21:33 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 44852C433C8;
+        Sun,  8 Nov 2020 11:21:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 44852C433C8
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>, netdev@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-hams@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [RFC net-next 00/28] ndo_ioctl rework
+References: <20201106221743.3271965-1-arnd@kernel.org>
+        <20201107160612.2909063a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Sun, 08 Nov 2020 13:21:24 +0200
+In-Reply-To: <20201107160612.2909063a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        (Jakub Kicinski's message of "Sat, 7 Nov 2020 16:06:12 -0800")
+Message-ID: <87tuu05c23.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2020-11-08 at 08:34 +0100, Lukas Bulwahn wrote:
-> On Sat, 7 Nov 2020, Joe Perches wrote:
-> > On Fri, 2020-11-06 at 23:55 -0800, Nick Desaulniers wrote:
-> > > Clang is more aggressive about -Wformat warnings when the format flag
-> > > specifies a type smaller than the parameter. Fixes 8 instances of:
-> > > 
-> > > warning: format specifies type 'unsigned short' but the argument has
-> > > type 'int' [-Wformat]
-> > 
-> > Likely clang's -Wformat message is still bogus.
-> > Wasn't that going to be fixed?
-> > 
-> > Integer promotions are already done on these types to int anyway.
-> > Didn't we have this discussion last year?
-> > 
-> > https://lore.kernel.org/lkml/CAKwvOd=mqzj2pAZEUsW-M_62xn4pijpCJmP=B1h_-wEb0NeZsA@mail.gmail.com/
-> > https://lore.kernel.org/lkml/CAHk-=wgoxnmsj8GEVFJSvTwdnWm8wVJthefNk2n6+4TC=20e0Q@mail.gmail.com/
-> > https://lore.kernel.org/lkml/a68114afb134b8633905f5a25ae7c4e6799ce8f1.camel@perches.com/
-> > 
-> > Look at commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use
-> > of unnecessary %h[xudi] and %hh[xudi]")
-> > 
-> > The "h" and "hh" things should never be used. The only reason for them
-> > being used if if you have an "int", but you want to print it out as a
-> > "char" (and honestly, that is a really bad reason, you'd be better off
-> > just using a proper cast to make the code more obvious).
-> > 
-> Joe, would this be a good rule to check for in checkpatch?
-> 
-> Can Dwaipayan or Aditya give it a try to create a suitable patch to add 
-> such a rule?
+Jakub Kicinski <kuba@kernel.org> writes:
 
-$ git grep -P '"[^"]*%[\d\.\*\-]*h+[idux].*"'
+>> For the wireless drivers, removing the old drivers
+>> instead of just the dead code might be an alternative, depending
+>> on whether anyone thinks there might still be users.
+>
+> Dunno if you want to dig into removal with a series like this, 
+> anything using ioctls will be pretty old (with the exception 
+> of what you separated into ndo_eth_ioctl). You may get bogged 
+> down.
 
-I suppose so.
-Please avoid warning on scanf and its variants and the asm bits though.
+I would very much like to get rid of unused ancient wireless drivers but
+the problem is that it's next to impossible to know if someone still
+uses a driver, or if the driver is even working. For example, few months
+back I suggested removing one driver which I thought to be completely
+unused (forgot already the name of the driver) and to my big surprise
+there was still a user, and he reported it working with a recent kernel
+release.
 
-> Dwaipayan, Aditya, if Joe thinks it is worth a rule, it is "first come, 
-> first serve" for you to take that task. 
+So I don't know what to do. Should we try adding a warning like below? :)
 
+  "This ancient driver will be removed from the kernel in 2022, but if
+   it still works send report to <...@...> to avoid the removal."
 
+How do other subsystems handle ancient drivers?
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
