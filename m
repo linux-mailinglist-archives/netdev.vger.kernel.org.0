@@ -2,127 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E3B82AAA15
-	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 09:27:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E3AB2AAA13
+	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 09:26:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728046AbgKHI1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 03:27:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48336 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726115AbgKHI1a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Nov 2020 03:27:30 -0500
-Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 82E612151B;
-        Sun,  8 Nov 2020 08:27:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604824049;
-        bh=T9rK7jzM4Uo8lISDVLvutAoFUbM+bhC60Dfzze4KpJ0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=HjG6ii8k7TFQjX7JNqHv2lOviskc+54D1iF0wnjynFrjUOv74BY09q9iKn9AiZ298
-         OVL3Hn7g6gEiqpY3r32Y3Tf/SG+Z/yEIilaYUVAqwNSzoK28HX/cx5Yl23vSoreGLF
-         ix9qGQ+vvFIMcSktEa4OIhiHn2alhbh3rIC5R02E=
-Received: by mail-ot1-f45.google.com with SMTP id n11so5644966ota.2;
-        Sun, 08 Nov 2020 00:27:29 -0800 (PST)
-X-Gm-Message-State: AOAM531doHEiAfXi0qUAi+8r4uufpQGtV2pK0Mpx15BjTndko+eEYZMv
-        tdKUU5iXc0k9ABQ4D6jtVftBq+LUmmEA3RNK6Ow=
-X-Google-Smtp-Source: ABdhPJwGPcL/jY9Wx83MiEfwJ8vLr/COIt3JPH8IQANmhl0uIxcK1xw4JkTzas8PArDafbyk6I6ykok3k/Z2l+HmWUM=
-X-Received: by 2002:a9d:65d5:: with SMTP id z21mr6116013oth.251.1604824048822;
- Sun, 08 Nov 2020 00:27:28 -0800 (PST)
+        id S1726366AbgKHI0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 03:26:18 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7611 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726099AbgKHI0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 03:26:18 -0500
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CTRzJ13QzzLlcZ;
+        Sun,  8 Nov 2020 16:26:04 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Sun, 8 Nov 2020
+ 16:26:11 +0800
+From:   Zhang Qilong <zhangqilong3@huawei.com>
+To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: [PATCH v2] can: flexcan: fix reference count leak in flexcan ops
+Date:   Sun, 8 Nov 2020 16:30:00 +0800
+Message-ID: <20201108083000.2599705-1-zhangqilong3@huawei.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-References: <20201106221743.3271965-1-arnd@kernel.org> <20201107160612.2909063a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201107160612.2909063a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Sun, 8 Nov 2020 09:27:12 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3ROYs1FADZw8he0sZwfuM=XCvkOpzK=GHO+URf4opeDQ@mail.gmail.com>
-Message-ID: <CAK8P3a3ROYs1FADZw8he0sZwfuM=XCvkOpzK=GHO+URf4opeDQ@mail.gmail.com>
-Subject: Re: [RFC net-next 00/28] ndo_ioctl rework
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Networking <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        bridge@lists.linux-foundation.org, linux-hams@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 8, 2020 at 1:06 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri,  6 Nov 2020 23:17:15 +0100 Arnd Bergmann wrote:
-> > Any suggestions on how to proceed? I think the ndo_siocdevprivate
-> > change is the most interesting here, and I would like to get
-> > that merged.
->
-> Splitting out / eliminating ioctl pass-thry in general seems like
-> a nice clean up. How did you get the ndo_eth_ioctl patch done, was
-> it manual work?
+pm_runtime_get_sync() will increment pm usage at first and it
+will resume the device later. If runtime of the device has
+error or device is in inaccessible state(or other error state),
+resume operation will fail. If we do not call put operation to
+decrease the reference, it will result in reference leak in
+the two function(flexcan_get_berr_counter and flexcan_open).
+Moreover, this device cannot enter the idle state and always
+stay busy or other non-idle state later. So we should fix it
+through adding pm_runtime_put_noidle.
 
-I had done a fairly detailed manual search through all drivers
-with a .ndo_do_ioctl function to find the SIOCDEVPRIVATE users,
-based on a simple shell script. After I had converted all of those,
-I realized that 80% of the remaining ndo_do_ioctl users were
-in drivers/net/ethernet, implementing the same five commands,
-so I did a 'git grep -wl ndo_do_ioctl drivers/net/ethernet/ |
-sed -i "s:ndo_do_ioctl:ndo_eth_ioctl"' and converted the rest
-by hand.
+Fixes: ca10989632d88 ("can: flexcan: implement can Runtime PM")
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+---
+Changelog:
+v2
+- removed empty lines between tags.
+---
+ drivers/net/can/flexcan.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-FWIW, this is what remains afterwards:
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index 881799bd9c5e..c42a1ae5ee46 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -728,8 +728,10 @@ static int flexcan_get_berr_counter(const struct net_device *dev,
+ 	int err;
+ 
+ 	err = pm_runtime_get_sync(priv->dev);
+-	if (err < 0)
++	if (err < 0) {
++		pm_runtime_put_noidle(priv->dev);
+ 		return err;
++	}
+ 
+ 	err = __flexcan_get_berr_counter(dev, bec);
+ 
+@@ -1654,8 +1656,10 @@ static int flexcan_open(struct net_device *dev)
+ 	}
+ 
+ 	err = pm_runtime_get_sync(priv->dev);
+-	if (err < 0)
++	if (err < 0) {
++		pm_runtime_put_noidle(priv->dev);
+ 		return err;
++	}
+ 
+ 	err = open_candev(dev);
+ 	if (err)
+-- 
+2.25.4
 
-$ git grep -w ndo_do_ioctl
-Documentation/networking/netdevices.rst:ndo_do_ioctl:
-drivers/char/pcmcia/synclink_cs.c:      .ndo_do_ioctl   = hdlcdev_ioctl,
-drivers/net/appletalk/cops.c:        .ndo_do_ioctl           = cops_ioctl,
-drivers/net/appletalk/ltpc.c:   .ndo_do_ioctl           = ltpc_ioctl,
-drivers/net/bonding/bond_main.c:        .ndo_do_ioctl           = bond_do_ioctl,
-drivers/net/wan/c101.c: .ndo_do_ioctl   = c101_ioctl,
-drivers/net/wan/cosa.c: .ndo_do_ioctl   = cosa_net_ioctl,
-drivers/net/wan/farsync.c:      .ndo_do_ioctl   = fst_ioctl,
-drivers/net/wan/fsl_ucc_hdlc.c: .ndo_do_ioctl   = uhdlc_ioctl,
-drivers/net/wan/hdlc_fr.c:      .ndo_do_ioctl   = pvc_ioctl,
-drivers/net/wan/hostess_sv11.c: .ndo_do_ioctl   = hostess_ioctl,
-drivers/net/wan/ixp4xx_hss.c:   .ndo_do_ioctl   = hss_hdlc_ioctl,
-drivers/net/wan/lmc/lmc_main.c: .ndo_do_ioctl   = lmc_ioctl,
-drivers/net/wan/n2.c:   .ndo_do_ioctl   = n2_ioctl,
-drivers/net/wan/pc300too.c:     .ndo_do_ioctl   = pc300_ioctl,
-drivers/net/wan/pci200syn.c:    .ndo_do_ioctl   = pci200_ioctl,
-drivers/net/wan/sealevel.c:     .ndo_do_ioctl   = sealevel_ioctl,
-drivers/net/wan/wanxl.c:        .ndo_do_ioctl   = wanxl_ioctl,
-drivers/tty/synclink.c: .ndo_do_ioctl   = hdlcdev_ioctl,
-drivers/tty/synclink_gt.c:      .ndo_do_ioctl   = hdlcdev_ioctl,
-drivers/tty/synclinkmp.c:       .ndo_do_ioctl   = hdlcdev_ioctl,
-include/linux/netdevice.h: * int (*ndo_do_ioctl)(struct net_device
-*dev, struct ifreq *ifr, int cmd);
-include/linux/netdevice.h:      int
-(*ndo_do_ioctl)(struct net_device *dev,
-net/appletalk/aarp.c:   if (!(ops->ndo_do_ioctl(iface->dev, &atreq,
-SIOCSIFADDR))) {
-net/appletalk/aarp.c:           ops->ndo_do_ioctl(iface->dev, &atreq,
-SIOCGIFADDR);
-net/bridge/br_device.c: .ndo_do_ioctl            = br_dev_ioctl,
-net/core/dev_ioctl.c:   if (ops->ndo_do_ioctl) {
-net/core/dev_ioctl.c:                   return ops->ndo_do_ioctl(dev, ifr, cmd);
-net/ieee802154/socket.c:        if (dev->type == ARPHRD_IEEE802154 &&
-dev->netdev_ops->ndo_do_ioctl)
-net/ieee802154/socket.c:                ret =
-dev->netdev_ops->ndo_do_ioctl(dev, &ifr, cmd);
-net/mac802154/iface.c:  .ndo_do_ioctl           = mac802154_wpan_ioctl,
-
-> > For the wireless drivers, removing the old drivers
-> > instead of just the dead code might be an alternative, depending
-> > on whether anyone thinks there might still be users.
->
-> Dunno if you want to dig into removal with a series like this,
-> anything using ioctls will be pretty old (with the exception
-> of what you separated into ndo_eth_ioctl). You may get bogged
-> down.
-
-Ok
-
-      Arnd
