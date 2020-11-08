@@ -2,136 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DEC22AA9F4
-	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 08:35:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC462AA9F7
+	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 08:35:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726144AbgKHH2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 02:28:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57870 "EHLO
+        id S1727452AbgKHHee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 02:34:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726014AbgKHH2j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 02:28:39 -0500
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21524C0613CF
-        for <netdev@vger.kernel.org>; Sat,  7 Nov 2020 23:28:39 -0800 (PST)
-Received: by mail-wr1-x443.google.com with SMTP id l1so1080840wrb.9
-        for <netdev@vger.kernel.org>; Sat, 07 Nov 2020 23:28:38 -0800 (PST)
+        with ESMTP id S1726014AbgKHHee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 02:34:34 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF64CC0613CF;
+        Sat,  7 Nov 2020 23:34:33 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id gn41so7801498ejc.4;
+        Sat, 07 Nov 2020 23:34:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=LF8+xdOvr6XY27NLXGIrhH9dQ/W4uX2IFzyOsBPTrJU=;
-        b=X7ZFF6MM5Q+UGnYq4zHa7fwjRKtEaBI1ihQ7Yf3lcgIl0idDe4JEydau9CpyV4A+Vk
-         K/QCJ3BLeF1xO6+RN/+A7s8+4bfhEmvhUpiHHQFuoygMqN4l+cdph/mJp7WSL3VsDjh9
-         Cft3Ef/8d4IjSSrvS+UBDaElRMDKL9YD5vfwn0BPWUBOeF3YaZyZcC56FpdYMVZCIrPy
-         tLMKkdMJPzMyrYn3mOrmtuUVXi00mKgvp2kVzg9yi80B4CUYLyQ1vdxm58oX2UnuHMeI
-         05al8bWy4LzdaGGsQITTc+0RXVXWQIjZGntYwWq1Xu2qV9uofsgii7zqdsNXaKjnPBzs
-         pFoQ==
+        h=from:date:to:cc:subject:in-reply-to:message-id:references
+         :user-agent:mime-version;
+        bh=EtaEzhxwenaqaXTQFj3napoTw7vDymU9qv/CcKvdwmE=;
+        b=ZnE/glUABu9QGDkOHxquGmDxrQqIHjLEvt5SpxMBg5Xx0xSiyv1zagNoZJRPOQMQIx
+         qdNM//HIPnmvQW29aMQG231tebEkJrdlrSk/RahX3E7b49r/vxmfvSEughuZumxN+nID
+         MVuon/6ytPQ+gyT0bdF6Jkk4z6oxkhEcMHORr8JrosV2NKc6yOI+FaGCSf4Ohu1uAtJM
+         kr7rTmyWRdmLt0Z2pOK8DGkoktpJY6GnEahi78kVIqQ+g61w2LOB6Rpipi7owxHMbFmv
+         yGqLkRw7isCy4TIuSsh6riO4BqNYCkgy6fpR8kxjKZkRwinisy0lgJ7BWfq9x3BF0fT2
+         GP+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=LF8+xdOvr6XY27NLXGIrhH9dQ/W4uX2IFzyOsBPTrJU=;
-        b=IShzybtyqjhNYyPDhZj6fslWrtxiW1XxNuBVHmoJKWzR1aZs1B++NPxxOjcGqPZRzo
-         686cb72XHAvcJGONLPnH1QWjN8dXOQqMNNW0w28jbYaKN/T+1307CueBQx34v+Zzppsk
-         YHn0tcrp0bG+F51yQEjY3B/QeSOlI74dyg0rXHrH9WBSrUpbgKNQ3CN7WrV1cG6Xt8+c
-         77QXwBlh6WG0LQbbHpgohEVJDmviVv2eJZv73jTOJRBwSHA8osxKdLcAuVMqXmzS+pAU
-         oC++yav8Ot80c7BaEU8VWXdov6kET5IvYcIk6zz71GZc/UiOUJ+ORpcCwgZHtUNpeXTn
-         i7TQ==
-X-Gm-Message-State: AOAM532F6FxqH1b3n+bxjk+h0FsQV7MOt15EdttiR/GlMOFJbIkvuCUK
-        WLdnfd370nyQigRJ6OeRrzg=
-X-Google-Smtp-Source: ABdhPJxyzVaXtjY3y/amwyu0+AcZfR3L/uD7hKjMITwUKi1Vwi2FVIKiPCBWwondvFqnews3UENOKQ==
-X-Received: by 2002:adf:e40e:: with SMTP id g14mr10617928wrm.285.1604820517766;
-        Sat, 07 Nov 2020 23:28:37 -0800 (PST)
-Received: from [192.168.1.11] ([213.57.108.142])
-        by smtp.gmail.com with ESMTPSA id n10sm9079013wrx.9.2020.11.07.23.28.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Nov 2020 23:28:36 -0800 (PST)
-Subject: Re: [PATCH net-next RFC v1 07/10] nvme-tcp : Recalculate crc in the
- end of the capsule
-To:     Shai Malin <smalin@marvell.com>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Boris Pismenny <borisp@mellanox.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>, "hch@lst.de" <hch@lst.de>,
-        "axboe@fb.com" <axboe@fb.com>,
-        "kbusch@kernel.org" <kbusch@kernel.org>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "edumazet@google.com" <edumazet@google.com>
-Cc:     Yoray Zack <yorayz@mellanox.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        "boris.pismenny@gmail.com" <boris.pismenny@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>
-References: <20200930162010.21610-1-borisp@mellanox.com>
- <20200930162010.21610-8-borisp@mellanox.com>
- <a17cf1ca-4183-8f6c-8470-9d45febb755b@grimberg.me>
- <PH0PR18MB3845764B48FD24C87FA34304CCED0@PH0PR18MB3845.namprd18.prod.outlook.com>
- <PH0PR18MB38458FD325BD77983D2623D4CCEB0@PH0PR18MB3845.namprd18.prod.outlook.com>
- <PH0PR18MB3845FDA1C8E6063A03ECCE14CCEB0@PH0PR18MB3845.namprd18.prod.outlook.com>
-From:   Boris Pismenny <borispismenny@gmail.com>
-Message-ID: <5dcbb7b1-f1e2-f436-f211-8f4ef6712e52@gmail.com>
-Date:   Sun, 8 Nov 2020 09:28:04 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        h=x-gm-message-state:from:date:to:cc:subject:in-reply-to:message-id
+         :references:user-agent:mime-version;
+        bh=EtaEzhxwenaqaXTQFj3napoTw7vDymU9qv/CcKvdwmE=;
+        b=Ck43XtnWGlObu2UpURofEgMC32FIwWjEeo681zXase6MDJKf4lZCDRVxExiAtEk0hc
+         MyMnsQNVTLMQDh1NSkwnD+/jFReLYw0dpbw76zCmKnZ0DpGfVTDMEbM4+ptwdlhyI38j
+         JnxKxR7zznevTtPEevI/H285UuQu2s/UzU2k+0fe/1ueIfgNqkqbW1MEzDnJ/VcXOE9R
+         3kvmeE6W3H/XQxiVl8DZrvJNObCXwAQ4+BLgV4Pt4p6JhuaBfZtw5OS/ajqfo9UHxCF5
+         sJRXOnZAetW0Ad4IeSIWHIRHSglCSWHacLXBeIwe6ephPTsrzid/YLPj5RibgNimNWhY
+         xYqw==
+X-Gm-Message-State: AOAM5314BLyxeP7TDRQ/6SO88htj5bgDA5n2Pi+JnfiZtOJlFUdNQ6P4
+        nXzOjCMXSBANF9+IqicJT3A=
+X-Google-Smtp-Source: ABdhPJwf8HUCG+aejCdj3kNsW0NI3G/bOwmVp0UeenyfCbR1SkEQkajHmqVIoPa6OwQmCefvdWyXAA==
+X-Received: by 2002:a17:906:f18f:: with SMTP id gs15mr10050425ejb.474.1604820872490;
+        Sat, 07 Nov 2020 23:34:32 -0800 (PST)
+Received: from felia ([2001:16b8:2d34:bd00:5df6:61b:5ed6:df51])
+        by smtp.gmail.com with ESMTPSA id f25sm5202614edr.53.2020.11.07.23.34.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Nov 2020 23:34:31 -0800 (PST)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+X-Google-Original-From: Lukas Bulwahn <lukas@gmail.com>
+Date:   Sun, 8 Nov 2020 08:34:30 +0100 (CET)
+X-X-Sender: lukas@felia
+To:     Joe Perches <joe@perches.com>,
+        Aditya Srivastava <yashsri421@gmail.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>
+cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH] netfilter: conntrack: fix -Wformat
+In-Reply-To: <4910042649a4f3ab22fac93191b8c1fa0a2e17c3.camel@perches.com>
+Message-ID: <alpine.DEB.2.21.2011080829080.4909@felia>
+References: <20201107075550.2244055-1-ndesaulniers@google.com> <4910042649a4f3ab22fac93191b8c1fa0a2e17c3.camel@perches.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <PH0PR18MB3845FDA1C8E6063A03ECCE14CCEB0@PH0PR18MB3845.namprd18.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: multipart/mixed; boundary="8323329-296194858-1604820871=:4909"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-On 08/11/2020 8:59, Shai Malin wrote:
-> On 09/10/2020 1:44, Sagi Grimberg wrote:
->> On 9/30/20 7:20 PM, Boris Pismenny wrote:
->>
->>> crc offload of the nvme capsule. Check if all the skb bits are on, 
->>> and if not recalculate the crc in SW and check it.
->> Can you clarify in the patch description that this is only for pdu 
->> data digest and not header digest?
->>
-> Not a security expert, but according to my understanding, the NVMeTCP data digest is a layer 5 CRC,  and as such it is expected to be end-to-end, meaning it is computed by layer 5 on the transmitter and verified on layer 5 on the receiver.
-> Any data corruption which happens in any of the lower layers, including their software processing, should be protected by this CRC. For example, if the IP or TCP stack has a bug that corrupts the NVMeTCP payload data, the CRC should protect against it. It seems that may not be the case with this offload.
+--8323329-296194858-1604820871=:4909
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-If the TCP/IP stack corrupts packet data, then likely many TCP/IP consumers will be effected, and it will be fixed promptly.
-Unlike with TOE, these bugs can be easily fixed/hotpatched by the community.
 
+
+On Sat, 7 Nov 2020, Joe Perches wrote:
+
+> On Fri, 2020-11-06 at 23:55 -0800, Nick Desaulniers wrote:
+> > Clang is more aggressive about -Wformat warnings when the format flag
+> > specifies a type smaller than the parameter. Fixes 8 instances of:
+> > 
+> > warning: format specifies type 'unsigned short' but the argument has
+> > type 'int' [-Wformat]
+> 
+> Likely clang's -Wformat message is still bogus.
+> Wasn't that going to be fixed?
+> 
+> Integer promotions are already done on these types to int anyway.
+> Didn't we have this discussion last year?
+> 
+> https://lore.kernel.org/lkml/CAKwvOd=mqzj2pAZEUsW-M_62xn4pijpCJmP=B1h_-wEb0NeZsA@mail.gmail.com/
+> https://lore.kernel.org/lkml/CAHk-=wgoxnmsj8GEVFJSvTwdnWm8wVJthefNk2n6+4TC=20e0Q@mail.gmail.com/
+> https://lore.kernel.org/lkml/a68114afb134b8633905f5a25ae7c4e6799ce8f1.camel@perches.com/
+> 
+> Look at commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use
+> of unnecessary %h[xudi] and %hh[xudi]")
+> 
+> The "h" and "hh" things should never be used. The only reason for them
+> being used if if you have an "int", but you want to print it out as a
+> "char" (and honestly, that is a really bad reason, you'd be better off
+> just using a proper cast to make the code more obvious).
 >
->>> This patch reworks the receive-side crc calculation to always run at 
->>> the end, so as to keep a single flow for both offload and non-offload.
->>> This change simplifies the code, but it may degrade performance for 
->>> non-offload crc calculation.
->> ??
->>
->>  From my scan it doeesn't look like you do that.. Am I missing something?
->> Can you explain?
->>
->>> Signed-off-by: Boris Pismenny <borisp@mellanox.com>
->>> Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
->>> Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
->>> Signed-off-by: Yoray Zack <yorayz@mellanox.com>
->>> ---
->>>   drivers/nvme/host/tcp.c | 66
->> ++++++++++++++++++++++++++++++++++++-----
->>>   1 file changed, 58 insertions(+), 8 deletions(-)
->>>
->>> diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c index
->>> 7bd97f856677..9a620d1dacb4 100644
->>> --- a/drivers/nvme/host/tcp.c
->>> +++ b/drivers/nvme/host/tcp.c
->>> @@ -94,6 +94,7 @@ struct nvme_tcp_queue {
->>>   	size_t			data_remaining;
->>>   	size_t			ddgst_remaining;
->>>   	unsigned int		nr_cqe;
->>> +	bool			crc_valid;
-> I suggest to rename it to ddgst_valid.
->
-Sure
+
+Joe, would this be a good rule to check for in checkpatch?
+
+Can Dwaipayan or Aditya give it a try to create a suitable patch to add 
+such a rule?
+
+Dwaipayan, Aditya, if Joe thinks it is worth a rule, it is "first come, 
+first serve" for you to take that task. 
+
+Lukas
+
+> So if what you have a "char" (or unsigned char) you should always just
+> print it out as an "int", knowing that the compiler already did the
+> proper type conversion.
+> 
+> > diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
+> []
+> > @@ -50,38 +50,38 @@ print_tuple(struct seq_file *s, const struct nf_conntrack_tuple *tuple,
+> >  
+> > 
+> >  	switch (l4proto->l4proto) {
+> >  	case IPPROTO_ICMP:
+> > -		seq_printf(s, "type=%u code=%u id=%u ",
+> > +		seq_printf(s, "type=%u code=%u id=%hu ",
+> 
+> etc...
+> 
+> 
+> -- 
+> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/4910042649a4f3ab22fac93191b8c1fa0a2e17c3.camel%40perches.com.
+> 
+--8323329-296194858-1604820871=:4909--
