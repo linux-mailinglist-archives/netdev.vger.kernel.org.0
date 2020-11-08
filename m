@@ -2,206 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1F612AABAC
-	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 15:46:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE7352AABC3
+	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 16:09:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728043AbgKHOqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 09:46:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40568 "EHLO
+        id S1728419AbgKHPIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 10:08:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727570AbgKHOqu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 09:46:50 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316F3C0613CF
-        for <netdev@vger.kernel.org>; Sun,  8 Nov 2020 06:46:50 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id t11so5992641edj.13
-        for <netdev@vger.kernel.org>; Sun, 08 Nov 2020 06:46:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=vnFceaW+8mscDH815HlhItngZTzRyIa8sj9BZAwWtU4=;
-        b=NEe+aXTfKYtiWMOLmyxRfSnDiUe3M9HiVtbtSwYPZX9/U4BgK73c0jPQHdiH1lWduX
-         q6IYYhwYvdtpeJohRkzD4c1v/3VPGL9j04Gcb0QU/g2HhxGF/sqZAjZIaZXOp6kuy7LE
-         kfMCd6EzNwX+Ljpoz0KKdfds8MR/PQeeQeH+87BGnDqhMgnuZUpagMXa2YC6W/W/ZHT9
-         1JgbjiIx0hPoADyDlMw8giXnGdjIqIbq+2k7KUfevO2daa+nOE2x5DgMd3GUDbkPTcKA
-         tDuQ5yeuvpIP/LEd1KSCijmPw+jiVIwJ0FCK1fuXg4GjKHevQ6tVJbG7n2Hepr0e3ZaH
-         Omjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=vnFceaW+8mscDH815HlhItngZTzRyIa8sj9BZAwWtU4=;
-        b=ma/7l8AqoYIGKD4Kv675hZWi+WJiPVkZ95F+/3xpbnAMshw9v/Bg2kZHXysjGTAfJm
-         M0WiFEYHlbjROEJ5hDJtwt6V52yqAPLY4SgsIYpLm+br43gWwrvkpSc1BdKvBpTATeKT
-         q8bFHq6SLqgXaPsWplLS4a00P5/xU6Aw3SoKXhJdp2QYf/tE6VdZLW2B+PrCZv22wMWe
-         J7K7Nqy1SEnGvfew5JAaqGlZ1rtmxtDEpJLcrtnhDofotFJAxjayW4IWdJh/GrLe5x84
-         E++nbJPkvZkA9PLvD2R3Cu9IEwO3ztY2POw3BKlU44HoxcLpazE8Kcwe/MM8JlBlPxP5
-         do/A==
-X-Gm-Message-State: AOAM530FqPEPTMAG6E+bVyXbCHkPoiH/sfuWaOm5vr8vWSOp/GFauCHK
-        hMJvA5Lpq7zTureXf4RwH74=
-X-Google-Smtp-Source: ABdhPJxE+C6ozFbnRWrF6XkNxbrPq9f0cFvseaXfeT9nhnfutGl6IR1ck7ZMXXn+1R+f9M/CX6lJUQ==
-X-Received: by 2002:a50:be8f:: with SMTP id b15mr10870511edk.180.1604846808791;
-        Sun, 08 Nov 2020 06:46:48 -0800 (PST)
-Received: from [132.68.43.131] ([132.68.43.131])
-        by smtp.gmail.com with ESMTPSA id o20sm6144212eja.34.2020.11.08.06.46.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Nov 2020 06:46:48 -0800 (PST)
-Subject: Re: [PATCH net-next RFC v1 07/10] nvme-tcp : Recalculate crc in the
- end of the capsule
-To:     Sagi Grimberg <sagi@grimberg.me>,
-        Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
-        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com
-Cc:     Yoray Zack <yorayz@mellanox.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, Or Gerlitz <ogerlitz@mellanox.com>
-References: <20200930162010.21610-1-borisp@mellanox.com>
- <20200930162010.21610-8-borisp@mellanox.com>
- <a17cf1ca-4183-8f6c-8470-9d45febb755b@grimberg.me>
-From:   Boris Pismenny <borispismenny@gmail.com>
-Message-ID: <d080bd0c-ca1d-42a6-bee7-e6aa4bcb6896@gmail.com>
-Date:   Sun, 8 Nov 2020 16:46:45 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        with ESMTP id S1726814AbgKHPIb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 10:08:31 -0500
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05BE1C0613D2
+        for <netdev@vger.kernel.org>; Sun,  8 Nov 2020 07:08:30 -0800 (PST)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4CTcvZ3qZRzQlKM;
+        Sun,  8 Nov 2020 16:08:26 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
+        s=MBO0001; t=1604848104;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=8P8E1k0nBMJQzbTXXR/d56mnldeCnqLADLwGqw3YP1g=;
+        b=ec+pDnJGFQ40eBXY59suN559zSOyshICxGGejkFcI3UVlrrBVKxQ/rCpEGrxPhTd6AN8d/
+        9BgRos0OzU4ZVyJTmh9FNBC2uQnOwbuoa7PgTt1L8lJMJQEKDKiyE5lbMDr0E0zxZHheRj
+        Qfhdyt/5Y1rTvJzvzjl0ntr8CYQ2Qs7OJa/mlHESEc7Qi3L8RbiHTINcROZKX3cm3G/lAx
+        /KbyfA0t4k5kz4pE9VbSAcby/oNxvcaN8g1uka1U6uyfGj/kJZ1sdUUU2m7AhIyyKIMUJ/
+        pxOPsDdsq7TrCXTRkc2zu9iNm1dflci+Vu5BxEOLumSoxflwAJuaZTfKE2uq7w==
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by spamfilter05.heinlein-hosting.de (spamfilter05.heinlein-hosting.de [80.241.56.123]) (amavisd-new, port 10030)
+        with ESMTP id fRzQ_l7-GvsL; Sun,  8 Nov 2020 16:08:22 +0100 (CET)
+From:   Petr Machata <me@pmachata.org>
+To:     netdev@vger.kernel.org, dsahern@gmail.com,
+        stephen@networkplumber.org
+Cc:     john.fastabend@gmail.com, jiri@nvidia.com, idosch@nvidia.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Roman Mashak <mrv@mojatatu.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Petr Machata <me@pmachata.org>
+Subject: [PATCH iproute2-next v3 00/11] Add a tool for configuration of DCB
+Date:   Sun,  8 Nov 2020 16:07:21 +0100
+Message-Id: <cover.1604847919.git.me@pmachata.org>
 MIME-Version: 1.0
-In-Reply-To: <a17cf1ca-4183-8f6c-8470-9d45febb755b@grimberg.me>
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+X-MBO-SPAM-Probability: *
+X-Rspamd-Score: 0.69 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 33C9D171A
+X-Rspamd-UID: 6ad4d3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The Linux DCB interface allows configuration of a broad range of
+hardware-specific attributes, such as TC scheduling, flow control, per-port
+buffer configuration, TC rate, etc.
 
-On 09/10/2020 1:44, Sagi Grimberg wrote:
->> crc offload of the nvme capsule. Check if all the skb bits
->> are on, and if not recalculate the crc in SW and check it.
-> Can you clarify in the patch description that this is only
-> for pdu data digest and not header digest?
+Currently a common libre tool for configuration of DCB is OpenLLDP. This
+suite contains a daemon that uses Linux DCB interface to configure HW
+according to the DCB TLVs exchanged over an interface. The daemon can also
+be controlled by a client, through which the user can adjust and view the
+configuration. The downside of using OpenLLDP is that it is somewhat
+heavyweight and difficult to use in scripts, and does not support
+extensions such as buffer and rate commands.
 
-Will do
+For access to many HW features, one would be perfectly fine with a
+fire-and-forget tool along the lines of "ip" or "tc". For scripting in
+particular, this would be ideal. This author is aware of one such tool,
+mlnx_qos from Mellanox OFED scripts collection[1].
 
->
->> This patch reworks the receive-side crc calculation to always
->> run at the end, so as to keep a single flow for both offload
->> and non-offload. This change simplifies the code, but it may degrade
->> performance for non-offload crc calculation.
-> ??
->
->  From my scan it doeesn't look like you do that.. Am I missing something?
-> Can you explain?
+The downside here is that the tool is very verbose, the command line
+language is awkward to use, it is not packaged in Linux distros, and
+generally has the appearance of a very vendor-specific tool, despite not
+being one.
 
-The performance of CRC data digest in the offload's fallback path may be less good compared to CRC calculation with skb_copy_and_hash.
-To be clear, the fallback path is occurs when `queue->data_digest && test_bit(NVME_TCP_Q_OFF_CRC_RX, &queue->flags)`, while we receive SKBs where `skb->ddp_crc = 0`
+This patchset addresses the above issues by providing a seed of a clean,
+well-documented, easily usable, extensible fire-and-forget tool for DCB
+configuration:
 
->
->>   	rq = blk_mq_tag_to_rq(nvme_tcp_tagset(queue), pdu->command_id);
->>   	if (!rq) {
->>   		dev_err(queue->ctrl->ctrl.device,
->> @@ -992,7 +1031,7 @@ static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
->>   		recv_len = min_t(size_t, recv_len,
->>   				iov_iter_count(&req->iter));
->>   
->> -		if (queue->data_digest)
->> +		if (queue->data_digest && !test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags))
->>   			ret = skb_copy_and_hash_datagram_iter(skb, *offset,
->>   				&req->iter, recv_len, queue->rcv_hash);
-> This is the skb copy and hash, not clear why you say that you move this
-> to the end...
+    # dcb ets set dev eni1np1 \
+                  tc-tsa all:strict 0:ets 1:ets 2:ets \
+		  tc-bw all:0 0:33 1:33 2:34
 
-See the offload fallback path below
+    # dcb ets show dev eni1np1 tc-tsa tc-bw
+    tc-tsa 0:ets 1:ets 2:ets 3:strict 4:strict 5:strict 6:strict 7:strict
+    tc-bw 0:33 1:33 2:34 3:0 4:0 5:0 6:0 7:0
 
->
->>   		else
->> @@ -1012,7 +1051,6 @@ static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
->>   
->>   	if (!queue->data_remaining) {
->>   		if (queue->data_digest) {
->> -			nvme_tcp_ddgst_final(queue->rcv_hash, &queue->exp_ddgst);
-> If I instead do:
-> 			if (!test_bit(NVME_TCP_Q_OFFLOADS,
->                                        &queue->flags))
-> 				nvme_tcp_ddgst_final(queue->rcv_hash,
-> 						     &queue->exp_ddgst);
->
-> Does that help the mess in nvme_tcp_recv_ddgst?
+    # dcb ets set dev eni1np1 tc-bw 1:30 2:37
 
-Not really, as the code path there takes care of the fallback path, i.e. offloaded requested, but didn't succeed.
+    # dcb -j ets show dev eni1np1 | jq '.tc_bw[2]'
+    37
 
->
->>   			queue->ddgst_remaining = NVME_TCP_DIGEST_LENGTH;
->>   		} else {
->>   			if (pdu->hdr.flags & NVME_TCP_F_DATA_SUCCESS) {
->> @@ -1033,8 +1071,11 @@ static int nvme_tcp_recv_ddgst(struct nvme_tcp_queue *queue,
->>   	char *ddgst = (char *)&queue->recv_ddgst;
->>   	size_t recv_len = min_t(size_t, *len, queue->ddgst_remaining);
->>   	off_t off = NVME_TCP_DIGEST_LENGTH - queue->ddgst_remaining;
->> +	bool ddgst_offload_fail;
->>   	int ret;
->>   
->> +	if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags))
->> +		nvme_tcp_device_ddgst_update(queue, skb);
->>   	ret = skb_copy_bits(skb, *offset, &ddgst[off], recv_len);
->>   	if (unlikely(ret))
->>   		return ret;
->> @@ -1045,12 +1086,21 @@ static int nvme_tcp_recv_ddgst(struct nvme_tcp_queue *queue,
->>   	if (queue->ddgst_remaining)
->>   		return 0;
->>   
->> -	if (queue->recv_ddgst != queue->exp_ddgst) {
->> -		dev_err(queue->ctrl->ctrl.device,
->> -			"data digest error: recv %#x expected %#x\n",
->> -			le32_to_cpu(queue->recv_ddgst),
->> -			le32_to_cpu(queue->exp_ddgst));
->> -		return -EIO;
->> +	ddgst_offload_fail = !nvme_tcp_device_ddgst_ok(queue);
->> +	if (!test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags) ||
->> +	    ddgst_offload_fail) {
->> +		if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags) &&
->> +		    ddgst_offload_fail)
->> +			nvme_tcp_crc_recalculate(queue, pdu);
->> +
->> +		nvme_tcp_ddgst_final(queue->rcv_hash, &queue->exp_ddgst);
->> +		if (queue->recv_ddgst != queue->exp_ddgst) {
->> +			dev_err(queue->ctrl->ctrl.device,
->> +				"data digest error: recv %#x expected %#x\n",
->> +				le32_to_cpu(queue->recv_ddgst),
->> +				le32_to_cpu(queue->exp_ddgst));
->> +			return -EIO;
-> This gets convoluted here...
+The patchset proceeds as follows:
 
-Will try to simplify, the general idea is that there are 3 paths with common code:
-1. non-offload
-2. offload failed
-3. offload success
-(1) and (2) share the code for finalizing checking the data digest, while (3) skips this entirely.
+- Many tools in iproute2 have an option to work in batch mode, where the
+  commands to run are given in a file. The code to handle batching is
+  largely the same independent of the tool in question. In patch #1, add a
+  helper to handle the batching, and migrate individual tools to use it.
 
-In other words, how about this:
-```
-          offload_fail = !nvme_tcp_ddp_ddgst_ok(queue);                                               
-          offload = test_bit(NVME_TCP_Q_OFF_CRC_RX, &queue->flags);                                   
-          if (!offload || offload_fail) {                                                             
-                  if (offload && offload_fail) // software-fallback                                   
-                          nvme_tcp_ddp_ddgst_recalc(queue, pdu);                                      
-                                                                                                      
-                  nvme_tcp_ddgst_final(queue->rcv_hash, &queue->exp_ddgst);                           
-                  if (queue->recv_ddgst != queue->exp_ddgst) {                                        
-                          dev_err(queue->ctrl->ctrl.device,                                           
-                                  "data digest error: recv %#x expected %#x\n",                       
-                                  le32_to_cpu(queue->recv_ddgst),                                     
-                                  le32_to_cpu(queue->exp_ddgst));                                     
-                          return -EIO;                                                                
-                  }                                                                                   
-          } 
-```
+- A number of configuration options come in a form of an on-off switch.
+  This in turn can be considered a special case of parsing one of a given
+  set of strings. In patch #2, extract helpers to parse one of a number of
+  strings, on top of which build an on-off parser.
 
->
->> +		}
->>   	}
->>   
->>   	if (pdu->hdr.flags & NVME_TCP_F_DATA_SUCCESS) {
->>
+  Currently each tool open-codes the logic to parse the on-off toggle. A
+  future patch set will migrate instances of this code over to the new
+  helpers.
+
+- The on/off toggles from previous list item sometimes need to be dumped.
+  While in the FP output, one typically wishes to maintain consistency with
+  the command line and show actual strings, "on" and "off", in JSON output
+  one would rather use booleans. This logic is somewhat annoying to have to
+  open-code time and again. Therefore in patch #3, add a helper to do just
+  that.
+
+- The DCB tool is built on top of libmnl. Several routines will be
+  basically the same in DCB as they are currently in devlink. In patches
+  #4-#6, extract them to a new module, mnl_utils, for easy reuse.
+
+- Much of DCB is built around arrays. A syntax similar to the iplink_vlan's
+  ingress-qos-map / egress-qos-map is very handy for describing changes
+  done to such arrays. Therefore in patch #7, extract a helper,
+  parse_mapping(), which manages parsing of key-value arrays. In patch #8,
+  fix a buglet in the helper, and in patch #9, extend it to allow setting
+  of all array elements in one go.
+
+- In patch #10, add a skeleton of "dcb", which contains common helpers and
+  dispatches to subtools for handling of individual objects. The skeleton
+  is empty as of this patch.
+
+  In patch #11, add "dcb_ets", a module for handling of specifically DCB
+  ETS objects.
+
+  The intention is to gradually add handlers for at least PFC, APP, peer
+  configuration, buffers and rates.
+
+[1] https://github.com/Mellanox/mlnx-tools/tree/master/ofed_scripts
+
+v3:
+- Patch #2:
+    - Have parse_on_off() return a boolean. [David Ahern]
+- Patch #3:
+    - Rename to print_on_off(). [David Ahern]
+    - Move over to json_print.c and make it a variant of print_bool().
+      Convert RDMA tool over to print_on_off(). [Leon Romanovsky]
+- Patch #10:
+    - Fix help output to show the arguments as they are, so -p and
+      --pretty, not -[p]retty, which is inaccurate.
+- Patch #11:
+    - Formatting tweaks in the man page
+
+v2:
+- A new function, print_on_off_bool(), has been introduced for showing
+  on-off toggles in both FP and JSON modes.
+  [Jakub Kicinski, Stephen Hemminger]
+
+- This prompted refactoring in several existing files, and pushed the
+  number of patches in the set too high. The cleanup patches have therefore
+  been moved out to another patchset, which will follow after this one.
+
+- When dumping JSON, format keys so that they are valid jq identifiers.
+  E.g. "tc_tsa" instead of "tc-tsa". Additionally, do not dump arrays as
+  objects with string indices, but as true arrays. This allows for more
+  natural access to individual items, e.g.:
+    # dcb ets -j show dev eth0 | jq '.tc_tsa[3]'
+  Instead of:
+    # dcb ets -j show dev eth0 | jq '.["tc-tsa"]["3"]'
+
+- Patch #4:
+  - Add SPDX-License-Identifier
+
+- Patch #7:
+  - In parse_qos_mapping(), propagate return value from addattr_l()
+    [Roman Mashak]
+
+Petr Machata (11):
+  Unify batch processing across tools
+  lib: Add parse_one_of(), parse_on_off()
+  lib: json_print: Add print_on_off()
+  lib: Extract from devlink/mnlg a helper, mnlu_socket_open()
+  lib: Extract from devlink/mnlg a helper, mnlu_msg_prepare()
+  lib: Extract from devlink/mnlg a helper, mnlu_socket_recv_run()
+  lib: Extract from iplink_vlan a helper to parse key:value arrays
+  lib: parse_mapping: Update argc, argv on error
+  lib: parse_mapping: Recognize a keyword "all"
+  Add skeleton of a new tool, dcb
+  dcb: Add a subtool for the DCB ETS object
+
+ Makefile             |   2 +-
+ bridge/bridge.c      |  38 +---
+ dcb/Makefile         |  24 +++
+ dcb/dcb.c            | 407 ++++++++++++++++++++++++++++++++++++++++
+ dcb/dcb.h            |  39 ++++
+ dcb/dcb_ets.c        | 430 +++++++++++++++++++++++++++++++++++++++++++
+ devlink/Makefile     |   2 +-
+ devlink/devlink.c    |  41 +----
+ devlink/mnlg.c       |  93 ++--------
+ include/json_print.h |   1 +
+ include/mnl_utils.h  |  11 ++
+ include/utils.h      |  11 ++
+ ip/ip.c              |  46 +----
+ ip/iplink_vlan.c     |  36 ++--
+ ip/ipmacsec.c        |  52 ++----
+ lib/Makefile         |   2 +-
+ lib/json_print.c     |  34 +++-
+ lib/mnl_utils.c      | 110 +++++++++++
+ lib/utils.c          | 103 +++++++++++
+ man/man8/dcb-ets.8   | 185 +++++++++++++++++++
+ man/man8/dcb.8       | 114 ++++++++++++
+ rdma/dev.c           |   2 +-
+ rdma/rdma.c          |  38 +---
+ rdma/rdma.h          |   1 -
+ rdma/res-cq.c        |   2 +-
+ rdma/utils.c         |   5 -
+ tc/tc.c              |  38 +---
+ 27 files changed, 1543 insertions(+), 324 deletions(-)
+ create mode 100644 dcb/Makefile
+ create mode 100644 dcb/dcb.c
+ create mode 100644 dcb/dcb.h
+ create mode 100644 dcb/dcb_ets.c
+ create mode 100644 include/mnl_utils.h
+ create mode 100644 lib/mnl_utils.c
+ create mode 100644 man/man8/dcb-ets.8
+ create mode 100644 man/man8/dcb.8
+
+-- 
+2.25.1
 
