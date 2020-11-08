@@ -2,98 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 559682AADB5
-	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 22:38:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEDD82AADBA
+	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 22:44:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728038AbgKHVhP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 8 Nov 2020 16:37:15 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:56091 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727570AbgKHVhP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 16:37:15 -0500
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1kbsN1-0008KN-Sy; Sun, 08 Nov 2020 21:37:08 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 2C9FB5FEE8; Sun,  8 Nov 2020 13:37:06 -0800 (PST)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 246D0A0409;
-        Sun,  8 Nov 2020 13:37:06 -0800 (PST)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-cc:     LIU Yulong <liuyulong.xa@gmail.com>, netdev@vger.kernel.org,
-        LIU Yulong <i@liuyulong.me>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [PATCH v2] net: bonding: alb disable balance for IPv6 multicast related mac
-In-reply-to: <20201107103950.70cf9353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <1603850163-4563-1-git-send-email-i@liuyulong.me> <1604303803-30660-1-git-send-email-i@liuyulong.me> <20201103130559.0335c353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <20201107103950.70cf9353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Comments: In-reply-to Jakub Kicinski <kuba@kernel.org>
-   message dated "Sat, 07 Nov 2020 10:39:50 -0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1728866AbgKHVoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 16:44:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727570AbgKHVoM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 16:44:12 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64477C0613CF
+        for <netdev@vger.kernel.org>; Sun,  8 Nov 2020 13:44:12 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id f23so2865125ejk.2
+        for <netdev@vger.kernel.org>; Sun, 08 Nov 2020 13:44:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:message-id:date:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=wwFy1MmWeUmWZJvbY8QGWJ6gtRFMhrW66VcCJS/zn10=;
+        b=jNwZ+u3BFfjMBax9cgIBpvzaKI0lxHpEvQ5ef/uS0wzVwKejgBVcwyOyRXkn7VhDCR
+         QUiYrLQUESumtE4YDAaUuAQ1JxlFZynPAVMXP4jJdDhGFZ6XlQv/PfIM5GttvCyKe/1E
+         QqW3lAmwBEs37mSdXLOn2H8yVz+TSmT398LkQIkCoBxvCoqKZ1Hi+pnjr3j2YzbLTfBt
+         UBPLe89eAAtu/XG2UKLYPt2auwhjx3u4pG2Nf8HYkBq1GKhUpE4j63IQW2/EmpXs/Ken
+         MZUTOhbIfB+CguXhy2JSLmRppDyqEjbzdS6rV56raDrATNVZAhKATeU+IBjBcLPe8Sdu
+         f26Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=wwFy1MmWeUmWZJvbY8QGWJ6gtRFMhrW66VcCJS/zn10=;
+        b=J+fxwK3D0539q0l1dmGJae6dkoDG+Jshb+AWJN8my57g+1suHYdYb2SxNi6sljo2uq
+         z6GZD4RtXMByK7yxnRFQZ0g01myIdTP/eWPWiu+Uv+mauE9U/iGQ08Pe2YBOivqcV6/j
+         rvmYtlJlEPUIxujw5b4ruemR/dxN35OKWsgJQphJ4UaXLPKfoDTypVHoRJBN8YkxYZHV
+         bui7PCzY2a5lvUhNnS1yNPMm/ksNMjX7z84kT+e7VfKAITt/1ioAQqztmy1Z2gzU4eJ0
+         1IGW1MFdpVrPV74n5axMmcn7NkFEXJHhCJYLjta48/RfYQu1P+v7DoeV55m/klWIJe01
+         xBOg==
+X-Gm-Message-State: AOAM531R+0FzgzdAxkTZSKbQk58V3o5tY+A8WTXTR16U5t3c98wNjOhF
+        C7J5U7ES831N3aXXn4rSv+F3HZGvx+nnng==
+X-Google-Smtp-Source: ABdhPJylz/l5IXTg953SsTi89VzGRoMkZUSB9qEqZqlGzVsWFustsw1dUrpw4xVEl80pCUEhvlQDnA==
+X-Received: by 2002:a17:906:4c41:: with SMTP id d1mr12868299ejw.485.1604871850899;
+        Sun, 08 Nov 2020 13:44:10 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f23:2800:493b:5170:637f:1fc7? (p200300ea8f232800493b5170637f1fc7.dip0.t-ipconnect.de. [2003:ea:8f23:2800:493b:5170:637f:1fc7])
+        by smtp.googlemail.com with ESMTPSA id d7sm6940096ejt.50.2020.11.08.13.44.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Nov 2020 13:44:10 -0800 (PST)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH net] net: phy: realtek: support paged operations on RTL8201CP
+Message-ID: <69882f7a-ca2f-e0c7-ae83-c9b6937282cd@gmail.com>
+Date:   Sun, 8 Nov 2020 22:44:02 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <16802.1604871426.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Sun, 08 Nov 2020 13:37:06 -0800
-Message-ID: <16803.1604871426@famine>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> wrote:
+The RTL8401-internal PHY identifies as RTL8201CP, and the init
+sequence in r8169, copied from vendor driver r8168, uses paged
+operations. Therefore set the same paged operation callbacks as
+for the other Realtek PHY's.
 
->On Tue, 3 Nov 2020 13:05:59 -0800 Jakub Kicinski wrote:
->> On Mon,  2 Nov 2020 15:56:43 +0800 LIU Yulong wrote:
->> > According to the RFC 2464 [1] the prefix "33:33:xx:xx:xx:xx" is defined to
->> > construct the multicast destination MAC address for IPv6 multicast traffic.
->> > The NDP (Neighbor Discovery Protocol for IPv6)[2] will comply with such
->> > rule. The work steps [6] are:
->> >   *) Let's assume a destination address of 2001:db8:1:1::1.
->> >   *) This is mapped into the "Solicited Node Multicast Address" (SNMA)
->> >      format of ff02::1:ffXX:XXXX.
->> >   *) The XX:XXXX represent the last 24 bits of the SNMA, and are derived
->> >      directly from the last 24 bits of the destination address.
->> >   *) Resulting in a SNMA ff02::1:ff00:0001, or ff02::1:ff00:1.
->> >   *) This, being a multicast address, can be mapped to a multicast MAC
->> >      address, using the format 33-33-XX-XX-XX-XX
->> >   *) Resulting in 33-33-ff-00-00-01.
->> >   *) This is a MAC address that is only being listened for by nodes
->> >      sharing the same last 24 bits.
->> >   *) In other words, while there is a chance for a "address collision",
->> >      it is a vast improvement over ARP's guaranteed "collision".
->> > Kernel related code can be found at [3][4][5].  
->> 
->> Please make sure you keep maintainers CCed on your postings, adding bond
->> maintainers now.
->
->Looks like no reviews are coming in, so I had a closer look.
->
->It's concerning that we'll disable load balancing for all IPv6 multicast
->addresses now. AFAIU you're only concerned about 33:33:ff:00:00:01, can
->we not compare against that?
-
-	It's not fixed as 33:33:ff:00:00:01, that's just the example.
-The first two octets are fixed as 33:33, and the remaining four are
-derived from the SNMA, which in turn comes from the destination IPv6
-address.
-
-	I can't decide if this is genuinely a reasonable change overall,
-or if the described topology is simply untenable in the environment that
-the balance-alb mode creates.  My specific concern is that the alb mode
-will periodically rebalance its TX load, so outgoing traffic will
-migrate from one bond port to another from time to time.  It's unclear
-to me how the described topology that's broken by the multicast traffic
-being TX balanced is not also broken by the alb TX side rebalances.
-
-	-J
-
->The way the comparison is written now it does a single 64bit comparison
->per address, so it's the same number of instructions to compare the top
->two bytes or two full addresses.
-
-
+Fixes: cdafdc29ef75 ("r8169: sync support for RTL8401 with vendor driver")
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+ drivers/net/phy/realtek.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 2ba0d73bf..5844cf2d3 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -551,6 +551,8 @@ static struct phy_driver realtek_drvs[] = {
+ 	{
+ 		PHY_ID_MATCH_EXACT(0x00008201),
+ 		.name           = "RTL8201CP Ethernet",
++		.read_page	= rtl821x_read_page,
++		.write_page	= rtl821x_write_page,
+ 	}, {
+ 		PHY_ID_MATCH_EXACT(0x001cc816),
+ 		.name		= "RTL8201F Fast Ethernet",
+-- 
+2.29.2
+
