@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E89DA2AAAA9
-	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 12:21:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E147F2AAAB3
+	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 12:32:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728254AbgKHLVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 06:21:55 -0500
-Received: from m42-4.mailgun.net ([69.72.42.4]:15806 "EHLO m42-4.mailgun.net"
+        id S1728016AbgKHLcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 06:32:05 -0500
+Received: from z5.mailgun.us ([104.130.96.5]:24092 "EHLO z5.mailgun.us"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726021AbgKHLVz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Nov 2020 06:21:55 -0500
+        id S1726021AbgKHLcF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Nov 2020 06:32:05 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1604834514; h=Content-Type: MIME-Version: Message-ID:
+ s=smtp; t=1604835124; h=Content-Type: MIME-Version: Message-ID:
  In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=+a2nw8TOnWhGkjW2VdGmo04dSuvzksPHyNngfg5RaIM=; b=JBroZhUh/jHG/QNRITWzFahR3OxBqT6g5aK/mNYX5afjIXm4JBdUxxaKPbQRPx480e1cjFUO
- IbiH3qIzBFKAIDKo7H6LM6iX/V2b/9JaxAQhkZQ78Og+illqo26gHz0lKzKQdq4CpvpcN+Sp
- TxkOUzKSxXuAbUFSUozfRr9gaeQ=
-X-Mailgun-Sending-Ip: 69.72.42.4
+ bh=Hh80t6DBe3X7mbuwvXT2qT4O+qR89/NR5LLrWLjb7W8=; b=f9oMDpZ/aY8vpDlfCTcTv40B5aToSuONm29uL5OQ0S7ndvmuz2LCcEM4XqsSDHtsCFfz9MyP
+ xdx2p3s7n095+BOFeZ4Mp9VdfJnDagFTrhnFJwUvBKkUPwoSwZGcxL9UsbC6R+fmYcKvGGVl
+ aKwAt38hgIZbt65NmRQnl/bCOzM=
+X-Mailgun-Sending-Ip: 104.130.96.5
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 5fa7d4be9d6b206d94f27085 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 08 Nov 2020 11:21:34
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 5fa7d73160d947565276bf76 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 08 Nov 2020 11:32:01
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id BCCD7C43385; Sun,  8 Nov 2020 11:21:33 +0000 (UTC)
+        id 96F5AC433F0; Sun,  8 Nov 2020 11:32:01 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -37,28 +37,30 @@ Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 44852C433C8;
-        Sun,  8 Nov 2020 11:21:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 44852C433C8
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2A982C433C6;
+        Sun,  8 Nov 2020 11:31:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2A982C433C6
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
 From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Arnd Bergmann <arnd@kernel.org>, netdev@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-hams@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [RFC net-next 00/28] ndo_ioctl rework
-References: <20201106221743.3271965-1-arnd@kernel.org>
-        <20201107160612.2909063a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Sun, 08 Nov 2020 13:21:24 +0200
-In-Reply-To: <20201107160612.2909063a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        (Jakub Kicinski's message of "Sat, 7 Nov 2020 16:06:12 -0800")
-Message-ID: <87tuu05c23.fsf@tynnyri.adurom.net>
+To:     Tsuchiya Yuto <kitakar@gmail.com>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl
+Subject: Re: [PATCH 1/2] mwifiex: fix mwifiex_shutdown_sw() causing sw reset failure
+References: <20201028142110.18144-1-kitakar@gmail.com>
+        <20201028142110.18144-2-kitakar@gmail.com>
+Date:   Sun, 08 Nov 2020 13:31:55 +0200
+In-Reply-To: <20201028142110.18144-2-kitakar@gmail.com> (Tsuchiya Yuto's
+        message of "Wed, 28 Oct 2020 23:21:09 +0900")
+Message-ID: <87pn4o5bkk.fsf@tynnyri.adurom.net>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -66,31 +68,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+Tsuchiya Yuto <kitakar@gmail.com> writes:
 
->> For the wireless drivers, removing the old drivers
->> instead of just the dead code might be an alternative, depending
->> on whether anyone thinks there might still be users.
+> When FLR is performed but without fw reset for some reasons (e.g. on
+> Surface devices, fw reset requires another quirk), it fails to reset
+> properly. You can trigger the issue on such devices via debugfs entry
+> for reset:
 >
-> Dunno if you want to dig into removal with a series like this, 
-> anything using ioctls will be pretty old (with the exception 
-> of what you separated into ndo_eth_ioctl). You may get bogged 
-> down.
+>     $ echo 1 | sudo tee /sys/kernel/debug/mwifiex/mlan0/reset
+>
+> and the resulting dmesg log:
+>
+>     [   45.740508] mwifiex_pcie 0000:03:00.0: Resetting per request
+>     [   45.742937] mwifiex_pcie 0000:03:00.0: info: successfully disconnected from [BSSID]: reason code 3
+>     [   45.744666] mwifiex_pcie 0000:03:00.0: info: shutdown mwifiex...
+>     [   45.751530] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.751539] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771691] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771695] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   45.771697] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771698] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   45.771699] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771701] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   45.771702] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771703] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   45.771704] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771705] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   45.771707] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771708] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   53.099343] mwifiex_pcie 0000:03:00.0: info: trying to associate to '[SSID]' bssid [BSSID]
+>     [   53.241870] mwifiex_pcie 0000:03:00.0: info: associated to bssid [BSSID] successfully
+>     [   75.377942] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+>     [   85.385491] mwifiex_pcie 0000:03:00.0: info: successfully disconnected from [BSSID]: reason code 15
+>     [   87.539408] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+>     [   87.539412] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   99.699917] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+>     [   99.699925] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [  111.859802] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+>     [  111.859808] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [...]
+>
+> When comparing mwifiex_shutdown_sw() with mwifiex_pcie_remove(), it
+> lacks mwifiex_init_shutdown_fw().
+>
+> This commit fixes mwifiex_shutdown_sw() by adding the missing
+> mwifiex_init_shutdown_fw().
+>
+> Fixes: 4c5dae59d2e9 ("mwifiex: add PCIe function level reset support")
+> Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
 
-I would very much like to get rid of unused ancient wireless drivers but
-the problem is that it's next to impossible to know if someone still
-uses a driver, or if the driver is even working. For example, few months
-back I suggested removing one driver which I thought to be completely
-unused (forgot already the name of the driver) and to my big surprise
-there was still a user, and he reported it working with a recent kernel
-release.
-
-So I don't know what to do. Should we try adding a warning like below? :)
-
-  "This ancient driver will be removed from the kernel in 2022, but if
-   it still works send report to <...@...> to avoid the removal."
-
-How do other subsystems handle ancient drivers?
+Otherwise looks good to me, but what is FLR? I can add the description
+to the commit log if you tell me what it is.
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/list/
