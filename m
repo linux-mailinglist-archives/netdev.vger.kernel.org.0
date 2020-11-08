@@ -2,94 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 617E92AA977
-	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 06:27:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 401622AA97C
+	for <lists+netdev@lfdr.de>; Sun,  8 Nov 2020 06:29:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726210AbgKHF1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 00:27:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39336 "EHLO
+        id S1727908AbgKHF2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 00:28:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726030AbgKHF1o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 00:27:44 -0500
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349EFC0613CF;
-        Sat,  7 Nov 2020 21:27:44 -0800 (PST)
-Received: by mail-ot1-x341.google.com with SMTP id n15so5444710otl.8;
-        Sat, 07 Nov 2020 21:27:44 -0800 (PST)
+        with ESMTP id S1726607AbgKHF2t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 00:28:49 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2DCFC0613CF;
+        Sat,  7 Nov 2020 21:28:48 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id r186so4215499pgr.0;
+        Sat, 07 Nov 2020 21:28:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=XE6DDqq8PzLKVEch12IMRl0UYe/3AExuvFUQzYKpLi4=;
-        b=rO4JvHvjG1z98sfUyqjZnyyyW5v5uJhtLYJfPk/bepN2kdth/pRGCI2nHbZ+QvaLJV
-         oYpVF6cSr5arJfh2Ejl06cewlNXviRHzycqte/VKaQo+3cVAVxRo/Pl9a1i9khDqswiB
-         LF1uZVom/COgjeOL+cPLTsFpRdmmCEnnEv4/DsqE7nmB1R4mCUAQhEMNJlF/bq1O1EXK
-         KtbtnCjn3CzZAf+zRa1KtZ4tSKhdqFiYc/0WBwY4iDdVkCpdJFYTLvPYyT5M5rl5+Knp
-         T8x9O4MAbwTBiePfAZUsxn0Wk+DmbeGLtlza2rbqcUzCJrvRv3g1Gqh1/qnItPpjn25D
-         Iv/A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v7uO+4tymTzpGaO0kxRYzy6la1dUIrl8lP4+3AeMlpM=;
+        b=DqFR5FawS/AQuqh/HAmfkEgzPh3P4GYc+AikwrifEDm27ZOOczPg2bGbirjr3XuDnh
+         Tp7hTt2UM598yigXJ93850W4mOxkmACnJ17hU7Unc5LiLq60D/W3Rg2EtooQFwfF6wKA
+         nGuyx2ukwdMet8kmDLDDbcuBDkHsIowx2eaBP2VqhxVlr2tMwgjA4g0ks/PBkf9iN5zo
+         /36UIrLcteQhpz01xXAS9An/SUL0cHp7sxODjDdDAGga0IScmx0uuNGPA5QrfX5+f6B+
+         IrNiRxuVMTNYxzYUl+EGbkzNqU3AJW6GM3jYF2+XQlMFVf5Hr2i87Qz7144FvlA9ck3d
+         i/JQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=XE6DDqq8PzLKVEch12IMRl0UYe/3AExuvFUQzYKpLi4=;
-        b=nh45UXaUVU1XxjPQ9HeBgcFzy4wdYxCbOv55szvbQNt3Z4IG0ycABEdZrJZDKcRmoX
-         f63ZEO1dIebtoVZbB9nZDl1BT9wJttTER9HKhii4NT+8zqp3d67yKleyFWY0mln1xRJL
-         GL0g52QXha821bAewnOHow/d8P5NrjhCY6XQ9qitJRVqmA8MSy/6ryBPR31Kn3ZA5KTk
-         fsHvprv7PYql6fu48FA+gBAss1IVxulbICI+l9vWUKVnyqFYxt8sDZd4KavwjshW6utL
-         GTeOUWMo38cusHIbayZHUkVsMPjHq6Pvh2H/fbbE9hPW9PbSQ2zuYuY/4ycDOgb4M0pj
-         hnCg==
-X-Gm-Message-State: AOAM5329rGdiQNu4NbFDMX7jqyceyQJxbdrq1/2g0IMt03on2XElgv8x
-        C0N4HqB9+F0tWUg53pYMGMnZdrWw7+m6ylV8/ts=
-X-Google-Smtp-Source: ABdhPJztcNOzPPZtWecyVrFoVBcPQ7OBV38hbvs50i68GTku5OjdMCjgbOWyXcEI90sNyXbqMqRLTOzj/YQk+20XeIY=
-X-Received: by 2002:a9d:731a:: with SMTP id e26mr6034762otk.53.1604813263494;
- Sat, 07 Nov 2020 21:27:43 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=v7uO+4tymTzpGaO0kxRYzy6la1dUIrl8lP4+3AeMlpM=;
+        b=h9j/weIhDftP4efiEYsiDx0yo583oY7OvQlEVYeYUG7Q609i3gnzJvEd6FXPaY8cAe
+         v+Q8D6AaZsu5z+MI8uEu3iqCY59vX/2cv7V3TpIOK38v1CjZTy1OnBh+/HxRXN5jAIYO
+         nwYOp+ZCvQHZMqWMVWk8lWQUcFi3LIab2UFn2z9HoHZmD9GvRfCAfaPCnRFv4+neJbVV
+         PIWmzyDgzISGfpW+Mu5Qd1/eySkVNuumzrENyrE8m3rIYTE10srp0kCkUlGcsi0GrD7+
+         IgbniTz8F1KfH9NuybrPoMgW2gJ9OYwOrgX5SRbVD99rjbEPYc+wngT6CXu9TyiFCiaw
+         8a4A==
+X-Gm-Message-State: AOAM5311kU96PuMJF7x99+eYz4l5rjn8/r7b+/HgcuY7J8d4sgfT0tZn
+        CNpW+l6M4ehm/aPq4NsLM38scpw/lzCirHBV1Vw=
+X-Google-Smtp-Source: ABdhPJxP0gMBi4LZoJKrRAHoLhqd3uVGpSJAGvARPxdjIz9wGwCk3Uj8Y+vC4aKAjIhnJwE9Lz9sZZPL6Q4lKaXJtY0=
+X-Received: by 2002:a65:52cb:: with SMTP id z11mr8020662pgp.368.1604813328575;
+ Sat, 07 Nov 2020 21:28:48 -0800 (PST)
 MIME-Version: 1.0
-References: <20201107122617.55d0909c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <222b9c1b-9d60-22f3-6097-8abd651cc192@gmail.com>
-In-Reply-To: <222b9c1b-9d60-22f3-6097-8abd651cc192@gmail.com>
-From:   Zhu Yanjun <zyjzyj2000@gmail.com>
-Date:   Sun, 8 Nov 2020 13:27:32 +0800
-Message-ID: <CAD=hENdP8sJrBZ7uDEWtatZ3D6bKQY=wBKdM5NQ79xveohAnhQ@mail.gmail.com>
-Subject: Re: [PATCH 1/1] RDMA/rxe: Fetch skb packets from ethernet layer
-To:     "zyjzyj2000@gmail.com" <zyjzyj2000@gmail.com>, kuba@kernel.org,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>, linux-rdma@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>
+References: <20201028070504.362164-1-xie.he.0141@gmail.com>
+ <20201030200705.6e2039c2@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAJht_EOk43LdKVU4qH1MB5pLKcSONazA9XsKJUMTG=79TJ-3Rg@mail.gmail.com>
+ <20201031095146.5e6945a1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAK8P3a1kJT50s+BVF8-fmX6ctX2pmVtcg5rnS__EBQvseuqWNA@mail.gmail.com> <20201031150359.0f944863@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201031150359.0f944863@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Sat, 7 Nov 2020 21:28:37 -0800
+Message-ID: <CAJht_EMzCpNKOwuZgxKz0nPbA=zkq-Jz30ddhYbVOyrj072x1A@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dlci: Deprecate the DLCI driver (aka the
+ Frame Relay layer)
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Krzysztof Halasa <khc@pm.waw.pl>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 8, 2020 at 1:24 PM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
+On Sat, Oct 31, 2020 at 3:04 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
+> On Sat, 31 Oct 2020 22:41:30 +0100 Arnd Bergmann wrote:
+> >
+> > I think it can just go in the bin directly.
 >
+> Ack, fine by me.
 >
+> > I actually submitted a couple of patches to clean up drivers/net/wan
+> > last year but didn't follow up with a new version after we decided
+> > that x.25 is still needed, see
+> > https://lore.kernel.org/netdev/20191209151256.2497534-1-arnd@arndb.de/
+> >
+> > I can resubmit if you like.
 >
-> -------- Forwarded Message --------
-> Subject: Re: [PATCH 1/1] RDMA/rxe: Fetch skb packets from ethernet layer
-> Date: Sat, 7 Nov 2020 12:26:17 -0800
-> From: Jakub Kicinski <kuba@kernel.org>
-> To: Zhu Yanjun <yanjunz@nvidia.com>
-> CC: dledford@redhat.com, jgg@ziepe.ca, linux-rdma@vger.kernel.org, netdev@vger.kernel.org
->
->
-> On Thu, 5 Nov 2020 19:12:01 +0800 Zhu Yanjun wrote:
->
-> In the original design, in rx, skb packet would pass ethernet
-> layer and IP layer, eventually reach udp tunnel.
->
-> Now rxe fetches the skb packets from the ethernet layer directly.
-> So this bypasses the IP and UDP layer. As such, the skb packets
-> are sent to the upper protocals directly from the ethernet layer.
->
-> This increases bandwidth and decreases latency.
->
-> Signed-off-by: Zhu Yanjun <yanjunz@nvidia.com>
->
->
-> Nope, no stealing UDP packets with some random rx handlers.
+> Let's just leave it at DLCI/SDLA for now, we can revisit once Dave
+> is back :)
 
-Why? Is there any risks?
+Hi Arnd,
 
-Zhu Yanjun
->
-> The tunnel socket is a correct approach.
+Can you resubmit your patch to delete the DLCI / SDLA drivers? I
+really want them to be deleted. Thank you so much!
