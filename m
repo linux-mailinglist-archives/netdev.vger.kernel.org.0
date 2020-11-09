@@ -2,69 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A79022AC6C8
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 22:18:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28ADA2AC6E8
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 22:21:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730185AbgKIVSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 16:18:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41924 "EHLO
+        id S1730844AbgKIVTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 16:19:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725946AbgKIVSM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 16:18:12 -0500
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B028FC0613CF;
-        Mon,  9 Nov 2020 13:18:10 -0800 (PST)
-Received: by mail-ot1-x342.google.com with SMTP id a15so8689883otf.5;
-        Mon, 09 Nov 2020 13:18:10 -0800 (PST)
+        with ESMTP id S1730621AbgKIVTI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 16:19:08 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5936FC0613D3;
+        Mon,  9 Nov 2020 13:19:08 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id k26so11843456oiw.0;
+        Mon, 09 Nov 2020 13:19:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=59zjdzQyhp71sMG1iWXtFCQNcH3XvIU0Stj+Q44iaHY=;
-        b=BePoM79U3tOCqKP03BDWCIpjbvRQ76t9rRYgVJCjTKsfb3ipNwEB+fJ9OLqZeXWiB6
-         hPFACET1kpaDIg36+CZEqAc7S6SVLjmBjKgzzBum9Bfb/EDJ5xYPY9wzbutrApV52OdQ
-         gXr9wv8GZgyEgVmz60C9fyt1UtfDf6kBTgyAVY1BANszUec08P/UqThKVrjN320rCCzn
-         wOEFK5VWKAAQEDZQci/H3TQDD9soIEukprXlcPglHr9il7eYJx4RQOwhWVxPgdz6Co58
-         1CkJT8zwai0tGXo4uG4wzZgOEbaScmzSEnsBWI6+q8S9QlY3aL0NG3qNexXaUzbpeTMV
-         2K/w==
+        bh=mNCXb6okOAQ5bU8t6b7mqJM0F9PZekApdw3/WSH9rAA=;
+        b=nfC1W94rW35FMn3nyK0xnllzvWCOqq8GBpcNtezWALYI+7XIMjQge37o0AU0yHsBxC
+         y5gbh/pnrhx0kaYd7gx7k3REEPAnCC7tMOVmyFY9mtAVo+wFzRQ1TqyTR3pX6e+L5R0n
+         5KBDvSWPpHNncLeAEPnQo2Xh8PPxeeY653c21jzSfv5orDOHnWCqW9hC5KoHJTyuE7M3
+         UsYVMOyUlJHMqF1Hg+ZM3vU5XukFZme1ZWHiNF6Tn0D1Mybv97eM98m9+8U0tBXAgSGl
+         o8t6EeQoiZwZbbQg2rlDr9g5u71gIRlbgEO9M8U/SwXNJ8wgZNyEUjMAAiPPzlJbs+KQ
+         4dLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=59zjdzQyhp71sMG1iWXtFCQNcH3XvIU0Stj+Q44iaHY=;
-        b=tCldRHhmPlz50ZEMrcQfMbc3qGAPEj3x1tPolclPr1H3l1k8nO8vxhEIX29Epk19ly
-         6/vtR52betfWXaPLS9rUGDoStvIMVUGvkIw0UHY2BKQ2gFZIRUBNwatPp16Rz+5iV0am
-         KkupCsVhAatonAwd7y6vHAsr2Vyc5/zXLNyUt3bohKE5lGUZv3QKEs6IW5IjXAPpwd+B
-         CN1funXkc7Wcwa0JdQvqD6/0c7loRi8muBStvzYTwS0tTqcwajzTNpuHp89WH0KRl9lN
-         4ayI9e5bUdRfY5nOpulArsvmhcoxL03irgQkwaPLU41OetDzvPhv3tx29E8GkUO5dbL7
-         gkKw==
-X-Gm-Message-State: AOAM532ul81V9Br3BNic1NPhhTpo2u/h5pCo8RtAaE1qVcbAoTf09e0/
-        WcwOnE2VmznSmwT8QTma/Tw=
-X-Google-Smtp-Source: ABdhPJy7zBoSPSd6sF9tk44JcNBE39Gv+8c70Pz8yU8jNpswflIx5sqMRbq/48X9vuCgZrjRcOqBZA==
-X-Received: by 2002:a05:6830:1556:: with SMTP id l22mr12594411otp.102.1604956690092;
-        Mon, 09 Nov 2020 13:18:10 -0800 (PST)
+        bh=mNCXb6okOAQ5bU8t6b7mqJM0F9PZekApdw3/WSH9rAA=;
+        b=GWZYrXwWtPiezI4BUq/j3tT4x/Baud2pE0pZH5cRMiDQhrmvAsXTo41p5HTPsHKpS3
+         At7XWLVcDweLooNK5WlIrluYwaXrK92z66HRfLakYa0ktB/fluEPzhrcIMU8KnOCXapv
+         tgyzuu+oW9KRiVhGWrcyu1Pm8iQSQZzT86vWnLKh65j1hNfx9FaDDnQZhQz4Yo+erxon
+         a9ieSqNX9vRUOMObV0CvNjacgj502PUQ5HITlhSbM95Ey6tgJSsIACB+IxKXI6kqnl5t
+         fbHTLEyxQVWsax3TkFNYbSnXnxG1ws8+bKRbDEfAtAcHX26oRsq53jwlPm+8Xg4EfA3Z
+         y7wA==
+X-Gm-Message-State: AOAM532X7j7yajhyisKtWBWdhoaJRYWoBbTXWtPXaFJAT2NShWyAVBrH
+        9Kc0+v+nlkrHPUXHuMJMAFw=
+X-Google-Smtp-Source: ABdhPJxk9AUSFZj+rVipOwvEPHfbYj9JrGpo2jFIelJWkqTEU4c1VA7H4tPKmzo014VdO/vax1EGMA==
+X-Received: by 2002:aca:5742:: with SMTP id l63mr763944oib.166.1604956747718;
+        Mon, 09 Nov 2020 13:19:07 -0800 (PST)
 Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id c14sm2802175otp.1.2020.11.09.13.18.08
+        by smtp.gmail.com with ESMTPSA id z19sm2697381ooi.32.2020.11.09.13.19.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 13:18:09 -0800 (PST)
-Date:   Mon, 09 Nov 2020 13:18:01 -0800
+        Mon, 09 Nov 2020 13:19:07 -0800 (PST)
+Date:   Mon, 09 Nov 2020 13:19:00 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
-To:     Wang Qing <wangqing@vivo.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Wang Qing <wangqing@vivo.com>
-Message-ID: <5fa9b209b7eeb_8c0e208f3@john-XPS-13-9370.notmuch>
-In-Reply-To: <1604735144-686-1-git-send-email-wangqing@vivo.com>
-References: <1604735144-686-1-git-send-email-wangqing@vivo.com>
-Subject: RE: [PATCH v3 bpf] trace: bpf: Fix passing zero to PTR_ERR()
+To:     Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii@kernel.org, kernel-team@fb.com,
+        Dmitrii Banshchikov <dbanschikov@fb.com>
+Message-ID: <5fa9b2442542d_8c0e2085b@john-XPS-13-9370.notmuch>
+In-Reply-To: <20201107000251.256821-1-andrii@kernel.org>
+References: <20201107000251.256821-1-andrii@kernel.org>
+Subject: RE: [PATCH bpf] libbpf: don't attempt to load unused subprog as an
+ entry-point BPF program
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -73,30 +66,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wang Qing wrote:
-> There is a bug when passing zero to PTR_ERR() and return.
-> Fix smatch err.
+Andrii Nakryiko wrote:
+> If BPF code contains unused BPF subprogram and there are no other subprogram
+> calls (which can realistically happen in real-world applications given
+> sufficiently smart Clang code optimizations), libbpf will erroneously assume
+> that subprograms are entry-point programs and will attempt to load them with
+> UNSPEC program type.
 > 
-> Signed-off-by: Wang Qing <wangqing@vivo.com>
+> Fix by not relying on subcall instructions and rather detect it based on the
+> structure of BPF object's sections.
+> 
+> Reported-by: Dmitrii Banshchikov <dbanschikov@fb.com>
+> Fixes: 9a94f277c4fb ("tools: libbpf: restore the ability to load programs from .text section")
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 > ---
->  kernel/trace/bpf_trace.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index 4517c8b..5113fd4
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -1198,7 +1198,7 @@ static int bpf_btf_printf_prepare(struct btf_ptr *ptr, u32 btf_ptr_size,
->  	*btf = bpf_get_btf_vmlinux();
->  
->  	if (IS_ERR_OR_NULL(*btf))
-> -		return PTR_ERR(*btf);
-> +		return IS_ERR(*btf) ? PTR_ERR(*btf) : -EINVAL;
->  
->  	if (ptr->type_id > 0)
->  		*btf_id = ptr->type_id;
-> -- 
-> 2.7.4
-> 
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
