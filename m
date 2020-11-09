@@ -2,119 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B70B2AC0D6
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 17:26:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A3FF2AC0DD
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 17:29:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730121AbgKIQ0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 11:26:46 -0500
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:45871 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729791AbgKIQ0p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 11:26:45 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=wenan.mao@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UEmInaP_1604939200;
-Received: from B-44NBMD6M-0121.local(mailfrom:wenan.mao@linux.alibaba.com fp:SMTPD_---0UEmInaP_1604939200)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 10 Nov 2020 00:26:40 +0800
-Subject: Re: [PATCH net v2] net: Update window_clamp if SOCK_RCVBUF is set
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        id S1730204AbgKIQ26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 11:28:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53368 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729791AbgKIQ26 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 11:28:58 -0500
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4398FC0613D3
+        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 08:28:58 -0800 (PST)
+Received: by mail-ed1-x544.google.com with SMTP id e18so9410957edy.6
+        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 08:28:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VcXUbl2f8utqzzFYS4gDk1OqUS8YDWffeiu9Odc0C+A=;
+        b=dQghebCkUm/2O5HtpHQcC3Sq0S1OQ+BRaqC3PuEQsVdOFGAHwD4VkWfptetAQCjl/4
+         YJETS+0vzIUSWEurflkbpeallB89hLwtr2GzexP1cv0S8YLuJ8jXOUi/AgTWls1unH53
+         fj8KZS8ozbsQdhEUPV5+9EiWwH+NuAJ7I/TG2tL4x3pil2LOznG2xYbvKh5E3GJq+QtI
+         OEyHOp08I9/1XkNnW3UM2vUoWkYpMMgQXSPpYFwlJ4p0fUY9PDSaIVN2WbaKZ5DR5Dqy
+         sLyuAiQtU92/SH4a/d0t8IxYLIX5nIgpNlASaAgXLRI7+9HgTQTL1eFtMtOAPpUmXV/e
+         M7NQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VcXUbl2f8utqzzFYS4gDk1OqUS8YDWffeiu9Odc0C+A=;
+        b=ZIPpzjv7zW8fq28l0pfgxwjC1ZmUASmbmzzlZsgkud5rUQ6QGShIamTL1A3rDacRym
+         O2hsGDPjXUlaPdt1xta45FdLtbmyNEk/QukmsNQIhtgNB9LZAQ+Ce5ENkDVL/VBejCIB
+         ipHjCa+Iom8zOtnuxvBuJKi2MlBYOjS0mM3lxEilD1n1ZMsl2RXRfP4sy8lgo0+/2sDb
+         zemU0rCMq/AM3EpxsR9/zz8XG1jLYZAR56bZYmnm6a1fN1nbZxqZINEpM4I4ztXuJwbo
+         R2xlHQ1cZnc71MAw6Rbgsp8C8tLpRmb7ibtd+oPRgjG/xd+57VcjKpNAp+DcS6Y0353m
+         p6gg==
+X-Gm-Message-State: AOAM533BovF4JCiJQT9rFS0PAJ3rmC+k97nGGrArjdiH4pT/CU4Jq2qj
+        qIZIjt2CTltoecFjdZCoxaqz+A==
+X-Google-Smtp-Source: ABdhPJw9Ev8Usg+y6pJcQxDa4Fc6Eq+iqNDrk/4dsYlJhXWuzODI/Q5M+uLoEgvINzWOVj9kdpa0bQ==
+X-Received: by 2002:a50:a689:: with SMTP id e9mr6198994edc.233.1604939336772;
+        Mon, 09 Nov 2020 08:28:56 -0800 (PST)
+Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:42d:4528:36bd:c4ae])
+        by smtp.gmail.com with ESMTPSA id b12sm9204372edn.86.2020.11.09.08.28.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Nov 2020 08:28:56 -0800 (PST)
+To:     Geliang Tang <geliangtang@gmail.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-References: <1604913614-19432-1-git-send-email-wenan.mao@linux.alibaba.com>
- <1604914417-24578-1-git-send-email-wenan.mao@linux.alibaba.com>
- <CANn89iKiNdtxaL_yMF6=_8=m001vXVaxvECMGbAiXTYZjfj3oQ@mail.gmail.com>
- <3b92167c-201c-e85d-822d-06f0c9ac508c@linux.alibaba.com>
- <CANn89i+oS75TVKBDOBrr7Ff55Uctq4_HUcM_05Ed8kUL1HkHLw@mail.gmail.com>
- <CANn89iJ5kuEfKAJoWxM9MWV5X6nHXzbtcBkh1OBTak-Y6SzbPQ@mail.gmail.com>
- <CANn89iLhCjh7ZQRanVEj6Sytzn6LhFOb9Xo7O=teLHPouoeopw@mail.gmail.com>
-From:   Mao Wenan <wenan.mao@linux.alibaba.com>
-Message-ID: <302ad089-9e82-1856-0652-b92251c14e37@linux.alibaba.com>
-Date:   Tue, 10 Nov 2020 00:26:40 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.3.2
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>
+References: <cover.1604930005.git.geliangtang@gmail.com>
+ <ccf004469e02fb5bd7ec822414b9a98b0015f4a3.1604930005.git.geliangtang@gmail.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: Re: [MPTCP][PATCH net 1/2] mptcp: fix static checker warnings in
+ mptcp_pm_add_timer
+Message-ID: <009ea5da-8a44-3ea2-1b9f-a658a09f3396@tessares.net>
+Date:   Mon, 9 Nov 2020 17:28:54 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-In-Reply-To: <CANn89iLhCjh7ZQRanVEj6Sytzn6LhFOb9Xo7O=teLHPouoeopw@mail.gmail.com>
+In-Reply-To: <ccf004469e02fb5bd7ec822414b9a98b0015f4a3.1604930005.git.geliangtang@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Geliang, Dan,
 
+On 09/11/2020 14:59, Geliang Tang wrote:
+> Fix the following Smatch complaint:
 
-在 2020/11/9 下午10:01, Eric Dumazet 写道:
-> On Mon, Nov 9, 2020 at 12:41 PM Eric Dumazet <edumazet@google.com> wrote:
->>
->> Packetdrill test would be :
->>
->> // Force syncookies
->> `sysctl -q net.ipv4.tcp_syncookies=2`
->>
->>      0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
->>     +0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
->>     +0 setsockopt(3, SOL_SOCKET, SO_RCVBUF, [2048], 4) = 0
->>     +0 bind(3, ..., ...) = 0
->>     +0 listen(3, 1) = 0
->>
->> +0 < S 0:0(0) win 32792 <mss 1000,sackOK,TS val 100 ecr 0,nop,wscale 7>
->>     +0 > S. 0:0(0) ack 1 <mss 1460,sackOK,TS val 4000 ecr 100,nop,wscale 0>
->>    +.1 < . 1:1(0) ack 1 win 1024 <nop,nop,TS val 200 ecr 4000>
->>     +0 accept(3, ..., ...) = 4
->> +0 %{ assert tcpi_snd_wscale == 0, tcpi_snd_wscale }%
->>
+Thanks for the report and the patch!
+
+>       net/mptcp/pm_netlink.c:213 mptcp_pm_add_timer()
+>       warn: variable dereferenced before check 'msk' (see line 208)
 > 
-> Also, please add to your next submission an appropriate Fixes: tag :
+>   net/mptcp/pm_netlink.c
+>      207          struct mptcp_sock *msk = entry->sock;
+>      208          struct sock *sk = (struct sock *)msk;
+>      209          struct net *net = sock_net(sk);
+>                                             ^^
+>   "msk" dereferenced here.
 > 
-> Fixes: e88c64f0a425 ("tcp: allow effective reduction of TCP's
-> rcv-buffer via setsockopt")
-
-OK, thanks, I can reproduce wscale=0 with your packetdrill, and I will 
-send v3 with the fixes tag.
-
+>      210
+>      211          pr_debug("msk=%p", msk);
+>      212
+>      213          if (!msk)
+>                      ^^^^
+>   Too late.
 > 
->> On Mon, Nov 9, 2020 at 12:02 PM Eric Dumazet <edumazet@google.com> wrote:
->>>
->>> On Mon, Nov 9, 2020 at 11:12 AM Mao Wenan <wenan.mao@linux.alibaba.com> wrote:
->>>>
->>>>
->>>>
->>>> 在 2020/11/9 下午5:56, Eric Dumazet 写道:
->>>>> On Mon, Nov 9, 2020 at 10:33 AM Mao Wenan <wenan.mao@linux.alibaba.com> wrote:
->>>>>>
->>>>>> When net.ipv4.tcp_syncookies=1 and syn flood is happened,
->>>>>> cookie_v4_check or cookie_v6_check tries to redo what
->>>>>> tcp_v4_send_synack or tcp_v6_send_synack did,
->>>>>> rsk_window_clamp will be changed if SOCK_RCVBUF is set,
->>>>>> which will make rcv_wscale is different, the client
->>>>>> still operates with initial window scale and can overshot
->>>>>> granted window, the client use the initial scale but local
->>>>>> server use new scale to advertise window value, and session
->>>>>> work abnormally.
->>>>>
->>>>> What is not working exactly ?
->>>>>
->>>>> Sending a 'big wscale' should not really matter, unless perhaps there
->>>>> is a buggy stack at the remote end ?
->>>> 1)in tcp_v4_send_synack, if SO_RCVBUF is set and
->>>> tcp_full_space(sk)=65535, pass req->rsk_window_clamp=65535 to
->>>> tcp_select_initial_window, rcv_wscale will be zero, and send to client,
->>>> the client consider wscale is 0;
->>>> 2)when ack is back from client, if there is no this patch,
->>>> req->rsk_window_clamp is 0, and pass to tcp_select_initial_window,
->>>> wscale will be 7, this new rcv_wscale is no way to advertise to client.
->>>> 3)if server send rcv_wind to client with window=63, it consider the real
->>>> window is 63*2^7=8064, but client consider the server window is only
->>>> 63*2^0=63, it can't send big packet to server, and the send-q of client
->>>> is full.
->>>>
->>>
->>> I see, please change your patches so that tcp_full_space() is used _once_
->>>
->>> listener sk_rcvbuf can change under us.
->>>
->>> I really have no idea how window can be set to 63, so please send us
->>> the packetdrill test once you have it.
+>      214                  return;
+>      215
+> 
+> Fixes: 93f323b9cccc ("mptcp: add a new sysctl add_addr_timeout")
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+> Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+
+A small detail (I think): the Signed-off-by of the sender (Geliang) 
+should be the last one in the list if I am not mistaken.
+But I guess this is not blocking.
+
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
