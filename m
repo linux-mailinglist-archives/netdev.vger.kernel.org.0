@@ -2,72 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63C562AB5BB
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 12:03:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CE6F2AB5CC
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 12:05:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729492AbgKILDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 06:03:06 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:48784 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729276AbgKILDG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 06:03:06 -0500
-Received: by mail-il1-f198.google.com with SMTP id o5so6147280ilh.15
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 03:03:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=RC1F7ktIPdtkjf9WZxb33quJkR4mZqslLpcDaMizXIQ=;
-        b=QBHmve8DHzh3tmvWNY+QXSVEyNbF20oZO8z+VB9Tp+CgnMYsoCXypgu5YYNTm1mXhd
-         RL45I9WG/FKJZJzO77Q96a/DRl09np+uoXiXmhSPpfgYHEUMKvffWy+35BwVFqh31baQ
-         u7ZhVvUTDs/5TBosK/p6E/ch6O5mYynoCaUFwHysnQlOTptXhG35j5fH9WBMlbjT4ElW
-         RtytoGok0VpbfCTuQZhJb1Uqak18h5IU1h5sjH2IaAr3hC7kt85AsQWDTGEf5HtNtJ7B
-         ycEwBGEOVMKht1o5Sc4Q6JHAVUWHLWRkKfQRt3e9NdrejT43F5GDG7eqvYLtaGCi4t6t
-         2b6w==
-X-Gm-Message-State: AOAM531s+mVySzNhWtU8oHzuHzL2VYNWtnOHvWFd09hCueYvYLDoXTLv
-        2tV9bgrqjbXhrdinOLRI8v1c0HMHPwDMTA3ewJdlrrehf7LH
-X-Google-Smtp-Source: ABdhPJywQbYbN3++ou8k2gB6sjlyy0rEKh+k8IYljtbeI93rm6pObmoUSlPtAT1Ld4D0aDBhwcdPxIgVjgAK/RKW4DgHAskDUE5K
+        id S1729243AbgKILFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 06:05:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727303AbgKILFT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 06:05:19 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47AD7C0613CF;
+        Mon,  9 Nov 2020 03:05:19 -0800 (PST)
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 25ABA22EEB;
+        Mon,  9 Nov 2020 12:05:16 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1604919916;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=kOqIuIndQf3aK9yaBEOv3D7I9b4UZvE3iTyoW8FVpLU=;
+        b=rO4j0B0yfqTFIx0ShMhu8go6NNnXWNsz4GOFGyfWQ84tagw2diaJvToVUOdJta8GF49kxa
+        Q4YyJxB16cxvLwA/zZZ99c9nnNAd7ZvEHcX+SyBdLqbvEGCMzPbuNOlh/g57WnhrFNn7hA
+        4WDF0luGmCuXYTo8Rpr9DBMVVF77ZFg=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Michael Walle <michael@walle.cc>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net RESEND] arm64: dts: fsl-ls1028a-kontron-sl28: specify in-band mode for ENETC
+Date:   Mon,  9 Nov 2020 12:04:36 +0100
+Message-Id: <20201109110436.5906-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:d5d0:: with SMTP id d16mr10009802ilq.223.1604919785429;
- Mon, 09 Nov 2020 03:03:05 -0800 (PST)
-Date:   Mon, 09 Nov 2020 03:03:05 -0800
-In-Reply-To: <000000000000a48f9e05aef6cce1@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b4227e05b3aa8101@google.com>
-Subject: Re: INFO: rcu detected stall in exit_group
-From:   syzbot <syzbot+1a14a0f8ce1a06d4415f@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, dhowells@redhat.com, fweisbec@gmail.com,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, mareklindner@neomailbox.ch,
-        mike.kravetz@oracle.com, mingo@kernel.org, netdev@vger.kernel.org,
-        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+Since commit 71b77a7a27a3 ("enetc: Migrate to PHYLINK and PCS_LYNX") the
+network port of the Kontron sl28 board is broken. After the migration to
+phylink the device tree has to specify the in-band-mode property. Add
+it.
 
-commit 1d0e850a49a5b56f8f3cb51e74a11e2fedb96be6
-Author: David Howells <dhowells@redhat.com>
-Date:   Fri Oct 16 12:21:14 2020 +0000
+Fixes: 71b77a7a27a3 ("enetc: Migrate to PHYLINK and PCS_LYNX")
+Suggested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+Forgot to add the netdev@ mailinglist in my former submission.
 
-    afs: Fix cell removal
+From my previous mail:
+> Ping. will this go through the net queue or Shawn's queue. In any case,
+> it should make it into a fixes queue, because this board is currently
+> broken in 5.10-rc2.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14b65c3a500000
-start commit:   34d4ddd3 Merge tag 'linux-kselftest-5.9-rc5' of git://git...
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a9075b36a6ae26c9
-dashboard link: https://syzkaller.appspot.com/bug?extid=1a14a0f8ce1a06d4415f
-userspace arch: i386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10c6642d900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132d00fd900000
+ arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts | 1 +
+ 1 file changed, 1 insertion(+)
 
-If the result looks correct, please mark the issue as fixed by replying with:
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
+index 17a2f5dacc3f..54ff6f7c2477 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
+@@ -79,6 +79,7 @@
+ &enetc_port0 {
+ 	phy-handle = <&phy0>;
+ 	phy-connection-type = "sgmii";
++	managed = "in-band-status";
+ 	status = "okay";
+ 
+ 	mdio {
+-- 
+2.20.1
 
-#syz fix: afs: Fix cell removal
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
