@@ -2,68 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 315772AB88A
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 13:46:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AC722AB8B1
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 13:52:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729516AbgKIMqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 07:46:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48646 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727311AbgKIMp7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 07:45:59 -0500
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F147E20659;
-        Mon,  9 Nov 2020 12:45:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604925958;
-        bh=XGv29gtnKEeD+MqLt6Z0oRnSXCeM5E2a/egTV6CQId8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=I1dYxZdpMejwJkwo9vR9NrfBKl3MzlQL1sEAIkSo3hXBHGcGx9cXupWTwWqvdUGhh
-         j2QkK+oq8GcqqucEj7+bGHrJsDV+xaQ6N0/1y8NG0P8uC10jEF8Q0K8+5kcKdG/tNw
-         AAHml90l9mRbjI6wdTR4agGd03aWEaMG4Lu0JMbA=
-Date:   Mon, 9 Nov 2020 13:46:58 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     stable@vger.kernel.org, vpai@akamai.com,
-        Joakim.Tjernlund@infinera.com, xiyou.wangcong@gmail.com,
-        johunt@akamai.com, jhs@mojatatu.com, jiri@resnulli.us,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@huawei.com,
-        john.fastabend@gmail.com, eric.dumazet@gmail.com, dsahern@gmail.com
-Subject: Re: [PATCH stable] net: sch_generic: fix the missing new qdisc
- assignment bug
-Message-ID: <20201109124658.GC1834954@kroah.com>
-References: <1604373938-211588-1-git-send-email-linyunsheng@huawei.com>
+        id S1729740AbgKIMwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 07:52:19 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:51078 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729366AbgKIMv7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 07:51:59 -0500
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1604926306;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zwES86N0yJ0dgEGX9ZXoJmJfCl+XMGLkOyAmFYlVn78=;
+        b=SJSUAYLne91ofdxwYKpDP/cXIlGLsDnBBfB+R/eBAJLeOtbBne78hIbZbNWueiMJes2OM6
+        wuB1J9pVZ5QdjSIpZOks+7xTCCcVSIxSLTWYWVu7sEpaSO45/RK/+J7AUqTWAt8Pr2Ekry
+        dQofOxY392Tc96ASX3EUpu+ydoaqqGidcWjHk6SrLQKUK72syPdDTy+9P434k8o4AWRPDT
+        WI/iyXgFsCy+AFKeW/W2tL22iFRaN26DJuWCZJ6EX8jTFigVYeanxXO4Xkpmx3zLthF+T+
+        W8paKGedu274pQrGpwpS6xG2pAhE3QNVGOD/GhDcCl5nS70dm540usAMddXjsQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1604926306;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zwES86N0yJ0dgEGX9ZXoJmJfCl+XMGLkOyAmFYlVn78=;
+        b=nLbbdC5jNq5ayIWQQ4PdZgzOVEv5Movf8A9/IZhH113Xdnz79wP1JciDk8Q6dmQbZqsx+E
+        O1QWzdv07Y3YNwBg==
+To:     Colin King <colin.king@canonical.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] net: dsa: fix unintended sign extension on a u16 left shift
+In-Reply-To: <20201109124008.2079873-1-colin.king@canonical.com>
+References: <20201109124008.2079873-1-colin.king@canonical.com>
+Date:   Mon, 09 Nov 2020 13:51:45 +0100
+Message-ID: <877dqusnfi.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1604373938-211588-1-git-send-email-linyunsheng@huawei.com>
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 03, 2020 at 11:25:38AM +0800, Yunsheng Lin wrote:
-> commit 2fb541c862c9 ("net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc")
-> 
-> When the above upstream commit is backported to stable kernel,
-> one assignment is missing, which causes two problems reported
-> by Joakim and Vishwanath, see [1] and [2].
-> 
-> So add the assignment back to fix it.
-> 
-> 1. https://www.spinics.net/lists/netdev/msg693916.html
-> 2. https://www.spinics.net/lists/netdev/msg695131.html
-> 
-> Fixes: 749cc0b0c7f3 ("net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc")
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+
+On Mon Nov 09 2020, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+>
+> The left shift of u16 variable high is promoted to the type int and
+> then sign extended to a 64 bit u64 value.  If the top bit of high is
+> set then the upper 32 bits of the result end up being set by the
+> sign extension. Fix this by explicitly casting the value in high to
+> a u64 before left shifting by 16 places.
+>
+> Also, remove the initialisation of variable value to 0 at the start
+> of each loop iteration as the value is never read and hence the
+> assignment it is redundant.
+>
+> Addresses-Coverity: ("Unintended sign extension")
+> Fixes: e4b27ebc780f ("net: dsa: Add DSA driver for Hirschmann Hellcreek s=
+witches")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 > ---
->  net/sched/sch_generic.c | 3 +++
->  1 file changed, 3 insertions(+)
+>  drivers/net/dsa/hirschmann/hellcreek.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hir=
+schmann/hellcreek.c
+> index dfa66f7260d6..d42f40c76ba5 100644
+> --- a/drivers/net/dsa/hirschmann/hellcreek.c
+> +++ b/drivers/net/dsa/hirschmann/hellcreek.c
+> @@ -308,7 +308,7 @@ static void hellcreek_get_ethtool_stats(struct dsa_sw=
+itch *ds, int port,
+>  		const struct hellcreek_counter *counter =3D &hellcreek_counter[i];
+>  		u8 offset =3D counter->offset + port * 64;
+>  		u16 high, low;
+> -		u64 value =3D 0;
+> +		u64 value;
+>=20=20
+>  		mutex_lock(&hellcreek->reg_lock);
+>=20=20
+> @@ -320,7 +320,7 @@ static void hellcreek_get_ethtool_stats(struct dsa_sw=
+itch *ds, int port,
+>  		 */
+>  		high  =3D hellcreek_read(hellcreek, HR_CRDH);
+>  		low   =3D hellcreek_read(hellcreek, HR_CRDL);
+> -		value =3D (high << 16) | low;
+> +		value =3D ((u64)high << 16) | low;
 
-What kernel tree(s) does this need to be backported to?
+Looks good to me. Thank you.
 
-thanks,
+Thanks,
+Kurt
 
-greg k-h
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+pO2EACgkQeSpbgcuY
+8KauRhAAkLQ+DCT570ooD5dZAQdphqu8IuvFMDQbsPy92qO9FNA07A5n0P2hbZdq
+JE2jjD0VUcP+FjhbZ7nz7vPl9vohLZ4P5ZQBX+J25YF+lh0JqJFcH8kSdhobOSdb
+Cz68+RnbmEA63M82oYGZUwk7ZZ48Ao4oa6v+9snaUZ4onq2iy1ZBcvqpjbTtMCKn
+CQxH8fGe8D6l0vXUF6Ma/M/RTuOFA7IK7rVVBJ2OyAxzrSj/Q6sJ0RrUsgHztBms
+iWRWu2Vdq434aR73SxKj8O8pWRusagd0xdNcMu8Le1Zd9dw6CE+MGBGWZiqCyzeY
+mZF2A6GW4OMKFz6GLhIlSU/MclXMLmYNRKh0AiaccG9A2M8C6R+5sL62BeJU6WPm
+jEv0DM5fV3dPEA2w7U2bS2CTJVtpwgFutE2q8CsIKpZ1gyRDkSvoGBH5Mjy+l2qA
+NIi0c9gBCgz6Mx2uyXme6hmciTFd6cCohmjFm7gtX8ZbumqIFhaWNNwFrgFZ/FsB
+LoxBRM7hZPkGmnnMFrxKpTym+9JcAg5+gvFsa2G6gfAv22fxdi/qKg34npksnWY+
+GvOFLwHBJJrenP96uDCNOlogRkOesgdeO9K6R3JqpgEFV0l0kV2q5mZ3bPxT/cIw
+jw4M68MPiFOfiUudIARjVofFONh/Dn0bpekmSA8HWLTu5Dvj8zY=
+=DIYK
+-----END PGP SIGNATURE-----
+--=-=-=--
