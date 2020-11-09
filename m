@@ -2,218 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B55382ABBBF
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 14:32:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE4432ABC06
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 14:35:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733272AbgKINaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 08:30:03 -0500
-Received: from mx2.suse.de ([195.135.220.15]:38786 "EHLO mx2.suse.de"
+        id S1731975AbgKINdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 08:33:02 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:42850 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732381AbgKINaB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 08:30:01 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id A0EABAD4F;
-        Mon,  9 Nov 2020 13:29:59 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 67F9D60344; Mon,  9 Nov 2020 14:29:59 +0100 (CET)
-Message-Id: <41b2639b0ea126964ed85eb0a5255bf6e4efcff3.1604928515.git.mkubecek@suse.cz>
-In-Reply-To: <cover.1604928515.git.mkubecek@suse.cz>
-References: <cover.1604928515.git.mkubecek@suse.cz>
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool 2/2] ethtool: Improve compatibility between netlink
- and ioctl interfaces
-To:     netdev@vger.kernel.org
-Cc:     Ido Schimmel <idosch@idosch.org>, Jakub Kicinski <kuba@kernel.org>,
-        Ivan Vecera <ivecera@redhat.com>
-Date:   Mon,  9 Nov 2020 14:29:59 +0100 (CET)
+        id S1732249AbgKINdA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 08:33:00 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kc7Hq-0065hb-8j; Mon, 09 Nov 2020 14:32:46 +0100
+Date:   Mon, 9 Nov 2020 14:32:46 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wong Vee Khee <vee.khee.wong@intel.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Wei Feng <weifeng.voon@intel.com>
+Subject: Re: [PATCH net-next 1/1] net: phy: Allow mdio buses to probe C45
+ before falling back to C22
+Message-ID: <20201109133246.GC1429655@lunn.ch>
+References: <20201109124347.13087-1-vee.khee.wong@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201109124347.13087-1-vee.khee.wong@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+On Mon, Nov 09, 2020 at 08:43:47PM +0800, Wong Vee Khee wrote:
+> This patch makes mdiobus_scan() to try on C45 first as C45 can access
+> all devices. This allows the function available for the PHY that
+> supports for both C45 and C22.
+> 
+> Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
+> Reviewed-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
 
-With the ioctl interface, when autoneg is enabled, but without
-specifying speed, duplex or link modes, the advertised link modes are
-set to the supported link modes by the ethtool user space utility.
+Hi
 
-This does not happen when using the netlink interface. Fix this
-incompatibility problem by having ethtool query the supported link modes
-from the kernel and advertise all the "real" ones when only "autoneg on"
-is specified.
+You need to add a user of this.
 
-Before:
+And i would like to see a more detailed explanation of why it is
+needed. The PHY driver is free to do either C45 or C22 transfers.
+Why does it care how the device was found?
+Plus you can generally access C45 registers via the C45 over C22.  If
+the PHY does not allow C45 over C22, then i expect the driver needs to
+be aware of if the PHY can be access either way, and it needs to do
+different things. And there is no PHY driver that i know of which does
+this.
 
-Settings for eth0:
-	Supported ports: [ TP ]
-	Supported link modes:   10baseT/Half 10baseT/Full
-	                        100baseT/Half 100baseT/Full
-	                        1000baseT/Full
-	Supported pause frame use: No
-	Supports auto-negotiation: Yes
-	Supported FEC modes: Not reported
-	Advertised link modes:  100baseT/Half 100baseT/Full
-	Advertised pause frame use: No
-	Advertised auto-negotiation: Yes
-	Advertised FEC modes: Not reported
-	Speed: 1000Mb/s
-	Duplex: Full
-	Auto-negotiation: on
-	Port: Twisted Pair
-	PHYAD: 0
-	Transceiver: internal
-	MDI-X: off (auto)
-	Supports Wake-on: umbg
-	Wake-on: d
-        Current message level: 0x00000007 (7)
-                               drv probe link
-	Link detected: yes
+So before this goes any further, we need to see the bigger picture.
 
-After:
-
-Settings for eth0:
-	Supported ports: [ TP ]
-	Supported link modes:   10baseT/Half 10baseT/Full
-	                        100baseT/Half 100baseT/Full
-	                        1000baseT/Full
-	Supported pause frame use: No
-	Supports auto-negotiation: Yes
-	Supported FEC modes: Not reported
-	Advertised link modes:  10baseT/Half 10baseT/Full
-	                        100baseT/Half 100baseT/Full
-	                        1000baseT/Full
-	Advertised pause frame use: No
-	Advertised auto-negotiation: Yes
-	Advertised FEC modes: Not reported
-	Speed: 1000Mb/s
-	Duplex: Full
-	Auto-negotiation: on
-	Port: Twisted Pair
-	PHYAD: 0
-	Transceiver: internal
-	MDI-X: on (auto)
-	Supports Wake-on: umbg
-	Wake-on: d
-        Current message level: 0x00000007 (7)
-                               drv probe link
-	Link detected: yes
-
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
----
- netlink/settings.c | 92 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 92 insertions(+)
-
-diff --git a/netlink/settings.c b/netlink/settings.c
-index dc9280c114b5..90c28b1bc424 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -1115,6 +1115,93 @@ static const struct param_parser sset_params[] = {
-  */
- #define SSET_MAX_MSGS 4
- 
-+static int linkmodes_reply_advert_all_cb(const struct nlmsghdr *nlhdr,
-+					 void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_LINKMODES_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct nl_msg_buff *req_msgbuff = data;
-+	const struct nlattr *ours_attr;
-+	struct nlattr *req_bitset;
-+	uint32_t *supported_modes;
-+	unsigned int modes_count;
-+	unsigned int i;
-+	int ret;
-+
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return MNL_CB_ERROR;
-+	ours_attr = tb[ETHTOOL_A_LINKMODES_OURS];
-+	if (!ours_attr)
-+		return MNL_CB_ERROR;
-+	modes_count = bitset_get_count(tb[ETHTOOL_A_LINKMODES_OURS], &ret);
-+	if (ret < 0)
-+		return MNL_CB_ERROR;
-+	supported_modes = get_compact_bitset_mask(tb[ETHTOOL_A_LINKMODES_OURS]);
-+	if (!supported_modes)
-+		return MNL_CB_ERROR;
-+
-+	/* keep only "real" link modes */
-+	for (i = 0; i < modes_count; i++)
-+		if (!lm_class_match(i, LM_CLASS_REAL))
-+			supported_modes[i / 32] &= ~((uint32_t)1 << (i % 32));
-+
-+	req_bitset = ethnla_nest_start(req_msgbuff, ETHTOOL_A_LINKMODES_OURS);
-+	if (!req_bitset)
-+		return MNL_CB_ERROR;
-+
-+	if (ethnla_put_u32(req_msgbuff, ETHTOOL_A_BITSET_SIZE, modes_count) ||
-+	    ethnla_put(req_msgbuff, ETHTOOL_A_BITSET_VALUE,
-+		       DIV_ROUND_UP(modes_count, 32) * sizeof(uint32_t),
-+		       supported_modes) ||
-+	    ethnla_put(req_msgbuff, ETHTOOL_A_BITSET_MASK,
-+		       DIV_ROUND_UP(modes_count, 32) * sizeof(uint32_t),
-+		       supported_modes)) {
-+		ethnla_nest_cancel(req_msgbuff, req_bitset);
-+		return MNL_CB_ERROR;
-+	}
-+
-+	ethnla_nest_end(req_msgbuff, req_bitset);
-+	return MNL_CB_OK;
-+}
-+
-+/* For compatibility reasons with ioctl-based ethtool, when "autoneg on" is
-+ * specified without "advertise", "speed" and "duplex", we need to query the
-+ * supported link modes from the kernel and advertise all the "real" ones.
-+ */
-+static int nl_sset_compat_linkmodes(struct nl_context *nlctx,
-+				    struct nl_msg_buff *msgbuff)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_LINKMODES_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	int ret;
-+
-+	ret = mnl_attr_parse(msgbuff->nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return ret;
-+	if (!tb[ETHTOOL_A_LINKMODES_AUTONEG] || tb[ETHTOOL_A_LINKMODES_OURS] ||
-+	    tb[ETHTOOL_A_LINKMODES_SPEED] || tb[ETHTOOL_A_LINKMODES_DUPLEX])
-+		return 0;
-+	if (!mnl_attr_get_u8(tb[ETHTOOL_A_LINKMODES_AUTONEG]))
-+		return 0;
-+
-+	/* all conditions satisfied, create ETHTOOL_A_LINKMODES_OURS */
-+	if (netlink_cmd_check(nlctx->ctx, ETHTOOL_MSG_LINKMODES_GET, false) ||
-+	    netlink_cmd_check(nlctx->ctx, ETHTOOL_MSG_LINKMODES_SET, false))
-+		return -EOPNOTSUPP;
-+	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_LINKMODES_GET,
-+				      ETHTOOL_A_LINKMODES_HEADER,
-+				      ETHTOOL_FLAG_COMPACT_BITSETS);
-+	if (ret < 0)
-+		return ret;
-+	ret = nlsock_sendmsg(nlsk, NULL);
-+	if (ret < 0)
-+		return ret;
-+	return nlsock_process_reply(nlsk, linkmodes_reply_advert_all_cb,
-+				    msgbuff);
-+}
-+
- int nl_sset(struct cmd_context *ctx)
- {
- 	struct nl_msg_buff *msgbuffs[SSET_MAX_MSGS] = {};
-@@ -1136,6 +1223,11 @@ int nl_sset(struct cmd_context *ctx)
- 	for (i = 0; i < SSET_MAX_MSGS && msgbuffs[i]; i++) {
- 		struct nl_socket *nlsk = nlctx->ethnl_socket;
- 
-+		if (msgbuffs[i]->genlhdr->cmd == ETHTOOL_MSG_LINKMODES_SET) {
-+			ret = nl_sset_compat_linkmodes(nlctx, msgbuffs[i]);
-+			if (ret < 0)
-+				goto out_free;
-+		}
- 		ret = nlsock_sendmsg(nlsk, msgbuffs[i]);
- 		if (ret < 0)
- 			goto out_free;
--- 
-2.29.2
-
+   Andrew
