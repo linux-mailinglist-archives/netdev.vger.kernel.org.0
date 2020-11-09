@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FE652AB60E
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 12:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 046BF2AB606
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 12:08:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729800AbgKILIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 06:08:04 -0500
+        id S1729599AbgKILHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 06:07:54 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729592AbgKILHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 06:07:10 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A112CC061A4C
-        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 03:07:07 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id c17so8204235wrc.11
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 03:07:07 -0800 (PST)
+        with ESMTP id S1729617AbgKILHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 06:07:13 -0500
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F2CC061A53
+        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 03:07:09 -0800 (PST)
+Received: by mail-wr1-x442.google.com with SMTP id s8so1124771wrw.10
+        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 03:07:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=m2ikj+dhQ1Zeha09QctzFr3Pm7l2AwdyE1EcOPpxBQc=;
-        b=lrGFiV0JEwMQZrmMw1exEx6p70DOim7QTqsGe9oOJfscxaaDbqtNd51mDY2gLrVO6e
-         AJaVU6gEvJ5Rqj0pmzF+RQrIAx3UUypf5ocQh5+MxoPZ8v5DbPYgi+LUXOO0xXncPOxJ
-         vazruXakD7raTY00eG7zaplUuhpuFOzAXeDC0+Go3Z91tS4RB4jYmtz+tumRzgHuHKVW
-         Q3APL+KmLaN9niAGudHytA7iWz6ha072HjPWCU0qqHVWmvaciARBx8JEUQUEjIamSyMq
-         CKw7PL+YgCXUcrNMDTeAPsCWzL8tuPTeq/pLQmlfpQnNOHY3qjMybpVo+6SdERNaMi03
-         sDgw==
+        bh=iECHQmtOjlKNpXGH67tnBHQ9XW515B1GPzEiiSpCWAs=;
+        b=xWDYj2fBLmHGr/Gy85P06U2gKM3D4irotg7Jdhw1AyiBnRSDDMWVsz+UsdmoIiJ1F6
+         nBdb9dPDrCjuHs2goVBwrr6i6L4C7nSkDDkQ52BSJEmC2Sc+Lp3e/ArXtKhoYyq2tjlm
+         enDVDKNvTwWmAC7ozqpXJrCXGsNiuZH44PQN4c/a7dPfoMS2oPpYh7i3mNmXgbZlJvFE
+         GIrrnt+rSBU33vfETv4kqGiEQcGPEdca2Jt17hBqqYBDAZWSOPL0sA/n+Zbdml7GLRC0
+         DkMxtT7MSeOhKhfcqgYLWG72cc/mZ35Yq91+n4gnXf+cL4HS0AnCOswBrOImbVlmN+XV
+         kQGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=m2ikj+dhQ1Zeha09QctzFr3Pm7l2AwdyE1EcOPpxBQc=;
-        b=AB8s101O1bEjOzDMBib83/87SaAtwOOS0W38jsNpe4IhNk6CRoR1tcCPyYcZOF5hZa
-         J5LxMvm/EH4YNOxjv17ef9Xr5mVWMP0IK7BfA00X4NPzx4BSEpPdARCMWXHLKnBehHsb
-         zWqzDejwoCWXtXUQGWvSt98BF2XQug83FzIS70MPzLuVtIjopPD9GOp0BqGG8sT8Xo4o
-         Wb+N54U5i0pGxkUNSH3+QdNTif+wro7YfKGhHpXnL0UeYB+bLBoNNqXt1rUIPuTF9hT7
-         PXJgjw5IL0Z17I2JJ5v9O7BsLMNBXcv0xmPGQU67+dO/RrPncDfrMqexjUT+odHfpZIZ
-         OSjg==
-X-Gm-Message-State: AOAM532xPb4M0CtjHkm88PFqNvueKpTPgYzJNadLqoTGxUadpPnsVdiS
-        IIy0rWZ7dMz69/LXrLYwqw1i7g==
-X-Google-Smtp-Source: ABdhPJyDQDC3mJ8XBzXRPLr9tujc8yB1EaUC1zlVXx3gghE7oqzt7WatCScZ7dhRaCoAETe4X60pOw==
-X-Received: by 2002:a5d:54c5:: with SMTP id x5mr3869675wrv.297.1604920026445;
-        Mon, 09 Nov 2020 03:07:06 -0800 (PST)
+        bh=iECHQmtOjlKNpXGH67tnBHQ9XW515B1GPzEiiSpCWAs=;
+        b=CKYLS2Ye7TghB8bKJtHwFY7hNAjleMQRtKKXX8tyIhFuALBmniKtf7C+GnB1eRzlwW
+         x3NLPlw5PfsceKOojJS0fLnuOcRVnxB1Z4S43kx/1WGZAsxshavVdbuQiLMue9iTY/Hr
+         DVQAW9i4lzho3D+TMlKM/zj0l3Olnk77KAEYt6I0Hzo1GnxgKaZRYRYZveCXxDcDJuTE
+         ouEt6WspRSA8Sj3yWQOniVJbpXsJ+BzqU7KUpi7UFh+FZYo88cHHgIVw5A4vrv7QEslz
+         m8hsOYQfQEio67Rxnuni0VqA7vkldnh1+Q+ylkudVsfuvGpPWO/T9xeVQ4/waCfzR3//
+         1fWQ==
+X-Gm-Message-State: AOAM533bNu86neoHnYzOo5RZDdzmBegpepHTozyfvL7JHyWXMpIlwT82
+        KReW9ti7BMZtJPF+EkEz/B6UuQ==
+X-Google-Smtp-Source: ABdhPJxJIoqvvP9l/776r7Kb43HV1AC5EVztuqTnCOgkzEIqxPExxehDC+JhspQEHF3syfUB3O2Rrw==
+X-Received: by 2002:adf:eb4f:: with SMTP id u15mr17320974wrn.165.1604920028177;
+        Mon, 09 Nov 2020 03:07:08 -0800 (PST)
 Received: from localhost.localdomain (lfbn-nic-1-190-206.w2-15.abo.wanadoo.fr. [2.15.39.206])
-        by smtp.gmail.com with ESMTPSA id d3sm12815582wre.91.2020.11.09.03.07.04
+        by smtp.gmail.com with ESMTPSA id d3sm12815582wre.91.2020.11.09.03.07.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 03:07:05 -0800 (PST)
+        Mon, 09 Nov 2020 03:07:07 -0800 (PST)
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sumit Semwal <sumit.semwal@linaro.org>,
@@ -79,9 +79,9 @@ Cc:     linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
         netdev@vger.kernel.org, linux-mm@kvack.org,
         alsa-devel@alsa-project.org,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH v3 4/9] vhost: vringh: use krealloc_array()
-Date:   Mon,  9 Nov 2020 12:06:49 +0100
-Message-Id: <20201109110654.12547-5-brgl@bgdev.pl>
+Subject: [PATCH v3 5/9] pinctrl: use krealloc_array()
+Date:   Mon,  9 Nov 2020 12:06:50 +0100
+Message-Id: <20201109110654.12547-6-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.29.1
 In-Reply-To: <20201109110654.12547-1-brgl@bgdev.pl>
 References: <20201109110654.12547-1-brgl@bgdev.pl>
@@ -97,25 +97,24 @@ Use the helper that checks for overflows internally instead of manually
 calculating the size of the new array.
 
 Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/vhost/vringh.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pinctrl/pinctrl-utils.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index 8bd8b403f087..08a0e1c842df 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -198,7 +198,8 @@ static int resize_iovec(struct vringh_kiov *iov, gfp_t gfp)
+diff --git a/drivers/pinctrl/pinctrl-utils.c b/drivers/pinctrl/pinctrl-utils.c
+index f2bcbf62c03d..93df0d4c0a24 100644
+--- a/drivers/pinctrl/pinctrl-utils.c
++++ b/drivers/pinctrl/pinctrl-utils.c
+@@ -39,7 +39,7 @@ int pinctrl_utils_reserve_map(struct pinctrl_dev *pctldev,
+ 	if (old_num >= new_num)
+ 		return 0;
  
- 	flag = (iov->max_num & VRINGH_IOV_ALLOCATED);
- 	if (flag)
--		new = krealloc(iov->iov, new_num * sizeof(struct iovec), gfp);
-+		new = krealloc_array(iov->iov, new_num,
-+				     sizeof(struct iovec), gfp);
- 	else {
- 		new = kmalloc_array(new_num, sizeof(struct iovec), gfp);
- 		if (new) {
+-	new_map = krealloc(*map, sizeof(*new_map) * new_num, GFP_KERNEL);
++	new_map = krealloc_array(*map, new_num, sizeof(*new_map), GFP_KERNEL);
+ 	if (!new_map) {
+ 		dev_err(pctldev->dev, "krealloc(map) failed\n");
+ 		return -ENOMEM;
 -- 
 2.29.1
 
