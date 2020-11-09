@@ -2,238 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10F102AB208
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 08:58:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B2052AB21E
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 09:05:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729789AbgKIH5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 02:57:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729737AbgKIH5v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 02:57:51 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D080C0613D4
-        for <netdev@vger.kernel.org>; Sun,  8 Nov 2020 23:57:51 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id c196so10206158ybf.0
-        for <netdev@vger.kernel.org>; Sun, 08 Nov 2020 23:57:51 -0800 (PST)
+        id S1729701AbgKIIFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 03:05:30 -0500
+Received: from mail-eopbgr680066.outbound.protection.outlook.com ([40.107.68.66]:15006
+        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727077AbgKIIF3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 03:05:29 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VxRnT2Z6VeA7gKyrKIayDLna6nUZKHYfh7Nml15mr0vCHdIlCt+FVXNpJVLOEYInUJ7fmAgiczWJvQI7hm+qCFV7DbTiLmE+hbZn4r0G1nBHhnnSSufiEV3e+7Ev2CLB+ogPZKnLcMUR3MdnXsmXhw8qBsUe5Qo9UCQQ9KnbLumQwp5MKbWKriFRxnfszqE7MBdNaZZFFH6UEmGd6IW5AsldLxXuVpUHj2gri3Il1GMtUfdI4p7l5ehv2Ugv3HZ9K3t6R3/Ff6uD5bern2rHAUk2enSBpkPQ6bQL6YrNl8sVFNLU3KRsOHHAt9p8g/HekjugcfzAmIaEgkDSKNhaRg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cVzYQ7WyKGSlenh/Imy5VDY/ypXBBeSCNPH66uNYmXg=;
+ b=DJhXIkckadqX+YGqP8j4HG/QrTNxrkiLQMLZWZoA3btbzvXR0eDCsam9luopym0NeGYtiZ/ixBsPhLa5j1BWZKjwAUMq9cn678keVg4LQRdHD8jBFa+KevcnRSV+Pu7wrKc6y/qvC/5zV4gEtGRaUomEpY1smcMxoXp64gOWLbSvSC7/+8NfBKemzYstSnVWDroCarVQRShdJqHGRaO15PbqoooKcn1B3m2Y1b9rnAyu5kzvplBEtcSLo+3dJ9yEODv2D/oi5eHyYb6j072lzIv8Pd7UiZvft8Bs2TzFcub+BZ5/SfT810q5xs2hnecD2jB7RVLLfmJaOU88qJ8n+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=mzPL36jUYccmuy3uUDUDamZKwDlz8VG/1Akljp216ug=;
-        b=DSsSyRwJ7An+hAHQ1FozZlvz0sliHFKo45v06BwynZehQg3lhOhgzwlexw2BgY49mI
-         IQem62rda/lNiV4JQma6JuYXIH/YsR8KJ5qF+0K4LDJVVEuKF3OhOhahETGU5ILvxMtn
-         /MGS3nJVqZFFjjS8+Tvr1rjrs3Y9ip+4IknvOELFksJQHAqSwQJ6JVfLGD81+pnDa4+s
-         QnQ4e2cIn75DseWzVGLQWT8f3e5TblBJf7XEKYj+IXdoG6FWeAaAY2pF/JdMEVzaNEPm
-         WXuAh7QndfBTo6oVMLqxVJPlOQ5kLJPvsiTIfxIfk/EbkkL+7ExXVWN7dWfbatwMql7r
-         4nLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=mzPL36jUYccmuy3uUDUDamZKwDlz8VG/1Akljp216ug=;
-        b=ZpyVLqydg/CG//IrqQ2k5hAjMTaaWL9NnKGxxsVYKLHAkj5WiRckOt8HVnhl0UeVSJ
-         4xs4IW0vkuuK+nu7NEMlw+GX5hM9FneGpaGQ75Mg35ll2/x1ysQ8H8ImAQYWWlr2cDkD
-         xFusPqE8fn203dwMZo6tHduaxYlPM//DXGzzQODIMiys9lTQJobuCnhLeFO9WLMUeRMk
-         r57jwLqhZ2dFUso4ax1dqXpU8VyNotq7nXIgzmuZyfBAxqSaKR/hA3LqZs4eNQqeRmth
-         fdEh9seZGuiIe/duRUa61LtGCwwsON2ljypeaZ0QK2KYJ4kErk8S5HZxWS5bTFE+p3iN
-         SxmQ==
-X-Gm-Message-State: AOAM533vGA+JF8A5h2BpT05DsUoPk04EGuPzv+jKOCLXyVVZvEoCC0RJ
-        +Ve96Xur+nzC0cLIkmIDF5RbZXaaZdMEAwDxQg==
-X-Google-Smtp-Source: ABdhPJyLAMuC2pjYzipDevJKIWKM9mGTw75n1CMvn1lgViTf/WE72G+Jtkerg4MpqD/wKzTcn52wB5eU3H5Dh5M8cw==
-Sender: "howardchung via sendgmr" 
-        <howardchung@howardchung-p920.tpe.corp.google.com>
-X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:10:f693:9fff:fef4:4e45])
- (user=howardchung job=sendgmr) by 2002:a25:468a:: with SMTP id
- t132mr5491805yba.312.1604908670614; Sun, 08 Nov 2020 23:57:50 -0800 (PST)
-Date:   Mon,  9 Nov 2020 15:57:26 +0800
-In-Reply-To: <20201109155659.v7.1.Ib75f58e90c477f9b82c5598f00c59f0e95a1a352@changeid>
-Message-Id: <20201109155659.v7.5.I756c1fecc03bcc0cd94400b4992cd7e743f4b3e2@changeid>
-Mime-Version: 1.0
-References: <20201109155659.v7.1.Ib75f58e90c477f9b82c5598f00c59f0e95a1a352@changeid>
-X-Mailer: git-send-email 2.29.2.222.g5d2a92d10f8-goog
-Subject: [PATCH v7 5/5] Bluetooth: Add toggle to switch off interleave scan
-From:   Howard Chung <howardchung@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com
-Cc:     mmandlik@chromium.org, alainm@chromium.org, mcchou@chromium.org,
-        Howard Chung <howardchung@google.com>,
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cVzYQ7WyKGSlenh/Imy5VDY/ypXBBeSCNPH66uNYmXg=;
+ b=ZgRxtAGE44Fi27QHyl0GvW/XGru1k9cqwbr0t5Vpif8gtjVoTW28XDCSqJgYSX7TDRoDDLYrcDaCPbZtgzYXedI1RnXR9fwF6BWNBeHTao3KRZriTojCT6Ira2yGg1wCjRz78Au6BNFFkql/S5Qvo/3k+eKJ3Ve+mfePMQ+BD8s=
+Authentication-Results: st.com; dkim=none (message not signed)
+ header.d=none;st.com; dmarc=none action=none header.from=synaptics.com;
+Received: from SN2PR03MB2383.namprd03.prod.outlook.com (2603:10b6:804:d::23)
+ by SN6PR03MB3616.namprd03.prod.outlook.com (2603:10b6:805:4b::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.28; Mon, 9 Nov
+ 2020 08:05:27 +0000
+Received: from SN2PR03MB2383.namprd03.prod.outlook.com
+ ([fe80::49be:5ea3:8961:a22]) by SN2PR03MB2383.namprd03.prod.outlook.com
+ ([fe80::49be:5ea3:8961:a22%6]) with mapi id 15.20.3541.024; Mon, 9 Nov 2020
+ 08:05:26 +0000
+Date:   Mon, 9 Nov 2020 16:05:14 +0800
+From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: stmmac: dwc-qos: Change the
+ dwc_eth_dwmac_data's .probe prototype
+Message-ID: <20201109160440.3a736ee3@xhacker.debian>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.147.44.204]
+X-ClientProxiedBy: BYAPR05CA0087.namprd05.prod.outlook.com
+ (2603:10b6:a03:e0::28) To SN2PR03MB2383.namprd03.prod.outlook.com
+ (2603:10b6:804:d::23)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from xhacker.debian (192.147.44.204) by BYAPR05CA0087.namprd05.prod.outlook.com (2603:10b6:a03:e0::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.10 via Frontend Transport; Mon, 9 Nov 2020 08:05:23 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d2a3eeff-be34-455f-e74c-08d884863798
+X-MS-TrafficTypeDiagnostic: SN6PR03MB3616:
+X-Microsoft-Antispam-PRVS: <SN6PR03MB3616013726919494271CCA02EDEA0@SN6PR03MB3616.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2089;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7V8NvBFgJeVE3PQWyLHMDDbEXf0oswbmpCq+fC6LgUDtl/9VSsDJ71h/AFmOFND+N9Ft3tRmPt4CHlsRtAsLRJOimY4OPRuMg+SS652bs9MtN/X0evBcZZ+2f9gO2103aY8LmgAgkRPRvt99mQuSu7PIsoc5cXj8GgIzBYf8Oaq3uxrxdjVw1VCKHsqYfK9J847/wdhYVvZds4cuu70wmodwDatdKXdh003LKtrG9E7x8DTUi0nXN4LaEVUiItliIRs1QsJEDvgQSUnCyCcie0vnyu6ibMxvANunrK+n/FSy1mjRBfpWoWASjAnZUWP86DcaqM/iEzLIk9xsk36Q7JHldHw5gPz2OKP6LiXBilVURIlCnCr5GHXWTQI8TlUl
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN2PR03MB2383.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(39850400004)(346002)(136003)(376002)(66476007)(66946007)(9686003)(66556008)(2906002)(8936002)(8676002)(55016002)(478600001)(956004)(6666004)(7696005)(110136005)(83380400001)(5660300002)(4326008)(16526019)(6506007)(86362001)(186003)(1076003)(316002)(52116002)(26005)(7416002)(142923001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: h3V3TCL0vQAz+iTikWE6U4Q3wOR8hwaJlcwyzxTIJQNihnLHfniYXZhjvQxYyliBFXsHpYO1xNRYgVAP15j8v3ZLXTgHi+xJeD4a8nt0jMq55oWsBknCXUB5UQQ3TEAElsVOGERLEeFfNvWKgwHWWMXUnBC1SUQF8dXjgOLfm8t3DTbVBLijIFktHSLFogE43up9roKiwrtzYPTYwz0kPj2347PcdEYs7DirF8bRzZTXf0Vryt8Kuw1u4Sc+a9pvym7bt59/yaURO2PWxNVzvOMXmj7xSidno30aFAO5fL+w6d42FK2UfUaaF0ukDpvo4yWPQ1Ny8+RTIKVVwNa+1bqYOOZaEHrwP+vwwPHSchj0a43y0Ne+yE0kfEvPbQWx11nJBHs2WeHgGKW0MxepH8AJu8pNYfAC/neQ5mnxqPaLP7n49jvWPcGdESAD1E+8kXAI4nzzZKFY31LGdG6M1+Gl6kG+YSeuCo+SfvvoAdtLdVx9wMORMzrFgMFAY7fbKV94BBURdUp1/7UH0HRv+AouZ3VKGxd5LeeacvFRwR5Lsb4eRcvIaJpxbO/S78HNv0sbHT51bJEH/Gsx+m+g1Q9DPCqfXwOO7hP36y/6wC5H+jlOBCe/D7XkNDtQv+yrDP+r/EODuhN3V5yq01tqNQ==
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d2a3eeff-be34-455f-e74c-08d884863798
+X-MS-Exchange-CrossTenant-AuthSource: SN2PR03MB2383.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2020 08:05:26.8275
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: npxpU02FLEjidXha2j5SWeUYdhvelJPs6JnYNSgPO/OQnil8GB3B05XMwNubqC+TBgaJ1e0Nbo/S2uZ5pzuSlQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR03MB3616
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add a configurable parameter to switch off the interleave
-scan feature.
+The return pointer of dwc_eth_dwmac_data's .probe isn't used, and
+"probe" usually return int, so change the prototype to follow standard
+way. Secondly, it can simplify the tegra_eqos_probe() code.
 
-Reviewed-by: Alain Michaud <alainm@chromium.org>
-Signed-off-by: Howard Chung <howardchung@google.com>
+Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
 ---
+ .../stmicro/stmmac/dwmac-dwc-qos-eth.c        | 46 ++++++++-----------
+ 1 file changed, 19 insertions(+), 27 deletions(-)
 
-Changes in v7:
-- Fix bt_dev_warn arguemnt type warning
-
-Changes in v6:
-- Set EnableAdvMonInterleaveScan to 1 byte long
-
-Changes in v4:
-- Set EnableAdvMonInterleaveScan default to Disable
-- Fix 80 chars limit in mgmt_config.c
-
- include/net/bluetooth/hci_core.h |  1 +
- net/bluetooth/hci_core.c         |  1 +
- net/bluetooth/hci_request.c      |  3 ++-
- net/bluetooth/mgmt_config.c      | 41 +++++++++++++++++++++++++-------
- 4 files changed, 37 insertions(+), 9 deletions(-)
-
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index cfede18709d8f..63c6d656564a1 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -363,6 +363,7 @@ struct hci_dev {
- 	__u32		clock;
- 	__u16		advmon_allowlist_duration;
- 	__u16		advmon_no_filter_duration;
-+	__u8		enable_advmon_interleave_scan;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
+index 2342d497348e..27254b27d7ed 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
+@@ -119,23 +119,23 @@ static int dwc_eth_dwmac_config_dt(struct platform_device *pdev,
+ 	return 0;
+ }
  
- 	__u16		devid_source;
- 	__u16		devid_vendor;
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 65b7b74baba4c..b7cb7bfe250bd 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3595,6 +3595,7 @@ struct hci_dev *hci_alloc_dev(void)
- 	/* The default values will be chosen in the future */
- 	hdev->advmon_allowlist_duration = 300;
- 	hdev->advmon_no_filter_duration = 500;
-+	hdev->enable_advmon_interleave_scan = 0x00;	/* Default to disable */
+-static void *dwc_qos_probe(struct platform_device *pdev,
+-			   struct plat_stmmacenet_data *plat_dat,
+-			   struct stmmac_resources *stmmac_res)
++static int dwc_qos_probe(struct platform_device *pdev,
++			 struct plat_stmmacenet_data *plat_dat,
++			 struct stmmac_resources *stmmac_res)
+ {
+ 	int err;
  
- 	hdev->sniff_max_interval = 800;
- 	hdev->sniff_min_interval = 80;
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 396960ef54a13..85948c73c72b3 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1059,7 +1059,8 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
- 				      &own_addr_type))
- 		return;
- 
--	if (__hci_update_interleaved_scan(hdev))
-+	if (hdev->enable_advmon_interleave_scan &&
-+	    __hci_update_interleaved_scan(hdev))
- 		return;
- 
- 	bt_dev_dbg(hdev, "interleave state %d", hdev->interleave_scan_state);
-diff --git a/net/bluetooth/mgmt_config.c b/net/bluetooth/mgmt_config.c
-index b735e59c7fd51..a3dfcdcb3b78d 100644
---- a/net/bluetooth/mgmt_config.c
-+++ b/net/bluetooth/mgmt_config.c
-@@ -17,12 +17,24 @@
- 		__le16 value; \
- 	} __packed _param_name_
- 
-+#define HDEV_PARAM_U8(_param_name_) \
-+	struct {\
-+		struct mgmt_tlv entry; \
-+		__u8 value; \
-+	} __packed _param_name_
-+
- #define TLV_SET_U16(_param_code_, _param_name_) \
- 	{ \
- 		{ cpu_to_le16(_param_code_), sizeof(__u16) }, \
- 		  cpu_to_le16(hdev->_param_name_) \
+ 	plat_dat->stmmac_clk = devm_clk_get(&pdev->dev, "apb_pclk");
+ 	if (IS_ERR(plat_dat->stmmac_clk)) {
+ 		dev_err(&pdev->dev, "apb_pclk clock not found.\n");
+-		return ERR_CAST(plat_dat->stmmac_clk);
++		return PTR_ERR(plat_dat->stmmac_clk);
  	}
  
-+#define TLV_SET_U8(_param_code_, _param_name_) \
-+	{ \
-+		{ cpu_to_le16(_param_code_), sizeof(__u8) }, \
-+		  hdev->_param_name_ \
-+	}
-+
- #define TLV_SET_U16_JIFFIES_TO_MSECS(_param_code_, _param_name_) \
- 	{ \
- 		{ cpu_to_le16(_param_code_), sizeof(__u16) }, \
-@@ -65,6 +77,7 @@ int read_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 		HDEV_PARAM_U16(def_le_autoconnect_timeout);
- 		HDEV_PARAM_U16(advmon_allowlist_duration);
- 		HDEV_PARAM_U16(advmon_no_filter_duration);
-+		HDEV_PARAM_U8(enable_advmon_interleave_scan);
- 	} __packed rp = {
- 		TLV_SET_U16(0x0000, def_page_scan_type),
- 		TLV_SET_U16(0x0001, def_page_scan_int),
-@@ -97,6 +110,7 @@ int read_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 					     def_le_autoconnect_timeout),
- 		TLV_SET_U16(0x001d, advmon_allowlist_duration),
- 		TLV_SET_U16(0x001e, advmon_no_filter_duration),
-+		TLV_SET_U8(0x001f, enable_advmon_interleave_scan),
- 	};
+ 	err = clk_prepare_enable(plat_dat->stmmac_clk);
+ 	if (err < 0) {
+ 		dev_err(&pdev->dev, "failed to enable apb_pclk clock: %d\n",
+ 			err);
+-		return ERR_PTR(err);
++		return err;
+ 	}
  
- 	bt_dev_dbg(hdev, "sock %p", sk);
-@@ -109,6 +123,7 @@ int read_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
+ 	plat_dat->pclk = devm_clk_get(&pdev->dev, "phy_ref_clk");
+@@ -152,11 +152,11 @@ static void *dwc_qos_probe(struct platform_device *pdev,
+ 		goto disable;
+ 	}
  
- #define TO_TLV(x)		((struct mgmt_tlv *)(x))
- #define TLV_GET_LE16(tlv)	le16_to_cpu(*((__le16 *)(TO_TLV(tlv)->value)))
-+#define TLV_GET_LE8(tlv)	le16_to_cpu(*((__u8 *)(TO_TLV(tlv)->value)))
+-	return NULL;
++	return 0;
  
- int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 			  u16 data_len)
-@@ -125,6 +140,7 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 	/* First pass to validate the tlv */
- 	while (buffer_left >= sizeof(struct mgmt_tlv)) {
- 		const u8 len = TO_TLV(buffer)->length;
-+		size_t exp_type_len;
- 		const u16 exp_len = sizeof(struct mgmt_tlv) +
- 				    len;
- 		const u16 type = le16_to_cpu(TO_TLV(buffer)->type);
-@@ -170,20 +186,26 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 		case 0x001b:
- 		case 0x001d:
- 		case 0x001e:
--			if (len != sizeof(u16)) {
--				bt_dev_warn(hdev, "invalid length %d, exp %zu for type %d",
--					    len, sizeof(u16), type);
+ disable:
+ 	clk_disable_unprepare(plat_dat->stmmac_clk);
+-	return ERR_PTR(err);
++	return err;
+ }
+ 
+ static int dwc_qos_remove(struct platform_device *pdev)
+@@ -267,19 +267,17 @@ static int tegra_eqos_init(struct platform_device *pdev, void *priv)
+ 	return 0;
+ }
+ 
+-static void *tegra_eqos_probe(struct platform_device *pdev,
+-			      struct plat_stmmacenet_data *data,
+-			      struct stmmac_resources *res)
++static int tegra_eqos_probe(struct platform_device *pdev,
++			    struct plat_stmmacenet_data *data,
++			    struct stmmac_resources *res)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct tegra_eqos *eqos;
+ 	int err;
+ 
+ 	eqos = devm_kzalloc(&pdev->dev, sizeof(*eqos), GFP_KERNEL);
+-	if (!eqos) {
+-		err = -ENOMEM;
+-		goto error;
+-	}
++	if (!eqos)
++		return -ENOMEM;
+ 
+ 	eqos->dev = &pdev->dev;
+ 	eqos->regs = res->addr;
+@@ -368,9 +366,7 @@ static void *tegra_eqos_probe(struct platform_device *pdev,
+ 	if (err < 0)
+ 		goto reset;
+ 
+-out:
+-	return eqos;
 -
--				return mgmt_cmd_status(sk, hdev->id,
--					MGMT_OP_SET_DEF_SYSTEM_CONFIG,
--					MGMT_STATUS_INVALID_PARAMS);
--			}
-+			exp_type_len = sizeof(u16);
-+			break;
-+		case 0x001f:
-+			exp_type_len = sizeof(u8);
- 			break;
- 		default:
-+			exp_type_len = 0;
- 			bt_dev_warn(hdev, "unsupported parameter %u", type);
- 			break;
- 		}
++	return 0;
+ reset:
+ 	reset_control_assert(eqos->rst);
+ reset_phy:
+@@ -384,8 +380,7 @@ static void *tegra_eqos_probe(struct platform_device *pdev,
+ disable_master:
+ 	clk_disable_unprepare(eqos->clk_master);
+ error:
+-	eqos = ERR_PTR(err);
+-	goto out;
++	return err;
+ }
  
-+		if (exp_type_len && len != exp_type_len) {
-+			bt_dev_warn(hdev, "invalid length %d, exp %zu for type %d",
-+				    len, exp_type_len, type);
-+
-+			return mgmt_cmd_status(sk, hdev->id,
-+				MGMT_OP_SET_DEF_SYSTEM_CONFIG,
-+				MGMT_STATUS_INVALID_PARAMS);
-+		}
-+
- 		buffer_left -= exp_len;
- 		buffer += exp_len;
- 	}
-@@ -289,6 +311,9 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 		case 0x0001e:
- 			hdev->advmon_no_filter_duration = TLV_GET_LE16(buffer);
- 			break;
-+		case 0x0001f:
-+			hdev->enable_advmon_interleave_scan = TLV_GET_LE8(buffer);
-+			break;
- 		default:
- 			bt_dev_warn(hdev, "unsupported parameter %u", type);
- 			break;
+ static int tegra_eqos_remove(struct platform_device *pdev)
+@@ -403,9 +398,9 @@ static int tegra_eqos_remove(struct platform_device *pdev)
+ }
+ 
+ struct dwc_eth_dwmac_data {
+-	void *(*probe)(struct platform_device *pdev,
+-		       struct plat_stmmacenet_data *data,
+-		       struct stmmac_resources *res);
++	int (*probe)(struct platform_device *pdev,
++		     struct plat_stmmacenet_data *data,
++		     struct stmmac_resources *res);
+ 	int (*remove)(struct platform_device *pdev);
+ };
+ 
+@@ -424,7 +419,6 @@ static int dwc_eth_dwmac_probe(struct platform_device *pdev)
+ 	const struct dwc_eth_dwmac_data *data;
+ 	struct plat_stmmacenet_data *plat_dat;
+ 	struct stmmac_resources stmmac_res;
+-	void *priv;
+ 	int ret;
+ 
+ 	data = device_get_match_data(&pdev->dev);
+@@ -448,10 +442,8 @@ static int dwc_eth_dwmac_probe(struct platform_device *pdev)
+ 	if (IS_ERR(plat_dat))
+ 		return PTR_ERR(plat_dat);
+ 
+-	priv = data->probe(pdev, plat_dat, &stmmac_res);
+-	if (IS_ERR(priv)) {
+-		ret = PTR_ERR(priv);
+-
++	ret = data->probe(pdev, plat_dat, &stmmac_res);
++	if (ret < 0) {
+ 		if (ret != -EPROBE_DEFER)
+ 			dev_err(&pdev->dev, "failed to probe subdriver: %d\n",
+ 				ret);
 -- 
-2.29.2.222.g5d2a92d10f8-goog
+2.29.2
 
