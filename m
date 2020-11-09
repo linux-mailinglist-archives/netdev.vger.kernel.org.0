@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FA9F2ABE02
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 14:59:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 831132ABE06
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 15:00:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730795AbgKIN7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 08:59:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
+        id S1729697AbgKIN7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 08:59:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730693AbgKIN7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 08:59:30 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F15FDC0613D3;
-        Mon,  9 Nov 2020 05:59:29 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id 62so7193278pgg.12;
-        Mon, 09 Nov 2020 05:59:29 -0800 (PST)
+        with ESMTP id S1730991AbgKIN7f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 08:59:35 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8CEC0613CF;
+        Mon,  9 Nov 2020 05:59:34 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id q5so5268384pfk.6;
+        Mon, 09 Nov 2020 05:59:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=93kJl9t+EVyLrim0/kTQzEnaEemTLzaZCzx+b+Buzug=;
-        b=Bw6Ot8pKW7jXBYNQJZmNxyTO7AKyegpvZZkNzeDacmsgFR8LMba+nw7zk81bU8xWKf
-         ZhzCzEo9gAaM0Ggtt4VF7JxjXCzS8RBUik6ops1tzrKYuET/gL4pB5DVJ+VZDn4Ip67j
-         JhOTZf4huX+tL2z3fozXpGGqzL/Tb09OHMDPSKIYOsMjxisE9mTapi+1JlypvIodW+RF
-         AHy6vQ5TLx61Yw1EK/EL4OY5vhEXnXsY1Q02HAde1kRIn+HZxoBK2y0a/YOwZOo5mMvP
-         avq4u9TsEQxaXzAs1Unm28qFe7tmPgLjTElHvnQFy6WwhZMsZJEzURV0JrpLkSScIFkr
-         k5Hw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ZQzJKKt4uzjrRFSl3mDjwbikP5PjZvNDeMBTReKioBA=;
+        b=CNrSrMzhRAe8BycT/VihxX80QHsZ4eBZO6O5ghk9vJGd/crz9MNtICGaJTJlBCg5eB
+         Pp0vvKcGbpZJ4aOnvy3nnVgTivcS1LaNl5PX4iZwMY2eTBWXk7DF0feqiNakmsT3+awl
+         sa5hZqiovdiOUtpHghtbW3fIk7fvVgJKvewBxrAMkwhEMHUIotkLPc2U2C1KAeMzf4MK
+         2U3kIilP9bUch+cZQn3nBR0SpD+1kNeue8jIn79cQZ1Ij1hw5mlp4JffskDt++x+ksvZ
+         qGkEoaVDsbLXG/WtWuq97JKKIrhjnthaA8HGZwam/+2Huxn9oiLWa2kwQNG9wNiyVQnG
+         yllg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=93kJl9t+EVyLrim0/kTQzEnaEemTLzaZCzx+b+Buzug=;
-        b=kKfZVcsvRmcfUwYyc3OeIet1BpzUQdw3pcd87jBzCrTxwaVrWSHo7lAcPpS24wSRrP
-         e6nVBiPfGkr84sVK+d4utLXQly969fQkj/7cyc1lR9RhwZeV75U5yBm0XPj5QeSVGb4y
-         WD5Bpe8ieXpuB8BkT9TqWlYRxZdMUacIYrZA2sFcBk1NE/gkbgs56XMOeEFcXeERZsmR
-         ClbfHehf2hTxoAG9nVEtWtqw4RWahjHbN5jdjTAdLpquHwe7yfQoL1cx4pWTUND+TlQX
-         nNuKtcnJ3OzD9ThGxb07XkMvqn2antBMohl6gF1+vZ3DH2E3VbJMCbjNTO3VL6mLPIKK
-         RCDw==
-X-Gm-Message-State: AOAM532LtfyiMmzfshMXivhKKhdOPhL88Ysjn/8V2diXIvSO/WMC8OIj
-        +mv5neBOumfa3kQPT1t75PM=
-X-Google-Smtp-Source: ABdhPJz11P3hEEJWuHvI43uFw4XHQaQ5HjvpGlgOSVarNOXfvfVp8X0w9BxxXKihDjC6JSXEKJpclg==
-X-Received: by 2002:a63:6484:: with SMTP id y126mr13274517pgb.320.1604930369505;
-        Mon, 09 Nov 2020 05:59:29 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ZQzJKKt4uzjrRFSl3mDjwbikP5PjZvNDeMBTReKioBA=;
+        b=rymq3o6DmW5SgcfwO4eK4n4bLrD1mosZcDWYm2zsZx7BJgBGEaXEBsBbkLNWAxEaeL
+         HjTjY5nA7KRgALzpIvPwvguJSICeAUiu8vrt3ZmVl+2JMz+7/SgeHvZ1GTcQYUso2kbh
+         xG7hRYRuiIE+SDL7ZWhvMnBg/WpZbu81sBSSlISRHEIuZZ3RxoMAWK2EOvl7DBG+KwMC
+         MQ/F7JTe6GrO+ZlT85Zw5QXO7cj0sUTVHF/LKDR7P752//kcuuzWekHU7V70xNAiUyBC
+         IzJUL2Tha1KtJhTWgXWr7NzMMRWwDMdpTgTQ226jMyOx1DN2RCyvNf7KBS8iD42nAzOL
+         MSwQ==
+X-Gm-Message-State: AOAM533hRJ9kU7usUTV32+N85sjJzJBjlZ9Ps20iokumfcVp/86b0wlV
+        IDmWL7STBFvzYd620XxOht0=
+X-Google-Smtp-Source: ABdhPJylyjr2UPg4t6JoPmDdRHSuS8ldb+M9pROgcq0fb84tA3vx1LoXJFP5TYx73cDshNyuibHiLw==
+X-Received: by 2002:a62:d114:0:b029:18a:e114:1eb4 with SMTP id z20-20020a62d1140000b029018ae1141eb4mr14387707pfg.41.1604930373913;
+        Mon, 09 Nov 2020 05:59:33 -0800 (PST)
 Received: from localhost ([209.9.72.213])
-        by smtp.gmail.com with ESMTPSA id t9sm11851517pjo.4.2020.11.09.05.59.27
+        by smtp.gmail.com with ESMTPSA id f4sm5800397pjp.3.2020.11.09.05.59.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 05:59:28 -0800 (PST)
+        Mon, 09 Nov 2020 05:59:32 -0800 (PST)
 From:   Geliang Tang <geliangtang@gmail.com>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
@@ -54,27 +54,71 @@ To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [MPTCP][PATCH net 0/2] fix static checker warnings in
-Date:   Mon,  9 Nov 2020 21:59:20 +0800
-Message-Id: <cover.1604930005.git.geliangtang@gmail.com>
+        mptcp@lists.01.org, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [MPTCP][PATCH net 1/2] mptcp: fix static checker warnings in mptcp_pm_add_timer
+Date:   Mon,  9 Nov 2020 21:59:21 +0800
+Message-Id: <ccf004469e02fb5bd7ec822414b9a98b0015f4a3.1604930005.git.geliangtang@gmail.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <cover.1604930005.git.geliangtang@gmail.com>
+References: <cover.1604930005.git.geliangtang@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset fixed static checker warnings in mptcp_pm_add_timer and
-mptcp_pm_alloc_anno_list.
+Fix the following Smatch complaint:
 
-Geliang Tang (2):
-  mptcp: fix static checker warnings in mptcp_pm_add_timer
-  mptcp: cleanup for mptcp_pm_alloc_anno_list
+     net/mptcp/pm_netlink.c:213 mptcp_pm_add_timer()
+     warn: variable dereferenced before check 'msk' (see line 208)
 
- net/mptcp/pm_netlink.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ net/mptcp/pm_netlink.c
+    207          struct mptcp_sock *msk = entry->sock;
+    208          struct sock *sk = (struct sock *)msk;
+    209          struct net *net = sock_net(sk);
+                                           ^^
+ "msk" dereferenced here.
 
+    210
+    211          pr_debug("msk=%p", msk);
+    212
+    213          if (!msk)
+                    ^^^^
+ Too late.
+
+    214                  return;
+    215
+
+Fixes: 93f323b9cccc ("mptcp: add a new sysctl add_addr_timeout")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ net/mptcp/pm_netlink.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 6180a8b39a3f..03f2c28f11f5 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -206,7 +206,6 @@ static void mptcp_pm_add_timer(struct timer_list *timer)
+ 	struct mptcp_pm_add_entry *entry = from_timer(entry, timer, add_timer);
+ 	struct mptcp_sock *msk = entry->sock;
+ 	struct sock *sk = (struct sock *)msk;
+-	struct net *net = sock_net(sk);
+ 
+ 	pr_debug("msk=%p", msk);
+ 
+@@ -235,7 +234,7 @@ static void mptcp_pm_add_timer(struct timer_list *timer)
+ 
+ 	if (entry->retrans_times < ADD_ADDR_RETRANS_MAX)
+ 		sk_reset_timer(sk, timer,
+-			       jiffies + mptcp_get_add_addr_timeout(net));
++			       jiffies + mptcp_get_add_addr_timeout(sock_net(sk)));
+ 
+ 	spin_unlock_bh(&msk->pm.lock);
+ 
 -- 
 2.26.2
 
