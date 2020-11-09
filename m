@@ -2,89 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 380632AB171
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 07:55:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 083082AB172
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 07:56:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729585AbgKIGzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 01:55:23 -0500
-Received: from mxout70.expurgate.net ([91.198.224.70]:8475 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727077AbgKIGzX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 01:55:23 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kc155-000Mue-VZ; Mon, 09 Nov 2020 07:55:12 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kc154-000UAf-Eo; Mon, 09 Nov 2020 07:55:10 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 88DA824004B;
-        Mon,  9 Nov 2020 07:55:09 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id ED16C240049;
-        Mon,  9 Nov 2020 07:55:08 +0100 (CET)
-Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id 463C820484;
-        Mon,  9 Nov 2020 07:55:08 +0100 (CET)
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, xiyuyang19@fudan.edu.cn
-Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
-Subject: [RESEND PATCH v2] net/x25: Fix null-ptr-deref in x25_connect
-Date:   Mon,  9 Nov 2020 07:54:49 +0100
-Message-ID: <20201109065449.9014-1-ms@dev.tdt.de>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-Content-Transfer-Encoding: quoted-printable
-X-purgate-type: clean
-X-purgate-ID: 151534::1604904911-00014126-C9C59892/0/0
-X-purgate: clean
+        id S1729458AbgKIG42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 01:56:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728873AbgKIG41 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 01:56:27 -0500
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A673EC0613CF;
+        Sun,  8 Nov 2020 22:56:27 -0800 (PST)
+Received: by mail-oi1-x233.google.com with SMTP id t16so9189397oie.11;
+        Sun, 08 Nov 2020 22:56:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=3t7z1OAnLWIsPyyWvxu3btLtZGPdXzBYbO08I/vW1XE=;
+        b=vFNffQDPYoC8d9yH0F7tB8VxujK2VuzRgqedXii9CykLmRunrXKLD/mstB81zVdJrL
+         0nMorH20GVVcQLidQPoHEFeDP2uuimXFVUg3dMyTrfUoDg/jb7CRdAsKqsSi67Gob/Qb
+         +Hwc79/nsnLx4D3VWsNUlFsSnU5b5hXh/2+DpqgXQHCyr/gCG33r2B4TitKCyN7//lhS
+         nHAsVBMA8cu99V6NkyRWMcusXJh8zYWto2j4W4YdC2ZYgbaHPe3tNYkeSIBalVGGr/+/
+         3eAHfj5IrCnEsJoONcMK27w4lW3b3jVgzOSG0XaidIwrO4SuAnRC2zU9t3WRW713EH8q
+         goaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=3t7z1OAnLWIsPyyWvxu3btLtZGPdXzBYbO08I/vW1XE=;
+        b=NWMrLGZ77hdcZv8VdxvJYCCVCsQ53hLZSd9zhpicpvXca2H7DhsgHM6LDzHHiDalUM
+         NpQPNcPQjVoOa+4/QRaW80BkbMR565vbn+CeiPK7XacDsYi96ZvQvaRRteGkq9qs2Pbe
+         5VPwRVZlkaTaeJU0HkwL3etQJ8Yl+LpoiFyeaK7p+7E4m0CjSdRgMOqKN1kIv6RhOMTE
+         mwTE3ngPFWcQ6tPdSwCShbBMkJf6zJLExqOWX45X0j8lu6GJ1T2gp/DcxIfLGocFosLU
+         4/Fx23Y4625nj1PjXUdwK9xzb+XfvkLAWA7T+oHXYZ9RYoaXD/lfWDoYTNYfE9GXmCBz
+         GNRA==
+X-Gm-Message-State: AOAM530i721miAbsA/TODxtFm6k/AV5OZsJaj2BSc5s7ZmpJzMIY5IlJ
+        p5OgFfkw4Q1TyTMXweV+EM8=
+X-Google-Smtp-Source: ABdhPJxkYM+rvylKuuImJoojFPmrvGjCnvNyfRukNxRbJJxFuzWiNQpF4gN3vCSsh3czexY4RVHn7Q==
+X-Received: by 2002:aca:d9c5:: with SMTP id q188mr7914042oig.155.1604904987198;
+        Sun, 08 Nov 2020 22:56:27 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id 186sm2232310ooe.20.2020.11.08.22.56.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Nov 2020 22:56:26 -0800 (PST)
+Date:   Sun, 08 Nov 2020 22:56:19 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
+        netdev@vger.kernel.org
+Message-ID: <5fa8e81395e0f_2056c20834@john-XPS-13-9370.notmuch>
+In-Reply-To: <20201106225402.4135741-1-kafai@fb.com>
+References: <20201106225402.4135741-1-kafai@fb.com>
+Subject: RE: [PATCH bpf-next] bpf: selftest: Use static globals in
+ tcp_hdr_options and btf_skc_cls_ingress
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This fixes a regression for blocking connects introduced by commit
-4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect").
+Martin KaFai Lau wrote:
+> Some globals in the tcp_hdr_options test and btf_skc_cls_ingress test
+> are not using static scope.  This patch fixes it.
+> 
+> Targeting bpf-next branch as an improvement since it currently does not
+> break the build.
+> 
+> Fixes: ad2f8eb0095e ("bpf: selftests: Tcp header options")
+> Fixes: 9a856cae2217 ("bpf: selftest: Add test_btf_skc_cls_ingress")
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
+>  .../selftests/bpf/prog_tests/btf_skc_cls_ingress.c   |  2 +-
+>  .../selftests/bpf/prog_tests/tcp_hdr_options.c       | 12 ++++++------
+>  2 files changed, 7 insertions(+), 7 deletions(-)
+> 
 
-The x25->neighbour is already set to "NULL" by x25_disconnect() now,
-while a blocking connect is waiting in
-x25_wait_for_connection_establishment(). Therefore x25->neighbour must
-not be accessed here again and x25->state is also already set to
-X25_STATE_0 by x25_disconnect().
-
-Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconn=
-ect")
-Signed-off-by: Martin Schiller <ms@dev.tdt.de>
----
-
-Change from v1:
-also handle interrupting signals correctly
-
----
- net/x25/af_x25.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index 0bbb283f23c9..046d3fee66a9 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -825,7 +825,7 @@ static int x25_connect(struct socket *sock, struct so=
-ckaddr *uaddr,
- 	sock->state =3D SS_CONNECTED;
- 	rc =3D 0;
- out_put_neigh:
--	if (rc) {
-+	if (rc && x25->neighbour) {
- 		read_lock_bh(&x25_list_lock);
- 		x25_neigh_put(x25->neighbour);
- 		x25->neighbour =3D NULL;
---=20
-2.20.1
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
