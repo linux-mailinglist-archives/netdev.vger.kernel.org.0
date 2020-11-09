@@ -2,86 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C69942AB9AA
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 14:11:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E8CA2ABADD
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 14:23:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732364AbgKINLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 08:11:23 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7161 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732340AbgKINLW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 08:11:22 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CVBFs2S2Nz15SjZ;
-        Mon,  9 Nov 2020 21:11:13 +0800 (CST)
-Received: from [10.174.179.62] (10.174.179.62) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 9 Nov 2020 21:11:12 +0800
-Subject: Re: [PATCH V3] fsl/fman: add missing put_devcie() call in
- fman_port_probe()
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <madalin.bucur@nxp.com>, <davem@davemloft.net>,
-        <florinel.iordache@nxp.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
-References: <20201103112323.1077040-1-yukuai3@huawei.com>
- <20201107090925.1494578-1-yukuai3@huawei.com>
- <20201107140953.1f04c04e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   "yukuai (C)" <yukuai3@huawei.com>
-Message-ID: <0efa4731-67d7-fe7a-54ab-a3d3493ad936@huawei.com>
-Date:   Mon, 9 Nov 2020 21:11:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2387799AbgKINXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 08:23:22 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:39480 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733091AbgKINXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 08:23:19 -0500
+Received: by mail-io1-f70.google.com with SMTP id z18so5583760ioz.6
+        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 05:23:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=CO45gfakMLgnsGNC2zQCKWa4XgBYQMP+NMYJGmT003U=;
+        b=Dfgf0yyifMa5gT5ghS9rsLPAYfMtg/n/uh6+OLJGVtzZfHF42I0mhm6MVHcPcQTcA0
+         Jt1OIxqK/+5xI2g2IhXU3PB8Lo2RUly1Cwn4W/pSjgNRVbViHnAOSfNeUISdYshHhbnI
+         Gh++QGYOuADRyvIk1Zob24I1qDEHkZDdf5K75qqV4A1N6q8uPYCYAe3ehlvlSZmOo7/D
+         g7hyZO/XhOQN8ANatf6JeTT7I5iMHaWwcKE12h/TmbcUbrbsMUGBSUk1lM41UtzuSsJF
+         zNTRK/26Q2SCYRwCqLFccsITmg7Czb/6VsnLF4ZANIG+09AqLbfOXYpw/55yEd44huij
+         CIRg==
+X-Gm-Message-State: AOAM531jG/adJ2s2OfpMzeEYrE62GoxWgfoc16z9jWhGoxn5CTqjr1V/
+        f7Xgtv1x764inWHcJrsUzfoqBXiiZyClfcp5JkFBWns3v+z5
+X-Google-Smtp-Source: ABdhPJzXwgrjFbwFN8QQPAiQANvB6yFzbI0NeYFOZSKmEJa6uyKIHDxJZIDWoxe5J3JgIcAvs1aySuSGbfdWd7hqCstmcbbs8pKJ
 MIME-Version: 1.0
-In-Reply-To: <20201107140953.1f04c04e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.62]
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a92:cecf:: with SMTP id z15mr9859936ilq.214.1604928198116;
+ Mon, 09 Nov 2020 05:23:18 -0800 (PST)
+Date:   Mon, 09 Nov 2020 05:23:18 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000238d9b05b3ac77c5@google.com>
+Subject: BUG: sleeping function called from invalid context in corrupted
+From:   syzbot <syzbot+b7aeb9318541a1c709f1@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes.berg@intel.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ÔÚ 2020/11/08 6:09, Jakub Kicinski Ð´µÀ:
-> On Sat, 7 Nov 2020 17:09:25 +0800 Yu Kuai wrote:
->> if of_find_device_by_node() succeed, fman_port_probe() doesn't have a
->> corresponding put_device(). Thus add jump target to fix the exception
->> handling for this function implementation.
->>
->> Fixes: 0572054617f3 ("fsl/fman: fix dereference null return value")
->> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-> 
->> @@ -1792,20 +1792,20 @@ static int fman_port_probe(struct platform_device *of_dev)
->>   	if (!fm_node) {
->>   		dev_err(port->dev, "%s: of_get_parent() failed\n", __func__);
->>   		err = -ENODEV;
->> -		goto return_err;
->> +		goto free_port;
-> 
-> And now you no longer put port_node if jumping from here...
+Hello,
 
-Sincerely apologize for that stupid mistake...
+syzbot found the following issue on:
 
-> 
-> Also does the reference to put_device() not have to be released when
-> this function succeeds?
-> 
+HEAD commit:    bf3e7628 Merge branch 'mtd/fixes' of git://git.kernel.org/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16d76e2a500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e791ddf0875adf65
+dashboard link: https://syzkaller.appspot.com/bug?extid=b7aeb9318541a1c709f1
+compiler:       clang version 11.0.0 (https://github.com/llvm/llvm-project.git ca2dcbd030eadbf0aa9b660efe864ff08af6e18b)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14df611a500000
 
-I'm not sure about that, since fman_port_driver doesn't define other
-interface, maybe it reasonable to release it here.
+The issue was bisected to:
 
->>   	}
-> 
->> @@ -1896,7 +1895,9 @@ static int fman_port_probe(struct platform_device *of_dev)
->>   
->>   	return 0;
->>   
->> -return_err:
->> +put_device:
->> +	put_device(&fm_pdev->dev);
->> +put_node:
->>   	of_node_put(port_node);
->>   free_port:
->>   	kfree(port);
-> 
-> .
-> 
+commit dcd479e10a0510522a5d88b29b8f79ea3467d501
+Author: Johannes Berg <johannes.berg@intel.com>
+Date:   Fri Oct 9 12:17:11 2020 +0000
+
+    mac80211: always wind down STA state
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1218ff14500000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1118ff14500000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1618ff14500000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b7aeb9318541a1c709f1@syzkaller.appspotmail.com
+Fixes: dcd479e10a05 ("mac80211: always wind down STA state")
+
+BUG: sleeping function called from invalid context at net/mac80211/sta_info.c:1962
+in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 35, name: kworker/u4:2
+4 locks held by kworker/u4:2/35:
+ #0: ffff88802af11138 ((wq_completion)phy4){+.+.}-{0:0}, at: process_one_work+0x6f4/0xfc0 kernel/workqueue.c:2245
+ #1: ffffc90000e0fd80 ((work_completion)(&sdata->work)){+.+.}-{0:0}, at: process_one_work+0x733/0xfc0 kernel/workqueue.c:2247
+ #2: ffff88802f27cd00 (&wdev->mtx){+.+.}-{3:3}, at: sdata_lock net/mac80211/ieee80211_i.h:1021 [inline]
+ #2: ffff88802f27cd00 (&wdev->mtx){+.+.}-{3:3}, at: ieee80211_ibss_work+0x4e/0x1450 net/mac80211/ibss.c:1683
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
