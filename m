@@ -2,76 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B76B2AC712
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 22:21:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B92D2AC72F
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 22:23:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731384AbgKIVU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 16:20:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42426 "EHLO
+        id S1730237AbgKIVXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 16:23:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729451AbgKIVU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 16:20:58 -0500
-Received: from mail-ua1-x942.google.com (mail-ua1-x942.google.com [IPv6:2607:f8b0:4864:20::942])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB32FC0613CF;
-        Mon,  9 Nov 2020 13:20:58 -0800 (PST)
-Received: by mail-ua1-x942.google.com with SMTP id r23so3260151uak.0;
-        Mon, 09 Nov 2020 13:20:58 -0800 (PST)
+        with ESMTP id S1727311AbgKIVXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 16:23:35 -0500
+Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4FFC0613CF;
+        Mon,  9 Nov 2020 13:23:35 -0800 (PST)
+Received: by mail-oo1-xc31.google.com with SMTP id q28so1037544oof.1;
+        Mon, 09 Nov 2020 13:23:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7DBQ7bhRqZ6AzXHPOPfjQrb2gmOafLUkLl/Zq//thao=;
-        b=GA363FLEmGvNcaOVPu+1Mx5y3TLNI5//6oCy5bWoo1iZiwGklBUnwb+wFwpKngn/+i
-         tJdq4DaxJBo0LVuL8qc2OTj9r4UCbUhqJKksMdwtPfwPHyOVcO+I1a4sNCfD0jC+NhwU
-         KNVJECPSTUbj2oi92PtKciyzBbQEgUoqqnX8Pvw2RFzfYjIGH584j5W0V7ZEXAjD8x3N
-         gSokH9HjyJunlX8LrDsBxJ5tu3/iloELgwSj/GqWK4Fz1Bupjuf0+jikEgWw2inrIQTm
-         CE0JsPQwWY4E4tKza34j9gxF0r4+5u8q6SVe0y+pfzYakc/NLQeuHuCXP8O1RI1SEiRy
-         4FCg==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=/8e23jmWF0zLSuDrh/DoOClOMWqEUTAgB9D0NlWAzvU=;
+        b=e3OhyFo42YU0Uc9UdimaaWvc4Gx++UhE07xWCD3Tx/k2/P8enGVSxlhwasvrCgZ0FK
+         ueaOzzl8QQLM5FBPxgLBsnE5FAgva3VkZi5NjS3323a9yVT/4HB3VvEd+O/A+isunEB8
+         ok4mDx1YXduyrR7JplZGBPJTXBfESfYvQDimkfYI/63DpEa9VoceJfKht1Z3caOZZGWM
+         4kLPduVKtOnDIG0Lmll93QPZQrEGZ/e7XyQtLHXpNPrjy9LFLuhrQ1C5S9UpEcP5hvev
+         hI909JmbsV0SCHbWlymiA4jEkP7GujqKgyXDEm8J0gIzvMttgKivIMogdrqAs2X3kCDo
+         LqpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7DBQ7bhRqZ6AzXHPOPfjQrb2gmOafLUkLl/Zq//thao=;
-        b=e/sCQcBLUv/pMtqnL4wISGClCAeQx2pU+ycVQCBSaNbJfRLHzZmY4CYMEpBkeQLa+G
-         EHEP9OVdiF619ICM7YsQqPICg1kdy1xmJn2m7RTXV6NNoIO3UlNGCPyur5xxHBEPCo6b
-         e+jtUR5v7DP1Z9G+nT764221t+5e7tNkGDoCflOTMl0dgfANA6XPr3ERK18Ml9wUziDW
-         2LUyrhUjg0q4W9DNeGl5RtWdEk7D48cR8tHJ2tlMluaQx6l22zkAVhsE2Ks24dmN+3qd
-         16ZXZJBa0STiYHIKMsu02ww2dfD4fwI7R+IBEsHSONjQwWRjgjc8WO04+BF007+pAK2o
-         t2RA==
-X-Gm-Message-State: AOAM533wIUr8T73CiJfzPn0TwHT7d6/dUk4ROycK2nRMDJU8Au4Rthx0
-        4WnPvA7veghjuqyegVUsSWJ/l4k4aToLkT+YS9o=
-X-Google-Smtp-Source: ABdhPJwXUPIdnj6YB1V/GNwWxnUY4pO3NEM2p7J2W2vASZGEqUdFeObcdtl+nMyqYcYc8EZRDJDZ0e24xOJyYFnTksA=
-X-Received: by 2002:a9f:2c92:: with SMTP id w18mr8408184uaj.58.1604956857746;
- Mon, 09 Nov 2020 13:20:57 -0800 (PST)
-MIME-Version: 1.0
-References: <20201109193117.2017-1-TheSven73@gmail.com> <20201109130900.39602186@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201109130900.39602186@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Mon, 9 Nov 2020 16:20:46 -0500
-Message-ID: <CAGngYiUt8MBCugYfjUJMa_h0iekubnOwVwenE7gY50DnRXq5VQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v1] net: phy: spi_ks8995: Do not overwrite SPI
- mode flags
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=/8e23jmWF0zLSuDrh/DoOClOMWqEUTAgB9D0NlWAzvU=;
+        b=grSTw0i1HKmlcNShANMr3oWlM7KUY4FKKnFDm3IwHNFMcxlteRnJfv1Q17iHS1VAvN
+         fJZyDF339TFLU5xOZlHyHhFykY4HVZ4l0bzi2l7+2F39M9S8XS0TqUnjEMjbkNScFPrH
+         VLCg3SF/uTCnxNBvLSvK9GuHviKmc9DYrZObCvdwH/ZJJoU37CgIRtS6yRaMPo94CDT6
+         E4scaiVbW9HGlICucqQzJyxDYBdjTnM/sz1BHrqhZBsA7zBIBl6rcB2mz5Zj2dtA2nAV
+         oOtQDEBZ4BU7CWpcOrp/Hq1kftsweS4Uyotp+voJk3Y7qyIO+UqgB4IgL5P1YJhW+Fa5
+         n5ew==
+X-Gm-Message-State: AOAM532tdemngCgfHwjJ7/n+DJj+3oDwnTMDkctzaSFvpdJk0Hp/BtiD
+        77oRQG4TU/d7qsn3Sl8gZDc=
+X-Google-Smtp-Source: ABdhPJxA352mKQ9xMZ+PPBzsmHTnAFsTAjfbNY+f7PuspaOWhQMA1QIBanNp9Y2UtsPyU03ukg2I5g==
+X-Received: by 2002:a4a:9486:: with SMTP id k6mr11388212ooi.85.1604957014754;
+        Mon, 09 Nov 2020 13:23:34 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id w21sm1116483otq.20.2020.11.09.13.23.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Nov 2020 13:23:34 -0800 (PST)
+Date:   Mon, 09 Nov 2020 13:23:27 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     menglong8.dong@gmail.com, kuba@kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andrii@kernel.org,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Menglong Dong <dong.menglong@zte.com.cn>
+Message-ID: <5fa9b34f132a5_8c0e208ca@john-XPS-13-9370.notmuch>
+In-Reply-To: <5fa8e9d4.1c69fb81.5d889.5c64@mx.google.com>
+References: <5fa8e9d4.1c69fb81.5d889.5c64@mx.google.com>
+Subject: RE: [PATCH] net: sched: fix misspellings using misspell-fixer tool
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 9, 2020 at 4:09 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> This is a fix right? You seem to be targeting net-next and there is no
-> Fixes tag but it sounds like a bug.
+menglong8.dong@ wrote:
+> From: Menglong Dong <dong.menglong@zte.com.cn>
+> 
+> Some typos are found out by misspell-fixer tool:
+> 
+> $ misspell-fixer -rnv ./net/sched/
+> ./net/sched/act_api.c:686
+> ./net/sched/act_bpf.c:68
+> ./net/sched/cls_rsvp.h:241
+> ./net/sched/em_cmp.c:44
+> ./net/sched/sch_pie.c:408
+> 
+> Fix typos found by misspell-fixer.
+> 
+> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+> ---
 
-I'm not sure. The original code used to work for me, until the spi bus
-driver I'm using to communicate to this chip was changed to always
-require SPI_CS_HIGH. The current ks8995 driver will now plow over
-this flag, and spi communication breaks.
+Hi, you will want to add net-next to the [PATCH *] line next time
+to make it clear this is for net-next. The contents make it
+obvious in this case though.
 
-Is this a bug? If so, what should its Fixes commit be? The spi commit
-upstream that enables SPI_CS_HIGH on my platform?
+Also I'm not sure why the bpf@ include but OK.
+
+Acked-by: John Fastabend <john.fastabend@gmail.com>
