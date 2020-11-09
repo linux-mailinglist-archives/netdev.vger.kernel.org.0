@@ -2,35 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17F7F2AC98C
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 00:52:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E65102AC990
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 01:00:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729454AbgKIXwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 18:52:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44958 "EHLO mail.kernel.org"
+        id S1729454AbgKJAAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 19:00:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45918 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727311AbgKIXwj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 18:52:39 -0500
+        id S1727311AbgKJAAA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 19:00:00 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C22AD206BE;
-        Mon,  9 Nov 2020 23:52:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9E9E6206ED;
+        Mon,  9 Nov 2020 23:59:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604965959;
-        bh=XnyYnvUV1ykojWFJ3UIc+rnrXL2IVhaSjrVIJNr0lUs=;
+        s=default; t=1604966400;
+        bh=J4pDKkXNp2Y5H5jh93pio6tF7sDidvKSpRVwQ9Qn6Kk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LC/r7N29SIA6bb18tQVCdOomTa3K8k7Fv6f7fEKXZsf6exwFMRJ37MVwwoLZRjLlJ
-         GsC7uFtL4dN1HB5DZH5AF2X/UcoUKoXFJL/BaQF4kNTA9gu/6D2GLHGCSKkVzuNtDP
-         oZanTBN9muzTmFZelHBDwfJ5PNYc0NQ9EJXFacFE=
-Date:   Mon, 9 Nov 2020 15:52:37 -0800
+        b=ymA7p9KhYx/9VvBMG9uGRsWTb/0LuFnNn85Gg1mubbrUEotG9Ka5viBdJ5ZAVbLRa
+         rDe345kxoGT9j2admzKd6hysRxZivK4vXiJUOXcQBFc+8YQLuOMV91RNPOc9OpwAm8
+         gWO5qFEHWONKtYZC+EViBRIJHeVtdjfnQHsOO02Y=
+Date:   Mon, 9 Nov 2020 15:59:58 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     netdev@vger.kernel.org, gnault@redhat.com, jchapman@katalix.com
-Subject: Re: [RFC PATCH 0/2] add ppp_generic ioctl to bridge channels
-Message-ID: <20201109155237.69c2b867@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201106181647.16358-1-tparkin@katalix.com>
-References: <20201106181647.16358-1-tparkin@katalix.com>
+To:     Stefano Brivio <sbrivio@redhat.com>
+Cc:     Jianlin Shi <jishi@redhat.com>, David Ahern <dsahern@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Aaron Conole <aconole@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net] tunnels: Fix off-by-one in lower MTU bounds for
+ ICMP/ICMPv6 replies
+Message-ID: <20201109155958.0ea7df75@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <4f5fc2f33bfdf8409549fafd4f952b008bf04d63.1604681709.git.sbrivio@redhat.com>
+References: <4f5fc2f33bfdf8409549fafd4f952b008bf04d63.1604681709.git.sbrivio@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -38,24 +42,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  6 Nov 2020 18:16:45 +0000 Tom Parkin wrote:
-> This small RFC series implements a suggestion from Guillaume Nault in
-> response to my previous submission to add an ac/pppoe driver to the l2tp
-> subsystem[1].
+On Fri,  6 Nov 2020 17:59:52 +0100 Stefano Brivio wrote:
+> Jianlin reports that a bridged IPv6 VXLAN endpoint, carrying IPv6
+> packets over a link with a PMTU estimation of exactly 1350 bytes,
+> won't trigger ICMPv6 Packet Too Big replies when the encapsulated
+> datagrams exceed said PMTU value. VXLAN over IPv6 adds 70 bytes of
+> overhead, so an ICMPv6 reply indicating 1280 bytes as inner MTU
+> would be legitimate and expected.
 > 
-> Following Guillaume's advice, this series adds an ioctl to the ppp code
-> to allow a ppp channel to be bridged to another.  Quoting Guillaume:
+> This comes from an off-by-one error I introduced in checks added
+> as part of commit 4cb47a8644cc ("tunnels: PMTU discovery support
+> for directly bridged IP packets"), whose purpose was to prevent
+> sending ICMPv6 Packet Too Big messages with an MTU lower than the
+> smallest permissible IPv6 link MTU, i.e. 1280 bytes.
 > 
-> "It's just a matter of extending struct channel (in ppp_generic.c) with
-> a pointer to another channel, then testing this pointer in ppp_input().
-> If the pointer is NULL, use the classical path, if not, forward the PPP
-> frame using the ->start_xmit function of the peer channel."
+> In iptunnel_pmtud_check_icmpv6(), avoid triggering a reply only if
+> the advertised MTU would be less than, and not equal to, 1280 bytes.
 > 
-> This allows userspace to easily take PPP frames from e.g. a PPPoE
-> session, and forward them over a PPPoL2TP session; accomplishing the
-> same thing my earlier ac/pppoe driver in l2tp did but in much less code!
+> Also fix the analogous comparison for IPv4, that is, skip the ICMP
+> reply only if the resulting MTU is strictly less than 576 bytes.
+> 
+> This becomes apparent while running the net/pmtu.sh bridged VXLAN
+> or GENEVE selftests with adjusted lower-link MTU values. Using
+> e.g. GENEVE, setting ll_mtu to the values reported below, in the
+> test_pmtu_ipvX_over_bridged_vxlanY_or_geneveY_exception() test
+> function, we can see failures on the following tests:
+> 
+>              test                | ll_mtu
+>   -------------------------------|--------
+>   pmtu_ipv4_br_geneve4_exception |   626
+>   pmtu_ipv6_br_geneve4_exception |  1330
+>   pmtu_ipv6_br_geneve6_exception |  1350
+> 
+> owing to the different tunneling overheads implied by the
+> corresponding configurations.
+> 
+> Reported-by: Jianlin Shi <jishi@redhat.com>
+> Fixes: 4cb47a8644cc ("tunnels: PMTU discovery support for directly bridged IP packets")
+> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
 
-I have little understanding of the ppp code, but I can't help but
-wonder why this special channel connection is needed? We have great
-many ways to redirect traffic between interfaces - bpf, tc, netfilter,
-is there anything ppp specific that is required here?
+Applied, thanks.
