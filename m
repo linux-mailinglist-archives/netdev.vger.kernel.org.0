@@ -2,107 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5E882AAEAB
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 02:16:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95B062AAECE
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 02:45:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728873AbgKIBQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 20:16:21 -0500
-Received: from mail-bn8nam12on2063.outbound.protection.outlook.com ([40.107.237.63]:11552
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727979AbgKIBQV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Nov 2020 20:16:21 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NwioGlPhMHsEsN/6uQzicLIEoCb6nPDOfGkdOjMms0iiGo8zLsb1FGXzznHDSdtcp5seDZ9go+uQP5KtjBZQ3UT0xP0muQvKoJtmjHIqm7RZ8VXkiBsN7gp6dvF+dZbBRR8ADrliOVKcPVRNUp2/uL2BN2qspcLda66qFJk5U2SuRtLC1L3GfZneGWXDb8TpiWjoP/0GDmQCmnQvq3i0/GgBa934QtRONe2kGSNJaJNLGN2qPTY4OSmI+uVwpnsrTitelNFSmDE/9DEHhf9xYLNx/+I8SDhHBNXKMNAq1z6vIpw4KrgDkT23xocNI82/UJHLLqw015BykXjSNBxPCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5xVe+WQzH30dC68dxJpxSyHWq19rbkGT2IAhPtvbaaI=;
- b=QCQdlHwyDCOjKSyjok6EEPDsAf9VPDHG3b207x+yYp9d8S6SteUcuyTMGDTSAG428msqAmZB3OS13UX4qfe73d4sn1yrekfvbma2gL/Z+9qCpXVP4mtLW69O3rvjIzFuhSox2E/jFqmvYSVwsqOZjrzhj+ES2+s5MfHZ75Tvs0TNHmfpyuN5FV0BRMy8y9XX9dzAiAxAGnx9PxvbY+p5rLJbreBI/IUlc/0H7246KUnnAMrhGYTTZb/JoZA9+NZ1bn71hGQ9tD7/kzufpuLqrxrdCNkdISjAKiKsYrBaXd43gYncjiD2NzHXVDunjfd81oXsc82Y7kXpYMdIgB/ZMA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synaptics.com; dmarc=pass action=none
- header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+        id S1729025AbgKIBpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 20:45:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727979AbgKIBpT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 20:45:19 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886ADC0613CF;
+        Sun,  8 Nov 2020 17:45:19 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id w6so979405pfu.1;
+        Sun, 08 Nov 2020 17:45:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5xVe+WQzH30dC68dxJpxSyHWq19rbkGT2IAhPtvbaaI=;
- b=ZaDxyc6TR510bCLqJFoaJLKc9DYYPaO50hcmjLlkH2v5AKPjiun5bigLwXmoG54cFbZPbBlpky1kOPKBhFmP90FvDHfw/PtlK724eUpG/iNM0T+t9TRLWvqFsj5iosa6ETIB4vgWL9NJYH8mOf2KlXl+P3DYiVZmeswSTuQmDTY=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=synaptics.com;
-Received: from SN2PR03MB2383.namprd03.prod.outlook.com (2603:10b6:804:d::23)
- by SA0PR03MB5516.namprd03.prod.outlook.com (2603:10b6:806:bf::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21; Mon, 9 Nov
- 2020 01:16:18 +0000
-Received: from SN2PR03MB2383.namprd03.prod.outlook.com
- ([fe80::49be:5ea3:8961:a22]) by SN2PR03MB2383.namprd03.prod.outlook.com
- ([fe80::49be:5ea3:8961:a22%6]) with mapi id 15.20.3541.024; Mon, 9 Nov 2020
- 01:16:18 +0000
-Date:   Mon, 9 Nov 2020 09:16:05 +0800
-From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: phy: microchip_t1: Don't set .config_aneg
-Message-ID: <20201109091605.3951c969@xhacker.debian>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.147.44.204]
-X-ClientProxiedBy: BY5PR17CA0010.namprd17.prod.outlook.com
- (2603:10b6:a03:1b8::23) To SN2PR03MB2383.namprd03.prod.outlook.com
- (2603:10b6:804:d::23)
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=do64FoTxiW6aSEst954wsCuxnCqK2NqrUlgo5iPVJ0U=;
+        b=V8GHN66N/wOQtHaPM8a7mgZQOx2zU+r6RW2kAjMXBFRh3itFM6zN4mn28wKBmdkXCO
+         4YjkFifLhDMlIMmvLCjYsZBkdvrBkDny40zFrCFWVZMqsl9SEjOjxLwyTQxIVUS5pvx9
+         kcNK5ixcW+MSxvijkDuFrrvhQjDkV8w+N8eple71+yG+tfoB68ANkpBD8QbKUKSYV1c+
+         U+eiaQNCGwAl2uzvXxipWUI8OSES+Ap28ZVwLBLoz++rDvbXWUVFiExtWXZFclVKPFtT
+         DEVKb3CsgtlvGvnUeNYEOaMMVvt8gSIS14kh1WkJ4DqnGfyeR6Hi6HScJyxfkpZfky/m
+         QJug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=do64FoTxiW6aSEst954wsCuxnCqK2NqrUlgo5iPVJ0U=;
+        b=In+EeSc9lm9S9DAXgIV+WkCp7mMjEDk5pP76rp9G440TVrVBuViEXK1Rj4owiphpKz
+         gn4bLfWF/AcGbIiegi6Kg659XpCYTdy4T14v2xONrEZMG34TIE7h0nTmq+w8DBCFxbGY
+         QHoljbQUj2fbqoWwJesJ7rJa31gNyfrfgV8PNFv+osa8DT8nGhikqT1I71zKzuVEyfUH
+         E6B1DYgsBEwFs9eTfMxNNFweM2mVB/WLiIHHgw2K2vEe3IOiCbZoCme+llchgF4rgBuU
+         6BpZzRVYbEIDc3ySDMQhMVpxLxCSQP34QDe08yteuI6U8pH35vjE66gQnRUey1iRVqhe
+         GTqw==
+X-Gm-Message-State: AOAM532L+ioTy/nAjZslZ3QTjy2gVe43NqNCFOr03JcsZbn5FCVVEkC4
+        LB8ZGGwbgfKq45I+FB0WYoA=
+X-Google-Smtp-Source: ABdhPJwYB3Whpu117Q8/CtmgwUK8dDudCPfXHYlVhvmYWsZeoMlQEzYEfsMOoSsoAv9yKbwNiLMBcA==
+X-Received: by 2002:a17:90a:b797:: with SMTP id m23mr783000pjr.153.1604886319127;
+        Sun, 08 Nov 2020 17:45:19 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:400::5:7b57])
+        by smtp.gmail.com with ESMTPSA id t19sm8160644pgv.37.2020.11.08.17.45.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Nov 2020 17:45:17 -0800 (PST)
+Date:   Sun, 8 Nov 2020 17:45:15 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Hangbin Liu <haliu@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
+Message-ID: <20201109014515.rxz3uppztndbt33k@ast-mbp>
+References: <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
+ <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com>
+ <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
+ <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com>
+ <CAEf4BzaSfutBt3McEPjmu_FyxyzJa_xVGfhP_7v0oGuqG_HBEw@mail.gmail.com>
+ <20201106094425.5cc49609@redhat.com>
+ <CAEf4Bzb2fuZ+Mxq21HEUKcOEba=rYZHc+1FTQD98=MPxwj8R3g@mail.gmail.com>
+ <CAADnVQ+S7fusZ6RgXBKJL7aCtt3jpNmCnCkcXd0fLayu+Rw_6Q@mail.gmail.com>
+ <20201106152537.53737086@hermes.local>
+ <45d88ca7-b22a-a117-5743-b965ccd0db35@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from xhacker.debian (192.147.44.204) by BY5PR17CA0010.namprd17.prod.outlook.com (2603:10b6:a03:1b8::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21 via Frontend Transport; Mon, 9 Nov 2020 01:16:15 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2c82c805-ad20-4e7c-922b-08d8844d0f4e
-X-MS-TrafficTypeDiagnostic: SA0PR03MB5516:
-X-Microsoft-Antispam-PRVS: <SA0PR03MB55165D6CA53E6D8F4FCBE163EDEA0@SA0PR03MB5516.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hLk/AvpJMhdFnwymLp3v1LFpUEQ82kOrxF4oUWbPj6GzoOJXMzGycitHsb6Jb5pkrZ4Ftv8bviG2uzaFOw87a53ytc3/GteojQhMWZXgPmFApdBxlVbPJyJIrsu+EbZujzygQBGha1jMNkZ8XBACxCPnwD9ghWKI6M83r2gGkCUbD9+oxfTyvpJRI4GGBwYEt0+YtAXyl8+Ikdf8nKzWlxJ75sdYWcFL4tY8oH1J2O8XPlljlQsGcMs2BH1X8d7/ZfqQ2+hrJxVfWkEvuLTNkaIlWVqz8uVs5V5W5si+5z+7sN3UX+/nBqSrVPZYFZKiVLU7I699IYaWFG/qDld3JVa6EPy8c/NcPU0O4iTmVCMznRWlq5rKMnprgWASecLG
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN2PR03MB2383.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39850400004)(346002)(396003)(376002)(136003)(66476007)(66556008)(5660300002)(66946007)(478600001)(86362001)(2906002)(110136005)(83380400001)(9686003)(6666004)(55016002)(956004)(7696005)(26005)(52116002)(316002)(8676002)(8936002)(1076003)(6506007)(4326008)(4744005)(186003)(16526019)(142923001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: MUguJkUiyHiBpkwSjWgY9VqNc3ZHCoqB7+Vvo+ITRuYf0Uvz0DjP37lXLC7QqLla6SFHx7fGu4Cfe3r34rI2AcSepBlmdYzTcoyJRrmebjHMy8Tbst0gME2jpzKQTY7Ml3Winp2gs9/jON2ZxGodDp7hOENJ39Dzt9uGi0oRe0ot3IXHNeOTQz+coemFN8X1/TS+TG5ka7Oj8Y3PHjdVVzDBKwJzxn5aSYP47oiaNRn75H1EEksvtAzxzWSJGK7g8mA580fugdWZHLQWtOVnsdFG3vVlajDHrUm+6ZEPGWMaQv5UHZAXicniuHoyuesbJtiO5A2UWiw6MrqEmMQlN6ryvIxP+u9SPNCRXL+Gs89UfasOTimVLcvN9jBDVdKrcBytmtPGY/3/DoEbvUV3vNTxwSSUhXC5J9jiN7iZGeeyK5QoTHWX8LxIKxLiiYbZWM6zCPTNqtQOlvdVrr+ie1At1NQGd1oOZ1SIVHyl+BxIzPCiEGa9jTOi8GMcohxQ59ijZnetdBN8xovNL8VGLeRsXYD9L4060uINuja+i0fu6iOPE0AeMgxS3J4ODLRO/IyKCAL93Y7KGHW5GntmSqmsBcVVAgnTIym+phZNMM69yCodY7KfSgBtzNVsXd8OsgEElEuSpHj6QTpGVH8Vaw==
-X-OriginatorOrg: synaptics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c82c805-ad20-4e7c-922b-08d8844d0f4e
-X-MS-Exchange-CrossTenant-AuthSource: SN2PR03MB2383.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2020 01:16:18.0589
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IgP7ldeE7f2zgEVW76x6ArCXdpYlFh4+edvH+8gdsjvl5MxqOc+JIbAxDuc+SYHQxD2T8ecs1pArcG3yyxKH9g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR03MB5516
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <45d88ca7-b22a-a117-5743-b965ccd0db35@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The .config_aneg in microchip_t1 is genphy_config_aneg, so it's not
-needed, because the phy core will call genphy_config_aneg() if the
-.config_aneg is NULL.
+On Fri, Nov 06, 2020 at 04:38:13PM -0700, David Ahern wrote:
+> On 11/6/20 4:25 PM, Stephen Hemminger wrote:
+> >>
+> >> I think bumping the minimal version of libbpf with every iproute2 release
+> >> is necessary as well.
+> >> Today iproute2-next should require 0.2.0. The cycle after it should be 0.3.0
+> >> and so on.
+> >> This way at least some correlation between iproute2 and libbpf will be
+> >> established.
+> >> Otherwise it's a mess of versions and functionality from user point of view.
+> 
+> If existing bpf features in iproute2 work fine with version 0.1.0, what
+> is the justification for an arbitrary requirement for iproute2 to force
+> users to bump libbpf versions just to use iproute2 from v5.11?
 
-Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
----
- drivers/net/phy/microchip_t1.c | 1 -
- 1 file changed, 1 deletion(-)
+I don't understand why on one side you're pointing out existing quirkiness with
+bpf usability while at the same time arguing to make it _less_ user friendly
+when myself, Daniel, Andrii explained in detail what libbpf does and how it
+affects user experience?
 
-diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
-index fed3e395f18e..1c9900162619 100644
---- a/drivers/net/phy/microchip_t1.c
-+++ b/drivers/net/phy/microchip_t1.c
-@@ -219,7 +219,6 @@ static struct phy_driver microchip_t1_phy_driver[] = {
- 		.features       = PHY_BASIC_T1_FEATURES,
- 
- 		.config_init	= lan87xx_config_init,
--		.config_aneg    = genphy_config_aneg,
- 
- 		.ack_interrupt  = lan87xx_phy_ack_interrupt,
- 		.config_intr    = lan87xx_phy_config_intr,
--- 
-2.29.2
-
+The analogy of libbpf in iproute2 and libbfd in gdb is that both libraries
+perform large percentage of functionality comparing to the rest of the tool.
+When library is dynamic linked it makes user experience unpredictable. My guess
+is that libbfd is ~50% of what gdb is doing. What will the users say if gdb
+suddenly behaves differently (supports less or more elf files) because
+libbfd.so got upgraded in the background? In case of tc+libbpf the break down
+of funcionality is heavliy skewed towards libbpf. The amount of logic iproute2
+code will do to perform "tc filter ... bpf..." command is 10% iproute2 / 90%
+libbpf. Issuing few netlink calls to attach bpf prog to a qdisc is trivial
+comparing to what libbpf is doing with an elf file. There is a linker inside
+libbpf. It will separate different functions inside elf file. It will relocate
+code and adjust instructions before sending it to the kernel. libbpf is not
+a wrapper. It's a mini compiler: CO-RE logic, function relocation, dynamic
+kernel feature probing, etc. When the users use a command line tool (like
+iproute2 or bpftool) they are interfacing with the tool. It's not unix-like to
+demand that users should check the version of a shared library and adjust their
+expectations. The UI is the command line. Its version is as a promise of
+features. iproute2 of certain version in one distro should behave the same as
+iproute2 in another distro. By not doing git submodule that promise is broken.
+Hence my preference is to use fixed libbpf sha for every iproute2 release. The
+other alternative is to lag iproute2/libbpf one release behind. Hence
+repeating what I said earlier: Today iproute2-next should require 0.2.0. The
+iprtoute2 in the next cycle _must_ bump be the minimum libbpf version to 0.3.0.
+Not bumping minimum version brings us to square one and unpredicatable user
+experience. The users are jumping through enough hoops when they develop bpf
+programs. We have to make it simpler and easier. Using libbpf in iproute2
+can improve the user experience, but only if it's predictable.
