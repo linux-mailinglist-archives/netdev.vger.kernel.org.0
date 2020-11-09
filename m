@@ -2,70 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17F9D2AC2EA
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 18:55:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D2172AC2FF
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 18:58:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726410AbgKIRzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 12:55:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38770 "EHLO
+        id S1730249AbgKIR6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 12:58:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729923AbgKIRzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 12:55:52 -0500
-Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2291C0613CF;
-        Mon,  9 Nov 2020 09:55:52 -0800 (PST)
-Received: by fieldses.org (Postfix, from userid 2815)
-        id 9768B1C79; Mon,  9 Nov 2020 12:55:51 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 9768B1C79
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
-        s=default; t=1604944551;
-        bh=3bMCJ6oV4LyUEOFexrWIXMDsBYHsUZ6jBKyfSZ6GZAg=;
-        h=Date:To:Cc:Subject:References:In-Reply-To:From:From;
-        b=wQOvZu2Pbp/isw5mcfB+atX+QmeeTpreMzJ3DMd8juj/0xa56YlEgLBeUvU5TFw6k
-         WzDLo+CJ4UO/9YBG/BZyTiJKhy8oyAgEwg2ANtGaFEndc7B8lPMXOgri+yb6l6A/zu
-         WNNVrYzt9vcSVgrgapLVXd5sTKs3sGzlqQsPo9Ps=
-Date:   Mon, 9 Nov 2020 12:55:51 -0500
-To:     Chuck Lever <chuck.lever@oracle.com>
-Cc:     Trond Myklebust <trondmy@hammerspace.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC] SUNRPC: Use zero-copy to perform socket send
- operations
-Message-ID: <20201109175551.GC11144@fieldses.org>
-References: <160493771006.15633.8524084764848931537.stgit@klimt.1015granger.net>
- <9ce015245c916b2c90de72440a22f801142f2c6e.camel@hammerspace.com>
- <0313136F-6801-434F-8304-72B9EADD389E@oracle.com>
- <f03dae6d36c0f008796ae01bbb6de3673e783571.camel@hammerspace.com>
- <5056C7C7-7B26-4667-9691-D2F634C02FB1@oracle.com>
+        with ESMTP id S1730062AbgKIR6m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 12:58:42 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC26C0613CF;
+        Mon,  9 Nov 2020 09:58:40 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id i186so9020645ybc.11;
+        Mon, 09 Nov 2020 09:58:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ypr4Kuc9X8rFEI2EWRdGGaNl783YbOoeeQfMY7jHtgI=;
+        b=SOA1Rhwu0dXIyRSvIu5iU3wrgAmvwrXvs3Bfx9DFGRjQOYi+m7nsiMy3s064GwOoPf
+         rKrhT1sCYoFfMbpSEpdhNeBu57E4ckYqVeoMucHWhYigUsDKPOZDZEgjzHgRHUjIR/d+
+         FV2CBdMwN4pMGbQ/prR05wR5rYrdGPm9O7PANyVX6xk7sKEEQTPDTPJe4u5f3m+IL3qE
+         3NQCJZ5GaUOUEccU1hsUxuHZSggEmhTU/I9vQw3UE6HlHpD4h0446bdbVcHrP1hbeJFT
+         uHl2RGa4GLtui214v0Rxz1l0F9Tgk5a+mKyhGkgzUS407d3IXkc4/X3bcyVmMXVvcYWC
+         kp9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ypr4Kuc9X8rFEI2EWRdGGaNl783YbOoeeQfMY7jHtgI=;
+        b=MV4fwkJSyRRnzTtPvnebll4/xu+jL/8jQc0IEV4fTXXBraFWbNTDzT9IoRzOZTPWDK
+         WpnEkRaQo+9EhNEui7qg3SnJwNWhfl8eviPkmm6qlJfe4+ymU3PH0Z6cPeEvibXRjUCn
+         LKgfsor4gERFMLF+X/Wtl5HrnpjWTs6dQWtfQBW8BzBR0wz7jK9Q/FTxhFlv1izyY3/R
+         i+OS5FLRIVqhGsLwcmHE7OQeNQkM78YyTa2lRFoqzz5Yd8iV5rUdHb4vTrdeXyhZLZNM
+         /VYlUAl1nc9O12HuUi57iXGSgU6yKVelrquRwwcA1RiFeQAt1HQVjk6or9Ll/BdhcuxT
+         Fchw==
+X-Gm-Message-State: AOAM531Gvshffsmk0tjvxXWkA1ZP3d2XCoYxze5tu42m4/SCzlfhLZKo
+        ceESh3FMz5thSjGpnsLakNBC9R29av9bgMRLv4MPChQKPIkctw==
+X-Google-Smtp-Source: ABdhPJyA2HctkWbIVQauz5gXSOTiVM5JMnbtl4J1OlEsiI4u5mbTqDrcAeuRtHGnrqItJBz+XfqSC8n9zvzvTs/o3XY=
+X-Received: by 2002:a25:bdc7:: with SMTP id g7mr21695549ybk.260.1604944719969;
+ Mon, 09 Nov 2020 09:58:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5056C7C7-7B26-4667-9691-D2F634C02FB1@oracle.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-From:   bfields@fieldses.org (J. Bruce Fields)
+References: <20201106055111.3972047-1-andrii@kernel.org> <20201106055111.3972047-6-andrii@kernel.org>
+ <alpine.LRH.2.21.2011091633450.4154@localhost>
+In-Reply-To: <alpine.LRH.2.21.2011091633450.4154@localhost>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 9 Nov 2020 09:58:28 -0800
+Message-ID: <CAEf4BzaTyaD4Mz_tVc9WbP9Qv+oAmQNsG--OPwJCJf51xrFK7w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/5] tools/bpftool: add support for in-kernel and
+ named BTF in `btf show`
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Jessica Yu <jeyu@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 09, 2020 at 12:36:15PM -0500, Chuck Lever wrote:
-> > On Nov 9, 2020, at 12:32 PM, Trond Myklebust <trondmy@hammerspace.com> wrote:
-> > On Mon, 2020-11-09 at 12:12 -0500, Chuck Lever wrote:
-> >> I assume you mean the client side only. Those issues aren't a factor
-> >> on the server. Not setting SOCK_ZEROCOPY here should be enough to
-> >> prevent the use of zero-copy on the client.
-> >> 
-> >> However, the client loses the benefits of sending a page at a time.
-> >> Is there a desire to remedy that somehow?
-> > 
-> > What about splice reads on the server side?
-> 
-> On the server, this path formerly used kernel_sendpages(), which I
-> assumed is similar to the sendmsg zero-copy mechanism. How does
-> kernel_sendpages() mitigate against page instability?
+On Mon, Nov 9, 2020 at 8:43 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+>
+> On Thu, 5 Nov 2020, Andrii Nakryiko wrote:
+>
+> > Display vmlinux BTF name and kernel module names when listing available BTFs
+> > on the system.
+> >
+> > In human-readable output mode, module BTFs are reported with "name
+> > [module-name]", while vmlinux BTF will be reported as "name [vmlinux]".
+> > Square brackets are added by bpftool and follow kernel convention when
+> > displaying modules in human-readable text outputs.
+> >
+>
+> I had a go at testing this and all looks good, but I was curious
+> if  "bpftool btf dump" is expected to work with module BTF? I see
+> the various modules in /sys/kernel/btf, but if I run:
+>
+> # bpftool btf dump file /sys/kernel/btf/ixgbe
 
-We turn it off when gss integrity or privacy services is used, to
-prevent spurious checksum failures (grep for RQ_SPLICE_OK).
+You need to specify vmlinux as a base BTF. There is a -B flag for
+that, added in [0]. So just add -B /sys/kernel/btf/vmlinux. I think we
+might want to teach bpftool to do this automatically if we see that
+file points at module BTF in /sys/kernel/btf, as a convenience
+feature.
 
-But maybe that's not the only problematic case, I don't know.
+  [0] https://patchwork.kernel.org/project/netdevbpf/patch/20201105043402.2530976-12-andrii@kernel.org/
 
---b.
+
+> Error: failed to load BTF from /sys/kernel/btf/ixgbe: Invalid argument
+>
+> ...while it still works for vmlinux:
+>
+> # bpftool btf dump file /sys/kernel/btf/vmlinux
+> [1] INT '(anon)' size=4 bits_offset=0 nr_bits=32 encoding=(none)
+> [2] INT 'long unsigned int' size=8 bits_offset=0 nr_bits=64
+> encoding=(none)
+> ...
+>
+> "bpftool btf show" works for ixgbe:
+>
+> # bpftool btf show|grep ixgbe
+> 19: name [ixgbe]  size 182074B
+>
+> Is this perhaps not expected to work yet? (I updated pahole
+> to the latest changes etc and BTF generation seemed to work
+> fine for modules during kernel build).
+>
+> For the "bpftool btf show" functionality, feel free to add
+>
+> Tested-by: Alan Maguire <alan.maguire@oracle.com>
+
+Ok, thanks.
+
+>
+> Thanks!
+>
+> Alan
