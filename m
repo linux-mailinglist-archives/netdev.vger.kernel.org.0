@@ -2,116 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0E3D2AC126
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 17:44:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D0C52AC141
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 17:48:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730471AbgKIQoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 11:44:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55792 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726410AbgKIQoE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 11:44:04 -0500
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F84C0613CF
-        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 08:44:04 -0800 (PST)
-Received: by mail-qt1-x843.google.com with SMTP id m65so6394321qte.11
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 08:44:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bxKjKzyax+cKTDy4CrT1Ah9rBj0Kud+9NcQt8Uwja9I=;
-        b=NevfnH1ajOYsfTPL95QEBkvMx8cVstM+rEK/+UgXRYLe52JYtpHbtZOSaLGoc1AZq3
-         t2+Q4HMRMamOft+5d7BtLPiWpOd22MyNLboDzciE0bizZH6Z5rMbIBf9k4x4540rhTqX
-         JGG+j4yIKbTkdndc4dKJ0BNHXHT8BR+Kdb/xXlWYDKpOAxzZJjLxwL68ZZgkMedVqqKf
-         DJPtdsfnWJgOnesVn/CuhJ2HpJiFOetxGLGNWRELr1SIHPKz4jvIs0pI72f6QX663Odn
-         fV5TOyN0++PVvHu39o5Jamv+69xJ3C67YlAMnx8GBrxvkbh0wQKvx6nO3NPJ9tNobA91
-         5PyQ==
+        id S1730712AbgKIQsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 11:48:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:50792 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730419AbgKIQsM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 11:48:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604940491;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fqIq5NUwLO5XS6VOJO9c8F79ciX9FemcAwNmtAIcwRI=;
+        b=NujbtCCK8KK7ScfBD3D9N7DsW0Cu4S6n8iKhY2Zc3uoFPZ1ZSmfw2IeR49q2Djx08tmvwN
+        s8gbrXw8m/p5XT68R8nJH0KPO6kRFCDDX0BrDIVrg66Lv/18ECOfe6VP2SqJoYqAqXeBpW
+        NTPNN5IAOLyO6EkKOZM4kN8NT653FVY=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-190-WpBOAhO2NWqb4gk48s_dNw-1; Mon, 09 Nov 2020 11:48:10 -0500
+X-MC-Unique: WpBOAhO2NWqb4gk48s_dNw-1
+Received: by mail-oo1-f72.google.com with SMTP id t8so2389138oor.19
+        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 08:48:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bxKjKzyax+cKTDy4CrT1Ah9rBj0Kud+9NcQt8Uwja9I=;
-        b=EsbKSn8GsG0ErU6JyAfjDjL+yYHBbwJqi2vBtzj1GXqeWT8NT8gt+/iGuZtkD6A/r8
-         7fdDhEqhvgl5bNnra+mg+mlDcPpay/yxUZHx445a/LS6C9T4UneVZUiopvkAsgEGjgmw
-         KXabE9eWjw0VpESIcy2yUCbIMs3vkMRBc5h64pGG6+UIDMvrNeqkLsi5PHZ42cHexq13
-         w3PeyJI7JKK+QwqAktIBxfSyFxYrseOWnhSst0YLAmFNlA1rXAEKlqVSC/NiLGUiuUKO
-         gQRcM8wkjNuRm9KgWWggPNtK4cuPMbsybhYEInqoinI+3Xjl0H/FbiMOw50RUx4IOwhQ
-         ytew==
-X-Gm-Message-State: AOAM533AaqLESMzeHgusqTaImo7WE8NUxrMnE8hnHwEcwB2H0HYzQQBU
-        DXyrfNA2TxvkceGCFXglp40=
-X-Google-Smtp-Source: ABdhPJwEOouNnm5E2o0W9/obGhF5Z45qwMdy6jtHUJwNRGVlKBnBat0VCsmUqL7hpFp+Frjd778Ptw==
-X-Received: by 2002:ac8:7189:: with SMTP id w9mr13996211qto.288.1604940243512;
-        Mon, 09 Nov 2020 08:44:03 -0800 (PST)
-Received: from localhost.localdomain ([2001:1284:f013:f46e:fd51:d129:1f9d:9ebd])
-        by smtp.gmail.com with ESMTPSA id d140sm2579774qke.59.2020.11.09.08.44.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 08:44:02 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 6D551C1B7C; Mon,  9 Nov 2020 13:44:00 -0300 (-03)
-Date:   Mon, 9 Nov 2020 13:44:00 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     wenxu@ucloud.cn, kuba@kernel.org, dcaratti@redhat.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 3/3] net/sched: act_frag: add implict packet
- fragment support.
-Message-ID: <20201109164400.GC3913@localhost.localdomain>
-References: <1604791828-7431-1-git-send-email-wenxu@ucloud.cn>
- <1604791828-7431-4-git-send-email-wenxu@ucloud.cn>
- <ygnhimaewtm2.fsf@nvidia.com>
- <20201109145025.GB3913@localhost.localdomain>
- <ygnhft5iwmzh.fsf@nvidia.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fqIq5NUwLO5XS6VOJO9c8F79ciX9FemcAwNmtAIcwRI=;
+        b=eUgOIRVQTu/RZNZ40k3AYMZdyFH3hSs4+bnI3z7dv6zmHOKKgU+CBATVW/6uly8hWi
+         5A2ml2IaabMw/NCq8kUMS5+lAbuJ/epXOU2AzHNf2Gy08oud2DbUS/ZSFCRFqRFEAjQj
+         DTN5V5PXabez8/e/frp1hKeCMR/EymDmrUKzvhsSr1Yn5+JhDwbCkLXJhnRF+4dKTVYi
+         qUlkQnpSJk9rqv+gBtGcq1KserIK3+/QEdmbnHN+y12NT1SlyyMRxNFY0Crge/TxryFu
+         SQR3QP8hDH1SacuhRMkRzEr6e1vCFS5pWKGODVi06q8thDrdITjiggILcPZrBcMqOYqj
+         AmGQ==
+X-Gm-Message-State: AOAM533HCfJeLqscaH7P7ngfY7Tqk6RkIP9di+klap/l+T/MzZzyU7eh
+        Sf3BQaNaYnEK7SQtqAYbTBD3JbO1cJGjKplN+O2BUzRM0Ea9FXY+yvjKFk3Jq+FHk1c7/wlcTkP
+        FFJqoLcHYi8TCilQNcO1S7iiVW9+r2jzA
+X-Received: by 2002:aca:4f53:: with SMTP id d80mr29981oib.120.1604940488744;
+        Mon, 09 Nov 2020 08:48:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyHFiGAk0galmy0bk5raHPkH/pu4uljJlFq+eNb+KPxOugkwKoJBdOHvGL6Z37sQJd6iaPMBOkPmw04bQVv+dE=
+X-Received: by 2002:aca:4f53:: with SMTP id d80mr29973oib.120.1604940488554;
+ Mon, 09 Nov 2020 08:48:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ygnhft5iwmzh.fsf@nvidia.com>
+References: <20201106200436.943795-1-jarod@redhat.com> <20201106184432.07a6ab18@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201106184432.07a6ab18@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Mon, 9 Nov 2020 11:47:58 -0500
+Message-ID: <CAKfmpSfkmo1GVVThadDDtXma1m1yrNwPoPz87sMy5664uJbevg@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 0/5] bonding: rename bond components
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 09, 2020 at 05:47:46PM +0200, Vlad Buslov wrote:
-> 
-> On Mon 09 Nov 2020 at 16:50, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> wrote:
-> > On Mon, Nov 09, 2020 at 03:24:37PM +0200, Vlad Buslov wrote:
-> >> On Sun 08 Nov 2020 at 01:30, wenxu@ucloud.cn wrote:
-...
-> >> > +int tcf_dev_queue_xmit(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb))
-> >> > +{
-> >> > +	if (tcf_xmit_hook_enabled())
-> >> 
-> >> Okay, so what happens here if tcf_xmit_hook is disabled concurrently? If
-> >> we get here from some rule that doesn't involve act_ct but uses
-> >> act_mirred and act_ct is concurrently removed decrementing last
-> >> reference to static branch and setting tcf_xmit_hook to NULL?
-> >
-> > Yeah.. good point. Thinking further now, what about using RCU for the
-> > hook? AFAICT it can cover the synchronization needed when clearing the
-> > pointer, tcf_set_xmit_hook() should do a module_get() and
-> > tcf_clear_xmit_hook() can delay a module_put(act_frag) as needed with
-> > call_rcu.
-> 
-> Wouldn't it be enough to just call synchronize_rcu() in
-> tcf_clear_xmit_hook() after setting tcf_xmit_hook to NULL? act_ct module
-> removal should be very rare, so synchronously waiting for rcu grace
-> period to complete is probably okay.
+On Fri, Nov 6, 2020 at 9:44 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri,  6 Nov 2020 15:04:31 -0500 Jarod Wilson wrote:
+> > The bonding driver's use of master and slave, while largely understood
+> > in technical circles, poses a barrier for inclusion to some potential
+> > members of the development and user community, due to the historical
+> > context of masters and slaves, particularly in the United States. This
+> > is a first full pass at replacing those phrases with more socially
+> > inclusive ones, opting for bond to replace master and port to
+> > replace slave, which is congruent with the bridge and team drivers.
+>
+> If we decide to go ahead with this, we should probably also use it as
+> an opportunity to clean up the more egregious checkpatch warnings, WDYT?
+>
+> Plan minimum - don't add new ones ;)
 
-Right. And even if it gets reloaded (or, say, something else tries to
-use the hook), the teardown was already handled. Nice, thanks Vlad.
+Hm. I hadn't actually looked at checkpatch output until now. It's...
+noisy here. But I'm pretty sure the vast majority of that is from
+existing issues, simply reported now due to all the renaming. I can
+certainly take a crack at cleanups, but I'd be worried about missing
+another merge window trying to sort all of these, when they're not
+directly related.
 
-> 
-> >
-> > I see tcf_mirred_act is already calling rcu_dereference_bh(), so
-> > it's already protected by rcu read here and calling tcf_xmit_hook()
-> > with xmit pointer should be fine. WDYT?
-> 
-> Yes, good idea.
-> 
-> >
-> >> 
-> >> > +		return tcf_xmit_hook(skb, xmit);
-> >> > +	else
-> >> > +		return xmit(skb);
-> >> > +}
-> >> > +EXPORT_SYMBOL_GPL(tcf_dev_queue_xmit);
-> 
+-- 
+Jarod Wilson
+jarod@redhat.com
+
