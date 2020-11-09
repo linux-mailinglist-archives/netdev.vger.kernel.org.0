@@ -2,71 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D0102AC601
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 21:34:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CFAA2AC60C
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 21:38:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729831AbgKIUeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 15:34:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
+        id S1729499AbgKIUid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 15:38:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729452AbgKIUeM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 15:34:12 -0500
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8837BC0613CF;
-        Mon,  9 Nov 2020 12:34:12 -0800 (PST)
-Received: by mail-vs1-xe44.google.com with SMTP id f7so5732964vsh.10;
-        Mon, 09 Nov 2020 12:34:12 -0800 (PST)
+        with ESMTP id S1726952AbgKIUic (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 15:38:32 -0500
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B48C0613CF;
+        Mon,  9 Nov 2020 12:38:32 -0800 (PST)
+Received: by mail-qt1-x844.google.com with SMTP id m65so6992100qte.11;
+        Mon, 09 Nov 2020 12:38:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=87qto0cmJNMfXhhR85KNP1Rhuduq/+YarKX5RKpLJq4=;
-        b=b8Hv7w7pods6lRb2MVTAeTI318PXPcJ2X/mf6VoHOU1dWUMa4OzAbAzXmqGxPFYDVI
-         hLzVTRFflxxibUzNvbu49L6pXD9HAKhB8frhqF67O0YzlVrQuTUQduO6X55D8IvsBF6r
-         DktnbdCkkyoal3m5MX5Y11e9WXkuv/PlaBKn4tTAt81zZemGwvg+J0IxLQ4OAGPjEtRn
-         KBEYvjCFNN6Rl5mH6s/6gtfH542/Ev0JWGw2dtevutA5ct1ee3kKjdn3DI7nWKhAJodd
-         pMjHgplO1q4MjoXyK0cEIv8rvdpRePLwbbAU7rqAyhe+i61zgMGl5ZGv0dTRgpuzmxwI
-         DtsQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=gMW3pk1wRUoLgj0dOxEf2J+Wx3p/8/WsmXDMapxJ2ec=;
+        b=j6BwfuHNd7EIXx0fjylxPtKiYcgZGwwVsW0yk1t4qOj8R/ptKNRFNe9XaVtz83DDrb
+         BQZzBn1Mx/l4uTdfHwHtDd10Eh3rMsmhp4Ef4frdnzFa7a/VvDpm/+ug7N3hGPHJNYzY
+         7WlzqpIQg0rnUuMUs0ceFc5wptiJmONYtYWCNwQTWDZULESZHG3ic2MeIV0uW55FxJHC
+         o2tWdqipayLTOywzSwc/o4pvC4ZARa7RC4ew2vWs/mA+WY1rO3nszziBILoSDOSSnU/j
+         y/geSKgVBmNu8wiJwmJLLQHZf0XfGrSBWFmac5uWzt2obaXFp58LV0QlTGyIVEzbyyi4
+         h0NA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=87qto0cmJNMfXhhR85KNP1Rhuduq/+YarKX5RKpLJq4=;
-        b=AB15qybT+vFYc0f2cILgmiO43C7nLv0vEfnhR21Wj22lFokoW99gLpXuXczCVdj/Xy
-         TIo3ox2VNWNHCUVoWula6R21P5jCwTTae5VoAqVfSexXa9PMgwRk+/UKs2Z3K37F0Bt0
-         FIBaHdiOnj74/aAh0uR2p+yRFJlFAo6vLrhjlwDhQyh/kAqVIACXnPQrPIMFQN7ph0A+
-         gq+2Ba6pMSkHtaE4G282Vgo3kXlTYUz0D46Yw7XQxCvp4EA5mjnkiumWHuwdxdaK7Afs
-         IqbV/NbvdcVYW3tQTjqQATHVlOlRAQlTjBxmQPAFOvmYfC+4KJDvMY1JR42WKodZkZKK
-         x0mQ==
-X-Gm-Message-State: AOAM532A+6kyt0h7rpvuVspA6PUQZA5PvfY0q6CDnD5v6ltaHmlcnEwV
-        sVkgEkS0540S3IqorNm/b1kD/hiB5Kvp2JB60ui1pA44
-X-Google-Smtp-Source: ABdhPJxRjjP8MK53VixK+AlHV22F5DbT6z/6gI5LPDsqRoDdS0UPySdi0gPsp8BPrXSfVmeyj8+D9aiNxZGFFwmDnGw=
-X-Received: by 2002:a67:b347:: with SMTP id b7mr9707146vsm.15.1604954051561;
- Mon, 09 Nov 2020 12:34:11 -0800 (PST)
-MIME-Version: 1.0
-References: <20201109193117.2017-1-TheSven73@gmail.com> <20201109194934.GE1456319@lunn.ch>
- <CAGngYiVV1_65tZRgnzSxDV5mQGAkur8HwTOer9eDMXhBLvBCXw@mail.gmail.com> <20201109202559.GF1456319@lunn.ch>
-In-Reply-To: <20201109202559.GF1456319@lunn.ch>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=gMW3pk1wRUoLgj0dOxEf2J+Wx3p/8/WsmXDMapxJ2ec=;
+        b=MlpMBev34ZIx+Bo5EHqaoklnF4LZJrnEx2ICP7XmQQ7oK4iiC0QxC4pvtSlmT9XpK/
+         SgWBrtcoTlV2DIyvuofJlNlypijtBxVLq+CSXERMlx7XWZn0IBWRtXeCK6TZZeOATA5A
+         cE2mfUH0V1iLSsy2ZOCtlNZzdhCTcgW6E4P4075XdBpf3mbsEUhXRzpqcq1UGOKXcxlE
+         75yxH+5n0xQsOsXJ/MjzLSylqfMQDF1dTZDqsD3oo+aHRLSYSODMIkIFlE+L8xnLhmi0
+         JrHqXPt3DBP47yXhxCo/xXGtatIzqZuFCrrvjTqbG46GWJawKeVNOthJjfzdO49L5EPd
+         IqKg==
+X-Gm-Message-State: AOAM5327109/35AvxTBuENCtcvFuHW8Kkmp+7S2DwZeYb3eG+5eNrhcH
+        xj9wot972+WgObphoU+sCFk=
+X-Google-Smtp-Source: ABdhPJzPmF4m7q3cvnahmyDVo4UMO5mkHR2ap6GMuqcisSxLG4PguplAq+Y0ex2MoKrZ27yul22c4Q==
+X-Received: by 2002:aed:3a63:: with SMTP id n90mr15505367qte.133.1604954311887;
+        Mon, 09 Nov 2020 12:38:31 -0800 (PST)
+Received: from svens-asus.arcx.com ([184.94.50.30])
+        by smtp.gmail.com with ESMTPSA id h82sm6952821qke.109.2020.11.09.12.38.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Nov 2020 12:38:31 -0800 (PST)
 From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Mon, 9 Nov 2020 15:34:00 -0500
-Message-ID: <CAGngYiW+njPG033VpiFHo2ZttgMvfhJOQ3=-pnD4W325p1hUuA@mail.gmail.com>
-Subject: Re: [PATCH net-next v1] net: phy: spi_ks8995: Do not overwrite SPI
- mode flags
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
+To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        David S Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v1] lan743x: fix "BUG: invalid wait context" when setting rx mode
+Date:   Mon,  9 Nov 2020 15:38:28 -0500
+Message-Id: <20201109203828.5115-1-TheSven73@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 9, 2020 at 3:26 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> Then you should consider adding it, and cross post the SPI list.
->
+From: Sven Van Asbroeck <thesven73@gmail.com>
 
-Good idea. I will give that a try.
+In the net core, the struct net_device_ops -> ndo_set_rx_mode()
+callback is called with the dev->addr_list_lock spinlock held.
+
+However, this driver's ndo_set_rx_mode callback eventually calls
+lan743x_dp_write(), which acquires a mutex. Mutex acquisition
+may sleep, and this is not allowed when holding a spinlock.
+
+Fix by removing the dp_lock mutex entirely. Its purpose is to
+prevent concurrent accesses to the data port. No concurrent
+accesses are possible, because the dev->addr_list_lock
+spinlock in the core only lets through one thread at a time.
+
+Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+---
+
+Tree: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git # 4e0396c59559
+
+To: Bryan Whitehead <bryan.whitehead@microchip.com>
+To: "David S. Miller" <davem@davemloft.net>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org (open list)
+
+ drivers/net/ethernet/microchip/lan743x_main.c | 12 +++---------
+ drivers/net/ethernet/microchip/lan743x_main.h |  3 ---
+ 2 files changed, 3 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index d0817a974f8e..eb990e036611 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -674,14 +674,12 @@ static int lan743x_intr_open(struct lan743x_adapter *adapter)
+ static int lan743x_dp_write(struct lan743x_adapter *adapter,
+ 			    u32 select, u32 addr, u32 length, u32 *buf)
+ {
+-	int ret = -EIO;
+ 	u32 dp_sel;
+ 	int i;
+ 
+-	mutex_lock(&adapter->dp_lock);
+ 	if (lan743x_csr_wait_for_bit(adapter, DP_SEL, DP_SEL_DPRDY_,
+ 				     1, 40, 100, 100))
+-		goto unlock;
++		return -EIO;
+ 	dp_sel = lan743x_csr_read(adapter, DP_SEL);
+ 	dp_sel &= ~DP_SEL_MASK_;
+ 	dp_sel |= select;
+@@ -693,13 +691,10 @@ static int lan743x_dp_write(struct lan743x_adapter *adapter,
+ 		lan743x_csr_write(adapter, DP_CMD, DP_CMD_WRITE_);
+ 		if (lan743x_csr_wait_for_bit(adapter, DP_SEL, DP_SEL_DPRDY_,
+ 					     1, 40, 100, 100))
+-			goto unlock;
++			return -EIO;
+ 	}
+-	ret = 0;
+ 
+-unlock:
+-	mutex_unlock(&adapter->dp_lock);
+-	return ret;
++	return 0;
+ }
+ 
+ static u32 lan743x_mac_mii_access(u16 id, u16 index, int read)
+@@ -2720,7 +2715,6 @@ static int lan743x_hardware_init(struct lan743x_adapter *adapter,
+ 
+ 	adapter->intr.irq = adapter->pdev->irq;
+ 	lan743x_csr_write(adapter, INT_EN_CLR, 0xFFFFFFFF);
+-	mutex_init(&adapter->dp_lock);
+ 
+ 	ret = lan743x_gpio_init(adapter);
+ 	if (ret)
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
+index 57fce752346e..3a0e70daa88f 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.h
++++ b/drivers/net/ethernet/microchip/lan743x_main.h
+@@ -711,9 +711,6 @@ struct lan743x_adapter {
+ 	struct lan743x_csr      csr;
+ 	struct lan743x_intr     intr;
+ 
+-	/* lock, used to prevent concurrent access to data port */
+-	struct mutex		dp_lock;
+-
+ 	struct lan743x_gpio	gpio;
+ 	struct lan743x_ptp	ptp;
+ 
+-- 
+2.17.1
+
