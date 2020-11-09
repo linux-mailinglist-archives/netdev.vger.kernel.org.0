@@ -2,137 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DF6B2AC74C
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 22:31:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8560D2AC757
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 22:36:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730605AbgKIVbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 16:31:46 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:38081 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727311AbgKIVbp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 16:31:45 -0500
-Received: from 1.general.cascardo.us.vpn ([10.172.70.58] helo=mussarela)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <cascardo@canonical.com>)
-        id 1kcElJ-0002mr-La; Mon, 09 Nov 2020 21:31:42 +0000
-Date:   Mon, 9 Nov 2020 18:31:34 -0300
-From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Kleber Sacilotto de Souza <kleber.souza@canonical.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "Alexander A. Klimov" <grandmaster@al2klimov.de>,
-        Kees Cook <keescook@chromium.org>,
-        Alexey Kodanev <alexey.kodanev@oracle.com>,
-        dccp@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dccp: ccid: move timers to struct dccp_sock
-Message-ID: <20201109213134.GR595944@mussarela>
-References: <20201013171849.236025-1-kleber.souza@canonical.com>
- <20201013171849.236025-2-kleber.souza@canonical.com>
- <20201016153016.04bffc1e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201109114828.GP595944@mussarela>
- <20201109094938.45b230c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201109210909.GQ595944@mussarela>
- <20201109131554.5f65b2fa@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        id S1729923AbgKIVgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 16:36:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727311AbgKIVgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 16:36:03 -0500
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2736C0613CF
+        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 13:36:02 -0800 (PST)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1kcEpR-0006Ja-IZ; Mon, 09 Nov 2020 22:35:57 +0100
+Date:   Mon, 9 Nov 2020 22:35:57 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     nusiddiq@redhat.com
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Florian Westphal <fw@strlen.de>
+Subject: Re: [net-next] netfiler: conntrack: Add the option to set ct tcp
+ flag - BE_LIBERAL per-ct basis.
+Message-ID: <20201109213557.GE23619@breakpoint.cc>
+References: <20201109072930.14048-1-nusiddiq@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201109131554.5f65b2fa@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201109072930.14048-1-nusiddiq@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 09, 2020 at 01:15:54PM -0800, Jakub Kicinski wrote:
-> On Mon, 9 Nov 2020 18:09:09 -0300 Thadeu Lima de Souza Cascardo wrote:
-> > On Mon, Nov 09, 2020 at 09:49:38AM -0800, Jakub Kicinski wrote:
-> > > On Mon, 9 Nov 2020 08:48:28 -0300 Thadeu Lima de Souza Cascardo wrote:  
-> > > > On Fri, Oct 16, 2020 at 03:30:16PM -0700, Jakub Kicinski wrote:  
-> > > > > On Tue, 13 Oct 2020 19:18:48 +0200 Kleber Sacilotto de Souza wrote:    
-> > > > > > From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> > > > > > 
-> > > > > > When dccps_hc_tx_ccid is freed, ccid timers may still trigger. The reason
-> > > > > > del_timer_sync can't be used is because this relies on keeping a reference
-> > > > > > to struct sock. But as we keep a pointer to dccps_hc_tx_ccid and free that
-> > > > > > during disconnect, the timer should really belong to struct dccp_sock.
-> > > > > > 
-> > > > > > This addresses CVE-2020-16119.
-> > > > > > 
-> > > > > > Fixes: 839a6094140a (net: dccp: Convert timers to use timer_setup())
-> > > > > > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> > > > > > Signed-off-by: Kleber Sacilotto de Souza <kleber.souza@canonical.com>    
-> > > > > 
-> > > > > I've been mulling over this fix.
-> > > > > 
-> > > > > The layering violation really doesn't sit well.
-> > > > > 
-> > > > > We're reusing the timer object. What if we are really unlucky, the
-> > > > > fires and gets blocked by a cosmic ray just as it's about to try to
-> > > > > lock the socket, then user manages to reconnect, and timer starts
-> > > > > again. Potentially with a different CCID algo altogether?
-> > > > > 
-> > > > > Is disconnect ever called under the BH lock?  Maybe plumb a bool
-> > > > > argument through to ccid*_hc_tx_exit() and do a sk_stop_timer_sync()
-> > > > > when called from disconnect()?
-> > > > > 
-> > > > > Or do refcounting on ccid_priv so that the timer holds both the socket
-> > > > > and the priv?    
-> > > > 
-> > > > Sorry about too late a response. I was on vacation, then came back and spent a
-> > > > couple of days testing this further, and had to switch to other tasks.
-> > > > 
-> > > > So, while testing this, I had to resort to tricks like having a very small
-> > > > expire and enqueuing on a different CPU. Then, after some minutes, I hit a UAF.
-> > > > That's with or without the first of the second patch.
-> > > > 
-> > > > I also tried to refcount ccid instead of the socket, keeping the timer on the
-> > > > ccid, but that still hit the UAF, and that's when I had to switch tasks.  
-> > > 
-> > > Hm, not instead, as well. I think trying cancel the timer _sync from
-> > > the disconnect path would be the simplest solution, tho.
-> > 
-> > I don't think so. On other paths, we would still have the possibility that:
-> > 
-> > CPU1: timer expires and is about to run
-> > CPU2: calls stop_timer (which does not stop anything) and frees ccid
-> > CPU1: timer runs and uses freed ccid
-> > 
-> > And those paths, IIUC, may be run under a SoftIRQ on the receive path, so would
-> > not be able to call stop_timer_sync.
+nusiddiq@redhat.com <nusiddiq@redhat.com> wrote:
+> From: Numan Siddique <nusiddiq@redhat.com>
 > 
-> Which paths are those (my memory of this code is waning)? I thought
-> disconnect is only called from the user space side (shutdown syscall).
-> The only other way to terminate the connection is to close the socket,
-> which Eric already fixed by postponing the destruction of ccid in that
-> case.
+> Before calling nf_conntrack_in(), caller can set this flag in the
+> connection template for a tcp packet and any errors in the
+> tcp_in_window() will be ignored.
+> 
+> A helper function - nf_ct_set_tcp_be_liberal(nf_conn) is added which
+> sets this flag for both the directions of the nf_conn.
+> 
+> openvswitch makes use of this feature so that any out of window tcp
+> packets are not marked invalid. Prior to this there was no easy way
+> to distinguish if conntracked packet is marked invalid because of
+> tcp_in_window() check error or because it doesn't belong to an
+> existing connection.
+> 
+> An earlier attempt (see the link) tried to solve this problem for
+> openvswitch in a different way. Florian Westphal instead suggested
+> to be liberal in openvswitch for tcp packets.
+> 
+> Link: https://patchwork.ozlabs.org/project/netdev/patch/20201006083355.121018-1-nusiddiq@redhat.com/
+> 
+> Suggested-by: Florian Westphal <fw@strlen.de>
+> Signed-off-by: Numan Siddique <nusiddiq@redhat.com>
+> ---
+>  include/net/netfilter/nf_conntrack_l4proto.h |  6 ++++++
+>  net/netfilter/nf_conntrack_core.c            | 13 +++++++++++--
+>  net/openvswitch/conntrack.c                  |  1 +
+>  3 files changed, 18 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/net/netfilter/nf_conntrack_l4proto.h b/include/net/netfilter/nf_conntrack_l4proto.h
+> index 88186b95b3c2..572ae8d2a622 100644
+> --- a/include/net/netfilter/nf_conntrack_l4proto.h
+> +++ b/include/net/netfilter/nf_conntrack_l4proto.h
+> @@ -203,6 +203,12 @@ static inline struct nf_icmp_net *nf_icmpv6_pernet(struct net *net)
+>  {
+>  	return &net->ct.nf_ct_proto.icmpv6;
+>  }
+> +
+> +static inline void nf_ct_set_tcp_be_liberal(struct nf_conn *ct)
+> +{
+> +	ct->proto.tcp.seen[0].flags |= IP_CT_TCP_FLAG_BE_LIBERAL;
+> +	ct->proto.tcp.seen[1].flags |= IP_CT_TCP_FLAG_BE_LIBERAL;
+> +}
+>  #endif
+>  
+>  #ifdef CONFIG_NF_CT_PROTO_DCCP
+> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+> index 234b7cab37c3..8290c5b04e88 100644
+> --- a/net/netfilter/nf_conntrack_core.c
+> +++ b/net/netfilter/nf_conntrack_core.c
+> @@ -1748,10 +1748,18 @@ static int nf_conntrack_handle_packet(struct nf_conn *ct,
+>  				      struct sk_buff *skb,
+>  				      unsigned int dataoff,
+>  				      enum ip_conntrack_info ctinfo,
+> -				      const struct nf_hook_state *state)
+> +				      const struct nf_hook_state *state,
+> +				      union nf_conntrack_proto *tmpl_proto)
 
-dccp_v4_do_rcv -> dccp_rcv_established -> dccp_parse_options ->
-	dccp_feat_parse_options -> dccp_feat_handle_nn_established ->
-	dccp_feat_activate -> __dccp_feat_activate -> dccp_hdlr_ccid ->
-	ccid_hc_tx_delete
+I would prefer if we could avoid adding yet another function argument.
 
-> 
-> > > > Oh, and in the meantime, I found one or two other fixes that we
-> > > > should apply, will send them shortly.
-> > > > 
-> > > > But I would argue that we should apply the revert as it addresses the
-> > > > CVE, without really regressing the other UAF, as I argued. Does that
-> > > > make sense?  
-> > > 
-> > > We can - it's always a little strange to go from one bug to a different
-> > > without a fix - but the justification being that while the previous UAF
-> > > required a race condition the new one is actually worst because it can 
-> > > be triggered reliably?  
-> > 
-> > Well, I am arguing here that commit 2677d20677314101293e6da0094ede7b5526d2b1
-> > ("dccp: don't free ccid2_hc_tx_sock struct in dccp_disconnect()") doesn't
-> > really fix anything. Whenever ccid_hx_tx_delete is called, that UAF might
-> > happen, because the timer might trigger right after we free the ccid struct.
-> > 
-> > And, yes, on the other hand, we can reliably launch the DoS attack that is
-> > fixed by the revert of that commit.
-> 
-> OK.
-> 
+AFAICS its enough to call the new nf_ct_set_tcp_be_liberal() helper
+before nf_conntrack_confirm() in ovs_ct_commit(), e.g.:
+
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -1235,10 +1235,13 @@ static int ovs_ct_commit(struct net *net, struct sw_flow_key *key,
+        if (!nf_ct_is_confirmed(ct)) {
+                err = ovs_ct_init_labels(ct, key, &info->labels.value,
+                                         &info->labels.mask);
+                if (err)
+                        return err;
++
++               if (nf_ct_protonum(ct) == IPPROTO_TCP)
++                       nf_ct_set_tcp_be_liberal(ct);
+
