@@ -2,161 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA24C2AC84E
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 23:25:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 485462AC84F
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 23:26:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730122AbgKIWZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 17:25:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729247AbgKIWZK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 17:25:10 -0500
-Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18228C0613CF
-        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 14:25:10 -0800 (PST)
-Received: by mail-vs1-xe43.google.com with SMTP id y78so5892309vsy.6
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 14:25:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7J1frim2Gmu7cnIZwRAm8GwdYdgbW4mQlO83f03DoX8=;
-        b=G2FkNP618JGFUMp5BYl/j3zIMXpd90SRIlm1x34j85v/YAIKgp+G35i3I1ylf/zOeu
-         SKeP6Ss3R+ceMRfgIdSz64Qhi86bNiaI+4OoNEKy/fg81IY/Z0YxtoldKvMjXo0WLVH2
-         m/nshf5OOgwHM0b1t+OO9kE1czwo1Vc14Ub4unnSL/N6rO2cOr8FTPZiTFCctDyWtjqe
-         ffMSJy+7Z+v4NyScTdg25gfX3vNk5Uk1GcxO771JY390VqKE6QJbkgFJ6IsQfQT0bFjg
-         shgbBgbPN6XMTc/JQJFhW4OLTPLGR5gRogZXTGMkcmkJOAlomWvgSNT5HV63ltNFkkto
-         rr1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7J1frim2Gmu7cnIZwRAm8GwdYdgbW4mQlO83f03DoX8=;
-        b=dsKCFnmrDLLxkDVbE+OhVzs6gibBP00vZV04hlkpLRlF7FU5fADlLZEzFAfx5KIMpu
-         Dd0XNky6eGr2qotumyb7qAFwI/Zn8AH1TZx86OE66n7Tznjyn4P+SxnCqNnVERvn31gT
-         4iy5Agtj3PBrJ0frJj2ngeMdETKzgaATJE8NZuCMPIlXdfyYNDIZBWumKD582ZlkvKB1
-         7kZWSy2XYv57Iv8RkiYuWFL0s1PDxTonKRodqR0IC1mZkQ743T3bsfzv0nH1JKVnuKAr
-         TBiez5h/WgHoilNMnHXEQ0bqThPW79R0xkn+xR+VWE+dt9tct2IAaSGnegx2uORBQhXC
-         WMvQ==
-X-Gm-Message-State: AOAM530fKYTXSfCY2yaBIKCPkETJRV5XryQahgrFidzfs3vpoGXJgyhf
-        lpqqcm0F+xqVsbJuvz66dSoNOcLaXyM=
-X-Google-Smtp-Source: ABdhPJxwFKQckh5MI6qUJUYSkovLhWOTW5ED2AcQfTu8QLnpaa07NsLpF6gyZ3f4/YxtCtBtE/DQrg==
-X-Received: by 2002:a67:edcb:: with SMTP id e11mr10173308vsp.11.1604960708387;
-        Mon, 09 Nov 2020 14:25:08 -0800 (PST)
-Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com. [209.85.217.41])
-        by smtp.gmail.com with ESMTPSA id t188sm1384100vkg.23.2020.11.09.14.25.07
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Nov 2020 14:25:07 -0800 (PST)
-Received: by mail-vs1-f41.google.com with SMTP id y78so5892241vsy.6
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 14:25:07 -0800 (PST)
-X-Received: by 2002:a67:ed4b:: with SMTP id m11mr345672vsp.14.1604960706575;
- Mon, 09 Nov 2020 14:25:06 -0800 (PST)
+        id S1729914AbgKIW0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 17:26:08 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:6988 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729247AbgKIW0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 17:26:08 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A9MAlE7006673;
+        Mon, 9 Nov 2020 14:25:52 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=9eaJlCFC6gkqbyH5Q9DlrZgYLwhIFKnPMojnJnvzeXs=;
+ b=qHo6tTBslrtmpooLuEkpHH1xgSlujH59sXT/vcB1JazgvIEDECNCZe5FRPh7P2dw4epJ
+ lPJVJDO284S0UKYa5oTpQPrdfD/J+nbq9Bz5IDqvWn3XM5CedaYiOgmYU2MFL+Xhmebz
+ qOFvyWF39lAVz5yWDUe+9ZDGoWyrgkoKqDE= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 34pch9q7yt-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 09 Nov 2020 14:25:52 -0800
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 9 Nov 2020 14:25:50 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=koaHLv3w4EkZSyqbDmD60QZnYBIzDWsaUQvAnJEmhDRidcMlQlmRd3lYFNW3y6qfEX9xTSlZrv0QijYFDTkjgwtnxHClpG6/MEkKZ08wz6YlWHSZcWSsSdOriogQep0VHu77AfYK1dSJVx3Cth1C0n0OlduDNntlUo0KTQFYyPeZ0VrJs/g/aexRL9W2gSWZnZpcFWfhwEsMLsh1jbIaeUIowni/XPH4AnpNgwZX6hlijodsCY/2dse73sfKAtNL93eNblG5DEJVcJcQSk0qkSLF4cA2cPITO8yS/Nym4lEXyjz5+AQFC1TzjQcVWkYvbtyVegdpr+66vik8lMLE2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9eaJlCFC6gkqbyH5Q9DlrZgYLwhIFKnPMojnJnvzeXs=;
+ b=oZ6BmWLavi5iHfjTFlacgiyrXDIebPXimF9oWi0PWG8ZSTh934Xxkz7UYC2C7wAe0WjpevYyorVFC+NI5qp/dJ5ykFkGLVovjTiKMcRpMkaQFN8ApWdr7xqmG9NBlZD+0Z4kPygjaecuyzMWunACMu7Ql8gYOSXtzmeOGzsdYElxNNOFHtuyj2Xno2RQgA7E0XFJBrmtvXAqyI0aPCwbx+xmKFpgoh2PdtKIUC42Fp9UHWIyok0sAqHg/wzSuBybuYDed8JYL7ER5+2PCy/fPz6NJN1I0qzdqpa3KPVB+s5liUBUdLLZafSf0yKaL5RJcFZvLh4dBhW6cUPzAs5T5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9eaJlCFC6gkqbyH5Q9DlrZgYLwhIFKnPMojnJnvzeXs=;
+ b=VJk8QXs7Eaiob+1EC3TgYdOYjX0+AEyMxpwp/zqpleiF6r3n/22JS13YVmTlBXVEua4lr2Joba+JIqtpQBVf4Kr574+2aYveg6O3MNfE06XHC0ziSagOD8amf0Pp0zO0zjbpEyq+frtsTAZcZGe40F8Mcig4ODHFT4LQ5Ad288I=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2584.namprd15.prod.outlook.com (2603:10b6:a03:150::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.24; Mon, 9 Nov
+ 2020 22:25:42 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee%4]) with mapi id 15.20.3541.025; Mon, 9 Nov 2020
+ 22:25:42 +0000
+Date:   Mon, 9 Nov 2020 14:25:35 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+CC:     <netdev@vger.kernel.org>, William Tu <u9012063@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <bpf@vger.kernel.org>
+Subject: Re: [PATCHv2 net 1/2] selftest/bpf: add missed ip6ip6 test back
+Message-ID: <20201109222347.kxe2nkbkzalvzr6l@kafai-mbp.dhcp.thefacebook.com>
+References: <20201103042908.2825734-1-liuhangbin@gmail.com>
+ <20201106090117.3755588-1-liuhangbin@gmail.com>
+ <20201106090117.3755588-2-liuhangbin@gmail.com>
+ <20201107021544.tajvaxcxnc3pmppe@kafai-mbp.dhcp.thefacebook.com>
+ <20201109030015.GW2531@dhcp-12-153.nay.redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201109030015.GW2531@dhcp-12-153.nay.redhat.com>
+X-Originating-IP: [2620:10d:c090:400::5:b389]
+X-ClientProxiedBy: MWHPR21CA0056.namprd21.prod.outlook.com
+ (2603:10b6:300:db::18) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-References: <MgZce9htmEtCtHg7pmWxXXfdhmQ6AHrnltXC41zOoo@cp7-web-042.plabs.ch>
-In-Reply-To: <MgZce9htmEtCtHg7pmWxXXfdhmQ6AHrnltXC41zOoo@cp7-web-042.plabs.ch>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 9 Nov 2020 17:24:30 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSdWQyWmq5NT_syXCSUX9+kgKxhz1Rg+2JKNYTBCFQ0e-g@mail.gmail.com>
-Message-ID: <CA+FuTSdWQyWmq5NT_syXCSUX9+kgKxhz1Rg+2JKNYTBCFQ0e-g@mail.gmail.com>
-Subject: Re: [PATCH v3 net] net: udp: fix Fast/frag0 UDP GRO
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:b389) by MWHPR21CA0056.namprd21.prod.outlook.com (2603:10b6:300:db::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.6 via Frontend Transport; Mon, 9 Nov 2020 22:25:41 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 07a17e97-953d-44cb-3b3d-08d884fe64a5
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2584:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB25840D7F21F43DBA0A9A6950D5EA0@BYAPR15MB2584.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: r/OBFMfuUWKhb1vAp4Ynbxnef19RhO2OCkkqVzpNrhIOfg9Aip2c6dhJChn/52lCjC/Zj88YOYNqoWCxQWlOWZBYYXDJpHuvHU9mCm15woGRwOU+8O+Od9sObNLq4wDQveK0+aOstHSgba130fUbVcgYMtrnIHpQ4lmjmQprXB+DMCeAmfPMlmG0DtF0tEJfV6avxTxz5GBNt4mgFkL94hfFhkUj8I13//tlBAlJrSlLO+Ij+MNOaxcoTkKvI5jgyOyuwpKEvsbKCCWrBcp+LJYkEni4ESKTyisIhmtzn15oz696U4k6/BYeE8lPBCvRhWy1t1iNPeMsIaqw6iZZcw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(376002)(396003)(346002)(366004)(136003)(54906003)(55016002)(7696005)(186003)(478600001)(9686003)(52116002)(16526019)(4744005)(2906002)(1076003)(66946007)(6506007)(4326008)(6666004)(8936002)(66556008)(66476007)(6916009)(8676002)(5660300002)(86362001)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: /eMvRk9hF0Lh01fnlgIIvUny23dIlhW6uL9hRN+N3EejXTqtU16lxRZFP6OeT2sySiz4YuB8y6yZJLuEfAtogdS7xYIHaFeZu4qhpdGRAsYPn8WGkLvbyIc8alYQc7xHhDlXbWk+RHu+jXyZfBz2k261PPaAj7mp78ao0SFspzU/wNadjKbA6UvBORua/wFIuswupx7Gboki95cwVX+MLpx7DNSOUH4lxTJscObRGkTq6gVWyNW3qC4UmdYqO0CATC4Ldiy1t+1Q2dOgEF6mLBNiUfpp7YqkpkjV4enl5rM9V3K3tpsBNiiUGN2igvemdAPEBGmY/r9GzvxEzga8Ag/BF9qkUglq2M+biC+34+EhN/g64hXGepprolWPb1ZDY8QZcA8s57iv0R+6IaUk/FpFe8RTIksb+GeU5mV1RifT3zxgrzj74i07xEbfrRq8W40gmGA5uPrYJPu32haY7f4Okn0MMAEJx0gjldemgnev9gC6y5nJ+E2yacsOn2g3GkuMFGGXiubiQIsdxoFhkKXptbUCTUJ2A4B0Ho1GSO9pwAJU97W4h/Vi7rfACvve6f9queOrO+vl51CrDHNg/OC+qAadcCILIw8Tw9nxki1Q4Cy4AzINPeya+BEA47MJX7u90H1id/t1ip2AHMCXI6w58OyxWM68TmM+vKeSbJXxRncgs/+4BhZUfHue1IlOjnieHZB0OcMsG5xsqqJoRKexoKHJTdSmvdK9+TAIIwzSnYQjBSQnSfMoC0pfifavXBvFy9zKce540wd5oXzQxfBZ+T/c6lm35uljxcHc9cN+pC7/xXxNvdk9UhU9k/Ptp+E0VamTawoNir8uzEjkwvDd3iwp16AY8rD/Hum7yla5kZ01PGPEPN0no67EAngWHHZKhfU6dL9Ze0b1+QDLanChmznWZV/T+kUATCUoPug=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 07a17e97-953d-44cb-3b3d-08d884fe64a5
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2020 22:25:42.0963
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: R+rNUozVrrHgKu7HStNtCrJr/j/6jZTbZTSYCnHaZL9IXdFsVFI837C0OzXjq+GH
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2584
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-09_14:2020-11-05,2020-11-09 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 clxscore=1015
+ suspectscore=1 lowpriorityscore=0 malwarescore=0 adultscore=0 phishscore=0
+ bulkscore=0 mlxscore=0 priorityscore=1501 impostorscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011090140
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 9, 2020 at 4:15 PM Alexander Lobakin <alobakin@pm.me> wrote:
->
-> While testing UDP GSO fraglists forwarding through driver that uses
-> Fast GRO (via napi_gro_frags()), I was observing lots of out-of-order
-> iperf packets:
->
-> [ ID] Interval           Transfer     Bitrate         Jitter
-> [SUM]  0.0-40.0 sec  12106 datagrams received out-of-order
->
-> Simple switch to napi_gro_receive() any other method without frag0
-> shortcut completely resolved them.
->
-> I've found that UDP GRO uses udp_hdr(skb) in its .gro_receive()
-> callback. While it's probably OK for non-frag0 paths (when all
-> headers or even the entire frame are already in skb->data), this
-> inline points to junk when using Fast GRO (napi_gro_frags() or
-> napi_gro_receive() with only Ethernet header in skb->data and all
-> the rest in shinfo->frags) and breaks GRO packet compilation and
-> the packet flow itself.
-> To support both modes, skb_gro_header_fast() + skb_gro_header_slow()
-> are typically used. UDP even has an inline helper that makes use of
-> them, udp_gro_udphdr(). Use that instead of troublemaking udp_hdr()
-> to get rid of the out-of-order delivers.
->
-> Present since the introduction of plain UDP GRO in 5.0-rc1.
->
-> Since v2 [1]:
->  - dropped redundant check introduced in v2 as it's performed right
->    before (thanks to Eric);
->  - udp_hdr() switched to data + off for skbs from list (also Eric);
->  - fixed possible malfunction of {,__}udp{4,6}_lib_lookup_skb() with
->    Fast/frag0 due to ip{,v6}_hdr() usage (Willem).
->
-> Since v1 [2]:
->  - added a NULL pointer check for "uh" as suggested by Willem.
->
-> [1] https://lore.kernel.org/netdev/0eaG8xtbtKY1dEKCTKUBubGiC9QawGgB3tVZtNqVdY@cp4-web-030.plabs.ch
-> [2] https://lore.kernel.org/netdev/YazU6GEzBdpyZMDMwJirxDX7B4sualpDG68ADZYvJI@cp4-web-034.plabs.ch
->
-> Fixes: e20cf8d3f1f7 ("udp: implement GRO for plain UDP sockets.")
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> ---
->  net/ipv4/udp.c         | 4 ++--
->  net/ipv4/udp_offload.c | 9 ++++++---
->  net/ipv6/udp.c         | 4 ++--
->  3 files changed, 10 insertions(+), 7 deletions(-)
->
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 09f0a23d1a01..948ddc9a0212 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -534,7 +534,7 @@ static inline struct sock *__udp4_lib_lookup_skb(struct sk_buff *skb,
->                                                  __be16 sport, __be16 dport,
->                                                  struct udp_table *udptable)
->  {
-> -       const struct iphdr *iph = ip_hdr(skb);
-> +       const struct iphdr *iph = skb_gro_network_header(skb);
-
-This function is called from the normal UDP stack, not the GRO stack.
-It's not safe to use this helper here.
-
->
->         return __udp4_lib_lookup(dev_net(skb->dev), iph->saddr, sport,
->                                  iph->daddr, dport, inet_iif(skb),
-> @@ -544,7 +544,7 @@ static inline struct sock *__udp4_lib_lookup_skb(struct sk_buff *skb,
->  struct sock *udp4_lib_lookup_skb(struct sk_buff *skb,
->                                  __be16 sport, __be16 dport)
->  {
-> -       const struct iphdr *iph = ip_hdr(skb);
-> +       const struct iphdr *iph = skb_gro_network_header(skb);
-
-This one is, but I think it would be preferable to avoid leaking this
-frag0 optimization stuff outside of the core GRO code if we can help
-it.
-
-Also haven't checked whether that helper is safe to call from
-.gro_complete handlers such as udp_gro_complete. It's not needed
-there, in any case.
-
-Instead, perhaps we can call __udp4_lib_lookup which takes the exact
-fields as arguments, and do the network header lookup in
-udp_gro_complete itself.
-
-Less important (because it's not working before), does the use of
-skb_gro_network_header break any nested tunnel support that the
-p->data + off change would add?
+On Mon, Nov 09, 2020 at 11:00:15AM +0800, Hangbin Liu wrote:
+> On Fri, Nov 06, 2020 at 06:15:44PM -0800, Martin KaFai Lau wrote:
+> > > -	if (iph->nexthdr == 58 /* NEXTHDR_ICMP */) {
+> > Same here. Can this check be kept?
+> 
+> Hi Martin,
+> 
+> I'm OK to keep the checking, then what about _ipip6_set_tunnel()? It also
+> doesn't have the ICMP checking.
+It should.  Otherwise, what is the point on testing
+"data + sizeof(*iph) > data_end" without checking anything from iph?
