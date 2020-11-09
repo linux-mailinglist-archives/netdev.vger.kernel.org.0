@@ -2,58 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA4502AC935
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 00:18:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 924452AC943
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 00:24:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730204AbgKIXSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 18:18:35 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:39691 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730005AbgKIXSf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 18:18:35 -0500
-Received: by mail-wr1-f65.google.com with SMTP id o15so2819996wru.6
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 15:18:34 -0800 (PST)
+        id S1731194AbgKIXYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 18:24:02 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:32792 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731145AbgKIXYC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 18:24:02 -0500
+Received: by mail-wm1-f66.google.com with SMTP id p19so883041wmg.0
+        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 15:24:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=0YUh8L7igoV3Pzcq684BHezCnL4xDkpIMR3kxjUfhDw=;
-        b=HwVa2W13ZHy0wl6fVsRCaI/vQdjRCoGNIZDQ8AT9YAPT/6qNkeds6yVCygAiWAIicN
-         MFTxjtErl9vLRLufJdVKh4WbMvS8POQW/Iu3E/XP//EcK91bAxxVmDgURQdChluRfM4W
-         IC3OBWN3VzbDXgxqPaeu/u2sLktrvTdrIDSXXYRX3EnYJX77u60Z/iDm287btOLhhypI
-         QfVC36LGRkx1dMtBYVdxI88jBNm8GmDfvGtyQSUUZ1qtvi8MzMnrW21Elgmm0LmXQike
-         2BlS31LkDTL53k+0gixgXJDToQoNmhVX+qCFdf2Bs1D9bCNhzgo/MxPjUxrGTYVRzf8p
-         NzLw==
-X-Gm-Message-State: AOAM533PLJAteLBKVjKasBBVrgm/VGnL3soOpXisA8NfRbAXZAM13yAH
-        UAfx3+em7oBYPsEu1snFYYk=
-X-Google-Smtp-Source: ABdhPJwTJP+kcO34FQBhF84j4wYWYrX3gHu1JcY3IRtqd+adZxWOzZByr1bdZbEPgH8eCmoqU+QEZg==
-X-Received: by 2002:adf:e3c2:: with SMTP id k2mr18037603wrm.82.1604963913736;
-        Mon, 09 Nov 2020 15:18:33 -0800 (PST)
+        bh=4fYW7atqTCFeV0ZwbZO6DpnGkO9+ntK7D4Qq/lKRBTg=;
+        b=MMdZucHxDPRdFxXyt75AC2FqNADGz11hUlOCuudse6DULXqZ2rsyIcrxl0ufqz2anv
+         25/RDZwmfWmg8iHlDWHSSIJT7s8oJF+3m58T5SMv+R/vTEKmm1y6KmyjGWjM8aFR5+sr
+         C5bdrxPrpjNvWJ6+kbyFFsYMvqn+Er9AGkH95afeWQxYURhNCyN3a34RHYI+ICtBDtZl
+         jT6LNrUEOkiAPSBzpUKRO3yi9wLEP2WQVsEbcEdJR6wr6TTv5E4gmo/s6PPS1EoML+F2
+         OLkA7f13gd/z0+VbwXYQdcaUuHawRAESrLH0qJA6giRl6pU7NlGAGYUp6I6AXYKTmxsD
+         gsrg==
+X-Gm-Message-State: AOAM531HwupYyQUVozhgtFCThDz1YLaB59g5XaTuIqpQPnQaBFSccARy
+        g1F1xc+nEigDMeZINAYXQ6g=
+X-Google-Smtp-Source: ABdhPJxKUNNNYEHSscPU3HUyYSJ6LMGmPpaINmiRwm48+WreFKTG2CAqaCODa8p9/VQ92nXG9L2dWA==
+X-Received: by 2002:a1c:46c5:: with SMTP id t188mr1605094wma.68.1604964239722;
+        Mon, 09 Nov 2020 15:23:59 -0800 (PST)
 Received: from ?IPv6:2601:647:4802:9070:f26a:270b:f54c:37eb? ([2601:647:4802:9070:f26a:270b:f54c:37eb])
-        by smtp.gmail.com with ESMTPSA id t5sm957612wmg.19.2020.11.09.15.18.29
+        by smtp.gmail.com with ESMTPSA id u195sm971656wmu.18.2020.11.09.15.23.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Nov 2020 15:18:32 -0800 (PST)
-Subject: Re: [PATCH net-next RFC v1 06/10] nvme-tcp: Add DDP data-path
-To:     Boris Pismenny <borispismenny@gmail.com>,
-        Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
-        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com
+        Mon, 09 Nov 2020 15:23:59 -0800 (PST)
+Subject: Re: [PATCH net-next RFC v1 05/10] nvme-tcp: Add DDP offload control
+ path
+To:     Shai Malin <smalin@marvell.com>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        Boris Pismenny <borispismenny@gmail.com>,
+        Boris Pismenny <borisp@mellanox.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "saeedm@nvidia.com" <saeedm@nvidia.com>, "hch@lst.de" <hch@lst.de>,
+        "axboe@fb.com" <axboe@fb.com>,
+        "kbusch@kernel.org" <kbusch@kernel.org>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "edumazet@google.com" <edumazet@google.com>
 Cc:     Yoray Zack <yorayz@mellanox.com>,
         Ben Ben-Ishay <benishay@mellanox.com>,
-        boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, Or Gerlitz <ogerlitz@mellanox.com>
+        "boris.pismenny@gmail.com" <boris.pismenny@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>
 References: <20200930162010.21610-1-borisp@mellanox.com>
- <20200930162010.21610-7-borisp@mellanox.com>
- <5a23d221-fd3e-5802-ce68-7edec55068bb@grimberg.me>
- <12692704-126a-4242-f0a9-f00db6071e40@gmail.com>
+ <20200930162010.21610-6-borisp@mellanox.com>
+ <c6bb16cc-fdda-3c4e-41f6-9155911aa2c8@grimberg.me>
+ <PH0PR18MB3845430DDF572E0DD4832D06CCED0@PH0PR18MB3845.namprd18.prod.outlook.com>
+ <PH0PR18MB3845CCB614E7D0EC51F91258CCEB0@PH0PR18MB3845.namprd18.prod.outlook.com>
 From:   Sagi Grimberg <sagi@grimberg.me>
-Message-ID: <37baeb0e-b6c5-7661-b871-6a51c1a2e804@grimberg.me>
-Date:   Mon, 9 Nov 2020 15:18:26 -0800
+Message-ID: <a41ff414-4286-e5e9-5b80-85d87533361e@grimberg.me>
+Date:   Mon, 9 Nov 2020 15:23:54 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <12692704-126a-4242-f0a9-f00db6071e40@gmail.com>
+In-Reply-To: <PH0PR18MB3845CCB614E7D0EC51F91258CCEB0@PH0PR18MB3845.namprd18.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -62,27 +74,22 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
->>>    static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
->>> @@ -1115,6 +1222,7 @@ static int nvme_tcp_try_send_cmd_pdu(struct nvme_tcp_request *req)
->>>    	bool inline_data = nvme_tcp_has_inline_data(req);
->>>    	u8 hdgst = nvme_tcp_hdgst_len(queue);
->>>    	int len = sizeof(*pdu) + hdgst - req->offset;
->>> +	struct request *rq = blk_mq_rq_from_pdu(req);
->>>    	int flags = MSG_DONTWAIT;
->>>    	int ret;
->>>    
->>> @@ -1123,6 +1231,10 @@ static int nvme_tcp_try_send_cmd_pdu(struct nvme_tcp_request *req)
->>>    	else
->>>    		flags |= MSG_EOR;
->>>    
->>> +	if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags) &&
->>> +	    blk_rq_nr_phys_segments(rq) && rq_data_dir(rq) == READ)
->>> +		nvme_tcp_setup_ddp(queue, pdu->cmd.common.command_id, rq);
->> I'd assume that this is something we want to setup in
->> nvme_tcp_setup_cmd_pdu. Why do it here?
-> Our goal in placing it here is to keep both setup and teardown in the same thread.
-> This enables drivers to avoid locking for per-queue operations.
+>>> diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c index
+>>> 8f4f29f18b8c..06711ac095f2 100644
+>>> --- a/drivers/nvme/host/tcp.c
+>>> +++ b/drivers/nvme/host/tcp.c
+>>> @@ -62,6 +62,7 @@ enum nvme_tcp_queue_flags {
+>>>    	NVME_TCP_Q_ALLOCATED	= 0,
+>>>    	NVME_TCP_Q_LIVE		= 1,
+>>>    	NVME_TCP_Q_POLLING	= 2,
+>>> +	NVME_TCP_Q_OFFLOADS     = 3,
+> 
+> Sagi - following our discussion and your suggestions regarding the NVMeTCP Offload ULP module that we are working on at Marvell in which a TCP_OFFLOAD transport type would be added,
 
-I also think that it is cleaner when setting up the PDU. Do note that if
-queues match 1x1 with cpu cores then any synchronization is pretty
-lightweight, and if not, we have other synchronizations anyways...
+We still need to see how this pans out.. it's hard to predict if this is
+the best approach before seeing the code. I'd suggest to share some code
+so others can share their input.
+
+> we are concerned that perhaps the generic term "offload" for both the transport type (for the Marvell work) and for the DDP and CRC offload queue (for the Mellanox work) may be misleading and confusing to developers and to users. Perhaps the naming should be "direct data placement", e.g. NVME_TCP_Q_DDP or NVME_TCP_Q_DIRECT?
+
+We can call this NVME_TCP_Q_DDP, no issues with that.
