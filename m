@@ -2,104 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A3C92AB282
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 09:35:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 957C02AB2A1
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 09:43:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729823AbgKIIez (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 03:34:55 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:26704 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727920AbgKIIez (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 03:34:55 -0500
-Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 0A98XwJh010868;
-        Mon, 9 Nov 2020 00:34:37 -0800
-From:   Rohit Maheshwari <rohitm@chelsio.com>
-To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
-Cc:     secdev@chelsio.com, Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [net v5 12/12] ch_ktls: stop the txq if reaches threshold
-Date:   Mon,  9 Nov 2020 14:03:56 +0530
-Message-Id: <20201109083356.11117-13-rohitm@chelsio.com>
-X-Mailer: git-send-email 2.18.1
-In-Reply-To: <20201109083356.11117-1-rohitm@chelsio.com>
-References: <20201109083356.11117-1-rohitm@chelsio.com>
+        id S1729514AbgKIIne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 03:43:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726127AbgKIIne (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 03:43:34 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600B0C0613CF
+        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 00:43:34 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id k9so7813853edo.5
+        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 00:43:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=azGRjNxM3lY1Vx897AZ7Db+EDWbByWWjOWp7CFeR+tc=;
+        b=zemGUMSn1XpFtqAA4tWRawE4tJhaUN1wRVHoIevxzRgBHTJN1zJ52ghXq49lutp3KE
+         lHdFXXlUe/pkRZe0A4A9XxCCO3gDKvgXxhXCRBUwIaUSJyX52hnd74R7cMy4e9yEaFH3
+         EAfLslPrJwP06dzQ7YHdzXXn2wHGxMQEdQBANszlY+KTqI1W3yX4rBwfSOApezkszu9c
+         BCQStudBncnkJAiNSp19y9DDxhTfBcnoCdOO918LDTLVAhwiPfkKwyCwQb78TH82XJ31
+         cDpS/MX5cGjC1M3TXKOagGO1/S0T4+QXjnJEeXQFskN/Rnfzd1jrOyHhiL/MuSR6cAVH
+         TMFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=azGRjNxM3lY1Vx897AZ7Db+EDWbByWWjOWp7CFeR+tc=;
+        b=c/gkuj2jxbqMWvW8yHBWNvPTkAIKnos5gWtDdXytTRTa7IT0RHKKUnG5fwLFAZ/LJq
+         5gJL4nyGZPPniNOjgFeipVPMrm/v3Nov/0EP0tvHhaZdDDyM/v/X3l84Lv2eEwM88uDP
+         QTYME7odMddL2oU+JLq5zo1Go3SMxtUSqI79qZqSrlonpdPLsImXa2cLRCtKtcYvd5l0
+         pt2m4pk4Az4nWRwtYIjUQ1RSJ1xWeFNTbRsbt8B3pBSghmf3nqB57CCMX1KWc7saQ/YB
+         Btr8Zdvlvr8Vu7Pah3+SJAiaLlqRXWanql3BNNsvUA0UU86ROUo8lxSHtZmV4QSJaADF
+         I5cQ==
+X-Gm-Message-State: AOAM530arWAGIjqVWkDvo3sJp0g30X/wDkia92lpEwbVEpEA1qoMsj6K
+        Pv3NVJhhYn62HKRr31H3AOoo+PxWHR52zpOqVqlsGg==
+X-Google-Smtp-Source: ABdhPJy4tGNMIMD9tp0rszvsFtmtMtXk5BNA7HUfENDdRDvSOifXim1bgJhlxuhtWzhxSxGvaJxL+Her45Sbatw6qkw=
+X-Received: by 2002:a50:a105:: with SMTP id 5mr6480704edj.165.1604911412947;
+ Mon, 09 Nov 2020 00:43:32 -0800 (PST)
+MIME-Version: 1.0
+References: <1604684010-24090-1-git-send-email-loic.poulain@linaro.org> <20201107162640.357a2b6f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201107162640.357a2b6f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Mon, 9 Nov 2020 09:49:24 +0100
+Message-ID: <CAMZdPi-5Qp7jOHDZLZoWKJ4zwU6Sa9ULAts0eY6ObCu91Awx+w@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] net: qrtr: Add distant node support
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        cjhuang@codeaurora.org,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stop the queue and ask for the credits if queue reaches to
-threashold.
+Hi Jakub,
 
-Fixes: 5a4b9fe7fece ("cxgb4/chcr: complete record tx handling")
-Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
----
- .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c  | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+On Sun, 8 Nov 2020 at 01:26, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri,  6 Nov 2020 18:33:25 +0100 Loic Poulain wrote:
+> > QRTR protocol allows a node to communicate with an other non-immediate
+> > node via an intermdediate immediate node acting as a 'bridge':
+> >
+> > node-0 <=> node-1 <=> node-2
+> >
+> > This is currently not supported in this upstream version and this
+> > series aim to fix that.
+> >
+> > This series is V2 because changes 1, 2 and 3 have already been submitted
+> > separately on LKML.
+>
+> Looks like patch 1 is a bug fix and patches 2-5 add a new feature.
+> Is that correct?
 
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-index a732051b21e4..c24485c0d512 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-@@ -835,7 +835,7 @@ static int chcr_ktls_xmit_tcb_cpls(struct chcr_ktls_info *tx_info,
- {
- 	bool first_wr = ((tx_info->prev_ack == 0) && (tx_info->prev_win == 0));
- 	struct ch_ktls_port_stats_debug *port_stats;
--	u32 len, cpl = 0, ndesc, wr_len;
-+	u32 len, cpl = 0, ndesc, wr_len, wr_mid = 0;
- 	struct fw_ulptx_wr *wr;
- 	int credits;
- 	void *pos;
-@@ -851,6 +851,11 @@ static int chcr_ktls_xmit_tcb_cpls(struct chcr_ktls_info *tx_info,
- 		return NETDEV_TX_BUSY;
- 	}
- 
-+	if (unlikely(credits < ETHTXQ_STOP_THRES)) {
-+		chcr_eth_txq_stop(q);
-+		wr_mid |= FW_WR_EQUEQ_F | FW_WR_EQUIQ_F;
-+	}
-+
- 	pos = &q->q.desc[q->q.pidx];
- 	/* make space for WR, we'll fill it later when we know all the cpls
- 	 * being sent out and have complete length.
-@@ -905,7 +910,8 @@ static int chcr_ktls_xmit_tcb_cpls(struct chcr_ktls_info *tx_info,
- 		wr->op_to_compl = htonl(FW_WR_OP_V(FW_ULPTX_WR));
- 		wr->cookie = 0;
- 		/* fill len in wr field */
--		wr->flowid_len16 = htonl(FW_WR_LEN16_V(DIV_ROUND_UP(len, 16)));
-+		wr->flowid_len16 = htonl(wr_mid |
-+					 FW_WR_LEN16_V(DIV_ROUND_UP(len, 16)));
- 
- 		ndesc = DIV_ROUND_UP(len, 64);
- 		chcr_txq_advance(&q->q, ndesc);
-@@ -986,6 +992,7 @@ chcr_ktls_write_tcp_options(struct chcr_ktls_info *tx_info, struct sk_buff *skb,
- 	struct tcphdr *tcp;
- 	int len16, pktlen;
- 	struct iphdr *ip;
-+	u32 wr_mid = 0;
- 	int credits;
- 	u8 buf[150];
- 	u64 cntrl1;
-@@ -1010,6 +1017,11 @@ chcr_ktls_write_tcp_options(struct chcr_ktls_info *tx_info, struct sk_buff *skb,
- 		return NETDEV_TX_BUSY;
- 	}
- 
-+	if (unlikely(credits < ETHTXQ_STOP_THRES)) {
-+		chcr_eth_txq_stop(q);
-+		wr_mid |= FW_WR_EQUEQ_F | FW_WR_EQUIQ_F;
-+	}
-+
- 	pos = &q->q.desc[q->q.pidx];
- 	wr = pos;
- 
-@@ -1017,7 +1029,7 @@ chcr_ktls_write_tcp_options(struct chcr_ktls_info *tx_info, struct sk_buff *skb,
- 	wr->op_immdlen = htonl(FW_WR_OP_V(FW_ETH_TX_PKT_WR) |
- 			       FW_WR_IMMDLEN_V(ctrl));
- 
--	wr->equiq_to_len16 = htonl(FW_WR_LEN16_V(len16));
-+	wr->equiq_to_len16 = htonl(wr_mid | FW_WR_LEN16_V(len16));
- 	wr->r3 = 0;
- 
- 	cpl = (void *)(wr + 1);
--- 
-2.18.1
+That's correct, though strictly speaking 2-5 are also bug fix since remote node
+communication is supposed to be supported in QRTR to be compatible with
+other implementations (downstream or private implementations).
 
+> If so first one needs to go to net and then onto 5.10, and the rest
+> to net-next for 5.11.
+
+I'm can split that into two series so that you can dispatch them at
+your convenience.
+
+Regards,
+Loic
