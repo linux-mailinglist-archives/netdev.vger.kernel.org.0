@@ -2,107 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA9CC2AB56F
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 11:52:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BD4C2AB573
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 11:52:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729005AbgKIKwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 05:52:33 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:3500 "EHLO
+        id S1729362AbgKIKwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 05:52:41 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:2640 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727311AbgKIKwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 05:52:33 -0500
+        with ESMTP id S1729228AbgKIKwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 05:52:40 -0500
 Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 0A9AqQMZ011444;
-        Mon, 9 Nov 2020 02:52:26 -0800
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 0A9AqQMa011444;
+        Mon, 9 Nov 2020 02:52:30 -0800
 From:   Rohit Maheshwari <rohitm@chelsio.com>
 To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
 Cc:     secdev@chelsio.com, Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [net v6 00/12] cxgb4/ch_ktls: Fixes in nic tls code
-Date:   Mon,  9 Nov 2020 16:21:30 +0530
-Message-Id: <20201109105142.15398-1-rohitm@chelsio.com>
+Subject: [net v6 01/12] cxgb4/ch_ktls: decrypted bit is not enough
+Date:   Mon,  9 Nov 2020 16:21:31 +0530
+Message-Id: <20201109105142.15398-2-rohitm@chelsio.com>
 X-Mailer: git-send-email 2.18.1
+In-Reply-To: <20201109105142.15398-1-rohitm@chelsio.com>
+References: <20201109105142.15398-1-rohitm@chelsio.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series helps in fixing multiple nic ktls issues. Series is broken
-into 12 patches.
-
-Patch 1 avoids deciding tls packet based on decrypted bit. If its a
-retransmit packet which has tls handshake and finish (for encryption),
-decrypted bit won't be set there, and so we can't rely on decrypted
-bit.
-
-Patch 2 helps supporting linear skb. SKBs were assumed non-linear.
-Corrected the length extraction.
-
-Patch 3 fixes the checksum offload update in WR.
-
-Patch 4 fixes kernel panic happening due to creating new skb for each
-record. As part of fix driver will use same skb to send out one tls
-record (partial data) of the same SKB.
-
-Patch 5 fixes the problem of skb data length smaller than remaining data
-of the record.
-
-Patch 6 fixes the handling of SKBs which has tls header alone pkt, but
-not starting from beginning.
-
-Patch 7 avoids sending extra data which is used to make a record 16 byte
-aligned. We don't need to retransmit those extra few bytes.
-
-Patch 8 handles the cases where retransmit packet has tls starting
-exchanges which are prior to tls start marker.
-
-Patch 9 fixes the problem os skb free before HW knows about tcp FIN.
-
-Patch 10 handles the small packet case which has partial TAG bytes only.
-HW can't handle those, hence using sw crypto for such pkts.
-
-Patch 11 corrects the potential tcb update problem.
-
-Patch 12 stops the queue if queue reaches threshold value.
-
-v1->v2:
-- Corrected fixes tag issue.
-- Marked chcr_ktls_sw_fallback() static.
+If skb has retransmit data starting before start marker, e.g. ccs,
+decrypted bit won't be set for that, and if it has some data to
+encrypt, then it must be given to crypto ULD. So in place of
+decrypted, check if socket is tls offloaded. Also, unless skb has
+some data to encrypt, no need to give it for tls offload handling.
 
 v2->v3:
-- Replaced GFP_KERNEL with GFP_ATOMIC.
-- Removed mixed fixes.
+- Removed ifdef.
 
-v3->v4:
-- Corrected fixes tag issue.
+Fixes: 5a4b9fe7fece ("cxgb4/chcr: complete record tx handling")
+Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c              | 1 +
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h               | 5 +++++
+ drivers/net/ethernet/chelsio/cxgb4/sge.c                     | 3 ++-
+ .../net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c   | 4 ----
+ 4 files changed, 8 insertions(+), 5 deletions(-)
 
-v4->v5:
-- Separated mixed fixes from patch 4.
-
-v5-v6:
-- Fixes tag should be at the end.
-
-Rohit Maheshwari (12):
-  cxgb4/ch_ktls: decrypted bit is not enough
-  ch_ktls: Correction in finding correct length
-  ch_ktls: Update cheksum information
-  cxgb4/ch_ktls: creating skbs causes panic
-  ch_ktls: Correction in trimmed_len calculation
-  ch_ktls: missing handling of header alone
-  ch_ktls: Correction in middle record handling
-  ch_ktls: packet handling prior to start marker
-  ch_ktls: don't free skb before sending FIN
-  ch_ktls/cxgb4: handle partial tag alone SKBs
-  ch_ktls: tcb update fails sometimes
-  ch_ktls: stop the txq if reaches threshold
-
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |   3 +
- .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    |   2 +
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |   1 +
- .../net/ethernet/chelsio/cxgb4/cxgb4_uld.h    |   6 +
- drivers/net/ethernet/chelsio/cxgb4/sge.c      | 111 +++-
- .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c | 582 +++++++++++-------
- .../chelsio/inline_crypto/ch_ktls/chcr_ktls.h |   1 +
- 7 files changed, 478 insertions(+), 228 deletions(-)
-
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index a952fe198eb9..7fd264a6d085 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -1176,6 +1176,7 @@ static u16 cxgb_select_queue(struct net_device *dev, struct sk_buff *skb,
+ 		txq = netdev_pick_tx(dev, skb, sb_dev);
+ 		if (xfrm_offload(skb) || is_ptp_enabled(skb, dev) ||
+ 		    skb->encapsulation ||
++		    cxgb4_is_ktls_skb(skb) ||
+ 		    (proto != IPPROTO_TCP && proto != IPPROTO_UDP))
+ 			txq = txq % pi->nqsets;
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
+index b169776ab484..e2a4941fa802 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
+@@ -493,6 +493,11 @@ struct cxgb4_uld_info {
+ #endif
+ };
+ 
++static inline bool cxgb4_is_ktls_skb(struct sk_buff *skb)
++{
++	return skb->sk && tls_is_sk_tx_device_offloaded(skb->sk);
++}
++
+ void cxgb4_uld_enable(struct adapter *adap);
+ void cxgb4_register_uld(enum cxgb4_uld type, const struct cxgb4_uld_info *p);
+ int cxgb4_unregister_uld(enum cxgb4_uld type);
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+index a9e9c7ae565d..01bd9c0dfe4e 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+@@ -1422,7 +1422,8 @@ static netdev_tx_t cxgb4_eth_xmit(struct sk_buff *skb, struct net_device *dev)
+ #endif /* CHELSIO_IPSEC_INLINE */
+ 
+ #if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
+-	if (skb->decrypted)
++	if (cxgb4_is_ktls_skb(skb) &&
++	    (skb->len - (skb_transport_offset(skb) + tcp_hdrlen(skb))))
+ 		return adap->uld[CXGB4_ULD_KTLS].tx_handler(skb, dev);
+ #endif /* CHELSIO_TLS_DEVICE */
+ 
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
+index 5195f692f14d..43c723c72c61 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
+@@ -1878,10 +1878,6 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	mss = skb_is_gso(skb) ? skb_shinfo(skb)->gso_size : skb->data_len;
+ 
+-	/* check if we haven't set it for ktls offload */
+-	if (!skb->sk || !tls_is_sk_tx_device_offloaded(skb->sk))
+-		goto out;
+-
+ 	tls_ctx = tls_get_ctx(skb->sk);
+ 	if (unlikely(tls_ctx->netdev != dev))
+ 		goto out;
 -- 
 2.18.1
 
