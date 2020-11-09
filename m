@@ -2,123 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B12D2AB43D
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 11:02:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 912A22AB43B
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 11:02:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729038AbgKIKCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 05:02:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726423AbgKIKCM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 05:02:12 -0500
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA995C0613D3;
-        Mon,  9 Nov 2020 02:02:12 -0800 (PST)
-Received: by mail-il1-x141.google.com with SMTP id t13so7737619ilp.2;
-        Mon, 09 Nov 2020 02:02:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EQ7E7yH7knGfXa8L78Wzfx6uu8dmAvOU2LSv4iVHx1M=;
-        b=R7tV5kYyLHL3fwLuB5osXpJ0YTp3qY42EJVKZXucac3PvMQwvt/VwsUjvvv7fM+YHx
-         JJyPU1BW1v7zzK4EvAxyhWk5o9wBhXnBRrr0bEOl0dMM7Ms9h0BlmOHwo2zsHtRVKmhw
-         MzePWlxx0ABQrvpU/mRA7Gff4Feq5ylHsjreNxHi8AYedIKX80rMGhMX/B0nP/RysZZi
-         iZGNQ92S5bT/0fTUTDJg5hEodcjhFgiE/HhGm0efeD10p4GXYz/cY27lnpjYn1eQ150l
-         o4vv92WnXQS6Zw2SLDhSCqcIxZDVLwUNFZ9IjMoB7JZ/Nu75TTADHpvLdd0cLuiqCBCZ
-         lmuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EQ7E7yH7knGfXa8L78Wzfx6uu8dmAvOU2LSv4iVHx1M=;
-        b=dfyske1kvErDw4/7DdzR7nKUydZjI3/OCd+srCAvPSiIlbjppoaAxyU5snTywzrNON
-         NV8oLf0hOZWDs3KhMCslPKA1J+Pxrpz5wxb4dCkyl6X717ozZgfKgAG1C+eBaUjRkbKM
-         JRr1LytvoUa/3FxWXn5rqRyUz3SNFTFFXleS3uKf1Pvc4D8RjgPmYk4VwwIn+JtzI5Yx
-         ISi8fk9fIUsEyUyZLXNbAxe97bDOoVgUFStZVgnGihU+nApQpLKEG1ZMGECjcNOZxCsa
-         3jZl6+SvXb2f1QRrRZFBHfA2hFkZ8ZpYAoiLpRs1GDDjvkhvkvFvxxVMrwi3TeeoS2Ri
-         HV3w==
-X-Gm-Message-State: AOAM532otuJHo9kixUpgKPpDBCRHZZFuhdUwSB538yLqQBkm16l13SYB
-        2xBwtyYcw3G8Qp01qpcLQOA=
-X-Google-Smtp-Source: ABdhPJxX5qcAr7BiC72J/O0abvVqel/IdJ0Bz07Vo5V1p44JG7GbZORq8T+PGQtc6RQtFDdb5I0lWA==
-X-Received: by 2002:a92:cd0e:: with SMTP id z14mr9225485iln.135.1604916131989;
-        Mon, 09 Nov 2020 02:02:11 -0800 (PST)
-Received: from localhost.localdomain ([156.146.54.75])
-        by smtp.gmail.com with ESMTPSA id u1sm6606527ilb.74.2020.11.09.02.02.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 02:02:11 -0800 (PST)
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     bfields@fieldses.org, chuck.lever@oracle.com,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        davem@davemloft.net, kuba@kernel.org, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Subject: [PATCH] net: sunrpc: xprtsock.c: Corrected few spellings ,in comments
-Date:   Mon,  9 Nov 2020 15:24:05 +0530
-Message-Id: <20201109095404.25154-1-unixbhaskar@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        id S1728767AbgKIKCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 05:02:06 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:47366 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726646AbgKIKCG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 05:02:06 -0500
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A99WLno165058;
+        Mon, 9 Nov 2020 05:02:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=7KmqLtkv4n+qon/WOA1vGB76k4Z2CvysOh+6wFr0wlk=;
+ b=Pg5jYoF5MDJ0UAEsPDTRC6oIgorWqtGngT3O8Yq0WHOtOSKZt0FJ6nwW+9TlEH2Nke16
+ uNJ9q6zEo1W8a3zLai4mUyHIZnxH6XKYp8eaJN5/XhdvjPsGlZ6u2GgBCVvSqh05mSqt
+ TxKL3E3MEF0fIUy6pUARZ0Lnd/+7gyLFpnFXoeB06b5K3H3YrOJLaWTsT2D+8CiN3M5Y
+ ddbPZF9gedKkzrsEkY61/VH0JvT9WfvQPfe5iOB0+I7L38z/qRmPEIwV7xxnCd7SHwny
+ ZBx+WRjJ6aS65wIenJIvJdUsw2L73q8bX2trGOzubOzlsNw0/nMO0NKha3W9sesAWicw ow== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34nryaqx3c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 09 Nov 2020 05:02:02 -0500
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A9A1r7U024323;
+        Mon, 9 Nov 2020 10:02:00 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04ams.nl.ibm.com with ESMTP id 34p26phaty-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 09 Nov 2020 10:02:00 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A9A1v9e25362800
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 9 Nov 2020 10:01:57 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D732DA4066;
+        Mon,  9 Nov 2020 10:01:57 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 80EC5A4062;
+        Mon,  9 Nov 2020 10:01:57 +0000 (GMT)
+Received: from [9.171.82.206] (unknown [9.171.82.206])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  9 Nov 2020 10:01:57 +0000 (GMT)
+Subject: Re: [PATCH net-next v3 15/15] net/smc: Add support for obtaining
+ system information
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, hca@linux.ibm.com, raspl@linux.ibm.com
+References: <20201107125958.16384-1-kgraul@linux.ibm.com>
+ <20201107125958.16384-16-kgraul@linux.ibm.com>
+ <20201107095540.0f45b572@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+Message-ID: <22bd2535-4057-12a2-ae6b-fefd33129e98@linux.ibm.com>
+Date:   Mon, 9 Nov 2020 11:01:57 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201107095540.0f45b572@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-09_02:2020-11-05,2020-11-09 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ impostorscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0
+ clxscore=1015 priorityscore=1501 bulkscore=0 mlxlogscore=976 mlxscore=0
+ spamscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011090059
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Few trivial and rudimentary spell corrections.
+On 07/11/2020 18:55, Jakub Kicinski wrote:
+> On Sat,  7 Nov 2020 13:59:58 +0100 Karsten Graul wrote:
+>> From: Guvenc Gulce <guvenc@linux.ibm.com>
+>>
+>> Add new netlink command to obtain system information
+>> of the smc module.
+>>
+>> Signed-off-by: Guvenc Gulce <guvenc@linux.ibm.com>
+>> Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+> 
+> Checkpatch says:
+> 
+> CHECK: Please don't use multiple blank lines
+> #62: FILE: include/uapi/linux/smc_diag.h:140:
+>  
+> +
+> 
+> WARNING: line length of 84 exceeds 80 columns
+> #172: FILE: net/smc/smc_diag.c:687:
+> +	smcd_dev = list_first_entry_or_null(&dev_list->list, struct smcd_dev, list);
+> 
 
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
----
- net/sunrpc/xprtsock.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+The checkpatch.pl script in net-next does not bring up this length warning.
+We will address it in a v4.
 
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 343c6396b297..90792afea6c8 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -828,7 +828,7 @@ xs_stream_record_marker(struct xdr_buf *xdr)
-  *   EAGAIN:	The socket was blocked, please call again later to
-  *		complete the request
-  * ENOTCONN:	Caller needs to invoke connect logic then call again
-- *    other:	Some other error occured, the request was not sent
-+ *    other:	Some other error occurred, the request was not sent
-  */
- static int xs_local_send_request(struct rpc_rqst *req)
- {
-@@ -1664,7 +1664,7 @@ static int xs_bind(struct sock_xprt *transport, struct socket *sock)
- 	 * This ensures that we can continue to establish TCP
- 	 * connections even when all local ephemeral ports are already
- 	 * a part of some TCP connection.  This makes no difference
--	 * for UDP sockets, but also doens't harm them.
-+	 * for UDP sockets, but also doesn't harm them.
- 	 *
- 	 * If we're asking for any reserved port (i.e. port == 0 &&
- 	 * transport->xprt.resvport == 1) xs_get_srcport above will
-@@ -2380,7 +2380,7 @@ static void xs_error_handle(struct work_struct *work)
- }
+-- 
+Karsten
 
- /**
-- * xs_local_print_stats - display AF_LOCAL socket-specifc stats
-+ * xs_local_print_stats - display AF_LOCAL socket-specific stats
-  * @xprt: rpc_xprt struct containing statistics
-  * @seq: output file
-  *
-@@ -2409,7 +2409,7 @@ static void xs_local_print_stats(struct rpc_xprt *xprt, struct seq_file *seq)
- }
-
- /**
-- * xs_udp_print_stats - display UDP socket-specifc stats
-+ * xs_udp_print_stats - display UDP socket-specific stats
-  * @xprt: rpc_xprt struct containing statistics
-  * @seq: output file
-  *
-@@ -2433,7 +2433,7 @@ static void xs_udp_print_stats(struct rpc_xprt *xprt, struct seq_file *seq)
- }
-
- /**
-- * xs_tcp_print_stats - display TCP socket-specifc stats
-+ * xs_tcp_print_stats - display TCP socket-specific stats
-  * @xprt: rpc_xprt struct containing statistics
-  * @seq: output file
-  *
---
-2.26.2
-
+(I'm a dude)
