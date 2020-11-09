@@ -2,123 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 634EA2ABFB9
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 16:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFC4F2ABFE8
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 16:35:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730470AbgKIPU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 10:20:57 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37404 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727077AbgKIPU4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 10:20:56 -0500
-Received: by mail-ot1-f66.google.com with SMTP id l36so9264469ota.4;
-        Mon, 09 Nov 2020 07:20:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CdGO/90kcr4f31GvGdKRgTjSScpvfcOUI5SEBiL1EOA=;
-        b=crwL3KcLBR18efgVSCR5SEqF+HF6tPLoG1uQk/bb+zdrehr7DOtGNHJSL071armlqT
-         6xl20J7gSvRCLnZnT5s4WxVgvcVJlbnPrYDV0jISRBMCSTfj1AWAoNLO25GcL60CmiG3
-         +fy4fcQQP3XrukFJ4Bt2hR3ckizh+HEQOil9EHkmDsn2IU9ccIBM2SlECoabCHUj6fWc
-         5Q37sGonVSgZ7rtNIaLf0XnM/88fkt7PL0niBADhsuGRAw/YY0bUvnV3xPcrnnxZ0PTx
-         dYG6IJeC3kgut4UQ/wDfR7d1/z2fKZAedkFrWbQvdeuNwa3yU4aqSp07rBMWzvybyxpY
-         poWQ==
-X-Gm-Message-State: AOAM531HMOYxtP+Kcs2LHoruI3QerO3OmsVR33zT8vj+85Qpdpia8lej
-        7AJmd97/w6F592cvVxScr9IEcZAmGTJI4iHHMW/hH9Et
-X-Google-Smtp-Source: ABdhPJw70Qaea5loILHHnrwzHV1xU4x41jwgxIGZggvhcZrO8OGG4v1QzFpHW/n9zj+yJ2XTC+irnNGUXr3C1IVwSCg=
-X-Received: by 2002:a9d:171a:: with SMTP id i26mr11257116ota.260.1604935255974;
- Mon, 09 Nov 2020 07:20:55 -0800 (PST)
+        id S1730294AbgKIPfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 10:35:54 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:36881 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727077AbgKIPfy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 10:35:54 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id F37C05C03D2;
+        Mon,  9 Nov 2020 10:35:52 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 09 Nov 2020 10:35:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=GOSBQ0
+        Tt3iIgzm1Ap8+/GyZNXBFPRXdZktjV4NW0/44=; b=TGewrfP9BFyJOO05Dd2t8b
+        6h6JYDldlEKSjfmn23x6hXEg5NN3c06wI8sJvxsEkyL97Bqv7BkwJ0cqe6S7P+0K
+        +CcW5vknCbWcBt4gBejqAlOmn7i0ShzfU1TMYjtP3388GaOg2A/NnZt9yR4tiR1x
+        0eB0vNDtNZXWIKLK+3vMzdUyggNA1m98MMRSOV2ufSIwK74rbTL/iPVUyRRqyc0H
+        R9lOiJN3j3mOHxxJFdkI54yq4eHlbAMMidbDW8D+a16sGoueLpveJVY09F4dg3kb
+        Ijcu1Kso11D+/w1noivPi1hPJo+Dhs1drrpkkZF3ToE3t6uRd3RrlJdwTyNhO7fQ
+        ==
+X-ME-Sender: <xms:2GGpX9oQdU2IYxfP3MNRqdfMmvLMNyL-LKum9njZiMGZNagoyHVlzg>
+    <xme:2GGpX_ok6gSSYtiLAoYTAMoySrwtYvu_a47bgSmUvfHYiVE45vhLTBmWk0aE6tBbB
+    OMAv3-xL3Cs-hY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudduhedgjeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnheptdffkeekfeduffevgeeujeffjefhte
+    fgueeugfevtdeiheduueeukefhudehleetnecukfhppeekgedrvddvledrudehvddrvdeh
+    heenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:2GGpX6Oywk4rOlVdR9OjiK4eWDojjH8YLY2AUZU2NYtpw3M5Dx-E0A>
+    <xmx:2GGpX47ti8JiLWdNgLd3iHSQccwBpzFOgVXrlXOn6RPY1w1xoNjgpA>
+    <xmx:2GGpX859LezlVCnMXTOs5gqA1_-ZePO5DMrby2BRo-Tr0zdLy_d5_g>
+    <xmx:2GGpX6m_8Ovb92c2sPjRdKi7h9CuvROyUIjTTeUF4PYHDzI9zKmORg>
+Received: from localhost (unknown [84.229.152.255])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 71933328005E;
+        Mon,  9 Nov 2020 10:35:52 -0500 (EST)
+Date:   Mon, 9 Nov 2020 17:35:50 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@gmail.com,
+        jiri@nvidia.com, mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 05/18] rtnetlink: Add RTNH_F_TRAP flag
+Message-ID: <20201109153550.GA1796533@shredder>
+References: <20201104133040.1125369-1-idosch@idosch.org>
+ <20201104133040.1125369-6-idosch@idosch.org>
+ <20201106111221.06e16716@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20201109150416.1877878-1-zhangqilong3@huawei.com> <20201109150416.1877878-2-zhangqilong3@huawei.com>
-In-Reply-To: <20201109150416.1877878-2-zhangqilong3@huawei.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 9 Nov 2020 16:20:44 +0100
-Message-ID: <CAJZ5v0gGG4FeVfrFOYe1+axv78yh9vA4FAOsbLughbsQosP9-w@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] PM: runtime: Add a general runtime get sync
- operation to deal with usage counter
-To:     Zhang Qilong <zhangqilong3@huawei.com>
-Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>, fugang.duan@nxp.com,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201106111221.06e16716@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 9, 2020 at 4:00 PM Zhang Qilong <zhangqilong3@huawei.com> wrote:
->
-> In many case, we need to check return value of pm_runtime_get_sync, but
-> it brings a trouble to the usage counter processing. Many callers forget
-> to decrease the usage counter when it failed. It has been discussed a
-> lot[0][1]. So we add a function to deal with the usage counter for better
-> coding.
->
-> [0]https://lkml.org/lkml/2020/6/14/88
-> [1]https://patchwork.ozlabs.org/project/linux-tegra/patch/20200520095148.10995-1-dinghao.liu@zju.edu.cn/
-> Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
-> ---
->  include/linux/pm_runtime.h | 30 ++++++++++++++++++++++++++++++
->  1 file changed, 30 insertions(+)
->
-> diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-> index 4b708f4e8eed..6549ce764400 100644
-> --- a/include/linux/pm_runtime.h
-> +++ b/include/linux/pm_runtime.h
-> @@ -386,6 +386,36 @@ static inline int pm_runtime_get_sync(struct device *dev)
->         return __pm_runtime_resume(dev, RPM_GET_PUT);
->  }
->
-> +/**
-> + * pm_runtime_general_get - Bump up usage counter of a device and resume it.
-> + * @dev: Target device.
-> + *
-> + * Increase runtime PM usage counter of @dev first, and carry out runtime-resume
-> + * of it synchronously. If __pm_runtime_resume return negative value(device is in
-> + * error state), we to need decrease the usage counter before it return. If
-> + * __pm_runtime_resume return positive value, it means the runtime of device has
-> + * already been in active state, and we let the new wrapper return zero instead.
-> + *
-> + * The possible return values of this function is zero or negative value.
-> + * zero:
-> + *    - it means resume succeeed or runtime of device has already been active, the
-> + *      runtime PM usage counter of @dev remains incremented.
-> + * negative:
-> + *    - it means failure and the runtime PM usage counter of @dev has been balanced.
+On Fri, Nov 06, 2020 at 11:12:21AM -0800, Jakub Kicinski wrote:
+> On Wed,  4 Nov 2020 15:30:27 +0200 Ido Schimmel wrote:
+> >  	*flags |= (nhc->nhc_flags & RTNH_F_ONLINK);
+> >  	if (nhc->nhc_flags & RTNH_F_OFFLOAD)
+> >  		*flags |= RTNH_F_OFFLOAD;
+> > +	if (nhc->nhc_flags & RTNH_F_TRAP)
+> > +		*flags |= RTNH_F_TRAP;
+> 
+> Out of curiosity - why use this if construct like OFFLOAD rather than
+> the more concise mask like ONLINK does?
 
-The kerneldoc above is kind of noisy and it is hard to figure out what
-the helper really does from it.
+Good question :)
 
-You could basically say something like "Resume @dev synchronously and
-if that is successful, increment its runtime PM usage counter.  Return
-0 if the runtime PM usage counter of @dev has been incremented or a
-negative error code otherwise."
+> In fact looks like the mask could just be extended there instead?
 
-> + */
-> +static inline int pm_runtime_general_get(struct device *dev)
-
-What about pm_runtime_resume_and_get()?
-
-> +{
-> +       int ret = 0;
-
-This extra initialization is not necessary.
-
-You can initialize ret to the __pm_runtime_resume() return value right away.
-
-> +
-> +       ret = __pm_runtime_resume(dev, RPM_GET_PUT);
-> +       if (ret < 0) {
-> +               pm_runtime_put_noidle(dev);
-> +               return ret;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
->  /**
->   * pm_runtime_put - Drop device usage counter and queue up "idle check" if 0.
->   * @dev: Target device.
-> --
+Yes, good suggestion. Will do that.
