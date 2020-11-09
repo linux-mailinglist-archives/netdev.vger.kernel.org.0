@@ -2,121 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CFDE2ABD1D
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 14:43:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15AFD2ABD0B
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 14:43:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387652AbgKINnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 08:43:25 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:42306 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730419AbgKINAI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 08:00:08 -0500
-Received: by mail-ot1-f65.google.com with SMTP id 30so3045673otx.9;
-        Mon, 09 Nov 2020 05:00:07 -0800 (PST)
+        id S1730452AbgKINAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 08:00:13 -0500
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:44189 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730324AbgKINAK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 08:00:10 -0500
+Received: by mail-yb1-f195.google.com with SMTP id i186so8097562ybc.11;
+        Mon, 09 Nov 2020 05:00:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6uF1/nDxnfFpcdHInj7K0Ga/zyedpjeBwPAvCl11lWs=;
-        b=rGnTnX/XRm17U+NHySh0bC4A/ANZ5Iw+9czhRprsQhNCBTe2uuDCXPvyBCOXR/lkX6
-         Xln9ALyi4bxaO7DCrVe2MTwPr/QOzZWVO/QL7ryAjhjcy2NF1qJgzK8+Oa5Xscn22tQi
-         afRkuqcWN1MzhzTIMGQ04Ap+uoFh0hvdUx2rXzvq4wFQbx5QyYbH2dohJyJHxP24DZ7R
-         07m+pTvPxwobL0bRVFIhmWLwPgKKL755S+dm8l3vxnVQBHBXvtEjOIgcK7GrCSesuAab
-         nzABeWf/VGedkRiqErtkwPNJ9yI3yV3PCvt0gMz5cbc7vQF4mAkk+WdS70XMBDQCzQND
-         w7Kw==
-X-Gm-Message-State: AOAM531bj6q+f3S8fq4ld12hrUiX6CL0Cppc6v0esUDfzBREXkDDZV5C
-        FqKiMo8EGxLnlqJ4vr09BlE7AO74LFar635YeUk=
-X-Google-Smtp-Source: ABdhPJzVCmqe6uLmG54/OBrNeVgEnEjNiX+fLdvVeDQDQJkEnMU7MkjatPJt1QynqYrfHn13969AAC+Imo+3vMm7hMY=
-X-Received: by 2002:a9d:16f:: with SMTP id 102mr10900397otu.206.1604926807447;
- Mon, 09 Nov 2020 05:00:07 -0800 (PST)
+        bh=7ONH1likqkogb93d/r1uP1qpS++gqjRPAA5YiqR0gr4=;
+        b=U+fvlvYTbIzXUIb+BkX8r4N0AGTzCc5Y8PYRVelwuyj4V2bcTk2tBQ/N2Wm1LiDe7p
+         vyTtU3D4cvXq+EVEkLaJdWNPboskwY2JXHz9EYDHAZjDQ7wCDFfpfjjVZwj5Nr0z3+Sq
+         rG7YAAhnbPLIOiYH10Z5IxZqgwjFs9rzD1TI4MPF2pCk42kx/lLb+QSWyut8daKw6qeg
+         oTQD4bIaZQCqPBCA0HzNr51bg6/V6wdNi+Pg0V0Yi5nWnJNmag1EuAIbHTnCl/mJ8rLy
+         HfonUXY8TdYAa+/6kKQ4sStcTKg2RzLd4vIn5w+DKhlw5aknIVTDf4gFipJZSsn92ykH
+         1Klg==
+X-Gm-Message-State: AOAM5311tIot3g/wyfCvYXlVY0xtWL3WiJryX+G+yeq3Fy2O2hfGGhG4
+        aOHzqrFHWh24FV7Su3IRZ7gOFnMte7VCIzbQTe9x3bbLkb29AQ==
+X-Google-Smtp-Source: ABdhPJxFnslEBpGEJWaYWxYyZTiHJg86Tg94aszG9Pjc9yeHqbZctxCojU69sD4XYW5F/WVc+U8jAxYZo1EU7p6sp/8=
+X-Received: by 2002:a05:6902:513:: with SMTP id x19mr19383163ybs.239.1604926808747;
+ Mon, 09 Nov 2020 05:00:08 -0800 (PST)
 MIME-Version: 1.0
-References: <20201109080938.4174745-1-zhangqilong3@huawei.com> <20201109080938.4174745-2-zhangqilong3@huawei.com>
-In-Reply-To: <20201109080938.4174745-2-zhangqilong3@huawei.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 9 Nov 2020 13:59:51 +0100
-Message-ID: <CAJZ5v0gZp_R60FN+ZrKmEn+m0F4yjt_MB+N8uGG=fxKUnZdknQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] PM: runtime: Add a general runtime get sync operation
- to deal with usage counter
-To:     Zhang Qilong <zhangqilong3@huawei.com>
-Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>, fugang.duan@nxp.com,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
+References: <20201109102618.2495-1-socketcan@hartkopp.net> <20201109102618.2495-5-socketcan@hartkopp.net>
+In-Reply-To: <20201109102618.2495-5-socketcan@hartkopp.net>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Mon, 9 Nov 2020 21:59:57 +0900
+Message-ID: <CAMZ6RqJz+G-R6LF=jU22kcYPBwTCOB7XmcY+GTNLmfm+-9rvUw@mail.gmail.com>
+Subject: Re: [PATCH v4 4/7] can: replace can_dlc as variable/element for
+ payload length
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     linux-can <linux-can@vger.kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 9, 2020 at 9:05 AM Zhang Qilong <zhangqilong3@huawei.com> wrote:
->
-> In many case, we need to check return value of pm_runtime_get_sync, but
-> it brings a trouble to the usage counter processing. Many callers forget
-> to decrease the usage counter when it failed. It has been discussed a
-> lot[0][1]. So we add a function to deal with the usage counter for better
-> coding.
->
-> [0]https://lkml.org/lkml/2020/6/14/88
-> [1]https://patchwork.ozlabs.org/project/linux-tegra/patch/20200520095148.10995-1-dinghao.liu@zju.edu.cn/
-> Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
-> ---
->  include/linux/pm_runtime.h | 32 ++++++++++++++++++++++++++++++++
->  1 file changed, 32 insertions(+)
->
-> diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-> index 4b708f4e8eed..2b0af5b1dffd 100644
-> --- a/include/linux/pm_runtime.h
-> +++ b/include/linux/pm_runtime.h
-> @@ -386,6 +386,38 @@ static inline int pm_runtime_get_sync(struct device *dev)
->         return __pm_runtime_resume(dev, RPM_GET_PUT);
+On Mon. 9 Nov 2020 at 19:26, Oliver Hartkopp wrote:
+> diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
+> index b2e8df8e4cb0..72671184a7a2 100644
+> --- a/include/linux/can/dev.h
+> +++ b/include/linux/can/dev.h
+> @@ -183,12 +183,12 @@ static inline void can_set_static_ctrlmode(struct net_device *dev,
+>         /* override MTU which was set by default in can_setup()? */
+>         if (static_mode & CAN_CTRLMODE_FD)
+>                 dev->mtu = CANFD_MTU;
 >  }
 >
-> +/**
-> + * gene_pm_runtime_get_sync - Bump up usage counter of a device and resume it.
-> + * @dev: Target device.
+> -/* get data length from can_dlc with sanitized can_dlc */
+> -u8 can_dlc2len(u8 can_dlc);
+> +/* get data length from raw data length code (DLC) */
 
-The force argument is not documented.
+/*
+ * convert a given data length code (dlc) of an FD CAN frame into a
+ * valid data length of max. 64 bytes.
+ */
 
-> + *
-> + * Increase runtime PM usage counter of @dev first, and carry out runtime-resume
-> + * of it synchronously. If __pm_runtime_resume return negative value(device is in
-> + * error state) or return positive value(the runtime of device is already active)
-> + * with force is true, it need decrease the usage counter of the device when
-> + * return.
-> + *
-> + * The possible return values of this function is zero or negative value.
-> + * zero:
-> + *    - it means success and the status will store the resume operation status
-> + *      if needed, the runtime PM usage counter of @dev remains incremented.
-> + * negative:
-> + *    - it means failure and the runtime PM usage counter of @dev has been
-> + *      decreased.
-> + * positive:
-> + *    - it means the runtime of the device is already active before that. If
-> + *      caller set force to true, we still need to decrease the usage counter.
+I missed this point during my previous review: the can_dlc2len() function
+is only valid for CAN FD frames. Comments should reflect this fact.
 
-Why is this needed?
+> +u8 can_dlc2len(u8 dlc);
 
-> + */
-> +static inline int gene_pm_runtime_get_sync(struct device *dev, bool force)
+Concerning the name:
+ * can_get_cc_len() converts a Classical CAN frame DLC into a data
+   length.
+ * can_dlc2len() converts an FD CAN frame DLC into a data length.
 
-The name is not really a good one and note that pm_runtime_get() has
-the same problem as _get_sync() (ie. the usage counter is incremented
-regardless of the return value).
+Just realized that both macro/function do similar things so we could
+think of a similar naming as well.
+ * Example 1: can_get_cc_len() and can_get_fd_len()
+ * Example 2: can_cc_dlc2len() and can_fd_dlc2len()
 
-> +{
-> +       int ret = 0;
-> +
-> +       ret = __pm_runtime_resume(dev, RPM_GET_PUT);
-> +       if (ret < 0 || (ret > 0 && force))
-> +               pm_runtime_put_noidle(dev);
-> +
-> +       return ret;
-> +}
-> +
->  /**
->   * pm_runtime_put - Drop device usage counter and queue up "idle check" if 0.
->   * @dev: Target device.
-> --
+Or we could simply leave things as they are, this is not a big issue
+as long as the comments clearly state which one is for classical
+frames and which one is for FD frames.
 
-Thanks!
+>
+>  /* map the sanitized data length to an appropriate data length code */
+>  u8 can_len2dlc(u8 len);
+
+can_len2dlc() might be renamed (e.g. can_get_fd_dlc()) if Example 1
+solution is chosen.
+
+>  struct net_device *alloc_candev_mqs(int sizeof_priv, unsigned int echo_skb_max,
+
+Yours sincerely,
+Vincent Mailhol
