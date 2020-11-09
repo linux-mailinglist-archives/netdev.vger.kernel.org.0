@@ -2,132 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95B062AAECE
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 02:45:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B45D72AAED0
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 02:49:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729025AbgKIBpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 20:45:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727979AbgKIBpT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 20:45:19 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886ADC0613CF;
-        Sun,  8 Nov 2020 17:45:19 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id w6so979405pfu.1;
-        Sun, 08 Nov 2020 17:45:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=do64FoTxiW6aSEst954wsCuxnCqK2NqrUlgo5iPVJ0U=;
-        b=V8GHN66N/wOQtHaPM8a7mgZQOx2zU+r6RW2kAjMXBFRh3itFM6zN4mn28wKBmdkXCO
-         4YjkFifLhDMlIMmvLCjYsZBkdvrBkDny40zFrCFWVZMqsl9SEjOjxLwyTQxIVUS5pvx9
-         kcNK5ixcW+MSxvijkDuFrrvhQjDkV8w+N8eple71+yG+tfoB68ANkpBD8QbKUKSYV1c+
-         U+eiaQNCGwAl2uzvXxipWUI8OSES+Ap28ZVwLBLoz++rDvbXWUVFiExtWXZFclVKPFtT
-         DEVKb3CsgtlvGvnUeNYEOaMMVvt8gSIS14kh1WkJ4DqnGfyeR6Hi6HScJyxfkpZfky/m
-         QJug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=do64FoTxiW6aSEst954wsCuxnCqK2NqrUlgo5iPVJ0U=;
-        b=In+EeSc9lm9S9DAXgIV+WkCp7mMjEDk5pP76rp9G440TVrVBuViEXK1Rj4owiphpKz
-         gn4bLfWF/AcGbIiegi6Kg659XpCYTdy4T14v2xONrEZMG34TIE7h0nTmq+w8DBCFxbGY
-         QHoljbQUj2fbqoWwJesJ7rJa31gNyfrfgV8PNFv+osa8DT8nGhikqT1I71zKzuVEyfUH
-         E6B1DYgsBEwFs9eTfMxNNFweM2mVB/WLiIHHgw2K2vEe3IOiCbZoCme+llchgF4rgBuU
-         6BpZzRVYbEIDc3ySDMQhMVpxLxCSQP34QDe08yteuI6U8pH35vjE66gQnRUey1iRVqhe
-         GTqw==
-X-Gm-Message-State: AOAM532L+ioTy/nAjZslZ3QTjy2gVe43NqNCFOr03JcsZbn5FCVVEkC4
-        LB8ZGGwbgfKq45I+FB0WYoA=
-X-Google-Smtp-Source: ABdhPJwYB3Whpu117Q8/CtmgwUK8dDudCPfXHYlVhvmYWsZeoMlQEzYEfsMOoSsoAv9yKbwNiLMBcA==
-X-Received: by 2002:a17:90a:b797:: with SMTP id m23mr783000pjr.153.1604886319127;
-        Sun, 08 Nov 2020 17:45:19 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:7b57])
-        by smtp.gmail.com with ESMTPSA id t19sm8160644pgv.37.2020.11.08.17.45.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Nov 2020 17:45:17 -0800 (PST)
-Date:   Sun, 8 Nov 2020 17:45:15 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-Message-ID: <20201109014515.rxz3uppztndbt33k@ast-mbp>
-References: <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
- <bb04a01a-8a96-7a6a-c77e-28ee63983d9a@solarflare.com>
- <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
- <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com>
- <CAEf4BzaSfutBt3McEPjmu_FyxyzJa_xVGfhP_7v0oGuqG_HBEw@mail.gmail.com>
- <20201106094425.5cc49609@redhat.com>
- <CAEf4Bzb2fuZ+Mxq21HEUKcOEba=rYZHc+1FTQD98=MPxwj8R3g@mail.gmail.com>
- <CAADnVQ+S7fusZ6RgXBKJL7aCtt3jpNmCnCkcXd0fLayu+Rw_6Q@mail.gmail.com>
- <20201106152537.53737086@hermes.local>
- <45d88ca7-b22a-a117-5743-b965ccd0db35@gmail.com>
+        id S1728104AbgKIBto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 20:49:44 -0500
+Received: from mail-db8eur05on2079.outbound.protection.outlook.com ([40.107.20.79]:51614
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727979AbgKIBto (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Nov 2020 20:49:44 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eh7TeJILTW5YYHB4TkfpDF6IOB/8WoXVj6Tqu60kIxG8jV2DLZ3Tf9UGZcMOz3ezjA4XDEXKSklHwrLeNqz/GKgopxpjuTL1L4gUuB12613Cwq30RTlRPJ38GfFKqa2798d5HlFXDD5YXTN3wJ6wP/KxhpPuU9Qwl1Q/D/VAh6aXd2IEZaXJDlDkdlQeJvqvJd0+RgeG51OtvqmbyRs9xW/3ZuDlpGeDgQw5m3oo17nKhTeacv5wgq5rviPaF3bLwDa81J3XwvSaQ/lUS118zSFHwUO84oqIcUFdsiR7mez9qkMd4VMG4Irao1M2QwP7tel3H72JhWjqxhDkjMc/Aw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UbBzdCADfHlUxWEjd2NpXKlj/CzVE1S5y3KpuC5g7sE=;
+ b=Fli5a0bvtpzZMULbb2LDPkfG4O5joiNGkxURUiXrsONVducm5bZtX/MTAUOJGIboAGgYIqMtIW8juu14d2uIHhi7mzGgRQXbBsBa2vbW+CvXtbeczE0R65m6nlKiJwxxajlibvseQEqERqFlUuUwu4zk4Glh2hghiWl8yO4eoqKiMd8zZb6BpEWP+aswG7sKN+cZZJuTnI7FL/tNDOs1RXtjg3RQ+0B5RiRzrjzjLOYXHze0KnZ21j9SyyxSYchHt1yP9noEzT7sz6G+KzY8+d/Fiih+QNQkYd81hwXcT0pi/aCB3kGxJCB0zQ7I1biQLrKsKXACvmi2TWeINIMPuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UbBzdCADfHlUxWEjd2NpXKlj/CzVE1S5y3KpuC5g7sE=;
+ b=pyovM9HfyWOUJEbYyfDIGC0767YWiITLdyxvdFecZAy+VGFHnsX7xRjga2XBS5OEMj3vMsvZ4sZ4ky+dBhIjuGcqosnSv37Pb8/X0p+XLj7dNcRLJnFSC0YeZSeBeuGYMgwApCliIvNFQz7DstDNaAByfNRb39i7IHmInCQp7eY=
+Received: from AM8PR04MB7315.eurprd04.prod.outlook.com (2603:10a6:20b:1d4::7)
+ by AM0PR0402MB3585.eurprd04.prod.outlook.com (2603:10a6:208:1c::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21; Mon, 9 Nov
+ 2020 01:49:40 +0000
+Received: from AM8PR04MB7315.eurprd04.prod.outlook.com
+ ([fe80::11e6:d413:2d3d:d271]) by AM8PR04MB7315.eurprd04.prod.outlook.com
+ ([fe80::11e6:d413:2d3d:d271%6]) with mapi id 15.20.3541.025; Mon, 9 Nov 2020
+ 01:49:40 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     Zhang Qilong <zhangqilong3@huawei.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] net: fec: Fix reference count leak in fec series ops
+Thread-Topic: [PATCH] net: fec: Fix reference count leak in fec series ops
+Thread-Index: AQHWtbR0cLl78/z7wEeCrdGvuGMwFam/CZHw
+Date:   Mon, 9 Nov 2020 01:49:40 +0000
+Message-ID: <AM8PR04MB731568128C08B0730519E9D3FFEA0@AM8PR04MB7315.eurprd04.prod.outlook.com>
+References: <20201108095310.2892555-1-zhangqilong3@huawei.com>
+In-Reply-To: <20201108095310.2892555-1-zhangqilong3@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.67]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 24d0b115-e8f5-4afc-4cff-08d88451b918
+x-ms-traffictypediagnostic: AM0PR0402MB3585:
+x-microsoft-antispam-prvs: <AM0PR0402MB3585A2150AA7CA32FE7124B5FFEA0@AM0PR0402MB3585.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: f3m9LlzYe0teBZYRFzbVFKMFUP21Hfwezicplvfnw1rCAK81nN70RY38PgM0DYw5JAAKQQuke9m1pe/cmvmeQWtopVOe8sN6kiJ4vL/4k1Qub+QcSQwjfmPACHqSDEyXHkvmiQnC1rzMJDdOGNk1bv4H+KsmQwbySoW27z8sfUfiavtxosL/HFIatp/yM+i1RoCU2NKDJN/YjutCsdbBBnupeBdOuLPoViyRZBLTXNdce3K+Un7+i0z0phQdwt0TDFNG+4RFZo8/a8fy+uXC31NiuEd/IAh9V8FMilJg/doMeAoknW4PIFByoypVTwi9tIiGmLxi2ERnCg9+PqIe28KkWALPJo00SYjcla96pTCMP/5MhXRmu8/rUQYf2b8q8OnEMHus16JyCAuwcnHXnA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7315.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(366004)(396003)(376002)(346002)(26005)(86362001)(9686003)(55016002)(316002)(7696005)(6506007)(71200400001)(76116006)(4326008)(8676002)(186003)(5660300002)(83380400001)(2906002)(52536014)(966005)(478600001)(33656002)(110136005)(66946007)(66446008)(8936002)(64756008)(66476007)(66556008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 6SLyjSvh93xoA82XR5DNf/pApEcWaSV0qgAqX1JWr1QcwiQoCmle5EIklY+sjeuI9t4ox1GBY/1VoAi4GYmLRW2183EH1RvC6WaInjCg89S2MeQu17KDONFjocuku0V2AP0jeJ79IivGcOSBMAOQfj4IWx1mCliBHR8Rflai+w4TxDFeAz4K1WZ+aYxprqp7OFiQNdGQVXZEKvYjeAz7eMqXPZ0Qu8q+5vfA6LB62R4DnWi4exMQGF8dI3ovYpMfjrwVQ8WAmTCPpuzf9drBqiWF47KH7YiSphyjVLgld8w+P/QJniNP8BwxpK8rfehYloBahHx2W91Nplck9IWVGvw9ah7rw5fWaua8vP/3Y/FZxrcBrK8AJD0uPpXWhPoNjRnPrwHXrD6hEG+knGXOTUmOEkBEfAVQMW4Tj7kPMHX5AIFeivBT+oRjtVg4L5e1cfzVpSKxtPH2IgsdCiSYf4BuG7qbnVXtmYOHo6CE9V5yDwX4JCEA5IFuo2z9dxeeUFdoFLOiQ7iM3wSuN7CxxBfLQDMW6MEWRPVEF4MdGQpMhN1EoVJFmfs7KIC+0fq5zl+QKJXoI9tWyV9IPIWfBpd0K29Fd9HhX4V9Br29rvn9k/u5pjrCJ+wUBpysV9PN8oBTDrlnMcYpi6XvfrJK1g==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <45d88ca7-b22a-a117-5743-b965ccd0db35@gmail.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7315.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24d0b115-e8f5-4afc-4cff-08d88451b918
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Nov 2020 01:49:40.4882
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cy5BJUHRQyGy6FvAd8b5i/cqyzOq0rcFNO0zPsXW2T1n8SMaW03qmMSxPbxTYQ+FeXQbmkApYbZkgbe2zEn41w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0402MB3585
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 06, 2020 at 04:38:13PM -0700, David Ahern wrote:
-> On 11/6/20 4:25 PM, Stephen Hemminger wrote:
-> >>
-> >> I think bumping the minimal version of libbpf with every iproute2 release
-> >> is necessary as well.
-> >> Today iproute2-next should require 0.2.0. The cycle after it should be 0.3.0
-> >> and so on.
-> >> This way at least some correlation between iproute2 and libbpf will be
-> >> established.
-> >> Otherwise it's a mess of versions and functionality from user point of view.
-> 
-> If existing bpf features in iproute2 work fine with version 0.1.0, what
-> is the justification for an arbitrary requirement for iproute2 to force
-> users to bump libbpf versions just to use iproute2 from v5.11?
+From: Zhang Qilong <zhangqilong3@huawei.com> Sent: Sunday, November 8, 2020=
+ 5:53 PM
+> pm_runtime_get_sync() will increment pm usage at first and it will resume=
+ the
+> device later. If runtime of the device has error or device is in inaccess=
+ible
+> state(or other error state), resume operation will fail. If we do not cal=
+l put
+> operation to decrease the reference, it will result in reference count le=
+ak.
+> Moreover, this device cannot enter the idle state and always stay busy or=
+ other
+> non-idle state later. So we fixed it through adding pm_runtime_put_noidle=
+.
+>=20
+> Fixes: 8fff755e9f8d0 ("net: fec: Ensure clocks are enabled while using md=
+io bus")
+> Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
 
-I don't understand why on one side you're pointing out existing quirkiness with
-bpf usability while at the same time arguing to make it _less_ user friendly
-when myself, Daniel, Andrii explained in detail what libbpf does and how it
-affects user experience?
+From early discussion for the topic, Wolfram Sang wonder if such de-referen=
+ce can
+be better handled by pm runtime core code.
 
-The analogy of libbpf in iproute2 and libbfd in gdb is that both libraries
-perform large percentage of functionality comparing to the rest of the tool.
-When library is dynamic linked it makes user experience unpredictable. My guess
-is that libbfd is ~50% of what gdb is doing. What will the users say if gdb
-suddenly behaves differently (supports less or more elf files) because
-libbfd.so got upgraded in the background? In case of tc+libbpf the break down
-of funcionality is heavliy skewed towards libbpf. The amount of logic iproute2
-code will do to perform "tc filter ... bpf..." command is 10% iproute2 / 90%
-libbpf. Issuing few netlink calls to attach bpf prog to a qdisc is trivial
-comparing to what libbpf is doing with an elf file. There is a linker inside
-libbpf. It will separate different functions inside elf file. It will relocate
-code and adjust instructions before sending it to the kernel. libbpf is not
-a wrapper. It's a mini compiler: CO-RE logic, function relocation, dynamic
-kernel feature probing, etc. When the users use a command line tool (like
-iproute2 or bpftool) they are interfacing with the tool. It's not unix-like to
-demand that users should check the version of a shared library and adjust their
-expectations. The UI is the command line. Its version is as a promise of
-features. iproute2 of certain version in one distro should behave the same as
-iproute2 in another distro. By not doing git submodule that promise is broken.
-Hence my preference is to use fixed libbpf sha for every iproute2 release. The
-other alternative is to lag iproute2/libbpf one release behind. Hence
-repeating what I said earlier: Today iproute2-next should require 0.2.0. The
-iprtoute2 in the next cycle _must_ bump be the minimum libbpf version to 0.3.0.
-Not bumping minimum version brings us to square one and unpredicatable user
-experience. The users are jumping through enough hoops when they develop bpf
-programs. We have to make it simpler and easier. Using libbpf in iproute2
-can improve the user experience, but only if it's predictable.
+https://lkml.org/lkml/2020/6/14/76
+
+Regards,
+Andy
+> ---
+>  drivers/net/ethernet/freescale/fec_main.c | 22 ++++++++++++++++------
+>  1 file changed, 16 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c
+> b/drivers/net/ethernet/freescale/fec_main.c
+> index d7919555250d..6c02f885c67e 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -1809,8 +1809,10 @@ static int fec_enet_mdio_read(struct mii_bus *bus,
+> int mii_id, int regnum)
+>  	bool is_c45 =3D !!(regnum & MII_ADDR_C45);
+>=20
+>  	ret =3D pm_runtime_get_sync(dev);
+> -	if (ret < 0)
+> +	if (ret < 0) {
+> +		pm_runtime_put_noidle(dev);
+>  		return ret;
+> +	}
+>=20
+>  	if (is_c45) {
+>  		frame_start =3D FEC_MMFR_ST_C45;
+> @@ -1868,10 +1870,12 @@ static int fec_enet_mdio_write(struct mii_bus
+> *bus, int mii_id, int regnum,
+>  	bool is_c45 =3D !!(regnum & MII_ADDR_C45);
+>=20
+>  	ret =3D pm_runtime_get_sync(dev);
+> -	if (ret < 0)
+> +	if (ret < 0) {
+> +		pm_runtime_put_noidle(dev);
+>  		return ret;
+> -	else
+> +	} else {
+>  		ret =3D 0;
+> +	}
+>=20
+>  	if (is_c45) {
+>  		frame_start =3D FEC_MMFR_ST_C45;
+> @@ -2276,8 +2280,10 @@ static void fec_enet_get_regs(struct net_device
+> *ndev,
+>  	int ret;
+>=20
+>  	ret =3D pm_runtime_get_sync(dev);
+> -	if (ret < 0)
+> +	if (ret < 0) {
+> +		pm_runtime_put_noidle(dev);
+>  		return;
+> +	}
+>=20
+>  	regs->version =3D fec_enet_register_version;
+>=20
+> @@ -2977,8 +2983,10 @@ fec_enet_open(struct net_device *ndev)
+>  	bool reset_again;
+>=20
+>  	ret =3D pm_runtime_get_sync(&fep->pdev->dev);
+> -	if (ret < 0)
+> +	if (ret < 0) {
+> +		pm_runtime_put_noidle(&fep->pdev->dev);
+>  		return ret;
+> +	}
+>=20
+>  	pinctrl_pm_select_default_state(&fep->pdev->dev);
+>  	ret =3D fec_enet_clk_enable(ndev, true); @@ -3771,8 +3779,10 @@
+> fec_drv_remove(struct platform_device *pdev)
+>  	int ret;
+>=20
+>  	ret =3D pm_runtime_get_sync(&pdev->dev);
+> -	if (ret < 0)
+> +	if (ret < 0) {
+> +		pm_runtime_put_noidle(&pdev->dev);
+>  		return ret;
+> +	}
+>=20
+>  	cancel_work_sync(&fep->tx_timeout_work);
+>  	fec_ptp_stop(pdev);
+> --
+> 2.25.4
+
