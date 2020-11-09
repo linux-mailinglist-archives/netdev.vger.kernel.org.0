@@ -2,127 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D1E42ABFAD
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 16:19:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 059412ABFAF
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 16:19:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731794AbgKIPS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 10:18:26 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:1682 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730083AbgKIPSY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 10:18:24 -0500
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A9F3EXk056588;
+        id S1732278AbgKIPTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 10:19:06 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:21904 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731686AbgKIPS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 10:18:26 -0500
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A9F7X2E034411;
         Mon, 9 Nov 2020 10:18:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id; s=pp1;
- bh=YfXgGDbpt+PYTwJmIRjS9G7dlFdhUObIO9koW3C2Dmc=;
- b=rcIl0sohXXyl9SD2VhFU0AKiwbK9JTTI1o+5x7RE4eU/sWF/eCEnDzq3LXaFQCDJbyFa
- 5ge2fREYsyX9lptlaj8DvB7LpVJ+l9Z1rnxxKqtDTUU0Jqkk4WtRa8AaAN1GGpoGHWzi
- UfzOIK0I0D2oCmNuMXC3RPgYOR9L7NAkmn6cj/Pq+zv985pWdimWozSOzh2xypGL3QbZ
- ICCJp6cP6QY/NUhyYlZMZwDQUaXNJ3ekPncSpTpHMmHypmZT6dbFpzvd25geT9UiHNKq
- ifrFjlNSyPqxS8Nc8z4b4T7KaiTOOYXhxIIbrWvmwbSTkxOOH1sGJMOpiaPTkvMkSh5P QQ== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34q74ejsjy-1
+ : date : message-id : in-reply-to : references; s=pp1;
+ bh=s/HRzeD+3KGfEzpf5dG4UYvemk8/JHV23L+u+8kEYfw=;
+ b=bxo/bDJ6ORnOVpnXzfWJ/ouJbKf0bmbbqzTqMr56uatP7ql6lUTULecHARiTOgb2ouhr
+ SSVuzM9JqvVBSLuB3PTMTm+OTn3lvEiQpvhxpGOOuwNewqvsBk68Ros17FLJpfYVfX4p
+ yjO42HdzB/IdDhpLnqBlNUhVgNqIrstjvMzv4XvJsrowgxVSBHFLNfmmDBJv3CutoW8T
+ jbbz71+P41CGyvw+hLohbbkQsQUCDAcgSJKjKCmxb9jPtW8fl5WlY2H33Sl7GncifZRM
+ Y84B0kPlp+6MdJeHVx8JYP1Mhb1igWlgR+BwDPytOBOAJRu9TEhjzhCE8SXVVZ0kcrv5 UQ== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 34q5cwxgjw-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 Nov 2020 10:18:22 -0500
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A9FCTk9014578;
-        Mon, 9 Nov 2020 15:18:20 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04fra.de.ibm.com with ESMTP id 34nk77s3tx-1
+        Mon, 09 Nov 2020 10:18:23 -0500
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A9FBin1025115;
+        Mon, 9 Nov 2020 15:18:21 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 34njuh25u7-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 Nov 2020 15:18:19 +0000
+        Mon, 09 Nov 2020 15:18:21 +0000
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A9FIGbY4260452
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A9FII8i63308084
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 9 Nov 2020 15:18:16 GMT
+        Mon, 9 Nov 2020 15:18:18 GMT
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A5A4FA4060;
-        Mon,  9 Nov 2020 15:18:16 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 96925A4069;
+        Mon,  9 Nov 2020 15:18:18 +0000 (GMT)
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6BB0AA4054;
-        Mon,  9 Nov 2020 15:18:16 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 5DBCDA405B;
+        Mon,  9 Nov 2020 15:18:18 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  9 Nov 2020 15:18:16 +0000 (GMT)
+        Mon,  9 Nov 2020 15:18:18 +0000 (GMT)
 From:   Karsten Graul <kgraul@linux.ibm.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         hca@linux.ibm.com, raspl@linux.ibm.com
-Subject: [PATCH net-next v4 00/15] net/smc: extend diagnostic netlink interface
-Date:   Mon,  9 Nov 2020 16:17:59 +0100
-Message-Id: <20201109151814.15040-1-kgraul@linux.ibm.com>
+Subject: [PATCH net-next v4 01/15] net/smc: use helper smc_conn_abort() in listen processing
+Date:   Mon,  9 Nov 2020 16:18:00 +0100
+Message-Id: <20201109151814.15040-2-kgraul@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201109151814.15040-1-kgraul@linux.ibm.com>
+References: <20201109151814.15040-1-kgraul@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-09_07:2020-11-05,2020-11-09 signatures=0
+ definitions=2020-11-09_08:2020-11-05,2020-11-09 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- clxscore=1015 lowpriorityscore=0 mlxlogscore=567 phishscore=0 spamscore=0
- impostorscore=0 suspectscore=1 mlxscore=0 adultscore=0 bulkscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011090102
+ suspectscore=3 phishscore=0 mlxscore=0 spamscore=0 adultscore=0
+ malwarescore=0 impostorscore=0 mlxlogscore=811 clxscore=1015 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011090106
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please apply the following patch series for smc to netdev's net-next tree.
+The helper smc_connect_abort() can be used by the listen processing
+functions, too. And rename this helper to smc_conn_abort() to make the
+purpose clearer.
+No functional change.
 
-This patch series refactors the current netlink API in smc_diag module
-which is used for diagnostic purposes and extends the netlink API in a
-backward compatible way so that the extended API can provide information
-about SMC linkgroups, links and devices (both for SMC-R and SMC-D) and
-can still work with the legacy netlink API.
+Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+---
+ net/smc/af_smc.c | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
 
-Please note that patch 9 triggers a checkpatch warning because a comment
-line was added using the style of the already existing comment block.
-
-v2: In patch 10, add missing include to uapi header smc_diag.h.
-
-v3: Apply code style recommendations from review comments.
-    Instead of using EXPORTs to allow the smc_diag module to access
-    data of the smc module, introduce struct smc_diag_ops and let
-    smc_diag access the required data using function pointers.
-
-v4: Address checkpatch.pl warnings. Do not use static inline for
-    functions.
-
-Guvenc Gulce (14):
-  net/smc: Use active link of the connection
-  net/smc: Add connection counters for links
-  net/smc: Add link counters for IB device ports
-  net/smc: Add diagnostic information to smc ib-device
-  net/smc: Add diagnostic information to link structure
-  net/smc: Refactor the netlink reply processing routine
-  net/smc: Add ability to work with extended SMC netlink API
-  net/smc: Introduce SMCR get linkgroup command
-  net/smc: Introduce SMCR get link command
-  net/smc: Add SMC-D Linkgroup diagnostic support
-  net/smc: Add support for obtaining SMCD device list
-  net/smc: Add support for obtaining SMCR device list
-  net/smc: Refactor smc ism v2 capability handling
-  net/smc: Add support for obtaining system information
-
-Karsten Graul (1):
-  net/smc: use helper smc_conn_abort() in listen processing
-
- include/net/smc.h             |   2 +-
- include/uapi/linux/smc.h      |   8 +
- include/uapi/linux/smc_diag.h | 108 +++++
- net/smc/af_smc.c              |  29 +-
- net/smc/smc.h                 |   4 +-
- net/smc/smc_clc.c             |   5 +
- net/smc/smc_clc.h             |   1 +
- net/smc/smc_core.c            |  72 +++-
- net/smc/smc_core.h            |  26 +-
- net/smc/smc_diag.c            | 788 ++++++++++++++++++++++++++++++----
- net/smc/smc_ib.c              |  45 ++
- net/smc/smc_ib.h              |   5 +-
- net/smc/smc_ism.c             |   8 +-
- net/smc/smc_ism.h             |   5 +-
- net/smc/smc_pnet.c            |   3 +
- 15 files changed, 986 insertions(+), 123 deletions(-)
-
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 527185af7bf3..bc3e45289771 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -552,8 +552,7 @@ static int smc_connect_decline_fallback(struct smc_sock *smc, int reason_code,
+ 	return smc_connect_fallback(smc, reason_code);
+ }
+ 
+-/* abort connecting */
+-static void smc_connect_abort(struct smc_sock *smc, int local_first)
++static void smc_conn_abort(struct smc_sock *smc, int local_first)
+ {
+ 	if (local_first)
+ 		smc_lgr_cleanup_early(&smc->conn);
+@@ -814,7 +813,7 @@ static int smc_connect_rdma(struct smc_sock *smc,
+ 
+ 	return 0;
+ connect_abort:
+-	smc_connect_abort(smc, ini->first_contact_local);
++	smc_conn_abort(smc, ini->first_contact_local);
+ 	mutex_unlock(&smc_client_lgr_pending);
+ 	smc->connect_nonblock = 0;
+ 
+@@ -893,7 +892,7 @@ static int smc_connect_ism(struct smc_sock *smc,
+ 
+ 	return 0;
+ connect_abort:
+-	smc_connect_abort(smc, ini->first_contact_local);
++	smc_conn_abort(smc, ini->first_contact_local);
+ 	mutex_unlock(&smc_server_lgr_pending);
+ 	smc->connect_nonblock = 0;
+ 
+@@ -1320,10 +1319,7 @@ static void smc_listen_decline(struct smc_sock *new_smc, int reason_code,
+ 			       int local_first, u8 version)
+ {
+ 	/* RDMA setup failed, switch back to TCP */
+-	if (local_first)
+-		smc_lgr_cleanup_early(&new_smc->conn);
+-	else
+-		smc_conn_free(&new_smc->conn);
++	smc_conn_abort(new_smc, local_first);
+ 	if (reason_code < 0) { /* error, no fallback possible */
+ 		smc_listen_out_err(new_smc);
+ 		return;
+@@ -1429,10 +1425,7 @@ static int smc_listen_ism_init(struct smc_sock *new_smc,
+ 	/* Create send and receive buffers */
+ 	rc = smc_buf_create(new_smc, true);
+ 	if (rc) {
+-		if (ini->first_contact_local)
+-			smc_lgr_cleanup_early(&new_smc->conn);
+-		else
+-			smc_conn_free(&new_smc->conn);
++		smc_conn_abort(new_smc, ini->first_contact_local);
+ 		return (rc == -ENOSPC) ? SMC_CLC_DECL_MAX_DMB :
+ 					 SMC_CLC_DECL_MEM;
+ 	}
 -- 
 2.17.1
 
