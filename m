@@ -2,145 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5B132AC05C
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 17:00:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A882AC0B1
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 17:22:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729968AbgKIQAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 11:00:32 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:39184 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729451AbgKIQAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 11:00:31 -0500
-Received: by mail-ot1-f67.google.com with SMTP id z16so9384612otq.6;
-        Mon, 09 Nov 2020 08:00:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Dm9RkQCY4JyF3iafyTQ9SSJQRIaiZzcvN4W59n+LBDc=;
-        b=TrTdXmoa/btnvM7CVDch+3NibKFrMlfSLS73hZsmEjDLp5R/cuMT9LXEqf8vXm7PH4
-         4bLIiiBni9iKUJqLZyoAcz2W9d83X9FjHl7EegUqEDC2Den54/rvDTEsbj/p8ULSZ7nT
-         1Q0wkTMHKW/fnlZCi92+FUhz5HW3oC+8/ftjzc+T4qf9JRssTd7TvYNBRIi5xgpwrip3
-         IKmXVMYqcJCQ32V0iMaUezJpLDU/RhzvMR76w47hkeX+gHDKcr44q+5/A6PI+EyTZNSE
-         ZsQ30kEUeqEscmM2Q3s8wktLtdmfCqBq8ynQJP9n4p3E+grafM0Anf1+7f1ECFBjDrhq
-         di+w==
-X-Gm-Message-State: AOAM532uuOAZ9TuPHC0GeX2Jklcy3QgkXao4ROvkmkKb7uMCjUtwpVDw
-        ox0VlQg5CVlkUSVxbkmuN0w+Tkp+r3gtlZ6DCZ8=
-X-Google-Smtp-Source: ABdhPJyHNdFK4akmWbS3+P3KNFuAWo6BUpb3+ZzC89PO++9rJqwWS4CaEVByXO4hgHuVNe2QV2rcwclvZGyosMLmENo=
-X-Received: by 2002:a9d:222f:: with SMTP id o44mr11103499ota.321.1604937629188;
- Mon, 09 Nov 2020 08:00:29 -0800 (PST)
+        id S1730169AbgKIQWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 11:22:16 -0500
+Received: from peugeot.dedicated.co.za ([197.242.155.8]:57726 "EHLO
+        server.peugeotsouthafrica.co.za" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729791AbgKIQWP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 11:22:15 -0500
+X-Greylist: delayed 28441 seconds by postgrey-1.27 at vger.kernel.org; Mon, 09 Nov 2020 11:22:12 EST
+Received: from localhost ([127.0.0.1]:41964 helo=server.peugeotsouthafrica.co.za)
+        by server.peugeotsouthafrica.co.za with esmtpa (Exim 4.93)
+        (envelope-from <usm@helderberg.peugeotsouthafrica.co.za>)
+        id 1kc24k-0001Iv-CQ; Mon, 09 Nov 2020 09:58:54 +0200
 MIME-Version: 1.0
-References: <20201109150416.1877878-1-zhangqilong3@huawei.com>
- <20201109150416.1877878-2-zhangqilong3@huawei.com> <CAJZ5v0gGG4FeVfrFOYe1+axv78yh9vA4FAOsbLughbsQosP9-w@mail.gmail.com>
- <5acb71f82f144a35b2a5c6bcd73af5a8@huawei.com>
-In-Reply-To: <5acb71f82f144a35b2a5c6bcd73af5a8@huawei.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 9 Nov 2020 17:00:17 +0100
-Message-ID: <CAJZ5v0g1uzLEUA7uC8QwfFK6TU2=Ngcwcp35bfUwVg-WoTXprg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] PM: runtime: Add a general runtime get sync
- operation to deal with usage counter
-To:     zhangqilong <zhangqilong3@huawei.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Date:   Mon, 09 Nov 2020 09:58:54 +0200
+From:   Mrs Anna Cooper <usm@helderberg.peugeotsouthafrica.co.za>
+To:     undisclosed-recipients:;
+Subject: Warmest Greetings
+Reply-To: webmyprivate2019@webmail.co.za
+User-Agent: Roundcube Webmail/1.4.8
+Message-ID: <a00be8086b32514184f09d539edc4440@helderberg.peugeotsouthafrica.co.za>
+X-Sender: usm@helderberg.peugeotsouthafrica.co.za
+Organization: Mrs Anna Cooper
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - server.peugeotsouthafrica.co.za
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - helderberg.peugeotsouthafrica.co.za
+X-Get-Message-Sender-Via: server.peugeotsouthafrica.co.za: authenticated_id: usm@helderberg.peugeotsouthafrica.co.za
+X-Authenticated-Sender: server.peugeotsouthafrica.co.za: usm@helderberg.peugeotsouthafrica.co.za
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-From-Rewrite: unmodified, already matched
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 9, 2020 at 4:50 PM zhangqilong <zhangqilong3@huawei.com> wrote:
->
-> > operation to deal with usage counter
-> >
-> > On Mon, Nov 9, 2020 at 4:00 PM Zhang Qilong <zhangqilong3@huawei.com>
-> > wrote:
-> > >
-> > > In many case, we need to check return value of pm_runtime_get_sync,
-> > > but it brings a trouble to the usage counter processing. Many callers
-> > > forget to decrease the usage counter when it failed. It has been
-> > > discussed a lot[0][1]. So we add a function to deal with the usage
-> > > counter for better coding.
-> > >
-> > > [0]https://lkml.org/lkml/2020/6/14/88
-> > > [1]https://patchwork.ozlabs.org/project/linux-tegra/patch/202005200951
-> > > 48.10995-1-dinghao.liu@zju.edu.cn/
-> > > Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
-> > > ---
-> > >  include/linux/pm_runtime.h | 30 ++++++++++++++++++++++++++++++
-> > >  1 file changed, 30 insertions(+)
-> > >
-> > > diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-> > > index 4b708f4e8eed..6549ce764400 100644
-> > > --- a/include/linux/pm_runtime.h
-> > > +++ b/include/linux/pm_runtime.h
-> > > @@ -386,6 +386,36 @@ static inline int pm_runtime_get_sync(struct device
-> > *dev)
-> > >         return __pm_runtime_resume(dev, RPM_GET_PUT);  }
-> > >
-> > > +/**
-> > > + * pm_runtime_general_get - Bump up usage counter of a device and
-> > resume it.
-> > > + * @dev: Target device.
-> > > + *
-> > > + * Increase runtime PM usage counter of @dev first, and carry out
-> > > +runtime-resume
-> > > + * of it synchronously. If __pm_runtime_resume return negative
-> > > +value(device is in
-> > > + * error state), we to need decrease the usage counter before it
-> > > +return. If
-> > > + * __pm_runtime_resume return positive value, it means the runtime of
-> > > +device has
-> > > + * already been in active state, and we let the new wrapper return zero
-> > instead.
-> > > + *
-> > > + * The possible return values of this function is zero or negative value.
-> > > + * zero:
-> > > + *    - it means resume succeeed or runtime of device has already been
-> > active, the
-> > > + *      runtime PM usage counter of @dev remains incremented.
-> > > + * negative:
-> > > + *    - it means failure and the runtime PM usage counter of @dev has
-> > been balanced.
-> >
-> > The kerneldoc above is kind of noisy and it is hard to figure out what the helper
-> > really does from it.
-> >
-> > You could basically say something like "Resume @dev synchronously and if that
-> > is successful, increment its runtime PM usage counter.  Return
-> > 0 if the runtime PM usage counter of @dev has been incremented or a negative
-> > error code otherwise."
-> >
->
-> How about the following description.
-> /**
-> 390  * pm_runtime_general_get - Bump up usage counter of a device and resume it.
-> 391  * @dev: Target device.
-> 392  *
-> 393  * Increase runtime PM usage counter of @dev first, and carry out runtime-resume
-> 394  * of it synchronously. If __pm_runtime_resume return negative value(device is in
-> 395  * error state), we to need decrease the usage counter before it return. If
-> 396  * __pm_runtime_resume return positive value, it means the runtime of device has
-> 397  * already been in active state, and we let the new wrapper return zero instead.
-> 398  *
 
-If you add the paragraph below, the one above becomes redundant IMV.
 
-> 399  * Resume @dev synchronously and if that is successful, and increment its runtime
+Hello Dear, (webmyprivate2019@webmail.co.za), 
+(annacooper2019@yandex.com)
 
-"Resume @dev synchronously and if that is successful, increment its runtime"
+I am Mrs. Anna Cooper, from Australia, lived in South Africa for 20years 
+and currently residing in London United Kingdom, a widow to late Dr. 
+Andrew Cooper. I am 78 years old and presently suffering from Leukemia.
 
-(drop the extra "and").
+My health condition has gotten worse and just two weeks ago my doctor 
+informed me that my condition has reach a critical stage, and that I 
+have just 3 months left. This confirmation from my doctor was and still 
+is devastating news; it is hard to know that you have just a little time 
+left to live here.
 
-> 400  * PM usage counter if it turn out to equal to 0. The runtime PM usage counter of
+My late husband was a contractor in both South Africa and London, he 
+died in a plane crash and during the period of our marriage we could not 
+bear any child. My late husband was very wealthy and after his death, I 
+inherited all his businesses and wealth both in South Africa and 
+London-United Kingdom.
 
-The "if it turn out to equal to 0" phrase is redundant (and the
-grammar in it is incorrect).
+After the doctor's medical pronunciation that I have just few months to 
+live, I decided to divide my wealth to contribute to your country and 
+Africa where my late husband as a contractor made lots of money. I want 
+to assist you with the funds to do great charity works in your country, 
+this is my last wish. I selected you after searching few websites; I 
+prayed and was led to you. I am willing to donate the sum of Four 
+Million, Six Hundred thousand United States Dollars (USD$4,600,000.00) 
+to the less privileged through you.
 
-> 401  * @dev has been incremented or a negative error code otherwise.
-> 402  */
+Please I want to transfer this money to you as I am travelling to South 
+Africa soonest to have my lawyer amend my WILL. If you can handle this 
+fund and very sure to do charity works on my behalf then I will include 
+your name in my WILL when in South Africa, and from there I will travel 
+to Australia to meet a specialist as I want to be buried alongside my 
+late husband when I passed on. Note that this fund is in the financial 
+institution and upon my instruction; I will file in an application 
+through my family attorney for the transfer of the money into your 
+account for the said purpose.
 
-Why don't you use what I said verbatim?
+Lastly, I honestly pray that this money when transferred will be used 
+for the said purpose even though I might be late then. I have come to 
+find out that wealth is vanity and I made a promise to God that my 
+wealth will be used to support the poor and the assist the sick. Do let 
+me know if you will be able to handle this fund and use it for the said 
+purpose so that I will inform my attorney and my bank on my decision. 
+Reply to me using (webmyprivate2019@webmail.co.za), 
+(annacooper2019@yandex.com)
+
+God bless you
+
+Mrs. Anna Cooper
