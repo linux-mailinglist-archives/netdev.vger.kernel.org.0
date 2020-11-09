@@ -2,97 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E84D2ABB69
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 14:28:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 368D22ABB30
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 14:28:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732554AbgKIN15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 08:27:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730936AbgKIN14 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 08:27:56 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B23EC0613CF;
-        Mon,  9 Nov 2020 05:27:56 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1604928474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WG3O0Yq9IgUsxM6iHYTRUGMax2Zqkl4t5Ylzk9NgAgU=;
-        b=mYxInpRPGuHUI0BHTCrs04gRm7r7w6hETgwWcsN+y7uaZ2Xh+DDXpeIGNhgbCkdFQWU9+d
-        VvMM+B3njyInQsQQytpUdcMJDBwoW4PvqaHY1YRaPSBP2oWHn766+uMaJEpmYQj52WMCor
-        e0DX9D8folQLx/G8YmNu+BpcYgy7m+2OEXZ+jZCrjgoo497DCOFnY7Q8ygtvr7yNmZ9Xw0
-        m3s8OppEtXA0uq/eNmkLSADYw3LC6nt8OEtTtrAwXXl0ua/rzNZjkLgkVl28LIqSY9OTpA
-        mwurtxysrcmaynNcGNhFVHpG2LvQp1yjk6T8EmGaqxSZNuKP9HNoaCXarEZMOw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1604928474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WG3O0Yq9IgUsxM6iHYTRUGMax2Zqkl4t5Ylzk9NgAgU=;
-        b=lft8dUCwRq8EPoK717JI3WT9nSZoDR8fyBgvLKaPF4orIEcjVNfsh8cLB12T9J5Z982NiL
-        Zaewm94tHIcswjDg==
-To:     Colin King <colin.king@canonical.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] net: dsa: fix unintended sign extension on a u16 left shift
-In-Reply-To: <20201109124008.2079873-1-colin.king@canonical.com>
-References: <20201109124008.2079873-1-colin.king@canonical.com>
-Date:   Mon, 09 Nov 2020 14:27:52 +0100
-Message-ID: <87y2jar76v.fsf@kurt>
+        id S2387981AbgKINZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 08:25:19 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7069 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387441AbgKINZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 08:25:16 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CVBYq5x05zhjXm;
+        Mon,  9 Nov 2020 21:25:03 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Mon, 9 Nov 2020
+ 21:25:01 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <krzk@kernel.org>, <thierry.reding@gmail.com>,
+        <jonathanh@nvidia.com>, <madalin.bucur@nxp.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <mperttunen@nvidia.com>,
+        <tomeu.vizoso@collabora.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH V2] memory: tegra: add missing put_devcie() call in error path of tegra_emc_probe()
+Date:   Mon, 9 Nov 2020 21:28:47 +0800
+Message-ID: <20201109132847.1738010-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20201102185216.GB13405@kozik-lap>
+References: <20201102185216.GB13405@kozik-lap>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+The reference to device obtained with of_find_device_by_node() should
+be dropped. Thus add jump target to fix the exception handling for this
+function implementation.
 
-On Mon Nov 09 2020, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
->
-> The left shift of u16 variable high is promoted to the type int and
-> then sign extended to a 64 bit u64 value.  If the top bit of high is
-> set then the upper 32 bits of the result end up being set by the
-> sign extension. Fix this by explicitly casting the value in high to
-> a u64 before left shifting by 16 places.
->
-> Also, remove the initialisation of variable value to 0 at the start
-> of each loop iteration as the value is never read and hence the
-> assignment it is redundant.
->
-> Addresses-Coverity: ("Unintended sign extension")
-> Fixes: e4b27ebc780f ("net: dsa: Add DSA driver for Hirschmann Hellcreek switches")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Fixes: 73a7f0a90641("memory: tegra: Add EMC (external memory controller) driver")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ drivers/memory/tegra/tegra124-emc.c           | 21 +++++++++++++------
+ .../net/ethernet/freescale/fman/fman_port.c   |  3 +--
+ 2 files changed, 16 insertions(+), 8 deletions(-)
 
-Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
+diff --git a/drivers/memory/tegra/tegra124-emc.c b/drivers/memory/tegra/tegra124-emc.c
+index 76ace42a688a..7d58a0e0a177 100644
+--- a/drivers/memory/tegra/tegra124-emc.c
++++ b/drivers/memory/tegra/tegra124-emc.c
+@@ -1207,8 +1207,10 @@ static int tegra_emc_probe(struct platform_device *pdev)
+ 		return -ENOENT;
+ 
+ 	emc->mc = platform_get_drvdata(mc);
+-	if (!emc->mc)
+-		return -EPROBE_DEFER;
++	if (!emc->mc) {
++		err = -EPROBE_DEFER;
++		goto put_device;
++	}
+ 
+ 	ram_code = tegra_read_ram_code();
+ 
+@@ -1217,25 +1219,27 @@ static int tegra_emc_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev,
+ 			"no memory timings for RAM code %u found in DT\n",
+ 			ram_code);
+-		return -ENOENT;
++		err = -ENOENT;
++		goto put_device;
+ 	}
+ 
+ 	err = tegra_emc_load_timings_from_dt(emc, np);
+ 	of_node_put(np);
+ 	if (err)
+-		return err;
++		goto put_device;
+ 
+ 	if (emc->num_timings == 0) {
+ 		dev_err(&pdev->dev,
+ 			"no memory timings for RAM code %u registered\n",
+ 			ram_code);
+-		return -ENOENT;
++		err = -ENOENT;
++		goto put_device;
+ 	}
+ 
+ 	err = emc_init(emc);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "EMC initialization failed: %d\n", err);
+-		return err;
++		goto put_device;
+ 	}
+ 
+ 	platform_set_drvdata(pdev, emc);
+@@ -1244,6 +1248,11 @@ static int tegra_emc_probe(struct platform_device *pdev)
+ 		emc_debugfs_init(&pdev->dev, emc);
+ 
+ 	return 0;
++
++put_device:
++	put_device(&mc->dev);
++
++	return err;
+ };
+ 
+ static struct platform_driver tegra_emc_driver = {
+diff --git a/drivers/net/ethernet/freescale/fman/fman_port.c b/drivers/net/ethernet/freescale/fman/fman_port.c
+index 9790e483241b..fcc59444df17 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_port.c
++++ b/drivers/net/ethernet/freescale/fman/fman_port.c
+@@ -1792,7 +1792,7 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 	if (!fm_node) {
+ 		dev_err(port->dev, "%s: of_get_parent() failed\n", __func__);
+ 		err = -ENODEV;
+-		goto free_port;
++		goto put_node;
+ 	}
+ 
+ 	fm_pdev = of_find_device_by_node(fm_node);
+@@ -1899,7 +1899,6 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 	put_device(&fm_pdev->dev);
+ put_node:
+ 	of_node_put(port_node);
+-free_port:
+ 	kfree(port);
+ 	return err;
+ }
+-- 
+2.25.4
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+pQ9gACgkQeSpbgcuY
-8KYcTBAAy18YsyfEDK2RBP/05cmZJKdrhKGT65m5aI1JezdENk9bCdlxSlc+Oqga
-rAzG0pQliyooyHkhkk/+uKd0TMFQ5TdbvIW7af2AoAiNADbUrp2I1an/CXbxIBGA
-kCoyqGmGpmvl6V9/sRklq5Y16BxxhDJVREa4/oeiAl4HEuqUQo/bxnc8bH3puOzx
-3SMHt0YZDWLyIAkmocREmMBijzlAlXEpTrIR/QnDJTcAEJgxlUlHwJq8Vn4c+1iR
-rc2XlsIwzzLz1ah6wfVzP24wbHvFwpGGUMjOR2OubJeKcyn8u5AjqT4z2NCr3/G5
-7MhTYblsO0qZVLSxO63ZatXzB8gX+Y6Pr3M6WQqL1B3j4mMrGJSYYohPBHSwKeDh
-1z+w8tYNOPGAQ811hjuMrIJh/xGIo4dglYCWASo6oUi611tqrs1WBMaH09E9Dy3F
-jYj7Zv+K4qMRmeGYLGu3bLihqycZFq3XvyPmGF8aJlKCNAQnPb+2Vk5v5L3AXsSj
-qD3cJbCO87U86Ee4jYyGnpu/5+g1VGWxQzvzWrtqFyITPJVL1gJ51TEPdG2DvbSb
-REMVKGPmLZCrylUWmq8zQa7MqCxuI1sSwyIhhAGx/PxvEHc0AlHMm4HNBq8+ZCVD
-crawO2LX5auQKEudppWsulWZIRQzvO3xaE+3Ov3C85LVvBQ8XWE=
-=OcYZ
------END PGP SIGNATURE-----
---=-=-=--
