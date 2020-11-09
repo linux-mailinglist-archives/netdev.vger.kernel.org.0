@@ -2,109 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 029CA2AC501
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 20:31:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 775482AC508
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 20:33:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730793AbgKITbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 14:31:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726691AbgKITbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 14:31:22 -0500
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F588C0613CF;
-        Mon,  9 Nov 2020 11:31:22 -0800 (PST)
-Received: by mail-qt1-x842.google.com with SMTP id t5so6862306qtp.2;
-        Mon, 09 Nov 2020 11:31:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=wP9KXoUMsiUhA5JKW0pkbm1QMKgjwIQX0z6JW9kJa6s=;
-        b=Zho3QB6MQnSmLfAsGEY74Ebt3PidB9Zz/Oo6q5S0iHVO/2XCci5p0MTGmpNJjcFF+a
-         jZbVSGOhnESX7VObw1jujOz340ZnROHw/SXJhDzeUeKKQG7MLcTd+QcCpDi+1Ta2QR93
-         m2pwuKQ7nDG+yT+Ng+1uEqtHqYYYfhwlGKP7HJy3BeBhQoDUnb0VR2I26Ace7NmsPAye
-         mx788G9pRFcZFrc7ZzS9mCSNuuW0DL2m4txNZZWR0/vaj+AFKQw7k6/zCl2jCHKuH/kk
-         xwiF5XLL8/HCtZhcGpT4lzwDoqVJtIhmDYj7foY+pJHSulkQx9mmq5853wRS95gP2dZr
-         +xLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=wP9KXoUMsiUhA5JKW0pkbm1QMKgjwIQX0z6JW9kJa6s=;
-        b=jJiDW2IcSYTcS4rMfQrw5ahTyRT2PeMfOqIRW1IMI9N+iwMk5q3Fe3mbzrKvG23h1O
-         8YQyPP2tvYGHyNcv2paxrEuJ8CDkHWgOO+35oW9iJZXbmZvxAvEy5HikYhZv48OelvBb
-         NIjPudYchi24PDH+Ga7oZNN5lRch78FNSCpDmmuQ3h61qf85ft9zifQ7sQoGie48bWm6
-         dlzPNxZ57sNqi5NonhkAX7zHr/+WhmNO2kFdmji7ASYcZseKhP1o9iaA1qCvugYFYYUs
-         RpOO8mb7PYVoOCLoDf9+4UDHquTobBFcwXIoMNibwU6236sGZirGrEdhK3Jjjg5MiVQu
-         beVA==
-X-Gm-Message-State: AOAM5336t9g7Iej9I4tOJLXIi76LcLFvUG0sinImCNQWB0hPOVzDavcW
-        haWttlik2UtDM3cP/letzU4=
-X-Google-Smtp-Source: ABdhPJw6UtAn+o1nNr0oOLN9c0kEcMPx8IxBgAj4Mdys5B2HF6Dugu9LtC8cN/uBrs7Izt0QDYY4lA==
-X-Received: by 2002:ac8:46cf:: with SMTP id h15mr13644007qto.99.1604950281415;
-        Mon, 09 Nov 2020 11:31:21 -0800 (PST)
-Received: from svens-asus.arcx.com ([184.94.50.30])
-        by smtp.gmail.com with ESMTPSA id o14sm6585172qto.16.2020.11.09.11.31.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 11:31:20 -0800 (PST)
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v1] net: phy: spi_ks8995: Do not overwrite SPI mode flags
-Date:   Mon,  9 Nov 2020 14:31:17 -0500
-Message-Id: <20201109193117.2017-1-TheSven73@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1729899AbgKITdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 14:33:33 -0500
+Received: from aserp2130.oracle.com ([141.146.126.79]:33688 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729831AbgKITdc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 14:33:32 -0500
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A9JXTuh093233;
+        Mon, 9 Nov 2020 19:33:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2020-01-29; bh=v8kRVvy556fGGPqyFh6SHsBSjLR6I7c3YmpYh5wlKc4=;
+ b=a6i1oQYya1p0EAogO1bIb4J3LFK01zp37Xqc84NK+1O9EnACZpnUAzz1zCcv6ycYcNry
+ Jfa7FfnLfafrzQJ0HMiaznX6h3v5X0A3XQBqYZgqESaFm0ePbTbHZL29OvW5mgoN0xQd
+ 7VlRuJJDceU0qVuIzR8jv/ut8H3qq3ZOmNhIpvJCptwARt4h3+M47Y+sRY2qpdZ4CGy3
+ /a0frOEBojWu7647KgbsME8t+NBL6kOoNaCrK9nUCgm0mgQeT1BXtJQcOnTMXPE0VRmV
+ aKiPZ+dfXfC0k/0ncBjwYD0oeixUTy7mIm51FnGg67d/P4VUP0pJrjNyCok+sN1Erlrx hw== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2130.oracle.com with ESMTP id 34nh3ar13v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 09 Nov 2020 19:33:29 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A9JVFlv190884;
+        Mon, 9 Nov 2020 19:31:29 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 34p5bqxht4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 09 Nov 2020 19:31:28 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0A9JVR9Z027253;
+        Mon, 9 Nov 2020 19:31:27 GMT
+Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 09 Nov 2020 11:31:27 -0800
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
+Subject: Re: [PATCH RFC] SUNRPC: Use zero-copy to perform socket send
+ operations
+From:   Chuck Lever <chuck.lever@oracle.com>
+In-Reply-To: <3194609c525610dc502d69f11c09cff1c9b21f2d.camel@hammerspace.com>
+Date:   Mon, 9 Nov 2020 14:31:26 -0500
+Cc:     Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <A3D0FF41-D88F-4116-AD47-AF9C94B1D984@oracle.com>
+References: <160493771006.15633.8524084764848931537.stgit@klimt.1015granger.net>
+ <9ce015245c916b2c90de72440a22f801142f2c6e.camel@hammerspace.com>
+ <0313136F-6801-434F-8304-72B9EADD389E@oracle.com>
+ <f03dae6d36c0f008796ae01bbb6de3673e783571.camel@hammerspace.com>
+ <5056C7C7-7B26-4667-9691-D2F634C02FB1@oracle.com>
+ <3194609c525610dc502d69f11c09cff1c9b21f2d.camel@hammerspace.com>
+To:     Trond Myklebust <trondmy@hammerspace.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.4)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9800 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
+ phishscore=0 spamscore=0 mlxlogscore=999 bulkscore=0 suspectscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011090130
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9800 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 priorityscore=1501
+ clxscore=1015 malwarescore=0 mlxscore=0 spamscore=0 suspectscore=0
+ mlxlogscore=999 impostorscore=0 phishscore=0 adultscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011090130
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Van Asbroeck <thesven73@gmail.com>
 
-This driver makes sure the underlying SPI bus is set to "mode 0"
-by assigning SPI_MODE_0 to spi->mode. This overwrites all other
-SPI mode flags.
 
-In some circumstances, this can break the underlying SPI bus driver.
-For example, if SPI_CS_HIGH is set on the SPI bus, the driver
-will clear that flag, which results in a chip-select polarity issue.
+> On Nov 9, 2020, at 1:16 PM, Trond Myklebust <trondmy@hammerspace.com> =
+wrote:
+>=20
+> On Mon, 2020-11-09 at 12:36 -0500, Chuck Lever wrote:
+>>=20
+>>=20
+>>> On Nov 9, 2020, at 12:32 PM, Trond Myklebust <
+>>> trondmy@hammerspace.com> wrote:
+>>>=20
+>>> On Mon, 2020-11-09 at 12:12 -0500, Chuck Lever wrote:
+>>>>=20
+>>>>=20
+>>>>> On Nov 9, 2020, at 12:08 PM, Trond Myklebust
+>>>>> <trondmy@hammerspace.com> wrote:
+>>>>>=20
+>>>>> On Mon, 2020-11-09 at 11:03 -0500, Chuck Lever wrote:
+>>>>>> Daire Byrne reports a ~50% aggregrate throughput regression
+>>>>>> on
+>>>>>> his
+>>>>>> Linux NFS server after commit da1661b93bf4 ("SUNRPC: Teach
+>>>>>> server
+>>>>>> to
+>>>>>> use xprt_sock_sendmsg for socket sends"), which replaced
+>>>>>> kernel_send_page() calls in NFSD's socket send path with
+>>>>>> calls to
+>>>>>> sock_sendmsg() using iov_iter.
+>>>>>>=20
+>>>>>> Investigation showed that tcp_sendmsg() was not using zero-
+>>>>>> copy
+>>>>>> to
+>>>>>> send the xdr_buf's bvec pages, but instead was relying on
+>>>>>> memcpy.
+>>>>>>=20
+>>>>>> Set up the socket and each msghdr that bears bvec pages to
+>>>>>> use
+>>>>>> the
+>>>>>> zero-copy mechanism in tcp_sendmsg.
+>>>>>>=20
+>>>>>> Reported-by: Daire Byrne <daire@dneg.com>
+>>>>>> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=3D209439
+>>>>>> Fixes: da1661b93bf4 ("SUNRPC: Teach server to use
+>>>>>> xprt_sock_sendmsg
+>>>>>> for socket sends")
+>>>>>> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+>>>>>> ---
+>>>>>>  net/sunrpc/socklib.c  |    5 ++++-
+>>>>>>  net/sunrpc/svcsock.c  |    1 +
+>>>>>>  net/sunrpc/xprtsock.c |    1 +
+>>>>>>  3 files changed, 6 insertions(+), 1 deletion(-)
+>>>>>>=20
+>>>>>> This patch does not fully resolve the issue. Daire reports
+>>>>>> high
+>>>>>> softIRQ activity after the patch is applied, and this
+>>>>>> activity
+>>>>>> seems to prevent full restoration of previous performance.
+>>>>>>=20
+>>>>>>=20
+>>>>>> diff --git a/net/sunrpc/socklib.c b/net/sunrpc/socklib.c
+>>>>>> index d52313af82bc..af47596a7bdd 100644
+>>>>>> --- a/net/sunrpc/socklib.c
+>>>>>> +++ b/net/sunrpc/socklib.c
+>>>>>> @@ -226,9 +226,12 @@ static int xprt_send_pagedata(struct
+>>>>>> socket
+>>>>>> *sock, struct msghdr *msg,
+>>>>>>         if (err < 0)
+>>>>>>                 return err;
+>>>>>> =20
+>>>>>> +       msg->msg_flags |=3D MSG_ZEROCOPY;
+>>>>>>         iov_iter_bvec(&msg->msg_iter, WRITE, xdr->bvec,
+>>>>>> xdr_buf_pagecount(xdr),
+>>>>>>                       xdr->page_len + xdr->page_base);
+>>>>>> -       return xprt_sendmsg(sock, msg, base + xdr-
+>>>>>>> page_base);
+>>>>>> +       err =3D xprt_sendmsg(sock, msg, base + xdr->page_base);
+>>>>>> +       msg->msg_flags &=3D ~MSG_ZEROCOPY;
+>>>>>> +       return err;
+>>>>>>  }
+>>>>>> =20
+>>>>>>  /* Common case:
+>>>>>> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+>>>>>> index c2752e2b9ce3..c814b4953b15 100644
+>>>>>> --- a/net/sunrpc/svcsock.c
+>>>>>> +++ b/net/sunrpc/svcsock.c
+>>>>>> @@ -1176,6 +1176,7 @@ static void svc_tcp_init(struct
+>>>>>> svc_sock
+>>>>>> *svsk,
+>>>>>> struct svc_serv *serv)
+>>>>>>                 svsk->sk_datalen =3D 0;
+>>>>>>                 memset(&svsk->sk_pages[0], 0, sizeof(svsk-
+>>>>>>> sk_pages));
+>>>>>> =20
+>>>>>> +               sock_set_flag(sk, SOCK_ZEROCOPY);
+>>>>>>                 tcp_sk(sk)->nonagle |=3D TCP_NAGLE_OFF;
+>>>>>> =20
+>>>>>>                 set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
+>>>>>> diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+>>>>>> index 7090bbee0ec5..343c6396b297 100644
+>>>>>> --- a/net/sunrpc/xprtsock.c
+>>>>>> +++ b/net/sunrpc/xprtsock.c
+>>>>>> @@ -2175,6 +2175,7 @@ static int
+>>>>>> xs_tcp_finish_connecting(struct
+>>>>>> rpc_xprt *xprt, struct socket *sock)
+>>>>>> =20
+>>>>>>                 /* socket options */
+>>>>>>                 sock_reset_flag(sk, SOCK_LINGER);
+>>>>>> +               sock_set_flag(sk, SOCK_ZEROCOPY);
+>>>>>>                 tcp_sk(sk)->nonagle |=3D TCP_NAGLE_OFF;
+>>>>>> =20
+>>>>>>                 xprt_clear_connected(xprt);
+>>>>>>=20
+>>>>>>=20
+>>>>> I'm thinking we are not really allowed to do that here. The
+>>>>> pages
+>>>>> we
+>>>>> pass in to the RPC layer are not guaranteed to contain stable
+>>>>> data
+>>>>> since they include unlocked page cache pages as well as
+>>>>> O_DIRECT
+>>>>> pages.
+>>>>=20
+>>>> I assume you mean the client side only. Those issues aren't a
+>>>> factor
+>>>> on the server. Not setting SOCK_ZEROCOPY here should be enough to
+>>>> prevent the use of zero-copy on the client.
+>>>>=20
+>>>> However, the client loses the benefits of sending a page at a
+>>>> time.
+>>>> Is there a desire to remedy that somehow?
+>>>=20
+>>> What about splice reads on the server side?
+>>=20
+>> On the server, this path formerly used kernel_sendpages(), which I
+>> assumed is similar to the sendmsg zero-copy mechanism. How does
+>> kernel_sendpages() mitigate against page instability?
+>=20
+> It copies the data. =F0=9F=99=82
 
-Fix by changing only the SPI_MODE_N bits, i.e. SPI_CPHA and SPI_CPOL.
+tcp_sendmsg_locked() invokes skb_copy_to_page_nocache(), which is
+where Daire's performance-robbing memcpy occurs.
 
-Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
----
+do_tcp_sendpages() has no such call site. Therefore the legacy
+sendpage-based path has at least one fewer data copy operations.
 
-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git # bff6f1db91e3
+What is the appropriate way to make tcp_sendmsg() treat a bvec-bearing
+msghdr like an array of struct page pointers passed to kernel_sendpage() =
+?
 
-To: Andrew Lunn <andrew@lunn.ch>
-To: Heiner Kallweit <hkallweit1@gmail.com>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
 
- drivers/net/phy/spi_ks8995.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+--
+Chuck Lever
 
-diff --git a/drivers/net/phy/spi_ks8995.c b/drivers/net/phy/spi_ks8995.c
-index 4b198399bfa2..3c6c87a09b03 100644
---- a/drivers/net/phy/spi_ks8995.c
-+++ b/drivers/net/phy/spi_ks8995.c
-@@ -491,7 +491,9 @@ static int ks8995_probe(struct spi_device *spi)
- 
- 	spi_set_drvdata(spi, ks);
- 
--	spi->mode = SPI_MODE_0;
-+	/* use SPI_MODE_0 without changing any other mode flags */
-+	spi->mode &= ~(SPI_CPHA | SPI_CPOL);
-+	spi->mode |= SPI_MODE_0;
- 	spi->bits_per_word = 8;
- 	err = spi_setup(spi);
- 	if (err) {
--- 
-2.17.1
+
 
