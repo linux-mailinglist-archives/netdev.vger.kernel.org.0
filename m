@@ -2,96 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B21C2AB223
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 09:05:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A07A22AB234
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 09:09:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729747AbgKIIFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 03:05:55 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7617 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729730AbgKIIFy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 03:05:54 -0500
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CV3TJ3tqqzLty0;
-        Mon,  9 Nov 2020 16:05:40 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Mon, 9 Nov 2020
- 16:05:49 +0800
-From:   Zhang Qilong <zhangqilong3@huawei.com>
-To:     <rjw@rjwysocki.net>, <fugang.duan@nxp.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <linux-pm@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH 1/2] PM: runtime: Add a general runtime get sync operation to deal with usage counter
-Date:   Mon, 9 Nov 2020 16:09:37 +0800
-Message-ID: <20201109080938.4174745-2-zhangqilong3@huawei.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20201109080938.4174745-1-zhangqilong3@huawei.com>
-References: <20201109080938.4174745-1-zhangqilong3@huawei.com>
+        id S1727915AbgKIIJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 03:09:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60194 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726127AbgKIIJl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 03:09:41 -0500
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B44C0613CF
+        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 00:09:40 -0800 (PST)
+Received: by mail-lf1-x144.google.com with SMTP id w142so4163084lff.8
+        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 00:09:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=axyGt1wqKAYfmWoWOLaDDpJAktMqWVgCi5lIj5UDrAs=;
+        b=NM5AiWrn9Kvpwnbqi1yYTrJkkomsu0S8pl7Vg80ZkloeUv+01BQE5Lnrc1JD2yKrTY
+         jxQFbbq1r3SFY+4sOPDEf4UJnnzSu20oIJoIEXyAI0irUXAZ2z73bPQ3mIw8NZTveZBW
+         tqtoXpMRTQPrsjn3uyds8I3vUijGnf04zK0cU/Gdby7+n+8SKD1gEYPVC2QydRRuX64Z
+         IXhjhAZLtuqjtArNOCcc6mz6FDGHGT2Gadmzp3NM8N8Pr5gZ8COJWKgf1C2MTNYl2bUT
+         4W9c66JNcv1du6GR5LqSMdlSXZ/XbC0k6JiFMelDapWz0ClcLB3lDS6IxV45NY+pxH4F
+         PAUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=axyGt1wqKAYfmWoWOLaDDpJAktMqWVgCi5lIj5UDrAs=;
+        b=QnwWbtwyfqBVXYpfLozRd8UCqXsyiEZNJsP4+irTB52zglFC+mrtFYbQRg3HYL1FsL
+         NEoDtraz3EjPM3wTzo8Vmr9pfmM2YnaclfA8+B3cgJeEmxNVgPEVLhUtZHGES2K+DFSD
+         pP9bWT4uTFH5BlK6/ff2YE029oRZS0oyHYN1um2xR2XDABMvWSmu/U5e4c1fCHQPZlUW
+         Y7jVJvdmerU7qDXYHDddhLO0vpg839Rm4PUy/+kdJ2eT2+emVhtQnVfSWCAOPWMQ5Sy1
+         x2OzTlPuGI4nd+6NaN8yDWOJjnG/4UtjZjlZ2eWKOKnxBhvsLCd6K1jg+FT9Dygr1w10
+         juHg==
+X-Gm-Message-State: AOAM530pZ6aJEdxOmbP+tM6a/Fd6FdhH0KQinLq8DLZTIRojw2EjXFvb
+        IYoGIgO+udQxPJTHb3H58FW6TA==
+X-Google-Smtp-Source: ABdhPJx3LZPSji/ECBg7RPCyQMIcGlS6xJLzOqAsT1lOV6TEsbYx1zLPL/2vY9O8jAI1pl1tC/KgfQ==
+X-Received: by 2002:ac2:52b3:: with SMTP id r19mr877256lfm.140.1604909378618;
+        Mon, 09 Nov 2020 00:09:38 -0800 (PST)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id i4sm1691370lfd.190.2020.11.09.00.09.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Nov 2020 00:09:38 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        Marek Behun <marek.behun@nic.cz>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: Re: [RFC PATCH net-next 3/3] net: dsa: listen for SWITCHDEV_{FDB,DEL}_ADD_TO_DEVICE on foreign bridge neighbors
+In-Reply-To: <20201109003028.melbgstk4pilxksl@skbuf>
+References: <20201108131953.2462644-1-olteanv@gmail.com> <20201108131953.2462644-4-olteanv@gmail.com> <CALW65jb+Njb3WkY-TUhsHh1YWEzfMcXoRAXshnT8ke02wc10Uw@mail.gmail.com> <20201108172355.5nwsw3ek5qg6z7yx@skbuf> <20201108235939.GC1417181@lunn.ch> <20201109003028.melbgstk4pilxksl@skbuf>
+Date:   Mon, 09 Nov 2020 09:09:37 +0100
+Message-ID: <87y2jbt0hq.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In many case, we need to check return value of pm_runtime_get_sync, but
-it brings a trouble to the usage counter processing. Many callers forget
-to decrease the usage counter when it failed. It has been discussed a
-lot[0][1]. So we add a function to deal with the usage counter for better
-coding.
+On Mon, Nov 09, 2020 at 02:30, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Mon, Nov 09, 2020 at 12:59:39AM +0100, Andrew Lunn wrote:
+>> We also need to make sure the static entries get removed correctly
+>> when a host moves. The mv88e6xxx will not replace a static entry with
+>> a dynamically learned one. It will probably rise an ATU violation
+>> interrupt that frames have come in the wrong port.
+>
+> This is a good one. Currently every implementer of .port_fdb_add assumes
+> a static entry is what we want, but that is not the case here. We want
+> an entry that can expire or the switch can move it to a different port
+> when there is evidence that it's wrong. Should we add more arguments to
+> the API?
 
-[0]https://lkml.org/lkml/2020/6/14/88
-[1]https://patchwork.ozlabs.org/project/linux-tegra/patch/20200520095148.10995-1-dinghao.liu@zju.edu.cn/
-Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
----
- include/linux/pm_runtime.h | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+I don't think that would help. You would essentially be trading one
+situation where station moves causes loss of traffic for another
+one. But now you have also increased the background load of an already
+choked resource, the MDIO bus.
 
-diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-index 4b708f4e8eed..2b0af5b1dffd 100644
---- a/include/linux/pm_runtime.h
-+++ b/include/linux/pm_runtime.h
-@@ -386,6 +386,38 @@ static inline int pm_runtime_get_sync(struct device *dev)
- 	return __pm_runtime_resume(dev, RPM_GET_PUT);
- }
- 
-+/**
-+ * gene_pm_runtime_get_sync - Bump up usage counter of a device and resume it.
-+ * @dev: Target device.
-+ *
-+ * Increase runtime PM usage counter of @dev first, and carry out runtime-resume
-+ * of it synchronously. If __pm_runtime_resume return negative value(device is in
-+ * error state) or return positive value(the runtime of device is already active)
-+ * with force is true, it need decrease the usage counter of the device when
-+ * return.
-+ *
-+ * The possible return values of this function is zero or negative value.
-+ * zero:
-+ *    - it means success and the status will store the resume operation status
-+ *      if needed, the runtime PM usage counter of @dev remains incremented.
-+ * negative:
-+ *    - it means failure and the runtime PM usage counter of @dev has been
-+ *      decreased.
-+ * positive:
-+ *    - it means the runtime of the device is already active before that. If
-+ *      caller set force to true, we still need to decrease the usage counter.
-+ */
-+static inline int gene_pm_runtime_get_sync(struct device *dev, bool force)
-+{
-+	int ret = 0;
-+
-+	ret = __pm_runtime_resume(dev, RPM_GET_PUT);
-+	if (ret < 0 || (ret > 0 && force))
-+		pm_runtime_put_noidle(dev);
-+
-+	return ret;
-+}
-+
- /**
-  * pm_runtime_put - Drop device usage counter and queue up "idle check" if 0.
-  * @dev: Target device.
--- 
-2.25.4
+At least on mv88e6xxx, your only option to allow the hardware to move
+the station to another port autonomously is to add the entry as a
+dynamically learnt one. However, since the switch does not perform any
+SA learning on the CPU port in this world, the entry would have to be
+refreshed by software, otherwise it would just age out.
 
+Then you run in to this situation:
+
+A and B are communicating.
+
+       br0
+  .----'|'----.
+  |     |     |
+swp0  swp1  wlan0
+  |           |
+  A           B
+
+The switch's FDB:
+A: swp0
+B: cpu0 (due to this patchset)
+
+Now B roams to an AP somewhere behind swp1 and continues to communicate
+with A.
+
+       br0
+  .----'|'----.
+  |     |     |
+swp0  swp1  wlan0
+  |     |
+  A     B
+
+The switch's FDB:
+A: swp0
+B: swp1
+
+But br0 sees none of this, so at whatever interval we choose we will
+refresh the FDB, moving the station back to the cpu:
+
+A: swp0
+B: cpu0
+
+So now you have traded the issue of having to wait for the hardware to
+age out its entry, to the issue of having to wait for br0 to age out its
+entry. Right?
