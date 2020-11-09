@@ -2,99 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAFAA2AB5DA
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 12:05:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 365322AB5E3
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 12:07:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729455AbgKILFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 06:05:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59200 "EHLO
+        id S1729302AbgKILHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 06:07:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729195AbgKILFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 06:05:22 -0500
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E317C0613D3
-        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 03:05:22 -0800 (PST)
-Received: by mail-lf1-x141.google.com with SMTP id e27so11797457lfn.7
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 03:05:22 -0800 (PST)
+        with ESMTP id S1727303AbgKILHB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 06:07:01 -0500
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1011C0613CF
+        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 03:07:00 -0800 (PST)
+Received: by mail-wr1-x443.google.com with SMTP id w1so8229228wrm.4
+        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 03:07:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=3uRqsn75rbTwmBzJ0l/P9eIK6ZSJjaqzCJOX5cis7Sg=;
-        b=DXpAsJPy5/YV6jAny8c92G1x7TZxdWFdo6NU20rMRMVLAjaCL4nIUTC5Wp4QQQJHhI
-         eAB2hAQM+LWirsljJ4rm92E97EU+ZvYv36mrGA3FjZikayvCoMlZ88JvfmRc+oghKoyE
-         PO8AHteeqQPzSjuVkNKLKNFrWNQ6Q2XM8oMh212ZmoIo7XMPRn6mv/dmbjVb8624xvqY
-         EtfI09MEAK3Z8pYO+CB4dyESgYcZIo5Uy5c26iqS8XvdYSrIx+nhgtNGYBL1AaEE090I
-         On0hy0nKgNLQC9GZhKHRZf0UfGs0fQRwHmj45rUWIsEqdDNycUrVfM2AnlgK4LBegzx4
-         IFWQ==
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/BZufo5GeZBBjJpVBhVfUUqf7bDRhIufHOC+GeAXTjw=;
+        b=h63NN6JIr7BPg/L5K4tALUY+/tMHu7b/AohNm+Sq0AHtLr7C775RNCqPF5N91xMyBI
+         MOiY+0CB7+nr/djuF77eQh2JjzNwZIgYaGZcGaavyRIGIDOMtNAYYoguPo3Q8xFlwx6L
+         QddH+S2xNU+tvs03WMAyY063pe678sUddwGJwNwh+sGNbGg5ToLYxAiebC7qHygj5JKC
+         wX/om83DYWGS2MTV/IcOR6891AOSOJx6pnI6tFAZh8FUdpFrpM+edanMCufFGJCkBefi
+         wPu7sueEx5oa9fOWdtBQSKZ4a7oTEsuZvbf1jYwrHa9aigN1cKpCLLxVES7TkXXM96mf
+         VUKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=3uRqsn75rbTwmBzJ0l/P9eIK6ZSJjaqzCJOX5cis7Sg=;
-        b=XKyfdodlxozytAnvr3/30VSiLDv64/hcrF7aJ9hBSEfddiNEWpoaT2qneJhmaG63BO
-         AvkZvTw/GuXZkQ6ZrY/z9O/p32Oy4IRAJW9v3rZ0jWso+8ZeAjo0Tgpk+8/1wTvJfCrT
-         GiTtAQ6zFPDRy/aicF0AZSP1sXKG/yikNUTRmxLPCnZZwm2EK+LuymfHVQ2pK4A2OpW9
-         IHNqM7RjZ4Cz5JKxvwKEITIQhrqbQ/J+f8iOy3ZXDFFlspQIIkKGpj6nJS1UKfqqTZ87
-         YuNnIa/2VioHRKnPYRC6YPxUozTaes7Pmw9N4znSgjN+3XmdKiKaT+5AJWimXog66RST
-         ES1Q==
-X-Gm-Message-State: AOAM533oet0mfMHyJj8+TBsnweKOvgnbMTLo5R5w47FU1+JTLrg9D/88
-        RNC6qobSWUOuDhVQtwZSSq5gUQ==
-X-Google-Smtp-Source: ABdhPJw8KwEkpCc5VDk7H19aX073UZnSTjC7ZaX8bdUVFH7yTffGsWwHvtkjrvZt5fIe3nS/tsX0dA==
-X-Received: by 2002:ac2:4d93:: with SMTP id g19mr5116818lfe.594.1604919920651;
-        Mon, 09 Nov 2020 03:05:20 -0800 (PST)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id c70sm59878lfd.87.2020.11.09.03.05.19
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/BZufo5GeZBBjJpVBhVfUUqf7bDRhIufHOC+GeAXTjw=;
+        b=oZPv0dbZfQO9HoGOsEDiMHryeLWKLb70A6yswhGj4Sb/Wg7fpSbFyfg0Qv9hx/3Sm9
+         gq4Qtq4Fq/WQXyJ9WaQXTVhFhd3SzGDl4F5nAveX9b03G0RvFznPbZBxDvQj51rJJsN0
+         FOFfxWdT0Oxc0KLYZYARnQQMXoiRVcNEeBBbOLS7wHQn0VA6QiwFK0NBcgN0lPZW1+WL
+         uUzg4c2UWnidZwqn3uZGWdlBwjDCEOkoXUeXfoktH03SWWTUFxhEnwfkZYlSrfY9tzU3
+         RrgBNAfcDS2KE5bS3KfrbIFgVQIEeqxh1Oc8xtzburA41bifp0h5hLKG19H4S36euwOw
+         PmDA==
+X-Gm-Message-State: AOAM533OAhMtY9sm1kTa6S4jHNFaSQyvJtRWth4pWRakch+C8YUDq2ER
+        86BB99hPjfLkiWdKnQBZc6K29g==
+X-Google-Smtp-Source: ABdhPJyoLN1aG0XKVyv+yWfCk24OCLDvJjyIFGdAfhV/HDRuWRPPB2x0i9RWfrD3NWEqtPTk5g+kWQ==
+X-Received: by 2002:adf:9066:: with SMTP id h93mr18252220wrh.166.1604920019608;
+        Mon, 09 Nov 2020 03:06:59 -0800 (PST)
+Received: from localhost.localdomain (lfbn-nic-1-190-206.w2-15.abo.wanadoo.fr. [2.15.39.206])
+        by smtp.gmail.com with ESMTPSA id d3sm12815582wre.91.2020.11.09.03.06.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 03:05:20 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, DENG Qingfang <dqfext@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        Marek Behun <marek.behun@nic.cz>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [RFC PATCH net-next 3/3] net: dsa: listen for SWITCHDEV_{FDB,DEL}_ADD_TO_DEVICE on foreign bridge neighbors
-In-Reply-To: <20201109100300.dgwce4nvddhgvzti@skbuf>
-References: <20201108131953.2462644-1-olteanv@gmail.com> <20201108131953.2462644-4-olteanv@gmail.com> <CALW65jb+Njb3WkY-TUhsHh1YWEzfMcXoRAXshnT8ke02wc10Uw@mail.gmail.com> <20201108172355.5nwsw3ek5qg6z7yx@skbuf> <20201108235939.GC1417181@lunn.ch> <20201109003028.melbgstk4pilxksl@skbuf> <87y2jbt0hq.fsf@waldekranz.com> <20201109100300.dgwce4nvddhgvzti@skbuf>
-Date:   Mon, 09 Nov 2020 12:05:19 +0100
-Message-ID: <87tutyu6xc.fsf@waldekranz.com>
+        Mon, 09 Nov 2020 03:06:58 -0800 (PST)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-mm@kvack.org,
+        alsa-devel@alsa-project.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH v3 0/9] slab: provide and use krealloc_array()
+Date:   Mon,  9 Nov 2020 12:06:45 +0100
+Message-Id: <20201109110654.12547-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.29.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 09, 2020 at 12:03, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Mon, Nov 09, 2020 at 09:09:37AM +0100, Tobias Waldekranz wrote:
->> one. But now you have also increased the background load of an already
->> choked resource, the MDIO bus.
->
-> In practice, DSA switches are already very demanding of their management
-> interface throughput, for PTP and things like that. I do expect that if
-> you spent any significant amount of time with DSA, you already know the
-> ins and outs of your MDIO/SPI/I2C controller and it would already be
-> optimized for efficiency. But ok, we can add this to the list of cons.
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-You are arguing for my position though, no? Yes it is demanding; that is
-why we must allocate it carefully.
+Andy brought to my attention the fact that users allocating an array of
+equally sized elements should check if the size multiplication doesn't
+overflow. This is why we have helpers like kmalloc_array().
 
-> So there you have it, it's not that bad. More work needs to be done, but
-> IMO it's still workable.
+However we don't have krealloc_array() equivalent and there are many
+users who do their own multiplication when calling krealloc() for arrays.
 
-If you bypass learning on all frames sent from the CPU (as today), yes I
-agree that you should be able to solve it with static entries. But I
-think that you will have lots of weird problems with initial packet loss
-as the FDB updates are not synchronous with the packet flow. I.e. the
-bridge will tell DSA to update the entry, but the update in HW will
-occur some time later when the workqueue actually performs the
-operation.
+This series provides krealloc_array() and uses it in a couple places.
 
-> But now maybe it makes more sense to treat the switches that perform
-> hardware SA learning on the CPU port separately, after I've digested
-> this a bit.
+A separate series will follow adding devm_krealloc_array() which is
+needed in the xilinx adc driver.
 
-Yes, please. Because it will be impossible to add tx forward offloading
-otherwise.
+v1 -> v2:
+- added a kernel doc for krealloc_array()
+- mentioned krealloc et al in the docs
+- collected review tags
+
+v2 -> v3:
+- add a patch improving krealloc()'s kerneldoc
+- fix a typo
+- improve .rst doc
+- tweak line breaks
+
+Bartosz Golaszewski (9):
+  mm: slab: clarify krealloc()'s behavior with __GFP_ZERO
+  mm: slab: provide krealloc_array()
+  ALSA: pcm: use krealloc_array()
+  vhost: vringh: use krealloc_array()
+  pinctrl: use krealloc_array()
+  edac: ghes: use krealloc_array()
+  drm: atomic: use krealloc_array()
+  hwtracing: intel: use krealloc_array()
+  dma-buf: use krealloc_array()
+
+ Documentation/core-api/memory-allocation.rst |  4 ++++
+ drivers/dma-buf/sync_file.c                  |  3 +--
+ drivers/edac/ghes_edac.c                     |  4 ++--
+ drivers/gpu/drm/drm_atomic.c                 |  3 ++-
+ drivers/hwtracing/intel_th/msu.c             |  2 +-
+ drivers/pinctrl/pinctrl-utils.c              |  2 +-
+ drivers/vhost/vringh.c                       |  3 ++-
+ include/linux/slab.h                         | 18 ++++++++++++++++++
+ mm/slab_common.c                             |  6 +++---
+ sound/core/pcm_lib.c                         |  4 ++--
+ 10 files changed, 36 insertions(+), 13 deletions(-)
+
+-- 
+2.29.1
+
