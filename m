@@ -2,128 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 283362ABECD
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 15:36:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A38A12ABED2
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 15:37:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730887AbgKIOgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 09:36:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35934 "EHLO
+        id S1731363AbgKIOhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 09:37:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729976AbgKIOgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 09:36:52 -0500
-Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303E1C0613CF
-        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 06:36:52 -0800 (PST)
-Received: by mail-ua1-x944.google.com with SMTP id k12so2842181uad.11
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 06:36:52 -0800 (PST)
+        with ESMTP id S1729976AbgKIOhK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 09:37:10 -0500
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB43C0613CF;
+        Mon,  9 Nov 2020 06:37:10 -0800 (PST)
+Received: by mail-wm1-x343.google.com with SMTP id p19so35750wmg.0;
+        Mon, 09 Nov 2020 06:37:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xDniQAvxFLBjIKTPYpnf40KKSY2vMSiv1LR/tBJSqcA=;
-        b=LxF1L+qGOIsxg05Lh0AzTGP5Iwb+FRJjDr/EMmjoNpyVVkoZAK0uPsRHh/wau4UHyD
-         xh2hlTuIE0nsNZz9H+gMOuMzCX6gEHNOwVtmZZOo7wMGB8sPHTGPpaY1s0Y5TJ48nRWx
-         lINJc8eu3GQFZBbrP/2MbKJgiFRoWYnrgOd0xb1B4no4COrC5vQiuj4bxlstYDKdMLkk
-         Zp/0j7JV5Bg0FEsvyCQrkL/wM+Y7As52L6u9wKkSeIPdQ+oRw6cD/CNWA8ouiqSODa4a
-         WilzHKCrQyEs4yPCINqM+NEE116rmHFQiJPxEd9pd4xyahqi+k8AnC+1He5l4QT/6tnJ
-         I6YQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=caIEYH7Eu5Xcnq+e7ySVcHnIwnQp8PB5zRJO0aE9sVM=;
+        b=WE7W9+WZW2zEJ9SGPk0THFJtjIKY2AryBOzwd6VjZJsRHynfxhNuDZ93/pPzphwzTY
+         yYX/NrenpziwuirAOgC7IlVVc0rni5qAWj8hkI11mfQExcsoUBk5k2IIyC+yFR1zfs+0
+         t5stdQx44NZjKjmlE+lta+If+cNt42Av4NbWB6FrDCL/PM7DPeJXM7CG8ATmfByGculE
+         GOkmcLabPXyuF2KyeUb7nWQQc6gGHXcxoOp/tnjIvxDmgFUrZPBBEHkAtd7fgPyBkeaE
+         Cx3ERzKzN9kGQxTepVlz9DlL9Xb35o0gNdVmVFOuZR219aQ6sECO4UfPZyojOc8O4L3O
+         76NA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xDniQAvxFLBjIKTPYpnf40KKSY2vMSiv1LR/tBJSqcA=;
-        b=ohcWjFRGiuStY5mJ6KiBinYWhQKlx5lmLipI5/JQW2eMw5ksUwA8c0ZueSeZytkyjF
-         f66KYvO9Pk4IhSjSgrYrj0He8WybEHPkc5MtN+Ik9Ci6xVDRZerFoYRptd5cO8y+dE9U
-         mtJFR5lM0Z+ZgHRjmWBJfdyB057HF9xjkyhyDVqH2GBHAs0fWZd5AObQzCCiXS2N4sSW
-         MHiLsXvGj4ITl2rdiF81pH4nLVGDJ7iyNa8XfBJQPW5Y3ZJi8JJ4pqyGA8jxErP8bFMF
-         14aou/SEZ53d0V3FXC+EYDcS7HR2BU6KZETaD9TjuVBpSUOsEolp+mVUSY5kSF1eQjGp
-         BPhg==
-X-Gm-Message-State: AOAM530slr7tHcR/Q9iXF75NW89wXNqLNxgxZMEVkn1Y9jkH+wXUl+1W
-        oIBaEUkrXmdP9JSBHOYDSGK3+s8cPuo=
-X-Google-Smtp-Source: ABdhPJwysSiZ8PHQvW+vXhFyaizrobol//EviDvplpjLDA25tyjtyTiNk9ttdcrQwu2g+aYa3yu/7Q==
-X-Received: by 2002:ab0:403:: with SMTP id 3mr3679739uav.4.1604932611109;
-        Mon, 09 Nov 2020 06:36:51 -0800 (PST)
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
-        by smtp.gmail.com with ESMTPSA id 59sm1058936uag.13.2020.11.09.06.36.50
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=caIEYH7Eu5Xcnq+e7ySVcHnIwnQp8PB5zRJO0aE9sVM=;
+        b=A/0aTuDzTp+SgqepwiKPm8guP0ZUCI28QJt5Eceo8UN1PvUbQAB1CSIUE1X4Dt7ZHk
+         EPRRkzP5ZVvlHTb//Dhsxi7GK7szJgoMfiG7Xhhz+DOJz47fbY0kJygK9lUZfPQWH9+n
+         YivIwfJn0MwNOtbwm7swe0SXMCX1gHG0bRzzPL0u50gMfab0DKzGq4jFfL5MyyBY0CxO
+         /pqUyuit4mcpLFlVL47M64yVH5R1z2KiLA7zIuFskuYzlktX5W4YhOnyvjQa/STg/y2z
+         CInSk4spfgNfU3YBSllv6/WqWTwoCKaHjrHxY2kCSoMYbdkBh/wMmoWG2AdeysFSVYs8
+         rNSA==
+X-Gm-Message-State: AOAM532Zit9LBcE2kxAjjFzBfvm0YdC7n29Hva/WscKvpLBJWMJukS7d
+        oJADSNcl56OhNbv6zWgMQWt3TSnaB7A=
+X-Google-Smtp-Source: ABdhPJy/OBxtlwQcJigGkaOwAxFgOjBrd5Z4mXA8WovN3u1qXxRRSdaeFRXEbNx1H6w9Q2tCmjheGA==
+X-Received: by 2002:a05:600c:210a:: with SMTP id u10mr14896062wml.98.1604932628611;
+        Mon, 09 Nov 2020 06:37:08 -0800 (PST)
+Received: from [192.168.8.114] ([37.170.121.171])
+        by smtp.gmail.com with ESMTPSA id x18sm14661454wrg.4.2020.11.09.06.37.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Nov 2020 06:36:50 -0800 (PST)
-Received: by mail-ua1-f52.google.com with SMTP id p12so2843374uam.1
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 06:36:50 -0800 (PST)
-X-Received: by 2002:a9f:2067:: with SMTP id 94mr6343749uam.141.1604932609475;
- Mon, 09 Nov 2020 06:36:49 -0800 (PST)
+        Mon, 09 Nov 2020 06:37:07 -0800 (PST)
+Subject: Re: [PATCH] page_frag: Recover from memory pressure
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-mm@kvack.org, netdev@vger.kernel.org,
+        Dongli Zhang <dongli.zhang@oracle.com>,
+        Aruna Ramakrishna <aruna.ramakrishna@oracle.com>,
+        Bert Barbe <bert.barbe@oracle.com>,
+        Rama Nichanamatlu <rama.nichanamatlu@oracle.com>,
+        Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>,
+        Manjunath Patil <manjunath.b.patil@oracle.com>,
+        Joe Jin <joe.jin@oracle.com>,
+        SRINIVAS <srinivas.eeda@oracle.com>, stable@vger.kernel.org
+References: <20201105042140.5253-1-willy@infradead.org>
+ <d673308e-c9a6-85a7-6c22-0377dd33c019@gmail.com>
+ <20201105140224.GK17076@casper.infradead.org>
+ <20201109143249.GB17076@casper.infradead.org>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a8dd751d-2777-6821-47d2-b3d11a569f70@gmail.com>
+Date:   Mon, 9 Nov 2020 15:37:06 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-References: <YazU6GEzBdpyZMDMwJirxDX7B4sualpDG68ADZYvJI@cp4-web-034.plabs.ch>
-In-Reply-To: <YazU6GEzBdpyZMDMwJirxDX7B4sualpDG68ADZYvJI@cp4-web-034.plabs.ch>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 9 Nov 2020 09:36:12 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSfokZNJv2g2mCK284UTj7nN_-qXei42J4QWt7YniSrKog@mail.gmail.com>
-Message-ID: <CA+FuTSfokZNJv2g2mCK284UTj7nN_-qXei42J4QWt7YniSrKog@mail.gmail.com>
-Subject: Re: [PATCH net] net: udp: fix Fast/frag0 UDP GRO
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201109143249.GB17076@casper.infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 7, 2020 at 8:11 PM Alexander Lobakin <alobakin@pm.me> wrote:
->
-> While testing UDP GSO fraglists forwarding through driver that uses
-> Fast GRO (via napi_gro_frags()), I was observing lots of out-of-order
-> iperf packets:
->
-> [ ID] Interval           Transfer     Bitrate         Jitter
-> [SUM]  0.0-40.0 sec  12106 datagrams received out-of-order
->
-> Simple switch to napi_gro_receive() any other method without frag0
-> shortcut completely resolved them.
->
-> I've found that UDP GRO uses udp_hdr(skb) in its .gro_receive()
-> callback. While it's probably OK for non-frag0 paths (when all
-> headers or even the entire frame are already in skb->data), this
-> inline points to junk when using Fast GRO (napi_gro_frags() or
-> napi_gro_receive() with only Ethernet header in skb->data and all
-> the rest in shinfo->frags) and breaks GRO packet compilation and
-> the packet flow itself.
-> To support both modes, skb_gro_header_fast() + skb_gro_header_slow()
-> are typically used. UDP even has an inline helper that makes use of
-> them, udp_gro_udphdr(). Use that instead of troublemaking udp_hdr()
-> to get rid of the out-of-order delivers.
->
-> Present since the introduction of plain UDP GRO in 5.0-rc1.
->
-> Fixes: e20cf8d3f1f7 ("udp: implement GRO for plain UDP sockets.")
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> ---
->  net/ipv4/udp_offload.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-> index e67a66fbf27b..13740e9fe6ec 100644
-> --- a/net/ipv4/udp_offload.c
-> +++ b/net/ipv4/udp_offload.c
-> @@ -366,7 +366,7 @@ static struct sk_buff *udp4_ufo_fragment(struct sk_buff *skb,
->  static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
->                                                struct sk_buff *skb)
->  {
-> -       struct udphdr *uh = udp_hdr(skb);
-> +       struct udphdr *uh = udp_gro_udphdr(skb);
->         struct sk_buff *pp = NULL;
->         struct udphdr *uh2;
->         struct sk_buff *p;
 
-Good catch. skb_gro_header_slow may fail and return NULL. Need to
-check that before dereferencing uh below in
 
-        /* requires non zero csum, for symmetry with GSO */
-        if (!uh->check) {
-                NAPI_GRO_CB(skb)->flush = 1;
-                return NULL;
-        }
+On 11/9/20 3:32 PM, Matthew Wilcox wrote:
+> On Thu, Nov 05, 2020 at 02:02:24PM +0000, Matthew Wilcox wrote:
+>> On Thu, Nov 05, 2020 at 02:21:25PM +0100, Eric Dumazet wrote:
+>>> On 11/5/20 5:21 AM, Matthew Wilcox (Oracle) wrote:
+>>>> When the machine is under extreme memory pressure, the page_frag allocator
+>>>> signals this to the networking stack by marking allocations with the
+>>>> 'pfmemalloc' flag, which causes non-essential packets to be dropped.
+>>>> Unfortunately, even after the machine recovers from the low memory
+>>>> condition, the page continues to be used by the page_frag allocator,
+>>>> so all allocations from this page will continue to be dropped.
+>>>>
+>>>> Fix this by freeing and re-allocating the page instead of recycling it.
+>>>>
+>>>> Reported-by: Dongli Zhang <dongli.zhang@oracle.com>
+>>>> Cc: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
+>>>> Cc: Bert Barbe <bert.barbe@oracle.com>
+>>>> Cc: Rama Nichanamatlu <rama.nichanamatlu@oracle.com>
+>>>> Cc: Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>
+>>>> Cc: Manjunath Patil <manjunath.b.patil@oracle.com>
+>>>> Cc: Joe Jin <joe.jin@oracle.com>
+>>>> Cc: SRINIVAS <srinivas.eeda@oracle.com>
+>>>> Cc: stable@vger.kernel.org
+>>>> Fixes: 79930f5892e ("net: do not deplete pfmemalloc reserve")
+>>>
+>>> Your patch looks fine, although this Fixes: tag seems incorrect.
+>>>
+>>> 79930f5892e ("net: do not deplete pfmemalloc reserve") was propagating
+>>> the page pfmemalloc status into the skb, and seems correct to me.
+>>>
+>>> The bug was the page_frag_alloc() was keeping a problematic page for
+>>> an arbitrary period of time ?
+>>
+>> Isn't this the commit which unmasks the problem, though?  I don't think
+>> it's the buggy commit, but if your tree doesn't have 79930f5892e, then
+>> you don't need this patch.
+>>
+>> Or are you saying the problem dates back all the way to
+>> c93bdd0e03e8 ("netvm: allow skb allocation to use PFMEMALLOC reserves")
+>>
+>>>> +		if (nc->pfmemalloc) {
+>>>
+>>>                 if (unlikely(nc->pfmemalloc)) {
+>>
+>> ACK.  Will make the change once we've settled on an appropriate Fixes tag.
+> 
+> Which commit should I claim this fixes?
+
+Hmm, no big deal, lets not waste time on tracking precise bug origin.
+
