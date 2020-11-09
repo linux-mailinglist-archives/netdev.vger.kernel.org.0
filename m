@@ -2,263 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F14FF2AB444
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 11:03:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DEBC2AB44C
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 11:04:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729160AbgKIKDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 05:03:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49424 "EHLO
+        id S1729243AbgKIKEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 05:04:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726423AbgKIKDE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 05:03:04 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D73C0613CF;
-        Mon,  9 Nov 2020 02:03:04 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id ay21so8076785edb.2;
-        Mon, 09 Nov 2020 02:03:04 -0800 (PST)
+        with ESMTP id S1728016AbgKIKEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 05:04:02 -0500
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16980C0613CF
+        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 02:04:02 -0800 (PST)
+Received: by mail-io1-xd41.google.com with SMTP id n12so9177590ioc.2
+        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 02:04:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Lq1EVF4b0inxzqXCcvQULCE2t/AsJKaH6qjbOpBxRK8=;
-        b=XUi4cv9W7zhbNsQftYBbWs4ISImdmhCeh+gETox8tMYaIbSD6tEsQRFmMDkx4fJaQj
-         CMYOamEDUutzTYChBFIjz7KOjH97bCIlpmNQAGsDD/22CFF6M4ZHKXEVeGvRb8IUprMi
-         Ex2c9HkNW85WlicdEWrJ8R3qJ8s2XzChMHh+ak/Y7WGIx64Cil619rDqCSrnBZJoTmRL
-         iijmzZZM1LMMvBQtR0VGGTRaPXZiML1XhzHAfrxjdUveaJdaxm0AnuY3CkW7VSGi/3Oc
-         grarNj8ggtzQH5tVCZl87dlDlNS0wpixk734O7OZdiZvDiMzTrQTp4Lh1wXb3Bxb+F/Y
-         HxPg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=79QUVZRSSk7lYa1JaI31tUrKqJZEnH1ARVLllhGq6P0=;
+        b=TCY2RB1yu/2Jpp28cFdFjklXz0UsEwmPGOJul/oeUsQFEqRWLEtlMSBSzu7dXejfhp
+         J4VdbjwNefv4VQ/vWDTrGjDtJujbhsfYM4efDxwx9C/6nkmY1uEKVvN4mBR/DEnJ92BK
+         rEx0nsNIFSNiPSSX7ASC2TXaulhOXUrYd5XKWNItaxZW5DpA/5h4ZfsuDZZGFX3nrqBK
+         +jyNX2QPfB0Dd+LzsGkySzcEcMCQhyFQzefcYq57tYOzP82JbfU3U7JScTymPPRg0SVk
+         5t2iolLAIaiFWAL99On+7KgMxR//2QKK3dvSTDOooFrQfJnNwb9ENcZTtEIDyg4zu/pP
+         KYfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Lq1EVF4b0inxzqXCcvQULCE2t/AsJKaH6qjbOpBxRK8=;
-        b=JImzIJgbKhIuhygSdKAXJDmFn61v78LKsBvCAe44BSug0bSXhbm/76hhZ1Ksgw/32l
-         12OG7b7TfcU2KLT1JSwm/V5wJqUCAejfi26ihPL3mq9FnpZTJ2qm/7SRkP/e5MZlc27G
-         bKMHuqLCNAGCVM6WPBifj7MDNbRm4ng50BBqsICx1asoVI78Jv+cOJ5UzG/EKuzRH+vE
-         5MZEUuLuQlGW5amLjBhw8levAJrG5Eu1hF9z8kxAwb0FuJtPgwzk94W6IbVOrra9q9q/
-         nrZ9/WaC8YfrXPrkjBOzIisSKI5JlzfHaBkaPqi2PaiYpmZyjwsCkFu/gF4aORaXVTcF
-         Kv1Q==
-X-Gm-Message-State: AOAM531EzjlsVKR8uhg5T/qBdhC3VgXSftGAGAm54EFp5gwoAAUYdW3w
-        U13CRP7AO717vMmvazeNeuU=
-X-Google-Smtp-Source: ABdhPJyBhjSkzXNVeoAl7lkWw7dvZ/K1mGNkJoF/aTEumq9Rc4GX1n1N3/wFTlgPgESkWy8uGkEY3Q==
-X-Received: by 2002:a50:950e:: with SMTP id u14mr14307123eda.260.1604916182809;
-        Mon, 09 Nov 2020 02:03:02 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id l16sm8328543ejd.70.2020.11.09.02.03.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 02:03:02 -0800 (PST)
-Date:   Mon, 9 Nov 2020 12:03:00 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, DENG Qingfang <dqfext@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        Marek Behun <marek.behun@nic.cz>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [RFC PATCH net-next 3/3] net: dsa: listen for
- SWITCHDEV_{FDB,DEL}_ADD_TO_DEVICE on foreign bridge neighbors
-Message-ID: <20201109100300.dgwce4nvddhgvzti@skbuf>
-References: <20201108131953.2462644-1-olteanv@gmail.com>
- <20201108131953.2462644-4-olteanv@gmail.com>
- <CALW65jb+Njb3WkY-TUhsHh1YWEzfMcXoRAXshnT8ke02wc10Uw@mail.gmail.com>
- <20201108172355.5nwsw3ek5qg6z7yx@skbuf>
- <20201108235939.GC1417181@lunn.ch>
- <20201109003028.melbgstk4pilxksl@skbuf>
- <87y2jbt0hq.fsf@waldekranz.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=79QUVZRSSk7lYa1JaI31tUrKqJZEnH1ARVLllhGq6P0=;
+        b=EVuF4icsDe/Q7ROYnx/YNtDUOIOZnzU9f98L8PkD4AHWS5ZVDZiAebX3JAFjgkta5x
+         yaX5s3JYd+juH2LhHwsLAAdWWW0twws1Y30f3o8fIjtojT7S1NpMTFhxYaTyf6esu2YA
+         ptkF6qdaQZvrsK3TsP4qDWiAPe9Vnj1Kh/2AzEHHQIa1uqEkkjp3f1t36ZDVf7+CcG+O
+         wSSNwPVTiOltCOsistsF0LJtX7DXzLuVZWPcbiFtfsl5klFuHTDOHHUYHy6iHpRjHihw
+         6psHeXqRG8X6+ry1zKV8aFrmxToSEGaSru2BV9+JeB05CmOigZcAorprzgWIxtrGxLjp
+         yRFA==
+X-Gm-Message-State: AOAM531/aFNGLdutLadgwtXxLNkxWcbfhPKxJ5rnPkD7QAi278Nhy2KQ
+        wpAJeupFKAh7lfXlJuFRqc7LOCfNuexsEZutkHTbKoN1NZdLKw==
+X-Google-Smtp-Source: ABdhPJxaRZ2bQGpgRz+6fagxvGqVG3DIq943nryGrBgLPsHfxwPXFTLNPXGa1Zq1h3+/Fm48c2iEfn0gESm7U/imO4o=
+X-Received: by 2002:a02:cf28:: with SMTP id s8mr10008698jar.11.1604916241338;
+ Mon, 09 Nov 2020 02:04:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87y2jbt0hq.fsf@waldekranz.com>
+References: <1603850163-4563-1-git-send-email-i@liuyulong.me>
+ <1604303803-30660-1-git-send-email-i@liuyulong.me> <20201103130559.0335c353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201107103950.70cf9353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <16803.1604871426@famine>
+In-Reply-To: <16803.1604871426@famine>
+From:   LIU Yulong <liuyulong.xa@gmail.com>
+Date:   Mon, 9 Nov 2020 18:03:50 +0800
+Message-ID: <CANp3m6nsYyPeoTqSv_EvUawPAVVsMXr3ek16VGKnzRzejyb2CQ@mail.gmail.com>
+Subject: Re: [PATCH v2] net: bonding: alb disable balance for IPv6 multicast
+ related mac
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        LIU Yulong <i@liuyulong.me>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 09, 2020 at 09:09:37AM +0100, Tobias Waldekranz wrote:
-> On Mon, Nov 09, 2020 at 02:30, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Mon, Nov 09, 2020 at 12:59:39AM +0100, Andrew Lunn wrote:
-> >> We also need to make sure the static entries get removed correctly
-> >> when a host moves. The mv88e6xxx will not replace a static entry with
-> >> a dynamically learned one. It will probably rise an ATU violation
-> >> interrupt that frames have come in the wrong port.
+Yes, the 33:33:ff:00:00:01 is just an example, the destination MAC address
+can be various. The code of current solution is simple but indeed may need
+have more attentions on the real world topologys.
+
+The current solution refers to the action of ARP protocol in IPv4 [1].
+While the IPv4 diabled the ARP tx balance, for the IPv6 we disable
+the all-nodes multicast [2] (when there are no multicast domain, it
+can be considered as all, aka broadcast [3]). But please note, the
+MAC "33:33:00:00:00:01" for IPv6 RA (Router Advertisement) destination.
+
+I have an alternative which is to verify the packet type, if it is the
+ICMPv6 and the type is 135(Neighbor Solicitation), we disable the tx
+balance. A new if-conditon will be added right below the all-nodes
+multicast check.
+
+[1] https://github.com/torvalds/linux/blob/master/drivers/net/bonding/bond_alb.c#L1423
+[2] https://github.com/torvalds/linux/blob/master/drivers/net/bonding/bond_alb.c#L1431
+[3] https://en.wikipedia.org/wiki/Solicited-node_multicast_address
+
+On Mon, Nov 9, 2020 at 5:37 AM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+>
+> Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> >On Tue, 3 Nov 2020 13:05:59 -0800 Jakub Kicinski wrote:
+> >> On Mon,  2 Nov 2020 15:56:43 +0800 LIU Yulong wrote:
+> >> > According to the RFC 2464 [1] the prefix "33:33:xx:xx:xx:xx" is defined to
+> >> > construct the multicast destination MAC address for IPv6 multicast traffic.
+> >> > The NDP (Neighbor Discovery Protocol for IPv6)[2] will comply with such
+> >> > rule. The work steps [6] are:
+> >> >   *) Let's assume a destination address of 2001:db8:1:1::1.
+> >> >   *) This is mapped into the "Solicited Node Multicast Address" (SNMA)
+> >> >      format of ff02::1:ffXX:XXXX.
+> >> >   *) The XX:XXXX represent the last 24 bits of the SNMA, and are derived
+> >> >      directly from the last 24 bits of the destination address.
+> >> >   *) Resulting in a SNMA ff02::1:ff00:0001, or ff02::1:ff00:1.
+> >> >   *) This, being a multicast address, can be mapped to a multicast MAC
+> >> >      address, using the format 33-33-XX-XX-XX-XX
+> >> >   *) Resulting in 33-33-ff-00-00-01.
+> >> >   *) This is a MAC address that is only being listened for by nodes
+> >> >      sharing the same last 24 bits.
+> >> >   *) In other words, while there is a chance for a "address collision",
+> >> >      it is a vast improvement over ARP's guaranteed "collision".
+> >> > Kernel related code can be found at [3][4][5].
+> >>
+> >> Please make sure you keep maintainers CCed on your postings, adding bond
+> >> maintainers now.
 > >
-> > This is a good one. Currently every implementer of .port_fdb_add assumes
-> > a static entry is what we want, but that is not the case here. We want
-> > an entry that can expire or the switch can move it to a different port
-> > when there is evidence that it's wrong. Should we add more arguments to
-> > the API?
+> >Looks like no reviews are coming in, so I had a closer look.
+> >
+> >It's concerning that we'll disable load balancing for all IPv6 multicast
+> >addresses now. AFAIU you're only concerned about 33:33:ff:00:00:01, can
+> >we not compare against that?
 >
-> I don't think that would help. You would essentially be trading one
-> situation where station moves causes loss of traffic for another
-> one. But now you have also increased the background load of an already
-> choked resource, the MDIO bus.
-
-In practice, DSA switches are already very demanding of their management
-interface throughput, for PTP and things like that. I do expect that if
-you spent any significant amount of time with DSA, you already know the
-ins and outs of your MDIO/SPI/I2C controller and it would already be
-optimized for efficiency. But ok, we can add this to the list of cons.
-
-> At least on mv88e6xxx, your only option to allow the hardware to move
-> the station to another port autonomously is to add the entry as a
-> dynamically learnt one. However, since the switch does not perform any
-> SA learning on the CPU port in this world, the entry would have to be
-> refreshed by software, otherwise it would just age out.
+>         It's not fixed as 33:33:ff:00:00:01, that's just the example.
+> The first two octets are fixed as 33:33, and the remaining four are
+> derived from the SNMA, which in turn comes from the destination IPv6
+> address.
 >
-> Then you run in to this situation:
+>         I can't decide if this is genuinely a reasonable change overall,
+> or if the described topology is simply untenable in the environment that
+> the balance-alb mode creates.  My specific concern is that the alb mode
+> will periodically rebalance its TX load, so outgoing traffic will
+> migrate from one bond port to another from time to time.  It's unclear
+> to me how the described topology that's broken by the multicast traffic
+> being TX balanced is not also broken by the alb TX side rebalances.
 >
-> A and B are communicating.
+>         -J
 >
->        br0
->   .----'|'----.
->   |     |     |
-> swp0  swp1  wlan0
->   |           |
->   A           B
+> >The way the comparison is written now it does a single 64bit comparison
+> >per address, so it's the same number of instructions to compare the top
+> >two bytes or two full addresses.
 >
-> The switch's FDB:
-> A: swp0
-> B: cpu0 (due to this patchset)
 >
-> Now B roams to an AP somewhere behind swp1 and continues to communicate
-> with A.
->
->        br0
->   .----'|'----.
->   |     |     |
-> swp0  swp1  wlan0
->   |     |
->   A     B
->
-> The switch's FDB:
-> A: swp0
-> B: swp1
->
-> But br0 sees none of this, so at whatever interval we choose we will
-> refresh the FDB, moving the station back to the cpu:
->
-> A: swp0
-> B: cpu0
-
-No, br0 should see some traffic from station B. Not the unicast traffic
-towards station A, of course (because that has already been learnt to go
-towards swp0), but some broadcast ARP, or some multicast ND. This is the
-big assumption behind any solution: that the stations are not silent and
-make their presence known somehow.
-
-> So now you have traded the issue of having to wait for the hardware to
-> age out its entry, to the issue of having to wait for br0 to age out its
-> entry. Right?
-
-That's the thing.
-The software bridge will never expire its entry in br_fdb_update if
-traffic is continuously coming in. fdb->updated will just keep getting
-larger and larger after each incoming packet. But the hardware bridge is
-not aware of this traffic. So:
-- if the hardware bridge has a dynamic entry installed (one that's
-  subject to ageing), that entry will eventually expire within 5 minutes
-  when its software equivalent won't. Then no switchdev event will ever
-  come back to update the hardware bridge, since from the software's
-  perspective it was never supposed to expire. It's as if we _do_ want
-  the entry to be static. But:
-- if the hardware bridge has a static entry installed, then that entry
-  might become wrong and cause connectivity loss until the software
-  bridge figures it out.
-It's what Andrew described as a 'hybrid' entry. We would want a 'static'
-entry (one that doesn't age out based on a timer) that is 'weak' (can be
-overridden when traffic comes in on a different port). I'm not sure
-either that such thing exists.
-
-So for now, static entries are the best we've got. Let's re-run the
-simulation knowing that we're working with static addresses towards the
-CPU, to see how bad things are.
-
- AP 1:
- +------------------------------------------------------------------------+
- |                                          br0                           |
- +------------------------------------------------------------------------+
- +------------+ +------------+ +------------+ +------------+ +------------+
- |    swp0    | |    swp1    | |    swp2    | |    swp3    | |    wlan0   |
- +------------+ +------------+ +------------+ +------------+ +------------+
-       |                                                       ^        ^
-       |                                                       |        |
-       |                                                       |        |
-       |                                                    Client A  Client B
-       |
-       |
-       |
- +------------+ +------------+ +------------+ +------------+ +------------+
- |    swp0    | |    swp1    | |    swp2    | |    swp3    | |    wlan0   |
- +------------+ +------------+ +------------+ +------------+ +------------+
- +------------------------------------------------------------------------+
- |                                          br0                           |
- +------------------------------------------------------------------------+
- AP 2
-
-- br0 of AP 1 will lean that Clients A and B are reachable via wlan0.
-  The DSA switch will snoop these and add static entries towards the CPU
-  port.
-- the hardware fdb of the DSA switch, as well as br0 on AP 2, will learn
-  that Clients A and B are reachable through swp0, because of our
-  assumption of non-silent stations. There are no static entries
-  involved on AP 2 for now.
-
-Client B disconnects from AP 1 and roams to AP 2.
-
- AP 1:
- +------------------------------------------------------------------------+
- |                                          br0                           |
- +------------------------------------------------------------------------+
- +------------+ +------------+ +------------+ +------------+ +------------+
- |    swp0    | |    swp1    | |    swp2    | |    swp3    | |    wlan0   |
- +------------+ +------------+ +------------+ +------------+ +------------+
-       |                                                            ^
-       |                                                            |
-       |                                                         Client A
-       |
-       |
-       |                                                         Client B
-       |                                                            |
-       |                                                            v
- +------------+ +------------+ +------------+ +------------+ +------------+
- |    swp0    | |    swp1    | |    swp2    | |    swp3    | |    wlan0   |
- +------------+ +------------+ +------------+ +------------+ +------------+
- +------------------------------------------------------------------------+
- |                                          br0                           |
- +------------------------------------------------------------------------+
- AP 2
-
-- br0 of AP 1 still knows that Client A is reachable via wlan0 (no change)
-- In the general case, br0 of AP 1 will _NOT_ know that Client B has
-  left wlan0. So there is still a static entry for Client B towards the
-  CPU port.
-- Right now, any attempt from Client A to directly address Client B via
-  unicast would result, if the FDB were to be consulted, in packet
-  drops, because the switch on AP 1 would say 'wait a minute, I'm
-  receiving a packet for Client B from the CPU port, but Client B is
-  reachable via the CPU port!'. Luckily for us, the switches that we're
-  working with are not looking up the FDB for CPU injected traffic,
-  remember? So I don't think this is a problem. So unicast packets would
-  be delivered to anywhere that the software bridge wanted to. Right
-  now, even the software bridge has a wrong impression of where Client B
-  is.
-- remember the assumption that Client B is not silent at startup. So
-  some broadcast packets with Client B's source MAC address will reach
-  the Ethernet segment. The hardware switch on AP 1 will have no problem
-  accepting these packets, since they are broadcast/multicast. They will
-  reach the software bridge. At this point, the software bridge finally
-  learns the new destination for Client B, and it emits a new
-  SWITCHDEV_FDB_ADD_TO_DEVICE event. Today we ignore that, because
-  added_by_user will be false. That's what we do wrong/incomplete in
-  this RFC patch set. We should keep track of static addresses installed
-  on the CPU port, and if we ever receive a !added_by_user notification
-  on a DSA switch port for one of those addresses, we should update the
-  hardware FDB of the DSA switch on AP 1.
-
-So there you have it, it's not that bad. More work needs to be done, but
-IMO it's still workable.
-
-But now maybe it makes more sense to treat the switches that perform
-hardware SA learning on the CPU port separately, after I've digested
-this a bit.
+> ---
+>         -Jay Vosburgh, jay.vosburgh@canonical.com
