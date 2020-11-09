@@ -2,94 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD4342AC95B
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 00:29:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2F362AC965
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 00:33:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730456AbgKIX3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 18:29:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40748 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729243AbgKIX3Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 18:29:16 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 67801206B2;
-        Mon,  9 Nov 2020 23:29:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604964555;
-        bh=QLmsZu4I3VD2I6lWY3q3EZ+YXZZd264CGkdr7Y6bsvU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CDYdm9dEcW3pFo+imXDGh8eHy1+F0F5Cyw+IysJ9ZVkT4Me3cLfHTNwr3WfcS1sZq
-         gafwWkNTc9GjKnJJc9M5vxT3babe81/ZKlDAjAmSCadQuaIh+t51hYVpsMPZbPn6SX
-         KW/febL5oU1u66ENzi5M7SLIdBneg+TGmrwN8si8=
-Date:   Mon, 9 Nov 2020 15:29:13 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Florian Westphal <fw@strlen.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: skb_vlan_untag(): don't reset transport
- offset if set by GRO layer
-Message-ID: <20201109152913.289c3cac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <zYurwsZRN7BkqSoikWQLVqHyxz18h4LhHU4NFa2Vw@cp4-web-038.plabs.ch>
-References: <zYurwsZRN7BkqSoikWQLVqHyxz18h4LhHU4NFa2Vw@cp4-web-038.plabs.ch>
+        id S1730134AbgKIXdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 18:33:31 -0500
+Received: from mail2.protonmail.ch ([185.70.40.22]:13688 "EHLO
+        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727070AbgKIXd3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 18:33:29 -0500
+Date:   Mon, 09 Nov 2020 23:33:23 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1604964807; bh=TRxXCgaE15C0k6XBtuc6PMRdlGWdL4cI78TMkWtQBQk=;
+        h=Date:To:From:Cc:Reply-To:Subject:From;
+        b=pVaSw2zzPi8pFABans0RWt+QYul5aK/b6B7012+xFmK0O+5LxaVCIClUrczl5e4N6
+         x7Yt5LbSjuerxhWyQcurLvuqeQ0KkOM4db4kYh1p9XJyuVdyoubTPl2jup9h+9Nxey
+         Pq41BioU1FSBbh1egQgfB8NWVdZ7REKki6ehVDDNgae0zhV7e6DPqEgCEh7DTlXVdc
+         bgG3lcsreOB/ch7RroWENCVWlUUyCsE/3af72NIRopwAxE9ymAxdEGMxIL29I2nK88
+         aC43Tce4P9jPiJtVM2vHgfoq7UZAGGLNZiWMm1xvXc5Y2R1XPQSOgKuPKfXF43gHaK
+         MRxzkvF04M70Q==
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH net-next 0/2] inet: prevent skb changes in udp{4|6}_lib_lookup_skb()
+Message-ID: <o5W2i2pZBXUMLfXAXnUsKrQPAjw9hX9EPrGQSP3I@cp4-web-034.plabs.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 05 Nov 2020 21:29:01 +0000 Alexander Lobakin wrote:
-> Similar to commit fda55eca5a33f
-> ("net: introduce skb_transport_header_was_set()"), avoid resetting
-> transport offsets that were already set by GRO layer. This not only
-> mirrors the behavior of __netif_receive_skb_core(), but also makes
-> sense when it comes to UDP GSO fraglists forwarding: transport offset
-> of such skbs is set only once by GRO receive callback and remains
-> untouched and correct up to the xmitting driver in 1:1 case, but
-> becomes junk after untagging in ingress VLAN case and breaks UDP
-> GSO offload. This does not happen after this change, and all types
-> of forwarding of UDP GSO fraglists work as expected.
-> 
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> ---
->  net/core/skbuff.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index c5e6c0b83a92..39c13b9cf79d 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -5441,9 +5441,11 @@ struct sk_buff *skb_vlan_untag(struct sk_buff *skb)
->  		goto err_free;
->  
->  	skb_reset_network_header(skb);
-> -	skb_reset_transport_header(skb);
->  	skb_reset_mac_len(skb);
->  
-> +	if (!skb_transport_header_was_set(skb))
-> +		skb_reset_transport_header(skb);
-> +
+From: Eric Dumazet <eric.dumazet@gmail.com>
+Date: Mon,  9 Nov 2020 15:13:47 -0800
 
-Patch looks fine, thanks, but I don't understand why you decided to 
-move the reset?  It's not like it's not in order of headers, either.
-Let's keep the series of resets identical to __netif_receive_skb_core(),
-shall we?
+> From: Eric Dumazet <edumazet@google.com>
+>
+> This came while reviewing Alexander Lobakin patch against UDP GRO:
+>
+> We want to make sure skb wont be changed by these helpers
+> while it is owned by GRO stack.
+>
+> Eric Dumazet (2):
+>   inet: constify inet_sdif() argument
+>   inet: udp{4|6}_lib_lookup_skb() skb argument is const
 
->  	return skb;
->  
->  err_free:
+For the series:
+Acked-by: Alexander Lobakin <alobakin@pm.me>
+
+Thanks!
+
+>  include/net/ip.h  | 2 +-
+>  include/net/udp.h | 6 +++---
+>  net/ipv4/udp.c    | 2 +-
+>  net/ipv6/udp.c    | 2 +-
+>  4 files changed, 6 insertions(+), 6 deletions(-)
+>
+> --
+> 2.29.2.222.g5d2a92d10f8-goog
+
+Al
 
