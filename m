@@ -2,112 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 279582AB416
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 10:56:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 303482AB430
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 10:58:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729031AbgKIJ4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 04:56:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726535AbgKIJ4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 04:56:45 -0500
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C579C0613CF
-        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 01:56:45 -0800 (PST)
-Received: by mail-il1-x144.google.com with SMTP id g7so7700124ilr.12
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 01:56:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Reyf2LTkl/nZmDymc/C7yhdYxGBOvgpjf15ijhHXrXk=;
-        b=h6lPXGm5aOnj3YuFHHOqJ54jB/gd4poG1bgWPgpyvt1+NfFOh6lcPqHeMzjQ5mrY/R
-         roMcD+FaCTwRBOyX59DBpv/ueZZhi20x3WwIXkAmCZDcbSUt2nX3tjhN3kg47VnpDhdc
-         jJgmoPlA3KUlxJ5pH0Jg9ger371DV+iH1uMkxd/s8gjxHsYws9GbIN9iiWUgvyrhqbNZ
-         yuuzXK3xJOoiBcEXuWxdzums+aOvjz8Za2NJQ2bOGm3QMVMFtDAxvhZl7o+oZ2a5vNSB
-         AQdesuNpbCDL2C7tRxfUBr7v+gUe2SiNFMiXJeyaMvZlE7qHRRd3pp7t0BZocUDYeU0t
-         bhmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Reyf2LTkl/nZmDymc/C7yhdYxGBOvgpjf15ijhHXrXk=;
-        b=quwbiexY+Poa0kewOkWa+PErGkthnSLKcEGgwSmODKB1gR94E1nXFVl5LQ9CEUPGUp
-         cRF2a/yH1sZbDQgZCGs73jEZs871CgExoQsAwvT2XUIhIkQh0MtZ4IIdlekL6gRTCNdu
-         zaKE2itV8OHnOK16yiZKR7iir3Sr1Wjq9kFQxFg1fDuSjRA8oX91kJ1enLhnYEsndaNJ
-         zMDJUrbrXkFzlcAgorqDUHo8t600BKE2bPPbc/jLcLgVJjYh/rJIdu9+FChJhQx3TfBf
-         HEK6BJWyJWQuE+eMwA7EY58SJ59cCgvArAK8ccQ7ql6vxT/pb+CZegdqdUPkP5H3r26d
-         jtgA==
-X-Gm-Message-State: AOAM531CHBPeW0EIHrSudqKkvjqNJfTt4RPyVUg5l+HreI5R6e8eZTP8
-        50SsXJYKy9f7EbqpDnN+UAIiA3L4bqod8bmtMsVwt7lFsNnHvg==
-X-Google-Smtp-Source: ABdhPJzoXZSHKjTkIGQFt1LutvDCEx/57b7tlUf+ufClMuHEnwB4eL4Vbg/Q5gshcXTU5vx5K22p/Dnl3YB10/u8jMI=
-X-Received: by 2002:a92:6f11:: with SMTP id k17mr9516216ilc.69.1604915804564;
- Mon, 09 Nov 2020 01:56:44 -0800 (PST)
-MIME-Version: 1.0
-References: <1604913614-19432-1-git-send-email-wenan.mao@linux.alibaba.com> <1604914417-24578-1-git-send-email-wenan.mao@linux.alibaba.com>
-In-Reply-To: <1604914417-24578-1-git-send-email-wenan.mao@linux.alibaba.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 9 Nov 2020 10:56:33 +0100
-Message-ID: <CANn89iKiNdtxaL_yMF6=_8=m001vXVaxvECMGbAiXTYZjfj3oQ@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: Update window_clamp if SOCK_RCVBUF is set
-To:     Mao Wenan <wenan.mao@linux.alibaba.com>
-Cc:     David Miller <davem@davemloft.net>,
+        id S1729334AbgKIJ6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 04:58:19 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:52508 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727906AbgKIJ6R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 04:58:17 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id A47A3200BC;
+        Mon,  9 Nov 2020 10:58:15 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id mHvVf0SRTQlv; Mon,  9 Nov 2020 10:58:15 +0100 (CET)
+Received: from mail-essen-01.secunet.de (unknown [10.53.40.204])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 035C820078;
+        Mon,  9 Nov 2020 10:58:15 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Mon, 9 Nov 2020 10:58:14 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Mon, 9 Nov 2020
+ 10:58:14 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id BA61131844B0;
+ Mon,  9 Nov 2020 10:58:13 +0100 (CET)
+Date:   Mon, 9 Nov 2020 10:58:13 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Lorenzo Colitti <lorenzo@google.com>
+CC:     mtk81216 <lina.wang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "Hideaki YOSHIFUJI" <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
+        Greg Kroah-Hartman <gregkh@google.com>
+Subject: Re: [PATCH] xfrm:fragmented ipv4 tunnel packets in inner interface
+Message-ID: <20201109095813.GV26422@gauss3.secunet.de>
+References: <20200909062613.18604-1-lina.wang@mediatek.com>
+ <20200915073006.GR20687@gauss3.secunet.de>
+ <CAKD1Yr1VsueZWUtCL4iMWLhnADypUOtDK=dgqM2Y2HDvXc77iw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAKD1Yr1VsueZWUtCL4iMWLhnADypUOtDK=dgqM2Y2HDvXc77iw@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 9, 2020 at 10:33 AM Mao Wenan <wenan.mao@linux.alibaba.com> wrote:
->
-> When net.ipv4.tcp_syncookies=1 and syn flood is happened,
-> cookie_v4_check or cookie_v6_check tries to redo what
-> tcp_v4_send_synack or tcp_v6_send_synack did,
-> rsk_window_clamp will be changed if SOCK_RCVBUF is set,
-> which will make rcv_wscale is different, the client
-> still operates with initial window scale and can overshot
-> granted window, the client use the initial scale but local
-> server use new scale to advertise window value, and session
-> work abnormally.
+On Thu, Nov 05, 2020 at 01:52:01PM +0900, Lorenzo Colitti wrote:
+> On Tue, Sep 15, 2020 at 4:30 PM Steffen Klassert
+> <steffen.klassert@secunet.com> wrote:
+> > > In esp's tunnel mode,if inner interface is ipv4,outer is ipv4,one big
+> > > packet which travels through tunnel will be fragmented with outer
+> > > interface's mtu,peer server will remove tunnelled esp header and assemble
+> > > them in big packet.After forwarding such packet to next endpoint,it will
+> > > be dropped because of exceeding mtu or be returned ICMP(packet-too-big).
+> >
+> > What is the exact case where packets are dropped? Given that the packet
+> > was fragmented (and reassembled), I'd assume the DF bit was not set. So
+> > every router along the path is allowed to fragment again if needed.
+> 
+> In general, isn't it just suboptimal to rely on fragmentation if the
+> sender already knows the packet is too big? That's why we have things
+> like path MTU discovery (RFC 1191).
 
-What is not working exactly ?
+When we setup packets that are sent from a local socket, we take
+MTU/PMTU info we have into account. So we don't create fragments in
+that case.
 
-Sending a 'big wscale' should not really matter, unless perhaps there
-is a buggy stack at the remote end ?
+When forwarding packets it is different. The router that can not
+TX the packet because it exceeds the MTU of the sending interface
+is responsible to either fragment (if DF is not set), or send a
+PMTU notification (if DF is set). So if we are able to transmit
+the packet, we do it.
 
->
-> Signed-off-by: Mao Wenan <wenan.mao@linux.alibaba.com>
-> ---
->  v2: fix for ipv6.
->  net/ipv4/syncookies.c | 4 ++++
->  net/ipv6/syncookies.c | 5 +++++
->  2 files changed, 9 insertions(+)
->
-> diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
-> index 6ac473b..57ce317 100644
-> --- a/net/ipv4/syncookies.c
-> +++ b/net/ipv4/syncookies.c
-> @@ -427,6 +427,10 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
->
->         /* Try to redo what tcp_v4_send_synack did. */
->         req->rsk_window_clamp = tp->window_clamp ? :dst_metric(&rt->dst, RTAX_WINDOW);
-> +       /* limit the window selection if the user enforce a smaller rx buffer */
-> +       if (sk->sk_userlocks & SOCK_RCVBUF_LOCK &&
-> +           (req->rsk_window_clamp > tcp_full_space(sk) || req->rsk_window_clamp == 0))
-> +               req->rsk_window_clamp = tcp_full_space(sk);
+> Fragmentation is generally
+> expensive, increases the chance of packet loss, and has historically
+> caused lots of security vulnerabilities. Also, in real world networks,
+> fragments sometimes just don't work, either because intermediate
+> routers don't fragment, or because firewalls drop the fragments due to
+> security reasons.
+> 
+> While it's possible in theory to ask these operators to configure
+> their routers to fragment packets, that may not result in the network
+> being fixed, due to hardware constraints, security policy or other
+> reasons.
 
-This seems not needed to me.
+We can not really do anything here. If a flow has no DF bit set
+on the packets, we can not rely on PMTU information. If we have PMTU
+info on the route, then we have it because some other flow (that has
+DF bit set on the packets) triggered PMTU discovery. That means that
+the PMTU information is reset when this flow (with DF set) stops
+sending packets. So the other flow (with DF not set) will send
+big packets again.
 
-We call tcp_select_initial_window() with tcp_full_space(sk) passed as
-the 2nd parameter.
+> Those operators may also be in a position to place
+> requirements on devices that have to use their network. If the Linux
+> stack does not work as is on these networks, then those devices will
+> have to meet those requirements by making out-of-tree changes. It
+> would be good to avoid that if there's a better solution (e.g., make
+> this configurable via sysctl).
 
-tcp_full_space(sk) will then apply :
-
-space = min(*window_clamp, space);
-
-Please cook a packetdrill test to demonstrate what you are seeing ?
+We should not try to workaround broken configurations, there are just
+too many possibilities to configure a broken network.
