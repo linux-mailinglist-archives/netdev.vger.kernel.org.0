@@ -2,61 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98FD52AC925
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 00:13:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18DC62AC926
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 00:13:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730632AbgKIXN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 18:13:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60178 "EHLO
+        id S1730689AbgKIXN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 18:13:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
         with ESMTP id S1729452AbgKIXN4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 18:13:56 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8812C0613CF
-        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 15:13:54 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id e7so9600448pfn.12
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 15:13:54 -0800 (PST)
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9510C0613CF
+        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 15:13:56 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id w11so5489692pll.8
+        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 15:13:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UBc0jRpnMotBJPPpr+nMafrbVcY3nHLtkPpcqs3OA9Q=;
-        b=Usw6A3/rc1FSTBdhpUiwnwnKrgbqhbFXPibseee6my0D0xm7kngnoIxXtMo3L+KLUY
-         lqhl2QOuiAq2GGHZ9OnAp388FH0StXQ+h7Z7zwF5RyC3F7E3CYKjY7Vt8EIQzW+WSRZ3
-         eSVm/Mfx0L1AuLqx82LGZXRPJu0TjimLJtodm9I2OlVXhG9XJw3shF+78i0525mleD+e
-         631wqYWeIS0uEb0DAfeqjG5O6Wvh3e8ucPjfDoB7NBPZqSAknpKyjAATw/uPEt7s0no6
-         QtHTCg83OQL3qMw8ZCzyTbRV8TO6BVYhcmrmbRacV/v/zV6ZOQ0pZpm3BXKeL1RJ6Drl
-         k9Zw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Oduogtnbw5/TKsSx9Xyi3jGYRSYurv0+Gmjk3ygWYFU=;
+        b=r1xQr5Hadf5RzWS4UZmVozXBtgfRjYPEX32af6H+6W+cMbDpl6ceRegQaJg8FepAph
+         08fYpfOqHXrxsBkHot2fVmg+h+gRA+j3/MNH6CKaJcOaG10jXYw/QUmK9NZNvI/eAHo5
+         lAmkDPWPghTo02WXcXQ3P5DWn7XZ9FtEu6HCJClv3YU3Ik02Ngyd4sDy2IUXmUnu29JN
+         CVXV4p6CHosFpPplJkU192tAlD9iJ+VNG9yk7gz8hOgXn5oEkvE7uRpxw4O8DzX58eLv
+         RgoaCFZm5V2aelvloJjAgacV0wDGEG/NGDrpaa24e/+zA47V9ui87NaSh+ieaURHnLSm
+         O7ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UBc0jRpnMotBJPPpr+nMafrbVcY3nHLtkPpcqs3OA9Q=;
-        b=P2kyA6V68/r7OccwGR1GykZjzHwRTYH6RNYDXDJS5a6G/F+aNEclQXxy2YSqIDAciJ
-         bduHNmZmDS8OVW5P+fcTiHDmGBf+3j0LQToBL94EHDzxhMFI7UZBrQxNYHbGOTAVccGo
-         +dn10gLOXG6PQv44LyF4Poe0uOpEQYDiR39JGJjXfe6ZU8Lgc2GlkcCeQxuvJ0ww86d4
-         jxb0V6xhiuqZiRi46es8A3/pzFOjuEW4PWkmLE7UpBtWg0W2+T1NFqk/MBNbxkGc4hq2
-         d4KrI5AuYQAZtmMG1ObB3NpF5gCMYVV0zEiC2RuO4yURZ1LqGzsb5vrA559xdIHgI94t
-         QURw==
-X-Gm-Message-State: AOAM5305bxOp/tcPAS75X/MZ/7OypAeVU7UO5z2seljVFYpb6XTrIrm7
-        PdYuAwMF/7NHeU2wXfKPPFk=
-X-Google-Smtp-Source: ABdhPJwffPRMl2FzLBTHaHmirzKnUqPlTjpMCIctZ4tBNeZQSAjC5MsRdIcDbva46i4Qo8ESqrws5Q==
-X-Received: by 2002:a17:90b:1b43:: with SMTP id nv3mr1724356pjb.67.1604963634376;
-        Mon, 09 Nov 2020 15:13:54 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Oduogtnbw5/TKsSx9Xyi3jGYRSYurv0+Gmjk3ygWYFU=;
+        b=AF/dLW/uajhrnndJCJdqEZWnS74i1E62ClVck9HF3i+CLRBzv3YiZTJgTy0e90vbz2
+         M7voiSo99JQ2LQ+m/bYJFge9RjkyxUcS6ZalJxEhHHKjkZCEAB3VqzCRP+n3cTNGyqif
+         L/M7g0uIL9n2s1IwuC2Vginj2rPR3wUfaGSVPs4jjWhmlqQWSpQ8U7LyApr3jGSaEA5Z
+         deRC5Br1FD4Vzh/IazrZB+cJVfpu11uJLzSo93Y8aLcsVJT1xb6uPBOx30fmg1Tm4xHU
+         BcvjrJJcQybzDxCdKMFbni4MRU0NA93aG3HprPRz/uAGB5kZa//DC8y/FL4lHDbgj0jl
+         El3w==
+X-Gm-Message-State: AOAM531au4AWbeYhnj6OwF0wZJXHdPDkdNUnMkZOB880A2JVIqpt1jE2
+        4qhb+yBzlPqN46ZLKOCDqDU=
+X-Google-Smtp-Source: ABdhPJzzVLq8QaGAeoxW0XKn8ddUsciCYB9t0C1Gn3l0lLJeJxtFYw+OEkyVpSiwpIPniw5PjziDUA==
+X-Received: by 2002:a17:902:6b08:b029:d6:c471:8b5b with SMTP id o8-20020a1709026b08b02900d6c4718b5bmr14668910plk.78.1604963636348;
+        Mon, 09 Nov 2020 15:13:56 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
-        by smtp.gmail.com with ESMTPSA id w16sm12375365pfn.45.2020.11.09.15.13.52
+        by smtp.gmail.com with ESMTPSA id w16sm12375365pfn.45.2020.11.09.15.13.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 15:13:53 -0800 (PST)
+        Mon, 09 Nov 2020 15:13:55 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 0/2] inet: prevent skb changes in udp{4|6}_lib_lookup_skb()
-Date:   Mon,  9 Nov 2020 15:13:47 -0800
-Message-Id: <20201109231349.20946-1-eric.dumazet@gmail.com>
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH net-next 1/2] inet: constify inet_sdif() argument
+Date:   Mon,  9 Nov 2020 15:13:48 -0800
+Message-Id: <20201109231349.20946-2-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.29.2.222.g5d2a92d10f8-goog
+In-Reply-To: <20201109231349.20946-1-eric.dumazet@gmail.com>
+References: <20201109231349.20946-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -65,21 +68,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-This came while reviewing Alexander Lobakin patch against UDP GRO:
+inet_sdif() does not modify the skb.
 
-We want to make sure skb wont be changed by these helpers
-while it is owned by GRO stack.
+This will permit propagating the const qualifier in
+udp{4|6}_lib_lookup_skb() functions.
 
-Eric Dumazet (2):
-  inet: constify inet_sdif() argument
-  inet: udp{4|6}_lib_lookup_skb() skb argument is const
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Alexander Lobakin <alobakin@pm.me>
+---
+ include/net/ip.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- include/net/ip.h  | 2 +-
- include/net/udp.h | 6 +++---
- net/ipv4/udp.c    | 2 +-
- net/ipv6/udp.c    | 2 +-
- 4 files changed, 6 insertions(+), 6 deletions(-)
-
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 2d6b985d11ccaa75827b3a15ac3f898d7a193242..e20874059f826eb0f9e899aed556bfbc9c9d71e8 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -99,7 +99,7 @@ static inline void ipcm_init_sk(struct ipcm_cookie *ipcm,
+ #define PKTINFO_SKB_CB(skb) ((struct in_pktinfo *)((skb)->cb))
+ 
+ /* return enslaved device index if relevant */
+-static inline int inet_sdif(struct sk_buff *skb)
++static inline int inet_sdif(const struct sk_buff *skb)
+ {
+ #if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
+ 	if (skb && ipv4_l3mdev_skb(IPCB(skb)->flags))
 -- 
 2.29.2.222.g5d2a92d10f8-goog
 
