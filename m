@@ -2,115 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F8412AC124
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 17:43:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0E3D2AC126
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 17:44:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730555AbgKIQn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 11:43:29 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:48394 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729776AbgKIQn2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 11:43:28 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A9GTiGs024900;
-        Mon, 9 Nov 2020 16:43:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : in-reply-to : message-id : references : mime-version :
- content-type; s=corp-2020-01-29;
- bh=yoSc8PVnoqz9vLpwLqVpjsZWxikRjgLIIdZmILAbnjM=;
- b=dBIunAvHvyYJ8eDVVK0GgO0D2jj4HnIPOe3U/fnqG71CAARSSvWmpB9UxcqU2v0GcrcT
- 3Mz0lQDFL4oT55eZajk+X+BANRUd3wm8vq+SibOLLy7CYgnejsa7Bl4RAJXqOPjni/3T
- CtRijv3Rg7CVE4biWzGSFAI+W0T12WCTVGBR2i3kLXr4BISyP9SnYBcs5tpnmUiLUnlQ
- Yo7f5CTfxzgMAOZY78BCl2aN+7p415ZNYrrrCc5mocnEJsH5AZF/vStu1BmkK5d9HYDI
- YAQooRbqhu6CLgUu8lkVvrMxHTU3ChueWWQ7/Z42WyJnSZGebMKjmUZGM1KT7ncVP/kz GA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 34nkhkpyh6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 09 Nov 2020 16:43:10 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0A9GU3fY157105;
-        Mon, 9 Nov 2020 16:43:09 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 34p5gvg514-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 09 Nov 2020 16:43:09 +0000
-Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0A9Gh8du027322;
-        Mon, 9 Nov 2020 16:43:08 GMT
-Received: from dhcp-10-175-204-77.vpn.oracle.com (/10.175.204.77)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 09 Nov 2020 08:43:07 -0800
-Date:   Mon, 9 Nov 2020 16:42:58 +0000 (GMT)
-From:   Alan Maguire <alan.maguire@oracle.com>
-X-X-Sender: alan@localhost
-To:     Andrii Nakryiko <andrii@kernel.org>
-cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com,
-        linux-kernel@vger.kernel.org, rafael@kernel.org, jeyu@kernel.org,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH bpf-next 5/5] tools/bpftool: add support for in-kernel
- and named BTF in `btf show`
-In-Reply-To: <20201106055111.3972047-6-andrii@kernel.org>
-Message-ID: <alpine.LRH.2.21.2011091633450.4154@localhost>
-References: <20201106055111.3972047-1-andrii@kernel.org> <20201106055111.3972047-6-andrii@kernel.org>
-User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
+        id S1730471AbgKIQoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 11:44:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726410AbgKIQoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 11:44:04 -0500
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F84C0613CF
+        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 08:44:04 -0800 (PST)
+Received: by mail-qt1-x843.google.com with SMTP id m65so6394321qte.11
+        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 08:44:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bxKjKzyax+cKTDy4CrT1Ah9rBj0Kud+9NcQt8Uwja9I=;
+        b=NevfnH1ajOYsfTPL95QEBkvMx8cVstM+rEK/+UgXRYLe52JYtpHbtZOSaLGoc1AZq3
+         t2+Q4HMRMamOft+5d7BtLPiWpOd22MyNLboDzciE0bizZH6Z5rMbIBf9k4x4540rhTqX
+         JGG+j4yIKbTkdndc4dKJ0BNHXHT8BR+Kdb/xXlWYDKpOAxzZJjLxwL68ZZgkMedVqqKf
+         DJPtdsfnWJgOnesVn/CuhJ2HpJiFOetxGLGNWRELr1SIHPKz4jvIs0pI72f6QX663Odn
+         fV5TOyN0++PVvHu39o5Jamv+69xJ3C67YlAMnx8GBrxvkbh0wQKvx6nO3NPJ9tNobA91
+         5PyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bxKjKzyax+cKTDy4CrT1Ah9rBj0Kud+9NcQt8Uwja9I=;
+        b=EsbKSn8GsG0ErU6JyAfjDjL+yYHBbwJqi2vBtzj1GXqeWT8NT8gt+/iGuZtkD6A/r8
+         7fdDhEqhvgl5bNnra+mg+mlDcPpay/yxUZHx445a/LS6C9T4UneVZUiopvkAsgEGjgmw
+         KXabE9eWjw0VpESIcy2yUCbIMs3vkMRBc5h64pGG6+UIDMvrNeqkLsi5PHZ42cHexq13
+         w3PeyJI7JKK+QwqAktIBxfSyFxYrseOWnhSst0YLAmFNlA1rXAEKlqVSC/NiLGUiuUKO
+         gQRcM8wkjNuRm9KgWWggPNtK4cuPMbsybhYEInqoinI+3Xjl0H/FbiMOw50RUx4IOwhQ
+         ytew==
+X-Gm-Message-State: AOAM533AaqLESMzeHgusqTaImo7WE8NUxrMnE8hnHwEcwB2H0HYzQQBU
+        DXyrfNA2TxvkceGCFXglp40=
+X-Google-Smtp-Source: ABdhPJwEOouNnm5E2o0W9/obGhF5Z45qwMdy6jtHUJwNRGVlKBnBat0VCsmUqL7hpFp+Frjd778Ptw==
+X-Received: by 2002:ac8:7189:: with SMTP id w9mr13996211qto.288.1604940243512;
+        Mon, 09 Nov 2020 08:44:03 -0800 (PST)
+Received: from localhost.localdomain ([2001:1284:f013:f46e:fd51:d129:1f9d:9ebd])
+        by smtp.gmail.com with ESMTPSA id d140sm2579774qke.59.2020.11.09.08.44.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Nov 2020 08:44:02 -0800 (PST)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 6D551C1B7C; Mon,  9 Nov 2020 13:44:00 -0300 (-03)
+Date:   Mon, 9 Nov 2020 13:44:00 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     wenxu@ucloud.cn, kuba@kernel.org, dcaratti@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 3/3] net/sched: act_frag: add implict packet
+ fragment support.
+Message-ID: <20201109164400.GC3913@localhost.localdomain>
+References: <1604791828-7431-1-git-send-email-wenxu@ucloud.cn>
+ <1604791828-7431-4-git-send-email-wenxu@ucloud.cn>
+ <ygnhimaewtm2.fsf@nvidia.com>
+ <20201109145025.GB3913@localhost.localdomain>
+ <ygnhft5iwmzh.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9800 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999 mlxscore=0
- spamscore=0 phishscore=0 adultscore=0 malwarescore=0 suspectscore=3
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011090114
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9800 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 priorityscore=1501
- mlxscore=0 suspectscore=3 mlxlogscore=999 lowpriorityscore=0 spamscore=0
- malwarescore=0 adultscore=0 clxscore=1011 bulkscore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011090114
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ygnhft5iwmzh.fsf@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 Nov 2020, Andrii Nakryiko wrote:
-
-> Display vmlinux BTF name and kernel module names when listing available BTFs
-> on the system.
+On Mon, Nov 09, 2020 at 05:47:46PM +0200, Vlad Buslov wrote:
 > 
-> In human-readable output mode, module BTFs are reported with "name
-> [module-name]", while vmlinux BTF will be reported as "name [vmlinux]".
-> Square brackets are added by bpftool and follow kernel convention when
-> displaying modules in human-readable text outputs.
-> 
-
-I had a go at testing this and all looks good, but I was curious
-if  "bpftool btf dump" is expected to work with module BTF? I see
-the various modules in /sys/kernel/btf, but if I run:
-
-# bpftool btf dump file /sys/kernel/btf/ixgbe
-Error: failed to load BTF from /sys/kernel/btf/ixgbe: Invalid argument
-
-...while it still works for vmlinux:
-
-# bpftool btf dump file /sys/kernel/btf/vmlinux
-[1] INT '(anon)' size=4 bits_offset=0 nr_bits=32 encoding=(none)
-[2] INT 'long unsigned int' size=8 bits_offset=0 nr_bits=64 
-encoding=(none)
+> On Mon 09 Nov 2020 at 16:50, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> wrote:
+> > On Mon, Nov 09, 2020 at 03:24:37PM +0200, Vlad Buslov wrote:
+> >> On Sun 08 Nov 2020 at 01:30, wenxu@ucloud.cn wrote:
 ...
+> >> > +int tcf_dev_queue_xmit(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb))
+> >> > +{
+> >> > +	if (tcf_xmit_hook_enabled())
+> >> 
+> >> Okay, so what happens here if tcf_xmit_hook is disabled concurrently? If
+> >> we get here from some rule that doesn't involve act_ct but uses
+> >> act_mirred and act_ct is concurrently removed decrementing last
+> >> reference to static branch and setting tcf_xmit_hook to NULL?
+> >
+> > Yeah.. good point. Thinking further now, what about using RCU for the
+> > hook? AFAICT it can cover the synchronization needed when clearing the
+> > pointer, tcf_set_xmit_hook() should do a module_get() and
+> > tcf_clear_xmit_hook() can delay a module_put(act_frag) as needed with
+> > call_rcu.
+> 
+> Wouldn't it be enough to just call synchronize_rcu() in
+> tcf_clear_xmit_hook() after setting tcf_xmit_hook to NULL? act_ct module
+> removal should be very rare, so synchronously waiting for rcu grace
+> period to complete is probably okay.
 
-"bpftool btf show" works for ixgbe:
+Right. And even if it gets reloaded (or, say, something else tries to
+use the hook), the teardown was already handled. Nice, thanks Vlad.
 
-# bpftool btf show|grep ixgbe
-19: name [ixgbe]  size 182074B
-
-Is this perhaps not expected to work yet? (I updated pahole
-to the latest changes etc and BTF generation seemed to work
-fine for modules during kernel build).
-
-For the "bpftool btf show" functionality, feel free to add
-
-Tested-by: Alan Maguire <alan.maguire@oracle.com>
-
-Thanks!
-
-Alan
+> 
+> >
+> > I see tcf_mirred_act is already calling rcu_dereference_bh(), so
+> > it's already protected by rcu read here and calling tcf_xmit_hook()
+> > with xmit pointer should be fine. WDYT?
+> 
+> Yes, good idea.
+> 
+> >
+> >> 
+> >> > +		return tcf_xmit_hook(skb, xmit);
+> >> > +	else
+> >> > +		return xmit(skb);
+> >> > +}
+> >> > +EXPORT_SYMBOL_GPL(tcf_dev_queue_xmit);
+> 
