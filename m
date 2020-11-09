@@ -2,57 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37E7D2AAEA2
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 01:58:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 544352AAEA7
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 02:06:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728956AbgKIA60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Nov 2020 19:58:26 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7156 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728937AbgKIA6Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Nov 2020 19:58:25 -0500
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CTt085QjVz15SQX;
-        Mon,  9 Nov 2020 08:58:16 +0800 (CST)
-Received: from [127.0.0.1] (10.74.149.191) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Mon, 9 Nov 2020
- 08:58:16 +0800
-Subject: Re: [PATCH net-next 10/11] net: hns3: add ethtool priv-flag for EQ/CQ
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>
-References: <1604730681-32559-1-git-send-email-tanhuazhong@huawei.com>
- <1604730681-32559-11-git-send-email-tanhuazhong@huawei.com>
- <20201107094721.648db60c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   tanhuazhong <tanhuazhong@huawei.com>
-Message-ID: <4ca0514b-23b1-3934-2152-a7ab5d1bfa3e@huawei.com>
-Date:   Mon, 9 Nov 2020 08:58:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        id S1728814AbgKIBGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Nov 2020 20:06:25 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:41904 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727949AbgKIBGZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Nov 2020 20:06:25 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kbvdV-005zoO-Cg; Mon, 09 Nov 2020 02:06:21 +0100
+Date:   Mon, 9 Nov 2020 02:06:21 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Marek Behun <marek.behun@nic.cz>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: Re: [RFC PATCH net-next 3/3] net: dsa: listen for
+ SWITCHDEV_{FDB,DEL}_ADD_TO_DEVICE on foreign bridge neighbors
+Message-ID: <20201109010621.GE1417181@lunn.ch>
+References: <20201108131953.2462644-1-olteanv@gmail.com>
+ <20201108131953.2462644-4-olteanv@gmail.com>
+ <CALW65jb+Njb3WkY-TUhsHh1YWEzfMcXoRAXshnT8ke02wc10Uw@mail.gmail.com>
+ <20201108172355.5nwsw3ek5qg6z7yx@skbuf>
+ <20201108235939.GC1417181@lunn.ch>
+ <20201109003028.melbgstk4pilxksl@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20201107094721.648db60c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.149.191]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201109003028.melbgstk4pilxksl@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2020/11/8 1:47, Jakub Kicinski wrote:
-> On Sat, 7 Nov 2020 14:31:20 +0800 Huazhong Tan wrote:
->> +static void hns3_update_cqe_mode(struct net_device *netdev, bool enable, bool is_tx)
+> > We also need to make sure the static entries get removed correctly
+> > when a host moves. The mv88e6xxx will not replace a static entry with
+> > a dynamically learned one. It will probably rise an ATU violation
+> > interrupt that frames have come in the wrong port.
 > 
-> Wrap this to 80 characters, please.
-> 
+> This is a good one. Currently every implementer of .port_fdb_add assumes
+> a static entry is what we want, but that is not the case here. We want
+> an entry that can expire or the switch can move it to a different port
+> when there is evidence that it's wrong.
 
-Will fix it.
-Thanks
+I doubt you will find any hardware that actually does this. I expect
+there are static entries, and dynamic entries, and nothing
+hybrid. After a move, we need to rely on a broadcast packet making its
+way to the software bridge, which causes it to learn about the move,
+and delete the static CPU entry from the hardware.
 
-> .
-> 
+We can probably test this with having our wireless device move back
+and forth a few times, so we can see the full cycle a few
+times. Unfortunately, i don't have two boards with both a switch and
+WiFi.
 
+    Andrew
