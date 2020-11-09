@@ -2,153 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CFAA2AC60C
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 21:38:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AE812AC616
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 21:43:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729499AbgKIUid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 15:38:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35778 "EHLO
+        id S1730056AbgKIUny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 15:43:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726952AbgKIUic (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 15:38:32 -0500
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B48C0613CF;
-        Mon,  9 Nov 2020 12:38:32 -0800 (PST)
-Received: by mail-qt1-x844.google.com with SMTP id m65so6992100qte.11;
-        Mon, 09 Nov 2020 12:38:32 -0800 (PST)
+        with ESMTP id S1725946AbgKIUnx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 15:43:53 -0500
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7E4C0613CF;
+        Mon,  9 Nov 2020 12:43:53 -0800 (PST)
+Received: by mail-ot1-x342.google.com with SMTP id l36so10327862ota.4;
+        Mon, 09 Nov 2020 12:43:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=gMW3pk1wRUoLgj0dOxEf2J+Wx3p/8/WsmXDMapxJ2ec=;
-        b=j6BwfuHNd7EIXx0fjylxPtKiYcgZGwwVsW0yk1t4qOj8R/ptKNRFNe9XaVtz83DDrb
-         BQZzBn1Mx/l4uTdfHwHtDd10Eh3rMsmhp4Ef4frdnzFa7a/VvDpm/+ug7N3hGPHJNYzY
-         7WlzqpIQg0rnUuMUs0ceFc5wptiJmONYtYWCNwQTWDZULESZHG3ic2MeIV0uW55FxJHC
-         o2tWdqipayLTOywzSwc/o4pvC4ZARa7RC4ew2vWs/mA+WY1rO3nszziBILoSDOSSnU/j
-         y/geSKgVBmNu8wiJwmJLLQHZf0XfGrSBWFmac5uWzt2obaXFp58LV0QlTGyIVEzbyyi4
-         h0NA==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=ATlrc71eVmMN7dt7E+P5qZNg9suPptLNbqRD/l6+6aY=;
+        b=plXr8QvaQSlpxzLlNSm4+pzsXkkyAtKZPCwYM1aC0PJbEZilntIxAgGEhXWqcn6vLa
+         3Nqg/F9WarxyZrWos3e9JTl04CPbvzJ9FD5RJUNy7wPIdKbeRoEQOhZLBwyxcsbgm4iU
+         5iMNIOLsZWyJijwkwFJY7/h6Jbx+V7XNhISDK2BCeYSL+m5hBXatXdb60px3Yyv5ykx2
+         2+0dKIQZXbnfVAgLYWlDE1O+tjrX7dktDrDOSZ2O3bia7oakzgoD9cIhQy4enryWNy2d
+         9XocgYlNGh3KdWanoMFigemtxu6qRXdUBJdgmK+xI/6CRAXDbDJhIE2wcxptAKa8OEKL
+         lZIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=gMW3pk1wRUoLgj0dOxEf2J+Wx3p/8/WsmXDMapxJ2ec=;
-        b=MlpMBev34ZIx+Bo5EHqaoklnF4LZJrnEx2ICP7XmQQ7oK4iiC0QxC4pvtSlmT9XpK/
-         SgWBrtcoTlV2DIyvuofJlNlypijtBxVLq+CSXERMlx7XWZn0IBWRtXeCK6TZZeOATA5A
-         cE2mfUH0V1iLSsy2ZOCtlNZzdhCTcgW6E4P4075XdBpf3mbsEUhXRzpqcq1UGOKXcxlE
-         75yxH+5n0xQsOsXJ/MjzLSylqfMQDF1dTZDqsD3oo+aHRLSYSODMIkIFlE+L8xnLhmi0
-         JrHqXPt3DBP47yXhxCo/xXGtatIzqZuFCrrvjTqbG46GWJawKeVNOthJjfzdO49L5EPd
-         IqKg==
-X-Gm-Message-State: AOAM5327109/35AvxTBuENCtcvFuHW8Kkmp+7S2DwZeYb3eG+5eNrhcH
-        xj9wot972+WgObphoU+sCFk=
-X-Google-Smtp-Source: ABdhPJzPmF4m7q3cvnahmyDVo4UMO5mkHR2ap6GMuqcisSxLG4PguplAq+Y0ex2MoKrZ27yul22c4Q==
-X-Received: by 2002:aed:3a63:: with SMTP id n90mr15505367qte.133.1604954311887;
-        Mon, 09 Nov 2020 12:38:31 -0800 (PST)
-Received: from svens-asus.arcx.com ([184.94.50.30])
-        by smtp.gmail.com with ESMTPSA id h82sm6952821qke.109.2020.11.09.12.38.31
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=ATlrc71eVmMN7dt7E+P5qZNg9suPptLNbqRD/l6+6aY=;
+        b=MbOi94odkSuTVqU07cgbMJUNpx5qbxqb98IZXtxypDqu3ZzAq458Nab7nHh5imE8lL
+         pjfQg64TalHHOB3VAoYFte39eiI0aR350ismerl6xiUoXAIPZDUSqDNMjE366Dos6j0c
+         8R3jHIk4OpD683baWMzkNoxqpUnEui5iFqln/aNVgTB59zE+IL5jgwnvFZFanuMk5pCh
+         Thj/LnsGMFFFLr98HDF0SJMPqC8jDTC5ZF98Tcy4GIv/AKuwHi5LUTxd4R87tTrFoy4C
+         +/Ag41ByG7xrJJwnKclQ7N5J/NEjiZfVEdvNvrNWYZrPkcc/ezQDSxqTW0jEXv9PLuTw
+         nfjQ==
+X-Gm-Message-State: AOAM530RA5pVSCVHwuYKSqXqYJPDdU4SbL1Fn8UCEbVAwcRhw3kKslFH
+        dlBxS2nWPBGpyqMfq5Tgi+I=
+X-Google-Smtp-Source: ABdhPJz/wqdJcgTVIkfvCa6luKlYzRUqzWrUKz0KdQ0nLjlP9/+xq7vt01xn7VVeytUYno4ZOqkZxQ==
+X-Received: by 2002:a05:6830:22c9:: with SMTP id q9mr12509129otc.48.1604954632560;
+        Mon, 09 Nov 2020 12:43:52 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id r24sm2748068otq.77.2020.11.09.12.43.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 12:38:31 -0800 (PST)
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
-To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v1] lan743x: fix "BUG: invalid wait context" when setting rx mode
-Date:   Mon,  9 Nov 2020 15:38:28 -0500
-Message-Id: <20201109203828.5115-1-TheSven73@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 09 Nov 2020 12:43:51 -0800 (PST)
+Date:   Mon, 09 Nov 2020 12:43:43 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org,
+        bpf@vger.kernel.org
+Message-ID: <5fa9a9ffc2ea3_8c0e208a2@john-XPS-13-9370.notmuch>
+In-Reply-To: <1604498942-24274-5-git-send-email-magnus.karlsson@gmail.com>
+References: <1604498942-24274-1-git-send-email-magnus.karlsson@gmail.com>
+ <1604498942-24274-5-git-send-email-magnus.karlsson@gmail.com>
+Subject: RE: [Intel-wired-lan] [PATCH bpf-next 4/6] xsk: introduce padding
+ between more ring pointers
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Van Asbroeck <thesven73@gmail.com>
+Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> Introduce one cache line worth of padding between the consumer pointer
+> and the flags field as well as between the flags field and the start
+> of the descriptors in all the lockless rings. This so that the x86 HW
+> adjacency prefetcher will not prefetch the adjacent pointer/field when
+> only one pointer/field is going to be used. This improves throughput
+> performance for the l2fwd sample app with 1% on my machine with HW
+> prefetching turned on in the BIOS.
+> 
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> ---
 
-In the net core, the struct net_device_ops -> ndo_set_rx_mode()
-callback is called with the dev->addr_list_lock spinlock held.
+Acked-by: John Fastabend <john.fastabend@gmail.com>
 
-However, this driver's ndo_set_rx_mode callback eventually calls
-lan743x_dp_write(), which acquires a mutex. Mutex acquisition
-may sleep, and this is not allowed when holding a spinlock.
+>  net/xdp/xsk_queue.h | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+> index cdb9cf3..74fac80 100644
+> --- a/net/xdp/xsk_queue.h
+> +++ b/net/xdp/xsk_queue.h
+> @@ -18,9 +18,11 @@ struct xdp_ring {
+>  	/* Hinder the adjacent cache prefetcher to prefetch the consumer
+>  	 * pointer if the producer pointer is touched and vice versa.
+>  	 */
+> -	u32 pad ____cacheline_aligned_in_smp;
+> +	u32 pad1 ____cacheline_aligned_in_smp;
+>  	u32 consumer ____cacheline_aligned_in_smp;
+> +	u32 pad2 ____cacheline_aligned_in_smp;
+>  	u32 flags;
+> +	u32 pad3 ____cacheline_aligned_in_smp;
+>  };
+>  
+>  /* Used for the RX and TX queues for packets */
+> -- 
+> 2.7.4
+> 
+> _______________________________________________
+> Intel-wired-lan mailing list
+> Intel-wired-lan@osuosl.org
+> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
 
-Fix by removing the dp_lock mutex entirely. Its purpose is to
-prevent concurrent accesses to the data port. No concurrent
-accesses are possible, because the dev->addr_list_lock
-spinlock in the core only lets through one thread at a time.
-
-Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
----
-
-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git # 4e0396c59559
-
-To: Bryan Whitehead <bryan.whitehead@microchip.com>
-To: "David S. Miller" <davem@davemloft.net>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org (open list)
-
- drivers/net/ethernet/microchip/lan743x_main.c | 12 +++---------
- drivers/net/ethernet/microchip/lan743x_main.h |  3 ---
- 2 files changed, 3 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index d0817a974f8e..eb990e036611 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -674,14 +674,12 @@ static int lan743x_intr_open(struct lan743x_adapter *adapter)
- static int lan743x_dp_write(struct lan743x_adapter *adapter,
- 			    u32 select, u32 addr, u32 length, u32 *buf)
- {
--	int ret = -EIO;
- 	u32 dp_sel;
- 	int i;
- 
--	mutex_lock(&adapter->dp_lock);
- 	if (lan743x_csr_wait_for_bit(adapter, DP_SEL, DP_SEL_DPRDY_,
- 				     1, 40, 100, 100))
--		goto unlock;
-+		return -EIO;
- 	dp_sel = lan743x_csr_read(adapter, DP_SEL);
- 	dp_sel &= ~DP_SEL_MASK_;
- 	dp_sel |= select;
-@@ -693,13 +691,10 @@ static int lan743x_dp_write(struct lan743x_adapter *adapter,
- 		lan743x_csr_write(adapter, DP_CMD, DP_CMD_WRITE_);
- 		if (lan743x_csr_wait_for_bit(adapter, DP_SEL, DP_SEL_DPRDY_,
- 					     1, 40, 100, 100))
--			goto unlock;
-+			return -EIO;
- 	}
--	ret = 0;
- 
--unlock:
--	mutex_unlock(&adapter->dp_lock);
--	return ret;
-+	return 0;
- }
- 
- static u32 lan743x_mac_mii_access(u16 id, u16 index, int read)
-@@ -2720,7 +2715,6 @@ static int lan743x_hardware_init(struct lan743x_adapter *adapter,
- 
- 	adapter->intr.irq = adapter->pdev->irq;
- 	lan743x_csr_write(adapter, INT_EN_CLR, 0xFFFFFFFF);
--	mutex_init(&adapter->dp_lock);
- 
- 	ret = lan743x_gpio_init(adapter);
- 	if (ret)
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index 57fce752346e..3a0e70daa88f 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.h
-+++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -711,9 +711,6 @@ struct lan743x_adapter {
- 	struct lan743x_csr      csr;
- 	struct lan743x_intr     intr;
- 
--	/* lock, used to prevent concurrent access to data port */
--	struct mutex		dp_lock;
--
- 	struct lan743x_gpio	gpio;
- 	struct lan743x_ptp	ptp;
- 
--- 
-2.17.1
 
