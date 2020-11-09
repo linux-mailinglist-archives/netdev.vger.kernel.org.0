@@ -2,223 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F9882AC682
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 22:03:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 834042AC699
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 22:06:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730260AbgKIVC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 16:02:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39562 "EHLO
+        id S1730607AbgKIVGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 16:06:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727070AbgKIVC4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 16:02:56 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28281C0613CF
-        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 13:02:56 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id o9so14363603ejg.1
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 13:02:56 -0800 (PST)
+        with ESMTP id S1730437AbgKIVGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 16:06:43 -0500
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5D10C0613CF;
+        Mon,  9 Nov 2020 13:06:42 -0800 (PST)
+Received: by mail-oi1-x244.google.com with SMTP id t143so11749527oif.10;
+        Mon, 09 Nov 2020 13:06:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M1MpqAr7WUWLVR6sicCUs2LlVAQDrfhnkN0gYmTcIL4=;
-        b=hYrE+IYZmkWMAqzYrSj/M/Ib194DeQCHHWOBT3uaSYyiy/dgLC9u63GFfTMogzwAmS
-         BoggCWkFz5/XnuK8O8ISVa9K8p2fCGqvI/bV1N85IDMvnN5QAzOP24dk8yVKuvHqxVx3
-         nJrvZrvOXMASM10OcixRgdHfq+QlWrQTwJpDkgMagDmxvQvfeKJ/FmwSdtk5hw2U7hlD
-         TkXPoUNR+6VLfhguM13a42tjmXslwrJ3lzzZg3j4HltjpU0qlRPSQ8feQ8l5qqdYXYhw
-         o+0q8ihg5jDZZeAXCfqS+48Zeu8DlytlfxGtY3mgT83f/fHVNVhnA5xhyIiCdrBM2yfd
-         g6vA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=dmc2tE6MNDnQkrAgLG+0UnVegaJqmlcObysEf4HngsI=;
+        b=Wo1VeJrAeAAX6gx4xgSl4SOH8CJaYeSzGYj7yNnJdr6yD4/1WCxV4H9HFLLHLQ9WOD
+         tUaeiezWOeooiao738i3iadYQbR255vDks/Cr7dqSMf2HOacIT4nkhnvhh9pePlQOnhQ
+         saMwG68s+p1bdIe/r7tXePiemG9EenlA75mY2iB5Xeb6eqZoLU8zz/BHT0W1SfakAn/6
+         B989pcaP7IrKsdDhhgaIZaL6kZU70F93bolO97nxFXPsAoK76B+vE6PwElalPuN4e1qM
+         KZlillnFv6ih1EfpG7InxICocQwuFqMTSZCSLlkU3S4mtL6W+J9U9Gq/HpK/2Oh1aJ7t
+         mBUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M1MpqAr7WUWLVR6sicCUs2LlVAQDrfhnkN0gYmTcIL4=;
-        b=FKW2bJI0KfKJtTAh3jE2ceaJ+gPCGhaS3OwNyKwLRtNy0ZF3/5xHIj8e8Idxwns98B
-         3/+brix9YoJT6Orj60tbi0PB8shQy6IiH2BlByV0Bt1GePY80+ljELmJIEF8Po+K5NEq
-         EEWlVd8dm9XZDmHWmlkJs/hbrqWE/ZpSAHAamLeOsIIJy6HPCAD8FW59DvawwS0stnuK
-         i9rNwf1eQqrtjvwBQOiGjgkjG82hdN11SP4V3iWl214HOoTJz1i+dOynfaIDZgmLhc8D
-         5WTJ6SoRz+ja4v3Ytl1rs3SSTa+ekeXZSPcgOHizS20XZJaGxeN6j6TQH+D0TXpVZ+t5
-         xcyQ==
-X-Gm-Message-State: AOAM531H0BxiQcuXvAbvXrUyOl9aZdGrjSDoxqSAU9F78FVbiezQAtSw
-        dolBtvAMexZRFIqDvtBJeciGl0KYDfcJoMLr9FOf9g==
-X-Google-Smtp-Source: ABdhPJya9da5/lYkK/loQ1w5id5ejoMnXv2iEhQRqtPOsr8sfSDp2TORIOcZWWqVgg2Bj0sHP/qAcExyz/y6ED0DudI=
-X-Received: by 2002:a17:906:5793:: with SMTP id k19mr17422032ejq.410.1604955774676;
- Mon, 09 Nov 2020 13:02:54 -0800 (PST)
-MIME-Version: 1.0
-References: <20201103174651.590586-1-awogbemila@google.com>
- <20201103174651.590586-2-awogbemila@google.com> <f4b03d3c70c2b1e19e42d0209e270110b7668039.camel@kernel.org>
- <CAL9ddJdgFvSZ-4F9XXHec-NDCbQjX20nWJF8=YQc7iiC_OSfoQ@mail.gmail.com>
-In-Reply-To: <CAL9ddJdgFvSZ-4F9XXHec-NDCbQjX20nWJF8=YQc7iiC_OSfoQ@mail.gmail.com>
-From:   David Awogbemila <awogbemila@google.com>
-Date:   Mon, 9 Nov 2020 13:02:43 -0800
-Message-ID: <CAL9ddJcS4oPhvOgsrXD6au0P8MFPBAoHW9TNEOTjMGB_jbwt-g@mail.gmail.com>
-Subject: Re: [PATCH 1/4] gve: Add support for raw addressing device option
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     netdev@vger.kernel.org, Catherine Sullivan <csully@google.com>,
-        Yangchun Fu <yangchun@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=dmc2tE6MNDnQkrAgLG+0UnVegaJqmlcObysEf4HngsI=;
+        b=dH9NyY/17azcOx+0dTlHM5jTy36biwZ1XI1EPZtMLsWhLNlg/ENrr39pzPHfLW+412
+         c1tbRrfDmhfJWlJ74/h/AxwCnTvABDLnsfl4K9Lv2A7eHusKs5eTxjwC80uoonOBeFEL
+         ei2RaqnQh9o25p00yk5DK9a5J01SpKI6PnIFg0Oe1hvVL0kGJCtcTpjNvkdlppNsV/vf
+         XjveZE2AeWOHrFdlPx5J9RapT6jWd6R35h49fzKDQbOUMOasTlskuq+0cM/2Qpn+xzMT
+         0+gI+avBykTAGOQS4ZOyzXaWfMu2H5IPBPiY04NpsuoOwBhsQzdwkMho3F/Vpk7uXUvg
+         N6NQ==
+X-Gm-Message-State: AOAM531HPuMaUczGzw6u87lGzL+ALYKM83noD1FMazuPxQIsX0gXaNsA
+        ygal/IU4QUGDMn20B1eYTio=
+X-Google-Smtp-Source: ABdhPJxbAP00slh6Z0LNatYLx6zk7RfhQGZtpim9Zoj76yeShFv+JSlzuJlng5H8YXkJG373unLR8w==
+X-Received: by 2002:a05:6808:649:: with SMTP id z9mr689859oih.132.1604956002273;
+        Mon, 09 Nov 2020 13:06:42 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id n62sm2776180ota.74.2020.11.09.13.06.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Nov 2020 13:06:41 -0800 (PST)
+Date:   Mon, 09 Nov 2020 13:06:33 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org,
+        bpf@vger.kernel.org
+Message-ID: <5fa9af59a5f89_8c0e208b1@john-XPS-13-9370.notmuch>
+In-Reply-To: <1604498942-24274-6-git-send-email-magnus.karlsson@gmail.com>
+References: <1604498942-24274-1-git-send-email-magnus.karlsson@gmail.com>
+ <1604498942-24274-6-git-send-email-magnus.karlsson@gmail.com>
+Subject: RE: [Intel-wired-lan] [PATCH bpf-next 5/6] xsk: introduce batched Tx
+ descriptor interfaces
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Actually, I think I'll adopt a helper static inline function - it may
-be tidier than a macro.
+Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> Introduce batched descriptor interfaces in the xsk core code for the
+> Tx path to be used in the driver to write a code path with higher
+> performance. This interface will be used by the i40e driver in the
+> next patch. Though other drivers would likely benefit from this new
+> interface too.
+> 
+> Note that batching is only implemented for the common case when
+> there is only one socket bound to the same device and queue id. When
+> this is not the case, we fall back to the old non-batched version of
+> the function.
+> 
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> ---
+>  include/net/xdp_sock_drv.h |  7 ++++
+>  net/xdp/xsk.c              | 43 ++++++++++++++++++++++
+>  net/xdp/xsk_queue.h        | 89 +++++++++++++++++++++++++++++++++++++++-------
+>  3 files changed, 126 insertions(+), 13 deletions(-)
+> 
+> diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
+> index 5b1ee8a..4e295541 100644
+> --- a/include/net/xdp_sock_drv.h
+> +++ b/include/net/xdp_sock_drv.h
+> @@ -13,6 +13,7 @@
+>  
+>  void xsk_tx_completed(struct xsk_buff_pool *pool, u32 nb_entries);
+>  bool xsk_tx_peek_desc(struct xsk_buff_pool *pool, struct xdp_desc *desc);
+> +u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *desc, u32 max);
+>  void xsk_tx_release(struct xsk_buff_pool *pool);
+>  struct xsk_buff_pool *xsk_get_pool_from_qid(struct net_device *dev,
+>  					    u16 queue_id);
+> @@ -128,6 +129,12 @@ static inline bool xsk_tx_peek_desc(struct xsk_buff_pool *pool,
+>  	return false;
+>  }
+>  
+> +static inline u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *desc,
+> +						 u32 max)
+> +{
+> +	return 0;
+> +}
+> +
+>  static inline void xsk_tx_release(struct xsk_buff_pool *pool)
+>  {
+>  }
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index b71a32e..dd75b5f 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -332,6 +332,49 @@ bool xsk_tx_peek_desc(struct xsk_buff_pool *pool, struct xdp_desc *desc)
+>  }
+>  EXPORT_SYMBOL(xsk_tx_peek_desc);
+>  
+> +u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *descs,
+> +				   u32 max_entries)
+> +{
+> +	struct xdp_sock *xs;
+> +	u32 nb_pkts;
+> +
+> +	rcu_read_lock();
+> +	if (!list_is_singular(&pool->xsk_tx_list)) {
+> +		/* Fallback to the non-batched version */
+> +		rcu_read_unlock();
+> +		return xsk_tx_peek_desc(pool, &descs[0]) ? 1 : 0;
+> +	}
+> +
+> +	xs = list_first_or_null_rcu(&pool->xsk_tx_list, struct xdp_sock, tx_list);
 
-On Fri, Nov 6, 2020 at 11:41 AM David Awogbemila <awogbemila@google.com> wrote:
->
-> On Tue, Nov 3, 2020 at 2:43 PM Saeed Mahameed <saeed@kernel.org> wrote:
-> >
-> > On Tue, 2020-11-03 at 09:46 -0800, David Awogbemila wrote:
-> > > From: Catherine Sullivan <csully@google.com>
-> > >
-> > > Add support to describe device for parsing device options. As
-> > > the first device option, add raw addressing.
-> > >
-> > > "Raw Addressing" mode (as opposed to the current "qpl" mode) is an
-> > > operational mode which allows the driver avoid bounce buffer copies
-> > > which it currently performs using pre-allocated qpls
-> > > (queue_page_lists)
-> > > when sending and receiving packets.
-> > > For egress packets, the provided skb data addresses will be
-> > > dma_map'ed and
-> > > passed to the device, allowing the NIC can perform DMA directly - the
-> > > driver will not have to copy the buffer content into pre-allocated
-> > > buffers/qpls (as in qpl mode).
-> > > For ingress packets, copies are also eliminated as buffers are handed
-> > > to
-> > > the networking stack and then recycled or re-allocated as
-> > > necessary, avoiding the use of skb_copy_to_linear_data().
-> > >
-> > > This patch only introduces the option to the driver.
-> > > Subsequent patches will add the ingress and egress functionality.
-> > >
-> > > Reviewed-by: Yangchun Fu <yangchun@google.com>
-> > > Signed-off-by: Catherine Sullivan <csully@google.com>
-> > > Signed-off-by: David Awogbemila <awogbemila@google.com>
-> > > ---
-> > >  drivers/net/ethernet/google/gve/gve.h        |  1 +
-> > >  drivers/net/ethernet/google/gve/gve_adminq.c | 52
-> > > ++++++++++++++++++++
-> > >  drivers/net/ethernet/google/gve/gve_adminq.h | 15 ++++--
-> > >  drivers/net/ethernet/google/gve/gve_main.c   |  9 ++++
-> > >  4 files changed, 73 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/google/gve/gve.h
-> > > b/drivers/net/ethernet/google/gve/gve.h
-> > > index f5c80229ea96..80cdae06ee39 100644
-> > > --- a/drivers/net/ethernet/google/gve/gve.h
-> > > +++ b/drivers/net/ethernet/google/gve/gve.h
-> > > @@ -199,6 +199,7 @@ struct gve_priv {
-> > >       u64 num_registered_pages; /* num pages registered with NIC */
-> > >       u32 rx_copybreak; /* copy packets smaller than this */
-> > >       u16 default_num_queues; /* default num queues to set up */
-> > > +     bool raw_addressing; /* true if this dev supports raw
-> > > addressing */
-> > >
-> > >       struct gve_queue_config tx_cfg;
-> > >       struct gve_queue_config rx_cfg;
-> > > diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c
-> > > b/drivers/net/ethernet/google/gve/gve_adminq.c
-> > > index 24ae6a28a806..0b7a2653fe33 100644
-> > > --- a/drivers/net/ethernet/google/gve/gve_adminq.c
-> > > +++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-> > > @@ -460,11 +460,14 @@ int gve_adminq_destroy_rx_queues(struct
-> > > gve_priv *priv, u32 num_queues)
-> > >  int gve_adminq_describe_device(struct gve_priv *priv)
-> > >  {
-> > >       struct gve_device_descriptor *descriptor;
-> > > +     struct gve_device_option *dev_opt;
-> > >       union gve_adminq_command cmd;
-> > >       dma_addr_t descriptor_bus;
-> > > +     u16 num_options;
-> > >       int err = 0;
-> > >       u8 *mac;
-> > >       u16 mtu;
-> > > +     int i;
-> > >
-> > >       memset(&cmd, 0, sizeof(cmd));
-> > >       descriptor = dma_alloc_coherent(&priv->pdev->dev, PAGE_SIZE,
-> > > @@ -518,6 +521,55 @@ int gve_adminq_describe_device(struct gve_priv
-> > > *priv)
-> > >               priv->rx_desc_cnt = priv->rx_pages_per_qpl;
-> > >       }
-> > >       priv->default_num_queues = be16_to_cpu(descriptor-
-> > > >default_num_queues);
-> > > +     dev_opt = (void *)(descriptor + 1);
-> > > +
-> > > +     num_options = be16_to_cpu(descriptor->num_device_options);
-> > > +     for (i = 0; i < num_options; i++) {
-> > > +             u16 option_length = be16_to_cpu(dev_opt-
-> > > >option_length);
-> > > +             u16 option_id = be16_to_cpu(dev_opt->option_id);
-> > > +             void *option_end;
-> > > +
-> > > +             option_end = (void *)dev_opt + sizeof(*dev_opt) +
-> > > option_length;
-> > > +             if (option_end > (void *)descriptor +
-> > > be16_to_cpu(descriptor->total_length)) {
-> > > +                     dev_err(&priv->dev->dev,
-> > > +                             "options exceed device_descriptor's
-> > > total length.\n");
-> > > +                     err = -EINVAL;
-> > > +                     goto free_device_descriptor;
-> > > +             }
-> > > +
-> > > +             switch (option_id) {
-> > > +             case GVE_DEV_OPT_ID_RAW_ADDRESSING:
-> > > +                     /* If the length or feature mask doesn't match,
-> > > +                      * continue without enabling the feature.
-> > > +                      */
-> > > +                     if (option_length !=
-> > > GVE_DEV_OPT_LEN_RAW_ADDRESSING ||
-> > > +                         dev_opt->feat_mask !=
-> > > +                         cpu_to_be32(GVE_DEV_OPT_FEAT_MASK_RAW_ADDRE
-> > > SSING)) {
-> > > +                             dev_warn(&priv->pdev->dev,
-> > > +                                      "Raw addressing option
-> > > error:\n"
-> > > +                                      "      Expected: length=%d,
-> > > feature_mask=%x.\n"
-> > > +                                      "      Actual: length=%d,
-> > > feature_mask=%x.\n",
-> > > +                                      GVE_DEV_OPT_LEN_RAW_ADDRESSING
-> > > ,
-> > > +                                      cpu_to_be32(GVE_DEV_OPT_FEAT_M
-> > > ASK_RAW_ADDRESSING),
-> > > +                                      option_length, dev_opt-
-> > > >feat_mask);
-> > > +                             priv->raw_addressing = false;
-> > > +                     } else {
-> > > +                             dev_info(&priv->pdev->dev,
-> > > +                                      "Raw addressing device option
-> > > enabled.\n");
-> > > +                             priv->raw_addressing = true;
-> > > +                     }
-> > > +                     break;
-> > > +             default:
-> > > +                     /* If we don't recognize the option just
-> > > continue
-> > > +                      * without doing anything.
-> > > +                      */
-> > > +                     dev_dbg(&priv->pdev->dev,
-> > > +                             "Unrecognized device option 0x%hx not
-> > > enabled.\n",
-> > > +                             option_id);
-> > > +                     break;
-> > > +             }
-> > > +             dev_opt = (void *)dev_opt + sizeof(*dev_opt) +
-> > > option_length;
-> >
-> > This was already calculated above, "option_end"
-> >
-> >
-> > Suggestion: you can make an iterator macro to return the next opt
-> >
-> > next_opt = GET_NEXT_OPT(descriptor, curr_opt);
-> >
-> > you can make it check boundaries and return null on last iteration or
-> > when total length is exceeded, and just use it in a more readable
-> > iterator loop.
-> >
-> Thanks for the suggestion. I will adopt a macro but it'll only return
-> NULL if the options exceed the boundary - that way we can distinguish
-> between an error (boundary exceeded) and the last option.
+I'm not seeing how we avoid the null check here? Can you add a comment on why this
+is safe? I see the bind/unbind routines is it possible to unbind while this is
+running or do we have some locking here.
+
+> +
+> +	nb_pkts = xskq_cons_peek_desc_batch(xs->tx, descs, pool, max_entries);
+> +	if (!nb_pkts) {
+> +		xs->tx->queue_empty_descs++;
+> +		goto out;
+> +	}
+> +
+> +	/* This is the backpressure mechanism for the Tx path. Try to
+> +	 * reserve space in the completion queue for all packets, but
+> +	 * if there are fewer slots available, just process that many
+> +	 * packets. This avoids having to implement any buffering in
+> +	 * the Tx path.
+> +	 */
+> +	nb_pkts = xskq_prod_reserve_addr_batch(pool->cq, descs, nb_pkts);
+> +	if (!nb_pkts)
+> +		goto out;
+> +
+> +	xskq_cons_release_n(xs->tx, nb_pkts);
+> +	__xskq_cons_release(xs->tx);
+> +	xs->sk.sk_write_space(&xs->sk);
+
+Can you move the out label here? Looks like nb_pkts = 0 in all cases
+where goto out is used.
+
+> +	rcu_read_unlock();
+> +	return nb_pkts;
+> +
+> +out:
+> +	rcu_read_unlock();
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(xsk_tx_peek_release_desc_batch);
+> +
+>  static int xsk_wakeup(struct xdp_sock *xs, u8 flags)
+>  {
+>  	struct net_device *dev = xs->dev;
+
+[...]
+
+Other than above question LGTM.
+
+Thanks,
+John
