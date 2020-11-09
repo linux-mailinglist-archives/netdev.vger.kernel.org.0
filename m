@@ -2,224 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1A3A2AB78C
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 12:53:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 561BD2AB7CB
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 13:09:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729442AbgKILxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 06:53:00 -0500
-Received: from aer-iport-2.cisco.com ([173.38.203.52]:26496 "EHLO
-        aer-iport-2.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726999AbgKILxA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 06:53:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=6566; q=dns/txt; s=iport;
-  t=1604922779; x=1606132379;
-  h=from:to:cc:subject:date:message-id;
-  bh=H5Bz1s84ozZCcKfzPWZpXeuWlSmsZwHszPQ2h/FO+1w=;
-  b=MU9PTh73AYgKgwmMEQRAWgF0EXHPJO0+CfCDHVamWbYXmaGTPu0DLJmw
-   KWoIsdpE44h6mU2JtN0cjVFgJn+Gl2F7ZwBDyA5AT8NUoAekpkA5WhJFs
-   u2QvULGmemLMjXRDiJsDsGb/M0zo5YByv5JPrugOcrQKseJzBTZqEXJKC
-   E=;
-X-IronPort-AV: E=Sophos;i="5.77,463,1596499200"; 
-   d="scan'208";a="30976981"
-Received: from aer-iport-nat.cisco.com (HELO aer-core-1.cisco.com) ([173.38.203.22])
-  by aer-iport-2.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 09 Nov 2020 11:52:58 +0000
-Received: from rdbuild16.cisco.com.rd.cisco.com (rdbuild16.cisco.com [10.47.15.16])
-        by aer-core-1.cisco.com (8.15.2/8.15.2) with ESMTP id 0A9BqvlZ032264;
-        Mon, 9 Nov 2020 11:52:57 GMT
-From:   Georg Kohmann <geokohma@cisco.com>
-To:     netdev@vger.kernel.org
-Cc:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Georg Kohmann <geokohma@cisco.com>
-Subject: [PATCH net v3] ipv6/netfilter: Discard first fragment not including all headers
-Date:   Mon,  9 Nov 2020 12:52:49 +0100
-Message-Id: <20201109115249.14491-1-geokohma@cisco.com>
-X-Mailer: git-send-email 2.10.2
-X-Outbound-SMTP-Client: 10.47.15.16, rdbuild16.cisco.com
-X-Outbound-Node: aer-core-1.cisco.com
+        id S1729303AbgKIMJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 07:09:53 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:10976 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726410AbgKIMJx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 07:09:53 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A9C9iFM011312;
+        Mon, 9 Nov 2020 04:09:44 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=G/xzgY4R63QcXVPiHC+0z3pg4LL4rHMCp+akPCgiwiw=;
+ b=CVzyxbKnlVKohq6ITOFsZ8eczV8qjNWLSqr+PtqyvuTiil2Juxm16t7yCq8K2goSYGgJ
+ DhZ9HN7lyO2yOWGXFyYUuiwB7fSrKQYSJEgV3rc/SVS49M3gNvkDmTI50zc50lw5qur7
+ K9S6cN6gQB9oZlKBHAk64CZKMvzwQiR2Yjbz80gYLIqCRShgNw67/CSgB8yT3zJeTBUW
+ ojuWvPGh8SCVUs/040OihQAxdWGw7NK3tHaQHR4ca5z0IwuRWWdO0bzsfqo4J9uhnYMa
+ cTjormbmi3/7b3gcDFk2pZavqYpshdlQ4++Y675kV1ufVW0refYX+0oEWIHNlXIVIcrV Bg== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 34nuysad8e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 09 Nov 2020 04:09:44 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 9 Nov
+ 2020 04:09:42 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 9 Nov
+ 2020 04:09:41 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 9 Nov 2020 04:09:41 -0800
+Received: from hyd1schalla-dt.marvell.com (hyd1schalla-dt.marvell.com [10.29.8.39])
+        by maili.marvell.com (Postfix) with ESMTP id 1BB263F7041;
+        Mon,  9 Nov 2020 04:09:37 -0800 (PST)
+From:   Srujana Challa <schalla@marvell.com>
+To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <kuba@kernel.org>, <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <schandran@marvell.com>,
+        <pathreya@marvell.com>, Srujana Challa <schalla@marvell.com>
+Subject: [PATCH v9,net-next,00/12] Add Support for Marvell OcteonTX2 Cryptographic Acceleration Unit
+Date:   Mon, 9 Nov 2020 17:39:12 +0530
+Message-ID: <20201109120924.358-1-schalla@marvell.com>
+X-Mailer: git-send-email 2.28.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-09_02:2020-11-05,2020-11-09 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Packets are processed even though the first fragment don't include all
-headers through the upper layer header. This breaks TAHI IPv6 Core
-Conformance Test v6LC.1.3.6.
+This series introduces crypto(CPT) drivers(PF & VF) for Marvell OcteonTX2
+CN96XX Soc.
 
-Referring to RFC8200 SECTION 4.5: "If the first fragment does not include
-all headers through an Upper-Layer header, then that fragment should be
-discarded and an ICMP Parameter Problem, Code 3, message should be sent to
-the source of the fragment, with the Pointer field set to zero."
+OcteonTX2 SOC's resource virtualization unit (RVU) supports multiple
+physical and virtual functions. Each of the PF/VF's functionality is
+determined by what kind of resources are attached to it. When the CPT
+block is attached to a VF, it can function as a security device.
+The following document provides an overview of the hardware and
+different drivers for the OcteonTX2 SOC: 
+https://www.kernel.org/doc/Documentation/networking/device_drivers/marvell/octeontx2.rst
 
-The fragment needs to be validated the same way it is done in
-commit 2efdaaaf883a ("IPv6: reply ICMP error if the first fragment don't
-include all headers") for ipv6. Wrap the validation into a common function,
-ipv6_frag_validate(). A closer inspection of the existing validation show
-that it does not fullfill all aspects of RFC 8200, section 4.5, but is at
-the moment sufficient to pass mentioned TAHI test.
+The CPT PF driver is responsible for:
+- Forwarding messages to/from VFs from/to admin function(AF),
+- Enabling/disabling VFs,
+- Loading/unloading microcode (creation/deletion of engine groups).
 
-In netfilter, utilize the fragment offset returned by find_prev_fhdr() to
-let ipv6_frag_validate() start it's traverse from the fragment header.
+The CPT VF driver works as a crypto offload device.
 
-Return 0 to drop the fragment in the netfilter. This is the same behaviour
-as used on other protocol errors in this function, e.g. when
-nf_ct_frag6_queue() returns -EPROTO. The Fragment will later be picked up
-by ipv6_frag_rcv() in reassembly.c. ipv6_frag_rcv() will then send an
-appropriate ICMP Parameter Problem message back to the source.
+This patch series includes:
+- Patch to update existing Marvell sources to support the CPT driver.
+- Patch that adds mailbox messages to the admin function (AF) driver,
+to configure CPT HW registers.
+- CPT PF driver patches that include AF<=>PF<=>VF mailbox communication,
+sriov_configure, and firmware load to the acceleration engines.
+- CPT VF driver patches that include VF<=>PF mailbox communication and
+crypto offload support through the kernel cryptographic API.
 
-References commit 2efdaaaf883a ("IPv6: reply ICMP error if the first
-fragment don't include all headers")
-Signed-off-by: Georg Kohmann <geokohma@cisco.com>
----
+This series is tested with CRYPTO_EXTRA_TESTS enabled and
+CRYPTO_DISABLE_TESTS disabled.
 
-Notes:
-    v2: Wrap fragment validation code into exthdrs_code.c for use by both ipv6 and
-    netfiter.
-    
-    v3: Remove unused variable frag_off from ipv6_frag_rcv().
+Changes since v8:
+ * Load firmware files individually instead of tar.
+Changes since v7:
+ * Removed writable entries in debugfs.
+ * Dropped IPsec support.
+Changes since v6:
+ * Removed driver version.
+Changes since v4:
+ * Rebased the patches onto net-next tree with base
+   'commit bc081a693a56 ("Merge branch 'Offload-tc-vlan-mangle-to-mscc_ocelot-switch'")' 
+Changes since v3:
+ * Splitup the patches into smaller patches with more informartion.
+Changes since v2:
+ * Fixed C=1 warnings.
+ * Added code to exit CPT VF driver gracefully.
+ * Moved OcteonTx2 asm code to a header file under include/linux/soc/
+Changes since v1:
+ * Moved Makefile changes from patch4 to patch2 and patch3.
 
- include/net/ipv6.h                      |  2 ++
- net/ipv6/exthdrs_core.c                 | 43 +++++++++++++++++++++++++++++++++
- net/ipv6/netfilter/nf_conntrack_reasm.c |  9 +++++++
- net/ipv6/reassembly.c                   | 26 +++++---------------
- 4 files changed, 60 insertions(+), 20 deletions(-)
+Srujana Challa (12):
+  octeontx2-pf: move lmt flush to include/linux/soc
+  octeontx2-af: add mailbox interface for CPT
+  octeontx2-af: add debugfs entries for CPT block
+  drivers: crypto: add Marvell OcteonTX2 CPT PF driver
+  crypto: octeontx2: add mailbox communication with AF
+  crypto: octeontx2: enable SR-IOV and mailbox communication with VF
+  crypto: octeontx2: load microcode and create engine groups
+  crypto: octeontx2: add LF framework
+  crypto: octeontx2: add support to get engine capabilities
+  crypto: octeontx2: add virtual function driver support
+  crypto: octeontx2: add support to process the crypto request
+  crypto: octeontx2: register with linux crypto framework
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index bd1f396..489f3f9 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -1064,6 +1064,8 @@ int ipv6_skip_exthdr(const struct sk_buff *, int start, u8 *nexthdrp,
- 
- bool ipv6_ext_hdr(u8 nexthdr);
- 
-+bool ipv6_frag_validate(struct sk_buff *skb, int start, u8 *nexthdrp);
-+
- enum {
- 	IP6_FH_F_FRAG		= (1 << 0),
- 	IP6_FH_F_AUTH		= (1 << 1),
-diff --git a/net/ipv6/exthdrs_core.c b/net/ipv6/exthdrs_core.c
-index da46c42..7a94fdf 100644
---- a/net/ipv6/exthdrs_core.c
-+++ b/net/ipv6/exthdrs_core.c
-@@ -278,3 +278,46 @@ int ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset,
- 	return nexthdr;
- }
- EXPORT_SYMBOL(ipv6_find_hdr);
-+
-+/* Validate that the upper layer header is not truncated in fragment.
-+ *
-+ * This function returns false if a TCP, UDP or ICMP header is truncated
-+ * just before or in the middle of the header. It also returns false if
-+ * any other upper layer header is truncated just before the first byte.
-+ *
-+ * Notes:
-+ * -It does NOT return false if the first fragment where truncated
-+ * elsewhere, i.e. between or in the middle of one of the extension
-+ * headers or in the middle of one of the upper layer headers, except for
-+ * TCP, UDP and ICMP.
-+ * -The function also returns true if the fragment is not the first
-+ * fragment.
-+ */
-+
-+bool ipv6_frag_validate(struct sk_buff *skb, int start, u8 *nexthdrp)
-+{
-+	int offset;
-+	u8 nexthdr = *nexthdrp;
-+	__be16 frag_off;
-+
-+	offset = ipv6_skip_exthdr(skb, start, &nexthdr, &frag_off);
-+	if (offset >= 0 && !(frag_off & htons(IP6_OFFSET))) {
-+		switch (nexthdr) {
-+		case NEXTHDR_TCP:
-+			offset += sizeof(struct tcphdr);
-+			break;
-+		case NEXTHDR_UDP:
-+			offset += sizeof(struct udphdr);
-+			break;
-+		case NEXTHDR_ICMP:
-+			offset += sizeof(struct icmp6hdr);
-+			break;
-+		default:
-+			offset += 1;
-+		}
-+		if (offset > skb->len)
-+			return false;
-+	}
-+	return true;
-+}
-+EXPORT_SYMBOL(ipv6_frag_validate);
-diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
-index 054d287..f6cae28 100644
---- a/net/ipv6/netfilter/nf_conntrack_reasm.c
-+++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
-@@ -445,6 +445,7 @@ int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user)
- 	struct frag_queue *fq;
- 	struct ipv6hdr *hdr;
- 	u8 prevhdr;
-+	u8 nexthdr = NEXTHDR_FRAGMENT;
- 
- 	/* Jumbo payload inhibits frag. header */
- 	if (ipv6_hdr(skb)->payload_len == 0) {
-@@ -455,6 +456,14 @@ int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user)
- 	if (find_prev_fhdr(skb, &prevhdr, &nhoff, &fhoff) < 0)
- 		return 0;
- 
-+	/* Discard the first fragment if it does not include all headers
-+	 * RFC 8200, Section 4.5
-+	 */
-+	if (!ipv6_frag_validate(skb, fhoff, &nexthdr)) {
-+		pr_debug("Drop incomplete fragment\n");
-+		return 0;
-+	}
-+
- 	if (!pskb_may_pull(skb, fhoff + sizeof(*fhdr)))
- 		return -ENOMEM;
- 
-diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-index c8cf1bb..04e078e 100644
---- a/net/ipv6/reassembly.c
-+++ b/net/ipv6/reassembly.c
-@@ -324,8 +324,7 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
- 	struct frag_queue *fq;
- 	const struct ipv6hdr *hdr = ipv6_hdr(skb);
- 	struct net *net = dev_net(skb_dst(skb)->dev);
--	__be16 frag_off;
--	int iif, offset;
-+	int iif;
- 	u8 nexthdr;
- 
- 	if (IP6CB(skb)->flags & IP6SKB_FRAGMENTED)
-@@ -362,24 +361,11 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
- 	 * the source of the fragment, with the Pointer field set to zero.
- 	 */
- 	nexthdr = hdr->nexthdr;
--	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
--	if (offset >= 0) {
--		/* Check some common protocols' header */
--		if (nexthdr == IPPROTO_TCP)
--			offset += sizeof(struct tcphdr);
--		else if (nexthdr == IPPROTO_UDP)
--			offset += sizeof(struct udphdr);
--		else if (nexthdr == IPPROTO_ICMPV6)
--			offset += sizeof(struct icmp6hdr);
--		else
--			offset += 1;
--
--		if (!(frag_off & htons(IP6_OFFSET)) && offset > skb->len) {
--			__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
--					IPSTATS_MIB_INHDRERRORS);
--			icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
--			return -1;
--		}
-+	if (!ipv6_frag_validate(skb, skb_transport_offset(skb), &nexthdr)) {
-+		__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
-+				IPSTATS_MIB_INHDRERRORS);
-+		icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
-+		return -1;
- 	}
- 
- 	iif = skb->dev ? skb->dev->ifindex : 0;
+ MAINTAINERS                                   |    2 +
+ drivers/crypto/marvell/Kconfig                |   14 +
+ drivers/crypto/marvell/Makefile               |    1 +
+ drivers/crypto/marvell/octeontx2/Makefile     |   10 +
+ .../marvell/octeontx2/otx2_cpt_common.h       |  123 ++
+ .../marvell/octeontx2/otx2_cpt_hw_types.h     |  464 +++++
+ .../marvell/octeontx2/otx2_cpt_mbox_common.c  |  202 ++
+ .../marvell/octeontx2/otx2_cpt_reqmgr.h       |  197 ++
+ drivers/crypto/marvell/octeontx2/otx2_cptlf.c |  429 +++++
+ drivers/crypto/marvell/octeontx2/otx2_cptlf.h |  352 ++++
+ drivers/crypto/marvell/octeontx2/otx2_cptpf.h |   52 +
+ .../marvell/octeontx2/otx2_cptpf_main.c       |  574 ++++++
+ .../marvell/octeontx2/otx2_cptpf_mbox.c       |  331 ++++
+ .../marvell/octeontx2/otx2_cptpf_ucode.c      | 1415 ++++++++++++++
+ .../marvell/octeontx2/otx2_cptpf_ucode.h      |  162 ++
+ drivers/crypto/marvell/octeontx2/otx2_cptvf.h |   28 +
+ .../marvell/octeontx2/otx2_cptvf_algs.c       | 1664 +++++++++++++++++
+ .../marvell/octeontx2/otx2_cptvf_algs.h       |  170 ++
+ .../marvell/octeontx2/otx2_cptvf_main.c       |  405 ++++
+ .../marvell/octeontx2/otx2_cptvf_mbox.c       |  139 ++
+ .../marvell/octeontx2/otx2_cptvf_reqmgr.c     |  541 ++++++
+ .../ethernet/marvell/octeontx2/af/Makefile    |    3 +-
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |   33 +
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |    1 +
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   |  233 +++
+ .../marvell/octeontx2/af/rvu_debugfs.c        |  272 +++
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   63 +-
+ .../marvell/octeontx2/nic/otx2_common.h       |   13 +-
+ include/linux/soc/marvell/octeontx2/asm.h     |   29 +
+ 29 files changed, 7903 insertions(+), 19 deletions(-)
+ create mode 100644 drivers/crypto/marvell/octeontx2/Makefile
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_common.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptlf.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptlf.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+ create mode 100644 include/linux/soc/marvell/octeontx2/asm.h
+
 -- 
-2.10.2
+2.28.0
 
