@@ -2,92 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D0C52AC141
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 17:48:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5972E2AC174
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 17:54:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730712AbgKIQsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 11:48:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:50792 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730419AbgKIQsM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 11:48:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604940491;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fqIq5NUwLO5XS6VOJO9c8F79ciX9FemcAwNmtAIcwRI=;
-        b=NujbtCCK8KK7ScfBD3D9N7DsW0Cu4S6n8iKhY2Zc3uoFPZ1ZSmfw2IeR49q2Djx08tmvwN
-        s8gbrXw8m/p5XT68R8nJH0KPO6kRFCDDX0BrDIVrg66Lv/18ECOfe6VP2SqJoYqAqXeBpW
-        NTPNN5IAOLyO6EkKOZM4kN8NT653FVY=
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
- [209.85.161.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-190-WpBOAhO2NWqb4gk48s_dNw-1; Mon, 09 Nov 2020 11:48:10 -0500
-X-MC-Unique: WpBOAhO2NWqb4gk48s_dNw-1
-Received: by mail-oo1-f72.google.com with SMTP id t8so2389138oor.19
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 08:48:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fqIq5NUwLO5XS6VOJO9c8F79ciX9FemcAwNmtAIcwRI=;
-        b=eUgOIRVQTu/RZNZ40k3AYMZdyFH3hSs4+bnI3z7dv6zmHOKKgU+CBATVW/6uly8hWi
-         5A2ml2IaabMw/NCq8kUMS5+lAbuJ/epXOU2AzHNf2Gy08oud2DbUS/ZSFCRFqRFEAjQj
-         DTN5V5PXabez8/e/frp1hKeCMR/EymDmrUKzvhsSr1Yn5+JhDwbCkLXJhnRF+4dKTVYi
-         qUlkQnpSJk9rqv+gBtGcq1KserIK3+/QEdmbnHN+y12NT1SlyyMRxNFY0Crge/TxryFu
-         SQR3QP8hDH1SacuhRMkRzEr6e1vCFS5pWKGODVi06q8thDrdITjiggILcPZrBcMqOYqj
-         AmGQ==
-X-Gm-Message-State: AOAM533HCfJeLqscaH7P7ngfY7Tqk6RkIP9di+klap/l+T/MzZzyU7eh
-        Sf3BQaNaYnEK7SQtqAYbTBD3JbO1cJGjKplN+O2BUzRM0Ea9FXY+yvjKFk3Jq+FHk1c7/wlcTkP
-        FFJqoLcHYi8TCilQNcO1S7iiVW9+r2jzA
-X-Received: by 2002:aca:4f53:: with SMTP id d80mr29981oib.120.1604940488744;
-        Mon, 09 Nov 2020 08:48:08 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyHFiGAk0galmy0bk5raHPkH/pu4uljJlFq+eNb+KPxOugkwKoJBdOHvGL6Z37sQJd6iaPMBOkPmw04bQVv+dE=
-X-Received: by 2002:aca:4f53:: with SMTP id d80mr29973oib.120.1604940488554;
- Mon, 09 Nov 2020 08:48:08 -0800 (PST)
-MIME-Version: 1.0
-References: <20201106200436.943795-1-jarod@redhat.com> <20201106184432.07a6ab18@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201106184432.07a6ab18@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Mon, 9 Nov 2020 11:47:58 -0500
-Message-ID: <CAKfmpSfkmo1GVVThadDDtXma1m1yrNwPoPz87sMy5664uJbevg@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 0/5] bonding: rename bond components
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1730858AbgKIQyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 11:54:06 -0500
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:59444 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730202AbgKIQyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 11:54:05 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=wenan.mao@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0UEoLgHG_1604940832;
+Received: from VM20200710-3.tbsite.net(mailfrom:wenan.mao@linux.alibaba.com fp:SMTPD_---0UEoLgHG_1604940832)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 10 Nov 2020 00:54:00 +0800
+From:   Mao Wenan <wenan.mao@linux.alibaba.com>
+To:     edumazet@google.com, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Mao Wenan <wenan.mao@linux.alibaba.com>
+Subject: [PATCH net v3] net: Update window_clamp if SOCK_RCVBUF is set
+Date:   Tue, 10 Nov 2020 00:53:50 +0800
+Message-Id: <1604940830-74688-1-git-send-email-wenan.mao@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <CANn89iLhCjh7ZQRanVEj6Sytzn6LhFOb9Xo7O=teLHPouoeopw@mail.gmail.com>
+References: <CANn89iLhCjh7ZQRanVEj6Sytzn6LhFOb9Xo7O=teLHPouoeopw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 6, 2020 at 9:44 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri,  6 Nov 2020 15:04:31 -0500 Jarod Wilson wrote:
-> > The bonding driver's use of master and slave, while largely understood
-> > in technical circles, poses a barrier for inclusion to some potential
-> > members of the development and user community, due to the historical
-> > context of masters and slaves, particularly in the United States. This
-> > is a first full pass at replacing those phrases with more socially
-> > inclusive ones, opting for bond to replace master and port to
-> > replace slave, which is congruent with the bridge and team drivers.
->
-> If we decide to go ahead with this, we should probably also use it as
-> an opportunity to clean up the more egregious checkpatch warnings, WDYT?
->
-> Plan minimum - don't add new ones ;)
+When net.ipv4.tcp_syncookies=1 and syn flood is happened,
+cookie_v4_check or cookie_v6_check tries to redo what
+tcp_v4_send_synack or tcp_v6_send_synack did,
+rsk_window_clamp will be changed if SOCK_RCVBUF is set,
+which will make rcv_wscale is different, the client
+still operates with initial window scale and can overshot
+granted window, the client use the initial scale but local
+server use new scale to advertise window value, and session
+work abnormally.
 
-Hm. I hadn't actually looked at checkpatch output until now. It's...
-noisy here. But I'm pretty sure the vast majority of that is from
-existing issues, simply reported now due to all the renaming. I can
-certainly take a crack at cleanups, but I'd be worried about missing
-another merge window trying to sort all of these, when they're not
-directly related.
+Fixes: e88c64f0a425 ("tcp: allow effective reduction of TCP's
+rcv-buffer via setsockopt")
 
+Signed-off-by: Mao Wenan <wenan.mao@linux.alibaba.com>
+---
+ v3: add local variable full_space, add fixes tag.
+ v2: fix for ipv6.
+ net/ipv4/syncookies.c | 7 ++++++-
+ net/ipv6/syncookies.c | 8 +++++++-
+ 2 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index 6ac473b..eea4698 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -327,6 +327,7 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
+ 	struct inet_request_sock *ireq;
+ 	struct tcp_request_sock *treq;
+ 	struct tcp_sock *tp = tcp_sk(sk);
++	int full_space = tcp_full_space(sk);
+ 	const struct tcphdr *th = tcp_hdr(skb);
+ 	__u32 cookie = ntohl(th->ack_seq) - 1;
+ 	struct sock *ret = sk;
+@@ -427,8 +428,12 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
+ 
+ 	/* Try to redo what tcp_v4_send_synack did. */
+ 	req->rsk_window_clamp = tp->window_clamp ? :dst_metric(&rt->dst, RTAX_WINDOW);
++	/* limit the window selection if the user enforce a smaller rx buffer */
++	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK &&
++	    (req->rsk_window_clamp > full_space || req->rsk_window_clamp == 0))
++		req->rsk_window_clamp = full_space;
+ 
+-	tcp_select_initial_window(sk, tcp_full_space(sk), req->mss,
++	tcp_select_initial_window(sk, full_space, req->mss,
+ 				  &req->rsk_rcv_wnd, &req->rsk_window_clamp,
+ 				  ireq->wscale_ok, &rcv_wscale,
+ 				  dst_metric(&rt->dst, RTAX_INITRWND));
+diff --git a/net/ipv6/syncookies.c b/net/ipv6/syncookies.c
+index e796a64..5b09bb6 100644
+--- a/net/ipv6/syncookies.c
++++ b/net/ipv6/syncookies.c
+@@ -132,6 +132,7 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
+ 	struct tcp_request_sock *treq;
+ 	struct ipv6_pinfo *np = inet6_sk(sk);
+ 	struct tcp_sock *tp = tcp_sk(sk);
++	int full_space = tcp_full_space(sk);
+ 	const struct tcphdr *th = tcp_hdr(skb);
+ 	__u32 cookie = ntohl(th->ack_seq) - 1;
+ 	struct sock *ret = sk;
+@@ -241,7 +242,12 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
+ 	}
+ 
+ 	req->rsk_window_clamp = tp->window_clamp ? :dst_metric(dst, RTAX_WINDOW);
+-	tcp_select_initial_window(sk, tcp_full_space(sk), req->mss,
++	/* limit the window selection if the user enforce a smaller rx buffer */
++	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK &&
++	    (req->rsk_window_clamp > full_space || req->rsk_window_clamp == 0))
++		req->rsk_window_clamp = full_space;
++
++	tcp_select_initial_window(sk, full_space, req->mss,
+ 				  &req->rsk_rcv_wnd, &req->rsk_window_clamp,
+ 				  ireq->wscale_ok, &rcv_wscale,
+ 				  dst_metric(dst, RTAX_INITRWND));
 -- 
-Jarod Wilson
-jarod@redhat.com
+1.8.3.1
 
