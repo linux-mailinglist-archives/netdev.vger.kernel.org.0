@@ -2,105 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB2E12ABE0D
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 15:00:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 340342ABE0C
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 15:00:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731271AbgKIN7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 08:59:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58426 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729854AbgKIN7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 08:59:40 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797FEC0613CF;
-        Mon,  9 Nov 2020 05:59:38 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id e7so8228542pfn.12;
-        Mon, 09 Nov 2020 05:59:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gSYjZ1cUgOekEM7SwW9yeu6llfvLPIn9JJb6KN19b+0=;
-        b=uheTqZt3G2+6GJj/cnThwf9U010w83aj61EMBOva7nathZ8x/txGFq9RJd7zy5O7q7
-         Z+qZveWsaJMx7KsOK8BCgsRr9Myqdh+/u3J9225VqAXndLlOSf3W0jhO3XBASTAN7gdW
-         RyRm6KF5rY6emONkNlZRtKwm5EWhnhpLPg3NBtFbJ09MQusOUAd3uPRgMDrF4fGiVqIV
-         Em0N3pqiUpDkxQgKxMqrH9W4PezYE3c5d5LixTPQh4NGjXRyKXPEJXyCuusXMbO4YZAw
-         mmTQoO4ihtK6Ysm8eStgwwssoRRNxXaopu3jCWJpvhyzV1vXCFNvPEwj6qfM0XXHQePs
-         ucKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gSYjZ1cUgOekEM7SwW9yeu6llfvLPIn9JJb6KN19b+0=;
-        b=bCsQuA2DYlYSj7Sc5SZD2eDZfFHnyCFnLY+IqKun9DF8DXC+Y7O4jEQNBKQObsvLh5
-         NVX2moim0TTguzUec7wAmmy/IFmZqPYkbKkLPCv4qTIK/kMFFZs4QypUkAFE11jKpyJD
-         ST50t9xx6Gzf9yJSkdb1GmLAs2sjahc1ko+p1W836gq2mzQ8pxPa4eYJWbIk40hNN/WN
-         er7kVX8Z7wrAsLPmwZOOYSzSCFlU5pYOrpqql2r1m15Uz0ciZ6ldlVmtjLXCN1k0yJP4
-         hp75oyneEVhsWDDnDzfnsynuOLMEKs4b0EWbYUaxc6iQSASuMNl73pN3mH4xw/Xw5wUC
-         kseg==
-X-Gm-Message-State: AOAM531Tl5HVFOsD5ydaMXSCNI5JjScvT3OvJ44QrDWCJoY3BdvZDaD9
-        fryguhVl/qACkUpjVKwLtZy65i7SKCvn8Q==
-X-Google-Smtp-Source: ABdhPJyfg6WaH76st17Ot4HhGAxk1PA0a1hNeb+g2YZFvH9jjh5LnZNprzZ3mGoKYIKRbp8mH0SqoQ==
-X-Received: by 2002:a17:90b:1642:: with SMTP id il2mr12300961pjb.81.1604930378160;
-        Mon, 09 Nov 2020 05:59:38 -0800 (PST)
-Received: from localhost ([209.9.72.213])
-        by smtp.gmail.com with ESMTPSA id j12sm10422175pga.78.2020.11.09.05.59.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 05:59:37 -0800 (PST)
-From:   Geliang Tang <geliangtang@gmail.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1731351AbgKIOAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 09:00:05 -0500
+Received: from mx2.suse.de ([195.135.220.15]:43816 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730072AbgKIOAE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 09:00:04 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id B53A0AD4F;
+        Mon,  9 Nov 2020 14:00:02 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 3F7BD60344; Mon,  9 Nov 2020 15:00:02 +0100 (CET)
+Date:   Mon, 9 Nov 2020 15:00:02 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [MPTCP][PATCH net 2/2] mptcp: cleanup for mptcp_pm_alloc_anno_list
-Date:   Mon,  9 Nov 2020 21:59:22 +0800
-Message-Id: <0f17d2f60c188554d093e820c45caf20fe53aab0.1604930005.git.geliangtang@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <ccf004469e02fb5bd7ec822414b9a98b0015f4a3.1604930005.git.geliangtang@gmail.com>
-References: <cover.1604930005.git.geliangtang@gmail.com> <ccf004469e02fb5bd7ec822414b9a98b0015f4a3.1604930005.git.geliangtang@gmail.com>
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net] ethtool: netlink: add missing
+ netdev_features_change() call
+Message-ID: <20201109140002.g45cbbroshyjotdh@lion.mk-sys.cz>
+References: <ahA2YWXYICz5rbUSQqNG4roJ8OlJzzYQX7PTiG80@cp4-web-028.plabs.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="kabiacxtqtoc2zqu"
+Content-Disposition: inline
+In-Reply-To: <ahA2YWXYICz5rbUSQqNG4roJ8OlJzzYQX7PTiG80@cp4-web-028.plabs.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch added NULL pointer check for mptcp_pm_alloc_anno_list, and
-avoided similar static checker warnings in mptcp_pm_add_timer.
 
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- net/mptcp/pm_netlink.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+--kabiacxtqtoc2zqu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 03f2c28f11f5..dfc1bed4a55f 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -266,7 +266,9 @@ static bool mptcp_pm_alloc_anno_list(struct mptcp_sock *msk,
- {
- 	struct mptcp_pm_add_entry *add_entry = NULL;
- 	struct sock *sk = (struct sock *)msk;
--	struct net *net = sock_net(sk);
-+
-+	if (!msk)
-+		return false;
- 
- 	if (lookup_anno_list_by_saddr(msk, &entry->addr))
- 		return false;
-@@ -283,7 +285,7 @@ static bool mptcp_pm_alloc_anno_list(struct mptcp_sock *msk,
- 
- 	timer_setup(&add_entry->add_timer, mptcp_pm_add_timer, 0);
- 	sk_reset_timer(sk, &add_entry->add_timer,
--		       jiffies + mptcp_get_add_addr_timeout(net));
-+		       jiffies + mptcp_get_add_addr_timeout(sock_net(sk)));
- 
- 	return true;
- }
--- 
-2.26.2
+On Sun, Nov 08, 2020 at 12:46:15AM +0000, Alexander Lobakin wrote:
+> After updating userspace Ethtool from 5.7 to 5.9, I noticed that
+> NETDEV_FEAT_CHANGE is no more raised when changing netdev features
+> through Ethtool.
+> That's because the old Ethtool ioctl interface always calls
+> netdev_features_change() at the end of user request processing to
+> inform the kernel that our netdevice has some features changed, but
+> the new Netlink interface does not. Instead, it just notifies itself
+> with ETHTOOL_MSG_FEATURES_NTF.
+> Replace this ethtool_notify() call with netdev_features_change(), so
+> the kernel will be aware of any features changes, just like in case
+> with the ioctl interface. This does not omit Ethtool notifications,
+> as Ethtool itself listens to NETDEV_FEAT_CHANGE and drops
+> ETHTOOL_MSG_FEATURES_NTF on it
+> (net/ethtool/netlink.c:ethnl_netdev_event()).
+>=20
+> From v1 [1]:
+> - dropped extra new line as advised by Jakub;
+> - no functional changes.
+>=20
+> [1] https://lore.kernel.org/netdev/AlZXQ2o5uuTVHCfNGOiGgJ8vJ3KgO5YIWAnQjH=
+0cDE@cp3-web-009.plabs.ch
+>=20
+> Fixes: 0980bfcd6954 ("ethtool: set netdev features with FEATURES_SET requ=
+est")
+> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+
+> ---
+>  net/ethtool/features.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/net/ethtool/features.c b/net/ethtool/features.c
+> index 8ee4cdbd6b82..1c9f4df273bd 100644
+> --- a/net/ethtool/features.c
+> +++ b/net/ethtool/features.c
+> @@ -280,7 +280,7 @@ int ethnl_set_features(struct sk_buff *skb, struct ge=
+nl_info *info)
+>  					  active_diff_mask, compact);
+>  	}
+>  	if (mod)
+> -		ethtool_notify(dev, ETHTOOL_MSG_FEATURES_NTF, NULL);
+> +		netdev_features_change(dev);
+> =20
+>  out_rtnl:
+>  	rtnl_unlock();
+> --=20
+> 2.29.2
+>=20
+>=20
+
+--kabiacxtqtoc2zqu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl+pS1sACgkQ538sG/LR
+dpVc/wgAhPzbYoT4cIBpAgOork4F228kOK5CTAXW39iq0ms5xYC44R3ThegOMlpc
+e+OZxcL8BsALZ8WN/fOA29tEIAFKPuAVSPH6EdsddYtP7Rc90DCrBBB3kl7XpK7j
+ZcE5TbDf+KPbFaeJWxjya4ERA7tzzSgO+0dblfNLW6b7P8RERmtkpauGv+/tvrs6
+3oz0/OnX8Uli+nX2sLttl/QLMKywYbLFSNBbA5MffjXR5MOOh/G79uMLmblu5L9Z
+VU8HfQDlJSuZAJW1++DgPWaqHCoNVqWD1LzEfNfQ1Bw9UowgvCK2cbbYiYE+FUyr
+3pLBXPm4qp3p95006yWKzRj7HpfLhw==
+=zqEO
+-----END PGP SIGNATURE-----
+
+--kabiacxtqtoc2zqu--
