@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 783132AB579
+	by mail.lfdr.de (Postfix) with ESMTP id EF4FD2AB57A
 	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 11:53:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729430AbgKIKw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 05:52:58 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:30019 "EHLO
+        id S1729442AbgKIKxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 05:53:02 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:21438 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728462AbgKIKw6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 05:52:58 -0500
+        with ESMTP id S1728462AbgKIKxB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 05:53:01 -0500
 Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 0A9AqQMh011444;
-        Mon, 9 Nov 2020 02:52:53 -0800
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 0A9AqQMi011444;
+        Mon, 9 Nov 2020 02:52:56 -0800
 From:   Rohit Maheshwari <rohitm@chelsio.com>
 To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
 Cc:     secdev@chelsio.com, Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [net v6 08/12] ch_ktls: packet handling prior to start marker
-Date:   Mon,  9 Nov 2020 16:21:38 +0530
-Message-Id: <20201109105142.15398-9-rohitm@chelsio.com>
+Subject: [net v6 09/12] ch_ktls: don't free skb before sending FIN
+Date:   Mon,  9 Nov 2020 16:21:39 +0530
+Message-Id: <20201109105142.15398-10-rohitm@chelsio.com>
 X-Mailer: git-send-email 2.18.1
 In-Reply-To: <20201109105142.15398-1-rohitm@chelsio.com>
 References: <20201109105142.15398-1-rohitm@chelsio.com>
@@ -27,73 +27,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There could be a case where ACK for tls exchanges prior to start
-marker is missed out, and by the time tls is offloaded. This pkt
-should not be discarded and handled carefully. It could be
-plaintext alone or plaintext + finish as well.
+If its a last packet and fin is set. Make sure FIN is informed
+to HW before skb gets freed.
 
-Fixes: 5a4b9fe7fece ("cxgb4/chcr: complete record tx handling")
+Fixes: 429765a149f1 ("chcr: handle partial end part of a record")
 Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
 ---
- .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c | 38 ++++++++++++++++---
- 1 file changed, 33 insertions(+), 5 deletions(-)
+ .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c        | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-index 026c66599d1e..bbda71b7f98b 100644
+index bbda71b7f98b..a8062e038ebc 100644
 --- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
 +++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-@@ -1909,11 +1909,6 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
- 			goto out;
- 		}
- 
--		if (unlikely(tls_record_is_start_marker(record))) {
--			spin_unlock_irqrestore(&tx_ctx->base.lock, flags);
--			atomic64_inc(&port_stats->ktls_tx_skip_no_sync_data);
--			goto out;
--		}
- 		tls_end_offset = record->end_seq - tcp_seq;
- 
- 		pr_debug("seq 0x%x, end_seq 0x%x prev_seq 0x%x, datalen 0x%x\n",
-@@ -1938,6 +1933,39 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -1932,6 +1932,9 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
+ 						       flags);
  				goto out;
  			}
- 		}
 +
-+		if (unlikely(tls_record_is_start_marker(record))) {
-+			atomic64_inc(&port_stats->ktls_tx_skip_no_sync_data);
-+			/* If tls_end_offset < data_len, means there is some
-+			 * data after start marker, which needs encryption, send
-+			 * plaintext first and take skb refcount. else send out
-+			 * complete pkt as plaintext.
-+			 */
-+			if (tls_end_offset < data_len)
++			if (th->fin)
 +				skb_get(skb);
-+			else
-+				tls_end_offset = data_len;
-+
-+			ret = chcr_ktls_tx_plaintxt(tx_info, skb, tcp_seq, mss,
-+						    (!th->fin && th->psh), q,
-+						    tx_info->port_id, NULL,
-+						    tls_end_offset, skb_offset,
-+						    0);
-+
-+			spin_unlock_irqrestore(&tx_ctx->base.lock, flags);
-+			if (ret) {
-+				/* free the refcount taken earlier */
-+				if (tls_end_offset < data_len)
-+					dev_kfree_skb_any(skb);
-+				goto out;
-+			}
-+
-+			data_len -= tls_end_offset;
-+			tcp_seq = record->end_seq;
-+			skb_offset += tls_end_offset;
-+			continue;
+ 		}
+ 
+ 		if (unlikely(tls_record_is_start_marker(record))) {
+@@ -2006,8 +2009,11 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			__skb_frag_unref(&record->frags[i]);
+ 		}
+ 		/* if any failure, come out from the loop. */
+-		if (ret)
++		if (ret) {
++			if (th->fin)
++				dev_kfree_skb_any(skb);
+ 			return NETDEV_TX_OK;
 +		}
-+
- 		/* increase page reference count of the record, so that there
- 		 * won't be any chance of page free in middle if in case stack
- 		 * receives ACK and try to delete the record.
+ 
+ 		/* length should never be less than 0 */
+ 		WARN_ON(data_len < 0);
+@@ -2020,8 +2026,10 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	/* tcp finish is set, send a separate tcp msg including all the options
+ 	 * as well.
+ 	 */
+-	if (th->fin)
++	if (th->fin) {
+ 		chcr_ktls_write_tcp_options(tx_info, skb, q, tx_info->tx_chan);
++		dev_kfree_skb_any(skb);
++	}
+ 
+ 	return NETDEV_TX_OK;
+ out:
 -- 
 2.18.1
 
