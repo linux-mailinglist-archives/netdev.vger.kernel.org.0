@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C07D12ABFF7
+	by mail.lfdr.de (Postfix) with ESMTP id 513912ABFF6
 	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 16:37:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730817AbgKIPhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 10:37:18 -0500
-Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.22]:9693 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727077AbgKIPhR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 10:37:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1604936234;
+        id S1729828AbgKIPhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 10:37:19 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:36601 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729919AbgKIPhS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 10:37:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1604936235;
         s=strato-dkim-0002; d=hartkopp.net;
-        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
-        Subject:Sender;
-        bh=aYALwDSvZccYv0EdUz0eQbCo0KvLmSghgC4ARnpCv3g=;
-        b=ps02FxtxN6wRatB4B3WuKyDz6at/jqDISqlYslIA8e675p/l7kJyPJ9H3NfDtxmdrw
-        FnKw6IgCDDofOl2sFWInS9zSuvggd7oICKJddocD8ifzS72scyOar82CmWwz/Bj//uqy
-        QItKRY4ldUQvQxkMinNb6dRQXjhHGUfyG3AbfMYCcqJJUBWl3yu01APa/j53CvUk4qcl
-        37oKzNfTLDmV/WQIcENuZ64kCZXkvTpG0eCx7mIv1P6lcRKhTXWGP+O2ksj8oa1NM0HO
-        xX+gDoEdQEgnfxXCxAWJY+c/6oIaRZUFmSFZBRm5+BCptbsx79vZJP+LCj9i0DXQFU27
-        h+aQ==
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=MTQtC6hu8jphXFm30aQ9c48BEEYCvjQQKzJ5LYSSuWA=;
+        b=XUNgUb2YsrV0OD39L9yEbb22EGZzCIIKmg6IMjpdyphl6uHwv+CkkKMsRS5cd2TrjN
+        H1eWm85NxKA4x/syijmJBNMAcm7gDpMliKsMi5N66tj4Gl3CW+aQrX+mVglzzRRHQL9c
+        xtl6fB23ql2We5EqeHuqOKBIQoGHRqOnUp7A4/2B+cxLAsglPy1tmwjb/OY5jKp3HXb8
+        P82VwH/AURT0z+kfBjqw/92EeHM5YaEAReK0uD6tEd0sGXRoOVAiWk/PTNF//1NxZ0Xl
+        zglJlecyOTxAAr4dkvog4iareLeva6voa4uGfYDf88eHhbMfzL7nBOvmvj8lGbAMwuAd
+        5ZkQ==
 X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS0lu8GW272ZqqIaA=="
 X-RZG-CLASS-ID: mo00
 Received: from silver.lan
         by smtp.strato.de (RZmta 47.3.3 DYNA|AUTH)
-        with ESMTPSA id V0298cwA9FbC85W
+        with ESMTPSA id V0298cwA9FbC85X
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
         Mon, 9 Nov 2020 16:37:12 +0100 (CET)
@@ -34,103 +34,124 @@ From:   Oliver Hartkopp <socketcan@hartkopp.net>
 To:     linux-can@vger.kernel.org, mkl@pengutronix.de,
         mailhol.vincent@wanadoo.fr
 Cc:     netdev@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>
-Subject: [PATCH v5 0/8] Introduce optional DLC element for Classic CAN
-Date:   Mon,  9 Nov 2020 16:36:49 +0100
-Message-Id: <20201109153657.17897-1-socketcan@hartkopp.net>
+Subject: [PATCH v5 1/8] can: add optional DLC element to Classical CAN frame structure
+Date:   Mon,  9 Nov 2020 16:36:50 +0100
+Message-Id: <20201109153657.17897-2-socketcan@hartkopp.net>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201109153657.17897-1-socketcan@hartkopp.net>
+References: <20201109153657.17897-1-socketcan@hartkopp.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce improved DLC handling for Classic CAN with introduces a new
-element 'len8_dlc' to the struct can_frame and additionally rename
-the 'can_dlc' element to 'len' as it represents a plain payload length.
+ISO 11898-1 Chapter 8.4.2.3 defines a 4 bit data length code (DLC) table which
+maps the DLC to the payload length of the CAN frame in bytes:
 
-Before implementing the CAN_CTRLMODE_CC_LEN8_DLC handling on driver level
-this patch set cleans up and renames the relevant code.
+    DLC      ->  payload length
+    0 .. 8   ->  0 .. 8
+    9 .. 15  ->  8
 
-No functional changes.
+Although the DLC values 8 .. 15 in Classical CAN always result in a payload
+length of 8 bytes these DLC values are transparently transmitted on the CAN
+bus. As the struct can_frame only provides a 'len' element (formerly 'can_dlc')
+which contains the plain payload length ( 0 .. 8 ) of the CAN frame, the raw
+DLC is not visible to the application programmer, e.g. for testing use-cases.
 
-This patch set is based on kernel/git/netdev/net-next.git
+To access the raw DLC values 9 .. 15 the len8_dlc element is introduced, which
+is only valid when the payload length 'len' is 8 and the DLC is greater than 8.
 
-Changes in v2:
-  - rephrase commit message of patch 4 about can_dlc replacement
+The len8_dlc element is filled by the CAN interface driver and used for CAN
+frame creation by the CAN driver when the CAN_CTRLMODE_CC_LEN8_DLC flag is
+supported by the driver and enabled via netlink configuration interface.
 
-Changes in v3:
-  - remove unnecessarily introduced u8 cast in flexcan.c
+Reported-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+---
+ include/uapi/linux/can.h         | 38 ++++++++++++++++++++------------
+ include/uapi/linux/can/netlink.h |  1 +
+ 2 files changed, 25 insertions(+), 14 deletions(-)
 
-Changes in v4:
-  - adopt phrasing suggestions from Vincent Mailhol
-  - separate and extend CAN documentation (Documentation/networking/can.rst)
-  - add new patches for len8_dlc handling for CAN drivers
-      - add new helpers in include/linux/can/dev.h
-      - add len8_dlc support for various CAN USB adapters as reference
-
-Changes in v5:
-  - rename CAN FD related can_len2dlc and can_dlc2len helpers so that they
-    fit to the renamed can_cc_dlc2len helper for Classical CAN
-    (suggested by Vincent Mailhol)
-
-Oliver Hartkopp (8):
-  can: add optional DLC element to Classical CAN frame structure
-  can: rename get_can_dlc() macro with can_cc_dlc2len()
-  can: remove obsolete get_canfd_dlc() macro
-  can: replace can_dlc as variable/element for payload length
-  can: rename CAN FD related can_len2dlc and can_dlc2len helpers
-  can: update documentation for DLC usage in Classical CAN
-  can-dev: introduce helpers to access Classical CAN DLC values
-  can-dev: add len8_dlc support for various CAN USB adapters
-
- Documentation/networking/can.rst              | 70 ++++++++++++++-----
- drivers/net/can/at91_can.c                    | 14 ++--
- drivers/net/can/c_can/c_can.c                 | 20 +++---
- drivers/net/can/cc770/cc770.c                 | 14 ++--
- drivers/net/can/dev.c                         | 16 ++---
- drivers/net/can/flexcan.c                     |  6 +-
- drivers/net/can/grcan.c                       | 10 +--
- drivers/net/can/ifi_canfd/ifi_canfd.c         | 10 +--
- drivers/net/can/janz-ican3.c                  | 20 +++---
- drivers/net/can/kvaser_pciefd.c               | 10 +--
- drivers/net/can/m_can/m_can.c                 | 12 ++--
- drivers/net/can/mscan/mscan.c                 | 20 +++---
- drivers/net/can/pch_can.c                     | 14 ++--
- drivers/net/can/peak_canfd/peak_canfd.c       | 16 ++---
- drivers/net/can/rcar/rcar_can.c               | 14 ++--
- drivers/net/can/rcar/rcar_canfd.c             | 12 ++--
- drivers/net/can/rx-offload.c                  |  2 +-
- drivers/net/can/sja1000/sja1000.c             | 10 +--
- drivers/net/can/slcan.c                       | 32 ++++-----
- drivers/net/can/softing/softing_fw.c          |  2 +-
- drivers/net/can/softing/softing_main.c        | 14 ++--
- drivers/net/can/spi/hi311x.c                  | 20 +++---
- drivers/net/can/spi/mcp251x.c                 | 20 +++---
- .../net/can/spi/mcp251xfd/mcp251xfd-core.c    | 10 +--
- drivers/net/can/sun4i_can.c                   | 10 +--
- drivers/net/can/ti_hecc.c                     |  8 +--
- drivers/net/can/usb/ems_usb.c                 | 16 ++---
- drivers/net/can/usb/esd_usb2.c                | 16 ++---
- drivers/net/can/usb/gs_usb.c                  | 20 +++---
- .../net/can/usb/kvaser_usb/kvaser_usb_core.c  |  2 +-
- .../net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 24 +++----
- .../net/can/usb/kvaser_usb/kvaser_usb_leaf.c  | 22 +++---
- drivers/net/can/usb/mcba_usb.c                | 10 +--
- drivers/net/can/usb/peak_usb/pcan_usb.c       | 20 +++---
- drivers/net/can/usb/peak_usb/pcan_usb_fd.c    | 29 +++++---
- drivers/net/can/usb/peak_usb/pcan_usb_pro.c   | 14 ++--
- drivers/net/can/usb/ucan.c                    | 20 +++---
- drivers/net/can/usb/usb_8dev.c                | 21 +++---
- drivers/net/can/xilinx_can.c                  | 16 ++---
- include/linux/can/dev.h                       | 32 +++++++--
- include/linux/can/dev/peak_canfd.h            |  2 +-
- include/uapi/linux/can.h                      | 38 ++++++----
- include/uapi/linux/can/netlink.h              |  1 +
- net/can/af_can.c                              |  2 +-
- net/can/gw.c                                  |  2 +-
- net/can/j1939/main.c                          |  4 +-
- 46 files changed, 400 insertions(+), 317 deletions(-)
-
+diff --git a/include/uapi/linux/can.h b/include/uapi/linux/can.h
+index 6a6d2c7655ff..f75238ac6dce 100644
+--- a/include/uapi/linux/can.h
++++ b/include/uapi/linux/can.h
+@@ -82,34 +82,44 @@ typedef __u32 canid_t;
+  */
+ typedef __u32 can_err_mask_t;
+ 
+ /* CAN payload length and DLC definitions according to ISO 11898-1 */
+ #define CAN_MAX_DLC 8
++#define CAN_MAX_RAW_DLC 15
+ #define CAN_MAX_DLEN 8
+ 
+ /* CAN FD payload length and DLC definitions according to ISO 11898-7 */
+ #define CANFD_MAX_DLC 15
+ #define CANFD_MAX_DLEN 64
+ 
+ /**
+- * struct can_frame - basic CAN frame structure
+- * @can_id:  CAN ID of the frame and CAN_*_FLAG flags, see canid_t definition
+- * @can_dlc: frame payload length in byte (0 .. 8) aka data length code
+- *           N.B. the DLC field from ISO 11898-1 Chapter 8.4.2.3 has a 1:1
+- *           mapping of the 'data length code' to the real payload length
+- * @__pad:   padding
+- * @__res0:  reserved / padding
+- * @__res1:  reserved / padding
+- * @data:    CAN frame payload (up to 8 byte)
++ * struct can_frame - Classical CAN frame structure (aka CAN 2.0B)
++ * @can_id:   CAN ID of the frame and CAN_*_FLAG flags, see canid_t definition
++ * @len:      CAN frame payload length in byte (0 .. 8)
++ * @can_dlc:  deprecated name for CAN frame payload length in byte (0 .. 8)
++ * @__pad:    padding
++ * @__res0:   reserved / padding
++ * @len8_dlc: optional DLC value (9 .. 15) at 8 byte payload length
++ *            len8_dlc contains values from 9 .. 15 when the payload length is
++ *            8 bytes but the DLC value (see ISO 11898-1) is greater then 8.
++ *            CAN_CTRLMODE_CC_LEN8_DLC flag has to be enabled in CAN driver.
++ * @data:     CAN frame payload (up to 8 byte)
+  */
+ struct can_frame {
+ 	canid_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+-	__u8    can_dlc; /* frame payload length in byte (0 .. CAN_MAX_DLEN) */
+-	__u8    __pad;   /* padding */
+-	__u8    __res0;  /* reserved / padding */
+-	__u8    __res1;  /* reserved / padding */
+-	__u8    data[CAN_MAX_DLEN] __attribute__((aligned(8)));
++	union {
++		/* CAN frame payload length in byte (0 .. CAN_MAX_DLEN)
++		 * was previously named can_dlc so we need to carry that
++		 * name for legacy support
++		 */
++		__u8 len;
++		__u8 can_dlc; /* deprecated */
++	};
++	__u8 __pad; /* padding */
++	__u8 __res0; /* reserved / padding */
++	__u8 len8_dlc; /* optional DLC for 8 byte payload length (9 .. 15) */
++	__u8 data[CAN_MAX_DLEN] __attribute__((aligned(8)));
+ };
+ 
+ /*
+  * defined bits for canfd_frame.flags
+  *
+diff --git a/include/uapi/linux/can/netlink.h b/include/uapi/linux/can/netlink.h
+index 6f598b73839e..f730d443b918 100644
+--- a/include/uapi/linux/can/netlink.h
++++ b/include/uapi/linux/can/netlink.h
+@@ -98,10 +98,11 @@ struct can_ctrlmode {
+ #define CAN_CTRLMODE_ONE_SHOT		0x08	/* One-Shot mode */
+ #define CAN_CTRLMODE_BERR_REPORTING	0x10	/* Bus-error reporting */
+ #define CAN_CTRLMODE_FD			0x20	/* CAN FD mode */
+ #define CAN_CTRLMODE_PRESUME_ACK	0x40	/* Ignore missing CAN ACKs */
+ #define CAN_CTRLMODE_FD_NON_ISO		0x80	/* CAN FD in non-ISO mode */
++#define CAN_CTRLMODE_CC_LEN8_DLC	0x100	/* Classic CAN DLC option */
+ 
+ /*
+  * CAN device statistics
+  */
+ struct can_device_stats {
 -- 
 2.28.0
 
