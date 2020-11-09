@@ -2,179 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFAD82ABE3A
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 15:07:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD6E52ABE34
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 15:06:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730443AbgKIOHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 09:07:25 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37094 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727826AbgKIOHY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 09:07:24 -0500
-Received: by mail-ot1-f66.google.com with SMTP id l36so9012829ota.4;
-        Mon, 09 Nov 2020 06:07:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qItS/x3JE/SvOZ8YtwxUA1cr4KrrSfqUypilCfxyhBs=;
-        b=MQmFP0DczI7zAEQtoQK9wHdyxL9q8rfpTYx7HtgpewyUdxHk4yvfaWwxDM9CpjytwD
-         gcBCMv5taPKM3oiS92H2eM80EMfC4Xf/OzrxQMHqnT5M5LWBXW9FJmO5rwSJElyMoo1x
-         AU04O3g3XJ9TpXgcjVmIdRltfOqfdpezepRrSnIUXsnQBL7BqBZpDvUJed8MpvbZAI7T
-         ++pkngWrrR4TowI4gbaylHegugyFPtEUO5HSTxg7JWKoUznHPX77gTg8B5rpzdpelHlb
-         cXnWD+2WC4igC+ZnO7GN+XvUg21Z5BL8YrVEedO5Ay9LJLOGgdgdV593Lhxp1/eEh+Mc
-         sDAg==
-X-Gm-Message-State: AOAM533/AdGrFyBkWYksKlcBTI/QyDTnvh/+4w8hgv1YKY4BMj03RWrJ
-        bv/bpKMeiEVyeMESGpyDc/wlwBzokXmQbLGdzEc=
-X-Google-Smtp-Source: ABdhPJzgpYehEI3SdWXufFS9I1mYiO0GDqKZkPYcEO+iAW/ctyCqn4R6pQaOmq/WsKVHPGdGtK400/DgPWks9pWC8H8=
-X-Received: by 2002:a9d:16f:: with SMTP id 102mr11137585otu.206.1604930841719;
- Mon, 09 Nov 2020 06:07:21 -0800 (PST)
+        id S1730581AbgKIOGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 09:06:13 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7197 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729854AbgKIOGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 09:06:12 -0500
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CVCT31l2VzkgpG;
+        Mon,  9 Nov 2020 22:05:59 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.487.0; Mon, 9 Nov 2020
+ 22:06:06 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <jmaloy@redhat.com>, <ying.xue@windriver.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <tipc-discussion@lists.sourceforge.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] tipc: fix memory leak in tipc_topsrv_start()
+Date:   Mon, 9 Nov 2020 22:09:13 +0800
+Message-ID: <20201109140913.47370-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20201109080938.4174745-1-zhangqilong3@huawei.com>
- <20201109080938.4174745-2-zhangqilong3@huawei.com> <CAJZ5v0gZp_R60FN+ZrKmEn+m0F4yjt_MB+N8uGG=fxKUnZdknQ@mail.gmail.com>
- <d05e3d35a68e41e2ac36acfcd577ad47@huawei.com> <CAJZ5v0hpNNAyRuQyMbOE2Lwer_uJbC0uTpnpCBpPNTv54_fxRg@mail.gmail.com>
- <bf9325b7c3e04691a215fb16a133d536@huawei.com>
-In-Reply-To: <bf9325b7c3e04691a215fb16a133d536@huawei.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 9 Nov 2020 15:07:10 +0100
-Message-ID: <CAJZ5v0ggJCFqqmFVGmxEf2MRckLU6GsF=V=cnzfveyOqOMfVZg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] PM: runtime: Add a general runtime get sync operation
- to deal with usage counter
-To:     zhangqilong <zhangqilong3@huawei.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 9, 2020 at 2:46 PM zhangqilong <zhangqilong3@huawei.com> wrote:
->
-> Hi,
->
-> >
-> > On Mon, Nov 9, 2020 at 2:24 PM zhangqilong <zhangqilong3@huawei.com>
-> > wrote:
-> > >
-> > > Hi
-> > > >
-> > > > On Mon, Nov 9, 2020 at 9:05 AM Zhang Qilong
-> > > > <zhangqilong3@huawei.com>
-> > > > wrote:
-> > > > >
-> > > > > In many case, we need to check return value of
-> > > > > pm_runtime_get_sync, but it brings a trouble to the usage counter
-> > > > > processing. Many callers forget to decrease the usage counter when
-> > > > > it failed. It has been discussed a lot[0][1]. So we add a function
-> > > > > to deal with the usage counter for better coding.
-> > > > >
-> > > > > [0]https://lkml.org/lkml/2020/6/14/88
-> > > > > [1]https://patchwork.ozlabs.org/project/linux-tegra/patch/20200520
-> > > > > 0951 48.10995-1-dinghao.liu@zju.edu.cn/
-> > > > > Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
-> > > > > ---
-> > > > >  include/linux/pm_runtime.h | 32
-> > ++++++++++++++++++++++++++++++++
-> > > > >  1 file changed, 32 insertions(+)
-> > > > >
-> > > > > diff --git a/include/linux/pm_runtime.h
-> > > > > b/include/linux/pm_runtime.h index 4b708f4e8eed..2b0af5b1dffd
-> > > > > 100644
-> > > > > --- a/include/linux/pm_runtime.h
-> > > > > +++ b/include/linux/pm_runtime.h
-> > > > > @@ -386,6 +386,38 @@ static inline int pm_runtime_get_sync(struct
-> > > > > device
-> > > > *dev)
-> > > > >         return __pm_runtime_resume(dev, RPM_GET_PUT);  }
-> > > > >
-> > > > > +/**
-> > > > > + * gene_pm_runtime_get_sync - Bump up usage counter of a device
-> > > > > +and
-> > > > resume it.
-> > > > > + * @dev: Target device.
-> > > >
-> > > > The force argument is not documented.
-> > >
-> > > (1) Good catch, I will add it in next version.
-> > >
-> > > >
-> > > > > + *
-> > > > > + * Increase runtime PM usage counter of @dev first, and carry out
-> > > > > + runtime-resume
-> > > > > + * of it synchronously. If __pm_runtime_resume return negative
-> > > > > + value(device is in
-> > > > > + * error state) or return positive value(the runtime of device is
-> > > > > + already active)
-> > > > > + * with force is true, it need decrease the usage counter of the
-> > > > > + device when
-> > > > > + * return.
-> > > > > + *
-> > > > > + * The possible return values of this function is zero or negative value.
-> > > > > + * zero:
-> > > > > + *    - it means success and the status will store the resume operation
-> > > > status
-> > > > > + *      if needed, the runtime PM usage counter of @dev remains
-> > > > incremented.
-> > > > > + * negative:
-> > > > > + *    - it means failure and the runtime PM usage counter of @dev has
-> > > > been
-> > > > > + *      decreased.
-> > > > > + * positive:
-> > > > > + *    - it means the runtime of the device is already active before that.
-> > If
-> > > > > + *      caller set force to true, we still need to decrease the usage
-> > > > counter.
-> > > >
-> > > > Why is this needed?
-> > >
-> > > (2) If caller set force, it means caller will return even the device
-> > > has already been active (__pm_runtime_resume return positive value)
-> > > after calling gene_pm_runtime_get_sync, we still need to decrease the
-> > usage count.
-> >
-> > But who needs this?
-> >
-> > I don't think that it is a good idea to complicate the API this way.
->
-> The callers like:
-> ret = pm_runtime_get_sync(dev);
-> if (ret) {
->         ...
->         return (xxx);
-> }
+kmemleak report a memory leak as follows:
 
-Which isn't correct really, is it?
+unreferenced object 0xffff88810a596800 (size 512):
+  comm "ip", pid 21558, jiffies 4297568990 (age 112.120s)
+  hex dump (first 32 bytes):
+    00 00 00 00 ad 4e ad de ff ff ff ff 00 00 00 00  .....N..........
+    ff ff ff ff ff ff ff ff 00 83 60 b0 ff ff ff ff  ..........`.....
+  backtrace:
+    [<0000000022bbe21f>] tipc_topsrv_init_net+0x1f3/0xa70
+    [<00000000fe15ddf7>] ops_init+0xa8/0x3c0
+    [<00000000138af6f2>] setup_net+0x2de/0x7e0
+    [<000000008c6807a3>] copy_net_ns+0x27d/0x530
+    [<000000006b21adbd>] create_new_namespaces+0x382/0xa30
+    [<00000000bb169746>] unshare_nsproxy_namespaces+0xa1/0x1d0
+    [<00000000fe2e42bc>] ksys_unshare+0x39c/0x780
+    [<0000000009ba3b19>] __x64_sys_unshare+0x2d/0x40
+    [<00000000614ad866>] do_syscall_64+0x56/0xa0
+    [<00000000a1b5ca3c>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-If ret is greater than 0, the error should not be returned in the
-first place, so you may want the new wrapper to return zero in that
-case instead.
+'srv' is malloced in tipc_topsrv_start() but not free before
+leaving from the error handling cases. We need to free it.
 
-> drivers/spi/spi-img-spfi.c:734 img_spfi_resume() warn: pm_runtime_get_sync() also returns 1 on success
-> drivers/mfd/arizona-core.c:49 arizona_clk32k_enable() warn: pm_runtime_get_sync() also returns 1 on success
-> drivers/usb/dwc3/dwc3-pci.c:212 dwc3_pci_resume_work() warn: pm_runtime_get_sync() also returns 1 on success
-> drivers/input/keyboard/omap4-keypad.c:279 omap4_keypad_probe() warn: pm_runtime_get_sync() also returns 1 on success
-> drivers/gpu/drm/vc4/vc4_dsi.c:839 vc4_dsi_encoder_enable() warn: pm_runtime_get_sync() also returns 1 on success
-> drivers/gpu/drm/i915/selftests/mock_gem_device.c:157 mock_gem_device() warn: 'pm_runtime_get_sync(&pdev->dev)' returns positive and negative
-> drivers/watchdog/rti_wdt.c:230 rti_wdt_probe() warn: pm_runtime_get_sync() also returns 1 on success
-> drivers/media/platform/exynos4-is/mipi-csis.c:513 s5pcsis_s_stream() warn: pm_runtime_get_sync() also returns 1 on success
-> drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c:89 mtk_vcodec_dec_pw_on() warn: pm_runtime_get_sync() also returns 1 on success
-> drivers/media/platform/ti-vpe/cal.c:794 cal_probe() warn: pm_runtime_get_sync() also returns 1 on success
-> drivers/media/platform/ti-vpe/vpe.c:2478 vpe_runtime_get() warn: pm_runtime_get_sync() also returns 1 on success
-> drivers/media/i2c/smiapp/smiapp-core.c:1529 smiapp_pm_get_init() warn: pm_runtime_get_sync() also returns 1 on success
-> ...
-> they need it to simplify the function.
->
-> If we only want to simplify like
-> ret = pm_runtime_get_sync(dev);
-> if (ret < 0) {
->         ...
->         Return (xxx)
-> }
-> The parameter force could be removed.
+Fixes: 5c45ab24ac77 ("tipc: make struct tipc_server private for server.c")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+ net/tipc/topsrv.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-Which is exactly my point.
+diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
+index 5f6f86051c83..13f3143609f9 100644
+--- a/net/tipc/topsrv.c
++++ b/net/tipc/topsrv.c
+@@ -664,12 +664,18 @@ static int tipc_topsrv_start(struct net *net)
+ 
+ 	ret = tipc_topsrv_work_start(srv);
+ 	if (ret < 0)
+-		return ret;
++		goto err_start;
+ 
+ 	ret = tipc_topsrv_create_listener(srv);
+ 	if (ret < 0)
+-		tipc_topsrv_work_stop(srv);
++		goto err_create;
+ 
++	return 0;
++
++err_create:
++	tipc_topsrv_work_stop(srv);
++err_start:
++	kfree(srv);
+ 	return ret;
+ }
+ 
+-- 
+2.17.1
+
