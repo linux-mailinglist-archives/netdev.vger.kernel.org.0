@@ -2,104 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0414A2AB226
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 09:06:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84F022AB246
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 09:17:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729760AbgKIIF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 03:05:59 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:7435 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729730AbgKIIF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 03:05:59 -0500
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CV3TT05hBz73nD;
-        Mon,  9 Nov 2020 16:05:49 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Mon, 9 Nov 2020
- 16:05:50 +0800
-From:   Zhang Qilong <zhangqilong3@huawei.com>
-To:     <rjw@rjwysocki.net>, <fugang.duan@nxp.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <linux-pm@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH 2/2] net: fec: Fix reference count leak in fec series ops
-Date:   Mon, 9 Nov 2020 16:09:38 +0800
-Message-ID: <20201109080938.4174745-3-zhangqilong3@huawei.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20201109080938.4174745-1-zhangqilong3@huawei.com>
-References: <20201109080938.4174745-1-zhangqilong3@huawei.com>
+        id S1726867AbgKIIR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 03:17:27 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:2490 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726176AbgKIIR1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 03:17:27 -0500
+Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4CV3kg6bp9zQprq;
+        Mon,  9 Nov 2020 16:17:15 +0800 (CST)
+Received: from dggema705-chm.china.huawei.com (10.3.20.69) by
+ DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Mon, 9 Nov 2020 16:17:16 +0800
+Received: from dggema755-chm.china.huawei.com (10.1.198.197) by
+ dggema705-chm.china.huawei.com (10.3.20.69) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Mon, 9 Nov 2020 16:17:16 +0800
+Received: from dggema755-chm.china.huawei.com ([10.1.198.197]) by
+ dggema755-chm.china.huawei.com ([10.1.198.197]) with mapi id 15.01.1913.007;
+ Mon, 9 Nov 2020 16:17:16 +0800
+From:   zhangqilong <zhangqilong3@huawei.com>
+To:     Andy Duan <fugang.duan@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBuZXQ6IGZlYzogRml4IHJlZmVyZW5jZSBjb3VudCBs?=
+ =?gb2312?Q?eak_in_fec_series_ops?=
+Thread-Topic: [PATCH] net: fec: Fix reference count leak in fec series ops
+Thread-Index: AQHWtbR0dNnOQKhcrEOwTSi35QjWC6m/CZHwgAAHX3D//4bLAIAA3VkQ
+Date:   Mon, 9 Nov 2020 08:17:16 +0000
+Message-ID: <86643764cd4f4d919fe00bf3fb6e654b@huawei.com>
+References: <20201108095310.2892555-1-zhangqilong3@huawei.com>
+ <AM8PR04MB731568128C08B0730519E9D3FFEA0@AM8PR04MB7315.eurprd04.prod.outlook.com>
+ <deec0b718f894de191a26bbe1015882b@huawei.com>
+ <AM8PR04MB73157728290E9AF743B8E59BFFEA0@AM8PR04MB7315.eurprd04.prod.outlook.com>
+In-Reply-To: <AM8PR04MB73157728290E9AF743B8E59BFFEA0@AM8PR04MB7315.eurprd04.prod.outlook.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.179.28]
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pm_runtime_get_sync() will increment pm usage at first and it will
-resume the device later. If runtime of the device has error or
-device is in inaccessible state(or other error state), resume
-operation will fail. If we do not call put operation to decrease
-the reference, it will result in reference count leak. Moreover,
-this device cannot enter the idle state and always stay busy or other
-non-idle state later. So we fixed it by replacing it with
-gene_pm_runtime_get_sync.
-
-Fixes: 8fff755e9f8d0 ("net: fec: Ensure clocks are enabled while using mdio bus")
-Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
----
- drivers/net/ethernet/freescale/fec_main.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index d7919555250d..f3f632bf3676 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -1808,7 +1808,7 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
- 	int ret = 0, frame_start, frame_addr, frame_op;
- 	bool is_c45 = !!(regnum & MII_ADDR_C45);
- 
--	ret = pm_runtime_get_sync(dev);
-+	ret = gene_pm_runtime_get_sync(dev, false);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1867,7 +1867,7 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- 	int ret, frame_start, frame_addr;
- 	bool is_c45 = !!(regnum & MII_ADDR_C45);
- 
--	ret = pm_runtime_get_sync(dev);
-+	ret = gene_pm_runtime_get_sync(dev, false);
- 	if (ret < 0)
- 		return ret;
- 	else
-@@ -2275,7 +2275,7 @@ static void fec_enet_get_regs(struct net_device *ndev,
- 	u32 i, off;
- 	int ret;
- 
--	ret = pm_runtime_get_sync(dev);
-+	ret = gene_pm_runtime_get_sync(dev, false);
- 	if (ret < 0)
- 		return;
- 
-@@ -2976,7 +2976,7 @@ fec_enet_open(struct net_device *ndev)
- 	int ret;
- 	bool reset_again;
- 
--	ret = pm_runtime_get_sync(&fep->pdev->dev);
-+	ret = gene_pm_runtime_get_sync(&fep->pdev->dev, false);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -3770,7 +3770,7 @@ fec_drv_remove(struct platform_device *pdev)
- 	struct device_node *np = pdev->dev.of_node;
- 	int ret;
- 
--	ret = pm_runtime_get_sync(&pdev->dev);
-+	ret = gene_pm_runtime_get_sync(&pdev->dev, false);
- 	if (ret < 0)
- 		return ret;
- 
--- 
-2.25.4
-
+PiBGcm9tOiB6aGFuZ3FpbG9uZyA8emhhbmdxaWxvbmczQGh1YXdlaS5jb20+ZW50OiBNb25kYXks
+IE5vdmVtYmVyIDksDQo+IDIwMjAgMTA6NTIgQU0NCj4gPiA+IEZyb206IFpoYW5nIFFpbG9uZyA8
+emhhbmdxaWxvbmczQGh1YXdlaS5jb20+IFNlbnQ6IFN1bmRheSwgTm92ZW1iZXINCj4gPiA+IDgs
+DQo+ID4gPiAyMDIwIDU6NTMgUE0NCj4gPiA+ID4gcG1fcnVudGltZV9nZXRfc3luYygpIHdpbGwg
+aW5jcmVtZW50IHBtIHVzYWdlIGF0IGZpcnN0IGFuZCBpdCB3aWxsDQo+ID4gPiA+IHJlc3VtZSB0
+aGUgZGV2aWNlIGxhdGVyLiBJZiBydW50aW1lIG9mIHRoZSBkZXZpY2UgaGFzIGVycm9yIG9yDQo+
+ID4gPiA+IGRldmljZSBpcyBpbiBpbmFjY2Vzc2libGUgc3RhdGUob3Igb3RoZXIgZXJyb3Igc3Rh
+dGUpLCByZXN1bWUNCj4gPiA+ID4gb3BlcmF0aW9uIHdpbGwgZmFpbC4gSWYgd2UgZG8gbm90IGNh
+bGwgcHV0IG9wZXJhdGlvbiB0byBkZWNyZWFzZQ0KPiA+ID4gPiB0aGUgcmVmZXJlbmNlLCBpdCB3
+aWxsIHJlc3VsdCBpbg0KPiA+ID4gcmVmZXJlbmNlIGNvdW50IGxlYWsuDQo+ID4gPiA+IE1vcmVv
+dmVyLCB0aGlzIGRldmljZSBjYW5ub3QgZW50ZXIgdGhlIGlkbGUgc3RhdGUgYW5kIGFsd2F5cyBz
+dGF5DQo+ID4gPiA+IGJ1c3kgb3Igb3RoZXIgbm9uLWlkbGUgc3RhdGUgbGF0ZXIuIFNvIHdlIGZp
+eGVkIGl0IHRocm91Z2ggYWRkaW5nDQo+ID4gPiBwbV9ydW50aW1lX3B1dF9ub2lkbGUuDQo+ID4g
+PiA+DQo+ID4gPiA+IEZpeGVzOiA4ZmZmNzU1ZTlmOGQwICgibmV0OiBmZWM6IEVuc3VyZSBjbG9j
+a3MgYXJlIGVuYWJsZWQgd2hpbGUNCj4gPiA+ID4gdXNpbmcgbWRpbyBidXMiKQ0KPiA+ID4gPiBT
+aWduZWQtb2ZmLWJ5OiBaaGFuZyBRaWxvbmcgPHpoYW5ncWlsb25nM0BodWF3ZWkuY29tPg0KPiA+
+ID4NCj4gPiA+IEZyb20gZWFybHkgZGlzY3Vzc2lvbiBmb3IgdGhlIHRvcGljLCBXb2xmcmFtIFNh
+bmcgd29uZGVyIGlmIHN1Y2gNCj4gPiA+IGRlLXJlZmVyZW5jZSBjYW4gYmUgYmV0dGVyIGhhbmRs
+ZWQgYnkgcG0gcnVudGltZSBjb3JlIGNvZGUuDQo+ID4gPg0KPiA+IEkgaGF2ZSByZWFkIHRoZSBk
+aXNjdXNzaW9uIGp1c3Qgbm93LCBUaGV5IGRpZG4ndCBnaXZlIGEgZGVmaW5pdGUNCj4gPiByZXN1
+bHQuIEkgYWdyZWVkIHdpdGggaW50cm9kdWNpbmcgYSBuZXcgb3IgaGVscCBmdW5jdGlvbiB0byBy
+ZXBsYWNlDQo+ID4gdGhlIHBtX3J1bnRpbWVfZ2V0X3N5bmMgZ3JhZHVhbGx5LiBIb3cgZG8geW91
+IHRoaW5rIHNvID8NCj4gPg0KPiA+IFJlZ2FyZHMsDQo+ID4gWmhhbmcNCj4gDQo+IEkgYWxzbyB0
+aGluayBzbyB0byBhdm9pZCBzbyBtdWNoIGR1cGxpY2F0aW9uIGNvZGUgaW4gZnVuY3Rpb24gZHJp
+dmVyLg0KDQpIaSwNCiANCkkgaGF2ZSBhZGRlZCBhIG1vcmUgZ2VuZXJhbCBvcGVyYXRpb24gaW4g
+Zmxvd2luZyBwYXRjaA0KaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbmV0ZGV2LzIwMjAxMTA5MDgw
+OTM4LjQxNzQ3NDUtMS16aGFuZ3FpbG9uZzNAaHVhd2VpLmNvbS9ULyN0DQp0byBzb2x2ZSB0aGlz
+IHByb2JsZW0uIENvbW1lbnRzIGFyZSB3ZWxjb21lIGlmIHlvdSBhcmUgZnJlZS4NCg0KUmVnYXJk
+cywNClpoYW5nDQoNCj4gPg0KPiA+ID4gaHR0cHM6Ly9ldXIwMS5zYWZlbGlua3MucHJvdGVjdGlv
+bi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJGbGsNCj4gPiA+DQo+IG1sIC5vcmclMkZs
+a21sJTJGMjAyMCUyRjYlMkYxNCUyRjc2JmFtcDtkYXRhPTA0JTdDMDElN0NmdWdhbmcuZHUNCj4g
+YQ0KPiA+IG4lNDBueHAuDQo+ID4gPg0KPiA+DQo+IGNvbSU3Q2VhZWY1MDIwZDFjMTQzZGZkYTUy
+MDhkODg0NWE2MzkxJTdDNjg2ZWExZDNiYzJiNGM2ZmE5MmNkOTkNCj4gPiBjNWMzMDENCj4gPiA+
+DQo+ID4NCj4gNjM1JTdDMCU3QzAlN0M2Mzc0MDQ4NzEwNTAxMzU0MjYlN0NVbmtub3duJTdDVFdG
+cGJHWnNiM2Q4ZXlKDQo+ID4gV0lqb2lNQzR3TA0KPiA+ID4NCj4gPg0KPiBqQXdNREFpTENKUUlq
+b2lWMmx1TXpJaUxDSkJUaUk2SWsxaGFXd2lMQ0pYVkNJNk1uMCUzRCU3QzEwMDAmYW1wOw0KPiBz
+DQo+ID4gZGF0YQ0KPiA+ID4NCj4gPUdMaTM0SFJMenpUblRqVDU0ZHBOWGtNZHZ1UHV5VmhjU3VB
+R3FjMXJkdnclM0QmYW1wO3Jlc2VydmVkPTANCj4gPiA+DQo+ID4gPiBSZWdhcmRzLA0KPiA+ID4g
+QW5keQ0KPiA+ID4gPiAtLS0NCj4gPiA+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2Fs
+ZS9mZWNfbWFpbi5jIHwgMjINCj4gPiA+ID4gKysrKysrKysrKysrKysrKy0tLS0tLQ0KPiA+ID4g
+PiAgMSBmaWxlIGNoYW5nZWQsIDE2IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pDQo+ID4g
+PiA+DQo+ID4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUv
+ZmVjX21haW4uYw0KPiA+ID4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNf
+bWFpbi5jDQo+ID4gPiA+IGluZGV4IGQ3OTE5NTU1MjUwZC4uNmMwMmY4ODVjNjdlIDEwMDY0NA0K
+PiA+ID4gPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0K
+PiA+ID4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0K
+PiA+ID4gPiBAQCAtMTgwOSw4ICsxODA5LDEwIEBAIHN0YXRpYyBpbnQgZmVjX2VuZXRfbWRpb19y
+ZWFkKHN0cnVjdA0KPiA+ID4gPiBtaWlfYnVzICpidXMsIGludCBtaWlfaWQsIGludCByZWdudW0p
+DQo+ID4gPiA+ICAJYm9vbCBpc19jNDUgPSAhIShyZWdudW0gJiBNSUlfQUREUl9DNDUpOw0KPiA+
+ID4gPg0KPiA+ID4gPiAgCXJldCA9IHBtX3J1bnRpbWVfZ2V0X3N5bmMoZGV2KTsNCj4gPiA+ID4g
+LQlpZiAocmV0IDwgMCkNCj4gPiA+ID4gKwlpZiAocmV0IDwgMCkgew0KPiA+ID4gPiArCQlwbV9y
+dW50aW1lX3B1dF9ub2lkbGUoZGV2KTsNCj4gPiA+ID4gIAkJcmV0dXJuIHJldDsNCj4gPiA+ID4g
+Kwl9DQo+ID4gPiA+DQo+ID4gPiA+ICAJaWYgKGlzX2M0NSkgew0KPiA+ID4gPiAgCQlmcmFtZV9z
+dGFydCA9IEZFQ19NTUZSX1NUX0M0NTsNCj4gPiA+ID4gQEAgLTE4NjgsMTAgKzE4NzAsMTIgQEAg
+c3RhdGljIGludCBmZWNfZW5ldF9tZGlvX3dyaXRlKHN0cnVjdA0KPiA+ID4gPiBtaWlfYnVzICpi
+dXMsIGludCBtaWlfaWQsIGludCByZWdudW0sDQo+ID4gPiA+ICAJYm9vbCBpc19jNDUgPSAhIShy
+ZWdudW0gJiBNSUlfQUREUl9DNDUpOw0KPiA+ID4gPg0KPiA+ID4gPiAgCXJldCA9IHBtX3J1bnRp
+bWVfZ2V0X3N5bmMoZGV2KTsNCj4gPiA+ID4gLQlpZiAocmV0IDwgMCkNCj4gPiA+ID4gKwlpZiAo
+cmV0IDwgMCkgew0KPiA+ID4gPiArCQlwbV9ydW50aW1lX3B1dF9ub2lkbGUoZGV2KTsNCj4gPiA+
+ID4gIAkJcmV0dXJuIHJldDsNCj4gPiA+ID4gLQllbHNlDQo+ID4gPiA+ICsJfSBlbHNlIHsNCj4g
+PiA+ID4gIAkJcmV0ID0gMDsNCj4gPiA+ID4gKwl9DQo+ID4gPiA+DQo+ID4gPiA+ICAJaWYgKGlz
+X2M0NSkgew0KPiA+ID4gPiAgCQlmcmFtZV9zdGFydCA9IEZFQ19NTUZSX1NUX0M0NTsNCj4gPiA+
+ID4gQEAgLTIyNzYsOCArMjI4MCwxMCBAQCBzdGF0aWMgdm9pZCBmZWNfZW5ldF9nZXRfcmVncyhz
+dHJ1Y3QNCj4gPiA+ID4gbmV0X2RldmljZSAqbmRldiwNCj4gPiA+ID4gIAlpbnQgcmV0Ow0KPiA+
+ID4gPg0KPiA+ID4gPiAgCXJldCA9IHBtX3J1bnRpbWVfZ2V0X3N5bmMoZGV2KTsNCj4gPiA+ID4g
+LQlpZiAocmV0IDwgMCkNCj4gPiA+ID4gKwlpZiAocmV0IDwgMCkgew0KPiA+ID4gPiArCQlwbV9y
+dW50aW1lX3B1dF9ub2lkbGUoZGV2KTsNCj4gPiA+ID4gIAkJcmV0dXJuOw0KPiA+ID4gPiArCX0N
+Cj4gPiA+ID4NCj4gPiA+ID4gIAlyZWdzLT52ZXJzaW9uID0gZmVjX2VuZXRfcmVnaXN0ZXJfdmVy
+c2lvbjsNCj4gPiA+ID4NCj4gPiA+ID4gQEAgLTI5NzcsOCArMjk4MywxMCBAQCBmZWNfZW5ldF9v
+cGVuKHN0cnVjdCBuZXRfZGV2aWNlICpuZGV2KQ0KPiA+ID4gPiAgCWJvb2wgcmVzZXRfYWdhaW47
+DQo+ID4gPiA+DQo+ID4gPiA+ICAJcmV0ID0gcG1fcnVudGltZV9nZXRfc3luYygmZmVwLT5wZGV2
+LT5kZXYpOw0KPiA+ID4gPiAtCWlmIChyZXQgPCAwKQ0KPiA+ID4gPiArCWlmIChyZXQgPCAwKSB7
+DQo+ID4gPiA+ICsJCXBtX3J1bnRpbWVfcHV0X25vaWRsZSgmZmVwLT5wZGV2LT5kZXYpOw0KPiA+
+ID4gPiAgCQlyZXR1cm4gcmV0Ow0KPiA+ID4gPiArCX0NCj4gPiA+ID4NCj4gPiA+ID4gIAlwaW5j
+dHJsX3BtX3NlbGVjdF9kZWZhdWx0X3N0YXRlKCZmZXAtPnBkZXYtPmRldik7DQo+ID4gPiA+ICAJ
+cmV0ID0gZmVjX2VuZXRfY2xrX2VuYWJsZShuZGV2LCB0cnVlKTsgQEAgLTM3NzEsOCArMzc3OSwx
+MCBAQA0KPiA+ID4gPiBmZWNfZHJ2X3JlbW92ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2
+KQ0KPiA+ID4gPiAgCWludCByZXQ7DQo+ID4gPiA+DQo+ID4gPiA+ICAJcmV0ID0gcG1fcnVudGlt
+ZV9nZXRfc3luYygmcGRldi0+ZGV2KTsNCj4gPiA+ID4gLQlpZiAocmV0IDwgMCkNCj4gPiA+ID4g
+KwlpZiAocmV0IDwgMCkgew0KPiA+ID4gPiArCQlwbV9ydW50aW1lX3B1dF9ub2lkbGUoJnBkZXYt
+PmRldik7DQo+ID4gPiA+ICAJCXJldHVybiByZXQ7DQo+ID4gPiA+ICsJfQ0KPiA+ID4gPg0KPiA+
+ID4gPiAgCWNhbmNlbF93b3JrX3N5bmMoJmZlcC0+dHhfdGltZW91dF93b3JrKTsNCj4gPiA+ID4g
+IAlmZWNfcHRwX3N0b3AocGRldik7DQo+ID4gPiA+IC0tDQo+ID4gPiA+IDIuMjUuNA0KDQo=
