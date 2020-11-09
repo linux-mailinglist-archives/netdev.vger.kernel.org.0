@@ -2,59 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0883B2AC829
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 23:17:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3699F2AC82D
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 23:20:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730005AbgKIWRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 17:17:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53530 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729336AbgKIWRA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 17:17:00 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 16EB9206BE;
-        Mon,  9 Nov 2020 22:16:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604960219;
-        bh=ROrsqtYaKXfk3QoJVLVQQdpZkH8gX3j3DtkJ5PIVV2g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KcFPTBvE4LyxKT+LnRnmg0jcIbffymp9YQmfgjOZC3m/0SUcWvVAARlRURhXfNw95
-         49109i5GvRP7Lv9n68YxB7xWfcNHmLrXBtZfhIAA42MdvEPDOc20fSwIAotRs4Fcm/
-         NmoQtEjS0fTNI44pXBpCdjMqrckZryZ5g2P839MM=
-Date:   Mon, 9 Nov 2020 14:16:58 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Georg Kohmann (geokohma)" <geokohma@cisco.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "kadlec@netfilter.org" <kadlec@netfilter.org>,
-        "fw@strlen.de" <fw@strlen.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>
-Subject: Re: [PATCH net v3] ipv6/netfilter: Discard first fragment not
- including all headers
-Message-ID: <20201109141658.0265373d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <3c81d2ae-ba14-60d8-247d-87fabf407fea@cisco.com>
-References: <20201109115249.14491-1-geokohma@cisco.com>
-        <20201109125009.5e54ec8b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <3c81d2ae-ba14-60d8-247d-87fabf407fea@cisco.com>
+        id S1729886AbgKIWUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 17:20:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51572 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725946AbgKIWUA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 17:20:00 -0500
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2436FC0613CF;
+        Mon,  9 Nov 2020 14:20:00 -0800 (PST)
+Received: by mail-vs1-xe42.google.com with SMTP id u7so5886553vsq.11;
+        Mon, 09 Nov 2020 14:20:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NkRhdWUjyBAq9RdkQbodw+dQbZwpkI++aUs2Z/kHrgA=;
+        b=mccDTbWJ2u3OvdVtsp+jDwL4z2qtcW6NPcO83WHToJrRzbTIqWVDTv3Og1RC4jzTCk
+         OVje4KKR/WprUu8VOwYbbvPEHp0dhHLEe471unDTriNOmE3F5TFq+nRLywpFYl/3sv6Q
+         Kyxi50xFpNmt2Su3ijVKULFZ7Iq75S9Mik1GeUeeyiMePtTDZm5bX5BquB/gCT8J9zUI
+         RJSdFRTlrTC2PZDTq5Drc8qnxKSBY/DjbDgC675SebVFmCvphEkWdXIgc8N+VcgJz5N3
+         IXQtrG80XNl6OU5uqNImYdD+ntvi0idxASmD+NKT6uTMZ8aB+MMkMNZ/B02WO7BfaErK
+         jfRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NkRhdWUjyBAq9RdkQbodw+dQbZwpkI++aUs2Z/kHrgA=;
+        b=TGzZ0Hm3Evw8sT4fp0nOQ6Wl3VBjGZ/aWqwQoG9KmWmPOk7pSRBkLj+fIPtQ/cUzvY
+         qFSj5Tp8KuQaqrfBuEL0SK3U55ShdP+j/ZnvaHNvHEjANWHlVkHrkt+dBQRvrkpGrRzj
+         eisRNenS88BZ6HJmG38mqJ7BHGeg7B00fjs6DAAVkafLzn6ZOwaoHqWLitr+qgR84FZ8
+         kWpCsmdI45K0hIBchKQvjc1uG+zhrzUoF9SsN7U0mwusBHlKPyQvw9CqPm0YYirXh5XZ
+         QuN29uzFnRfgLYaOLpoomc70uDuLcDdPudIseiMNT5O9NXdievvDRzf8MqDAh1UrdCp9
+         Uxug==
+X-Gm-Message-State: AOAM5308LksGYXZaq06mzMp1KJHcivwDvrFNBij1ig6R2VhQ5GABJd+i
+        JQcv9r1VuVzD+RnHELthhjP2IH2wy9Z342WXDQwFc0HO
+X-Google-Smtp-Source: ABdhPJwQlpmjamXNAzbB0AIyk+TQD+2N2RybvhJNM6ZRirFuvy3YigGZB/avIN2QFxvHNSgJeQl4j3cQcO1eznwjxOA=
+X-Received: by 2002:a67:2ac1:: with SMTP id q184mr9356588vsq.57.1604960399361;
+ Mon, 09 Nov 2020 14:19:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201109193117.2017-1-TheSven73@gmail.com> <20201109130900.39602186@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAGngYiUt8MBCugYfjUJMa_h0iekubnOwVwenE7gY50DnRXq5VQ@mail.gmail.com>
+ <20201109132421.720a0e13@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAGngYiXeBRBzDuUScfxnkG2NwO=oPw5dwfxzim1yDf=Lo=LZxA@mail.gmail.com> <20201109140428.27b89e0e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201109140428.27b89e0e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Mon, 9 Nov 2020 17:19:48 -0500
+Message-ID: <CAGngYiWUJ=bdJVMjzXBOc54H4Ubx5vQmaFnUbAWUjhaZ8nvP3A@mail.gmail.com>
+Subject: Re: [PATCH net-next v1] net: phy: spi_ks8995: Do not overwrite SPI
+ mode flags
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Nov 2020 22:08:47 +0000 Georg Kohmann (geokohma) wrote:
-> >> +bool ipv6_frag_validate(struct sk_buff *skb, int start, u8 *nexthdrp)  
-> > (a) why place this function in exthdrs_core? I don't see any header
-> >     specific code here, IMO it belongs in reassembly.c.  
-> 
-> ipv6_frag_validate() is used in both reassembly.c and nf_conntrack_reasm.c
-> Where should I put the prototype so it can be used both places?
+On Mon, Nov 9, 2020 at 5:04 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Yup
 
-The prototype can stay in net/ipv6.h
+Just a minute. Earlier in the thread, Andrew Lunn is suggesting I
+create a new spi helper function, and cross-post to the spi group(s).
+
+That doesn't sound like a minimal fix, should it go to net or net-next?
+
+Thanks,
+Sven
