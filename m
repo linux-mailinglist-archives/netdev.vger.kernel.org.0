@@ -2,122 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B56062AC6AA
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 22:09:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BF0B2AC6B0
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 22:11:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730678AbgKIVJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 16:09:21 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:37429 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725946AbgKIVJV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 16:09:21 -0500
-Received: from 1.general.cascardo.us.vpn ([10.172.70.58] helo=mussarela)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <cascardo@canonical.com>)
-        id 1kcEPb-0001YJ-TT; Mon, 09 Nov 2020 21:09:16 +0000
-Date:   Mon, 9 Nov 2020 18:09:09 -0300
-From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Kleber Sacilotto de Souza <kleber.souza@canonical.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "Alexander A. Klimov" <grandmaster@al2klimov.de>,
-        Kees Cook <keescook@chromium.org>,
-        Alexey Kodanev <alexey.kodanev@oracle.com>,
-        dccp@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dccp: ccid: move timers to struct dccp_sock
-Message-ID: <20201109210909.GQ595944@mussarela>
-References: <20201013171849.236025-1-kleber.souza@canonical.com>
- <20201013171849.236025-2-kleber.souza@canonical.com>
- <20201016153016.04bffc1e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201109114828.GP595944@mussarela>
- <20201109094938.45b230c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201109094938.45b230c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1730187AbgKIVLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 16:11:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40846 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725946AbgKIVLJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 16:11:09 -0500
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B7AC0613CF;
+        Mon,  9 Nov 2020 13:11:09 -0800 (PST)
+Received: by mail-ot1-x343.google.com with SMTP id f16so10371723otl.11;
+        Mon, 09 Nov 2020 13:11:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=ffJlmLjI1LxmQKvS2WnW7bcoolnwblQDAh0y1MpPzfA=;
+        b=Hp9lxi8B1/DgblzGap4loUDg1qIMW6662Rz2j5oJhF991vRI85wWL9W8hWuiBM8M84
+         MDshGGRrejg7yviPamY0b6j1xg7/IUMF+/+2eOG6I/a0cDV661/m7ZT/tC1J3pToI8SH
+         T6mjDLturs1Rb5BoXfOWeF2rpi7qNIJ4Nf4+QDHoCOrpKujjLjA2eFOfsJenllwWcALh
+         1gu4OAD+BibxUPyLFR5IHyymwGnIYHkRSUjnziE9ic1AbGi/Lq/q9BLFyrULhRuyO1d4
+         ocYjRAg7WI2KaKQnoy0VDm7iHgp/nWjUNJLuBWOjPQO5GlOkwSAj79gq3y9rGyma34Tq
+         CsYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=ffJlmLjI1LxmQKvS2WnW7bcoolnwblQDAh0y1MpPzfA=;
+        b=Hnft9BVhTaIJdW/lSrTXmJRgsNmXc7UQ5A9pWKT6GsC7/jMwta4z2fiWB0F48VanqK
+         M7XxzUR/sQMWEsezOWydaC13cB3Ib0ihVmkYsrf+8FaDNz3liY8q+exbdf5gMmdvU39P
+         8xL574Brxh/2XNOkY0ZM6jdC6L5uFQSAOAuvVgfnKe0WawGRGBFTeIXPSkckNhORaVK9
+         0k5pxOA7AKA/mGVSQL5wv36FZbo41xXTaLlX8SKBRfLPZFalcIZwvBP2Up95hb88Pv0w
+         CVKqNuVRNpystrUrZZQXZrkUHGeQks+F1jgDnX3vv/VpDh3eHrl0U7MjpotB7sA6Hcin
+         SjtA==
+X-Gm-Message-State: AOAM530bPF334SJg+9oU9OioP+jKyTBMAKSANul71PLVNI/qnRnNO2d3
+        XTns5eDJGhn6/jY9HwtlP2OJzaIBRCbLBQ==
+X-Google-Smtp-Source: ABdhPJyMMb0vc7gpgYWoRFFDPQ7mMhV5sYo98bKd0BJL7Hd/IXx7fTrkqclB06EXCy3S/p6RFzySKQ==
+X-Received: by 2002:a05:6830:1015:: with SMTP id a21mr12378595otp.143.1604956268705;
+        Mon, 09 Nov 2020 13:11:08 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id 33sm2767395otr.25.2020.11.09.13.11.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Nov 2020 13:11:08 -0800 (PST)
+Date:   Mon, 09 Nov 2020 13:10:59 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org,
+        bpf@vger.kernel.org
+Message-ID: <5fa9b06383a48_8c0e2087e@john-XPS-13-9370.notmuch>
+In-Reply-To: <1604498942-24274-7-git-send-email-magnus.karlsson@gmail.com>
+References: <1604498942-24274-1-git-send-email-magnus.karlsson@gmail.com>
+ <1604498942-24274-7-git-send-email-magnus.karlsson@gmail.com>
+Subject: RE: [Intel-wired-lan] [PATCH bpf-next 6/6] i40e: use batched xsk Tx
+ interfaces to increase performance
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 09, 2020 at 09:49:38AM -0800, Jakub Kicinski wrote:
-> On Mon, 9 Nov 2020 08:48:28 -0300 Thadeu Lima de Souza Cascardo wrote:
-> > On Fri, Oct 16, 2020 at 03:30:16PM -0700, Jakub Kicinski wrote:
-> > > On Tue, 13 Oct 2020 19:18:48 +0200 Kleber Sacilotto de Souza wrote:  
-> > > > From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> > > > 
-> > > > When dccps_hc_tx_ccid is freed, ccid timers may still trigger. The reason
-> > > > del_timer_sync can't be used is because this relies on keeping a reference
-> > > > to struct sock. But as we keep a pointer to dccps_hc_tx_ccid and free that
-> > > > during disconnect, the timer should really belong to struct dccp_sock.
-> > > > 
-> > > > This addresses CVE-2020-16119.
-> > > > 
-> > > > Fixes: 839a6094140a (net: dccp: Convert timers to use timer_setup())
-> > > > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> > > > Signed-off-by: Kleber Sacilotto de Souza <kleber.souza@canonical.com>  
-> > > 
-> > > I've been mulling over this fix.
-> > > 
-> > > The layering violation really doesn't sit well.
-> > > 
-> > > We're reusing the timer object. What if we are really unlucky, the
-> > > fires and gets blocked by a cosmic ray just as it's about to try to
-> > > lock the socket, then user manages to reconnect, and timer starts
-> > > again. Potentially with a different CCID algo altogether?
-> > > 
-> > > Is disconnect ever called under the BH lock?  Maybe plumb a bool
-> > > argument through to ccid*_hc_tx_exit() and do a sk_stop_timer_sync()
-> > > when called from disconnect()?
-> > > 
-> > > Or do refcounting on ccid_priv so that the timer holds both the socket
-> > > and the priv?  
-> > 
-> > Sorry about too late a response. I was on vacation, then came back and spent a
-> > couple of days testing this further, and had to switch to other tasks.
-> > 
-> > So, while testing this, I had to resort to tricks like having a very small
-> > expire and enqueuing on a different CPU. Then, after some minutes, I hit a UAF.
-> > That's with or without the first of the second patch.
-> > 
-> > I also tried to refcount ccid instead of the socket, keeping the timer on the
-> > ccid, but that still hit the UAF, and that's when I had to switch tasks.
+Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
 > 
-> Hm, not instead, as well. I think trying cancel the timer _sync from
-> the disconnect path would be the simplest solution, tho.
+> Use the new batched xsk interfaces for the Tx path in the i40e driver
+> to improve performance. On my machine, this yields a throughput
+> increase of 4% for the l2fwd sample app in xdpsock. If we instead just
+> look at the Tx part, this patch set increases throughput with above
+> 20% for Tx.
+> 
+> Note that I had to explicitly loop unroll the inner loop to get to
+> this performance level, by using a pragma. It is honored by both clang
+> and gcc and should be ignored by versions that do not support
+> it. Using the -funroll-loops compiler command line switch on the
+> source file resulted in a loop unrolling on a higher level that
+> lead to a performance decrease instead of an increase.
+> 
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_ethtool.c |   2 +-
+>  drivers/net/ethernet/intel/i40e/i40e_main.c    |   4 +-
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.c    |  14 ++-
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.h    |   3 +-
+>  drivers/net/ethernet/intel/i40e/i40e_xsk.c     | 127 ++++++++++++++++++-------
+>  5 files changed, 110 insertions(+), 40 deletions(-)
 > 
 
-I don't think so. On other paths, we would still have the possibility that:
+LGTM, although I mostly just reviewed the API usage. Maciej's seems like
+a nice cleanup.
 
-CPU1: timer expires and is about to run
-CPU2: calls stop_timer (which does not stop anything) and frees ccid
-CPU1: timer runs and uses freed ccid
-
-And those paths, IIUC, may be run under a SoftIRQ on the receive path, so would
-not be able to call stop_timer_sync.
-
-> > Oh, and in the meantime, I found one or two other fixes that we
-> > should apply, will send them shortly.
-> > 
-> > But I would argue that we should apply the revert as it addresses the
-> > CVE, without really regressing the other UAF, as I argued. Does that
-> > make sense?
-> 
-> We can - it's always a little strange to go from one bug to a different
-> without a fix - but the justification being that while the previous UAF
-> required a race condition the new one is actually worst because it can 
-> be triggered reliably?
-
-Well, I am arguing here that commit 2677d20677314101293e6da0094ede7b5526d2b1
-("dccp: don't free ccid2_hc_tx_sock struct in dccp_disconnect()") doesn't
-really fix anything. Whenever ccid_hx_tx_delete is called, that UAF might
-happen, because the timer might trigger right after we free the ccid struct.
-
-And, yes, on the other hand, we can reliably launch the DoS attack that is
-fixed by the revert of that commit.
-
-Thanks.
-Cascardo.
+Acked-by: John Fastabend <john.fastabend@gmail.com>
