@@ -2,116 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 065DF2AC008
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 16:38:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A8E2AC00B
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 16:39:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729913AbgKIPia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 10:38:30 -0500
-Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.83]:21166 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727311AbgKIPia (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 10:38:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1604936308;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=S6fI1VVgo3BFqkCRhbg9Tu9n35Sv2Rz9Yq/+PsHLB0I=;
-        b=NLLux4EFYzcguf8u4HCNV5NB376Fstv1MSblLpW5OTpW39WVnhtVf4S3i0uM2ajdhd
-        X3+K1ngiSTBbnKFVp/fRW8sYu1eJaoAu2amApzdU7YUEjCly1N3HCI8p3+Ia0unTsnpL
-        Qenh25XXbA59xz5Y5GIxPSg8GPqnPG9C3P/kVD51U3Y0hS3Feegxct96kwqI+sHrJweI
-        sS+inuOKYTi8Lk6/HWCdaVQbA4oB3FYq9fCOCUg44KjiwGsk40n2+mleT64ePUW9ib88
-        7iBlCQnCspbgCR+VdoBB8FjE+l9gPnTUEm1oDdXDsk/1bTp8yo7zcJSZwVC9LJam44QD
-        X2uw==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3HMbEWKONeXTNI="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.50.177]
-        by smtp.strato.de (RZmta 47.3.3 DYNA|AUTH)
-        with ESMTPSA id V0298cwA9FcQ864
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Mon, 9 Nov 2020 16:38:26 +0100 (CET)
-Subject: Re: [PATCH v4 4/7] can: replace can_dlc as variable/element for
- payload length
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        netdev <netdev@vger.kernel.org>
-References: <20201109102618.2495-1-socketcan@hartkopp.net>
- <20201109102618.2495-5-socketcan@hartkopp.net>
- <CAMZ6RqJz+G-R6LF=jU22kcYPBwTCOB7XmcY+GTNLmfm+-9rvUw@mail.gmail.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <b33f7cc7-6bf3-363b-e328-a405ec4a2575@hartkopp.net>
-Date:   Mon, 9 Nov 2020 16:38:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1729843AbgKIPj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 10:39:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45694 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726691AbgKIPj2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 10:39:28 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC886C0613CF;
+        Mon,  9 Nov 2020 07:39:27 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id k2so5773732wrx.2;
+        Mon, 09 Nov 2020 07:39:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MIC9xtdEfUk9GCC22X4+Zzg2XIu8aFShc9zTKSGRy5o=;
+        b=jj0OYesOC4bghByHFhacOiHwne1SwqAgKpJetmE9X437Z45juQ90SyEwRgs/zFXOjS
+         af5JPqPpOIVxFhPKOZlIy51b5INeK8dCaejapCzxPzO5ptdbnAx/jsCaOQ1JiNt6KUeY
+         y0NgWnUqD3LnOiIVmd4RDnG/oAnCAB4ZUmVaYGq43E/aKSPWnuIwWdwz+RGYvFdba72T
+         kQygppLs+kDvRNDDz9otzC3JZhZbvdoddfH2yb1m3uZ0kLyxdXVxq0tCq0aOBQajk8su
+         ITlVN3UkIzBqmMQdRusBs7MNaetqQi1uX4Bbm/bi+Ba20mY9a4GQnDO6N2bKYthfdQG1
+         NJhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MIC9xtdEfUk9GCC22X4+Zzg2XIu8aFShc9zTKSGRy5o=;
+        b=bSSwOWjzPe+GSTulLHJndljx70mfOEDdTM0NV4vgcOXqEI2FbP7/sELlNgMsZ+Jfsf
+         rn/CM1Cbor1yxXj+ZqOUQRifSHrvuWOwx3aADuuBI/4dBFWNNKkRnYemI0D7yVHuOX9o
+         2nI4EFarbkcQ24QtwMxEtp7IEmunqmQBYwUoLKfV0OTFvRQxLWmgZ0IPsEa77tHThPpI
+         g88WpTsaEultmp+hO7IOfATB+D5k0y10FDD/bXMBVHhBnmUEWuLEmlteksIJaRaxM99L
+         Onw27t0jV0UY8fb7uQGcjxJk6OKC0fhgQNpJ3umZPHoxkgOAvCnDCJodp1JW7LXtH8+M
+         sgMA==
+X-Gm-Message-State: AOAM5301MHfOYd6xODalUWnZmVki2lV9fxzEcsutQeAIuoFqpyy7qjMI
+        gAOmEc/kHtxnDJB+OA140zI=
+X-Google-Smtp-Source: ABdhPJz+yoFlZke7o+COe1FiZyEj6mB9rrELKvWcZ0I7es4x8Tjg98W+tMwrirxY7rqR1p1j8jOnhw==
+X-Received: by 2002:adf:93e1:: with SMTP id 88mr17901739wrp.37.1604936366733;
+        Mon, 09 Nov 2020 07:39:26 -0800 (PST)
+Received: from [192.168.8.114] ([37.170.121.171])
+        by smtp.gmail.com with ESMTPSA id a17sm13859156wra.61.2020.11.09.07.39.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Nov 2020 07:39:26 -0800 (PST)
+Subject: Re: [PATCH] net: tcp: ratelimit warnings in tcp_recvmsg
+To:     Menglong Dong <menglong8.dong@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Menglong Dong <dong.menglong@zte.com.cn>
+References: <5fa93ef0.1c69fb81.bff98.2afc@mx.google.com>
+ <CANn89iJNYyON8khtQYzZi2LdV1ZSopGfnXB1ev9bZ2cDUdekHw@mail.gmail.com>
+ <CADxym3bP=BRbVAnDCzmrrAyh3i=QO3gAWnUwpU==TskFY-GHYg@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <0ccc35a7-3d19-e37d-52d1-7e900091cc1b@gmail.com>
+Date:   Mon, 9 Nov 2020 16:39:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-In-Reply-To: <CAMZ6RqJz+G-R6LF=jU22kcYPBwTCOB7XmcY+GTNLmfm+-9rvUw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <CADxym3bP=BRbVAnDCzmrrAyh3i=QO3gAWnUwpU==TskFY-GHYg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vincent,
 
-On 09.11.20 13:59, Vincent MAILHOL wrote:
-> On Mon. 9 Nov 2020 at 19:26, Oliver Hartkopp wrote:
->> diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
->> index b2e8df8e4cb0..72671184a7a2 100644
->> --- a/include/linux/can/dev.h
->> +++ b/include/linux/can/dev.h
->> @@ -183,12 +183,12 @@ static inline void can_set_static_ctrlmode(struct net_device *dev,
->>          /* override MTU which was set by default in can_setup()? */
->>          if (static_mode & CAN_CTRLMODE_FD)
->>                  dev->mtu = CANFD_MTU;
->>   }
+
+On 11/9/20 3:48 PM, Menglong Dong wrote:
+> On Mon, Nov 9, 2020 at 9:36 PM Eric Dumazet <edumazet@google.com> wrote:
 >>
->> -/* get data length from can_dlc with sanitized can_dlc */
->> -u8 can_dlc2len(u8 can_dlc);
->> +/* get data length from raw data length code (DLC) */
-> 
-> /*
->   * convert a given data length code (dlc) of an FD CAN frame into a
->   * valid data length of max. 64 bytes.
->   */
-> 
-> I missed this point during my previous review: the can_dlc2len() function
-> is only valid for CAN FD frames. Comments should reflect this fact.
-> 
->> +u8 can_dlc2len(u8 dlc);
-> 
-> Concerning the name:
->   * can_get_cc_len() converts a Classical CAN frame DLC into a data
->     length.
->   * can_dlc2len() converts an FD CAN frame DLC into a data length.
-> 
-> Just realized that both macro/function do similar things so we could
-> think of a similar naming as well.
->   * Example 1: can_get_cc_len() and can_get_fd_len()
->   * Example 2: can_cc_dlc2len() and can_fd_dlc2len()
-
-I like!
-
-Patch set v5 is out now.
-
-Thanks,
-Oliver
-
-> 
-> Or we could simply leave things as they are, this is not a big issue
-> as long as the comments clearly state which one is for classical
-> frames and which one is for FD frames.
-> 
+>> I do not think this patch is useful. That is simply code churn.
 >>
->>   /* map the sanitized data length to an appropriate data length code */
->>   u8 can_len2dlc(u8 len);
+>> Can you trigger the WARN() in the latest upstream version ?
+>> If yes this is a serious bug that needs urgent attention.
+>>
+>> Make sure you have backported all needed fixes into your kernel, if
+>> you get this warning on a non pristine kernel.
 > 
-> can_len2dlc() might be renamed (e.g. can_get_fd_dlc()) if Example 1
-> solution is chosen.
+> Theoretically, this WARN() shouldn't be triggered in any branches.
+> Somehow, it just happened in kernel v3.10. This really confused me. I
+> wasn't able to keep tracing it, as it is a product environment.
 > 
->>   struct net_device *alloc_candev_mqs(int sizeof_priv, unsigned int echo_skb_max,
+> I notice that the codes for tcp skb receiving didn't change much
+> between v3.10 and the latest upstream version, and guess the latest
+> version can be triggered too.
 > 
-> Yours sincerely,
-> Vincent Mailhol
+> If something is fixed and this WARN() won't be triggered, just ignore me.
 > 
+
+Yes, I confirm this WARN() should not trigger.
+
+The bug is not in tcp recvmsg(), that is why you do not see obvious
+fix for this issue in 3.10
+
