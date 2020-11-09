@@ -2,80 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75FB32AC310
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 19:00:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31FF82AC341
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 19:09:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730311AbgKISAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 13:00:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730092AbgKISAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 13:00:06 -0500
-Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4087CC0613D3;
-        Mon,  9 Nov 2020 10:00:06 -0800 (PST)
-Received: by mail-vs1-xe43.google.com with SMTP id y73so5456413vsc.5;
-        Mon, 09 Nov 2020 10:00:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=gT6NVd5kLg+vLhMsY5UL81nfbLscRMQ9JwMFR67gHxA=;
-        b=g6zeul5lR9V/e3BNd2kOiNmdzXstvXXGf9X2Mfo+whfhM0YnswaptXBwwYejZmAAOO
-         LbOcyWanx4JH/zZzOrDmsFm/ojjMdixbISL62BC50DuQrX6CVZw8LNItWp5QqfjepgrA
-         z92Oi75z6uyRQLJXuNMD37zTwIqMXvLxbl/ea4CX6f2x6MqHvToFsL6WWCr6sElI8XU/
-         7Xz1xdAfZQZyMaluQgC1VGDYb2vB9o4AJgxmaiTVhjZDu+TEaPY1NXMihoyc/2cduDId
-         SZeWzHxv8fJYJ6DxOKHdBH5WAiSDExqrFyUBNHT2oXElJh9jMLGrHIIXEQafIY1ZuhU/
-         jhAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=gT6NVd5kLg+vLhMsY5UL81nfbLscRMQ9JwMFR67gHxA=;
-        b=tXQ1mxZYvGV0OwkeHJAo3JC2cIoZrOffD63IugmnLT3LrzRUhTPPVWHnnuwDdAzByT
-         yxwF3K01HZ2qmK769N7iKML/FxUkjDy6MM+bOS7LgdAd3G/E/boCy/o0t+xwGtjo3MzF
-         XDscTSVweOWUeSsxEn9kIct6LWpzIK7OzIwzye4NuEkS+upBwSuJJpbE6U9+H/EoTc2c
-         BPuX4idljSS4xe9q/18TxoXb+ilyGJj4L0uWz16DJMsx0Stu1NZxG5tl11UgOYrs6lxd
-         nm1piPwlLwVCbJVnp1R29F5UXvHuaKvqkMc2wWKBlLmvNgjKJr/yzCC/A99HQ03Eo502
-         K8xw==
-X-Gm-Message-State: AOAM532oMVtc4J2JuWlr58jiivz3nmmn4vcA6L4trq/feLqcoiIELf3V
-        uJyzLIiucZAPnmyPUTgejftNLqKOWAHsfxb13gI=
-X-Google-Smtp-Source: ABdhPJy+gEHMTPNc8zvbT56ZbZW0Xi1l0xlYs5LPvzO6ABEjI3UDBL3FJ1QPhsfBdarG6+5D6FI0g/QdO6Z4nT6m5a4=
-X-Received: by 2002:a67:b347:: with SMTP id b7mr9145347vsm.15.1604944805297;
- Mon, 09 Nov 2020 10:00:05 -0800 (PST)
+        id S1729904AbgKISJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 13:09:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49996 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729247AbgKISJO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 13:09:14 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D92DF20678;
+        Mon,  9 Nov 2020 18:09:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604945353;
+        bh=JU34YanRQ67wdNLNcG1HyaIGvC4Hvn9BN1r19BodjUY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fmQaKGHZHjq7wNC0q47GooBDjXBM7yHd2ivf4TMaq4JvcqepRbx15j+7TSpVuGEiQ
+         x1fUsJrk0KtHo/jd4cbztN7OOvfkx0+AxXIE16Ig4rIYaeNm3Kz6yHJlyUz1VZ68VL
+         XyMnngEleioqfNRjZLG2RihZx0kEn+d1ZNibDNVA=
+Date:   Mon, 9 Nov 2020 10:09:11 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
+Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH 2/2] selftests: pmtu.sh: improve the test result
+ processing
+Message-ID: <20201109100911.28afc390@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAMy_GT-Hsj7GmHKBb9Ztvsisrujud1C=E+sKE1TfHDsszwpMXA@mail.gmail.com>
+References: <20201105105051.64258-1-po-hsu.lin@canonical.com>
+        <20201105105051.64258-3-po-hsu.lin@canonical.com>
+        <20201107150200.509523e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAMy_GT-Hsj7GmHKBb9Ztvsisrujud1C=E+sKE1TfHDsszwpMXA@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAGngYiUVnq2BanL_JwDGVwRapO_oU0=-2xFmaPPmHB5XJft4MA@mail.gmail.com>
- <91E6EF39-9562-4654-BC6C-96C23460870F@berg-solutions.de>
-In-Reply-To: <91E6EF39-9562-4654-BC6C-96C23460870F@berg-solutions.de>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Mon, 9 Nov 2020 12:59:54 -0500
-Message-ID: <CAGngYiUy5D6xONticHdrcmwTtx4x6zsLXh_1V62k7yiQZFg7_Q@mail.gmail.com>
-Subject: Re: [PATCH v2] lan743x: correctly handle chips with internal PHY
-To:     Roelof Berg <rberg@berg-solutions.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Roelof,
+On Mon, 9 Nov 2020 11:42:33 +0800 Po-Hsu Lin wrote:
+> On Sun, Nov 8, 2020 at 7:02 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Thu,  5 Nov 2020 18:50:51 +0800 Po-Hsu Lin wrote:  
+> > > This test will treat all non-zero return codes as failures, it will
+> > > make the pmtu.sh test script being marked as FAILED when some
+> > > sub-test got skipped.
+> > >
+> > > Improve the result processing by
+> > >   * Only mark the whole test script as SKIP when all of the
+> > >     sub-tests were skipped
+> > >   * If the sub-tests were either passed or skipped, the overall
+> > >     result will be PASS
+> > >   * If any of them has failed, the overall result will be FAIL
+> > >   * Treat other return codes (e.g. 127 for command not found) as FAIL
+> > >
+> > > Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>  
+> >
+> > Patch 1 looks like a cleanup while patch 2 is more of a fix, can we
+> > separate the two and apply the former to -next and latter to 5.10?
+> > They shouldn't conflict, right?
+> >  
+> 
+> Hello Jakub,
+> 
+> Yes the first patch is just changing return code to $ksft_skip, the
+> real fix is the second one. However the second patch was based on the
+> first one, if we want to apply them separately we might need to change
+> this $ksft_skip handling part in the second patch.
 
-On Sun, Nov 8, 2020 at 2:57 PM Roelof Berg <rberg@berg-solutions.de> wrote:
->
-> Well, it=E2=80=99s not an easy 4 hours attempt between breakfast and lunc=
-h, unfortunately, but it=E2=80=99s based on inexpensive off-the-shelf parts=
- and doable in an experienced team.
->
+Ah, I misread the situation, ksft_skip is 4, not 2, so the patch is
+more than just refactoring.
 
-I would love to test this patch on fixed-link, but unfortunately I
-don't have the
-resources to create a prototype as per your instructions.
+> What should I do to deal with this?
+> Resend the former for -next and rebase + resend the latter (plus the
+> fix to remove case 1) for 5.10 without the former patch?
 
-Sven
+Let's apply both of the patches to net-next if that's fine with you.
+Indeed detangling them is may be more effort that it's worth.
