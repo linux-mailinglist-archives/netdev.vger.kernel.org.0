@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9C062AC832
-	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 23:20:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B33792AC83E
+	for <lists+netdev@lfdr.de>; Mon,  9 Nov 2020 23:23:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730294AbgKIWUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 17:20:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53956 "EHLO mail.kernel.org"
+        id S1730769AbgKIWXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 17:23:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54420 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725946AbgKIWUx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 17:20:53 -0500
+        id S1730121AbgKIWXY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 17:23:24 -0500
 Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BBEEC206BE;
-        Mon,  9 Nov 2020 22:20:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 145BE20656;
+        Mon,  9 Nov 2020 22:23:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604960453;
-        bh=5o++kBGtqvY/cH2LHogRFoYRDW40+gdKIWMOuMRsIbU=;
+        s=default; t=1604960603;
+        bh=ln6kgehSfZwmx/DCJZgoDSJ40d9YDP8+PFYtLPUoy/Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=zychZuSRf00MA36kGvBXdeaA1NUgl93Q8/VASMJYNy0Xl0VZXbSYAuuD/P4vcrWTQ
-         L1wYwfJybykYv6WM5/5XVWZXtKsH1r103Mi2fFwVe3N2Bpe7OwVqbMrHIZ8areEtJq
-         kd5GAcq4vfgvXgjunvIXqRbV3/fLo+s/cVIc8C4A=
-Date:   Mon, 9 Nov 2020 14:20:51 -0800
+        b=14YCp4zkeBjY3F6pyzImSuqJFBhByXJrtJVeSJw7aPjKWx4HDyGJR2YomoGfvRJFg
+         e7wAfQePeoK6yI6wPY98ug/XnkqcfFG8w0bLf/2qjqIwJaxkfCDxCGDBa/b7FO0X40
+         BnSvZw80I+kdeHiHFxvPrBkm3Ih11agiSrLj+Wlo=
+Date:   Mon, 9 Nov 2020 14:23:22 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     Geliang Tang <geliangtang@gmail.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+To:     Sven Van Asbroeck <thesven73@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [MPTCP][PATCH net 1/2] mptcp: fix static checker warnings in
- mptcp_pm_add_timer
-Message-ID: <20201109142051.39f1cfaa@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <62ab8297-41fc-446b-a09e-0b93118a478c@tessares.net>
-References: <cover.1604930005.git.geliangtang@gmail.com>
-        <ccf004469e02fb5bd7ec822414b9a98b0015f4a3.1604930005.git.geliangtang@gmail.com>
-        <009ea5da-8a44-3ea2-1b9f-a658a09f3396@tessares.net>
-        <20201109125703.7d82a34a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <62ab8297-41fc-446b-a09e-0b93118a478c@tessares.net>
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v1] net: phy: spi_ks8995: Do not overwrite SPI
+ mode flags
+Message-ID: <20201109142322.782b9495@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CAGngYiWUJ=bdJVMjzXBOc54H4Ubx5vQmaFnUbAWUjhaZ8nvP3A@mail.gmail.com>
+References: <20201109193117.2017-1-TheSven73@gmail.com>
+        <20201109130900.39602186@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <CAGngYiUt8MBCugYfjUJMa_h0iekubnOwVwenE7gY50DnRXq5VQ@mail.gmail.com>
+        <20201109132421.720a0e13@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <CAGngYiXeBRBzDuUScfxnkG2NwO=oPw5dwfxzim1yDf=Lo=LZxA@mail.gmail.com>
+        <20201109140428.27b89e0e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <CAGngYiWUJ=bdJVMjzXBOc54H4Ubx5vQmaFnUbAWUjhaZ8nvP3A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -48,21 +50,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Nov 2020 21:23:33 +0000 (UTC) Matthieu Baerts wrote:
-> 09 Nov 2020 21:57:05 Jakub Kicinski <kuba@kernel.org>:
-> > On Mon, 9 Nov 2020 17:28:54 +0100 Matthieu Baerts wrote:  
-> >> A small detail (I think): the Signed-off-by of the sender (Geliang)
-> >> should be the last one in the list if I am not mistaken.
-> >> But I guess this is not blocking.
-> >>
-> >> Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>  
+On Mon, 9 Nov 2020 17:19:48 -0500 Sven Van Asbroeck wrote:
+> On Mon, Nov 9, 2020 at 5:04 PM Jakub Kicinski <kuba@kernel.org> wrote:
 > >
-> > I take it you'd like me to apply patch 1 directly to net?  
+> > Yup  
 > 
-> Sorry, I didn't know it was OK to apply only one patch of the series.
-> Then yes, if you don't mind, please apply this patch :)
+> Just a minute. Earlier in the thread, Andrew Lunn is suggesting I
+> create a new spi helper function, and cross-post to the spi group(s).
+> 
+> That doesn't sound like a minimal fix, should it go to net or net-next?
 
-Not really, I was just establishing ownership ;)
-
-Geliang Tang, please rebase on net and repost just the first patch.
-It does not apply to net as is.
+Is it only broken for you in linux-next or just in the current 5.10
+release?
