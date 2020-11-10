@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58F762ACD06
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 04:59:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E19232ACD02
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 04:59:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733264AbgKJD7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 22:59:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58332 "EHLO mail.kernel.org"
+        id S2387599AbgKJD40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 22:56:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58346 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387569AbgKJD4X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 22:56:23 -0500
+        id S2387585AbgKJD4Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 22:56:24 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0104820731;
-        Tue, 10 Nov 2020 03:56:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 642362054F;
+        Tue, 10 Nov 2020 03:56:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604980582;
-        bh=Dfgg1Zhwokh20GcGy7w+kYaS9x+RYxcfE22/X3DR9yk=;
+        s=default; t=1604980584;
+        bh=UE8TG4E8KEuyum8GqKuE75XwJYIocEuD5stFJ29F2aU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1frfatDvHl8z4IhjBiduXWip+ycVC7ky1DreX+9tti0IWVnaHcIe3ggE3E6jaR0iR
-         h5w1NFB1Hec0SmLBoUsgclRny8CLIm9GBbIx7ztPRoalyNlz8bGzim1M077t0PcgDz
-         SQuAw2g0brNZaQjV/F9Rb1+0sY4/7P0QRqLIrGv4=
+        b=gcS1mRamxb/0T2YkLWpyxIdEvhx/Vx97GwFDBiFg9d3HChRewjfY9xUhxL+PKCpIt
+         4EcnOYHvV+vK+q0ZWDtdzEP1LVhZN/DZwbX6FFxF84ZoOiViBBYKtLYnibf7r5mZzu
+         +9Nh8KDUzAWqEFTEr0Vk0/2uCkSamgjtihK/sCrk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        syzbot+2e293dbd67de2836ba42@syzkaller.appspotmail.com,
+Cc:     Ye Bin <yebin10@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 08/14] mac80211: always wind down STA state
-Date:   Mon,  9 Nov 2020 22:56:04 -0500
-Message-Id: <20201110035611.424867-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 09/14] cfg80211: regulatory: Fix inconsistent format argument
+Date:   Mon,  9 Nov 2020 22:56:05 -0500
+Message-Id: <20201110035611.424867-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201110035611.424867-1-sashal@kernel.org>
 References: <20201110035611.424867-1-sashal@kernel.org>
@@ -43,62 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit dcd479e10a0510522a5d88b29b8f79ea3467d501 ]
+[ Upstream commit db18d20d1cb0fde16d518fb5ccd38679f174bc04 ]
 
-When (for example) an IBSS station is pre-moved to AUTHORIZED
-before it's inserted, and then the insertion fails, we don't
-clean up the fast RX/TX states that might already have been
-created, since we don't go through all the state transitions
-again on the way down.
+Fix follow warning:
+[net/wireless/reg.c:3619]: (warning) %d in format string (no. 2)
+requires 'int' but the argument type is 'unsigned int'.
 
-Do that, if it hasn't been done already, when the station is
-freed. I considered only freeing the fast TX/RX state there,
-but we might add more state so it's more robust to wind down
-the state properly.
-
-Note that we warn if the station was ever inserted, it should
-have been properly cleaned up in that case, and the driver
-will probably not like things happening out of order.
-
-Reported-by: syzbot+2e293dbd67de2836ba42@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20201009141710.7223b322a955.I95bd08b9ad0e039c034927cce0b75beea38e059b@changeid
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Link: https://lore.kernel.org/r/20201009070215.63695-1-yebin10@huawei.com
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/sta_info.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ net/wireless/reg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
-index 2a18687019003..b74551323f5fb 100644
---- a/net/mac80211/sta_info.c
-+++ b/net/mac80211/sta_info.c
-@@ -244,6 +244,24 @@ struct sta_info *sta_info_get_by_idx(struct ieee80211_sub_if_data *sdata,
-  */
- void sta_info_free(struct ieee80211_local *local, struct sta_info *sta)
- {
-+	/*
-+	 * If we had used sta_info_pre_move_state() then we might not
-+	 * have gone through the state transitions down again, so do
-+	 * it here now (and warn if it's inserted).
-+	 *
-+	 * This will clear state such as fast TX/RX that may have been
-+	 * allocated during state transitions.
-+	 */
-+	while (sta->sta_state > IEEE80211_STA_NONE) {
-+		int ret;
-+
-+		WARN_ON_ONCE(test_sta_flag(sta, WLAN_STA_INSERTED));
-+
-+		ret = sta_info_move_state(sta, sta->sta_state - 1);
-+		if (WARN_ONCE(ret, "sta_info_move_state() returned %d\n", ret))
-+			break;
-+	}
-+
- 	if (sta->rate_ctrl)
- 		rate_control_free_sta(sta);
+diff --git a/net/wireless/reg.c b/net/wireless/reg.c
+index 9eb9d34cef7b1..db8cc505caf76 100644
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -2846,7 +2846,7 @@ static void print_rd_rules(const struct ieee80211_regdomain *rd)
+ 		power_rule = &reg_rule->power_rule;
  
+ 		if (reg_rule->flags & NL80211_RRF_AUTO_BW)
+-			snprintf(bw, sizeof(bw), "%d KHz, %d KHz AUTO",
++			snprintf(bw, sizeof(bw), "%d KHz, %u KHz AUTO",
+ 				 freq_range->max_bandwidth_khz,
+ 				 reg_get_max_bandwidth(rd, reg_rule));
+ 		else
 -- 
 2.27.0
 
