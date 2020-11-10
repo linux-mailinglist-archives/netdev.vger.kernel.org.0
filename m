@@ -2,171 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 844F72ADE39
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 19:25:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCA2C2ADE5F
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 19:31:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731323AbgKJSZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 13:25:20 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:34101 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731206AbgKJSZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 13:25:19 -0500
-Received: by mail-il1-f199.google.com with SMTP id e14so9705584ilr.1
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 10:25:18 -0800 (PST)
+        id S1731499AbgKJSbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 13:31:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726307AbgKJSbi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 13:31:38 -0500
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11657C0613CF;
+        Tue, 10 Nov 2020 10:31:37 -0800 (PST)
+Received: by mail-yb1-xb43.google.com with SMTP id c129so12594157yba.8;
+        Tue, 10 Nov 2020 10:31:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=peGiCwgtCJ3sRYv27ePRKvzy1zD9nBWcslzddhBQHGo=;
+        b=QoBv/dR75xRGMgLxop0xRqFlVbS+msKtifA8Uoq634CC1Np3Pt7m8UuN1fpTkll19P
+         jWt7ZUvjrcgkFOfeoB2QaEbulhROzjQs+3sBrgfKxk7f3UPn5ST4moI8SIP4hXzc4RTE
+         CiLNe21s6yJXxSFZ+bb1JJ3/84XTPfrb0sisIipfzxpomtwPbRFcN9XJe8y2Br+JRyut
+         KQ1YR/n9foD0B/6740z8WkhKyXgRBtQbaibcI8SOO5WUcaikIjFnNPWQ2X2Y3hu3Vv6r
+         yfjAb5/t7P3M/MT3/A8dQucA5lbOPdoJ2vPHoLcbwJszHKxsK4ChtEO7iRybrcCdiIAS
+         yGeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=5k/KfaC6hpzMbrmO2ub4fMk/eikFub437ScdVpWXUuE=;
-        b=Dl993qXhzGeZc4zi2foKItDs+bgUBfvcGgu0WiPv6thnwCImCHoqcOYZn+Liv4B4iq
-         BV6mh+MUp1dyXGt7ocYExczLRwU48pbOAVjzgk1KOtkxPl3EST449qxel/mYrCjtzBOf
-         nCa/5/kSplbkYMJY7MwWIxYdsWrwsyUM66zb+lITqFZog5suPILrDb3S+mShlYEExKCe
-         rDLIHSw8jCjJqIXMecSBNfNw0v+u98My9WMi6BtpxCzN5VQ9tuAz0Zgu6rFGr6qL+15s
-         WM5FdJeLdHGWMcJuC3PLPGjs1yjeHkbgL+C1/CFrxSGeyXv50Y9A35tlfPyxIRzxPCTY
-         RSgg==
-X-Gm-Message-State: AOAM533aEjWRk6r+T1RQEm3Z+awBSmqxbe3fcwp6SCr2HwBbyz9r9scm
-        50kwl7LhijB1cx0iZWWvUAvMxbM8SGlFUAlM+JtoHOAutUWb
-X-Google-Smtp-Source: ABdhPJz2y+PtpZTBKc5pN2jHseHQMxUuJwAUGNtfRmS7Gv+OFb6IQqO9jNUUQoe/7L7psLd2KD4vcS8GfQ5BejuBRIqYIrRYPyv3
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=peGiCwgtCJ3sRYv27ePRKvzy1zD9nBWcslzddhBQHGo=;
+        b=HZbsNYsHnUfopmZlEv5z22eVxhltBdUsX6OQuL1/sviXOQbbHFvqw58rM6qUu+gmya
+         oKGHeKMHyJv1LQOTCJ8Bz2pHUxaXXBkmWOjwXT1Qe2TkCf44euVDQoe21LgrBcDM81As
+         wGlEAwDQLsYm+PQaKc/IFGRpV6uQ2LNKiNySHp6nIk7EvSRDliYFMKfG1nK2HICcOmRj
+         VyQtCKJeNGHEjL5UQWxkRMm9obKmHWUqeTl2pao5TmMsoqKOLrf15ASjBaFNuB5i6Lss
+         GeOtg/Z6aKW+NygQy3ge9swGv8F8Vn4vfM8wGi2gzrdk5xzgiaSifr4tTcdsYYPueerh
+         pEUQ==
+X-Gm-Message-State: AOAM533V20LEK6nnEyZbFpjHBJOgb/AVrTrZZyi5VFWtDoRQ9kSoIJGs
+        VP4Y/Fpyg531TCyp4vVIQiDQ41C6kFWSO7lS1xq+iLwW5Ak=
+X-Google-Smtp-Source: ABdhPJwnrrf9uBO5MotE8u6KmeZ28WHW2pwMTzwMt2WZ4vnEpO9yPKFNNbwhuJT6LO5qCwQqdpRDbqFZM9OPMkSY7dc=
+X-Received: by 2002:a25:585:: with SMTP id 127mr17217817ybf.425.1605033096297;
+ Tue, 10 Nov 2020 10:31:36 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a92:5b46:: with SMTP id p67mr15069330ilb.150.1605032718305;
- Tue, 10 Nov 2020 10:25:18 -0800 (PST)
-Date:   Tue, 10 Nov 2020 10:25:18 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000007105605b3c4cdbf@google.com>
-Subject: net-next test error: BUG: sleeping function called from invalid
- context in sta_info_move_state
-From:   syzbot <syzbot+4c81fe92e372d26c4246@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <20201110011932.3201430-1-andrii@kernel.org> <20201110011932.3201430-2-andrii@kernel.org>
+ <695E976D-DECA-4BE1-BFB0-771878B9CFCD@fb.com>
+In-Reply-To: <695E976D-DECA-4BE1-BFB0-771878B9CFCD@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 10 Nov 2020 10:31:25 -0800
+Message-ID: <CAEf4BzYORuxNUvJDTe4cPvJ18HNhFDOuYGfLdUzuwHeddVLw6Q@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 1/5] bpf: add in-kernel split BTF support
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Nov 10, 2020 at 9:50 AM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Nov 9, 2020, at 5:19 PM, Andrii Nakryiko <andrii@kernel.org> wrote:
+> >
+> > Adjust in-kernel BTF implementation to support a split BTF mode of operation.
+> > Changes are mostly mirroring libbpf split BTF changes, with the exception of
+> > start_id being 0 for in-kernel implementation due to simpler read-only mode.
+> >
+> > Otherwise, for split BTF logic, most of the logic of jumping to base BTF,
+> > where necessary, is encapsulated in few helper functions. Type numbering and
+> > string offset in a split BTF are logically continuing where base BTF ends, so
+> > most of the high-level logic is kept without changes.
+> >
+> > Type verification and size resolution is only doing an added resolution of new
+> > split BTF types and relies on already cached size and type resolution results
+> > in the base BTF.
+> >
+> > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> > ---
+> > kernel/bpf/btf.c | 171 +++++++++++++++++++++++++++++++++--------------
+> > 1 file changed, 119 insertions(+), 52 deletions(-)
+> >
+> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> > index 6324de8c59f7..727c1c27053f 100644
+> > --- a/kernel/bpf/btf.c
+> > +++ b/kernel/bpf/btf.c
+> > @@ -203,12 +203,17 @@ struct btf {
+> >       const char *strings;
+> >       void *nohdr_data;
+> >       struct btf_header hdr;
+> > -     u32 nr_types;
+> > +     u32 nr_types; /* includes VOID for base BTF */
+> >       u32 types_size;
+> >       u32 data_size;
+> >       refcount_t refcnt;
+> >       u32 id;
+> >       struct rcu_head rcu;
+> > +
+> > +     /* split BTF support */
+> > +     struct btf *base_btf;
+> > +     u32 start_id; /* first type ID in this BTF (0 for base BTF) */
+> > +     u32 start_str_off; /* first string offset (0 for base BTF) */
+> > };
+> >
+> > enum verifier_phase {
+> > @@ -449,14 +454,27 @@ static bool btf_type_is_datasec(const struct btf_type *t)
+> >       return BTF_INFO_KIND(t->info) == BTF_KIND_DATASEC;
+> > }
+> >
+> > +static u32 btf_nr_types_total(const struct btf *btf)
+> > +{
+> > +     u32 total = 0;
+> > +
+> > +     while (btf) {
+> > +             total += btf->nr_types;
+> > +             btf = btf->base_btf;
+> > +     }
+> > +
+> > +     return total;
+> > +}
+> > +
+> > s32 btf_find_by_name_kind(const struct btf *btf, const char *name, u8 kind)
+> > {
+> >       const struct btf_type *t;
+> >       const char *tname;
+> > -     u32 i;
+> > +     u32 i, total;
+> >
+> > -     for (i = 1; i <= btf->nr_types; i++) {
+> > -             t = btf->types[i];
+> > +     total = btf_nr_types_total(btf);
+> > +     for (i = 1; i < total; i++) {
+> > +             t = btf_type_by_id(btf, i);
+> >               if (BTF_INFO_KIND(t->info) != kind)
+> >                       continue;
+> >
+> > @@ -599,8 +617,14 @@ static const struct btf_kind_operations *btf_type_ops(const struct btf_type *t)
+> >
+> > static bool btf_name_offset_valid(const struct btf *btf, u32 offset)
+> > {
+> > -     return BTF_STR_OFFSET_VALID(offset) &&
+> > -             offset < btf->hdr.str_len;
+> > +     if (!BTF_STR_OFFSET_VALID(offset))
+> > +             return false;
+> > +
+> > +     while (offset < btf->start_str_off)
+> > +             btf = btf->base_btf;
+>
+> Do we need "if (!btf) return false;" in the while loop? (and some other loops below)
 
-syzbot found the following issue on:
+No, because for base btf start_str_off and start_type_id are always
+zero, so loop condition is always false.
 
-HEAD commit:    a3ce2b10 net: udp: introduce UDP_MIB_MEMERRORS for udp_mem
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12a0df46500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7891ad1ca1723c54
-dashboard link: https://syzkaller.appspot.com/bug?extid=4c81fe92e372d26c4246
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4c81fe92e372d26c4246@syzkaller.appspotmail.com
-
-BUG: sleeping function called from invalid context at net/mac80211/sta_info.c:1962
-in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 21, name: kworker/u4:1
-4 locks held by kworker/u4:1/21:
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: process_one_work+0x821/0x15a0 kernel/workqueue.c:2243
- #1: ffffc90000dbfda8 ((work_completion)(&sdata->work)){+.+.}-{0:0}, at: process_one_work+0x854/0x15a0 kernel/workqueue.c:2247
- #2: ffff8880355c8d00 (&wdev->mtx){+.+.}-{3:3}, at: sdata_lock net/mac80211/ieee80211_i.h:1021 [inline]
- #2: ffff8880355c8d00 (&wdev->mtx){+.+.}-{3:3}, at: ieee80211_ibss_work+0x93/0xe80 net/mac80211/ibss.c:1683
- #3: ffffffff8b337160 (rcu_read_lock){....}-{1:2}, at: sta_info_insert_finish net/mac80211/sta_info.c:644 [inline]
- #3: ffffffff8b337160 (rcu_read_lock){....}-{1:2}, at: sta_info_insert_rcu+0x680/0x2ba0 net/mac80211/sta_info.c:732
-Preemption disabled at:
-[<ffffffff88e70c2f>] __mutex_lock_common kernel/locking/mutex.c:955 [inline]
-[<ffffffff88e70c2f>] __mutex_lock+0x10f/0x10e0 kernel/locking/mutex.c:1103
-CPU: 1 PID: 21 Comm: kworker/u4:1 Not tainted 5.10.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: phy3 ieee80211_iface_work
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:118
- ___might_sleep.cold+0x1e8/0x22e kernel/sched/core.c:7298
- sta_info_move_state+0x32/0x8d0 net/mac80211/sta_info.c:1962
- sta_info_free+0x65/0x3b0 net/mac80211/sta_info.c:274
- sta_info_insert_rcu+0x303/0x2ba0 net/mac80211/sta_info.c:738
- ieee80211_ibss_finish_sta+0x212/0x390 net/mac80211/ibss.c:592
- ieee80211_ibss_work+0x2c7/0xe80 net/mac80211/ibss.c:1700
- ieee80211_iface_work+0x91f/0xa90 net/mac80211/iface.c:1478
- process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
- kthread+0x3af/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-=============================
-[ BUG: Invalid wait context ]
-5.10.0-rc2-syzkaller #0 Tainted: G        W        
------------------------------
-kworker/u4:1/21 is trying to lock:
-ffff88802d8729d0 (&local->chanctx_mtx){+.+.}-{3:3}, at: ieee80211_recalc_min_chandef+0x49/0x140 net/mac80211/util.c:2741
-other info that might help us debug this:
-context-{4:4}
-4 locks held by kworker/u4:1/21:
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
- #0: ffff8880247dc138 ((wq_completion)phy3){+.+.}-{0:0}, at: process_one_work+0x821/0x15a0 kernel/workqueue.c:2243
- #1: ffffc90000dbfda8 ((work_completion)(&sdata->work)){+.+.}-{0:0}, at: process_one_work+0x854/0x15a0 kernel/workqueue.c:2247
- #2: ffff8880355c8d00 (&wdev->mtx){+.+.}-{3:3}, at: sdata_lock net/mac80211/ieee80211_i.h:1021 [inline]
- #2: ffff8880355c8d00 (&wdev->mtx){+.+.}-{3:3}, at: ieee80211_ibss_work+0x93/0xe80 net/mac80211/ibss.c:1683
- #3: ffffffff8b337160 (rcu_read_lock){....}-{1:2}, at: sta_info_insert_finish net/mac80211/sta_info.c:644 [inline]
- #3: ffffffff8b337160 (rcu_read_lock){....}-{1:2}, at: sta_info_insert_rcu+0x680/0x2ba0 net/mac80211/sta_info.c:732
-stack backtrace:
-CPU: 1 PID: 21 Comm: kworker/u4:1 Tainted: G        W         5.10.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: phy3 ieee80211_iface_work
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:118
- print_lock_invalid_wait_context kernel/locking/lockdep.c:4483 [inline]
- check_wait_context kernel/locking/lockdep.c:4544 [inline]
- __lock_acquire.cold+0x310/0x3a2 kernel/locking/lockdep.c:4781
- lock_acquire kernel/locking/lockdep.c:5436 [inline]
- lock_acquire+0x2a3/0x8c0 kernel/locking/lockdep.c:5401
- __mutex_lock_common kernel/locking/mutex.c:956 [inline]
- __mutex_lock+0x134/0x10e0 kernel/locking/mutex.c:1103
- ieee80211_recalc_min_chandef+0x49/0x140 net/mac80211/util.c:2741
- sta_info_move_state+0x3cf/0x8d0 net/mac80211/sta_info.c:2019
- sta_info_free+0x65/0x3b0 net/mac80211/sta_info.c:274
- sta_info_insert_rcu+0x303/0x2ba0 net/mac80211/sta_info.c:738
- ieee80211_ibss_finish_sta+0x212/0x390 net/mac80211/ibss.c:592
- ieee80211_ibss_work+0x2c7/0xe80 net/mac80211/ibss.c:1700
- ieee80211_iface_work+0x91f/0xa90 net/mac80211/iface.c:1478
- process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
- kthread+0x3af/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-netdevsim netdevsim0 netdevsim3 (unregistering): unset [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim2 (unregistering): unset [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim1 (unregistering): unset [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim0 (unregistering): unset [1, 0] type 2 family 0 port 6081 - 0
-device hsr_slave_0 left promiscuous mode
-device hsr_slave_1 left promiscuous mode
-batman_adv: batadv0: Interface deactivated: batadv_slave_0
-batman_adv: batadv0: Removing interface: batadv_slave_0
-batman_adv: batadv0: Interface deactivated: batadv_slave_1
-batman_adv: batadv0: Removing interface: batadv_slave_1
-device bridge_slave_1 left promiscuous mode
-bridge0: port 2(bridge_slave_1) entered disabled state
-device bridge_slave_0 left promiscuous mode
-bridge0: port 1(bridge_slave_0) entered disabled state
-device veth1_macvtap left promiscuous mode
-device veth0_macvtap left promiscuous mode
-device veth1_vlan left promiscuous mode
-device veth0_vlan left promiscuous mode
-team0 (unregistering): Port device team_slave_1 removed
-team0 (unregistering): Port device team_slave_0 removed
-bond0 (unregistering): (slave bond_slave_1): Releasing backup interface
-bond0 (unregistering): (slave bond_slave_0): Releasing backup interface
-bond0 (unregistering): Released all slaves
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>
+> [...]
+>
