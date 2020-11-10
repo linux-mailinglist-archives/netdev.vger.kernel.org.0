@@ -2,73 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7688B2ADCA7
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 18:12:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AB062ADCC5
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 18:20:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726984AbgKJRMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 12:12:24 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:39246 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726344AbgKJRMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 12:12:23 -0500
-Received: by mail-ed1-f67.google.com with SMTP id e18so13568293edy.6;
-        Tue, 10 Nov 2020 09:12:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=gMWumldJ9UU3kZd8oowtYDvR++TdiU3XisALKrh8u1Q=;
-        b=qlaN3sJ3HuuRQ4pq6Ldv/9wyaxABMdXVKQ4KoxzVXjNmu4mK118kSAv/yGF6+7tYkZ
-         9i5weBBbi58wzPDASuu/RV0pHmUr6aDaKWuR4xZQxYJUSmTR0Vs8livsemMCQOglJy9h
-         sMkUBtPXtT7NqaAN4TIjmn5HbJC+0tm1YfE3yY3VQCd+FUwepzrWLENMllF/3qSd7z9Y
-         696tidGPz1y4KfP+YwNewAbWztPvrGQnYpoz3NNo/YIb4w/t/DZs3YOJUCCiLts2xHOL
-         dZOsQHl+YjDCEQE7FD9C3j3aqGkwiiUkWQZXFwrenJhV5FtKIGV4tV99GbZjY77vFKPT
-         ZvlQ==
-X-Gm-Message-State: AOAM532U0U7YWQhph8t20QS1Nlc1ZGiUJZgOH20AFfFtDfPIxRYkyshR
-        wmpriygZDKg+TCYHZAXa0rc=
-X-Google-Smtp-Source: ABdhPJwUfCydgBcV/x31hFTnMPaO0/zDn4iSGzkrYe3JlaFzj7WBDsPVr+igD6PMgiywYYW0RxqxLQ==
-X-Received: by 2002:a50:f0d4:: with SMTP id a20mr326268edm.303.1605028336215;
-        Tue, 10 Nov 2020 09:12:16 -0800 (PST)
-Received: from santucci.pierpaolo ([2.236.81.180])
-        by smtp.gmail.com with ESMTPSA id h9sm10648713ejk.118.2020.11.10.09.12.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Nov 2020 09:12:15 -0800 (PST)
-Date:   Tue, 10 Nov 2020 18:12:13 +0100
-From:   Santucci Pierpaolo <santucci@epigenesys.com>
-To:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andrii@kernel.org,
-        john.fastabend@gmail.com, kpsingh@chromium.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH] selftest/bpf: fix IPV6FR handling in flow dissector
-Message-ID: <X6rJ7c1C95uNZ/xV@santucci.pierpaolo>
+        id S1730660AbgKJRUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 12:20:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43840 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730468AbgKJRUp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 12:20:45 -0500
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 64CD4207D3;
+        Tue, 10 Nov 2020 17:20:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605028844;
+        bh=CCTnDCAuuzm6mDIFcu8KCQsuUDMrKrxDKK90okxS4fk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Vr0EYzw3G94OIGuCW5pc5gp1CS6c8tExs5si/3znnJA8VirbiEzX7PVpZJR9FP0me
+         6te5OHu0md9FgCMdhGD8Ia7VTUDYBcvSMkW7ykIhwvYwW6DNMIxS2hSme8xiPvIzeY
+         h8Ft6t25keqfxhMIv34lD+CzZeyFrXpwLjrutDUg=
+Received: by mail-ot1-f43.google.com with SMTP id a15so11543775otf.5;
+        Tue, 10 Nov 2020 09:20:44 -0800 (PST)
+X-Gm-Message-State: AOAM530i/qsvWIpUebCUdfB8d3AK05MvtBJl+uyvgyqwsv1CUbjPtSaP
+        vQGBSzojVgfp8xkG+Jpw9Py3Xi18breqjklZLA==
+X-Google-Smtp-Source: ABdhPJxTW1zyuuGU0nYnE6jokSTkRx0L3GaMfd1E8nJiIRwJDoTnjiX+oRJAcTo4UeF55RMhc+xmv2NCRRQ3bMrB4kg=
+X-Received: by 2002:a9d:5e14:: with SMTP id d20mr13751749oti.107.1605028843571;
+ Tue, 10 Nov 2020 09:20:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20201109104635.21116-1-laurentiu.tudor@nxp.com>
+ <20201109104635.21116-2-laurentiu.tudor@nxp.com> <20201109221123.GA1846668@bogus>
+In-Reply-To: <20201109221123.GA1846668@bogus>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Tue, 10 Nov 2020 11:20:32 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJ2Ew6GdQmE0gcTgFX9cMZKtkL_rO1F+0EMNy88wF+gXw@mail.gmail.com>
+Message-ID: <CAL_JsqJ2Ew6GdQmE0gcTgFX9cMZKtkL_rO1F+0EMNy88wF+gXw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] dt-bindings: misc: convert fsl, qoriq-mc from txt
+ to YAML
+To:     Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Yang-Leo Li <leoyang.li@nxp.com>,
+        David Miller <davem@davemloft.net>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        devicetree@vger.kernel.org,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ionut-robert Aron <ionut-robert.aron@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From second fragment on, IPV6FR program must stop the dissection of IPV6
-fragmented packet. This is the same approach used for IPV4 fragmentation.
+On Mon, Nov 9, 2020 at 4:11 PM Rob Herring <robh@kernel.org> wrote:
+>
+> On Mon, 09 Nov 2020 12:46:35 +0200, Laurentiu Tudor wrote:
+> > From: Ionut-robert Aron <ionut-robert.aron@nxp.com>
+> >
+> > Convert fsl,qoriq-mc to YAML in order to automate the verification
+> > process of dts files. In addition, update MAINTAINERS accordingly
+> > and, while at it, add some missing files.
+> >
+> > Signed-off-by: Ionut-robert Aron <ionut-robert.aron@nxp.com>
+> > [laurentiu.tudor@nxp.com: update MINTAINERS, updates & fixes in schema]
+> > Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> > ---
+> > Changes in v2:
+> >  - fixed errors reported by yamllint
+> >  - dropped multiple unnecessary quotes
+> >  - used schema instead of text in description
+> >  - added constraints on dpmac reg property
+> >
+> >  .../devicetree/bindings/misc/fsl,qoriq-mc.txt | 196 ----------------
+> >  .../bindings/misc/fsl,qoriq-mc.yaml           | 210 ++++++++++++++++++
+> >  .../ethernet/freescale/dpaa2/overview.rst     |   5 +-
+> >  MAINTAINERS                                   |   4 +-
+> >  4 files changed, 217 insertions(+), 198 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> >  create mode 100644 Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
+> >
+>
+> Applied, thanks!
 
-Signed-off-by: Santucci Pierpaolo <santucci@epigenesys.com>
----
- tools/testing/selftests/bpf/progs/bpf_flow.c | 2 ++
- 1 file changed, 2 insertions(+)
+And now dropped. This duplicates what's in commit 0dbcd4991719
+("dt-bindings: net: add the DPAA2 MAC DTS definition") and has
+warnings from it:
 
-diff --git a/tools/testing/selftests/bpf/progs/bpf_flow.c b/tools/testing/selftests/bpf/progs/bpf_flow.c
-index 5a65f6b51377..95a5a0778ed7 100644
---- a/tools/testing/selftests/bpf/progs/bpf_flow.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_flow.c
-@@ -368,6 +368,8 @@ PROG(IPV6FR)(struct __sk_buff *skb)
- 		 */
- 		if (!(keys->flags & BPF_FLOW_DISSECTOR_F_PARSE_1ST_FRAG))
- 			return export_flow_keys(keys, BPF_OK);
-+	} else {
-+		return export_flow_keys(keys, BPF_OK);
- 	}
- 
- 	return parse_ipv6_proto(skb, fragh->nexthdr);
--- 
-2.29.2
+/builds/robherring/linux-dt-bindings/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.example.dt.yaml:
+dpmac@1: $nodename:0: 'dpmac@1' does not match '^ethernet(@.*)?$'
+ From schema: /builds/robherring/linux-dt-bindings/Documentation/devicetree/bindings/net/fsl,qoriq-mc-dpmac.yaml
 
+Rob
