@@ -2,78 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E8352ADB6B
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 17:17:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA8BC2ADB76
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 17:19:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729110AbgKJQQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 11:16:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48944 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726307AbgKJQQ5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 11:16:57 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726944AbgKJQT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 11:19:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34415 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726688AbgKJQTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 11:19:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605025164;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ex6TCsm+l+OMpVSxdKk20p/MJxan2qyl5QDlnj+iupc=;
+        b=dsKAuUC+wkwxgBJA240dnsIa/JkqjJ5F7ZFCRRIwKCnoRU5oIQEQaklUBqcMFrffpFuho5
+        VjK3LDMwnP3UAhqvwkWZr+72pQOfIu0q3f1rW/Ev/h5RNS4J/+9OUfkhNGpYBYIPvUlj64
+        CsIbIHJXNypzeF5TZlod8dpKeBZEpJg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-275-VQJ4iT6oNfWv-_4Ulm_Vyg-1; Tue, 10 Nov 2020 11:19:20 -0500
+X-MC-Unique: VQJ4iT6oNfWv-_4Ulm_Vyg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4DCAD206E3;
-        Tue, 10 Nov 2020 16:16:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605025017;
-        bh=4gmtA/yuGGJcTi7/FecgJWoThfPjpjrkVVDpswNAn04=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eRHRE0GQdUDjBsHOwvVGyY3UMntZbQj8kYMGipRJrkAtp3MOF+S5VZPn8Y9+Qy065
-         X+AYPIHg84GFG4cmVT/OfNcaeNd6IYoBazm727azzL6+97st5Kv0cogUSqy6zJTr5l
-         7k/XI4p3rJTYb43PVCTbSuat90kb7bTXhrCt59Kg=
-Date:   Tue, 10 Nov 2020 08:16:55 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc:     Kleber Sacilotto de Souza <kleber.souza@canonical.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "Alexander A. Klimov" <grandmaster@al2klimov.de>,
-        Kees Cook <keescook@chromium.org>,
-        Alexey Kodanev <alexey.kodanev@oracle.com>,
-        dccp@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dccp: ccid: move timers to struct dccp_sock
-Message-ID: <20201110081655.29cbcd34@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201110111932.GS595944@mussarela>
-References: <20201013171849.236025-1-kleber.souza@canonical.com>
-        <20201013171849.236025-2-kleber.souza@canonical.com>
-        <20201016153016.04bffc1e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201109114828.GP595944@mussarela>
-        <20201109094938.45b230c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201109210909.GQ595944@mussarela>
-        <20201109131554.5f65b2fa@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <20201109213134.GR595944@mussarela>
-        <20201109141553.30e9d502@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <20201110111932.GS595944@mussarela>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D2818186DD25;
+        Tue, 10 Nov 2020 16:19:18 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EC69F1A4D8;
+        Tue, 10 Nov 2020 16:19:10 +0000 (UTC)
+Date:   Tue, 10 Nov 2020 17:19:09 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, lorenzo.bianconi@redhat.com,
+        ilias.apalodimas@linaro.org, brouer@redhat.com
+Subject: Re: [PATCH v5 net-nex 5/5] net: mlx5: add xdp tx return bulking
+ support
+Message-ID: <20201110171909.4fc9100c@carbon>
+In-Reply-To: <0e898e7f201e65bdf4d9457f9ad4997d8e52dd4c.1605020963.git.lorenzo@kernel.org>
+References: <cover.1605020963.git.lorenzo@kernel.org>
+        <0e898e7f201e65bdf4d9457f9ad4997d8e52dd4c.1605020963.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Nov 2020 08:19:32 -0300 Thadeu Lima de Souza Cascardo wrote:
-> Yeah, I agree with your initial email. The patch I submitted for that fix needs
-> rework, which is what I tried and failed so far. I need to get back to some
-> testing of my latest fix and find out what needs fixing there.
-> 
-> But I am also saying that simply doing a del_timer_sync on disconnect paths
-> won't do, because there are non-disconnect paths where there is a CCID that we
-> will remove and replace and that will still trigger a timer UAF.
-> 
-> So I have been working on a fix that involves a refcnt on ccid itself. But I
-> want to test that it really fixes the problem and I have spent most of the time
-> finding out a way to trigger the timer in a race with the disconnect path.
+On Tue, 10 Nov 2020 16:38:00 +0100
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-Sounds good, thanks a lot for working on this!
-
-> And that same test has showed me that this timer UAF will happen regardless of
-> commit 2677d20677314101293e6da0094ede7b5526d2b1, which led me into stating that
-> reverting it should be done in any case.
+> Convert mlx5 driver to xdp_return_frame_bulk APIs.
 > 
-> I think I can find some time this week to work a little further on the fix for
-> the time UAF.
+> XDP_REDIRECT (upstream codepath): 8.9Mpps
+> XDP_REDIRECT (upstream codepath + bulking APIs): 10.2Mpps
+> 
+> Co-developed-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+
+I did most of my testing on this driver:
+
+Tested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
