@@ -2,89 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DA112ACD2A
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 05:00:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10B0A2ACCFE
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 04:59:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387621AbgKJEAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 23:00:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47230 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387477AbgKJD4D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 22:56:03 -0500
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95625C0613CF
-        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 19:56:03 -0800 (PST)
-Received: by mail-il1-x143.google.com with SMTP id t13so10494963ilp.2
-        for <netdev@vger.kernel.org>; Mon, 09 Nov 2020 19:56:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Z4Gev3At3/+7WYsIRbgs7lJDvm//A/cHTMAu+zMHgAg=;
-        b=MdsPYgNzb08Fl6YqOpRB7fIbd66l+aZNDhpLwPVEPb+Y0Lmf1jiFha1FcLLN7c3rdi
-         BDNLY4QbLFZAMo/X9tU4wCQhmb/mMZ5HWMbXKTifkfgag4/xUwn+70c3vGa13WapV4wg
-         xovzdvz/Z3vWwrlYVvpRqaN7daMaQZ87lXUNzl2dl5hu38+1seWHvWDj/1PvzHXhpNOI
-         NljWNKG+WwSBx4gP1dZKQdJo4cDGXL6qf0ELqDhlXAI+WCx+G9BpsbqO2bez/nHqlOGV
-         gZ8DpUQ5gIMzib7hbCc4JtjhI22UeqJ6a06v2rUSrp+hnbomnowON02jSo6ybieKemV0
-         Nukg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Z4Gev3At3/+7WYsIRbgs7lJDvm//A/cHTMAu+zMHgAg=;
-        b=qb6hWSiYdofvCzPZK0BGLDo1T62hUloRRKqIFMjAKUPWrLHN4XH0OmzVON+CUF3EDO
-         Qhx5HF9jn1hMRP0EfCRJ1E5YGYI+qXieIgQntMbLVTTx6ON/4Ut5839ClpubzKnbaMU7
-         VZu2vSeAAM7tc1JgUl/mFjA72VOM1zfBIUhIiplVDdXI2zWVrXyQsZ8Xl64I3cclp94Q
-         drt95Id0Vb1L76+cO5WKAy+8aM/+O0+F5dRrM4CkaTDMLUs2spYwvTRm8980vzhTDp/8
-         wZykFukzYKJBzDmBNhhn6SgJ5yxOFuKQ3dqlKAkkhbCrZF0M5Nzu7CsQ8Dzqm+oDzb3e
-         Y3ZQ==
-X-Gm-Message-State: AOAM530pSEkJ1voidkYi4UdCg9Dw9VfVSK0PkPgAf/i+saC3Lx42gGA3
-        fXH0OHreK4vha3YJre13DSGf9m0TiIY=
-X-Google-Smtp-Source: ABdhPJxseRk1o7Z43dfXvnJwagWnH6aVYyMaD81IA4Sk0wEXL3t0jWXUoOSWoqp+Tqya63wo1niC2A==
-X-Received: by 2002:a92:ba97:: with SMTP id t23mr8649122ill.208.1604980562846;
-        Mon, 09 Nov 2020 19:56:02 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:7980:a277:20c7:aa44])
-        by smtp.googlemail.com with ESMTPSA id u15sm8130723iln.81.2020.11.09.19.56.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Nov 2020 19:56:02 -0800 (PST)
-Subject: Re: [PATCH net V2] Exempt multicast addresses from five-second
- neighbor lifetime
-To:     Jeff Dike <jdike@akamai.com>, netdev@vger.kernel.org
-References: <20201109025052.23280-1-jdike@akamai.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <50c52b3b-9bf3-6666-df4f-a30cbffd208f@gmail.com>
-Date:   Mon, 9 Nov 2020 20:55:59 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.1
+        id S2387578AbgKJD4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 22:56:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58280 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387557AbgKJD4W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 22:56:22 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 894DF20663;
+        Tue, 10 Nov 2020 03:56:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604980581;
+        bh=vYfmboIzGbBiNDdt8ogPl6hax31zFik+g+zN1Zf1vRI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=E6KLWDXETpCrmFyYQYKKALhMkwV8+uJ7kv7tWcdUC/Wb5B8e18iYNLTUz4vC4yzKi
+         9ozwG8W+72pAVpyWOvI4pqrxwRVMgKOTbfPxz4jzgJyGGTTb86Q/Ybr8MXWbwbscso
+         Z7tVfZ01PkoxuAFA46tYBeJnPDBvguMlTMys4NUM=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        syzbot+32fd1a1bfe355e93f1e2@syzkaller.appspotmail.com,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 07/14] mac80211: fix use of skb payload instead of header
+Date:   Mon,  9 Nov 2020 22:56:03 -0500
+Message-Id: <20201110035611.424867-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20201110035611.424867-1-sashal@kernel.org>
+References: <20201110035611.424867-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20201109025052.23280-1-jdike@akamai.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-in addition to Jakub's comments ...
+From: Johannes Berg <johannes.berg@intel.com>
 
-On 11/8/20 7:50 PM, Jeff Dike wrote:
-> @@ -1706,6 +1708,11 @@ static void pndisc_redo(struct sk_buff *skb)
->  	kfree_skb(skb);
->  }
->  
-> +static int ndisc_is_multicast(const void *pkey)
-> +{
-> +	return (((struct in6_addr *)pkey)->in6_u.u6_addr8[0] & 0xf0) == 0xf0;
+[ Upstream commit 14f46c1e5108696ec1e5a129e838ecedf108c7bf ]
 
-ipv6_addr_type() and IPV6_ADDR_MULTICAST is the better way to code this.
+When ieee80211_skb_resize() is called from ieee80211_build_hdr()
+the skb has no 802.11 header yet, in fact it consist only of the
+payload as the ethernet frame is removed. As such, we're using
+the payload data for ieee80211_is_mgmt(), which is of course
+completely wrong. This didn't really hurt us because these are
+always data frames, so we could only have added more tailroom
+than we needed if we determined it was a management frame and
+sdata->crypto_tx_tailroom_needed_cnt was false.
 
+However, syzbot found that of course there need not be any payload,
+so we're using at best uninitialized memory for the check.
 
+Fix this to pass explicitly the kind of frame that we have instead
+of checking there, by replacing the "bool may_encrypt" argument
+with an argument that can carry the three possible states - it's
+not going to be encrypted, it's a management frame, or it's a data
+frame (and then we check sdata->crypto_tx_tailroom_needed_cnt).
 
-> +}
-> +
->  static bool ndisc_suppress_frag_ndisc(struct sk_buff *skb)
->  {
->  	struct inet6_dev *idev = __in6_dev_get(skb->dev);
-> 
+Reported-by: syzbot+32fd1a1bfe355e93f1e2@syzkaller.appspotmail.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/20201009132538.e1fd7f802947.I799b288466ea2815f9d4c84349fae697dca2f189@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/mac80211/tx.c | 35 +++++++++++++++++++++++------------
+ 1 file changed, 23 insertions(+), 12 deletions(-)
+
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 1b1f2d6cb3f4b..0ab710576673f 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -1851,19 +1851,24 @@ static bool ieee80211_tx(struct ieee80211_sub_if_data *sdata,
+ 
+ /* device xmit handlers */
+ 
++enum ieee80211_encrypt {
++	ENCRYPT_NO,
++	ENCRYPT_MGMT,
++	ENCRYPT_DATA,
++};
++
+ static int ieee80211_skb_resize(struct ieee80211_sub_if_data *sdata,
+ 				struct sk_buff *skb,
+-				int head_need, bool may_encrypt)
++				int head_need,
++				enum ieee80211_encrypt encrypt)
+ {
+ 	struct ieee80211_local *local = sdata->local;
+-	struct ieee80211_hdr *hdr;
+ 	bool enc_tailroom;
+ 	int tail_need = 0;
+ 
+-	hdr = (struct ieee80211_hdr *) skb->data;
+-	enc_tailroom = may_encrypt &&
+-		       (sdata->crypto_tx_tailroom_needed_cnt ||
+-			ieee80211_is_mgmt(hdr->frame_control));
++	enc_tailroom = encrypt == ENCRYPT_MGMT ||
++		       (encrypt == ENCRYPT_DATA &&
++			sdata->crypto_tx_tailroom_needed_cnt);
+ 
+ 	if (enc_tailroom) {
+ 		tail_need = IEEE80211_ENCRYPT_TAILROOM;
+@@ -1896,21 +1901,27 @@ void ieee80211_xmit(struct ieee80211_sub_if_data *sdata,
+ 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
+ 	int headroom;
+-	bool may_encrypt;
++	enum ieee80211_encrypt encrypt;
+ 
+-	may_encrypt = !(info->flags & IEEE80211_TX_INTFL_DONT_ENCRYPT);
++	if (info->flags & IEEE80211_TX_INTFL_DONT_ENCRYPT)
++		encrypt = ENCRYPT_NO;
++	else if (ieee80211_is_mgmt(hdr->frame_control))
++		encrypt = ENCRYPT_MGMT;
++	else
++		encrypt = ENCRYPT_DATA;
+ 
+ 	headroom = local->tx_headroom;
+-	if (may_encrypt)
++	if (encrypt != ENCRYPT_NO)
+ 		headroom += sdata->encrypt_headroom;
+ 	headroom -= skb_headroom(skb);
+ 	headroom = max_t(int, 0, headroom);
+ 
+-	if (ieee80211_skb_resize(sdata, skb, headroom, may_encrypt)) {
++	if (ieee80211_skb_resize(sdata, skb, headroom, encrypt)) {
+ 		ieee80211_free_txskb(&local->hw, skb);
+ 		return;
+ 	}
+ 
++	/* reload after potential resize */
+ 	hdr = (struct ieee80211_hdr *) skb->data;
+ 	info->control.vif = &sdata->vif;
+ 
+@@ -2692,7 +2703,7 @@ static struct sk_buff *ieee80211_build_hdr(struct ieee80211_sub_if_data *sdata,
+ 		head_need += sdata->encrypt_headroom;
+ 		head_need += local->tx_headroom;
+ 		head_need = max_t(int, 0, head_need);
+-		if (ieee80211_skb_resize(sdata, skb, head_need, true)) {
++		if (ieee80211_skb_resize(sdata, skb, head_need, ENCRYPT_DATA)) {
+ 			ieee80211_free_txskb(&local->hw, skb);
+ 			skb = NULL;
+ 			return ERR_PTR(-ENOMEM);
+@@ -3352,7 +3363,7 @@ static bool ieee80211_xmit_fast(struct ieee80211_sub_if_data *sdata,
+ 	if (unlikely(ieee80211_skb_resize(sdata, skb,
+ 					  max_t(int, extra_head + hw_headroom -
+ 						     skb_headroom(skb), 0),
+-					  false))) {
++					  ENCRYPT_NO))) {
+ 		kfree_skb(skb);
+ 		return true;
+ 	}
+-- 
+2.27.0
 
