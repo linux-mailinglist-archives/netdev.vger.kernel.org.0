@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEAD92AD242
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 10:20:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A256D2AD251
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 10:20:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730234AbgKJJUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 04:20:07 -0500
-Received: from mga07.intel.com ([134.134.136.100]:23648 "EHLO mga07.intel.com"
+        id S1731705AbgKJJUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 04:20:40 -0500
+Received: from mga14.intel.com ([192.55.52.115]:25391 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728478AbgKJJUE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727991AbgKJJUE (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 10 Nov 2020 04:20:04 -0500
-IronPort-SDR: QRLqcfc18pw9WlvDT494DfsrarOyFi3H0gjjBIG1hU2Kn36D7KHjVant3+VzGpQoeW2O45jyu6
- iNZSXVAJPPlw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9800"; a="234110526"
+IronPort-SDR: +RsYiMaDR7V2l1CYZHWRNX7+qeFT2gbPzGvjnuMcJJbf+mQTJrbK5O3cJEuYJoMjIwNLPeLI6M
+ RUDStWmPQtfg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9800"; a="169160559"
 X-IronPort-AV: E=Sophos;i="5.77,466,1596524400"; 
-   d="scan'208";a="234110526"
+   d="scan'208";a="169160559"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2020 01:20:03 -0800
-IronPort-SDR: 5eo22GK8LDiwSz4SCq2q/3H1mlF2mKTFFjCcZO1EaGfCEP2A5N5q6Tp2zzBpPiGwLX19eE3A/8
- Q+afRafzAvmg==
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2020 01:20:03 -0800
+IronPort-SDR: 6xDOf5lHIbvfqoQiGZzOWvt70OPWS0XNL0bauX8LRe0IHyD3hgksuWj5UFV4j8dYL38qNoVtJG
+ HDGpHemAy1Cg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.77,466,1596524400"; 
-   d="scan'208";a="360039274"
+   d="scan'208";a="356068336"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 10 Nov 2020 01:20:01 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 10 Nov 2020 01:20:01 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id 735FA56E; Tue, 10 Nov 2020 11:19:57 +0200 (EET)
+        id 7BA9B44A; Tue, 10 Nov 2020 11:19:57 +0200 (EET)
 From:   Mika Westerberg <mika.westerberg@linux.intel.com>
 To:     linux-usb@vger.kernel.org
 Cc:     Michael Jamet <michael.jamet@intel.com>,
@@ -40,9 +40,9 @@ Cc:     Michael Jamet <michael.jamet@intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         netdev@vger.kernel.org
-Subject: [PATCH v2 05/10] thunderbolt: Add functions for enabling and disabling lane bonding on XDomain
-Date:   Tue, 10 Nov 2020 12:19:52 +0300
-Message-Id: <20201110091957.17472-6-mika.westerberg@linux.intel.com>
+Subject: [PATCH v2 06/10] thunderbolt: Create debugfs directory automatically for services
+Date:   Tue, 10 Nov 2020 12:19:53 +0300
+Message-Id: <20201110091957.17472-7-mika.westerberg@linux.intel.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201110091957.17472-1-mika.westerberg@linux.intel.com>
 References: <20201110091957.17472-1-mika.westerberg@linux.intel.com>
@@ -52,193 +52,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Isaac Hazan <isaac.hazan@intel.com>
+This allows service drivers to use it as parent directory if they need
+to add their own debugfs entries.
 
-These can be used by service drivers to enable and disable lane bonding
-as needed.
-
-Signed-off-by: Isaac Hazan <isaac.hazan@intel.com>
 Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 Acked-by: Yehezkel Bernat <YehezkelShB@gmail.com>
 ---
- drivers/thunderbolt/switch.c  | 24 +++++++++++--
- drivers/thunderbolt/tb.h      |  3 ++
- drivers/thunderbolt/xdomain.c | 66 +++++++++++++++++++++++++++++++++++
- include/linux/thunderbolt.h   |  2 ++
- 4 files changed, 92 insertions(+), 3 deletions(-)
+ drivers/thunderbolt/debugfs.c | 24 ++++++++++++++++++++++++
+ drivers/thunderbolt/tb.h      |  4 ++++
+ drivers/thunderbolt/xdomain.c |  3 +++
+ include/linux/thunderbolt.h   |  4 ++++
+ 4 files changed, 35 insertions(+)
 
-diff --git a/drivers/thunderbolt/switch.c b/drivers/thunderbolt/switch.c
-index 05a360901790..cdfd8cccfe19 100644
---- a/drivers/thunderbolt/switch.c
-+++ b/drivers/thunderbolt/switch.c
-@@ -503,12 +503,13 @@ static void tb_dump_port(struct tb *tb, struct tb_regs_port_header *port)
- 
- /**
-  * tb_port_state() - get connectedness state of a port
-+ * @port: the port to check
-  *
-  * The port must have a TB_CAP_PHY (i.e. it should be a real port).
-  *
-  * Return: Returns an enum tb_port_state on success or an error code on failure.
-  */
--static int tb_port_state(struct tb_port *port)
-+int tb_port_state(struct tb_port *port)
- {
- 	struct tb_cap_phy phy;
- 	int res;
-@@ -1008,7 +1009,16 @@ static int tb_port_set_link_width(struct tb_port *port, unsigned int width)
- 			     port->cap_phy + LANE_ADP_CS_1, 1);
+diff --git a/drivers/thunderbolt/debugfs.c b/drivers/thunderbolt/debugfs.c
+index 3680b2784ea1..e53ca8270acd 100644
+--- a/drivers/thunderbolt/debugfs.c
++++ b/drivers/thunderbolt/debugfs.c
+@@ -690,6 +690,30 @@ void tb_switch_debugfs_remove(struct tb_switch *sw)
+ 	debugfs_remove_recursive(sw->debugfs_dir);
  }
  
--static int tb_port_lane_bonding_enable(struct tb_port *port)
 +/**
-+ * tb_port_lane_bonding_enable() - Enable bonding on port
-+ * @port: port to enable
++ * tb_service_debugfs_init() - Add debugfs directory for service
++ * @svc: Thunderbolt service pointer
 + *
-+ * Enable bonding by setting the link width of the port and the
-+ * other port in case of dual link port.
-+ *
-+ * Return: %0 in case of success and negative errno in case of error
++ * Adds debugfs directory for service.
 + */
-+int tb_port_lane_bonding_enable(struct tb_port *port)
- {
- 	int ret;
- 
-@@ -1038,7 +1048,15 @@ static int tb_port_lane_bonding_enable(struct tb_port *port)
- 	return 0;
- }
- 
--static void tb_port_lane_bonding_disable(struct tb_port *port)
++void tb_service_debugfs_init(struct tb_service *svc)
++{
++	svc->debugfs_dir = debugfs_create_dir(dev_name(&svc->dev),
++					      tb_debugfs_root);
++}
++
 +/**
-+ * tb_port_lane_bonding_disable() - Disable bonding on port
-+ * @port: port to disable
++ * tb_service_debugfs_remove() - Remove service debugfs directory
++ * @svc: Thunderbolt service pointer
 + *
-+ * Disable bonding by setting the link width of the port and the
-+ * other port in case of dual link port.
-+ *
++ * Removes the previously created debugfs directory for @svc.
 + */
-+void tb_port_lane_bonding_disable(struct tb_port *port)
++void tb_service_debugfs_remove(struct tb_service *svc)
++{
++	debugfs_remove_recursive(svc->debugfs_dir);
++	svc->debugfs_dir = NULL;
++}
++
+ void tb_debugfs_init(void)
  {
- 	port->dual_link_port->bonded = false;
- 	port->bonded = false;
+ 	tb_debugfs_root = debugfs_create_dir("thunderbolt", NULL);
 diff --git a/drivers/thunderbolt/tb.h b/drivers/thunderbolt/tb.h
-index 3a826315049e..e98d3561648d 100644
+index e98d3561648d..a21000649009 100644
 --- a/drivers/thunderbolt/tb.h
 +++ b/drivers/thunderbolt/tb.h
-@@ -863,6 +863,9 @@ struct tb_port *tb_next_port_on_path(struct tb_port *start, struct tb_port *end,
+@@ -1027,11 +1027,15 @@ void tb_debugfs_init(void);
+ void tb_debugfs_exit(void);
+ void tb_switch_debugfs_init(struct tb_switch *sw);
+ void tb_switch_debugfs_remove(struct tb_switch *sw);
++void tb_service_debugfs_init(struct tb_service *svc);
++void tb_service_debugfs_remove(struct tb_service *svc);
+ #else
+ static inline void tb_debugfs_init(void) { }
+ static inline void tb_debugfs_exit(void) { }
+ static inline void tb_switch_debugfs_init(struct tb_switch *sw) { }
+ static inline void tb_switch_debugfs_remove(struct tb_switch *sw) { }
++static inline void tb_service_debugfs_init(struct tb_service *svc) { }
++static inline void tb_service_debugfs_remove(struct tb_service *svc) { }
+ #endif
  
- int tb_port_get_link_speed(struct tb_port *port);
- int tb_port_get_link_width(struct tb_port *port);
-+int tb_port_state(struct tb_port *port);
-+int tb_port_lane_bonding_enable(struct tb_port *port);
-+void tb_port_lane_bonding_disable(struct tb_port *port);
- 
- int tb_switch_find_vse_cap(struct tb_switch *sw, enum tb_switch_vse_cap vsec);
- int tb_switch_find_cap(struct tb_switch *sw, enum tb_switch_cap cap);
+ #ifdef CONFIG_USB4_KUNIT_TEST
 diff --git a/drivers/thunderbolt/xdomain.c b/drivers/thunderbolt/xdomain.c
-index 83a315f96934..65108216bfe3 100644
+index 65108216bfe3..1a0491b461fd 100644
 --- a/drivers/thunderbolt/xdomain.c
 +++ b/drivers/thunderbolt/xdomain.c
-@@ -8,6 +8,7 @@
-  */
+@@ -779,6 +779,7 @@ static void tb_service_release(struct device *dev)
+ 	struct tb_service *svc = container_of(dev, struct tb_service, dev);
+ 	struct tb_xdomain *xd = tb_service_parent(svc);
  
- #include <linux/device.h>
-+#include <linux/delay.h>
- #include <linux/kmod.h>
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
-@@ -21,6 +22,7 @@
- #define XDOMAIN_UUID_RETRIES			10
- #define XDOMAIN_PROPERTIES_RETRIES		60
- #define XDOMAIN_PROPERTIES_CHANGED_RETRIES	10
-+#define XDOMAIN_BONDING_WAIT			100  /* ms */
++	tb_service_debugfs_remove(svc);
+ 	ida_simple_remove(&xd->service_ids, svc->id);
+ 	kfree(svc->key);
+ 	kfree(svc);
+@@ -892,6 +893,8 @@ static void enumerate_services(struct tb_xdomain *xd)
+ 		svc->dev.parent = &xd->dev;
+ 		dev_set_name(&svc->dev, "%s.%d", dev_name(&xd->dev), svc->id);
  
- struct xdomain_request_work {
- 	struct work_struct work;
-@@ -1443,6 +1445,70 @@ void tb_xdomain_remove(struct tb_xdomain *xd)
- 		device_unregister(&xd->dev);
- }
- 
-+/**
-+ * tb_xdomain_lane_bonding_enable() - Enable lane bonding on XDomain
-+ * @xd: XDomain connection
-+ *
-+ * Lane bonding is disabled by default for XDomains. This function tries
-+ * to enable bonding by first enabling the port and waiting for the CL0
-+ * state.
-+ *
-+ * Return: %0 in case of success and negative errno in case of error.
-+ */
-+int tb_xdomain_lane_bonding_enable(struct tb_xdomain *xd)
-+{
-+	struct tb_port *port;
-+	int ret;
++		tb_service_debugfs_init(svc);
 +
-+	port = tb_port_at(xd->route, tb_xdomain_parent(xd));
-+	if (!port->dual_link_port)
-+		return -ENODEV;
-+
-+	ret = tb_port_enable(port->dual_link_port);
-+	if (ret)
-+		return ret;
-+
-+	ret = tb_wait_for_port(port->dual_link_port, true);
-+	if (ret < 0)
-+		return ret;
-+	if (!ret)
-+		return -ENOTCONN;
-+
-+	ret = tb_port_lane_bonding_enable(port);
-+	if (ret) {
-+		tb_port_warn(port, "failed to enable lane bonding\n");
-+		return ret;
-+	}
-+
-+	tb_xdomain_update_link_attributes(xd);
-+
-+	dev_dbg(&xd->dev, "lane bonding enabled\n");
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(tb_xdomain_lane_bonding_enable);
-+
-+/**
-+ * tb_xdomain_lane_bonding_disable() - Disable lane bonding
-+ * @xd: XDomain connection
-+ *
-+ * Lane bonding is disabled by default for XDomains. If bonding has been
-+ * enabled, this function can be used to disable it.
-+ */
-+void tb_xdomain_lane_bonding_disable(struct tb_xdomain *xd)
-+{
-+	struct tb_port *port;
-+
-+	port = tb_port_at(xd->route, tb_xdomain_parent(xd));
-+	if (port->dual_link_port) {
-+		tb_port_lane_bonding_disable(port);
-+		tb_port_disable(port->dual_link_port);
-+		tb_xdomain_update_link_attributes(xd);
-+
-+		dev_dbg(&xd->dev, "lane bonding disabled\n");
-+	}
-+}
-+EXPORT_SYMBOL_GPL(tb_xdomain_lane_bonding_disable);
-+
- /**
-  * tb_xdomain_enable_paths() - Enable DMA paths for XDomain connection
-  * @xd: XDomain connection
+ 		if (device_register(&svc->dev)) {
+ 			put_device(&svc->dev);
+ 			break;
 diff --git a/include/linux/thunderbolt.h b/include/linux/thunderbolt.h
-index e441af88ed77..0a747f92847e 100644
+index 0a747f92847e..a844fd5d96ab 100644
 --- a/include/linux/thunderbolt.h
 +++ b/include/linux/thunderbolt.h
-@@ -247,6 +247,8 @@ struct tb_xdomain {
- 	u8 depth;
+@@ -350,6 +350,9 @@ void tb_unregister_protocol_handler(struct tb_protocol_handler *handler);
+  * @prtcvers: Protocol version from the properties directory
+  * @prtcrevs: Protocol software revision from the properties directory
+  * @prtcstns: Protocol settings mask from the properties directory
++ * @debugfs_dir: Pointer to the service debugfs directory. Always created
++ *		 when debugfs is enabled. Can be used by service drivers to
++ *		 add their own entries under the service.
+  *
+  * Each domain exposes set of services it supports as collection of
+  * properties. For each service there will be one corresponding
+@@ -363,6 +366,7 @@ struct tb_service {
+ 	u32 prtcvers;
+ 	u32 prtcrevs;
+ 	u32 prtcstns;
++	struct dentry *debugfs_dir;
  };
  
-+int tb_xdomain_lane_bonding_enable(struct tb_xdomain *xd);
-+void tb_xdomain_lane_bonding_disable(struct tb_xdomain *xd);
- int tb_xdomain_enable_paths(struct tb_xdomain *xd, u16 transmit_path,
- 			    u16 transmit_ring, u16 receive_path,
- 			    u16 receive_ring);
+ static inline struct tb_service *tb_service_get(struct tb_service *svc)
 -- 
 2.28.0
 
