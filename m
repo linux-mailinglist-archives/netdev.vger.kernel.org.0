@@ -2,100 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F026A2AD177
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 09:40:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D4FD2AD17B
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 09:41:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731404AbgKJIkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 03:40:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:28393 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729441AbgKJIjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 03:39:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1604997593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hyh7UaM+g2trOiYngrS9dlcrb+FW3phxTbIaNTk+T7A=;
-        b=b9o392c8a6dLMBfCuW/vlXBKcgWWQ750CX5sv2CDbqAxeK5/Xqcru3xMRlVbF3O5sCRQ7B
-        fY4qN5iUK+kl/iWedqi+V7qcZxedIB1Gb4XxUYC72dpEJJMCBmFR/kDZ26n5Rhzp/Ounmg
-        GqVJHzy0MCGZekCd+E2ikGCYl1CErx4=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-526-vVTOm1gcOzyc0M4B8uO8ew-1; Tue, 10 Nov 2020 03:39:50 -0500
-X-MC-Unique: vVTOm1gcOzyc0M4B8uO8ew-1
-Received: by mail-wr1-f72.google.com with SMTP id e18so5400781wrs.23
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 00:39:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hyh7UaM+g2trOiYngrS9dlcrb+FW3phxTbIaNTk+T7A=;
-        b=uIEY1UbRFPN7CzE9caKyO6Z2FXKuzmIkG/HEnR1pr/DcxrBnx+LxRT51WjdjAl8FzJ
-         l3nd5gQ9dCU9dLEPzQNOPDAGBDAtRaZKsF6dSHAlzf53B0M40g5q08jjXK8taOj9a0Wn
-         T/z+oFeWfxoEp2d8D+8sMNyrmEN7GXpFFDxmHScxr6ecT+IEkxZKjtE51NdnKrZpR9qa
-         s7L1WHG0O2701ENt/NZrsgMhNqfsEXOVjjhFH4qFfg88yWs6unWbf0wHblOePi+d0roq
-         I+OgXTLSuu7sLnw7vGftxqp6qQ2Yl80z8Uy9PlZDAm1NxkErKW84DEZHHpSxRuPlWJH4
-         +iMA==
-X-Gm-Message-State: AOAM532nVTklOqsCqXV6JAmowN4me4/7V6djWEMfZ2ZnGAuMeiijxLSw
-        cVdE6a+qLGvcH34iuMViYGJJU/3xiz2P9iBIdEjEe0nq2Z4o6rPoEUNyayXQD+iep1//mWSZSuh
-        tQOf5e2+c1DlfXxSWaqBkp7NvBHm1Anq9
-X-Received: by 2002:a1c:1906:: with SMTP id 6mr3356322wmz.87.1604997588697;
-        Tue, 10 Nov 2020 00:39:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJygpgV8AXXuqlYLBeLe3dxUBkWwtMJMFF9d1iDZ4oUQhYNTvKRIcdpuQ/GdhgZUyOjn8cfx8iWl2yN8a32afMU=
-X-Received: by 2002:a1c:1906:: with SMTP id 6mr3356300wmz.87.1604997588429;
- Tue, 10 Nov 2020 00:39:48 -0800 (PST)
+        id S1729240AbgKJIlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 03:41:03 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7512 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726462AbgKJIlC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 03:41:02 -0500
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CVhCP6G4dzhfWW;
+        Tue, 10 Nov 2020 16:40:49 +0800 (CST)
+Received: from [10.174.179.81] (10.174.179.81) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 10 Nov 2020 16:40:53 +0800
+Subject: Re: [PATCH v2 bpf] tools: bpftool: Add missing close before bpftool
+ net attach exit
+To:     John Fastabend <john.fastabend@gmail.com>
+CC:     <quentin@isovalent.com>, <mrostecki@opensuse.org>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <andrii@kernel.org>,
+        <kpsingh@chromium.org>, <toke@redhat.com>,
+        <danieltimlee@gmail.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20201110014637.6055-1-wanghai38@huawei.com>
+ <5faa18319b71_3e187208f@john-XPS-13-9370.notmuch>
+From:   "wanghai (M)" <wanghai38@huawei.com>
+Message-ID: <52cbaf9b-0680-6a4d-8d42-cd5f6d7f5714@huawei.com>
+Date:   Tue, 10 Nov 2020 16:40:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20201109072930.14048-1-nusiddiq@redhat.com> <20201109115458.0590541b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201109115458.0590541b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Numan Siddique <nusiddiq@redhat.com>
-Date:   Tue, 10 Nov 2020 14:09:37 +0530
-Message-ID: <CAH=CPzpXfLLPWLgH07iEQQJQyWNCW2uv6hh7oFCe-1uVY825SQ@mail.gmail.com>
-Subject: Re: [net-next] netfiler: conntrack: Add the option to set ct tcp flag
- - BE_LIBERAL per-ct basis.
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     ovs dev <dev@openvswitch.org>, netdev <netdev@vger.kernel.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <5faa18319b71_3e187208f@john-XPS-13-9370.notmuch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.81]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 10, 2020 at 1:25 AM Jakub Kicinski <kuba@kernel.org> wrote:
+
+在 2020/11/10 12:33, John Fastabend 写道:
+> Wang Hai wrote:
+>> progfd is created by prog_parse_fd(), before 'bpftool net attach' exit,
+>> it should be closed.
+>>
+>> Fixes: 04949ccc273e ("tools: bpftool: add net attach command to attach XDP on interface")
+>> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+>> ---
+>> v1->v2: use cleanup tag instead of repeated closes
+>>   tools/bpf/bpftool/net.c | 14 ++++++++------
+>>   1 file changed, 8 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+>> index 910e7bac6e9e..1ac7228167e6 100644
+>> --- a/tools/bpf/bpftool/net.c
+>> +++ b/tools/bpf/bpftool/net.c
+>> @@ -578,8 +578,8 @@ static int do_attach(int argc, char **argv)
+>>   
+>>   	ifindex = net_parse_dev(&argc, &argv);
+>>   	if (ifindex < 1) {
+>> -		close(progfd);
+>> -		return -EINVAL;
+>> +		err = -EINVAL;
+>> +		goto cleanup;
+>>   	}
+>>   
+>>   	if (argc) {
+>> @@ -587,8 +587,8 @@ static int do_attach(int argc, char **argv)
+>>   			overwrite = true;
+>>   		} else {
+>>   			p_err("expected 'overwrite', got: '%s'?", *argv);
+>> -			close(progfd);
+>> -			return -EINVAL;
+>> +			err = -EINVAL;
+>> +			goto cleanup;
+>>   		}
+>>   	}
+>>   
+>> @@ -600,13 +600,15 @@ static int do_attach(int argc, char **argv)
+> I think now that return value depends on this err it should be 'if (err)'
+> otherwise we risk retunring non-zero error code from do_attach which
+> will cause programs to fail.
+I agree with you. Thanks.
+>>   	if (err < 0) {
+>          ^^^^^^^^^^^^
+>          if (err) {
 >
-> On Mon,  9 Nov 2020 12:59:30 +0530 nusiddiq@redhat.com wrote:
-> > From: Numan Siddique <nusiddiq@redhat.com>
-> >
-> > Before calling nf_conntrack_in(), caller can set this flag in the
-> > connection template for a tcp packet and any errors in the
-> > tcp_in_window() will be ignored.
-> >
-> > A helper function - nf_ct_set_tcp_be_liberal(nf_conn) is added which
-> > sets this flag for both the directions of the nf_conn.
-> >
-> > openvswitch makes use of this feature so that any out of window tcp
-> > packets are not marked invalid. Prior to this there was no easy way
-> > to distinguish if conntracked packet is marked invalid because of
-> > tcp_in_window() check error or because it doesn't belong to an
-> > existing connection.
-> >
-> > An earlier attempt (see the link) tried to solve this problem for
-> > openvswitch in a different way. Florian Westphal instead suggested
-> > to be liberal in openvswitch for tcp packets.
-> >
-> > Link: https://patchwork.ozlabs.org/project/netdev/patch/20201006083355.121018-1-nusiddiq@redhat.com/
-> >
-> > Suggested-by: Florian Westphal <fw@strlen.de>
-> > Signed-off-by: Numan Siddique <nusiddiq@redhat.com>
+>>   		p_err("interface %s attach failed: %s",
+>>   		      attach_type_strings[attach_type], strerror(-err));
+>> -		return err;
+>> +		goto cleanup;
+>>   	}
+>>   
+>>   	if (json_output)
+>>   		jsonw_null(json_wtr);
+>>   
+>> -	return 0;
 >
-> Please repost Ccing Pablo & netfilter-devel.
+> Alternatively we could add an 'err = 0' here, but above should never
+> return a value >0 as far as I can see.
+It's true that 'err > 0' doesn't exist currently , but adding 'err = 0' 
+would make the code clearer. Thanks for your advice.
+>> +cleanup:
+>> +	close(progfd);
+>> +	return err;
+>>   }
+>>   
+>>   static int do_detach(int argc, char **argv)
+>> -- 
+>> 2.17.1
+>>
+Can it be fixed like this?
 
-Thanks. I will repost.
+--- a/tools/bpf/bpftool/net.c
++++ b/tools/bpf/bpftool/net.c
+@@ -578,8 +578,8 @@ static int do_attach(int argc, char **argv)
 
-Numan
+         ifindex = net_parse_dev(&argc, &argv);
+         if (ifindex < 1) {
+-               close(progfd);
+-               return -EINVAL;
++               err = -EINVAL;
++               goto cleanup;
+         }
+
+         if (argc) {
+@@ -587,8 +587,8 @@ static int do_attach(int argc, char **argv)
+                         overwrite = true;
+                 } else {
+                         p_err("expected 'overwrite', got: '%s'?", *argv);
+-                       close(progfd);
+-                       return -EINVAL;
++                       err = -EINVAL;
++                       goto cleanup;
+                 }
+         }
+
+@@ -597,16 +597,19 @@ static int do_attach(int argc, char **argv)
+                 err = do_attach_detach_xdp(progfd, attach_type, ifindex,
+                                            overwrite);
+
+-       if (err < 0) {
++       if (err) {
+                 p_err("interface %s attach failed: %s",
+                       attach_type_strings[attach_type], strerror(-err));
+-               return err;
++               goto cleanup;
+         }
+
+         if (json_output)
+                 jsonw_null(json_wtr);
+
+-       return 0;
++       ret = 0;
++cleanup:
++       close(progfd);
++       return err;
+  }
 
 >
-
+> .
+>
