@@ -2,107 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5B272AD763
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 14:21:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 271262AD79E
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 14:35:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730639AbgKJNVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 08:21:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729898AbgKJNVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 08:21:04 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C536C0613CF;
-        Tue, 10 Nov 2020 05:21:04 -0800 (PST)
-From:   Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1605014462;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AzMhSL6JfZYLoAxLQNqOinsWfodG6w3sgRNE+je62BU=;
-        b=iNMXQPuDLaAAymCV8YNdZjYIfSNJ9dV3mI3KTjBFmGTy4lF2j74igpHBSibhkxwDRGf9CX
-        eG2eRV+hbF5GW//fUgx4HgvZHd5Lp7Bs8YR2qRBuKgRgjOD92qNdT46fqVrh7BrkwQKERO
-        jUdkTNGBxbtjqpQ2rAcOamnCqi0acF2da7QMuP3lD7/tj0iVol8K1uGNPLzut4quKGgLRX
-        O9G279PsNkfe6IZJ0DrwYYwVoUdXjSArBFrmkVZOc+gbT/WmX3RrCJV+rixpoqtNCzjZnI
-        dx02872vu64JOHz7YGp228x44FVX0bNuAq3RBRfB5NMyrB4hdLTckC3tuRvsCQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1605014462;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AzMhSL6JfZYLoAxLQNqOinsWfodG6w3sgRNE+je62BU=;
-        b=5EStyjC2JN90PchQKFpE0zsLVrZxmq5m2ghA9RKQoPUfACMG6TqzaKsW8CEqikYZP7iKfd
-        cClD7ShI6ogSV2CA==
-To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Cc:     Kurt Kanzenbach <kurt@kmk-computers.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1730430AbgKJNfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 08:35:13 -0500
+Received: from correo.us.es ([193.147.175.20]:35748 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730496AbgKJNfM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 08:35:12 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id B0547396266
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 14:35:09 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A0CAEDA7B9
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 14:35:09 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 95DBDDA78C; Tue, 10 Nov 2020 14:35:09 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0D63ADA730;
+        Tue, 10 Nov 2020 14:35:07 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 10 Nov 2020 14:35:07 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id E4FFF42EF9E0;
+        Tue, 10 Nov 2020 14:35:06 +0100 (CET)
+Date:   Tue, 10 Nov 2020 14:35:06 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Martin Willi <martin@strongswan.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        "maintainer\:BROADCOM IPROC ARM ARCHITECTURE" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        =?utf-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <zajec5@gmail.com>,
-        "open list\:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list\:BROADCOM IPROC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 10/10] dt-bindings: net: dsa: b53: Add YAML bindings
-In-Reply-To: <20201110033113.31090-11-f.fainelli@gmail.com>
-References: <20201110033113.31090-1-f.fainelli@gmail.com> <20201110033113.31090-11-f.fainelli@gmail.com>
-Date:   Tue, 10 Nov 2020 14:21:01 +0100
-Message-ID: <871rh18i0y.fsf@kurt>
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH net] vrf: Fix fast path output packet handling with async
+ Netfilter rules
+Message-ID: <20201110133506.GA1777@salvia>
+References: <20201106073030.3974927-1-martin@strongswan.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201106073030.3974927-1-martin@strongswan.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+Hi Martin,
 
-On Mon Nov 09 2020, Florian Fainelli wrote:
-> From: Kurt Kanzenbach <kurt@kmk-computers.de>
->
-> Convert the b53 DSA device tree bindings to YAML in order to allow
-> for automatic checking and such.
->
-> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
+Just a few nitpicks, see below.
+
+On Fri, Nov 06, 2020 at 08:30:30AM +0100, Martin Willi wrote:
+> VRF devices use an optimized direct path on output if a default qdisc
+> is involved, calling Netfilter hooks directly. This path, however, does
+> not consider Netfilter rules completing asynchronously, such as with
+> NFQUEUE. The Netfilter okfn() is called for asynchronously accepted
+> packets, but the VRF never passes that packet down the stack to send
+> it out over the slave device. Using the slower redirect path for this
+> seems not feasible, as we do not know beforehand if a Netfilter hook
+> has asynchronously completing rules.
+> 
+> Fix the use of asynchronously completing Netfilter rules in OUTPUT and
+> POSTROUTING by using a special completion function that additionally
+> calls dst_output() to pass the packet down the stack. Also, slightly
+> adjust the use of nf_reset_ct() so that is called in the asynchronous
+> case, too.
+> 
+> Fixes: dcdd43c41e60 ("net: vrf: performance improvements for IPv4")
+> Fixes: a9ec54d1b0cd ("net: vrf: performance improvements for IPv6")
+> Signed-off-by: Martin Willi <martin@strongswan.org>
 > ---
->  .../devicetree/bindings/net/dsa/b53.txt       | 149 -----------
->  .../devicetree/bindings/net/dsa/b53.yaml      | 249 ++++++++++++++++++
+>  drivers/net/vrf.c | 92 +++++++++++++++++++++++++++++++++++------------
+>  1 file changed, 69 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+> index 60c1aadece89..f2793ffde191 100644
+> --- a/drivers/net/vrf.c
+> +++ b/drivers/net/vrf.c
+> @@ -608,8 +608,7 @@ static netdev_tx_t vrf_xmit(struct sk_buff *skb, struct net_device *dev)
+>  	return ret;
+>  }
+>  
+> -static int vrf_finish_direct(struct net *net, struct sock *sk,
+> -			     struct sk_buff *skb)
+> +static void vrf_finish_direct(struct sk_buff *skb)
+>  {
+>  	struct net_device *vrf_dev = skb->dev;
+>  
+> @@ -628,7 +627,8 @@ static int vrf_finish_direct(struct net *net, struct sock *sk,
+>  		skb_pull(skb, ETH_HLEN);
+>  	}
+>  
+> -	return 1;
+> +	/* reset skb device */
+> +	nf_reset_ct(skb);
+>  }
+>  
+>  #if IS_ENABLED(CONFIG_IPV6)
+> @@ -707,15 +707,41 @@ static struct sk_buff *vrf_ip6_out_redirect(struct net_device *vrf_dev,
+>  	return skb;
+>  }
+>  
+> +static int vrf_output6_direct_finish(struct net *net, struct sock *sk,
+> +				     struct sk_buff *skb)
+> +{
+> +	vrf_finish_direct(skb);
+> +
+> +	return vrf_ip6_local_out(net, sk, skb);
+> +}
+> +
+>  static int vrf_output6_direct(struct net *net, struct sock *sk,
+>  			      struct sk_buff *skb)
+>  {
+> +	int err = 1;
+> +
+>  	skb->protocol = htons(ETH_P_IPV6);
+>  
+> -	return NF_HOOK_COND(NFPROTO_IPV6, NF_INET_POST_ROUTING,
+> -			    net, sk, skb, NULL, skb->dev,
+> -			    vrf_finish_direct,
+> -			    !(IPCB(skb)->flags & IPSKB_REROUTED));
+> +	if (!(IPCB(skb)->flags & IPSKB_REROUTED))
+> +		err = nf_hook(NFPROTO_IPV6, NF_INET_POST_ROUTING, net, sk, skb,
+> +			      NULL, skb->dev, vrf_output6_direct_finish);
 
-Maybe it should be renamed to brcm,b53.yaml to be consistent with the
-ksz and hellcreek bindings.
+I might missing something... this looks very similar to NF_HOOK_COND
+but it's open-coded.
 
-Thanks,
-Kurt
+My question, could you still use NF_HOOK_COND?
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+        ret = NF_HOOK_COND(NFPROTO_IPV6, ..., vrf_output6_direct_finish);
 
------BEGIN PGP SIGNATURE-----
+just update the okfn.
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+qk70ACgkQeSpbgcuY
-8KaoAg/+KXo2Fr8lqgfG4Ih8O7QQ5lBso9BL80dO6Iavyio2ueysGXAs5RtGxSWW
-BQCVARWEWevf7xVkyRTkvz5GNEnL+KMCkZqjfUHuhnHEuISDm2idGk2iD5U1V+op
-GZrK7dH8A9HsA8z/vGxuuOnMGQibSHC4R55XBYZKXuHGQGlqGlYaoCtXlBChxMIl
-rsOjWMRCuY6Deg6UmJYmaREDNJLZRdzGIfj8hiVFswRXSwA/+Nku4HRRegxoPqKE
-UYFtiY6ljH1eXxq78SlJu6zslB5OsfV1wFWUG1IM0bB7utauT4NdTkSj91asCUCK
-atnNIuXIBlGS41dUljCcSN/UdNDCWSuA2cyBItY8frgk7HNbtdH1rvvMn1uio9T6
-CZd9Y/mKK3XOT5KZI9FS1hzZIBiuHvw2nvpPUoEZDeIZRPYCDed1nNsKQI/armU2
-bc6kaIqv427yXAT99AaCWdsunkNAhMo7gHC+y0/6Hp/ySS51G3uDLUI18+R/iRxf
-trPJRca7pAsrXHuRMhDWRLp8o8FYAo2tTa113ZSATrUsHwq2IQ0H7MXxKVdOhOAV
-7R/utQ4EZ65vjqZN0tOcyk4MkiE5it3LVDVjw3OH1hkTBp2aUrR8JCPObFmNfCaX
-FO9kS/riUlTMUDCbl5WUt0dO+X2cOZKtpZLgzrO5bB5u2PZtK2k=
-=xhiF
------END PGP SIGNATURE-----
---=-=-=--
+> +
+> +	if (likely(err == 1))
+
+I'd suggest you remove likely() here and elsewhere in this patch.
+Just let the branch predictor make its work instead of assuming that
+the ruleset accepts traffic.
+
+> +		vrf_finish_direct(skb);
+> +
+> +	return err;
+> +}
+> +
+> +static int vrf_ip6_out_direct_finish(struct net *net, struct sock *sk,
+> +				     struct sk_buff *skb)
+> +{
+> +	int err;
+> +
+> +	err = vrf_output6_direct(net, sk, skb);
+> +	if (likely(err == 1))
+> +		err = vrf_ip6_local_out(net, sk, skb);
+> +
+> +	return err;
+>  }
+>  
+>  static struct sk_buff *vrf_ip6_out_direct(struct net_device *vrf_dev,
+> @@ -728,18 +754,15 @@ static struct sk_buff *vrf_ip6_out_direct(struct net_device *vrf_dev,
+>  	skb->dev = vrf_dev;
+>  
+>  	err = nf_hook(NFPROTO_IPV6, NF_INET_LOCAL_OUT, net, sk,
+> -		      skb, NULL, vrf_dev, vrf_output6_direct);
+> +		      skb, NULL, vrf_dev, vrf_ip6_out_direct_finish);
+>  
+>  	if (likely(err == 1))
+>  		err = vrf_output6_direct(net, sk, skb);
+>  
+> -	/* reset skb device */
+>  	if (likely(err == 1))
+> -		nf_reset_ct(skb);
+> -	else
+> -		skb = NULL;
+> +		return skb;
+>  
+> -	return skb;
+> +	return NULL;
+>  }
+>  
+>  static struct sk_buff *vrf_ip6_out(struct net_device *vrf_dev,
+> @@ -919,15 +942,41 @@ static struct sk_buff *vrf_ip_out_redirect(struct net_device *vrf_dev,
+>  	return skb;
+>  }
+>  
+> +static int vrf_output_direct_finish(struct net *net, struct sock *sk,
+> +				    struct sk_buff *skb)
+> +{
+> +	vrf_finish_direct(skb);
+> +
+> +	return vrf_ip_local_out(net, sk, skb);
+> +}
+> +
+>  static int vrf_output_direct(struct net *net, struct sock *sk,
+>  			     struct sk_buff *skb)
+>  {
+> +	int err = 1;
+> +
+>  	skb->protocol = htons(ETH_P_IP);
+>  
+> -	return NF_HOOK_COND(NFPROTO_IPV4, NF_INET_POST_ROUTING,
+> -			    net, sk, skb, NULL, skb->dev,
+> -			    vrf_finish_direct,
+> -			    !(IPCB(skb)->flags & IPSKB_REROUTED));
+> +	if (!(IPCB(skb)->flags & IPSKB_REROUTED))
+> +		err = nf_hook(NFPROTO_IPV4, NF_INET_POST_ROUTING, net, sk, skb,
+> +			      NULL, skb->dev, vrf_output_direct_finish);
+> +
+> +	if (likely(err == 1))
+> +		vrf_finish_direct(skb);
+> +
+> +	return err;
+> +}
+> +
+> +static int vrf_ip_out_direct_finish(struct net *net, struct sock *sk,
+> +				    struct sk_buff *skb)
+> +{
+> +	int err;
+> +
+> +	err = vrf_output_direct(net, sk, skb);
+> +	if (likely(err == 1))
+> +		err = vrf_ip_local_out(net, sk, skb);
+> +
+> +	return err;
+>  }
+>  
+>  static struct sk_buff *vrf_ip_out_direct(struct net_device *vrf_dev,
+> @@ -940,18 +989,15 @@ static struct sk_buff *vrf_ip_out_direct(struct net_device *vrf_dev,
+>  	skb->dev = vrf_dev;
+>  
+>  	err = nf_hook(NFPROTO_IPV4, NF_INET_LOCAL_OUT, net, sk,
+> -		      skb, NULL, vrf_dev, vrf_output_direct);
+> +		      skb, NULL, vrf_dev, vrf_ip_out_direct_finish);
+>  
+>  	if (likely(err == 1))
+>  		err = vrf_output_direct(net, sk, skb);
+
+Could you use NF_HOOK() here instead?
+
+Thanks.
