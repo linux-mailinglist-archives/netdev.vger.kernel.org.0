@@ -2,136 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BD2D2AD08E
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 08:38:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11E812AD09E
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 08:46:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730397AbgKJHiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 02:38:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
+        id S1728478AbgKJHqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 02:46:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726467AbgKJHiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 02:38:05 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC97C0613CF;
-        Mon,  9 Nov 2020 23:38:05 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id l1so7118908wrb.9;
-        Mon, 09 Nov 2020 23:38:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Iq/ftfUT5fyKh06LGM2xX4OHrUmblBvdj19McHGYIWM=;
-        b=KBO8yNX5bziqNjDrWUP0O6G7RGd0FzaGF8Mwk77jWnlkA9pFaLBUSr2Cr7U5VlbJt5
-         eRY1tqr/KEOtLPYJhoDeXl/Am9M07FyzR7/qJNX001V4b1v/pkMX5UnI5OANIr4AZjp5
-         s+tW5oSki49qEbj02vLpR+pjOus9Xbizr2c5yZAVt5CUe0tAGkqIixps5+w6OzM3M1re
-         rPbp0Iwvn5xwwKkQmw+PbsVpQc38WUsimuUjTlxp9f1wHqK0sxfmPgFOIYNCrtwUPyTu
-         2XXTgwngaivBFX4OfNGK+gKsNymYyvxTZvPkrlE19qXtRwGM994fKYNNgpx9MnXj/Fd1
-         fEBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Iq/ftfUT5fyKh06LGM2xX4OHrUmblBvdj19McHGYIWM=;
-        b=UVCwdOXAH5IP+DALdM8HLa7yQTAmJsdB0ldISL/+LFPFDxAILIei1fhFI0OzWv/2TQ
-         z/x1ikzakjLidCVB4y8SmAC+M6ypOvnOJHc6NvAXD4S4eR5hKYP4G6hseVAejW77Rn6c
-         ch5VqtMwtdOwMYdQBRV+dleMd7qqda78mAGlCRU/FHMOIiFgqNAmkL/vs6yL0z7D8yJo
-         aOEi0mAWuWbWVHp02txpr0JmIP0YR53WRizH8hIYlI2fPJpj77p6LIm5FqpM6bTl/UWV
-         mM1tysBZAGdGqGsl9+sle5I/KJdrETWruy+PiVWCpvJ5JGl3hno6ntSHIrUfaawMxeCv
-         Jrig==
-X-Gm-Message-State: AOAM533bmvJDNlNIlOMjNvUBkoeOip1KcZ3JQX5s2aDs2rqmApIYXMsW
-        Pcn/MxW7uVMcEKZLYrLDN0+KdfICV0k=
-X-Google-Smtp-Source: ABdhPJxFe0LsmPNprAlQRXOX+aqKWAPNaEhqsg5Ntn9tH7a4mm5YsKNFqJ6Ec68myjyQ5K5YvagqEQ==
-X-Received: by 2002:a5d:5752:: with SMTP id q18mr21348720wrw.176.1604993883674;
-        Mon, 09 Nov 2020 23:38:03 -0800 (PST)
-Received: from localhost ([217.111.27.204])
-        by smtp.gmail.com with ESMTPSA id h128sm2076266wme.38.2020.11.09.23.38.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 23:38:02 -0800 (PST)
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>
-Subject: [PATCH net/next] net: ipconfig: Avoid spurious blank lines in boot log
-Date:   Tue, 10 Nov 2020 08:37:57 +0100
-Message-Id: <20201110073757.1284594-1-thierry.reding@gmail.com>
-X-Mailer: git-send-email 2.29.2
+        with ESMTP id S1726849AbgKJHqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 02:46:42 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A10FC0613CF
+        for <netdev@vger.kernel.org>; Mon,  9 Nov 2020 23:46:42 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kcOMR-0006Dp-T9; Tue, 10 Nov 2020 08:46:40 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:6c8a:7fd4:ebb4:403c] (unknown [IPv6:2a03:f580:87bc:d400:6c8a:7fd4:ebb4:403c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1C0C358E87F;
+        Tue, 10 Nov 2020 07:46:38 +0000 (UTC)
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        linux-can@vger.kernel.org, mailhol.vincent@wanadoo.fr
+Cc:     netdev@vger.kernel.org
+References: <20201109153657.17897-1-socketcan@hartkopp.net>
+ <20201109153657.17897-9-socketcan@hartkopp.net>
+ <c9b7ec89-0892-89fa-1f8d-af9c973e4544@pengutronix.de>
+ <68005955-4bf3-cdef-f85d-a841eb336921@hartkopp.net>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH v5 8/8] can-dev: add len8_dlc support for various CAN USB
+ adapters
+Message-ID: <d563bbf7-da72-83ce-a3c1-ebec828e0d5b@pengutronix.de>
+Date:   Tue, 10 Nov 2020 08:46:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <68005955-4bf3-cdef-f85d-a841eb336921@hartkopp.net>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="UVHsEErOvDqwDEDxFjrDlSCAXVaA4wmRk"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--UVHsEErOvDqwDEDxFjrDlSCAXVaA4wmRk
+Content-Type: multipart/mixed; boundary="ldlUzzooeEMNcZMO3zUQH8jFwhXsYpKJ3";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Oliver Hartkopp <socketcan@hartkopp.net>, linux-can@vger.kernel.org,
+ mailhol.vincent@wanadoo.fr
+Cc: netdev@vger.kernel.org
+Message-ID: <d563bbf7-da72-83ce-a3c1-ebec828e0d5b@pengutronix.de>
+Subject: Re: [PATCH v5 8/8] can-dev: add len8_dlc support for various CAN USB
+ adapters
+References: <20201109153657.17897-1-socketcan@hartkopp.net>
+ <20201109153657.17897-9-socketcan@hartkopp.net>
+ <c9b7ec89-0892-89fa-1f8d-af9c973e4544@pengutronix.de>
+ <68005955-4bf3-cdef-f85d-a841eb336921@hartkopp.net>
+In-Reply-To: <68005955-4bf3-cdef-f85d-a841eb336921@hartkopp.net>
 
-When dumping the name and NTP servers advertised by DHCP, a blank line
-is emitted if either of the lists is empty. This can lead to confusing
-issues such as the blank line getting flagged as warning. This happens
-because the blank line is the result of pr_cont("\n") and that may see
-its level corrupted by some other driver concurrently writing to the
-console.
+--ldlUzzooeEMNcZMO3zUQH8jFwhXsYpKJ3
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-Fix this by making sure that the terminating newline is only emitted
-if at least one entry in the lists was printed before.
+On 11/10/20 7:55 AM, Oliver Hartkopp wrote:
+>>> diff --git a/drivers/net/can/usb/gs_usb.c b/drivers/net/can/usb/gs_us=
+b.c
+>>> index 940589667a7f..cc0c30a33335 100644
+>>> --- a/drivers/net/can/usb/gs_usb.c
+>>> +++ b/drivers/net/can/usb/gs_usb.c
+>>> @@ -330,10 +330,13 @@ static void gs_usb_receive_bulk_callback(struct=
+ urb *urb)
+>>>   			return;
+>>>  =20
+>>>   		cf->can_id =3D hf->can_id;
+>>>  =20
+>>>   		cf->len =3D can_cc_dlc2len(hf->len);
+>>> +		cf->len8_dlc =3D can_get_len8_dlc(dev->can.ctrlmode, cf->len,
+>>> +						hf->len);
+>>
+>> What about introducing a function that sets len and len8_dlc at the sa=
+me time:
+>>
+>> void can_frame_set_length(const struct can_priv *can, struct can_frame=
+ *cfd, u8
+>> dlc);
+>=20
+> Good idea.
+>=20
+> I would suggest something like
+>=20
+> u8 can_get_cc_len(const u32 ctrlmode, struct can_frame *cf, u8 dlc)
+>=20
+> that still returns the 'len' element, so that we can replace=20
+> can_cc_dlc2len() with can_get_cc_len() for CAN drivers that add support=
+=20
+> for len8_dlc.
 
-Reported-by: Jon Hunter <jonathanh@nvidia.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
----
- net/ipv4/ipconfig.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+The regex to replace can_cc_dlc2len() with can_get_cc_len() might be simp=
+ler,
+but passing the cf by reference _and_ assigning the return value to a mem=
+ber of
+cf looks strange.
 
-diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
-index 561f15b5a944..3cd13e1bc6a7 100644
---- a/net/ipv4/ipconfig.c
-+++ b/net/ipv4/ipconfig.c
-@@ -1441,7 +1441,7 @@ static int __init ip_auto_config(void)
- 	int retries = CONF_OPEN_RETRIES;
- #endif
- 	int err;
--	unsigned int i;
-+	unsigned int i, count;
- 
- 	/* Initialise all name servers and NTP servers to NONE (but only if the
- 	 * "ip=" or "nfsaddrs=" kernel command line parameters weren't decoded,
-@@ -1575,7 +1575,7 @@ static int __init ip_auto_config(void)
- 	if (ic_dev_mtu)
- 		pr_cont(", mtu=%d", ic_dev_mtu);
- 	/* Name servers (if any): */
--	for (i = 0; i < CONF_NAMESERVERS_MAX; i++) {
-+	for (i = 0, count = 0; i < CONF_NAMESERVERS_MAX; i++) {
- 		if (ic_nameservers[i] != NONE) {
- 			if (i == 0)
- 				pr_info("     nameserver%u=%pI4",
-@@ -1583,12 +1583,14 @@ static int __init ip_auto_config(void)
- 			else
- 				pr_cont(", nameserver%u=%pI4",
- 					i, &ic_nameservers[i]);
-+
-+			count++;
- 		}
--		if (i + 1 == CONF_NAMESERVERS_MAX)
-+		if ((i + 1 == CONF_NAMESERVERS_MAX) && count > 0)
- 			pr_cont("\n");
- 	}
- 	/* NTP servers (if any): */
--	for (i = 0; i < CONF_NTP_SERVERS_MAX; i++) {
-+	for (i = 0, count = 0; i < CONF_NTP_SERVERS_MAX; i++) {
- 		if (ic_ntp_servers[i] != NONE) {
- 			if (i == 0)
- 				pr_info("     ntpserver%u=%pI4",
-@@ -1596,8 +1598,10 @@ static int __init ip_auto_config(void)
- 			else
- 				pr_cont(", ntpserver%u=%pI4",
- 					i, &ic_ntp_servers[i]);
-+
-+			count++;
- 		}
--		if (i + 1 == CONF_NTP_SERVERS_MAX)
-+		if ((i + 1 == CONF_NTP_SERVERS_MAX) && count > 0)
- 			pr_cont("\n");
- 	}
- #endif /* !SILENT */
--- 
-2.29.2
+> The assignment cf->len =3D can_get_cc_len() fits better into the code=20
+> which assigns cf->can_id too.
+>=20
+> And I would stay on 'u32 ctrlmode' as ctrlmode is the parameter which i=
+s=20
+> namely needed here. A pointer to can_priv can mean anything.
 
+OK
+>> And maybe a function that takes a canfd_frame, so that we don't need t=
+o cast....
+>=20
+> No. The len8_dlc element is from struct can_frame. When people use the =
+
+> struct canfd_frame in their driver this might have some benefits for th=
+em.
+> But when it comes to access the len8_dlc element this has to be casted =
+IMO.
+>=20
+> But with the suggested can_get_cc_len() function a needed cast could be=
+=20
+> put into the parameter list without adding extra code somewhere else in=
+=20
+> the driver.
+
+OK
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--ldlUzzooeEMNcZMO3zUQH8jFwhXsYpKJ3--
+
+--UVHsEErOvDqwDEDxFjrDlSCAXVaA4wmRk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+qRVgACgkQqclaivrt
+76nWiwf/UvLKMREX1DIBWz87/FLrs8zYLml5N+YIxw7EiGv0G7DIuYbvBAyiWfsD
+WIBKOuccvh9Bx+hn5M0EgH05i4CQoOnxtefm3UBXIM0SfHNFEJAZhsxi02RHsMFx
+z0i/gTl3B3Jgz10dMfBdua+K/FWXcO+XQZSO3UzvwfYZAgEbjwxNJeo53hMwnlZW
+EkXgmC9h39gWX4z/DNNWVbAztYZLEGGrodupksqrwzZiDYWkZsviSA/onl8iycqt
+QpL+Ot2PyAlHp2s3Axl4L30oZFyARSkA/63yYtUj33V6V6riB3Qm10ICRTgjaBM0
+e3hDuBZFfTuXfdAhMiu/J8v22q+rIA==
+=1FUW
+-----END PGP SIGNATURE-----
+
+--UVHsEErOvDqwDEDxFjrDlSCAXVaA4wmRk--
