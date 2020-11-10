@@ -2,67 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E75142ADC89
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 18:00:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A0252ADC99
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 18:08:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729819AbgKJRAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 12:00:46 -0500
-Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.24]:35326 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726152AbgKJRAp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 12:00:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1605027641;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=NKr8r0uLV1nrrcxOSMeIVZxDvBadzfVs2IXxp0zJ7G4=;
-        b=aeZYtE/QLgan7NwC7PN+raBXp9FTLK9CJvkFDeVR3TyIKu21ZSmf+lRwyyZBGlLVYw
-        Vq7Y2MFkKRjCFgIBzPPBoFMs7I9MeDEJ3sMFcsHe5XCUEYRljnghyJOy1uZgy9VTQHAV
-        Gg6BiIp6Pznga/4npAjAcu2ObX5LopOZMrGdaXOJViVdkA1IWdIZYBEOBAmb3enXHpjq
-        cf6xY/DFOyC5JQi/PbHMU8BQtK9XTn10CuLWZjo1uCKiU7MYaCppTI/HQMjT3fwFTHvc
-        rZYxu/YlmmZoBkx6cDJ/B+ShT9rRPyrgnUU6FcDvGepImjUC1sTHmjCFJrhbTWaBYtVt
-        zX1A==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hYNd5YsYfzMFI2y1mvrC6tJ0qV6vjIz8/x7DMw=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPv6:2a00:6020:1cf5:5d00:7f6c:26b3:e573:28b8]
-        by smtp.strato.de (RZmta 47.3.4 AUTH)
-        with ESMTPSA id n07f3bwAAH0c1dT
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Tue, 10 Nov 2020 18:00:38 +0100 (CET)
-Subject: Re: [PATCH v6 7/8] can-dev: introduce helpers to access Classical CAN
- DLC values
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
-        mailhol.vincent@wanadoo.fr
-Cc:     netdev@vger.kernel.org
-References: <20201110101852.1973-1-socketcan@hartkopp.net>
- <20201110101852.1973-8-socketcan@hartkopp.net>
- <57350d3f-f8e7-ea2b-5071-be5b3347f631@pengutronix.de>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <b12f08de-f5a6-2998-4e60-cc6ec107c6a7@hartkopp.net>
-Date:   Tue, 10 Nov 2020 18:00:32 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <57350d3f-f8e7-ea2b-5071-be5b3347f631@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1730345AbgKJRHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 12:07:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726344AbgKJRHw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 12:07:52 -0500
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3B7C0613CF
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 09:07:52 -0800 (PST)
+Received: by mail-lj1-x243.google.com with SMTP id p12so985104ljc.9
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 09:07:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:from:to:cc:subject:date:message-id
+         :in-reply-to;
+        bh=Pp9o5OX51TquD+MYbeAa/QRs/3qQlMMtjPTVS58b7No=;
+        b=qhekew2kUCHmjSZK7fCsW36TDfZYoidQt31PSh2JsqpNpgDyIh0e3io/ljIWYrlB/X
+         we1BoqWQ9nasIsmrWWjFgIQDfxb6fwAEfPeEwtva5jRXo1LR8PgNThwY3/Q79ZIFdi8p
+         i8QLfehO2XY52xUxpttQ0BFzqeZBhW08CS5RUM/cOwwU3gfwS/AS+VcXkRO9TfvIavG+
+         qPa8pXFc54zssHLLuBv6m+PHFvjME0OJosxwi8VGCWk9f1o6cKczgCTbwDVTkxEfXOT9
+         fqjP97gXy+ADVqmL/xB+qHEjSM0dk3bCNGJ+iSBHVQ26qvbw1pz1rv/FjcMqVfZNPZ9w
+         ML8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:content-transfer-encoding:from:to:cc:subject
+         :date:message-id:in-reply-to;
+        bh=Pp9o5OX51TquD+MYbeAa/QRs/3qQlMMtjPTVS58b7No=;
+        b=KkcraCe6BUjdFpYsNLBMb0kUgnZie5MbterUyqzE/yp+lyTBkain08UrEZZ4FQQ1zv
+         siLbKQvrrfR8nYQpcGoWJ4MU6eSNG8tCARKBTp8bdbRYJ5wH7/ydH1UUgUu+KucprHrx
+         yAF+t7WSHFQiQhWe2jFD/o0E7CJFtVdAAOz+vykDaJ6NCfPuhwtVGkwPfoA5OQpdza6X
+         OhiqvYSzWdkLvZlzsE2eN6iq5UkQhh6+yfUw7g8mG7150iWum2RECPMdkNgtfBOdPi3F
+         lez+BtVgQ3Lyzb72UnnSD40ZJHZK/fC3tGqLtiC9rTrV1eKFfh8uqfAPGclhVcCWZU2S
+         XdLQ==
+X-Gm-Message-State: AOAM530eLEHa5VGXzBXrWSeYjf/2JsVY1nEknkYx7Qg4LznhJGjJ3rK/
+        +W//81Dxi7E+s3mhsD94JWUCfg==
+X-Google-Smtp-Source: ABdhPJwUqu5pAe0wv3SZW5pK44XSfmO/EQVEf00UWK4BnJJCwVAjMPkESyTkmNXFKikIxbsqHnA7Rw==
+X-Received: by 2002:a2e:9256:: with SMTP id v22mr8019030ljg.115.1605028070794;
+        Tue, 10 Nov 2020 09:07:50 -0800 (PST)
+Received: from localhost (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id v195sm2173030lfa.266.2020.11.10.09.07.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Nov 2020 09:07:50 -0800 (PST)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+From:   "Tobias Waldekranz" <tobias@waldekranz.com>
+To:     "Vladimir Oltean" <olteanv@gmail.com>
+Cc:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
+        <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net: dsa: tag_dsa: Unify regular and ethertype DSA
+ taggers
+Date:   Tue, 10 Nov 2020 17:57:54 +0100
+Message-Id: <C6ZQR6IP6FDI.19PS7RY5FUQIG@wkz-x280>
+In-Reply-To: <20201110125906.djgj2nnzdlnudt3w@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.11.20 16:50, Marc Kleine-Budde wrote:
-> On 11/10/20 11:18 AM, Oliver Hartkopp wrote:
+On Tue Nov 10, 2020 at 3:59 PM CET, Vladimir Oltean wrote:
+> On Tue, Nov 10, 2020 at 10:13:25AM +0100, Tobias Waldekranz wrote:
+> > +config NET_DSA_TAG_DSA_COMMON
+> > +	tristate
+> > +	default n
+>
+> I think that "default n" is implicit and should be omitted.
 
+Correct, will fix!
 
-> I still think, that can_frame_set_cc_len() makes more sense. See my just posted
-> patches for illustration.
-> 
+> > +/**
+> > + * enum dsa_cmd - DSA Command
+> > + * @DSA_CMD_TO_CPU: Set on packets that where trapped or mirrored to
+>
+> s/where/were/
 
-Yep. Your patches look fine!
+ACK
 
-Just remove my patches 7 & 8 and apply your suggestions instead.
+> > +		/* Construct tagged FROM_CPU DSA tag from 802.1Q tag. */
+> > +		dsa_header =3D skb->data + 2 * ETH_ALEN + extra;
+> > +		dsa_header[0] =3D (DSA_CMD_FROM_CPU << 6) | 0x20 | dp->ds->index;
+>
+> What is 0x20, BIT(5)? To denote that it's an 802.1Q tagged frame I
+> suppose?
+> Could it have a macro?
 
-Many thanks,
-Oliver
+It could, there are loads of bare shifts and masks inherited from the
+old taggers though. I suppose it would be nice to replace them with
+symbolic names. Then again they are never used for anything else so
+I'm not sure it adds that much. Andrew?
+
+> > -	/*
+> > -	 * The ethertype field is part of the DSA header.
+> > -	 */
+> > +	/* The ethertype field is part of the DSA header. */
+>
+> Could these comment style changes be a separate patch?
+
+Sure, I'll separate them in v2.
+
+> > +static const struct dsa_device_ops edsa_netdev_ops =3D {
+> > +	.name	=3D "edsa",
+> > +	.proto	=3D DSA_TAG_PROTO_EDSA,
+> > +	.xmit	=3D edsa_xmit,
+> > +	.rcv	=3D edsa_rcv,
+> > +	.overhead =3D EDSA_HLEN,
+>
+> Could you reindent these to be aligned?
+
+Yeah, absolutely.
+
+Thanks for the review!
