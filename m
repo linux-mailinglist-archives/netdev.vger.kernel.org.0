@@ -2,75 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8167B2AD324
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 11:06:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 093352AD329
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 11:07:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728478AbgKJKF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 05:05:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35692 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726467AbgKJKF7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 05:05:59 -0500
-Received: from localhost (searspoint.nvidia.com [216.228.112.21])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6309520781;
-        Tue, 10 Nov 2020 10:05:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605002759;
-        bh=KyiZZNGCWirMY3RDzwcBHMG2nq8uijt2A2VGI534m3c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TzPhEGyWiQDqAd+44Ijt2ZRVNQ0wFMItCMteyFGSHwOV/2B898EEiQ+JpO6xtxcEt
-         wOOfWUVmuG27scvLPAz2Rt7ELZBVq+pFFYSzKUrf9R2Vhp9rV+XcEoE3Ix7gGXvbnS
-         9Dy1lgP8B825KkZP1HblwlIJgWnBd5zBbp03fDOg=
-Date:   Tue, 10 Nov 2020 12:05:54 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Petr Machata <me@pmachata.org>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        stephen@networkplumber.org, john.fastabend@gmail.com,
-        jiri@nvidia.com, idosch@nvidia.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: Re: [PATCH iproute2-next v4 03/11] lib: json_print: Add
- print_on_off()
-Message-ID: <20201110100554.GB371586@unreal>
-References: <cover.1604869679.git.me@pmachata.org>
- <f9e1baac29bddcb406d41e06d8414a4b4d6bcf62.1604869679.git.me@pmachata.org>
+        id S1730117AbgKJKHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 05:07:00 -0500
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:30804 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729518AbgKJKG7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 05:06:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1605002818; x=1636538818;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=QEu3DFmQoPTTcPOvRiqtur5CeOCrmq72y1qW9mxA3lg=;
+  b=QQlqr8EFV5GXA8IGC6kv9Ep+YKLItCQaCKvDjFmiFPOEGDMXEbLVndfp
+   boA0htuU9F7fTHOlrCh4XGd85tIFX0K3Yh84j/CAw6hbEFygfJyUZFVBI
+   Sq5QAKb1lRurtM0lWxhvU6hZP4aw0ReHt/Lac88Vw55pUYGJhYGIcupK2
+   9tKgHWTJWArVNojbDkuvQR4x6eWWfT/dwxaO76ZPT7JXuJLQBlxUBzJkQ
+   rVG361eOwc3pF9MLyT9knlHXali+2Y22Vz5HFYOLPtWlBrSuV7PnIEswn
+   3egiiavC/xHiQVulc6Kl8eIXNQQuZbkT7alp3cHjm/THdYyTMGPmjFdVS
+   A==;
+IronPort-SDR: 9/8A2lQQ8xCIYT3KWDnJJgD2Qo4+mZIIdd4s6MY0jLoovRJ7u8jn1ILmsRgN0lqN2BUuGEzUHA
+ sN02zrJg2CKn5xaBzEXZ73uaMnbX9x3zVml0c/hSWM8kUt5yzDGL7HOdNCXk0108HZex9h9/yk
+ EIeDfBI7Nrjc/gAbFVe9CdOizFiL4HZ4tccHgL5V3Ucz7KCZcStQSbuju1+aymzZ26Ccs4ijLD
+ 139AxFUyE+7u76M1FnODOkVUos8mo+oJb/vjHsHKk1eFhR5KHRbs0b10bk2Q9wpJA4JP8oqvxa
+ 6Gc=
+X-IronPort-AV: E=Sophos;i="5.77,466,1596524400"; 
+   d="scan'208";a="33053859"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Nov 2020 03:06:58 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 10 Nov 2020 03:06:58 -0700
+Received: from soft-dev2.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Tue, 10 Nov 2020 03:06:56 -0700
+From:   Bjarni Jonasson <bjarni.jonasson@microchip.com>
+To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
+        "Heiner Kallweit" <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
+Subject: [PATCH] phy: phylink: Fix CuSFP issue in phylink
+Date:   Tue, 10 Nov 2020 11:06:42 +0100
+Message-ID: <20201110100642.2153-1-bjarni.jonasson@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f9e1baac29bddcb406d41e06d8414a4b4d6bcf62.1604869679.git.me@pmachata.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 08, 2020 at 10:14:08PM +0100, Petr Machata wrote:
-> The value of a number of booleans is shown as "on" and "off" in the plain
-> output, and as an actual boolean in JSON mode. Add a function that does
-> that.
->
-> RDMA tool already uses a function named print_on_off(). This function
-> always shows "on" and "off", even in JSON mode. Since there are probably
-> very few if any consumers of this interface at this point, migrate it to
-> the new central print_on_off() as well.
->
-> Signed-off-by: Petr Machata <me@pmachata.org>
-> ---
->
-> Notes:
->     v3:
->     - Rename to print_on_off(). [David Ahern]
->     - Move over to json_print.c and make it a variant of print_bool().
->       Convert RDMA tool over to print_on_off(). [Leon Romanovsky]
->
->  include/json_print.h |  1 +
->  lib/json_print.c     | 34 +++++++++++++++++++++++++++-------
->  rdma/dev.c           |  2 +-
->  rdma/rdma.h          |  1 -
->  rdma/res-cq.c        |  2 +-
->  rdma/utils.c         |  5 -----
->  6 files changed, 30 insertions(+), 15 deletions(-)
->
+There is an issue with the current phylink driver and CuSFPs which
+results in a callback to the phylink validate function without any
+advertisement capabilities.  The workaround (in this changeset)
+is to assign capabilities if a 1000baseT SFP is identified.
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
+---
+ drivers/net/phy/phylink.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 32f4e8ec96cf..76e25f7f6934 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -2196,6 +2196,14 @@ static int phylink_sfp_connect_phy(void *upstream, struct phy_device *phy)
+ 		mode = MLO_AN_INBAND;
+ 
+ 	/* Do the initial configuration */
++	if (phylink_test(pl->sfp_support, 1000baseT_Full)) {
++		pr_info("%s:%d: adding 1000baseT to PHY\n", __func__, __LINE__);
++		phylink_set(phy->supported, 1000baseT_Half);
++		phylink_set(phy->supported, 1000baseT_Full);
++		phylink_set(phy->advertising, 1000baseT_Half);
++		phylink_set(phy->advertising, 1000baseT_Full);
++	}
++
+ 	ret = phylink_sfp_config(pl, mode, phy->supported, phy->advertising);
+ 	if (ret < 0)
+ 		return ret;
+-- 
+2.17.1
+
