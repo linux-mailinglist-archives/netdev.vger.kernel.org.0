@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B09B52AD24F
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 10:20:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEAD92AD242
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 10:20:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729938AbgKJJUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 04:20:34 -0500
-Received: from mga09.intel.com ([134.134.136.24]:51675 "EHLO mga09.intel.com"
+        id S1730234AbgKJJUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 04:20:07 -0500
+Received: from mga07.intel.com ([134.134.136.100]:23648 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731404AbgKJJU2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 04:20:28 -0500
-IronPort-SDR: lU1KDyJRL6ACkVDAyLhme6Oh5PWFjK6gzuGX8F85Sa/i5RwBmeTMrF/EpshMjdNf4RMIq0c0ji
- bfonaTvknbnQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9800"; a="170096896"
+        id S1728478AbgKJJUE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 04:20:04 -0500
+IronPort-SDR: QRLqcfc18pw9WlvDT494DfsrarOyFi3H0gjjBIG1hU2Kn36D7KHjVant3+VzGpQoeW2O45jyu6
+ iNZSXVAJPPlw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9800"; a="234110526"
 X-IronPort-AV: E=Sophos;i="5.77,466,1596524400"; 
-   d="scan'208";a="170096896"
+   d="scan'208";a="234110526"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2020 01:20:01 -0800
-IronPort-SDR: o4iMPvjzEi7qNDTlmn1fuo2qHcxkTzcnVX+D71ICVj6s4SXZ+Hspm84X7RsWr4COXpjKPFpvpS
- bKrVQUlv0JHw==
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2020 01:20:03 -0800
+IronPort-SDR: 5eo22GK8LDiwSz4SCq2q/3H1mlF2mKTFFjCcZO1EaGfCEP2A5N5q6Tp2zzBpPiGwLX19eE3A/8
+ Q+afRafzAvmg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.77,466,1596524400"; 
-   d="scan'208";a="327610483"
+   d="scan'208";a="360039274"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 10 Nov 2020 01:19:58 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 10 Nov 2020 01:20:01 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id 63B444C7; Tue, 10 Nov 2020 11:19:57 +0200 (EET)
+        id 735FA56E; Tue, 10 Nov 2020 11:19:57 +0200 (EET)
 From:   Mika Westerberg <mika.westerberg@linux.intel.com>
 To:     linux-usb@vger.kernel.org
 Cc:     Michael Jamet <michael.jamet@intel.com>,
@@ -40,9 +40,9 @@ Cc:     Michael Jamet <michael.jamet@intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         netdev@vger.kernel.org
-Subject: [PATCH v2 04/10] thunderbolt: Add link_speed and link_width to XDomain
-Date:   Tue, 10 Nov 2020 12:19:51 +0300
-Message-Id: <20201110091957.17472-5-mika.westerberg@linux.intel.com>
+Subject: [PATCH v2 05/10] thunderbolt: Add functions for enabling and disabling lane bonding on XDomain
+Date:   Tue, 10 Nov 2020 12:19:52 +0300
+Message-Id: <20201110091957.17472-6-mika.westerberg@linux.intel.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201110091957.17472-1-mika.westerberg@linux.intel.com>
 References: <20201110091957.17472-1-mika.westerberg@linux.intel.com>
@@ -54,203 +54,191 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Isaac Hazan <isaac.hazan@intel.com>
 
-Link speed and link width are needed for checking expected values in
-case of using a loopback service.
+These can be used by service drivers to enable and disable lane bonding
+as needed.
 
 Signed-off-by: Isaac Hazan <isaac.hazan@intel.com>
 Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 Acked-by: Yehezkel Bernat <YehezkelShB@gmail.com>
 ---
- .../ABI/testing/sysfs-bus-thunderbolt         | 28 ++++++++
- drivers/thunderbolt/switch.c                  |  9 ++-
- drivers/thunderbolt/tb.h                      |  1 +
- drivers/thunderbolt/xdomain.c                 | 65 +++++++++++++++++++
- include/linux/thunderbolt.h                   |  4 ++
- 5 files changed, 106 insertions(+), 1 deletion(-)
+ drivers/thunderbolt/switch.c  | 24 +++++++++++--
+ drivers/thunderbolt/tb.h      |  3 ++
+ drivers/thunderbolt/xdomain.c | 66 +++++++++++++++++++++++++++++++++++
+ include/linux/thunderbolt.h   |  2 ++
+ 4 files changed, 92 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-thunderbolt b/Documentation/ABI/testing/sysfs-bus-thunderbolt
-index 0b4ab9e4b8f4..a91b4b24496e 100644
---- a/Documentation/ABI/testing/sysfs-bus-thunderbolt
-+++ b/Documentation/ABI/testing/sysfs-bus-thunderbolt
-@@ -1,3 +1,31 @@
-+What:		/sys/bus/thunderbolt/devices/<xdomain>/rx_speed
-+Date:		Feb 2021
-+KernelVersion:	5.11
-+Contact:	Isaac Hazan <isaac.hazan@intel.com>
-+Description:	This attribute reports the XDomain RX speed per lane.
-+		All RX lanes run at the same speed.
-+
-+What:		/sys/bus/thunderbolt/devices/<xdomain>/rx_lanes
-+Date:		Feb 2021
-+KernelVersion:	5.11
-+Contact:	Isaac Hazan <isaac.hazan@intel.com>
-+Description:	This attribute reports the number of RX lanes the XDomain
-+		is using simultaneously through its upstream port.
-+
-+What:		/sys/bus/thunderbolt/devices/<xdomain>/tx_speed
-+Date:		Feb 2021
-+KernelVersion:	5.11
-+Contact:	Isaac Hazan <isaac.hazan@intel.com>
-+Description:	This attribute reports the XDomain TX speed per lane.
-+		All TX lanes run at the same speed.
-+
-+What:		/sys/bus/thunderbolt/devices/<xdomain>/tx_lanes
-+Date:		Feb 2021
-+KernelVersion:	5.11
-+Contact:	Isaac Hazan <isaac.hazan@intel.com>
-+Description:	This attribute reports number of TX lanes the XDomain
-+		is using simultaneously through its upstream port.
-+
- What: /sys/bus/thunderbolt/devices/.../domainX/boot_acl
- Date:		Jun 2018
- KernelVersion:	4.17
 diff --git a/drivers/thunderbolt/switch.c b/drivers/thunderbolt/switch.c
-index c73bbfe69ba1..05a360901790 100644
+index 05a360901790..cdfd8cccfe19 100644
 --- a/drivers/thunderbolt/switch.c
 +++ b/drivers/thunderbolt/switch.c
-@@ -932,7 +932,14 @@ int tb_port_get_link_speed(struct tb_port *port)
- 	return speed == LANE_ADP_CS_1_CURRENT_SPEED_GEN3 ? 20 : 10;
+@@ -503,12 +503,13 @@ static void tb_dump_port(struct tb *tb, struct tb_regs_port_header *port)
+ 
+ /**
+  * tb_port_state() - get connectedness state of a port
++ * @port: the port to check
+  *
+  * The port must have a TB_CAP_PHY (i.e. it should be a real port).
+  *
+  * Return: Returns an enum tb_port_state on success or an error code on failure.
+  */
+-static int tb_port_state(struct tb_port *port)
++int tb_port_state(struct tb_port *port)
+ {
+ 	struct tb_cap_phy phy;
+ 	int res;
+@@ -1008,7 +1009,16 @@ static int tb_port_set_link_width(struct tb_port *port, unsigned int width)
+ 			     port->cap_phy + LANE_ADP_CS_1, 1);
  }
  
--static int tb_port_get_link_width(struct tb_port *port)
+-static int tb_port_lane_bonding_enable(struct tb_port *port)
 +/**
-+ * tb_port_get_link_width() - Get current link width
-+ * @port: Port to check (USB4 or CIO)
++ * tb_port_lane_bonding_enable() - Enable bonding on port
++ * @port: port to enable
 + *
-+ * Returns link width. Return values can be 1 (Single-Lane), 2 (Dual-Lane)
-+ * or negative errno in case of failure.
++ * Enable bonding by setting the link width of the port and the
++ * other port in case of dual link port.
++ *
++ * Return: %0 in case of success and negative errno in case of error
 + */
-+int tb_port_get_link_width(struct tb_port *port)
++int tb_port_lane_bonding_enable(struct tb_port *port)
  {
- 	u32 val;
  	int ret;
+ 
+@@ -1038,7 +1048,15 @@ static int tb_port_lane_bonding_enable(struct tb_port *port)
+ 	return 0;
+ }
+ 
+-static void tb_port_lane_bonding_disable(struct tb_port *port)
++/**
++ * tb_port_lane_bonding_disable() - Disable bonding on port
++ * @port: port to disable
++ *
++ * Disable bonding by setting the link width of the port and the
++ * other port in case of dual link port.
++ *
++ */
++void tb_port_lane_bonding_disable(struct tb_port *port)
+ {
+ 	port->dual_link_port->bonded = false;
+ 	port->bonded = false;
 diff --git a/drivers/thunderbolt/tb.h b/drivers/thunderbolt/tb.h
-index a9995e21b916..3a826315049e 100644
+index 3a826315049e..e98d3561648d 100644
 --- a/drivers/thunderbolt/tb.h
 +++ b/drivers/thunderbolt/tb.h
-@@ -862,6 +862,7 @@ struct tb_port *tb_next_port_on_path(struct tb_port *start, struct tb_port *end,
- 	     (p) = tb_next_port_on_path((src), (dst), (p)))
+@@ -863,6 +863,9 @@ struct tb_port *tb_next_port_on_path(struct tb_port *start, struct tb_port *end,
  
  int tb_port_get_link_speed(struct tb_port *port);
-+int tb_port_get_link_width(struct tb_port *port);
+ int tb_port_get_link_width(struct tb_port *port);
++int tb_port_state(struct tb_port *port);
++int tb_port_lane_bonding_enable(struct tb_port *port);
++void tb_port_lane_bonding_disable(struct tb_port *port);
  
  int tb_switch_find_vse_cap(struct tb_switch *sw, enum tb_switch_vse_cap vsec);
  int tb_switch_find_cap(struct tb_switch *sw, enum tb_switch_cap cap);
 diff --git a/drivers/thunderbolt/xdomain.c b/drivers/thunderbolt/xdomain.c
-index da229ac4e471..83a315f96934 100644
+index 83a315f96934..65108216bfe3 100644
 --- a/drivers/thunderbolt/xdomain.c
 +++ b/drivers/thunderbolt/xdomain.c
-@@ -942,6 +942,43 @@ static void tb_xdomain_restore_paths(struct tb_xdomain *xd)
- 	}
+@@ -8,6 +8,7 @@
+  */
+ 
+ #include <linux/device.h>
++#include <linux/delay.h>
+ #include <linux/kmod.h>
+ #include <linux/module.h>
+ #include <linux/pm_runtime.h>
+@@ -21,6 +22,7 @@
+ #define XDOMAIN_UUID_RETRIES			10
+ #define XDOMAIN_PROPERTIES_RETRIES		60
+ #define XDOMAIN_PROPERTIES_CHANGED_RETRIES	10
++#define XDOMAIN_BONDING_WAIT			100  /* ms */
+ 
+ struct xdomain_request_work {
+ 	struct work_struct work;
+@@ -1443,6 +1445,70 @@ void tb_xdomain_remove(struct tb_xdomain *xd)
+ 		device_unregister(&xd->dev);
  }
  
-+static inline struct tb_switch *tb_xdomain_parent(struct tb_xdomain *xd)
++/**
++ * tb_xdomain_lane_bonding_enable() - Enable lane bonding on XDomain
++ * @xd: XDomain connection
++ *
++ * Lane bonding is disabled by default for XDomains. This function tries
++ * to enable bonding by first enabling the port and waiting for the CL0
++ * state.
++ *
++ * Return: %0 in case of success and negative errno in case of error.
++ */
++int tb_xdomain_lane_bonding_enable(struct tb_xdomain *xd)
 +{
-+	return tb_to_switch(xd->dev.parent);
-+}
-+
-+static int tb_xdomain_update_link_attributes(struct tb_xdomain *xd)
-+{
-+	bool change = false;
 +	struct tb_port *port;
 +	int ret;
 +
 +	port = tb_port_at(xd->route, tb_xdomain_parent(xd));
++	if (!port->dual_link_port)
++		return -ENODEV;
 +
-+	ret = tb_port_get_link_speed(port);
-+	if (ret < 0)
++	ret = tb_port_enable(port->dual_link_port);
++	if (ret)
 +		return ret;
 +
-+	if (xd->link_speed != ret)
-+		change = true;
-+
-+	xd->link_speed = ret;
-+
-+	ret = tb_port_get_link_width(port);
++	ret = tb_wait_for_port(port->dual_link_port, true);
 +	if (ret < 0)
 +		return ret;
++	if (!ret)
++		return -ENOTCONN;
 +
-+	if (xd->link_width != ret)
-+		change = true;
++	ret = tb_port_lane_bonding_enable(port);
++	if (ret) {
++		tb_port_warn(port, "failed to enable lane bonding\n");
++		return ret;
++	}
 +
-+	xd->link_width = ret;
-+
-+	if (change)
-+		kobject_uevent(&xd->dev.kobj, KOBJ_CHANGE);
-+
-+	return 0;
-+}
-+
- static void tb_xdomain_get_uuid(struct work_struct *work)
- {
- 	struct tb_xdomain *xd = container_of(work, typeof(*xd),
-@@ -1053,6 +1090,8 @@ static void tb_xdomain_get_properties(struct work_struct *work)
- 	xd->properties = dir;
- 	xd->property_block_gen = gen;
- 
 +	tb_xdomain_update_link_attributes(xd);
 +
- 	tb_xdomain_restore_paths(xd);
- 
- 	mutex_unlock(&xd->lock);
-@@ -1159,9 +1198,35 @@ static ssize_t unique_id_show(struct device *dev, struct device_attribute *attr,
- }
- static DEVICE_ATTR_RO(unique_id);
- 
-+static ssize_t speed_show(struct device *dev, struct device_attribute *attr,
-+			  char *buf)
-+{
-+	struct tb_xdomain *xd = container_of(dev, struct tb_xdomain, dev);
-+
-+	return sprintf(buf, "%u.0 Gb/s\n", xd->link_speed);
++	dev_dbg(&xd->dev, "lane bonding enabled\n");
++	return 0;
 +}
++EXPORT_SYMBOL_GPL(tb_xdomain_lane_bonding_enable);
 +
-+static DEVICE_ATTR(rx_speed, 0444, speed_show, NULL);
-+static DEVICE_ATTR(tx_speed, 0444, speed_show, NULL);
-+
-+static ssize_t lanes_show(struct device *dev, struct device_attribute *attr,
-+			  char *buf)
++/**
++ * tb_xdomain_lane_bonding_disable() - Disable lane bonding
++ * @xd: XDomain connection
++ *
++ * Lane bonding is disabled by default for XDomains. If bonding has been
++ * enabled, this function can be used to disable it.
++ */
++void tb_xdomain_lane_bonding_disable(struct tb_xdomain *xd)
 +{
-+	struct tb_xdomain *xd = container_of(dev, struct tb_xdomain, dev);
++	struct tb_port *port;
 +
-+	return sprintf(buf, "%u\n", xd->link_width);
++	port = tb_port_at(xd->route, tb_xdomain_parent(xd));
++	if (port->dual_link_port) {
++		tb_port_lane_bonding_disable(port);
++		tb_port_disable(port->dual_link_port);
++		tb_xdomain_update_link_attributes(xd);
++
++		dev_dbg(&xd->dev, "lane bonding disabled\n");
++	}
 +}
++EXPORT_SYMBOL_GPL(tb_xdomain_lane_bonding_disable);
 +
-+static DEVICE_ATTR(rx_lanes, 0444, lanes_show, NULL);
-+static DEVICE_ATTR(tx_lanes, 0444, lanes_show, NULL);
-+
- static struct attribute *xdomain_attrs[] = {
- 	&dev_attr_device.attr,
- 	&dev_attr_device_name.attr,
-+	&dev_attr_rx_lanes.attr,
-+	&dev_attr_rx_speed.attr,
-+	&dev_attr_tx_lanes.attr,
-+	&dev_attr_tx_speed.attr,
- 	&dev_attr_unique_id.attr,
- 	&dev_attr_vendor.attr,
- 	&dev_attr_vendor_name.attr,
+ /**
+  * tb_xdomain_enable_paths() - Enable DMA paths for XDomain connection
+  * @xd: XDomain connection
 diff --git a/include/linux/thunderbolt.h b/include/linux/thunderbolt.h
-index 5db2b11ab085..e441af88ed77 100644
+index e441af88ed77..0a747f92847e 100644
 --- a/include/linux/thunderbolt.h
 +++ b/include/linux/thunderbolt.h
-@@ -179,6 +179,8 @@ void tb_unregister_property_dir(const char *key, struct tb_property_dir *dir);
-  * @lock: Lock to serialize access to the following fields of this structure
-  * @vendor_name: Name of the vendor (or %NULL if not known)
-  * @device_name: Name of the device (or %NULL if not known)
-+ * @link_speed: Speed of the link in Gb/s
-+ * @link_width: Width of the link (1 or 2)
-  * @is_unplugged: The XDomain is unplugged
-  * @resume: The XDomain is being resumed
-  * @needs_uuid: If the XDomain does not have @remote_uuid it will be
-@@ -223,6 +225,8 @@ struct tb_xdomain {
- 	struct mutex lock;
- 	const char *vendor_name;
- 	const char *device_name;
-+	unsigned int link_speed;
-+	unsigned int link_width;
- 	bool is_unplugged;
- 	bool resume;
- 	bool needs_uuid;
+@@ -247,6 +247,8 @@ struct tb_xdomain {
+ 	u8 depth;
+ };
+ 
++int tb_xdomain_lane_bonding_enable(struct tb_xdomain *xd);
++void tb_xdomain_lane_bonding_disable(struct tb_xdomain *xd);
+ int tb_xdomain_enable_paths(struct tb_xdomain *xd, u16 transmit_path,
+ 			    u16 transmit_ring, u16 receive_path,
+ 			    u16 receive_ring);
 -- 
 2.28.0
 
