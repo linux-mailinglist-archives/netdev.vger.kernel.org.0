@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 376FF2ACF77
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 07:10:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 070D82ACF72
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 07:10:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731194AbgKJGKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 01:10:38 -0500
-Received: from mga03.intel.com ([134.134.136.65]:17477 "EHLO mga03.intel.com"
+        id S1732054AbgKJGKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 01:10:33 -0500
+Received: from mga03.intel.com ([134.134.136.65]:17481 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727089AbgKJGKb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1731819AbgKJGKb (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 10 Nov 2020 01:10:31 -0500
-IronPort-SDR: FvU141fKd5HZOHr/mU9XFEgFT1iSX1jEVHjrko0LtVL/rcRtATtepMOcpkivqs4knseYb6Tklq
- 2Mnwy7oFxcww==
-X-IronPort-AV: E=McAfee;i="6000,8403,9800"; a="170035028"
+IronPort-SDR: 32nn60UCSg58ohVffRd8ldXp1NCaRFPU3esIg9cPvVhwSzCNJpKpEv+WpUP4yFfE2A1RRZd9L1
+ R8zSfgM6FYoA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9800"; a="170035030"
 X-IronPort-AV: E=Sophos;i="5.77,465,1596524400"; 
-   d="scan'208";a="170035028"
+   d="scan'208";a="170035030"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2020 22:10:30 -0800
-IronPort-SDR: ixU8/TOHj72yFPDYg5Uuv4nE0mey6MHshR4KGVcs0j0Whiuupk6WizQFXSwIP0JMibFIpmrLRo
- fqiYcJM6+SEg==
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2020 22:10:31 -0800
+IronPort-SDR: iUivQAjkrEcf0jQ+f4phyPmr4GKHHhFdBNbhrywSbUkfxAhMjNYMhWzzGbIwSB/28015p2VQSk
+ 6PGfyPFo8E3g==
 X-IronPort-AV: E=Sophos;i="5.77,465,1596524400"; 
-   d="scan'208";a="365752854"
+   d="scan'208";a="365752866"
 Received: from eevans-mobl1.amr.corp.intel.com (HELO localhost.localdomain) ([10.212.97.1])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2020 22:10:29 -0800
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2020 22:10:30 -0800
 From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
 To:     intel-wired-lan@lists.osuosl.org
 Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         sasha.neftin@intel.com, andre.guedes@intel.com,
         anthony.l.nguyen@intel.com, linux-pci@vger.kernel.org,
         bhelgaas@google.com, netdev@vger.kernel.org
-Subject: [PATCH next-queue v2 1/3] Revert "PCI: Make pci_enable_ptm() private"
-Date:   Mon,  9 Nov 2020 22:10:17 -0800
-Message-Id: <20201110061019.519589-2-vinicius.gomes@intel.com>
+Subject: [PATCH next-queue v2 2/3] igc: Enable PCIe PTM
+Date:   Mon,  9 Nov 2020 22:10:18 -0800
+Message-Id: <20201110061019.519589-3-vinicius.gomes@intel.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20201110061019.519589-1-vinicius.gomes@intel.com>
 References: <20201110061019.519589-1-vinicius.gomes@intel.com>
@@ -44,57 +44,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make pci_enable_ptm() accessible from the drivers.
+In practice, enabling PTM also sets the enabled_ptm flag in the PCI
+device, the flag will be used for detecting if PTM is enabled before
+adding support for the SYSOFFSET_PRECISE ioctl() (which is added by
+implementing the getcrosststamp() PTP function).
 
-Even if PTM still works on the platform I am using without calling
-this function, it might be possible that it's not always the case.
-
-Exposing this to the driver enables the driver to use the
-'ptm_enabled' field of 'pci_dev' to check if PTM is enabled or not.
-
-This reverts commit ac6c26da29c12fa511c877c273ed5c939dc9e96c.
-
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 ---
- drivers/pci/pci.h   | 3 ---
- include/linux/pci.h | 7 +++++++
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index f86cae9aa1f4..548e93aca55b 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -581,11 +581,8 @@ static inline void pcie_ecrc_get_policy(char *str) { }
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 9112dff075cf..cb4ffa90230c 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -10,6 +10,7 @@
+ #include <linux/ip.h>
+ #include <linux/pm_runtime.h>
+ #include <net/pkt_sched.h>
++#include <linux/pci.h>
  
- #ifdef CONFIG_PCIE_PTM
- void pci_ptm_init(struct pci_dev *dev);
--int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
- #else
- static inline void pci_ptm_init(struct pci_dev *dev) { }
--static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
--{ return -EINVAL; }
- #endif
+ #include <net/ipv6.h>
  
- struct pci_dev_reset_methods {
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 22207a79762c..18ce0d3eaecc 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1596,6 +1596,13 @@ static inline bool pci_aer_available(void) { return false; }
+@@ -5017,6 +5018,10 @@ static int igc_probe(struct pci_dev *pdev,
  
- bool pci_ats_disabled(void);
+ 	pci_enable_pcie_error_reporting(pdev);
  
-+#ifdef CONFIG_PCIE_PTM
-+int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
-+#else
-+static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
-+{ return -EINVAL; }
-+#endif
++	err = pci_enable_ptm(pdev, NULL);
++	if (err < 0)
++		dev_err(&pdev->dev, "PTM not supported\n");
 +
- void pci_cfg_access_lock(struct pci_dev *dev);
- bool pci_cfg_access_trylock(struct pci_dev *dev);
- void pci_cfg_access_unlock(struct pci_dev *dev);
+ 	pci_set_master(pdev);
+ 
+ 	err = -ENOMEM;
 -- 
 2.29.0
 
