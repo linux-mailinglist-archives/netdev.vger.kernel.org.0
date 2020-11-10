@@ -2,77 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C84E2AC9F2
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 01:58:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA4182ACA1A
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 02:11:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730702AbgKJA61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 19:58:27 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7507 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729451AbgKJA60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 19:58:26 -0500
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CVTxj1d6Wzhj15;
-        Tue, 10 Nov 2020 08:58:17 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 10 Nov 2020 08:58:18 +0800
-Subject: Re: [PATCH stable] net: sch_generic: fix the missing new qdisc
- assignment bug
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <stable@vger.kernel.org>, <vpai@akamai.com>,
-        <Joakim.Tjernlund@infinera.com>, <xiyou.wangcong@gmail.com>,
-        <johunt@akamai.com>, <jhs@mojatatu.com>, <jiri@resnulli.us>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        <john.fastabend@gmail.com>, <eric.dumazet@gmail.com>,
-        <dsahern@gmail.com>
-References: <1604373938-211588-1-git-send-email-linyunsheng@huawei.com>
- <20201109124658.GC1834954@kroah.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <3deb16a8-bdb1-3c31-2722-404f271f41d8@huawei.com>
-Date:   Tue, 10 Nov 2020 08:58:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1731145AbgKJBLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 20:11:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56728 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727311AbgKJBLb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 20:11:31 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 517DA206D8;
+        Tue, 10 Nov 2020 01:11:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604970690;
+        bh=VIZZlsx0jAouiq3t1QoP1KOVqGLlr6W8TTq9SFQmF3M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZDdpsC4f8aqGBsvCk04lvbv0d6EX6OwnUZQ8Kn2DH/eYK5s0qyuLyqh/40P72GSHj
+         gO0NKtOZBSE+OKHVkTt1hcu6PVLpjT418GiUss1boJKJbeEDnWiUS4IxsIZOA1W48X
+         DFJ4X+AOo3vhe5aICWqcYtc919Zb/8mpCVdi7sGE=
+Date:   Mon, 9 Nov 2020 17:11:29 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     <nikolay@nvidia.com>, <roopa@nvidia.com>, <davem@davemloft.net>,
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] bridge: mrp: Use hlist_head instead of
+ list_head for mrp
+Message-ID: <20201109171129.6b156947@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201106215049.1448185-1-horatiu.vultur@microchip.com>
+References: <20201106215049.1448185-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-In-Reply-To: <20201109124658.GC1834954@kroah.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/11/9 20:46, Greg KH wrote:
-> On Tue, Nov 03, 2020 at 11:25:38AM +0800, Yunsheng Lin wrote:
->> commit 2fb541c862c9 ("net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc")
->>
->> When the above upstream commit is backported to stable kernel,
->> one assignment is missing, which causes two problems reported
->> by Joakim and Vishwanath, see [1] and [2].
->>
->> So add the assignment back to fix it.
->>
->> 1. https://www.spinics.net/lists/netdev/msg693916.html
->> 2. https://www.spinics.net/lists/netdev/msg695131.html
->>
->> Fixes: 749cc0b0c7f3 ("net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc")
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->> ---
->>  net/sched/sch_generic.c | 3 +++
->>  1 file changed, 3 insertions(+)
+On Fri, 6 Nov 2020 22:50:49 +0100 Horatiu Vultur wrote:
+> Replace list_head with hlist_head for MRP list under the bridge.
+> There is no need for a circular list when a linear list will work.
+> This will also decrease the size of 'struct net_bridge'.
 > 
-> What kernel tree(s) does this need to be backported to?
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-4.19.x and 5.4.x
-
-Thanks
-
-> 
-> thanks,
-> 
-> greg k-h
-> .
-> 
+Applied, thanks!
