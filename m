@@ -2,345 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED3262AE388
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 23:43:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F9B02AE38B
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 23:44:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732452AbgKJWnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 17:43:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731713AbgKJWnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 17:43:15 -0500
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5671C0613D1;
-        Tue, 10 Nov 2020 14:43:14 -0800 (PST)
-Received: by mail-ej1-x644.google.com with SMTP id dk16so8222ejb.12;
-        Tue, 10 Nov 2020 14:43:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=N/PQEE+/FPJ0NMebPS1QLSFSGVBrmG2LTD+JvZjZhrA=;
-        b=D6gF6EqSrlCZd90BEdgFKvy5HfV0oHNA1w+wBVLraTax8HCvBdJE6z9M00jaoOkkNH
-         sS7dIbvHM2HtO5yVicnl6VkVyJ9AJ0cC3aL5UKRY7BPqGZVutnzSjNEAf66tC90ogd6m
-         xWkt0UNK+X6rk95fmVaUesY2Tw8w+zI7+rkTcv2TaIN/DBXN8wZEd0JyMTrbdi/3OBNe
-         n334YMTwwyzsp//8LGhwXxfW+h0NKpiQpxj/Lo2zbVAvIFGPvCuhy9MqHj0FZYlsMX0Z
-         4btSPdh9UiWJdr6Spkgu2KLZ9HbHVH+/S86OOiluAcLy0U+xbHRH16N3qa2tNd2Seqqd
-         X9jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=N/PQEE+/FPJ0NMebPS1QLSFSGVBrmG2LTD+JvZjZhrA=;
-        b=tRHYhouZWr4lW9p3d8TmODUfMCNEQSOFWQD74anTH+Wf+7mp7AYPdvcWxUgoH6GRFT
-         32dJwnRpUg7/oeZnsbjH93ROWu0xC9mOqEJVcLYQPvb9NSXaAp90Kf0QUl4rEqdvKLUZ
-         PFR+CHIycYvTcxWpCmJifpeVLn+8yCnksyhDHjGxMNeWyvtcZRAuItN6+CVp4rYQ34zI
-         V5TCLLSeqN0W/bsDIqAwdJWjdPq8QhuP2vfkcaKpTpIHb1lsw1s45p2xIjqEBVcijG5Z
-         lV50xC8sW2SsCmWmpILL/ojLnIsEEu7azWI/4zeuJIYuDVf32o1xfVtiMcYLwV/c3YF5
-         xcKA==
-X-Gm-Message-State: AOAM532b6rkNlAKWPUjXJBhfvzB5pVKcOEx85DpHU+mSdCvvD1mnTczF
-        JQl0Tb48bxgmrbcz8jmDi9Y=
-X-Google-Smtp-Source: ABdhPJwQ4CDUWTmtukolhtYeoKhgrRiaz/vIih5rgiJyldK+BAVzvoXeE6dMZSSEIgfRS7KaK0sXQA==
-X-Received: by 2002:a17:906:a195:: with SMTP id s21mr21482422ejy.146.1605048193570;
-        Tue, 10 Nov 2020 14:43:13 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id mj17sm74969ejb.59.2020.11.10.14.43.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Nov 2020 14:43:13 -0800 (PST)
-Date:   Wed, 11 Nov 2020 00:43:11 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Kurt Kanzenbach <kurt@kmk-computers.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        "maintainer:BROADCOM IPROC ARM ARCHITECTURE" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:BROADCOM IPROC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 10/10] dt-bindings: net: dsa: b53: Add YAML bindings
-Message-ID: <20201110224311.xtgv6wqqzmg77uny@skbuf>
-References: <20201110033113.31090-1-f.fainelli@gmail.com>
- <20201110033113.31090-11-f.fainelli@gmail.com>
+        id S1732160AbgKJWoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 17:44:16 -0500
+Received: from mga03.intel.com ([134.134.136.65]:39110 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732013AbgKJWoP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 17:44:15 -0500
+IronPort-SDR: g6GGjshQO9xGxTP6dLVKcthNClERQbakkZoy0sWK8hSiwqm6qvScnvgcHpoPDzBcFRXO8Q4KBs
+ TLIz2CaAbOfQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9801"; a="170169155"
+X-IronPort-AV: E=Sophos;i="5.77,467,1596524400"; 
+   d="scan'208";a="170169155"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2020 14:44:15 -0800
+IronPort-SDR: Z9dxM6NozppeUlGuKahovvuAtJ1k1GDKnSWH8RRJ/b7T0H/Axo1pl12ek9AT3ASWfkJ1I+0uhN
+ vyH2EsQCcfOA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,467,1596524400"; 
+   d="scan'208";a="473610763"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+  by orsmga004.jf.intel.com with ESMTP; 10 Nov 2020 14:44:15 -0800
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 10 Nov 2020 14:44:14 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Tue, 10 Nov 2020 14:44:14 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.108)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Tue, 10 Nov 2020 14:44:14 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dJV5qrD7HP9tWSw8V093P3OUEkSTtUFTlCHYNh1c3dQzagMPpD9J0epPZ79FCv6bo5XJyF0fWBIfV+87zLv8aHFmepiVFcD5swh90q4dCQfJgEyKgS9C42/b+vUgUQDG/6sJNk51QX2bMRwj7NFkIAM8hH8tYzGJ8tx1D7nLtzMuSYK7ZREKOTlwtAJFsKBCMGInWPVnYNpZRbKNx6qJZzztpk6Z+HMHdg5MV6iWo1fmZahEfYvj5oWL3ohbdoGHwn1n59zQhm5BftzT+q7eS0k/cOeoLUWDQ9nV49EUXjb/LwtIhVUfxH/im7MnluPIp0D78VlRlCh2CnUq25W21A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vgrIWyfiXYnOz7f9CWTeKZKApyGaQJh/WW0iBOVDg6k=;
+ b=ZwXNH0D2FKDDNaR/l44Q6mUR8Wuq9/vSiMz39I/EgWkkwCbPuDHajxXerfrjfTd5xcJ9W0JKpY0CgkCCpjo4HvmRotehEqEP+n6P0T63sd0evM7ZOTsLRLWI/P87TMIj/pVWdm0csC55F5ohxEJW2N+ziZaSWusOxDKuiJLjPoFaGi2635ZMXiWXmkkJdzMdSHQDL3bi+o74jkgYKr+xgUjdMyTTdABdGrT3oby8eyI2sGf812jflC7AXJhgwaqkqTJqmKxtrDP+DPRy3u4kleiu4c+mAruzyRrfZLg4AsHd2WNx9fxrnusQMDgUT9kzY3B1XJmWQYnOihwEPHk4Ig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vgrIWyfiXYnOz7f9CWTeKZKApyGaQJh/WW0iBOVDg6k=;
+ b=X0siOVCo776YuQp9Gf5oZkWO0+Lky+Fp/V9o3zqKy7sTpLiIf4GblrqKDOz54iXJp1Y485N8XrPJabwQ5CZluP7iFM+YZvq5Qw4TDQzNIUmu7hmzxWc+K9WXjVQzt7gFSPc26AWC44ZnJUS8/V4iFvlgzTvik/91n0kiEQBqLvY=
+Received: from MWHPR1101MB2207.namprd11.prod.outlook.com (2603:10b6:301:58::7)
+ by MW3PR11MB4746.namprd11.prod.outlook.com (2603:10b6:303:5f::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.24; Tue, 10 Nov
+ 2020 22:44:12 +0000
+Received: from MWHPR1101MB2207.namprd11.prod.outlook.com
+ ([fe80::f15b:19a7:98ba:8b02]) by MWHPR1101MB2207.namprd11.prod.outlook.com
+ ([fe80::f15b:19a7:98ba:8b02%8]) with mapi id 15.20.3541.025; Tue, 10 Nov 2020
+ 22:44:12 +0000
+From:   "Patel, Vedang" <vedang.patel@intel.com>
+To:     Saeed Mahameed <saeed@kernel.org>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Guedes, Andre" <andre.guedes@intel.com>
+Subject: Hardware time stamping support for AF_XDP applications
+Thread-Topic: Hardware time stamping support for AF_XDP applications
+Thread-Index: AQHWt7MCSEaDlO58DE6scAsur7MQZQ==
+Date:   Tue, 10 Nov 2020 22:44:12 +0000
+Message-ID: <7299CEB5-9777-4FE4-8DEE-32EF61F6DA29@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Microsoft-MacOutlook/10.21.0.200113
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [73.96.95.157]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c262d2d1-c2a6-4fb4-1195-08d885ca2519
+x-ms-traffictypediagnostic: MW3PR11MB4746:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW3PR11MB47464FA7C2DDE8E5EE687BF392E90@MW3PR11MB4746.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BlkXxEL2/oXHyrXuLsnvZJrwB8fBOsWDCgejKS8J8aprvkcoJcDSTRCTRJjXpX6rjmoiJnGn+ZAcp7HHuJUbdPs8IY85Lfw2K/gTrDjpcq6MQZOrPW+4bPG9FPWl1l+JCm4z8Hs7VvUgCLXShkd5DSHMbBU7VNY51n5Sozk2opoTaZv4x0EbLiGBxRpCi5jNFxuBh1Y5R1uQJWHqAYIV91CwLauT6WUAyYjPkEdyTpQNVvOsUhvTFtvwfFopLP1c/Y5NYZYSqKYk7ibcPD7i8sYqYRDfL6jZnUHR7KNCZeVV5W1cABHYGE+DlQaXZ9L27PDr1DGCpve4duosycslNZzpkqXOeWDgZkzfOt9FneXLgICtEuMDs8eLr5oo86ciOWjaZ593RmnhSgp233tHirvIgQAmdPfFYcFVZNyZ28hyCZ723+vewhhmd1wBrBz+b1wtjaqVIhAqfSihD2uf5w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1101MB2207.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(396003)(346002)(376002)(39860400002)(8676002)(66446008)(64756008)(33656002)(71200400001)(316002)(966005)(66556008)(66476007)(6512007)(107886003)(5660300002)(86362001)(478600001)(54906003)(110136005)(26005)(186003)(8936002)(6506007)(36756003)(6486002)(76116006)(4326008)(66946007)(2616005)(83380400001)(2906002)(6606295002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: 7CmB68RbYr38IhDdZSJl27vNFKqUraIrwSX7cmyeUQrQuMlEXBSMXTj+jLW0TJlcfAXewLx5MnnVN2P1fOBc9hTOMq4OHKlgWav6/gbWAFDGySSAic37kBuckzVsD0kmvjeYKaMbqDT7HJWDVQ2uDFZlChShSnNalYOLdWiz0WBybbSdAAUEqinDzjPtxkbKgxvH3sD9B/1eCjcm0WVvxtVq9iGQUq3RfGhr/CPJtvP3oUZ43nk1KnWLEDQUm5bw7YZ7ZNm4ICwAAEEBIe6mRCZP0T7Bb1RJKMSh/UM28RF6T1n0BDwddBCDYm9PYlVU3Un2vo4icBwVvJ5SPUbGjgI99OIz9/YTv4Xjf4x9yQoPV26m0oaKrZ1FovArigv8jbsu61E7BVb+AtFot7/FeUX7FwUtJmfS2X0ieDvd3yLzgBBNWyrSnZN5MrwFduD1xMWOVJ4DRct/6+kugPvHvUHBbSRzk7KRvvigiNtBJQvT+kLCaUXBRfAcYUeqr4twq1NE6rcLumGk4Q5pJf3QfuMSf/4lAhDC0k/bhxsxuzf+B9KBifTP9vXzDeAbACq/4+ecoCnEOtN8jdlm63MuXDXly5R8r1L1aolTc7tNwZJgTQWkta66WUB3Zv10ZQMD0yqkRtYvZM0y9DXpEutMdw==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9631C7DB9CA6084885271323CDCEC024@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201110033113.31090-11-f.fainelli@gmail.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1101MB2207.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c262d2d1-c2a6-4fb4-1195-08d885ca2519
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Nov 2020 22:44:12.4213
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4r/uYo+sqDDGONDXQpl5IgAZBtess7qacoa675nOiorRztVlgXfFzuBT4iWiDu/anrSv6FS6LewDUYMuRYQMJQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4746
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 09, 2020 at 07:31:13PM -0800, Florian Fainelli wrote:
-> diff --git a/Documentation/devicetree/bindings/net/dsa/b53.yaml b/Documentation/devicetree/bindings/net/dsa/b53.yaml
-> new file mode 100644
-> index 000000000000..4fcbac1de95b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/dsa/b53.yaml
-> @@ -0,0 +1,249 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/dsa/b53.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Broadcom BCM53xx Ethernet switches
-> +
-> +allOf:
-> +  - $ref: dsa.yaml#
-> +
-> +maintainers:
-> +  - Florian Fainelli <f.fainelli@gmail.com>
-> +
-> +description:
-> +  Broadcom BCM53xx Ethernet switches
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - const: brcm,bcm5325
-> +      - const: brcm,bcm53115
-> +      - const: brcm,bcm53125
-> +      - const: brcm,bcm53128
-> +      - const: brcm,bcm5365
-> +      - const: brcm,bcm5395
-> +      - const: brcm,bcm5389
-> +      - const: brcm,bcm5397
-> +      - const: brcm,bcm5398
-> +      - items:
-> +          - const: brcm,bcm11360-srab
-> +          - const: brcm,cygnus-srab
-> +      - items:
-> +          - enum:
-> +              - brcm,bcm53010-srab
-> +              - brcm,bcm53011-srab
-> +              - brcm,bcm53012-srab
-> +              - brcm,bcm53018-srab
-> +              - brcm,bcm53019-srab
-> +          - const: brcm,bcm5301x-srab
-> +      - items:
-> +          - enum:
-> +              - brcm,bcm11404-srab
-> +              - brcm,bcm11407-srab
-> +              - brcm,bcm11409-srab
-> +              - brcm,bcm58310-srab
-> +              - brcm,bcm58311-srab
-> +              - brcm,bcm58313-srab
-> +          - const: brcm,omega-srab
-> +      - items:
-> +          - enum:
-> +              - brcm,bcm58522-srab
-> +              - brcm,bcm58523-srab
-> +              - brcm,bcm58525-srab
-> +              - brcm,bcm58622-srab
-> +              - brcm,bcm58623-srab
-> +              - brcm,bcm58625-srab
-> +              - brcm,bcm88312-srab
-> +          - const: brcm,nsp-srab
-> +      - items:
-> +          - enum:
-> +              - brcm,bcm3384-switch
-> +              - brcm,bcm6328-switch
-> +              - brcm,bcm6368-switch
-> +          - const: brcm,bcm63xx-switch
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +# BCM585xx/586xx/88312 SoCs
-> +if:
-> +  properties:
-> +    compatible:
-> +      contains:
-> +        enum:
-> +          - brcm,bcm58522-srab
-> +          - brcm,bcm58523-srab
-> +          - brcm,bcm58525-srab
-> +          - brcm,bcm58622-srab
-> +          - brcm,bcm58623-srab
-> +          - brcm,bcm58625-srab
-> +          - brcm,bcm88312-srab
-> +then:
-> +  properties:
-> +    reg:
-> +      minItems: 3
-> +      maxItems: 3
-> +    reg-names:
-> +      items:
-> +        - const: srab
-> +        - const: mux_config
-> +        - const: sgmii_config
-
-I am only reading these with a human eye, I don't parse YAML syntax.
-Does the syntax enforce that these reg-names are declared in this
-precise order, which is necessary for the proper operation of the
-driver?
-
-> +    interrupts:
-> +      minItems: 13
-> +      maxItems: 13
-> +    interrupt-names:
-> +      items:
-> +        - const: link_state_p0
-> +        - const: link_state_p1
-> +        - const: link_state_p2
-> +        - const: link_state_p3
-> +        - const: link_state_p4
-> +        - const: link_state_p5
-> +        - const: link_state_p7
-> +        - const: link_state_p8
-> +        - const: phy
-> +        - const: ts
-> +        - const: imp_sleep_timer_p5
-> +        - const: imp_sleep_timer_p7
-> +        - const: imp_sleep_timer_p8
-> +  required:
-> +    - interrupts
-> +else:
-> +  properties:
-> +    reg:
-> +      maxItems: 1
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    mdio {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        switch@1e {
-
-You have renamed a node called 'ethernet-switch' into one called
-'switch'. Was it deliberate?
-
-> +            compatible = "brcm,bcm53125";
-> +            reg = <30>;
-> +
-> +            ethernet-ports {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +
-> +                port@0 {
-> +                    reg = <0>;
-> +                    label = "lan1";
-> +                };
-> +
-> +                port@1 {
-> +                    reg = <1>;
-> +                    label = "lan2";
-> +                };
-> +
-> +                port@5 {
-> +                    reg = <5>;
-> +                    label = "cable-modem";
-> +                    phy-mode = "rgmii-txid";
-> +                    fixed-link {
-> +                        speed = <1000>;
-> +                        full-duplex;
-> +                    };
-> +                };
-> +
-> +                port@8 {
-> +                    reg = <8>;
-> +                    label = "cpu";
-> +                    phy-mode = "rgmii-txid";
-> +                    ethernet = <&eth0>;
-> +                    fixed-link {
-> +                        speed = <1000>;
-> +                        full-duplex;
-> +                    };
-> +                };
-> +            };
-> +        };
-> +    };
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    axi {
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +
-> +        switch@36000 {
-> +            compatible = "brcm,bcm58623-srab", "brcm,nsp-srab";
-> +            reg = <0x36000 0x1000>,
-> +                  <0x3f308 0x8>,
-> +                  <0x3f410 0xc>;
-> +            reg-names = "srab", "mux_config", "sgmii_config";
-> +            interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
-> +            interrupt-names = "link_state_p0",
-> +                              "link_state_p1",
-> +                              "link_state_p2",
-> +                              "link_state_p3",
-> +                              "link_state_p4",
-> +                              "link_state_p5",
-> +                              "link_state_p7",
-> +                              "link_state_p8",
-> +                              "phy",
-> +                              "ts",
-> +                              "imp_sleep_timer_p5",
-> +                              "imp_sleep_timer_p7",
-> +                              "imp_sleep_timer_p8";
-> +
-> +            ethernet-ports {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +
-> +                port@0 {
-> +                    label = "port0";
-> +                    reg = <0>;
-> +                };
-> +
-> +                port@1 {
-> +                    label = "port1";
-> +                    reg = <1>;
-> +                };
-> +
-> +                port@2 {
-> +                    label = "port2";
-> +                    reg = <2>;
-> +                };
-> +
-> +                port@3 {
-> +                    label = "port3";
-> +                    reg = <3>;
-> +                };
-> +
-> +                port@4 {
-> +                    label = "port4";
-> +                    reg = <4>;
-> +                };
-> +
-> +                port@8 {
-> +                    ethernet = <&amac2>;
-> +                    label = "cpu";
-> +                    reg = <8>;
-> +                    fixed-link {
-> +                        speed = <1000>;
-> +                        full-duplex;
-> +                    };
-> +                };
-> +            };
-> +        };
-> +    };
+W1NvcnJ5IGlmIHlvdSBnb3QgdGhlIGVtYWlsIHR3aWNlLiBSZXNlbmRpbmcgYmVjYXVzZSBpdCB3
+YXMgcmVqZWN0ZWQgYnkgbmV0ZGV2IGZvciBjb250YWluaW5nIEhUTUxdDQoNCkhpIFNhZWVkL0pl
+c3BlcizCoA0KwqANCkkgYW0gd29ya2luZyBpbiB0aGUgVGltZSBTZW5zaXRpdmUgTmV0d29ya2lu
+ZyB0ZWFtIGF0IEludGVsLiBXZSB3b3JrIG9uIGltcGxlbWVudGluZyBhbmQgdXBzdHJlYW1pbmcg
+c3VwcG9ydCBmb3IgVFNOIHJlbGF0ZWQgZmVhdHVyZXMgZm9yIGludGVsIGJhc2VkIE5JQ3MuIFJl
+Y2VudGx5IHdlIGhhdmUgYmVlbiBhZGRpbmcgc3VwcG9ydCBmb3IgWERQIGluIGkyMjUuIE9uZSBv
+ZiB0aGUgZmVhdHVyZXMgd2hpY2ggd2Ugd2FudCB0byBhZGQgc3VwcG9ydCBmb3IgaXMgcGFzc2lu
+ZyB0aGUgaGFyZHdhcmUgdGltZXN0YW1wIGluZm9ybWF0aW9uIHRvIHRoZSB1c2Vyc3BhY2UgYXBw
+bGljYXRpb24gcnVubmluZyBBRl9YRFAgc29ja2V0cyAoZm9yIGJvdGggVHggYW5kIFJ4KS4gSSBj
+YW1lIGFjcm9zcyB0aGUgWERQIFdvcmtzaG9wWzFdIGNvbmR1Y3RlZCBpbiBKdWx5IDIwMjAgYW5k
+IHRoZXJlIHlvdSBzdGF0ZWQgdGhhdCB5b3UgYXJlIGFscmVhZHkgd29ya2luZyBvbiBhZGRpbmcg
+c3VwcG9ydCBmb3IgQlRGIGJhc2VkIG1ldGFkYXRhIHRvIHBhc3MgaGFyZHdhcmUgaGludHMgZm9y
+IFhEUCBQcm9ncmFtcy4gTXkgdW5kZXJzdGFuZGluZyAoYWxvbmcgd2l0aCBhIGZldyBxdWVzdGlv
+bnMpIG9mIHRoZSBjdXJyZW50IHN0YXRlIGlzOsKgDQoqIFRoaXMgZmVhdHVyZSBpcyBjdXJyZW50
+bHkgYmVpbmcgbWFpbnRhaW5lZCBvdXQgb2YgdHJlZS4gSSBmb3VuZCB0aGF0IGFuIFJGQyBTZXJp
+ZXNbMl0gd2FzIHBvc3RlZCBpbiBKdW5lIDIwMTguIEFyZSB5b3UgcGxhbm5pbmcgdG8gcG9zdCBh
+biB1cGRhdGVkIHZlcnNpb24gdG8gYmUgbWVyZ2VkIGluIHRoZSBtYWlubGluZSBhbnl0aW1lIHNv
+b24/wqANCiogSSBhbSBndWVzc2luZyBoYXJkd2FyZSB0aW1lc3RhbXAgaXMgb25lIG9mIHRoZSBt
+ZXRhZGF0YSBmaWVsZHMgd2hpY2ggd2lsbCBiZSBldmVudHVhbGx5IHN1cHBvcnRlZD8gWzNdDQoq
+IFRoZSBNZXRhZGF0YSBzdXBwb3J0IHdpbGwgYmUgZXh0ZW5kZWQgdG8gcGFzcyBvbiB0aGUgaGFy
+ZHdhcmUgaGludHMgdG8gQUZfWERQIHNvY2tldHMuIEFyZSB0aGVyZSBhbnkgcm91Z2ggcGxhbnMg
+b24gd2hhdCBtZXRhZGF0YSB3aWxsIGJlIHRyYW5zZmVycmVkPw0KKiBUaGUgY3VycmVudCBwbGFu
+IGZvciBUeCBzaWRlIG9ubHkgaW5jbHVkZXMgcGFzc2luZyBkYXRhIGZyb20gdGhlIGFwcGxpY2F0
+aW9uIHRvIHRoZSBkcml2ZXIuIEFyZSB0aGVyZSBhbnkgcGxhbnMgdG8gc3VwcG9ydCBwYXNzaW5n
+IGluZm9ybWF0aW9uIChsaWtlIEhXIFRYIHRpbWVzdGFtcCkgZnJvbSBkcml2ZXIgdG8gdGhlIEFw
+cGxpY2F0aW9uPw0KwqANCkZpbmFsbHksIGlzIHRoZXJlIGFueSB3YXkgSSBjYW4gaGVscCBpbiBl
+eHBlZGl0aW5nIHRoZSBkZXZlbG9wbWVudCBhbmQgdXBzdHJlYW1pbmcgb2YgdGhpcyBmZWF0dXJl
+PyBJIGhhdmUgYmVlbiB3b3JraW5nIG9uIHN0dWR5aW5nIGhvdyBYRFAgd29ya3MgYW5kIGNhbiB3
+b3JrIG9uIGltcGxlbWVudGluZyBzb21lIHBhcnQgb2YgdGhpcyBmZWF0dXJlIGlmIHlvdSB3b3Vs
+ZCBsaWtlLg0KwqANClRoYW5rcywNClZlZGFuZyBQYXRlbA0KU29mdHdhcmUgRW5naW5lZXINCklu
+dGVsIENvcnBvcmF0aW9uDQrCoA0KWzFdIC3CoGh0dHBzOi8vbmV0ZGV2Y29uZi5pbmZvLzB4MTQv
+c2Vzc2lvbi5odG1sP3dvcmtzaG9wLVhEUA0KWzJdIC3CoGh0dHBzOi8vcGF0Y2h3b3JrLm96bGFi
+cy5vcmcvcHJvamVjdC9uZXRkZXYvY292ZXIvMjAxODA2MjcwMjQ2MTUuMTc4NTYtMS1zYWVlZG1A
+bWVsbGFub3guY29tLw0KWzNdIC3CoGh0dHBzOi8veGRwLXByb2plY3QubmV0LyNvdXRsaW5lLWNv
+bnRhaW5lci1JbXBvcnRhbnQtbWVkaXVtLXRlcm0tdGFza3MNCg0KDQo=
