@@ -2,96 +2,264 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E4722AD061
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 08:23:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 012412AD070
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 08:27:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728403AbgKJHXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 02:23:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45126 "EHLO mail.kernel.org"
+        id S1728538AbgKJH1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 02:27:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46026 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726307AbgKJHXV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 02:23:21 -0500
-Received: from ogabbay-VM.habana-labs.com (unknown [213.57.90.10])
+        id S1726213AbgKJH1W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 02:27:22 -0500
+Received: from coco.lan (ip5f5ad5a8.dynamic.kabel-deutschland.de [95.90.213.168])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6C0E7206B6;
-        Tue, 10 Nov 2020 07:23:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DB0E3206E3;
+        Tue, 10 Nov 2020 07:27:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604993000;
-        bh=8Qz8LIUkTxY5/gc9OeAz1JzdfBTeCe2Bc+FW79CrHvs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lxwipDA750+LxYCIEu3zmzw/pUVmCg7SnCXTV+tkp+uRd9HfS7hzKE6EWuqiSM04n
-         JSYs2z775lphf/o41x7822LhK8kSvzL+ukiWXd7qO3bbsyTc3toL9GerxI+wnwO5Bn
-         C0q4F0UuQnc+RBfkG6lgigyNFmnbFtw8EbA34xTQ=
-Date:   Tue, 10 Nov 2020 09:23:10 +0200
-From:   Oded Gabbay <ogabbay@kernel.org>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Parav Pandit <parav@nvidia.com>,
+        s=default; t=1604993241;
+        bh=S1o4qj80GoZoWAAm6f5WIdZgKYNgEyeuOMYKs01dOuI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TUH5+tNazhJ/XJzAl/Wd+cQEsRpNMchPxEmOCv92clZjPMpMMVpFOqsyNGQ8qQlVK
+         vt54VFkbwQr8J7ito6H7c5ALBnYlEng06bYHpBTDo7H35Y6tiYwfUYlrrC4pXGTnLL
+         ZqjZgHifCGhcsQ6FCeSyPXsZrR60Wop4+ME3S5hM=
+Date:   Tue, 10 Nov 2020 08:26:58 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Javier =?UTF-8?B?R29uesOhbGV6?= <javier@javigon.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Benson Leung <bleung@chromium.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bruno Meneguele <bmeneg@redhat.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Dan Murphy <dmurphy@ti.com>,
         Dan Williams <dan.j.williams@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        Takashi Iwai <tiwai@suse.de>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: Re: [PATCH v3 01/10] Add auxiliary bus support
-Message-ID: <20201110072309.GA6508@ogabbay-VM.habana-labs.com>
-References: <20201023003338.1285642-1-david.m.ertman@intel.com>
- <20201023003338.1285642-2-david.m.ertman@intel.com>
- <CAPcyv4i9s=CsO5VJOhPnS77K=bD0LTQ8TUAbhLd+0OmyU8YQ3g@mail.gmail.com>
- <DM6PR11MB284191BAA817540E52E4E2C4DDEE0@DM6PR11MB2841.namprd11.prod.outlook.com>
- <BY5PR12MB43228923300FDE8B087DC4E9DCEE0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <CAPcyv4h1LH+ojRGqvh_R6mfuBbsibGa8DNMG5M1sN5G1BgwiHw@mail.gmail.com>
- <BY5PR12MB43222D59CCCFCF368C357098DCEE0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20201106193537.GH49612@sirena.org.uk>
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Juergen Gross <jgross@suse.com>,
+        Konstantin Khlebnikov <koct9i@gmail.com>,
+        Kranthi Kuntala <kranthi.kuntala@intel.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Len Brown <lenb@kernel.org>,
+        Leonid Maksymchuk <leonmaxx@gmail.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Mario Limonciello <mario.limonciello@dell.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        Oleh Kravchenko <oleg@kaa.org.ua>,
+        Orson Zhai <orsonzhai@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Peter Rosin <peda@axentia.se>, Petr Mladek <pmladek@suse.com>,
+        Philippe Bergheaud <felix@linux.ibm.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tom Rix <trix@redhat.com>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>,
+        Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-pm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, xen-devel@lists.xenproject.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Duplicated ABI entries - Was: Re: [PATCH v2 20/39] docs: ABI:
+ testing: make the files compatible with ReST output
+Message-ID: <20201110082658.2edc1ab5@coco.lan>
+In-Reply-To: <20201108165621.4d0da3f4@archlinux>
+References: <cover.1604042072.git.mchehab+huawei@kernel.org>
+        <58cf3c2d611e0197fb215652719ebd82ca2658db.1604042072.git.mchehab+huawei@kernel.org>
+        <5326488b-4185-9d67-fc09-79b911fbb3b8@st.com>
+        <20201030110925.3e09d59e@coco.lan>
+        <cb586ea3-b6e6-4e48-2344-2bd641e5323f@st.com>
+        <20201102124641.GA881895@kroah.com>
+        <20201102154250.45bee17f@coco.lan>
+        <20201108165621.4d0da3f4@archlinux>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201106193537.GH49612@sirena.org.uk>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 06, 2020 at 07:35:37PM +0000, Mark Brown wrote:
-> On Thu, Nov 05, 2020 at 08:37:14PM +0000, Parav Pandit wrote:
-> 
-> > > > This example describes the mlx5 PCI subfunction use case.
-> > > > I didn't follow your question about 'explicit example'.
-> > > > What part is missing to identify it as explicit example?
-> 
-> > > Specifically listing "mlx5" so if someone reading this document thinks to
-> > > themselves "hey mlx5 sounds like my use case" they can go grep for that.
-> 
-> > Ah, I see.
-> > "mlx5" is not listed explicitly, because it is not included in this patchset.
-> > In various previous discussions in this thread, mlx5 subfunction use case is described that justifies the existence of the bus.
-> > I will be happy to update this documentation once mlx5 subfunction will be part of kernel so that grep actually shows valid output.
-> > (waiting to post them as it uses auxiliary bus :-)).
-> 
-> For ease of review if there's a new version it might be as well to just
-> reference it anyway, hopefully the mlx5 code will be merged fairly
-> quickly once the bus itself is merged.  It's probably easier all round
-> than adding the reference later, it seems more likely that mlx5 will get
-> merged than that it'll fall by the wayside.
+Hi Jonathan,
 
-Another use-case for this patch-set is going to be the habanalabs driver.
-The GAUDI ASIC is a PCI H/W accelerator for deep-learning which also exposes 
-network ports.We are going to use this auxiliary-bus feature to separate our 
-monolithic driver into several parts that will reside in different subsystems 
-and communicate between them through the bus.
+Em Sun, 8 Nov 2020 16:56:21 +0000
+Jonathan Cameron <jic23@kernel.org> escreveu:
+
+> > PS.: the IIO subsystem is the one that currently has more duplicated
+> > ABI entries:  
+> > $ ./scripts/get_abi.pl validate 2>&1|grep iio
+> > Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_x_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:0  Documentation/ABI/testing/sysfs-bus-iio:394
+> > Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_y_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:1  Documentation/ABI/testing/sysfs-bus-iio:395
+> > Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_z_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:2  Documentation/ABI/testing/sysfs-bus-iio:396
+> > Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_x_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:3  Documentation/ABI/testing/sysfs-bus-iio:397
+> > Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:4  Documentation/ABI/testing/sysfs-bus-iio:398
+> > Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:5  Documentation/ABI/testing/sysfs-bus-iio:399
+> > Warning: /sys/bus/iio/devices/iio:deviceX/in_count0_preset is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:100  Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:0
+> > Warning: /sys/bus/iio/devices/iio:deviceX/in_count0_quadrature_mode is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:117  Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:14
+> > Warning: /sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available is defined 3 times:  Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8:2  Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:111  Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:8
+> > Warning: /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4371:0  Documentation/ABI/testing/sysfs-bus-iio:599
+> > Warning: /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4371:36  Documentation/ABI/testing/sysfs-bus-iio:588
+> > Warning: /sys/bus/iio/devices/iio:deviceX/out_currentY_raw is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als:43  Documentation/ABI/testing/sysfs-bus-iio-health-afe440x:38
+> > Warning: /sys/bus/iio/devices/iio:deviceX/out_current_heater_raw is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc2010:0  Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x:0
+> > Warning: /sys/bus/iio/devices/iio:deviceX/out_current_heater_raw_available is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc2010:1  Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x:1
+> > Warning: /sys/bus/iio/devices/iio:deviceX/sensor_sensitivity is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-distance-srf08:0  Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935:8
+> > Warning: /sys/bus/iio/devices/triggerX/sampling_frequency is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:92  Documentation/ABI/testing/sysfs-bus-iio:45  
+
+> 
+> That was intentional.  Often these provide more information on the
+> ABI for a particular device than is present in the base ABI doc.
+
+FYI, right now, there are 20 duplicated entries, being 16 of them
+from IIO, on those files:
+
+	$ ./scripts/get_abi.pl validate 2>&1|perl -ne 'if (m,(Documentation/\S+)\:,g) { print "$1\n" }'|sort|uniq
+	Documentation/ABI/stable/sysfs-driver-w1_ds28e04
+	Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
+	Documentation/ABI/testing/sysfs-bus-iio-distance-srf08
+	Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4371
+	Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc2010
+	Documentation/ABI/testing/sysfs-bus-iio-icm42600
+	Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
+	Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+	Documentation/ABI/testing/sysfs-class-backlight-adp8860
+	Documentation/ABI/testing/sysfs-class-led-trigger-pattern
+	Documentation/ABI/testing/sysfs-kernel-iommu_groups
+
+> 
+> A bit like when we have additional description for dt binding properties
+> for a particular device, even though they are standard properties.
+> 
+> Often a standard property allows for more values than the specific
+> one for a particular device.  There can also be obscuring coupling
+> between sysfs attributes due to hardware restrictions that we would
+> like to provide some explanatory info on.
+> 
+> I suppose we could add all this information to the parent doc but
+> that is pretty ugly and will make that doc very nasty to read.
+
+I understand what you meant to do, but right now, it is is actually
+a lot uglier than merging into a single entry ;-)
+
+Let's view ABI from the PoV of a system admin that doesn't know
+yet about a certain ABI symbol.
+
+He'll try to seek for the symbol, more likely using the HTML 
+documentation. Only very senior system admins might try to take
+a look at the Kernel.
+
+This is what happens when one would seek for a duplicated symbol
+via command line:
+
+	$ ./scripts/get_abi.pl search /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency$
+	
+	/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency
+	----------------------------------------------------------
+	
+	Kernel version:		3.4.0
+	Contact:		linux-iio@vger.kernel.org
+	Defined on file(s):	Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4371 Documentation/ABI/testing/sysfs-bus-iio
+	
+	Description:
+	
+	Stores the PLL frequency in Hz for channel Y.
+	Reading returns the actual frequency in Hz.
+	The ADF4371 has an integrated VCO with fundamendal output
+	frequency ranging from 4000000000 Hz 8000000000 Hz.
+	
+	out_altvoltage0_frequency:
+	        A divide by 1, 2, 4, 8, 16, 32 or circuit generates
+	        frequencies from 62500000 Hz to 8000000000 Hz.
+	out_altvoltage1_frequency:
+	        This channel duplicates the channel 0 frequency
+	out_altvoltage2_frequency:
+	        A frequency doubler generates frequencies from
+	        8000000000 Hz to 16000000000 Hz.
+	out_altvoltage3_frequency:
+	        A frequency quadrupler generates frequencies from
+	        16000000000 Hz to 32000000000 Hz.
+	
+	Note: writes to one of the channels will affect the frequency of
+	all the other channels, since it involves changing the VCO
+	fundamental output frequency.
+	
+	Output frequency for channel Y in Hz. The number must always be
+	specified and unique if the output corresponds to a single
+	channel.
+
+As the "What:" field is identical on both sysfs-bus-iio-frequency-adf4371
+and sysfs-bus-iio, those entries are merged, which produces an ABI
+documentation mixing both the generic one and the board specific one
+into a single output.
+
+Worse than that, the "generic" content is at the end.
+
+The same happens when generating the HTML output.
+
+See, entries at the HTML output are ordered by the What: field,
+which is considered within the script as an unique key, as it is
+unique (except for IIO and a couple of other cases).
+
+-
+
+As I commented on an e-mail I sent to Greg, I see a few ways
+to solve it.
+
+The most trivial one (which I used to solve a few conflicts on
+other places), is to place driver-specific details on a separate
+file under Documentation/driver-api, and mention it at the
+generic entries. The docs building system will generate cross
+references for Documentation/.../foo.rst files, so, everything
+should be OK.
+
+The second alternative that I also used on a couple of places
+is to modify the generic entry for it to contain the generic
+definition first, followed by per-device details.
+
+There is a third possible alternative: add a new optional field
+(something like Scope:) which would be part of the unique key,
+if present. Implementing support for it could be tricky, as the
+produced output would likely need to create cross-references
+between the generic field (if present) and the per-device details.
 
 Thanks,
-Oded
+Mauro
+
+PS.: I'm taking a few days of PTO during this week. So, it
+could take a while for me to reply again to this thread.
