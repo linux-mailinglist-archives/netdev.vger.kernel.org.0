@@ -2,77 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B912E2AD0FA
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 09:16:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49CA32AD14B
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 09:28:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729024AbgKJIQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 03:16:35 -0500
-Received: from m42-4.mailgun.net ([69.72.42.4]:57995 "EHLO m42-4.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726746AbgKJIQe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 03:16:34 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1604996194; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=kuvWj8eqBWR1DBhp8ZGnSxliRk/RtY1alVKAD+etVBk=; b=wdgzVKQnPDeVmuy/cNFavH3JxabsaH8DBvz4Zfw+SFvd1GLsmp4nDMG5TGIyBfCSqqCylvEx
- KQZyAYGt18pdwSodvfAhVh152XUs0HsAIuWyHKIp0XTA2Iz/Z7bitqSu6INBO4hOvwGkUKkJ
- +wE8QadTH+78Zcc/PnqWCRGhFdw=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 5faa4c617d4f16f92fe1ca73 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 10 Nov 2020 08:16:33
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 04855C433C8; Tue, 10 Nov 2020 08:16:33 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 93E7DC433C8;
-        Tue, 10 Nov 2020 08:16:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 93E7DC433C8
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Yejune Deng <yejune.deng@gmail.com>
-Cc:     pizza@shaftnet.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Replace a set of atomic_add()
-References: <1604991491-27908-1-git-send-email-yejune.deng@gmail.com>
-Date:   Tue, 10 Nov 2020 10:16:28 +0200
-In-Reply-To: <1604991491-27908-1-git-send-email-yejune.deng@gmail.com> (Yejune
-        Deng's message of "Tue, 10 Nov 2020 14:58:11 +0800")
-Message-ID: <87mtzpeieb.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1728048AbgKJI2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 03:28:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726462AbgKJI2d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 03:28:33 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB24C0613CF;
+        Tue, 10 Nov 2020 00:28:33 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id z24so9542622pgk.3;
+        Tue, 10 Nov 2020 00:28:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=TISfo2rPOusjiUGHzOKrJ8GdmWyI2UtdJ5e85V2NGcA=;
+        b=OYOVDErUX4cXYvXseqcY6uc7shtOteKXUZ69ocRpUnkD+oWvMmv2PQAij7GXxe7kIh
+         FYxyBzaUgKX5tiyUOzycmOeer1DqsIYYxsdh4EhriMoMaGnLbokivLIJrZLebrsnf4fX
+         UDflWbaWW7jnwDg3GtwVsNAywIKVPm5OUF+LOVOo1FAH/n1BHE5CLKpl2eZGzZm98Hnf
+         xP6PhrcyBW8Ndgr29+YmNsVw0ptqSFkzm8Y5vZhfYHs6xTiHanuHQyipss1jUCmPlhIZ
+         60mH4Vc0NELQFeJpdtp9htHq5sD2BAdW9llIDx2ll9V1yKB2PjzkWqSiZByLM5WtxkpF
+         SReg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TISfo2rPOusjiUGHzOKrJ8GdmWyI2UtdJ5e85V2NGcA=;
+        b=ZGCb7H51ndEk9xmBUfEl5XqcR6h4L7iKNm8F5ekBr6OL/1gbozDXvpysId9a6YdX3L
+         ITOgtT+L6cioQshodIMKc8WZi2wkayZ1F/gn74WKzujO9B5bkwKZYZwcx+0Jbx+QbdPs
+         46Rdcf5xrdnQjR61OU3yo8VPpbY5YTsjH1l2otKaIiFi3B9xNAhknoezwjMbaH+OOE+W
+         KeO5OpeoGVNYxQGy35tkUAF1r5Kl1TLq/KOJYGTDiokl9/1oAmB+HKxZ/HMDveyouUbU
+         CIOOr6h7cgEr2O/cn+wOjxzZN9K4mPDcIxD3a2j4B3mYmgaaT+seIy2632IXR3SPOugX
+         nWtQ==
+X-Gm-Message-State: AOAM531bvKCqs/WjTUVSz8S280wPmUv0A6ufL3J8ghoMH/ON1gK6s2iD
+        3uv8bG0JwOgVVLgx2mNHEsyCiASlDRzEoMTbxVE=
+X-Google-Smtp-Source: ABdhPJxH28x49RG53UZ7aOJ/CMJ82oUdDqKNRbdrlhwgWTv7lgXNFWh83jlStBCgiBiVKOfJ2LOGbcVLpCRQdXGQNdY=
+X-Received: by 2002:a62:2bd0:0:b029:18a:df0f:dd61 with SMTP id
+ r199-20020a622bd00000b029018adf0fdd61mr16655324pfr.19.1604996913078; Tue, 10
+ Nov 2020 00:28:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <1604498942-24274-1-git-send-email-magnus.karlsson@gmail.com>
+ <1604498942-24274-6-git-send-email-magnus.karlsson@gmail.com> <5fa9af59a5f89_8c0e208b1@john-XPS-13-9370.notmuch>
+In-Reply-To: <5fa9af59a5f89_8c0e208b1@john-XPS-13-9370.notmuch>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 10 Nov 2020 09:28:21 +0100
+Message-ID: <CAJ8uoz2gU+3Va0a4Z1jij-jgN4DCwHb57xbs98SLr58gjVWp1A@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH bpf-next 5/6] xsk: introduce batched Tx
+ descriptor interfaces
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yejune Deng <yejune.deng@gmail.com> writes:
-
-> a set of atomic_inc() looks more readable
+On Mon, Nov 9, 2020 at 10:06 PM John Fastabend <john.fastabend@gmail.com> w=
+rote:
 >
-> Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
-> ---
->  drivers/net/wireless/st/cw1200/bh.c  | 10 +++++-----
->  drivers/net/wireless/st/cw1200/wsm.c |  8 ++++----
->  2 files changed, 9 insertions(+), 9 deletions(-)
+> Magnus Karlsson wrote:
+> > From: Magnus Karlsson <magnus.karlsson@intel.com>
+> >
+> > Introduce batched descriptor interfaces in the xsk core code for the
+> > Tx path to be used in the driver to write a code path with higher
+> > performance. This interface will be used by the i40e driver in the
+> > next patch. Though other drivers would likely benefit from this new
+> > interface too.
+> >
+> > Note that batching is only implemented for the common case when
+> > there is only one socket bound to the same device and queue id. When
+> > this is not the case, we fall back to the old non-batched version of
+> > the function.
+> >
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > ---
+> >  include/net/xdp_sock_drv.h |  7 ++++
+> >  net/xdp/xsk.c              | 43 ++++++++++++++++++++++
+> >  net/xdp/xsk_queue.h        | 89 ++++++++++++++++++++++++++++++++++++++=
++-------
+> >  3 files changed, 126 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
+> > index 5b1ee8a..4e295541 100644
+> > --- a/include/net/xdp_sock_drv.h
+> > +++ b/include/net/xdp_sock_drv.h
+> > @@ -13,6 +13,7 @@
+> >
+> >  void xsk_tx_completed(struct xsk_buff_pool *pool, u32 nb_entries);
+> >  bool xsk_tx_peek_desc(struct xsk_buff_pool *pool, struct xdp_desc *des=
+c);
+> > +u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct =
+xdp_desc *desc, u32 max);
+> >  void xsk_tx_release(struct xsk_buff_pool *pool);
+> >  struct xsk_buff_pool *xsk_get_pool_from_qid(struct net_device *dev,
+> >                                           u16 queue_id);
+> > @@ -128,6 +129,12 @@ static inline bool xsk_tx_peek_desc(struct xsk_buf=
+f_pool *pool,
+> >       return false;
+> >  }
+> >
+> > +static inline u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool =
+*pool, struct xdp_desc *desc,
+> > +                                              u32 max)
+> > +{
+> > +     return 0;
+> > +}
+> > +
+> >  static inline void xsk_tx_release(struct xsk_buff_pool *pool)
+> >  {
+> >  }
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index b71a32e..dd75b5f 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -332,6 +332,49 @@ bool xsk_tx_peek_desc(struct xsk_buff_pool *pool, =
+struct xdp_desc *desc)
+> >  }
+> >  EXPORT_SYMBOL(xsk_tx_peek_desc);
+> >
+> > +u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct =
+xdp_desc *descs,
+> > +                                u32 max_entries)
+> > +{
+> > +     struct xdp_sock *xs;
+> > +     u32 nb_pkts;
+> > +
+> > +     rcu_read_lock();
+> > +     if (!list_is_singular(&pool->xsk_tx_list)) {
+> > +             /* Fallback to the non-batched version */
+> > +             rcu_read_unlock();
+> > +             return xsk_tx_peek_desc(pool, &descs[0]) ? 1 : 0;
+> > +     }
+> > +
+> > +     xs =3D list_first_or_null_rcu(&pool->xsk_tx_list, struct xdp_sock=
+, tx_list);
+>
+> I'm not seeing how we avoid the null check here? Can you add a comment on=
+ why this
+> is safe? I see the bind/unbind routines is it possible to unbind while th=
+is is
+> running or do we have some locking here.
 
-The subject prefix should be "cw1200:", but I can fix that.
+You are correct. The entry can disappear between list_is_singluar and
+list_first_or_null_rcu. There are 3 possibilities at this point:
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+0 entries: as you point out, we need to test for this and exit since
+the socket does not exist anymore.
+1 entry: everything is working as expected.
+>1 entry: we only process the first socket in the list. This is fine since =
+this can only happen when we add a second socket to the list and the next t=
+ime we enter this function list_is_singular() will not be true anymore, so =
+we will use the fallback version that will process packets from all sockets=
+. So the only thing that will happen in this rare case is that the start of=
+ processing for the second socket is delayed ever so slightly.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+In summary, I will add a test for !xs and exit in that case.
+
+> > +
+> > +     nb_pkts =3D xskq_cons_peek_desc_batch(xs->tx, descs, pool, max_en=
+tries);
+> > +     if (!nb_pkts) {
+> > +             xs->tx->queue_empty_descs++;
+> > +             goto out;
+> > +     }
+> > +
+> > +     /* This is the backpressure mechanism for the Tx path. Try to
+> > +      * reserve space in the completion queue for all packets, but
+> > +      * if there are fewer slots available, just process that many
+> > +      * packets. This avoids having to implement any buffering in
+> > +      * the Tx path.
+> > +      */
+> > +     nb_pkts =3D xskq_prod_reserve_addr_batch(pool->cq, descs, nb_pkts=
+);
+> > +     if (!nb_pkts)
+> > +             goto out;
+> > +
+> > +     xskq_cons_release_n(xs->tx, nb_pkts);
+> > +     __xskq_cons_release(xs->tx);
+> > +     xs->sk.sk_write_space(&xs->sk);
+>
+> Can you move the out label here? Looks like nb_pkts =3D 0 in all cases
+> where goto out is used.
+
+Nice simplification. Will fix.
+
+Thanks: Magnus
+
+> > +     rcu_read_unlock();
+> > +     return nb_pkts;
+> > +
+> > +out:
+> > +     rcu_read_unlock();
+> > +     return 0;
+> > +}
+> > +EXPORT_SYMBOL(xsk_tx_peek_release_desc_batch);
+> > +
+> >  static int xsk_wakeup(struct xdp_sock *xs, u8 flags)
+> >  {
+> >       struct net_device *dev =3D xs->dev;
+>
+> [...]
+>
+> Other than above question LGTM.
+>
+> Thanks,
+> John
