@@ -2,81 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3388F2ACB4E
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 03:52:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 149492ACB67
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 03:58:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730348AbgKJCwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 21:52:19 -0500
-Received: from smtprelay0242.hostedemail.com ([216.40.44.242]:52914 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727311AbgKJCwS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 21:52:18 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id F008012CB;
-        Tue, 10 Nov 2020 02:52:13 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:982:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2559:2562:2693:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3870:4321:4605:5007:6117:6119:6742:6743:7652:7875:7903:8660:10004:10400:10848:11232:11658:11783:11914:12043:12048:12297:12679:12740:12895:13019:13069:13148:13230:13311:13357:13439:13894:14181:14659:14721:21080:21451:21627:21939:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: ink22_1714ef1272f1
-X-Filterd-Recvd-Size: 2439
-Received: from [192.168.0.160] (cpe-72-134-80-165.natsow.res.rr.com [72.134.80.165])
-        (Authenticated sender: joe@perches.com)
-        by omf07.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 10 Nov 2020 02:52:09 +0000 (UTC)
-Message-ID: <3c39c363690d0b46069afddc3ad09213011e5cd4.camel@perches.com>
-Subject: Re: Subject: [RFC] clang tooling cleanups
-From:   Joe Perches <joe@perches.com>
-To:     trix@redhat.com, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com, cocci <cocci@systeme.lip6.fr>
-Cc:     linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
-        qat-linux@intel.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org, linux-samsung-soc@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-nfs@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org,
-        linux-rpi-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
-Date:   Mon, 09 Nov 2020 18:52:08 -0800
-In-Reply-To: <20201027164255.1573301-1-trix@redhat.com>
-References: <20201027164255.1573301-1-trix@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1731087AbgKJC6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 21:58:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729454AbgKJC6a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 21:58:30 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71147C0613CF;
+        Mon,  9 Nov 2020 18:58:30 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id g7so10074277pfc.2;
+        Mon, 09 Nov 2020 18:58:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:from:to:cc:subject:date;
+        bh=F5cpULf6JD3oKvDpY2w/0ouhpNWX4sd6An/RceLKtro=;
+        b=oaye5O1fOjAr+od+4iS+Skg4xCD54XCKP19+IoKi3aYSU9p7OrAte1sHSARiW9Bg4H
+         B4vM89jX7fT0BULSGhpW2AotbWQmgRT4RY5WZOdyhVnvg0YG5M5+niJQdi8/i+XD2O+H
+         +iSo9iA9Og22IBGJMZ0+2WCwZAEGmEYbhoj+7Xrf1PpsrRcCXvIk0QBxfSNyhMCOwZLZ
+         AIC49LkPUelrD92Dtn36jEu9hSOmCfAV99HoXSQmBO1YkY3ZJF4A0quuPra3ezjB3nhg
+         zLgrwyQk3ah45PL92IkZyMCS8w5nv4tEy09NSVE9oHdxF8n4m6CaW2pryYiTu4CZqiTj
+         zKdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:from:to:cc:subject:date;
+        bh=F5cpULf6JD3oKvDpY2w/0ouhpNWX4sd6An/RceLKtro=;
+        b=Uj/7ptKjZcz9cLjL1mdsDlr0RVGpRnf9kUZBPF2w+zcWKZf62TqH5nZ3IZH1PyVdh+
+         6vm9/wQZir3KcfBc1QfuoJV+qhz4CnPriIOwCKCnzlBalBbK5qC5CfMNBgW+oUwhaok1
+         cLSjTOu1/XXfUG6czxiiaK3QY/81LUoLMjkmFt6oIGjhET9Q8m7md0nqWvmSWjiAdnkw
+         bQr66Xxz8Lc2KPFKLrTTWPpmIwBd9GVhygI278Qlz4xLcc2vQKwzot8mvTf/Ky9kdzLt
+         1/K9qrXU42cLUgbK7fvBmMdc44nMaXHuG9Q5cHoeHwiWSMmaqDHXH0nwn5LV2b18vK2G
+         V0tg==
+X-Gm-Message-State: AOAM533YpMeAOibEwrCtjLgaTK1FOrcV8CAF+Vr1vL/LYT1sySVI6ayh
+        8uga6T1IoCmOcv/VaGEwKkw=
+X-Google-Smtp-Source: ABdhPJx3u3hI0C+4er+TyT6S2SzeSYu6L1B4IUQSUoAiUL9u6PxChbflJcm+zdbCvTRUfZDHgOwkfg==
+X-Received: by 2002:a63:6243:: with SMTP id w64mr14967793pgb.430.1604977110109;
+        Mon, 09 Nov 2020 18:58:30 -0800 (PST)
+Received: from localhost.localdomain ([154.93.3.113])
+        by smtp.gmail.com with ESMTPSA id j184sm12899665pfg.207.2020.11.09.18.58.28
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 09 Nov 2020 18:58:29 -0800 (PST)
+Message-ID: <5faa01d5.1c69fb81.8451c.cb5b@mx.google.com>
+X-Google-Original-Message-ID: <1604977078-10422-1-git-send-email---global>
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: --global
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Menglong Dong <dong.menglong@zte.com.cn>
+Subject: [PATCH v2 net-next] net: udp: remove redundant initialization in udp_gro_complete
+Date:   Mon,  9 Nov 2020 21:57:58 -0500
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-10-27 at 09:42 -0700, trix@redhat.com wrote:
-> This rfc will describe
-> An upcoming treewide cleanup.
-> How clang tooling was used to programatically do the clean up.
-> Solicit opinions on how to generally use clang tooling.
-> 
-> The clang warning -Wextra-semi-stmt produces about 10k warnings.
-> Reviewing these, a subset of semicolon after a switch looks safe to
-> fix all the time.  An example problem
-> 
-> void foo(int a) {
->      switch(a) {
->      	       case 1:
-> 	       ...
->      }; <--- extra semicolon
-> }
-> 
-> Treewide, there are about 100 problems in 50 files for x86_64 allyesconfig.
-> These fixes will be the upcoming cleanup.
+From: Menglong Dong <dong.menglong@zte.com.cn>
 
-coccinelle already does some of these.
+The initialization for 'err' with '-ENOSYS' is redundant and
+can be removed, as it is updated soon and not used.
 
-For instance: scripts/coccinelle/misc/semicolon.cocci
+Changes since v1:
+- Move the err declaration below struct sock *sk
 
-Perhaps some tool coordination can be done here as
-coccinelle/checkpatch/clang/Lindent call all be used
-to do some facet or another of these cleanup issues.
+Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+---
+ net/ipv4/udp_offload.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index b8b1fde..54c9533 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -554,8 +554,8 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
+ {
+ 	__be16 newlen = htons(skb->len - nhoff);
+ 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+-	int err = -ENOSYS;
+ 	struct sock *sk;
++	int err;
+ 
+ 	uh->len = newlen;
+ 
+-- 
+2.7.4
 
