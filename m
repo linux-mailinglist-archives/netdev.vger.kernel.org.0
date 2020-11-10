@@ -2,124 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B9062AD6C6
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 13:48:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C45072AD6F7
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 13:58:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730479AbgKJMrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 07:47:43 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.49]:52104 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726462AbgKJMrn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 07:47:43 -0500
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.61])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8502960090;
-        Tue, 10 Nov 2020 12:47:42 +0000 (UTC)
-Received: from us4-mdac16-46.ut7.mdlocal (unknown [10.7.66.13])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 835728009E;
-        Tue, 10 Nov 2020 12:47:42 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.91])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id ED16580056;
-        Tue, 10 Nov 2020 12:47:41 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4D99CBC0061;
-        Tue, 10 Nov 2020 12:47:41 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 10 Nov
- 2020 12:47:32 +0000
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        David Ahern <dsahern@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Hangbin Liu <haliu@redhat.com>
-CC:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-References: <20201028132529.3763875-1-haliu@redhat.com>
- <20201029151146.3810859-1-haliu@redhat.com>
- <646cdfd9-5d6a-730d-7b46-f2b13f9e9a41@gmail.com>
- <CAEf4BzYupkUqfgRx62uq3gk86dHTfB00ZtLS7eyW0kKzBGxmKQ@mail.gmail.com>
- <edf565cf-f75e-87a1-157b-39af6ea84f76@iogearbox.net>
- <3306d19c-346d-fcbc-bd48-f141db26a2aa@gmail.com>
- <CAADnVQ+EWmmjec08Y6JZGnan=H8=X60LVtwjtvjO5C6M-jcfpg@mail.gmail.com>
- <71af5d23-2303-d507-39b5-833dd6ea6a10@gmail.com>
- <20201103225554.pjyuuhdklj5idk3u@ast-mbp.dhcp.thefacebook.com>
- <20201104021730.GK2408@dhcp-12-153.nay.redhat.com>
- <20201104031145.nmtggnzomfee4fma@ast-mbp.dhcp.thefacebook.com>
- <2e8ba0be-51bf-9060-e1f7-2148fbaf0f1d@iogearbox.net>
- <ec50328d-61ab-71fb-f266-5e49e9dbf98e@gmail.com>
- <1118ef27-3302-d077-021a-43aa8d8f3ebb@mojatatu.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <11c18a26-72af-2e0d-a411-3148cfbc91be@solarflare.com>
-Date:   Tue, 10 Nov 2020 12:47:28 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1730285AbgKJM6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 07:58:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:24869 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729898AbgKJM6k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 07:58:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605013119;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=z+WGCssdGA3YCRbCIXVl6tCa62lOfUTtuf06k0ZXFFU=;
+        b=fieMZXO4XUe/9jY0fkJ72rFyqvvmT2wI1sj2ZSWEtYRZNX+Cdju969PSgfs/ct3dQOdTGH
+        3q/uLGLM7Zmkl7vWlG2ta2es0UlJ6LlpGCGs+4zsP1jWqZ2XismspmfEwjcYmAc44opwZZ
+        cYiU/471vkxAX8JADqKJcUYSbMGu3sM=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-256-902bVExHOPqT_ml-POxNbw-1; Tue, 10 Nov 2020 07:58:37 -0500
+X-MC-Unique: 902bVExHOPqT_ml-POxNbw-1
+Received: by mail-wm1-f71.google.com with SMTP id s3so1228386wmj.6
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 04:58:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z+WGCssdGA3YCRbCIXVl6tCa62lOfUTtuf06k0ZXFFU=;
+        b=r+Ix/AfQV/LBexXiUc/Usk2gFydxle2P86YuBAxFNAGB3HPArEHNcmM750xB2/pROe
+         IVPfYUGeLZQonFDvp8zjmSKa6YRNx1yH36KdOQdUIggs5+3cLVeZf/32E9ve6dx83dBa
+         Rn91gd0+953eayjkf/km/cQ1HTBSFMYc/FF0Tvpkw0MUglugImIsL7J8ZVmxJp/WaST0
+         fGCX5cZrJB7CPoJgRv1+UszwWGNe+nwuuNaXzjOPylMWx0si1VdTUiNsBHTLbT3E3nmP
+         a7ZZNhoBwWHmtHJZfkhX5FK20Zvvq9YevbXa+2JZtCsQwjtzTVH48QPjTV2c5x9OPEna
+         eS+A==
+X-Gm-Message-State: AOAM532891YPYRIGU3POf6nCxM2H3WpOri6enksbGpMGQFztNWxmxIUN
+        keb9Ur3SXtjff8Q8nDwN0iLWdQnfIQ44HMCfxpQdew/Mpbkz3AU8EfbNEY3qAscT+wfVStqG6C2
+        03qEnKYQEsNb+Gfa4s31fWxNheXgVJC1F
+X-Received: by 2002:adf:f2c7:: with SMTP id d7mr20288493wrp.142.1605013116310;
+        Tue, 10 Nov 2020 04:58:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJweC6IjK+j8sEdC2btLJnlZh8JURX/2BOwz0WpCtJjLKFEyNn9FcQYtGZXXMP66pt+rSaE1GwNqxHeCPjfvT9k=
+X-Received: by 2002:adf:f2c7:: with SMTP id d7mr20288476wrp.142.1605013116071;
+ Tue, 10 Nov 2020 04:58:36 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1118ef27-3302-d077-021a-43aa8d8f3ebb@mojatatu.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25778.003
-X-TM-AS-Result: No-7.626800-8.000000-10
-X-TMASE-MatchedRID: 1GZI+iG+MtfmLzc6AOD8DfHkpkyUphL9mIYIWwCrtbDfUZT83lbkEBbC
-        99SYja1g08KOouRPweXpA9zAtoTtQbwGAZ9mF4+tbMGKOuLn5FU2vbWaKPnQ20+86maMM3aSoqR
-        TS3ju9kjL1YnN80IdgfrX3HUSpSJtbWU+hmLYQb30VCHd+VQiHsuCYrT3WeZNI0YrtQLsSUx/HZ
-        ivtns2jCoEdDLq/Jx9DebCA+2uaihMi6dAAjypoo6MisxJraxHZAGtCJE23YjlhO+RZsN0Zgzha
-        8w4PtmsDbQK46q0MoVIK8AsRmtEnbRnkHe8f3Wi1ilQ4KKAwrcfqkfNzTRFSkvEK4FMJdoqFxHJ
-        /PgKcF7XbjtE3SWl31+24nCsUSFNjaPj0W1qn0Q7AFczfjr/7EBUz7fy5vxHDt1tO/HyQLI3c0D
-        GoeWQNPu3cx2BXcvV7l6uq4rmU/w=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.626800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25778.003
-X-MDID: 1605012462-t_ROz6fajzuV
-X-PPE-DISP: 1605012462;t_ROz6fajzuV
+References: <20201109072930.14048-1-nusiddiq@redhat.com> <20201109213557.GE23619@breakpoint.cc>
+ <CAH=CPzqTy3yxgBEJ9cVpp3pmGN9u4OsL9GrA+1w6rVum7B8zJw@mail.gmail.com> <20201110122542.GG23619@breakpoint.cc>
+In-Reply-To: <20201110122542.GG23619@breakpoint.cc>
+From:   Numan Siddique <nusiddiq@redhat.com>
+Date:   Tue, 10 Nov 2020 18:28:24 +0530
+Message-ID: <CAH=CPzqRKTfQW05UxFQwVpvMSOZ7wNgLeiP3txY8T45jdx_E5Q@mail.gmail.com>
+Subject: Re: [net-next] netfiler: conntrack: Add the option to set ct tcp flag
+ - BE_LIBERAL per-ct basis.
+To:     Florian Westphal <fw@strlen.de>
+Cc:     ovs dev <dev@openvswitch.org>, netdev <netdev@vger.kernel.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/11/2020 14:05, Jamal Hadi Salim wrote:
-> On 2020-11-04 10:19 p.m., David Ahern wrote:
+On Tue, Nov 10, 2020 at 5:55 PM Florian Westphal <fw@strlen.de> wrote:
 >
-> [..]
->> Similarly, it is not realistic or user friendly to *require* general
->> Linux users to constantly chase latest versions of llvm, clang, dwarves,
->> bcc, bpftool, libbpf, (I am sure I am missing more)
+> Numan Siddique <nusiddiq@redhat.com> wrote:
+> > On Tue, Nov 10, 2020 at 3:06 AM Florian Westphal <fw@strlen.de> wrote:
+> > Thanks for the comments. I actually tried this approach first, but it
+> > doesn't seem to work.
+> > I noticed that for the committed connections, the ct tcp flag -
+> > IP_CT_TCP_FLAG_BE_LIBERAL is
+> > not set when nf_conntrack_in() calls resolve_normal_ct().
 >
-> 2cents feedback from a dabbler in ebpf on user experience:
->
-> What David described above *has held me back*.
-If we're doing 2¢... I gave up on trying to keep ebpf_asmabreast
- of all the latest BPF and BTF features quite some time ago, since
- there was rarely any documentation and the specifications for BPF
- elves were basically "whatever latest clang does".
-The bpf developers seem to have taken the position that since
- they're in control of clang, libbpf and the kernel, they can make
- their changes across all three and not bother with the specs that
- would allow other toolchains to interoperate.  As a result of
- which, that belief has now become true — while ebpf_asm will
- still work for what it always did (simple XDP programs), it is
- unlikely ever to gain CO-RE support so is no longer a live
- alternative to clang for BPF in general.
-Of course the bpf developers are well within their rights to not
- care about that.  But I think it illustrates why having to
- interoperate with systems outside their control and mix-and-match
- versioning of various components provides external discipline that
- is sorely needed if the BPF ecosystem is to remain healthy.
-That is why I am opposed to iproute2 'vendoring' libbpf.
+> Yes, it won't be set during nf_conntrack_in, thats why I suggested
+> to do it before confirming the connection.
 
--ed
+Sorry for the confusion. What I mean is - I tested  your suggestion - i.e called
+nf_ct_set_tcp_be_liberal()  before calling nf_conntrack_confirm().
+
+ Once the connection is established, for subsequent packets, openvswitch
+ calls nf_conntrack_in() [1] to see if the packet is part of the
+existing connection or not (i.e ct.new or ct.est )
+and if the packet happens to be out-of-window then skb->_nfct is set
+to NULL. And the tcp
+be flags set during confirmation are not reflected when
+nf_conntrack_in() calls resolve_normal_ct().
+
+
+>
+> > Would you expect that the tcp ct flags should have been preserved once
+> > the connection is committed ?
+>
+> Yes, they are preserved when you set them after nf_conntrack_in(), else
+> we would already have trouble with hw flow offloading which needs to
+> turn off window checks as well.
+
+Looks they are not preserved for the openvswitch case. Probably
+openvswitch is doing something wrong.
+I will debug further and see what is going on.
+
+Please let me know if you have any further comments.
+
+Thanks
+Numan
+
+>
+
