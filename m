@@ -2,106 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66DEF2AD705
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 14:02:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD3772AD725
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 14:11:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730182AbgKJNCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 08:02:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
+        id S1730468AbgKJNLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 08:11:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726462AbgKJNC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 08:02:29 -0500
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7BFC0613D1
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 05:02:29 -0800 (PST)
-Received: by mail-ej1-x644.google.com with SMTP id oq3so17438698ejb.7
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 05:02:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=Tu26tgPcSzxp0jQayLJ0lZvINdp+uKPsES6yIreZi1Q=;
-        b=J37h17ukYjnSQ06PMZH5y5/tzwpw0UAVvpQcZ4n7aJNVAP1KfdTU+SAyebZbGkb/gx
-         JkW1aY8B/ImWJ2+SdKR3pyWJ113065WzkEKZUJQ87VSnH58zdQ5VYpclo5eK2mxCjUUQ
-         7jK68BNNzPAim2Fce1tVyS4D9zF9+jxPqFvQR+bRJ9r+C1KV+VQ25Cl7u2kn+a7xvYUS
-         AP28yDfhZ0KnKslfKBYBXRWjz1hHTRlhkBRyz3P8oEv0oTOhLxdN2XanOjsvUO5wBidn
-         TioyayLMQ+HkhcVU6ZJIqQJY9nIfNDGV29VqiLyBpWlLLW/8ssjnXVcY0A0ArJrHW+40
-         nrWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=Tu26tgPcSzxp0jQayLJ0lZvINdp+uKPsES6yIreZi1Q=;
-        b=YLoA8V3BKi8ihcR2qp4uSHFYhrbyFAyc0d4fCXfJmZ2xzlS04V34cM2zTD+49p2uMI
-         6gIbalZ/mFc3CUUGpPxnN8l77c2yflyiVSBGuit0wt9Nwj1wl+RtZ7g5yl2fAS4+Y2eE
-         zH1KKefiGsCm4tzNAfaN3LIrOOlh3eghuppwghn9qi1Imc29s0wiG931cvvFwZPelf7b
-         uDJiQhDqf4ZdWLxkXS7fs/kdyOIwRXhfMoplfkYODCs5J6f1A81AJAFAxGRXns0Ioi/m
-         3mW+tNEBFgaallguncWOO7sKp/0zw1QXvln+3SJopoRVos/w3y9+9uxB9r3Hzzcb5ZEC
-         8njQ==
-X-Gm-Message-State: AOAM531T1+CbiW0515I3Wfm7OyqVowFD0XedhtyOLGbXbaxXIBfVGEsZ
-        fgsCVCsQAr3msvgugnIB4s0g5lecm+wiUBz4oJ7GnA==
-X-Google-Smtp-Source: ABdhPJwuyoPs8El5On7U+y39tdjDDjB2kFrwRvDLNnSTklVWmV/GlCYDQiy/n5BDlXgqD3X/nyFVhztXCMVnKimvvbo=
-X-Received: by 2002:a17:906:82c4:: with SMTP id a4mr18897731ejy.131.1605013348332;
- Tue, 10 Nov 2020 05:02:28 -0800 (PST)
+        with ESMTP id S1726721AbgKJNLq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 08:11:46 -0500
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4BDEC0613CF;
+        Tue, 10 Nov 2020 05:11:46 -0800 (PST)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1kcTQz-0002W4-QT; Tue, 10 Nov 2020 14:11:41 +0100
+Date:   Tue, 10 Nov 2020 14:11:41 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Numan Siddique <nusiddiq@redhat.com>
+Cc:     Florian Westphal <fw@strlen.de>, ovs dev <dev@openvswitch.org>,
+        netdev <netdev@vger.kernel.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [net-next] netfiler: conntrack: Add the option to set ct tcp
+ flag - BE_LIBERAL per-ct basis.
+Message-ID: <20201110131141.GH23619@breakpoint.cc>
+References: <20201109072930.14048-1-nusiddiq@redhat.com>
+ <20201109213557.GE23619@breakpoint.cc>
+ <CAH=CPzqTy3yxgBEJ9cVpp3pmGN9u4OsL9GrA+1w6rVum7B8zJw@mail.gmail.com>
+ <20201110122542.GG23619@breakpoint.cc>
+ <CAH=CPzqRKTfQW05UxFQwVpvMSOZ7wNgLeiP3txY8T45jdx_E5Q@mail.gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a54:380d:0:0:0:0:0 with HTTP; Tue, 10 Nov 2020 05:02:27
- -0800 (PST)
-X-Originating-IP: [5.35.10.61]
-In-Reply-To: <1605009019-22310-1-git-send-email-kaixuxia@tencent.com>
-References: <1605009019-22310-1-git-send-email-kaixuxia@tencent.com>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Tue, 10 Nov 2020 16:02:27 +0300
-Message-ID: <CAOJe8K2tL5x-dESsV+PFq1Gii-yB=fJh7i-=E-FbrJeioo6pqA@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Fix unsigned 'datasec_id' compared with zero in check_pseudo_btf_id
-To:     xiakaixu1987@gmail.com
-Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andrii@kernel.org,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kaixu Xia <kaixuxia@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAH=CPzqRKTfQW05UxFQwVpvMSOZ7wNgLeiP3txY8T45jdx_E5Q@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/10/20, xiakaixu1987@gmail.com <xiakaixu1987@gmail.com> wrote:
-> From: Kaixu Xia <kaixuxia@tencent.com>
->
-> The unsigned variable datasec_id is assigned a return value from the call
-> to check_pseudo_btf_id(), which may return negative error code.
->
-> Fixes coccicheck warning:
->
-> ./kernel/bpf/verifier.c:9616:5-15: WARNING: Unsigned expression compared
-> with zero: datasec_id > 0
->
-> Reported-by: Tosk Robot <tencent_os_robot@tencent.com>
-> Signed-off-by: Kaixu Xia <kaixuxia@tencent.com>
-> ---
->  kernel/bpf/verifier.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 6200519582a6..e9d8d4309bb4 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -9572,7 +9572,7 @@ static int check_pseudo_btf_id(struct bpf_verifier_env
-> *env,
->  			       struct bpf_insn *insn,
->  			       struct bpf_insn_aux_data *aux)
->  {
-> -	u32 datasec_id, type, id = insn->imm;
-> +	s32 datasec_id, type, id = insn->imm;
+Numan Siddique <nusiddiq@redhat.com> wrote:
+> On Tue, Nov 10, 2020 at 5:55 PM Florian Westphal <fw@strlen.de> wrote:
+> >
+> > Numan Siddique <nusiddiq@redhat.com> wrote:
+> > > On Tue, Nov 10, 2020 at 3:06 AM Florian Westphal <fw@strlen.de> wrote:
+> > > Thanks for the comments. I actually tried this approach first, but it
+> > > doesn't seem to work.
+> > > I noticed that for the committed connections, the ct tcp flag -
+> > > IP_CT_TCP_FLAG_BE_LIBERAL is
+> > > not set when nf_conntrack_in() calls resolve_normal_ct().
+> >
+> > Yes, it won't be set during nf_conntrack_in, thats why I suggested
+> > to do it before confirming the connection.
+> 
+> Sorry for the confusion. What I mean is - I tested  your suggestion - i.e called
+> nf_ct_set_tcp_be_liberal()  before calling nf_conntrack_confirm().
+> 
+>  Once the connection is established, for subsequent packets, openvswitch
+>  calls nf_conntrack_in() [1] to see if the packet is part of the
+> existing connection or not (i.e ct.new or ct.est )
+> and if the packet happens to be out-of-window then skb->_nfct is set
+> to NULL. And the tcp
+> be flags set during confirmation are not reflected when
+> nf_conntrack_in() calls resolve_normal_ct().
 
-but the value is passed as u32 to btf_type_by_id()...
+Can you debug where this happens?  This looks very very wrong.
+resolve_normal_ct() has no business to check any of those flags
+(and I don't see where it uses them, it should only deal with the
+ tuples).
 
-btf_find_by_name_kind() returns s32
+The flags come into play when nf_conntrack_handle_packet() gets called
+after resolve_normal_ct has found an entry, since that will end up
+calling the tcp conntrack part.
 
-
->  	const struct btf_var_secinfo *vsi;
->  	const struct btf_type *datasec;
->  	const struct btf_type *t;
-> --
-> 2.20.0
->
->
+The entry found/returned by resolve_normal_ct should be the same
+nf_conn entry that was confirmed earlier, i.e. it should be in "liberal"
+mode.
