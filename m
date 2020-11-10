@@ -2,175 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E6EA2ACEC4
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 06:00:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA8802ACEAE
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 05:56:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732009AbgKJFAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 00:00:05 -0500
-Received: from mga17.intel.com ([192.55.52.151]:12625 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729454AbgKJE77 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 23:59:59 -0500
-IronPort-SDR: b21jH+8daNxFd9MhjXJ+hcbKWYaVf+1LuxpUVENj4DuN0lfPZ6JFWJv2XzpSDg/I8fO29ydhkv
- QgXh15BrSwxQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9800"; a="149768142"
-X-IronPort-AV: E=Sophos;i="5.77,465,1596524400"; 
-   d="scan'208";a="149768142"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2020 20:59:55 -0800
-IronPort-SDR: hhtGbVHiYEduO62f/jUORNlQE29+PA61IlKuvPXTtZvvOlHxHT75TW+y4i0J9B1O2lrgZ7K2Sp
- gskiAxl5TCew==
-X-IronPort-AV: E=Sophos;i="5.77,465,1596524400"; 
-   d="scan'208";a="531063331"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2020 20:59:54 -0800
-Date:   Mon, 9 Nov 2020 20:59:54 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>, x86@kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nvdimm@lists.01.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kexec@lists.infradead.org, linux-bcache@vger.kernel.org,
-        linux-mtd@lists.infradead.org, devel@driverdev.osuosl.org,
-        linux-efi@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-erofs@lists.ozlabs.org,
-        linux-um@lists.infradead.org, linux-ntfs-dev@lists.sourceforge.net,
-        reiserfs-devel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-nilfs@vger.kernel.org, cluster-devel@redhat.com,
-        ecryptfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-rdma@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
-        samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH RFC PKS/PMEM 05/58] kmap: Introduce k[un]map_thread
-Message-ID: <20201110045954.GL3976735@iweiny-DESK2.sc.intel.com>
-References: <20201009195033.3208459-1-ira.weiny@intel.com>
- <20201009195033.3208459-6-ira.weiny@intel.com>
- <87h7pyhv3f.fsf@nanos.tec.linutronix.de>
+        id S1731751AbgKJE4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 23:56:18 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:35885 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729454AbgKJE4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 23:56:18 -0500
+Received: from [10.193.177.155] (bharat.asicdesigners.com [10.193.177.155] (may be forged))
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 0AA4tjax029698;
+        Mon, 9 Nov 2020 20:55:46 -0800
+Subject: Re: [PATCH net] net/tls: Fix kernel panic when socket is in TLS ULP
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, borisp@nvidia.com,
+        secdev@chelsio.com
+References: <20201103104702.798-1-vinay.yadav@chelsio.com>
+ <20201104171609.78d410db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <976e0bb7-1846-94cc-0be7-9a9e62563130@chelsio.com>
+ <20201105095344.0edecafa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <043b91f8-60e0-b890-7ce2-557299ee745d@chelsio.com>
+ <20201105104658.4f96cc90@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <a9d6ec03-1638-6282-470a-3a6b09b96652@chelsio.com>
+ <20201106122831.5fccebe3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <8c7a1bab-3c7b-e3bf-3572-afdf2abd2505@chelsio.com>
+ <20201109105851.41417807@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+Message-ID: <0cd430df-167a-be86-66c5-f0838ed24641@chelsio.com>
+Date:   Tue, 10 Nov 2020 10:37:11 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h7pyhv3f.fsf@nanos.tec.linutronix.de>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+In-Reply-To: <20201109105851.41417807@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 10, 2020 at 02:13:56AM +0100, Thomas Gleixner wrote:
-> Ira,
-> 
-> On Fri, Oct 09 2020 at 12:49, ira weiny wrote:
-> > From: Ira Weiny <ira.weiny@intel.com>
-> >
-> > To correctly support the semantics of kmap() with Kernel protection keys
-> > (PKS), kmap() may be required to set the protections on multiple
-> > processors (globally).  Enabling PKS globally can be very expensive
-> > depending on the requested operation.  Furthermore, enabling a domain
-> > globally reduces the protection afforded by PKS.
-> >
-> > Most kmap() (Aprox 209 of 229) callers use the map within a single thread and
-> > have no need for the protection domain to be enabled globally.  However, the
-> > remaining callers do not follow this pattern and, as best I can tell, expect
-> > the mapping to be 'global' and available to any thread who may access the
-> > mapping.[1]
-> >
-> > We don't anticipate global mappings to pmem, however in general there is a
-> > danger in changing the semantics of kmap().  Effectively, this would cause an
-> > unresolved page fault with little to no information about why the failure
-> > occurred.
-> >
-> > To resolve this a number of options were considered.
-> >
-> > 1) Attempt to change all the thread local kmap() calls to kmap_atomic()[2]
-> > 2) Introduce a flags parameter to kmap() to indicate if the mapping should be
-> >    global or not
-> > 3) Change ~20 call sites to 'kmap_global()' to indicate that they require a
-> >    global enablement of the pages.
-> > 4) Change ~209 call sites to 'kmap_thread()' to indicate that the mapping is to
-> >    be used within that thread of execution only
-> >
-> > Option 1 is simply not feasible.  Option 2 would require all of the call sites
-> > of kmap() to change.  Option 3 seems like a good minimal change but there is a
-> > danger that new code may miss the semantic change of kmap() and not get the
-> > behavior the developer intended.  Therefore, #4 was chosen.
-> 
-> There is Option #5:
 
-There is now yes.  :-D
 
+On 11/10/2020 12:28 AM, Jakub Kicinski wrote:
+> On Tue, 10 Nov 2020 00:21:13 +0530 Vinay Kumar Yadav wrote:
+>> On 11/7/2020 1:58 AM, Jakub Kicinski wrote:
+>>> On Sat, 7 Nov 2020 02:02:42 +0530 Vinay Kumar Yadav wrote:
+>>>> On 11/6/2020 12:16 AM, Jakub Kicinski wrote:
+>>>>> On Thu, 5 Nov 2020 23:55:15 +0530 Vinay Kumar Yadav wrote:
+>>>>>>>>> We should prevent from the socket getting into LISTEN state in the
+>>>>>>>>> first place. Can we make a copy of proto_ops (like tls_sw_proto_ops)
+>>>>>>>>> and set listen to sock_no_listen?
+>>>>>>>>
+>>>>>>>> Once tls-toe (TLS_HW_RECORD) is configured on a socket, listen() call
+>>>>>>>> from user on same socket will create hash at two places.
+>>>>>>>
+>>>>>>> What I'm saying is - disallow listen calls on sockets with tls-toe
+>>>>>>> installed on them. Is that not possible?
+>>>>>>>         
+>>>>>> You mean socket with tls-toe installed shouldn't be listening at other
+>>>>>> than adapter? basically avoid ctx->sk_proto->hash(sk) call.
+>>>>>
+>>>>> No, replace the listen callback, like I said. Why are you talking about
+>>>>> hash???
+>>>>> As per my understanding we can't avoid socket listen.
+>>>> Not sure how replacing listen callback solve the issue,
+>>>> can you please elaborate ?
+>>>
+>>> TLS sockets are not supposed to get into listen state. IIUC the problem
+>>> is that the user is able to set TLS TOE on a socket which then starts
+>>> to listen and the state gets cloned improperly.
+>>
+>> TLS-TOE can go to listen mode, removing listen is not an option and
+>> TLS-TOE support only server mode so if we remove listen then we will not
+>> have TLS-TOE support which we don't want.
 > 
-> Convert the thread local kmap() invocations to the proposed kmap_local()
-> interface which is coming along [1].
-
-I've been trying to follow that thread.
-
+> Oh, so it's completely incompatible with kernel tls. How about we
+> remove the support completely then? Clearly it's not an offload of
+> kernel tls if it supports completely different mode of operation.
 > 
-> That solves a couple of issues:
-> 
->  1) It relieves the current kmap_atomic() usage sites from the implict
->     pagefault/preempt disable semantics which apply even when
->     CONFIG_HIGHMEM is disabled. kmap_local() still can be invoked from
->     atomic context.
-> 
->  2) Due to #1 it allows to replace the conditional usage of kmap() and
->     kmap_atomic() for purely thread local mappings.
-> 
->  3) It puts the burden on the HIGHMEM inflicted systems
-> 
->  4) It is actually more efficient for most of the pure thread local use
->     cases on HIGHMEM inflicted systems because it avoids the overhead of
->     the global lock and the potential kmap slot exhaustion. A potential
->     preemption will be more expensive, but that's not really the case we
->     want to optimize for.
-> 
->  5) It solves the RT issue vs. kmap_atomic()
-> 
-> So instead of creating yet another variety of kmap() which is just
-> scratching the particular PKRS itch, can we please consolidate all of
-> that on the wider reaching kmap_local() approach?
 
-Yes I agree.  We absolutely don't want more kmap*() calls and I was hoping to
-dovetail into your kmap_local() work.[2]
-
-I've pivoted away from this work a bit to clean up all the
-kmap()/memcpy*()/kunmaps() as discussed elsewhere in the thread first.[3]  I
-was hoping your work would land and then I could s/kmap_thread()/kmap_local()/
-on all of these patches.
-
-Also, we can convert the new memcpy_*_page() calls to kmap_local() as well.
-[For now my patch just uses kmap_atomic().]
-
-I've not looked at all of the patches in your latest version.  Have you
-included converting any of the kmap() call sites?  I thought you were more
-focused on converting the kmap_atomic() to kmap_local()?
-
-Ira
-
-> 
-> Thanks,
-> 
->         tglx
->      
-> [1] https://lore.kernel.org/lkml/20201103092712.714480842@linutronix.de/
-
-[2] https://lore.kernel.org/lkml/20201012195354.GC2046448@iweiny-DESK2.sc.intel.com/
-[3] https://lore.kernel.org/lkml/20201009213434.GA839@sol.localdomain/
-    https://lore.kernel.org/lkml/20201013200149.GI3576660@ZenIV.linux.org.uk/
-
+It is not incompatible. It fits in k.org tls infrastructure (TLS-TOE 
+mode). For the current issue we have proposed a fix. What is the issue 
+with proposed fix, can you elaborate and we will address that?
