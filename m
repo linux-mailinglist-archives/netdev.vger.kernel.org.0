@@ -2,70 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2DAD2ACFC8
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 07:35:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A34D2ACFCC
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 07:36:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730198AbgKJGfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 01:35:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38264 "EHLO mail.kernel.org"
+        id S1731293AbgKJGgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 01:36:05 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:36118 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726307AbgKJGfu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 01:35:50 -0500
-Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726010AbgKJGgE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 01:36:04 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 77FF720199;
+        Tue, 10 Nov 2020 07:36:03 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id P0Xsb588pzC3; Tue, 10 Nov 2020 07:35:59 +0100 (CET)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 09C7A20731;
-        Tue, 10 Nov 2020 06:35:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604990150;
-        bh=Csm4wo04kR1Ui5qcsZwBMQttwacgnFppjmbbdnCPId4=;
-        h=Subject:From:To:Date:In-Reply-To:References:From;
-        b=MKM2qtAKESCYUnNlJ8VPPVt9ao8A3icQcESohPrMqqn/R4HsfVpJD84QnrEbTuCoo
-         /0S6ml5H2g9vUkfAYjuaus3x8R8J54hykODyCLO9WoniC76RCCqUP5iGrSUTwDY7yz
-         VGLLGQ+x4Bptz5Ob5RsiJQ6w3ZJN/UfJKdWlUrXc=
-Message-ID: <48de4584fecb4dd9c2db3a1de1a754d8a0e079c7.camel@kernel.org>
-Subject: Re: [PATCH 1/1] net/mlx5e: remove unnecessary memset
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Zhu Yanjun <yanjunz@nvidia.com>, leon@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org
-Date:   Mon, 09 Nov 2020 22:35:48 -0800
-In-Reply-To: <1604721272-23314-1-git-send-email-yanjunz@nvidia.com>
-References: <1604721272-23314-1-git-send-email-yanjunz@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        by a.mx.secunet.com (Postfix) with ESMTPS id 3BB8C20080;
+        Tue, 10 Nov 2020 07:35:59 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 10 Nov 2020 07:35:58 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Tue, 10 Nov
+ 2020 07:35:58 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 6C90231844B1; Tue, 10 Nov 2020 07:35:58 +0100 (CET)
+Date:   Tue, 10 Nov 2020 07:35:58 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Dmitry Safonov <dima@arista.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hillf Danton <hdanton@sina.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 0/3] xfrm/compat: syzbot-found fixes
+Message-ID: <20201110063558.GW26422@gauss3.secunet.de>
+References: <20201102161447.1266001-1-dima@arista.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20201102161447.1266001-1-dima@arista.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-11-07 at 11:54 +0800, Zhu Yanjun wrote:
-> Since kvzalloc will initialize the allocated memory, it is not
-> necessary to initialize it once again.
+On Mon, Nov 02, 2020 at 04:14:44PM +0000, Dmitry Safonov wrote:
+> v2: Added "Fixes" tags to the patches.
 > 
-> Fixes: 11b717d61526 ("net/mlx5: E-Switch, Get reg_c0 value on CQE")
-> Signed-off-by: Zhu Yanjun <yanjunz@nvidia.com>
-> ---
->  .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |    1 -
->  1 files changed, 0 insertions(+), 1 deletions(-)
+> WARN_ON() for XFRMA_UNSPEC translation which likely no-one except
+> syzkaller uses; properly zerofy tail-padding for 64-bit attribute;
+> don't use __GFP_ZERO as the memory is initialized during translation.
 > 
-> diff --git
-> a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-> b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-> index 1bcf260..35c5629 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-> @@ -1528,7 +1528,6 @@ static int esw_create_restore_table(struct
-> mlx5_eswitch *esw)
->  		goto out_free;
->  	}
->  
-> -	memset(flow_group_in, 0, inlen);
->  	match_criteria = MLX5_ADDR_OF(create_flow_group_in,
-> flow_group_in,
->  				      match_criteria);
->  	misc = MLX5_ADDR_OF(fte_match_param, match_criteria,
+> Cc: Steffen Klassert <steffen.klassert@secunet.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> Cc: Hillf Danton <hdanton@sina.com>
+> Cc: netdev@vger.kernel.org
+> 
+> Thanks,
+>          Dmitry
+> 
+> Dmitry Safonov (3):
+>   xfrm/compat: Translate by copying XFRMA_UNSPEC attribute
+>   xfrm/compat: memset(0) 64-bit padding at right place
+>   xfrm/compat: Don't allocate memory with __GFP_ZERO
 
-applied to net-next-mlx5,
-Thank you !
-
+Series applied, thanks a lot Dmitry!
