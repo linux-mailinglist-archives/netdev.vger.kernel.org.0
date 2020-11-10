@@ -2,102 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50CB72ADC2D
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 17:30:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 591E62ADC49
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 17:43:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729113AbgKJQak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 11:30:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
+        id S1728272AbgKJQnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 11:43:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726152AbgKJQak (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 11:30:40 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DB0C0613CF;
-        Tue, 10 Nov 2020 08:30:40 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id v12so11871077pfm.13;
-        Tue, 10 Nov 2020 08:30:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Emb5D9r6vMHQJaEak29n+N1kdy4zO6KUWrIUTneLBuA=;
-        b=KwVcNwoaZUVIsJ7CPNOmwmBCeNBSuC/UrOIDzWAvLPJMMAKYGyLVTvgaczyoqb8FCQ
-         1c9vI7nEXtfXHENvngRyNRQDw8qVpWnbBopZrL3w4yFV0p1JlpinDoj9BR2Opy0qiTxa
-         LFB9snRr255eu/iHxvfgyhrMZ81yrsOedZoWapUPqNwI41hezobZOGorYjqjpyEihN9L
-         EoJiOHfPAn8ocKWgLPFU0cFEmC6XJmsPe4Tzy0OwGMER/1G0nzT6DKDy/pQz6264HszE
-         JYbyzeYu30l+XMqsR8tCAyoObX4RYzzFuL3AcWC4pUyOWUhkWT5guIC9eE7W6w1gvLEp
-         bkNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Emb5D9r6vMHQJaEak29n+N1kdy4zO6KUWrIUTneLBuA=;
-        b=obsPEiEuSznbBq8V0/GBU4uzLlvdgYolFE3rQjDL9IV4hVWM2ZPkJXPrAo1PMxuTqu
-         58pGsjQs+Uy7PSWQnytJfK1L820k34Mi0ZZErs68iVotTDCgG0YtHzqycF+CWXCzXrj2
-         TtPmbjtaOSFANe3CxNV9Z6Zzk/QPsF1SV5OxGJBoDDEDUJ4vHNM26+2Da6OvxBnITvHi
-         cfv4+IlE7EKjm8rL5LSFCOYyZ+HCAQsVXJXaNxzgvhIOlx5oh7JdgNUdX4QK34I0d+YX
-         Gn/WCU4M9+BTmOiNAnZQIydclHHvrEPgE5/lHfzGfvWiUCP+a9j4OBRypYh4w4vS7Z1h
-         0xsw==
-X-Gm-Message-State: AOAM533f7nk6x7S6SmxEtDN1xGYA8UkI8A2+jxUAiqqNJ9RZFu7jxyT2
-        luPRaAdU9YPev1ZIeGwB79Dg7cvCwIyn68O44uPo33kAqS1l1A==
-X-Google-Smtp-Source: ABdhPJyY0453AcBPMxoZFi1CIwxdJZwtVD04o73CzpSKHWth3PJ3hVVfK5CtNjnLjtzEhr+F6cT7YPfm5EByAZw29gQ=
-X-Received: by 2002:a63:3e05:: with SMTP id l5mr17259587pga.74.1605025839839;
- Tue, 10 Nov 2020 08:30:39 -0800 (PST)
+        with ESMTP id S1726400AbgKJQne (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 11:43:34 -0500
+X-Greylist: delayed 321 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 10 Nov 2020 08:43:34 PST
+Received: from anxur.fi.muni.cz (anxur.ip6.fi.muni.cz [IPv6:2001:718:801:230::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801B0C0613CF;
+        Tue, 10 Nov 2020 08:43:34 -0800 (PST)
+Received: by anxur.fi.muni.cz (Postfix, from userid 11561)
+        id B10EF62147; Tue, 10 Nov 2020 17:38:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fi.muni.cz;
+        s=20190124; t=1605026289;
+        bh=TvflFCzvFXxiKiOIiUQj5XppASsorsvTm8Prn4eNH3w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BHuZIagpBRYA6sp9rLJguXgzRQemps26S/JNVd9iAAmMeP20RKLj1nZGhGbCBEdAL
+         YDp7O1i3g9UD6L7THHaNcgdXHmvbSaC/YDVcTU8hJxVNFUtlf6usCqyp52gxIVmbFn
+         v0IoUgKYxyEtZjYMz8t8mQERNTTyeaaIsMoVZ9Ww=
+Date:   Tue, 10 Nov 2020 17:38:09 +0100
+From:   Jan Kasprzak <kas@fi.muni.cz>
+To:     Wang Hai <wanghai38@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] cosa: Add missing kfree in error path of cosa_write
+Message-ID: <20201110163809.GE26676@fi.muni.cz>
+References: <20201110144614.43194-1-wanghai38@huawei.com>
 MIME-Version: 1.0
-References: <20201110142032.24071-1-TheSven73@gmail.com>
-In-Reply-To: <20201110142032.24071-1-TheSven73@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 10 Nov 2020 18:31:28 +0200
-Message-ID: <CAHp75Ve7jZyshwLuNKvuk7uvj43SpcZT_=csOYXVFUqhtmFo3A@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: phy: spi_ks8995: Do not overwrite SPI mode flags
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Frederic LAMBERT <frdrc66@gmail.com>,
-        Gabor Juhos <juhosg@openwrt.org>,
-        Jonathan Cameron <jonathan.cameron@huawei.com>,
-        linux-spi <linux-spi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201110144614.43194-1-wanghai38@huawei.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 10, 2020 at 4:20 PM Sven Van Asbroeck <thesven73@gmail.com> wrote:
->
-> From: Sven Van Asbroeck <thesven73@gmail.com>
->
-> This driver makes sure the underlying SPI bus is set to "mode 0"
-> by assigning SPI_MODE_0 to spi->mode. Which overwrites all other
-> SPI mode flags.
->
-> In some circumstances, this can break the underlying SPI bus driver.
-> For example, if SPI_CS_HIGH is set on the SPI bus, the driver
-> will clear that flag, which results in a chip-select polarity issue.
->
-> Fix by changing only the SPI_MODE_N bits, i.e. SPI_CPHA and SPI_CPOL.
+Wang Hai wrote:
+: If memory allocation for 'kbuf' succeed, cosa_write() doesn't have a
+: corresponding kfree() in exception handling. Thus add kfree() for this
+: function implementation.
 
-I see that this is a fix for backporing, but maybe you can send a
-patches on top of this to:
-  1) introduce
- #define SPI_MODE_MASK  (SPI_CPHA | SPI_CPOL)
+Acked-By: Jan "Yenya" Kasprzak <kas@fi.muni.cz>
 
-> +       /* use SPI_MODE_0 without changing any other mode flags */
-> +       spi->mode &= ~(SPI_CPHA | SPI_CPOL);
+Looks correct, thanks.
 
-2)
-       spi->mode &= ~SPI_MODE_MASK;
+That said, COSA is an ancient ISA bus device designed in late 1990s,
+I doubt anybody is still using it. I still do have one or two of these
+cards myself, but no computer with ISA bus to use them.
 
-> +       spi->mode |= SPI_MODE_0;
+-Yenya
 
-?
+: 
+: Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+: Reported-by: Hulk Robot <hulkci@huawei.com>
+: Signed-off-by: Wang Hai <wanghai38@huawei.com>
+: ---
+:  drivers/net/wan/cosa.c | 1 +
+:  1 file changed, 1 insertion(+)
+: 
+: diff --git a/drivers/net/wan/cosa.c b/drivers/net/wan/cosa.c
+: index f8aed0696d77..2369ca250cd6 100644
+: --- a/drivers/net/wan/cosa.c
+: +++ b/drivers/net/wan/cosa.c
+: @@ -889,6 +889,7 @@ static ssize_t cosa_write(struct file *file,
+:  			chan->tx_status = 1;
+:  			spin_unlock_irqrestore(&cosa->lock, flags);
+:  			up(&chan->wsem);
+: +			kfree(kbuf);
+:  			return -ERESTARTSYS;
+:  		}
+:  	}
+: -- 
+: 2.17.1
 
 -- 
-With Best Regards,
-Andy Shevchenko
+| Jan "Yenya" Kasprzak <kas at {fi.muni.cz - work | yenya.net - private}> |
+| http://www.fi.muni.cz/~kas/                         GPG: 4096R/A45477D5 |
+    We all agree on the necessity of compromise. We just can't agree on
+    when it's necessary to compromise.                     --Larry Wall
