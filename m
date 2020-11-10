@@ -2,84 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BF502ADA81
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 16:36:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D7D2ADA89
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 16:38:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731255AbgKJPgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 10:36:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43036 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730139AbgKJPgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 10:36:50 -0500
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E9E6C0613CF;
-        Tue, 10 Nov 2020 07:36:50 -0800 (PST)
-Received: by mail-lj1-x244.google.com with SMTP id y16so15179694ljk.1;
-        Tue, 10 Nov 2020 07:36:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yCkfPOQLt6gc9t/YVztMhlgr4Q0m8ZRXrNAsWzJdQfY=;
-        b=KaMyqlkTsiPf3suhjyjMamyRy8K4B1u/3SRxjjEwZ97h5crMUSVRfFhlJl6KUXcwhT
-         1n2y2lPMK3Q8k2id7wHAnzTuAJ45PV3xjtFz6DR7FGTO6teld0ujevZqdKa25Edo25sG
-         DfipG5Cca4lhBFCQ8TMary0klLHMfmUZrRiKBzhUfQHAVAW7qo6c3a6RiE1SPWW0hZ6s
-         Vyrb0BLOE0tfJteCnWGj+f8VqYQ+bqyEuaMvqCOf8th7I4kBy7zMFKVT9PapKkPdT8z5
-         b0pEKfzXW5iHiI5KGKiRsf5+nWPcEoNFldHfloFY3M2nUZCODbCUy5YFZV1lHWO5vWtC
-         Picw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yCkfPOQLt6gc9t/YVztMhlgr4Q0m8ZRXrNAsWzJdQfY=;
-        b=EnnkCbVFEVgT9ahoGLlHQfo4n+BfRKvx4S60aKz3wpRSVh8YI8fSdni+q+0LT5Ov4j
-         XkPrksPNPCqaT8KJakrisHQm1A2tNxXhNI2uFvfD92fWON/ZI640cD1Bnq3KNb3wLRZV
-         ymtxQF6EOkyHhrJFxO1Q3svzKhtLi0g+5/ZBuLKcbmhyMyxxv15LFGIuzBi5Dss0WGB5
-         idF68HO8oFvq0Veu+KJJs+BGVIOqRd8AzVbfxZy7EYURw9GPSAbNZB4V6BdbA05aVVYX
-         7dMOFgPITOGBoR3urQcAWL/6UP/09No8EaqkCbms/Isd0DKQksPC1Xa8e3kbYMph1HP8
-         pbpA==
-X-Gm-Message-State: AOAM532d1DNMGqrrXljnPbJ0bp6NOabDPkjr2Srv/QY32y4dEyHQ1Kv0
-        S0eRcUiaqy78p31DdU3zurfG5hrRRAaK0g/3zn8=
-X-Google-Smtp-Source: ABdhPJw3sLVI0y9BKV7BKGuHRya4tYsmojgjE0CKJCKR0tZle6ao0nA4GKyusXzZT4wWrrr8YuLu8kRDvLl1zimiQWs=
-X-Received: by 2002:a05:651c:2041:: with SMTP id t1mr6810110ljo.202.1605022608722;
- Tue, 10 Nov 2020 07:36:48 -0800 (PST)
+        id S1731450AbgKJPiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 10:38:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35728 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729794AbgKJPiR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 10:38:17 -0500
+Received: from lore-desk.redhat.com (unknown [151.66.8.153])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C1E6D2068D;
+        Tue, 10 Nov 2020 15:38:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605022696;
+        bh=IbKY1lzgjID7u4pDWJAZ6J/2v6bglgx0aVDw3HYf7fM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WohlSo8h17VOsSIADNzy+X6k3mQ3CCfizxcQCXNgY49BLywajPR+A60nmvaz9nFPu
+         QD9dYrJH8Wco7fDzAggpmrrw8uL8J12Y7IboK2uLX011fAJxkK4Y4YZQuxbJmHRR24
+         LxoXRXotA6q+1eAcMz7XRt0VdtgakePtgdsqpkew=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com,
+        ilias.apalodimas@linaro.org
+Subject: [PATCH v5 net-nex 0/5] xdp: introduce bulking for page_pool tx return path
+Date:   Tue, 10 Nov 2020 16:37:55 +0100
+Message-Id: <cover.1605020963.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <5fa8e9d4.1c69fb81.5d889.5c64@mx.google.com> <5fa9b34f132a5_8c0e208ca@john-XPS-13-9370.notmuch>
-In-Reply-To: <5fa9b34f132a5_8c0e208ca@john-XPS-13-9370.notmuch>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Tue, 10 Nov 2020 23:36:37 +0800
-Message-ID: <CADxym3b3nt5GP6H3HKDnk27zfjCX3CUg2B=mzFugk-d3-TPDMQ@mail.gmail.com>
-Subject: Re: [PATCH] net: sched: fix misspellings using misspell-fixer tool
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        xiyou.wangcong@gmail.com,
-        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, andrii@kernel.org, kpsingh@chromium.org,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
-        Menglong Dong <dong.menglong@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, John.
+XDP bulk APIs introduce a defer/flush mechanism to return
+pages belonging to the same xdp_mem_allocator object
+(identified via the mem.id field) in bulk to optimize
+I-cache and D-cache since xdp_return_frame is usually run
+inside the driver NAPI tx completion loop.
+Convert mvneta, mvpp2 and mlx5 drivers to xdp_return_frame_bulk APIs.
 
-On Tue, Nov 10, 2020 at 5:23 AM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> Hi, you will want to add net-next to the [PATCH *] line next time
-> to make it clear this is for net-next. The contents make it
-> obvious in this case though.
->
-> Also I'm not sure why the bpf@ include but OK.
+Changes since v4:
+- fix comments
+- introduce xdp_frame_bulk_init utility routine
+- compiler annotations for I-cache code layout
+- move rcu_read_lock outside fast-path
+- mlx5 xdp bulking code optimization
 
-Thanks for your suggestion, and I will pay attention to the [PATCH *] next time.
+Changes since v3:
+- align DEV_MAP_BULK_SIZE to XDP_BULK_QUEUE_SIZE
+- refactor page_pool_put_page_bulk to avoid code duplication
 
-As for the bpf@, I guess that 'get_maintainer.pl' listed it to me
-because of 'act_bpf.c'.
+Changes since v2:
+- move mvneta changes in a dedicated patch
 
-Cheers,
-Menglong Dong
+Changes since v1:
+- improve comments
+- rework xdp_return_frame_bulk routine logic
+- move count and xa fields at the beginning of xdp_frame_bulk struct
+- invert logic in page_pool_put_page_bulk for loop
+
+Lorenzo Bianconi (5):
+  net: xdp: introduce bulking for xdp tx return path
+  net: page_pool: add bulk support for ptr_ring
+  net: mvneta: add xdp tx return bulking support
+  net: mvpp2: add xdp tx return bulking support
+  net: mlx5: add xdp tx return bulking support
+
+ drivers/net/ethernet/marvell/mvneta.c         | 10 ++-
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 10 ++-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 22 ++++--
+ include/net/page_pool.h                       | 26 +++++++
+ include/net/xdp.h                             | 17 ++++-
+ net/core/page_pool.c                          | 69 ++++++++++++++++---
+ net/core/xdp.c                                | 54 +++++++++++++++
+ 7 files changed, 191 insertions(+), 17 deletions(-)
+
+-- 
+2.26.2
+
