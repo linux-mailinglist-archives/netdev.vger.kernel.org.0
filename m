@@ -2,85 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E6A2AE418
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 00:30:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FCC22AE41A
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 00:32:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732331AbgKJXar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 18:30:47 -0500
-Received: from www62.your-server.de ([213.133.104.62]:37412 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731234AbgKJXar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 18:30:47 -0500
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kcd61-0003PG-DP; Wed, 11 Nov 2020 00:30:41 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kcd61-000PfB-3r; Wed, 11 Nov 2020 00:30:41 +0100
-Subject: Re: [PATCHv5 bpf] bpf: Move iterator functions into special init
- section
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-References: <20201109185754.377373-1-jolsa@kernel.org>
- <9205a69f-95db-6bc3-51f8-8b6f79c5e8fd@iogearbox.net>
- <20201110103509.GD387652@krava>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <073f2234-b3ce-aa6d-f1d9-e216aeede68a@iogearbox.net>
-Date:   Wed, 11 Nov 2020 00:30:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1731955AbgKJXcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 18:32:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41118 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730254AbgKJXcN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 18:32:13 -0500
+Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CC5CF207E8;
+        Tue, 10 Nov 2020 23:32:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605051133;
+        bh=oYYP8PoMQDx34d6jvaYwRonJviJjFXmRlAKQM8IXFjc=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=kOTAMi6yYqIuoMtHDFQc9uFRRvlgpb33Sx31kNNSgPQYajs7GdxLv+8lXFzKyOrR8
+         11D5J8Zu+I0Jm/RzIstHINcIit2ggvJRiaMRSE/L40iRoCuXqZr8ZXCAn7Lw1J0CND
+         MO8MWQMS7+CNglDwZtFpJDqzmvM5AJUrr0ivqwYg=
+Message-ID: <6af7754d5bcba7a7f7d92dc43e1f4206ce470c79.camel@kernel.org>
+Subject: Re: Hardware time stamping support for AF_XDP applications
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "Patel, Vedang" <vedang.patel@intel.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Guedes, Andre" <andre.guedes@intel.com>
+Date:   Tue, 10 Nov 2020 15:32:11 -0800
+In-Reply-To: <7299CEB5-9777-4FE4-8DEE-32EF61F6DA29@intel.com>
+References: <7299CEB5-9777-4FE4-8DEE-32EF61F6DA29@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-In-Reply-To: <20201110103509.GD387652@krava>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25984/Tue Nov 10 14:18:29 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/10/20 11:35 AM, Jiri Olsa wrote:
-> On Mon, Nov 09, 2020 at 11:04:34PM +0100, Daniel Borkmann wrote:
+On Tue, 2020-11-10 at 22:44 +0000, Patel, Vedang wrote:
+> [Sorry if you got the email twice. Resending because it was rejected
+> by netdev for containing HTML]
 > 
-> SNIP
-> 
->>> index 7b53cb3092ee..a7c71e3b5f9a 100644
->>> --- a/include/linux/init.h
->>> +++ b/include/linux/init.h
->>> @@ -52,6 +52,7 @@
->>>    #define __initconst	__section(".init.rodata")
->>>    #define __exitdata	__section(".exit.data")
->>>    #define __exit_call	__used __section(".exitcall.exit")
->>> +#define __init_bpf_preserve_type __section(".init.bpf.preserve_type")
->>
->> Small nit, why this detour via BPF_INIT define? Couldn't we just:
->>
->> #ifdef CONFIG_DEBUG_INFO_BTF
->> #define __init_bpf_preserve_type   __section(".init.bpf.preserve_type")
->> #else
->> #define __init_bpf_preserve_type   __init
->> #endif
->>
->> Also, the comment above the existing defines says '/* These are for everybody (although
->> not all archs will actually discard it in modules) */' ... We should probably not add
->> the __init_bpf_preserve_type right under this listing as-is in your patch, but instead
->> 'separate' it by adding a small comment on top of its definition by explaining its
->> purpose more clearly for others.
-> 
-> ok, for some reason I thought I needed to add it to init.h,
-> but as it's bpf specific, perhaps we can omit init.h change
-> completely.. how about the change below?
+> Hi Saeed/Jesper, 
+>  
+> I am working in the Time Sensitive Networking team at Intel. We work
+> on implementing and upstreaming support for TSN related features for
+> intel based NICs. Recently we have been adding support for XDP in
+> i225. One of the features which we want to add support for is passing
+> the hardware timestamp information to the userspace application
+> running AF_XDP sockets (for both Tx and Rx). I came across the XDP
+> Workshop[1] conducted in July 2020 and there you stated that you are
+> already working on adding support for BTF based metadata to pass
+> hardware hints for XDP Programs. My understanding (along with a few
+> questions) of the current state is: 
 
-Agree, that looks much better, thanks!
+Hi Patel,
+
+> * This feature is currently being maintained out of tree. I found
+> that an RFC Series[2] was posted in June 2018. Are you planning to
+> post an updated version to be merged in the mainline anytime soon? 
+
+Yes hopefully in the coming couple of weeks.
+
+> * I am guessing hardware timestamp is one of the metadata fields
+> which will be eventually supported? [3]
+
+With BTF formatted metadata it is up to the driver to advertise
+whatever it can/want :)
+so yes.
+
+> * The Metadata support will be extended to pass on the hardware hints
+> to AF_XDP sockets. Are there any rough plans on what metadata will be
+> transferred?
+
+AF_XDP is not part of my series, but supporting AF_XDP with metadata
+offlaod is up to the driver to implement, should be straight forward
+and identical to XDP.
+
+what meta data to pass is up to the driver.
+
+
+> * The current plan for Tx side only includes passing data from the
+> application to the driver. Are there any plans to support passing
+> information (like HW TX timestamp) from driver to the Application?
+>  
+
+you mean for AF_XDP ? i actually haven't thought about this, 
+but we could use TX umem packet buffer headroom to pass TX completion
+metadata to AF_XDP app, or extend the completion queue entries to host
+metadata, i am sure that the 1st approach is preferred, but i am not
+planing to support this in my initial series. 
+
+> Finally, is there any way I can help in expediting the development
+> and upstreaming of this feature? I have been working on studying how
+> XDP works and can work on implementing some part of this feature if
+> you would like.
+>  
+
+Sure,
+Please feel free to clone and test the following branch if you add
+support to  your driver and implement offloads for AF_XDP that would be
+awesome, and i will append your patches to my series before submission.
+
+it is always great to send new features with multiple use cases and
+multi vendor support, this will differently expedite submission and
+acceptance
+
+My Latest work can be found at:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git/log/?h=topic/xdp_metadata3
+
+Please feel free to send me any questions about the code in private or
+public.
+
+Thanks,
+Saeed.
+
+> Thanks,
+> Vedang Patel
+> Software Engineer
+> Intel Corporation
+>  
+> [1] - https://netdevconf.info/0x14/session.html?workshop-XDP
+> [2] - 
+> https://patchwork.ozlabs.org/project/netdev/cover/20180627024615.17856-1-saeedm@mellanox.com/
+> [3] - 
+> https://xdp-project.net/#outline-container-Important-medium-term-tasks
+> 
+> 
+
