@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA34C2ACC3D
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 04:54:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E33102ACC3F
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 04:54:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731477AbgKJDxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 22:53:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54416 "EHLO mail.kernel.org"
+        id S1732312AbgKJDx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 22:53:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54538 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732146AbgKJDxw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 22:53:52 -0500
+        id S1732269AbgKJDx5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 22:53:57 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AE595207BC;
-        Tue, 10 Nov 2020 03:53:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3D82320731;
+        Tue, 10 Nov 2020 03:53:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604980431;
-        bh=BYzD6UaKc4s5o3gN7OudfqlHsDG5FIyVSpOhmvsP2wk=;
+        s=default; t=1604980436;
+        bh=vggjhxlZ0nTVehZ6/y+P9Re4mUYV/sXpTjZQ/ky4jjs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LTzsqWhjWqdD9ZE+q8w6vppGfrRguPYvbzp+y87FJ6hmoMgwouEI/Ba1KEgRfvp1/
-         Qb0fA1BDvK+cGNvv0oVhcJli+RfLOJJQtcK7l+jFHdmpMyI8pc2wV41OYAhqEuY7b1
-         IlIbhmEQHHJ4yJD5henQG8ZDKOULmX09Mwj+2a/8=
+        b=hcSBE3aUyFVlBkLXt6UBZ5YLM9oimBvcHUC9txUZ4o3rLwTHYVQK39R/wjcwmhJiH
+         4z1Q5E1H6+igdU/zRzXhIhssM1/Zi68n+zl/gM+5UXKqXW+HzgbdFigbJb982ATy5J
+         DgUO0/5KS12wJKNsfuLZtVQd7WnyYNCGvM+QOETs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.9 23/55] cfg80211: initialize wdev data earlier
-Date:   Mon,  9 Nov 2020 22:52:46 -0500
-Message-Id: <20201110035318.423757-23-sashal@kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Chen Minqiang <ptpt52@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.9 26/55] wireguard: selftests: check that route_me_harder packets use the right sk
+Date:   Mon,  9 Nov 2020 22:52:49 -0500
+Message-Id: <20201110035318.423757-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201110035318.423757-1-sashal@kernel.org>
 References: <20201110035318.423757-1-sashal@kernel.org>
@@ -42,162 +44,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit 9bdaf3b91efd229dd272b228e13df10310c80d19 ]
+[ Upstream commit af8afcf1fdd5f365f70e2386c2d8c7a1abd853d7 ]
 
-There's a race condition in the netdev registration in that
-NETDEV_REGISTER actually happens after the netdev is available,
-and so if we initialize things only there, we might get called
-with an uninitialized wdev through nl80211 - not using a wdev
-but using a netdev interface index.
+If netfilter changes the packet mark, the packet is rerouted. The
+ip_route_me_harder family of functions fails to use the right sk, opting
+to instead use skb->sk, resulting in a routing loop when used with
+tunnels. With the next change fixing this issue in netfilter, test for
+the relevant condition inside our test suite, since wireguard was where
+the bug was discovered.
 
-I found this while looking into a syzbot report, but it doesn't
-really seem to be related, and unfortunately there's no repro
-for it (yet). I can't (yet) explain how it managed to get into
-cfg80211_release_pmsr() from nl80211_netlink_notify() without
-the wdev having been initialized, as the latter only iterates
-the wdevs that are linked into the rdev, which even without the
-change here happened after init.
-
-However, looking at this, it seems fairly clear that the init
-needs to be done earlier, otherwise we might even re-init on a
-netns move, when data might still be pending.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20201009135821.fdcbba3aad65.Ie9201d91dbcb7da32318812effdc1561aeaf4cdc@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Reported-by: Chen Minqiang <ptpt52@gmail.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/core.c    | 57 +++++++++++++++++++++++-------------------
- net/wireless/core.h    |  5 ++--
- net/wireless/nl80211.c |  3 ++-
- 3 files changed, 36 insertions(+), 29 deletions(-)
+ tools/testing/selftests/wireguard/netns.sh           | 8 ++++++++
+ tools/testing/selftests/wireguard/qemu/kernel.config | 2 ++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/net/wireless/core.c b/net/wireless/core.c
-index 354b0ccbdc240..e025493171262 100644
---- a/net/wireless/core.c
-+++ b/net/wireless/core.c
-@@ -1248,8 +1248,7 @@ void cfg80211_stop_iface(struct wiphy *wiphy, struct wireless_dev *wdev,
- }
- EXPORT_SYMBOL(cfg80211_stop_iface);
+diff --git a/tools/testing/selftests/wireguard/netns.sh b/tools/testing/selftests/wireguard/netns.sh
+index d77f4829f1e07..74c69b75f6f5a 100755
+--- a/tools/testing/selftests/wireguard/netns.sh
++++ b/tools/testing/selftests/wireguard/netns.sh
+@@ -316,6 +316,14 @@ pp sleep 3
+ n2 ping -W 1 -c 1 192.168.241.1
+ n1 wg set wg0 peer "$pub2" persistent-keepalive 0
  
--void cfg80211_init_wdev(struct cfg80211_registered_device *rdev,
--			struct wireless_dev *wdev)
-+void cfg80211_init_wdev(struct wireless_dev *wdev)
- {
- 	mutex_init(&wdev->mtx);
- 	INIT_LIST_HEAD(&wdev->event_list);
-@@ -1260,6 +1259,30 @@ void cfg80211_init_wdev(struct cfg80211_registered_device *rdev,
- 	spin_lock_init(&wdev->pmsr_lock);
- 	INIT_WORK(&wdev->pmsr_free_wk, cfg80211_pmsr_free_wk);
- 
-+#ifdef CONFIG_CFG80211_WEXT
-+	wdev->wext.default_key = -1;
-+	wdev->wext.default_mgmt_key = -1;
-+	wdev->wext.connect.auth_type = NL80211_AUTHTYPE_AUTOMATIC;
-+#endif
++# Test that sk_bound_dev_if works
++n1 ping -I wg0 -c 1 -W 1 192.168.241.2
++# What about when the mark changes and the packet must be rerouted?
++n1 iptables -t mangle -I OUTPUT -j MARK --set-xmark 1
++n1 ping -c 1 -W 1 192.168.241.2 # First the boring case
++n1 ping -I wg0 -c 1 -W 1 192.168.241.2 # Then the sk_bound_dev_if case
++n1 iptables -t mangle -D OUTPUT -j MARK --set-xmark 1
 +
-+	if (wdev->wiphy->flags & WIPHY_FLAG_PS_ON_BY_DEFAULT)
-+		wdev->ps = true;
-+	else
-+		wdev->ps = false;
-+	/* allow mac80211 to determine the timeout */
-+	wdev->ps_timeout = -1;
-+
-+	if ((wdev->iftype == NL80211_IFTYPE_STATION ||
-+	     wdev->iftype == NL80211_IFTYPE_P2P_CLIENT ||
-+	     wdev->iftype == NL80211_IFTYPE_ADHOC) && !wdev->use_4addr)
-+		wdev->netdev->priv_flags |= IFF_DONT_BRIDGE;
-+
-+	INIT_WORK(&wdev->disconnect_wk, cfg80211_autodisconnect_wk);
-+}
-+
-+void cfg80211_register_wdev(struct cfg80211_registered_device *rdev,
-+			    struct wireless_dev *wdev)
-+{
- 	/*
- 	 * We get here also when the interface changes network namespaces,
- 	 * as it's registered into the new one, but we don't want it to
-@@ -1293,6 +1316,11 @@ static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
- 	switch (state) {
- 	case NETDEV_POST_INIT:
- 		SET_NETDEV_DEVTYPE(dev, &wiphy_type);
-+		wdev->netdev = dev;
-+		/* can only change netns with wiphy */
-+		dev->features |= NETIF_F_NETNS_LOCAL;
-+
-+		cfg80211_init_wdev(wdev);
- 		break;
- 	case NETDEV_REGISTER:
- 		/*
-@@ -1300,35 +1328,12 @@ static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
- 		 * called within code protected by it when interfaces
- 		 * are added with nl80211.
- 		 */
--		/* can only change netns with wiphy */
--		dev->features |= NETIF_F_NETNS_LOCAL;
--
- 		if (sysfs_create_link(&dev->dev.kobj, &rdev->wiphy.dev.kobj,
- 				      "phy80211")) {
- 			pr_err("failed to add phy80211 symlink to netdev!\n");
- 		}
--		wdev->netdev = dev;
--#ifdef CONFIG_CFG80211_WEXT
--		wdev->wext.default_key = -1;
--		wdev->wext.default_mgmt_key = -1;
--		wdev->wext.connect.auth_type = NL80211_AUTHTYPE_AUTOMATIC;
--#endif
--
--		if (wdev->wiphy->flags & WIPHY_FLAG_PS_ON_BY_DEFAULT)
--			wdev->ps = true;
--		else
--			wdev->ps = false;
--		/* allow mac80211 to determine the timeout */
--		wdev->ps_timeout = -1;
--
--		if ((wdev->iftype == NL80211_IFTYPE_STATION ||
--		     wdev->iftype == NL80211_IFTYPE_P2P_CLIENT ||
--		     wdev->iftype == NL80211_IFTYPE_ADHOC) && !wdev->use_4addr)
--			dev->priv_flags |= IFF_DONT_BRIDGE;
--
--		INIT_WORK(&wdev->disconnect_wk, cfg80211_autodisconnect_wk);
- 
--		cfg80211_init_wdev(rdev, wdev);
-+		cfg80211_register_wdev(rdev, wdev);
- 		break;
- 	case NETDEV_GOING_DOWN:
- 		cfg80211_leave(rdev, wdev);
-diff --git a/net/wireless/core.h b/net/wireless/core.h
-index 67b0389fca4dc..8cd4a9793298e 100644
---- a/net/wireless/core.h
-+++ b/net/wireless/core.h
-@@ -208,8 +208,9 @@ struct wiphy *wiphy_idx_to_wiphy(int wiphy_idx);
- int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 			  struct net *net);
- 
--void cfg80211_init_wdev(struct cfg80211_registered_device *rdev,
--			struct wireless_dev *wdev);
-+void cfg80211_init_wdev(struct wireless_dev *wdev);
-+void cfg80211_register_wdev(struct cfg80211_registered_device *rdev,
-+			    struct wireless_dev *wdev);
- 
- static inline void wdev_lock(struct wireless_dev *wdev)
- 	__acquires(wdev)
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index e14307f2bddcc..8eb43c47e582a 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -3801,7 +3801,8 @@ static int nl80211_new_interface(struct sk_buff *skb, struct genl_info *info)
- 		 * P2P Device and NAN do not have a netdev, so don't go
- 		 * through the netdev notifier and must be added here
- 		 */
--		cfg80211_init_wdev(rdev, wdev);
-+		cfg80211_init_wdev(wdev);
-+		cfg80211_register_wdev(rdev, wdev);
- 		break;
- 	default:
- 		break;
+ # Test that onion routing works, even when it loops
+ n1 wg set wg0 peer "$pub3" allowed-ips 192.168.242.2/32 endpoint 192.168.241.2:5
+ ip1 addr add 192.168.242.1/24 dev wg0
+diff --git a/tools/testing/selftests/wireguard/qemu/kernel.config b/tools/testing/selftests/wireguard/qemu/kernel.config
+index d531de13c95b0..4eecb432a66c1 100644
+--- a/tools/testing/selftests/wireguard/qemu/kernel.config
++++ b/tools/testing/selftests/wireguard/qemu/kernel.config
+@@ -18,10 +18,12 @@ CONFIG_NF_NAT=y
+ CONFIG_NETFILTER_XTABLES=y
+ CONFIG_NETFILTER_XT_NAT=y
+ CONFIG_NETFILTER_XT_MATCH_LENGTH=y
++CONFIG_NETFILTER_XT_MARK=y
+ CONFIG_NF_CONNTRACK_IPV4=y
+ CONFIG_NF_NAT_IPV4=y
+ CONFIG_IP_NF_IPTABLES=y
+ CONFIG_IP_NF_FILTER=y
++CONFIG_IP_NF_MANGLE=y
+ CONFIG_IP_NF_NAT=y
+ CONFIG_IP_ADVANCED_ROUTER=y
+ CONFIG_IP_MULTIPLE_TABLES=y
 -- 
 2.27.0
 
