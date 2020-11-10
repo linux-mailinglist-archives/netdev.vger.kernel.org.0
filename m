@@ -2,39 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B77072AE44C
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 00:44:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF7492AE462
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 00:48:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732450AbgKJXof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 18:44:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47028 "EHLO mail.kernel.org"
+        id S1732286AbgKJXsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 18:48:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48790 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727018AbgKJXof (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 18:44:35 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.3])
+        id S1730254AbgKJXsr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 18:48:47 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C790F207E8;
-        Tue, 10 Nov 2020 23:44:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3023C207E8;
+        Tue, 10 Nov 2020 23:48:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605051875;
-        bh=o6wNEbY5NpvlgutDr4f6xOf9o2yFKWKhyUaNDZd43Po=;
+        s=default; t=1605052126;
+        bh=wRBFRLvW3yQNab1zY31tsSRJ4SNnP8HEwm3V2HkrMqY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=G08VYt1IAM8+TmQDaCalbJiRJHNkEJ244cezVDDAzskY1G6ixtahpFNwnVv6CnWiY
-         K0X13eoUwrvZ34RLoP2VrAxBNRwE2kJEijM03b5e4+5W1p8e3HUQ1CkudXp+Q6yWJ5
-         5EtL0Nm2xrr3e5Jd8JvkaJGfIKTY+FrD2xeqRqYU=
-Date:   Tue, 10 Nov 2020 15:44:28 -0800
+        b=fhobiSMnzLxSvz8w/acYZFNFAdjO6S7nMnLGENliejDLk+irP0ccDoLNUnOMExnnm
+         iI0JTLETEaLTJT56/fzfyFQc7d3RupdzF0fdf7BQY+bcmR140Vi5X9oorLTJiBhDwL
+         mMdfAXrNCMoCtnLCAHgpV7ZS8GHXeMROisxGwZWw=
+Date:   Tue, 10 Nov 2020 15:48:44 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Boris Pismenny <borisp@nvidia.com>
-Subject: Re: [PATCH net V2] net: Disable NETIF_F_HW_TLS_TX when HW_CSUM is
- disabled
-Message-ID: <20201110154428.06094336@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201108144309.31699-1-tariqt@nvidia.com>
-References: <20201108144309.31699-1-tariqt@nvidia.com>
+To:     Sven Van Asbroeck <thesven73@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        David S Miller <davem@davemloft.net>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Roelof Berg <rberg@berg-solutions.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v4] lan743x: correctly handle chips with internal
+ PHY
+Message-ID: <20201110154844.651c5f98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201108171224.23829-1-TheSven73@gmail.com>
+References: <20201108171224.23829-1-TheSven73@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,35 +44,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  8 Nov 2020 16:43:09 +0200 Tariq Toukan wrote:
-> @@ -528,3 +528,7 @@ Drivers should ignore the changes to TLS the device feature flags.
->  These flags will be acted upon accordingly by the core ``ktls`` code.
->  TLS device feature flags only control adding of new TLS connection
->  offloads, old connections will remain active after flags are cleared.
-> +
-> +The TLS encryption cannot be offloaded to device if checksum calculation
-> +is not, hence the TLS TX device feature flag is cleared when HW_CSUM is
-> +disabled.
+On Sun,  8 Nov 2020 12:12:24 -0500 Sven Van Asbroeck wrote:
+> From: Sven Van Asbroeck <thesven73@gmail.com>
+> 
+> Commit 6f197fb63850 ("lan743x: Added fixed link and RGMII support")
+> assumes that chips with an internal PHY will never have a devicetree
+> entry. This is incorrect: even for these chips, a devicetree entry
+> can be useful e.g. to pass the mac address from bootloader to chip:
+> 
+>     &pcie {
+>             status = "okay";
+> 
+>             host@0 {
+>                     reg = <0 0 0 0 0>;
+> 
+>                     #address-cells = <3>;
+>                     #size-cells = <2>;
+> 
+>                     lan7430: ethernet@0 {
+>                             /* LAN7430 with internal PHY */
+>                             compatible = "microchip,lan743x";
+>                             status = "okay";
+>                             reg = <0 0 0 0 0>;
+>                             /* filled in by bootloader */
+>                             local-mac-address = [00 00 00 00 00 00];
+>                     };
+>             };
+>     };
+> 
+> If a devicetree entry is present, the driver will not attach the chip
+> to its internal phy, and the chip will be non-operational.
+> 
+> Fix by tweaking the phy connection algorithm:
+> - first try to connect to a phy specified in the devicetree
+>   (could be 'real' phy, or just a 'fixed-link')
+> - if that doesn't succeed, try to connect to an internal phy, even
+>   if the chip has a devnode
+> 
+> Tested on a LAN7430 with internal PHY. I cannot test a device using
+> fixed-link, as I do not have access to one.
+> 
+> Fixes: 6f197fb63850 ("lan743x: Added fixed link and RGMII support")
+> Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # lan7430
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
 
-This makes it sound like the driver will fall back to software crypto
-if L4 csum offload gets disabled, is this your intention?
-
-Seems at odds with the paragraph above it.
-
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 9499a414d67e..26c9b059cade 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -9584,6 +9584,11 @@ static netdev_features_t netdev_fix_features(struct net_device *dev,
->  		}
->  	}
->  
-> +	if ((features & NETIF_F_HW_TLS_TX) && !(features & NETIF_F_HW_CSUM)) {
-> +		netdev_dbg(dev, "Dropping TLS TX HW offload feature since no CSUM feature.\n");
-> +		features &= ~NETIF_F_HW_TLS_TX;
-> +	}
-> +
->  	return features;
->  }
->  
-
+Applied, thank you!
