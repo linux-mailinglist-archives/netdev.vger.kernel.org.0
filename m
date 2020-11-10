@@ -2,107 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E42532AD934
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 15:48:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 000052AD938
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 15:49:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731084AbgKJOsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 09:48:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35464 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731054AbgKJOsp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 09:48:45 -0500
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72558C0613D6
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 06:48:43 -0800 (PST)
-Received: by mail-lf1-x141.google.com with SMTP id e27so17920219lfn.7
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 06:48:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TRtX8baRaCtbeDJjWA3IRYfdgtIW44Wdj4Sdz3HfZMA=;
-        b=An/Ddk0HLR+91xPRpInCFnfZ9o+5szjLSy+NtnyMq7UJRY1S3pi1mcTpeSPq8yWGO7
-         +hYo5dzW6PHxmv0YE0x63sDphTthBePQ7rc/OdTTaSn1XaXPVNTS2Qj572/59VtqdnSE
-         ADq1kQeLGgCPetyHlz4LQ8E+f4lA+tewwA3JqwJikM3iaVmfqn+lcqYRQW/wE7ooEhJ+
-         bUglFTYdPjIL+R6utnbfqDb4IhOZ5rx4bucFlRBZmrj8DrD8Mjij9VzBx0YIKOoIC2Nb
-         AA/x0kRUOLLFfqW7r0bkOIMPkR+YoHRBgD+4KlQ2b15e9/I5sO+IMBiDslv4L69nF3h/
-         5YMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TRtX8baRaCtbeDJjWA3IRYfdgtIW44Wdj4Sdz3HfZMA=;
-        b=nqjUgTicCqbc9gXZVTIUfe4hk0N6a3tLVhnNoH8GU/3TC8N+ixE1fHoivbaDKSSzS+
-         +4vsFUeKOYBEOGuT8mKF64Bm027pzNVOomIAofumu+RQz3qjAv0LR+Xakg353q/xqmO1
-         Uc0szjOhq3P+wkMtmL9IG6rbw4jIBlS1HnvbQ3Pw24JMvRm378kodmgmHb4OPKmqaSwQ
-         9C5QasHOGSwuP0jOntHndz6vSGQs1aSohQkPT0hkloowsUIYDmUYw8+rh1JQHo8+2g32
-         vHaroG5QWy3LwQNbeCqtk3qAWQNMBj52qXK2t4sidrJOnGKrlYLLQ3Oz54zUjOTheGz+
-         Y72A==
-X-Gm-Message-State: AOAM532SmgEFRnnL3rcauYIFHrPKdLBmz283dOlAWDIYkOLrRc71zbJ/
-        AGIrT404JPE1N7fI6bVINxeD9XMlSNOl9Bq7nz3dxA==
-X-Google-Smtp-Source: ABdhPJw46ud/uUkcZJ6tSOXJvAqor8Mj5zSR0l7JClGYT9/b+K2wIXlkgMzo8k4v5SokXVFThmMVRoGjQRQOqS4C810=
-X-Received: by 2002:ac2:4ac7:: with SMTP id m7mr5517480lfp.572.1605019721579;
- Tue, 10 Nov 2020 06:48:41 -0800 (PST)
-MIME-Version: 1.0
-References: <20201109110654.12547-1-brgl@bgdev.pl> <20201109110654.12547-6-brgl@bgdev.pl>
-In-Reply-To: <20201109110654.12547-6-brgl@bgdev.pl>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 10 Nov 2020 15:48:30 +0100
-Message-ID: <CACRpkdZ9tRHFS51pnQg_TgKGed3pD_hRE_rGP_9tiFNcGrb1bQ@mail.gmail.com>
-Subject: Re: [PATCH v3 5/9] pinctrl: use krealloc_array()
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Gustavo Padovan <gustavo@padovan.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>,
-        linaro-mm-sig@lists.linaro.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-edac@vger.kernel.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev <netdev@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
-        <alsa-devel@alsa-project.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1731134AbgKJOtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 09:49:20 -0500
+Received: from aserp2130.oracle.com ([141.146.126.79]:36420 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730853AbgKJOtS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 09:49:18 -0500
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AAEhrGx010557;
+        Tue, 10 Nov 2020 14:49:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2020-01-29; bh=sPIiV/3UM3YEUvlOqqEtPvsNDIxlFjXBi9StsBoT0rY=;
+ b=0D0dj0nedsR0zUpUewt5Z7CXxLG5DKnojprHoKJBMVt0UsdVskfo56rOIyLLSibKYi+o
+ oxyznuj4/uHlo2XtlmolcQEYadRPD80FkCHAjoZ9zQDpISxP0imp1XG1azPMBCvv87nH
+ dKCkPH6bcKswDe7Cbj2tlhTOgwnrZMbni5uSNnM7x68rPQdbWkgmUWey4BmQnFfKeVfD
+ vXpszoPGeWWtC4G45KcobVATRNegNrxGz+MXmp+SDXTFP6zsubT18j+DxfkBiQxfze5q
+ ORaAXC1ylJwapuOfyVPq45WuF3iyEOuONPWe8ELtdWkx3FP2cbnvLHgUWohsJcZQiKcN KQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2130.oracle.com with ESMTP id 34nh3av3gd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 10 Nov 2020 14:49:15 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AAEk8gM164386;
+        Tue, 10 Nov 2020 14:49:14 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 34p5gx09p5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 10 Nov 2020 14:49:14 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0AAEn83A002606;
+        Tue, 10 Nov 2020 14:49:13 GMT
+Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 10 Nov 2020 06:49:07 -0800
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
+Subject: Re: [PATCH RFC] SUNRPC: Use zero-copy to perform socket send
+ operations
+From:   Chuck Lever <chuck.lever@oracle.com>
+In-Reply-To: <47630f20-c596-6cdc-2eed-7e0ad1137292@gmail.com>
+Date:   Tue, 10 Nov 2020 09:49:06 -0500
+Cc:     Trond Myklebust <trondmy@hammerspace.com>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <269B7F38-0F08-456B-B584-1FF550BA48AA@oracle.com>
+References: <160493771006.15633.8524084764848931537.stgit@klimt.1015granger.net>
+ <9ce015245c916b2c90de72440a22f801142f2c6e.camel@hammerspace.com>
+ <0313136F-6801-434F-8304-72B9EADD389E@oracle.com>
+ <f03dae6d36c0f008796ae01bbb6de3673e783571.camel@hammerspace.com>
+ <5056C7C7-7B26-4667-9691-D2F634C02FB1@oracle.com>
+ <3194609c525610dc502d69f11c09cff1c9b21f2d.camel@hammerspace.com>
+ <A3D0FF41-D88F-4116-AD47-AF9C94B1D984@oracle.com>
+ <47630f20-c596-6cdc-2eed-7e0ad1137292@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.4)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9800 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999 mlxscore=0
+ spamscore=0 phishscore=0 adultscore=0 malwarescore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011100106
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9800 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 priorityscore=1501
+ clxscore=1015 malwarescore=0 mlxscore=0 spamscore=0 suspectscore=0
+ mlxlogscore=999 impostorscore=0 phishscore=0 adultscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011100106
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 9, 2020 at 12:07 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
 
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
->
-> Use the helper that checks for overflows internally instead of manually
-> calculating the size of the new array.
->
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> On Nov 9, 2020, at 3:10 PM, Eric Dumazet <eric.dumazet@gmail.com> =
+wrote:
+>=20
+>=20
+>=20
+> On 11/9/20 8:31 PM, Chuck Lever wrote:
+>>=20
+>>=20
+>>> On Nov 9, 2020, at 1:16 PM, Trond Myklebust =
+<trondmy@hammerspace.com> wrote:
+>>>=20
+>>> On Mon, 2020-11-09 at 12:36 -0500, Chuck Lever wrote:
+>>>>=20
+>>>>=20
+>>>>> On Nov 9, 2020, at 12:32 PM, Trond Myklebust <
+>>>>> trondmy@hammerspace.com> wrote:
+>>>>>=20
+>>>>> On Mon, 2020-11-09 at 12:12 -0500, Chuck Lever wrote:
+>>>>>>=20
+>>>>>>=20
+>>>>>>> On Nov 9, 2020, at 12:08 PM, Trond Myklebust
+>>>>>>> <trondmy@hammerspace.com> wrote:
+>>>>>>>=20
+>>>>>>> On Mon, 2020-11-09 at 11:03 -0500, Chuck Lever wrote:
+>>>>>>>> Daire Byrne reports a ~50% aggregrate throughput regression
+>>>>>>>> on
+>>>>>>>> his
+>>>>>>>> Linux NFS server after commit da1661b93bf4 ("SUNRPC: Teach
+>>>>>>>> server
+>>>>>>>> to
+>>>>>>>> use xprt_sock_sendmsg for socket sends"), which replaced
+>>>>>>>> kernel_send_page() calls in NFSD's socket send path with
+>>>>>>>> calls to
+>>>>>>>> sock_sendmsg() using iov_iter.
+>>>>>>>>=20
+>>>>>>>> Investigation showed that tcp_sendmsg() was not using zero-
+>>>>>>>> copy
+>>>>>>>> to
+>>>>>>>> send the xdr_buf's bvec pages, but instead was relying on
+>>>>>>>> memcpy.
+>>>>>>>>=20
+>>>>>>>> Set up the socket and each msghdr that bears bvec pages to
+>>>>>>>> use
+>>>>>>>> the
+>>>>>>>> zero-copy mechanism in tcp_sendmsg.
+>>>>>>>>=20
+>>>>>>>> Reported-by: Daire Byrne <daire@dneg.com>
+>>>>>>>> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=3D209439
+>>>>>>>> Fixes: da1661b93bf4 ("SUNRPC: Teach server to use
+>>>>>>>> xprt_sock_sendmsg
+>>>>>>>> for socket sends")
+>>>>>>>> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+>>>>>>>> ---
+>>>>>>>> net/sunrpc/socklib.c  |    5 ++++-
+>>>>>>>> net/sunrpc/svcsock.c  |    1 +
+>>>>>>>> net/sunrpc/xprtsock.c |    1 +
+>>>>>>>> 3 files changed, 6 insertions(+), 1 deletion(-)
+>>>>>>>>=20
+>>>>>>>> This patch does not fully resolve the issue. Daire reports
+>>>>>>>> high
+>>>>>>>> softIRQ activity after the patch is applied, and this
+>>>>>>>> activity
+>>>>>>>> seems to prevent full restoration of previous performance.
+>>>>>>>>=20
+>>>>>>>>=20
+>>>>>>>> diff --git a/net/sunrpc/socklib.c b/net/sunrpc/socklib.c
+>>>>>>>> index d52313af82bc..af47596a7bdd 100644
+>>>>>>>> --- a/net/sunrpc/socklib.c
+>>>>>>>> +++ b/net/sunrpc/socklib.c
+>>>>>>>> @@ -226,9 +226,12 @@ static int xprt_send_pagedata(struct
+>>>>>>>> socket
+>>>>>>>> *sock, struct msghdr *msg,
+>>>>>>>>        if (err < 0)
+>>>>>>>>                return err;
+>>>>>>>>=20
+>>>>>>>> +       msg->msg_flags |=3D MSG_ZEROCOPY;
+>>>>>>>>        iov_iter_bvec(&msg->msg_iter, WRITE, xdr->bvec,
+>>>>>>>> xdr_buf_pagecount(xdr),
+>>>>>>>>                      xdr->page_len + xdr->page_base);
+>>>>>>>> -       return xprt_sendmsg(sock, msg, base + xdr-
+>>>>>>>>> page_base);
+>>>>>>>> +       err =3D xprt_sendmsg(sock, msg, base + xdr->page_base);
+>>>>>>>> +       msg->msg_flags &=3D ~MSG_ZEROCOPY;
+>>>>>>>> +       return err;
+>>>>>>>> }
+>>>>>>>>=20
+>>>>>>>> /* Common case:
+>>>>>>>> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+>>>>>>>> index c2752e2b9ce3..c814b4953b15 100644
+>>>>>>>> --- a/net/sunrpc/svcsock.c
+>>>>>>>> +++ b/net/sunrpc/svcsock.c
+>>>>>>>> @@ -1176,6 +1176,7 @@ static void svc_tcp_init(struct
+>>>>>>>> svc_sock
+>>>>>>>> *svsk,
+>>>>>>>> struct svc_serv *serv)
+>>>>>>>>                svsk->sk_datalen =3D 0;
+>>>>>>>>                memset(&svsk->sk_pages[0], 0, sizeof(svsk-
+>>>>>>>>> sk_pages));
+>>>>>>>>=20
+>>>>>>>> +               sock_set_flag(sk, SOCK_ZEROCOPY);
+>>>>>>>>                tcp_sk(sk)->nonagle |=3D TCP_NAGLE_OFF;
+>>>>>>>>=20
+>>>>>>>>                set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
+>>>>>>>> diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+>>>>>>>> index 7090bbee0ec5..343c6396b297 100644
+>>>>>>>> --- a/net/sunrpc/xprtsock.c
+>>>>>>>> +++ b/net/sunrpc/xprtsock.c
+>>>>>>>> @@ -2175,6 +2175,7 @@ static int
+>>>>>>>> xs_tcp_finish_connecting(struct
+>>>>>>>> rpc_xprt *xprt, struct socket *sock)
+>>>>>>>>=20
+>>>>>>>>                /* socket options */
+>>>>>>>>                sock_reset_flag(sk, SOCK_LINGER);
+>>>>>>>> +               sock_set_flag(sk, SOCK_ZEROCOPY);
+>>>>>>>>                tcp_sk(sk)->nonagle |=3D TCP_NAGLE_OFF;
+>>>>>>>>=20
+>>>>>>>>                xprt_clear_connected(xprt);
+>>>>>>>>=20
+>>>>>>>>=20
+>>>>>>> I'm thinking we are not really allowed to do that here. The
+>>>>>>> pages
+>>>>>>> we
+>>>>>>> pass in to the RPC layer are not guaranteed to contain stable
+>>>>>>> data
+>>>>>>> since they include unlocked page cache pages as well as
+>>>>>>> O_DIRECT
+>>>>>>> pages.
+>>>>>>=20
+>>>>>> I assume you mean the client side only. Those issues aren't a
+>>>>>> factor
+>>>>>> on the server. Not setting SOCK_ZEROCOPY here should be enough to
+>>>>>> prevent the use of zero-copy on the client.
+>>>>>>=20
+>>>>>> However, the client loses the benefits of sending a page at a
+>>>>>> time.
+>>>>>> Is there a desire to remedy that somehow?
+>>>>>=20
+>>>>> What about splice reads on the server side?
+>>>>=20
+>>>> On the server, this path formerly used kernel_sendpages(), which I
+>>>> assumed is similar to the sendmsg zero-copy mechanism. How does
+>>>> kernel_sendpages() mitigate against page instability?
+>>>=20
+>>> It copies the data. =F0=9F=99=82
+>>=20
+>> tcp_sendmsg_locked() invokes skb_copy_to_page_nocache(), which is
+>> where Daire's performance-robbing memcpy occurs.
+>>=20
+>> do_tcp_sendpages() has no such call site. Therefore the legacy
+>> sendpage-based path has at least one fewer data copy operations.
+>>=20
+>> What is the appropriate way to make tcp_sendmsg() treat a =
+bvec-bearing
+>> msghdr like an array of struct page pointers passed to =
+kernel_sendpage() ?
+>>=20
+>=20
+>=20
+> MSG_ZEROCOPY is only accepted if sock_flag(sk, SOCK_ZEROCOPY) is true,
+> ie if SO_ZEROCOPY socket option has been set earlier.
 
-Yours,
-Linus Walleij
+Eric, are you suggesting that ZEROCOPY is the mechanism that socket
+consumers should be using with sock_sendmsg to get the same behavior
+as kernel_sendpage() ?
+
+If no, what is the preferred approach?
+
+If yes, can you comment on the added soft IRQ workload when NFSD
+sets these flags?
+
+
+--
+Chuck Lever
+
+
+
