@@ -2,211 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19F742ADEBF
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 19:50:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3058C2ADEBB
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 19:50:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731451AbgKJSul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 13:50:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731309AbgKJSuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 13:50:37 -0500
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CF8C0613D1
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 10:50:37 -0800 (PST)
-Received: by mail-vs1-xe44.google.com with SMTP id m16so7660705vsl.8
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 10:50:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z1MyxP0Km6Zy1ESXM9YxE2rbmVw2X+wkPKihjiRYITY=;
-        b=Noi9TFlQ3rEhpispl1llPzVuEcluCRBDohbXmSFCunpTcOkfFoRfz9/vA8AAcuS3Fz
-         AjL7dgCjFdIkkfMVeQPZUNC/tUTGvskOMTLLeUdDIZmcIvISiqEsy8gZP7TIQHU6TkCA
-         0Dp6KdVfP+InfjZV9x1fEFV058NzO5XUHCa6uuCbOyUxbUU99CWfeULR4yVTzJ7f/fgC
-         35sHKxFbvu+DGcRf5eefwLMfRRYzetHwfYBpXjuNtSsJsGRO4xTDpcQox2LyUUIR1Z43
-         SVuc3ybroJhRUEoK0Iuh/tydvu+R3WSy6H/aCgdt7eeSRs5S5NFPR+b4J4pIHqX36SX/
-         D2ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z1MyxP0Km6Zy1ESXM9YxE2rbmVw2X+wkPKihjiRYITY=;
-        b=W6jLNeFmL8R2IvmOCH/7pJQVVV0pfw658wJfIr577H4ZhGsg79p0AKa1OkbAy76j8/
-         LPFRJBIeEzv0VcumqmQYyvVKq+QhI0FtxqcRLmZx1DbC+rOBncvEg3OdK6hPmQ0N1nuU
-         8z3RDU+6HqGZbKAT95GihlMU0YGTHr4chq77NOYukuwnLjNTcbItsAkMEV/NHXyVXJWM
-         GJmvuRuFVq5b/bNqGB4tbVoNoAZLzs5Juaq+W+eJjVKIasYyp4cTG6ph9D3AVtG28AxH
-         WUru1EXEygiUETKwADcjR6End3voVkgGiTRBPAHAgJnXexHk37jClgKMPdjJxqDd9u5P
-         Pd4g==
-X-Gm-Message-State: AOAM5303Pjwc6uX8LknD6FTRAqT4rgyR97PRTUTlrpISdFUG3dhnQbiL
-        Rp9zGKfhehwxl4Km4/Qf18qm8sFcqEA=
-X-Google-Smtp-Source: ABdhPJw0uzEcOdgcb9RaZO/RoTcCY+LXJSj0sGSggMKwZt0/Xs2xYAVfg25Grqgjs/9jNH4Q4w7zUw==
-X-Received: by 2002:a67:fc4f:: with SMTP id p15mr13395839vsq.3.1605034235983;
-        Tue, 10 Nov 2020 10:50:35 -0800 (PST)
-Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com. [209.85.217.41])
-        by smtp.gmail.com with ESMTPSA id a8sm1637912vsp.4.2020.11.10.10.50.34
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Nov 2020 10:50:35 -0800 (PST)
-Received: by mail-vs1-f41.google.com with SMTP id b67so1135246vsc.3
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 10:50:34 -0800 (PST)
-X-Received: by 2002:a67:ce0e:: with SMTP id s14mr12918161vsl.13.1605034233710;
- Tue, 10 Nov 2020 10:50:33 -0800 (PST)
+        id S1726688AbgKJSug (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 13:50:36 -0500
+Received: from m42-4.mailgun.net ([69.72.42.4]:50528 "EHLO m42-4.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726557AbgKJSue (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 13:50:34 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1605034233; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=TLsCNsopTYgMfYxQI+Rv7Ueci5CyMDHLKfaVFZJXCjQ=;
+ b=XScreMz+A4XRPcVz7eSmOW7JPAuzIkNoMedezBZErBhsXBj7X0ypG2QHfjD35YewEBCfse5d
+ N4AxeqpFedpf/z2nKKHpICK0eGl4aB5vrSaZxugKzvhHynBDCOKlzwNctZ761ZKbx98Bm8pJ
+ U5XssYm3NFuJav4IMMtIBqhnl8I=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 5faae0e60d87d63775d684a1 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 10 Nov 2020 18:50:14
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 36A35C433FE; Tue, 10 Nov 2020 18:50:13 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 71609C433C8;
+        Tue, 10 Nov 2020 18:50:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 71609C433C8
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <bEm19mEHLokLGc5HrEiEKEUgpZfmDYPoFtoLAAEnIUE@cp3-web-033.plabs.ch>
-In-Reply-To: <bEm19mEHLokLGc5HrEiEKEUgpZfmDYPoFtoLAAEnIUE@cp3-web-033.plabs.ch>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 10 Nov 2020 13:49:56 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScriNKLu=q+xmBGjtBB06SbErZK26M+FPiJBRN-c8gVLw@mail.gmail.com>
-Message-ID: <CA+FuTScriNKLu=q+xmBGjtBB06SbErZK26M+FPiJBRN-c8gVLw@mail.gmail.com>
-Subject: Re: [PATCH v4 net] net: udp: fix Fast/frag0 UDP GRO
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+Content-Transfer-Encoding: 7bit
+Subject: Re: [1/2] mwifiex: fix mwifiex_shutdown_sw() causing sw reset failure
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201028142110.18144-2-kitakar@gmail.com>
+References: <20201028142110.18144-2-kitakar@gmail.com>
+To:     Tsuchiya Yuto <kitakar@gmail.com>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl,
+        Tsuchiya Yuto <kitakar@gmail.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20201110185013.36A35C433FE@smtp.codeaurora.org>
+Date:   Tue, 10 Nov 2020 18:50:13 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 9, 2020 at 7:29 PM Alexander Lobakin <alobakin@pm.me> wrote:
->
-> From: Alexander Lobakin <alobakin@pm.me>
-> Date: Tue, 10 Nov 2020 00:17:18 +0000
->
-> > While testing UDP GSO fraglists forwarding through driver that uses
-> > Fast GRO (via napi_gro_frags()), I was observing lots of out-of-order
-> > iperf packets:
-> >
-> > [ ID] Interval           Transfer     Bitrate         Jitter
-> > [SUM]  0.0-40.0 sec  12106 datagrams received out-of-order
-> >
-> > Simple switch to napi_gro_receive() or any other method without frag0
-> > shortcut completely resolved them.
-> >
-> > I've found that UDP GRO uses udp_hdr(skb) in its .gro_receive()
-> > callback. While it's probably OK for non-frag0 paths (when all
-> > headers or even the entire frame are already in skb->data), this
-> > inline points to junk when using Fast GRO (napi_gro_frags() or
-> > napi_gro_receive() with only Ethernet header in skb->data and all
-> > the rest in shinfo->frags) and breaks GRO packet compilation and
-> > the packet flow itself.
-> > To support both modes, skb_gro_header_fast() + skb_gro_header_slow()
-> > are typically used. UDP even has an inline helper that makes use of
-> > them, udp_gro_udphdr(). Use that instead of troublemaking udp_hdr()
-> > to get rid of the out-of-order delivers.
-> >
-> > Present since the introduction of plain UDP GRO in 5.0-rc1.
-> >
-> > Since v3 [1]:
-> >  - restore the original {,__}udp{4,6}_lib_lookup_skb() and use
-> >    private versions of them inside GRO code (Willem).
->
-> Note: this doesn't cover a support for nested tunnels as it's out of
-> the subject and requires more invasive changes. It will be handled
-> separately in net-next series.
+Tsuchiya Yuto <kitakar@gmail.com> wrote:
 
-Thanks for looking into that.
+> When a PCIe function level reset (FLR) is performed but without fw reset for
+> some reasons (e.g., on Microsoft Surface devices, fw reset requires other
+> quirks), it fails to reset wifi properly. You can trigger the issue on such
+> devices via debugfs entry for reset:
+> 
+>     $ echo 1 | sudo tee /sys/kernel/debug/mwifiex/mlan0/reset
+> 
+> and the resulting dmesg log:
+> 
+>     [   45.740508] mwifiex_pcie 0000:03:00.0: Resetting per request
+>     [   45.742937] mwifiex_pcie 0000:03:00.0: info: successfully disconnected from [BSSID]: reason code 3
+>     [   45.744666] mwifiex_pcie 0000:03:00.0: info: shutdown mwifiex...
+>     [   45.751530] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.751539] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771691] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771695] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   45.771697] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771698] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   45.771699] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771701] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   45.771702] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771703] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   45.771704] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771705] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   45.771707] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+>     [   45.771708] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   53.099343] mwifiex_pcie 0000:03:00.0: info: trying to associate to '[SSID]' bssid [BSSID]
+>     [   53.241870] mwifiex_pcie 0000:03:00.0: info: associated to bssid [BSSID] successfully
+>     [   75.377942] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+>     [   85.385491] mwifiex_pcie 0000:03:00.0: info: successfully disconnected from [BSSID]: reason code 15
+>     [   87.539408] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+>     [   87.539412] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [   99.699917] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+>     [   99.699925] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [  111.859802] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+>     [  111.859808] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+>     [...]
+> 
+> When comparing mwifiex_shutdown_sw() with mwifiex_pcie_remove(), it
+> lacks mwifiex_init_shutdown_fw().
+> 
+> This commit fixes mwifiex_shutdown_sw() by adding the missing
+> mwifiex_init_shutdown_fw().
+> 
+> Fixes: 4c5dae59d2e9 ("mwifiex: add PCIe function level reset support")
+> Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
 
-In that case, should the p->data + off change be deferred to that,
-too? It adds some risk unrelated to the bug fix.
+2 patches applied to wireless-drivers-next.git, thanks.
 
-> > Since v2 [2]:
-> >  - dropped redundant check introduced in v2 as it's performed right
-> >    before (thanks to Eric);
-> >  - udp_hdr() switched to data + off for skbs from list (also Eric);
-> >  - fixed possible malfunction of {,__}udp{4,6}_lib_lookup_skb() with
-> >    Fast/frag0 due to ip{,v6}_hdr() usage (Willem).
-> >
-> > Since v1 [3]:
-> >  - added a NULL pointer check for "uh" as suggested by Willem.
-> >
-> > [1] https://lore.kernel.org/netdev/MgZce9htmEtCtHg7pmWxXXfdhmQ6AHrnltXC41zOoo@cp7-web-042.plabs.ch
-> > [2] https://lore.kernel.org/netdev/0eaG8xtbtKY1dEKCTKUBubGiC9QawGgB3tVZtNqVdY@cp4-web-030.plabs.ch
-> > [3] https://lore.kernel.org/netdev/YazU6GEzBdpyZMDMwJirxDX7B4sualpDG68ADZYvJI@cp4-web-034.plabs.ch
-> >
-> > Fixes: e20cf8d3f1f7 ("udp: implement GRO for plain UDP sockets.")
-> > Cc: Eric Dumazet <edumazet@google.com>
-> > Cc: Willem de Bruijn <willemb@google.com>
-> > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> > ---
-> >  net/ipv4/udp_offload.c | 23 +++++++++++++++++++----
-> >  net/ipv6/udp_offload.c | 14 +++++++++++++-
-> >  2 files changed, 32 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-> > index e67a66fbf27b..6064efe17cdb 100644
-> > --- a/net/ipv4/udp_offload.c
-> > +++ b/net/ipv4/udp_offload.c
-> > @@ -366,11 +366,11 @@ static struct sk_buff *udp4_ufo_fragment(struct sk_buff *skb,
-> >  static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
-> >                                              struct sk_buff *skb)
-> >  {
-> > -     struct udphdr *uh = udp_hdr(skb);
-> > +     struct udphdr *uh = udp_gro_udphdr(skb);
-> >       struct sk_buff *pp = NULL;
-> >       struct udphdr *uh2;
-> >       struct sk_buff *p;
-> > -     unsigned int ulen;
-> > +     u32 ulen, off;
+fa74cb1dc0f4 mwifiex: fix mwifiex_shutdown_sw() causing sw reset failure
+566b4cb9587e mwifiex: update comment for shutdown_sw()/reinit_sw() to reflect current state
 
-a specific reason for changing type here?
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20201028142110.18144-2-kitakar@gmail.com/
 
-> >       int ret = 0;
-> >
-> >       /* requires non zero csum, for symmetry with GSO */
-> > @@ -385,6 +385,9 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
-> >               NAPI_GRO_CB(skb)->flush = 1;
-> >               return NULL;
-> >       }
-> > +
-> > +     off = skb_gro_offset(skb);
-> > +
-> >       /* pull encapsulating udp header */
-> >       skb_gro_pull(skb, sizeof(struct udphdr));
-> >
-> > @@ -392,7 +395,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
-> >               if (!NAPI_GRO_CB(p)->same_flow)
-> >                       continue;
-> >
-> > -             uh2 = udp_hdr(p);
-> > +             uh2 = (void *)p->data + off;
-> >
-> >               /* Match ports only, as csum is always non zero */
-> >               if ((*(u32 *)&uh->source != *(u32 *)&uh2->source)) {
-> > @@ -500,6 +503,16 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
-> >  }
-> >  EXPORT_SYMBOL(udp_gro_receive);
-> >
-> > +static struct sock *udp4_gro_lookup_skb(struct sk_buff *skb, __be16 sport,
-> > +                                     __be16 dport)
-> > +{
-> > +     const struct iphdr *iph = skb_gro_network_header(skb);
-> > +
-> > +     return __udp4_lib_lookup(dev_net(skb->dev), iph->saddr, sport,
-> > +                              iph->daddr, dport, inet_iif(skb),
-> > +                              inet_sdif(skb), &udp_table, NULL);
-> > +}
-> > +
-> >  INDIRECT_CALLABLE_SCOPE
-> >  struct sk_buff *udp4_gro_receive(struct list_head *head, struct sk_buff *skb)
-> >  {
-> > @@ -523,7 +536,9 @@ struct sk_buff *udp4_gro_receive(struct list_head *head, struct sk_buff *skb)
-> >  skip:
-> >       NAPI_GRO_CB(skb)->is_ipv6 = 0;
-> >       rcu_read_lock();
-> > -     sk = static_branch_unlikely(&udp_encap_needed_key) ? udp4_lib_lookup_skb(skb, uh->source, uh->dest) : NULL;
-> > +     sk = static_branch_unlikely(&udp_encap_needed_key) ?
-> > +          udp4_gro_lookup_skb(skb, uh->source, uh->dest) :
-> > +          NULL;
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-Does this indentation pass checkpatch?
-
-Else, the line limit is no longer strict,a and this only shortens the
-line, so a single line is fine.
