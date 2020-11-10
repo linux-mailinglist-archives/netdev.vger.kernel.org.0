@@ -2,78 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A972AE3AE
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 23:50:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 080A82AE3B1
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 23:51:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732314AbgKJWus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 17:50:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52060 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730254AbgKJWus (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 17:50:48 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6DDC220780;
-        Tue, 10 Nov 2020 22:50:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605048647;
-        bh=WcboRWl77JWuNzjg4I9C64dxGXdRBQo6lbR/ydIN3RA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RBeviLq2IcezpX/bHnESfoisdefgA6FWEdHXUeN7mhgcNl562iTpOs8HTYkO5hWAT
-         CTgwn+lkzPOR2gWc0ttow4O8DwiC8xHFkCHpJ47ws3WHAxhIBr8RzvbdgskueFyXCc
-         7vf3BslIPWcaX2t9B57NB+Vmo/3Mx7vS7PE/jVOw=
-Date:   Tue, 10 Nov 2020 14:50:45 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrea Mayer <andrea.mayer@uniroma2.it>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Shrijeet Mukherjee <shrijeet@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
-Subject: Re: [net-next,v2,1/5] vrf: add mac header for tunneled packets when
- sniffer is attached
-Message-ID: <20201110145045.22dfd58e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201107153139.3552-2-andrea.mayer@uniroma2.it>
-References: <20201107153139.3552-1-andrea.mayer@uniroma2.it>
-        <20201107153139.3552-2-andrea.mayer@uniroma2.it>
+        id S1732260AbgKJWvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 17:51:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730254AbgKJWvs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 17:51:48 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01EBC0613D1;
+        Tue, 10 Nov 2020 14:51:46 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id e18so212104edy.6;
+        Tue, 10 Nov 2020 14:51:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DIJDZdaQQSS9aflu5DDVVbzLNzWkzQwKwKyH1TaqCPw=;
+        b=jTUwTuAKwWCdgsy3w3QAZY3kOTE71vNfJUXdb++4Ws52Ir3eJxELN2u5xjfToFUuy2
+         5Sj44RnIUVFN5X7luyajGXg83BCjMYJCky2bAlzVsAgP5ERRllFHnn3S0cCK9NH5LWHj
+         ictBUeWa03mta1/NjJ06ARtFnzBz+Dej5caZfR5E4tEFG0bzcbhwo65ol1yOmETFC0Sq
+         NWHVNH/0PKWxaqryDcROBjHEAFxwNX6nXqP4NPqfzPVzFA7bEPpoiUFew9crw5Cd+kXA
+         L51f+JXqf0lW9GuFhRHqpiMMXDUS4Y0bx5TIF4YAMpyHhKuxD0qcP9gNwQHU/Lsoea89
+         MeLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DIJDZdaQQSS9aflu5DDVVbzLNzWkzQwKwKyH1TaqCPw=;
+        b=VH8ur0/T5cMSpUKNT9Y8Ec9CB3bQQ42LZF+TEOfGCXn750jg1AsblQFPuFMr96tNtm
+         tTg3yqsM8AlANxVfyzlN1N5FExm+EdtNpgF4a3OcoAdfPkfrgG9W4vkwqWCxhJoVI1/e
+         VUTYFAPoBIjTEe5L/4qt23PTvtZnnjZTbQvJmnMBbBdIZFHAHAtHq1dJKasZ+HFCNkGD
+         j9ERkvnbpxsgG+cvxc/GiLaL3iy/oVM2fYirDJLrlFVC5amgFSBqk7dFzON27l93EViI
+         GEfwS0oNbg+89d3Hw0ylYiD8Q5tU2YB9eydbH+/l/lL3YoUX64OvHDRKl+DHB23uCi4f
+         GiqA==
+X-Gm-Message-State: AOAM530z7yhnqBnh72EV+R34ife+eQUdjf/5eub5Enk7FjjRjf2Dc3p/
+        nA67MpC9HfsNZ1jpeLfV2cw=
+X-Google-Smtp-Source: ABdhPJzqp7IpwjgTjE9NidMp39dFRyHleO5uzlJJFqvYWVmx+SQXIfKOqXXQsjSr8mrXtnReoc5kKw==
+X-Received: by 2002:a50:a105:: with SMTP id 5mr1750224edj.165.1605048705408;
+        Tue, 10 Nov 2020 14:51:45 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id y18sm79353ejq.69.2020.11.10.14.51.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Nov 2020 14:51:44 -0800 (PST)
+Date:   Wed, 11 Nov 2020 00:51:43 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] MAINTAINERS: Add entry for Hirschmann Hellcreek
+ Switch Driver
+Message-ID: <20201110225143.jlojjh6dvwgrq3p6@skbuf>
+References: <20201110071829.7467-1-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201110071829.7467-1-kurt@linutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  7 Nov 2020 16:31:35 +0100 Andrea Mayer wrote:
-> Before this patch, a sniffer attached to a VRF used as the receiving
-> interface of L3 tunneled packets detects them as malformed packets and
-> it complains about that (i.e.: tcpdump shows bogus packets).
+On Tue, Nov 10, 2020 at 08:18:29AM +0100, Kurt Kanzenbach wrote:
+> Add myself to cover the Hirschmann Hellcreek TSN Ethernet Switch Driver.
 > 
-> The reason is that a tunneled L3 packet does not carry any L2
-> information and when the VRF is set as the receiving interface of a
-> decapsulated L3 packet, no mac header is currently set or valid.
-> Therefore, the purpose of this patch consists of adding a MAC header to
-> any packet which is directly received on the VRF interface ONLY IF:
-> 
->  i) a sniffer is attached on the VRF and ii) the mac header is not set.
-> 
-> In this case, the mac address of the VRF is copied in both the
-> destination and the source address of the ethernet header. The protocol
-> type is set either to IPv4 or IPv6, depending on which L3 packet is
-> received.
-> 
-> Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+> Suggested-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> ---
 
-Please keep David's review tag since you haven't changed the code.
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
