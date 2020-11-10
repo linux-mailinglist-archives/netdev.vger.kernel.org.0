@@ -2,94 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D662F2AD19D
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 09:48:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD19A2AD1BC
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 09:49:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729149AbgKJIse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 03:48:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35680 "EHLO
+        id S1731404AbgKJItZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 03:49:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727001AbgKJIsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 03:48:33 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71028C0613CF;
-        Tue, 10 Nov 2020 00:48:33 -0800 (PST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1604998111;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+lFM+Dy1hrzRRrrrA3qnbGkxEtyVqIh0g4peYrriLeU=;
-        b=iuo8f+7vFglLggVRQElkiZ2WEkqCMbTG8xoMGtVyBk3DBfZOlzK9bn4iYE9n5TJlXEeyiw
-        mK2AsUoeE727uJ+eyVgbEeyt2qz1CsngbkfMTC30zg6BSGbxrFxVJV/nTlcmtj9NHSMsJn
-        sU38ljGJ30NJ8ooIZ53QTax6dO6NfnLLpRxklxBphTMVejdacYZZqkmCK8e4gkxhfN2Hq9
-        zuGNw+h8VUH3NFZO14JlYgbkNPH833xVYFQ2lmqEAC35a4/baTqfi6uG7ey36+HQyygrEi
-        Jy4I41umlX4stejJrRBLu7awPrfWhbLcelHNMzqQQSqRZrKTpO34TDntXU+02A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1604998111;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+lFM+Dy1hrzRRrrrA3qnbGkxEtyVqIh0g4peYrriLeU=;
-        b=y7osrUd/437dzM5/Hc5G9cQ/HuZ2jh7vgX8EDHSswmJuPLkHyLG6iEX8rrCl2sg3XohELe
-        1aQhUu8PTNjq+DAw==
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>, x86@kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nvdimm@lists.01.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kexec@lists.infradead.org, linux-bcache@vger.kernel.org,
-        linux-mtd@lists.infradead.org, devel@driverdev.osuosl.org,
-        linux-efi@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-erofs@lists.ozlabs.org,
-        linux-um@lists.infradead.org, linux-ntfs-dev@lists.sourceforge.net,
-        reiserfs-devel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-nilfs@vger.kernel.org, cluster-devel@redhat.com,
-        ecryptfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-rdma@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
-        samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH RFC PKS/PMEM 05/58] kmap: Introduce k[un]map_thread
-In-Reply-To: <20201110045954.GL3976735@iweiny-DESK2.sc.intel.com>
-References: <20201009195033.3208459-1-ira.weiny@intel.com> <20201009195033.3208459-6-ira.weiny@intel.com> <87h7pyhv3f.fsf@nanos.tec.linutronix.de> <20201110045954.GL3976735@iweiny-DESK2.sc.intel.com>
-Date:   Tue, 10 Nov 2020 09:48:31 +0100
-Message-ID: <87eel1iom8.fsf@nanos.tec.linutronix.de>
+        with ESMTP id S1726825AbgKJItX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 03:49:23 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5976C0613D3
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 00:49:22 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id i13so4787107pgm.9
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 00:49:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YvISL/qdLkdwPYX88Kdh3n2uLpOi4eNhrcHOaqAjvcs=;
+        b=Uk6yrwwZGt6DbAqXYz56yubQ3KJD8KXkW0xqOw7DyDlcECvaACAPsdILReYeN5q82/
+         8Gy0PFGdCY/NgzKWoQ5uyEdbr1oYQx5rcLyPcBh+4Ww+uUqA64xsNRAd6KJGsyR/m/q6
+         //UUuS0stlkHCcQa1lVULK6afpmnXoafSeu6g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YvISL/qdLkdwPYX88Kdh3n2uLpOi4eNhrcHOaqAjvcs=;
+        b=JmT+oyxDfpv0/CtIJ1XrZvO+e5vrnHs2zAjUwIivBywkkzZ1DOZYMO8ZfgS2ovA6Mx
+         5CaDITc/171ltb0eqdXqbStg+cqIs0i1s0f3aN0iIE8whrBPxa6we66agjOfQYWGJEoS
+         C8V5wdztcSUc57z7FqNEB15a1flPY9dL6pPV/ijKp3vPgKE4HFcawBix5A2lRmULVDrJ
+         Lj98v03xBayQVzOiXleTtrQ4i3stgS0G/urKyDUwfEdpdSSBDsQMPS//EnPjFb+AHdoG
+         4IbH3sE38QVq6KJqwnZli+a8Gu602CHt32xbf+ZmI4ulLaHutw2wK83x102UzUlByIRw
+         Mf9g==
+X-Gm-Message-State: AOAM530EddLNn6QAV3/osXU2/8pWYjGShiYd0qXjE0XEElMVEVG/ahRv
+        lU38nNp79GJX096ujrDODGODQw==
+X-Google-Smtp-Source: ABdhPJyVW1uWC0lJQFwCgm+h2n2t4eQeWlgNVFy8vHOeVWyRrVPIW/AOUseN+NURRWL0O0Xvz7sPUA==
+X-Received: by 2002:a62:870c:0:b029:18b:d345:70f3 with SMTP id i12-20020a62870c0000b029018bd34570f3mr13536858pfe.30.1604998162297;
+        Tue, 10 Nov 2020 00:49:22 -0800 (PST)
+Received: from localhost ([2401:fa00:1:10:3e52:82ff:fe5e:cc9d])
+        by smtp.gmail.com with ESMTPSA id i2sm2173330pjk.12.2020.11.10.00.49.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Nov 2020 00:49:21 -0800 (PST)
+From:   Claire Chang <tientzu@chromium.org>
+To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
+        hdegoede@redhat.com, marcel@holtmann.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Claire Chang <tientzu@chromium.org>
+Subject: [PATCH] rfkill: Fix use-after-free in rfkill_resume()
+Date:   Tue, 10 Nov 2020 16:49:08 +0800
+Message-Id: <20201110084908.219088-1-tientzu@chromium.org>
+X-Mailer: git-send-email 2.29.2.222.g5d2a92d10f8-goog
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 09 2020 at 20:59, Ira Weiny wrote:
-> On Tue, Nov 10, 2020 at 02:13:56AM +0100, Thomas Gleixner wrote:
-> Also, we can convert the new memcpy_*_page() calls to kmap_local() as well.
-> [For now my patch just uses kmap_atomic().]
->
-> I've not looked at all of the patches in your latest version.  Have you
-> included converting any of the kmap() call sites?  I thought you were more
-> focused on converting the kmap_atomic() to kmap_local()?
+If a device is getting removed or reprobed during resume, use-after-free
+might happen. For example, h5_btrtl_resume()[drivers/bluetooth/hci_h5.c]
+schedules a work queue for device reprobing. During the reprobing, if
+rfkill_set_block() in rfkill_resume() is called after the corresponding
+*_unregister() and kfree() are called, there will be an use-after-free
+in hci_rfkill_set_block()[net/bluetooth/hci_core.c].
 
-I did not touch any of those yet, but it's a logical consequence to
-convert all kmap() instances which are _not_ creating a global mapping
-over to it.
+BUG: KASAN: use-after-free in hci_rfkill_set_block+0x58/0xc0 [bluetooth]
+...
+Call trace:
+  dump_backtrace+0x0/0x154
+  show_stack+0x20/0x2c
+  dump_stack+0xbc/0x12c
+  print_address_description+0x88/0x4b0
+  __kasan_report+0x144/0x168
+  kasan_report+0x10/0x18
+  check_memory_region+0x19c/0x1ac
+  __kasan_check_write+0x18/0x24
+  hci_rfkill_set_block+0x58/0xc0 [bluetooth]
+  rfkill_set_block+0x9c/0x120
+  rfkill_resume+0x34/0x70
+  dpm_run_callback+0xf0/0x1f4
+  device_resume+0x210/0x22c
 
-Thanks,
+Fix this by checking rfkill->registered in rfkill_resume().
+Since device_del() in rfkill_unregister() requires device_lock() and the
+whole rfkill_resume() is also protected by the same lock in
+device_resume()[drivers/base/power/main.c], we can make sure either the
+rfkill->registered is false before rfkill_resume() starts or the rfkill
+device won't be unregistered before rfkill_resume() returns.
 
-        tglx
+Fixes: 8589086f4efd ("Bluetooth: hci_h5: Turn off RTL8723BS on suspend, reprobe on resume")
+Signed-off-by: Claire Chang <tientzu@chromium.org>
+---
+ net/rfkill/core.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/rfkill/core.c b/net/rfkill/core.c
+index 971c73c7d34c..97101c55763d 100644
+--- a/net/rfkill/core.c
++++ b/net/rfkill/core.c
+@@ -876,6 +876,9 @@ static int rfkill_resume(struct device *dev)
+ 
+ 	rfkill->suspended = false;
+ 
++	if (!rfkill->registered)
++		return 0;
++
+ 	if (!rfkill->persistent) {
+ 		cur = !!(rfkill->state & RFKILL_BLOCK_SW);
+ 		rfkill_set_block(rfkill, cur);
+-- 
+2.29.2.222.g5d2a92d10f8-goog
 
