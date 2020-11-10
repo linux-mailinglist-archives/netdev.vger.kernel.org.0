@@ -2,111 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01C842AD812
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 14:54:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D30EA2AD879
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 15:16:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730995AbgKJNyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 08:54:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726721AbgKJNyT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 08:54:19 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A28AC0613CF;
-        Tue, 10 Nov 2020 05:54:19 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1605016457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rtk59NKVDDuDgZ5JurBrBN+PO3AoA1MD7trsIrojCXM=;
-        b=u5x4PEMEPLyzGgIGWlI9++dwF7XL48DcFoZKF1RJVJE0uOAhv9DPebvOE13aviGreZDDw4
-        wW+dl4gl7Vfsy8ww9xrbXde22R4gYOHm1R3wK8hl1L+R1hKWB9zh/WEHfEhqBjHyQ5sEac
-        rnaPEXrawz5CaMUqVK/nihwf0qCF28QwSCDoMa2hpSRe7L66e7+igsbhRpZjTGEtWTQG/K
-        Nye74SsQemNNHRoUKzUIR1Ml+rB2/f3bW2WsDjkqK3ouK8mbheqfOOfr6xmTZE7GrJdQiJ
-        Ssfc/9KbKy+um81khhFcmzHb0tgfyDNtbN/ubPqOGbgmU/8S/YDXfY+GYWhchA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1605016457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rtk59NKVDDuDgZ5JurBrBN+PO3AoA1MD7trsIrojCXM=;
-        b=NorZWwvAN6+BKC2Dx3Z+pXndKaMRqzvk+ooNaCrO0FkP0XFkewtx7lVOk66BJjLDfUKYRy
-        Gn47K37CDgYxiVDQ==
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S1730785AbgKJOQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 09:16:39 -0500
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:53724 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730306AbgKJOQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 09:16:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1605017798; x=1636553798;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=/pRG9WstYX5Gt0aV6L+9ZdT/3GXFPr5BMfaefLyPVrY=;
+  b=glOriLjIMRv7SLS9jCjrWExu/iM/KI+RGDqUCav1n2VryS9nCRBedJZo
+   GzWUtJsyVDzX7ONvnfSxSW6wQM54Mla0vnIt19HDW029H4MCaVMHdinzS
+   NVEFXcHuUAZroTqWfC/q7TYtTBeS3ptPkiYyFeXOTfnAETSUSMoItyf+l
+   ZwrSLwhIyxoHakfo8nWSovTcMKMwlb6xy3mo5RJoF6ZUQYcrXnOlfbwvX
+   5l/dV2zwCWJiGTHIqs4wNAPVLLPt1Q6D2X5jsvYBkfglvebYDFnHwvabE
+   fKQUaeAf7XFEDeLxhtgtj4PJm5MeJsSxLDl4zgoWKk1yHBs9QcJGdFOKT
+   A==;
+IronPort-SDR: NW1f5quH0B5w1KcR/vLZ5MOxdBv5YgfvuD5BYYh/D/c62L7fEXe/1zY3HvhUHnQDBmsWLOkA0I
+ JsAiDJHxNpAsD/T48g50EtaaAfbDipFDJ22hBDXO2L5nvUlfebOIUEssu6l1EzI2bdfwBcgGx+
+ peE2LJnCBWM6twyin2FEkxGhqsaEDK8Z3iqPoIAZVGMgDkyiEORt3P4vQZphGEKQMrAyKdOSHl
+ TsG07Y5YI3/9d2zXmNzKoBOQUHzCiVPEa2wZbikh+7GdVEzZ2Ngu7ZgTyCza8TET8imRoj6TMU
+ nP4=
+X-IronPort-AV: E=Sophos;i="5.77,466,1596524400"; 
+   d="scan'208";a="98449226"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Nov 2020 07:16:37 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 10 Nov 2020 07:16:37 -0700
+Received: from soft-dev2.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3
+ via Frontend Transport; Tue, 10 Nov 2020 07:16:35 -0700
+References: <20201110100642.2153-1-bjarni.jonasson@microchip.com> <20201110102552.GZ1551@shell.armlinux.org.uk>
+User-agent: mu4e 0.9.18; emacs 25.2.2
+From:   Bjarni Jonasson <bjarni.jonasson@microchip.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] MAINTAINERS: Add entry for Hirschmann Hellcreek Switch Driver
-In-Reply-To: <20201110130059.emgojxcyu5j3lc73@skbuf>
-References: <20201110071829.7467-1-kurt@linutronix.de> <20201110130059.emgojxcyu5j3lc73@skbuf>
-Date:   Tue, 10 Nov 2020 14:54:16 +0100
-Message-ID: <87y2j971x3.fsf@kurt>
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH] phy: phylink: Fix CuSFP issue in phylink
+In-Reply-To: <20201110102552.GZ1551@shell.armlinux.org.uk>
+Date:   Tue, 10 Nov 2020 15:16:34 +0100
+Message-ID: <87blg5qou5.fsf@microchip.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
 
-On Tue Nov 10 2020, Vladimir Oltean wrote:
-> On Tue, Nov 10, 2020 at 08:18:29AM +0100, Kurt Kanzenbach wrote:
->> Add myself to cover the Hirschmann Hellcreek TSN Ethernet Switch Driver.
->>=20
->> Suggested-by: Andrew Lunn <andrew@lunn.ch>
->> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
->> ---
->>  MAINTAINERS | 9 +++++++++
->>  1 file changed, 9 insertions(+)
->>=20
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index 2a0fde12b650..7fe936fc7e76 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -7897,6 +7897,15 @@ F:	include/linux/hippidevice.h
->>  F:	include/uapi/linux/if_hippi.h
->>  F:	net/802/hippi.c
->>=20=20
->> +HIRSCHMANN HELLCREEK ETHERNET SWITCH DRIVER
->> +M:	Kurt Kanzenbach <kurt@linutronix.de>
->> +L:	netdev@vger.kernel.org
->> +S:	Maintained
+Russell King - ARM Linux admin writes:
+
+> On Tue, Nov 10, 2020 at 11:06:42AM +0100, Bjarni Jonasson wrote:
+>> There is an issue with the current phylink driver and CuSFPs which
+>> results in a callback to the phylink validate function without any
+>> advertisement capabilities.  The workaround (in this changeset)
+>> is to assign capabilities if a 1000baseT SFP is identified.
 >
-> Just want to make sure you're aware of the difference:
->
-> 	   Supported:	Someone is actually paid to look after this.
-> 	   Maintained:	Someone actually looks after it.
+> How does this happen?  Which PHY is being used?
 
-Yea, that's fine.
+This occurs just by plugging in the CuSFP.
+None of the CuSFPs we have tested are working.
+This is a dump from 3 different CuSFPs, phy regs 0-3:
+FS SFP: 01:40:79:49 
+HP SFP: 01:40:01:49
+Marvel SFP: 01:40:01:49
+This was working before the delayed mac config was implemented (in dec
+2019).
 
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+qm4gACgkQeSpbgcuY
-8KbeJBAAv7JR/VLVT0QFPAQMoiBHYJgILlBlP/dAKxqZXs2DMFOWtyDYDoJgOZRJ
-gYcZAacfowxB5+4ulJDjozS2+gd1s4A+8Wx7SbpfsNujOm7cWp5czVV3cOYgDUI+
-YltvJ0c5ST1ZOgHtnA04ARVxOKfQIaVAF8cCegqJOt7ydx/goUH2AzVP6d++brDS
-VrmVhLwkmOyOUpFPBHbZGhI2qOmtRiKLAj+KMWQzUmpNCKWHuUf0fYBLQYjXxQ8d
-lqGWUslD06KJ6namBepgDxdtXf9pHx1mHANa1DgZ8XgmeLpmz+JKDWCkfszOTGQ7
-oBSyHXwmRQ1TBNlWltSphNQUj0trYONBXz3lRnxWlLCgyuXLKtb3PelOywVSFtuj
-JE98TeOsdEo8PkhqpV7Q8DooIOhJIXfvJxrlT3lo2n33Bb0RNOa3NXcEpBI6CQSD
-+ORVbp619sWBET1+Opbnk8kwaUBHxMOncHhwOkY9gKJSuVSv4Xb3weTDEoxd3x6t
-gZHgJGWzvyHw/gESCWrQA/xBm/AGTPzfHaMInk99WrOw3tKKwpewGATz/z1J59nO
-zkqG7tuVwzsWz7Tv6ayIPOcjSD1xfGsSLAVMwLj65A6Oio81wAHIOXwps2bC7J9f
-YOqqAXiucVqxz4btr5rmAphU18/4wavAXJ3PlsRIqMG8uNkl/Gc=
-=uiu+
------END PGP SIGNATURE-----
---=-=-=--
+--
+Bjarni Jonasson, Microchip
