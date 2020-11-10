@@ -2,121 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36A422AD735
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 14:12:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5B272AD763
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 14:21:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730186AbgKJNMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 08:12:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42671 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730542AbgKJNMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 08:12:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605013952;
+        id S1730639AbgKJNVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 08:21:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729898AbgKJNVE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 08:21:04 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C536C0613CF;
+        Tue, 10 Nov 2020 05:21:04 -0800 (PST)
+From:   Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1605014462;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2V11rFQ3FKVTN+koXAVvig/bkOvKVZoOl9jWSSiZ8Ik=;
-        b=Di+p8tHpuaV5rtMlatp24D6j8+WKmCUBtqz8yv0zCEdrS6sGXtBKp/ajiNQKnRgk1iVbBf
-        EPgPhQ0oDcmNLweqKLA2uf1G287zKEdUoDcJ+SAJtNZ7ElvnOQlZ77m+OxtwtGg6hoPAvK
-        H8JUZjK8UjW7EnlIU91t9XZBpHRi/X8=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-21-UfckxnPnOryM1wJrXAABnA-1; Tue, 10 Nov 2020 08:12:31 -0500
-X-MC-Unique: UfckxnPnOryM1wJrXAABnA-1
-Received: by mail-qv1-f71.google.com with SMTP id w6so2797265qvr.15
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 05:12:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=2V11rFQ3FKVTN+koXAVvig/bkOvKVZoOl9jWSSiZ8Ik=;
-        b=VMRbBIRbPpJgNbdK9woPsD/HRvaU5ujC1oLYSryeko3733xOgru3Bvsh7oCyrhzCOo
-         T+vgHZGfXN3g7B+bgyyxa8EeAeCPMvCnmcvqt2WfcJ06fnhk5CbJRfg2vpcQK7iwwayF
-         u1IkNYzMFQY6VkP2mF6SauBV/5Az5CLdk2XyEopexkpXufHPNvlb7xywu8UriABT3wz8
-         pDX+u3QNe0YbbKPn1H4jN2X+raTuXA007win6/OA8LkbePlkSWdNCmbweByzPXQMMa6q
-         SpbJTgx2h+Mse/6T1+j+BPd2ncpSAp67hM9oSnoNnEp9F8abr/v1zxQkRuKqlzyei/uA
-         X8HA==
-X-Gm-Message-State: AOAM532pO2JGP2AFVJRvG1Mu1rZ8TXyo7iwQDCz2UDZXoUoXQo0DKQT6
-        Y1RY+2bo3NuGLziN2XT3w1GYMqynKyMNWC8OY3AI4CFgonbMmm8Mlnk3matQMkDpwydizLkvRA3
-        gbM7c7q6lKCw57sWf
-X-Received: by 2002:ac8:3621:: with SMTP id m30mr8787095qtb.168.1605013950431;
-        Tue, 10 Nov 2020 05:12:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyRnI1rUF5eW2rST1vImtIogpOlMRBum2fO0dVCe+zUlRqVIaRBqmVo31rjlhOk2kmW2Hr8dQ==
-X-Received: by 2002:ac8:3621:: with SMTP id m30mr8787064qtb.168.1605013950178;
-        Tue, 10 Nov 2020 05:12:30 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id e8sm7658678qti.28.2020.11.10.05.12.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Nov 2020 05:12:29 -0800 (PST)
-Subject: Re: Subject: [RFC] clang tooling cleanups
-To:     Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com, cocci <cocci@systeme.lip6.fr>
-Cc:     linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
-        qat-linux@intel.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org, linux-samsung-soc@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-nfs@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org,
-        linux-rpi-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
-References: <20201027164255.1573301-1-trix@redhat.com>
- <3c39c363690d0b46069afddc3ad09213011e5cd4.camel@perches.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <cc512954-2e1d-a165-f1f1-2c489fd6d3a9@redhat.com>
-Date:   Tue, 10 Nov 2020 05:12:26 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        bh=AzMhSL6JfZYLoAxLQNqOinsWfodG6w3sgRNE+je62BU=;
+        b=iNMXQPuDLaAAymCV8YNdZjYIfSNJ9dV3mI3KTjBFmGTy4lF2j74igpHBSibhkxwDRGf9CX
+        eG2eRV+hbF5GW//fUgx4HgvZHd5Lp7Bs8YR2qRBuKgRgjOD92qNdT46fqVrh7BrkwQKERO
+        jUdkTNGBxbtjqpQ2rAcOamnCqi0acF2da7QMuP3lD7/tj0iVol8K1uGNPLzut4quKGgLRX
+        O9G279PsNkfe6IZJ0DrwYYwVoUdXjSArBFrmkVZOc+gbT/WmX3RrCJV+rixpoqtNCzjZnI
+        dx02872vu64JOHz7YGp228x44FVX0bNuAq3RBRfB5NMyrB4hdLTckC3tuRvsCQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1605014462;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AzMhSL6JfZYLoAxLQNqOinsWfodG6w3sgRNE+je62BU=;
+        b=5EStyjC2JN90PchQKFpE0zsLVrZxmq5m2ghA9RKQoPUfACMG6TqzaKsW8CEqikYZP7iKfd
+        cClD7ShI6ogSV2CA==
+To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Cc:     Kurt Kanzenbach <kurt@kmk-computers.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        "maintainer\:BROADCOM IPROC ARM ARCHITECTURE" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        =?utf-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <zajec5@gmail.com>,
+        "open list\:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list\:BROADCOM IPROC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH 10/10] dt-bindings: net: dsa: b53: Add YAML bindings
+In-Reply-To: <20201110033113.31090-11-f.fainelli@gmail.com>
+References: <20201110033113.31090-1-f.fainelli@gmail.com> <20201110033113.31090-11-f.fainelli@gmail.com>
+Date:   Tue, 10 Nov 2020 14:21:01 +0100
+Message-ID: <871rh18i0y.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <3c39c363690d0b46069afddc3ad09213011e5cd4.camel@perches.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--=-=-=
+Content-Type: text/plain
 
-On 11/9/20 6:52 PM, Joe Perches wrote:
-> On Tue, 2020-10-27 at 09:42 -0700, trix@redhat.com wrote:
->> This rfc will describe
->> An upcoming treewide cleanup.
->> How clang tooling was used to programatically do the clean up.
->> Solicit opinions on how to generally use clang tooling.
->>
->> The clang warning -Wextra-semi-stmt produces about 10k warnings.
->> Reviewing these, a subset of semicolon after a switch looks safe to
->> fix all the time.  An example problem
->>
->> void foo(int a) {
->>      switch(a) {
->>      	       case 1:
->> 	       ...
->>      }; <--- extra semicolon
->> }
->>
->> Treewide, there are about 100 problems in 50 files for x86_64 allyesconfig.
->> These fixes will be the upcoming cleanup.
-> coccinelle already does some of these.
+On Mon Nov 09 2020, Florian Fainelli wrote:
+> From: Kurt Kanzenbach <kurt@kmk-computers.de>
 >
-> For instance: scripts/coccinelle/misc/semicolon.cocci
+> Convert the b53 DSA device tree bindings to YAML in order to allow
+> for automatic checking and such.
 >
-> Perhaps some tool coordination can be done here as
-> coccinelle/checkpatch/clang/Lindent call all be used
-> to do some facet or another of these cleanup issues.
+> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
+> ---
+>  .../devicetree/bindings/net/dsa/b53.txt       | 149 -----------
+>  .../devicetree/bindings/net/dsa/b53.yaml      | 249 ++++++++++++++++++
 
-Thanks for pointing this out.
+Maybe it should be renamed to brcm,b53.yaml to be consistent with the
+ksz and hellcreek bindings.
 
-I will take a look at it.
+Thanks,
+Kurt
 
-Tom
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
->
->
+-----BEGIN PGP SIGNATURE-----
 
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+qk70ACgkQeSpbgcuY
+8KaoAg/+KXo2Fr8lqgfG4Ih8O7QQ5lBso9BL80dO6Iavyio2ueysGXAs5RtGxSWW
+BQCVARWEWevf7xVkyRTkvz5GNEnL+KMCkZqjfUHuhnHEuISDm2idGk2iD5U1V+op
+GZrK7dH8A9HsA8z/vGxuuOnMGQibSHC4R55XBYZKXuHGQGlqGlYaoCtXlBChxMIl
+rsOjWMRCuY6Deg6UmJYmaREDNJLZRdzGIfj8hiVFswRXSwA/+Nku4HRRegxoPqKE
+UYFtiY6ljH1eXxq78SlJu6zslB5OsfV1wFWUG1IM0bB7utauT4NdTkSj91asCUCK
+atnNIuXIBlGS41dUljCcSN/UdNDCWSuA2cyBItY8frgk7HNbtdH1rvvMn1uio9T6
+CZd9Y/mKK3XOT5KZI9FS1hzZIBiuHvw2nvpPUoEZDeIZRPYCDed1nNsKQI/armU2
+bc6kaIqv427yXAT99AaCWdsunkNAhMo7gHC+y0/6Hp/ySS51G3uDLUI18+R/iRxf
+trPJRca7pAsrXHuRMhDWRLp8o8FYAo2tTa113ZSATrUsHwq2IQ0H7MXxKVdOhOAV
+7R/utQ4EZ65vjqZN0tOcyk4MkiE5it3LVDVjw3OH1hkTBp2aUrR8JCPObFmNfCaX
+FO9kS/riUlTMUDCbl5WUt0dO+X2cOZKtpZLgzrO5bB5u2PZtK2k=
+=xhiF
+-----END PGP SIGNATURE-----
+--=-=-=--
