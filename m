@@ -2,96 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCB0E2AD040
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 08:13:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E7122AD047
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 08:18:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727013AbgKJHNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 02:13:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727019AbgKJHNF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 02:13:05 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCF3C0613CF;
-        Mon,  9 Nov 2020 23:13:05 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id r10so9359239pgb.10;
-        Mon, 09 Nov 2020 23:13:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZPFe2WuiWwyNg1Eyj3XJGsLb5Wa+6AC1ZklocEhohjk=;
-        b=LW4ny0aDBseDwZ76K9DKeQOHEHyHurl/nH8zVm9oq4gw3hcIQnEjTIVQzx01YG6MAq
-         OQY/3QH+NaZAieNoZmYuUPUzzMz45JXLzqk16njQnUQdVMz8+Oohl8/vftFwrd5DogF1
-         RgD3k6j8EWApfYjwY6SQy0Ig2uJn4nq8n3a3pIuKVUjQYBnS5Tl0zSldv42Sc7vy3TdO
-         0FERJ5P7UBQakCZ6KBvmrbcSsLJ0AtuDYORTC7NgZIWvUMu0VnVBwj6fX296zTCOZPC+
-         9ubJsOCWlqPCWt9jpz8TzyWq2qOHNGRujamCmMWKpRdbXqclCh4ODJ3/zuNTqeECEbiY
-         OF2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZPFe2WuiWwyNg1Eyj3XJGsLb5Wa+6AC1ZklocEhohjk=;
-        b=uejDGxTIYSEmA+oBb/Kmiv1KiJhrhgO7Jnt2afMXC05wlWi/Qp/vxlCumaHwLagxyC
-         ljp38JX3mluiPprikDnVIhfAp0GUrkjErSLMgaqhStt4YeD+RzQLBc8perNpPKn767Y8
-         TUGaL+Af0jcfSWoci2cYHOKEhNB3nQXU51iFT7v9221yUu39cmBQjpF8RS3w19wAjute
-         79ldx+YZIr72XGvMJzz0/0dBxNYJFTEaBcFrkVuCcfJZY4Mt4fbaDxLIIS00ALtsYebd
-         B+jHE0nbDz1uAK6O951QTVxWQEfduVLXfzpAPtz+FnmX4nSfNFcDlEZj/bytSMSyUoz7
-         lTGA==
-X-Gm-Message-State: AOAM533oHHXzq1+hT4ARwuuCILytDN+FDTYPPiXWkoZqYLg3WWmjkgaw
-        0e9FXsBj5IAwiNtuvoNejAds7XQPjvMadM+THsY=
-X-Google-Smtp-Source: ABdhPJwdKvbB69qXEgdZwN3837DsoGBC4vJQh8ZB1EElebgRlZqRjGhXE6kbQreHcgynDvusc9yZdtBUmsuH6ozwGTw=
-X-Received: by 2002:a62:2bd0:0:b029:18a:df0f:dd61 with SMTP id
- r199-20020a622bd00000b029018adf0fdd61mr16448462pfr.19.1604992385197; Mon, 09
- Nov 2020 23:13:05 -0800 (PST)
+        id S1726006AbgKJHSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 02:18:42 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:56438 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726213AbgKJHSm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 02:18:42 -0500
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1604992719;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1iFuz01GoKN17OphrVPg/1m+RVnZekyWdaY0+/9C/Gw=;
+        b=RxZfp2w5JBLOIaLBStU2mESv32U/viQ32AdOfAMcEYTvUdUauvq+UeQO/4LXTYApaWTuSy
+        2DYRz6SArn5iaxutYRA+sDRRwluUky9HmmGS07Ym4vQL3yldOvBvR9AfXJkB6IIE5aBE8b
+        DoE1TnnHFEXrc1XELZxoq9vH0/OiP/FZNrEtQIwEaY4pmQUCzfYNDgxeue42OtJm+7yjIx
+        Xqrz8kHT3VYWlT4hL29T9GzdfISAsZV2ywe3fLA99Jo7Q80AbZErEUev8zY9TgE3YioTNY
+        DBtcHG8Ii4gaVt9Yg6qZR8IM60A1YZVF0SoyIhcGAW0Nk6ixBrlc60QsQwNXqg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1604992719;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1iFuz01GoKN17OphrVPg/1m+RVnZekyWdaY0+/9C/Gw=;
+        b=0zTgecuqiamKpuCgOvRV0JzcqO2lJDUtZoQu186CttQRutTsOaiIFMBYiZi5II3PKbwESS
+        hXiFsHadVC7bsDBQ==
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH net-next] MAINTAINERS: Add entry for Hirschmann Hellcreek Switch Driver
+Date:   Tue, 10 Nov 2020 08:18:29 +0100
+Message-Id: <20201110071829.7467-1-kurt@linutronix.de>
 MIME-Version: 1.0
-References: <1604498942-24274-1-git-send-email-magnus.karlsson@gmail.com>
- <1604498942-24274-3-git-send-email-magnus.karlsson@gmail.com> <5fa9aae46c442_8c0e208b5@john-XPS-13-9370.notmuch>
-In-Reply-To: <5fa9aae46c442_8c0e208b5@john-XPS-13-9370.notmuch>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 10 Nov 2020 08:12:54 +0100
-Message-ID: <CAJ8uoz1f=-2Dysg-iwo=Grn0eS5nJB0hNE8HuPeHYPgeE4Bfmg@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH bpf-next 2/6] samples/bpf: increment Tx
- stats at sending
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 9, 2020 at 9:47 PM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> Magnus Karlsson wrote:
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
-> >
-> > Increment the statistics over how many Tx packets have been sent at
-> > the time of sending instead of at the time of completion. This as a
-> > completion event means that the buffer has been sent AND returned to
-> > user space. The packet always gets sent shortly after sendto() is
-> > called. The kernel might, for performance reasons, decide to not
-> > return every single buffer to user space immediately after sending,
-> > for example, only after a batch of packets have been
-> > transmitted. Incrementing the number of packets sent at completion,
-> > will in that case be confusing as if you send a single packet, the
-> > counter might show zero for a while even though the packet has been
-> > transmitted.
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
->
-> LGTM. Just one question then if we wanted to know the old value, packet
-> completion counter it looks like (tx_npkts - outstanding_tx) would give
-> that value?
+Add myself to cover the Hirschmann Hellcreek TSN Ethernet Switch Driver.
 
-That is correct.
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+---
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2a0fde12b650..7fe936fc7e76 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7897,6 +7897,15 @@ F:	include/linux/hippidevice.h
+ F:	include/uapi/linux/if_hippi.h
+ F:	net/802/hippi.c
+ 
++HIRSCHMANN HELLCREEK ETHERNET SWITCH DRIVER
++M:	Kurt Kanzenbach <kurt@linutronix.de>
++L:	netdev@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
++F:	drivers/net/dsa/hirschmann/*
++F:	include/linux/platform_data/hirschmann-hellcreek.h
++F:	net/dsa/tag_hellcreek.c
++
+ HISILICON DMA DRIVER
+ M:	Zhou Wang <wangzhou1@hisilicon.com>
+ L:	dmaengine@vger.kernel.org
+-- 
+2.20.1
+
