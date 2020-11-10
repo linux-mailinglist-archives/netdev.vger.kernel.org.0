@@ -2,66 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0731B2ACAA5
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 02:45:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0540C2ACAA2
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 02:43:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729817AbgKJBpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 20:45:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34744 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727311AbgKJBpo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 20:45:44 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BCBE32065D;
-        Tue, 10 Nov 2020 01:45:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604972744;
-        bh=T/Yvdn05BT4307DEEQ9E5rEvZJroGKLL5DOaAa585HU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=r6H4+Y0Um3d/31K8MM18H8XDm5+VIIPbGR/3D3/qxSq/S2ZLwywc5pvJx1n6o9iZf
-         0a2ze+27zNiFDIdQO4JtFE1c4H3HnLm5ZKHfh3x3wi6+xEnLvbRYRDAI6WIrqm7+P2
-         aRCCp5hoVTTsb5ZP4YZ+xx3Q0dxOhyAKVIsyK/pQ=
-Date:   Mon, 9 Nov 2020 17:45:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
-        vivien.didelot@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Export VTU as devlink
- region
-Message-ID: <20201109174542.2ab6a3dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201109174415.GD1456319@lunn.ch>
-References: <20201109082927.8684-1-tobias@waldekranz.com>
-        <20201109174415.GD1456319@lunn.ch>
+        id S1730349AbgKJBni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 20:43:38 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7199 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725889AbgKJBni (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 20:43:38 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CVVxm6HrLzkhDL;
+        Tue, 10 Nov 2020 09:43:24 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Tue, 10 Nov 2020
+ 09:43:31 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <quentin@isovalent.com>, <mrostecki@opensuse.org>,
+        <john.fastabend@gmail.com>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <andrii@kernel.org>,
+        <kpsingh@chromium.org>, <toke@redhat.com>,
+        <danieltimlee@gmail.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 bpf] tools: bpftool: Add missing close before bpftool net attach exit
+Date:   Tue, 10 Nov 2020 09:46:37 +0800
+Message-ID: <20201110014637.6055-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Nov 2020 18:44:15 +0100 Andrew Lunn wrote:
-> >  static void
-> > @@ -574,9 +670,16 @@ static int mv88e6xxx_setup_devlink_regions_global(struct dsa_switch *ds,
-> >  		ops = mv88e6xxx_regions[i].ops;
-> >  		size = mv88e6xxx_regions[i].size;
-> >  
-> > -		if (i == MV88E6XXX_REGION_ATU)
-> > +		switch (i) {
-> > +		case MV88E6XXX_REGION_ATU:
-> >  			size = mv88e6xxx_num_databases(chip) *
-> >  				sizeof(struct mv88e6xxx_devlink_atu_entry);
-> > +			break;
-> > +		case MV88E6XXX_REGION_VTU:
-> > +			size = chip->info->max_vid *
-> > +				sizeof(struct mv88e6xxx_devlink_vtu_entry);
-> > +			break;
-> > +		}  
-> 
+progfd is created by prog_parse_fd(), before 'bpftool net attach' exit,
+it should be closed.
 
-[...]
+Fixes: 04949ccc273e ("tools: bpftool: add net attach command to attach XDP on interface")
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+v1->v2: use cleanup tag instead of repeated closes
+ tools/bpf/bpftool/net.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+index 910e7bac6e9e..1ac7228167e6 100644
+--- a/tools/bpf/bpftool/net.c
++++ b/tools/bpf/bpftool/net.c
+@@ -578,8 +578,8 @@ static int do_attach(int argc, char **argv)
+ 
+ 	ifindex = net_parse_dev(&argc, &argv);
+ 	if (ifindex < 1) {
+-		close(progfd);
+-		return -EINVAL;
++		err = -EINVAL;
++		goto cleanup;
+ 	}
+ 
+ 	if (argc) {
+@@ -587,8 +587,8 @@ static int do_attach(int argc, char **argv)
+ 			overwrite = true;
+ 		} else {
+ 			p_err("expected 'overwrite', got: '%s'?", *argv);
+-			close(progfd);
+-			return -EINVAL;
++			err = -EINVAL;
++			goto cleanup;
+ 		}
+ 	}
+ 
+@@ -600,13 +600,15 @@ static int do_attach(int argc, char **argv)
+ 	if (err < 0) {
+ 		p_err("interface %s attach failed: %s",
+ 		      attach_type_strings[attach_type], strerror(-err));
+-		return err;
++		goto cleanup;
+ 	}
+ 
+ 	if (json_output)
+ 		jsonw_null(json_wtr);
+ 
+-	return 0;
++cleanup:
++	close(progfd);
++	return err;
+ }
+ 
+ static int do_detach(int argc, char **argv)
+-- 
+2.17.1
 
-Applied, thanks!
