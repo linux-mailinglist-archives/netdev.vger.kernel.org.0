@@ -2,182 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DE132AE39E
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 23:48:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA842AE3AC
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 23:50:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732281AbgKJWs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 17:48:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54242 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726688AbgKJWsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 17:48:25 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1329BC0613D1;
-        Tue, 10 Nov 2020 14:48:24 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id l5so177962edq.11;
-        Tue, 10 Nov 2020 14:48:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Em8WmoYAvsXVW5SzBtkWgE8omnO3+c4rMhoVObwwjsk=;
-        b=lxv2PaOvwPDyJPfCeBZHoeHvFyarLc7JGIvHAfhVDSy6drxmEHL4vhm3B2Ysu1UfhU
-         NspZc78ZfwNzl1SRzdTRcoAkri5QzHOrN1GySZd+otwHlcHXcdProhZ6a8XlM6TXWd+k
-         i8O2ilk1nH2d5bLo/H0lBT4tKnAMY7CPjGgD+9bDeeVayedKjY2J3eOMBVoJMHf+8gR5
-         wXHxTE65VZVgJv+w0qwYEFi97velqUluljCcA3spM2lAPdSflyuJly69pcCxb/vaoPMm
-         EO4EeJ6I6GnqBiN0i1GgejfiFST4OChxG1OBv4vqHL1kPvgwSosXLJtkqHApAVAfHTEI
-         FUNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Em8WmoYAvsXVW5SzBtkWgE8omnO3+c4rMhoVObwwjsk=;
-        b=heK5KwUngeex/fyDxZjpYxpVCW7JnufykocFkWqo00kau12vO10Z/irL+Xn6Tq388V
-         a3hFzvT5qEXkEwPYRvI7B4fVQE3+MeAgfh8BXJ3mKHHnkeuaSXmgrZUYJdPC9jiF7lzI
-         RODJxoCiW2/doBfBp5iCyyPz7y87FJoHFl/um03eEE/owHPc71BjQFYgvHTqttxE8uPU
-         eQeJg3zr3a70RQN5gNlbZ5MUN+mjMG58ZAOBWpHYtw6Wvhw7jroz/lz7bpofNJVMedVl
-         JHhdz4jhQcN/hpCO5UEnIWZbMMp0AUfigxLevHkzdzfYeKGckcgAE3cchyXYyR4k8IWl
-         RIRA==
-X-Gm-Message-State: AOAM5318q2xEnc8G89YSh8+QlRk4ikk4sNI96Qgcey4Z7b14bwW8F6Tf
-        EL9vC27V/XkiB7C+/9qfttk=
-X-Google-Smtp-Source: ABdhPJywtLEXQhr+THCrnyE2wBAiXh/ZBTDTv7mMPPinrudG7I9DUvaxIl4rqPj9sCMN2iOK0HbdgA==
-X-Received: by 2002:a05:6402:783:: with SMTP id d3mr23885455edy.168.1605048503378;
-        Tue, 10 Nov 2020 14:48:23 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id a17sm37417eda.45.2020.11.10.14.48.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Nov 2020 14:48:22 -0800 (PST)
-Date:   Wed, 11 Nov 2020 00:48:20 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        "maintainer:BROADCOM IPROC ARM ARCHITECTURE" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:BROADCOM IPROC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Kurt Kanzenbach <kurt@kmk-computers.de>
-Subject: Re: [PATCH 08/10] ARM: dts: NSP: Add a default compatible for switch
- node
-Message-ID: <20201110224820.gbz3tcl6lzjbe3zo@skbuf>
-References: <20201110033113.31090-1-f.fainelli@gmail.com>
- <20201110033113.31090-9-f.fainelli@gmail.com>
- <20201110223709.vca534wynwgfkz77@skbuf>
- <ff118521-6317-b75f-243d-bcd6bbe255d5@gmail.com>
+        id S1732429AbgKJWuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 17:50:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51896 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731981AbgKJWuX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 17:50:23 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DF5D52076E;
+        Tue, 10 Nov 2020 22:50:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605048622;
+        bh=Zkjo0/Wuk/Kqi5o9mQjGlsLXqHmHaUp2Dh+TASGGorA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QXbFdj3ZIgWaVu9npA3/iMUu5LgWhqIECdjqphQ6myBgSQoJ+IJ0l0ax+HUZ8wyF3
+         YAkU4gry0N2u0uz2ol1CzcGsO1pG0mkJUGW7So4CpJ0NzM9+qoqogtu3w/hkB9H0GP
+         MQ+aVm/6bEEjau2xdp/ByEM/SHpOz37E7AhkCQTo=
+Date:   Tue, 10 Nov 2020 14:50:21 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+Subject: Re: [net-next,v2,2/5] seg6: improve management of behavior
+ attributes
+Message-ID: <20201110145021.761f5ee7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201107153139.3552-3-andrea.mayer@uniroma2.it>
+References: <20201107153139.3552-1-andrea.mayer@uniroma2.it>
+        <20201107153139.3552-3-andrea.mayer@uniroma2.it>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ff118521-6317-b75f-243d-bcd6bbe255d5@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 10, 2020 at 02:40:43PM -0800, Florian Fainelli wrote:
-> On 11/10/20 2:37 PM, Vladimir Oltean wrote:
-> > On Mon, Nov 09, 2020 at 07:31:11PM -0800, Florian Fainelli wrote:
-> >> Provide a default compatible string which is based on the 58522 SRAB
-> >> compatible, this allows us to have sane defaults and silences the
-> >> following warnings:
-> >>
-> >>  arch/arm/boot/dts/bcm958522er.dt.yaml:
-> >>     ethernet-switch@36000: compatible: 'oneOf' conditional failed,
-> >> one
-> >>     must be fixed:
-> >>             ['brcm,bcm5301x-srab'] is too short
-> >>             'brcm,bcm5325' was expected
-> >>             'brcm,bcm53115' was expected
-> >>             'brcm,bcm53125' was expected
-> >>             'brcm,bcm53128' was expected
-> >>             'brcm,bcm5365' was expected
-> >>             'brcm,bcm5395' was expected
-> >>             'brcm,bcm5389' was expected
-> >>             'brcm,bcm5397' was expected
-> >>             'brcm,bcm5398' was expected
-> >>             'brcm,bcm11360-srab' was expected
-> >>             'brcm,bcm5301x-srab' is not one of ['brcm,bcm53010-srab',
-> >>     'brcm,bcm53011-srab', 'brcm,bcm53012-srab', 'brcm,bcm53018-srab',
-> >>     'brcm,bcm53019-srab']
-> >>             'brcm,bcm5301x-srab' is not one of ['brcm,bcm11404-srab',
-> >>     'brcm,bcm11407-srab', 'brcm,bcm11409-srab', 'brcm,bcm58310-srab',
-> >>     'brcm,bcm58311-srab', 'brcm,bcm58313-srab']
-> >>             'brcm,bcm5301x-srab' is not one of ['brcm,bcm58522-srab',
-> >>     'brcm,bcm58523-srab', 'brcm,bcm58525-srab', 'brcm,bcm58622-srab',
-> >>     'brcm,bcm58623-srab', 'brcm,bcm58625-srab', 'brcm,bcm88312-srab']
-> >>             'brcm,bcm5301x-srab' is not one of ['brcm,bcm3384-switch',
-> >>     'brcm,bcm6328-switch', 'brcm,bcm6368-switch']
-> >>             From schema:
-> >>     Documentation/devicetree/bindings/net/dsa/b53.yaml
-> >>
-> >> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> >> ---
-> >>  arch/arm/boot/dts/bcm-nsp.dtsi | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/arch/arm/boot/dts/bcm-nsp.dtsi b/arch/arm/boot/dts/bcm-nsp.dtsi
-> >> index 09fd7e55c069..8453865d1439 100644
-> >> --- a/arch/arm/boot/dts/bcm-nsp.dtsi
-> >> +++ b/arch/arm/boot/dts/bcm-nsp.dtsi
-> >> @@ -386,7 +386,7 @@ ccbtimer1: timer@35000 {
-> >>  		};
-> >>
-> >>  		srab: ethernet-switch@36000 {
-> >> -			compatible = "brcm,nsp-srab";
-> >> +			compatible = "brcm,bcm58522-srab", "brcm,nsp-srab";
-> >>  			reg = <0x36000 0x1000>,
-> >>  			      <0x3f308 0x8>,
-> >>  			      <0x3f410 0xc>;
-> >> --
-> >> 2.25.1
-> >>
-> > 
-> > I am not getting this.
-> > The line:
-> > #include "bcm-nsp.dtsi"
-> > 
-> > can be found in:
-> > 
-> > arch/arm/boot/dts/bcm988312hr.dts
-> > arch/arm/boot/dts/bcm958625hr.dts
-> > arch/arm/boot/dts/bcm958622hr.dts
-> > arch/arm/boot/dts/bcm958625k.dts
-> > arch/arm/boot/dts/bcm958522er.dts
-> > arch/arm/boot/dts/bcm958525er.dts
-> > arch/arm/boot/dts/bcm958623hr.dts
-> > arch/arm/boot/dts/bcm958525xmc.dts
-> > 
-> > 
-> > The pattern for the other DTS files that include this seems to be to
-> > overwrite the compatible locally in bcm958522er.dts, like this:
-> > 
-> > &srab {
-> > 	compatible = "brcm,bcm58522-srab", "brcm,nsp-srab";
-> > };
-> > 
-> > Is there a reason why you are choosing to put an SoC specific compatible
-> > in the common bcm-nsp.dtsi?
-> 
-> It is necessary to silence the warnings provided in the commit message
-> even when the srab node is disabled, since the dt_binding_check rule
-> will check all of the nodes matching the pattern. If there is a better
-> way to do this, I would gladly do it differently.
-> -- 
-> Florian
+On Sat,  7 Nov 2020 16:31:36 +0100 Andrea Mayer wrote:
+> Depending on the attribute (i.e.: SEG6_LOCAL_SRH, SEG6_LOCAL_TABLE, etc),
+> the parse() callback performs some validity checks on the provided input
+> and updates the tunnel state (slwt) with the result of the parsing
+> operation. However, an attribute may also need to reserve some additional
+> resources (i.e.: memory or setting up an eBPF program) in the parse()
+> callback to complete the parsing operation.
 
-I am still not getting it. The exact 3 lines from above will not change
-the "status" property from "disabled" to "okay", so I don't understand
-why it matters whether it's enabled or not. The dt_binding_check error
-isn't in the DTSI, it's in bcm958522er.dts. All that needs to be done is
-that the bcm958522er.dts needs to override the compatible from the DTSI
-and only the compatible, I believe. With no occurrence of an incomplete
-list of compatibles in any final DTS, the dt_binding_check should not
-complain about that single occurrence in the DTSI as far as I know (and
-I did not test this).
+Looks good, a few nit picks below.
+
+> diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+> index eba23279912d..63a82e2fdea9 100644
+> --- a/net/ipv6/seg6_local.c
+> +++ b/net/ipv6/seg6_local.c
+> @@ -710,6 +710,12 @@ static int cmp_nla_srh(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
+>  	return memcmp(a->srh, b->srh, len);
+>  }
+>  
+> +static void destroy_attr_srh(struct seg6_local_lwt *slwt)
+> +{
+> +	kfree(slwt->srh);
+> +	slwt->srh = NULL;
+
+This should never be called twice, right? No need for defensive
+programming then.
+
+> +}
+> +
+>  static int parse_nla_table(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+>  {
+>  	slwt->table = nla_get_u32(attrs[SEG6_LOCAL_TABLE]);
+> @@ -901,16 +907,33 @@ static int cmp_nla_bpf(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
+>  	return strcmp(a->bpf.name, b->bpf.name);
+>  }
+>  
+> +static void destroy_attr_bpf(struct seg6_local_lwt *slwt)
+> +{
+> +	kfree(slwt->bpf.name);
+> +	if (slwt->bpf.prog)
+> +		bpf_prog_put(slwt->bpf.prog);
+
+Same - why check if prog is NULL? That doesn't seem necessary if the
+code is correct.
+
+> +	slwt->bpf.name = NULL;
+> +	slwt->bpf.prog = NULL;
+> +}
+> +
+>  struct seg6_action_param {
+>  	int (*parse)(struct nlattr **attrs, struct seg6_local_lwt *slwt);
+>  	int (*put)(struct sk_buff *skb, struct seg6_local_lwt *slwt);
+>  	int (*cmp)(struct seg6_local_lwt *a, struct seg6_local_lwt *b);
+> +
+> +	/* optional destroy() callback useful for releasing resources which
+> +	 * have been previously acquired in the corresponding parse()
+> +	 * function.
+> +	 */
+> +	void (*destroy)(struct seg6_local_lwt *slwt);
+>  };
+>  
+>  static struct seg6_action_param seg6_action_params[SEG6_LOCAL_MAX + 1] = {
+>  	[SEG6_LOCAL_SRH]	= { .parse = parse_nla_srh,
+>  				    .put = put_nla_srh,
+> -				    .cmp = cmp_nla_srh },
+> +				    .cmp = cmp_nla_srh,
+> +				    .destroy = destroy_attr_srh },
+>  
+>  	[SEG6_LOCAL_TABLE]	= { .parse = parse_nla_table,
+>  				    .put = put_nla_table,
+> @@ -934,13 +957,68 @@ static struct seg6_action_param seg6_action_params[SEG6_LOCAL_MAX + 1] = {
+>  
+>  	[SEG6_LOCAL_BPF]	= { .parse = parse_nla_bpf,
+>  				    .put = put_nla_bpf,
+> -				    .cmp = cmp_nla_bpf },
+> +				    .cmp = cmp_nla_bpf,
+> +				    .destroy = destroy_attr_bpf },
+>  
+>  };
+>  
+> +/* call the destroy() callback (if available) for each set attribute in
+> + * @parsed_attrs, starting from attribute index @start up to @end excluded.
+> + */
+> +static void __destroy_attrs(unsigned long parsed_attrs, int start, int end,
+
+You always pass 0 as start, no need for that argument.
+
+slwt and max_parsed should be the only args this function needs.
+
+> +			    struct seg6_local_lwt *slwt)
+> +{
+> +	struct seg6_action_param *param;
+> +	int i;
+> +
+> +	/* Every seg6local attribute is identified by an ID which is encoded as
+> +	 * a flag (i.e: 1 << ID) in the @parsed_attrs bitmask; such bitmask
+> +	 * keeps track of the attributes parsed so far.
+> +
+> +	 * We scan the @parsed_attrs bitmask, starting from the attribute
+> +	 * identified by @start up to the attribute identified by @end
+> +	 * excluded. For each set attribute, we retrieve the corresponding
+> +	 * destroy() callback.
+> +	 * If the callback is not available, then we skip to the next
+> +	 * attribute; otherwise, we call the destroy() callback.
+> +	 */
+> +	for (i = start; i < end; ++i) {
+> +		if (!(parsed_attrs & (1 << i)))
+> +			continue;
+> +
+> +		param = &seg6_action_params[i];
+> +
+> +		if (param->destroy)
+> +			param->destroy(slwt);
+> +	}
+> +}
+> +
+> +/* release all the resources that may have been acquired during parsing
+> + * operations.
+> + */
+> +static void destroy_attrs(struct seg6_local_lwt *slwt)
+> +{
+> +	struct seg6_action_desc *desc;
+> +	unsigned long attrs;
+> +
+> +	desc = slwt->desc;
+> +	if (!desc) {
+> +		WARN_ONCE(1,
+> +			  "seg6local: seg6_action_desc* for action %d is NULL",
+> +			  slwt->action);
+> +		return;
+> +	}
+
+Defensive programming?
+
+> +
+> +	/* get the attributes for the current behavior instance */
+> +	attrs = desc->attrs;
+> +
+> +	__destroy_attrs(attrs, 0, SEG6_LOCAL_MAX + 1, slwt);
+> +}
+> +
+>  static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+>  {
+>  	struct seg6_action_param *param;
+> +	unsigned long parsed_attrs = 0;
+>  	struct seg6_action_desc *desc;
+>  	int i, err;
+>  
+> @@ -963,11 +1041,22 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+>  
+>  			err = param->parse(attrs, slwt);
+>  			if (err < 0)
+> -				return err;
+> +				goto parse_err;
+> +
+> +			/* current attribute has been parsed correctly */
+> +			parsed_attrs |= (1 << i);
+
+Why do you need parsed_attrs, attributes are not optional. Everything
+that's sepecified in desc->attrs and lower than i must had been parsed.
+
+>  		}
+>  	}
+>  
+>  	return 0;
+> +
+> +parse_err:
+> +	/* release any resource that may have been acquired during the i-1
+> +	 * parse() operations.
+> +	 */
+> +	__destroy_attrs(parsed_attrs, 0, i, slwt);
+> +
+> +	return err;
+>  }
+>  
+>  static int seg6_local_build_state(struct net *net, struct nlattr *nla,
+
+
