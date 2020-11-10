@@ -2,104 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42EA82ADED3
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 19:53:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC99B2ADEDC
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 19:56:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731142AbgKJSxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 13:53:16 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:10886 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726307AbgKJSxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 13:53:16 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5faae1a20000>; Tue, 10 Nov 2020 10:53:22 -0800
-Received: from sw-mtx-036.mtx.labs.mlnx (172.20.13.39) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 10 Nov
- 2020 18:53:15 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>,
-        Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net] devlink: Avoid overwriting port attributes of registered port
-Date:   Tue, 10 Nov 2020 20:52:58 +0200
-Message-ID: <20201110185258.30576-1-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S1725862AbgKJSz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 13:55:59 -0500
+Received: from z5.mailgun.us ([104.130.96.5]:27992 "EHLO z5.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730382AbgKJSz5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 13:55:57 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1605034557; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=2kmNg+DcYCP30cdie56V5OYbK+DXzLqPEuc1mLQCzB0=;
+ b=PxJyimNxrB0su2USWIRdx++NWe4ZfI35/gb+Gpjaw1Tp8Wge8a9uKwg3eHnyupTajhA4xyL+
+ brCOc1MnKun7hf/5gvnhPu9gO+1KmQwERFu7uaK0l+O0H9fKLV4FuAMuIOBdTdSiJ+avHIO9
+ IQsWddQ+MpQhusFYFML3dVEGaOA=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
+ 5faae22734c4908d191fedc4 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 10 Nov 2020 18:55:35
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 12EA1C4339C; Tue, 10 Nov 2020 18:55:34 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id EF0E1C433C6;
+        Tue, 10 Nov 2020 18:55:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EF0E1C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1605034402; bh=GjQJGd9e1sDvsnE2pN0SD7K/8l7LP8R7rqGQ5ZExBuU=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=XsI0X2M5TeMANdG9LD+JuCnig7kRsn6i0T5x0QX7pkvLMNWk+wLQCUe/40nrRQ+Ap
-         4E0BqqqW2SCZk9jS9tyRT6OxHtDU0webOxODBTUMC2rNONj0kcOHHLonC1S06VP5ex
-         UamXzQ4rX9Qdw0+JjnKyuNRf8bJCxM70CO641jn5dKxA7TOQSmllOfxxKR69qWqaR/
-         ANYrQ434vPVACLdTAoFGcVNyvn9fu770MYXn9x6m6N4sEAlFt/2ZfyG29BCTBTcupZ
-         t9AQqdfhCkkRy//i226Y+/Wu/N2iHVNpobaQ5wknOmKAcl9vN5zTDOUNToiA5PQLm3
-         a4Y/tKi3vU9Xg==
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 1/2] rsi: Move card interrupt handling to RX thread
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201103180941.443528-1-marex@denx.de>
+References: <20201103180941.443528-1-marex@denx.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     linux-wireless@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Angus Ainslie <angus@akkea.ca>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Martin Kepplinger <martink@posteo.de>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20201110185534.12EA1C4339C@smtp.codeaurora.org>
+Date:   Tue, 10 Nov 2020 18:55:34 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cited commit in fixes tag overwrites the port attributes for the
-registered port.
+Marek Vasut <marex@denx.de> wrote:
 
-Avoid such error by checking registered flag before setting attributes.
+> The interrupt handling of the RS911x is particularly heavy. For each RX
+> packet, the card does three SDIO transactions, one to read interrupt
+> status register, one to RX buffer length, one to read the RX packet(s).
+> This translates to ~330 uS per one cycle of interrupt handler. In case
+> there is more incoming traffic, this will be more.
+> 
+> The drivers/mmc/core/sdio_irq.c has the following comment, quote "Just
+> like traditional hard IRQ handlers, we expect SDIO IRQ handlers to be
+> quick and to the point, so that the holding of the host lock does not
+> cover too much work that doesn't require that lock to be held."
+> 
+> The RS911x interrupt handler does not fit that. This patch therefore
+> changes it such that the entire IRQ handler is moved to the RX thread
+> instead, and the interrupt handler only wakes the RX thread.
+> 
+> This is OK, because the interrupt handler only does things which can
+> also be done in the RX thread, that is, it checks for firmware loading
+> error(s), it checks buffer status, it checks whether a packet arrived
+> and if so, reads out the packet and passes it to network stack.
+> 
+> Moreover, this change permits removal of a code which allocated an
+> skbuff only to get 4-byte-aligned buffer, read up to 8kiB of data
+> into the skbuff, queue this skbuff into local private queue, then in
+> RX thread, this buffer is dequeued, the data in the skbuff as passed
+> to the RSI driver core, and the skbuff is deallocated. All this is
+> replaced by directly calling the RSI driver core with local buffer.
+> 
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Angus Ainslie <angus@akkea.ca>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Martin Kepplinger <martink@posteo.de>
+> Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+> Cc: Siva Rebbagondla <siva8118@gmail.com>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Tested-by: Martin Kepplinger <martin.kepplinger@puri.sm>
 
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
- net/core/devlink.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+2 patches applied to wireless-drivers-next.git, thanks.
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index a932d95be798..ab4b1368904f 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -8254,8 +8254,6 @@ static int __devlink_port_attrs_set(struct devlink_po=
-rt *devlink_port,
- {
- 	struct devlink_port_attrs *attrs =3D &devlink_port->attrs;
-=20
--	if (WARN_ON(devlink_port->registered))
--		return -EEXIST;
- 	devlink_port->attrs_set =3D true;
- 	attrs->flavour =3D flavour;
- 	if (attrs->switch_id.id_len) {
-@@ -8279,6 +8277,8 @@ void devlink_port_attrs_set(struct devlink_port *devl=
-ink_port,
- {
- 	int ret;
-=20
-+	if (WARN_ON(devlink_port->registered))
-+		return;
- 	devlink_port->attrs =3D *attrs;
- 	ret =3D __devlink_port_attrs_set(devlink_port, attrs->flavour);
- 	if (ret)
-@@ -8301,6 +8301,8 @@ void devlink_port_attrs_pci_pf_set(struct devlink_por=
-t *devlink_port, u32 contro
- 	struct devlink_port_attrs *attrs =3D &devlink_port->attrs;
- 	int ret;
-=20
-+	if (WARN_ON(devlink_port->registered))
-+		return;
- 	ret =3D __devlink_port_attrs_set(devlink_port,
- 				       DEVLINK_PORT_FLAVOUR_PCI_PF);
- 	if (ret)
-@@ -8326,6 +8328,8 @@ void devlink_port_attrs_pci_vf_set(struct devlink_por=
-t *devlink_port, u32 contro
- 	struct devlink_port_attrs *attrs =3D &devlink_port->attrs;
- 	int ret;
-=20
-+	if (WARN_ON(devlink_port->registered))
-+		return;
- 	ret =3D __devlink_port_attrs_set(devlink_port,
- 				       DEVLINK_PORT_FLAVOUR_PCI_VF);
- 	if (ret)
---=20
-2.26.2
+287431463e78 rsi: Move card interrupt handling to RX thread
+abd131a19f6b rsi: Clean up loop in the interrupt handler
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20201103180941.443528-1-marex@denx.de/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
