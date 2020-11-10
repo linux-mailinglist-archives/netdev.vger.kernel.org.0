@@ -2,192 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6162B2AD7C1
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 14:37:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64F7D2AD801
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 14:49:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732355AbgKJNhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 08:37:24 -0500
-Received: from correo.us.es ([193.147.175.20]:36772 "EHLO mail.us.es"
+        id S1730542AbgKJNt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 08:49:26 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:45910 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731187AbgKJNhU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 08:37:20 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 7AE5339627A
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 14:37:18 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 6BBB8DA7E1
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 14:37:18 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 53E45DA85D; Tue, 10 Nov 2020 14:37:18 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id ADF1ADA789;
-        Tue, 10 Nov 2020 14:37:15 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 10 Nov 2020 14:37:15 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 7CCF642EF9E0;
-        Tue, 10 Nov 2020 14:37:15 +0100 (CET)
-Date:   Tue, 10 Nov 2020 14:37:15 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-audit@redhat.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        paul@paul-moore.com, sds@tycho.nsa.gov,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH v22 16/23] LSM: security_secid_to_secctx in netlink
- netfilter
-Message-ID: <20201110133715.GA1890@salvia>
-References: <20201105004924.11651-1-casey@schaufler-ca.com>
- <20201105004924.11651-17-casey@schaufler-ca.com>
+        id S1730357AbgKJNt0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 08:49:26 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kcU1P-006Htg-Nb; Tue, 10 Nov 2020 14:49:19 +0100
+Date:   Tue, 10 Nov 2020 14:49:19 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: tag_dsa: Unify regular and ethertype DSA
+ taggers
+Message-ID: <20201110134919.GA1480543@lunn.ch>
+References: <20201110091325.21582-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201105004924.11651-17-casey@schaufler-ca.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20201110091325.21582-1-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Casey,
+> @@ -7,8 +7,7 @@ dsa_core-y += dsa.o dsa2.o master.o port.o slave.o switch.o
+>  obj-$(CONFIG_NET_DSA_TAG_8021Q) += tag_8021q.o
+>  obj-$(CONFIG_NET_DSA_TAG_AR9331) += tag_ar9331.o
+>  obj-$(CONFIG_NET_DSA_TAG_BRCM_COMMON) += tag_brcm.o
+> -obj-$(CONFIG_NET_DSA_TAG_DSA) += tag_dsa.o
+> -obj-$(CONFIG_NET_DSA_TAG_EDSA) += tag_edsa.o
+> +obj-$(CONFIG_NET_DSA_TAG_DSA_COMMON) += tag_dsa.o
+>  obj-$(CONFIG_NET_DSA_TAG_GSWIP) += tag_gswip.o
+>  obj-$(CONFIG_NET_DSA_TAG_HELLCREEK) += tag_hellcreek.o
+>  obj-$(CONFIG_NET_DSA_TAG_KSZ) += tag_ksz.o
 
-On Wed, Nov 04, 2020 at 04:49:17PM -0800, Casey Schaufler wrote:
-> Change netlink netfilter interfaces to use lsmcontext
-> pointers, and remove scaffolding.
-> 
-> Reviewed-by: Kees Cook <keescook@chromium.org>
-> Reviewed-by: John Johansen <john.johansen@canonical.com>
-> Acked-by: Stephen Smalley <sds@tycho.nsa.gov>
-> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-> Cc: netdev@vger.kernel.org
-> Cc: netfilter-devel@vger.kernel.org
+>  
+> -#define DSA_HLEN	4
+> +#if IS_ENABLED(CONFIG_NET_DSA_TAG_DSA_COMMON)
 
-You can carry this tag in your follow up patches.
+I don't think you need this.  The file will not get compiled if
+CONFIG_NET_DSA_TAG_DSA_COMMON is not enabled.
 
-Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> -static struct sk_buff *dsa_xmit(struct sk_buff *skb, struct net_device *dev)
+> +#define DSA_HLEN 4
+> +
+> +/**
+> + * enum dsa_cmd - DSA Command
+> + * @DSA_CMD_TO_CPU: Set on packets that where trapped or mirrored to
+> + *     the CPU port. This is needed to implement control protocols,
+> + *     e.g. STP and LLDP, that must not allow those control packets to
+> + *     be switched according to the normal rules.
+> + * @DSA_CMD_FROM_CPU: Used by the CPU to send a packet to a specific
+> + *     port, ignoring all the barriers that the switch normally
+> + *     enforces (VLANs, STP port states etc.). "sudo send packet"
+> + * @DSA_CMD_TO_SNIFFER: Set on packets that where mirrored to the CPU
+> + *     as a result of matching some user configured ingress or egress
+> + *     monitor criteria.
+> + * @DSA_CMD_FORWARD: Everything else, i.e. the bulk data traffic.
+> + */
+> +enum dsa_cmd {
+> +	DSA_CMD_TO_CPU     = 0,
+> +	DSA_CMD_FROM_CPU   = 1,
+> +	DSA_CMD_TO_SNIFFER = 2,
+> +	DSA_CMD_FORWARD    = 3
+> +};
+> +
+> +/**
+> + * enum dsa_code - TO_CPU Code
+> + *
+> + * A 3-bit code is used to relay why a particular frame was sent to
+> + * the CPU. We only use this to determine if the packet was trapped or
+> + * mirrored, i.e. whether the packet has been forwarded by hardware or
+> + * not.
+> + */
+> +enum dsa_code {
+> +	DSA_CODE_MGMT_TRAP     = 0,
+> +	DSA_CODE_FRAME2REG     = 1,
+> +	DSA_CODE_IGMP_MLD_TRAP = 2,
+> +	DSA_CODE_POLICY_TRAP   = 3,
+> +	DSA_CODE_ARP_MIRROR    = 4,
+> +	DSA_CODE_POLICY_MIRROR = 5,
+> +	DSA_CODE_RESERVED_6    = 6,
+> +	DSA_CODE_RESERVED_7    = 7
+> +};
 
-Thanks.
+Nice kerneldoc. Thanks
 
-> ---
->  net/netfilter/nfnetlink_queue.c | 37 +++++++++++++--------------------
->  1 file changed, 14 insertions(+), 23 deletions(-)
-> 
-> diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-> index 84be5a49a157..0d8b83d84422 100644
-> --- a/net/netfilter/nfnetlink_queue.c
-> +++ b/net/netfilter/nfnetlink_queue.c
-> @@ -301,15 +301,13 @@ static int nfqnl_put_sk_uidgid(struct sk_buff *skb, struct sock *sk)
->  	return -1;
->  }
->  
-> -static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
-> +static void nfqnl_get_sk_secctx(struct sk_buff *skb, struct lsmcontext *context)
->  {
-> -	u32 seclen = 0;
->  #if IS_ENABLED(CONFIG_NETWORK_SECMARK)
->  	struct lsmblob blob;
-> -	struct lsmcontext context = { };
->  
->  	if (!skb || !sk_fullsock(skb->sk))
-> -		return 0;
-> +		return;
->  
->  	read_lock_bh(&skb->sk->sk_callback_lock);
->  
-> @@ -318,14 +316,12 @@ static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
->  		 * blob. security_secid_to_secctx() will know which security
->  		 * module to use to create the secctx.  */
->  		lsmblob_init(&blob, skb->secmark);
-> -		security_secid_to_secctx(&blob, &context);
-> -		*secdata = context.context;
-> +		security_secid_to_secctx(&blob, context);
->  	}
->  
->  	read_unlock_bh(&skb->sk->sk_callback_lock);
-> -	seclen = context.len;
->  #endif
-> -	return seclen;
-> +	return;
->  }
->  
->  static u32 nfqnl_get_bridge_size(struct nf_queue_entry *entry)
-> @@ -398,12 +394,10 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
->  	struct net_device *indev;
->  	struct net_device *outdev;
->  	struct nf_conn *ct = NULL;
-> +	struct lsmcontext context = { };
->  	enum ip_conntrack_info ctinfo;
->  	struct nfnl_ct_hook *nfnl_ct;
->  	bool csum_verify;
-> -	struct lsmcontext scaff; /* scaffolding */
-> -	char *secdata = NULL;
-> -	u32 seclen = 0;
->  
->  	size = nlmsg_total_size(sizeof(struct nfgenmsg))
->  		+ nla_total_size(sizeof(struct nfqnl_msg_packet_hdr))
-> @@ -469,9 +463,9 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
->  	}
->  
->  	if ((queue->flags & NFQA_CFG_F_SECCTX) && entskb->sk) {
-> -		seclen = nfqnl_get_sk_secctx(entskb, &secdata);
-> -		if (seclen)
-> -			size += nla_total_size(seclen);
-> +		nfqnl_get_sk_secctx(entskb, &context);
-> +		if (context.len)
-> +			size += nla_total_size(context.len);
->  	}
->  
->  	skb = alloc_skb(size, GFP_ATOMIC);
-> @@ -604,7 +598,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
->  	    nfqnl_put_sk_uidgid(skb, entskb->sk) < 0)
->  		goto nla_put_failure;
->  
-> -	if (seclen && nla_put(skb, NFQA_SECCTX, seclen, secdata))
-> +	if (context.len &&
-> +	    nla_put(skb, NFQA_SECCTX, context.len, context.context))
->  		goto nla_put_failure;
->  
->  	if (ct && nfnl_ct->build(skb, ct, ctinfo, NFQA_CT, NFQA_CT_INFO) < 0)
-> @@ -632,10 +627,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
->  	}
->  
->  	nlh->nlmsg_len = skb->len;
-> -	if (seclen) {
-> -		lsmcontext_init(&scaff, secdata, seclen, 0);
-> -		security_release_secctx(&scaff);
-> -	}
-> +	if (context.len)
-> +		security_release_secctx(&context);
->  	return skb;
->  
->  nla_put_failure:
-> @@ -643,10 +636,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
->  	kfree_skb(skb);
->  	net_err_ratelimited("nf_queue: error creating packet message\n");
->  nlmsg_failure:
-> -	if (seclen) {
-> -		lsmcontext_init(&scaff, secdata, seclen, 0);
-> -		security_release_secctx(&scaff);
-> -	}
-> +	if (context.len)
-> +		security_release_secctx(&context);
->  	return NULL;
->  }
->  
-> -- 
-> 2.24.1
-> 
+I will take a look at the rest later.
+
+  Andrew
