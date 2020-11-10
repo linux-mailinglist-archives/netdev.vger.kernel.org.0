@@ -2,132 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B05542AD893
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 15:20:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F5A12AD8A6
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 15:22:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732170AbgKJOUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 09:20:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59246 "EHLO
+        id S1731738AbgKJOWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 09:22:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730059AbgKJOUi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 09:20:38 -0500
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 327D6C0613CF;
-        Tue, 10 Nov 2020 06:20:38 -0800 (PST)
-Received: by mail-qk1-x741.google.com with SMTP id h15so11485031qkl.13;
-        Tue, 10 Nov 2020 06:20:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=oJx9xQKc52ebOodjQ1LDvOG8BVuJTChcS2sdwxrpBsY=;
-        b=f1D9kNtV1Xe5AbRNdk82ZhouiPlBOEaxMlksIuXiflWbZuQ7D0pMnWLRs3SBDGq3vT
-         rqEpemlORRYRAB1juT3hZqgamDISa/mtB3qWmWN7O5sQeZdChsZNzuYpD3Mie/hZZ6j7
-         DwXPTmo+k6bCsoYwMCs9WYZCkAEFR+mSWPmj7MQB2ABrzfDFp9MnjgAXZzTQgoYasG72
-         Z7WWS3jD3SBKl8Z3szg6LPGQHYKEQ9AT7DqbBJidQidA6bAz7A1vtJHGWPv2jyWKcQ21
-         CFxZUpCjjMilnoZoQIqKD25cDm1eEiJ9ct/Td3heQrick/OvL6lXsW1BtfQlJQVUTtEm
-         OiGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=oJx9xQKc52ebOodjQ1LDvOG8BVuJTChcS2sdwxrpBsY=;
-        b=ht/9dDu2jIcySvF2T2gcCwRzIMy8nLasRyPoaXRxhyc9NSqRbnQfwkmipTGdR4tDi1
-         9OQH37T/EcizkETFom4eF8cVKxd/dYdu5gV4Hg+BPcZMjMnjHxlCodeed+rz2uunrkqU
-         XeLVUWV8jqJRpFmvvl3B+jzSRcsRfayMsmkYSd74JsO2Pt9G/97NnfzSA30ZoB9h36EP
-         Ge7Fu+0L5OkXu7/ARF2he9IM2Qkv7VTGoU/RTKEanTFHfC9lxRoGtaR5axlm7RdrT4t2
-         eeVVq8HFKia3fbxt+7HIA8LW1o3sgRKXqIHMO5YAwMrBbZjgY/hJL0PlkIbuFCbpXxE5
-         WgeQ==
-X-Gm-Message-State: AOAM530Zni99hKAGMUdBy1kTGTYTNMxSMRTg811vhPzlpyJGgcbZMTqh
-        6UoGrfoeD/wwVwUgBcLORNs=
-X-Google-Smtp-Source: ABdhPJzSdQzvYsv4MjhvHeoiKsBktwTCINCy3aruXB7KC2rEvml2fggDY9qbhNun3v/ix/5DrNVcKw==
-X-Received: by 2002:a37:4e57:: with SMTP id c84mr19132583qkb.394.1605018037188;
-        Tue, 10 Nov 2020 06:20:37 -0800 (PST)
-Received: from localhost.localdomain ([198.52.185.246])
-        by smtp.gmail.com with ESMTPSA id h6sm6858534qtm.68.2020.11.10.06.20.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Nov 2020 06:20:36 -0800 (PST)
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Frederic LAMBERT <frdrc66@gmail.com>,
-        Gabor Juhos <juhosg@openwrt.org>,
-        Jonathan Cameron <jonathan.cameron@huawei.com>,
-        linux-spi@vger.kernel.org
-Subject: [PATCH net v2] net: phy: spi_ks8995: Do not overwrite SPI mode flags
-Date:   Tue, 10 Nov 2020 09:20:32 -0500
-Message-Id: <20201110142032.24071-1-TheSven73@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S1726721AbgKJOWA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 09:22:00 -0500
+Received: from mx0b-00190b01.pphosted.com (mx0b-00190b01.pphosted.com [IPv6:2620:100:9005:57f::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD1EC0613CF
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 06:22:00 -0800 (PST)
+Received: from pps.filterd (m0122331.ppops.net [127.0.0.1])
+        by mx0b-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AAEF2su019922;
+        Tue, 10 Nov 2020 14:21:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=bzsr6I01mEwqPHMp7Kai1Ifb6tt8RMl5iMCYL3nRC1s=;
+ b=GmCe38qwGQBIgK/Kp4cpY0xoYZesrub+V1cQ/z9kEwxmLqWODPqZ+J4O91F1lJg1wU+1
+ EoM3TVJV8q0U8w0Ruwszl/s6fhrr33UjiW4cIZgqoSwMYiMidFUwaKum/ZX9B2+Pv6Z/
+ HsLk1dLMSmMxWSfyLsO50jy47oMOHpk/vHws2HzwHqqTOsgkpP+gm9gP5h0xaV+Arn+R
+ 9gAQMpgVjiqLEcOlzYRfltLi3IJ1PlfMOA0b8sap5bwnnp+mC8M+uw9/L2jEB3Xw+2KC
+ 9gl/+Lp3TVz+VQ0gxSuQ7y7yg3dGPdJaoXqbD2hF1OhfdzS8KaXP3/etmVETBu4KfMcb 3g== 
+Received: from prod-mail-ppoint6 (prod-mail-ppoint6.akamai.com [184.51.33.61] (may be forged))
+        by mx0b-00190b01.pphosted.com with ESMTP id 34nhb5dx68-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 10 Nov 2020 14:21:54 +0000
+Received: from pps.filterd (prod-mail-ppoint6.akamai.com [127.0.0.1])
+        by prod-mail-ppoint6.akamai.com (8.16.0.42/8.16.0.42) with SMTP id 0AAEJegB001778;
+        Tue, 10 Nov 2020 09:21:53 -0500
+Received: from prod-mail-relay11.akamai.com ([172.27.118.250])
+        by prod-mail-ppoint6.akamai.com with ESMTP id 34nqt2p9ej-1;
+        Tue, 10 Nov 2020 09:21:53 -0500
+Received: from [0.0.0.0] (stag-ssh-gw01.bos01.corp.akamai.com [172.27.113.23])
+        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id 73DEC23CBB;
+        Tue, 10 Nov 2020 14:21:53 +0000 (GMT)
+Subject: Re: [PATCH net V2] Exempt multicast addresses from five-second
+ neighbor lifetime
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+References: <20201109025052.23280-1-jdike@akamai.com>
+ <20201109114733.0ee71b82@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Jeff Dike <jdike@akamai.com>
+Message-ID: <aaf62231-75d2-6b2f-9982-3d24ca4e4e80@akamai.com>
+Date:   Tue, 10 Nov 2020 09:21:53 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20201109114733.0ee71b82@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-10_05:2020-11-10,2020-11-10 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 suspectscore=0
+ adultscore=0 spamscore=0 malwarescore=0 mlxlogscore=846 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011100102
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-10_05:2020-11-10,2020-11-10 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxlogscore=795
+ lowpriorityscore=0 priorityscore=1501 clxscore=1011 impostorscore=0
+ adultscore=0 malwarescore=0 phishscore=0 spamscore=0 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011100102
+X-Agari-Authentication-Results: mx.akamai.com; spf=${SPFResult} (sender IP is 184.51.33.61)
+ smtp.mailfrom=jdike@akamai.com smtp.helo=prod-mail-ppoint6
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Van Asbroeck <thesven73@gmail.com>
+Hi Jakub,
 
-This driver makes sure the underlying SPI bus is set to "mode 0"
-by assigning SPI_MODE_0 to spi->mode. Which overwrites all other
-SPI mode flags.
+On 11/9/20 2:47 PM, Jakub Kicinski wrote:
+> This makes sense because mcast L2 addr is calculated, not discovered,
+> and therefore can be recreated at a very low cost, correct?
 
-In some circumstances, this can break the underlying SPI bus driver.
-For example, if SPI_CS_HIGH is set on the SPI bus, the driver
-will clear that flag, which results in a chip-select polarity issue.
+Yes.
 
-Fix by changing only the SPI_MODE_N bits, i.e. SPI_CPHA and SPI_CPOL.
+> Perhaps it would make sense to widen the API to any "computed" address
+> rather than implicitly depending on this behavior for mcast?
 
-Fixes: a8e510f682fe ("phy: Micrel KS8995MA 5-ports 10/100 managed Ethernet switch support added")
-Fixes: f3186dd87669 ("spi: Optionally use GPIO descriptors for CS GPIOs")
-Link: https://patchwork.kernel.org/project/spi-devel-general/patch/20201106150706.29089-1-TheSven73@gmail.com/#23747737
-Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
----
+I'm happy to do that, but I don't know of any other types of addresses which are computed and end up in the neighbors table.
 
-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git # 989ef49bdf10
+> I'm not an expert tho, maybe others disagree.
+> 
+>> +static int arp_is_multicast(const void *pkey)
+>> +{
+>> +	return IN_MULTICAST(htonl(*((u32 *)pkey)));
+>> +}
+> 
+> net/ipv4/arp.c:935:16: warning: cast from restricted __be32
+> 
+> s/u32/__be32/
+> s/htonl/ntohl/
 
-To be followed by a proposed spi helper function. Submit to net-next after net
-gets merged into net-next.
+Thanks, I ran sparse, but must have missed that somehow.
 
-# large number of people, from get_maintainer.pl
-To: Andrew Lunn <andrew@lunn.ch>
-To: Heiner Kallweit <hkallweit1@gmail.com>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-
-Cc: Mark Brown <broonie@kernel.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Frederic LAMBERT <frdrc66@gmail.com>
-Cc: Gabor Juhos <juhosg@openwrt.org>
-Cc: Jonathan Cameron <jonathan.cameron@huawei.com>
-
-# Cc SPI group, suggested by Jakub Kicinski
-Cc: linux-spi@vger.kernel.org
-
- drivers/net/phy/spi_ks8995.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/spi_ks8995.c b/drivers/net/phy/spi_ks8995.c
-index 4b198399bfa2..3c6c87a09b03 100644
---- a/drivers/net/phy/spi_ks8995.c
-+++ b/drivers/net/phy/spi_ks8995.c
-@@ -491,7 +491,9 @@ static int ks8995_probe(struct spi_device *spi)
- 
- 	spi_set_drvdata(spi, ks);
- 
--	spi->mode = SPI_MODE_0;
-+	/* use SPI_MODE_0 without changing any other mode flags */
-+	spi->mode &= ~(SPI_CPHA | SPI_CPOL);
-+	spi->mode |= SPI_MODE_0;
- 	spi->bits_per_word = 8;
- 	err = spi_setup(spi);
- 	if (err) {
--- 
-2.17.1
+Jeff
 
