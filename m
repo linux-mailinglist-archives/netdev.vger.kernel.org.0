@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33F242AD2C7
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 10:50:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 430842AD2C9
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 10:50:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730453AbgKJJu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 04:50:28 -0500
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:52863 "EHLO
+        id S1730654AbgKJJub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 04:50:31 -0500
+Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:35539 "EHLO
         wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730209AbgKJJuZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 04:50:25 -0500
+        by vger.kernel.org with ESMTP id S1726467AbgKJJu0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 04:50:26 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 2FEE8E08;
-        Tue, 10 Nov 2020 04:50:24 -0500 (EST)
+        by mailout.west.internal (Postfix) with ESMTP id 8DE49DF9;
+        Tue, 10 Nov 2020 04:50:25 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 10 Nov 2020 04:50:24 -0500
+  by compute3.internal (MEProxy); Tue, 10 Nov 2020 04:50:25 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=jD9noV40odXofwL5g939LNtJBSstCkliXYzfnO0JoKo=; b=G/msqlJp
-        BgjUpwFhF/+dmjtVAf/9NTLhAsf2M2ZjdQcc3Fx3N+Rs5g/H40Jr32bCDUiYiGF7
-        G1zKcxt4BllHGZqGHL21p2bnCsErzQOHRaKgPcwgMdGBnidZwHFDnD9V5ChQjEQG
-        muEg2OmRdWhbKcwQ0ObvuV6cFXnryw6U+axLIlzsAkK1bTVlIddQFNueCHJB7+43
-        PbmLpMqJ7ZbLH153OK211lkfNFFqRHZlEg9GG17K6A1yCwsqfpNXCC5QjcVohdl+
-        okUY4RXpugQD+1thWqVb8dwQgMJtGACGSbskpPNYKSLc5v/E7AxN2X1X2q3B/y+X
-        C/W1WGgv15DOAQ==
-X-ME-Sender: <xms:X2KqX9Vh0sp9dAfCIhV1qwIB1ccRdHQs2QADaQ4uYyz7T2oBH4gyDQ>
-    <xme:X2KqX9khy42vosLH5f1TEHzWOZgSLifN8JhRi4mk7A8Q20742w3cEKPDWvfpZ9xsL
-    OTQCUwU6WAhaTA>
+        fm1; bh=OH7VIbh2tYdRjRF9xMm4i3XS38PbbYrLP9cFGsho9vs=; b=fQeDc9Pf
+        bSI5j1sYamPC8UM5bp1pqaGiS3Nqn2g8fKBomAcKB5t1As7SqU5jlU2ZxoBcyhn+
+        PcJo+qGcvEbHj//hc92y4JgMPRO+uyk8lBxHlHHSlGWxsRdFNVEvOUJa2NrjStU8
+        IyDPiLPYJ4XpFmJIqbfcygLH/OaWcr6ze8VBv9+wIUhq08p0hGU/2xeo4gP90fH9
+        nNhL1vu/2oHo2gLg/2BkY2wmasToHlWNndGLgdZsQ14evGRFz/bB8nd65hx2C7h9
+        q8Y74BjqyBpgDMnd4aa9c3csZWAIpRtNU2B4nPwIOMZIXSoTYjmZn2X+IadRDHfm
+        64SOS0vQSDyvZA==
+X-ME-Sender: <xms:YWKqX24l3eutqUQObFXF0dECuJPg1Dw0baMy45UAm_DLdVcqOPngxQ>
+    <xme:YWKqX_7fJ0plO5UI2UxLK99ZP8Ps3ZffwtldCOaAAasdGOjvD_6gUocmeL4Y2y6K1
+    hy_w9GGOmgFKpA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedruddujedgtdekucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedruddujedgtdekucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehgedrudeg
     jeenucevlhhushhtvghrufhiiigvpeegnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
     hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:X2KqX5a3UjkB-q5xEJrPIzLht-FRX0vcLu2CHfmRSy9VHCMq38xBAQ>
-    <xmx:X2KqXwVbVFDWsgIqSqOzoA1qDKffiGjjRH-ZLeaNoRqe_C9nkLYP-w>
-    <xmx:X2KqX3kDkXioxPwywKxnex6_L5im8Og_DiINMPi2SfXTL5QdnBqoNw>
-    <xmx:X2KqX8ymIQDGndP5DtGDj-f1OETbwkdRMNKzpEipyXJhULoSP-8bXg>
+X-ME-Proxy: <xmx:YWKqX1frwB8juBNC_HNm3ftq5BKrEXM10fVmgzkiwCQvsMhQ4VidoA>
+    <xmx:YWKqXzLKq4P1WaZrY4f5DThzr9GmeJJ828IEIY7LAoKeRlCrxtR7rw>
+    <xmx:YWKqX6LHKWYh9bKkbk4K3Ii1DLaYdvHNco04qNzYbwa3qrZFhSK_tw>
+    <xmx:YWKqXxVnlVMbUxQgCV94iFiurpv_w6ko6y8XwI47lymjj8dOb1trog>
 Received: from shredder.mtl.com (igld-84-229-154-147.inter.net.il [84.229.154.147])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 878023280066;
-        Tue, 10 Nov 2020 04:50:22 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id E40E0328005A;
+        Tue, 10 Nov 2020 04:50:23 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 05/15] mlxsw: spectrum_router: Push out RALUE pack into separate helper
-Date:   Tue, 10 Nov 2020 11:48:50 +0200
-Message-Id: <20201110094900.1920158-6-idosch@idosch.org>
+Subject: [PATCH net-next 06/15] mlxsw: spectrum: Export RALUE pack helper and use it from IPIP
+Date:   Tue, 10 Nov 2020 11:48:51 +0200
+Message-Id: <20201110094900.1920158-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201110094900.1920158-1-idosch@idosch.org>
 References: <20201110094900.1920158-1-idosch@idosch.org>
@@ -63,135 +63,73 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-As the RALUE packing is going to be pushed into an op, in preparation
-for that push the code into a separate function in the meantime.
+As the RALUE packing is going to be put into op, make the user from
+IPIP code use the same helper as the router code does.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 49 +++++++++++--------
- 1 file changed, 29 insertions(+), 20 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum_ipip.c | 17 ++---------------
+ .../ethernet/mellanox/mlxsw/spectrum_router.c   |  2 +-
+ .../ethernet/mellanox/mlxsw/spectrum_router.h   |  5 +++++
+ 3 files changed, 8 insertions(+), 16 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
+index f8b9b5be8247..0f0064392468 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
+@@ -188,22 +188,9 @@ mlxsw_sp_ipip_fib_entry_op_gre4_ralue(struct mlxsw_sp *mlxsw_sp,
+ 				      u32 tunnel_index)
+ {
+ 	char *ralue_pl = op_ctx->ralue_pl;
+-	enum mlxsw_reg_ralue_op ralue_op;
+-
+-	switch (op) {
+-	case MLXSW_SP_FIB_ENTRY_OP_WRITE:
+-		ralue_op = MLXSW_REG_RALUE_OP_WRITE_WRITE;
+-		break;
+-	case MLXSW_SP_FIB_ENTRY_OP_DELETE:
+-		ralue_op = MLXSW_REG_RALUE_OP_WRITE_DELETE;
+-		break;
+-	default:
+-		WARN_ON_ONCE(1);
+-		return -EINVAL;
+-	}
+ 
+-	mlxsw_reg_ralue_pack4(ralue_pl, MLXSW_REG_RALXX_PROTOCOL_IPV4, ralue_op,
+-			      ul_vr_id, prefix_len, dip);
++	mlxsw_sp_fib_entry_ralue_pack(ralue_pl, MLXSW_SP_L3_PROTO_IPV4, op,
++				      ul_vr_id, prefix_len, (unsigned char *) &dip);
+ 	mlxsw_reg_ralue_act_ip2me_tun_pack(ralue_pl, tunnel_index);
+ 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ralue), ralue_pl);
+ }
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 9083c74c1904..cf186f1ff3f6 100644
+index cf186f1ff3f6..3ed9bd4afe95 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -4308,16 +4308,15 @@ mlxsw_sp_fib_entry_hw_flags_refresh(struct mlxsw_sp *mlxsw_sp,
+@@ -4307,7 +4307,7 @@ mlxsw_sp_fib_entry_hw_flags_refresh(struct mlxsw_sp *mlxsw_sp,
+ 	}
  }
  
- static void
--mlxsw_sp_fib_entry_ralue_pack(char *ralue_pl,
--			      const struct mlxsw_sp_fib_entry *fib_entry,
--			      enum mlxsw_sp_fib_entry_op op)
+-static void
++void
+ mlxsw_sp_fib_entry_ralue_pack(char *ralue_pl, enum mlxsw_sp_l3proto proto,
+ 			      enum mlxsw_sp_fib_entry_op op, u16 virtual_router,
+ 			      u8 prefix_len, unsigned char *addr)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+index 963825dff66b..1b071f872a3b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+@@ -173,4 +173,9 @@ static inline bool mlxsw_sp_l3addr_eq(const union mlxsw_sp_l3addr *addr1,
+ int mlxsw_sp_ipip_ecn_encap_init(struct mlxsw_sp *mlxsw_sp);
+ int mlxsw_sp_ipip_ecn_decap_init(struct mlxsw_sp *mlxsw_sp);
+ 
++void
 +mlxsw_sp_fib_entry_ralue_pack(char *ralue_pl, enum mlxsw_sp_l3proto proto,
 +			      enum mlxsw_sp_fib_entry_op op, u16 virtual_router,
-+			      u8 prefix_len, unsigned char *addr)
- {
--	struct mlxsw_sp_fib *fib = fib_entry->fib_node->fib;
--	enum mlxsw_reg_ralxx_protocol proto;
-+	enum mlxsw_reg_ralxx_protocol ralxx_proto;
- 	enum mlxsw_reg_ralue_op ralue_op;
- 	u32 *p_dip;
- 
--	proto = (enum mlxsw_reg_ralxx_protocol) fib->proto;
-+	ralxx_proto = (enum mlxsw_reg_ralxx_protocol) proto;
- 
- 	switch (op) {
- 	case MLXSW_SP_FIB_ENTRY_OP_WRITE:
-@@ -4331,21 +4330,31 @@ mlxsw_sp_fib_entry_ralue_pack(char *ralue_pl,
- 		return;
- 	}
- 
--	switch (fib->proto) {
-+	switch (proto) {
- 	case MLXSW_SP_L3_PROTO_IPV4:
--		p_dip = (u32 *) fib_entry->fib_node->key.addr;
--		mlxsw_reg_ralue_pack4(ralue_pl, proto, ralue_op, fib->vr->id,
--				      fib_entry->fib_node->key.prefix_len,
--				      *p_dip);
-+		p_dip = (u32 *) addr;
-+		mlxsw_reg_ralue_pack4(ralue_pl, ralxx_proto, ralue_op,
-+				      virtual_router, prefix_len, *p_dip);
- 		break;
- 	case MLXSW_SP_L3_PROTO_IPV6:
--		mlxsw_reg_ralue_pack6(ralue_pl, proto, ralue_op, fib->vr->id,
--				      fib_entry->fib_node->key.prefix_len,
--				      fib_entry->fib_node->key.addr);
-+		mlxsw_reg_ralue_pack6(ralue_pl, ralxx_proto, ralue_op,
-+				      virtual_router, prefix_len, addr);
- 		break;
- 	}
- }
- 
-+static void mlxsw_sp_fib_entry_pack(struct mlxsw_sp_fib_entry_op_ctx *op_ctx,
-+				    struct mlxsw_sp_fib_entry *fib_entry,
-+				    enum mlxsw_sp_fib_entry_op op)
-+{
-+	struct mlxsw_sp_fib *fib = fib_entry->fib_node->fib;
++			      u8 prefix_len, unsigned char *addr);
 +
-+	mlxsw_sp_fib_entry_ralue_pack(op_ctx->ralue_pl, fib->proto, op,
-+				      fib->vr->id,
-+				      fib_entry->fib_node->key.prefix_len,
-+				      fib_entry->fib_node->key.addr);
-+}
-+
- static int mlxsw_sp_adj_discard_write(struct mlxsw_sp *mlxsw_sp, u16 rif_index)
- {
- 	enum mlxsw_reg_ratr_trap_action trap_action;
-@@ -4414,7 +4423,7 @@ static int mlxsw_sp_fib_entry_op_remote(struct mlxsw_sp *mlxsw_sp,
- 		trap_id = MLXSW_TRAP_ID_RTR_INGRESS0;
- 	}
- 
--	mlxsw_sp_fib_entry_ralue_pack(ralue_pl, fib_entry, op);
-+	mlxsw_sp_fib_entry_pack(op_ctx, fib_entry, op);
- 	mlxsw_reg_ralue_act_remote_pack(ralue_pl, trap_action, trap_id,
- 					adjacency_index, ecmp_size);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ralue), ralue_pl);
-@@ -4439,7 +4448,7 @@ static int mlxsw_sp_fib_entry_op_local(struct mlxsw_sp *mlxsw_sp,
- 		trap_id = MLXSW_TRAP_ID_RTR_INGRESS0;
- 	}
- 
--	mlxsw_sp_fib_entry_ralue_pack(ralue_pl, fib_entry, op);
-+	mlxsw_sp_fib_entry_pack(op_ctx, fib_entry, op);
- 	mlxsw_reg_ralue_act_local_pack(ralue_pl, trap_action, trap_id,
- 				       rif_index);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ralue), ralue_pl);
-@@ -4452,7 +4461,7 @@ static int mlxsw_sp_fib_entry_op_trap(struct mlxsw_sp *mlxsw_sp,
- {
- 	char *ralue_pl = op_ctx->ralue_pl;
- 
--	mlxsw_sp_fib_entry_ralue_pack(ralue_pl, fib_entry, op);
-+	mlxsw_sp_fib_entry_pack(op_ctx, fib_entry, op);
- 	mlxsw_reg_ralue_act_ip2me_pack(ralue_pl);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ralue), ralue_pl);
- }
-@@ -4466,7 +4475,7 @@ static int mlxsw_sp_fib_entry_op_blackhole(struct mlxsw_sp *mlxsw_sp,
- 	char *ralue_pl = op_ctx->ralue_pl;
- 
- 	trap_action = MLXSW_REG_RALUE_TRAP_ACTION_DISCARD_ERROR;
--	mlxsw_sp_fib_entry_ralue_pack(ralue_pl, fib_entry, op);
-+	mlxsw_sp_fib_entry_pack(op_ctx, fib_entry, op);
- 	mlxsw_reg_ralue_act_local_pack(ralue_pl, trap_action, 0, 0);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ralue), ralue_pl);
- }
-@@ -4484,7 +4493,7 @@ mlxsw_sp_fib_entry_op_unreachable(struct mlxsw_sp *mlxsw_sp,
- 	trap_action = MLXSW_REG_RALUE_TRAP_ACTION_TRAP;
- 	trap_id = MLXSW_TRAP_ID_RTR_INGRESS1;
- 
--	mlxsw_sp_fib_entry_ralue_pack(ralue_pl, fib_entry, op);
-+	mlxsw_sp_fib_entry_pack(op_ctx, fib_entry, op);
- 	mlxsw_reg_ralue_act_local_pack(ralue_pl, trap_action, trap_id, 0);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ralue), ralue_pl);
- }
-@@ -4513,7 +4522,7 @@ static int mlxsw_sp_fib_entry_op_nve_decap(struct mlxsw_sp *mlxsw_sp,
- {
- 	char *ralue_pl = op_ctx->ralue_pl;
- 
--	mlxsw_sp_fib_entry_ralue_pack(ralue_pl, fib_entry, op);
-+	mlxsw_sp_fib_entry_pack(op_ctx, fib_entry, op);
- 	mlxsw_reg_ralue_act_ip2me_tun_pack(ralue_pl,
- 					   fib_entry->decap.tunnel_index);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ralue), ralue_pl);
+ #endif /* _MLXSW_ROUTER_H_*/
 -- 
 2.26.2
 
