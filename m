@@ -2,362 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9C612AE025
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 20:51:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F5D72AE091
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 21:15:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731797AbgKJTvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 14:51:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731613AbgKJTv3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 14:51:29 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D79DC0613D1;
-        Tue, 10 Nov 2020 11:51:29 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id o23so19373999ejn.11;
-        Tue, 10 Nov 2020 11:51:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=HH3eQpgACFc0U7/w0sEUlYSVeHEP4oODaS+YLEBlqzk=;
-        b=K7WBROx+NQYbR4nWTmYwYSoLBjquYRRNJUYANnNuVwBOfSGxffrEZsbRmOK4pFg+hV
-         h+2ALZaHn/SjgGHYjul25syEsCXxShqAk/Hza3VuOs8lPmK25OPtx6XH/CyV/z8aIyZU
-         sfc3yG2EQ9YjYcGvgsnP+LmEvtdlROiNwZ5Mck3wo+jHCeUnsKCK8e8jhnXfz6HywR9w
-         CTNZ3x43OsxB7vmXt/o+1y53Ponh0LRShKzgVKb2DTdZ0+axHWLaq5pJFWktcpT6dLb6
-         nOam/wXBAremig+CLzi/qYnWpbWOSz86uvvzNdjJpEnmkGtP1mATiiEbf0BQ7ZahoTHh
-         e+QQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=HH3eQpgACFc0U7/w0sEUlYSVeHEP4oODaS+YLEBlqzk=;
-        b=h8De7nWNofLLkkpbYZSDAuhj98RCtgYGHAqEZYSNQau499UprdwXdGA6/cIGrQQNZZ
-         qWiLCCH32kszOjjIH8j8Dt8i8JGJJSDEFr0uUlt03eWJ9IsjyIeiHARTgBdc/InCO0Pm
-         wK3APlcxcDXTQkzJRCcRi4HX5BM53HpkbU2GGnAIa+o09RSIwuEgftvDsFaSkroC+xOF
-         hllm3mkZtGQV8l20iWeHP0jowrPr7ZkRc1/CwwmF+DlQXwLo4IVpkUF8/80C/PaFCBft
-         wzEQ1gk+aNqSjt+EjTbn0cW2kQIU10jd6EGf+wbtAZs51CbUFXbIQ6ZN94CGT4/ImP2p
-         CL7w==
-X-Gm-Message-State: AOAM533hnIra35zlN5xfW8SDS3WCQwfzim7x/a0P1MloopldhTXPcOF4
-        AEXFRy6GVnlun4NsEKbO0ws3TjbRXiotbA==
-X-Google-Smtp-Source: ABdhPJzOpD+iG/6Kqb/nWpvnuEymcgQb7LmaE3K2QMu6lKg5LMdkfUVDy7WhCeJrttpFy6FWM4Y/Ow==
-X-Received: by 2002:a17:906:f84f:: with SMTP id ks15mr20944652ejb.337.1605037887372;
-        Tue, 10 Nov 2020 11:51:27 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:895e:e59d:3602:de4b? (p200300ea8f232800895ee59d3602de4b.dip0.t-ipconnect.de. [2003:ea:8f23:2800:895e:e59d:3602:de4b])
-        by smtp.googlemail.com with ESMTPSA id d23sm8595042edy.57.2020.11.10.11.51.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Nov 2020 11:51:26 -0800 (PST)
-Subject: [PATCH net-next 5/5] net: usb: switch to dev_get_tstats64 and remove
- usbnet_get_stats64 alias
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
-        Igor Mitsyanko <imitsyanko@quantenna.com>,
-        Sergey Matyukevich <geomatsi@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Jussi Kivilinna <jussi.kivilinna@iki.fi>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>
-References: <5fbe3a1f-6625-eadc-b1c9-f76f78debb94@gmail.com>
-Message-ID: <35569407-d028-ed00-bf2a-2fc572a938e9@gmail.com>
-Date:   Tue, 10 Nov 2020 20:51:03 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.1
+        id S1731582AbgKJUPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 15:15:37 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46608 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726307AbgKJUPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 15:15:36 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AAKB0OB012451;
+        Tue, 10 Nov 2020 12:15:19 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=l4+HGW6pv16Y4kVQ+odQkYi5Mk8cEYnSczftgc4O7/k=;
+ b=mqI4aJ0yp9Bi2KLWpyo4cnkF32BRYDaAWRdaEr+HGC/YgMD9OozUgEwIx75W+BCsIGTn
+ N5YWigibGHn5O06o7Mu9BvoynuzBn8Mp4DlftYg6SRxe1Sqx6vYJhU+tpPK392YEOtuS
+ OjCCIpycSTfgZREKBhCuZ/EYzgccdD4CY6k= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 34pch9vs1b-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 10 Nov 2020 12:15:19 -0800
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 10 Nov 2020 12:15:15 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fzcqIkmJrvbO0NpNES56CvO9Z9FTeyPOJLdz8cZMqHvPuQgwqsL/eB2xT6zekSUtBl5SWJ+Bd7VS3I+2jG9tveUMWK1/83RABQnaSFnPsUycrCtImsEBpVKBvqX4nWnoQGWuHWHDya42VMdjT97Djbhxyy81sTaSpqjfPPGYNN8Lf+xD0C53ERy3UmSJUxZy3h+LZ+vT6awPCDkf83yBxjhmRgQMO23lfH6PRYikrH7rfo2o5DwKYbehhzMQOqS2LvOY6nPESctMlzSX0kV7NRtX73Y7f6zhGCrr96oLkIcdWyCLSmb21VivQuEKjDTUsZWU+3vsS3CTOt54JdRHgQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l4+HGW6pv16Y4kVQ+odQkYi5Mk8cEYnSczftgc4O7/k=;
+ b=fKT3AnfXZBZXVkso0PdUxSuEIkgmfa43cu+2fiJ+2EaPaxCQFOTe7VL/Us7HztSBm8P3/D4oPHNRlgY2trF5t/jSRzeES1GWqaI4EM0+htGH0mCLMLEw6EZEjcY9waqQ9by7AqU7+L2rSvhq3HSiS4CzoEGkCi29e21ftw4LVi4579KbPuIsY9LREMcw2Ht5qO86lN6mkl10Ctfl+rk4Bvahwl9Ijl+kBINfS1nERxlg6tj96k4/RGauCklqXZWPmurnRyAxTNeB/c19J+tIMPADmvf5fVps+ja9Onm0MlpatP64u5/gejfiFuQn2Z/Lr5P6bbeHPaKqkRsv6Xd/Iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l4+HGW6pv16Y4kVQ+odQkYi5Mk8cEYnSczftgc4O7/k=;
+ b=D0V5Jf/I6I9nUjRzYLmgbUtd6ZF4yYuYHlyI3qwqiNAQ/6+z3A5VhTQ2JSKGNX4SOjjpb78bs4YSZzqE4Tt24lTJVEjAA9bl/4B7DGB7OP3tqzTuZT7fnTFMnQHQwmWVfeXwA/2pglwt7xdHoLGLldo8C3W2zvXcbfi2IguQByc=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB2824.namprd15.prod.outlook.com (2603:10b6:a03:158::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.25; Tue, 10 Nov
+ 2020 20:14:54 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::f49e:bdbb:8cd7:bf6b]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::f49e:bdbb:8cd7:bf6b%7]) with mapi id 15.20.3541.025; Tue, 10 Nov 2020
+ 20:14:54 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4 bpf-next 1/5] bpf: add in-kernel split BTF support
+Thread-Topic: [PATCH v4 bpf-next 1/5] bpf: add in-kernel split BTF support
+Thread-Index: AQHWtwAHoXtpfdzO80ynz0OJjXLTl6nBpcmAgAALm4CAABzogA==
+Date:   Tue, 10 Nov 2020 20:14:54 +0000
+Message-ID: <E26C39E9-51C4-4E31-87AC-69CADE54A15F@fb.com>
+References: <20201110011932.3201430-1-andrii@kernel.org>
+ <20201110011932.3201430-2-andrii@kernel.org>
+ <695E976D-DECA-4BE1-BFB0-771878B9CFCD@fb.com>
+ <CAEf4BzYORuxNUvJDTe4cPvJ18HNhFDOuYGfLdUzuwHeddVLw6Q@mail.gmail.com>
+In-Reply-To: <CAEf4BzYORuxNUvJDTe4cPvJ18HNhFDOuYGfLdUzuwHeddVLw6Q@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.120.23.2.4)
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+x-originating-ip: [2620:10d:c090:400::5:1f7d]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a58e7411-a231-4a7d-5809-08d885b54983
+x-ms-traffictypediagnostic: BYAPR15MB2824:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB28240C8C8DBDC61A0D153D02B3E90@BYAPR15MB2824.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kYyYfe3qPDuWjKT7Nd9klzc5fFPY4q/ylOtE5cSBL1U6htGU6jE4liwOfw1uhSeBaj2a5KhqyiyR05haUEsYUft1vZl0pnrqYQld8IoXQZSUjopZyCOw1N22WFsdbwMEgiANidb5SdqU7j5nXG5Iu2KHk8XOL++5lgStP8ZdmaYKWlof+wM5pxlib/GEeNRhUr5Y6uWM6KEaA5tQL8Zbsq5xjsUQbp5LWxlRkxQPBZJ2nD96NM2l8+9pRzMmLa4MOaGNUmRATK3a3kc5vBTPMhL94FtAhgTI9vz+WtGqi2Kk3S2VX+nPBmzUGWxei0WOPI+NaucS9OLZVUT3tiliKw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(136003)(366004)(396003)(376002)(346002)(36756003)(8676002)(33656002)(2616005)(8936002)(6512007)(2906002)(478600001)(54906003)(86362001)(6916009)(316002)(6506007)(6486002)(186003)(83380400001)(53546011)(7416002)(5660300002)(66476007)(91956017)(66446008)(64756008)(66946007)(76116006)(66556008)(71200400001)(4326008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: YSeInd7LqHPm6umxjiHvMhI46/WJxVKfmUvAbvpSYzpiSumqkkuHxFTzldwuvjU8n2EgP9gpZXezcS9FZpIRDGPyvooVhoaRbqhZAngBiFjXwYspby7Ube/AmnQxAlFe6npvuPSuZV1sJwoqd63uGVjcrfQLiclZ3ESDK0AzjBshzxB58PivRvNipuzQFj4QHIsNFgaHqtogAfmJRJjxbCYBBw9c9J9OysZaHGOIETUwQT6b4ifIY64w/FKOkdF18zua6yr+sIiX7lkjc3MxIWUjd6Oxq0k2hYuG0LTi6wtU3SQv1jh/VzAFhvkydv+CGeAX2igm8G5J6lBAExOwKuWzD0MSopmdC2JwZ97I4XxmvKk5B/g611RdIzpY9YJADaQ15FVh5LjaxNlgksYmEv7eGF7aiZMxbqCkrNC7nrUOgJwn25wJqv6XtqsX1r3EvYrpAki2+bDAi5qWnunWwgx+spnzLcJPsRbLmMgoPKD4Z0Pe13bNMtqumR7OEEiYXiF+3v5J690oJCgRKkhQfSqQycSC/nKIBQC2oCl8VH1FDC/tHyt11PIW5f+VY3DF8N5ANd/XVp15AqSmZOfz7j9LX7zGCbtX5qDh+ZT0SASDHonvOUJCn5mhb1g2cHXALBCG9DOOZZfhclq87/QgwtAKGheDnKnUkWGP32r8+6Q4yK4k6j6n4wsfsfQ1AvKNd8+A44D+8fiewb93y41ymee5BeAbB9pFQ5y7rPrVAuV++dpAcWg6pF75UrKa77baQxRFHDRBDVxs7VnB8H0tzcH7puBKlm28W57dC1mCNFIihyD6zPVwvjBdyJFpgJHKXZ1VQ2upEDldwtjMS/WyTARXPxtK6Tf3vXf5JRhAL65i0u4g4PTo7bFw94v3WDRAysaLB9ki0wK501XMASJlsTglMjaQWDa8ESF0S7aPZ3s=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <15F7E46AD723EA4397CC868834F59A4D@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <5fbe3a1f-6625-eadc-b1c9-f76f78debb94@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a58e7411-a231-4a7d-5809-08d885b54983
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Nov 2020 20:14:54.1424
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Mn0a/BFmmCtu9cAVlJ5CF+jFI7uoTaFUFLAHnuG9M86Y/C+AAiVv88tr6TXOvukONkwur4OfC/XEfLdkcvImYg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2824
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-10_07:2020-11-10,2020-11-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 clxscore=1015
+ suspectscore=0 lowpriorityscore=0 malwarescore=0 adultscore=0 phishscore=0
+ bulkscore=0 mlxscore=0 priorityscore=1501 impostorscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011100137
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace usbnet_get_stats64() with new identical core function
-dev_get_tstats64() in all users and remove usbnet_get_stats64().
-
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/usb/aqc111.c          | 2 +-
- drivers/net/usb/asix_devices.c    | 6 +++---
- drivers/net/usb/ax88172a.c        | 2 +-
- drivers/net/usb/ax88179_178a.c    | 2 +-
- drivers/net/usb/cdc_mbim.c        | 2 +-
- drivers/net/usb/cdc_ncm.c         | 2 +-
- drivers/net/usb/dm9601.c          | 2 +-
- drivers/net/usb/int51x1.c         | 2 +-
- drivers/net/usb/mcs7830.c         | 2 +-
- drivers/net/usb/qmi_wwan.c        | 2 +-
- drivers/net/usb/rndis_host.c      | 2 +-
- drivers/net/usb/sierra_net.c      | 2 +-
- drivers/net/usb/smsc75xx.c        | 2 +-
- drivers/net/usb/smsc95xx.c        | 2 +-
- drivers/net/usb/sr9700.c          | 2 +-
- drivers/net/usb/sr9800.c          | 2 +-
- drivers/net/wireless/rndis_wlan.c | 2 +-
- include/linux/usb/usbnet.h        | 2 --
- 18 files changed, 19 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
-index 0717c1801..73b97f4cc 100644
---- a/drivers/net/usb/aqc111.c
-+++ b/drivers/net/usb/aqc111.c
-@@ -641,7 +641,7 @@ static const struct net_device_ops aqc111_netdev_ops = {
- 	.ndo_stop		= usbnet_stop,
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_change_mtu		= aqc111_change_mtu,
- 	.ndo_set_mac_address	= aqc111_set_mac_addr,
- 	.ndo_validate_addr	= eth_validate_addr,
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index ef548beba..6e13d8165 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -194,7 +194,7 @@ static const struct net_device_ops ax88172_netdev_ops = {
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
- 	.ndo_change_mtu		= usbnet_change_mtu,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_set_mac_address 	= eth_mac_addr,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_do_ioctl		= asix_ioctl,
-@@ -580,7 +580,7 @@ static const struct net_device_ops ax88772_netdev_ops = {
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
- 	.ndo_change_mtu		= usbnet_change_mtu,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_set_mac_address 	= asix_set_mac_address,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_do_ioctl		= asix_ioctl,
-@@ -1050,7 +1050,7 @@ static const struct net_device_ops ax88178_netdev_ops = {
- 	.ndo_stop		= usbnet_stop,
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_set_mac_address 	= asix_set_mac_address,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_set_rx_mode	= asix_set_multicast,
-diff --git a/drivers/net/usb/ax88172a.c b/drivers/net/usb/ax88172a.c
-index fd3a04d98..b404c9462 100644
---- a/drivers/net/usb/ax88172a.c
-+++ b/drivers/net/usb/ax88172a.c
-@@ -120,7 +120,7 @@ static const struct net_device_ops ax88172a_netdev_ops = {
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
- 	.ndo_change_mtu		= usbnet_change_mtu,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_set_mac_address	= asix_set_mac_address,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_do_ioctl		= phy_do_ioctl_running,
-diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index 5541f3fae..d650b39b6 100644
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1031,7 +1031,7 @@ static const struct net_device_ops ax88179_netdev_ops = {
- 	.ndo_stop		= usbnet_stop,
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_change_mtu		= ax88179_change_mtu,
- 	.ndo_set_mac_address	= ax88179_set_mac_addr,
- 	.ndo_validate_addr	= eth_validate_addr,
-diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
-index eb100eb33..5db66272f 100644
---- a/drivers/net/usb/cdc_mbim.c
-+++ b/drivers/net/usb/cdc_mbim.c
-@@ -98,7 +98,7 @@ static const struct net_device_ops cdc_mbim_netdev_ops = {
- 	.ndo_stop             = usbnet_stop,
- 	.ndo_start_xmit       = usbnet_start_xmit,
- 	.ndo_tx_timeout       = usbnet_tx_timeout,
--	.ndo_get_stats64      = usbnet_get_stats64,
-+	.ndo_get_stats64      = dev_get_tstats64,
- 	.ndo_change_mtu       = cdc_ncm_change_mtu,
- 	.ndo_set_mac_address  = eth_mac_addr,
- 	.ndo_validate_addr    = eth_validate_addr,
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index e04f58853..abe1162dc 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -793,7 +793,7 @@ static const struct net_device_ops cdc_ncm_netdev_ops = {
- 	.ndo_start_xmit	     = usbnet_start_xmit,
- 	.ndo_tx_timeout	     = usbnet_tx_timeout,
- 	.ndo_set_rx_mode     = usbnet_set_rx_mode,
--	.ndo_get_stats64     = usbnet_get_stats64,
-+	.ndo_get_stats64     = dev_get_tstats64,
- 	.ndo_change_mtu	     = cdc_ncm_change_mtu,
- 	.ndo_set_mac_address = eth_mac_addr,
- 	.ndo_validate_addr   = eth_validate_addr,
-diff --git a/drivers/net/usb/dm9601.c b/drivers/net/usb/dm9601.c
-index 915ac75b5..b5d2ac55a 100644
---- a/drivers/net/usb/dm9601.c
-+++ b/drivers/net/usb/dm9601.c
-@@ -343,7 +343,7 @@ static const struct net_device_ops dm9601_netdev_ops = {
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
- 	.ndo_change_mtu		= usbnet_change_mtu,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_do_ioctl 		= dm9601_ioctl,
- 	.ndo_set_rx_mode	= dm9601_set_multicast,
-diff --git a/drivers/net/usb/int51x1.c b/drivers/net/usb/int51x1.c
-index cb5bc1a7f..ed05f992c 100644
---- a/drivers/net/usb/int51x1.c
-+++ b/drivers/net/usb/int51x1.c
-@@ -133,7 +133,7 @@ static const struct net_device_ops int51x1_netdev_ops = {
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
- 	.ndo_change_mtu		= usbnet_change_mtu,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_set_mac_address	= eth_mac_addr,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_set_rx_mode	= int51x1_set_multicast,
-diff --git a/drivers/net/usb/mcs7830.c b/drivers/net/usb/mcs7830.c
-index 09bfa6a4d..fc512b780 100644
---- a/drivers/net/usb/mcs7830.c
-+++ b/drivers/net/usb/mcs7830.c
-@@ -462,7 +462,7 @@ static const struct net_device_ops mcs7830_netdev_ops = {
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
- 	.ndo_change_mtu		= usbnet_change_mtu,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_do_ioctl 		= mcs7830_ioctl,
- 	.ndo_set_rx_mode	= mcs7830_set_multicast,
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index b9d74d9a7..afeb09b96 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -575,7 +575,7 @@ static const struct net_device_ops qmi_wwan_netdev_ops = {
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
- 	.ndo_change_mtu		= usbnet_change_mtu,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_set_mac_address	= qmi_wwan_mac_addr,
- 	.ndo_validate_addr	= eth_validate_addr,
- };
-diff --git a/drivers/net/usb/rndis_host.c b/drivers/net/usb/rndis_host.c
-index 6fa7a009a..6609d21ef 100644
---- a/drivers/net/usb/rndis_host.c
-+++ b/drivers/net/usb/rndis_host.c
-@@ -279,7 +279,7 @@ static const struct net_device_ops rndis_netdev_ops = {
- 	.ndo_stop		= usbnet_stop,
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_set_mac_address 	= eth_mac_addr,
- 	.ndo_validate_addr	= eth_validate_addr,
- };
-diff --git a/drivers/net/usb/sierra_net.c b/drivers/net/usb/sierra_net.c
-index 0abd257b6..55a244eca 100644
---- a/drivers/net/usb/sierra_net.c
-+++ b/drivers/net/usb/sierra_net.c
-@@ -184,7 +184,7 @@ static const struct net_device_ops sierra_net_device_ops = {
- 	.ndo_start_xmit         = usbnet_start_xmit,
- 	.ndo_tx_timeout         = usbnet_tx_timeout,
- 	.ndo_change_mtu         = usbnet_change_mtu,
--	.ndo_get_stats64        = usbnet_get_stats64,
-+	.ndo_get_stats64        = dev_get_tstats64,
- 	.ndo_set_mac_address    = eth_mac_addr,
- 	.ndo_validate_addr      = eth_validate_addr,
- };
-diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-index 8689835a5..4353b3702 100644
---- a/drivers/net/usb/smsc75xx.c
-+++ b/drivers/net/usb/smsc75xx.c
-@@ -1435,7 +1435,7 @@ static const struct net_device_ops smsc75xx_netdev_ops = {
- 	.ndo_stop		= usbnet_stop,
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_change_mtu		= smsc75xx_change_mtu,
- 	.ndo_set_mac_address 	= eth_mac_addr,
- 	.ndo_validate_addr	= eth_validate_addr,
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index ea0d5f04d..4c8ee1cff 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -1041,7 +1041,7 @@ static const struct net_device_ops smsc95xx_netdev_ops = {
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
- 	.ndo_change_mtu		= usbnet_change_mtu,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_set_mac_address 	= eth_mac_addr,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_do_ioctl 		= smsc95xx_ioctl,
-diff --git a/drivers/net/usb/sr9700.c b/drivers/net/usb/sr9700.c
-index e04c8054c..878557ad0 100644
---- a/drivers/net/usb/sr9700.c
-+++ b/drivers/net/usb/sr9700.c
-@@ -308,7 +308,7 @@ static const struct net_device_ops sr9700_netdev_ops = {
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
- 	.ndo_change_mtu		= usbnet_change_mtu,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_do_ioctl		= sr9700_ioctl,
- 	.ndo_set_rx_mode	= sr9700_set_multicast,
-diff --git a/drivers/net/usb/sr9800.c b/drivers/net/usb/sr9800.c
-index 681e0def6..da56735d7 100644
---- a/drivers/net/usb/sr9800.c
-+++ b/drivers/net/usb/sr9800.c
-@@ -681,7 +681,7 @@ static const struct net_device_ops sr9800_netdev_ops = {
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
- 	.ndo_change_mtu		= usbnet_change_mtu,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_set_mac_address	= sr_set_mac_address,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_do_ioctl		= sr_ioctl,
-diff --git a/drivers/net/wireless/rndis_wlan.c b/drivers/net/wireless/rndis_wlan.c
-index 75b5d545b..9fe775568 100644
---- a/drivers/net/wireless/rndis_wlan.c
-+++ b/drivers/net/wireless/rndis_wlan.c
-@@ -3379,7 +3379,7 @@ static const struct net_device_ops rndis_wlan_netdev_ops = {
- 	.ndo_stop		= usbnet_stop,
- 	.ndo_start_xmit		= usbnet_start_xmit,
- 	.ndo_tx_timeout		= usbnet_tx_timeout,
--	.ndo_get_stats64	= usbnet_get_stats64,
-+	.ndo_get_stats64	= dev_get_tstats64,
- 	.ndo_set_mac_address 	= eth_mac_addr,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_set_rx_mode	= rndis_wlan_set_multicast_list,
-diff --git a/include/linux/usb/usbnet.h b/include/linux/usb/usbnet.h
-index 1f6dfa977..88a767389 100644
---- a/include/linux/usb/usbnet.h
-+++ b/include/linux/usb/usbnet.h
-@@ -284,6 +284,4 @@ extern void usbnet_status_stop(struct usbnet *dev);
- 
- extern void usbnet_update_max_qlen(struct usbnet *dev);
- 
--#define usbnet_get_stats64 dev_get_tstats64
--
- #endif /* __LINUX_USB_USBNET_H */
--- 
-2.29.2
 
 
+> On Nov 10, 2020, at 10:31 AM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
+ wrote:
+>=20
+> On Tue, Nov 10, 2020 at 9:50 AM Song Liu <songliubraving@fb.com> wrote:
+>>=20
+>>=20
+>>=20
+>>> On Nov 9, 2020, at 5:19 PM, Andrii Nakryiko <andrii@kernel.org> wrote:
+>>>=20
+>>> Adjust in-kernel BTF implementation to support a split BTF mode of oper=
+ation.
+>>> Changes are mostly mirroring libbpf split BTF changes, with the excepti=
+on of
+>>> start_id being 0 for in-kernel implementation due to simpler read-only =
+mode.
+>>>=20
+>>> Otherwise, for split BTF logic, most of the logic of jumping to base BT=
+F,
+>>> where necessary, is encapsulated in few helper functions. Type numberin=
+g and
+>>> string offset in a split BTF are logically continuing where base BTF en=
+ds, so
+>>> most of the high-level logic is kept without changes.
+>>>=20
+>>> Type verification and size resolution is only doing an added resolution=
+ of new
+>>> split BTF types and relies on already cached size and type resolution r=
+esults
+>>> in the base BTF.
+>>>=20
+>>> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+>>> ---
+>>> kernel/bpf/btf.c | 171 +++++++++++++++++++++++++++++++++--------------
+>>> 1 file changed, 119 insertions(+), 52 deletions(-)
+>>>=20
+>>> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+>>> index 6324de8c59f7..727c1c27053f 100644
+>>> --- a/kernel/bpf/btf.c
+>>> +++ b/kernel/bpf/btf.c
+>>> @@ -203,12 +203,17 @@ struct btf {
+>>>      const char *strings;
+>>>      void *nohdr_data;
+>>>      struct btf_header hdr;
+>>> -     u32 nr_types;
+>>> +     u32 nr_types; /* includes VOID for base BTF */
+>>>      u32 types_size;
+>>>      u32 data_size;
+>>>      refcount_t refcnt;
+>>>      u32 id;
+>>>      struct rcu_head rcu;
+>>> +
+>>> +     /* split BTF support */
+>>> +     struct btf *base_btf;
+>>> +     u32 start_id; /* first type ID in this BTF (0 for base BTF) */
+>>> +     u32 start_str_off; /* first string offset (0 for base BTF) */
+>>> };
+>>>=20
+>>> enum verifier_phase {
+>>> @@ -449,14 +454,27 @@ static bool btf_type_is_datasec(const struct btf_=
+type *t)
+>>>      return BTF_INFO_KIND(t->info) =3D=3D BTF_KIND_DATASEC;
+>>> }
+>>>=20
+>>> +static u32 btf_nr_types_total(const struct btf *btf)
+>>> +{
+>>> +     u32 total =3D 0;
+>>> +
+>>> +     while (btf) {
+>>> +             total +=3D btf->nr_types;
+>>> +             btf =3D btf->base_btf;
+>>> +     }
+>>> +
+>>> +     return total;
+>>> +}
+>>> +
+>>> s32 btf_find_by_name_kind(const struct btf *btf, const char *name, u8 k=
+ind)
+>>> {
+>>>      const struct btf_type *t;
+>>>      const char *tname;
+>>> -     u32 i;
+>>> +     u32 i, total;
+>>>=20
+>>> -     for (i =3D 1; i <=3D btf->nr_types; i++) {
+>>> -             t =3D btf->types[i];
+>>> +     total =3D btf_nr_types_total(btf);
+>>> +     for (i =3D 1; i < total; i++) {
+>>> +             t =3D btf_type_by_id(btf, i);
+>>>              if (BTF_INFO_KIND(t->info) !=3D kind)
+>>>                      continue;
+>>>=20
+>>> @@ -599,8 +617,14 @@ static const struct btf_kind_operations *btf_type_=
+ops(const struct btf_type *t)
+>>>=20
+>>> static bool btf_name_offset_valid(const struct btf *btf, u32 offset)
+>>> {
+>>> -     return BTF_STR_OFFSET_VALID(offset) &&
+>>> -             offset < btf->hdr.str_len;
+>>> +     if (!BTF_STR_OFFSET_VALID(offset))
+>>> +             return false;
+>>> +
+>>> +     while (offset < btf->start_str_off)
+>>> +             btf =3D btf->base_btf;
+>>=20
+>> Do we need "if (!btf) return false;" in the while loop? (and some other =
+loops below)
+>=20
+> No, because for base btf start_str_off and start_type_id are always
+> zero, so loop condition is always false.
+
+Ah, I misread the code. Thanks for the explanation.=20
+
+Acked-by: Song Liu <songliubraving@fb.com>=
