@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C4422AE029
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 20:51:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E70D2AE020
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 20:51:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731677AbgKJTv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 14:51:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
+        id S1731718AbgKJTv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 14:51:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725862AbgKJTvY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 14:51:24 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCF1C0613D1;
-        Tue, 10 Nov 2020 11:51:23 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id w13so19330168eju.13;
-        Tue, 10 Nov 2020 11:51:23 -0800 (PST)
+        with ESMTP id S1731613AbgKJTv0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 14:51:26 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B41BC0613D1;
+        Tue, 10 Nov 2020 11:51:25 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id dk16so19316300ejb.12;
+        Tue, 10 Nov 2020 11:51:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-transfer-encoding;
-        bh=fqQzZPFdwUoIi61+74s2tJDUiiLXIPVm1vc/LuVT+UM=;
-        b=WAzzuLpwx3lQWSi9dW5jFp6+CCEoH24YnMXivjI2nttQ8RRXW+IUZyEapY/CnRlA8m
-         K6GuwxhihBBPt7hXu+fgVqtxIDX3usa+uY4lrTGJikrNEM1RFIc+wyIob7fKpdfIcJVw
-         Sx5XvNxCCvx091/h/yzYJ6at7gYYdSqsgFSX8S0l/Mm2ELIETebG6YT09zxom/+6rljw
-         an9jiJLE9AnZ/IVKz0chNGBrHP8D9kT+nv2GG1l7lWvfD71fANFjGPNdeS+55CrAo13j
-         RMucccgPPsMbMFebxHM1NHz4hUhXSTJ4YymF821NHvMnJBxAClF+zxV7sljGubER+r9X
-         D8vQ==
+        bh=NhuUAeR80nfEeuMWJO9rn2BTncFH7te01FW54NzBpW0=;
+        b=l/9jHpoHkxGjhxxpoLcIKUhaM62UhbllNGha4Jm9H0CxXCyZ7VxrOaAXcYQBMQVs4Z
+         wee+8QCMDvxlTW8MaZ3vhgJtZ+jIaX5l8r8uyMjoGC36JvWiVLZVrRz39iBl3+xcc0yT
+         e4saa3KkL7D9WjH7PRS0T3i2hA8T9sEk8wSdp/xpkDGkmkVGe8Cn5Eo0cxgbKILFsPWV
+         77zvKw49H9JN5zE4xPPas8ackvvroVMSyVm1u6ij+WWfVAW4ANxwKI3A3T1uUvJhTGWE
+         bE3R/GL75W4oe/NfCzxHFvI6EulHbtdTrKnTjGngPNoi3awQqt++LDA83+vSuQHqVbdx
+         lePw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=fqQzZPFdwUoIi61+74s2tJDUiiLXIPVm1vc/LuVT+UM=;
-        b=m/ZPIc6cqWMyTKQn4zcRYYD2BJ/h2AeHDTwJXn/YJgISAiQT7UBF+u2qg5GDOvBvXW
-         5YLB+WS5i5YHMRPc+DVu4jIGsDjH8O9zqAiu9DfGAOYDM0cZ8oe9DwXGJKiuEWK2O9Zo
-         g7x+oQlOSjWoJowd1oZ0w8EOGGsSgdeJb2E/dF8fnk+T9WT1HAmpQCsWcuYETaLKOahA
-         vz/3YDI/KCmA7Q9xkQD6C5rX9R/FEBqtH6UrGI1rj4pDosZvQefVOkcKmqRg5KGe3dwB
-         9i4dwUBDWUBaSu6nruoBDt1z/fzjplUpDIOoqNROWgWJOH6ZzQiWXBNsSNuJ/Qr4Uun9
-         WqyA==
-X-Gm-Message-State: AOAM533LVZNlGAX9KsfTgOEi4UjnayECPfNcuyqsYoLUagpvb4x+1d59
-        L4ZY01kw6viV/jynIQqMJeBBCBpp3wIz0A==
-X-Google-Smtp-Source: ABdhPJw2pUNEDKoB9g04hdsxUC1eo3fbKJVX8oizhRE8OZsS5qANAdeC6A6ODx9OSbsEDjVBTOzvBQ==
-X-Received: by 2002:a17:906:138c:: with SMTP id f12mr22613982ejc.108.1605037882273;
-        Tue, 10 Nov 2020 11:51:22 -0800 (PST)
+        bh=NhuUAeR80nfEeuMWJO9rn2BTncFH7te01FW54NzBpW0=;
+        b=fRSudPqsL0Gmb6X+ieL3Giw2xia+37m3xMcI0j26nkDRIH6TpAOgOOmZQdehFdx/Kw
+         eAoAGg+PsaGrU9Q0HUU8V44upKIWsoctSFeNi5ifpeD0j/4+HUfD2F1EwnCi3+rWPYg3
+         Y0GgfkNC5vM0dfICYF7zP90NczR4C8hHZk188/J35VAzYn1e/e6zvD78F12EZZRN3W89
+         GDwONrPyYZXYdIgf4AzwVk67S7za6gwA1kBT87mBxwloaMga6mxpSiV9jHfKMk+sZ/aV
+         djLSEq8WOBvx9If+f48jpHaZJ6wjPmyYBxKKnbB+GrtcZELCFujpuHfVkzmcH7egPeII
+         96bQ==
+X-Gm-Message-State: AOAM532g4zmShHBnE4pKWkxFnN97yj+st5tRwwuEtZ4DKsrinU8RtEwx
+        DZ2igBl5wBwiBWhlK4iUpQgRqxMAc/N4Hw==
+X-Google-Smtp-Source: ABdhPJwA3v9bN4hBcNPA/ZTQbFo4nEiwQ73RwBaMXlDzRloJblYJEK+RYKsMLYx6DUR+0k5Ww8Q9Dg==
+X-Received: by 2002:a17:906:6949:: with SMTP id c9mr21671485ejs.482.1605037883883;
+        Tue, 10 Nov 2020 11:51:23 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f23:2800:895e:e59d:3602:de4b? (p200300ea8f232800895ee59d3602de4b.dip0.t-ipconnect.de. [2003:ea:8f23:2800:895e:e59d:3602:de4b])
-        by smtp.googlemail.com with ESMTPSA id e2sm11153502edu.93.2020.11.10.11.51.21
+        by smtp.googlemail.com with ESMTPSA id l20sm11104664eja.40.2020.11.10.11.51.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Nov 2020 11:51:21 -0800 (PST)
-Subject: [PATCH net-next 2/5] qmi_wwan: switch to core handling of rx/tx
+        Tue, 10 Nov 2020 11:51:23 -0800 (PST)
+Subject: [PATCH net-next 3/5] qtnfmac: switch to core handling of rx/tx
  byte/packet counters
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
@@ -70,8 +70,8 @@ Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Linux USB Mailing List <linux-usb@vger.kernel.org>,
         linux-wireless <linux-wireless@vger.kernel.org>
 References: <5fbe3a1f-6625-eadc-b1c9-f76f78debb94@gmail.com>
-Message-ID: <c3eb3707-cac8-5db2-545d-8a3b4de39dad@gmail.com>
-Date:   Tue, 10 Nov 2020 20:48:14 +0100
+Message-ID: <4b22c155-6868-793f-ebfe-f797e16b9c40@gmail.com>
+Date:   Tue, 10 Nov 2020 20:48:54 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.4.1
 MIME-Version: 1.0
@@ -82,102 +82,216 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use netdev->tstats instead of a member of qmimux_priv for storing
-a pointer to the per-cpu counters. This allows us to use core
-functionality for statistics handling.
+Use netdev->tstats instead of a member of qtnf_vif for storing a pointer
+to the per-cpu counters. This allows us to use core functionality for
+statistics handling.
+The driver sets netdev->needs_free_netdev, therefore freeing the per-cpu
+counters at the right point in time is a little bit tricky. Best option
+seems to be to use the ndo_init/ndo_uninit callbacks.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/usb/qmi_wwan.c | 39 ++++++++------------------------------
- 1 file changed, 8 insertions(+), 31 deletions(-)
+ drivers/net/wireless/quantenna/qtnfmac/core.c | 78 ++++---------------
+ drivers/net/wireless/quantenna/qtnfmac/core.h |  4 -
+ .../quantenna/qtnfmac/pcie/pearl_pcie.c       |  4 +-
+ .../quantenna/qtnfmac/pcie/topaz_pcie.c       |  4 +-
+ 4 files changed, 20 insertions(+), 70 deletions(-)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 581ed51ab..b9d74d9a7 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -72,7 +72,6 @@ struct qmimux_hdr {
- struct qmimux_priv {
- 	struct net_device *real_dev;
- 	u8 mux_id;
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/core.c b/drivers/net/wireless/quantenna/qtnfmac/core.c
+index bf6dbeb61..ad726bd10 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/core.c
++++ b/drivers/net/wireless/quantenna/qtnfmac/core.c
+@@ -126,28 +126,13 @@ qtnf_netdev_hard_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 
+ 	if (unlikely(skb->protocol == htons(ETH_P_PAE))) {
+ 		qtnf_packet_send_hi_pri(skb);
+-		qtnf_update_tx_stats(ndev, skb);
++		dev_sw_netstats_tx_add(ndev, 1, skb->len);
+ 		return NETDEV_TX_OK;
+ 	}
+ 
+ 	return qtnf_bus_data_tx(mac->bus, skb, mac->macid, vif->vifid);
+ }
+ 
+-/* Netdev handler for getting stats.
+- */
+-static void qtnf_netdev_get_stats64(struct net_device *ndev,
+-				    struct rtnl_link_stats64 *stats)
+-{
+-	struct qtnf_vif *vif = qtnf_netdev_get_priv(ndev);
+-
+-	netdev_stats_to_stats64(stats, &ndev->stats);
+-
+-	if (!vif->stats64)
+-		return;
+-
+-	dev_fetch_sw_netstats(stats, vif->stats64);
+-}
+-
+ /* Netdev handler for transmission timeout.
+  */
+ static void qtnf_netdev_tx_timeout(struct net_device *ndev, unsigned int txqueue)
+@@ -211,13 +196,27 @@ static int qtnf_netdev_port_parent_id(struct net_device *ndev,
+ 	return 0;
+ }
+ 
++static int qtnf_netdev_alloc_pcpu_stats(struct net_device *dev)
++{
++	dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
++
++	return dev->tstats ? 0 : -ENOMEM;
++}
++
++static void qtnf_netdev_free_pcpu_stats(struct net_device *dev)
++{
++	free_percpu(dev->tstats);
++}
++
+ /* Network device ops handlers */
+ const struct net_device_ops qtnf_netdev_ops = {
++	.ndo_init = qtnf_netdev_alloc_pcpu_stats,
++	.ndo_uninit = qtnf_netdev_free_pcpu_stats,
+ 	.ndo_open = qtnf_netdev_open,
+ 	.ndo_stop = qtnf_netdev_close,
+ 	.ndo_start_xmit = qtnf_netdev_hard_start_xmit,
+ 	.ndo_tx_timeout = qtnf_netdev_tx_timeout,
+-	.ndo_get_stats64 = qtnf_netdev_get_stats64,
++	.ndo_get_stats64 = dev_get_tstats64,
+ 	.ndo_set_mac_address = qtnf_netdev_set_mac_address,
+ 	.ndo_get_port_parent_id = qtnf_netdev_port_parent_id,
+ };
+@@ -448,10 +447,6 @@ static struct qtnf_wmac *qtnf_core_mac_alloc(struct qtnf_bus *bus,
+ 		qtnf_sta_list_init(&vif->sta_list);
+ 		INIT_WORK(&vif->high_pri_tx_work, qtnf_vif_send_data_high_pri);
+ 		skb_queue_head_init(&vif->high_pri_tx_queue);
+-		vif->stats64 = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
+-		if (!vif->stats64)
+-			pr_warn("VIF%u.%u: per cpu stats allocation failed\n",
+-				macid, i);
+ 	}
+ 
+ 	qtnf_mac_init_primary_intf(mac);
+@@ -531,7 +526,6 @@ static void qtnf_core_mac_detach(struct qtnf_bus *bus, unsigned int macid)
+ 		}
+ 		rtnl_unlock();
+ 		qtnf_sta_list_free(&vif->sta_list);
+-		free_percpu(vif->stats64);
+ 	}
+ 
+ 	if (mac->wiphy_registered)
+@@ -924,46 +918,6 @@ void qtnf_wake_all_queues(struct net_device *ndev)
+ }
+ EXPORT_SYMBOL_GPL(qtnf_wake_all_queues);
+ 
+-void qtnf_update_rx_stats(struct net_device *ndev, const struct sk_buff *skb)
+-{
+-	struct qtnf_vif *vif = qtnf_netdev_get_priv(ndev);
+-	struct pcpu_sw_netstats *stats64;
+-
+-	if (unlikely(!vif || !vif->stats64)) {
+-		ndev->stats.rx_packets++;
+-		ndev->stats.rx_bytes += skb->len;
+-		return;
+-	}
+-
+-	stats64 = this_cpu_ptr(vif->stats64);
+-
+-	u64_stats_update_begin(&stats64->syncp);
+-	stats64->rx_packets++;
+-	stats64->rx_bytes += skb->len;
+-	u64_stats_update_end(&stats64->syncp);
+-}
+-EXPORT_SYMBOL_GPL(qtnf_update_rx_stats);
+-
+-void qtnf_update_tx_stats(struct net_device *ndev, const struct sk_buff *skb)
+-{
+-	struct qtnf_vif *vif = qtnf_netdev_get_priv(ndev);
+-	struct pcpu_sw_netstats *stats64;
+-
+-	if (unlikely(!vif || !vif->stats64)) {
+-		ndev->stats.tx_packets++;
+-		ndev->stats.tx_bytes += skb->len;
+-		return;
+-	}
+-
+-	stats64 = this_cpu_ptr(vif->stats64);
+-
+-	u64_stats_update_begin(&stats64->syncp);
+-	stats64->tx_packets++;
+-	stats64->tx_bytes += skb->len;
+-	u64_stats_update_end(&stats64->syncp);
+-}
+-EXPORT_SYMBOL_GPL(qtnf_update_tx_stats);
+-
+ struct dentry *qtnf_get_debugfs_dir(void)
+ {
+ 	return qtnf_debugfs_dir;
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/core.h b/drivers/net/wireless/quantenna/qtnfmac/core.h
+index 269ce12cf..b204a2407 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/core.h
++++ b/drivers/net/wireless/quantenna/qtnfmac/core.h
+@@ -70,8 +70,6 @@ struct qtnf_vif {
+ 	struct qtnf_sta_list sta_list;
+ 	unsigned long cons_tx_timeout_cnt;
+ 	int generation;
+-
 -	struct pcpu_sw_netstats __percpu *stats64;
  };
  
- static int qmimux_open(struct net_device *dev)
-@@ -108,34 +107,19 @@ static netdev_tx_t qmimux_start_xmit(struct sk_buff *skb, struct net_device *dev
- 	skb->dev = priv->real_dev;
- 	ret = dev_queue_xmit(skb);
+ struct qtnf_mac_info {
+@@ -139,8 +137,6 @@ int qtnf_cmd_send_update_phy_params(struct qtnf_wmac *mac, u32 changed);
+ struct qtnf_wmac *qtnf_core_get_mac(const struct qtnf_bus *bus, u8 macid);
+ struct net_device *qtnf_classify_skb(struct qtnf_bus *bus, struct sk_buff *skb);
+ void qtnf_wake_all_queues(struct net_device *ndev);
+-void qtnf_update_rx_stats(struct net_device *ndev, const struct sk_buff *skb);
+-void qtnf_update_tx_stats(struct net_device *ndev, const struct sk_buff *skb);
  
--	if (likely(ret == NET_XMIT_SUCCESS || ret == NET_XMIT_CN)) {
--		struct pcpu_sw_netstats *stats64 = this_cpu_ptr(priv->stats64);
--
--		u64_stats_update_begin(&stats64->syncp);
--		stats64->tx_packets++;
--		stats64->tx_bytes += len;
--		u64_stats_update_end(&stats64->syncp);
--	} else {
-+	if (likely(ret == NET_XMIT_SUCCESS || ret == NET_XMIT_CN))
-+		dev_sw_netstats_tx_add(dev, 1, len);
-+	else
- 		dev->stats.tx_dropped++;
--	}
+ void qtnf_virtual_intf_cleanup(struct net_device *ndev);
  
- 	return ret;
- }
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/pcie/pearl_pcie.c b/drivers/net/wireless/quantenna/qtnfmac/pcie/pearl_pcie.c
+index 9a20c0f29..0003df577 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/pcie/pearl_pcie.c
++++ b/drivers/net/wireless/quantenna/qtnfmac/pcie/pearl_pcie.c
+@@ -489,7 +489,7 @@ static void qtnf_pearl_data_tx_reclaim(struct qtnf_pcie_pearl_state *ps)
+ 					 PCI_DMA_TODEVICE);
  
--static void qmimux_get_stats64(struct net_device *net,
--			       struct rtnl_link_stats64 *stats)
--{
--	struct qmimux_priv *priv = netdev_priv(net);
--
--	netdev_stats_to_stats64(stats, &net->stats);
--	dev_fetch_sw_netstats(stats, priv->stats64);
--}
--
- static const struct net_device_ops qmimux_netdev_ops = {
- 	.ndo_open        = qmimux_open,
- 	.ndo_stop        = qmimux_stop,
- 	.ndo_start_xmit  = qmimux_start_xmit,
--	.ndo_get_stats64 = qmimux_get_stats64,
-+	.ndo_get_stats64 = dev_get_tstats64,
- };
+ 			if (skb->dev) {
+-				qtnf_update_tx_stats(skb->dev, skb);
++				dev_sw_netstats_tx_add(skb->dev, 1, skb->len);
+ 				if (unlikely(priv->tx_stopped)) {
+ 					qtnf_wake_all_queues(skb->dev);
+ 					priv->tx_stopped = 0;
+@@ -756,7 +756,7 @@ static int qtnf_pcie_pearl_rx_poll(struct napi_struct *napi, int budget)
+ 			skb_put(skb, psize);
+ 			ndev = qtnf_classify_skb(bus, skb);
+ 			if (likely(ndev)) {
+-				qtnf_update_rx_stats(ndev, skb);
++				dev_sw_netstats_rx_add(ndev, skb->len);
+ 				skb->protocol = eth_type_trans(skb, ndev);
+ 				napi_gro_receive(napi, skb);
+ 			} else {
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/pcie/topaz_pcie.c b/drivers/net/wireless/quantenna/qtnfmac/pcie/topaz_pcie.c
+index 4b87d3151..24f1be8dd 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/pcie/topaz_pcie.c
++++ b/drivers/net/wireless/quantenna/qtnfmac/pcie/topaz_pcie.c
+@@ -418,7 +418,7 @@ static void qtnf_topaz_data_tx_reclaim(struct qtnf_pcie_topaz_state *ts)
+ 					 PCI_DMA_TODEVICE);
  
- static void qmimux_setup(struct net_device *dev)
-@@ -224,14 +208,7 @@ static int qmimux_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 			net->stats.rx_errors++;
- 			return 0;
- 		} else {
--			struct pcpu_sw_netstats *stats64;
--			struct qmimux_priv *priv = netdev_priv(net);
--
--			stats64 = this_cpu_ptr(priv->stats64);
--			u64_stats_update_begin(&stats64->syncp);
--			stats64->rx_packets++;
--			stats64->rx_bytes += pkt_len;
--			u64_stats_update_end(&stats64->syncp);
-+			dev_sw_netstats_rx_add(net, pkt_len);
- 		}
- 
- skip:
-@@ -256,8 +233,8 @@ static int qmimux_register_device(struct net_device *real_dev, u8 mux_id)
- 	priv->mux_id = mux_id;
- 	priv->real_dev = real_dev;
- 
--	priv->stats64 = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
--	if (!priv->stats64) {
-+	new_dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
-+	if (!new_dev->tstats) {
- 		err = -ENOBUFS;
- 		goto out_free_newdev;
- 	}
-@@ -292,7 +269,7 @@ static void qmimux_unregister_device(struct net_device *dev,
- 	struct qmimux_priv *priv = netdev_priv(dev);
- 	struct net_device *real_dev = priv->real_dev;
- 
--	free_percpu(priv->stats64);
-+	free_percpu(dev->tstats);
- 	netdev_upper_dev_unlink(real_dev, dev);
- 	unregister_netdevice_queue(dev, head);
- 
+ 			if (skb->dev) {
+-				qtnf_update_tx_stats(skb->dev, skb);
++				dev_sw_netstats_tx_add(skb->dev, 1, skb->len);
+ 				if (unlikely(priv->tx_stopped)) {
+ 					qtnf_wake_all_queues(skb->dev);
+ 					priv->tx_stopped = 0;
+@@ -662,7 +662,7 @@ static int qtnf_topaz_rx_poll(struct napi_struct *napi, int budget)
+ 			skb_put(skb, psize);
+ 			ndev = qtnf_classify_skb(bus, skb);
+ 			if (likely(ndev)) {
+-				qtnf_update_rx_stats(ndev, skb);
++				dev_sw_netstats_rx_add(ndev, skb->len);
+ 				skb->protocol = eth_type_trans(skb, ndev);
+ 				netif_receive_skb(skb);
+ 			} else {
 -- 
 2.29.2
 
