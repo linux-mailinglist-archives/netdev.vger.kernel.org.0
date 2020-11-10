@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AECA2ACBC8
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 04:32:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F81D2ACBC3
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 04:32:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731619AbgKJDcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 22:32:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43368 "EHLO
+        id S1731865AbgKJDbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 22:31:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731664AbgKJDbj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 22:31:39 -0500
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8945BC0613D3;
-        Mon,  9 Nov 2020 19:31:39 -0800 (PST)
-Received: by mail-pg1-x541.google.com with SMTP id f27so5564335pgl.1;
-        Mon, 09 Nov 2020 19:31:39 -0800 (PST)
+        with ESMTP id S1731671AbgKJDbl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 22:31:41 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2FAC0613D4;
+        Mon,  9 Nov 2020 19:31:41 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id e21so8948160pgr.11;
+        Mon, 09 Nov 2020 19:31:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pF51Sa1m31zHtusl1Q/a9fcn1tFfdxdiiX0Xoe3v770=;
-        b=NCvkAz63xkDZRyBQ/QTtJu/+6VMyz0snjrKfW3QtAsRPMpoD1On6YVFMAid67IUw1w
-         /bqHqNqbpj2A3AvxKPX+Gf3+PJJUrqyd9pDk+dOGXGElDtXnvux7harO5c4s+WTRkG/+
-         Gv3DDtooY/sVmxYjry6v0pji5KvSpUYc6myLXVc/hUPjIWS5js5nRXrd/rZPNOYDjIjd
-         2Xc+QBfYANzIS3Q+2GDM60DWiiQerCiZLUlsteH1aVF0L0hzmuRUB1mNQjfRr0K0szux
-         GUIiIvBbBENVo30mZP5g6u34SQr/dONPxHnlFDXPalCjXsmBslw4h4zlf2PI+hbfT6j4
-         GV3A==
+        bh=3pKhL02+7n5uS3Xi9y221tTNlJLYEMC8oigF8OT66lc=;
+        b=XcXKpUE6xZEQbh+93SRuQd5o8bVaij90B0yXhiimDMhwWLUd/1SyLRJo61qY/xCLoi
+         +ljhOT4ZQoiPrwlbVdX+1yGBfL3Zm3yyYcp06wxXHI+foIZVT/eXzfFn0mnjrDcaElR9
+         QzlSjdeo4ehd/OxWSzzl3x6RPmO9FAZA+Qb7acfoKifPOlHFn7EW+9smHMK81c01WxQv
+         LDvqzWtjAHMhN4sl/VEg4LRNdu4mmqIPVG5dvVf9GEKfbxIDn8kiMFCLw3zgbCvylFVy
+         88ODxS+SEHdC5FHzlOfqujH9vUai5pPtcKXXJ23fwfHt9rp43W3q/n1VfYogtuZB/kYF
+         JVRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pF51Sa1m31zHtusl1Q/a9fcn1tFfdxdiiX0Xoe3v770=;
-        b=GFuPHAOuxc38upYlYT7TfGOik5caFYEdrEGFlel+ROHIxclPcAB8gG9ERaTA5ArHrz
-         TImWaZUGG/DJPfIFs+P2hMpS43MFk/hSv+RtGCmNjIxsYLg1TirRXtwCUa4Z32c1v/BR
-         A1b4aT2ssOSHplTx2vA4qyxqNvhEoaNKdFH4PZoXEFDUmfXmXkTeW6fKtdvuxIeXqNBX
-         qFJW9rdknah08MRZ33AA0h4hKV6Agi+Zzqx2U13aouIKB13qwjfQa9C1lSmjfY+y4w3Q
-         TzB/rPEQ66ww0ohb38mZDjWM1zLwxW9aOJapoaZgavwUx7x62T71AORYYWBK6bNtiIr+
-         mucg==
-X-Gm-Message-State: AOAM530s+y9CYH2X6dU8ovXQqLO2m7o0A657jTEwKkVKvsauJaugVNSf
-        vApwGUQl9iNOSern3cWJe2NmPRedbh0=
-X-Google-Smtp-Source: ABdhPJzRWnSg4/l66+aBSIjmRMMVm3wMYaGbRFFC7cOHJdLqbR5ZjBnyUM5HOitF2Wjo6nU+N+7fsw==
-X-Received: by 2002:a63:b24e:: with SMTP id t14mr15065321pgo.224.1604979098735;
-        Mon, 09 Nov 2020 19:31:38 -0800 (PST)
+        bh=3pKhL02+7n5uS3Xi9y221tTNlJLYEMC8oigF8OT66lc=;
+        b=IstI7dXcLN7FJdbBnNTqhNeyynskWnLhK6HXsdZU6zJ3lrvDSxC1Zxrp1VF5hQJmDt
+         ZY3l65QDoA1Zr4RryZejIjW3LK8CrkdG0TXi+rkmSDCC+pFgRJp+RwTrazRycBlJaUXJ
+         tEhhao0CufiH6BstHmzS6IHz280jczKVgKGtp9las5BOI6ewf8ra0fxeQfqWAs5mUbdN
+         qDl/jnulSyYGX1rOkfKQqGuxnvu6zdztIEaIgQZexHNaX3Uhg0EDyK/Jc+wSAgMTzIQN
+         tZKWOQU4OGuD9g6hNPpE/geDuy5UIQATUjWxgHjCvA1rFdkvmBGLXhBXGUMq2VBIlD+G
+         D+rA==
+X-Gm-Message-State: AOAM530IdxtqmTmJnWJDDz2QMKYS5F0kuQuD6WJJ3N+3+jcTE196f/2u
+        5jnkOmR8FO82UyXZArs+Ia1prSrkNTs=
+X-Google-Smtp-Source: ABdhPJzGL+D9yovIwcIWwDoDYGKxmsFX8+Jfp0jWEsh95kKkegHYJpOu1a8iHzBX/D9fA8RKCMHeBA==
+X-Received: by 2002:a17:90b:3d5:: with SMTP id go21mr2691320pjb.8.1604979100837;
+        Mon, 09 Nov 2020 19:31:40 -0800 (PST)
 Received: from 1G5JKC2.Broadcom.net (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id k12sm965677pjf.22.2020.11.09.19.31.36
+        by smtp.gmail.com with ESMTPSA id k12sm965677pjf.22.2020.11.09.19.31.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2020 19:31:37 -0800 (PST)
+        Mon, 09 Nov 2020 19:31:40 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -64,9 +64,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list),
         linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM IPROC ARM
         ARCHITECTURE), Kurt Kanzenbach <kurt@kmk-computers.de>
-Subject: [PATCH 08/10] ARM: dts: NSP: Add a default compatible for switch node
-Date:   Mon,  9 Nov 2020 19:31:11 -0800
-Message-Id: <20201110033113.31090-9-f.fainelli@gmail.com>
+Subject: [PATCH 09/10] ARM: dts: NSP: Provide defaults ports container node
+Date:   Mon,  9 Nov 2020 19:31:12 -0800
+Message-Id: <20201110033113.31090-10-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201110033113.31090-1-f.fainelli@gmail.com>
 References: <20201110033113.31090-1-f.fainelli@gmail.com>
@@ -76,57 +76,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provide a default compatible string which is based on the 58522 SRAB
-compatible, this allows us to have sane defaults and silences the
-following warnings:
+Provide an empty 'ports' container node with the correct #address-cells
+and #size-cells properties. This silences the following warning:
 
- arch/arm/boot/dts/bcm958522er.dt.yaml:
-    ethernet-switch@36000: compatible: 'oneOf' conditional failed,
-one
-    must be fixed:
-            ['brcm,bcm5301x-srab'] is too short
-            'brcm,bcm5325' was expected
-            'brcm,bcm53115' was expected
-            'brcm,bcm53125' was expected
-            'brcm,bcm53128' was expected
-            'brcm,bcm5365' was expected
-            'brcm,bcm5395' was expected
-            'brcm,bcm5389' was expected
-            'brcm,bcm5397' was expected
-            'brcm,bcm5398' was expected
-            'brcm,bcm11360-srab' was expected
-            'brcm,bcm5301x-srab' is not one of ['brcm,bcm53010-srab',
-    'brcm,bcm53011-srab', 'brcm,bcm53012-srab', 'brcm,bcm53018-srab',
-    'brcm,bcm53019-srab']
-            'brcm,bcm5301x-srab' is not one of ['brcm,bcm11404-srab',
-    'brcm,bcm11407-srab', 'brcm,bcm11409-srab', 'brcm,bcm58310-srab',
-    'brcm,bcm58311-srab', 'brcm,bcm58313-srab']
-            'brcm,bcm5301x-srab' is not one of ['brcm,bcm58522-srab',
-    'brcm,bcm58523-srab', 'brcm,bcm58525-srab', 'brcm,bcm58622-srab',
-    'brcm,bcm58623-srab', 'brcm,bcm58625-srab', 'brcm,bcm88312-srab']
-            'brcm,bcm5301x-srab' is not one of ['brcm,bcm3384-switch',
-    'brcm,bcm6328-switch', 'brcm,bcm6368-switch']
+arch/arm/boot/dts/bcm958522er.dt.yaml:
+ethernet-switch@36000: 'oneOf' conditional failed, one must be fixed:
+            'ports' is a required property
+            'ethernet-ports' is a required property
             From schema:
-    Documentation/devicetree/bindings/net/dsa/b53.yaml
+Documentation/devicetree/bindings/net/dsa/b53.yaml
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- arch/arm/boot/dts/bcm-nsp.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/bcm-nsp.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/arch/arm/boot/dts/bcm-nsp.dtsi b/arch/arm/boot/dts/bcm-nsp.dtsi
-index 09fd7e55c069..8453865d1439 100644
+index 8453865d1439..d75bf37260c2 100644
 --- a/arch/arm/boot/dts/bcm-nsp.dtsi
 +++ b/arch/arm/boot/dts/bcm-nsp.dtsi
-@@ -386,7 +386,7 @@ ccbtimer1: timer@35000 {
+@@ -420,6 +420,10 @@ srab: ethernet-switch@36000 {
+ 			status = "disabled";
+ 
+ 			/* ports are defined in board DTS */
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++			};
  		};
  
- 		srab: ethernet-switch@36000 {
--			compatible = "brcm,nsp-srab";
-+			compatible = "brcm,bcm58522-srab", "brcm,nsp-srab";
- 			reg = <0x36000 0x1000>,
- 			      <0x3f308 0x8>,
- 			      <0x3f410 0xc>;
+ 		i2c0: i2c@38000 {
 -- 
 2.25.1
 
