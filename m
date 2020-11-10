@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 558E22AE00B
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 20:46:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC6592AE019
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 20:51:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731711AbgKJTqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 14:46:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
+        id S1731600AbgKJTvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 14:51:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725862AbgKJTqk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 14:46:40 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141B3C0613D1;
-        Tue, 10 Nov 2020 11:46:40 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id za3so19345930ejb.5;
-        Tue, 10 Nov 2020 11:46:40 -0800 (PST)
+        with ESMTP id S1725862AbgKJTvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 14:51:22 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403FEC0613D1;
+        Tue, 10 Nov 2020 11:51:22 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id k9so14104996edo.5;
+        Tue, 10 Nov 2020 11:51:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=94xWn4igC2rRAAMu2z0THiSQOP5rKPvk0MjxLB0+gEY=;
-        b=iVYffJCCKWKLf191Owwu9ps45oJ7w9Nsd3V1GMUP0v9PMSJuKYCZC08k1fdQhTpfBx
-         ecNx1Vb53dVKtcylVvR26kuqYWfkLW244MXcqcKV6+yOHOBZKL3zJoBUyLShZqfrigN4
-         cV/3xMGsh2Wwno0jGtRaEIQolja5WheurLRzzTn856lrrBkuiYnVQCbeLrMQobxfzaHd
-         LrRvN/KJJsjW1D8ruoxpYri6L3wb4YFqT0ohJnvjXhlaRTv45TujBISx3sb6VI+tEFK/
-         cOEsfBW4bxqsFs6qMuHult0tFx8EAu6JUuroRdZB+gUzYTEBNKKqRXhTecSJmMcy3INT
-         WUlg==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=bOdWylhtQ7csIcx3x7AgcGPRiivjTYceou3ldTAJsAs=;
+        b=YeBxn6BCTsEDT2K3jc2JwEBRjqhWJ4MxrIdcqijDmpwNxmHZjSSoL1c7tNj79zov0u
+         jGcdzUbaafpV+7md60rfV7XhBJ0spqnBGkFLNbS1urJ9tR5zo1lrzsKH3lR32S+6v2ev
+         4aWuKJw5QZP15QpGRBfS0Q2NJtJhg+Hv9dAl0MPJr2BAlO4gqfRv9BlI/oj04n0I51C3
+         gV2CQ8oWuZ/3aRAo/kbS2hRju9wCOxa59FFjJ2cXwvJyKHfTrrKtn+ECQTYbBmk6DYlL
+         TCjnVxgxtu99AAuOb5XdESLmFIYghJawyJhELlyKn+XWUXg8PQgVPF/Lwn9hCTt977GC
+         pHoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=94xWn4igC2rRAAMu2z0THiSQOP5rKPvk0MjxLB0+gEY=;
-        b=G1nTqed18XMGU/eKDlJ5M13INbTFXZB7nMtEtdNpM+6v6BoJEBaBKvbxt26W1LDIFQ
-         ToXrbv4fXTM8fudV3yhhkiaPQksSo4sb37QMQBeniwKwaqhsMJ7Yh1ySVY2RGYFbCMBD
-         bLRa5+NmfUMCzNQ6eoHZMiyrfUZ/maMTadAj90TtllvJA2NfuEgm8T22X6jizcEUu9d0
-         3+ZcNi+O4QDGaOMv0StQY82GgJQI8AYtnr6aqi9eHr/09M/VYDm4XZIe/w7LMfp7JxWn
-         8wcWnmgNuIUj8gp3FOKhIJN5r54UinIt2fYBKgb48idcxlcYK7O/ZBw+2zCJ/32ieqJz
-         YscQ==
-X-Gm-Message-State: AOAM532vHLq2I9eUEUOJ4I8eBZOnYNIihUO4QCPu8Bpgs6pvRPpeJrhp
-        O7ELBotVZxRNdBcHE0mH6eFq06fR5nZyXg==
-X-Google-Smtp-Source: ABdhPJyyiDTRA9Xdiopj0gYPnrIo3pXG4hJzhgyBoCLnKnknMPKS8uj57zFbZ3FbPjWaHnal/xUDFQ==
-X-Received: by 2002:a17:906:268c:: with SMTP id t12mr20832985ejc.377.1605037598523;
-        Tue, 10 Nov 2020 11:46:38 -0800 (PST)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=bOdWylhtQ7csIcx3x7AgcGPRiivjTYceou3ldTAJsAs=;
+        b=GdyfFJsoiV/9vuvsYXj8qV+9tzIFlRFzEK4w1yWeypSB/5W1ctIkYgKTKtwRwVspQb
+         JzLKIfsSwqVTan42Uk23gCZ/nyGQbIl033RLVpjC2bTHUMRIEaKu4Dc2zizGfU5YvUSz
+         5hx5e2TvKLHKXiQV2u8m6jnDr+b46HXw09g98Vfv0kLdnpRKZO4FHgH/bxdgAxJrtvnH
+         5IkQJ0iTjSoPB7nJ1oB+nqCFzFVAbJcPVdS1iWPPTrAjN2gV6oCK/PtdXCss3y4GJvg2
+         AIELCfxUlUCvRqePEbbEJPyRtRqza9v81z3TlEdSPtcaIFR03dTpSnFweel8sOGUd6ba
+         kAYQ==
+X-Gm-Message-State: AOAM530OrErErBHpJ1XR1kLNoaVtJDX/x9P7qQDdNuqVCuzDl9Xrh37F
+        9lzVHtemob8f6E8Ak1RGOnutRAfeund+yw==
+X-Google-Smtp-Source: ABdhPJxk7DTsgCEZiCcDHIK6P7rRocDMeZD9EY8ECUBsYZPrhDfIBIbmqWIZBZNqp8eLRr7R6QyMEQ==
+X-Received: by 2002:a05:6402:31b6:: with SMTP id dj22mr23495415edb.348.1605037880671;
+        Tue, 10 Nov 2020 11:51:20 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f23:2800:895e:e59d:3602:de4b? (p200300ea8f232800895ee59d3602de4b.dip0.t-ipconnect.de. [2003:ea:8f23:2800:895e:e59d:3602:de4b])
-        by smtp.googlemail.com with ESMTPSA id n22sm11419876edr.11.2020.11.10.11.46.37
+        by smtp.googlemail.com with ESMTPSA id a1sm11311622edv.88.2020.11.10.11.51.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Nov 2020 11:46:38 -0800 (PST)
+        Tue, 10 Nov 2020 11:51:20 -0800 (PST)
+Subject: [PATCH net-next 1/5] IB/hfi1: switch to core handling of rx/tx
+ byte/packet counters
 From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 0/5] net: switch further drivers to core
- functionality for handling per-cpu byte/packet counters
 To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
         Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
@@ -69,58 +69,157 @@ Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         linux-rdma@vger.kernel.org,
         Linux USB Mailing List <linux-usb@vger.kernel.org>,
         linux-wireless <linux-wireless@vger.kernel.org>
-Message-ID: <5fbe3a1f-6625-eadc-b1c9-f76f78debb94@gmail.com>
-Date:   Tue, 10 Nov 2020 20:46:26 +0100
+References: <5fbe3a1f-6625-eadc-b1c9-f76f78debb94@gmail.com>
+Message-ID: <5093239e-2d3b-a716-3039-790abdb7a5ba@gmail.com>
+Date:   Tue, 10 Nov 2020 20:47:34 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.4.1
 MIME-Version: 1.0
+In-Reply-To: <5fbe3a1f-6625-eadc-b1c9-f76f78debb94@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Switch further drivers to core functionality for handling per-cpu
-byte/packet counters.
-All changes are compile-tested only.
+Use netdev->tstats instead of a member of hfi1_ipoib_dev_priv for storing
+a pointer to the per-cpu counters. This allows us to use core
+functionality for statistics handling.
 
-Heiner Kallweit (5):
-  IB/hfi1: switch to core handling of rx/tx byte/packet counters
-  qmi_wwan: switch to core handling of rx/tx byte/packet counters
-  qtnfmac: switch to core handling of rx/tx byte/packet counters
-  usbnet: switch to core handling of rx/tx byte/packet counters
-  net: usb: switch to dev_get_tstats64 and remove usbnet_get_stats64
-    alias
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/infiniband/hw/hfi1/driver.c     |  4 +---
+ drivers/infiniband/hw/hfi1/ipoib.h      | 27 -------------------------
+ drivers/infiniband/hw/hfi1/ipoib_main.c | 15 +++-----------
+ drivers/infiniband/hw/hfi1/ipoib_tx.c   |  2 +-
+ 4 files changed, 5 insertions(+), 43 deletions(-)
 
- drivers/infiniband/hw/hfi1/driver.c           |  4 +-
- drivers/infiniband/hw/hfi1/ipoib.h            | 27 -------
- drivers/infiniband/hw/hfi1/ipoib_main.c       | 15 +---
- drivers/infiniband/hw/hfi1/ipoib_tx.c         |  2 +-
- drivers/net/usb/aqc111.c                      |  2 +-
- drivers/net/usb/asix_devices.c                |  6 +-
- drivers/net/usb/ax88172a.c                    |  2 +-
- drivers/net/usb/ax88179_178a.c                |  2 +-
- drivers/net/usb/cdc_mbim.c                    |  2 +-
- drivers/net/usb/cdc_ncm.c                     |  2 +-
- drivers/net/usb/dm9601.c                      |  2 +-
- drivers/net/usb/int51x1.c                     |  2 +-
- drivers/net/usb/mcs7830.c                     |  2 +-
- drivers/net/usb/qmi_wwan.c                    | 41 +++-------
- drivers/net/usb/rndis_host.c                  |  2 +-
- drivers/net/usb/sierra_net.c                  |  2 +-
- drivers/net/usb/smsc75xx.c                    |  2 +-
- drivers/net/usb/smsc95xx.c                    |  2 +-
- drivers/net/usb/sr9700.c                      |  2 +-
- drivers/net/usb/sr9800.c                      |  2 +-
- drivers/net/usb/usbnet.c                      | 23 ++----
- drivers/net/wireless/quantenna/qtnfmac/core.c | 78 ++++---------------
- drivers/net/wireless/quantenna/qtnfmac/core.h |  4 -
- .../quantenna/qtnfmac/pcie/pearl_pcie.c       |  4 +-
- .../quantenna/qtnfmac/pcie/topaz_pcie.c       |  4 +-
- drivers/net/wireless/rndis_wlan.c             |  2 +-
- include/linux/usb/usbnet.h                    |  4 -
- 27 files changed, 59 insertions(+), 183 deletions(-)
-
+diff --git a/drivers/infiniband/hw/hfi1/driver.c b/drivers/infiniband/hw/hfi1/driver.c
+index a40701a6e..0b64aa87a 100644
+--- a/drivers/infiniband/hw/hfi1/driver.c
++++ b/drivers/infiniband/hw/hfi1/driver.c
+@@ -1686,7 +1686,6 @@ static void hfi1_ipoib_ib_rcv(struct hfi1_packet *packet)
+ 	u32 extra_bytes;
+ 	u32 tlen, qpnum;
+ 	bool do_work, do_cnp;
+-	struct hfi1_ipoib_dev_priv *priv;
+ 
+ 	trace_hfi1_rcvhdr(packet);
+ 
+@@ -1734,8 +1733,7 @@ static void hfi1_ipoib_ib_rcv(struct hfi1_packet *packet)
+ 	if (unlikely(!skb))
+ 		goto drop;
+ 
+-	priv = hfi1_ipoib_priv(netdev);
+-	hfi1_ipoib_update_rx_netstats(priv, 1, skb->len);
++	dev_sw_netstats_rx_add(netdev, skb->len);
+ 
+ 	skb->dev = netdev;
+ 	skb->pkt_type = PACKET_HOST;
+diff --git a/drivers/infiniband/hw/hfi1/ipoib.h b/drivers/infiniband/hw/hfi1/ipoib.h
+index b8c9d0a00..f650cac9d 100644
+--- a/drivers/infiniband/hw/hfi1/ipoib.h
++++ b/drivers/infiniband/hw/hfi1/ipoib.h
+@@ -110,7 +110,6 @@ struct hfi1_ipoib_dev_priv {
+ 
+ 	const struct net_device_ops *netdev_ops;
+ 	struct rvt_qp *qp;
+-	struct pcpu_sw_netstats __percpu *netstats;
+ };
+ 
+ /* hfi1 ipoib rdma netdev's private data structure */
+@@ -126,32 +125,6 @@ hfi1_ipoib_priv(const struct net_device *dev)
+ 	return &((struct hfi1_ipoib_rdma_netdev *)netdev_priv(dev))->dev_priv;
+ }
+ 
+-static inline void
+-hfi1_ipoib_update_rx_netstats(struct hfi1_ipoib_dev_priv *priv,
+-			      u64 packets,
+-			      u64 bytes)
+-{
+-	struct pcpu_sw_netstats *netstats = this_cpu_ptr(priv->netstats);
+-
+-	u64_stats_update_begin(&netstats->syncp);
+-	netstats->rx_packets += packets;
+-	netstats->rx_bytes += bytes;
+-	u64_stats_update_end(&netstats->syncp);
+-}
+-
+-static inline void
+-hfi1_ipoib_update_tx_netstats(struct hfi1_ipoib_dev_priv *priv,
+-			      u64 packets,
+-			      u64 bytes)
+-{
+-	struct pcpu_sw_netstats *netstats = this_cpu_ptr(priv->netstats);
+-
+-	u64_stats_update_begin(&netstats->syncp);
+-	netstats->tx_packets += packets;
+-	netstats->tx_bytes += bytes;
+-	u64_stats_update_end(&netstats->syncp);
+-}
+-
+ int hfi1_ipoib_send_dma(struct net_device *dev,
+ 			struct sk_buff *skb,
+ 			struct ib_ah *address,
+diff --git a/drivers/infiniband/hw/hfi1/ipoib_main.c b/drivers/infiniband/hw/hfi1/ipoib_main.c
+index 9f71b9d70..3242290eb 100644
+--- a/drivers/infiniband/hw/hfi1/ipoib_main.c
++++ b/drivers/infiniband/hw/hfi1/ipoib_main.c
+@@ -21,7 +21,7 @@ static int hfi1_ipoib_dev_init(struct net_device *dev)
+ 	struct hfi1_ipoib_dev_priv *priv = hfi1_ipoib_priv(dev);
+ 	int ret;
+ 
+-	priv->netstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
++	dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
+ 
+ 	ret = priv->netdev_ops->ndo_init(dev);
+ 	if (ret)
+@@ -93,21 +93,12 @@ static int hfi1_ipoib_dev_stop(struct net_device *dev)
+ 	return priv->netdev_ops->ndo_stop(dev);
+ }
+ 
+-static void hfi1_ipoib_dev_get_stats64(struct net_device *dev,
+-				       struct rtnl_link_stats64 *storage)
+-{
+-	struct hfi1_ipoib_dev_priv *priv = hfi1_ipoib_priv(dev);
+-
+-	netdev_stats_to_stats64(storage, &dev->stats);
+-	dev_fetch_sw_netstats(storage, priv->netstats);
+-}
+-
+ static const struct net_device_ops hfi1_ipoib_netdev_ops = {
+ 	.ndo_init         = hfi1_ipoib_dev_init,
+ 	.ndo_uninit       = hfi1_ipoib_dev_uninit,
+ 	.ndo_open         = hfi1_ipoib_dev_open,
+ 	.ndo_stop         = hfi1_ipoib_dev_stop,
+-	.ndo_get_stats64  = hfi1_ipoib_dev_get_stats64,
++	.ndo_get_stats64  = dev_get_tstats64,
+ };
+ 
+ static int hfi1_ipoib_send(struct net_device *dev,
+@@ -182,7 +173,7 @@ static void hfi1_ipoib_netdev_dtor(struct net_device *dev)
+ 	hfi1_ipoib_txreq_deinit(priv);
+ 	hfi1_ipoib_rxq_deinit(priv->netdev);
+ 
+-	free_percpu(priv->netstats);
++	free_percpu(dev->tstats);
+ }
+ 
+ static void hfi1_ipoib_free_rdma_netdev(struct net_device *dev)
+diff --git a/drivers/infiniband/hw/hfi1/ipoib_tx.c b/drivers/infiniband/hw/hfi1/ipoib_tx.c
+index 9df292b51..edd4eeac8 100644
+--- a/drivers/infiniband/hw/hfi1/ipoib_tx.c
++++ b/drivers/infiniband/hw/hfi1/ipoib_tx.c
+@@ -121,7 +121,7 @@ static void hfi1_ipoib_free_tx(struct ipoib_txreq *tx, int budget)
+ 	struct hfi1_ipoib_dev_priv *priv = tx->priv;
+ 
+ 	if (likely(!tx->sdma_status)) {
+-		hfi1_ipoib_update_tx_netstats(priv, 1, tx->skb->len);
++		dev_sw_netstats_tx_add(priv->netdev, 1, tx->skb->len);
+ 	} else {
+ 		++priv->netdev->stats.tx_errors;
+ 		dd_dev_warn(priv->dd,
 -- 
 2.29.2
+
 
