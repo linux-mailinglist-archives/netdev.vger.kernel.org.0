@@ -2,176 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 996BE2ADF4B
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 20:26:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D24842ADF98
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 20:33:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731654AbgKJT0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 14:26:41 -0500
-Received: from namei.org ([65.99.196.166]:52328 "EHLO namei.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726307AbgKJT0k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 14:26:40 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by namei.org (8.14.4/8.14.4) with ESMTP id 0AAJQCLt001815;
-        Tue, 10 Nov 2020 19:26:12 GMT
-Date:   Wed, 11 Nov 2020 06:26:12 +1100 (AEDT)
-From:   James Morris <jmorris@namei.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-cc:     Casey Schaufler <casey@schaufler-ca.com>,
-        casey.schaufler@intel.com, linux-security-module@vger.kernel.org,
-        selinux@vger.kernel.org, linux-audit@redhat.com,
-        keescook@chromium.org, john.johansen@canonical.com,
-        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        sds@tycho.nsa.gov, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH v22 16/23] LSM: security_secid_to_secctx in netlink
- netfilter
-In-Reply-To: <20201110133715.GA1890@salvia>
-Message-ID: <alpine.LRH.2.21.2011110626050.32313@namei.org>
-References: <20201105004924.11651-1-casey@schaufler-ca.com> <20201105004924.11651-17-casey@schaufler-ca.com> <20201110133715.GA1890@salvia>
-User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
+        id S1732704AbgKJTcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 14:32:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732004AbgKJTct (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 14:32:49 -0500
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D0AC0613D1;
+        Tue, 10 Nov 2020 11:32:48 -0800 (PST)
+Received: by mail-ed1-x542.google.com with SMTP id v22so3690425edt.9;
+        Tue, 10 Nov 2020 11:32:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VM/5N1Cfxe/m3bRipJoTI2B3zhN3N0f0sMhjH2eyUBU=;
+        b=KdkNh6b3qKXeJvvlcUmKWOeRgPT/zxH3+orznfb65IsHrz7oKYGtiIZacKV/w9g3rP
+         1BHn9xyNAFCM66rdtplI01RPdvPFOhsOu163eyvaJLtISgPqleiayYU9t6U4RjyMe3No
+         +mzIGAocaRP9G5AkadyXwHz+zNt8x9QJDIdy0HTZpuZlHMc1/OI0/xezTXDREFrQms2i
+         CUEcAK5uInTPaSRJ4HXPty6DGW3/+Vcrh+2MCjiwZxlF/ox1llqaLProMD4XFRytgNSV
+         PxUs4yxgM1oAdMEDdAHaSHKLOaf+TytLPyUjA4Q3B5QYCdQzPF3kDW7yEspTneFO3QSm
+         zy6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VM/5N1Cfxe/m3bRipJoTI2B3zhN3N0f0sMhjH2eyUBU=;
+        b=ENOBqh3VG0VERa0mWgXi2agTqnYrN4hKdOezr4kNnpf3HHwNVvPlejA+tAdsaEfonh
+         +SDCk0xC9Fajoaqo6yLyqDHp9mlZqkbb6N1sQbXe2xLDXPVBrmfoBB28ZTCoi4hlzXSv
+         ig++tckd+qAN8fGi29rUIs7klm3AOuI5TCwDVJfag5dhOU86UAHQO1n3VMRXFelU5bIs
+         KnYMX2p6o4J0J1GMKRhG3UJkLV19YRoxNWC2+cAut9VPdI6+6mvxHYV4VbRnNy+GnEUG
+         e6+4cg6yQVBtuxGW4kJ4NpcLGEAEHRwwOAYIvN9ZrR1X0C9MWVqg2yALVCHzjuf5l/sm
+         XlSg==
+X-Gm-Message-State: AOAM530OogVPeCQBbtLYv0ilzeG6JiYss6JavJR06Z0RQvLFFTux9cgm
+        PwjxtLqA7Rj+/ggJ7OZGvxo=
+X-Google-Smtp-Source: ABdhPJxCG5xnShiAvBFmxb7Da3biTlYt98r8QqBxKW8iMTt6wpgkAlO2l83uFJaTB/QDYZpHzQp04g==
+X-Received: by 2002:a05:6402:234a:: with SMTP id r10mr992643eda.311.1605036767418;
+        Tue, 10 Nov 2020 11:32:47 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id cz14sm1918012edb.46.2020.11.10.11.32.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Nov 2020 11:32:46 -0800 (PST)
+Date:   Tue, 10 Nov 2020 21:32:45 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add
+ hardware time stamping support
+Message-ID: <20201110193245.uwsmrqzio5hco7fb@skbuf>
+References: <20201019172435.4416-1-ceggers@arri.de>
+ <5844018.3araiXeC39@n95hx1g2>
+ <20201110014234.b3qdmc2e74poawpz@skbuf>
+ <1909178.Ky26jPeFT0@n95hx1g2>
+ <20201110164045.jqdwvmz5lq4hg54l@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201110164045.jqdwvmz5lq4hg54l@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Nov 2020, Pablo Neira Ayuso wrote:
+On Tue, Nov 10, 2020 at 06:40:45PM +0200, Vladimir Oltean wrote:
+> I am fairly confident that this is how your hardware works, because
+> that's also how peer delay wants to be timestamped, it seems.
 
-> Hi Casey,
-> 
-> On Wed, Nov 04, 2020 at 04:49:17PM -0800, Casey Schaufler wrote:
-> > Change netlink netfilter interfaces to use lsmcontext
-> > pointers, and remove scaffolding.
-> > 
-> > Reviewed-by: Kees Cook <keescook@chromium.org>
-> > Reviewed-by: John Johansen <john.johansen@canonical.com>
-> > Acked-by: Stephen Smalley <sds@tycho.nsa.gov>
-> > Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-> > Cc: netdev@vger.kernel.org
-> > Cc: netfilter-devel@vger.kernel.org
-> 
-> You can carry this tag in your follow up patches.
-> 
-> Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
+So I was confident and also wrong, it appears. My KSZ9477 datasheet
+says:
 
-Thanks for the review!
+In the host-to-switch direction, the 4-byte timestamp field is always
+present when PTP is enabled, as shown in Figure 4-6. This is true for
+all packets sent by the host, including IBA packets. The host uses this
+field to insert the receive timestamp from PTP Pdelay_Req messages into
+the Pdelay_Resp messages. For all other traffic and PTP message types,
+the host should populate the timestamp field with zeros.
 
-> 
-> Thanks.
-> 
-> > ---
-> >  net/netfilter/nfnetlink_queue.c | 37 +++++++++++++--------------------
-> >  1 file changed, 14 insertions(+), 23 deletions(-)
-> > 
-> > diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-> > index 84be5a49a157..0d8b83d84422 100644
-> > --- a/net/netfilter/nfnetlink_queue.c
-> > +++ b/net/netfilter/nfnetlink_queue.c
-> > @@ -301,15 +301,13 @@ static int nfqnl_put_sk_uidgid(struct sk_buff *skb, struct sock *sk)
-> >  	return -1;
-> >  }
-> >  
-> > -static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
-> > +static void nfqnl_get_sk_secctx(struct sk_buff *skb, struct lsmcontext *context)
-> >  {
-> > -	u32 seclen = 0;
-> >  #if IS_ENABLED(CONFIG_NETWORK_SECMARK)
-> >  	struct lsmblob blob;
-> > -	struct lsmcontext context = { };
-> >  
-> >  	if (!skb || !sk_fullsock(skb->sk))
-> > -		return 0;
-> > +		return;
-> >  
-> >  	read_lock_bh(&skb->sk->sk_callback_lock);
-> >  
-> > @@ -318,14 +316,12 @@ static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
-> >  		 * blob. security_secid_to_secctx() will know which security
-> >  		 * module to use to create the secctx.  */
-> >  		lsmblob_init(&blob, skb->secmark);
-> > -		security_secid_to_secctx(&blob, &context);
-> > -		*secdata = context.context;
-> > +		security_secid_to_secctx(&blob, context);
-> >  	}
-> >  
-> >  	read_unlock_bh(&skb->sk->sk_callback_lock);
-> > -	seclen = context.len;
-> >  #endif
-> > -	return seclen;
-> > +	return;
-> >  }
-> >  
-> >  static u32 nfqnl_get_bridge_size(struct nf_queue_entry *entry)
-> > @@ -398,12 +394,10 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
-> >  	struct net_device *indev;
-> >  	struct net_device *outdev;
-> >  	struct nf_conn *ct = NULL;
-> > +	struct lsmcontext context = { };
-> >  	enum ip_conntrack_info ctinfo;
-> >  	struct nfnl_ct_hook *nfnl_ct;
-> >  	bool csum_verify;
-> > -	struct lsmcontext scaff; /* scaffolding */
-> > -	char *secdata = NULL;
-> > -	u32 seclen = 0;
-> >  
-> >  	size = nlmsg_total_size(sizeof(struct nfgenmsg))
-> >  		+ nla_total_size(sizeof(struct nfqnl_msg_packet_hdr))
-> > @@ -469,9 +463,9 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
-> >  	}
-> >  
-> >  	if ((queue->flags & NFQA_CFG_F_SECCTX) && entskb->sk) {
-> > -		seclen = nfqnl_get_sk_secctx(entskb, &secdata);
-> > -		if (seclen)
-> > -			size += nla_total_size(seclen);
-> > +		nfqnl_get_sk_secctx(entskb, &context);
-> > +		if (context.len)
-> > +			size += nla_total_size(context.len);
-> >  	}
-> >  
-> >  	skb = alloc_skb(size, GFP_ATOMIC);
-> > @@ -604,7 +598,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
-> >  	    nfqnl_put_sk_uidgid(skb, entskb->sk) < 0)
-> >  		goto nla_put_failure;
-> >  
-> > -	if (seclen && nla_put(skb, NFQA_SECCTX, seclen, secdata))
-> > +	if (context.len &&
-> > +	    nla_put(skb, NFQA_SECCTX, context.len, context.context))
-> >  		goto nla_put_failure;
-> >  
-> >  	if (ct && nfnl_ct->build(skb, ct, ctinfo, NFQA_CT, NFQA_CT_INFO) < 0)
-> > @@ -632,10 +627,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
-> >  	}
-> >  
-> >  	nlh->nlmsg_len = skb->len;
-> > -	if (seclen) {
-> > -		lsmcontext_init(&scaff, secdata, seclen, 0);
-> > -		security_release_secctx(&scaff);
-> > -	}
-> > +	if (context.len)
-> > +		security_release_secctx(&context);
-> >  	return skb;
-> >  
-> >  nla_put_failure:
-> > @@ -643,10 +636,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
-> >  	kfree_skb(skb);
-> >  	net_err_ratelimited("nf_queue: error creating packet message\n");
-> >  nlmsg_failure:
-> > -	if (seclen) {
-> > -		lsmcontext_init(&scaff, secdata, seclen, 0);
-> > -		security_release_secctx(&scaff);
-> > -	}
-> > +	if (context.len)
-> > +		security_release_secctx(&context);
-> >  	return NULL;
-> >  }
-> >  
-> > -- 
-> > 2.24.1
-> > 
-> 
+Hm. Does that mean that the switch updates the originTimestamp field of
+the Sync frames by itself? Ok... Very interesting that they decided to
+introduce a field in the tail tag for a single type of PTP message.
 
--- 
-James Morris
-<jmorris@namei.org>
+But something is still wrong if you need to special-case the negative
+correctionField, it looks like the arithmetic is not done on the correct
+number of bits, either by the driver or by the hardware.
 
+And zeroing out the correctionField of the Pdelay_Resp on transmission,
+to put that value into t_Tail_Tag? How can you squeeze a 48-bit value
+into a 32-bit value without truncation?
