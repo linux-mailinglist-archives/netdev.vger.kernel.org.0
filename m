@@ -2,113 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A8382AC99D
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 01:16:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 996012AC9A2
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 01:17:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729965AbgKJAQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 19:16:43 -0500
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:36305 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729243AbgKJAQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 19:16:43 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R311e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=wenan.mao@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0UEpA7Z3_1604967392;
-Received: from VM20200710-3.tbsite.net(mailfrom:wenan.mao@linux.alibaba.com fp:SMTPD_---0UEpA7Z3_1604967392)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 10 Nov 2020 08:16:39 +0800
-From:   Mao Wenan <wenan.mao@linux.alibaba.com>
-To:     edumazet@google.com, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Mao Wenan <wenan.mao@linux.alibaba.com>
-Subject: [PATCH net v5] net: Update window_clamp if SOCK_RCVBUF is set
-Date:   Tue, 10 Nov 2020 08:16:31 +0800
-Message-Id: <1604967391-123737-1-git-send-email-wenan.mao@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <CANn89i+ABLMJTEKat=9=qujNwe0BFavphzqYc1CQGtrdkwUnXg@mail.gmail.com>
-References: <CANn89i+ABLMJTEKat=9=qujNwe0BFavphzqYc1CQGtrdkwUnXg@mail.gmail.com>
+        id S1730437AbgKJAR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 19:17:29 -0500
+Received: from mail-40131.protonmail.ch ([185.70.40.131]:38620 "EHLO
+        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727311AbgKJAR2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 19:17:28 -0500
+X-Greylist: delayed 10916 seconds by postgrey-1.27 at vger.kernel.org; Mon, 09 Nov 2020 19:17:26 EST
+Date:   Tue, 10 Nov 2020 00:17:18 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1604967445; bh=3r5eH4kmQg8GtWwXBLWSLr+/uoVW1i5B4scSDxo7/Fw=;
+        h=Date:To:From:Cc:Reply-To:Subject:From;
+        b=QVw7gVxXrBphejmocuPxl0Fslxe9chWynYwC/lwOmLn4TZYfcqgVIQSMJj7ScX7Yz
+         k18zKmyC5mRSgQj6MU5XkBP/yGUPhXlDOcAhgQ6XnvLiExj7NrG9drVX7AL0I2M3yU
+         osoCI/jeVvyiieDEYqv9FcJJH3kdInHG4MGn4EMqubXXlWuwXjhbTM21PgDNy2dzUO
+         AoWNa7W4LK0pQNZc33TcV3BPdIqMuYHRV2Wk+cxTShDgL1soCRKb6vIhIvQs5iEjgK
+         sbgjvHg5mwB4ti4FFlDLj9n7ynwXiDobV2VoprwF9G4ntd2zGYX/sOEMRGwBM3vzrk
+         bnv7HM102/9Xg==
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH v4 net] net: udp: fix Fast/frag0 UDP GRO
+Message-ID: <Ha2hou5eJPcblo4abjAqxZRzIl1RaLs2Hy0oOAgFs@cp4-web-036.plabs.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When net.ipv4.tcp_syncookies=1 and syn flood is happened,
-cookie_v4_check or cookie_v6_check tries to redo what
-tcp_v4_send_synack or tcp_v6_send_synack did,
-rsk_window_clamp will be changed if SOCK_RCVBUF is set,
-which will make rcv_wscale is different, the client
-still operates with initial window scale and can overshot
-granted window, the client use the initial scale but local
-server use new scale to advertise window value, and session
-work abnormally.
+While testing UDP GSO fraglists forwarding through driver that uses
+Fast GRO (via napi_gro_frags()), I was observing lots of out-of-order
+iperf packets:
 
-Fixes: e88c64f0a425 ("tcp: allow effective reduction of TCP's rcv-buffer via setsockopt")
-Signed-off-by: Mao Wenan <wenan.mao@linux.alibaba.com>
+[ ID] Interval           Transfer     Bitrate         Jitter
+[SUM]  0.0-40.0 sec  12106 datagrams received out-of-order
+
+Simple switch to napi_gro_receive() or any other method without frag0
+shortcut completely resolved them.
+
+I've found that UDP GRO uses udp_hdr(skb) in its .gro_receive()
+callback. While it's probably OK for non-frag0 paths (when all
+headers or even the entire frame are already in skb->data), this
+inline points to junk when using Fast GRO (napi_gro_frags() or
+napi_gro_receive() with only Ethernet header in skb->data and all
+the rest in shinfo->frags) and breaks GRO packet compilation and
+the packet flow itself.
+To support both modes, skb_gro_header_fast() + skb_gro_header_slow()
+are typically used. UDP even has an inline helper that makes use of
+them, udp_gro_udphdr(). Use that instead of troublemaking udp_hdr()
+to get rid of the out-of-order delivers.
+
+Present since the introduction of plain UDP GRO in 5.0-rc1.
+
+Since v3 [1]:
+ - restore the original {,__}udp{4,6}_lib_lookup_skb() and use
+   private versions of them inside GRO code (Willem).
+
+Since v2 [2]:
+ - dropped redundant check introduced in v2 as it's performed right
+   before (thanks to Eric);
+ - udp_hdr() switched to data + off for skbs from list (also Eric);
+ - fixed possible malfunction of {,__}udp{4,6}_lib_lookup_skb() with
+   Fast/frag0 due to ip{,v6}_hdr() usage (Willem).
+
+Since v1 [3]:
+ - added a NULL pointer check for "uh" as suggested by Willem.
+
+[1] https://lore.kernel.org/netdev/MgZce9htmEtCtHg7pmWxXXfdhmQ6AHrnltXC41zO=
+oo@cp7-web-042.plabs.ch
+[2] https://lore.kernel.org/netdev/0eaG8xtbtKY1dEKCTKUBubGiC9QawGgB3tVZtNqV=
+dY@cp4-web-030.plabs.ch
+[3] https://lore.kernel.org/netdev/YazU6GEzBdpyZMDMwJirxDX7B4sualpDG68ADZYv=
+JI@cp4-web-034.plabs.ch
+
+Fixes: e20cf8d3f1f7 ("udp: implement GRO for plain UDP sockets.")
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- v5: fix variable to adapat to Christmas tree format.
- v4: change fixes tag format, and delay the actual call to
-     tcp_full_space().
- v3: add local variable full_space, add fixes tag.
- v2: fix for ipv6.
- net/ipv4/syncookies.c |  9 +++++++--
- net/ipv6/syncookies.c | 10 ++++++++--
- 2 files changed, 15 insertions(+), 4 deletions(-)
+ net/ipv4/udp_offload.c | 23 +++++++++++++++++++----
+ net/ipv6/udp_offload.c | 14 +++++++++++++-
+ 2 files changed, 32 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
-index 6ac473b..00dc3f9 100644
---- a/net/ipv4/syncookies.c
-+++ b/net/ipv4/syncookies.c
-@@ -331,7 +331,7 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
- 	__u32 cookie = ntohl(th->ack_seq) - 1;
- 	struct sock *ret = sk;
- 	struct request_sock *req;
--	int mss;
-+	int full_space, mss;
- 	struct rtable *rt;
- 	__u8 rcv_wscale;
- 	struct flowi4 fl4;
-@@ -427,8 +427,13 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
- 
- 	/* Try to redo what tcp_v4_send_synack did. */
- 	req->rsk_window_clamp = tp->window_clamp ? :dst_metric(&rt->dst, RTAX_WINDOW);
-+	/* limit the window selection if the user enforce a smaller rx buffer */
-+	full_space = tcp_full_space(sk);
-+	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK &&
-+	    (req->rsk_window_clamp > full_space || req->rsk_window_clamp == 0))
-+		req->rsk_window_clamp = full_space;
- 
--	tcp_select_initial_window(sk, tcp_full_space(sk), req->mss,
-+	tcp_select_initial_window(sk, full_space, req->mss,
- 				  &req->rsk_rcv_wnd, &req->rsk_window_clamp,
- 				  ireq->wscale_ok, &rcv_wscale,
- 				  dst_metric(&rt->dst, RTAX_INITRWND));
-diff --git a/net/ipv6/syncookies.c b/net/ipv6/syncookies.c
-index e796a64..9b6cae1 100644
---- a/net/ipv6/syncookies.c
-+++ b/net/ipv6/syncookies.c
-@@ -136,7 +136,7 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
- 	__u32 cookie = ntohl(th->ack_seq) - 1;
- 	struct sock *ret = sk;
- 	struct request_sock *req;
--	int mss;
-+	int full_space, mss;
- 	struct dst_entry *dst;
- 	__u8 rcv_wscale;
- 	u32 tsoff = 0;
-@@ -241,7 +241,13 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
- 	}
- 
- 	req->rsk_window_clamp = tp->window_clamp ? :dst_metric(dst, RTAX_WINDOW);
--	tcp_select_initial_window(sk, tcp_full_space(sk), req->mss,
-+	/* limit the window selection if the user enforce a smaller rx buffer */
-+	full_space = tcp_full_space(sk);
-+	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK &&
-+	    (req->rsk_window_clamp > full_space || req->rsk_window_clamp == 0))
-+		req->rsk_window_clamp = full_space;
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index e67a66fbf27b..6064efe17cdb 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -366,11 +366,11 @@ static struct sk_buff *udp4_ufo_fragment(struct sk_bu=
+ff *skb,
+ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+ =09=09=09=09=09       struct sk_buff *skb)
+ {
+-=09struct udphdr *uh =3D udp_hdr(skb);
++=09struct udphdr *uh =3D udp_gro_udphdr(skb);
+ =09struct sk_buff *pp =3D NULL;
+ =09struct udphdr *uh2;
+ =09struct sk_buff *p;
+-=09unsigned int ulen;
++=09u32 ulen, off;
+ =09int ret =3D 0;
+=20
+ =09/* requires non zero csum, for symmetry with GSO */
+@@ -385,6 +385,9 @@ static struct sk_buff *udp_gro_receive_segment(struct l=
+ist_head *head,
+ =09=09NAPI_GRO_CB(skb)->flush =3D 1;
+ =09=09return NULL;
+ =09}
 +
-+	tcp_select_initial_window(sk, full_space, req->mss,
- 				  &req->rsk_rcv_wnd, &req->rsk_window_clamp,
- 				  ireq->wscale_ok, &rcv_wscale,
- 				  dst_metric(dst, RTAX_INITRWND));
--- 
-1.8.3.1
++=09off =3D skb_gro_offset(skb);
++
+ =09/* pull encapsulating udp header */
+ =09skb_gro_pull(skb, sizeof(struct udphdr));
+=20
+@@ -392,7 +395,7 @@ static struct sk_buff *udp_gro_receive_segment(struct l=
+ist_head *head,
+ =09=09if (!NAPI_GRO_CB(p)->same_flow)
+ =09=09=09continue;
+=20
+-=09=09uh2 =3D udp_hdr(p);
++=09=09uh2 =3D (void *)p->data + off;
+=20
+ =09=09/* Match ports only, as csum is always non zero */
+ =09=09if ((*(u32 *)&uh->source !=3D *(u32 *)&uh2->source)) {
+@@ -500,6 +503,16 @@ struct sk_buff *udp_gro_receive(struct list_head *head=
+, struct sk_buff *skb,
+ }
+ EXPORT_SYMBOL(udp_gro_receive);
+=20
++static struct sock *udp4_gro_lookup_skb(struct sk_buff *skb, __be16 sport,
++=09=09=09=09=09__be16 dport)
++{
++=09const struct iphdr *iph =3D skb_gro_network_header(skb);
++
++=09return __udp4_lib_lookup(dev_net(skb->dev), iph->saddr, sport,
++=09=09=09=09 iph->daddr, dport, inet_iif(skb),
++=09=09=09=09 inet_sdif(skb), &udp_table, NULL);
++}
++
+ INDIRECT_CALLABLE_SCOPE
+ struct sk_buff *udp4_gro_receive(struct list_head *head, struct sk_buff *s=
+kb)
+ {
+@@ -523,7 +536,9 @@ struct sk_buff *udp4_gro_receive(struct list_head *head=
+, struct sk_buff *skb)
+ skip:
+ =09NAPI_GRO_CB(skb)->is_ipv6 =3D 0;
+ =09rcu_read_lock();
+-=09sk =3D static_branch_unlikely(&udp_encap_needed_key) ? udp4_lib_lookup_=
+skb(skb, uh->source, uh->dest) : NULL;
++=09sk =3D static_branch_unlikely(&udp_encap_needed_key) ?
++=09     udp4_gro_lookup_skb(skb, uh->source, uh->dest) :
++=09     NULL;
+ =09pp =3D udp_gro_receive(head, skb, uh, sk);
+ =09rcu_read_unlock();
+ =09return pp;
+diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
+index 584157a07759..b126ab2120d9 100644
+--- a/net/ipv6/udp_offload.c
++++ b/net/ipv6/udp_offload.c
+@@ -111,6 +111,16 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buf=
+f *skb,
+ =09return segs;
+ }
+=20
++static struct sock *udp6_gro_lookup_skb(struct sk_buff *skb, __be16 sport,
++=09=09=09=09=09__be16 dport)
++{
++=09const struct ipv6hdr *iph =3D skb_gro_network_header(skb);
++
++=09return __udp6_lib_lookup(dev_net(skb->dev), &iph->saddr, sport,
++=09=09=09=09 &iph->daddr, dport, inet6_iif(skb),
++=09=09=09=09 inet6_sdif(skb), &udp_table, NULL);
++}
++
+ INDIRECT_CALLABLE_SCOPE
+ struct sk_buff *udp6_gro_receive(struct list_head *head, struct sk_buff *s=
+kb)
+ {
+@@ -135,7 +145,9 @@ struct sk_buff *udp6_gro_receive(struct list_head *head=
+, struct sk_buff *skb)
+ skip:
+ =09NAPI_GRO_CB(skb)->is_ipv6 =3D 1;
+ =09rcu_read_lock();
+-=09sk =3D static_branch_unlikely(&udpv6_encap_needed_key) ? udp6_lib_looku=
+p_skb(skb, uh->source, uh->dest) : NULL;
++=09sk =3D static_branch_unlikely(&udpv6_encap_needed_key) ?
++=09     udp6_gro_lookup_skb(skb, uh->source, uh->dest) :
++=09     NULL;
+ =09pp =3D udp_gro_receive(head, skb, uh, sk);
+ =09rcu_read_unlock();
+ =09return pp;
+--=20
+2.29.2
+
 
