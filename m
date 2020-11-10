@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 282342ACB79
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 04:03:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B47552ACB76
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 04:03:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731256AbgKJDDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 22:03:18 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:44924 "EHLO vps0.lunn.ch"
+        id S1730996AbgKJDDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 22:03:13 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:44918 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729243AbgKJDDL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729648AbgKJDDL (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 9 Nov 2020 22:03:11 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kcJw4-006D8d-0n; Tue, 10 Nov 2020 04:03:08 +0100
+        id 1kcJw4-006D8g-1s; Tue, 10 Nov 2020 04:03:08 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>, Nicolas Pitre <nico@fluxnic.net>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH v3 net-next 3/7] drivers: net: smc911x: Work around set but unused status
-Date:   Tue, 10 Nov 2020 04:02:44 +0100
-Message-Id: <20201110030248.1480413-4-andrew@lunn.ch>
+Subject: [PATCH v3 net-next 4/7] drivers: net: smc911x: Fix set but unused status because of DBG macro
+Date:   Tue, 10 Nov 2020 04:02:45 +0100
+Message-Id: <20201110030248.1480413-5-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201110030248.1480413-1-andrew@lunn.ch>
 References: <20201110030248.1480413-1-andrew@lunn.ch>
@@ -31,42 +31,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/ethernet/smsc/smc911x.c: In function ‘smc911x_phy_interrupt’:
-drivers/net/ethernet/smsc/smc911x.c:976:6: warning: variable ‘status’ set but not used [-Wunused-but-set-variable]
-  976 |  int status;
+drivers/net/ethernet/smsc/smc911x.c: In function ‘smc911x_timeout’:
+drivers/net/ethernet/smsc/smc911x.c:1251:6: warning: variable ‘status’ set but not used [-Wunused-but-set-variable]
+ 1251 |  int status, mask;
 
-A comment indicates the status needs to be read from the PHY,
-otherwise bad things happen. But due to the macro magic, it is hard to
-perform the read without assigning it to a variable. So add
-_always_unused attribute to status to tell the compiler we don't
-expect to use the value.
+The status is read in order to print it via the DBG macro. However,
+due to the way DBG is disabled, the compiler never sees it being used.
+
+Change the DBG macro to actually make use of the passed parameters,
+and the leave the optimiser to remove the unwanted code inside the
+while (0).
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/ethernet/smsc/smc911x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/smsc/smc911x.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
-index 01069dfaf75c..8f748a0c057e 100644
+index 8f748a0c057e..6978050496ac 100644
 --- a/drivers/net/ethernet/smsc/smc911x.c
 +++ b/drivers/net/ethernet/smsc/smc911x.c
-@@ -879,7 +879,7 @@ static void smc911x_phy_configure(struct work_struct *work)
- 	int phyaddr = lp->mii.phy_id;
- 	int my_phy_caps; /* My PHY capabilities */
- 	int my_ad_caps; /* My Advertised capabilities */
--	int status;
-+	int status __always_unused;
- 	unsigned long flags;
+@@ -102,7 +102,10 @@ MODULE_ALIAS("platform:smc911x");
  
- 	DBG(SMC_DEBUG_FUNC, dev, "--> %s()\n", __func__);
-@@ -973,7 +973,7 @@ static void smc911x_phy_interrupt(struct net_device *dev)
- {
- 	struct smc911x_local *lp = netdev_priv(dev);
- 	int phyaddr = lp->mii.phy_id;
--	int status;
-+	int status __always_unused;
- 
- 	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+ #define PRINTK(dev, args...)   netdev_info(dev, args)
+ #else
+-#define DBG(n, dev, args...)   do { } while (0)
++#define DBG(n, dev, args...)			 \
++	while (0) {				 \
++		netdev_dbg(dev, args);		 \
++	}
+ #define PRINTK(dev, args...)   netdev_dbg(dev, args)
+ #endif
  
 -- 
 2.29.2
