@@ -2,436 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F59E2ADD4A
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 18:46:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 848202ADD62
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 18:50:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730894AbgKJRqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 12:46:22 -0500
-Received: from sender11-of-o52.zoho.eu ([31.186.226.238]:21367 "EHLO
-        sender11-of-o52.zoho.eu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729183AbgKJRqW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 12:46:22 -0500
-ARC-Seal: i=1; a=rsa-sha256; t=1605030334; cv=none; 
-        d=zohomail.eu; s=zohoarc; 
-        b=KgCcrHJFffdIrq95qoxxMIfqwnapRjlQSO+k1qQVu39O+zn1aE+irbpDG8TgvUhGmMuYTk0O5NiWXSk4/3I0ZXYnHAGmZWAtUlU5k7M7rM7hCt/LGyhBcSKz9i7e5Ow4sD0N8P/DvA9YQWvst7HxQ8pWiXFBobs9/X9fgCbhKYQ=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
-        t=1605030334; h=Content-Type:Content-Transfer-Encoding:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=SgkCXERQ4OHMND1UX17F8adqAfB9Ze0VA10WlJUJ1Cg=; 
-        b=hzz8poUNOj4RDiVc1CcbcM2FcjYA57o3jaCT2OCeeELZ0kkADbv3wg04oR1nmkyRjPI6LewFUS0Xf8cpaZlG0bfmwduC13D/hU7HQMFneBl9ZaIBxlp7D0Vn/XAphQGa2nY6RUbMqNmBkqPPkK92TwooTMtsucJYDnEeDS7wb+I=
-ARC-Authentication-Results: i=1; mx.zohomail.eu;
-        dkim=pass  header.i=shytyi.net;
-        spf=pass  smtp.mailfrom=dmytro@shytyi.net;
-        dmarc=pass header.from=<dmytro@shytyi.net> header.from=<dmytro@shytyi.net>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1605030334;
-        s=hs; d=shytyi.net; i=dmytro@shytyi.net;
-        h=Date:From:To:Message-ID:In-Reply-To:References:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding;
-        bh=SgkCXERQ4OHMND1UX17F8adqAfB9Ze0VA10WlJUJ1Cg=;
-        b=cBazENHfHzTgF/g7U0kdrX1Wu/ExOYslisY8PcwwyA0d3MGKekAqJ+vX92HHgo8U
-        yaFRO3KdZ7aDiodeYEMff0GBRbJC3xRLkDYyzsKPhCHRcPlamKm+fEGKtpN7STwJbb3
-        b1kzXBMkJpf/HcK+zjhcOHcJzbgqBCoaOHENlIpI=
-Received: from mail.zoho.eu by mx.zoho.eu
-        with SMTP id 1605030328911921.8939858496824; Tue, 10 Nov 2020 18:45:28 +0100 (CET)
-Date:   Tue, 10 Nov 2020 18:45:28 +0100
-From:   Dmytro Shytyi <dmytro@shytyi.net>
-To:     "kuba" <kuba@kernel.org>, "kuznet" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji" <yoshfuji@linux-ipv6.org>,
-        "liuhangbin" <liuhangbin@gmail.com>, "davem" <davem@davemloft.net>,
-        "netdev" <netdev@vger.kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>
-Message-ID: <175b3433a4c.aea7c06513321.4158329434310691736@shytyi.net>
-In-Reply-To: <175b25d0c79.f8ce5734515834.1635475016968827598@shytyi.net>
-References: <175b25d0c79.f8ce5734515834.1635475016968827598@shytyi.net>
-Subject: Re: [PATCH net-next] net: Variable SLAAC: SLAAC with prefixes of
- arbitrary length in PIO
+        id S1731128AbgKJRuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 12:50:17 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:20214 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730473AbgKJRuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 12:50:15 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AAHmjEF025517;
+        Tue, 10 Nov 2020 09:49:59 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=VrSJWdaxDSKmOpTC0lTq1V6nmhsYgzIBEmXnj3g04RE=;
+ b=USPMH23DU0Z+zCtMO++amEgzF7TNK1ElnmIixarFoLDHjYRjBKm+Spgxdrww1+mSva7x
+ pSucWmNM4sMoCH6hl0TM5+/xzhb+ov1ULrpOE3AnK2+wu5tmgBId1GfNoyhISbVF3MC7
+ J93NKhV0dF1FN8fyiQwTj4pFbmlGhdN3Ld0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 34pc9qc5fk-15
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 10 Nov 2020 09:49:59 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 10 Nov 2020 09:49:58 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IoEqgb0R/CnIxlFMQRWGmZ5UM7NroxmyCJFqAGJepuKcpUSeDu5EQnyrBcmcnbCnmifFUtHqrSz+62lEKHFf4wsf+3ct8bFdJSCAiax3h2gj9geofPs68uHKYh19PXDhnWKa874er+ihHwfkCbrBr3VmH1yl8ooDiHSTomwb44qx/RwxB5XOhDS7uCjc3qbByTWrFHUmojfPkorDdio4jiMNJSQr/vTiMbgFleIkvAsF0YK5CsgqA/hKG0p4g7h7H6882HlIO8v7jIjO0I1C9zXJhdx4Ffzag23Ze/BL/Wqoht5xktWACWDL16TUKlzdjblhDhO3BPKP5rrUMo1XwQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VrSJWdaxDSKmOpTC0lTq1V6nmhsYgzIBEmXnj3g04RE=;
+ b=DAkuexuRV4+jpdZWm7rLcl8+a1Bz5EToa+hzapmJpx08aQjo1H53xv9WsLtsXPAhheunFnELWnl224HOUTvilBR6wFjs9tRD5MtyDvYBM/4FXZftWF3cUEVqRn7qLxmnnLP2kthulyLPl0epIkalU/7FA4yoFkNQCAvn6rtGICrHg38mVorK051OZuo0LCMHHrCzsdlSkZ2zGR5Vu1FokYRhn2wMTjkzwR9ZAk76xR/cHIpFhfOYV5vbtMOEKDWsve1+nx9HNC5iBaOF4Y/rb6X1DWyCaPuSk+FYDTBQFHfhnamgf1roy1jQJDlFz9d9MRVg0kASAyM1qwXWvrcZIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VrSJWdaxDSKmOpTC0lTq1V6nmhsYgzIBEmXnj3g04RE=;
+ b=RXuknwzDoGpBccUzhnvblxBtZ8N48Z1pcEQIG9olwtqc8s3dXI+hIlIz53YbDwDl1T2Bz1r9WWLic+pa03lZXYcm66PGkdZv3GT4rYHxrbU1grnib8rJ1TU411j2Cbn6FTj4PpkqoxYpdV4Ql5mV8N2g1icx7v9doy6aPkiTst0=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB3094.namprd15.prod.outlook.com (2603:10b6:a03:ff::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.23; Tue, 10 Nov
+ 2020 17:49:53 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::f49e:bdbb:8cd7:bf6b]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::f49e:bdbb:8cd7:bf6b%7]) with mapi id 15.20.3541.025; Tue, 10 Nov 2020
+ 17:49:53 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andrii@kernel.org>
+CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "Alexei Starovoitov" <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4 bpf-next 1/5] bpf: add in-kernel split BTF support
+Thread-Topic: [PATCH v4 bpf-next 1/5] bpf: add in-kernel split BTF support
+Thread-Index: AQHWtwAHoXtpfdzO80ynz0OJjXLTl6nBpcmA
+Date:   Tue, 10 Nov 2020 17:49:53 +0000
+Message-ID: <695E976D-DECA-4BE1-BFB0-771878B9CFCD@fb.com>
+References: <20201110011932.3201430-1-andrii@kernel.org>
+ <20201110011932.3201430-2-andrii@kernel.org>
+In-Reply-To: <20201110011932.3201430-2-andrii@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.120.23.2.4)
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=fb.com;
+x-originating-ip: [2620:10d:c090:400::5:3659]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d7d949e2-66ab-4dff-150d-08d885a107c8
+x-ms-traffictypediagnostic: BYAPR15MB3094:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB3094524E7561175D8261A129B3E90@BYAPR15MB3094.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sWRaKCNaC+P0fCPd+/u5oSFJKW4MQsNLDcZdsF8WUym7mhxfZdPgNF0out7DtHwsDQnN8x1FOwUPBUpKNeY6EscfHTuASbX5xDP/MusPyyrZ13XhgyYZkdjynKFmLLgQkMe0Z3hei7qjmF2BLcGWClAF5HNaZs4nprxz/5x0+vV1GmELwSbTBjxY0R8rigDgWlFXBfDmoKqX6jqGj9zApx54+bkds1yygHobb/VBZpqCc9d0G0avs2T9bwmUtJYCOMdxj18FDGA1nof++EMrS7MClmVBSAYB2eXtbX4LrFqzyutuEUr6U0B60Rwv7KdtIAuS5qshAAp79HMdzgw/xw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(396003)(376002)(39860400002)(136003)(366004)(6506007)(53546011)(66446008)(76116006)(64756008)(2616005)(36756003)(83380400001)(71200400001)(8676002)(54906003)(86362001)(66476007)(6486002)(6512007)(186003)(316002)(66556008)(2906002)(91956017)(478600001)(66946007)(5660300002)(6916009)(33656002)(4326008)(8936002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: naNkYaTRxZMUMiHGLh5FPKDMfUEas92/kJXwzArGWHHDDVy502seSZnsNwgb/jdeRwnNDgEOmjQOVwnSuyE+jpnAzDa8NSImq+gjBc5goC7k4p7eXMl6CNxOUJJB0LqcLDwvKKoQjQuqHe8PfcDlH1lebQPFHIrgELQE8lSKlPybibcfzBFAAJZ1Wy8vdtgVP+VS8ghe+WHHrk67DsErEt9DMaq5sj7N0r3BCCulMOG6UXjNoN50YN6szxfAO0M1uUdzB4155wEY+iB5nINscPlgCxfv9H08qF9J7APaTmx99Y6HkkyaEEQ7Snt2BWrRf1Ir9+OkQIk2xDPemHOz+F21DUqCnl6G7OBg2pyOEvezq3kSMsuKxLsjyyiV/7ErBC8vROfRSVNzCdy/+yCjkiVtzbCFm17SQ2jbv6xSgKwBbSxD8rY1AhatpjbxvTd9SGVYvkq8lJnzKrFji/MCzR+SehQmBA2x6q38x1q0nONaLJHYasEmewtcFZQ49Y5xIYxpl8NZcgvKc060xfBMM4nXJfS3mA0WQcj0Ecr4Ur2Ph/3JqTn3paTI927H+kKXwiiwdyCeyCrkP9a2ozzCjZ2PGjjJkVpcXoj/DYLVV3vLaUIiviQiHAlbzouWLJ5auDUiypWVgyPtcTfR5gLgpW3RBHhjRpLWVWBNCI3mrb41bcR+k2IyeOmi+hy2EkzAMYFeQKGKVV/gn+RLAaEylPV2lKSNISBYaolEzwJySAmaAQzW7MwYZOeEWZJaAiqOaLcTxXLLQWoRIzibYM3W6Wb+znpmnCiqu5nBs4yw0Nn63V7FComI8WZyzMpVweBRkWez+ZE8O8jQy3reIr7hnjYB8SWelisUJdR4cfP8V/MRIr+SAEmBPfmXmXPYERtBfd8TKOJJ9LCnOSO2QB4urlXlk6r6JvIifLNC4ydXejw=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <012128130996894097D84B39F76C51B6@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7d949e2-66ab-4dff-150d-08d885a107c8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Nov 2020 17:49:53.8098
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: J7B/7wZrfL7IwRo4Qfym/siokrprsxrrrKfS13j/eKFUv5FkP7WPrvNsTRhI3qT7J/Lk8UkxLX2yhSmTnybpuQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3094
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-10_07:2020-11-10,2020-11-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 spamscore=0
+ mlxlogscore=999 phishscore=0 adultscore=0 suspectscore=0
+ priorityscore=1501 bulkscore=0 impostorscore=0 lowpriorityscore=0
+ clxscore=1015 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2011100125
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Variable SLAAC: SLAAC with prefixes of arbitrary length in PIO (randomly
-generated hostID or stable privacy + privacy extensions).
-The main problem is that SLAAC RA or PD allocates a /64 by the Wireless
-carrier 4G, 5G to a mobile hotspot, however segmentation of the /64 via
-SLAAC is required so that downstream interfaces can be further subnetted.
-Example: uCPE device (4G + WI-FI enabled) receives /64 via Wireless, and
-assigns /72 to VNF-Firewall, /72 to WIFI, /72 to VNF-Router, /72 to
-Load-Balancer and /72 to wired connected devices.
-IETF document that defines problem statement:
-draft-mishra-v6ops-variable-slaac-problem-stmt
-IETF document that specifies variable slaac:
-draft-mishra-6man-variable-slaac
 
-Signed-off-by: Dmytro Shytyi <dmytro@shytyi.net>
----
-diff -rupN net-next-5.10.0-rc2/include/net/if_inet6.h net-next-patch-v2-5.10.0-rc2/include/net/if_inet6.h
---- net-next-5.10.0-rc2/include/net/if_inet6.h	2020-11-10 08:46:00.195180579 +0100
-+++ net-next-patch-v2-5.10.0-rc2/include/net/if_inet6.h	2020-11-10 12:43:26.866166351 +0100
-@@ -22,6 +22,12 @@
- #define IF_RS_SENT	0x10
- #define IF_READY	0x80000000
- 
-+/* Variable SLAAC (Contact: Dmytro Shytyi)
-+ * draft-mishra-6man-variable-slaac
-+ * draft-mishra-v6ops-variable-slaac-problem-stmt
-+ */
-+#define IF_RA_VAR_PLEN	0x08
-+
- /* prefix flags */
- #define IF_PREFIX_ONLINK	0x01
- #define IF_PREFIX_AUTOCONF	0x02
-diff -rupN net-next-5.10.0-rc2/include/uapi/linux/icmpv6.h net-next-patch-v2-5.10.0-rc2/include/uapi/linux/icmpv6.h
---- net-next-5.10.0-rc2/include/uapi/linux/icmpv6.h	2020-11-10 08:46:00.351849525 +0100
-+++ net-next-patch-v2-5.10.0-rc2/include/uapi/linux/icmpv6.h	2020-11-10 12:43:26.866166351 +0100
-@@ -42,7 +42,9 @@ struct icmp6hdr {
-                 struct icmpv6_nd_ra {
- 			__u8		hop_limit;
- #if defined(__LITTLE_ENDIAN_BITFIELD)
--			__u8		reserved:3,
-+			__u8		reserved:1,
-+					slaac_var_plen:1,
-+					proxy:1,
- 					router_pref:2,
- 					home_agent:1,
- 					other:1,
-@@ -53,7 +55,9 @@ struct icmp6hdr {
- 					other:1,
- 					home_agent:1,
- 					router_pref:2,
--					reserved:3;
-+					proxy:1,
-+					slaac_var_plen:1,
-+					reserved:1;
- #else
- #error	"Please fix <asm/byteorder.h>"
- #endif
-@@ -78,9 +82,9 @@ struct icmp6hdr {
- #define icmp6_addrconf_other	icmp6_dataun.u_nd_ra.other
- #define icmp6_rt_lifetime	icmp6_dataun.u_nd_ra.rt_lifetime
- #define icmp6_router_pref	icmp6_dataun.u_nd_ra.router_pref
-+#define icmp6_slaac_var_plen	icmp6_dataun.u_nd_ra.slaac_var_plen
- };
- 
--
- #define ICMPV6_ROUTER_PREF_LOW		0x3
- #define ICMPV6_ROUTER_PREF_MEDIUM	0x0
- #define ICMPV6_ROUTER_PREF_HIGH		0x1
-diff -rupN net-next-5.10.0-rc2/net/ipv6/addrconf.c net-next-patch-v2-5.10.0-rc2/net/ipv6/addrconf.c
---- net-next-5.10.0-rc2/net/ipv6/addrconf.c	2020-11-10 08:46:01.075193379 +0100
-+++ net-next-patch-v2-5.10.0-rc2/net/ipv6/addrconf.c	2020-11-10 13:09:55.762384640 +0100
-@@ -11,6 +11,8 @@
- /*
-  *	Changes:
-  *
-+ *	Dmytro Shytyi			:	Variable SLAAC: SLAAC with
-+ *	<dmytro@shytyi.net>			prefixes of arbitrary length.
-  *	Janos Farkas			:	delete timer on ifdown
-  *	<chexum@bankinf.banki.hu>
-  *	Andi Kleen			:	kill double kfree on module
-@@ -142,7 +144,12 @@ static int ipv6_count_addresses(const st
- static int ipv6_generate_stable_address(struct in6_addr *addr,
- 					u8 dad_count,
- 					const struct inet6_dev *idev);
--
-+static int ipv6_generate_address_variable_plen(struct in6_addr *address,
-+					       u8 dad_count,
-+					       const struct inet6_dev *idev,
-+					       unsigned int rcvd_prfx_len,
-+					       bool stable_privacy_mode);
-+unsigned char reverse_bits(unsigned char num);
- #define IN6_ADDR_HSIZE_SHIFT	8
- #define IN6_ADDR_HSIZE		(1 << IN6_ADDR_HSIZE_SHIFT)
- /*
-@@ -1314,9 +1321,21 @@ static int ipv6_create_tempaddr(struct i
- 	struct inet6_ifaddr *ift;
- 	struct ifa6_config cfg;
- 	long max_desync_factor;
--	struct in6_addr addr;
-+
-+	struct in6_addr temp, addr;
-+
- 	int ret = 0;
- 
-+	__int128 host_id;
-+	__int128 net_prfx;
-+	__int128 ipv6addr;
-+	__int128 mask_128;
-+	__int128 mask_host_id;
-+	__int128 mask_net_prfx;
-+	int i;
-+	unsigned char mask_host_id_arr[128];
-+
-+	memset(&mask_128, 0xFF, 16);
- 	write_lock_bh(&idev->lock);
- 
- retry:
-@@ -1340,9 +1359,30 @@ retry:
- 		goto out;
- 	}
- 	in6_ifa_hold(ifp);
--	memcpy(addr.s6_addr, ifp->addr.s6_addr, 8);
--	ipv6_gen_rnd_iid(&addr);
- 
-+	if (ifp->prefix_len == 64) {
-+		memcpy(addr.s6_addr, ifp->addr.s6_addr, 8);
-+		ipv6_gen_rnd_iid(&addr);
-+	} else if (ifp->prefix_len > 0 && ifp->prefix_len <= 128) {
-+		memcpy(addr.s6_addr, ifp->addr.s6_addr, 16);
-+		get_random_bytes(temp.s6_addr32, 16);
-+
-+		memcpy(&host_id, temp.s6_addr32, sizeof(host_id));
-+		memcpy(&net_prfx, addr.s6_addr, sizeof(net_prfx));
-+
-+		mask_host_id = ifp->prefix_len != 128 ? (mask_128 << ifp->prefix_len) : 0x0;
-+		memcpy(mask_host_id_arr, &mask_host_id, 16);
-+		for (i = 0; i < 128; i++)
-+			mask_host_id_arr[i] = reverse_bits(mask_host_id_arr[i]);
-+		memcpy(&mask_host_id, mask_host_id_arr, 16);
-+		host_id = host_id & mask_host_id;
-+
-+		mask_net_prfx = mask_128 ^ mask_host_id;
-+		net_prfx = net_prfx & mask_net_prfx;
-+
-+		ipv6addr = net_prfx | host_id;
-+		memcpy(addr.s6_addr, &ipv6addr, 16);
-+	}
- 	age = (now - ifp->tstamp) / HZ;
- 
- 	regen_advance = idev->cnf.regen_max_retry *
-@@ -2576,9 +2616,61 @@ int addrconf_prefix_rcv_add_addr(struct
- 				 u32 addr_flags, bool sllao, bool tokenized,
- 				 __u32 valid_lft, u32 prefered_lft)
- {
--	struct inet6_ifaddr *ifp = ipv6_get_ifaddr(net, addr, dev, 1);
-+	struct inet6_ifaddr *ifp = NULL;
- 	int create = 0;
- 
-+	if ((in6_dev->if_flags & IF_RA_VAR_PLEN) == IF_RA_VAR_PLEN &&
-+	    in6_dev->cnf.addr_gen_mode != IN6_ADDR_GEN_MODE_STABLE_PRIVACY) {
-+		struct inet6_ifaddr *result = NULL;
-+		struct inet6_ifaddr *result_base = NULL;
-+		__int128 mask_128;
-+		__int128 mask_net_prfx;
-+		__int128 net_prfx;
-+		__int128 curr_net_prfx;
-+		int hostid_len;
-+		int i;
-+		unsigned char mask_host_id_arr[128];
-+
-+		memset(&mask_128, 0xFF, 16);
-+		result_base = result;
-+		rcu_read_lock();
-+		list_for_each_entry_rcu(ifp, &in6_dev->addr_list, if_list) {
-+			if (!net_eq(dev_net(ifp->idev->dev), net))
-+				continue;
-+			/* 128bit network prefix mask calculation */
-+			hostid_len = 128 - pinfo->prefix_len;
-+			mask_net_prfx = pinfo->prefix_len != 128 ? (mask_128 << pinfo->prefix_len) : 0x0;
-+			mask_net_prfx = ~mask_net_prfx;
-+			memcpy(mask_host_id_arr, &mask_net_prfx, 16);
-+			for (i = 0; i < 128; i++)
-+				mask_host_id_arr[i] = reverse_bits(mask_host_id_arr[i]);
-+			memcpy(&mask_net_prfx, mask_host_id_arr, 16);
-+
-+			/* Received/new IPv6 prefix */
-+			memcpy(&net_prfx, pinfo->prefix.s6_addr32, 16);
-+			net_prfx &= mask_net_prfx;
-+
-+			/* Configured/old IPv6 prefix */
-+			memcpy(&curr_net_prfx, ifp->addr.s6_addr32, 16);
-+			curr_net_prfx &=  mask_net_prfx;
-+
-+			/* IPv6 prefixes comparison */
-+			if ((net_prfx ^ curr_net_prfx) == 0 &&
-+			    pinfo->prefix_len == ifp->prefix_len) {
-+				result = ifp;
-+				in6_ifa_hold(ifp);
-+				break;
-+			}
-+		}
-+		rcu_read_unlock();
-+		if (result_base != result)
-+			ifp = result;
-+		else
-+			ifp = NULL;
-+	} else {
-+		ifp = ipv6_get_ifaddr(net, addr, dev, 1);
-+	}
-+
- 	if (!ifp && valid_lft) {
- 		int max_addresses = in6_dev->cnf.max_addresses;
- 		struct ifa6_config cfg = {
-@@ -2781,9 +2873,35 @@ void addrconf_prefix_rcv(struct net_devi
- 				dev_addr_generated = true;
- 			}
- 			goto ok;
-+		goto put;
-+		} else if (((in6_dev->if_flags & IF_RA_VAR_PLEN) == IF_RA_VAR_PLEN) &&
-+			  pinfo->prefix_len > 0 && pinfo->prefix_len <= 128) {
-+			/* SLAAC with prefixes of arbitrary length (Variable SLAAC).
-+			 * draft-mishra-6man-variable-slaac
-+			 * draft-mishra-v6ops-variable-slaac-problem-stmt
-+			 * Contact: Dmytro Shytyi.
-+			 */
-+			memcpy(&addr, &pinfo->prefix, 16);
-+			if (in6_dev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_STABLE_PRIVACY) {
-+				if (!ipv6_generate_address_variable_plen(&addr,
-+									 0,
-+									 in6_dev,
-+									 pinfo->prefix_len,
-+									 true)) {
-+					addr_flags |= IFA_F_STABLE_PRIVACY;
-+					goto ok;
-+			}
-+			} else if (!ipv6_generate_address_variable_plen(&addr,
-+									0,
-+									in6_dev,
-+									pinfo->prefix_len,
-+									false)) {
-+				goto ok;
-+			}
-+		} else {
-+			net_dbg_ratelimited("IPv6: Prefix with unexpected length %d\n",
-+					    pinfo->prefix_len);
- 		}
--		net_dbg_ratelimited("IPv6 addrconf: prefix with wrong length %d\n",
--				    pinfo->prefix_len);
- 		goto put;
- 
- ok:
-@@ -3264,6 +3382,119 @@ retry:
- 	return 0;
- }
- 
-+unsigned char reverse_bits(unsigned char num)
-+{
-+	unsigned char count = sizeof(num) * 8 - 1;
-+	unsigned char reverse_num = num;
-+
-+	num >>= 1;
-+	while (num) {
-+		reverse_num <<= 1;
-+		reverse_num |= num & 1;
-+		num >>= 1;
-+		count--;
-+	}
-+	reverse_num <<= count;
-+	return reverse_num;
-+}
-+
-+static int ipv6_generate_address_variable_plen(struct in6_addr *address,
-+					       u8 dad_count,
-+					       const struct inet6_dev *idev,
-+					       unsigned int rcvd_prfx_len,
-+					       bool stable_privacy_mode)
-+{
-+	static DEFINE_SPINLOCK(lock);
-+	static __u32 digest[SHA1_DIGEST_WORDS];
-+	static __u32 workspace[SHA1_WORKSPACE_WORDS];
-+
-+	static union {
-+		char __data[SHA1_BLOCK_SIZE];
-+		struct {
-+			struct in6_addr secret;
-+			__be32 prefix[2];
-+			unsigned char hwaddr[MAX_ADDR_LEN];
-+			u8 dad_count;
-+		} __packed;
-+	} data;
-+
-+	struct in6_addr secret;
-+	struct in6_addr temp;
-+	struct net *net = dev_net(idev->dev);
-+	__int128 host_id;
-+	__int128 net_prfx;
-+	__int128 ipv6addr;
-+	__int128 mask_128;
-+	__int128 mask_host_id;
-+	__int128 mask_net_prfx;
-+	int i;
-+	unsigned char mask_host_id_arr[128];
-+
-+	memset(&mask_128, 0xFF, 16);
-+	BUILD_BUG_ON(sizeof(data.__data) != sizeof(data));
-+
-+	if (stable_privacy_mode) {
-+		if (idev->cnf.stable_secret.initialized)
-+			secret = idev->cnf.stable_secret.secret;
-+		else if (net->ipv6.devconf_dflt->stable_secret.initialized)
-+			secret = net->ipv6.devconf_dflt->stable_secret.secret;
-+		else
-+			return -1;
-+	}
-+
-+retry:
-+	spin_lock_bh(&lock);
-+	if (stable_privacy_mode) {
-+		sha1_init(digest);
-+		memset(&data, 0, sizeof(data));
-+		memset(workspace, 0, sizeof(workspace));
-+		memcpy(data.hwaddr, idev->dev->perm_addr, idev->dev->addr_len);
-+		data.prefix[0] = address->s6_addr32[0];
-+		data.prefix[1] = address->s6_addr32[1];
-+		data.secret = secret;
-+		data.dad_count = dad_count;
-+
-+		sha1_transform(digest, data.__data, workspace);
-+
-+		temp = *address;
-+		temp.s6_addr32[0] = (__force __be32)digest[0];
-+		temp.s6_addr32[1] = (__force __be32)digest[1];
-+		temp.s6_addr32[2] = (__force __be32)digest[2];
-+		temp.s6_addr32[3] = (__force __be32)digest[3];
-+	} else {
-+		temp = *address;
-+		get_random_bytes(temp.s6_addr32, 16);
-+	}
-+	spin_unlock_bh(&lock);
-+
-+	if (ipv6_reserved_interfaceid(temp)) {
-+		dad_count++;
-+		if (dad_count > dev_net(idev->dev)->ipv6.sysctl.idgen_retries)
-+			return -1;
-+		goto retry;
-+	}
-+
-+	memcpy(&host_id, temp.s6_addr32, 16);
-+	memcpy(&net_prfx, address->s6_addr32, 16);
-+
-+	mask_host_id = rcvd_prfx_len != 128 ? (mask_128 << rcvd_prfx_len) : 0x0;
-+	memcpy(mask_host_id_arr, &mask_host_id, 16);
-+	for (i = 0; i < 128; i++)
-+		mask_host_id_arr[i] = reverse_bits(mask_host_id_arr[i]);
-+	memcpy(&mask_host_id, mask_host_id_arr, 16);
-+	host_id = host_id & mask_host_id;
-+
-+	mask_net_prfx = mask_128 ^ mask_host_id;
-+	net_prfx = net_prfx & mask_net_prfx;
-+
-+	ipv6addr = net_prfx | host_id;
-+	memcpy(temp.s6_addr32, &ipv6addr, 16);
-+
-+	*address = temp;
-+
-+	return 0;
-+}
-+
- static void ipv6_gen_mode_random_init(struct inet6_dev *idev)
- {
- 	struct ipv6_stable_secret *s = &idev->cnf.stable_secret;
-diff -rupN net-next-5.10.0-rc2/net/ipv6/ndisc.c net-next-patch-v2-5.10.0-rc2/net/ipv6/ndisc.c
---- net-next-5.10.0-rc2/net/ipv6/ndisc.c	2020-11-10 08:46:01.091860289 +0100
-+++ net-next-patch-v2-5.10.0-rc2/net/ipv6/ndisc.c	2020-11-10 12:43:26.869499720 +0100
-@@ -1244,6 +1244,8 @@ static void ndisc_router_discovery(struc
- 		in6_dev->if_flags |= IF_RA_RCVD;
- 	}
- 
-+	in6_dev->if_flags |= ra_msg->icmph.icmp6_slaac_var_plen ?
-+					IF_RA_VAR_PLEN : 0;
- 	/*
- 	 * Remember the managed/otherconf flags from most recently
- 	 * received RA message (RFC 2462) -- yoshfuji
+
+> On Nov 9, 2020, at 5:19 PM, Andrii Nakryiko <andrii@kernel.org> wrote:
+>=20
+> Adjust in-kernel BTF implementation to support a split BTF mode of operat=
+ion.
+> Changes are mostly mirroring libbpf split BTF changes, with the exception=
+ of
+> start_id being 0 for in-kernel implementation due to simpler read-only mo=
+de.
+>=20
+> Otherwise, for split BTF logic, most of the logic of jumping to base BTF,
+> where necessary, is encapsulated in few helper functions. Type numbering =
+and
+> string offset in a split BTF are logically continuing where base BTF ends=
+, so
+> most of the high-level logic is kept without changes.
+>=20
+> Type verification and size resolution is only doing an added resolution o=
+f new
+> split BTF types and relies on already cached size and type resolution res=
+ults
+> in the base BTF.
+>=20
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> ---
+> kernel/bpf/btf.c | 171 +++++++++++++++++++++++++++++++++--------------
+> 1 file changed, 119 insertions(+), 52 deletions(-)
+>=20
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 6324de8c59f7..727c1c27053f 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -203,12 +203,17 @@ struct btf {
+> 	const char *strings;
+> 	void *nohdr_data;
+> 	struct btf_header hdr;
+> -	u32 nr_types;
+> +	u32 nr_types; /* includes VOID for base BTF */
+> 	u32 types_size;
+> 	u32 data_size;
+> 	refcount_t refcnt;
+> 	u32 id;
+> 	struct rcu_head rcu;
+> +
+> +	/* split BTF support */
+> +	struct btf *base_btf;
+> +	u32 start_id; /* first type ID in this BTF (0 for base BTF) */
+> +	u32 start_str_off; /* first string offset (0 for base BTF) */
+> };
+>=20
+> enum verifier_phase {
+> @@ -449,14 +454,27 @@ static bool btf_type_is_datasec(const struct btf_ty=
+pe *t)
+> 	return BTF_INFO_KIND(t->info) =3D=3D BTF_KIND_DATASEC;
+> }
+>=20
+> +static u32 btf_nr_types_total(const struct btf *btf)
+> +{
+> +	u32 total =3D 0;
+> +
+> +	while (btf) {
+> +		total +=3D btf->nr_types;
+> +		btf =3D btf->base_btf;
+> +	}
+> +
+> +	return total;
+> +}
+> +
+> s32 btf_find_by_name_kind(const struct btf *btf, const char *name, u8 kin=
+d)
+> {
+> 	const struct btf_type *t;
+> 	const char *tname;
+> -	u32 i;
+> +	u32 i, total;
+>=20
+> -	for (i =3D 1; i <=3D btf->nr_types; i++) {
+> -		t =3D btf->types[i];
+> +	total =3D btf_nr_types_total(btf);
+> +	for (i =3D 1; i < total; i++) {
+> +		t =3D btf_type_by_id(btf, i);
+> 		if (BTF_INFO_KIND(t->info) !=3D kind)
+> 			continue;
+>=20
+> @@ -599,8 +617,14 @@ static const struct btf_kind_operations *btf_type_op=
+s(const struct btf_type *t)
+>=20
+> static bool btf_name_offset_valid(const struct btf *btf, u32 offset)
+> {
+> -	return BTF_STR_OFFSET_VALID(offset) &&
+> -		offset < btf->hdr.str_len;
+> +	if (!BTF_STR_OFFSET_VALID(offset))
+> +		return false;
+> +
+> +	while (offset < btf->start_str_off)
+> +		btf =3D btf->base_btf;
+
+Do we need "if (!btf) return false;" in the while loop? (and some other loo=
+ps below)
+
+[...]
+
