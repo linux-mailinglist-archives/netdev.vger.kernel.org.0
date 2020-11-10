@@ -2,90 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 093352AD329
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 11:07:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD7BA2AD357
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 11:18:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730117AbgKJKHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 05:07:00 -0500
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:30804 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729518AbgKJKG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 05:06:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1605002818; x=1636538818;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=QEu3DFmQoPTTcPOvRiqtur5CeOCrmq72y1qW9mxA3lg=;
-  b=QQlqr8EFV5GXA8IGC6kv9Ep+YKLItCQaCKvDjFmiFPOEGDMXEbLVndfp
-   boA0htuU9F7fTHOlrCh4XGd85tIFX0K3Yh84j/CAw6hbEFygfJyUZFVBI
-   Sq5QAKb1lRurtM0lWxhvU6hZP4aw0ReHt/Lac88Vw55pUYGJhYGIcupK2
-   9tKgHWTJWArVNojbDkuvQR4x6eWWfT/dwxaO76ZPT7JXuJLQBlxUBzJkQ
-   rVG361eOwc3pF9MLyT9knlHXali+2Y22Vz5HFYOLPtWlBrSuV7PnIEswn
-   3egiiavC/xHiQVulc6Kl8eIXNQQuZbkT7alp3cHjm/THdYyTMGPmjFdVS
-   A==;
-IronPort-SDR: 9/8A2lQQ8xCIYT3KWDnJJgD2Qo4+mZIIdd4s6MY0jLoovRJ7u8jn1ILmsRgN0lqN2BUuGEzUHA
- sN02zrJg2CKn5xaBzEXZ73uaMnbX9x3zVml0c/hSWM8kUt5yzDGL7HOdNCXk0108HZex9h9/yk
- EIeDfBI7Nrjc/gAbFVe9CdOizFiL4HZ4tccHgL5V3Ucz7KCZcStQSbuju1+aymzZ26Ccs4ijLD
- 139AxFUyE+7u76M1FnODOkVUos8mo+oJb/vjHsHKk1eFhR5KHRbs0b10bk2Q9wpJA4JP8oqvxa
- 6Gc=
-X-IronPort-AV: E=Sophos;i="5.77,466,1596524400"; 
-   d="scan'208";a="33053859"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Nov 2020 03:06:58 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 10 Nov 2020 03:06:58 -0700
-Received: from soft-dev2.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Tue, 10 Nov 2020 03:06:56 -0700
-From:   Bjarni Jonasson <bjarni.jonasson@microchip.com>
-To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>,
+        id S1726827AbgKJKSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 05:18:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726344AbgKJKSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 05:18:41 -0500
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119C4C0613CF
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 02:18:41 -0800 (PST)
+Received: by mail-qk1-x74a.google.com with SMTP id u16so8265560qkm.22
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 02:18:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=0MzzK5QGXbJzu974MwyqHzvYNMML0VPnlzv3We3j1VE=;
+        b=gMaOh1pCOTzr+9g5eOr5OLO7aIpnxmMEyu3xmSxpxYPSdkGfgrkLxaZfzzshis4tdX
+         hF+ClxyT0zL5M4649mabcs6d+dOwQJ4lwD2tuREi7yktBY1sLwtLgifpRjmyrBCUJ8HR
+         mYO56Y4kXjMHIJrPu8vqB475TN6fdBlZRR9MvQt3FD2XfaNtej2+ChG22UAGAGlWhuOA
+         3rKl7Y2t7miOL6cmGeZDpKrV2sEkpue5R/Y61pnJ+hCkLxCI2JqUF0qF0r7Gs8RptUST
+         k/cOZPONiaztuMQ26u4LnlUT3V9OXo+sFMATZsJagcxkK3vicgjQVuV8pcakCq42XMbw
+         HrtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=0MzzK5QGXbJzu974MwyqHzvYNMML0VPnlzv3We3j1VE=;
+        b=WlxTzkAlNQjfT3owwArmr/tbq7PuC7OGJnK06AD88yW7sLccLkPO4fdAbxYAa9R8Re
+         NOTZsOt0nz1YzBX9wk3E+w7/bBDVimOvkvEFVcChNhF9lNEpzXF+Dg5f4qaaOxU5Utib
+         kPoqfGu/ubj/+pE4oz+nwlPjXWFG1JZ4/72sX1IyUBZz/q/OetWflNdlL1SLl+gTdO7U
+         GpKUv0xoZjTao4uG6NJZF//FVIM9vbz2XNUue4sks4xJBdap5MfaUxkTvuviSjykA3QD
+         DlRyvfc0Objkw3IJ8+uWF0ZrlsL7qXWutga2wb6pU++srH84eFIbvYGWACLw/U3vekYc
+         9T8g==
+X-Gm-Message-State: AOAM533Xc0XLkz91NB2PBRarTF3qjSKVVUGm0x4y7rOTLG1ZqIA9IJ2v
+        3AA2frb1zfCjT2n1ER1yaZiU+h5BV5RbLbhg5Q==
+X-Google-Smtp-Source: ABdhPJzem2k7PaSNYuBdVSkzysL4CxVpGuP/F0vc0CafxCaop/UtB27+JVNCZgYt4+knJCNXqmRuGv8SwDSptkbvww==
+Sender: "howardchung via sendgmr" 
+        <howardchung@howardchung-p920.tpe.corp.google.com>
+X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:10:f693:9fff:fef4:4e45])
+ (user=howardchung job=sendgmr) by 2002:a0c:ffd1:: with SMTP id
+ h17mr1569954qvv.20.1605003520117; Tue, 10 Nov 2020 02:18:40 -0800 (PST)
+Date:   Tue, 10 Nov 2020 18:17:50 +0800
+Message-Id: <20201110181740.v8.1.I55fa38874edc240d726c1de6e82b2ce57b64f5eb@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.2.222.g5d2a92d10f8-goog
+Subject: [PATCH v8 1/6] Bluetooth: Replace BT_DBG with bt_dev_dbg in HCI request
+From:   Howard Chung <howardchung@google.com>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
+        luiz.dentz@gmail.com
+Cc:     mmandlik@chromium.org, mcchou@chromium.org, alainm@chromium.org,
+        Howard Chung <howardchung@google.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
-Subject: [PATCH] phy: phylink: Fix CuSFP issue in phylink
-Date:   Tue, 10 Nov 2020 11:06:42 +0100
-Message-ID: <20201110100642.2153-1-bjarni.jonasson@microchip.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is an issue with the current phylink driver and CuSFPs which
-results in a callback to the phylink validate function without any
-advertisement capabilities.  The workaround (in this changeset)
-is to assign capabilities if a 1000baseT SFP is identified.
+This replaces the BT_DBG function to bt_dev_dbg as it is cleaner to show
+the controller index in the debug message.
 
-Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
+Signed-off-by: Howard Chung <howardchung@google.com>
 ---
- drivers/net/phy/phylink.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 32f4e8ec96cf..76e25f7f6934 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -2196,6 +2196,14 @@ static int phylink_sfp_connect_phy(void *upstream, struct phy_device *phy)
- 		mode = MLO_AN_INBAND;
+Changes in v8:
+- Simplified logic in __hci_update_interleaved_scan
+- Remove hdev->name when calling bt_dev_dbg
+- Remove 'default' in hci_req_add_le_interleaved_scan switch block
+- Remove {} around :1915
+- Update commit message and title in v7 4/5
+- Add a cleanup patch for replacing BT_DBG with bt_dev_dbg
+
+Changes in v7:
+- Fix bt_dev_warn argument type warning
+
+Changes in v6:
+- Set parameter EnableAdvMonInterleaveScan to 1 byte long
+
+Changes in v5:
+- Rename 'adv_monitor' from many functions/variables
+- Move __hci_update_interleaved_scan into hci_req_add_le_passive_scan
+- Update the logic of update_adv_monitor_scan_state
+
+Changes in v4:
+- Rebase to bluetooth-next/master (previous 2 patches are applied)
+- Fix over 80 chars limit in mgmt_config.c
+- Set EnableAdvMonInterleaveScan default to Disable
+
+Changes in v3:
+- Remove 'Bluez' prefix
+
+Changes in v2:
+- remove 'case 0x001c' in mgmt_config.c
+
+ net/bluetooth/hci_request.c | 52 ++++++++++++++++++-------------------
+ 1 file changed, 26 insertions(+), 26 deletions(-)
+
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index 6a74097c50d34..048d4db9d4ea5 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -58,7 +58,7 @@ static int req_run(struct hci_request *req, hci_req_complete_t complete,
+ 	struct sk_buff *skb;
+ 	unsigned long flags;
  
- 	/* Do the initial configuration */
-+	if (phylink_test(pl->sfp_support, 1000baseT_Full)) {
-+		pr_info("%s:%d: adding 1000baseT to PHY\n", __func__, __LINE__);
-+		phylink_set(phy->supported, 1000baseT_Half);
-+		phylink_set(phy->supported, 1000baseT_Full);
-+		phylink_set(phy->advertising, 1000baseT_Half);
-+		phylink_set(phy->advertising, 1000baseT_Full);
-+	}
-+
- 	ret = phylink_sfp_config(pl, mode, phy->supported, phy->advertising);
- 	if (ret < 0)
- 		return ret;
+-	BT_DBG("length %u", skb_queue_len(&req->cmd_q));
++	bt_dev_dbg(hdev, "length %u", skb_queue_len(&req->cmd_q));
+ 
+ 	/* If an error occurred during request building, remove all HCI
+ 	 * commands queued on the HCI request queue.
+@@ -102,7 +102,7 @@ int hci_req_run_skb(struct hci_request *req, hci_req_complete_skb_t complete)
+ static void hci_req_sync_complete(struct hci_dev *hdev, u8 result, u16 opcode,
+ 				  struct sk_buff *skb)
+ {
+-	BT_DBG("%s result 0x%2.2x", hdev->name, result);
++	bt_dev_dbg(hdev, "result 0x%2.2x", result);
+ 
+ 	if (hdev->req_status == HCI_REQ_PEND) {
+ 		hdev->req_result = result;
+@@ -115,7 +115,7 @@ static void hci_req_sync_complete(struct hci_dev *hdev, u8 result, u16 opcode,
+ 
+ void hci_req_sync_cancel(struct hci_dev *hdev, int err)
+ {
+-	BT_DBG("%s err 0x%2.2x", hdev->name, err);
++	bt_dev_dbg(hdev, "err 0x%2.2x", err);
+ 
+ 	if (hdev->req_status == HCI_REQ_PEND) {
+ 		hdev->req_result = err;
+@@ -131,7 +131,7 @@ struct sk_buff *__hci_cmd_sync_ev(struct hci_dev *hdev, u16 opcode, u32 plen,
+ 	struct sk_buff *skb;
+ 	int err = 0;
+ 
+-	BT_DBG("%s", hdev->name);
++	bt_dev_dbg(hdev, "");
+ 
+ 	hci_req_init(&req, hdev);
+ 
+@@ -167,7 +167,7 @@ struct sk_buff *__hci_cmd_sync_ev(struct hci_dev *hdev, u16 opcode, u32 plen,
+ 	skb = hdev->req_skb;
+ 	hdev->req_skb = NULL;
+ 
+-	BT_DBG("%s end: err %d", hdev->name, err);
++	bt_dev_dbg(hdev, "end: err %d", err);
+ 
+ 	if (err < 0) {
+ 		kfree_skb(skb);
+@@ -196,7 +196,7 @@ int __hci_req_sync(struct hci_dev *hdev, int (*func)(struct hci_request *req,
+ 	struct hci_request req;
+ 	int err = 0;
+ 
+-	BT_DBG("%s start", hdev->name);
++	bt_dev_dbg(hdev, "start");
+ 
+ 	hci_req_init(&req, hdev);
+ 
+@@ -260,7 +260,7 @@ int __hci_req_sync(struct hci_dev *hdev, int (*func)(struct hci_request *req,
+ 	hdev->req_skb = NULL;
+ 	hdev->req_status = hdev->req_result = 0;
+ 
+-	BT_DBG("%s end: err %d", hdev->name, err);
++	bt_dev_dbg(hdev, "end: err %d", err);
+ 
+ 	return err;
+ }
+@@ -300,7 +300,7 @@ struct sk_buff *hci_prepare_cmd(struct hci_dev *hdev, u16 opcode, u32 plen,
+ 	if (plen)
+ 		skb_put_data(skb, param, plen);
+ 
+-	BT_DBG("skb len %d", skb->len);
++	bt_dev_dbg(hdev, "skb len %d", skb->len);
+ 
+ 	hci_skb_pkt_type(skb) = HCI_COMMAND_PKT;
+ 	hci_skb_opcode(skb) = opcode;
+@@ -315,7 +315,7 @@ void hci_req_add_ev(struct hci_request *req, u16 opcode, u32 plen,
+ 	struct hci_dev *hdev = req->hdev;
+ 	struct sk_buff *skb;
+ 
+-	BT_DBG("%s opcode 0x%4.4x plen %d", hdev->name, opcode, plen);
++	bt_dev_dbg(hdev, "opcode 0x%4.4x plen %d", opcode, plen);
+ 
+ 	/* If an error occurred during request building, there is no point in
+ 	 * queueing the HCI command. We can simply return.
+@@ -413,8 +413,8 @@ static void __hci_update_background_scan(struct hci_request *req)
+ 	 */
+ 	hci_discovery_filter_clear(hdev);
+ 
+-	BT_DBG("%s ADV monitoring is %s", hdev->name,
+-	       hci_is_adv_monitoring(hdev) ? "on" : "off");
++	bt_dev_dbg(hdev, "ADV monitoring is %s",
++		   hci_is_adv_monitoring(hdev) ? "on" : "off");
+ 
+ 	if (list_empty(&hdev->pend_le_conns) &&
+ 	    list_empty(&hdev->pend_le_reports) &&
+@@ -430,7 +430,7 @@ static void __hci_update_background_scan(struct hci_request *req)
+ 
+ 		hci_req_add_le_scan_disable(req, false);
+ 
+-		BT_DBG("%s stopping background scanning", hdev->name);
++		bt_dev_dbg(hdev, "stopping background scanning");
+ 	} else {
+ 		/* If there is at least one pending LE connection, we should
+ 		 * keep the background scan running.
+@@ -1826,7 +1826,7 @@ void hci_req_disable_address_resolution(struct hci_dev *hdev)
+ 
+ static void adv_enable_complete(struct hci_dev *hdev, u8 status, u16 opcode)
+ {
+-	BT_DBG("%s status %u", hdev->name, status);
++	bt_dev_dbg(hdev, "status %u", status);
+ }
+ 
+ void hci_req_reenable_advertising(struct hci_dev *hdev)
+@@ -1863,7 +1863,7 @@ static void adv_timeout_expire(struct work_struct *work)
+ 	struct hci_request req;
+ 	u8 instance;
+ 
+-	BT_DBG("%s", hdev->name);
++	bt_dev_dbg(hdev, "");
+ 
+ 	hci_dev_lock(hdev);
+ 
+@@ -2347,7 +2347,7 @@ static void set_random_addr(struct hci_request *req, bdaddr_t *rpa)
+ 	 */
+ 	if (hci_dev_test_flag(hdev, HCI_LE_ADV) ||
+ 	    hci_lookup_le_connect(hdev)) {
+-		BT_DBG("Deferring random address update");
++		bt_dev_dbg(hdev, "Deferring random address update");
+ 		hci_dev_set_flag(hdev, HCI_RPA_EXPIRED);
+ 		return;
+ 	}
+@@ -2572,7 +2572,7 @@ void __hci_req_update_class(struct hci_request *req)
+ 	struct hci_dev *hdev = req->hdev;
+ 	u8 cod[3];
+ 
+-	BT_DBG("%s", hdev->name);
++	bt_dev_dbg(hdev, "");
+ 
+ 	if (!hdev_is_powered(hdev))
+ 		return;
+@@ -2741,7 +2741,7 @@ void __hci_abort_conn(struct hci_request *req, struct hci_conn *conn,
+ static void abort_conn_complete(struct hci_dev *hdev, u8 status, u16 opcode)
+ {
+ 	if (status)
+-		BT_DBG("Failed to abort connection: status 0x%2.2x", status);
++		bt_dev_dbg(hdev, "Failed to abort connection: status 0x%2.2x", status);
+ }
+ 
+ int hci_abort_conn(struct hci_conn *conn, u8 reason)
+@@ -2804,7 +2804,7 @@ static int bredr_inquiry(struct hci_request *req, unsigned long opt)
+ 	const u8 liac[3] = { 0x00, 0x8b, 0x9e };
+ 	struct hci_cp_inquiry cp;
+ 
+-	BT_DBG("%s", req->hdev->name);
++	bt_dev_dbg(req->hdev, "");
+ 
+ 	hci_dev_lock(req->hdev);
+ 	hci_inquiry_cache_flush(req->hdev);
+@@ -2830,7 +2830,7 @@ static void le_scan_disable_work(struct work_struct *work)
+ 					    le_scan_disable.work);
+ 	u8 status;
+ 
+-	BT_DBG("%s", hdev->name);
++	bt_dev_dbg(hdev, "");
+ 
+ 	if (!hci_dev_test_flag(hdev, HCI_LE_SCAN))
+ 		return;
+@@ -2926,7 +2926,7 @@ static void le_scan_restart_work(struct work_struct *work)
+ 	unsigned long timeout, duration, scan_start, now;
+ 	u8 status;
+ 
+-	BT_DBG("%s", hdev->name);
++	bt_dev_dbg(hdev, "");
+ 
+ 	hci_req_sync(hdev, le_scan_restart, 0, HCI_CMD_TIMEOUT, &status);
+ 	if (status) {
+@@ -2980,7 +2980,7 @@ static int active_scan(struct hci_request *req, unsigned long opt)
+ 	bool addr_resolv = false;
+ 	int err;
+ 
+-	BT_DBG("%s", hdev->name);
++	bt_dev_dbg(hdev, "");
+ 
+ 	/* If controller is scanning, it means the background scanning is
+ 	 * running. Thus, we should temporarily stop it in order to set the
+@@ -3008,7 +3008,7 @@ static int interleaved_discov(struct hci_request *req, unsigned long opt)
+ {
+ 	int err;
+ 
+-	BT_DBG("%s", req->hdev->name);
++	bt_dev_dbg(req->hdev, "");
+ 
+ 	err = active_scan(req, opt);
+ 	if (err)
+@@ -3021,7 +3021,7 @@ static void start_discovery(struct hci_dev *hdev, u8 *status)
+ {
+ 	unsigned long timeout;
+ 
+-	BT_DBG("%s type %u", hdev->name, hdev->discovery.type);
++	bt_dev_dbg(hdev, "type %u", hdev->discovery.type);
+ 
+ 	switch (hdev->discovery.type) {
+ 	case DISCOV_TYPE_BREDR:
+@@ -3069,7 +3069,7 @@ static void start_discovery(struct hci_dev *hdev, u8 *status)
+ 	if (*status)
+ 		return;
+ 
+-	BT_DBG("%s timeout %u ms", hdev->name, jiffies_to_msecs(timeout));
++	bt_dev_dbg(hdev, "timeout %u ms", jiffies_to_msecs(timeout));
+ 
+ 	/* When service discovery is used and the controller has a
+ 	 * strict duplicate filter, it is important to remember the
+@@ -3094,7 +3094,7 @@ bool hci_req_stop_discovery(struct hci_request *req)
+ 	struct inquiry_entry *e;
+ 	bool ret = false;
+ 
+-	BT_DBG("%s state %u", hdev->name, hdev->discovery.state);
++	bt_dev_dbg(hdev, "state %u", hdev->discovery.state);
+ 
+ 	if (d->state == DISCOVERY_FINDING || d->state == DISCOVERY_STOPPING) {
+ 		if (test_bit(HCI_INQUIRY, &hdev->flags))
+@@ -3174,7 +3174,7 @@ static void discov_off(struct work_struct *work)
+ 	struct hci_dev *hdev = container_of(work, struct hci_dev,
+ 					    discov_off.work);
+ 
+-	BT_DBG("%s", hdev->name);
++	bt_dev_dbg(hdev, "");
+ 
+ 	hci_dev_lock(hdev);
+ 
 -- 
-2.17.1
+2.29.2.222.g5d2a92d10f8-goog
 
