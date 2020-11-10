@@ -2,103 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 622B12AD490
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 12:18:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21F6D2AD499
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 12:19:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbgKJLSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 06:18:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:24209 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726219AbgKJLSc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 06:18:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605007111;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vhOxEeSzK0Ivy9Ku3XQdJlj82ClJuPF8szgfw0gISAs=;
-        b=XXaGRfTSnJTLmYWCqofeUH3EpYcG9Lj2w/lK6ftO5mUXpUlyA3CGRyajL06aRD/bzUcZeG
-        fOqaxKGDrIphnfI/phfVG7LWNs2RS9JzuznGjt3BQ3CBbqFF4ocClJOsPUE1856nJF+bWt
-        e/Tl4gQ46gS5JiSTfx62XnMhNYxO2Xs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-86-AvPKIKGwPmilWybx0GR2yg-1; Tue, 10 Nov 2020 06:18:29 -0500
-X-MC-Unique: AvPKIKGwPmilWybx0GR2yg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 68B65803F74;
-        Tue, 10 Nov 2020 11:18:28 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 28D6927CB7;
-        Tue, 10 Nov 2020 11:18:19 +0000 (UTC)
-Date:   Tue, 10 Nov 2020 12:18:18 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ilias.apalodimas@linaro.org, brouer@redhat.com
-Subject: Re: [PATCH v4 net-next 1/5] net: xdp: introduce bulking for xdp tx
- return path
-Message-ID: <20201110121818.39c9d7fb@carbon>
-In-Reply-To: <3764c855c42d719000aa56bb946b3ddfd00971f2.1604686496.git.lorenzo@kernel.org>
-References: <cover.1604686496.git.lorenzo@kernel.org>
-        <3764c855c42d719000aa56bb946b3ddfd00971f2.1604686496.git.lorenzo@kernel.org>
+        id S1729909AbgKJLTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 06:19:43 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:60589 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729484AbgKJLTn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 06:19:43 -0500
+Received: from 1.general.cascardo.us.vpn ([10.172.70.58] helo=mussarela)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <cascardo@canonical.com>)
+        id 1kcRgY-0003QB-Ox; Tue, 10 Nov 2020 11:19:39 +0000
+Date:   Tue, 10 Nov 2020 08:19:32 -0300
+From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Kleber Sacilotto de Souza <kleber.souza@canonical.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        "Alexander A. Klimov" <grandmaster@al2klimov.de>,
+        Kees Cook <keescook@chromium.org>,
+        Alexey Kodanev <alexey.kodanev@oracle.com>,
+        dccp@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dccp: ccid: move timers to struct dccp_sock
+Message-ID: <20201110111932.GS595944@mussarela>
+References: <20201013171849.236025-1-kleber.souza@canonical.com>
+ <20201013171849.236025-2-kleber.souza@canonical.com>
+ <20201016153016.04bffc1e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201109114828.GP595944@mussarela>
+ <20201109094938.45b230c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201109210909.GQ595944@mussarela>
+ <20201109131554.5f65b2fa@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20201109213134.GR595944@mussarela>
+ <20201109141553.30e9d502@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201109141553.30e9d502@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  6 Nov 2020 19:19:07 +0100
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Mon, Nov 09, 2020 at 02:15:53PM -0800, Jakub Kicinski wrote:
+> On Mon, 9 Nov 2020 18:31:34 -0300 Thadeu Lima de Souza Cascardo wrote:
+> > > Which paths are those (my memory of this code is waning)? I thought
+> > > disconnect is only called from the user space side (shutdown syscall).
+> > > The only other way to terminate the connection is to close the socket,
+> > > which Eric already fixed by postponing the destruction of ccid in that
+> > > case.  
+> > 
+> > dccp_v4_do_rcv -> dccp_rcv_established -> dccp_parse_options ->
+> > 	dccp_feat_parse_options -> dccp_feat_handle_nn_established ->
+> > 	dccp_feat_activate -> __dccp_feat_activate -> dccp_hdlr_ccid ->
+> > 	ccid_hc_tx_delete
+> 
+> Well, that's not a disconnect path.
+> 
+> There should be no CCID on a disconnected socket, tho, right? Otherwise
+> if we can switch from one active CCID to another then reusing a single
+> timer in struct dccp_sock for both is definitely not safe as I
+> explained in my initial email.
 
-> +void xdp_return_frame_bulk(struct xdp_frame *xdpf,
-> +			   struct xdp_frame_bulk *bq)
-> +{
-> +	struct xdp_mem_info *mem = &xdpf->mem;
-> +	struct xdp_mem_allocator *xa;
-> +
-> +	if (mem->type != MEM_TYPE_PAGE_POOL) {
-> +		__xdp_return(xdpf->data, &xdpf->mem, false);
-> +		return;
-> +	}
-> +
-> +	rcu_read_lock();
+Yeah, I agree with your initial email. The patch I submitted for that fix needs
+rework, which is what I tried and failed so far. I need to get back to some
+testing of my latest fix and find out what needs fixing there.
 
-This rcu_read_lock() shows up on my performance benchmarking, and is
-unnecessary for the fast-path usage, as in most drivers DMA-TX
-completion already holds the rcu_read_lock.
+But I am also saying that simply doing a del_timer_sync on disconnect paths
+won't do, because there are non-disconnect paths where there is a CCID that we
+will remove and replace and that will still trigger a timer UAF.
 
-> +	xa = bq->xa;
-> +	if (unlikely(!xa)) {
-> +		xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
-> +		bq->count = 0;
-> +		bq->xa = xa;
-> +	}
-> +
-> +	if (bq->count == XDP_BULK_QUEUE_SIZE)
-> +		xdp_flush_frame_bulk(bq);
-> +
-> +	if (mem->id != xa->mem.id) {
-> +		xdp_flush_frame_bulk(bq);
-> +		bq->xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
-> +	}
-> +
-> +	bq->q[bq->count++] = xdpf->data;
-> +
-> +	rcu_read_unlock();
-> +}
-> +EXPORT_SYMBOL_GPL(xdp_return_frame_bulk);
+So I have been working on a fix that involves a refcnt on ccid itself. But I
+want to test that it really fixes the problem and I have spent most of the time
+finding out a way to trigger the timer in a race with the disconnect path.
 
+And that same test has showed me that this timer UAF will happen regardless of
+commit 2677d20677314101293e6da0094ede7b5526d2b1, which led me into stating that
+reverting it should be done in any case.
 
+I think I can find some time this week to work a little further on the fix for
+the time UAF.
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Thanks.
+Cascardo.
