@@ -2,84 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74F722AD248
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 10:20:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4585D2AD275
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 10:28:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730741AbgKJJUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 04:20:15 -0500
-Received: from mga07.intel.com ([134.134.136.100]:23648 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730102AbgKJJUG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 04:20:06 -0500
-IronPort-SDR: /6xIOXuZB7i0dszf1oFQJ3wxiSqmf5itmnfW8DpUtS8ZjgFLZ7XlvXhN1AVOYYMph5qscgEwyu
- IQNK35CUl7aA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9800"; a="234110528"
-X-IronPort-AV: E=Sophos;i="5.77,466,1596524400"; 
-   d="scan'208";a="234110528"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2020 01:20:05 -0800
-IronPort-SDR: VQ3bkORQylbkUa5Ab3nfvfeEwiK5mOUIfyQWxmHZ2xQ0QtRgJRJkUY5hIabKJt0M8tR9IhG0Cg
- OBiFd1tbcduA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,466,1596524400"; 
-   d="scan'208";a="322785992"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 10 Nov 2020 01:20:01 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id B0ADE60A; Tue, 10 Nov 2020 11:19:57 +0200 (EET)
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     linux-usb@vger.kernel.org
-Cc:     Michael Jamet <michael.jamet@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Isaac Hazan <isaac.hazan@intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH v2 10/10] MAINTAINERS: Add Isaac as maintainer of Thunderbolt DMA traffic test driver
-Date:   Tue, 10 Nov 2020 12:19:57 +0300
-Message-Id: <20201110091957.17472-11-mika.westerberg@linux.intel.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201110091957.17472-1-mika.westerberg@linux.intel.com>
-References: <20201110091957.17472-1-mika.westerberg@linux.intel.com>
+        id S1728272AbgKJJ2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 04:28:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45874 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726467AbgKJJ2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 04:28:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605000520;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=DWQR4+lW8/3xvAUmgOI4OAJGMLTpJgUV2AdqwnurgMU=;
+        b=Dd3DbTXId6bXakUrvmI7POLzHDRxb8elPXaDGYG4RoBHkPX0fnIB6o5e4lhfWT2+/BegpC
+        w9dS/FVWjeU9CSliLFg6rdQYuD4AvFDFZLwtBU5iFujSw1dB6DWhEpZo5yQVN3iiB0IHBS
+        qI5UrPDUlQCRffH/FdzqFD+Yd09H/Gw=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-175-yiclEDiTOreTDBguXWjm0w-1; Tue, 10 Nov 2020 04:28:38 -0500
+X-MC-Unique: yiclEDiTOreTDBguXWjm0w-1
+Received: by mail-wr1-f70.google.com with SMTP id w17so4710226wrp.11
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 01:28:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DWQR4+lW8/3xvAUmgOI4OAJGMLTpJgUV2AdqwnurgMU=;
+        b=DM9/ClLkta913uGp48bnZPavkP2sgDwAVdL9zdemCvyrJ0jDwu0qBl+447dKSjvT9m
+         4TfB7EbLNYQtwRkiUwHpxNLxekUVCu7nLty5KDh/R0MPOoXkdmdSIYJOKzTgOydwGMro
+         q8jm3EDqWzBFbPQbcWBBxa/qsuFFnbgwgdRYkf164SM0+FO1me3douyd09sgPtSiCnmG
+         dGM1UNJCFyHnf/zmc2GYO+FPhjdbGEW+1BKXPTamzd3GdFxCVFOKhtwEl4D9QejzKmOd
+         dJvrDE8HRa1qeEf6RWzWS2+g/n1N2xRy5v5TlxKyg4Q1NDbD7rPa2gwBLM/FJuquiN7Z
+         usHg==
+X-Gm-Message-State: AOAM531HKoIFIlZGhRpBgBpkSmTroB8xpDpHrf70j4jM1nBEl7MGCr4J
+        ZM9Ipgz+bgOato8lyxCA3DexDOnuIlpCR8RJlBh7bKZbouZoLkmzkl7+mlisH5oSnFo3FHkf7TT
+        f2qVjtPQ8qw7URrwR
+X-Received: by 2002:a5d:67c4:: with SMTP id n4mr22503261wrw.125.1605000517243;
+        Tue, 10 Nov 2020 01:28:37 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzYc0oOCKFX0b5cjD/y4zVsaE3tUiz0ba9Vk+gxIePK2ZBgfQAzd55fLJWJcPtXEfUYEp/3JA==
+X-Received: by 2002:a5d:67c4:: with SMTP id n4mr22503244wrw.125.1605000517013;
+        Tue, 10 Nov 2020 01:28:37 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id l13sm4711760wrm.24.2020.11.10.01.28.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Nov 2020 01:28:36 -0800 (PST)
+Date:   Tue, 10 Nov 2020 10:28:34 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Tom Parkin <tparkin@katalix.com>, netdev@vger.kernel.org,
+        jchapman@katalix.com
+Subject: Re: [RFC PATCH 0/2] add ppp_generic ioctl to bridge channels
+Message-ID: <20201110092834.GA30007@linux.home>
+References: <20201106181647.16358-1-tparkin@katalix.com>
+ <20201109155237.69c2b867@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201109155237.69c2b867@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Isaac Hazan <isaac.hazan@intel.com>
+On Mon, Nov 09, 2020 at 03:52:37PM -0800, Jakub Kicinski wrote:
+> On Fri,  6 Nov 2020 18:16:45 +0000 Tom Parkin wrote:
+> > This small RFC series implements a suggestion from Guillaume Nault in
+> > response to my previous submission to add an ac/pppoe driver to the l2tp
+> > subsystem[1].
+> > 
+> > Following Guillaume's advice, this series adds an ioctl to the ppp code
+> > to allow a ppp channel to be bridged to another.  Quoting Guillaume:
+> > 
+> > "It's just a matter of extending struct channel (in ppp_generic.c) with
+> > a pointer to another channel, then testing this pointer in ppp_input().
+> > If the pointer is NULL, use the classical path, if not, forward the PPP
+> > frame using the ->start_xmit function of the peer channel."
+> > 
+> > This allows userspace to easily take PPP frames from e.g. a PPPoE
+> > session, and forward them over a PPPoL2TP session; accomplishing the
+> > same thing my earlier ac/pppoe driver in l2tp did but in much less code!
+> 
+> I have little understanding of the ppp code, but I can't help but
+> wonder why this special channel connection is needed? We have great
+> many ways to redirect traffic between interfaces - bpf, tc, netfilter,
+> is there anything ppp specific that is required here?
 
-I will be maintaining the Thunderbolt DMA traffic test driver.
+I can see two viable ways to implement this feature. The one described
+in this patch series is the simplest. The reason why it doesn't reuse
+existing infrastructure is because it has to work at the link layer
+(no netfilter) and also has to work on PPP channels (no network
+device).
 
-Signed-off-by: Isaac Hazan <isaac.hazan@intel.com>
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Acked-by: Yehezkel Bernat <YehezkelShB@gmail.com>
----
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
+The alternative, is to implement a virtual network device for the
+protocols we want to support (at least PPPoE and L2TP, maybe PPTP)
+and teach tunnel_key about them. Then we could use iproute2 commands
+like:
+ # ip link add name pppoe0 up type pppoe external
+ # ip link add name l2tp0 up type l2tp external
+ # tc qdisc add dev pppoe0 ingress
+ # tc qdisc add dev l2tp0 ingress
+ # tc filter add dev pppoe0 ingress matchall                        \
+     action tunnel_key set l2tp_version 2 l2tp_tid XXX l2tp_sid YYY \
+     action mirred egress redirect dev pppoe0
+ # tc filter add dev l2tp0 ingress matchall  \
+     action tunnel_key set pppoe_sid ZZZ     \
+     action mirred egress redirect dev l2tp0
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3da6d8c154e4..83c4c66f8188 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17378,6 +17378,12 @@ W:	http://thinkwiki.org/wiki/Ibm-acpi
- T:	git git://repo.or.cz/linux-2.6/linux-acpi-2.6/ibm-acpi-2.6.git
- F:	drivers/platform/x86/thinkpad_acpi.c
- 
-+THUNDERBOLT DMA TRAFFIC TEST DRIVER
-+M:	Isaac Hazan <isaac.hazan@intel.com>
-+L:	linux-usb@vger.kernel.org
-+S:	Maintained
-+F:	drivers/thunderbolt/dma_test.c
-+
- THUNDERBOLT DRIVER
- M:	Andreas Noever <andreas.noever@gmail.com>
- M:	Michael Jamet <michael.jamet@intel.com>
--- 
-2.28.0
+Note: I've used matchall for simplicity, but a real uses case would
+have to filter on the L2TP session and tunnel IDs and on the PPPoE
+session ID.
+
+As I said in my reply to the original thread, I like this idea, but
+haven't thought much about the details. So there might be some road
+blocks. Beyond modernising PPP and making it better integrated into the
+stack, that should also bring the possibility of hardware offload (but
+would any NIC vendor be interested?).
+
+I think the question is more about long term maintainance. Do we want
+to keep PPP related module self contained, with low maintainance code
+(the current proposal)? Or are we willing to modernise the
+infrastructure, add support and maintain PPP features in other modules
+like flower, tunnel_key, etc.?
+
+Of course, I might have missed other ways to implement this feature.
+But that's all I could think of for now.
+
+And if anyone wants a quick recap about PPP (what are these PPP channel
+and unit things? what's the relationship between PPPoE, L2TP and PPP?
+etc.), just let me know.
+
+Hope this clarifies the situation.
 
