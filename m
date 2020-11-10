@@ -2,87 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 359C22AD155
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 09:33:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F026A2AD177
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 09:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728052AbgKJIdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 03:33:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726462AbgKJIdJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 03:33:09 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92704C0613CF;
-        Tue, 10 Nov 2020 00:33:09 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kcP5A-004ok0-0t; Tue, 10 Nov 2020 09:32:52 +0100
-Message-ID: <29adbaa7a7f200589e56566069270c857fcba015.camel@sipsolutions.net>
-Subject: Re: [PATCH net v2 00/21] net: avoid to remove module when its
- debugfs is being used
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>, Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        David.Laight@aculab.com, nstange@suse.de, derosier@gmail.com,
-        kvalo@codeaurora.org, linux-wireless@vger.kernel.org,
-        wil6210@qti.qualcomm.com, b43-dev@lists.infradead.org,
-        linux-bluetooth@vger.kernel.org, michael.hennerich@analog.com,
-        linux-wpan@vger.kernel.org, stefan@datenfreihafen.org,
-        inaky.perez-gonzalez@intel.com, linux-wimax@intel.com,
-        emmanuel.grumbach@intel.com, luciano.coelho@intel.com,
-        stf_xl@wp.pl, pkshih@realtek.com, ath11k@lists.infradead.org,
-        ath10k@lists.infradead.org, wcn36xx@lists.infradead.org,
-        merez@codeaurora.org, pizza@shaftnet.org,
-        Larry.Finger@lwfinger.net, amitkarwar@gmail.com,
-        ganapathi.bhat@nxp.com, huxinming820@gmail.com,
-        marcel@holtmann.org, johan.hedberg@gmail.com, alex.aring@gmail.com,
-        jukka.rissanen@linux.intel.com, arend.vanspriel@broadcom.com,
-        franky.lin@broadcom.com, hante.meuleman@broadcom.com,
-        chung-hsien.hsu@infineon.com, wright.feng@infineon.com,
-        chi-hsien.lin@infineon.com
-Date:   Tue, 10 Nov 2020 09:32:49 +0100
-In-Reply-To: <20201107110522.2a796f1d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201107172152.828-1-ap420073@gmail.com>
-         <20201107110522.2a796f1d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1731404AbgKJIkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 03:40:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:28393 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729441AbgKJIjy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 03:39:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604997593;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hyh7UaM+g2trOiYngrS9dlcrb+FW3phxTbIaNTk+T7A=;
+        b=b9o392c8a6dLMBfCuW/vlXBKcgWWQ750CX5sv2CDbqAxeK5/Xqcru3xMRlVbF3O5sCRQ7B
+        fY4qN5iUK+kl/iWedqi+V7qcZxedIB1Gb4XxUYC72dpEJJMCBmFR/kDZ26n5Rhzp/Ounmg
+        GqVJHzy0MCGZekCd+E2ikGCYl1CErx4=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-526-vVTOm1gcOzyc0M4B8uO8ew-1; Tue, 10 Nov 2020 03:39:50 -0500
+X-MC-Unique: vVTOm1gcOzyc0M4B8uO8ew-1
+Received: by mail-wr1-f72.google.com with SMTP id e18so5400781wrs.23
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 00:39:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hyh7UaM+g2trOiYngrS9dlcrb+FW3phxTbIaNTk+T7A=;
+        b=uIEY1UbRFPN7CzE9caKyO6Z2FXKuzmIkG/HEnR1pr/DcxrBnx+LxRT51WjdjAl8FzJ
+         l3nd5gQ9dCU9dLEPzQNOPDAGBDAtRaZKsF6dSHAlzf53B0M40g5q08jjXK8taOj9a0Wn
+         T/z+oFeWfxoEp2d8D+8sMNyrmEN7GXpFFDxmHScxr6ecT+IEkxZKjtE51NdnKrZpR9qa
+         s7L1WHG0O2701ENt/NZrsgMhNqfsEXOVjjhFH4qFfg88yWs6unWbf0wHblOePi+d0roq
+         I+OgXTLSuu7sLnw7vGftxqp6qQ2Yl80z8Uy9PlZDAm1NxkErKW84DEZHHpSxRuPlWJH4
+         +iMA==
+X-Gm-Message-State: AOAM532nVTklOqsCqXV6JAmowN4me4/7V6djWEMfZ2ZnGAuMeiijxLSw
+        cVdE6a+qLGvcH34iuMViYGJJU/3xiz2P9iBIdEjEe0nq2Z4o6rPoEUNyayXQD+iep1//mWSZSuh
+        tQOf5e2+c1DlfXxSWaqBkp7NvBHm1Anq9
+X-Received: by 2002:a1c:1906:: with SMTP id 6mr3356322wmz.87.1604997588697;
+        Tue, 10 Nov 2020 00:39:48 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJygpgV8AXXuqlYLBeLe3dxUBkWwtMJMFF9d1iDZ4oUQhYNTvKRIcdpuQ/GdhgZUyOjn8cfx8iWl2yN8a32afMU=
+X-Received: by 2002:a1c:1906:: with SMTP id 6mr3356300wmz.87.1604997588429;
+ Tue, 10 Nov 2020 00:39:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+References: <20201109072930.14048-1-nusiddiq@redhat.com> <20201109115458.0590541b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201109115458.0590541b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Numan Siddique <nusiddiq@redhat.com>
+Date:   Tue, 10 Nov 2020 14:09:37 +0530
+Message-ID: <CAH=CPzpXfLLPWLgH07iEQQJQyWNCW2uv6hh7oFCe-1uVY825SQ@mail.gmail.com>
+Subject: Re: [net-next] netfiler: conntrack: Add the option to set ct tcp flag
+ - BE_LIBERAL per-ct basis.
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     ovs dev <dev@openvswitch.org>, netdev <netdev@vger.kernel.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-11-07 at 11:05 -0800, Jakub Kicinski wrote:
-> On Sat,  7 Nov 2020 17:21:31 +0000 Taehee Yoo wrote:
-> > When debugfs file is opened, its module should not be removed until
-> > it's closed.
-> > Because debugfs internally uses the module's data.
-> > So, it could access freed memory.
-> > 
-> > In order to avoid panic, it just sets .owner to THIS_MODULE.
-> > So that all modules will be held when its debugfs file is opened.
-> 
-> Hm, looks like some of the patches need to be revised because
-> .owner is already set in the ops, and a warning gets generated.
-> 
-> Also it'd be good to mention why Johannes's approach was abandoned.
+On Tue, Nov 10, 2020 at 1:25 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon,  9 Nov 2020 12:59:30 +0530 nusiddiq@redhat.com wrote:
+> > From: Numan Siddique <nusiddiq@redhat.com>
+> >
+> > Before calling nf_conntrack_in(), caller can set this flag in the
+> > connection template for a tcp packet and any errors in the
+> > tcp_in_window() will be ignored.
+> >
+> > A helper function - nf_ct_set_tcp_be_liberal(nf_conn) is added which
+> > sets this flag for both the directions of the nf_conn.
+> >
+> > openvswitch makes use of this feature so that any out of window tcp
+> > packets are not marked invalid. Prior to this there was no easy way
+> > to distinguish if conntracked packet is marked invalid because of
+> > tcp_in_window() check error or because it doesn't belong to an
+> > existing connection.
+> >
+> > An earlier attempt (see the link) tried to solve this problem for
+> > openvswitch in a different way. Florian Westphal instead suggested
+> > to be liberal in openvswitch for tcp packets.
+> >
+> > Link: https://patchwork.ozlabs.org/project/netdev/patch/20201006083355.121018-1-nusiddiq@redhat.com/
+> >
+> > Suggested-by: Florian Westphal <fw@strlen.de>
+> > Signed-off-by: Numan Siddique <nusiddiq@redhat.com>
+>
+> Please repost Ccing Pablo & netfilter-devel.
 
-Well, I had two.
+Thanks. I will repost.
 
-One was awful, and worked in all cases.
+Numan
 
-The other was less awful, and didn't work in all cases.
-
-I think both gave Al Viro hives ;-)
-
-> Patch 1 needs to be split in two. Patches 2 and 3 would go via Johannes.
-
-FWIW, I'm happy for you to take patches 2 and 3 as well, but I guess if
-patch 1 needs to be split there's a resend coming anyway, so then I'll
-be happy to take the patches 2/3 from a separate set.
-
-johannes
-
+>
 
