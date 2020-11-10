@@ -2,75 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E30372AC9D2
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 01:40:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C84E2AC9F2
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 01:58:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730839AbgKJAke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 19:40:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51288 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729454AbgKJAkd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 19:40:33 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8E738206D8;
-        Tue, 10 Nov 2020 00:40:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604968833;
-        bh=jmTx3DJMRcveLNZUk4PbliJncItS0hILMz0WGG7pkgU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wwkDIoq95V5OTOZI+OdPhmoxGHJEDSdKrhS3IBTLLMqljPqEZwiEkYrABm9Dsn4qj
-         hEKwFxKKQ+/MZS2tyDi+6aOi6HSya7Gjl8OYsOPi4ciz/CQp5iwN/CNxFuQ55nS/5w
-         iTinCHbuJx40zjeSgYGQhRGr2AgR3zKlnA5MBQhk=
-Date:   Mon, 9 Nov 2020 16:40:31 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     menglong8.dong@gmail.com
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, davem@davemloft.net,
-        ycheng@google.com, ncardwell@google.com, priyarjha@google.com,
-        edumazet@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, willemb@google.com,
-        pabeni@redhat.com, Menglong Dong <dong.menglong@zte.com.cn>
-Subject: Re: [PATCH v2 net-next] net: udp: introduce UDP_MIB_MEMERRORS for
- udp_mem
-Message-ID: <20201109164031.5f4fc0ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1604627354-43207-1-git-send-email-dong.menglong@zte.com.cn>
-References: <1604627354-43207-1-git-send-email-dong.menglong@zte.com.cn>
+        id S1730702AbgKJA61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 19:58:27 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7507 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729451AbgKJA60 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Nov 2020 19:58:26 -0500
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CVTxj1d6Wzhj15;
+        Tue, 10 Nov 2020 08:58:17 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 10 Nov 2020 08:58:18 +0800
+Subject: Re: [PATCH stable] net: sch_generic: fix the missing new qdisc
+ assignment bug
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <stable@vger.kernel.org>, <vpai@akamai.com>,
+        <Joakim.Tjernlund@infinera.com>, <xiyou.wangcong@gmail.com>,
+        <johunt@akamai.com>, <jhs@mojatatu.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <john.fastabend@gmail.com>, <eric.dumazet@gmail.com>,
+        <dsahern@gmail.com>
+References: <1604373938-211588-1-git-send-email-linyunsheng@huawei.com>
+ <20201109124658.GC1834954@kroah.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <3deb16a8-bdb1-3c31-2722-404f271f41d8@huawei.com>
+Date:   Tue, 10 Nov 2020 08:58:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201109124658.GC1834954@kroah.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  5 Nov 2020 20:49:14 -0500 menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <dong.menglong@zte.com.cn>
+On 2020/11/9 20:46, Greg KH wrote:
+> On Tue, Nov 03, 2020 at 11:25:38AM +0800, Yunsheng Lin wrote:
+>> commit 2fb541c862c9 ("net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc")
+>>
+>> When the above upstream commit is backported to stable kernel,
+>> one assignment is missing, which causes two problems reported
+>> by Joakim and Vishwanath, see [1] and [2].
+>>
+>> So add the assignment back to fix it.
+>>
+>> 1. https://www.spinics.net/lists/netdev/msg693916.html
+>> 2. https://www.spinics.net/lists/netdev/msg695131.html
+>>
+>> Fixes: 749cc0b0c7f3 ("net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc")
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>>  net/sched/sch_generic.c | 3 +++
+>>  1 file changed, 3 insertions(+)
 > 
-> When udp_memory_allocated is at the limit, __udp_enqueue_schedule_skb
-> will return a -ENOBUFS, and skb will be dropped in __udp_queue_rcv_skb
-> without any counters being done. It's hard to find out what happened
-> once this happen.
-> 
-> So we introduce a UDP_MIB_MEMERRORS to do this job. Well, this change
-> looks friendly to the existing users, such as netstat:
-> 
-> $ netstat -u -s
-> Udp:
->     0 packets received
->     639 packets to unknown port received.
->     158689 packet receive errors
->     180022 packets sent
->     RcvbufErrors: 20930
->     MemErrors: 137759
-> UdpLite:
-> IpExt:
->     InOctets: 257426235
->     OutOctets: 257460598
->     InNoECTPkts: 181177
-> 
-> v2:
-> - Fix some alignment problems
-> 
-> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+> What kernel tree(s) does this need to be backported to?
 
-Applied, thanks!
+4.19.x and 5.4.x
+
+Thanks
+
+> 
+> thanks,
+> 
+> greg k-h
+> .
+> 
