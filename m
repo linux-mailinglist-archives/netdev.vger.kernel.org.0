@@ -2,69 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99B592ACCEF
-	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 04:58:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 749AF2ACE25
+	for <lists+netdev@lfdr.de>; Tue, 10 Nov 2020 05:07:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732007AbgKJD6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Nov 2020 22:58:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60328 "EHLO mail.kernel.org"
+        id S1732181AbgKJDxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Nov 2020 22:53:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54348 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732457AbgKJD6O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Nov 2020 22:58:14 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1732111AbgKJDxv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Nov 2020 22:53:51 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DC48B2054F;
-        Tue, 10 Nov 2020 03:58:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 57AB420781;
+        Tue, 10 Nov 2020 03:53:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604980693;
-        bh=LYd6sGtqAyllUZ+TrvpQ0ZyMTLKy+YxG+IC0lRSP0tg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PeG9ireBIMzUv7Q12nrOYnN4Q8LVc3jZHg2H91I8KoS4gDGeTGasfMomSW9KGU4zm
-         PriQL/3QKFPXnDXQAPN8fZzHi6/H5q39LcJ68hn9LVI5dYFWE0um2AkZsH5pcX0q5v
-         cGixoTXrRdTRFjj/0r+ZKnEplwPxM7H1iEuSDhkU=
-Date:   Mon, 9 Nov 2020 19:58:11 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Harald Welte <laforge@gnumonks.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        osmocom-net-gprs@lists.osmocom.org, wireguard@lists.zx2c4.com,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: Re: [PATCH net-next v3 00/10] net: add and use dev_get_tstats64
-Message-ID: <20201109195811.7be5882c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <99273e2f-c218-cd19-916e-9161d8ad8c56@gmail.com>
-References: <99273e2f-c218-cd19-916e-9161d8ad8c56@gmail.com>
+        s=default; t=1604980430;
+        bh=MOASNicnRHo4bFE4WqKh8TQXfz9L4JNjrQFI1K3UyE0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GHbVzTJPDSSL5urDgyDdUghzXuZ02hFpATNSrMmTpDGtW+TyCLfyKLWZGQzmGl42U
+         lwENxxH+XHSNEtnbYebffJhW2kkvDUO9IIboLi+PV6VnoYFLtpaL4d/BhR2+Yhmtwz
+         mJVfHHq/UQfEj7CVYw28+Cn5w4JHaJWEdGA2PG/E=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        syzbot+32fd1a1bfe355e93f1e2@syzkaller.appspotmail.com,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.9 22/55] mac80211: fix use of skb payload instead of header
+Date:   Mon,  9 Nov 2020 22:52:45 -0500
+Message-Id: <20201110035318.423757-22-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20201110035318.423757-1-sashal@kernel.org>
+References: <20201110035318.423757-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 7 Nov 2020 21:48:13 +0100 Heiner Kallweit wrote:
-> It's a frequent pattern to use netdev->stats for the less frequently
-> accessed counters and per-cpu counters for the frequently accessed
-> counters (rx/tx bytes/packets). Add a default ndo_get_stats64()
-> implementation for this use case. Subsequently switch more drivers
-> to use this pattern.
-> 
-> v2:
-> - add patches for replacing ip_tunnel_get_stats64
->   Requested additional migrations will come in a separate series.
-> 
-> v3:
-> - add atomic_long_t member rx_frame_errors in patch 3 for making
->   counter updates atomic
+From: Johannes Berg <johannes.berg@intel.com>
 
-Applied, thank you!
+[ Upstream commit 14f46c1e5108696ec1e5a129e838ecedf108c7bf ]
+
+When ieee80211_skb_resize() is called from ieee80211_build_hdr()
+the skb has no 802.11 header yet, in fact it consist only of the
+payload as the ethernet frame is removed. As such, we're using
+the payload data for ieee80211_is_mgmt(), which is of course
+completely wrong. This didn't really hurt us because these are
+always data frames, so we could only have added more tailroom
+than we needed if we determined it was a management frame and
+sdata->crypto_tx_tailroom_needed_cnt was false.
+
+However, syzbot found that of course there need not be any payload,
+so we're using at best uninitialized memory for the check.
+
+Fix this to pass explicitly the kind of frame that we have instead
+of checking there, by replacing the "bool may_encrypt" argument
+with an argument that can carry the three possible states - it's
+not going to be encrypted, it's a management frame, or it's a data
+frame (and then we check sdata->crypto_tx_tailroom_needed_cnt).
+
+Reported-by: syzbot+32fd1a1bfe355e93f1e2@syzkaller.appspotmail.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/20201009132538.e1fd7f802947.I799b288466ea2815f9d4c84349fae697dca2f189@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/mac80211/tx.c | 37 ++++++++++++++++++++++++-------------
+ 1 file changed, 24 insertions(+), 13 deletions(-)
+
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 282b0bc201eeb..b82d6cfd6aaf4 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -1938,19 +1938,24 @@ static bool ieee80211_tx(struct ieee80211_sub_if_data *sdata,
+ 
+ /* device xmit handlers */
+ 
++enum ieee80211_encrypt {
++	ENCRYPT_NO,
++	ENCRYPT_MGMT,
++	ENCRYPT_DATA,
++};
++
+ static int ieee80211_skb_resize(struct ieee80211_sub_if_data *sdata,
+ 				struct sk_buff *skb,
+-				int head_need, bool may_encrypt)
++				int head_need,
++				enum ieee80211_encrypt encrypt)
+ {
+ 	struct ieee80211_local *local = sdata->local;
+-	struct ieee80211_hdr *hdr;
+ 	bool enc_tailroom;
+ 	int tail_need = 0;
+ 
+-	hdr = (struct ieee80211_hdr *) skb->data;
+-	enc_tailroom = may_encrypt &&
+-		       (sdata->crypto_tx_tailroom_needed_cnt ||
+-			ieee80211_is_mgmt(hdr->frame_control));
++	enc_tailroom = encrypt == ENCRYPT_MGMT ||
++		       (encrypt == ENCRYPT_DATA &&
++			sdata->crypto_tx_tailroom_needed_cnt);
+ 
+ 	if (enc_tailroom) {
+ 		tail_need = IEEE80211_ENCRYPT_TAILROOM;
+@@ -1981,23 +1986,29 @@ void ieee80211_xmit(struct ieee80211_sub_if_data *sdata,
+ {
+ 	struct ieee80211_local *local = sdata->local;
+ 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
+-	struct ieee80211_hdr *hdr;
++	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
+ 	int headroom;
+-	bool may_encrypt;
++	enum ieee80211_encrypt encrypt;
+ 
+-	may_encrypt = !(info->flags & IEEE80211_TX_INTFL_DONT_ENCRYPT);
++	if (info->flags & IEEE80211_TX_INTFL_DONT_ENCRYPT)
++		encrypt = ENCRYPT_NO;
++	else if (ieee80211_is_mgmt(hdr->frame_control))
++		encrypt = ENCRYPT_MGMT;
++	else
++		encrypt = ENCRYPT_DATA;
+ 
+ 	headroom = local->tx_headroom;
+-	if (may_encrypt)
++	if (encrypt != ENCRYPT_NO)
+ 		headroom += sdata->encrypt_headroom;
+ 	headroom -= skb_headroom(skb);
+ 	headroom = max_t(int, 0, headroom);
+ 
+-	if (ieee80211_skb_resize(sdata, skb, headroom, may_encrypt)) {
++	if (ieee80211_skb_resize(sdata, skb, headroom, encrypt)) {
+ 		ieee80211_free_txskb(&local->hw, skb);
+ 		return;
+ 	}
+ 
++	/* reload after potential resize */
+ 	hdr = (struct ieee80211_hdr *) skb->data;
+ 	info->control.vif = &sdata->vif;
+ 
+@@ -2822,7 +2833,7 @@ static struct sk_buff *ieee80211_build_hdr(struct ieee80211_sub_if_data *sdata,
+ 		head_need += sdata->encrypt_headroom;
+ 		head_need += local->tx_headroom;
+ 		head_need = max_t(int, 0, head_need);
+-		if (ieee80211_skb_resize(sdata, skb, head_need, true)) {
++		if (ieee80211_skb_resize(sdata, skb, head_need, ENCRYPT_DATA)) {
+ 			ieee80211_free_txskb(&local->hw, skb);
+ 			skb = NULL;
+ 			return ERR_PTR(-ENOMEM);
+@@ -3496,7 +3507,7 @@ static bool ieee80211_xmit_fast(struct ieee80211_sub_if_data *sdata,
+ 	if (unlikely(ieee80211_skb_resize(sdata, skb,
+ 					  max_t(int, extra_head + hw_headroom -
+ 						     skb_headroom(skb), 0),
+-					  false))) {
++					  ENCRYPT_NO))) {
+ 		kfree_skb(skb);
+ 		return true;
+ 	}
+-- 
+2.27.0
+
