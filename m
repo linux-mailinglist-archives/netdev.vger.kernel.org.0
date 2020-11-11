@@ -2,176 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A81082AFBF5
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:31:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 927BF2AFBF7
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:31:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725960AbgKLBbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 20:31:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54144 "EHLO
+        id S1726251AbgKLBbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 20:31:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726188AbgKKWm2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 17:42:28 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874D4C061A4C
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 14:33:57 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kcygW-0003qf-9g; Wed, 11 Nov 2020 23:33:48 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:f584:6a63:cc3a:f86a] (unknown [IPv6:2a03:f580:87bc:d400:f584:6a63:cc3a:f86a])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 85AA0590375;
-        Wed, 11 Nov 2020 22:33:45 +0000 (UTC)
-Subject: Re: [PATCH v2] can: m_can: Set device to software init mode before
- closing
-To:     Faiz Abbas <faiz_abbas@ti.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, wg@grandegger.com,
-        sriram.dash@samsung.com, dmurphy@ti.com
-References: <20200825055442.16994-1-faiz_abbas@ti.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <4dfa600f-1167-e3c4-c9d5-d177f27cde92@pengutronix.de>
-Date:   Wed, 11 Nov 2020 23:33:38 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1727194AbgKKWqp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 17:46:45 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B2CC040208;
+        Wed, 11 Nov 2020 14:37:53 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id o71so3116040ybc.2;
+        Wed, 11 Nov 2020 14:37:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N5VYtEHc8PJh6B9Pxwlx+Xskau4NMSgJa2pe+N/+0hQ=;
+        b=mIC6jicwNMDMYFiuiMuBACCgPbD4hSINY8bHnJF3OU19jk/QMCYS7pM4BqBYavjA0W
+         pHxyF+5JWJ8hwLLq8P+ss5fOJeI9XR3Ao4i+1Qehu4nmX3b2R4SR6OlZatgHcBT+Z1MD
+         gAhYz1nodwBBFDlSTR5wkXAbX3s2h30wOkMt0Nl3Gx5gN0WuFqgPKmdajV5Fqp5EkdKL
+         DbkVkXX2DJ82y3plY4hdjt4ShFcoj1g7LOgV7GjgWklZ0FHTLCtzaDaFqkMlvVsFwSKF
+         Cam5QJUDpkf0ccxOJVmYz5OL0RQ4cnwrBEG8pgOLj+kmKXOEy1qW9ZMcrkguIMBBkY95
+         YbjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N5VYtEHc8PJh6B9Pxwlx+Xskau4NMSgJa2pe+N/+0hQ=;
+        b=WgQ+XSsYE2loy5eJGekzcKizIxnNM0HHKr9TlsT4HbEGtLLMPhFLh8FtVSVSNx2/cu
+         3QbVq5XwDGglodZVtn27r5EVXlOPtEFvhkwMEsk+sQ6POun/tuZUwSqFcGi6KKgThoPo
+         HbyEkFD4gGCXZUgCRM3JXcDpwi0SVDt1qS5ZGGcR2M43uGr91HSwfeRXvOOPtZyMkrwH
+         9NHmUZFdxOLGAcrm91VlWaJig9NCSuLZ7ZcEV0Z+8QscmTZ/eSCzL028Wez30jByJIM6
+         04uJx/HX6e/5ax/I2bApE1kDm5afAmqvaAl/F1eUx3Mcz82Jg1cPNwUr51NQcTKcL7kA
+         PVLA==
+X-Gm-Message-State: AOAM533FnOHm0GxSX+6EvwB6TYOdna3KBFNimIEFubyJzQLcuJEOZbJ4
+        0XItsjKKwKx9LrLoEJl2fQuc6oLRUI1z3N9lXgk=
+X-Google-Smtp-Source: ABdhPJzceVMSitP9WEByfMfPlKfV3tIMI46eRigsyjAZap2rw9WtaR+Alr/UeVY1x+3FV4YmkQ5rHafJEb0fbziZqJQ=
+X-Received: by 2002:a25:e701:: with SMTP id e1mr12067008ybh.510.1605134272385;
+ Wed, 11 Nov 2020 14:37:52 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200825055442.16994-1-faiz_abbas@ti.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="FLINfmH2tzMl5GH6qbhGBVFmGAmBjTrrJ"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20201111135425.56533-1-wanghai38@huawei.com> <6a589c0b-e2fb-5766-542b-62f40b16253a@iogearbox.net>
+In-Reply-To: <6a589c0b-e2fb-5766-542b-62f40b16253a@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 11 Nov 2020 14:37:41 -0800
+Message-ID: <CAEf4BzZ_Fhzg=f437fS0rZANk5ZDAfTv_T3f9Hm6LCLO23pm-g@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf] tools: bpftool: Add missing close before bpftool
+ net attach exit
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Wang Hai <wanghai38@huawei.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Michal Rostecki <mrostecki@opensuse.org>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        KP Singh <kpsingh@chromium.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        "Daniel T. Lee" <danieltimlee@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---FLINfmH2tzMl5GH6qbhGBVFmGAmBjTrrJ
-Content-Type: multipart/mixed; boundary="iuBwrBRpDu4oPsWzozGg6Dvhcf352MSWD";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Faiz Abbas <faiz_abbas@ti.com>, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, linux-can@vger.kernel.org
-Cc: kuba@kernel.org, davem@davemloft.net, wg@grandegger.com,
- sriram.dash@samsung.com, dmurphy@ti.com
-Message-ID: <4dfa600f-1167-e3c4-c9d5-d177f27cde92@pengutronix.de>
-Subject: Re: [PATCH v2] can: m_can: Set device to software init mode before
- closing
-References: <20200825055442.16994-1-faiz_abbas@ti.com>
-In-Reply-To: <20200825055442.16994-1-faiz_abbas@ti.com>
+On Wed, Nov 11, 2020 at 1:24 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 11/11/20 2:54 PM, Wang Hai wrote:
+> > progfd is created by prog_parse_fd(), before 'bpftool net attach' exit,
+> > it should be closed.
+> >
+> > Fixes: 04949ccc273e ("tools: bpftool: add net attach command to attach XDP on interface")
+> > Signed-off-by: Wang Hai <wanghai38@huawei.com>
+> > ---
+> > v2->v3: add 'err = 0' before successful return
+> > v1->v2: use cleanup tag instead of repeated closes
+> >   tools/bpf/bpftool/net.c | 18 +++++++++++-------
+> >   1 file changed, 11 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+> > index 910e7bac6e9e..f927392271cc 100644
+> > --- a/tools/bpf/bpftool/net.c
+> > +++ b/tools/bpf/bpftool/net.c
+> > @@ -578,8 +578,8 @@ static int do_attach(int argc, char **argv)
+> >
+> >       ifindex = net_parse_dev(&argc, &argv);
+> >       if (ifindex < 1) {
+> > -             close(progfd);
+> > -             return -EINVAL;
+> > +             err = -EINVAL;
+> > +             goto cleanup;
+> >       }
+> >
+> >       if (argc) {
+> > @@ -587,8 +587,8 @@ static int do_attach(int argc, char **argv)
+> >                       overwrite = true;
+> >               } else {
+> >                       p_err("expected 'overwrite', got: '%s'?", *argv);
+> > -                     close(progfd);
+> > -                     return -EINVAL;
+> > +                     err = -EINVAL;
+> > +                     goto cleanup;
+> >               }
+> >       }
+> >
+> > @@ -597,16 +597,20 @@ static int do_attach(int argc, char **argv)
+> >               err = do_attach_detach_xdp(progfd, attach_type, ifindex,
+> >                                          overwrite);
+> >
+> > -     if (err < 0) {
+> > +     if (err) {
+> >               p_err("interface %s attach failed: %s",
+> >                     attach_type_strings[attach_type], strerror(-err));
+> > -             return err;
+> > +             goto cleanup;
+> >       }
+> >
+> >       if (json_output)
+> >               jsonw_null(json_wtr);
+> >
+> > -     return 0;
+> > +     err = 0;
+>
+> Why is the 'err = 0' still needed here given we test for err != 0 earlier?
+> Would just remove it, otherwise looks good.
 
---iuBwrBRpDu4oPsWzozGg6Dvhcf352MSWD
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+This patch was already applied. Wang, can you please follow up with
+another patch to address Daniel's feedback?
 
-On 8/25/20 7:54 AM, Faiz Abbas wrote:
-> There might be some requests pending in the buffer when the
-> interface close sequence occurs. In some devices, these
-> pending requests might lead to the module not shutting down
-> properly when m_can_clk_stop() is called.
->=20
-> Therefore, move the device to init state before potentially
-> powering it down.
->=20
-> Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
-
-Added to linux-can/testing.
-
-Tnx,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---iuBwrBRpDu4oPsWzozGg6Dvhcf352MSWD--
-
---FLINfmH2tzMl5GH6qbhGBVFmGAmBjTrrJ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+sZsIACgkQqclaivrt
-76neyQf7Bo/LNsQSo9M1tmaTNHiUilvKCob55/Zz+9X4yXdOuohr3/TkG4MEaYyI
-whCKppIDS8nhi1wz4jHgfe3SHm3mWH/wZNGjJdWB+H9hchbi1gR/CsBEe/TuZxry
-9wZQ1jejh+OD5zmOo4UCj7s740+jT1J4C9qSgkqxfBzvZVz44IRkSbZ4Msd2hr1X
-r9ACYjh+YgY5TaAt1xfu0lu9mumzB16PNJ4u+4rtdrKJN29h98Ip1JI8UGaGFxZw
-2PnrHQVxmihBIA4oaV6BF3l6Cp8dv6lDMUmes3+lZxGIGqC2raHQnyBL6R4FdP6r
-pPTEfkGXAcAAf+3UuAj2+zgekzKDBQ==
-=35uP
------END PGP SIGNATURE-----
-
---FLINfmH2tzMl5GH6qbhGBVFmGAmBjTrrJ--
+>
+> > +cleanup:
+> > +     close(progfd);
+> > +     return err;
+> >   }
+> >
+> >   static int do_detach(int argc, char **argv)
+> >
+>
