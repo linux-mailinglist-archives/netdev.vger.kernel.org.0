@@ -2,127 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E31542AEDC6
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 10:30:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A08CC2AEDDB
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 10:33:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727218AbgKKJaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 04:30:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727193AbgKKJ36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 04:29:58 -0500
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A06CC0613D1;
-        Wed, 11 Nov 2020 01:29:58 -0800 (PST)
-Received: by mail-ot1-x334.google.com with SMTP id 79so1523116otc.7;
-        Wed, 11 Nov 2020 01:29:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=zKusWzXmLlOMRnj3BtSPpyun+4DjiVw4QxGAPL3NRyc=;
-        b=aQxj+p014zNzgfjUsnYJpKUEHCvRJHHONE2RhqqJYCQQ+1LVWso6n9NwAMGIUQaovQ
-         t+JpMlgrtxOkfvHp5j+WHItDxcHf0v6mfa/rIjAnUuQHBg/pCXyZqZMRpu1EY7ADGrgA
-         ExYf8RY+ILh1+im8jtaSb0qDMS/naL0RB3Z+I2yBvltBlQxW4GR3VchT9Z/eIwcQKeWk
-         P/+S2G0CozeguW2w98qYF81QiFMjkd5xHsy2UwVwD+85vUu0OV98ERxWxMRhcNMMdki6
-         pvMZnS7BK4gewU58YDhz3bRmX+70xqFtgfvbNfh+q7IZZRwVR8zNlXyjyil3N0wZiKMn
-         j5ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=zKusWzXmLlOMRnj3BtSPpyun+4DjiVw4QxGAPL3NRyc=;
-        b=qS5UTow8GmU6Fx3fR5lmcW/F+cI9pJjqB+iTfZjXQWBBjF21+cViDK0IUvujRemvKG
-         ec43RGzgPS8LzdkrVCQ85/uAEkiLu8pe57c+7XjRQ0IqMpzFQ5kDQ8zdn6yLalMueVk9
-         erJbvNElZFDxFosdc9fxlCdaPSm87igHaVj0FMDezetxljVzc0qgU78XOtTzxttpt5ir
-         bXlysJjh7yq+OMhUJcU/V2KXoSHq4Bu0W+l1gylgykikQlz57cCvgJnkGSfGqqL2wpN9
-         jFhhr+HxXbC8JrezH8FvijcrUx0xesFjBnOHxpzWXPeSF7IEGew+5lN40+NlWnnqXTSQ
-         lO4Q==
-X-Gm-Message-State: AOAM530Rvx54N1UgzTQQDivC+ZEG6MvQFgwIBsLLNftdGtzGjA4GR/Po
-        SOpGauPXzZUyphuQ35fmN8bDAoXTyUs2ew==
-X-Google-Smtp-Source: ABdhPJxFA/1RexfH5LkDfECu8U/iKhMuqB+8biYkM+x6HoBHAZLwDJcJ9VrTbtHwm4GU0783TS8G2Q==
-X-Received: by 2002:a9d:32f6:: with SMTP id u109mr15911371otb.255.1605086997592;
-        Wed, 11 Nov 2020 01:29:57 -0800 (PST)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id a5sm110537oto.1.2020.11.11.01.29.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Nov 2020 01:29:56 -0800 (PST)
-Date:   Wed, 11 Nov 2020 01:29:48 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com,
-        ilias.apalodimas@linaro.org
-Message-ID: <5fabaf0c4a68a_bb2602085a@john-XPS-13-9370.notmuch>
-In-Reply-To: <1229970bf6f36fd4689169a2e47fdcc664d28366.1605020963.git.lorenzo@kernel.org>
-References: <cover.1605020963.git.lorenzo@kernel.org>
- <1229970bf6f36fd4689169a2e47fdcc664d28366.1605020963.git.lorenzo@kernel.org>
-Subject: RE: [PATCH v5 net-nex 2/5] net: page_pool: add bulk support for
- ptr_ring
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1726655AbgKKJd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 04:33:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45834 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726621AbgKKJd5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 04:33:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605087235;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ry6c6il1QUa78SSYS15ImkmJaL0iw4a/bsKiGOYdFwo=;
+        b=W9DONUuSgeR3pwOIV0d7+jbmHUM80yDGS9Khivre9+l/kS8uEZtESlwa7/RnemQtrocNQs
+        LFc2hVDZsr5iEyYj4vB2wZEihsy2b3rP+UN6DvS0xTXrdOihIyJ3UQCVUgWpvD4S+Xbi9c
+        X/CtJgH6Y2iGWMJItKekaps8niroH6w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-29-UisX5i0ZOkuuyh0C3VMiUQ-1; Wed, 11 Nov 2020 04:33:51 -0500
+X-MC-Unique: UisX5i0ZOkuuyh0C3VMiUQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 20C3E6D253;
+        Wed, 11 Nov 2020 09:33:50 +0000 (UTC)
+Received: from localhost (holly.tpb.lab.eng.brq.redhat.com [10.43.134.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8E4066115F;
+        Wed, 11 Nov 2020 09:33:48 +0000 (UTC)
+Date:   Wed, 11 Nov 2020 10:33:46 +0100
+From:   Miroslav Lichvar <mlichvar@redhat.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
+        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
+        bhelgaas@google.com
+Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support for
+ PTP getcrosststamp()
+Message-ID: <20201111093346.GE1559650@localhost>
+References: <20201110061019.519589-1-vinicius.gomes@intel.com>
+ <20201110061019.519589-4-vinicius.gomes@intel.com>
+ <20201110180719.GA1559650@localhost>
+ <871rh19gm8.fsf@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <871rh19gm8.fsf@intel.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi wrote:
-> Introduce the capability to batch page_pool ptr_ring refill since it is
-> usually run inside the driver NAPI tx completion loop.
+On Tue, Nov 10, 2020 at 11:06:07AM -0800, Vinicius Costa Gomes wrote:
+> Miroslav Lichvar <mlichvar@redhat.com> writes:
+> > I suspect the estimate would be valid only when the NIC is connected
+> > directly to the PTM root (PCI root complex). Is it possible to get the
+> > timestamps or delay from PTM-capable switches on the path between CPU
+> > and NIC? Also, how frequent can be the PTM dialogs? Could they be
+> > performed synchronously in the ioctl?
 > 
-> Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Co-developed-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  include/net/page_pool.h | 26 ++++++++++++++++
->  net/core/page_pool.c    | 69 +++++++++++++++++++++++++++++++++++------
->  net/core/xdp.c          |  9 ++----
->  3 files changed, 87 insertions(+), 17 deletions(-)
+> Reading the PTM specs, it could work over PCIe switches (if they also
+> support PTM).
 
-[...]
+I saw some "implementation specific means" mentioned in the spec, so
+I'm not sure what and how exactly it works with the existing CPUs,
+NICs and PCIe switches. But even if the reported delay was valid only
+for directly connected NICs, I think that could still be useful as
+long as the user/application can figure out whether that is the case.
 
-> +/* Caller must not use data area after call, as this function overwrites it */
-> +void page_pool_put_page_bulk(struct page_pool *pool, void **data,
-> +			     int count)
-> +{
-> +	int i, bulk_len = 0, pa_len = 0;
-> +
-> +	for (i = 0; i < count; i++) {
-> +		struct page *page = virt_to_head_page(data[i]);
-> +
-> +		page = __page_pool_put_page(pool, page, -1, false);
-> +		/* Approved for bulk recycling in ptr_ring cache */
-> +		if (page)
-> +			data[bulk_len++] = page;
-> +	}
-> +
-> +	if (unlikely(!bulk_len))
-> +		return;
-> +
-> +	/* Bulk producer into ptr_ring page_pool cache */
-> +	page_pool_ring_lock(pool);
-> +	for (i = 0; i < bulk_len; i++) {
-> +		if (__ptr_ring_produce(&pool->ring, data[i]))
-> +			data[pa_len++] = data[i];
+> The NIC I have supports PTM cycles from every ~1ms to ~512ms, and from
+> my tests it wants to be kept running "in background" always, i.e. set
+> the cycles to run, and only report the data when necessary. Trying to
+> only enable the cycles "on demand" was unreliable.
 
-How about bailing out on the first error? bulk_len should be less than
-16 right, so should we really keep retying hoping ring->size changes?
+I see. It does makes sense if the clocks need to be are synchronized.
+For the case of this ioctl, I think it would be better if it we could
+just collect the measurements and leave the clocks free running.
 
-> +	}
-> +	page_pool_ring_unlock(pool);
-> +
-> +	if (likely(!pa_len))
-> +		return;
-> +
-> +	/* ptr_ring cache full, free pages outside producer lock since
-> +	 * put_page() with refcnt == 1 can be an expensive operation
-> +	 */
-> +	for (i = 0; i < pa_len; i++)
-> +		page_pool_return_page(pool, data[i]);
-> +}
-> +EXPORT_SYMBOL(page_pool_put_page_bulk);
-> +
+> (so for the _EXTENDED case, I would need to accumulate multiple values
+> in the driver, and report them later, a bit annoying, but not
+> impossible)
 
-Otherwise LGTM.
+I think you could simply repeat the sample in the output up to the
+requested number.
+
+I suspect a bigger issue, for both the PRECISE and EXTENDED variants,
+is that it would return old data. I'm not sure if the existing
+applications are ready to deal with that. With high clock update
+rates, a delay of 50 milliseconds could cause an instability. You can
+try phc2sys -R 50 and see if it stays stable.
+
+The minimum 1ms cycle you mentioned would probably work better for the
+applications.
+
+-- 
+Miroslav Lichvar
+
