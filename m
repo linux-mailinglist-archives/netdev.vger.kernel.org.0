@@ -2,408 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EC792AEA3B
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 08:35:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26C962AEA4C
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 08:45:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726211AbgKKHfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 02:35:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726198AbgKKHfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 02:35:52 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7FEDC0613D4
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 23:35:50 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id r17so1564197wrw.1
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 23:35:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=singlestore.com; s=google;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=rO/szqiwm4BbNv2jP5Dr48sP1SrvXHFTDLJPTLj/rEc=;
-        b=M20WWHx2s8CeBl2XFzu+2zpNnQSqrE4t2/2eFoOiUioYe9Va3CqZuj6bPGfuM70/bT
-         E96luilA/PYfP2MqZ1TsbFZu6Zqr0VZItLYRKlYu1A+t6oVuMHG+1nTFdsd0//vttM+W
-         f1ruXTk1FQdOzJgMmovnqqojtbf4cWB3nCzkb/W+3WS4uUjH5mxB5VLhSytdkCTrz1LC
-         KFDapQpOdcizFG1io1Tdta+SGSMDypeT+Ak9XBMSespcDPTpGdoRUzNclHWgHK1Hr0Gd
-         qIkGwiKRHCGoVwAgccpreqZ1WDEM15lRrUu0lXcsKKUhyMkKr4nFiN/HEc0EwZYK2Xqo
-         cHRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=rO/szqiwm4BbNv2jP5Dr48sP1SrvXHFTDLJPTLj/rEc=;
-        b=sbLPcRxIx9zLv3TYMiDKPM/3jpempgLDbpveTPIXdTqmO0aom/BHUJgR0vuFk0dqj+
-         eZB4I6Vd7lzuVz4tnXxweVrgAQ5Gj01BswF4iL4UKXFWGBRjJF1bypITt3vv6wiBjjry
-         Mt3RrlbXTjUuD2OnRvhxZGOn5xoZ4XWg0WFk+mECKLHiRGpMbnJ4f1HZccCNj4HkQmPk
-         M57ChZ8oEErNIMgjBPxYomJ8F4jqN+FTwcezTLeQSYGCF71GREhiOyTt7NASSSgRPKXk
-         Q9GByyWTt4AmxiyIh5nFPcyruxEs42uzPvUOXoUc9QFurfxvrJUuKD49McYVoDL0ska+
-         qFdQ==
-X-Gm-Message-State: AOAM531sxtdjlXqGbzyDM+er7+M8OuDZHRYrX0WMiX63vHoxr6o67GLb
-        tTe1nglk8bY+IT2+LlvvqSM/mRTt3AQBaGlU3Jo=
-X-Google-Smtp-Source: ABdhPJyIC0lJSq2TctrUPLfBwEMjrHC1CRWSWyTudU2odGVz8Z05a+oaO/9NBjGVR3zOXGzATTFnTQ==
-X-Received: by 2002:adf:eacb:: with SMTP id o11mr18002030wrn.208.1605080149091;
-        Tue, 10 Nov 2020 23:35:49 -0800 (PST)
-Received: from rdias-suse-pc.lan (bl13-26-148.dsl.telepac.pt. [85.246.26.148])
-        by smtp.gmail.com with ESMTPSA id b1sm1472079wmd.43.2020.11.10.23.35.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Nov 2020 23:35:48 -0800 (PST)
-Date:   Wed, 11 Nov 2020 07:35:46 +0000
-From:   Ricardo Dias <rdias@singlestore.com>
-To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, edumazet@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] tcp: fix race condition when creating child sockets from
- syncookies
-Message-ID: <20201111073546.GA1249399@rdias-suse-pc.lan>
+        id S1726204AbgKKHpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 02:45:16 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:28938 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726112AbgKKHpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 02:45:13 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AB7ipWo002021;
+        Tue, 10 Nov 2020 23:44:52 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=C8CCcA+x3QpCkzo4LWdRCwm+DE0lVzL4jtV52D14Trc=;
+ b=K9pftcjI2lJwpEYdjhSM9G82gATjfQmC7Q5+PjKu5OWuDvUmh7U7H/6u1UN/sbKAib13
+ lNoFIgwUH5ef2HbgJSSt1AvG/Rc8cevQH+JUMcHlHGPIjhffiEKWU25U671LvX+gXBjZ
+ 1zVaD/CMNsmF8Mm+KFzd5CJptXEZ5Zn7N2g= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 34pcmjftm3-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 10 Nov 2020 23:44:51 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 10 Nov 2020 23:44:30 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GY6xmgt0OWTWr8p/YnPgb/E2ywwVJ/ozmJJMz2NBxHKQW2TIGPsTJY2Dh0h9XHzJJyZzwLa/gvbOu2VAfMMmkqF9vVGwS+WaxRKdp3KiWcfJzmVCdv4yY+V5vQ/4K0hcE/1CDYFP1TMVa2C/ENGbPPFsvcYxq6kIXI1mn83uueDABBwTZ2r0BMVV6z0N51TIOEHFaPKV+c/kbQGBoD84b4jSHlg6Q12ZoESbSTwrW48XMtmcgOoMADjau1N7pw2fRsrD6oYe0o8O2SnTZGPQuh7OJnJgwSYEk90SWjmturEeItiy438MXPqd3bt+aqlpgbw8qL8K6PGR/5wBS43r6w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C8CCcA+x3QpCkzo4LWdRCwm+DE0lVzL4jtV52D14Trc=;
+ b=bVNzeUd1eeE1YGnFmc4bejLxg+ZdhilgZp7yBhXXu4A+Uum9ZCyCXcc6y0rTJyYHr04EidXo4Rb04oglMRS+AnFiB7kBePq1J6fmiK8sxTvNjYVQxrhNtQ0sQSsniWaRvgIJq90j9MfSxt1h70IpcWGdck+KyO96sov2aBchbrom4nGqE8j5LQX5TJsjIv2A2caiyQVxjy5OHaK+l80QKRiDyRHxUGygk4QvEk9WyfapwYWeetJCLVvmBVJt7zYZJW6QVFLF0mTMWfmoRobC22kEZZN28AnEQmavWqwx+ZjlixOfP5q4oziJneHOfAd6Hm/y5NWv/WFax2YQIfW0TQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C8CCcA+x3QpCkzo4LWdRCwm+DE0lVzL4jtV52D14Trc=;
+ b=K/S4e1RHP1HIeByH5UWDVUdjORvbzXNDoBke9076xqIe5s9p7AcsmOoFfvt6/wkphhoZebm+8YPCC4YMikytmpZMBsNz35d00th30IuGE5ZCQTGPJB2CNUQ+g5YyX4VYMMtFueHJw3rG+PCcJx7K6m64/ONrcHS6tCEOj/DrsoM=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB2885.namprd15.prod.outlook.com (2603:10b6:a03:f5::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21; Wed, 11 Nov
+ 2020 07:44:26 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::f49e:bdbb:8cd7:bf6b]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::f49e:bdbb:8cd7:bf6b%7]) with mapi id 15.20.3541.025; Wed, 11 Nov 2020
+ 07:44:26 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Alan Maguire" <alan.maguire@oracle.com>
+Subject: Re: [PATCH v4 bpf-next 5/5] tools/bpftool: add support for in-kernel
+ and named BTF in `btf show`
+Thread-Topic: [PATCH v4 bpf-next 5/5] tools/bpftool: add support for in-kernel
+ and named BTF in `btf show`
+Thread-Index: AQHWtwBlZiwFu4lmdkSb7Pyhw/89SanCIkiAgAAzfQCAADkugA==
+Date:   Wed, 11 Nov 2020 07:44:26 +0000
+Message-ID: <6F96BB47-7D10-4302-B637-33CFD3342804@fb.com>
+References: <20201110011932.3201430-1-andrii@kernel.org>
+ <20201110011932.3201430-6-andrii@kernel.org>
+ <8A2A9182-F22C-4A3B-AF52-6FC56D3057AA@fb.com>
+ <CAEf4Bzamkc29nHsixj1EJ5embPFG=ZCnys9CgPsvPDEMm9bS3A@mail.gmail.com>
+In-Reply-To: <CAEf4Bzamkc29nHsixj1EJ5embPFG=ZCnys9CgPsvPDEMm9bS3A@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.120.23.2.4)
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+x-originating-ip: [2620:10d:c090:400::5:1f7d]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 493348ea-074a-4bca-e809-08d886159d37
+x-ms-traffictypediagnostic: BYAPR15MB2885:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB2885B871E621A3F972D7C18CB3E80@BYAPR15MB2885.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:284;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: l1ZtSRmwn91HCIRBTexn4vx6SuyOrRsYVl1Us2YZuSlfU7ap5rnqW/eaqpmZXqzcXe37IIO/wThK68XZZjZhHIZfUwgDtGPULq62GeLeHmU8R2gvAfRrKd+JP6n4o50Zh7Ryc64RpNjLB+1odpVHLMFdeInfIzqG76lMLRAEChSwEb/3S6/FxQN+VEPglZCCMNwp0s7DVmxF7qfojw9725VXjy60s4el40/W2Z2EUM/787UCtUc/VmJcDrlHmEDO6R3HOMz69nzLIP4yKCyLfkP3GyQLQ7ei5192IX2ISaypoTfQpIKbBdWWvQR1WSvMQsxd9SgP2akZ1jRBYvEDyxRvYDqVQpYXCPPVg6zghXQnRIr3E0heX111yUiqO8qk
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(39860400002)(376002)(396003)(366004)(136003)(6916009)(6512007)(76116006)(316002)(186003)(478600001)(83380400001)(54906003)(66946007)(33656002)(2906002)(66476007)(6506007)(71200400001)(8936002)(5660300002)(66556008)(2616005)(53546011)(91956017)(36756003)(4326008)(6486002)(7416002)(8676002)(66446008)(64756008)(86362001)(81973001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: v3CVxZ14fjoFqejad2iwGSlinAx1S4vzfIxxLQuASTdlf/bcNvTcW8U6K628GO/BR/Pgb4yPmDPb+LE57kT2LyjfN6rgCC7s3V/wk1jjh/aNvLdCNEnI0sFGlF7bABh7twmNARUm3q5PbD3An0t4qgKrH5oLeyEkx95dLuQ2BjQ02FcoqN5nyi/ZLPu+q9aNn31M32+8zTNlEKUwFT17YbmZHp6HCI7TBIJzyvfEP9V/qv+lnCa5oan4rwjkEAHwiFSTO+gsfc2b9BDgr0u5AZIkm709OsV5KAmxWrvnk1MHkRCtmed3RrRcfsE6rHufTu20cnZOdNdIkmC2fjzo7KGuojqcoUBAHMR48HQfPOxGegrC+sG6eZXQDMHe5QxjDoWcacDPn6IYPQMkxhhbiclThsJOpn8nqt2au9SfKEyOO1EO4N/riJ1JNi2uv121uUtz2qoVWBlDlJ+1Xtbw0akatQErAlYhkDmfQcvkZzKNAuDKOMANLbq1AUjsjKL2JORbR3sgyLvwsjXgZmLlVXpx1iZSqTe5Njbe6OLaqcbNptp0zpOVGcT3eTyH+l0lc0jk8ePpJtjey9zfYzoRLJaQotd8Tmfq31BjxhkRoq995BHGNBkUBBzjRxvaOCB97k1CZNRvter7chMdmejyxYfcksekRbzjJ2efwRQnlEvXbaDeKq91ESECtRF1jD7iolPMvc2V99zUL6Ju2gLKLfLHAnLN/6Yr8jjrVHfRfI7y590ygZeWLkFc0WTP66mSJUo4DW2oFBZrD28Gi62mrkSnyqrNsAgnlrswPxb/V6axvUOZ5O4n6i8xCBMv6gRYAbAZOcA33SqhnC1bkmeauHxJSpBzOrowYdM6SCgHXoNEZnxRI3RSQzOaTGUwksP0fVl8MF1My3AsXGOsiVM6vH9heRkR9NwHS21kmF1pUu4=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <44D970B5E1AF0747B78AC6C835910D04@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 493348ea-074a-4bca-e809-08d886159d37
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2020 07:44:26.1518
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YWxfOd3yVl5IUeJRGoKKHB9u6uA+rW3XWwMRbLFo3V/hK/o6rVC3X812tTdbU81e9ujWwhxbEPGzrhDy4DImSg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2885
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-11_02:2020-11-10,2020-11-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ lowpriorityscore=0 adultscore=0 impostorscore=0 spamscore=0
+ priorityscore=1501 mlxscore=0 suspectscore=0 clxscore=1015 phishscore=0
+ mlxlogscore=999 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2011110041
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the TCP stack is in SYN flood mode, the server child socket is
-created from the SYN cookie received in a TCP packet with the ACK flag
-set.
 
-The child socket is created when the server receives the first TCP
-packet with a valid SYN cookie from the client. Usually, this packet
-corresponds to the final step of the TCP 3-way handshake, the ACK
-packet. But is also possible to receive a valid SYN cookie from the
-first TCP data packet sent by the client, and thus create a child socket
-from that SYN cookie.
 
-Since a client socket is ready to send data as soon as it receives the
-SYN+ACK packet from the server, the client can send the ACK packet (sent
-by the TCP stack code), and the first data packet (sent by the userspace
-program) almost at the same time, and thus the server will equally
-receive the two TCP packets with valid SYN cookies almost at the same
-instant.
+> On Nov 10, 2020, at 8:19 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> =
+wrote:
+>=20
+> On Tue, Nov 10, 2020 at 5:15 PM Song Liu <songliubraving@fb.com> wrote:
+>>=20
+>>=20
+>>=20
+>>> On Nov 9, 2020, at 5:19 PM, Andrii Nakryiko <andrii@kernel.org> wrote:
+>>=20
+>> [...]
+>>=20
+>>> ...
+>>>=20
+>>> Tested-by: Alan Maguire <alan.maguire@oracle.com>
+>>> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+>>=20
+>> Acked-by: Song Liu <songliubraving@fb.com>
+>>=20
+>> With one nit:
+>>=20
+>>> ---
+>>> tools/bpf/bpftool/btf.c | 28 +++++++++++++++++++++++++++-
+>>> 1 file changed, 27 insertions(+), 1 deletion(-)
+>>>=20
+>>> diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+>>> index c96b56e8e3a4..ed5e97157241 100644
+>>> --- a/tools/bpf/bpftool/btf.c
+>>> +++ b/tools/bpf/bpftool/btf.c
+>>> @@ -742,9 +742,14 @@ show_btf_plain(struct bpf_btf_info *info, int fd,
+>>>             struct btf_attach_table *btf_map_table)
+>>> {
+>>>      struct btf_attach_point *obj;
+>>> +     const char *name =3D u64_to_ptr(info->name);
+>>>      int n;
+>>>=20
+>>>      printf("%u: ", info->id);
+>>> +     if (info->kernel_btf)
+>>> +             printf("name [%s]  ", name);
+>>> +     else if (name && name[0])
+>>> +             printf("name %s  ", name);
+>>=20
+>> Maybe explicitly say "name <anonymous>" for btf without a name? I think
+>> it will benefit plain output.
+>=20
+> This patch set is already landed. But I can do a follow-up patch to add t=
+his.
 
-When such event happens, the TCP stack code has a race condition that
-occurs between the momement a lookup is done to the established
-connections hashtable to check for the existence of a connection for the
-same client, and the moment that the child socket is added to the
-established connections hashtable. As a consequence, this race condition
-can lead to a situation where we add two child sockets to the
-established connections hashtable and deliver two sockets to the
-userspace program to the same client.
+I realized this was applied soon after sending this. Yeah, a follow-up=20
+patch would be great.=20
 
-This patch fixes the race condition by checking if an existing child
-socket exists for the same client when we are adding the second child
-socket to the established connections socket. If an existing child
-socket exists, we return that socket and use it to process the TCP
-packet received, and discard the second child socket to the same client.
-
-Signed-off-by: Ricardo Dias <rdias@singlestore.com>
----
-v3 (2020-11-11):
-  * Fixed IPv6 handling in inet_ehash_insert
-  * Removed unecessary comparison while traversing the ehash bucket
-    list.
- 
-v2 (2020-11-09):
-  * Changed the author's email domain.
-  * Removed the helper function inet_ehash_insert_chk_dup and moved the
-    logic to the existing inet_ehash_insert.
-  * Updated the callers of iner_ehash_nolisten to deal with the new
-    logic.
-
- include/net/inet_hashtables.h |  6 +--
- net/dccp/ipv4.c               |  4 +-
- net/dccp/ipv6.c               |  4 +-
- net/ipv4/inet_hashtables.c    | 69 ++++++++++++++++++++++++++++++-----
- net/ipv4/syncookies.c         |  5 ++-
- net/ipv4/tcp_ipv4.c           | 10 ++++-
- net/ipv6/tcp_ipv6.c           | 17 ++++++++-
- 7 files changed, 97 insertions(+), 18 deletions(-)
-
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index 92560974ea67..dffa345d52a7 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -247,9 +247,9 @@ void inet_hashinfo2_init(struct inet_hashinfo *h, const char *name,
- 			 unsigned long high_limit);
- int inet_hashinfo2_init_mod(struct inet_hashinfo *h);
- 
--bool inet_ehash_insert(struct sock *sk, struct sock *osk);
--bool inet_ehash_nolisten(struct sock *sk, struct sock *osk);
--int __inet_hash(struct sock *sk, struct sock *osk);
-+bool inet_ehash_insert(struct sock *sk, struct sock **osk);
-+bool inet_ehash_nolisten(struct sock *sk, struct sock **osk);
-+int __inet_hash(struct sock *sk, struct sock **osk);
- int inet_hash(struct sock *sk);
- void inet_unhash(struct sock *sk);
- 
-diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-index 9c28c8251125..99bbba478991 100644
---- a/net/dccp/ipv4.c
-+++ b/net/dccp/ipv4.c
-@@ -400,6 +400,7 @@ struct sock *dccp_v4_request_recv_sock(const struct sock *sk,
- 	struct inet_request_sock *ireq;
- 	struct inet_sock *newinet;
- 	struct sock *newsk;
-+	struct sock *osk;
- 
- 	if (sk_acceptq_is_full(sk))
- 		goto exit_overflow;
-@@ -427,7 +428,8 @@ struct sock *dccp_v4_request_recv_sock(const struct sock *sk,
- 
- 	if (__inet_inherit_port(sk, newsk) < 0)
- 		goto put_and_exit;
--	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash));
-+	osk = req_to_sk(req_unhash);
-+	*own_req = inet_ehash_nolisten(newsk, &osk);
- 	if (*own_req)
- 		ireq->ireq_opt = NULL;
- 	else
-diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-index ef4ab28cfde0..91a825c00a97 100644
---- a/net/dccp/ipv6.c
-+++ b/net/dccp/ipv6.c
-@@ -407,6 +407,7 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
- 	struct inet_sock *newinet;
- 	struct dccp6_sock *newdp6;
- 	struct sock *newsk;
-+	struct sock *osk;
- 
- 	if (skb->protocol == htons(ETH_P_IP)) {
- 		/*
-@@ -533,7 +534,8 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
- 		dccp_done(newsk);
- 		goto out;
- 	}
--	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash));
-+	osk = req_to_sk(req_unhash);
-+	*own_req = inet_ehash_nolisten(newsk, &osk);
- 	/* Clone pktoptions received with SYN, if we own the req */
- 	if (*own_req && ireq->pktopts) {
- 		newnp->pktoptions = skb_clone(ireq->pktopts, GFP_ATOMIC);
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 239e54474b65..1fce64f7f0dc 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -20,6 +20,9 @@
- #include <net/addrconf.h>
- #include <net/inet_connection_sock.h>
- #include <net/inet_hashtables.h>
-+#if IS_ENABLED(CONFIG_IPV6)
-+#include <net/inet6_hashtables.h>
-+#endif
- #include <net/secure_seq.h>
- #include <net/ip.h>
- #include <net/tcp.h>
-@@ -510,17 +513,27 @@ static u32 inet_sk_port_offset(const struct sock *sk)
- 					  inet->inet_dport);
- }
- 
--/* insert a socket into ehash, and eventually remove another one
-- * (The another one can be a SYN_RECV or TIMEWAIT
-+/* Insert a socket into ehash, and eventually remove another one
-+ * (The another one can be a SYN_RECV or TIMEWAIT)
-+ * If an existing socket already exists, it returns that socket
-+ * through the osk parameter.
-  */
--bool inet_ehash_insert(struct sock *sk, struct sock *osk)
-+bool inet_ehash_insert(struct sock *sk, struct sock **osk)
- {
- 	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
- 	struct hlist_nulls_head *list;
- 	struct inet_ehash_bucket *head;
--	spinlock_t *lock;
-+	const struct hlist_nulls_node *node;
-+	struct sock *esk;
-+	spinlock_t *lock; /* protects hashinfo socket entry */
-+	struct net *net = sock_net(sk);
-+	const int dif = sk->sk_bound_dev_if;
-+	const int sdif = sk->sk_bound_dev_if;
- 	bool ret = true;
- 
-+	INET_ADDR_COOKIE(acookie, sk->sk_daddr, sk->sk_rcv_saddr);
-+	const __portpair ports = INET_COMBINED_PORTS(sk->sk_dport, sk->sk_num);
-+
- 	WARN_ON_ONCE(!sk_unhashed(sk));
- 
- 	sk->sk_hash = sk_ehashfn(sk);
-@@ -529,17 +542,53 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk)
- 	lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
- 
- 	spin_lock(lock);
--	if (osk) {
--		WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
--		ret = sk_nulls_del_node_init_rcu(osk);
-+	if (osk && *osk) {
-+		WARN_ON_ONCE(sk->sk_hash != (*osk)->sk_hash);
-+		ret = sk_nulls_del_node_init_rcu(*osk);
-+	} else if (osk && !*osk) {
-+		sk_nulls_for_each_rcu(esk, node, list) {
-+			if (esk->sk_hash != sk->sk_hash)
-+				continue;
-+			if (sk->sk_family == AF_INET) {
-+				if (unlikely(INET_MATCH(esk, net, acookie,
-+							sk->sk_daddr,
-+							sk->sk_rcv_saddr,
-+							ports, dif, sdif))) {
-+					if (unlikely(!refcount_inc_not_zero(&esk->sk_refcnt)))
-+						goto out;
-+					goto found;
-+				}
-+			}
-+#if IS_ENABLED(CONFIG_IPV6)
-+			else if (sk->sk_family == AF_INET6) {
-+				if (unlikely(INET6_MATCH(esk, net,
-+							 &sk->sk_v6_daddr,
-+							 &sk->sk_v6_rcv_saddr,
-+							 ports, dif, sdif))) {
-+					if (unlikely(!refcount_inc_not_zero(&esk->sk_refcnt)))
-+						goto out;
-+					goto found;
-+				}
-+			}
-+#endif
-+		}
-+
- 	}
-+out:
-+	esk = NULL;
- 	if (ret)
- 		__sk_nulls_add_node_rcu(sk, list);
-+
-+found:
- 	spin_unlock(lock);
-+	if (esk) {
-+		*osk = esk;
-+		ret = false;
-+	}
- 	return ret;
- }
- 
--bool inet_ehash_nolisten(struct sock *sk, struct sock *osk)
-+bool inet_ehash_nolisten(struct sock *sk, struct sock **osk)
- {
- 	bool ok = inet_ehash_insert(sk, osk);
- 
-@@ -578,7 +627,7 @@ static int inet_reuseport_add_sock(struct sock *sk,
- 	return reuseport_alloc(sk, inet_rcv_saddr_any(sk));
- }
- 
--int __inet_hash(struct sock *sk, struct sock *osk)
-+int __inet_hash(struct sock *sk, struct sock **osk)
- {
- 	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
- 	struct inet_listen_hashbucket *ilb;
-@@ -760,7 +809,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 	inet_bind_hash(sk, tb, port);
- 	if (sk_unhashed(sk)) {
- 		inet_sk(sk)->inet_sport = htons(port);
--		inet_ehash_nolisten(sk, (struct sock *)tw);
-+		inet_ehash_nolisten(sk, (struct sock **)&tw);
- 	}
- 	if (tw)
- 		inet_twsk_bind_unhash(tw, hinfo);
-diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
-index e03756631541..c4bb895085f0 100644
---- a/net/ipv4/syncookies.c
-+++ b/net/ipv4/syncookies.c
-@@ -208,7 +208,7 @@ struct sock *tcp_get_cookie_sock(struct sock *sk, struct sk_buff *skb,
- 
- 	child = icsk->icsk_af_ops->syn_recv_sock(sk, skb, req, dst,
- 						 NULL, &own_req);
--	if (child) {
-+	if (child && own_req) {
- 		refcount_set(&req->rsk_refcnt, 1);
- 		tcp_sk(child)->tsoffset = tsoff;
- 		sock_rps_save_rxhash(child, skb);
-@@ -223,6 +223,9 @@ struct sock *tcp_get_cookie_sock(struct sock *sk, struct sk_buff *skb,
- 
- 		bh_unlock_sock(child);
- 		sock_put(child);
-+	}  else if (child && !own_req) {
-+		__reqsk_free(req);
-+		return child;
- 	}
- 	__reqsk_free(req);
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 592c73962723..7daaea30fc30 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1501,6 +1501,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
- 	int l3index;
- #endif
- 	struct ip_options_rcu *inet_opt;
-+	struct sock *osk;
- 
- 	if (sk_acceptq_is_full(sk))
- 		goto exit_overflow;
-@@ -1565,11 +1566,18 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
- 
- 	if (__inet_inherit_port(sk, newsk) < 0)
- 		goto put_and_exit;
--	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash));
-+	osk = req_to_sk(req_unhash);
-+	*own_req = inet_ehash_nolisten(newsk, &osk);
- 	if (likely(*own_req)) {
- 		tcp_move_syn(newtp, req);
- 		ireq->ireq_opt = NULL;
- 	} else {
-+		if (!req_unhash && osk) {
-+			/* This code path should only be executed in the
-+			 * syncookie case only
-+			 */
-+			newsk = osk;
-+		}
- 		newinet->inet_opt = NULL;
- 	}
- 	return newsk;
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 305870a72352..376dc75395c5 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1190,6 +1190,7 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 	struct inet_sock *newinet;
- 	struct tcp_sock *newtp;
- 	struct sock *newsk;
-+	struct sock *osk;
- #ifdef CONFIG_TCP_MD5SIG
- 	struct tcp_md5sig_key *key;
- 	int l3index;
-@@ -1206,6 +1207,12 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 
- 		if (!newsk)
- 			return NULL;
-+		else if (!own_req) {
-+			/* We're returning an existing child socket, probably
-+			 * created by a previous syncookie ACK.
-+			 */
-+			return newsk;
-+		}
- 
- 		inet_sk(newsk)->pinet6 = tcp_inet6_sk(newsk);
- 
-@@ -1359,7 +1366,8 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 		tcp_done(newsk);
- 		goto out;
- 	}
--	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash));
-+	osk = req_to_sk(req_unhash);
-+	*own_req = inet_ehash_nolisten(newsk, &osk);
- 	if (*own_req) {
- 		tcp_move_syn(newtp, req);
- 
-@@ -1374,6 +1382,13 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 				skb_set_owner_r(newnp->pktoptions, newsk);
- 			}
- 		}
-+	} else {
-+		if (!req_unhash && osk) {
-+			/* This code path should only be executed in the
-+			 * syncookie case only
-+			 */
-+			newsk = osk;
-+		}
- 	}
- 
- 	return newsk;
--- 
-2.25.1
+Thanks,
+Song=20
 
