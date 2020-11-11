@@ -2,211 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F09EB2AF36B
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 15:23:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D4E2AF380
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 15:27:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726227AbgKKOXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 09:23:19 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:45798 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgKKOXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 09:23:18 -0500
-Received: by mail-io1-f70.google.com with SMTP id o17so1493085ioo.12
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 06:23:17 -0800 (PST)
+        id S1726557AbgKKO1V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 09:27:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725909AbgKKO1U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 09:27:20 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F90DC0613D1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 06:27:20 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id d9so2358264oib.3
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 06:27:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=tJNevqO0XjK36FmENHY936OAEeTL8r5JxlA7yFe17JA=;
+        b=shGm7xW/7s3pRFZ1eb2pCLqF9cmc0EIL+gGpMw5/CI9N3ejlmJC7wZic4R133Ca2JO
+         G85QxutjOZIz5c3DbjWootzVUive84O6rC7AhbebepQyUDmj024K2EB1SeB9Az0F28uY
+         lRoVT/fboxut6m+Pl3g259L7bPN4+gYi6Hkg1bOwv8HdaANwhW2d98byHiUK7V9bXkt4
+         dLVgXZbhtJ0PEDNhEqdAIlUmF+T+eenLS+lcm2Jsxq7rtWamYklImuaMgo3AXhB/xXOx
+         qAvBhQebJEinDCHU4lpYNwQkL7SDszVsIu/GOrj/93ja0x9J3s0cnypwG80shXcknOTp
+         SAeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=2yCMU4GvUtwAjY+k5nLvthk8vkB54VNGKYZoEyb3b6c=;
-        b=oQYy56MOjSMRckyULDpg+lZrV1s7rYBGuh8VlHXQTE8uxz2qxONxnpwpRQqwN2z4lH
-         kQhT7vb7El2oOuNBzsDZ/UFNfJ4VDSglpxOXZp+nVKpvEO+Yjnau/nqmP7XVd4kOaQ2n
-         AAWYF8T9zLWkgohCOfe/IWwZjNaVRo907tdYfzNVSqBklBaj/x/IiWQyXu3KWI9Tv33T
-         vXn2xXfSUr98+lOc695DmhzNTHBbiUs1cC/oKvg6m7eYJYtdzw7W9UW8EaJy7ZMcVuD8
-         bbGUb6LfDh/nR1gMg+5QWntvv3V1B3izlipYI1nK8mx946jwhA80MbZwYNx+0Sco/BX2
-         oySA==
-X-Gm-Message-State: AOAM533ZcPdGDgdB6+qtd9T6NHc6DrlMf1hlk02jCmZng3yV2v1h5WUC
-        YzllPzS8Dc98Xo49tSqIS2gGW7+cDiBmwM+2Ec9ZedcrGcYY
-X-Google-Smtp-Source: ABdhPJzS+LviWWBvhoTPlk8A1iMPbhdx32pJQmLO6uLZSeOZUpKY7PJaY6w9Z8f78WyCumGqA06uEA2TpC4JQFm0XIB/3xIXoXEp
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=tJNevqO0XjK36FmENHY936OAEeTL8r5JxlA7yFe17JA=;
+        b=PWfbOHPHElbw3dN4wvhwkAqdtZtzLfo5OXFZLSy0V0LRDTMv5Rw1CQgJXFzAXNXlZP
+         //cLqr9VKax/Rn7EWNlEsJEE/p6RMv6/MInkKrjG5wOKBN5EBf34/ijEfAiY7RKBxQdu
+         aNpPpH40rZTI3reORX0AmFXUSdkAgMbl2oNoFd28hQ+MHm1B2UzUYS2oGZgyYAEOzxK+
+         mSyE7nP/9kuifoyu/YCJb6RrJ/4VK/WoAjl6Uv9LE2Tn+hoL/OX5Sa1Esd7KDHDyteOP
+         ehOW6/YxZ4RL0eDttgX6vxxXQ2mBxdUN94aiPscCuKx5oFSslHUNkziC+LzduVf2qcFZ
+         B4FQ==
+X-Gm-Message-State: AOAM5309dDr0f5/139/5IgsA1vipPIioDYupa5MV6y1fEORmeRhdMswr
+        Eb8das6f8UdZaZMZreV10TySFq4gN89DMlxa2lYE6HUl
+X-Google-Smtp-Source: ABdhPJxZG8HHO0uZRVR7YVeat9PbepRLuVX4ChDf2rOWud4OkGuuXIZVdXg/1vpnfXQ2Jj9eTeGPZaAF+cE7Q8v6YXY=
+X-Received: by 2002:aca:bc03:: with SMTP id m3mr2311934oif.35.1605104839296;
+ Wed, 11 Nov 2020 06:27:19 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a92:9845:: with SMTP id l66mr17373243ili.65.1605104597489;
- Wed, 11 Nov 2020 06:23:17 -0800 (PST)
-Date:   Wed, 11 Nov 2020 06:23:17 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005c61c005b3d589fb@google.com>
-Subject: KASAN: use-after-free Read in ath9k_hif_usb_reg_in_cb
-From:   syzbot <syzbot+98c96757d557f4afaf19@syzkaller.appspotmail.com>
-To:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net, kuba@kernel.org,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+References: <CAMeyCbh8vSCnr-9-odi0kg3E8BGCiETOL-jJ650qYQdsY0wxeA@mail.gmail.com>
+In-Reply-To: <CAMeyCbh8vSCnr-9-odi0kg3E8BGCiETOL-jJ650qYQdsY0wxeA@mail.gmail.com>
+From:   Kegl Rohit <keglrohit@gmail.com>
+Date:   Wed, 11 Nov 2020 15:27:09 +0100
+Message-ID: <CAMeyCbjuj2Q2riK2yzKXRfCa_mKToqe0uPXKxrjd6zJQWaXxog@mail.gmail.com>
+Subject: Fwd: net: fec: rx descriptor ring out of order
+To:     netdev@vger.kernel.org, Andy Duan <fugang.duan@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello!
 
-syzbot found the following issue on:
+We are using a imx6q platform.
+The fec interface is used to receive a continuous stream of custom /
+raw ethernet packets. The packet size is fixed ~132 bytes and they get
+sent every 250=C2=B5s.
 
-HEAD commit:    407ab579 Merge tag 'for-linus' of git://git.kernel.org/pub..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=143b7966500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f9aa2432c01bcb1f
-dashboard link: https://syzkaller.appspot.com/bug?extid=98c96757d557f4afaf19
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+While testing I observed spontaneous packet delays from time to time.
+After digging down deeper I think that the fec peripheral does not
+update the rx descriptor status correctly.
+I modified the queue_rx function which is called by the NAPI poll
+function. "no packet N" is printed when the queue_rx function doesn't
+process any descriptor.
+Therefore the variable N counts continuous calls without ready
+descriptors. When the current descriptor is ready&processed and moved
+to the next entry, then N is cleared again.
+Additionally an error is printed if the current descriptor is empty
+but the next one is already ready. In case this error happens the
+current descriptor and the next 11 ones are dumped.
+"C"  ... current
+"E"  ... empty
 
-Unfortunately, I don't have any reproducer for this issue yet.
+[   57.436478 <    0.020005>] no packet 1!
+[   57.460850 <    0.024372>] no packet 1!
+[   57.461107 <    0.000257>] ring error, current empty but next is not emp=
+ty
+[   57.461118 <    0.000011>] RX ahead
+[   57.461135 <    0.000017>] 129 C E 0x8840 0x2c743a40  132
+[   57.461146 <    0.000011>] 130     0x0840 0x2c744180  132
+[   57.461158 <    0.000012>] 131   E 0x8840 0x2c7448c0  132
+[   57.461170 <    0.000012>] 132   E 0x8840 0x2c745000  132
+[   57.461181 <    0.000011>] 133   E 0x8840 0x2c745740  132
+[   57.461192 <    0.000011>] 134   E 0x8840 0x2c745e80  132
+[   57.461204 <    0.000012>] 135   E 0x8880 0x2c7465c0  114
+[   57.461215 <    0.000011>] 136   E 0x8840 0x2c746d00  132
+[   57.461227 <    0.000012>] 137   E 0x8840 0x2c747440  132
+[   57.461239 <    0.000012>] 138   E 0x8840 0x2c748040  132
+[   57.461250 <    0.000011>] 139   E 0x8840 0x2c748780  132
+[   57.461262 <    0.000012>] 140   E 0x8840 0x2c748ec0  132
+[   57.461477 <    0.000008>] no packet 2!
+[   57.461506 <    0.000029>] ring error, current empty but next is not emp=
+ty
+[   57.461537 <    0.000031>] RX ahead
+[   57.461550 <    0.000013>] 129 C E 0x8840 0x2c743a40  132
+[   57.461563 <    0.000013>] 130     0x0840 0x2c744180  132
+[   57.461577 <    0.000014>] 131     0x0840 0x2c7448c0  132
+[   57.461589 <    0.000012>] 132     0x0840 0x2c745000  132
+[   57.461601 <    0.000012>] 133   E 0x8840 0x2c745740  132
+[   57.461613 <    0.000012>] 134   E 0x8840 0x2c745e80  132
+[   57.461624 <    0.000011>] 135   E 0x8880 0x2c7465c0  114
+[   57.461635 <    0.000011>] 136   E 0x8840 0x2c746d00  132
+[   57.461645 <    0.000010>] 137   E 0x8840 0x2c747440  132
+[   57.461657 <    0.000012>] 138   E 0x8840 0x2c748040  132
+[   57.461668 <    0.000011>] 139   E 0x8840 0x2c748780  132
+[   57.461680 <    0.000012>] 140   E 0x8840 0x2c748ec0  132
+[   57.461894 <    0.000009>] no packet 3!
+[   57.461926 <    0.000032>] ring error, current empty but next is not emp=
+ty
+[   57.461935 <    0.000009>] RX ahead
+[   57.461947 <    0.000012>] 129 C E 0x8840 0x2c743a40  132
+[   57.461959 <    0.000012>] 130     0x0840 0x2c744180  132
+[   57.461970 <    0.000011>] 131     0x0840 0x2c7448c0  132
+[   57.461982 <    0.000012>] 132     0x0840 0x2c745000  132
+[   57.461993 <    0.000011>] 133     0x0840 0x2c745740  132
+[   57.462005 <    0.000012>] 134   E 0x8840 0x2c745e80  132
+[   57.462017 <    0.000012>] 135   E 0x8880 0x2c7465c0  114
+[   57.462028 <    0.000011>] 136   E 0x8840 0x2c746d00  132
+[   57.462039 <    0.000011>] 137   E 0x8840 0x2c747440  132
+[   57.462051 <    0.000012>] 138   E 0x8840 0x2c748040  132
+[   57.462062 <    0.000011>] 139   E 0x8840 0x2c748780  132
+[   57.462075 <    0.000013>] 140   E 0x8840 0x2c748ec0  132
+[   57.462289 <    0.000009>] no packet 4!
+[   57.462316 <    0.000027>] ring error, current empty but next is not emp=
+ty
+[   57.462326 <    0.000010>] RX ahead
+[   57.462339 <    0.000013>] 129 C E 0x8840 0x2c743a40  132
+[   57.462351 <    0.000012>] 130     0x0840 0x2c744180  132
+[   57.462362 <    0.000011>] 131     0x0840 0x2c7448c0  132
+[   57.462373 <    0.000011>] 132     0x0840 0x2c745000  132
+[   57.462384 <    0.000011>] 133     0x0840 0x2c745740  132
+[   57.462397 <    0.000013>] 134     0x0840 0x2c745e80  132
+[   57.462408 <    0.000011>] 135     0x0840 0x2c7465c0  132
+[   57.462421 <    0.000013>] 136   E 0x8840 0x2c746d00  132
+[   57.462431 <    0.000010>] 137   E 0x8840 0x2c747440  132
+[   57.462443 <    0.000012>] 138   E 0x8840 0x2c748040  132
+[   57.462454 <    0.000011>] 139   E 0x8840 0x2c748780  132
+[   57.462467 <    0.000013>] 140   E 0x8840 0x2c748ec0  132
+[   57.462697 <    0.000009>] no packet 5!
+[   57.462730 <    0.000033>] ring error, current empty but next is not emp=
+ty
+[   57.462739 <    0.000009>] RX ahead
+[   57.462752 <    0.000013>] 129 C E 0x8840 0x2c743a40  132
+[   57.462763 <    0.000011>] 130     0x0840 0x2c744180  132
+[   57.462775 <    0.000012>] 131     0x0840 0x2c7448c0  132
+[   57.462787 <    0.000012>] 132     0x0840 0x2c745000  132
+[   57.462799 <    0.000012>] 133     0x0840 0x2c745740  132
+[   57.462809 <    0.000010>] 134     0x0840 0x2c745e80  132
+[   57.462820 <    0.000011>] 135     0x0840 0x2c7465c0  132
+[   57.462830 <    0.000010>] 136     0x0840 0x2c746d00  132
+[   57.462842 <    0.000012>] 137     0x0840 0x2c747440  132
+[   57.462853 <    0.000011>] 138   E 0x8840 0x2c748040  132
+[   57.462864 <    0.000011>] 139   E 0x8840 0x2c748780  132
+[   57.462877 <    0.000013>] 140   E 0x8840 0x2c748ec0  132
+[   57.463093 <    0.000009>] no packet 6!
+[   57.463120 <    0.000027>] RX ahead
+[   57.463133 <    0.000013>] 129 C   0x0840 0x2c743a40  132
+[   57.463144 <    0.000011>] 130     0x0840 0x2c744180  132
+[   57.463155 <    0.000011>] 131     0x0840 0x2c7448c0  132
+[   57.463166 <    0.000011>] 132     0x0840 0x2c745000  132
+[   57.463179 <    0.000013>] 133     0x0840 0x2c745740  132
+[   57.463190 <    0.000011>] 134     0x0840 0x2c745e80  132
+[   57.463201 <    0.000011>] 135     0x0840 0x2c7465c0  132
+[   57.463213 <    0.000012>] 136     0x0840 0x2c746d00  132
+[   57.463224 <    0.000011>] 137     0x0840 0x2c747440  132
+[   57.463235 <    0.000011>] 138     0x0840 0x2c748040  132
+[   57.463245 <    0.000010>] 139   E 0x8840 0x2c748780  132
+[   57.463256 <    0.000011>] 140   E 0x8840 0x2c748ec0  132
+[   57.463695 <    0.000244>] rx 12
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+98c96757d557f4afaf19@syzkaller.appspotmail.com
+As you can see, the described error is catched and the ring is dumped.
+9 descriptors got ready before the current descriptor is ready.
+After that the current descriptor got ready and 12 packets were
+processed at once.
+I could also observe cases where the ring (512 entries) got full
+before the current descriptor was cleared.
+And also cases where the current and next descriptor were not ready.
+[   57.462752 <    0.000013>] 129 C E 0x8840 0x2c743a40  132
+[   57.462763 <    0.000011>] 130    E 0x0840 0x2c744180  132
+[   57.462775 <    0.000012>] 131     0x0840 0x2c7448c0  132
 
-==================================================================
-BUG: KASAN: use-after-free in instrument_atomic_read include/linux/instrumented.h:71 [inline]
-BUG: KASAN: use-after-free in atomic_read include/asm-generic/atomic-instrumented.h:27 [inline]
-BUG: KASAN: use-after-free in refcount_read include/linux/refcount.h:147 [inline]
-BUG: KASAN: use-after-free in skb_unref include/linux/skbuff.h:1046 [inline]
-BUG: KASAN: use-after-free in kfree_skb+0x2e/0x3f0 net/core/skbuff.c:692
-Read of size 4 at addr ffff888014b7ed54 by task syz-executor.0/28422
+I am suspecting the errata:
 
-CPU: 1 PID: 28422 Comm: syz-executor.0 Not tainted 5.10.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xae/0x4c8 mm/kasan/report.c:385
- __kasan_report mm/kasan/report.c:545 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
- check_memory_region_inline mm/kasan/generic.c:186 [inline]
- check_memory_region+0x13d/0x180 mm/kasan/generic.c:192
- instrument_atomic_read include/linux/instrumented.h:71 [inline]
- atomic_read include/asm-generic/atomic-instrumented.h:27 [inline]
- refcount_read include/linux/refcount.h:147 [inline]
- skb_unref include/linux/skbuff.h:1046 [inline]
- kfree_skb+0x2e/0x3f0 net/core/skbuff.c:692
- ath9k_hif_usb_reg_in_cb+0x4c0/0x630 drivers/net/wireless/ath/ath9k/hif_usb.c:764
- __usb_hcd_giveback_urb+0x32d/0x560 drivers/usb/core/hcd.c:1650
- usb_hcd_giveback_urb+0x367/0x410 drivers/usb/core/hcd.c:1716
- dummy_timer+0x11f4/0x3280 drivers/usb/gadget/udc/dummy_hcd.c:1967
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1410
- expire_timers kernel/time/timer.c:1455 [inline]
- __run_timers.part.0+0x67c/0xa50 kernel/time/timer.c:1747
- __run_timers kernel/time/timer.c:1728 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1760
- __do_softirq+0x2a0/0x9f6 kernel/softirq.c:298
- asm_call_irq_on_stack+0xf/0x20
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
- do_softirq_own_stack+0xaa/0xd0 arch/x86/kernel/irq_64.c:77
- invoke_softirq kernel/softirq.c:393 [inline]
- __irq_exit_rcu kernel/softirq.c:423 [inline]
- irq_exit_rcu+0x132/0x200 kernel/softirq.c:435
- sysvec_apic_timer_interrupt+0x4d/0x100 arch/x86/kernel/apic/apic.c:1091
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:631
-RIP: 0010:zap_pte_range mm/memory.c:1252 [inline]
-RIP: 0010:zap_pmd_range mm/memory.c:1357 [inline]
-RIP: 0010:zap_pud_range mm/memory.c:1386 [inline]
-RIP: 0010:zap_p4d_range mm/memory.c:1407 [inline]
-RIP: 0010:unmap_page_range+0xdf9/0x2640 mm/memory.c:1428
-Code: 83 e3 01 89 de c1 e3 1f e8 b4 c2 ce ff c1 fb 1f 83 e3 03 e8 99 ca ce ff 48 63 db 48 83 fb 03 0f 87 b0 14 00 00 48 8b 44 24 40 <48> 8d 3c 98 48 89 f8 48 c1 e8 03 42 0f b6 14 30 48 89 f8 83 e0 07
-RSP: 0018:ffffc9000320f9d8 EFLAGS: 00000293
-RAX: ffffc9000320fad0 RBX: 0000000000000000 RCX: ffffffff81a14e9c
-RDX: ffff88806c188000 RSI: ffffffff81a14ea7 RDI: 0000000000000001
-RBP: ffffea00008b5740 R08: 0000000000000000 R09: ffffea00008b5747
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: ffff88802efc74a0 R14: dffffc0000000000 R15: 00007fd879e95000
- unmap_single_vma+0x198/0x300 mm/memory.c:1473
- unmap_vmas+0x168/0x2e0 mm/memory.c:1505
- exit_mmap+0x2b1/0x530 mm/mmap.c:3222
- __mmput+0x122/0x470 kernel/fork.c:1079
- mmput+0x53/0x60 kernel/fork.c:1100
- exit_mm kernel/exit.c:483 [inline]
- do_exit+0xa31/0x2930 kernel/exit.c:793
- do_group_exit+0x125/0x310 kernel/exit.c:903
- __do_sys_exit_group kernel/exit.c:914 [inline]
- __se_sys_exit_group kernel/exit.c:912 [inline]
- __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:912
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45deb9
-Code: Unable to access opcode bytes at RIP 0x45de8f.
-RSP: 002b:000000000169fd88 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-RAX: ffffffffffffffda RBX: 000000000000001e RCX: 000000000045deb9
-RDX: 0000000000417811 RSI: fffffffffffffff7 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 000000006e9499ad R09: 000000000169fde0
-R10: ffffffff8127dcc0 R11: 0000000000000246 R12: 0000000000000000
-R13: 000000000169fde0 R14: 0000000000000000 R15: 000000000169fdf0
+ERR005783 ENET: ENET Status FIFO may overflow due to consecutive short fram=
+es
+Description:
+When the MAC receives shorter frames (size 64 bytes) at a rate
+exceeding the average line-rate
+burst traffic of 400 Mbps the DMA is able to absorb, the receiver
+might drop incoming frames
+before a Pause frame is issued.
+Projected Impact:
+No malfunction will result aside from the frame drops.
+Workarounds:
+The application might want to implement some flow control to ensure
+the line-rate burst traffic is
+below 400 Mbps if it only uses consecutive small frames with minimal
+(96 bit times) or short
+Inter-frame gap (IFG) time following large frames at such a high rate.
+The limit does not exist for
+frames of size larger than 800 bytes.
+Proposed Solution:
+No fix scheduled
+Linux BSP Status:
+Workaround possible but not implemented in the BSP, impacting
+functionality as described above.
 
-Allocated by task 9817:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
- kasan_set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:461
- slab_post_alloc_hook mm/slab.h:526 [inline]
- slab_alloc_node mm/slub.c:2891 [inline]
- kmem_cache_alloc_node+0x132/0x480 mm/slub.c:2927
- __alloc_skb+0x71/0x550 net/core/skbuff.c:198
- alloc_skb include/linux/skbuff.h:1094 [inline]
- ath9k_hif_usb_alloc_reg_in_urbs drivers/net/wireless/ath/ath9k/hif_usb.c:957 [inline]
- ath9k_hif_usb_alloc_urbs+0x912/0x1010 drivers/net/wireless/ath/ath9k/hif_usb.c:1016
- ath9k_hif_usb_dev_init drivers/net/wireless/ath/ath9k/hif_usb.c:1102 [inline]
- ath9k_hif_usb_firmware_cb+0x148/0x530 drivers/net/wireless/ath/ath9k/hif_usb.c:1235
- request_firmware_work_func+0x12c/0x230 drivers/base/firmware_loader/main.c:1079
- process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
- kthread+0x3af/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+Is the "ENET Status FIFO" some internal hardware FIFO or is it the
+descriptor ring.
+What would be the workaround when a "Workaround is possible"?
 
-Freed by task 28422:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
- kasan_set_track+0x1c/0x30 mm/kasan/common.c:56
- kasan_set_free_info+0x1b/0x30 mm/kasan/generic.c:355
- __kasan_slab_free+0x102/0x140 mm/kasan/common.c:422
- slab_free_hook mm/slub.c:1544 [inline]
- slab_free_freelist_hook+0x5d/0x150 mm/slub.c:1577
- slab_free mm/slub.c:3142 [inline]
- kmem_cache_free+0x82/0x350 mm/slub.c:3158
- kfree_skbmem+0xef/0x1b0 net/core/skbuff.c:622
- __kfree_skb net/core/skbuff.c:679 [inline]
- kfree_skb net/core/skbuff.c:696 [inline]
- kfree_skb+0x140/0x3f0 net/core/skbuff.c:690
- ath9k_htc_rx_msg+0x1eb/0xb70 drivers/net/wireless/ath/ath9k/htc_hst.c:451
- ath9k_hif_usb_reg_in_cb+0x1ac/0x630 drivers/net/wireless/ath/ath9k/hif_usb.c:733
- __usb_hcd_giveback_urb+0x32d/0x560 drivers/usb/core/hcd.c:1650
- usb_hcd_giveback_urb+0x367/0x410 drivers/usb/core/hcd.c:1716
- dummy_timer+0x11f4/0x3280 drivers/usb/gadget/udc/dummy_hcd.c:1967
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1410
- expire_timers kernel/time/timer.c:1455 [inline]
- __run_timers.part.0+0x67c/0xa50 kernel/time/timer.c:1747
- __run_timers kernel/time/timer.c:1728 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1760
- __do_softirq+0x2a0/0x9f6 kernel/softirq.c:298
+I could only think of skipping/dropping the descriptor when the
+current is still busy but the next one is ready.
+But it is not easily possible because the "stuck" descriptor gets
+ready after a huge delay.
 
-The buggy address belongs to the object at ffff888014b7ec80
- which belongs to the cache skbuff_head_cache of size 224
-The buggy address is located 212 bytes inside of
- 224-byte region [ffff888014b7ec80, ffff888014b7ed60)
-The buggy address belongs to the page:
-page:00000000f48c4391 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x14b7e
-flags: 0xfff00000000200(slab)
-raw: 00fff00000000200 ffffea00009b9a80 0000000400000004 ffff888010f33640
-raw: 0000000000000000 00000000000c000c 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff888014b7ec00: 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc fc
- ffff888014b7ec80: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff888014b7ed00: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-                                                 ^
- ffff888014b7ed80: fc fc fc fc fc fc fc fc 00 00 00 00 00 00 00 00
- ffff888014b7ee00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
+Is this issue known already? Any suggestions?
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks in advance
