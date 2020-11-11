@@ -2,133 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 932FB2AEFD4
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:42:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23D762AEFD5
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:42:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726274AbgKKLl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 06:41:27 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:48917 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725903AbgKKLlX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 06:41:23 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kcoV2-000Arb-Tv; Wed, 11 Nov 2020 12:41:16 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kcoV1-0005Zg-SM; Wed, 11 Nov 2020 12:41:15 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 1BEEB24004B;
-        Wed, 11 Nov 2020 12:41:15 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id A25BD240049;
-        Wed, 11 Nov 2020 12:41:14 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id EC805200AE;
-        Wed, 11 Nov 2020 12:41:13 +0100 (CET)
+        id S1725912AbgKKLmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 06:42:24 -0500
+Received: from mail-db8eur05on2084.outbound.protection.outlook.com ([40.107.20.84]:31257
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725903AbgKKLmC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Nov 2020 06:42:02 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mNcuxKsqk3wPZLei4x8TwHJ0GWZEUR22NZixBwyV5qvT2iid32NiJCM1I3/SGHANTVqXHYXpBsBsmKsvVNoS80qTZ6C0DqOdsRrtlYYL1PYAMCO6Kqu6/dn1296lQo85IbfdtUHRxlCo0iz6Z5YS+GstsNo6ICcIjl9oDeR9ccEpahokapZMxDbkb29kznHsM4zgM6I1SRh765By015A9H4kTUwhZMlMGXxmhFEPbBMF8fqDqml5xJVG/vewUStNebI6HX/UPggjEqacrUnBryRg5x3jHO/SVPCJ8COEnUqaK7nb+3aIx2SQKqquhSOA4AnRKlMuxCKhY0eKLXvStA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jjXsKoQLzJJSJI3IlFCDAQs4pB/zS2KFXz1acIphj7E=;
+ b=KsAmqmL7KtGIdn1eZRmgwX+yea0fPKYdFHh/YCISRyu24QOYV2uDA1DS2kCkUVahWrqIPy7y4xKWGHAmED3k7SFcBODesqg33vfpQhwdndwJcd7dpFhyMEOBDQTuTPMw39gED6617X+K/3pZKdZQfRpU+oWGv//lXBVgiUuyZAkwQGs/2MOp4Vzprc/DwwSy6VD2XNF4dltDFR8yVAcaQ5HvD1Vw9ke8/zeYarGffBUHuqpvSjxtoYGgKO0EsRiyt7whq1IUxR8RHbEomAyfjsoeA2sH+ZhZk/KsJVmWsEzYm70XNTA3fdYNdMpFd2q/gqtsLmn2Ymf6u2wqmXbQsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jjXsKoQLzJJSJI3IlFCDAQs4pB/zS2KFXz1acIphj7E=;
+ b=YIoie9sdDvs83FnjmdNmiMjZfPD8YCX0Xux+oM2SlavbnyRLk9r0NT0QciLavn96GyTojlhKPm4+c5MfiZt8KiSPp2lwplIP9/xlHU+VwOFeJszu6LP7wVW40+JM9dffmUv9TRwLQPNQjaytXoh5efL0oI6R+9Tp30ZLTUOJofo=
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
+ by AM0PR04MB6833.eurprd04.prod.outlook.com (2603:10a6:208:17d::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21; Wed, 11 Nov
+ 2020 11:41:59 +0000
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::21b9:fda3:719f:f37b]) by AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::21b9:fda3:719f:f37b%3]) with mapi id 15.20.3541.025; Wed, 11 Nov 2020
+ 11:41:59 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: RE: [PATCH net-next] enetc: Workaround for MDIO register access issue
+Thread-Topic: [PATCH net-next] enetc: Workaround for MDIO register access
+ issue
+Thread-Index: AQHWt3g5LdPswlGN4kqnYf25WlFReKnB/QGAgADP/kA=
+Date:   Wed, 11 Nov 2020 11:41:58 +0000
+Message-ID: <AM0PR04MB6754649DFEDEB10A9244FF2096E80@AM0PR04MB6754.eurprd04.prod.outlook.com>
+References: <20201110154304.30871-1-claudiu.manoil@nxp.com>
+ <20201110230525.GO1456319@lunn.ch>
+In-Reply-To: <20201110230525.GO1456319@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.27.120.177]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 91e3be2e-46f9-4ad0-cd75-08d88636cc7f
+x-ms-traffictypediagnostic: AM0PR04MB6833:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR04MB6833D8E2E79184710C2E086896E80@AM0PR04MB6833.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: snCrj6cVFhs1qXaQZguKaS45BG32SYqVUG23mitWjX7y1HKnuWcFcpP+rUliUILZBCXRK0R2hMITOxj32q1lrnugAXFim/sDy1hkLdXJ7FVYb2W6VKtYxjWIcWfh1fkx7g75LUf36DgqD2h8+I4y1OeEOFz5WcXoLdQoRWX6i6anuc4L13CDe++nTZ5SStupnW/XbmKiovP4TbodQPABiT2lquzZ14NwFsNl94KzzuTUgCju2mgAJxhsVm1vJlgP2R57Kcr1UyqmBrOn2so9MPG+gsHShyGztVluhPKMDsP7/OTdDkGuleaUuvnrFTwS
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(346002)(366004)(376002)(39860400002)(9686003)(33656002)(55016002)(66446008)(66556008)(66476007)(26005)(6916009)(6506007)(478600001)(186003)(86362001)(7696005)(5660300002)(8676002)(64756008)(44832011)(76116006)(8936002)(52536014)(71200400001)(2906002)(316002)(54906003)(83380400001)(4326008)(66946007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: C3yGQRFf8+hh+NmMzEr+JgzAp53n9+99XuHiiTxNFBYfq98YYJg9INKHor16IBSzAwun9LxdloXS0zY7+0ytx6ytwVGHWkOFNlS5ilIRwVY72VITBEQqom/Q3YZIV6nGn8kbnQQNSiIPMy6i8o3vC7Bwd76gMqlMmwhKziF6Kj61tmZtIlARQcQt5s+uQQabHFvUhT+Wc4xfmEG7tDUGMtnJ5N760dd5MzEQw8M9QiqOPm3Ba7J8nWNyYONVKk3wvyNUSpqE8NbCTVVvHe0pGdhuz+WsaJmzSyVNMXeCLr7k0lrCiyCvdsoJbn3sF3XNgq7YKHT1bWRtXaXchiloeRYde4Q7ppcdvq61nAHFSBtfLqy8wSIEU8PXitStKPU0bCOJoJt61v6uczrtPFDriglOu9eYnC3MvVL6Lja03ij/27DYa57862INvk8TVbyD3HQaZzf1v6A5Cs+fZNIFjPBKU4hBuEsuA3sPRn1dzdD433gjWUx2EXFGRRl1RwSPj8Aa4ZljvALKPWFVaIOYCFVsIPEWOVHW9KOr/ehbaUQSfvJOmKuPUWKrHYaO821yldVJC01tJSLc20jbE58GdOpRZLLHkKfI4WoPr8Y+lhvXmFd5hv/usx7STEKNuMohshMlF/0YjsdvP5C26qercw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 11 Nov 2020 12:41:13 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: x25: Fix kernel crashes due to x25_disconnect
- releasing x25_neigh
-Organization: TDT AG
-In-Reply-To: <20201111100424.3989-1-xie.he.0141@gmail.com>
-References: <20201111100424.3989-1-xie.he.0141@gmail.com>
-Message-ID: <89483cb5fbf9e06edf3108fa4def6eef@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.15
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate-ID: 151534::1605094876-0000CF01-6FFAE7B9/0/0
-X-purgate: clean
-X-purgate-type: clean
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 91e3be2e-46f9-4ad0-cd75-08d88636cc7f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2020 11:41:58.8679
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MA2m1cgfC3H90RNVB4MaS9ADvZmz4bypHRxIBKDUhWNTkgg/pnJKcTdFer2+qQLJp6Q9xgKlGEBPHF2XfMq3BA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6833
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-11 11:04, Xie He wrote:
-> The x25_disconnect function in x25_subr.c would decrease the refcount 
-> of
-> "x25->neighbour" (struct x25_neigh) and reset this pointer to NULL.
-> 
-> However:
-> 
-> 1) When we receive a connection, the x25_rx_call_request function in
-> af_x25.c does not increase the refcount when it assigns the pointer.
-> When we disconnect, x25_disconnect is called and the struct's refcount
-> is decreased without being increased in the first place.
 
-Yes, this is a problem and should be fixed. As an alternative to your
-approach, you could also go the way to prevent the call of
-x25_neigh_put(nb) in x25_lapb_receive_frame() in case of a Call Request.
-However, this would require more effort.
 
-> 
-> This causes frequent kernel crashes when using AF_X25 sockets.
-> 
-> 2) When we initiate a connection but the connection is refused by the
-> remote side, x25_disconnect is called which decreases the refcount and
-> resets the pointer to NULL. But the x25_connect function in af_x25.c,
-> which is waiting for the connection to be established, notices the
-> failure and then tries to decrease the refcount again, resulting in a
-> NULL-pointer-dereference error.
-> 
-> This crashes the kernel every time a connection is refused by the 
-> remote
-> side.
+>-----Original Message-----
+>From: Andrew Lunn <andrew@lunn.ch>
+>Sent: Wednesday, November 11, 2020 1:05 AM
+>To: Claudiu Manoil <claudiu.manoil@nxp.com>
+>Cc: netdev@vger.kernel.org; Jakub Kicinski <kuba@kernel.org>; David S .
+>Miller <davem@davemloft.net>; Alexandru Marginean
+><alexandru.marginean@nxp.com>; Vladimir Oltean
+><vladimir.oltean@nxp.com>
+>Subject: Re: [PATCH net-next] enetc: Workaround for MDIO register access
+>issue
+>
+>On Tue, Nov 10, 2020 at 05:43:04PM +0200, Claudiu Manoil wrote:
+>> From: Alex Marginean <alexandru.marginean@nxp.com>
+>>
+>> Due to a hardware issue, an access to MDIO registers
+>> that is concurrent with other ENETC register accesses
+>> may lead to the MDIO access being dropped or corrupted.
+>> The workaround introduces locking for all register accesses
+>> to the ENETC register space.  To reduce performance impact,
+>> a readers-writers locking scheme has been implemented.
+>> The writer in this case is the MDIO access code (irrelevant
+>> whether that MDIO access is a register read or write), and
+>> the reader is any access code to non-MDIO ENETC registers.
+>> Also, the datapath functions acquire the read lock fewer times
+>> and use _hot accessors.  All the rest of the code uses the _wa
+>> accessors which lock every register access.
+>
+>Hi Claudiu
+>
+>The code you are adding makes no comment about the odd using of
+>read/writer locks. This is going to confused people.
+>
+>Please could you add helpers, probably as inline functions in a
+>header, which take/release the read_lock and the write_lock, which
+>don't use the name read_ or write_. Maybe something like
+>enetc_lock_mdio()/enetc_unlock_mdio(), enetc_lock_reg(),
+>enetc_unlock_reg(). Put comments by the helpers explaining what is
+>going on. That should help avoid future confusion and questions.
+>
 
-For this bug I already sent a fix some time ago (last time I sent a
-RESEND yesterday), but unfortunately it was not merged yet:
-https://lore.kernel.org/patchwork/patch/1334917/
+Good point Andrew, will look into using better names and adding comments.
+This patch was actually intended as rfc, the final patch should target the =
+"net"=20
+tree as a fix.
 
-> 
-> Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 
-> disconnect")
-> Cc: Martin Schiller <ms@dev.tdt.de>
-> Signed-off-by: Xie He <xie.he.0141@gmail.com>
-> ---
->  net/x25/af_x25.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-> index 0bbb283f23c9..8e59f9ecbeab 100644
-> --- a/net/x25/af_x25.c
-> +++ b/net/x25/af_x25.c
-> @@ -826,10 +826,12 @@ static int x25_connect(struct socket *sock,
-> struct sockaddr *uaddr,
->  	rc = 0;
->  out_put_neigh:
->  	if (rc) {
-> -		read_lock_bh(&x25_list_lock);
-> -		x25_neigh_put(x25->neighbour);
-> -		x25->neighbour = NULL;
-> -		read_unlock_bh(&x25_list_lock);
-> +		if (x25->neighbour) {
-> +			read_lock_bh(&x25_list_lock);
-> +			x25_neigh_put(x25->neighbour);
-> +			x25->neighbour = NULL;
-> +			read_unlock_bh(&x25_list_lock);
-> +		}
->  		x25->state = X25_STATE_0;
->  	}
->  out_put_route:
-> @@ -1050,6 +1052,7 @@ int x25_rx_call_request(struct sk_buff *skb,
-> struct x25_neigh *nb,
->  	makex25->lci           = lci;
->  	makex25->dest_addr     = dest_addr;
->  	makex25->source_addr   = source_addr;
-> +	x25_neigh_hold(nb);
->  	makex25->neighbour     = nb;
->  	makex25->facilities    = facilities;
->  	makex25->dte_facilities= dte_facilities;
+Thanks.
