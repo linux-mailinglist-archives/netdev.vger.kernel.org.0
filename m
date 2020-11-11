@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 574152AFAB9
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 22:50:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 661B82AFAD3
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 22:53:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726276AbgKKVub (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 16:50:31 -0500
-Received: from mailout04.rmx.de ([94.199.90.94]:35086 "EHLO mailout04.rmx.de"
+        id S1727038AbgKKVxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 16:53:12 -0500
+Received: from mailout11.rmx.de ([94.199.88.76]:35456 "EHLO mailout11.rmx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726108AbgKKVua (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Nov 2020 16:50:30 -0500
+        id S1726188AbgKKVxM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Nov 2020 16:53:12 -0500
 Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mailout04.rmx.de (Postfix) with ESMTPS id 4CWdh25qXYz3qcH4;
-        Wed, 11 Nov 2020 22:50:26 +0100 (CET)
+        by mailout11.rmx.de (Postfix) with ESMTPS id 4CWdl71NHJz40np;
+        Wed, 11 Nov 2020 22:53:07 +0100 (CET)
 Received: from mta.arri.de (unknown [217.111.95.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4CWdgw19V5z2xDM;
-        Wed, 11 Nov 2020 22:50:20 +0100 (CET)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4CWdkr3cwHz2xDP;
+        Wed, 11 Nov 2020 22:52:52 +0100 (CET)
 Received: from n95hx1g2.localnet (192.168.54.13) by mta.arri.de
  (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 11 Nov
- 2020 22:49:47 +0100
+ 2020 22:50:23 +0100
 From:   Christian Eggers <ceggers@arri.de>
 To:     Vladimir Oltean <olteanv@gmail.com>
 CC:     Richard Cochran <richardcochran@gmail.com>,
@@ -44,8 +44,8 @@ CC:     Richard Cochran <richardcochran@gmail.com>,
         <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add hardware time stamping support
-Date:   Wed, 11 Nov 2020 22:49:44 +0100
-Message-ID: <5898097.XrYNDCFn2f@n95hx1g2>
+Date:   Wed, 11 Nov 2020 22:50:22 +0100
+Message-ID: <2269731.xUjYGUPlbM@n95hx1g2>
 Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
 In-Reply-To: <20201110193245.uwsmrqzio5hco7fb@skbuf>
 References: <20201019172435.4416-1-ceggers@arri.de> <20201110164045.jqdwvmz5lq4hg54l@skbuf> <20201110193245.uwsmrqzio5hco7fb@skbuf>
@@ -53,7 +53,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
 X-Originating-IP: [192.168.54.13]
-X-RMX-ID: 20201111-225020-4CWdgw19V5z2xDM-0@kdin01
+X-RMX-ID: 20201111-225300-4CWdkr3cwHz2xDP-0@kdin01
 X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
