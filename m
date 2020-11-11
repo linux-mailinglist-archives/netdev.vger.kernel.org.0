@@ -2,124 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 013A12AE964
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 08:11:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 238102AE9A1
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 08:20:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726039AbgKKHLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 02:11:49 -0500
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:34041 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725828AbgKKHLt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Nov 2020 02:11:49 -0500
-Received: from [192.168.0.2] (ip5f5af465.dynamic.kabel-deutschland.de [95.90.244.101])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 09FF620646221;
-        Wed, 11 Nov 2020 08:11:47 +0100 (CET)
-Subject: Re: [Intel-wired-lan] [PATCH net v3 3/6] igb: XDP extack message on
- error
-To:     sven.auhagen@voleatech.de, anthony.l.nguyen@intel.com,
-        maciej.fijalkowski@intel.com, kuba@kernel.org
-Cc:     nhorman@redhat.com, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, brouer@redhat.com,
-        davem@davemloft.net, sassmann@redhat.com
-References: <20201019080553.24353-1-sven.auhagen@voleatech.de>
- <20201019080553.24353-4-sven.auhagen@voleatech.de>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <fc1f6aad-b587-25e2-0632-ea43f1032aad@molgen.mpg.de>
-Date:   Wed, 11 Nov 2020 08:11:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.1
+        id S1726507AbgKKHUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 02:20:36 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:27234 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726316AbgKKHO0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 02:14:26 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AB758Rv017988;
+        Tue, 10 Nov 2020 23:14:10 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=+cZCPLuvVKIt87SGOI9GoxwODS45RkPLzl4h3mDNwug=;
+ b=isJ81LnmrqTKzMoM3/CX8qlCVdc6bn/HBhDkcSiIw3euYrxVLwT5z20iG352RjjKFpJK
+ pnbtO6AViMlsmLrgptuT68/lwKpR5pCsgPali+RzbEfNjvwoDzZdqqsi3jO/ITTEGJ2v
+ 6tShUXdrU+gVMZf4zMjZ/FQ5aYxh7k4aRhI6AzMuWDja/a43BXqkLi1U1Rx2ko19zYGf
+ rpTyyWKLl4RFcnqhmlFaKU7/MVf/+LsJw2HPqMq5gWDc7E8ZbaI94wF26WmKVLi0qTBP
+ W3EDfNqfhQBBMweI23i2yGIUohZJDlklUMekHUkct9ckiF8LZAceZVlGubHzsdxnCw/6 8w== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 34nstu681q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 10 Nov 2020 23:14:10 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 10 Nov
+ 2020 23:14:08 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 10 Nov 2020 23:14:09 -0800
+Received: from hyd1583.caveonetworks.com (unknown [10.29.37.44])
+        by maili.marvell.com (Postfix) with ESMTP id B9B973F703F;
+        Tue, 10 Nov 2020 23:14:05 -0800 (PST)
+From:   Naveen Mamindlapalli <naveenm@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <saeed@kernel.org>,
+        <sgoutham@marvell.com>, <lcherian@marvell.com>,
+        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
+        <hkelam@marvell.com>
+Subject: [PATCH v3 net-next 00/13] Add ethtool ntuple filters support
+Date:   Wed, 11 Nov 2020 12:43:51 +0530
+Message-ID: <20201111071404.29620-1-naveenm@marvell.com>
+X-Mailer: git-send-email 2.16.5
 MIME-Version: 1.0
-In-Reply-To: <20201019080553.24353-4-sven.auhagen@voleatech.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-11_02:2020-11-10,2020-11-11 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Sven,
+This patch series adds support for ethtool ntuple filters, unicast
+address filtering, VLAN offload and SR-IOV ndo handlers. All of the
+above features are based on the Admin Function(AF) driver support to
+install and delete the low level MCAM entries. Each MCAM entry is
+programmed with the packet fields to match and what actions to take
+if the match succeeds. The PF driver requests AF driver to allocate
+set of MCAM entries to be used to install the flows by that PF. The
+entries will be freed when the PF driver is unloaded.
 
+* The patches 1 to 4 adds AF driver infrastructure to install and
+  delete the low level MCAM flow entries.
+* Patch 5 adds ethtool ntuple filter support.
+* Patch 6 adds unicast MAC address filtering.
+* Patch 7 adds support for dumping the MCAM entries via debugfs.
+* Patches 8 to 10 adds support for VLAN offload.
+* Patch 10 to 11 adds support for SR-IOV ndo handlers.
+* Patch 12 adds support to read the MCAM entries.
 
-Am 19.10.20 um 10:05 schrieb sven.auhagen@voleatech.de:
-> From: Sven Auhagen <sven.auhagen@voleatech.de>
-> 
-> Add an extack error message when the RX buffer size is too small
-> for the frame size.
-> 
-> Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
-> ---
->   drivers/net/ethernet/intel/igb/igb_main.c | 12 +++++++-----
->   1 file changed, 7 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index 0a9198037b98..088f9ddb0093 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -2824,20 +2824,22 @@ static int igb_setup_tc(struct net_device *dev, enum tc_setup_type type,
->   	}
->   }
->   
-> -static int igb_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
-> +static int igb_xdp_setup(struct net_device *dev, struct netdev_bpf *bpf)
->   {
->   	int i, frame_size = dev->mtu + IGB_ETH_PKT_HDR_PAD;
->   	struct igb_adapter *adapter = netdev_priv(dev);
-> +	struct bpf_prog *prog = bpf->prog, *old_prog;
->   	bool running = netif_running(dev);
-> -	struct bpf_prog *old_prog;
->   	bool need_reset;
->   
->   	/* verify igb ring attributes are sufficient for XDP */
->   	for (i = 0; i < adapter->num_rx_queues; i++) {
->   		struct igb_ring *ring = adapter->rx_ring[i];
->   
-> -		if (frame_size > igb_rx_bufsz(ring))
-> +		if (frame_size > igb_rx_bufsz(ring)) {
-> +			NL_SET_ERR_MSG_MOD(bpf->extack, "The RX buffer size is too small for the frame size");
+Misc:
+* Removed redundant mailbox NIX_RXVLAN_ALLOC.
 
-Could you please also add both size values to the error message?
+Change-log:
+v3:
+- Fixed Saeed's review comments on v2.
+	- Fixed modifying the netdev->flags from driver.
+	- Fixed modifying the netdev features and hw_features after register_netdev.
+	- Removed unwanted ndo_features_check callback.
+v2:
+- Fixed the sparse issues reported by Jakub.
 
->   			return -EINVAL;
-> +		}
->   	}
->   
->   	old_prog = xchg(&adapter->xdp_prog, prog);
-> @@ -2869,7 +2871,7 @@ static int igb_xdp(struct net_device *dev, struct netdev_bpf *xdp)
->   {
->   	switch (xdp->command) {
->   	case XDP_SETUP_PROG:
-> -		return igb_xdp_setup(dev, xdp->prog);
-> +		return igb_xdp_setup(dev, xdp);
->   	default:
->   		return -EINVAL;
->   	}
-> @@ -6499,7 +6501,7 @@ static int igb_change_mtu(struct net_device *netdev, int new_mtu)
->   			struct igb_ring *ring = adapter->rx_ring[i];
->   
->   			if (max_frame > igb_rx_bufsz(ring)) {
-> -				netdev_warn(adapter->netdev, "Requested MTU size is not supported with XDP\n");
-> +				netdev_warn(adapter->netdev, "Requested MTU size is not supported with XDP. Max frame size is %d\n", max_frame);
->   				return -EINVAL;
->   			}
->   		}
-> 
+Hariprasad Kelam (3):
+  octeontx2-pf: Add support for unicast MAC address filtering
+  octeontx2-pf: Implement ingress/egress VLAN offload
+  octeontx2-af: Handle PF-VF mac address changes
 
+Naveen Mamindlapalli (2):
+  octeontx2-pf: Add support for SR-IOV management functions
+  octeontx2-af: Add new mbox messages to retrieve MCAM entries
 
-Kind regards,
+Stanislaw Kardach (1):
+  octeontx2-af: Modify default KEX profile to extract TX packet fields
 
-Paul
+Subbaraya Sundeep (6):
+  octeontx2-af: Verify MCAM entry channel and PF_FUNC
+  octeontx2-af: Generate key field bit mask from KEX profile
+  octeontx2-af: Add mbox messages to install and delete MCAM rules
+  octeontx2-pf: Add support for ethtool ntuple filters
+  octeontx2-af: Add debugfs entry to dump the MCAM rules
+  octeontx2-af: Delete NIX_RXVLAN_ALLOC mailbox message
 
+Vamsi Attunuru (1):
+  octeontx2-af: Modify nix_vtag_cfg mailbox to support TX VTAG entries
 
-PS: For commit message summaries, statements with verbs in imperative 
-mood are quite common [1].
+ drivers/net/ethernet/marvell/octeontx2/af/Makefile |    2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/common.h |    2 +
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  170 ++-
+ drivers/net/ethernet/marvell/octeontx2/af/npc.h    |  106 +-
+ .../ethernet/marvell/octeontx2/af/npc_profile.h    |   71 +-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |   16 +-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   71 +-
+ .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    |  197 +++
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |  305 ++++-
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    |  462 ++++++-
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c | 1334 ++++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/af/rvu_struct.h |   11 +
+ .../net/ethernet/marvell/octeontx2/nic/Makefile    |    2 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |    8 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   59 +
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |   58 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_flows.c    |  820 ++++++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  307 ++++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |   16 +
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |    5 +
+ 20 files changed, 3862 insertions(+), 160 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
 
- > igb: Print XDP extack error on too big frame size
+-- 
+2.16.5
 
-
-[1]: https://chris.beams.io/posts/git-commit/
