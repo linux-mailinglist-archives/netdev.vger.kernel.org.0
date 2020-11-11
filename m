@@ -2,194 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0646A2AE46E
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 00:53:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7315F2AE4A5
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 01:07:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732239AbgKJXxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 18:53:46 -0500
-Received: from mga02.intel.com ([134.134.136.20]:1171 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726737AbgKJXxp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 18:53:45 -0500
-IronPort-SDR: qviY55BWnQmrHijmPHftp10yfd8gVCIkRa7GovU5Fs/9pMZPE4n2K8DUpl7LzqBS8jNTTgsL9Z
- bjGmm6GTqZOQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9801"; a="157076179"
-X-IronPort-AV: E=Sophos;i="5.77,467,1596524400"; 
-   d="scan'208";a="157076179"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2020 15:53:44 -0800
-IronPort-SDR: F6IwIKzJf3pZidhj4wEvXt9sWoxIap2s9VxkAwRNgmc7AfGGS6qW9QMNZjz/ze/n0XGo+gI+A/
- t1kJl9CgrIkg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,467,1596524400"; 
-   d="scan'208";a="428570257"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga001.fm.intel.com with ESMTP; 10 Nov 2020 15:53:44 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+        id S1731984AbgKKAHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 19:07:35 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:37714 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730894AbgKKAHc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 19:07:32 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AB04YkV028716;
+        Tue, 10 Nov 2020 16:07:16 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=uRRoCWccS+rVMWrAnO5g6d7Qsawq7lwoyGwa+qjBTlE=;
+ b=A6vgMVgthV693eY2xGeJZ3TLf/ufDcr0SbhITKWqSoOBF/1EF09tUh7EyHXeyxWWk7Wp
+ V30K8aZFZSywRxFvHE1yLsdr8cDfo3UnISg8G1HjY7OapmCR/WHJwIiQIeiVDIAyJ9at
+ 3Ls+1f7B8oGf9TV1Kx7Gn5hOMogoDqcu1f0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 34pc9qe2v6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 10 Nov 2020 16:07:16 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 10 Nov 2020 15:53:44 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Tue, 10 Nov 2020 15:53:44 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.172)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Tue, 10 Nov 2020 15:53:44 -0800
+ 15.1.1979.3; Tue, 10 Nov 2020 16:07:15 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TEdRELGShE+750VFSuYFKOkqzJqPuqHYh8cunbD24Q9SE2gSYInLvqOFVOmPGJ5+vp6rQiqxaU7AEUlOd/UovvpYQoRtbgkMHNdgEwzF5z1oVw/PF9/hAWKCsL0lilOOdl2bBPRrVNiiPcEGfdjhJVqVws4ugqH0zASW7zt1YdxwsX1xHz4es3B5d2gqL63g4yI0/sLBm2cbHMFU/wmH29qHbfdVFMW7fjocvEqPSuOO37taKYHEby7qLZzJhhbjHW71tgysdhgIPekaC6mMk8GQbCcC3cjuleYBLtSZL2N6xpanFjEfC7++v0VwnQS8/uJnMpGXnTEyn9g3ae6b4A==
+ b=bJUoOu8/JdyP3KAlXZvjtSt7RorgqKe2vVVRGPjd07yGQE6Z6wqpuJCQtCc/WwT6/67E9ExmsnChfKI9vap7FeV3yl/Fw6T63aB97fxQcieTLj23109hytoxceZI42t9Vmo7hWWkoiMumMpaIqWOQ70TgaS+tEYMild6MdqBaq4FGt8smvIXD0qZINN9zAoShlEEcGwniPTn3wuDhVClZt63EZV3Z2vKCP01TEDvgD3ViRCjZWdEBFN7aITg/5XykO6+AHO8ig1ESLimP+jSviE1JuTtYZ/eMc93j9eOsBCVUl0pYWQQducCIqHmoIDdOwJaY3slosO3k9Wxdkq+Fw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UeNfE3TRhf4e6HFb1f9m5HkAZu/MAsowF17BT3PV9Ds=;
- b=PVkDcLsZD7rHFiN1FNlpn9jS8D7lWc4/QWWb6xPI1ftxUKKpfoNPX2PIxBA76xRyeBglba9Focgv1oElZcUKkAb7k2cjg4A88Pr34Li5zfhxNyxroPsf2sokb/BLzAKIB0HH0Gzpq3p8XOFTZPwdtSey+fqMHEHXiJDghEBMiGJAb6HVrVnYL9N7yWdyRu4VPKgb/Zf8jUpGvU/sJfSDfxOAi0Gcu+w7jzGdoL7olM+Tdpv4dGGLj6sE0J5FIrarH5dggBEDy/3F1o0iE3KbHDYbv8vMjpe1TI5hrYIETVXFL5x1Jb5kdN8TyMA04UwgIiChqXp9cJ7qXB+UAcjYGQ==
+ bh=uRRoCWccS+rVMWrAnO5g6d7Qsawq7lwoyGwa+qjBTlE=;
+ b=koYZmO0Wf9iP9Vxci3kWLxhau0XxWECoLGpTU+oJwB/NxSpZPEYysDimm+LpYP/9YzYIy397iFyVK2spP63Dpy3dO+Xqv9+cIRfd5HAPp4BEZ8JBWeFUa8X91ymP0t5SHBw7lVKnjHqgynJ9qDiWrEZKF+0+eNo2KgcKQEmTKm4VT1Ibg/JlzMm7a+P8ncMkh/CICxEZktg6a11I8WgS/xTpHq3uHppTgr3+xALVAEP2mS0cN+soEqp2ejtpPxxbhFWhNY/xgmsTAnuvTyUKixKvQ0jJpZZHbLZ+XCEApr2UK6vixVgVw+UT43HXg9n1Fp9NHHB7mxJZo/QZnkTNJA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UeNfE3TRhf4e6HFb1f9m5HkAZu/MAsowF17BT3PV9Ds=;
- b=kDV5Jspw9AuGFTJ2QYe0HpZBGnUU4bHaf2Prnzkp0sxqhOe03kLX7vvdByUqy7eQiNuoQ9sii0ZBauZ1cAOs2TtXUNVNWD/9m+oujE2rS7bquVVyY+aYOt2PBOBRk6H28lGJ8mnXaCa979MwYM7fwoHbBpwZoJgm1mV28m82cis=
-Received: from MWHPR1101MB2207.namprd11.prod.outlook.com (2603:10b6:301:58::7)
- by CO1PR11MB4948.namprd11.prod.outlook.com (2603:10b6:303:9b::12) with
+ bh=uRRoCWccS+rVMWrAnO5g6d7Qsawq7lwoyGwa+qjBTlE=;
+ b=a52wjBFDrN28vwXmcl7lWt4gF3wu7vnekazNu6mLS8aWXDvNPzSE4sycdZKLzQmYvSk3wNYoXXcCntyP1zPVOxIIP2DCXQf4qWtnlPG+ssGsXbxETASHH/EI93JhHEYebjkgQ9EVOiaE9NOay5Bv9DvMUGOw7nZ+znJLhXSOtMA=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2565.namprd15.prod.outlook.com (2603:10b6:a03:14f::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21; Tue, 10 Nov
- 2020 23:53:41 +0000
-Received: from MWHPR1101MB2207.namprd11.prod.outlook.com
- ([fe80::f15b:19a7:98ba:8b02]) by MWHPR1101MB2207.namprd11.prod.outlook.com
- ([fe80::f15b:19a7:98ba:8b02%8]) with mapi id 15.20.3541.025; Tue, 10 Nov 2020
- 23:53:41 +0000
-From:   "Patel, Vedang" <vedang.patel@intel.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-CC:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
-        "Guedes, Andre" <andre.guedes@intel.com>
-Subject: Re: Hardware time stamping support for AF_XDP applications
-Thread-Topic: Hardware time stamping support for AF_XDP applications
-Thread-Index: AQHWt7MCSEaDlO58DE6scAsur7MQZanCBAaAgAAGAoA=
-Date:   Tue, 10 Nov 2020 23:53:41 +0000
-Message-ID: <65418F25-1795-4FF7-AB04-8DE78F0C8BF5@intel.com>
-References: <7299CEB5-9777-4FE4-8DEE-32EF61F6DA29@intel.com>
- <6af7754d5bcba7a7f7d92dc43e1f4206ce470c79.camel@kernel.org>
-In-Reply-To: <6af7754d5bcba7a7f7d92dc43e1f4206ce470c79.camel@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [73.96.95.157]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ef0c4481-bbe5-479d-5519-08d885d3da39
-x-ms-traffictypediagnostic: CO1PR11MB4948:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CO1PR11MB4948154A4E96BA912E908CF292E90@CO1PR11MB4948.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zbj1z52+0xWhTZpqnqETORU3HbXl0dJfY6DJnLFYkIlWuR5bqtGjiA+lh9iNVxO8si/rJTR97iBleQVVXJdQAXqU1yscOV1JADt5uTfhKdSvVutQDo0HxfZYjbLmSyMHa+rPGTVzfL5ongN4gu3vPe+42KuOF7u11jV97yJmUnvw0cLlNKVuwV2zUQC4kmv0B4LnlnsmsP6ZqqqQzZ75z+5u4CDSnOXwI0oUqB/r4FPgYpu5E1Z/PQ16Aj0dpFgG1YAaGudFg4TDRPcb3N81pK0uX6VXROdoRmTScgRnldHPCLkr6LUGSZUVqqzdRHVCtwMRhuvogqbA5l1s72rJB9409gVYYJnXlOX2IRcrSCrdGg9f4TZOLCSjI1sLyymWg0zpQH1+jTmh3R/pVNteKDnjxkJBvne8Qk0tCzsDi0LxbwGRLXoQPUcfbx5Yk1Rb
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1101MB2207.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(346002)(39860400002)(136003)(366004)(33656002)(86362001)(71200400001)(107886003)(8936002)(2906002)(36756003)(4001150100001)(5660300002)(66446008)(66556008)(66476007)(66946007)(76116006)(64756008)(6486002)(966005)(83380400001)(478600001)(54906003)(316002)(2616005)(4326008)(8676002)(6506007)(53546011)(26005)(6916009)(186003)(6512007)(6606295002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: 9jwidrV+peeuYHBGlfPw5ScziYRLaxggWyppc69ZaZ4Qiglm67rVUKNXKPNHpGrQ9TVoIebhlTVxFCbXV3WkUGMcmGVLVZTMmUXNBuWDwLP8O12IbWK4Z7R6F+YxoLZ6sO9fhPT6pdYBfOKsVOG2X0maXG/CSPRuFZkvgt2VIzOXVp9E1qdBVBn1s1s8S0Q9d17p3EDdjcpO1JaTqVBipTVksBCJcahxze/CDCVlbVnA5ZuXPpLSeytXzjRzZy8ZrgmD2d1bLQ2VBqGOIDWs7fr5ukGLy/5fEXcLkB4m6vnWutU78f49YjLAXr6uC0zzutZaqltoWWEM0oRt3cHcR3SBKPpSDmz2pc/nRndzURoh+nkjPX6S0fznrGFFgcfD9hYmbhLfkjNjk/GK3Iiwfcv7B8IOyP1m8R6oRvgVamaBXqabM8tkSp0bXYEaSWDRXuyxFDYjakRxEE9NR5cyVf2ydBxp0tH2+xxtNRRMz65CR9FrVPkn9z8sZ2b5x609w2tfsmW7DerFqz359m6coARz3d64DlbxXQQciPMbho1U78lNlypTBTlOoEfQT1VjN4yqXZCI70Wpuxzt+2QV8Du4szmTcvVXtMmu02pU8XFYrw+QvtaNiiP8EE6YnmrCOgLQyE8MMrDP3HrQ6M764A==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A34274678F90B542906566D3BFF3C199@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.25; Wed, 11 Nov
+ 2020 00:07:13 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee%4]) with mapi id 15.20.3541.025; Wed, 11 Nov 2020
+ 00:07:13 +0000
+Date:   Tue, 10 Nov 2020 16:07:07 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     KP Singh <kpsingh@chromium.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 2/3] bpf: Allow using bpf_sk_storage in
+ FENTRY/FEXIT/RAW_TP
+Message-ID: <20201111000651.fmsuax3fuzcn5v6s@kafai-mbp.dhcp.thefacebook.com>
+References: <20201106220750.3949423-1-kafai@fb.com>
+ <20201106220803.3950648-1-kafai@fb.com>
+ <CAEf4BzaQMcnALQ3rPErQJxVjL-Mi8zB8aSBkL8bkR8mtivro+g@mail.gmail.com>
+ <20201107015225.o7hm7oxpndqueae4@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzbRXvWdEXC3GdT4Q_dYe6=VPymyDws5QV8wLkdnSONghQ@mail.gmail.com>
+ <5fa9a741dc362_8c0e20827@john-XPS-13-9370.notmuch>
+ <CACYkzJ4Jdabs5ot7TnHmeq2x+ULhuPuw8wwbR2gQzi22c3N_7A@mail.gmail.com>
+ <20201110234325.kk7twlyu5ejvde6e@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZs+5xdA0ZEct6cXSgF294RATnn8TmAfaJrBX+kvc6Gxg@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZs+5xdA0ZEct6cXSgF294RATnn8TmAfaJrBX+kvc6Gxg@mail.gmail.com>
+X-Originating-IP: [2620:10d:c090:400::5:b389]
+X-ClientProxiedBy: MWHPR1601CA0018.namprd16.prod.outlook.com
+ (2603:10b6:300:da::28) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:b389) by MWHPR1601CA0018.namprd16.prod.outlook.com (2603:10b6:300:da::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21 via Frontend Transport; Wed, 11 Nov 2020 00:07:12 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0799d919-c7f6-4f42-afdf-08d885d5bde9
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2565:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB256511D66F059A4E671CDC0FD5E80@BYAPR15MB2565.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: b53Q6eFTGuXyjSTZBRGjYROhGAbzTZlkiTVkSeLHIpBkAgav7JORVsNKTyrMpg0azlLoCKEsbKABOUBaXaOf1D8xvDEa8lTit+XWJrV5OtrZVUPVr6+V7AwQXoLyG2E1buA9tVi1re3+olEpIBP4i56hIhhAEzWHAcycIbvcGiWWj1IptcigNjamSM2XQr6v2VRQSeKpdwNL3buJemelVtdnadBES16zpcQMPfg/Io25mNezdDX7txkbK/UGv5EWDn1okeWsGuVB4h67MD7aeN8qemluWExyGJSfUokIaog4ztzd0VAtTMXtAl/c9Y4hzCQxuQGQU8Gdr9TjGi5L0g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(366004)(396003)(39860400002)(136003)(6916009)(8676002)(52116002)(6506007)(53546011)(83380400001)(1076003)(66946007)(7696005)(16526019)(5660300002)(66556008)(316002)(9686003)(54906003)(6666004)(4326008)(86362001)(478600001)(186003)(55016002)(8936002)(66476007)(2906002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: U1L82gmyZWhoMQ8SmG3Z3r7blSThepYsdHr6j0XT1ft+1ClJGG6D77TUkVszSqjJebHb7RpIFX1Nlm+Q/pAaWfr5Iy+1ZavcjmN4GAZQrGeaqcwS/aN1UGAGYAedO4+6CsE4+CraRX2XvInV5ilf/16b+3sSAeERpm/9b3QIhWPPeSI1AoT0Yr1vSwThNS0yg1ydsQ0XZl5f7HRVZ2JMmhpvE2Jjr4JuSfWQ6HakPcK2wQuUL7P4hIOZaEtcKJkaZG9nhrnP3KO78UMh2v5Y728MbLN/nDaAtosr5TaEIUj3bEOY+1wyG2zhIsSCBUDS8U+SMVpCC0ggOHN1gm8n7O1Y8K7zSEBZbLbjZ2T7EfvDIK3A7/CVQVmc4JLMZmvtm3S5AAUsA8biQj6AEq4eDrW6X5m26lLXN1d6OL5n6cchZIo3xv8N1QuLS6xeOZKj3VuZHcLHvVGTd2QDnlKn6enTfBhgOkQgQUNIAZUqavU+qrLkOntIHhh7EvRW1HFcDCPwB/yFUTc5r8If85xgLbbFCPVJquADp1s+G24E4hvH+1Caebac6UCpixCLz3WCBFMexHUou40oNlC0J688vHlly7T4ATDcj3Zhmk3hOnOFwsAqm+B0xILSOE8AJc41P2LOzZMRoepzigq9xp941oq/I8uwD8FBq1N91SDY5mpk7kzUC3a3h9/y3Ko854JPz4kNFZX82Swf/nKv7vPzlgadb7lCKKDqpfmCSV4NWIS2AktWJ6S/gtez6iUe2YwiheSTCDgd2SRCwiMPOys9weSRMeILVIc1CCstOlj0ouU38xQ1oXxhWaVNdsUK3Xd1YfS+QA2n3h5J5XoaHZ3NT6idG8uzQ0afFWZXtX/iyEo23YZ6Qc3eJ7rPm1pXHcdOlKRgl/NUlCzCCEY3rJRfyCParLZcYpgHVk4l4sLmN6E=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0799d919-c7f6-4f42-afdf-08d885d5bde9
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1101MB2207.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef0c4481-bbe5-479d-5519-08d885d3da39
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Nov 2020 23:53:41.7609
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2020 00:07:13.4781
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YV5H0HflsMJ97ca8b4OQKxrDyLKDUAWKmYvUoEXqCmtmHBif/MWKxOkLQEjIBU+J1n9nKhBekoDiIrQbJW3TVw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4948
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LHGFoPLQRY7P8+nS9wM8Tntnd1VQMIwXcw8FGh0otaNAEskvhDi/XKX0v3EXhV46
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2565
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-10_09:2020-11-10,2020-11-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 spamscore=0
+ mlxlogscore=999 phishscore=0 adultscore=0 suspectscore=1
+ priorityscore=1501 bulkscore=0 impostorscore=0 lowpriorityscore=0
+ clxscore=1015 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2011100158
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgU2FlZWQsIA0KDQo+IE9uIE5vdiAxMCwgMjAyMCwgYXQgMzozMiBQTSwgU2FlZWQgTWFoYW1l
-ZWQgPHNhZWVkQGtlcm5lbC5vcmc+IHdyb3RlOg0KPiANCj4gT24gVHVlLCAyMDIwLTExLTEwIGF0
-IDIyOjQ0ICswMDAwLCBQYXRlbCwgVmVkYW5nIHdyb3RlOg0KPj4gW1NvcnJ5IGlmIHlvdSBnb3Qg
-dGhlIGVtYWlsIHR3aWNlLiBSZXNlbmRpbmcgYmVjYXVzZSBpdCB3YXMgcmVqZWN0ZWQNCj4+IGJ5
-IG5ldGRldiBmb3IgY29udGFpbmluZyBIVE1MXQ0KPj4gDQo+PiBIaSBTYWVlZC9KZXNwZXIsIA0K
-Pj4gDQo+PiBJIGFtIHdvcmtpbmcgaW4gdGhlIFRpbWUgU2Vuc2l0aXZlIE5ldHdvcmtpbmcgdGVh
-bSBhdCBJbnRlbC4gV2Ugd29yaw0KPj4gb24gaW1wbGVtZW50aW5nIGFuZCB1cHN0cmVhbWluZyBz
-dXBwb3J0IGZvciBUU04gcmVsYXRlZCBmZWF0dXJlcyBmb3INCj4+IGludGVsIGJhc2VkIE5JQ3Mu
-IFJlY2VudGx5IHdlIGhhdmUgYmVlbiBhZGRpbmcgc3VwcG9ydCBmb3IgWERQIGluDQo+PiBpMjI1
-LiBPbmUgb2YgdGhlIGZlYXR1cmVzIHdoaWNoIHdlIHdhbnQgdG8gYWRkIHN1cHBvcnQgZm9yIGlz
-IHBhc3NpbmcNCj4+IHRoZSBoYXJkd2FyZSB0aW1lc3RhbXAgaW5mb3JtYXRpb24gdG8gdGhlIHVz
-ZXJzcGFjZSBhcHBsaWNhdGlvbg0KPj4gcnVubmluZyBBRl9YRFAgc29ja2V0cyAoZm9yIGJvdGgg
-VHggYW5kIFJ4KS4gSSBjYW1lIGFjcm9zcyB0aGUgWERQDQo+PiBXb3Jrc2hvcFsxXSBjb25kdWN0
-ZWQgaW4gSnVseSAyMDIwIGFuZCB0aGVyZSB5b3Ugc3RhdGVkIHRoYXQgeW91IGFyZQ0KPj4gYWxy
-ZWFkeSB3b3JraW5nIG9uIGFkZGluZyBzdXBwb3J0IGZvciBCVEYgYmFzZWQgbWV0YWRhdGEgdG8g
-cGFzcw0KPj4gaGFyZHdhcmUgaGludHMgZm9yIFhEUCBQcm9ncmFtcy4gTXkgdW5kZXJzdGFuZGlu
-ZyAoYWxvbmcgd2l0aCBhIGZldw0KPj4gcXVlc3Rpb25zKSBvZiB0aGUgY3VycmVudCBzdGF0ZSBp
-czogDQo+IA0KPiBIaSBQYXRlbCwNCj4gDQo+PiAqIFRoaXMgZmVhdHVyZSBpcyBjdXJyZW50bHkg
-YmVpbmcgbWFpbnRhaW5lZCBvdXQgb2YgdHJlZS4gSSBmb3VuZA0KPj4gdGhhdCBhbiBSRkMgU2Vy
-aWVzWzJdIHdhcyBwb3N0ZWQgaW4gSnVuZSAyMDE4LiBBcmUgeW91IHBsYW5uaW5nIHRvDQo+PiBw
-b3N0IGFuIHVwZGF0ZWQgdmVyc2lvbiB0byBiZSBtZXJnZWQgaW4gdGhlIG1haW5saW5lIGFueXRp
-bWUgc29vbj8gDQo+IA0KPiBZZXMgaG9wZWZ1bGx5IGluIHRoZSBjb21pbmcgY291cGxlIG9mIHdl
-ZWtzLg0KPiANClN1cmUhIEkgd2lsbCBzdGFydCB0ZXN0aW5nL2RldmVsb3Bpbmcgb24gdG9wIG9m
-IHlvdXIgYnJhbmNoIG1lbnRpb25lZCBiZWxvdyBmb3Igbm93Lg0KPj4gKiBJIGFtIGd1ZXNzaW5n
-IGhhcmR3YXJlIHRpbWVzdGFtcCBpcyBvbmUgb2YgdGhlIG1ldGFkYXRhIGZpZWxkcw0KPj4gd2hp
-Y2ggd2lsbCBiZSBldmVudHVhbGx5IHN1cHBvcnRlZD8gWzNdDQo+IA0KPiBXaXRoIEJURiBmb3Jt
-YXR0ZWQgbWV0YWRhdGEgaXQgaXMgdXAgdG8gdGhlIGRyaXZlciB0byBhZHZlcnRpc2UNCj4gd2hh
-dGV2ZXIgaXQgY2FuL3dhbnQgOikNCj4gc28geWVzLg0KSSBoYXZlIGEgdmVyeSBiYXNpYyBxdWVz
-dGlvbiBoZXJlLiBGcm9tIHdoYXQgSSB1bmRlcnN0YW5kIGFib3V0IEJURiwgSSBjYW4gZ2VuZXJh
-dGUgYSBoZWFkZXIgZmlsZSAodXNpbmcgYnBmdG9vbD8pIGNvbnRhaW5pbmcgdGhlIEJURiBkYXRh
-IGZvcm1hdCBwcm92aWRlZCBieSB0aGUgZHJpdmVyLiBJZiBzbywgaG93IGNhbiBJIGRlc2lnbiBh
-biBhcHBsaWNhdGlvbiB3aGljaCBjYW4gd29yayB3aXRoIG11bHRpcGxlIE5JQ3MgZHJpdmVycyB3
-aXRob3V0IHJlY29tcGlsYXRpb24/IEkgYW0gZ3Vlc3NpbmcgdGhlcmUgaXMgc29tZSBzb3J0IG9m
-IOKAnG1hc3RlciBsaXN04oCdIG9mIEhXIGhpbnRzIHRoZSBkcml2ZXJzIHdpbGwgYWdyZWUgdXBv
-bj8NCj4gDQo+PiAqIFRoZSBNZXRhZGF0YSBzdXBwb3J0IHdpbGwgYmUgZXh0ZW5kZWQgdG8gcGFz
-cyBvbiB0aGUgaGFyZHdhcmUgaGludHMNCj4+IHRvIEFGX1hEUCBzb2NrZXRzLiBBcmUgdGhlcmUg
-YW55IHJvdWdoIHBsYW5zIG9uIHdoYXQgbWV0YWRhdGEgd2lsbCBiZQ0KPj4gdHJhbnNmZXJyZWQ/
-DQo+IA0KPiBBRl9YRFAgaXMgbm90IHBhcnQgb2YgbXkgc2VyaWVzLCBidXQgc3VwcG9ydGluZyBB
-Rl9YRFAgd2l0aCBtZXRhZGF0YQ0KPiBvZmZsYW9kIGlzIHVwIHRvIHRoZSBkcml2ZXIgdG8gaW1w
-bGVtZW50LCBzaG91bGQgYmUgc3RyYWlnaHQgZm9yd2FyZA0KPiBhbmQgaWRlbnRpY2FsIHRvIFhE
-UC4NCj4gDQo+IHdoYXQgbWV0YSBkYXRhIHRvIHBhc3MgaXMgdXAgdG8gdGhlIGRyaXZlci4NCkFs
-cmlnaHQsIGxldCBtZSB0YWtlIGEgY2xvc2VyIGxvb2sgYXQgeW91ciBsYXRlc3QgY29kZS4gSSB3
-aWxsIGNvbWUgYmFjayB3aWxsIHF1ZXN0aW9ucyBpZiBJIGhhdmUgYW55Lg0KPiANCj4gDQo+PiAq
-IFRoZSBjdXJyZW50IHBsYW4gZm9yIFR4IHNpZGUgb25seSBpbmNsdWRlcyBwYXNzaW5nIGRhdGEg
-ZnJvbSB0aGUNCj4+IGFwcGxpY2F0aW9uIHRvIHRoZSBkcml2ZXIuIEFyZSB0aGVyZSBhbnkgcGxh
-bnMgdG8gc3VwcG9ydCBwYXNzaW5nDQo+PiBpbmZvcm1hdGlvbiAobGlrZSBIVyBUWCB0aW1lc3Rh
-bXApIGZyb20gZHJpdmVyIHRvIHRoZSBBcHBsaWNhdGlvbj8NCj4+IA0KPiANCj4geW91IG1lYW4g
-Zm9yIEFGX1hEUCA/IGkgYWN0dWFsbHkgaGF2ZW4ndCB0aG91Z2h0IGFib3V0IHRoaXMsIA0KPiBi
-dXQgd2UgY291bGQgdXNlIFRYIHVtZW0gcGFja2V0IGJ1ZmZlciBoZWFkcm9vbSB0byBwYXNzIFRY
-IGNvbXBsZXRpb24NCj4gbWV0YWRhdGEgdG8gQUZfWERQIGFwcCwgb3IgZXh0ZW5kIHRoZSBjb21w
-bGV0aW9uIHF1ZXVlIGVudHJpZXMgdG8gaG9zdA0KPiBtZXRhZGF0YSwgaSBhbSBzdXJlIHRoYXQg
-dGhlIDFzdCBhcHByb2FjaCBpcyBwcmVmZXJyZWQsIGJ1dCBpIGFtIG5vdA0KPiBwbGFuaW5nIHRv
-IHN1cHBvcnQgdGhpcyBpbiBteSBpbml0aWFsIHNlcmllcy4gDQo+IA0KWWVhaCwgSSB3YXMgdGhp
-bmtpbmcgb2YgdXNpbmcgYXBwcm9hY2ggMSBhcyB3ZWxsIGZvciB0aGlzLiBMZXQgbWUgZmlyc3Qg
-d29yayBvbiB0aGUgUnggc2lkZS4gVGhlbiB3ZSBjYW4gc2NvcGUgdGhpcyBvbmUgb3V0Lg0KPj4g
-RmluYWxseSwgaXMgdGhlcmUgYW55IHdheSBJIGNhbiBoZWxwIGluIGV4cGVkaXRpbmcgdGhlIGRl
-dmVsb3BtZW50DQo+PiBhbmQgdXBzdHJlYW1pbmcgb2YgdGhpcyBmZWF0dXJlPyBJIGhhdmUgYmVl
-biB3b3JraW5nIG9uIHN0dWR5aW5nIGhvdw0KPj4gWERQIHdvcmtzIGFuZCBjYW4gd29yayBvbiBp
-bXBsZW1lbnRpbmcgc29tZSBwYXJ0IG9mIHRoaXMgZmVhdHVyZSBpZg0KPj4geW91IHdvdWxkIGxp
-a2UuDQo+PiANCj4gDQo+IFN1cmUsDQo+IFBsZWFzZSBmZWVsIGZyZWUgdG8gY2xvbmUgYW5kIHRl
-c3QgdGhlIGZvbGxvd2luZyBicmFuY2ggaWYgeW91IGFkZA0KPiBzdXBwb3J0IHRvICB5b3VyIGRy
-aXZlciBhbmQgaW1wbGVtZW50IG9mZmxvYWRzIGZvciBBRl9YRFAgdGhhdCB3b3VsZCBiZQ0KPiBh
-d2Vzb21lLCBhbmQgaSB3aWxsIGFwcGVuZCB5b3VyIHBhdGNoZXMgdG8gbXkgc2VyaWVzIGJlZm9y
-ZSBzdWJtaXNzaW9uLg0KPiANCj4gaXQgaXMgYWx3YXlzIGdyZWF0IHRvIHNlbmQgbmV3IGZlYXR1
-cmVzIHdpdGggbXVsdGlwbGUgdXNlIGNhc2VzIGFuZA0KPiBtdWx0aSB2ZW5kb3Igc3VwcG9ydCwg
-dGhpcyB3aWxsIGRpZmZlcmVudGx5IGV4cGVkaXRlIHN1Ym1pc3Npb24gYW5kDQo+IGFjY2VwdGFu
-Y2UNCj4gDQo+IE15IExhdGVzdCB3b3JrIGNhbiBiZSBmb3VuZCBhdDoNCj4gDQo+IGh0dHBzOi8v
-Z2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3NhZWVkL2xpbnV4LmdpdC9s
-b2cvP2g9dG9waWMveGRwX21ldGFkYXRhMw0KPiANCj4gUGxlYXNlIGZlZWwgZnJlZSB0byBzZW5k
-IG1lIGFueSBxdWVzdGlvbnMgYWJvdXQgdGhlIGNvZGUgaW4gcHJpdmF0ZSBvcg0KPiBwdWJsaWMu
-DQpUaGFua3MgU2FlZWQgZm9yIGFsbCB0aGUgaW5mb3JtYXRpb24hIFRoaXMgaXMgcmVhbGx5IGhl
-bHBmdWwuIDopDQo+IA0KPiBUaGFua3MsDQo+IFNhZWVkLg0KPiANCj4+IFRoYW5rcywNCj4+IFZl
-ZGFuZyBQYXRlbA0KPj4gU29mdHdhcmUgRW5naW5lZXINCj4+IEludGVsIENvcnBvcmF0aW9uDQo+
-PiANCj4+IFsxXSAtIGh0dHBzOi8vbmV0ZGV2Y29uZi5pbmZvLzB4MTQvc2Vzc2lvbi5odG1sP3dv
-cmtzaG9wLVhEUA0KPj4gWzJdIC0gDQo+PiBodHRwczovL3BhdGNod29yay5vemxhYnMub3JnL3By
-b2plY3QvbmV0ZGV2L2NvdmVyLzIwMTgwNjI3MDI0NjE1LjE3ODU2LTEtc2FlZWRtQG1lbGxhbm94
-LmNvbS8NCj4+IFszXSAtIA0KPj4gaHR0cHM6Ly94ZHAtcHJvamVjdC5uZXQvI291dGxpbmUtY29u
-dGFpbmVyLUltcG9ydGFudC1tZWRpdW0tdGVybS10YXNrcw0KDQo=
+On Tue, Nov 10, 2020 at 03:53:13PM -0800, Andrii Nakryiko wrote:
+> On Tue, Nov 10, 2020 at 3:43 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > On Tue, Nov 10, 2020 at 11:01:12PM +0100, KP Singh wrote:
+> > > On Mon, Nov 9, 2020 at 9:32 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > > >
+> > > > Andrii Nakryiko wrote:
+> > > > > On Fri, Nov 6, 2020 at 5:52 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > > >
+> > > > > > On Fri, Nov 06, 2020 at 05:14:14PM -0800, Andrii Nakryiko wrote:
+> > > > > > > On Fri, Nov 6, 2020 at 2:08 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > > > > >
+> > > > > > > > This patch enables the FENTRY/FEXIT/RAW_TP tracing program to use
+> > > > > > > > the bpf_sk_storage_(get|delete) helper, so those tracing programs
+> > > > > > > > can access the sk's bpf_local_storage and the later selftest
+> > > > > > > > will show some examples.
+> > > > > > > >
+> > > > > > > > The bpf_sk_storage is currently used in bpf-tcp-cc, tc,
+> > > > > > > > cg sockops...etc which is running either in softirq or
+> > > > > > > > task context.
+> > > > > > > >
+> > > > > > > > This patch adds bpf_sk_storage_get_tracing_proto and
+> > > > > > > > bpf_sk_storage_delete_tracing_proto.  They will check
+> > > > > > > > in runtime that the helpers can only be called when serving
+> > > > > > > > softirq or running in a task context.  That should enable
+> > > > > > > > most common tracing use cases on sk.
+> > > > > > > >
+> > > > > > > > During the load time, the new tracing_allowed() function
+> > > > > > > > will ensure the tracing prog using the bpf_sk_storage_(get|delete)
+> > > > > > > > helper is not tracing any *sk_storage*() function itself.
+> > > > > > > > The sk is passed as "void *" when calling into bpf_local_storage.
+> > > > > > > >
+> > > > > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > > > > ---
+> > > > > > > >  include/net/bpf_sk_storage.h |  2 +
+> > > > > > > >  kernel/trace/bpf_trace.c     |  5 +++
+> > > > > > > >  net/core/bpf_sk_storage.c    | 73 ++++++++++++++++++++++++++++++++++++
+> > > > > > > >  3 files changed, 80 insertions(+)
+> > > > > > > >
+> > > > > > >
+> > > > > > > [...]
+> > > > > > >
+> > > > > > > > +       switch (prog->expected_attach_type) {
+> > > > > > > > +       case BPF_TRACE_RAW_TP:
+> > > > > > > > +               /* bpf_sk_storage has no trace point */
+> > > > > > > > +               return true;
+> > > > > > > > +       case BPF_TRACE_FENTRY:
+> > > > > > > > +       case BPF_TRACE_FEXIT:
+> > > > > > > > +               btf_vmlinux = bpf_get_btf_vmlinux();
+> > > > > > > > +               btf_id = prog->aux->attach_btf_id;
+> > > > > > > > +               t = btf_type_by_id(btf_vmlinux, btf_id);
+> > > > > > > > +               tname = btf_name_by_offset(btf_vmlinux, t->name_off);
+> > > > > > > > +               return !strstr(tname, "sk_storage");
+> > > > > > >
+> > > > > > > I'm always feeling uneasy about substring checks... Also, KP just
+> > > > > > > fixed the issue with string-based checks for LSM. Can we use a
+> > > > > > > BTF_ID_SET of blacklisted functions instead?
+> > > > > > KP one is different.  It accidentally whitelist-ed more than it should.
+> > > > > >
+> > > > > > It is a blacklist here.  It is actually cleaner and safer to blacklist
+> > > > > > all functions with "sk_storage" and too pessimistic is fine here.
+> > > > >
+> > > > > Fine for whom? Prefix check would be half-bad, but substring check is
+> > > > > horrible. Suddenly "task_storage" (and anything related) would be also
+> > > > > blacklisted. Let's do a prefix check at least.
+> > > > >
+> > > >
+> > > > Agree, prefix check sounds like a good idea. But, just doing a quick
+> > > > grep seems like it will need at least bpf_sk_storage and sk_storage to
+> > > > catch everything.
+> > >
+> > > Is there any reason we are not using BTF ID sets and an allow list similar
+> > > to bpf_d_path helper? (apart from the obvious inconvenience of
+> > > needing to update the set in the kernel)
+> > It is a blacklist here, a small recap from commit message.
+> >
+> > > During the load time, the new tracing_allowed() function
+> > > will ensure the tracing prog using the bpf_sk_storage_(get|delete)
+> > > helper is not tracing any *sk_storage*() function itself.
+> > > The sk is passed as "void *" when calling into bpf_local_storage.
+> >
+> > Both BTF_ID and string-based (either prefix/substr) will work.
+> >
+> > The intention is to first disallow a tracing program from tracing
+> > any function in bpf_sk_storage.c and also calling the
+> > bpf_sk_storage_(get|delete) helper at the same time.
+> > This blacklist can be revisited later if there would
+> > be a use case in some of the blacklist-ed
+> > functions (which I doubt).
+> >
+> > To use BTF_ID, it needs to consider about if the current (and future)
+> > bpf_sk_storage function can be used in BTF_ID or not:
+> > static, global/external, or inlined.
+> >
+> > If BTF_ID is the best way for doing all black/white list, I don't mind
+> > either.  I could force some to inline and we need to remember
+> > to revisit the blacklist when the scope of fentry/fexit tracable
+> > function changed, e.g. when static function becomes traceable
+> 
+> You can consider static functions traceable already. Arnaldo landed a
+> change a day or so ago in pahole that exposes static functions in BTF
+> and makes it possible to fentry/fexit attach them.
+Good to know.
+
+Is all static traceable (and can be used in BTF_ID)?
