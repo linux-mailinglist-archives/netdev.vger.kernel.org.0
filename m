@@ -2,136 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8B012AF7A8
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 19:02:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F7582AF7B1
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 19:06:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726491AbgKKSCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 13:02:39 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:50275 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725959AbgKKSCi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 13:02:38 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id BBE4F5C0105;
-        Wed, 11 Nov 2020 13:02:37 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 11 Nov 2020 13:02:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=T/Gx521phxO6qKh09ol1WoqiINT3EqhyQJX96W6sp
-        SA=; b=pFanZHqtJptHiQwOHub/kF55j+ifJd9m8PioOuikaiWMbRbXrYXVe80uD
-        lSa2JKTBuWPqC/OV3vwBKLZlWMgaL4t1sFquzduAMpoATbW/Mazny66CDA3sYrqo
-        p6gDeP4v6mk09RP1zKIC5orjUopcpcOojP1WbGkLJeFFm9eTsgGPCxVX49Ur0Hpg
-        WIFp0JTOLZA0z67WrdHG41sdQbzsaB1M3yBA+BpW8mwMxXzWSLK0Uc5nf+6d6ukb
-        EU8H+6uTYabYnvDI/UH1ZNFBP0d1Z1fdYms/2Xb24GSX1SPUP06acXotvjjycRqs
-        QWRyTbDhMxj4DqcP5jC6R2T7e3rwg==
-X-ME-Sender: <xms:PCesX25qh7RRAqB3SLCrgAR5ydaZctR6MN4oAEEIczPutMC6ii5o0A>
-    <xme:PCesX_5ApVBcOZuSbybEi_hL73YGbVtu_F8uIj_q1ea0xy85RGObiV0r2Gt-NJyj7
-    vc0NbEA17PGWXc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedruddvtddggeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjgesthekredttddtudenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepvdffveekfeeiieeuieetudefkeevkeeuhfeuieduudetkeegleefvdegheej
-    hefhnecukfhppeekgedrvddvledrudehgedrudegjeenucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:PCesX1c4SfQ9vHeGf8CawlLAT7SGqkbxLKA7U4PWQMI3o1RXsNqnRg>
-    <xmx:PCesXzKT4nK1Yr_7-u7zZuqvvVk6fnGJJ8OGkNl7Q4MBcuTiFQyzHg>
-    <xmx:PCesX6JcE8W5Sqd291WUcxAzVhTi135dlXLFSta2oZrLX5CbfpG3HA>
-    <xmx:PSesX8g9fjFYp6CL8yP33RvYRlyKZmTeT8m3-g7bVaILooQjnm7WrA>
-Received: from localhost (igld-84-229-154-147.inter.net.il [84.229.154.147])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D9325306301C;
-        Wed, 11 Nov 2020 13:02:35 -0500 (EST)
-Date:   Wed, 11 Nov 2020 20:02:33 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Markus =?iso-8859-1?Q?Bl=F6chl?= <markus.bloechl@ipetronik.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: lan78xx: Disable hardware vlan filtering in
- promiscuous mode
-Message-ID: <20201111180233.GA2089577@shredder>
-References: <20201110153958.ci5ekor3o2ekg3ky@ipetronik.com>
- <20201111074341.24cafaf3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1727266AbgKKSGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 13:06:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726036AbgKKSGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 13:06:01 -0500
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA16C0613D4
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 10:05:59 -0800 (PST)
+Received: by mail-wm1-x341.google.com with SMTP id 19so3105162wmf.1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 10:05:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=singlestore.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=65Xr2iKu/nZDVRfbHutkqqfvFgaTZi4vq99SCrkQasA=;
+        b=cYaL1wImxfK+ZUKumTaHS86Ga2LYRMjNL/ZGvPIqeOmM8N5TO4gqnL2WkW3I4Kylcm
+         bX2xwxCnk3/cVVE5fhO5OUwiJycNH7PpvdhTGG2gs6rVozS4ww5to/n9cuuhdI5OoDA5
+         boQtHILlO0dK0JAwsWkZhd7BRbe/gh30ks/ONUSD/h+svWboPIdpE1mTLTReO3f5qym1
+         9OxMv66/5OZBWn/kSJLqXGqComz01o62CN1F2OG6j2Nnqwe+YDEk3/Qj8mDKD8zeLusG
+         gnzQe6Gf6oHg8oCTgtNdzKf5kJUjPodb9A+uiK+9QcoKCdzZZ4XUY1pf/jLKnwZNnCjD
+         +CwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=65Xr2iKu/nZDVRfbHutkqqfvFgaTZi4vq99SCrkQasA=;
+        b=H/CG69NV1d2P7ctWvnmvX8BE5FP4oqBiU4MFMvgyQpF6RmE+0T0WIgTUl5wNq8tVPx
+         MpoHzJ+suCzNXUM5jNEH1lPUZXABtS4sJUBxfQjbt+SE3mC5ouESvLoAP0qzPu6MkBui
+         q3aqkaTAhvzLQnyyRlsWiwKy0DniY6/C17ePf/XgBOBWiWACg9JxE9aFg47w3/PUoKwc
+         TytzqF9LvD/NJ2fO1hSt96PlkSZwbnOUW9T2Jl6t/VZBaFZinuNcIZ/NC7HaIx2byk+K
+         Pvvt6pjiiqqam9KtwBalnZ4tsICFh0qqNvdgD7KyRUd8+w53KoXN23dxLhJGmPG4rSDO
+         iAng==
+X-Gm-Message-State: AOAM530Aq8leUPFywhVLBKGTF3dnGznIHP98xqKkVLEAp+NmknOA+YRb
+        S0I1REk6tqKoc3qOEskpwfv/DQ==
+X-Google-Smtp-Source: ABdhPJxvhcIhy52UyrtFzOPmnE/tDp9zlS1acmL8InTf4voP4NuF722ImzTufq5Qh1zJRJrVKkqOtw==
+X-Received: by 2002:a05:600c:212:: with SMTP id 18mr5656371wmi.175.1605117958466;
+        Wed, 11 Nov 2020 10:05:58 -0800 (PST)
+Received: from rdias-suse-pc.lan (bl13-26-148.dsl.telepac.pt. [85.246.26.148])
+        by smtp.gmail.com with ESMTPSA id t5sm3493034wmg.19.2020.11.11.10.05.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Nov 2020 10:05:57 -0800 (PST)
+Date:   Wed, 11 Nov 2020 18:05:55 +0000
+From:   Ricardo Dias <rdias@singlestore.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] tcp: fix race condition when creating child sockets
+ from syncookies
+Message-ID: <20201111180555.GA1305169@rdias-suse-pc.lan>
+References: <20201111073546.GA1249399@rdias-suse-pc.lan>
+ <CANn89i+5PkUk5Lts+8jQR_AAhKUUDzODEAjBjRJpAs+BeKnKuw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201111074341.24cafaf3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CANn89i+5PkUk5Lts+8jQR_AAhKUUDzODEAjBjRJpAs+BeKnKuw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 11, 2020 at 07:43:41AM -0800, Jakub Kicinski wrote:
-> On Tue, 10 Nov 2020 16:39:58 +0100 Markus Blöchl wrote:
-> > The rx-vlan-filter feature flag prevents unexpected tagged frames on
-> > the wire from reaching the kernel in promiscuous mode.
-> > Disable this offloading feature in the lan7800 controller whenever
-> > IFF_PROMISC is set and make sure that the hardware features
-> > are updated when IFF_PROMISC changes.
-> > 
-> > Signed-off-by: Markus Blöchl <markus.bloechl@ipetronik.com>
-> > ---
-> > 
-> > Notes:
-> >     When sniffing ethernet using a LAN7800 ethernet controller, vlan-tagged
-> >     frames are silently dropped by the controller due to the
-> >     RFE_CTL_VLAN_FILTER flag being set by default since commit
-> >     4a27327b156e("net: lan78xx: Add support for VLAN filtering.").
-> > 
-> >     In order to receive those tagged frames it is necessary to manually disable
-> >     rx vlan filtering using ethtool ( `ethtool -K ethX rx-vlan-filter off` or
-> >     corresponding ioctls ). Setting all bits in the vlan filter table to 1 is
-> >     an even worse approach, imho.
-> > 
-> >     As a user I would probably expect that setting IFF_PROMISC should be enough
-> >     in all cases to receive all valid traffic.
-> >     Therefore I think this behaviour is a bug in the driver, since other
-> >     drivers (notably ixgbe) automatically disable rx-vlan-filter when
-> >     IFF_PROMISC is set. Please correct me if I am wrong here.
+On Wed, Nov 11, 2020 at 05:05:11PM +0100, Eric Dumazet wrote:
+> On Wed, Nov 11, 2020 at 8:35 AM Ricardo Dias <rdias@singlestore.com> wrote:
+>
+> ...
 > 
-> I've been mulling over this, I'm not 100% sure that disabling VLAN
-> filters on promisc is indeed the right thing to do. The ixgbe doing
-> this is somewhat convincing. OTOH users would not expect flow filters
-> to get disabled when promisc is on, so why disable vlan filters?
+> > + * If an existing socket already exists, it returns that socket
+> > + * through the osk parameter.
 > 
-> Either way we should either document this as an expected behavior or
-> make the core clear the features automatically rather than force
-> drivers to worry about it.
 > 
-> Does anyone else have an opinion, please?
+> I think this deserves a third parameter, to avoid confusion.
 
-I agree it is weird, but it seems to be justified by the bridge code.
-Note that the code was added around 2013, so it is possible it was
-influenced by the behavior of existing drivers.
+Yes, I agree. It will make much clearer the semantics of this function.
 
-1. vi net/bridge/br_vlan.c +245
+> ...
+>
+> > +                                       if (unlikely(!refcount_inc_not_zero(&esk->sk_refcnt)))
+> 
+> Can you explain how this could happen ?
+> Again, we own the lock here, finding a socket in ehash, with a zero
+> refcount can not happen.
+> 
+> Only a true rcu lookup could see a zero refcount.
 
-/* Add VLAN to the device filter if it is supported.
- * This ensures tagged traffic enters the bridge when
- * promiscuous mode is disabled by br_manage_promisc().
- */
+Ah! Now I understand what you are saying. Indeed we just need to
+increment the ref counter. We don't need to check if it's zero.
 
-2. The bridge device itself will not filter packets based on their VID
-when it is in promiscuous mode:
+> ...
+>
+> > -               inet_ehash_nolisten(sk, (struct sock *)tw);
+> > +               inet_ehash_nolisten(sk, (struct sock **)&tw);
+> 
+> Why could not we 'find' a prior socket, and since you ignore the result,
+> leave a refcount increment, and a socket leak ?
+> 
+> Same remark for all callers.
+> 
+> >         }
+> >         if (tw)
+> 
+> See the problem here ?
+> 
+> If tw was initially NULL, then inet_ehash_nolisten() could have overwritten tw
+> with another socket.
+> 
+> Surely calling inet_twsk_bind_unhash() could be disastrous.
 
-vi net/bridge/br_input.c +45
+Yes, you're right.
+I adapted this call to match the new signature assuming `tw` would never
+be NULL. Shame on me for not noticing the `if (tw)` statement right
+below :-).
 
-vg = br_vlan_group_rcu(br);
-/* Bridge is just like any other port.  Make sure the
- * packet is allowed except in promisc modue when someone
- * may be running packet capture.
- */
-if (!(brdev->flags & IFF_PROMISC) &&
-    !br_allowed_egress(vg, skb)) {
-	kfree_skb(skb);
-	return NET_RX_DROP;
-}
+I'll check each caller code, to make sure I'm not leaking the socket.
+
+
+Thanks for your reviews. I'm learning more and more with each review
+iteration.
+
