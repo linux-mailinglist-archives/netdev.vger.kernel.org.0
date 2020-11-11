@@ -2,66 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 745BE2AF1E7
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 14:19:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DEFA2AF178
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 14:04:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726771AbgKKNTa convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 11 Nov 2020 08:19:30 -0500
-Received: from mail.bata.co.id ([117.54.3.130]:43090 "EHLO mail.bata.co.id"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726701AbgKKNTY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Nov 2020 08:19:24 -0500
-X-Greylist: delayed 2549 seconds by postgrey-1.27 at vger.kernel.org; Wed, 11 Nov 2020 08:19:22 EST
-Received: from localhost (localhost [127.0.0.1])
-        by mail.bata.co.id (Postfix) with ESMTP id 357636C6EB8;
-        Wed, 11 Nov 2020 19:03:30 +0700 (WIB)
-Received: from mail.bata.co.id ([127.0.0.1])
-        by localhost (mail.bata.co.id [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id CTFbslBzbI2b; Wed, 11 Nov 2020 19:03:29 +0700 (WIB)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.bata.co.id (Postfix) with ESMTP id B185D6C6EA8;
-        Wed, 11 Nov 2020 19:03:29 +0700 (WIB)
-X-Virus-Scanned: amavisd-new at bata.co.id
-Received: from mail.bata.co.id ([127.0.0.1])
-        by localhost (mail.bata.co.id [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id J4pKil8mnwBx; Wed, 11 Nov 2020 19:03:29 +0700 (WIB)
-Received: from mail.bata.co.id (mail.bata.co.id [117.54.3.130])
-        by mail.bata.co.id (Postfix) with ESMTP id 2D1AC6C6E9B;
-        Wed, 11 Nov 2020 19:03:27 +0700 (WIB)
-Date:   Wed, 11 Nov 2020 19:03:27 +0700 (WIB)
-From:   =?utf-8?B?0KHQuNGB0YLQtdC80L3Ri9C5INCw0LTQvNC40L3QuNGB0YLRgNCw0YLQvtGA?= 
-        <sb57405@bata.co.id>
-Reply-To: mailupgrade@mail2engineer.com
-Message-ID: <1144316190.49338.1605096207067.JavaMail.zimbra@bata.co.id>
-Subject: 
+        id S1726615AbgKKNES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 08:04:18 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:60116 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726441AbgKKNEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 08:04:16 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0ABD3iW3040367;
+        Wed, 11 Nov 2020 07:03:44 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1605099824;
+        bh=/PXRJzYw61Pq2KpKYYbLbZH+T1+XvaMgs9xPK++lcdE=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=WDZ7SzwO88vGOKRFs5JjZMqCQlxwsPhJEIiQ53fgnFxhRcVJnOMyvnQv3uMl/6R8w
+         PlvTyYLI64zKUya4mJBVb/uJlVf2p0pWk3e4BdHnzHV5ZxuZBG1k+yMboyCi9jWxBR
+         7oaThlr7xcnYbQOZr+TJqSKPeHTr/CsF26iBtrWc=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0ABD3iRU007907
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 11 Nov 2020 07:03:44 -0600
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 11
+ Nov 2020 07:03:44 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 11 Nov 2020 07:03:44 -0600
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0ABD3fk6026860;
+        Wed, 11 Nov 2020 07:03:42 -0600
+Subject: Re: [PATCH] net/ethernet: update ret when ptp_clock is ERROR
+To:     Richard Cochran <richardcochran@gmail.com>,
+        Wang Qing <wangqing@vivo.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Samuel Zou <zou_wei@huawei.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1604649411-24886-1-git-send-email-wangqing@vivo.com>
+ <20201107150803.GD9653@hoboy.vegasvil.org>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <fbe087bc-5453-00cc-65d4-8c660e6587ed@ti.com>
+Date:   Wed, 11 Nov 2020 15:03:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-X-Originating-IP: [110.225.88.196]
-X-Mailer: Zimbra 8.8.15_GA_3975 (zclient/8.8.15_GA_3975)
-Thread-Index: 1wfS3a4qssIUIDRbiBSmjl2ZKWVdww==
-Thread-Topic: 
-Content-Transfer-Encoding: 8BIT
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <20201107150803.GD9653@hoboy.vegasvil.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ВНИМАНИЕ;
 
-Ваш почтовый ящик превысил лимит хранилища, который составляет 5 ГБ, определенный администратором, который в настоящее время работает с 10,9 ГБ, вы не сможете отправлять или получать новую почту, пока не подтвердите свой почтовый ящик снова. Для повторной проверки вашего почтового ящика отправьте следующую информацию:
 
-Название:
-Имя пользователя:
-пароль:
-Подтвердить Пароль:
-Электронное письмо:
-телефон:
+On 07/11/2020 17:08, Richard Cochran wrote:
+> On Fri, Nov 06, 2020 at 03:56:45PM +0800, Wang Qing wrote:
+>> We always have to update the value of ret, otherwise the
+>>   error value may be the previous one.
+>>
+>> Signed-off-by: Wang Qing <wangqing@vivo.com>
+> 
+> Acked-by: Richard Cochran <richardcochran@gmail.com>
+> 
 
-Если вы не можете повторно подтвердить свой почтовый ящик, он будет отключен!
+Following Richard's comments:
 
-Приносим извинения за неудобства.
-Проверочный код: 666690opp4r56: 006524
-Электронная почта Техническая поддержка © 2020
+Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
 
-Благодарность
-Системный администратор
+> 
+>> ---
+>>   drivers/net/ethernet/ti/am65-cpts.c | 3 +--
+>>   1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
+>> index 75056c1..b77ff61
+>> --- a/drivers/net/ethernet/ti/am65-cpts.c
+>> +++ b/drivers/net/ethernet/ti/am65-cpts.c
+>> @@ -1001,8 +1001,7 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
+>>   	if (IS_ERR_OR_NULL(cpts->ptp_clock)) {
+>>   		dev_err(dev, "Failed to register ptp clk %ld\n",
+>>   			PTR_ERR(cpts->ptp_clock));
+>> -		if (!cpts->ptp_clock)
+>> -			ret = -ENODEV;
+>> +		ret = cpts->ptp_clock ? cpts->ptp_clock : (-ENODEV);
+>>   		goto refclk_disable;
+>>   	}
+>>   	cpts->phc_index = ptp_clock_index(cpts->ptp_clock);
+>> -- 
+>> 2.7.4
+>>
+
+-- 
+Best regards,
+grygorii
