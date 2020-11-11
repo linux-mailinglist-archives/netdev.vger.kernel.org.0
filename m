@@ -2,90 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EEAC2AF0AB
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 13:32:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 948422AF0BD
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 13:37:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726456AbgKKMcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 07:32:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44436 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726136AbgKKMca (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 07:32:30 -0500
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A1AC0613D1;
-        Wed, 11 Nov 2020 04:32:28 -0800 (PST)
-Received: by mail-pj1-x1042.google.com with SMTP id gv24so637983pjb.3;
-        Wed, 11 Nov 2020 04:32:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=dTYvfnOluYKgTxdMcxZ/FPGnTnywlshfCqeGlC/4bIw=;
-        b=KZeqETg/goR4DpzrRxll6dpNFeDbh3T5LuitxgAFLrZvLFFeP31gTZD8NEXIWIXHQR
-         P3oRY0x9yxWloawl+5zQvfBF9b85fWqZW690DxP17o8EVj1IgcSPlfuashAT2CLAJVK5
-         jSwmQCTZkUfDE7NGE95Ew0eUzMF8J/oX6qp0xkaW7W0D9vsJaAbiqcwhKyibLpX4Tedt
-         Fe3yZbDy6WmDGOe9SDZkL0UZv3jc9zBGdqC4kIRpRIV7XVFxUvFX/cwCFW0w1EsDu5Lf
-         KzNpJV83sZ0QSd6/5n5L0aFNZbegxZX+41zaP9jtMKAu03qRQ/6fME1iaoSQ3GC6uonQ
-         Vzwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=dTYvfnOluYKgTxdMcxZ/FPGnTnywlshfCqeGlC/4bIw=;
-        b=t8hFEWNQS8ZR2qfTyB6JdPap+XGnFAptywjmfGm+Z8EfPRG3EZWbwFC9nSH3h4dAIS
-         OQ1tqSq+CLxZijB8+xPXNEG64V7PzYhB0cmO8EGx5cYqj7qhxQlXrUEPDDuj/lc7BEYX
-         6CTgK2ZD+n+tdq3svl6q2f/NYUFDPZtPPXvnyaOpeiouTeHSo6b1MATw2DYzPERdU+cj
-         x+IpzHbuXZBxpdTMLoQ5jSQHhH5ZyvKxSneSMMuDOdDqKEdph1QJpC41U1iQW4A+sA4U
-         fTzFMpIO3Q14VJW+odYNq+bIIadtNGQoV9Ft4LyiIuxSKjCoNb3ZtrfBEjDktYy4vmFB
-         8Eyw==
-X-Gm-Message-State: AOAM533eOYEKb5GLNF1skDzTZtAKG6yqBaj5BFabcDogBcf/UkWNc1Fa
-        tdlgVZCHk0dTg8rNrPNNTTxOBDTMrX8=
-X-Google-Smtp-Source: ABdhPJwBYBPf3hIzlZLO3uZTEVXVkF867c9Le/HTPd2ZAcrQJLs8GBImBHZVSAqC2ag4KZ6ynrEEyg==
-X-Received: by 2002:a17:90b:90f:: with SMTP id bo15mr3453831pjb.80.1605097948596;
-        Wed, 11 Nov 2020 04:32:28 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id r5sm1680554pgi.77.2020.11.11.04.32.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Nov 2020 04:32:27 -0800 (PST)
-Date:   Wed, 11 Nov 2020 04:32:25 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Wang Qing <wangqing@vivo.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Samuel Zou <zou_wei@huawei.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V4 net-bugfixs] net/ethernet: Update ret when ptp_clock
- is ERROR
-Message-ID: <20201111123224.GB29159@hoboy.vegasvil.org>
-References: <1605086686-5140-1-git-send-email-wangqing@vivo.com>
+        id S1726514AbgKKMhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 07:37:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44710 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726220AbgKKMhm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Nov 2020 07:37:42 -0500
+Received: from quaco.ghostprotocols.net (unknown [179.97.37.151])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 135BD20659;
+        Wed, 11 Nov 2020 12:37:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605098261;
+        bh=tbOZUZNuGJOHeVqF2TBi+RYW50P2S55MdCC4L43u0hI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FT+v6OSpE4nVDjsHUiMMnUAdR1DpOA2ldxpKqnCLRaS3SwF7upyYrowUcRyHmjix7
+         8zIlK33+YiZwq+7IpEZ3jzze9HgnWnDHmY2R5SLPw8H1SVBnlzJ29GbBPZs/D4nhP9
+         4eslVMTuf+owBRe69cBOiMZFfvZPdxfcKzNqzReg=
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 4CBDD411D1; Wed, 11 Nov 2020 09:37:38 -0300 (-03)
+Date:   Wed, 11 Nov 2020 09:37:38 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCHv6 bpf] bpf: Move iterator functions into special init
+ section
+Message-ID: <20201111123738.GE355344@kernel.org>
+References: <20201110154017.482352-1-jolsa@kernel.org>
+ <2a71a0b4-b5de-e9fb-bacc-3636e16245c5@iogearbox.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1605086686-5140-1-git-send-email-wangqing@vivo.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <2a71a0b4-b5de-e9fb-bacc-3636e16245c5@iogearbox.net>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 11, 2020 at 05:24:41PM +0800, Wang Qing wrote:
-> We always have to update the value of ret, otherwise the error value
->  may be the previous one. And ptp_clock_register() never return NULL
->  when PTP_1588_CLOCK enable.
+Em Wed, Nov 11, 2020 at 12:26:29PM +0100, Daniel Borkmann escreveu:
+> On 11/10/20 4:40 PM, Jiri Olsa wrote:
+> > With upcoming changes to pahole, that change the way how and
+> > which kernel functions are stored in BTF data, we need a way
+> > to recognize iterator functions.
+> > 
+> > Iterator functions need to be in BTF data, but have no real
+> > body and are currently placed in .init.text section, so they
+> > are freed after kernel init and are filtered out of BTF data
+> > because of that.
+> > 
+> > The solution is to place these functions under new section:
+> >    .init.bpf.preserve_type
+> > 
+> > And add 2 new symbols to mark that area:
+> >    __init_bpf_preserve_type_begin
+> >    __init_bpf_preserve_type_end
+> > 
+> > The code in pahole responsible for picking up the functions will
+> > be able to recognize functions from this section and add them to
+> > the BTF data and filter out all other .init.text functions.
+> > 
+> > Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+> > Suggested-by: Yonghong Song <yhs@fb.com>
+> > Signed-off-by: Jiri Olsa <jolsa@redhat.com>
+> 
+> LGTM, applied, thanks! Also added a reference to the pahole commit
 
-NAK.
+Applied to what branch? I'm trying to test it now :-)
 
-Your code must handle the possibility that ptp_clock_register() can
-return NULL.  Why?
+- Arnaldo
 
-1. Because that follows the documented API.
+> to the commit log so that this info doesn't get lost in the void
+> plus carried over prior Acks given nothing changed logically in the
+> patch.
+> 
+> P.s.: I've been wondering whether we also need to align the begin/end
+> symbols via ALIGN_FUNCTION() in case ld might realign to a different
+> boundary on later passes but this seems neither the case for .init.text
+> right now, likely since it doesn't matter for kallsyms data in our
+> particular case.
 
-2. Because people will copy/paste this driver.
+-- 
 
-3. Because the Kconfig for your driver can change without warning.
-
-Thanks,
-Richard
+- Arnaldo
