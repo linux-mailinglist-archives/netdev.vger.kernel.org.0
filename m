@@ -2,141 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA12D2AF695
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 17:33:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 142782AF6CC
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 17:44:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726682AbgKKQdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 11:33:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53754 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725979AbgKKQdI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 11:33:08 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760ACC0613D1;
-        Wed, 11 Nov 2020 08:33:08 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id m13so2882149ioq.9;
-        Wed, 11 Nov 2020 08:33:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3fAjIG3mgbnFVC9OfitJdgU8aFvxA1tcVc+KEAMIaZA=;
-        b=iUj4jDELk5UiZXYyi7LM3W05hrAA+UqY7foSzkvRunGEaFk52Ev2xzR0dXDhvVRlin
-         tEkNlotJ75SDtUwNQQZ5YJ+YrXyDETfRNR/p5dJUIvlWFvFSllS8HNDhjkyvYXLUIE4t
-         0adXs6C7X/tn3oBXh1E/uqmaTc2LXaP8Ud/c25ZYT91UpwaFjbmXfygSU7tDNbyRddAt
-         Y3esyNBCZc4ZNtJP8lU2EETxNk+WzJNWdMaoVGxlb3LSsCnM6Hj6GH2PobchZoBGsc2T
-         K5IgZB1vmcbQfTILCG7s2GQtog42PMgQtreioybqzenuW/x/5aMLaqUzjh1RPkOpWdmy
-         OOww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3fAjIG3mgbnFVC9OfitJdgU8aFvxA1tcVc+KEAMIaZA=;
-        b=pcgzsUDJTFgHDwDDTnKLiLPNqI0isVkDVLehyNmchyNRKWZqtwD/bsC9HbdIpWOfGs
-         u4hsT0OJfRBkf5ta6WuBNhxtit5lhYuz/aWYW2K6Fp+QHCmeZ3h55504aIz/o5d9WFWu
-         tE7fUkOOjmnxNjJJk2fBLR7RlFAdmlpXCrl15rwQEgH7EX+60aMaQfHMpAFE3jP8Hhm6
-         oWx1R5leRLOfTwPEAkkyKXJJIwb3znsOMq0Kpw4ZtConl0CuQd7FaSNPECAYg5d6Q75Y
-         9nJ55L8QwdcjVxzFdb5QE7MNyJc3WsTgzn+eJm4XEsZCoEtUPV76x1D5KbsWuxnUAfwA
-         VLjw==
-X-Gm-Message-State: AOAM533OX6DHNfcupcIJKuT5/g3iBR/X/rakksjtgWC2uIfDRksLMxh0
-        zR6ch0aGO5ICo1o9us5hjmnR/qnie8Q=
-X-Google-Smtp-Source: ABdhPJx5rCRIk61jEGHofstkNTXJwLf6Y9A0XfK5hJV8CoD/O2opRHUm8weboEY2J/+qHI1AlMRARg==
-X-Received: by 2002:a02:cb99:: with SMTP id u25mr16397606jap.73.1605112387744;
-        Wed, 11 Nov 2020 08:33:07 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:7980:a277:20c7:aa44])
-        by smtp.googlemail.com with ESMTPSA id x14sm1561669ior.7.2020.11.11.08.33.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Nov 2020 08:33:07 -0800 (PST)
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-References: <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
- <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com>
- <CAEf4BzaSfutBt3McEPjmu_FyxyzJa_xVGfhP_7v0oGuqG_HBEw@mail.gmail.com>
- <20201106094425.5cc49609@redhat.com>
- <CAEf4Bzb2fuZ+Mxq21HEUKcOEba=rYZHc+1FTQD98=MPxwj8R3g@mail.gmail.com>
- <CAADnVQ+S7fusZ6RgXBKJL7aCtt3jpNmCnCkcXd0fLayu+Rw_6Q@mail.gmail.com>
- <20201106152537.53737086@hermes.local>
- <45d88ca7-b22a-a117-5743-b965ccd0db35@gmail.com>
- <20201109014515.rxz3uppztndbt33k@ast-mbp>
- <14c9e6da-e764-2e2c-bbbb-bc95992ed258@gmail.com>
- <20201111004749.r37tqrhskrcxjhhx@ast-mbp> <874klwcg1p.fsf@toke.dk>
- <321a2728-7a43-4a48-fe97-dab45b76e6fb@iogearbox.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8bd665e1-f82b-1543-9791-8b41da855327@gmail.com>
-Date:   Wed, 11 Nov 2020 09:33:05 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.1
-MIME-Version: 1.0
-In-Reply-To: <321a2728-7a43-4a48-fe97-dab45b76e6fb@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
+        id S1726682AbgKKQo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 11:44:56 -0500
+Received: from mail-eopbgr130058.outbound.protection.outlook.com ([40.107.13.58]:8449
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725979AbgKKQo4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Nov 2020 11:44:56 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nse68seGlWrom9DHEEnGdyDy0hlY4DBCl2gxjBAXQgbKG/tbsd3nBr0jqnTbmsQo+1aD4foeXU5UxDsn3qqlMqWZONtlokd5sXQ80gw+oKwhrGwT1tqa7BPkVeyeRsAyiDFc2xzukH+DP/Qo7508IeaVkSyI9TpLL5FtKGV9FbgCMQFaOmJ9Xo5i8XfN2EMGGUAcWuJJiHZ/eqzOtK9SDtsLmfxYeiBnnrQF9NH7ZDWdXCRq3nePJjbBqv8rDUQkR7EC4dRwsyQJ3mOuYSU62tYqVtqcIW14JBrg+f7qiinys5OnO5/yDMUNHCZqCCpMEE7vA4O7f6pHkhZr4UMgww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iHcddte9uUI6HKeLgPGaGys20m/NYsdBT3+S5aj0Yok=;
+ b=J85sMvTEc65ZaNHJD11zX3CQJLOvkBEi6w9cu3366SVP2G1ENkMDOQTU93OIGK9POb2b7RrjcsP+XLBETG0CDDbbxdbLp+b/ieFJBhzfgibFoMA2paCwQtRGXoTjpXqsn+F1KCbnjnVUZqYJEIms0JeT74NGoRDJZyOFoMyWiWTBgJAR4QNUCWOVipBjdk/0CQjV2RwKFfdCrEY2meE2BwWZGuI5CBAKI7RVw2abPkjo1nhZd8aNGv86zucSMrFvudqa5mwxWis7oOuWoIM3squAoaI6TE2vnXnvW+iN5DtuFcFWiGbEySB89zNEmhHTTVW1VC8qZ33/QlI9+Zc/pw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iHcddte9uUI6HKeLgPGaGys20m/NYsdBT3+S5aj0Yok=;
+ b=klH3AgjAp2Y9gSedqXGlLyQ6GjB9Y0bPw+k41LCcuku7UYVs5MMxfqGxJZ5iD3w/xuRzfuyZixUUeQzmh+q6fCp49+ckmBL11qbzk4GOjHKvBMsQj1/RSrcQWItC9+p/1bLeVBP/aegPCFv21xN3KP8WdOEv3MBjCE14w0lqwkw=
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
+ by VI1PR04MB4287.eurprd04.prod.outlook.com (2603:10a6:803:41::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.25; Wed, 11 Nov
+ 2020 16:44:52 +0000
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::45b9:4:f092:6cb6]) by VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::45b9:4:f092:6cb6%3]) with mapi id 15.20.3541.025; Wed, 11 Nov 2020
+ 16:44:52 +0000
+From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
+To:     Ioana Ciornei <ciorneiioana@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: RE: [PATCH net-next] net: phy: aquantia: do not return an error on
+ clearing pending IRQs
+Thread-Topic: [PATCH net-next] net: phy: aquantia: do not return an error on
+ clearing pending IRQs
+Thread-Index: AQHWtq+R5WUuz+tPA0yyw9BuN2g6DanDJY1g
+Date:   Wed, 11 Nov 2020 16:44:52 +0000
+Message-ID: <VI1PR04MB58073C9127310383E4888CF2F2E80@VI1PR04MB5807.eurprd04.prod.outlook.com>
+References: <20201109154601.3812574-1-ciorneiioana@gmail.com>
+In-Reply-To: <20201109154601.3812574-1-ciorneiioana@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [82.78.148.61]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 505d5f7c-cf8d-44a2-d05a-08d886611c91
+x-ms-traffictypediagnostic: VI1PR04MB4287:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB4287FED5B64C209B01C271A1F2E80@VI1PR04MB4287.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1201;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fDhf2fmVOCdKJ88SoZPnUy4NTprWwfR0PIaDuBD0hAGNDknrhdOOAksCnICZ0rF6gRkd4nh0tXZMKieFW2DxaxT0I1TEAzcLI1DX45DMqRjbT+fYGZTOyf8+MghxuGSM1ppZoHyqLaSVK8TwmCQCJOacEgDTIBIbu9n1nKQXF9la3w+6umsZCnlLlo/qmKJo6OrX8hyrYbsQVaQ2lxLfRWAjY2ECMwK+6exU1wjfzA7RsLZxnVUn6AyIzlv0AAF6WXah70nib0UgC2ELN/tcbZMkyaRqaHshaA/LG6cy/5t+bZ9d8Eg2r1gIbmBWyN1Az56YHz+QLo8+H9ctYLdVVQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(39860400002)(346002)(396003)(136003)(26005)(8936002)(33656002)(66946007)(53546011)(76116006)(66476007)(66556008)(64756008)(66446008)(5660300002)(186003)(6506007)(4326008)(52536014)(110136005)(478600001)(7696005)(86362001)(4744005)(71200400001)(8676002)(9686003)(55016002)(316002)(2906002)(83380400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 64l7RPZrt3LTZRzPwL4VhYBs7tLW0hnKrekI/7VkHMPMOt9VN9O5HwvO+KUD9PmsZvfwRbErxVNJ9O16p8qbQxBiqdWXvLdX4P0u735CI17BDcoEA6H9ueuvBVzgEJWvJGctjZgHf3fJr5VPmwJQ8BQzTXD45yLGHbxvT83N/ulBNqCV7FW0t0J2TPYJvBYKVeSnghSoHsteQIZ26eiBFjQ6HlPHBTyWlub+93rBI9Fs+KPQkReWeXlQ3TFx0Da7LHCAijvdjbTUa7OsNVbHT0Y6eI5exOKlJxLCzjsQjQdh9wZZ12a3O3+TM9Vemoh78RmMH1i0VGlntODtujFcMqX2IqZe5FHtT0ADAtk4xugGeMgBTkf1QjE2H1+acnO8Z8501fmj2z4EVvBSxckFAOlkT/5fqCRaNc9h4IYetOhP9GwLX7RGRUgazMZ1j5EiIfR9O6k3RirwvgjVpI58tB0d5VFQxMH4qJws+DBvryRgGAd7lMqXuy8N/wAO3HqnWklRNAJZmuIqwls86JAw3/8//mHV1Ik20jNLLb1WZA8+5B+wNoXPnLzifyk6t8P5RELOjs82S6s4BawCKnEC1a0VnzJiowtZNqOhyGYgl/qWO+ZFRl2uU+ZIQ+H4PsPMcX2m4QNXiL3s4QeGA8tu2MvX5uVPksZG2JihfdXN5KoqSyrDv6eq33+M8HrD1QSQys8qK6ITLL1rYsdW1s0aI42VwHYQTETxFsi73vFCS2j9O03ypc+AMXfJIe7EfyzOKNVvEvJMj/ZjWG3Z/tc4H069QGe6sj/b8qMtUDe5A672Abt0HyAYnWicGxk2aXjeht+FIjMx1XtFVUGAA8lIenJejdOL5ZEcM7d7I1Tak5VhS5b6tlt72Qxai4qjdDWtSj20ZOju6YnHmDagwi5xXA==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 505d5f7c-cf8d-44a2-d05a-08d886611c91
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2020 16:44:52.1533
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NB3Kxy8m+l0JtKOMO8yeWd+ZXWOUf2gW7e9yVsyXUSxeONqqVNP24kSP5xoNRzsZ5KxrN030PhFy0CzHEa6MEw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4287
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/11/20 8:06 AM, Daniel Borkmann wrote:
-> 
-> Not really. What you imply here is that we're living in a perfect world
-> and that
-> all distros follow suite and i) add libbpf dependency to their official
-> iproute2
-> package, ii) upgrade iproute2 package along with new kernel releases and
-> iii)
-> upgrade libbpf along with it so that users are able to develop BPF
-> programs against
-> the feature set that the kernel offers (as intended). These are a lot of
-> moving parts
-> to get right, and as I pointed out earlier in the conversation, it took
-> major distros
-> 2 years to get their act together to officially include bpftool as a
-> package -
+> -----Original Message-----
+> From: Ioana Ciornei <ciorneiioana@gmail.com>
+> Sent: Monday, November 9, 2020 17:46
+> To: kuba@kernel.org; netdev@vger.kernel.org
+> Cc: Ioana Ciornei <ioana.ciornei@nxp.com>
+> Subject: [PATCH net-next] net: phy: aquantia: do not return an error on
+> clearing pending IRQs
+>=20
+> From: Ioana Ciornei <ioana.ciornei@nxp.com>
+>=20
+> The referenced commit added in .config_intr() the part of code which upon
+> configuration of the IRQ state it also clears up any pending IRQ. If
+> there were actually pending IRQs, a read on the IRQ status register will
+> return something non zero. This should not result in the callback
+> returning an error.
+>=20
+> Fix this by returning an error only when the result of the
+> phy_read_mmd() is negative.
+>=20
+> Fixes: e11ef96d44f1 ("net: phy: aquantia: remove the use of
+> .ack_interrupt()")
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Yes, there are lot of moving parts and that puts a huge burden on
-distributions. The trend that related s/w is outdated 2-3 months after a
-release can be taken as a sign that bpf is not stable and ready for
-distributions to take on and support.
+I ran into this issue recently. Thanks for the fix.
 
-bpftool is only 3 years old (Oct 2017 is first kernel commit). You can
-not expect distributions to chase every whim from kernel developers, so
-bpftool needed to evolve and prove its usefulness. It has now, so really
-the disappointment should be limited to distributions over the past 12
-months, especially Ubuntu 20.04 (most recent LTS) not having a libbpf
-and bpftool releases. But again, 20.04 was too old for BTF 3 months
-after it was released and that comes back to the bigger question of
-whether bpf is really ready for distributions to support. More below.
-
-Focusing on the future: for Ubuntu (and Debian?) bpftool is in the
-linux-tools-common package. perf has already trained distributions to
-release a tools package with kernel releases. That means bpftool updates
-follow the kernel cadence. bpftool requires libbpf and I believe given
-the feature dependencies will force libbpf versions to follow kernel
-releases, so I believe your goal is going to be achieved by those
-dependencies.
-
-But there is an on-going nagging problem which needs to be acknowledged
-and solved. As an *example*, Ubunutu has kernel updates to get new
-hardware support (HWE releases). Updating kernels on an LTS is
-problematic when the kernel update requires toolchain updates to
-maintain features (DEBUG_INFO_BTF) and library updates to get tools for
-that kernel version working. That is a huge disruption to their
-customers who want stability — the whole reason for LTS distributions.
-
-
-
-
+Tested-by: Camelia Groza <camelia.groza@nxp.com>
