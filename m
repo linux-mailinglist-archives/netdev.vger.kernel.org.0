@@ -2,131 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89AD72AF72C
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 18:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 925102AF73F
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 18:14:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727566AbgKKRFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 12:05:21 -0500
-Received: from mail-eopbgr00112.outbound.protection.outlook.com ([40.107.0.112]:45497
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727513AbgKKRFS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Nov 2020 12:05:18 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZY7g/wXc5WtgG55Np47alQgbnMmeOQA1jXDJUv6vzyFvE7x7PU1t/IrY/IuYKuiW6pIYl4Uy5U2wDC5dLEqS6F773dI1La7mCw9213bb3984QoVN4V88m9w+vLhKlYXYqZyeBHM44bPcKy2qFGQjVdZQ6U8BlEHU4RAK+/xpvdaked76yjHSvg/nXSNwXxu0m3IwinDqVq9SVCqK3E/0QtkEMU/HrJsPMhg0Gg3yRLr+sNr6KN/zcF64Gv5NvVWwjRzNG5DZd35hICVMVrwbhaMOn5YY72JoS7faxBm66C2BDU+Deo/tA/kDQFTFvYBviyqVCHpMCL8LMTrmhrHKoQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ASVDWPz8RaTBk+vB7+8fCVTfRs2E3tTi8roz6xqgeI8=;
- b=RxfadpcVr7yCmYg8paAyY7WDOsbkghwobrpCLjtSRW1g25KoYARsa582mldNXwNbooVL5uu2ByzmPuKxV2sUE6TTlzIXs/THnK36A54Nb5DZY65B2DtzPoq/VNn7wimFQ7Kv08u00Nuqr5Pja1aP0dXLnbok2+wJpomqPAZlu2BuOFJdOiMMC/ByZsueuPtmrcljpVb7gpN2HYGnOEsuCy2lTlaudA5Y4VrtHDfw89KYdyS/w9/4auRhIcJV3aXlRLtEO9A3INIklwD0rveY6Kcov9ymTCwP04Rdwi62mb+7ou9/CVq4tcfb7fjenPCmR5QAc/tDi6ZcczxtlkC1oQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=voleatech.de; dmarc=pass action=none header.from=voleatech.de;
- dkim=pass header.d=voleatech.de; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=voleatech.de;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ASVDWPz8RaTBk+vB7+8fCVTfRs2E3tTi8roz6xqgeI8=;
- b=gBWSqlEEME5bKVEYGXbLYw4/1f+GYP72mbixrqyJc/XQn2th7Y5KRyKHQ923zK3US7ib/yXFvzEUM/kLgxfoRXQbUDzKXGxRpbTEMP3S/Lv+l8oKlbjjjmbrwqZYCjFNFiE3tqltEgMpoYDiUb7n8eIKiOmvA+AjNkFWSSbVo4A=
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=voleatech.de;
-Received: from AM8PR05MB7251.eurprd05.prod.outlook.com (2603:10a6:20b:1d4::23)
- by AM0PR0502MB3921.eurprd05.prod.outlook.com (2603:10a6:208:17::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.30; Wed, 11 Nov
- 2020 17:05:01 +0000
-Received: from AM8PR05MB7251.eurprd05.prod.outlook.com
- ([fe80::f132:2cc:34f2:5e4]) by AM8PR05MB7251.eurprd05.prod.outlook.com
- ([fe80::f132:2cc:34f2:5e4%7]) with mapi id 15.20.3541.025; Wed, 11 Nov 2020
- 17:05:01 +0000
-From:   sven.auhagen@voleatech.de
-To:     anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
-        kuba@kernel.org
-Cc:     davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        sandeep.penigalapati@intel.com, brouer@redhat.com,
-        pmenzel@molgen.mpg.de
-Subject: [PATCH v4 6/6] igb: avoid transmit queue timeout in xdp path
-Date:   Wed, 11 Nov 2020 18:04:53 +0100
-Message-Id: <20201111170453.32693-7-sven.auhagen@voleatech.de>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
-In-Reply-To: <20201111170453.32693-1-sven.auhagen@voleatech.de>
-References: <20201111170453.32693-1-sven.auhagen@voleatech.de>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [37.209.79.82]
-X-ClientProxiedBy: FR2P281CA0013.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::23) To AM8PR05MB7251.eurprd05.prod.outlook.com
- (2603:10a6:20b:1d4::23)
+        id S1727248AbgKKROV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 12:14:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60160 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727153AbgKKROT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 12:14:19 -0500
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C26EC0613D1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 09:14:19 -0800 (PST)
+Received: by mail-ed1-x542.google.com with SMTP id b9so3078084edu.10
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 09:14:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=DJPo9AErnWcrp3zz1/wLtf0Pi/Gk2wugzOoosq2kUeY=;
+        b=cqGcauJrK/bhBtMhZdU+uXDVmB3ymWj4LoQ5DK6RK5eHZYp+qPVvvw6i99JO0tWmMp
+         6b4jQ9TLR793cb8GZPgX3NrUL7iO9bTMKDQNixJPhMlUHk5YGIiKCsHQq+TGydrTuyCn
+         9CFIVyEGgvqd2zZilpWybZs2yQqZANLJxq9Qfx1EVpI5zLP1+s30brT3YJYT+Xxnzooh
+         icy4xgB1OKaUYD0oPTjSP74edF5KdsY3CuAXOngbqBfo8KFVYABA3RLI5IAWdRJy6sRq
+         Nc10xT6TMpxrpFlrUUc6mDD9Iw6JAkgC+49LYFz0yzEExnFnNiGAwm3JheyzX0jrYhqT
+         u78A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=DJPo9AErnWcrp3zz1/wLtf0Pi/Gk2wugzOoosq2kUeY=;
+        b=Xb9THDATAUHo4jP36SCfNYefntgVl2baD4k81lxyE0VBBVS3eqMTNhLtFeC92X59xV
+         z+PR2CFfNmT6lDeZ3MUuMZMP2Wkp75bVizOtCd3t+8Sb1TC7q7mhkf5L61pDk+wKzY4P
+         KgukdgPT1PJd66/PFKr/QE22omIlwqNrvYaPloqdy5hbkA+uJGA/UTCOJarKThKt33Z8
+         TxJcLY4VqOt6IBgsUOOfu6sGl2d8Ox9RtEf3iL5iiWOjeQnkCUmTffI0eefZhhoUXYFa
+         ksiqDModa3uGfDzyW9Sagh2ClDgeMXs9ZlB9IFPN51Uk+PpTn5JcdEE92SA6THNSmG1t
+         EOzQ==
+X-Gm-Message-State: AOAM5307sHpMErEY+3exL5/ch9hD3umNJdnkp/Te6uQUWClqE/ggKlV0
+        MtLfj9scMUoe5ayKEY62iyAFiqWHsjc=
+X-Google-Smtp-Source: ABdhPJwFMkVBMDOLvIbbjhCuAe82qs4b5Xd8tfDdoQN8EgrGl8zgIlPLfFqAV28eEJYay0qtRsSv0Q==
+X-Received: by 2002:a05:6402:b35:: with SMTP id bo21mr538468edb.52.1605114858260;
+        Wed, 11 Nov 2020 09:14:18 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id hp27sm1066884ejc.2.2020.11.11.09.14.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Nov 2020 09:14:17 -0800 (PST)
+Date:   Wed, 11 Nov 2020 19:14:16 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Markus =?utf-8?Q?Bl=C3=B6chl?= <markus.bloechl@ipetronik.com>,
+        Ido Schimmel <idosch@idosch.org>, Andrew Lunn <andrew@lunn.ch>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: lan78xx: Disable hardware vlan filtering in
+ promiscuous mode
+Message-ID: <20201111171416.ns4lysezemurdipo@skbuf>
+References: <20201110153958.ci5ekor3o2ekg3ky@ipetronik.com>
+ <20201111074341.24cafaf3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3df0cfa6-cbc9-dddb-0283-9b48fb6516d8@gmail.com>
+ <20201111164727.pqecvbnhk4qgantt@skbuf>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (37.209.79.82) by FR2P281CA0013.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:a::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.21 via Frontend Transport; Wed, 11 Nov 2020 17:05:00 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4cf2ab15-feb3-4e64-32d0-08d88663ed17
-X-MS-TrafficTypeDiagnostic: AM0PR0502MB3921:
-X-Microsoft-Antispam-PRVS: <AM0PR0502MB392132E38D785DD47C80013DEFE80@AM0PR0502MB3921.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5CpW6J6A3xp1nouX7YzDoKKAuI3EvbZKm+Pm6rceiMfiRcY1q2wEshuO2nlbyvv16y64uq7cdrj1qEjrkMvhaKlvtZtYT6rSFyOiUAfjOvA0QQ9OuIRldn22Zb2ucbTuqThbPSB39onH5CzsQaJF2c/AxCgxMc/eDCZGEYAvnrZuZeog/ArWw7cd5uGAnJ3sohal2vbD37opTdmjDsxuV0M/l3qghfuOnGXkDIm9IzZqEDWFHkhl9jLMFFHLQasSUIWU6G+IZ8Jao4bGJ2glIy9MgiB5X4n0s1ceUnltk8b3hrmDXgcSin71ULIMJ6sNuaMCOR9IiVzTrt00/m3Ci13GFJ3YY44efPMsYRoqoCWNkZoleEn2RVGfz303FDVR
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR05MB7251.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(346002)(396003)(366004)(39830400003)(376002)(16526019)(186003)(5660300002)(52116002)(69590400008)(316002)(8676002)(4326008)(66556008)(7416002)(86362001)(66476007)(66946007)(478600001)(83380400001)(9686003)(1076003)(6666004)(8936002)(26005)(956004)(6506007)(2906002)(2616005)(36756003)(6512007)(6486002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: TrFf9LEZp05mrnMfCYczrd7adv1PyWU8M5ZrXK6Ipr4ip5HcksfPzYL3J1aj8hq6JkKUDAgq2IU4qvmR+hxzFkFk/983UleGZN6kAcRg/bXDb4f5u8PLVuC0oa7WrLOEBF0YCt8FKpf8pyI7fIRYdDRXuI1EwsxuNwR0mAdr2yHBdLKbONV6ZHeeGrzdMdzH4qHcxWNn9vMeXEF9yQ4OgYEM/bjUNO8oWz+ETnSOqOOY2GobwrPc4nafNohqYTgQnHg0EQp6xJsMSJGOzuAPr9iiFx5ph2gbumoMkdI3qdjLBKaJngay+trV52bAPZZ74M0LUsG3KbFJixhzNcOG7+FLKoEZ5L6H66Oqc6D2cdPIT9/zcrs6cu/htKHOVnbNF/QtyiD23KTiqZjnmO3MKs2XnOgKZyVo44b6xVyA+yjyMTMs0n32uY17y48hbJUtRQNdWRdOsl3M7JGK0/dcxFyzV+qLiqrGsFQzraHOn1cdPi+BngyCc3iWY0TZx1LRL7z4Dt1kykRr8Rfq0ldp9yfc6KMKw6eKmjW4DbvtpIAG5tAffbdfqWI3UpgsQ8M1EauUtcjI+yAOTWD0edDeuah2Dyvnh2AOaH0NzvE0dAQO4vHV+NZa43pEx5SX9R9GH5Yu5aeK28kteiK+Tb+FiQ==
-X-OriginatorOrg: voleatech.de
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cf2ab15-feb3-4e64-32d0-08d88663ed17
-X-MS-Exchange-CrossTenant-AuthSource: AM8PR05MB7251.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2020 17:05:01.3337
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: b82a99f6-7981-4a72-9534-4d35298f847b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ICRdfNfN//IvxPmMyQlobgO+AAjI932oeYBbDmQwUGHxGIrC05g89AG3hLTLXlVW7HQX/3kk/TQi8hRpLr1b6rfVMGWDoKkL5cMuQtCK17g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB3921
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201111164727.pqecvbnhk4qgantt@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Auhagen <sven.auhagen@voleatech.de>
+On Wed, Nov 11, 2020 at 06:47:27PM +0200, Vladimir Oltean wrote:
+> On Wed, Nov 11, 2020 at 07:56:58AM -0800, Florian Fainelli wrote:
+> > The semantics of promiscuous are pretty clear though, and if you have a
+> > NIC with VLAN filtering capability which could prevent the stack from
+> > seeing *all* packets, that would be considered a bug. I suppose that you
+> > could not disable VLAN filtering but instead install all 4096 - N VLANs
+> > (N being currently used) into the filter to guarantee receiving those
+> > VLAN tagged frames?
+> 
+> Are they?
+> 
+> IEEE 802.3 clause 30.3.1.1.16 aPromiscuousStatus says:
+> 
+> APPROPRIATE SYNTAX:
+> BOOLEAN
+> 
+> BEHAVIOUR DEFINED AS:
+> A GET operation returns the value “true” for promiscuous mode enabled, and “false” otherwise.
+> 
+> Frames without errors received solely because this attribute has the value “true” are counted as
+> frames received correctly; frames received in this mode that do contain errors update the
+> appropriate error counters.
+> 
+> A SET operation to the value “true” provides a means to cause the LayerMgmtRecognizeAddress
+> function to accept frames regardless of their destination address.
+> 
+> A SET operation to the value “false” causes the MAC sublayer to return to the normal operation
+> of carrying out address recognition procedures for station, broadcast, and multicast group
+> addresses (LayerMgmtRecognizeAddress function).;
+> 
+> 
+> As for IEEE 802.1Q, there's nothing about promiscuity in the context of
+> VLAN there.
+> 
+> Sadly, I think promiscuity refers only to address recognition for the
+> purpose of packet termination. I cannot find any reference to VLAN in
+> the context of promiscuity, or, for that matter, I cannot find any
+> reference coming from a standards body that promiscuity would mean
+> "accept all packets".
 
-Since we share the transmit queue with the network stack,
-it is possible that we run into a transmit queue timeout.
-This will reset the queue.
-This happens under high load when XDP is using the
-transmit queue pretty much exclusively.
+I realize I did not tell you what the LayerMgmtRecognizeAddress function
+does.
 
-netdev_start_xmit() sets the trans_start variable of the
-transmit queue to jiffies which is later utilized by dev_watchdog(),
-so to avoid timeout, let stack know that XDP xmit happened by
-bumping the trans_start within XDP Tx routines to jiffies.
+function LayerMgmtRecognizeAddress(address: AddressValue): Boolean;
+begin
+	if {promiscuous receive enabled} then LayerMgmtRecognizeAddress := true;
+	if address = ... {MAC station address} then LayerMgmtRecognizeAddress := true;
+	if address = ... {Broadcast address} then LayerMgmtRecognizeAddress := true;
+	if address = ... {One of the addresses on the multicast list and multicast reception is enabled} then LayerMgmtRecognizeAddress := true;
+	LayerMgmtRecognizeAddress := false
+end; {LayerMgmtRecognizeAddress}
 
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Markus complained about the tcpdump program in particular. Well, tcpdump
+is a complex beast, and far too often, people seem to conflate tcpdump
+with promiscuity, even though:
+- promiscuity is not what enables tcpdump to see "all packets" being
+  sent/received by the network stack on that interface, but ETH_P_ALL
+  sockets are what do the magic there
+- tcpdump also has a --no-promiscuous-mode option.
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index b6c793441585..74f0f06bedff 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -2919,6 +2919,8 @@ static int igb_xdp_xmit_back(struct igb_adapter *adapter, struct xdp_buff *xdp)
- 
- 	nq = txring_txq(tx_ring);
- 	__netif_tx_lock(nq, cpu);
-+	/* Avoid transmit queue timeout since we share it with the slow path */
-+	nq->trans_start = jiffies;
- 	ret = igb_xmit_xdp_ring(adapter, tx_ring, xdpf);
- 	__netif_tx_unlock(nq);
- 
-@@ -2951,6 +2953,9 @@ static int igb_xdp_xmit(struct net_device *dev, int n,
- 	nq = txring_txq(tx_ring);
- 	__netif_tx_lock(nq, cpu);
- 
-+	/* Avoid transmit queue timeout since we share it with the slow path */
-+	nq->trans_start = jiffies;
-+
- 	for (i = 0; i < n; i++) {
- 		struct xdp_frame *xdpf = frames[i];
- 		int err;
--- 
-2.20.1
-
+I would expect that tcpdump could gain a feature to disable (even if
+temporarily) the rx-vlan-filter offload, through an ethtool netlink
+message. Then users could get what they expect.
