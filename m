@@ -2,92 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98DAD2AE531
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 01:59:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC2F82AE535
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 02:01:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732341AbgKKA70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 19:59:26 -0500
-Received: from smtp1.emailarray.com ([65.39.216.14]:51794 "EHLO
-        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730894AbgKKA70 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 19:59:26 -0500
-Received: (qmail 33220 invoked by uid 89); 11 Nov 2020 00:59:24 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 11 Nov 2020 00:59:24 -0000
-Date:   Tue, 10 Nov 2020 16:59:22 -0800
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Victor Stewart <v@nametag.social>
-Cc:     netdev@vger.kernel.org
-Subject: Re: MSG_ZEROCOPY_FIXED
-Message-ID: <20201111005922.h55aiqcs325bvhk7@bsd-mbp.dhcp.thefacebook.com>
-References: <CAM1kxwjkJndycnWWbzBFyAap9=y13DynF=SMijL1=3SPpHbvdw@mail.gmail.com>
- <20201111000902.zs4zcxlq5ija7swe@bsd-mbp.dhcp.thefacebook.com>
- <CAM1kxwh9+fu1O=rG9=HuEnp8c0E2_xvyZpTq=ehX+r5pmNiMLg@mail.gmail.com>
+        id S1732322AbgKKBAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 20:00:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47786 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730254AbgKKBAz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 20:00:55 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9B38621741;
+        Wed, 11 Nov 2020 01:00:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605056454;
+        bh=qZcSZhfA5h13Su5Lmd0qP28DKQxMEDIE6EFD9WX1W4Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dmvgQQO/Z55JTZt7PCpAPXJaFBulDoPZenqBLYhVWuA9aXb60LDSHqof8QSxB9CRD
+         Ocf8LtcweCDygClzG5CGYzvBd52jsoyrelxSqHLBDmMScilTW0sbvkwt8X+YK0KTST
+         Ddj7lnNTnzFAJY+jDe9w3rRDLzCwxO5T9zzdOeyk=
+Date:   Tue, 10 Nov 2020 17:00:52 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     menglong8.dong@gmail.com
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andrii@kernel.org,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Menglong Dong <dong.menglong@zte.com.cn>
+Subject: Re: [PATCH] net: sched: fix misspellings using misspell-fixer tool
+Message-ID: <20201110170052.4f471497@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <5fa8e9d4.1c69fb81.5d889.5c64@mx.google.com>
+References: <5fa8e9d4.1c69fb81.5d889.5c64@mx.google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM1kxwh9+fu1O=rG9=HuEnp8c0E2_xvyZpTq=ehX+r5pmNiMLg@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 11, 2020 at 12:20:22AM +0000, Victor Stewart wrote:
-> On Wed, Nov 11, 2020 at 12:09 AM Jonathan Lemon
-> <jonathan.lemon@gmail.com> wrote:
-> >
-> > On Sun, Nov 08, 2020 at 05:04:41PM +0000, Victor Stewart wrote:
-> > > hi all,
-> > >
-> > > i'm seeking input / comment on the idea of implementing full fledged
-> > > zerocopy UDP networking that uses persistent buffers allocated in
-> > > userspace... before I go off on a solo tangent with my first patches
-> > > lol.
-> > >
-> > > i'm sure there's been lots of thought/discussion on this before. of
-> > > course Willem added MSG_ZEROCOPY on the send path (pin buffers on
-> > > demand / per send). and something similar to what I speak of exists
-> > > with TCP_ZEROCOPY_RECEIVE.
-> > >
-> > > i envision something like a new flag like MSG_ZEROCOPY_FIXED that
-> > > "does the right thing" in the send vs recv paths.
-> >
-> > See the netgpu patches that I posted earlier; these will handle
-> > protocol independent zerocopy sends/receives.  I do have a working
-> > UDP receive implementation which will be posted with an updated
-> > patchset.
+On Mon,  9 Nov 2020 02:02:17 -0500 menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <dong.menglong@zte.com.cn>
 > 
-> amazing i'll check it out. thanks.
+> Some typos are found out by misspell-fixer tool:
 > 
-> does your udp zerocopy receive use mmap-ed buffers then vm_insert_pfn
-> / remap_pfn_range to remap the physical pages of the received payload
-> into the memory submitted by recvmsg for reception?
-
-The application mmaps buffers, which are then pinned into the kernel.
-The NIC receives directly into the buffers and then notifies the application.
-
-For completions, the mechanism that I prefer is having one of the
-sends tagged with SO_NOTIFY message.  Then a completion notification is 
-generated when the buffer corresponding to the NOTIFY is released by
-the protocol stack.
-
-The notifiations could be posted as an io_uring CQE.  (work TBD)
-
-> https://lore.kernel.org/io-uring/acc66238-0d27-cd22-dac4-928777a8efbc@gmail.com/T/#t
+> $ misspell-fixer -rnv ./net/sched/
+> ./net/sched/act_api.c:686
+> ./net/sched/act_bpf.c:68
+> ./net/sched/cls_rsvp.h:241
+> ./net/sched/em_cmp.c:44
+> ./net/sched/sch_pie.c:408
 > 
-> ^^ and check the thread from today on the io_uring mailing list going
-> into the mechanics of zerocopy sendmsg i have in mind.
+> Fix typos found by misspell-fixer.
 > 
-> (TLDR; i think it should be io_uring "only" so that we can collapse it
-> into a single completion event, aka when the NIC ACKs the
-> transmission. and exploiting the asynchrony of io_uring is the only
-> way to do this? so you'd submit your sendmsg operation to io_uring and
-> instead of receiving a completion event when the send gets enqueued,
-> you'd only get it upon failure or NIC ACK).
+> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
 
-I think it's likely better to have two completions:
-  "this buffer has been submitted", and 
-  "this buffer is released by the protocol".
-
-This simplifies handling of errors, cancellations, and short writes.
--- 
-Jonathan
+Applied, thanks.
