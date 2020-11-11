@@ -2,74 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DB8C2AF8A3
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 20:02:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBA0D2AF8A8
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 20:05:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726584AbgKKTC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 14:02:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726039AbgKKTC0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 14:02:26 -0500
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9D7C0613D1
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 11:02:26 -0800 (PST)
-Received: by mail-il1-x12a.google.com with SMTP id g7so2919972ilr.12
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 11:02:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wJUhAVU55DlobEIoNA0apAgzB87x0yOG4RBVQwFKl9U=;
-        b=JiqdzJCBytxDnylf4f5YdfkxKDEdWrW+cVoSlIBqFHdwoIh3WK+2lJJJK9vK8r3CpJ
-         CXTm2QbJ3wE2LnlgZYIMqfELaA0pcW4zPumjiupOheTAg63gSAzZBzSnt44NPaBkFRRw
-         JuEXAXsmjz7UTb2kG1yD/x4fzcwd5XrqQHv/POt8abWG/zS5YGPFj8d9c7I66MHXloUV
-         8W+3/Pj0U3GcnuJ19sChH81cy50n8PR2vFN0Su6QQfJNvAxXBg2y5hHXhd8ci6CSKcbP
-         IJ+fbmHNBKTlUETvKjVhQnkyL6zOoicZ5eFAV4d0Q/NSbcBC6bXWPshnB44XK5lCnZ65
-         TZxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wJUhAVU55DlobEIoNA0apAgzB87x0yOG4RBVQwFKl9U=;
-        b=YX+TVNRwJCb1ybXSlid3H/QMv7T4V5hs+U8q+5uJyh8Hq8EnBX9XLFbC+Tttuy1AFN
-         mvBZFrx1Sepdh2/o1Qh5o6wVbHftdEI22Zy2KkAXb7mF43XRf5aQ8xENynSU0OdNDIBH
-         9Ti3+d4pxFY15rHVfXa/b3TLV3dh51Aas8HavcDae0MIEYPAFZUhuavlxSaBhqwHOg3S
-         7KUVLa3WMOFzce/0X/uGO3GHSBabm5qgrV9lguscVrMypxoRLOCKUaEvMboOocruxK43
-         FrHzMYB/cywKqc12E377gHW6AKXhMWgLVjsVm1sAlqn6DNcIFJw8/BzP6Zj0acH4ZUHj
-         6k8g==
-X-Gm-Message-State: AOAM53165xWtTsOxFPWTxC6b8v7uqFOh9Hg2qRf+1VJ36QDts5GVLXz0
-        39MJaVONwuJKMMtPvQZvVmh3OAu+/d/TNmUl40k=
-X-Google-Smtp-Source: ABdhPJzuCxE05/3uyXIW64aRlL+V6nFLpbPvSysQEKc+BmhfnnLhWdbbITwYoQJwWsSmp/RNA8HIc3fqpXPCsK3vibk=
-X-Received: by 2002:a92:ba14:: with SMTP id o20mr20430897ili.268.1605121345616;
- Wed, 11 Nov 2020 11:02:25 -0800 (PST)
+        id S1726134AbgKKTFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 14:05:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35504 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725860AbgKKTFo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Nov 2020 14:05:44 -0500
+Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B461E20797;
+        Wed, 11 Nov 2020 19:05:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605121543;
+        bh=QuYJYy9Z8qTlM956KSHGMy2Godc8Ym5zh6p3LrKqyuQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=M7HVRqraUEo/4Nl3aG8Cczbgfd1ERNf0o1lJ4CZDjWP7NPYvGmqqShocj1UHktTtu
+         F/B8tkIqTKg0aeDU6VbZos6n1JExJL5CKRb/cc7huTLsEieyREm2SZy0juBrzCWq5u
+         WrYE65CZZrH+Jpb/WHP7XNAIX/94TbUEAbG70EEw=
+Received: by mail-oo1-f50.google.com with SMTP id r11so689969oos.12;
+        Wed, 11 Nov 2020 11:05:43 -0800 (PST)
+X-Gm-Message-State: AOAM531S7hj/T28CsLgRtQlQn2P2dtgvmoMpfpzT/GpI+oyR9DA9itHL
+        B0PHc7QzjE+IdMWc3OcAqCZy6PY7ptUFUnTYPA==
+X-Google-Smtp-Source: ABdhPJwypuMzJg/5W47bou8+okjT2kD1Fu5H8ig9wyBUvLsktWN4KwiT9YgDjoH5xW4vcl/eb6Oagrn11jTvnTPXZbE=
+X-Received: by 2002:a4a:1a82:: with SMTP id 124mr18130758oof.81.1605121542885;
+ Wed, 11 Nov 2020 11:05:42 -0800 (PST)
 MIME-Version: 1.0
-References: <1a87f1b4.3d6ab.175b592a271.Coremail.leondyj@pku.edu.cn>
-In-Reply-To: <1a87f1b4.3d6ab.175b592a271.Coremail.leondyj@pku.edu.cn>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 11 Nov 2020 11:02:14 -0800
-Message-ID: <CAM_iQpVzC6PTX8b0cgXO=Pcp_jFCw-UtP__AYyoN7pZLovkqcQ@mail.gmail.com>
-Subject: Re: some question about "/sys/class/net/<iface>/operstate"
-To:     =?UTF-8?B?5p2c6Iux5p2w?= <leondyj@pku.edu.cn>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <20201111130507.1560881-1-mkl@pengutronix.de>
+In-Reply-To: <20201111130507.1560881-1-mkl@pengutronix.de>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 11 Nov 2020 13:05:31 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLCRA4ee5OYzz2FNz+WTRiCa6YEGXDoXB29PC3D9uH6EQ@mail.gmail.com>
+Message-ID: <CAL_JsqLCRA4ee5OYzz2FNz+WTRiCa6YEGXDoXB29PC3D9uH6EQ@mail.gmail.com>
+Subject: Re: pull-request: can 2020-11-11
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        Sascha Hauer <kernel@pengutronix.de>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Shawn Guo <shawnguo@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 10, 2020 at 8:32 PM =E6=9D=9C=E8=8B=B1=E6=9D=B0 <leondyj@pku.ed=
-u.cn> wrote:
+On Wed, Nov 11, 2020 at 7:05 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
 >
-> I want to use inotify to monitor /sys/class/net//operstate  to detect sta=
-tus of a iface in real time.
-> when I ifdown &amp;&amp; ifup eth3, the content of operstate changed, but=
- the file's Modify time didn't change.
-> I don't know the reason, is there any file which can be monitored by inot=
-ify to get iface status in real time?
-> Much appreciation for any advice!
+> Hello,
+>
+> after v5.10-rc1 the flexcan bindings were converted to yaml. This causes
+> several unneeded regressions on i.MX53 based boards and/or SoC specifying the
+> fsl,stop-mode property in their flexcan node.
+>
+> This series fixes these problems by first updating the affected i.MX SoC dtsi
+> files and then fixing the flexcan yaml binding.
+>
+> After I got the OK from the DT and fsl people, the plan is to upstream this via
+> net/master. If this is not an option, I'll send individual patches.
 
-You need to listen to netdev netlink messages for changes like
-this. These messages are generated in real-time.
+There's no need for dts changes to go into 5.10. dtbs_check is nowhere
+near warning free yet. They should go via the soc tree. The schema
+fixes do need to go in and I can take them. However, all the issues
+still aren't fixed:
 
-Thanks.
+Documentation/devicetree/bindings/clock/imx5-clock.example.dt.yaml:
+can@53fc8000: compatible: 'oneOf' conditional failed, one must be
+fixed:
+        ['fsl,imx53-flexcan', 'fsl,p1010-flexcan'] is too long
+        Additional items are not allowed ('fsl,p1010-flexcan' was unexpected)
+        'fsl,imx53-flexcan' is not one of ['fsl,imx7d-flexcan',
+'fsl,imx6ul-flexcan', 'fsl,imx6sx-flexcan']
+        'fsl,imx53-flexcan' is not one of ['fsl,ls1028ar1-flexcan']
+        'fsl,imx25-flexcan' was expected
+        'fsl,imx6q-flexcan' was expected
+        'fsl,lx2160ar1-flexcan' was expected
+        From schema:
+/home/rob/proj/git/linux-dt/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
+
+Either the imx5-clock.yaml example needs changing or the schema does.
+I'm guessing it's the former. I've applied the 2 schema patches here.
+
+Rob
