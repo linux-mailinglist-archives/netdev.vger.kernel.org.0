@@ -2,143 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 927BF2AFBF7
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:31:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 845962AFD5A
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:55:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726251AbgKLBbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 20:31:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727194AbgKKWqp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 17:46:45 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B2CC040208;
-        Wed, 11 Nov 2020 14:37:53 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id o71so3116040ybc.2;
-        Wed, 11 Nov 2020 14:37:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N5VYtEHc8PJh6B9Pxwlx+Xskau4NMSgJa2pe+N/+0hQ=;
-        b=mIC6jicwNMDMYFiuiMuBACCgPbD4hSINY8bHnJF3OU19jk/QMCYS7pM4BqBYavjA0W
-         pHxyF+5JWJ8hwLLq8P+ss5fOJeI9XR3Ao4i+1Qehu4nmX3b2R4SR6OlZatgHcBT+Z1MD
-         gAhYz1nodwBBFDlSTR5wkXAbX3s2h30wOkMt0Nl3Gx5gN0WuFqgPKmdajV5Fqp5EkdKL
-         DbkVkXX2DJ82y3plY4hdjt4ShFcoj1g7LOgV7GjgWklZ0FHTLCtzaDaFqkMlvVsFwSKF
-         Cam5QJUDpkf0ccxOJVmYz5OL0RQ4cnwrBEG8pgOLj+kmKXOEy1qW9ZMcrkguIMBBkY95
-         YbjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N5VYtEHc8PJh6B9Pxwlx+Xskau4NMSgJa2pe+N/+0hQ=;
-        b=WgQ+XSsYE2loy5eJGekzcKizIxnNM0HHKr9TlsT4HbEGtLLMPhFLh8FtVSVSNx2/cu
-         3QbVq5XwDGglodZVtn27r5EVXlOPtEFvhkwMEsk+sQ6POun/tuZUwSqFcGi6KKgThoPo
-         HbyEkFD4gGCXZUgCRM3JXcDpwi0SVDt1qS5ZGGcR2M43uGr91HSwfeRXvOOPtZyMkrwH
-         9NHmUZFdxOLGAcrm91VlWaJig9NCSuLZ7ZcEV0Z+8QscmTZ/eSCzL028Wez30jByJIM6
-         04uJx/HX6e/5ax/I2bApE1kDm5afAmqvaAl/F1eUx3Mcz82Jg1cPNwUr51NQcTKcL7kA
-         PVLA==
-X-Gm-Message-State: AOAM533FnOHm0GxSX+6EvwB6TYOdna3KBFNimIEFubyJzQLcuJEOZbJ4
-        0XItsjKKwKx9LrLoEJl2fQuc6oLRUI1z3N9lXgk=
-X-Google-Smtp-Source: ABdhPJzceVMSitP9WEByfMfPlKfV3tIMI46eRigsyjAZap2rw9WtaR+Alr/UeVY1x+3FV4YmkQ5rHafJEb0fbziZqJQ=
-X-Received: by 2002:a25:e701:: with SMTP id e1mr12067008ybh.510.1605134272385;
- Wed, 11 Nov 2020 14:37:52 -0800 (PST)
+        id S1726834AbgKLBbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 20:31:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45216 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726671AbgKKWt6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Nov 2020 17:49:58 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3526120679;
+        Wed, 11 Nov 2020 22:49:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605134997;
+        bh=GsA+4wgtfMwtneyzD+NwV724aS0h4OluJ/jzxrmT9SA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=v9aMfMpRGazvep19rwa8B4OnmWsXgSPGEm/2E6x05twYIUXJRi0EdMytxYSxeKt3e
+         UVj3+5wWJVmiqnwqaMnkIl6N4RB3eoQYKT6Ujcz7l3ctK7D2pQ+KQVwyOHboltyMKv
+         Ue7/G/7GY977LynNExUUFsxUuI0Egaa4f6AZB7Yo=
+Date:   Wed, 11 Nov 2020 14:49:56 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Wang Hai <wanghai38@huawei.com>
+Cc:     <jmaloy@redhat.com>, <ying.xue@windriver.com>,
+        <davem@davemloft.net>, <tipc-discussion@lists.sourceforge.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] tipc: fix memory leak in tipc_topsrv_start()
+Message-ID: <20201111144956.33f6ca58@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201109140913.47370-1-wanghai38@huawei.com>
+References: <20201109140913.47370-1-wanghai38@huawei.com>
 MIME-Version: 1.0
-References: <20201111135425.56533-1-wanghai38@huawei.com> <6a589c0b-e2fb-5766-542b-62f40b16253a@iogearbox.net>
-In-Reply-To: <6a589c0b-e2fb-5766-542b-62f40b16253a@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 11 Nov 2020 14:37:41 -0800
-Message-ID: <CAEf4BzZ_Fhzg=f437fS0rZANk5ZDAfTv_T3f9Hm6LCLO23pm-g@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf] tools: bpftool: Add missing close before bpftool
- net attach exit
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Wang Hai <wanghai38@huawei.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Michal Rostecki <mrostecki@opensuse.org>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        KP Singh <kpsingh@chromium.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        "Daniel T. Lee" <danieltimlee@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 11, 2020 at 1:24 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 11/11/20 2:54 PM, Wang Hai wrote:
-> > progfd is created by prog_parse_fd(), before 'bpftool net attach' exit,
-> > it should be closed.
-> >
-> > Fixes: 04949ccc273e ("tools: bpftool: add net attach command to attach XDP on interface")
-> > Signed-off-by: Wang Hai <wanghai38@huawei.com>
-> > ---
-> > v2->v3: add 'err = 0' before successful return
-> > v1->v2: use cleanup tag instead of repeated closes
-> >   tools/bpf/bpftool/net.c | 18 +++++++++++-------
-> >   1 file changed, 11 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
-> > index 910e7bac6e9e..f927392271cc 100644
-> > --- a/tools/bpf/bpftool/net.c
-> > +++ b/tools/bpf/bpftool/net.c
-> > @@ -578,8 +578,8 @@ static int do_attach(int argc, char **argv)
-> >
-> >       ifindex = net_parse_dev(&argc, &argv);
-> >       if (ifindex < 1) {
-> > -             close(progfd);
-> > -             return -EINVAL;
-> > +             err = -EINVAL;
-> > +             goto cleanup;
-> >       }
-> >
-> >       if (argc) {
-> > @@ -587,8 +587,8 @@ static int do_attach(int argc, char **argv)
-> >                       overwrite = true;
-> >               } else {
-> >                       p_err("expected 'overwrite', got: '%s'?", *argv);
-> > -                     close(progfd);
-> > -                     return -EINVAL;
-> > +                     err = -EINVAL;
-> > +                     goto cleanup;
-> >               }
-> >       }
-> >
-> > @@ -597,16 +597,20 @@ static int do_attach(int argc, char **argv)
-> >               err = do_attach_detach_xdp(progfd, attach_type, ifindex,
-> >                                          overwrite);
-> >
-> > -     if (err < 0) {
-> > +     if (err) {
-> >               p_err("interface %s attach failed: %s",
-> >                     attach_type_strings[attach_type], strerror(-err));
-> > -             return err;
-> > +             goto cleanup;
-> >       }
-> >
-> >       if (json_output)
-> >               jsonw_null(json_wtr);
-> >
-> > -     return 0;
-> > +     err = 0;
->
-> Why is the 'err = 0' still needed here given we test for err != 0 earlier?
-> Would just remove it, otherwise looks good.
+On Mon, 9 Nov 2020 22:09:13 +0800 Wang Hai wrote:
+> kmemleak report a memory leak as follows:
+> 
+> unreferenced object 0xffff88810a596800 (size 512):
+>   comm "ip", pid 21558, jiffies 4297568990 (age 112.120s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 ad 4e ad de ff ff ff ff 00 00 00 00  .....N..........
+>     ff ff ff ff ff ff ff ff 00 83 60 b0 ff ff ff ff  ..........`.....
+>   backtrace:
+>     [<0000000022bbe21f>] tipc_topsrv_init_net+0x1f3/0xa70
+>     [<00000000fe15ddf7>] ops_init+0xa8/0x3c0
+>     [<00000000138af6f2>] setup_net+0x2de/0x7e0
+>     [<000000008c6807a3>] copy_net_ns+0x27d/0x530
+>     [<000000006b21adbd>] create_new_namespaces+0x382/0xa30
+>     [<00000000bb169746>] unshare_nsproxy_namespaces+0xa1/0x1d0
+>     [<00000000fe2e42bc>] ksys_unshare+0x39c/0x780
+>     [<0000000009ba3b19>] __x64_sys_unshare+0x2d/0x40
+>     [<00000000614ad866>] do_syscall_64+0x56/0xa0
+>     [<00000000a1b5ca3c>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> 'srv' is malloced in tipc_topsrv_start() but not free before
+> leaving from the error handling cases. We need to free it.
+> 
+> Fixes: 5c45ab24ac77 ("tipc: make struct tipc_server private for server.c")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
 
-This patch was already applied. Wang, can you please follow up with
-another patch to address Daniel's feedback?
-
->
-> > +cleanup:
-> > +     close(progfd);
-> > +     return err;
-> >   }
-> >
-> >   static int do_detach(int argc, char **argv)
-> >
->
+Applied, thanks.
