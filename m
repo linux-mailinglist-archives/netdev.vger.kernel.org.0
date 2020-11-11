@@ -2,155 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D7D92AFA16
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 21:56:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D61452AFA41
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 22:17:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726201AbgKKU4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 15:56:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38068 "EHLO
+        id S1725981AbgKKVRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 16:17:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725933AbgKKU4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 15:56:18 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02385C0613D1
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 12:56:18 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id t9so3765307edq.8
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 12:56:17 -0800 (PST)
+        with ESMTP id S1725933AbgKKVRa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 16:17:30 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86936C0613D1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 13:17:30 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id f38so2284660pgm.2
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 13:17:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=0/KKpH3B4lHx3pgxOOzqHzJj6OUY1rYiLih/Lmvwi8I=;
-        b=F4CQIVnDeNn4+LNVFHegnFcKEaXVyzywEASdmcPbmg24GM0OBeBSycQ/40L829qh8W
-         goY3/GGZiAwBIaGOoa0DPI6DOI1/doNyErmV5xj7XaZlTn/m1OAwSZhXQ/JNLr2THdO+
-         UMcEIEikiTJ3hqU8TiwUp2J+h+tSrmqV7WIFCdTXD8icWfvLziEmEaG5/iHqfu/Pwuay
-         PfFoWOu5Ty0bHt4PvCAE/IaV8Ihn4uGx/cYm3lJ0FRWAvh83pXJlsqzFee3Ur28PczDe
-         e5h8dh7g1Qnjg+GH8BNj4b4b9vGbrDpAwc+3mMla8HX0DcBg0VG59pKYpy9x49TW6Lwu
-         A/Cw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xKeSXUoPTb94VTZzArvQrdZOaZO1ARIP1gC1bThDFN0=;
+        b=mEj+tQabiKrVPWL8ricFSm6QbRsIn9cB6UT88mz+ItP8ieG0GP7Y0/YecF1lvZvFxR
+         SBQVSeplO78hEJR4u4dD8ABWa5NB5rPNyF8CfTSYLyhZLn24W8Xl9PJFbtUtfa1fDLEy
+         HTAa2/fiv4LVqNF51B1sm+bNWjyCgffxJPSxddawWU4DaLfSgjU2an1VcYJ5POeBXDNZ
+         3L2v6cUzlb/1FGI2nyLCLasXbe2ry+K7bNyifA92BgObPWVOWvrQTew+NgMteLssDHhb
+         46QbYDL/yXJE0Ibu8a7DNPVRsw1IIOrweGBBBa/MdAGiHwm1nWnnQruHufyct4cwHSPD
+         F8EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=0/KKpH3B4lHx3pgxOOzqHzJj6OUY1rYiLih/Lmvwi8I=;
-        b=p7AZNEfhkPQXvUWMpMT0H01JqjCrft0NPKuvGhubgVTTJRuH5kp7f/2dzVxmXoHXoP
-         JK0/R2W/BqNEuPkaGyOtJwWdwatPiHrrqoU0TGkSI5N7EUbiJcyrRJ93NsdVir8UDg4D
-         AnQTHUiE2al74Edb4cPJCxg8TJuU74tJM9Y6JJJLLCMMch7+P2wNpdeSBcle/lKxPJiI
-         9D2NJxHN1nUefYvy+C8G7F8/RN9vWq0bhKH3U67r7n4g8YpwUPV+OouvobET6xsmpkoH
-         a2ILYPfyOx6oEPDiUU2jDUXVYu0WgoEYFaSq8QATdCmKHPRR2ozjK7nhAD86Rrjq/kfJ
-         wOmw==
-X-Gm-Message-State: AOAM5301wxsYsJkdmlpIe6g2C/V+elA/eq1375qV36/+DUXzqzY0fCXY
-        6DgWVhmCV8Za3yzGC09PeG8qrhGxIXd+Ow==
-X-Google-Smtp-Source: ABdhPJx7NkssOkSG6hMdk/owb8R8w/i72pJ5lLGKoZ0+dgtEIqY8B0hxpybu3w8GB1nwNd/CVZ3EcA==
-X-Received: by 2002:a50:d587:: with SMTP id v7mr1486894edi.38.1605128176350;
-        Wed, 11 Nov 2020 12:56:16 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:b8a2:2ad2:2cb8:3612? (p200300ea8f232800b8a22ad22cb83612.dip0.t-ipconnect.de. [2003:ea:8f23:2800:b8a2:2ad2:2cb8:3612])
-        by smtp.googlemail.com with ESMTPSA id x2sm1302276ejb.86.2020.11.11.12.56.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Nov 2020 12:56:15 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH RFC] net: core: support managed resource allocation in
- ndo_open
-Message-ID: <1151799e-7faa-3d86-c610-9b9ebbd62637@gmail.com>
-Date:   Wed, 11 Nov 2020 21:56:10 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xKeSXUoPTb94VTZzArvQrdZOaZO1ARIP1gC1bThDFN0=;
+        b=e3k09C4et62Zr+eEraf3ZiU6ktR0jss/TLEUavX7+yWCIVw97haA4qDDCCnRIHe5ac
+         kOnuLQvKWlxv40Y2bXTF2Bfxkc4+q/dy8CEF8ZIcTtLYdG5+PFAwpAeQRJBP2Z1S0mSo
+         fyocXUh7q49BMM5kb6S2ue/7CcPpIjyhK1yK/7zVWJnb2HH2A3MBkiLJRI3fB1yBfb/A
+         gNghYyCk6i15C81olPH0CNYXP5ehjXGY5+X/96y4III5rnw1oN8FINL22Y6Jtd4zk0hp
+         QpAWpPmjxQbdCppKU58OlLFI4Ip8mnSE+twW78qsPNQJNUDCQvJrQGT2hr5cEjfm53S3
+         Pfww==
+X-Gm-Message-State: AOAM533wnHU7B8QzEDG8lbAwMaaU/5Pur8tFJ1HLsfJWEziwCO/DnTze
+        LP5hatyLTgyBEcljYkaUJnIBIw==
+X-Google-Smtp-Source: ABdhPJyr/nmYBCSLIlqS8cvY75Jv9KTjZ2ftDsM3qoqfe5nvQbqssqXFDwCYzdAGnxSHEySZH3uucw==
+X-Received: by 2002:a17:90a:1bc3:: with SMTP id r3mr5859850pjr.196.1605129449739;
+        Wed, 11 Nov 2020 13:17:29 -0800 (PST)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id y201sm3462776pfb.2.2020.11.11.13.17.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Nov 2020 13:17:29 -0800 (PST)
+Date:   Wed, 11 Nov 2020 13:17:24 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Erik Kline <ek@loon.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        =?UTF-8?B?5p2c6Iux5p2w?= <leondyj@pku.edu.cn>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: some question about "/sys/class/net/<iface>/operstate"
+Message-ID: <20201111131724.3ee61c26@hermes.local>
+In-Reply-To: <CAAedzxoW76P7jk3k4auR+DY_829FKwVLBi6uDzn7C2Y6381=YQ@mail.gmail.com>
+References: <1a87f1b4.3d6ab.175b592a271.Coremail.leondyj@pku.edu.cn>
+        <CAM_iQpVzC6PTX8b0cgXO=Pcp_jFCw-UtP__AYyoN7pZLovkqcQ@mail.gmail.com>
+        <20201111115520.08b58818@hermes.local>
+        <CAAedzxoW76P7jk3k4auR+DY_829FKwVLBi6uDzn7C2Y6381=YQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quite often certain resources (irq, bigger chunks of memory) are
-allocated not at probe time but in ndo_open. This requires to relaese
-such resources in the right order in ndo_stop(), and in ndo_open()
-error paths. Having said that the requirements are basically the same
-as for releasing probe-time allocated resources in remove callback
-and probe error paths.
-So why not use the same mechanism to faciliate this? We have a big
-number of device-managed resource allocation functions, so all we
-need is a device suited for managed ndo_open resource allocation.
-This RFC patch adds such a device to struct net_device. All we need
-is a dozen lines of code. Resources then can be allocated with e.g.
+On Wed, 11 Nov 2020 12:34:51 -0800
+Erik Kline <ek@loon.com> wrote:
 
-struct device *devm = &dev->devres_up;
-devm_kzalloc(devm, size, gfp);
+> On Wed, Nov 11, 2020 at 11:55 AM Stephen Hemminger
+> <stephen@networkplumber.org> wrote:
+> >
+> > On Wed, 11 Nov 2020 11:02:14 -0800
+> > Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > =20
+> > > On Tue, Nov 10, 2020 at 8:32 PM =E6=9D=9C=E8=8B=B1=E6=9D=B0 <leondyj@=
+pku.edu.cn> wrote: =20
+> > > >
+> > > > I want to use inotify to monitor /sys/class/net//operstate  to dete=
+ct status of a iface in real time.
+> > > > when I ifdown &amp;&amp; ifup eth3, the content of operstate change=
+d, but the file's Modify time didn't change.
+> > > > I don't know the reason, is there any file which can be monitored b=
+y inotify to get iface status in real time?
+> > > > Much appreciation for any advice! =20
+> > >
+> > > You need to listen to netdev netlink messages for changes like
+> > > this. These messages are generated in real-time. =20
+> >
+> > The /sys and /proc are pseudo-filesystems. The file modify time and ino=
+tify do not work
+> > as expected on these files. Cong is right you need to use netlink for t=
+his. =20
+>=20
+> Related question: could/should modify time and/or inotify be made to
+> work?  I genuinely don't know if that would even be possible (separate
+> from "desirable").
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- include/linux/netdevice.h |  2 ++
- net/core/dev.c            | 15 +++++++++++++--
- 2 files changed, 15 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 72643c193..1fd2c1f3d 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1803,6 +1803,7 @@ enum netdev_priv_flags {
-  *	@garp_port:	GARP
-  *	@mrp_port:	MRP
-  *
-+ *	@devres_up:	for managed resource allocation in ndo_open()
-  *	@dev:		Class/net/name entry
-  *	@sysfs_groups:	Space for optional device, statistics and wireless
-  *			sysfs groups
-@@ -2121,6 +2122,7 @@ struct net_device {
- 	struct mrp_port __rcu	*mrp_port;
- #endif
- 
-+	struct device		devres_up;
- 	struct device		dev;
- 	const struct attribute_group *sysfs_groups[4];
- 	const struct attribute_group *sysfs_rx_queue_group;
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 81abc4f98..f2c345579 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -1488,6 +1488,11 @@ void netdev_notify_peers(struct net_device *dev)
- }
- EXPORT_SYMBOL(netdev_notify_peers);
- 
-+static void netdev_release_devres_up(struct device *dev)
-+{
-+	memset(dev, 0, sizeof(*dev));
-+}
-+
- static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
- {
- 	const struct net_device_ops *ops = dev->netdev_ops;
-@@ -1519,14 +1524,18 @@ static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
- 	if (ops->ndo_validate_addr)
- 		ret = ops->ndo_validate_addr(dev);
- 
-+	device_initialize(&dev->devres_up);
-+	dev->devres_up.release = netdev_release_devres_up;
-+
- 	if (!ret && ops->ndo_open)
- 		ret = ops->ndo_open(dev);
- 
- 	netpoll_poll_enable(dev);
- 
--	if (ret)
-+	if (ret) {
-+		put_device(&dev->devres_up);
- 		clear_bit(__LINK_STATE_START, &dev->state);
--	else {
-+	} else {
- 		dev->flags |= IFF_UP;
- 		dev_set_rx_mode(dev);
- 		dev_activate(dev);
-@@ -1606,6 +1615,8 @@ static void __dev_close_many(struct list_head *head)
- 		if (ops->ndo_stop)
- 			ops->ndo_stop(dev);
- 
-+		put_device(&dev->devres_up);
-+
- 		dev->flags &= ~IFF_UP;
- 		netpoll_poll_enable(dev);
- 	}
--- 
-2.29.2
-
+The problem is lots of data changes in /proc and /sys all the time, like ev=
+ery counter
+value. So having any kind of notification would be a major performance hit.
