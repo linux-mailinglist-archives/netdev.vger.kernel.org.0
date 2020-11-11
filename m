@@ -2,216 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5478E2AFA9E
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 22:39:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 574152AFAB9
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 22:50:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbgKKVj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 16:39:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725949AbgKKVj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 16:39:27 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 533C5C0613D1
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 13:39:27 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kcxpm-0007b5-LX; Wed, 11 Nov 2020 22:39:18 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:f584:6a63:cc3a:f86a] (unknown [IPv6:2a03:f580:87bc:d400:f584:6a63:cc3a:f86a])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 6014F590317;
-        Wed, 11 Nov 2020 21:39:16 +0000 (UTC)
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        Sascha Hauer <kernel@pengutronix.de>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Shawn Guo <shawnguo@kernel.org>
-References: <20201111130507.1560881-1-mkl@pengutronix.de>
- <CAL_JsqLCRA4ee5OYzz2FNz+WTRiCa6YEGXDoXB29PC3D9uH6EQ@mail.gmail.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: pull-request: can 2020-11-11
-Message-ID: <e138af95-b924-9d93-1f31-49628179d25b@pengutronix.de>
-Date:   Wed, 11 Nov 2020 22:39:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726276AbgKKVub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 16:50:31 -0500
+Received: from mailout04.rmx.de ([94.199.90.94]:35086 "EHLO mailout04.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726108AbgKKVua (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Nov 2020 16:50:30 -0500
+Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout04.rmx.de (Postfix) with ESMTPS id 4CWdh25qXYz3qcH4;
+        Wed, 11 Nov 2020 22:50:26 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4CWdgw19V5z2xDM;
+        Wed, 11 Nov 2020 22:50:20 +0100 (CET)
+Received: from n95hx1g2.localnet (192.168.54.13) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 11 Nov
+ 2020 22:49:47 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add hardware time stamping support
+Date:   Wed, 11 Nov 2020 22:49:44 +0100
+Message-ID: <5898097.XrYNDCFn2f@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <20201110193245.uwsmrqzio5hco7fb@skbuf>
+References: <20201019172435.4416-1-ceggers@arri.de> <20201110164045.jqdwvmz5lq4hg54l@skbuf> <20201110193245.uwsmrqzio5hco7fb@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <CAL_JsqLCRA4ee5OYzz2FNz+WTRiCa6YEGXDoXB29PC3D9uH6EQ@mail.gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="XapceDl03msKBSSShGu3BzJRC8xzkSEzn"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.13]
+X-RMX-ID: 20201111-225020-4CWdgw19V5z2xDM-0@kdin01
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---XapceDl03msKBSSShGu3BzJRC8xzkSEzn
-Content-Type: multipart/mixed; boundary="aYAkrOwdk19PYEJ6DV8GqfIPGlB0KZ2le";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Rob Herring <robh+dt@kernel.org>
-Cc: netdev <netdev@vger.kernel.org>, David Miller <davem@davemloft.net>,
- Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
- Sascha Hauer <kernel@pengutronix.de>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
- Shawn Guo <shawnguo@kernel.org>
-Message-ID: <e138af95-b924-9d93-1f31-49628179d25b@pengutronix.de>
-Subject: Re: pull-request: can 2020-11-11
-References: <20201111130507.1560881-1-mkl@pengutronix.de>
- <CAL_JsqLCRA4ee5OYzz2FNz+WTRiCa6YEGXDoXB29PC3D9uH6EQ@mail.gmail.com>
-In-Reply-To: <CAL_JsqLCRA4ee5OYzz2FNz+WTRiCa6YEGXDoXB29PC3D9uH6EQ@mail.gmail.com>
+Hi Vladimir,
 
---aYAkrOwdk19PYEJ6DV8GqfIPGlB0KZ2le
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+On Tuesday, 10 November 2020, 20:32:45 CET, Vladimir Oltean wrote:
+> On Tue, Nov 10, 2020 at 06:40:45PM +0200, Vladimir Oltean wrote:
+> > I am fairly confident that this is how your hardware works, because
+> > that's also how peer delay wants to be timestamped, it seems.
+> 
+> So I was confident and also wrong, it appears. My KSZ9477 datasheet
+> says:
+> 
+> In the host-to-switch direction, the 4-byte timestamp field is always
+> present when PTP is enabled, as shown in Figure 4-6. This is true for
+> all packets sent by the host, including IBA packets. The host uses this
+> field to insert the receive timestamp from PTP Pdelay_Req messages into
+> the Pdelay_Resp messages. For all other traffic and PTP message types,
+> the host should populate the timestamp field with zeros.
+> 
+> Hm. Does that mean that the switch updates the originTimestamp field of
+> the Sync frames by itself?
+IMHO this is the best solution. User space / driver do not know the exact time 
+(would require slow I2C transfer). So inserting the time in hardware seems to 
+be the better solution. Maybe this is what the data sheet meant with "egress 
+timestamp insertion".
 
-On 11/11/20 8:05 PM, Rob Herring wrote:
->> after v5.10-rc1 the flexcan bindings were converted to yaml. This caus=
-es
->> several unneeded regressions on i.MX53 based boards and/or SoC specify=
-ing the
->> fsl,stop-mode property in their flexcan node.
->>
->> This series fixes these problems by first updating the affected i.MX S=
-oC dtsi
->> files and then fixing the flexcan yaml binding.
->>
->> After I got the OK from the DT and fsl people, the plan is to upstream=
- this via
->> net/master. If this is not an option, I'll send individual patches.
->=20
-> There's no need for dts changes to go into 5.10. dtbs_check is nowhere
-> near warning free yet. They should go via the soc tree. The schema
-> fixes do need to go in and I can take them. However, all the issues
-> still aren't fixed:
+> Ok... Very interesting that they decided to
+> introduce a field in the tail tag for a single type of PTP message.
 
-Right, this shows up with the dt_binding_check...
+> But something is still wrong if you need to special-case the negative
+> correctionField, it looks like the arithmetic is not done on the correct
+> number of bits, either by the driver or by the hardware.
+> 
+Maybe I found the formula which is (should) applied to the correction field 
+for PDelayResp:
 
-> Documentation/devicetree/bindings/clock/imx5-clock.example.dt.yaml:
-> can@53fc8000: compatible: 'oneOf' conditional failed, one must be
-> fixed:
->         ['fsl,imx53-flexcan', 'fsl,p1010-flexcan'] is too long
->         Additional items are not allowed ('fsl,p1010-flexcan' was unexp=
-ected)
->         'fsl,imx53-flexcan' is not one of ['fsl,imx7d-flexcan',
-> 'fsl,imx6ul-flexcan', 'fsl,imx6sx-flexcan']
->         'fsl,imx53-flexcan' is not one of ['fsl,ls1028ar1-flexcan']
->         'fsl,imx25-flexcan' was expected
->         'fsl,imx6q-flexcan' was expected
->         'fsl,lx2160ar1-flexcan' was expected
->         From schema:
-> /home/rob/proj/git/linux-dt/Documentation/devicetree/bindings/net/can/f=
-sl,flexcan.yaml
->=20
-> Either the imx5-clock.yaml example needs changing or the schema does.
-> I'm guessing it's the former.=20
+correction = correction_old + now + residental_delay + tx_latency - tail_tag
 
-Ack. I've created a patch to fix this:
+<correction_old>: current value from the PTP header
+<now>: Time of the PTP clock when entering the switch
+<residental_delay>: Switching delay
+<Tx latency>: Delay between time stamping unit and wire (configurable via 
+register)
+<tail_tag>: Time stamp in the tail tag
 
-http://lore.kernel.org/r/20201111213548.1621094-1-mkl@pengutronix.de
+The new correction value has been captured with Wireshark. For the measurement 
+I simply halted the internal PTP clock and set it to zero (so it's value is 
+exactly known). In the port's TX time stamp unit I got a non-zero time stamp 
+anyway (between, 10 to 40 ns), so this must be the residential delay.
 
-> I've applied the 2 schema patches here.
+I tested with different values for the correction field and the tail_tag. 
+Negative values are no problem, but the calculation seems no to consider all 
+bits.
 
-Thanks
+Measurements:
+- PTP clock: 0 (frozen)
+- Residential delay: variable
+- TX delay: 45 ns (default)
 
-Marc
+- correction = 0xffff ffff ffff.ffff (-1.xxx ns)
+correction = correction + now + residental_delay + tx_latency - tail_tag
+           =          -1  + 0                 40 +         45          0
+           = 84             (0000 0000 0054)
+           wireshark:       (0000 0000 0054) --> correct
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+correction = correction + now + residental_delay + tx_latency - tail_tag
+           =          -1  + 0                 32 +         45      1.000
+           = -924           (FFFF FFFF FC64)
+           wireshark:       (0000 FFFF FC64) --> wrong
+
+correction = correction + now + residental_delay + tx_latency - tail_tag
+           =          -1  + 0                 24 +         45   2.000.000.000 
+           = -1.926.258.108 (FFFF 8D2F A244)
+           wireshark:       (0000 7B9A CA44) --> wrong
+
+- correction = 0xffff ffff 0000.0000 (-65536.0 ns)
+correction = correction + now + residental_delay + tx_latency - tail_tag
+           =     -65536     0                 24 +         45          0
+           =     -65467     (FFFF FFFF 0045)
+           wireshark:       (FFFF FFFF 0045) --> correct
+
+correction = correction + now + residental_delay + tx_latency - tail_tag
+           =     -65536   + 0                 32 +         45      1.000
+           =     -66459     (FFFF FFFE FC65)
+           wireshark:       (0000 FFFE FC65) --> wrong
 
 
---aYAkrOwdk19PYEJ6DV8GqfIPGlB0KZ2le--
+Please note that the tail tag consist of 2 bits for seconds and 30 bit 
+nanoseconds. So the value of 2.000.000.000 means 1s + 926.258.176 ns.
 
---XapceDl03msKBSSShGu3BzJRC8xzkSEzn
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+As you are better in 2's complement as me, you can give me some more 
+combinations for testing if you need. But in the end it looks like I should 
+keep T2 in the tail tag.
 
------BEGIN PGP SIGNATURE-----
+> And zeroing out the correctionField of the Pdelay_Resp on transmission,
+> to put that value into t_Tail_Tag? How can you squeeze a 48-bit value
+> into a 32-bit value without truncation?
+Only the lower bits are used. As long as PDelayResp doesn't take more than 4 
+seconds, this should be enough.
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+sWf8ACgkQqclaivrt
-76kw2QgAjkLockxPe2IP9goY6XRnRffL8Ote+3Gxysmm0h0C7cJGUhvegZoQ7SKx
-/zF3j9UUgst3IMWVHM/PqUaoGI4Sl3nKpW8amlrfZl6BryeYVr239uqtUhKZTUhe
-B2zhYB8hNizlVO55OCLUVQjiffnCSrAcJrdiKuDCtUKQiTx4hXz4pO1660AYzbpV
-WhWd5DvgzpoJyOxpBHE2wCXUKCVx7t1RXUmZyI6CuI9H8oiw876ktQvfTC51tla9
-PfKTSiYWebO0MC08oFOMxoGZpgN2mYop9gAkH0MHN8SmGJP/705wZcjU1ygqqXx9
-0tvneY7mtH2maYM9VkvKeEEcBP46VA==
-=XdSO
------END PGP SIGNATURE-----
+regards
+Christian
 
---XapceDl03msKBSSShGu3BzJRC8xzkSEzn--
+
+
