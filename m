@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5480B2AE5F9
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 02:45:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB7FE2AE604
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 02:48:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732420AbgKKBpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 20:45:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36550 "EHLO mail.kernel.org"
+        id S1732562AbgKKBse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 20:48:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37098 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731610AbgKKBpD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 20:45:03 -0500
+        id S1731805AbgKKBse (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Nov 2020 20:48:34 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A125721D91;
-        Wed, 11 Nov 2020 01:45:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 27A87216C4;
+        Wed, 11 Nov 2020 01:48:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605059103;
-        bh=ic/a7OlP7uVxoz0DZlnF8Ku42k4DL7dFKQ5vFbygi4c=;
+        s=default; t=1605059313;
+        bh=8ZoXFi19cRFxurUpEO5osza2tLaJVaBLs/a+W0ovF1c=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ItIBu3KedxgUi3HQVDq2fRjNtZkawaNHGlgAf53SwhyxoEE6HXOa/RxwyrzzKHdhH
-         1wQkku5shQJFlvc9MjbI7FCR1xXCY2Kix90s+TciKjQG2r0xNYpur8w3SWRKK3wniU
-         lQSstQx3kXgyPKqB0R5Nk4twvJO8masbKNKDBMW8=
-Date:   Tue, 10 Nov 2020 17:45:01 -0800
+        b=Q+jPt3Nt8m8DXdJcqcPyssEU7Br3tkPgCzb5XIORN1OLhAFgMJknyUmyBrzhIZdjN
+         kcX/8hLGdtUMkj0WJFs99Qe0fAbmTAf7vmho8iFR/BVq6qHO28n9Ez/qgFnwuS6j6k
+         MfSackoKWIR0fOla91sG3lNObegpHFomKRKzTEgM=
+Date:   Tue, 10 Nov 2020 17:48:32 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Mao Wenan <wenan.mao@linux.alibaba.com>,
-        David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net v5] net: Update window_clamp if SOCK_RCVBUF is set
-Message-ID: <20201110174501.703879e8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89iL6UW9mG6hW7f3Yv+32Pe_i9F-5cQhfo2uV68wdcgSuZA@mail.gmail.com>
-References: <CANn89i+ABLMJTEKat=9=qujNwe0BFavphzqYc1CQGtrdkwUnXg@mail.gmail.com>
-        <1604967391-123737-1-git-send-email-wenan.mao@linux.alibaba.com>
-        <CANn89iL6UW9mG6hW7f3Yv+32Pe_i9F-5cQhfo2uV68wdcgSuZA@mail.gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Colin King <colin.king@canonical.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] net: dsa: fix unintended sign extension on a u16
+ left shift
+Message-ID: <20201110174832.437b4951@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87y2jar76v.fsf@kurt>
+References: <20201109124008.2079873-1-colin.king@canonical.com>
+        <87y2jar76v.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,21 +46,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Nov 2020 08:32:52 +0100 Eric Dumazet wrote:
-> On Tue, Nov 10, 2020 at 1:16 AM Mao Wenan <wenan.mao@linux.alibaba.com> wrote:
-> > When net.ipv4.tcp_syncookies=1 and syn flood is happened,
-> > cookie_v4_check or cookie_v6_check tries to redo what
-> > tcp_v4_send_synack or tcp_v6_send_synack did,
-> > rsk_window_clamp will be changed if SOCK_RCVBUF is set,
-> > which will make rcv_wscale is different, the client
-> > still operates with initial window scale and can overshot
-> > granted window, the client use the initial scale but local
-> > server use new scale to advertise window value, and session
-> > work abnormally.
+On Mon, 09 Nov 2020 14:27:52 +0100 Kurt Kanzenbach wrote:
+> On Mon Nov 09 2020, Colin King wrote:
+> > From: Colin Ian King <colin.king@canonical.com>
 > >
-> > Fixes: e88c64f0a425 ("tcp: allow effective reduction of TCP's rcv-buffer via setsockopt")
-> > Signed-off-by: Mao Wenan <wenan.mao@linux.alibaba.com>  
+> > The left shift of u16 variable high is promoted to the type int and
+> > then sign extended to a 64 bit u64 value.  If the top bit of high is
+> > set then the upper 32 bits of the result end up being set by the
+> > sign extension. Fix this by explicitly casting the value in high to
+> > a u64 before left shifting by 16 places.
+> >
+> > Also, remove the initialisation of variable value to 0 at the start
+> > of each loop iteration as the value is never read and hence the
+> > assignment it is redundant.
+> >
+> > Addresses-Coverity: ("Unintended sign extension")
+> > Fixes: e4b27ebc780f ("net: dsa: Add DSA driver for Hirschmann Hellcreek switches")
+> > Signed-off-by: Colin Ian King <colin.king@canonical.com>  
 > 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
 
 Applied, thanks!
