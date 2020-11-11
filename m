@@ -2,87 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20B492AEFBE
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:38:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 932FB2AEFD4
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:42:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726267AbgKKLiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 06:38:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725903AbgKKLiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 06:38:14 -0500
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0280BC0613D1;
-        Wed, 11 Nov 2020 03:38:14 -0800 (PST)
-Received: by mail-pj1-x1041.google.com with SMTP id gv24so572894pjb.3;
-        Wed, 11 Nov 2020 03:38:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gZypMvFGW5/pMKgzZVWPRnEirLifs50mu6u8h37HDmI=;
-        b=UnTeNA+PLFAXevIi/ssqDSio4u1I91tlJqiYr86WRheEHgdSi1G9D5JAIWe7fSq7KS
-         WGumDuvL39rilD2D9i8ViMAyl3L5nWaOpygSnex2HRvvsw3y9Y6ZplBD0FZPzOW/a8m1
-         6R4hT5U9Z9mTGkp/DB0vHNnwieO/dy7qu6bt+5f/MWc2q2k0/NBDXIHrGyaY8zc9Zoys
-         CCYsYqOl+us1cqiYQ6Q4B2M8sudiVVdr/ka/WQanLqSiRbwftnQLTlx++Gd8iZI51/Ew
-         KYXKh2n4YAFj6oXFGrOkAYl9UubhonkSvVH3wva3UFOSScD2Iq+VaHEvB3RZyI+NJcmm
-         37Rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gZypMvFGW5/pMKgzZVWPRnEirLifs50mu6u8h37HDmI=;
-        b=aErBIu+q5CdHmrLFn2Gc3USBi2i6nAqvG5GQdukussEVuJqS7XdtPsTv9XJ4UTLBt+
-         h558490C+lZbjln0Nxx7M9rvfwHUIJco96Rdm3AbGRIDmterTCD5ah9JvB0q1S4PBx83
-         /BdEK9lYlBUaxBc2WK49spTZhHztM6Ph46qtz43Yr6MceeIjD+MkzgxKSXqyTtAOw/hd
-         rA4/sSji2ZLZ3kGe+8DmAgeWEE0W7RUt5GGtzcQpMq6Bm0on9HgfooDA/83Wr3spUg+Z
-         lKBMKqZ92ifJG8AO5rE8ztbhays1kV7EBEXzqAT1egc2DXmrHEd7hk48zo0b5r+rDVqN
-         n1tg==
-X-Gm-Message-State: AOAM530qBA9KLF5eeCtL2UazVBS2Nld/e+X2Zzh5nWldkxFgWQ2k5fsU
-        hcPi+aLCy/S0VQvpUAHuAeY=
-X-Google-Smtp-Source: ABdhPJxRqBAJEOtgIkFC7KGGS6a90xRf3EqjjcEIqmDVsYRL6UWFw+3Hj7I26fx8EY/MJ7o6fFBBzA==
-X-Received: by 2002:a17:90a:fe07:: with SMTP id ck7mr3593991pjb.212.1605094693547;
-        Wed, 11 Nov 2020 03:38:13 -0800 (PST)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:5320:802e:3749:ff39])
-        by smtp.gmail.com with ESMTPSA id x4sm2257499pfm.98.2020.11.11.03.38.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Nov 2020 03:38:13 -0800 (PST)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, xiyuyang19@fudan.edu.cn,
-        linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RESEND PATCH v2] net/x25: Fix null-ptr-deref in x25_connect
-Date:   Wed, 11 Nov 2020 03:38:05 -0800
-Message-Id: <20201111113805.44617-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201109065449.9014-1-ms@dev.tdt.de>
-References: <20201109065449.9014-1-ms@dev.tdt.de>
+        id S1726274AbgKKLl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 06:41:27 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:48917 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725903AbgKKLlX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 06:41:23 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kcoV2-000Arb-Tv; Wed, 11 Nov 2020 12:41:16 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kcoV1-0005Zg-SM; Wed, 11 Nov 2020 12:41:15 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 1BEEB24004B;
+        Wed, 11 Nov 2020 12:41:15 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id A25BD240049;
+        Wed, 11 Nov 2020 12:41:14 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id EC805200AE;
+        Wed, 11 Nov 2020 12:41:13 +0100 (CET)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 11 Nov 2020 12:41:13 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: x25: Fix kernel crashes due to x25_disconnect
+ releasing x25_neigh
+Organization: TDT AG
+In-Reply-To: <20201111100424.3989-1-xie.he.0141@gmail.com>
+References: <20201111100424.3989-1-xie.he.0141@gmail.com>
+Message-ID: <89483cb5fbf9e06edf3108fa4def6eef@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.15
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-ID: 151534::1605094876-0000CF01-6FFAE7B9/0/0
+X-purgate: clean
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This fixes a regression for blocking connects introduced by commit
-> 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect").
+On 2020-11-11 11:04, Xie He wrote:
+> The x25_disconnect function in x25_subr.c would decrease the refcount 
+> of
+> "x25->neighbour" (struct x25_neigh) and reset this pointer to NULL.
+> 
+> However:
+> 
+> 1) When we receive a connection, the x25_rx_call_request function in
+> af_x25.c does not increase the refcount when it assigns the pointer.
+> When we disconnect, x25_disconnect is called and the struct's refcount
+> is decreased without being increased in the first place.
 
-> The x25->neighbour is already set to "NULL" by x25_disconnect() now,
-> while a blocking connect is waiting in
-> x25_wait_for_connection_establishment(). Therefore x25->neighbour must
-> not be accessed here again and x25->state is also already set to
-> X25_STATE_0 by x25_disconnect().
+Yes, this is a problem and should be fixed. As an alternative to your
+approach, you could also go the way to prevent the call of
+x25_neigh_put(nb) in x25_lapb_receive_frame() in case of a Call Request.
+However, this would require more effort.
 
-> Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect")
-> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+> 
+> This causes frequent kernel crashes when using AF_X25 sockets.
+> 
+> 2) When we initiate a connection but the connection is refused by the
+> remote side, x25_disconnect is called which decreases the refcount and
+> resets the pointer to NULL. But the x25_connect function in af_x25.c,
+> which is waiting for the connection to be established, notices the
+> failure and then tries to decrease the refcount again, resulting in a
+> NULL-pointer-dereference error.
+> 
+> This crashes the kernel every time a connection is refused by the 
+> remote
+> side.
 
-Oh. Sorry, I didn't see your patch. I just submitted another patch to fix
-the same problem.
+For this bug I already sent a fix some time ago (last time I sent a
+RESEND yesterday), but unfortunately it was not merged yet:
+https://lore.kernel.org/patchwork/patch/1334917/
 
-I also found another problem introduced by the same regression commit,
-which I was also trying to fix in my patch.
-
-See:
-http://patchwork.ozlabs.org/project/netdev/patch/20201111100424.3989-1-xie.he.0141@gmail.com/
-
+> 
+> Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 
+> disconnect")
+> Cc: Martin Schiller <ms@dev.tdt.de>
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
+> ---
+>  net/x25/af_x25.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+> index 0bbb283f23c9..8e59f9ecbeab 100644
+> --- a/net/x25/af_x25.c
+> +++ b/net/x25/af_x25.c
+> @@ -826,10 +826,12 @@ static int x25_connect(struct socket *sock,
+> struct sockaddr *uaddr,
+>  	rc = 0;
+>  out_put_neigh:
+>  	if (rc) {
+> -		read_lock_bh(&x25_list_lock);
+> -		x25_neigh_put(x25->neighbour);
+> -		x25->neighbour = NULL;
+> -		read_unlock_bh(&x25_list_lock);
+> +		if (x25->neighbour) {
+> +			read_lock_bh(&x25_list_lock);
+> +			x25_neigh_put(x25->neighbour);
+> +			x25->neighbour = NULL;
+> +			read_unlock_bh(&x25_list_lock);
+> +		}
+>  		x25->state = X25_STATE_0;
+>  	}
+>  out_put_route:
+> @@ -1050,6 +1052,7 @@ int x25_rx_call_request(struct sk_buff *skb,
+> struct x25_neigh *nb,
+>  	makex25->lci           = lci;
+>  	makex25->dest_addr     = dest_addr;
+>  	makex25->source_addr   = source_addr;
+> +	x25_neigh_hold(nb);
+>  	makex25->neighbour     = nb;
+>  	makex25->facilities    = facilities;
+>  	makex25->dte_facilities= dte_facilities;
