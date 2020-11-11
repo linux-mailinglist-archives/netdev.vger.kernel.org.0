@@ -2,85 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF4EE2AF1C1
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 14:12:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D3862AF1C2
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 14:12:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726605AbgKKNMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 08:12:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50542 "EHLO
+        id S1726647AbgKKNMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 08:12:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725995AbgKKNMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 08:12:00 -0500
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08AC1C0613D1
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 05:12:00 -0800 (PST)
-Received: by mail-qv1-xf44.google.com with SMTP id dj6so835414qvb.3
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 05:11:59 -0800 (PST)
+        with ESMTP id S1726039AbgKKNMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 08:12:39 -0500
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A206DC0613D1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 05:12:38 -0800 (PST)
+Received: by mail-lj1-x243.google.com with SMTP id y16so2036762ljk.1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 05:12:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=/W7GvreXakq3KKENAD14bEENonCuT2QBpLr+vZNyDdI=;
-        b=tj/qPHnv/ayDVEmAqdA18U3qHCdY1DA35vc/KTLsrCBuIR09VdtatsGArIvY2Lla9J
-         602XtspILlm8fagjfWD4aYQyZOKYID+bheTNzEuQ9UjM/PEHAQqa9Ajp8Q6gzinlMdHU
-         mi2+tVAQT9cye3hyBjf5pAvqixGpsgMNqXIQTusvxb6BdiRyqRp6DXVm/WAyU9x8sHFV
-         BpzfKwKK4er9vesVLU836UACw3zjIW7BJr+OKtYHOw7PjAxzm1IvysF3pE3/9j0cXz3+
-         HHnRhxF54aoebmkgljEdc1bEndAEo77liM6Hhy8/sPji+uqA9i4mk91vJFdEeiKtg+Rb
-         x/MA==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:organization;
+        bh=zXv7rygQRyAccp6y4zKGUt5FHkwVAMuBvku22YaRFOA=;
+        b=GMJJe6okqikE9Sa3gsx3QyiZ4u5TkdhAzw9zi+qTYosQsoDoSCqt9IuDjgf62NLiaP
+         v5fbQ6UWzJbwSP8xvfjiwpWf41C7d/5vLBkHeCgVz1o+2/PCDmtPi2T+eDfBaG8twS+D
+         /dC7o7RyIrH6HE8ErcT9NaS9JJIkOk7GQuCCnHEyytv2DfiWPrN4hZ3dH8Y6Kq5szezF
+         Y5qJ7Jh/2AIG/UhjNt5EWtKb4hZnJcsdyIQsEpincr+gldz7rcnAj3W1ggwZBpG+GD9+
+         Y28b1m2QiUsfB5JevCJFcBbO7OmruVRWCv+sNbY2X7eoTBrQEZX6DDtfa0EAjVsf3qOy
+         Ca9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=/W7GvreXakq3KKENAD14bEENonCuT2QBpLr+vZNyDdI=;
-        b=OGDhJLZTvy93XV9Wslood7/R2SyqqKrbXj0CC/FmGbcOIoJBmvdvEAE6twjwHYx8Dq
-         bD2L0bRYnp2iT/AJe22qtMHVxfV53DrIKHFsvzOF/em0WcFmwxjbLjfott81s3HiQsWU
-         Spp3Tyj4ev5KmT/waTJhiAK7vJy2jyAINJpP/zZ/nvE06Fn5ymQvI/FW8ZQGRhozlLvg
-         oS8iLxPFpQguh2NI0rC8LlicWL+tBQGaViOh3ONpHPqHVIDR5EP1U07aa3H0FoyXEgY3
-         9TE6bcljCQXDPdXNxiRMtdfglN3wLgcol7hdfPy3kfb0EHbSJ7fgtFVoy4vy14oIay2i
-         oaWA==
-X-Gm-Message-State: AOAM530GgHCQnJZS3XzBGKwlT+xVVKeywkDD3JhXL+R3FKMqJ35HrHcg
-        UWVhXWQtKlmeYhjkyT7qIipHUF19gZdsPYsWczNFhg==
-X-Google-Smtp-Source: ABdhPJyOEw2mofCqFBA6XQfzpGuecD/O4uijixejPXs9UJu8uU1/bNEkycowdNLdtoawirfJHyVdiqGYIpe4RPVk9gc=
-X-Received: by 2002:a0c:8d8b:: with SMTP id t11mr25274361qvb.13.1605100318985;
- Wed, 11 Nov 2020 05:11:58 -0800 (PST)
-MIME-Version: 1.0
-References: <00000000000088487805a116880c@google.com> <00000000000000c55c05a3813a66@google.com>
-In-Reply-To: <00000000000000c55c05a3813a66@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 11 Nov 2020 14:11:47 +0100
-Message-ID: <CACT4Y+a0QfyMHLv0RP-=ihAUNpJpAVJbHFUWa6RT_0RupBE31g@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Write in tcindex_change
-To:     syzbot <syzbot+ba4bcf1563f90386910f@syzkaller.appspotmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:organization;
+        bh=zXv7rygQRyAccp6y4zKGUt5FHkwVAMuBvku22YaRFOA=;
+        b=HepBlGRTf9Bnt/nnKQuROjd+WdznLyelBXSIOS12wnWh1OZ+0h8qo5v1GE6qit5xIz
+         GGHy2j9zKDVrV64NgIBQoDGLk/VpH09WAaqEhg75BXzhQA++9CvAHWuGguPMqxLon/W3
+         E1nhPaUQhnt0wJ33tNhc/vsKuLl9/5BB/k7Vl9OaXbvrTFlom2gxFjF/QnjFex6F7Xwy
+         p/9eijavq4VbE98ov31agwmLhb2jbEpbRlkh+shHrWPYm859P9H82Xgzrf46RHJy+RtU
+         4ByFOoTcpQAKFEoOQkVxDzmyzJyRrD+acwkUzOUYADZYR9cxarUXo0Wyw+i8mrBQfwHF
+         MQZQ==
+X-Gm-Message-State: AOAM530ccdQ2d//Wm6LO8cXblZea1xQVepP0kvQ9anWpJtSJHkny/SFs
+        56YSaX1vE5PLJwVBpYKTrlcIzQ==
+X-Google-Smtp-Source: ABdhPJx2C6U5tfw+r+/eWXiDMoIVxiR4tX9Jx+miDNQXjl2HiiUMlormheoLbG3e0EnU8D02CB3qBQ==
+X-Received: by 2002:a2e:8346:: with SMTP id l6mr9560698ljh.132.1605100357096;
+        Wed, 11 Nov 2020 05:12:37 -0800 (PST)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id w22sm231108ljm.20.2020.11.11.05.12.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Nov 2020 05:12:36 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org
+Subject: [PATCH v2 net-next 0/2] net: dsa: tag_dsa: Unify regular and ethertype DSA taggers
+Date:   Wed, 11 Nov 2020 14:11:51 +0100
+Message-Id: <20201111131153.3816-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.17.1
+Organization: Westermo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 17, 2020 at 9:05 PM syzbot
-<syzbot+ba4bcf1563f90386910f@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this bug was fixed by commit:
->
-> commit 0d1c3530e1bd38382edef72591b78e877e0edcd3
-> Author: Cong Wang <xiyou.wangcong@gmail.com>
-> Date:   Thu Mar 12 05:42:28 2020 +0000
->
->     net_sched: keep alloc_hash updated after hash allocation
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15a956d7e00000
-> start commit:   ac309e77 Merge branch 'for-linus' of git://git.kernel.org/..
-> git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=6dfa02302d6db985
-> dashboard link: https://syzkaller.appspot.com/bug?extid=ba4bcf1563f90386910f
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1771b973e00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1248a61de00000
->
-> If the result looks correct, please mark the bug fixed by replying with:
->
-> #syz fix: net_sched: keep alloc_hash updated after hash allocation
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+The first commit does the heavy lifting of actually fusing tag_dsa.c
+and tag_edsa.c. Second commit just follows up with some clean up of
+existing comments.
 
-#syz fix: net_sched: keep alloc_hash updated after hash allocation
+v1 -> v2:
+  - Fixed some grammar and whitespace errors.
+  - Removed unnecessary default value in Kconfig.
+  - Removed unnecessary #ifdef.
+  - Split out comment fixes from functional changes.
+  - Fully document enum dsa_code.
+
+Tobias Waldekranz (2):
+  net: dsa: tag_dsa: Unify regular and ethertype DSA taggers
+  net: dsa: tag_dsa: Use a consistent comment style
+
+ net/dsa/Kconfig    |   5 +
+ net/dsa/Makefile   |   3 +-
+ net/dsa/tag_dsa.c  | 315 ++++++++++++++++++++++++++++++++++++---------
+ net/dsa/tag_edsa.c | 202 -----------------------------
+ 4 files changed, 257 insertions(+), 268 deletions(-)
+ delete mode 100644 net/dsa/tag_edsa.c
+
+-- 
+2.17.1
+
