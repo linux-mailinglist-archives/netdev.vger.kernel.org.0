@@ -2,104 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB1642AF78E
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 18:48:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 244A72AF79A
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 18:52:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727041AbgKKRsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 12:48:07 -0500
-Received: from z5.mailgun.us ([104.130.96.5]:31040 "EHLO z5.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725860AbgKKRsF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Nov 2020 12:48:05 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1605116885; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=7g87NZ0M/XFTxCuaZCnkFZZOqSYBdmIg4bjJcPXl19M=; b=FJFGLH5KqdGsNAsSl20eygc1U6AJ3XdO53Iy8CsBmodDqKZVFZwQPgk3/FFZTLIEe7VUCWcY
- iONkBSQiXtxp3+3fpBSlt33Nt+zTwUMV41xjWWNr0rY3N+BCHA/aqc00+zGvkuCudbci9Xsa
- YBzGFwwrODu0rw9wVy4x59qnMdw=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 5fac1b7f34c4908d19e6864b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 11 Nov 2020 17:12:31
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 12E90C433A1; Wed, 11 Nov 2020 17:12:30 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C6DEEC433C6;
-        Wed, 11 Nov 2020 17:12:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C6DEEC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?utf-8?Q?Bj?= =?utf-8?Q?=C3=B8rn?= Mork <bjorn@mork.no>,
-        Igor Mitsyanko <imitsyanko@quantenna.com>,
-        Sergey Matyukevich <geomatsi@gmail.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Jussi Kivilinna <jussi.kivilinna@iki.fi>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/5] qtnfmac: switch to core handling of rx/tx byte/packet counters
-References: <5fbe3a1f-6625-eadc-b1c9-f76f78debb94@gmail.com>
-        <4b22c155-6868-793f-ebfe-f797e16b9c40@gmail.com>
-Date:   Wed, 11 Nov 2020 19:12:22 +0200
-In-Reply-To: <4b22c155-6868-793f-ebfe-f797e16b9c40@gmail.com> (Heiner
-        Kallweit's message of "Tue, 10 Nov 2020 20:48:54 +0100")
-Message-ID: <87o8k34y2x.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726491AbgKKRwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 12:52:06 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:48324 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725860AbgKKRwG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 12:52:06 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-43-QeRdog2ZPvqSTYboprMNfg-1; Wed, 11 Nov 2020 17:51:59 +0000
+X-MC-Unique: QeRdog2ZPvqSTYboprMNfg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 11 Nov 2020 17:51:58 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 11 Nov 2020 17:51:58 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <eric.dumazet@gmail.com>,
+        Kegl Rohit <keglrohit@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andy Duan <fugang.duan@nxp.com>
+Subject: RE: Fwd: net: fec: rx descriptor ring out of order
+Thread-Topic: Fwd: net: fec: rx descriptor ring out of order
+Thread-Index: AQHWuD4r1T0YzVhgDEWrjTWACLiX9anDMgSg
+Date:   Wed, 11 Nov 2020 17:51:58 +0000
+Message-ID: <739b43c5c77448c0ab9e8efadd33dbfb@AcuMS.aculab.com>
+References: <CAMeyCbh8vSCnr-9-odi0kg3E8BGCiETOL-jJ650qYQdsY0wxeA@mail.gmail.com>
+ <CAMeyCbjuj2Q2riK2yzKXRfCa_mKToqe0uPXKxrjd6zJQWaXxog@mail.gmail.com>
+ <3f069322-f22a-a2e8-1498-0a979e02b595@gmail.com>
+In-Reply-To: <3f069322-f22a-a2e8-1498-0a979e02b595@gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Heiner Kallweit <hkallweit1@gmail.com> writes:
+PiBPbiAxMS8xMS8yMCAzOjI3IFBNLCBLZWdsIFJvaGl0IHdyb3RlOg0KPiA+IEhlbGxvIQ0KPiA+
+DQo+ID4gV2UgYXJlIHVzaW5nIGEgaW14NnEgcGxhdGZvcm0uDQo+ID4gVGhlIGZlYyBpbnRlcmZh
+Y2UgaXMgdXNlZCB0byByZWNlaXZlIGEgY29udGludW91cyBzdHJlYW0gb2YgY3VzdG9tIC8NCj4g
+PiByYXcgZXRoZXJuZXQgcGFja2V0cy4gVGhlIHBhY2tldCBzaXplIGlzIGZpeGVkIH4xMzIgYnl0
+ZXMgYW5kIHRoZXkgZ2V0DQo+ID4gc2VudCBldmVyeSAyNTDCtXMuDQo+ID4NCj4gPiBXaGlsZSB0
+ZXN0aW5nIEkgb2JzZXJ2ZWQgc3BvbnRhbmVvdXMgcGFja2V0IGRlbGF5cyBmcm9tIHRpbWUgdG8g
+dGltZS4NCj4gPiBBZnRlciBkaWdnaW5nIGRvd24gZGVlcGVyIEkgdGhpbmsgdGhhdCB0aGUgZmVj
+IHBlcmlwaGVyYWwgZG9lcyBub3QNCj4gPiB1cGRhdGUgdGhlIHJ4IGRlc2NyaXB0b3Igc3RhdHVz
+IGNvcnJlY3RseS4NCj4gPiBJIG1vZGlmaWVkIHRoZSBxdWV1ZV9yeCBmdW5jdGlvbiB3aGljaCBp
+cyBjYWxsZWQgYnkgdGhlIE5BUEkgcG9sbA0KPiA+IGZ1bmN0aW9uLiAibm8gcGFja2V0IE4iIGlz
+IHByaW50ZWQgd2hlbiB0aGUgcXVldWVfcnggZnVuY3Rpb24gZG9lc24ndA0KPiA+IHByb2Nlc3Mg
+YW55IGRlc2NyaXB0b3IuDQo+ID4gVGhlcmVmb3JlIHRoZSB2YXJpYWJsZSBOIGNvdW50cyBjb250
+aW51b3VzIGNhbGxzIHdpdGhvdXQgcmVhZHkNCj4gPiBkZXNjcmlwdG9ycy4gV2hlbiB0aGUgY3Vy
+cmVudCBkZXNjcmlwdG9yIGlzIHJlYWR5JnByb2Nlc3NlZCBhbmQgbW92ZWQNCj4gPiB0byB0aGUg
+bmV4dCBlbnRyeSwgdGhlbiBOIGlzIGNsZWFyZWQgYWdhaW4uDQo+ID4gQWRkaXRpb25hbGx5IGFu
+IGVycm9yIGlzIHByaW50ZWQgaWYgdGhlIGN1cnJlbnQgZGVzY3JpcHRvciBpcyBlbXB0eQ0KPiA+
+IGJ1dCB0aGUgbmV4dCBvbmUgaXMgYWxyZWFkeSByZWFkeS4gSW4gY2FzZSB0aGlzIGVycm9yIGhh
+cHBlbnMgdGhlDQo+ID4gY3VycmVudCBkZXNjcmlwdG9yIGFuZCB0aGUgbmV4dCAxMSBvbmVzIGFy
+ZSBkdW1wZWQuDQo+ID4gIkMiICAuLi4gY3VycmVudA0KPiA+ICJFIiAgLi4uIGVtcHR5DQo+ID4N
+Cj4gPiBbICAgNTcuNDM2NDc4IDwgICAgMC4wMjAwMDU+XSBubyBwYWNrZXQgMSENCj4gPiBbICAg
+NTcuNDYwODUwIDwgICAgMC4wMjQzNzI+XSBubyBwYWNrZXQgMSENCj4gPiBbICAgNTcuNDYxMTA3
+IDwgICAgMC4wMDAyNTc+XSByaW5nIGVycm9yLCBjdXJyZW50IGVtcHR5IGJ1dCBuZXh0IGlzIG5v
+dCBlbXB0eQ0KPiA+IFsgICA1Ny40NjExMTggPCAgICAwLjAwMDAxMT5dIFJYIGFoZWFkDQo+ID4g
+WyAgIDU3LjQ2MTEzNSA8ICAgIDAuMDAwMDE3Pl0gMTI5IEMgRSAweDg4NDAgMHgyYzc0M2E0MCAg
+MTMyDQo+ID4gWyAgIDU3LjQ2MTE0NiA8ICAgIDAuMDAwMDExPl0gMTMwICAgICAweDA4NDAgMHgy
+Yzc0NDE4MCAgMTMyDQo+ID4gWyAgIDU3LjQ2MTE1OCA8ICAgIDAuMDAwMDEyPl0gMTMxICAgRSAw
+eDg4NDAgMHgyYzc0NDhjMCAgMTMyDQoNCldoYXQgYXJlIHRoZSBhZGRyZXNzZXMgb2YgdGhlIHJp
+bmcgZW50cmllcz8NCkkgYmV0IHRoZXJlIGlzIHNvbWV0aGluZyB3cm9uZyB3aXRoIHRoZSBjYWNo
+ZSBjb2hlcmVuY3kgYW5kL29yDQpmbHVzaGluZy4NCg0KU28gdGhlIE1BQyBoYXJkd2FyZSBoYXMg
+ZG9uZSB0aGUgd3JpdGUgYnV0IChzb21ld2hlcmUpIGl0DQppc24ndCB2aXNpYmxlIHRvIHRoZSBj
+cHUgZm9yIGFnZXMuDQoNCkkndmUgc2VlbiBhICdmZWMnIGV0aGVybmV0IGJsb2NrIGluIGEgZnJl
+ZXNjYWxlIERTUC4NCklJUkMgaXQgaXMgYSBmYWlybHkgc2ltcGxlIGJsb2NrIC0gd29uJ3QgYmUg
+ZG9pbmcgb3V0LW9mLW9yZGVyIHdyaXRlcy4NCg0KVGhlIGlteDZxIHNlZW1zIHRvIGJlIGFybSBi
+YXNlZC4NCkknbSBndWVzc2luZyB0aGF0IG1lYW5zIGl0IGRvZXNuJ3QgZG8gY2FjaGUgY29oZXJl
+bmN5IGZvciBldGhlcm5ldCBkbWENCmFjY2Vzc2VzLg0KVGhhdCAobW9yZSBvciBsZXNzKSBtZWFu
+cyB0aGUgcmluZ3MgbmVlZCB0byBiZSBtYXBwZWQgdW5jYWNoZWQuDQpBbnkgYXR0ZW1wdCB0byBq
+dXN0IGZsdXNoL2ludmFsaWRhdGUgdGhlIGNhY2hlIGxpbmVzIGlzIGRvb21lZC4NCg0KLi4uDQo+
+ID4gSSBhbSBzdXNwZWN0aW5nIHRoZSBlcnJhdGE6DQo+ID4NCj4gPiBFUlIwMDU3ODMgRU5FVDog
+RU5FVCBTdGF0dXMgRklGTyBtYXkgb3ZlcmZsb3cgZHVlIHRvIGNvbnNlY3V0aXZlIHNob3J0IGZy
+YW1lcw0KPiA+IERlc2NyaXB0aW9uOg0KPiA+IFdoZW4gdGhlIE1BQyByZWNlaXZlcyBzaG9ydGVy
+IGZyYW1lcyAoc2l6ZSA2NCBieXRlcykgYXQgYSByYXRlDQo+ID4gZXhjZWVkaW5nIHRoZSBhdmVy
+YWdlIGxpbmUtcmF0ZQ0KPiA+IGJ1cnN0IHRyYWZmaWMgb2YgNDAwIE1icHMgdGhlIERNQSBpcyBh
+YmxlIHRvIGFic29yYiwgdGhlIHJlY2VpdmVyDQo+ID4gbWlnaHQgZHJvcCBpbmNvbWluZyBmcmFt
+ZXMNCj4gPiBiZWZvcmUgYSBQYXVzZSBmcmFtZSBpcyBpc3N1ZWQuDQo+ID4gUHJvamVjdGVkIElt
+cGFjdDoNCj4gPiBObyBtYWxmdW5jdGlvbiB3aWxsIHJlc3VsdCBhc2lkZSBmcm9tIHRoZSBmcmFt
+ZSBkcm9wcy4NCj4gPiBXb3JrYXJvdW5kczoNCj4gPiBUaGUgYXBwbGljYXRpb24gbWlnaHQgd2Fu
+dCB0byBpbXBsZW1lbnQgc29tZSBmbG93IGNvbnRyb2wgdG8gZW5zdXJlDQo+ID4gdGhlIGxpbmUt
+cmF0ZSBidXJzdCB0cmFmZmljIGlzDQo+ID4gYmVsb3cgNDAwIE1icHMgaWYgaXQgb25seSB1c2Vz
+IGNvbnNlY3V0aXZlIHNtYWxsIGZyYW1lcyB3aXRoIG1pbmltYWwNCj4gPiAoOTYgYml0IHRpbWVz
+KSBvciBzaG9ydA0KPiA+IEludGVyLWZyYW1lIGdhcCAoSUZHKSB0aW1lIGZvbGxvd2luZyBsYXJn
+ZSBmcmFtZXMgYXQgc3VjaCBhIGhpZ2ggcmF0ZS4NCj4gPiBUaGUgbGltaXQgZG9lcyBub3QgZXhp
+c3QgZm9yDQo+ID4gZnJhbWVzIG9mIHNpemUgbGFyZ2VyIHRoYW4gODAwIGJ5dGVzLg0KPiA+IFBy
+b3Bvc2VkIFNvbHV0aW9uOg0KPiA+IE5vIGZpeCBzY2hlZHVsZWQNCj4gPiBMaW51eCBCU1AgU3Rh
+dHVzOg0KPiA+IFdvcmthcm91bmQgcG9zc2libGUgYnV0IG5vdCBpbXBsZW1lbnRlZCBpbiB0aGUg
+QlNQLCBpbXBhY3RpbmcNCj4gPiBmdW5jdGlvbmFsaXR5IGFzIGRlc2NyaWJlZCBhYm92ZS4NCj4g
+Pg0KPiA+IElzIHRoZSAiRU5FVCBTdGF0dXMgRklGTyIgc29tZSBpbnRlcm5hbCBoYXJkd2FyZSBG
+SUZPIG9yIGlzIGl0IHRoZQ0KPiA+IGRlc2NyaXB0b3IgcmluZy4NCj4gPiBXaGF0IHdvdWxkIGJl
+IHRoZSB3b3JrYXJvdW5kIHdoZW4gYSAiV29ya2Fyb3VuZCBpcyBwb3NzaWJsZSI/DQoNCkkgZG9u
+J3QgdGhpbmsgdGhhdCBpcyBhcHBsaWNhYmxlLg0KSXQgbG9va3MgbGlrZSBpdCBqdXN0IGRyb3Bz
+IGZyYW1lcyB1bmRlciBoaWdoIGxvYWQuDQoNCkkndmUgbm8gaWRlYSB3aGF0IGEgJ0xpbnV4IEJT
+UCcgbWlnaHQgYmUuDQpUaGF0IHRlcm0gaXMgdXN1YWxseSB1c2VkIGZvciB0aGUgKG9mdGVuIGJy
+b2tlbikgYm9hcmQgc3VwcG9ydA0KZm9yIHRoaW5ncyBsaWtlIFZ4KG5vLWxvbmdlcilXb3Jrcy4N
+Cg0KPiA+IEkgY291bGQgb25seSB0aGluayBvZiBza2lwcGluZy9kcm9wcGluZyB0aGUgZGVzY3Jp
+cHRvciB3aGVuIHRoZQ0KPiA+IGN1cnJlbnQgaXMgc3RpbGwgYnVzeSBidXQgdGhlIG5leHQgb25l
+IGlzIHJlYWR5Lg0KPiA+IEJ1dCBpdCBpcyBub3QgZWFzaWx5IHBvc3NpYmxlIGJlY2F1c2UgdGhl
+ICJzdHVjayIgZGVzY3JpcHRvciBnZXRzDQo+ID4gcmVhZHkgYWZ0ZXIgYSBodWdlIGRlbGF5Lg0K
+DQpJIGJldCB0aGUgZGVzY3JpcHRvciBpcyBhdCB0aGUgZW5kIG9mIGEgY2FjaGUgbGluZSB3aGlj
+aCBmaW5hbGx5DQpnZXRzIHJlLXJlYWQuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJl
+c3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsx
+IDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-> Use netdev->tstats instead of a member of qtnf_vif for storing a pointer
-> to the per-cpu counters. This allows us to use core functionality for
-> statistics handling.
-> The driver sets netdev->needs_free_netdev, therefore freeing the per-cpu
-> counters at the right point in time is a little bit tricky. Best option
-> seems to be to use the ndo_init/ndo_uninit callbacks.
->
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  drivers/net/wireless/quantenna/qtnfmac/core.c | 78 ++++---------------
->  drivers/net/wireless/quantenna/qtnfmac/core.h |  4 -
->  .../quantenna/qtnfmac/pcie/pearl_pcie.c       |  4 +-
->  .../quantenna/qtnfmac/pcie/topaz_pcie.c       |  4 +-
->  4 files changed, 20 insertions(+), 70 deletions(-)
-
-Jakub, feel free to take this to net-next:
-
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
-
-But I can also take this to wireless-drivers-next, whichever you prefer.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
