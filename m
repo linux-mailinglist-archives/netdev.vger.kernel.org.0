@@ -2,184 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADF552AF991
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 21:12:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FE112AF998
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 21:14:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726134AbgKKUML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 15:12:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59458 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725949AbgKKUML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 15:12:11 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598A1C0613D1;
-        Wed, 11 Nov 2020 12:12:11 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id v92so3092546ybi.4;
-        Wed, 11 Nov 2020 12:12:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pB38drbiYuyH57f1j/OGS58rHVCVIBiVZxazCjdLplA=;
-        b=YTaod/s6xOSthLFOf5v9u0Agfru7+P51p/rp9bBE05FqDCVEEi1IKyAy/Ksck1hJgj
-         M7FKDYj9jAXS8yANQRlv8ehfwdaEx0pfj5IYInLYYzgakIcJYPsbEQGNVOedib+0DQZK
-         T/44IWZV4CD8Y2YlrVMjLeyReEPgBi76rdiY72xd3WBnHpOD0wRtZwyVWgEl9MNCD1MY
-         TNCMVgBmshhtaxiIRo3P7V1gtbsawLC7Zdo7wRWsjpcqDFWJKftVWjtGDmKI4wEueaK0
-         oE1jnTHUKV/kOnxxdTAo480tDlvuTCX7j/RwXNEFRkPmvx44to1XCma6Jlgb3Jmj+n20
-         9fow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pB38drbiYuyH57f1j/OGS58rHVCVIBiVZxazCjdLplA=;
-        b=A8/Eh2z2ZKZFf8ocBm/wnqh8T+UaL7bDa8+dWMw9lmic7b5JIN0pJRhCL7tnOc1B2G
-         PeQyYaYW3MFjJZZ27pnrzGut/JnmDqbtZoGN2oAhN7qnhV9hm/qimTuXef8ofZ6u3ZPV
-         BxhfKZ3+7O3Bjzxwx2uafIJ7W97NtInfSwrQfA9HxMePsoaNo+PSIAGvrimwX49Z80Yq
-         fLEvzVKeBe+Ibkwuc9MadiLF/YO7SkRh3k9I18FrHjNeNN4UJRNH6I5lH7tcx03bdfSM
-         +17SQbNqA8fMi6U3aTLIoC500AzgH1pu9jGnR260mOfM43fSS3Rz73KWz/CUahwYdnDN
-         +E5g==
-X-Gm-Message-State: AOAM533f7vdGe4/bLuAEbknzuXQbWHCsIjNtnWrC5gDrBSMwqTWy+e7L
-        MYChxINfXovzPXNuj0057SDGMx/5fywo7+BR26c=
-X-Google-Smtp-Source: ABdhPJzYDY7ZkALEs1trStLJuAnj+VHR91+D3T1A0rOUFfDHX+SUOJaXYI/asPu5fxHeZTrSFyR9P8zb/E7BjHmo044=
-X-Received: by 2002:a25:df8e:: with SMTP id w136mr9444434ybg.230.1605125530599;
- Wed, 11 Nov 2020 12:12:10 -0800 (PST)
+        id S1726136AbgKKUOF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 11 Nov 2020 15:14:05 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:36624 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725860AbgKKUOF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 15:14:05 -0500
+Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1kcwVB-0002LF-Sq; Wed, 11 Nov 2020 20:13:58 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 57C5D5FEE8; Wed, 11 Nov 2020 12:13:56 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 4F9CEA0409;
+        Wed, 11 Nov 2020 12:13:56 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jarod Wilson <jarod@redhat.com>
+cc:     linux-kernel@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4 0/5] bonding: rename bond components
+In-reply-to: <20201106200436.943795-1-jarod@redhat.com>
+References: <20201106200436.943795-1-jarod@redhat.com>
+Comments: In-reply-to Jarod Wilson <jarod@redhat.com>
+   message dated "Fri, 06 Nov 2020 15:04:31 -0500."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-References: <20201110011932.3201430-1-andrii@kernel.org> <20201110011932.3201430-5-andrii@kernel.org>
- <20201111101316.GA5304@linux-8ccs>
-In-Reply-To: <20201111101316.GA5304@linux-8ccs>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 11 Nov 2020 12:11:59 -0800
-Message-ID: <CAEf4BzZbKRgWhLD6KFOwJU8DDns9oufroBShczM9KqODCqbEPA@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 4/5] bpf: load and verify kernel module BTFs
-To:     Jessica Yu <jeyu@kernel.org>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <10064.1605125636.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Wed, 11 Nov 2020 12:13:56 -0800
+Message-ID: <10065.1605125636@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 11, 2020 at 2:13 AM Jessica Yu <jeyu@kernel.org> wrote:
+Jarod Wilson <jarod@redhat.com> wrote:
+
+>The bonding driver's use of master and slave, while largely understood
+>in technical circles, poses a barrier for inclusion to some potential
+>members of the development and user community, due to the historical
+>context of masters and slaves, particularly in the United States. This
+>is a first full pass at replacing those phrases with more socially
+>inclusive ones, opting for bond to replace master and port to
+>replace slave, which is congruent with the bridge and team drivers.
 >
-> +++ Andrii Nakryiko [09/11/20 17:19 -0800]:
-> [snipped]
-> >diff --git a/kernel/module.c b/kernel/module.c
-> >index a4fa44a652a7..f2996b02ab2e 100644
-> >--- a/kernel/module.c
-> >+++ b/kernel/module.c
-> >@@ -380,6 +380,35 @@ static void *section_objs(const struct load_info *info,
-> >       return (void *)info->sechdrs[sec].sh_addr;
-> > }
-> >
-> >+/* Find a module section: 0 means not found. Ignores SHF_ALLOC flag. */
-> >+static unsigned int find_any_sec(const struct load_info *info, const char *name)
-> >+{
-> >+      unsigned int i;
-> >+
-> >+      for (i = 1; i < info->hdr->e_shnum; i++) {
-> >+              Elf_Shdr *shdr = &info->sechdrs[i];
-> >+              if (strcmp(info->secstrings + shdr->sh_name, name) == 0)
-> >+                      return i;
-> >+      }
-> >+      return 0;
-> >+}
-> >+
-> >+/*
-> >+ * Find a module section, or NULL. Fill in number of "objects" in section.
-> >+ * Ignores SHF_ALLOC flag.
-> >+ */
-> >+static __maybe_unused void *any_section_objs(const struct load_info *info,
-> >+                                           const char *name,
-> >+                                           size_t object_size,
-> >+                                           unsigned int *num)
-> >+{
-> >+      unsigned int sec = find_any_sec(info, name);
-> >+
-> >+      /* Section 0 has sh_addr 0 and sh_size 0. */
-> >+      *num = info->sechdrs[sec].sh_size / object_size;
-> >+      return (void *)info->sechdrs[sec].sh_addr;
-> >+}
-> >+
+>There are a few problems with this change. First up, "port" is used in
+>the bonding 802.3ad code, so the first step here is to rename port to
+>ad_port, so we can reuse port. Second, we have the issue of not wanting
+>to break any existing userspace, which I believe this patchset
+>accomplishes, preserving all existing sysfs and procfs interfaces, and
+>adding module parameter aliases where necessary.
 >
-> Hm, I see this patchset has already been applied to bpf-next, but I
-> guess that doesn't preclude any follow-up patches :-)
+>Third, we do still have the issue of ease of backporting fixes to
+>-stable trees. I've not had a huge amount of time to spend on it, but
+>brief forays into coccinelle didn't really pay off (since it's meant to
+>operate on code, not patches), and the best solution I can come up with
+>is providing a shell script someone could run over git-format-patch
+>output before git-am'ing the result to a -stable tree, though scripting
+>these changes in the first place turned out to be not the best thing to
+>do anyway, due to subtle cases where use of master or slave can NOT yet
+>be replaced, so a large amount of work was done by hand, inspection,
+>trial and error, which is why this set is a lot longer in coming than
+>I'd originally hoped. I don't expect -stable backports to be horrible to
+>figure out one way or another though, and I don't believe that a bit of
+>inconvenience on that front is enough to warrant not making these
+>changes.
 
-Of course!
+	I think this undersells the impact a bit; this will most likely
+break the majority of cherry-picks for the bonding driver to stable
+going forward should this patch set be committed.  Yes, the volume of
+patches to bonding is relatively low, and the manual backports are not
+likely to be technically difficult.  Nevertheless, I expect that most
+bonding backports to stable that cross this patch set will require
+manual intervention.
 
+	As such, I'd still like to see explicit direction from the
+kernel development community leadership that change sets of this nature
+(not technically driven, with long term maintenance implications) are
+changes that should be undertaken rather than are merely permitted.
+
+	-J
+
+>See here for further details on Red Hat's commitment to this work:
+>https://www.redhat.com/en/blog/making-open-source-more-inclusive-eradicating-problematic-language
 >
-> I am not a huge fan of the code duplication here, and also the fact
-> that they're only called in one place. any_section_objs() and
-> find_any_sec() are pretty much identical to section_objs() and
-> find_sec(), other than the fact the former drops the SHF_ALLOC check.
-
-Right, but the alternative was to add a new flag to existing
-section_objs() and find_sec() functions, which would cause much more
-code churn for no good reason (besides saving some trivial code
-duplication). And those true/false flags are harder to read in code
-anyways.
-
+>As far as testing goes, I've manually operated on various bonds while
+>working on this code, and have run it through multiple lnst test runs,
+>which exercises the existing sysfs interfaces fairly extensively. As far
+>as I can tell through testing and inspection, there is no breakage of
+>any existing interfaces with this set.
 >
-> Moreover, since it appears that the ".BTF" section is not marked
-> SHF_ALLOC, I think this will leave mod->btf_data as a dangling pointer
-> after the module is done loading and the module's load_info has been
-> deallocated, since SHF_ALLOC sections are not allocated nor copied to
-> the module's final location in memory.
-
-I can make sure that we also reset the btf_data pointer back to NULL,
-if that's a big concern.
-
+>v2: legacy module parameters are retained this time, and we're trying
+>out bond/port instead of aggregator/link in place of master/slave. The
+>procfs interface legacy output is also duplicated or dropped, depending
+>on Kconfig, rather than being replaced.
 >
-> Why not simply mark the ".BTF" section in the module SHF_ALLOC? We
-> already do some sh_flags rewriting in rewrite_section_headers(). Then
-> the module loader knows to keep the section in memory and you can use
-> section_objs(). And since the .BTF section stays in module memory,
-> that might save you the memcpy() to btf->data in btf_parse_module()
-> (unless that is still needed for some reason).
-
-Wasn't aware about rewrite_section_headers() manipulations. Are you
-suggesting to just add SHF_ALLOC there for the .BTF section from the
-kernel side? I guess that would work, but won't avoid memory copy (so
-actually would waste kernel memory, if I understand correctly). The
-reason being that the module's BTF is registered as an independently
-ref-counted BTF object, which could be held past the kernel module
-being unloaded. So I can't directly reference module's .BTF data
-anyways.
-
-Also, marking .BTF with SHF_ALLOC with pahole or objcopy tool actually
-might generate warnings because SHF_ALLOC sections need to be
-allocated to data segments, which neither of those tools know how to
-do, it requires a linker support. We do that for vmlinux with extra
-linker script logic, but for kernel modules we don't have and probably
-don't want to do that.
-
-So in the end, the cleanest approach still seems like not doing
-SHF_ALLOC but allowing "capturing" .BTF data with an extra helper.
-
+>v3: remove Kconfig knob, leave sysfs and procfs interfaces entirely
+>untouched, but update documentation to reference their deprecated
+>nature, explain the name changes, add references to NetworkManager,
+>include more netlink/iproute2 examples and make note of netlink
+>being the preferred interface for userspace interaction with bonds.
 >
-> Thanks,
+>v4: documentation table of contents fixes
 >
-> Jessica
+>Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+>Cc: Veaceslav Falico <vfalico@gmail.com>
+>Cc: Andy Gospodarek <andy@greyhouse.net>
+>Cc: "David S. Miller" <davem@davemloft.net>
+>Cc: Jakub Kicinski <kuba@kernel.org>
+>Cc: Thomas Davis <tadavis@lbl.gov>
+>Cc: netdev@vger.kernel.org
 >
-> > /* Provided by the linker */
-> > extern const struct kernel_symbol __start___ksymtab[];
-> > extern const struct kernel_symbol __stop___ksymtab[];
-> >@@ -3250,6 +3279,9 @@ static int find_module_sections(struct module *mod, struct load_info *info)
-> >                                          sizeof(*mod->bpf_raw_events),
-> >                                          &mod->num_bpf_raw_events);
-> > #endif
-> >+#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
-> >+      mod->btf_data = any_section_objs(info, ".BTF", 1, &mod->btf_data_size);
-> >+#endif
-> > #ifdef CONFIG_JUMP_LABEL
-> >       mod->jump_entries = section_objs(info, "__jump_table",
-> >                                       sizeof(*mod->jump_entries),
-> >--
-> >2.24.1
-> >
+>Jarod Wilson (5):
+>  bonding: rename 802.3ad's struct port to ad_port
+>  bonding: replace use of the term master where possible
+>  bonding: rename slave to port where possible
+>  bonding: rename bonding_sysfs_slave.c to _port.c
+>  bonding: update Documentation for port/bond terminology
+>
+> .clang-format                                 |    4 +-
+> Documentation/networking/bonding.rst          |  581 ++--
+> drivers/infiniband/core/cma.c                 |    2 +-
+> drivers/infiniband/core/lag.c                 |    2 +-
+> drivers/infiniband/core/roce_gid_mgmt.c       |   10 +-
+> drivers/infiniband/hw/mlx4/main.c             |    2 +-
+> drivers/net/bonding/Makefile                  |    2 +-
+> drivers/net/bonding/bond_3ad.c                | 1701 ++++++------
+> drivers/net/bonding/bond_alb.c                |  689 ++---
+> drivers/net/bonding/bond_debugfs.c            |    2 +-
+> drivers/net/bonding/bond_main.c               | 2341 +++++++++--------
+> drivers/net/bonding/bond_netlink.c            |  114 +-
+> drivers/net/bonding/bond_options.c            |  258 +-
+> drivers/net/bonding/bond_procfs.c             |   86 +-
+> drivers/net/bonding/bond_sysfs.c              |   78 +-
+> drivers/net/bonding/bond_sysfs_port.c         |  185 ++
+> drivers/net/bonding/bond_sysfs_slave.c        |  176 --
+> .../ethernet/chelsio/cxgb3/cxgb3_offload.c    |    2 +-
+> .../net/ethernet/mellanox/mlx4/en_netdev.c    |   14 +-
+> .../ethernet/mellanox/mlx5/core/en/rep/bond.c |    4 +-
+> .../net/ethernet/mellanox/mlx5/core/en_tc.c   |    2 +-
+> .../ethernet/netronome/nfp/flower/lag_conf.c  |    2 +-
+> .../ethernet/qlogic/netxen/netxen_nic_main.c  |   12 +-
+> include/linux/netdevice.h                     |   22 +-
+> include/net/bond_3ad.h                        |   42 +-
+> include/net/bond_alb.h                        |   74 +-
+> include/net/bond_options.h                    |   18 +-
+> include/net/bonding.h                         |  362 +--
+> include/net/lag.h                             |    2 +-
+> 29 files changed, 3482 insertions(+), 3307 deletions(-)
+> create mode 100644 drivers/net/bonding/bond_sysfs_port.c
+> delete mode 100644 drivers/net/bonding/bond_sysfs_slave.c
+>
+>-- 
+>2.28.0
+>
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
