@@ -2,199 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 874EF2AF15F
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 14:00:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 745BE2AF1E7
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 14:19:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726300AbgKKNAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 08:00:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48985 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725933AbgKKNAm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 08:00:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605099640;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/LHzk4kHvXcojxXA+XRzoh4JcvbpffRClf0ZQRlgeXk=;
-        b=R++a7aNhOiHq9ZUESaaxN+wMvrall9aWDP0h3TeznkbOlth535+0X7UwHR48CRtKmGf7SP
-        x+JJamM1x0htVG5j7y0MdpoX3oyEOwsg3akLl5svQeX5UrwvvPgQfbgFcW3Wiaki1Qp0tC
-        JWamV2mzmDGgJO/fqSBq33NkxxkSdr8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-553-T8wP8U-TNk68D8onxA4Pyg-1; Wed, 11 Nov 2020 08:00:37 -0500
-X-MC-Unique: T8wP8U-TNk68D8onxA4Pyg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E1ACE804B90;
-        Wed, 11 Nov 2020 13:00:35 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0046A27BBE;
-        Wed, 11 Nov 2020 12:59:54 +0000 (UTC)
-Date:   Wed, 11 Nov 2020 13:59:53 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     John Fastabend <john.fastabend@gmail.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        lorenzo.bianconi@redhat.com, ilias.apalodimas@linaro.org,
-        brouer@redhat.com
-Subject: Re: [PATCH v5 net-nex 2/5] net: page_pool: add bulk support for
- ptr_ring
-Message-ID: <20201111135953.6482dff5@carbon>
-In-Reply-To: <20201111104331.GA3988@lore-desk>
-References: <cover.1605020963.git.lorenzo@kernel.org>
-        <1229970bf6f36fd4689169a2e47fdcc664d28366.1605020963.git.lorenzo@kernel.org>
-        <5fabaf0c4a68a_bb2602085a@john-XPS-13-9370.notmuch>
-        <20201111104331.GA3988@lore-desk>
+        id S1726771AbgKKNTa convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 11 Nov 2020 08:19:30 -0500
+Received: from mail.bata.co.id ([117.54.3.130]:43090 "EHLO mail.bata.co.id"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726701AbgKKNTY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Nov 2020 08:19:24 -0500
+X-Greylist: delayed 2549 seconds by postgrey-1.27 at vger.kernel.org; Wed, 11 Nov 2020 08:19:22 EST
+Received: from localhost (localhost [127.0.0.1])
+        by mail.bata.co.id (Postfix) with ESMTP id 357636C6EB8;
+        Wed, 11 Nov 2020 19:03:30 +0700 (WIB)
+Received: from mail.bata.co.id ([127.0.0.1])
+        by localhost (mail.bata.co.id [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id CTFbslBzbI2b; Wed, 11 Nov 2020 19:03:29 +0700 (WIB)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.bata.co.id (Postfix) with ESMTP id B185D6C6EA8;
+        Wed, 11 Nov 2020 19:03:29 +0700 (WIB)
+X-Virus-Scanned: amavisd-new at bata.co.id
+Received: from mail.bata.co.id ([127.0.0.1])
+        by localhost (mail.bata.co.id [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id J4pKil8mnwBx; Wed, 11 Nov 2020 19:03:29 +0700 (WIB)
+Received: from mail.bata.co.id (mail.bata.co.id [117.54.3.130])
+        by mail.bata.co.id (Postfix) with ESMTP id 2D1AC6C6E9B;
+        Wed, 11 Nov 2020 19:03:27 +0700 (WIB)
+Date:   Wed, 11 Nov 2020 19:03:27 +0700 (WIB)
+From:   =?utf-8?B?0KHQuNGB0YLQtdC80L3Ri9C5INCw0LTQvNC40L3QuNGB0YLRgNCw0YLQvtGA?= 
+        <sb57405@bata.co.id>
+Reply-To: mailupgrade@mail2engineer.com
+Message-ID: <1144316190.49338.1605096207067.JavaMail.zimbra@bata.co.id>
+Subject: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=utf-8
+X-Originating-IP: [110.225.88.196]
+X-Mailer: Zimbra 8.8.15_GA_3975 (zclient/8.8.15_GA_3975)
+Thread-Index: 1wfS3a4qssIUIDRbiBSmjl2ZKWVdww==
+Thread-Topic: 
+Content-Transfer-Encoding: 8BIT
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Nov 2020 11:43:31 +0100
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+ВНИМАНИЕ;
 
-> > Lorenzo Bianconi wrote:  
-> > > Introduce the capability to batch page_pool ptr_ring refill since it is
-> > > usually run inside the driver NAPI tx completion loop.
-> > > 
-> > > Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > > Co-developed-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > ---
-> > >  include/net/page_pool.h | 26 ++++++++++++++++
-> > >  net/core/page_pool.c    | 69 +++++++++++++++++++++++++++++++++++------
-> > >  net/core/xdp.c          |  9 ++----
-> > >  3 files changed, 87 insertions(+), 17 deletions(-)  
-> > 
-> > [...]
-> >   
-> > > +/* Caller must not use data area after call, as this function overwrites it */
-> > > +void page_pool_put_page_bulk(struct page_pool *pool, void **data,
-> > > +			     int count)
-> > > +{
-> > > +	int i, bulk_len = 0, pa_len = 0;
-> > > +
-> > > +	for (i = 0; i < count; i++) {
-> > > +		struct page *page = virt_to_head_page(data[i]);
-> > > +
-> > > +		page = __page_pool_put_page(pool, page, -1, false);
-> > > +		/* Approved for bulk recycling in ptr_ring cache */
-> > > +		if (page)
-> > > +			data[bulk_len++] = page;
-> > > +	}
-> > > +
-> > > +	if (unlikely(!bulk_len))
-> > > +		return;
-> > > +
-> > > +	/* Bulk producer into ptr_ring page_pool cache */
-> > > +	page_pool_ring_lock(pool);
-> > > +	for (i = 0; i < bulk_len; i++) {
-> > > +		if (__ptr_ring_produce(&pool->ring, data[i]))
-> > > +			data[pa_len++] = data[i];  
-> > 
-> > How about bailing out on the first error? bulk_len should be less than
-> > 16 right, so should we really keep retying hoping ring->size changes?  
-> 
-> do you mean doing something like:
-> 
-> 	page_pool_ring_lock(pool);
-> 	if (__ptr_ring_full(&pool->ring)) {
-> 		pa_len = bulk_len;
-> 		page_pool_ring_unlock(pool);
-> 		goto out;
-> 	}
-> 	...
-> out:
-> 	for (i = 0; i < pa_len; i++) {
-> 		...
-> 	}
+Ваш почтовый ящик превысил лимит хранилища, который составляет 5 ГБ, определенный администратором, который в настоящее время работает с 10,9 ГБ, вы не сможете отправлять или получать новую почту, пока не подтвердите свой почтовый ящик снова. Для повторной проверки вашего почтового ящика отправьте следующую информацию:
 
-I think this is the change John is looking for:
+Название:
+Имя пользователя:
+пароль:
+Подтвердить Пароль:
+Электронное письмо:
+телефон:
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index a06606f07df0..3093fe4e1cd7 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -424,7 +424,7 @@ EXPORT_SYMBOL(page_pool_put_page);
- void page_pool_put_page_bulk(struct page_pool *pool, void **data,
-                             int count)
- {
--       int i, bulk_len = 0, pa_len = 0;
-+       int i, bulk_len = 0;
-        bool order0 = (pool->p.order == 0);
- 
-        for (i = 0; i < count; i++) {
-@@ -448,17 +448,18 @@ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
-        page_pool_ring_lock(pool);
-        for (i = 0; i < bulk_len; i++) {
-                if (__ptr_ring_produce(&pool->ring, data[i]))
--                       data[pa_len++] = data[i];
-+                       break; /* ring_full */
-        }
-        page_pool_ring_unlock(pool);
- 
--       if (likely(!pa_len))
-+       /* Hopefully all pages was return into ptr_ring */
-+       if (likely(i == bulk_len))
-                return;
- 
--       /* ptr_ring cache full, free pages outside producer lock since
--        * put_page() with refcnt == 1 can be an expensive operation
-+       /* ptr_ring cache full, free remaining pages outside producer lock
-+        * since put_page() with refcnt == 1 can be an expensive operation
-         */
--       for (i = 0; i < pa_len; i++)
-+       for (; i < bulk_len; i++)
-                page_pool_return_page(pool, data[i]);
- }
- EXPORT_SYMBOL(page_pool_put_page_bulk);
+Если вы не можете повторно подтвердить свой почтовый ящик, он будет отключен!
 
+Приносим извинения за неудобства.
+Проверочный код: 666690opp4r56: 006524
+Электронная почта Техническая поддержка © 2020
 
-> I do not know if it is better or not since the consumer can run in
-> parallel. @Jesper/Ilias: any idea?
-
-Currently it is not very likely that the consumer runs in parallel, but
-is it possible. (As you experienced on your testlab with mlx5, the
-DMA-TX completion did run on another CPU, but I asked you to
-reconfigure this to have it run on same CPU, as it is suboptimal).
-When we (finally) support this memory type for SKBs it will be more
-normal to happen.
-
-But, John is right, for ptr_ring we should exit as soon the first
-"produce" fails.  This is because I know how ptr_ring works internally.
-The "consumer" will free slots in chunks of 16 slots, so it is not very
-likely that a slot opens up.
-
-> >   
-> > > +	}
-> > > +	page_pool_ring_unlock(pool);
-> > > +
-> > > +	if (likely(!pa_len))
-> > > +		return;
-> > > +
-> > > +	/* ptr_ring cache full, free pages outside producer lock since
-> > > +	 * put_page() with refcnt == 1 can be an expensive operation
-> > > +	 */
-> > > +	for (i = 0; i < pa_len; i++)
-> > > +		page_pool_return_page(pool, data[i]);
-> > > +}
-> > > +EXPORT_SYMBOL(page_pool_put_page_bulk);
-> > > +  
-> > 
-> > Otherwise LGTM.  
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Благодарность
+Системный администратор
