@@ -2,53 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17A1E2AE631
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 03:12:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4601E2AE66F
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 03:32:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731772AbgKKCMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 21:12:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40648 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726861AbgKKCMH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 21:12:07 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5B56621D91;
-        Wed, 11 Nov 2020 02:12:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605060726;
-        bh=0f0NXqOkTRsaaUfxpZORvgRcgdrcHQrib07uSFQ/VEU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EymgoN1q0I9usJ0xbVomPO5Jasf9qODxgUPha7sAu7muUUaaopSUzXrMcs7hMW4C7
-         x432pvcW4Fd6q9x2lDnjHcrx/yh1GLaR+Q/Gh3EvMU9DVbNtXLNnUUcVQcSuJEnmov
-         b27FoKbriap21tIhm8fH1IsDEpm+usyO8tc0oklw=
-Date:   Tue, 10 Nov 2020 18:12:05 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ursula Braun <ubraun@linux.ibm.com>
-Cc:     Julian Wiedmann <jwi@linux.ibm.com>,
-        David Miller <davem@davemloft.net>,
-        linux-netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
-Subject: Re: [PATCH net v2 2/2] MAINTAINERS: remove Ursula Braun as s390
- network maintainer
-Message-ID: <20201110181205.40f01ca0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201109075706.56573-3-jwi@linux.ibm.com>
-References: <20201109075706.56573-1-jwi@linux.ibm.com>
-        <20201109075706.56573-3-jwi@linux.ibm.com>
+        id S1726843AbgKKCcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 21:32:07 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:7478 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725882AbgKKCcG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 21:32:06 -0500
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CW7zL5gNwzhj1j;
+        Wed, 11 Nov 2020 10:31:58 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Wed, 11 Nov 2020
+ 10:31:56 +0800
+Subject: Re: [PATCH V2 net-next 05/11] net: hns3: add support for dynamic
+ interrupt moderation
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>
+References: <1604892159-19990-1-git-send-email-tanhuazhong@huawei.com>
+ <1604892159-19990-6-git-send-email-tanhuazhong@huawei.com>
+ <20201110172055.27ab308f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <7a7805e0-7d13-2b34-f15c-1fc7bda151ed@huawei.com>
+Date:   Wed, 11 Nov 2020 10:31:55 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201110172055.27ab308f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  9 Nov 2020 08:57:06 +0100 Julian Wiedmann wrote:
-> From: Ursula Braun <ubraun@linux.ibm.com>
-> 
-> I am retiring soon. Thus this patch removes myself from the
-> MAINTAINERS file (s390 network).
 
-Thanks for all the work over the years! :)
+
+On 2020/11/11 9:20, Jakub Kicinski wrote:
+> On Mon, 9 Nov 2020 11:22:33 +0800 Huazhong Tan wrote:
+>> Add dynamic interrupt moderation support for the HNS3 driver.
+>>
+>> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> 
+> I'm slightly confused here. What does the adaptive moderation do in
+> your driver/device if you still need DIM on top of it?
+> 
+
+The driver's adaptive moderation and DIM are mutually-exclusive options,
+and DIM is used by default. Since it is hard to verify all cases that
+DIM can get a better result, so keep the adaptive moderation as an
+option now, which can be swicthed by the ethtool priv-flag. If DIM is ok
+for a long time, then we will send a separate patch to  remove the
+adaptive moderation from the driver.
+
+Thanks.
+> 
+
