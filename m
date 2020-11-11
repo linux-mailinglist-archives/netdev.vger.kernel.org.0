@@ -2,104 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E84262AEF77
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:20:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DEDD2AEF7A
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:20:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726414AbgKKLUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 06:20:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32896 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726207AbgKKLT5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 06:19:57 -0500
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D726C0613D6
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 03:19:57 -0800 (PST)
-Received: by mail-qv1-xf43.google.com with SMTP id y11so668960qvu.10
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 03:19:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HL+P6C+e6EWuUkq6BT22AnRS/x2R8zWC5SF2fuIvWTY=;
-        b=G7eBLWOQu/jKzydXH77LVk341vLoFf2aVMsmRzA51ZaqsLZw8reU4eMnbvGOcSaAZq
-         0b3xp/oFtihhxA67Tz22LyI/Yore49lROWLIym1ViOFCxrPRQcgwHAw/NWFVF7JRvSKm
-         KzNfdc/KedyImofcF1Gl6HzW0SvPt2kJolBtt/fSQNWKnHsxpXz70c+sUIfX747qok7N
-         LZQVuNAH2Al9XhPCPYpPID5PU37KLRoO/v5VdbkK2DlYc3cSUs33actL4xTT8i0Zr2rw
-         P3hJJL1bXlkdtS2TKLIUGe+PuhLraTqcRbvnRhYjqqBT/EF+M86YL/YhjOos1psD1mQE
-         nl0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HL+P6C+e6EWuUkq6BT22AnRS/x2R8zWC5SF2fuIvWTY=;
-        b=LDkybdcQ8/wAaV8Oz8DSyI13rlstNWORUztZn7s7YF3vr86afl46zpA78Xo310y3zQ
-         sXMyCWP7gKqVtnVNGS1AnFh+jHCW+PxP1voULDH9M/cdIJXMUCb6V9V0GLBsZjLPJoNi
-         TAx5vx2B03ykt1LsrsS8t/DJZ9L48fLNIzFELts+D8XZJDI2n3VvrEiP7EWEcWYVD2gq
-         nvCQTqmFZmwsVMDgjvPcZvmeBT3qHE5GniQ99DYw7jtGLWXgMM5pAJarnlHBiRudxr+F
-         3M1PU07qEKk6B8sNo8qwAPqBj5/JUzyWeCPbzdS+l8awEN6EZ0cqUidSHUlAfAWz15Un
-         Hc/Q==
-X-Gm-Message-State: AOAM5335d/2dMIygiABybgCECQNzc+CtLOXQWw4JyJlB/dV6K90mEKSy
-        YbSpiXRy94jG5YqgkTafT4cT/DLApWuDs5jAy+uC1Q==
-X-Google-Smtp-Source: ABdhPJxSKANgqKyIaFyKJJvDKEIsAq50ZDYIvoYkWBLdIn0dbZYFOsej/MN69Kzg8OORqQgkUJcdv3y6TbWf2QePsTM=
-X-Received: by 2002:a0c:8d8b:: with SMTP id t11mr24811025qvb.13.1605093596081;
- Wed, 11 Nov 2020 03:19:56 -0800 (PST)
-MIME-Version: 1.0
-References: <0000000000008fddd805adc8c56f@google.com> <000000000000abcd5505b0a06d96@google.com>
-In-Reply-To: <000000000000abcd5505b0a06d96@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 11 Nov 2020 12:19:45 +0100
-Message-ID: <CACT4Y+bpDs82p-+vV2fki3STcdZaGcrmOqO1qh-agE7couKBHw@mail.gmail.com>
-Subject: Re: general protection fault in rt6_fill_node
-To:     syzbot <syzbot+81af6e9b3c4b8bc874f8@syzkaller.appspotmail.com>
-Cc:     John.Linn@xilinx.com, a@unstable.cc,
-        Anant Thazhemadam <anant.thazhemadam@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, anirudh@xilinx.com,
-        Alexei Starovoitov <ast@kernel.org>,
-        b.a.t.m.a.n@lists.open-mesh.org, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>, hancock@sedsystems.ca,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
+        id S1726438AbgKKLUa convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 11 Nov 2020 06:20:30 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:55225 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726175AbgKKLU3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 06:20:29 -0500
+Received: from marcel-macbook.holtmann.net (unknown [37.83.201.106])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 16C6FCECFE;
+        Wed, 11 Nov 2020 12:27:35 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
+Subject: Re: [PATCH v9 5/6] Bluetooth: Refactor read default sys config for
+ various types
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20201111150115.v9.5.I9231b35b0be815c32c3a3ec48dcd1d68fa65daf4@changeid>
+Date:   Wed, 11 Nov 2020 12:20:25 +0100
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        alainm@chromium.org, mmandlik@chromium.org, mcchou@chromium.org,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>, mareklindner@neomailbox.ch,
-        michal.simek@xilinx.com, netdev <netdev@vger.kernel.org>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Song Liu <songliubraving@fb.com>, sw@simonwunderlich.de,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Content-Type: text/plain; charset="UTF-8"
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <A5A4227D-58B7-4C08-AFC9-BC8A8D469179@holtmann.org>
+References: <20201111150115.v9.1.I55fa38874edc240d726c1de6e82b2ce57b64f5eb@changeid>
+ <20201111150115.v9.5.I9231b35b0be815c32c3a3ec48dcd1d68fa65daf4@changeid>
+To:     Howard Chung <howardchung@google.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 1, 2020 at 8:46 PM syzbot
-<syzbot+81af6e9b3c4b8bc874f8@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit eeaac3634ee0e3f35548be35275efeca888e9b23
-> Author: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> Date:   Sat Aug 22 12:06:36 2020 +0000
->
->     net: nexthop: don't allow empty NHA_GROUP
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12beed5b900000
-> start commit:   c3d8f220 Merge tag 'kbuild-fixes-v5.9' of git://git.kernel..
-> git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a0437fdd630bee11
-> dashboard link: https://syzkaller.appspot.com/bug?extid=81af6e9b3c4b8bc874f8
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13ff8539900000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=143f3a96900000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
->
-> #syz fix: net: nexthop: don't allow empty NHA_GROUP
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Hi Howard,
 
-#syz fix: net: nexthop: don't allow empty NHA_GROUP
+> Refactor read default system configuration function so that it's capable
+> of returning different types than u16
+> 
+> Signed-off-by: Howard Chung <howardchung@google.com>
+> ---
+> 
+> (no changes since v8)
+> 
+> Changes in v8:
+> - Update the commit title and message
+> 
+> net/bluetooth/mgmt_config.c | 140 +++++++++++++++++++++---------------
+> 1 file changed, 84 insertions(+), 56 deletions(-)
+> 
+> diff --git a/net/bluetooth/mgmt_config.c b/net/bluetooth/mgmt_config.c
+> index 2d3ad288c78ac..282fbf82f3192 100644
+> --- a/net/bluetooth/mgmt_config.c
+> +++ b/net/bluetooth/mgmt_config.c
+> @@ -11,72 +11,100 @@
+> #include "mgmt_util.h"
+> #include "mgmt_config.h"
+> 
+> -#define HDEV_PARAM_U16(_param_code_, _param_name_) \
+> -{ \
+> -	{ cpu_to_le16(_param_code_), sizeof(__u16) }, \
+> -	{ cpu_to_le16(hdev->_param_name_) } \
+> -}
+> +#define HDEV_PARAM_U16(_param_name_) \
+> +	struct {\
+> +		struct mgmt_tlv entry; \
+> +		__le16 value; \
+> +	} __packed _param_name_
+> 
+> -#define HDEV_PARAM_U16_JIFFIES_TO_MSECS(_param_code_, _param_name_) \
+> -{ \
+> -	{ cpu_to_le16(_param_code_), sizeof(__u16) }, \
+> -	{ cpu_to_le16(jiffies_to_msecs(hdev->_param_name_)) } \
+> -}
+> +#define TLV_SET_U16(_param_code_, _param_name_) \
+> +	{ \
+> +		{ cpu_to_le16(_param_code_), sizeof(__u16) }, \
+> +		cpu_to_le16(hdev->_param_name_) \
+> +	}
+> +
+> +#define TLV_SET_U16_JIFFIES_TO_MSECS(_param_code_, _param_name_) \
+> +	{ \
+> +		{ cpu_to_le16(_param_code_), sizeof(__u16) }, \
+> +		cpu_to_le16(jiffies_to_msecs(hdev->_param_name_)) \
+> +	}
+> 
+> int read_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
+> 			   u16 data_len)
+> {
+> -	struct {
+> -		struct mgmt_tlv entry;
+> -		union {
+> -			/* This is a simplification for now since all values
+> -			 * are 16 bits.  In the future, this code may need
+> -			 * refactoring to account for variable length values
+> -			 * and properly calculate the required buffer size.
+> -			 */
+> -			__le16 value;
+> -		};
+> -	} __packed params[] = {
+> +	int ret;
+> +	struct mgmt_rp_read_def_system_config {
+> 		/* Please see mgmt-api.txt for documentation of these values */
+> -		HDEV_PARAM_U16(0x0000, def_page_scan_type),
+> -		HDEV_PARAM_U16(0x0001, def_page_scan_int),
+> -		HDEV_PARAM_U16(0x0002, def_page_scan_window),
+> -		HDEV_PARAM_U16(0x0003, def_inq_scan_type),
+> -		HDEV_PARAM_U16(0x0004, def_inq_scan_int),
+> -		HDEV_PARAM_U16(0x0005, def_inq_scan_window),
+> -		HDEV_PARAM_U16(0x0006, def_br_lsto),
+> -		HDEV_PARAM_U16(0x0007, def_page_timeout),
+> -		HDEV_PARAM_U16(0x0008, sniff_min_interval),
+> -		HDEV_PARAM_U16(0x0009, sniff_max_interval),
+> -		HDEV_PARAM_U16(0x000a, le_adv_min_interval),
+> -		HDEV_PARAM_U16(0x000b, le_adv_max_interval),
+> -		HDEV_PARAM_U16(0x000c, def_multi_adv_rotation_duration),
+> -		HDEV_PARAM_U16(0x000d, le_scan_interval),
+> -		HDEV_PARAM_U16(0x000e, le_scan_window),
+> -		HDEV_PARAM_U16(0x000f, le_scan_int_suspend),
+> -		HDEV_PARAM_U16(0x0010, le_scan_window_suspend),
+> -		HDEV_PARAM_U16(0x0011, le_scan_int_discovery),
+> -		HDEV_PARAM_U16(0x0012, le_scan_window_discovery),
+> -		HDEV_PARAM_U16(0x0013, le_scan_int_adv_monitor),
+> -		HDEV_PARAM_U16(0x0014, le_scan_window_adv_monitor),
+> -		HDEV_PARAM_U16(0x0015, le_scan_int_connect),
+> -		HDEV_PARAM_U16(0x0016, le_scan_window_connect),
+> -		HDEV_PARAM_U16(0x0017, le_conn_min_interval),
+> -		HDEV_PARAM_U16(0x0018, le_conn_max_interval),
+> -		HDEV_PARAM_U16(0x0019, le_conn_latency),
+> -		HDEV_PARAM_U16(0x001a, le_supv_timeout),
+> -		HDEV_PARAM_U16_JIFFIES_TO_MSECS(0x001b,
+> -						def_le_autoconnect_timeout),
+> -		HDEV_PARAM_U16(0x001d, advmon_allowlist_duration),
+> -		HDEV_PARAM_U16(0x001e, advmon_no_filter_duration),
+> +		HDEV_PARAM_U16(def_page_scan_type);
+> +		HDEV_PARAM_U16(def_page_scan_int);
+> +		HDEV_PARAM_U16(def_page_scan_window);
+> +		HDEV_PARAM_U16(def_inq_scan_type);
+> +		HDEV_PARAM_U16(def_inq_scan_int);
+> +		HDEV_PARAM_U16(def_inq_scan_window);
+> +		HDEV_PARAM_U16(def_br_lsto);
+> +		HDEV_PARAM_U16(def_page_timeout);
+> +		HDEV_PARAM_U16(sniff_min_interval);
+> +		HDEV_PARAM_U16(sniff_max_interval);
+> +		HDEV_PARAM_U16(le_adv_min_interval);
+> +		HDEV_PARAM_U16(le_adv_max_interval);
+> +		HDEV_PARAM_U16(def_multi_adv_rotation_duration);
+> +		HDEV_PARAM_U16(le_scan_interval);
+> +		HDEV_PARAM_U16(le_scan_window);
+> +		HDEV_PARAM_U16(le_scan_int_suspend);
+> +		HDEV_PARAM_U16(le_scan_window_suspend);
+> +		HDEV_PARAM_U16(le_scan_int_discovery);
+> +		HDEV_PARAM_U16(le_scan_window_discovery);
+> +		HDEV_PARAM_U16(le_scan_int_adv_monitor);
+> +		HDEV_PARAM_U16(le_scan_window_adv_monitor);
+> +		HDEV_PARAM_U16(le_scan_int_connect);
+> +		HDEV_PARAM_U16(le_scan_window_connect);
+> +		HDEV_PARAM_U16(le_conn_min_interval);
+> +		HDEV_PARAM_U16(le_conn_max_interval);
+> +		HDEV_PARAM_U16(le_conn_latency);
+> +		HDEV_PARAM_U16(le_supv_timeout);
+> +		HDEV_PARAM_U16(def_le_autoconnect_timeout);
+> +		HDEV_PARAM_U16(advmon_allowlist_duration);
+> +		HDEV_PARAM_U16(advmon_no_filter_duration);
+> +	} __packed rp = {
+> +		TLV_SET_U16(0x0000, def_page_scan_type),
+> +		TLV_SET_U16(0x0001, def_page_scan_int),
+> +		TLV_SET_U16(0x0002, def_page_scan_window),
+> +		TLV_SET_U16(0x0003, def_inq_scan_type),
+> +		TLV_SET_U16(0x0004, def_inq_scan_int),
+> +		TLV_SET_U16(0x0005, def_inq_scan_window),
+> +		TLV_SET_U16(0x0006, def_br_lsto),
+> +		TLV_SET_U16(0x0007, def_page_timeout),
+> +		TLV_SET_U16(0x0008, sniff_min_interval),
+> +		TLV_SET_U16(0x0009, sniff_max_interval),
+> +		TLV_SET_U16(0x000a, le_adv_min_interval),
+> +		TLV_SET_U16(0x000b, le_adv_max_interval),
+> +		TLV_SET_U16(0x000c, def_multi_adv_rotation_duration),
+> +		TLV_SET_U16(0x000d, le_scan_interval),
+> +		TLV_SET_U16(0x000e, le_scan_window),
+> +		TLV_SET_U16(0x000f, le_scan_int_suspend),
+> +		TLV_SET_U16(0x0010, le_scan_window_suspend),
+> +		TLV_SET_U16(0x0011, le_scan_int_discovery),
+> +		TLV_SET_U16(0x0012, le_scan_window_discovery),
+> +		TLV_SET_U16(0x0013, le_scan_int_adv_monitor),
+> +		TLV_SET_U16(0x0014, le_scan_window_adv_monitor),
+> +		TLV_SET_U16(0x0015, le_scan_int_connect),
+> +		TLV_SET_U16(0x0016, le_scan_window_connect),
+> +		TLV_SET_U16(0x0017, le_conn_min_interval),
+> +		TLV_SET_U16(0x0018, le_conn_max_interval),
+> +		TLV_SET_U16(0x0019, le_conn_latency),
+> +		TLV_SET_U16(0x001a, le_supv_timeout),
+> +		TLV_SET_U16_JIFFIES_TO_MSECS(0x001b,
+> +					     def_le_autoconnect_timeout),
+> +		TLV_SET_U16(0x001d, advmon_allowlist_duration),
+> +		TLV_SET_U16(0x001e, advmon_no_filter_duration),
+> 	};
+> -	struct mgmt_rp_read_def_system_config *rp = (void *)params;
+> 
+> 	bt_dev_dbg(hdev, "sock %p", sk);
+> 
+> -	return mgmt_cmd_complete(sk, hdev->id,
+> -				 MGMT_OP_READ_DEF_SYSTEM_CONFIG,
+> -				 0, rp, sizeof(params));
+> +	ret = mgmt_cmd_complete(sk, hdev->id,
+> +				MGMT_OP_READ_DEF_SYSTEM_CONFIG,
+> +				0, &rp, sizeof(rp));
+> +	return ret;
+> }
+> 
+
+frankly I would prefer if we do the re-factoring first and only then add new
+parameters.
+
+While I am looking at this, I am also really confused about this
+JIFFIES_TO_MSEC business. We should actually not store anything in jiffies
+or use it in an API. Is there a good reason to keep storing things in
+jiffies internally?
+
+Regards
+
+Marcel
+
