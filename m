@@ -2,113 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 142782AF6CC
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 17:44:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83C5F2AF6DB
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 17:47:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726682AbgKKQo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 11:44:56 -0500
-Received: from mail-eopbgr130058.outbound.protection.outlook.com ([40.107.13.58]:8449
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725979AbgKKQo4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Nov 2020 11:44:56 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nse68seGlWrom9DHEEnGdyDy0hlY4DBCl2gxjBAXQgbKG/tbsd3nBr0jqnTbmsQo+1aD4foeXU5UxDsn3qqlMqWZONtlokd5sXQ80gw+oKwhrGwT1tqa7BPkVeyeRsAyiDFc2xzukH+DP/Qo7508IeaVkSyI9TpLL5FtKGV9FbgCMQFaOmJ9Xo5i8XfN2EMGGUAcWuJJiHZ/eqzOtK9SDtsLmfxYeiBnnrQF9NH7ZDWdXCRq3nePJjbBqv8rDUQkR7EC4dRwsyQJ3mOuYSU62tYqVtqcIW14JBrg+f7qiinys5OnO5/yDMUNHCZqCCpMEE7vA4O7f6pHkhZr4UMgww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iHcddte9uUI6HKeLgPGaGys20m/NYsdBT3+S5aj0Yok=;
- b=J85sMvTEc65ZaNHJD11zX3CQJLOvkBEi6w9cu3366SVP2G1ENkMDOQTU93OIGK9POb2b7RrjcsP+XLBETG0CDDbbxdbLp+b/ieFJBhzfgibFoMA2paCwQtRGXoTjpXqsn+F1KCbnjnVUZqYJEIms0JeT74NGoRDJZyOFoMyWiWTBgJAR4QNUCWOVipBjdk/0CQjV2RwKFfdCrEY2meE2BwWZGuI5CBAKI7RVw2abPkjo1nhZd8aNGv86zucSMrFvudqa5mwxWis7oOuWoIM3squAoaI6TE2vnXnvW+iN5DtuFcFWiGbEySB89zNEmhHTTVW1VC8qZ33/QlI9+Zc/pw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iHcddte9uUI6HKeLgPGaGys20m/NYsdBT3+S5aj0Yok=;
- b=klH3AgjAp2Y9gSedqXGlLyQ6GjB9Y0bPw+k41LCcuku7UYVs5MMxfqGxJZ5iD3w/xuRzfuyZixUUeQzmh+q6fCp49+ckmBL11qbzk4GOjHKvBMsQj1/RSrcQWItC9+p/1bLeVBP/aegPCFv21xN3KP8WdOEv3MBjCE14w0lqwkw=
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
- by VI1PR04MB4287.eurprd04.prod.outlook.com (2603:10a6:803:41::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.25; Wed, 11 Nov
- 2020 16:44:52 +0000
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::45b9:4:f092:6cb6]) by VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::45b9:4:f092:6cb6%3]) with mapi id 15.20.3541.025; Wed, 11 Nov 2020
- 16:44:52 +0000
-From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
-To:     Ioana Ciornei <ciorneiioana@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: RE: [PATCH net-next] net: phy: aquantia: do not return an error on
- clearing pending IRQs
-Thread-Topic: [PATCH net-next] net: phy: aquantia: do not return an error on
- clearing pending IRQs
-Thread-Index: AQHWtq+R5WUuz+tPA0yyw9BuN2g6DanDJY1g
-Date:   Wed, 11 Nov 2020 16:44:52 +0000
-Message-ID: <VI1PR04MB58073C9127310383E4888CF2F2E80@VI1PR04MB5807.eurprd04.prod.outlook.com>
-References: <20201109154601.3812574-1-ciorneiioana@gmail.com>
-In-Reply-To: <20201109154601.3812574-1-ciorneiioana@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [82.78.148.61]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 505d5f7c-cf8d-44a2-d05a-08d886611c91
-x-ms-traffictypediagnostic: VI1PR04MB4287:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB4287FED5B64C209B01C271A1F2E80@VI1PR04MB4287.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1201;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fDhf2fmVOCdKJ88SoZPnUy4NTprWwfR0PIaDuBD0hAGNDknrhdOOAksCnICZ0rF6gRkd4nh0tXZMKieFW2DxaxT0I1TEAzcLI1DX45DMqRjbT+fYGZTOyf8+MghxuGSM1ppZoHyqLaSVK8TwmCQCJOacEgDTIBIbu9n1nKQXF9la3w+6umsZCnlLlo/qmKJo6OrX8hyrYbsQVaQ2lxLfRWAjY2ECMwK+6exU1wjfzA7RsLZxnVUn6AyIzlv0AAF6WXah70nib0UgC2ELN/tcbZMkyaRqaHshaA/LG6cy/5t+bZ9d8Eg2r1gIbmBWyN1Az56YHz+QLo8+H9ctYLdVVQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(39860400002)(346002)(396003)(136003)(26005)(8936002)(33656002)(66946007)(53546011)(76116006)(66476007)(66556008)(64756008)(66446008)(5660300002)(186003)(6506007)(4326008)(52536014)(110136005)(478600001)(7696005)(86362001)(4744005)(71200400001)(8676002)(9686003)(55016002)(316002)(2906002)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 64l7RPZrt3LTZRzPwL4VhYBs7tLW0hnKrekI/7VkHMPMOt9VN9O5HwvO+KUD9PmsZvfwRbErxVNJ9O16p8qbQxBiqdWXvLdX4P0u735CI17BDcoEA6H9ueuvBVzgEJWvJGctjZgHf3fJr5VPmwJQ8BQzTXD45yLGHbxvT83N/ulBNqCV7FW0t0J2TPYJvBYKVeSnghSoHsteQIZ26eiBFjQ6HlPHBTyWlub+93rBI9Fs+KPQkReWeXlQ3TFx0Da7LHCAijvdjbTUa7OsNVbHT0Y6eI5exOKlJxLCzjsQjQdh9wZZ12a3O3+TM9Vemoh78RmMH1i0VGlntODtujFcMqX2IqZe5FHtT0ADAtk4xugGeMgBTkf1QjE2H1+acnO8Z8501fmj2z4EVvBSxckFAOlkT/5fqCRaNc9h4IYetOhP9GwLX7RGRUgazMZ1j5EiIfR9O6k3RirwvgjVpI58tB0d5VFQxMH4qJws+DBvryRgGAd7lMqXuy8N/wAO3HqnWklRNAJZmuIqwls86JAw3/8//mHV1Ik20jNLLb1WZA8+5B+wNoXPnLzifyk6t8P5RELOjs82S6s4BawCKnEC1a0VnzJiowtZNqOhyGYgl/qWO+ZFRl2uU+ZIQ+H4PsPMcX2m4QNXiL3s4QeGA8tu2MvX5uVPksZG2JihfdXN5KoqSyrDv6eq33+M8HrD1QSQys8qK6ITLL1rYsdW1s0aI42VwHYQTETxFsi73vFCS2j9O03ypc+AMXfJIe7EfyzOKNVvEvJMj/ZjWG3Z/tc4H069QGe6sj/b8qMtUDe5A672Abt0HyAYnWicGxk2aXjeht+FIjMx1XtFVUGAA8lIenJejdOL5ZEcM7d7I1Tak5VhS5b6tlt72Qxai4qjdDWtSj20ZOju6YnHmDagwi5xXA==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727614AbgKKQrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 11:47:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727519AbgKKQrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 11:47:32 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB83C0613D1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 08:47:31 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id w13so3606346eju.13
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 08:47:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=eiOK2q32GbsWI3FsiUTk0GCoUa/T9/oJgnazWEvpmaQ=;
+        b=RdRE7oHsp07FwcbAJ7IdX4Gm8nta1tpXPtDuh3lrnF2GosQ8ujoQquwhlPt8ool95M
+         XDXNuofVRx4eT23pttiU/04wD0lCzoobjwyBeu8FF8neZz0g0H0xzgnxCu3eIxZBLuFO
+         xm2vFQxHwe3B8kmZ/S1ZyVNw1sd2E26plrFGcvd4t6bmDWfss5Sk27R96XdD+VHzVMpk
+         jXUCrt1XY7Wp5fKFZt78cj1++zNk6v/7MMSVJ6nRT2Q4dmBNZ77FPyMT6mDyrXAjAnGb
+         DK9UaSllHOxKyFw34qK0hzzxEFLDLWX9I4OmccWBpPxYvl+m3XVQir8O/GeCKo8cBwSQ
+         AgcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=eiOK2q32GbsWI3FsiUTk0GCoUa/T9/oJgnazWEvpmaQ=;
+        b=sflooOLvI4dLACAmvJ7NP5k4rEFjuodleZgAXHpw88VLXIBrQpgULlC519af5F93na
+         BLZMKJhGMujy9DlVG/1cZPt5CuKigx6bzQGomCXp7tvAkYnFyNRjX2xfMmoh0vqqVQ0x
+         p1Qq2SbuVxg1wRCdYfsBG/ls9KWCOnsrNucq4siVIr2WggBggCbnkh/UtojdcNCOARsY
+         IQAtFyom/GEnlSv5lhc5zePPJ89hCIZY+jXXneAOlMlwQPGsDE33dAsDvulxZKSBvXeL
+         I/fPwtCnh253MFHNqn34zSP9/4qmTFJmJijCaiLssf6JkD1AAMjyslfdtxQTRC+FuCHk
+         VSEA==
+X-Gm-Message-State: AOAM531FpULNwjw/MVYX7x2LoIPFTvZOs62y5ne9zzHJinO8FFp4HW8F
+        xXh5l0gWmIHOFxdimpnaRsg=
+X-Google-Smtp-Source: ABdhPJzwdWk7lv6l1a/dOlZFK/my2LewpgjpjV9X2bS0tFhlbwhCfwlu/oXqj9/GuI+DVQX2y6x/bw==
+X-Received: by 2002:a17:906:b852:: with SMTP id ga18mr27166496ejb.80.1605113250491;
+        Wed, 11 Nov 2020 08:47:30 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id b1sm1060161ejg.60.2020.11.11.08.47.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Nov 2020 08:47:29 -0800 (PST)
+Date:   Wed, 11 Nov 2020 18:47:27 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Markus =?utf-8?Q?Bl=C3=B6chl?= <markus.bloechl@ipetronik.com>,
+        Ido Schimmel <idosch@idosch.org>, Andrew Lunn <andrew@lunn.ch>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: lan78xx: Disable hardware vlan filtering in
+ promiscuous mode
+Message-ID: <20201111164727.pqecvbnhk4qgantt@skbuf>
+References: <20201110153958.ci5ekor3o2ekg3ky@ipetronik.com>
+ <20201111074341.24cafaf3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3df0cfa6-cbc9-dddb-0283-9b48fb6516d8@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 505d5f7c-cf8d-44a2-d05a-08d886611c91
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2020 16:44:52.1533
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NB3Kxy8m+l0JtKOMO8yeWd+ZXWOUf2gW7e9yVsyXUSxeONqqVNP24kSP5xoNRzsZ5KxrN030PhFy0CzHEa6MEw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4287
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3df0cfa6-cbc9-dddb-0283-9b48fb6516d8@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Ioana Ciornei <ciorneiioana@gmail.com>
-> Sent: Monday, November 9, 2020 17:46
-> To: kuba@kernel.org; netdev@vger.kernel.org
-> Cc: Ioana Ciornei <ioana.ciornei@nxp.com>
-> Subject: [PATCH net-next] net: phy: aquantia: do not return an error on
-> clearing pending IRQs
->=20
-> From: Ioana Ciornei <ioana.ciornei@nxp.com>
->=20
-> The referenced commit added in .config_intr() the part of code which upon
-> configuration of the IRQ state it also clears up any pending IRQ. If
-> there were actually pending IRQs, a read on the IRQ status register will
-> return something non zero. This should not result in the callback
-> returning an error.
->=20
-> Fix this by returning an error only when the result of the
-> phy_read_mmd() is negative.
->=20
-> Fixes: e11ef96d44f1 ("net: phy: aquantia: remove the use of
-> .ack_interrupt()")
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+On Wed, Nov 11, 2020 at 07:56:58AM -0800, Florian Fainelli wrote:
+> The semantics of promiscuous are pretty clear though, and if you have a
+> NIC with VLAN filtering capability which could prevent the stack from
+> seeing *all* packets, that would be considered a bug. I suppose that you
+> could not disable VLAN filtering but instead install all 4096 - N VLANs
+> (N being currently used) into the filter to guarantee receiving those
+> VLAN tagged frames?
 
-I ran into this issue recently. Thanks for the fix.
+Are they?
 
-Tested-by: Camelia Groza <camelia.groza@nxp.com>
+IEEE 802.3 clause 30.3.1.1.16 aPromiscuousStatus says:
+
+APPROPRIATE SYNTAX:
+BOOLEAN
+
+BEHAVIOUR DEFINED AS:
+A GET operation returns the value “true” for promiscuous mode enabled, and “false” otherwise.
+
+Frames without errors received solely because this attribute has the value “true” are counted as
+frames received correctly; frames received in this mode that do contain errors update the
+appropriate error counters.
+
+A SET operation to the value “true” provides a means to cause the LayerMgmtRecognizeAddress
+function to accept frames regardless of their destination address.
+
+A SET operation to the value “false” causes the MAC sublayer to return to the normal operation
+of carrying out address recognition procedures for station, broadcast, and multicast group
+addresses (LayerMgmtRecognizeAddress function).;
+
+
+As for IEEE 802.1Q, there's nothing about promiscuity in the context of
+VLAN there.
+
+Sadly, I think promiscuity refers only to address recognition for the
+purpose of packet termination. I cannot find any reference to VLAN in
+the context of promiscuity, or, for that matter, I cannot find any
+reference coming from a standards body that promiscuity would mean
+"accept all packets".
