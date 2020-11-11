@@ -2,96 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A689B2AE79D
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 05:49:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D39262AE7B6
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 06:04:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725908AbgKKEtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 23:49:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53748 "EHLO
+        id S1725903AbgKKFDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 00:03:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725468AbgKKEtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 23:49:08 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E980DC0613D1;
-        Tue, 10 Nov 2020 20:49:06 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id i193so773294yba.1;
-        Tue, 10 Nov 2020 20:49:06 -0800 (PST)
+        with ESMTP id S1725468AbgKKFDx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 00:03:53 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BABC0613D1;
+        Tue, 10 Nov 2020 21:03:53 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id h4so100013pjk.0;
+        Tue, 10 Nov 2020 21:03:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wGhKnuXKAZIBN7UU5RqHCMQOESVmCKea2plzLKaGYKI=;
-        b=oe8yyqzv8RF5OX9FkBiOV0q2mfOECXLwSpsfm3UPGRiLYFc7VTPRravP7it6csoYCR
-         c4/Pg2AwWCjJHW/n72v6IygO9r1mB08WRczgO0j5/XTgJM+V5knJiaBrwAl1yt9MkbnV
-         6nsLrvRuCBp+xW5okootClnDZnN3dUUsnlmJF0OHJfGtlJ4aEYuzND3ZanNKj87B4woX
-         Fp9ZuN1GZClLPj7OMkNoXOt28BxlVTHkQy6/B4PxpYF9RGoA9hX2iFt6DhvsWt4geFp8
-         pzuvIRAz5tPj9S21vueYXQofsNl5ja+Ea85xqDHstePjbjspl8s30n8sfj2+MgIhqHAy
-         692Q==
+        h=from:to:cc:subject:date:message-id;
+        bh=dYRnJX7E52Qr8q+Y6mWaepyoKc/zmQ6oafgF1OqoAbs=;
+        b=uEhw4nBRsv6FaF+7krKDl7sr30gt6Yj731sECCjJRsMnIht4l9rPIOtKXhiAq1tfS2
+         tMhrxyIkwny9Fg4OL9WmatdEcRZvXnw1ONJ009EkxIdOd3UT+c0ePTFg+VhLmW8xONFh
+         LRJXPNSTjaFZ/3cCk8ZuNXr6DmQyfY0G4RPi9BT3i3Nth0H9KZ3siKUgtSERUmIFG8ws
+         c3OXL10Z4HaUeJLfGDONBpedGrugvbAY3rNOyD5Ok7pQGcIukLubR6CKUymj9ChqZDFJ
+         962o8pJYh4Trv2bF9XvAyD8YSP+HV1Gy+gxBpuVIHNACpJWbuIFa1vuMe0epu0UD2bos
+         kbig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wGhKnuXKAZIBN7UU5RqHCMQOESVmCKea2plzLKaGYKI=;
-        b=JOGbSFpoVE9JTHF6FqnuJJUvcSE+NRZjngmw/jJi0UVUBf4pgoV23FCnminlSPDlz3
-         aYoxPvT2wDPOMvUudT6EGr2AVhXlf97YAuQZfVYE73TquxW3vx6w7KvVLYW4m1VvbZvn
-         6dNKLkESBMyPTZV5M1YLIIHwhUs+B2XjTqtT82mUQwVIepmddRQ/3CY8chkkD1iXd4oO
-         XjScMHVVCzdptRLCsgqYo9xqGSSK0eGqcW3wrAYZi2immWzBCiK3nL5n5BEhBD2y/6tW
-         nkdxTGg/UJMsxp5bOoETibChgUalnMHA6up1DrFNu6RNrPJ683sdwIK1tcKO1ijmWp/3
-         Eh8Q==
-X-Gm-Message-State: AOAM531Z2YF8HCLwmVAP5pX6e9Docin6WVSib69y2aw5atiwlfl243h2
-        2V6YQ0/gtbOWRMqQHcrexDBRNXi6phstXzRpFZvMAuCeXmRxfQ==
-X-Google-Smtp-Source: ABdhPJyvz/EfrSBFVn1Pv8d2YkvUEku9oYRNKXMgu/SGexRauFTWOZXT00SrgY4xvh3tqI/ibw7qx/B2WC1mAb2nGTQ=
-X-Received: by 2002:a25:3d7:: with SMTP id 206mr19269842ybd.27.1605070146281;
- Tue, 10 Nov 2020 20:49:06 -0800 (PST)
-MIME-Version: 1.0
-References: <X6rJ7c1C95uNZ/xV@santucci.pierpaolo>
-In-Reply-To: <X6rJ7c1C95uNZ/xV@santucci.pierpaolo>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 10 Nov 2020 20:48:55 -0800
-Message-ID: <CAEf4BzYTvPOtiYKuRiMFeJCKhEzYSYs6nLfhuten-EbWxn02Sg@mail.gmail.com>
-Subject: Re: [PATCH] selftest/bpf: fix IPV6FR handling in flow dissector
-To:     Santucci Pierpaolo <santucci@epigenesys.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=dYRnJX7E52Qr8q+Y6mWaepyoKc/zmQ6oafgF1OqoAbs=;
+        b=B8tuwmz1D4T6oN0m59d9THLBEYMjv4aCzg6gO2KwLgMTCyAEFm2odn6mVwui3J1Wk3
+         i9U6RWypD6436hrdHgq/Lo3gTJKAE9clmaM4S3vju2940vtraEXK2Ks5P+l+QKe7Tnii
+         TxVkZcnkxNVNIDyCfyGRtsNOmhyE+FDz5n+QRIzc4oj/c6uERIXHECD7uOBO3P9ZZ94d
+         1b8vfAkoO1jLCFWKfoytjocBuh7Th+sPVAWChkywOu/Y1SBmLWTFyZwD/iI8atR/O/rI
+         L+80rReBtsKy0of6rC26+la+DIpOTHAE6pZ11T77/VPhPjA6FzJq5nle9oruHxJXRJRD
+         0kBw==
+X-Gm-Message-State: AOAM533mbEp0BQbMXvR9z6yC5qv+0E3At/kON+Pku6r/lQ0UENFNpOBm
+        OL2sQT+drrsbUF89VO/8Mw==
+X-Google-Smtp-Source: ABdhPJx2jvTgyuea3Ejr0/Y0MbxVTWYXDd89GtP0F70JjQo3LU/KczLNudUpsIA27TZN1nl/1q2BQg==
+X-Received: by 2002:a17:90b:512:: with SMTP id r18mr2097099pjz.149.1605071032934;
+        Tue, 10 Nov 2020 21:03:52 -0800 (PST)
+Received: from he-cluster.localdomain (67.216.221.250.16clouds.com. [67.216.221.250])
+        by smtp.gmail.com with ESMTPSA id t74sm800093pfc.47.2020.11.10.21.03.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 10 Nov 2020 21:03:52 -0800 (PST)
+From:   xiakaixu1987@gmail.com
+X-Google-Original-From: kaixuxia@tencent.com
+To:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andrii@kernel.org,
+        john.fastabend@gmail.com, kpsingh@chromium.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kaixu Xia <kaixuxia@tencent.com>
+Subject: [PATCH v3] bpf: Fix unsigned 'datasec_id' compared with zero in check_pseudo_btf_id
+Date:   Wed, 11 Nov 2020 13:03:46 +0800
+Message-Id: <1605071026-25906-1-git-send-email-kaixuxia@tencent.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 10, 2020 at 9:12 AM Santucci Pierpaolo
-<santucci@epigenesys.com> wrote:
->
-> From second fragment on, IPV6FR program must stop the dissection of IPV6
-> fragmented packet. This is the same approach used for IPV4 fragmentation.
->
+From: Kaixu Xia <kaixuxia@tencent.com>
 
-Jakub, can you please take a look as well?
+The unsigned variable datasec_id is assigned a return value from the call
+to check_pseudo_btf_id(), which may return negative error code.
 
-> Signed-off-by: Santucci Pierpaolo <santucci@epigenesys.com>
-> ---
->  tools/testing/selftests/bpf/progs/bpf_flow.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/progs/bpf_flow.c b/tools/testing/selftests/bpf/progs/bpf_flow.c
-> index 5a65f6b51377..95a5a0778ed7 100644
-> --- a/tools/testing/selftests/bpf/progs/bpf_flow.c
-> +++ b/tools/testing/selftests/bpf/progs/bpf_flow.c
-> @@ -368,6 +368,8 @@ PROG(IPV6FR)(struct __sk_buff *skb)
->                  */
->                 if (!(keys->flags & BPF_FLOW_DISSECTOR_F_PARSE_1ST_FRAG))
->                         return export_flow_keys(keys, BPF_OK);
-> +       } else {
-> +               return export_flow_keys(keys, BPF_OK);
->         }
->
->         return parse_ipv6_proto(skb, fragh->nexthdr);
-> --
-> 2.29.2
->
+Fixes coccicheck warning:
+
+./kernel/bpf/verifier.c:9616:5-15: WARNING: Unsigned expression compared with zero: datasec_id > 0
+
+Reported-by: Tosk Robot <tencent_os_robot@tencent.com>
+Signed-off-by: Kaixu Xia <kaixuxia@tencent.com>
+---
+v3:
+ -put the changes on the proper place.
+
+v2:
+ -split out datasec_id definition into a separate line.
+
+ kernel/bpf/verifier.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 6200519582a6..6204ec705d80 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -9572,12 +9572,13 @@ static int check_pseudo_btf_id(struct bpf_verifier_env *env,
+ 			       struct bpf_insn *insn,
+ 			       struct bpf_insn_aux_data *aux)
+ {
+-	u32 datasec_id, type, id = insn->imm;
+ 	const struct btf_var_secinfo *vsi;
+ 	const struct btf_type *datasec;
+ 	const struct btf_type *t;
+ 	const char *sym_name;
+ 	bool percpu = false;
++	u32 type, id = insn->imm;
++	s32 datasec_id;
+ 	u64 addr;
+ 	int i;
+ 
+-- 
+2.20.0
+
