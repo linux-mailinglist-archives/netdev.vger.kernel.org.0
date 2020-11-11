@@ -2,83 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 332AA2AF8F8
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 20:24:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81A682AF903
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 20:26:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727647AbgKKTYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 14:24:01 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:35583 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726157AbgKKTYA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 14:24:00 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1kcvin-0005qG-Ux; Wed, 11 Nov 2020 19:23:58 +0000
-Subject: Re: [PATCH][next] mptcp: fix a dereference of pointer before msk is
- null checked.
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Geliang Tang <geliangtang@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, kernel-janitors@vger.kernel.org,
+        id S1727442AbgKKT0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 14:26:21 -0500
+Received: from mail-40136.protonmail.ch ([185.70.40.136]:54289 "EHLO
+        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726466AbgKKT0U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 14:26:20 -0500
+Date:   Wed, 11 Nov 2020 19:26:14 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1605122778; bh=ZIGJsv6VuvrH6aqhvv1rHsUpskcyiznKXAa1hoxNvCs=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=K5fArzI38ps9TNjIyC/yfuMfwNSbHEkbFN0Swyu9QWnMaAup1vOTuq6ZC9hJZj6j7
+         J+IV3NJDbuYZTBkXzBtj4WO0YXOP/o5aNbE9mPk50G3q/uJBzDwEE+UmjJgL5lZunW
+         /0t//mBJhR1uweHvHISekwkTdNhGwvHRuL/AvHtdeJnvj+1UuKPnv1dBAC4+KitsKc
+         II6PU+Gpm3es4OZPKyEVIZ68Qbj09BX8zZ39Jk9DyUFevvOhXP5VPYNjCNCctYJPLy
+         EgugshrdqEuSb2yCUZ5usJfkZW/t/x/Aw7bmPDGU/n5i6mRZj76O8NN426EpME7yuT
+         BC0OSJaG+GgLA==
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20201109125215.2080172-1-colin.king@canonical.com>
- <cb9fba1-b399-325f-c956-ede9da1b1b7@linux.intel.com>
-From:   Colin Ian King <colin.king@canonical.com>
-Message-ID: <e493452c-4dc1-d2b2-e05b-9bace72af2dc@canonical.com>
-Date:   Wed, 11 Nov 2020 19:23:57 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.1
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH v4 net] net: udp: fix Fast/frag0 UDP GRO
+Message-ID: <95YTSkmAW8hn6cmmEKdJEAGj6Mn5r07PALzHZW4@cp7-web-044.plabs.ch>
+In-Reply-To: <CA+FuTSfnRJF4_SoMtJz+B7Y5hePoA1OzA797zkmzJ0cYQ99iVw@mail.gmail.com>
+References: <bEm19mEHLokLGc5HrEiEKEUgpZfmDYPoFtoLAAEnIUE@cp3-web-033.plabs.ch> <CA+FuTScriNKLu=q+xmBGjtBB06SbErZK26M+FPiJBRN-c8gVLw@mail.gmail.com> <zlsylwLJr9o9nP9fcmUnMBxSNs5tLc6rw2181IgE@cp7-web-041.plabs.ch> <20201111082658.4cd3bb1d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CA+FuTSfnRJF4_SoMtJz+B7Y5hePoA1OzA797zkmzJ0cYQ99iVw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <cb9fba1-b399-325f-c956-ede9da1b1b7@linux.intel.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/11/2020 18:49, Mat Martineau wrote:
-> On Mon, 9 Nov 2020, Colin King wrote:
-> 
->> From: Colin Ian King <colin.king@canonical.com>
->>
->> Currently the assignment of pointer net from the sock_net(sk) call
->> is potentially dereferencing a null pointer sk. sk points to the
->> same location as pointer msk and msk is being null checked after
->> the sock_net call.  Fix this by calling sock_net after the null
->> check on pointer msk.
->>
->> Addresses-Coverity: ("Dereference before null check")
->> Fixes: 00cfd77b9063 ("mptcp: retransmit ADD_ADDR when timeout")
->> Signed-off-by: Colin Ian King <colin.king@canonical.com>
->> ---
->> net/mptcp/pm_netlink.c | 4 +++-
->> 1 file changed, 3 insertions(+), 1 deletion(-)
->>
-> 
-> Hi Colin and Jakub -
-> 
-> I noticed that the follow-up discussion on this patch didn't go to the
-> netdev list, so patchwork did not get updated.
-> 
-> This patch is superseded by the following, which already has a
-> Reviewed-by tag from Matthieu:
-> 
-> http://patchwork.ozlabs.org/project/netdev/patch/078a2ef5bdc4e3b2c25ef852461692001f426495.1604976945.git.geliangtang@gmail.com/
-> 
-> 
-OK, thanks for letting me know. Good to see it got fixed!
+From: Jakub Kicinski <kuba@kernel.org>
 
-Colin
-> 
-> Thanks!
-> 
-> -- 
-> Mat Martineau
-> Intel
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date: Wed, 11 Nov 2020 12:28:21 -0500
+
+> On Wed, Nov 11, 2020 at 11:27 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>>
+>> On Wed, 11 Nov 2020 11:29:06 +0000 Alexander Lobakin wrote:
+>>>>>> +     sk =3D static_branch_unlikely(&udp_encap_needed_key) ?
+>>>>>> +          udp4_gro_lookup_skb(skb, uh->source, uh->dest) :
+>>>>>> +          NULL;
+>>>>
+>>>> Does this indentation pass checkpatch?
+>>>
+>>> Sure, I always check my changes with checkpatch --strict.
+>>>
+>>>> Else, the line limit is no longer strict,a and this only shortens the
+>>>> line, so a single line is fine.
+>>>
+>>> These single lines is about 120 chars, don't find them eye-pleasant.
+>>> But, as with "u32" above, they're pure cosmetics and can be changed.
+>>
+>> let me chime in on the perhaps least important aspect of the patch :)
+>>
+>> Is there are reason to use a ternary operator here at all?
+>> Isn't this cleaner when written with an if statement?
+>>
+>>         sk =3D NULL;
+>>         if (static_branch_unlikely(&udp_encap_needed_key))
+>>                 sk =3D udp4_gro_lookup_skb(skb, uh->source, uh->dest);
+
+This idea came to me right after I submitted the last version
+actually. Sure, there's absolutely no need to use a split ternary.
+
+> Ah indeed :)
+>
+> One other thing I missed before. The socket lookup is actually an
+> independent issue, introduced on commit a6024562ffd7 ("udp: Add GRO
+> functions to UDP socket"). Should be a separate Fixes tag, perhaps
+> even a separate patch.
+
+Seems reasonable. I'll convert v5 to a pair.
+
+Thanks,
+Al
 
