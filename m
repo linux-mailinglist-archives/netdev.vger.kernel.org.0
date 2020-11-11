@@ -2,91 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99C492AEF5D
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:15:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AE542AEF62
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:15:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726208AbgKKLPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 06:15:17 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:33378 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725965AbgKKLPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 06:15:16 -0500
-Received: from marcel-macbook.holtmann.net (unknown [37.83.201.106])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 2D2CDCECFE;
-        Wed, 11 Nov 2020 12:22:23 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
-Subject: Re: [PATCH v9 1/6] Bluetooth: Replace BT_DBG with bt_dev_dbg in HCI
- request
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20201111150115.v9.1.I55fa38874edc240d726c1de6e82b2ce57b64f5eb@changeid>
-Date:   Wed, 11 Nov 2020 12:15:13 +0100
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Alain Michaud <alainm@chromium.org>,
-        Manish Mandlik <mmandlik@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <930CC61B-FFE0-44A4-93E4-D48C07793324@holtmann.org>
-References: <20201111150115.v9.1.I55fa38874edc240d726c1de6e82b2ce57b64f5eb@changeid>
-To:     Howard Chung <howardchung@google.com>
-X-Mailer: Apple Mail (2.3608.120.23.2.4)
+        id S1726290AbgKKLPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 06:15:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbgKKLPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 06:15:48 -0500
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55E00C0613D1;
+        Wed, 11 Nov 2020 03:15:48 -0800 (PST)
+Received: by mail-ot1-x343.google.com with SMTP id j14so1797032ots.1;
+        Wed, 11 Nov 2020 03:15:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oDGt8ma/Ki7z732IZFIEIBCAmcZZzkinHzRJMbdIpOk=;
+        b=NXvTO6/RXFrl8YidjDfskiLCdvh2F6y9c9UXMDaHseaL4steWStoXPMW4aAnz1ojkF
+         zlvLquT43M7QoiCK5QOEWk8xRwK/H7NQQcVIgV03MOKu/K9iA0QvJsCGvBXIg/vn7YR8
+         1uPlVf1D6WQTqwR8THwySy/JOjGdVR9HLUE+EFDHefKtNZdoUZmdj2APNIt4/1g8FVMm
+         YvJXklFF7VD1znuJ88HqUsyRDgSsFlcH6logMzXaLF3b0nLOY5G9KmgNPOs0NZBKAI5P
+         Cgc/Ev8p/oWPiIhh+7E9pP73I+7G9ce9f/4h+ddr/kSNDZuymnnw+C3ZX3jlYwNtLOsN
+         wydg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oDGt8ma/Ki7z732IZFIEIBCAmcZZzkinHzRJMbdIpOk=;
+        b=N9PoAdcYA2ftQFUUaUFWG8QdvYqrVhDQ7v/nXzpNqowCWR0M7+zEx1pmZy0Wk4mSrs
+         vRxOXtVqfHdRDgnPryUW7pbnM+6KdFTtZkXgIXwbzUe9YtjWa56y3Vm+2iJ0RbouSMWF
+         9lqRgEepL//0WDFEfOVakCxHrMLMrN92N4i+iU/e6I1HLMR2RSPCRzXkWe038eqfcZUA
+         r7bzRZmnNRHQ/24ByWg2jfDONPNFicx320t/TcCY4nRUebZYJzpp8SxlaMsbengFYZpG
+         Fb/zCKHM9dEt7VH1wgWewjFyDCE6gPpl0XTdjoQklUpUfDOiqWxY9xmA+JO8b5zRiV4G
+         s41w==
+X-Gm-Message-State: AOAM532BjQSdUXRLUBod2smDBRdxdCFAu33UGUOeObNXDI5b5SI5/z4R
+        FLY0MZpEm6pGPTa9j31P2IakJwr2IRkecx5Ht1s=
+X-Google-Smtp-Source: ABdhPJzoyiezA6bxrPG+J4Zvz0VXzT/Cs5WFODvqu/lWnWWqhMomQ8cYyoJvawhKXqCfOi37Fp4ACpPMTFxJWttZ3Dw=
+X-Received: by 2002:a9d:2f61:: with SMTP id h88mr18012985otb.278.1605093347705;
+ Wed, 11 Nov 2020 03:15:47 -0800 (PST)
+MIME-Version: 1.0
+References: <20201107122617.55d0909c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <222b9c1b-9d60-22f3-6097-8abd651cc192@gmail.com> <CAD=hENdP8sJrBZ7uDEWtatZ3D6bKQY=wBKdM5NQ79xveohAnhQ@mail.gmail.com>
+ <20201109102518.6b3d92a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CAD=hENcAc8TZSeW1ba_BDiT7M7+HeyWUHSVwnFQjOi6vk5TPMQ@mail.gmail.com>
+In-Reply-To: <CAD=hENcAc8TZSeW1ba_BDiT7M7+HeyWUHSVwnFQjOi6vk5TPMQ@mail.gmail.com>
+From:   Zhu Yanjun <zyjzyj2000@gmail.com>
+Date:   Wed, 11 Nov 2020 19:15:36 +0800
+Message-ID: <CAD=hENcBQ=A9UrrciM2L7PJUD2wCNnQPh8tCNCHc6nT+0N1cDg@mail.gmail.com>
+Subject: Re: [PATCH 1/1] RDMA/rxe: Fetch skb packets from ethernet layer
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        linux-rdma@vger.kernel.org, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Howard,
+On Tue, Nov 10, 2020 at 9:58 AM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
+>
+> On Tue, Nov 10, 2020 at 2:25 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Sun, 8 Nov 2020 13:27:32 +0800 Zhu Yanjun wrote:
+> > > On Sun, Nov 8, 2020 at 1:24 PM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
+> > > > On Thu, 5 Nov 2020 19:12:01 +0800 Zhu Yanjun wrote:
+> > > >
+> > > > In the original design, in rx, skb packet would pass ethernet
+> > > > layer and IP layer, eventually reach udp tunnel.
+> > > >
+> > > > Now rxe fetches the skb packets from the ethernet layer directly.
+> > > > So this bypasses the IP and UDP layer. As such, the skb packets
+> > > > are sent to the upper protocals directly from the ethernet layer.
+> > > >
+> > > > This increases bandwidth and decreases latency.
+> > > >
+> > > > Signed-off-by: Zhu Yanjun <yanjunz@nvidia.com>
+> > > >
+> > > >
+> > > > Nope, no stealing UDP packets with some random rx handlers.
+> > >
+> > > Why? Is there any risks?
+> >
+> > Are there risks in layering violations? Yes.
+> >
+> > For example - you do absolutely no protocol parsing,
+>
+> Protocol parsing is in rxe driver.
+>
+> > checksum validation, only support IPv4, etc.
+>
+> Since only ipv4 is supported in rxe, if ipv6 is supported in rxe, I
+> will add ipv6.
+>
+> >
+> > Besides it also makes the code far less maintainable, rx_handler is a
+>
+> This rx_handler is also used in openvswitch and bridge.
 
-> This replaces the BT_DBG function to bt_dev_dbg as it is cleaner to show
-> the controller index in the debug message.
-> 
-> Signed-off-by: Howard Chung <howardchung@google.com>
-> ---
-> 
-> Changes in v9:
-> - Fix compile warning on patch 6/6
-> 
-> Changes in v8:
-> - Simplified logic in __hci_update_interleaved_scan
-> - Remove hdev->name when calling bt_dev_dbg
-> - Remove 'default' in hci_req_add_le_interleaved_scan switch block
-> - Remove {} around :1915
-> - Update commit message and title in v7 4/5
-> - Add a cleanup patch for replacing BT_DBG with bt_dev_dbg
-> 
-> Changes in v7:
-> - Fix bt_dev_warn argument type warning
-> 
-> Changes in v6:
-> - Set parameter EnableAdvMonInterleaveScan to 1 byte long
-> 
-> Changes in v5:
-> - Rename 'adv_monitor' from many functions/variables
-> - Move __hci_update_interleaved_scan into hci_req_add_le_passive_scan
-> - Update the logic of update_adv_monitor_scan_state
-> 
-> Changes in v4:
-> - Rebase to bluetooth-next/master (previous 2 patches are applied)
-> - Fix over 80 chars limit in mgmt_config.c
-> - Set EnableAdvMonInterleaveScan default to Disable
-> 
-> Changes in v3:
-> - Remove 'Bluez' prefix
-> 
-> Changes in v2:
-> - remove 'case 0x001c' in mgmt_config.c
-> 
-> net/bluetooth/hci_request.c | 52 ++++++++++++++++++-------------------
-> 1 file changed, 26 insertions(+), 26 deletions(-)
+in Vacation. I will reply as soon as I come back.
 
-patch has been applied to bluetooth-next tree.
+Zhu Yanjun
 
-Regards
-
-Marcel
-
+>
+> Zhu Yanjun
+>
+> > singleton, etc. etc.
+> >
+> > > > The tunnel socket is a correct approach.
