@@ -2,156 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1A812AEF15
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:02:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2704A2AEF45
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:12:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726026AbgKKLCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 06:02:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32637 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725895AbgKKLCf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 06:02:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605092554;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HgnsptKYrAYETwb6RQgP12ipc3XlwLCSG6GxAjNNiQg=;
-        b=HdYebn0bjIhjrD1RljpXkyCe3gqmj/Xge1/BecCBYojGzfm0xUKSj1Xqgk5TJEsCPZ153M
-        Q19YUQfqg5L/K0FXNc/y5TSgsQKhLsc7439FDwStCJbJWgN+QosmB87WYQMsBuwmyV9N/1
-        HRUNQm7cPMsBh6EVVx52E7/tROnUVc0=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-583-fvTjL9tIPsiQnlwEjcKVqw-1; Wed, 11 Nov 2020 06:02:32 -0500
-X-MC-Unique: fvTjL9tIPsiQnlwEjcKVqw-1
-Received: by mail-qk1-f199.google.com with SMTP id z68so1380862qkc.4
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 03:02:32 -0800 (PST)
+        id S1726203AbgKKLMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 06:12:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59756 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726395AbgKKLMS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 06:12:18 -0500
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57721C0613D4
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 03:12:18 -0800 (PST)
+Received: by mail-qk1-x741.google.com with SMTP id n132so1271714qke.1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 03:12:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WblSjW7Hy1Qg/G9ygaqee8dLuPciIb0PMDRXWK2yB3I=;
+        b=mnoXeYYU9FZvxitCgz+s3IfMrgwI92vcPOfjlpLHfCKQ0i916WWDlzOVGj5faz2D9+
+         JXDBkB6Sqv5zDJCTOyJP86i9c7z/OeJz1YDk1McIBYw9hrCsly2glRfgS4dDw9xmC1vj
+         NPO/Y3ydEZHxMbD++b7hkNodPdDlqOxg74S5UE2qyakpVvg/pNP5O2Hsi0wHiKa8ur1V
+         QqScNUC3sx+DtFLhy2H2G+PKibPl3zNqX2JQhIwKceYMlWbMggEJPSUOMIr5d3LM9+eT
+         AuXp2vy8WuYE8VhaYajRR/fikF2jfNaJWD51CG3aYsWb886PT2kBX8r/XrWSnvAIwEMs
+         4wrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=HgnsptKYrAYETwb6RQgP12ipc3XlwLCSG6GxAjNNiQg=;
-        b=V9kxq9ZcPcpvsSXAs4sbcNti+sT3cNemgapjnSX947tO2FnEnFbZ4nVHRgM87/TC20
-         3RE/ZowBlX0ut6eieuAcOU+clLjxG/s2GawS8Gt2Efh3+Ik6xxQThyoOER/juJ4s/n8T
-         vBtoynyW41C6n+k1Wm/OpsEywHfm8sT8mzc9hpahffLuXSVwytrtjSWBENc8VLQ+TdzW
-         ZnVWnyYLUw1I0Oz/fshwfk4EQ24KipuZJbRqzU56thvSBNz8/sEvlCOe+6PGLjOx6npd
-         o+YFQIKPKa6n3Z84RnG4FmD0Ao+yc+pPIIoejsutPg51L2OagUMIImLH0uTh1aHfoP7O
-         lQHA==
-X-Gm-Message-State: AOAM530g+CsG6rXqLBRIGyg4Dtf8ANvhVa9R019NY+xKz6yikk0vLNKy
-        Hi2E0iVPiDVvwAq0MG1cTRDL9dvZjgescPwcGvrXBRttnFjg1X47jE+tffUi7mRRFlZhi13V6wh
-        YgyFv3YDxXRsI8P2V
-X-Received: by 2002:ac8:1201:: with SMTP id x1mr12717903qti.339.1605092551553;
-        Wed, 11 Nov 2020 03:02:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzk553Y+qO9pY8i86H2Q8DT91q75yDtJJLXiQ9gewjey8d5E3lMiuoHYWNh9qdk7ow0cv4rww==
-X-Received: by 2002:ac8:1201:: with SMTP id x1mr12717886qti.339.1605092551320;
-        Wed, 11 Nov 2020 03:02:31 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id s23sm1718122qke.11.2020.11.11.03.02.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Nov 2020 03:02:29 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B1EAB1833E9; Wed, 11 Nov 2020 12:02:26 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-In-Reply-To: <20201111004749.r37tqrhskrcxjhhx@ast-mbp>
-References: <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
- <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com>
- <CAEf4BzaSfutBt3McEPjmu_FyxyzJa_xVGfhP_7v0oGuqG_HBEw@mail.gmail.com>
- <20201106094425.5cc49609@redhat.com>
- <CAEf4Bzb2fuZ+Mxq21HEUKcOEba=rYZHc+1FTQD98=MPxwj8R3g@mail.gmail.com>
- <CAADnVQ+S7fusZ6RgXBKJL7aCtt3jpNmCnCkcXd0fLayu+Rw_6Q@mail.gmail.com>
- <20201106152537.53737086@hermes.local>
- <45d88ca7-b22a-a117-5743-b965ccd0db35@gmail.com>
- <20201109014515.rxz3uppztndbt33k@ast-mbp>
- <14c9e6da-e764-2e2c-bbbb-bc95992ed258@gmail.com>
- <20201111004749.r37tqrhskrcxjhhx@ast-mbp>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 11 Nov 2020 12:02:26 +0100
-Message-ID: <874klwcg1p.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WblSjW7Hy1Qg/G9ygaqee8dLuPciIb0PMDRXWK2yB3I=;
+        b=q1iwsvZhA4P3/yVShN+OtAIzLEPrAFRVsPLcos+SDZ+Gv3WrR/LnJMqaSPyFB/Ry5/
+         3rEuAFIRsNMoXhlg0JBbnva61s7H4DRLdPKFI3RI6D/4fMnGk4hYGT1446eZlAdY1G21
+         L33itNFa5RcwqMGkau1g+V1VTs6LyKxjfh3a0xOnOK8mE8aIoeYEsZzX5d0UeDH6pz9e
+         i4FOk5nFEnqQwaPAIHjOKKVDLrwzvjoQk4Y0+9nv7TQjphaLtdar6HUJ/bBnavgQlyDD
+         cHlLq7HlP5Gk98D+91Z8o+iNqEW9/in4foI+N4UP8g0PbTs18K0EcrmVTJ1DZOTWEc5j
+         5kuQ==
+X-Gm-Message-State: AOAM5302NlPAlOhaBTOjCvsrID1x5U+8Oh7xC9kFwZ3hBswQMfG7Q5h1
+        hcUtLK1R/TSylLxuISDpnPbK0iUPD7Q35TrkdbDEdA==
+X-Google-Smtp-Source: ABdhPJytmEudtqCvqu9Cia4M/vz8rvbh5JQqeb7dFN0b5G22lRbkjrL2sa5NNnZ0sXR/eE6YVQcWrXHOQaQh0zml8/Q=
+X-Received: by 2002:a05:620a:15ce:: with SMTP id o14mr25226279qkm.231.1605093137327;
+ Wed, 11 Nov 2020 03:12:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <000000000000a48f9e05aef6cce1@google.com> <000000000000b4227e05b3aa8101@google.com>
+In-Reply-To: <000000000000b4227e05b3aa8101@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Wed, 11 Nov 2020 12:12:06 +0100
+Message-ID: <CACT4Y+Zy=m_K=rHpzi09tOd6YuQe6Dzk9vLvNoZk8Oo1hVG55g@mail.gmail.com>
+Subject: Re: INFO: rcu detected stall in exit_group
+To:     syzbot <syzbot+1a14a0f8ce1a06d4415f@syzkaller.appspotmail.com>
+Cc:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        David Miller <davem@davemloft.net>,
+        David Howells <dhowells@redhat.com>,
+        =?UTF-8?B?RnLDqWTDqXJpYyBXZWlzYmVja2Vy?= <fweisbec@gmail.com>,
+        linux-afs@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, mareklindner@neomailbox.ch,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        netdev <netdev@vger.kernel.org>, sw@simonwunderlich.de,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-
-> On Mon, Nov 09, 2020 at 09:09:44PM -0700, David Ahern wrote:
->> On 11/8/20 6:45 PM, Alexei Starovoitov wrote:
->> > 
->> > I don't understand why on one side you're pointing out existing quirkiness with
->> > bpf usability while at the same time arguing to make it _less_ user friendly
->> 
->> I believe you have confused my comments with others. My comments have
->> focused on one aspect: The insistence by BPF maintainers that all code
->> bases and users constantly chase latest and greatest versions of
->> relevant S/W to use BPF
+On Mon, Nov 9, 2020 at 12:03 PM syzbot
+<syzbot+1a14a0f8ce1a06d4415f@syzkaller.appspotmail.com> wrote:
 >
-> yes, because we care about user experience while you're still insisting
-> on make it horrible.
-> With random pick of libbpf.so we would have no choice, but to actively tell
-> users to avoid using tc, because sooner or later they will be pissed. I'd
-> rather warn them ahead of time.
-
-Could we *please* stop with this "my way or the highway" extortion? It's
-incredibly rude, and it's not helping the discussion.
-
->> - though I believe a lot of the tool chasing
->> stems from BTF. I am fairly certain I have been consistent in that theme
->> within this thread.
+> syzbot suspects this issue was fixed by commit:
 >
-> Right. A lot of features added in the last couple years depend on BTF:
-> static vs global linking, bpf_spin_lock, function by function verification, etc
+> commit 1d0e850a49a5b56f8f3cb51e74a11e2fedb96be6
+> Author: David Howells <dhowells@redhat.com>
+> Date:   Fri Oct 16 12:21:14 2020 +0000
 >
->> > when myself, Daniel, Andrii explained in detail what libbpf does and how it
->> > affects user experience?
->> > 
->> > The analogy of libbpf in iproute2 and libbfd in gdb is that both libraries
->> 
->> Your gdb / libbfd analogy misses the mark - by a lot. That analogy is
->> relevant for bpftool, not iproute2.
->> 
->> iproute2 can leverage libbpf for 3 or 4 tc modules and a few xdp hooks.
->> That is it, and it is a tiny percentage of the functionality in the package.
+>     afs: Fix cell removal
 >
-> cat tools/lib/bpf/*.[hc]|wc -l
-> 23950
-> cat iproute2/tc/*.[hc]|wc -l
-> 29542
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14b65c3a500000
+> start commit:   34d4ddd3 Merge tag 'linux-kselftest-5.9-rc5' of git://git...
+> git tree:       upstream
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a9075b36a6ae26c9
+> dashboard link: https://syzkaller.appspot.com/bug?extid=1a14a0f8ce1a06d4415f
+> userspace arch: i386
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10c6642d900000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132d00fd900000
 >
-> The point is that for these few tc commands the amount logic in libbpf/tc is 90/10.
+> If the result looks correct, please mark the issue as fixed by replying with:
 >
-> Let's play it out how libbpf+tc is going to get developed moving forward if
-> libbpf is a random version. Say, there is a patch for libbpf that makes
-> iproute2 experience better. bpf maintainers would have no choice, but to reject
-> it, since we don't add features/apis to libbpf if there is no active user.
-> Adding a new libbpf api that iproute2 few years from now may or may not take
-> advantage makes little sense.
+> #syz fix: afs: Fix cell removal
+>
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
-What? No one has said that iproute2 would never use any new features,
-just that they would be added conditionally on a compatibility check
-with libbpf (like the check for bpf_program__section_name() in the
-current patch series).
-
-Besides, for the entire history of BPF support in iproute2 so far, the
-benefit has come from all the features that libbpf has just started
-automatically supporting on load (BTF, etc), so users would have
-benefited from automatic library updates had it *not* been vendored in.
-
--Toke
-
+#syz fix: afs: Fix cell removal
