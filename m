@@ -2,93 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7730B2AE72E
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 04:45:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BAB92AE735
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 04:48:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725976AbgKKDpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 22:45:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725849AbgKKDpC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 22:45:02 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2B0C0613D1;
-        Tue, 10 Nov 2020 19:45:02 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id v12so767320pfm.13;
-        Tue, 10 Nov 2020 19:45:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rnbLMNtHljBapvM78K/ufrArsOT1Tj93sPuGgYeOtEE=;
-        b=Y5oCbCrfM+Pt96bcFo5KZ/gZRkyWbLRb2GfC6zVEPxyr2HExZgkg7DLoRmG0zvdgcP
-         tC9F/BD2B4Qe8gTOUn7bhcxV69qCmsdOgup+WWtnQ5qJCLVv9RkhbsXkTW1MJstDCIZS
-         Lfc1FBZO+f+7xBHVgsXDEUxGao1HD7BdQMuODda+axxweZfpY7iISBXTxy7FhBJoLFNq
-         Sd/Mdfnetx217r4oRy1V2tLWaMNhDnwM9VB68NtIZ9LFG1+dwbWmiXEFR7iufQpdABrc
-         4/EFH/3DFHDGmPCuVZVwXnFIE2Sa2Vkx4oANi2P2IKNMeAYN9ihxcyXJbeG4+eiCfdI1
-         QYYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rnbLMNtHljBapvM78K/ufrArsOT1Tj93sPuGgYeOtEE=;
-        b=RN2kTQOgapuemCbuGvSVhcXyqwS0lUy8PuBrMvt6pDAkiNQRyPdE0yOG8utueMfw+M
-         pxGJt38CU7DqGd3CwtdKXZ9eOVnQfYzSgnbpX3KPluVn3juF02nkhj2LRKti4qGFqzfe
-         M3W2aCKTYqLTRYfbnDYz0qCQq+Wc/5v8UlN/aywJ88nPPiLDReEdwBz/9478TX/iclJ6
-         6BCDGzm/hwZX35ZSk7Ng8EdZsdiRMp+w4HMEq1gHbgqVXgy+vt32LAuKyp3WwQ6dTJ2p
-         +I6zAASPBLU3KtKJR1+wmZQ0iZZO/9uh2RiD4MRWzvPFsNI5kvQ3JHhv2kGrcWQaU1yt
-         LZ7g==
-X-Gm-Message-State: AOAM533pLKJQXJjuFynVuKI8us/1Csp/P1kFFjDawPzJcprWAjlRv5ks
-        U2n0MpQUCdilpQFcgYe5olI=
-X-Google-Smtp-Source: ABdhPJyQXfdALt9USvkJWka5bDoiURyvSCB8OLjcS0Y62X0s524S2msg1o4hUB9C2SiD4pxWqSlyrw==
-X-Received: by 2002:aa7:9888:0:b029:18b:a9e2:dc7a with SMTP id r8-20020aa798880000b029018ba9e2dc7amr20808115pfl.67.1605066301975;
-        Tue, 10 Nov 2020 19:45:01 -0800 (PST)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id c28sm619137pfj.108.2020.11.10.19.45.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Nov 2020 19:45:01 -0800 (PST)
-Subject: Re: [RFC PATCH net-next 2/3] net: dsa: move switchdev event
- implementation under the same switch/case statement
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     DENG Qingfang <dqfext@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Marek Behun <marek.behun@nic.cz>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-References: <20201108131953.2462644-1-olteanv@gmail.com>
- <20201108131953.2462644-3-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <650cc6e2-8bf7-57b9-595d-08624f545a07@gmail.com>
-Date:   Tue, 10 Nov 2020 19:44:59 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.4.2
+        id S1725884AbgKKDsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 22:48:15 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1464 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725849AbgKKDsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 22:48:14 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fab5ef90000>; Tue, 10 Nov 2020 19:48:09 -0800
+Received: from sw-mtx-036.mtx.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 11 Nov
+ 2020 03:48:13 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>,
+        Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH net RESEND] devlink: Avoid overwriting port attributes of registered port
+Date:   Wed, 11 Nov 2020 05:47:44 +0200
+Message-ID: <20201111034744.35554-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201110185258.30576-1-parav@nvidia.com>
+References: <20201110185258.30576-1-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20201108131953.2462644-3-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1605066489; bh=QNddpX4MZtczOoPX3ILe/h42UIgao/9pGSjX9V+gL8w=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
+         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=qcASHtf0K3LctTSPORkMUmwAJgkHbH6zGZzNhRKbzEDTA8fW9cjACmX22iu7dKzv/
+         6MQXXDPu3khLKWsX6iyl3y42MqyXf28ZZ0kioo4SGzFgumeAYxvuprnJAqTJUKxQQR
+         QTEqlFaAq+7jjPSSW23ELz74FpVsYm7nXWCUVXnFcLq1MmqyG5St36OxX8Unz5/Hsj
+         t4cvKJtgbb70jHEIGD5HU5HIIDw+XJC/bc5DWZ4F1jMaLLDZFoM2naLKdkHm/1u1qx
+         5oAr5K6rNLkR4wCBQv751WMnuItq51EEQ5ZO1EOqfYX+iWkpXHcQS1Kb6z4yJQ6M+F
+         MU+oGnoODqJHQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Cited commit in fixes tag overwrites the port attributes for the
+registered port.
 
+Avoid such error by checking registered flag before setting attributes.
 
-On 11/8/2020 5:19 AM, Vladimir Oltean wrote:
-> We'll need to start listening to SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE
-> events even for interfaces where dsa_slave_dev_check returns false, so
-> we need that check inside the switch-case statement for SWITCHDEV_FDB_*.
-> 
-> This movement also avoids two useless allocation / free paths for
-> switchdev_work, which were difficult to avoid before, due to the code's
-> structure:
-> - on the untreated "default event" case.
-> - on the case where fdb_info->added_by_user is false.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Fixes: 71ad8d55f8e5 ("devlink: Replace devlink_port_attrs_set parameters wi=
+th a struct")
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
+ net/core/devlink.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index a932d95be798..ab4b1368904f 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -8254,8 +8254,6 @@ static int __devlink_port_attrs_set(struct devlink_po=
+rt *devlink_port,
+ {
+ 	struct devlink_port_attrs *attrs =3D &devlink_port->attrs;
+=20
+-	if (WARN_ON(devlink_port->registered))
+-		return -EEXIST;
+ 	devlink_port->attrs_set =3D true;
+ 	attrs->flavour =3D flavour;
+ 	if (attrs->switch_id.id_len) {
+@@ -8279,6 +8277,8 @@ void devlink_port_attrs_set(struct devlink_port *devl=
+ink_port,
+ {
+ 	int ret;
+=20
++	if (WARN_ON(devlink_port->registered))
++		return;
+ 	devlink_port->attrs =3D *attrs;
+ 	ret =3D __devlink_port_attrs_set(devlink_port, attrs->flavour);
+ 	if (ret)
+@@ -8301,6 +8301,8 @@ void devlink_port_attrs_pci_pf_set(struct devlink_por=
+t *devlink_port, u32 contro
+ 	struct devlink_port_attrs *attrs =3D &devlink_port->attrs;
+ 	int ret;
+=20
++	if (WARN_ON(devlink_port->registered))
++		return;
+ 	ret =3D __devlink_port_attrs_set(devlink_port,
+ 				       DEVLINK_PORT_FLAVOUR_PCI_PF);
+ 	if (ret)
+@@ -8326,6 +8328,8 @@ void devlink_port_attrs_pci_vf_set(struct devlink_por=
+t *devlink_port, u32 contro
+ 	struct devlink_port_attrs *attrs =3D &devlink_port->attrs;
+ 	int ret;
+=20
++	if (WARN_ON(devlink_port->registered))
++		return;
+ 	ret =3D __devlink_port_attrs_set(devlink_port,
+ 				       DEVLINK_PORT_FLAVOUR_PCI_VF);
+ 	if (ret)
+--=20
+2.26.2
+
