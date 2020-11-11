@@ -2,113 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83C5F2AF6DB
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 17:47:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D3352AF710
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 18:00:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727614AbgKKQrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 11:47:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
+        id S1726634AbgKKRAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 12:00:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727519AbgKKQrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 11:47:32 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB83C0613D1
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 08:47:31 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id w13so3606346eju.13
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 08:47:31 -0800 (PST)
+        with ESMTP id S1726011AbgKKRAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 12:00:09 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B379C0613D1;
+        Wed, 11 Nov 2020 09:00:09 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id f38so1808143pgm.2;
+        Wed, 11 Nov 2020 09:00:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=eiOK2q32GbsWI3FsiUTk0GCoUa/T9/oJgnazWEvpmaQ=;
-        b=RdRE7oHsp07FwcbAJ7IdX4Gm8nta1tpXPtDuh3lrnF2GosQ8ujoQquwhlPt8ool95M
-         XDXNuofVRx4eT23pttiU/04wD0lCzoobjwyBeu8FF8neZz0g0H0xzgnxCu3eIxZBLuFO
-         xm2vFQxHwe3B8kmZ/S1ZyVNw1sd2E26plrFGcvd4t6bmDWfss5Sk27R96XdD+VHzVMpk
-         jXUCrt1XY7Wp5fKFZt78cj1++zNk6v/7MMSVJ6nRT2Q4dmBNZ77FPyMT6mDyrXAjAnGb
-         DK9UaSllHOxKyFw34qK0hzzxEFLDLWX9I4OmccWBpPxYvl+m3XVQir8O/GeCKo8cBwSQ
-         AgcA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=c94lztZhO2eT008D4pkLhU43B72yvq0WPJWvKsO0hew=;
+        b=MOh286pQVrJTTVD8HcoPhcqT8q2yYoTL3bit4sDU9Mx5LKGgm5C8Ug8g0J6cNTUac2
+         tsuqG1uOT1cVJaLGmgl9TCVBn9lAkM/KOgQS3/MGhJg7aCfJ5Q1kicPjfxOtMzP73kOy
+         C69ar9hvwULSb6x6X2ojXTxGVhtRrXKoA4jCbGcFId4odlcU0lSSjOtUBQIM2VUanjlL
+         FtkxvSMiY5DThI3jgfnZaVl7jd/sJnnfnsz6z9PGheLKZJse9vdUc/uJAopZ2VaBYjk5
+         +Ni8MPJ/tXGN3WLucmZRebzS2Q6ifsk3YQVvbd/lG7mZXTm7MOrg1bQOp1qG6UZ/WLlp
+         ltbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=eiOK2q32GbsWI3FsiUTk0GCoUa/T9/oJgnazWEvpmaQ=;
-        b=sflooOLvI4dLACAmvJ7NP5k4rEFjuodleZgAXHpw88VLXIBrQpgULlC519af5F93na
-         BLZMKJhGMujy9DlVG/1cZPt5CuKigx6bzQGomCXp7tvAkYnFyNRjX2xfMmoh0vqqVQ0x
-         p1Qq2SbuVxg1wRCdYfsBG/ls9KWCOnsrNucq4siVIr2WggBggCbnkh/UtojdcNCOARsY
-         IQAtFyom/GEnlSv5lhc5zePPJ89hCIZY+jXXneAOlMlwQPGsDE33dAsDvulxZKSBvXeL
-         I/fPwtCnh253MFHNqn34zSP9/4qmTFJmJijCaiLssf6JkD1AAMjyslfdtxQTRC+FuCHk
-         VSEA==
-X-Gm-Message-State: AOAM531FpULNwjw/MVYX7x2LoIPFTvZOs62y5ne9zzHJinO8FFp4HW8F
-        xXh5l0gWmIHOFxdimpnaRsg=
-X-Google-Smtp-Source: ABdhPJzwdWk7lv6l1a/dOlZFK/my2LewpgjpjV9X2bS0tFhlbwhCfwlu/oXqj9/GuI+DVQX2y6x/bw==
-X-Received: by 2002:a17:906:b852:: with SMTP id ga18mr27166496ejb.80.1605113250491;
-        Wed, 11 Nov 2020 08:47:30 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id b1sm1060161ejg.60.2020.11.11.08.47.28
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=c94lztZhO2eT008D4pkLhU43B72yvq0WPJWvKsO0hew=;
+        b=CbO7ABR5B/ijLxgv8KYYrm2mYYAAhkS+0XaryWb0URctid45nxVV7AujcwajO+7JEe
+         BoYk3P71whzPzXZQiIstYEvsPqRWvO6uKyvIkwOhgoYT4s5O4XYHIN15qfDO4FV+5Qbd
+         qm9bqTcIjm6+lSD4lmzn5AeRao08h474svqKfWoDMYgR5aLrcbWHBLeHm5/2TROLP6q9
+         +oxrfxhmEW1/v+bLwF+ddPsgRdpWngPDMC+ADNgb7yWAd4qrkMr+kH9YzmIeN8m8DLda
+         knRUVVGrmzcdGkwDNROiBYssQJXToHU8Yt4xeIWO7wywoXwi1/EouI2cRyAdVnAgxsdd
+         GapA==
+X-Gm-Message-State: AOAM532HfTWyHBZebWn+dV9Jl31lFm4eU9N2IRNjubpMYzfWxMznvnXz
+        DexoCeUl4i3XSui+rX8lLgs=
+X-Google-Smtp-Source: ABdhPJwfkvk/d3fU+yUTkhmcjaJx1E8XyqQCovjkXeem1RMt/jK/7gE1oAMERAynWBom8fmf3hQFlg==
+X-Received: by 2002:a62:1d83:0:b029:160:b9b1:470a with SMTP id d125-20020a621d830000b0290160b9b1470amr24129648pfd.32.1605114008894;
+        Wed, 11 Nov 2020 09:00:08 -0800 (PST)
+Received: from localhost.localdomain ([45.118.167.196])
+        by smtp.googlemail.com with ESMTPSA id h5sm3074114pfn.12.2020.11.11.09.00.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Nov 2020 08:47:29 -0800 (PST)
-Date:   Wed, 11 Nov 2020 18:47:27 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Markus =?utf-8?Q?Bl=C3=B6chl?= <markus.bloechl@ipetronik.com>,
-        Ido Schimmel <idosch@idosch.org>, Andrew Lunn <andrew@lunn.ch>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: lan78xx: Disable hardware vlan filtering in
- promiscuous mode
-Message-ID: <20201111164727.pqecvbnhk4qgantt@skbuf>
-References: <20201110153958.ci5ekor3o2ekg3ky@ipetronik.com>
- <20201111074341.24cafaf3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <3df0cfa6-cbc9-dddb-0283-9b48fb6516d8@gmail.com>
+        Wed, 11 Nov 2020 09:00:08 -0800 (PST)
+From:   Anmol Karn <anmol.karan123@gmail.com>
+To:     ralf@linux-mips.org, davem@davemloft.net, kuba@kernel.org
+Cc:     saeed@kernel.org, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hams@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzkaller-bugs@googlegroups.com, anmol.karan123@gmail.com,
+        syzbot+a1c743815982d9496393@syzkaller.appspotmail.com
+Subject: [Linux-kernel-mentees] [PATCH v4 net] rose: Fix Null pointer dereference in rose_send_frame()
+Date:   Wed, 11 Nov 2020 22:29:54 +0530
+Message-Id: <20201111165954.14743-1-anmol.karan123@gmail.com>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20201110194518.GA97719@Thinkpad>
+References: <20201110194518.GA97719@Thinkpad>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <3df0cfa6-cbc9-dddb-0283-9b48fb6516d8@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 11, 2020 at 07:56:58AM -0800, Florian Fainelli wrote:
-> The semantics of promiscuous are pretty clear though, and if you have a
-> NIC with VLAN filtering capability which could prevent the stack from
-> seeing *all* packets, that would be considered a bug. I suppose that you
-> could not disable VLAN filtering but instead install all 4096 - N VLANs
-> (N being currently used) into the filter to guarantee receiving those
-> VLAN tagged frames?
+rose_send_frame() dereferences `neigh->dev` when called from
+rose_transmit_clear_request(), and the first occurrence of the
+`neigh` is in rose_loopback_timer() as `rose_loopback_neigh`,
+and it is initialized in rose_add_loopback_neigh() as NULL.
+i.e when `rose_loopback_neigh` used in rose_loopback_timer()
+its `->dev` was still NULL and rose_loopback_timer() was calling
+rose_rx_call_request() without checking for NULL.
 
-Are they?
+- net/rose/rose_link.c
+This bug seems to get triggered in this line:
 
-IEEE 802.3 clause 30.3.1.1.16 aPromiscuousStatus says:
+rose_call = (ax25_address *)neigh->dev->dev_addr;
 
-APPROPRIATE SYNTAX:
-BOOLEAN
+Fix it by adding NULL checking for `rose_loopback_neigh->dev`
+in rose_loopback_timer().
 
-BEHAVIOUR DEFINED AS:
-A GET operation returns the value “true” for promiscuous mode enabled, and “false” otherwise.
-
-Frames without errors received solely because this attribute has the value “true” are counted as
-frames received correctly; frames received in this mode that do contain errors update the
-appropriate error counters.
-
-A SET operation to the value “true” provides a means to cause the LayerMgmtRecognizeAddress
-function to accept frames regardless of their destination address.
-
-A SET operation to the value “false” causes the MAC sublayer to return to the normal operation
-of carrying out address recognition procedures for station, broadcast, and multicast group
-addresses (LayerMgmtRecognizeAddress function).;
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: syzbot+a1c743815982d9496393@syzkaller.appspotmail.com
+Tested-by: syzbot+a1c743815982d9496393@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?id=9d2a7ca8c7f2e4b682c97578dfa3f236258300b3
+Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
+---
+Changes in v4:
+	- Free `dev`(on dev_hold()), when neigh->dev is NULL. (Suggested-by: Jakub Kicinski <kuba@kernel.org>)
+Changes in v3:
+        - Corrected checkpatch warnings and errors (Suggested-by: Saeed Mahameed <saeed@kernel.org>)
+        - Added "Fixes:" tag (Suggested-by: Saeed Mahameed <saeed@kernel.org>)
+Changes in v2:
+        - Added NULL check in rose_loopback_timer() (Suggested-by: Greg KH <gregkh@linuxfoundation.org>)
 
+ net/rose/rose_loopback.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-As for IEEE 802.1Q, there's nothing about promiscuity in the context of
-VLAN there.
+diff --git a/net/rose/rose_loopback.c b/net/rose/rose_loopback.c
+index 7b094275ea8b..6a71b6947d92 100644
+--- a/net/rose/rose_loopback.c
++++ b/net/rose/rose_loopback.c
+@@ -96,10 +96,12 @@ static void rose_loopback_timer(struct timer_list *unused)
+ 		}
 
-Sadly, I think promiscuity refers only to address recognition for the
-purpose of packet termination. I cannot find any reference to VLAN in
-the context of promiscuity, or, for that matter, I cannot find any
-reference coming from a standards body that promiscuity would mean
-"accept all packets".
+ 		if (frametype == ROSE_CALL_REQUEST) {
+-			if ((dev = rose_dev_get(dest)) != NULL) {
++			dev = rose_dev_get(dest);
++			if (rose_loopback_neigh->dev && dev) {
+ 				if (rose_rx_call_request(skb, dev, rose_loopback_neigh, lci_o) == 0)
+ 					kfree_skb(skb);
+ 			} else {
++				dev_put(dev);
+ 				kfree_skb(skb);
+ 			}
+ 		} else {
+--
+2.29.2
