@@ -2,217 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A06A62AEFFA
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:50:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0DFD2AEFFD
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 12:51:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726485AbgKKLuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 06:50:39 -0500
-Received: from aer-iport-1.cisco.com ([173.38.203.51]:60095 "EHLO
-        aer-iport-1.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726203AbgKKLuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 06:50:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=6166; q=dns/txt; s=iport;
-  t=1605095436; x=1606305036;
-  h=from:to:cc:subject:date:message-id;
-  bh=4199su7uBK8wp/VR0XBmY9yN9VAU3ulCdirTolmFEBM=;
-  b=LxHRsmoPrfrQHUE04/G22SNtlwzH3Omfb3TvtPVgZxwJEnkmpHJDYceS
-   wn53sjBoiRwhmNmJ+g9U2v1LvbEY+ZyMAvNCrulI1UywT1sy7be+STAAC
-   K4CtpuO8XjfbrrO7mYQqgz1EE3YpvzmgurEuVL+CNSL4ckP0nF2z2JFmM
-   w=;
-X-IronPort-AV: E=Sophos;i="5.77,469,1596499200"; 
-   d="scan'208";a="31035493"
-Received: from aer-iport-nat.cisco.com (HELO aer-core-1.cisco.com) ([173.38.203.22])
-  by aer-iport-1.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 11 Nov 2020 11:50:33 +0000
-Received: from rdbuild16.cisco.com.rd.cisco.com (rdbuild16.cisco.com [10.47.15.16])
-        by aer-core-1.cisco.com (8.15.2/8.15.2) with ESMTP id 0ABBoWdC001257;
-        Wed, 11 Nov 2020 11:50:32 GMT
-From:   Georg Kohmann <geokohma@cisco.com>
-To:     netdev@vger.kernel.org
-Cc:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Georg Kohmann <geokohma@cisco.com>
-Subject: [PATCH net v4] ipv6/netfilter: Discard first fragment not including all headers
-Date:   Wed, 11 Nov 2020 12:50:25 +0100
-Message-Id: <20201111115025.28879-1-geokohma@cisco.com>
-X-Mailer: git-send-email 2.10.2
-X-Outbound-SMTP-Client: 10.47.15.16, rdbuild16.cisco.com
-X-Outbound-Node: aer-core-1.cisco.com
+        id S1726498AbgKKLvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 06:51:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:48151 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726203AbgKKLvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 06:51:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605095467;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fBZlME/NpyU2+DxETmjLqkp/S2r9CBRgxTt3fLfXBVU=;
+        b=A9ms+WRVbuiDlJwiguuEEZYbzxvscYXKkkeNxzajjkVzyw63cn+Izi86voeWm6tyGeoqXI
+        B6RfUpgxc+VCv+qKxhbPM/e36NJ/oBYpVprqB9sEmueYk4mI2dWL0ZrjmkaKkr2BedTEyK
+        lvFQuYWVMFgW5YY+NJA1ByXyAX3VRVY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-366-2RsBwSU5OpyWTZPXMVWpMA-1; Wed, 11 Nov 2020 06:51:05 -0500
+X-MC-Unique: 2RsBwSU5OpyWTZPXMVWpMA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 13ACE188C12F;
+        Wed, 11 Nov 2020 11:51:04 +0000 (UTC)
+Received: from krava (unknown [10.40.194.237])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 4AD1527BAE;
+        Wed, 11 Nov 2020 11:51:01 +0000 (UTC)
+Date:   Wed, 11 Nov 2020 12:51:00 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCHv6 bpf] bpf: Move iterator functions into special init
+ section
+Message-ID: <20201111115100.GH387652@krava>
+References: <20201110154017.482352-1-jolsa@kernel.org>
+ <2a71a0b4-b5de-e9fb-bacc-3636e16245c5@iogearbox.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2a71a0b4-b5de-e9fb-bacc-3636e16245c5@iogearbox.net>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Packets are processed even though the first fragment don't include all
-headers through the upper layer header. This breaks TAHI IPv6 Core
-Conformance Test v6LC.1.3.6.
+On Wed, Nov 11, 2020 at 12:26:29PM +0100, Daniel Borkmann wrote:
+> On 11/10/20 4:40 PM, Jiri Olsa wrote:
+> > With upcoming changes to pahole, that change the way how and
+> > which kernel functions are stored in BTF data, we need a way
+> > to recognize iterator functions.
+> > 
+> > Iterator functions need to be in BTF data, but have no real
+> > body and are currently placed in .init.text section, so they
+> > are freed after kernel init and are filtered out of BTF data
+> > because of that.
+> > 
+> > The solution is to place these functions under new section:
+> >    .init.bpf.preserve_type
+> > 
+> > And add 2 new symbols to mark that area:
+> >    __init_bpf_preserve_type_begin
+> >    __init_bpf_preserve_type_end
+> > 
+> > The code in pahole responsible for picking up the functions will
+> > be able to recognize functions from this section and add them to
+> > the BTF data and filter out all other .init.text functions.
+> > 
+> > Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+> > Suggested-by: Yonghong Song <yhs@fb.com>
+> > Signed-off-by: Jiri Olsa <jolsa@redhat.com>
+> 
+> LGTM, applied, thanks! Also added a reference to the pahole commit
+> to the commit log so that this info doesn't get lost in the void
+> plus carried over prior Acks given nothing changed logically in the
+> patch.
+> 
+> P.s.: I've been wondering whether we also need to align the begin/end
+> symbols via ALIGN_FUNCTION() in case ld might realign to a different
+> boundary on later passes but this seems neither the case for .init.text
+> right now, likely since it doesn't matter for kallsyms data in our
+> particular case.
+> 
 
-Referring to RFC8200 SECTION 4.5: "If the first fragment does not include
-all headers through an Upper-Layer header, then that fragment should be
-discarded and an ICMP Parameter Problem, Code 3, message should be sent to
-the source of the fragment, with the Pointer field set to zero."
+I'll check but I think it's not a problem as you said
 
-The fragment needs to be validated the same way it is done in
-commit 2efdaaaf883a ("IPv6: reply ICMP error if the first fragment don't
-include all headers") for ipv6. Wrap the validation into a common function,
-ipv6_frag_thdr_truncated() to check for truncation in the upper layer
-header. This validation does not fullfill all aspects of RFC 8200,
-section 4.5, but is at the moment sufficient to pass mentioned TAHI test.
-
-In netfilter, utilize the fragment offset returned by find_prev_fhdr() to
-let ipv6_frag_thdr_truncated() start it's traverse from the fragment
-header.
-
-Return 0 to drop the fragment in the netfilter. This is the same behaviour
-as used on other protocol errors in this function, e.g. when
-nf_ct_frag6_queue() returns -EPROTO. The Fragment will later be picked up
-by ipv6_frag_rcv() in reassembly.c. ipv6_frag_rcv() will then send an
-appropriate ICMP Parameter Problem message back to the source.
-
-References commit 2efdaaaf883a ("IPv6: reply ICMP error if the first
-fragment don't include all headers")
-
-Signed-off-by: Georg Kohmann <geokohma@cisco.com>
----
-
-Notes:
-    v2: Wrap fragment validation code into exthdrs_code.c for use by both ipv6 and
-    netfiter.
-    
-    v3: Remove unused variable frag_off from ipv6_frag_rcv().
-    
-    v4:
-    a) Rename ipv6_frag_validate() to ipv6_frag_thdr_truncated() and invert
-       returned bool values. Refrazing function comment.
-    b) Move ipv6_frag_thdr_truncated() to reassembly.c
-    c) Reverse conditions to return early and reduce indentation after
-       ipv6_skip_exthdr() call.
-
- include/net/ipv6.h                      |  2 ++
- net/ipv6/netfilter/nf_conntrack_reasm.c |  9 ++++++
- net/ipv6/reassembly.c                   | 55 +++++++++++++++++++++------------
- 3 files changed, 46 insertions(+), 20 deletions(-)
-
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index bd1f396..637cc6d 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -1064,6 +1064,8 @@ int ipv6_skip_exthdr(const struct sk_buff *, int start, u8 *nexthdrp,
- 
- bool ipv6_ext_hdr(u8 nexthdr);
- 
-+bool ipv6_frag_thdr_truncated(struct sk_buff *skb, int start, u8 *nexthdrp);
-+
- enum {
- 	IP6_FH_F_FRAG		= (1 << 0),
- 	IP6_FH_F_AUTH		= (1 << 1),
-diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
-index 054d287..b9cc0b3 100644
---- a/net/ipv6/netfilter/nf_conntrack_reasm.c
-+++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
-@@ -440,6 +440,7 @@ find_prev_fhdr(struct sk_buff *skb, u8 *prevhdrp, int *prevhoff, int *fhoff)
- int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user)
- {
- 	u16 savethdr = skb->transport_header;
-+	u8 nexthdr = NEXTHDR_FRAGMENT;
- 	int fhoff, nhoff, ret;
- 	struct frag_hdr *fhdr;
- 	struct frag_queue *fq;
-@@ -455,6 +456,14 @@ int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user)
- 	if (find_prev_fhdr(skb, &prevhdr, &nhoff, &fhoff) < 0)
- 		return 0;
- 
-+	/* Discard the first fragment if it does not include all headers
-+	 * RFC 8200, Section 4.5
-+	 */
-+	if (ipv6_frag_thdr_truncated(skb, fhoff, &nexthdr)) {
-+		pr_debug("Drop incomplete fragment\n");
-+		return 0;
-+	}
-+
- 	if (!pskb_may_pull(skb, fhoff + sizeof(*fhdr)))
- 		return -ENOMEM;
- 
-diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-index c8cf1bb..e3869ba 100644
---- a/net/ipv6/reassembly.c
-+++ b/net/ipv6/reassembly.c
-@@ -318,15 +318,43 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
- 	return -1;
- }
- 
-+/* Check if the upper layer header is truncated in the first fragment. */
-+bool ipv6_frag_thdr_truncated(struct sk_buff *skb, int start, u8 *nexthdrp)
-+{
-+	u8 nexthdr = *nexthdrp;
-+	__be16 frag_off;
-+	int offset;
-+
-+	offset = ipv6_skip_exthdr(skb, start, &nexthdr, &frag_off);
-+	if (offset < 0 || (frag_off & htons(IP6_OFFSET)))
-+		return false;
-+	switch (nexthdr) {
-+	case NEXTHDR_TCP:
-+		offset += sizeof(struct tcphdr);
-+		break;
-+	case NEXTHDR_UDP:
-+		offset += sizeof(struct udphdr);
-+		break;
-+	case NEXTHDR_ICMP:
-+		offset += sizeof(struct icmp6hdr);
-+		break;
-+	default:
-+		offset += 1;
-+	}
-+	if (offset > skb->len)
-+		return true;
-+	return false;
-+}
-+EXPORT_SYMBOL(ipv6_frag_thdr_truncated);
-+
- static int ipv6_frag_rcv(struct sk_buff *skb)
- {
- 	struct frag_hdr *fhdr;
- 	struct frag_queue *fq;
- 	const struct ipv6hdr *hdr = ipv6_hdr(skb);
- 	struct net *net = dev_net(skb_dst(skb)->dev);
--	__be16 frag_off;
--	int iif, offset;
- 	u8 nexthdr;
-+	int iif;
- 
- 	if (IP6CB(skb)->flags & IP6SKB_FRAGMENTED)
- 		goto fail_hdr;
-@@ -362,24 +390,11 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
- 	 * the source of the fragment, with the Pointer field set to zero.
- 	 */
- 	nexthdr = hdr->nexthdr;
--	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
--	if (offset >= 0) {
--		/* Check some common protocols' header */
--		if (nexthdr == IPPROTO_TCP)
--			offset += sizeof(struct tcphdr);
--		else if (nexthdr == IPPROTO_UDP)
--			offset += sizeof(struct udphdr);
--		else if (nexthdr == IPPROTO_ICMPV6)
--			offset += sizeof(struct icmp6hdr);
--		else
--			offset += 1;
--
--		if (!(frag_off & htons(IP6_OFFSET)) && offset > skb->len) {
--			__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
--					IPSTATS_MIB_INHDRERRORS);
--			icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
--			return -1;
--		}
-+	if (ipv6_frag_thdr_truncated(skb, skb_transport_offset(skb), &nexthdr)) {
-+		__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
-+				IPSTATS_MIB_INHDRERRORS);
-+		icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
-+		return -1;
- 	}
- 
- 	iif = skb->dev ? skb->dev->ifindex : 0;
--- 
-2.10.2
+thanks,
+jirka
 
