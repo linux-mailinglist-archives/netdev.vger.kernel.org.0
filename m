@@ -2,215 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA6072AF417
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 15:53:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F9392AF43A
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 15:58:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726969AbgKKOxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 09:53:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38794 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727161AbgKKOxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 09:53:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605106398;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l5bQ1RwzCeGmlnbRjY4ysxqA1EJK+QA8oSw+5t0ycLQ=;
-        b=fzGu2EZ1xz/WLsUy4aqdn/mn5XT5kRfBfR15S9ujgDdLkdZSzj1eT2+N3C6FBs81fIy8cl
-        Pag60pyCGpEM6Lp6+uVV2z2gojPHcpxUb62H4sOf1QqawwWrETYpIWgAp2fZ1l9uNtXPY3
-        ozjxmRM7Tih5Mg89HBuUYGK9PqPAGm4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-180-yRbXGUrgNFepVc-q5N_t2g-1; Wed, 11 Nov 2020 09:53:13 -0500
-X-MC-Unique: yRbXGUrgNFepVc-q5N_t2g-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 49668802EDA;
-        Wed, 11 Nov 2020 14:53:11 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E164860CD0;
-        Wed, 11 Nov 2020 14:53:08 +0000 (UTC)
-Date:   Wed, 11 Nov 2020 15:53:07 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Patel, Vedang" <vedang.patel@intel.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     brouer@redhat.com, Saeed Mahameed <saeed@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
-        "Guedes, Andre" <andre.guedes@intel.com>
-Subject: Re: Hardware time stamping support for AF_XDP applications
-Message-ID: <20201111155307.4d0171a5@carbon>
-In-Reply-To: <65418F25-1795-4FF7-AB04-8DE78F0C8BF5@intel.com>
-References: <7299CEB5-9777-4FE4-8DEE-32EF61F6DA29@intel.com>
-        <6af7754d5bcba7a7f7d92dc43e1f4206ce470c79.camel@kernel.org>
-        <65418F25-1795-4FF7-AB04-8DE78F0C8BF5@intel.com>
+        id S1727245AbgKKO6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 09:58:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726849AbgKKO6D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 09:58:03 -0500
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C2CC0613D6
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 06:58:02 -0800 (PST)
+Received: by mail-qv1-xf41.google.com with SMTP id ec16so1015839qvb.0
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 06:58:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=J/T2e2MM+mxNfra1uERC4vIcmXovyjTAZssRPrCDAsQ=;
+        b=nhbHrhIPbOdB6Y2E8bijLF3eKmUZSEpLDwSxG0C+xiJ29+4IkMPrSvJ+/tdBlC75e5
+         3Mm3RpdxyC7ua5Nottgys8GAWTVQky4nf0bskVUv1YsA8ihrxlrxEfooIRrx75eko71O
+         RIBPtPSaokULzu+mzDOsM1j1tRF3wV4Sf8xomuG92f6KX410b8ZG3UJhFYwu1NYSaLrA
+         v6iN1Rc+wT9+lGE41ZdQobboPyxJYkDvkaEP1RA78r3VKkFFF9ztw/ACB86SV7JiHnOd
+         1mug29cTySxMYWFkCpnuBDJQQ9IWpUpzMRwva7btCy3Ts7pc7nMDbVKhCCpdHjoQVO/B
+         XFAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J/T2e2MM+mxNfra1uERC4vIcmXovyjTAZssRPrCDAsQ=;
+        b=qk6uPPBofLD/njnRdMVBNQJCm02ymJWgb+tNK/WhQwMjHYiSWk6ma7Jhn6YMfWFbcr
+         EorrYm672Upt23gVEfyHE1Wu0+AaJYcIzN6iU0X8OsYjKXNo6MlFdQVNViawY1eF/tUf
+         dC6KuHMFKaSW9C2c0G7PUoQvBBTb+vbq/9PaW2YDcPS7bTiuHqZktpQxGfn7FGeLPwMf
+         wMjSMKqKiFHh6X8xVsIHHEYa9F0rE9YszA/sX6rL/Ktrm0+UYOFIhdKbdfHyZSH2PvJF
+         mCErawlDSZjDCSO0o5EKf4GkGAcVOZDPPl8jPogwZsZTEvecBlyVZgsnsMmlmiIegTVC
+         vrLw==
+X-Gm-Message-State: AOAM532AvtHLkwXx74HAdNT7qTLahWkc8CPi9AOgSmMMGHG4Mkn64oN9
+        B/VAMbp267zBJMVs7/1kkRz4gWu5znMJ5dEr5qRNCg==
+X-Google-Smtp-Source: ABdhPJwjzmEanddvsSwyCHatSv0UJUued/Xxwjeernqie6g/cmeJqP6Ixrb+U8KXolDa7oKxYqRe6KODxAX2au2vAAM=
+X-Received: by 2002:a05:6214:12ed:: with SMTP id w13mr20297841qvv.23.1605106681487;
+ Wed, 11 Nov 2020 06:58:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <00000000000004500b05b31e68ce@google.com>
+In-Reply-To: <00000000000004500b05b31e68ce@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Wed, 11 Nov 2020 15:57:50 +0100
+Message-ID: <CACT4Y+aBVQ6LKYf9wCV=AUx23xpWmb_6-mBqwkQgeyfXA3SS2A@mail.gmail.com>
+Subject: Re: KASAN: vmalloc-out-of-bounds Read in bpf_trace_run3
+To:     syzbot <syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, andrii@kernel.org,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>,
+        Ingo Molnar <mingo@redhat.com>, mmullins@fb.com,
+        netdev <netdev@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Nov 2020 23:53:41 +0000
-"Patel, Vedang" <vedang.patel@intel.com> wrote:
-
-> Hi Saeed,=20
->=20
-> > On Nov 10, 2020, at 3:32 PM, Saeed Mahameed <saeed@kernel.org> wrote:
-> >=20
-> > On Tue, 2020-11-10 at 22:44 +0000, Patel, Vedang wrote: =20
-> >> [Sorry if you got the email twice. Resending because it was rejected
-> >> by netdev for containing HTML]
-> >>=20
-> >> Hi Saeed/Jesper,=20
-> >>=20
-> >> I am working in the Time Sensitive Networking team at Intel. We work
-> >> on implementing and upstreaming support for TSN related features for
-> >> intel based NICs. Recently we have been adding support for XDP in
-> >> i225. One of the features which we want to add support for is passing
-> >> the hardware timestamp information to the userspace application
-> >> running AF_XDP sockets (for both Tx and Rx). I came across the XDP
-> >> Workshop[1] conducted in July 2020 and there you stated that you are
-> >> already working on adding support for BTF based metadata to pass
-> >> hardware hints for XDP Programs. My understanding (along with a few
-> >> questions) of the current state is: =20
-
-Have the i225 XDP support been upstreamed?
-
-Can I buy a i255 NIC for my server, or is this embedded NICs?
-
-Ilias have played with PoC for TSN (on ARM) here:
- https://github.com/xdp-project/xdp-project/blob/master/areas/arm64/xdp_for=
-_tsn.org
-
-> > Hi Patel,
-> >  =20
-> >> * This feature is currently being maintained out of tree. I found
-> >> that an RFC Series[2] was posted in June 2018. Are you planning to
-> >> post an updated version to be merged in the mainline anytime soon?  =20
-> >=20
-> > Yes hopefully in the coming couple of weeks.
-> >  =20
+On Mon, Nov 2, 2020 at 12:54 PM syzbot
+<syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com> wrote:
 >
-> Sure! I will start testing/developing on top of your branch mentioned
-> below for now.
-
-I've also signed up for helping out on this effort.  Notice Andrii (cc)
-have already pointed out something that can be improved, and even made
-easier.
-
-
-> >> * I am guessing hardware timestamp is one of the metadata fields
-> >> which will be eventually supported? [3] =20
-> >=20
-> > With BTF formatted metadata it is up to the driver to advertise
-> > whatever it can/want :)
-> > so yes. =20
+> Hello,
 >
-> I have a very basic question here. From what I understand about BTF,
-> I can generate a header file (using bpftool?) containing the BTF data
-> format provided by the driver. If so, how can I design an application
-> which can work with multiple NICs drivers without recompilation? I am
-> guessing there is some sort of =E2=80=9Cmaster list=E2=80=9D of HW hints =
-the drivers
-> will agree upon?
-
-I recommend that you read Andrii's blogpost:
- https://facebookmicrosites.github.io/bpf/blog/2020/02/19/bpf-portability-a=
-nd-co-re.html
-
-I need to learn more about BTF myself, but the way I understand this:
-We need to agree on the meaning of struct member names (e.g. rxhash32).
-Then you compile BPF with a BTF struct that have this rxhash32 member
-name, and at BPF load-time the kernel CO-RE infra will remap the offset
-to the rxhash32 offset used by the specific driver.
-
-> >  =20
-> >> * The Metadata support will be extended to pass on the hardware hints
-> >> to AF_XDP sockets. Are there any rough plans on what metadata will be
-> >> transferred? =20
-> >=20
-> > AF_XDP is not part of my series, but supporting AF_XDP with metadata
-> > offlaod is up to the driver to implement, should be straight forward
-> > and identical to XDP.
-
-The XDP data_meta area is also transferred into the AF_XDP frame, also
-in the copy-mode version of AF_XDP.
-
-
-> > what meta data to pass is up to the driver. =20
+> syzbot found the following issue on:
 >
-> Alright, let me take a closer look at your latest code. I will come
-> back will questions if I have any.
-> >=20
-> >  =20
-> >> * The current plan for Tx side only includes passing data from the
-> >> application to the driver. Are there any plans to support passing
-> >> information (like HW TX timestamp) from driver to the Application?
-> >>  =20
-> >=20
-> > you mean for AF_XDP ? i actually haven't thought about this,=20
-> > but we could use TX umem packet buffer headroom to pass TX completion
-> > metadata to AF_XDP app, or extend the completion queue entries to host
-> > metadata, i am sure that the 1st approach is preferred, but i am not
-> > planing to support this in my initial series.=20
-> >  =20
-> Yeah, I was thinking of using approach 1 as well for this. Let me
-> first work on the Rx side. Then we can scope this one out.
+> HEAD commit:    080b6f40 bpf: Don't rely on GCC __attribute__((optimize)) ..
+> git tree:       bpf
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1089d37c500000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=58a4ca757d776bfe
+> dashboard link: https://syzkaller.appspot.com/bug?extid=d29e58bb557324e55e5e
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10f4b032500000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1371a47c500000
 >
-> >> Finally, is there any way I can help in expediting the development
-> >> and upstreaming of this feature? I have been working on studying how
-> >> XDP works and can work on implementing some part of this feature if
-> >> you would like.
-> >>  =20
-> >=20
-> > Sure,
-> > Please feel free to clone and test the following branch if you add
-> > support to  your driver and implement offloads for AF_XDP that would be
-> > awesome, and i will append your patches to my series before submission.
-> >=20
-> > it is always great to send new features with multiple use cases and
-> > multi vendor support, this will differently expedite submission and
-> > acceptance
-> >=20
-> > My Latest work can be found at:
-> >=20
-> > https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git/log/?h=
-=3Dtopic/xdp_metadata3
-> >=20
-> > Please feel free to send me any questions about the code in private or
-> > public.
+> The issue was bisected to:
 >
-> Thanks Saeed for all the information! This is really helpful. :)
-> >=20
-> > Thanks,
-> > Saeed.
-> >  =20
-> >> Thanks,
-> >> Vedang Patel
-> >> Software Engineer
-> >> Intel Corporation
-> >>=20
-> >> [1] - https://netdevconf.info/0x14/session.html?workshop-XDP
-> >> [2] -=20
-> >> https://patchwork.ozlabs.org/project/netdev/cover/20180627024615.17856=
--1-saeedm@mellanox.com/
-> >> [3] -=20
-> >> https://xdp-project.net/#outline-container-Important-medium-term-tasks=
- =20
->=20
+> commit 9df1c28bb75217b244257152ab7d788bb2a386d0
+> Author: Matt Mullins <mmullins@fb.com>
+> Date:   Fri Apr 26 18:49:47 2019 +0000
+>
+>     bpf: add writable context for raw tracepoints
+
+
+We have a number of kernel memory corruptions related to bpf_trace_run now:
+https://groups.google.com/g/syzkaller-bugs/search?q=kernel%2Ftrace%2Fbpf_trace.c
+
+Can raw tracepoints "legally" corrupt kernel memory (a-la /dev/kmem)?
+Or they shouldn't?
+
+Looking at the description of Matt's commit, it seems that corruptions
+should not be possible (bounded buffer, checked size, etc). Then it
+means it's a real kernel bug?
 
 
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12b6c4da500000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=11b6c4da500000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=16b6c4da500000
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
+> Fixes: 9df1c28bb752 ("bpf: add writable context for raw tracepoints")
+>
+> ==================================================================
+> BUG: KASAN: vmalloc-out-of-bounds in __bpf_trace_run kernel/trace/bpf_trace.c:2045 [inline]
+> BUG: KASAN: vmalloc-out-of-bounds in bpf_trace_run3+0x3e0/0x3f0 kernel/trace/bpf_trace.c:2083
+> Read of size 8 at addr ffffc90000e6c030 by task kworker/0:3/3754
+>
+> CPU: 0 PID: 3754 Comm: kworker/0:3 Not tainted 5.9.0-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Workqueue:  0x0 (events)
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x107/0x163 lib/dump_stack.c:118
+>  print_address_description.constprop.0.cold+0x5/0x4c8 mm/kasan/report.c:385
+>  __kasan_report mm/kasan/report.c:545 [inline]
+>  kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
+>  __bpf_trace_run kernel/trace/bpf_trace.c:2045 [inline]
+>  bpf_trace_run3+0x3e0/0x3f0 kernel/trace/bpf_trace.c:2083
+>  __bpf_trace_sched_switch+0xdc/0x120 include/trace/events/sched.h:138
+>  __traceiter_sched_switch+0x64/0xb0 include/trace/events/sched.h:138
+>  trace_sched_switch include/trace/events/sched.h:138 [inline]
+>  __schedule+0xeb8/0x2130 kernel/sched/core.c:4520
+>  schedule+0xcf/0x270 kernel/sched/core.c:4601
+>  worker_thread+0x14c/0x1120 kernel/workqueue.c:2439
+>  kthread+0x3af/0x4a0 kernel/kthread.c:292
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+>
+>
+> Memory state around the buggy address:
+>  ffffc90000e6bf00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>  ffffc90000e6bf80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+> >ffffc90000e6c000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>                                      ^
+>  ffffc90000e6c080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>  ffffc90000e6c100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+> ==================================================================
+>
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/00000000000004500b05b31e68ce%40google.com.
