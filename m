@@ -2,108 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BAB92AE735
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 04:48:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 114EA2AE746
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 05:07:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725884AbgKKDsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 22:48:15 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1464 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725849AbgKKDsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 22:48:14 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fab5ef90000>; Tue, 10 Nov 2020 19:48:09 -0800
-Received: from sw-mtx-036.mtx.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 11 Nov
- 2020 03:48:13 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>,
-        Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net RESEND] devlink: Avoid overwriting port attributes of registered port
-Date:   Wed, 11 Nov 2020 05:47:44 +0200
-Message-ID: <20201111034744.35554-1-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201110185258.30576-1-parav@nvidia.com>
-References: <20201110185258.30576-1-parav@nvidia.com>
+        id S1725923AbgKKEHA convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 10 Nov 2020 23:07:00 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:58464 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725852AbgKKEHA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 23:07:00 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AB3xGrK014899
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 20:06:58 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 34qye8jvkk-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 20:06:58 -0800
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 10 Nov 2020 20:06:57 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 6880A2EC9377; Tue, 10 Nov 2020 20:06:51 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: [PATCH bpf-next] bpf: compile out btf_parse_module() if module BTF is not enabled
+Date:   Tue, 10 Nov 2020 20:06:45 -0800
+Message-ID: <20201111040645.903494-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
 Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1605066489; bh=QNddpX4MZtczOoPX3ILe/h42UIgao/9pGSjX9V+gL8w=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=qcASHtf0K3LctTSPORkMUmwAJgkHbH6zGZzNhRKbzEDTA8fW9cjACmX22iu7dKzv/
-         6MQXXDPu3khLKWsX6iyl3y42MqyXf28ZZ0kioo4SGzFgumeAYxvuprnJAqTJUKxQQR
-         QTEqlFaAq+7jjPSSW23ELz74FpVsYm7nXWCUVXnFcLq1MmqyG5St36OxX8Unz5/Hsj
-         t4cvKJtgbb70jHEIGD5HU5HIIDw+XJC/bc5DWZ4F1jMaLLDZFoM2naLKdkHm/1u1qx
-         5oAr5K6rNLkR4wCBQv751WMnuItq51EEQ5ZO1EOqfYX+iWkpXHcQS1Kb6z4yJQ6M+F
-         MU+oGnoODqJHQ==
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-11_01:2020-11-10,2020-11-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ mlxlogscore=999 clxscore=1015 priorityscore=1501 mlxscore=0 adultscore=0
+ phishscore=0 suspectscore=8 malwarescore=0 spamscore=0 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011110018
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cited commit in fixes tag overwrites the port attributes for the
-registered port.
+Make sure btf_parse_module() is compiled out if module BTFs are not enabled.
 
-Avoid such error by checking registered flag before setting attributes.
-
-Fixes: 71ad8d55f8e5 ("devlink: Replace devlink_port_attrs_set parameters wi=
-th a struct")
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Fixes: 36e68442d1af ("bpf: Load and verify kernel module BTFs")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- net/core/devlink.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ kernel/bpf/btf.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index a932d95be798..ab4b1368904f 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -8254,8 +8254,6 @@ static int __devlink_port_attrs_set(struct devlink_po=
-rt *devlink_port,
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 0f1fd2669d69..6b2d508b33d4 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -4478,6 +4478,8 @@ struct btf *btf_parse_vmlinux(void)
+ 	return ERR_PTR(err);
+ }
+ 
++#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
++
+ static struct btf *btf_parse_module(const char *module_name, const void *data, unsigned int data_size)
  {
- 	struct devlink_port_attrs *attrs =3D &devlink_port->attrs;
-=20
--	if (WARN_ON(devlink_port->registered))
--		return -EEXIST;
- 	devlink_port->attrs_set =3D true;
- 	attrs->flavour =3D flavour;
- 	if (attrs->switch_id.id_len) {
-@@ -8279,6 +8277,8 @@ void devlink_port_attrs_set(struct devlink_port *devl=
-ink_port,
+ 	struct btf_verifier_env *env = NULL;
+@@ -4547,6 +4549,8 @@ static struct btf *btf_parse_module(const char *module_name, const void *data, u
+ 	return ERR_PTR(err);
+ }
+ 
++#endif /* CONFIG_DEBUG_INFO_BTF_MODULES */
++
+ struct btf *bpf_prog_get_target_btf(const struct bpf_prog *prog)
  {
- 	int ret;
-=20
-+	if (WARN_ON(devlink_port->registered))
-+		return;
- 	devlink_port->attrs =3D *attrs;
- 	ret =3D __devlink_port_attrs_set(devlink_port, attrs->flavour);
- 	if (ret)
-@@ -8301,6 +8301,8 @@ void devlink_port_attrs_pci_pf_set(struct devlink_por=
-t *devlink_port, u32 contro
- 	struct devlink_port_attrs *attrs =3D &devlink_port->attrs;
- 	int ret;
-=20
-+	if (WARN_ON(devlink_port->registered))
-+		return;
- 	ret =3D __devlink_port_attrs_set(devlink_port,
- 				       DEVLINK_PORT_FLAVOUR_PCI_PF);
- 	if (ret)
-@@ -8326,6 +8328,8 @@ void devlink_port_attrs_pci_vf_set(struct devlink_por=
-t *devlink_port, u32 contro
- 	struct devlink_port_attrs *attrs =3D &devlink_port->attrs;
- 	int ret;
-=20
-+	if (WARN_ON(devlink_port->registered))
-+		return;
- 	ret =3D __devlink_port_attrs_set(devlink_port,
- 				       DEVLINK_PORT_FLAVOUR_PCI_VF);
- 	if (ret)
---=20
-2.26.2
+ 	struct bpf_prog *tgt_prog = prog->aux->dst_prog;
+-- 
+2.24.1
 
