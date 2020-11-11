@@ -2,94 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 759222AFD4D
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:55:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 361F12AFD46
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:54:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727901AbgKLBbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 20:31:47 -0500
-Received: from www62.your-server.de ([213.133.104.62]:49140 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727782AbgKKXGa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 18:06:30 -0500
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kczC4-0007Tc-5p; Thu, 12 Nov 2020 00:06:24 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kczC3-000XDo-Sk; Thu, 12 Nov 2020 00:06:23 +0100
-Subject: Re: [PATCH] selftest/bpf: fix IPV6FR handling in flow dissector
-To:     Santucci Pierpaolo <santucci@epigenesys.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        sdf@google.com
-References: <X6rJ7c1C95uNZ/xV@santucci.pierpaolo>
- <CAEf4BzYTvPOtiYKuRiMFeJCKhEzYSYs6nLfhuten-EbWxn02Sg@mail.gmail.com>
- <87imacw3bh.fsf@cloudflare.com> <X6vxRV1zqn+GjLfL@santucci.pierpaolo>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <292adb9d-899a-fcb0-a37f-cd21e848fede@iogearbox.net>
-Date:   Thu, 12 Nov 2020 00:06:23 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727997AbgKLBbz convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 11 Nov 2020 20:31:55 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:45652 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727842AbgKKXMX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 18:12:23 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0ABMxWp5001679
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 15:12:23 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 34pcqsmpen-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 15:12:23 -0800
+Received: from intmgw004.03.ash8.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 11 Nov 2020 15:12:22 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id DA99E2EC9432; Wed, 11 Nov 2020 15:12:20 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH bpf] selftests/bpf: fix unused attribute usage in subprogs_unused test
+Date:   Wed, 11 Nov 2020 15:12:15 -0800
+Message-ID: <20201111231215.1779147-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <X6vxRV1zqn+GjLfL@santucci.pierpaolo>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25985/Wed Nov 11 14:18:01 2020)
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-11_11:2020-11-10,2020-11-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 mlxscore=0
+ spamscore=0 lowpriorityscore=0 phishscore=0 clxscore=1034 impostorscore=0
+ priorityscore=1501 mlxlogscore=637 suspectscore=8 malwarescore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011110133
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/11/20 3:12 PM, Santucci Pierpaolo wrote:
-> Hi Jakub,
-> 
-> thanks for your reply.
+Correct attribute name is "unused". maybe_unused is a C++17 addition.
+This patch fixes compilation warning during selftests compilation.
 
-(Santucci, please do not top-post but always reply inline which makes it
-  easier for discussions to follow.)
+Fixes: 197afc631413 ("libbpf: Don't attempt to load unused subprog as an entry-point BPF program")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ tools/testing/selftests/bpf/progs/test_subprogs_unused.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> Let me explain the problem with an example.
-> 
-> Please consider the PCAP file:
-> https://github.com/named-data/ndn-tools/blob/master/tests/dissect-wireshark/ipv6-udp-fragmented.pcap
-> Let's assume that the dissector is invoked without the flag:
-> BPF_FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL.
->   
-> Without the proposed patch, the flow keys for the second fragment (packet
-> timestamp 0.256997) will contain the value 0x6868 for the source and
-> destination port fields: this is obviously wrong.
-> The same happens for the third fragment (packet timestamp 0.256998) and for
-> the fourth fragment (packet timestamp 0.257001).
-> 
-> So it seems that the correct thing to do is to stop the dissector after the
-> IPV6 fragmentation header for all fragments from the second on.
-> 
-[...]
->>
->> I'm not initimately familiar with this test, but looking at the change
->> I'd consider that Destinations Options and encapsulation headers can
->> follow the Fragment Header.
->>
->> With enough of Dst Opts or levels of encapsulation, transport header
->> could be pushed to the 2nd fragment. So I'm not sure if the assertion
->> from the IPv4 dissector that 2nd fragment and following doesn't contain
->> any parseable header holds.
+diff --git a/tools/testing/selftests/bpf/progs/test_subprogs_unused.c b/tools/testing/selftests/bpf/progs/test_subprogs_unused.c
+index 75d975f8cf90..bc49e050d342 100644
+--- a/tools/testing/selftests/bpf/progs/test_subprogs_unused.c
++++ b/tools/testing/selftests/bpf/progs/test_subprogs_unused.c
+@@ -4,12 +4,12 @@
+ 
+ const char LICENSE[] SEC("license") = "GPL";
+ 
+-__attribute__((maybe_unused)) __noinline int unused1(int x)
++__attribute__((unused)) __noinline int unused1(int x)
+ {
+ 	return x + 1;
+ }
+ 
+-static __attribute__((maybe_unused)) __noinline int unused2(int x)
++static __attribute__((unused)) __noinline int unused2(int x)
+ {
+ 	return x + 2;
+ }
+-- 
+2.24.1
 
-Hm, staring at rfc8200, it says that the first fragment packet must include
-the upper-layer header (e.g. tcp, udp). The patch here should probably add a
-comment wrt to the rfc.
-
-Thanks,
-Daniel
