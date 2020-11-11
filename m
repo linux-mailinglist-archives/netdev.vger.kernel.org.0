@@ -2,85 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFCB72AF953
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 20:55:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44CD92AF989
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 21:09:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726584AbgKKTz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 14:55:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56852 "EHLO
+        id S1726151AbgKKUJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 15:09:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725860AbgKKTz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 14:55:28 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89549C0613D1
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 11:55:28 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id q5so2279200pfk.6
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 11:55:28 -0800 (PST)
+        with ESMTP id S1725860AbgKKUJl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 15:09:41 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A052C0613D1;
+        Wed, 11 Nov 2020 12:09:41 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id s9so3457257ljo.11;
+        Wed, 11 Nov 2020 12:09:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2D4UopeoGsADyGSgakVUyeylQq/DbszdJ62imU5+3As=;
-        b=vkEiIslpKfq1kwlB5N1raWqNwi4R9XOq9yiZLMQ00aNu3El848yUVaBKPgqUnZFzBH
-         b/kT4g9RRc+kRVHR7utZqzCtzh2wEWXMpNCgmVraXDQam1Svg85lUA0j19qXL0mjk4pZ
-         ls7GV3aO28tQ/7wqpeMhW8AgIEM+bH0uDxRoFBToCIloXlFMQMYL8S7rU36iYaLbtUEk
-         wgojer2mhXjp+U834LeovembKoTcI5demIGv0j11+wK6ZNE06LfPr1EFP2fXnHrH94f4
-         WfGuld8ysibduB+43rz2j7lww8BwYeXWuMIyCeeA/wY1huuYJnOW5PeJe2QOMtxy3Sx1
-         mdJQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4O7dSv7r4Y+yU7mfsrBZpH53JVwwJEULvzPK+mdVFIE=;
+        b=XlqWcA8DhRwktzmxBPb/iE3IxyUjR9AJGVlo5r0JnozVklxfEGotAJF330qlcQu+IE
+         QdweCk5JWswpsruq7wzGkqdM7kjFp9bnALItr3jNfXRNdl1dcC0ypiLjtlLCVOIBr/vL
+         y00xw18fWX7rkg/sskMoXq/V1cQOYR3PypAUIczJvQfFfUAAc3rr7Xn4z1kGRwBuS6Iq
+         Zz0jwaMv1xn0C4Quo4cUS7hFfWjFvNgg47S30f2qS8FTmzD2ppbUMocIvIJSpOGhCqBJ
+         KSwmPkRKhogH5LczgpvSMTMm3oK1WpgAtoegio5YiwK1hW12dBjnxomOoS8zKhw2pbCR
+         vEig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2D4UopeoGsADyGSgakVUyeylQq/DbszdJ62imU5+3As=;
-        b=kRrjZAEY3GUw5C0z1bRnKLFUGR8jLEL8HFX2uB2qiWTbULJv4B4uTEMIPzM/xj52+N
-         WRMBD6B6GtScYcQFJQCqVGBqPoyw/1UdzYLhbbc9Hp6I5aQB2PrncEfnZs4co0D1PDGq
-         NZk6LsprJ6i4UBis6/0L8lALK5T5BoggzVzii7hjF9VC+Nm9pATvvPbiDli05CD9kJ1p
-         Z6hoxC6AYMD1I+W6RL3v4cNARqRHL4MDWnqlY8GlSvF5FrAiXZDlf7MyLtcBDztIzBC7
-         7J/ZiVomSyzN3swHKPovifepg0iUAigR29+GdN/dGnTYCJXMQe1ibobT2jiQvrjvnQYl
-         b3Gg==
-X-Gm-Message-State: AOAM532jE4/n8YkJhVrCRUeOpX2Wa/YKy53fJoVK4bZHwpiuxUTASIP0
-        ucRtmpeLQM9gh8Z485JQzGIbkw==
-X-Google-Smtp-Source: ABdhPJzE7PbRtducXtTQfUAZPUp4s9NmSFEw737YFgfr1HarT/OTS897oyuNG4vVPuQta5T3oPrHFg==
-X-Received: by 2002:a62:7504:0:b029:18b:8238:cc0 with SMTP id q4-20020a6275040000b029018b82380cc0mr23990635pfc.81.1605124528059;
-        Wed, 11 Nov 2020 11:55:28 -0800 (PST)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id q6sm3282855pfu.23.2020.11.11.11.55.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Nov 2020 11:55:27 -0800 (PST)
-Date:   Wed, 11 Nov 2020 11:55:20 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     =?UTF-8?B?5p2c6Iux5p2w?= <leondyj@pku.edu.cn>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: some question about "/sys/class/net/<iface>/operstate"
-Message-ID: <20201111115520.08b58818@hermes.local>
-In-Reply-To: <CAM_iQpVzC6PTX8b0cgXO=Pcp_jFCw-UtP__AYyoN7pZLovkqcQ@mail.gmail.com>
-References: <1a87f1b4.3d6ab.175b592a271.Coremail.leondyj@pku.edu.cn>
-        <CAM_iQpVzC6PTX8b0cgXO=Pcp_jFCw-UtP__AYyoN7pZLovkqcQ@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4O7dSv7r4Y+yU7mfsrBZpH53JVwwJEULvzPK+mdVFIE=;
+        b=oUscersPxIvjDKrCq8FTK693TSbBnFGbpAafsv2khM3UIZztPZbuIZqsi8Nfb8t1cJ
+         IPHnv0GzwfH9e4mVUnuMn5rJBo41XzmMx8NwimLCutg2y72LGxQ+EpeQ0706/MTFrDEG
+         1N61pycwB7IPD5YgA9yALX9Ql8/3yrR+JUonIEQbMk7wtzGO5fGfQtnhdZ9Rwb3+/SIW
+         +4NBgUBCBBHeT2usA/yRo99EjLC6WuFVzx2U6mmeE7rY9wXFF1OXvUhA3JEzSH3AJ3Cp
+         0zKGAv0bgfM76I4kHLyaA/vyDj9rbM777EVm7CAyKQf1ANnopeu7boG1+gQ/sTKy1Cr7
+         2bCg==
+X-Gm-Message-State: AOAM530fq7yPjZtMK6ZZzYt8hhMzioRKNqldeZFIeQweUME3g2aMpnK7
+        QZn1zou2JzeYl45Uz2WjxOTBdGu1s0eyuPViSo4=
+X-Google-Smtp-Source: ABdhPJzYvAxIp1NAWZOJe0fM1XXjCQhyxh6CkHlH6qoTW6FAHl4lhFJ35t7CgU8UeUEmCt+M4Sf1/cloNYAyqQUfbBE=
+X-Received: by 2002:a05:651c:1205:: with SMTP id i5mr11962786lja.283.1605125378319;
+ Wed, 11 Nov 2020 12:09:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20201110154017.482352-1-jolsa@kernel.org> <2a71a0b4-b5de-e9fb-bacc-3636e16245c5@iogearbox.net>
+ <20201111123738.GE355344@kernel.org> <20201111123820.GF355344@kernel.org>
+In-Reply-To: <20201111123820.GF355344@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 11 Nov 2020 12:09:26 -0800
+Message-ID: <CAADnVQ+A-+jAbDiJV-qe53SjJ+zGeqcV5owZ3S7RNKMMYirVBw@mail.gmail.com>
+Subject: Re: [PATCHv6 bpf] bpf: Move iterator functions into special init section
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Nov 2020 11:02:14 -0800
-Cong Wang <xiyou.wangcong@gmail.com> wrote:
-
-> On Tue, Nov 10, 2020 at 8:32 PM =E6=9D=9C=E8=8B=B1=E6=9D=B0 <leondyj@pku.=
-edu.cn> wrote:
+On Wed, Nov 11, 2020 at 4:38 AM Arnaldo Carvalho de Melo
+<acme@kernel.org> wrote:
+>
+> Em Wed, Nov 11, 2020 at 09:37:38AM -0300, Arnaldo Carvalho de Melo escreveu:
+> > Em Wed, Nov 11, 2020 at 12:26:29PM +0100, Daniel Borkmann escreveu:
+> > > On 11/10/20 4:40 PM, Jiri Olsa wrote:
+> > > > With upcoming changes to pahole, that change the way how and
+> > > > which kernel functions are stored in BTF data, we need a way
+> > > > to recognize iterator functions.
+> > > >
+> > > > Iterator functions need to be in BTF data, but have no real
+> > > > body and are currently placed in .init.text section, so they
+> > > > are freed after kernel init and are filtered out of BTF data
+> > > > because of that.
+> > > >
+> > > > The solution is to place these functions under new section:
+> > > >    .init.bpf.preserve_type
+> > > >
+> > > > And add 2 new symbols to mark that area:
+> > > >    __init_bpf_preserve_type_begin
+> > > >    __init_bpf_preserve_type_end
+> > > >
+> > > > The code in pahole responsible for picking up the functions will
+> > > > be able to recognize functions from this section and add them to
+> > > > the BTF data and filter out all other .init.text functions.
+> > > >
+> > > > Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+> > > > Suggested-by: Yonghong Song <yhs@fb.com>
+> > > > Signed-off-by: Jiri Olsa <jolsa@redhat.com>
+> > >
+> > > LGTM, applied, thanks! Also added a reference to the pahole commit
 > >
-> > I want to use inotify to monitor /sys/class/net//operstate  to detect s=
-tatus of a iface in real time.
-> > when I ifdown &amp;&amp; ifup eth3, the content of operstate changed, b=
-ut the file's Modify time didn't change.
-> > I don't know the reason, is there any file which can be monitored by in=
-otify to get iface status in real time?
-> > Much appreciation for any advice! =20
->=20
-> You need to listen to netdev netlink messages for changes like
-> this. These messages are generated in real-time.
+> > Applied to what branch? I'm trying to test it now :-)
+>
+> Nevermind, bpf/master, I was looking at bpf-next/master.
 
-The /sys and /proc are pseudo-filesystems. The file modify time and inotify=
- do not work
-as expected on these files. Cong is right you need to use netlink for this.
+I've dropped this patch from bpf tree.
+I think we need to agree on the whole approach first.
+This filtering based on section name with special handling in pahole doesn't
+feel like solid long term direction.
+I think we have to brainstorm more on it.
+I'm not saying we will not go back to a special section approach.
+This revert is only buying us time to discuss what's the right path here.
+Mainly I reverted to unbreak bpf tree CI which currently fails due to
+two tests in test_progs
+failing with the latest pahole and this patch.
