@@ -2,85 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 898772AF22A
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 14:30:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C67F2AF248
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 14:36:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbgKKNaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 08:30:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
+        id S1726274AbgKKNfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 08:35:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726557AbgKKNaJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 08:30:09 -0500
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F196FC0613D1
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 05:30:08 -0800 (PST)
-Received: by mail-qk1-x743.google.com with SMTP id n132so1610480qke.1
-        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 05:30:08 -0800 (PST)
+        with ESMTP id S1725959AbgKKNfh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 08:35:37 -0500
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB24C0613D1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 05:35:36 -0800 (PST)
+Received: by mail-lj1-x243.google.com with SMTP id b17so2062038ljf.12
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 05:35:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=Mrf0d0bxYH+6GH0lvsgm2uEX7jLFPjyo3DZnCKJ0/0Y=;
-        b=bgpBn97B9nq1SWvjUEtBeKWBDj005oKswykPrMMU/kypedSDkiNNXAUwzKW+R2ueCJ
-         Se8nOTvZEIgs0IyaYA6wJDuO7oyTSUtx1n3AAidUiqay8cu5vrgiHu6D+zjESngqESDK
-         DnGm7xl2OKb0xEHo51+YZB5WXVJxziWgDPihpNBOo9MyxAlL5wL3ElgXUToLSryNnPXg
-         BwIeRgD3ZhxXqRB9d+bhpDcWZ8vGIk9FJWs83s6ZqrwHKhwvh//sbotDR15n6hzMb2wP
-         jgiQc34TGMFbMQThldjFGWsxhQIatQiCP5fsYODZ7kPqNBfUPNoq19rrYG0zVB0bxDo0
-         VoyQ==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:cc:subject:from:to:date:message-id
+         :in-reply-to;
+        bh=Ofo4uUdK4ufb95GSpnIeu9OCFDhLxT/0JM/jlHExZtc=;
+        b=sYaNpzoAjvxXAGUqCJQ0qfKhxVdqcaSNvFWIQaSMNWITAm0SbvtCiDTQW8tWmDUVOk
+         gn10GbiE5PpofivdEo90hIHkVRXMLxtKoAti/PAE7XLaax9ivnv1p08A6voygFmLPEM5
+         xOQOMwKEcPBHoeGBTIaT6Yew9bPzkrEcIzIL23dT4tY1iwju5kYMiW8li5O61ia56M9T
+         wECCYyi693Z+g/BEAcgXqhVMN0GgzbmGx/3zR0ZzlWTi7QqsIha6RZWe+ltnbGwbBh85
+         xsToROIc/pkpo4vs98UL5B1IMHBxUYRmzHMkqC3KMn96UGhK+Kfky6lZDO5lgNr16mOE
+         TAuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=Mrf0d0bxYH+6GH0lvsgm2uEX7jLFPjyo3DZnCKJ0/0Y=;
-        b=OCRRKqMR1caus8CqG6ij5MFcYXRnLGHZ2FPNUWgQtMDYM/S85pV9bzGXFnB503u6lT
-         u2iknGtKK3QlKDqcjTKBQbtBPOUD+WbSHPnSmh9sZKmhcPuVwGvzSFTkh/wLMRM5ZoKt
-         uZCoccdruuXHEe12jhKfa6zcLd3rmIkEoMKpZqVXVhWcHWDxvxXWVIFOPOaINaKsq2uk
-         B/msefOVr9Le7fpZrtFvynU5XvExDiFDoN+LZHwCEUtCfcA4bDCW9zq7RD5L9zG0rja5
-         G+m76bAYWVtCsivo23qVW0U8Cx0k34uvnO0IsWpKRiqHMwpMbMSndg4RQETIPRq1Kts7
-         F1Pw==
-X-Gm-Message-State: AOAM533nbP1BZZlJZSLNyfyMSnyTVNi9FP3Z1oOzhjOrtVTNHZnbJHHf
-        KfpW9bxh74Gf0AHMrCdYlZjKK4afNDPRN/BBcxSFGTBtSEe53chA
-X-Google-Smtp-Source: ABdhPJyxyZ80WQyvQSfath8VmPjxYL1ABS4kGXtU6ceB3M/Ive9IT8dmInULusYU/wmx2oTw1k500RCiVwr3tc95sLk=
-X-Received: by 2002:a37:9747:: with SMTP id z68mr23987360qkd.424.1605101407964;
- Wed, 11 Nov 2020 05:30:07 -0800 (PST)
-MIME-Version: 1.0
-References: <0000000000005eaea0059aa1dff6@google.com> <00000000000039c12305a141e817@google.com>
-In-Reply-To: <00000000000039c12305a141e817@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 11 Nov 2020 14:29:57 +0100
-Message-ID: <CACT4Y+YFEhTsTdjNTpkcrmDdWJriS-ezgxM_q9U2enepcoFTQQ@mail.gmail.com>
-Subject: Re: INFO: task hung in htable_put
-To:     syzbot <syzbot+84936245a918e2cddb32@syzkaller.appspotmail.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, coreteam@netfilter.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:content-transfer-encoding:cc:subject:from:to
+         :date:message-id:in-reply-to;
+        bh=Ofo4uUdK4ufb95GSpnIeu9OCFDhLxT/0JM/jlHExZtc=;
+        b=NxK4pFdooEWR4b4qRV0SQcoPp3jIf45+ZO3AjL8TAFcPBYIY0CgfyzZlx+YfcGS+48
+         EROolf4kho999xH0FbBR2Tlv/dbgRToAz+SfyBg8vL+m6Gs7uqSKt56Q/8GLFDH+42AA
+         OVzqAqY1PKhLyBGgynQgxmInGkULx+OQJSw9Nz/DOMFaGoprwbRQqfxC6eX2Hya+N3pX
+         CQPQ5nXu4gNkLBMTLE+Vj9PB40Tg4q98ia6yBz+VzMdnwrGVKFgs+ANiZeqX4KqBJvPA
+         4krsUm7PkWTgzV4xM7aVV90BoIzd40FOzO0aOQO6Ut4KfFpB5zqrYJpS678kgjcuhVz6
+         eXVg==
+X-Gm-Message-State: AOAM531d851c0sttlgPleKYmcNRIhvuQy7uS0lW2b+oOwVqcrZhIYTqu
+        bkz23GTmwd1hYyKqeWVPDDuDPg==
+X-Google-Smtp-Source: ABdhPJxVzxzMfuaOOOuf2KD5bePwK503poUpnneK2pBpav1PKXCp4dVxpAsI1PsNlTo/oCArGWB5xQ==
+X-Received: by 2002:a2e:bc1a:: with SMTP id b26mr9540377ljf.359.1605101734720;
+        Wed, 11 Nov 2020 05:35:34 -0800 (PST)
+Received: from localhost (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id w22sm237263ljm.20.2020.11.11.05.35.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Nov 2020 05:35:33 -0800 (PST)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Cc:     <andrew@lunn.ch>, <vivien.didelot@gmail.com>, <olteanv@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net: dsa: tag_dsa: Unify regular and ethertype DSA
+ taggers
+From:   "Tobias Waldekranz" <tobias@waldekranz.com>
+To:     "Florian Fainelli" <f.fainelli@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+Date:   Wed, 11 Nov 2020 14:14:20 +0100
+Message-Id: <C70GMK1SV1ZG.23ZG16VPK4TU7@wkz-x280>
+In-Reply-To: <b953f38d-47e3-ac3d-39e1-84e9df807803@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 20, 2020 at 5:42 AM syzbot
-<syzbot+84936245a918e2cddb32@syzkaller.appspotmail.com> wrote:
+On Tue Nov 10, 2020 at 8:41 PM CET, Florian Fainelli wrote:
 >
-> syzbot suspects this bug was fixed by commit:
 >
-> commit 99b79c3900d4627672c85d9f344b5b0f06bc2a4d
-> Author: Cong Wang <xiyou.wangcong@gmail.com>
-> Date:   Thu Feb 13 06:53:52 2020 +0000
+> On 11/10/2020 1:13 AM, Tobias Waldekranz wrote:
+> > Ethertype DSA encodes exactly the same information in the DSA tag as
+> > the non-ethertype variety. So refactor out the common parts and reuse
+> > them for both protocols.
+> >=20
+> > This is ensures tag parsing and generation as always consistent across
+> > all mv88e6xxx chips.
 >
->     netfilter: xt_hashlimit: unregister proc file before releasing mutex
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17446eb1e00000
-> start commit:   f2850dd5 Merge tag 'kbuild-fixes-v5.6' of git://git.kernel..
-> git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=735296e4dd620b10
-> dashboard link: https://syzkaller.appspot.com/bug?extid=84936245a918e2cddb32
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17a96c29e00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12fcc65ee00000
->
-> If the result looks correct, please mark the bug fixed by replying with:
->
-> #syz fix: netfilter: xt_hashlimit: unregister proc file before releasing mutex
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> s/as/is/?
 
-#syz fix: netfilter: xt_hashlimit: unregister proc file before releasing mutex
+ACK
+
+> This looks good to me! This made me remember that we do not really
+> interface with devlink traps today in DSA, but we may be able to.
+
+Yeah maybe. I've tried to read up on it as I would like to be able to
+control things like DHCP snooping. I have not really been able to wrap
+my head around it though.
+
+Using DHCP as an example: that sorts into the "control" type, as
+specified in Documentation/networking/devlink/devlink-trap.rst. But
+changing the trap action is not allowed. And even if it was allowed,
+how do these settings interact with an offloaded tc rule along the
+lines of "tc filter add [handwavy wizardry] [match dhcp] action trap"?
