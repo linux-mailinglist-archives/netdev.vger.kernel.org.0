@@ -2,109 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDDB72AE52A
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 01:56:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98DAD2AE531
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 01:59:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731805AbgKKA4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 19:56:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727275AbgKKA42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 19:56:28 -0500
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0F5C0613D1;
-        Tue, 10 Nov 2020 16:56:24 -0800 (PST)
-Received: by mail-lj1-x234.google.com with SMTP id s9so91781ljo.11;
-        Tue, 10 Nov 2020 16:56:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ibYHRITwovHehatBTDyOaIjSjp1FDrg3sFv2ExyPAJg=;
-        b=jNcwXkwrYvw0eWiBMEOxbPIPR22Yx/0QacAEu2yYjvo+QBozeVYJ+clisFf05DuJXp
-         A1KD+RacWwNNFX8p0k7POLJLrSP6hcyouCxOvI0RCX2YTEkCK996fgPSWLofEJc35T2j
-         rYxkKvn7yp8tzLuw7QWdbCfgGT6cwKslojAT5yG6fQTv20MURBmcNDAWBYtjqW6w0ljU
-         L6bVatzuhr0nRstXJO2N/9LwI2poO4ZagL4VoGY+owMmPFEDTxUZu4Qr7qEk24UqdHod
-         tU7iBwElNcxhYxioC9UH1l2xcnZiQssFhQysYV0pGnBe0fhOEqkSTVKxLNjYDSRaNS2o
-         rscw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ibYHRITwovHehatBTDyOaIjSjp1FDrg3sFv2ExyPAJg=;
-        b=TKxWnu9DaBMX7WawTs29KMr3efKll7VQ11h9ODjZBRM1uh82sZhURrDmn2/nnrIkmX
-         HZskQZ4LwshB+pn+3Bb+S7gUVqaVBtrnRXCrz5Ak/yPEcT00if0zV78cMTD/ekBCY6ts
-         XaA4/l9xO0fCZLZf1tAEIo3j6SnZJOGn/JQE7WsY0uj+KSOew27R9WWHiP+DbURDTt78
-         EBZLxMDJ4sKAYaQLjGzFxmAAfHDhiM/euYcOeFtgQ5G4fwNptfzDdcm6il5xyeN3j2wc
-         NT4jy7TrqV/lJDhjJ+LMKUQDBXkyCQqmi4nCHAZWWu4ddxRCrjKba6NZzwmtqF7duzaT
-         I6QA==
-X-Gm-Message-State: AOAM5316B20LoL8Hv8NQerT08/sMiy3PLjQr6vt4Y8OsHwSMJCQNjK5N
-        wrIqKy1J/9g8mHEJMB5fBPrGa+N5PxdhDERWFJh3O4Q8
-X-Google-Smtp-Source: ABdhPJyXpdPDUG9zv+bmVQgcmXVyckhNtbIq3YCEjmrJtnNcmvT7IstpPzDBqpyfNBbW+IH35K7rsQRxMJHYl2RP0lo=
-X-Received: by 2002:a2e:8982:: with SMTP id c2mr7785523lji.121.1605056174730;
- Tue, 10 Nov 2020 16:56:14 -0800 (PST)
+        id S1732341AbgKKA70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 19:59:26 -0500
+Received: from smtp1.emailarray.com ([65.39.216.14]:51794 "EHLO
+        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730894AbgKKA70 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 19:59:26 -0500
+Received: (qmail 33220 invoked by uid 89); 11 Nov 2020 00:59:24 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
+  by smtp1.emailarray.com with SMTP; 11 Nov 2020 00:59:24 -0000
+Date:   Tue, 10 Nov 2020 16:59:22 -0800
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Victor Stewart <v@nametag.social>
+Cc:     netdev@vger.kernel.org
+Subject: Re: MSG_ZEROCOPY_FIXED
+Message-ID: <20201111005922.h55aiqcs325bvhk7@bsd-mbp.dhcp.thefacebook.com>
+References: <CAM1kxwjkJndycnWWbzBFyAap9=y13DynF=SMijL1=3SPpHbvdw@mail.gmail.com>
+ <20201111000902.zs4zcxlq5ija7swe@bsd-mbp.dhcp.thefacebook.com>
+ <CAM1kxwh9+fu1O=rG9=HuEnp8c0E2_xvyZpTq=ehX+r5pmNiMLg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20201106090117.3755588-1-liuhangbin@gmail.com>
- <20201110015013.1570716-1-liuhangbin@gmail.com> <20201110173549.i4osogbqr2pji3ua@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20201110173549.i4osogbqr2pji3ua@kafai-mbp.dhcp.thefacebook.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 10 Nov 2020 16:56:03 -0800
-Message-ID: <CAADnVQJvg2O67T+bVRyFnZP19HpV0yfndX_yosiMYwje57qQkA@mail.gmail.com>
-Subject: Re: [PATCHv3 bpf 0/2] Remove unused test_ipip.sh test and add missed
- ip6ip6 test
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>, bpf <bpf@vger.kernel.org>,
-        William Tu <u9012063@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM1kxwh9+fu1O=rG9=HuEnp8c0E2_xvyZpTq=ehX+r5pmNiMLg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 10, 2020 at 9:39 AM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Tue, Nov 10, 2020 at 09:50:11AM +0800, Hangbin Liu wrote:
-> > In comment 173ca26e9b51 ("samples/bpf: add comprehensive ipip, ipip6,
-> > ip6ip6 test") we added some bpf tunnel tests. In commit 933a741e3b82
-> > ("selftests/bpf: bpf tunnel test.") when we moved it to the current
-> > folder, we missed some points:
+On Wed, Nov 11, 2020 at 12:20:22AM +0000, Victor Stewart wrote:
+> On Wed, Nov 11, 2020 at 12:09 AM Jonathan Lemon
+> <jonathan.lemon@gmail.com> wrote:
 > >
-> > 1. ip6ip6 test is not added
-> > 2. forgot to remove test_ipip.sh in sample folder
-> > 3. TCP test code is not removed in test_tunnel_kern.c
+> > On Sun, Nov 08, 2020 at 05:04:41PM +0000, Victor Stewart wrote:
+> > > hi all,
+> > >
+> > > i'm seeking input / comment on the idea of implementing full fledged
+> > > zerocopy UDP networking that uses persistent buffers allocated in
+> > > userspace... before I go off on a solo tangent with my first patches
+> > > lol.
+> > >
+> > > i'm sure there's been lots of thought/discussion on this before. of
+> > > course Willem added MSG_ZEROCOPY on the send path (pin buffers on
+> > > demand / per send). and something similar to what I speak of exists
+> > > with TCP_ZEROCOPY_RECEIVE.
+> > >
+> > > i envision something like a new flag like MSG_ZEROCOPY_FIXED that
+> > > "does the right thing" in the send vs recv paths.
 > >
-> > In this patch set I add back ip6ip6 test and remove unused code. I'm not sure
-> > if this should be net or net-next, so just set to net.
-> >
-> > Here is the test result:
-> > ```
-> > Testing IP6IP6 tunnel...
-> > PING ::11(::11) 56 data bytes
-> >
-> > --- ::11 ping statistics ---
-> > 3 packets transmitted, 3 received, 0% packet loss, time 63ms
-> > rtt min/avg/max/mdev = 0.014/1028.308/2060.906/841.361 ms, pipe 2
-> > PING 1::11(1::11) 56 data bytes
-> >
-> > --- 1::11 ping statistics ---
-> > 3 packets transmitted, 3 received, 0% packet loss, time 48ms
-> > rtt min/avg/max/mdev = 0.026/0.029/0.036/0.006 ms
-> > PING 1::22(1::22) 56 data bytes
-> >
-> > --- 1::22 ping statistics ---
-> > 3 packets transmitted, 3 received, 0% packet loss, time 47ms
-> > rtt min/avg/max/mdev = 0.030/0.048/0.067/0.016 ms
-> > PASS: ip6ip6tnl
-> > ```
-> >
-> > v3:
-> > Add back ICMP check as Martin suggested.
-> >
-> > v2: Keep ip6ip6 section in test_tunnel_kern.c.
-> This should be for bpf-next.
->
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
+> > See the netgpu patches that I posted earlier; these will handle
+> > protocol independent zerocopy sends/receives.  I do have a working
+> > UDP receive implementation which will be posted with an updated
+> > patchset.
+> 
+> amazing i'll check it out. thanks.
+> 
+> does your udp zerocopy receive use mmap-ed buffers then vm_insert_pfn
+> / remap_pfn_range to remap the physical pages of the received payload
+> into the memory submitted by recvmsg for reception?
 
-git bot got lost.
-the patches were applied.
+The application mmaps buffers, which are then pinned into the kernel.
+The NIC receives directly into the buffers and then notifies the application.
+
+For completions, the mechanism that I prefer is having one of the
+sends tagged with SO_NOTIFY message.  Then a completion notification is 
+generated when the buffer corresponding to the NOTIFY is released by
+the protocol stack.
+
+The notifiations could be posted as an io_uring CQE.  (work TBD)
+
+> https://lore.kernel.org/io-uring/acc66238-0d27-cd22-dac4-928777a8efbc@gmail.com/T/#t
+> 
+> ^^ and check the thread from today on the io_uring mailing list going
+> into the mechanics of zerocopy sendmsg i have in mind.
+> 
+> (TLDR; i think it should be io_uring "only" so that we can collapse it
+> into a single completion event, aka when the NIC ACKs the
+> transmission. and exploiting the asynchrony of io_uring is the only
+> way to do this? so you'd submit your sendmsg operation to io_uring and
+> instead of receiving a completion event when the send gets enqueued,
+> you'd only get it upon failure or NIC ACK).
+
+I think it's likely better to have two completions:
+  "this buffer has been submitted", and 
+  "this buffer is released by the protocol".
+
+This simplifies handling of errors, cancellations, and short writes.
+-- 
+Jonathan
