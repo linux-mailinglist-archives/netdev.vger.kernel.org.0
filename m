@@ -2,117 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E81932AE4CB
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 01:17:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D60A2AE4CD
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 01:17:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732023AbgKKARN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 19:17:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39726 "EHLO
+        id S1732090AbgKKARS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 19:17:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726706AbgKKARM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 19:17:12 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2482C0613D1
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 16:17:12 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id x13so387463pfa.9
-        for <netdev@vger.kernel.org>; Tue, 10 Nov 2020 16:17:12 -0800 (PST)
+        with ESMTP id S1726706AbgKKARS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 19:17:18 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3CBC0613D1;
+        Tue, 10 Nov 2020 16:17:17 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id c18so230470ybj.10;
+        Tue, 10 Nov 2020 16:17:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=1jWuCO6gezRCsHJCeIWwfLImcLt+uN7Xse8K4/jnFdk=;
-        b=XZ9Y3h0Hjxz0n8T+goBfQZDjyOivbUVNCksSSy5evGxTi0NoQ7Gl+j8GReDqsnbkDs
-         tkAPlISrii7fxmeE7zbVsYk+XiauWMTckBJENqQHZzGeGu8VAMeIwf1zDMg7zGj6vyVx
-         nxh5Tf8rWViGT54inCyi62GwS7EXkAlWDLGz/GQjvUJb5oKJRsaB1diPgc4D0ffH42BW
-         xTlGJDN2dzw0ToWPTQeK/dITM7VjcaWTqAx8s/Ow2bVhZcMyt768NpYf2mMDzvs+R1HN
-         zGgmHn60jeSeS+Vphyo6KG4x57heNoW+hXiruspi1qaHs7BHH8eRvh2V2Ltq0JmomUDk
-         3Jmg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yaUVkE6ga6OeEMKnSxu8Z7wIpa/rKvADpYWxBqJ5R2k=;
+        b=IrWyN6Hnd83VMEzNx0TgYcwRpPRMNUyrJUF5mJxSVhDhiEZCLYS0PKTcjOi96uupGt
+         XFc6xLSGBqorYjHf9jdTcn6srrW67S1gebp9aAy88IXlLVEQoJHcWp5XukycOb4DFGgC
+         +LJsb9r+DGYVY9VZEBD9lO6o6pOV2WHYvKvXb1wZpof0IcF0lnAYrHxU4i+y1Ze+x9Vw
+         4iyeuTQGf2iR5E8xmfDibaFM2ALKD81NA/ikwao7ppvOG3WeEOExuzjP1UT8Jh+eX1AT
+         HZ56fNJ4YURYJoGOY5BwmYwHLipEv7xpLOpOZFquJXngG6Jc0qWcswoC0j6Bv7uXqXPp
+         wnBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=1jWuCO6gezRCsHJCeIWwfLImcLt+uN7Xse8K4/jnFdk=;
-        b=fVzBnDVhPjDRRoQsEuEpgNUfpYaPLiReP0bCKTREt1HyrwyC4dsdk7pZCaIuKW2vXy
-         7PIHTZT8ZKTNi0ICyy6/JoqXY55vGn6cZmswXOnHqPJx9YADxHLNEoZ5NVnx4Z4UP4kd
-         lCWIwRgwDPf3LVyyOpZf1EA6w/oSrdMlzOa+igbB0abCEOvyP/XxxxwJAzbt9z0wabhq
-         uExiMEcT9m3AJpJxG4F7YEZi/yWTwqJeVzS82mRnKTmKd2C/Pbkqj9B6b69jW7NXaGgq
-         AVK/OukPRHGqc+4A6WAwJRqzkdbvJ7/mC3JDWDty0o7ws1126jbXSfG1Zu9L1/beacYT
-         LAkw==
-X-Gm-Message-State: AOAM533EgwHyZSs/AJ8/17930ikRi+hB6l2UxnyVB+Ueg9uCBieiIAoO
-        e2IBoRd8IGBNg5YwhGPwrGD8BjK4JKA=
-X-Google-Smtp-Source: ABdhPJxP5pxgiv9+NLFRZjKhwgi3wKEZwZQhDLe/ZXSUJN3RqBuZrcTm9fMPLWle7QyZj2B50hzkuw==
-X-Received: by 2002:a63:751e:: with SMTP id q30mr9207223pgc.294.1605053832174;
-        Tue, 10 Nov 2020 16:17:12 -0800 (PST)
-Received: from vm-main.eng.vmware.com ([66.170.99.1])
-        by smtp.gmail.com with ESMTPSA id d68sm274384pfc.135.2020.11.10.16.17.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 Nov 2020 16:17:11 -0800 (PST)
-From:   Yi-Hung Wei <yihung.wei@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, pieter.jansenvanvuuren@netronome.com,
-        netdev@vger.kernel.org
-Cc:     Yi-Hung Wei <yihung.wei@gmail.com>
-Subject: [PATCH] ip_tunnels: Set tunnel option flag when tunnel metadata is present
-Date:   Tue, 10 Nov 2020 16:16:40 -0800
-Message-Id: <1605053800-74072-1-git-send-email-yihung.wei@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yaUVkE6ga6OeEMKnSxu8Z7wIpa/rKvADpYWxBqJ5R2k=;
+        b=BaUpCMyjIGRCzV7nxTLfNPxdNzgDMgvNxbu6unqtnlo/xCd+KFqUlK+K7QyB/3cHr5
+         RhUq0G8dYhH9n2eGKIqA/NwkLsaN/P0SNl0SZlb7vJtOFMNnN1YcInTiO9YWn+Qb5URG
+         d/LJsHXbLALke7n8Mg0xTpL2wEF0VcV2iWdu0oat7+niTlt4nQdHULKlpRWKRueymiFJ
+         cv9LUvXCQbsFiNlAvQHzUMZXkMVOB21GyC3+XMH8q158ndr1IwUdwRt2P0gaA2Ph/06L
+         NlAxt0qSIO1Naqdk0/JMmE88QLtKcP8+L3hgXN1bYlB1K863uQaQaOPU3zRW3AdX+lle
+         e0mQ==
+X-Gm-Message-State: AOAM533OVhErg0MfcnAbb009h6Hn37Bga1f4+FV44W+0+8pdOkq93XyA
+        ikUSGBOYqUv2sQRtpcp/FDR2vS7ceEsB0cvShRHkuRJzEQIa2Q==
+X-Google-Smtp-Source: ABdhPJw5/afo/wTqM7PWAxxtJ3piAGuSGh7bJ6TD3pUqiPNFt0YUfmXM0BaJKz/TWdnfZ4o5JQGpXEqV/vUTJOokC7I=
+X-Received: by 2002:a25:df8e:: with SMTP id w136mr4125771ybg.230.1605053837177;
+ Tue, 10 Nov 2020 16:17:17 -0800 (PST)
+MIME-Version: 1.0
+References: <20201106220750.3949423-1-kafai@fb.com> <20201106220803.3950648-1-kafai@fb.com>
+ <CAEf4BzaQMcnALQ3rPErQJxVjL-Mi8zB8aSBkL8bkR8mtivro+g@mail.gmail.com>
+ <20201107015225.o7hm7oxpndqueae4@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzbRXvWdEXC3GdT4Q_dYe6=VPymyDws5QV8wLkdnSONghQ@mail.gmail.com>
+ <5fa9a741dc362_8c0e20827@john-XPS-13-9370.notmuch> <CACYkzJ4Jdabs5ot7TnHmeq2x+ULhuPuw8wwbR2gQzi22c3N_7A@mail.gmail.com>
+ <20201110234325.kk7twlyu5ejvde6e@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZs+5xdA0ZEct6cXSgF294RATnn8TmAfaJrBX+kvc6Gxg@mail.gmail.com> <20201111000651.fmsuax3fuzcn5v6s@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201111000651.fmsuax3fuzcn5v6s@kafai-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 10 Nov 2020 16:17:06 -0800
+Message-ID: <CAEf4BzY0nCXaShyxivyvC0zqGo=JSDazAOGoHVUrr4Dv2Lugiw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/3] bpf: Allow using bpf_sk_storage in FENTRY/FEXIT/RAW_TP
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     KP Singh <kpsingh@chromium.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, we may set the tunnel option flag when the size of metadata
-is zero.  For example, we set TUNNEL_GENEVE_OPT in the receive function
-no matter the geneve option is present or not.  As this may result in
-issues on the tunnel flags consumers, this patch fixes the issue.
+On Tue, Nov 10, 2020 at 4:07 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Tue, Nov 10, 2020 at 03:53:13PM -0800, Andrii Nakryiko wrote:
+> > On Tue, Nov 10, 2020 at 3:43 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > On Tue, Nov 10, 2020 at 11:01:12PM +0100, KP Singh wrote:
+> > > > On Mon, Nov 9, 2020 at 9:32 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > > > >
+> > > > > Andrii Nakryiko wrote:
+> > > > > > On Fri, Nov 6, 2020 at 5:52 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > > > >
+> > > > > > > On Fri, Nov 06, 2020 at 05:14:14PM -0800, Andrii Nakryiko wrote:
+> > > > > > > > On Fri, Nov 6, 2020 at 2:08 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > > > > > >
+> > > > > > > > > This patch enables the FENTRY/FEXIT/RAW_TP tracing program to use
+> > > > > > > > > the bpf_sk_storage_(get|delete) helper, so those tracing programs
+> > > > > > > > > can access the sk's bpf_local_storage and the later selftest
+> > > > > > > > > will show some examples.
+> > > > > > > > >
+> > > > > > > > > The bpf_sk_storage is currently used in bpf-tcp-cc, tc,
+> > > > > > > > > cg sockops...etc which is running either in softirq or
+> > > > > > > > > task context.
+> > > > > > > > >
+> > > > > > > > > This patch adds bpf_sk_storage_get_tracing_proto and
+> > > > > > > > > bpf_sk_storage_delete_tracing_proto.  They will check
+> > > > > > > > > in runtime that the helpers can only be called when serving
+> > > > > > > > > softirq or running in a task context.  That should enable
+> > > > > > > > > most common tracing use cases on sk.
+> > > > > > > > >
+> > > > > > > > > During the load time, the new tracing_allowed() function
+> > > > > > > > > will ensure the tracing prog using the bpf_sk_storage_(get|delete)
+> > > > > > > > > helper is not tracing any *sk_storage*() function itself.
+> > > > > > > > > The sk is passed as "void *" when calling into bpf_local_storage.
+> > > > > > > > >
+> > > > > > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > > > > > ---
+> > > > > > > > >  include/net/bpf_sk_storage.h |  2 +
+> > > > > > > > >  kernel/trace/bpf_trace.c     |  5 +++
+> > > > > > > > >  net/core/bpf_sk_storage.c    | 73 ++++++++++++++++++++++++++++++++++++
+> > > > > > > > >  3 files changed, 80 insertions(+)
+> > > > > > > > >
+> > > > > > > >
+> > > > > > > > [...]
+> > > > > > > >
+> > > > > > > > > +       switch (prog->expected_attach_type) {
+> > > > > > > > > +       case BPF_TRACE_RAW_TP:
+> > > > > > > > > +               /* bpf_sk_storage has no trace point */
+> > > > > > > > > +               return true;
+> > > > > > > > > +       case BPF_TRACE_FENTRY:
+> > > > > > > > > +       case BPF_TRACE_FEXIT:
+> > > > > > > > > +               btf_vmlinux = bpf_get_btf_vmlinux();
+> > > > > > > > > +               btf_id = prog->aux->attach_btf_id;
+> > > > > > > > > +               t = btf_type_by_id(btf_vmlinux, btf_id);
+> > > > > > > > > +               tname = btf_name_by_offset(btf_vmlinux, t->name_off);
+> > > > > > > > > +               return !strstr(tname, "sk_storage");
+> > > > > > > >
+> > > > > > > > I'm always feeling uneasy about substring checks... Also, KP just
+> > > > > > > > fixed the issue with string-based checks for LSM. Can we use a
+> > > > > > > > BTF_ID_SET of blacklisted functions instead?
+> > > > > > > KP one is different.  It accidentally whitelist-ed more than it should.
+> > > > > > >
+> > > > > > > It is a blacklist here.  It is actually cleaner and safer to blacklist
+> > > > > > > all functions with "sk_storage" and too pessimistic is fine here.
+> > > > > >
+> > > > > > Fine for whom? Prefix check would be half-bad, but substring check is
+> > > > > > horrible. Suddenly "task_storage" (and anything related) would be also
+> > > > > > blacklisted. Let's do a prefix check at least.
+> > > > > >
+> > > > >
+> > > > > Agree, prefix check sounds like a good idea. But, just doing a quick
+> > > > > grep seems like it will need at least bpf_sk_storage and sk_storage to
+> > > > > catch everything.
+> > > >
+> > > > Is there any reason we are not using BTF ID sets and an allow list similar
+> > > > to bpf_d_path helper? (apart from the obvious inconvenience of
+> > > > needing to update the set in the kernel)
+> > > It is a blacklist here, a small recap from commit message.
+> > >
+> > > > During the load time, the new tracing_allowed() function
+> > > > will ensure the tracing prog using the bpf_sk_storage_(get|delete)
+> > > > helper is not tracing any *sk_storage*() function itself.
+> > > > The sk is passed as "void *" when calling into bpf_local_storage.
+> > >
+> > > Both BTF_ID and string-based (either prefix/substr) will work.
+> > >
+> > > The intention is to first disallow a tracing program from tracing
+> > > any function in bpf_sk_storage.c and also calling the
+> > > bpf_sk_storage_(get|delete) helper at the same time.
+> > > This blacklist can be revisited later if there would
+> > > be a use case in some of the blacklist-ed
+> > > functions (which I doubt).
+> > >
+> > > To use BTF_ID, it needs to consider about if the current (and future)
+> > > bpf_sk_storage function can be used in BTF_ID or not:
+> > > static, global/external, or inlined.
+> > >
+> > > If BTF_ID is the best way for doing all black/white list, I don't mind
+> > > either.  I could force some to inline and we need to remember
+> > > to revisit the blacklist when the scope of fentry/fexit tracable
+> > > function changed, e.g. when static function becomes traceable
+> >
+> > You can consider static functions traceable already. Arnaldo landed a
+> > change a day or so ago in pahole that exposes static functions in BTF
+> > and makes it possible to fentry/fexit attach them.
+> Good to know.
+>
+> Is all static traceable (and can be used in BTF_ID)?
 
-Related discussion:
-* https://lore.kernel.org/netdev/1604448694-19351-1-git-send-email-yihung.wei@gmail.com/T/#u
+Only those that end up not inlined, I think. Similarly as with
+kprobes. pahole actually checks mcount section to keep only those that
+are attachable with ftrace. See [0] for patches.
 
-Fixes: 256c87c17c53 ("net: check tunnel option type in tunnel flags")
-Signed-off-by: Yi-Hung Wei <yihung.wei@gmail.com>
----
- drivers/net/geneve.c     | 3 +--
- include/net/ip_tunnels.h | 7 ++++---
- 2 files changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index d07008a818df..1426bfc009bc 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -224,8 +224,7 @@ static void geneve_rx(struct geneve_dev *geneve, struct geneve_sock *gs,
- 	if (ip_tunnel_collect_metadata() || gs->collect_md) {
- 		__be16 flags;
- 
--		flags = TUNNEL_KEY | TUNNEL_GENEVE_OPT |
--			(gnvh->oam ? TUNNEL_OAM : 0) |
-+		flags = TUNNEL_KEY | (gnvh->oam ? TUNNEL_OAM : 0) |
- 			(gnvh->critical ? TUNNEL_CRIT_OPT : 0);
- 
- 		tun_dst = udp_tun_rx_dst(skb, geneve_get_sk_family(gs), flags,
-diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-index 02ccd32542d0..61620677b034 100644
---- a/include/net/ip_tunnels.h
-+++ b/include/net/ip_tunnels.h
-@@ -478,9 +478,11 @@ static inline void ip_tunnel_info_opts_set(struct ip_tunnel_info *info,
- 					   const void *from, int len,
- 					   __be16 flags)
- {
--	memcpy(ip_tunnel_info_opts(info), from, len);
- 	info->options_len = len;
--	info->key.tun_flags |= flags;
-+	if (len > 0) {
-+		memcpy(ip_tunnel_info_opts(info), from, len);
-+		info->key.tun_flags |= flags;
-+	}
- }
- 
- static inline struct ip_tunnel_info *lwt_tun_info(struct lwtunnel_state *lwtstate)
-@@ -526,7 +528,6 @@ static inline void ip_tunnel_info_opts_set(struct ip_tunnel_info *info,
- 					   __be16 flags)
- {
- 	info->options_len = 0;
--	info->key.tun_flags |= flags;
- }
- 
- #endif /* CONFIG_INET */
--- 
-2.7.4
-
+  [0] https://patchwork.kernel.org/project/netdevbpf/list/?series=379377&state=*
