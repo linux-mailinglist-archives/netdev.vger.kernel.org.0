@@ -2,51 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01BE02AE55B
-	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 02:13:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D9F2AE55F
+	for <lists+netdev@lfdr.de>; Wed, 11 Nov 2020 02:14:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732052AbgKKBNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Nov 2020 20:13:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53070 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730254AbgKKBNO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Nov 2020 20:13:14 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A665121D46;
-        Wed, 11 Nov 2020 01:13:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605057194;
-        bh=16HYItG66V6WU6c8Fdsuoluq41PtqwCa8Bv4xeZylqU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JtN9dD0rF8ioMSqxieYhOX4Mr+CeKMan82/WjchZ9p/arWP7hUmdGCmiLeZFhddxc
-         4Em1rQ7s2BGmpre8+UdEjk8U817DN3ceiKhYiY6DQXEsSKijGrRx9FnXWHeKrgNuVN
-         NqjUuzP86XY32cEikSUSSJJIulzQeNoux9ieZgXo=
-Date:   Tue, 10 Nov 2020 17:13:12 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>
-Subject: Re: [PATCH V2 net-next 01/11] net: hns3: add support for
- configuring interrupt quantity limiting
-Message-ID: <20201110171312.66a031a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1604892159-19990-2-git-send-email-tanhuazhong@huawei.com>
-References: <1604892159-19990-1-git-send-email-tanhuazhong@huawei.com>
-        <1604892159-19990-2-git-send-email-tanhuazhong@huawei.com>
+        id S1732573AbgKKBO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Nov 2020 20:14:26 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7627 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731746AbgKKBOW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Nov 2020 20:14:22 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CW6FW4x09zLx6D;
+        Wed, 11 Nov 2020 09:14:07 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 11 Nov 2020 09:14:17 +0800
+From:   Tian Tao <tiantao6@hisilicon.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] vhost_vdpa: switch to vmemdup_user()
+Date:   Wed, 11 Nov 2020 09:14:48 +0800
+Message-ID: <1605057288-60400-1-git-send-email-tiantao6@hisilicon.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Nov 2020 11:22:29 +0800 Huazhong Tan wrote:
-> +	if (rx_vector->tx_group.coal.ql_enable)
-                       ^^^^^^^^
+Replace opencoded alloc and copy with vmemdup_user()
 
-Is this supposed to be rx_group, not tx?
+Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
+---
+ drivers/vhost/vdpa.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-> +		hns3_set_vector_coalesce_rx_ql(rx_vector,
-> +					       rx_vector->rx_group.coal.int_ql);
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 2754f30..4c39583 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -245,14 +245,10 @@ static long vhost_vdpa_set_config(struct vhost_vdpa *v,
+ 		return -EFAULT;
+ 	if (vhost_vdpa_config_validate(v, &config))
+ 		return -EINVAL;
+-	buf = kvzalloc(config.len, GFP_KERNEL);
+-	if (!buf)
+-		return -ENOMEM;
+ 
+-	if (copy_from_user(buf, c->buf, config.len)) {
+-		kvfree(buf);
+-		return -EFAULT;
+-	}
++	buf = vmemdup_user(c->buf, config.len);
++	if (IS_ERR(buf))
++		return PTR_ERR(buf);
+ 
+ 	ops->set_config(vdpa, config.off, buf, config.len);
+ 
+-- 
+2.7.4
+
