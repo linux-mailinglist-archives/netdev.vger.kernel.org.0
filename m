@@ -2,154 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A31E02B047B
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 12:56:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED7BC2B0493
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 12:58:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728091AbgKLLzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 06:55:38 -0500
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:42409 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728039AbgKLLvk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 06:51:40 -0500
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20201112115119euoutp02ad7f467f97dfe9b3f735714694aae2b2~GwGokL6s82634826348euoutp02c
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 11:51:19 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20201112115119euoutp02ad7f467f97dfe9b3f735714694aae2b2~GwGokL6s82634826348euoutp02c
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1605181879;
-        bh=4fyCws4IJ/FYfmeubIZmsDv7F8YQu+sqPMRSahhjyO0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WIABk/WVPSsfmKxGDP+YL7BdAwi5vx82B31q2T3UK2+SJVh8L8kUe/RSAfa1zqjUQ
-         EogI1a8Fw473fxmv+EQGRABUKwFpCMPxksgd1YOvLsJRKn+Fin5RLVbOrsTfKhdYwp
-         zVXgP9DRhglFcfquS/iAKoZu8EWT/m2gJ70QzMbs=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20201112115110eucas1p2d1dd008558d1f4ed3684ce050c0238c2~GwGgMO08L2190821908eucas1p2d;
-        Thu, 12 Nov 2020 11:51:10 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id 3B.E6.27958.EA12DAF5; Thu, 12
-        Nov 2020 11:51:10 +0000 (GMT)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20201112115109eucas1p190980b0cfd73d205d5fbc1b9bdd97214~GwGflQEs42862728627eucas1p1m;
-        Thu, 12 Nov 2020 11:51:09 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20201112115109eusmtrp1cf3063c4a34d98eb9646b431872356b6~GwGfkV-zq1853418534eusmtrp1R;
-        Thu, 12 Nov 2020 11:51:09 +0000 (GMT)
-X-AuditID: cbfec7f2-efdff70000006d36-4e-5fad21aed13b
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 64.B7.16282.DA12DAF5; Thu, 12
-        Nov 2020 11:51:09 +0000 (GMT)
-Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20201112115109eusmtip198c7ec6cdce933431d0ca1a56145255e~GwGfXrHyW0079100791eusmtip1D;
-        Thu, 12 Nov 2020 11:51:09 +0000 (GMT)
-From:   =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>
-To:     Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Cc:     =?UTF-8?q?Bart=C5=82omiej=20=C5=BBolnierkiewicz?= 
-        <b.zolnierkie@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>
-Subject: [PATCH v6 5/5] ARM: defconfig: Enable ax88796c driver
-Date:   Thu, 12 Nov 2020 12:51:06 +0100
-Message-Id: <20201112115106.16224-6-l.stelmach@samsung.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201112115106.16224-1-l.stelmach@samsung.com>
+        id S1728251AbgKLL6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 06:58:06 -0500
+Received: from smtp-o-3.desy.de ([131.169.56.156]:53589 "EHLO smtp-o-3.desy.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728337AbgKLL6F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 06:58:05 -0500
+X-Greylist: delayed 339 seconds by postgrey-1.27 at vger.kernel.org; Thu, 12 Nov 2020 06:58:03 EST
+Received: from smtp-buf-3.desy.de (smtp-buf-3.desy.de [IPv6:2001:638:700:1038::1:a6])
+        by smtp-o-3.desy.de (Postfix) with ESMTP id 101E8605AF
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 12:52:19 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp-o-3.desy.de 101E8605AF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=desy.de; s=default;
+        t=1605181939; bh=43y3Y53ssiHMHjx6vPCvKqbXwna9ag1nGRQzRu/sm7U=;
+        h=To:From:Subject:Cc:Date:From;
+        b=r/t1wH1TKAbhiXhVm7YBtrFMpbJO3ZTZ+AqjJ9DA7xKk5EFc4shXfrgTWYr45OkKg
+         CIUxwc78ydx+/SyEOIJzUV5/axUHKx/DFopeIEFMWQg1jzCTGgArgXthtMW/uYOjK2
+         93gI/UNa6pbL1l1IDek3iFH8HdvJtqvugjIZdkEA=
+Received: from smtp-m-3.desy.de (smtp-m-3.desy.de [IPv6:2001:638:700:1038::1:83])
+        by smtp-buf-3.desy.de (Postfix) with ESMTP id 0C29BA0586
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 12:52:19 +0100 (CET)
+X-Virus-Scanned: amavisd-new at desy.de
+Received: from [131.169.146.66] (lb-56-26.desy.de [131.169.56.26])
+        by smtp-intra-2.desy.de (Postfix) with ESMTP id D7F821001A7;
+        Thu, 12 Nov 2020 12:52:18 +0100 (CET)
+To:     netdev@vger.kernel.org
+From:   Vladimir Rybnikov <vladimir.rybnikov@desy.de>
+Subject: Problems with multicast delivery to application layer after kernel
+ 4.4.0-128
+Cc:     Vladimir Rybnikov <vladimir.rybnikov@desy.de>
+Message-ID: <f1b698a6-fd3b-4860-62d1-91d3f39d6d45@desy.de>
+Date:   Thu, 12 Nov 2020 12:52:18 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Organization: Samsung R&D Institute Poland
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrLKsWRmVeSWpSXmKPExsWy7djPc7rrFNfGG3w+y2tx/u4hZouNM9az
-        Wsw538JiMf/IOVaLRe9nsFpce3uH1aL/8Wtmi/PnN7BbXNjWx2px89AKRotNj6+xWlzeNYfN
-        Ysb5fUwWh6buZbRYe+Quu8WxBWIWrXuPsDsIely+dpHZY8vKm0weO2fdZffYtKqTzWPzknqP
-        nTs+M3n0bVnF6PF5k1wARxSXTUpqTmZZapG+XQJXRs/uC2wFrZwVGyasYG5g/M3excjBISFg
-        InGsz6KLkYtDSGAFo8S8G6+ZIZwvjBLXN8A4nxklJi05A9dx9l8+RHw5o8TVpgamLkZOIOc5
-        o0TDaVUQm03AUaJ/6QlWkCIRgXvMEuvbHzCCOMwC+xgldt6bwgxSJSxgJ7Hl2XZmkKksAqoS
-        c/tjQMK8AtYSXxufsYPYEgLyEu3Lt7OB2JwCNhJLb15kh6gRlDg58wkLiM0voCWxpuk6mM0M
-        VN+8dTYzRO9uTomnd3IgbBeJddMWskDYwhKvjm+Bmi8jcXpyDwvEY/USkyeZgZwpIdDDKLFt
-        zg+oemuJO+d+sYHUMAtoSqzfpQ8RdpRonXkTGiZ8EjfeCkJcwCcxadt0Zogwr0RHmxBEtYrE
-        uv49UAOlJHpfrWCcwKg0C8kvs5DcPwth1wJG5lWM4qmlxbnpqcWGeanlesWJucWleel6yfm5
-        mxiBKe70v+OfdjDOffVR7xAjEwfjIUYJDmYlEV5lhzXxQrwpiZVVqUX58UWlOanFhxilOViU
-        xHlXzQZKCaQnlqRmp6YWpBbBZJk4OKUamKQjk+4JlK0rLTpdW+M+JUybUX32pz93cr5EnRG/
-        t2z2+igezeKf/jJyNwSvdayZd6ZHO3X6H95kowX7jLQDJh6/cp09nXNLKndDe0KgZ5/Ijvn2
-        Vzp79tWqZIbFzHNwVRLrYa+/trjq0WZ1ydXt/ofnTG1ZF7amwNl08f1rwrsNZtYn+pgf/NW/
-        /mDWHJXrSd8CpkaW3rqh4dh8IkRnfcv2GXw9l8Lm5D/6zmxQ92UlK2Ppnz/Wx4rydjCZ3fuf
-        M+PRw/j3iW+8lvHmrd3VU9gTJn5H3I7zgX+/8ISJImlPXU9zH3y40PSI84Qdi/+l6v472he8
-        aRln4KsTM1SUHlQevLPum75TUadO8iyza0osxRmJhlrMRcWJAPPgw17gAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrAIsWRmVeSWpSXmKPExsVy+t/xu7prFdfGG8xepWxx/u4hZouNM9az
-        Wsw538JiMf/IOVaLRe9nsFpce3uH1aL/8Wtmi/PnN7BbXNjWx2px89AKRotNj6+xWlzeNYfN
-        Ysb5fUwWh6buZbRYe+Quu8WxBWIWrXuPsDsIely+dpHZY8vKm0weO2fdZffYtKqTzWPzknqP
-        nTs+M3n0bVnF6PF5k1wAR5SeTVF+aUmqQkZ+cYmtUrShhZGeoaWFnpGJpZ6hsXmslZGpkr6d
-        TUpqTmZZapG+XYJeRs/uC2wFrZwVGyasYG5g/M3excjBISFgInH2X34XIxeHkMBSRok/jTtZ
-        IOJSEivnpncxcgKZwhJ/rnWxQdQ8ZZS42jeHDSTBJuAo0b/0BCtIQkTgDbNE07237CAOs8A+
-        Ron9Rxezg1QJC9hJbHm2nRlkKouAqsTc/hiQMK+AtcTXxmfsEBvkJdqXbwcbyilgI7H05kWw
-        uBBQTevMz+wQ9YISJ2c+ATuOWUBdYv08IZAwv4CWxJqm6ywgNjPQmOats5knMArNQtIxC6Fj
-        FpKqBYzMqxhFUkuLc9Nzi430ihNzi0vz0vWS83M3MQKjetuxn1t2MK589VHvECMTB+MhRgkO
-        ZiURXmWHNfFCvCmJlVWpRfnxRaU5qcWHGE2BHpvILCWanA9MK3kl8YZmBqaGJmaWBqaWZsZK
-        4rwmR4CaBNITS1KzU1MLUotg+pg4OKUamEJ+rzh14WuC/fQSiYtSu1aaWBd9Xnul2lh6rX7b
-        7MbrBU+dHnj/skkLb/+4dEFzwVH/ngcnZ22xUa+4fVtPLbpE75zNajv93tI/vj7cs1wjFI/3
-        PV+WfZv1i7CC7QGVgz+PXWFZ3v8jyfiqrnjz9+NfihUyf86YoHVvPjvvnFjnvta6/DvNPsZL
-        Hz44bZ+2vcP8XmH1av7fj2PWd8gdVbnzNU/j8Q/hsN++Cu2H3X9sks164GuyZsrRO+vWnmh2
-        V/3y55lHkVNpYqOlQptj5APnaXysn86w/o4Puey5Pvn3JztWj9uXlqjuSHhqkZB4uUrQVb4s
-        6WSSQi/vv+W7K5f+Wnntn91a3W+dE6cIOCmxFGckGmoxFxUnAgC6heBmcwMAAA==
-X-CMS-MailID: 20201112115109eucas1p190980b0cfd73d205d5fbc1b9bdd97214
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20201112115109eucas1p190980b0cfd73d205d5fbc1b9bdd97214
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20201112115109eucas1p190980b0cfd73d205d5fbc1b9bdd97214
-References: <20201112115106.16224-1-l.stelmach@samsung.com>
-        <CGME20201112115109eucas1p190980b0cfd73d205d5fbc1b9bdd97214@eucas1p1.samsung.com>
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable ax88796c driver for the ethernet chip on Exynos3250-based
-ARTIK5 boards.
+Dear Linux kerenl-network experts,
 
-Signed-off-by: Łukasz Stelmach <l.stelmach@samsung.com>
----
- arch/arm/configs/exynos_defconfig   | 2 ++
- arch/arm/configs/multi_v7_defconfig | 2 ++
- 2 files changed, 4 insertions(+)
 
-diff --git a/arch/arm/configs/exynos_defconfig b/arch/arm/configs/exynos_defconfig
-index cf82c9d23a08..1ee902d01eef 100644
---- a/arch/arm/configs/exynos_defconfig
-+++ b/arch/arm/configs/exynos_defconfig
-@@ -107,6 +107,8 @@ CONFIG_MD=y
- CONFIG_BLK_DEV_DM=y
- CONFIG_DM_CRYPT=m
- CONFIG_NETDEVICES=y
-+CONFIG_NET_VENDOR_ASIX=y
-+CONFIG_SPI_AX88796C=y
- CONFIG_SMSC911X=y
- CONFIG_USB_RTL8150=m
- CONFIG_USB_RTL8152=y
-diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-index e731cdf7c88c..dad53846f58f 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -243,6 +243,8 @@ CONFIG_SATA_HIGHBANK=y
- CONFIG_SATA_MV=y
- CONFIG_SATA_RCAR=y
- CONFIG_NETDEVICES=y
-+CONFIG_NET_VENDOR_ASIX=y
-+CONFIG_SPI_AX88796C=m
- CONFIG_VIRTIO_NET=y
- CONFIG_B53_SPI_DRIVER=m
- CONFIG_B53_MDIO_DRIVER=m
+I work at DESY (Hamburg, Germany), and is responsible for Data Acquisition (DAQ) from different accelerators and experiments.
+
+
+Every DAQ collects data over the network. UDP multicast is used to transfer the data. Every data source has a multicast sender (~ 200 instances). A Dell PowerEdge R730xd server (DAQ server: 256 GB RAM, 40 Cores) is used for the data receiving. The DAQ server has several 10Gb network adapters in different sub-nets to receive multicast from the senders sitting in the corresponding sub-nets.
+
+Every sender is pushing data via a UDP socket bound to a multicast address. The data sending takes place every 100ms (10Hz),
+
+The size of data can vary from some bytes up to several MB.
+The data is split into 32KB messages sent via the UDP socket.
+
+A multi-threaded fast collector runs on the DAQ server to receive the data.
+
+
+We have found and successfully used the values of the kernel parameters to minimize packet losses on all network stack layers till the kernel 4.4.0-128.
+
+
+Since one year (after trying to switch to other kernels kernel 4.4.0-xxx [sorry I cannot say what xxx was, but after 128], 4.6 .. ) we have a problem that looks like losses on the application layer.
+
+
+In my current test 2 network interfaces are used. The multicast input rate is ~ 140MB/s for each interface.
+
+
+
+  I'm testing kernel 5.6.0-1032-oem.
+Previously kernel 5.4.0-52-generic was tested but with the same results.
+
+The signature is the following:
+1) no Rx looses in adapters
+2) no counting InErrors RcvbufErrors InCsumErrors in /proc/net/snmp
+3) no counts in any column but 0 in /proc/net/softnet_stat
+
+The losses show up in bursts from time to time.
+4) dropwatch shows "xxx drops in at ip_defrag+171 ..."
+
+
+Putting it in one line:n my current test 2 network interfaces are used. The multicast input rate is ~ 140MB/s for each interface.
+
+Multicast packages are seen by the network adapters but the application layer from time to time doesn't get them  simultaneously from all senders.
+
+Here are some sysctl parameters  currently used values, I'm aware of, that could
+influence on the losses level.
+
+net.core.optmem_max = 40960
+net.core.rmem_default = 16777216
+net.core.rmem_max = 67108864
+net.core.wmem_default = 212992
+net.core.wmem_max = 212992
+net.ipv4.igmp_max_memberships = 512
+net.ipv4.udp_mem = 262144    327680    393216
+net.ipv4.udp_rmem_min = 8192
+net.ipv4.udp_wmem_min = 4096
+
+net.core.netdev_budget = 100000
+net.core.netdev_max_backlog = 100000
+net.ipv4.ipfrag_high_thresh = 33554432
+net.ipv4.ipfrag_low_thresh = 16777216
+
+All other parameters are without changes as they come with the kernel distribution.
+
+We plan to switch to Ubuntu 20.04 next year, and therefore kernel 5.4(6) is going to be used.
+
+
+I hope that this problem is solvable on the kernel level.
+
+
+Many thanks in advance and best regards,
+
+Vladimir
+
 -- 
-2.26.2
+>/*********************************************************************\
+>* Dr. Vladimir Rybnikov      Phone : [49] (40) 8998 4846              *
+>* FLA/MCS4                   Fax   : [49] (40) 8998 4448              *
+>* Geb. 55a/35                e-mail: Vladimir.Rybnikov@desy.de        *
+>*                            WWW   : http://www.desy.de/~rybnikov/    * 
+>+                                                                     +
+>* Notkestr.85, DESY                                                   *
+>* D-22607 Hamburg, Germany                                            *
+>\*********************************************************************/
 
