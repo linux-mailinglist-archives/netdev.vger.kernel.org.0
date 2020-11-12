@@ -2,121 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ACEB2B11C8
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 23:37:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DEC72B11F1
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 23:42:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbgKLWhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 17:37:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38266 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727708AbgKLWge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 17:36:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605220593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XhgHn2WJtZkLF+ApGVLkt0XduVBcSMTHxp7BqhQwEiI=;
-        b=f/bzZU57CajRBXsk7gDkfhI7QcXO6yMiOP/vFDlToE+4UzOTexVdHztAAOyqO7RsTa4mat
-        o2sK4kEXuhgmZ/Oi9+hxXzLwUdoQOUySj4eqZHGCUQMcyH/8bFvnhc3sQ2fV8zPl0yoagy
-        eV7kgFx+Zap5N4iH5qmyKE1T71QF6DA=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-391-ZWCFdUiXNGe3qSyfDt-1wg-1; Thu, 12 Nov 2020 17:36:31 -0500
-X-MC-Unique: ZWCFdUiXNGe3qSyfDt-1wg-1
-Received: by mail-wr1-f72.google.com with SMTP id y2so2693187wrl.3
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 14:36:31 -0800 (PST)
+        id S1726751AbgKLWmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 17:42:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbgKLWmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 17:42:46 -0500
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99265C0613D1;
+        Thu, 12 Nov 2020 14:42:46 -0800 (PST)
+Received: by mail-ej1-x644.google.com with SMTP id o21so10467037ejb.3;
+        Thu, 12 Nov 2020 14:42:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9uIFbwY/aDvICNOe+dyohdf9CD3ZKiy5rbtal4KyUec=;
+        b=hjPH1IEw1q+48yggnNsF0VvIje/fklJ3N7wK+2z/3QoXaIF0jkRaPsI7j4pYhQwYsZ
+         VQyG1v1ZssLr9Wk0a2Pk2O6RQv1oAb0FreplX9u6BqtWNIk02b8q/LN73YncotR/mp4H
+         L/AeE1jpV3bqEx9ZmaWkEdIAgQ7MQK2hdiawdYJn8Bs0Jg4flolUQtLuXtyDP/on9Sh+
+         FoKjoY6Jz3A9hy++UBKD6rtmqtnxQzNzZh/F49HwrZ9MjkdD6VKUTUcVF7aSE/v0BYqj
+         2fvBTfaATdra26erg0hmMbpTqTPdleYryX4i4YLZ0IDUOhg6iP8KpL0zGAWzNhKmrwtr
+         UTqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=XhgHn2WJtZkLF+ApGVLkt0XduVBcSMTHxp7BqhQwEiI=;
-        b=cIqTkor+YW7xYMeGoVHcdfhDDj7OkdnBuzdF9RvrSlHXL5fI/thkf0t76kICQ+nlri
-         bTEXbHQ5bdFLqnPEk5Jt/KotoQoiPWpgi09LoiFEuUd5AJpvCkEkQGTTSKvJ+7qjDj4d
-         z4010hOsL0bL+kDghOltqXcVKF9LFyZDo97hzKC3UqD5fmnQZDHyVTxtHtDFR8NGs59l
-         3rpmboDJBfWNnmUGBMo1J06OFr402F9b1PreHHNSXpGv96DIQJFCXTZy00iklFVjyhAn
-         KaOQVigwnXbuUSsEXzSpBLISyqF3CF8JqESveZCTBvyDWE9UZffTrAudlO/XE1d1HLYY
-         2B9w==
-X-Gm-Message-State: AOAM5308wJBjfewonR8MlI56y9IEq7ui+6Zp7XFnuGkUrUjy4u8buCUB
-        +rEvYSZqKZE3lc5GJEH8CzgOmKL0XdLc/IRyHhdB677AtnuziPzMCb4RdJU+kSkiBjjklrZwQZc
-        oYcbwLg9LPqFh+gCw
-X-Received: by 2002:a5d:5643:: with SMTP id j3mr2011653wrw.43.1605220589963;
-        Thu, 12 Nov 2020 14:36:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw5B1dz4Y5fMvfHGo7//UMwx0YvrMv+zb6yd42EN8mu+BvkRseRV5thcGxkng82q5Gf+Ffp3w==
-X-Received: by 2002:a5d:5643:: with SMTP id j3mr2011535wrw.43.1605220588373;
-        Thu, 12 Nov 2020 14:36:28 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id f13sm3157112wrq.78.2020.11.12.14.36.27
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9uIFbwY/aDvICNOe+dyohdf9CD3ZKiy5rbtal4KyUec=;
+        b=sMZOC+fk6GmHt/mbQ8DoqGFUk9gTRt2noHaOsp+BOLfMLBfgzkuehPJ07WrAinQma+
+         EL88cW/zRSWTzD2oUqQmhvoXbf1RXkduKCWWzJelZG4BwAfFDmNFHB2zdS/Xv41gZbCM
+         29DOcDI4d/Xm9LFZ3g/kc5HJ5o/jTKRAOSs/jhlc1+3fVwLKXb77M2sza4WIBd/54HrE
+         dO+Di5pe4ZyEqlxqDZsBUQUfax47T6tASUe9g7EgMHBxW8ZRi8eFPJ/dT7/tu8AyFCQy
+         PYHCcX6qn9m1teZE/sN4ARBERFpiOMO+gxpNipi2KLJPo6cvjlDipQH+FHaA5HlOypZw
+         TWmA==
+X-Gm-Message-State: AOAM5334Qk3qmTftvvk5nQP/bMHqpX3NzY/2K2mSPbIY58vPC3yCWhXi
+        Ly9EZGgq3RpV6j37mcAU7Sg=
+X-Google-Smtp-Source: ABdhPJw5fghN6w0IhVQiMzse9ol5oPT0cUSXq/kHBww2IzCqi3fWdmBvVsqtoR/WQaBMN3AnXl60YQ==
+X-Received: by 2002:a17:907:2063:: with SMTP id qp3mr1642255ejb.314.1605220965351;
+        Thu, 12 Nov 2020 14:42:45 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id p1sm2944791edx.4.2020.11.12.14.42.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2020 14:36:27 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id EDE5A1833E9; Thu, 12 Nov 2020 23:36:25 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: Re: [PATCHv3 iproute2-next 0/5] iproute2: add libbpf support
-In-Reply-To: <321a2728-7a43-4a48-fe97-dab45b76e6fb@iogearbox.net>
-References: <CAADnVQKu7usDXbwwcjKChcs0NU3oP0deBsGGEavR_RuPkht74g@mail.gmail.com>
- <07f149f6-f8ac-96b9-350d-b289ef16d82f@solarflare.com>
- <CAEf4BzaSfutBt3McEPjmu_FyxyzJa_xVGfhP_7v0oGuqG_HBEw@mail.gmail.com>
- <20201106094425.5cc49609@redhat.com>
- <CAEf4Bzb2fuZ+Mxq21HEUKcOEba=rYZHc+1FTQD98=MPxwj8R3g@mail.gmail.com>
- <CAADnVQ+S7fusZ6RgXBKJL7aCtt3jpNmCnCkcXd0fLayu+Rw_6Q@mail.gmail.com>
- <20201106152537.53737086@hermes.local>
- <45d88ca7-b22a-a117-5743-b965ccd0db35@gmail.com>
- <20201109014515.rxz3uppztndbt33k@ast-mbp>
- <14c9e6da-e764-2e2c-bbbb-bc95992ed258@gmail.com>
- <20201111004749.r37tqrhskrcxjhhx@ast-mbp> <874klwcg1p.fsf@toke.dk>
- <321a2728-7a43-4a48-fe97-dab45b76e6fb@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 12 Nov 2020 23:36:25 +0100
-Message-ID: <871rgy8aom.fsf@toke.dk>
+        Thu, 12 Nov 2020 14:42:44 -0800 (PST)
+Date:   Fri, 13 Nov 2020 00:42:43 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 02/11] net: dsa: microchip: support for
+ "ethernet-ports" node
+Message-ID: <20201112224243.u6oxe4gnfrv7onkz@skbuf>
+References: <20201112153537.22383-1-ceggers@arri.de>
+ <20201112153537.22383-3-ceggers@arri.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201112153537.22383-3-ceggers@arri.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
-
->> Besides, for the entire history of BPF support in iproute2 so far, the
->> benefit has come from all the features that libbpf has just started
->> automatically supporting on load (BTF, etc), so users would have
->> benefited from automatic library updates had it *not* been vendored in.
+On Thu, Nov 12, 2020 at 04:35:28PM +0100, Christian Eggers wrote:
+> The dsa.yaml device tree binding allows "ethernet-ports" (preferred) and
+> "ports".
 >
-> Not really. What you imply here is that we're living in a perfect
-> world and that all distros follow suite and i) add libbpf dependency
-> to their official iproute2 package, ii) upgrade iproute2 package along
-> with new kernel releases and iii) upgrade libbpf along with it so that
-> users are able to develop BPF programs against the feature set that
-> the kernel offers (as intended). These are a lot of moving parts to
-> get right, and as I pointed out earlier in the conversation, it took
-> major distros 2 years to get their act together to officially include
-> bpftool as a package - I'm not making this up, and this sort of pace
-> is simply not sustainable. It's also not clear whether distros will
-> get point iii) correct.
+> Signed-off-by: Christian Eggers <ceggers@arri.de>
+> ---
+>  drivers/net/dsa/microchip/ksz_common.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+> index 71cd1828e25d..a135fd5a9264 100644
+> --- a/drivers/net/dsa/microchip/ksz_common.c
+> +++ b/drivers/net/dsa/microchip/ksz_common.c
+> @@ -427,7 +427,9 @@ int ksz_switch_register(struct ksz_device *dev,
+>  		ret = of_get_phy_mode(dev->dev->of_node, &interface);
+>  		if (ret == 0)
+>  			dev->compat_interface = interface;
+> -		ports = of_get_child_by_name(dev->dev->of_node, "ports");
+> +		ports = of_get_child_by_name(dev->dev->of_node, "ethernet-ports");
+> +		if (!ports)
+> +			ports = of_get_child_by_name(dev->dev->of_node, "ports");
 
-I totally get that you've been frustrated with the distro adoption and
-packaging of BPF-related tools. And rightfully so. I just don't think
-that the answer to this is to try to work around distros, but rather to
-work with them to get things right.
+Man, I didn't think there could be something as uninspired as naming the
+private structure of your driver "dev"...
 
-I'm quite happy to take a shot at getting a cross-distro effort going in
-this space; really, having well-supported BPF tooling ought to be in
-everyone's interest!
+>  		if (ports)
+>  			for_each_available_child_of_node(ports, port) {
+>  				if (of_property_read_u32(port, "reg",
+> --
 
--Toke
+Either way:
 
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
