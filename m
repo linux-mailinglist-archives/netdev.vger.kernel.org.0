@@ -2,118 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D1BE2B07BB
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 15:45:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 934C32B07BF
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 15:46:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728089AbgKLOpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 09:45:52 -0500
-Received: from mga09.intel.com ([134.134.136.24]:17665 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727035AbgKLOpv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 09:45:51 -0500
-IronPort-SDR: lIVe/r462j8jyITzOGIbdcocDAEN6fmmCZul7dE6Ue88swB9F6lqvmUPONDpd+XG/HattSnd8h
- Q51QWE0iAaqA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9802"; a="170482625"
-X-IronPort-AV: E=Sophos;i="5.77,472,1596524400"; 
-   d="scan'208";a="170482625"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2020 06:45:40 -0800
-IronPort-SDR: TN6bxwzbqoYGyDaP16dmzETsNXxfLjUrZmlyuA3QZhGcua2QYvLEl45CisQXfDaha2T/zc7k3M
- +g4KmxpgfJyg==
-X-IronPort-AV: E=Sophos;i="5.77,472,1596524400"; 
-   d="scan'208";a="542280087"
-Received: from geigerri-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.34.175])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2020 06:45:36 -0800
-Subject: Re: [PATCH bpf-next 2/9] net: add SO_BUSY_POLL_BUDGET socket option
-To:     Eric Dumazet <edumazet@google.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        magnus.karlsson@intel.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        maciej.fijalkowski@intel.com,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        qi.z.zhang@intel.com, Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>, maximmi@nvidia.com
-References: <20201112114041.131998-1-bjorn.topel@gmail.com>
- <20201112114041.131998-3-bjorn.topel@gmail.com>
- <CANn89i+Zumgn+phZEYPb9yCQRrJ7UYh1wY7SBio6ykg2noYz2w@mail.gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <03a5a7d5-e5c9-5c61-8e8e-9393e8772d88@intel.com>
-Date:   Thu, 12 Nov 2020 15:45:35 +0100
+        id S1728211AbgKLOqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 09:46:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33524 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727035AbgKLOqb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 09:46:31 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A5AC0613D1
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 06:46:30 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id b6so6278200wrt.4
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 06:46:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6zx5VG+w350L0aBaDTEjKxbDXvVSoQiFTo4w5SMmtbc=;
+        b=MkeDhkcrJsywnKiUs76V44rpJfM8sZUqgACh3odS/U30Z+MUmfoHjA9582c0uLZBEU
+         K8L/A/Xkqr2vbSJ7tnXkrBoKDBl101C9x3WSsfCGdQPEBviwAQaJHq4CyQZT7/JjdwQF
+         eBzFlT1KaQwyHJsINVMDKRDaHQbjChECOzKKXArMwNvPLaP4CXzJtR66MkmjT5/4MOEX
+         Ih+Uwe2tl2QH+4KgG0Bu1HUcZkVo6egB0cZvi0pTTLzXONGPDro3Hqe/1D4JcsCuCERE
+         hVyFCmH2DKKr4eq31y7bwcGl1QNlkEC7yO946XkNSOycKqE2KPen17rLM+A3CxTfa21d
+         SxPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6zx5VG+w350L0aBaDTEjKxbDXvVSoQiFTo4w5SMmtbc=;
+        b=tqSJjDyZbven7sNcTKLAJAsPrQ0dJJFeyR91+YUZyPA1qbUalqNiqzuY6vqvVCxwMf
+         RKobNUBGKA7BM5ppUUKmarXdpOLJ7fExfG7a1dDAJICG1ZgNAlj/mP6w63yEDIVX8Sog
+         A8QgzcT2t0tmL9D4HjCFsAogp1QG8qUXmd8ugCImvv4j0BnLNviV7Ccy6w3lP3V/Rvbk
+         8H9aFyCMCVZD3ZNGf6Gy/dRNWLY8cf0eCKSceEowLJI7tO6E04HduHv2ODIPNElMdtZg
+         77Zu96hReIj61NEPvOWWO7557wvEsuMyJr3TDguZJKYmOXbU5aafzWaXZHjIuQuphn0f
+         EI1w==
+X-Gm-Message-State: AOAM531uouv3taioWHxY3CT/IK/EEL+QTM7OdxToV1fOa28DWnC9Q8W4
+        Mrb7TUJmRTtft2SGz1TwtUER0Qqi1VE=
+X-Google-Smtp-Source: ABdhPJxS7Z8puBcUvJBLEG2pMXoBE6p38jvGympiG4vZ5KCyjxg+MA/Qo4E+K8Q1GsQIqGHY1bdFqw==
+X-Received: by 2002:adf:f846:: with SMTP id d6mr19582315wrq.128.1605192389474;
+        Thu, 12 Nov 2020 06:46:29 -0800 (PST)
+Received: from [192.168.8.114] ([37.173.54.223])
+        by smtp.gmail.com with ESMTPSA id c2sm6834793wmf.47.2020.11.12.06.46.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Nov 2020 06:46:28 -0800 (PST)
+Subject: Re: net: fec: rx descriptor ring out of order
+To:     Kegl Rohit <keglrohit@gmail.com>,
+        David Laight <David.Laight@aculab.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+References: <CAMeyCbh8vSCnr-9-odi0kg3E8BGCiETOL-jJ650qYQdsY0wxeA@mail.gmail.com>
+ <CAMeyCbjuj2Q2riK2yzKXRfCa_mKToqe0uPXKxrjd6zJQWaXxog@mail.gmail.com>
+ <CAOMZO5CYVDmCh-qxeKw0eOW6docQYxhZ5WA6ruxjcP+aYR6=LA@mail.gmail.com>
+ <CAMeyCbhFfdONLEDYtqHxVZ59kBsH6vEaDBsvc5dWRinNY7RSgA@mail.gmail.com>
+ <ba3b594f-bfdb-c8d6-ea1e-508040cf0414@gmail.com>
+ <a3caa320811d4399808b6185dff79534@AcuMS.aculab.com>
+ <CAMeyCbhG7-dCr4bVWP=kNuwLa6CNB9h=SwN_kK7VbJ7YFCY2Ow@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a2659a6b-ce03-6df7-0017-8f49fd502555@gmail.com>
+Date:   Thu, 12 Nov 2020 15:46:26 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.2
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-In-Reply-To: <CANn89i+Zumgn+phZEYPb9yCQRrJ7UYh1wY7SBio6ykg2noYz2w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <CAMeyCbhG7-dCr4bVWP=kNuwLa6CNB9h=SwN_kK7VbJ7YFCY2Ow@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-12 15:36, Eric Dumazet wrote:
-> On Thu, Nov 12, 2020 at 12:41 PM Björn Töpel <bjorn.topel@gmail.com> wrote:
->>
->> From: Björn Töpel <bjorn.topel@intel.com>
->>
->> This option lets a user set a per socket NAPI budget for
->> busy-polling. If the options is not set, it will use the default of 8.
->>
->> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
->> ---
->>
-> 
-> ...
-> 
->>   #else /* CONFIG_NET_RX_BUSY_POLL */
->>   static inline unsigned long net_busy_loop_on(void)
->> @@ -106,7 +108,8 @@ static inline void sk_busy_loop(struct sock *sk, int nonblock)
->>
->>          if (napi_id >= MIN_NAPI_ID)
->>                  napi_busy_loop(napi_id, nonblock ? NULL : sk_busy_loop_end, sk,
->> -                              READ_ONCE(sk->sk_prefer_busy_poll));
->> +                              READ_ONCE(sk->sk_prefer_busy_poll),
->> +                              sk->sk_busy_poll_budget ?: BUSY_POLL_BUDGET);
-> 
-> Please use :
-> 
->         READ_ONCE(sk->sk_busy_poll_budget) ?: BUSY_POLL_BUDGET
-> 
-> Because sk_busy_loop() is usually called without socket lock being held.
-> 
-> This will prevent yet another KCSAN report.
-> 
->>   #endif
->>   }
->>
-> 
-> ...
-> 
->> --- a/net/core/sock.c
->> +++ b/net/core/sock.c
->> @@ -1165,6 +1165,16 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
->>                  else
->>                          sk->sk_prefer_busy_poll = valbool;
->>                  break;
->> +       case SO_BUSY_POLL_BUDGET:
->> +               if (val > sk->sk_busy_poll_budget && !capable(CAP_NET_ADMIN)) {
->> +                       ret = -EPERM;
->> +               } else {
->> +                       if (val < 0)
-> 
->                 if (val < 0 || val > (u16)~0)
-> 
->> +                               ret = -EINVAL;
->> +                       else
->> +                               sk->sk_busy_poll_budget = val;
-> 
-> 
->                                 WRITE_ONCE(sk->sk_busy_poll_budget, val);
->
-
-Thanks for the review! I'll address it all.
 
 
+On 11/12/20 12:56 PM, Kegl Rohit wrote:
+
+> Our kernel already has some patches like the wmb() for the rx path and
+> the rmb() for the tx path applied.
+
+Well, please do not claim you use 3.10.108 then. :/
+
+Really, there is no point for us trying to guess if one of your local change
+went wrong.
+
+I will stop trying to help right there.
