@@ -2,93 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FF1F2B0E86
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 20:54:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E50942B0E89
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 20:55:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726787AbgKLTyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 14:54:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59326 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726702AbgKLTyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 14:54:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605210881;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CFQzTySwNt2NOoQnXqVc/FjTwpXdtzoCtvmyjrkFsF0=;
-        b=ETNNxEOpt4vlcRupVUcFnfvRcbOk3pNRDiOvx50kiiZb52UfgSkk3wF9FQ9AErqDObjIcJ
-        1tWj3wsRSe9oneXS3na8e32t81EOs6xSVPAqZ9j166jOC1j9vcCkgxujbBNGibheUCwD8T
-        CErhZIszHgwoaJ2zJgwjMsZ2AhyHo4I=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-244-I2W0luy2PhO-4mHubwvvgg-1; Thu, 12 Nov 2020 14:54:37 -0500
-X-MC-Unique: I2W0luy2PhO-4mHubwvvgg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 480511087D7B;
-        Thu, 12 Nov 2020 19:54:36 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.10.110.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E21586198C;
-        Thu, 12 Nov 2020 19:54:29 +0000 (UTC)
-Message-ID: <5616ee6f15c2b9da73d23bcc23eca5befc824abe.camel@redhat.com>
-Subject: Re: [PATCH net-next] net-loopback: allow lo dev initial state to be
- controlled
-From:   Dan Williams <dcbw@redhat.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Jian Yang <jianyang.kernel@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Mahesh Bandewar <maheshb@google.com>,
-        Jian Yang <jianyang@google.com>
-Date:   Thu, 12 Nov 2020 13:54:28 -0600
-In-Reply-To: <20201112160832.GB1456319@lunn.ch>
-References: <20201111204308.3352959-1-jianyang.kernel@gmail.com>
-         <20201112160832.GB1456319@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1726826AbgKLTz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 14:55:26 -0500
+Received: from mga11.intel.com ([192.55.52.93]:46984 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726702AbgKLTz0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 14:55:26 -0500
+IronPort-SDR: kVaPLMUmW6bXPuzYgc5H++I5FNcrIQ7+Rk2y5EzafziUi15NXR/pbEmrLHiEN8kqzfjFwnmLoR
+ 4zCj6MLZ2ulg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9803"; a="166863401"
+X-IronPort-AV: E=Sophos;i="5.77,472,1596524400"; 
+   d="scan'208";a="166863401"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2020 11:55:25 -0800
+IronPort-SDR: DsUlTVVOlynqrt86LqUK7pV/urlmnAAbQ28PeqqZbeqlVhkgqUMMa23YwX5sm35xuJfyuWHRUh
+ Yw5q7WJ8TJAA==
+X-IronPort-AV: E=Sophos;i="5.77,472,1596524400"; 
+   d="scan'208";a="357213971"
+Received: from jlee24-mobl1.amr.corp.intel.com (HELO ellie) ([10.212.177.92])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2020 11:55:25 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, sassmann@redhat.com
+Subject: Re: [net 0/4][pull request] Intel Wired LAN Driver Updates 2020-11-10
+In-Reply-To: <20201112085533.0d8c55d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201111001955.533210-1-anthony.l.nguyen@intel.com>
+ <20201112085533.0d8c55d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Thu, 12 Nov 2020 11:55:24 -0800
+Message-ID: <87blg28i4z.fsf@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-11-12 at 17:08 +0100, Andrew Lunn wrote:
-> On Wed, Nov 11, 2020 at 12:43:08PM -0800, Jian Yang wrote:
-> > From: Mahesh Bandewar <maheshb@google.com>
-> > 
-> > Traditionally loopback devices comes up with initial state as DOWN
-> > for
-> > any new network-namespace. This would mean that anyone needing this
-> > device (which is mostly true except sandboxes where networking in
-> > not
-> > needed at all), would have to bring this UP by issuing something
-> > like
-> > 'ip link set lo up' which can be avoided if the initial state can
-> > be set
-> > as UP.
-> 
-> How useful is lo if it is up, but has no IP address? I don't think
-> this change adds the IP addresses does it? So you still need
-> something
-> inside your netns to add the IP addresses? Which seems to make this
-> change pointless?
+Jakub Kicinski <kuba@kernel.org> writes:
+>
+> Pulled, thanks!
+>
+> Please double check the use of the spin lock in patch 3. Stats are
+> updated in an atomic context when read from /proc, you probably need 
+> to convert that spin lock to _bh.
 
-lo gets addresses automatically these days, no?
+I just did some tests with lockdep enabled, reading from /proc/net/dev
+in a loop, and everything seems fine. Am I missing something?
 
-$ ip netns add blue
-$ ip netns exec blue ip addr
-1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-$ ip netns exec blue ip link set lo up
-$ ip netns exec blue ip addr
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host 
-       valid_lft forever preferred_lft forever
 
-Dan
-
+Cheers,
+-- 
+Vinicius
