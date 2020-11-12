@@ -2,190 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D1CE2AFF7E
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 06:51:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1AC02AFF89
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 07:12:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726279AbgKLFu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 00:50:58 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:48260 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725966AbgKLFu4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 00:50:56 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 12 Nov 2020 07:50:53 +0200
-Received: from vnc1.mtl.labs.mlnx (vnc1.mtl.labs.mlnx [10.7.2.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AC5orIE030691;
-        Thu, 12 Nov 2020 07:50:53 +0200
-Received: from vnc1.mtl.labs.mlnx (localhost [127.0.0.1])
-        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4) with ESMTP id 0AC5or78008540;
-        Thu, 12 Nov 2020 07:50:53 +0200
-Received: (from moshe@localhost)
-        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4/Submit) id 0AC5ordf008539;
-        Thu, 12 Nov 2020 07:50:53 +0200
-From:   Moshe Shemesh <moshe@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Adrian Pop <pop.adrian61@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>
-Subject: [PATCH net-next 2/2] net/mlx5e: Add DSFP EEPROM dump support to ethtool
-Date:   Thu, 12 Nov 2020 07:49:41 +0200
-Message-Id: <1605160181-8137-3-git-send-email-moshe@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1605160181-8137-1-git-send-email-moshe@mellanox.com>
-References: <1605160181-8137-1-git-send-email-moshe@mellanox.com>
+        id S1725983AbgKLGMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 01:12:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725290AbgKLGMU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 01:12:20 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C549CC0613D1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 22:12:20 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id w6so3562956pfu.1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 22:12:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FHs6zieQRsrlBczzhIrz4lwm76YMszXTvMnFZ/QAhwo=;
+        b=nDwsCVFqt6o2XS9meXwElwWZaK7GSFxgU6ZX/w1JzBhLqjFEbatjDBWuf6tBBoCOwe
+         DA/A6USTGhvy4G5aCGY2v4+kvqqT97gKu70SwdPqO01UTNBfYauXKtygcqqKY0bSqx7O
+         I/PWFlAI7zgMNrDEHr+CUwunDQuibRlcWthrw8ZveEKT20UHkWEv+HycQKOwKAPLbQeV
+         Kc56zRP1gpeLLDf+P+XoLAv+ix4m8U7ziibtxxi8J0H7nl5wGJ1gonIVQgwUBXH2vqDV
+         i6BnpZbF3F4Eiygn+L+Ove1xFcxrRs7vY6fWsZ86wSoXSArOPwSa2LD/qh9q51ZYCeNH
+         sycQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=FHs6zieQRsrlBczzhIrz4lwm76YMszXTvMnFZ/QAhwo=;
+        b=hXGmyLcLQACqUalTr9uNL4PAKl13if0Kc1K479q8RlzCe0fVZZqzN/H7zaldUZdr5g
+         XLY7WsOTg03oZmj4ywzulQ5MGvxYgRAt7/MQUWVeWFIKjZZYMHhOzNt+Mj7UsdTC/5DH
+         E6Wywwd5sGgI+EIjQA4Jq17L7+vH3R16VUco0kIEwlLERkYSdI49xxk0kjMaqdzrnMW3
+         AcWP7y8JzgzoRCEF+ZlVBja0Dob4lZ5TE9vXgkhI6MW/9LrXzgHrSa7hddxQk+GhxaM8
+         B9SgEpuDqweIm01al4e8zgHMcn5b3c8IZ/a+KZuYUjnR+1Qp+27ps8GYkgxLnSY7Sgcs
+         6gew==
+X-Gm-Message-State: AOAM532QYhPThZigsvyIjV8DDA3KD8KpxHRbUHCrTNFFVWthV1+WGGbh
+        js2ZLmDtuInIEUdxvyIc0K7zeBpu5VcfhbrU
+X-Google-Smtp-Source: ABdhPJySRUxwya3lW7eirK3Z96lqaFS+smXiv+MRqNuY/kW/Ceie3YaDt8hElvJeuyodCTseZrae3Q==
+X-Received: by 2002:a17:90b:188b:: with SMTP id mn11mr2193367pjb.125.1605161540288;
+        Wed, 11 Nov 2020 22:12:20 -0800 (PST)
+Received: from localhost.localdomain ([45.124.203.14])
+        by smtp.gmail.com with ESMTPSA id n64sm4906564pfn.134.2020.11.11.22.12.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Nov 2020 22:12:19 -0800 (PST)
+Sender: "joel.stan@gmail.com" <joel.stan@gmail.com>
+From:   Joel Stanley <joel@jms.id.au>
+To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Jeffery <andrew@aj.id.au>, netdev@vger.kernel.org
+Subject: [PATCH v2] net/ncsi: Fix netlink registration
+Date:   Thu, 12 Nov 2020 16:42:10 +1030
+Message-Id: <20201112061210.914621-1-joel@jms.id.au>
+X-Mailer: git-send-email 2.28.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+If a user unbinds and re-binds a NC-SI aware driver the kernel will
+attempt to register the netlink interface at runtime. The structure is
+marked __ro_after_init so registration fails spectacularly at this point.
 
-DSFP is a new cable module type, which EEPROM uses memory layout
-described in CMIS 4.0 document. Use corresponding standard value for
-userspace ethtool to distinguish DSFP's layout from older standards.
+ # echo 1e660000.ethernet > /sys/bus/platform/drivers/ftgmac100/unbind
+ # echo 1e660000.ethernet > /sys/bus/platform/drivers/ftgmac100/bind
+  ftgmac100 1e660000.ethernet: Read MAC address 52:54:00:12:34:56 from chip
+  ftgmac100 1e660000.ethernet: Using NCSI interface
+  8<--- cut here ---
+  Unable to handle kernel paging request at virtual address 80a8f858
+  pgd = 8c768dd6
+  [80a8f858] *pgd=80a0841e(bad)
+  Internal error: Oops: 80d [#1] SMP ARM
+  CPU: 0 PID: 116 Comm: sh Not tainted 5.10.0-rc3-next-20201111-00003-gdd25b227ec1e #51
+  Hardware name: Generic DT based system
+  PC is at genl_register_family+0x1f8/0x6d4
+  LR is at 0xff26ffff
+  pc : [<8073f930>]    lr : [<ff26ffff>]    psr: 20000153
+  sp : 8553bc80  ip : 81406244  fp : 8553bd04
+  r10: 8085d12c  r9 : 80a8f73c  r8 : 85739000
+  r7 : 00000017  r6 : 80a8f860  r5 : 80c8ab98  r4 : 80a8f858
+  r3 : 00000000  r2 : 00000000  r1 : 81406130  r0 : 00000017
+  Flags: nzCv  IRQs on  FIQs off  Mode SVC_32  ISA ARM  Segment none
+  Control: 00c5387d  Table: 85524008  DAC: 00000051
+  Process sh (pid: 116, stack limit = 0x1f1988d6)
+ ...
+  Backtrace:
+  [<8073f738>] (genl_register_family) from [<80860ac0>] (ncsi_init_netlink+0x20/0x48)
+   r10:8085d12c r9:80c8fb0c r8:85739000 r7:00000000 r6:81218000 r5:85739000
+   r4:8121c000
+  [<80860aa0>] (ncsi_init_netlink) from [<8085d740>] (ncsi_register_dev+0x1b0/0x210)
+   r5:8121c400 r4:8121c000
+  [<8085d590>] (ncsi_register_dev) from [<805a8060>] (ftgmac100_probe+0x6e0/0x778)
+   r10:00000004 r9:80950228 r8:8115bc10 r7:8115ab00 r6:9eae2c24 r5:813b6f88
+   r4:85739000
+  [<805a7980>] (ftgmac100_probe) from [<805355ec>] (platform_drv_probe+0x58/0xa8)
+   r9:80c76bb0 r8:00000000 r7:80cd4974 r6:80c76bb0 r5:8115bc10 r4:00000000
+  [<80535594>] (platform_drv_probe) from [<80532d58>] (really_probe+0x204/0x514)
+   r7:80cd4974 r6:00000000 r5:80cd4868 r4:8115bc10
 
-Add DSFP module ID in accordance to SFF-8024.
+Jakub pointed out that ncsi_register_dev is obviously broken, because
+there is only one family so it would never work if there was more than
+one ncsi netdev.
 
-DSFP module memory can be flat or paged, which is indicated by a
-flat_mem bit. In first case, only page 00 is available, and in second -
-multiple pages: 00h, 01h, 02h, 10h and 11h.
+Fix the crash by registering the netlink family once on boot, and drop
+the code to unregister it.
 
-Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Fixes: 955dc68cb9b2 ("net/ncsi: Add generic netlink family")
+Signed-off-by: Joel Stanley <joel@jms.id.au>
 ---
- .../ethernet/mellanox/mlx5/core/en_ethtool.c  | 12 ++++-
- .../net/ethernet/mellanox/mlx5/core/port.c    | 52 ++++++++++++++++---
- include/linux/mlx5/port.h                     |  1 +
- 3 files changed, 57 insertions(+), 8 deletions(-)
+v2: Implement Jakub's suggestion
+ - drop __ro_after_init change
+ - register netlink with subsys_intcall
+ - remove unregister function
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index 42e61dc28ead..e6e80f1b0e94 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -1659,8 +1659,8 @@ static int mlx5e_get_module_info(struct net_device *netdev,
- 	int size_read = 0;
- 	u8 data[4] = {0};
+ net/ncsi/ncsi-manage.c  |  5 -----
+ net/ncsi/ncsi-netlink.c | 22 +++-------------------
+ net/ncsi/ncsi-netlink.h |  3 ---
+ 3 files changed, 3 insertions(+), 27 deletions(-)
+
+diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
+index f1be3e3f6425..a9cb355324d1 100644
+--- a/net/ncsi/ncsi-manage.c
++++ b/net/ncsi/ncsi-manage.c
+@@ -1726,9 +1726,6 @@ struct ncsi_dev *ncsi_register_dev(struct net_device *dev,
+ 	ndp->ptype.dev = dev;
+ 	dev_add_pack(&ndp->ptype);
  
--	size_read = mlx5_query_module_eeprom(dev, 0, 2, data);
--	if (size_read < 2)
-+	size_read = mlx5_query_module_eeprom(dev, 0, 3, data);
-+	if (size_read < 3)
- 		return -EIO;
- 
- 	/* data[0] = identifier byte */
-@@ -1680,6 +1680,14 @@ static int mlx5e_get_module_info(struct net_device *netdev,
- 			modinfo->eeprom_len = ETH_MODULE_SFF_8436_MAX_LEN;
- 		}
- 		break;
-+	case MLX5_MODULE_ID_DSFP:
-+		modinfo->type = ETH_MODULE_CMIS_4;
-+		/* check flat_mem bit, zero indicates paged memory */
-+		if (data[2] & 0x80)
-+			modinfo->eeprom_len = ETH_MODULE_CMIS_4_LEN;
-+		else
-+			modinfo->eeprom_len = ETH_MODULE_CMIS_4_MAX_LEN;
-+		break;
- 	case MLX5_MODULE_ID_SFP:
- 		modinfo->type       = ETH_MODULE_SFF_8472;
- 		modinfo->eeprom_len = ETH_MODULE_SFF_8472_LEN;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-index 4bb219565c58..df8e3d024479 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-@@ -311,13 +311,9 @@ static int mlx5_query_module_id(struct mlx5_core_dev *dev, int module_num,
- 	return 0;
- }
- 
--static int mlx5_qsfp_eeprom_page(u16 offset)
-+static int mlx5_eeprom_high_page_num(u16 offset)
- {
--	if (offset < MLX5_EEPROM_PAGE_LENGTH)
--		/* Addresses between 0-255 - page 00 */
--		return 0;
+-	/* Set up generic netlink interface */
+-	ncsi_init_netlink(dev);
 -
--	/* Addresses between 256 - 639 belongs to pages 01, 02 and 03
-+	/* Addresses 256 and higher belong to pages 01, 02, etc.
- 	 * For example, offset = 400 belongs to page 02:
- 	 * 1 + ((400 - 256)/128) = 2
- 	 */
-@@ -325,6 +321,16 @@ static int mlx5_qsfp_eeprom_page(u16 offset)
- 		    MLX5_EEPROM_HIGH_PAGE_LENGTH);
- }
+ 	pdev = to_platform_device(dev->dev.parent);
+ 	if (pdev) {
+ 		np = pdev->dev.of_node;
+@@ -1892,8 +1889,6 @@ void ncsi_unregister_dev(struct ncsi_dev *nd)
+ 	list_del_rcu(&ndp->node);
+ 	spin_unlock_irqrestore(&ncsi_dev_lock, flags);
  
-+static int mlx5_qsfp_eeprom_page(u16 offset)
-+{
-+	if (offset < MLX5_EEPROM_PAGE_LENGTH)
-+		/* Addresses between 0-255 - page 00 */
-+		return 0;
-+
-+	/* Addresses between 256 - 639 belong to pages 01, 02 and 03 */
-+	return mlx5_eeprom_high_page_num(offset);
-+}
-+
- static int mlx5_qsfp_eeprom_high_page_offset(int page_num)
- {
- 	if (!page_num) /* Page 0 always start from low page */
-@@ -341,6 +347,37 @@ static void mlx5_qsfp_eeprom_params_set(u16 *i2c_addr, int *page_num, u16 *offse
- 	*offset -=  mlx5_qsfp_eeprom_high_page_offset(*page_num);
+-	ncsi_unregister_netlink(nd->dev);
+-
+ 	kfree(ndp);
  }
- 
-+static int mlx5_dsfp_eeprom_high_page_offset(int page_num)
-+{
-+	if (!page_num)
-+		return 0;
-+
-+	return (page_num < 0x10 ? page_num : page_num - 13) * MLX5_EEPROM_HIGH_PAGE_LENGTH;
-+}
-+
-+static int mlx5_dsfp_eeprom_page(u16 offset)
-+{
-+	if (offset < MLX5_EEPROM_PAGE_LENGTH)
-+		return 0;
-+
-+	if (offset < MLX5_EEPROM_PAGE_LENGTH + (MLX5_EEPROM_HIGH_PAGE_LENGTH * 2))
-+		/* Addresses 0 - 511 - pages 00, 01 and 02 */
-+		return mlx5_eeprom_high_page_num(offset);
-+
-+	/* Offsets 512 - 767 belong to pages 10h and 11h.
-+	 * For example, offset = 700 belongs to page 11:
-+	 * 13 + 1 + ((700 - 256) / 128) = 17 = 0x11
-+	 */
-+	return 13 + mlx5_eeprom_high_page_num(offset);
-+}
-+
-+static void mlx5_dsfp_eeprom_params_set(u16 *i2c_addr, int *page_num, u16 *offset)
-+{
-+	*i2c_addr = MLX5_I2C_ADDR_LOW;
-+	*page_num = mlx5_dsfp_eeprom_page(*offset);
-+	*offset -= mlx5_dsfp_eeprom_high_page_offset(*page_num);
-+}
-+
- static void mlx5_sfp_eeprom_params_set(u16 *i2c_addr, int *page_num, u16 *offset)
- {
- 	*i2c_addr = MLX5_I2C_ADDR_LOW;
-@@ -380,6 +417,9 @@ int mlx5_query_module_eeprom(struct mlx5_core_dev *dev,
- 	case MLX5_MODULE_ID_QSFP28:
- 		mlx5_qsfp_eeprom_params_set(&i2c_addr, &page_num, &offset);
- 		break;
-+	case MLX5_MODULE_ID_DSFP:
-+		mlx5_dsfp_eeprom_params_set(&i2c_addr, &page_num, &offset);
-+		break;
- 	default:
- 		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
- 		return -EINVAL;
-diff --git a/include/linux/mlx5/port.h b/include/linux/mlx5/port.h
-index 23edd2db4803..ad4b2e778d46 100644
---- a/include/linux/mlx5/port.h
-+++ b/include/linux/mlx5/port.h
-@@ -45,6 +45,7 @@ enum mlx5_module_id {
- 	MLX5_MODULE_ID_QSFP             = 0xC,
- 	MLX5_MODULE_ID_QSFP_PLUS        = 0xD,
- 	MLX5_MODULE_ID_QSFP28           = 0x11,
-+	MLX5_MODULE_ID_DSFP             = 0x1B,
+ EXPORT_SYMBOL_GPL(ncsi_unregister_dev);
+diff --git a/net/ncsi/ncsi-netlink.c b/net/ncsi/ncsi-netlink.c
+index adddc7707aa4..bb5f1650f11c 100644
+--- a/net/ncsi/ncsi-netlink.c
++++ b/net/ncsi/ncsi-netlink.c
+@@ -766,24 +766,8 @@ static struct genl_family ncsi_genl_family __ro_after_init = {
+ 	.n_small_ops = ARRAY_SIZE(ncsi_ops),
  };
  
- enum mlx5_an_status {
+-int ncsi_init_netlink(struct net_device *dev)
++static int __init ncsi_init_netlink(void)
+ {
+-	int rc;
+-
+-	rc = genl_register_family(&ncsi_genl_family);
+-	if (rc)
+-		netdev_err(dev, "ncsi: failed to register netlink family\n");
+-
+-	return rc;
+-}
+-
+-int ncsi_unregister_netlink(struct net_device *dev)
+-{
+-	int rc;
+-
+-	rc = genl_unregister_family(&ncsi_genl_family);
+-	if (rc)
+-		netdev_err(dev, "ncsi: failed to unregister netlink family\n");
+-
+-	return rc;
++	return genl_register_family(&ncsi_genl_family);
+ }
++subsys_initcall(ncsi_init_netlink);
+diff --git a/net/ncsi/ncsi-netlink.h b/net/ncsi/ncsi-netlink.h
+index 7502723fba83..39a1a9d7bf77 100644
+--- a/net/ncsi/ncsi-netlink.h
++++ b/net/ncsi/ncsi-netlink.h
+@@ -22,7 +22,4 @@ int ncsi_send_netlink_err(struct net_device *dev,
+ 			  struct nlmsghdr *nlhdr,
+ 			  int err);
+ 
+-int ncsi_init_netlink(struct net_device *dev);
+-int ncsi_unregister_netlink(struct net_device *dev);
+-
+ #endif /* __NCSI_NETLINK_H__ */
 -- 
-2.18.2
+2.28.0
 
