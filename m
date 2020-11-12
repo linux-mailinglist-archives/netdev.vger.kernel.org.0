@@ -2,197 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C2A32B007F
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 08:45:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B83372B0084
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 08:51:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726107AbgKLHpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 02:45:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
+        id S1726101AbgKLHvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 02:51:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725884AbgKLHpT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 02:45:19 -0500
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6347CC0613D1;
-        Wed, 11 Nov 2020 23:45:18 -0800 (PST)
-Received: by mail-pl1-x641.google.com with SMTP id k7so2361631plk.3;
-        Wed, 11 Nov 2020 23:45:18 -0800 (PST)
+        with ESMTP id S1725860AbgKLHvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 02:51:12 -0500
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4133FC0613D1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 23:51:12 -0800 (PST)
+Received: by mail-ot1-x32b.google.com with SMTP id l36so4748896ota.4
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 23:51:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=geTkkLYkNmham7L8WOSL9oUt7IUhwr3Ml72iGwW862I=;
-        b=mikqjdLfhtLjRmLiBKDPWoaUsu6D574KKtiGoErbQ+31qIaxQAM5B2+ghSvUZuOHoa
-         qUfiwpIJ6tWoqhEmUoRVo3U6qjMK4kh/LRW50zPKxiMc9nosGgLqEvBvX9IwoAX2oAYL
-         0wewL+PCnot4CwESBHWYM6gB+QqtcBcxQtFRltqpd7t+/HiaMiXSTMLqXBFWGkID7yky
-         sSKQfy6lhiQO65gPR+mR9oKyTc+qkurJtybeEIgMR3K7loP0peSeiZBnr/aeP/DDh9af
-         xV4ABN48tAcCEMoHT6AWTInQTnY2WEaxBfu7ClCLMUePGM1lWXKOp4riaOGb1MBzA709
-         Vfcg==
+         :cc:content-transfer-encoding;
+        bh=J2sYideJnbRmb7JH7/wnVh2cCrL2WNfIa6EkJnNb+1Q=;
+        b=vUE4tGBVjcphJtOCttpXMK6UauXkR0dwHPyC20O/Ln+JeOJCgOtss72fbCcGvzq6A7
+         LhCwwbrq3w+ECH5pG1XZxU5AcpoI4hTUd+J6sNrJDbi3Y9Dd3XUFU9r5Fmfaq8Tw3T9k
+         D7pyk6PkvG+EWvGZ0Spwnjb4tSaplxkT1a10Wp1KAIxb0sU9m9kiKe1qwS2PSxtjECZe
+         IVr4rSXMjqq50YTZXvuvy3B4MMZVy0fDaO7kmf0MY277Dz7N3dN7p8yi/h2y54xmvihh
+         TDDpkbsIDO/WB0k/0HONZOuA4Syz3hKXo+piiILCEmUso6xXVdgKfndXi9hgOA60nMV7
+         HpUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=geTkkLYkNmham7L8WOSL9oUt7IUhwr3Ml72iGwW862I=;
-        b=YCh2c9vdJPh+G7beBCQtUV3TIGdq9MpTpW2Wk+1gTFKof5Ru03c9nGY7t0B/PwNnsT
-         sNbg9gmxwI/JlWMUfTOYV9tiKUEsqM/BY57Fw9ghXOJan5BLaxVqgW8rQpL/+hYz1cXk
-         uUqJOEzODeWwD4GtbVH3ycAy4htTemtaCLcUJjH1hk105zTNGz5h2loLwbJK7K/HjSfb
-         OM1gcnmv0vSXo/sy1Y04npz5P4QQzC2SVQ7TyHqfN05ZfgRKXL3tfU5no7Iahhdjbqr/
-         cSdcv3ldyrmZZmgR8TM4ELqQ3LSY4/4dfBUeFK8OspqAo6PhPFtLA2pGIRT+PaAilxmb
-         2GkQ==
-X-Gm-Message-State: AOAM533jyViTOFAUfS7O55FGATosZyYAI7S3pbeuk1tVr2a31K+kZ0vL
-        vU3aohRN0V6BYvOPgnqRmw712r5LTX3sJkKcObUDIkjVylie5jZqk4w=
-X-Google-Smtp-Source: ABdhPJxYFtoP/QNAzFUFI8w6Wtq6gwXRueaKZmX0iGBcJUVwhNadNUwxxnG+1CmhmiOnRi/QxemcO8b3/wIkRAqeQ+Q=
-X-Received: by 2002:a17:902:8d97:b029:d8:94dd:43ea with SMTP id
- v23-20020a1709028d97b02900d894dd43eamr12515950plo.43.1605167117901; Wed, 11
- Nov 2020 23:45:17 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=J2sYideJnbRmb7JH7/wnVh2cCrL2WNfIa6EkJnNb+1Q=;
+        b=rLGD124ejovW1/KER9OWtVej0JMDn4dTKlQscL2FvbgaCZrcH9TOyZBvOf//p7u6t6
+         d3ylQXdhFzxxQFNGFXYERH1eMlYuaeZI/ioP1f2eGwJE4Zy0Z+okcYbRds8pPlVh01In
+         20whQnKR2DWaSXEckJK5LgTX2JwGRCPcgfXdr/3F38vdudR3aJwHo+gu9g0gaWmyw8FZ
+         e38sallwLsmpr5c5RmiiA9qiIS6sTPBxoLwcJv2+Lq/DqOGpTAy8ddryBsqje5SEx3WW
+         oxkbFcTaPgvOyrBY5UFx4d0D1k3eXLcbHACAaXmG6pIWAfxV7fUdTXKxCQGbPsFuS2WG
+         CLjw==
+X-Gm-Message-State: AOAM531TC807Frxa8+CMvahYlN4dwxtyMGauq3RrKUec0Ww/5TJe8WTg
+        wWy9PqM9/O0b9EQqo6P7zzd7e1hrFNjnFURTm9A=
+X-Google-Smtp-Source: ABdhPJzTh4VSqbUS8Jol3WNWcJq40+IM37s5Yp1BGL8bTzudb/Nzb15lVx8+qn3Y5U4eSZcHotSwvJX3IEFs/sBFUKQ=
+X-Received: by 2002:a9d:7392:: with SMTP id j18mr20970542otk.288.1605167471100;
+ Wed, 11 Nov 2020 23:51:11 -0800 (PST)
 MIME-Version: 1.0
-References: <1605006094-31097-6-git-send-email-magnus.karlsson@gmail.com>
- <202011110934.GFwFDfqe-lkp@intel.com> <CAJ8uoz2aDjLPtcTgZ_pO-=S9TgXm3c57rN8TTPXdqT7HOOKrhA@mail.gmail.com>
- <CAKwvOd=Pws8npXdRuOVz+cgUYJ+nnztZCgMnZvP+Jr-dJ4z_Aw@mail.gmail.com>
-In-Reply-To: <CAKwvOd=Pws8npXdRuOVz+cgUYJ+nnztZCgMnZvP+Jr-dJ4z_Aw@mail.gmail.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 12 Nov 2020 08:45:06 +0100
-Message-ID: <CAJ8uoz2PxgZybUKDpe0Y4OJOHmK3gAxU7diTc1raPJoanze4sA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 5/5] i40e: use batched xsk Tx interfaces to
- increase performance
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        kbuild-all@lists.01.org,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        bpf <bpf@vger.kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+References: <CAMeyCbh8vSCnr-9-odi0kg3E8BGCiETOL-jJ650qYQdsY0wxeA@mail.gmail.com>
+ <CAMeyCbjuj2Q2riK2yzKXRfCa_mKToqe0uPXKxrjd6zJQWaXxog@mail.gmail.com> <AM8PR04MB73153260540558FF6793E63AFFE70@AM8PR04MB7315.eurprd04.prod.outlook.com>
+In-Reply-To: <AM8PR04MB73153260540558FF6793E63AFFE70@AM8PR04MB7315.eurprd04.prod.outlook.com>
+From:   Kegl Rohit <keglrohit@gmail.com>
+Date:   Thu, 12 Nov 2020 08:51:01 +0100
+Message-ID: <CAMeyCbi+7y6s+7LNQenLhkJug2owiULGM4VxFbGEWxNGnsTmVQ@mail.gmail.com>
+Subject: Re: [EXT] Fwd: net: fec: rx descriptor ring out of order
+To:     Andy Duan <fugang.duan@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 11, 2020 at 8:16 PM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
+On Thu, Nov 12, 2020 at 2:29 AM Andy Duan <fugang.duan@nxp.com> wrote:
 >
-> On Wed, Nov 11, 2020 at 3:57 AM Magnus Karlsson
-> <magnus.karlsson@gmail.com> wrote:
+> From: Kegl Rohit <keglrohit@gmail.com> Sent: Wednesday, November 11, 2020=
+ 10:27 PM
+> > Hello!
 > >
-> > On Wed, Nov 11, 2020 at 2:38 AM kernel test robot <lkp@intel.com> wrote:
-> > >
-> > > Hi Magnus,
-> > >
-> > > I love your patch! Perhaps something to improve:
-> > >
-> > > [auto build test WARNING on bpf-next/master]
-> > >
-> > > url:    https://github.com/0day-ci/linux/commits/Magnus-Karlsson/xsk-i40e-Tx-performance-improvements/20201110-190310
-> > > base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-> > > config: powerpc64-randconfig-r025-20201110 (attached as .config)
-> > > compiler: clang version 12.0.0 (https://github.com/llvm/llvm-project 4d81c8adb6ed9840257f6cb6b93f60856d422a15)
+> > We are using a imx6q platform.
+> > The fec interface is used to receive a continuous stream of custom / ra=
+w
+> > ethernet packets. The packet size is fixed ~132 bytes and they get sent=
+ every
+> > 250=C2=B5s.
+> >
+> > While testing I observed spontaneous packet delays from time to time.
+> > After digging down deeper I think that the fec peripheral does not upda=
+te the rx
+> > descriptor status correctly.
+> > I modified the queue_rx function which is called by the NAPI poll funct=
+ion. "no
+> > packet N" is printed when the queue_rx function doesn't process any des=
+criptor.
+> > Therefore the variable N counts continuous calls without ready descript=
+ors.
+> > When the current descriptor is ready&processed and moved to the next en=
+try,
+> > then N is cleared again.
+> > Additionally an error is printed if the current descriptor is empty but=
+ the next
+> > one is already ready. In case this error happens the current descriptor=
+ and the
+> > next 11 ones are dumped.
+> > "C"  ... current
+> > "E"  ... empty
+> >
+> > [   57.436478 <    0.020005>] no packet 1!
+> > [   57.460850 <    0.024372>] no packet 1!
+> > [   57.461107 <    0.000257>] ring error, current empty but next is not
+> > empty
+> > [   57.461118 <    0.000011>] RX ahead
+> > [   57.461135 <    0.000017>] 129 C E 0x8840 0x2c743a40  132
+> > [   57.461146 <    0.000011>] 130     0x0840 0x2c744180  132
+> > [   57.461158 <    0.000012>] 131   E 0x8840 0x2c7448c0  132
+> > [   57.461170 <    0.000012>] 132   E 0x8840 0x2c745000  132
+> > [   57.461181 <    0.000011>] 133   E 0x8840 0x2c745740  132
+> > [   57.461192 <    0.000011>] 134   E 0x8840 0x2c745e80  132
+> > [   57.461204 <    0.000012>] 135   E 0x8880 0x2c7465c0  114
+> > [   57.461215 <    0.000011>] 136   E 0x8840 0x2c746d00  132
+> > [   57.461227 <    0.000012>] 137   E 0x8840 0x2c747440  132
+> > [   57.461239 <    0.000012>] 138   E 0x8840 0x2c748040  132
+> > [   57.461250 <    0.000011>] 139   E 0x8840 0x2c748780  132
+> > [   57.461262 <    0.000012>] 140   E 0x8840 0x2c748ec0  132
+> > [   57.461477 <    0.000008>] no packet 2!
+> > [   57.461506 <    0.000029>] ring error, current empty but next is not
+> > empty
+> > [   57.461537 <    0.000031>] RX ahead
+> > [   57.461550 <    0.000013>] 129 C E 0x8840 0x2c743a40  132
+> > [   57.461563 <    0.000013>] 130     0x0840 0x2c744180  132
+> > [   57.461577 <    0.000014>] 131     0x0840 0x2c7448c0  132
+> > [   57.461589 <    0.000012>] 132     0x0840 0x2c745000  132
+> > [   57.461601 <    0.000012>] 133   E 0x8840 0x2c745740  132
+> > [   57.461613 <    0.000012>] 134   E 0x8840 0x2c745e80  132
+> > [   57.461624 <    0.000011>] 135   E 0x8880 0x2c7465c0  114
+> > [   57.461635 <    0.000011>] 136   E 0x8840 0x2c746d00  132
+> > [   57.461645 <    0.000010>] 137   E 0x8840 0x2c747440  132
+> > [   57.461657 <    0.000012>] 138   E 0x8840 0x2c748040  132
+> > [   57.461668 <    0.000011>] 139   E 0x8840 0x2c748780  132
+> > [   57.461680 <    0.000012>] 140   E 0x8840 0x2c748ec0  132
+> > [   57.461894 <    0.000009>] no packet 3!
+> > [   57.461926 <    0.000032>] ring error, current empty but next is not
+> > empty
+> > [   57.461935 <    0.000009>] RX ahead
+> > [   57.461947 <    0.000012>] 129 C E 0x8840 0x2c743a40  132
+> > [   57.461959 <    0.000012>] 130     0x0840 0x2c744180  132
+> > [   57.461970 <    0.000011>] 131     0x0840 0x2c7448c0  132
+> > [   57.461982 <    0.000012>] 132     0x0840 0x2c745000  132
+> > [   57.461993 <    0.000011>] 133     0x0840 0x2c745740  132
+> > [   57.462005 <    0.000012>] 134   E 0x8840 0x2c745e80  132
+> > [   57.462017 <    0.000012>] 135   E 0x8880 0x2c7465c0  114
+> > [   57.462028 <    0.000011>] 136   E 0x8840 0x2c746d00  132
+> > [   57.462039 <    0.000011>] 137   E 0x8840 0x2c747440  132
+> > [   57.462051 <    0.000012>] 138   E 0x8840 0x2c748040  132
+> > [   57.462062 <    0.000011>] 139   E 0x8840 0x2c748780  132
+> > [   57.462075 <    0.000013>] 140   E 0x8840 0x2c748ec0  132
+> > [   57.462289 <    0.000009>] no packet 4!
+> > [   57.462316 <    0.000027>] ring error, current empty but next is not
+> > empty
+> > [   57.462326 <    0.000010>] RX ahead
+> > [   57.462339 <    0.000013>] 129 C E 0x8840 0x2c743a40  132
+> > [   57.462351 <    0.000012>] 130     0x0840 0x2c744180  132
+> > [   57.462362 <    0.000011>] 131     0x0840 0x2c7448c0  132
+> > [   57.462373 <    0.000011>] 132     0x0840 0x2c745000  132
+> > [   57.462384 <    0.000011>] 133     0x0840 0x2c745740  132
+> > [   57.462397 <    0.000013>] 134     0x0840 0x2c745e80  132
+> > [   57.462408 <    0.000011>] 135     0x0840 0x2c7465c0  132
+> > [   57.462421 <    0.000013>] 136   E 0x8840 0x2c746d00  132
+> > [   57.462431 <    0.000010>] 137   E 0x8840 0x2c747440  132
+> > [   57.462443 <    0.000012>] 138   E 0x8840 0x2c748040  132
+> > [   57.462454 <    0.000011>] 139   E 0x8840 0x2c748780  132
+> > [   57.462467 <    0.000013>] 140   E 0x8840 0x2c748ec0  132
+> > [   57.462697 <    0.000009>] no packet 5!
+> > [   57.462730 <    0.000033>] ring error, current empty but next is not
+> > empty
+> > [   57.462739 <    0.000009>] RX ahead
+> > [   57.462752 <    0.000013>] 129 C E 0x8840 0x2c743a40  132
+> > [   57.462763 <    0.000011>] 130     0x0840 0x2c744180  132
+> > [   57.462775 <    0.000012>] 131     0x0840 0x2c7448c0  132
+> > [   57.462787 <    0.000012>] 132     0x0840 0x2c745000  132
+> > [   57.462799 <    0.000012>] 133     0x0840 0x2c745740  132
+> > [   57.462809 <    0.000010>] 134     0x0840 0x2c745e80  132
+> > [   57.462820 <    0.000011>] 135     0x0840 0x2c7465c0  132
+> > [   57.462830 <    0.000010>] 136     0x0840 0x2c746d00  132
+> > [   57.462842 <    0.000012>] 137     0x0840 0x2c747440  132
+> > [   57.462853 <    0.000011>] 138   E 0x8840 0x2c748040  132
+> > [   57.462864 <    0.000011>] 139   E 0x8840 0x2c748780  132
+> > [   57.462877 <    0.000013>] 140   E 0x8840 0x2c748ec0  132
+> > [   57.463093 <    0.000009>] no packet 6!
+> > [   57.463120 <    0.000027>] RX ahead
+> > [   57.463133 <    0.000013>] 129 C   0x0840 0x2c743a40  132
+> > [   57.463144 <    0.000011>] 130     0x0840 0x2c744180  132
+> > [   57.463155 <    0.000011>] 131     0x0840 0x2c7448c0  132
+> > [   57.463166 <    0.000011>] 132     0x0840 0x2c745000  132
+> > [   57.463179 <    0.000013>] 133     0x0840 0x2c745740  132
+> > [   57.463190 <    0.000011>] 134     0x0840 0x2c745e80  132
+> > [   57.463201 <    0.000011>] 135     0x0840 0x2c7465c0  132
+> > [   57.463213 <    0.000012>] 136     0x0840 0x2c746d00  132
+> > [   57.463224 <    0.000011>] 137     0x0840 0x2c747440  132
+> > [   57.463235 <    0.000011>] 138     0x0840 0x2c748040  132
+> > [   57.463245 <    0.000010>] 139   E 0x8840 0x2c748780  132
+> > [   57.463256 <    0.000011>] 140   E 0x8840 0x2c748ec0  132
+> > [   57.463695 <    0.000244>] rx 12
+> >
+> > As you can see, the described error is catched and the ring is dumped.
+> > 9 descriptors got ready before the current descriptor is ready.
+> > After that the current descriptor got ready and 12 packets were process=
+ed at
+> > once.
+> > I could also observe cases where the ring (512 entries) got full before=
+ the
+> > current descriptor was cleared.
+> > And also cases where the current and next descriptor were not ready.
+> > [   57.462752 <    0.000013>] 129 C E 0x8840 0x2c743a40  132
+> > [   57.462763 <    0.000011>] 130    E 0x0840 0x2c744180  132
+> > [   57.462775 <    0.000012>] 131     0x0840 0x2c7448c0  132
+> >
+> > I am suspecting the errata:
+> >
+> > ERR005783 ENET: ENET Status FIFO may overflow due to consecutive short
+> > frames
+> > Description:
+> > When the MAC receives shorter frames (size 64 bytes) at a rate exceedin=
+g the
+> > average line-rate burst traffic of 400 Mbps the DMA is able to absorb, =
+the
+> > receiver might drop incoming frames before a Pause frame is issued.
+> > Projected Impact:
+> > No malfunction will result aside from the frame drops.
+> > Workarounds:
+> > The application might want to implement some flow control to ensure the
+> > line-rate burst traffic is below 400 Mbps if it only uses consecutive s=
+mall frames
+> > with minimal
+> > (96 bit times) or short
+> > Inter-frame gap (IFG) time following large frames at such a high rate.
+> > The limit does not exist for
+> > frames of size larger than 800 bytes.
+> > Proposed Solution:
+> > No fix scheduled
+> > Linux BSP Status:
+> > Workaround possible but not implemented in the BSP, impacting functiona=
+lity as
+> > described above.
+> >
+> > Is the "ENET Status FIFO" some internal hardware FIFO or is it the desc=
+riptor
+> > ring.
+> > What would be the workaround when a "Workaround is possible"?
+> >
+> > I could only think of skipping/dropping the descriptor when the current=
+ is still
+> > busy but the next one is ready.
+> > But it is not easily possible because the "stuck" descriptor gets ready=
+ after a
+> > huge delay.
+> >
+> > Is this issue known already? Any suggestions?
+> >
 >
-> ^ Note: clang
+> We don't see the issue.
 >
-> > > reproduce (this is a W=1 build):
-> > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> > >         chmod +x ~/bin/make.cross
-> > >         # install powerpc64 cross compiling tool for clang build
-> > >         # apt-get install binutils-powerpc64-linux-gnu
-> > >         # https://github.com/0day-ci/linux/commit/b016bbeac6692a93e61b28efa430d64645032b5e
-> > >         git remote add linux-review https://github.com/0day-ci/linux
-> > >         git fetch --no-tags linux-review Magnus-Karlsson/xsk-i40e-Tx-performance-improvements/20201110-190310
-> > >         git checkout b016bbeac6692a93e61b28efa430d64645032b5e
-> > >         # save the attached .config to linux build tree
-> > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=powerpc64
-> > >
-> > > If you fix the issue, kindly add following tag as appropriate
-> > > Reported-by: kernel test robot <lkp@intel.com>
-> > >
-> > > All warnings (new ones prefixed by >>):
-> > >
-> > > >> drivers/net/ethernet/intel/i40e/i40e_xsk.c:417:13: warning: unknown pragma ignored [-Wunknown-pragmas]
-> > >    #pragma GCC unroll 4
-> > >                ^
-> > >    1 warning generated.
-> >
-> > And I was hoping that unknown pragmas would be ignored, but that will
-> > obviously not be the case with -Wunknown-pragmas added. The unrolling
-> > of this inner loop where the code spends most of its time gives me
-> > nearly 1 Mpps extra in performance which is substantial, so I would
-> > like to get this unrolled in some way, but without the warning. Need
-> > some advice please. Here are some options that comes in mind:
-> >
-> > #1: Suppress unknown pragma warnings in this file only by adding
-> > CFLAGS_i40e_xsk.o += -Wno-unknown-pragmas (or whatever that option
-> > might be) in the Makefile
-> >
-> > #2: Force the compiler to loop-unroll the loop with for example a
-> > switch statement with four cases that all fall through. This will make
-> > the code less readable.
-> >
-> > #3: Manually loop-unroll the loop. This will make the code even less
-> > readable than #2.
+> Yes, the IP has the errata on i.MX6Q,  so the workaround is to enable HW =
+flow control.
+> Keep HW flow control is enabled on your networking connection to avoid FI=
+FO overrun happen.
 >
-> #4 support both compilers.  Note Clang's syntax is slightly different
-> here; it doesn't accept GCC specific pragmas, and uses a slightly
-> different form:
-> https://clang.llvm.org/docs/LanguageExtensions.html#loop-unrolling .
-> If you wrap that in a macro based on `#ifdef __clang__`, that should
-> do the trick.
+> Regards,
+> Andy
+> >
+> > Thanks in advance
 
-Yes, that did the trick. Tried it out with the compiler explorer at
-https://godbolt.org/ and it compiles nicely even for clang-powerpc64.
-Will spin a v3.
+Ok, after rereading the errata I don't think that they are the problem.
 
-Thank you: Magnus
+ERR004512 ENET: 1 Gb Ethernet MAC (ENET) system limitation.
 
-> >
-> > I prefer #1 as I like to keep the code readable, but you might have
-> > other better suggestions on how to tackle this.
-> >
-> > Thanks: Magnus
-> >
-> > > vim +417 drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> > >
-> > >    408
-> > >    409  static void i40e_xmit_pkt_batch(struct i40e_ring *xdp_ring, struct xdp_desc *desc,
-> > >    410                                  unsigned int *total_bytes)
-> > >    411  {
-> > >    412          u16 ntu = xdp_ring->next_to_use;
-> > >    413          struct i40e_tx_desc *tx_desc;
-> > >    414          dma_addr_t dma;
-> > >    415          u32 i;
-> > >    416
-> > >  > 417  #pragma GCC unroll 4
-> > >    418          for (i = 0; i < PKTS_PER_BATCH; i++) {
-> > >    419                  dma = xsk_buff_raw_get_dma(xdp_ring->xsk_pool, desc[i].addr);
-> > >    420                  xsk_buff_raw_dma_sync_for_device(xdp_ring->xsk_pool, dma, desc[i].len);
-> > >    421
-> > >    422                  tx_desc = I40E_TX_DESC(xdp_ring, ntu++);
-> > >    423                  tx_desc->buffer_addr = cpu_to_le64(dma);
-> > >    424                  tx_desc->cmd_type_offset_bsz = build_ctob(I40E_TX_DESC_CMD_ICRC |
-> > >    425                                                            I40E_TX_DESC_CMD_EOP,
-> > >    426                                                            0, desc[i].len, 0);
-> > >    427
-> > >    428                  *total_bytes += desc[i].len;
-> > >    429          }
-> > >    430
-> > >    431          xdp_ring->next_to_use = ntu;
-> > >    432  }
-> > >    433
-> > >
-> > > ---
-> > > 0-DAY CI Kernel Test Service, Intel Corporation
-> > > https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-> >
-> > --
-> > You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> > To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> > To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/CAJ8uoz2aDjLPtcTgZ_pO-%3DS9TgXm3c57rN8TTPXdqT7HOOKrhA%40mail.gmail.com.
->
->
->
-> --
-> Thanks,
-> ~Nick Desaulniers
+Here flow control should be the solution.
+We are using a 100MBit/s full duplex link and the generated test
+stream is only 4MBit/s, so this issue should not apply.
+
+
+ERR005783 ENET: ENET Status FIFO may overflow due to consecutive short fram=
+es.
+When the MAC receives shorter frames (size 64 bytes) at a rate
+exceeding the average line-rate
+burst traffic of 400 Mbps the DMA is able to absorb, the receiver
+might drop incoming frames
+before a Pause frame is issued.
+
+In this case the hardware flow control workaround will not help and a
+flow control has to be done at software protocol level.
