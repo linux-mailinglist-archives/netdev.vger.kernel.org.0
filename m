@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C703B2B1168
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 23:26:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09CE62B1169
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 23:26:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726236AbgKLW0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 17:26:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48590 "EHLO
+        id S1726290AbgKLW0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 17:26:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726125AbgKLW0H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 17:26:07 -0500
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E45DC0613D4
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 14:26:07 -0800 (PST)
+        with ESMTP id S1726248AbgKLW0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 17:26:08 -0500
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84EE4C0613D1
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 14:26:08 -0800 (PST)
 Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4CXGQk1FsCzQlVP;
-        Thu, 12 Nov 2020 23:26:06 +0100 (CET)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4CXGQj6rGZzQl8x;
+        Thu, 12 Nov 2020 23:26:05 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1605219962;
+        s=MBO0001; t=1605219964;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=reJsB5/K3a/oTlTqeGRODg6xD0dkFikmeb1Md1DF2xI=;
-        b=BY9pmCE7KQjPlAluhEJrEGnd/mQ1f6RlACi1elWF1diSSczNKMp1aGM7eg1i41BeA3nF31
-        Pm44yILp2HlbwvVDO3DvX2BrtpMRTWiXomFV9g+kHGjMrMt0nMpYCh0xgiB0ueK2wDIlQx
-        FJJXJNsWxuVrX/+NKNhT3ccC2uvORAtdRxrL85hWCJN0obhoq0zjzy3nqzq+ubUGUqpm8T
-        Gd+5DdwvRVYRel913qwN59UkeLKp8gVmFA38zerBQ8AXnUNq2FBJeVK2eal4W/IXy0cirI
-        jtEC5RaaLcGSDPyNp8yVg8bV2KJcvQ8F87dokSm+IbklxNudz7XsDHAMBc/BXQ==
+        bh=e/WLpIcEn8sQ6IVnRSBC0JVl1XO/WumW9BFcqnvqLRU=;
+        b=BxSMKlHqaNyZ+deEpwcYWhAuE8ffWMPDteTAwqShILWg3+sbXROycjyHVm4yETw4cOD61O
+        Ra8YqL64Yz4hiFoIH4JsMCVZZoQxWyy7uwFtP5RbTyJXI72vWIJWAg0/YbaIMJmiQ86QMT
+        nLbBHyk2aNJSC4/fNxZg4H6F6xFaExxfNifnexl8wF/stfklKumjZ4rnVaGK4+aH6bXX0L
+        QrEYiGt5uYWppeJ84HaLjsIXkKEcV6V2Qslq8wqosgMO7P9VzFZzur+n9TAgXFxUIWu0f3
+        vWM8rJUftDE9ueK+AYUDyt0E++KPiIN95xMErezCuH7Dsu7I+1ce6evtXAh+JQ==
 Received: from smtp2.mailbox.org ([80.241.60.241])
-        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
-        with ESMTP id to4y3rCG2bQU; Thu, 12 Nov 2020 23:25:57 +0100 (CET)
+        by spamfilter02.heinlein-hosting.de (spamfilter02.heinlein-hosting.de [80.241.56.116]) (amavisd-new, port 10030)
+        with ESMTP id TT3MPZiGiB56; Thu, 12 Nov 2020 23:26:01 +0100 (CET)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
@@ -43,226 +43,173 @@ Cc:     john.fastabend@gmail.com, jiri@nvidia.com, idosch@nvidia.com,
         Jakub Kicinski <kuba@kernel.org>,
         Roman Mashak <mrv@mojatatu.com>,
         Leon Romanovsky <leon@kernel.org>,
-        Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next v5 02/11] lib: Add parse_one_of(), parse_on_off()
-Date:   Thu, 12 Nov 2020 23:24:39 +0100
-Message-Id: <9d0bab01775cea4511e0003424637bb1268c0c40.1605218735.git.me@pmachata.org>
+        Petr Machata <me@pmachata.org>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [PATCH iproute2-next v5 03/11] lib: json_print: Add print_on_off()
+Date:   Thu, 12 Nov 2020 23:24:40 +0100
+Message-Id: <cf31e4c2ea4108afea9516647316749ba4003b2f.1605218735.git.me@pmachata.org>
 In-Reply-To: <cover.1605218735.git.me@pmachata.org>
 References: <cover.1605218735.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: **
-X-Rspamd-Score: 1.55 / 15.00 / 15.00
-X-Rspamd-Queue-Id: E2ACF171A
-X-Rspamd-UID: bd1dcc
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -0.18 / 15.00 / 15.00
+X-Rspamd-Queue-Id: CBF571724
+X-Rspamd-UID: 1aacd0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Take from the macsec code parse_one_of() and adapt so that it passes the
-primary result as the main return value, and error result through a
-pointer. That is the simplest way to make the code reusable across data
-types without introducing extra magic.
+The value of a number of booleans is shown as "on" and "off" in the plain
+output, and as an actual boolean in JSON mode. Add a function that does
+that.
 
-Also from macsec take the specialization of parse_one_of() for parsing
-specifically the strings "off" and "on".
-
-Convert the macsec code to the new helpers.
+RDMA tool already uses a function named print_on_off(). This function
+always shows "on" and "off", even in JSON mode. Since there are probably
+very few if any consumers of this interface at this point, migrate it to
+the new central print_on_off() as well.
 
 Signed-off-by: Petr Machata <me@pmachata.org>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 ---
 
 Notes:
     v3:
-    - Have parse_on_off() return a boolean. [David Ahern]
+    - Rename to print_on_off(). [David Ahern]
+    - Move over to json_print.c and make it a variant of print_bool().
+      Convert RDMA tool over to print_on_off(). [Leon Romanovsky]
 
- include/utils.h |  4 ++++
- ip/ipmacsec.c   | 52 +++++++++++--------------------------------------
- lib/utils.c     | 28 ++++++++++++++++++++++++++
- 3 files changed, 43 insertions(+), 41 deletions(-)
+ include/json_print.h |  1 +
+ lib/json_print.c     | 34 +++++++++++++++++++++++++++-------
+ rdma/dev.c           |  2 +-
+ rdma/rdma.h          |  1 -
+ rdma/res-cq.c        |  2 +-
+ rdma/utils.c         |  5 -----
+ 6 files changed, 30 insertions(+), 15 deletions(-)
 
-diff --git a/include/utils.h b/include/utils.h
-index 085b17b1f6e3..d7653273af5f 100644
---- a/include/utils.h
-+++ b/include/utils.h
-@@ -325,4 +325,8 @@ char *sprint_time64(__s64 time, char *buf);
- int do_batch(const char *name, bool force,
- 	     int (*cmd)(int argc, char *argv[], void *user), void *user);
- 
-+int parse_one_of(const char *msg, const char *realval, const char * const *list,
-+		 size_t len, int *p_err);
-+bool parse_on_off(const char *msg, const char *realval, int *p_err);
-+
- #endif /* __UTILS_H__ */
-diff --git a/ip/ipmacsec.c b/ip/ipmacsec.c
-index 18289ecd6d9e..bf48e8b5d0b2 100644
---- a/ip/ipmacsec.c
-+++ b/ip/ipmacsec.c
-@@ -23,8 +23,6 @@
- #include "ll_map.h"
- #include "libgenl.h"
- 
--static const char * const values_on_off[] = { "off", "on" };
--
- static const char * const validate_str[] = {
- 	[MACSEC_VALIDATE_DISABLED] = "disabled",
- 	[MACSEC_VALIDATE_CHECK] = "check",
-@@ -108,25 +106,6 @@ static void ipmacsec_usage(void)
- 	exit(-1);
- }
- 
--static int one_of(const char *msg, const char *realval, const char * const *list,
--		  size_t len, int *index)
--{
--	int i;
--
--	for (i = 0; i < len; i++) {
--		if (matches(realval, list[i]) == 0) {
--			*index = i;
--			return 0;
--		}
--	}
--
--	fprintf(stderr, "Error: argument of \"%s\" must be one of ", msg);
--	for (i = 0; i < len; i++)
--		fprintf(stderr, "\"%s\", ", list[i]);
--	fprintf(stderr, "not \"%s\"\n", realval);
--	return -1;
--}
--
- static int get_an(__u8 *val, const char *arg)
+diff --git a/include/json_print.h b/include/json_print.h
+index 50e71de443ab..096a999a4de4 100644
+--- a/include/json_print.h
++++ b/include/json_print.h
+@@ -65,6 +65,7 @@ void print_nl(void);
+ _PRINT_FUNC(int, int)
+ _PRINT_FUNC(s64, int64_t)
+ _PRINT_FUNC(bool, bool)
++_PRINT_FUNC(on_off, bool)
+ _PRINT_FUNC(null, const char*)
+ _PRINT_FUNC(string, const char*)
+ _PRINT_FUNC(uint, unsigned int)
+diff --git a/lib/json_print.c b/lib/json_print.c
+index fe0705bf6965..62eeb1f1fb31 100644
+--- a/lib/json_print.c
++++ b/lib/json_print.c
+@@ -191,11 +191,12 @@ int print_color_string(enum output_type type,
+  * a value to it, you will need to use "is_json_context()" to have different
+  * branch for json and regular output. grep -r "print_bool" for example
+  */
+-int print_color_bool(enum output_type type,
+-		     enum color_attr color,
+-		     const char *key,
+-		     const char *fmt,
+-		     bool value)
++static int __print_color_bool(enum output_type type,
++			      enum color_attr color,
++			      const char *key,
++			      const char *fmt,
++			      bool value,
++			      const char *str)
  {
- 	int ret = get_u8(val, arg, 0);
-@@ -559,8 +538,7 @@ static int do_offload(enum cmd c, int argc, char **argv)
- 	if (argc == 0)
- 		ipmacsec_usage();
+ 	int ret = 0;
  
--	ret = one_of("offload", *argv, offload_str, ARRAY_SIZE(offload_str),
--		     (int *)&offload);
-+	offload = parse_one_of("offload", *argv, offload_str, ARRAY_SIZE(offload_str), &ret);
- 	if (ret)
- 		ipmacsec_usage();
- 
-@@ -1334,8 +1312,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("encrypt", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("encrypt", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			addattr8(n, MACSEC_BUFLEN, IFLA_MACSEC_ENCRYPT, i);
-@@ -1343,8 +1320,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("send_sci", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("send_sci", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			send_sci = i;
-@@ -1354,8 +1330,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("end_station", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("end_station", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			es = i;
-@@ -1364,8 +1339,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("scb", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("scb", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			scb = i;
-@@ -1374,8 +1348,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("protect", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("protect", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			addattr8(n, MACSEC_BUFLEN, IFLA_MACSEC_PROTECT, i);
-@@ -1383,8 +1356,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("replay", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("replay", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			replay_protect = !!i;
-@@ -1395,9 +1367,8 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 				invarg("expected replay window size", *argv);
- 		} else if (strcmp(*argv, "validate") == 0) {
- 			NEXT_ARG();
--			ret = one_of("validate", *argv,
--				     validate_str, ARRAY_SIZE(validate_str),
--				     (int *)&validate);
-+			validate = parse_one_of("validate", *argv, validate_str,
-+						ARRAY_SIZE(validate_str), &ret);
- 			if (ret != 0)
- 				return ret;
- 			addattr8(n, MACSEC_BUFLEN,
-@@ -1411,9 +1382,8 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 				invarg("expected an { 0..3 }", *argv);
- 		} else if (strcmp(*argv, "offload") == 0) {
- 			NEXT_ARG();
--			ret = one_of("offload", *argv,
--				     offload_str, ARRAY_SIZE(offload_str),
--				     (int *)&offload);
-+			offload = parse_one_of("offload", *argv, offload_str,
-+					       ARRAY_SIZE(offload_str), &ret);
- 			if (ret != 0)
- 				return ret;
- 			addattr8(n, MACSEC_BUFLEN,
-diff --git a/lib/utils.c b/lib/utils.c
-index 9815e328c9e0..eab0839a13c7 100644
---- a/lib/utils.c
-+++ b/lib/utils.c
-@@ -1735,3 +1735,31 @@ int do_batch(const char *name, bool force,
+@@ -205,13 +206,32 @@ int print_color_bool(enum output_type type,
+ 		else
+ 			jsonw_bool(_jw, value);
+ 	} else if (_IS_FP_CONTEXT(type)) {
+-		ret = color_fprintf(stdout, color, fmt,
+-				    value ? "true" : "false");
++		ret = color_fprintf(stdout, color, fmt, str);
+ 	}
  
  	return ret;
  }
-+
-+int parse_one_of(const char *msg, const char *realval, const char * const *list,
-+		 size_t len, int *p_err)
+ 
++int print_color_bool(enum output_type type,
++		     enum color_attr color,
++		     const char *key,
++		     const char *fmt,
++		     bool value)
 +{
-+	int i;
-+
-+	for (i = 0; i < len; i++) {
-+		if (list[i] && matches(realval, list[i]) == 0) {
-+			*p_err = 0;
-+			return i;
-+		}
-+	}
-+
-+	fprintf(stderr, "Error: argument of \"%s\" must be one of ", msg);
-+	for (i = 0; i < len; i++)
-+		if (list[i])
-+			fprintf(stderr, "\"%s\", ", list[i]);
-+	fprintf(stderr, "not \"%s\"\n", realval);
-+	*p_err = -EINVAL;
-+	return 0;
++	return __print_color_bool(type, color, key, fmt, value,
++				  value ? "true" : "false");
 +}
 +
-+bool parse_on_off(const char *msg, const char *realval, int *p_err)
++int print_color_on_off(enum output_type type,
++		       enum color_attr color,
++		       const char *key,
++		       const char *fmt,
++		       bool value)
 +{
-+	static const char * const values_on_off[] = { "off", "on" };
-+
-+	return parse_one_of(msg, realval, values_on_off, ARRAY_SIZE(values_on_off), p_err);
++	return __print_color_bool(type, color, key, fmt, value,
++				  value ? "on" : "off");
 +}
++
+ /*
+  * In JSON context uses hardcode %#x format: 42 -> 0x2a
+  */
+diff --git a/rdma/dev.c b/rdma/dev.c
+index a11081b82170..c684dde4a56f 100644
+--- a/rdma/dev.c
++++ b/rdma/dev.c
+@@ -159,7 +159,7 @@ static void dev_print_dim_setting(struct rd *rd, struct nlattr **tb)
+ 	if (dim_setting > 1)
+ 		return;
+ 
+-	print_on_off(rd, "adaptive-moderation", dim_setting);
++	print_on_off(PRINT_ANY, "adaptive-moderation", "adaptive-moderation %s ", dim_setting);
+ 
+ }
+ 
+diff --git a/rdma/rdma.h b/rdma/rdma.h
+index fd1024123363..fc8bcf09274d 100644
+--- a/rdma/rdma.h
++++ b/rdma/rdma.h
+@@ -138,7 +138,6 @@ void print_driver_table(struct rd *rd, struct nlattr *tb);
+ void print_raw_data(struct rd *rd, struct nlattr **nla_line);
+ void newline(struct rd *rd);
+ void newline_indent(struct rd *rd);
+-void print_on_off(struct rd *rd, const char *key_str, bool on);
+ void print_raw_data(struct rd *rd, struct nlattr **nla_line);
+ #define MAX_LINE_LENGTH 80
+ 
+diff --git a/rdma/res-cq.c b/rdma/res-cq.c
+index 313f929a29b5..9e7c4f512b72 100644
+--- a/rdma/res-cq.c
++++ b/rdma/res-cq.c
+@@ -36,7 +36,7 @@ static void print_cq_dim_setting(struct rd *rd, struct nlattr *attr)
+ 	if (dim_setting > 1)
+ 		return;
+ 
+-	print_on_off(rd, "adaptive-moderation", dim_setting);
++	print_on_off(PRINT_ANY, "adaptive-moderation", "adaptive-moderation %s ", dim_setting);
+ }
+ 
+ static int res_cq_line_raw(struct rd *rd, const char *name, int idx,
+diff --git a/rdma/utils.c b/rdma/utils.c
+index 4d3de4fadba2..2a201aa4aeb7 100644
+--- a/rdma/utils.c
++++ b/rdma/utils.c
+@@ -781,11 +781,6 @@ static int print_driver_string(struct rd *rd, const char *key_str,
+ 	return 0;
+ }
+ 
+-void print_on_off(struct rd *rd, const char *key_str, bool on)
+-{
+-	print_driver_string(rd, key_str, (on) ? "on":"off");
+-}
+-
+ static int print_driver_s32(struct rd *rd, const char *key_str, int32_t val,
+ 			      enum rdma_nldev_print_type print_type)
+ {
 -- 
 2.25.1
 
