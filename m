@@ -2,83 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D88C92B08C5
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 16:46:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3132B08D9
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 16:49:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728756AbgKLPqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 10:46:33 -0500
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:48661 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728732AbgKLPqb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 10:46:31 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id D0292580402;
-        Thu, 12 Nov 2020 10:46:30 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 12 Nov 2020 10:46:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=ecba3g
-        Rjc7G1F4YiLCFkhsZZYY4GbaNTefv9Zd/5+Bw=; b=j87mxMN55s9hlmJwHu5/4G
-        Mp7Za3bVZZ/MSDBjG4qeHeIhUSdlZqt3X5VW9a7PZiyTNyiJOJ4sEBd4yKe9Dj6e
-        AMUk53JZ/r4uymKPLUpdbpux8D8qqRZgqJgocoErV3MaU/XGY5Ve4euZf3LU5doL
-        Bg9T1o48hdaM4/lA8Q4MEUOLRN2IH0qNnsFVq0duhMcBHI17Ea48ZtHyLLU/r9h2
-        437xirG3tauSflUmT37mMoFhnc6Ne4ruL6IKJvPLse/iMhHq8+BBRy7o8Tnl/rJz
-        crqawUt7AQ2vdpGvBE1AwuOTWCJsoHvPV4nC8LH2lQ/GMuOlEXqq1QESp1y6M+Dw
-        ==
-X-ME-Sender: <xms:1litX8njf1x8J4XcsDdVZydERgrKJekXX1G3jDlZTyLlENsgJwgqag>
-    <xme:1litX72uXNxkV0BToLncl_QBZnW6RYzIn4xQLgLNz6xHUJO5cPZYh5cPF7fv7MMVS
-    -Zz106lLZBG4Hw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedruddvfedgheehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheegrddugeejnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:1litX6qMEAywc8J7Govrhwqs93GtcVvQvTz_yZTQv1xsN0EpCHOPWQ>
-    <xmx:1litX4kMCF-v_4CGMMO7C8hN_5wkgaY_lAMnuO0eyNYX0nBFXCAFfg>
-    <xmx:1litX60wQEqGaIHqKL5oh8-cjSTd-iNtP8pClrWfi1Fdwgpsfl-qfA>
-    <xmx:1litXzli86zu2hGigZBi7U61o0bWWx-Asv4VZfLasZw_XzI7kSP6zg>
-Received: from localhost (igld-84-229-154-147.inter.net.il [84.229.154.147])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 412853067A2D;
-        Thu, 12 Nov 2020 10:46:30 -0500 (EST)
-Date:   Thu, 12 Nov 2020 17:46:27 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Itay Aveksis <itayav@nvidia.com>,
-        Ran Rozenstein <ranro@nvidia.com>, tariqt@nvidia.com
-Subject: Re: bug report: WARNING in bonding
-Message-ID: <20201112154627.GA2138135@shredder>
-References: <fb299ee2-4cf0-31d8-70f4-874da43e0021@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fb299ee2-4cf0-31d8-70f4-874da43e0021@gmail.com>
+        id S1728567AbgKLPtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 10:49:25 -0500
+Received: from userp2120.oracle.com ([156.151.31.85]:49316 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728032AbgKLPtX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 10:49:23 -0500
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0ACFTOcY091503;
+        Thu, 12 Nov 2020 15:49:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2020-01-29; bh=bD1V5q95i6+ADV+YeAFQt2s8ENYs/W7Au47fsVzm170=;
+ b=I+c7hO+bjcs00L2rQ4D9vhfLswmZuCqk8qj2Zy513vtnws9SiGwmfaAz+zOmv0gRqTSo
+ Yl2cnvrFzhNjuZychmZGau0YrII9Ro+yhj+BD2XvIQ+khyK+s8kZ+LbbXgL8halL1px4
+ Uozki8PMlSG60yqLJDKEeExb45H4jKL8F8e8CVFlIpylUYUQhAAO2n3uUgyiR65IY0Bw
+ TpBPXFKJYSvkWq96Y3iegUx8Y9eBA+2p/DtC+CcSWXdUxvEDxhPS00SUB980D+1QtW21
+ X6pMiCC78K0BL7hJ9vVX1vWNaN38N0iuyxkfBrnUeVA8evI2IPwpe0JcterNmlbbCs5p uA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 34p72ev7f9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 12 Nov 2020 15:49:09 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0ACFVCnl133264;
+        Thu, 12 Nov 2020 15:49:08 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 34rt5686x6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 12 Nov 2020 15:49:08 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0ACFn5ll005827;
+        Thu, 12 Nov 2020 15:49:05 GMT
+Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 12 Nov 2020 07:49:05 -0800
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
+Subject: Re: [RFC][PATCH 00/18] crypto: Add generic Kerberos library
+From:   Chuck Lever <chuck.lever@oracle.com>
+In-Reply-To: <2380561.1605195776@warthog.procyon.org.uk>
+Date:   Thu, 12 Nov 2020 10:49:03 -0500
+Cc:     CIFS <linux-cifs@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Bruce Fields <bfields@fieldses.org>,
+        linux-crypto@vger.kernel.org,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-afs@lists.infradead.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <22138FE2-9E79-4E24-99FC-74A35651B0C1@oracle.com>
+References: <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com>
+ <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
+ <2380561.1605195776@warthog.procyon.org.uk>
+To:     David Howells <dhowells@redhat.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.4)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9802 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 mlxscore=0
+ mlxlogscore=999 suspectscore=0 adultscore=0 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011120093
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9802 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999 mlxscore=0
+ malwarescore=0 suspectscore=0 lowpriorityscore=0 adultscore=0 phishscore=0
+ priorityscore=1501 spamscore=0 impostorscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011120093
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 12, 2020 at 05:38:44PM +0200, Tariq Toukan wrote:
-> Hi all,
-> 
-> In the past ~2-3 weeks, we started seeing the following WARNING and traces
-> in our regression testing systems, almost every day.
-> 
-> Reproduction is not stable, and not isolated to a specific test, so it's
-> hard to bisect.
-> 
-> Any idea what could this be?
-> Or what is the suspected offending patch?
 
-Do you have commit f8e48a3dca06 ("lockdep: Fix preemption WARN for spurious
-IRQ-enable")? I think it fixed the issue for me
+
+> On Nov 12, 2020, at 10:42 AM, David Howells <dhowells@redhat.com> =
+wrote:
+>=20
+> Chuck Lever <chuck.lever@oracle.com> wrote:
+>=20
+>>> There are three main interfaces to it:
+>>>=20
+>>> (*) I/O crypto: encrypt, decrypt, get_mic and verify_mic.
+>>>=20
+>>>    These all do in-place crypto, using an sglist to define the =
+buffer
+>>>    with the data in it.  Is it necessary to make it able to take =
+separate
+>>>    input and output buffers?
+>>=20
+>> Hi David, Wondering if these "I/O" APIs use synchronous or async
+>> crypto under the covers. For small data items like MICs, synchronous
+>> might be a better choice, especially if asynchronous crypto could
+>> result in incoming requests getting re-ordered and falling out of
+>> the GSS sequence number window.
+>>=20
+>> What say ye?
+>=20
+> For the moment I'm using synchronous APIs as that's what sunrpc is =
+using (I
+> borrowed the basic code from there).
+
+Really? My understanding of the Linux kernel SUNRPC implementation is
+that it uses asynchronous, even for small data items. Maybe I'm using
+the terminology incorrectly.
+
+The problem that arises is on the server. The asynchronous API can
+schedule, and if the server has other work to do, that can delay a
+verify_mic long enough that the request drops out of the GSS sequence
+number window (even a large window).
+
+Whatever the mechanism, we need to have deterministic ordering, at
+least on the server-side.
+
+
+> It would be interesting to consider using async, but there's a =
+potential
+> issue.  For the simplified profile, encryption and integrity checksum
+> generation can be done simultaneously, but decryption and verification =
+can't.
+> For the AES-2 profile, the reverse is true.
+>=20
+> For my purposes in rxrpc, async mode isn't actually that useful since =
+I'm only
+> doing the contents of a UDP packet at a time.  Either I'm encrypting =
+with the
+> intention of immediate transmission or decrypting with the intention =
+of
+> immediately using the data, so I'm in a context where I can wait =
+anyway.
+>=20
+> What might get me more of a boost would be to encrypt the app data =
+directly
+> into a UDP packet and decrypt the UDP packet directly into the app =
+buffers.
+> This is easier said than done, though, as there's typically security =
+metadata
+> inserted into the packet inside the encrypted region.
+
+
+--
+Chuck Lever
+
+
+
