@@ -2,36 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 596D62B1180
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 23:27:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 597FB2B1182
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 23:28:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727759AbgKLW1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 17:27:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59842 "EHLO mail.kernel.org"
+        id S1727495AbgKLW2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 17:28:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60530 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727733AbgKLW1I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 17:27:08 -0500
+        id S1725999AbgKLW2G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 17:28:06 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D39A206FB;
-        Thu, 12 Nov 2020 22:27:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8400622201;
+        Thu, 12 Nov 2020 22:28:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605220027;
-        bh=kZGYKOnp3QwnS9OhLwTVPmSlbPZRfbiKAT7VQVYN91o=;
+        s=default; t=1605220086;
+        bh=hqzOEE9slJHruPm1S91dR08YcGHz3IXTTJKdDrMbBnM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ot80wdzGNOdQ3TvVdv0HXwJxAy7IyVWoYoEvpZSz3to0hSQQ3d8xCPShbuWunnsGE
-         cuN6TyWvj5i6ttUge/rLqBv1SBKXSV6bpW0wz+jQyrZnKatNA2ay9qUqkAIdQaLgTA
-         eGEgbzbM62XNb46tJMPCfXqOFBfJ/lOccx2v0FUM=
-Date:   Thu, 12 Nov 2020 14:27:06 -0800
+        b=UTj1RnCC9I1G1KeM9CqGcuIegTsZ8oAcS4EHi/fVpM0ezOFn5VXo9edfiyl7QmOwW
+         vEoy8wyaB2fVvwL6cRy6y3BK2roXnyrr5j4WGahFSTan0/ZhX+6ze0P1B7PRcjvZn0
+         WORN4jEvrpJzudgIUv3BGwVJ/bHIFTLtjc7UaIdw=
+Date:   Thu, 12 Nov 2020 14:28:04 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oliver Herms <oliver.peter.herms@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org
-Subject: Re: [PATCH] IPv4: RTM_GETROUTE: Add RTA_ENCAP to result
-Message-ID: <20201112142706.63a1816b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201112081008.GA57799@tws>
-References: <20201112081008.GA57799@tws>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Antoine Tenart <atenart@kernel.org>,
+        Bryan Whitehead <Bryan.Whitehead@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        John Haechten <John.Haechten@microchip.com>,
+        Netdev List <netdev@vger.kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: phy: mscc: remove non-MACSec compatible phy
+Message-ID: <20201112142804.3787760c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201112090429.906000-1-steen.hegelund@microchip.com>
+References: <20201112090429.906000-1-steen.hegelund@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,31 +47,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Nov 2020 09:10:08 +0100 Oliver Herms wrote:
-> This patch adds an IPv4 routes encapsulation attribute
-> to the result of netlink RTM_GETROUTE requests
-> (e.g. ip route get 192.0.2.1).
+On Thu, 12 Nov 2020 10:04:29 +0100 Steen Hegelund wrote:
+> Selecting VSC8575 as a MACSec PHY was not correct
 > 
-> Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
-> ---
->  net/ipv4/route.c | 3 +++
->  1 file changed, 3 insertions(+)
+> The relevant datasheet can be found here:
+>   - VSC8575: https://www.microchip.com/wwwproducts/en/VSC8575
 > 
-> diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-> index dc2a399cd9f4..b4d3384697cb 100644
-> --- a/net/ipv4/route.c
-> +++ b/net/ipv4/route.c
-> @@ -2872,6 +2872,9 @@ static int rt_fill_info(struct net *net, __be32 dst, __be32 src,
->  	if (rt->dst.dev &&
->  	    nla_put_u32(skb, RTA_OIF, rt->dst.dev->ifindex))
->  		goto nla_put_failure;
-> +	if (rt->dst.lwtstate && lwtunnel_fill_encap(skb, rt->dst.lwtstate,
-> +		RTA_ENCAP, RTA_ENCAP_TYPE) < 0)
-> +		goto nla_put_failure;
+> Fixes: 0a504e9e97886 ("net: phy: mscc: macsec initialization")
+> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 
-Please fix this checkpatch warning:
-
-CHECK: Alignment should match open parenthesis
-#25: FILE: net/ipv4/route.c:2876:
-+	if (rt->dst.lwtstate && lwtunnel_fill_encap(skb, rt->dst.lwtstate,
-+		RTA_ENCAP, RTA_ENCAP_TYPE) < 0)
+Fixes tag: Fixes: 0a504e9e97886 ("net: phy: mscc: macsec initialization")
+Has these problem(s):
+	- Subject does not match target commit subject
+	  Just use
+		git log -1 --format='Fixes: %h ("%s")'
