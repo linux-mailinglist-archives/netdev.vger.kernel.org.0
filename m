@@ -2,61 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EEC72B123E
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 23:55:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 383442B1241
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 23:56:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726348AbgKLWzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 17:55:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50410 "EHLO mail.kernel.org"
+        id S1726478AbgKLW4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 17:56:40 -0500
+Received: from bilbo.ozlabs.org ([203.11.71.1]:54803 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725971AbgKLWzX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 17:55:23 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1725971AbgKLW4k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 17:56:40 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 52C422085B;
-        Thu, 12 Nov 2020 22:55:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605221722;
-        bh=TuNbC2A6rWFosN//6t+OI+I4OjlX5wmpO0dQUYP7a/0=;
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4CXH5v1Fwnz9sTK;
+        Fri, 13 Nov 2020 09:56:35 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1605221797;
+        bh=0pX8nIOtoAq1+7rtL+5P/hevnEzjcuHkAft2GGDIhU4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JagG0SyT8xyfIfF8/vgIygjzKmW9u2GdtqdwtKmfHjsTbBL+myuwMBWEDkQEfsiuw
-         4eoGWVDCTvy59LjfguCs4DBSRGGSd/8+wCm5tylPsJmd77CylAiQHnJjq2XfgqJsDz
-         TNBAHCUIxVMqOJSw3PLkq0jvMwTgxcsit7kDXFRc=
-Date:   Thu, 12 Nov 2020 14:55:20 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jon Hunter <jonathanh@nvidia.com>
-Subject: Re: [PATCH net/next] net: ipconfig: Avoid spurious blank lines in
- boot log
-Message-ID: <20201112145520.45f13da3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201110073757.1284594-1-thierry.reding@gmail.com>
-References: <20201110073757.1284594-1-thierry.reding@gmail.com>
+        b=TtZxDNxU3z13HHyrf9s7gIXP64XILbwfku2j6lu9Yz/+0RStgSOOkuE5zLVnLd7//
+         osYHC21sPr93DlxYd+KSQxcprkxpUEFDaBW2At2SnyQOrwER4ADZO/u16Z2r+/n4pq
+         rDAISKtek7yPOFQHROyBMC1j0YixDhldNvZnRRmpS8CwPjxNo6vC4TLmKeTXD88gJb
+         083c7iWAf+hN3/+5QuP6FkPAbAvwS9KKkBo5Jqw3HjbiCq4JrYF5Mu1PEUv6VTFGD6
+         025fGiGXUMJgSfWTdAQgQ1Y4gmY4yFz+dyyMQ/LfrX2GE7/v9USxiL52emb+RgtFQ5
+         xRovR5gFq//0Q==
+Date:   Fri, 13 Nov 2020 09:56:32 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Roman Gushchin <guro@fb.com>
+Cc:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        <netdev@vger.kernel.org>, Andrii Nakryiko <andrii@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH bpf-next v5 01/34] mm: memcontrol: use helpers to read
+ page's memcg data
+Message-ID: <20201113095632.489e66e2@canb.auug.org.au>
+In-Reply-To: <20201112221543.3621014-2-guro@fb.com>
+References: <20201112221543.3621014-1-guro@fb.com>
+        <20201112221543.3621014-2-guro@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/=IuuajhLUc48=qI8wDqPnmd";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Nov 2020 08:37:57 +0100 Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
-> 
-> When dumping the name and NTP servers advertised by DHCP, a blank line
-> is emitted if either of the lists is empty. This can lead to confusing
-> issues such as the blank line getting flagged as warning. This happens
-> because the blank line is the result of pr_cont("\n") and that may see
-> its level corrupted by some other driver concurrently writing to the
-> console.
-> 
-> Fix this by making sure that the terminating newline is only emitted
-> if at least one entry in the lists was printed before.
-> 
-> Reported-by: Jon Hunter <jonathanh@nvidia.com>
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
+--Sig_/=IuuajhLUc48=qI8wDqPnmd
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Applied, thanks!
+Hi Roman,
+
+On Thu, 12 Nov 2020 14:15:10 -0800 Roman Gushchin <guro@fb.com> wrote:
+>
+> Patch series "mm: allow mapping accounted kernel pages to userspace", v6.
+>=20
+> Currently a non-slab kernel page which has been charged to a memory cgroup
+> can't be mapped to userspace.  The underlying reason is simple: PageKmemcg
+> flag is defined as a page type (like buddy, offline, etc), so it takes a
+> bit from a page->mapped counter.  Pages with a type set can't be mapped to
+> userspace.
+>
+.....
+>=20
+> To make sure nobody uses a direct access, struct page's
+> mem_cgroup/obj_cgroups is converted to unsigned long memcg_data.
+>=20
+> Link: https://lkml.kernel.org/r/20201027001657.3398190-1-guro@fb.com
+> Link: https://lkml.kernel.org/r/20201027001657.3398190-2-guro@fb.com
+> Signed-off-by: Roman Gushchin <guro@fb.com>
+> Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+> Reviewed-by: Shakeel Butt <shakeelb@google.com>
+> Acked-by: Michal Hocko <mhocko@suse.com>
+> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+
+What is going on here?  You are taking patches from linux-next and
+submitting them to another maintainer?  Why?
+
+You should not do that from Andrew's tree as it changes/rebases every
+so often ... and you should not have my SOB on there as it is only
+there because that patch is in linux-next i.e. I in the submission
+chain to linux-next - if the patch is to go via some other tree, then
+my SOB should not be there.  (The same may be true for Andrew's SOB.)
+In general you cannot add someone else's SOB to one of your patch
+submissions.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/=IuuajhLUc48=qI8wDqPnmd
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl+tvaAACgkQAVBC80lX
+0GyiWwf+OVKz0JM8eCLNsSIf5uoCARVabzFp0O+8xY8jd7RPiDORD97UcrS0d7TE
+XHjO6q1llUGgw7KB+aZCr09pPIIvgF949tWY9yheehC7F/QhJkOFCMRHsxpJ77gT
+43aaHmTKSGMmd53qmu0+Ycz3htyhVRHcgYVp5ely2e761NKf6l89A6HsnkGdRn8v
+uJ61wv/o3pZeLxeXydX8k+ouOkG2M9zvkSRNYiz/JPb8PnrGqJReWdV5Gxq2nsCP
+pzrDBGtFGk+pMMa+t0pu0ml22WaMf7e2WHUmzKAng8DIApAsl/sbSDtpuv80Lpgf
+R/rwGpiYVyy1IIXB+CTXEjBOJsKpFg==
+=C+xA
+-----END PGP SIGNATURE-----
+
+--Sig_/=IuuajhLUc48=qI8wDqPnmd--
