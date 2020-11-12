@@ -2,62 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 104CE2B06DD
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 14:44:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76C4D2B06F2
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 14:49:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728088AbgKLNoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 08:44:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25947 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727796AbgKLNoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 08:44:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605188659;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BUwAIt+GOyG7Z7TJGWPImVlKsyad1TuYvU2wjzCyMwM=;
-        b=g/6i2SgqaaZJqiwLl1I+jPfj5Vg6l+ies2D+Tuuaj27E5hICR41GaA7Lzx2zeQP4aS8521
-        tEFMbgyJGW26FC43iBW1qhnyNvs/a4nsnaudVP3kihv6YpG85DW1obc4DhWh15Xypx+yXb
-        L/MFgive/koEQnnB5qbHSfL0UrcSNIw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-59-GVDbAyBiPoCIGQMZjHAg_Q-1; Thu, 12 Nov 2020 08:44:17 -0500
-X-MC-Unique: GVDbAyBiPoCIGQMZjHAg_Q-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C717A100F7A3;
-        Thu, 12 Nov 2020 13:44:15 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-115-47.rdu2.redhat.com [10.10.115.47])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D98195DA7E;
-        Thu, 12 Nov 2020 13:44:13 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
-References: <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
-To:     herbert@gondor.apana.org.au
-Cc:     dhowells@redhat.com, bfields@fieldses.org,
-        trond.myklebust@hammerspace.com, linux-crypto@vger.kernel.org,
-        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC][PATCH 00/18] crypto: Add generic Kerberos library
+        id S1728387AbgKLNtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 08:49:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727790AbgKLNtO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 08:49:14 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F35C0613D1;
+        Thu, 12 Nov 2020 05:49:14 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id cq7so6234197edb.4;
+        Thu, 12 Nov 2020 05:49:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MPV3yW2odt+zjcLvgi5foXaZefhlaoNMN5fVUhCTo60=;
+        b=H6L/LZ9nJYkQH4482zy8zeDCX1wapP0XU54WgAmX7CthhqbXBfkJ17XH6VjF7vt1px
+         kBLj9N0E9rIbY5YCVmsESFCIw1/ywXYaw83GL8fzFACttQBizerwrTuwGOIPHuIjyMYX
+         +7yl1IKwNRCPOda9PldsS4yDnCd620WneDur4zumNdII/7VWQZsfu/aWdJCEJo719DVI
+         Oer9dt13PfLWHNfs0fhJQGXpdX1P6K3adkYyi9IXus8w0e9MZKtSGbMItrY3mtvO3VNp
+         51FTOCULRf2M9BkcXnP6B8YSooyELt0yYwc2QxV19q9W/Se7/jJ7YjDIoLrygJ4CD3Kl
+         ktYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MPV3yW2odt+zjcLvgi5foXaZefhlaoNMN5fVUhCTo60=;
+        b=pWVCzlzhJL09ulZIwCMl+vNw5gPj+VKAQ5TIR7wtY9W57Zlnvyvtza10Cw1qEhVLus
+         DwN7OMPkdu+5px7WkAwUrmZlW2st+RMO01M9rCPHz+c1AHBAMixHp6DacQFBJ/X6ynxH
+         EMf3TUszLaJ6e1n7J09CcHFOWNHMmj62m8skRDDhpdC0haNSo156p7+qr+vvcd7SJPVR
+         66RPU/hlJlqKYZ7a45GAuN5/911NmuPhGkiXmA7DioxCyqtTtDiQXnWWoE1DO+dj/2OO
+         7FgVBzawphuSTl1ng6I2itwFZwm89acyVVlowaP8yo8fK/Lp//ig2h3qMLQ4c8vgnOu7
+         UQOw==
+X-Gm-Message-State: AOAM532Y/za4n3RmhiXB1ZUhZryxX5kSjXfK7l01fdEKGp5UbhMVBZ22
+        KP2sn1JNKqeHUlQIIjPcUB8=
+X-Google-Smtp-Source: ABdhPJxHUT+D32ZuT+OmWB5Ksu/4xQOrJJD2gMujrBENGUJ8FLxCmqD0vL5t0JHESnEoy5paf7TX0Q==
+X-Received: by 2002:a05:6402:17ac:: with SMTP id j12mr5158071edy.31.1605188952971;
+        Thu, 12 Nov 2020 05:49:12 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id pg24sm2174593ejb.72.2020.11.12.05.49.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Nov 2020 05:49:11 -0800 (PST)
+Date:   Thu, 12 Nov 2020 15:49:10 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Alexandra Winter <wintera@linux.ibm.com>
+Cc:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Marek Behun <marek.behun@nic.cz>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: Re: [RFC PATCH net-next 3/3] net: dsa: listen for
+ SWITCHDEV_{FDB,DEL}_ADD_TO_DEVICE on foreign bridge neighbors
+Message-ID: <20201112134910.jpbfrjfwlb3734im@skbuf>
+References: <20201108131953.2462644-1-olteanv@gmail.com>
+ <20201108131953.2462644-4-olteanv@gmail.com>
+ <CALW65jb+Njb3WkY-TUhsHh1YWEzfMcXoRAXshnT8ke02wc10Uw@mail.gmail.com>
+ <20201108172355.5nwsw3ek5qg6z7yx@skbuf>
+ <c35d48cd-a1ea-7867-a125-0f900e1e8808@linux.ibm.com>
+ <20201111103601.67kqkaphgztoifzl@skbuf>
+ <dd9c1f37-a049-ef69-b915-214c869edb51@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2319366.1605188653.1@warthog.procyon.org.uk>
-Date:   Thu, 12 Nov 2020 13:44:13 +0000
-Message-ID: <2319367.1605188653@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dd9c1f37-a049-ef69-b915-214c869edb51@linux.ibm.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Would it be possible/practical to make the skcipher encrypt functions take an
-offset into the scatterlist rather than always starting at the beginning?
+On Wed, Nov 11, 2020 at 03:14:26PM +0100, Alexandra Winter wrote:
+> On 11.11.20 11:36, Vladimir Oltean wrote:
+> > Hi Alexandra,
+> > 
+> > On Wed, Nov 11, 2020 at 11:13:03AM +0100, Alexandra Winter wrote:
+> >> On 08.11.20 18:23, Vladimir Oltean wrote:
+> >>> On Sun, Nov 08, 2020 at 10:09:25PM +0800, DENG Qingfang wrote:
+> >>>> Can it be turned off for switches that support SA learning from CPU?
+> >>>
+> >>> Is there a good reason I would add another property per switch and not
+> >>> just do it unconditionally?
+> >>>
+> >> I have a similar concern for a future patch, where I want to turn on or off, whether the
+> >> device driver listens to SWITCHDEV_{FDB,DEL}_ADD_TO_DEVICE for a certain interface.
+> >> (Options will be: static MACs only, learning in the device or learning in bridge and notifications to device)
+> >> What about 'bridge link set dev $netdev learning_sync on self' respectively the corresponding netlink message?
+> > 
+> > My understanding is that "learning_sync" is for pushing learnt addresses
+> > from device to bridge, not from bridge to device.
+> > 
+> uh, sorry copy-paste error. I meant:
+> 'bridge link set dev $netdev learning on self'
 
-David
-
+Even with "learning" instead of "learning_sync", I don't understand what
+the "self" modifier would mean and how it would help, sorry.
