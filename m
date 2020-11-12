@@ -2,93 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABADF2AFD01
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:50:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C13D02AFCFF
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:50:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728421AbgKLBca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 20:32:30 -0500
-Received: from mga05.intel.com ([192.55.52.43]:60195 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728108AbgKLAiZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Nov 2020 19:38:25 -0500
-IronPort-SDR: vImSEVmcTe9YKHK2cb+/gs7wRxf3u/cR3l+uhXCTLUcUkC3rtviYlJIpuzM/cwBOQTpkfpBa3Q
- N2rX3SPfelaw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9802"; a="254947228"
-X-IronPort-AV: E=Sophos;i="5.77,471,1596524400"; 
-   d="scan'208";a="254947228"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2020 16:38:20 -0800
-IronPort-SDR: +jynYNDeVo568Z4aC+hqE2ol7auSkKODpbRi6TeOFSWCcCCjnkWVKFbIQ17I7Lk0cNihWWJbkZ
- TXid8ZgaxYWw==
-X-IronPort-AV: E=Sophos;i="5.77,471,1596524400"; 
-   d="scan'208";a="328306845"
-Received: from fgueva1x-mobl.amr.corp.intel.com (HELO ellie) ([10.212.101.141])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2020 16:38:18 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Miroslav Lichvar <mlichvar@redhat.com>
-Cc:     intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
-        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        bhelgaas@google.com
-Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support
- for PTP getcrosststamp()
-In-Reply-To: <20201110180719.GA1559650@localhost>
-References: <20201110061019.519589-1-vinicius.gomes@intel.com>
- <20201110061019.519589-4-vinicius.gomes@intel.com>
- <20201110180719.GA1559650@localhost>
-Date:   Wed, 11 Nov 2020 16:38:16 -0800
-Message-ID: <87imab8l53.fsf@intel.com>
+        id S1728434AbgKLBcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 20:32:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728114AbgKLAki (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 19:40:38 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D732BC0613D1
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 16:40:36 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id h6so2676353pgk.4
+        for <netdev@vger.kernel.org>; Wed, 11 Nov 2020 16:40:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3P8EmAqtg5xwwjMd3ZN6EYRBAIOuxWsNBKu5J84nJKU=;
+        b=cMkcs2KYO2kdqIIJc7OD9eAYiCdUppDaQ8Acznv/d17ikxEsvz4Oa0pPnNgI1bpXD2
+         2h3p5Ufn4hBDJQlou1CWNUjdFjtwhEEaBxKVDgBrdfKrvKMnhFz+Pd7fc7r6Jr6xq/lo
+         0cLNzI5sfcyhfwXcY2djWIkgcwVKNEODZC3vSAACmTj2xyKNBjerbcC9ZWtBGoNw0643
+         cF2N7gvEJ2Z5Xrg4jXgu4dfFE9i7PJYU1vvfCSTvxH+sWYarouvKgcJmByGGK2x35EiG
+         kLXeliNl0KlmH+d7t52FzlHIaAcZ81TOCuNboPKFlF7VkDCBP7C9uQaeO/SrV9ennbcF
+         Ky4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=3P8EmAqtg5xwwjMd3ZN6EYRBAIOuxWsNBKu5J84nJKU=;
+        b=KfmRbX7sbtZyvda7c/u7HJeje9eq9YICaSZCppdA/3p9P9elA+3ip36z713q8bsJaO
+         P0wtBckw8o1LKGI3NLLcSYs9qPe9wR+tTAMCt10hAezS3O23r12PAuSDpkoPWcaByhLW
+         amIjwdlzQ4+HeoBvsK1g/7ruMkaukDDe45UEC4gFaG+CfVZLuYPcAOPr2SwoCdig5Ro1
+         kNRs7buy0ksmo5Exo/UPEqqd27SfQpfarvESG+o0/8DaHwbC1LHjL3iQz+WarVWburLV
+         P6ooJzzvvSQAmSkQ6DVwb8KRzo55J3IqPqucuYhaUf35FbjNxpuFoWJ0m1vg5A9OeQWB
+         dYsA==
+X-Gm-Message-State: AOAM533TWBpVnlJaTUe8lwqkIDYKeutMZL0OO4Kc5bV3zFlDXCeecL5V
+        8e9pjBBrae4x+syyG95WXfJU7lc57YJC4Q==
+X-Google-Smtp-Source: ABdhPJxvcGVK2TciT3z0KY0JWSnNN8lYG0yWzS0s6p+ZPIAdYsYagFkHsT1RgQo20GrHLpSVqvckXw==
+X-Received: by 2002:aa7:8ed0:0:b029:18a:e177:7bce with SMTP id b16-20020aa78ed00000b029018ae1777bcemr152607pfr.0.1605141636257;
+        Wed, 11 Nov 2020 16:40:36 -0800 (PST)
+Received: from localhost.localdomain ([45.124.203.14])
+        by smtp.gmail.com with ESMTPSA id 23sm3848394pfx.210.2020.11.11.16.40.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Nov 2020 16:40:35 -0800 (PST)
+Sender: "joel.stan@gmail.com" <joel.stan@gmail.com>
+From:   Joel Stanley <joel@jms.id.au>
+To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Jeffery <andrew@aj.id.au>, netdev@vger.kernel.org
+Subject: [PATCH] net/ncsi: Fix re-registering ncsi device
+Date:   Thu, 12 Nov 2020 11:10:21 +1030
+Message-Id: <20201112004021.834673-1-joel@jms.id.au>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+If a user unbinds and re-binds a ncsi aware driver, the kernel will
+attempt to register the netlink interface at runtime. The structure is
+marked __ro_after_init so this fails at this point.
 
-Miroslav Lichvar <mlichvar@redhat.com> writes:
+ Unable to handle kernel paging request at virtual address 80bb588c
+ pgd = 0ff284bb
+ [80bb588c] *pgd=80a1941e(bad)
+ Internal error: Oops: 80d [#1] SMP ARM
+ Modules linked in:
+ CPU: 0 PID: 128 Comm: sh Not tainted 5.8.14-00191-g79e816b77665 #223
+ Hardware name: Generic DT based system
+ PC is at genl_register_family+0x1d4/0x648
+ LR is at 0xfe46ffff
+ pc : [<807f575c>]    lr : [<fe46ffff>]    psr: 20000013
+ sp : b52c9d10  ip : bcc125d4  fp : b52c9d5c
+ r10: 8090fedc  r9 : 80bb57a8  r8 : 80bb5894
+ r7 : 00000013  r6 : 00000000  r5 : 00000018  r4 : 80bb588c
+ r3 : 00000000  r2 : 00000000  r1 : bcc124c0  r0 : 00000018
+ Flags: nzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+ Control: 10c5387d  Table: b4dcc06a  DAC: 00000051
+ Process sh (pid: 128, stack limit = 0xe54c9aea)
 
-> On Mon, Nov 09, 2020 at 10:10:19PM -0800, Vinicius Costa Gomes wrote:
->> i225 has support for PCIe PTM, which allows us to implement support
->> for the PTP_SYS_OFFSET_PRECISE ioctl(), implemented in the driver via
->> the getcrosststamp() function.
->
-> Would it be possible to provide the PTM measurements with the
-> PTP_SYS_OFFSET_EXTENDED ioctl instead of PTP_SYS_OFFSET_PRECISE?
->
-> As I understand it, PTM is not cross timestamping. It's basically
-> NTP over PCIe, which provides four timestamps with each "dialog". From
-> the other constants added to the header file it looks like they could
-> all be obtained and then they could be converted to the triplets
-> returned by the EXTENDED ioctl.
->
+ Backtrace:
+ [<807f5588>] (genl_register_family) from [<80913720>] (ncsi_init_netlink+0x20/0x48)
+  r10:8090fedc r9:80e6c590 r8:b4db4800 r7:00000000 r6:b52dc478 r5:b4db4800
+  r4:b52dc000
+ [<80913700>] (ncsi_init_netlink) from [<8090f128>] (ncsi_register_dev+0x1d8/0x238)
+  r5:b52dc444 r4:b52dc000
+ [<8090ef50>] (ncsi_register_dev) from [<8064f43c>] (ftgmac100_probe+0x6e0/0x838)
+  r10:00000004 r9:80a5d898 r8:bd141410 r7:bd140900 r6:bd7f2c84 r5:b4dbdb88
+  r4:b4db4800
+ [<8064ed5c>] (ftgmac100_probe) from [<805d4d90>] (platform_drv_probe+0x58/0xa8)
+  r9:80e527cc r8:00000000 r7:80eb4bcc r6:80e527cc r5:bd141410 r4:00000000
 
-There might be a problem, the PTM dialogs start from the device, the
-protocol is more or less this:
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+---
+ net/ncsi/ncsi-netlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- 1. NIC sends "Request" message, takes T1 timestamp;
- 2. Host receives "Request" message, takes T2 timestamp;
- 3. Host sends "Response" message, takes T3 timestamp;
- 4. NIC receives "Response" message, takes T4 timestamp;
-
-So, T2 and T3 are "host" timestamps and T1 and T4 are NIC timestamps.
-
-That means that the timestamps I have "as is" are a bit different than
-the expectations of the EXTENDED ioctl().
-
-Of course I could use T3 (as the "pre" timestamp), T4 as the device
-timestamp, and calculate the delay[1], apply it to T3 and get something
-T3' as the "post" timestamp (T3' = T3 + delay). But I feel that this
-"massaging" would defeat the purpose of using the EXTENDED variant.
-
-Does it make sense? Am I worrying too much?
-
-[1] 
-	delay = ((T4 - T1) - (T3 - T2)) / 2
-
-
-
-Cheers,
+diff --git a/net/ncsi/ncsi-netlink.c b/net/ncsi/ncsi-netlink.c
+index adddc7707aa4..1641ecbb5b1f 100644
+--- a/net/ncsi/ncsi-netlink.c
++++ b/net/ncsi/ncsi-netlink.c
+@@ -756,7 +756,7 @@ static const struct genl_small_ops ncsi_ops[] = {
+ 	},
+ };
+ 
+-static struct genl_family ncsi_genl_family __ro_after_init = {
++static struct genl_family ncsi_genl_family = {
+ 	.name = "NCSI",
+ 	.version = 0,
+ 	.maxattr = NCSI_ATTR_MAX,
 -- 
-Vinicius
+2.28.0
+
