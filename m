@@ -2,69 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADDE12B0895
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 16:40:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D378F2B08A3
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 16:43:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728598AbgKLPk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 10:40:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49982 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728238AbgKLPk1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 10:40:27 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728685AbgKLPnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 10:43:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:48929 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728655AbgKLPnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 10:43:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605195784;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dxbxgJ3l9w064dkJ4nmc+S2zoOeV0z0h2c6CrYTGwuU=;
+        b=WXe4UtPJXS0A9puUNibsrOGzt65xItaRg1XyeSbzpPzbf71uF3llshcXj6s4nLy58tZdWW
+        fQw48Szh00x2QJcr5uGl70ozM9d8D2sux2QHnemeAPCHYFnJH54Ak8OudPY+hcatrmGefk
+        jmPeh/mlidUahItWhry/UfttN8wdOD4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-274-WWPp6-O5Ocm8dUXKMSFVfw-1; Thu, 12 Nov 2020 10:43:00 -0500
+X-MC-Unique: WWPp6-O5Ocm8dUXKMSFVfw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1916920A8B;
-        Thu, 12 Nov 2020 15:40:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605195627;
-        bh=3D8TQhzFx9PXf0zCMIIPsXRK/iP5EIAsbriL2JAon4M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=zdzOaeMxsXT2pMf/VnBgXAkUq9Z8ZMjTGiGFRJsVYf1YBKZKFsNMaw/Vv3Aml2F5U
-         BX+HhzB4NJym9r+rd4oIheXLtZoqXPS00D4E0z5G5H1zKH7NQRM9FXO0oKLx5rkZG1
-         qLudEocgckQkA3oINrg1uuRGyOTn6y7clG6I5it4=
-Date:   Thu, 12 Nov 2020 07:40:25 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        mptcp@lists.01.org
-Subject: Re: [PATCH net-next 00/13] mptcp: improve multiple xmit streams
- support
-Message-ID: <20201112074025.5b932eaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <cover.1605175834.git.pabeni@redhat.com>
-References: <cover.1605175834.git.pabeni@redhat.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F2C6680365A;
+        Thu, 12 Nov 2020 15:42:58 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-115-47.rdu2.redhat.com [10.10.115.47])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D47A760C0F;
+        Thu, 12 Nov 2020 15:42:56 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com>
+References: <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com> <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
+To:     Chuck Lever <chuck.lever@oracle.com>
+Cc:     dhowells@redhat.com, CIFS <linux-cifs@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Bruce Fields <bfields@fieldses.org>,
+        linux-crypto@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-afs@lists.infradead.org
+Subject: Re: [RFC][PATCH 00/18] crypto: Add generic Kerberos library
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2380560.1605195776.1@warthog.procyon.org.uk>
+Date:   Thu, 12 Nov 2020 15:42:56 +0000
+Message-ID: <2380561.1605195776@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Nov 2020 11:47:58 +0100 Paolo Abeni wrote:
-> This series improves MPTCP handling of multiple concurrent
-> xmit streams.
-> 
-> The to-be-transmitted data is enqueued to a subflow only when
-> the send window is open, keeping the subflows xmit queue shorter
-> and allowing for faster switch-over.
-> 
-> The above requires a more accurate msk socket state tracking
-> and some additional infrastructure to allow pushing the data
-> pending in the msk xmit queue as soon as the MPTCP's send window
-> opens (patches 6-10).
-> 
-> As a side effect, the MPTCP socket could enqueue data to subflows
-> after close() time - to completely spooling the data sitting in the 
-> msk xmit queue. Dealing with the requires some infrastructure and 
-> core TCP changes (patches 1-5)
-> 
-> Finally, patches 11-12 introduce a more accurate tracking of the other
-> end's receive window.
-> 
-> Overall this refactor the MPTCP xmit path, without introducing
-> new features - the new code is covered by the existing self-tests.
+Chuck Lever <chuck.lever@oracle.com> wrote:
 
-Hi Paolo!
+> > There are three main interfaces to it:
+> > 
+> > (*) I/O crypto: encrypt, decrypt, get_mic and verify_mic.
+> > 
+> >     These all do in-place crypto, using an sglist to define the buffer
+> >     with the data in it.  Is it necessary to make it able to take separate
+> >     input and output buffers?
+> 
+> Hi David, Wondering if these "I/O" APIs use synchronous or async
+> crypto under the covers. For small data items like MICs, synchronous
+> might be a better choice, especially if asynchronous crypto could
+> result in incoming requests getting re-ordered and falling out of
+> the GSS sequence number window.
+> 
+> What say ye?
 
-Would you mind resending? Looks like patchwork got confused about patch
-6 not belonging to the series.
+For the moment I'm using synchronous APIs as that's what sunrpc is using (I
+borrowed the basic code from there).
+
+It would be interesting to consider using async, but there's a potential
+issue.  For the simplified profile, encryption and integrity checksum
+generation can be done simultaneously, but decryption and verification can't.
+For the AES-2 profile, the reverse is true.
+
+For my purposes in rxrpc, async mode isn't actually that useful since I'm only
+doing the contents of a UDP packet at a time.  Either I'm encrypting with the
+intention of immediate transmission or decrypting with the intention of
+immediately using the data, so I'm in a context where I can wait anyway.
+
+What might get me more of a boost would be to encrypt the app data directly
+into a UDP packet and decrypt the UDP packet directly into the app buffers.
+This is easier said than done, though, as there's typically security metadata
+inserted into the packet inside the encrypted region.
+
+David
+
