@@ -2,97 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 863C82B0279
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 11:04:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96B522B027C
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 11:05:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727706AbgKLKEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 05:04:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46088 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725979AbgKLKEv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 05:04:51 -0500
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF9CC0613D1
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 02:04:50 -0800 (PST)
-Received: by mail-wm1-x344.google.com with SMTP id c9so4706851wml.5
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 02:04:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=s2E/u0F0tDTSTx1gOaW8/01mbFoO3jqY6Xy2l3NiEcc=;
-        b=SFPo3T82awxcVg1iIQDEy5AlrYpZshcgxcoAGVod6am7Qiuuj9zhSfSnEb7ITxPuus
-         k5ZFlFYXwlYfEYcLTpzwqpALEbLyAdA1iNkcv4i7EhCjaoMPYqaFt2hXgx4XtzKffuJr
-         PFZYxlEde3+LV4vm56BRa853d+QM/5oS4ZCcd0V56LgDi/G/DUn/jsfU3FdXEXmjBK7i
-         6+QE10iIu40TnRb723vR64MXBaATc5lav2i2zuQjK0iMHaw8c+V8sQVSsDF6KtzQ+wSS
-         c6+u6UtRZqfLio2JQiUWx0gkvwqhDK+1STEtv4sWiL2Zelb70nyVl2ZyhqlWf/8QNMyW
-         gpBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=s2E/u0F0tDTSTx1gOaW8/01mbFoO3jqY6Xy2l3NiEcc=;
-        b=DJhPcuIlNWDXVUgtWEYaulr/CUhbQ1GNPuO016UEh0XS527mwReQRkvAiVDLhmLsm4
-         kuzSIpXVZsKGXWxb4b5fMQE9A3PuTCArhRWRBoK1Dk764q4+AUju5SGhL6k5rncmGzgJ
-         Jz8uQ/Fi/ABFAoufzXmCP/bEm4IzW99hPYPmyzn1e3p9JtjJoFS4faTMV0gxMsjBuf/N
-         Per6I9Kfif/8KVgEy9MANsDmsNaZ9nhUFtiveJ09hY36wOIZTEg9zBSnEW2UuMaWpnhk
-         WVZqL1avKj5G66fb3s7i4kEmxNlrHy/IiUC2QcnsaoPbh+kc4DXOttXTYH8Apsic6wIX
-         Wd7Q==
-X-Gm-Message-State: AOAM531Nol+FJQyZpUwc8P/ml6HOhuRjgz3h06H/w0gc8SQwT8t6uUdq
-        jt0Qzh7q6blTBXzJRC3orrS0RQ==
-X-Google-Smtp-Source: ABdhPJxvJ4GQvSG28P3t1X8RkWLKjtZ+YGZvUroc9iQsjffTBV22c9C7wkul5mnE6ePLTeD+kDlIHw==
-X-Received: by 2002:a1c:3803:: with SMTP id f3mr8563107wma.14.1605175488913;
-        Thu, 12 Nov 2020 02:04:48 -0800 (PST)
-Received: from dell ([91.110.221.159])
-        by smtp.gmail.com with ESMTPSA id r9sm6310917wrg.59.2020.11.12.02.04.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2020 02:04:48 -0800 (PST)
-Date:   Thu, 12 Nov 2020 10:04:45 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     davem@davemloft.net, gregkh@linuxfoundation.org
-Cc:     Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
-        linux-wimax@intel.com, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 04/30] net: wimax: i2400m: control: Fix some misspellings
- in i2400m_set_init_config()'s docs
-Message-ID: <20201112100445.GA1997862@dell>
-References: <20201102114512.1062724-1-lee.jones@linaro.org>
- <20201102114512.1062724-5-lee.jones@linaro.org>
+        id S1727827AbgKLKFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 05:05:37 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:45284 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725979AbgKLKFg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 05:05:36 -0500
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0ACA5GcC118916;
+        Thu, 12 Nov 2020 04:05:16 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1605175516;
+        bh=5mZL0qdohem3qi1lEyWOIBg12nManBREU6hV9hbnWsQ=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=oqzUHMsWgArLmS3nkD989pi4ORqwqz0Bwahk2/PFCk1/fcYauWXSgCuOSqgyv/Vt2
+         vP5ZiYdIlndaZNqV+9WLwiLvw3pjPksdJiPwswFCHMUcUsI9fwTGoSUKF0/7aJ4R1X
+         0viBU2OcfGbZtb+5R/LaSgDQGiW1yXXgCROGZQJo=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0ACA5Guh082266
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 12 Nov 2020 04:05:16 -0600
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 12
+ Nov 2020 04:05:16 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 12 Nov 2020 04:05:16 -0600
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0ACA5Eea013120;
+        Thu, 12 Nov 2020 04:05:14 -0600
+Subject: Re: [PATCH V4 net-bugfixs] net/ethernet: Update ret when ptp_clock is
+ ERROR
+To:     Arnd Bergmann <arnd@kernel.org>,
+        =?UTF-8?B?546L5pOO?= <wangqing@vivo.com>
+CC:     Jakub Kicinski <kuba@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Samuel Zou <zou_wei@huawei.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20201111080027.7830f756@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <AFoANwC7DUvmHhxeg4sBAapD.3.1605143705212.Hmail.wangqing@vivo.com>
+ <CAK8P3a3=eOxE-K25754+fB_-i_0BZzf9a9RfPTX3ppSwu9WZXw@mail.gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <64177a8e-eb60-bc27-6d64-26234be47601@ti.com>
+Date:   Thu, 12 Nov 2020 12:05:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <CAK8P3a3=eOxE-K25754+fB_-i_0BZzf9a9RfPTX3ppSwu9WZXw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201102114512.1062724-5-lee.jones@linaro.org>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 02 Nov 2020, Lee Jones wrote:
 
-> Fixes the following W=1 kernel build warning(s):
+
+On 12/11/2020 10:25, Arnd Bergmann wrote:
+> On Thu, Nov 12, 2020 at 2:48 AM 王擎 <wangqing@vivo.com> wrote:
+>>>> On Wed, Nov 11, 2020 at 03:24:33PM +0200, Grygorii Strashko wrote:
+>>>
+>>> I don't think v1 builds cleanly folks (not 100% sure, cpts is not
+>>> compiled on x86):
+>>>
+>>>                ret = cpts->ptp_clock ? cpts->ptp_clock : (-ENODEV);
+>>>
+>>> ptp_clock is a pointer, ret is an integer, right?
+>>
+>> yeah, I will modify like: ret = cpts->ptp_clock ? PTR_ERR(cpts->ptp_clock) : -ENODEV;
 > 
->  drivers/net/wimax/i2400m/control.c:1195: warning: Function parameter or member 'arg' not described in 'i2400m_set_init_config'
->  drivers/net/wimax/i2400m/control.c:1195: warning: Excess function parameter 'arg_size' description in 'i2400m_set_init_config'
+> This is not really getting any better. If Richard is worried about
+> Kconfig getting changed here, I would suggest handling the
+> case of PTP being disabled by returning an error early on in the
+> function, like
 > 
-> Cc: Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
-> Cc: linux-wimax@intel.com
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> ---
->  drivers/staging/wimax/i2400m/control.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
+>                                     struct device_node *node)
+> {
+>          struct am65_cpts *cpts;
+>          int ret, i;
+> 
+>          if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK))
+>                   return -ENODEV;
+> 
+> Then you can replace the broken IS_ERR_OR_NULL() path with
+> a simpler IS_ERR() case and keep the rest of the function readable.
 
-Any news on these i2400 patches?
+There is proper blocker in am65-cpts.h #if IS_ENABLED(CONFIG_TI_K3_AM65_CPTS)
+and in Makefile and proper dependency in Kconfig.
 
-Looks like the driver has been moved to Staging since submission.
+config TI_K3_AM65_CPTS
+	tristate "TI K3 AM65x CPTS"
+	depends on ARCH_K3 && OF
+	depends on PTP_1588_CLOCK
 
-Greg, shall I re-submit?
+But, as Richard mentioned [1], ptp_clock_register() may return NULL even if PTP_1588_CLOCK=y
+(which I can't confirm neither deny - from the fast look at ptp_clock_register()
+  code it seems should not return NULL)
 
+> 
+>>> Grygorii, would you mind sending a correct patch in so Wang Qing can
+>>> see how it's done? I've been asking for a fixes tag multiple times
+>>> already :(
+>>
+>> I still don't quite understand what a fixes tag means，
+>> can you tell me how to do this, thanks.
+> 
+> This identifies which patch introduced the problem you are fixing
+> originally. If you add an alias in your ~/.gitconfig such as
+> 
+> [alias]
+>          fixes = show --format='Fixes: %h (\"%s\")' -s
+> 
+> then running
+> 
+> $ git fixes f6bd59526c
+> produces this line:
+> 
+> Fixes: f6bd59526ca5 ("net: ethernet: ti: introduce am654 common
+> platform time sync driver")
+
+correct
+
+> 
+> which you can add to the changelog, just above the Signed-off-by
+> lines.
+
+
+
+[1] https://lore.kernel.org/patchwork/patch/1334067/#1529232
 -- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Best regards,
+grygorii
