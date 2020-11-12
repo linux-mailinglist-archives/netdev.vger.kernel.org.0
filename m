@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13F9B2B12B5
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 00:22:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32D462B12B7
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 00:25:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726046AbgKLXWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 18:22:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58154 "EHLO mail.kernel.org"
+        id S1726081AbgKLXZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 18:25:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58282 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725929AbgKLXWn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 18:22:43 -0500
+        id S1725929AbgKLXZY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 18:25:24 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6E696216C4;
-        Thu, 12 Nov 2020 23:22:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0F006216C4;
+        Thu, 12 Nov 2020 23:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605223362;
-        bh=HABR+gCW3tD/Zh5XW1nVWu/T+8hrcQmzKZsLDrSWzYk=;
+        s=default; t=1605223523;
+        bh=+M+SFw0G+ApwR9Ct4A6HcDsdhooPuMpK4hkQ9kX4VyI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FAik7gIPZNHDA1glr8SjkuUnptPJpJbkc9y2OK0VB+nYxKfKICMitTUYU10wOZQPQ
-         mxCuaaUtCkAnko3LJ4cUiMF5fQrCQ8DyFDiy5Girpyfy3LuKCOrEL8ZxFg9/b7pS+u
-         o5OziDbMDPrDNyob65BFlnfVUH9cZTLObYrHmCeA=
-Date:   Thu, 12 Nov 2020 15:22:41 -0800
+        b=FwRFYfDWdwAZwz503N3gol3RK2E2bokFGBlw1h5gInLan2B88Ylwzw29dHaEmLYsb
+         pPmHCQrD3t3IOLt/Yn320/qgKBe+AfVxZp8Uv+n9WwjY9d1iGhD1SSdo0qKbH3yPRu
+         70GDnVUuWpfOMHUIV109+zJaMr/xxasII5CnV00A=
+Date:   Thu, 12 Nov 2020 15:25:22 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Joel Stanley <joel@jms.id.au>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Ivan Mikhaylov <i.mikhaylov@yadro.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: ftgmac100: Fix crash when removing driver
-Message-ID: <20201112152241.7a3acaca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201112003145.831169-1-joel@jms.id.au>
-References: <20201112003145.831169-1-joel@jms.id.au>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, Aleksandr Nogikh <nogikh@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        linux-next@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: kcov: don't select SKB_EXTENSIONS when
+ there is no NET
+Message-ID: <20201112152522.02af9fa2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201110175746.11437-1-rdunlap@infradead.org>
+References: <20201110175746.11437-1-rdunlap@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -40,13 +41,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Nov 2020 11:01:45 +1030 Joel Stanley wrote:
-> When removing the driver we would hit BUG_ON(!list_empty(&dev->ptype_specific))
-> in net/core/dev.c due to still having the NC-SI packet handler
-> registered.
+On Tue, 10 Nov 2020 09:57:46 -0800 Randy Dunlap wrote:
+> Fix kconfig warning when CONFIG_NET is not set/enabled:
+> 
+> WARNING: unmet direct dependencies detected for SKB_EXTENSIONS
+>   Depends on [n]: NET [=n]
+>   Selected by [y]:
+>   - KCOV [=y] && ARCH_HAS_KCOV [=y] && (CC_HAS_SANCOV_TRACE_PC [=y] || GCC_PLUGINS [=n])
+> 
+> Fixes: 6370cc3bbd8a ("net: add kcov handle to skb extensions")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 
-> Fixes: bd466c3fb5a4 ("net/faraday: Support NCSI mode")
-> Signed-off-by: Joel Stanley <joel@jms.id.au>
+> This is from linux-next. I'm only guessing that it is in net-next.
 
-Thanks for the fix, I think there is another one of those missing in 
-the error path of ftgmac100_probe(), right?  Under err_ncsi_dev?
+Yup, applied, thanks!
