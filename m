@@ -2,92 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF5012B0071
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 08:42:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0225C2B007C
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 08:44:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726203AbgKLHmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 02:42:06 -0500
-Received: from mga14.intel.com ([192.55.52.115]:21554 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725920AbgKLHmF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 02:42:05 -0500
-IronPort-SDR: t2PVUlgrtzVIM/1j1E0EfiTnS3m8n4VvPljQnYiz5ZWYQjFFfT9yffPutJSS7vvPcizmqvG4GM
- G95ct/Hn9JzQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9802"; a="169486939"
-X-IronPort-AV: E=Sophos;i="5.77,471,1596524400"; 
-   d="scan'208";a="169486939"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2020 23:42:03 -0800
-IronPort-SDR: fOS0fEC/RpEPzpI6YHZeAKkrZiP3VuvhNoWoYlHcHNMEsoG7jqHG0mh3WpuXy3PIhzSJF0BBOv
- Ds7zhhUTLpCw==
-X-IronPort-AV: E=Sophos;i="5.77,471,1596524400"; 
-   d="scan'208";a="474177420"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.163])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2020 23:42:00 -0800
-Received: by lahna (sSMTP sendmail emulation); Thu, 12 Nov 2020 09:41:58 +0200
-Date:   Thu, 12 Nov 2020 09:41:58 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Christian Eggers <ceggers@gmx.de>
-Cc:     thunderbolt-software@lists.01.org,
-        Christian Kellner <christian@kellner.me>,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        Gil Fine <gil.fine@intel.com>, netdev@vger.kernel.org
-Subject: Re: thunderbolt: How to disconnect without physically unplugging
-Message-ID: <20201112074158.GP2495@lahna.fi.intel.com>
-References: <12647082.uLZWGnKmhe@zbook-opensuse.wgnetz.xx>
+        id S1726319AbgKLHou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 02:44:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24031 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725898AbgKLHot (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 02:44:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605167088;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gBYvmTaLLip6W5W4KHqMcgwCLAwq+6PTGHuasKuWRVo=;
+        b=Q32wNhJiYahVlpxlMtll8sZhymnrGe8bqSFQpaxS4xhZWtp/O/KtqAq0edJbQMMEapOGR5
+        y/xTkJJ1ydirXUSg7fhggD44CTaNLIEw+EXJDol03bTP6MfoP8bdHtfuTF8j8zyVUQwOlx
+        GKlZ9GV/beBFm2Xiab0J2VdhakmA88o=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-449-xjcfkOLPMdC8BNrEV6ic8w-1; Thu, 12 Nov 2020 02:44:46 -0500
+X-MC-Unique: xjcfkOLPMdC8BNrEV6ic8w-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0A188801FDC;
+        Thu, 12 Nov 2020 07:44:45 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EBF265DA74;
+        Thu, 12 Nov 2020 07:44:38 +0000 (UTC)
+Date:   Thu, 12 Nov 2020 08:44:37 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     brouer@redhat.com, Jesper Dangaard Brouer <hawk@kernel.org>,
+        Vincent Bernat <vincent@bernat.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [PATCH net-next v2 2/3] net: evaluate
+ net.ipv4.conf.all.proxy_arp_pvlan
+Message-ID: <20201112084437.37d159e0@carbon>
+In-Reply-To: <20201110152118.3636794d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201107193515.1469030-1-vincent@bernat.ch>
+        <20201107193515.1469030-3-vincent@bernat.ch>
+        <20201110152118.3636794d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <12647082.uLZWGnKmhe@zbook-opensuse.wgnetz.xx>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, 10 Nov 2020 15:21:18 -0800
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-On Thu, Nov 12, 2020 at 07:55:23AM +0100, Christian Eggers wrote:
-> Hi,
+> On Sat,  7 Nov 2020 20:35:14 +0100 Vincent Bernat wrote:
+> > Introduced in 65324144b50b, the "proxy_arp_vlan" sysctl is a
+                                               ^ pvlan
+
+The sysctl is called "proxy_arp_pvlan"
+
+> > per-interface sysctl to tune proxy ARP support for private VLANs.
+> > While the "all" variant is exposed, it was a noop and never evaluated.
+> > We use the usual "or" logic for this kind of sysctls.
+> > 
+> > Fixes: 65324144b50b ("net: RFC3069, private VLAN proxy arp support")
+> > Signed-off-by: Vincent Bernat <vincent@bernat.ch>
+> > ---
+> >  include/linux/inetdevice.h | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >   
 > 
-> sorry for asking "user" questions directly to developers. But I didn't find a
-> better place for asking.
+> CC Jesper 
 > 
-> I own a "hp zbook thunderbolt 3 dock". This docking station has 2 thunderbolt
-> connectors, the first (primary?) is connected to my personal laptop and the
-> other port I use for my company's laptop for working at home. It seems that
-> only one laptop at a time can access the dock peripherals (display port,
-> ethernet, usb) at a time.
+> I know this is 10 year old code, but can we get an ack for applying
+> this to net-next?
 
-Yes, this is the way the protocol works. Only one host can enumerate a
-device.
+ACK, I agree that the "all" variant doesn't make sense for proxy_arp_pvlan.
 
-> Unfortunately there is no button for selecting the "active" port (like on a KVM
-> switch), so the only way for switching between the two laptops is pulling the
-> cable every time (unplugging the "active" laptop for a short period lets the
-> dock automatically switch to the "inactive" laptop).
-> 
-> Is there a possibility to do this "short disconnect" in software (either
-> - by raising an "unplug" sequence to to the thunderbolt itself, or
-> - by temporarily removing the thunderbolt controller from the PCI bus)?
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-Not with the currect systems out there. With USB4 and software based
-connection manager this could be done by disabling the lanes but that is
-not implemented in the driver.
+> > diff --git a/include/linux/inetdevice.h b/include/linux/inetdevice.h
+> > index 3bbcddd22df8..53aa0343bf69 100644
+> > --- a/include/linux/inetdevice.h
+> > +++ b/include/linux/inetdevice.h
+> > @@ -105,7 +105,7 @@ static inline void ipv4_devconf_setall(struct in_device *in_dev)
+> >  
+> >  #define IN_DEV_LOG_MARTIANS(in_dev)	IN_DEV_ORCONF((in_dev), LOG_MARTIANS)
+> >  #define IN_DEV_PROXY_ARP(in_dev)	IN_DEV_ORCONF((in_dev), PROXY_ARP)
+> > -#define IN_DEV_PROXY_ARP_PVLAN(in_dev)	IN_DEV_CONF_GET(in_dev, PROXY_ARP_PVLAN)
+> > +#define IN_DEV_PROXY_ARP_PVLAN(in_dev)	IN_DEV_ORCONF((in_dev), PROXY_ARP_PVLAN)
+> >  #define IN_DEV_SHARED_MEDIA(in_dev)	IN_DEV_ORCONF((in_dev), SHARED_MEDIA)
+> >  #define IN_DEV_TX_REDIRECTS(in_dev)	IN_DEV_ORCONF((in_dev), SEND_REDIRECTS)
+> >  #define IN_DEV_SEC_REDIRECTS(in_dev)	IN_DEV_ORCONF((in_dev), \  
 
-> My concern is that pulling the cables multiple times a day would wear out the
-> connectors quickly and render my hardware unusable. Additionally I see not much
-> value having two connectors on the dock when I have to manually plug cables
-> anyway (although the dock may offer the ability to establish a "thunderbolt
-> networking connection" between both laptops).
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-The idea of the two connectors (and with USB4 more than two) is that you
-can plug more periperals there as a sort of "daisy chain". TBT3 it is up
-to 6 peripherals and then you can plug in a monitor as 7th device and
-another host of course to allow networking or so.
-
-What I've seen many docks actually only charge at one port so you may
-need to physically unplug and plug the laptops anyway. The Type-C
-connectors I've used seem to be pretty durable compared to USB micro-B
-connectors so hard to imagine that they would "wear out" from this.
