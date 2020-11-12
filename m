@@ -2,130 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED7BC2B0493
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 12:58:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B28F2B0469
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 12:54:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728251AbgKLL6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 06:58:06 -0500
-Received: from smtp-o-3.desy.de ([131.169.56.156]:53589 "EHLO smtp-o-3.desy.de"
+        id S1728298AbgKLLx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 06:53:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54674 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728337AbgKLL6F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 06:58:05 -0500
-X-Greylist: delayed 339 seconds by postgrey-1.27 at vger.kernel.org; Thu, 12 Nov 2020 06:58:03 EST
-Received: from smtp-buf-3.desy.de (smtp-buf-3.desy.de [IPv6:2001:638:700:1038::1:a6])
-        by smtp-o-3.desy.de (Postfix) with ESMTP id 101E8605AF
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 12:52:19 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp-o-3.desy.de 101E8605AF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=desy.de; s=default;
-        t=1605181939; bh=43y3Y53ssiHMHjx6vPCvKqbXwna9ag1nGRQzRu/sm7U=;
-        h=To:From:Subject:Cc:Date:From;
-        b=r/t1wH1TKAbhiXhVm7YBtrFMpbJO3ZTZ+AqjJ9DA7xKk5EFc4shXfrgTWYr45OkKg
-         CIUxwc78ydx+/SyEOIJzUV5/axUHKx/DFopeIEFMWQg1jzCTGgArgXthtMW/uYOjK2
-         93gI/UNa6pbL1l1IDek3iFH8HdvJtqvugjIZdkEA=
-Received: from smtp-m-3.desy.de (smtp-m-3.desy.de [IPv6:2001:638:700:1038::1:83])
-        by smtp-buf-3.desy.de (Postfix) with ESMTP id 0C29BA0586
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 12:52:19 +0100 (CET)
-X-Virus-Scanned: amavisd-new at desy.de
-Received: from [131.169.146.66] (lb-56-26.desy.de [131.169.56.26])
-        by smtp-intra-2.desy.de (Postfix) with ESMTP id D7F821001A7;
-        Thu, 12 Nov 2020 12:52:18 +0100 (CET)
-To:     netdev@vger.kernel.org
-From:   Vladimir Rybnikov <vladimir.rybnikov@desy.de>
-Subject: Problems with multicast delivery to application layer after kernel
- 4.4.0-128
-Cc:     Vladimir Rybnikov <vladimir.rybnikov@desy.de>
-Message-ID: <f1b698a6-fd3b-4860-62d1-91d3f39d6d45@desy.de>
-Date:   Thu, 12 Nov 2020 12:52:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728247AbgKLLxc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 06:53:32 -0500
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 670A922228;
+        Thu, 12 Nov 2020 11:53:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605182011;
+        bh=StUZENy+EqpA+v5bMTo8klXuvmlElJqapUnjCI4L0FI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=amtd+lbLS9WC8iApliLmMWZ1Qf1MuZA52rP/yrEjsWbrvzVAiQ/o2Wq7PCHBGHlCL
+         3E7bZDuicVbOmgutSHqisGc7Nn+eIEqp3ahyFCw2B13/QGi0go1tHSSQNfe500wMnF
+         9bn90zCIl4DiKp/RRas8eIXrUk6q+KxmhztKyH7Q=
+Received: by mail-ej1-f45.google.com with SMTP id cw8so7271519ejb.8;
+        Thu, 12 Nov 2020 03:53:31 -0800 (PST)
+X-Gm-Message-State: AOAM531v9fFC/5nBgvvRwlA7ase6zMnf1aXp4oV+R816vYqrdEE41/7n
+        a34ssAa6yijs1dHCIhioz2vjH0nw/SvJ9XEdWPA=
+X-Google-Smtp-Source: ABdhPJwpu3Qzv0aVpWz0TpMkSYylnZML4PSBTVDNybtAlg8bUufujwuSXvcMDt8/roomQlOeRRweOPWtpYSkoXboybg=
+X-Received: by 2002:a17:907:d1e:: with SMTP id gn30mr31142306ejc.148.1605182009793;
+ Thu, 12 Nov 2020 03:53:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <CGME20201112115107eucas1p1abe7589e6caffc579c22d39395f1efa0@eucas1p1.samsung.com>
+ <20201112115106.16224-1-l.stelmach@samsung.com>
+In-Reply-To: <20201112115106.16224-1-l.stelmach@samsung.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Date:   Thu, 12 Nov 2020 12:53:17 +0100
+X-Gmail-Original-Message-ID: <CAJKOXPeAwUG4fRxb5KANg90SLAmJ27dj9fO5e2nWrbVGqpzRFg@mail.gmail.com>
+Message-ID: <CAJKOXPeAwUG4fRxb5KANg90SLAmJ27dj9fO5e2nWrbVGqpzRFg@mail.gmail.com>
+Subject: Re: [PATCH v6 0/5] AX88796C SPI Ethernet Adapter
+To:     =?UTF-8?Q?=C5=81ukasz_Stelmach?= <l.stelmach@samsung.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        "linux-samsung-soc@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>,
+        =?UTF-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewicz?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Linux kerenl-network experts,
+On Thu, 12 Nov 2020 at 12:51, =C5=81ukasz Stelmach <l.stelmach@samsung.com>=
+ wrote:
+>
+> This is a driver for AX88796C Ethernet Adapter connected in SPI mode as
+> found on ARTIK5 evaluation board. The driver has been ported from a
+> v3.10.9 vendor kernel for ARTIK5 board.
+>
+> Changes in v6:
+>   - fixed typos in Kconfig
+>   - checked argument value in ax88796c_set_tunable
+>   - updated tags in commit messages
+>
+> Changes in v5:
+>   - coding style (local variable declarations)
+>   - added spi0 node in the DT binding example and removed
+>     interrupt-parent
+>   - removed comp module parameter
+>   - added CONFIG_SPI_AX88796C_COMPRESSION option to set the initial
+>     state of SPI compression
+>   - introduced new ethtool tunable "spi-compression" to controll SPI
+>     transfer compression
+>   - removed unused fields in struct ax88796c_device
+>   - switched from using buffers allocated on stack for SPI transfers
+>     to DMA safe ones embedded in struct ax_spi and allocated with
+>     kmalloc()
+>
+> Changes in v4:
+>   - fixed compilation problems in asix,ax88796c.yaml and in
+>   ax88796c_main.c introduced in v3
+>
+> Changes in v3:
+>   - modify vendor-prefixes.yaml in a separate patch
+>   - fix several problems in the dt binding
+>     - removed unnecessary descriptions and properties
+>     - changed the order of entries
+>     - fixed problems with missing defines in the example
+>   - change (1 << N) to BIT(N), left a few (0 << N)
+>   - replace ax88796c_get_link(), ax88796c_get_link_ksettings(),
+>     ax88796c_set_link_ksettings(), ax88796c_nway_reset(),
+>     ax88796c_set_mac_address() with appropriate kernel functions.
+>   - disable PHY auto-polling in MAC and use PHYLIB to track the state
+>     of PHY and configure MAC
+>   - propagate return values instead of returning constants in several
+>     places
+>   - add WARN_ON() for unlocked mutex
+>   - remove local work queue and use the system_wq
+>   - replace phy_connect_direct() with phy_connect() and move
+>     devm_register_netdev() to the end of ax88796c_probe()
+>     (Unlike phy_connect_direct() phy_connect() does not crash if the
+>     network device isn't registered yet.)
+>   - remove error messages on ENOMEM
+>   - move free_irq() to the end of ax88796c_close() to avoid race
+>     condition
+>   - implement flow-control
+>
+> Changes in v2:
+>   - use phylib
+>   - added DT bindings
+>   - moved #includes to *.c files
+>   - used mutex instead of a semaphore for locking
+>   - renamed some constants
+>   - added error propagation for several functions
+>   - used ethtool for dumping registers
+>   - added control over checksum offloading
+>   - remove vendor specific PM
+>   - removed macaddr module parameter and added support for reading a MAC
+>     address from platform data (e.g. DT)
+>   - removed dependency on SPI from NET_VENDOR_ASIX
+>   - added an entry in the MAINTAINERS file
+>   - simplified logging with appropriate netif_* and netdev_* helpers
+>   - lots of style fixes
+>
+> =C5=81ukasz Stelmach (5):
+>   dt-bindings: vendor-prefixes: Add asix prefix
+>   dt-bindings: net: Add bindings for AX88796C SPI Ethernet Adapter
+>   net: ax88796c: ASIX AX88796C SPI Ethernet Adapter Driver
+>   ARM: dts: exynos: Add Ethernet to Artik 5 board
+>   ARM: defconfig: Enable ax88796c driver
 
+Please don't send patches which were applied. It confuses everyone and
+could cause double-applying through different tree.
 
-I work at DESY (Hamburg, Germany), and is responsible for Data Acquisition (DAQ) from different accelerators and experiments.
-
-
-Every DAQ collects data over the network. UDP multicast is used to transfer the data. Every data source has a multicast sender (~ 200 instances). A Dell PowerEdge R730xd server (DAQ server: 256 GB RAM, 40 Cores) is used for the data receiving. The DAQ server has several 10Gb network adapters in different sub-nets to receive multicast from the senders sitting in the corresponding sub-nets.
-
-Every sender is pushing data via a UDP socket bound to a multicast address. The data sending takes place every 100ms (10Hz),
-
-The size of data can vary from some bytes up to several MB.
-The data is split into 32KB messages sent via the UDP socket.
-
-A multi-threaded fast collector runs on the DAQ server to receive the data.
-
-
-We have found and successfully used the values of the kernel parameters to minimize packet losses on all network stack layers till the kernel 4.4.0-128.
-
-
-Since one year (after trying to switch to other kernels kernel 4.4.0-xxx [sorry I cannot say what xxx was, but after 128], 4.6 .. ) we have a problem that looks like losses on the application layer.
-
-
-In my current test 2 network interfaces are used. The multicast input rate is ~ 140MB/s for each interface.
-
-
-
-  I'm testing kernel 5.6.0-1032-oem.
-Previously kernel 5.4.0-52-generic was tested but with the same results.
-
-The signature is the following:
-1) no Rx looses in adapters
-2) no counting InErrors RcvbufErrors InCsumErrors in /proc/net/snmp
-3) no counts in any column but 0 in /proc/net/softnet_stat
-
-The losses show up in bursts from time to time.
-4) dropwatch shows "xxx drops in at ip_defrag+171 ..."
-
-
-Putting it in one line:n my current test 2 network interfaces are used. The multicast input rate is ~ 140MB/s for each interface.
-
-Multicast packages are seen by the network adapters but the application layer from time to time doesn't get them  simultaneously from all senders.
-
-Here are some sysctl parameters  currently used values, I'm aware of, that could
-influence on the losses level.
-
-net.core.optmem_max = 40960
-net.core.rmem_default = 16777216
-net.core.rmem_max = 67108864
-net.core.wmem_default = 212992
-net.core.wmem_max = 212992
-net.ipv4.igmp_max_memberships = 512
-net.ipv4.udp_mem = 262144    327680    393216
-net.ipv4.udp_rmem_min = 8192
-net.ipv4.udp_wmem_min = 4096
-
-net.core.netdev_budget = 100000
-net.core.netdev_max_backlog = 100000
-net.ipv4.ipfrag_high_thresh = 33554432
-net.ipv4.ipfrag_low_thresh = 16777216
-
-All other parameters are without changes as they come with the kernel distribution.
-
-We plan to switch to Ubuntu 20.04 next year, and therefore kernel 5.4(6) is going to be used.
-
-
-I hope that this problem is solvable on the kernel level.
-
-
-Many thanks in advance and best regards,
-
-Vladimir
-
--- 
->/*********************************************************************\
->* Dr. Vladimir Rybnikov      Phone : [49] (40) 8998 4846              *
->* FLA/MCS4                   Fax   : [49] (40) 8998 4448              *
->* Geb. 55a/35                e-mail: Vladimir.Rybnikov@desy.de        *
->*                            WWW   : http://www.desy.de/~rybnikov/    * 
->+                                                                     +
->* Notkestr.85, DESY                                                   *
->* D-22607 Hamburg, Germany                                            *
->\*********************************************************************/
-
+Best regards,
+Krzysztof
