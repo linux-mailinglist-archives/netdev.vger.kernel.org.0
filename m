@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4850B2B0957
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 17:00:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 946542B0954
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 17:00:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729102AbgKLQA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 11:00:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44604 "EHLO
+        id S1729131AbgKLQAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 11:00:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728849AbgKLP6Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 10:58:25 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD524C0613D6;
-        Thu, 12 Nov 2020 07:58:24 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id o20so6875758eds.3;
-        Thu, 12 Nov 2020 07:58:24 -0800 (PST)
+        with ESMTP id S1728857AbgKLP60 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 10:58:26 -0500
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F1AC0613D4;
+        Thu, 12 Nov 2020 07:58:26 -0800 (PST)
+Received: by mail-ej1-x644.google.com with SMTP id y17so2925068ejh.11;
+        Thu, 12 Nov 2020 07:58:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oNz8ucszFZGajN27xAe/ut4viosb6LUQd+Phco1FxbU=;
-        b=izWPgd04V/VZW3Qwc8thc8F7Lmx3HnSszpF3SJZbtyPPDqNMbjmqqUwcxxmiKiBkXS
-         Aa4V/35HpfcEf0qdldv4S6H7Vl7o+6DYMYedJFVZcG+/fqPeI2cBafGqAd+O0rk2E4Ei
-         HlbdlmJimzIn6p3twbhy5Mup0pM1KgkJXiT6VHFF9uGc4lUHYamA9OqhNnKYytw51fPl
-         mFKDYd5uU6HOla2T0hRRalYhILQXO5KiSU3nCiYEGDIXkcJlG6qtCFOGyDuEe9WzUxuN
-         roxZpmKP91TLcTHMANlKbHNrLmCxFEsACc4Kcm8IEZ7YfmkwNMbRLoETYfNZ20dfu0vL
-         7nbA==
+        bh=T2XY8ttvdIFiCYz29ukEUuH1Xm19QPYXW7DIh+FSk/8=;
+        b=IZS4ybW8CI3QnVvcxHwHmD2hj4HFIZkwmB9H2kewmiQbpnf1z31PQzv5t6+motXvZ1
+         na61XssyPc+8TBXJk+/u4ktHG6Chdj1XYeTXaHk+HU3g+l7soWOObJxvSlw1pp2Al1km
+         vLJOXZutzOhPU3Kx0cGGN30ONs60HIC77RiNx2Bp7S1xRhW7uJsfkVFa0IuDAOR+gxOL
+         XMd9wslm8WzfeAPd0ndic3yNYPoMkiG2fmDW9+jMZDmrZpRK+7iqDJUcXY2STgY3Z6EH
+         P59QNw2WuA+3twqXXZ97t6HYx4pg66mPwEjkPs912W05h71YbByJ4JE90NEFRN1K/iwZ
+         jv1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oNz8ucszFZGajN27xAe/ut4viosb6LUQd+Phco1FxbU=;
-        b=mzZf/MUpOeDFVxcdiZBGzY46XFwZ2/msgS9XIlK7p4x9EAv1pPAHSHXUY+GJZJCaI8
-         MeSY8HrObcl0Z5kQnojP6QyyI5Z6wJiBUnywCJwmR/lzz5KcyrOnbIx6Xj/lBw+5IKDD
-         xRrQNsGAPhxUznNMH4ai2VlvUev28ZsxnuuzrMOjn5JGW8UndJPn/uoN/Brol7giAHOt
-         RL/rFRWma1FC0yKt2j6DtOY3qSPkrMc6j3NKMec5JbWV1Z/5S1U+qEkrjllWCX9wT1Xa
-         cnnLo4b2f0vh3Og4aoF6igUqhHOZDzB9Fqz2LPD8nmE+netmRlDWXUfZ/pQh/iY8cxKB
-         oqlQ==
-X-Gm-Message-State: AOAM532NW4wZR3A59PchX6jv+tFJquXnhriAfQSwdith9DBEXojg2DhU
-        vwkSSajYPdtHGnrrclN8uT4=
-X-Google-Smtp-Source: ABdhPJzo7qu/k5YqYG4+kYp0rg+iGHJFPc3Gb+lnoEt137BOIwikjdyMj+5q3JJxlzPS7CISCHd9Aw==
-X-Received: by 2002:a50:de45:: with SMTP id a5mr394821edl.91.1605196703608;
-        Thu, 12 Nov 2020 07:58:23 -0800 (PST)
+        bh=T2XY8ttvdIFiCYz29ukEUuH1Xm19QPYXW7DIh+FSk/8=;
+        b=BfUuEc674pqFWNqssB88wXGzX05T2E58LzXN2+YI3Gvwsq27mAYkD3ixCldXCgYEU5
+         SCoTVV804vP1Qi4zaV/Kw1UHM0ED7Zy0StQ90mgad+gRZ++b2DKdxMvbj1xi/ob/3MTl
+         5alLqnvOfD7FUTMlTRFEM9AihQURJVLgFpSJqjb9FqGFRh6YIu/g+/sbrutWHQkdQdl4
+         SPsPgaA5g72P8dHa67zOt47WND4n9NI3siH7VroBRuWnQak50CKkGLXB7d+he7bkKMsX
+         hwKz3IxlI4kMGV3YMLRoIr70Z3vR/qj+Z7lkRtkYRq711dcf995KuHzdYCmvIVzjpE+C
+         D+Xw==
+X-Gm-Message-State: AOAM532bseFPUemBxBZcrLr9zGWYnLRUM5A/8Ou8DtI/wz/Xz91mMMe1
+        9y047V7xoN5QEYaoYpiKHrM=
+X-Google-Smtp-Source: ABdhPJxPPObF7VfIddXXiBMyQt+VUupzwm6zuT9DBmU0EB+A8vu/lvDbSE+2CfAu6X8Ia3le410xLg==
+X-Received: by 2002:a17:906:c298:: with SMTP id r24mr30422591ejz.38.1605196704749;
+        Thu, 12 Nov 2020 07:58:24 -0800 (PST)
 Received: from yoga-910.localhost ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id q15sm2546540edt.95.2020.11.12.07.58.22
+        by smtp.gmail.com with ESMTPSA id q15sm2546540edt.95.2020.11.12.07.58.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2020 07:58:23 -0800 (PST)
+        Thu, 12 Nov 2020 07:58:24 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -55,12 +55,10 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH net-next 06/18] net: phy: marvell: remove the use of .ack_interrupt()
-Date:   Thu, 12 Nov 2020 17:55:01 +0200
-Message-Id: <20201112155513.411604-7-ciorneiioana@gmail.com>
+        Christophe Leroy <christophe.leroy@c-s.fr>
+Subject: [PATCH net-next 07/18] net: phy: lxt: implement generic .handle_interrupt() callback
+Date:   Thu, 12 Nov 2020 17:55:02 +0200
+Message-Id: <20201112155513.411604-8-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201112155513.411604-1-ciorneiioana@gmail.com>
 References: <20201112155513.411604-1-ciorneiioana@gmail.com>
@@ -72,195 +70,116 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-In preparation of removing the .ack_interrupt() callback, we must replace
-its occurrences (aka phy_clear_interrupt), from the 2 places where it is
-called from (phy_enable_interrupts and phy_disable_interrupts), with
-equivalent functionality.
+In an attempt to actually support shared IRQs in phylib, we now move the
+responsibility of triggering the phylib state machine or just returning
+IRQ_NONE, based on the IRQ status register, to the PHY driver. Having
+3 different IRQ handling callbacks (.handle_interrupt(),
+.did_interrupt() and .ack_interrupt() ) is confusing so let the PHY
+driver implement directly an IRQ handler like any other device driver.
+Make this driver follow the new convention.
 
-This means that clearing interrupts now becomes something that the PHY
-driver is responsible of doing, before enabling interrupts and after
-clearing them. Make this driver follow the new contract.
-
-Cc: Maxim Kochetkov <fido_max@inbox.ru>
-Cc: Baruch Siach <baruch@tkos.co.il>
-Cc: Robert Hancock <robert.hancock@calian.com>
+Cc: Christophe Leroy <christophe.leroy@c-s.fr>
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
- drivers/net/phy/marvell.c | 31 +++++++++++--------------------
- 1 file changed, 11 insertions(+), 20 deletions(-)
+ drivers/net/phy/lxt.c | 50 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index bb843b960436..587930a7f48b 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -317,12 +317,21 @@ static int marvell_config_intr(struct phy_device *phydev)
- {
- 	int err;
+diff --git a/drivers/net/phy/lxt.c b/drivers/net/phy/lxt.c
+index fec58ad69e02..716d9936bc90 100644
+--- a/drivers/net/phy/lxt.c
++++ b/drivers/net/phy/lxt.c
+@@ -37,6 +37,8 @@
  
--	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		err = marvell_ack_interrupt(phydev);
-+		if (err)
-+			return err;
-+
- 		err = phy_write(phydev, MII_M1011_IMASK,
- 				MII_M1011_IMASK_INIT);
--	else
-+	} else {
- 		err = phy_write(phydev, MII_M1011_IMASK,
- 				MII_M1011_IMASK_CLEAR);
-+		if (err)
-+			return err;
-+
-+		err = marvell_ack_interrupt(phydev);
-+	}
+ #define MII_LXT970_ISR       18  /* Interrupt Status Register */
  
- 	return err;
++#define MII_LXT970_IRS_MINT  BIT(15)
++
+ #define MII_LXT970_CONFIG    19  /* Configuration Register    */
+ 
+ /* ------------------------------------------------------------------------- */
+@@ -47,6 +49,7 @@
+ #define MII_LXT971_IER_IEN	0x00f2
+ 
+ #define MII_LXT971_ISR		19  /* Interrupt Status Register */
++#define MII_LXT971_ISR_MASK	0x00f0
+ 
+ /* register definitions for the 973 */
+ #define MII_LXT973_PCR 16 /* Port Configuration Register */
+@@ -81,6 +84,33 @@ static int lxt970_config_intr(struct phy_device *phydev)
+ 		return phy_write(phydev, MII_LXT970_IER, 0);
  }
-@@ -2703,7 +2712,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.probe = marvell_probe,
- 		.config_init = marvell_config_init,
- 		.config_aneg = m88e1101_config_aneg,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -2722,7 +2730,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.probe = marvell_probe,
- 		.config_init = m88e1111_config_init,
- 		.config_aneg = marvell_config_aneg,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -2744,7 +2751,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = m88e1111_config_init,
- 		.config_aneg = m88e1111_config_aneg,
- 		.read_status = marvell_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -2766,7 +2772,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = m88e1111_config_init,
- 		.config_aneg = m88e1111_config_aneg,
- 		.read_status = marvell_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -2787,7 +2792,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.probe = marvell_probe,
- 		.config_init = m88e1118_config_init,
- 		.config_aneg = m88e1118_config_aneg,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -2807,7 +2811,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = marvell_config_init,
- 		.config_aneg = m88e1121_config_aneg,
- 		.read_status = marvell_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -2829,7 +2832,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = m88e1318_config_init,
- 		.config_aneg = m88e1318_config_aneg,
- 		.read_status = marvell_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.get_wol = m88e1318_get_wol,
-@@ -2851,7 +2853,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = m88e1145_config_init,
- 		.config_aneg = m88e1101_config_aneg,
- 		.read_status = genphy_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -2872,7 +2873,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.probe = marvell_probe,
- 		.config_init = m88e1149_config_init,
- 		.config_aneg = m88e1118_config_aneg,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -2891,7 +2891,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.probe = marvell_probe,
- 		.config_init = m88e1111_config_init,
- 		.config_aneg = marvell_config_aneg,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -2909,7 +2908,6 @@ static struct phy_driver marvell_drivers[] = {
- 		/* PHY_GBIT_FEATURES */
- 		.probe = marvell_probe,
- 		.config_init = m88e1116r_config_init,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -2932,7 +2930,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = m88e1510_config_init,
- 		.config_aneg = m88e1510_config_aneg,
- 		.read_status = marvell_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.get_wol = m88e1318_get_wol,
-@@ -2961,7 +2958,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = marvell_config_init,
- 		.config_aneg = m88e1510_config_aneg,
- 		.read_status = marvell_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -2987,7 +2983,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = marvell_config_init,
- 		.config_aneg = m88e1510_config_aneg,
- 		.read_status = marvell_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -3012,7 +3007,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = m88e3016_config_init,
- 		.aneg_done = marvell_aneg_done,
- 		.read_status = marvell_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -3033,7 +3027,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = marvell_config_init,
- 		.config_aneg = m88e6390_config_aneg,
- 		.read_status = marvell_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -3058,7 +3051,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = marvell_config_init,
- 		.config_aneg = m88e1510_config_aneg,
- 		.read_status = marvell_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -3080,7 +3072,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.config_init = marvell_config_init,
- 		.config_aneg = m88e1510_config_aneg,
- 		.read_status = marvell_read_status,
--		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
+ 
++static irqreturn_t lxt970_handle_interrupt(struct phy_device *phydev)
++{
++	int irq_status;
++
++	/* The interrupt status register is cleared by reading BMSR
++	 * followed by MII_LXT970_ISR
++	 */
++	irq_status = phy_read(phydev, MII_BMSR);
++	if (irq_status < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	irq_status = phy_read(phydev, MII_LXT970_ISR);
++	if (irq_status < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	if (!(irq_status & MII_LXT970_IRS_MINT))
++		return IRQ_NONE;
++
++	phy_trigger_machine(phydev);
++
++	return IRQ_HANDLED;
++}
++
+ static int lxt970_config_init(struct phy_device *phydev)
+ {
+ 	return phy_write(phydev, MII_LXT970_CONFIG, 0);
+@@ -105,6 +135,24 @@ static int lxt971_config_intr(struct phy_device *phydev)
+ 		return phy_write(phydev, MII_LXT971_IER, 0);
+ }
+ 
++static irqreturn_t lxt971_handle_interrupt(struct phy_device *phydev)
++{
++	int irq_status;
++
++	irq_status = phy_read(phydev, MII_LXT971_ISR);
++	if (irq_status < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	if (!(irq_status & MII_LXT971_ISR_MASK))
++		return IRQ_NONE;
++
++	phy_trigger_machine(phydev);
++
++	return IRQ_HANDLED;
++}
++
+ /*
+  * A2 version of LXT973 chip has an ERRATA: it randomly return the contents
+  * of the previous even register when you read a odd register regularly
+@@ -239,6 +287,7 @@ static struct phy_driver lxt97x_driver[] = {
+ 	.config_init	= lxt970_config_init,
+ 	.ack_interrupt	= lxt970_ack_interrupt,
+ 	.config_intr	= lxt970_config_intr,
++	.handle_interrupt = lxt970_handle_interrupt,
+ }, {
+ 	.phy_id		= 0x001378e0,
+ 	.name		= "LXT971",
+@@ -246,6 +295,7 @@ static struct phy_driver lxt97x_driver[] = {
+ 	/* PHY_BASIC_FEATURES */
+ 	.ack_interrupt	= lxt971_ack_interrupt,
+ 	.config_intr	= lxt971_config_intr,
++	.handle_interrupt = lxt971_handle_interrupt,
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
+ }, {
 -- 
 2.28.0
 
