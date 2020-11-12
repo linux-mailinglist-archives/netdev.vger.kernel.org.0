@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 924052AFFC2
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 07:40:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C7952AFFC6
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 07:40:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbgKLGkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 01:40:40 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:5893 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726251AbgKLGke (ORCPT
+        id S1726473AbgKLGkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 01:40:42 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:15487 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726287AbgKLGke (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 01:40:34 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5facd8e60000>; Wed, 11 Nov 2020 22:40:38 -0800
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5facd8dd0001>; Wed, 11 Nov 2020 22:40:29 -0800
 Received: from sw-mtx-036.mtx.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 12 Nov
- 2020 06:40:33 +0000
+ 2020 06:40:34 +0000
 From:   Parav Pandit <parav@nvidia.com>
 To:     <virtualization@lists.linux-foundation.org>
 CC:     <mst@redhat.com>, <jasowang@redhat.com>, <parav@nvidia.com>,
         <elic@nvidia.com>, <netdev@vger.kernel.org>
-Subject: [PATCH 6/7] vdpa: Enable user to query vdpa device info
-Date:   Thu, 12 Nov 2020 08:40:04 +0200
-Message-ID: <20201112064005.349268-7-parav@nvidia.com>
+Subject: [PATCH 7/7] vdpa/vdpa_sim: Enable user to create vdpasim net devices
+Date:   Thu, 12 Nov 2020 08:40:05 +0200
+Message-ID: <20201112064005.349268-8-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201112064005.349268-1-parav@nvidia.com>
 References: <20201112064005.349268-1-parav@nvidia.com>
@@ -33,21 +33,41 @@ X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1605163238; bh=Hdk1FRDwYZoc183SbD09+7k3Ug3LOo5biJ6yLjJm35g=;
+        t=1605163229; bh=KJ3AOJWMJTMztY+TXdCv61rtyZGand4171XiGUabLAI=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=BBAJXmNzzEC7kMxEt5J7+04SX4s5FmQY7Nad/02N/4Ab4ZYJZdragKz8SOETz8cAV
-         +B/ISU+OkJvwlY4vDmjaCxcY/B7TI6DzyO2h2oppkuroaPMvgaP75nkmP9M43XxiOJ
-         5x1cogISbU/VnpKvJfcgKWuJprL/4DN2rO6aeC1j1VwLnDBnvNDXHomJiQbkot8ART
-         fVMecefdVRNiZ/USy7UNlprtXi8AP7RfV3iLZY8iegt4ACy+tFu7fr9rqlLwBRm9Gg
-         5z0LMWErGkezwLMlUXRtTNItt7CD/vzYQiu57KNOxvAIKKvQTrwlK/kGbzha2b4bJu
-         g/ByMsXQXMX4g==
+        b=X3AME2CEGukSsNJizi2DRuLJDHos1YyLKY9cOrHZFFXkoj/mtFQgJ27+8gYsA3DTm
+         1W/3RVB7+LaLpNszZOu1MfeP/fVjfpD1NJMqGEeOK/dT2+1xo7SSumUw3X48rdfZQX
+         C4XxqO3HVRY/Jhf4sJZeQq0Krqu9HuKq4ddWqlVe91oKkNRwhm/gt1odNlM4uiqiVr
+         /u3dIPJpE7f1xq6FGAFIaGE5HukcuhnPr8s/W+VjQnkv3klAJZPUEe2O1kq4IIErCX
+         eryY7iuEpfSCkQm/DJRpqbNsMhIJmgEAcg8uWhpzi6MRm+FcVmx9wTisQChP7BeH7S
+         hO3dwU1arQYFQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable user to query vdpa device information.
+Enable user to create vdpasim net simulate devices.
+
+Show vdpa parent device that supports creating, deleting vdpa devices.
+
+$ vdpa parentdev show
+vdpasim:
+  supported_classes
+    net
+
+$ vdpa parentdev show -jp
+{
+    "show": {
+        "vdpasim": {
+            "supported_classes": {
+              "net"
+        }
+    }
+}
+
+Create a vdpa device of type networking named as "foo2" from
+the parent device vdpasim:
 
 $ vdpa dev add parentdev vdpasim type net name foo2
 
@@ -68,191 +88,165 @@ $ vdpa dev show foo2 -jp
     }
 }
 
+Delete the vdpa device after its use:
+$ vdpa dev del foo2
+
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Reviewed-by: Eli Cohen <elic@nvidia.com>
-Reviewed-by: Jason Wang <jasowang@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/vdpa/vdpa.c       | 131 ++++++++++++++++++++++++++++++++++++++
- include/uapi/linux/vdpa.h |   4 ++
- 2 files changed, 135 insertions(+)
+ drivers/vdpa/vdpa_sim/vdpa_sim.c | 81 +++++++++++++++++++++++++++-----
+ 1 file changed, 69 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index fcbdc8f10206..32bd48baffab 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -483,6 +483,131 @@ static int vdpa_nl_cmd_dev_del_set_doit(struct sk_buf=
-f *skb, struct genl_info *i
- 	return err;
- }
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_=
+sim.c
+index aed1bb7770ab..85776e4e6749 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+@@ -28,6 +28,7 @@
+ #include <linux/vhost_iotlb.h>
+ #include <uapi/linux/virtio_config.h>
+ #include <uapi/linux/virtio_net.h>
++#include <uapi/linux/vdpa.h>
 =20
-+static int
-+vdpa_dev_fill(struct vdpa_device *vdev, struct sk_buff *msg, u32 portid, u=
-32 seq,
-+	      int flags, struct netlink_ext_ack *extack)
+ #define DRV_VERSION  "0.1"
+ #define DRV_AUTHOR   "Jason Wang <jasowang@redhat.com>"
+@@ -42,6 +43,17 @@ static char *macaddr;
+ module_param(macaddr, charp, 0);
+ MODULE_PARM_DESC(macaddr, "Ethernet MAC address");
+=20
++static struct vdpa_parent_dev parent_dev;
++
++static void vdpasim_parent_release(struct device *dev)
 +{
-+	u16 max_vq_size;
-+	u32 device_id;
-+	u32 vendor_id;
-+	void *hdr;
-+	int err;
-+
-+	hdr =3D genlmsg_put(msg, portid, seq, &vdpa_nl_family, flags, VDPA_CMD_DE=
-V_NEW);
-+	if (!hdr)
-+		return -EMSGSIZE;
-+
-+	err =3D vdpa_nl_parentdev_handle_fill(msg, vdev->pdev);
-+	if (err)
-+		goto msg_err;
-+
-+	device_id =3D vdev->config->get_device_id(vdev);
-+	vendor_id =3D vdev->config->get_vendor_id(vdev);
-+	max_vq_size =3D vdev->config->get_vq_num_max(vdev);
-+
-+	err =3D -EMSGSIZE;
-+	if (nla_put_string(msg, VDPA_ATTR_DEV_NAME, dev_name(&vdev->dev)))
-+		goto msg_err;
-+	if (nla_put_u32(msg, VDPA_ATTR_DEV_ID, device_id))
-+		goto msg_err;
-+	if (nla_put_u32(msg, VDPA_ATTR_DEV_VENDOR_ID, vendor_id))
-+		goto msg_err;
-+	if (nla_put_u32(msg, VDPA_ATTR_DEV_MAX_VQS, vdev->nvqs))
-+		goto msg_err;
-+	if (nla_put_u16(msg, VDPA_ATTR_DEV_MAX_VQ_SIZE, max_vq_size))
-+		goto msg_err;
-+
-+	genlmsg_end(msg, hdr);
-+	return 0;
-+
-+msg_err:
-+	genlmsg_cancel(msg, hdr);
-+	return err;
 +}
 +
-+static int vdpa_nl_cmd_dev_get_doit(struct sk_buff *skb, struct genl_info =
-*info)
-+{
-+	struct vdpa_device *vdev;
-+	struct sk_buff *msg;
-+	const char *devname;
-+	struct device *dev;
-+	int err;
-+
-+	if (!info->attrs[VDPA_ATTR_DEV_NAME])
-+		return -EINVAL;
-+	devname =3D nla_data(info->attrs[VDPA_ATTR_DEV_NAME]);
-+	msg =3D nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	mutex_lock(&vdpa_dev_mutex);
-+	dev =3D bus_find_device(&vdpa_bus, NULL, devname, vdpa_name_match);
-+	if (!dev) {
-+		mutex_unlock(&vdpa_dev_mutex);
-+		NL_SET_ERR_MSG_MOD(info->extack, "device not found");
-+		return -ENODEV;
-+	}
-+	vdev =3D container_of(dev, struct vdpa_device, dev);
-+	if (!vdev->pdev) {
-+		mutex_unlock(&vdpa_dev_mutex);
-+		put_device(dev);
-+		return -EINVAL;
-+	}
-+	err =3D vdpa_dev_fill(vdev, msg, info->snd_portid, info->snd_seq, 0, info=
-->extack);
-+	if (!err)
-+		err =3D genlmsg_reply(msg, info);
-+	put_device(dev);
-+	mutex_unlock(&vdpa_dev_mutex);
-+
-+	if (err)
-+		nlmsg_free(msg);
-+	return err;
-+}
-+
-+struct vdpa_dev_dump_info {
-+	struct sk_buff *msg;
-+	struct netlink_callback *cb;
-+	int start_idx;
-+	int idx;
++static struct device vdpasim_parent =3D {
++	.init_name =3D "vdpasim",
++	.release =3D vdpasim_parent_release,
 +};
 +
-+static int vdpa_dev_dump(struct device *dev, void *data)
+ struct vdpasim_virtqueue {
+ 	struct vringh vring;
+ 	struct vringh_kiov iov;
+@@ -101,8 +113,6 @@ static inline __virtio16 cpu_to_vdpasim16(struct vdpasi=
+m *vdpasim, u16 val)
+ 	return __cpu_to_virtio16(vdpasim_is_little_endian(vdpasim), val);
+ }
+=20
+-static struct vdpasim *vdpasim_dev;
+-
+ static struct vdpasim *vdpa_to_sim(struct vdpa_device *vdpa)
+ {
+ 	return container_of(vdpa, struct vdpasim, vdpa);
+@@ -345,7 +355,7 @@ static const struct dma_map_ops vdpasim_dma_ops =3D {
+ static const struct vdpa_config_ops vdpasim_net_config_ops;
+ static const struct vdpa_config_ops vdpasim_net_batch_config_ops;
+=20
+-static struct vdpasim *vdpasim_create(void)
++static struct vdpasim *vdpasim_create(const char *name)
+ {
+ 	const struct vdpa_config_ops *ops;
+ 	struct vdpasim *vdpasim;
+@@ -357,7 +367,7 @@ static struct vdpasim *vdpasim_create(void)
+ 	else
+ 		ops =3D &vdpasim_net_config_ops;
+=20
+-	vdpasim =3D vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops, VDPASIM_VQ=
+_NUM, NULL);
++	vdpasim =3D vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops, VDPASIM_VQ=
+_NUM, name);
+ 	if (!vdpasim)
+ 		goto err_alloc;
+=20
+@@ -393,7 +403,8 @@ static struct vdpasim *vdpasim_create(void)
+ 	vringh_set_iotlb(&vdpasim->vqs[1].vring, vdpasim->iommu);
+=20
+ 	vdpasim->vdpa.dma_dev =3D dev;
+-	ret =3D vdpa_register_device(&vdpasim->vdpa);
++	vdpasim->vdpa.pdev =3D &parent_dev;
++	ret =3D _vdpa_register_device(&vdpasim->vdpa);
+ 	if (ret)
+ 		goto err_iommu;
+=20
+@@ -714,21 +725,67 @@ static const struct vdpa_config_ops vdpasim_net_batch=
+_config_ops =3D {
+ 	.free                   =3D vdpasim_free,
+ };
+=20
++static struct vdpa_device *
++vdpa_dev_add(struct vdpa_parent_dev *pdev, const char *name, u32 device_id=
+)
 +{
-+	struct vdpa_device *vdev =3D container_of(dev, struct vdpa_device, dev);
-+	struct vdpa_dev_dump_info *info =3D data;
-+	int err;
++	struct vdpasim *simdev;
 +
-+	if (!vdev->pdev)
-+		return 0;
-+	if (info->idx < info->start_idx) {
-+		info->idx++;
-+		return 0;
-+	}
-+	err =3D vdpa_dev_fill(vdev, info->msg, NETLINK_CB(info->cb->skb).portid,
-+			    info->cb->nlh->nlmsg_seq, NLM_F_MULTI, info->cb->extack);
-+	if (err)
-+		return err;
++	if (device_id !=3D VIRTIO_ID_NET)
++		return ERR_PTR(-EOPNOTSUPP);
 +
-+	info->idx++;
++	simdev =3D vdpasim_create(name);
++	if (IS_ERR(simdev))
++		return (struct vdpa_device *)simdev;
++
++	return &simdev->vdpa;
++}
++
++static void vdpa_dev_del(struct vdpa_parent_dev *pdev, struct vdpa_device =
+*dev)
++{
++	struct vdpasim *simdev =3D container_of(dev, struct vdpasim, vdpa);
++
++	_vdpa_unregister_device(&simdev->vdpa);
++}
++
++static const struct vdpa_dev_ops vdpa_dev_parent_ops =3D {
++	.dev_add =3D vdpa_dev_add,
++	.dev_del =3D vdpa_dev_del
++};
++
++static struct virtio_device_id id_table[] =3D {
++	{ VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID },
++	{ 0 },
++};
++
++static struct vdpa_parent_dev parent_dev =3D {
++	.device =3D &vdpasim_parent,
++	.id_table =3D id_table,
++	.ops =3D &vdpa_dev_parent_ops,
++};
++
+ static int __init vdpasim_dev_init(void)
+ {
+-	vdpasim_dev =3D vdpasim_create();
++	int ret;
+=20
+-	if (!IS_ERR(vdpasim_dev))
+-		return 0;
++	ret =3D device_register(&vdpasim_parent);
++	if (ret)
++		return ret;
++
++	ret =3D vdpa_parentdev_register(&parent_dev);
++	if (ret)
++		goto parent_err;
+=20
+-	return PTR_ERR(vdpasim_dev);
 +	return 0;
-+}
 +
-+static int vdpa_nl_cmd_dev_get_dumpit(struct sk_buff *msg, struct netlink_=
-callback *cb)
-+{
-+	struct vdpa_dev_dump_info info;
-+
-+	info.msg =3D msg;
-+	info.cb =3D cb;
-+	info.start_idx =3D cb->args[0];
-+	info.idx =3D 0;
-+
-+	mutex_lock(&vdpa_dev_mutex);
-+	bus_for_each_dev(&vdpa_bus, NULL, &info, vdpa_dev_dump);
-+	mutex_unlock(&vdpa_dev_mutex);
-+	cb->args[0] =3D info.idx;
-+	return msg->len;
-+}
-+
- static const struct nla_policy vdpa_nl_policy[VDPA_ATTR_MAX] =3D {
- 	[VDPA_ATTR_PARENTDEV_BUS_NAME] =3D { .type =3D NLA_NUL_STRING },
- 	[VDPA_ATTR_PARENTDEV_DEV_NAME] =3D { .type =3D NLA_STRING },
-@@ -509,6 +634,12 @@ static const struct genl_ops vdpa_nl_ops[] =3D {
- 		.doit =3D vdpa_nl_cmd_dev_del_set_doit,
- 		.flags =3D GENL_ADMIN_PERM,
- 	},
-+	{
-+		.cmd =3D VDPA_CMD_DEV_GET,
-+		.validate =3D GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit =3D vdpa_nl_cmd_dev_get_doit,
-+		.dumpit =3D vdpa_nl_cmd_dev_get_dumpit,
-+	},
- };
++parent_err:
++	device_unregister(&vdpasim_parent);
++	return ret;
+ }
 =20
- static struct genl_family vdpa_nl_family __ro_after_init =3D {
-diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
-index c528a9cfd6c9..bba8b83a94b5 100644
---- a/include/uapi/linux/vdpa.h
-+++ b/include/uapi/linux/vdpa.h
-@@ -17,6 +17,7 @@ enum vdpa_command {
- 	VDPA_CMD_PARENTDEV_GET,		/* can dump */
- 	VDPA_CMD_DEV_NEW,
- 	VDPA_CMD_DEV_DEL,
-+	VDPA_CMD_DEV_GET,		/* can dump */
- };
+ static void __exit vdpasim_dev_exit(void)
+ {
+-	struct vdpa_device *vdpa =3D &vdpasim_dev->vdpa;
+-
+-	vdpa_unregister_device(vdpa);
++	vdpa_parentdev_unregister(&parent_dev);
++	device_unregister(&vdpasim_parent);
+ }
 =20
- enum vdpa_attr {
-@@ -29,6 +30,9 @@ enum vdpa_attr {
-=20
- 	VDPA_ATTR_DEV_NAME,			/* string */
- 	VDPA_ATTR_DEV_ID,			/* u32 */
-+	VDPA_ATTR_DEV_VENDOR_ID,		/* u32 */
-+	VDPA_ATTR_DEV_MAX_VQS,			/* u32 */
-+	VDPA_ATTR_DEV_MAX_VQ_SIZE,		/* u16 */
-=20
- 	/* new attributes must be added above here */
- 	VDPA_ATTR_MAX,
+ module_init(vdpasim_dev_init)
 --=20
 2.26.2
 
