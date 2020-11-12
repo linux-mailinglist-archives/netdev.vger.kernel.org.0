@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1082B0B7F
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 18:46:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 972792B0B80
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 18:46:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726297AbgKLRql (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 12:46:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36527 "EHLO
+        id S1726303AbgKLRqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 12:46:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51901 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725999AbgKLRql (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 12:46:41 -0500
+        by vger.kernel.org with ESMTP id S1725999AbgKLRqq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 12:46:46 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605203200;
+        s=mimecast20190719; t=1605203204;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5NPXgKFcR8fnVVEzk6A7OTV/AQgRIo/GpomxKtJkd1Y=;
-        b=cdO1TIkzdl2J07vmY/0NYcyKWSG8yOynMogXecdKDw190bvU4omrQiEAqPXHIseHaLaPZ+
-        YSGX6QQh7VzrxOxD8Rwob9XStdVgj1FeT6kB06V7NZLRVP3am8H49zLGz/cmyY8rMs/E8w
-        ncgTHyz9CXDMP9tBikNmFJct03khcEQ=
+        bh=gkHqJSHa7L19ax54z+9rAxsoelZg+6Nw4onZpFSVsRo=;
+        b=DIFSUGi08YM9cf/2aX7JwwQnjaGrd1zibSJp26fyV+phn027WAsOCENlkzNf7mcthLqIf9
+        lLum3DXTOg7njjGzqxRKaDrrFZ2eGbHLFh9y7EDg3LSupecxH338x9xdUa/1e/iH48Sof8
+        zsHtJ7DEDfpb+xL2LlZMLSbuPW5fRWU=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-375-g-q0ivlxPqmtGfXelpdkEg-1; Thu, 12 Nov 2020 12:46:38 -0500
-X-MC-Unique: g-q0ivlxPqmtGfXelpdkEg-1
+ us-mta-211-y1EwP9daNoy-GuqRbmZSGA-1; Thu, 12 Nov 2020 12:46:42 -0500
+X-MC-Unique: y1EwP9daNoy-GuqRbmZSGA-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 622E2809DC0;
-        Thu, 12 Nov 2020 17:46:37 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 70744427F4;
+        Thu, 12 Nov 2020 17:46:41 +0000 (UTC)
 Received: from gerbillo.redhat.com (ovpn-112-208.ams2.redhat.com [10.36.112.208])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CBC3255795;
-        Thu, 12 Nov 2020 17:46:34 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DD7615578C;
+        Thu, 12 Nov 2020 17:46:37 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 03/13] tcp: factor out __tcp_close() helper
-Date:   Thu, 12 Nov 2020 18:45:23 +0100
-Message-Id: <e204ff31d5684799528721a5ce85c43fe4f65ca9.1605199807.git.pabeni@redhat.com>
+Subject: [PATCH net-next v2 04/13] mptcp: introduce mptcp_schedule_work
+Date:   Thu, 12 Nov 2020 18:45:24 +0100
+Message-Id: <2105b7ac0c1ab8eec4c164cc1f2b33bb3848b621.1605199807.git.pabeni@redhat.com>
 In-Reply-To: <cover.1605199807.git.pabeni@redhat.com>
 References: <cover.1605199807.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -49,59 +49,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-unlocked version of protocol level close, will be used by
-MPTCP to allow decouple orphaning and subflow level close.
+remove some of code duplications an allow preventing
+rescheduling on close.
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- include/net/tcp.h | 1 +
- net/ipv4/tcp.c    | 9 +++++++--
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ net/mptcp/pm.c       |  3 +--
+ net/mptcp/protocol.c | 36 ++++++++++++++++++++++--------------
+ net/mptcp/protocol.h |  1 +
+ 3 files changed, 24 insertions(+), 16 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 374d0a2acc4b..f3d42cb626fc 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -395,6 +395,7 @@ void tcp_update_metrics(struct sock *sk);
- void tcp_init_metrics(struct sock *sk);
- void tcp_metrics_init(void);
- bool tcp_peer_is_proven(struct request_sock *req, struct dst_entry *dst);
-+void __tcp_close(struct sock *sk, long timeout);
- void tcp_close(struct sock *sk, long timeout);
- void tcp_init_sock(struct sock *sk);
- void tcp_init_transfer(struct sock *sk, int bpf_op, struct sk_buff *skb);
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 391705aaa80e..743b71ca0d78 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -2420,13 +2420,12 @@ bool tcp_check_oom(struct sock *sk, int shift)
- 	return too_many_orphans || out_of_socket_memory;
+diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
+index e19e1525ecbb..f9c88e2abb8e 100644
+--- a/net/mptcp/pm.c
++++ b/net/mptcp/pm.c
+@@ -89,8 +89,7 @@ static bool mptcp_pm_schedule_work(struct mptcp_sock *msk,
+ 		return false;
+ 
+ 	msk->pm.status |= BIT(new_status);
+-	if (schedule_work(&msk->work))
+-		sock_hold((struct sock *)msk);
++	mptcp_schedule_work((struct sock *)msk);
+ 	return true;
  }
  
--void tcp_close(struct sock *sk, long timeout)
-+void __tcp_close(struct sock *sk, long timeout)
- {
- 	struct sk_buff *skb;
- 	int data_was_unread = 0;
- 	int state;
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 0d712755d7fc..2efa7817505a 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -620,9 +620,8 @@ static bool move_skbs_to_msk(struct mptcp_sock *msk, struct sock *ssk)
+ 		 * this is not a good place to change state. Let the workqueue
+ 		 * do it.
+ 		 */
+-		if (mptcp_pending_data_fin(sk, NULL) &&
+-		    schedule_work(&msk->work))
+-			sock_hold(sk);
++		if (mptcp_pending_data_fin(sk, NULL))
++			mptcp_schedule_work(sk);
+ 	}
  
--	lock_sock(sk);
- 	sk->sk_shutdown = SHUTDOWN_MASK;
+ 	spin_unlock_bh(&sk->sk_lock.slock);
+@@ -699,23 +698,32 @@ static void mptcp_reset_timer(struct sock *sk)
+ 	sk_reset_timer(sk, &icsk->icsk_retransmit_timer, jiffies + tout);
+ }
  
- 	if (sk->sk_state == TCP_LISTEN) {
-@@ -2590,6 +2589,12 @@ void tcp_close(struct sock *sk, long timeout)
- out:
- 	bh_unlock_sock(sk);
- 	local_bh_enable();
++bool mptcp_schedule_work(struct sock *sk)
++{
++	if (inet_sk_state_load(sk) != TCP_CLOSE &&
++	    schedule_work(&mptcp_sk(sk)->work)) {
++		/* each subflow already holds a reference to the sk, and the
++		 * workqueue is invoked by a subflow, so sk can't go away here.
++		 */
++		sock_hold(sk);
++		return true;
++	}
++	return false;
 +}
 +
-+void tcp_close(struct sock *sk, long timeout)
-+{
-+	lock_sock(sk);
-+	__tcp_close(sk, timeout);
- 	release_sock(sk);
- 	sock_put(sk);
+ void mptcp_data_acked(struct sock *sk)
+ {
+ 	mptcp_reset_timer(sk);
+ 
+ 	if ((!test_bit(MPTCP_SEND_SPACE, &mptcp_sk(sk)->flags) ||
+-	     (inet_sk_state_load(sk) != TCP_ESTABLISHED)) &&
+-	    schedule_work(&mptcp_sk(sk)->work))
+-		sock_hold(sk);
++	     (inet_sk_state_load(sk) != TCP_ESTABLISHED)))
++		mptcp_schedule_work(sk);
  }
+ 
+ void mptcp_subflow_eof(struct sock *sk)
+ {
+-	struct mptcp_sock *msk = mptcp_sk(sk);
+-
+-	if (!test_and_set_bit(MPTCP_WORK_EOF, &msk->flags) &&
+-	    schedule_work(&msk->work))
+-		sock_hold(sk);
++	if (!test_and_set_bit(MPTCP_WORK_EOF, &mptcp_sk(sk)->flags))
++		mptcp_schedule_work(sk);
+ }
+ 
+ static void mptcp_check_for_eof(struct mptcp_sock *msk)
+@@ -1620,8 +1628,7 @@ static void mptcp_retransmit_handler(struct sock *sk)
+ 		mptcp_stop_timer(sk);
+ 	} else {
+ 		set_bit(MPTCP_WORK_RTX, &msk->flags);
+-		if (schedule_work(&msk->work))
+-			sock_hold(sk);
++		mptcp_schedule_work(sk);
+ 	}
+ }
+ 
+@@ -2334,7 +2341,8 @@ static void mptcp_release_cb(struct sock *sk)
+ 		struct sock *ssk;
+ 
+ 		ssk = mptcp_subflow_recv_lookup(msk);
+-		if (!ssk || !schedule_work(&msk->work))
++		if (!ssk || sk->sk_state == TCP_CLOSE ||
++		    !schedule_work(&msk->work))
+ 			__sock_put(sk);
+ 	}
+ 
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 278c88c405e8..5211564a533f 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -408,6 +408,7 @@ static inline bool mptcp_is_fully_established(struct sock *sk)
+ void mptcp_rcv_space_init(struct mptcp_sock *msk, const struct sock *ssk);
+ void mptcp_data_ready(struct sock *sk, struct sock *ssk);
+ bool mptcp_finish_join(struct sock *sk);
++bool mptcp_schedule_work(struct sock *sk);
+ void mptcp_data_acked(struct sock *sk);
+ void mptcp_subflow_eof(struct sock *sk);
+ bool mptcp_update_rcv_data_fin(struct mptcp_sock *msk, u64 data_fin_seq, bool use_64bit);
 -- 
 2.26.2
 
