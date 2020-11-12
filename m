@@ -2,96 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 090432B005B
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 08:31:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5012B0071
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 08:42:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725981AbgKLHbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 02:31:24 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:48350 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725884AbgKLHbY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 02:31:24 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AC7QKw2026884;
-        Wed, 11 Nov 2020 23:31:18 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0220;
- bh=Q5CSx4nNQG/6lho+5mk7KxoCzmyopquKcR2OAYFD2B8=;
- b=SLY8p2Or9tDCBzhq1OTVhaZVk1d7aqbZkg/18J4c2PaK6ZSkcNylN3n7HsqG6T2foHjV
- +ni8vKUtzUaqo+N7m37GAlbwAZB//wszyjTE6oFZ1PLamglWlacI0PeVqkxDjYa0ha/n
- AYS9KyAh/imiTQZxZqLjw34w3irOrhIAJoovBZoTNUNGUqaBCeBzg0MUWxYgSv1K4qxd
- Rko6YtLf52B052L+vfzugvCzc3KLHtEPxhUtLCVm9jLVHgDL9eVakkrlF1TjsZLd/Mrp
- pO1bXTJWZXIcj4FpDoAotr6UewjiVJUaurrX8seOy+jQo0YFiSC97dzYyk8z/lfna1/d Mw== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 34nstuayc5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 11 Nov 2020 23:31:18 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 11 Nov
- 2020 23:31:16 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 11 Nov
- 2020 23:31:15 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 11 Nov 2020 23:31:15 -0800
-Received: from [10.193.39.169] (NN-LT0019.marvell.com [10.193.39.169])
-        by maili.marvell.com (Postfix) with ESMTP id E68873F7040;
-        Wed, 11 Nov 2020 23:31:12 -0800 (PST)
-Subject: Re: [EXT] Re: [PATCH v3 net-next 07/21] net: usb: aqc111: Add support
- for getting and setting of MAC address
-To:     Anant Thazhemadam <anant.thazhemadam@gmail.com>,
-        Igor Russkikh <Igor.Russkikh@aquantia.com>
-CC:     <linux-usb@vger.kernel.org>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <andrew@lunn.ch>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>
-References: <cover.1542794577.git.igor.russkikh@aquantia.com>
- <8f92711d8479a3df65849e60fd92c727e1e1f78a.1542794577.git.igor.russkikh@aquantia.com>
- <7a866553-1333-4952-5fe6-45336235ebb2@gmail.com>
-From:   Igor Russkikh <irusskikh@marvell.com>
-Message-ID: <9ad88163-ba9a-f49d-4327-d25ad97a8041@marvell.com>
-Date:   Thu, 12 Nov 2020 10:31:11 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101
- Thunderbird/83.0
+        id S1726203AbgKLHmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 02:42:06 -0500
+Received: from mga14.intel.com ([192.55.52.115]:21554 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725920AbgKLHmF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 02:42:05 -0500
+IronPort-SDR: t2PVUlgrtzVIM/1j1E0EfiTnS3m8n4VvPljQnYiz5ZWYQjFFfT9yffPutJSS7vvPcizmqvG4GM
+ G95ct/Hn9JzQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9802"; a="169486939"
+X-IronPort-AV: E=Sophos;i="5.77,471,1596524400"; 
+   d="scan'208";a="169486939"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2020 23:42:03 -0800
+IronPort-SDR: fOS0fEC/RpEPzpI6YHZeAKkrZiP3VuvhNoWoYlHcHNMEsoG7jqHG0mh3WpuXy3PIhzSJF0BBOv
+ Ds7zhhUTLpCw==
+X-IronPort-AV: E=Sophos;i="5.77,471,1596524400"; 
+   d="scan'208";a="474177420"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.163])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2020 23:42:00 -0800
+Received: by lahna (sSMTP sendmail emulation); Thu, 12 Nov 2020 09:41:58 +0200
+Date:   Thu, 12 Nov 2020 09:41:58 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Christian Eggers <ceggers@gmx.de>
+Cc:     thunderbolt-software@lists.01.org,
+        Christian Kellner <christian@kellner.me>,
+        Mario Limonciello <mario.limonciello@dell.com>,
+        Gil Fine <gil.fine@intel.com>, netdev@vger.kernel.org
+Subject: Re: thunderbolt: How to disconnect without physically unplugging
+Message-ID: <20201112074158.GP2495@lahna.fi.intel.com>
+References: <12647082.uLZWGnKmhe@zbook-opensuse.wgnetz.xx>
 MIME-Version: 1.0
-In-Reply-To: <7a866553-1333-4952-5fe6-45336235ebb2@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-12_02:2020-11-10,2020-11-12 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <12647082.uLZWGnKmhe@zbook-opensuse.wgnetz.xx>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Anant,
+Hi,
 
->>
->> +static int aqc111_set_mac_addr(struct net_device *net, void *p)
->> +{
->> +	struct usbnet *dev = netdev_priv(net);
->> +	int ret = 0;
->> +
->> +	ret = eth_mac_addr(net, p);
->> +	if (ret < 0)
->> +		return ret;
->> +
+On Thu, Nov 12, 2020 at 07:55:23AM +0100, Christian Eggers wrote:
+> Hi,
 > 
-> When eth_mac_addr() fails, from what I can see, it returns either -EBUSY, or
-> -EADDRNOTAVAIL.
-> Wouldn't it be a better idea to set a random MAC address instead, when
-> -EADDRNOTAVAIL is returned, so that the interface still comes up and is
-> usable?
+> sorry for asking "user" questions directly to developers. But I didn't find a
+> better place for asking.
 > 
-> I'm only asking because this feels similar to the discussion that can be 
-> found here.
->     https://urldefense.proofpoint.com/v2/url?u=https-3A__lkml.org_lkml_2020_10_2_305&d=DwIDaQ&c=nKjWec2b6R0mOyPaz7xtfQ&r=3kUjVPjrPMvlbd3rzgP63W0eewvCq4D-kzQRqaXHOqU&m=aJdSTt0SmQpKGqrsMm9TQ2mCWDH1Vc7arUp0xq-v6Ac&s=n-tXDyWIR5tPvrQ4DUasDgrocxKU3e_A-mh3Nv5JC5A&e=
+> I own a "hp zbook thunderbolt 3 dock". This docking station has 2 thunderbolt
+> connectors, the first (primary?) is connected to my personal laptop and the
+> other port I use for my company's laptop for working at home. It seems that
+> only one laptop at a time can access the dock peripherals (display port,
+> ethernet, usb) at a time.
 
-Here in set_mac_addr driver is being asked to SET the specified mac.
-If it fails - device will most probably drop the packets designated for it.
+Yes, this is the way the protocol works. Only one host can enumerate a
+device.
 
-So I think no, you can't put here some random MAC.
+> Unfortunately there is no button for selecting the "active" port (like on a KVM
+> switch), so the only way for switching between the two laptops is pulling the
+> cable every time (unplugging the "active" laptop for a short period lets the
+> dock automatically switch to the "inactive" laptop).
+> 
+> Is there a possibility to do this "short disconnect" in software (either
+> - by raising an "unplug" sequence to to the thunderbolt itself, or
+> - by temporarily removing the thunderbolt controller from the PCI bus)?
 
-Regards,
-  Igor
+Not with the currect systems out there. With USB4 and software based
+connection manager this could be done by disabling the lanes but that is
+not implemented in the driver.
+
+> My concern is that pulling the cables multiple times a day would wear out the
+> connectors quickly and render my hardware unusable. Additionally I see not much
+> value having two connectors on the dock when I have to manually plug cables
+> anyway (although the dock may offer the ability to establish a "thunderbolt
+> networking connection" between both laptops).
+
+The idea of the two connectors (and with USB4 more than two) is that you
+can plug more periperals there as a sort of "daisy chain". TBT3 it is up
+to 6 peripherals and then you can plug in a monitor as 7th device and
+another host of course to allow networking or so.
+
+What I've seen many docks actually only charge at one port so you may
+need to physically unplug and plug the laptops anyway. The Type-C
+connectors I've used seem to be pretty durable compared to USB micro-B
+connectors so hard to imagine that they would "wear out" from this.
