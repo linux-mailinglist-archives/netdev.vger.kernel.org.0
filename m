@@ -2,66 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68DF92AFD14
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:50:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 079322AFD02
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:50:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728351AbgKLBcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 20:32:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34926 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728025AbgKLAKm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Nov 2020 19:10:42 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CFCC320759;
-        Thu, 12 Nov 2020 00:10:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605139841;
-        bh=K6GhIf09wG7HHL3UYGzXcboTjOl6PZZmZ/yPx05msC4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hjuG5H1MFSXO4Pn6Y4mA+hQm5e9CoTR/c9ooufK/0dJ17lOXFdALJ+dpMYW5S4io/
-         QuFmFbcoAA1eTyjBRDojX3/lZJ/QTKmkzoSMtXDC/i6uYGso7L4RnlWIm3Kz5oxT3+
-         l1G1zVdXPbis9A+rwWkzYLOctmJxOpmHyf0BMtxU=
-Date:   Wed, 11 Nov 2020 16:10:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     <herbert@gondor.apana.org.au>
-Cc:     Srujana Challa <schalla@marvell.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <sgoutham@marvell.com>, <gakula@marvell.com>,
-        <sbhatta@marvell.com>, <schandran@marvell.com>,
-        <pathreya@marvell.com>, Lukasz Bartosik <lbartosik@marvell.com>
-Subject: Re: [PATCH v9,net-next,12/12] crypto: octeontx2: register with
- linux crypto framework
-Message-ID: <20201111161039.64830a68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201109120924.358-13-schalla@marvell.com>
-References: <20201109120924.358-1-schalla@marvell.com>
-        <20201109120924.358-13-schalla@marvell.com>
+        id S1728152AbgKLBcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 20:32:21 -0500
+Received: from www62.your-server.de ([213.133.104.62]:54810 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728046AbgKLATe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 19:19:34 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kd0Ko-0007OD-G3; Thu, 12 Nov 2020 01:19:30 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kd0Ko-0004DD-Ak; Thu, 12 Nov 2020 01:19:30 +0100
+Subject: Re: [bpf PATCH 1/5] bpf, sockmap: fix partial copy_page_to_iter so
+ progress can still be made
+To:     John Fastabend <john.fastabend@gmail.com>, ast@kernel.org,
+        jakub@cloudflare.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
+References: <160477770483.608263.6057216691957042088.stgit@john-XPS-13-9370>
+ <160477787531.608263.10144789972668918015.stgit@john-XPS-13-9370>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1aa5f637-c044-3dc6-09d5-0b5dc0521f91@iogearbox.net>
+Date:   Thu, 12 Nov 2020 01:19:29 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <160477787531.608263.10144789972668918015.stgit@john-XPS-13-9370>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25985/Wed Nov 11 14:18:01 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Nov 2020 17:39:24 +0530 Srujana Challa wrote:
-> CPT offload module utilises the linux crypto framework to offload
-> crypto processing. This patch registers supported algorithms by
-> calling registration functions provided by the kernel crypto API.
+On 11/7/20 8:37 PM, John Fastabend wrote:
+> If copy_page_to_iter() fails or even partially completes, but with fewer
+> bytes copied than expected we currently reset sg.start and return EFAULT.
+> This proves problematic if we already copied data into the user buffer
+> before we return an error. Because we leave the copied data in the user
+> buffer and fail to unwind the scatterlist so kernel side believes data
+> has been copied and user side believes data has _not_ been received.
 > 
-> The module currently supports:
-> - AES block cipher in CBC,ECB,XTS and CFB mode.
-> - 3DES block cipher in CBC and ECB mode.
-> - AEAD algorithms.
->   authenc(hmac(sha1),cbc(aes)),
->   authenc(hmac(sha256),cbc(aes)),
->   authenc(hmac(sha384),cbc(aes)),
->   authenc(hmac(sha512),cbc(aes)),
->   authenc(hmac(sha1),ecb(cipher_null)),
->   authenc(hmac(sha256),ecb(cipher_null)),
->   authenc(hmac(sha384),ecb(cipher_null)),
->   authenc(hmac(sha512),ecb(cipher_null)),
->   rfc4106(gcm(aes)).
+> Expected behavior should be to return number of bytes copied and then
+> on the next read we need to return the error assuming its still there. This
+> can happen if we have a copy length spanning multiple scatterlist elements
+> and one or more complete before the error is hit.
+> 
+> The error is rare enough though that my normal testing with server side
+> programs, such as nginx, httpd, envoy, etc., I have never seen this. The
+> only reliable way to reproduce that I've found is to stream movies over
+> my browser for a day or so and wait for it to hang. Not very scientific,
+> but with a few extra WARN_ON()s in the code the bug was obvious.
+> 
+> When we review the errors from copy_page_to_iter() it seems we are hitting
+> a page fault from copy_page_to_iter_iovec() where the code checks
+> fault_in_pages_writeable(buf, copy) where buf is the user buffer. It
+> also seems typical server applications don't hit this case.
+> 
+> The other way to try and reproduce this is run the sockmap selftest tool
+> test_sockmap with data verification enabled, but it doesn't reproduce the
+> fault. Perhaps we can trigger this case artificially somehow from the
+> test tools. I haven't sorted out a way to do that yet though.
+> 
+> Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>   net/ipv4/tcp_bpf.c |   15 ++++++++++-----
+>   1 file changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+> index 37f4cb2bba5c..3709d679436e 100644
+> --- a/net/ipv4/tcp_bpf.c
+> +++ b/net/ipv4/tcp_bpf.c
+> @@ -15,8 +15,8 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+>   {
+>   	struct iov_iter *iter = &msg->msg_iter;
+>   	int peek = flags & MSG_PEEK;
+> -	int i, ret, copied = 0;
+>   	struct sk_msg *msg_rx;
+> +	int i, copied = 0;
+>   
+>   	msg_rx = list_first_entry_or_null(&psock->ingress_msg,
+>   					  struct sk_msg, list);
+> @@ -37,10 +37,9 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+>   			page = sg_page(sge);
+>   			if (copied + copy > len)
+>   				copy = len - copied;
+> -			ret = copy_page_to_iter(page, sge->offset, copy, iter);
+> -			if (ret != copy) {
+> -				msg_rx->sg.start = i;
+> -				return -EFAULT;
+> +			copy = copy_page_to_iter(page, sge->offset, copy, iter);
+> +			if (!copy) {
+> +				return copied ? copied : -EFAULT;
+>   			}
 
-Herbert, could someone who knows about crypto take a look at this, 
-if the intention is to merge this via net-next?
+nit: no need for {}
+
+>   
+>   			copied += copy;
+> @@ -56,6 +55,11 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+>   						put_page(page);
+>   				}
+>   			} else {
+> +				/* Lets not optimize peek case if copy_page_to_iter
+> +				 * didn't copy the entire length lets just break.
+> +				 */
+> +				if (copy != sge->length)
+> +					goto out;
+
+nit: return copied;
+
+Rest lgtm for this one.
+
+>   				sk_msg_iter_var_next(i);
+>   			}
+>   
+> @@ -82,6 +86,7 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+>   						  struct sk_msg, list);
+>   	}
+>   
+> +out:
+>   	return copied;
+>   }
+>   EXPORT_SYMBOL_GPL(__tcp_bpf_recvmsg);
+> 
+> 
+
