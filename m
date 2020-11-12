@@ -2,44 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18E6E2AFD0A
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:50:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68DF92AFD14
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 02:50:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728362AbgKLBcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Nov 2020 20:32:19 -0500
-Received: from smtp.netregistry.net ([202.124.241.204]:59756 "EHLO
-        smtp.netregistry.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728035AbgKLAP0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 19:15:26 -0500
-X-Greylist: delayed 322 seconds by postgrey-1.27 at vger.kernel.org; Wed, 11 Nov 2020 19:15:26 EST
-Received: from 124-148-94-203.tpgi.com.au ([124.148.94.203]:32948 helo=192-168-1-16.tpgi.com.au)
-        by smtp-1.servers.netregistry.net protocol: esmtpa (Exim 4.84_2 #1 (Debian))
-        id 1kd0BZ-0002jp-N1
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 11:10:00 +1100
-Date:   Thu, 12 Nov 2020 10:09:54 +1000
-From:   Russell Strong <russell@strong.id.au>
-To:     netdev@vger.kernel.org
-Subject: IPv4 TOS vs DSCP
-Message-ID: <20201112100954.62d696b6@192-168-1-16.tpgi.com.au>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1728351AbgKLBcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Nov 2020 20:32:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34926 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728025AbgKLAKm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Nov 2020 19:10:42 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CFCC320759;
+        Thu, 12 Nov 2020 00:10:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605139841;
+        bh=K6GhIf09wG7HHL3UYGzXcboTjOl6PZZmZ/yPx05msC4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hjuG5H1MFSXO4Pn6Y4mA+hQm5e9CoTR/c9ooufK/0dJ17lOXFdALJ+dpMYW5S4io/
+         QuFmFbcoAA1eTyjBRDojX3/lZJ/QTKmkzoSMtXDC/i6uYGso7L4RnlWIm3Kz5oxT3+
+         l1G1zVdXPbis9A+rwWkzYLOctmJxOpmHyf0BMtxU=
+Date:   Wed, 11 Nov 2020 16:10:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     <herbert@gondor.apana.org.au>
+Cc:     Srujana Challa <schalla@marvell.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <schandran@marvell.com>,
+        <pathreya@marvell.com>, Lukasz Bartosik <lbartosik@marvell.com>
+Subject: Re: [PATCH v9,net-next,12/12] crypto: octeontx2: register with
+ linux crypto framework
+Message-ID: <20201111161039.64830a68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201109120924.358-13-schalla@marvell.com>
+References: <20201109120924.358-1-schalla@marvell.com>
+        <20201109120924.358-13-schalla@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-User: russell@strong.id.au
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, 9 Nov 2020 17:39:24 +0530 Srujana Challa wrote:
+> CPT offload module utilises the linux crypto framework to offload
+> crypto processing. This patch registers supported algorithms by
+> calling registration functions provided by the kernel crypto API.
+> 
+> The module currently supports:
+> - AES block cipher in CBC,ECB,XTS and CFB mode.
+> - 3DES block cipher in CBC and ECB mode.
+> - AEAD algorithms.
+>   authenc(hmac(sha1),cbc(aes)),
+>   authenc(hmac(sha256),cbc(aes)),
+>   authenc(hmac(sha384),cbc(aes)),
+>   authenc(hmac(sha512),cbc(aes)),
+>   authenc(hmac(sha1),ecb(cipher_null)),
+>   authenc(hmac(sha256),ecb(cipher_null)),
+>   authenc(hmac(sha384),ecb(cipher_null)),
+>   authenc(hmac(sha512),ecb(cipher_null)),
+>   rfc4106(gcm(aes)).
 
-After needing to do policy based routing based on DSCP, I discovered
-that IPv4 does not support this.  It does support TOS, but this has
-never been upgraded to the new ( now quite old ) DSCP interpretation.
-
-Is there a historical reason why the interpretation has not changed?
-
-I could copy the dscp into a fwmark and then use that, but that seems a
-little unnecessarily complicated.  If I were to change this, what would
-be the objections?
-
-Russell
+Herbert, could someone who knows about crypto take a look at this, 
+if the intention is to merge this via net-next?
