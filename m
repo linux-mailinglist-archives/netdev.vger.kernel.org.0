@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C4C12B0AC8
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 17:55:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0762E2B0B2B
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 18:20:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728937AbgKLQzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 11:55:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42356 "EHLO mail.kernel.org"
+        id S1726236AbgKLRUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 12:20:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49230 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728692AbgKLQzf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 11:55:35 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8D891206FA;
-        Thu, 12 Nov 2020 16:55:34 +0000 (UTC)
+        id S1726162AbgKLRUF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 12:20:05 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605200134;
-        bh=k+3SviLSqOkowHpjjuhnCv26uuu/tn/sd6MtqFR5CEI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mQU24Sq+0+Kpr68Fy7lO2kn86V4nrgZ57Wp2EELH1UAO2jMrNNGPg4XyKYMj/oTFU
-         xruSXhFndDl0SaFThxpTZ09v/i5yaDZyyD0OMcNtvf5R9jnEGIoAXNzPXteYP4R4bL
-         BK1E0lLb1+42rd7elzGK+5MjFbCjjCE9O0CdrRM4=
-Date:   Thu, 12 Nov 2020 08:55:33 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, sassmann@redhat.com
-Subject: Re: [net 0/4][pull request] Intel Wired LAN Driver Updates
- 2020-11-10
-Message-ID: <20201112085533.0d8c55d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201111001955.533210-1-anthony.l.nguyen@intel.com>
-References: <20201111001955.533210-1-anthony.l.nguyen@intel.com>
+        s=default; t=1605201604;
+        bh=Ii0gRUdrh7C37ds0H5EJMZESbBOnTU0/C3hu5J3WAbk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=s+sinpdOle5545XEbpbwkPXCgreLguwMciqboJ7SQFEtglGBAQeok4I051XiNqnOi
+         kcPRF3jmdOgRzMZEiMB1mUA0+inSJry/G7VGec23hKJ1pdD6H8DZ7J2p2wkVf/T0DS
+         zbTeUWMQsi+vgMC6GJVckH5SW2Sh/uruKz2YwJsY=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf] selftests/bpf: fix unused attribute usage in
+ subprogs_unused test
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160520160485.17608.9139256574933427173.git-patchwork-notify@kernel.org>
+Date:   Thu, 12 Nov 2020 17:20:04 +0000
+References: <20201111231215.1779147-1-andrii@kernel.org>
+In-Reply-To: <20201111231215.1779147-1-andrii@kernel.org>
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, kernel-team@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Nov 2020 16:19:51 -0800 Tony Nguyen wrote:
-> This series contains updates to i40e and igc drivers and the MAINTAINERS
-> file.
-> 
-> Slawomir fixes updating VF MAC addresses to fix various issues related
-> to reporting and setting of these addresses for i40e.
-> 
-> Dan Carpenter fixes a possible used before being initialized issue for
-> i40e.
-> 
-> Vinicius fixes reporting of netdev stats for igc.
-> 
-> Tony updates repositories for Intel Ethernet Drivers.
+Hello:
 
-Pulled, thanks!
+This patch was applied to bpf/bpf.git (refs/heads/master):
 
-Please double check the use of the spin lock in patch 3. Stats are
-updated in an atomic context when read from /proc, you probably need 
-to convert that spin lock to _bh.
+On Wed, 11 Nov 2020 15:12:15 -0800 you wrote:
+> Correct attribute name is "unused". maybe_unused is a C++17 addition.
+> This patch fixes compilation warning during selftests compilation.
+> 
+> Fixes: 197afc631413 ("libbpf: Don't attempt to load unused subprog as an entry-point BPF program")
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> ---
+>  tools/testing/selftests/bpf/progs/test_subprogs_unused.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+
+Here is the summary with links:
+  - [bpf] selftests/bpf: fix unused attribute usage in subprogs_unused test
+    https://git.kernel.org/bpf/bpf/c/fd63729cc0a6
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
