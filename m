@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8759C2B12C1
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 00:27:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE34D2B12C3
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 00:27:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726230AbgKLX1V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 18:27:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
+        id S1726260AbgKLX1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 18:27:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726120AbgKLX1V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 18:27:21 -0500
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3712FC0613D1;
-        Thu, 12 Nov 2020 15:27:14 -0800 (PST)
-Received: by mail-oi1-x244.google.com with SMTP id m13so8379799oih.8;
-        Thu, 12 Nov 2020 15:27:14 -0800 (PST)
+        with ESMTP id S1726120AbgKLX1g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 18:27:36 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A22C0613D1;
+        Thu, 12 Nov 2020 15:27:32 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id c80so8413060oib.2;
+        Thu, 12 Nov 2020 15:27:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=aDYZN5a9ApiLd0vCcv7Ak0sWbHY6Cv/Dsk+GGWN7dZY=;
-        b=ssfR/SeHY8IajLr+WRrLV5giu1JLsh/YUgrkL/2Z98FZvu2TW9rR6o24iUtBRwF6gD
-         B5+3uZ54Pro2UVPfccOuTnxxu1sYi7i/EBlt3S0nUzRNarWiswrqhh00VLsvOIE9FXMS
-         BycrD36NlbzXSH4dKCEJOfT+i81Lp58usGnDkhKrmcX+CnCuww3MTZRwSOFzA/8eOr1M
-         MlAH4Lcv3jJvdwvkPJBRrZg6ikt1CBvoLMzo90arQf3xZKVNzHb7oBwWtG5nVbAqms8K
-         G6QUFO+YK4T8I6trbWaZ0rXp7tPEVyKVvRENG2qBQGQngqmDuxEMDKw4AGLXpigIFJKA
-         vSYQ==
+        bh=Mwy/q1OsCumX7Ymcr0qph52W094rvZ6gjyVjTWBlDuM=;
+        b=I3hKM3GvVphY9rSSPWasliXATFDnTk5WZQOB6SOLuHseKnem4FAL+KE/HQz5knf8LX
+         5XBhQJeOEYnlyNZ7sNgmc2rurdjKeIJfNRNVbMk79To+CuC78TSHnckkkPjJ3yyaj5NA
+         m2+EIbCUOXPYP+pJqgnYV6vyqd9xvGDojAPt/Ndkl4dlehkwIE8V65Jgdz+xRlijjiio
+         0QALxACcnoWxUHSzPH+NPlmt54I0Wh52Ku7nBWSCBcyPaVr9bR0CCCCyXIL2vM4ygX51
+         oddJylPrPTOhmkFp3hHZbTCjGtvjYuh9V/gRZX37LkInyoTiy+1FjFkIlui3bLYOkFfw
+         aRGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=aDYZN5a9ApiLd0vCcv7Ak0sWbHY6Cv/Dsk+GGWN7dZY=;
-        b=ISN/4NGOxoje5h6DXpUuZQCckYbf/dPSb4H6ErpI3R2jwjEA27VQATPuoiVcVxHgiN
-         PsdosbTKCFnnMOKtd7JzB5VJeJIGIbzjrH9dS8PRnyfLc2+Sb+fXsoKqOi2WKTeET1N7
-         Q6DiEVIu+I/rUOOI8BxCurwGBd9yDTwSuW2aUjo8ThxEW0VEm3Q+yUgieBMM4X9mj6t/
-         9c5MrVuHAPfG/cOwH9oj/1E8H45YHvP2WMz4hxscR6ov4LJSi7lS0zmNjTDdJ+zohl+C
-         cVZFIS0CElsMP2tQcLcyaTb6pkxp/06ahZfLLc4a8xa/RFDeocxRi1k3QGw6oBABkScs
-         VuEw==
-X-Gm-Message-State: AOAM532TBdIiMI87niQ4OL1Dy/4+1IQnTFhtqQuE4YFpDFaV1n7/HCWi
-        GTg34gmu8EPI+oDPeQ5a+jk=
-X-Google-Smtp-Source: ABdhPJzFmr6ML7janfPb9nfjNhd4UkN/3Naqd5a/WNgxj/RpQGeT+00c44A4YqKMuxygLMxM/YD4Cw==
-X-Received: by 2002:aca:d48c:: with SMTP id l134mr127430oig.129.1605223633688;
-        Thu, 12 Nov 2020 15:27:13 -0800 (PST)
+        bh=Mwy/q1OsCumX7Ymcr0qph52W094rvZ6gjyVjTWBlDuM=;
+        b=i47zlheXMrmOeRSdirlzn+3ToCGQZfnT3skqvvclEZQbOIMcPZh1SjaAyhb6Sy+5LZ
+         H4B0OeGw0HnLM2IydnnOW2psMJ7EDm+RXs+hD2VFRgUtDDfp7/3AnzybhXSkBTBPESBb
+         /3OET4nuNYcxayX2iG+OBHfI2bYODDzKedUGS5tvevoCn1knSciMroPD5CXga5GYAj0J
+         aDYbWK+hIMfhu9tiwan2n7aVFT0vTz/wzdYL0mKUzLunrEQYMNafMXmA/yIZZhGIWzoi
+         OfL9zJogbwejfD+oB7PYwRrESjoSBHGFa8lJwYwmAKdjU1/NuYy4fzbUzlEgsxgv/EvH
+         sybQ==
+X-Gm-Message-State: AOAM532UYQJBNaK+wdS4av46sMHUGQYySLQmkNZY+nvS8Na22a31CvSy
+        4E8spj6vkV1k9eZmsyCcKeI=
+X-Google-Smtp-Source: ABdhPJyRXSD9z8Z3j8WQbTMTV24DWLlNTEPLvgSnCNvP2pH+grTFWj86zk7R0axKRwzgT3c43/D5rg==
+X-Received: by 2002:a05:6808:d9:: with SMTP id t25mr144563oic.102.1605223652009;
+        Thu, 12 Nov 2020 15:27:32 -0800 (PST)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id s14sm1475480oij.4.2020.11.12.15.27.06
+        by smtp.gmail.com with ESMTPSA id u5sm1628057oop.8.2020.11.12.15.27.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2020 15:27:13 -0800 (PST)
-Subject: [bpf PATCH v2 2/6] bpf,
- sockmap: Ensure SO_RCVBUF memory is observed on ingress redirect
+        Thu, 12 Nov 2020 15:27:31 -0800 (PST)
+Subject: [bpf PATCH v2 3/6] bpf, sockmap: Use truesize with sk_rmem_schedule()
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, jakub@cloudflare.com
 Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
         netdev@vger.kernel.org
-Date:   Thu, 12 Nov 2020 15:27:01 -0800
-Message-ID: <160522362100.135009.18395216656832785566.stgit@john-XPS-13-9370>
+Date:   Thu, 12 Nov 2020 15:27:20 -0800
+Message-ID: <160522364023.135009.13166901167357981092.stgit@john-XPS-13-9370>
 In-Reply-To: <160522352433.135009.15329422887113794062.stgit@john-XPS-13-9370>
 References: <160522352433.135009.15329422887113794062.stgit@john-XPS-13-9370>
 User-Agent: StGit/0.23-36-gc01b
@@ -65,79 +64,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix sockmap sk_skb programs so that they observe sk_rcvbuf limits. This
-allows users to tune SO_RCVBUF and sockmap will honor them.
+We use skb->size with sk_rmem_scheduled() which is not correct. Instead
+use truesize to align with socket and tcp stack usage of sk_rmem_schedule.
 
-We can refactor the if(charge) case out in later patches. But, keep this
-fix to the point.
-
-Fixes: 51199405f9672 ("bpf: skb_verdict, support SK_PASS on RX BPF path")
-Suggested-by: Jakub Sitnicki <jakub@cloudflare.com>
+Suggested-by: Daniel Borkman <daniel@iogearbox.net>
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/core/skmsg.c   |   20 ++++++++++++++++----
- net/ipv4/tcp_bpf.c |    3 ++-
- 2 files changed, 18 insertions(+), 5 deletions(-)
+ net/core/skmsg.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 654182ecf87b..fe44280c033e 100644
+index fe44280c033e..d09426ce4af3 100644
 --- a/net/core/skmsg.c
 +++ b/net/core/skmsg.c
-@@ -170,10 +170,12 @@ static int sk_msg_free_elem(struct sock *sk, struct sk_msg *msg, u32 i,
- 	struct scatterlist *sge = sk_msg_elem(msg, i);
- 	u32 len = sge->length;
- 
--	if (charge)
--		sk_mem_uncharge(sk, len);
--	if (!msg->skb)
-+	/* When the skb owns the memory we free it from consume_skb path. */
-+	if (!msg->skb) {
-+		if (charge)
-+			sk_mem_uncharge(sk, len);
- 		put_page(sg_page(sge));
-+	}
- 	memset(sge, 0, sizeof(*sge));
- 	return len;
- }
-@@ -403,6 +405,9 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
- 	int copied = 0, num_sge;
- 	struct sk_msg *msg;
- 
-+	if (atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf)
-+		return -EAGAIN;
-+
+@@ -411,7 +411,7 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
  	msg = kzalloc(sizeof(*msg), __GFP_NOWARN | GFP_ATOMIC);
  	if (unlikely(!msg))
  		return -EAGAIN;
-@@ -418,7 +423,14 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
- 		return num_sge;
+-	if (!sk_rmem_schedule(sk, skb, skb->len)) {
++	if (!sk_rmem_schedule(sk, skb, skb->truesize)) {
+ 		kfree(msg);
+ 		return -EAGAIN;
  	}
- 
--	sk_mem_charge(sk, skb->len);
-+	/* This will transition ownership of the data from the socket where
-+	 * the BPF program was run initiating the redirect to the socket
-+	 * we will eventually receive this data on. The data will be released
-+	 * from skb_consume found in __tcp_bpf_recvmsg() after its been copied
-+	 * into user buffers.
-+	 */
-+	skb_set_owner_r(skb, sk);
-+
- 	copied = skb->len;
- 	msg->sg.start = 0;
- 	msg->sg.size = copied;
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 8e950b0bfabc..bc7d2a586e18 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -45,7 +45,8 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
- 			if (likely(!peek)) {
- 				sge->offset += copy;
- 				sge->length -= copy;
--				sk_mem_uncharge(sk, copy);
-+				if (!msg_rx->skb)
-+					sk_mem_uncharge(sk, copy);
- 				msg_rx->sg.size -= copy;
- 
- 				if (!sge->length) {
 
 
