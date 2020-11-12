@@ -2,86 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 142C22B00F7
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 09:15:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 616FE2B011C
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 09:18:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726734AbgKLIPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 03:15:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57312 "EHLO
+        id S1726510AbgKLISW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 03:18:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725884AbgKLIPG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 03:15:06 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9A8C0613D1;
-        Thu, 12 Nov 2020 00:15:06 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id 34so265537pgp.10;
-        Thu, 12 Nov 2020 00:15:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lzSBKIfQ7GPpk/XHMAOzG2gIUmm0ThvwybixqBcJdVc=;
-        b=pDKEGhIOFHS8tr6Pqfo/zYZQkCAev0rZOTu+FzVzCU2vvA2BBb7rlTMO4oLd0PahZS
-         QclIUIDlZjtQUx0QnLF9UsPGFnLj98xOxcOvpKktwV2O1IruWtKxyljamhO6pW2G/W0x
-         tTmTzAhz3RWTTDCWvSY1WfmColQy5VGD7hsXY8HjwVhhpmIUEXAYeavJAdPO3EPHPu5q
-         2BNPMuWYltwXG419ZM64Jpb4lsiK8x7klXWckj13GGwZak1W49nwSwzMsTiHS53LrGs5
-         sk7dQ4slZ/4mmlrOiAKy6oKsVshR6uLAKrFRt+hsgkJApUp/6M1RRQz2Lfa7BO1Q/e1h
-         9BwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lzSBKIfQ7GPpk/XHMAOzG2gIUmm0ThvwybixqBcJdVc=;
-        b=rTgHBjs3Opg+A1W9IbuaT5RlqUN7EdH8abW4lqmzCTarjMh215kyNnoVvu3W/wZiBn
-         oHp4Zo+saMYFRiCMLFm5vWr/D/K4GWh4AepPjasFodlaBqfXHlCRaEiw3zTBJI4ylC5J
-         ZTlyMyvZC74NxFQmFJvmp3/gjSo9WMm4e2sasr+GV2b/eNC83tX9H84nseVuDjl40W8K
-         ghZP37d+IQG4ZtfHqQzlJJfsgwhHQMpC4FOkrdJyxCvU8zFTG04yRBBnAdImpLHHcvcP
-         aPo4FFniQm8COs6wftGTqPZdAyCHZuWFHU3BfI6wnbzatdArvWmD24CpltVOKQ/2CNHo
-         VgCA==
-X-Gm-Message-State: AOAM531MIBk1q9/qZXvSQonvBfNg+45a3VmGT1Zh8VH7KtUi1jEOSw2W
-        K5N0xo+TbuERzDmDArOxZjPz3kwkLJ8GJeEs6kM=
-X-Google-Smtp-Source: ABdhPJyaYUTaaupLGvZokLMr5vzt4g14NVtSANn+FadNW1e47xX6B5HNQ+Ky0by89ooWPbNl/qSwefZlXT0CFqdB4eU=
-X-Received: by 2002:a65:52cb:: with SMTP id z11mr24621154pgp.368.1605168906228;
- Thu, 12 Nov 2020 00:15:06 -0800 (PST)
-MIME-Version: 1.0
-References: <20201111213608.27846-1-xie.he.0141@gmail.com> <7baa879ed48465e7af27d4cbbe41c3e6@dev.tdt.de>
-In-Reply-To: <7baa879ed48465e7af27d4cbbe41c3e6@dev.tdt.de>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Thu, 12 Nov 2020 00:14:55 -0800
-Message-ID: <CAJht_EOU+=nwJ5qqPHozqqvUn9dkrN37WnPk6p3hxdJDhHTAHA@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC] MAINTAINERS: Add Martin Schiller as a
- maintainer for the X.25 stack
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrew Hendry <andrew.hendry@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>
+        with ESMTP id S1725884AbgKLISV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 03:18:21 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCBAC0613D1;
+        Thu, 12 Nov 2020 00:18:21 -0800 (PST)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kd7no-006CQP-KM; Thu, 12 Nov 2020 09:17:56 +0100
+Message-ID: <2f8fa91f2490eec82893fea837ec52356cda55f6.camel@sipsolutions.net>
+Subject: Re: [PATCH] rfkill: Fix use-after-free in rfkill_resume()
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Claire Chang <tientzu@chromium.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, hdegoede@redhat.com,
+        marcel@holtmann.org,
+        "open list:NETWORKING DRIVERS (WIRELESS)" 
+        <linux-wireless@vger.kernel.org>, netdev@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>
+Date:   Thu, 12 Nov 2020 09:17:40 +0100
+In-Reply-To: <CALiNf29ku1aBiaBEg9ZTe7USSZZiOwnZWW3NKZgSGZ6M+GAX7w@mail.gmail.com> (sfid-20201111_042332_725984_06312727)
+References: <20201110084908.219088-1-tientzu@chromium.org>
+         <3b851462d9bfd914aeb9f5b432e4c076f6c330f3.camel@sipsolutions.net>
+         <CALiNf29ku1aBiaBEg9ZTe7USSZZiOwnZWW3NKZgSGZ6M+GAX7w@mail.gmail.com>
+         (sfid-20201111_042332_725984_06312727)
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 11, 2020 at 11:06 PM Martin Schiller <ms@dev.tdt.de> wrote:
->
-> About 1 year ago I was asked by Arnd Bergmann if I would like to become
-> the maintainer for the X.25 stack:
->
-> https://patchwork.ozlabs.org/project/netdev/patch/20191209151256.2497534-4-arnd@arndb.de/#2320767
->
-> Yes, I would agree to be listed as a maintainer.
+On Wed, 2020-11-11 at 11:23 +0800, Claire Chang wrote:
+> On Wed, Nov 11, 2020 at 1:35 AM Johannes Berg <johannes@sipsolutions.net> wrote:
+> > On Tue, 2020-11-10 at 16:49 +0800, Claire Chang wrote:
+> > > If a device is getting removed or reprobed during resume, use-after-free
+> > > might happen. For example, h5_btrtl_resume()[drivers/bluetooth/hci_h5.c]
+> > > schedules a work queue for device reprobing. During the reprobing, if
+> > > rfkill_set_block() in rfkill_resume() is called after the corresponding
+> > > *_unregister() and kfree() are called, there will be an use-after-free
+> > > in hci_rfkill_set_block()[net/bluetooth/hci_core.c].
+> > 
+> > Not sure I understand. So you're saying
+> > 
+> >  * something (h5_btrtl_resume) schedules a worker
+> >  * said worker run, when it runs, calls rfkill_unregister()
+> >  * somehow rfkill_resume() still gets called after this
+> > 
+> > But that can't really be right, device_del() removes it from the PM
+> > lists?
+> 
+> If device_del() is called right before the device_lock() in device_resume()[1],
+> it's possible the rfkill device is unregistered, but rfkill_resume is
+> still called.
 
-Thank you!!
+OK, I see, thanks for the clarification!
 
-> But I still think it is important that we either repair or delete the
-> linux-x25 mailing list. The current state that the messages are going
-> into nirvana is very unpleasant.
+I'll try to add that to the commit message.
 
-Yes, I agree.
+Thanks,
+johannes
 
-Willem de Bruijn <willemdebruijn.kernel@gmail.com> sent an email to
-<postmaster@vger.kernel.org> for this issue on Aug 9th, 2020, but got
-no reply.
-
-Maybe we need to ask Jakub or David for help.
