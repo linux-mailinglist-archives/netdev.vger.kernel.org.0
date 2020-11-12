@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 972792B0B80
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 18:46:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8489E2B0B81
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 18:46:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbgKLRqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 12:46:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51901 "EHLO
+        id S1726311AbgKLRqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 12:46:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52102 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725999AbgKLRqq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 12:46:46 -0500
+        by vger.kernel.org with ESMTP id S1726308AbgKLRqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 12:46:52 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605203204;
+        s=mimecast20190719; t=1605203210;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gkHqJSHa7L19ax54z+9rAxsoelZg+6Nw4onZpFSVsRo=;
-        b=DIFSUGi08YM9cf/2aX7JwwQnjaGrd1zibSJp26fyV+phn027WAsOCENlkzNf7mcthLqIf9
-        lLum3DXTOg7njjGzqxRKaDrrFZ2eGbHLFh9y7EDg3LSupecxH338x9xdUa/1e/iH48Sof8
-        zsHtJ7DEDfpb+xL2LlZMLSbuPW5fRWU=
+        bh=eZSMv+Cpki+mAAZ8o0ta9+Wjoshp2Ns4uhV56VB5eiY=;
+        b=PoBCpoaAQgxgn+1vNKrUkTxcN++5DXcY6fv9fh4bM7GRkAMstExigM5C0gehaCYewJrg3E
+        cGd87YlpqXKhlzj+8MsE0rDmVtOaSpsrfCt1zBZw/4yATDu8qgVGS3dObnRwwONl/aZAlk
+        QuWgt8SI6PfEPIWVEYWtpTJOyrpOBhc=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-211-y1EwP9daNoy-GuqRbmZSGA-1; Thu, 12 Nov 2020 12:46:42 -0500
-X-MC-Unique: y1EwP9daNoy-GuqRbmZSGA-1
+ us-mta-580-iZ6bFhX0MCCk-rsc5Tq7VA-1; Thu, 12 Nov 2020 12:46:48 -0500
+X-MC-Unique: iZ6bFhX0MCCk-rsc5Tq7VA-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 70744427F4;
-        Thu, 12 Nov 2020 17:46:41 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7FEF31899422;
+        Thu, 12 Nov 2020 17:46:47 +0000 (UTC)
 Received: from gerbillo.redhat.com (ovpn-112-208.ams2.redhat.com [10.36.112.208])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DD7615578C;
-        Thu, 12 Nov 2020 17:46:37 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ED23055763;
+        Thu, 12 Nov 2020 17:46:41 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 04/13] mptcp: introduce mptcp_schedule_work
-Date:   Thu, 12 Nov 2020 18:45:24 +0100
-Message-Id: <2105b7ac0c1ab8eec4c164cc1f2b33bb3848b621.1605199807.git.pabeni@redhat.com>
+Subject: [PATCH net-next v2 05/13] mptcp: reduce the arguments of mptcp_sendmsg_frag
+Date:   Thu, 12 Nov 2020 18:45:25 +0100
+Message-Id: <a3493603d604c809ba925120b716494d7e50bc8a.1605199807.git.pabeni@redhat.com>
 In-Reply-To: <cover.1605199807.git.pabeni@redhat.com>
 References: <cover.1605199807.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -49,119 +49,168 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-remove some of code duplications an allow preventing
-rescheduling on close.
+The current argument list is pretty long and quite unreadable,
+move many of them into a specific struct. Later patches
+will add more stuff to such struct.
+
+Additionally drop the 'timeo' argument, now unused.
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/mptcp/pm.c       |  3 +--
- net/mptcp/protocol.c | 36 ++++++++++++++++++++++--------------
- net/mptcp/protocol.h |  1 +
- 3 files changed, 24 insertions(+), 16 deletions(-)
+ net/mptcp/protocol.c | 53 ++++++++++++++++++++++++--------------------
+ 1 file changed, 29 insertions(+), 24 deletions(-)
 
-diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
-index e19e1525ecbb..f9c88e2abb8e 100644
---- a/net/mptcp/pm.c
-+++ b/net/mptcp/pm.c
-@@ -89,8 +89,7 @@ static bool mptcp_pm_schedule_work(struct mptcp_sock *msk,
- 		return false;
- 
- 	msk->pm.status |= BIT(new_status);
--	if (schedule_work(&msk->work))
--		sock_hold((struct sock *)msk);
-+	mptcp_schedule_work((struct sock *)msk);
- 	return true;
- }
- 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 0d712755d7fc..2efa7817505a 100644
+index 2efa7817505a..691fdb2071cf 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -620,9 +620,8 @@ static bool move_skbs_to_msk(struct mptcp_sock *msk, struct sock *ssk)
- 		 * this is not a good place to change state. Let the workqueue
- 		 * do it.
- 		 */
--		if (mptcp_pending_data_fin(sk, NULL) &&
--		    schedule_work(&msk->work))
--			sock_hold(sk);
-+		if (mptcp_pending_data_fin(sk, NULL))
-+			mptcp_schedule_work(sk);
- 	}
- 
- 	spin_unlock_bh(&sk->sk_lock.slock);
-@@ -699,23 +698,32 @@ static void mptcp_reset_timer(struct sock *sk)
- 	sk_reset_timer(sk, &icsk->icsk_retransmit_timer, jiffies + tout);
+@@ -914,12 +914,16 @@ mptcp_carve_data_frag(const struct mptcp_sock *msk, struct page_frag *pfrag,
+ 	return dfrag;
  }
  
-+bool mptcp_schedule_work(struct sock *sk)
-+{
-+	if (inet_sk_state_load(sk) != TCP_CLOSE &&
-+	    schedule_work(&mptcp_sk(sk)->work)) {
-+		/* each subflow already holds a reference to the sk, and the
-+		 * workqueue is invoked by a subflow, so sk can't go away here.
-+		 */
-+		sock_hold(sk);
-+		return true;
-+	}
-+	return false;
-+}
++struct mptcp_sendmsg_info {
++	int mss_now;
++	int size_goal;
++};
 +
- void mptcp_data_acked(struct sock *sk)
+ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
+ 			      struct msghdr *msg, struct mptcp_data_frag *dfrag,
+-			      long *timeo, int *pmss_now,
+-			      int *ps_goal)
++			      struct mptcp_sendmsg_info *info)
  {
- 	mptcp_reset_timer(sk);
- 
- 	if ((!test_bit(MPTCP_SEND_SPACE, &mptcp_sk(sk)->flags) ||
--	     (inet_sk_state_load(sk) != TCP_ESTABLISHED)) &&
--	    schedule_work(&mptcp_sk(sk)->work))
--		sock_hold(sk);
-+	     (inet_sk_state_load(sk) != TCP_ESTABLISHED)))
-+		mptcp_schedule_work(sk);
- }
- 
- void mptcp_subflow_eof(struct sock *sk)
- {
--	struct mptcp_sock *msk = mptcp_sk(sk);
--
--	if (!test_and_set_bit(MPTCP_WORK_EOF, &msk->flags) &&
--	    schedule_work(&msk->work))
--		sock_hold(sk);
-+	if (!test_and_set_bit(MPTCP_WORK_EOF, &mptcp_sk(sk)->flags))
-+		mptcp_schedule_work(sk);
- }
- 
- static void mptcp_check_for_eof(struct mptcp_sock *msk)
-@@ -1620,8 +1628,7 @@ static void mptcp_retransmit_handler(struct sock *sk)
- 		mptcp_stop_timer(sk);
- 	} else {
- 		set_bit(MPTCP_WORK_RTX, &msk->flags);
--		if (schedule_work(&msk->work))
--			sock_hold(sk);
-+		mptcp_schedule_work(sk);
- 	}
- }
- 
-@@ -2334,7 +2341,8 @@ static void mptcp_release_cb(struct sock *sk)
- 		struct sock *ssk;
- 
- 		ssk = mptcp_subflow_recv_lookup(msk);
--		if (!ssk || !schedule_work(&msk->work))
-+		if (!ssk || sk->sk_state == TCP_CLOSE ||
-+		    !schedule_work(&msk->work))
- 			__sock_put(sk);
+-	int mss_now, avail_size, size_goal, offset, ret, frag_truesize = 0;
++	int avail_size, offset, ret, frag_truesize = 0;
+ 	bool dfrag_collapsed, can_collapse = false;
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
+ 	struct mptcp_ext *mpext = NULL;
+@@ -945,10 +949,8 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
  	}
  
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 278c88c405e8..5211564a533f 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -408,6 +408,7 @@ static inline bool mptcp_is_fully_established(struct sock *sk)
- void mptcp_rcv_space_init(struct mptcp_sock *msk, const struct sock *ssk);
- void mptcp_data_ready(struct sock *sk, struct sock *ssk);
- bool mptcp_finish_join(struct sock *sk);
-+bool mptcp_schedule_work(struct sock *sk);
- void mptcp_data_acked(struct sock *sk);
- void mptcp_subflow_eof(struct sock *sk);
- bool mptcp_update_rcv_data_fin(struct mptcp_sock *msk, u64 data_fin_seq, bool use_64bit);
+ 	/* compute copy limit */
+-	mss_now = tcp_send_mss(ssk, &size_goal, msg->msg_flags);
+-	*pmss_now = mss_now;
+-	*ps_goal = size_goal;
+-	avail_size = size_goal;
++	info->mss_now = tcp_send_mss(ssk, &info->size_goal, msg->msg_flags);
++	avail_size = info->size_goal;
+ 	skb = tcp_write_queue_tail(ssk);
+ 	if (skb) {
+ 		mpext = skb_ext_find(skb, SKB_EXT_MPTCP);
+@@ -959,12 +961,12 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
+ 		 * queue management operation, to avoid breaking the ext <->
+ 		 * SSN association set here
+ 		 */
+-		can_collapse = (size_goal - skb->len > 0) &&
++		can_collapse = (info->size_goal - skb->len > 0) &&
+ 			      mptcp_skb_can_collapse_to(*write_seq, skb, mpext);
+ 		if (!can_collapse)
+ 			TCP_SKB_CB(skb)->eor = 1;
+ 		else
+-			avail_size = size_goal - skb->len;
++			avail_size = info->size_goal - skb->len;
+ 	}
+ 
+ 	if (!retransmission) {
+@@ -1187,11 +1189,15 @@ static void ssk_check_wmem(struct mptcp_sock *msk)
+ 
+ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ {
+-	int mss_now = 0, size_goal = 0, ret = 0;
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
++	struct mptcp_sendmsg_info info = {
++		.mss_now = 0,
++		.size_goal = 0,
++	};
+ 	struct page_frag *pfrag;
+ 	size_t copied = 0;
+ 	struct sock *ssk;
++	int ret = 0;
+ 	u32 sndbuf;
+ 	bool tx_ok;
+ 	long timeo;
+@@ -1260,8 +1266,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	lock_sock(ssk);
+ 	tx_ok = msg_data_left(msg);
+ 	while (tx_ok) {
+-		ret = mptcp_sendmsg_frag(sk, ssk, msg, NULL, &timeo, &mss_now,
+-					 &size_goal);
++		ret = mptcp_sendmsg_frag(sk, ssk, msg, NULL, &info);
+ 		if (ret < 0) {
+ 			if (ret == -EAGAIN && timeo > 0) {
+ 				mptcp_set_timeout(sk, ssk);
+@@ -1284,8 +1289,8 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		if (!sk_stream_memory_free(ssk) ||
+ 		    !mptcp_page_frag_refill(ssk, pfrag) ||
+ 		    !mptcp_ext_cache_refill(msk)) {
+-			tcp_push(ssk, msg->msg_flags, mss_now,
+-				 tcp_sk(ssk)->nonagle, size_goal);
++			tcp_push(ssk, msg->msg_flags, info.mss_now,
++				 tcp_sk(ssk)->nonagle, info.size_goal);
+ 			mptcp_set_timeout(sk, ssk);
+ 			release_sock(ssk);
+ 			goto restart;
+@@ -1305,8 +1310,8 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		 * limits before we send more data.
+ 		 */
+ 		if (unlikely(!sk_stream_memory_free(sk))) {
+-			tcp_push(ssk, msg->msg_flags, mss_now,
+-				 tcp_sk(ssk)->nonagle, size_goal);
++			tcp_push(ssk, msg->msg_flags, info.mss_now,
++				 tcp_sk(ssk)->nonagle, info.size_goal);
+ 			mptcp_clean_una(sk);
+ 			if (!sk_stream_memory_free(sk)) {
+ 				/* can't send more for now, need to wait for
+@@ -1323,8 +1328,8 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 
+ 	mptcp_set_timeout(sk, ssk);
+ 	if (copied) {
+-		tcp_push(ssk, msg->msg_flags, mss_now, tcp_sk(ssk)->nonagle,
+-			 size_goal);
++		tcp_push(ssk, msg->msg_flags, info.mss_now,
++			 tcp_sk(ssk)->nonagle, info.size_goal);
+ 
+ 		/* start the timer, if it's not pending */
+ 		if (!mptcp_timer_pending(sk))
+@@ -1763,14 +1768,15 @@ static void mptcp_worker(struct work_struct *work)
+ {
+ 	struct mptcp_sock *msk = container_of(work, struct mptcp_sock, work);
+ 	struct sock *ssk, *sk = &msk->sk.icsk_inet.sk;
+-	int orig_len, orig_offset, mss_now = 0, size_goal = 0;
++	struct mptcp_sendmsg_info info = {};
+ 	struct mptcp_data_frag *dfrag;
++	int orig_len, orig_offset;
+ 	u64 orig_write_seq;
+ 	size_t copied = 0;
+ 	struct msghdr msg = {
+ 		.msg_flags = MSG_DONTWAIT,
+ 	};
+-	long timeo = 0;
++	int ret;
+ 
+ 	lock_sock(sk);
+ 	mptcp_clean_una_wakeup(sk);
+@@ -1809,8 +1815,7 @@ static void mptcp_worker(struct work_struct *work)
+ 	orig_offset = dfrag->offset;
+ 	orig_write_seq = dfrag->data_seq;
+ 	while (dfrag->data_len > 0) {
+-		int ret = mptcp_sendmsg_frag(sk, ssk, &msg, dfrag, &timeo,
+-					     &mss_now, &size_goal);
++		ret = mptcp_sendmsg_frag(sk, ssk, &msg, dfrag, &info);
+ 		if (ret < 0)
+ 			break;
+ 
+@@ -1823,8 +1828,8 @@ static void mptcp_worker(struct work_struct *work)
+ 			break;
+ 	}
+ 	if (copied)
+-		tcp_push(ssk, msg.msg_flags, mss_now, tcp_sk(ssk)->nonagle,
+-			 size_goal);
++		tcp_push(ssk, 0, info.mss_now, tcp_sk(ssk)->nonagle,
++			 info.size_goal);
+ 
+ 	dfrag->data_seq = orig_write_seq;
+ 	dfrag->offset = orig_offset;
 -- 
 2.26.2
 
