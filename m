@@ -2,129 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1EA02B03A8
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 12:15:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10C992B03C3
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 12:22:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728034AbgKLLPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 06:15:45 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:57150 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727035AbgKLLPp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 06:15:45 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0ACBFcaI009766;
-        Thu, 12 Nov 2020 05:15:38 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1605179738;
-        bh=2qkNvREGB6upemw2NWJh9LDH9SjawC+AaQHptIVURaU=;
-        h=From:To:CC:Subject:Date;
-        b=TrlhxvlbWT8h7c0pu9qlVVOLBhWz2v7FMK/szdxGG0DMuOK7dvUv8JriCbkY2mAuh
-         XwQIHgQOOS8Qu5Zk+klOXE7Cd3U1zkUh+wtum2P3S9EekipxkJLRH0OYAj0sxhb9MO
-         UavJ+Jd7bdNrBBadPoFamgfGOaaMYUJr0ylAvn9E=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0ACBFc6a058380
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 12 Nov 2020 05:15:38 -0600
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 12
- Nov 2020 05:15:37 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 12 Nov 2020 05:15:37 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0ACBFaoE099039;
-        Thu, 12 Nov 2020 05:15:37 -0600
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tony Lindgren <tony@atomide.com>
-CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH] net: ethernet: ti: cpsw: fix cpts irq after suspend
-Date:   Thu, 12 Nov 2020 13:15:46 +0200
-Message-ID: <20201112111546.20343-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728055AbgKLLWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 06:22:34 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7177 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725966AbgKLLWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 06:22:32 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CWzhZ3Pj5z15VfX;
+        Thu, 12 Nov 2020 19:22:06 +0800 (CST)
+Received: from compute.localdomain (10.175.112.70) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Thu, 12 Nov 2020 19:22:12 +0800
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <m.felsch@pengutronix.de>, <f.fainelli@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] net: phy: smsc: add missed clk_disable_unprepare in smsc_phy_probe()
+Date:   Thu, 12 Nov 2020 19:23:59 +0800
+Message-ID: <1605180239-1792-1-git-send-email-zhangchangzhong@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
 Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Originating-IP: [10.175.112.70]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Depending on the SoC/platform the CPSW can completely lose context after a
-suspend/resume cycle, including CPSW wrapper (WR) which will cause reset of
-WR_C0_MISC_EN register, so CPTS IRQ will became disabled.
+Add the missing clk_disable_unprepare() before return from
+smsc_phy_probe() in the error handling case.
 
-Fix it by moving CPTS IRQ enabling in cpsw_ndo_open() where CPTS is
-actually started.
-
-Fixes: 84ea9c0a95d7 ("net: ethernet: ti: cpsw: enable cpts irq")
-Reported-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Fixes: bedd8d78aba3 ("net: phy: smsc: LAN8710/20: add phy refclk in support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 ---
- drivers/net/ethernet/ti/cpsw.c     | 10 ++++++----
- drivers/net/ethernet/ti/cpsw_new.c |  9 ++++++---
- 2 files changed, 12 insertions(+), 7 deletions(-)
+ drivers/net/phy/smsc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index 9fd1f77190ad..fa2d1025cbb2 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -838,9 +838,12 @@ static int cpsw_ndo_open(struct net_device *ndev)
- 		if (ret < 0)
- 			goto err_cleanup;
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index ec97669..0fc39ac 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -291,8 +291,10 @@ static int smsc_phy_probe(struct phy_device *phydev)
+ 		return ret;
  
--		if (cpts_register(cpsw->cpts))
--			dev_err(priv->dev, "error registering cpts device\n");
--
-+		if (cpsw->cpts) {
-+			if (cpts_register(cpsw->cpts))
-+				dev_err(priv->dev, "error registering cpts device\n");
-+			else
-+				writel(0x10, &cpsw->wr_regs->misc_en);
-+		}
- 	}
+ 	ret = clk_set_rate(priv->refclk, 50 * 1000 * 1000);
+-	if (ret)
++	if (ret) {
++		clk_disable_unprepare(priv->refclk);
+ 		return ret;
++	}
  
- 	cpsw_restore(priv);
-@@ -1716,7 +1719,6 @@ static int cpsw_probe(struct platform_device *pdev)
- 
- 	/* Enable misc CPTS evnt_pend IRQ */
- 	cpts_set_irqpoll(cpsw->cpts, false);
--	writel(0x10, &cpsw->wr_regs->misc_en);
- 
- skip_cpts:
- 	cpsw_notice(priv, probe,
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index f779d2e1b5c5..2f5e0ad23ad7 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -873,8 +873,12 @@ static int cpsw_ndo_open(struct net_device *ndev)
- 		if (ret < 0)
- 			goto err_cleanup;
- 
--		if (cpts_register(cpsw->cpts))
--			dev_err(priv->dev, "error registering cpts device\n");
-+		if (cpsw->cpts) {
-+			if (cpts_register(cpsw->cpts))
-+				dev_err(priv->dev, "error registering cpts device\n");
-+			else
-+				writel(0x10, &cpsw->wr_regs->misc_en);
-+		}
- 
- 		napi_enable(&cpsw->napi_rx);
- 		napi_enable(&cpsw->napi_tx);
-@@ -2006,7 +2010,6 @@ static int cpsw_probe(struct platform_device *pdev)
- 
- 	/* Enable misc CPTS evnt_pend IRQ */
- 	cpts_set_irqpoll(cpsw->cpts, false);
--	writel(0x10, &cpsw->wr_regs->misc_en);
- 
- skip_cpts:
- 	ret = cpsw_register_notifiers(cpsw);
+ 	return 0;
+ }
 -- 
-2.17.1
+2.9.5
 
