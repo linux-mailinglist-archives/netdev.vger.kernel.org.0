@@ -2,98 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 848662B0A07
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 17:33:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50A7C2B0A98
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 17:45:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728743AbgKLQdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 11:33:13 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:45869 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727646AbgKLQdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 11:33:11 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3C58F5C00C2;
-        Thu, 12 Nov 2020 11:33:10 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 12 Nov 2020 11:33:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=F1cPPC
-        Wql/rfrn4UySuUzH8Jeh/NeA/yPmCSipWGL00=; b=H2LBj05g9MUFn5bgIpyRJ8
-        yRbSrmfzWTY3Tn0LxUtVdDa3SxVXpBWKD1rYenm7Z3WVCTM5cRf3cwcI0eF6Ojol
-        cH3uIXj+B30MGodVDdq1cHKVC9/zk7nQJVBGuPpePoXWwwTqZwKIFc8lXBiOigUD
-        H4TGCRl1KJiN6Nt2RoOhafcEv1G0blMdtvtYx8s5Z56Rh7TzSO/px9IItHs0//Bp
-        z5IS+090nHVzi1CLv1KTO2dAopXa0qHlZIke68N2Q2JRlOVz4xVxotx8lzWPkSi5
-        UdFg/imfpHVkx6mPIdoQgC7BtjSJ4jJkRtXqIUgh3/5fviQxYtPXCJ6R41QidnxA
-        ==
-X-ME-Sender: <xms:xWOtXyb9obywjW8cwQ3r_dKkSh0eDHYCuoye86jj0VXhxPXeYwVcPg>
-    <xme:xWOtX1YJZ3UrmgxIyETJR9YGKDFXrAcfQPXbzUNBB1otgbE7vkFs4WoxxfsnUFSeN
-    TeI7yMezT1zKR8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedruddvfedgieegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheegrddugeejnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:xWOtX8-V6rW5w3tR1iULFfn-06M2VaOT0MYs3--0aVG07SowgOu24A>
-    <xmx:xWOtX0ovMRmgAjOLYqW2DsdDrf6TfC37qKildt0WpYO2LhuDyeMyiQ>
-    <xmx:xWOtX9pi6eqr8B-poPU693X96gPaKoagBw8o3qtca4e2oioBkja89g>
-    <xmx:xmOtX-f3wMnvQkxxYqXY7J7cg-7gImFFNJvIzvRe2sX6V33FYBQPPw>
-Received: from localhost (igld-84-229-154-147.inter.net.il [84.229.154.147])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 1DD6B3067E36;
-        Thu, 12 Nov 2020 11:33:08 -0500 (EST)
-Date:   Thu, 12 Nov 2020 18:33:07 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Itay Aveksis <itayav@nvidia.com>,
-        Ran Rozenstein <ranro@nvidia.com>
-Subject: Re: bug report: WARNING in bonding
-Message-ID: <20201112163307.GA2140537@shredder>
-References: <fb299ee2-4cf0-31d8-70f4-874da43e0021@gmail.com>
- <20201112154627.GA2138135@shredder>
- <e864f9a3-cda7-e498-91f4-894921527eaf@gmail.com>
+        id S1729234AbgKLQpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 11:45:38 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:37566 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728977AbgKLQpi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 11:45:38 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0ACGjWVr030274;
+        Thu, 12 Nov 2020 10:45:32 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1605199532;
+        bh=nEeyGV/g8WhnDhmKwXjMR/xIRfMtEk/NvzJI7KH1IEg=;
+        h=From:To:CC:Subject:Date;
+        b=Npe45z1FSa8F+JxCBhh/LjOhcnJYvBvCpbZYribufbxj3kQd8+7B76xAs2QYK1Si9
+         0mTWvBX28fRfouowO7kkIYUbLJBMJse2FXSL6LOYjiLiAl3Ypdbk76TExVHGESigk9
+         S/S3kzeu5/wzB2fr0GI7Rx2gDB32DwPv/HOAe6AA=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0ACGjWYP057547
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 12 Nov 2020 10:45:32 -0600
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 12
+ Nov 2020 10:45:31 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 12 Nov 2020 10:45:31 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0ACGjVJ1098180;
+        Thu, 12 Nov 2020 10:45:31 -0600
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, Wang Qing <wangqing@vivo.com>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>, Arnd Bergmann <arnd@kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH v5] net: ethernet: ti: am65-cpts: update ret when ptp_clock is ERROR
+Date:   Thu, 12 Nov 2020 18:45:41 +0200
+Message-ID: <20201112164541.3223-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e864f9a3-cda7-e498-91f4-894921527eaf@gmail.com>
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 12, 2020 at 05:54:30PM +0200, Tariq Toukan wrote:
-> 
-> 
-> On 11/12/2020 5:46 PM, Ido Schimmel wrote:
-> > On Thu, Nov 12, 2020 at 05:38:44PM +0200, Tariq Toukan wrote:
-> > > Hi all,
-> > > 
-> > > In the past ~2-3 weeks, we started seeing the following WARNING and traces
-> > > in our regression testing systems, almost every day.
-> > > 
-> > > Reproduction is not stable, and not isolated to a specific test, so it's
-> > > hard to bisect.
-> > > 
-> > > Any idea what could this be?
-> > > Or what is the suspected offending patch?
-> > 
-> > Do you have commit f8e48a3dca06 ("lockdep: Fix preemption WARN for spurious
-> > IRQ-enable")? I think it fixed the issue for me
-> > 
-> 
-> We do have it. Yet issue still exists.
+From: Wang Qing <wangqing@vivo.com>
 
-I checked my mail and apparently we stopped seeing this warning after I
-fixed a lockdep issue (spin_lock() vs spin_lock_bh()) in a yet to be
-submitted patch. Do you see any other lockdep warnings in the log
-besides this one? Maybe something in mlx4/5 which is why syzbot didn't
-hit it?
+We always have to update the value of ret, otherwise the
+ error value may be the previous one.
+
+Fixes: f6bd59526ca5 ("net: ethernet: ti: introduce am654 common platform time sync driver")
+Signed-off-by: Wang Qing <wangqing@vivo.com>
+[grygorii.strashko@ti.com: fix build warn, subj add fixes tag]
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+---
+Hi
+
+I've update patch as requested and added Acked-by from Richard from v1.
+
+v4: https://lore.kernel.org/patchwork/patch/1336771/
+v3: https://lore.kernel.org/patchwork/patch/1334871/
+v2: https://lore.kernel.org/patchwork/patch/1334549/
+v1: https://lore.kernel.org/patchwork/patch/1334067/
+
+ drivers/net/ethernet/ti/am65-cpts.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
+index 75056c14b161..5dc60ecabe56 100644
+--- a/drivers/net/ethernet/ti/am65-cpts.c
++++ b/drivers/net/ethernet/ti/am65-cpts.c
+@@ -1001,8 +1001,7 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
+ 	if (IS_ERR_OR_NULL(cpts->ptp_clock)) {
+ 		dev_err(dev, "Failed to register ptp clk %ld\n",
+ 			PTR_ERR(cpts->ptp_clock));
+-		if (!cpts->ptp_clock)
+-			ret = -ENODEV;
++		ret = cpts->ptp_clock ? PTR_ERR(cpts->ptp_clock) : -ENODEV;
+ 		goto refclk_disable;
+ 	}
+ 	cpts->phc_index = ptp_clock_index(cpts->ptp_clock);
+-- 
+2.17.1
+
