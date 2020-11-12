@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB2292B0C54
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 19:10:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C53E02B0C5E
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 19:10:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726394AbgKLSKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 13:10:25 -0500
-Received: from inva021.nxp.com ([92.121.34.21]:60266 "EHLO inva021.nxp.com"
+        id S1726537AbgKLSK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 13:10:29 -0500
+Received: from inva021.nxp.com ([92.121.34.21]:60348 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726344AbgKLSKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 13:10:25 -0500
+        id S1726455AbgKLSK2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 13:10:28 -0500
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4F9ED200144;
-        Thu, 12 Nov 2020 19:10:23 +0100 (CET)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5377D201523;
+        Thu, 12 Nov 2020 19:10:26 +0100 (CET)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 41C32200103;
-        Thu, 12 Nov 2020 19:10:23 +0100 (CET)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 459D8201513;
+        Thu, 12 Nov 2020 19:10:26 +0100 (CET)
 Received: from fsr-ub1464-019.ea.freescale.net (fsr-ub1464-019.ea.freescale.net [10.171.81.207])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id EA1F22032C;
-        Thu, 12 Nov 2020 19:10:22 +0100 (CET)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id ED6FD2032C;
+        Thu, 12 Nov 2020 19:10:25 +0100 (CET)
 From:   Camelia Groza <camelia.groza@nxp.com>
 To:     kuba@kernel.org, brouer@redhat.com, davem@davemloft.net
 Cc:     madalin.bucur@oss.nxp.com, ioana.ciornei@nxp.com,
         netdev@vger.kernel.org, Camelia Groza <camelia.groza@nxp.com>
-Subject: [PATCH net-next 1/7] dpaa_eth: add struct for software backpointers
-Date:   Thu, 12 Nov 2020 20:10:06 +0200
-Message-Id: <21b8407fbd7ff1c8b3ea170e1a954f35df5fadb2.1605181416.git.camelia.groza@nxp.com>
+Subject: [PATCH net-next 2/7] dpaa_eth: add basic XDP support
+Date:   Thu, 12 Nov 2020 20:10:07 +0200
+Message-Id: <7389fa62d9e311236f2e39c5d5d153cabc59949d.1605181416.git.camelia.groza@nxp.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <cover.1605181416.git.camelia.groza@nxp.com>
 References: <cover.1605181416.git.camelia.groza@nxp.com>
@@ -37,98 +37,278 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We maintain an skb backpointer in the software annotations area of Tx
-frames. Introduce a structure for explicit handling.
+Implement the XDP_DROP and XDP_PASS actions.
+
+Avoid draining and reconfiguring the buffer pool at each XDP
+setup/teardown by increasing the frame headroom and reserving
+XDP_PACKET_HEADROOM bytes from the start. Since we always reserve an
+entire page per buffer, this change only impacts Jumbo frame scenarios
+where the maximum linear frame size is reduced by 256 bytes. Multi
+buffer Scatter/Gather frames are now used instead in these scenarios.
+
+Allow XDP programs to access the entire buffer.
+
+The data in the received frame's headroom can be overwritten by the XDP
+program. Extract the relevant fields from the headroom while they are
+still available, before running the XDP program.
+
+Since the headroom might be resized before the frame is passed up to the
+stack, remove the check for a fixed headroom value when building an skb.
+
+Allow the meta data to be updated and pass the information up the stack.
 
 Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 16 +++++++++-------
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.h |  8 ++++++++
- 2 files changed, 17 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 148 ++++++++++++++++++++++---
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.h |   2 +
+ 2 files changed, 134 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 8867693..88533a2 100644
+index 88533a2..d1d8a46 100644
 --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
 +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -1633,6 +1633,7 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
- 	dma_addr_t addr = qm_fd_addr(fd);
- 	void *vaddr = phys_to_virt(addr);
- 	const struct qm_sg_entry *sgt;
-+	struct dpaa_eth_swbp *swbp;
+@@ -53,6 +53,8 @@
+ #include <linux/dma-mapping.h>
+ #include <linux/sort.h>
+ #include <linux/phy_fixed.h>
++#include <linux/bpf.h>
++#include <linux/bpf_trace.h>
+ #include <soc/fsl/bman.h>
+ #include <soc/fsl/qman.h>
+ #include "fman.h"
+@@ -177,7 +179,7 @@
+ #define DPAA_HWA_SIZE (DPAA_PARSE_RESULTS_SIZE + DPAA_TIME_STAMP_SIZE \
+ 		       + DPAA_HASH_RESULTS_SIZE)
+ #define DPAA_RX_PRIV_DATA_DEFAULT_SIZE (DPAA_TX_PRIV_DATA_SIZE + \
+-					dpaa_rx_extra_headroom)
++					XDP_PACKET_HEADROOM - DPAA_HWA_SIZE)
+ #ifdef CONFIG_DPAA_ERRATUM_A050385
+ #define DPAA_RX_PRIV_DATA_A050385_SIZE (DPAA_A050385_ALIGN - DPAA_HWA_SIZE)
+ #define DPAA_RX_PRIV_DATA_SIZE (fman_has_errata_a050385() ? \
+@@ -1733,7 +1735,6 @@ static struct sk_buff *contig_fd_to_skb(const struct dpaa_priv *priv,
+ 			SKB_DATA_ALIGN(sizeof(struct skb_shared_info)));
+ 	if (WARN_ONCE(!skb, "Build skb failure on Rx\n"))
+ 		goto free_buffer;
+-	WARN_ON(fd_off != priv->rx_headroom);
+ 	skb_reserve(skb, fd_off);
+ 	skb_put(skb, qm_fd_get_length(fd));
+ 
+@@ -2349,12 +2350,62 @@ static enum qman_cb_dqrr_result rx_error_dqrr(struct qman_portal *portal,
+ 	return qman_cb_dqrr_consume;
+ }
+ 
++static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
++			unsigned int *xdp_meta_len)
++{
++	ssize_t fd_off = qm_fd_get_offset(fd);
++	struct bpf_prog *xdp_prog;
++	struct xdp_buff xdp;
++	u32 xdp_act;
++
++	rcu_read_lock();
++
++	xdp_prog = READ_ONCE(priv->xdp_prog);
++	if (!xdp_prog) {
++		rcu_read_unlock();
++		return XDP_PASS;
++	}
++
++	xdp.data = vaddr + fd_off;
++	xdp.data_meta = xdp.data;
++	xdp.data_hard_start = xdp.data - XDP_PACKET_HEADROOM;
++	xdp.data_end = xdp.data + qm_fd_get_length(fd);
++	xdp.frame_sz = DPAA_BP_RAW_SIZE;
++
++	xdp_act = bpf_prog_run_xdp(xdp_prog, &xdp);
++
++	/* Update the length and the offset of the FD */
++	qm_fd_set_contig(fd, xdp.data - vaddr, xdp.data_end - xdp.data);
++
++	switch (xdp_act) {
++	case XDP_PASS:
++		*xdp_meta_len = xdp.data - xdp.data_meta;
++		break;
++	default:
++		bpf_warn_invalid_xdp_action(xdp_act);
++		fallthrough;
++	case XDP_ABORTED:
++		trace_xdp_exception(priv->net_dev, xdp_prog, xdp_act);
++		fallthrough;
++	case XDP_DROP:
++		/* Free the buffer */
++		free_pages((unsigned long)vaddr, 0);
++		break;
++	}
++
++	rcu_read_unlock();
++
++	return xdp_act;
++}
++
+ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
+ 						struct qman_fq *fq,
+ 						const struct qm_dqrr_entry *dq,
+ 						bool sched_napi)
+ {
++	bool ts_valid = false, hash_valid = false;
+ 	struct skb_shared_hwtstamps *shhwtstamps;
++	unsigned int skb_len, xdp_meta_len = 0;
+ 	struct rtnl_link_stats64 *percpu_stats;
+ 	struct dpaa_percpu_priv *percpu_priv;
+ 	const struct qm_fd *fd = &dq->fd;
+@@ -2364,10 +2415,11 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
+ 	u32 fd_status, hash_offset;
+ 	struct dpaa_bp *dpaa_bp;
+ 	struct dpaa_priv *priv;
+-	unsigned int skb_len;
  	struct sk_buff *skb;
+ 	int *count_ptr;
++	u32 xdp_act;
+ 	void *vaddr;
++	u32 hash;
  	u64 ns;
- 	int i;
-@@ -1665,7 +1666,8 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
- 				 dma_dir);
+ 
+ 	fd_status = be32_to_cpu(fd->status);
+@@ -2423,35 +2475,58 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
+ 	count_ptr = this_cpu_ptr(dpaa_bp->percpu_count);
+ 	(*count_ptr)--;
+ 
+-	if (likely(fd_format == qm_fd_contig))
++	/* Extract the timestamp stored in the headroom before running XDP */
++	if (priv->rx_tstamp) {
++		if (!fman_port_get_tstamp(priv->mac_dev->port[RX], vaddr, &ns))
++			ts_valid = true;
++		else
++			dev_warn(net_dev->dev.parent, "fman_port_get_tstamp failed!\n");
++	}
++
++	/* Extract the hash stored in the headroom before running XDP */
++	if (net_dev->features & NETIF_F_RXHASH && priv->keygen_in_use &&
++	    !fman_port_get_hash_result_offset(priv->mac_dev->port[RX],
++					      &hash_offset)) {
++		hash = be32_to_cpu(*(u32 *)(vaddr + hash_offset));
++		hash_valid = true;
++	}
++
++	if (likely(fd_format == qm_fd_contig)) {
++		xdp_act = dpaa_run_xdp(priv, (struct qm_fd *)fd, vaddr,
++				       &xdp_meta_len);
++		if (xdp_act != XDP_PASS) {
++			percpu_stats->rx_packets++;
++			percpu_stats->rx_bytes += qm_fd_get_length(fd);
++			return qman_cb_dqrr_consume;
++		}
+ 		skb = contig_fd_to_skb(priv, fd);
+-	else
++	} else {
++		WARN_ONCE(priv->xdp_prog, "S/G frames not supported under XDP\n");
+ 		skb = sg_fd_to_skb(priv, fd);
++	}
+ 	if (!skb)
+ 		return qman_cb_dqrr_consume;
+ 
+-	if (priv->rx_tstamp) {
++	if (xdp_meta_len)
++		skb_metadata_set(skb, xdp_meta_len);
++
++	/* Set the previously extracted timestamp */
++	if (ts_valid) {
+ 		shhwtstamps = skb_hwtstamps(skb);
+ 		memset(shhwtstamps, 0, sizeof(*shhwtstamps));
+-
+-		if (!fman_port_get_tstamp(priv->mac_dev->port[RX], vaddr, &ns))
+-			shhwtstamps->hwtstamp = ns_to_ktime(ns);
+-		else
+-			dev_warn(net_dev->dev.parent, "fman_port_get_tstamp failed!\n");
++		shhwtstamps->hwtstamp = ns_to_ktime(ns);
  	}
  
--	skb = *(struct sk_buff **)vaddr;
-+	swbp = (struct dpaa_eth_swbp *)vaddr;
-+	skb = swbp->skb;
+ 	skb->protocol = eth_type_trans(skb, net_dev);
  
- 	/* DMA unmapping is required before accessing the HW provided info */
- 	if (ts && priv->tx_tstamp &&
-@@ -1879,8 +1881,8 @@ static int skb_to_contig_fd(struct dpaa_priv *priv,
+-	if (net_dev->features & NETIF_F_RXHASH && priv->keygen_in_use &&
+-	    !fman_port_get_hash_result_offset(priv->mac_dev->port[RX],
+-					      &hash_offset)) {
++	/* Set the previously extracted hash */
++	if (hash_valid) {
+ 		enum pkt_hash_types type;
+ 
+ 		/* if L4 exists, it was used in the hash generation */
+ 		type = be32_to_cpu(fd->status) & FM_FD_STAT_L4CV ?
+ 			PKT_HASH_TYPE_L4 : PKT_HASH_TYPE_L3;
+-		skb_set_hash(skb, be32_to_cpu(*(u32 *)(vaddr + hash_offset)),
+-			     type);
++		skb_set_hash(skb, hash, type);
+ 	}
+ 
+ 	skb_len = skb->len;
+@@ -2671,6 +2746,46 @@ static int dpaa_eth_stop(struct net_device *net_dev)
+ 	return err;
+ }
+ 
++static int dpaa_setup_xdp(struct net_device *net_dev, struct bpf_prog *prog)
++{
++	struct dpaa_priv *priv = netdev_priv(net_dev);
++	struct bpf_prog *old_prog;
++	bool up;
++	int err;
++
++	/* S/G fragments are not supported in XDP-mode */
++	if (prog && (priv->dpaa_bp->raw_size <
++	    net_dev->mtu + VLAN_ETH_HLEN + ETH_FCS_LEN))
++		return -EINVAL;
++
++	up = netif_running(net_dev);
++
++	if (up)
++		dpaa_eth_stop(net_dev);
++
++	old_prog = xchg(&priv->xdp_prog, prog);
++	if (old_prog)
++		bpf_prog_put(old_prog);
++
++	if (up) {
++		err = dpaa_open(net_dev);
++		if (err)
++			return err;
++	}
++
++	return 0;
++}
++
++static int dpaa_xdp(struct net_device *net_dev, struct netdev_bpf *xdp)
++{
++	switch (xdp->command) {
++	case XDP_SETUP_PROG:
++		return dpaa_setup_xdp(net_dev, xdp->prog);
++	default:
++		return -EINVAL;
++	}
++}
++
+ static int dpaa_ts_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
  {
- 	struct net_device *net_dev = priv->net_dev;
- 	enum dma_data_direction dma_dir;
-+	struct dpaa_eth_swbp *swbp;
- 	unsigned char *buff_start;
--	struct sk_buff **skbh;
- 	dma_addr_t addr;
- 	int err;
- 
-@@ -1891,8 +1893,8 @@ static int skb_to_contig_fd(struct dpaa_priv *priv,
- 	buff_start = skb->data - priv->tx_headroom;
- 	dma_dir = DMA_TO_DEVICE;
- 
--	skbh = (struct sk_buff **)buff_start;
--	*skbh = skb;
-+	swbp = (struct dpaa_eth_swbp *)buff_start;
-+	swbp->skb = skb;
- 
- 	/* Enable L3/L4 hardware checksum computation.
- 	 *
-@@ -1931,8 +1933,8 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
- 	const enum dma_data_direction dma_dir = DMA_TO_DEVICE;
- 	const int nr_frags = skb_shinfo(skb)->nr_frags;
- 	struct net_device *net_dev = priv->net_dev;
-+	struct dpaa_eth_swbp *swbp;
- 	struct qm_sg_entry *sgt;
--	struct sk_buff **skbh;
- 	void *buff_start;
- 	skb_frag_t *frag;
- 	dma_addr_t addr;
-@@ -2005,8 +2007,8 @@ static int skb_to_sg_fd(struct dpaa_priv *priv,
- 	qm_fd_set_sg(fd, priv->tx_headroom, skb->len);
- 
- 	/* DMA map the SGT page */
--	skbh = (struct sk_buff **)buff_start;
--	*skbh = skb;
-+	swbp = (struct dpaa_eth_swbp *)buff_start;
-+	swbp->skb = skb;
- 
- 	addr = dma_map_page(priv->tx_dma_dev, p, 0,
- 			    priv->tx_headroom + DPAA_SGT_SIZE, dma_dir);
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
-index fc2cc4c..da30e5d 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
-@@ -144,6 +144,14 @@ struct dpaa_buffer_layout {
- 	u16 priv_data_size;
+ 	struct dpaa_priv *priv = netdev_priv(dev);
+@@ -2737,6 +2852,7 @@ static int dpaa_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
+ 	.ndo_set_rx_mode = dpaa_set_rx_mode,
+ 	.ndo_do_ioctl = dpaa_ioctl,
+ 	.ndo_setup_tc = dpaa_setup_tc,
++	.ndo_bpf = dpaa_xdp,
  };
  
-+/* Information to be used on the Tx confirmation path. Stored just
-+ * before the start of the transmit buffer. Maximum size allowed
-+ * is DPAA_TX_PRIV_DATA_SIZE bytes.
-+ */
-+struct dpaa_eth_swbp {
-+	struct sk_buff *skb;
-+};
+ static int dpaa_napi_add(struct net_device *net_dev)
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+index da30e5d..94e8613 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+@@ -196,6 +196,8 @@ struct dpaa_priv {
+ 
+ 	bool tx_tstamp; /* Tx timestamping enabled */
+ 	bool rx_tstamp; /* Rx timestamping enabled */
 +
- struct dpaa_priv {
- 	struct dpaa_percpu_priv __percpu *percpu_priv;
- 	struct dpaa_bp *dpaa_bp;
++	struct bpf_prog *xdp_prog;
+ };
+ 
+ /* from dpaa_ethtool.c */
 -- 
 1.9.1
 
