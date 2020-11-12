@@ -2,56 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 738532B0C43
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 19:05:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3041C2B0C53
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 19:10:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726488AbgKLSFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 13:05:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36698 "EHLO mail.kernel.org"
+        id S1726324AbgKLSKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 13:10:18 -0500
+Received: from inva021.nxp.com ([92.121.34.21]:60228 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726194AbgKLSFq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 13:05:46 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.3])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 11D5822201;
-        Thu, 12 Nov 2020 18:05:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605204345;
-        bh=NN2RmnkMHYhHjjqXsr30dnhfEfppsmxzdtW1JJjpc/c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=chT6NP6nq7GUq+nivv771+cevAkixfBFyKimC5yrhTUEFUylO3CSzcV1jLITUkXdM
-         v+erJvpwrl650PstwPfnPN0CHZ/dE0vXZbAyyqDS5BgNCRmFQ+AbPmApjRyJz7+UqU
-         nZmn3PBXwE4X8W9t7d2bgIjcEBb6OmKrvTSH6ucw=
-Date:   Thu, 12 Nov 2020 10:05:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v1] lan743x: fix use of uninitialized variable
-Message-ID: <20201112100539.172ed3b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201112152513.1941-1-TheSven73@gmail.com>
-References: <20201112152513.1941-1-TheSven73@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726156AbgKLSKR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 13:10:17 -0500
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A24752001CA;
+        Thu, 12 Nov 2020 19:10:15 +0100 (CET)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9F860200190;
+        Thu, 12 Nov 2020 19:10:15 +0100 (CET)
+Received: from fsr-ub1464-019.ea.freescale.net (fsr-ub1464-019.ea.freescale.net [10.171.81.207])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 499D02032C;
+        Thu, 12 Nov 2020 19:10:15 +0100 (CET)
+From:   Camelia Groza <camelia.groza@nxp.com>
+To:     kuba@kernel.org, brouer@redhat.com, davem@davemloft.net
+Cc:     madalin.bucur@oss.nxp.com, ioana.ciornei@nxp.com,
+        netdev@vger.kernel.org, Camelia Groza <camelia.groza@nxp.com>
+Subject: [PATCH net-next 0/7] dpaa_eth: add XDP support
+Date:   Thu, 12 Nov 2020 20:10:05 +0200
+Message-Id: <cover.1605181416.git.camelia.groza@nxp.com>
+X-Mailer: git-send-email 1.9.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Nov 2020 10:25:13 -0500 Sven Van Asbroeck wrote:
-> From: Sven Van Asbroeck <thesven73@gmail.com>
-> 
-> When no devicetree is present, the driver will use an
-> uninitialized variable.
-> 
-> Fix by initializing this variable.
-> 
-> Fixes: 902a66e08cea ("lan743x: correctly handle chips with internal PHY")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+Enable XDP support for the QorIQ DPAA1 platforms.
 
-Applied, thanks!
+Implement all the current actions (DROP, ABORTED, PASS, TX, REDIRECT). No
+Tx batching is added at this time.
+
+Additional XDP_PACKET_HEADROOM bytes are reserved in each frame's headroom.
+
+After transmit, a reference to the xdp_frame is saved in the buffer for
+clean-up on confirmation in a newly created structure for software
+annotations.
+
+
+Camelia Groza (7):
+  dpaa_eth: add struct for software backpointers
+  dpaa_eth: add basic XDP support
+  dpaa_eth: limit the possible MTU range when XDP is enabled
+  dpaa_eth: add XDP_TX support
+  dpaa_eth: add XDP_REDIRECT support
+  dpaa_eth: rename current skb A050385 erratum workaround
+  dpaa_eth: implement the A050385 erratum workaround for XDP
+
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 447 +++++++++++++++++++++++--
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.h |  13 +
+ 2 files changed, 430 insertions(+), 30 deletions(-)
+
+--
+1.9.1
+
