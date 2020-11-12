@@ -2,73 +2,714 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 616FE2B011C
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 09:18:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FF632B0123
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 09:20:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726510AbgKLISW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 03:18:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57856 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725884AbgKLISV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 03:18:21 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCBAC0613D1;
-        Thu, 12 Nov 2020 00:18:21 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kd7no-006CQP-KM; Thu, 12 Nov 2020 09:17:56 +0100
-Message-ID: <2f8fa91f2490eec82893fea837ec52356cda55f6.camel@sipsolutions.net>
-Subject: Re: [PATCH] rfkill: Fix use-after-free in rfkill_resume()
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Claire Chang <tientzu@chromium.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, hdegoede@redhat.com,
-        marcel@holtmann.org,
-        "open list:NETWORKING DRIVERS (WIRELESS)" 
-        <linux-wireless@vger.kernel.org>, netdev@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>
-Date:   Thu, 12 Nov 2020 09:17:40 +0100
-In-Reply-To: <CALiNf29ku1aBiaBEg9ZTe7USSZZiOwnZWW3NKZgSGZ6M+GAX7w@mail.gmail.com> (sfid-20201111_042332_725984_06312727)
-References: <20201110084908.219088-1-tientzu@chromium.org>
-         <3b851462d9bfd914aeb9f5b432e4c076f6c330f3.camel@sipsolutions.net>
-         <CALiNf29ku1aBiaBEg9ZTe7USSZZiOwnZWW3NKZgSGZ6M+GAX7w@mail.gmail.com>
-         (sfid-20201111_042332_725984_06312727)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
-MIME-Version: 1.0
+        id S1726028AbgKLIU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 03:20:57 -0500
+Received: from mailout3.samsung.com ([203.254.224.33]:39904 "EHLO
+        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725884AbgKLIU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 03:20:56 -0500
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20201112082053epoutp0385482e77000ebef7199337594006e903~GtO5t_JzH1945419454epoutp03g
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 08:20:53 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20201112082053epoutp0385482e77000ebef7199337594006e903~GtO5t_JzH1945419454epoutp03g
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1605169253;
+        bh=Oybib231jc1KYnlVbzUF0RmuotYWk203+B/RUVdL2Z4=;
+        h=Subject:Reply-To:From:To:CC:Date:References:From;
+        b=N4B5WC+AJNBfR4rOSOQj0Ryi+3QEjxWfhFY5l60YfoYT68b2oxW2LW7IL6NUC1s6H
+         Nk2yFMJvl51/mi0OM+WvJWYPmzlt5rjoJT+Z5PJYfZKqLP0jEpDFG1a3VOpVytmV2p
+         U4LiYQGELncOivGoKMhvb7hzBJfb/WFdiQWAo/Xs=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20201112082052epcas2p1bb4d426f0dbbc2ec4847f91e8dd94da4~GtO45JALF2964729647epcas2p1J;
+        Thu, 12 Nov 2020 08:20:52 +0000 (GMT)
+Received: from epsmges2p4.samsung.com (unknown [182.195.40.187]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4CWvgQ2w9mzMqYly; Thu, 12 Nov
+        2020 08:20:50 +0000 (GMT)
+X-AuditID: b6c32a48-50fff7000000cd1f-51-5facf060526c
+Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
+        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        51.66.52511.060FCAF5; Thu, 12 Nov 2020 17:20:48 +0900 (KST)
+Mime-Version: 1.0
+Subject: [PATCH] nfc: s3fwrn82: Add driver for Samsung S3FWRN82 NFC Chip
+Reply-To: bongsu.jeon@samsung.com
+Sender: Bongsu Jeon <bongsu.jeon@samsung.com>
+From:   Bongsu Jeon <bongsu.jeon@samsung.com>
+To:     "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20201112082047epcms2p3c164a73f89b1bdf2be97fe5e2c6936d2@epcms2p3>
+Date:   Thu, 12 Nov 2020 17:20:47 +0900
+X-CMS-MailID: 20201112082047epcms2p3c164a73f89b1bdf2be97fe5e2c6936d2
 Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrOKsWRmVeSWpSXmKPExsWy7bCmqW7ChzXxBk2HuSy2NE9it5hzvoXF
+        4tgCMQdmjy0rbzJ59G1ZxejxeZNcAHNUjk1GamJKapFCal5yfkpmXrqtkndwvHO8qZmBoa6h
+        pYW5kkJeYm6qrZKLT4CuW2YO0B4lhbLEnFKgUEBicbGSvp1NUX5pSapCRn5xia1SakFKToGh
+        YYFecWJucWleul5yfq6VoYGBkSlQZUJOxs6+/+wF6+oqpn/8y9rA+CS9i5GTQ0LAROLFwn6W
+        LkYuDiGBHYwSm3vusHYxcnDwCghK/N0hDFIjLOAhcfH9YRYQW0hAUeJ/xzk2iLiuxIu/R8Fs
+        NgFtibVHG5lAWkUE9CVW7PIGCTMLmEo8O/2WBWIVr8SM9qdQtrTE9uVbGSFsDYkfy3qZIWxR
+        iZur37LD2O+PzYeqEZFovXcWqkZQ4sHP3VBxSYm3++axg5wvIdDOKHH+5w82CGcGo8SpzX+h
+        OvQlFp9bwQRi8wr4Srx9tZMVxGYRUJVYu/EfVI2LxM/9v9kgrpaX2P52DjPIM8wCmhLrd+mD
+        mBICyhJHbrFAVPBJdBz+yw7z1455T5ggbFWJ3uYvTDA/Tp7dwgjR6iHxY44/JAQDJXqvnGac
+        wKgwCxHOs5CsnYWwdgEj8ypGsdSC4tz01GKjAhPkqN3ECE5xWh47GGe//aB3iJGJg/EQowQH
+        s5IIr7LDmngh3pTEyqrUovz4otKc1OJDjKZAD09klhJNzgcm2bySeENTIzMzA0tTC1MzIwsl
+        cd7QlX3xQgLpiSWp2ampBalFMH1MHJxSDUx6C3vOfLVYl7Itxkx69718GZXpIa7O6fntPz+e
+        e35iy5Hc+TmXnbl5i4MWzf6nuZnjDhdfwqbK9nklt272zmNJ7OwN/HzZaLFVn4pUOnOWj8CP
+        KwmHks9Zt1UXuSZMd7zwOdegS/ROymO9lM4wm8i5mdtmtrCdr21dUr7j4BqfBna+YyteGUj4
+        huhFp2gWs0e9emk1MaEx8jXD281aHz5lnIg94GS9IH133aNFZpNi7xZMOuq5q63v0iX/+Cav
+        1r2Z3Loxj8TSOXWP2mQZbD0tExbD9e8Eq+nfef+6dzIrZggGuWfsazlp7mzB8KPqRe6/+k8l
+        Mb//n0tyzaqJToqUDuf8tIfv54P+BW1RSizFGYmGWsxFxYkA0Z+PpfoDAAA=
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20201112082047epcms2p3c164a73f89b1bdf2be97fe5e2c6936d2
+References: <CGME20201112082047epcms2p3c164a73f89b1bdf2be97fe5e2c6936d2@epcms2p3>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-11-11 at 11:23 +0800, Claire Chang wrote:
-> On Wed, Nov 11, 2020 at 1:35 AM Johannes Berg <johannes@sipsolutions.net> wrote:
-> > On Tue, 2020-11-10 at 16:49 +0800, Claire Chang wrote:
-> > > If a device is getting removed or reprobed during resume, use-after-free
-> > > might happen. For example, h5_btrtl_resume()[drivers/bluetooth/hci_h5.c]
-> > > schedules a work queue for device reprobing. During the reprobing, if
-> > > rfkill_set_block() in rfkill_resume() is called after the corresponding
-> > > *_unregister() and kfree() are called, there will be an use-after-free
-> > > in hci_rfkill_set_block()[net/bluetooth/hci_core.c].
-> > 
-> > Not sure I understand. So you're saying
-> > 
-> >  * something (h5_btrtl_resume) schedules a worker
-> >  * said worker run, when it runs, calls rfkill_unregister()
-> >  * somehow rfkill_resume() still gets called after this
-> > 
-> > But that can't really be right, device_del() removes it from the PM
-> > lists?
-> 
-> If device_del() is called right before the device_lock() in device_resume()[1],
-> it's possible the rfkill device is unregistered, but rfkill_resume is
-> still called.
 
-OK, I see, thanks for the clarification!
+Add driver for Samsung S3FWRN82 NFC controller.
+S3FWRN82 is using NCI protocol and I2C communication interface.
 
-I'll try to add that to the commit message.
+Signed-off-by: bongsujeon <bongsu.jeon@samsung.com>
+---
+ .../devicetree/bindings/net/nfc/s3fwrn82.txt  |  30 ++
+ drivers/nfc/Kconfig                           |   1 +
+ drivers/nfc/Makefile                          |   1 +
+ drivers/nfc/s3fwrn82/Kconfig                  |  20 ++
+ drivers/nfc/s3fwrn82/Makefile                 |  10 +
+ drivers/nfc/s3fwrn82/core.c                   | 133 +++++++++
+ drivers/nfc/s3fwrn82/i2c.c                    | 281 ++++++++++++++++++
+ drivers/nfc/s3fwrn82/s3fwrn82.h               |  82 +++++
+ 8 files changed, 558 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt
+ create mode 100644 drivers/nfc/s3fwrn82/Kconfig
+ create mode 100644 drivers/nfc/s3fwrn82/Makefile
+ create mode 100644 drivers/nfc/s3fwrn82/core.c
+ create mode 100644 drivers/nfc/s3fwrn82/i2c.c
+ create mode 100644 drivers/nfc/s3fwrn82/s3fwrn82.h
 
-Thanks,
-johannes
-
+diff --git a/Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt b/Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt
+new file mode 100644
+index 000000000000..03ed880e1c7f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt
+@@ -0,0 +1,30 @@
++* Samsung S3FWRN82 NCI NFC Controller
++
++Required properties:
++- compatible: Should be "samsung,s3fwrn82-i2c".
++- reg: address on the bus
++- interrupts: GPIO interrupt to which the chip is connected
++- en-gpios: Output GPIO pin used for enabling/disabling the chip
++- wake-gpios: Output GPIO pin used to enter firmware mode and
++  sleep/wakeup control
++
++Example:
++
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c4 {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        s3fwrn82@27 {
++            compatible = "samsung,s3fwrn82-i2c";
++            reg = <0x27>;
++
++            interrupt-parent = <&gpa1>;
++            interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
++
++            en-gpios = <&gpf1 4 GPIO_ACTIVE_HIGH>;
++            wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
++        };
++    };
+diff --git a/drivers/nfc/Kconfig b/drivers/nfc/Kconfig
+index 75c65d339018..102654909d3a 100644
+--- a/drivers/nfc/Kconfig
++++ b/drivers/nfc/Kconfig
+@@ -59,4 +59,5 @@ source "drivers/nfc/st-nci/Kconfig"
+ source "drivers/nfc/nxp-nci/Kconfig"
+ source "drivers/nfc/s3fwrn5/Kconfig"
+ source "drivers/nfc/st95hf/Kconfig"
++source "drivers/nfc/s3fwrn82/Kconfig"
+ endmenu
+diff --git a/drivers/nfc/Makefile b/drivers/nfc/Makefile
+index 5393ba59b17d..518d83301ad2 100644
+--- a/drivers/nfc/Makefile
++++ b/drivers/nfc/Makefile
+@@ -17,3 +17,4 @@ obj-$(CONFIG_NFC_ST_NCI)	+= st-nci/
+ obj-$(CONFIG_NFC_NXP_NCI)	+= nxp-nci/
+ obj-$(CONFIG_NFC_S3FWRN5)	+= s3fwrn5/
+ obj-$(CONFIG_NFC_ST95HF)	+= st95hf/
++obj-$(CONFIG_NFC_S3FWRN82)	+= s3fwrn82/
+diff --git a/drivers/nfc/s3fwrn82/Kconfig b/drivers/nfc/s3fwrn82/Kconfig
+new file mode 100644
+index 000000000000..8765624c6fa4
+--- /dev/null
++++ b/drivers/nfc/s3fwrn82/Kconfig
+@@ -0,0 +1,20 @@
++# SPDX-License-Identifier: GPL-2.0-only
++config NFC_S3FWRN82
++	tristate
++	help
++	  Core driver for Samsung S3FWRN82 NFC chip. Contains core utilities
++	  of chip. It's intended to be used by PHYs to avoid duplicating lots
++	  of common code.
++
++config NFC_S3FWRN82_I2C
++	tristate "Samsung S3FWRN82 I2C support"
++	depends on NFC_NCI && I2C
++	select NFC_S3FWRN82
++	default n
++	help
++	  This module adds support for an I2C interface to the S3FWRN82 chip.
++	  Select this if your platform is using the I2C bus.
++
++	  To compile this driver as a module, choose m here. The module will
++	  be called s3fwrn82_i2c.ko.
++	  Say N if unsure.
+diff --git a/drivers/nfc/s3fwrn82/Makefile b/drivers/nfc/s3fwrn82/Makefile
+new file mode 100644
+index 000000000000..198e2cd85e91
+--- /dev/null
++++ b/drivers/nfc/s3fwrn82/Makefile
+@@ -0,0 +1,10 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Makefile for Samsung S3FWRN82 NFC driver
++#
++
++s3fwrn82-objs = core.o
++s3fwrn82_i2c-objs = i2c.o
++
++obj-$(CONFIG_NFC_S3FWRN82) += s3fwrn82.o
++obj-$(CONFIG_NFC_S3FWRN82_I2C) += s3fwrn82_i2c.o
+diff --git a/drivers/nfc/s3fwrn82/core.c b/drivers/nfc/s3fwrn82/core.c
+new file mode 100644
+index 000000000000..7ba60ec37fe3
+--- /dev/null
++++ b/drivers/nfc/s3fwrn82/core.c
+@@ -0,0 +1,133 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * NCI based driver for Samsung S3FWRN82 NFC chip
++ *
++ * Copyright (C) 2020 Samsung Electrnoics
++ * Bongsu Jeon <bongsu.jeon@samsung.com>
++ */
++
++#include <linux/module.h>
++#include <net/nfc/nci_core.h>
++
++#include "s3fwrn82.h"
++
++#define S3FWRN82_NFC_PROTOCOLS  (NFC_PROTO_JEWEL_MASK | \
++				NFC_PROTO_MIFARE_MASK | \
++				NFC_PROTO_FELICA_MASK | \
++				NFC_PROTO_ISO14443_MASK | \
++				NFC_PROTO_ISO14443_B_MASK | \
++				NFC_PROTO_ISO15693_MASK)
++
++static int s3fwrn82_nci_open(struct nci_dev *ndev)
++{
++	struct s3fwrn82_info *info = nci_get_drvdata(ndev);
++
++	if (s3fwrn82_get_mode(info) != S3FWRN82_MODE_COLD)
++		return  -EBUSY;
++
++	s3fwrn82_set_mode(info, S3FWRN82_MODE_NCI);
++	s3fwrn82_set_wake(info, true);
++
++	return 0;
++}
++
++static int s3fwrn82_nci_close(struct nci_dev *ndev)
++{
++	struct s3fwrn82_info *info = nci_get_drvdata(ndev);
++
++	s3fwrn82_set_wake(info, false);
++	s3fwrn82_set_mode(info, S3FWRN82_MODE_COLD);
++
++	return 0;
++}
++
++static int s3fwrn82_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
++{
++	struct s3fwrn82_info *info = nci_get_drvdata(ndev);
++	int ret;
++
++	mutex_lock(&info->mutex);
++
++	if (s3fwrn82_get_mode(info) != S3FWRN82_MODE_NCI) {
++		mutex_unlock(&info->mutex);
++		return -EINVAL;
++	}
++
++	ret = s3fwrn82_write(info, skb);
++	if (ret < 0)
++		kfree_skb(skb);
++
++	mutex_unlock(&info->mutex);
++	return ret;
++}
++
++static struct nci_ops s3fwrn82_nci_ops = {
++	.open = s3fwrn82_nci_open,
++	.close = s3fwrn82_nci_close,
++	.send = s3fwrn82_nci_send,
++};
++
++int s3fwrn82_probe(struct nci_dev **ndev, void *phy_id, struct device *pdev,
++	const struct s3fwrn82_phy_ops *phy_ops)
++{
++	struct s3fwrn82_info *info;
++	int ret;
++
++	info = devm_kzalloc(pdev, sizeof(*info), GFP_KERNEL);
++	if (!info)
++		return -ENOMEM;
++
++	info->phy_id = phy_id;
++	info->pdev = pdev;
++	info->phy_ops = phy_ops;
++	mutex_init(&info->mutex);
++
++	s3fwrn82_set_mode(info, S3FWRN82_MODE_COLD);
++
++	info->ndev = nci_allocate_device(&s3fwrn82_nci_ops,
++		S3FWRN82_NFC_PROTOCOLS, 0, 0);
++	if (!info->ndev)
++		return -ENOMEM;
++
++	nci_set_parent_dev(info->ndev, pdev);
++	nci_set_drvdata(info->ndev, info);
++
++	ret = nci_register_device(info->ndev);
++	if (ret < 0) {
++		nci_free_device(info->ndev);
++		return ret;
++	}
++
++	*ndev = info->ndev;
++
++	return ret;
++}
++EXPORT_SYMBOL(s3fwrn82_probe);
++
++void s3fwrn82_remove(struct nci_dev *ndev)
++{
++	struct s3fwrn82_info *info = nci_get_drvdata(ndev);
++
++	s3fwrn82_set_mode(info, S3FWRN82_MODE_COLD);
++
++	nci_unregister_device(ndev);
++	nci_free_device(ndev);
++}
++EXPORT_SYMBOL(s3fwrn82_remove);
++
++int s3fwrn82_recv_frame(struct nci_dev *ndev, struct sk_buff *skb,
++	enum s3fwrn82_mode mode)
++{
++	switch (mode) {
++	case S3FWRN82_MODE_NCI:
++		return nci_recv_frame(ndev, skb);
++	default:
++		kfree_skb(skb);
++		return -ENODEV;
++	}
++}
++EXPORT_SYMBOL(s3fwrn82_recv_frame);
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("Samsung S3FWRN82 NFC driver");
++MODULE_AUTHOR("Bongsu Jeon <bongsu.jeon@samsung.com>");
+diff --git a/drivers/nfc/s3fwrn82/i2c.c b/drivers/nfc/s3fwrn82/i2c.c
+new file mode 100644
+index 000000000000..26e60b76e6ca
+--- /dev/null
++++ b/drivers/nfc/s3fwrn82/i2c.c
+@@ -0,0 +1,281 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * I2C Link Layer for Samsung S3FWRN82 NCI based Driver
++ *
++ * Copyright (C) 2020 Samsung Electrnoics
++ * Bongsu Jeon <bongsu.jeon@samsung.com>
++ */
++
++#include <linux/i2c.h>
++#include <linux/gpio.h>
++#include <linux/delay.h>
++#include <linux/of_gpio.h>
++#include <linux/of_irq.h>
++#include <linux/module.h>
++
++#include <net/nfc/nfc.h>
++
++#include "s3fwrn82.h"
++
++#define S3FWRN82_I2C_DRIVER_NAME "s3fwrn82_i2c"
++
++#define S3FWRN82_EN_WAIT_TIME 20
++
++struct s3fwrn82_i2c_phy {
++	struct i2c_client *i2c_dev;
++	struct nci_dev *ndev;
++
++	unsigned int gpio_en;
++	unsigned int gpio_fw_wake;
++
++	struct mutex mutex;
++
++	enum s3fwrn82_mode mode;
++	unsigned int irq_skip:1;
++};
++
++static void s3fwrn82_i2c_set_wake(void *phy_id, bool wake)
++{
++	struct s3fwrn82_i2c_phy *phy = phy_id;
++
++	mutex_lock(&phy->mutex);
++	gpio_set_value(phy->gpio_fw_wake, wake);
++	if (wake == true)
++		msleep(S3FWRN82_EN_WAIT_TIME);
++	mutex_unlock(&phy->mutex);
++}
++
++static void s3fwrn82_i2c_set_mode(void *phy_id, enum s3fwrn82_mode mode)
++{
++	struct s3fwrn82_i2c_phy *phy = phy_id;
++
++	mutex_lock(&phy->mutex);
++
++	if (phy->mode == mode)
++		goto out;
++
++	phy->mode = mode;
++
++	gpio_set_value(phy->gpio_en, 1);
++	gpio_set_value(phy->gpio_fw_wake, 0);
++
++	if (mode != S3FWRN82_MODE_COLD) {
++		msleep(S3FWRN82_EN_WAIT_TIME);
++		gpio_set_value(phy->gpio_en, 0);
++		msleep(S3FWRN82_EN_WAIT_TIME/2);
++	}
++
++	phy->irq_skip = true;
++
++out:
++	mutex_unlock(&phy->mutex);
++}
++
++static enum s3fwrn82_mode s3fwrn82_i2c_get_mode(void *phy_id)
++{
++	struct s3fwrn82_i2c_phy *phy = phy_id;
++	enum s3fwrn82_mode mode;
++
++	mutex_lock(&phy->mutex);
++
++	mode = phy->mode;
++
++	mutex_unlock(&phy->mutex);
++
++	return mode;
++}
++
++static int s3fwrn82_i2c_write(void *phy_id, struct sk_buff *skb)
++{
++	struct s3fwrn82_i2c_phy *phy = phy_id;
++	int ret;
++
++	mutex_lock(&phy->mutex);
++
++	phy->irq_skip = false;
++
++	ret = i2c_master_send(phy->i2c_dev, skb->data, skb->len);
++	mutex_unlock(&phy->mutex);
++
++	if (ret < 0)
++		return ret;
++
++	if (ret != skb->len)
++		return -EREMOTEIO;
++
++	return 0;
++}
++
++static const struct s3fwrn82_phy_ops i2c_phy_ops = {
++	.set_wake = s3fwrn82_i2c_set_wake,
++	.set_mode = s3fwrn82_i2c_set_mode,
++	.get_mode = s3fwrn82_i2c_get_mode,
++	.write = s3fwrn82_i2c_write,
++};
++
++static int s3fwrn82_i2c_read(struct s3fwrn82_i2c_phy *phy)
++{
++	struct sk_buff *skb;
++	size_t hdr_size;
++	size_t data_len;
++	char hdr[4];
++	int ret;
++
++	hdr_size = NCI_CTRL_HDR_SIZE;
++	ret = i2c_master_recv(phy->i2c_dev, hdr, hdr_size);
++	if (ret < 0)
++		return ret;
++
++	if (ret < hdr_size)
++		return -EBADMSG;
++
++	data_len = ((struct nci_ctrl_hdr *)hdr)->plen;
++
++	skb = alloc_skb(hdr_size + data_len, GFP_KERNEL);
++	if (!skb)
++		return -ENOMEM;
++
++	skb_put_data(skb, hdr, hdr_size);
++
++	if (data_len == 0)
++		goto out;
++
++	ret = i2c_master_recv(phy->i2c_dev, skb_put(skb, data_len), data_len);
++	if (ret != data_len) {
++		kfree_skb(skb);
++		return -EBADMSG;
++	}
++
++out:
++	return s3fwrn82_recv_frame(phy->ndev, skb, phy->mode);
++}
++
++static irqreturn_t s3fwrn82_i2c_irq_thread_fn(int irq, void *phy_id)
++{
++	struct s3fwrn82_i2c_phy *phy = phy_id;
++
++	if (!phy || !phy->ndev) {
++		WARN_ON_ONCE(1);
++		return IRQ_NONE;
++	}
++
++	mutex_lock(&phy->mutex);
++
++	if (phy->irq_skip)
++		goto out;
++
++	switch (phy->mode) {
++	case S3FWRN82_MODE_NCI:
++		s3fwrn82_i2c_read(phy);
++		break;
++	case S3FWRN82_MODE_COLD:
++		break;
++	}
++
++out:
++	mutex_unlock(&phy->mutex);
++
++	return IRQ_HANDLED;
++}
++
++static int s3fwrn82_i2c_parse_dt(struct i2c_client *client)
++{
++	struct s3fwrn82_i2c_phy *phy = i2c_get_clientdata(client);
++	struct device_node *np = client->dev.of_node;
++
++	if (!np)
++		return -ENODEV;
++
++	phy->gpio_en = of_get_named_gpio(np, "en-gpios", 0);
++	if (!gpio_is_valid(phy->gpio_en)) {
++		return -ENODEV;
++	}
++
++	phy->gpio_fw_wake = of_get_named_gpio(np, "wake-gpios", 0);
++	if (!gpio_is_valid(phy->gpio_fw_wake)) {
++		return -ENODEV;
++	}
++
++	return 0;
++}
++
++static int s3fwrn82_i2c_probe(struct i2c_client *client,
++				  const struct i2c_device_id *id)
++{
++	struct s3fwrn82_i2c_phy *phy;
++	int ret;
++
++	phy = devm_kzalloc(&client->dev, sizeof(*phy), GFP_KERNEL);
++	if (!phy)
++		return -ENOMEM;
++
++	mutex_init(&phy->mutex);
++	phy->mode = S3FWRN82_MODE_COLD;
++	phy->irq_skip = true;
++
++	phy->i2c_dev = client;
++	i2c_set_clientdata(client, phy);
++
++	ret = s3fwrn82_i2c_parse_dt(client);
++	if (ret < 0)
++		return ret;
++
++	ret = devm_gpio_request_one(&phy->i2c_dev->dev, phy->gpio_en,
++		GPIOF_OUT_INIT_HIGH, "s3fwrn82_en");
++	if (ret < 0)
++		return ret;
++
++	ret = devm_gpio_request_one(&phy->i2c_dev->dev, phy->gpio_fw_wake,
++		GPIOF_OUT_INIT_LOW, "s3fwrn82_fw_wake");
++	if (ret < 0)
++		return ret;
++
++	ret = s3fwrn82_probe(&phy->ndev, phy, &phy->i2c_dev->dev, &i2c_phy_ops);
++	if (ret < 0)
++		return ret;
++
++	ret = devm_request_threaded_irq(&client->dev, phy->i2c_dev->irq, NULL,
++		s3fwrn82_i2c_irq_thread_fn, IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
++		S3FWRN82_I2C_DRIVER_NAME, phy);
++	if (ret)
++		s3fwrn82_remove(phy->ndev);
++
++	return ret;
++}
++
++static int s3fwrn82_i2c_remove(struct i2c_client *client)
++{
++	struct s3fwrn82_i2c_phy *phy = i2c_get_clientdata(client);
++
++	s3fwrn82_remove(phy->ndev);
++
++	return 0;
++}
++
++static const struct i2c_device_id s3fwrn82_i2c_id_table[] = {
++	{S3FWRN82_I2C_DRIVER_NAME, 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, s3fwrn82_i2c_id_table);
++
++static const struct of_device_id of_s3fwrn82_i2c_match[] = {
++	{ .compatible = "samsung,s3fwrn82-i2c", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, of_s3fwrn82_i2c_match);
++
++static struct i2c_driver s3fwrn82_i2c_driver = {
++	.driver = {
++		.name = S3FWRN82_I2C_DRIVER_NAME,
++		.of_match_table = of_match_ptr(of_s3fwrn82_i2c_match),
++	},
++	.probe = s3fwrn82_i2c_probe,
++	.remove = s3fwrn82_i2c_remove,
++	.id_table = s3fwrn82_i2c_id_table,
++};
++
++module_i2c_driver(s3fwrn82_i2c_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("I2C driver for Samsung S3FWRN82");
++MODULE_AUTHOR("Bongsu Jeon <bongsu.jeon@samsung.com>");
+diff --git a/drivers/nfc/s3fwrn82/s3fwrn82.h b/drivers/nfc/s3fwrn82/s3fwrn82.h
+new file mode 100644
+index 000000000000..5be6e08e04e2
+--- /dev/null
++++ b/drivers/nfc/s3fwrn82/s3fwrn82.h
+@@ -0,0 +1,82 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * NCI based driver for Samsung S3FWRN82 NFC chip
++ *
++ * Copyright (C) 2020 Samsung Electrnoics
++ * Bongsu Jeon <bongsu.jeon@samsung.com>
++ */
++
++#ifndef __LOCAL_S3FWRN82_H_
++#define __LOCAL_S3FWRN82_H_
++
++#include <linux/nfc.h>
++
++#include <net/nfc/nci_core.h>
++
++enum s3fwrn82_mode {
++	S3FWRN82_MODE_COLD,
++	S3FWRN82_MODE_NCI,
++};
++
++struct s3fwrn82_phy_ops {
++	void (*set_wake)(void *id, bool sleep);
++	void (*set_mode)(void *id, enum s3fwrn82_mode);
++	enum s3fwrn82_mode (*get_mode)(void *id);
++	int (*write)(void *id, struct sk_buff *skb);
++};
++
++struct s3fwrn82_info {
++	struct nci_dev *ndev;
++	void *phy_id;
++	struct device *pdev;
++
++	const struct s3fwrn82_phy_ops *phy_ops;
++
++	struct mutex mutex;
++};
++
++static inline int s3fwrn82_set_mode(struct s3fwrn82_info *info,
++	enum s3fwrn82_mode mode)
++{
++	if (!info->phy_ops->set_mode)
++		return -ENOTSUPP;
++
++	info->phy_ops->set_mode(info->phy_id, mode);
++
++	return 0;
++}
++
++static inline enum s3fwrn82_mode s3fwrn82_get_mode(struct s3fwrn82_info *info)
++{
++	if (!info->phy_ops->get_mode)
++		return -ENOTSUPP;
++
++	return info->phy_ops->get_mode(info->phy_id);
++}
++
++static inline int s3fwrn82_set_wake(struct s3fwrn82_info *info, bool wake)
++{
++	if (!info->phy_ops->set_wake)
++		return -ENOTSUPP;
++
++	info->phy_ops->set_wake(info->phy_id, wake);
++
++	return 0;
++}
++
++static inline int s3fwrn82_write(struct s3fwrn82_info *info, struct sk_buff *skb)
++{
++	if (!info->phy_ops->write)
++		return -ENOTSUPP;
++
++	return info->phy_ops->write(info->phy_id, skb);
++}
++
++int s3fwrn82_probe(struct nci_dev **ndev, void *phy_id, struct device *pdev,
++	const struct s3fwrn82_phy_ops *phy_ops);
++void s3fwrn82_remove(struct nci_dev *ndev);
++
++int s3fwrn82_recv_frame(struct nci_dev *ndev, struct sk_buff *skb,
++	enum s3fwrn82_mode mode);
++
++#endif /* __LOCAL_S3FWRN82_H_ */
+-- 
