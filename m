@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 524852B0DEB
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 20:25:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D944D2B0DEA
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 20:25:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726770AbgKLTZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 14:25:12 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:11362 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726912AbgKLTY6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 14:24:58 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fad8c120000>; Thu, 12 Nov 2020 11:25:06 -0800
+        id S1726985AbgKLTZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 14:25:11 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:11890 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726884AbgKLTY7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 14:24:59 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fad8c050000>; Thu, 12 Nov 2020 11:24:53 -0800
 Received: from sw-mtx-036.mtx.labs.mlnx (172.20.13.39) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 12 Nov
- 2020 19:24:57 +0000
+ 2020 19:24:58 +0000
 From:   Parav Pandit <parav@nvidia.com>
 To:     <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
         <gregkh@linuxfoundation.org>
 CC:     <jiri@nvidia.com>, <jgg@nvidia.com>, <dledford@redhat.com>,
         <leonro@nvidia.com>, <saeedm@nvidia.com>, <kuba@kernel.org>,
-        <davem@davemloft.net>, Parav Pandit <parav@nvidia.com>,
-        Vu Pham <vuhuong@nvidia.com>, Roi Dayan <roid@nvidia.com>
-Subject: [PATCH net-next 10/13] net/mlx5: E-switch, Add eswitch helpers for SF vport
-Date:   Thu, 12 Nov 2020 21:24:20 +0200
-Message-ID: <20201112192424.2742-11-parav@nvidia.com>
+        <davem@davemloft.net>, Vu Pham <vuhuong@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>
+Subject: [PATCH net-next 11/13] net/mlx5: SF, Add SF configuration hardware commands
+Date:   Thu, 12 Nov 2020 21:24:21 +0200
+Message-ID: <20201112192424.2742-12-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201112192424.2742-1-parav@nvidia.com>
 References: <20201112192424.2742-1-parav@nvidia.com>
@@ -36,220 +36,182 @@ X-Originating-IP: [172.20.13.39]
 X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1605209106; bh=X7wkyOLBY1v8uaw9RgSYUbc7p4gr/Rh3LJuyyQDy0gc=;
+        t=1605209093; bh=5i1PQZ1/8jjIYq9/gILm63zgTWgNxBLAtrpxiC4y5bQ=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=CAcvkw6yVqcHbp8CvBdW4kbH1mjF5xY90jKZYFSfguRvTIfcTlYwoeZDD1ys923sy
-         iO24Nopdvc8RvHRFfFujq80KQJH8GzvM/r2sWJhQPvXNcvS5xbUEPP2gWkn2j9q+cv
-         FfL76fImB4Qqlb3qNpymq3lb979Ezbq8JapqZEJVokZAcU/xZNxcBIkuafgz4+qfVR
-         Ue5oOx2zNcfBIYjgvU9qrgYvEEqivdCziIktsWumPvI8IC1TKVr1WLs7zrPMYWk+VY
-         J70P6PD5l23bxgE0ChaGYAdCpxy5p0u6vQihqKfmKtesaI0li7cOssQpTU8w3tScjw
-         d9P31y/0fZo4Q==
+        b=bx/iCrUn6h+eWSj6AdY0eOX5CC7KOXUAxU62W4DLGjdTBCvPHo5ynkIqLIMlYK/Wx
+         D2NFnEZkzpm5mp5r1pDOU2yQAdPH3j6m3D3BskLyZfvXuxASw/XM2FB0vVIholsVxJ
+         yoSEM8RDdlkUY5IIceg+L5zfflFOun5y77zZfToJ3x4PdJJ9SP4mQ5niNSWrk6DOO9
+         /IELPr5UyWEjfW438Tt3JqEZW1HPhDcf9KkPZBoqkCmrgK2ywiVG79qTZ62cMchmzm
+         faBgHYw67x/jGBmFwgClN6pcIR6DTDd7qgSxXYK2YMhI1nsaZE8wO/nGTs0n9rN+Nf
+         xZHbVQU/wBFFA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add helpers to enable/disable eswitch port, register its devlink port and
-load its representor.
+From: Vu Pham <vuhuong@nvidia.com>
+
+Add command helpers to access SF port and function in device.
+
+Enable SF HCA port capability when such configuration is enabled
+and supported in a device.
+
+Use them in subsequent patches.
 
 Signed-off-by: Vu Pham <vuhuong@nvidia.com>
 Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
 ---
- .../mellanox/mlx5/core/esw/devlink_port.c     | 41 +++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/eswitch.c | 10 +++++
- .../net/ethernet/mellanox/mlx5/core/eswitch.h | 15 +++++++
- .../mellanox/mlx5/core/eswitch_offloads.c     | 36 +++++++++++++++-
- 4 files changed, 100 insertions(+), 2 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |  5 ++
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c |  4 ++
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  5 ++
+ .../net/ethernet/mellanox/mlx5/core/sf/cmd.c  | 48 +++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/sf/priv.h | 14 ++++++
+ 5 files changed, 76 insertions(+)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/cmd.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/priv.h
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c b/d=
-rivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-index 88688b84513b..f361a896c278 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-@@ -122,3 +122,44 @@ struct devlink_port *mlx5_esw_offloads_devlink_port(st=
-ruct mlx5_eswitch *esw, u1
- 	vport =3D mlx5_eswitch_get_vport(esw, vport_num);
- 	return IS_ERR(vport) ? ERR_CAST(vport) : vport->dl_port;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net=
+/ethernet/mellanox/mlx5/core/Makefile
+index 7dd5be49fb9e..911e7bb43b23 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+@@ -89,3 +89,8 @@ mlx5_core-$(CONFIG_MLX5_SW_STEERING) +=3D steering/dr_dom=
+ain.o steering/dr_table.o
+ # SF device
+ #
+ mlx5_core-$(CONFIG_MLX5_SF) +=3D sf/dev/dev.o sf/dev/driver.o
++
++#
++# SF manager
++#
++mlx5_core-$(CONFIG_MLX5_SF_MANAGER) +=3D sf/cmd.o
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/et=
+hernet/mellanox/mlx5/core/cmd.c
+index e49387dbef98..7de8139bc167 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+@@ -333,6 +333,7 @@ static int mlx5_internal_err_ret_value(struct mlx5_core=
+_dev *dev, u16 op,
+ 	case MLX5_CMD_OP_DEALLOC_MEMIC:
+ 	case MLX5_CMD_OP_PAGE_FAULT_RESUME:
+ 	case MLX5_CMD_OP_QUERY_ESW_FUNCTIONS:
++	case MLX5_CMD_OP_DEALLOC_SF:
+ 		return MLX5_CMD_STAT_OK;
+=20
+ 	case MLX5_CMD_OP_QUERY_HCA_CAP:
+@@ -464,6 +465,7 @@ static int mlx5_internal_err_ret_value(struct mlx5_core=
+_dev *dev, u16 op,
+ 	case MLX5_CMD_OP_ALLOC_MEMIC:
+ 	case MLX5_CMD_OP_MODIFY_XRQ:
+ 	case MLX5_CMD_OP_RELEASE_XRQ_ERROR:
++	case MLX5_CMD_OP_ALLOC_SF:
+ 		*status =3D MLX5_DRIVER_STATUS_ABORTED;
+ 		*synd =3D MLX5_DRIVER_SYND;
+ 		return -EIO;
+@@ -657,6 +659,8 @@ const char *mlx5_command_str(int command)
+ 	MLX5_COMMAND_STR_CASE(DESTROY_UMEM);
+ 	MLX5_COMMAND_STR_CASE(RELEASE_XRQ_ERROR);
+ 	MLX5_COMMAND_STR_CASE(MODIFY_XRQ);
++	MLX5_COMMAND_STR_CASE(ALLOC_SF);
++	MLX5_COMMAND_STR_CASE(DEALLOC_SF);
+ 	default: return "unknown command opcode";
+ 	}
  }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/e=
+thernet/mellanox/mlx5/core/main.c
+index adfa21de938e..bd414d93f70e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -567,6 +567,11 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, v=
+oid *set_ctx)
+ 	if (MLX5_CAP_GEN_MAX(dev, mkey_by_name))
+ 		MLX5_SET(cmd_hca_cap, set_hca_cap, mkey_by_name, 1);
+=20
++#ifdef CONFIG_MLX5_SF_MANAGER
++	if (MLX5_CAP_GEN_MAX(dev, sf) && MLX5_ESWITCH_MANAGER(dev))
++		MLX5_SET(cmd_hca_cap, set_hca_cap, sf, 1);
++#endif
 +
-+int mlx5_esw_devlink_sf_port_register(struct mlx5_eswitch *esw, struct dev=
-link_port *dl_port,
-+				      u16 vport_num, u32 sfnum)
-+{
-+	struct mlx5_core_dev *dev =3D esw->dev;
-+	struct netdev_phys_item_id ppid =3D {};
-+	unsigned int dl_port_index;
-+	struct mlx5_vport *vport;
-+	struct devlink *devlink;
-+	u16 pfnum;
-+	int err;
-+
-+	vport =3D mlx5_eswitch_get_vport(esw, vport_num);
-+	if (IS_ERR(vport))
-+		return PTR_ERR(vport);
-+
-+	pfnum =3D PCI_FUNC(dev->pdev->devfn);
-+	mlx5_esw_get_port_parent_id(dev, &ppid);
-+	memcpy(dl_port->attrs.switch_id.id, &ppid.id[0], ppid.id_len);
-+	dl_port->attrs.switch_id.id_len =3D ppid.id_len;
-+	devlink_port_attrs_pci_sf_set(dl_port, 0, pfnum, sfnum, false);
-+	devlink =3D priv_to_devlink(dev);
-+	dl_port_index =3D mlx5_esw_vport_to_devlink_port_index(dev, vport_num);
-+	err =3D devlink_port_register(devlink, dl_port, dl_port_index);
-+	if (err)
-+		return err;
-+
-+	vport->dl_port =3D dl_port;
-+	return 0;
-+}
-+
-+void mlx5_esw_devlink_sf_port_unregister(struct mlx5_eswitch *esw, u16 vpo=
-rt_num)
-+{
-+	struct mlx5_vport *vport;
-+
-+	vport =3D mlx5_eswitch_get_vport(esw, vport_num);
-+	if (IS_ERR(vport))
-+		return;
-+	devlink_port_unregister(vport->dl_port);
-+	vport->dl_port =3D NULL;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/eswitch.c
-index 5b90f126b7f3..d72766b78bd7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -1342,6 +1342,16 @@ static void esw_disable_vport(struct mlx5_eswitch *e=
-sw, u16 vport_num)
- 	mutex_unlock(&esw->state_lock);
+ 	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE);
  }
 =20
-+int mlx5_esw_vport_enable(struct mlx5_eswitch *esw, u16 vport_num)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/cmd.c b/drivers/net=
+/ethernet/mellanox/mlx5/core/sf/cmd.c
+new file mode 100644
+index 000000000000..8dd44a2b2467
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/cmd.c
+@@ -0,0 +1,48 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2020 Mellanox Technologies Ltd */
++
++#include <linux/mlx5/driver.h>
++
++int mlx5_cmd_alloc_sf(struct mlx5_core_dev *dev, u16 function_id)
 +{
-+	return esw_enable_vport(esw, vport_num, MLX5_VPORT_UC_ADDR_CHANGE);
++	u32 out[MLX5_ST_SZ_DW(alloc_sf_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(alloc_sf_in)] =3D {};
++
++	MLX5_SET(alloc_sf_in, in, opcode, MLX5_CMD_OP_ALLOC_SF);
++	MLX5_SET(alloc_sf_in, in, function_id, function_id);
++
++	return mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
 +}
 +
-+void mlx5_esw_vport_disable(struct mlx5_eswitch *esw, u16 vport_num)
++int mlx5_cmd_dealloc_sf(struct mlx5_core_dev *dev, u16 function_id)
 +{
-+	esw_disable_vport(esw, vport_num);
++	u32 out[MLX5_ST_SZ_DW(dealloc_sf_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(dealloc_sf_in)] =3D {};
++
++	MLX5_SET(dealloc_sf_in, in, opcode, MLX5_CMD_OP_DEALLOC_SF);
++	MLX5_SET(dealloc_sf_in, in, function_id, function_id);
++
++	return mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
 +}
 +
- static int eswitch_vport_event(struct notifier_block *nb,
- 			       unsigned long type, void *data)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/eswitch.h
-index 2165bc065196..3a373f314a6b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -711,6 +711,9 @@ esw_get_max_restore_tag(struct mlx5_eswitch *esw);
- int esw_offloads_load_rep(struct mlx5_eswitch *esw, u16 vport_num);
- void esw_offloads_unload_rep(struct mlx5_eswitch *esw, u16 vport_num);
-=20
-+int mlx5_esw_offloads_rep_load(struct mlx5_eswitch *esw, u16 vport_num);
-+void mlx5_esw_offloads_rep_unload(struct mlx5_eswitch *esw, u16 vport_num)=
-;
-+
- int mlx5_eswitch_load_vport(struct mlx5_eswitch *esw, u16 vport_num,
- 			    enum mlx5_eswitch_vport_event enabled_events);
- void mlx5_eswitch_unload_vport(struct mlx5_eswitch *esw, u16 vport_num);
-@@ -722,6 +725,18 @@ void mlx5_eswitch_unload_vf_vports(struct mlx5_eswitch=
- *esw, u16 num_vfs);
- int mlx5_esw_offloads_devlink_port_register(struct mlx5_eswitch *esw, u16 =
-vport_num);
- void mlx5_esw_offloads_devlink_port_unregister(struct mlx5_eswitch *esw, u=
-16 vport_num);
- struct devlink_port *mlx5_esw_offloads_devlink_port(struct mlx5_eswitch *e=
-sw, u16 vport_num);
-+
-+int mlx5_esw_devlink_sf_port_register(struct mlx5_eswitch *esw, struct dev=
-link_port *dl_port,
-+				      u16 vport_num, u32 sfnum);
-+void mlx5_esw_devlink_sf_port_unregister(struct mlx5_eswitch *esw, u16 vpo=
-rt_num);
-+
-+int mlx5_esw_vport_enable(struct mlx5_eswitch *esw, u16 vport_num);
-+void mlx5_esw_vport_disable(struct mlx5_eswitch *esw, u16 vport_num);
-+
-+int mlx5_esw_offloads_sf_vport_enable(struct mlx5_eswitch *esw, struct dev=
-link_port *dl_port,
-+				      u16 vport_num, u32 sfnum);
-+void mlx5_esw_offloads_sf_vport_disable(struct mlx5_eswitch *esw, u16 vpor=
-t_num);
-+
- #else  /* CONFIG_MLX5_ESWITCH */
- /* eswitch API stubs */
- static inline int  mlx5_eswitch_init(struct mlx5_core_dev *dev) { return 0=
-; }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/d=
-rivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 01242afbfcce..14f73c202adf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -1834,7 +1834,7 @@ static void __unload_reps_all_vport(struct mlx5_eswit=
-ch *esw, u8 rep_type)
- 	__esw_offloads_unload_rep(esw, rep, rep_type);
- }
-=20
--static int mlx5_esw_offloads_rep_load(struct mlx5_eswitch *esw, u16 vport_=
-num)
-+int mlx5_esw_offloads_rep_load(struct mlx5_eswitch *esw, u16 vport_num)
- {
- 	struct mlx5_eswitch_rep *rep;
- 	int rep_type;
-@@ -1858,7 +1858,7 @@ static int mlx5_esw_offloads_rep_load(struct mlx5_esw=
-itch *esw, u16 vport_num)
- 	return err;
- }
-=20
--static void mlx5_esw_offloads_rep_unload(struct mlx5_eswitch *esw, u16 vpo=
-rt_num)
-+void mlx5_esw_offloads_rep_unload(struct mlx5_eswitch *esw, u16 vport_num)
- {
- 	struct mlx5_eswitch_rep *rep;
- 	int rep_type;
-@@ -2842,3 +2842,35 @@ u32 mlx5_eswitch_get_vport_metadata_for_match(struct=
- mlx5_eswitch *esw,
- 	return vport->metadata << (32 - ESW_SOURCE_PORT_METADATA_BITS);
- }
- EXPORT_SYMBOL(mlx5_eswitch_get_vport_metadata_for_match);
-+
-+int mlx5_esw_offloads_sf_vport_enable(struct mlx5_eswitch *esw, struct dev=
-link_port *dl_port,
-+				      u16 vport_num, u32 sfnum)
++int mlx5_cmd_sf_enable_hca(struct mlx5_core_dev *dev, u16 func_id)
 +{
-+	int err;
++	u32 out[MLX5_ST_SZ_DW(enable_hca_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(enable_hca_in)] =3D {};
 +
-+	err =3D mlx5_esw_vport_enable(esw, vport_num);
-+	if (err)
-+		return err;
-+
-+	err =3D mlx5_esw_devlink_sf_port_register(esw, dl_port, vport_num, sfnum)=
-;
-+	if (err)
-+		goto devlink_err;
-+
-+	err =3D mlx5_esw_offloads_rep_load(esw, vport_num);
-+	if (err)
-+		goto rep_err;
-+	return 0;
-+
-+rep_err:
-+	mlx5_esw_devlink_sf_port_unregister(esw, vport_num);
-+devlink_err:
-+	mlx5_esw_vport_disable(esw, vport_num);
-+	return err;
++	MLX5_SET(enable_hca_in, in, opcode, MLX5_CMD_OP_ENABLE_HCA);
++	MLX5_SET(enable_hca_in, in, function_id, func_id);
++	MLX5_SET(enable_hca_in, in, embedded_cpu_function, 0);
++	return mlx5_cmd_exec(dev, &in, sizeof(in), &out, sizeof(out));
 +}
 +
-+void mlx5_esw_offloads_sf_vport_disable(struct mlx5_eswitch *esw, u16 vpor=
-t_num)
++int mlx5_cmd_sf_disable_hca(struct mlx5_core_dev *dev, u16 func_id)
 +{
-+	mlx5_esw_offloads_rep_unload(esw, vport_num);
-+	mlx5_esw_devlink_sf_port_unregister(esw, vport_num);
-+	mlx5_esw_vport_disable(esw, vport_num);
++	u32 out[MLX5_ST_SZ_DW(disable_hca_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(disable_hca_in)] =3D {};
++
++	MLX5_SET(disable_hca_in, in, opcode, MLX5_CMD_OP_DISABLE_HCA);
++	MLX5_SET(disable_hca_in, in, function_id, func_id);
++	MLX5_SET(enable_hca_in, in, embedded_cpu_function, 0);
++	return mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
 +}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/priv.h b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/sf/priv.h
+new file mode 100644
+index 000000000000..0e39df9f297e
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/priv.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2020 Mellanox Technologies Ltd */
++
++#ifndef __MLX5_SF_PRIV_H__
++#define __MLX5_SF_PRIV_H__
++
++#include <linux/mlx5/driver.h>
++
++int mlx5_cmd_alloc_sf(struct mlx5_core_dev *dev, u16 function_id);
++int mlx5_cmd_dealloc_sf(struct mlx5_core_dev *dev, u16 function_id);
++int mlx5_cmd_sf_enable_hca(struct mlx5_core_dev *dev, u16 func_id);
++int mlx5_cmd_sf_disable_hca(struct mlx5_core_dev *dev, u16 func_id);
++
++#endif
 --=20
 2.26.2
 
