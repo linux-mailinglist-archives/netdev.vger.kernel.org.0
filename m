@@ -2,87 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B9522B00DD
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 09:10:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B9972B00F4
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 09:13:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725995AbgKLIKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 03:10:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725884AbgKLIKL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 03:10:11 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D2BC0613D1
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 00:10:11 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id ay21so5163861edb.2
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 00:10:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=FWxk2gGd5JJaGbG2Vq5urHCAquc6jphaxfHbKJfxVsE=;
-        b=R6msML0oqqygdle0hM4Y4r8kZTqxnCq6G9Ij2ASMUC3L21YfnBsNOvs6HSai+W/zQN
-         7+miMsg9ds9A8WAKNjKuZHFn0qJIU6AERRo/td5E7/nTuI4NJn5S0QhgS/fyEbvWcWBX
-         pbdJuGoVzOZhnt4BpnpqrFrWNC7thT0b37rhPd022MsOCoHwspqsv8cyWlcTN6fC/enQ
-         Loh5sf5DhXd14B1XegagLid5zTiqlc/CwvWx/PowNH/l+0HfOXIS/+t7z+9HwSl7tU88
-         pYIZ8JrHNy59LkdD8EewYDwaAmeRBqj2UV42WidH9ffetoveEOy4rv0fLdj9FL8NXwBf
-         hkbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=FWxk2gGd5JJaGbG2Vq5urHCAquc6jphaxfHbKJfxVsE=;
-        b=VkE4Nb5pmE6+H1lhodF9o0WDa2mOL5JVpRc3hHtesVuYlOT7fiuIafuwsK8BJ8eqSD
-         nnbSugQ3j4dgvFjMycYwe0/OGYG0JqxEGxTaol5HEnl3eWHlGFJe8fu6guremNbfJAQ5
-         6kcONH5QI6eHqa047WFI+yT5AYUJvppwVV0188/r9XPZVTKETScysKQiJs8fgVxzzB4M
-         f6EL/Yc9GMXXhxrtScWbSmY3ksbe4Lh8DJnpckPDe4kYAcRbcLWAy3sqHm+nlW06DnVq
-         OX9vd+ySzhy/UdzRO+GC9gnXVwo8J4K7kHgvHj0D2MDGGsWYQFDwyKN/KQOpuPAm+3qR
-         gRVw==
-X-Gm-Message-State: AOAM531b4KoxsZcI66nhVnWCFN+hqEQ38Hx2Pp2ZR7kFRsfcGaaxYUQW
-        KJdIZzN2eeCmW6ch1o7kA/0=
-X-Google-Smtp-Source: ABdhPJwITNVaai69O/51Fn3TRM80+gnNWaMJWAmYnW/4WJ7feD8UIddxM6Q2V/Ya61MgeL4WxEXEtw==
-X-Received: by 2002:a50:d885:: with SMTP id p5mr3675713edj.169.1605168609484;
-        Thu, 12 Nov 2020 00:10:09 -0800 (PST)
-Received: from tws ([2a0f:6480:3:1:d65d:64ff:fed0:4a9d])
-        by smtp.gmail.com with ESMTPSA id rn28sm1789892ejb.22.2020.11.12.00.10.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2020 00:10:08 -0800 (PST)
-Date:   Thu, 12 Nov 2020 09:10:08 +0100
-From:   Oliver Herms <oliver.peter.herms@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org
-Subject: [PATCH] IPv4: RTM_GETROUTE: Add RTA_ENCAP to result
-Message-ID: <20201112081008.GA57799@tws>
+        id S1726337AbgKLINw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 03:13:52 -0500
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:23022 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725884AbgKLINv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 03:13:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1605168830; x=1636704830;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ItFpNbmKR7OdhMzHJF470N6EX32UEcaOk9xfLGe7gDc=;
+  b=jXVVO2I4xKrVN7Xx9iw2CbCBDypbaZz3kNrJ/5+QY/a4zW6vSA6mqKnL
+   7pGCdl4/Ikno+vEYo5Smnw5j5Qy4619e8dKyX2PxahVqkZPfpovoQxh+R
+   AuqWTrgABcRy83N4CdWDdiSD2veWH9NqfpiBulPM07riaLc7fZ7GU8QxC
+   Hjp2AZfgFDohLOc+WV25Gw+MV42AuBa5K92Rxo/MajUW6uQOcOjjxzEWz
+   9tjWsaBJO+Tsl4OkRy0MW8QrQ7xyIny+h1LhA09ALoatrjdZm3Zo1dPRo
+   9mTdNMu/8p387+aKFBf5x3GtAdyJn3AIbfBg1S+vfVZhzQ4qAB1ZbjfST
+   A==;
+IronPort-SDR: uktn7miP3jsCzH/NEyJa7oaQ8Y3xr23MLP/Eeln2ATiCBr/OJVdmz2Nxvohptl5vF8x1tOU9v3
+ 6pHesvmKgk6LQGKaDu8S4ulDblUDf/Gu4kMIqd/b1M9WNFOfwwtTtgMZztO5FYbM6Ifj9Aeou7
+ UVjavyGeO4Q1FPed0R6D4fcllF4BwT91iveEclEueHllYTH1Mj/94vYXw3Jsc+5Qe24xxLlvA5
+ xXzGCQGC1L7Bxz/VSkCSmxweapDpHKqRNx8cH/E2q5gafrod0GlZIjPokKIYf3d23Qibd+NGN4
+ 6Lk=
+X-IronPort-AV: E=Sophos;i="5.77,471,1596524400"; 
+   d="scan'208";a="93386858"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Nov 2020 01:13:49 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 12 Nov 2020 01:13:49 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Thu, 12 Nov 2020 01:13:49 -0700
+Date:   Thu, 12 Nov 2020 09:13:48 +0100
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Antoine Tenart <atenart@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Bryan Whitehead <Bryan.Whitehead@microchip.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        John Haechten <John.Haechten@microchip.com>,
+        Netdev List <netdev@vger.kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>
+Subject: Re: [net v2] net: phy: mscc: adjust the phy support for PTP and
+ MACsec
+Message-ID: <20201112081348.iazemmss2vwjv63v@mchp-dev-shegelun>
+References: <20201111151753.840364-1-steen.hegelund@microchip.com>
+ <160511213375.165477.17752694389005766821@surface.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Disposition: inline
+In-Reply-To: <160511213375.165477.17752694389005766821@surface.local>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds an IPv4 routes encapsulation attribute
-to the result of netlink RTM_GETROUTE requests
-(e.g. ip route get 192.0.2.1).
+On 11.11.2020 17:28, Antoine Tenart wrote:
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>
+>Hi Steen,
+>
+>Quoting Steen Hegelund (2020-11-11 16:17:53)
+>> The MSCC PHYs selected for PTP and MACSec was not correct
+>>
+>> - PTP
+>>     - Add VSC8572 and VSC8574
+>>
+>> - MACsec
+>>     - Removed VSC8575
+>>
+>> The relevant datasheets can be found here:
+>>   - VSC8572: https://www.microchip.com/wwwproducts/en/VSC8572
+>>   - VSC8574: https://www.microchip.com/wwwproducts/en/VSC8574
+>>   - VSC8575: https://www.microchip.com/wwwproducts/en/VSC8575
+>>
+>> History:
+>> v1 -> v2:
+>>   - Added "fixes:" tags to the commit message
+>>
+>> Fixes: bb56c016a1257 ("net: phy: mscc: split the driver into separate files")
+>
+>This commit splitting the driver didn't introduced the issue, it only
+>moved code around. You can remove this Fixes tag. (You usually/should
+>have a single Fixes tag per patch).
+>
+OK.  I get that.
 
-Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
----
- net/ipv4/route.c | 3 +++
- 1 file changed, 3 insertions(+)
+>> Fixes: ab2bf93393571 ("net: phy: mscc: 1588 block initialization")
+>
+>The PTP and the MACsec support were introduced in separate patches (and
+>were introduced in different releases of the kernel). This patch is
+>fixing two different issues then, and its changes can't apply to the
+>same kernel versions. You should send them in two separate patches.
+>
+OK.
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index dc2a399cd9f4..b4d3384697cb 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -2872,6 +2872,9 @@ static int rt_fill_info(struct net *net, __be32 dst, __be32 src,
- 	if (rt->dst.dev &&
- 	    nla_put_u32(skb, RTA_OIF, rt->dst.dev->ifindex))
- 		goto nla_put_failure;
-+	if (rt->dst.lwtstate && lwtunnel_fill_encap(skb, rt->dst.lwtstate,
-+		RTA_ENCAP, RTA_ENCAP_TYPE) < 0)
-+		goto nla_put_failure;
- #ifdef CONFIG_IP_ROUTE_CLASSID
- 	if (rt->dst.tclassid &&
- 	    nla_put_u32(skb, RTA_FLOW, rt->dst.tclassid))
--- 
-2.25.1
+>With the changes sent in two different patches, I would suggest to only
+>send the MACsec one as a fix for net (it's really fixing something, by
+>removing a non-compatible PHY from using MACsec) and the PTP one for
+>net-next as it's adding PTP support for two new PHYs (not fixing
+>anything).
+>
 
+I will split the patch as you suggested.
+
+>When you do so, please use the following commands to format the patches,
+>to end up with the correct prefix in the subject:
+>git format-patch --subject-prefix='PATCH net' ...
+>git format-patch --subject-prefix='PATCH net-next' ...
+>
+>Thanks!
+>Antoine
+>
+Thanks for the comments, Antoine,
+
+BR
+Steen
+>
+>> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+>> ---
+>>  drivers/net/phy/mscc/mscc_macsec.c | 1 -
+>>  drivers/net/phy/mscc/mscc_ptp.c    | 2 ++
+>>  2 files changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
+>> index 1d4c012194e9..72292bf6c51c 100644
+>> --- a/drivers/net/phy/mscc/mscc_macsec.c
+>> +++ b/drivers/net/phy/mscc/mscc_macsec.c
+>> @@ -981,7 +981,6 @@ int vsc8584_macsec_init(struct phy_device *phydev)
+>>
+>>         switch (phydev->phy_id & phydev->drv->phy_id_mask) {
+>>         case PHY_ID_VSC856X:
+>> -       case PHY_ID_VSC8575:
+>>         case PHY_ID_VSC8582:
+>>         case PHY_ID_VSC8584:
+>>                 INIT_LIST_HEAD(&vsc8531->macsec_flows);
+>> diff --git a/drivers/net/phy/mscc/mscc_ptp.c b/drivers/net/phy/mscc/mscc_ptp.c
+>> index b97ee79f3cdf..f0537299c441 100644
+>> --- a/drivers/net/phy/mscc/mscc_ptp.c
+>> +++ b/drivers/net/phy/mscc/mscc_ptp.c
+>> @@ -1510,6 +1510,8 @@ void vsc8584_config_ts_intr(struct phy_device *phydev)
+>>  int vsc8584_ptp_init(struct phy_device *phydev)
+>>  {
+>>         switch (phydev->phy_id & phydev->drv->phy_id_mask) {
+>> +       case PHY_ID_VSC8572:
+>> +       case PHY_ID_VSC8574:
+>>         case PHY_ID_VSC8575:
+>>         case PHY_ID_VSC8582:
+>>         case PHY_ID_VSC8584:
+>> --
+>> 2.29.2
+>>
+
+BR
+Steen
+
+---------------------------------------
+Steen Hegelund
+steen.hegelund@microchip.com
