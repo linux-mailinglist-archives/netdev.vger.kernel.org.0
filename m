@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 032FF2B0D85
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 20:11:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6E5B2B0D7E
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 20:11:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726913AbgKLTKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 14:10:48 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:19574 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726795AbgKLTKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 14:10:38 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0ACJ1JT0157916;
-        Thu, 12 Nov 2020 14:10:30 -0500
+        id S1726817AbgKLTKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 14:10:36 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:17086 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726787AbgKLTKf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 14:10:35 -0500
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0ACJ1W7c036357;
+        Thu, 12 Nov 2020 14:10:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references; s=pp1;
- bh=llb3HNvFm/pj1PaOpIYU7hypfIOd52YZMf7zLBt8Lwg=;
- b=iry9C8AAZxrgpKo8lj9M4jwprJ72zLG0tADBMAZ/D/+qLX1KSyoDkP/hFZ+GhbxgqglI
- eq0ehIdSBCP9QZIaGeNiFEgdKxs3bEHpW9MJVNPmHJ4UO9fV9BNoGPE1J9rxZRKlSiaK
- TlqCSrReFhUqgB89mO4Pnm0S2cF9sxvMRR+/OhKzsRqVdNtsyXzCr66AeddJYjcj9C3P
- SsQyrt/GrFxzuZiHj7xjBaGGs/P5eX3871EX9tr3HgirYru9lIeECC2DmvUXbihkafp4
- HLvsvUiaYMw6eeWHYifh3JU9JBtJ75oEg4IvFCgTgDBNbPXKResBQdLFOkR2SJjsEp5t Hw== 
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34sapm0f45-1
+ bh=Kk8qrjyiN0intXkSBEOfW+fMOmwdPhSlfEWoRNX9n+E=;
+ b=q62oLFTlam313qRttn752GCXROSkP+O9RXZoCc3QJlchoVBIF9rD1Lkrqn5HhoT2qeCP
+ 3axNl6phFrsGEIUB4bMOY5V0dsCI78pDp6uZlzUXeTyxFs99RfXby4UsLosGLHTYOdZC
+ agdVGmQfj9fFOEwEzV1vtHPXLkU+RjFP+C6JwyMCktf+O2L+G5VzDy8lbSBXFM0lc5ZL
+ vLejWJ1jmeTklWvM3G3HtCRl5R2sVTnM+WBYC8YuLwwI8p186NZXv6FM/hPC5mTDUMAY
+ Lcoyrg0PgJDf8rNqgNWeMQQ3LvpVOVx8QpyZGf2OXR2l9tzeyGY4DCEllAoipr/M6Te6 eA== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34s8x9utcg-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 Nov 2020 14:10:30 -0500
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0ACJ87fe026662;
-        Thu, 12 Nov 2020 19:10:29 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma04wdc.us.ibm.com with ESMTP id 34q5nf5tu2-1
+        Thu, 12 Nov 2020 14:10:32 -0500
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0ACJ7UA2030897;
+        Thu, 12 Nov 2020 19:10:31 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma03dal.us.ibm.com with ESMTP id 34nk7a831b-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 Nov 2020 19:10:29 +0000
+        Thu, 12 Nov 2020 19:10:31 +0000
 Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0ACJASx78454692
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0ACJATkG56295860
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Thu, 12 Nov 2020 19:10:29 GMT
 Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9828EAE087;
-        Thu, 12 Nov 2020 19:10:27 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id B7C49AE06A;
+        Thu, 12 Nov 2020 19:10:28 +0000 (GMT)
 Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A1886AE062;
-        Thu, 12 Nov 2020 19:10:26 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id BADBAAE079;
+        Thu, 12 Nov 2020 19:10:27 +0000 (GMT)
 Received: from oc7186267434.ibm.com (unknown [9.160.10.22])
         by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 12 Nov 2020 19:10:26 +0000 (GMT)
+        Thu, 12 Nov 2020 19:10:27 +0000 (GMT)
 From:   Thomas Falcon <tlfalcon@linux.ibm.com>
 To:     netdev@vger.kernel.org
 Cc:     linuxppc-dev@lists.ozlabs.org, dnbanerg@us.ibm.com,
@@ -53,153 +53,157 @@ Cc:     linuxppc-dev@lists.ozlabs.org, dnbanerg@us.ibm.com,
         drt@linux.vnet.ibm.com, sukadev@linux.vnet.ibm.com,
         ljp@linux.vnet.ibm.com, cforno12@linux.ibm.com,
         tlfalcon@linux.ibm.com, ricklind@linux.ibm.com
-Subject: [PATCH net-next 06/12] ibmvnic: Clean up TX code and TX buffer data structure
-Date:   Thu, 12 Nov 2020 13:10:01 -0600
-Message-Id: <1605208207-1896-7-git-send-email-tlfalcon@linux.ibm.com>
+Subject: [PATCH net-next 07/12] ibmvnic: Clean up TX error handling and statistics tracking
+Date:   Thu, 12 Nov 2020 13:10:02 -0600
+Message-Id: <1605208207-1896-8-git-send-email-tlfalcon@linux.ibm.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1605208207-1896-1-git-send-email-tlfalcon@linux.ibm.com>
 References: <1605208207-1896-1-git-send-email-tlfalcon@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-11-12_09:2020-11-12,2020-11-12 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
- bulkscore=0 suspectscore=1 phishscore=0 spamscore=0 impostorscore=0
- mlxscore=0 lowpriorityscore=0 clxscore=1015 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011120109
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=3
+ bulkscore=0 phishscore=0 mlxscore=0 lowpriorityscore=0 mlxlogscore=999
+ priorityscore=1501 spamscore=0 impostorscore=0 adultscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011120109
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove unused and superfluous code and members in
-existing TX implementation and data structures.
+Update error handling code in ibmvnic_xmit to be more readable
+and remove unused statistics counters. Also record statistics
+when TX completions are received to improve accuracy.
 
 Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 31 +++++++++++-------------------
- drivers/net/ethernet/ibm/ibmvnic.h |  8 --------
- 2 files changed, 11 insertions(+), 28 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 38 ++++++++++--------------------
+ drivers/net/ethernet/ibm/ibmvnic.h |  2 --
+ 2 files changed, 13 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index c9437b2d1aa8..b523da20bffc 100644
+index b523da20bffc..2c24d4774457 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
 +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1496,17 +1496,18 @@ static int create_hdr_descs(u8 hdr_field, u8 *hdr_data, int len, int *hdr_len,
-  * L2/L3/L4 packet header descriptors to be sent by send_subcrq_indirect.
-  */
- 
--static void build_hdr_descs_arr(struct ibmvnic_tx_buff *txbuff,
-+static void build_hdr_descs_arr(struct sk_buff *skb,
-+				union sub_crq *indir_arr,
- 				int *num_entries, u8 hdr_field)
- {
- 	int hdr_len[3] = {0, 0, 0};
-+	u8 hdr_data[140] = {0};
- 	int tot_len;
--	u8 *hdr_data = txbuff->hdr_data;
- 
--	tot_len = build_hdr_data(hdr_field, txbuff->skb, hdr_len,
--				 txbuff->hdr_data);
-+	tot_len = build_hdr_data(hdr_field, skb, hdr_len,
-+				 hdr_data);
- 	*num_entries += create_hdr_descs(hdr_field, hdr_data, tot_len, hdr_len,
--			 txbuff->indir_arr + 1);
-+					 indir_arr + 1);
- }
- 
- static int ibmvnic_xmit_workarounds(struct sk_buff *skb,
-@@ -1537,6 +1538,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
- 	unsigned int tx_send_failed = 0;
+@@ -1535,13 +1535,9 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	struct ibmvnic_tx_buff *tx_buff = NULL;
+ 	struct ibmvnic_sub_crq_queue *tx_scrq;
+ 	struct ibmvnic_tx_pool *tx_pool;
+-	unsigned int tx_send_failed = 0;
  	netdev_tx_t ret = NETDEV_TX_OK;
- 	unsigned int tx_map_failed = 0;
-+	union sub_crq indir_arr[16];
+-	unsigned int tx_map_failed = 0;
+ 	union sub_crq indir_arr[16];
  	unsigned int tx_dropped = 0;
- 	unsigned int tx_packets = 0;
- 	unsigned int tx_bytes = 0;
-@@ -1620,11 +1622,8 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
- 
- 	tx_buff = &tx_pool->tx_buff[index];
- 	tx_buff->skb = skb;
--	tx_buff->data_dma[0] = data_dma_addr;
--	tx_buff->data_len[0] = skb->len;
- 	tx_buff->index = index;
- 	tx_buff->pool_index = queue_num;
--	tx_buff->last_frag = true;
- 
- 	memset(&tx_crq, 0, sizeof(tx_crq));
- 	tx_crq.v1.first = IBMVNIC_CRQ_CMD;
-@@ -1671,7 +1670,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
- 	}
- 
- 	if ((*hdrs >> 7) & 1)
--		build_hdr_descs_arr(tx_buff, &num_entries, *hdrs);
-+		build_hdr_descs_arr(skb, indir_arr, &num_entries, *hdrs);
- 
- 	netdev_tx_sent_queue(txq, skb->len);
- 
-@@ -1688,8 +1687,8 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
- 		ind_bufp->index = 0;
- 	}
- 
--	tx_buff->indir_arr[0] = tx_crq;
--	memcpy(&ind_bufp->indir_arr[ind_bufp->index], tx_buff->indir_arr,
-+	indir_arr[0] = tx_crq;
-+	memcpy(&ind_bufp->indir_arr[ind_bufp->index], &indir_arr[0],
- 	       num_entries * sizeof(struct ibmvnic_generic_scrq));
- 	ind_bufp->index += num_entries;
- 	if (!netdev_xmit_more() || netif_xmit_stopped(txq) ||
-@@ -3140,7 +3139,7 @@ static int ibmvnic_complete_tx(struct ibmvnic_adapter *adapter,
+-	unsigned int tx_packets = 0;
+-	unsigned int tx_bytes = 0;
+ 	dma_addr_t data_dma_addr;
  	struct netdev_queue *txq;
- 	union sub_crq *next;
- 	int index;
--	int i, j;
-+	int i;
+ 	unsigned long lpar_rc;
+@@ -1558,18 +1554,13 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 		if (!netif_subqueue_stopped(netdev, skb))
+ 			netif_stop_subqueue(netdev, queue_num);
+ 		dev_kfree_skb_any(skb);
+-
+-		tx_send_failed++;
+ 		tx_dropped++;
+-		ret = NETDEV_TX_OK;
+-		goto out;
++		goto err_out;
+ 	}
  
- restart_loop:
- 	while (pending_scrq(adapter, scrq)) {
-@@ -3169,14 +3168,6 @@ static int ibmvnic_complete_tx(struct ibmvnic_adapter *adapter,
+ 	if (ibmvnic_xmit_workarounds(skb, netdev)) {
+ 		tx_dropped++;
+-		tx_send_failed++;
+-		ret = NETDEV_TX_OK;
+-		goto out;
++		goto err_out;
+ 	}
+ 	if (skb_is_gso(skb))
+ 		tx_pool = &adapter->tso_pool[queue_num];
+@@ -1584,10 +1575,8 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 
+ 	if (index == IBMVNIC_INVALID_MAP) {
+ 		dev_kfree_skb_any(skb);
+-		tx_send_failed++;
+ 		tx_dropped++;
+-		ret = NETDEV_TX_OK;
+-		goto out;
++		goto err_out;
+ 	}
+ 
+ 	tx_pool->free_map[tx_pool->consumer_index] = IBMVNIC_INVALID_MAP;
+@@ -1707,12 +1696,9 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 		netif_stop_subqueue(netdev, queue_num);
+ 	}
+ 
+-	tx_packets++;
+-	tx_bytes += skb->len;
+ 	txq->trans_start = jiffies;
+-	ret = NETDEV_TX_OK;
+-	goto out;
+ 
++	return ret;
+ tx_flush_err:
+ 	dev_kfree_skb_any(skb);
+ 	tx_buff->skb = NULL;
+@@ -1758,14 +1744,8 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 		netif_tx_stop_all_queues(netdev);
+ 		netif_carrier_off(netdev);
+ 	}
+-out:
++err_out:
+ 	netdev->stats.tx_dropped += tx_dropped;
+-	netdev->stats.tx_bytes += tx_bytes;
+-	netdev->stats.tx_packets += tx_packets;
+-	adapter->tx_send_failed += tx_send_failed;
+-	adapter->tx_map_failed += tx_map_failed;
+-	adapter->tx_stats_buffers[queue_num].packets += tx_packets;
+-	adapter->tx_stats_buffers[queue_num].bytes += tx_bytes;
+ 	adapter->tx_stats_buffers[queue_num].dropped_packets += tx_dropped;
+ 
+ 	return ret;
+@@ -3147,6 +3127,7 @@ static int ibmvnic_complete_tx(struct ibmvnic_adapter *adapter,
+ 		int num_entries = 0;
+ 		int total_bytes = 0;
+ 		int num_packets = 0;
++		int tx_dropped = 0;
+ 
+ 		next = ibmvnic_next_scrq(adapter, scrq);
+ 		/* ensure that we are reading the correct queue entry */
+@@ -3157,6 +3138,7 @@ static int ibmvnic_complete_tx(struct ibmvnic_adapter *adapter,
+ 			if (next->tx_comp.rcs[i]) {
+ 				dev_err(dev, "tx error %x\n",
+ 					next->tx_comp.rcs[i]);
++				tx_dropped++;
+ 				error = true;
  			}
+ 			index = be32_to_cpu(next->tx_comp.correlators[i]);
+@@ -3200,6 +3182,12 @@ static int ibmvnic_complete_tx(struct ibmvnic_adapter *adapter,
+ 			netdev_dbg(adapter->netdev, "Started queue %d\n",
+ 				   scrq->pool_index);
+ 		}
++		adapter->netdev->stats.tx_packets += num_packets;
++		adapter->netdev->stats.tx_bytes += total_bytes;
++		adapter->netdev->stats.tx_dropped += tx_dropped;
++		adapter->tx_stats_buffers[scrq->pool_index].packets += num_packets;
++		adapter->tx_stats_buffers[scrq->pool_index].bytes += total_bytes;
++		adapter->tx_stats_buffers[scrq->pool_index].dropped_packets += tx_dropped;
+ 	}
  
- 			txbuff = &tx_pool->tx_buff[index];
--
--			for (j = 0; j < IBMVNIC_MAX_FRAGS_PER_CRQ; j++) {
--				if (!txbuff->data_dma[j])
--					continue;
--
--				txbuff->data_dma[j] = 0;
--			}
--
- 			num_packets++;
- 			num_entries += txbuff->num_entries;
- 			if (txbuff->skb) {
+ 	enable_scrq_irq(adapter, scrq);
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index 05bf212d387d..11af1f29210b 100644
+index 11af1f29210b..c6f1842d2023 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.h
 +++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -225,8 +225,6 @@ struct ibmvnic_tx_comp_desc {
- #define IBMVNIC_TCP_CHKSUM		0x20
- #define IBMVNIC_UDP_CHKSUM		0x08
+@@ -992,8 +992,6 @@ struct ibmvnic_adapter {
+ 	int replenish_add_buff_success;
+ 	int replenish_add_buff_failure;
+ 	int replenish_task_cycles;
+-	int tx_send_failed;
+-	int tx_map_failed;
  
--#define IBMVNIC_MAX_FRAGS_PER_CRQ 3
--
- struct ibmvnic_tx_desc {
- 	u8 first;
- 	u8 type;
-@@ -897,14 +895,8 @@ struct ibmvnic_long_term_buff {
- 
- struct ibmvnic_tx_buff {
- 	struct sk_buff *skb;
--	dma_addr_t data_dma[IBMVNIC_MAX_FRAGS_PER_CRQ];
--	unsigned int data_len[IBMVNIC_MAX_FRAGS_PER_CRQ];
- 	int index;
- 	int pool_index;
--	bool last_frag;
--	union sub_crq indir_arr[6];
--	u8 hdr_data[140];
--	dma_addr_t indir_dma;
- 	int num_entries;
- };
- 
+ 	struct ibmvnic_tx_queue_stats *tx_stats_buffers;
+ 	struct ibmvnic_rx_queue_stats *rx_stats_buffers;
 -- 
 2.26.2
 
