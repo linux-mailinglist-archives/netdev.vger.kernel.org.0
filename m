@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3649D2AFF09
+	by mail.lfdr.de (Postfix) with ESMTP id A5DC12AFF0A
 	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 06:43:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728486AbgKLFdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 00:33:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
+        id S1728506AbgKLFdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 00:33:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729096AbgKLEwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 23:52:39 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5821C061A48;
-        Wed, 11 Nov 2020 20:51:28 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id z24so3150749pgk.3;
-        Wed, 11 Nov 2020 20:51:28 -0800 (PST)
+        with ESMTP id S1729102AbgKLEwo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Nov 2020 23:52:44 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9BDC061A49;
+        Wed, 11 Nov 2020 20:51:37 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id b3so2135905pls.11;
+        Wed, 11 Nov 2020 20:51:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zuL+aKkvTXRvVyAjB9d0Gmyxs4zs/ysdm48P1lvShlU=;
-        b=B2XMsIL3ic2jUbsf2bHrS4jw96MgEclQ0RI/sr9gjoWPIXEjTVtDfr+JK5NELVzBRP
-         gFBnp0aSVHxhdeMYGYJg2iHHt7bu50KRe+CG/T3zEgj75YeD2KlsNyek2oo2Ufy4wArS
-         ARBk/gVu2d4eI4agezSPs2HhSsa4WpcmZTo5lorOtzZAjPRHwLZLWTMQ9pL+TjiO7zW/
-         5hfJ3bdF0RYVetkkw5PCtO6a13LoVl2HJFq4jL2mi466+OJgCmfF/cHetmYCPrwjHjl/
-         B4Rs3oZ/zxEfWMdYf2Km3m250spwNJp85OTWNa1UBMtngsAGro4hAOe/RKcxuX+WO/sB
-         dXHA==
+        bh=HFo4rwKDO3HHhcsoL7vPox9y0FiOilLBsHbbX62U+iA=;
+        b=ghLn6DvHvUoGN739B8VaOdHo9vtWLVqAFODa8gKY8XfQ+6hzxtVUfL5EjyNn3hKGRq
+         qUydFbX1M4tjQoZfddZkHwSEYofTiH1jeHLrqZjIyhIXC5BnLIT9FuRr17RmZyu2eS/y
+         5y5hrtWckq86E63Ess24ouVDTTAiTXWfIy/ErEkT/MPmN9QMBXYH3k+Sspyb4OlcZaMl
+         tPbSlq5/t0NAqSAJTDOAWGMZdBV27wLmcHc0XJTVQqrXynBqxaJxo1KtTBTmVb6SfwK2
+         eXRZDriDwXbnoJF0Eupun0fq9k6tL14oFWks6EbbGLwSBTd5fauE1xb8cU//F3HisbD2
+         aJJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zuL+aKkvTXRvVyAjB9d0Gmyxs4zs/ysdm48P1lvShlU=;
-        b=fzDh9rMKDsobu1gtFnpJe1a3AUFaEvglRx2UaN6fZOnfjgMbZyzxq+IbUa9N8pOZ3k
-         Ej0HJKY37yg3ubpXYpmdcGy2sQ3BfWAOwLB9b2RGDv9SsbCx5WYHnnPLUhsZadhAbve0
-         vjR6wobqgOCemWSyA2FOjIVYBl+IqHHSK+Zt4HuntYFPEJliD65Wfz3Gq/E0YMNQW+LK
-         65r5VbzDvRe/1qFw2OGUAERDYeI8traOnoB643GEWJbAxpxpMHIU9XT5a9/Y1wcV6M9K
-         VUG+shCAEVpiyzjKA+j6hsY0nUH11IFx6zFIqK9lnujrRMr0dbNOuAFUh1XPdD9oQL/K
-         tiqQ==
-X-Gm-Message-State: AOAM532+STa/QqKyXEeqZOxH+hpNRUXVwFh+QA0OwBG/oheLcO/fsDdT
-        lckiGitjO+//Pl9d5tS9A8QyOO4MGR0=
-X-Google-Smtp-Source: ABdhPJyp7uiq1u9B2wvQJxWWeSOHJNPuLAde6qeLyZA3hLn3GfMybSCe9MzW2FciAUHF2xoKpWL0+A==
-X-Received: by 2002:a63:7a51:: with SMTP id j17mr24150116pgn.186.1605156688262;
-        Wed, 11 Nov 2020 20:51:28 -0800 (PST)
+        bh=HFo4rwKDO3HHhcsoL7vPox9y0FiOilLBsHbbX62U+iA=;
+        b=ScmD4kbE94yGweBu4bC/JZu51X3QdX94lDwKmmmgDsnorMndNiJPfYGYTcj9tFysix
+         5z3hrmQl7yLjd+5nQHwY0GfwxB4UkX/GiVn9mUC807bsi/NOMLHgBaST8wAsBabPJBTF
+         WustkdGpdc4HbWyKktod3+nwsyu6RsBlE/akh/xvsTtVi1wxEh/aelwaDLP3lRJ4NCT4
+         UHVOTgYFmvuHuQg+lBhQLuF3l0q8NJIximV9bjf+Ucx69DeBKTnwQwGwLaOLkrFXi8jN
+         LQ52zby7Ueym4evEjjnrud6xJeCp8jLMWiI0zsihrZhQydDzy4qRZXsIJ6fziobJwGSw
+         9RJQ==
+X-Gm-Message-State: AOAM5329mDHkhYBiREh9E5y3cH477z2YOp37JAYoZs8oyvKLJ/czEUOP
+        mdxlYQsEmAkP14QmEndviyw=
+X-Google-Smtp-Source: ABdhPJxp69cnois8Pe7fKuLL7klRxDUDb9MIrjd2IiSdiuTi6qDPXWqKfuJudrzfAAlCxuIhVtzs1A==
+X-Received: by 2002:a17:902:d3ca:b029:d7:e0f9:b9c with SMTP id w10-20020a170902d3cab02900d7e0f90b9cmr15556764plb.2.1605156696480;
+        Wed, 11 Nov 2020 20:51:36 -0800 (PST)
 Received: from 1G5JKC2.Broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id gk22sm4189087pjb.39.2020.11.11.20.51.20
+        by smtp.gmail.com with ESMTPSA id gk22sm4189087pjb.39.2020.11.11.20.51.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Nov 2020 20:51:27 -0800 (PST)
+        Wed, 11 Nov 2020 20:51:35 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>, Ray Jui <rjui@broadcom.com>,
@@ -64,9 +64,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
         DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list),
         Kurt Kanzenbach <kurt@kmk-computers.de>
-Subject: [PATCH v2 07/10] ARM: dts: NSP: Fix Ethernet switch SGMII register name
-Date:   Wed, 11 Nov 2020 20:50:17 -0800
-Message-Id: <20201112045020.9766-8-f.fainelli@gmail.com>
+Subject: [PATCH v2 08/10] ARM: dts: NSP: Add a SRAB compatible string for each board
+Date:   Wed, 11 Nov 2020 20:50:18 -0800
+Message-Id: <20201112045020.9766-9-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201112045020.9766-1-f.fainelli@gmail.com>
 References: <20201112045020.9766-1-f.fainelli@gmail.com>
@@ -76,29 +76,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The register name should be "sgmii_config", not "sgmii", this is not a
-functional change since no code is currently looking for that register
-by name (or at all).
+Provide a valid compatible string for the Ethernet switch node based on
+the board including the switch. This allows us to have sane defaults and
+silences the following warnings:
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+ arch/arm/boot/dts/bcm958522er.dt.yaml:
+    ethernet-switch@36000: compatible: 'oneOf' conditional failed,
+one
+    must be fixed:
+            ['brcm,bcm5301x-srab'] is too short
+            'brcm,bcm5325' was expected
+            'brcm,bcm53115' was expected
+            'brcm,bcm53125' was expected
+            'brcm,bcm53128' was expected
+            'brcm,bcm5365' was expected
+            'brcm,bcm5395' was expected
+            'brcm,bcm5389' was expected
+            'brcm,bcm5397' was expected
+            'brcm,bcm5398' was expected
+            'brcm,bcm11360-srab' was expected
+            'brcm,bcm5301x-srab' is not one of ['brcm,bcm53010-srab',
+    'brcm,bcm53011-srab', 'brcm,bcm53012-srab', 'brcm,bcm53018-srab',
+    'brcm,bcm53019-srab']
+            'brcm,bcm5301x-srab' is not one of ['brcm,bcm11404-srab',
+    'brcm,bcm11407-srab', 'brcm,bcm11409-srab', 'brcm,bcm58310-srab',
+    'brcm,bcm58311-srab', 'brcm,bcm58313-srab']
+            'brcm,bcm5301x-srab' is not one of ['brcm,bcm58522-srab',
+    'brcm,bcm58523-srab', 'brcm,bcm58525-srab', 'brcm,bcm58622-srab',
+    'brcm,bcm58623-srab', 'brcm,bcm58625-srab', 'brcm,bcm88312-srab']
+            'brcm,bcm5301x-srab' is not one of ['brcm,bcm3384-switch',
+    'brcm,bcm6328-switch', 'brcm,bcm6368-switch']
+            From schema:
+    Documentation/devicetree/bindings/net/dsa/b53.yaml
+
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- arch/arm/boot/dts/bcm-nsp.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/bcm958522er.dts  | 4 ++++
+ arch/arm/boot/dts/bcm958525er.dts  | 4 ++++
+ arch/arm/boot/dts/bcm958525xmc.dts | 4 ++++
+ 3 files changed, 12 insertions(+)
 
-diff --git a/arch/arm/boot/dts/bcm-nsp.dtsi b/arch/arm/boot/dts/bcm-nsp.dtsi
-index e7d08959d5fe..09fd7e55c069 100644
---- a/arch/arm/boot/dts/bcm-nsp.dtsi
-+++ b/arch/arm/boot/dts/bcm-nsp.dtsi
-@@ -390,7 +390,7 @@ srab: ethernet-switch@36000 {
- 			reg = <0x36000 0x1000>,
- 			      <0x3f308 0x8>,
- 			      <0x3f410 0xc>;
--			reg-names = "srab", "mux_config", "sgmii";
-+			reg-names = "srab", "mux_config", "sgmii_config";
- 			interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
+diff --git a/arch/arm/boot/dts/bcm958522er.dts b/arch/arm/boot/dts/bcm958522er.dts
+index 7be4c4e628e0..5443fc079e6e 100644
+--- a/arch/arm/boot/dts/bcm958522er.dts
++++ b/arch/arm/boot/dts/bcm958522er.dts
+@@ -178,3 +178,7 @@ &usb3_phy {
+ &xhci {
+ 	status = "okay";
+ };
++
++&srab {
++	compatible = "brcm,bcm58522-srab", "brcm,nsp-srab";
++};
+diff --git a/arch/arm/boot/dts/bcm958525er.dts b/arch/arm/boot/dts/bcm958525er.dts
+index e58ed7e95346..e1e3c26cef19 100644
+--- a/arch/arm/boot/dts/bcm958525er.dts
++++ b/arch/arm/boot/dts/bcm958525er.dts
+@@ -190,3 +190,7 @@ &usb3_phy {
+ &xhci {
+ 	status = "okay";
+ };
++
++&srab {
++	compatible = "brcm,bcm58525-srab", "brcm,nsp-srab";
++};
+diff --git a/arch/arm/boot/dts/bcm958525xmc.dts b/arch/arm/boot/dts/bcm958525xmc.dts
+index 21f922dc6019..f161ba2e7e5e 100644
+--- a/arch/arm/boot/dts/bcm958525xmc.dts
++++ b/arch/arm/boot/dts/bcm958525xmc.dts
+@@ -210,3 +210,7 @@ &usb3_phy {
+ &xhci {
+ 	status = "okay";
+ };
++
++&srab {
++	compatible = "brcm,bcm58525-srab", "brcm,nsp-srab";
++};
 -- 
 2.25.1
 
