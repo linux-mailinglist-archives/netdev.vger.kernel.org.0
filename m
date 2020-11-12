@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B50982B0C7E
-	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 19:22:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D45B52B0C7A
+	for <lists+netdev@lfdr.de>; Thu, 12 Nov 2020 19:22:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726593AbgKLSWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 13:22:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38822 "EHLO
+        id S1726610AbgKLSW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 13:22:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726573AbgKLSWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 13:22:21 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C6DC0613D1
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 10:22:21 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id y7so5280687pfq.11
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 10:22:21 -0800 (PST)
+        with ESMTP id S1726554AbgKLSWW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 13:22:22 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E9AC0613D1
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 10:22:22 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id w6so5338455pfu.1
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 10:22:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=hr6aj6JtxGducKoxvMPXrY7OCt+4LEbjDkNLR4EhT44=;
-        b=o3pzVPKWpsml5L5vhv35FBu2gb87nep/gJOBHOmE2c+KlITQzAhRKF+mizncCcdYkd
-         z2fj55AV4XwM695Ch9E6XGPPRZkrJfC6g/npagzUyyDehgEYToX80Jg0phfuansxprJO
-         GGr6dIdopVhAh2MYDZTUY3h4ndy5D9zC2rQyimgyf+0c7qjsKdlQevNFCk2sYMafZUrV
-         VBY2l3R2Hs10FA/j9VNqSrJWujtx45D+RNfQPdaLZ0mF/mtcmB2Zoo7teRpPb7Tu1X5o
-         PIM36LU+XgDA94wEi+r2S/S6UDs9RcJQSPYTwwexsrlePvDt9obKH63u10xjAlPkU6S+
-         ZBMg==
+        bh=ThuSp1nWjUdZnFZrlwwu4dXM5FADWV5pVgbm5tfIdyk=;
+        b=WYs16sjEE4omgATI/7uob/4Y20BE4qbGZQhvqkGtLoUtMKTI8z3CTa8HwGZ6dRO0VP
+         S2tSp3k4J5LLm8oj1V7QYfZbmMQk2jJbFR7SrH6ZILLgMIbcf9L6/IfF285xk8bmiZ9h
+         JRDlmIWoZzVnGD1RIXsCHUTAShj81E/08yn+VDKjGjmAm1u3AGgDVOsEiFamH2HyAr6z
+         LCndHneLOcCcLJAu8byHxi3SRg9m4c8H/TIBcR/XQVvTlRfGkWCeECx16ls2xK21FBUI
+         bhIrNq+KBXjmkPoy8+wozThCDBlq9xQnAfcujGhmwolRs9DTInrG2Vyx9f6s6zLknXFU
+         6Gew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=hr6aj6JtxGducKoxvMPXrY7OCt+4LEbjDkNLR4EhT44=;
-        b=WTEi0akPY+C7PFKL/6dnu1ur+8pQIYz5yMLTTTWobSaUrvGKSV7L7TKg/IVUwYEXXO
-         5JMHkxB4HSVg2xmOmd1e3oAgirlDnmYDI/f+1jtOneGOzZU7sJZtRrGLHnvDNXnw+j9P
-         ArUQYiXsXLDzknueRe59QUQav3cGk5oyppcD44xhPC33Botd/omzuWEj72YUlwiYkGv6
-         4KFjpU1ij+l00BrAxv727qzDs4zuGGiV97rVHSUaI1TIJaEeGxY7wkwV0S7dVsAW3vyi
-         Xpq25oZb+CGdtONlHlQRTKn9lKggO6WaxAd7mrpPV9PcE+iRFhFtgTBx6jEj5BkQuade
-         G4tg==
-X-Gm-Message-State: AOAM533WzRDZJGDY/bHgFH59ybqSHGzPCjmuXj+F2YrvDhjkqTjDLFbK
-        /kCooEqc2DbvTtXc70F3u8SvAEZx5OoYDQ==
-X-Google-Smtp-Source: ABdhPJxa5h+8z9qX1Ccq6CoaiI+jr2rpxuFPk5itrb1oC2ptB69duV1U9yIVIX4bPj9BcttXMgJDVw==
-X-Received: by 2002:a62:804d:0:b029:18b:9bf:2979 with SMTP id j74-20020a62804d0000b029018b09bf2979mr534793pfd.11.1605205341110;
-        Thu, 12 Nov 2020 10:22:21 -0800 (PST)
+        bh=ThuSp1nWjUdZnFZrlwwu4dXM5FADWV5pVgbm5tfIdyk=;
+        b=sib9zkAPiVx9I53yvf1eA/JY9AarWLVlu/9++gAZGoqrCkMIef2W3jtqos3B8xzVC/
+         fF6UraF4JW7vWefy+RSSLiMCi27SLWmyFqtZb4P6gCe6JbPTzUVQvsDFiPp6Ve3YC8Ql
+         kCo0aXYQ7rMFDihZDHHyQ5RPc6+8YVl/8PAqrTWuhcai1b2R2OAUF96cuSos87HLvdYr
+         +V+nmv6cOhxq3EBtaI1p9CsMHs6ysJbLrfyFFE86CpFavvPy+m8v/JgNYTUeao9WA3MA
+         C6zVR9GkxggA31bdp0I65OyEzBIO+Sy1VYzwMwYjHOo4kyNYmmSgnOPjOo2dHva3Fcia
+         IvKg==
+X-Gm-Message-State: AOAM530n2xehD3EryDnOSiOERb2yFEY7F4WGPfPYOwscVXqn6JrWs8ja
+        FB+kLpCasgjxHgDLqCMtIUxRSooNAu3urw==
+X-Google-Smtp-Source: ABdhPJxwZwZEsvXZFr0r4k484CEAnPxhgYYSBiODiNM/04wDyosQkL+cQgcAF2HIgbcgSZjG8I59OA==
+X-Received: by 2002:a65:4b8e:: with SMTP id t14mr591830pgq.99.1605205342139;
+        Thu, 12 Nov 2020 10:22:22 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id m6sm7152292pfa.61.2020.11.12.10.22.20
+        by smtp.gmail.com with ESMTPSA id m6sm7152292pfa.61.2020.11.12.10.22.21
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 12 Nov 2020 10:22:20 -0800 (PST)
+        Thu, 12 Nov 2020 10:22:21 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v3 net-next 4/8] ionic: batch rx buffer refilling
-Date:   Thu, 12 Nov 2020 10:22:04 -0800
-Message-Id: <20201112182208.46770-5-snelson@pensando.io>
+Subject: [PATCH v3 net-next 5/8] ionic: use mc sync for multicast filters
+Date:   Thu, 12 Nov 2020 10:22:05 -0800
+Message-Id: <20201112182208.46770-6-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201112182208.46770-1-snelson@pensando.io>
 References: <20201112182208.46770-1-snelson@pensando.io>
@@ -59,90 +59,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We don't need to refill the rx descriptors on every napi
-if only a few were handled.  Waiting until we can batch up
-a few together will save us a few Rx cycles.
+We should be using the multicast sync routines for the multicast
+filters.  Also, let's just flatten the logic a bit and pull
+the small unicast routine back into ionic_set_rx_mode().
 
+Fixes: 1800eee16676 ("net: ionic: Replace in_interrupt() usage.")
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/pensando/ionic/ionic_dev.h    |  4 +++-
- .../net/ethernet/pensando/ionic/ionic_txrx.c   | 18 ++++++++++--------
- 2 files changed, 13 insertions(+), 9 deletions(-)
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-index 6c243b17312c..690768ff0143 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-@@ -12,8 +12,10 @@
- 
- #define IONIC_MAX_TX_DESC		8192
- #define IONIC_MAX_RX_DESC		16384
--#define IONIC_MIN_TXRX_DESC		16
-+#define IONIC_MIN_TXRX_DESC		64
- #define IONIC_DEF_TXRX_DESC		4096
-+#define IONIC_RX_FILL_THRESHOLD		16
-+#define IONIC_RX_FILL_DIV		8
- #define IONIC_LIFS_MAX			1024
- #define IONIC_WATCHDOG_SECS		5
- #define IONIC_ITR_COAL_USEC_DEFAULT	64
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index b3d2250c77d0..9156c9825a16 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -392,11 +392,6 @@ void ionic_rx_fill(struct ionic_queue *q)
- 			 q->dbval | q->head_idx);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index e5ed8231317a..13c7ac904611 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -1149,15 +1149,6 @@ static void _ionic_lif_rx_mode(struct ionic_lif *lif, unsigned int rx_mode,
+ 	}
  }
  
--static void ionic_rx_fill_cb(void *arg)
+-static void ionic_dev_uc_sync(struct net_device *netdev, bool from_ndo)
 -{
--	ionic_rx_fill(arg);
+-	if (from_ndo)
+-		__dev_uc_sync(netdev, ionic_ndo_addr_add, ionic_ndo_addr_del);
+-	else
+-		__dev_uc_sync(netdev, ionic_addr_add, ionic_addr_del);
+-
 -}
 -
- void ionic_rx_empty(struct ionic_queue *q)
+ static void ionic_set_rx_mode(struct net_device *netdev, bool from_ndo)
  {
- 	struct ionic_desc_info *desc_info;
-@@ -480,6 +475,7 @@ int ionic_rx_napi(struct napi_struct *napi, int budget)
- 	struct ionic_cq *cq = napi_to_cq(napi);
- 	struct ionic_dev *idev;
- 	struct ionic_lif *lif;
-+	u16 rx_fill_threshold;
- 	u32 work_done = 0;
- 	u32 flags = 0;
+ 	struct ionic_lif *lif = netdev_priv(netdev);
+@@ -1177,7 +1168,10 @@ static void ionic_set_rx_mode(struct net_device *netdev, bool from_ndo)
+ 	 *       we remove our overflow flag and check the netdev flags
+ 	 *       to see if we can disable NIC PROMISC
+ 	 */
+-	ionic_dev_uc_sync(netdev, from_ndo);
++	if (from_ndo)
++		__dev_uc_sync(netdev, ionic_ndo_addr_add, ionic_ndo_addr_del);
++	else
++		__dev_uc_sync(netdev, ionic_addr_add, ionic_addr_del);
+ 	nfilters = le32_to_cpu(lif->identity->eth.max_ucast_filters);
+ 	if (netdev_uc_count(netdev) + 1 > nfilters) {
+ 		rx_mode |= IONIC_RX_MODE_F_PROMISC;
+@@ -1189,7 +1183,10 @@ static void ionic_set_rx_mode(struct net_device *netdev, bool from_ndo)
+ 	}
  
-@@ -489,7 +485,9 @@ int ionic_rx_napi(struct napi_struct *napi, int budget)
- 	work_done = ionic_cq_service(cq, budget,
- 				     ionic_rx_service, NULL, NULL);
- 
--	if (work_done)
-+	rx_fill_threshold = min_t(u16, IONIC_RX_FILL_THRESHOLD,
-+				  cq->num_descs / IONIC_RX_FILL_DIV);
-+	if (work_done && ionic_q_space_avail(cq->bound_q) >= rx_fill_threshold)
- 		ionic_rx_fill(cq->bound_q);
- 
- 	if (work_done < budget && napi_complete_done(napi, work_done)) {
-@@ -518,6 +516,7 @@ int ionic_txrx_napi(struct napi_struct *napi, int budget)
- 	struct ionic_dev *idev;
- 	struct ionic_lif *lif;
- 	struct ionic_cq *txcq;
-+	u16 rx_fill_threshold;
- 	u32 rx_work_done = 0;
- 	u32 tx_work_done = 0;
- 	u32 flags = 0;
-@@ -531,8 +530,11 @@ int ionic_txrx_napi(struct napi_struct *napi, int budget)
- 
- 	rx_work_done = ionic_cq_service(rxcq, budget,
- 					ionic_rx_service, NULL, NULL);
--	if (rx_work_done)
--		ionic_rx_fill_cb(rxcq->bound_q);
-+
-+	rx_fill_threshold = min_t(u16, IONIC_RX_FILL_THRESHOLD,
-+				  rxcq->num_descs / IONIC_RX_FILL_DIV);
-+	if (rx_work_done && ionic_q_space_avail(rxcq->bound_q) >= rx_fill_threshold)
-+		ionic_rx_fill(rxcq->bound_q);
- 
- 	if (rx_work_done < budget && napi_complete_done(napi, rx_work_done)) {
- 		ionic_dim_update(qcq);
+ 	/* same for multicast */
+-	ionic_dev_uc_sync(netdev, from_ndo);
++	if (from_ndo)
++		__dev_mc_sync(netdev, ionic_ndo_addr_add, ionic_ndo_addr_del);
++	else
++		__dev_mc_sync(netdev, ionic_addr_add, ionic_addr_del);
+ 	nfilters = le32_to_cpu(lif->identity->eth.max_mcast_filters);
+ 	if (netdev_mc_count(netdev) > nfilters) {
+ 		rx_mode |= IONIC_RX_MODE_F_ALLMULTI;
 -- 
 2.17.1
 
