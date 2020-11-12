@@ -2,102 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1D812B12E9
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 00:57:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCD8F2B12EC
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 00:58:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726225AbgKLX44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 18:56:56 -0500
-Received: from www62.your-server.de ([213.133.104.62]:47280 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725894AbgKLX44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 18:56:56 -0500
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kdMST-0003uZ-8K; Fri, 13 Nov 2020 00:56:53 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kdMST-000319-2h; Fri, 13 Nov 2020 00:56:53 +0100
-Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Support for pointers beyond pkt_end.
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-References: <20201111031213.25109-1-alexei.starovoitov@gmail.com>
- <20201111031213.25109-2-alexei.starovoitov@gmail.com>
- <5fad89fb649af_2a612088e@john-XPS-13-9370.notmuch>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <4f80439b-3251-f82b-be63-b398d5f73ac2@iogearbox.net>
-Date:   Fri, 13 Nov 2020 00:56:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726255AbgKLX6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 18:58:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36948 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726017AbgKLX6M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 18:58:12 -0500
+Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B9D4C20723;
+        Thu, 12 Nov 2020 23:58:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605225492;
+        bh=D7BWy4zT3PbHd0AJ1nIJLQwiLiRhReaFI7Ef1rnHFDs=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=S4FV+tZpTU+OfMLs2eYEKR/CDcjXZHX5syjhq2Y0dg4O6sRfU0+rSRJ9V1wkm+ZH/
+         mWp0vPD6Cl+vZen2NfpjleqxROKHz9dRNanmiLu2VcYdvdeRCowDxEXrF0kC5n5veA
+         ASJDWZSBPF3ztBAaCeFYVeT7zJFondbYRcZJkU4I=
+Message-ID: <06f889297f97217961e4e563d2715f28d1e8d953.camel@kernel.org>
+Subject: Re: [PATCH net-next] net/mlx5: Fix passing zero to 'PTR_ERR'
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     YueHaibing <yuehaibing@huawei.com>, leon@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, vuhuong@mellanox.com
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 12 Nov 2020 15:58:10 -0800
+In-Reply-To: <20201112142845.54580-1-yuehaibing@huawei.com>
+References: <20201112142845.54580-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-In-Reply-To: <5fad89fb649af_2a612088e@john-XPS-13-9370.notmuch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25986/Thu Nov 12 14:18:25 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/12/20 8:16 PM, John Fastabend wrote:
-> Alexei Starovoitov wrote:
->> From: Alexei Starovoitov <ast@kernel.org>
->>
->> This patch adds the verifier support to recognize inlined branch conditions.
->> The LLVM knows that the branch evaluates to the same value, but the verifier
->> couldn't track it. Hence causing valid programs to be rejected.
->> The potential LLVM workaround: https://reviews.llvm.org/D87428
->> can have undesired side effects, since LLVM doesn't know that
->> skb->data/data_end are being compared. LLVM has to introduce extra boolean
->> variable and use inline_asm trick to force easier for the verifier assembly.
->>
->> Instead teach the verifier to recognize that
->> r1 = skb->data;
->> r1 += 10;
->> r2 = skb->data_end;
->> if (r1 > r2) {
->>    here r1 points beyond packet_end and
->>    subsequent
->>    if (r1 > r2) // always evaluates to "true".
->> }
->>
->> Tested-by: Jiri Olsa <jolsa@redhat.com>
->> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
->> ---
->>   include/linux/bpf_verifier.h |   2 +-
->>   kernel/bpf/verifier.c        | 129 +++++++++++++++++++++++++++++------
->>   2 files changed, 108 insertions(+), 23 deletions(-)
->>
+On Thu, 2020-11-12 at 22:28 +0800, YueHaibing wrote:
+> Fix smatch warnings:
 > 
-> Thanks, we can remove another set of inline asm logic.
+> drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c:105
+> esw_acl_egress_lgcy_setup() warn: passing zero to 'PTR_ERR'
+> drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c:177
+> esw_acl_egress_ofld_setup() warn: passing zero to 'PTR_ERR'
+> drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c:184
+> esw_acl_ingress_lgcy_setup() warn: passing zero to 'PTR_ERR'
+> drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c:262
+> esw_acl_ingress_ofld_setup() warn: passing zero to 'PTR_ERR'
 > 
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
->   
->>   	if (pred >= 0) {
->> @@ -7517,7 +7601,8 @@ static int check_cond_jmp_op(struct bpf_verifier_env *env,
->>   		 */
->>   		if (!__is_pointer_value(false, dst_reg))
->>   			err = mark_chain_precision(env, insn->dst_reg);
->> -		if (BPF_SRC(insn->code) == BPF_X && !err)
->> +		if (BPF_SRC(insn->code) == BPF_X && !err &&
->> +		    !__is_pointer_value(false, src_reg))
+> esw_acl_table_create() never returns NULL, so
+> NULL test should be removed.
 > 
-> This could have been more specific with !type_is_pkt_pointer() correct? I
-> think its fine as is though.
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 > 
->>   			err = mark_chain_precision(env, insn->src_reg);
->>   		if (err)
->>   			return err;
 
-Given the reg->range could now be negative, I wonder whether for the regsafe()
-pruning logic we should now better add a >=0 sanity check in there before we
-attempt to test on rold->range > rcur->range?
+Applied to net-next-mlx5 
 
-Thanks,
-Daniel
+thanks 
+
