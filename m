@@ -2,137 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 371AA2B241E
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 19:56:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3669A2B2423
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 19:58:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726233AbgKMS43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 13:56:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44872 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725866AbgKMS42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 13:56:28 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD0C7C0613D1
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 10:56:28 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id f38so7833159pgm.2
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 10:56:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FTe4IFxyZRfe6e1KTm/4BOEWWvsZWzGpkqFKgybFiWE=;
-        b=OhMOwOmIpkXinfZKtq0pWORdDEbp5pMj3T5NNMq/Jy/qGauRFJyXmOGt/GdZq/I3h8
-         OPWk1MochZfO1wR2yh0x+/Ruwtt30WkDl1hHGtNuxnu7G/hK5xltFP403S8AerHA9L82
-         dra4vpbBV/1EtPfG65/oiUIotzGKzV4l4sfPc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FTe4IFxyZRfe6e1KTm/4BOEWWvsZWzGpkqFKgybFiWE=;
-        b=TKBXvMOxQecLlypvtMGFIzyYDWPu3c/QWpH4L2IyIptZpjufL32HTuDiXoDOW0pprS
-         p02/UvorNq7WR9GjeiVFaZR2CZMy8AXxaaK3PgL/iAmFgDhFAxfPx1ZvpNp4Xvw+pUSw
-         R9rlfTog1jqvej05hghi+sWOqXJG7KpG6rpOMj5VJzcVQ1SZHyvmCY2erdRJBiYSU+6m
-         f6idpSABIvl3FcwzETdGK4SKCYHAVb7UBYJiPI0stpil/asQ9YKwErQXDRG6UuLPDZca
-         EC09qJz6+ckYVeQtHoDP26lkYR3yFkwrtvkfwYHhiInCly6qO6r+DZ2+wEx/v++5L8KJ
-         MQIg==
-X-Gm-Message-State: AOAM533oFAOzIbAjsQDbS01pWbBZ7y9pfSaS/5AAEpA7/hfOEIgWQ3PH
-        gGFki1isN8GeMs+FOgu2h7DFhA==
-X-Google-Smtp-Source: ABdhPJyWOcYg1DIz/MbaT5BJSJKHR2gB672kAJ8jzYYVMbLzJJhnghEXydc3VWIZCgVrOywSEJ66/Q==
-X-Received: by 2002:a62:52d7:0:b029:18b:7093:fb88 with SMTP id g206-20020a6252d70000b029018b7093fb88mr3233812pfb.76.1605293788220;
-        Fri, 13 Nov 2020 10:56:28 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id l190sm10101876pfl.205.2020.11.13.10.56.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Nov 2020 10:56:27 -0800 (PST)
-Date:   Fri, 13 Nov 2020 10:56:26 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     laniel_francis@privacyrequired.com,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-hardening@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net
-Subject: Re: [PATCH v5 0/3] Fix inefficiences and rename nla_strlcpy
-Message-ID: <202011131054.28BD6A9@keescook>
-References: <20201113111133.15011-1-laniel_francis@privacyrequired.com>
+        id S1726342AbgKMS6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 13:58:20 -0500
+Received: from mailout04.rmx.de ([94.199.90.94]:36384 "EHLO mailout04.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725967AbgKMS6U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 13:58:20 -0500
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout04.rmx.de (Postfix) with ESMTPS id 4CXnmR5LG2z3qy9M;
+        Fri, 13 Nov 2020 19:58:15 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CXnmC0c7wz2TRmB;
+        Fri, 13 Nov 2020 19:58:03 +0100 (CET)
+Received: from n95hx1g2.localnet (192.168.54.24) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 13 Nov
+ 2020 19:57:01 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        "Richard Cochran" <richardcochran@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Vivien Didelot" <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 05/11] dt-bindings: net: dsa: microchip,ksz: add interrupt property
+Date:   Fri, 13 Nov 2020 19:57:00 +0100
+Message-ID: <13390157.M6Fu2mDLuP@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <20201112230732.5spb6qgsu3zdtq4d@skbuf>
+References: <20201112153537.22383-1-ceggers@arri.de> <20201112153537.22383-6-ceggers@arri.de> <20201112230732.5spb6qgsu3zdtq4d@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201113111133.15011-1-laniel_francis@privacyrequired.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.24]
+X-RMX-ID: 20201113-195803-4CXnmC0c7wz2TRmB-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 13, 2020 at 12:11:30PM +0100, laniel_francis@privacyrequired.com wrote:
-> From: Francis Laniel <laniel_francis@privacyrequired.com>
+On Friday, 13 November 2020, 00:07:32 CET, Vladimir Oltean wrote:
+> On Thu, Nov 12, 2020 at 04:35:31PM +0100, Christian Eggers wrote:
+> > The devices have an optional interrupt line.
+> > 
+> > Signed-off-by: Christian Eggers <ceggers@arri.de>
+> > ---
+> > 
+> >  .../devicetree/bindings/net/dsa/microchip,ksz.yaml        | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+> > b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml index
+> > 431ca5c498a8..b2613d6c97cf 100644
+> > --- a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+> > +++ b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+> > 
+...
+> > +            interrupt-parent = <&gpio5>;
+> > +            interrupts = <1 IRQ_TYPE_LEVEL_LOW>;  /* INTRP_N line */
 > 
-> Hi.
+> Isn't it preferable to use this syntax?
 > 
-> 
-> I hope you are all fine and the same for your relatives.
-> 
-> This patch set answers to first three issues listed in:
-> https://github.com/KSPP/linux/issues/110
-> 
-> To sum up, the patch contributions are the following:
-> 1. the first patch fixes an inefficiency where some bytes in dst were written
-> twice, one with 0 the other with src content.
-> 2. The second one modifies nla_strlcpy to return the same value as strscpy,
-> i.e. number of bytes written or -E2BIG if src was truncated.
-> It also modifies code that calls nla_strlcpy and checks for its return value.
-> 3. The third renames nla_strlcpy to nla_strscpy.
-> 
-> Unfortunately, I did not find how to create struct nlattr objects so I tested
-> my modifications on simple char* and with GDB using tc to get to
-> tcf_proto_check_kind.
-> 
-> If you see any way to improve the code or have any remark, feel free to comment.
-> 
-> 
-> Best regards and take care of yourselves.
-> 
-> Francis Laniel (3):
->   Fix unefficient call to memset before memcpu in nla_strlcpy.
->   Modify return value of nla_strlcpy to match that of strscpy.
->   treewide: rename nla_strlcpy to nla_strscpy.
+> 		interrupts-extended = <&gpio5 1 IRQ_TYPE_LEVEL_LOW>;  /* INTRP_N line */
 
-Thanks! This looks good to me.
+After reading Documentation/devicetree/bindings/interrupt-controller/interrupts.txt,
+I would say that "interrupts-extended" is more flexible as it allows different
+interrupt parents for the case there is more than one interrupt line. Although
+there is only one line on the KSZ, I will change this.
 
-Jakub, does this look ready to you?
 
-> 
->  drivers/infiniband/core/nldev.c            | 10 +++---
->  drivers/net/can/vxcan.c                    |  4 +--
->  drivers/net/veth.c                         |  4 +--
->  include/linux/genl_magic_struct.h          |  2 +-
->  include/net/netlink.h                      |  4 +--
->  include/net/pkt_cls.h                      |  2 +-
->  kernel/taskstats.c                         |  2 +-
->  lib/nlattr.c                               | 42 ++++++++++++++--------
->  net/core/fib_rules.c                       |  4 +--
->  net/core/rtnetlink.c                       | 12 +++----
->  net/decnet/dn_dev.c                        |  2 +-
->  net/ieee802154/nl-mac.c                    |  2 +-
->  net/ipv4/devinet.c                         |  2 +-
->  net/ipv4/fib_semantics.c                   |  2 +-
->  net/ipv4/metrics.c                         |  2 +-
->  net/netfilter/ipset/ip_set_hash_netiface.c |  4 +--
->  net/netfilter/nf_tables_api.c              |  6 ++--
->  net/netfilter/nfnetlink_acct.c             |  2 +-
->  net/netfilter/nfnetlink_cthelper.c         |  4 +--
->  net/netfilter/nft_ct.c                     |  2 +-
->  net/netfilter/nft_log.c                    |  2 +-
->  net/netlabel/netlabel_mgmt.c               |  2 +-
->  net/nfc/netlink.c                          |  2 +-
->  net/sched/act_api.c                        |  2 +-
->  net/sched/act_ipt.c                        |  2 +-
->  net/sched/act_simple.c                     |  4 +--
->  net/sched/cls_api.c                        |  2 +-
->  net/sched/sch_api.c                        |  2 +-
->  net/tipc/netlink_compat.c                  |  2 +-
->  29 files changed, 73 insertions(+), 61 deletions(-)
-> 
-> -- 
-> 2.20.1
-> 
 
--- 
-Kees Cook
