@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EE962B20F4
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:53:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ADEA2B20FC
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:54:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726593AbgKMQxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 11:53:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53530 "EHLO
+        id S1726614AbgKMQxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 11:53:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726429AbgKMQxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 11:53:15 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1A2C0617A6;
-        Fri, 13 Nov 2020 08:53:15 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id t9so11472485edq.8;
-        Fri, 13 Nov 2020 08:53:15 -0800 (PST)
+        with ESMTP id S1726570AbgKMQxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 11:53:18 -0500
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9C0C0613D1;
+        Fri, 13 Nov 2020 08:53:18 -0800 (PST)
+Received: by mail-ej1-x644.google.com with SMTP id oq3so14417934ejb.7;
+        Fri, 13 Nov 2020 08:53:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WRj8kGX7s7SWFRxtrV/mPs1BTo8dFHEN4BaCHQWnYmQ=;
-        b=KJq9q/kdXRsrhvBiS0vVmLn9NOUaZvXxEgRajwcNbePCCFBhsUa0iQyBwEIsxkgP+m
-         1Y2kpCki1NpgCxk2C/npdzsBH0ibwCjRjkENOJeOwE2qKLzpIiQeIwp+KImto0st9u5i
-         TNrymWok3Vnm42UEgSTSP6gjOPla6rDzx/CydvtRMFF31+MUGYh5bABrXXgk58x350qk
-         gYOlUmt2GrVhSSBzKu78oCXmpUeOpxucS+ODdpvvrOlLbalQK4LmB+J9jCHiV/yqfxz5
-         CtMJq5yeJG46gnXj1VL1v6deowyEBoyEfNCCdhvxlogfl9XOuo3bW5RA4P3X8P7ShI/q
-         i4Ew==
+        bh=aWtwI+k7UCBs0l74OtNTgocL7WE2uWiSxbu1sqlhGi0=;
+        b=hFTvM0KXcAWgZYGr94f2uXH2yeNL7use8w0TgX4TOZ8EPYJIzI57RODxLXbQDVi+oJ
+         0w4BGiHBCAVopmSHu+Kndle5eoR3PODnPfPh5RuS32uH1gPC472fLHJ5JVzg6N9SLZ/8
+         nyCGbQdE/LKBDw676PN+0EwnxaqcWs1BDqNymzWnfXg1PvCNEKG7PYByXSR/K+wbS6tS
+         4XCSyGWDaB1U3U4CHFCA628QoO4gG4dftzYG9Oy0Gpz0vV1stT/7nRzJOfWQtzOUB9jG
+         yDgfpLW3Mvk6HbuNvvwpk8l/hzsVfX8UigQBfac8Eai3j8g0CgIJhmcLPq+rzZ2Exhq/
+         wZeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WRj8kGX7s7SWFRxtrV/mPs1BTo8dFHEN4BaCHQWnYmQ=;
-        b=sOxcYTQcEkVGl4jT6t9Fwerbaxm/H8Gv9ryyNeLTTIEh2BWJARab9C5SMhO843TkfK
-         q/0NmRDWguYqMLRtXKU82TBidLJb7IbvI1/PY+IYTn57Zx4zuxr0yPfv6S/gnAJfjQsC
-         3Kr3Bqud1heSC78G5Z7BGXihwR66RnQAoBwUmDbLLztT2z6p/IbdTpKVvc1T/Ye4GyD7
-         hiynF1BhGO6vybS6QdiMOO5ObN1V2wbD/03se+Y1xd4mKN/SU6e1tUcfN4SAaHD3zSWE
-         1A3GC52X065Euwp4KXhfTEvETHhj8Kns2ePHWucm1K8y9Pa+bj2WAUZBv42tWsI6Nlyh
-         nG4g==
-X-Gm-Message-State: AOAM530cf163w9oLtZIMTRx/6IK+PFQ9U+1oKtIDHfT9NfRESvfMvbcn
-        PqAULa5WmK1y5iIoBrWkpIk=
-X-Google-Smtp-Source: ABdhPJwp+Z+LZQtE8H02SuVcz5TQ7Zw7g5+8f6dxh+vlz2Eg1o/fsUFmy4QrnPl5Yza79RVTqOXtMw==
-X-Received: by 2002:a50:d582:: with SMTP id v2mr3451357edi.218.1605286389308;
-        Fri, 13 Nov 2020 08:53:09 -0800 (PST)
+        bh=aWtwI+k7UCBs0l74OtNTgocL7WE2uWiSxbu1sqlhGi0=;
+        b=ZYK3Sip9hYS+fSyzpGMzulwZq3m9UxyQhmGzUhRz8TBlIJFhzohPAISzssd0+RTkLq
+         Tm+pGF71BMzNcdoyF45/XucV/JEIGImkOJPgADQd+V7GjxtjK/bWeVdEUgAW4P81L9ID
+         uodQZYUHh1Wre8rP/3F/w6JqnLafgDa2fz91icPCZHLF/p5MZRbwe91cwxXmg52SUAJt
+         reERGsELzm4ldH2FUmvpL7oj2Wa/4wanzvK5/erscSy1fbk8aDKTpZCmlKnOJ06C7f7w
+         BrGWSllSY7CUJ2B2sUzX2a6/mj7hj5j0d3XacHDe74zEELXqSy/xzxvt1UwAiFmRIOVV
+         xW5g==
+X-Gm-Message-State: AOAM5327L4K/S+HQajg8TbMDSajXJcTfK0bG2A/dAvd5474oxEwxAYHC
+        Rn8sxbz970yZrmywZJ2XkFo=
+X-Google-Smtp-Source: ABdhPJzNnqyazxNApGEKsEr4UoLr+b5Hkh79+r62SMBF824IvIue2XnkbV1SgOkfmpP2kPT3n3BsZQ==
+X-Received: by 2002:a17:906:35da:: with SMTP id p26mr2795962ejb.256.1605286391510;
+        Fri, 13 Nov 2020 08:53:11 -0800 (PST)
 Received: from yoga-910.localhost ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id rp28sm4076570ejb.77.2020.11.13.08.53.08
+        by smtp.gmail.com with ESMTPSA id rp28sm4076570ejb.77.2020.11.13.08.53.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Nov 2020 08:53:08 -0800 (PST)
+        Fri, 13 Nov 2020 08:53:10 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -55,9 +55,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH RESEND net-next 15/18] net: phy: ste10Xp: implement generic .handle_interrupt() callback
-Date:   Fri, 13 Nov 2020 18:52:23 +0200
-Message-Id: <20201113165226.561153-16-ciorneiioana@gmail.com>
+Subject: [PATCH RESEND net-next 16/18] net: phy: ste10Xp: remove the use of .ack_interrupt()
+Date:   Fri, 13 Nov 2020 18:52:24 +0200
+Message-Id: <20201113165226.561153-17-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201113165226.561153-1-ciorneiioana@gmail.com>
 References: <20201113165226.561153-1-ciorneiioana@gmail.com>
@@ -69,64 +69,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-In an attempt to actually support shared IRQs in phylib, we now move the
-responsibility of triggering the phylib state machine or just returning
-IRQ_NONE, based on the IRQ status register, to the PHY driver. Having
-3 different IRQ handling callbacks (.handle_interrupt(),
-.did_interrupt() and .ack_interrupt() ) is confusing so let the PHY
-driver implement directly an IRQ handler like any other device driver.
-Make this driver follow the new convention.
+In preparation of removing the .ack_interrupt() callback, we must replace
+its occurrences (aka phy_clear_interrupt), from the 2 places where it is
+called from (phy_enable_interrupts and phy_disable_interrupts), with
+equivalent functionality.
+
+This means that clearing interrupts now becomes something that the PHY
+driver is responsible of doing, before enabling interrupts and after
+clearing them. Make this driver follow the new contract.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
- drivers/net/phy/ste10Xp.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/net/phy/ste10Xp.c | 41 +++++++++++++++++++++------------------
+ 1 file changed, 22 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/net/phy/ste10Xp.c b/drivers/net/phy/ste10Xp.c
-index d735a01380ed..9f315332e0f2 100644
+index 9f315332e0f2..431fe5e0ce31 100644
 --- a/drivers/net/phy/ste10Xp.c
 +++ b/drivers/net/phy/ste10Xp.c
-@@ -76,6 +76,24 @@ static int ste10Xp_ack_interrupt(struct phy_device *phydev)
+@@ -48,32 +48,37 @@ static int ste10Xp_config_init(struct phy_device *phydev)
  	return 0;
  }
  
-+static irqreturn_t ste10Xp_handle_interrupt(struct phy_device *phydev)
++static int ste10Xp_ack_interrupt(struct phy_device *phydev)
 +{
-+	int irq_status;
++	int err = phy_read(phydev, MII_XCIIS);
 +
-+	irq_status = phy_read(phydev, MII_XCIIS);
-+	if (irq_status < 0) {
-+		phy_error(phydev);
-+		return IRQ_NONE;
-+	}
++	if (err < 0)
++		return err;
 +
-+	if (!(irq_status & MII_XIE_DEFAULT_MASK))
-+		return IRQ_NONE;
-+
-+	phy_trigger_machine(phydev);
-+
-+	return IRQ_HANDLED;
++	return 0;
 +}
 +
- static struct phy_driver ste10xp_pdriver[] = {
+ static int ste10Xp_config_intr(struct phy_device *phydev)
  {
- 	.phy_id = STE101P_PHY_ID,
-@@ -85,6 +103,7 @@ static struct phy_driver ste10xp_pdriver[] = {
+-	int err, value;
++	int err;
+ 
+ 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
++		/* clear any pending interrupts */
++		err = ste10Xp_ack_interrupt(phydev);
++		if (err)
++			return err;
++
+ 		/* Enable all STe101P interrupts (PR12) */
+ 		err = phy_write(phydev, MII_XIE, MII_XIE_DEFAULT_MASK);
+-		/* clear any pending interrupts */
+-		if (err == 0) {
+-			value = phy_read(phydev, MII_XCIIS);
+-			if (value < 0)
+-				err = value;
+-		}
+-	} else
++	} else {
+ 		err = phy_write(phydev, MII_XIE, 0);
++		if (err)
++			return err;
+ 
+-	return err;
+-}
+-
+-static int ste10Xp_ack_interrupt(struct phy_device *phydev)
+-{
+-	int err = phy_read(phydev, MII_XCIIS);
+-	if (err < 0)
+-		return err;
++		err = ste10Xp_ack_interrupt(phydev);
++	}
+ 
+-	return 0;
++	return err;
+ }
+ 
+ static irqreturn_t ste10Xp_handle_interrupt(struct phy_device *phydev)
+@@ -101,7 +106,6 @@ static struct phy_driver ste10xp_pdriver[] = {
+ 	.name = "STe101p",
+ 	/* PHY_BASIC_FEATURES */
  	.config_init = ste10Xp_config_init,
- 	.ack_interrupt = ste10Xp_ack_interrupt,
+-	.ack_interrupt = ste10Xp_ack_interrupt,
  	.config_intr = ste10Xp_config_intr,
-+	.handle_interrupt = ste10Xp_handle_interrupt,
+ 	.handle_interrupt = ste10Xp_handle_interrupt,
  	.suspend = genphy_suspend,
- 	.resume = genphy_resume,
- }, {
-@@ -95,6 +114,7 @@ static struct phy_driver ste10xp_pdriver[] = {
+@@ -112,7 +116,6 @@ static struct phy_driver ste10xp_pdriver[] = {
+ 	.name = "STe100p",
+ 	/* PHY_BASIC_FEATURES */
  	.config_init = ste10Xp_config_init,
- 	.ack_interrupt = ste10Xp_ack_interrupt,
+-	.ack_interrupt = ste10Xp_ack_interrupt,
  	.config_intr = ste10Xp_config_intr,
-+	.handle_interrupt = ste10Xp_handle_interrupt,
+ 	.handle_interrupt = ste10Xp_handle_interrupt,
  	.suspend = genphy_suspend,
- 	.resume = genphy_resume,
- } };
 -- 
 2.28.0
 
