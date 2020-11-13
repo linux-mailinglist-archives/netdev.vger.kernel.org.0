@@ -2,116 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BDAF2B288E
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 23:32:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BE8E2B28B0
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 23:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726105AbgKMWcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 17:32:41 -0500
-Received: from mga03.intel.com ([134.134.136.65]:25435 "EHLO mga03.intel.com"
+        id S1726136AbgKMWlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 17:41:03 -0500
+Received: from mail.zx2c4.com ([192.95.5.64]:32947 "EHLO mail.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725866AbgKMWcl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 17:32:41 -0500
-IronPort-SDR: qIYVHGd29JLneXTSk55S/KKOL7dAWOflLBSb7VwUXb3bXRqEw8NWBTIZU103NOvnPqNCwozsoP
- YkYAFjktMlmQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9804"; a="170645229"
-X-IronPort-AV: E=Sophos;i="5.77,476,1596524400"; 
-   d="scan'208";a="170645229"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2020 14:32:39 -0800
-IronPort-SDR: feQdPrfrAxspinQPwrSDchJeLPCN0S/jeXGbBRjEYAypxPJZ+P7FLhisxRzjsU1wUR9ibL+VbY
- oHbJJtYuxziw==
-X-IronPort-AV: E=Sophos;i="5.77,476,1596524400"; 
-   d="scan'208";a="361486121"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.32.182]) ([10.212.32.182])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2020 14:32:39 -0800
-Subject: devlink userspace process appears stuck (was: Re: [net-next] devlink:
- move request_firmware out of driver)
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Bin Luo <luobin9@huawei.com>
-References: <20201113000142.3563690-1-jacob.e.keller@intel.com>
- <20201113131252.743c1226@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <01c79a25-3826-d0f3-8ea3-aa31e338dabe@intel.com>
-Organization: Intel Corporation
-Message-ID: <6352e9d3-02af-721e-3a54-ef99a666be29@intel.com>
-Date:   Fri, 13 Nov 2020 14:32:36 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.1
+        id S1726039AbgKMWlC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 17:41:02 -0500
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 0204c346;
+        Fri, 13 Nov 2020 22:37:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=OJIQBsQN9YtZ59U8T292O32PRFg=; b=ClGu4V
+        82JgxtH+96ZdKad/6V8fFydSOranrAO/P2pWzperym6X5Ebk09NlEza1LxNfH5et
+        zSccOxVP0OWl1XKN6LjyktNrQqgOmz79PV0rBqrCRHfHkISyxy6J9rBi4CzLwEYB
+        auVwVjk5oBrsbChH66Ihd9JI0kI+S//aLV+1eDLhCM1+jw0sA0+jxMkYX9/WqR/Q
+        t0gXQTzeFlBeHMl+ym6jLjEhVQXOZ77bdlIrvMa5J8eo/ZO1lm4cu4VE+2pm0YPp
+        TcXnEex7CyoC0JOC+YhYRsFysplWsMT876W9gq4chBHaFzQQQP4yP1l7oF6u5pU1
+        /EYRvyWvU8XGohzQ==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7c6e6c09 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Fri, 13 Nov 2020 22:37:37 +0000 (UTC)
+Received: by mail-yb1-f179.google.com with SMTP id s8so10102244yba.13;
+        Fri, 13 Nov 2020 14:40:59 -0800 (PST)
+X-Gm-Message-State: AOAM530sYcXF4hFhZX5+N8pBV1umx3jxtC4wkcAwfRLMcTI6H0adZC/O
+        uRKYpP+UbcbKxslDffgLPs7NalYpdCGeTTCUqIc=
+X-Google-Smtp-Source: ABdhPJy4GHaEV+sM67RNRkegMlf+s/XVygZw2mSKbBF4g5x7T20uFd0ua6JodgxMauamrd8pWTxcgPSeuv0shuxsYaQ=
+X-Received: by 2002:a25:6f83:: with SMTP id k125mr6338937ybc.123.1605307258734;
+ Fri, 13 Nov 2020 14:40:58 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <01c79a25-3826-d0f3-8ea3-aa31e338dabe@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201110035318.423757-1-sashal@kernel.org> <20201110035318.423757-26-sashal@kernel.org>
+ <CAHmME9pPbitUYU4CcLaikQLOMjj-=b16nVXgp6+jh1At4Y=vNg@mail.gmail.com> <X6rMJe+bF+/ZyyTz@kroah.com>
+In-Reply-To: <X6rMJe+bF+/ZyyTz@kroah.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 13 Nov 2020 23:40:47 +0100
+X-Gmail-Original-Message-ID: <CAHmME9r0Oar0Js5hhO=5U9JTqS1P04VkYjSq1cqXW19ZOvgh+g@mail.gmail.com>
+Message-ID: <CAHmME9r0Oar0Js5hhO=5U9JTqS1P04VkYjSq1cqXW19ZOvgh+g@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.9 26/55] wireguard: selftests: check that
+ route_me_harder packets use the right sk
+To:     Greg KH <greg@kroah.com>
+Cc:     Sasha Levin <sashal@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        Chen Minqiang <ptpt52@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Nov 10, 2020 at 6:20 PM Greg KH <greg@kroah.com> wrote:
+>
+> On Tue, Nov 10, 2020 at 01:29:41PM +0100, Jason A. Donenfeld wrote:
+> > Note that this requires
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=46d6c5ae953cc0be38efd0e469284df7c4328cf8
+> > And that commit should be backported to every kernel ever, since the
+> > bug is so old.
+>
+> Sasha queued this up to 5.4.y and 5.9.y, but it looks like it doesn't
+> easily apply to older kernels.  If you think that it's needed beyond
+> that, I'll gladly take backported patches.
 
-
-On 11/13/2020 1:34 PM, Jacob Keller wrote:
-> Well, at least with ice, the experience is pretty bad. I tried out with
-> a garbage file name on one of my test systems. This was on a slightly
-> older kernel without this patch applied, and the device had a pending
-> update that had not yet been finalized with a reset:
-> 
-> $ devlink dev flash pci/0000:af:00.0 file garbage_file_does_not_exist
-> Canceling previous pending update
-> 
-> 
-> The update looks like it got stuck, but actually it failed. Somehow the
-> extack error over the socket didn't get handled by the application very
-> well. Something buggy in the forked process probably.
-> 
-> I do get this in the dmesg though:
-> 
-> Nov 13 13:12:57 jekeller-stp-glorfindel kernel: ice 0000:af:00.0: Direct
-> firmware load for garbage_file_does_not_exist failed with error -2
-> 
-
-I think I figured out what is going on here, but I'm not sure what the
-best solution is.
-
-in userspace devlink.c:3410, the condition for exiting the while loop
-that monitors the flash update process is:
-
-(!ctx.flash_done || (ctx.not_first && !ctx.received_end))
-
-This condition means keep looping until flash is done *OR* we've
-received a message but have not yet received the end.
-
-In the ice driver implementation, we perform a check for a pending flash
-update first, which could trigger a cancellation that causes us to send
-back a "cancelling previous pending flash update" status message, which
-was sent *before* the devlink_flash_update_begin_notify(). Then, after
-this we request the firmware object, which fails, and results in an
-error code being reported back..
-
-However, we will never send either the begin or end notification at this
-point. Thus, the devlink userspace application will never quit, and
-won't display the extack message.
-
-This occurs because we sent a status notify message before we actually
-sent a "begin notify". I think the ordering was done because of trying
-to avoid having a complicated cleanup logic.
-
-In some sense, this is a bug in the ice driver.. but in another sense
-this is the devlink application being too strict about the requirements
-on ordering of these messages..
-
-I guess one method if we really want to remain strict is moving the
-"begin" and "end" notifications outside of the driver into core so that
-it always sends a begin before calling the .flash_update handler, and
-always sends an end before exiting.
-
-I guess we could simply relax the restriction on "not first" so that
-we'll always exit in the case where the forked process has quit on us,
-even if we haven't received a proper flash end notification...
-
-Thoughts?
+Backport to older kernels coming your way shortly.
