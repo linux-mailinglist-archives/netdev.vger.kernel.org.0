@@ -2,144 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9402C2B28C8
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 23:49:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26C1E2B28C9
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 23:51:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726121AbgKMWty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 17:49:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39214 "EHLO mail.kernel.org"
+        id S1726199AbgKMWvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 17:51:49 -0500
+Received: from mga12.intel.com ([192.55.52.136]:53012 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726087AbgKMWty (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 17:49:54 -0500
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5D2C82225E
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 22:49:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605307793;
-        bh=GeQLa7d3PQ1pLzQVCA8nzjILyd20h5XWXeJqYcHyJ54=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=hy8SbT4izdP2YEfY7A85DMIIdKk6cc2DgkuopAqO/3YK7zfUCbrgoGs54vM/HoCZ0
-         OZIbpFrJ6yZNAih6JeW7FK3yTvzEG6ouFce4DS1VV6wxfjIRJX+uRyqEmNdFK3C4lH
-         LhECCs2otPz8xo2JccyzfFzMbrSm60pRiQ5o6e6w=
-Received: by mail-ot1-f53.google.com with SMTP id z16so10410565otq.6
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 14:49:53 -0800 (PST)
-X-Gm-Message-State: AOAM533ihgP4b1K8myEyCNP11HZK8dr7TreBGwpIKcq38ZNxcHNdVi93
-        PAvPaoG+9F2/nm4yRBi6xHW4hQYYp2tcpIaXSLo=
-X-Google-Smtp-Source: ABdhPJyZeTkLlncQDMNy6uNZFxaQGSFq7xPTLz8cHfWmkoGAss6UebWS0en3k9o97/h6bY25YeztJxCFOYVTW/C7FuY=
-X-Received: by 2002:a9d:62c1:: with SMTP id z1mr3113787otk.108.1605307792601;
- Fri, 13 Nov 2020 14:49:52 -0800 (PST)
+        id S1726087AbgKMWvo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 17:51:44 -0500
+IronPort-SDR: zdS1TODkx+tfj6hln57C6a53HwzWK7xJWinIhRSB29pliq9vu5gBuyq5KGjGTdXZ1T9nuS+Xc7
+ 05mz5SPg+rLg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9804"; a="149812365"
+X-IronPort-AV: E=Sophos;i="5.77,476,1596524400"; 
+   d="scan'208";a="149812365"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2020 14:51:39 -0800
+IronPort-SDR: lgN8aD/zTu5Rs9QJ+u5Q/O+btJF/3BkToPJucgmwuhp7/s/plMZ1m4OGtyDBVOeJ4s+VUJsmaE
+ cPHbpH2+WIcA==
+X-IronPort-AV: E=Sophos;i="5.77,476,1596524400"; 
+   d="scan'208";a="361488876"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.32.182]) ([10.212.32.182])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2020 14:51:39 -0800
+Subject: Re: devlink userspace process appears stuck (was: Re: [net-next]
+ devlink: move request_firmware out of driver)
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Bin Luo <luobin9@huawei.com>
+References: <20201113000142.3563690-1-jacob.e.keller@intel.com>
+ <20201113131252.743c1226@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <01c79a25-3826-d0f3-8ea3-aa31e338dabe@intel.com>
+ <6352e9d3-02af-721e-3a54-ef99a666be29@intel.com>
+Organization: Intel Corporation
+Message-ID: <baf44b88-156f-7b34-5e8d-9fe3bc2e2c40@intel.com>
+Date:   Fri, 13 Nov 2020 14:51:36 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.1
 MIME-Version: 1.0
-References: <20201017230226.GV456889@lunn.ch> <20201029143934.GO878328@lunn.ch>
- <20201029144644.GA70799@apalos.home> <2697795.ZkNf1YqPoC@kista>
- <CAK8P3a2hBpQAsRekNyauUF1MgdO8CON=77MNSd0E-U1TWNT-gA@mail.gmail.com>
- <20201113144401.GM1456319@lunn.ch> <CAK8P3a2iwwneb+FPuUQRm1JD8Pk54HCPnux4935Ok43WDPRaYQ@mail.gmail.com>
- <20201113165625.GN1456319@lunn.ch> <CAK8P3a3ABKRYg_wyjz_zUPd+gE1=f3PsVs5Ac-y1jpa0+Kt1fA@mail.gmail.com>
- <20201113224301.GU1480543@lunn.ch>
-In-Reply-To: <20201113224301.GU1480543@lunn.ch>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Fri, 13 Nov 2020 23:49:39 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXGnfsX1pH8m1eO-B1nAqL=vMeuw6fpYdeA1RqMpSrg66Q@mail.gmail.com>
-Message-ID: <CAMj1kXGnfsX1pH8m1eO-B1nAqL=vMeuw6fpYdeA1RqMpSrg66Q@mail.gmail.com>
-Subject: Re: Re: realtek PHY commit bbc4d71d63549 causes regression
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Arnd Bergmann <arnd@kernel.org>,
-        =?UTF-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steve McIntyre <steve@einval.com>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, Willy Liu <willy.liu@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Masahisa Kojima <masahisa.kojima@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <6352e9d3-02af-721e-3a54-ef99a666be29@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Nov 2020 at 23:43, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> Hi Arnd
->
-> > Something of that sort. I also see a similar patch in KSZ9031
-> > now, see 7dd8f0ba88fc ("arm: dts: imx6qdl-udoo: fix rgmii phy-mode
-> > for ksz9031 phy")
-> >
-> > As this exact mismatch between rgmii and rgmii-id mode is apparently
-> > a more widespread problem, the best workaround I can think of
-> > is that we redefine the phy-mode="rgmii" property to actually mean
-> > "use rgmii mode and let the phy driver decide the delay configuration",
->
-> The problem is, the PHY driver has no idea what the delay
-> configuration should be. That is the whole point of the DT property.
->
-> The MAC and the PHY have to work together to ensure one of them
-> inserts the delay. In most cases, the MAC driver reads the property
-> and passes it unmodified to the PHY. The PHY then does what it is
-> told. In some cases, the MAC decides to add the delay, it changes the
-> rgmii-id to rgmii before passing it onto the PHY. The PHY does as it
-> is told, and it works. And a very small number of boards simply have
-> longer clock lines than signal lines, so the PCB adds the delay. It is
-> not clearly defined how that should be described in DT, but it works
-> so far because most MAC drivers don't add delays, pass the 'rgmii'
-> from DT to the PHY and it does as it is told and does not add delays.
->
-> There is one more case, which is not used very often. The PHY is
-> passed the NA values, which means, don't touch, something else has set
-> it up. So when the straps are doing the correct thing, you could pass
-> NA. However, some MAC drivers look at the phy mode, see it is one of
-> the 4 rgmii modes, and configure their end to rgmii, instead of gmii,
-> mii, sgmii, etc. How networking does ACPI is still very undefined, but
-> i think we need to push for ACPI to pass NA, and the firmware does all
-> the setup. That seems to be ACPI way.
->
-> > with a new string to mean specifically rgmii mode with no delay.
->
-> As you said, we have phy-mode="rgmii" 235 times. How many of those are
-> going to break when you change the definition of rgmii?  I have no
-> idea, but my gut feeling is more than the number of boards which are
-> currently broken because of the problem with this PHY.
->
-> And, as i said above, some MAC drivers look for one of the 4 RGMII
-> modes in order to configure their side. If you add a new string, you
-> need to review all the MAC drivers and make sure they check for all 5
-> strings, not 4. Some of that is easy, modify
-> phy_interface_mode_is_rgmii(), but not all MAC use it, and it is no
-> help in a switch statement.
->
-> And we are potentially going to get into the same problem
-> again. History has shown, we cannot get 4 properties right. Do you
-> think we will do any better getting 5 properties right? Especially
-> when phy-mode="rgmii" does not mean rgmii, but do whatever you think
-> might be correct?
->
-> Having suffered the pain from the Atheros PHY, this is something i
-> review much more closely, so hopefully we are getting better at
-> this. But PHY drivers live for a long time, ksz9031 was added 7 years
-> ago, well before we started looking closely at delays. I expect more
-> similar problems will keep being found over the next decade.
->
-> To some extent, we actually need DT writers to properly test their
-> DT. If both rgmii and rgmii-id works, there is a 50% chance whatever
-> they pick is wrong. And it would be nice if they told the networking
-> people so we can fix the PHY.
->
 
-One question that still has not been answered is how many actual
-platforms were fixed by backporting Realtek's follow up fix to
--stable. My suspicion is none. That by itself should be enough
-justification to revert the backport of that change.
 
-I do agree that we should fix this properly going forward, and if we
-do manage to fix this in a backwards compatible way, we should
-backport that fix. But letting the current situation exist because
-nobody can be bothered to fix it properly is not the right solution
-IMHO.
+On 11/13/2020 2:32 PM, Jacob Keller wrote:
+> 
+> 
+> On 11/13/2020 1:34 PM, Jacob Keller wrote:
+>> Well, at least with ice, the experience is pretty bad. I tried out with
+>> a garbage file name on one of my test systems. This was on a slightly
+>> older kernel without this patch applied, and the device had a pending
+>> update that had not yet been finalized with a reset:
+>>
+>> $ devlink dev flash pci/0000:af:00.0 file garbage_file_does_not_exist
+>> Canceling previous pending update
+>>
+>>
+>> The update looks like it got stuck, but actually it failed. Somehow the
+>> extack error over the socket didn't get handled by the application very
+>> well. Something buggy in the forked process probably.
+>>
+>> I do get this in the dmesg though:
+>>
+>> Nov 13 13:12:57 jekeller-stp-glorfindel kernel: ice 0000:af:00.0: Direct
+>> firmware load for garbage_file_does_not_exist failed with error -2
+>>
+> 
+> I think I figured out what is going on here, but I'm not sure what the
+> best solution is.
+> 
+> in userspace devlink.c:3410, the condition for exiting the while loop
+> that monitors the flash update process is:
+> 
+> (!ctx.flash_done || (ctx.not_first && !ctx.received_end))
+> 
+
+FWIW changing this to
+
+(!ctx.flash_done && !ctx.received_end)
+
+works for this problem, but I suspect that the original condition
+intended to try and catch the case where flash update has exited but we
+haven't yet processed all of the status messages?
+
+I mean in some sense we could just wait for !ctx.flash_done only. Then
+we'd always loop until the initial request exits.
+
+There's a slight issue with the netlink extack message not being
+displayed on its own line, but I think that just needs us to add a
+pr_out("\n") somewhere to fix it.
+
+
+> This condition means keep looping until flash is done *OR* we've
+> received a message but have not yet received the end.
+> 
+> In the ice driver implementation, we perform a check for a pending flash
+> update first, which could trigger a cancellation that causes us to send
+> back a "cancelling previous pending flash update" status message, which
+> was sent *before* the devlink_flash_update_begin_notify(). Then, after
+> this we request the firmware object, which fails, and results in an
+> error code being reported back..
+> 
+> However, we will never send either the begin or end notification at this
+> point. Thus, the devlink userspace application will never quit, and
+> won't display the extack message.
+> 
+> This occurs because we sent a status notify message before we actually
+> sent a "begin notify". I think the ordering was done because of trying
+> to avoid having a complicated cleanup logic.
+> 
+> In some sense, this is a bug in the ice driver.. but in another sense
+> this is the devlink application being too strict about the requirements
+> on ordering of these messages..
+> 
+> I guess one method if we really want to remain strict is moving the
+> "begin" and "end" notifications outside of the driver into core so that
+> it always sends a begin before calling the .flash_update handler, and
+> always sends an end before exiting.
+> 
+> I guess we could simply relax the restriction on "not first" so that
+> we'll always exit in the case where the forked process has quit on us,
+> even if we haven't received a proper flash end notification...
+> 
+> Thoughts?
+> 
