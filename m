@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2484D2B2703
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 22:35:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0072B2719
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 22:36:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbgKMVew (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 16:34:52 -0500
-Received: from mga06.intel.com ([134.134.136.31]:18350 "EHLO mga06.intel.com"
+        id S1726756AbgKMVf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 16:35:59 -0500
+Received: from mga06.intel.com ([134.134.136.31]:18351 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726476AbgKMVei (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 16:34:38 -0500
-IronPort-SDR: Bb0PN4ppfidhDb+5HaB3iM7IZYo3P+0M4NsRGfXzHfUBJF29UXSKuq3Hcvam+oc4LLrw7Avl3w
- Gmd3GNrygypw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9804"; a="232152340"
+        id S1725981AbgKMVej (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 16:34:39 -0500
+IronPort-SDR: M1z/nUy5jjK31sclvLaOZFNeegr3i44HJ5kqIGJXNE41jo46mf6W8gjDzwojoS+gFdGW31iRF/
+ ZTmBdnrROHSw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9804"; a="232152341"
 X-IronPort-AV: E=Sophos;i="5.77,476,1596524400"; 
-   d="scan'208";a="232152340"
+   d="scan'208";a="232152341"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2020 13:34:37 -0800
-IronPort-SDR: 9ykqs0LWqaZooMgoboTV8yBICLajD9BFf1qB6Q5jrFK+FPE2CNUE08gdCJ4sfpf+R3Gt3VMUjr
- /KWCO+wMeB9w==
+IronPort-SDR: PazIMKOEybto8pXR70TIWgchNnN2+QHugMUF6IaW5Vecvcbg92X+luNjH8McQjGGwsoJI0QEM7
+ mqRp0GNkiOQQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.77,476,1596524400"; 
-   d="scan'208";a="366861581"
+   d="scan'208";a="366861585"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by FMSMGA003.fm.intel.com with ESMTP; 13 Nov 2020 13:34:36 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.neti, kuba@kernel.org
-Cc:     Bruce Allan <bruce.w.allan@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com,
+        Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
         Harikumar Bokkena <harikumarx.bokkena@intel.com>
-Subject: [net-next v2 01/15] ice: cleanup stack hog
-Date:   Fri, 13 Nov 2020 13:33:53 -0800
-Message-Id: <20201113213407.2131340-2-anthony.l.nguyen@intel.com>
+Subject: [net-next v2 02/15] ice: rename shared Flow Director functions
+Date:   Fri, 13 Nov 2020 13:33:54 -0800
+Message-Id: <20201113213407.2131340-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201113213407.2131340-1-anthony.l.nguyen@intel.com>
 References: <20201113213407.2131340-1-anthony.l.nguyen@intel.com>
@@ -44,107 +45,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bruce Allan <bruce.w.allan@intel.com>
+These functions are currently used to add Flow Director filters, however,
+they will be expanded to also add ACL filters. Rename the functions,
+replacing 'fdir' to 'ntuple', to reflect that they are being
+used to for ntuple filters and are not solely used for Flow Director.
 
-In ice_flow_add_prof_sync(), struct ice_flow_prof_params has recently
-grown in size hogging stack space when allocated there.  Hogging stack
-space should be avoided.  Change allocation to be on the heap when needed.
-
-Signed-off-by: Bruce Allan <bruce.w.allan@intel.com>
-Tested-by: Harikumar Bokkena <harikumarx.bokkena@intel.com>
+Co-developed-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
+Signed-off-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Tested-by: Harikumar Bokkena <harikumarx.bokkena@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_flow.c | 44 +++++++++++++----------
- 1 file changed, 26 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h          |  4 +--
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  4 +--
+ .../net/ethernet/intel/ice/ice_ethtool_fdir.c | 30 +++++++++----------
+ 3 files changed, 19 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_flow.c b/drivers/net/ethernet/intel/ice/ice_flow.c
-index eadc85aee389..2a92071bd7d1 100644
---- a/drivers/net/ethernet/intel/ice/ice_flow.c
-+++ b/drivers/net/ethernet/intel/ice/ice_flow.c
-@@ -708,37 +708,42 @@ ice_flow_add_prof_sync(struct ice_hw *hw, enum ice_block blk,
- 		       struct ice_flow_seg_info *segs, u8 segs_cnt,
- 		       struct ice_flow_prof **prof)
- {
--	struct ice_flow_prof_params params;
-+	struct ice_flow_prof_params *params;
- 	enum ice_status status;
- 	u8 i;
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index a0723831c4e4..59d3862bb7d8 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -592,8 +592,8 @@ int
+ ice_fdir_write_fltr(struct ice_pf *pf, struct ice_fdir_fltr *input, bool add,
+ 		    bool is_tun);
+ void ice_vsi_manage_fdir(struct ice_vsi *vsi, bool ena);
+-int ice_add_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd);
+-int ice_del_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd);
++int ice_add_ntuple_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd);
++int ice_del_ntuple_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd);
+ int ice_get_ethtool_fdir_entry(struct ice_hw *hw, struct ethtool_rxnfc *cmd);
+ int
+ ice_get_fdir_fltr_ids(struct ice_hw *hw, struct ethtool_rxnfc *cmd,
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index 9e8e9531cd87..363377fe90ee 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -2652,9 +2652,9 @@ static int ice_set_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd)
  
- 	if (!prof)
- 		return ICE_ERR_BAD_PTR;
- 
--	memset(&params, 0, sizeof(params));
--	params.prof = devm_kzalloc(ice_hw_to_dev(hw), sizeof(*params.prof),
--				   GFP_KERNEL);
--	if (!params.prof)
-+	params = kzalloc(sizeof(*params), GFP_KERNEL);
-+	if (!params)
- 		return ICE_ERR_NO_MEMORY;
- 
-+	params->prof = devm_kzalloc(ice_hw_to_dev(hw), sizeof(*params->prof),
-+				    GFP_KERNEL);
-+	if (!params->prof) {
-+		status = ICE_ERR_NO_MEMORY;
-+		goto free_params;
-+	}
-+
- 	/* initialize extraction sequence to all invalid (0xff) */
- 	for (i = 0; i < ICE_MAX_FV_WORDS; i++) {
--		params.es[i].prot_id = ICE_PROT_INVALID;
--		params.es[i].off = ICE_FV_OFFSET_INVAL;
-+		params->es[i].prot_id = ICE_PROT_INVALID;
-+		params->es[i].off = ICE_FV_OFFSET_INVAL;
- 	}
- 
--	params.blk = blk;
--	params.prof->id = prof_id;
--	params.prof->dir = dir;
--	params.prof->segs_cnt = segs_cnt;
-+	params->blk = blk;
-+	params->prof->id = prof_id;
-+	params->prof->dir = dir;
-+	params->prof->segs_cnt = segs_cnt;
- 
- 	/* Make a copy of the segments that need to be persistent in the flow
- 	 * profile instance
- 	 */
- 	for (i = 0; i < segs_cnt; i++)
--		memcpy(&params.prof->segs[i], &segs[i], sizeof(*segs));
-+		memcpy(&params->prof->segs[i], &segs[i], sizeof(*segs));
- 
--	status = ice_flow_proc_segs(hw, &params);
-+	status = ice_flow_proc_segs(hw, params);
- 	if (status) {
- 		ice_debug(hw, ICE_DBG_FLOW,
- 			  "Error processing a flow's packet segments\n");
-@@ -746,19 +751,22 @@ ice_flow_add_prof_sync(struct ice_hw *hw, enum ice_block blk,
- 	}
- 
- 	/* Add a HW profile for this flow profile */
--	status = ice_add_prof(hw, blk, prof_id, (u8 *)params.ptypes, params.es);
-+	status = ice_add_prof(hw, blk, prof_id, (u8 *)params->ptypes,
-+			      params->es);
- 	if (status) {
- 		ice_debug(hw, ICE_DBG_FLOW, "Error adding a HW flow profile\n");
- 		goto out;
- 	}
- 
--	INIT_LIST_HEAD(&params.prof->entries);
--	mutex_init(&params.prof->entries_lock);
--	*prof = params.prof;
-+	INIT_LIST_HEAD(&params->prof->entries);
-+	mutex_init(&params->prof->entries_lock);
-+	*prof = params->prof;
- 
- out:
- 	if (status)
--		devm_kfree(ice_hw_to_dev(hw), params.prof);
-+		devm_kfree(ice_hw_to_dev(hw), params->prof);
-+free_params:
-+	kfree(params);
- 
- 	return status;
+ 	switch (cmd->cmd) {
+ 	case ETHTOOL_SRXCLSRLINS:
+-		return ice_add_fdir_ethtool(vsi, cmd);
++		return ice_add_ntuple_ethtool(vsi, cmd);
+ 	case ETHTOOL_SRXCLSRLDEL:
+-		return ice_del_fdir_ethtool(vsi, cmd);
++		return ice_del_ntuple_ethtool(vsi, cmd);
+ 	case ETHTOOL_SRXFH:
+ 		return ice_set_rss_hash_opt(vsi, cmd);
+ 	default:
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+index 2d27f66ac853..f3d2199a2b42 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+@@ -1388,7 +1388,7 @@ ice_fdir_do_rem_flow(struct ice_pf *pf, enum ice_fltr_ptype flow_type)
  }
+ 
+ /**
+- * ice_fdir_update_list_entry - add or delete a filter from the filter list
++ * ice_ntuple_update_list_entry - add or delete a filter from the filter list
+  * @pf: PF structure
+  * @input: filter structure
+  * @fltr_idx: ethtool index of filter to modify
+@@ -1396,8 +1396,8 @@ ice_fdir_do_rem_flow(struct ice_pf *pf, enum ice_fltr_ptype flow_type)
+  * returns 0 on success and negative on errors
+  */
+ static int
+-ice_fdir_update_list_entry(struct ice_pf *pf, struct ice_fdir_fltr *input,
+-			   int fltr_idx)
++ice_ntuple_update_list_entry(struct ice_pf *pf, struct ice_fdir_fltr *input,
++			     int fltr_idx)
+ {
+ 	struct ice_fdir_fltr *old_fltr;
+ 	struct ice_hw *hw = &pf->hw;
+@@ -1429,13 +1429,13 @@ ice_fdir_update_list_entry(struct ice_pf *pf, struct ice_fdir_fltr *input,
+ }
+ 
+ /**
+- * ice_del_fdir_ethtool - delete Flow Director filter
++ * ice_del_ntuple_ethtool - delete Flow Director or ACL filter
+  * @vsi: pointer to target VSI
+- * @cmd: command to add or delete Flow Director filter
++ * @cmd: command to add or delete the filter
+  *
+  * Returns 0 on success and negative values for failure
+  */
+-int ice_del_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
++int ice_del_ntuple_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
+ {
+ 	struct ethtool_rx_flow_spec *fsp =
+ 		(struct ethtool_rx_flow_spec *)&cmd->fs;
+@@ -1456,21 +1456,21 @@ int ice_del_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
+ 		return -EBUSY;
+ 
+ 	mutex_lock(&hw->fdir_fltr_lock);
+-	val = ice_fdir_update_list_entry(pf, NULL, fsp->location);
++	val = ice_ntuple_update_list_entry(pf, NULL, fsp->location);
+ 	mutex_unlock(&hw->fdir_fltr_lock);
+ 
+ 	return val;
+ }
+ 
+ /**
+- * ice_set_fdir_input_set - Set the input set for Flow Director
++ * ice_ntuple_set_input_set - Set the input set for Flow Director
+  * @vsi: pointer to target VSI
+  * @fsp: pointer to ethtool Rx flow specification
+  * @input: filter structure
+  */
+ static int
+-ice_set_fdir_input_set(struct ice_vsi *vsi, struct ethtool_rx_flow_spec *fsp,
+-		       struct ice_fdir_fltr *input)
++ice_ntuple_set_input_set(struct ice_vsi *vsi, struct ethtool_rx_flow_spec *fsp,
++			 struct ice_fdir_fltr *input)
+ {
+ 	u16 dest_vsi, q_index = 0;
+ 	struct ice_pf *pf;
+@@ -1594,13 +1594,13 @@ ice_set_fdir_input_set(struct ice_vsi *vsi, struct ethtool_rx_flow_spec *fsp,
+ }
+ 
+ /**
+- * ice_add_fdir_ethtool - Add/Remove Flow Director filter
++ * ice_add_ntuple_ethtool - Add/Remove Flow Director or ACL filter
+  * @vsi: pointer to target VSI
+- * @cmd: command to add or delete Flow Director filter
++ * @cmd: command to add or delete the filter
+  *
+  * Returns 0 on success and negative values for failure
+  */
+-int ice_add_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
++int ice_add_ntuple_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
+ {
+ 	struct ice_rx_flow_userdef userdata;
+ 	struct ethtool_rx_flow_spec *fsp;
+@@ -1657,7 +1657,7 @@ int ice_add_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
+ 	if (!input)
+ 		return -ENOMEM;
+ 
+-	ret = ice_set_fdir_input_set(vsi, fsp, input);
++	ret = ice_ntuple_set_input_set(vsi, fsp, input);
+ 	if (ret)
+ 		goto free_input;
+ 
+@@ -1674,7 +1674,7 @@ int ice_add_fdir_ethtool(struct ice_vsi *vsi, struct ethtool_rxnfc *cmd)
+ 	}
+ 
+ 	/* input struct is added to the HW filter list */
+-	ice_fdir_update_list_entry(pf, input, fsp->location);
++	ice_ntuple_update_list_entry(pf, input, fsp->location);
+ 
+ 	ret = ice_fdir_write_all_fltr(pf, input, true);
+ 	if (ret)
 -- 
 2.26.2
 
