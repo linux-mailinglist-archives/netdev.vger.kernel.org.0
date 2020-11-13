@@ -2,111 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C1152B14AE
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 04:26:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73B772B14BD
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 04:31:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbgKMD0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 22:26:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39030 "EHLO
+        id S1726101AbgKMDbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 22:31:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725929AbgKMD0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 22:26:01 -0500
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C88C0613D1;
-        Thu, 12 Nov 2020 19:26:01 -0800 (PST)
-Received: by mail-lj1-x241.google.com with SMTP id y16so8961735ljh.0;
-        Thu, 12 Nov 2020 19:26:01 -0800 (PST)
+        with ESMTP id S1726007AbgKMDbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 22:31:44 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E22FC0613D1;
+        Thu, 12 Nov 2020 19:31:44 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id b63so2841976pfg.12;
+        Thu, 12 Nov 2020 19:31:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U5FpYADtIYALgZoE+kVuMMQ+y3SY9Pf75a4z51dOshs=;
-        b=YBelQveZAC0DyHbmZtd7aH+D6mDI2uFaGKR0wNazXzP7elQxXmGYZNu5GpqcxCv1NV
-         Vv4IUEYSb5R6ryUq9RiIvP76vkBAxYeRjQ0Ypk38N/xHSW57NFSLq/Aojgc8dc+p8FYl
-         oB1JaWleSP5AH5Xx3JcvV5dCFJrWLu4jYCOwrlfOfyArZKAT7sVaNUg+FRVTky7K0N5K
-         iXcXIIdofrzc08j8q9MmJqEMs9B60u6gk51Zlx/iZxxhmK2wQrm+KfziUux3Wc0BCMPy
-         3y6mAaUaPEqsT3l68zvuHX4KEifPGtJxooPwkfRufL+Jon7YTxVxEG0x2EdUvxAWsOVz
-         ENig==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=t/Lu3UdKToQwiBVeUSQQ3sQ7DPauKi80eKVhQbk9Mb4=;
+        b=o8xYY0BvaaysquhJMLCvdB0C1g3AXuXJoUlhj7BrXavh7di6CkfQLhFUUDnUAJfGi/
+         OWA7n17t1BHzHwL8zK9KqdgFlYH2LWTcC/miVXkOLq0J6IUZd5cKbdmnNQvwglvHK0p9
+         rSXGQ8i7ONvhUiovTAxxjxBFH18kj2oJDY/aZG+b2T/86wPaJLqgnXTpUWCnLTPmcv6O
+         i6swrWNBcM42nsGZuZzxlIfHyDBQPfT+ZLbF0k4qKLk2v/nQm4weIxaa7WmVzV2pIy88
+         dEo6AhOGcLzpSxNVTA4DdlSK2Ja/xsc/v/y5rVz1Hylwf9D1Oer2Xq7nVA2dbCAe9w4I
+         kd9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U5FpYADtIYALgZoE+kVuMMQ+y3SY9Pf75a4z51dOshs=;
-        b=V3zzo9551hIVQQyIojnWYS6ZGp+NLu3CE01ltRHcCwcHfyxz4NdKIGH6xZASOeZxtO
-         NZrM9fyae+zFsZeZB2OwKiOl3z3I5ZdcbsXvgGAAJqF8E9gxxMAoFuhIHrguMiA4vp3S
-         ltUBH8qJj8ke6Jw3G2Sy7L24dH0B8ot0wKwKuN0DlcbS1/H7xVqlt1aia5gcwMVOX/pE
-         iDQOe5/qzZsVFKADLPIz3ibupy/XOYf+uZIwza0f1fJ97eV6ggI6ByF8Xj0N0xIDGu+a
-         fspNjM9aVbMAs0G0fiJN5Qxgxs11P4MQeROsZVavm5tKyoaFwf0FLIv5Ng3IXbtV1PEt
-         uaaw==
-X-Gm-Message-State: AOAM533rz3D2Aef2onJSl4ZCxzQ5uGlfIcGIqUE/NjdB0n+4bFOVyjE+
-        /KqhFheATDXWNzmGbWfCKk0IqqCzIBMH4l25gSo=
-X-Google-Smtp-Source: ABdhPJzYPzhQebU/TBmdwHHrBYR9QYjxYNHbq+mq/qxiyZoquBpClro2B4t6QDEbfu4QWTzKDOsDA9Mgt+hy27M8Zks=
-X-Received: by 2002:a05:651c:1205:: with SMTP id i5mr152605lja.283.1605237959980;
- Thu, 12 Nov 2020 19:25:59 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=t/Lu3UdKToQwiBVeUSQQ3sQ7DPauKi80eKVhQbk9Mb4=;
+        b=CIwRqH4rRC1k7KICfp2YHFppcFTe3XW2TV+wp0Y8DA2rhbBU1jw+NddgjseQ8GLqKb
+         9K6J7rH2ed25qQh8HQDN3PBfMRn25qHWkGAVniKQAO92k9fZQbne2Mu70EwvmIXgEJ6w
+         6E5nBdIS5Tmo8JnF+JyIUn9xsPB5wDeFdAyPF0qmX7ppiNnPwKK0yb8xxHtQ7Vzm+sj4
+         cl+BUBWj74o5tUQltl9i7zSdsHRQYCdhC26sOJhVhk+Fonw6J0elRNgyl7JfnU58vA9T
+         PmHw8CFKawYpDoJrOu+UlaVhs28ZK7MJkflcYCLCwAPuHxAtt2vCCQztwOb6VqWMYsB4
+         ez3g==
+X-Gm-Message-State: AOAM5309Og3spSLtvoCK2dh9GnuHUwuFDPmb8XxFGbMKj+Tz1k3u1Pco
+        5lqEiNNWYHWxnc4lzCnUI2I=
+X-Google-Smtp-Source: ABdhPJxe63jr2zZ4QoY3tfHDmEeppNgHRAhVkYLDkE1ldkS5htiMTeho8maabrDNsi7r/4ZvtaUvTA==
+X-Received: by 2002:a17:90b:1108:: with SMTP id gi8mr564656pjb.56.1605238303724;
+        Thu, 12 Nov 2020 19:31:43 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id t64sm8330506pfd.36.2020.11.12.19.31.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Nov 2020 19:31:43 -0800 (PST)
+Date:   Thu, 12 Nov 2020 19:31:39 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Christian Eggers <ceggers@arri.de>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 09/11] net: dsa: microchip: ksz9477: add
+ hardware time stamping support
+Message-ID: <20201113033139.GC32138@hoboy.vegasvil.org>
+References: <20201112153537.22383-1-ceggers@arri.de>
+ <20201112153537.22383-10-ceggers@arri.de>
+ <20201113024020.ixzrpjxjfwme3wur@skbuf>
 MIME-Version: 1.0
-References: <20201112221543.3621014-1-guro@fb.com> <20201112221543.3621014-2-guro@fb.com>
- <20201113095632.489e66e2@canb.auug.org.au> <20201113002610.GB2934489@carbon.dhcp.thefacebook.com>
- <20201113030456.drdswcndp65zmt2u@ast-mbp> <20201112191825.1a7c3e0d50cc5e375a4e887c@linux-foundation.org>
-In-Reply-To: <20201112191825.1a7c3e0d50cc5e375a4e887c@linux-foundation.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 12 Nov 2020 19:25:48 -0800
-Message-ID: <CAADnVQ+evkBCakrfEUqEvZ2Th=6xUGA2uTzdb_hwpaU9CPdj8Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 01/34] mm: memcontrol: use helpers to read
- page's memcg data
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Roman Gushchin <guro@fb.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@suse.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201113024020.ixzrpjxjfwme3wur@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 12, 2020 at 7:18 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Thu, 12 Nov 2020 19:04:56 -0800 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
->
-> > On Thu, Nov 12, 2020 at 04:26:10PM -0800, Roman Gushchin wrote:
-> > >
-> > > These patches are not intended to be merged through the bpf tree.
-> > > They are included into the patchset to make bpf selftests pass and for
-> > > informational purposes.
-> > > It's written in the cover letter.
-> > ...
-> > > Maybe I had to just list their titles in the cover letter. Idk what's
-> > > the best option for such cross-subsystem dependencies.
+On Fri, Nov 13, 2020 at 04:40:20AM +0200, Vladimir Oltean wrote:
+> > @@ -103,6 +108,10 @@ static int ksz9477_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+> >  	if (ret)
+> >  		goto error_return;
 > >
-> > We had several situations in the past releases where dependent patches
-> > were merged into multiple trees. For that to happen cleanly from git pov
-> > one of the maintainers need to create a stable branch/tag and let other
-> > maintainers pull that branch into different trees. This way the sha-s
-> > stay the same and no conflicts arise during the merge window.
-> > In this case sounds like the first 4 patches are in mm tree already.
-> > Is there a branch/tag I can pull to get the first 4 into bpf-next?
->
-> Not really, at present.  This is largely by design, although it does cause
-> this problem once or twice a year.
->
-> These four patches:
->
-> mm-memcontrol-use-helpers-to-read-pages-memcg-data.patch
-> mm-memcontrol-slab-use-helpers-to-access-slab-pages-memcg_data.patch
-> mm-introduce-page-memcg-flags.patch
-> mm-convert-page-kmemcg-type-to-a-page-memcg-flag.patch
->
-> are sufficiently reviewed - please pull them into the bpf tree when
-> convenient.  Once they hit linux-next, I'll drop the -mm copies and the
-> bpf tree maintainers will then be responsible for whether & when they
-> get upstream.
+> > +	spin_lock_irqsave(&dev->ptp_clock_lock, flags);
+> 
+> I believe that spin_lock_irqsave is unnecessary, since there is no code
+> that runs in hardirq context.
 
-That's certainly an option if they don't depend on other patches in the mm tree.
-Roman probably knows best ?
+The .adjtime method is in a system call context.  If all of the code
+that manipulates dev->ptp_clock_time can sleep, then you can use a
+mutex.  Otherwise spin_lock_irqsave is the safe choice.
+
+Thanks,
+Richard
