@@ -2,115 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0D542B2013
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:22:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34AD12B200C
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:22:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726908AbgKMQWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 11:22:18 -0500
-Received: from mga09.intel.com ([134.134.136.24]:10822 "EHLO mga09.intel.com"
+        id S1726891AbgKMQWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 11:22:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38866 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726603AbgKMQVs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 11:21:48 -0500
-IronPort-SDR: 4q9/fmWsSmkeiD2ccYR88Sl4UubNnRRifOUT0RyTg6ADLkE87jjiYNAAOtc2Qt2Nipi8A8wN/e
- mVSgndpQk9+g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9804"; a="170664316"
-X-IronPort-AV: E=Sophos;i="5.77,475,1596524400"; 
-   d="scan'208";a="170664316"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2020 08:21:47 -0800
-IronPort-SDR: VoJIdrVOahzLn09Hlos2+YZXTi9c7IJbWuSU7SpysP/0TkLwyi3q9ylxnhhdSa2vm+dnX+gLal
- 7896ip1n9FTQ==
-X-IronPort-AV: E=Sophos;i="5.77,475,1596524400"; 
-   d="scan'208";a="366767263"
-Received: from dmert-dev.jf.intel.com ([10.166.241.5])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2020 08:21:47 -0800
-From:   Dave Ertman <david.m.ertman@intel.com>
-To:     alsa-devel@alsa-project.org
-Cc:     tiwai@suse.de, broonie@kernel.org, linux-rdma@vger.kernel.org,
-        jgg@nvidia.com, dledford@redhat.com, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
-        ranjani.sridharan@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, fred.oh@linux.intel.com,
-        parav@mellanox.com, shiraz.saleem@intel.com,
-        dan.j.williams@intel.com, kiran.patil@intel.com,
-        linux-kernel@vger.kernel.org, leonro@nvidia.com
-Subject: [PATCH v4 10/10] ASoC: SOF: Intel: CNL: register probes client
-Date:   Fri, 13 Nov 2020 08:18:59 -0800
-Message-Id: <20201113161859.1775473-11-david.m.ertman@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201113161859.1775473-1-david.m.ertman@intel.com>
-References: <20201113161859.1775473-1-david.m.ertman@intel.com>
+        id S1726867AbgKMQWG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 11:22:06 -0500
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DDFCE22242;
+        Fri, 13 Nov 2020 16:22:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605284526;
+        bh=fX3xdiQYb5V89YurUlsRm+iMzpkNmQF2yX7rst7Fbh4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=WECKDcoS7vsSMa1RJbr3KW7rRxPJVn2QAgXKdbwZ8PcOrJuFf7qIa1T/Kf8dNJBNG
+         ggYdFjJ7ZbB4EBQvz5UGIMLtKb+UqvpKphx3fB9LnnNcgV9Iq/+xbfbbTkgZZ3eeQ4
+         kibQFbgOWd/ZwH5PYob1piGQUSZ9Aamr/29psL4M=
+Received: by mail-ot1-f43.google.com with SMTP id n89so9412911otn.3;
+        Fri, 13 Nov 2020 08:22:05 -0800 (PST)
+X-Gm-Message-State: AOAM532wbToRWGkYM82yH7oxfeKJ7DVaAKp/BvCfVhpOwboCaRLNSXwA
+        X7hZOTGWkU823Nif/dH6CIGTdB/jBS06xJgiVmk=
+X-Google-Smtp-Source: ABdhPJwCqtSzy85fgpXARAdUrW5t6a29ygecNGNheUBP2KcmHoZih3Ml3ZyBmBqHbIBYjhjlwcBzoLfz9bK1yx5HaDE=
+X-Received: by 2002:a9d:65d5:: with SMTP id z21mr1927181oth.251.1605284520141;
+ Fri, 13 Nov 2020 08:22:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201111080027.7830f756@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <AFoANwC7DUvmHhxeg4sBAapD.3.1605143705212.Hmail.wangqing@vivo.com>
+ <CAK8P3a3=eOxE-K25754+fB_-i_0BZzf9a9RfPTX3ppSwu9WZXw@mail.gmail.com>
+ <20201112181954.GD21010@hoboy.vegasvil.org> <CAK8P3a1pHpweXP+2mp7bdg2GvU5kk4NASsu4MQCRPtK-VpuXSA@mail.gmail.com>
+ <20201112232735.GA26605@hoboy.vegasvil.org>
+In-Reply-To: <20201112232735.GA26605@hoboy.vegasvil.org>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Fri, 13 Nov 2020 17:21:43 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3V98x3s7DvHtutiz97Q=5QjfS6Xn4kH2r2iamY3dzwkw@mail.gmail.com>
+Message-ID: <CAK8P3a3V98x3s7DvHtutiz97Q=5QjfS6Xn4kH2r2iamY3dzwkw@mail.gmail.com>
+Subject: Re: Re: [PATCH V4 net-bugfixs] net/ethernet: Update ret when
+ ptp_clock is ERROR
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     =?UTF-8?B?546L5pOO?= <wangqing@vivo.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Samuel Zou <zou_wei@huawei.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+On Fri, Nov 13, 2020 at 12:27 AM Richard Cochran
+<richardcochran@gmail.com> wrote:
+>
+> On Thu, Nov 12, 2020 at 10:21:21PM +0100, Arnd Bergmann wrote:
+> > I agree that the 'imply' keyword in Kconfig is what made this a
+> > lot worse, and it would be best to replace that with normal
+> > dependencies.
+>
+> IIRC, this all started with tinification and wanting dynamic posix
+> clocks to be optional at compile time.
+>
+> I would like to simplify this whole mess:
+>
+> - restore dynamic posix clocks to be always included
+>
+> - make PHC always included when the MAC has that feature (by saying
+>   "select" in the MAC Kconfig) -- I think this is what davem had
+>   wanted back in the day ...
+>
+> I'm not against tinification in principle, but I believe it is a lost
+> cause.
 
-Register the client device for probes support on the
-CNL platform. Creating this client device alleviates the
-need for modifying the sound card definitions in the existing
-machine drivers to add support for the new probes feature in
-the FW. This will result in the creation of a separate sound
-card that can be used for audio data extraction from user
-specified points in the audio pipeline.
+My preference would be to avoid both 'select' and 'imply' here,
+both of them cause their own set of problems. The main downside
+of 'select' is that you can't mix it with 'depends on' without risking
+running into circular dependencies and impossible configurations,
+while the main problem with 'imply' is that the behavior is close to
+unpredictable. The original definition still made some sense to me,
+but the new definition of 'imply' seems completely meaningless.
 
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Tested-by: Fred Oh <fred.oh@linux.intel.com>
-Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
----
- sound/soc/sof/intel/cnl.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+I've prototyped a patch that I think makes this more sensible
+again: https://pastebin.com/AQ5nWS9e
 
-diff --git a/sound/soc/sof/intel/cnl.c b/sound/soc/sof/intel/cnl.c
-index 20afb622c315..6d15b871dc17 100644
---- a/sound/soc/sof/intel/cnl.c
-+++ b/sound/soc/sof/intel/cnl.c
-@@ -19,6 +19,7 @@
- #include "hda.h"
- #include "hda-ipc.h"
- #include "../sof-audio.h"
-+#include "../sof-client.h"
- #include "intel-client.h"
- 
- static const struct snd_sof_debugfs_map cnl_dsp_debugfs[] = {
-@@ -233,12 +234,26 @@ void cnl_ipc_dump(struct snd_sof_dev *sdev)
- 
- static int cnl_register_clients(struct snd_sof_dev *sdev)
- {
--	return intel_register_ipc_test_clients(sdev);
-+	int ret;
-+
-+	ret = intel_register_ipc_test_clients(sdev);
-+	if (ret < 0)
-+		return ret;
-+
-+#if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA_PROBES)
-+	return sof_client_dev_register(sdev, "probes", 0);
-+#endif
-+
-+	return 0;
- }
- 
- static void cnl_unregister_clients(struct snd_sof_dev *sdev)
- {
- 	intel_unregister_ipc_test_clients(sdev);
-+
-+#if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA_PROBES)
-+	sof_client_dev_unregister(sdev, "probes", 0);
-+#endif
- }
- 
- /* cannonlake ops */
-@@ -409,3 +424,4 @@ const struct sof_intel_dsp_desc jsl_chip_info = {
- };
- EXPORT_SYMBOL_NS(jsl_chip_info, SND_SOC_SOF_INTEL_HDA_COMMON);
- MODULE_IMPORT_NS(SND_SOC_SOF_INTEL_CLIENT);
-+MODULE_IMPORT_NS(SND_SOC_SOF_CLIENT);
--- 
-2.26.2
+This needs testing, but if you think the approach makes sense,
+I can give it a few randconfig builds and submit for wider review.
 
+       Arnd
