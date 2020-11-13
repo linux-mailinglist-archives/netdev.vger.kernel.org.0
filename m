@@ -2,95 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B222B1771
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 09:42:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5777A2B1777
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 09:47:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726270AbgKMIm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 03:42:28 -0500
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:48152 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726149AbgKMIm2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 03:42:28 -0500
+        id S1726327AbgKMIrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 03:47:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32810 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726149AbgKMIrF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 03:47:05 -0500
+X-Greylist: delayed 66 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 13 Nov 2020 00:47:03 PST
+Received: from smtp2.infineon.com (smtp2.infineon.com [IPv6:2a00:18f0:1e00:4::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5752C0613D1;
+        Fri, 13 Nov 2020 00:47:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1605256948; x=1636792948;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nrGKxgIDh+JmYSQC8t2GtfMIobIPHaoAB1Nzt3WA8B4=;
-  b=S2ol1n3c4ZOT65cgh9v6BUYOgbc4Y7uQLETlKvDNzYQqKHZmVEBrj0Ht
-   dKj5rKi18W7OloH/AUf4xeKMj6/IeROaYriJ1Hhplzs0SluyoFGe8X28W
-   3xWjM44AUVENvEQbxe/vTLsztGy/y3pEm4GU8bL+8m139n6szCxLlzqV2
-   P1FsISRiRj8mum3IaYDdeR1GRq83HI69ea34Yt7awzcAW2/nDHNROSKxe
-   Gdkk6N5Nfd2miXutzHCVuZiWwrynadqHeAj/Usp6OiCQgsLUBfdR8+NER
-   Z/O+M/ASxMIg12OihIbcvZpe8KWlvFyBQTX3yVgxtd6jnje7jW64As+n9
-   Q==;
-IronPort-SDR: Amh7d1vLL2c5kUVUAqh+QQ/TLQbt1nIX50dUy9OGTSbYOt0iqSykUr8Rhb1ZY52Ks7rx2bO7+9
- NSvzZCD/t62/xpTOWPUsKt7H+pv9jHia43MXK3IlYEpe3CIFbujpAKYgix72QJt8QaYyIIpZXt
- QNHWxdbzWJ8dnCMDnJgh26N1fhZjPNow1zzNgAKDwZSQNmdKRQAWyTELLjQECNVSv639ZDDojY
- nn+kY+NjtjLFRZl48J/37vViRqwKOYx7r12mh4wRzGs2uHH9r2a4hIM03PCgxW3mv8rbUb0wEr
- BDc=
-X-IronPort-AV: E=Sophos;i="5.77,475,1596524400"; 
-   d="scan'208";a="103376384"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Nov 2020 01:42:28 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 13 Nov 2020 01:42:27 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Fri, 13 Nov 2020 01:42:27 -0700
-Date:   Fri, 13 Nov 2020 09:42:26 +0100
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Antoine Tenart <atenart@kernel.org>,
-        Bryan Whitehead <Bryan.Whitehead@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        John Haechten <John.Haechten@microchip.com>,
-        Netdev List <netdev@vger.kernel.org>,
-        Linux Kernel List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: phy: mscc: remove non-MACSec compatible phy
-Message-ID: <20201113084226.ag54c2tpgeiy4atq@mchp-dev-shegelun>
-References: <20201112090429.906000-1-steen.hegelund@microchip.com>
- <20201112142804.3787760c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1605257224; x=1636793224;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=yAJzaL6E1Ou/8GDr9JUabB3IujzsyMl+Vw2CIVIkMRk=;
+  b=lsqaBdfr6Xmrx2+LKh6kjG1y/JTw/SBG4pWDjfsjN9JL16thcoLETvPp
+   i+avgivCuIuKoIY2WBh6KP0jbfJH93naDUi8IK72UF6/5f6dMbDVsV1lm
+   Z6wgrkfgWYY6edT9ekD1MKSNfUGX/totYwI4LRuE80AwUM/yUc9SaSSg5
+   c=;
+IronPort-SDR: mvLqvLW5yf4lkfE5qnpZKFk9qBaw91x2xyL1GGgrB96H3PH58HpFKUIv8uhhYQTwhYO6L/rko2
+ PAu73Id9S2Nw==
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6000,8403,9803"; a="76739433"
+X-IronPort-AV: E=Sophos;i="5.77,475,1596492000"; 
+   d="scan'208";a="76739433"
+Received: from unknown (HELO mucxv001.muc.infineon.com) ([172.23.11.16])
+  by smtp2.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2020 09:45:54 +0100
+Received: from MUCSE708.infineon.com (MUCSE708.infineon.com [172.23.7.82])
+        by mucxv001.muc.infineon.com (Postfix) with ESMTPS;
+        Fri, 13 Nov 2020 09:45:54 +0100 (CET)
+Received: from MUCSE709.infineon.com (172.23.7.75) by MUCSE708.infineon.com
+ (172.23.7.82) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P256) id 15.1.1913.5; Fri, 13
+ Nov 2020 09:45:51 +0100
+Received: from MUCSE709.infineon.com ([172.23.106.9]) by MUCSE709.infineon.com
+ ([172.23.106.9]) with mapi id 15.01.1913.010; Fri, 13 Nov 2020 09:45:51 +0100
+From:   <Chi-Hsien.Lin@infineon.com>
+To:     <zhangchangzhong@huawei.com>, <arend.vanspriel@broadcom.com>,
+        <franky.lin@broadcom.com>, <hante.meuleman@broadcom.com>,
+        <Wright.Feng@infineon.com>, <kvalo@codeaurora.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <Chung-Hsien.Hsu@infineon.com>
+CC:     <linux-wireless@vger.kernel.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        <brcm80211-dev-list@cypress.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] brcmfmac: fix error return code in
+ brcmf_cfg80211_connect()
+Thread-Topic: [PATCH] brcmfmac: fix error return code in
+ brcmf_cfg80211_connect()
+Thread-Index: AQHWuYX2LsrVIVcLDEeEhdSUn8X2dKnFvg+Q
+Date:   Fri, 13 Nov 2020 08:45:50 +0000
+Message-ID: <ea4b55d801ed418f9b0430ddba559457@infineon.com>
+References: <1605248896-16812-1-git-send-email-zhangchangzhong@huawei.com>
+In-Reply-To: <1605248896-16812-1-git-send-email-zhangchangzhong@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.23.8.247]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20201112142804.3787760c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.11.2020 14:28, Jakub Kicinski wrote:
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> Fix to return a negative error code from the error handling case instead =
+of 0, as done elsewhere in th>
 >
->On Thu, 12 Nov 2020 10:04:29 +0100 Steen Hegelund wrote:
->> Selecting VSC8575 as a MACSec PHY was not correct
->>
->> The relevant datasheet can be found here:
->>   - VSC8575: https://www.microchip.com/wwwproducts/en/VSC8575
->>
->> Fixes: 0a504e9e97886 ("net: phy: mscc: macsec initialization")
->> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> Fixes: 3b1e0a7bdfee ("brcmfmac: add support for SAE authentication offloa=
+d")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+Reviewed-by: Chi-hsien Lin <chi-hsien.lin@infineon.com>
+
+> ---
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 >
->Fixes tag: Fixes: 0a504e9e97886 ("net: phy: mscc: macsec initialization")
->Has these problem(s):
->        - Subject does not match target commit subject
->          Just use
->                git log -1 --format='Fixes: %h ("%s")'
-Hi Jacub,
-
-Right, that sha was for a tree object, not a commit. I should have
-checked that.
-Thanks for the log command example.  That is really useful.
-
-BR
-Steen
-
----------------------------------------
-Steen Hegelund
-steen.hegelund@microchip.com
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c =
+b/drivers/net/wireless/broadc>
+> index a2dbbb9..0ee421f 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+> @@ -2137,7 +2137,8 @@ brcmf_cfg80211_connect(struct wiphy *wiphy, struct =
+net_device *ndev,
+>               BRCMF_WSEC_MAX_PSK_LEN);
+>     else if (profile->use_fwsup =3D=3D BRCMF_PROFILE_FWSUP_SAE) {
+>       /* clean up user-space RSNE */
+> -             if (brcmf_fil_iovar_data_set(ifp, "wpaie", NULL, 0)) {
+> +             err =3D brcmf_fil_iovar_data_set(ifp, "wpaie", NULL, 0);
+> +             if (err) {
+>                       bphy_err(drvr, "failed to clean up user-space RSNE\=
+n");
+>                       goto done;
+> }
+> --
+> 2.9.5
