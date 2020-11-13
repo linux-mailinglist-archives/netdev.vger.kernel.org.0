@@ -2,281 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5E232B2365
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 19:11:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABEF02B2377
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 19:15:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726519AbgKMSL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 13:11:26 -0500
-Received: from userp2120.oracle.com ([156.151.31.85]:34510 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725959AbgKMSLT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 13:11:19 -0500
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0ADI6Dtk057822;
-        Fri, 13 Nov 2020 18:10:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=MxHvzeabld3km1vihStJ5/q5EmID2rQ6TSWZBV8rYXc=;
- b=d/lqROMCxPjuJosy4jPlUoIs+C6EEBKhDPAFcnRkJDTjN2M3e9Lwm8vqwjFuDXZQLNjo
- GpqOzkAU05+ZYaCdvulVPfQOtPHbDXb0I0/6v9iO3F7intfooBxuZou2KpdRGTEvU1YX
- Rs31YDvBqGuBtRji/nVoVDG9/PM/TJeZTPWQmo7lDbabdAao2WvvAb65+/AwNpuM4EID
- Ks3iRxOgjwctYju5lHO5qeb7jZqeDMeWIKGCSbDozbPq5Hfjo6FBU3eCfv8HGQcpgzEZ
- SUl1TPTmd/E0mYxGl+Souj9U4hXvbN0IiWm1tmtXTbbDPZ2VXIX9hqnVzs75o+Zez/A5 vQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 34p72f1taw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 13 Nov 2020 18:10:33 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0ADI52AE076327;
-        Fri, 13 Nov 2020 18:10:32 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3020.oracle.com with ESMTP id 34p5g58rq4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 13 Nov 2020 18:10:32 +0000
-Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0ADIASB9032200;
-        Fri, 13 Nov 2020 18:10:28 GMT
-Received: from localhost.uk.oracle.com (/10.175.203.107)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 13 Nov 2020 10:10:28 -0800
-From:   Alan Maguire <alan.maguire@oracle.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        rostedt@goodmis.org, mingo@redhat.com, haoluo@google.com,
-        jolsa@kernel.org, quentin@isovalent.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [RFC bpf-next 3/3] selftests/bpf: verify module-specific types can be shown via bpf_snprintf_btf
-Date:   Fri, 13 Nov 2020 18:10:13 +0000
-Message-Id: <1605291013-22575-4-git-send-email-alan.maguire@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1605291013-22575-1-git-send-email-alan.maguire@oracle.com>
-References: <1605291013-22575-1-git-send-email-alan.maguire@oracle.com>
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9804 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 malwarescore=0
- adultscore=0 phishscore=0 bulkscore=0 mlxlogscore=999 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011130117
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9804 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999 mlxscore=0
- malwarescore=0 suspectscore=0 lowpriorityscore=0 adultscore=0 phishscore=0
- priorityscore=1501 spamscore=0 impostorscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011130117
+        id S1726203AbgKMSPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 13:15:11 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:28538 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726004AbgKMSPK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 13:15:10 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0ADIBDWG014063;
+        Fri, 13 Nov 2020 10:14:52 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=0FP1XS02vG4uhnHX2i6W0axP0ldN7NLRuOx94EhDsBM=;
+ b=iOPCQ5C4J0ovLMuNI7+z/YoW/nOpb98JLNSQBRvuGfRqHmGaCeb7w61ukbIqF4FwXv6j
+ qjqc4OOpJvBYtMd/eoQIbmWLZi25vNl4TJKIRxB9hjtwvVNQSB00wR6EL4qlHazzlThK
+ O5zEat076mScXxjQbtkSqE1WKYdJnA/SlYU= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 34rf8sxvvm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 13 Nov 2020 10:14:52 -0800
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 13 Nov 2020 10:14:50 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TAGR+8LdvJrxq958jVcgcoQW6/FwZ5ZvMa2RBELpEwtTQv3L69XXEN0++/fuEjotvBtAf5cSSa6ZLjknwIAN8q/qZ9uxPG038/EsJdOA2fPZ1wwxRj1XLyox1JpI3Ko9ZB0gCvrMQueHEdUc8G/Gv/Eq+dSen1HYNymxvBKkR0blhjs5JL4HjchPZbi5NsuZhosYu5l9cx+Bfqm6jhRuvPr9qI/62ViwtxGbH3ed2uo5c9VSbdjhXPedf9RljlZNhGRN1T08lFuihi7HQSU5+ei7FXyFG/Abh5Ya0dPs3BwDpFAau1P0TEHbn19FXxpIja3Dz+46Lr1DiYLlCFxETw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0FP1XS02vG4uhnHX2i6W0axP0ldN7NLRuOx94EhDsBM=;
+ b=ItI5ZHWpXpayg4E+dI3cy0xmfILojNC2CCAZx84fKaXseL3NBdrUSWA1rSgLuveW0VbC1LuMFU7Y7/l7k65pGtAQHnSv+jILjMTdNIBK8F4PLqBT8ayWfriPZFqAMO3sEI3ZqTq8rFnoRLXU9yvVhzV7F5fh0cuuUPGFQ9W/2wb/1g5QwB/+jiP642LE8Guh+/+dExUzOz3LEwOXxLBIDBjMWqPeVlEmJn4N0JQqEIPvvqrNFf2E18PYt/VVOr4oByreNFIqSbNOONoACBwRA3Nev4te/Asyd2jTN54rS0FKOBR0l78HSy1d5al31Ifp3dfoFGdZRGsxdu1qCMClaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0FP1XS02vG4uhnHX2i6W0axP0ldN7NLRuOx94EhDsBM=;
+ b=aneDo2cK2ls2sx/kCZqXUe5/YC/paOaPc7AWdMYmpSHByDrq26Us5nlB6ZHec5bFjcwYkHzvR9DleMopinHw9PTCSpOctkwSFe6Ni4ghGbgBCrgJwrH88Vhzk3tOYlKnnwYQSKnBrjXQ6DHTNth9KsZXoOkmRQ+l4Z3KPbmlmlk=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BY5PR15MB3617.namprd15.prod.outlook.com (2603:10b6:a03:1fc::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.25; Fri, 13 Nov
+ 2020 18:14:48 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::f49e:bdbb:8cd7:bf6b]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::f49e:bdbb:8cd7:bf6b%7]) with mapi id 15.20.3541.025; Fri, 13 Nov 2020
+ 18:14:48 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Roman Gushchin <guro@fb.com>
+CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next v5 31/34] bpf: eliminate rlimit-based memory
+ accounting for bpf local storage maps
+Thread-Topic: [PATCH bpf-next v5 31/34] bpf: eliminate rlimit-based memory
+ accounting for bpf local storage maps
+Thread-Index: AQHWuUFqlzOfptSqHUWGJwxUOMopjanGXzqA
+Date:   Fri, 13 Nov 2020 18:14:48 +0000
+Message-ID: <4270B214-010E-4554-89E8-3FD279C44B7A@fb.com>
+References: <20201112221543.3621014-1-guro@fb.com>
+ <20201112221543.3621014-32-guro@fb.com>
+In-Reply-To: <20201112221543.3621014-32-guro@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.120.23.2.4)
+x-originating-ip: [2620:10d:c090:400::5:f6d8]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ad28cc8d-8bf3-49de-d7ab-08d8880001ad
+x-ms-traffictypediagnostic: BY5PR15MB3617:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR15MB3617F337F408754F2BF29566B3E60@BY5PR15MB3617.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yeoY6oUOvlq3OYGzPKlY+O0MnuW8ttMPCFm83MByFBQb3ultE1WLuVWdNQtRXJ8jXLTJ02RhqTaaD7CZ85pMbDXNIT7NeR7FBbrpsGupokGnLZ5jHfoBqp/DbY0eXzOkqLztRKf4KuK49aqpVbVvbB9fV8CAhBiUb7P82BcS15lj63z+uhiudr0yDuWuZFWzObw5vkBovyqCnn/vObCkIb2s5K+Y+mhPEE4i3djIN0RM5WZ/ENZRw++WAfzU1vVj+UzJyaD0N4HTs6+L+5h7fBgpRU1it3TuTtd5vhTaKBQD8CxzTgMI9MlJgodSogxDi2uKI9LKmYcheLx+vrU95w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39860400002)(376002)(366004)(136003)(346002)(54906003)(5660300002)(4326008)(86362001)(6636002)(83380400001)(33656002)(316002)(478600001)(6486002)(37006003)(76116006)(2906002)(2616005)(186003)(6506007)(6512007)(8676002)(53546011)(8936002)(66556008)(66476007)(36756003)(64756008)(66446008)(4744005)(66946007)(15650500001)(71200400001)(91956017)(6862004);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: ucdoBDvlv0nHXuN6rpFJG0xCP+RtZ6pEnagiV6zyZpRLPBQiwbXVXSHQxRb56uiwXtx0FXDHvvsUREoTcpP+teM+tTkjc04t7dVlxUnOnPXcs0DAucR7BZzxHCi/wrP/N5PRJ1FQ6osXDZ9BFrIId0cYL91377TJfGYvQY9IOr4qOKuqO0+Y8/xPTBSy7YnaYZLOGdhECH2oI2QsErjfhv31p2Q2hHJ62/zZIJQZHo+pryC+PdnTPgspd2PQAH6KcVMa0EDqWVFKVFjqFKCNxZtO9N8A/vhxksBekjchxQOO3Cfc9B1MCPS5pJj4bC1bZySWHQv0mcue4vARi2mVJoZS3De6O+B3ybQKn983awxDHeXDiFcnOucfHmySvpREF7VUZ1qL9hAmq6jZNaFJzBpPShBOTyuDj3e1/0wYbgpwZcurGEs2+5+hfFcrqoi3vjPRbQ7jXH/1o9aDThJloSPQmQxekICWZ8r32N7leVsFoWD0Ri8HtFcw+nZIQMhqk8BjNN00JRXS95z23PS0IdFl8BNB4hGWzDT5V8czZCcm8OYWCWlvGay3MBfJcN8QLMC5rR8OhP+Rv0oclx3ilJiOSXcENXrfAIO9mUmTK65zMsSBSnTNiG6SpUAikpNEcvk3LJcQZCveuJjJ26ruhXc/KaqtDLgOe+ufzW152+kt0loS/SnL9p6o0wY7OG0uzJFuP/ZEE7aTrInp6iivGzqA4iZOwqojlpY1xX+o4Dkf54Dt20Xium9IAnOeSP5FmrVUBltdFwBnG++dfK1TEDoR2qpDSwIvf3dcBSAM0rLxOymk6gqZ3PtsX9wmENOxi8np2PrfPd/J0JPLqO8u8JrD/YG3kjLsPUzRkOl8JQYEL+W95d+ytz8VMZ6Z358YKuaJ29VqUTIjObUDsWgzwg+Cx0rjkPrFIG++BQIo4qk=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <0AB3253BC83F5C4DA4579BE9E31111E9@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad28cc8d-8bf3-49de-d7ab-08d8880001ad
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2020 18:14:48.1203
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: f4y/s9B3QF22YxoonRApXeUZICRYeCGbgKDjYyTJQg07Rq+Y6ZlrbF6h4KDXJ6ZsKOEhsxcoKVERjvR3H/VllA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR15MB3617
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-13_10:2020-11-13,2020-11-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0 mlxscore=0
+ clxscore=1015 priorityscore=1501 mlxlogscore=841 adultscore=0
+ impostorscore=0 suspectscore=0 phishscore=0 lowpriorityscore=0 spamscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011130118
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Verify that specifying a module name in "struct btf_ptr *" along
-with a type id of a module-specific type will succeed.
 
-veth_stats_rx() is chosen because its function signature consists
-of a module-specific type "struct veth_stats" and a kernel-specific
-one "struct net_device".
 
-Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
----
- .../selftests/bpf/prog_tests/snprintf_btf_mod.c    | 96 ++++++++++++++++++++++
- tools/testing/selftests/bpf/progs/btf_ptr.h        |  1 +
- tools/testing/selftests/bpf/progs/veth_stats_rx.c  | 73 ++++++++++++++++
- 3 files changed, 170 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/snprintf_btf_mod.c
- create mode 100644 tools/testing/selftests/bpf/progs/veth_stats_rx.c
+> On Nov 12, 2020, at 2:15 PM, Roman Gushchin <guro@fb.com> wrote:
+>=20
+> Do not use rlimit-based memory accounting for bpf local storage maps.
+> It has been replaced with the memcg-based memory accounting.
+>=20
+> Signed-off-by: Roman Gushchin <guro@fb.com>
+> ---
+> kernel/bpf/bpf_local_storage.c | 11 -----------
+> 1 file changed, 11 deletions(-)
+>=20
+> diff --git a/kernel/bpf/bpf_local_storage.c b/kernel/bpf/bpf_local_storag=
+e.c
+> index fd4f9ac1d042..3b0da5a04d55 100644
+> --- a/kernel/bpf/bpf_local_storage.c
+> +++ b/kernel/bpf/bpf_local_storage.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/snprintf_btf_mod.c b/tools/testing/selftests/bpf/prog_tests/snprintf_btf_mod.c
-new file mode 100644
-index 0000000..f1b12df
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/snprintf_btf_mod.c
-@@ -0,0 +1,96 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include <linux/btf.h>
-+#include <bpf/btf.h>
-+#include "veth_stats_rx.skel.h"
-+
-+#define VETH_NAME	"bpfveth0"
-+
-+/* Demonstrate that bpf_snprintf_btf succeeds for both module-specific
-+ * and kernel-defined data structures; veth_stats_rx() is used as
-+ * it has both module-specific and kernel-defined data as arguments.
-+ * This test assumes that veth is built as a module and will skip if not.
-+ */
-+void test_snprintf_btf_mod(void)
-+{
-+	struct btf *vmlinux_btf = NULL, *veth_btf = NULL;
-+	struct veth_stats_rx *skel = NULL;
-+	struct veth_stats_rx__bss *bss;
-+	int err, duration = 0;
-+	__u32 id;
-+
-+	err = system("ip link add name " VETH_NAME " type veth");
-+	if (CHECK(err, "system", "ip link add veth failed: %d\n", err))
-+		return;
-+
-+	vmlinux_btf = btf__parse_raw("/sys/kernel/btf/vmlinux");
-+	err = libbpf_get_error(vmlinux_btf);
-+	if (CHECK(err, "parse vmlinux BTF", "failed parsing vmlinux BTF: %d\n",
-+		  err))
-+		goto cleanup;
-+	veth_btf = btf__parse_raw_split("/sys/kernel/btf/veth", vmlinux_btf);
-+	err = libbpf_get_error(veth_btf);
-+	if (err == -ENOENT) {
-+		printf("%s:SKIP:no BTF info for veth\n", __func__);
-+		test__skip();
-+                goto cleanup;
-+	}
-+
-+	if (CHECK(err, "parse veth BTF", "failed parsing veth BTF: %d\n", err))
-+		goto cleanup;
-+
-+	skel = veth_stats_rx__open();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+		goto cleanup;
-+
-+	err = veth_stats_rx__load(skel);
-+	if (CHECK(err, "skel_load", "failed to load skeleton: %d\n", err))
-+		goto cleanup;
-+
-+	bss = skel->bss;
-+
-+	bss->veth_stats_btf_id = btf__find_by_name(veth_btf, "veth_stats");
-+
-+	if (CHECK(bss->veth_stats_btf_id <= 0, "find 'struct veth_stats'",
-+		  "could not find 'struct veth_stats' in veth BTF: %d",
-+		  bss->veth_stats_btf_id))
-+		goto cleanup;
-+
-+	err = veth_stats_rx__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	/* generate stats event, then delete; this ensures the program
-+	 * triggers prior to reading status.
-+	 */
-+	err = system("ethtool -S " VETH_NAME " > /dev/null");
-+	if (CHECK(err, "system", "ethtool -S failed: %d\n", err))
-+		goto cleanup;
-+
-+	system("ip link delete " VETH_NAME);
-+
-+	/*
-+	 * Make sure veth_stats_rx program was triggered and it set
-+	 * expected return values from bpf_trace_printk()s and all
-+	 * tests ran.
-+	 */
-+	if (CHECK(bss->ret <= 0,
-+		  "bpf_snprintf_btf: got return value",
-+		  "ret <= 0 %ld test %d\n", bss->ret, bss->ran_subtests))
-+		goto cleanup;
-+
-+	if (CHECK(bss->ran_subtests == 0, "check if subtests ran",
-+		  "no subtests ran, did BPF program run?"))
-+		goto cleanup;
-+
-+	if (CHECK(bss->num_subtests != bss->ran_subtests,
-+		  "check all subtests ran",
-+		  "only ran %d of %d tests\n", bss->num_subtests,
-+		  bss->ran_subtests))
-+		goto cleanup;
-+
-+cleanup:
-+	system("ip link delete " VETH_NAME ">/dev/null 2>&1");
-+	if (skel)
-+		veth_stats_rx__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/btf_ptr.h b/tools/testing/selftests/bpf/progs/btf_ptr.h
-index c3c9797..afef9b3 100644
---- a/tools/testing/selftests/bpf/progs/btf_ptr.h
-+++ b/tools/testing/selftests/bpf/progs/btf_ptr.h
-@@ -17,6 +17,7 @@ struct btf_ptr {
- 	void *ptr;
- 	__u32 type_id;
- 	__u32 flags;
-+	const char *module;
- };
- 
- enum {
-diff --git a/tools/testing/selftests/bpf/progs/veth_stats_rx.c b/tools/testing/selftests/bpf/progs/veth_stats_rx.c
-new file mode 100644
-index 0000000..6ec7ce2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/veth_stats_rx.c
-@@ -0,0 +1,73 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020, Oracle and/or its affiliates. */
-+
-+#include "btf_ptr.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_core_read.h>
-+
-+#include <errno.h>
-+
-+long ret = 0;
-+int num_subtests = 0;
-+int ran_subtests = 0;
-+s32 veth_stats_btf_id = 0;
-+
-+#define STRSIZE			2048
-+
-+#ifndef ARRAY_SIZE
-+#define ARRAY_SIZE(x)	(sizeof(x) / sizeof((x)[0]))
-+#endif
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, char[STRSIZE]);
-+} strdata SEC(".maps");
-+
-+SEC("kprobe/veth_stats_rx")
-+int veth_stats_rx(struct pt_regs *ctx)
-+{
-+	static __u64 flags[] = { 0, BTF_F_COMPACT, BTF_F_ZERO, BTF_F_PTR_RAW,
-+				 BTF_F_NONAME, BTF_F_COMPACT | BTF_F_ZERO |
-+				 BTF_F_PTR_RAW | BTF_F_NONAME };
-+	static const char mod[] = "veth";
-+	const char *mods[] = { mod, 0 };
-+	static struct btf_ptr p = { };
-+	__u32 btf_ids[] = { 0, 0 };
-+	void *ptrs[] = { 0, 0 };
-+	__u32 key = 0;
-+	int i, j;
-+	char *str;
-+
-+	btf_ids[0] = veth_stats_btf_id;
-+	ptrs[0] = (void *)PT_REGS_PARM1_CORE(ctx);
-+#if __has_builtin(__builtin_btf_type_id)
-+	btf_ids[1] = bpf_core_type_id_kernel(struct net_device);
-+	ptrs[1] = (void *)PT_REGS_PARM2_CORE(ctx);
-+#endif
-+	str = bpf_map_lookup_elem(&strdata, &key);
-+	if (!str)
-+		return 0;
-+
-+	for (i = 0; i < ARRAY_SIZE(btf_ids); i++) {
-+		if (btf_ids[i] == 0)
-+			continue;
-+		p.type_id = btf_ids[i];
-+		p.ptr = ptrs[i];
-+		p.module = mods[i];
-+		for (j = 0; j < ARRAY_SIZE(flags); j++) {
-+			++num_subtests;
-+			ret = bpf_snprintf_btf(str, STRSIZE, &p, sizeof(p), 0);
-+			if (ret < 0)
-+				bpf_printk("returned %d when writing id %d",
-+					   ret, p.type_id);
-+			++ran_subtests;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-1.8.3.1
+Do we need to change/remove mem_charge() and mem_uncharge() in=20
+bpf_local_storage.c? I didn't find that in the set.=20
 
+Thanks,
+Song
+
+[...]=
