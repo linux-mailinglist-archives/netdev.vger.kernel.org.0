@@ -2,408 +2,317 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5BE22B2449
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 20:09:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D65732B244B
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 20:10:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726376AbgKMTJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 14:09:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46956 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726310AbgKMTJk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 14:09:40 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52AEC0613D1
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 11:09:39 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id 33so11226150wrl.7
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 11:09:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=singlestore.com; s=google;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=+iOLnrc0hvizg2xwbP3eUh2USfs+s6GfS50BoVNK02I=;
-        b=SWZtNOfZbsiknKP3od9nqZOTwbz9eSLjGStDCTH+KqMjlDoEixkJ+hEqYS6SpCAc6v
-         Pg9cBsboFR+XZmUcAd854qweTHRRTMNa/UnYRxIcy+7P2U1S6WWalcUXF96cbhREVuJc
-         WaNC0ZrG1sUmBP5TTOCjq50cj9lhFoRcgrprcaBnU2K/JZuyzh51gQwTLPJmNVB8xEo+
-         C3K6ZiXrkCS+bs92WjMyXcyqaG9PcsHJPp0UFlOw2c5TA5QofvWMfM2DrNjTxdKe28DX
-         gTDN9o4PCYR1O3yOjzOyAon0XXMfIM/LPvjcVPfXVKZnjWPxJQIZ2JXbsKD8a/Ez5jWE
-         hxuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=+iOLnrc0hvizg2xwbP3eUh2USfs+s6GfS50BoVNK02I=;
-        b=UK9zZ4RvClLPlsJ9M6aYnw/6sXC4JIzv2vejINoUZIaHOP5evyoHgXt2aoBMB2xLhj
-         byj/BAtdK/OwD7yjv9hv1mU0UXP/ubbdGmAETKebXQ4Elw6cPDcfbRpD3UFtp6JwlZ8e
-         Je6gRYO/45wFIbS9MFkO/BLKD2QqnZ2zkwl0Pc0ICB7kkYdQLZQ7jbURblhv1ASUP1Bw
-         qpNKUfr0fn8m5pw7sEVobQ7l42UgNQnhLyIvZtYW/dvMGUpPDWoGI8J/rBrWJWlBUk6U
-         Q5So99N9KHormh4RaNbTmFKkLhJNurM0xp2XqEWyMbSb7CMRSlVDsNoPapLwtQy9rD9X
-         9IzQ==
-X-Gm-Message-State: AOAM53190IBrZp50W9289a8qQ3y7cueoKxJhNi9xnc38yR2/i08S11Nd
-        om42gioV+8c1DY8Sg3xgi/JPSA==
-X-Google-Smtp-Source: ABdhPJzOkka4AiKQgJ+oE5Uo3yi0uijqy+6QMIyvrW5He2tcKKDVZJiViKin69rCV0SuMZjzPKFDSg==
-X-Received: by 2002:a5d:6411:: with SMTP id z17mr5319266wru.112.1605294578429;
-        Fri, 13 Nov 2020 11:09:38 -0800 (PST)
-Received: from rdias-suse-pc.lan (bl13-26-148.dsl.telepac.pt. [85.246.26.148])
-        by smtp.gmail.com with ESMTPSA id a18sm10638411wmm.22.2020.11.13.11.09.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Nov 2020 11:09:37 -0800 (PST)
-Date:   Fri, 13 Nov 2020 19:09:35 +0000
-From:   Ricardo Dias <rdias@singlestore.com>
-To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, edumazet@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4] tcp: fix race condition when creating child sockets from
- syncookies
-Message-ID: <20201113190935.GA106934@rdias-suse-pc.lan>
+        id S1726336AbgKMTKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 14:10:33 -0500
+Received: from sender11-of-o52.zoho.eu ([31.186.226.238]:21315 "EHLO
+        sender11-of-o52.zoho.eu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725866AbgKMTKd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 14:10:33 -0500
+ARC-Seal: i=1; a=rsa-sha256; t=1605294589; cv=none; 
+        d=zohomail.eu; s=zohoarc; 
+        b=OzTAj37sL9DNssltwDz3e3rN+AsMD/K9n97SOgjg5fAXYy1wO104X1vSmsnM6XmeGb12RuDSQZeZuzGq4NyASqsfrN1+p39q/U+nWm2RjpXdBjU6yCj/1ceMfSusEUXLC0JRhnJRWurZxakRPIyqcLsYh28usl3urx+w96DwX4c=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
+        t=1605294589; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=tvD4wWar86pTP/G4jJYNNyxJfymK+KPFfhKCCxWIcPc=; 
+        b=EZRNOKu/J1G6PT/MF6tm7L8j6j8ltxkTzALdMr06mgxJfJttk3DGtxwWLC3ni/AU30vaA7HzMQYsq/KE7LpFCo2hyWWHlj8V/DyBcgmnVa9fLGP5Yr7eQIbiwbgG7IG8uvdvKqEySJehpR0emIWkjag7o8jYizblAFDKNtfsls4=
+ARC-Authentication-Results: i=1; mx.zohomail.eu;
+        dkim=pass  header.i=shytyi.net;
+        spf=pass  smtp.mailfrom=dmytro@shytyi.net;
+        dmarc=pass header.from=<dmytro@shytyi.net> header.from=<dmytro@shytyi.net>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1605294589;
+        s=hs; d=shytyi.net; i=dmytro@shytyi.net;
+        h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding;
+        bh=tvD4wWar86pTP/G4jJYNNyxJfymK+KPFfhKCCxWIcPc=;
+        b=QRFpkDiN9C40MpKpdk1Ovi8xc/8aTrh6zbsV45k/KGdeN2vkeIai2yHAsJwgqPg7
+        QgF//2xidggNBR1qcsjxBCXWSpdA6+UVYyG4oiFrPvidm2pUZ00rgKfoA7KDH0zUt1K
+        2llBIcR2E/bKeA0eznxH4YU8Bt9ibAksVjtF+KEs=
+Received: from mail.zoho.eu by mx.zoho.eu
+        with SMTP id 1605294583384891.1387554495267; Fri, 13 Nov 2020 20:09:43 +0100 (CET)
+Date:   Fri, 13 Nov 2020 20:09:43 +0100
+From:   Dmytro Shytyi <dmytro@shytyi.net>
+To:     "Hideaki Yoshifuji" <hideaki.yoshifuji@miraclelinux.com>
+Cc:     "kuba" <kuba@kernel.org>, "kuznet" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji" <yoshfuji@linux-ipv6.org>,
+        "liuhangbin" <liuhangbin@gmail.com>, "davem" <davem@davemloft.net>,
+        "netdev" <netdev@vger.kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>
+Message-ID: <175c3036e56.c134a30a177674.8041366564060302157@shytyi.net>
+In-Reply-To: <CAPA1RqC+wgi+fQ4A3GiwnLpGZ=5PfDF7kZUKkoYyXA2FN+4oyw@mail.gmail.com>
+References: <175b3433a4c.aea7c06513321.4158329434310691736@shytyi.net>
+ <202011110944.7zNVZmvB-lkp@intel.com> <175bd218cf4.103c639bc117278.4209371191555514829@shytyi.net>
+ <175bf515624.c67e02e8130655.7824060160954233592@shytyi.net> <CAPA1RqC+wgi+fQ4A3GiwnLpGZ=5PfDF7kZUKkoYyXA2FN+4oyw@mail.gmail.com>
+Subject: Re: [PATCH net-next V4] net: Variable SLAAC: SLAAC with prefixes of
+ arbitrary length in PIO
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the TCP stack is in SYN flood mode, the server child socket is
-created from the SYN cookie received in a TCP packet with the ACK flag
-set.
+Hello,
 
-The child socket is created when the server receives the first TCP
-packet with a valid SYN cookie from the client. Usually, this packet
-corresponds to the final step of the TCP 3-way handshake, the ACK
-packet. But is also possible to receive a valid SYN cookie from the
-first TCP data packet sent by the client, and thus create a child socket
-from that SYN cookie.
+---- On Fri, 13 Nov 2020 13:38:02 +0100 Hideaki Yoshifuji <hideaki.yoshifuj=
+i@miraclelinux.com> wrote ----
 
-Since a client socket is ready to send data as soon as it receives the
-SYN+ACK packet from the server, the client can send the ACK packet (sent
-by the TCP stack code), and the first data packet (sent by the userspace
-program) almost at the same time, and thus the server will equally
-receive the two TCP packets with valid SYN cookies almost at the same
-instant.
+ > Hi,=20
+ > =20
+ > 2020=E5=B9=B411=E6=9C=8813=E6=97=A5(=E9=87=91) 10:57 Dmytro Shytyi <dmyt=
+ro@shytyi.net>:=20
+ > >=20
+ > > Variable SLAAC: SLAAC with prefixes of arbitrary length in PIO (random=
+ly=20
+ > > generated hostID or stable privacy + privacy extensions).=20
+ > > The main problem is that SLAAC RA or PD allocates a /64 by the Wireles=
+s=20
+ > > carrier 4G, 5G to a mobile hotspot, however segmentation of the /64 vi=
+a=20
+ > > SLAAC is required so that downstream interfaces can be further subnett=
+ed.=20
+ > > Example: uCPE device (4G + WI-FI enabled) receives /64 via Wireless, a=
+nd=20
+ > > assigns /72 to VNF-Firewall, /72 to WIFI, /72 to VNF-Router, /72 to=20
+ > > Load-Balancer and /72 to wired connected devices.=20
+ > > IETF document that defines problem statement:=20
+ > > draft-mishra-v6ops-variable-slaac-problem-stmt=20
+ > > IETF document that specifies variable slaac:=20
+ > > draft-mishra-6man-variable-slaac=20
+ > >=20
+ > > Signed-off-by: Dmytro Shytyi <dmytro@shytyi.net>=20
+ > > ---=20
+ > > diff -rupN net-next-5.10.0-rc2/net/ipv6/addrconf.c net-next-patch-5.10=
+.0-rc2/net/ipv6/addrconf.c=20
+ > > --- net-next-5.10.0-rc2/net/ipv6/addrconf.c     2020-11-10 08:46:01.07=
+5193379 +0100=20
+ > > +++ net-next-patch-5.10.0-rc2/net/ipv6/addrconf.c       2020-11-13 02:=
+30:25.552724864 +0100=20
+ > > @@ -1315,10 +1322,14 @@ static int ipv6_create_tempaddr(struct i=20
+ > >         struct ifa6_config cfg;=20
+ > >         long max_desync_factor;=20
+ > >         struct in6_addr addr;=20
+ > > -       int ret =3D 0;=20
+ > > +       int ret;=20
+ > > +       struct in6_addr net_mask;=20
+ > > +       struct in6_addr temp;=20
+ > > +       struct in6_addr ipv6addr;=20
+ > > +       int i;=20
+ > >=20
+ > >         write_lock_bh(&idev->lock);=20
+ > > -=20
+ > > +       ret =3D 0;=20
+ > >  retry:=20
+ > >         in6_dev_hold(idev);=20
+ > >         if (idev->cnf.use_tempaddr <=3D 0) {=20
+ > > @@ -1340,9 +1351,26 @@ retry:=20
+ > >                 goto out;=20
+ > >         }=20
+ > >         in6_ifa_hold(ifp);=20
+ > > -       memcpy(addr.s6_addr, ifp->addr.s6_addr, 8);=20
+ > > -       ipv6_gen_rnd_iid(&addr);=20
+ > >=20
+ > > +       if (ifp->prefix_len =3D=3D 64) {=20
+ > > +               memcpy(addr.s6_addr, ifp->addr.s6_addr, 8);=20
+ > > +               ipv6_gen_rnd_iid(&addr);=20
+ > > +       } else if (ifp->prefix_len > 0 && ifp->prefix_len <=3D 128) {=
+=20
+ > > +               memcpy(addr.s6_addr32, ifp->addr.s6_addr, 16);=20
+ > > +               get_random_bytes(temp.s6_addr32, 16);=20
+ > > +=20
+ > > +               /* tranfrom prefix len into mask */=20
+ > > +               ipv6_plen_to_mask(ifp->prefix_len, &net_mask);=20
+ > > +=20
+ > > +               for (i =3D 0; i < 4; i++) {=20
+ > > +                       /* network prefix */=20
+ > > +                       ipv6addr.s6_addr32[i] =3D addr.s6_addr32[i] & =
+net_mask.s6_addr32[i];=20
+ > > +                       /* host id */=20
+ > > +                       ipv6addr.s6_addr32[i] |=3D temp.s6_addr32[i] &=
+ ~net_mask.s6_addr32[i];=20
+ > > +               }=20
+ > > +=20
+ > > +               memcpy(addr.s6_addr, ipv6addr.s6_addr32, 16);=20
+ > >=20
+ > =20
+ > ipv6_addr_copy() and then ipv6_addr_prefix_copy()=20
 
-When such event happens, the TCP stack code has a race condition that
-occurs between the momement a lookup is done to the established
-connections hashtable to check for the existence of a connection for the
-same client, and the moment that the child socket is added to the
-established connections hashtable. As a consequence, this race condition
-can lead to a situation where we add two child sockets to the
-established connections hashtable and deliver two sockets to the
-userspace program to the same client.
+ [Dmytro] Understood. Migrating to ipv6_addr_prefix_copy()
 
-This patch fixes the race condition by checking if an existing child
-socket exists for the same client when we are adding the second child
-socket to the established connections socket. If an existing child
-socket exists, we return that socket and use it to process the TCP
-packet received, and discard the second child socket to the same client.
-
-Signed-off-by: Ricardo Dias <rdias@singlestore.com>
----
-v4 (2020-11-12):
-  * Added `struct sock **esk) parameter to `inet_ehash_insert`.
-  * Fixed ref count increment in `inet_ehash_insert`.
-  * Fixed callers of inet_ehash_nolisten.
-
-v3 (2020-11-11):
-  * Fixed IPv6 handling in inet_ehash_insert
-  * Removed unecessary comparison while traversing the ehash bucket
-    list.
- 
-v2 (2020-11-09):
-  * Changed the author's email domain.
-  * Removed the helper function inet_ehash_insert_chk_dup and moved the
-    logic to the existing inet_ehash_insert.
-  * Updated the callers of iner_ehash_nolisten to deal with the new
-    logic.
-
- include/net/inet_hashtables.h   |  4 +--
- net/dccp/ipv4.c                 |  2 +-
- net/dccp/ipv6.c                 |  2 +-
- net/ipv4/inet_connection_sock.c |  2 +-
- net/ipv4/inet_hashtables.c      | 64 ++++++++++++++++++++++++++++-----
- net/ipv4/syncookies.c           |  5 ++-
- net/ipv4/tcp_ipv4.c             |  9 ++++-
- net/ipv6/tcp_ipv6.c             | 16 ++++++++-
- 8 files changed, 87 insertions(+), 17 deletions(-)
-
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index 92560974ea67..b0abc4dd6d49 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -247,8 +247,8 @@ void inet_hashinfo2_init(struct inet_hashinfo *h, const char *name,
- 			 unsigned long high_limit);
- int inet_hashinfo2_init_mod(struct inet_hashinfo *h);
- 
--bool inet_ehash_insert(struct sock *sk, struct sock *osk);
--bool inet_ehash_nolisten(struct sock *sk, struct sock *osk);
-+bool inet_ehash_insert(struct sock *sk, struct sock *osk, struct sock **esk);
-+bool inet_ehash_nolisten(struct sock *sk, struct sock *osk, struct sock **esk);
- int __inet_hash(struct sock *sk, struct sock *osk);
- int inet_hash(struct sock *sk);
- void inet_unhash(struct sock *sk);
-diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-index 9c28c8251125..098bae35ab76 100644
---- a/net/dccp/ipv4.c
-+++ b/net/dccp/ipv4.c
-@@ -427,7 +427,7 @@ struct sock *dccp_v4_request_recv_sock(const struct sock *sk,
- 
- 	if (__inet_inherit_port(sk, newsk) < 0)
- 		goto put_and_exit;
--	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash));
-+	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash), NULL);
- 	if (*own_req)
- 		ireq->ireq_opt = NULL;
- 	else
-diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-index ef4ab28cfde0..78ee1b5acf1f 100644
---- a/net/dccp/ipv6.c
-+++ b/net/dccp/ipv6.c
-@@ -533,7 +533,7 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
- 		dccp_done(newsk);
- 		goto out;
- 	}
--	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash));
-+	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash), NULL);
- 	/* Clone pktoptions received with SYN, if we own the req */
- 	if (*own_req && ireq->pktopts) {
- 		newnp->pktoptions = skb_clone(ireq->pktopts, GFP_ATOMIC);
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index b457dd2d6c75..df26489e4f6c 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -787,7 +787,7 @@ static void reqsk_queue_hash_req(struct request_sock *req,
- 	timer_setup(&req->rsk_timer, reqsk_timer_handler, TIMER_PINNED);
- 	mod_timer(&req->rsk_timer, jiffies + timeout);
- 
--	inet_ehash_insert(req_to_sk(req), NULL);
-+	inet_ehash_insert(req_to_sk(req), NULL, NULL);
- 	/* before letting lookups find us, make sure all req fields
- 	 * are committed to memory and refcnt initialized.
- 	 */
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 239e54474b65..bb2fb9385e83 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -20,6 +20,9 @@
- #include <net/addrconf.h>
- #include <net/inet_connection_sock.h>
- #include <net/inet_hashtables.h>
-+#if IS_ENABLED(CONFIG_IPV6)
-+#include <net/inet6_hashtables.h>
-+#endif
- #include <net/secure_seq.h>
- #include <net/ip.h>
- #include <net/tcp.h>
-@@ -510,17 +513,27 @@ static u32 inet_sk_port_offset(const struct sock *sk)
- 					  inet->inet_dport);
- }
- 
--/* insert a socket into ehash, and eventually remove another one
-- * (The another one can be a SYN_RECV or TIMEWAIT
-+/* Insert a socket into ehash, and eventually remove another one
-+ * (The another one can be a SYN_RECV or TIMEWAIT)
-+ * If an existing socket already exists, it returns that socket
-+ * through the esk parameter.
-  */
--bool inet_ehash_insert(struct sock *sk, struct sock *osk)
-+bool inet_ehash_insert(struct sock *sk, struct sock *osk, struct sock **esk)
- {
- 	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
- 	struct hlist_nulls_head *list;
- 	struct inet_ehash_bucket *head;
--	spinlock_t *lock;
-+	const struct hlist_nulls_node *node;
-+	struct sock *_esk;
-+	spinlock_t *lock; /* protects hashinfo socket entry */
-+	struct net *net = sock_net(sk);
-+	const int dif = sk->sk_bound_dev_if;
-+	const int sdif = sk->sk_bound_dev_if;
- 	bool ret = true;
- 
-+	INET_ADDR_COOKIE(acookie, sk->sk_daddr, sk->sk_rcv_saddr);
-+	const __portpair ports = INET_COMBINED_PORTS(sk->sk_dport, sk->sk_num);
-+
- 	WARN_ON_ONCE(!sk_unhashed(sk));
- 
- 	sk->sk_hash = sk_ehashfn(sk);
-@@ -532,16 +545,49 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk)
- 	if (osk) {
- 		WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
- 		ret = sk_nulls_del_node_init_rcu(osk);
-+	} else if (esk) {
-+		sk_nulls_for_each_rcu(_esk, node, list) {
-+			if (_esk->sk_hash != sk->sk_hash)
-+				continue;
-+			if (sk->sk_family == AF_INET) {
-+				if (unlikely(INET_MATCH(_esk, net, acookie,
-+							sk->sk_daddr,
-+							sk->sk_rcv_saddr,
-+							ports, dif, sdif))) {
-+					refcount_inc(&_esk->sk_refcnt);
-+					goto found;
-+				}
-+			}
-+#if IS_ENABLED(CONFIG_IPV6)
-+			else if (sk->sk_family == AF_INET6) {
-+				if (unlikely(INET6_MATCH(_esk, net,
-+							 &sk->sk_v6_daddr,
-+							 &sk->sk_v6_rcv_saddr,
-+							 ports, dif, sdif))) {
-+					refcount_inc(&_esk->sk_refcnt);
-+					goto found;
-+				}
-+			}
-+#endif
-+		}
-+
- 	}
-+	_esk = NULL;
- 	if (ret)
- 		__sk_nulls_add_node_rcu(sk, list);
-+
-+found:
- 	spin_unlock(lock);
-+	if (_esk) {
-+		*esk = _esk;
-+		ret = false;
-+	}
- 	return ret;
- }
- 
--bool inet_ehash_nolisten(struct sock *sk, struct sock *osk)
-+bool inet_ehash_nolisten(struct sock *sk, struct sock *osk, struct sock **esk)
- {
--	bool ok = inet_ehash_insert(sk, osk);
-+	bool ok = inet_ehash_insert(sk, osk, esk);
- 
- 	if (ok) {
- 		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
-@@ -585,7 +631,7 @@ int __inet_hash(struct sock *sk, struct sock *osk)
- 	int err = 0;
- 
- 	if (sk->sk_state != TCP_LISTEN) {
--		inet_ehash_nolisten(sk, osk);
-+		inet_ehash_nolisten(sk, osk, NULL);
- 		return 0;
- 	}
- 	WARN_ON(!sk_unhashed(sk));
-@@ -681,7 +727,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 		tb = inet_csk(sk)->icsk_bind_hash;
- 		spin_lock_bh(&head->lock);
- 		if (sk_head(&tb->owners) == sk && !sk->sk_bind_node.next) {
--			inet_ehash_nolisten(sk, NULL);
-+			inet_ehash_nolisten(sk, NULL, NULL);
- 			spin_unlock_bh(&head->lock);
- 			return 0;
- 		}
-@@ -760,7 +806,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 	inet_bind_hash(sk, tb, port);
- 	if (sk_unhashed(sk)) {
- 		inet_sk(sk)->inet_sport = htons(port);
--		inet_ehash_nolisten(sk, (struct sock *)tw);
-+		inet_ehash_nolisten(sk, (struct sock *)tw, NULL);
- 	}
- 	if (tw)
- 		inet_twsk_bind_unhash(tw, hinfo);
-diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
-index e03756631541..c4bb895085f0 100644
---- a/net/ipv4/syncookies.c
-+++ b/net/ipv4/syncookies.c
-@@ -208,7 +208,7 @@ struct sock *tcp_get_cookie_sock(struct sock *sk, struct sk_buff *skb,
- 
- 	child = icsk->icsk_af_ops->syn_recv_sock(sk, skb, req, dst,
- 						 NULL, &own_req);
--	if (child) {
-+	if (child && own_req) {
- 		refcount_set(&req->rsk_refcnt, 1);
- 		tcp_sk(child)->tsoffset = tsoff;
- 		sock_rps_save_rxhash(child, skb);
-@@ -223,6 +223,9 @@ struct sock *tcp_get_cookie_sock(struct sock *sk, struct sk_buff *skb,
- 
- 		bh_unlock_sock(child);
- 		sock_put(child);
-+	}  else if (child && !own_req) {
-+		__reqsk_free(req);
-+		return child;
- 	}
- 	__reqsk_free(req);
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 592c73962723..875b5310fc25 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1501,6 +1501,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
- 	int l3index;
- #endif
- 	struct ip_options_rcu *inet_opt;
-+	struct sock *esk = NULL;
- 
- 	if (sk_acceptq_is_full(sk))
- 		goto exit_overflow;
-@@ -1565,11 +1566,17 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
- 
- 	if (__inet_inherit_port(sk, newsk) < 0)
- 		goto put_and_exit;
--	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash));
-+	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash), &esk);
- 	if (likely(*own_req)) {
- 		tcp_move_syn(newtp, req);
- 		ireq->ireq_opt = NULL;
- 	} else {
-+		if (!req_unhash && esk) {
-+			/* This code path should only be executed in the
-+			 * syncookie case only
-+			 */
-+			newsk = esk;
-+		}
- 		newinet->inet_opt = NULL;
- 	}
- 	return newsk;
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 305870a72352..dd64ec3b8a43 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1190,6 +1190,7 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 	struct inet_sock *newinet;
- 	struct tcp_sock *newtp;
- 	struct sock *newsk;
-+	struct sock *esk = NULL;
- #ifdef CONFIG_TCP_MD5SIG
- 	struct tcp_md5sig_key *key;
- 	int l3index;
-@@ -1206,6 +1207,12 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 
- 		if (!newsk)
- 			return NULL;
-+		else if (!req_unhash && !own_req) {
-+			/* We're returning an existing child socket, probably
-+			 * created by a previous syncookie ACK.
-+			 */
-+			return newsk;
-+		}
- 
- 		inet_sk(newsk)->pinet6 = tcp_inet6_sk(newsk);
- 
-@@ -1359,7 +1366,7 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 		tcp_done(newsk);
- 		goto out;
- 	}
--	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash));
-+	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash), &esk);
- 	if (*own_req) {
- 		tcp_move_syn(newtp, req);
- 
-@@ -1374,6 +1381,13 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 				skb_set_owner_r(newnp->pktoptions, newsk);
- 			}
- 		}
-+	} else {
-+		if (!req_unhash && esk) {
-+			/* This code path should only be executed in the
-+			 * syncookie case only
-+			 */
-+			newsk = esk;
-+		}
- 	}
- 
- 	return newsk;
--- 
-2.25.1
-
+ > +       }=20
+ > >         age =3D (now - ifp->tstamp) / HZ;=20
+ > >=20
+ > >         regen_advance =3D idev->cnf.regen_max_retry *=20
+ > > @@ -2576,9 +2604,57 @@ int addrconf_prefix_rcv_add_addr(struct=20
+ > >                                  u32 addr_flags, bool sllao, bool toke=
+nized,=20
+ > >                                  __u32 valid_lft, u32 prefered_lft)=20
+ > >  {=20
+ > > -       struct inet6_ifaddr *ifp =3D ipv6_get_ifaddr(net, addr, dev, 1=
+);=20
+ > > +       struct inet6_ifaddr *ifp =3D NULL;=20
+ > >         int create =3D 0;=20
+ > >=20
+ > > +       if ((in6_dev->if_flags & IF_RA_VAR_PLEN) =3D=3D IF_RA_VAR_PLEN=
+ &&=20
+ > > +           in6_dev->cnf.addr_gen_mode !=3D IN6_ADDR_GEN_MODE_STABLE_P=
+RIVACY) {=20
+ > > +               struct inet6_ifaddr *result =3D NULL;=20
+ > > +               struct inet6_ifaddr *result_base =3D NULL;=20
+ > > +               struct in6_addr net_mask;=20
+ > > +               struct in6_addr net_prfx;=20
+ > > +               struct in6_addr curr_net_prfx;=20
+ > > +               bool prfxs_equal;=20
+ > > +               int i;=20
+ > > +=20
+ > > +               result_base =3D result;=20
+ > > +               rcu_read_lock();=20
+ > > +               list_for_each_entry_rcu(ifp, &in6_dev->addr_list, if_l=
+ist) {=20
+ > > +                       if (!net_eq(dev_net(ifp->idev->dev), net))=20
+ > > +                               continue;=20
+ > > +=20
+ > > +                       /* tranfrom prefix len into mask */=20
+ > > +                       ipv6_plen_to_mask(pinfo->prefix_len, &net_mask=
+);=20
+ > > +                       /* Prepare network prefixes */=20
+ > > +                       for (i =3D 0; i < 4; i++) {=20
+ > > +                               /* Received/new network prefix */=20
+ > > +                               net_prfx.s6_addr32[i] =3D=20
+ > > +                                       pinfo->prefix.s6_addr32[i] & n=
+et_mask.s6_addr32[i];=20
+ > > +                               /* Configured/old IPv6 prefix */=20
+ > > +                               curr_net_prfx.s6_addr32[i] =3D=20
+ > > +                                       ifp->addr.s6_addr32[i] & net_m=
+ask.s6_addr32[i];=20
+ > > +                       }=20
+ > > +                       /* Compare network prefixes */=20
+ > > +                       prfxs_equal =3D 1;=20
+ > > +                       for (i =3D 0; i < 4; i++) {=20
+ > > +                               if ((net_prfx.s6_addr32[i] ^ curr_net_=
+prfx.s6_addr32[i]) !=3D 0)=20
+ > > +                                       prfxs_equal =3D 0;=20
+ > > +                       }=20
+ > =20
+ > ipv6_prefix_equal()
+ [Dmytro] Understood. Migrating to ipv6_prefix_equal()
+ > =20
+ > > +                       if (prfxs_equal && pinfo->prefix_len =3D=3D if=
+p->prefix_len) {=20
+ > > +                               result =3D ifp;=20
+ > > +                               in6_ifa_hold(ifp);=20
+ > > +                               break;=20
+ > > +                       }=20
+ > > +               }=20
+ > > +               rcu_read_unlock();=20
+ > > +               if (result_base !=3D result)=20
+ > > +                       ifp =3D result;=20
+ > > +               else=20
+ > > +                       ifp =3D NULL;=20
+ > > +       } else {=20
+ > > +               ifp =3D ipv6_get_ifaddr(net, addr, dev, 1);=20
+ > > +       }=20
+ > > +=20
+ > >         if (!ifp && valid_lft) {=20
+ > >                 int max_addresses =3D in6_dev->cnf.max_addresses;=20
+ > >                 struct ifa6_config cfg =3D {=20
+ > > @@ -2781,9 +2857,35 @@ void addrconf_prefix_rcv(struct net_devi=20
+ > >                                 dev_addr_generated =3D true;=20
+ > >                         }=20
+ > >                         goto ok;=20
+ > > +               goto put;=20
+ > > +               } else if (((in6_dev->if_flags & IF_RA_VAR_PLEN) =3D=
+=3D IF_RA_VAR_PLEN) &&=20
+ > > +                         pinfo->prefix_len > 0 && pinfo->prefix_len <=
+=3D 128) {=20
+ > > +                       /* SLAAC with prefixes of arbitrary length (Va=
+riable SLAAC).=20
+ > > +                        * draft-mishra-6man-variable-slaac=20
+ > > +                        * draft-mishra-v6ops-variable-slaac-problem-s=
+tmt=20
+ > > +                        * Contact: Dmytro Shytyi.=20
+ > > +                        */=20
+ > > +                       memcpy(&addr, &pinfo->prefix, 16);=20
+ > > +                       if (in6_dev->cnf.addr_gen_mode =3D=3D IN6_ADDR=
+_GEN_MODE_STABLE_PRIVACY) {=20
+ > > +                               if (!ipv6_generate_address_variable_pl=
+en(&addr,=20
+ > > +                                                                     =
+   0,=20
+ > > +                                                                     =
+   in6_dev,=20
+ > > +                                                                     =
+   pinfo->prefix_len,=20
+ > > +                                                                     =
+   true)) {=20
+ > > +                                       addr_flags |=3D IFA_F_STABLE_P=
+RIVACY;=20
+ > > +                                       goto ok;=20
+ > > +                       }=20
+ > > +                       } else if (!ipv6_generate_address_variable_ple=
+n(&addr,=20
+ > > +                                                                     =
+  0,=20
+ > > +                                                                     =
+  in6_dev,=20
+ > > +                                                                     =
+  pinfo->prefix_len,=20
+ > > +                                                                     =
+  false)) {=20
+ > > +                               goto ok;=20
+ > > +                       }=20
+ > > +               } else {=20
+ > > +                       net_dbg_ratelimited("IPv6: Prefix with unexpec=
+ted length %d\n",=20
+ > > +                                           pinfo->prefix_len);=20
+ > >                 }=20
+ > > -               net_dbg_ratelimited("IPv6 addrconf: prefix with wrong =
+length %d\n",=20
+ > > -                                   pinfo->prefix_len);=20
+ > >                 goto put;=20
+ > >=20
+ > >  ok:=20
+ > > @@ -3264,6 +3366,118 @@ retry:=20
+ > >         return 0;=20
+ > >  }=20
+ > >=20
+ > > +static void ipv6_plen_to_mask(int plen, struct in6_addr *net_mask)=20
+ > > +{=20
+ > > +       int i, plen_bytes;=20
+ > > +       char bit_array[7] =3D {0b10000000,=20
+ > > +                            0b11000000,=20
+ > > +                            0b11100000,=20
+ > > +                            0b11110000,=20
+ > > +                            0b11111000,=20
+ > > +                            0b11111100,=20
+ > > +                            0b11111110};=20
+ > > +=20
+ > > +       if (plen <=3D 0 || plen > 128)=20
+ > > +               pr_err("Unexpected plen: %d", plen);=20
+ > > +=20
+ > > +       memset(net_mask, 0x00, sizeof(*net_mask));=20
+ > > +=20
+ > > +       /* We set all bits =3D=3D 1 of s6_addr[i] */=20
+ > > +       plen_bytes =3D plen / 8;=20
+ > > +       for (i =3D 0; i < plen_bytes; i++)=20
+ > > +               net_mask->s6_addr[i] =3D 0xff;=20
+ > > +=20
+ > > +       /* We add bits from the bit_array to=20
+ > > +        * netmask starting from plen_bytes position=20
+ > > +        */=20
+ > > +       if (plen % 8)=20
+ > > +               net_mask->s6_addr[plen_bytes] =3D bit_array[(plen % 8)=
+ - 1];=20
+ > > +       memcpy(net_mask->s6_addr32, net_mask->s6_addr, 16);=20
+ > > +}=20
+ > =20
+ > I don't think we need this function.
+[Dmytro] Indeed.=20
+ > If needed, we could introduce ipv6_addr_host() (like ipv6_addr_prefix())=
+=20
+ > in include/net/ipv6.h.=20
+[Dmytro] Maybe, we will see...
