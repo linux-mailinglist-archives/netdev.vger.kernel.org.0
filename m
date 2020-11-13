@@ -2,98 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73B772B14BD
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 04:31:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D5E42B14C5
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 04:37:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726101AbgKMDbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 22:31:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
+        id S1726050AbgKMDhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 22:37:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726007AbgKMDbo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 22:31:44 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E22FC0613D1;
-        Thu, 12 Nov 2020 19:31:44 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id b63so2841976pfg.12;
-        Thu, 12 Nov 2020 19:31:44 -0800 (PST)
+        with ESMTP id S1726011AbgKMDhT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 22:37:19 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABFAC0613D1
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 19:37:01 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id h16so1918800pgb.7
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 19:37:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=t/Lu3UdKToQwiBVeUSQQ3sQ7DPauKi80eKVhQbk9Mb4=;
-        b=o8xYY0BvaaysquhJMLCvdB0C1g3AXuXJoUlhj7BrXavh7di6CkfQLhFUUDnUAJfGi/
-         OWA7n17t1BHzHwL8zK9KqdgFlYH2LWTcC/miVXkOLq0J6IUZd5cKbdmnNQvwglvHK0p9
-         rSXGQ8i7ONvhUiovTAxxjxBFH18kj2oJDY/aZG+b2T/86wPaJLqgnXTpUWCnLTPmcv6O
-         i6swrWNBcM42nsGZuZzxlIfHyDBQPfT+ZLbF0k4qKLk2v/nQm4weIxaa7WmVzV2pIy88
-         dEo6AhOGcLzpSxNVTA4DdlSK2Ja/xsc/v/y5rVz1Hylwf9D1Oer2Xq7nVA2dbCAe9w4I
-         kd9A==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ATARJHqPD9zawKFyBCkMWKOU4zPAdcvM8fWCyZA632U=;
+        b=VHwLJYPkpmKN4VpnYRjE0Q5BIJCJcDUfgmY4mJrLTrLM1mc6nb2iVhTMXCapMxsFVC
+         FQ/RuSMdDp+De6Ul6rl2j4GNIkW9jnPkK4NBSknAXo2CBFEXKDrPKRCBzHUySWRSLh3t
+         KIDuPvlafIkBNFOrGu9rs+webt7yOTWPV2AgJoFjwWCx9nHJyuUy5X05idnE8huYMWhC
+         agoiqM+ddpk9DIxMV53sxitnm0iSeG3Vxov5AomrJqzocCqj05wt87Rr2Cv2cGdcE6ei
+         Vx7Mlkhxo72Hle4WneHVtE7txP1pwcHImx24hkIgBzVy+vMbtUGofmwN2XbLRhLNldEF
+         n1rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=t/Lu3UdKToQwiBVeUSQQ3sQ7DPauKi80eKVhQbk9Mb4=;
-        b=CIwRqH4rRC1k7KICfp2YHFppcFTe3XW2TV+wp0Y8DA2rhbBU1jw+NddgjseQ8GLqKb
-         9K6J7rH2ed25qQh8HQDN3PBfMRn25qHWkGAVniKQAO92k9fZQbne2Mu70EwvmIXgEJ6w
-         6E5nBdIS5Tmo8JnF+JyIUn9xsPB5wDeFdAyPF0qmX7ppiNnPwKK0yb8xxHtQ7Vzm+sj4
-         cl+BUBWj74o5tUQltl9i7zSdsHRQYCdhC26sOJhVhk+Fonw6J0elRNgyl7JfnU58vA9T
-         PmHw8CFKawYpDoJrOu+UlaVhs28ZK7MJkflcYCLCwAPuHxAtt2vCCQztwOb6VqWMYsB4
-         ez3g==
-X-Gm-Message-State: AOAM5309Og3spSLtvoCK2dh9GnuHUwuFDPmb8XxFGbMKj+Tz1k3u1Pco
-        5lqEiNNWYHWxnc4lzCnUI2I=
-X-Google-Smtp-Source: ABdhPJxe63jr2zZ4QoY3tfHDmEeppNgHRAhVkYLDkE1ldkS5htiMTeho8maabrDNsi7r/4ZvtaUvTA==
-X-Received: by 2002:a17:90b:1108:: with SMTP id gi8mr564656pjb.56.1605238303724;
-        Thu, 12 Nov 2020 19:31:43 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id t64sm8330506pfd.36.2020.11.12.19.31.41
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ATARJHqPD9zawKFyBCkMWKOU4zPAdcvM8fWCyZA632U=;
+        b=PyFrR2rT2kuUtSqodR5PRMYioDEj4lh9+UlEX4sgNUajdWBTzvdR3NcXstDdP5fTT8
+         R7WS07fP7yJpMYgkAvSvDux4c+p//FDxOtaIUzu7jJsnNTsnBcwIFUcLR2SA3hPU7Frg
+         COk1obCA9ttTheTdAapCPUb1dwvaxmtci3k3BI1p+di605pTVUO2shPfjfmJp0TYfit3
+         9DTYWAU0MN7ct2W3SPwmTatuuoooLw66cQDmo9xn3USp+ZC8WAyFSZeNC9oRCuNEVrxC
+         /BFGSDZIhjZfWdjRdCD7aARCz9aeGmFg5WY9+QJjycEpVThRSBDferP1tAPbI0DDbWJ8
+         tNMQ==
+X-Gm-Message-State: AOAM533NnC3D/wVf/2kVoBIRwg4V1ejhzdirt/VRgKSoNCVx+MYjtNET
+        9znq4fSy1+bS9Q/7YKexE34SZ6jL/8uTmDu9
+X-Google-Smtp-Source: ABdhPJxKvxCyWw0hCFMYdKphs/Yb6yQeAla7JIwl/wBbA1RXVY77TjRsseZVNAJ69NmdQjiN84zyKA==
+X-Received: by 2002:a17:90a:4208:: with SMTP id o8mr584229pjg.19.1605238620597;
+        Thu, 12 Nov 2020 19:37:00 -0800 (PST)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id t32sm7759545pgl.0.2020.11.12.19.36.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2020 19:31:43 -0800 (PST)
-Date:   Thu, 12 Nov 2020 19:31:39 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Christian Eggers <ceggers@arri.de>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 09/11] net: dsa: microchip: ksz9477: add
- hardware time stamping support
-Message-ID: <20201113033139.GC32138@hoboy.vegasvil.org>
-References: <20201112153537.22383-1-ceggers@arri.de>
- <20201112153537.22383-10-ceggers@arri.de>
- <20201113024020.ixzrpjxjfwme3wur@skbuf>
+        Thu, 12 Nov 2020 19:37:00 -0800 (PST)
+Date:   Thu, 12 Nov 2020 19:36:56 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Russell Strong <russell@strong.id.au>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: DSCP in IPv4 routing
+Message-ID: <20201112193656.73621cd5@hermes.local>
+In-Reply-To: <20201113120637.39c45f3f@192-168-1-16.tpgi.com.au>
+References: <20201113120637.39c45f3f@192-168-1-16.tpgi.com.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201113024020.ixzrpjxjfwme3wur@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 13, 2020 at 04:40:20AM +0200, Vladimir Oltean wrote:
-> > @@ -103,6 +108,10 @@ static int ksz9477_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
-> >  	if (ret)
-> >  		goto error_return;
-> >
-> > +	spin_lock_irqsave(&dev->ptp_clock_lock, flags);
-> 
-> I believe that spin_lock_irqsave is unnecessary, since there is no code
-> that runs in hardirq context.
+On Fri, 13 Nov 2020 12:06:37 +1000
+Russell Strong <russell@strong.id.au> wrote:
 
-The .adjtime method is in a system call context.  If all of the code
-that manipulates dev->ptp_clock_time can sleep, then you can use a
-mutex.  Otherwise spin_lock_irqsave is the safe choice.
+> diff --git a/include/uapi/linux/in_route.h
+> b/include/uapi/linux/in_route.h index 0cc2c23b47f8..db5d236b9c50 100644
+> --- a/include/uapi/linux/in_route.h
+> +++ b/include/uapi/linux/in_route.h
+> @@ -28,6 +28,6 @@
+>  
+>  #define RTCF_NAT	(RTCF_DNAT|RTCF_SNAT)
+>  
+> -#define RT_TOS(tos)	((tos)&IPTOS_TOS_MASK)
+> +#define RT_TOS(tos)	((tos)&IPTOS_DS_MASK)
+>  
 
-Thanks,
-Richard
+Changing behavior of existing header files risks breaking applications.
+
+> diff --git a/net/ipv4/fib_rules.c b/net/ipv4/fib_rules.c
+> index ce54a30c2ef1..1499105d1efd 100644
+> --- a/net/ipv4/fib_rules.c
+> +++ b/net/ipv4/fib_rules.c
+> @@ -229,7 +229,7 @@ static int fib4_rule_configure(struct fib_rule
+> *rule, struct sk_buff *skb, int err = -EINVAL;
+>  	struct fib4_rule *rule4 = (struct fib4_rule *) rule;
+>  
+> -	if (frh->tos & ~IPTOS_TOS_MASK) {
+> +	if (frh->tos & ~IPTOS_RT_MASK) {
+
+This needs to be behind a sysctl and the default has to be to keep
+the old behavior
