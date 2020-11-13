@@ -2,180 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE382B159B
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 06:43:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FBC42B159D
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 06:46:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726130AbgKMFnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 00:43:33 -0500
-Received: from hydra.tuxags.com ([64.13.172.54]:56376 "EHLO mail.tuxags.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725962AbgKMFnd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 00:43:33 -0500
-X-Greylist: delayed 368 seconds by postgrey-1.27 at vger.kernel.org; Fri, 13 Nov 2020 00:43:33 EST
-Received: by mail.tuxags.com (Postfix, from userid 1000)
-        id B37E812038E63; Thu, 12 Nov 2020 21:37:24 -0800 (PST)
-Date:   Thu, 12 Nov 2020 21:37:24 -0800
-From:   Matt Mullins <mmullins@mmlx.us>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     syzbot <syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>, andrii@kernel.org,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>,
-        Ingo Molnar <mingo@redhat.com>, mmullins@fb.com,
-        netdev <netdev@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: KASAN: vmalloc-out-of-bounds Read in bpf_trace_run3
-Message-ID: <20201113053722.7i4xkiyrlymcwebg@hydra.tuxags.com>
-Mail-Followup-To: Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>, andrii@kernel.org,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, KP Singh <kpsingh@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>,
-        Ingo Molnar <mingo@redhat.com>, mmullins@fb.com,
-        netdev <netdev@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-References: <00000000000004500b05b31e68ce@google.com>
- <CACT4Y+aBVQ6LKYf9wCV=AUx23xpWmb_6-mBqwkQgeyfXA3SS2A@mail.gmail.com>
+        id S1726147AbgKMFqB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 00:46:01 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:45712 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725999AbgKMFqB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 00:46:01 -0500
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AD5Vt1j117015;
+        Fri, 13 Nov 2020 00:45:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version : date :
+ from : to : cc : subject : in-reply-to : references : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=B34aOJJPx8zuYeMoeXNRFeD0nQDuFLaURm5o/5PScys=;
+ b=J1nYPWAJYZ4X/6j3q+sBT6YTscPUuhxOCejdGED0Sccj2Z6ZpKlKPshPcZa6Xvky3PNa
+ i9wlvgFFCda1GK8wX6k4VUSZ4aF4iOjZrl726QWWFX2ELb6dUOrVTZUmN2AXETrO0shD
+ A/mdauCdvSUaSMxRbab8EA58KuBTgwvOoj1Ujsp+FVNtxawR7uXGAtuHycEbimJySKfH
+ n0V87khqFurSaQySIPYzexAzU9MHIdmX+seGXCTJXv5qgkBHMpBSsl3SkTDCdYiXK/ly
+ AOQd8Yb3ckMyaDEH0kZHOAklS3ZCAIfYL6URWnRARIIAAXuftFOtCw8GZjVEk/ESFVjo yA== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34shc2v341-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 13 Nov 2020 00:45:56 -0500
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AD5bUwL002679;
+        Fri, 13 Nov 2020 05:45:56 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma03dal.us.ibm.com with ESMTP id 34nk7acj2t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 13 Nov 2020 05:45:56 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AD5jrJX12845628
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 13 Nov 2020 05:45:53 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5BF346A054;
+        Fri, 13 Nov 2020 05:45:53 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0BA7E6A04F;
+        Fri, 13 Nov 2020 05:45:52 +0000 (GMT)
+Received: from ltc.linux.ibm.com (unknown [9.16.170.189])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Fri, 13 Nov 2020 05:45:52 +0000 (GMT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+aBVQ6LKYf9wCV=AUx23xpWmb_6-mBqwkQgeyfXA3SS2A@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Date:   Thu, 12 Nov 2020 21:45:52 -0800
+From:   drt <drt@linux.vnet.ibm.com>
+To:     Thomas Falcon <tlfalcon@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        dnbanerg@us.ibm.com, brking@linux.vnet.ibm.com, pradeep@us.ibm.com,
+        sukadev@linux.vnet.ibm.com, ljp@linux.vnet.ibm.com,
+        cforno12@linux.ibm.com, ricklind@linux.ibm.com
+Subject: Re: [PATCH net-next 01/12] ibmvnic: Ensure that subCRQ entry reads
+ are ordered
+In-Reply-To: <1605208207-1896-2-git-send-email-tlfalcon@linux.ibm.com>
+References: <1605208207-1896-1-git-send-email-tlfalcon@linux.ibm.com>
+ <1605208207-1896-2-git-send-email-tlfalcon@linux.ibm.com>
+Message-ID: <527f42fa5e6a087101cbc19934611783@linux.vnet.ibm.com>
+X-Sender: drt@linux.vnet.ibm.com
+User-Agent: Roundcube Webmail/1.0.1
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-13_03:2020-11-12,2020-11-13 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ mlxlogscore=999 clxscore=1015 mlxscore=0 lowpriorityscore=0 phishscore=0
+ spamscore=0 malwarescore=0 adultscore=0 bulkscore=0 impostorscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011130029
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 11, 2020 at 03:57:50PM +0100, Dmitry Vyukov wrote:
-> On Mon, Nov 2, 2020 at 12:54 PM syzbot
-> <syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com> wrote:
-> >
-> > Hello,
-> >
-> > syzbot found the following issue on:
-> >
-> > HEAD commit:    080b6f40 bpf: Don't rely on GCC __attribute__((optimize)) ..
-> > git tree:       bpf
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=1089d37c500000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=58a4ca757d776bfe
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=d29e58bb557324e55e5e
-> > compiler:       gcc (GCC) 10.1.0-syz 20200507
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10f4b032500000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1371a47c500000
-> >
-> > The issue was bisected to:
-> >
-> > commit 9df1c28bb75217b244257152ab7d788bb2a386d0
-> > Author: Matt Mullins <mmullins@fb.com>
-> > Date:   Fri Apr 26 18:49:47 2019 +0000
-> >
-> >     bpf: add writable context for raw tracepoints
+On 2020-11-12 11:09, Thomas Falcon wrote:
+> Ensure that received Subordinate Command-Response Queue
+> entries are properly read in order by the driver.
 > 
-> 
-> We have a number of kernel memory corruptions related to bpf_trace_run now:
-> https://groups.google.com/g/syzkaller-bugs/search?q=kernel%2Ftrace%2Fbpf_trace.c
-> 
-> Can raw tracepoints "legally" corrupt kernel memory (a-la /dev/kmem)?
-> Or they shouldn't?
-> 
-> Looking at the description of Matt's commit, it seems that corruptions
-> should not be possible (bounded buffer, checked size, etc). Then it
-> means it's a real kernel bug?
+> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
 
-This bug doesn't seem to be related to the writability of the
-tracepoint; it bisected to that commit simply because it used
-BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE for the reproducer and it EINVAL's
-before that program type was introduced.  The BPF program it loads is
-pretty much a no-op.
+Acked-by: Dany Madden <drt@linux.ibm.com>
 
-The problem here is a kmalloc failure injection into
-tracepoint_probe_unregister, but the error is ignored -- so the bpf
-program is freed even though the tracepoint is never unregistered.
-
-I have a first pass at a patch to pipe through the error code, but it's
-pretty ugly.  It's also called from the file_operations ->release(), for
-which errors are solidly ignored in __fput(), so I'm not sure what the
-best way to handle ENOMEM is...
-
+> ---
+>  drivers/net/ethernet/ibm/ibmvnic.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
+> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
+> b/drivers/net/ethernet/ibm/ibmvnic.c
+> index da15913879f8..5647f54bf387 100644
+> --- a/drivers/net/ethernet/ibm/ibmvnic.c
+> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
+> @@ -2391,6 +2391,8 @@ static int ibmvnic_poll(struct napi_struct
+> *napi, int budget)
 > 
+>  		if (!pending_scrq(adapter, adapter->rx_scrq[scrq_num]))
+>  			break;
+> +		/* ensure that we do not prematurely exit the polling loop */
+> +		dma_rmb();
+>  		next = ibmvnic_next_scrq(adapter, adapter->rx_scrq[scrq_num]);
+>  		rx_buff =
+>  		    (struct ibmvnic_rx_buff *)be64_to_cpu(next->
+> @@ -3087,6 +3089,8 @@ static int ibmvnic_complete_tx(struct
+> ibmvnic_adapter *adapter,
+>  		int num_entries = 0;
 > 
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12b6c4da500000
-> > final oops:     https://syzkaller.appspot.com/x/report.txt?x=11b6c4da500000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=16b6c4da500000
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
-> > Fixes: 9df1c28bb752 ("bpf: add writable context for raw tracepoints")
-> >
-> > ==================================================================
-> > BUG: KASAN: vmalloc-out-of-bounds in __bpf_trace_run kernel/trace/bpf_trace.c:2045 [inline]
-> > BUG: KASAN: vmalloc-out-of-bounds in bpf_trace_run3+0x3e0/0x3f0 kernel/trace/bpf_trace.c:2083
-> > Read of size 8 at addr ffffc90000e6c030 by task kworker/0:3/3754
-> >
-> > CPU: 0 PID: 3754 Comm: kworker/0:3 Not tainted 5.9.0-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > Workqueue:  0x0 (events)
-> > Call Trace:
-> >  __dump_stack lib/dump_stack.c:77 [inline]
-> >  dump_stack+0x107/0x163 lib/dump_stack.c:118
-> >  print_address_description.constprop.0.cold+0x5/0x4c8 mm/kasan/report.c:385
-> >  __kasan_report mm/kasan/report.c:545 [inline]
-> >  kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
-> >  __bpf_trace_run kernel/trace/bpf_trace.c:2045 [inline]
-> >  bpf_trace_run3+0x3e0/0x3f0 kernel/trace/bpf_trace.c:2083
-> >  __bpf_trace_sched_switch+0xdc/0x120 include/trace/events/sched.h:138
-> >  __traceiter_sched_switch+0x64/0xb0 include/trace/events/sched.h:138
-> >  trace_sched_switch include/trace/events/sched.h:138 [inline]
-> >  __schedule+0xeb8/0x2130 kernel/sched/core.c:4520
-> >  schedule+0xcf/0x270 kernel/sched/core.c:4601
-> >  worker_thread+0x14c/0x1120 kernel/workqueue.c:2439
-> >  kthread+0x3af/0x4a0 kernel/kthread.c:292
-> >  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-> >
-> >
-> > Memory state around the buggy address:
-> >  ffffc90000e6bf00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> >  ffffc90000e6bf80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> > >ffffc90000e6c000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> >                                      ^
-> >  ffffc90000e6c080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> >  ffffc90000e6c100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> > ==================================================================
-> >
-> >
-> > ---
-> > This report is generated by a bot. It may contain errors.
-> > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> >
-> > syzbot will keep track of this issue. See:
-> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> > syzbot can test patches for this issue, for details see:
-> > https://goo.gl/tpsmEJ#testing-patches
-> >
-> > --
-> > You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> > To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/00000000000004500b05b31e68ce%40google.com.
+>  		next = ibmvnic_next_scrq(adapter, scrq);
+> +		/* ensure that we are reading the correct queue entry */
+> +		dma_rmb();
+>  		for (i = 0; i < next->tx_comp.num_comps; i++) {
+>  			if (next->tx_comp.rcs[i]) {
+>  				dev_err(dev, "tx error %x\n",
