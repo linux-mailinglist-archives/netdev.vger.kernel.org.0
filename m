@@ -2,71 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1F2B2B1BC0
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 14:17:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F5182B1BC8
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 14:22:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726633AbgKMNRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 08:17:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47362 "EHLO
+        id S1726498AbgKMNWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 08:22:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726488AbgKMNRT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 08:17:19 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7804AC0613D1;
-        Fri, 13 Nov 2020 05:17:19 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id p22so8119737wmg.3;
-        Fri, 13 Nov 2020 05:17:19 -0800 (PST)
+        with ESMTP id S1726160AbgKMNWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 08:22:31 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94CC9C0613D1;
+        Fri, 13 Nov 2020 05:22:30 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id p1so9868793wrf.12;
+        Fri, 13 Nov 2020 05:22:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=Ic34olRO1gILB7gSPiIOtGJOG1ezfBO762HyFmKeo4c=;
-        b=dXZWaDNCupkDEDcP1H9UDTiR9J/VrkhBgMPk4QKQYSvM7rxl3Qkp7dmVINcMV6c0aY
-         9QxJXa4iVHj1Sl6wypkrImhD2uc/vSV9uA1GUk6UN+bfZYRxQl5pTSEOs34RMYdG6Gg2
-         PDsWnYsc6qTKO+vPmAzLQ5pC8FXj549C6lV6wF0Zrs7zzbmovyDPZtu7PbFcYWR0EBF3
-         1irRsmew9DFvezAFeKCtqp24f1iDIfjY3mdUoAIE8s8pwlSmB/CwKp+DjgMgWikjelum
-         +HtwkJ21H+vqUwvcP8gHSaEsQLgrbrKo/gmmUMJphZGf9tJlwom8KzPrjZ1YO0yDjRS5
-         /Cxw==
+        bh=gzAM5/34WGhJmOugyCwQPFpl5aixkDcuk0CgzVtzJO0=;
+        b=K3mFJ8hEOlm55D4UrfXq+sf04+yHRvyxv8188aJY0pqtVArXjpxOL6sPhoL9zHiov8
+         KLrP69YCyc96Iz+M37D4aPVoqP7cy7GFUffvGmcSjad+VZPXFzycpQtenLhx707ZqJ0f
+         CSUQ/tV1ra2b7NbAe6uAi9Ld5h83QhDJZ41u5kqrMrXPzFLJphgans1xKb85+YHsoxRr
+         xJos6bPWwsAcQd7qniVM4oKCIg8/UaaO+tjojmQ1Q3zC0Et3veYEh8Llqb8NwViV3EOY
+         59diiHzBNGOk+gN2Uc8FMgAIpQHPA1dG5Gn4uZ/5cnmTzshh4G0qNMnI8zXNRjiGh6Mc
+         04hQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Ic34olRO1gILB7gSPiIOtGJOG1ezfBO762HyFmKeo4c=;
-        b=Fd3n4WoVbAQtJGncJRRXxhbav4olNZ8MqserHxlTwLMcMzkdaAOtnYgqICdd+f58BM
-         KywwxbXCkZXwi6SOIJkTQe6wtZJoiTe9EIA4mUfWU3YsCV+Uig82HR+m55jI+0xK1ujs
-         QHsj9BWrJJ06wtSiumH1FT10KXOsh7eRNi53YNZDiBX0RPt6/UmX9kqeHmYr4Uob6sT8
-         dUxGelGxstDID9dZr3zHX1xghv8Cb5jrRCJ0dELST1hcAfr/7KfdToCs3hRe6owaJ7/d
-         Dx2BWO6fBUvX4+gMaOR2iHXGNvGPXj3EplNTxuhK0F/OtTiyZWlbGdA0X5s+u+LmmnIy
-         yk8g==
-X-Gm-Message-State: AOAM5310aJyvyWihbntlVgVUujFRG12e9MUYR6qzYaSV7p+cMmoqVbuE
-        Lyx+wEWYv3Vx6egUeoMidvFEp42yybkYpU7lbNI=
-X-Google-Smtp-Source: ABdhPJyR9jcrE71G44eJv6n4mvmESr0CggEl3JIC2AlR0fXpd5EBaeDBh86nGWe0VRO7sJ0/vssfGi6UCiFOVKiI4D8=
-X-Received: by 2002:a7b:c08e:: with SMTP id r14mr2592872wmh.165.1605273437363;
- Fri, 13 Nov 2020 05:17:17 -0800 (PST)
+        bh=gzAM5/34WGhJmOugyCwQPFpl5aixkDcuk0CgzVtzJO0=;
+        b=NMV+I8PtqLqhtbKIvJjjDOH4WfdltaC/wiKwBtHbMzEmS/xQmC644HDMsn5MaRWjHC
+         5slSd8R7SmrdJRd5DOc7Pry1uyVb6+/EOB1NB2HHpYgmwLdVnzyZIydsARoNMcB3KY5c
+         PI4f02LpbSch8OfmkfbtMk539eggMcezWzYGzqLXKYpgKS00ipbJx2UTS6Jfz8ceycyM
+         AQnQWoul9ubGHYE2y4VlacfyVuzcnleSXFlPTzezDcNkRH7iIaaWD0EP/P64NdQP066s
+         jtoisxKUvXFcSGa6nrfNshui7bSKBCiXLQLurYXVhYrCYZCwImDukZ19j+OSRZk0gcfx
+         zg0g==
+X-Gm-Message-State: AOAM530v8G2t7UeAWx+hNa40wt2/vK8zxi7wlbez8NWHj36KJeWSbGpo
+        tJl9zZYQAl2g8LYDwPY5yWyIO02QxIEn8Gl9FxQ=
+X-Google-Smtp-Source: ABdhPJzsbxweaLb3PeIq0ZgtrnX/SUHcUw7bZeFQH523s6o7TXXrg5JBgMmvN3W4NlKC8VWr6BuZsrO3TJ4kQB0FxbI=
+X-Received: by 2002:adf:f241:: with SMTP id b1mr3485684wrp.248.1605273749327;
+ Fri, 13 Nov 2020 05:22:29 -0800 (PST)
 MIME-Version: 1.0
 References: <CAJ+HfNiQbOcqCLxFUP2FMm5QrLXUUaj852Fxe3hn_2JNiucn6g@mail.gmail.com>
- <e23c63dd-5f90-c273-615f-d5d67991529c@gmail.com>
-In-Reply-To: <e23c63dd-5f90-c273-615f-d5d67991529c@gmail.com>
+ <20201113122440.GA2164@myrica>
+In-Reply-To: <20201113122440.GA2164@myrica>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Fri, 13 Nov 2020 14:17:04 +0100
-Message-ID: <CAJ+HfNgDwsNP_yM1_NH066JUfqMNPc-Q-K_yxqDaCQztEtwuZA@mail.gmail.com>
+Date:   Fri, 13 Nov 2020 14:22:16 +0100
+Message-ID: <CAJ+HfNiE5Oa25QgdAdKzfk-=X45hXLKk_t+ZCiSaeFVTzgzsrw@mail.gmail.com>
 Subject: Re: csum_partial() on different archs (selftest/bpf)
-To:     Eric Dumazet <eric.dumazet@gmail.com>
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        viro@zeniv.linux.org.uk
 Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Tom Herbert <tom@herbertland.com>,
         Anders Roxell <anders.roxell@gmail.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Nov 2020 at 12:34, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+On Fri, 13 Nov 2020 at 13:25, Jean-Philippe Brucker
+<jean-philippe@linaro.org> wrote:
 >
+> Hi,
 >
->
-> On 11/13/20 11:36 AM, Bj=C3=B6rn T=C3=B6pel wrote:
+> On Fri, Nov 13, 2020 at 11:36:08AM +0100, Bj=C3=B6rn T=C3=B6pel wrote:
 > > I was running the selftest/bpf on riscv, and had a closer look at one
 > > of the failing cases:
 > >
@@ -75,25 +78,35 @@ On Fri, 13 Nov 2020 at 12:34, Eric Dumazet <eric.dumazet@gmail.com> wrote:
 > >
 > > The test does a csum_partial() call via a BPF helper. riscv uses the
 > > generic implementation. arm64 uses the generic csum_partial() and fail
-> > in the same way [1]. arm (32-bit) has a arch specfic implementation,
-> > and fail in another way (FAIL retval 131042 !=3D -29) [2].
-> >
-> > I mimicked the test case in a userland program, comparing the generic
-> > csum_partial() to the x86 implementation [3], and the generic and x86
-> > implementation does yield a different result.
-> >
-> > x86     :    -29 : 0xffffffe3
-> > generic :  65507 : 0x0000ffe3
-> > arm     : 131042 : 0x0001ffe2
-> >
-> > Who is correct? :-) It would be nice to get rid of this failed case...
-> >
+> > in the same way [1].
 >
-> There are all the same value :), they all fold to u16  0xFFE3
+> It's worse than that, because arm64, parisc, alpha and others implement
+> do_csum(), called by the generic csum_partial(), and those all return a
+> 16-bit value.
 >
-> Maybe the test needs a fix, there is a missing folding.
+> It would be good to firstly formalize the size of the value returned by
+> the bpf_csum_diff() helper, because it's not clear from the doc (and the
+> helper returns a s64).
+>
+> Then homogenizing the csum_partial() implementations is difficult. One wa=
+y
+> forward, without having to immediately rewrite all arch-specific
+> implementations, would be to replace csum_partial() and do_csum() with
+> csum_partial_32(), csum_partial_16(), do_csum_32() and do_csum_16(). That
+> way we can use a generic implementation of the 32-bit variant if the
+> arch-specific implementation is 16-bit.
 >
 
-Ah, makes sense. Thank you!
+Folding Al's input to this reply.
 
+I think the bpf_csum_diff() is supposed to be used in combination with
+another helper(s) (e.g. bpf_l4_csum_replace) so I'd guess the returned
+__wsum should be seen as an opaque value, not something BPF userland
+can rely on.
+
+So, for this specific test case, it's probably best to just update the
+test case (as Eric suggested).
+
+
+Cheers, and thanks for the input!
 Bj=C3=B6rn
