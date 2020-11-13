@@ -2,65 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70B8B2B26F5
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 22:33:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A767F2B2702
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 22:35:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726064AbgKMVdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 16:33:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45400 "EHLO mail.kernel.org"
+        id S1726504AbgKMVeu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 16:34:50 -0500
+Received: from mga06.intel.com ([134.134.136.31]:18348 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725981AbgKMVdm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 16:33:42 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A02AD2224D;
-        Fri, 13 Nov 2020 21:33:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605303221;
-        bh=ZIvrNpZasZ0L90zdqbEp2JFFn0c/CGA7RTE7jW54axA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FONQHPNCbt2q2jKuqhDOAgeT+vPxfTGnQ9BQ/4wgA/w1IMNSWYoxkpx2UsVIHaMdh
-         GW2mKcJuLJxzly9/CO11AoKQXmVnT+nPoa2YNVc0Y2iVFX/rPROZmraI0rGX/d6ra6
-         d00ij2m51aPiOTcEi5Usnp5ydRJqm2eaPubjXwuE=
-Date:   Fri, 13 Nov 2020 13:33:40 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andreas Roeseler <andreas.a.roeseler@gmail.com>
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 0/3] Add support for sending RFC8335 PROBE messages
-Message-ID: <20201113133340.6d18c186@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <368dca70e518a9576a80fbd629ea7dc3583cc597.camel@gmail.com>
-References: <cover.1605238003.git.andreas.a.roeseler@gmail.com>
-        <20201113073230.3ecd6f0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <368dca70e518a9576a80fbd629ea7dc3583cc597.camel@gmail.com>
+        id S1726148AbgKMVeh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 16:34:37 -0500
+IronPort-SDR: ji/H84GhDVhxc+bs7I+UPh7Ffzo7sKC+y3r66bWyQaLAcs2tgzUztolKNzfoBngAIQeXTbe7ea
+ NwTAUYqw8Egw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9804"; a="232152338"
+X-IronPort-AV: E=Sophos;i="5.77,476,1596524400"; 
+   d="scan'208";a="232152338"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2020 13:34:36 -0800
+IronPort-SDR: RHr3AESdY5syiGe3X7dMN+PtR6grm0KoCwDjoMkE8HdSL2GgfE0tcd5edmn2VWWlSKw4h4ALq8
+ EotYdVVmOU7w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,476,1596524400"; 
+   d="scan'208";a="366861578"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by FMSMGA003.fm.intel.com with ESMTP; 13 Nov 2020 13:34:36 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.neti, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [net-next v2 00/15][pull request] 100GbE Intel Wired LAN Driver Updates 2020-11-13
+Date:   Fri, 13 Nov 2020 13:33:52 -0800
+Message-Id: <20201113213407.2131340-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=y
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Nov 2020 12:53:00 -0800 Andreas Roeseler wrote:
-> On Fri, 2020-11-13 at 07:32 -0800, Jakub Kicinski wrote:
-> > On Thu, 12 Nov 2020 21:02:27 -0800 Andreas Roeseler wrote:  
-> > > The popular utility ping has several severe limitations such as
-> > > an inability to query specific interfaces on a node and requiring
-> > > bidirectional connectivity between the probing and the probed
-> > > interfaces. RFC 8335 attempts to solve these limitations by
-> > > creating the
-> > > new utility PROBE which is an ICMP message that makes use of the
-> > > ICMP
-> > > Extension Structure outlined in RFC 4884.
-> > > 
-> > > This patchset adds define statments for the probe ICMP message
-> > > request
-> > > and reply types for both IPv4 and IPv6. It also expands the list of
-> > > supported ICMP messages to accommodate probe messages.  
-> > 
-> > Did you mean to CC netdev?  
-> 
-> Thank you for catching that. I'm new to kernel development and I'm still
-> trying to get my bearings.
+This series contains updates to ice driver only.
 
-You should repost the series, with the mailing list CCed.
+Bruce changes the allocation of ice_flow_prof_params from stack to heap to
+avoid excessive stack usage. Corrects a misleading comment and silences a
+sparse warning that is not a problem.
+
+Tony renames Flow Director functions to be more generic as their use
+is expanded.
+
+Real implements ACL filtering. This expands support of network flow
+classification rules for the ethtool ntuple command. ACL filtering will
+allow for an ip or port field's optional mask to be specified.
+
+Paul allows for HW initialization to continue if PHY abilities cannot
+be obtained.
+
+Jeb removes bypassing FW link override and reading Option ROM and
+netlist information for non-E810 devices as this is now available on
+other devices.
+
+Nick removes vlan_ena field as this information can be gathered by
+checking num_vlan.
+
+Jake combines format strings and debug prints to the same line.
+
+Simon adds a space to fix string concatenation.
+
+v2: Expand on commit message for patch 3 to show example usage/commands.
+    Reduce number of defensive checks being done.
+
+For now, we’d like to keep these ice_status error codes in the driver as
+there are cases where specific codes may translate to specific cases that
+must be handled. There is little equivalency between them and POSIX
+standard error codes so these cases can be lost by changing them. We are
+careful to turn everything into POSIX standard error codes before passing
+it to the kernel.
+
+We do understand your feedback on the refactoring pain. We will look into
+this in the future.
+
+The following are changes since commit e1d9d7b91302593d1951fcb12feddda6fb58a3c0:
+  Merge https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Bruce Allan (3):
+  ice: cleanup stack hog
+  ice: cleanup misleading comment
+  ice: silence static analysis warning
+
+Jacob Keller (1):
+  ice: join format strings to same line as ice_debug
+
+Jeb Cramer (2):
+  ice: Enable Support for FW Override (E82X)
+  ice: Remove gate to OROM init
+
+Nick Nunley (1):
+  ice: Remove vlan_ena from vsi structure
+
+Paul M Stillwell Jr (1):
+  ice: don't always return an error for Get PHY Abilities AQ command
+
+Real Valiquette (5):
+  ice: initialize ACL table
+  ice: initialize ACL scenario
+  ice: create flow profile
+  ice: create ACL entry
+  ice: program ACL entry
+
+Simon Perron Caissy (1):
+  ice: Add space to unknown speed
+
+Tony Nguyen (1):
+  ice: rename shared Flow Director functions
+
+ drivers/net/ethernet/intel/ice/Makefile       |    3 +
+ drivers/net/ethernet/intel/ice/ice.h          |   26 +-
+ drivers/net/ethernet/intel/ice/ice_acl.c      |  482 +++++++
+ drivers/net/ethernet/intel/ice/ice_acl.h      |  188 +++
+ drivers/net/ethernet/intel/ice/ice_acl_ctrl.c | 1145 +++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_acl_main.c |  328 +++++
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  400 +++++-
+ drivers/net/ethernet/intel/ice/ice_common.c   |  108 +-
+ drivers/net/ethernet/intel/ice/ice_controlq.c |   42 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |    8 +-
+ .../net/ethernet/intel/ice/ice_ethtool_fdir.c |  448 ++++--
+ drivers/net/ethernet/intel/ice/ice_fdir.c     |   15 +-
+ drivers/net/ethernet/intel/ice/ice_fdir.h     |    5 +-
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    |   40 +-
+ .../net/ethernet/intel/ice/ice_flex_pipe.h    |    7 +
+ drivers/net/ethernet/intel/ice/ice_flow.c     | 1253 ++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_flow.h     |   38 +-
+ .../net/ethernet/intel/ice/ice_lan_tx_rx.h    |    3 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |   10 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |   70 +-
+ drivers/net/ethernet/intel/ice/ice_nvm.c      |   61 +-
+ drivers/net/ethernet/intel/ice/ice_sched.c    |   21 +-
+ drivers/net/ethernet/intel/ice/ice_switch.c   |   15 +-
+ drivers/net/ethernet/intel/ice/ice_type.h     |    5 +
+ 24 files changed, 4355 insertions(+), 366 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_acl.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_acl.h
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_acl_ctrl.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_acl_main.c
+
+-- 
+2.26.2
+
