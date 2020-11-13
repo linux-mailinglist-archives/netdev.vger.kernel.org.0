@@ -2,60 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F5D62B139A
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 02:00:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 975F82B139D
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 02:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726207AbgKMBAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 20:00:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32972 "EHLO mail.kernel.org"
+        id S1726163AbgKMBBX convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 12 Nov 2020 20:01:23 -0500
+Received: from mga09.intel.com ([134.134.136.24]:10942 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725972AbgKMBAL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 20:00:11 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605229210;
-        bh=p9/dChOtSCS2nF7GfJqb6/Suf9Gahf/20WvXgZE6LgY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FfRtW5zqI4BuILLAE1uWu6MpfQRloUoNV8OQu2nHVa6RKjrrjM8j6Rt3m6PT/ZKsI
-         bSiZubLJpaUOyHxmPq+nSIZGhus/6SWJfeiaO1BVqLg0r/4IbLxX2lxiRLhUmxJVq7
-         hTm8q4U1kaqpCp8pE1+VDMN+GqGWEaM2H+4rfmuw=
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [GIT PULL] Networking
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160522921071.20000.12770202355609491498.git-patchwork-notify@kernel.org>
-Date:   Fri, 13 Nov 2020 01:00:10 +0000
-References: <20201112190245.2041381-1-kuba@kernel.org>
-In-Reply-To: <20201112190245.2041381-1-kuba@kernel.org>
+        id S1725965AbgKMBBW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 20:01:22 -0500
+IronPort-SDR: 5Dx8NFtyqsGTBeGog/Engpc5K+nSlTLuEHhAMMihelAtV3RVzA/7vYEqxeklUHP+Qpmptoe4Wr
+ bkr5ez/aAOTQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9803"; a="170576609"
+X-IronPort-AV: E=Sophos;i="5.77,473,1596524400"; 
+   d="scan'208";a="170576609"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2020 17:01:14 -0800
+IronPort-SDR: UTyCa1TTlO3Scx0RkJ2KoBpkmPVK0edGxutARnjcBJ/P3wunH0pyc2qGDybmyyKjlkhru56qc4
+ NWDhKmqymz2A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,473,1596524400"; 
+   d="scan'208";a="309009253"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga008.fm.intel.com with ESMTP; 12 Nov 2020 17:01:14 -0800
+Received: from shsmsx603.ccr.corp.intel.com (10.109.6.143) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 12 Nov 2020 17:01:13 -0800
+Received: from shsmsx601.ccr.corp.intel.com (10.109.6.141) by
+ SHSMSX603.ccr.corp.intel.com (10.109.6.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 13 Nov 2020 09:01:11 +0800
+Received: from shsmsx601.ccr.corp.intel.com ([10.109.6.141]) by
+ SHSMSX601.ccr.corp.intel.com ([10.109.6.141]) with mapi id 15.01.1713.004;
+ Fri, 13 Nov 2020 09:01:11 +0800
+From:   "Li, Philip" <philip.li@intel.com>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+CC:     lkp <lkp@intel.com>, Dmytro Shytyi <dmytro@shytyi.net>,
+        kuznet <kuznet@ms2.inr.ac.ru>,
+        yoshfuji <yoshfuji@linux-ipv6.org>,
+        liuhangbin <liuhangbin@gmail.com>, davem <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>
+Subject: RE: [kbuild-all] Re: [PATCH net-next] net: Variable SLAAC: SLAAC with
+ prefixes of arbitrary length in PIO
+Thread-Topic: [kbuild-all] Re: [PATCH net-next] net: Variable SLAAC: SLAAC
+ with prefixes of arbitrary length in PIO
+Thread-Index: AQHWt8rnymHV+oRFv0+mSedV58/YYKnEsPmAgACHjsD//3/5gIAAhmeA
+Date:   Fri, 13 Nov 2020 01:01:11 +0000
+Message-ID: <905a3ef02edb4aa9883ae4d6080120a9@intel.com>
+References: <175b3433a4c.aea7c06513321.4158329434310691736@shytyi.net>
+        <202011110944.7zNVZmvB-lkp@intel.com>
+        <20201112162423.6b4de8d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <5bc4f8ce9a6c40029043bc902a38af25@intel.com>
+ <20201112165119.54bd07ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201112165119.54bd07ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.239.127.36]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net.git (refs/heads/master):
-
-On Thu, 12 Nov 2020 11:02:45 -0800 you wrote:
-> The following changes since commit bf3e76289cd28b87f679cd53e26d67fd708d718a:
 > 
->   Merge branch 'mtd/fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux (2020-11-06 13:08:25 -0800)
+> On Fri, 13 Nov 2020 00:32:55 +0000 Li, Philip wrote:
+> > > Subject: [kbuild-all] Re: [PATCH net-next] net: Variable SLAAC: SLAAC
+> with
+> > > prefixes of arbitrary length in PIO
+> > >
+> > > On Wed, 11 Nov 2020 09:34:24 +0800 kernel test robot wrote:
+> > > > If you fix the issue, kindly add following tag as appropriate
+> > > > Reported-by: kernel test robot <lkp@intel.com>
+> > >
+> > > Good people of kernel test robot, could you please rephrase this to say
+> > > that the tag is only appropriate if someone is sending a fix up/follow
+> > > up patch?
+> > Thanks for the input, based on your suggestion how about
+> >
+> > Kindly add below tag as appropriate if you send a fix up/follow up patch
 > 
-> are available in the Git repository at:
+> I'm not sure myself how best to phrase it, I'm not a native speaker.
+> How about:
 > 
->   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.10-rc4
+> Kindly add below tag if you send a new patch solely addressing this issue
+Thanks, we will consider this, and provide update next week to gather
+more inputs. If anyone has further suggestion, it will be very welcome.
+
+There did have some confusion and discussed earlier actually regarding
+when/how to add the Reported-by, thus we use appropriate to let developer
+decide the best choice for his own situation. But if it leads to confusion,
+we will keep looking for a better way.
+
+BTW: if we just remove this message line, and leave below Reported-by only, would
+it be a good choice? 
+
 > 
-> [...]
-
-Here is the summary with links:
-  - [GIT,PULL] Networking
-    https://git.kernel.org/netdev/net/c/db7c95355538
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+> > Reported-by: kernel test robot <lkp@intel.com>
+> >
+> > Or any wording change suggestion to make it more clear/friendly?
 
