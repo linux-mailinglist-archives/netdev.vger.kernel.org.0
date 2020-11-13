@@ -2,134 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 325F32B16AD
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 08:47:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ECA22B1682
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 08:33:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726249AbgKMHq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 02:46:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51572 "EHLO
+        id S1726362AbgKMHds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 02:33:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726112AbgKMHq5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 02:46:57 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EC3C0613D6;
-        Thu, 12 Nov 2020 23:46:57 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id y4so3751242edy.5;
-        Thu, 12 Nov 2020 23:46:57 -0800 (PST)
+        with ESMTP id S1726112AbgKMHdq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 02:33:46 -0500
+Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AE4C0613D1
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 23:33:46 -0800 (PST)
+Received: by mail-oo1-xc36.google.com with SMTP id y3so1952457ooq.2
+        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 23:33:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=xELIDlBC4XpvbVgvkhrHVs/RO1MGhH1tO135RI7QKSA=;
-        b=eZDXofxm0CdO5iOJrsSaFzg8mQnKsQtQJu2M9Ku/pa+dVH0ozfoOpRJd2oM5mw1ql3
-         ccZruHwc+IoXUUbO3G/0Q339qQcdFH+TGMvDcNkQJ08TcPo1pi4If2evMhwb8n6IW+cJ
-         /B0qUB4VUYUUSFN8D/90myy3HNnBrQlPxeWTHxK0IUo1Gb8wgFVSP4ye50kZTGhZZdhY
-         6KWkyCteQ+a8nGJJUnyKh9ZYSUNMRqkqWathcf32+xFLqt53ILPoe9NdhqShCcOzM6oT
-         zKlMBusmCqTpYAaaz9QWsL7Hwghg05OcJvU1YtSmTnZJHVrjmayNN0RDz+stgVTG4cRS
-         SZZQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v3WcCdaHYOQQZJH1aMQoM0oyWC0gSEUn6WiHpGeSdoQ=;
+        b=Oh4QX9phUzzK1+RLrbOdpWTCe2vOUNe9F1YYskHWe6kg0H0p2BhPE2aCBLplRwJgQi
+         wZh/TCBELVW4PHkXk52e4q+2CYbvM1rgJy3xqsnH+GbLT25cWvco+8mJTMMhQAQ7Phed
+         9hcderDCyh8BevRfXYnfM8EBX/Ykl/97iyqLjpisUfvSa08CwFGd38UXETbHPq2gx6jm
+         skupsCYb1z4MeYgTmS6hPLeYO8PxynTKBgRAyZiIStll3uxUHJWT2AGej9kIJdp5VcIr
+         nW/6qN/vvWdKdPTq/Z2tvve6D1Oha4NuaUoSQ7R4pvS4u9CziT1jxknl5ggZBr9lz/Tx
+         yIhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=xELIDlBC4XpvbVgvkhrHVs/RO1MGhH1tO135RI7QKSA=;
-        b=O9wEEetk0mbjCthOifBGCR3djBEO9TNrBcRVjPa6jVzA4XtCAzlig3unq5uUs36u+M
-         iNiRQ9hxlgSk2OtNumIW+Uix50X36mK1FovTJL1jY2Wvodu8byZD4yeniiaCM9EcCwzH
-         1WK/zyXS2xwosQQwSRKXI2YgPvlzDJXkJAeBtOGKm59KV8HmygovYV7UsIQZ1lUFkpcQ
-         PlK2R8yHcICyu68LEqE+WZodYXiiSgMdE30X+plDPMMEIJ/jH93uP26T2ImpcBeR6NeE
-         L2EJAq42vz5KhgMKeQAov6MQAz2894uamSDSHvQFSlN+5YrsDA6EDdlZyNPd77SoSzA4
-         UUNQ==
-X-Gm-Message-State: AOAM531E5uIiFp5FytVbZpQeHQAvKvLL7cexv8qSru1bxhhP3GSoo4D4
-        3LzVq3a92m/2juFHYcEQD1ARyo6gybOlmw==
-X-Google-Smtp-Source: ABdhPJwzk5ATnWjy354Emnsiox6X34uHFtzvt0h+SRtPdzNZ5HEZWJbYcpCE8t2JhyDSJQo0avseTw==
-X-Received: by 2002:aa7:d351:: with SMTP id m17mr1271632edr.215.1605253615966;
-        Thu, 12 Nov 2020 23:46:55 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:e113:5d8d:7b96:ca98? (p200300ea8f232800e1135d8d7b96ca98.dip0.t-ipconnect.de. [2003:ea:8f23:2800:e113:5d8d:7b96:ca98])
-        by smtp.googlemail.com with ESMTPSA id z23sm3042644ejb.4.2020.11.12.23.46.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Nov 2020 23:46:55 -0800 (PST)
-Subject: Re: [PATCH 1/3] net: mac80211: use core API for updating TX stats
-To:     Lev Stipakov <lstipakov@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Lev Stipakov <lev@openvpn.net>
-References: <20201112110953.34055-1-lev@openvpn.net>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <44c8b5ae-3630-9d98-1ab4-5f57bfe0886c@gmail.com>
-Date:   Fri, 13 Nov 2020 08:16:32 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v3WcCdaHYOQQZJH1aMQoM0oyWC0gSEUn6WiHpGeSdoQ=;
+        b=Z0jZeTu2khk8yu6nWJhJye4ZRqZLPbG0MD6NWFMKDWaMlNJNAbHZDAYss96b0xaG8i
+         6/vArRoXOMWOsWGNTcccIu3Cc1+qcrTXIb0mvUNJPusUDJ9P3MpZHMpwjqgupDXSPp0j
+         okweYvYcPNl1H1qdvI9GnpVNQ7CsIb5OKYMJcmjFEKJltpVVOlsWW/wC/233Pzt9f85B
+         XCK/lhhxyXxeydxVXgdPr2DeUJKRX+OxkbqgEv0kOerjsl75DwgZqw79IkFiwM5QDMGX
+         0ZUCH2AlQlOjjMROC+tF1BIu6tJszNqDLi1Xts5HIantPVITj9hC2OaRfRPBkpHpgIQf
+         ZPMQ==
+X-Gm-Message-State: AOAM531hkvk3ELmes7JrN7Z/j/UBpHk18bEZ+R2yVW3G8XxfF4Zs6TyZ
+        5TloeCocMZVrmtzrdL595nCcVp5rXUXJ+kfoF92iFx0fAfw=
+X-Google-Smtp-Source: ABdhPJzp/Fg6Gu7s3rj2mxUdnVAQRjrPaXaredyKUMsXY0SsXy+M/oI7KhMSQYcYPGVJOCOpeHoIlm2iiLluaBT7LeU=
+X-Received: by 2002:a4a:5182:: with SMTP id s124mr594758ooa.88.1605252826061;
+ Thu, 12 Nov 2020 23:33:46 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201112110953.34055-1-lev@openvpn.net>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+References: <CAMeyCbh8vSCnr-9-odi0kg3E8BGCiETOL-jJ650qYQdsY0wxeA@mail.gmail.com>
+ <CAMeyCbjuj2Q2riK2yzKXRfCa_mKToqe0uPXKxrjd6zJQWaXxog@mail.gmail.com>
+ <3f069322-f22a-a2e8-1498-0a979e02b595@gmail.com> <739b43c5c77448c0ab9e8efadd33dbfb@AcuMS.aculab.com>
+In-Reply-To: <739b43c5c77448c0ab9e8efadd33dbfb@AcuMS.aculab.com>
+From:   Kegl Rohit <keglrohit@gmail.com>
+Date:   Fri, 13 Nov 2020 08:33:36 +0100
+Message-ID: <CAMeyCbj4aVRtVQfzKmHvhUkzh08PqNs2DHS1nobbx0nR4LoXbg@mail.gmail.com>
+Subject: Re: Fwd: net: fec: rx descriptor ring out of order
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 12.11.2020 um 12:09 schrieb Lev Stipakov:
-> Commit d3fd65484c781 ("net: core: add dev_sw_netstats_tx_add")
-> has added function "dev_sw_netstats_tx_add()" to update
-> net device per-cpu TX stats.
-> 
-> Use this function instead of ieee80211_tx_stats().
-> 
-I think you can do the same with ieee80211_rx_stats().
+> What are the addresses of the ring entries?
+> I bet there is something wrong with the cache coherency and/or
+> flushing.
+>
+> So the MAC hardware has done the write but (somewhere) it
+> isn't visible to the cpu for ages.
 
-> Signed-off-by: Lev Stipakov <lev@openvpn.net>
-> ---
->  net/mac80211/tx.c | 16 +++-------------
->  1 file changed, 3 insertions(+), 13 deletions(-)
-> 
-> diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
-> index 5f05f4651dd7..7807f8178527 100644
-> --- a/net/mac80211/tx.c
-> +++ b/net/mac80211/tx.c
-> @@ -38,16 +38,6 @@
->  
->  /* misc utils */
->  
-> -static inline void ieee80211_tx_stats(struct net_device *dev, u32 len)
-> -{
-> -	struct pcpu_sw_netstats *tstats = this_cpu_ptr(dev->tstats);
-> -
-> -	u64_stats_update_begin(&tstats->syncp);
-> -	tstats->tx_packets++;
-> -	tstats->tx_bytes += len;
-> -	u64_stats_update_end(&tstats->syncp);
-> -}
-> -
->  static __le16 ieee80211_duration(struct ieee80211_tx_data *tx,
->  				 struct sk_buff *skb, int group_addr,
->  				 int next_frag_len)
-> @@ -3403,7 +3393,7 @@ static void ieee80211_xmit_fast_finish(struct ieee80211_sub_if_data *sdata,
->  	if (key)
->  		info->control.hw_key = &key->conf;
->  
-> -	ieee80211_tx_stats(skb->dev, skb->len);
-> +	dev_sw_netstats_tx_add(skb->dev, 1, skb->len);
->  
->  	if (hdr->frame_control & cpu_to_le16(IEEE80211_STYPE_QOS_DATA)) {
->  		tid = skb->priority & IEEE80211_QOS_CTL_TAG1D_MASK;
-> @@ -4021,7 +4011,7 @@ void __ieee80211_subif_start_xmit(struct sk_buff *skb,
->  			goto out;
->  		}
->  
-> -		ieee80211_tx_stats(dev, skb->len);
-> +		dev_sw_netstats_tx_add(dev, 1, skb->len);
->  
->  		ieee80211_xmit(sdata, sta, skb);
->  	}
-> @@ -4248,7 +4238,7 @@ static void ieee80211_8023_xmit(struct ieee80211_sub_if_data *sdata,
->  
->  	info->hw_queue = sdata->vif.hw_queue[skb_get_queue_mapping(skb)];
->  
-> -	ieee80211_tx_stats(dev, skb->len);
-> +	dev_sw_netstats_tx_add(dev, 1, skb->len);
->  
->  	sta->tx_stats.bytes[skb_get_queue_mapping(skb)] += skb->len;
->  	sta->tx_stats.packets[skb_get_queue_mapping(skb)]++;
-> 
+CMA memory is disabled in our kernel config.
+So the descriptors allocated with dma_alloc_coherent() won't be CMA memory.
+Could this cause a different caching/flushing behaviour?
 
+> I've seen a 'fec' ethernet block in a freescale DSP.
+> IIRC it is a fairly simple block - won't be doing out-of-order writes.
+>
+> The imx6q seems to be arm based.
+> I'm guessing that means it doesn't do cache coherency for ethernet dma
+> accesses.
+> That (more or less) means the rings need to be mapped uncached.
+> Any attempt to just flush/invalidate the cache lines is doomed.
+>
+> ...
+
+> > > I could only think of skipping/dropping the descriptor when the
+> > > current is still busy but the next one is ready.
+> > > But it is not easily possible because the "stuck" descriptor gets
+> > > ready after a huge delay.
+>
+> I bet the descriptor is at the end of a cache line which finally
+> gets re-read.
+I stumbled across FEC ethernet issues [Was: PL310 errata workarounds]
+https://www.spinics.net/lists/arm-kernel/thrd312.html#315574.
+Changes to the PL310 cache driver (used in imx6q) were made, to also
+fix fec issues.
+This PL310 cleanup/fixes are not contained in the 3.10.108 kernel.
+So maybe i have to look also there.
