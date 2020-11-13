@@ -2,94 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9CF32B14FD
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 05:06:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 229D02B1500
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 05:08:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726101AbgKMEGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 23:06:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45372 "EHLO
+        id S1726163AbgKMEIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 23:08:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726054AbgKMEGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 23:06:44 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731CBC0613D1
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 20:06:44 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id m13so8421723ioq.9
-        for <netdev@vger.kernel.org>; Thu, 12 Nov 2020 20:06:44 -0800 (PST)
+        with ESMTP id S1726054AbgKMEIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 23:08:37 -0500
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8062C0613D1;
+        Thu, 12 Nov 2020 20:08:36 -0800 (PST)
+Received: by mail-lj1-x244.google.com with SMTP id i17so7944298ljd.3;
+        Thu, 12 Nov 2020 20:08:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=V7+QX2emMAd1YFMrI6A3ZRFkdoO50/trPP3fqDTmqWI=;
-        b=PDYY8UinFCJvgB27AS28h4naLMSXcFRoMh+/bySQCmEWn+u0KR5p53nli4ZlDCCnU1
-         vHImxmVbbwY3+oX2b83GW7/RSCQAJLo7vBMnULt5dEkDsfZypYpk2q8nquja6+GXCisB
-         kw+PsFktNdd2ToeTRJlaXqX6T0TTmghhRTjgi/A5P+TjKdF4OgFldn6outNSYudb1DqX
-         jXHKPBKWp7cOzgPRWQHj1doAckvDo7Zdg7xguLI4QZGUTm1HvYHTrc+UNRwGI5KSYRNN
-         xDBj3kAD2G9h+E7BFlVGmeG7fdbZl4niKvul7dayimUZM5ic4zxiqTE5h6hG68VIJb8Z
-         hqkw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AZbl5qbJ0BQUlrCyYeuRH2WHBnTTfBroCA0v71gGPzM=;
+        b=EAwjbLbLZtio+We3R3VZRYvj8d2ngKxaxveWpWwYrnIPLKEbhUj/0vqLWp5jnUYW+K
+         cVDEscUOGKWvkEYFY9uhr2jSdDq63oW0LI5gNdQmWW32+K8JRM0PYphZUGBqSL7UGY4h
+         vULs8BPfNjVBoconwBuxls9FBcRDCuTkW6N42c6oEiqFu+JFbxPOr1ma1jX9Yf1MuNch
+         r7WOaw8GfAC6fmCG9KaDBXDGs9yooxLs2rAcITKbQKh+gawvPYDmmNZEKMNVPlepDaRO
+         8hgGhJRxKj2i9pNPdj3vA37kKT2po4d/CbXci9GlI3kx+13ohgyL3632NnFDamlYw5tz
+         my/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=V7+QX2emMAd1YFMrI6A3ZRFkdoO50/trPP3fqDTmqWI=;
-        b=TDzZMksQfG6Ua/hV8vphF/C9JmksbyvVt9vVYChHRzLxucNT46PmxrHCPM6ho9ZtUq
-         jpiI62tT1XNcV29T/RzIP414mpsBS6ReSaUiy/mD0FaG1VWi7h71FuqqRjwmlusOpdMy
-         GfBXQLPz3R00Pyx5Ny5R5oWXrlkL9pUzBQcs8bBwtY3e66L9/armHIOY4irf7n/LtrZQ
-         ncNwa+bjW/FSRdFP0l9BZ/b78DV28ZTlbwIWhxpBkLdGA14TZEhYL1A/mMBOCdf0Mj//
-         GXVkCTpLDofr1hiZXPvm47p/Cv2OvgG+MhyhCqduEcZSzcLFYR7pw9V7Ob6O6Iyag7yz
-         VGpA==
-X-Gm-Message-State: AOAM532SshNISbRq+Krjur8x9gdZa8OqL+yPoJlQV1ovjzjMn5dEZhKN
-        xcZCQwbCjSiBwY9cwwIKpHm2h8lMBck=
-X-Google-Smtp-Source: ABdhPJwqBsj78eU+wk2F5Q4BZB8eAndE5DpQqUtPgcbIBRqcbehrOP9SYZs9ysHhOJ7LSRiztXXAdg==
-X-Received: by 2002:a6b:7f47:: with SMTP id m7mr369551ioq.83.1605240403800;
-        Thu, 12 Nov 2020 20:06:43 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:781e:c7e6:68f1:ffce])
-        by smtp.googlemail.com with ESMTPSA id l4sm3636127ioj.41.2020.11.12.20.06.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Nov 2020 20:06:43 -0800 (PST)
-Subject: Re: [PATCH net V4] Exempt multicast addresses from five-second
- neighbor lifetime
-To:     Jeff Dike <jdike@akamai.com>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>
-References: <20201113015815.31397-1-jdike@akamai.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <ea21130f-74fe-2dfa-2d42-b9985c21e705@gmail.com>
-Date:   Thu, 12 Nov 2020 21:06:42 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AZbl5qbJ0BQUlrCyYeuRH2WHBnTTfBroCA0v71gGPzM=;
+        b=clBT98iKKL2/uut+5bCrgiPT8CEiZshNniXBqAyiws7g0bH5zXsFnk35jTHYZoHjvi
+         NoPh5bg37v9dQVn3y5i60MMgmUwBawMo1yF7TLrIiJE928Kr4GXTPcdlhZbMwABsduRt
+         r8cjcERhyYQR6K1upOIjUVAPCY8r1yavl77DZmOVUmYPuu41ik0FGl5JFw64HbKamuEf
+         8/vsd5FOxoN8xDWhdZJpzCtYebrnsIlD38Q49D0kDBzEU27MQrspjy+yj7UgqvGOJZbO
+         bbGy19go0ChuFr28s3ta6UUcE9tbr/L1qXWPz7zJr/FFJf9Fgz+DHdleBuiuHuvzPtTu
+         sOuw==
+X-Gm-Message-State: AOAM532Af6ueC+xQlP5ziFaRYARkhIgdN+49Uv0tFnz3jjfL+2oiGUWK
+        ziaqDvfGVbE4tOBlGGngZD5lcqiIqcpgAyn2mM4=
+X-Google-Smtp-Source: ABdhPJzn7EMs1Itqci9FPcfCt6upEFH2ibkruLV6wZMffSYb9PRpRtA0Cdmdo18qJ8tzhz+H0mO+bfL6S2Reiaq5dhs=
+X-Received: by 2002:a2e:86c5:: with SMTP id n5mr213289ljj.450.1605240513968;
+ Thu, 12 Nov 2020 20:08:33 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201113015815.31397-1-jdike@akamai.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201112221543.3621014-1-guro@fb.com> <20201112221543.3621014-2-guro@fb.com>
+ <20201113095632.489e66e2@canb.auug.org.au> <20201113002610.GB2934489@carbon.dhcp.thefacebook.com>
+ <20201113030456.drdswcndp65zmt2u@ast-mbp> <20201112191825.1a7c3e0d50cc5e375a4e887c@linux-foundation.org>
+ <CAADnVQ+evkBCakrfEUqEvZ2Th=6xUGA2uTzdb_hwpaU9CPdj8Q@mail.gmail.com> <20201112194047.ea7c95e2876931fc57ae1cee@linux-foundation.org>
+In-Reply-To: <20201112194047.ea7c95e2876931fc57ae1cee@linux-foundation.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 12 Nov 2020 20:08:22 -0800
+Message-ID: <CAADnVQJ43nehf_KHeVFp7Ef2Fzu5xuWj4UMUMAbr+4dAE+qSdg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 01/34] mm: memcontrol: use helpers to read
+ page's memcg data
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Roman Gushchin <guro@fb.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/12/20 6:58 PM, Jeff Dike wrote:
-> Commit 58956317c8de ("neighbor: Improve garbage collection")
-> guarantees neighbour table entries a five-second lifetime.  Processes
-> which make heavy use of multicast can fill the neighour table with
-> multicast addresses in five seconds.  At that point, neighbour entries
-> can't be GC-ed because they aren't five seconds old yet, the kernel
-> log starts to fill up with "neighbor table overflow!" messages, and
-> sends start to fail.
-> 
-> This patch allows multicast addresses to be thrown out before they've
-> lived out their five seconds.  This makes room for non-multicast
-> addresses and makes messages to all addresses more reliable in these
-> circumstances.
-> 
-> Fixes: 58956317c8de ("neighbor: Improve garbage collection")
-> Signed-off-by: Jeff Dike <jdike@akamai.com>
-> ---
->  include/net/neighbour.h | 1 +
->  net/core/neighbour.c    | 2 ++
->  net/ipv4/arp.c          | 6 ++++++
->  net/ipv6/ndisc.c        | 7 +++++++
->  4 files changed, 16 insertions(+)
-> 
+On Thu, Nov 12, 2020 at 7:40 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> On Thu, 12 Nov 2020 19:25:48 -0800 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+>
+> > On Thu, Nov 12, 2020 at 7:18 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+> > >
+> > > On Thu, 12 Nov 2020 19:04:56 -0800 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > > On Thu, Nov 12, 2020 at 04:26:10PM -0800, Roman Gushchin wrote:
+> > > > >
+> > > > > These patches are not intended to be merged through the bpf tree.
+> > > > > They are included into the patchset to make bpf selftests pass and for
+> > > > > informational purposes.
+> > > > > It's written in the cover letter.
+> > > > ...
+> > > > > Maybe I had to just list their titles in the cover letter. Idk what's
+> > > > > the best option for such cross-subsystem dependencies.
+> > > >
+> > > > We had several situations in the past releases where dependent patches
+> > > > were merged into multiple trees. For that to happen cleanly from git pov
+> > > > one of the maintainers need to create a stable branch/tag and let other
+> > > > maintainers pull that branch into different trees. This way the sha-s
+> > > > stay the same and no conflicts arise during the merge window.
+> > > > In this case sounds like the first 4 patches are in mm tree already.
+> > > > Is there a branch/tag I can pull to get the first 4 into bpf-next?
+> > >
+> > > Not really, at present.  This is largely by design, although it does cause
+> > > this problem once or twice a year.
+> > >
+> > > These four patches:
+> > >
+> > > mm-memcontrol-use-helpers-to-read-pages-memcg-data.patch
+> > > mm-memcontrol-slab-use-helpers-to-access-slab-pages-memcg_data.patch
+> > > mm-introduce-page-memcg-flags.patch
+> > > mm-convert-page-kmemcg-type-to-a-page-memcg-flag.patch
+> > >
+> > > are sufficiently reviewed - please pull them into the bpf tree when
+> > > convenient.  Once they hit linux-next, I'll drop the -mm copies and the
+> > > bpf tree maintainers will then be responsible for whether & when they
+> > > get upstream.
+> >
+> > That's certainly an option if they don't depend on other patches in the mm tree.
+> > Roman probably knows best ?
+>
+> That should be OK.  They apply and compile ;)
 
-
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Awesome. Thank you both for confirming.
+Will take them as soon as the rest of the set is reviewed.
