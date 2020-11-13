@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CE042B1F8A
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:06:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F6A32B1F8B
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:06:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726889AbgKMQGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 11:06:42 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:50015 "EHLO
+        id S1726897AbgKMQGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 11:06:45 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:37313 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726863AbgKMQGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 11:06:40 -0500
+        by vger.kernel.org with ESMTP id S1726884AbgKMQGm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 11:06:42 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 86E585C0156;
-        Fri, 13 Nov 2020 11:06:39 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id DFBB85C0193;
+        Fri, 13 Nov 2020 11:06:41 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Fri, 13 Nov 2020 11:06:39 -0500
+  by compute3.internal (MEProxy); Fri, 13 Nov 2020 11:06:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=JsoqJkMur+0USpuhGgupDNDfrosQJbKG1lIXHhIjQuU=; b=f9GZFsxx
-        YxAIIzE17ThHMlEUtTyCIs5RLg2twLLT2KQ4mhdm2ZIJpIJzCfKnwIfzkG+/DN0T
-        2AGnD01Jh+S0boX3L/5CYfMtrhvZjcJXCRFkPad7gKhy5JSWEe/0s0Z9/pvGxJ/G
-        r0xWWWis3cKt8bfO54hmI6dEw9+Cq2cDwvq0LHotsF55D+zqDFSj9fMEDoiEqNaH
-        Jn0aEE19Hkae0sofaGh2C8Q+J7UVKCoiSLfBQctJ55ED5DAb8Cb8oWzKZogc4V3D
-        51fIbkwk/hNvI53qdD/ILuDu6MDZkX7jLPf1o/WrXzr9CWFxoa8hJXy2GryozcI4
-        XeJIvkAGRZodiQ==
-X-ME-Sender: <xms:D6-uX_V5ghEbWO6o5uQy-ta2HNxNtuh1eRVxlF0BKLi4I8ejDZpSqg>
-    <xme:D6-uX3kn8tnqgtdu6NcpMtoRrCgcqNjdX2xsT-TLTzrlwQU95EC09TyvhoJEZNhDY
-    KP_hAVP_GqKNyQ>
+        fm1; bh=a1mYGK3QcmjdFiMjAx2jzR2caSqqERjnHsLoRmSkyn4=; b=gG/BXMNL
+        Qi2oIZHR2xzAcsuiSE6Rf9rWSZ6y44bsSQPi4mGvF2Zxg7aCUfviheMNdBgVQI8K
+        IULZewg/INiF0BJk2kmldNOPRV8o3U4bk6ySS+DzU0KTJtd2tWK8vKrs0fTpHfn8
+        yvhRjACaE6t1hebB+QkvAZnccaJzbMKe10tgRCRLyxlzLkWzzoUP/6lWtDtTawh5
+        Vs6qykmMCRhztpBp6QRgbfPzOPAKolvtWt2PE2u2sXH0mRciFiKi1deKSd8C5FdP
+        WFMtpGN1IDrjWQ6Qt48pB5wvnVScyRwUGlgnJNDP1n0vxRV2vA+tyuNYgZj5skIT
+        j/wPQc5uzfGwyQ==
+X-ME-Sender: <xms:Ea-uX5pXQNyEAmyjMYVt-qXyMyq82HBz_W3Hr4A4S917urxS49bpBg>
+    <xme:Ea-uX7rEBywpWxipTC1KJemItozI4KawrUqbMBC3P7lMPZttkiq1LQOusE1Y-f96a
+    WabTrHx0nhwfIY>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedruddvhedgkeegucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehgedrudeg
-    jeenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    jeenucevlhhushhtvghrufhiiigvpeegnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
     hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:D6-uX7bcfaQ0fNMB4eGXhNrsPXVsV2YOpVZOlCIQyi0shjDHd0uT0g>
-    <xmx:D6-uX6Xpja7WME5EFm2vqu6LFYFFKQ0OcJQuP0zUgdJVo7Jesj8LVg>
-    <xmx:D6-uX5l9toiWwHYPF0IiYJo0mz2_qRV-i0iTYYpiMH5NHRMBrcx0Iw>
-    <xmx:D6-uX_hpSIhwYpe8sFrrkQ5cHAmRGTHIdoTdRIoBEmMDCK16iU4-sA>
+X-ME-Proxy: <xmx:Ea-uX2M35lhIi7xA2MGh1NP0TXXWl9rJpqgNuYbTt4uiSKjoCHz8tA>
+    <xmx:Ea-uX07z790Sh2Pn27xMbFVjBctm-Iv2_mez3ZOQoFyzB5ncp6TBuw>
+    <xmx:Ea-uX45w7j9yo7CMCwTXnGKluEIeXTbL1Y1_393PmXPr5kPJoC77CA>
+    <xmx:Ea-uX2lTaGzNW3sj0VjY0_CMGrqCoQRrwXqUFGniCvnJKYWcGOPT8A>
 Received: from shredder.lan (igld-84-229-154-147.inter.net.il [84.229.154.147])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8CFC93280059;
-        Fri, 13 Nov 2020 11:06:37 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id CB0F33280059;
+        Fri, 13 Nov 2020 11:06:39 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         dsahern@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 04/15] mlxsw: spectrum_router: Associate neighbour table with nexthop instead of group
-Date:   Fri, 13 Nov 2020 18:05:48 +0200
-Message-Id: <20201113160559.22148-5-idosch@idosch.org>
+Subject: [PATCH net-next 05/15] mlxsw: spectrum_router: Store FIB info in route
+Date:   Fri, 13 Nov 2020 18:05:49 +0200
+Message-Id: <20201113160559.22148-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201113160559.22148-1-idosch@idosch.org>
 References: <20201113160559.22148-1-idosch@idosch.org>
@@ -64,98 +64,92 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-As explained in the previous patch, nexthop objects can have both IPv4
-and IPv6 nexthops in the same group. Therefore, move the neighbour table
-to be a property of the nexthop instead of the nexthop group.
+When needed, IPv4 routes fetch the FIB info (i.e., 'struct fib_info')
+from their associated nexthop group. This will not work when the nexthop
+group represents a nexthop object (i.e., 'struct nexthop'), as it will
+only have access to the nexthop's identifier.
+
+Instead, store the FIB info in the route itself.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 20 +++++++++----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum_router.c   | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 5affe7f79a9a..462ddab11c07 100644
+index 462ddab11c07..87acb2bbb6fe 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -2835,6 +2835,7 @@ struct mlxsw_sp_nexthop {
- 						* this belongs to
- 						*/
- 	struct rhash_head ht_node;
-+	struct neigh_table *neigh_tbl;
- 	struct mlxsw_sp_nexthop_key key;
- 	unsigned char gw_addr[sizeof(struct in6_addr)];
- 	int ifindex;
-@@ -2869,7 +2870,6 @@ struct mlxsw_sp_nexthop_group {
- 	void *priv;
- 	struct rhash_head ht_node;
- 	struct list_head fib_list; /* list of fib entries that use this group */
--	struct neigh_table *neigh_tbl;
- 	enum mlxsw_sp_nexthop_group_type type;
- 	u8 adj_index_valid:1,
- 	   gateway:1; /* routes using the group use a gateway */
-@@ -3674,10 +3674,9 @@ mlxsw_sp_nexthop_dead_neigh_replace(struct mlxsw_sp *mlxsw_sp,
- 	nh = list_first_entry(&neigh_entry->nexthop_list,
- 			      struct mlxsw_sp_nexthop, neigh_list_node);
+@@ -431,6 +431,7 @@ struct mlxsw_sp_fib_entry {
  
--	n = neigh_lookup(nh->nh_grp->neigh_tbl, &nh->gw_addr, nh->rif->dev);
-+	n = neigh_lookup(nh->neigh_tbl, &nh->gw_addr, nh->rif->dev);
- 	if (!n) {
--		n = neigh_create(nh->nh_grp->neigh_tbl, &nh->gw_addr,
--				 nh->rif->dev);
-+		n = neigh_create(nh->neigh_tbl, &nh->gw_addr, nh->rif->dev);
- 		if (IS_ERR(n))
- 			return PTR_ERR(n);
- 		neigh_event_send(n, NULL);
-@@ -3776,10 +3775,9 @@ static int mlxsw_sp_nexthop_neigh_init(struct mlxsw_sp *mlxsw_sp,
- 	 * The reference is taken either in neigh_lookup() or
- 	 * in neigh_create() in case n is not found.
- 	 */
--	n = neigh_lookup(nh->nh_grp->neigh_tbl, &nh->gw_addr, nh->rif->dev);
-+	n = neigh_lookup(nh->neigh_tbl, &nh->gw_addr, nh->rif->dev);
- 	if (!n) {
--		n = neigh_create(nh->nh_grp->neigh_tbl, &nh->gw_addr,
--				 nh->rif->dev);
-+		n = neigh_create(nh->neigh_tbl, &nh->gw_addr, nh->rif->dev);
- 		if (IS_ERR(n))
- 			return PTR_ERR(n);
- 		neigh_event_send(n, NULL);
-@@ -3968,6 +3966,7 @@ static int mlxsw_sp_nexthop4_init(struct mlxsw_sp *mlxsw_sp,
- 	nh->nh_weight = 1;
- #endif
- 	memcpy(&nh->gw_addr, &fib_nh->fib_nh_gw4, sizeof(fib_nh->fib_nh_gw4));
-+	nh->neigh_tbl = &arp_tbl;
- 	err = mlxsw_sp_nexthop_insert(mlxsw_sp, nh);
+ struct mlxsw_sp_fib4_entry {
+ 	struct mlxsw_sp_fib_entry common;
++	struct fib_info *fi;
+ 	u32 tb_id;
+ 	u32 prio;
+ 	u8 tos;
+@@ -4240,7 +4241,6 @@ static void
+ mlxsw_sp_fib4_entry_hw_flags_set(struct mlxsw_sp *mlxsw_sp,
+ 				 struct mlxsw_sp_fib_entry *fib_entry)
+ {
+-	struct fib_info *fi = mlxsw_sp_nexthop4_group_fi(fib_entry->nh_group);
+ 	u32 *p_dst = (u32 *) fib_entry->fib_node->key.addr;
+ 	int dst_len = fib_entry->fib_node->key.prefix_len;
+ 	struct mlxsw_sp_fib4_entry *fib4_entry;
+@@ -4250,7 +4250,7 @@ mlxsw_sp_fib4_entry_hw_flags_set(struct mlxsw_sp *mlxsw_sp,
+ 	should_offload = mlxsw_sp_fib_entry_should_offload(fib_entry);
+ 	fib4_entry = container_of(fib_entry, struct mlxsw_sp_fib4_entry,
+ 				  common);
+-	fri.fi = fi;
++	fri.fi = fib4_entry->fi;
+ 	fri.tb_id = fib4_entry->tb_id;
+ 	fri.dst = cpu_to_be32(*p_dst);
+ 	fri.dst_len = dst_len;
+@@ -4265,7 +4265,6 @@ static void
+ mlxsw_sp_fib4_entry_hw_flags_clear(struct mlxsw_sp *mlxsw_sp,
+ 				   struct mlxsw_sp_fib_entry *fib_entry)
+ {
+-	struct fib_info *fi = mlxsw_sp_nexthop4_group_fi(fib_entry->nh_group);
+ 	u32 *p_dst = (u32 *) fib_entry->fib_node->key.addr;
+ 	int dst_len = fib_entry->fib_node->key.prefix_len;
+ 	struct mlxsw_sp_fib4_entry *fib4_entry;
+@@ -4273,7 +4272,7 @@ mlxsw_sp_fib4_entry_hw_flags_clear(struct mlxsw_sp *mlxsw_sp,
+ 
+ 	fib4_entry = container_of(fib_entry, struct mlxsw_sp_fib4_entry,
+ 				  common);
+-	fri.fi = fi;
++	fri.fi = fib4_entry->fi;
+ 	fri.tb_id = fib4_entry->tb_id;
+ 	fri.dst = cpu_to_be32(*p_dst);
+ 	fri.dst_len = dst_len;
+@@ -4831,6 +4830,8 @@ mlxsw_sp_fib4_entry_create(struct mlxsw_sp *mlxsw_sp,
  	if (err)
- 		return err;
-@@ -4104,7 +4103,6 @@ mlxsw_sp_nexthop4_group_create(struct mlxsw_sp *mlxsw_sp, struct fib_info *fi)
- 		return ERR_PTR(-ENOMEM);
- 	nh_grp->priv = fi;
- 	INIT_LIST_HEAD(&nh_grp->fib_list);
--	nh_grp->neigh_tbl = &arp_tbl;
- 	nh_grp->type = MLXSW_SP_NEXTHOP_GROUP_TYPE_IPV4;
+ 		goto err_nexthop4_group_get;
  
- 	nh_grp->gateway = mlxsw_sp_fi_is_gateway(mlxsw_sp, fi);
-@@ -5373,6 +5371,9 @@ static int mlxsw_sp_nexthop6_init(struct mlxsw_sp *mlxsw_sp,
- 	nh->nh_grp = nh_grp;
- 	nh->nh_weight = rt->fib6_nh->fib_nh_weight;
- 	memcpy(&nh->gw_addr, &rt->fib6_nh->fib_nh_gw6, sizeof(nh->gw_addr));
-+#if IS_ENABLED(CONFIG_IPV6)
-+	nh->neigh_tbl = &nd_tbl;
-+#endif
- 	mlxsw_sp_nexthop_counter_alloc(mlxsw_sp, nh);
++	fib4_entry->fi = fen_info->fi;
++	fib_info_hold(fib4_entry->fi);
+ 	fib4_entry->prio = fen_info->fi->fib_priority;
+ 	fib4_entry->tb_id = fen_info->tb_id;
+ 	fib4_entry->type = fen_info->type;
+@@ -4852,6 +4853,7 @@ mlxsw_sp_fib4_entry_create(struct mlxsw_sp *mlxsw_sp,
+ static void mlxsw_sp_fib4_entry_destroy(struct mlxsw_sp *mlxsw_sp,
+ 					struct mlxsw_sp_fib4_entry *fib4_entry)
+ {
++	fib_info_put(fib4_entry->fi);
+ 	mlxsw_sp_nexthop4_group_put(mlxsw_sp, &fib4_entry->common);
+ 	mlxsw_sp_fib4_entry_type_unset(mlxsw_sp, &fib4_entry->common);
+ 	mlxsw_sp_fib_entry_priv_put(fib4_entry->common.priv);
+@@ -4883,8 +4885,7 @@ mlxsw_sp_fib4_entry_lookup(struct mlxsw_sp *mlxsw_sp,
+ 	if (fib4_entry->tb_id == fen_info->tb_id &&
+ 	    fib4_entry->tos == fen_info->tos &&
+ 	    fib4_entry->type == fen_info->type &&
+-	    mlxsw_sp_nexthop4_group_fi(fib4_entry->common.nh_group) ==
+-	    fen_info->fi)
++	    fib4_entry->fi == fen_info->fi)
+ 		return fib4_entry;
  
- 	list_add_tail(&nh->router_list_node, &mlxsw_sp->router->nexthop_list);
-@@ -5414,9 +5415,6 @@ mlxsw_sp_nexthop6_group_create(struct mlxsw_sp *mlxsw_sp,
- 	if (!nh_grp)
- 		return ERR_PTR(-ENOMEM);
- 	INIT_LIST_HEAD(&nh_grp->fib_list);
--#if IS_ENABLED(CONFIG_IPV6)
--	nh_grp->neigh_tbl = &nd_tbl;
--#endif
- 	nh_grp->type = MLXSW_SP_NEXTHOP_GROUP_TYPE_IPV6;
- 	mlxsw_sp_rt6 = list_first_entry(&fib6_entry->rt6_list,
- 					struct mlxsw_sp_rt6, list);
+ 	return NULL;
 -- 
 2.28.0
 
