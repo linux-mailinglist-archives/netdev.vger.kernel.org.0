@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C2812B165C
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 08:25:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF26B2B166C
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 08:28:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726325AbgKMHZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 02:25:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43876 "EHLO mail.kernel.org"
+        id S1726348AbgKMH22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 02:28:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44352 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726133AbgKMHZq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 02:25:46 -0500
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+        id S1726133AbgKMH22 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 02:28:28 -0500
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 27CDC20797;
-        Fri, 13 Nov 2020 07:25:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5AA9020825;
+        Fri, 13 Nov 2020 07:28:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605252345;
-        bh=fyFpUkmXI+91nudOGLPsLDWf4nslbcl2UmwUnjAtWFI=;
+        s=default; t=1605252507;
+        bh=aFSZmq6CmY872NVYczWKbqeDbiFmSqUs9woe1qxA3ZM=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Ao88GgYvL//H9ysQ6kM/seqVeaRDnZM2euh5tSokcvAk9dC8lo6dIhMXzCB3uKE+F
-         rsn0ARIUSV4eg94M5yVD4XX8L8iMZdDkzOELlx0NEg22mxvfAGza2lTWYLE0dxD+ry
-         YXsahSspGW91VegzwFgSi7UxJvEGhDYPNMc8V9rY=
-Received: by mail-ej1-f46.google.com with SMTP id cw8so11861265ejb.8;
-        Thu, 12 Nov 2020 23:25:45 -0800 (PST)
-X-Gm-Message-State: AOAM530x5rGmAF07OC/RF19wrrpVmlQd2rABwOPgFKppbBrOlWHNdOzM
-        dYEYpBxOUHu1Wkd21Ki4+/Et82Lpd9dQgb3nxIA=
-X-Google-Smtp-Source: ABdhPJyuf/IEWcY2xcADRIotc8slqeZFRlQp07bGOyY/9HllRFvbQq3cMOXR/Ypc9RrYDYYh1g0MSLSIFDxtiRyAfIo=
-X-Received: by 2002:a17:906:5618:: with SMTP id f24mr669714ejq.381.1605252343758;
- Thu, 12 Nov 2020 23:25:43 -0800 (PST)
+        b=xnIjS0kPyxsUP3PwmDqBKajxq+Bi9J3LtJzlbpTazwNtpa6xuSsB9HgPu2Aab1Xr4
+         7LyA8nJYuYjRIV6PlhzCT15UBKfAhbQG75v68fb1nToGAhWrH3Aa3CHwxwCP5+g2E9
+         XruFp6xfLmpU3Nt3JWr/SBdg6e1qV9xWRdwdxCKg=
+Received: by mail-ed1-f44.google.com with SMTP id l5so9508078edq.11;
+        Thu, 12 Nov 2020 23:28:27 -0800 (PST)
+X-Gm-Message-State: AOAM530KzP0Wpd0HTDsHq/7dqW4uEay7Cmt9pwKxv4SlVgmsgvFuQxhF
+        OqCMKdfEumvMMG8iuzhAKLXipOKqfWfq3/zN5+c=
+X-Google-Smtp-Source: ABdhPJzX45wQROgRz6lZDn+ZiPZq+vZct6Juvf3yLDM+v4ouuidXvKY3lWVBOY0mzD/VK4YlXT5dq0joBTxrIWQTZQs=
+X-Received: by 2002:aa7:d414:: with SMTP id z20mr1119954edq.143.1605252505837;
+ Thu, 12 Nov 2020 23:28:25 -0800 (PST)
 MIME-Version: 1.0
-References: <CGME20201113050719epcms2p7ba0a549e386259a01753714da1b79ea3@epcms2p7>
- <20201113050719epcms2p7ba0a549e386259a01753714da1b79ea3@epcms2p7>
-In-Reply-To: <20201113050719epcms2p7ba0a549e386259a01753714da1b79ea3@epcms2p7>
+References: <CGME20201113050919epcms2p7487583bf846376040a9874a7eb39fdae@epcms2p7>
+ <20201113050919epcms2p7487583bf846376040a9874a7eb39fdae@epcms2p7>
+In-Reply-To: <20201113050919epcms2p7487583bf846376040a9874a7eb39fdae@epcms2p7>
 From:   Krzysztof Kozlowski <krzk@kernel.org>
-Date:   Fri, 13 Nov 2020 08:25:32 +0100
-X-Gmail-Original-Message-ID: <CAJKOXPePgqWQpJjOeJ9U0jcNG7et6heAid2HnrPeWTDKXLUgjA@mail.gmail.com>
-Message-ID: <CAJKOXPePgqWQpJjOeJ9U0jcNG7et6heAid2HnrPeWTDKXLUgjA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] nfc: s3fwrn82: Add driver for Samsung
+Date:   Fri, 13 Nov 2020 08:28:14 +0100
+X-Gmail-Original-Message-ID: <CAJKOXPez5ZbuG3jgjNbhAbDrWoDa+UGAiRpi_fjSpB=D6geo6A@mail.gmail.com>
+Message-ID: <CAJKOXPez5ZbuG3jgjNbhAbDrWoDa+UGAiRpi_fjSpB=D6geo6A@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] nfc: s3fwrn82: Add driver for Samsung
  S3FWRN82 NFC Chip
 To:     bongsu.jeon@samsung.com
 Cc:     "kuba@kernel.org" <kuba@kernel.org>,
@@ -54,29 +54,38 @@ X-Mailing-List: netdev@vger.kernel.org
 On Fri, 13 Nov 2020 at 06:09, Bongsu Jeon <bongsu.jeon@samsung.com> wrote:
 >
 >
-> Add driver for Samsung S3FWRN82 NFC controller.
+> Add the device tree bindings for Samsung S3FWRN82 NFC controller.
 > S3FWRN82 is using NCI protocol and I2C communication interface.
 >
 > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
 > ---
->  drivers/nfc/Kconfig             |   1 +
->  drivers/nfc/Makefile            |   1 +
->  drivers/nfc/s3fwrn82/Kconfig    |  15 ++
->  drivers/nfc/s3fwrn82/Makefile   |  10 ++
->  drivers/nfc/s3fwrn82/core.c     | 133 +++++++++++++++
->  drivers/nfc/s3fwrn82/i2c.c      | 288 ++++++++++++++++++++++++++++++++
->  drivers/nfc/s3fwrn82/s3fwrn82.h |  86 ++++++++++
->  7 files changed, 534 insertions(+)
->  create mode 100644 drivers/nfc/s3fwrn82/Kconfig
->  create mode 100644 drivers/nfc/s3fwrn82/Makefile
->  create mode 100644 drivers/nfc/s3fwrn82/core.c
->  create mode 100644 drivers/nfc/s3fwrn82/i2c.c
->  create mode 100644 drivers/nfc/s3fwrn82/s3fwrn82.h
+>  .../devicetree/bindings/net/nfc/s3fwrn82.txt  | 30 +++++++++++++++++++
+>  1 file changed, 30 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt
+>
+> diff --git a/Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt b/Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt
+> new file mode 100644
+> index 000000000000..03ed880e1c7f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt
+> @@ -0,0 +1,30 @@
+> +* Samsung S3FWRN82 NCI NFC Controller
+> +
+> +Required properties:
+> +- compatible: Should be "samsung,s3fwrn82-i2c".
+> +- reg: address on the bus
+> +- interrupts: GPIO interrupt to which the chip is connected
+> +- en-gpios: Output GPIO pin used for enabling/disabling the chip
+> +- wake-gpios: Output GPIO pin used to enter firmware mode and
+> +  sleep/wakeup control
+> +
 
-No, this is a copy of existing s3fwrn5.
+The bindings should be the first file in the series. However it does
+not really matter as this patch should be part of the existing s3fwrn5
+driver.
 
-Please do not add drivers which are duplicating existing ones but
-instead work on extending them.
+When submitting bindings, please use the title to match the bindings
+and use YAML format.
 
 Best regards,
 Krzysztof
