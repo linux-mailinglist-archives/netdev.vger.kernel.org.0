@@ -2,132 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB7EE2B1B17
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 13:26:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EB5E2B1B35
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 13:35:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726554AbgKMM00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 07:26:26 -0500
-Received: from mail-bn8nam11on2041.outbound.protection.outlook.com ([40.107.236.41]:7744
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726405AbgKMM0Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 07:26:25 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QEAUZkLots3XOaD1ADG8EEpdsfbB7ZLjTZMWyECYT8szfnDz6YRxbfus+8yv6K77nOZ688OkanbCAfMLkoVst49Txe/3FokK6acFlxuZr0oSsVMHbGFt8q/diShnbvjm3fRaGqOvzq1hVOvGa2M5QjEzClC7D6SXD7PlWZGj3dYNCH49dPyT9+oqNoN4SHq2QXUrtkhQN34hdK14ExTAp7+CodAjDULceOwb3fDM8GSr2sk7FuenAaHAioPcMgnIcQ9eMcS5HHO/aeqpIRa6JTB1oLg/IZnRhmouVxdSoiubTtcOLo36YK3MSvXKFi7M+RpgWpGwau8TfsAqFoI/pA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0I+PkPESAdqUTFKr84KSx5S6CHhJ2etNaraPjSN98yE=;
- b=BncM76asoqHjOoqtkt+Q7b5emwAk8tKJLCca7Taq3VaryelyKqABMsP9YSzM+liccnVhSDoX4B3lCWw9ejSYjVhjd0/cNGI/V6xXyE31u7gu/Ix/2zAUbhXuS1hElSZ+g3FSuVPkxxjJA9Qlb/4wLmcHiYDm0reDLO6m/RFE/9nZLd63k5GEFCANxMGlixGrVgEnAF/C2Ax/UGxD4Rr3uF0KH2KQR/OZitfW2IBFB/rJF8ou42M59QOXA4dyMQ0+LbCh17/4AL0ApxqounolLfp4WttHOK+oiAuHWiaHuctob2drPxX8g01hViIaRNFzWSnQdV13/ztgejqABWGbig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+        id S1726279AbgKMMfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 07:35:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726160AbgKMMfe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 07:35:34 -0500
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6DBC0613D1;
+        Fri, 13 Nov 2020 04:35:34 -0800 (PST)
+Received: by mail-qt1-x843.google.com with SMTP id j31so6486551qtb.8;
+        Fri, 13 Nov 2020 04:35:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=windriversystems.onmicrosoft.com;
- s=selector2-windriversystems-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0I+PkPESAdqUTFKr84KSx5S6CHhJ2etNaraPjSN98yE=;
- b=L5sKYoFxF746Qwo8MKv3EunvUp2BHrvlba+LwGul8t//0mBgPqJdJ8EsqGu81eK38gJwVapqdhFxAx0KBm4D1yY9A5CrTZ74EVtOdJpsMH2dhY2/gsFc0N2gYIdMTpLwfzBBhyhs0x/dCVM47w9Y5MqOrlkz0i92s74GK7OsxUE=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=windriver.com;
-Received: from DM6PR11MB2603.namprd11.prod.outlook.com (2603:10b6:5:c6::21) by
- DM6PR11MB4075.namprd11.prod.outlook.com (2603:10b6:5:198::25) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3541.22; Fri, 13 Nov 2020 12:26:23 +0000
-Received: from DM6PR11MB2603.namprd11.prod.outlook.com
- ([fe80::54f7:13ae:91ef:6ae4]) by DM6PR11MB2603.namprd11.prod.outlook.com
- ([fe80::54f7:13ae:91ef:6ae4%5]) with mapi id 15.20.3541.025; Fri, 13 Nov 2020
- 12:26:23 +0000
-Subject: Re: [PATCH] tipc: fix -Wstringop-truncation warnings
-To:     Kang Wenlin <wenlin.kang@windriver.com>, jmaloy@redhat.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-References: <20201112093442.8132-1-wenlin.kang@windriver.com>
-From:   Ying Xue <ying.xue@windriver.com>
-Autocrypt: addr=ying.xue@windriver.com; keydata=
- xjMEX1nnURYJKwYBBAHaRw8BAQdAZxROH3r87AOhslT5tP2cdYcg89+pbHiYf+LIny/C0fLN
- GDx5aW5nLnh1ZUB3aW5kcml2ZXIuY29tPsJ3BBAWCgAfBQJfWedRBgsJBwgDAgQVCAoCAxYC
- AQIZAQIbAwIeAQAKCRC3Qmz/Z9beRSLiAP9kPgF+mG4F3elbrVTen/sybJfZidnvF1YVq5Ho
- sUbt+wEA6ByAVvGqlEbt4SE1JP6xVgTzwlwihyCgl/byRAQzeg7OOARfWedREgorBgEEAZdV
- AQUBAQdAsdHm3QQyX4RnhnVEmywHpipu0cUyHWeuAkYuLavc5QYDAQgHwmEEGBYIAAkFAl9Z
- 51ECGwwACgkQt0Js/2fW3kXZKAEA0jTzhaLbmprQxi1BbUmAYtlpQCrrjCWdpFGwt5O3yO8A
- /jVE1VxnEgu71mYXX1QE1Lngk+SPVEfLm0BVZFk9fBAA
-Message-ID: <11e23a8d-766d-fb65-40ce-c7a1fdf00c3c@windriver.com>
-Date:   Fri, 13 Nov 2020 20:26:13 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20201112093442.8132-1-wenlin.kang@windriver.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [60.247.85.82]
-X-ClientProxiedBy: HK2PR0401CA0008.apcprd04.prod.outlook.com
- (2603:1096:202:2::18) To DM6PR11MB2603.namprd11.prod.outlook.com
- (2603:10b6:5:c6::21)
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VKlKeJt6j/nd89hl/EdvrjFiwHbcFs5p36oJMPj3OLA=;
+        b=jSHyDfTM+nkmOJFb6Qar7Urz3nLfaOtK4DGeCnk8qfQ3Fj+xnEh5j2QCOoYApqJKwA
+         ZwNagcLgId9b7abZd7usvPky6UgCORYqURM5HQNktmDQzBb4B0o6ya8lF6OuumE6uMS9
+         mrcxVclr2yr23hniN5Xrdc4frVQnb/n7f7Vvnx2+4rYK2cVJ/Glz6ZLraBSYHtFtBRCS
+         uRWANcOI5y88sSMLg75D3Fg8dfh5c/6+Jl310uwTI/wHsgNd97ltgTG/kcGM4rMrPbke
+         eV7Kibv334sqrqBZak0Kawx/ooOBAOXmQtMQZ8OhPJDpxinqLyGY2IZIm/eRU/pMrWBa
+         4Stg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VKlKeJt6j/nd89hl/EdvrjFiwHbcFs5p36oJMPj3OLA=;
+        b=fk6FeM3jpwgndXf7bN3uAIl8lnbKl7Ty5n6z/E/XUppGCBREH/v0kIXLW1woH/kRTa
+         Ro9OZns8VtCmDH+MJRWLrIooiMk+mH4mZFQ87FvvwweXc5Xb0iiUzGsU7ckfVWifRjK1
+         bCPXs5Q1zdj48Alv6OXF/9utQ8WOT8dzniFl/sW0iUpN8Yog2HQPsrYLegmra7dRso5D
+         TKdMIiY4yGJaKt6LgZiwSGsg4dwvP9pgvxMqoV92Bby6T2muardswMRjXrDdU3XmP4sM
+         kI+B7kxyrtSDwxdPeCK1Ms6mrVOFRWn/EhYwPqzroIZKn5sLI+Zr6yoh1jV1CErbPgVV
+         CmBg==
+X-Gm-Message-State: AOAM530XlgJoLWZDlGkHOpnOhg8jRx2l9nbFzgDRdd8ZXNPSZbMNXfqe
+        ObYUFz7EClvo9lBosyOlXTU=
+X-Google-Smtp-Source: ABdhPJx5xluZ9NGeQOx5YFwjwX0lso3xymI79JSzCTvlDDzhIo5Gk9ApxDVoA4IUfNua16U1rXFGEQ==
+X-Received: by 2002:ac8:734a:: with SMTP id q10mr1617926qtp.389.1605270933087;
+        Fri, 13 Nov 2020 04:35:33 -0800 (PST)
+Received: from localhost.localdomain ([2001:1284:f013:9364:c85c:d058:8418:f787])
+        by smtp.gmail.com with ESMTPSA id p127sm6429215qkc.37.2020.11.13.04.35.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Nov 2020 04:35:32 -0800 (PST)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id E24EBC2B35; Fri, 13 Nov 2020 09:35:29 -0300 (-03)
+Date:   Fri, 13 Nov 2020 09:35:29 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: Re: [PATCH net] sctp: change to hold/put transport for
+ proto_unreach_timer
+Message-ID: <20201113123529.GI3913@localhost.localdomain>
+References: <7cb07ff74acd144f14a4467c7dddd12a940fbf52.1605259104.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [128.224.155.152] (60.247.85.82) by HK2PR0401CA0008.apcprd04.prod.outlook.com (2603:1096:202:2::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21 via Frontend Transport; Fri, 13 Nov 2020 12:26:20 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d80f7892-834d-412e-a385-08d887cf5562
-X-MS-TrafficTypeDiagnostic: DM6PR11MB4075:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR11MB4075DEFB00F9E438692E3CD984E60@DM6PR11MB4075.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gYvjYCZuUquf6FsZ7hsKBEJcR0OhWhFvi1Jth0xZWabkkTPq1l2iCOtv5etvrZI6qgPT+m/ChoiSe0jLZzNDWyh+GgPlfCSLA8VxIcPK/HXYvTehRlJPekBl41gpzc27ZGM8Ub9tCM0rk38h3mZUVrpWaOLzmci91d8xjXgWpkhWcjae1MXMUHqOdCU99/jO+PmAWoQYpZV1vfBpTqgDSTo1lWpgEDbZxGO2WX9VszykkK3LUShfWrvilPvmsvzE2XZDj+p0uoU+5an1TxjUHnWCpGBMVLeu4XQ3T3NhvxtNPNj8Zwur6USJG3k1iFjQQz1d/ILKjNkZPd2i6xmpmzxKcVAbmLcOb7lDkiFI0sux3AbnAdyJDtuYVRl2RhuDwPye8ZE8HupMUNKtIboezA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(396003)(376002)(39850400004)(136003)(2616005)(5660300002)(66476007)(16576012)(8936002)(83380400001)(52116002)(8676002)(66556008)(66946007)(6706004)(36756003)(478600001)(956004)(316002)(6666004)(86362001)(44832011)(31696002)(53546011)(6486002)(186003)(2906002)(26005)(31686004)(16526019)(4326008)(78286007)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: JxFoefKlfe2VglSU4S3O5NzRhpoGl5q1PV5DsKaxK5ZwzeH9KiXRqQbAwyPSlpufs9yRI+DtJ3S2gapxKdaLvLj4ayxEACg95L5olWeQpC1DlsZVslU33gpDzS6mIMk+0WYVgdIFtU5MTIMAqDTQ+XWOtYOuRjevxD2lk058iLRYpCVRy102322n6HsHBtGkSDMZJO8lrRul9GVK4NQxsezKt6r0CKtcxxH+hIPDensBZVI6WTMAWtLqf5EI64KJ5pN3mhIWahJsRQlCxntMz/NQDPfQjEZN62pYYmmMfyCQw0vXKLMx5LBknaI6YchOSfNBuzbUBQjHulOkEo7andKKegNTtPHpBiNrzH4AqxWGlQA5Q3YaWN2FGQj8/N4SdM8+iRTduf1RwiSJH3NBuEnZOhUDtwbwcDYn/ymG2JU1wT4TU4IQnPW+8VGu0RV2aJlmP+2ozLHi2zuXC6tL6JaHzNG+J5+XZLYG13BZ5TkvWFtSUbhxdLZE2It1zeXu4WgVKKJGqzJhsNaaWQgQb/3f0Cx3ZoL9SISQzY36e37XfkWpGwNxpNr2bc3ApKLZAZmhpz/z2G1y3Efr0OX+KFam7xeXyux/H+ex0Fb6DLghLsgcDhoKs0DF6+uvOcqs0sfidxJcF978Lh5DTbzDVA==
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d80f7892-834d-412e-a385-08d887cf5562
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2020 12:26:23.7890
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: x1MJfQc9CkkftZlyzvFaUEYNpV9ePVAXrTaPOwXN6XiRqr7lIFi7PljZyMG3vTRrfKq36nCMBJIWoGZM/YWsAg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4075
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7cb07ff74acd144f14a4467c7dddd12a940fbf52.1605259104.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/12/20 5:34 PM, Kang Wenlin wrote:
-> From: Wenlin Kang <wenlin.kang@windriver.com>
-> 
-> Replace strncpy() with strscpy(), fixes the following warning:
-> 
-> In function 'bearer_name_validate',
->     inlined from 'tipc_enable_bearer' at net/tipc/bearer.c:246:7:
-> net/tipc/bearer.c:141:2: warning: 'strncpy' specified bound 32 equals destination size [-Wstringop-truncation]
->   strncpy(name_copy, name, TIPC_MAX_BEARER_NAME);
->   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> Signed-off-by: Wenlin Kang <wenlin.kang@windriver.com>
+Hi,
 
-Acked-by: Ying Xue <ying.xue@windriver.com>
+On Fri, Nov 13, 2020 at 05:18:24PM +0800, Xin Long wrote:
+...
+> diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
+> index 813d307..0a51150 100644
+> --- a/net/sctp/sm_sideeffect.c
+> +++ b/net/sctp/sm_sideeffect.c
+> @@ -419,7 +419,7 @@ void sctp_generate_proto_unreach_event(struct timer_list *t)
+>  		/* Try again later.  */
+>  		if (!mod_timer(&transport->proto_unreach_timer,
+>  				jiffies + (HZ/20)))
+> -			sctp_association_hold(asoc);
+> +			sctp_transport_hold(transport);
+>  		goto out_unlock;
+>  	}
+>  
 
-> ---
->  net/tipc/bearer.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
-> index 650414110452..2241d5a38f7b 100644
-> --- a/net/tipc/bearer.c
-> +++ b/net/tipc/bearer.c
-> @@ -139,10 +139,7 @@ static int bearer_name_validate(const char *name,
->  	u32 if_len;
+The chunk above covers the socket busy case, but for the normal cases
+it also needs:
+
+@@ -435,7 +435,7 @@ void sctp_generate_proto_unreach_event(struct timer_list *t)
+
+ out_unlock:
+        bh_unlock_sock(sk);
+-       sctp_association_put(asoc);
++       sctp_transport_put(asoc);
+ }
+
+  /* Handle the timeout of the RE-CONFIG timer. */
+
+> diff --git a/net/sctp/transport.c b/net/sctp/transport.c
+> index 806af58..60fcf31 100644
+> --- a/net/sctp/transport.c
+> +++ b/net/sctp/transport.c
+> @@ -133,7 +133,7 @@ void sctp_transport_free(struct sctp_transport *transport)
 >  
->  	/* copy bearer name & ensure length is OK */
-> -	name_copy[TIPC_MAX_BEARER_NAME - 1] = 0;
-> -	/* need above in case non-Posix strncpy() doesn't pad with nulls */
-> -	strncpy(name_copy, name, TIPC_MAX_BEARER_NAME);
-> -	if (name_copy[TIPC_MAX_BEARER_NAME - 1] != 0)
-> +	if (strscpy(name_copy, name, TIPC_MAX_BEARER_NAME) < 0)
->  		return 0;
+>  	/* Delete the ICMP proto unreachable timer if it's active. */
+>  	if (del_timer(&transport->proto_unreach_timer))
+> -		sctp_association_put(transport->asoc);
+> +		sctp_transport_put(transport);
 >  
->  	/* ensure all component parts of bearer name are present */
-> 
+>  	sctp_transport_put(transport);
+
+Btw, quite noticeable on the above list of timers that only this timer
+was using a reference on the asoc. Seems we're good now, then. :-)
+
+  Marcelo
