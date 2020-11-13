@@ -2,76 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 927072B186E
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 10:38:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 193612B18A1
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 10:48:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726648AbgKMJim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 04:38:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726526AbgKMJij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 04:38:39 -0500
-Received: from confino.investici.org (confino.investici.org [IPv6:2a00:c38:11e:ffff::a020])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F58BC0613D6;
-        Fri, 13 Nov 2020 01:38:38 -0800 (PST)
-Received: from mx1.investici.org (unknown [127.0.0.1])
-        by confino.investici.org (Postfix) with ESMTP id 4CXYLd6R7pz1132;
-        Fri, 13 Nov 2020 09:38:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=privacyrequired.com;
-        s=stigmate; t=1605260313;
-        bh=OAJ5KD0r/OiDibphGT3PLYWsOfovB3Nb036IIl60DlI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p+xYWWwQ9P8uwg66bDh8CY/ajVi/Sg48dLNwc8N9xrcJnOqbJtMbSi9AeQwmL85Ek
-         /8zs+5KHV6duTGCgj89Pw72UzNW1yViQigjraxSkr3YYouQKyH0+1e4QK9pTkuzrKU
-         evxR3j+6lzyKiubkcqqVPXfmx6CcksrUF/yxdQG8=
-Received: from [212.103.72.250] (mx1.investici.org [212.103.72.250]) (Authenticated sender: laniel_francis@privacyrequired.com) by localhost (Postfix) with ESMTPSA id 4CXYLd5K1Bz112w;
-        Fri, 13 Nov 2020 09:38:33 +0000 (UTC)
-From:   Francis Laniel <laniel_francis@privacyrequired.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-hardening@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Subject: Re: [PATCH v4 2/3] Modify return value of nla_strlcpy to match that of strscpy.
-Date:   Fri, 13 Nov 2020 10:38:33 +0100
-Message-ID: <3167137.UV11EXrnFd@machine>
-In-Reply-To: <202010301217.7EF0009E83@keescook>
-References: <20201030153647.4408-1-laniel_francis@privacyrequired.com> <20201030153647.4408-3-laniel_francis@privacyrequired.com> <202010301217.7EF0009E83@keescook>
+        id S1726336AbgKMJsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 04:48:31 -0500
+Received: from dyslmr.btconnect.com ([193.113.5.105]:45405 "EHLO
+        mail.btconnect.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726149AbgKMJsa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 04:48:30 -0500
+X-Greylist: delayed 321 seconds by postgrey-1.27 at vger.kernel.org; Fri, 13 Nov 2020 04:48:30 EST
+Received: from mail.btconnect.com (dy11780omr11.iuser.iroot.adidom.com [10.35.83.172])
+        by dy11780slr11.dci.bt.com (MOS 4.4.8-GA)
+        with ESMTP id BBL22176;
+        Fri, 13 Nov 2020 09:41:26 GMT
+Received: (from localhost [127.0.0.1])
+        by dy11780omr11.dci.bt.com (MOS 4.4.8-GA)
+        id XKP13044;
+        Fri, 13 Nov 2020 09:40:46 +0000 (GMT)
+Received: from 103.207.37.59 (EHLO User) ([103.207.37.59])
+        by dy11780omr11.dci.bt.com
+        with ESMTP id XKP10796 (AUTH roypope@btconnect.com);
+        Fri, 13 Nov 2020 09:40:06 +0000 (GMT)
+Reply-To: <mariaforlife2@gmail.com>
+From:   "Mrs Maria Talley" <roypope@btconnect.com>
+Subject: May the Peace of the Lord be with you
+Date:   Fri, 13 Nov 2020 01:40:05 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain;
+        charset="Windows-1251"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
+Message-Id: <202011130940.XKP10796@dy11780omr11.dci.bt.com>
+X-Mirapoint-IP-Reputation: reputation=Worst-1,
+        source=Queried,
+        refid=tid=0001.0A782F8F.5FAE528F.0013,
+        actions=tag
+X-Junkmail: UCE(55)
+X-Junkmail-Status: score=55/50, host=dy11780omr11.dci.bt.com
+X-Junkmail-Signature-Raw: score=bulk(5),
+        refid=str=0001.0A782F1E.5FAE29CC.0012,ss=3,sh,re=0.000,recu=0.000,reip=0.000,cl=3,cld=1,fgs=0,
+        ip=103.207.37.59,
+        so=2016-11-06 16:00:04,
+        dmn=2013-03-21 17:37:32,
+        mode=multiengine
+X-Junkmail-IWF: false
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le vendredi 30 octobre 2020, 20:25:38 CET Kees Cook a =E9crit :
-> On Fri, Oct 30, 2020 at 04:36:46PM +0100, laniel_francis@privacyrequired.=
-com=20
-wrote:
-> > diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-> > index 2a76a2f5ed88..f9b053b30a7b 100644
-> > --- a/net/sched/sch_api.c
-> > +++ b/net/sched/sch_api.c
-> > @@ -1170,7 +1170,7 @@ static struct Qdisc *qdisc_create(struct net_devi=
-ce
-> > *dev,>=20
-> >  #ifdef CONFIG_MODULES
-> > =20
-> >  	if (ops =3D=3D NULL && kind !=3D NULL) {
-> >  =09
-> >  		char name[IFNAMSIZ];
-> >=20
-> > -		if (nla_strlcpy(name, kind, IFNAMSIZ) < IFNAMSIZ) {
-> > +		if (nla_strlcpy(name, kind, IFNAMSIZ) > 0) {
-> >=20
-> >  			/* We dropped the RTNL semaphore in order to
-> >  		=09
-> >  			 * perform the module load.  So, even if we
-> >  			 * succeeded in loading the module we have to
->=20
-> Oops, I think this should be >=3D 0 ?
-
-Good catch! I will modify this, rebase my patch on top of master, test it a=
-=20
-bit more than what I did for the v4 and push  v5!
-
-
-
+May the Peace of the Lord be with you!
+ 
+Please this is an urgent solicitation for assistance, I'm Mrs Maria Talley from United States of America, but I lived in London for many years. I am 54 years old. I was diagnosed of cancer for about 2 years ago. This letter comes from a devastated, sorrowful and emotional laden soul that needs compassion from a kind and conscience driven person. I need someone who has a sincere compassionate heart of international humanitarian charity. There is some properties left by my late husband, which I sold, because the doctor had diagnosed me that I am in my last days, that I can not live anymore longer, so I have to sale all those properties that was left by my late husband.
+ 
+I have deposited the sum of $9.5 Million in a Bank in United States of America, which I sold from my properties and deposited it in New York City Bank in America. I want you to help me use this funds to help the less privilege, the motherless baby homes and hospitals in your country before I die. I want you to take 40 percent of the total money for your personal use, while 60% of the money will go to charity. I will appreciate your utmost confidentiality and trust in this matter to accomplish my heart desire, as I don't want anything that will jeopardize my last wish. If you are a good and honest person write back to me for more.
+ 
+Thanks and God bless you,
+Mrs Maria Talley
