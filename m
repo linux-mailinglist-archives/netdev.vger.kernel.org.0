@@ -2,108 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED1692B1AB8
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 13:05:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F2FB2B1AB5
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 13:05:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727076AbgKMMEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 07:04:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
+        id S1727031AbgKMMEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 07:04:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726536AbgKMLfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 06:35:53 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9811BC0617A6;
-        Fri, 13 Nov 2020 03:34:21 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id 33so9415345wrl.7;
-        Fri, 13 Nov 2020 03:34:21 -0800 (PST)
+        with ESMTP id S1726499AbgKMLf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 06:35:58 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5798C061A48
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 03:35:57 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id y7so7367947pfq.11
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 03:35:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GMSoaYGH0pA9Jq20ijPobnsXJLhxhfT0yN3dukQKp6A=;
-        b=LQlxVlKrvCkLWpBdDs/58N3IpmTopAyTws9kNHZKVjci2aBi1KeRGvBuLX3Spgfi5e
-         zpsWdcAR5ty1QGG1399GotlpH1BqS5IYBsNKJDMIjqQQXunfMczgQrn1490UCWHS6P4d
-         3OwmNxDiFuwYS8ZGX/dAzL/8PBFBlsS1pGuHYAbKe0jDT8JvUG2RmWO2ShVciJ/YK/ql
-         ANmrM28vnx9onF4QRkv0o6w6p2+JYDrxbAYPfFE5B+X6ddFHhbkdMUiVKcZ4po1o8Td2
-         W3oocH6cjfpeFTp63SmGwJuwj6OHv7l+Rh9OSMNDqwkjTEOq1sgE8ugKM0f4F6lKBAFF
-         Xm+A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bueBjhTpqUKjS9jxHJGqHsIOsYGFZLXQ7NH/5MiUfa4=;
+        b=MJnCkhhvldE/3sTC8i+9pnoRLX5+U8HSUTG3UXRQg8DIMrnjZ/bF/nFujoG4sj0tFu
+         CeVbRA6Zxby7B9YPNYmRDG0/Q2+3UxyEser6WVvIFLfFAYyHnSUpZwfngieWdGoMZXgk
+         3igzOPkv9Jt9gYmyq6I4l+Beuw0RsyN0htMz+hQT1Z95TNSOEMKdFLaObWYRymvX+8C6
+         fzrHjC/0VbhE7ck4uoDPlGlrj3NrD3r9wt5AXdY+g52z+mqfB8peZY4zSYJvN/j1JRRH
+         qV4lMeqOoh8mIzvxJfr+jEerZ12KzyozpL7EE1ZditzgEteD+u3rsaqtWDrjSNe7+zuX
+         rPHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=GMSoaYGH0pA9Jq20ijPobnsXJLhxhfT0yN3dukQKp6A=;
-        b=NXL/d17CWz4UNPlCI0yqbGkA0xLhecFmQE+HEwQerFpKk1cqcL6jYRhz3BOXnT+p06
-         ZxG6Dz9wT2/Gw0wedGlJL2VegjWC9tLl2kc6fz0PmTSf+i7GOr6PhPDCff3Ejrv6BmxX
-         ZESc7W7KQjbUc9Hv+/bLJ/hnwf0Hjt79vYNJ2lpyE3NN8c9Z5ReuuhmLBPXmUUyhEQqN
-         r9rqJKGYmdUATOGMRmNP+wIjhnemQu8wb0z2QuNiZLnULTSH8exlvhZGl6+7C6y7NkhW
-         Up3WHUUt8bZ8AWzsFKLdXAsv7yZQh+wGy1mr5UGm/eX/0t6Xb6fYpgOJplr9oZY5lfRi
-         7GtQ==
-X-Gm-Message-State: AOAM530Fe/gtf9NO4trdsOyXg9Kj8o3RE0rZtMyElKUGe7SGSxiRznZ6
-        uKxPb0SxaXobvcjWGmIxvDU=
-X-Google-Smtp-Source: ABdhPJyzAQ2D5zO01xFQdEApfeD/HaEk9Rw5kL9gKvfUGhUiYT0F9Hi4TU3agolrFc6X50eVsg9zgg==
-X-Received: by 2002:adf:cf0b:: with SMTP id o11mr2844517wrj.162.1605267260409;
-        Fri, 13 Nov 2020 03:34:20 -0800 (PST)
-Received: from [192.168.8.114] ([37.167.2.65])
-        by smtp.gmail.com with ESMTPSA id g23sm9865657wmh.21.2020.11.13.03.34.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Nov 2020 03:34:19 -0800 (PST)
-Subject: Re: csum_partial() on different archs (selftest/bpf)
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Cc:     Tom Herbert <tom@herbertland.com>,
-        Anders Roxell <anders.roxell@gmail.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-References: <CAJ+HfNiQbOcqCLxFUP2FMm5QrLXUUaj852Fxe3hn_2JNiucn6g@mail.gmail.com>
+        bh=bueBjhTpqUKjS9jxHJGqHsIOsYGFZLXQ7NH/5MiUfa4=;
+        b=hAbE0yzRbrxC8YW7RtuiFQVj7GB9IJz08o6OD8J9jNdmLw4d9/5Jj1cx+J/6llWwS+
+         1CBL8py2gECUnLs7fTr20dDcpTyNX2paoAVMQ6n/6Dn+u9VkdqPSF7G+ivfS0eR3kZ71
+         RDFnKURQAcUCwdIYwU7UzCiTkAkJAB1NWpTg+vkxH5N2sBov5JTMcpGg1uMWwSp69yFH
+         V5VkAPCQzVBul3PqJ6WIJwAQYtZhixaQUBLpJzRbsjMwDc5vbY0NVPF1DlN2GQrW1QfQ
+         OrymKPSlxg8H3uGvQRbdZIhkilJPwxajzwvemEQPUmuZpAtHjAdiCYKJCxOSZrKz+hcR
+         31EA==
+X-Gm-Message-State: AOAM530Lj1PLO/UWUFL17ZX4PnAjkuarkiRe0zxneeZ4MQjootpmweZC
+        u7S/0Lt114cCp2haQCCt3cbn3nVQ8TI=
+X-Google-Smtp-Source: ABdhPJxkJ8Uo+bM7H2+czkSS7Wf1EgEK+H/86lVhtNb1dJ1NF96KpVD81RZaDoI+glXlwE062JPzAA==
+X-Received: by 2002:a17:90b:100f:: with SMTP id gm15mr2346983pjb.63.1605267357390;
+        Fri, 13 Nov 2020 03:35:57 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
+        by smtp.gmail.com with ESMTPSA id gf17sm10415641pjb.15.2020.11.13.03.35.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Nov 2020 03:35:56 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <e23c63dd-5f90-c273-615f-d5d67991529c@gmail.com>
-Date:   Fri, 13 Nov 2020 12:34:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.1
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next] inet: unexport udp{4|6}_lib_lookup_skb()
+Date:   Fri, 13 Nov 2020 03:35:53 -0800
+Message-Id: <20201113113553.3411756-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.29.2.299.gdc1121823c-goog
 MIME-Version: 1.0
-In-Reply-To: <CAJ+HfNiQbOcqCLxFUP2FMm5QrLXUUaj852Fxe3hn_2JNiucn6g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Eric Dumazet <edumazet@google.com>
 
+These functions do not need to be exported.
 
-On 11/13/20 11:36 AM, Björn Töpel wrote:
-> I was running the selftest/bpf on riscv, and had a closer look at one
-> of the failing cases:
-> 
->   #14/p valid read map access into a read-only array 2 FAIL retval
-> 65507 != -29 (run 1/1)
-> 
-> The test does a csum_partial() call via a BPF helper. riscv uses the
-> generic implementation. arm64 uses the generic csum_partial() and fail
-> in the same way [1]. arm (32-bit) has a arch specfic implementation,
-> and fail in another way (FAIL retval 131042 != -29) [2].
-> 
-> I mimicked the test case in a userland program, comparing the generic
-> csum_partial() to the x86 implementation [3], and the generic and x86
-> implementation does yield a different result.
-> 
-> x86     :    -29 : 0xffffffe3
-> generic :  65507 : 0x0000ffe3
-> arm     : 131042 : 0x0001ffe2
-> 
-> Who is correct? :-) It would be nice to get rid of this failed case...
-> 
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/ipv4/udp.c | 1 -
+ net/ipv6/udp.c | 1 -
+ 2 files changed, 2 deletions(-)
 
-There are all the same value :), they all fold to u16  0xFFE3
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index c732f5acf720d14285bc851d965851a572643051..a3f105227ccca132a8479e3ee3580495731b530b 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -550,7 +550,6 @@ struct sock *udp4_lib_lookup_skb(const struct sk_buff *skb,
+ 				 iph->daddr, dport, inet_iif(skb),
+ 				 inet_sdif(skb), &udp_table, NULL);
+ }
+-EXPORT_SYMBOL_GPL(udp4_lib_lookup_skb);
+ 
+ /* Must be called under rcu_read_lock().
+  * Does increment socket refcount.
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index e152f8000db4d0487afb2966d7f978e804fce281..9008f5796ad424937ca5a1df9542afc7d313b7e4 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -285,7 +285,6 @@ struct sock *udp6_lib_lookup_skb(const struct sk_buff *skb,
+ 				 &iph->daddr, dport, inet6_iif(skb),
+ 				 inet6_sdif(skb), &udp_table, NULL);
+ }
+-EXPORT_SYMBOL_GPL(udp6_lib_lookup_skb);
+ 
+ /* Must be called under rcu_read_lock().
+  * Does increment socket refcount.
+-- 
+2.29.2.299.gdc1121823c-goog
 
-Maybe the test needs a fix, there is a missing folding.
-
-> 
-> Thanks,
-> Björn
-> 
-> 
-> [1] https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20201112/testrun/3430401/suite/kselftest/test/bpf.test_verifier/log
-> [2] https://qa-reports.linaro.org/lkft/linux-mainline-master/build/v5.10-rc3-207-g585e5b17b92d/testrun/3432361/suite/kselftest/test/bpf.test_verifier/log
-> [3] https://gist.github.com/bjoto/dc22d593aa3ac63c2c90632de5ed82e0
-> 
