@@ -2,73 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 659F22B211E
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:55:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DB132B2120
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:56:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726290AbgKMQzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 11:55:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45732 "EHLO mail.kernel.org"
+        id S1726166AbgKMQ4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 11:56:30 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:53754 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725967AbgKMQzu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 11:55:50 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 200D0217A0;
-        Fri, 13 Nov 2020 16:55:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605286549;
-        bh=4H30enNVLBKMJxvF1mJLsMBpRJaW//i/7xsd63EXN/4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=0Ka5X3T+ELCdOBY16R5w33GK1KM6qm18goc2Cpgk4wip9dynJTSddWtiGStMUfAKb
-         hOvxfMxVYWVt8ffW1Q06Mu1TkDkV44gZ6PwP5yS8Y77ejF/Jd/Z8/O236eAqnvq8kT
-         AcXNDclLMReBHkIJ5fvUDrP8Oj4eFUQEHkSjFdF4=
-Date:   Fri, 13 Nov 2020 08:55:47 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Andrea Mayer <andrea.mayer@uniroma2.it>,
+        id S1725967AbgKMQ4a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 11:56:30 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kdcN7-006sp2-4r; Fri, 13 Nov 2020 17:56:25 +0100
+Date:   Fri, 13 Nov 2020 17:56:25 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steve McIntyre <steve@einval.com>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>, Willy Liu <willy.liu@realtek.com>,
         "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Shrijeet Mukherjee <shrijeet@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
-Subject: Re: [net-next,v2,4/5] seg6: add support for the SRv6 End.DT4
- behavior
-Message-ID: <20201113085547.68e04931@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <34d9b96f-a378-4817-36e8-3d9287c5b76b@gmail.com>
-References: <20201107153139.3552-1-andrea.mayer@uniroma2.it>
-        <20201107153139.3552-5-andrea.mayer@uniroma2.it>
-        <20201110151255.3a86afcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201113022848.dd40aa66763316ac4f4ffd56@uniroma2.it>
-        <34d9b96f-a378-4817-36e8-3d9287c5b76b@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Masahisa Kojima <masahisa.kojima@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: Re: Re: realtek PHY commit bbc4d71d63549 causes regression
+Message-ID: <20201113165625.GN1456319@lunn.ch>
+References: <20201017230226.GV456889@lunn.ch>
+ <20201029143934.GO878328@lunn.ch>
+ <20201029144644.GA70799@apalos.home>
+ <2697795.ZkNf1YqPoC@kista>
+ <CAK8P3a2hBpQAsRekNyauUF1MgdO8CON=77MNSd0E-U1TWNT-gA@mail.gmail.com>
+ <20201113144401.GM1456319@lunn.ch>
+ <CAK8P3a2iwwneb+FPuUQRm1JD8Pk54HCPnux4935Ok43WDPRaYQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a2iwwneb+FPuUQRm1JD8Pk54HCPnux4935Ok43WDPRaYQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Nov 2020 18:49:17 -0700 David Ahern wrote:
-> On 11/12/20 6:28 PM, Andrea Mayer wrote:
-> > The implementation of SRv6 End.DT4 differs from the the implementation of SRv6
-> > End.DT6 due to the different *route input* lookup functions. For IPv6 is it
-> > possible to force the routing lookup specifying a routing table through the
-> > ip6_pol_route() function (as it is done in the seg6_lookup_any_nexthop()).  
+> > Hi Arnd
+> >
+> > This PHY driver bug hiding DT bug is always hard to handle. We have
+> > been though it once before with the Atheros PHY. All the buggy DT
+> > files were fixed in about one cycle.
 > 
-> It is unfortunate that the IPv6 variant got in without the VRF piece.
+> Do you have a link to the problem for the Atheros PHY?
 
-Should we make it a requirement for this series to also extend the v6
-version to support the preferred VRF-based operation? Given VRF is
-better and we require v4 features to be implemented for v6?
+commit cd28d1d6e52e740130745429b3ff0af7cbba7b2c
+Author: Vinod Koul <vkoul@kernel.org>
+Date:   Mon Jan 21 14:43:17 2019 +0530
+
+    net: phy: at803x: Disable phy delay for RGMII mode
+    
+    For RGMII mode, phy delay should be disabled. Add this case along
+    with disable delay routines.
+    
+    Signed-off-by: Vinod Koul <vkoul@kernel.org>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+
+and
+
+commit 6d4cd041f0af5b4c8fc742b4a68eac22e420e28c
+Author: Vinod Koul <vkoul@kernel.org>
+Date:   Thu Feb 21 15:53:15 2019 +0530
+
+    net: phy: at803x: disable delay only for RGMII mode
+    
+    Per "Documentation/devicetree/bindings/net/ethernet.txt" RGMII mode
+    should not have delay in PHY whereas RGMII_ID and RGMII_RXID/RGMII_TXID
+    can have delay in PHY.
+    
+    So disable the delay only for RGMII mode and enable for other modes.
+    Also treat the default case as disabled delays.
+    
+    Fixes: cd28d1d6e52e: ("net: phy: at803x: Disable phy delay for RGMII mode")
+
+Looking at the git history, it seems like it also took two attempts to
+get it working correctly, but the time between the two patches was
+much shorted for the atheros PHY.
+
+You will find DT patches converting rgmii to rgmii-id started soon
+afterwards.
+
+> I'm generally skeptical about the idea of being able to fix all DTBs,
+> some of the problems with that being:
+> 
+> - There is no way to identify which of of the 2019 dts files in the
+>   kernel actually have this particular phy, because it does not
+>   have a device node in the dt. Looking only at files that set
+>   phy-mode="rgmii" limits it to 235 files, but that is still more than
+>   anyone can test.
+
+You can narrow it down a bit. The rtl8211e was added
+2014-06-10. Anything older than that, is unlikely to be a problem.
+And you can ignore marvell, broadcom, etc boards. They are unlikely to
+use a realtek PHY.
+
+But i agree, we cannot test them all. We probably need to look at what
+boards we know are broken, and get siblings tested.
+
+> - if there was a way to automate identifying the dts files that
+>   need to be modified, we should also be able to do it at runtime
+
+We can get a hint, that there might be a problem, but we can get false
+positives. These DT blobs are broken because they rely on strapping
+resisters to put the PHY into the correct RGMII mode. We can read
+these strapping resistors and compare them against what the software
+is asking for. If they differ, it could be the DT blob is buggy. But
+there are cases where the DT blob is correct, the strapping is wrong,
+eg Pine64 Plus. It is doing everything correctly in DT.
+
+> I agree this makes the problem harder, but I have still hope that
+> we can come up with a code solution that can deal with this
+> one board that needs to have the correct settings applied as well
+> as the others on which we have traditionally ignored them.
+> 
+> As I understand it so far, the reason this board needs a different
+> setting is that the strapping pins are wired incorrectly, while all
+> other boards set them right and work correctly by default. I would
+> much prefer a way to identify this behavior in dts and have the phy
+> driver just warn when it finds a mismatch between the internal
+> delay setting in DT and the strapping pins but keep using the
+> setting from the strapping pins when there is a conflict.
+
+So what you are suggesting is that the pine board, and any other board
+which comes along in the future using this PHY which really wants
+RGMII, needs a boolean DT property:
+
+"realtek,IRealyDoWantRGMII_IAmNotBroken"
+
+in the PHY node?
+
+And if it is missing, we ignore when the MAC asks for RGMII and
+actually do RGMII_ID?
+
+We might also need to talk to the FreeBSD folks.
+
+https://reviews.freebsd.org/D13591
+
+Do we need to ask them to be bug compatible to Linux? Are the same DT
+file being used?
+
+That still leaves ACPI systems. Do we want to stuff this DT property
+into an ACPI table? That seems to go against what ACPI people say
+saying, ACPI is not DT with an extra wrapper around it.
+
+   Andrew
