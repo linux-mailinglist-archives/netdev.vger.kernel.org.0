@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 538F52B1E89
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 16:25:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47B3D2B1E8D
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 16:25:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726621AbgKMPZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 10:25:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31095 "EHLO
+        id S1726759AbgKMPZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 10:25:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43657 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726432AbgKMPZs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 10:25:48 -0500
+        by vger.kernel.org with ESMTP id S1726432AbgKMPZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 10:25:53 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605281147;
+        s=mimecast20190719; t=1605281152;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=JFbVbmAuoqd0W2DgzTzcymTCV+6MrqXZCAfMvklgpPI=;
-        b=JGnfWYw1JT62R96ihR2yGzkWc0H1Mgcru+vWzOfowjEsufLlyYyrtCZvry/BnCJTx1AEGd
-        DIXhqnBfepp3URSYK/5KojbyfAXG9N5IypKnowzjdR8ORN75Fv9W8qyaHNTVf6/RT0lJkK
-        eOFApY8RCYWj4obtpUdIkcVKBgO5bCc=
+        bh=i4HOaORxAgZ1yeakmKuN3ZirjAy2B/ToZhM7uEqrjRw=;
+        b=C1gE9M1CSACLCDcRy6tRbS/W4YJtwjevkMH86x0eRoQfxE2+it3GvOwm8Km3T25+O8kLZu
+        +lqHs/KISs0LHE3oGjCg/4zAROBiUS1aLeLgIxsQ9uFe7skJop7zamdhaGwap9kweJfHRt
+        ADXCSsBT635sDbXD+PPo+uefMRfbSKI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-335-UEIWZOoTM12Gbh_T8-BdRQ-1; Fri, 13 Nov 2020 10:25:45 -0500
-X-MC-Unique: UEIWZOoTM12Gbh_T8-BdRQ-1
+ us-mta-278-x8C2coQaMQOrpu418EvjYg-1; Fri, 13 Nov 2020 10:25:50 -0500
+X-MC-Unique: x8C2coQaMQOrpu418EvjYg-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B3356D262;
-        Fri, 13 Nov 2020 15:25:44 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 16BA86D240;
+        Fri, 13 Nov 2020 15:25:49 +0000 (UTC)
 Received: from yoda.redhat.com (unknown [10.40.194.83])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2D03319C66;
-        Fri, 13 Nov 2020 15:25:42 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E1A8919C66;
+        Fri, 13 Nov 2020 15:25:47 +0000 (UTC)
 From:   Antonio Cardace <acardace@redhat.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next v2 1/4] ethtool: add ETHTOOL_COALESCE_ALL_PARAMS define
-Date:   Fri, 13 Nov 2020 16:25:28 +0100
-Message-Id: <20201113152531.2235878-1-acardace@redhat.com>
+Subject: [PATCH net-next v2 2/4] netdevsim: support ethtool ring and coalesce settings
+Date:   Fri, 13 Nov 2020 16:25:29 +0100
+Message-Id: <20201113152531.2235878-2-acardace@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
@@ -46,25 +46,166 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This bitmask represents all existing coalesce parameters.
+Add ethtool ring and coalesce settings support for testing.
 
 Signed-off-by: Antonio Cardace <acardace@redhat.com>
 ---
- include/linux/ethtool.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/netdevsim/ethtool.c   | 78 ++++++++++++++++++++++++++-----
+ drivers/net/netdevsim/netdevsim.h |  9 +++-
+ 2 files changed, 75 insertions(+), 12 deletions(-)
 
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 6408b446051f..e3da25b51ae4 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -215,6 +215,7 @@ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
- #define ETHTOOL_COALESCE_TX_USECS_HIGH		BIT(19)
- #define ETHTOOL_COALESCE_TX_MAX_FRAMES_HIGH	BIT(20)
- #define ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL	BIT(21)
-+#define ETHTOOL_COALESCE_ALL_PARAMS		GENMASK(21, 0)
+diff --git a/drivers/net/netdevsim/ethtool.c b/drivers/net/netdevsim/ethtool.c
+index f1884d90a876..fedba8ae1309 100644
+--- a/drivers/net/netdevsim/ethtool.c
++++ b/drivers/net/netdevsim/ethtool.c
+@@ -13,9 +13,9 @@ nsim_get_pause_stats(struct net_device *dev,
+ {
+ 	struct netdevsim *ns = netdev_priv(dev);
  
- #define ETHTOOL_COALESCE_USECS						\
- 	(ETHTOOL_COALESCE_RX_USECS | ETHTOOL_COALESCE_TX_USECS)
+-	if (ns->ethtool.report_stats_rx)
++	if (ns->ethtool.pauseparam.report_stats_rx)
+ 		pause_stats->rx_pause_frames = 1;
+-	if (ns->ethtool.report_stats_tx)
++	if (ns->ethtool.pauseparam.report_stats_tx)
+ 		pause_stats->tx_pause_frames = 2;
+ }
+ 
+@@ -25,8 +25,8 @@ nsim_get_pauseparam(struct net_device *dev, struct ethtool_pauseparam *pause)
+ 	struct netdevsim *ns = netdev_priv(dev);
+ 
+ 	pause->autoneg = 0; /* We don't support ksettings, so can't pretend */
+-	pause->rx_pause = ns->ethtool.rx;
+-	pause->tx_pause = ns->ethtool.tx;
++	pause->rx_pause = ns->ethtool.pauseparam.rx;
++	pause->tx_pause = ns->ethtool.pauseparam.tx;
+ }
+ 
+ static int
+@@ -37,28 +37,84 @@ nsim_set_pauseparam(struct net_device *dev, struct ethtool_pauseparam *pause)
+ 	if (pause->autoneg)
+ 		return -EINVAL;
+ 
+-	ns->ethtool.rx = pause->rx_pause;
+-	ns->ethtool.tx = pause->tx_pause;
++	ns->ethtool.pauseparam.rx = pause->rx_pause;
++	ns->ethtool.pauseparam.tx = pause->tx_pause;
++	return 0;
++}
++
++static int nsim_get_coalesce(struct net_device *dev, struct ethtool_coalesce *coal)
++{
++	struct netdevsim *ns = netdev_priv(dev);
++
++	memcpy(coal, &ns->ethtool.coalesce, sizeof(ns->ethtool.coalesce));
++	return 0;
++}
++
++static int nsim_set_coalesce(struct net_device *dev, struct ethtool_coalesce *coal)
++{
++	struct netdevsim *ns = netdev_priv(dev);
++
++	memcpy(&ns->ethtool.coalesce, coal, sizeof(ns->ethtool.coalesce));
++	return 0;
++}
++
++static void nsim_get_ringparam(struct net_device *dev, struct ethtool_ringparam *ring)
++{
++	struct netdevsim *ns = netdev_priv(dev);
++
++	memcpy(ring, &ns->ethtool.ring, sizeof(ns->ethtool.ring));
++}
++
++static int nsim_set_ringparam(struct net_device *dev, struct ethtool_ringparam *ring)
++{
++	struct netdevsim *ns = netdev_priv(dev);
++
++	memcpy(&ns->ethtool.ring, ring, sizeof(ns->ethtool.ring));
+ 	return 0;
+ }
+ 
+ static const struct ethtool_ops nsim_ethtool_ops = {
+-	.get_pause_stats	= nsim_get_pause_stats,
+-	.get_pauseparam		= nsim_get_pauseparam,
+-	.set_pauseparam		= nsim_set_pauseparam,
++	.get_pause_stats	        = nsim_get_pause_stats,
++	.get_pauseparam		        = nsim_get_pauseparam,
++	.set_pauseparam		        = nsim_set_pauseparam,
++	.supported_coalesce_params	= ETHTOOL_COALESCE_ALL_PARAMS,
++	.set_coalesce			= nsim_set_coalesce,
++	.get_coalesce			= nsim_get_coalesce,
++	.get_ringparam			= nsim_get_ringparam,
++	.set_ringparam			= nsim_set_ringparam,
+ };
+ 
++static void nsim_ethtool_ring_init(struct netdevsim *ns)
++{
++	ns->ethtool.ring.rx_max_pending = 4096;
++	ns->ethtool.ring.rx_jumbo_max_pending = 4096;
++	ns->ethtool.ring.rx_mini_max_pending = 4096;
++	ns->ethtool.ring.tx_max_pending = 4096;
++}
++
+ void nsim_ethtool_init(struct netdevsim *ns)
+ {
+ 	struct dentry *ethtool, *dir;
+ 
+ 	ns->netdev->ethtool_ops = &nsim_ethtool_ops;
+ 
++	nsim_ethtool_ring_init(ns);
++
+ 	ethtool = debugfs_create_dir("ethtool", ns->nsim_dev_port->ddir);
+ 
+ 	dir = debugfs_create_dir("pause", ethtool);
+ 	debugfs_create_bool("report_stats_rx", 0600, dir,
+-			    &ns->ethtool.report_stats_rx);
++			    &ns->ethtool.pauseparam.report_stats_rx);
+ 	debugfs_create_bool("report_stats_tx", 0600, dir,
+-			    &ns->ethtool.report_stats_tx);
++			    &ns->ethtool.pauseparam.report_stats_tx);
++
++	dir = debugfs_create_dir("ring", ethtool);
++	debugfs_create_u32("rx_max_pending", 0600, dir,
++			   &ns->ethtool.ring.rx_max_pending);
++	debugfs_create_u32("rx_jumbo_max_pending", 0600, dir,
++			   &ns->ethtool.ring.rx_jumbo_max_pending);
++	debugfs_create_u32("rx_mini_max_pending", 0600, dir,
++			   &ns->ethtool.ring.rx_mini_max_pending);
++	debugfs_create_u32("tx_max_pending", 0600, dir,
++			   &ns->ethtool.ring.tx_max_pending);
+ }
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+index 827fc80f50a0..b023dc0a4259 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -15,6 +15,7 @@
+ 
+ #include <linux/debugfs.h>
+ #include <linux/device.h>
++#include <linux/ethtool.h>
+ #include <linux/kernel.h>
+ #include <linux/list.h>
+ #include <linux/netdevice.h>
+@@ -51,13 +52,19 @@ struct nsim_ipsec {
+ 	u32 ok;
+ };
+ 
+-struct nsim_ethtool {
++struct nsim_ethtool_pauseparam {
+ 	bool rx;
+ 	bool tx;
+ 	bool report_stats_rx;
+ 	bool report_stats_tx;
+ };
+ 
++struct nsim_ethtool {
++	struct nsim_ethtool_pauseparam pauseparam;
++	struct ethtool_coalesce coalesce;
++	struct ethtool_ringparam ring;
++};
++
+ struct netdevsim {
+ 	struct net_device *netdev;
+ 	struct nsim_dev *nsim_dev;
 -- 
 2.28.0
 
