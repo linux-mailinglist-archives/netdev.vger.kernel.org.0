@@ -2,324 +2,1298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 608742B1455
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 03:37:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88D342B1459
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 03:40:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726263AbgKMChW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 21:37:22 -0500
-Received: from mga04.intel.com ([192.55.52.120]:6073 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726017AbgKMChW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 21:37:22 -0500
-IronPort-SDR: 5k8iJIjIP7zc7blM1UFLRETOXSDeXMe+8Z5jXY6ynHDQ7bT6p+H8B7TaGqOhVYkM5jI26AmHFk
- qPu80i4mCXpw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9803"; a="167835180"
-X-IronPort-AV: E=Sophos;i="5.77,473,1596524400"; 
-   d="gz'50?scan'50,208,50";a="167835180"
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2020 18:37:12 -0800
-IronPort-SDR: YIVNVwWzBBdhGmp1o2wffuSJKyVdmFMqBjx2ofcxL/hLW0SD6Y58gedYJjKe5hRgHOCUFrbzRS
- RlwqIIDQPCiQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,473,1596524400"; 
-   d="gz'50?scan'50,208,50";a="366581803"
-Received: from lkp-server02.sh.intel.com (HELO 6c110fa9b5d1) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 12 Nov 2020 18:37:09 -0800
-Received: from kbuild by 6c110fa9b5d1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1kdOxZ-00008g-62; Fri, 13 Nov 2020 02:37:09 +0000
-Date:   Fri, 13 Nov 2020 10:36:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arjun Roy <arjunroy.kdev@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, arjunroy@google.com, edumazet@google.com,
-        soheil@google.com
-Subject: Re: [net-next 1/8] tcp: Copy straggler unaligned data for TCP Rx.
- zerocopy.
-Message-ID: <202011131006.fYay8JNw-lkp@intel.com>
-References: <20201112190205.633640-2-arjunroy.kdev@gmail.com>
+        id S1726299AbgKMCkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 21:40:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60092 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726011AbgKMCkl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 21:40:41 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC6BC0613D1;
+        Thu, 12 Nov 2020 18:40:24 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id f20so11145598ejz.4;
+        Thu, 12 Nov 2020 18:40:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NC6cMw85YIhkRCPplmXndA2qlLYi9KyleVh7kc1Yko4=;
+        b=XqtRx9BMEqF9oDHIo5YULcQL+E7Hf77k34UTGDvKtv3kHR6AomHEm8RRpBf7ml7L9D
+         Wmjbub7VocXUSip6BFGBWp2msMdE/0hrcUQ6ISM+XqkGOUKzYJ5tt1nObK7SlkdbgwN+
+         EY7WgV9tYGRajbtWbKQUbT3xZyGk4yXN+Ae7DLr2Qxm21hfOlG/ai/Ktn0mQ7n6J/mod
+         0T6w8vTFIxgBNXMUHFyqISoP6vgx7KzAE8coUDM5SM+vw7TWubw2oBPObq9RCs/YnxTn
+         Q5KgYxMWTWBI5pxly93EHahMM7DKKWjg+0Cx9FTqSTFmIF2o39LPsfyThor7IKr7FaHO
+         Iidg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NC6cMw85YIhkRCPplmXndA2qlLYi9KyleVh7kc1Yko4=;
+        b=dNK3lJW31/BDE6C7QlAYbvc9GH8kkg24Hn8jz/9EWHEWgI+K2Q1ILUwy84w7awAr8h
+         5K9sq3Gg2//9iL0p4SftbJ1FFV6KCsryXNEvwvQKBsSOd6sDm/NvwTLYCg4w5j33HTU1
+         rUq6UTGQsW1P96ryo3ub1SBpyHeoIIfOh+mNhPLi2oUMCTNATJSrBvfh0cihdM0nFeI+
+         yWghrYbZi41vIHDOaZ6LKiUNoEVmGtTYS0YWQrheugKrUIoKoLX4bEmpU0H+p+i9q/EW
+         iIZu1viLuBtIfNQzL8Ee4hm/zwXIVU0ajqpn2dW/akNhj5yen/nl0N3NqVQGk4cQyzTS
+         ZQQQ==
+X-Gm-Message-State: AOAM531w4ZFkxPociFNjkEwFmBywxq3RPjFCKzgEuGoFZ/W+ZjqaldAw
+        MElufB2ILl48SO5w+6dF868=
+X-Google-Smtp-Source: ABdhPJzZTMyQXJRrznY/Lgj3CDhcTqGS/0E6X+fWrBlPA3UNx5k+GlkPsIdJO3R6EbXO038VWZTaeA==
+X-Received: by 2002:a17:906:ec9:: with SMTP id u9mr2305937eji.400.1605235222941;
+        Thu, 12 Nov 2020 18:40:22 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id 65sm360415edi.91.2020.11.12.18.40.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Nov 2020 18:40:22 -0800 (PST)
+Date:   Fri, 13 Nov 2020 04:40:20 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 09/11] net: dsa: microchip: ksz9477: add
+ hardware time stamping support
+Message-ID: <20201113024020.ixzrpjxjfwme3wur@skbuf>
+References: <20201112153537.22383-1-ceggers@arri.de>
+ <20201112153537.22383-10-ceggers@arri.de>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="HcAYCG3uE/tztfnV"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201112190205.633640-2-arjunroy.kdev@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20201112153537.22383-10-ceggers@arri.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Nov 12, 2020 at 04:35:35PM +0100, Christian Eggers wrote:
+> Add routines required for TX hardware time stamping.
+>
+> The KSZ9563 only supports one step time stamping
+> (HWTSTAMP_TX_ONESTEP_P2P), which requires linuxptp-2.0 or later. PTP
+> mode is permanently enabled (changes tail tag; depends on
+> CONFIG_NET_DSA_MICROCHIP_KSZ9477_PTP).TX time stamps are reported via an
+> interrupt / device registers whilst RX time stamps are reported via an
+> additional tail tag.
+>
+> Currently, only P2P delay measurement is supported. See patchwork
+> discussion and comments in ksz9477_ptp_init() for details:
+> https://patchwork.ozlabs.org/project/netdev/patch/20201019172435.4416-8-ceggers@arri.de/
+>
+> One step TX time stamping of PDelay_Resp requires the RX time stamp from
+> the associated PDelay_Req message. linuxptp assumes that the RX time
+> stamp has already been subtracted from the PDelay_Req correction field
+> (as done by the TI PHYTER). linuxptp will echo back the value of the
 
---HcAYCG3uE/tztfnV
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+No, not TI PHYTER, this was discussed before, but the ZHAW InES PTP time
+stamping IP core.
 
-Hi Arjun,
+> correction field in the PDelay_Resp message.
 
-Thank you for the patch! Perhaps something to improve:
+Misleading. Not just linuxptp will do that. Any PTP stack must do that.
 
-[auto build test WARNING on net-next/master]
+> In order to be compatible to this already established interface, the
+> KSZ9563 code emulates this behavior. When processing the PDelay_Resp
+> message, the time stamp is moved back from the correction field to the
+> tail tag, as the hardware doesn't support negative values on this field.
 
-url:    https://github.com/0day-ci/linux/commits/Arjun-Roy/Perf-optimizations-for-TCP-Recv-Zerocopy/20201113-030506
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git e545f86573937142b8a90bd65d476b9f001088cf
-config: nds32-defconfig (attached as .config)
-compiler: nds32le-linux-gcc (GCC) 9.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/5c20c7c34817692f87427a655374172f6666d8ed
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Arjun-Roy/Perf-optimizations-for-TCP-Recv-Zerocopy/20201113-030506
-        git checkout 5c20c7c34817692f87427a655374172f6666d8ed
-        # save the attached .config to linux build tree
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=nds32 
+Old comment.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Of course, the UDP checksums (if any) have to be corrected after this
+> (for both directions).
+>
+> Everything has been tested on a Microchip KSZ9563 switch.
+>
+> Signed-off-by: Christian Eggers <ceggers@arri.de>
+> ---
+>  drivers/net/dsa/microchip/ksz9477_main.c |   9 +-
+>  drivers/net/dsa/microchip/ksz9477_ptp.c  | 544 +++++++++++++++++++++++
+>  drivers/net/dsa/microchip/ksz9477_ptp.h  |  27 ++
+>  include/linux/dsa/ksz_common.h           |  47 ++
+>  net/dsa/tag_ksz.c                        | 121 ++++-
+>  5 files changed, 740 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/net/dsa/microchip/ksz9477_main.c b/drivers/net/dsa/microchip/ksz9477_main.c
+> index 7d623400139f..42cd17c8c25d 100644
+> --- a/drivers/net/dsa/microchip/ksz9477_main.c
+> +++ b/drivers/net/dsa/microchip/ksz9477_main.c
+> @@ -1388,6 +1388,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+>  	.phy_read		= ksz9477_phy_read16,
+>  	.phy_write		= ksz9477_phy_write16,
+>  	.phylink_mac_link_down	= ksz_mac_link_down,
+> +	.get_ts_info		= ksz9477_ptp_get_ts_info,
+>  	.port_enable		= ksz_enable_port,
+>  	.get_strings		= ksz9477_get_strings,
+>  	.get_ethtool_stats	= ksz_get_ethtool_stats,
+> @@ -1408,6 +1409,11 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+>  	.port_mdb_del           = ksz9477_port_mdb_del,
+>  	.port_mirror_add	= ksz9477_port_mirror_add,
+>  	.port_mirror_del	= ksz9477_port_mirror_del,
+> +	.port_hwtstamp_get      = ksz9477_ptp_port_hwtstamp_get,
+> +	.port_hwtstamp_set      = ksz9477_ptp_port_hwtstamp_set,
+> +	.port_txtstamp          = ksz9477_ptp_port_txtstamp,
+> +	/* never defer rx delivery, tstamping is done via tail tagging */
+> +	.port_rxtstamp          = NULL,
+>  };
+>
+>  static u32 ksz9477_get_port_addr(int port, int offset)
+> @@ -1554,7 +1560,8 @@ static irqreturn_t ksz9477_switch_irq_thread(int irq, void *dev_id)
+>  			if (ret)
+>  				return result;
+>
+> -			/* ToDo: Add specific handling of port interrupts */
+> +			if (data8 & PORT_PTP_INT)
+> +				result |= ksz9477_ptp_port_interrupt(dev, port);
 
-All warnings (new ones prefixed by >>):
+No... why are you making assumptions about the value of IRQ_NONE?
 
-   net/ipv4/tcp.c: In function 'tcp_copy_straggler_data':
->> net/ipv4/tcp.c:1754:34: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-    1754 |  err = import_single_range(READ, (void __user *)zc->copybuf_address,
-         |                                  ^
+>  		}
+>  	}
+>
+> diff --git a/drivers/net/dsa/microchip/ksz9477_ptp.c b/drivers/net/dsa/microchip/ksz9477_ptp.c
+> index 44d7bbdea518..12698568b68b 100644
+> --- a/drivers/net/dsa/microchip/ksz9477_ptp.c
+> +++ b/drivers/net/dsa/microchip/ksz9477_ptp.c
+> @@ -6,7 +6,10 @@
+>   * Copyright (c) 2020 ARRI Lighting
+>   */
+>
+> +#include <linux/net_tstamp.h>
+> +#include <linux/ptp_classify.h>
+>  #include <linux/ptp_clock_kernel.h>
+> +#include <linux/sysfs.h>
+>
+>  #include "ksz_common.h"
+>  #include "ksz9477_reg.h"
+> @@ -71,8 +74,10 @@ static int ksz9477_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+>  static int ksz9477_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+>  {
+>  	struct ksz_device *dev = container_of(ptp, struct ksz_device, ptp_caps);
+> +	struct timespec64 delta64 = ns_to_timespec64(delta);
+>  	s32 sec, nsec;
+>  	u16 data16;
+> +	unsigned long flags;
 
-vim +1754 net/ipv4/tcp.c
+Reverse Christmas tree variable declaration, please.
 
-  1745	
-  1746	static int tcp_copy_straggler_data(struct tcp_zerocopy_receive *zc,
-  1747					   struct sk_buff *skb, u32 copylen,
-  1748					   u32 *offset, u32 *seq)
-  1749	{
-  1750		struct msghdr msg = {};
-  1751		struct iovec iov;
-  1752		int err;
-  1753	
-> 1754		err = import_single_range(READ, (void __user *)zc->copybuf_address,
-  1755					  copylen, &iov, &msg.msg_iter);
-  1756		if (err)
-  1757			return err;
-  1758		err = skb_copy_datagram_msg(skb, *offset, &msg, copylen);
-  1759		if (err)
-  1760			return err;
-  1761		zc->recv_skip_hint -= copylen;
-  1762		*offset += copylen;
-  1763		*seq += copylen;
-  1764		return (__s32)copylen;
-  1765	}
-  1766	
+>  	int ret;
+>
+>  	mutex_lock(&dev->ptp_mutex);
+> @@ -103,6 +108,10 @@ static int ksz9477_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+>  	if (ret)
+>  		goto error_return;
+>
+> +	spin_lock_irqsave(&dev->ptp_clock_lock, flags);
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I believe that spin_lock_irqsave is unnecessary, since there is no code
+that runs in hardirq context.
 
---HcAYCG3uE/tztfnV
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
+> +	dev->ptp_clock_time = timespec64_add(dev->ptp_clock_time, delta64);
+> +	spin_unlock_irqrestore(&dev->ptp_clock_lock, flags);
+> +
+>  error_return:
+>  	mutex_unlock(&dev->ptp_mutex);
+>  	return ret;
+> @@ -160,6 +169,7 @@ static int ksz9477_ptp_settime(struct ptp_clock_info *ptp, struct timespec64 con
+>  {
+>  	struct ksz_device *dev = container_of(ptp, struct ksz_device, ptp_caps);
+>  	u16 data16;
+> +	unsigned long flags;
+>  	int ret;
+>
+>  	mutex_lock(&dev->ptp_mutex);
+> @@ -198,6 +208,10 @@ static int ksz9477_ptp_settime(struct ptp_clock_info *ptp, struct timespec64 con
+>  	if (ret)
+>  		goto error_return;
+>
+> +	spin_lock_irqsave(&dev->ptp_clock_lock, flags);
+> +	dev->ptp_clock_time = *ts;
+> +	spin_unlock_irqrestore(&dev->ptp_clock_lock, flags);
+> +
+>  error_return:
+>  	mutex_unlock(&dev->ptp_mutex);
+>  	return ret;
+> @@ -208,9 +222,27 @@ static int ksz9477_ptp_enable(struct ptp_clock_info *ptp, struct ptp_clock_reque
+>  	return -ENOTTY;
+>  }
+>
+> +static long ksz9477_ptp_do_aux_work(struct ptp_clock_info *ptp)
+> +{
+> +	struct ksz_device *dev = container_of(ptp, struct ksz_device, ptp_caps);
+> +	struct timespec64 ts;
+> +	unsigned long flags;
+> +
+> +	mutex_lock(&dev->ptp_mutex);
+> +	_ksz9477_ptp_gettime(dev, &ts);
+> +	mutex_unlock(&dev->ptp_mutex);
+> +
+> +	spin_lock_irqsave(&dev->ptp_clock_lock, flags);
+> +	dev->ptp_clock_time = ts;
+> +	spin_unlock_irqrestore(&dev->ptp_clock_lock, flags);
+> +
+> +	return HZ;  /* reschedule in 1 second */
+> +}
+> +
+>  static int ksz9477_ptp_start_clock(struct ksz_device *dev)
+>  {
+>  	u16 data;
+> +	unsigned long flags;
+>  	int ret;
+>
+>  	ret = ksz_read16(dev, REG_PTP_CLK_CTRL, &data);
+> @@ -230,6 +262,11 @@ static int ksz9477_ptp_start_clock(struct ksz_device *dev)
+>  	if (ret)
+>  		return ret;
+>
+> +	spin_lock_irqsave(&dev->ptp_clock_lock, flags);
+> +	dev->ptp_clock_time.tv_sec = 0;
+> +	dev->ptp_clock_time.tv_nsec = 0;
+> +	spin_unlock_irqrestore(&dev->ptp_clock_lock, flags);
+> +
+>  	return 0;
+>  }
+>
+> @@ -251,11 +288,249 @@ static int ksz9477_ptp_stop_clock(struct ksz_device *dev)
+>  	return 0;
+>  }
+>
+> +/* Time stamping support */
+> +
+> +static int ksz9477_ptp_enable_mode(struct ksz_device *dev)
+> +{
+> +	u16 data;
+> +	int ret;
+> +
+> +	ret = ksz_read16(dev, REG_PTP_MSG_CONF1, &data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Enable PTP mode */
+> +	data |= PTP_ENABLE;
+> +	ret = ksz_write16(dev, REG_PTP_MSG_CONF1, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
 
-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
+	return ksz_write16(dev, REG_PTP_MSG_CONF1, data);
 
---HcAYCG3uE/tztfnV--
+> +}
+> +
+> +static int ksz9477_ptp_disable_mode(struct ksz_device *dev)
+> +{
+> +	u16 data;
+> +	int ret;
+> +
+> +	ret = ksz_read16(dev, REG_PTP_MSG_CONF1, &data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Disable PTP mode */
+> +	data &= ~PTP_ENABLE;
+> +	ret = ksz_write16(dev, REG_PTP_MSG_CONF1, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+
+Please merge this with ksz9477_ptp_enable_mode.
+
+> +
+> +static int ksz9477_ptp_enable_port_ptp_interrupts(struct ksz_device *dev, int port)
+> +{
+> +	u32 addr = PORT_CTRL_ADDR(port, REG_PORT_INT_MASK);
+> +	u8 data;
+> +	int ret;
+> +
+> +	ret = ksz_read8(dev, addr, &data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Enable port PTP interrupt (0 means enabled) */
+> +	data &= ~PORT_PTP_INT;
+> +	ret = ksz_write8(dev, addr, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ksz9477_ptp_disable_port_ptp_interrupts(struct ksz_device *dev, int port)
+> +{
+> +	u32 addr = PORT_CTRL_ADDR(port, REG_PORT_INT_MASK);
+> +	u8 data;
+> +	int ret;
+> +
+> +	ret = ksz_read8(dev, addr, &data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Enable port PTP interrupt (1 means disabled) */
+> +	data |= PORT_PTP_INT;
+> +	ret = ksz_write8(dev, addr, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+
+Same comments as above.
+
+> +
+> +static int ksz9477_ptp_enable_port_egress_interrupts(struct ksz_device *dev, int port)
+
+Could we make this line shorter?
+
+> +{
+> +	u32 addr = PORT_CTRL_ADDR(port, REG_PTP_PORT_TX_INT_ENABLE__2);
+> +	u16 data;
+> +	int ret;
+> +
+> +	ret = ksz_read16(dev, addr, &data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Enable port xdelay egress timestamp interrupt (1 means enabled) */
+> +	data |= PTP_PORT_XDELAY_REQ_INT;
+> +	ret = ksz_write16(dev, addr, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ksz9477_ptp_disable_port_egress_interrupts(struct ksz_device *dev, int port)
+> +{
+> +	u32 addr = PORT_CTRL_ADDR(port, REG_PTP_PORT_TX_INT_ENABLE__2);
+> +	u16 data;
+> +	int ret;
+> +
+> +	ret = ksz_read16(dev, addr, &data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Disable port xdelay egress timestamp interrupts (0 means disabled) */
+> +	data &= PTP_PORT_XDELAY_REQ_INT;
+> +	ret = ksz_write16(dev, addr, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+
+Don't you get tired of copy-pasting code? :)
+
+> +
+> +static int ksz9477_ptp_port_init(struct ksz_device *dev, int port)
+> +{
+> +	struct ksz_port *prt = &dev->ports[port];
+> +	int ret;
+> +
+> +	/* Read rx and tx delay from port registers */
+> +	ret = ksz_read16(dev, PORT_CTRL_ADDR(port, REG_PTP_PORT_RX_DELAY__2),
+> +			 &prt->tstamp_rx_latency_ns);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ksz_read16(dev, PORT_CTRL_ADDR(port, REG_PTP_PORT_TX_DELAY__2),
+> +			 &prt->tstamp_tx_latency_ns);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (port != dev->cpu_port) {
+
+Just return early for the CPU port.
+	if (port == dev->cpu_port)
+		return 0;
+
+> +		ret = ksz9477_ptp_enable_port_ptp_interrupts(dev, port);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = ksz9477_ptp_enable_port_egress_interrupts(dev, port);
+> +		if (ret)
+> +			goto error_disable_port_ptp_interrupts;
+> +	}
+> +
+> +	return 0;
+> +
+> +error_disable_port_ptp_interrupts:
+> +	if (port != dev->cpu_port)
+> +		ksz9477_ptp_disable_port_ptp_interrupts(dev, port);
+
+The "if" condition here is completely unnecessary since the only goto
+that can reach this code has already satisfied that condition.
+
+> +	return ret;
+> +}
+> +
+> +static void ksz9477_ptp_port_deinit(struct ksz_device *dev, int port)
+> +{
+> +	if (port != dev->cpu_port) {
+
+Return early?
+
+> +		ksz9477_ptp_disable_port_egress_interrupts(dev, port);
+> +		ksz9477_ptp_disable_port_ptp_interrupts(dev, port);
+> +	}
+> +}
+> +
+> +static int ksz9477_ptp_ports_init(struct ksz_device *dev)
+> +{
+> +	int port;
+> +	int ret;
+> +
+> +	for (port = 0; port < dev->port_cnt; port++) {
+> +		ret = ksz9477_ptp_port_init(dev, port);
+> +		if (ret)
+> +			goto error_deinit;
+> +	}
+> +
+> +	return 0;
+> +
+> +error_deinit:
+> +	for (--port; port >= 0; --port)
+
+Is that idiom runtime-tested? If not, or you're unsure if it works or
+not, you can use:
+	while (port-- > 0)
+
+> +		ksz9477_ptp_port_deinit(dev, port);
+> +	return ret;
+> +}
+> +
+> +static void ksz9477_ptp_ports_deinit(struct ksz_device *dev)
+> +{
+> +	int port;
+> +
+> +	for (port = dev->port_cnt - 1; port >= 0; --port)
+
+Nice, but also probably not worth the effort?
+
+> +		ksz9477_ptp_port_deinit(dev, port);
+> +}
+> +
+> +/* device attributes */
+> +
+> +enum ksz9477_ptp_tcmode {
+> +	KSZ9477_PTP_TCMODE_E2E,
+> +	KSZ9477_PTP_TCMODE_P2P,
+> +};
+> +
+> +static int ksz9477_ptp_tcmode_set(struct ksz_device *dev, enum ksz9477_ptp_tcmode tcmode)
+> +{
+> +	u16 data;
+> +	int ret;
+> +
+> +	ret = ksz_read16(dev, REG_PTP_MSG_CONF1, &data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (tcmode == KSZ9477_PTP_TCMODE_P2P)
+> +		data |= PTP_TC_P2P;
+> +	else
+> +		data &= ~PTP_TC_P2P;
+> +
+> +	ret = ksz_write16(dev, REG_PTP_MSG_CONF1, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+
+	return ksz_write16(dev, REG_PTP_MSG_CONF1, data);
+
+> +}
+> +
+> +enum ksz9477_ptp_ocmode {
+> +	KSZ9477_PTP_OCMODE_SLAVE,
+> +	KSZ9477_PTP_OCMODE_MASTER,
+> +};
+> +
+> +static int ksz9477_ptp_ocmode_set(struct ksz_device *dev, enum ksz9477_ptp_ocmode ocmode)
+> +{
+> +	u16 data;
+> +	int ret;
+> +
+> +	ret = ksz_read16(dev, REG_PTP_MSG_CONF1, &data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (ocmode == KSZ9477_PTP_OCMODE_MASTER)
+> +		data |= PTP_MASTER;
+> +	else
+> +		data &= ~PTP_MASTER;
+> +
+> +	ret = ksz_write16(dev, REG_PTP_MSG_CONF1, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+>  int ksz9477_ptp_init(struct ksz_device *dev)
+>  {
+>  	int ret;
+>
+>  	mutex_init(&dev->ptp_mutex);
+> +	spin_lock_init(&dev->ptp_clock_lock);
+>
+>  	/* PTP clock properties */
+>
+> @@ -275,6 +550,7 @@ int ksz9477_ptp_init(struct ksz_device *dev)
+>  	dev->ptp_caps.gettime64   = ksz9477_ptp_gettime;
+>  	dev->ptp_caps.settime64   = ksz9477_ptp_settime;
+>  	dev->ptp_caps.enable      = ksz9477_ptp_enable;
+> +	dev->ptp_caps.do_aux_work = ksz9477_ptp_do_aux_work;
+>
+>  	/* Start hardware counter (will overflow after 136 years) */
+>  	ret = ksz9477_ptp_start_clock(dev);
+> @@ -287,8 +563,44 @@ int ksz9477_ptp_init(struct ksz_device *dev)
+>  		goto error_stop_clock;
+>  	}
+>
+> +	/* Enable PTP mode (will affect tail tagging format) */
+> +	ret = ksz9477_ptp_enable_mode(dev);
+> +	if (ret)
+> +		goto error_unregister_clock;
+> +
+> +	/* Init switch ports */
+> +	ret = ksz9477_ptp_ports_init(dev);
+> +	if (ret)
+> +		goto error_disable_mode;
+> +
+> +	/* Currently, only P2P delay measurement is supported.  Setting ocmode to
+> +	 * slave will work independently of actually being master or slave.
+> +	 * For E2E delay measurement, switching between master and slave would
+> +	 * be required, as the KSZ devices filters out PTP messages depending on
+> +	 * the ocmode setting:
+> +	 * - in slave mode, DelayReq messages are filtered out
+> +	 * - in master mode, Sync messages are filtered out
+> +	 * Currently (and probably also in future) there is no interface in the
+> +	 * kernel which allows switching between master and slave mode.  For this
+> +	 * reason, E2E cannot be supported. See patchwork for full discussion:
+> +	 * https://patchwork.ozlabs.org/project/netdev/patch/20201019172435.4416-8-ceggers@arri.de/
+> +	 */
+> +	ksz9477_ptp_tcmode_set(dev, KSZ9477_PTP_TCMODE_P2P);
+> +	ksz9477_ptp_ocmode_set(dev, KSZ9477_PTP_OCMODE_SLAVE);
+> +
+> +	/* Schedule cyclic call of ksz_ptp_do_aux_work() */
+> +	ret = ptp_schedule_worker(dev->ptp_clock, 0);
+> +	if (ret)
+> +		goto error_ports_deinit;
+> +
+>  	return 0;
+>
+> +error_ports_deinit:
+> +	ksz9477_ptp_ports_deinit(dev);
+> +error_disable_mode:
+> +	ksz9477_ptp_disable_mode(dev);
+> +error_unregister_clock:
+> +	ptp_clock_unregister(dev->ptp_clock);
+>  error_stop_clock:
+>  	ksz9477_ptp_stop_clock(dev);
+>  	return ret;
+> @@ -296,6 +608,238 @@ int ksz9477_ptp_init(struct ksz_device *dev)
+>
+>  void ksz9477_ptp_deinit(struct ksz_device *dev)
+>  {
+> +	ksz9477_ptp_ports_deinit(dev);
+> +	ksz9477_ptp_disable_mode(dev);
+>  	ptp_clock_unregister(dev->ptp_clock);
+>  	ksz9477_ptp_stop_clock(dev);
+>  }
+> +
+> +irqreturn_t ksz9477_ptp_port_interrupt(struct ksz_device *dev, int port)
+> +{
+> +	u32 addr = PORT_CTRL_ADDR(port, REG_PTP_PORT_TX_INT_STATUS__2);
+> +	struct ksz_port *prt = &dev->ports[port];
+> +	irqreturn_t result = IRQ_NONE;
+> +	u16 data;
+> +	int ret;
+> +
+> +	ret = ksz_read16(dev, addr, &data);
+> +	if (ret)
+> +		return IRQ_NONE;
+> +
+> +	if ((data & PTP_PORT_XDELAY_REQ_INT) && prt->tstamp_tx_xdelay_skb) {
+
+It's almost as if you just want the "if" condition for the IRQ being
+asserted, and WARN_ON(!prt->tstamp_tx_xdelay_skb). Otherwise, it would
+mean that you received a TX timestamp interrupt for a packet that the
+kernel has no clue of whatsoever, and you just keep chugging along.
+Of course, you would still need to take care that you don't access a
+NULL pointer, and you would still need to clear the IRQ, as you do now.
+
+> +		/* Timestamp for Pdelay_Req / Delay_Req */
+> +		u32 tstamp_raw;
+> +		ktime_t tstamp;
+> +		struct skb_shared_hwtstamps shhwtstamps;
+> +		struct sk_buff *tmp_skb;
+
+Reverse Christmas notation.
+
+> +
+> +		/* In contrast to the KSZ9563R data sheet, the format of the
+> +		 * port time stamp registers is also 2 bit seconds + 30 bit
+> +		 * nanoseconds (same as in the tail tags).
+> +		 */
+> +		ret = ksz_read32(dev, PORT_CTRL_ADDR(port, REG_PTP_PORT_XDELAY_TS), &tstamp_raw);
+> +		if (ret)
+> +			return result;
+
+No reason whatsoever to keep IRQ_NONE in a variable.
+
+> +
+> +		tstamp = ksz9477_decode_tstamp(tstamp_raw, prt->tstamp_tx_latency_ns);
+> +		memset(&shhwtstamps, 0, sizeof(shhwtstamps));
+> +		shhwtstamps.hwtstamp = ksz9477_tstamp_to_clock(dev, tstamp);
+> +
+> +		/* skb_complete_tx_timestamp() will free up the client to make
+> +		 * another timestamp-able transmit. We have to be ready for it
+> +		 * -- by clearing the ps->tx_skb "flag" -- beforehand.
+> +		 */
+> +
+> +		tmp_skb = prt->tstamp_tx_xdelay_skb;
+> +		prt->tstamp_tx_xdelay_skb = NULL;
+> +		clear_bit_unlock(KSZ_HWTSTAMP_TX_XDELAY_IN_PROGRESS, &prt->tstamp_state);
+> +		skb_complete_tx_timestamp(tmp_skb, &shhwtstamps);
+> +	}
+> +
+> +	/* Clear interrupt(s) (W1C) */
+> +	ret = ksz_write16(dev, addr, data);
+> +	if (ret)
+> +		return IRQ_NONE;
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +/* DSA PTP operations */
+> +
+> +int ksz9477_ptp_get_ts_info(struct dsa_switch *ds, int port __always_unused,
+> +			    struct ethtool_ts_info *ts)
+> +{
+> +	struct ksz_device *dev = ds->priv;
+> +
+> +	ts->so_timestamping =
+> +			SOF_TIMESTAMPING_TX_HARDWARE |
+> +			SOF_TIMESTAMPING_RX_HARDWARE |
+> +			SOF_TIMESTAMPING_RAW_HARDWARE;
+> +
+> +	ts->phc_index = ptp_clock_index(dev->ptp_clock);
+> +
+> +	ts->tx_types =
+
+Odd that you didn't continue on the same line? (same above)
+
+> +			BIT(HWTSTAMP_TX_OFF) |
+> +			BIT(HWTSTAMP_TX_ONESTEP_P2P);
+> +
+> +	ts->rx_filters =
+> +			BIT(HWTSTAMP_FILTER_NONE) |
+> +			BIT(HWTSTAMP_FILTER_PTP_V2_L4_EVENT) |
+> +			BIT(HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
+> +			BIT(HWTSTAMP_FILTER_PTP_V2_EVENT);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ksz9477_set_hwtstamp_config(struct ksz_device *dev, int port,
+> +				       struct hwtstamp_config *config)
+> +{
+> +	struct ksz_port *prt = &dev->ports[port];
+> +	bool tstamp_enable = false;
+> +
+> +	/* Prevent the TX/RX paths from trying to interact with the
+> +	 * timestamp hardware while we reconfigure it.
+> +	 */
+> +	clear_bit_unlock(KSZ_HWTSTAMP_ENABLED, &prt->tstamp_state);
+> +
+> +	/* reserved for future extensions */
+> +	if (config->flags)
+> +		return -EINVAL;
+> +
+> +	switch (config->tx_type) {
+> +	case HWTSTAMP_TX_OFF:
+> +		tstamp_enable = false;
+> +		break;
+> +	case HWTSTAMP_TX_ONESTEP_P2P:
+> +		tstamp_enable = true;
+> +		break;
+> +	default:
+> +		return -ERANGE;
+> +	}
+> +
+> +	switch (config->rx_filter) {
+> +	case HWTSTAMP_FILTER_NONE:
+> +		tstamp_enable = false;
+> +		break;
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
+> +		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_L4_EVENT;  /* UDPv4/UDPv6 */
+
+I don't think the comments are really necessary. Additionally, you
+exceed the 80 characters limit.
+
+> +		break;
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
+
+I don't think you want to accept DELAY_REQ though? These rx_filters are
+a bit arbitrary to begin with, and you might be one of the first to
+differentiate here, but you really can't timestamp delay request/response.
+
+> +		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;  /* 802.3 ether */
+> +		break;
+> +	case HWTSTAMP_FILTER_PTP_V2_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
+> +		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;     /* UDP / 802.3 */
+> +		break;
+> +	case HWTSTAMP_FILTER_ALL:
+> +	default:
+> +		config->rx_filter = HWTSTAMP_FILTER_NONE;
+> +		return -ERANGE;
+> +	}
+> +
+> +	/* Once hardware has been configured, enable timestamp checks
+> +	 * in the RX/TX paths.
+> +	 */
+> +	if (tstamp_enable)
+> +		set_bit(KSZ_HWTSTAMP_ENABLED, &prt->tstamp_state);
+> +
+> +	return 0;
+> +}
+> +
+> +int ksz9477_ptp_port_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr)
+> +{
+> +	struct ksz_device *dev = ds->priv;
+> +	struct hwtstamp_config *port_tstamp_config = &dev->ports[port].tstamp_config;
+> +
+> +	return copy_to_user(ifr->ifr_data,
+> +			    port_tstamp_config, sizeof(*port_tstamp_config)) ? -EFAULT : 0;
+> +}
+> +
+> +int ksz9477_ptp_port_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr)
+> +{
+> +	struct ksz_device *dev = ds->priv;
+> +	struct hwtstamp_config *port_tstamp_config = &dev->ports[port].tstamp_config;
+> +	struct hwtstamp_config config;
+> +	int err;
+> +
+> +	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
+> +		return -EFAULT;
+> +
+> +	err = ksz9477_set_hwtstamp_config(dev, port, &config);
+> +	if (err)
+> +		return err;
+> +
+> +	/* Save the chosen configuration to be returned later. */
+> +	memcpy(port_tstamp_config, &config, sizeof(config));
+> +
+> +	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ? -EFAULT : 0;
+> +}
+> +
+> +/* Returns a pointer to the PTP header if the caller should time stamp,
+> + * or NULL if the caller should not.
+> + */
+> +static struct ptp_header *ksz9477_ptp_should_tstamp(struct ksz_port *port, struct sk_buff *skb,
+> +						    unsigned int type)
+
+The fact that others have a function called "should_tstamp" which
+returns a pointer to a struct ptp_header doesn't mean that this is a
+good model to copy. Also, you exceeded 80 characters by quite a bit.
+
+> +{
+> +	enum ksz9477_ptp_event_messages msg_type;
+> +	struct ptp_header *hdr;
+> +
+> +	if (!test_bit(KSZ_HWTSTAMP_ENABLED, &port->tstamp_state))
+> +		return NULL;
+> +
+> +	hdr = ptp_parse_header(skb, type);
+> +	if (!hdr)
+> +		return NULL;
+> +
+> +	msg_type = ptp_get_msgtype(hdr, type);
+> +
+> +	switch (msg_type) {
+> +	/* As the KSZ9563 always performs one step time stamping, only the time
+> +	 * stamp for Pdelay_Req is reported to the application via socket error
+> +	 * queue.  Time stamps for Sync and Pdelay_resp will be applied directly
+> +	 * to the outgoing message (e.g. correction field), but will NOT be
+> +	 * reported to the socket.
+> +	 * Delay_Req is not time stamped as E2E is currently not supported by
+> +	 * this driver.  See ksz9477_ptp_init() for details.
+> +	 */
+> +	case PTP_Event_Message_Pdelay_Req:
+> +		break;
+> +	default:
+> +		return NULL;
+> +	}
+> +
+> +	return hdr;
+> +}
+> +
+> +bool ksz9477_ptp_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *clone,
+> +			       unsigned int type)
+> +{
+> +	struct ksz_device *dev = ds->priv;
+> +	struct ksz_port *prt = &dev->ports[port];
+> +	struct ptp_header *hdr;
+> +
+> +	/* KSZ9563 supports PTPv2 only */
+> +	if (!(type & PTP_CLASS_V2))
+> +		return false;
+
+It should be sufficient that you specified this in the
+config->rx_filters from ksz9477_set_hwtstamp_config? I'm not even sure
+who uses PTP v1 anyway.
+
+> +
+> +	/* Should already been tested in dsa_skb_tx_timestamp()? */
+> +	if (!(skb_shinfo(clone)->tx_flags & SKBTX_HW_TSTAMP))
+> +		return false;
+
+Yeah, should have...
+What do you think about this one though:
+https://lore.kernel.org/netdev/20201104015834.mcn2eoibxf6j3ksw@skbuf/
+
+> +
+> +	hdr = ksz9477_ptp_should_tstamp(prt, clone, type);
+> +	if (!hdr)
+> +		return false;
+> +
+> +	if (test_and_set_bit_lock(KSZ_HWTSTAMP_TX_XDELAY_IN_PROGRESS,
+> +				  &prt->tstamp_state))
+> +		return false;  /* free cloned skb */
+> +
+> +	prt->tstamp_tx_xdelay_skb = clone;
+
+Who do you think will guarantee you that a second timestampable packet
+may not come in before the TX timestamp interrupt for the first one has
+fired?
+
+Either the hardware supports matching a TX timestamp to a PTP event
+message (by sequenceId or whatnot), case in which you need more complex
+logic in the IRQ handler, or the hardware can take a single TX timestamp
+at a time, case in which you'll need an skb_queue and a process context
+to wait for the TX timestamp of the previous PTP message before calling
+dsa_enqueue_skb for the next PTP event message. There are already
+implementations of both models in DSA that you can look at.
+
+> +
+> +	return true;  /* keep cloned skb */
+> +}
+> diff --git a/drivers/net/dsa/microchip/ksz9477_ptp.h b/drivers/net/dsa/microchip/ksz9477_ptp.h
+> index 0076538419fa..e8d50a086311 100644
+> --- a/drivers/net/dsa/microchip/ksz9477_ptp.h
+> +++ b/drivers/net/dsa/microchip/ksz9477_ptp.h
+> @@ -10,6 +10,9 @@
+>  #ifndef DRIVERS_NET_DSA_MICROCHIP_KSZ9477_PTP_H_
+>  #define DRIVERS_NET_DSA_MICROCHIP_KSZ9477_PTP_H_
+>
+> +#include <linux/irqreturn.h>
+> +#include <linux/types.h>
+> +
+>  #include "ksz_common.h"
+>
+>  #if IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ9477_PTP)
+> @@ -17,11 +20,35 @@
+>  int ksz9477_ptp_init(struct ksz_device *dev);
+>  void ksz9477_ptp_deinit(struct ksz_device *dev);
+>
+> +irqreturn_t ksz9477_ptp_port_interrupt(struct ksz_device *dev, int port);
+> +
+> +int ksz9477_ptp_get_ts_info(struct dsa_switch *ds, int port, struct ethtool_ts_info *ts);
+> +int ksz9477_ptp_port_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr);
+> +int ksz9477_ptp_port_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr);
+> +bool ksz9477_ptp_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *clone,
+> +			       unsigned int type);
+> +
+>  #else
+>
+>  static inline int ksz9477_ptp_init(struct ksz_device *dev) { return 0; }
+>  static inline void ksz9477_ptp_deinit(struct ksz_device *dev) {}
+>
+> +static inline irqreturn_t ksz9477_ptp_port_interrupt(struct ksz_device *dev, int port)
+> +	{ return IRQ_NONE; }
+> +
+> +static inline int ksz9477_ptp_get_ts_info(struct dsa_switch *ds, int port,
+> +					  struct ethtool_ts_info *ts) { return -EOPNOTSUPP; }
+> +
+> +static inline int ksz9477_ptp_port_hwtstamp_get(struct dsa_switch *ds, int port,
+> +						struct ifreq *ifr) { return -EOPNOTSUPP; }
+> +
+> +static inline int ksz9477_ptp_port_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr)
+> +	{ return -EOPNOTSUPP; }
+> +
+> +static inline bool ksz9477_ptp_port_txtstamp(struct dsa_switch *ds, int port,
+> +					     struct sk_buff *clone, unsigned int type)
+> +	{ return false; }
+> +
+
+In networking we still have the 80-characters rule, please follow it.
+
+>  #endif
+>
+>  #endif /* DRIVERS_NET_DSA_MICROCHIP_KSZ9477_PTP_H_ */
+> diff --git a/include/linux/dsa/ksz_common.h b/include/linux/dsa/ksz_common.h
+> index 4d5b6cc9429a..bfe8873b1636 100644
+> --- a/include/linux/dsa/ksz_common.h
+> +++ b/include/linux/dsa/ksz_common.h
+> @@ -5,16 +5,27 @@
+>  #ifndef _NET_DSA_KSZ_COMMON_H_
+>  #define _NET_DSA_KSZ_COMMON_H_
+>
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+>  #include <linux/gpio/consumer.h>
+>  #include <linux/kernel.h>
+> +#include <linux/ktime.h>
+>  #include <linux/mutex.h>
+> +#include <linux/net_tstamp.h>
+>  #include <linux/phy.h>
+>  #include <linux/ptp_clock_kernel.h>
+> +#include <linux/spinlock.h>
+>  #include <linux/regmap.h>
+>  #include <linux/timer.h>
+>  #include <linux/workqueue.h>
+>  #include <net/dsa.h>
+>
+> +/* All time stamps from the KSZ consist of 2 bits for seconds and 30 bits for
+> + * nanoseconds. This is NOT the same as 32 bits for nanoseconds.
+> + */
+> +#define KSZ_TSTAMP_SEC_MASK  GENMASK(31, 30)
+> +#define KSZ_TSTAMP_NSEC_MASK GENMASK(29, 0)
+> +
+>  struct ksz_platform_data;
+>  struct ksz_dev_ops;
+>  struct vlan_table;
+> @@ -25,6 +36,12 @@ struct ksz_port_mib {
+>  	u64 *counters;
+>  };
+>
+> +/* state flags for ksz_port::tstamp_state */
+> +enum {
+> +	KSZ_HWTSTAMP_ENABLED,
+> +	KSZ_HWTSTAMP_TX_XDELAY_IN_PROGRESS,
+> +};
+> +
+>  struct ksz_port {
+>  	u16 member;
+>  	u16 vid_member;
+> @@ -41,6 +58,13 @@ struct ksz_port {
+>
+>  	struct ksz_port_mib mib;
+>  	phy_interface_t interface;
+> +#if IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ9477_PTP)
+> +	u16 tstamp_rx_latency_ns;   /* rx delay from wire to tstamp unit */
+> +	u16 tstamp_tx_latency_ns;   /* tx delay from tstamp unit to wire */
+> +	struct hwtstamp_config tstamp_config;
+> +	struct sk_buff *tstamp_tx_xdelay_skb;
+> +	unsigned long tstamp_state;
+> +#endif
+>  };
+>
+>  struct ksz_device {
+> @@ -98,7 +122,30 @@ struct ksz_device {
+>  	struct ptp_clock *ptp_clock;
+>  	struct ptp_clock_info ptp_caps;
+>  	struct mutex ptp_mutex;
+> +	spinlock_t ptp_clock_lock; /* for ptp_clock_time */
+> +	/* approximated current time, read once per second from hardware */
+> +	struct timespec64 ptp_clock_time;
+>  #endif
+>  };
+>
+> +/* KSZ9563 will only timestamp event messages */
+> +enum ksz9477_ptp_event_messages {
+> +	PTP_Event_Message_Sync        = 0x0,
+> +	PTP_Event_Message_Delay_Req   = 0x1,
+> +	PTP_Event_Message_Pdelay_Req  = 0x2,
+> +	PTP_Event_Message_Pdelay_Resp = 0x3,
+> +};
+> +
+> +/* net/dsa/tag_ksz.c */
+> +static inline ktime_t ksz9477_decode_tstamp(u32 tstamp, int offset_ns)
+> +{
+> +	u64 ns = FIELD_GET(KSZ_TSTAMP_SEC_MASK, tstamp) * NSEC_PER_SEC +
+> +		 FIELD_GET(KSZ_TSTAMP_NSEC_MASK, tstamp);
+> +
+> +	/* Add/remove excess delay between wire and time stamp unit */
+> +	return ns_to_ktime(ns + offset_ns);
+> +}
+> +
+> +ktime_t ksz9477_tstamp_to_clock(struct ksz_device *ksz, ktime_t tstamp);
+> +
+>  #endif /* _NET_DSA_KSZ_COMMON_H_ */
+> diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
+> index 4820dbcedfa2..c16eb9eae19c 100644
+> --- a/net/dsa/tag_ksz.c
+> +++ b/net/dsa/tag_ksz.c
+> @@ -4,10 +4,14 @@
+>   * Copyright (c) 2017 Microchip Technology
+>   */
+>
+> +#include <asm/unaligned.h>
+> +#include <linux/dsa/ksz_common.h>
+>  #include <linux/etherdevice.h>
+>  #include <linux/list.h>
+> +#include <linux/ptp_classify.h>
+>  #include <linux/slab.h>
+>  #include <net/dsa.h>
+> +#include <net/checksum.h>
+>  #include "dsa_priv.h"
+>
+>  /* Typically only one byte is used for tail tag. */
+> @@ -87,26 +91,125 @@ MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ8795);
+>  /*
+>   * For Ingress (Host -> KSZ9477), 2 bytes are added before FCS.
+>   * ---------------------------------------------------------------------------
+> - * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|tag1(1byte)|FCS(4bytes)
+> + * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|ts(4bytes)|tag0(1byte)|tag1(1byte)|FCS(4bytes)
+>   * ---------------------------------------------------------------------------
+> + * ts   : time stamp (only present if PTP is enabled on the hardware).
+>   * tag0 : Prioritization (not used now)
+>   * tag1 : each bit represents port (eg, 0x01=port1, 0x02=port2, 0x10=port5)
+>   *
+> - * For Egress (KSZ9477 -> Host), 1 byte is added before FCS.
+> + * For Egress (KSZ9477 -> Host), 1/4 bytes are added before FCS.
+>   * ---------------------------------------------------------------------------
+> - * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|FCS(4bytes)
+> + * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|ts(4bytes)|tag0(1byte)|FCS(4bytes)
+>   * ---------------------------------------------------------------------------
+> + * ts   : time stamp (only present of bit 7 in tag0 is set
+>   * tag0 : zero-based value represents port
+>   *	  (eg, 0x00=port1, 0x02=port3, 0x06=port7)
+>   */
+>
+>  #define KSZ9477_INGRESS_TAG_LEN		2
+>  #define KSZ9477_PTP_TAG_LEN		4
+> -#define KSZ9477_PTP_TAG_INDICATION	0x80
+> +#define KSZ9477_PTP_TAG_INDICATION	BIT(7)
+>
+>  #define KSZ9477_TAIL_TAG_OVERRIDE	BIT(9)
+>  #define KSZ9477_TAIL_TAG_LOOKUP		BIT(10)
+>
+> +#if IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ9477_PTP)
+> +/* Time stamp tag is only inserted if PTP is enabled in hardware. */
+> +static void ksz9477_xmit_timestamp(struct sk_buff *skb)
+> +{
+> +	/* We send always 0 in the tail tag.  For PDelay_Resp, the ingress
+> +	 * time stamp of the PDelay_Req message has already been subtracted from
+> +	 * the correction field on rx.
+> +	 */
+> +	put_unaligned_be32(0, skb_put(skb, KSZ9477_PTP_TAG_LEN));
+> +}
+
+On TX you don't need the "PTP time stamp" field at all, can't you
+disable it?
+
+> +
+> +ktime_t ksz9477_tstamp_to_clock(struct ksz_device *ksz, ktime_t tstamp)
+> +{
+> +	struct timespec64 ts = ktime_to_timespec64(tstamp);
+> +	struct timespec64 ptp_clock_time;
+> +	struct timespec64 diff;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&ksz->ptp_clock_lock, flags);
+> +	ptp_clock_time = ksz->ptp_clock_time;
+> +	spin_unlock_irqrestore(&ksz->ptp_clock_lock, flags);
+> +
+> +	/* calculate full time from partial time stamp */
+> +	ts.tv_sec = (ptp_clock_time.tv_sec & ~3) | ts.tv_sec;
+> +
+> +	/* find nearest possible point in time */
+> +	diff = timespec64_sub(ts, ptp_clock_time);
+> +	if (diff.tv_sec > 2)
+> +		ts.tv_sec -= 4;
+> +	else if (diff.tv_sec < -2)
+> +		ts.tv_sec += 4;
+> +
+> +	return timespec64_to_ktime(ts);
+> +}
+> +EXPORT_SYMBOL(ksz9477_tstamp_to_clock);
+
+It should be noted that I tried to find fault with this simplistic
+implementation, where you just reconstruct the partial timestamp with
+whatever PTP time you've got laying around, but I couldn't (or at least
+I couldn't prove it).
+
+In principle there should be a problem when the current PTP time wraps
+around before you get the chance to reconstruct the partial timestamp.
+That one you can detect by ensuring that the partial timestamp is larger
+than the lower bits of the current PTP time. But that imposes the
+restriction that the current PTP time must be collected after the
+partial timestamp was taken by the MAC. And that means that PTP
+timestamping must be done in process context, because it's accessing
+SPI/I2C. Which means a very convoluted implementation, a nightmare
+frankly.
+
+The way you seem to be avoiding this, while still detecting the
+wraparound case, is that you're just patching in the partial timestamp
+into the "current" (i.e. at most 1 second old) PTP time, and then you
+take a look at how well it fits. If the diff is larger than half the
+wraparound interval, and positive (like: the "current" PTP time was
+collected by the driver after the MAC took the partial timestamp), then
+the current PTP time is too far ahead and must have wrapped around. If
+the diff is large but negative (like: the partial timestamp, which is in
+the "current" PTP time's future, has wrapped around), then the "current"
+PTP time needs to be manually boosted.
+
+This all seems to work because you have a somewhat workable budget of 4
+seconds wraparound time. I am not sure that reading the PTP time once
+per second is desirable under all circumstances if avoidable, and
+there's also an even bigger assumption, which is that the PTP worker
+will in fact get scheduled with a delay no larger than 2 seconds. I
+suppose that is an academic only concern though.
+
+So good for you that you can use a function so simple for timestamp
+reconstruction. By the way, what about the name ksz9477_tstamp_reconstruct?
+I don't exactly understand where does the "tstamp_to_clock" name come
+from.
+
+> +
+> +static void ksz9477_rcv_timestamp(struct sk_buff *skb, u8 *tag,
+> +				  struct net_device *dev, unsigned int port)
+> +{
+> +	struct skb_shared_hwtstamps *hwtstamps = skb_hwtstamps(skb);
+> +	u8 *tstamp_raw = tag - KSZ9477_PTP_TAG_LEN;
+> +	enum ksz9477_ptp_event_messages msg_type;
+> +	struct dsa_switch *ds = dev->dsa_ptr->ds;
+> +	struct ksz_device *ksz = ds->priv;
+> +	struct ksz_port *prt = &ksz->ports[port];
+> +	struct ptp_header *ptp_hdr;
+> +	unsigned int ptp_type;
+> +	ktime_t tstamp;
+> +
+> +	/* convert time stamp and write to skb */
+> +	tstamp = ksz9477_decode_tstamp(get_unaligned_be32(tstamp_raw),
+> +				       -prt->tstamp_rx_latency_ns);
+> +	memset(hwtstamps, 0, sizeof(*hwtstamps));
+> +	hwtstamps->hwtstamp = ksz9477_tstamp_to_clock(ksz, tstamp);
+> +
+> +	/* For PDelay_Req messages, user space (ptp4l) expects that the hardware
+> +	 * subtracts the ingress time stamp from the correction field.  The
+> +	 * separate hw time stamp from the sk_buff struct will not be used in
+> +	 * this case.
+> +	 */
+> +	if (skb_headroom(skb) < ETH_HLEN)
+> +		return;
+
+And what does the comment have to do with the code?
+
+> +
+> +	__skb_push(skb, ETH_HLEN);
+> +	ptp_type = ptp_classify_raw(skb);
+> +	__skb_pull(skb, ETH_HLEN);
+> +
+> +	if (ptp_type == PTP_CLASS_NONE)
+> +		return;
+> +
+> +	ptp_hdr = ptp_parse_header(skb, ptp_type);
+> +	if (!ptp_hdr)
+> +		return;
+> +
+> +	msg_type = ptp_get_msgtype(ptp_hdr, ptp_type);
+> +	if (msg_type != PTP_Event_Message_Pdelay_Req)
+> +		return;
+
+Would you be so generous to also modify ptp_get_msgtype to return this
+enum of yours? There is also some opportunity for reuse with drivers/ptp/ptp_ines.c.
+
+> +
+> +	/* Only subtract partial time stamp from the correction field.  When the
+> +	 * hardware adds the egress time stamp to the correction field of the
+> +	 * PDelay_Resp message on tx, also only the partial time stamp will be
+> +	 * added.
+> +	 */
+> +	ptp_onestep_p2p_move_t2_to_correction(skb, ptp_type, ptp_hdr, tstamp);
+> +}
+> +#else   /* IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ9477_PTP) */
+> +static void ksz9477_xmit_timestamp(struct sk_buff *skb __maybe_unused)
+> +{
+> +}
+> +
+> +static void ksz9477_rcv_timestamp(struct sk_buff *skb __maybe_unused, u8 *tag __maybe_unused,
+> +				  struct net_device *dev __maybe_unused,
+> +				  unsigned int port __maybe_unused)
+
+Where did you see __maybe_unused being utilized in this way? And what's
+so "maybe" about it? They are absolutely unused, and the compiler should
+not complain. Please remove these variable attributes.
+
+> +{
+> +}
+> +#endif  /* IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ9477_PTP) */
+> +
+>  static struct sk_buff *ksz9477_xmit(struct sk_buff *skb,
+>  				    struct net_device *dev)
+>  {
+> @@ -116,6 +219,7 @@ static struct sk_buff *ksz9477_xmit(struct sk_buff *skb,
+>  	u16 val;
+>
+>  	/* Tag encoding */
+> +	ksz9477_xmit_timestamp(skb);
+>  	tag = skb_put(skb, KSZ9477_INGRESS_TAG_LEN);
+>  	addr = skb_mac_header(skb);
+>
+> @@ -138,8 +242,10 @@ static struct sk_buff *ksz9477_rcv(struct sk_buff *skb, struct net_device *dev,
+>  	unsigned int len = KSZ_EGRESS_TAG_LEN;
+>
+>  	/* Extra 4-bytes PTP timestamp */
+> -	if (tag[0] & KSZ9477_PTP_TAG_INDICATION)
+> +	if (tag[0] & KSZ9477_PTP_TAG_INDICATION) {
+> +		ksz9477_rcv_timestamp(skb, tag, dev, port);
+>  		len += KSZ9477_PTP_TAG_LEN;
+> +	}
+>
+>  	return ksz_common_rcv(skb, dev, port, len);
+>  }
+> @@ -149,7 +255,7 @@ static const struct dsa_device_ops ksz9477_netdev_ops = {
+>  	.proto	= DSA_TAG_PROTO_KSZ9477,
+>  	.xmit	= ksz9477_xmit,
+>  	.rcv	= ksz9477_rcv,
+> -	.overhead = KSZ9477_INGRESS_TAG_LEN,
+> +	.overhead = KSZ9477_INGRESS_TAG_LEN + KSZ9477_PTP_TAG_LEN,
+>  	.tail_tag = true,
+>  };
+>
+> @@ -167,6 +273,7 @@ static struct sk_buff *ksz9893_xmit(struct sk_buff *skb,
+>  	u8 *tag;
+>
+>  	/* Tag encoding */
+> +	ksz9477_xmit_timestamp(skb);
+>  	tag = skb_put(skb, KSZ_INGRESS_TAG_LEN);
+>  	addr = skb_mac_header(skb);
+>
+> @@ -183,7 +290,7 @@ static const struct dsa_device_ops ksz9893_netdev_ops = {
+>  	.proto	= DSA_TAG_PROTO_KSZ9893,
+>  	.xmit	= ksz9893_xmit,
+>  	.rcv	= ksz9477_rcv,
+> -	.overhead = KSZ_INGRESS_TAG_LEN,
+> +	.overhead = KSZ_INGRESS_TAG_LEN + KSZ9477_PTP_TAG_LEN,
+>  	.tail_tag = true,
+>  };
+>
+> --
+
+Long and exhausting patch... Could you split it up into a patch for the
+control path and another one for the data path?
