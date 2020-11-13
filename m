@@ -2,84 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54B4F2B25F6
+	by mail.lfdr.de (Postfix) with ESMTP id C12CC2B25F7
 	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 21:55:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726678AbgKMUy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 15:54:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35290 "EHLO
+        id S1726701AbgKMUy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 15:54:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726636AbgKMUyZ (ORCPT
+        with ESMTP id S1726092AbgKMUyZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 15:54:25 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34261C0617A6
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 12:54:25 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id t11so12281381edj.13
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 12:54:25 -0800 (PST)
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FF3C0613D1
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 12:54:24 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id i7so8071193pgh.6
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 12:54:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5rQJ8Zivr+ADxZ9d4wLHPAMzU5Jegx9FQeksFM+wje8=;
-        b=mIlVor2HKWWsuQb3+Bkhjo70BliTh90H6AT+AXTAFAoguY12Ipr6Wea9L0qq4eHVz2
-         D3S02iG17F6X/cxhRvLia32SDAgg1WDKVkNPPvHcKhm9g/+Uq7W2gvsoQKeqcB///eY1
-         GM8DXvOIVju8D31WAw0zoRJALkbpUGnaWuZSH8UzNso2rh7KhtX9HTXweiWkajmn7Z3k
-         voEK8JvEPB8HjZbvK2nAU5L9Or/kt7RaeYwPxkNu+Z6GzYx5fS40a4aabnxWSEp89Fd3
-         1g8ZdYQXcDx1UJReM+BqTF/5+1yTIos0fBOvo/IdEqN0GMR9dOOz3QRY+YCwA6bxQ+lp
-         Dqgw==
+        d=gmail.com; s=20161025;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=YduKD2rXdXWGOe7iQm3bM6ks4nExuiBwwreytNlrTgg=;
+        b=Wo48JlEZ89dgUmkz5g8/nRAwhBNwozX//DIvzSSX6xKPc80VSsnM3SRHG6MLFSIR46
+         yL0BuaolRcEhXWrboAxa8OVyszrkUuaiEBHOD3xnNrPDjh0pYFUO5aUQXhQQ1y10Yr1/
+         fEGBktg4pFaOocl/NK4dEmdQ19I1G+2VHgLTljyhFDU7yTmc4PjfzZc2uueVmlg1bvqn
+         LpAuo5S89r9H+wwY9XdGnnHONjhQ7Ewclqi3pB1+hLJ8ovBSvBYlf6WmmKNach4JlhCM
+         AuJetWO1yVMiry+gTKOC+NeYOPsGlEqmfeIo/gwBPVlV5UEPJdN7N832+IrVV6EbXpgR
+         Z3iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5rQJ8Zivr+ADxZ9d4wLHPAMzU5Jegx9FQeksFM+wje8=;
-        b=VyKcQ9sK6MrmuAYq715uVPjm0yPu2pyvHZLD1ks+QLGuqAB8CzlU64a6BXEV4FaRHu
-         22SQRoFFxvm8RZvrMvuOV6adkNe92/zLtGVJXpkaPZKB1K8kZfetLyIoWP7SUV41l2TK
-         j6i0Jp3/4iknYvysUh/bPb8Ek5c6N1ltFTnF2/ThfonTSm/jeFGv5ACMwtKGlL8aByxg
-         oGaLt9UshOi7fixjn4MK+Hg17Tc9WbQzXg2mL5FfUdJPzGUA9swmvZLGEs0bkPRsOnt+
-         vYbnOS/Lrh4Qnoakrhhz/YFUWHVML8m1cQ6kt3O/VYSy0is5I/XCrKJs7Xl8AQTbKaJi
-         DeJw==
-X-Gm-Message-State: AOAM533W/eo6e3RKcfjrcDFbqEnEW0iXAQRYe82n/KDv37POOkq3TwsG
-        1tQ4Cwjyhdt1QGGKKePTfiJzb6+u2EMf01Poy1wyYBGXHl4=
-X-Google-Smtp-Source: ABdhPJx1s8phjyoXjTb35KkvZc75MK2Ukmz7+A9poKzS0Sy9hGxQOc9Ogf7xiGD96ZKM6mTcucOn797xuf8wJjfxpRs=
-X-Received: by 2002:aa7:df81:: with SMTP id b1mr4379400edy.365.1605300863914;
- Fri, 13 Nov 2020 12:54:23 -0800 (PST)
-MIME-Version: 1.0
-References: <20200922214112.19591-1-hauke@hauke-m.de> <20200923.180140.957870805702877808.davem@davemloft.net>
-In-Reply-To: <20200923.180140.957870805702877808.davem@davemloft.net>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Fri, 13 Nov 2020 21:54:13 +0100
-Message-ID: <CAFBinCA8qOhVPeLDugs4pvXsEOfC8V5jbPmgP_qZUjQdGG-NgQ@mail.gmail.com>
-Subject: Re: [PATCH v2] net: lantiq: Add locking for TX DMA channel
-To:     David Miller <davem@davemloft.net>
-Cc:     Hauke Mehrtens <hauke@hauke-m.de>, kuba@kernel.org,
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=YduKD2rXdXWGOe7iQm3bM6ks4nExuiBwwreytNlrTgg=;
+        b=AMQlCoJj7LET7s4Fe8kqmsIAq0Tf00hqLrj/LIvrOssZX9ve0E/fmObCqHkviqg1XE
+         Q2Hl1JVcU0g+ljZ9MSQXGI632jiVbuiQsv+5Fe2bK0dCAq7COR3GA3nZH4thRIEyFuNw
+         v6CbLOkQACUa7rrJOTOVNvo5UWUuT1nQNhLL/iQYqU81UMTUTanNGZhvs8o4asbTjuU9
+         NX6NBO5rMExYND6gR9WeT3OKr5MRs0gMBPmaDqxDXVOulgZooZ+UzNX3VwVQyslXOSmh
+         V4uRNm9nhSTFce3oKdNQ/XEOu3t2F6StgWokQL5E+oN9HxDovdVvCWAI9UXCzvWcSKxO
+         VQwg==
+X-Gm-Message-State: AOAM532qxsCO7I61cGcOlJf2q+JoScYo+oj5nPDQzs8xvh2+1rmtLz3T
+        hML4V5Un159Qs5z0bZQjdbU=
+X-Google-Smtp-Source: ABdhPJx1LTmHtK8uWNvSkPn//luob9UN8kBWpV0PCNtHdENti++LSjyTudapeHdCetubMJU9myGIqw==
+X-Received: by 2002:a62:1ccf:0:b029:18b:c80f:cf0c with SMTP id c198-20020a621ccf0000b029018bc80fcf0cmr3551779pfc.24.1605300864445;
+        Fri, 13 Nov 2020 12:54:24 -0800 (PST)
+Received: from ?IPv6:2601:648:8400:9ef4:34d:9355:e74:4f1b? ([2601:648:8400:9ef4:34d:9355:e74:4f1b])
+        by smtp.gmail.com with ESMTPSA id 143sm2962200pgh.57.2020.11.13.12.54.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Nov 2020 12:54:23 -0800 (PST)
+Message-ID: <30091c4aab58aba9e75fd591becf7a91cd7b46e9.camel@gmail.com>
+Subject: Re: [PATCH 2/3] icmp: define probe message types
+From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
+To:     davem@davemloft.net
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
         netdev@vger.kernel.org
+Date:   Fri, 13 Nov 2020 12:54:23 -0800
+In-Reply-To: <20201113050241.8218-1-andreas.a.roeseler@gmail.com>
+References: <cover.1605238003.git.andreas.a.roeseler@gmail.com>
+         <20201113050241.8218-1-andreas.a.roeseler@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 3:01 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Hauke Mehrtens <hauke@hauke-m.de>
-> Date: Tue, 22 Sep 2020 23:41:12 +0200
->
-> > The TX DMA channel data is accessed by the xrx200_start_xmit() and the
-> > xrx200_tx_housekeeping() function from different threads. Make sure the
-> > accesses are synchronized by acquiring the netif_tx_lock() in the
-> > xrx200_tx_housekeeping() function too. This lock is acquired by the
-> > kernel before calling xrx200_start_xmit().
-> >
-> > Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
->
-> Applied [...]
-what is the procedure to have this patch included in the 5.4 and 5.9
--stable trees as well?
-this commit is already in mainline as f9317ae5523f99999fb54c513ebabbb2bc887ddf
+On Thu, 2020-11-12 at 21:02 -0800, Andreas Roeseler wrote:
+> Types of ICMP Extended Echo Request and ICMP Extended Echo Reply are
+> defined in sections 2 and 3 of RFC 8335.
+> 
+> Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com> 
+> ---
+>  include/uapi/linux/icmp.h | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+> index fb169a50895e..6cabb6acc156 100644
+> --- a/include/uapi/linux/icmp.h
+> +++ b/include/uapi/linux/icmp.h
+> @@ -66,6 +66,10 @@
+>  #define ICMP_EXC_TTL           0       /* TTL count
+> exceeded           */
+>  #define ICMP_EXC_FRAGTIME      1       /* Fragment Reass time
+> exceeded */
+>  
+> +/* Codes for EXT_ECHO (Probe). */
+> +#define ICMP_EXT_ECHO          42
+> +#define ICMP_EXT_ECHOREPLY     43
+> +
+>  
+>  struct icmphdr {
+>    __u8         type;
 
-After more testing other users have confirmed that this patch works
-In hindsight it should have carried Fixes: fe1a56420cf2ec ("net:
-lantiq: Add Lantiq / Intel VRX200 Ethernet driver")
 
-
-Thank you!
-Martin
