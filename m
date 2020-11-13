@@ -2,118 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E1A92B1CF6
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 15:15:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A60C2B1CF8
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 15:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbgKMOPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 09:15:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30003 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726278AbgKMOPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 09:15:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605276915;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fgsPZorsBInqug204yKtGdenm5jOUFNYIYAi8fxlgbg=;
-        b=Dh57G5JimiQiYNA6/JrT7q9oQl8XYcfELytjNKSqtdPEOHR0ShmuPIkKaK21PJgAKf7vYH
-        xmGxSmN1HfsD0JQc82cUpa6YeOqxYmv1fvUvtZ7NhKGK4MBrqfFDC22MTN5gG7DgudyIOd
-        GcYTCMErj7LiHNZWMVtdOvGJui9bqMg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-500-ye2mSQhIPVipK1TVRYeU9w-1; Fri, 13 Nov 2020 09:15:12 -0500
-X-MC-Unique: ye2mSQhIPVipK1TVRYeU9w-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C89D0809DC4;
-        Fri, 13 Nov 2020 14:15:11 +0000 (UTC)
-Received: from yoda.fritz.box (unknown [10.40.194.83])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 899B21C4;
-        Fri, 13 Nov 2020 14:15:10 +0000 (UTC)
-Date:   Fri, 13 Nov 2020 15:15:07 +0100
-From:   Antonio Cardace <acardace@redhat.com>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/1] netdevsim: support ethtool ring and
- coalesce settings
-Message-ID: <20201113141507.z4gehzlddi6eyggm@yoda.fritz.box>
-References: <20201112151229.1288504-1-acardace@redhat.com>
- <20201113114522.pn5ap6m4a2aqoz2j@lion.mk-sys.cz>
+        id S1726594AbgKMOPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 09:15:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56600 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726278AbgKMOPt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 09:15:49 -0500
+Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D57EC0613D1;
+        Fri, 13 Nov 2020 06:15:49 -0800 (PST)
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kdZra-0058ih-LK; Fri, 13 Nov 2020 14:15:42 +0000
+Date:   Fri, 13 Nov 2020 14:15:42 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
+Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Tom Herbert <tom@herbertland.com>,
+        Anders Roxell <anders.roxell@gmail.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: csum_partial() on different archs (selftest/bpf)
+Message-ID: <20201113141542.GJ3576660@ZenIV.linux.org.uk>
+References: <CAJ+HfNiQbOcqCLxFUP2FMm5QrLXUUaj852Fxe3hn_2JNiucn6g@mail.gmail.com>
+ <20201113122440.GA2164@myrica>
+ <CAJ+HfNiE5Oa25QgdAdKzfk-=X45hXLKk_t+ZCiSaeFVTzgzsrw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20201113114522.pn5ap6m4a2aqoz2j@lion.mk-sys.cz>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJ+HfNiE5Oa25QgdAdKzfk-=X45hXLKk_t+ZCiSaeFVTzgzsrw@mail.gmail.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 13, 2020 at 12:45:22PM +0100, Michal Kubecek wrote:
-> On Thu, Nov 12, 2020 at 04:12:29PM +0100, Antonio Cardace wrote:
-> > Add ethtool ring and coalesce settings support for testing.
-> > 
-> > Signed-off-by: Antonio Cardace <acardace@redhat.com>
-> > ---
-> >  drivers/net/netdevsim/ethtool.c   | 65 +++++++++++++++++++++++++++----
-> >  drivers/net/netdevsim/netdevsim.h |  9 ++++-
-> >  2 files changed, 65 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/drivers/net/netdevsim/ethtool.c b/drivers/net/netdevsim/ethtool.c
-> > index f1884d90a876..25acd3bc1781 100644
-> > --- a/drivers/net/netdevsim/ethtool.c
-> > +++ b/drivers/net/netdevsim/ethtool.c
-> > @@ -7,15 +7,18 @@
-> > 
-> >  #include "netdevsim.h"
-> > 
-> > +#define UINT32_MAX 0xFFFFFFFFU
-> 
-> We already have U32_MAX in <linux/limits.h>
-> 
-> > +#define ETHTOOL_COALESCE_ALL_PARAMS UINT32_MAX
-> 
-> I would rather prefer this constant to include only bits corresponding
-> to parameters which actually exist, i.e. either GENMASK(21, 0) or
-> combination of existing ETHTOOL_COALESCE_* macros. It should probably
-> be defined in include/linux/ethtool.h then.
-> 
-> [...]
-> > +static void nsim_get_ringparam(struct net_device *dev, struct ethtool_ringparam *ring)
-> > +{
-> > +	struct netdevsim *ns = netdev_priv(dev);
-> > +
-> > +	memcpy(ring, &ns->ethtool.ring, sizeof(ns->ethtool.ring));
-> > +}
-> > +
-> > +static int nsim_set_ringparam(struct net_device *dev, struct ethtool_ringparam *ring)
-> > +{
-> > +	struct netdevsim *ns = netdev_priv(dev);
-> > +
-> > +	memcpy(&ns->ethtool.ring, ring, sizeof(ns->ethtool.ring));
-> >  	return 0;
-> >  }
-> [...]
-> > 
-> > +static void nsim_ethtool_coalesce_init(struct netdevsim *ns)
-> > +{
-> > +	ns->ethtool.ring.rx_max_pending = UINT32_MAX;
-> > +	ns->ethtool.ring.rx_jumbo_max_pending = UINT32_MAX;
-> > +	ns->ethtool.ring.rx_mini_max_pending = UINT32_MAX;
-> > +	ns->ethtool.ring.tx_max_pending = UINT32_MAX;
-> > +}
-> 
-> This way an ETHTOOL_MSG_RINGS_SET request would never fail. It would be
-> more useful for selftests if the max values were more realistic and
-> ideally also configurable via debugfs.
-> 
-> Michal
-> 
+On Fri, Nov 13, 2020 at 02:22:16PM +0100, Björn Töpel wrote:
 
-Thanks Michal and Jakub, I will send a v2 patch that addresses the
-comments you made.
+> Folding Al's input to this reply.
+> 
+> I think the bpf_csum_diff() is supposed to be used in combination with
+> another helper(s) (e.g. bpf_l4_csum_replace) so I'd guess the returned
+> __wsum should be seen as an opaque value, not something BPF userland
+> can rely on.
 
-Antonio
+Why not reduce the sucker modulo 0xffff before returning it?  Incidentally,
+implementation is bloody awful:
 
+        /* This is quite flexible, some examples:
+         *
+         * from_size == 0, to_size > 0,  seed := csum --> pushing data
+         * from_size > 0,  to_size == 0, seed := csum --> pulling data
+         * from_size > 0,  to_size > 0,  seed := 0    --> diffing data
+         *
+         * Even for diffing, from_size and to_size don't need to be equal.
+         */
+        if (unlikely(((from_size | to_size) & (sizeof(__be32) - 1)) ||
+                     diff_size > sizeof(sp->diff)))
+                return -EINVAL;
+
+        for (i = 0; i < from_size / sizeof(__be32); i++, j++)
+                sp->diff[j] = ~from[i];
+        for (i = 0; i <   to_size / sizeof(__be32); i++, j++)
+                sp->diff[j] = to[i];
+
+        return csum_partial(sp->diff, diff_size, seed);
+
+What the hell is this (copying, scratchpad, etc.) for?  First of all,
+_if_ you want to use csum_partial() at all (and I'm not at all sure
+that it won't be cheaper to just go over two arrays, doing csum_add()
+and csum_sub() resp. - depends upon the realistic sizes), you don't
+need to copy anything.  Find the sum of from, find the sum of to and
+then subtract (csum_sub()) the old sum from the seed and and add the
+new one...
+
+And I would strongly recommend to change the calling conventions of that
+thing - make it return __sum16.  And take __sum16 as well...
+
+Again, exposing __wsum to anything that looks like a stable ABI is
+a mistake - it's an internal detail that can be easily abused,
+causing unpleasant compat problems.
