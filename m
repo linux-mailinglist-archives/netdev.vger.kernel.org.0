@@ -2,103 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43D5F2B1E1A
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 16:05:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01D742B1E40
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 16:08:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726840AbgKMPFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 10:05:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36272 "EHLO
+        id S1726746AbgKMPIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 10:08:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726336AbgKMPFY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 10:05:24 -0500
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE96C0613D1;
-        Fri, 13 Nov 2020 07:05:11 -0800 (PST)
-Received: by mail-ot1-x343.google.com with SMTP id n11so9191288ota.2;
-        Fri, 13 Nov 2020 07:05:11 -0800 (PST)
+        with ESMTP id S1726160AbgKMPIP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 10:08:15 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCAA3C0613D1
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 07:08:15 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id b63so4234464pfg.12
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 07:08:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1C47CTLZAr89HP4Ij49KChin9n/8obEs9p/icBbyAZE=;
-        b=KG5S5U2kccbW0H4DF1sSGnVRAZL776fQmrZHApKZVnVh1XXn2LG9mG2p0h0FblW+MV
-         FGjd9VHdExpUitvFcz507nNywfL7q6Lv+7rgMoyk8d4IIFQDYX5otPdN/JWBqvUX5k8q
-         VlO4WAgw2g7ujeNNzP0bZzwuVqS1Lc6EK/yLdMsvGKUfvZndEIgkXKSrAaxBiPKSGyeJ
-         l+PKE+3+XTI4sdq/wQYGMNSu1MUGsndWg1BvHzx/MgnshB57zv+nsV/RAfVq4xC+2+F5
-         q6z36ZJeN8MaKaUEefiJwy2ceZtz1wtyOh0T1K0cvYC+jkWtEj3jtUaOPn3vBNceNB9f
-         CwBg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PDPxueAAySKApLbN4V0ld8BCC+3rz7zw7aHNJbbf4AY=;
+        b=TP8iqAN9OI2tSU0IX/+9uZQ6kvhL3HZI9RTUM6+Djo5nvd4Iylu/Nd1fwrKF8IRaoM
+         9Uy4emXVUbex4zSCkL4okWH2PPU7Wf6AT4Zxuj1yTqYfjAzN1AL1O4oN6WKpWk5JeXo7
+         +cq296P2HalChZVMUk9wcUUTN3qja2H+Ho+Yp+NYa5nmWCtDkORtymvZ26zPG2iTnRd3
+         947QYan2VIi+AxRNybDZUrvAuQFEz63cYnr+YPUIUTZSLNb7aWxER5EW1I1RmaaH7UwZ
+         oPgvO0agRjIGtiHw4kucNmD0bOV+jo20+NM8J/FAtEje4Nf5aXE4/c0If6el9Ugdx7dr
+         kPQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1C47CTLZAr89HP4Ij49KChin9n/8obEs9p/icBbyAZE=;
-        b=NEFiC5fVwQlvLdnGj+DdAmHoZXaYPnMSEBKHCbEliDBp91VBn7HavYYgYFsvvd4ch4
-         UQvgTX2LIo8gXQ5xOWXoUhKom5DbOXjWdHvW+Xwj24It4Kxf59VB1Kt0rWygx4IUqxsZ
-         F53elt/JSrCS0YwzHRsRKepui/bsiy0QUrpIrUQZxRviY4vymZIskU2EoFQa0yScuggZ
-         vkX497UXCANVv6i8TSiRMAOS1ctZWSperCo8385MNdnVGWG+Xb6Pk36FC6mQcYU2hfcT
-         ASj/zkcj+BxxarE10+PbmTqPG84Mt9eeJDTDzh+6u8AJt15st/gqjspnHGpzVKrd+klL
-         hiVQ==
-X-Gm-Message-State: AOAM533VxUd22bnrxGaEzBH7l3fvivtQkdlja9qDRSuFRPmLUOidmIL/
-        +TwJ/0O8SrEH5VzyZ8pfngHae36y3r2DThs8xoI=
-X-Google-Smtp-Source: ABdhPJyl4bssDWV93YJHQrFi28t8HVpRM6w/THK3WbZjakE5i/96GEDqtjQK4TPjzsd2aNY0iD1d0w0YwdtlFmt/dMg=
-X-Received: by 2002:a9d:6f8f:: with SMTP id h15mr1828218otq.166.1605279910676;
- Fri, 13 Nov 2020 07:05:10 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PDPxueAAySKApLbN4V0ld8BCC+3rz7zw7aHNJbbf4AY=;
+        b=NnBVmqLiFyumWdcUTFvef6fajZH19jttgooN3wuigDkhOvZZueaPoaeyswOd5zyBNv
+         WM+cddDq/uv3XO4VVr+D/29IpqDhLnNxmGrxdtB1iCQxdli62JhlPeSuGUlTZ2oG0qir
+         u74v19u5GCDHDrFb9YZ7i4wvAQP2m/Po9oa/fRLOSMXtdvyeOdaJhQPKMgGwqgECzQfI
+         fRvLE5DJPm4fqYRpECG4oIALZqzo8LGyiLl6YzwhJio9UglbsgbPNRUOL1wd/KIth1ER
+         GUkgxdmzskdKcPXHekuarqPCriI8jz/1fu21O+qWTwpEQCRdRHHdZI9pivQy4G5RB86o
+         Tq3w==
+X-Gm-Message-State: AOAM5304YzgodPb89xJKIHgh0nQHsRLH9lVMyqd3llCu+duvsDi/RyzT
+        67iwmkIm216B6UX7uy2L4Ms=
+X-Google-Smtp-Source: ABdhPJy/EaZCfH4vjSHeB1Iw7LkDL0y48rlYqeY1Q4FT5lgZTh1HQTKuKR2DEFMPhyNlzMqvzitXNQ==
+X-Received: by 2002:aa7:8518:0:b029:18b:cc9c:efab with SMTP id v24-20020aa785180000b029018bcc9cefabmr2533247pfn.39.1605280095369;
+        Fri, 13 Nov 2020 07:08:15 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
+        by smtp.gmail.com with ESMTPSA id k17sm12043834pji.50.2020.11.13.07.08.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Nov 2020 07:08:14 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next 0/2] tcp: avoid indirect call in __sk_stream_memory_free()
+Date:   Fri, 13 Nov 2020 07:08:07 -0800
+Message-Id: <20201113150809.3443527-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.29.2.299.gdc1121823c-goog
 MIME-Version: 1.0
-References: <e724ce7621dcb8bd412edb5d30bfb1e8@sslemail.net>
- <CAKfDRXjcOCvfTx0o6Hxdd4ytkNfJuxY97Wk2QnYvUCY8nzT7Sg@mail.gmail.com>
- <HK2PR06MB35071489A05CEBF9C5FADD1C86E60@HK2PR06MB3507.apcprd06.prod.outlook.com>
- <CAKfDRXgGw0s=DAOsR5x7SXtr6twda5U_uOEb_VNZ-0hVEEvuYg@mail.gmail.com>
-In-Reply-To: <CAKfDRXgGw0s=DAOsR5x7SXtr6twda5U_uOEb_VNZ-0hVEEvuYg@mail.gmail.com>
-From:   Kristian Evensen <kristian.evensen@gmail.com>
-Date:   Fri, 13 Nov 2020 16:04:59 +0100
-Message-ID: <CAKfDRXg+ViFVdN=op1s-xuaEQ3aWqtdh6-kdvcuMnx2zdd0QOw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/1] net: usb: qmi_wwan: add default rx_urb_size
-To:     =?UTF-8?B?Q2FybCBZaW4o5q635byg5oiQKQ==?= <carl.yin@quectel.com>
-Cc:     Daniele Palmas <dnlplm@gmail.com>,
-        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Paul Gildea <paul.gildea@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-usb <linux-usb@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Eric Dumazet <edumazet@google.com>
 
-On Fri, Nov 13, 2020 at 9:50 AM Kristian Evensen
-<kristian.evensen@gmail.com> wrote:
-> Yes, you are right in that NAT can have a large effect on performance,
-> especially when you start being CPU-limited. However,when using perf
-> to profile the kernel during my tests, no function related to
-> netfilter/conntrack appeared very high on the list. I would also
-> expect the modem to at least reach the performance of the dongle, with
-> offloading being switched off. However, there could be some detail I
-> missed.
+Small improvement for CONFIG_RETPOLINE=y, when dealing with TCP sockets.
 
-I continued working on this issue today and I believe I have found at
-least one reason for my performance problems. My initial attempts at
-profiling resulted in quite noisy perf files and this caused me to
-look in the wrong places. Today I figured out how to get a cleaner
-file, and I noticed that a lot of resources were spent on
-pskb_expand_head() + support functions.
+Eric Dumazet (2):
+  tcp: uninline tcp_stream_memory_free()
+  tcp: avoid indirect call to tcp_stream_memory_free()
 
-My MT7621 devices are used as routers, so before the packets are sent
-out on the LAN additional headers have to be added. The current code
-in qmimux_rx_fixup() allocates an SKB for each aggregated packet and
-copies the data from the URB. The newly allocated SKB has too little
-headroom, so when we get to ip_forward() then the check in skb_cow()
-fails and the SKB is reallocated. After increasing the amount of data
-allocated to also include the required headroom + reserving headroom
-amount of bytes, I see a huge performance increase. I go from around
-230 Mbit/s and to 280Mbit/s, with significantly less CPU usage. 280
-Mbit/s is the same speed as I get from my phone connected to the same
-network, so it seems to be the max of the network right now.
+ include/net/sock.h  |  8 ++++++--
+ include/net/tcp.h   | 13 +------------
+ net/ipv4/tcp_ipv4.c | 14 ++++++++++++++
+ 3 files changed, 21 insertions(+), 14 deletions(-)
 
-I do not know what would be an acceptable way (if any) to get this fix
-upstreamed. I currently add an additional "safe" amount of data, but I
-am pretty sure ETH_HLEN + 2 is not an acceptable solution :)
+-- 
+2.29.2.299.gdc1121823c-goog
 
-Kristian
