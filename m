@@ -2,68 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C670B2B24D0
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 20:44:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 097102B24E7
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 20:51:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726302AbgKMTop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 14:44:45 -0500
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:47548 "EHLO 1wt.eu"
+        id S1726205AbgKMTvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 14:51:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726087AbgKMTop (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 14:44:45 -0500
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 0ADJiWcF010910;
-        Fri, 13 Nov 2020 20:44:32 +0100
-Date:   Fri, 13 Nov 2020 20:44:32 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        netdev@vger.kernel.org, David Miller <davem@davemloft.net>
-Subject: Re: [PATCH net-next 0/3] macb: support the 2-deep Tx queue on at91
-Message-ID: <20201113194432.GA10904@1wt.eu>
-References: <20201011090944.10607-1-w@1wt.eu>
- <20201013170358.1a4d282a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201014030630.GA12531@1wt.eu>
- <20201113100359.GJ4556@piout.net>
+        id S1726081AbgKMTvU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 14:51:20 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A0107206A1;
+        Fri, 13 Nov 2020 19:51:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605297080;
+        bh=Yaba0wfKJ3Rh00ovTXjYCvG+pfoCtC87673MJwW6jx8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=O4IjcH4Fjs1i7x3cHbSKk4Lr7boCO5KQ3ET0kWKJpacDUN/+vledcyX0rX8nccmet
+         v0orvpMxU9puW9ScZDxEJQinNy2Ua7r/+O+7RakDohPwd4r4EG9+qaTeMfhPn0qTRu
+         p+Ykpt2uxMikk9zS8Jyo/ytIDQLzaWQYuLDbhDl0=
+Date:   Fri, 13 Nov 2020 11:51:18 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lev Stipakov <lstipakov@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lev Stipakov <lev@openvpn.net>
+Subject: Re: [PATCH v2 1/3] net: mac80211: use core API for updating TX/RX
+ stats
+Message-ID: <20201113115118.618f57de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAGyAFMUrNRAiDZuNa2QCJQ-JuQAUdDq3nOB17+M=wc2xNknqmQ@mail.gmail.com>
+References: <44c8b5ae-3630-9d98-1ab4-5f57bfe0886c@gmail.com>
+        <20201113085804.115806-1-lev@openvpn.net>
+        <53474f83c4185caf2e7237f023cf0456afcc55cc.camel@sipsolutions.net>
+        <CAGyAFMUrNRAiDZuNa2QCJQ-JuQAUdDq3nOB17+M=wc2xNknqmQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201113100359.GJ4556@piout.net>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexandre!
+On Fri, 13 Nov 2020 14:25:25 +0200 Lev Stipakov wrote:
+> > Seems I should take this through my tree, any objections?
 
-On Fri, Nov 13, 2020 at 11:03:59AM +0100, Alexandre Belloni wrote:
-> I think I'm the only one booting recent linux kernels on at91rm9200 and
-> I'm currently stuck home while the board is at the office. I'll try to
-> test as soon as possible, which may not be before 2021... At least I'll
-> know who is the culprit ;)
+Go for it, you may need to pull net-next first but that should happen
+soonish anyway, when I get to your pr.
 
-Oh that's great. I have a SAMG20 based one, which uses slightly different
-registers and supports a tx ring, so initially I thought that I couldn't
-test it there. But a friend of mine who wrote the drivers for FreeBSD
-told me that the original driver still worked for the SAMG20, and I
-suspect that despite not being mentioned in the datasheet, the more
-recent chip still supports the old behavior, at least to ease the
-transistion for their customers. So eventually I'll try it too.
+> The rest are similar changes for openvswitch and xfrm subsystems, so
+> I've sent those to the list of maintainers I got from
+> scripts/get_maintainer.pl.
 
-In all transparency, I must tell you that I recently noticed an issue
-when facing intense bidirectional traffic, eventually the chip would
-report a TX overrun and would stop sending. I finally attributed this
-to the unmerged changes needed for the MStar chip, which uses two 16
-bit I/O accesses instead of a single 32-bit one, and which apparently
-doesn't like being interrupted between the two when writing to the TAR
-or TLEN registers. It took me the whole week-end to figure the root
-cause so now I need to remove all my debugging code, address the issue
-and test again. If I can't manage to fix this and you can't find a
-moment to test on your board, I'll propose to revert my patch to stay
-on the safe side, as I want at least one implementation to be 100%
-reliable with it.
+Lev, please either post the patches separately (non-series) or make
+them a proper series which has a cover letter etc. and CC folks on all
+the patches.
 
-Cheers,
-Willy
+Since there are no dependencies between the patches here you could have
+gone for separate patches here.
