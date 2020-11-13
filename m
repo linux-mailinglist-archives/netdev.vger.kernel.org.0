@@ -2,88 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD9F32B149B
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 04:18:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45DC22B14A9
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 04:24:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726187AbgKMDS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 22:18:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59182 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725965AbgKMDS2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 22:18:28 -0500
-Received: from localhost.localdomain (c-73-231-172-41.hsd1.ca.comcast.net [73.231.172.41])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5117720A8B;
-        Fri, 13 Nov 2020 03:18:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605237507;
-        bh=MaaBG4tccxbaQ9aA0t1wzQvpBf1+T4mhBfx53VS77+M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Rr+0OHmnci8Dg534Baejpue8Nb3PJ+kZfcIki+m1P0ulo2cK245KXG5af4kDeYI7E
-         63I88cgNJzpJGs5tYUUQ/mSQmZZB+VpGgHX5kESj+06yqhE+PIqdd+Q22Vn1/jzIcG
-         sIM2UwrmeQ3MyOeHvJCSJEofPX70zpcdRjTLQuYc=
-Date:   Thu, 12 Nov 2020 19:18:25 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Roman Gushchin <guro@fb.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@suse.com>
-Subject: Re: [PATCH bpf-next v5 01/34] mm: memcontrol: use helpers to read
- page's memcg data
-Message-Id: <20201112191825.1a7c3e0d50cc5e375a4e887c@linux-foundation.org>
-In-Reply-To: <20201113030456.drdswcndp65zmt2u@ast-mbp>
-References: <20201112221543.3621014-1-guro@fb.com>
-        <20201112221543.3621014-2-guro@fb.com>
-        <20201113095632.489e66e2@canb.auug.org.au>
-        <20201113002610.GB2934489@carbon.dhcp.thefacebook.com>
-        <20201113030456.drdswcndp65zmt2u@ast-mbp>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726136AbgKMDYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 22:24:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725929AbgKMDYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 22:24:55 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADF0C0613D1;
+        Thu, 12 Nov 2020 19:24:55 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id a18so6448626pfl.3;
+        Thu, 12 Nov 2020 19:24:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=IrE75K0NizerR3Wqiaotbx/ZTvWDabFAa1OrR3pXQBM=;
+        b=tiqP62IaMm6SRIY34zK1I6Vd/AdYWXLclGpsFGDxzEfFmvIutxtBVS8EATJ3zTl1v6
+         iMT/9l21aMFpcbx/Zd22XI0meooOfiwQjMMXX5V4hDMKXVRBxmiqT693bbRnaRcZMcPB
+         cJUe4emdu6yTO1EOepN4hnPfht8E518Eg++8grjl+hqUlO33jxCx5Z9Ewp9VMxf8HZJ7
+         2doCEx5PDUL4l+tpiloMAyeGBqQbluCKb8quaDFIZT1dCqN1nHzZ6OadfU5z2SMvYJ/t
+         dwr5IcM6rFyY2n08rG3whqdZZPimxVaSZTNEvEw//8DPm+darGuDtFXqeLcGC0PVK8Ec
+         C7GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=IrE75K0NizerR3Wqiaotbx/ZTvWDabFAa1OrR3pXQBM=;
+        b=AMHEewOfOR7J3nsrG+hd3W34NQnWmNjY1MtevsU3lvqLA9oq6rl5sJbVul2IfyZ32e
+         GQjanVyf5GVfYbxSU9jBVxVFvNQHLK1FKA/r9ZrOASyOzFZt0qhu6DCDk0kp50Sl4k4p
+         beQ4qs9nP6Ep2T+xyr7UzVLmi1iBYEE8q7DrNnVeokvS0gN5gWgjS3FDYiPo+HGr9rHf
+         UEM/nv9q9FsVEyeFDy3vf9kSQ+E95JR/QJN5G48g4OdlgR7niYlMwQPl3xzO2Fw7BUb+
+         uUeiAtz3WwD447DMEuXqpWyBzwVeBQkICs5k8Urc9I9eQsR2JVGM76KJqcxmO6KwNxsK
+         Dtdg==
+X-Gm-Message-State: AOAM533j+OPwcnu0oTgtxTYy86Iv/1V1XOhyJBuKCrt/JJ82aFPtK501
+        i0sPcLOwWG0VKrA9CZi4n7A=
+X-Google-Smtp-Source: ABdhPJzcuTIzDajv93N7IQPN6QpZ/QfdtRcZ+OE7vEUpY+BoiTpWkaSmuDsIvd1J3W0wjx3m3Q5maQ==
+X-Received: by 2002:a65:590e:: with SMTP id f14mr456228pgu.58.1605237894762;
+        Thu, 12 Nov 2020 19:24:54 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id v23sm8361002pjh.46.2020.11.12.19.24.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Nov 2020 19:24:54 -0800 (PST)
+Date:   Thu, 12 Nov 2020 19:24:51 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
+        intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
+        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
+        bhelgaas@google.com
+Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support for
+ PTP getcrosststamp()
+Message-ID: <20201113032451.GB32138@hoboy.vegasvil.org>
+References: <20201112093203.GH1559650@localhost>
+ <87pn4i6svv.fsf@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87pn4i6svv.fsf@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Nov 2020 19:04:56 -0800 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-
-> On Thu, Nov 12, 2020 at 04:26:10PM -0800, Roman Gushchin wrote:
-> > 
-> > These patches are not intended to be merged through the bpf tree.
-> > They are included into the patchset to make bpf selftests pass and for
-> > informational purposes.
-> > It's written in the cover letter.
-> ...
-> > Maybe I had to just list their titles in the cover letter. Idk what's
-> > the best option for such cross-subsystem dependencies.
+On Thu, Nov 12, 2020 at 03:46:12PM -0800, Vinicius Costa Gomes wrote:
+> I wanted it so using PCIe PTM was transparent to applications, so adding
+> another API wouldn't be my preference.
 > 
-> We had several situations in the past releases where dependent patches
-> were merged into multiple trees. For that to happen cleanly from git pov
-> one of the maintainers need to create a stable branch/tag and let other
-> maintainers pull that branch into different trees. This way the sha-s
-> stay the same and no conflicts arise during the merge window.
-> In this case sounds like the first 4 patches are in mm tree already.
-> Is there a branch/tag I can pull to get the first 4 into bpf-next?
+> That being said, having a trigger from the application to start/stop the
+> PTM cycles doesn't sound too bad an idea. So, not too opposed to this
+> idea.
+> 
+> Richard, any opinions here?
 
-Not really, at present.  This is largely by design, although it does cause
-this problem once or twice a year.
+Sorry, I only have the last two message from this thread, and so I'm
+missing the backstory.
 
-These four patches:
-
-mm-memcontrol-use-helpers-to-read-pages-memcg-data.patch
-mm-memcontrol-slab-use-helpers-to-access-slab-pages-memcg_data.patch
-mm-introduce-page-memcg-flags.patch
-mm-convert-page-kmemcg-type-to-a-page-memcg-flag.patch
-
-are sufficiently reviewed - please pull them into the bpf tree when
-convenient.  Once they hit linux-next, I'll drop the -mm copies and the
-bpf tree maintainers will then be responsible for whether & when they
-get upstream.  
-
+Richard
