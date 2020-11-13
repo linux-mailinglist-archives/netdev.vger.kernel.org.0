@@ -2,95 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DF052B17EC
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 10:11:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B16D2B1809
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 10:18:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726438AbgKMJLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 04:11:35 -0500
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:6674 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726176AbgKMJL1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 04:11:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1605258686; x=1636794686;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=erS1OQ3Z61CN7IwmlfAARj2JX5P7XW8lk1gRwq3g3/Y=;
-  b=zeDl9mAPW0pJtAuovkxuOZsOGcv/VvWiORwiwz9sUUp6o7YYQC8uihM2
-   Y21B48Pcf9as+wmz8hBwdM9LDL0xhLjJ0q4npjRRC38/VH1qfbL+1BI0o
-   rlpcryl7IJvnIEZALCCpMtKO+/SzEUCnMOndXyQVKn/0ScPo111BRLH3r
-   oBeqp8mkKKrEaE3QDMfCC4fFRm+eU5CvPuDep/LDt8UqdeiEfb1OJlAOD
-   yS9/OH287nKlwyUQfEwTc8C/lNJwL3REivDhVwEytelGFLKy60a3xDDgw
-   1u69ydPcBqmQ8QbIANOKa4y1X9h7nEe+3YaXdeA0gGhHnp0btJfxS5bMO
-   Q==;
-IronPort-SDR: PEaQC0WhcI9uYU/LxT4GzclO4RKEoTUj3n0Vcbe25aE5YsRzx7/CZ1B2Dx1ouw3YyGjF/Za+HT
- hOSbQQsp6nPVKx/e3VJZC/x9AjeTDd6L7n+G6VbnBjTnA3wjoAKOE8B6XBIgC4hzscwazwY8gO
- yDSxkgcQw8WkpNRYWnPolyKlFyHhtEI4ZKnFWld2AUBWQNO3qUwCnQuNFZMoQ6cdVj1MpsT5O9
- aI/7pWIAZwSJxvhzAP/WzGYKwkcrRgJmTEyiHVZ7U1yy6AlJPsg0hwh9xyzVXiPh/knHEz8Afi
- wv0=
-X-IronPort-AV: E=Sophos;i="5.77,475,1596524400"; 
-   d="scan'208";a="96196469"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Nov 2020 02:11:25 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 13 Nov 2020 02:11:25 -0700
-Received: from mchp-dev-shegelun.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Fri, 13 Nov 2020 02:11:23 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Bryan Whitehead <Bryan.Whitehead@microchip.com>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        John Haechten <John.Haechten@microchip.com>,
-        Netdev List <netdev@vger.kernel.org>,
-        Linux Kernel List <linux-kernel@vger.kernel.org>
-Subject: [PATCH net v2] net: phy: mscc: remove non-MACSec compatible phy
-Date:   Fri, 13 Nov 2020 10:11:16 +0100
-Message-ID: <20201113091116.1102450-1-steen.hegelund@microchip.com>
-X-Mailer: git-send-email 2.29.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        id S1726348AbgKMJSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 04:18:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726221AbgKMJSd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 04:18:33 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4756FC0613D1;
+        Fri, 13 Nov 2020 01:18:33 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id t21so299438pgl.3;
+        Fri, 13 Nov 2020 01:18:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=fSo37royzjR0NCHVBZWpFhqlhvEoHQuMF/vuDeQN1w8=;
+        b=fN21bAuzTZqXV+uk5ZT72LQfNrhdluqYrYdBT4sPBrFYkzqy7f2i2eenHfZdxh5oM5
+         QOrpyiwqlCJJaH0hyJBjyiIpzj2PLBiClmluzKT+g+RoaV4vWEYiHlelF347kETe5txr
+         pRn+Oi8ET25TX+mcHGpUwmWvWn11D9oflMxp207/yJuP3F+FIAvkr/j2HR9HwJ/Wq1XF
+         fFUeVQMFqwpO39ftHRSY26MJjZBLa0dxC7A4Jl8QJCcLwzDRQXhnd2hDGzdImOufCb3E
+         6mqnuVxBf5XYcCi0qAUiXjToMiIVjwJ5tyrNKIMVIsScD50f3BNm3cDfCDHQrmZFZyk0
+         XE8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=fSo37royzjR0NCHVBZWpFhqlhvEoHQuMF/vuDeQN1w8=;
+        b=X2MnEr3HdqAIxOyJeUb8BZx1imW9ijPDAlbEQVbqBgai/g42tvR5N+PMlw2Gr1+sCP
+         +M8ZRJXO+9oJaYRdU+53/sWE8nqGf3jt0/CcQg2Crl/7JeKBnuMVozoVqhG1wjnqGHdM
+         43hBArFYV4XNpMkOgYPfWB+pFzQOKiYqMcC+j/J5tpsa356UiYsWtd4cX1QZHhXnYDbn
+         k5xrX4jfbIKoHiyTiv7ABdrrJf9arOsDAj4f4nTSYDlfI8rDxKSwXFYiBDUIMrwedRSU
+         YY0k0jpvlDbQmQD4kAOq/p7Wr/8fgonaJFWht75qY9jyJraQoX3ESUjgyGlyX/PwB+C3
+         xvzg==
+X-Gm-Message-State: AOAM530/WVJYchecTj7j1XcLNEziU8BUL74qgMBJf/oe5OWyGMjJIdiw
+        nFj5H8Dcao6RwpSkx4oi0qS45JRiCyE=
+X-Google-Smtp-Source: ABdhPJwGApdDwRdE3b6B1dkmJvtbPgt1tjfQ6Vucap5FGv8uISE39e4/+IpGb10MxRLrN9kegEsf5w==
+X-Received: by 2002:a63:3c5b:: with SMTP id i27mr1406597pgn.268.1605259112487;
+        Fri, 13 Nov 2020 01:18:32 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id v196sm9304116pfc.34.2020.11.13.01.18.31
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 13 Nov 2020 01:18:31 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] sctp: change to hold/put transport for proto_unreach_timer
+Date:   Fri, 13 Nov 2020 17:18:24 +0800
+Message-Id: <7cb07ff74acd144f14a4467c7dddd12a940fbf52.1605259104.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Selecting VSC8575 as a MACSec PHY was not correct
+A call trace was found in Hangbin's Codenomicon testing with debug kernel:
 
-The relevant datasheet can be found here:
-  - VSC8575: https://www.microchip.com/wwwproducts/en/VSC8575
+  [ 2615.981988] ODEBUG: free active (active state 0) object type: timer_list hint: sctp_generate_proto_unreach_event+0x0/0x3a0 [sctp]
+  [ 2615.995050] WARNING: CPU: 17 PID: 0 at lib/debugobjects.c:328 debug_print_object+0x199/0x2b0
+  [ 2616.095934] RIP: 0010:debug_print_object+0x199/0x2b0
+  [ 2616.191533] Call Trace:
+  [ 2616.194265]  <IRQ>
+  [ 2616.202068]  debug_check_no_obj_freed+0x25e/0x3f0
+  [ 2616.207336]  slab_free_freelist_hook+0xeb/0x140
+  [ 2616.220971]  kfree+0xd6/0x2c0
+  [ 2616.224293]  rcu_do_batch+0x3bd/0xc70
+  [ 2616.243096]  rcu_core+0x8b9/0xd00
+  [ 2616.256065]  __do_softirq+0x23d/0xacd
+  [ 2616.260166]  irq_exit+0x236/0x2a0
+  [ 2616.263879]  smp_apic_timer_interrupt+0x18d/0x620
+  [ 2616.269138]  apic_timer_interrupt+0xf/0x20
+  [ 2616.273711]  </IRQ>
 
-History:
-v1 -> v2:
-   - Corrected the sha in the "Fixes:" tag
+This is because it holds asoc when transport->proto_unreach_timer starts
+and puts asoc when the timer stops, and without holding transport the
+transport could be freed when the timer is still running.
 
-Fixes: 1bbe0ecc2a1a ("net: phy: mscc: macsec initialization")
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+So fix it by holding/putting transport instead for proto_unreach_timer
+in transport, just like other timers in transport.
+
+Fixes: 50b5d6ad6382 ("sctp: Fix a race between ICMP protocol unreachable and connect()")
+Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- drivers/net/phy/mscc/mscc_macsec.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/sctp/input.c         | 4 ++--
+ net/sctp/sm_sideeffect.c | 2 +-
+ net/sctp/transport.c     | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
-index 1d4c012194e9..72292bf6c51c 100644
---- a/drivers/net/phy/mscc/mscc_macsec.c
-+++ b/drivers/net/phy/mscc/mscc_macsec.c
-@@ -981,7 +981,6 @@ int vsc8584_macsec_init(struct phy_device *phydev)
-
- 	switch (phydev->phy_id & phydev->drv->phy_id_mask) {
- 	case PHY_ID_VSC856X:
--	case PHY_ID_VSC8575:
- 	case PHY_ID_VSC8582:
- 	case PHY_ID_VSC8584:
- 		INIT_LIST_HEAD(&vsc8531->macsec_flows);
---
-2.29.2
+diff --git a/net/sctp/input.c b/net/sctp/input.c
+index 55d4fc6..d508f6f 100644
+--- a/net/sctp/input.c
++++ b/net/sctp/input.c
+@@ -449,7 +449,7 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
+ 		else {
+ 			if (!mod_timer(&t->proto_unreach_timer,
+ 						jiffies + (HZ/20)))
+-				sctp_association_hold(asoc);
++				sctp_transport_hold(t);
+ 		}
+ 	} else {
+ 		struct net *net = sock_net(sk);
+@@ -458,7 +458,7 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
+ 			 "encountered!\n", __func__);
+ 
+ 		if (del_timer(&t->proto_unreach_timer))
+-			sctp_association_put(asoc);
++			sctp_transport_put(t);
+ 
+ 		sctp_do_sm(net, SCTP_EVENT_T_OTHER,
+ 			   SCTP_ST_OTHER(SCTP_EVENT_ICMP_PROTO_UNREACH),
+diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
+index 813d307..0a51150 100644
+--- a/net/sctp/sm_sideeffect.c
++++ b/net/sctp/sm_sideeffect.c
+@@ -419,7 +419,7 @@ void sctp_generate_proto_unreach_event(struct timer_list *t)
+ 		/* Try again later.  */
+ 		if (!mod_timer(&transport->proto_unreach_timer,
+ 				jiffies + (HZ/20)))
+-			sctp_association_hold(asoc);
++			sctp_transport_hold(transport);
+ 		goto out_unlock;
+ 	}
+ 
+diff --git a/net/sctp/transport.c b/net/sctp/transport.c
+index 806af58..60fcf31 100644
+--- a/net/sctp/transport.c
++++ b/net/sctp/transport.c
+@@ -133,7 +133,7 @@ void sctp_transport_free(struct sctp_transport *transport)
+ 
+ 	/* Delete the ICMP proto unreachable timer if it's active. */
+ 	if (del_timer(&transport->proto_unreach_timer))
+-		sctp_association_put(transport->asoc);
++		sctp_transport_put(transport);
+ 
+ 	sctp_transport_put(transport);
+ }
+-- 
+2.1.0
 
