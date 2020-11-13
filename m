@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F6A32B1F8B
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:06:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D75F2B1F8C
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:06:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbgKMQGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 11:06:45 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:37313 "EHLO
+        id S1726903AbgKMQGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 11:06:47 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:60937 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726884AbgKMQGm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 11:06:42 -0500
+        by vger.kernel.org with ESMTP id S1726894AbgKMQGp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 11:06:45 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id DFBB85C0193;
-        Fri, 13 Nov 2020 11:06:41 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id A266E5C018D;
+        Fri, 13 Nov 2020 11:06:44 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Fri, 13 Nov 2020 11:06:41 -0500
+  by compute3.internal (MEProxy); Fri, 13 Nov 2020 11:06:44 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=a1mYGK3QcmjdFiMjAx2jzR2caSqqERjnHsLoRmSkyn4=; b=gG/BXMNL
-        Qi2oIZHR2xzAcsuiSE6Rf9rWSZ6y44bsSQPi4mGvF2Zxg7aCUfviheMNdBgVQI8K
-        IULZewg/INiF0BJk2kmldNOPRV8o3U4bk6ySS+DzU0KTJtd2tWK8vKrs0fTpHfn8
-        yvhRjACaE6t1hebB+QkvAZnccaJzbMKe10tgRCRLyxlzLkWzzoUP/6lWtDtTawh5
-        Vs6qykmMCRhztpBp6QRgbfPzOPAKolvtWt2PE2u2sXH0mRciFiKi1deKSd8C5FdP
-        WFMtpGN1IDrjWQ6Qt48pB5wvnVScyRwUGlgnJNDP1n0vxRV2vA+tyuNYgZj5skIT
-        j/wPQc5uzfGwyQ==
-X-ME-Sender: <xms:Ea-uX5pXQNyEAmyjMYVt-qXyMyq82HBz_W3Hr4A4S917urxS49bpBg>
-    <xme:Ea-uX7rEBywpWxipTC1KJemItozI4KawrUqbMBC3P7lMPZttkiq1LQOusE1Y-f96a
-    WabTrHx0nhwfIY>
+        fm1; bh=BVQVSD3BWOKlqmYXCQPWWatOfcqEuIFS8OE1rp3E1BQ=; b=muYYjwTe
+        EipU2p6NfKDWl0AyHB8N5wePtYeUsltXPJOD8vcBqm8OvcMioJrXO60FADld0r30
+        qhVZlq86JoHn1OSeVms9ueFmtXSDiF2Ra/KGcKM7Pge2WFa5PDSC6/4noLE+QQrc
+        p9WjneYRcWqZStRi36lgcuPxs92T67OEVVnOLKd3lSdFdOuH2D4bouBg9yUt+Mwv
+        aX+Bdzski0XMOEyh0spnmdW/Yz9RR4WgcyRC6KxVlqWh7+0Un0YPnZisSEdB1AHB
+        jRfc8sOt9gLxcZrvelX61pLEQrP2wJZ/LfHU4F4cGtc4te2VozcClqSFg6BmTTwZ
+        9Kst8w/95orWAA==
+X-ME-Sender: <xms:FK-uX50WwwCtjmQnCZv72vM0Gi1118jHlyXXcuIRTgOS86joR7DokA>
+    <xme:FK-uXwHLE-Bnq6nru_mOhlyR5RGet3TPHhG6n98EVqvi3Dmat2R3HaN_bO6q73erJ
+    blqimru31CxaVM>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedruddvhedgkeegucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,21 +38,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedruddvhedgkeegucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehgedrudeg
     jeenucevlhhushhtvghrufhiiigvpeegnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
     hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:Ea-uX2M35lhIi7xA2MGh1NP0TXXWl9rJpqgNuYbTt4uiSKjoCHz8tA>
-    <xmx:Ea-uX07z790Sh2Pn27xMbFVjBctm-Iv2_mez3ZOQoFyzB5ncp6TBuw>
-    <xmx:Ea-uX45w7j9yo7CMCwTXnGKluEIeXTbL1Y1_393PmXPr5kPJoC77CA>
-    <xmx:Ea-uX2lTaGzNW3sj0VjY0_CMGrqCoQRrwXqUFGniCvnJKYWcGOPT8A>
+X-ME-Proxy: <xmx:FK-uX56tHCs3RVFaN5doAde8GKmwnwH0G6iJsLQBXrH0yshYLoHhww>
+    <xmx:FK-uX21MvXXbZ-6ilC4aIavahlmWH6Lco_SGQ-xqg-Tq9Fwl8nYSFA>
+    <xmx:FK-uX8E8A2v_96gEf4YrZ5IdFceUrBnVre2rpgQHWFyaAHjzyVxGWw>
+    <xmx:FK-uXwA3V48DZYTxtK1Klq42IzAucKo21_aRhUCrkNNwj5TFGajipA>
 Received: from shredder.lan (igld-84-229-154-147.inter.net.il [84.229.154.147])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CB0F33280059;
-        Fri, 13 Nov 2020 11:06:39 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1450A3280059;
+        Fri, 13 Nov 2020 11:06:41 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         dsahern@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 05/15] mlxsw: spectrum_router: Store FIB info in route
-Date:   Fri, 13 Nov 2020 18:05:49 +0200
-Message-Id: <20201113160559.22148-6-idosch@idosch.org>
+Subject: [PATCH net-next 06/15] mlxsw: spectrum_router: Remove unused field 'prio' from IPv4 FIB entry struct
+Date:   Fri, 13 Nov 2020 18:05:50 +0200
+Message-Id: <20201113160559.22148-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201113160559.22148-1-idosch@idosch.org>
 References: <20201113160559.22148-1-idosch@idosch.org>
@@ -64,92 +64,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-When needed, IPv4 routes fetch the FIB info (i.e., 'struct fib_info')
-from their associated nexthop group. This will not work when the nexthop
-group represents a nexthop object (i.e., 'struct nexthop'), as it will
-only have access to the nexthop's identifier.
-
-Instead, store the FIB info in the route itself.
+Not used anywhere.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum_router.c   | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 462ddab11c07..87acb2bbb6fe 100644
+index 87acb2bbb6fe..bd4bf9316390 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -431,6 +431,7 @@ struct mlxsw_sp_fib_entry {
- 
- struct mlxsw_sp_fib4_entry {
+@@ -433,7 +433,6 @@ struct mlxsw_sp_fib4_entry {
  	struct mlxsw_sp_fib_entry common;
-+	struct fib_info *fi;
+ 	struct fib_info *fi;
  	u32 tb_id;
- 	u32 prio;
+-	u32 prio;
  	u8 tos;
-@@ -4240,7 +4241,6 @@ static void
- mlxsw_sp_fib4_entry_hw_flags_set(struct mlxsw_sp *mlxsw_sp,
- 				 struct mlxsw_sp_fib_entry *fib_entry)
- {
--	struct fib_info *fi = mlxsw_sp_nexthop4_group_fi(fib_entry->nh_group);
- 	u32 *p_dst = (u32 *) fib_entry->fib_node->key.addr;
- 	int dst_len = fib_entry->fib_node->key.prefix_len;
- 	struct mlxsw_sp_fib4_entry *fib4_entry;
-@@ -4250,7 +4250,7 @@ mlxsw_sp_fib4_entry_hw_flags_set(struct mlxsw_sp *mlxsw_sp,
- 	should_offload = mlxsw_sp_fib_entry_should_offload(fib_entry);
- 	fib4_entry = container_of(fib_entry, struct mlxsw_sp_fib4_entry,
- 				  common);
--	fri.fi = fi;
-+	fri.fi = fib4_entry->fi;
- 	fri.tb_id = fib4_entry->tb_id;
- 	fri.dst = cpu_to_be32(*p_dst);
- 	fri.dst_len = dst_len;
-@@ -4265,7 +4265,6 @@ static void
- mlxsw_sp_fib4_entry_hw_flags_clear(struct mlxsw_sp *mlxsw_sp,
- 				   struct mlxsw_sp_fib_entry *fib_entry)
- {
--	struct fib_info *fi = mlxsw_sp_nexthop4_group_fi(fib_entry->nh_group);
- 	u32 *p_dst = (u32 *) fib_entry->fib_node->key.addr;
- 	int dst_len = fib_entry->fib_node->key.prefix_len;
- 	struct mlxsw_sp_fib4_entry *fib4_entry;
-@@ -4273,7 +4272,7 @@ mlxsw_sp_fib4_entry_hw_flags_clear(struct mlxsw_sp *mlxsw_sp,
+ 	u8 type;
+ };
+@@ -4832,7 +4831,6 @@ mlxsw_sp_fib4_entry_create(struct mlxsw_sp *mlxsw_sp,
  
- 	fib4_entry = container_of(fib_entry, struct mlxsw_sp_fib4_entry,
- 				  common);
--	fri.fi = fi;
-+	fri.fi = fib4_entry->fi;
- 	fri.tb_id = fib4_entry->tb_id;
- 	fri.dst = cpu_to_be32(*p_dst);
- 	fri.dst_len = dst_len;
-@@ -4831,6 +4830,8 @@ mlxsw_sp_fib4_entry_create(struct mlxsw_sp *mlxsw_sp,
- 	if (err)
- 		goto err_nexthop4_group_get;
- 
-+	fib4_entry->fi = fen_info->fi;
-+	fib_info_hold(fib4_entry->fi);
- 	fib4_entry->prio = fen_info->fi->fib_priority;
+ 	fib4_entry->fi = fen_info->fi;
+ 	fib_info_hold(fib4_entry->fi);
+-	fib4_entry->prio = fen_info->fi->fib_priority;
  	fib4_entry->tb_id = fen_info->tb_id;
  	fib4_entry->type = fen_info->type;
-@@ -4852,6 +4853,7 @@ mlxsw_sp_fib4_entry_create(struct mlxsw_sp *mlxsw_sp,
- static void mlxsw_sp_fib4_entry_destroy(struct mlxsw_sp *mlxsw_sp,
- 					struct mlxsw_sp_fib4_entry *fib4_entry)
- {
-+	fib_info_put(fib4_entry->fi);
- 	mlxsw_sp_nexthop4_group_put(mlxsw_sp, &fib4_entry->common);
- 	mlxsw_sp_fib4_entry_type_unset(mlxsw_sp, &fib4_entry->common);
- 	mlxsw_sp_fib_entry_priv_put(fib4_entry->common.priv);
-@@ -4883,8 +4885,7 @@ mlxsw_sp_fib4_entry_lookup(struct mlxsw_sp *mlxsw_sp,
- 	if (fib4_entry->tb_id == fen_info->tb_id &&
- 	    fib4_entry->tos == fen_info->tos &&
- 	    fib4_entry->type == fen_info->type &&
--	    mlxsw_sp_nexthop4_group_fi(fib4_entry->common.nh_group) ==
--	    fen_info->fi)
-+	    fib4_entry->fi == fen_info->fi)
- 		return fib4_entry;
- 
- 	return NULL;
+ 	fib4_entry->tos = fen_info->tos;
 -- 
 2.28.0
 
