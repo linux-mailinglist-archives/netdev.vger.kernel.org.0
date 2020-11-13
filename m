@@ -2,89 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E0402B26C7
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 22:30:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE2A22B26DC
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 22:32:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726102AbgKMVar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 16:30:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
+        id S1726525AbgKMVcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 16:32:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726070AbgKMVao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 16:30:44 -0500
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4587C094240
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 13:30:43 -0800 (PST)
-Received: by mail-qv1-xf44.google.com with SMTP id x13so5375741qvk.8
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 13:30:43 -0800 (PST)
+        with ESMTP id S1726491AbgKMVbx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 16:31:53 -0500
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F220AC061A52;
+        Fri, 13 Nov 2020 13:25:42 -0800 (PST)
+Received: by mail-qv1-xf2d.google.com with SMTP id e5so5387688qvs.1;
+        Fri, 13 Nov 2020 13:25:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=p9cmsU0CLi5tDhUSce4W56NG03m1gfWpOTNcudHv6mk=;
-        b=LntATJHKoayQxbIf2gR5COo4Sh4QVFH+KEfFYss+PxJ1FrYILV6wWxKgLqrrzpV6NS
-         Qj1W+q6kBK/CEoHPj8GbX6zf6oWw4JbkXVjpldpgxATqV/7e4r/YwI2UJ5rUYb3RsaJz
-         832OUi+U9sdNXVKP5Skc82+awpjfN2yKzrVrQi9ag4qvz5rQV2KMAK2wZZzog5CTujKW
-         aKiimqDZn5dqvr/QtQREJuoI0/AIPPZ2IBUnyhPBeMJ+R+uDQr/RRcCFZRyoKpbJds/M
-         KDXO5iWVEi1JEKQA15eZ1Q/CRPP94mbzI9xUo7ztaIgX/5w6RD60BDQnrFFMhtvsCyGN
-         t4bQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TdnY99F9lb58bh9jAVmDJPNTy58Y1xlClOHjyC7GswE=;
+        b=B4iMnoybje6QkXcPIbLnFFS42V9OzA72mbKDN83dmNEeTLxUupiQ0y8dtCzQWSHPZG
+         Fu0ymwYgbpAcGsucftoHzqo/8Tl2WHxEdpnEQxMDN8xAAPdNj9YkoVUds6y1r+y/fnJC
+         o9V/k3Q7bne0+B4AxJIYDTf/ZnVTPL0QEMpnqBG0/hYFAKncAU5ZKEPuk1pbp3et2P0q
+         5B7lQi/KRMYOTjhUIKe7M5BDCvjEvEmf13H/J0e+bWP8iurJhrxSVrYuA3qHvn2ulcBw
+         3wiZ9ie6E+CLOYArXylG5MIcedWf2DfUYSt6HR3YMZMffo5GUnj7mPjzAO1J45adamiR
+         ipFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=p9cmsU0CLi5tDhUSce4W56NG03m1gfWpOTNcudHv6mk=;
-        b=ahM+rbtZrOTJECkIeqvsRrqyYJA1SyO2JRZJTn7vdVlvEbU3090Pt25JVrZyJx3GjM
-         Yo+B8OgXMtQUaKuIqKmRbeAv/9WRmeTzlR1syB9N4t/LCvQGPK8KqPAVHt+huGljaix9
-         y+vrG8+aHNueojrrR4b0cAHqlzpBf3X57exSUFDyqXTAq+t6HN2PudwDW+vX2Yq08L37
-         ciYV/bASBGejsrXvqfVmMuJwgHg5Xh9uOX5MoemIss0CqwPY8rKUy2dyaGc7WBD5hg2A
-         7TSFrXF5cXNI8vwnjOxoanblanxQyTqRFPRGpStj2UKM/E+c6gkUIGHaEueJ+bgJq08G
-         RGZg==
-X-Gm-Message-State: AOAM530o3I4PoJI3Oba0AeU1Vn4AZYFXf5Wf9neP3LkwPhaC33HdBZIp
-        0dKt3loN3pb7+kHMERZmUidkAZ4bTH2Gxz3mmw==
-X-Google-Smtp-Source: ABdhPJzAO3kTUUIz6ySjW3XiOLT/TmYChj1SbHd/uzIxPN5qqJk5DRmd3PVoC/4dXeRlBdgEknnhLw==
-X-Received: by 2002:a05:6214:1805:: with SMTP id o5mr4484226qvw.41.1605303042527;
-        Fri, 13 Nov 2020 13:30:42 -0800 (PST)
-Received: from localhost (pool-96-230-24-152.bstnma.fios.verizon.net. [96.230.24.152])
-        by smtp.gmail.com with ESMTPSA id p48sm8060359qtp.67.2020.11.13.13.30.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Nov 2020 13:30:41 -0800 (PST)
-Subject: [PATCH] netlabel: fix an uninitialized warning in
- netlbl_unlabel_staticlist()
-From:   Paul Moore <paul@paul-moore.com>
-To:     netdev@vger.kernel.org
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Date:   Fri, 13 Nov 2020 16:30:40 -0500
-Message-ID: <160530304068.15651.18355773009751195447.stgit@sifl>
-User-Agent: StGit/0.23
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TdnY99F9lb58bh9jAVmDJPNTy58Y1xlClOHjyC7GswE=;
+        b=RKNd6bXQaY4bYTiKGrFXixEXQp1+45HUz48MlFaIVSMHyCBNx1OlGng3bKO46JGPyU
+         UNwfYQ20sKv6XV8hAXIKu88i2lqET0lY4qR2571lf+05zJYRdDCAtYFWvLz2WAmkVT/Q
+         Ku4Rkh4whp8z+fNnOOyw0JHqP0rdZjh9H4Hc8p0hoyg0gptDoWlm+mMMK27m66HQugDl
+         Ly+aYip4Ug9fzDu0YYuF1uhydnOlTC/dg+N9f+6HWm7hgiXFn2loJTQDGxuAgkCrYkIN
+         UI5uimUjD7lmNicTejUIBdhjxGEWaUNIGInSX312BbnX9DORJZ7TXpHZUzxeDZ1fLr8P
+         vG+Q==
+X-Gm-Message-State: AOAM530sY3Cma03UIOHX0L8cpR/TD/yk0RGN+GC4cF1hTm3AhO6auZ+v
+        bHwsInL1HYaXn4CqP6TnHVwKGFg3t1welnz5/7Y=
+X-Google-Smtp-Source: ABdhPJzETwy8FEM80LqNE0/UHC+bwYQaVFvbbEcw0buakJj3ZrQ2MS9AUs7lc/Y95OoEEQ8jmqm6L3+kLweAOH732ME=
+X-Received: by 2002:a0c:9021:: with SMTP id o30mr4318564qvo.1.1605302742125;
+ Fri, 13 Nov 2020 13:25:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+References: <44c8b5ae-3630-9d98-1ab4-5f57bfe0886c@gmail.com>
+ <20201113085804.115806-1-lev@openvpn.net> <53474f83c4185caf2e7237f023cf0456afcc55cc.camel@sipsolutions.net>
+ <CAGyAFMUrNRAiDZuNa2QCJQ-JuQAUdDq3nOB17+M=wc2xNknqmQ@mail.gmail.com> <20201113115118.618f57de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201113115118.618f57de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Lev Stipakov <lstipakov@gmail.com>
+Date:   Fri, 13 Nov 2020 23:25:31 +0200
+Message-ID: <CAGyAFMVpjwJWMaWp-tQuXCf9WPpsdzNhV0AYOX4iuDQef5jnHA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] net: mac80211: use core API for updating TX/RX stats
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lev Stipakov <lev@openvpn.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Static checking revealed that a previous fix to
-netlbl_unlabel_staticlist() leaves a stack variable uninitialized,
-this patches fixes that.
+> Lev, please either post the patches separately (non-series) or make
+> them a proper series which has a cover letter etc. and CC folks on all
+> the patches.
 
-Fixes: 866358ec331f ("netlabel: fix our progress tracking in netlbl_unlabel_staticlist()")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
----
- net/netlabel/netlabel_unlabeled.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Understood, thanks.
 
-diff --git a/net/netlabel/netlabel_unlabeled.c b/net/netlabel/netlabel_unlabeled.c
-index fc55c9116da0..ccb491642811 100644
---- a/net/netlabel/netlabel_unlabeled.c
-+++ b/net/netlabel/netlabel_unlabeled.c
-@@ -1167,7 +1167,7 @@ static int netlbl_unlabel_staticlist(struct sk_buff *skb,
- 	u32 skip_bkt = cb->args[0];
- 	u32 skip_chain = cb->args[1];
- 	u32 skip_addr4 = cb->args[2];
--	u32 iter_bkt, iter_chain, iter_addr4 = 0, iter_addr6 = 0;
-+	u32 iter_bkt, iter_chain = 0, iter_addr4 = 0, iter_addr6 = 0;
- 	struct netlbl_unlhsh_iface *iface;
- 	struct list_head *iter_list;
- 	struct netlbl_af4list *addr4;
+> Since there are no dependencies between the patches here you could have
+> gone for separate patches here.
 
+Shall I re-send those 3 patches separately or can we proceed with those
+in the (sub-optimal) form they've been already sent?
+
+-- 
+-Lev
