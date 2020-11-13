@@ -2,60 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE8772B132B
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 01:22:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65C292B1333
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 01:22:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726134AbgKMAUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 19:20:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42168 "EHLO mail.kernel.org"
+        id S1726112AbgKMAV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 19:21:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42908 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725894AbgKMAUF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 19:20:05 -0500
-Content-Type: text/plain; charset="utf-8"
+        id S1725894AbgKMAV5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 19:21:57 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 120CF20A8B;
+        Fri, 13 Nov 2020 00:21:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605226805;
-        bh=A9GlXH6q7yVPHhOJVS5gYEM8NSVeP9Ck6OHbqQFe0Ag=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NYCix47SlDtDv9N0EetkhDLXrL9jn2Npsaz/W0Vv/WWad5PLNQ2NmChPm38J665bR
-         YE42oJKytJ1HazRcWiXu/QYl22/ttsaTRDnuc4/aJavoatK4yYGT8ji4cFu5F1CjE9
-         f7MhhG/qwzHmfLT5KbIUdVA3t4Vr12i69p6dT3kE=
+        s=default; t=1605226917;
+        bh=pHNSUZkUxEccH8VL2y1wGZr7S0hV9rs65Z7xLJFB4Dg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=1uEVnUFHZ9Wakhohe3qWMPvY2hZXCjzE2sj6SVIHUsYicyN/7L3pZiTV1UwfTCV6q
+         4oxKdOT65kIQwEQ1qvDTFrLI2hjn+cueS7PTkUGgHSBEVaIpCoIFAsBNvX0UPXdEEZ
+         XtAl1NRlbUaCAUNln6DqXiuC1x0Bu7l+Sb9lkKKQ=
+Date:   Thu, 12 Nov 2020 16:21:56 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dmytro Shytyi <dmytro@shytyi.net>
+Cc:     "kuznet" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji" <yoshfuji@linux-ipv6.org>,
+        "liuhangbin" <liuhangbin@gmail.com>, "davem" <davem@davemloft.net>,
+        "netdev" <netdev@vger.kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next V3] net: Variable SLAAC: SLAAC with prefixes of
+ arbitrary length in PIO
+Message-ID: <20201112162156.211cad4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <175bd218cf4.103c639bc117278.4209371191555514829@shytyi.net>
+References: <175b3433a4c.aea7c06513321.4158329434310691736@shytyi.net>
+        <202011110944.7zNVZmvB-lkp@intel.com>
+        <175bd218cf4.103c639bc117278.4209371191555514829@shytyi.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] selftests: set conf.all.rp_filter=0 in bareudp.sh
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160522680539.1261.2025528347077942558.git-patchwork-notify@kernel.org>
-Date:   Fri, 13 Nov 2020 00:20:05 +0000
-References: <f2d459346471f163b239aa9d63ce3e2ba9c62895.1605107012.git.gnault@redhat.com>
-In-Reply-To: <f2d459346471f163b239aa9d63ce3e2ba9c62895.1605107012.git.gnault@redhat.com>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, 12 Nov 2020 16:44:54 +0100 Dmytro Shytyi wrote:
+> Reported-by: kernel test robot <lkp@intel.com>
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Wed, 11 Nov 2020 16:05:35 +0100 you wrote:
-> When working on the rp_filter problem, I didn't realise that disabling
-> it on the network devices didn't cover all cases: rp_filter could also
-> be enabled globally in the namespace, in which case it would drop
-> packets, even if the net device has rp_filter=0.
-> 
-> Fixes: 1ccd58331f6f ("selftests: disable rp_filter when testing bareudp")
-> Fixes: bbbc7aa45eef ("selftests: add test script for bareudp tunnels")
-> Signed-off-by: Guillaume Nault <gnault@redhat.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next] selftests: set conf.all.rp_filter=0 in bareudp.sh
-    https://git.kernel.org/netdev/net-next/c/e86580235708
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+You don't have to add the reported by tag just because the bot pointed
+out issues in the previous version.
