@@ -2,103 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C11F2B1D83
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 15:32:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E3742B1D9E
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 15:44:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726507AbgKMOc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 09:32:26 -0500
-Received: from www62.your-server.de ([213.133.104.62]:46634 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbgKMOc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 09:32:26 -0500
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kda7j-0002Xg-Ge; Fri, 13 Nov 2020 15:32:23 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kda7j-0008Cr-9w; Fri, 13 Nov 2020 15:32:23 +0100
-Subject: Re: csum_partial() on different archs (selftest/bpf)
-To:     Al Viro <viro@zeniv.linux.org.uk>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Tom Herbert <tom@herbertland.com>,
-        Anders Roxell <anders.roxell@gmail.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <CAJ+HfNiQbOcqCLxFUP2FMm5QrLXUUaj852Fxe3hn_2JNiucn6g@mail.gmail.com>
- <20201113122440.GA2164@myrica>
- <CAJ+HfNiE5Oa25QgdAdKzfk-=X45hXLKk_t+ZCiSaeFVTzgzsrw@mail.gmail.com>
- <20201113141542.GJ3576660@ZenIV.linux.org.uk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f634b437-aa51-736b-e2f3-f6210fc6a711@iogearbox.net>
-Date:   Fri, 13 Nov 2020 15:32:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726493AbgKMOoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 09:44:07 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:53358 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726267AbgKMOoH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 09:44:07 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kdaIz-006rmR-72; Fri, 13 Nov 2020 15:44:01 +0100
+Date:   Fri, 13 Nov 2020 15:44:01 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steve McIntyre <steve@einval.com>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>, Willy Liu <willy.liu@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Masahisa Kojima <masahisa.kojima@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: Re: Re: realtek PHY commit bbc4d71d63549 causes regression
+Message-ID: <20201113144401.GM1456319@lunn.ch>
+References: <20201017230226.GV456889@lunn.ch>
+ <20201029143934.GO878328@lunn.ch>
+ <20201029144644.GA70799@apalos.home>
+ <2697795.ZkNf1YqPoC@kista>
+ <CAK8P3a2hBpQAsRekNyauUF1MgdO8CON=77MNSd0E-U1TWNT-gA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20201113141542.GJ3576660@ZenIV.linux.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25987/Fri Nov 13 14:19:33 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a2hBpQAsRekNyauUF1MgdO8CON=77MNSd0E-U1TWNT-gA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/13/20 3:15 PM, Al Viro wrote:
-> On Fri, Nov 13, 2020 at 02:22:16PM +0100, Björn Töpel wrote:
+> > Sadly, there is one board - Pine64 Plus - where HW settings are wrong and it
+> > actually needs SW override. Until this Realtek PHY driver fix was merged, it
+> > was unclear what magic value provided by Realtek to board manufacturer does.
+> >
+> > Reference:
+> > https://lore.kernel.org/netdev/20191001082912.12905-3-icenowy@aosc.io/
 > 
->> Folding Al's input to this reply.
->>
->> I think the bpf_csum_diff() is supposed to be used in combination with
->> another helper(s) (e.g. bpf_l4_csum_replace) so I'd guess the returned
->> __wsum should be seen as an opaque value, not something BPF userland
->> can rely on.
-> 
-> Why not reduce the sucker modulo 0xffff before returning it?  Incidentally,
-> implementation is bloody awful:
-> 
->          /* This is quite flexible, some examples:
->           *
->           * from_size == 0, to_size > 0,  seed := csum --> pushing data
->           * from_size > 0,  to_size == 0, seed := csum --> pulling data
->           * from_size > 0,  to_size > 0,  seed := 0    --> diffing data
->           *
->           * Even for diffing, from_size and to_size don't need to be equal.
->           */
->          if (unlikely(((from_size | to_size) & (sizeof(__be32) - 1)) ||
->                       diff_size > sizeof(sp->diff)))
->                  return -EINVAL;
-> 
->          for (i = 0; i < from_size / sizeof(__be32); i++, j++)
->                  sp->diff[j] = ~from[i];
->          for (i = 0; i <   to_size / sizeof(__be32); i++, j++)
->                  sp->diff[j] = to[i];
-> 
->          return csum_partial(sp->diff, diff_size, seed);
-> 
-> What the hell is this (copying, scratchpad, etc.) for?  First of all,
-> _if_ you want to use csum_partial() at all (and I'm not at all sure
-> that it won't be cheaper to just go over two arrays, doing csum_add()
-> and csum_sub() resp. - depends upon the realistic sizes), you don't
-> need to copy anything.  Find the sum of from, find the sum of to and
-> then subtract (csum_sub()) the old sum from the seed and and add the
-> new one...
-> 
-> And I would strongly recommend to change the calling conventions of that
-> thing - make it return __sum16.  And take __sum16 as well...
-> 
-> Again, exposing __wsum to anything that looks like a stable ABI is
-> a mistake - it's an internal detail that can be easily abused,
-> causing unpleasant compat problems.
+> I have merged the fixes from the allwinner tree now, but I still think we
+> need something better than this, as the current state breaks any existing
+> dtb file that has the incorrect values, and this really should not have been
+> considered for backporting to stable kernels.
 
-I'll take a look at both, removing the copying and also wrt not breaking
-existing users for cascading the helper when fixing.
+Hi Arnd
 
-Thanks,
-Daniel
+This PHY driver bug hiding DT bug is always hard to handle. We have
+been though it once before with the Atheros PHY. All the buggy DT
+files were fixed in about one cycle.
+
+Now that we know there is a board which really does want rgmii when it
+says rgmii, we cannot simply ignore it in the PHY driver.
+
+But the whole story is muddy because of the backport to stable.  It
+might make sense to revert the stable change, and just leave HEAD
+broken. That then gives people more time to fix DT blobs. But we have
+to consider Pine64 Plus, are we happy breaking that for a while, when
+it is actually doing everything correct, and is bug free?
+
+	 Andrew
