@@ -2,147 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 534742B18CE
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 11:11:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3593A2B1913
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 11:32:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbgKMKL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 05:11:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726229AbgKMKL4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 05:11:56 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75DEC0613D1;
-        Fri, 13 Nov 2020 02:11:55 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kdW3d-006shG-Bc; Fri, 13 Nov 2020 11:11:53 +0100
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211-next 2020-11-13
-Date:   Fri, 13 Nov 2020 11:11:47 +0100
-Message-Id: <20201113101148.25268-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.26.2
+        id S1726396AbgKMKcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 05:32:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59478 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726176AbgKMKcF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 05:32:05 -0500
+Received: from linux-8ccs (p57a236d4.dip0.t-ipconnect.de [87.162.54.212])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5A37D22245;
+        Fri, 13 Nov 2020 10:32:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605263524;
+        bh=QKgBtK6sXxkCxICxBUKSJoEcuzaRrRYBpEZB1YpUpi8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=svSGqLgHGv9xuRLLSmtz/297RS0spgBHrp9qY7s4Le0aPTPyEoEELqGtmQxRGboj2
+         xErbWmBeWEX4uZ5+UOMJbMy+pSOKSga2pXiSwhL9HvqlxhR+Js5iefAInNgG10RNMJ
+         2OaK+1ppj63fJZJkG97gXXVhKhyXkBaB90o5qWVI=
+Date:   Fri, 13 Nov 2020 11:31:59 +0100
+From:   Jessica Yu <jeyu@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4 bpf-next 4/5] bpf: load and verify kernel module BTFs
+Message-ID: <20201113103158.GA30836@linux-8ccs>
+References: <20201110011932.3201430-1-andrii@kernel.org>
+ <20201110011932.3201430-5-andrii@kernel.org>
+ <20201111101316.GA5304@linux-8ccs>
+ <CAEf4BzZbKRgWhLD6KFOwJU8DDns9oufroBShczM9KqODCqbEPA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZbKRgWhLD6KFOwJU8DDns9oufroBShczM9KqODCqbEPA@mail.gmail.com>
+X-OS:   Linux linux-8ccs 4.12.14-lp150.12.61-default x86_64
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
++++ Andrii Nakryiko [11/11/20 12:11 -0800]:
+>On Wed, Nov 11, 2020 at 2:13 AM Jessica Yu <jeyu@kernel.org> wrote:
+>>
+>> +++ Andrii Nakryiko [09/11/20 17:19 -0800]:
+>> [snipped]
+>> >diff --git a/kernel/module.c b/kernel/module.c
+>> >index a4fa44a652a7..f2996b02ab2e 100644
+>> >--- a/kernel/module.c
+>> >+++ b/kernel/module.c
+>> >@@ -380,6 +380,35 @@ static void *section_objs(const struct load_info *info,
+>> >       return (void *)info->sechdrs[sec].sh_addr;
+>> > }
+>> >
+>> >+/* Find a module section: 0 means not found. Ignores SHF_ALLOC flag. */
+>> >+static unsigned int find_any_sec(const struct load_info *info, const char *name)
+>> >+{
+>> >+      unsigned int i;
+>> >+
+>> >+      for (i = 1; i < info->hdr->e_shnum; i++) {
+>> >+              Elf_Shdr *shdr = &info->sechdrs[i];
+>> >+              if (strcmp(info->secstrings + shdr->sh_name, name) == 0)
+>> >+                      return i;
+>> >+      }
+>> >+      return 0;
+>> >+}
+>> >+
+>> >+/*
+>> >+ * Find a module section, or NULL. Fill in number of "objects" in section.
+>> >+ * Ignores SHF_ALLOC flag.
+>> >+ */
+>> >+static __maybe_unused void *any_section_objs(const struct load_info *info,
+>> >+                                           const char *name,
+>> >+                                           size_t object_size,
+>> >+                                           unsigned int *num)
+>> >+{
+>> >+      unsigned int sec = find_any_sec(info, name);
+>> >+
+>> >+      /* Section 0 has sh_addr 0 and sh_size 0. */
+>> >+      *num = info->sechdrs[sec].sh_size / object_size;
+>> >+      return (void *)info->sechdrs[sec].sh_addr;
+>> >+}
+>> >+
+>>
+>> Hm, I see this patchset has already been applied to bpf-next, but I
+>> guess that doesn't preclude any follow-up patches :-)
+>
+>Of course!
+>
+>>
+>> I am not a huge fan of the code duplication here, and also the fact
+>> that they're only called in one place. any_section_objs() and
+>> find_any_sec() are pretty much identical to section_objs() and
+>> find_sec(), other than the fact the former drops the SHF_ALLOC check.
+>
+>Right, but the alternative was to add a new flag to existing
+>section_objs() and find_sec() functions, which would cause much more
+>code churn for no good reason (besides saving some trivial code
+>duplication). And those true/false flags are harder to read in code
+>anyways.
 
-And here's another set of patches, this one for -next. Nothing
-much stands out, perhaps apart from the WDS removal, but that
-was old and pretty much dead code when we turned it off, so it
-won't be missed.
+That's true, all fair points. I thought there was the possibility to
+avoid the code duplication if .BTF were also set to SHF_ALLOC, but I
+see for reasons you explained below it is more trouble than it's worth.
 
-Please pull and let me know if there's any problem.
+>>
+>> Moreover, since it appears that the ".BTF" section is not marked
+>> SHF_ALLOC, I think this will leave mod->btf_data as a dangling pointer
+>> after the module is done loading and the module's load_info has been
+>> deallocated, since SHF_ALLOC sections are not allocated nor copied to
+>> the module's final location in memory.
+>
+>I can make sure that we also reset the btf_data pointer back to NULL,
+>if that's a big concern.
 
-Thanks,
-johannes
+It's not a terribly huge concern, since mod->btf_data is only accessed
+in the btf coming notifier at the moment, but it's probably best to at
+least not advertise it as a valid pointer anymore after the module is
+done loading. We do some pointer and section size cleanup at the end
+of do_init_module() for sections that are deallocated at the end of
+module load (starting where init_layout.base is reset to NULL),
+we could just tack on mod->btf_data = NULL there as well.
 
+>>
+>> Why not simply mark the ".BTF" section in the module SHF_ALLOC? We
+>> already do some sh_flags rewriting in rewrite_section_headers(). Then
+>> the module loader knows to keep the section in memory and you can use
+>> section_objs(). And since the .BTF section stays in module memory,
+>> that might save you the memcpy() to btf->data in btf_parse_module()
+>> (unless that is still needed for some reason).
+>
+>Wasn't aware about rewrite_section_headers() manipulations. Are you
+>suggesting to just add SHF_ALLOC there for the .BTF section from the
+>kernel side? I guess that would work, but won't avoid memory copy (so
+>actually would waste kernel memory, if I understand correctly). The
+>reason being that the module's BTF is registered as an independently
+>ref-counted BTF object, which could be held past the kernel module
+>being unloaded. So I can't directly reference module's .BTF data
+>anyways.
 
+Ah OK, I was not aware that the section could be held past the module
+being unloaded. Then yeah, it would be a memory waste to keep them in
+memory if they are being memcpy'd anyway. Thanks for clarifying!
 
-The following changes since commit c9448e828d113cd7eafe77c414127e877ca88b20:
-
-  Merge tag 'mlx5-updates-2020-11-03' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux (2020-11-05 18:01:31 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-net-next-2020-11-13
-
-for you to fetch changes up to da1e9dd3a11cda85b58dafe64f091734934b2f6c:
-
-  nl80211: fix kernel-doc warning in the new SAE attribute (2020-11-11 08:39:13 +0100)
-
-----------------------------------------------------------------
-Some updates:
- * injection/radiotap updates for new test capabilities
- * remove WDS support - even years ago when we turned
-   it off by default it was already basically unusable
- * support for HE (802.11ax) rates for beacons
- * support for some vendor-specific HE rates
- * many other small features/cleanups
-
-----------------------------------------------------------------
-Colin Ian King (1):
-      nl80211/cfg80211: fix potential infinite loop
-
-Johannes Berg (9):
-      wireless: remove CONFIG_WIRELESS_WDS
-      ath9k: remove WDS code
-      carl9170: remove WDS code
-      b43: remove WDS code
-      b43legacy: remove WDS code
-      rt2x00: remove WDS code
-      mac80211: remove WDS-related code
-      cfg80211: remove WDS code
-      nl80211: fix kernel-doc warning in the new SAE attribute
-
-Julia Lawall (1):
-      mac80211: use semicolons rather than commas to separate statements
-
-Kurt Lee (1):
-      ieee80211: Add definition for WFA DPP
-
-Mathy Vanhoef (4):
-      mac80211: add radiotap flag to assure frames are not reordered
-      mac80211: adhere to Tx control flag that prevents frame reordering
-      mac80211: don't overwrite QoS TID of injected frames
-      mac80211: assure that certain drivers adhere to DONT_REORDER flag
-
-Pradeep Kumar Chitrapu (1):
-      mac80211: save HE oper info in BSS config for mesh
-
-Rajkumar Manoharan (2):
-      nl80211: fix beacon tx rate mask validation
-      cfg80211: add support to configure HE MCS for beacon rate
-
-Rohan Dutta (1):
-      cfg80211: Add support to configure SAE PWE value to drivers
-
-Vamsi Krishna (1):
-      cfg80211: Add support to calculate and report 4096-QAM HE rates
-
- drivers/net/wireless/Kconfig                      | 13 ----
- drivers/net/wireless/ath/ath9k/ath9k.h            |  1 -
- drivers/net/wireless/ath/ath9k/debug.c            |  4 +-
- drivers/net/wireless/ath/ath9k/init.c             | 19 -----
- drivers/net/wireless/ath/ath9k/main.c             |  5 --
- drivers/net/wireless/ath/carl9170/mac.c           |  4 --
- drivers/net/wireless/ath/carl9170/main.c          |  1 -
- drivers/net/wireless/broadcom/b43/main.c          |  6 +-
- drivers/net/wireless/broadcom/b43legacy/main.c    |  6 +-
- drivers/net/wireless/ralink/rt2x00/rt2x00config.c |  1 -
- drivers/net/wireless/ralink/rt2x00/rt2x00dev.c    |  6 +-
- drivers/net/wireless/ralink/rt2x00/rt2x00mac.c    |  3 +-
- include/linux/ieee80211.h                         |  3 +
- include/net/cfg80211.h                            | 21 ++++--
- include/net/ieee80211_radiotap.h                  |  1 +
- include/net/mac80211.h                            |  7 +-
- include/uapi/linux/nl80211.h                      | 38 +++++++++-
- net/mac80211/cfg.c                                | 11 ---
- net/mac80211/chan.c                               |  3 +-
- net/mac80211/debugfs_netdev.c                     | 11 ---
- net/mac80211/debugfs_sta.c                        |  2 +-
- net/mac80211/ieee80211_i.h                        |  6 --
- net/mac80211/iface.c                              | 52 ++------------
- net/mac80211/main.c                               |  8 ---
- net/mac80211/mesh.c                               | 30 ++++++++
- net/mac80211/pm.c                                 | 15 ----
- net/mac80211/rx.c                                 |  5 --
- net/mac80211/tx.c                                 | 39 +++--------
- net/mac80211/util.c                               |  2 +-
- net/mac80211/wme.c                                | 18 +++--
- net/wireless/chan.c                               |  6 +-
- net/wireless/core.c                               |  8 +--
- net/wireless/nl80211.c                            | 85 ++++++++++++-----------
- net/wireless/rdev-ops.h                           | 10 ---
- net/wireless/scan.c                               |  2 +-
- net/wireless/trace.h                              |  5 --
- net/wireless/util.c                               | 37 +++++-----
- net/wireless/wext-compat.c                        | 51 --------------
- 38 files changed, 198 insertions(+), 347 deletions(-)
-
+Jessica
