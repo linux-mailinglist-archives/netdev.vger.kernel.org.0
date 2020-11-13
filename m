@@ -2,92 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C51622B1486
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 04:05:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 886302B1496
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 04:16:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726302AbgKMDFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 22:05:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35758 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725965AbgKMDFA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 22:05:00 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32C2EC0613D1;
-        Thu, 12 Nov 2020 19:05:00 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id x15so5079999pfm.9;
-        Thu, 12 Nov 2020 19:05:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=J3xxlo0J7OEQ31x58M9zvwm+GKsy+33IUbEliZsTWrs=;
-        b=Uykun2xa0ICp1fXGTHcbokQvuKH2nSIViYf1ItzAqP4kpZOI/jHohqmYYQTPVbheBO
-         7M9rDA2UXDIUPxpm/Qnhz3nN/Ut3l8mWreU0z6JP4lBP9LBhgB6YZAmWTTI6Wac7Xqb4
-         pn/BeOV5KXxe0/cUmRWLKaHnNhpT2PzOzcXF5jRERV1PSDGoCvKeMmnqTfHeDvxTidoc
-         4NyulzTSKQgqwLmpSR2ie4fQxpL1xOzaweegv8ayneja963BHqMlglvsTLD66FybEZK5
-         5kKAzipqwNLSZ1N9wUp/FmjHfsqbzU2kgyVQAhlBPhsDXvxJ0U8Ycm99YnrS3fCOfBse
-         ZYLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=J3xxlo0J7OEQ31x58M9zvwm+GKsy+33IUbEliZsTWrs=;
-        b=j3fixrZCl+jE7X/kRObE6e3FqdGSIGUSlHk+Pi52N6e/3g515T3eH8+b+a6BaTf5v5
-         zGH7T9rylQWeBo9Ni1lGDwBAsHyeF/oYLiBs8zxp5ZqDSxL7nabHqbWIB0eGUTfjoqkE
-         OM6Fd5y9jKaYgYIk/WUsHSYDO9tuue3WwWPACT9v2JWpJqVJFcnsMMHZRxXZ3KIbk6Yq
-         ChyC6q5Srak82eeDhtcdtan3yxvAjHdxghX5oyeyMGTXA90Sgt4g14MQiR0IUmHq17gK
-         Z+e6dsHjDBkQcwTLbTXlX75xn5qSfDoAcUYaEsm9ilfvNP4uLm1qHuvpvI8LLdao/GLE
-         A1vw==
-X-Gm-Message-State: AOAM531JqzUenjv8W431KKzve41Q5Dya84CbVS/mczfiTG4CkQHrhy6W
-        sK2XK8EJGpMdRp3CescpX4I=
-X-Google-Smtp-Source: ABdhPJzMdJtLxZWjzkxjYFM+noXSnpWOIMV32Ng3PHbPRSaMSKsTIj/0HxBg3Meb0gCU6wO7fiyd6g==
-X-Received: by 2002:aa7:9190:0:b029:18b:6556:1e62 with SMTP id x16-20020aa791900000b029018b65561e62mr207259pfa.62.1605236699666;
-        Thu, 12 Nov 2020 19:04:59 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:a370])
-        by smtp.gmail.com with ESMTPSA id 21sm8083426pfw.105.2020.11.12.19.04.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2020 19:04:58 -0800 (PST)
-Date:   Thu, 12 Nov 2020 19:04:56 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Roman Gushchin <guro@fb.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH bpf-next v5 01/34] mm: memcontrol: use helpers to read
- page's memcg data
-Message-ID: <20201113030456.drdswcndp65zmt2u@ast-mbp>
-References: <20201112221543.3621014-1-guro@fb.com>
- <20201112221543.3621014-2-guro@fb.com>
- <20201113095632.489e66e2@canb.auug.org.au>
- <20201113002610.GB2934489@carbon.dhcp.thefacebook.com>
+        id S1726083AbgKMDQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 22:16:08 -0500
+Received: from helcar.hmeau.com ([216.24.177.18]:33140 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725965AbgKMDQI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 22:16:08 -0500
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1kdPZB-0007qa-7F; Fri, 13 Nov 2020 14:16:02 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 13 Nov 2020 14:16:01 +1100
+Date:   Fri, 13 Nov 2020 14:16:01 +1100
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Srujana Challa <schalla@marvell.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
+        schandran@marvell.com, pathreya@marvell.com,
+        Lukasz Bartosik <lbartosik@marvell.com>
+Subject: Re: [PATCH v9,net-next,12/12] crypto: octeontx2: register with linux
+ crypto framework
+Message-ID: <20201113031601.GA27112@gondor.apana.org.au>
+References: <20201109120924.358-1-schalla@marvell.com>
+ <20201109120924.358-13-schalla@marvell.com>
+ <20201111161039.64830a68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201113002610.GB2934489@carbon.dhcp.thefacebook.com>
+In-Reply-To: <20201111161039.64830a68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 12, 2020 at 04:26:10PM -0800, Roman Gushchin wrote:
+On Wed, Nov 11, 2020 at 04:10:39PM -0800, Jakub Kicinski wrote:
+> On Mon, 9 Nov 2020 17:39:24 +0530 Srujana Challa wrote:
+> > CPT offload module utilises the linux crypto framework to offload
+> > crypto processing. This patch registers supported algorithms by
+> > calling registration functions provided by the kernel crypto API.
+> > 
+> > The module currently supports:
+> > - AES block cipher in CBC,ECB,XTS and CFB mode.
+> > - 3DES block cipher in CBC and ECB mode.
+> > - AEAD algorithms.
+> >   authenc(hmac(sha1),cbc(aes)),
+> >   authenc(hmac(sha256),cbc(aes)),
+> >   authenc(hmac(sha384),cbc(aes)),
+> >   authenc(hmac(sha512),cbc(aes)),
+> >   authenc(hmac(sha1),ecb(cipher_null)),
+> >   authenc(hmac(sha256),ecb(cipher_null)),
+> >   authenc(hmac(sha384),ecb(cipher_null)),
+> >   authenc(hmac(sha512),ecb(cipher_null)),
+> >   rfc4106(gcm(aes)).
 > 
-> These patches are not intended to be merged through the bpf tree.
-> They are included into the patchset to make bpf selftests pass and for
-> informational purposes.
-> It's written in the cover letter.
-...
-> Maybe I had to just list their titles in the cover letter. Idk what's
-> the best option for such cross-subsystem dependencies.
+> Herbert, could someone who knows about crypto take a look at this, 
+> if the intention is to merge this via net-next?
 
-We had several situations in the past releases where dependent patches
-were merged into multiple trees. For that to happen cleanly from git pov
-one of the maintainers need to create a stable branch/tag and let other
-maintainers pull that branch into different trees. This way the sha-s
-stay the same and no conflicts arise during the merge window.
-In this case sounds like the first 4 patches are in mm tree already.
-Is there a branch/tag I can pull to get the first 4 into bpf-next?
+This patch seems to be quite large but it is self-contained.  How
+about waiting a release cycle and then resubmitting it to linux-crypto
+on its own?
+
+Thanks,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
