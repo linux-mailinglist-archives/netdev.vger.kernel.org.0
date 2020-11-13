@@ -2,188 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C86D82B2128
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:57:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D4F52B2194
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 18:11:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726094AbgKMQ5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 11:57:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46008 "EHLO mail.kernel.org"
+        id S1726136AbgKMRKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 12:10:50 -0500
+Received: from smtp.uniroma2.it ([160.80.6.22]:40191 "EHLO smtp.uniroma2.it"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725967AbgKMQ5c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 11:57:32 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 95742217A0;
-        Fri, 13 Nov 2020 16:57:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605286652;
-        bh=la7rtuRvQo/nFyioArw+GmaBHrmnYoByq6L20qjx5Vw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kHf7yJxG+JN4ZDc2SYUn1wSFTb+IXF3p7ZvwJ11WUUsu9VoX158214gLubXrSFDgw
-         tx/TQGrbzuR2H0lg4iEJ0lnoun1eTceN0Lr+9VyefHnTvCHuHYEMb4UzadgXv6YZIq
-         zNqhYp2NJjMyQu40EsbRiG8cNdyvbDwDetqrJk+0=
-Date:   Fri, 13 Nov 2020 08:57:30 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     kernel test robot <lkp@intel.com>
+        id S1726003AbgKMRKu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 12:10:50 -0500
+X-Greylist: delayed 429 seconds by postgrey-1.27 at vger.kernel.org; Fri, 13 Nov 2020 12:10:48 EST
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth-2019-1.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0ADH2WGo025040;
+        Fri, 13 Nov 2020 18:02:37 +0100
+Received: from [192.168.1.89] (93-36-192-249.ip61.fastwebnet.it [93.36.192.249])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id F3BAA120056;
+        Fri, 13 Nov 2020 18:02:26 +0100 (CET)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1605286947; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0XGT7HejRnapjvO3Gk30BS4PxlUZGNYjFQlC16LvtaA=;
+        b=lzCXHcWpJeW+zG20mj+MaomUDpk5DEwWODbVyfOl3URySu4F5q0BA48a5OTlXk6Zp2CSDB
+        h+foRmpSQjLmX5Cg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1605286947; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0XGT7HejRnapjvO3Gk30BS4PxlUZGNYjFQlC16LvtaA=;
+        b=AonEF9IP1O4jHQnw+F1LFjoKG/CKpdE6OnvlYUkF95B0iRl4RySQAQUacDVPg82cSYIpTW
+        sJe14tnn+dWRBIoXC/i1biVamRrInX5r+6rLH6qhkhSgG1tq2/sALY+pqqr5Yg9/5msWdX
+        1HsDdIirHF1ZWg2wfzERMHMw5VYxbZWyvWSpi2l+e/ff1h1/8DPf9zD8OTaYUE2ttTx8xb
+        p4ngezVwiprzvkwBAvpI5IBRIHrRvhJVgMiBwMSYA/nfqaDA8rKnwYUXM8+5SaL64FXVxX
+        M51xC74gwQyTB4+UapQyppQpDtRLaC54Jgmqj8QC1bVmw/a3tPMmLzRFvcra0Q==
+Subject: Re: [net-next,v2,4/5] seg6: add support for the SRv6 End.DT4 behavior
+To:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@gmail.com>
 Cc:     Andrea Mayer <andrea.mayer@uniroma2.it>,
         "David S. Miller" <davem@davemloft.net>,
         David Ahern <dsahern@kernel.org>,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        Shuah Khan <shuah@kernel.org>,
         Shrijeet Mukherjee <shrijeet@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        kbuild-all@lists.01.org, clang-built-linux@googlegroups.com,
-        netdev@vger.kernel.org
-Subject: Re: [net-next,v2,4/5] seg6: add support for the SRv6 End.DT4
- behavior
-Message-ID: <20201113085730.5f3c850a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <202011131747.puABQV5A-lkp@intel.com>
-References: <20201107153139.3552-5-andrea.mayer@uniroma2.it>
-        <202011131747.puABQV5A-lkp@intel.com>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+References: <20201107153139.3552-1-andrea.mayer@uniroma2.it>
+ <20201107153139.3552-5-andrea.mayer@uniroma2.it>
+ <20201110151255.3a86afcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201113022848.dd40aa66763316ac4f4ffd56@uniroma2.it>
+ <34d9b96f-a378-4817-36e8-3d9287c5b76b@gmail.com>
+ <20201113085547.68e04931@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Stefano Salsano <stefano.salsano@uniroma2.it>
+Message-ID: <bd3712b6-110b-acce-3761-457a6d2b4463@uniroma2.it>
+Date:   Fri, 13 Nov 2020 18:02:26 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201113085547.68e04931@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Language: it-IT
 Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good people of build bot, 
+Il 2020-11-13 17:55, Jakub Kicinski ha scritto:
+> On Thu, 12 Nov 2020 18:49:17 -0700 David Ahern wrote:
+>> On 11/12/20 6:28 PM, Andrea Mayer wrote:
+>>> The implementation of SRv6 End.DT4 differs from the the implementation of SRv6
+>>> End.DT6 due to the different *route input* lookup functions. For IPv6 is it
+>>> possible to force the routing lookup specifying a routing table through the
+>>> ip6_pol_route() function (as it is done in the seg6_lookup_any_nexthop()).
+>>
+>> It is unfortunate that the IPv6 variant got in without the VRF piece.
+> 
+> Should we make it a requirement for this series to also extend the v6
+> version to support the preferred VRF-based operation? Given VRF is
+> better and we require v4 features to be implemented for v6?
 
-would you mind shedding some light on this one? It was also reported on
-v1, and Andrea said it's impossible to repro. Strange that build bot
-would make the same mistake twice, tho.
+I think it is better to separate the two aspects... adding a missing 
+feature in IPv4 datapath should not depend on improving the quality of 
+the implementation of the IPv6 datapath :-)
 
-Thanks!
+I think that Andrea is willing to work on improving the IPv6 
+implementation, but this should be considered after this patchset...
 
-On Fri, 13 Nov 2020 17:23:09 +0800 kernel test robot wrote:
-> Hi Andrea,
-> 
-> Thank you for the patch! Yet something to improve:
-> 
-> [auto build test ERROR on ipvs/master]
-> [also build test ERROR on linus/master sparc-next/master v5.10-rc3 next-20201112]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Andrea-Mayer/seg6-add-support-for-the-SRv6-End-DT4-behavior/20201109-093019
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/horms/ipvs.git master
-> config: x86_64-randconfig-a005-20201111 (attached as .config)
-> compiler: clang version 12.0.0 (https://github.com/llvm/llvm-project 874b0a0b9db93f5d3350ffe6b5efda2d908415d0)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install x86_64 cross compiling tool for clang build
->         # apt-get install binutils-x86-64-linux-gnu
->         # https://github.com/0day-ci/linux/commit/761138e2f757ac64efe97b03311c976db242dc92
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Andrea-Mayer/seg6-add-support-for-the-SRv6-End-DT4-behavior/20201109-093019
->         git checkout 761138e2f757ac64efe97b03311c976db242dc92
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=x86_64 
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> net/ipv6/seg6_local.c:793:4: error: field designator 'slwt_ops' does not refer to any field in type 'struct seg6_action_desc'  
->                    .slwt_ops       = {
->                     ^
-> >> net/ipv6/seg6_local.c:826:10: error: invalid application of 'sizeof' to an incomplete type 'struct seg6_action_desc []'  
->            count = ARRAY_SIZE(seg6_action_table);
->                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->    include/linux/kernel.h:48:32: note: expanded from macro 'ARRAY_SIZE'
->    #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) + __must_be_array(arr))
->                                   ^~~~~
->    2 errors generated.
-> 
-> vim +793 net/ipv6/seg6_local.c
-> 
->    757	
->    758	static struct seg6_action_desc seg6_action_table[] = {
->    759		{
->    760			.action		= SEG6_LOCAL_ACTION_END,
->    761			.attrs		= 0,
->    762			.input		= input_action_end,
->    763		},
->    764		{
->    765			.action		= SEG6_LOCAL_ACTION_END_X,
->    766			.attrs		= (1 << SEG6_LOCAL_NH6),
->    767			.input		= input_action_end_x,
->    768		},
->    769		{
->    770			.action		= SEG6_LOCAL_ACTION_END_T,
->    771			.attrs		= (1 << SEG6_LOCAL_TABLE),
->    772			.input		= input_action_end_t,
->    773		},
->    774		{
->    775			.action		= SEG6_LOCAL_ACTION_END_DX2,
->    776			.attrs		= (1 << SEG6_LOCAL_OIF),
->    777			.input		= input_action_end_dx2,
->    778		},
->    779		{
->    780			.action		= SEG6_LOCAL_ACTION_END_DX6,
->    781			.attrs		= (1 << SEG6_LOCAL_NH6),
->    782			.input		= input_action_end_dx6,
->    783		},
->    784		{
->    785			.action		= SEG6_LOCAL_ACTION_END_DX4,
->    786			.attrs		= (1 << SEG6_LOCAL_NH4),
->    787			.input		= input_action_end_dx4,
->    788		},
->    789		{
->    790			.action		= SEG6_LOCAL_ACTION_END_DT4,
->    791			.attrs		= (1 << SEG6_LOCAL_TABLE),
->    792			.input		= input_action_end_dt4,
->  > 793			.slwt_ops	= {  
->    794						.build_state = seg6_end_dt4_build,
->    795					  },
->    796		},
->    797		{
->    798			.action		= SEG6_LOCAL_ACTION_END_DT6,
->    799			.attrs		= (1 << SEG6_LOCAL_TABLE),
->    800			.input		= input_action_end_dt6,
->    801		},
->    802		{
->    803			.action		= SEG6_LOCAL_ACTION_END_B6,
->    804			.attrs		= (1 << SEG6_LOCAL_SRH),
->    805			.input		= input_action_end_b6,
->    806		},
->    807		{
->    808			.action		= SEG6_LOCAL_ACTION_END_B6_ENCAP,
->    809			.attrs		= (1 << SEG6_LOCAL_SRH),
->    810			.input		= input_action_end_b6_encap,
->    811			.static_headroom	= sizeof(struct ipv6hdr),
->    812		},
->    813		{
->    814			.action		= SEG6_LOCAL_ACTION_END_BPF,
->    815			.attrs		= (1 << SEG6_LOCAL_BPF),
->    816			.input		= input_action_end_bpf,
->    817		},
->    818	
->    819	};
->    820	
->    821	static struct seg6_action_desc *__get_action_desc(int action)
->    822	{
->    823		struct seg6_action_desc *desc;
->    824		int i, count;
->    825	
->  > 826		count = ARRAY_SIZE(seg6_action_table);  
->    827		for (i = 0; i < count; i++) {
->    828			desc = &seg6_action_table[i];
->    829			if (desc->action == action)
->    830				return desc;
->    831		}
->    832	
->    833		return NULL;
->    834	}
->    835	
-> 
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+my 2c
+
+Stefano
+
+-- 
+*******************************************************************
+Stefano Salsano
+Professore Associato
+Dipartimento Ingegneria Elettronica
+Universita' di Roma Tor Vergata
+Viale Politecnico, 1 - 00133 Roma - ITALY
+
+http://netgroup.uniroma2.it/Stefano_Salsano/
+
+E-mail  : stefano.salsano@uniroma2.it
+Cell.   : +39 320 4307310
+Office  : (Tel.) +39 06 72597770 (Fax.) +39 06 72597435
+*******************************************************************
 
