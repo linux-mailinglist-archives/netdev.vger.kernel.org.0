@@ -2,123 +2,716 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1A412B13F9
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 02:44:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 422822B13FD
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 02:47:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726071AbgKMBn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 20:43:58 -0500
-Received: from mga06.intel.com ([134.134.136.31]:59579 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725965AbgKMBn6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 20:43:58 -0500
-IronPort-SDR: GNZiQih51j85Njv5XWuaaq5yqTAhTRy9y1JoYaR6gYDyjYAjJou5Qiz8ITIPOVLFj8CkoxosMy
- y4Tk5p5hTi+A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9803"; a="232029480"
-X-IronPort-AV: E=Sophos;i="5.77,473,1596524400"; 
-   d="scan'208";a="232029480"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2020 17:43:57 -0800
-IronPort-SDR: r8uaihk5chuFK9Ma7CwaO8clBJhCqXBhTT+mi4Cr81rOCfgrR+IiAWt3ztI5cuxuUZL4fzcZxz
- eRPi0obRTqpg==
-X-IronPort-AV: E=Sophos;i="5.77,473,1596524400"; 
-   d="scan'208";a="542480612"
-Received: from pcathanx-mobl.amr.corp.intel.com (HELO [10.212.226.118]) ([10.212.226.118])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2020 17:43:57 -0800
-Subject: Re: [PATCH net-next] net: Variable SLAAC: SLAAC with prefixes of
- arbitrary length in PIO
-To:     Jakub Kicinski <kuba@kernel.org>, kernel test robot <lkp@intel.com>
-Cc:     Dmytro Shytyi <dmytro@shytyi.net>, kuznet <kuznet@ms2.inr.ac.ru>,
-        yoshfuji <yoshfuji@linux-ipv6.org>,
-        liuhangbin <liuhangbin@gmail.com>, davem <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kbuild-all@lists.01.org
-References: <175b3433a4c.aea7c06513321.4158329434310691736@shytyi.net>
- <202011110944.7zNVZmvB-lkp@intel.com>
- <20201112162423.6b4de8d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
- z5cecg==
-Message-ID: <8b05710f-5718-986d-659c-916e2b85c892@intel.com>
-Date:   Thu, 12 Nov 2020 17:43:56 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <20201112162423.6b4de8d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1726188AbgKMBrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 20:47:43 -0500
+Received: from mailout3.samsung.com ([203.254.224.33]:43102 "EHLO
+        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726149AbgKMBrn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 20:47:43 -0500
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20201113014736epoutp0364ee6934a3776cbeb092303ed022ce61~G7gzp1yC22036220362epoutp03q
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 01:47:36 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20201113014736epoutp0364ee6934a3776cbeb092303ed022ce61~G7gzp1yC22036220362epoutp03q
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1605232056;
+        bh=Oybib231jc1KYnlVbzUF0RmuotYWk203+B/RUVdL2Z4=;
+        h=Subject:Reply-To:From:To:CC:Date:References:From;
+        b=vMN/mGWZd3aX40EDowJuyDbUWqLHkchuyf8vj+5YTLaIuKlT326MmiA5yANJZF37f
+         0ON4xDq5NzSHgU8PLwrBP8/mOoi2JzLdOJCFmLtjVGQwSOhRCMuhFOw0Hs18rqcO27
+         sPj33lUHNYdJwzPp/1Oc9Kbw3eqZin9AT3SSuep0=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20201113014736epcas2p140b063854f878126dbb1e596554b10d1~G7gzdjRtV1572115721epcas2p1B;
+        Fri, 13 Nov 2020 01:47:36 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.40.185]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4CXLv94v6pzMqYm0; Fri, 13 Nov
+        2020 01:47:33 +0000 (GMT)
+X-AuditID: b6c32a45-337ff7000001297d-08-5fade5b346c0
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        B4.69.10621.3B5EDAF5; Fri, 13 Nov 2020 10:47:31 +0900 (KST)
+Mime-Version: 1.0
+Subject: [PATCH net-next] nfc: s3fwrn82: Add driver for Samsung S3FWRN82 NFC
+ Chip
+Reply-To: bongsu.jeon@samsung.com
+Sender: Bongsu Jeon <bongsu.jeon@samsung.com>
+From:   Bongsu Jeon <bongsu.jeon@samsung.com>
+To:     "kuba@kernel.org" <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20201113014730epcms2p56b287dd23181ba4c0362ca1cb3d0a5b6@epcms2p5>
+Date:   Fri, 13 Nov 2020 10:47:30 +0900
+X-CMS-MailID: 20201113014730epcms2p56b287dd23181ba4c0362ca1cb3d0a5b6
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrBKsWRmVeSWpSXmKPExsWy7bCmue7mp2vjDTonsVnMOd/CYnFhWx+r
+        xbEFYg7MHltW3mTy2LSqk83j8ya5AOaoHJuM1MSU1CKF1Lzk/JTMvHRbJe/geOd4UzMDQ11D
+        SwtzJYW8xNxUWyUXnwBdt8wcoD1KCmWJOaVAoYDE4mIlfTubovzSklSFjPziElul1IKUnAJD
+        wwK94sTc4tK8dL3k/FwrQwMDI1OgyoScjJ19/9kL1tVVTP/4l7WB8Ul6FyMnh4SAicSD6xsZ
+        uxi5OIQEdjBK7OhfztLFyMHBKyAo8XeHMEiNsECwxOOJD5lAbCEBRYn/HefYIOK6Ei/+HgWz
+        2QS0JdYebQSrERFQl+g6eIIZZAyzQIrEpYdOEKt4JWa0P2WBsKUlti/fyghha0j8WNbLDGGL
+        Stxc/ZYdxn5/bD5UjYhE672zUDWCEg9+7oaKS0q83TePHeR8CYF2RonzP3+wQTgzGCVObf4L
+        1aEvsfjcCrDjeAV8Jdq/vAA7mkVAVeLi2RaoSS4SD+bfZAWxmQXkJba/nQP1gKbE+l36IKaE
+        gLLEkVssEBV8Eh2H/7LD/LVj3hMmCFtVorf5CxPMj5Nnw0z3kHi0p4kVEoSBEvN7XrBPYFSY
+        hQjoWUj2zkLYu4CReRWjWGpBcW56arFRgSFy3G5iBCc5LdcdjJPfftA7xMjEwXiIUYKDWUmE
+        V9lhTbwQb0piZVVqUX58UWlOavEhRlOgjycyS4km5wPTbF5JvKGpkZmZgaWphamZkYWSOG/o
+        yr54IYH0xJLU7NTUgtQimD4mDk6pBiavf5k/E5JfWZ9yzf5ntbWdJW9l0KU1XMcl7877L+Ks
+        ldL+5Oq+CFmN5zd6W2R7tm/a5nk1JniN/ubbzIw7RWfuTGqItJvgVb1sRt63rccSKyefeqIl
+        Z7kn1+/sJq20D+7zE+ML7S9JnMsWrJI4e/7ipePGU9N7Ntbeeu2muntN3bKbpUvYDtw0ZLim
+        2TA7UM/qnXr8n5ff1u5ybNwvfmTzF07n1072J/R1+Z1fXn2n3p1iGXr2h6VPbFsPz4xModv5
+        H30k9WLaVv5f7+92eOdJzw9tETU3bth6HmT6z88R6tmx6M36noIUt8Veu5L1mY4L+p9b0vn9
+        6hPBByzFZw2P/53yca7RxTfu26a53j6uxFKckWioxVxUnAgAqzqPM/sDAAA=
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20201113014730epcms2p56b287dd23181ba4c0362ca1cb3d0a5b6
+References: <CGME20201113014730epcms2p56b287dd23181ba4c0362ca1cb3d0a5b6@epcms2p5>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/12/20 4:24 PM, Jakub Kicinski wrote:
-> On Wed, 11 Nov 2020 09:34:24 +0800 kernel test robot wrote:
->> If you fix the issue, kindly add following tag as appropriate
->> Reported-by: kernel test robot <lkp@intel.com>
-> Good people of kernel test robot, could you please rephrase this to say
-> that the tag is only appropriate if someone is sending a fix up/follow
-> up patch?
-> 
-> Folks keep adding those tags on the next revisions of the their patches
-> which is quite misleading.
 
-I think it's still fair for the lkp folks to get *some* credit for
-reporting these bugs.  I mean, the stated reason[1] for it existing is:
+Add driver for Samsung S3FWRN82 NFC controller.
+S3FWRN82 is using NCI protocol and I2C communication interface.
 
-	The Reported-by tag gives credit to people who find bugs and
-	report them and it hopefully inspires them to help us again in
-	the future.
+Signed-off-by: bongsujeon <bongsu.jeon@samsung.com>
+---
+ .../devicetree/bindings/net/nfc/s3fwrn82.txt  |  30 ++
+ drivers/nfc/Kconfig                           |   1 +
+ drivers/nfc/Makefile                          |   1 +
+ drivers/nfc/s3fwrn82/Kconfig                  |  20 ++
+ drivers/nfc/s3fwrn82/Makefile                 |  10 +
+ drivers/nfc/s3fwrn82/core.c                   | 133 +++++++++
+ drivers/nfc/s3fwrn82/i2c.c                    | 281 ++++++++++++++++++
+ drivers/nfc/s3fwrn82/s3fwrn82.h               |  82 +++++
+ 8 files changed, 558 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt
+ create mode 100644 drivers/nfc/s3fwrn82/Kconfig
+ create mode 100644 drivers/nfc/s3fwrn82/Makefile
+ create mode 100644 drivers/nfc/s3fwrn82/core.c
+ create mode 100644 drivers/nfc/s3fwrn82/i2c.c
+ create mode 100644 drivers/nfc/s3fwrn82/s3fwrn82.h
 
-I do agree, though, that it's confusing *what* they reported, especially
-if the patch in question is fixing something *else*.  Rather than invent
-a new tag, maybe a comment would suffice:
-
-Reported-by: kernel test robot <lkp@intel.com> # bug in earlier revision
-
-1.
-https://www.kernel.org/doc/html/v4.17/process/submitting-patches.html#using-reported-by-tested-by-reviewed-by-suggested-by-and-fixes
-
+diff --git a/Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt b/Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt
+new file mode 100644
+index 000000000000..03ed880e1c7f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/nfc/s3fwrn82.txt
+@@ -0,0 +1,30 @@
++* Samsung S3FWRN82 NCI NFC Controller
++
++Required properties:
++- compatible: Should be "samsung,s3fwrn82-i2c".
++- reg: address on the bus
++- interrupts: GPIO interrupt to which the chip is connected
++- en-gpios: Output GPIO pin used for enabling/disabling the chip
++- wake-gpios: Output GPIO pin used to enter firmware mode and
++  sleep/wakeup control
++
++Example:
++
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c4 {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        s3fwrn82@27 {
++            compatible = "samsung,s3fwrn82-i2c";
++            reg = <0x27>;
++
++            interrupt-parent = <&gpa1>;
++            interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
++
++            en-gpios = <&gpf1 4 GPIO_ACTIVE_HIGH>;
++            wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
++        };
++    };
+diff --git a/drivers/nfc/Kconfig b/drivers/nfc/Kconfig
+index 75c65d339018..102654909d3a 100644
+--- a/drivers/nfc/Kconfig
++++ b/drivers/nfc/Kconfig
+@@ -59,4 +59,5 @@ source "drivers/nfc/st-nci/Kconfig"
+ source "drivers/nfc/nxp-nci/Kconfig"
+ source "drivers/nfc/s3fwrn5/Kconfig"
+ source "drivers/nfc/st95hf/Kconfig"
++source "drivers/nfc/s3fwrn82/Kconfig"
+ endmenu
+diff --git a/drivers/nfc/Makefile b/drivers/nfc/Makefile
+index 5393ba59b17d..518d83301ad2 100644
+--- a/drivers/nfc/Makefile
++++ b/drivers/nfc/Makefile
+@@ -17,3 +17,4 @@ obj-$(CONFIG_NFC_ST_NCI)	+= st-nci/
+ obj-$(CONFIG_NFC_NXP_NCI)	+= nxp-nci/
+ obj-$(CONFIG_NFC_S3FWRN5)	+= s3fwrn5/
+ obj-$(CONFIG_NFC_ST95HF)	+= st95hf/
++obj-$(CONFIG_NFC_S3FWRN82)	+= s3fwrn82/
+diff --git a/drivers/nfc/s3fwrn82/Kconfig b/drivers/nfc/s3fwrn82/Kconfig
+new file mode 100644
+index 000000000000..8765624c6fa4
+--- /dev/null
++++ b/drivers/nfc/s3fwrn82/Kconfig
+@@ -0,0 +1,20 @@
++# SPDX-License-Identifier: GPL-2.0-only
++config NFC_S3FWRN82
++	tristate
++	help
++	  Core driver for Samsung S3FWRN82 NFC chip. Contains core utilities
++	  of chip. It's intended to be used by PHYs to avoid duplicating lots
++	  of common code.
++
++config NFC_S3FWRN82_I2C
++	tristate "Samsung S3FWRN82 I2C support"
++	depends on NFC_NCI && I2C
++	select NFC_S3FWRN82
++	default n
++	help
++	  This module adds support for an I2C interface to the S3FWRN82 chip.
++	  Select this if your platform is using the I2C bus.
++
++	  To compile this driver as a module, choose m here. The module will
++	  be called s3fwrn82_i2c.ko.
++	  Say N if unsure.
+diff --git a/drivers/nfc/s3fwrn82/Makefile b/drivers/nfc/s3fwrn82/Makefile
+new file mode 100644
+index 000000000000..198e2cd85e91
+--- /dev/null
++++ b/drivers/nfc/s3fwrn82/Makefile
+@@ -0,0 +1,10 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Makefile for Samsung S3FWRN82 NFC driver
++#
++
++s3fwrn82-objs = core.o
++s3fwrn82_i2c-objs = i2c.o
++
++obj-$(CONFIG_NFC_S3FWRN82) += s3fwrn82.o
++obj-$(CONFIG_NFC_S3FWRN82_I2C) += s3fwrn82_i2c.o
+diff --git a/drivers/nfc/s3fwrn82/core.c b/drivers/nfc/s3fwrn82/core.c
+new file mode 100644
+index 000000000000..7ba60ec37fe3
+--- /dev/null
++++ b/drivers/nfc/s3fwrn82/core.c
+@@ -0,0 +1,133 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * NCI based driver for Samsung S3FWRN82 NFC chip
++ *
++ * Copyright (C) 2020 Samsung Electrnoics
++ * Bongsu Jeon <bongsu.jeon@samsung.com>
++ */
++
++#include <linux/module.h>
++#include <net/nfc/nci_core.h>
++
++#include "s3fwrn82.h"
++
++#define S3FWRN82_NFC_PROTOCOLS  (NFC_PROTO_JEWEL_MASK | \
++				NFC_PROTO_MIFARE_MASK | \
++				NFC_PROTO_FELICA_MASK | \
++				NFC_PROTO_ISO14443_MASK | \
++				NFC_PROTO_ISO14443_B_MASK | \
++				NFC_PROTO_ISO15693_MASK)
++
++static int s3fwrn82_nci_open(struct nci_dev *ndev)
++{
++	struct s3fwrn82_info *info = nci_get_drvdata(ndev);
++
++	if (s3fwrn82_get_mode(info) != S3FWRN82_MODE_COLD)
++		return  -EBUSY;
++
++	s3fwrn82_set_mode(info, S3FWRN82_MODE_NCI);
++	s3fwrn82_set_wake(info, true);
++
++	return 0;
++}
++
++static int s3fwrn82_nci_close(struct nci_dev *ndev)
++{
++	struct s3fwrn82_info *info = nci_get_drvdata(ndev);
++
++	s3fwrn82_set_wake(info, false);
++	s3fwrn82_set_mode(info, S3FWRN82_MODE_COLD);
++
++	return 0;
++}
++
++static int s3fwrn82_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
++{
++	struct s3fwrn82_info *info = nci_get_drvdata(ndev);
++	int ret;
++
++	mutex_lock(&info->mutex);
++
++	if (s3fwrn82_get_mode(info) != S3FWRN82_MODE_NCI) {
++		mutex_unlock(&info->mutex);
++		return -EINVAL;
++	}
++
++	ret = s3fwrn82_write(info, skb);
++	if (ret < 0)
++		kfree_skb(skb);
++
++	mutex_unlock(&info->mutex);
++	return ret;
++}
++
++static struct nci_ops s3fwrn82_nci_ops = {
++	.open = s3fwrn82_nci_open,
++	.close = s3fwrn82_nci_close,
++	.send = s3fwrn82_nci_send,
++};
++
++int s3fwrn82_probe(struct nci_dev **ndev, void *phy_id, struct device *pdev,
++	const struct s3fwrn82_phy_ops *phy_ops)
++{
++	struct s3fwrn82_info *info;
++	int ret;
++
++	info = devm_kzalloc(pdev, sizeof(*info), GFP_KERNEL);
++	if (!info)
++		return -ENOMEM;
++
++	info->phy_id = phy_id;
++	info->pdev = pdev;
++	info->phy_ops = phy_ops;
++	mutex_init(&info->mutex);
++
++	s3fwrn82_set_mode(info, S3FWRN82_MODE_COLD);
++
++	info->ndev = nci_allocate_device(&s3fwrn82_nci_ops,
++		S3FWRN82_NFC_PROTOCOLS, 0, 0);
++	if (!info->ndev)
++		return -ENOMEM;
++
++	nci_set_parent_dev(info->ndev, pdev);
++	nci_set_drvdata(info->ndev, info);
++
++	ret = nci_register_device(info->ndev);
++	if (ret < 0) {
++		nci_free_device(info->ndev);
++		return ret;
++	}
++
++	*ndev = info->ndev;
++
++	return ret;
++}
++EXPORT_SYMBOL(s3fwrn82_probe);
++
++void s3fwrn82_remove(struct nci_dev *ndev)
++{
++	struct s3fwrn82_info *info = nci_get_drvdata(ndev);
++
++	s3fwrn82_set_mode(info, S3FWRN82_MODE_COLD);
++
++	nci_unregister_device(ndev);
++	nci_free_device(ndev);
++}
++EXPORT_SYMBOL(s3fwrn82_remove);
++
++int s3fwrn82_recv_frame(struct nci_dev *ndev, struct sk_buff *skb,
++	enum s3fwrn82_mode mode)
++{
++	switch (mode) {
++	case S3FWRN82_MODE_NCI:
++		return nci_recv_frame(ndev, skb);
++	default:
++		kfree_skb(skb);
++		return -ENODEV;
++	}
++}
++EXPORT_SYMBOL(s3fwrn82_recv_frame);
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("Samsung S3FWRN82 NFC driver");
++MODULE_AUTHOR("Bongsu Jeon <bongsu.jeon@samsung.com>");
+diff --git a/drivers/nfc/s3fwrn82/i2c.c b/drivers/nfc/s3fwrn82/i2c.c
+new file mode 100644
+index 000000000000..26e60b76e6ca
+--- /dev/null
++++ b/drivers/nfc/s3fwrn82/i2c.c
+@@ -0,0 +1,281 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * I2C Link Layer for Samsung S3FWRN82 NCI based Driver
++ *
++ * Copyright (C) 2020 Samsung Electrnoics
++ * Bongsu Jeon <bongsu.jeon@samsung.com>
++ */
++
++#include <linux/i2c.h>
++#include <linux/gpio.h>
++#include <linux/delay.h>
++#include <linux/of_gpio.h>
++#include <linux/of_irq.h>
++#include <linux/module.h>
++
++#include <net/nfc/nfc.h>
++
++#include "s3fwrn82.h"
++
++#define S3FWRN82_I2C_DRIVER_NAME "s3fwrn82_i2c"
++
++#define S3FWRN82_EN_WAIT_TIME 20
++
++struct s3fwrn82_i2c_phy {
++	struct i2c_client *i2c_dev;
++	struct nci_dev *ndev;
++
++	unsigned int gpio_en;
++	unsigned int gpio_fw_wake;
++
++	struct mutex mutex;
++
++	enum s3fwrn82_mode mode;
++	unsigned int irq_skip:1;
++};
++
++static void s3fwrn82_i2c_set_wake(void *phy_id, bool wake)
++{
++	struct s3fwrn82_i2c_phy *phy = phy_id;
++
++	mutex_lock(&phy->mutex);
++	gpio_set_value(phy->gpio_fw_wake, wake);
++	if (wake == true)
++		msleep(S3FWRN82_EN_WAIT_TIME);
++	mutex_unlock(&phy->mutex);
++}
++
++static void s3fwrn82_i2c_set_mode(void *phy_id, enum s3fwrn82_mode mode)
++{
++	struct s3fwrn82_i2c_phy *phy = phy_id;
++
++	mutex_lock(&phy->mutex);
++
++	if (phy->mode == mode)
++		goto out;
++
++	phy->mode = mode;
++
++	gpio_set_value(phy->gpio_en, 1);
++	gpio_set_value(phy->gpio_fw_wake, 0);
++
++	if (mode != S3FWRN82_MODE_COLD) {
++		msleep(S3FWRN82_EN_WAIT_TIME);
++		gpio_set_value(phy->gpio_en, 0);
++		msleep(S3FWRN82_EN_WAIT_TIME/2);
++	}
++
++	phy->irq_skip = true;
++
++out:
++	mutex_unlock(&phy->mutex);
++}
++
++static enum s3fwrn82_mode s3fwrn82_i2c_get_mode(void *phy_id)
++{
++	struct s3fwrn82_i2c_phy *phy = phy_id;
++	enum s3fwrn82_mode mode;
++
++	mutex_lock(&phy->mutex);
++
++	mode = phy->mode;
++
++	mutex_unlock(&phy->mutex);
++
++	return mode;
++}
++
++static int s3fwrn82_i2c_write(void *phy_id, struct sk_buff *skb)
++{
++	struct s3fwrn82_i2c_phy *phy = phy_id;
++	int ret;
++
++	mutex_lock(&phy->mutex);
++
++	phy->irq_skip = false;
++
++	ret = i2c_master_send(phy->i2c_dev, skb->data, skb->len);
++	mutex_unlock(&phy->mutex);
++
++	if (ret < 0)
++		return ret;
++
++	if (ret != skb->len)
++		return -EREMOTEIO;
++
++	return 0;
++}
++
++static const struct s3fwrn82_phy_ops i2c_phy_ops = {
++	.set_wake = s3fwrn82_i2c_set_wake,
++	.set_mode = s3fwrn82_i2c_set_mode,
++	.get_mode = s3fwrn82_i2c_get_mode,
++	.write = s3fwrn82_i2c_write,
++};
++
++static int s3fwrn82_i2c_read(struct s3fwrn82_i2c_phy *phy)
++{
++	struct sk_buff *skb;
++	size_t hdr_size;
++	size_t data_len;
++	char hdr[4];
++	int ret;
++
++	hdr_size = NCI_CTRL_HDR_SIZE;
++	ret = i2c_master_recv(phy->i2c_dev, hdr, hdr_size);
++	if (ret < 0)
++		return ret;
++
++	if (ret < hdr_size)
++		return -EBADMSG;
++
++	data_len = ((struct nci_ctrl_hdr *)hdr)->plen;
++
++	skb = alloc_skb(hdr_size + data_len, GFP_KERNEL);
++	if (!skb)
++		return -ENOMEM;
++
++	skb_put_data(skb, hdr, hdr_size);
++
++	if (data_len == 0)
++		goto out;
++
++	ret = i2c_master_recv(phy->i2c_dev, skb_put(skb, data_len), data_len);
++	if (ret != data_len) {
++		kfree_skb(skb);
++		return -EBADMSG;
++	}
++
++out:
++	return s3fwrn82_recv_frame(phy->ndev, skb, phy->mode);
++}
++
++static irqreturn_t s3fwrn82_i2c_irq_thread_fn(int irq, void *phy_id)
++{
++	struct s3fwrn82_i2c_phy *phy = phy_id;
++
++	if (!phy || !phy->ndev) {
++		WARN_ON_ONCE(1);
++		return IRQ_NONE;
++	}
++
++	mutex_lock(&phy->mutex);
++
++	if (phy->irq_skip)
++		goto out;
++
++	switch (phy->mode) {
++	case S3FWRN82_MODE_NCI:
++		s3fwrn82_i2c_read(phy);
++		break;
++	case S3FWRN82_MODE_COLD:
++		break;
++	}
++
++out:
++	mutex_unlock(&phy->mutex);
++
++	return IRQ_HANDLED;
++}
++
++static int s3fwrn82_i2c_parse_dt(struct i2c_client *client)
++{
++	struct s3fwrn82_i2c_phy *phy = i2c_get_clientdata(client);
++	struct device_node *np = client->dev.of_node;
++
++	if (!np)
++		return -ENODEV;
++
++	phy->gpio_en = of_get_named_gpio(np, "en-gpios", 0);
++	if (!gpio_is_valid(phy->gpio_en)) {
++		return -ENODEV;
++	}
++
++	phy->gpio_fw_wake = of_get_named_gpio(np, "wake-gpios", 0);
++	if (!gpio_is_valid(phy->gpio_fw_wake)) {
++		return -ENODEV;
++	}
++
++	return 0;
++}
++
++static int s3fwrn82_i2c_probe(struct i2c_client *client,
++				  const struct i2c_device_id *id)
++{
++	struct s3fwrn82_i2c_phy *phy;
++	int ret;
++
++	phy = devm_kzalloc(&client->dev, sizeof(*phy), GFP_KERNEL);
++	if (!phy)
++		return -ENOMEM;
++
++	mutex_init(&phy->mutex);
++	phy->mode = S3FWRN82_MODE_COLD;
++	phy->irq_skip = true;
++
++	phy->i2c_dev = client;
++	i2c_set_clientdata(client, phy);
++
++	ret = s3fwrn82_i2c_parse_dt(client);
++	if (ret < 0)
++		return ret;
++
++	ret = devm_gpio_request_one(&phy->i2c_dev->dev, phy->gpio_en,
++		GPIOF_OUT_INIT_HIGH, "s3fwrn82_en");
++	if (ret < 0)
++		return ret;
++
++	ret = devm_gpio_request_one(&phy->i2c_dev->dev, phy->gpio_fw_wake,
++		GPIOF_OUT_INIT_LOW, "s3fwrn82_fw_wake");
++	if (ret < 0)
++		return ret;
++
++	ret = s3fwrn82_probe(&phy->ndev, phy, &phy->i2c_dev->dev, &i2c_phy_ops);
++	if (ret < 0)
++		return ret;
++
++	ret = devm_request_threaded_irq(&client->dev, phy->i2c_dev->irq, NULL,
++		s3fwrn82_i2c_irq_thread_fn, IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
++		S3FWRN82_I2C_DRIVER_NAME, phy);
++	if (ret)
++		s3fwrn82_remove(phy->ndev);
++
++	return ret;
++}
++
++static int s3fwrn82_i2c_remove(struct i2c_client *client)
++{
++	struct s3fwrn82_i2c_phy *phy = i2c_get_clientdata(client);
++
++	s3fwrn82_remove(phy->ndev);
++
++	return 0;
++}
++
++static const struct i2c_device_id s3fwrn82_i2c_id_table[] = {
++	{S3FWRN82_I2C_DRIVER_NAME, 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, s3fwrn82_i2c_id_table);
++
++static const struct of_device_id of_s3fwrn82_i2c_match[] = {
++	{ .compatible = "samsung,s3fwrn82-i2c", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, of_s3fwrn82_i2c_match);
++
++static struct i2c_driver s3fwrn82_i2c_driver = {
++	.driver = {
++		.name = S3FWRN82_I2C_DRIVER_NAME,
++		.of_match_table = of_match_ptr(of_s3fwrn82_i2c_match),
++	},
++	.probe = s3fwrn82_i2c_probe,
++	.remove = s3fwrn82_i2c_remove,
++	.id_table = s3fwrn82_i2c_id_table,
++};
++
++module_i2c_driver(s3fwrn82_i2c_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("I2C driver for Samsung S3FWRN82");
++MODULE_AUTHOR("Bongsu Jeon <bongsu.jeon@samsung.com>");
+diff --git a/drivers/nfc/s3fwrn82/s3fwrn82.h b/drivers/nfc/s3fwrn82/s3fwrn82.h
+new file mode 100644
+index 000000000000..5be6e08e04e2
+--- /dev/null
++++ b/drivers/nfc/s3fwrn82/s3fwrn82.h
+@@ -0,0 +1,82 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * NCI based driver for Samsung S3FWRN82 NFC chip
++ *
++ * Copyright (C) 2020 Samsung Electrnoics
++ * Bongsu Jeon <bongsu.jeon@samsung.com>
++ */
++
++#ifndef __LOCAL_S3FWRN82_H_
++#define __LOCAL_S3FWRN82_H_
++
++#include <linux/nfc.h>
++
++#include <net/nfc/nci_core.h>
++
++enum s3fwrn82_mode {
++	S3FWRN82_MODE_COLD,
++	S3FWRN82_MODE_NCI,
++};
++
++struct s3fwrn82_phy_ops {
++	void (*set_wake)(void *id, bool sleep);
++	void (*set_mode)(void *id, enum s3fwrn82_mode);
++	enum s3fwrn82_mode (*get_mode)(void *id);
++	int (*write)(void *id, struct sk_buff *skb);
++};
++
++struct s3fwrn82_info {
++	struct nci_dev *ndev;
++	void *phy_id;
++	struct device *pdev;
++
++	const struct s3fwrn82_phy_ops *phy_ops;
++
++	struct mutex mutex;
++};
++
++static inline int s3fwrn82_set_mode(struct s3fwrn82_info *info,
++	enum s3fwrn82_mode mode)
++{
++	if (!info->phy_ops->set_mode)
++		return -ENOTSUPP;
++
++	info->phy_ops->set_mode(info->phy_id, mode);
++
++	return 0;
++}
++
++static inline enum s3fwrn82_mode s3fwrn82_get_mode(struct s3fwrn82_info *info)
++{
++	if (!info->phy_ops->get_mode)
++		return -ENOTSUPP;
++
++	return info->phy_ops->get_mode(info->phy_id);
++}
++
++static inline int s3fwrn82_set_wake(struct s3fwrn82_info *info, bool wake)
++{
++	if (!info->phy_ops->set_wake)
++		return -ENOTSUPP;
++
++	info->phy_ops->set_wake(info->phy_id, wake);
++
++	return 0;
++}
++
++static inline int s3fwrn82_write(struct s3fwrn82_info *info, struct sk_buff *skb)
++{
++	if (!info->phy_ops->write)
++		return -ENOTSUPP;
++
++	return info->phy_ops->write(info->phy_id, skb);
++}
++
++int s3fwrn82_probe(struct nci_dev **ndev, void *phy_id, struct device *pdev,
++	const struct s3fwrn82_phy_ops *phy_ops);
++void s3fwrn82_remove(struct nci_dev *ndev);
++
++int s3fwrn82_recv_frame(struct nci_dev *ndev, struct sk_buff *skb,
++	enum s3fwrn82_mode mode);
++
++#endif /* __LOCAL_S3FWRN82_H_ */
+-- 
