@@ -2,83 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45DC22B14A9
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 04:24:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C1152B14AE
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 04:26:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726136AbgKMDYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 22:24:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38850 "EHLO
+        id S1726112AbgKMD0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 22:26:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725929AbgKMDYz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 22:24:55 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADF0C0613D1;
-        Thu, 12 Nov 2020 19:24:55 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id a18so6448626pfl.3;
-        Thu, 12 Nov 2020 19:24:55 -0800 (PST)
+        with ESMTP id S1725929AbgKMD0B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 22:26:01 -0500
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C88C0613D1;
+        Thu, 12 Nov 2020 19:26:01 -0800 (PST)
+Received: by mail-lj1-x241.google.com with SMTP id y16so8961735ljh.0;
+        Thu, 12 Nov 2020 19:26:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=IrE75K0NizerR3Wqiaotbx/ZTvWDabFAa1OrR3pXQBM=;
-        b=tiqP62IaMm6SRIY34zK1I6Vd/AdYWXLclGpsFGDxzEfFmvIutxtBVS8EATJ3zTl1v6
-         iMT/9l21aMFpcbx/Zd22XI0meooOfiwQjMMXX5V4hDMKXVRBxmiqT693bbRnaRcZMcPB
-         cJUe4emdu6yTO1EOepN4hnPfht8E518Eg++8grjl+hqUlO33jxCx5Z9Ewp9VMxf8HZJ7
-         2doCEx5PDUL4l+tpiloMAyeGBqQbluCKb8quaDFIZT1dCqN1nHzZ6OadfU5z2SMvYJ/t
-         dwr5IcM6rFyY2n08rG3whqdZZPimxVaSZTNEvEw//8DPm+darGuDtFXqeLcGC0PVK8Ec
-         C7GA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U5FpYADtIYALgZoE+kVuMMQ+y3SY9Pf75a4z51dOshs=;
+        b=YBelQveZAC0DyHbmZtd7aH+D6mDI2uFaGKR0wNazXzP7elQxXmGYZNu5GpqcxCv1NV
+         Vv4IUEYSb5R6ryUq9RiIvP76vkBAxYeRjQ0Ypk38N/xHSW57NFSLq/Aojgc8dc+p8FYl
+         oB1JaWleSP5AH5Xx3JcvV5dCFJrWLu4jYCOwrlfOfyArZKAT7sVaNUg+FRVTky7K0N5K
+         iXcXIIdofrzc08j8q9MmJqEMs9B60u6gk51Zlx/iZxxhmK2wQrm+KfziUux3Wc0BCMPy
+         3y6mAaUaPEqsT3l68zvuHX4KEifPGtJxooPwkfRufL+Jon7YTxVxEG0x2EdUvxAWsOVz
+         ENig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=IrE75K0NizerR3Wqiaotbx/ZTvWDabFAa1OrR3pXQBM=;
-        b=AMHEewOfOR7J3nsrG+hd3W34NQnWmNjY1MtevsU3lvqLA9oq6rl5sJbVul2IfyZ32e
-         GQjanVyf5GVfYbxSU9jBVxVFvNQHLK1FKA/r9ZrOASyOzFZt0qhu6DCDk0kp50Sl4k4p
-         beQ4qs9nP6Ep2T+xyr7UzVLmi1iBYEE8q7DrNnVeokvS0gN5gWgjS3FDYiPo+HGr9rHf
-         UEM/nv9q9FsVEyeFDy3vf9kSQ+E95JR/QJN5G48g4OdlgR7niYlMwQPl3xzO2Fw7BUb+
-         uUeiAtz3WwD447DMEuXqpWyBzwVeBQkICs5k8Urc9I9eQsR2JVGM76KJqcxmO6KwNxsK
-         Dtdg==
-X-Gm-Message-State: AOAM533j+OPwcnu0oTgtxTYy86Iv/1V1XOhyJBuKCrt/JJ82aFPtK501
-        i0sPcLOwWG0VKrA9CZi4n7A=
-X-Google-Smtp-Source: ABdhPJzcuTIzDajv93N7IQPN6QpZ/QfdtRcZ+OE7vEUpY+BoiTpWkaSmuDsIvd1J3W0wjx3m3Q5maQ==
-X-Received: by 2002:a65:590e:: with SMTP id f14mr456228pgu.58.1605237894762;
-        Thu, 12 Nov 2020 19:24:54 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id v23sm8361002pjh.46.2020.11.12.19.24.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2020 19:24:54 -0800 (PST)
-Date:   Thu, 12 Nov 2020 19:24:51 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
-        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        bhelgaas@google.com
-Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support for
- PTP getcrosststamp()
-Message-ID: <20201113032451.GB32138@hoboy.vegasvil.org>
-References: <20201112093203.GH1559650@localhost>
- <87pn4i6svv.fsf@intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U5FpYADtIYALgZoE+kVuMMQ+y3SY9Pf75a4z51dOshs=;
+        b=V3zzo9551hIVQQyIojnWYS6ZGp+NLu3CE01ltRHcCwcHfyxz4NdKIGH6xZASOeZxtO
+         NZrM9fyae+zFsZeZB2OwKiOl3z3I5ZdcbsXvgGAAJqF8E9gxxMAoFuhIHrguMiA4vp3S
+         ltUBH8qJj8ke6Jw3G2Sy7L24dH0B8ot0wKwKuN0DlcbS1/H7xVqlt1aia5gcwMVOX/pE
+         iDQOe5/qzZsVFKADLPIz3ibupy/XOYf+uZIwza0f1fJ97eV6ggI6ByF8Xj0N0xIDGu+a
+         fspNjM9aVbMAs0G0fiJN5Qxgxs11P4MQeROsZVavm5tKyoaFwf0FLIv5Ng3IXbtV1PEt
+         uaaw==
+X-Gm-Message-State: AOAM533rz3D2Aef2onJSl4ZCxzQ5uGlfIcGIqUE/NjdB0n+4bFOVyjE+
+        /KqhFheATDXWNzmGbWfCKk0IqqCzIBMH4l25gSo=
+X-Google-Smtp-Source: ABdhPJzYPzhQebU/TBmdwHHrBYR9QYjxYNHbq+mq/qxiyZoquBpClro2B4t6QDEbfu4QWTzKDOsDA9Mgt+hy27M8Zks=
+X-Received: by 2002:a05:651c:1205:: with SMTP id i5mr152605lja.283.1605237959980;
+ Thu, 12 Nov 2020 19:25:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87pn4i6svv.fsf@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20201112221543.3621014-1-guro@fb.com> <20201112221543.3621014-2-guro@fb.com>
+ <20201113095632.489e66e2@canb.auug.org.au> <20201113002610.GB2934489@carbon.dhcp.thefacebook.com>
+ <20201113030456.drdswcndp65zmt2u@ast-mbp> <20201112191825.1a7c3e0d50cc5e375a4e887c@linux-foundation.org>
+In-Reply-To: <20201112191825.1a7c3e0d50cc5e375a4e887c@linux-foundation.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 12 Nov 2020 19:25:48 -0800
+Message-ID: <CAADnVQ+evkBCakrfEUqEvZ2Th=6xUGA2uTzdb_hwpaU9CPdj8Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 01/34] mm: memcontrol: use helpers to read
+ page's memcg data
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Roman Gushchin <guro@fb.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 12, 2020 at 03:46:12PM -0800, Vinicius Costa Gomes wrote:
-> I wanted it so using PCIe PTM was transparent to applications, so adding
-> another API wouldn't be my preference.
-> 
-> That being said, having a trigger from the application to start/stop the
-> PTM cycles doesn't sound too bad an idea. So, not too opposed to this
-> idea.
-> 
-> Richard, any opinions here?
+On Thu, Nov 12, 2020 at 7:18 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> On Thu, 12 Nov 2020 19:04:56 -0800 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+>
+> > On Thu, Nov 12, 2020 at 04:26:10PM -0800, Roman Gushchin wrote:
+> > >
+> > > These patches are not intended to be merged through the bpf tree.
+> > > They are included into the patchset to make bpf selftests pass and for
+> > > informational purposes.
+> > > It's written in the cover letter.
+> > ...
+> > > Maybe I had to just list their titles in the cover letter. Idk what's
+> > > the best option for such cross-subsystem dependencies.
+> >
+> > We had several situations in the past releases where dependent patches
+> > were merged into multiple trees. For that to happen cleanly from git pov
+> > one of the maintainers need to create a stable branch/tag and let other
+> > maintainers pull that branch into different trees. This way the sha-s
+> > stay the same and no conflicts arise during the merge window.
+> > In this case sounds like the first 4 patches are in mm tree already.
+> > Is there a branch/tag I can pull to get the first 4 into bpf-next?
+>
+> Not really, at present.  This is largely by design, although it does cause
+> this problem once or twice a year.
+>
+> These four patches:
+>
+> mm-memcontrol-use-helpers-to-read-pages-memcg-data.patch
+> mm-memcontrol-slab-use-helpers-to-access-slab-pages-memcg_data.patch
+> mm-introduce-page-memcg-flags.patch
+> mm-convert-page-kmemcg-type-to-a-page-memcg-flag.patch
+>
+> are sufficiently reviewed - please pull them into the bpf tree when
+> convenient.  Once they hit linux-next, I'll drop the -mm copies and the
+> bpf tree maintainers will then be responsible for whether & when they
+> get upstream.
 
-Sorry, I only have the last two message from this thread, and so I'm
-missing the backstory.
-
-Richard
+That's certainly an option if they don't depend on other patches in the mm tree.
+Roman probably knows best ?
