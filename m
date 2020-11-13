@@ -2,90 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 562A82B18E1
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 11:16:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B4192B18D9
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 11:15:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726432AbgKMKQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 05:16:50 -0500
-Received: from mslow2.mail.gandi.net ([217.70.178.242]:34048 "EHLO
-        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726176AbgKMKQu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 05:16:50 -0500
-Received: from relay6-d.mail.gandi.net (unknown [217.70.183.198])
-        by mslow2.mail.gandi.net (Postfix) with ESMTP id 93E143ACD7F
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 10:04:21 +0000 (UTC)
-X-Originating-IP: 86.194.74.19
-Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id AA89CC002B;
-        Fri, 13 Nov 2020 10:03:59 +0000 (UTC)
-Date:   Fri, 13 Nov 2020 11:03:59 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        netdev@vger.kernel.org, David Miller <davem@davemloft.net>
-Subject: Re: [PATCH net-next 0/3] macb: support the 2-deep Tx queue on at91
-Message-ID: <20201113100359.GJ4556@piout.net>
-References: <20201011090944.10607-1-w@1wt.eu>
- <20201013170358.1a4d282a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201014030630.GA12531@1wt.eu>
+        id S1726324AbgKMKPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 05:15:40 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.48]:53656 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726176AbgKMKPj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 05:15:39 -0500
+X-Greylist: delayed 561 seconds by postgrey-1.27 at vger.kernel.org; Fri, 13 Nov 2020 05:15:39 EST
+Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D30FEA5D5D
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 10:06:18 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.61])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 2538B6008F;
+        Fri, 13 Nov 2020 10:06:18 +0000 (UTC)
+Received: from us4-mdac16-29.ut7.mdlocal (unknown [10.7.66.139])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 23DE18009E;
+        Fri, 13 Nov 2020 10:06:18 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.90])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A889080052;
+        Fri, 13 Nov 2020 10:06:17 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 46C239C0068;
+        Fri, 13 Nov 2020 10:06:17 +0000 (UTC)
+Received: from mh-desktop (10.17.20.62) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 13 Nov
+ 2020 10:06:11 +0000
+Date:   Fri, 13 Nov 2020 10:06:07 +0000
+From:   Martin Habets <mhabets@solarflare.com>
+To:     Edward Cree <ecree@solarflare.com>
+CC:     <linux-net-drivers@solarflare.com>, <kuba@kernel.org>,
+        <davem@davemloft.net>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/3] sfc: further EF100 encap TSO features
+Message-ID: <20201113100607.GB1486579@mh-desktop>
+Mail-Followup-To: Edward Cree <ecree@solarflare.com>,
+        linux-net-drivers@solarflare.com, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org
+References: <eda2de73-edf2-8b92-edb9-099ebda09ebc@solarflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20201014030630.GA12531@1wt.eu>
+In-Reply-To: <eda2de73-edf2-8b92-edb9-099ebda09ebc@solarflare.com>
+X-Originating-IP: [10.17.20.62]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25786.001
+X-TM-AS-Result: No-1.049200-8.000000-10
+X-TMASE-MatchedRID: 5+1rHnqhWUQNBIms22BrT/ZvT2zYoYOwC/ExpXrHizxTbQ95zRbWVlAX
+        z8FXjvtiCmviniliH8qtoxokPqGIrBuf8+qwj2wBZ7QXUcH2LaHrixWWWJYrH0OrZJUSTvYoTHD
+        UEwHVLSvZs3HUcS/scCq2rl3dzGQ1GpeevGsoI5fBsY/CjCFgmeigwiJM+C0aSnVV9pTSzERxMh
+        c8poLGg97tEDGPCf/SRXNUjAtxSZKhO2U+IR8g6QwNjX9cYjdM/FUSjgh03KxDDKa3G4nrLQ==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--1.049200-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25786.001
+X-MDID: 1605261978-CCTFmEp_gytg
+X-PPE-DISP: 1605261978;CCTFmEp_gytg
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/10/2020 05:06:30+0200, Willy Tarreau wrote:
-> On Tue, Oct 13, 2020 at 05:03:58PM -0700, Jakub Kicinski wrote:
-> > On Sun, 11 Oct 2020 11:09:41 +0200 Willy Tarreau wrote:
-> > > while running some tests on my Breadbee board, I noticed poor network
-> > > Tx performance. I had a look at the driver (macb, at91ether variant)
-> > > and noticed that at91ether_start_xmit() immediately stops the queue
-> > > after sending a frame and waits for the interrupt to restart the queue,
-> > > causing a dead time after each packet is sent.
-> > > 
-> > > The AT91RM9200 datasheet states that the controller supports two frames,
-> > > one being sent and the other one being queued, so I performed minimal
-> > > changes to support this. The transmit performance on my board has
-> > > increased by 50% on medium-sized packets (HTTP traffic), and with large
-> > > packets I can now reach line rate.
-> > > 
-> > > Since this driver is shared by various platforms, I tried my best to
-> > > isolate and limit the changes as much as possible and I think it's pretty
-> > > reasonable as-is. I've run extensive tests and couldn't meet any
-> > > unexpected situation (no stall, overflow nor lockup).
-> > > 
-> > > There are 3 patches in this series. The first one adds the missing
-> > > interrupt flag for RM9200 (TBRE, indicating the tx buffer is willing
-> > > to take a new packet). The second one replaces the single skb with a
-> > > 2-array and uses only index 0. It does no other change, this is just
-> > > to prepare the code for the third one. The third one implements the
-> > > queue. Packets are added at the tail of the queue, the queue is
-> > > stopped at 2 packets and the interrupt releases 0, 1 or 2 depending
-> > > on what the transmit status register reports.
-> > 
-> > LGTM. There's always a chance that this will make other 
-> > designs explode, but short of someone from Cadence giving 
-> > us a timely review we have only one way to find that out.. :)
+On Thu, Nov 12, 2020 at 03:18:01PM +0000, Edward Cree wrote:
+> This series adds support for GRE and GRE_CSUM TSO on EF100 NICs, as
+>  well as improving the handling of UDP tunnel TSO.
 > 
-> Not that much in fact, given that the at91ether_* functions are only
-> used by AT91RM9200 (whose datasheet I used to do this) and Mstar which
-> I used for the tests. I initially wanted to get my old SAM9G20 board
-> to boot until I noticed that it doesn't even use the same set of
-> functions, so the potential victims are extremely limited :-)
-> 
+> Edward Cree (3):
+>   sfc: extend bitfield macros to 19 fields
+>   sfc: correctly support non-partial GSO_UDP_TUNNEL_CSUM on EF100
+>   sfc: support GRE TSO on EF100
 
-I think I'm the only one booting recent linux kernels on at91rm9200 and
-I'm currently stuck home while the board is at the office. I'll try to
-test as soon as possible, which may not be before 2021... At least I'll
-know who is the culprit ;)
-
-
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Acked-by: Martin Habets <mhabets@solarflare.com>
