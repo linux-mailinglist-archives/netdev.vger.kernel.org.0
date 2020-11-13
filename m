@@ -2,71 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 517542B1405
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 02:51:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 537CA2B140A
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 02:53:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726281AbgKMBvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 20:51:43 -0500
-Received: from sender11-of-o52.zoho.eu ([31.186.226.238]:21371 "EHLO
-        sender11-of-o52.zoho.eu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbgKMBvn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 20:51:43 -0500
-ARC-Seal: i=1; a=rsa-sha256; t=1605232265; cv=none; 
-        d=zohomail.eu; s=zohoarc; 
-        b=cBvKcBMM/njmNYSGfQhrlVdRm/9nvY1EkaAYn7+vIXYUklR6PVd5RkRpKTJdVt7q7OhwNND7g3VL8yU0TjyLGLIeNvsdffJc7Ged7qiDvzC4P2TTNH5i2QeLXS4UWXMJ4Mc3zu74ixQB5xPI18A4HP32kWCvqrvkndaDbXRNOQ0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
-        t=1605232265; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=gEngQWGy289WgIOsFRNzQyvfCUzrxtfgSSenRYNqNts=; 
-        b=TKT9xr9QglCsYM7RDMA4UOViWqyFyQ98rFxD48ji+3BgufvnH3FHgiunAkgqx7jkolj2/jef0zr++/SRxhpahJCyMv9KnH3fJyXH2c4iMphgawnMHpVmhStZOiv26zgv89A481QPmjEolnhArbP6CbdmtWs42ZMpxaPSwGQt6YM=
-ARC-Authentication-Results: i=1; mx.zohomail.eu;
-        dkim=pass  header.i=shytyi.net;
-        spf=pass  smtp.mailfrom=dmytro@shytyi.net;
-        dmarc=pass header.from=<dmytro@shytyi.net> header.from=<dmytro@shytyi.net>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1605232265;
-        s=hs; d=shytyi.net; i=dmytro@shytyi.net;
-        h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding;
-        bh=gEngQWGy289WgIOsFRNzQyvfCUzrxtfgSSenRYNqNts=;
-        b=P54G9w/lj4jiY0p+9OpCbe3ZbEjC6XpaJNDYCYfcNyNqd0+qCK0OkJDQCJ5YdSlZ
-        b7xFR2eKTx5U9To0lkq8uLw8gtRN72w1I1ptYLi99Z4IdTq1WDwrYPCmIbjKYj3G3Oy
-        qaxPIqyYAofuPvAPRp8AKtQYhpQYCAyk7Zs/hLJ8=
-Received: from mail.zoho.eu by mx.zoho.eu
-        with SMTP id 1605232258219691.6899643912467; Fri, 13 Nov 2020 02:50:58 +0100 (CET)
-Date:   Fri, 13 Nov 2020 02:50:58 +0100
-From:   Dmytro Shytyi <dmytro@shytyi.net>
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     "kuznet" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji" <yoshfuji@linux-ipv6.org>,
-        "liuhangbin" <liuhangbin@gmail.com>, "davem" <davem@davemloft.net>,
-        "netdev" <netdev@vger.kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>
-Message-ID: <175bf4c6caa.ba8cba7c131155.80422714589772777@shytyi.net>
-In-Reply-To: <20201112162156.211cad4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726187AbgKMBxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 20:53:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47646 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725972AbgKMBxD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Nov 2020 20:53:03 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7304820791;
+        Fri, 13 Nov 2020 01:53:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605232383;
+        bh=DjyNIg5N1WPSkeeifOBONgzsegthHILogdziWb/Oj0g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=AF+L0XCv+yA+89tbNvn+RldVj7wJvFdmb4UIMs7SZ1L6Rgr9TBc3xPamdp04iXiBn
+         ci3gye+hhJcpbC4y3cARIbDIJy9B2YaxCcVdzrb/bPg/K9Lk00+6D/UPLozPsPDq3a
+         tsY70xiRShN7UBTntdo1e/N8f/UVLGAq9WBKwa24=
+Date:   Thu, 12 Nov 2020 17:53:01 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        Dmytro Shytyi <dmytro@shytyi.net>,
+        kuznet <kuznet@ms2.inr.ac.ru>,
+        yoshfuji <yoshfuji@linux-ipv6.org>,
+        liuhangbin <liuhangbin@gmail.com>, davem <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kbuild-all@lists.01.org
+Subject: Re: [PATCH net-next] net: Variable SLAAC: SLAAC with prefixes of
+ arbitrary length in PIO
+Message-ID: <20201112175301.481f80c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <8b05710f-5718-986d-659c-916e2b85c892@intel.com>
 References: <175b3433a4c.aea7c06513321.4158329434310691736@shytyi.net>
         <202011110944.7zNVZmvB-lkp@intel.com>
-        <175bd218cf4.103c639bc117278.4209371191555514829@shytyi.net> <20201112162156.211cad4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Subject: Re: [PATCH net-next V3] net: Variable SLAAC: SLAAC with prefixes of
- arbitrary length in PIO
+        <20201112162423.6b4de8d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <8b05710f-5718-986d-659c-916e2b85c892@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-          
----- On Fri, 13 Nov 2020 01:21:56 +0100 Jakub Kicinski <kuba@kernel.org> wrote ----
+On Thu, 12 Nov 2020 17:43:56 -0800 Dave Hansen wrote:
+> On 11/12/20 4:24 PM, Jakub Kicinski wrote:
+> > On Wed, 11 Nov 2020 09:34:24 +0800 kernel test robot wrote: =20
+> >> If you fix the issue, kindly add following tag as appropriate
+> >> Reported-by: kernel test robot <lkp@intel.com> =20
+> > Good people of kernel test robot, could you please rephrase this to say
+> > that the tag is only appropriate if someone is sending a fix up/follow
+> > up patch?
+> >=20
+> > Folks keep adding those tags on the next revisions of the their patches
+> > which is quite misleading. =20
+>=20
+> I think it's still fair for the lkp folks to get *some* credit for
+> reporting these bugs.=C2=A0 I mean, the stated reason[1] for it existing =
+is:
+>=20
+> 	The Reported-by tag gives credit to people who find bugs and
+> 	report them and it hopefully inspires them to help us again in
+> 	the future.
+>=20
+> I do agree, though, that it's confusing *what* they reported, especially
+> if the patch in question is fixing something *else*.  Rather than invent
+> a new tag, maybe a comment would suffice:
+>=20
+> Reported-by: kernel test robot <lkp@intel.com> # bug in earlier revision
 
- > On Thu, 12 Nov 2020 16:44:54 +0100 Dmytro Shytyi wrote: 
- > > Reported-by: kernel test robot <lkp@intel.com> 
- >  
- > You don't have to add the reported by tag just because the bot pointed 
- > out issues in the previous version. 
- > 
-[Dmytro] Understood. Thank you for the comment.
-                    
-Dmytro SHYTYI
-
+Fine by me, although its not common to add Reported-by tags for people
+who point out issues in review, so why add a tag for the bot?
