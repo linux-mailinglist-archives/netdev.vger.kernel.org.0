@@ -2,80 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54EFB2B1370
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 01:45:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85B662B137E
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 01:50:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726160AbgKMApF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Nov 2020 19:45:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51738 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725894AbgKMApD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Nov 2020 19:45:03 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7280F20B80;
-        Fri, 13 Nov 2020 00:45:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605228303;
-        bh=LH8XKateJ4hjA1AHIduUuCUKiP7srBwXHGzlVRgxHIk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=yy1zB8beYfZvC4+msMxv6CMPi9hzpAuMeMupPFgUJIcmqwpT9Dp8DiFR1eDiY5YYG
-         Kv+la8A7hr+TMHAGUqeOds+txu3tkO5kNON/G++eWSp3qZRPypmpKkTYMCOMcxAf6X
-         sgu9QjXWG8HsswRDzuQw1wwxa2B3JSJQwcnZMeaQ=
-Date:   Thu, 12 Nov 2020 16:44:57 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Markus =?UTF-8?B?QmzDtmNobA==?= <markus.bloechl@ipetronik.com>,
-        Ido Schimmel <idosch@idosch.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: lan78xx: Disable hardware vlan filtering in
- promiscuous mode
-Message-ID: <20201112164457.6af0fbaf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201111074341.24cafaf3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201110153958.ci5ekor3o2ekg3ky@ipetronik.com>
-        <20201111074341.24cafaf3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726101AbgKMAuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Nov 2020 19:50:16 -0500
+Received: from www62.your-server.de ([213.133.104.62]:52690 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725929AbgKMAuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Nov 2020 19:50:15 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kdNI1-0000Zr-K6; Fri, 13 Nov 2020 01:50:09 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kdNI1-0002t3-EX; Fri, 13 Nov 2020 01:50:09 +0100
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Support for pointers beyond pkt_end.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+References: <20201111031213.25109-1-alexei.starovoitov@gmail.com>
+ <20201111031213.25109-2-alexei.starovoitov@gmail.com>
+ <5fad89fb649af_2a612088e@john-XPS-13-9370.notmuch>
+ <4f80439b-3251-f82b-be63-b398d5f73ac2@iogearbox.net>
+ <20201113000941.azxyv523bl45z6s5@ast-mbp>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <99077ce7-8988-2a63-6663-c282e2007589@iogearbox.net>
+Date:   Fri, 13 Nov 2020 01:50:08 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201113000941.azxyv523bl45z6s5@ast-mbp>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25986/Thu Nov 12 14:18:25 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Nov 2020 07:43:41 -0800 Jakub Kicinski wrote:
-> >     In order to receive those tagged frames it is necessary to manually disable
-> >     rx vlan filtering using ethtool ( `ethtool -K ethX rx-vlan-filter off` or
-> >     corresponding ioctls ). Setting all bits in the vlan filter table to 1 is
-> >     an even worse approach, imho.
-> > 
-> >     As a user I would probably expect that setting IFF_PROMISC should be enough
-> >     in all cases to receive all valid traffic.
-> >     Therefore I think this behaviour is a bug in the driver, since other
-> >     drivers (notably ixgbe) automatically disable rx-vlan-filter when
-> >     IFF_PROMISC is set. Please correct me if I am wrong here.  
+On 11/13/20 1:09 AM, Alexei Starovoitov wrote:
+> On Fri, Nov 13, 2020 at 12:56:52AM +0100, Daniel Borkmann wrote:
+>> On 11/12/20 8:16 PM, John Fastabend wrote:
+>>> Alexei Starovoitov wrote:
+>>>> From: Alexei Starovoitov <ast@kernel.org>
+>>>>
+>>>> This patch adds the verifier support to recognize inlined branch conditions.
+>>>> The LLVM knows that the branch evaluates to the same value, but the verifier
+>>>> couldn't track it. Hence causing valid programs to be rejected.
+>>>> The potential LLVM workaround: https://reviews.llvm.org/D87428
+>>>> can have undesired side effects, since LLVM doesn't know that
+>>>> skb->data/data_end are being compared. LLVM has to introduce extra boolean
+>>>> variable and use inline_asm trick to force easier for the verifier assembly.
+>>>>
+>>>> Instead teach the verifier to recognize that
+>>>> r1 = skb->data;
+>>>> r1 += 10;
+>>>> r2 = skb->data_end;
+>>>> if (r1 > r2) {
+>>>>     here r1 points beyond packet_end and
+>>>>     subsequent
+>>>>     if (r1 > r2) // always evaluates to "true".
+>>>> }
+>>>>
+>>>> Tested-by: Jiri Olsa <jolsa@redhat.com>
+>>>> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+>>>> ---
+>>>>    include/linux/bpf_verifier.h |   2 +-
+>>>>    kernel/bpf/verifier.c        | 129 +++++++++++++++++++++++++++++------
+>>>>    2 files changed, 108 insertions(+), 23 deletions(-)
+>>>
+>>> Thanks, we can remove another set of inline asm logic.
+>>>
+>>> Acked-by: John Fastabend <john.fastabend@gmail.com>
+>>>>    	if (pred >= 0) {
+>>>> @@ -7517,7 +7601,8 @@ static int check_cond_jmp_op(struct bpf_verifier_env *env,
+>>>>    		 */
+>>>>    		if (!__is_pointer_value(false, dst_reg))
+>>>>    			err = mark_chain_precision(env, insn->dst_reg);
+>>>> -		if (BPF_SRC(insn->code) == BPF_X && !err)
+>>>> +		if (BPF_SRC(insn->code) == BPF_X && !err &&
+>>>> +		    !__is_pointer_value(false, src_reg))
+>>>
+>>> This could have been more specific with !type_is_pkt_pointer() correct? I
+>>> think its fine as is though.
+>>>
+>>>>    			err = mark_chain_precision(env, insn->src_reg);
+>>>>    		if (err)
+>>>>    			return err;
+>>
+>> Given the reg->range could now be negative, I wonder whether for the regsafe()
+>> pruning logic we should now better add a >=0 sanity check in there before we
+>> attempt to test on rold->range > rcur->range?
 > 
-> I've been mulling over this, I'm not 100% sure that disabling VLAN
-> filters on promisc is indeed the right thing to do. The ixgbe doing
-> this is somewhat convincing. OTOH users would not expect flow filters
-> to get disabled when promisc is on, so why disable vlan filters?
+> I thought about it and specifically picked negative range value to keep
+> regsafe() check as-is.
+> The check is this:
+>                  if (rold->range > rcur->range)
+>                          return false;
+> rold is the one that was safe in the past.
+> If rold was positive and the current is negative we fail here
+> which is ok. State pruning is conservative.
 > 
-> Either way we should either document this as an expected behavior or
-> make the core clear the features automatically rather than force
-> drivers to worry about it.
+> If rold was negative it means the previous state was safe even though that pointer
+> was pointing beyond packet end. So it's ok for rcur->range to be anything.
+> Whether rcur is positive or negative doesn't matter. Everything is still ok.
+> If rold->range == -1 and rcur->range == -2 we fail here.
+> It's minor annoyance. State pruning is tiny bit more conservative than necessary.
 > 
-> Does anyone else have an opinion, please?
+> So I think no extra checks in regsafe() are neeeded.
+> Does it make sense?
 
-Okay, I feel convinced that we should indeed let all vlan traffic thru,
-thanks everyone! :)
-
-Markus could you try to come up with a patch for the net/core/dev.c
-handling which would clear NETIF_F_HW_VLAN_CTAG_FILTER and
-NETIF_F_HW_VLAN_STAG_FILTER automatically so the drivers don't have 
-to worry?
-
-Whatever the driver chooses to do to disable vlan filtering is a
-separate discussion AFAICT.
+Yeah, same conclusion here. We still might want to add more BPF asm based tests
+on this in general, but either way logic lgtm, so applied, thanks.
