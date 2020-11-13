@@ -2,165 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B65EF2B1F39
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 16:52:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A89F2B1F79
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:02:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726769AbgKMPwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 10:52:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43816 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726526AbgKMPwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 10:52:33 -0500
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C5AC0617A6
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 07:52:26 -0800 (PST)
-Received: by mail-vs1-xe44.google.com with SMTP id f7so5414617vsh.10
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 07:52:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pDAgwKMitaAWFC4jbQvzCfSXWaMHu4F1VWRWRkf2F9w=;
-        b=U72jvX/hsqVzw3jlQZ8fQJuG2QhjmRNj2Vx6gjyaj4GW5OZYxiUinAbfX2n+L3+fvu
-         WX26BKgaTpZujLvmIh3HTswYK2ogos3GoIXrKx8qIWxOTD868HBMoNWANhNU/XSHnYzw
-         +hnp6kzQVxeconfWB7o9gT2cGAoXFqTeuD7m5OAbKYoqNIYPUDj+RklPXCKd5fHmNdDX
-         1j8hpKtPmScngjoDwtp/nbFbCKC1q9/+YBWiA6e49tgPYQm6QYTkDXZ7WKj8a5X5cuJ/
-         P7s7AA8lRdFhIYJJn+rXR3FnNnbTMZFhKckMtZB6ZUQ9xq/xcAMKAeE4Bi8QgGbtaBTO
-         oQEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pDAgwKMitaAWFC4jbQvzCfSXWaMHu4F1VWRWRkf2F9w=;
-        b=oir1a2OkpbzhPMIbkhNj3tTv+DSin7ZLKQqrqjWfDcjYRhzZdI1SoGHH3HgGPpfH3Y
-         fJOaZG14wSntuQMi7S+GcGSn53V1+H9NOLjig5Sqle9Cq6L7+sxG8/xsuJ5AnwwTEhJ6
-         D2SCQ5IccRxHvjwpyj2yr/mUAtBvTrX4O7aGv2nFCZsOnxDx+0DAZU6ob01LesoBqXXf
-         llX0r5o3jzkAp419BgoDIi8qobgFgUXYuxmyWpySiBtiE7090meZE0dNNLE+luvoyFvq
-         3YayYMeNrsJrxbeTem20bar02l/8f5qVi7VZjxf6EUOeDlCcJZv50C9rW1DhgVyA0qAJ
-         sbGQ==
-X-Gm-Message-State: AOAM530E1CShf+ysP3CvBUQFMhpBCezUWis3c3uRtCWgSBb1ssRHkZs/
-        X8WFXytWTY83bJg7OaJ2i++vCwLgP5k=
-X-Google-Smtp-Source: ABdhPJzCSzGZrHkadfDvlycZzSseAvEDmNCT/6CPJ6xuKq7ivNHrjPmxrISR6QK2XEvuii3wX7YpVA==
-X-Received: by 2002:a67:2a41:: with SMTP id q62mr1669492vsq.39.1605282740296;
-        Fri, 13 Nov 2020 07:52:20 -0800 (PST)
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
-        by smtp.gmail.com with ESMTPSA id a8sm1040243vsp.4.2020.11.13.07.52.19
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Nov 2020 07:52:20 -0800 (PST)
-Received: by mail-ua1-f41.google.com with SMTP id q4so3133171ual.8
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 07:52:19 -0800 (PST)
-X-Received: by 2002:ab0:6dd1:: with SMTP id r17mr1444960uaf.108.1605282734337;
- Fri, 13 Nov 2020 07:52:14 -0800 (PST)
+        id S1726788AbgKMQCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 11:02:31 -0500
+Received: from mga07.intel.com ([134.134.136.100]:1880 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726439AbgKMQCa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 11:02:30 -0500
+IronPort-SDR: nQ15CELw5vxNnpH8LCCwHHCAYksYtn54Ib+Z5xwjeOTF7NY2Xz4AcWkFQQV6Bq8GVkNZQWHrno
+ UHHgSxnI7Hvg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9804"; a="234649333"
+X-IronPort-AV: E=Sophos;i="5.77,475,1596524400"; 
+   d="scan'208";a="234649333"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2020 08:02:29 -0800
+IronPort-SDR: 6Q5SZdXA/W4VXopOfyKrwctpRkaa01eGzX+3ypJ27APftuKv7DrH/f7e1o2Vb0UeNkOnr9eIG4
+ ARJ6K3chFN2g==
+X-IronPort-AV: E=Sophos;i="5.77,475,1596524400"; 
+   d="scan'208";a="542700124"
+Received: from pkawatra-mobl1.amr.corp.intel.com (HELO [10.209.51.49]) ([10.209.51.49])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2020 08:02:29 -0800
+Subject: Re: [PATCH v6] lib: optimize cpumask_local_spread()
+To:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Yuqi Jin <jinyuqi@huawei.com>,
+        Rusty Russell <rusty@rustcorp.com.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Juergen Gross <jgross@suse.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>
+References: <1604410767-55947-1-git-send-email-zhangshaokun@hisilicon.com>
+ <3e2e760d-e4b9-8bd0-a279-b23bd7841ae7@intel.com>
+ <eec4c1b6-8dad-9d07-7ef4-f0fbdcff1785@hisilicon.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+ z5cecg==
+Message-ID: <5e8b0304-4de1-4bdc-41d2-79fa5464fbc7@intel.com>
+Date:   Fri, 13 Nov 2020 08:02:29 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <MgZce9htmEtCtHg7pmWxXXfdhmQ6AHrnltXC41zOoo@cp7-web-042.plabs.ch> <20201113121502.GB7578@xsang-OptiPlex-9020>
-In-Reply-To: <20201113121502.GB7578@xsang-OptiPlex-9020>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 13 Nov 2020 10:51:36 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSccV-DNMOqr0hy5q3fZak8=eWYYDNigo8EnG2GV6X1Stw@mail.gmail.com>
-Message-ID: <CA+FuTSccV-DNMOqr0hy5q3fZak8=eWYYDNigo8EnG2GV6X1Stw@mail.gmail.com>
-Subject: Re: [net] 0b726f6b31: BUG:unable_to_handle_page_fault_for_address
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        0day robot <lkp@intel.com>, lkp@lists.01.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <eec4c1b6-8dad-9d07-7ef4-f0fbdcff1785@hisilicon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 13, 2020 at 7:00 AM kernel test robot <oliver.sang@intel.com> wrote:
->
->
-> Greeting,
->
-> FYI, we noticed the following commit (built with gcc-9):
->
-> commit: 0b726f6b318a07644b6c2388e6e44406740f4754 ("[PATCH v3 net] net: udp: fix Fast/frag0 UDP GRO")
-> url: https://github.com/0day-ci/linux/commits/Alexander-Lobakin/net-udp-fix-Fast-frag0-UDP-GRO/20201110-052215
-> base: https://git.kernel.org/cgit/linux/kernel/git/davem/net.git 4e0396c59559264442963b349ab71f66e471f84d
->
-> in testcase: apachebench
-> version:
-> with following parameters:
->
->         runtime: 300s
->         concurrency: 2000
->         cluster: cs-localhost
->         cpufreq_governor: performance
->         ucode: 0x7000019
->
-> test-description: apachebench is a tool for benchmarking your Apache Hypertext Transfer Protocol (HTTP) server.
-> test-url: https://httpd.apache.org/docs/2.4/programs/ab.html
->
->
-> on test machine: 16 threads Intel(R) Xeon(R) CPU D-1541 @ 2.10GHz with 48G memory
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
->
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
->
->
-> [   28.582714] BUG: unable to handle page fault for address: fffffffffffffffa
-> [   28.590164] #PF: supervisor read access in kernel mode
-> [   28.590164] #PF: error_code(0x0000) - not-present page
-> [   28.590165] PGD c7e20d067 P4D c7e20d067 PUD c7e20f067 PMD 0
-> [   28.590169] Oops: 0000 [#1] SMP PTI
-> [   28.590171] CPU: 15 PID: 0 Comm: swapper/15 Not tainted 5.10.0-rc2-00373-g0b726f6b318a #1
-> [   28.590172] Hardware name: Supermicro SYS-5018D-FN4T/X10SDV-8C-TLN4F, BIOS 1.1 03/02/2016
-> [   28.590177] RIP: 0010:__udp4_lib_rcv+0x547/0xbe0
-> [   28.590178] Code: 74 0a f6 45 3c 80 74 04 44 8b 4d 28 48 8b 55 58 48 83 e2 fe 74 07 8b 52 7c 85 d2 75 06 8b 95 90 00 00 00 48 8b be f0 04 00 00 <44> 8b 58 0c 8b 48 10 55 41 55 44 89 de 41 51 41 89 d1 44 89 d2 e8
-> [   28.590179] RSP: 0018:ffffc900003b4bb8 EFLAGS: 00010246
-> [   28.590180] RAX: ffffffffffffffee RBX: 0000000000000011 RCX: ffff888c7bc580e2
-> [   28.590181] RDX: 0000000000000002 RSI: ffff88810ddc8000 RDI: ffffffff82d68f00
-> [   28.590182] RBP: ffff888c7bf8f800 R08: 00000000000003b7 R09: 0000000000000000
-> [   28.590182] R10: 0000000000003500 R11: 0000000000000000 R12: ffff888c7bc580e2
-> [   28.590183] R13: ffffffff82e072b0 R14: ffffffff82d68f00 R15: 0000000000000034
-> [   28.590184] FS:  0000000000000000(0000) GS:ffff888c7fdc0000(0000) knlGS:0000000000000000
-> [   28.590185] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   28.590186] CR2: fffffffffffffffa CR3: 0000000c7e20a006 CR4: 00000000003706e0
-> [   28.590186] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [   28.590187] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [   28.590187] Call Trace:
-> [   28.590189]  <IRQ>
-> [   28.590193]  ip_protocol_deliver_rcu+0xc5/0x1c0
-> [   28.590196]  ip_local_deliver_finish+0x4b/0x60
-> [   28.738714]  ip_local_deliver+0x6e/0x140
-> [   28.738717]  ip_sublist_rcv_finish+0x57/0x80
-> [   28.738719]  ip_sublist_rcv+0x199/0x240
-> [   28.750730]  ip_list_rcv+0x13a/0x160
-> [   28.750733]  __netif_receive_skb_list_core+0x2a9/0x2e0
-> [   28.750736]  netif_receive_skb_list_internal+0x1d3/0x320
-> [   28.764743]  gro_normal_list+0x19/0x40
-> [   28.764747]  napi_complete_done+0x68/0x160
-> [   28.773197]  igb_poll+0x63/0x320
-> [   28.773198]  net_rx_action+0x136/0x3a0
-> [   28.773201]  __do_softirq+0xe1/0x2c3
-> [   28.773204]  asm_call_irq_on_stack+0x12/0x20
-> [   28.773205]  </IRQ>
-> [   28.773208]  do_softirq_own_stack+0x37/0x40
-> [   28.773211]  irq_exit_rcu+0xd2/0xe0
-> [   28.773213]  common_interrupt+0x74/0x140
-> [   28.773216]  asm_common_interrupt+0x1e/0x40
-> [   28.773219] RIP: 0010:cpuidle_enter_state+0xd2/0x360
+On 11/12/20 6:06 PM, Shaokun Zhang wrote:
+>>> On Huawei Kunpeng 920 server, there are 4 NUMA node(0 - 3) in the 2-cpu
+>>> system(0 - 1). The topology of this server is followed:
+>>
+>> This is with a feature enabled that Intel calls sub-NUMA-clustering
+>> (SNC), right?  Explaining *that* feature would also be great context for
+> 
+> Correct,
+> 
+>> why this gets triggered on your system and not normally on others and
+>> why nobody noticed this until now.
+> 
+> This is on intel 6248 platform:
 
-This was expected. This v3 of the patch has already been superseded by
-one that addresses this lookup:
+I have no idea what a "6248 platform" is.
 
-> @@ -534,7 +534,7 @@ static inline struct sock *__udp4_lib_lookup_skb(struct sk_buff *skb,
->                                                  __be16 sport, __be16 dport,
->                                                  struct udp_table *udptable)
->  {
-> -       const struct iphdr *iph = ip_hdr(skb);
-> +       const struct iphdr *iph = skb_gro_network_header(skb);
+>>> +static void calc_node_distance(int *node_dist, int node)
+>>> +{
+>>> +	int i;
+>>> +
+>>> +	for (i = 0; i < nr_node_ids; i++)
+>>> +		node_dist[i] = node_distance(node, i);
+>>> +}
+>>
+>> This appears to be the only place node_dist[] is written.  That means it
+>> always contains a one-dimensional slice of the two-dimensional data
+>> represented by node_distance().
+>>
+>> Why is a copy of this data needed?
+> 
+> It is used to store the distance with the @node for later, apologies that I
+> can't follow your question correctly.
 
-The merged version was v5 and lacks this change.
+Right, the data that you store is useful.  *But*, it's also a verbatim
+copy of the data from node_distance().  Why not just use node_distance()
+directly in your code rather than creating a partial copy of it in the
+local node_dist[] array?
+
+
+>>>  unsigned int cpumask_local_spread(unsigned int i, int node)
+>>>  {
+>>> -	int cpu, hk_flags;
+>>> +	static DEFINE_SPINLOCK(spread_lock);
+>>> +	static int node_dist[MAX_NUMNODES];
+>>> +	static bool used[MAX_NUMNODES];
+>>
+>> Not to be *too* picky, but there is a reason we declare nodemask_t as a
+>> bitmap and not an array of bools.  Isn't this just wasteful?
+>>
+>>> +	unsigned long flags;
+>>> +	int cpu, hk_flags, j, id;
+>>>  	const struct cpumask *mask;
+>>>  
+>>>  	hk_flags = HK_FLAG_DOMAIN | HK_FLAG_MANAGED_IRQ;
+>>> @@ -220,20 +256,28 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
+>>>  				return cpu;
+>>>  		}
+>>>  	} else {
+>>> -		/* NUMA first. */
+>>> -		for_each_cpu_and(cpu, cpumask_of_node(node), mask) {
+>>> -			if (i-- == 0)
+>>> -				return cpu;
+>>> -		}
+>>> +		spin_lock_irqsave(&spread_lock, flags);
+>>> +		memset(used, 0, nr_node_ids * sizeof(bool));
+>>> +		calc_node_distance(node_dist, node);
+>>> +		/* Local node first then the nearest node is used */
+>>
+>> Is this comment really correct?  This makes it sound like there is only
+> 
+> I think it is correct, that's what we want to choose the nearest node.
+> 
+>> fallback to a single node.  Doesn't the _code_ fall back basically
+>> without limit?
+> 
+> If I follow your question correctly, without this patch, if the local
+> node is used up, one random node will be choosed, right? Now we firstly
+> choose the nearest node by the distance, if all nodes has been choosen,
+> it will return the initial solution.
+
+The comment makes it sound like the code does:
+	1. Do the local node
+	2. Do the next nearest node
+	3. Stop
+
+In reality, I *think* it's more of a loop where it search
+ever-increasing distances away from the local node.
+
+I just think the comment needs to be made more precise.
+
+>>> +		for (j = 0; j < nr_node_ids; j++) {
+>>> +			id = find_nearest_node(node_dist, used);
+>>> +			if (id < 0)
+>>> +				break;
+>>>  
+>>> -		for_each_cpu(cpu, mask) {
+>>> -			/* Skip NUMA nodes, done above. */
+>>> -			if (cpumask_test_cpu(cpu, cpumask_of_node(node)))
+>>> -				continue;
+>>> +			for_each_cpu_and(cpu, cpumask_of_node(id), mask)
+>>> +				if (i-- == 0) {
+>>> +					spin_unlock_irqrestore(&spread_lock,
+>>> +							       flags);
+>>> +					return cpu;
+>>> +				}
+>>> +			used[id] = 1;
+>>> +		}
+>>> +		spin_unlock_irqrestore(&spread_lock, flags);
+>>
+>> The existing code was pretty sparsely commented.  This looks to me to
+>> make it more complicated and *less* commented.  Not the best combo.
+> 
+> Apologies for the bad comments, hopefully I describe it clearly by the above
+> explantion.
+
+Do you want to take another pass at submitting this patch?
