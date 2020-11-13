@@ -2,235 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE74F2B1A65
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 12:58:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 159962B1AAE
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 13:04:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726493AbgKMLvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 06:51:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35984 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726846AbgKMLte (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 06:49:34 -0500
-Received: from lore-desk.redhat.com (unknown [151.66.8.153])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 167762224C;
-        Fri, 13 Nov 2020 11:48:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605268129;
-        bh=4kpB0UjgMnqa9Xbn/wTx9yHEJGKSohgLfcYNjev49Hc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H2WfAPfKB0kxGFelrlkLx/2AC0BzXcPpcCVCAHHh0bwbu12JktkFl3Nopgzul0pa/
-         1JihEjQQps8EjjlSFJY0PwhOzTWv1CFcYVcZsnJ8MBsPGP/WvNGUNl0w/hhxYMnmOW
-         ybRTOBv56XV5PyleEk5sRghAUr9UJHDnWSIplXfk=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, brouer@redhat.com,
-        ilias.apalodimas@linaro.org, john.fastabend@gmail.com
-Subject: [PATCH v6 net-nex 2/5] net: page_pool: add bulk support for ptr_ring
-Date:   Fri, 13 Nov 2020 12:48:29 +0100
-Message-Id: <08dd249c9522c001313f520796faa777c4089e1c.1605267335.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <cover.1605267335.git.lorenzo@kernel.org>
-References: <cover.1605267335.git.lorenzo@kernel.org>
+        id S1727049AbgKMMEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 07:04:44 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:51881 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726769AbgKMLf5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 06:35:57 -0500
+Received: by mail-wm1-f66.google.com with SMTP id 19so7804298wmf.1;
+        Fri, 13 Nov 2020 03:33:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=d1KWoyCxIzbC720+xBKrOQK15eEM1twXcAUiyfQaowY=;
+        b=JIqVVi9c9kNdRyw5tkLqltHLN5/nzUR+ySI4XdSnbhE26Il1j3e+FfAlgg+7a/2MQu
+         co1ICWyxuikOfTnCLyQZ62QnJqKOUjKG2Lzo7qTkDyCQOtwZQYWgt7pjpVQEMeUywvWS
+         aQB25urWOe0gi2h8AurBqGmQmqKOEMi0G4ye6HRUF46LUk7Go6zMuyfs0ckbIvyu5scb
+         Jzy+xBsYQMnURpMM3MlxoM5aH6F79OllRYo8BWD6Jb7Cu+36s09RwSTLoEA7Qu0QAExM
+         JBMzOBF/ng2Tw5fwy4yr1m7iTvPpGR7lDd/ZlkYbv+3JJmfizfjquojqOHwEE9ctvxH/
+         R7UA==
+X-Gm-Message-State: AOAM532/Si8K+4HsuS6yfuX8aDne+tqiMuGAaIDaeEIPPZYNwUVykte5
+        fEf6lQ0F9lckXp1K2oLzA7g=
+X-Google-Smtp-Source: ABdhPJxZQBzcTMRf76DZPR7PoAp2gCxSuinKtUAttdgGTrLJLVoAxY9BA2m1AN6Pt/+0k8Cse7RRcg==
+X-Received: by 2002:a1c:398a:: with SMTP id g132mr2151643wma.51.1605267223132;
+        Fri, 13 Nov 2020 03:33:43 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id z189sm5194304wme.23.2020.11.13.03.33.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Nov 2020 03:33:42 -0800 (PST)
+Date:   Fri, 13 Nov 2020 11:33:41 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
+        Andres Beltran <lkmlabelt@gmail.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Saruhan Karademir <skarade@microsoft.com>,
+        Juan Vazquez <juvazq@microsoft.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH v9 3/3] hv_netvsc: Use vmbus_requestor to generate
+ transaction IDs for VMBus hardening
+Message-ID: <20201113113341.kwc2fwpqzhqztgms@liuwe-devbox-debian-v2>
+References: <20201109100402.8946-1-parri.andrea@gmail.com>
+ <20201109100402.8946-4-parri.andrea@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201109100402.8946-4-parri.andrea@gmail.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce the capability to batch page_pool ptr_ring refill since it is
-usually run inside the driver NAPI tx completion loop.
+On Mon, Nov 09, 2020 at 11:04:02AM +0100, Andrea Parri (Microsoft) wrote:
+> From: Andres Beltran <lkmlabelt@gmail.com>
+> 
+> Currently, pointers to guest memory are passed to Hyper-V as
+> transaction IDs in netvsc. In the face of errors or malicious
+> behavior in Hyper-V, netvsc should not expose or trust the transaction
+> IDs returned by Hyper-V to be valid guest memory addresses. Instead,
+> use small integers generated by vmbus_requestor as requests
+> (transaction) IDs.
+> 
+> Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
+> Co-developed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+> Acked-by: Jakub Kicinski <kuba@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: netdev@vger.kernel.org
 
-Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Co-developed-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- include/net/page_pool.h | 26 +++++++++++++++
- net/core/page_pool.c    | 70 +++++++++++++++++++++++++++++++++++------
- net/core/xdp.c          |  9 ++----
- 3 files changed, 88 insertions(+), 17 deletions(-)
-
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 81d7773f96cd..b5b195305346 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -152,6 +152,8 @@ struct page_pool *page_pool_create(const struct page_pool_params *params);
- void page_pool_destroy(struct page_pool *pool);
- void page_pool_use_xdp_mem(struct page_pool *pool, void (*disconnect)(void *));
- void page_pool_release_page(struct page_pool *pool, struct page *page);
-+void page_pool_put_page_bulk(struct page_pool *pool, void **data,
-+			     int count);
- #else
- static inline void page_pool_destroy(struct page_pool *pool)
- {
-@@ -165,6 +167,11 @@ static inline void page_pool_release_page(struct page_pool *pool,
- 					  struct page *page)
- {
- }
-+
-+static inline void page_pool_put_page_bulk(struct page_pool *pool, void **data,
-+					   int count)
-+{
-+}
- #endif
- 
- void page_pool_put_page(struct page_pool *pool, struct page *page,
-@@ -215,4 +222,23 @@ static inline void page_pool_nid_changed(struct page_pool *pool, int new_nid)
- 	if (unlikely(pool->p.nid != new_nid))
- 		page_pool_update_nid(pool, new_nid);
- }
-+
-+static inline void page_pool_ring_lock(struct page_pool *pool)
-+	__acquires(&pool->ring.producer_lock)
-+{
-+	if (in_serving_softirq())
-+		spin_lock(&pool->ring.producer_lock);
-+	else
-+		spin_lock_bh(&pool->ring.producer_lock);
-+}
-+
-+static inline void page_pool_ring_unlock(struct page_pool *pool)
-+	__releases(&pool->ring.producer_lock)
-+{
-+	if (in_serving_softirq())
-+		spin_unlock(&pool->ring.producer_lock);
-+	else
-+		spin_unlock_bh(&pool->ring.producer_lock);
-+}
-+
- #endif /* _NET_PAGE_POOL_H */
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index ef98372facf6..f3c690b8c8e3 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -11,6 +11,8 @@
- #include <linux/device.h>
- 
- #include <net/page_pool.h>
-+#include <net/xdp.h>
-+
- #include <linux/dma-direction.h>
- #include <linux/dma-mapping.h>
- #include <linux/page-flags.h>
-@@ -362,8 +364,9 @@ static bool pool_page_reusable(struct page_pool *pool, struct page *page)
-  * If the page refcnt != 1, then the page will be returned to memory
-  * subsystem.
-  */
--void page_pool_put_page(struct page_pool *pool, struct page *page,
--			unsigned int dma_sync_size, bool allow_direct)
-+static __always_inline struct page *
-+__page_pool_put_page(struct page_pool *pool, struct page *page,
-+		     unsigned int dma_sync_size, bool allow_direct)
- {
- 	/* This allocator is optimized for the XDP mode that uses
- 	 * one-frame-per-page, but have fallbacks that act like the
-@@ -379,15 +382,12 @@ void page_pool_put_page(struct page_pool *pool, struct page *page,
- 			page_pool_dma_sync_for_device(pool, page,
- 						      dma_sync_size);
- 
--		if (allow_direct && in_serving_softirq())
--			if (page_pool_recycle_in_cache(page, pool))
--				return;
-+		if (allow_direct && in_serving_softirq() &&
-+		    page_pool_recycle_in_cache(page, pool))
-+			return NULL;
- 
--		if (!page_pool_recycle_in_ring(pool, page)) {
--			/* Cache full, fallback to free pages */
--			page_pool_return_page(pool, page);
--		}
--		return;
-+		/* Page found as candidate for recycling */
-+		return page;
- 	}
- 	/* Fallback/non-XDP mode: API user have elevated refcnt.
- 	 *
-@@ -405,9 +405,59 @@ void page_pool_put_page(struct page_pool *pool, struct page *page,
- 	/* Do not replace this with page_pool_return_page() */
- 	page_pool_release_page(pool, page);
- 	put_page(page);
-+
-+	return NULL;
-+}
-+
-+void page_pool_put_page(struct page_pool *pool, struct page *page,
-+			unsigned int dma_sync_size, bool allow_direct)
-+{
-+	page = __page_pool_put_page(pool, page, dma_sync_size, allow_direct);
-+	if (page && !page_pool_recycle_in_ring(pool, page)) {
-+		/* Cache full, fallback to free pages */
-+		page_pool_return_page(pool, page);
-+	}
- }
- EXPORT_SYMBOL(page_pool_put_page);
- 
-+/* Caller must not use data area after call, as this function overwrites it */
-+void page_pool_put_page_bulk(struct page_pool *pool, void **data,
-+			     int count)
-+{
-+	int i, bulk_len = 0;
-+
-+	for (i = 0; i < count; i++) {
-+		struct page *page = virt_to_head_page(data[i]);
-+
-+		page = __page_pool_put_page(pool, page, -1, false);
-+		/* Approved for bulk recycling in ptr_ring cache */
-+		if (page)
-+			data[bulk_len++] = page;
-+	}
-+
-+	if (unlikely(!bulk_len))
-+		return;
-+
-+	/* Bulk producer into ptr_ring page_pool cache */
-+	page_pool_ring_lock(pool);
-+	for (i = 0; i < bulk_len; i++) {
-+		if (__ptr_ring_produce(&pool->ring, data[i]))
-+			break; /* ring full */
-+	}
-+	page_pool_ring_unlock(pool);
-+
-+	/* Hopefully all pages was return into ptr_ring */
-+	if (likely(i == bulk_len))
-+		return;
-+
-+	/* ptr_ring cache full, free remaining pages outside producer lock
-+	 * since put_page() with refcnt == 1 can be an expensive operation
-+	 */
-+	for (; i < bulk_len; i++)
-+		page_pool_return_page(pool, data[i]);
-+}
-+EXPORT_SYMBOL(page_pool_put_page_bulk);
-+
- static void page_pool_empty_ring(struct page_pool *pool)
- {
- 	struct page *page;
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index bbaee7fdd44f..3d330ebda893 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -393,16 +393,11 @@ EXPORT_SYMBOL_GPL(xdp_return_frame_rx_napi);
- void xdp_flush_frame_bulk(struct xdp_frame_bulk *bq)
- {
- 	struct xdp_mem_allocator *xa = bq->xa;
--	int i;
- 
--	if (unlikely(!xa))
-+	if (unlikely(!xa || !bq->count))
- 		return;
- 
--	for (i = 0; i < bq->count; i++) {
--		struct page *page = virt_to_head_page(bq->q[i]);
--
--		page_pool_put_full_page(xa->page_pool, page, false);
--	}
-+	page_pool_put_page_bulk(xa->page_pool, bq->q, bq->count);
- 	/* bq->xa is not cleared to save lookup, if mem.id same in next bulk */
- 	bq->count = 0;
- }
--- 
-2.26.2
-
+Reviewed-by: Wei Liu <wl@xen.org>
