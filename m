@@ -2,108 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 143B12B1E43
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 16:08:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 990832B1E47
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 16:08:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726875AbgKMPIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 10:08:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36828 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbgKMPIT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 10:08:19 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71617C0613D1
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 07:08:19 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id j19so487439pgg.5
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 07:08:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=IYRMHQo/0TotVSboDZgb2XPRzlLB7yUez+sJ4ytUiLI=;
-        b=PeCyei/nipKyR7ADEKy6RlfNc9op6oxY5ODv7uYg8pTXLsbLWuc6qzn+L5MnRPXv8a
-         QuObolzqqN4djmp7YM0GPhCeQRwIme5WVR6kkCZNAeQ0VAje9QXrY6xNwW9kZ1dPEvY7
-         9tQF/HArGaz8efItznZDQXcRR42uE6Ek2uk5KwMf3CIT+IG85fOlTjKJGJct+BwwACUx
-         xW6KQD7ORimU0YdOA0BQpMUuur88UU2YOrFu9hPNHb+LEtzcCGwjYrdjGF27741SR++J
-         tLmC8DrUyA99WThw6/OQm6jzA5Y1l74k3uOjcB2ODrVvNaMvzj6F4X7sIP5OOVZP9Qup
-         +78A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IYRMHQo/0TotVSboDZgb2XPRzlLB7yUez+sJ4ytUiLI=;
-        b=WPvZe75zfYBubQnuSBod4S7LiHJJkZh+yldR7A3up8HcOPdZo+KloN2b84KASWdoHB
-         qc4MdfQpaHYT8Bhn17S4leGEAPbJmBmGXdTmm6Yi2Q19CMON2Q/CtfJNGi8IDua8fnBP
-         Fi8quH5V3tyCUQy89iMF4v8jsHDapK+yT0fN0rq8oP5GLRQTibeWmRnx6U9XqE5zbv4c
-         estHgNbji0YpGqPNrv53jSU5W15tlShazvGe6RUV4W+1Zm7BrrA9akUwGc1x3EK4tORx
-         7uSE/CITh5lZuCxi8LqEsMaPFbSdlB7TlOyUx8S8ANtwT8loNKF85HXrExiVCh+zPBsD
-         +NvA==
-X-Gm-Message-State: AOAM531fS92DE9sEJCg95B4y062hfVGwNvgiy/6QyfiLHBsV93qc+epo
-        /05TptuEQM5zODSDejpJReL1DKx1O/0=
-X-Google-Smtp-Source: ABdhPJyZ1vflD+z7mPpc1KoesngD3NOKz6NNxzlQSGdmR3dmx1t6r5ddeV7UjFKZOG+sL+IRIQZp2w==
-X-Received: by 2002:a17:90b:180f:: with SMTP id lw15mr3457995pjb.119.1605280099126;
-        Fri, 13 Nov 2020 07:08:19 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
-        by smtp.gmail.com with ESMTPSA id k17sm12043834pji.50.2020.11.13.07.08.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Nov 2020 07:08:18 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 2/2] tcp: avoid indirect call to tcp_stream_memory_free()
-Date:   Fri, 13 Nov 2020 07:08:09 -0800
-Message-Id: <20201113150809.3443527-3-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.29.2.299.gdc1121823c-goog
-In-Reply-To: <20201113150809.3443527-1-eric.dumazet@gmail.com>
-References: <20201113150809.3443527-1-eric.dumazet@gmail.com>
+        id S1726847AbgKMPIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 10:08:47 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:57958 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726439AbgKMPIq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 10:08:46 -0500
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0ADF1mgN114964;
+        Fri, 13 Nov 2020 10:08:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=KvmFHrYAG3NM1GPNZodIHODE6AE7QmndipPM4Z6GgeM=;
+ b=LWql9hveRZM8U+eUKTOJpIvTQ6puXZg2ijDgf1EEYDdf2amtWU4MNtKt80CN13epsR19
+ pQbsqkVY0APpXmqGJL19KfSV0A90DCS/2PcQXHkIrGI8LFUdMBgi+JKyIMmOPABg1wR/
+ D3IuZ9NQmaekUuWPsg8tgg6rcHHOUw56dyX/OW8EXfXYSS1w+DjoEPROF1gtp8TTDPMd
+ Yl2UQTRNYBJMnqzZ2cFZa28zL6NX4D2iiXfgsRDpIvuorKbqdYYh+EFPW24eIwd2dycY
+ wWZKAx57I1xbVlS7qTTqpTkYyBBGUnHrc5vH4WkeAMRK9UL6x+ZZ0yPx3Pvq9WcH7IXF 7Q== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34sve5r94p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 13 Nov 2020 10:08:42 -0500
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0ADF7ia2002398;
+        Fri, 13 Nov 2020 15:08:41 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 34p26pny2w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 13 Nov 2020 15:08:41 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0ADF8cUQ7471716
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 13 Nov 2020 15:08:38 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5E8A8AE045;
+        Fri, 13 Nov 2020 15:08:38 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 10B29AE04D;
+        Fri, 13 Nov 2020 15:08:38 +0000 (GMT)
+Received: from [9.171.64.119] (unknown [9.171.64.119])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 13 Nov 2020 15:08:37 +0000 (GMT)
+Subject: Re: [PATCH net-next v4 09/15] net/smc: Introduce SMCR get linkgroup
+ command
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, hca@linux.ibm.com, raspl@linux.ibm.com
+References: <20201109151814.15040-1-kgraul@linux.ibm.com>
+ <20201109151814.15040-10-kgraul@linux.ibm.com>
+ <20201111143405.7f5fb92f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+Message-ID: <3be40d64-3952-3de9-559b-2ee55449b54c@linux.ibm.com>
+Date:   Fri, 13 Nov 2020 16:08:39 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201111143405.7f5fb92f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-13_10:2020-11-13,2020-11-13 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
+ clxscore=1015 adultscore=0 lowpriorityscore=0 mlxlogscore=999
+ suspectscore=0 priorityscore=1501 bulkscore=0 spamscore=0 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011130092
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On 11/11/2020 23:34, Jakub Kicinski wrote:
+> On Mon,  9 Nov 2020 16:18:08 +0100 Karsten Graul wrote:
+>> @@ -295,6 +377,14 @@ static int smc_diag_dump(struct sk_buff *skb, struct netlink_callback *cb)
+>>  
+>>  static int smc_diag_dump_ext(struct sk_buff *skb, struct netlink_callback *cb)
+>>  {
+>> +	struct smc_diag_req_v2 *req = nlmsg_data(cb->nlh);
+>> +
+>> +	if (req->cmd == SMC_DIAG_GET_LGR_INFO) {
+>> +		if ((req->cmd_ext & (1 << (SMC_DIAG_LGR_INFO_SMCR - 1))))
+>> +			smc_diag_fill_lgr_list(smc_diag_ops->get_lgr_list(),
+>> +					       skb, cb, req);
+>> +	}
+>> +
+>>  	return skb->len;
+>>  }
+> 
+> IDK if this is appropriate for socket diag handler.
+> 
+> Is there precedent for funneling commands through socket diag instead
+> of just creating a genetlink family?
+> 
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/net/sock.h | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Thank you for your valuable comments. We are looking into a better way
+to retrieve the various information from the kernel into user space, 
+and we will come up with a v5 for that.
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index a5c6ae78df77d08e4b65e634e93040446486bdc2..1d29aeae74fdbbae3410def33ebc66758e034205 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -60,7 +60,7 @@
- #include <linux/rculist_nulls.h>
- #include <linux/poll.h>
- #include <linux/sockptr.h>
--
-+#include <linux/indirect_call_wrapper.h>
- #include <linux/atomic.h>
- #include <linux/refcount.h>
- #include <net/dst.h>
-@@ -1264,13 +1264,17 @@ static inline void sk_refcnt_debug_release(const struct sock *sk)
- #define sk_refcnt_debug_release(sk) do { } while (0)
- #endif /* SOCK_REFCNT_DEBUG */
- 
-+INDIRECT_CALLABLE_DECLARE(bool tcp_stream_memory_free(const struct sock *sk, int wake));
-+
- static inline bool __sk_stream_memory_free(const struct sock *sk, int wake)
- {
- 	if (READ_ONCE(sk->sk_wmem_queued) >= READ_ONCE(sk->sk_sndbuf))
- 		return false;
- 
- 	return sk->sk_prot->stream_memory_free ?
--		sk->sk_prot->stream_memory_free(sk, wake) : true;
-+		INDIRECT_CALL_1(sk->sk_prot->stream_memory_free,
-+			        tcp_stream_memory_free,
-+				sk, wake) : true;
- }
- 
- static inline bool sk_stream_memory_free(const struct sock *sk)
 -- 
-2.29.2.299.gdc1121823c-goog
+Karsten
+
 
