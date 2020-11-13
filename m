@@ -2,159 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DB132B2120
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:56:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17FC02B2130
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 17:58:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726166AbgKMQ4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 11:56:30 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:53754 "EHLO vps0.lunn.ch"
+        id S1726273AbgKMQ6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 11:58:02 -0500
+Received: from mailout01.rmx.de ([94.199.90.91]:53925 "EHLO mailout01.rmx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725967AbgKMQ4a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 11:56:30 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kdcN7-006sp2-4r; Fri, 13 Nov 2020 17:56:25 +0100
-Date:   Fri, 13 Nov 2020 17:56:25 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steve McIntyre <steve@einval.com>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, Willy Liu <willy.liu@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Masahisa Kojima <masahisa.kojima@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: Re: Re: realtek PHY commit bbc4d71d63549 causes regression
-Message-ID: <20201113165625.GN1456319@lunn.ch>
-References: <20201017230226.GV456889@lunn.ch>
- <20201029143934.GO878328@lunn.ch>
- <20201029144644.GA70799@apalos.home>
- <2697795.ZkNf1YqPoC@kista>
- <CAK8P3a2hBpQAsRekNyauUF1MgdO8CON=77MNSd0E-U1TWNT-gA@mail.gmail.com>
- <20201113144401.GM1456319@lunn.ch>
- <CAK8P3a2iwwneb+FPuUQRm1JD8Pk54HCPnux4935Ok43WDPRaYQ@mail.gmail.com>
+        id S1726136AbgKMQ6B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 11:58:01 -0500
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout01.rmx.de (Postfix) with ESMTPS id 4CXl5d0DPVz2SVY5;
+        Fri, 13 Nov 2020 17:57:57 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CXl5D2TCwz2TTLW;
+        Fri, 13 Nov 2020 17:57:36 +0100 (CET)
+Received: from n95hx1g2.localnet (192.168.54.14) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 13 Nov
+ 2020 17:56:34 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        "Richard Cochran" <richardcochran@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Vivien Didelot" <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 03/11] net: dsa: microchip: split ksz_common.h
+Date:   Fri, 13 Nov 2020 17:56:34 +0100
+Message-ID: <5328227.AyQhSCNoNJ@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <20201112230254.v6bzsud3jlcmsjm2@skbuf>
+References: <20201112153537.22383-1-ceggers@arri.de> <20201112153537.22383-4-ceggers@arri.de> <20201112230254.v6bzsud3jlcmsjm2@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a2iwwneb+FPuUQRm1JD8Pk54HCPnux4935Ok43WDPRaYQ@mail.gmail.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.14]
+X-RMX-ID: 20201113-175738-4CXl5D2TCwz2TTLW-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Hi Arnd
-> >
-> > This PHY driver bug hiding DT bug is always hard to handle. We have
-> > been though it once before with the Atheros PHY. All the buggy DT
-> > files were fixed in about one cycle.
+On Friday, 13 November 2020, 00:02:54 CET, Vladimir Oltean wrote:
+> On Thu, Nov 12, 2020 at 04:35:29PM +0100, Christian Eggers wrote:
+> > Parts of ksz_common.h (struct ksz_device) will be required in
+> > net/dsa/tag_ksz.c soon. So move the relevant parts into a new header
+> > file.
+> > 
+> > Signed-off-by: Christian Eggers <ceggers@arri.de>
+> > ---
 > 
-> Do you have a link to the problem for the Atheros PHY?
-
-commit cd28d1d6e52e740130745429b3ff0af7cbba7b2c
-Author: Vinod Koul <vkoul@kernel.org>
-Date:   Mon Jan 21 14:43:17 2019 +0530
-
-    net: phy: at803x: Disable phy delay for RGMII mode
-    
-    For RGMII mode, phy delay should be disabled. Add this case along
-    with disable delay routines.
-    
-    Signed-off-by: Vinod Koul <vkoul@kernel.org>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-
-and
-
-commit 6d4cd041f0af5b4c8fc742b4a68eac22e420e28c
-Author: Vinod Koul <vkoul@kernel.org>
-Date:   Thu Feb 21 15:53:15 2019 +0530
-
-    net: phy: at803x: disable delay only for RGMII mode
-    
-    Per "Documentation/devicetree/bindings/net/ethernet.txt" RGMII mode
-    should not have delay in PHY whereas RGMII_ID and RGMII_RXID/RGMII_TXID
-    can have delay in PHY.
-    
-    So disable the delay only for RGMII mode and enable for other modes.
-    Also treat the default case as disabled delays.
-    
-    Fixes: cd28d1d6e52e: ("net: phy: at803x: Disable phy delay for RGMII mode")
-
-Looking at the git history, it seems like it also took two attempts to
-get it working correctly, but the time between the two patches was
-much shorted for the atheros PHY.
-
-You will find DT patches converting rgmii to rgmii-id started soon
-afterwards.
-
-> I'm generally skeptical about the idea of being able to fix all DTBs,
-> some of the problems with that being:
+> I had to skip ahead to see what you're going to use struct ksz_port and
+> struct ksz_device for. It looks like you need:
 > 
-> - There is no way to identify which of of the 2019 dts files in the
->   kernel actually have this particular phy, because it does not
->   have a device node in the dt. Looking only at files that set
->   phy-mode="rgmii" limits it to 235 files, but that is still more than
->   anyone can test.
-
-You can narrow it down a bit. The rtl8211e was added
-2014-06-10. Anything older than that, is unlikely to be a problem.
-And you can ignore marvell, broadcom, etc boards. They are unlikely to
-use a realtek PHY.
-
-But i agree, we cannot test them all. We probably need to look at what
-boards we know are broken, and get siblings tested.
-
-> - if there was a way to automate identifying the dts files that
->   need to be modified, we should also be able to do it at runtime
-
-We can get a hint, that there might be a problem, but we can get false
-positives. These DT blobs are broken because they rely on strapping
-resisters to put the PHY into the correct RGMII mode. We can read
-these strapping resistors and compare them against what the software
-is asking for. If they differ, it could be the DT blob is buggy. But
-there are cases where the DT blob is correct, the strapping is wrong,
-eg Pine64 Plus. It is doing everything correctly in DT.
-
-> I agree this makes the problem harder, but I have still hope that
-> we can come up with a code solution that can deal with this
-> one board that needs to have the correct settings applied as well
-> as the others on which we have traditionally ignored them.
+> 	struct ksz_port::tstamp_rx_latency_ns
+> 	struct ksz_device::ptp_clock_lock
+> 	struct ksz_device::ptp_clock_time
 > 
-> As I understand it so far, the reason this board needs a different
-> setting is that the strapping pins are wired incorrectly, while all
-> other boards set them right and work correctly by default. I would
-> much prefer a way to identify this behavior in dts and have the phy
-> driver just warn when it finds a mismatch between the internal
-> delay setting in DT and the strapping pins but keep using the
-> setting from the strapping pins when there is a conflict.
+> Not more.
+> 
+> Why don't you go the other way around, i.e. exporting some functions
+> from your driver, and calling them from the tagger? 
 
-So what you are suggesting is that the pine board, and any other board
-which comes along in the future using this PHY which really wants
-RGMII, needs a boolean DT property:
+Good question... But as for as I can see, there are a single tagger and 
+multiple device drivers (currently KSZ8795 and KSZ9477). 
 
-"realtek,IRealyDoWantRGMII_IAmNotBroken"
+Moving the KSZ9477 specific stuff, which is required by the tagger, into the 
+KSZ9477 device driver, would make the tagger dependent on the driver(s). 
+Currently, no tagger seems to have this direction of dependency (at least I 
+cannot find this in net/dsa/Kconfig).
 
-in the PHY node?
+If I shall change this anyway, I would use #ifdefs within the tag_ksz driver 
+in order to avoid unnecessary dependencies to the KSZ9477 driver for the case 
+only KSZ8795 is selected.
 
-And if it is missing, we ignore when the MAC asks for RGMII and
-actually do RGMII_ID?
+> You could even move
+> the entire ksz9477_tstamp_to_clock() into the driver as-is, as far as I
+> can see.
 
-We might also need to talk to the FreeBSD folks.
 
-https://reviews.freebsd.org/D13591
 
-Do we need to ask them to be bug compatible to Linux? Are the same DT
-file being used?
 
-That still leaves ACPI systems. Do we want to stuff this DT property
-into an ACPI table? That seems to go against what ACPI people say
-saying, ACPI is not DT with an extra wrapper around it.
-
-   Andrew
