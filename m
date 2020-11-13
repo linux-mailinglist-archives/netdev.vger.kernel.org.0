@@ -2,64 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 193612B18A1
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 10:48:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 562A82B18E1
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 11:16:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbgKMJsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 04:48:31 -0500
-Received: from dyslmr.btconnect.com ([193.113.5.105]:45405 "EHLO
-        mail.btconnect.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726149AbgKMJsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 04:48:30 -0500
-X-Greylist: delayed 321 seconds by postgrey-1.27 at vger.kernel.org; Fri, 13 Nov 2020 04:48:30 EST
-Received: from mail.btconnect.com (dy11780omr11.iuser.iroot.adidom.com [10.35.83.172])
-        by dy11780slr11.dci.bt.com (MOS 4.4.8-GA)
-        with ESMTP id BBL22176;
-        Fri, 13 Nov 2020 09:41:26 GMT
-Received: (from localhost [127.0.0.1])
-        by dy11780omr11.dci.bt.com (MOS 4.4.8-GA)
-        id XKP13044;
-        Fri, 13 Nov 2020 09:40:46 +0000 (GMT)
-Received: from 103.207.37.59 (EHLO User) ([103.207.37.59])
-        by dy11780omr11.dci.bt.com
-        with ESMTP id XKP10796 (AUTH roypope@btconnect.com);
-        Fri, 13 Nov 2020 09:40:06 +0000 (GMT)
-Reply-To: <mariaforlife2@gmail.com>
-From:   "Mrs Maria Talley" <roypope@btconnect.com>
-Subject: May the Peace of the Lord be with you
-Date:   Fri, 13 Nov 2020 01:40:05 -0800
+        id S1726432AbgKMKQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 05:16:50 -0500
+Received: from mslow2.mail.gandi.net ([217.70.178.242]:34048 "EHLO
+        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726176AbgKMKQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 05:16:50 -0500
+Received: from relay6-d.mail.gandi.net (unknown [217.70.183.198])
+        by mslow2.mail.gandi.net (Postfix) with ESMTP id 93E143ACD7F
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 10:04:21 +0000 (UTC)
+X-Originating-IP: 86.194.74.19
+Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id AA89CC002B;
+        Fri, 13 Nov 2020 10:03:59 +0000 (UTC)
+Date:   Fri, 13 Nov 2020 11:03:59 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        netdev@vger.kernel.org, David Miller <davem@davemloft.net>
+Subject: Re: [PATCH net-next 0/3] macb: support the 2-deep Tx queue on at91
+Message-ID: <20201113100359.GJ4556@piout.net>
+References: <20201011090944.10607-1-w@1wt.eu>
+ <20201013170358.1a4d282a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201014030630.GA12531@1wt.eu>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="Windows-1251"
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-X-MSMail-Priority: Normal
-X-Mailer: Microsoft Outlook Express 6.00.2600.0000
-X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
-Message-Id: <202011130940.XKP10796@dy11780omr11.dci.bt.com>
-X-Mirapoint-IP-Reputation: reputation=Worst-1,
-        source=Queried,
-        refid=tid=0001.0A782F8F.5FAE528F.0013,
-        actions=tag
-X-Junkmail: UCE(55)
-X-Junkmail-Status: score=55/50, host=dy11780omr11.dci.bt.com
-X-Junkmail-Signature-Raw: score=bulk(5),
-        refid=str=0001.0A782F1E.5FAE29CC.0012,ss=3,sh,re=0.000,recu=0.000,reip=0.000,cl=3,cld=1,fgs=0,
-        ip=103.207.37.59,
-        so=2016-11-06 16:00:04,
-        dmn=2013-03-21 17:37:32,
-        mode=multiengine
-X-Junkmail-IWF: false
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201014030630.GA12531@1wt.eu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-May the Peace of the Lord be with you!
- 
-Please this is an urgent solicitation for assistance, I'm Mrs Maria Talley from United States of America, but I lived in London for many years. I am 54 years old. I was diagnosed of cancer for about 2 years ago. This letter comes from a devastated, sorrowful and emotional laden soul that needs compassion from a kind and conscience driven person. I need someone who has a sincere compassionate heart of international humanitarian charity. There is some properties left by my late husband, which I sold, because the doctor had diagnosed me that I am in my last days, that I can not live anymore longer, so I have to sale all those properties that was left by my late husband.
- 
-I have deposited the sum of $9.5 Million in a Bank in United States of America, which I sold from my properties and deposited it in New York City Bank in America. I want you to help me use this funds to help the less privilege, the motherless baby homes and hospitals in your country before I die. I want you to take 40 percent of the total money for your personal use, while 60% of the money will go to charity. I will appreciate your utmost confidentiality and trust in this matter to accomplish my heart desire, as I don't want anything that will jeopardize my last wish. If you are a good and honest person write back to me for more.
- 
-Thanks and God bless you,
-Mrs Maria Talley
+On 14/10/2020 05:06:30+0200, Willy Tarreau wrote:
+> On Tue, Oct 13, 2020 at 05:03:58PM -0700, Jakub Kicinski wrote:
+> > On Sun, 11 Oct 2020 11:09:41 +0200 Willy Tarreau wrote:
+> > > while running some tests on my Breadbee board, I noticed poor network
+> > > Tx performance. I had a look at the driver (macb, at91ether variant)
+> > > and noticed that at91ether_start_xmit() immediately stops the queue
+> > > after sending a frame and waits for the interrupt to restart the queue,
+> > > causing a dead time after each packet is sent.
+> > > 
+> > > The AT91RM9200 datasheet states that the controller supports two frames,
+> > > one being sent and the other one being queued, so I performed minimal
+> > > changes to support this. The transmit performance on my board has
+> > > increased by 50% on medium-sized packets (HTTP traffic), and with large
+> > > packets I can now reach line rate.
+> > > 
+> > > Since this driver is shared by various platforms, I tried my best to
+> > > isolate and limit the changes as much as possible and I think it's pretty
+> > > reasonable as-is. I've run extensive tests and couldn't meet any
+> > > unexpected situation (no stall, overflow nor lockup).
+> > > 
+> > > There are 3 patches in this series. The first one adds the missing
+> > > interrupt flag for RM9200 (TBRE, indicating the tx buffer is willing
+> > > to take a new packet). The second one replaces the single skb with a
+> > > 2-array and uses only index 0. It does no other change, this is just
+> > > to prepare the code for the third one. The third one implements the
+> > > queue. Packets are added at the tail of the queue, the queue is
+> > > stopped at 2 packets and the interrupt releases 0, 1 or 2 depending
+> > > on what the transmit status register reports.
+> > 
+> > LGTM. There's always a chance that this will make other 
+> > designs explode, but short of someone from Cadence giving 
+> > us a timely review we have only one way to find that out.. :)
+> 
+> Not that much in fact, given that the at91ether_* functions are only
+> used by AT91RM9200 (whose datasheet I used to do this) and Mstar which
+> I used for the tests. I initially wanted to get my old SAM9G20 board
+> to boot until I noticed that it doesn't even use the same set of
+> functions, so the potential victims are extremely limited :-)
+> 
+
+I think I'm the only one booting recent linux kernels on at91rm9200 and
+I'm currently stuck home while the board is at the office. I'll try to
+test as soon as possible, which may not be before 2021... At least I'll
+know who is the culprit ;)
+
+
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
