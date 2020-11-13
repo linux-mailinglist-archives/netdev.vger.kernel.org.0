@@ -2,184 +2,253 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09C512B176B
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 09:39:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9B232B176D
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 09:39:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726160AbgKMIjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 03:39:25 -0500
-Received: from de-smtp-delivery-52.mimecast.com ([62.140.7.52]:60803 "EHLO
-        de-smtp-delivery-52.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726149AbgKMIjZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 03:39:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1605256761;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=WWpbBqfKuGd2K6RnF+MTDL+1VI1DGMZ+u0+6hNJ8SHQ=;
-        b=mmiyxN9Fs9lYk+aAuNyt5Ub/eyyCcR9DTr9Z+kTNPro+HbPPbWEalGyfww5zryUBRJS6u2
-        KW9zrQGywixz3DV8BwkK24iQyI8r6gnGwsTk0XbdoI+ABNe/v4/SRVt+79zd9gECuhfTSM
-        cwS96lYOEyFSORCgNygygDQDEC9vHek=
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com
- (mail-vi1eur04lp2055.outbound.protection.outlook.com [104.47.14.55]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- de-mta-40-7_jcavCrO8-reddAroZBlg-1; Fri, 13 Nov 2020 09:39:19 +0100
-X-MC-Unique: 7_jcavCrO8-reddAroZBlg-1
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AEGtUM7++NxLXsMKy9/AQv+N6uXcvDBc+dXCcIPyzGHF3MphXVgHSkq1HigczS1ckrNeWnsmg7BGJ131BvoafhJy7DC7biHb3/X6LRLbSWKMdJ0TBaIG8pTMsR6uoSXQEI92diZ7VvVSpn4TABu5jsrL7sifAN+Q6OVNtZfy30AcqCKvQxIZhqOLPn/EOQVbQfrhZOrRYlW8A9OZdA31oQ6SDc6O8iBcJgqZn0ja4vLXj48ZBV7lDTiA+Ti2geGJSn5z+fHmXNeSQJQCC/tEhi+Kjfm4TALkrQSVMTUQWBMkJlZcVGQdzG4xXJytsldPDX/3sKZwayAKXJRbbA+Pjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xYaLrSBfx3edWy40um+qZanpNsDwYLxdh2LtlemenTU=;
- b=S7vPDs2JPlxm7/ZPpIOByp4XEiEL9EYgYMnLylpwqR2RlWsqT73kcOG8SMQSFH+nkh8F7EFdvUpbtExl8hDn37aH7YIxp502/O/j945KsKB/t2c3Efjn9jb5NSN5gOiDlYNpfOPpqY4KXR1H4HEJ/HmBaLR0YGx9Z8GNqfl49HHKAEy0rHj0JCXrE1hIm+5KQ4dBXybSFEBfkmHweH67vBeTKgINkc0qh7dlCzNmss0zQ8twsNugTlLNAfmDt751tV/7663WJV6plFi4+TnO5TRtS/KvDfLN7RxFIfP2oSR3JkK1Q1G6J8dn62PYoaeYXKmhTRDnlQqNtxWQKJG75A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=suse.com;
-Received: from DB3PR0402MB3641.eurprd04.prod.outlook.com (2603:10a6:8:b::12)
- by DB7PR04MB5068.eurprd04.prod.outlook.com (2603:10a6:10:14::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.25; Fri, 13 Nov
- 2020 08:39:18 +0000
-Received: from DB3PR0402MB3641.eurprd04.prod.outlook.com
- ([fe80::c84:f086:9b2e:2bf1]) by DB3PR0402MB3641.eurprd04.prod.outlook.com
- ([fe80::c84:f086:9b2e:2bf1%7]) with mapi id 15.20.3455.040; Fri, 13 Nov 2020
- 08:39:18 +0000
-From:   Gary Lin <glin@suse.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, andreas.taschner@suse.com
-Subject: [PATCH RFC] bpf, x64: allow not-converged images when BPF_JIT_ALWAYS_ON is set
-Date:   Fri, 13 Nov 2020 16:38:52 +0800
-Message-ID: <20201113083852.22294-1-glin@suse.com>
-X-Mailer: git-send-email 2.28.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [60.251.47.115]
-X-ClientProxiedBy: AM9P192CA0010.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:21d::15) To DB3PR0402MB3641.eurprd04.prod.outlook.com
- (2603:10a6:8:b::12)
+        id S1726274AbgKMIjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 03:39:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726149AbgKMIjx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 03:39:53 -0500
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206A8C0613D1;
+        Fri, 13 Nov 2020 00:39:53 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id u2so4231218pls.10;
+        Fri, 13 Nov 2020 00:39:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=rKiYlh6ITmwqNaDLO6LyOP0kIZ/gu8XpkF1XgCPmV4U=;
+        b=r66mTNttIJkymy7LtqJivJwBRlKNI5EonvaG+MXo+0hzM+YlO1ZkZnjDPSmHrTnZf8
+         /9TPNl80hRj8e0dcAu30zIbnGg9Kdkpuadq/fN2rLsyL9oZ5O+TMwYliEg/X+IeJifcu
+         uJZ7bwfSh7TReM12kdBUjjSxURLr9j/cV48cv1F84F429EizLDituCRz0lBDu82l89ZB
+         ZLoCMWkQ2Odd1pU4n4SPTbS97nvpxyR6EmU1G+5sLkiqU5ObR5jnQgz/ga3ZrsCAdMS1
+         b2qJcgzt3oUSebnzAX5qVE5/hNy9aPtURRyh1HpygeDaN2PBFfW4P2hl2JZt4/4ORyuS
+         jXcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rKiYlh6ITmwqNaDLO6LyOP0kIZ/gu8XpkF1XgCPmV4U=;
+        b=o1uCIZSiI8GH7BxzgU9T37KaepJNm9lidUiN5S8m1e8LOHieXjzex5VkU6juTdgxKq
+         dcJJR5vRC7ThqDeQs749etMe84sRnwoXiUlCQj3JvypqJhBhGfEHdUPWN4fMK8i2MJhI
+         6Q1VlcKFt1zzFyNfNec2Rkrm2qZKz04faPwf2OkkWHytvilmemz9F1ZFs11C9wXwFeQF
+         kDcsnilc4MGG0n68bYwgzPCSzreuCwrJtOas+uvZ0JYqPg14/pi8Z5/lBZOzTRW7784t
+         HOZEsdslbu3yODqvRw1G6WDdQ1Twnwbtpisk+1ORxu7bBFJAepZZc/9eCKLP7tfnGphd
+         DamQ==
+X-Gm-Message-State: AOAM531WHGN8d7j6Wah7dcp8ZXfww9Acugl8p4Q9pGgern8eEYVgs1lE
+        +/GHcqmrV9UFIc1gIkC13F0UQnHzqsrkQiByQuU=
+X-Google-Smtp-Source: ABdhPJx3dg0bPKqtMW16uUQLbo1lfLC4EvAOzwQIrJcqJw8BSgtLS3Uq84ifS401jfvT8o/kc57108nyUQYa1gRUpNE=
+X-Received: by 2002:a17:902:9a46:b029:d6:f20a:83e1 with SMTP id
+ x6-20020a1709029a46b02900d6f20a83e1mr1102335plv.49.1605256792536; Fri, 13 Nov
+ 2020 00:39:52 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from GaryWorkstation.suse.cz (60.251.47.115) by AM9P192CA0010.EURP192.PROD.OUTLOOK.COM (2603:10a6:20b:21d::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.25 via Frontend Transport; Fri, 13 Nov 2020 08:39:16 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 53190378-9884-436c-ee8f-08d887af9bfb
-X-MS-TrafficTypeDiagnostic: DB7PR04MB5068:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB7PR04MB5068FFAD42A20A3949FA30D2A9E60@DB7PR04MB5068.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XhELy+ejeyGfpQ+4Cy5Umy3ctEgfJNCiUv8G9DdwdEYFf+e3+Dsh3GTjXW3v57CeI0YchnBbXuezmhNALawn67ZbYfDULCbulFIlp+80WdgXyQsXh3dOP4oA78fgaz+5o/17wgcPgtvJArhfYoNcT1EW2LZk5gF+ZWudwMvEh8dswA9wFQa/Ree0pckUWEXRhIlgz/HMqPzK3edqHLT/UXEqtN7YPo/H0Hot0n5eMsSFKPaigiVfIXa7Y4VBEwycKpDzwIYmo+PPmRdEY4pcsc+OGYAkjIfMQ8pk9lb9G6fMouMp6blBbM0O2VHPaxBKIjXVZ8mBvUdFrEvUxshZfqabn08ah0zmOy4gXGjLknFG1yIa63dBFaiPu1MP8xjC
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB3PR0402MB3641.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(136003)(39860400002)(396003)(366004)(8676002)(956004)(2616005)(8936002)(2906002)(1076003)(52116002)(6512007)(36756003)(83380400001)(86362001)(16526019)(66946007)(54906003)(6666004)(316002)(478600001)(109986005)(107886003)(26005)(4326008)(5660300002)(55236004)(6486002)(66476007)(66556008)(6506007)(186003)(266003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Bn9ADcw1SyfcML1nFItgfReBgLB6y/FLSWktitiQv3hyUfxsVBinKLAvIS5Dj+QB/V1O5hWhX+MSFsnDlZMkrvg4t9AIvwvXqVdqu5TVLBv+pRamjoUjq1RM6ei5ETgsIjRLv/crNOAq96Ra8nozdi01f8UXkWI/Acuwes4IcKe+8uSakCJnbeV20qqlLWDgKSNH+O2ybnXYnqfCfPAsY1sZXtKxKNTkqOW3oGbZmmVKwQLpR11nWBKZeUbAhbHghthXSi/7H+SzjtIIbFg4hoJIoZTIqJBcMvIvKq9liofyrsKSiFMLJl3dbQliGHMrNcyNdCy6ZA3pr8QdjO3y7NkOUUb0r7LMBiQNszja8ASl5uGBXo06ouJ5e/RfmCwiHZTNI5U5PqV6zixrf1uxEiYPYiqC3Z4iYh0X+fd8PmUSLf1/3vK7A0kFsLAJSIknGtKz5wxMSLmUmhnk9tp6yzDE0o5nZxkUR0tCIDBDiFG40ZcYWqnrlc3XvKkVNtXyhCOQplpi9BjswlverpQbvTE/QUxOCaeUbb3xRGcqtpFhDY1i/hMtb8ShWWlyQSLGjCb1s1hFnLEHOkKnYu0n+Rg5B7qguDIepMoHQp/aTuzBR7ilNEhQaUUb+SwkJ+EfURJrFOlb/WoO9icqkTkTZw==
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 53190378-9884-436c-ee8f-08d887af9bfb
-X-MS-Exchange-CrossTenant-AuthSource: DB3PR0402MB3641.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2020 08:39:18.2009
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Rd6vgqVidWr5yXBts8k6IZ/nNOCn7Om9QolY9249KBpLw3S+yOfO1Wy3WVmbMx0q
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5068
-To:     unlisted-recipients:; (no To-header on input)
+References: <20201112085854.3764-1-mariuszx.dudek@intel.com>
+ <20201112085854.3764-2-mariuszx.dudek@intel.com> <CAEf4Bzam8O=tUM-YZ=XHbJPVohYW9SfQL+ynNd5MnFF3mNREhw@mail.gmail.com>
+In-Reply-To: <CAEf4Bzam8O=tUM-YZ=XHbJPVohYW9SfQL+ynNd5MnFF3mNREhw@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Fri, 13 Nov 2020 09:39:41 +0100
+Message-ID: <CAJ8uoz1TvGCo0qPi=+B-EOfSzV8DwZCzZ_7LUYAeW+yz16WXjQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/2] libbpf: separate XDP program load with
+ xsk socket creation
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Mariusz Dudek <mariusz.dudek@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Mariusz Dudek <mariuszx.dudek@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The x64 bpf jit expects the bpf images converge within the given passes.
-However there is a corner case:
+On Thu, Nov 12, 2020 at 8:12 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Thu, Nov 12, 2020 at 12:58 AM <mariusz.dudek@gmail.com> wrote:
+> >
+> > From: Mariusz Dudek <mariuszx.dudek@intel.com>
+> >
+> > Add support for separation of eBPF program load and xsk socket
+> > creation.
+> >
+> > This is needed for use-case when you want to privide as little
+> > privileges as possible to the data plane application that will
+> > handle xsk socket creation and incoming traffic.
+> >
+> > With this patch the data entity container can be run with only
+> > CAP_NET_RAW capability to fulfill its purpose of creating xsk
+> > socket and handling packages. In case your umem is larger or
+> > equal process limit for MEMLOCK you need either increase the
+> > limit or CAP_IPC_LOCK capability.
+> >
+> > To resolve privileges issue two APIs are introduced:
+> >
+> > - xsk_setup_xdp_prog - prepares bpf program if given and
+> > loads it on a selected network interface or loads the built in
+> > XDP program, if no XDP program is supplied. It can also return
+> > xsks_map_fd which is needed by unprivileged process to update
+> > xsks_map with AF_XDP socket "fd"
+> >
+> > - xsk_socket__update_xskmap - inserts an AF_XDP socket into an xskmap
+> > for a particular xsk_socket
+> >
+> > Signed-off-by: Mariusz Dudek <mariuszx.dudek@intel.com>
+> > ---
+> >  tools/lib/bpf/libbpf.map |   2 +
+> >  tools/lib/bpf/xsk.c      | 160 ++++++++++++++++++++++++++++++++-------
+> >  tools/lib/bpf/xsk.h      |  15 ++++
+> >  3 files changed, 151 insertions(+), 26 deletions(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> > index 29ff4807b909..73aa12388055 100644
+> > --- a/tools/lib/bpf/libbpf.map
+> > +++ b/tools/lib/bpf/libbpf.map
+> > @@ -336,6 +336,8 @@ LIBBPF_0.2.0 {
+> >                 perf_buffer__epoll_fd;
+> >                 perf_buffer__consume_buffer;
+> >                 xsk_socket__create_shared;
+> > +               xsk_setup_xdp_prog;
+> > +               xsk_socket__update_xskmap;
+> >  } LIBBPF_0.1.0;
+>
+>
+> New APIs have to go into LIBBPF_0.3.0 section now.
+>
+> >
+> >  LIBBPF_0.3.0 {
+>
+> [...]
+>
+> > +static int __xsk_setup_xdp_prog(struct xsk_socket *_xdp,
+> > +                               struct bpf_prog_cfg_opts *cfg,
+> > +                               bool force_set_map,
+> > +                               int *xsks_map_fd)
+> >  {
+> > +       struct xsk_socket *xsk =3D _xdp;
+> >         struct xsk_ctx *ctx =3D xsk->ctx;
+> >         __u32 prog_id =3D 0;
+> >         int err;
+> > @@ -578,14 +633,17 @@ static int xsk_setup_xdp_prog(struct xsk_socket *=
+xsk)
+> >                 return err;
+> >
+> >         if (!prog_id) {
+> > -               err =3D xsk_create_bpf_maps(xsk);
+> > -               if (err)
+> > -                       return err;
+> > +               if (!cfg || !cfg->insns_cnt) {
+>
+> you can't do this, use OPTS_GET() macro to access fields of opts struct.
+>
+> > +                       err =3D xsk_create_bpf_maps(xsk);
+> > +                       if (err)
+> > +                               return err;
+> > +               } else {
+> > +                       ctx->xsks_map_fd =3D cfg->xsks_map_fd;
+>
+> same
+>
+> > +               }
+> >
+> > -               err =3D xsk_load_xdp_prog(xsk);
+> > +               err =3D xsk_load_xdp_prog(xsk, cfg);
+> >                 if (err) {
+> > -                       xsk_delete_bpf_maps(xsk);
+> > -                       return err;
+> > +                       goto err_load_xdp_prog;
+> >                 }
+> >         } else {
+> >                 ctx->prog_fd =3D bpf_prog_get_fd_by_id(prog_id);
+>
+> [...]
+>
+> >  int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+> >                               const char *ifname,
+> >                               __u32 queue_id, struct xsk_umem *umem,
+> > @@ -838,7 +946,7 @@ int xsk_socket__create_shared(struct xsk_socket **x=
+sk_ptr,
+> >         ctx->prog_fd =3D -1;
+> >
+> >         if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG=
+_LOAD)) {
+> > -               err =3D xsk_setup_xdp_prog(xsk);
+> > +               err =3D __xsk_setup_xdp_prog(xsk, NULL, false, NULL);
+> >                 if (err)
+> >                         goto out_mmap_tx;
+> >         }
+> > diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+> > index 1069c46364ff..c852ec742437 100644
+> > --- a/tools/lib/bpf/xsk.h
+> > +++ b/tools/lib/bpf/xsk.h
+> > @@ -201,6 +201,21 @@ struct xsk_umem_config {
+> >         __u32 flags;
+> >  };
+> >
+> > +struct bpf_prog_cfg_opts {
+>
+> The name of this struct doesn't really match an API it's used in, it
+> looks to be related to struct bpf_program, which is extremely
+> misleading. Why didn't you go with something like
+> xdp_setup_xdp_prog_opts?
+>
+> Also, so far we've been following the convention that non-optional
+> parameters are passed directly as function arguments, with all the
+> optional things put into opts. Looking at this struct, prog and
+> insns_cnt look non-optional. Not sure about the license. Also, it
+> seems strange to have xsks_map_fd in opts struct and as an output
+> parameter... If that's really in/out param, you can do OPTS_SET() and
+> pass it back through the same opts struct.
+>
+> But in general, I'm also surprised that this API is using the bpf_insn
+> array as an input. Do people really construct such a low-level set of
+> instructions manually? Seems like a rather painful API.
+>
+> Bj=C3=B6rn, Magnus, please take a look as well and chime in on API design
+> (I have too little context on XSK use cases).
 
-  l0:     ldh [4]
-  l1:     jeq #0x537d, l2, l40
-  l2:     ld [0]
-  l3:     jeq #0xfa163e0d, l4, l40
-  l4:     ldh [12]
-  l5:     ldx #0xe
-  l6:     jeq #0x86dd, l41, l7
-  l7:     jeq #0x800, l8, l41
-  l8:     ld [x+16]
-  l9:     ja 41
+Yes, it is much too macho to write an eBPF program directly using
+assembly :-). My suggestion is to get rid of this whole struct
+bpf_prog_cfg_opts completely and the parameter in the call. There is
+no reason to provide functionality to load your own program in this
+API as it is already so easy using the existing libbpf APIs e.g., with
+bpf_prog_load_xattr() followed by bpf_set_link_xdp_fd(). So I suggest
+the following:
 
-    [... repeated ja 41 ]
+LIBBPF_API int xsk_setup_default_prog(int ifindex, int *xsks_map_fd);
 
-  l40:    ja 41
-  l41:    ret #0
-  l42:    ld #len
-  l43:    ret a
+It is strictly a helper function for setting up the default XDP
+program from a process that has the privilege to do this.
 
-The bpf program contains 32 "ja 41" and do_jit() only removes one "ja 41"
-right before "l41:  ret #0" for offset=3D=3D0 in each pass, so
-bpf_int_jit_compile() needs to run do_jit() at least 32 times to
-eliminate those JMP instructions. Since the current max number of passes
-is 20, the bpf program couldn't converge within 20 passes and got rejected
-when BPF_JIT_ALWAYS_ON is set even though it's legit as a classic socket
-filter.
+Thanks Andrii for taking a look at this and thanks Mariusz for taking
+a stab at this.
 
-A not-converged image may be not optimal but at least the bpf
-instructions are translated into x64 machine code. Maybe we could just
-issue a warning instead so that the program is still loaded and the user
-is also notified.
-
-On the other hand, if the size convergence is mandatory, then it
-deserves a document to collect the corner cases so that the user could
-know the limitations and how to work around them.
-
-Signed-off-by: Gary Lin <glin@suse.com>
----
- arch/x86/net/bpf_jit_comp.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 796506dcfc42..90814c2daaae 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -1972,6 +1972,8 @@ struct x64_jit_data {
- 	struct jit_context ctx;
- };
-=20
-+#define MAX_JIT_PASSES 20
-+
- struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- {
- 	struct bpf_binary_header *header =3D NULL;
-@@ -2042,7 +2044,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog =
-*prog)
- 	 * may converge on the last pass. In such case do one more
- 	 * pass to emit the final image.
- 	 */
--	for (pass =3D 0; pass < 20 || image; pass++) {
-+	for (pass =3D 0; pass < MAX_JIT_PASSES || image; pass++) {
- 		proglen =3D do_jit(prog, addrs, image, oldproglen, &ctx);
- 		if (proglen <=3D 0) {
- out_image:
-@@ -2054,13 +2056,22 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_pro=
-g *prog)
- 		}
- 		if (image) {
- 			if (proglen !=3D oldproglen) {
-+#ifdef CONFIG_BPF_JIT_ALWAYS_ON
-+				pr_warn("bpf_jit: proglen=3D%d !=3D oldproglen=3D%d pass=3D%d\n",
-+					proglen, oldproglen, pass);
-+#else
- 				pr_err("bpf_jit: proglen=3D%d !=3D oldproglen=3D%d\n",
- 				       proglen, oldproglen);
- 				goto out_image;
-+#endif
- 			}
- 			break;
- 		}
-+#ifdef CONFIG_BPF_JIT_ALWAYS_ON
-+		if (proglen =3D=3D oldproglen || pass >=3D (MAX_JIT_PASSES - 1)) {
-+#else
- 		if (proglen =3D=3D oldproglen) {
-+#endif
- 			/*
- 			 * The number of entries in extable is the number of BPF_LDX
- 			 * insns that access kernel memory via "pointer to BTF type".
---=20
-2.28.0
-
+>
+> > +       size_t sz; /* size of this struct for forward/backward compatib=
+ility */
+> > +       struct bpf_insn *prog;
+> > +       const char *license;
+> > +       size_t insns_cnt;
+> > +       int xsks_map_fd;
+> > +};
+> > +#define bpf_prog_cfg_opts__last_field xsks_map_fd
+> > +
+> > +LIBBPF_API int xsk_setup_xdp_prog(int ifindex,
+> > +                                 struct bpf_prog_cfg_opts *opts,
+> > +                                 int *xsks_map_fd);
+> > +LIBBPF_API int xsk_socket__update_xskmap(struct xsk_socket *xsk,
+> > +                                int xsks_map_fd);
+> > +
+> >  /* Flags for the libbpf_flags field. */
+> >  #define XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD (1 << 0)
+> >
+> > --
+> > 2.20.1
+> >
