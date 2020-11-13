@@ -2,283 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A91522B242A
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 19:59:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B0582B242F
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 20:00:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726489AbgKMS7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 13:59:51 -0500
-Received: from mailout12.rmx.de ([94.199.88.78]:51195 "EHLO mailout12.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725866AbgKMS7v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 13:59:51 -0500
-Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout12.rmx.de (Postfix) with ESMTPS id 4CXnp91sLxzRqWG;
-        Fri, 13 Nov 2020 19:59:45 +0100 (CET)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4CXnnt421hz2TTLx;
-        Fri, 13 Nov 2020 19:59:30 +0100 (CET)
-Received: from n95hx1g2.localnet (192.168.54.24) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 13 Nov
- 2020 19:57:34 +0100
-From:   Christian Eggers <ceggers@arri.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        "Richard Cochran" <richardcochran@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Vivien Didelot" <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 06/11] net: dsa: microchip: ksz9477: basic interrupt support
-Date:   Fri, 13 Nov 2020 19:57:08 +0100
-Message-ID: <2666087.ia0MCzDV76@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <20201112232617.dka72sudrbii52aq@skbuf>
-References: <20201112153537.22383-1-ceggers@arri.de> <20201112153537.22383-7-ceggers@arri.de> <20201112232617.dka72sudrbii52aq@skbuf>
+        id S1726233AbgKMTAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 14:00:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725866AbgKMTAu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 14:00:50 -0500
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EBCC0613D1
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 11:00:48 -0800 (PST)
+Received: by mail-qt1-x844.google.com with SMTP id m65so7388524qte.11
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 11:00:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Q61m3Kag5Q/urXoUxGuvFJyxhAGq2M6Yw4QQ7h8f4/g=;
+        b=eVH8SOcg6etopMOqefnzlfuv5HXkjkjMe1tD5L0XY7MOc6IippCXQdP+jpKt7m3eNZ
+         Sb0DMS4u2JX5zPwtkpb8JtYJsYxeqhwRxLUsoPURERHWv7LzlF1G0jJS9C8gzZSLrgB1
+         Ep1UKsbNojq1/JV7pQcLxJEP3PDEUfMw28MmThalTfbVmbEvDQ1TDI/018/Bx68mP9KH
+         L7TZT6ToaOMk56dvLG7Td8NK6uGlfP5hBz3IiyHUoLwfur068au3UJFTgZ/I50NHaVQ0
+         W/SPNOPqH4njhufkgTseQYVHDHZi+Dl2rSloiXc7CKgpnB671vmekHAuNuXNjTQ0fQRn
+         OLuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Q61m3Kag5Q/urXoUxGuvFJyxhAGq2M6Yw4QQ7h8f4/g=;
+        b=rXa/u2009tdP4KPo6GQjxtC6Nj1jGFmt4NPqtgCQ3AafuAEel5e41CloIlW1mPWB8L
+         qfQDmZnuj2ErBYwRHyyL0IdnjmNzbOuQ3aEs+/ZYcJsBQdxDBaqh2R6eGDoh8M0/tGRs
+         ABbpBb+d7L6Gw8w2rD/PV747vu8q4d+tdWhACSsk+NZHAVfOncNBkTwOC0DVlSS9SM+6
+         iI4VaFTmBho8zNFDjcJSxJ259Y56oigrrq0qQ0ODhjkQ9uSQYCqEakr86m1AU6IA1b4h
+         ZofzDbznT+n5uuUqS9EmA9n1M1yYKLwmTZ54nsfilvG7QIrWUhqSzX+bQBZwmzMgDA/g
+         zssw==
+X-Gm-Message-State: AOAM531eR6d+JT0wgF6nojSGWN+5WF7ny20Im2n5AlbgBxKipJMtHt+a
+        CUUKHwPjEtqyzUnRIsVh0h0=
+X-Google-Smtp-Source: ABdhPJwP7QlRqii+5SQW4s1ykFWMwN0N20UOg1l/k6i0L/9JLQrDwaBNMuWYyzfgZm+lX9P8KjQ58g==
+X-Received: by 2002:ac8:6898:: with SMTP id m24mr3404486qtq.157.1605294047936;
+        Fri, 13 Nov 2020 11:00:47 -0800 (PST)
+Received: from ubuntu-m3-large-x86 ([2604:1380:45f1:1d00::1])
+        by smtp.gmail.com with ESMTPSA id k4sm3314691qki.2.2020.11.13.11.00.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Nov 2020 11:00:47 -0800 (PST)
+Date:   Fri, 13 Nov 2020 12:00:45 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kbuild-all@lists.01.org, clang-built-linux@googlegroups.com,
+        netdev@vger.kernel.org
+Subject: Re: [net-next,v2,4/5] seg6: add support for the SRv6 End.DT4 behavior
+Message-ID: <20201113190045.GA1463790@ubuntu-m3-large-x86>
+References: <20201107153139.3552-5-andrea.mayer@uniroma2.it>
+ <202011131747.puABQV5A-lkp@intel.com>
+ <20201113085730.5f3c850a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <c7623978-5586-5757-71aa-d12ee046a338@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.24]
-X-RMX-ID: 20201113-195938-4CXnnt421hz2TTLx-0@kdin02
-X-RMX-SOURCE: 217.111.95.66
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c7623978-5586-5757-71aa-d12ee046a338@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Friday, 13 November 2020, 00:26:17 CET, Vladimir Oltean wrote:
-> On Thu, Nov 12, 2020 at 04:35:32PM +0100, Christian Eggers wrote:
-> > Interrupts are required for TX time stamping. Probably they could also
-> > be used for PHY connection status.
-> 
-> Do the KSZ switches have an internal PHY? And there's a single interrupt
-> line, shared between the PTP timestamping engine, and the internal PHY
-> that is driver by phylib?
-The device has only one interrupt line (INTRP_N), although there may be
-applications which use additionally the GPIO (PPS/PEROUT) output as an
-interrupt.
-
-I assume that the PHY driver currently uses polling (as the KSZ9477 driver
-used to have no interrupt functionality. Maybe this can be changed in future,
-as the KSZ hardware has hierarchical interrupt enable/status registers.
-
-> > This patch only adds the basic infrastructure for interrupts, no
-> > interrupts are actually enabled nor handled.
+On Fri, Nov 13, 2020 at 10:05:56AM -0700, David Ahern wrote:
+> On 11/13/20 9:57 AM, Jakub Kicinski wrote:
+> > Good people of build bot, 
 > > 
-> > ksz9477_reset_switch() must be called before requesting the IRQ (in
-> > ksz9477_init() instead of ksz9477_setup()).
-> 
-> A patch can never be "too simple". Maybe you could factor out that code
-> movement into a separate patch.
-I haven't checked yet, but I'll try.
-
-[...]
-
-> > +static irqreturn_t ksz9477_switch_irq_thread(int irq, void *dev_id)
-> > +{
-> > +	struct ksz_device *dev = dev_id;
-> > +	u32 data;
-> > +	int port;
-> > +	int ret;
-> > +	irqreturn_t result = IRQ_NONE;
-> 
-> Please keep local variable declaration sorted in the reverse order of
-> line length. But....
-> 
-> > +
-> > +	/* Read global port interrupt status register */
-> > +	ret = ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data);
-> > +	if (ret)
-> > +		return result;
-> 
-> ...Is there any point at all in keeping the "result" variable?
-> 
-> > +
-> > +	for (port = 0; port < dev->port_cnt; port++) {
-> > +		if (data & BIT(port)) {
-> 
-> You can reduce the indentation level by 1 here using:
-> 
-> 		if (!(data & BIT(port)))
-> 			continue;
-> 
-> > +			u8 data8;
-> > +
-> > +			/* Read port interrupt status register */
-> > +			ret = ksz_read8(dev, PORT_CTRL_ADDR(port, REG_PORT_INT_STATUS),
-> > +					&data8);
-> > +			if (ret)
-> > +				return result;
-> > +
-> > +			/* ToDo: Add specific handling of port interrupts */
-> 
-> Buggy? Please return IRQ_HANDLED, otherwise the system, when bisected to
-> this commit exactly, will emit interrupts and complain that nobody cared.
-Probably this can be kept as it is. The hardware will only emit interrupts
-if these have been explicitly enabled. Although the *port* interrupts are
-enabled here (and all bits in the "Port Interrupt Mask Register" (section
-5.2.1.12) are active after reset), actually no interrupts should be raised as
-the ports sub units (PTP, PHY and ACL) don't emit interrupt after reset:
-- PHY (section 5.2.2.19): All interrupts are disabled after reset
-- PTP (section 5.2.11.11): dito
-- ACL (not found): I got never interrupts from here
-
-> 
-> > +		}
-> > +	}
-> > +
-> > +	return result;
-> > +}
-> > +
-> > +static int ksz9477_enable_port_interrupts(struct ksz_device *dev)
-> > +{
-> > +	u32 data;
-> > +	int ret;
-> > +
-> > +	ret = ksz_read32(dev, REG_SW_PORT_INT_MASK__4, &data);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	/* Enable port interrupts (0 means enabled) */
-> > +	data &= ~((1 << dev->port_cnt) - 1);
-> 
-> And what's the " - 1" for?
-I build a bitmask where the bits 0..(dev->port_cnt-1) are set... I'll whether
-GENMASK() can be used with variable data as argument.
-> 
-> > +	ret = ksz_write32(dev, REG_SW_PORT_INT_MASK__4, data);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	return 0;
-> 
-> 	return ksz_write32(dev, REG_SW_PORT_INT_MASK__4, data);
-> 
-> > +}
-> > +
-> > +static int ksz9477_disable_port_interrupts(struct ksz_device *dev)
-> > +{
-> > +	u32 data;
-> > +	int ret;
-> > +
-> > +	ret = ksz_read32(dev, REG_SW_PORT_INT_MASK__4, &data);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	/* Disable port interrupts (1 means disabled) */
-> > +	data |= ((1 << dev->port_cnt) - 1);
-> > +	ret = ksz_write32(dev, REG_SW_PORT_INT_MASK__4, data);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	return 0;
-> 
-> same comments as above.
-> 
-> Also, it's almost as if you want to implement these in the same
-> function, with a "bool enable"?
-You are right.
-
-> 
-> > +}
-> > +
+> > would you mind shedding some light on this one? It was also reported on
+> > v1, and Andrea said it's impossible to repro. Strange that build bot
+> > would make the same mistake twice, tho.
 > > 
-> >  static int ksz9477_switch_init(struct ksz_device *dev)
-> >  {
-> > 
-> > -	int i;
-> > +	int i, ret;
-> > 
-> >  	dev->ds->ops = &ksz9477_switch_ops;
-> > 
-> > +	ret = ksz9477_reset_switch(dev);
-> > +	if (ret) {
-> > +		dev_err(dev->dev, "failed to reset switch\n");
-> > +		return ret;
-> > +	}
-> > +
-> > 
-> >  	for (i = 0; i < ARRAY_SIZE(ksz9477_switch_chips); i++) {
-> >  	
-> >  		const struct ksz_chip_data *chip = &ksz9477_switch_chips[i];
-> > 
-> > @@ -1584,12 +1651,32 @@ static int ksz9477_switch_init(struct ksz_device
-> > *dev)> 
-> >  	/* set the real number of ports */
-> >  	dev->ds->num_ports = dev->port_cnt;
-> > 
-> > +	if (dev->irq > 0) {
-> > +		unsigned long irqflags =
-> > irqd_get_trigger_type(irq_get_irq_data(dev->irq));
-> What is irqd_get_trigger_type and what does it have to do with the
-> "irqflags" argument of request_threaded_irq? Where else have you even
-> seen this?
-No idea where I originally found this. It's some time ago when I wrote this.
+> 
+> I kicked off a build this morning using Andrea's patches and the config
+> from the build bot; builds fine as long as the first 3 patches are applied.
+> 
 
-> 
-> > +
-> > +		irqflags |= IRQF_ONESHOT;
-> 
-> And shared maybe?
-I don't need it. Is there a rule when to add shared? At least the KSZ should 
-be able to tell whether it has raised an IRQ or not.
+I can confirm this as well with clang; if I applied the first three
+patches then this one, there is no error but if you just apply this one,
+there will be. If you open the GitHub URL, it shows just this patch
+applied, not the first three, which explains it.
 
-> 
-> > +		ret = devm_request_threaded_irq(dev->dev, dev->irq, NULL,
-> > +						ksz9477_switch_irq_thread,
-> > +						irqflags,
-> > +						dev_name(dev->dev),
-> > +						dev);
-> > +		if (ret) {
-> > +			dev_err(dev->dev, "failed to request IRQ.\n");
-> > +			return ret;
-> > +		}
-> > +
-> > +		ret = ksz9477_enable_port_interrupts(dev);
-> > +		if (ret)
-> > +			return ret;
-> 
-> Could you also clear pending interrupts before enabling the line?
-As the device has just been reset and no concrete interrupts have been enabled,
-there should be no need for this.
+For what it's worth, b4 chokes over this series:
 
-> 
-> > +	}
-> > 
-> >  	return 0;
-> >  
-> >  }
-> >  
-> >  static void ksz9477_switch_exit(struct ksz_device *dev)
-> >  {
-> > 
-> > +	if (dev->irq > 0)
-> > +		ksz9477_disable_port_interrupts(dev);
-> 
-> I think it'd look a bit nicer if you moved this condition into
-> ksz9477_disable_port_interrupts:
-> 
-> 	if (!dev->irq)
-> 		return;
-> 
-> >  	ksz9477_reset_switch(dev);
-> >  
-> >  }
+$ b4 am -o - 20201107153139.3552-1-andrea.mayer@uniroma2.it | git am
+Looking up https://lore.kernel.org/r/20201107153139.3552-1-andrea.mayer%40uniroma2.it
+Grabbing thread from lore.kernel.org/linux-kselftest
+Analyzing 18 messages in the thread
+---
+Writing /tmp/tmp8425by7fb4-am-stdout
+  [net-next,v2,3/5] seg6: add callbacks for customizing the creation/destruction of a behavior
+---
+Total patches: 1
+---
+ Link: https://lore.kernel.org/r/20201107153139.3552-1-andrea.mayer@uniroma2.it
+ Base: not found
+---
+Applying: seg6: add callbacks for customizing the creation/destruction of a behavior
+error: patch failed: net/ipv6/seg6_local.c:1015
+error: net/ipv6/seg6_local.c: patch does not apply
+Patch failed at 0001 seg6: add callbacks for customizing the creation/destruction of a behavior
+hint: Use 'git am --show-current-patch=diff' to see the failed patch
+When you have resolved this problem, run "git am --continue".
+If you prefer to skip this patch, run "git am --skip" instead.
+To restore the original branch and stop patching, run "git am --abort".
 
-regards
-Christian
+Even if I grab the mbox from lore.kernel.org, it tries to do the same
+thing and apply the 3rd patch first, which might explain why the 0day
+bot got confused.
 
-
-
+Cheers,
+Nathan
