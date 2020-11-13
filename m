@@ -2,137 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A1712B1747
-	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 09:37:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09C512B176B
+	for <lists+netdev@lfdr.de>; Fri, 13 Nov 2020 09:39:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726288AbgKMIhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 03:37:18 -0500
-Received: from mail-eopbgr1310079.outbound.protection.outlook.com ([40.107.131.79]:24034
-        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725866AbgKMIhS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 03:37:18 -0500
+        id S1726160AbgKMIjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 03:39:25 -0500
+Received: from de-smtp-delivery-52.mimecast.com ([62.140.7.52]:60803 "EHLO
+        de-smtp-delivery-52.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726149AbgKMIjZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 03:39:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1605256761;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=WWpbBqfKuGd2K6RnF+MTDL+1VI1DGMZ+u0+6hNJ8SHQ=;
+        b=mmiyxN9Fs9lYk+aAuNyt5Ub/eyyCcR9DTr9Z+kTNPro+HbPPbWEalGyfww5zryUBRJS6u2
+        KW9zrQGywixz3DV8BwkK24iQyI8r6gnGwsTk0XbdoI+ABNe/v4/SRVt+79zd9gECuhfTSM
+        cwS96lYOEyFSORCgNygygDQDEC9vHek=
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com
+ (mail-vi1eur04lp2055.outbound.protection.outlook.com [104.47.14.55]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ de-mta-40-7_jcavCrO8-reddAroZBlg-1; Fri, 13 Nov 2020 09:39:19 +0100
+X-MC-Unique: 7_jcavCrO8-reddAroZBlg-1
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fz6ezEsxUMc7C44oYjhqszn2MSvkkm6wieUALGco5DsxL7976qEUlThL/vyLyjjrRKmZBSWZu++QgmkwS6NupK6AbSuWYaxOOw4UKfR7EJkTuwIhMKq6ZYRGGI/2+jqw9+GBEkje/ysvT2S9BHoa9RCB42gKyghmz685pAgK4mJ49LTiNO24DzGdMARrSWRYHdSlM5AEQx1YRvKYesFBm2kUh7IZVMnjukBrfz380cn13RHVHgdL95JLsYR7mlWALQYdVOiPO+id3PC/TIfHvLDx94c5cLzUo9r5S3ssMRtigDrNAgSGRh1Oo0cSgRg6p3RRdB+r7XaqIrK/oyehGQ==
+ b=AEGtUM7++NxLXsMKy9/AQv+N6uXcvDBc+dXCcIPyzGHF3MphXVgHSkq1HigczS1ckrNeWnsmg7BGJ131BvoafhJy7DC7biHb3/X6LRLbSWKMdJ0TBaIG8pTMsR6uoSXQEI92diZ7VvVSpn4TABu5jsrL7sifAN+Q6OVNtZfy30AcqCKvQxIZhqOLPn/EOQVbQfrhZOrRYlW8A9OZdA31oQ6SDc6O8iBcJgqZn0ja4vLXj48ZBV7lDTiA+Ti2geGJSn5z+fHmXNeSQJQCC/tEhi+Kjfm4TALkrQSVMTUQWBMkJlZcVGQdzG4xXJytsldPDX/3sKZwayAKXJRbbA+Pjg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YWTV8dlJrkEVq2oDWDSL+Cpzhddm15jnQ66Ll/BTECc=;
- b=VPfmWt/K4wf9alhNqasG4veRgxPgrOLD6YsbUXKWlFgN9GIDd55VkW+J8JIarcCklyxILa5N57VAHAdK8TnJkKkoJlhvcYEIA3kgFXU0PxWE8Qk3b3l9iqvhlHBFkn/X9HWifYv3QFeCYku5c/hH/k58Nvu9deGSfyHLFOAxtxgv4fA6SPMRYcoFuCH1CQQ6XQFhWoM/WSFyq2RzrSMgoNNwKOgimSE4esLgPWJl6toWawhuFOY1HmnqbNAjJKr+E9oAZi6qImIfm2AdEbMeXJt6Om0Kpy+aJlZqvrYcRPKeQgp41dtmwCqgh11Mpx8R18zKydvpI4V8p7RtJiI9PA==
+ bh=xYaLrSBfx3edWy40um+qZanpNsDwYLxdh2LtlemenTU=;
+ b=S7vPDs2JPlxm7/ZPpIOByp4XEiEL9EYgYMnLylpwqR2RlWsqT73kcOG8SMQSFH+nkh8F7EFdvUpbtExl8hDn37aH7YIxp502/O/j945KsKB/t2c3Efjn9jb5NSN5gOiDlYNpfOPpqY4KXR1H4HEJ/HmBaLR0YGx9Z8GNqfl49HHKAEy0rHj0JCXrE1hIm+5KQ4dBXybSFEBfkmHweH67vBeTKgINkc0qh7dlCzNmss0zQ8twsNugTlLNAfmDt751tV/7663WJV6plFi4+TnO5TRtS/KvDfLN7RxFIfP2oSR3JkK1Q1G6J8dn62PYoaeYXKmhTRDnlQqNtxWQKJG75A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=quectel.com; dmarc=pass action=none header.from=quectel.com;
- dkim=pass header.d=quectel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quectel.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YWTV8dlJrkEVq2oDWDSL+Cpzhddm15jnQ66Ll/BTECc=;
- b=WLvD/6CMTc7Kf/eZwRqSbnhDIhRgHvrUTMfb5ASI7JVnLqcyI1nZ+rZasCCyQO/xPpX0Fo7BE4nPYO/wyZJ8Duvc3+30L8uClqSIE7Q4fI2kcKT9eD9BqnJg8QwhYgJW8XdODAPsYMv9xTFKsPUvGWK7P7DLNLiP0Xvol+qt3vY=
-Received: from HK2PR06MB3507.apcprd06.prod.outlook.com (2603:1096:202:3e::14)
- by HK0PR06MB3010.apcprd06.prod.outlook.com (2603:1096:203:90::21) with
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=suse.com;
+Received: from DB3PR0402MB3641.eurprd04.prod.outlook.com (2603:10a6:8:b::12)
+ by DB7PR04MB5068.eurprd04.prod.outlook.com (2603:10a6:10:14::30) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.22; Fri, 13 Nov
- 2020 08:37:10 +0000
-Received: from HK2PR06MB3507.apcprd06.prod.outlook.com
- ([fe80::94f:c55a:f9c8:22f4]) by HK2PR06MB3507.apcprd06.prod.outlook.com
- ([fe80::94f:c55a:f9c8:22f4%5]) with mapi id 15.20.3541.025; Fri, 13 Nov 2020
- 08:37:10 +0000
-From:   =?utf-8?B?Q2FybCBZaW4o5q635byg5oiQKQ==?= <carl.yin@quectel.com>
-To:     Kristian Evensen <kristian.evensen@gmail.com>,
-        Daniele Palmas <dnlplm@gmail.com>
-CC:     =?utf-8?B?QmrDuHJuIE1vcms=?= <bjorn@mork.no>,
-        Paul Gildea <paul.gildea@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-usb <linux-usb@vger.kernel.org>
-Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggbmV0LW5leHQgMS8xXSBuZXQ6IHVzYjogcW1pX3d3?=
- =?utf-8?B?YW46IGFkZCBkZWZhdWx0IHJ4X3VyYl9zaXpl?=
-Thread-Topic: [PATCH net-next 1/1] net: usb: qmi_wwan: add default rx_urb_size
-Thread-Index: AQHWhom0yoQF//qW/E+nUHr9aPCUA6m4izkAgAyrDwCAANxOAIAAB6Uw
-Date:   Fri, 13 Nov 2020 08:37:09 +0000
-Message-ID: <HK2PR06MB35071489A05CEBF9C5FADD1C86E60@HK2PR06MB3507.apcprd06.prod.outlook.com>
-References: <e724ce7621dcb8bd412edb5d30bfb1e8@sslemail.net>
- <CAKfDRXjcOCvfTx0o6Hxdd4ytkNfJuxY97Wk2QnYvUCY8nzT7Sg@mail.gmail.com>
-In-Reply-To: <CAKfDRXjcOCvfTx0o6Hxdd4ytkNfJuxY97Wk2QnYvUCY8nzT7Sg@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=quectel.com;
-x-originating-ip: [203.93.254.84]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 17baa40b-2c74-40de-05e8-08d887af4fc2
-x-ms-traffictypediagnostic: HK0PR06MB3010:
-x-microsoft-antispam-prvs: <HK0PR06MB3010E477AE8AA4478E41BDF586E60@HK0PR06MB3010.apcprd06.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9QJSVgGvAkljA9rsSnGykAmeLWgwzoAVcrKE7+ebQ8Z/f4VJEs0ky2Osj07tZWJTKkcb9pk/gsOATjvXKzm01/3TzB06FEOJqOhtqhzg2HlmPOu730YN9HR5+2RcqvWY0YiHm4RuBSDEXf5KaFH/47CYPzGGZgF8hcyjitp8r9hnJXXsaZnCfV2LFLx6lZhK2LmI0U+nsCUVwhaLc4OLZXELKK/jOWZNO0m1Uy8yheC7xJ1kQMlxaS1g28id+C5gSLI8SsT4j9dFa3YNEZgLqHokyAJxEDjAXuuaN1tfOhaVQGB0HRFCsh6L5Z4Ow0ieYrXSEG7dxMaiEsNmn7/eDQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3507.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(366004)(346002)(396003)(136003)(39860400002)(7696005)(54906003)(66476007)(5660300002)(478600001)(85182001)(9686003)(66946007)(186003)(224303003)(2906002)(55016002)(71200400001)(66556008)(316002)(4326008)(66446008)(64756008)(52536014)(53546011)(83380400001)(6506007)(76116006)(33656002)(26005)(86362001)(110136005)(8936002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: /qeEtBtqfNVrfOoC6h28S413Lzrm50Y4MK6q9vzVVmnPl6J7cNI0iIAwk+Kk+/eazQ5KG1XgF/fxwz5gavWJtuunpE4a/vOHI50E1BrBVcTNMfbdm+jFcnmsEscAXSZY4VfEjzbQ/g9S9Ja9MOp36MhKbvpKcuzC0IiGdcVOHeoLEUzAWWdeKJaqojN4XgpCHtBfwRMBImYuUHpUwtRUtFceLA+sNvzlW2pz3rRQ1tDFtb8GoGyo9ZqFW9XAsAIiz5VvXRHp4FkVZzA39654hEs/AGPo5x2a2Z7EZEvGaBtVyd85zwuKwkiRE4JHkQilSCnkdPqCTg4dWVAeCT+Fl77x3RmDHfTxmAMqxIf2lFqQvJq1Pol5fLBBRXpLUaGqOXb90pgfaw7rRzQWbfbFNCHRNY7eJn1tC+/oTvtmhGX9CrH8yVWCu25+s1iczARbuS9w/IRlikr/VQG1rq7bxyvVoGJjzbnNsz5jaqTgzm5SiS2as02QrDG54v20ta5cR5WmLMOjrmpXOiCVsXpxopfle+PbMgVABhHongJ/5xty86AAMWTLwxkZDJYQ36vDAXtlkxwidKB2MZBqbQAlPhQB+kV7WRLOkLp63ABOGzHJaYu59xdV+hALPXi5yFGAUEaksGFvrhoK2kWMIC6ZKb2UAw6MYBAB4jsqbwYVSXYJs2PK9xezHpq0T9fbn3FxvpnmhSntYiXCTZ6a/CgJr26KSN0UdMjZunxd0vEqt2OSAIGsTH+haa57W5il1J05OvwUaJ9ERBXmCTJ1hLOWLBDl6EuTSpTj4/vFI8qka3BxJC2LI3wZjsmP4SMzNqJvBG0elDTltAnCesS+Q93sFT+p8k80lSea3WW5jhFGCAvkLqb8ZpGDqGUxwrz8dfifM1oa6j2+pGmETlzXFxY0tQ==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.25; Fri, 13 Nov
+ 2020 08:39:18 +0000
+Received: from DB3PR0402MB3641.eurprd04.prod.outlook.com
+ ([fe80::c84:f086:9b2e:2bf1]) by DB3PR0402MB3641.eurprd04.prod.outlook.com
+ ([fe80::c84:f086:9b2e:2bf1%7]) with mapi id 15.20.3455.040; Fri, 13 Nov 2020
+ 08:39:18 +0000
+From:   Gary Lin <glin@suse.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, andreas.taschner@suse.com
+Subject: [PATCH RFC] bpf, x64: allow not-converged images when BPF_JIT_ALWAYS_ON is set
+Date:   Fri, 13 Nov 2020 16:38:52 +0800
+Message-ID: <20201113083852.22294-1-glin@suse.com>
+X-Mailer: git-send-email 2.28.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [60.251.47.115]
+X-ClientProxiedBy: AM9P192CA0010.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21d::15) To DB3PR0402MB3641.eurprd04.prod.outlook.com
+ (2603:10a6:8:b::12)
 MIME-Version: 1.0
-X-OriginatorOrg: quectel.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from GaryWorkstation.suse.cz (60.251.47.115) by AM9P192CA0010.EURP192.PROD.OUTLOOK.COM (2603:10a6:20b:21d::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.25 via Frontend Transport; Fri, 13 Nov 2020 08:39:16 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 53190378-9884-436c-ee8f-08d887af9bfb
+X-MS-TrafficTypeDiagnostic: DB7PR04MB5068:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB7PR04MB5068FFAD42A20A3949FA30D2A9E60@DB7PR04MB5068.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XhELy+ejeyGfpQ+4Cy5Umy3ctEgfJNCiUv8G9DdwdEYFf+e3+Dsh3GTjXW3v57CeI0YchnBbXuezmhNALawn67ZbYfDULCbulFIlp+80WdgXyQsXh3dOP4oA78fgaz+5o/17wgcPgtvJArhfYoNcT1EW2LZk5gF+ZWudwMvEh8dswA9wFQa/Ree0pckUWEXRhIlgz/HMqPzK3edqHLT/UXEqtN7YPo/H0Hot0n5eMsSFKPaigiVfIXa7Y4VBEwycKpDzwIYmo+PPmRdEY4pcsc+OGYAkjIfMQ8pk9lb9G6fMouMp6blBbM0O2VHPaxBKIjXVZ8mBvUdFrEvUxshZfqabn08ah0zmOy4gXGjLknFG1yIa63dBFaiPu1MP8xjC
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB3PR0402MB3641.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(136003)(39860400002)(396003)(366004)(8676002)(956004)(2616005)(8936002)(2906002)(1076003)(52116002)(6512007)(36756003)(83380400001)(86362001)(16526019)(66946007)(54906003)(6666004)(316002)(478600001)(109986005)(107886003)(26005)(4326008)(5660300002)(55236004)(6486002)(66476007)(66556008)(6506007)(186003)(266003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: Bn9ADcw1SyfcML1nFItgfReBgLB6y/FLSWktitiQv3hyUfxsVBinKLAvIS5Dj+QB/V1O5hWhX+MSFsnDlZMkrvg4t9AIvwvXqVdqu5TVLBv+pRamjoUjq1RM6ei5ETgsIjRLv/crNOAq96Ra8nozdi01f8UXkWI/Acuwes4IcKe+8uSakCJnbeV20qqlLWDgKSNH+O2ybnXYnqfCfPAsY1sZXtKxKNTkqOW3oGbZmmVKwQLpR11nWBKZeUbAhbHghthXSi/7H+SzjtIIbFg4hoJIoZTIqJBcMvIvKq9liofyrsKSiFMLJl3dbQliGHMrNcyNdCy6ZA3pr8QdjO3y7NkOUUb0r7LMBiQNszja8ASl5uGBXo06ouJ5e/RfmCwiHZTNI5U5PqV6zixrf1uxEiYPYiqC3Z4iYh0X+fd8PmUSLf1/3vK7A0kFsLAJSIknGtKz5wxMSLmUmhnk9tp6yzDE0o5nZxkUR0tCIDBDiFG40ZcYWqnrlc3XvKkVNtXyhCOQplpi9BjswlverpQbvTE/QUxOCaeUbb3xRGcqtpFhDY1i/hMtb8ShWWlyQSLGjCb1s1hFnLEHOkKnYu0n+Rg5B7qguDIepMoHQp/aTuzBR7ilNEhQaUUb+SwkJ+EfURJrFOlb/WoO9icqkTkTZw==
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53190378-9884-436c-ee8f-08d887af9bfb
+X-MS-Exchange-CrossTenant-AuthSource: DB3PR0402MB3641.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3507.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 17baa40b-2c74-40de-05e8-08d887af4fc2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2020 08:37:09.8408
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2020 08:39:18.2009
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 7730d043-e129-480c-b1ba-e5b6a9f476aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HY0/75xlfon/NYf/P1VvA2YJ1fIhyKWdImJBMY3GK5Xd4Ss2JjZIy62zYe33tWyPayqcYlXaAP8uM7vChedmqA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR06MB3010
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Rd6vgqVidWr5yXBts8k6IZ/nNOCn7Om9QolY9249KBpLw3S+yOfO1Wy3WVmbMx0q
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5068
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgS3Jpc3RpYW4sDQoJRm9yIG9wZW53cnQgZGV2aWNlLCB0aGUgJyBQZXJmb3JtYW5jZSBib3R0
-bGVuZWNrICcgdXN1YWxseSBpcyBOQVQsIG5vdCB1c2JuZXQuDQoJQXMgSSByZW1lbWJlcjogTVQ3
-NjIxIGhhdmUgZHVhbCBjb3JlLCBhbmQgc3VwcG9ydCBIYXJkd2FyZSBhY2NlbGVyYXRpb24gb2Yg
-J05BVCcuDQoNCglJdCBzZWVtcyByODE1MiBpcyBhIHB1cmUgRXRoZXJuZXQgY2FyZCwgZG9lcyBp
-dCBjYW4gdXNlIHRoZSAnIEhhcmR3YXJlIGFjY2VsZXJhdGlvbiAnDQogDQoJQW5kIGRvIHlvdSB1
-c2UgJ21wc3RhdCAtUCBBTEwgMicgdG8gbW9uaXRvciBlYWNoIGNvcmUncyBsb2FkaW5nPw0KCUdl
-bmVyYWxseSBVU0IgaW50ZXJydXB0IG9jY3VycyBhdCBjcHUwLCBhbmQgdGhlICdOQVQnIGlzIGFs
-c28gb24gY3B1MC4NCglZb3UgY2FuIHRyeSB0byB1c2UgImVjaG8gMiA+IC9zeXMvY2xhc3MvbmV0
-L3d3YW4wLyAvcXVldWVzL3J4LTAvcnBzX2NwdXMgIiB0byBtb3ZlIE5BVCB0byBjcHUxLg0KDQoJ
-WDU1IG1heCBzdXBwb3J0IDMxS0IsIHRoZXJlIGFyZSBiZW5lZml0IGZyb20gMTZLQiAtPiAzMUtC
-Lg0KCU1heWJlIHlvdXIgWDU1J3MgRlcgdmVyc2lvbiBpcyBvbGQsIG9ubHkgZ2VuZXJhdGVzIDE2
-S0IgZGF0YS4NCglBbmQgVVJCIHNpemUgaXMgMzJLQiwgYnV0IFg1NSBvbmx5IG91dHB1dCAxNktC
-LCBzbyBtYXliZSB0aGVyZSBhcmUgbm90IGVub3VnaCBudW1iZXIgb2YgVVJCcz8NCg0KDQpPbiBO
-b3ZlbWJlciAxMywgMjAyMCAzOjM3LCBLcmlzdGlhbiBFdmVuc2VuIHdyb3RlOg0KDQo+IEhpIERh
-bmllbGUsDQo+IA0KPiBPbiBUaHUsIE5vdiAxMiwgMjAyMCBhdCA3OjI5IFBNIERhbmllbGUgUGFs
-bWFzIDxkbmxwbG1AZ21haWwuY29tPiB3cm90ZToNCj4gPiB0aGFua3MgZm9yIHRlc3RpbmcuIFN0
-aWxsIHRoaW5raW5nIGl0IGNvdWxkIGJlIGJldHRlciB0byBkaWZmZXJlbnRpYXRlDQo+ID4gYmV0
-d2VlbiByYXctaXAgYW5kIHFtYXAsIGJ1dCBub3QgeWV0IGFibGUgdG8gZmluZCB0aGUgdGltZSB0
-byBwZXJmb3JtDQo+ID4gc29tZSB0ZXN0cyBvbiBteSBvd24uDQo+IA0KPiBJIGFncmVlIHRoYXQg
-c2VwYXJhdGluZyBiZXR3ZWVuIHFtYXAgYW5kIG5vbi1xbWFwIHdvdWxkIGJlIG5pY2UuDQo+IEhv
-d2V2ZXIsIHdpdGggbXkgbW9kdWxlcyBJIGhhdmUgbm90IG5vdGljZWQgYW55IGlzc3VlcyB3aGVu
-IHVzaW5nIDMyS0IgYXMgdGhlDQo+IFVSQiBzaXplLiBTdGlsbCwgdGhlIHJlc3VsdHMgc2hvdyB0
-aGF0IHRoZXJlIGlzIG5vIGdhaW4gaW4gaW5jcmVhc2luZyB0aGUgYWdncmVnYXRpb24NCj4gc2l6
-ZSBmcm9tIDE2IHRvIDMyS0IuIENhcHR1cmluZyB0cmFmZmljIGZyb20gdGhlIG1vZGVtIHJldmVh
-bHMgdGhhdCB0aGUNCj4gaGFyZHdhcmUgc3RpbGwgb25seSBnZW5lcmF0ZXMgMTZLQiBVUkJzIChl
-dmVuIGluIGhpZ2gtc3BlZWQgbmV0d29ya3MpLiBJIGFsc28NCj4gc2VlIHRoYXQgZm9yIGV4YW1w
-bGUgdGhlDQo+IHI4MTUyIGRyaXZlciB1c2VzIGEgc3RhdGljIFVSQiBzaXplIG9mIDE2Mzg0Lg0K
-PiANCj4gPiBJcyB0aGUgZG9uZ2xlIGRyaXZlciBiYXNlZCBvbiB1c2JuZXQ/IEJlc2lkZXMgdGhl
-IGFnZ3JlZ2F0ZWQgZGF0YWdyYW0NCj4gPiBzaXplLCBkaWQgeW91IGFsc28gdHJ5IGRpZmZlcmVu
-dCBkYXRhZ3JhbSBtYXggbnVtYmVycz8NCj4gDQo+IFRoZSBkb25nbGUgZHJpdmVyIGlzIG5vdCBi
-YXNlZCBvbiB1c2JuZXQsIGl0IGlzIHI4MTUyLiBJIHRyaWVkIHRvIGluY3JlYXNlIHRoZQ0KPiBt
-YXhpbXVtIGRhdGFncmFtcyBmcm9tIDMyIHRvIDY0IChhcyB3ZWxsIGFzIHNvbWUgb3RoZXIgdmFs
-dWVzKSwgYnV0IGl0IGhhZCBubw0KPiBlZmZlY3Qgb24gdGhlIHBlcmZyb3JtYW5jZS4NCj4gDQo+
-ID4gVGhlIG9ubHkgYWR2aWNlIEkgY2FuIGdpdmUgeW91IGlzIHRvIGNoZWNrIGlmIG90aGVyIGRy
-aXZlcnMgYXJlDQo+ID4gcGVyZm9ybWluZyBiZXR0ZXIsIGUuZy4gZGlkIHlvdSB0cnkgdGhlIE1C
-SU0gY29tcG9zaXRpb24/IG5vdCBzdXJlIGl0DQo+ID4gd2lsbCBtYWtlIG11Y2ggZGlmZmVyZW5j
-ZSwgc2luY2UgaXQncyBiYXNlZCBvbiB1c2JuZXQsIGJ1dCBjb3VsZCBiZQ0KPiA+IHdvcnRoIHRy
-eWluZy4NCj4gDQo+IEkgdHJpZWQgdG8gdXNlIE1CSU0sIGJ1dCB0aGUgcGVyZm9ybWFuY2Ugd2Fz
-IHRoZSBzYW1lIGFzIHdpdGggUU1JLiBJIHdpbGwgdGFrZSBhDQo+IGxvb2sgYXQgcjgxNTIgYW5k
-IGV4cGVyaW1lbnQgd2l0aCBpbXBsZW1lbnRpbmcgc29tZSBvZiB0aGUgZGlmZmVyZW5jZXMgaW4N
-Cj4gdXNibmV0L3FtaV93d2FuLiBJIHNlZSBmb3IgZXhhbXBsZSB0aGF0IHI4MTUyIHVzZXMgTkFQ
-SSwgd2hpY2ggd2hpbGUgbm90IGENCj4gcGVyZmVjdCBmaXQgZm9yIFVTQiBjb3VsZCBiZSB3b3J0
-aCBhIHRyeS4NCj4gQmFzZWQgb24gc29tZSBkaXNjdXNzaW9ucyBJIGZvdW5kIG9uIHRoZSBtYWls
-aW5nIGxpc3QgZnJvbSAyMDExLCBpbXBsZW1lbnRpbmcNCj4gTkFQSSBpbiB1c2JuZXQgY291bGQg
-YmUgd29ydGh3aGlsZS4NCj4gDQo+IFRoYW5rcyBmb3IgdGhlIHJlcGx5IQ0KPiANCj4gQlIsDQo+
-IEtyaXN0aWFuDQo=
+The x64 bpf jit expects the bpf images converge within the given passes.
+However there is a corner case:
+
+  l0:     ldh [4]
+  l1:     jeq #0x537d, l2, l40
+  l2:     ld [0]
+  l3:     jeq #0xfa163e0d, l4, l40
+  l4:     ldh [12]
+  l5:     ldx #0xe
+  l6:     jeq #0x86dd, l41, l7
+  l7:     jeq #0x800, l8, l41
+  l8:     ld [x+16]
+  l9:     ja 41
+
+    [... repeated ja 41 ]
+
+  l40:    ja 41
+  l41:    ret #0
+  l42:    ld #len
+  l43:    ret a
+
+The bpf program contains 32 "ja 41" and do_jit() only removes one "ja 41"
+right before "l41:  ret #0" for offset=3D=3D0 in each pass, so
+bpf_int_jit_compile() needs to run do_jit() at least 32 times to
+eliminate those JMP instructions. Since the current max number of passes
+is 20, the bpf program couldn't converge within 20 passes and got rejected
+when BPF_JIT_ALWAYS_ON is set even though it's legit as a classic socket
+filter.
+
+A not-converged image may be not optimal but at least the bpf
+instructions are translated into x64 machine code. Maybe we could just
+issue a warning instead so that the program is still loaded and the user
+is also notified.
+
+On the other hand, if the size convergence is mandatory, then it
+deserves a document to collect the corner cases so that the user could
+know the limitations and how to work around them.
+
+Signed-off-by: Gary Lin <glin@suse.com>
+---
+ arch/x86/net/bpf_jit_comp.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index 796506dcfc42..90814c2daaae 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -1972,6 +1972,8 @@ struct x64_jit_data {
+ 	struct jit_context ctx;
+ };
+=20
++#define MAX_JIT_PASSES 20
++
+ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ {
+ 	struct bpf_binary_header *header =3D NULL;
+@@ -2042,7 +2044,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog =
+*prog)
+ 	 * may converge on the last pass. In such case do one more
+ 	 * pass to emit the final image.
+ 	 */
+-	for (pass =3D 0; pass < 20 || image; pass++) {
++	for (pass =3D 0; pass < MAX_JIT_PASSES || image; pass++) {
+ 		proglen =3D do_jit(prog, addrs, image, oldproglen, &ctx);
+ 		if (proglen <=3D 0) {
+ out_image:
+@@ -2054,13 +2056,22 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_pro=
+g *prog)
+ 		}
+ 		if (image) {
+ 			if (proglen !=3D oldproglen) {
++#ifdef CONFIG_BPF_JIT_ALWAYS_ON
++				pr_warn("bpf_jit: proglen=3D%d !=3D oldproglen=3D%d pass=3D%d\n",
++					proglen, oldproglen, pass);
++#else
+ 				pr_err("bpf_jit: proglen=3D%d !=3D oldproglen=3D%d\n",
+ 				       proglen, oldproglen);
+ 				goto out_image;
++#endif
+ 			}
+ 			break;
+ 		}
++#ifdef CONFIG_BPF_JIT_ALWAYS_ON
++		if (proglen =3D=3D oldproglen || pass >=3D (MAX_JIT_PASSES - 1)) {
++#else
+ 		if (proglen =3D=3D oldproglen) {
++#endif
+ 			/*
+ 			 * The number of entries in extable is the number of BPF_LDX
+ 			 * insns that access kernel memory via "pointer to BTF type".
+--=20
+2.28.0
+
