@@ -2,123 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DDA92B2CD1
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 12:10:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE8CE2B2CD9
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 12:14:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726618AbgKNLKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 06:10:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726541AbgKNLKf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 06:10:35 -0500
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7265BC0613D1;
-        Sat, 14 Nov 2020 03:10:35 -0800 (PST)
-Received: by mail-pf1-x444.google.com with SMTP id g7so9651693pfc.2;
-        Sat, 14 Nov 2020 03:10:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YNatTsbYkweFKdnOleBf0bsCzUL4SJDHgNbE+iqTc5Q=;
-        b=F9n/TfJo5sOrNAeHMKRsi2G9F4nVU2YzCNxvS2Uv32YYB3fthPiYKks2Zxwz7o2klS
-         Y0z7jZ1a0DBauUZsybL1yjrCR6MrEmOeKKMDRUms0Aq1GBZJ18ENzc4yhLTQ4vZoNxs0
-         z0qrTDq82ri3KOYuvZEMuWkWbGpK2c1lXQfb+Z1l9LJ7mqLph6SWfHJncLuZppB77rwN
-         UvkQv0mozTEzBP7KubgMMhWauGnxK18dlNrpwOowNHvDaQyvFGqBsnODMM9+heXd5Zjw
-         XIf0zayWYEB73kSfnQMT+hfBwsslxbIl2Vv7tVubLtkjLbMQmQzKMg1mojWLdS2UQwlz
-         pq3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YNatTsbYkweFKdnOleBf0bsCzUL4SJDHgNbE+iqTc5Q=;
-        b=ZadBTVwy7cr2zy+Olyh/VDnoML33LoHReQEfbZD66o7RiHD0BfhGM77XyzLfz5c7CN
-         XoAdfT5FXbh4IF8q2GTXmXpcf2mRa8ZEyiCzQsF35ME3pyiyjyqsrpdYq0ynWi5fcwp3
-         GtnKu/EPWQwcigWSsFEaKr8boXHKhRWepNdofVoXgIcGdnC50xl4FmH64hrrLTtNvAfU
-         P0wLSiH490Ai+j2ULyUMCQki5QygS3pugCy/GhC9RRo7PLUKhi7wWy88OpWBILpzOH5I
-         EY0MEl9ne/h8HQX5LfaH9IJQpc6q2iH4wXMRNerKhwJFvTOFj38BUEzRIKXiwxh3OLMy
-         9awg==
-X-Gm-Message-State: AOAM532rDWxGo4f9vXirALghV7ShRl3ucIHzT3NhQ4M6ClEZMUqqv9kw
-        MAfbU/prce0rcRSUL2VL3y8=
-X-Google-Smtp-Source: ABdhPJxEJx655OTIW0L7EVIt9fXu1zhmZz2wknk5dKq4p1xACL2k8X7Cb4Vo5qKTKsxCg9a6OiXFhw==
-X-Received: by 2002:a62:254:0:b029:18b:fcea:8b7c with SMTP id 81-20020a6202540000b029018bfcea8b7cmr5869149pfc.69.1605352234959;
-        Sat, 14 Nov 2020 03:10:34 -0800 (PST)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:98a0:19b2:d60d:c0c7])
-        by smtp.gmail.com with ESMTPSA id e7sm10938369pgj.19.2020.11.14.03.10.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Nov 2020 03:10:34 -0800 (PST)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Schiller <ms@dev.tdt.de>
-Cc:     Xie He <xie.he.0141@gmail.com>,
-        Andrew Hendry <andrew.hendry@gmail.com>
-Subject: [PATCH net-next] MAINTAINERS: Add Martin Schiller as a maintainer for the X.25 stack
-Date:   Sat, 14 Nov 2020 03:10:29 -0800
-Message-Id: <20201114111029.326972-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S1726543AbgKNLNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 06:13:30 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7192 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726356AbgKNLNa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 06:13:30 -0500
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CYCPS22RPz15Vlr;
+        Sat, 14 Nov 2020 19:13:16 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Sat, 14 Nov 2020
+ 19:13:25 +0800
+From:   Zhang Qilong <zhangqilong3@huawei.com>
+To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: [PATCH] can: ti_hecc: Fix memleak in ti_hecc_probe
+Date:   Sat, 14 Nov 2020 19:17:08 +0800
+Message-ID: <20201114111708.3465543-1-zhangqilong3@huawei.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin Schiller is an active developer and reviewer for the X.25 code.
-His company is providing products based on the Linux X.25 stack.
-So he is a good candidate for maintainers of the X.25 code.
+In the error handling, we should goto the probe_exit_candev
+to free ndev to prevent memory leak.
 
-The original maintainer of the X.25 network layer (Andrew Hendry) has
-not sent any email to the netdev mail list since 2013. So he is probably
-inactive now.
-
-Cc: Martin Schiller <ms@dev.tdt.de>
-Cc: Andrew Hendry <andrew.hendry@gmail.com>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
+Fixes: dabf54dd1c63 ("can: ti_hecc: Convert TI HECC driver to DT only driver")
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
 ---
- MAINTAINERS | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+ drivers/net/can/ti_hecc.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index af9f6a3ab100..ab8b2c9ad00e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9842,13 +9842,6 @@ S:	Maintained
- F:	arch/mips/lantiq
- F:	drivers/soc/lantiq
+diff --git a/drivers/net/can/ti_hecc.c b/drivers/net/can/ti_hecc.c
+index 9913f5458279..2c22f40e12bd 100644
+--- a/drivers/net/can/ti_hecc.c
++++ b/drivers/net/can/ti_hecc.c
+@@ -881,7 +881,8 @@ static int ti_hecc_probe(struct platform_device *pdev)
+ 	priv->base = devm_platform_ioremap_resource_byname(pdev, "hecc");
+ 	if (IS_ERR(priv->base)) {
+ 		dev_err(&pdev->dev, "hecc ioremap failed\n");
+-		return PTR_ERR(priv->base);
++		err = PTR_ERR(priv->base);
++		goto probe_exit_candev;
+ 	}
  
--LAPB module
--L:	linux-x25@vger.kernel.org
--S:	Orphan
--F:	Documentation/networking/lapb-module.rst
--F:	include/*/lapb.h
--F:	net/lapb/
--
- LASI 53c700 driver for PARISC
- M:	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
- L:	linux-scsi@vger.kernel.org
-@@ -18986,12 +18979,18 @@ L:	linux-kernel@vger.kernel.org
- S:	Maintained
- N:	axp[128]
+ 	/* handle hecc-ram memory */
+@@ -889,20 +890,22 @@ static int ti_hecc_probe(struct platform_device *pdev)
+ 							       "hecc-ram");
+ 	if (IS_ERR(priv->hecc_ram)) {
+ 		dev_err(&pdev->dev, "hecc-ram ioremap failed\n");
+-		return PTR_ERR(priv->hecc_ram);
++		err = PTR_ERR(priv->hecc_ram);
++		goto probe_exit_candev;
+ 	}
  
--X.25 NETWORK LAYER
--M:	Andrew Hendry <andrew.hendry@gmail.com>
-+X.25 STACK
-+M:	Martin Schiller <ms@dev.tdt.de>
- L:	linux-x25@vger.kernel.org
--S:	Odd Fixes
-+S:	Maintained
-+F:	Documentation/networking/lapb-module.rst
- F:	Documentation/networking/x25*
-+F:	drivers/net/wan/hdlc_x25.c
-+F:	drivers/net/wan/lapbether.c
-+F:	include/*/lapb.h
- F:	include/net/x25*
-+F:	include/uapi/linux/x25.h
-+F:	net/lapb/
- F:	net/x25/
+ 	/* handle mbx memory */
+ 	priv->mbx = devm_platform_ioremap_resource_byname(pdev, "mbx");
+ 	if (IS_ERR(priv->mbx)) {
+ 		dev_err(&pdev->dev, "mbx ioremap failed\n");
+-		return PTR_ERR(priv->mbx);
++		err = PTR_ERR(priv->mbx);
++		goto probe_exit_candev;
+ 	}
  
- X86 ARCHITECTURE (32-BIT AND 64-BIT)
+ 	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+ 	if (!irq) {
+ 		dev_err(&pdev->dev, "No irq resource\n");
+-		goto probe_exit;
++		goto probe_exit_candev;
+ 	}
+ 
+ 	priv->ndev = ndev;
+@@ -966,7 +969,7 @@ static int ti_hecc_probe(struct platform_device *pdev)
+ 	clk_put(priv->clk);
+ probe_exit_candev:
+ 	free_candev(ndev);
+-probe_exit:
++
+ 	return err;
+ }
+ 
 -- 
-2.27.0
+2.25.4
 
