@@ -2,96 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D53C2B2EF7
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 18:28:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DBFF2B2EFE
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 18:34:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726255AbgKNR11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 12:27:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54874 "EHLO
+        id S1726140AbgKNReS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 12:34:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726070AbgKNR10 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 12:27:26 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739A4C0613D1;
-        Sat, 14 Nov 2020 09:27:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=nFIjmU3PyYTtN+/KPAaiBpQ9mhotPT9InWONOcxLEKw=; b=VP6O6FTLaPgIzlW2qwuSOXOyzW
-        Kolh+nSrb8DTpSIiSxLmzjsPU3KGkOCYELDJBlIBZHa7zSwz3Oyu5Ku2oDCjNOucmmYnEjMoN6fe/
-        aPDqJyQs+QbhNchsftgaET7gT43vvPiV7iv/+CE4bWdndy5XCMhLtTe6SYUO8tOEbgeN0h6YMlgvT
-        4faDo3sLezINoU/WmkX5iX2VcmP/mHpyZpgYzv8yEjVBemVItqcMnQIDrU0q/jFk3MhJ6dbWBslV7
-        3LRH/AV/7IJM27h7IqM5UwczPd1T4+DTgLUxTlJ2hR2fS6QFXJ67ONDYAWqAqCJwBJLlPUgwM5s1a
-        wcvG93Iw==;
-Received: from [2601:1c0:6280:3f0::f32]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kdzKb-0006hj-7C; Sat, 14 Nov 2020 17:27:21 +0000
-Subject: Re: [PATCH net-next] net: linux/skbuff.h: combine NET + KCOV handling
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        linux-kernel@vger.kernel.org
-Cc:     kernel test robot <lkp@intel.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-next@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20201114011110.21906-1-rdunlap@infradead.org>
- <52502fe4-8f41-0630-5b9c-be2e07b6932c@tessares.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <8198558c-55f0-0ea3-3a23-e3dafb2cb09d@infradead.org>
-Date:   Sat, 14 Nov 2020 09:27:16 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1726092AbgKNReS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 12:34:18 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5C0C0613D1
+        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 09:34:18 -0800 (PST)
+Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kdzRI-0000mY-Ne; Sat, 14 Nov 2020 18:34:16 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2020-11-14
+Date:   Sat, 14 Nov 2020 18:33:44 +0100
+Message-Id: <20201114173358.2058600-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-In-Reply-To: <52502fe4-8f41-0630-5b9c-be2e07b6932c@tessares.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/14/20 12:01 AM, Matthieu Baerts wrote:
-> Hi Randy,
-> 
-> On 14/11/2020 02:11, Randy Dunlap wrote:
->> The previous Kconfig patch led to some other build errors as
->> reported by the 0day bot and my own overnight build testing.
-> 
-> Thank you for looking at that!
-> 
-> I had the same issue and I was going to propose a similar fix with one small difference, please see below.
-> 
->> --- linux-next-20201113.orig/include/linux/skbuff.h
->> +++ linux-next-20201113/include/linux/skbuff.h
->> @@ -4608,7 +4608,7 @@ static inline void skb_reset_redirect(st
->>   #endif
->>   }
->>   -#ifdef CONFIG_KCOV
->> +#if IS_ENABLED(CONFIG_KCOV) && IS_ENABLED(CONFIG_NET)
->>   static inline void skb_set_kcov_handle(struct sk_buff *skb,
-> Should we have here CONFIG_SKB_EXTENSIONS instead of CONFIG_NET?
-> 
-> It is valid to use NET thanks to your commit 85ce50d337d1 ("net: kcov: don't select SKB_EXTENSIONS when there is no NET") that links SKB_EXTENSIONS with NET for KCOV but it looks strange to me to use a "non direct" dependence :)
-> I mean: here below, skb_ext_add() and skb_ext_find() are called but they are defined only if SKB_EXTENSIONS is enabled, not only NET.
-> 
-> But as I said, this patch fixes the issue. It's fine for me if we prefer to use CONFIG_NET.
+Hello Jakub, hello David,
 
-I think it would be safer to use CONFIG_SKB_EXTENSIONS.
+here's a pull request for net/master consisting of 15 patches for net/master.
 
->> @@ -4636,7 +4636,7 @@ static inline u64 skb_get_kcov_handle(st
->>   static inline void skb_set_kcov_handle(struct sk_buff *skb,
->>                          const u64 kcov_handle) { }
->>   static inline u64 skb_get_kcov_handle(struct sk_buff *skb) { return 0; }
->> -#endif /* CONFIG_KCOV */
->> +#endif /* CONFIG_KCOV &&  CONFIG_NET */
-> 
-> (Small detail if you post a v2: there is an extra space between "&&" and "CONFIG_NET")
+Anant Thazhemadam contributed two patches for the AF_CAN that prevent potential
+access of uninitialized member in can_rcv() and canfd_rcv().
 
-Oops. Fixed in v2. Thanks for looking.
+The next patch is by Alejandro Concepcion Rodriguez and changes can_restart()
+to use the correct function to push a skb into the networking stack from
+process context.
 
-v2 on the way.
+Zhang Qilong's patch fixes a memory leak in the error path of the ti_hecc's
+probe function.
 
--- 
-~Randy
+A patch by me fixes mcba_usb_start_xmit() function in the mcba_usb driver, to
+first fill the skb and then pass it to can_put_echo_skb().
+
+Colin Ian King's patch fixes a potential integer overflow on shift in the
+peak_usb driver.
+
+The next two patches target the flexcan driver, a patch by me adds the missing
+"req_bit" to the stop mode property comment (which was broken during net-next
+for v5.10). Zhang Qilong's patch fixes the failure handling of
+pm_runtime_get_sync().
+
+The next seven patches target the m_can driver including the tcan4x5x spi
+driver glue code. Enric Balletbo i Serra's patch for the tcan4x5x Kconfig fix
+the REGMAP_SPI dependency handling. A patch by me for the tcan4x5x driver's
+probe() function adds missing error handling to for devm_regmap_init(), and in
+tcan4x5x_can_remove() the order of deregistration is fixed. Wu Bo's patch for
+the m_can driver fixes the state change handling in
+m_can_handle_state_change(). Two patches by Dan Murphy first introduce
+m_can_class_free_dev() and then make use of it to fix the freeing of the can
+device. A patch by Faiz Abbas add a missing shutdown of the CAN controller in
+the m_can_stop() function.
+
+regards,
+Marc
+
+---
+
+The following changes since commit ceb736e1d45c253f5e86b185ca9b497cdd43063f:
+
+  ipv6: Fix error path to cancel the meseage (2020-11-13 18:20:00 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.10-20201114
+
+for you to fetch changes up to 9a7e716d475eb29213117d2e501b841050c4b511:
+
+  can: m_can: m_can_stop(): set device to software init mode before closing (2020-11-14 18:21:51 +0100)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.10-20201114
+
+----------------------------------------------------------------
+Alejandro Concepcion Rodriguez (1):
+      can: dev: can_restart(): post buffer from the right context
+
+Anant Thazhemadam (2):
+      can: af_can: prevent potential access of uninitialized member in can_rcv()
+      can: af_can: prevent potential access of uninitialized member in canfd_rcv()
+
+Colin Ian King (1):
+      can: peak_usb: fix potential integer overflow on shift of a int
+
+Dan Murphy (2):
+      can: m_can: m_can_class_free_dev(): introduce new function
+      can: m_can: Fix freeing of can device from peripherials
+
+Enric Balletbo i Serra (1):
+      can: tcan4x5x: replace depends on REGMAP_SPI with depends on SPI
+
+Faiz Abbas (1):
+      can: m_can: m_can_stop(): set device to software init mode before closing
+
+Marc Kleine-Budde (4):
+      can: mcba_usb: mcba_usb_start_xmit(): first fill skb, then pass to can_put_echo_skb()
+      can: flexcan: flexcan_setup_stop_mode(): add missing "req_bit" to stop mode property comment
+      can: tcan4x5x: tcan4x5x_can_probe(): add missing error checking for devm_regmap_init()
+      can: tcan4x5x: tcan4x5x_can_remove(): fix order of deregistration
+
+Wu Bo (1):
+      can: m_can: m_can_handle_state_change(): fix state change
+
+Zhang Qilong (2):
+      can: ti_hecc: Fix memleak in ti_hecc_probe
+      can: flexcan: fix failure handling of pm_runtime_get_sync()
+
+ drivers/net/can/dev.c                        |  2 +-
+ drivers/net/can/flexcan.c                    | 10 +++++---
+ drivers/net/can/m_can/Kconfig                |  3 ++-
+ drivers/net/can/m_can/m_can.c                | 16 ++++++++----
+ drivers/net/can/m_can/m_can.h                |  1 +
+ drivers/net/can/m_can/m_can_platform.c       | 23 +++++++++++------
+ drivers/net/can/m_can/tcan4x5x.c             | 32 ++++++++++++++++-------
+ drivers/net/can/ti_hecc.c                    | 13 ++++++----
+ drivers/net/can/usb/mcba_usb.c               |  4 +--
+ drivers/net/can/usb/peak_usb/pcan_usb_core.c |  4 +--
+ net/can/af_can.c                             | 38 ++++++++++++++++++++--------
+ 11 files changed, 100 insertions(+), 46 deletions(-)
 
