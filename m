@@ -2,54 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 002462B2AD0
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 03:23:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A9EC2B2AD1
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 03:30:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726174AbgKNCW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 21:22:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59644 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725981AbgKNCW6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Nov 2020 21:22:58 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E85D02225D;
-        Sat, 14 Nov 2020 02:22:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605320578;
-        bh=k61aVNK15oeAweVgGw21L1znnMpAT+RwJkTmnTyo+oY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LNH1vNYNZrKb2E+qhG4azVpc6qjfGINZKAo0znoxEuEawT8/VI5//AcjvemVZ8Ff5
-         KyPzq4HlXM/B6lulrEOZQTrGj+aOgbFYVS+Ry/391cYGV1XsspBQBFAYpr9vxjpZVC
-         mHDA96DH4zLNHwyt2bMoF6/7Uv4dd3YNMwP8ExBE=
-Date:   Fri, 13 Nov 2020 18:22:57 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Zhang Qilong <zhangqilong3@huawei.com>
-Cc:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH] ipv6: Fix error path to cancel the meseage
-Message-ID: <20201113182257.4b6dabfb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201112080950.1476302-1-zhangqilong3@huawei.com>
+        id S1726166AbgKNC3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 21:29:36 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:2433 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725981AbgKNC3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 21:29:36 -0500
+Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4CXzmx61lYz54fM;
+        Sat, 14 Nov 2020 10:29:21 +0800 (CST)
+Received: from dggema706-chm.china.huawei.com (10.3.20.70) by
+ DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Sat, 14 Nov 2020 10:29:32 +0800
+Received: from dggema755-chm.china.huawei.com (10.1.198.197) by
+ dggema706-chm.china.huawei.com (10.3.20.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Sat, 14 Nov 2020 10:29:32 +0800
+Received: from dggema755-chm.china.huawei.com ([10.1.198.197]) by
+ dggema755-chm.china.huawei.com ([10.1.198.197]) with mapi id 15.01.1913.007;
+ Sat, 14 Nov 2020 10:29:32 +0800
+From:   zhangqilong <zhangqilong3@huawei.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBpcHY2OiBGaXggZXJyb3IgcGF0aCB0byBjYW5jZWwg?=
+ =?gb2312?Q?the_meseage?=
+Thread-Topic: [PATCH] ipv6: Fix error path to cancel the meseage
+Thread-Index: AQHWui0Qi/9C6xxpiUm/NAMSwIdFSqnG510Q
+Date:   Sat, 14 Nov 2020 02:29:32 +0000
+Message-ID: <3bfc6c8e2885456cb527bf1b4d42e7fa@huawei.com>
 References: <20201112080950.1476302-1-zhangqilong3@huawei.com>
+ <20201113182257.4b6dabfb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201113182257.4b6dabfb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.179.28]
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Nov 2020 16:09:50 +0800 Zhang Qilong wrote:
-> genlmsg_cancel() needs to be called in the error path of
-> inet6_fill_ifmcaddr and inet6_fill_ifacaddr to cancel
-> the message.
-> 
-> Fixes: 203651b665f72 ("ipv6: add inet6_fill_args")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
-
-This is the correct fixes tag:
-
-Fixes: 6ecf4c37eb3e ("ipv6: enable IFA_TARGET_NETNSID for RTM_GETADDR") 
-
-Applied.
+PiANCj4gT24gVGh1LCAxMiBOb3YgMjAyMCAxNjowOTo1MCArMDgwMCBaaGFuZyBRaWxvbmcgd3Jv
+dGU6DQo+ID4gZ2VubG1zZ19jYW5jZWwoKSBuZWVkcyB0byBiZSBjYWxsZWQgaW4gdGhlIGVycm9y
+IHBhdGggb2YNCj4gPiBpbmV0Nl9maWxsX2lmbWNhZGRyIGFuZCBpbmV0Nl9maWxsX2lmYWNhZGRy
+IHRvIGNhbmNlbCB0aGUgbWVzc2FnZS4NCj4gPg0KPiA+IEZpeGVzOiAyMDM2NTFiNjY1ZjcyICgi
+aXB2NjogYWRkIGluZXQ2X2ZpbGxfYXJncyIpDQo+ID4gUmVwb3J0ZWQtYnk6IEh1bGsgUm9ib3Qg
+PGh1bGtjaUBodWF3ZWkuY29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6IFpoYW5nIFFpbG9uZyA8emhh
+bmdxaWxvbmczQGh1YXdlaS5jb20+DQo+IA0KPiBUaGlzIGlzIHRoZSBjb3JyZWN0IGZpeGVzIHRh
+ZzoNCj4gDQo+IEZpeGVzOiA2ZWNmNGMzN2ViM2UgKCJpcHY2OiBlbmFibGUgSUZBX1RBUkdFVF9O
+RVROU0lEIGZvciBSVE1fR0VUQUREUiIpDQo+IA0KPiBBcHBsaWVkLg0KDQpZZXMsIHlvdSBhcmUg
+cmlnaHQuDQoNClRoYW5rcywNClpoYW5nDQo=
