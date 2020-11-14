@@ -2,74 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 200112B2F27
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 18:44:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B78A82B2F36
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 18:46:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726125AbgKNRoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 12:44:01 -0500
-Received: from mail.nic.cz ([217.31.204.67]:37848 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726088AbgKNRoA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Nov 2020 12:44:00 -0500
-Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
-        by mail.nic.cz (Postfix) with ESMTPSA id 5C40F140A66;
-        Sat, 14 Nov 2020 18:43:59 +0100 (CET)
-Date:   Sat, 14 Nov 2020 18:43:57 +0100
-From:   Marek Behun <marek.behun@nic.cz>
-To:     "Tj (Elloe Linux)" <ml.linux@elloe.vision>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        chris.packham@alliedtelesis.co.nz, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, info <info@turris.cz>
-Subject: Re: dsa: mv88e6xxx not receiving IPv6 multicast packets
-Message-ID: <20201114184357.41902445@nic.cz>
-In-Reply-To: <eed7bc92-e1e6-35df-a2cf-97e74a8730fd@elloe.vision>
-References: <1b6ba265-4651-79d2-9b43-f14e7f6ec19b@alliedtelesis.co.nz>
-        <0538958b-44b8-7187-650b-35ce276e9d83@elloe.vision>
-        <3390878f-ca70-7714-3f89-c4455309d917@elloe.vision>
-        <20201114155614.GZ1480543@lunn.ch>
-        <eed7bc92-e1e6-35df-a2cf-97e74a8730fd@elloe.vision>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726230AbgKNRq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 12:46:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726088AbgKNRq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 12:46:26 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AAF7C0613D1;
+        Sat, 14 Nov 2020 09:46:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=zFmbG7lUGEssA2TGxTf3U7GjLMkFXLzG9VOoFN4dDxg=; b=NaUnrjYu1zoWsuyoRbah1k4MUm
+        +wtvix9eB59O0WyyPG4u6xAhJVkbEbfJPTzc/PgbzC58UeCZ194ShmokVJLiTSYYeqHugsS6IfuCX
+        0+94Us5i0XxrJ+45YsWl5Rd5Ebf0vm1ykzpdIzK7Tl4Ra48DhhP55rqtLBkTdhJcaBLlGTBqylXUh
+        dMygVWZNT2joP8QU+WgMTXUMOP8Kx/Wht0GcDW//w3Tu8Cko0g5jZqzaiJYfgtjUFxGnUVAWk2Wuc
+        UkratnAyV2uZQOaaHsq8WQa3vGuP3/+8yHQapANjkKZmnQZ4SdaEMq+1yCi/76G+NrTRLu7uSXd8l
+        Ye7AFfCw==;
+Received: from [2601:1c0:6280:3f0::f32] (helo=smtpauth.infradead.org)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kdzd0-0000Ys-IA; Sat, 14 Nov 2020 17:46:23 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-next@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v2] net: linux/skbuff.h: combine SKB_EXTENSIONS + KCOV handling
+Date:   Sat, 14 Nov 2020 09:46:18 -0800
+Message-Id: <20201114174618.24471-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
-        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 14 Nov 2020 16:06:33 +0000
-"Tj (Elloe Linux)" <ml.linux@elloe.vision> wrote:
+The previous Kconfig patch led to some other build errors as
+reported by the 0day bot and my own overnight build testing.
 
-> On 14/11/2020 15:56, Andrew Lunn wrote:
-> >> 1) with isc-dhcp-server configured with very short lease times (180
-> >> seconds). After mox reboot (or systemctl restart systemd-networkd)
-> >> clients successfully obtain a lease and a couple of RENEWs (requested
-> >> after 90 seconds) but then all goes silent, Mox OS no longer sees the
-> >> IPv6 multicast RENEW packets and client leases expire.  
-> > 
-> > So it takes about 3 minutes to reproduce this?
-> > 
-> > Can you do a git bisect to figure out which change broke it? It will
-> > take you maybe 5 minutes per step, and given the wide range of
-> > kernels, i'm guessing you need around 15 steps. So maybe two hours of
-> > work.
-> > 
-> > 	Andrew
-> >  
-> 
-> I'll check if we can - the problem might be the Turris Mox kernel is
-> based on a board support package drop by Marvell so I'm not clear right
-> now how divergent they are. Hopefully the Turris kernel devs can help on
-> that.
-> 
-No, TurrisOS kernel is just current OpenWRT 4.14 kernel with some
-patches added onto it. Turris MOX is also supported in upstream kernel.
-If this error can be reproduced on upstream kernel, you can try bisect
-there...
+These are all in <linux/skbuff.h> when KCOV is enabled but
+SKB_EXTENSIONS is not enabled, so fix those by combining those conditions
+in the header file.
 
-Marek
+Fixes: 6370cc3bbd8a ("net: add kcov handle to skb extensions")
+Fixes: 85ce50d337d1 ("net: kcov: don't select SKB_EXTENSIONS when there is no NET")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Aleksandr Nogikh <nogikh@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: linux-next@vger.kernel.org
+Cc: netdev@vger.kernel.org
+---
+v2: (as suggested by Matthieu Baerts <matthieu.baerts@tessares.net>)
+  drop an extraneous space in a comment;
+  use CONFIG_SKB_EXTENSIONS instead of CONFIG_NET;
+
+ include/linux/skbuff.h |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- linux-next-20201113.orig/include/linux/skbuff.h
++++ linux-next-20201113/include/linux/skbuff.h
+@@ -4151,7 +4151,7 @@ enum skb_ext_id {
+ #if IS_ENABLED(CONFIG_MPTCP)
+ 	SKB_EXT_MPTCP,
+ #endif
+-#if IS_ENABLED(CONFIG_KCOV)
++#if IS_ENABLED(CONFIG_KCOV) && IS_ENABLED(CONFIG_SKB_EXTENSIONS)
+ 	SKB_EXT_KCOV_HANDLE,
+ #endif
+ 	SKB_EXT_NUM, /* must be last */
+@@ -4608,7 +4608,7 @@ static inline void skb_reset_redirect(st
+ #endif
+ }
+ 
+-#ifdef CONFIG_KCOV
++#if IS_ENABLED(CONFIG_KCOV) && IS_ENABLED(CONFIG_SKB_EXTENSIONS)
+ static inline void skb_set_kcov_handle(struct sk_buff *skb,
+ 				       const u64 kcov_handle)
+ {
+@@ -4636,7 +4636,7 @@ static inline u64 skb_get_kcov_handle(st
+ static inline void skb_set_kcov_handle(struct sk_buff *skb,
+ 				       const u64 kcov_handle) { }
+ static inline u64 skb_get_kcov_handle(struct sk_buff *skb) { return 0; }
+-#endif /* CONFIG_KCOV */
++#endif /* CONFIG_KCOV && CONFIG_SKB_EXTENSIONS */
+ 
+ #endif	/* __KERNEL__ */
+ #endif	/* _LINUX_SKBUFF_H */
