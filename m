@@ -2,215 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AF2A2B3066
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 20:55:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 339782B3068
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 20:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726655AbgKNTyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 14:54:09 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:27866 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726597AbgKNTyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 14:54:06 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AEJoKUN028813;
-        Sat, 14 Nov 2020 11:54:03 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=RDKnjkMWcb9XcxquCZp7Id0IDj54WEsA//SP/QEzMq0=;
- b=df8786DY8Kga4cueaFwnUIagBbFnSbP5+xrZTO0W0DDfhLN4iOo06SnJPjvnD1FNq5Jl
- FfvCdJypbP6upzYAyGFVg2cFhXwTXpuB5BvE+eoaLc8myaYJLuKyt9/HgobZqw4oNDnV
- bfNdAEyR4FyJ0k5xf8UbbYTL3ld0JD46IuKNsLdeigoD/Uf+AVlthAzR47aeBwR3caXE
- jHKiOtX/eCzWQ6HBDqmk17lk1PSGXqoZGBaGvtfvyJrNn9GXd2r+HlNNH/CA2ekPaIzd
- ZvuEspeP74G0iMwycqTjoLd/AQi9os/Yq4h2zPFXGVmEDrLvPBe7Tb/ggseaGGuk547Q oQ== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 34tdfts05w-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sat, 14 Nov 2020 11:54:03 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 14 Nov
- 2020 11:54:02 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 14 Nov 2020 11:54:02 -0800
-Received: from hyd1583.caveonetworks.com (unknown [10.29.37.44])
-        by maili.marvell.com (Postfix) with ESMTP id D95B83F703F;
-        Sat, 14 Nov 2020 11:53:58 -0800 (PST)
-From:   Naveen Mamindlapalli <naveenm@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>, <saeed@kernel.org>,
-        <alexander.duyck@gmail.com>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>
-Subject: [PATCH v4 net-next 13/13] octeontx2-af: Delete NIX_RXVLAN_ALLOC mailbox message
-Date:   Sun, 15 Nov 2020 01:23:03 +0530
-Message-ID: <20201114195303.25967-14-naveenm@marvell.com>
-X-Mailer: git-send-email 2.16.5
-In-Reply-To: <20201114195303.25967-1-naveenm@marvell.com>
-References: <20201114195303.25967-1-naveenm@marvell.com>
+        id S1726315AbgKNTyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 14:54:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57516 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726112AbgKNTyj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 14 Nov 2020 14:54:39 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3D6C8222E9;
+        Sat, 14 Nov 2020 19:54:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605383678;
+        bh=3L3ZdjLNpMbrM9kh33h56mx9+Ki1Zw4agazyBg/3pcA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sx2AXaeaySiB2zLUmMq86OFJklD3Fm6dTSh9KrnOQer24GofRVK0L4lf60yQ/2KM5
+         4a940clfyJe4KdmAwUTfsL+HzvShGm6sg6mgQRlukTsoUAEu3FamN+/3XMweDEdNYQ
+         9EHmzLlM2oZzCRdVkOCscToOyRILYOa7d8n109b8=
+Date:   Sat, 14 Nov 2020 11:54:37 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        linux-next@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net: linux/skbuff.h: combine SKB_EXTENSIONS
+ + KCOV handling
+Message-ID: <20201114115437.55eed094@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201114174618.24471-1-rdunlap@infradead.org>
+References: <20201114174618.24471-1-rdunlap@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-14_07:2020-11-13,2020-11-14 signatures=0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+On Sat, 14 Nov 2020 09:46:18 -0800 Randy Dunlap wrote:
+> The previous Kconfig patch led to some other build errors as
+> reported by the 0day bot and my own overnight build testing.
+> 
+> These are all in <linux/skbuff.h> when KCOV is enabled but
+> SKB_EXTENSIONS is not enabled, so fix those by combining those conditions
+> in the header file.
+> 
+> Fixes: 6370cc3bbd8a ("net: add kcov handle to skb extensions")
+> Fixes: 85ce50d337d1 ("net: kcov: don't select SKB_EXTENSIONS when there is no NET")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Cc: Aleksandr Nogikh <nogikh@google.com>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: linux-next@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> ---
+> v2: (as suggested by Matthieu Baerts <matthieu.baerts@tessares.net>)
+>   drop an extraneous space in a comment;
+>   use CONFIG_SKB_EXTENSIONS instead of CONFIG_NET;
 
-Since mailbox message for installing flows is in place,
-remove the RXVLAN_ALLOC mbox message which is redundant.
+Thanks for the fix Randy!
 
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  1 -
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  6 ---
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 59 ----------------------
- .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    | 24 ---------
- 4 files changed, 90 deletions(-)
+> --- linux-next-20201113.orig/include/linux/skbuff.h
+> +++ linux-next-20201113/include/linux/skbuff.h
+> @@ -4151,7 +4151,7 @@ enum skb_ext_id {
+>  #if IS_ENABLED(CONFIG_MPTCP)
+>  	SKB_EXT_MPTCP,
+>  #endif
+> -#if IS_ENABLED(CONFIG_KCOV)
+> +#if IS_ENABLED(CONFIG_KCOV) && IS_ENABLED(CONFIG_SKB_EXTENSIONS)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 8ea132ec1784..cb4e3d86b58b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -226,7 +226,6 @@ M(NIX_SET_RX_CFG,	0x8010, nix_set_rx_cfg, nix_rx_cfg, msg_rsp)	\
- M(NIX_LSO_FORMAT_CFG,	0x8011, nix_lso_format_cfg,			\
- 				 nix_lso_format_cfg,			\
- 				 nix_lso_format_cfg_rsp)		\
--M(NIX_RXVLAN_ALLOC,	0x8012, nix_rxvlan_alloc, msg_req, msg_rsp)	\
- M(NIX_LF_PTP_TX_ENABLE, 0x8013, nix_lf_ptp_tx_enable, msg_req, msg_rsp)	\
- M(NIX_LF_PTP_TX_DISABLE, 0x8014, nix_lf_ptp_tx_disable, msg_req, msg_rsp) \
- M(NIX_BP_ENABLE,	0x8016, nix_bp_enable, nix_bp_cfg_req,	\
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index fd46092ad189..37774bac32b0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -217,11 +217,6 @@ struct rvu_pfvf {
- 	u16			bcast_mce_idx;
- 	struct nix_mce_list	bcast_mce_list;
- 
--	/* VLAN offload */
--	struct mcam_entry entry;
--	int rxvlan_index;
--	bool rxvlan;
--
- 	struct rvu_npc_mcam_rule *def_ucast_rule;
- 
- 	bool	cgx_in_use; /* this PF/VF using CGX? */
-@@ -571,7 +566,6 @@ void rvu_npc_enable_promisc_entry(struct rvu *rvu, u16 pcifunc, int nixlf);
- void rvu_npc_install_bcast_match_entry(struct rvu *rvu, u16 pcifunc,
- 				       int nixlf, u64 chan);
- void rvu_npc_enable_bcast_entry(struct rvu *rvu, u16 pcifunc, bool enable);
--int rvu_npc_update_rxvlan(struct rvu *rvu, u16 pcifunc, int nixlf);
- void rvu_npc_disable_mcam_entries(struct rvu *rvu, u16 pcifunc, int nixlf);
- void rvu_npc_free_mcam_entries(struct rvu *rvu, u16 pcifunc, int nixlf);
- void rvu_npc_disable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 9444c857ed3d..e8d039503097 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -3142,65 +3142,6 @@ int rvu_mbox_handler_nix_set_hw_frs(struct rvu *rvu, struct nix_frs_cfg *req,
- 	return 0;
- }
- 
--int rvu_mbox_handler_nix_rxvlan_alloc(struct rvu *rvu, struct msg_req *req,
--				      struct msg_rsp *rsp)
--{
--	struct npc_mcam_alloc_entry_req alloc_req = { };
--	struct npc_mcam_alloc_entry_rsp alloc_rsp = { };
--	struct npc_mcam_free_entry_req free_req = { };
--	u16 pcifunc = req->hdr.pcifunc;
--	int blkaddr, nixlf, err;
--	struct rvu_pfvf *pfvf;
--
--	/* LBK VFs do not have separate MCAM UCAST entry hence
--	 * skip allocating rxvlan for them
--	 */
--	if (is_afvf(pcifunc))
--		return 0;
--
--	pfvf = rvu_get_pfvf(rvu, pcifunc);
--	if (pfvf->rxvlan)
--		return 0;
--
--	/* alloc new mcam entry */
--	alloc_req.hdr.pcifunc = pcifunc;
--	alloc_req.count = 1;
--
--	err = rvu_mbox_handler_npc_mcam_alloc_entry(rvu, &alloc_req,
--						    &alloc_rsp);
--	if (err)
--		return err;
--
--	/* update entry to enable rxvlan offload */
--	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
--	if (blkaddr < 0) {
--		err = NIX_AF_ERR_AF_LF_INVALID;
--		goto free_entry;
--	}
--
--	nixlf = rvu_get_lf(rvu, &rvu->hw->block[blkaddr], pcifunc, 0);
--	if (nixlf < 0) {
--		err = NIX_AF_ERR_AF_LF_INVALID;
--		goto free_entry;
--	}
--
--	pfvf->rxvlan_index = alloc_rsp.entry_list[0];
--	/* all it means is that rxvlan_index is valid */
--	pfvf->rxvlan = true;
--
--	err = rvu_npc_update_rxvlan(rvu, pcifunc, nixlf);
--	if (err)
--		goto free_entry;
--
--	return 0;
--free_entry:
--	free_req.hdr.pcifunc = pcifunc;
--	free_req.entry = alloc_rsp.entry_list[0];
--	rvu_mbox_handler_npc_mcam_free_entry(rvu, &free_req, rsp);
--	pfvf->rxvlan = false;
--	return err;
--}
--
- int rvu_mbox_handler_nix_set_rx_cfg(struct rvu *rvu, struct nix_rx_cfg *req,
- 				    struct msg_rsp *rsp)
- {
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-index dd54d41801fb..5cf9b7a907ae 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-@@ -2730,30 +2730,6 @@ int rvu_mbox_handler_npc_get_kex_cfg(struct rvu *rvu, struct msg_req *req,
- 	return 0;
- }
- 
--int rvu_npc_update_rxvlan(struct rvu *rvu, u16 pcifunc, int nixlf)
--{
--	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, pcifunc);
--	struct npc_mcam *mcam = &rvu->hw->mcam;
--	int blkaddr, index;
--	bool enable;
--
--	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, 0);
--	if (blkaddr < 0)
--		return NIX_AF_ERR_AF_LF_INVALID;
--
--	if (!pfvf->rxvlan)
--		return 0;
--
--	index = npc_get_nixlf_mcam_index(mcam, pcifunc, nixlf,
--					 NIXLF_UCAST_ENTRY);
--	pfvf->entry.action = npc_get_mcam_action(rvu, mcam, blkaddr, index);
--	enable = is_mcam_entry_enabled(rvu, mcam, blkaddr, index);
--	npc_config_mcam_entry(rvu, mcam, blkaddr, pfvf->rxvlan_index,
--			      pfvf->nix_rx_intf, &pfvf->entry, enable);
--
--	return 0;
--}
--
- bool rvu_npc_write_default_rule(struct rvu *rvu, int blkaddr, int nixlf,
- 				u16 pcifunc, u8 intf, struct mcam_entry *entry,
- 				int *index)
--- 
-2.16.5
+I don't think this part is necessary, this is already under an ifdef:
+
+#ifdef CONFIG_SKB_EXTENSIONS
+enum skb_ext_id {
+
+if I'm reading the code right.
+
+That said I don't know why the enum is under CONFIG_SKB_EXTENSIONS in
+the first place.
+
+If extensions are not used doesn't matter if we define the enum and with
+how many entries.
+
+At the same time if we take the enum from under the ifdef and add stubs
+for skb_ext_add() and skb_ext_find() we could actually remove the stubs
+for kcov-related helpers. That seems cleaner and less ifdefy to me.
+
+WDYT?
+
+>  	SKB_EXT_KCOV_HANDLE,
+>  #endif
+>  	SKB_EXT_NUM, /* must be last */
+> @@ -4608,7 +4608,7 @@ static inline void skb_reset_redirect(st
+>  #endif
+>  }
+>  
+> -#ifdef CONFIG_KCOV
+> +#if IS_ENABLED(CONFIG_KCOV) && IS_ENABLED(CONFIG_SKB_EXTENSIONS)
+>  static inline void skb_set_kcov_handle(struct sk_buff *skb,
+>  				       const u64 kcov_handle)
+>  {
+> @@ -4636,7 +4636,7 @@ static inline u64 skb_get_kcov_handle(st
+>  static inline void skb_set_kcov_handle(struct sk_buff *skb,
+>  				       const u64 kcov_handle) { }
+>  static inline u64 skb_get_kcov_handle(struct sk_buff *skb) { return 0; }
+> -#endif /* CONFIG_KCOV */
+> +#endif /* CONFIG_KCOV && CONFIG_SKB_EXTENSIONS */
+>  
+>  #endif	/* __KERNEL__ */
+>  #endif	/* _LINUX_SKBUFF_H */
 
