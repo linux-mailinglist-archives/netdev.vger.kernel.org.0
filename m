@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 295AD2B2FFC
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 20:09:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51BF82B3011
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 20:19:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726249AbgKNTJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 14:09:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42278 "EHLO
+        id S1726319AbgKNTR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 14:17:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726121AbgKNTJM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 14:09:12 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A40CC0613D1;
-        Sat, 14 Nov 2020 11:09:12 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id cq7so14555730edb.4;
-        Sat, 14 Nov 2020 11:09:12 -0800 (PST)
+        with ESMTP id S1726112AbgKNTR0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 14:17:26 -0500
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A86AC0613D1;
+        Sat, 14 Nov 2020 11:17:26 -0800 (PST)
+Received: by mail-ej1-x644.google.com with SMTP id o21so18674083ejb.3;
+        Sat, 14 Nov 2020 11:17:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=JLdVN6GMW4s0rGfQ0nFt90uzelbVnIK4dvXuxZ/UCVo=;
-        b=PsnG9ZF4pKG/q067PVFPFgRV4zYYE+9OGlh7Unwf8/Ze0/TYCd9Bxzw0XogLZG3aSD
-         IwZGWBph8ltxVS8HYjammbB30r60oO/veumVCgb+8BFnVHe+bK88DHoQbhPt+5f6fn/U
-         3395IIdrHKm6wEdkeIiyfBIn2Z3QPJ/V9I0vE735MreH3Z/k0r+lR6guacIP+rum74ui
-         PqLDxSg0HSlJWb3kyF+ITOA2hQJTZT/fa+o5J+8DI26RMOOrJ+T4nxnlhoJaiRqRM65E
-         G2ADkESjzQmzwNbofZR+9yV50B5/7XGGlc5E1fTkvudQ2tWCzD6B9Q6evX/wFjy+JjLz
-         uDJw==
+        bh=DbC8+y4b+eAA7rNyPLQIjCBTvRwcIcXayWyHs45xBpo=;
+        b=Gr428jHhlSJ1UhxNAedZ0/zlY4OdkyeF77gcdE2s2a4pJaA7nRFTlKfhQcmKWUupGl
+         lhgGJvJhFwic5BUYeRCgzpqD9RlmtBWcY+plCxSaa11r53EoCky2XLP+8/gNC4lCeC4X
+         0JEbRHsvcZEDIgwQMyga8so7CvJD1NYvhthNbizHH/hVvahHwwqYzTrLS1yIRYl5jou0
+         l6p2l+A0h5WyG1yCBH8X6pC4eos+Na81axmkrNogJ+CChi6UqyHu4rvEk/ZEmmtQ+9cM
+         EkVFvk93DklAJst75aOTZcm/MplGoAcTcstrSvHOuIb6wEYlqH1apMzcgZnedIL+TMzt
+         BE7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=JLdVN6GMW4s0rGfQ0nFt90uzelbVnIK4dvXuxZ/UCVo=;
-        b=G3ubtgmPOExvgyatJ5Ucn/h6RbYCkzaCYPWyp3zQeIklXyOgS8eja64goZ7+oNsiZL
-         hufTKz3VD8Q0sGoJwkrqLyfWD15wHhfkmUURX/566+2WpbysFTJ5LboTx2tYMDH7gA6Z
-         /mfz6ytm0YPH/hMrttB2OsUNH80w5EMR9roru0zaGM9a8OmOwI3fxGcNU3oLQds4v+Xt
-         J4LHESX00im6YdvhvkRolby9CTocT1Wnvr3iJA9L1RmrTTayjQAO1CGnfY+/QnmwzvRw
-         /e7sSuFaIMiQSSDhoj0VEHfEBPeiMNf3iuffuoO/H2yDne0LXjJhJFl30cBmzDINqZ2f
-         OQFQ==
-X-Gm-Message-State: AOAM531v/OAlU+s96WEOHeEn404PnO0E1oakVVMa4VbJcjwLSuu5gmeN
-        ZIPBpHIYfWEB43mVlXTxGXk=
-X-Google-Smtp-Source: ABdhPJz16mpu8mrBnCF4wgeqBuVm67aMKdWo7tP19Y5QpF8IFMwoYQFzEp/RM5sHyav43ENAeWkYGQ==
-X-Received: by 2002:a05:6402:1542:: with SMTP id p2mr8372047edx.298.1605380950855;
-        Sat, 14 Nov 2020 11:09:10 -0800 (PST)
+        bh=DbC8+y4b+eAA7rNyPLQIjCBTvRwcIcXayWyHs45xBpo=;
+        b=dthJvvVCO+Ba79ouZ2jsDkboIgZHC0iexkhaL8Qd2urZgI/qqkBHPDX8B3mAwdWsZJ
+         kQImbAms2QqXkZmpF7Zx7XB18kmlgbOJpU5bqAuHW79j2utKiSb2MsXu+MvAT4kWY3JE
+         4goibftG6dNo0uFaBJvOBn28k1yBNWHe+5SfoJuRUtvdwc8SYnf1ch1djBN/4HGeaHRa
+         OEsnJ7KUg5LAS4WYAqZ9pPYnu4gIRZ9JvVJaboUYTcLjPicoMizAk7KbUZzIxkVhC/B4
+         SbXwfwfmg0l8Dr0hYwGxLcRu3/gbMQ2LPN+ZQIbw1yT4PWOE8NVi4dD26eWefbTAFJVz
+         hyTg==
+X-Gm-Message-State: AOAM532Ri2Cf/cSt8jFSibP2O4SBYtZi8hFYTvKPOSNrEamZN4B/Q5/R
+        rmCEGbc3hbZ9h5zdOpFQORYKJk9dOHk=
+X-Google-Smtp-Source: ABdhPJyaXjIdNFAbFCAsA0fR9h5dQCJAEvzN16slQB8P+tn2EJ+nAhIuiG7YUwK1Z70qlGJIOfrLUg==
+X-Received: by 2002:a17:906:860b:: with SMTP id o11mr694528ejx.252.1605381444693;
+        Sat, 14 Nov 2020 11:17:24 -0800 (PST)
 Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id o20sm7264552eja.34.2020.11.14.11.09.09
+        by smtp.gmail.com with ESMTPSA id b1sm7327231ejg.60.2020.11.14.11.17.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Nov 2020 11:09:10 -0800 (PST)
-Date:   Sat, 14 Nov 2020 21:09:09 +0200
+        Sat, 14 Nov 2020 11:17:24 -0800 (PST)
+Date:   Sat, 14 Nov 2020 21:17:23 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Grygorii Strashko <grygorii.strashko@ti.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
@@ -55,22 +55,22 @@ Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         Vignesh Raghavendra <vigneshr@ti.com>,
         Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
         linux-omap@vger.kernel.org, Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH net-next 2/3] net: ethernet: ti: cpsw_new: enable
+Subject: Re: [PATCH net-next 3/3] net: ethernet: ti: am65-cpsw: enable
  broadcast/multicast rate limit support
-Message-ID: <20201114190909.cc3rlnvom6wf2zkg@skbuf>
+Message-ID: <20201114191723.rvmhyrqinkhdjtpr@skbuf>
 References: <20201114035654.32658-1-grygorii.strashko@ti.com>
- <20201114035654.32658-3-grygorii.strashko@ti.com>
+ <20201114035654.32658-4-grygorii.strashko@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201114035654.32658-3-grygorii.strashko@ti.com>
+In-Reply-To: <20201114035654.32658-4-grygorii.strashko@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 14, 2020 at 05:56:53AM +0200, Grygorii Strashko wrote:
+On Sat, Nov 14, 2020 at 05:56:54AM +0200, Grygorii Strashko wrote:
 > This patch enables support for ingress broadcast(BC)/multicast(MC) rate limiting
-> in TI CPSW switchdev driver (the corresponding ALE support was added in previous
+> in TI AM65x CPSW driver (the corresponding ALE support was added in previous
 > patch) by implementing HW offload for simple tc-flower policer with matches
 > on dst_mac:
 >  - ff:ff:ff:ff:ff:ff has to be used for BC rate limiting
@@ -99,14 +99,13 @@ On Sat, Nov 14, 2020 at 05:56:53AM +0200, Grygorii Strashko wrote:
 > Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 > ---
 
-Your example for multicast would actually be correct if you specified
-the mask as well. Like this:
-
-tc filter add dev eth0 ingress flower skip_sw \
-	dst_mac 01:00:00:00:00:00/01:00:00:00:00:00 \
-	action police rate 9600kbit burst 64k
-
-But as things stand, the flow rule would have a certain meaning in
-software (rate-limit only that particular multicast MAC address) and a
-different meaning in hardware. Please modify the driver code to also
-match on the mask.
+I understand this is unpleasant feedback, but don't you want to extend
+tc-police to have an option to rate-limit based on packet count and not
+based on byte count? The assumption you make in the driver that the
+packets are all going to be minimum-sized is not a great one. I can
+imagine that the user's policer budget is vastly exceeded if they enable
+jumbo frames and they put a policer at 9.6 Mbps, and this is not at all
+according to their expectation. 20Kpps assuming 60 bytes per packet
+might be 9.6 Mbps, and the user will assume this bandwidth profile is
+not exceeded, that's the whole point. But 20Kpps assuming 9KB per packet
+is 1.44Gbps. Weird.
