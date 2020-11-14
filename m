@@ -2,109 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AD912B3147
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 23:55:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 874E22B3153
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 00:05:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726412AbgKNWyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 17:54:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726291AbgKNWye (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 17:54:34 -0500
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E536AC0613D1
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 14:54:33 -0800 (PST)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4CYVyb4WmKzQjgg;
-        Sat, 14 Nov 2020 23:54:31 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1605394469;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uqlQ23kdqZpfS+l2+AIpmp0Q53aI9litOdsPbB21G8A=;
-        b=VMrJlSjjkI+WlTj2I9a+BUT8s0aQho4UEkE7uCpEzn3ChdYGZjbJilR+PuLZcj0R/HDP/L
-        2YDM0pPlizTz1JYKOs2mZP8NWNkMCsFQt38Y/iPu1xW1CiQU3bDcFWbP2+OU6QHbMXlFxX
-        CVhTtcfd5erap5YMDMs+tuGlFuOgaXUUZJdTjPqh3gWRrIn1qmrrShLKHWPnnetbeLusQa
-        MFwotMoa/p6T5i6gnrQFuBUdlMA1k0JI3oOIU9UM5KEA5iL2iU9AFaGCww5786Rv/tnhBr
-        rJsvWUlDt3LvFqqtVRW/CrBRlSX0hqLUziwEvS1nJfyN2744iXCn+5clpiPXtA==
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
-        with ESMTP id LBHIUtYpVeQU; Sat, 14 Nov 2020 23:54:28 +0100 (CET)
-From:   Petr Machata <me@pmachata.org>
-To:     netdev@vger.kernel.org, dsahern@gmail.com,
-        stephen@networkplumber.org
-Cc:     Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next 7/7] ip: iptuntap: Convert to use print_on_off()
-Date:   Sat, 14 Nov 2020 23:54:01 +0100
-Message-Id: <bae76c8201cefbcc7a5a3f3b6f65e84ccaed559e.1605393324.git.me@pmachata.org>
-In-Reply-To: <cover.1605393324.git.me@pmachata.org>
-References: <cover.1605393324.git.me@pmachata.org>
+        id S1726189AbgKNXDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 18:03:53 -0500
+Received: from smtp.netregistry.net ([202.124.241.204]:41042 "EHLO
+        smtp.netregistry.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726140AbgKNXDx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 18:03:53 -0500
+Received: from 124-148-94-203.tpgi.com.au ([124.148.94.203]:41306 helo=192-168-1-16.tpgi.com.au)
+        by smtp-1.servers.netregistry.net protocol: esmtpa (Exim 4.84_2 #1 (Debian))
+        id 1ke4a9-0007y9-Kj; Sun, 15 Nov 2020 10:03:48 +1100
+Date:   Sun, 15 Nov 2020 09:03:43 +1000
+From:   Russell Strong <russell@strong.id.au>
+To:     Guillaume Nault <gnault@redhat.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: DSCP in IPv4 routing
+Message-ID: <20201115090343.447ad8b8@192-168-1-16.tpgi.com.au>
+In-Reply-To: <20201113090225.GA25425@linux.home>
+References: <20201113120637.39c45f3f@192-168-1-16.tpgi.com.au>
+        <20201112193656.73621cd5@hermes.local>
+        <20201113090225.GA25425@linux.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: *
-X-Rspamd-Score: 0.08 / 15.00 / 15.00
-X-Rspamd-Queue-Id: A345317E7
-X-Rspamd-UID: 204a0b
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Authenticated-User: russell@strong.id.au
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of rolling a custom on-off printer, use the one added to utils.c.
+On Fri, 13 Nov 2020 10:02:25 +0100
+Guillaume Nault <gnault@redhat.com> wrote:
 
-Signed-off-by: Petr Machata <me@pmachata.org>
----
- ip/iptuntap.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+> On Thu, Nov 12, 2020 at 07:36:56PM -0800, Stephen Hemminger wrote:
+> > On Fri, 13 Nov 2020 12:06:37 +1000
+> > Russell Strong <russell@strong.id.au> wrote:
+> >   
+> > > diff --git a/include/uapi/linux/in_route.h
+> > > b/include/uapi/linux/in_route.h index 0cc2c23b47f8..db5d236b9c50
+> > > 100644 --- a/include/uapi/linux/in_route.h
+> > > +++ b/include/uapi/linux/in_route.h
+> > > @@ -28,6 +28,6 @@
+> > >  
+> > >  #define RTCF_NAT	(RTCF_DNAT|RTCF_SNAT)
+> > >  
+> > > -#define RT_TOS(tos)	((tos)&IPTOS_TOS_MASK)
+> > > +#define RT_TOS(tos)	((tos)&IPTOS_DS_MASK)
+> > >    
+> > 
+> > Changing behavior of existing header files risks breaking
+> > applications. 
+> > > diff --git a/net/ipv4/fib_rules.c b/net/ipv4/fib_rules.c
+> > > index ce54a30c2ef1..1499105d1efd 100644
+> > > --- a/net/ipv4/fib_rules.c
+> > > +++ b/net/ipv4/fib_rules.c
+> > > @@ -229,7 +229,7 @@ static int fib4_rule_configure(struct fib_rule
+> > > *rule, struct sk_buff *skb, int err = -EINVAL;
+> > >  	struct fib4_rule *rule4 = (struct fib4_rule *) rule;
+> > >  
+> > > -	if (frh->tos & ~IPTOS_TOS_MASK) {
+> > > +	if (frh->tos & ~IPTOS_RT_MASK) {  
+> > 
+> > This needs to be behind a sysctl and the default has to be to keep
+> > the old behavior  
+> 
+> Can't we just define a new DSCP mask and replace the users of TOS one
+> by one? In most cases DSCP just makes the 3 highest bits available,
+> which souldn't change existing behaviours. We just need to pay
+> attention to the ECN bit that'd be masked out by DSCP but not by old
+> TOS. However, ECN has been supported for a long time, so most usages
+> of TOS already clear both ECN bits.
+> 
+> Let's not add a new sysctl if not necessary and, in any case, let's
+> not change macros blindly.
+> 
 
-diff --git a/ip/iptuntap.c b/ip/iptuntap.c
-index 82e384998b1c..e9cc7c0f5f70 100644
---- a/ip/iptuntap.c
-+++ b/ip/iptuntap.c
-@@ -541,14 +541,6 @@ static void print_mq(FILE *f, struct rtattr *tb[])
- 	}
- }
- 
--static void print_onoff(FILE *f, const char *flag, __u8 val)
--{
--	if (is_json_context())
--		print_bool(PRINT_JSON, flag, NULL, !!val);
--	else
--		fprintf(f, "%s %s ", flag, val ? "on" : "off");
--}
--
- static void print_type(FILE *f, __u8 type)
- {
- 	SPRINT_BUF(buf);
-@@ -573,17 +565,19 @@ static void tun_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 		print_type(f, rta_getattr_u8(tb[IFLA_TUN_TYPE]));
- 
- 	if (tb[IFLA_TUN_PI])
--		print_onoff(f, "pi", rta_getattr_u8(tb[IFLA_TUN_PI]));
-+		print_on_off(PRINT_ANY, "pi", "pi %s ",
-+			     rta_getattr_u8(tb[IFLA_TUN_PI]));
- 
- 	if (tb[IFLA_TUN_VNET_HDR]) {
--		print_onoff(f, "vnet_hdr",
--			    rta_getattr_u8(tb[IFLA_TUN_VNET_HDR]));
-+		print_on_off(PRINT_ANY, "vnet_hdr", "vnet_hdr %s ",
-+			     rta_getattr_u8(tb[IFLA_TUN_VNET_HDR]));
- 	}
- 
- 	print_mq(f, tb);
- 
- 	if (tb[IFLA_TUN_PERSIST])
--		print_onoff(f, "persist", rta_getattr_u8(tb[IFLA_TUN_PERSIST]));
-+		print_on_off(PRINT_ANY, "persist", "persist %s ",
-+			     rta_getattr_u8(tb[IFLA_TUN_PERSIST]));
- 
- 	if (tb[IFLA_TUN_OWNER])
- 		print_owner(f, rta_getattr_u32(tb[IFLA_TUN_OWNER]));
--- 
-2.25.1
+I've implemented the change ( patches to follow ) using a sysctl and
+did some playing around with it.  There are some odd behaviours that
+aren't intuitive to a user.
+
+With the sysctl off:
+]# ip rule add dsfield EF lookup 1234
+Error: Invalid tos.
+
+Turning the sysctl on:
+]# sysctl net.ipv4.route_tos_as_dscp=1
+]# ip rule add dsfield EF lookup 1234
+]# ip route add prohibit 8.8.8.8 table 1234
+]# ping 8.8.8.8
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=115 time=31.2 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=115 time=23.7 ms
+]# ping 8.8.8.8 -Q 0xb8
+ping: Do you want to ping broadcast? Then -b. If not, check your local
+firewall rules
+
+All good.
+
+Turning the sysctl off again:
+]# sysctl net.ipv4.route_tos_as_dscp=0
+]# ip rule
+]# ip rule
+0:	from all lookup local
+32765:	from all tos EF lookup 1234
+32766:	from all lookup main
+32767:	from all lookup default
+
+The rule is still present.  So as a user I would expect it to work...
+But....
+
+]# ping 8.8.8.8 -Q 0xb8
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=115 time=23.2 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=115 time=23.9 ms
+
+The rule is no longer triggered.  Which is what I would expect.
+But users may not.
+
+So my questions would be:
+
+What should happen here?
+Should clearing the sysctl remove rules that could no longer be added?
+Is clearing the rules even more confusing?
+Is Guillaume's suggestion the right way as it avoids the confusion?
+
+iproute2 is already presenting dscp to the users. I didn't modify
+it.
+
+Thanks,
+
+Russell Strong
+
 
