@@ -2,127 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 286A92B2AA8
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 02:51:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F41592B2AAA
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 02:52:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726339AbgKNBvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 20:51:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53214 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726299AbgKNBvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 20:51:06 -0500
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388ABC0613D1
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 17:51:06 -0800 (PST)
-Received: by mail-il1-x133.google.com with SMTP id y9so10197108ilb.0
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 17:51:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kNDynN8EYXV2jvx4iZ47g+JLt+azNx8SNJ7QZZJdcG0=;
-        b=YVvT75wR5cQHSUnXKiKV94oOR98+1UcB2vUGHnP42QYuO59snPPVZPBqFyw84sHhqQ
-         Zn2TwYrZZkgUI2dC6aPRkB21zJdRYQPmLdRNxm5LED7SE0t+kZZVEdbdV7/0uqR5wPoR
-         z40cww4hCJFGgKZrG/70y24vhazVlrIR9bNP1WmYvlQjMgBYZ5emdgxppRggUviEUoVu
-         ep4+ubM1DUv2RBaAJinVpy9+VtMiIVN92Beop2+E9i9n3+xfJh2iCCMPQjO1cSCC4uXw
-         JRWjZU+0vbOCz2M6wSLBAhx2PzSd/R+E3YS6k3ZYwUjvdxP3HUEKAnd5xx1a3levHduR
-         j8bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kNDynN8EYXV2jvx4iZ47g+JLt+azNx8SNJ7QZZJdcG0=;
-        b=iMipYHA4S8O3rfp9OegvE6fbNsUKsaS+kCjzTOfWaXGhTQRfP14UABY7oTqNpa6rxv
-         +ZIciyhMGj/Nz09s+Qa0J5SXiHeozHH2gWZz+ZIC440yI2/J4JWEBJZKaPVSQsgypWVZ
-         PZsjrmIY3+SSK3O4r4zu9oaQH6dOVjV6/3nKrOYDD38RjAdxhuEm65uH3zTwkM4Y5FcJ
-         3U7WEUbefwzmXCxmSAKl9llaP+o7NmkPLEUUFAGJ68m/kx+WKZMs+NUpB7wntti11Kmh
-         ux9bpI6yaR0OQnhpzOBQcg2drZvUQ6hiRrYf5tYTSR5QuqU5Ya+4FW8HxS47SQ4wILTE
-         VFDw==
-X-Gm-Message-State: AOAM533Eq/3pJprF5j9mdWj2k9w5fGEnsatFsfGYC2OkiqfA6wI719fU
-        NYS6CSEqpKKwpZvOB07pWKCaS69NgEIAzjLrbJo=
-X-Google-Smtp-Source: ABdhPJyZiXzTewOpimMCGU/yDuoETNycSt4d3aHnGzMU+srykTusy2cmc0yNIuo3lucJ5fQuhf50vUAu7xNMwDFi948=
-X-Received: by 2002:a92:ca86:: with SMTP id t6mr1887792ilo.95.1605318664726;
- Fri, 13 Nov 2020 17:51:04 -0800 (PST)
-MIME-Version: 1.0
-References: <20201113213407.2131340-1-anthony.l.nguyen@intel.com>
- <20201113213407.2131340-4-anthony.l.nguyen@intel.com> <CAKgT0UcEd4BmyMxBmy2D2vVCWKu3Q=0iYKZ2UTdAPg0gitSiCQ@mail.gmail.com>
- <2c35ef3950756f0ea04fb61246b2c9b22859d3d4.camel@intel.com>
-In-Reply-To: <2c35ef3950756f0ea04fb61246b2c9b22859d3d4.camel@intel.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 13 Nov 2020 17:50:53 -0800
-Message-ID: <CAKgT0UdiZGGjSaF=8gx4ZcApYzWDe_FpQwSZmtUjC2ZBsOeXDg@mail.gmail.com>
-Subject: Re: [net-next v2 03/15] ice: initialize ACL table
-To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Cc:     "Cao, Chinh T" <chinh.t.cao@intel.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Valiquette, Real" <real.valiquette@intel.com>,
-        "davem@davemloft.neti" <davem@davemloft.neti>,
-        "Bokkena, HarikumarX" <harikumarx.bokkena@intel.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726360AbgKNBwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 20:52:16 -0500
+Received: from smtp.uniroma2.it ([160.80.6.22]:48882 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726302AbgKNBwP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Nov 2020 20:52:15 -0500
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0AE1p4m7032763;
+        Sat, 14 Nov 2020 02:51:09 +0100
+Received: from lubuntu-18.04 (unknown [160.80.103.126])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id AB44A12005F;
+        Sat, 14 Nov 2020 02:50:58 +0100 (CET)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1605318659; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oK6t0eGA+ruC5HbNeaHODPDeco0lBrxmpa9spNCcLcg=;
+        b=tqvIpEcz6oeUL/Z28O+CCT0/e1V05n3VJL4eMFIYRGZtVU2FZGau6YehzX0OeJKn1n9Dnv
+        GhRGZXwpr1R5YuBQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1605318659; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oK6t0eGA+ruC5HbNeaHODPDeco0lBrxmpa9spNCcLcg=;
+        b=Z0AsAAdMP1zuLZI9ETRjXGiQsfgXXouUMzWu7ExrnzzjXhvlib7WvXIyo9uzM+UT++Bssw
+        nv7LkIQFpDlFh3ZNnZOK4nLKw53WpyZLE63rF69Q9WLRxoxbEieecolA8tOjZShYQVtvTf
+        jWl740EJWkr2Egawede+y6xS7ii35dT5OggohBbfQCX9243dfHXyBVEBzdgfs4FI1ah1Ln
+        W5JlfBsc0kV6n77cMrrqWd4A6BKROSSmLl4dCGCX/12swmPPE8p5tFg0uqU0IfxeL3GesD
+        duamvYAVXXLYX8Kygt514oydB/MaMXL9F53T4Kgv6+MUhjEhQOiWm02GBJU0OA==
+Date:   Sat, 14 Nov 2020 02:50:58 +0100
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [net-next,v2,4/5] seg6: add support for the SRv6 End.DT4
+ behavior
+Message-Id: <20201114025058.25ae815024ba77d59666a7ab@uniroma2.it>
+In-Reply-To: <20201113155437.7d82550b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201107153139.3552-1-andrea.mayer@uniroma2.it>
+        <20201107153139.3552-5-andrea.mayer@uniroma2.it>
+        <20201110151255.3a86afcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201113022848.dd40aa66763316ac4f4ffd56@uniroma2.it>
+        <34d9b96f-a378-4817-36e8-3d9287c5b76b@gmail.com>
+        <20201113085547.68e04931@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <bd3712b6-110b-acce-3761-457a6d2b4463@uniroma2.it>
+        <09381c96-42a3-91cd-951b-f970cd8e52cb@gmail.com>
+        <20201113114036.18e40b32@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201113134010.5eb2a154@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201114000024.614c6c097050188abc87a7ff@uniroma2.it>
+        <20201113155437.7d82550b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 13, 2020 at 4:16 PM Nguyen, Anthony L
-<anthony.l.nguyen@intel.com> wrote:
->
-> On Fri, 2020-11-13 at 14:59 -0800, Alexander Duyck wrote:
-> > On Fri, Nov 13, 2020 at 1:36 PM Tony Nguyen <
-> > anthony.l.nguyen@intel.com> wrote:
-> > >
-> > > From: Real Valiquette <real.valiquette@intel.com>
-> > >
-> > > ACL filtering can be utilized to expand support of ntuple rules by
-> > > allowing
-> > > mask values to be specified for redirect to queue or drop.
-> > >
-> > > Implement support for specifying the 'm' value of ethtool ntuple
-> > > command
-> > > for currently supported fields (src-ip, dst-ip, src-port, and dst-
-> > > port).
-> > >
-> > > For example:
-> > >
-> > > ethtool -N eth0 flow-type tcp4 dst-port 8880 m 0x00ff action 10
-> > > or
-> > > ethtool -N eth0 flow-type tcp4 src-ip 192.168.0.55 m 0.0.0.255
-> > > action -1
-> > >
-> > > At this time the following flow-types support mask values: tcp4,
-> > > udp4,
-> > > sctp4, and ip4.
-> >
-> > So you spend all of the patch description describing how this might
-> > be
-> > used in the future. However there is nothing specific to the ethtool
-> > interface as far as I can tell anywhere in this patch. With this
-> > patch
-> > the actual command called out above cannot be performed, correct?
-> >
-> > > Begin implementation of ACL filters by setting up structures,
-> > > AdminQ
-> > > commands, and allocation of the ACL table in the hardware.
-> >
-> > This seems to be what this patch is actually doing. You may want to
-> > rewrite this patch description to focus on this and explain that you
-> > are enabling future support for ethtool ntuple masks. However save
-> > this feature description for the patch that actually enables the
-> > functionality.
->
-> Thanks for the feedback Alex. I believe you're still reviewing the
-> patches, I'l look through and make changes accordingly or get responses
-> as neeeded.
->
-> Thanks,
-> Tony
+Hi Jakub,
+Please see my responses inline:
 
-I've pretty much finished up now. My main concern with the set is the
-mask handling for the ACL functionality. I think it may be doing the
-wrong thing since last I knew Flow Director required the full 4 tuple
-to function for TCP/UDP, so there are probably cases that are being
-sent to Flow Director when it should be handled by ACL, specifically
-when one of the ports is masked out of the filtering entirely.
+On Fri, 13 Nov 2020 15:54:37 -0800
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-- Alex
+> On Sat, 14 Nov 2020 00:00:24 +0100 Andrea Mayer wrote:
+> > On Fri, 13 Nov 2020 13:40:10 -0800
+> > Jakub Kicinski <kuba@kernel.org> wrote:
+> > 
+> > I can tackle the v6 version but how do we face the compatibility issue raised
+> > by Stefano in his message?
+> > 
+> > if it is ok to implement a uAPI that breaks the existing scripts, it is relatively
+> > easy to replicate the VRF-based approach also in v6.
+> 
+> We need to keep existing End.DT6 as is, and add a separate
+> implementation.
+
+ok
+
+>
+> The way to distinguish between the two could be either by
+
+> 1) passing via
+> netlink a flag attribute (which would request use of VRF in both
+> cases);
+
+yes, feasible... see UAPI solution 1
+
+> 2) using a different attribute than SEG6_LOCAL_TABLE for the
+> table id (or perhaps passing VRF's ifindex instead), e.g.
+> SEG6_LOCAL_TABLE_VRF;
+
+yes, feasible... see UAPI solution 2
+
+> 3) or adding a new command
+> (SEG6_LOCAL_ACTION_END_DT6_VRF) which would behave like End.DT4.
+
+no, we prefer not to add a new command, because it is better to keep a 
+semantic one-to-one relationship between these commands and the SRv6 
+behaviors defined in the draft.
+
+
+UAPI solution 1
+
+we add a new parameter "vrfmode". DT4 can only be used with the 
+vrfmode parameter (hence it is a required parameter for DT4).
+DT6 can be used with "vrfmode" (new vrf based mode) or without "vrfmode" 
+(legacy mode)(hence "vrfmode" is an optional parameter for DT6)
+
+UAPI solution 1 examples:
+
+ip -6 route add 2001:db8::1/128 encap seg6local action End.DT4 vrfmode table 100 dev eth0
+ip -6 route add 2001:db8::1/128 encap seg6local action End.DT6 vrfmode table 100 dev eth0
+ip -6 route add 2001:db8::1/128 encap seg6local action End.DT6 table 100 dev eth0
+
+UAPI solution 2
+
+we turn "table" into an optional parameter and we add the "vrftable" optional
+parameter. DT4 can only be used with the "vrftable" (hence it is a required
+parameter for DT4).
+DT6 can be used with "vrftable" (new vrf mode) or with "table" (legacy mode)
+(hence it is an optional parameter for DT6).
+
+UAPI solution 2 examples:
+
+ip -6 route add 2001:db8::1/128 encap seg6local action End.DT4 vrftable 100 dev eth0
+ip -6 route add 2001:db8::1/128 encap seg6local action End.DT6 vrftable 100 dev eth0
+ip -6 route add 2001:db8::1/128 encap seg6local action End.DT6 table 100 dev eth0
+
+IMO solution 2 is nicer from UAPI POV because we always have only one 
+parameter, maybe solution 1 is slightly easier to implement, all in all 
+we prefer solution 2 but we can go for 1 if you prefer.
+
+Waiting for your advice!
+
+Thanks,
+Andrea
