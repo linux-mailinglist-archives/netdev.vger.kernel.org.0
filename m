@@ -2,115 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA3182B2AA1
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 02:49:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 286A92B2AA8
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 02:51:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726143AbgKNBsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 20:48:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52854 "EHLO
+        id S1726339AbgKNBvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 20:51:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725981AbgKNBsp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 20:48:45 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8101EC0613D1;
-        Fri, 13 Nov 2020 17:48:45 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id b17so13175259ljf.12;
-        Fri, 13 Nov 2020 17:48:45 -0800 (PST)
+        with ESMTP id S1726299AbgKNBvG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 20:51:06 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388ABC0613D1
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 17:51:06 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id y9so10197108ilb.0
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 17:51:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UL5vLJE2EwlBtAIId0ThIAszpCR5aszIqn1/WM6ZNYY=;
-        b=LLnal3+NOH3+DBWzveyOVYxEP5yBlG5fh/ftVANIRqcj+uL1Qav15WnlyIBsliwcwK
-         vs0BFlZpwsG2ZPWVuH8/F+2XuytE+zyU2qTyRvJBNTzIDPMlSos9bell1T7sJsghtn0l
-         6Vpm3Z05s8hnAW3IDLyxUbRuG1mBV1TFmCaIRrlUEb2QguycMVUeTWFV1gTaMbpfdUzp
-         GjN+ulcG6r3E24+FBYA3Ak6Ovw0lmFsWHppf2E/t1rKugEXFZ3B7dQlesMcu2yxHM44e
-         sOEIT6WKYuB55YNVVB4r+X+3BvRiu+3qimERKCMRL+W8iX+142DQuAbzI1HbbQ0MI3o3
-         tjbg==
+        bh=kNDynN8EYXV2jvx4iZ47g+JLt+azNx8SNJ7QZZJdcG0=;
+        b=YVvT75wR5cQHSUnXKiKV94oOR98+1UcB2vUGHnP42QYuO59snPPVZPBqFyw84sHhqQ
+         Zn2TwYrZZkgUI2dC6aPRkB21zJdRYQPmLdRNxm5LED7SE0t+kZZVEdbdV7/0uqR5wPoR
+         z40cww4hCJFGgKZrG/70y24vhazVlrIR9bNP1WmYvlQjMgBYZ5emdgxppRggUviEUoVu
+         ep4+ubM1DUv2RBaAJinVpy9+VtMiIVN92Beop2+E9i9n3+xfJh2iCCMPQjO1cSCC4uXw
+         JRWjZU+0vbOCz2M6wSLBAhx2PzSd/R+E3YS6k3ZYwUjvdxP3HUEKAnd5xx1a3levHduR
+         j8bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UL5vLJE2EwlBtAIId0ThIAszpCR5aszIqn1/WM6ZNYY=;
-        b=eTpsLvaDnASuAmpj38+l6WFSQzo5Ilg3hm17BH7mY2qeZqAImOnPhL8kbrhwvpzyFF
-         H8x5v0LuD3c4V1QxJOr0fCsCA+11wvsYZ3iEOierX4GAVHR1i6tJyCL9MyKOMvoLseFB
-         kAUNK6xBtcIQCIXyG4xhIR0GynG7GcdyxQ6RbMcIpZFTs+p6WceN+tOA6zfmvxwI1LwE
-         7EMQIQcVxdt+X94NexYe8K2NRLW/VDsddevBuu6atXJpOBSnPxAyeUYllsTS257fWoju
-         7/Sif0HGDN+nHbngXQsZioRVUmuq2fwbQnDXrMgNT7MghUKEM5tzoS5L77omz6m3IxaC
-         6S3g==
-X-Gm-Message-State: AOAM533TdGG2S2BTEfLKNy8oSULQBJMO0/ZDzJxEjWrNSc3vvPwcWr4+
-        +JCQqSzYwqPGos3m9mWGnj+qy5flLJtmFQbu8mPxOdzkckc=
-X-Google-Smtp-Source: ABdhPJxlRTojrdWVPmz75QunsqAnFdY+qdH4gJbpSfbmqBfRSu3t+XaqIoOZVxoabpyIs1q1vxyvsOzJl/PuPz5b2TE=
-X-Received: by 2002:a2e:1643:: with SMTP id 3mr2205871ljw.290.1605318522985;
- Fri, 13 Nov 2020 17:48:42 -0800 (PST)
+        bh=kNDynN8EYXV2jvx4iZ47g+JLt+azNx8SNJ7QZZJdcG0=;
+        b=iMipYHA4S8O3rfp9OegvE6fbNsUKsaS+kCjzTOfWaXGhTQRfP14UABY7oTqNpa6rxv
+         +ZIciyhMGj/Nz09s+Qa0J5SXiHeozHH2gWZz+ZIC440yI2/J4JWEBJZKaPVSQsgypWVZ
+         PZsjrmIY3+SSK3O4r4zu9oaQH6dOVjV6/3nKrOYDD38RjAdxhuEm65uH3zTwkM4Y5FcJ
+         3U7WEUbefwzmXCxmSAKl9llaP+o7NmkPLEUUFAGJ68m/kx+WKZMs+NUpB7wntti11Kmh
+         ux9bpI6yaR0OQnhpzOBQcg2drZvUQ6hiRrYf5tYTSR5QuqU5Ya+4FW8HxS47SQ4wILTE
+         VFDw==
+X-Gm-Message-State: AOAM533Eq/3pJprF5j9mdWj2k9w5fGEnsatFsfGYC2OkiqfA6wI719fU
+        NYS6CSEqpKKwpZvOB07pWKCaS69NgEIAzjLrbJo=
+X-Google-Smtp-Source: ABdhPJyZiXzTewOpimMCGU/yDuoETNycSt4d3aHnGzMU+srykTusy2cmc0yNIuo3lucJ5fQuhf50vUAu7xNMwDFi948=
+X-Received: by 2002:a92:ca86:: with SMTP id t6mr1887792ilo.95.1605318664726;
+ Fri, 13 Nov 2020 17:51:04 -0800 (PST)
 MIME-Version: 1.0
-References: <20201113083852.22294-1-glin@suse.com>
-In-Reply-To: <20201113083852.22294-1-glin@suse.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 13 Nov 2020 17:48:31 -0800
-Message-ID: <CAADnVQ+0m3OJs6eNOyZv4v0PrB3JDxkP=xCK5sbXQpJ9sWqBjw@mail.gmail.com>
-Subject: Re: [PATCH RFC] bpf, x64: allow not-converged images when
- BPF_JIT_ALWAYS_ON is set
-To:     Gary Lin <glin@suse.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, andreas.taschner@suse.com
+References: <20201113213407.2131340-1-anthony.l.nguyen@intel.com>
+ <20201113213407.2131340-4-anthony.l.nguyen@intel.com> <CAKgT0UcEd4BmyMxBmy2D2vVCWKu3Q=0iYKZ2UTdAPg0gitSiCQ@mail.gmail.com>
+ <2c35ef3950756f0ea04fb61246b2c9b22859d3d4.camel@intel.com>
+In-Reply-To: <2c35ef3950756f0ea04fb61246b2c9b22859d3d4.camel@intel.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 13 Nov 2020 17:50:53 -0800
+Message-ID: <CAKgT0UdiZGGjSaF=8gx4ZcApYzWDe_FpQwSZmtUjC2ZBsOeXDg@mail.gmail.com>
+Subject: Re: [net-next v2 03/15] ice: initialize ACL table
+To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Cc:     "Cao, Chinh T" <chinh.t.cao@intel.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Valiquette, Real" <real.valiquette@intel.com>,
+        "davem@davemloft.neti" <davem@davemloft.neti>,
+        "Bokkena, HarikumarX" <harikumarx.bokkena@intel.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 13, 2020 at 12:40 AM Gary Lin <glin@suse.com> wrote:
+On Fri, Nov 13, 2020 at 4:16 PM Nguyen, Anthony L
+<anthony.l.nguyen@intel.com> wrote:
 >
-> The x64 bpf jit expects the bpf images converge within the given passes.
-> However there is a corner case:
+> On Fri, 2020-11-13 at 14:59 -0800, Alexander Duyck wrote:
+> > On Fri, Nov 13, 2020 at 1:36 PM Tony Nguyen <
+> > anthony.l.nguyen@intel.com> wrote:
+> > >
+> > > From: Real Valiquette <real.valiquette@intel.com>
+> > >
+> > > ACL filtering can be utilized to expand support of ntuple rules by
+> > > allowing
+> > > mask values to be specified for redirect to queue or drop.
+> > >
+> > > Implement support for specifying the 'm' value of ethtool ntuple
+> > > command
+> > > for currently supported fields (src-ip, dst-ip, src-port, and dst-
+> > > port).
+> > >
+> > > For example:
+> > >
+> > > ethtool -N eth0 flow-type tcp4 dst-port 8880 m 0x00ff action 10
+> > > or
+> > > ethtool -N eth0 flow-type tcp4 src-ip 192.168.0.55 m 0.0.0.255
+> > > action -1
+> > >
+> > > At this time the following flow-types support mask values: tcp4,
+> > > udp4,
+> > > sctp4, and ip4.
+> >
+> > So you spend all of the patch description describing how this might
+> > be
+> > used in the future. However there is nothing specific to the ethtool
+> > interface as far as I can tell anywhere in this patch. With this
+> > patch
+> > the actual command called out above cannot be performed, correct?
+> >
+> > > Begin implementation of ACL filters by setting up structures,
+> > > AdminQ
+> > > commands, and allocation of the ACL table in the hardware.
+> >
+> > This seems to be what this patch is actually doing. You may want to
+> > rewrite this patch description to focus on this and explain that you
+> > are enabling future support for ethtool ntuple masks. However save
+> > this feature description for the patch that actually enables the
+> > functionality.
 >
->   l0:     ldh [4]
->   l1:     jeq #0x537d, l2, l40
->   l2:     ld [0]
->   l3:     jeq #0xfa163e0d, l4, l40
->   l4:     ldh [12]
->   l5:     ldx #0xe
->   l6:     jeq #0x86dd, l41, l7
->   l7:     jeq #0x800, l8, l41
->   l8:     ld [x+16]
->   l9:     ja 41
+> Thanks for the feedback Alex. I believe you're still reviewing the
+> patches, I'l look through and make changes accordingly or get responses
+> as neeeded.
 >
->     [... repeated ja 41 ]
->
->   l40:    ja 41
->   l41:    ret #0
->   l42:    ld #len
->   l43:    ret a
->
-> The bpf program contains 32 "ja 41" and do_jit() only removes one "ja 41"
-> right before "l41:  ret #0" for offset==0 in each pass, so
-> bpf_int_jit_compile() needs to run do_jit() at least 32 times to
-> eliminate those JMP instructions. Since the current max number of passes
-> is 20, the bpf program couldn't converge within 20 passes and got rejected
-> when BPF_JIT_ALWAYS_ON is set even though it's legit as a classic socket
-> filter.
->
-> A not-converged image may be not optimal but at least the bpf
-> instructions are translated into x64 machine code. Maybe we could just
-> issue a warning instead so that the program is still loaded and the user
-> is also notified.
+> Thanks,
+> Tony
 
-Non-convergence is not about being optimal. It's about correctness.
-If size is different it likely means that at least one jump has the
-wrong offset.
+I've pretty much finished up now. My main concern with the set is the
+mask handling for the ACL functionality. I think it may be doing the
+wrong thing since last I knew Flow Director required the full 4 tuple
+to function for TCP/UDP, so there are probably cases that are being
+sent to Flow Director when it should be handled by ACL, specifically
+when one of the ports is masked out of the filtering entirely.
 
-Bumping from 20 to 64 also won't solve it.
-There could be a case where 64 isn't enough either.
-One of the test_bpf.ko tests can hit any limit, iirc.
-
-Also we've seen a case where JIT might never converge.
-The iteration N can have size 40, iteration N+1 size 38, iteration N+2 size 40
-and keep oscillating like this.
-
-I think the fix could be is to avoid optimality in size when pass
-number is getting large.
-Like after pass > 10 BPF_JA could always use 32-bit offset regardless
-of actual addrs[i + insn->off] - addrs[i]; difference.
-There could be other solutions too.
+- Alex
