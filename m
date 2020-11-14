@@ -2,65 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C78012B2C9B
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 11:10:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2578D2B2C9D
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 11:11:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726774AbgKNKI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 05:08:26 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:54793 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726513AbgKNKIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 05:08:25 -0500
-Received: by mail-wm1-f66.google.com with SMTP id d142so17604330wmd.4
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 02:08:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zqq3KXsbCh+A4XRGesodQomUE1KKi9x/4shZXgvPuFo=;
-        b=a72+4+0fGiCwDin/qO+l0SdEwdQoDSZ0xR+qnb9Uh0WDKQjKJUpQdih7VF3yAIZUNP
-         w5c2ss9thULaWzGBiri8lpUCbciksKYJmr7g/y+QjwxtnQbFVfMIJJ3xu3uOx72gGFvv
-         9Nr8tj6ext/y+4xksXg79MZAjQGW+MZmkHAd/0SMDNhPplIVkuKUc5AYnObx+FEcS+Pb
-         B4Y/sZZOk8PFdHXjsaYhHimYVuY++ULeoKwAxpu5C0yVUilunGiCRu+8ouoPyx2J9uta
-         PwRJt8JvBNbUB2R3TN2eiyyBseLgi+fw8ePQrVkz25I+YrfhQC51PROjjPdIAitrlrLd
-         322A==
-X-Gm-Message-State: AOAM533DfEl72op0sV0lcEdMoXhwkWbGozv5rMQOk7opM8SouTXF7lg9
-        XdO/LNdjZjMbXDy9JFGnOQ+vw/bBU2hf4w==
-X-Google-Smtp-Source: ABdhPJxfEEuDMCsna/h3dx3N/aX81InmGohN8v1KaLK8jcUvYVOzo+WywJvwZswvf6Xjpzy2ES0Hjw==
-X-Received: by 2002:a1c:1d09:: with SMTP id d9mr263994wmd.93.1605348503598;
-        Sat, 14 Nov 2020 02:08:23 -0800 (PST)
-Received: from kozik-lap (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
-        by smtp.googlemail.com with ESMTPSA id a18sm7286541wme.18.2020.11.14.02.08.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Nov 2020 02:08:22 -0800 (PST)
-Date:   Sat, 14 Nov 2020 11:08:21 +0100
-From:   "krzk@kernel.org" <krzk@kernel.org>
-To:     Bongsu Jeon <bongsu.jeon@samsung.com>
-Cc:     "kuba@kernel.org" <kuba@kernel.org>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/3] nfc: s3fwrn5: Change the error code.
-Message-ID: <20201114100821.GC5253@kozik-lap>
-References: <CGME20201114002134epcms2p1b504111777f3b1be7a0d1706882a5237@epcms2p1>
- <20201114002134epcms2p1b504111777f3b1be7a0d1706882a5237@epcms2p1>
+        id S1726678AbgKNKKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 05:10:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38414 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726495AbgKNKKH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 14 Nov 2020 05:10:07 -0500
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1FDC122252
+        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 10:10:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605348606;
+        bh=mmBAQMv+Xl0Tz2Qi2wx/HBpfiieSydKH4Z2N2ZOrCc8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=xgPkVY5Z5aJ0k8fkJ106D8BPSfDwx5Co5bKsVDmjDRYhxjtvW9CjiyB+W6OYHdkSo
+         CxgyOHB1M4nhaeZq60sE0oFqo+epL5kxnsmcjF8JsyFRiAYnbfwTvt8ne+h8s3uZmo
+         T90u4eszseUBreB3k2KWlnSQpPbTz9TPEtN0alJQ=
+Received: by mail-ot1-f50.google.com with SMTP id h16so7145680otq.9
+        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 02:10:06 -0800 (PST)
+X-Gm-Message-State: AOAM531/JCJw1K1D3W6FbbuqS4hkUfRWDJvQxUlg82bpCTrgAYBWhEEw
+        MbQkSVc/r65jCCgROX3lOzlnZWCyYQyulG7zp8U=
+X-Google-Smtp-Source: ABdhPJyJA+Ax27ZHfsWC/evCiNOdXxEwDiIKBAgnnh7vQhbkKT7yRxALW3GRHAtJqW+HgYtO7mhPyzR9GDaBLMYKwxM=
+X-Received: by 2002:a9d:62c1:: with SMTP id z1mr4365539otk.108.1605348605365;
+ Sat, 14 Nov 2020 02:10:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201114002134epcms2p1b504111777f3b1be7a0d1706882a5237@epcms2p1>
+References: <20201029143934.GO878328@lunn.ch> <20201029144644.GA70799@apalos.home>
+ <2697795.ZkNf1YqPoC@kista> <CAK8P3a2hBpQAsRekNyauUF1MgdO8CON=77MNSd0E-U1TWNT-gA@mail.gmail.com>
+ <20201113144401.GM1456319@lunn.ch> <CAK8P3a2iwwneb+FPuUQRm1JD8Pk54HCPnux4935Ok43WDPRaYQ@mail.gmail.com>
+ <20201113165625.GN1456319@lunn.ch> <CAK8P3a3ABKRYg_wyjz_zUPd+gE1=f3PsVs5Ac-y1jpa0+Kt1fA@mail.gmail.com>
+ <20201113224301.GU1480543@lunn.ch> <CAMj1kXGnfsX1pH8m1eO-B1nAqL=vMeuw6fpYdeA1RqMpSrg66Q@mail.gmail.com>
+ <20201114004002.GV1480543@lunn.ch>
+In-Reply-To: <20201114004002.GV1480543@lunn.ch>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Sat, 14 Nov 2020 11:09:53 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXF8m=YWrVyQmjTuFJ=4wyRCEu=qeAKs4EP7B-hmqSJDwA@mail.gmail.com>
+Message-ID: <CAMj1kXF8m=YWrVyQmjTuFJ=4wyRCEu=qeAKs4EP7B-hmqSJDwA@mail.gmail.com>
+Subject: Re: Re: realtek PHY commit bbc4d71d63549 causes regression
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        =?UTF-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steve McIntyre <steve@einval.com>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>, Willy Liu <willy.liu@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Masahisa Kojima <masahisa.kojima@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 14, 2020 at 09:21:34AM +0900, Bongsu Jeon wrote:
-> 
-> ENOTSUPP is not a SUSV4 error code, prefer EOPNOTSUPP.
+On Sat, 14 Nov 2020 at 01:40, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > One question that still has not been answered is how many actual
+> > platforms were fixed by backporting Realtek's follow up fix to
+> > -stable. My suspicion is none. That by itself should be enough
+> > justification to revert the backport of that change.
+>
+> I think i've already said that would be a good idea. It makes the
+> problem less critical. But the problem is still there, we are just
+> kicking the can down the road. I've not seen much activity actually
+> fixing the broken DT. So i suspect when we catch up with the can, we
+> will mostly still be in the same place. Actually, maybe worse, because
+> broken DTs have been copy/pasted for new boards?
+>
 
-The same as in patch #1 - trailing dot a subject end empty line at
-beginning of commit.
-
-Please CC all required maintainers and lists when submitting patches.
-You skipped here LKML and the most important - NFC mailing list. Use the
-scripts/get_maintainer.pl to get the necessary addresses.
-
-Best regards,
-Krzysztof
+I don't see how that matters. If the new board ships with a stable
+kernel, things should simply work as they did before. If the new board
+ships with a new kernel, things won't work in the first place, so it
+is unlikely to cause a regression in the field.
