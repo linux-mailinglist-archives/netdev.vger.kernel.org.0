@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60DD72B3141
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 23:55:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 469802B3143
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 23:55:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgKNWyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 17:54:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48494 "EHLO
+        id S1726356AbgKNWyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 17:54:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726301AbgKNWyb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 17:54:31 -0500
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C56C0613D2
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 14:54:31 -0800 (PST)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
+        with ESMTP id S1726291AbgKNWyc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 17:54:32 -0500
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE60C0613D2
+        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 14:54:32 -0800 (PST)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4CYVyY1GFczQlKG;
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4CYVyY3TK2zQkKG;
         Sat, 14 Nov 2020 23:54:29 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
@@ -27,132 +27,141 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+u5u3Lg0CbyjmAxM+CEeypcUZ93rxPfCkV/la1WmHw0=;
-        b=ivSpC3R1psv8jBmvoGPQ7ZQf1UsdzCzVXjLmdN7yYqFcWN5LLkMvPb8ygdf0QYWMiidykp
-        KFDQFheF6J6rVX/OksgBSs4oIW5H8WKVPLj3+vito66bRi8nnueISkMMagX3Gp10D4gq/F
-        4WAmVPqcfnuYO4eSV6GQmGicUK5bO9xlQkH9m3AyLMnx/SaoQcySnFdoVXD4wacZ00TJn5
-        QfW/T//+U9er5m4yo4KnpopM0om5Hje8mohfNagtJLb46yI9J3RQlHhK/AlJhqgEnkTMgO
-        oabECd9djRxr3/18Ba7XL1qhSyw5z1YiGXfuxT8eaIP9ecgocmxPvi0HUlW68A==
+        bh=O1BS2wlJd+j4COExWE0BCzIjS6OYumVtlSK9jSU49P4=;
+        b=eqqfE3FN/PvKPfx5qh+nV1PMvli2Zr6QCZwqhsRuUhLFQijztTG4QEOTfqExqRid9jxn6K
+        rHe0ZOcuoYgnOgcYLbHg6YuddEUOr/02fjJ3KQuD59jhYpfbu4gtDsT+4Hn08jPmuX+wBT
+        TLaG9nJUQIskgtAT3+lLLmRTM2T8vpiLYtyesqXM/uZ2SkM/ggbZtfSBEVZaGjL/PYrRKn
+        fkRQxkW51WfZ1ojYGq8NoCq+up8aOXm9THM2JC+QJ9bjpFIfWGI6/6Is9c3ER2AY0XlNSx
+        /TwtFdX4HsSRl3Y/7OVNsfL20HLOcBmOQdmQdFFy1X++ygGYo/v15h3MyPoPiQ==
 Received: from smtp1.mailbox.org ([80.241.60.240])
-        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
-        with ESMTP id xNRU-9kNYod4; Sat, 14 Nov 2020 23:54:25 +0100 (CET)
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id vT4cFwxNwo34; Sat, 14 Nov 2020 23:54:26 +0100 (CET)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
 Cc:     Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next 2/7] bridge: link: Convert to use print_on_off()
-Date:   Sat, 14 Nov 2020 23:53:56 +0100
-Message-Id: <60fb244156972652b22b3b5809a25b38c7502b39.1605393324.git.me@pmachata.org>
+Subject: [PATCH iproute2-next 3/7] ip: iplink: Convert to use parse_on_off()
+Date:   Sat, 14 Nov 2020 23:53:57 +0100
+Message-Id: <972a28d826eb677c3884aed70f893e7d257b1328.1605393324.git.me@pmachata.org>
 In-Reply-To: <cover.1605393324.git.me@pmachata.org>
 References: <cover.1605393324.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: *
-X-Rspamd-Score: 0.09 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 2FB0D17E7
-X-Rspamd-UID: acc96c
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -0.36 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 74F5017DD
+X-Rspamd-UID: 8a6274
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of rolling a custom on-off printer, use the one added to utils.c.
+Invoke parse_on_off() instead of rolling a custom function.
 
 Signed-off-by: Petr Machata <me@pmachata.org>
 ---
- bridge/link.c | 56 ++++++++++++++++++++++-----------------------------
- 1 file changed, 24 insertions(+), 32 deletions(-)
+ ip/iplink.c | 47 +++++++++++++++++------------------------------
+ 1 file changed, 17 insertions(+), 30 deletions(-)
 
-diff --git a/bridge/link.c b/bridge/link.c
-index fa6eda849b32..d88c469db78e 100644
---- a/bridge/link.c
-+++ b/bridge/link.c
-@@ -78,14 +78,6 @@ static void print_portstate(__u8 state)
- 			     "state (%d) ", state);
- }
+diff --git a/ip/iplink.c b/ip/iplink.c
+index d6b766de1fcf..f5766c39507b 100644
+--- a/ip/iplink.c
++++ b/ip/iplink.c
+@@ -352,6 +352,7 @@ static int iplink_parse_vf(int vf, int *argcp, char ***argvp,
+ 	int len, argc = *argcp;
+ 	char **argv = *argvp;
+ 	struct rtattr *vfinfo;
++	int ret;
  
--static void print_onoff(FILE *fp, const char *flag, __u8 val)
--{
--	if (is_json_context())
--		print_bool(PRINT_JSON, flag, NULL, val);
--	else
--		fprintf(fp, "%s %s ", flag, val ? "on" : "off");
--}
--
- static void print_hwmode(__u16 mode)
- {
- 	if (mode >= ARRAY_SIZE(hw_mode))
-@@ -123,38 +115,38 @@ static void print_protinfo(FILE *fp, struct rtattr *attr)
- 			fprintf(fp, "%s    ", _SL_);
+ 	tivt.min_tx_rate = -1;
+ 	tivt.max_tx_rate = -1;
+@@ -464,12 +465,9 @@ static int iplink_parse_vf(int vf, int *argcp, char ***argvp,
+ 			struct ifla_vf_spoofchk ivs;
  
- 		if (prtb[IFLA_BRPORT_MODE])
--			print_onoff(fp, "hairpin",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_MODE]));
-+			print_on_off(PRINT_ANY, "hairpin", "hairpin %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_MODE]));
- 		if (prtb[IFLA_BRPORT_GUARD])
--			print_onoff(fp, "guard",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_GUARD]));
-+			print_on_off(PRINT_ANY, "guard", "guard %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_GUARD]));
- 		if (prtb[IFLA_BRPORT_PROTECT])
--			print_onoff(fp, "root_block",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_PROTECT]));
-+			print_on_off(PRINT_ANY, "root_block", "root_block %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_PROTECT]));
- 		if (prtb[IFLA_BRPORT_FAST_LEAVE])
--			print_onoff(fp, "fastleave",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_FAST_LEAVE]));
-+			print_on_off(PRINT_ANY, "fastleave", "fastleave %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_FAST_LEAVE]));
- 		if (prtb[IFLA_BRPORT_LEARNING])
--			print_onoff(fp, "learning",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_LEARNING]));
-+			print_on_off(PRINT_ANY, "learning", "learning %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_LEARNING]));
- 		if (prtb[IFLA_BRPORT_LEARNING_SYNC])
--			print_onoff(fp, "learning_sync",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_LEARNING_SYNC]));
-+			print_on_off(PRINT_ANY, "learning_sync", "learning_sync %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_LEARNING_SYNC]));
- 		if (prtb[IFLA_BRPORT_UNICAST_FLOOD])
--			print_onoff(fp, "flood",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_UNICAST_FLOOD]));
-+			print_on_off(PRINT_ANY, "flood", "flood %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_UNICAST_FLOOD]));
- 		if (prtb[IFLA_BRPORT_MCAST_FLOOD])
--			print_onoff(fp, "mcast_flood",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_MCAST_FLOOD]));
-+			print_on_off(PRINT_ANY, "mcast_flood", "mcast_flood %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_MCAST_FLOOD]));
- 		if (prtb[IFLA_BRPORT_MCAST_TO_UCAST])
--			print_onoff(fp, "mcast_to_unicast",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_MCAST_TO_UCAST]));
-+			print_on_off(PRINT_ANY, "mcast_to_unicast", "mcast_to_unicast %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_MCAST_TO_UCAST]));
- 		if (prtb[IFLA_BRPORT_NEIGH_SUPPRESS])
--			print_onoff(fp, "neigh_suppress",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_NEIGH_SUPPRESS]));
-+			print_on_off(PRINT_ANY, "neigh_suppress", "neigh_suppress %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_NEIGH_SUPPRESS]));
- 		if (prtb[IFLA_BRPORT_VLAN_TUNNEL])
--			print_onoff(fp, "vlan_tunnel",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_VLAN_TUNNEL]));
-+			print_on_off(PRINT_ANY, "vlan_tunnel", "vlan_tunnel %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_VLAN_TUNNEL]));
+ 			NEXT_ARG();
+-			if (matches(*argv, "on") == 0)
+-				ivs.setting = 1;
+-			else if (matches(*argv, "off") == 0)
+-				ivs.setting = 0;
+-			else
+-				return on_off("spoofchk", *argv);
++			ivs.setting = parse_on_off("spoofchk", *argv, &ret);
++			if (ret)
++				return ret;
+ 			ivs.vf = vf;
+ 			addattr_l(&req->n, sizeof(*req), IFLA_VF_SPOOFCHK,
+ 				  &ivs, sizeof(ivs));
+@@ -478,12 +476,9 @@ static int iplink_parse_vf(int vf, int *argcp, char ***argvp,
+ 			struct ifla_vf_rss_query_en ivs;
  
- 		if (prtb[IFLA_BRPORT_BACKUP_PORT]) {
- 			int ifidx;
-@@ -166,8 +158,8 @@ static void print_protinfo(FILE *fp, struct rtattr *attr)
- 		}
+ 			NEXT_ARG();
+-			if (matches(*argv, "on") == 0)
+-				ivs.setting = 1;
+-			else if (matches(*argv, "off") == 0)
+-				ivs.setting = 0;
+-			else
+-				return on_off("query_rss", *argv);
++			ivs.setting = parse_on_off("query_rss", *argv, &ret);
++			if (ret)
++				return ret;
+ 			ivs.vf = vf;
+ 			addattr_l(&req->n, sizeof(*req), IFLA_VF_RSS_QUERY_EN,
+ 				  &ivs, sizeof(ivs));
+@@ -492,12 +487,9 @@ static int iplink_parse_vf(int vf, int *argcp, char ***argvp,
+ 			struct ifla_vf_trust ivt;
  
- 		if (prtb[IFLA_BRPORT_ISOLATED])
--			print_onoff(fp, "isolated",
--				    rta_getattr_u8(prtb[IFLA_BRPORT_ISOLATED]));
-+			print_on_off(PRINT_ANY, "isolated", "isolated %s ",
-+				     rta_getattr_u8(prtb[IFLA_BRPORT_ISOLATED]));
- 	} else
- 		print_portstate(rta_getattr_u8(attr));
- }
+ 			NEXT_ARG();
+-			if (matches(*argv, "on") == 0)
+-				ivt.setting = 1;
+-			else if (matches(*argv, "off") == 0)
+-				ivt.setting = 0;
+-			else
+-				invarg("Invalid \"trust\" value\n", *argv);
++			ivt.setting = parse_on_off("trust", *argv, &ret);
++			if (ret)
++				return ret;
+ 			ivt.vf = vf;
+ 			addattr_l(&req->n, sizeof(*req), IFLA_VF_TRUST,
+ 				  &ivt, sizeof(ivt));
+@@ -595,6 +587,7 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
+ 	int index = 0;
+ 	int group = -1;
+ 	int addr_len = 0;
++	int err;
+ 
+ 	ret = argc;
+ 
+@@ -738,12 +731,9 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
+ 			int carrier;
+ 
+ 			NEXT_ARG();
+-			if (strcmp(*argv, "on") == 0)
+-				carrier = 1;
+-			else if (strcmp(*argv, "off") == 0)
+-				carrier = 0;
+-			else
+-				return on_off("carrier", *argv);
++			carrier = parse_on_off("carrier", *argv, &err);
++			if (err)
++				return err;
+ 
+ 			addattr8(&req->n, sizeof(*req), IFLA_CARRIER, carrier);
+ 		} else if (strcmp(*argv, "vf") == 0) {
+@@ -896,12 +886,9 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
+ 			unsigned int proto_down;
+ 
+ 			NEXT_ARG();
+-			if (strcmp(*argv, "on") == 0)
+-				proto_down = 1;
+-			else if (strcmp(*argv, "off") == 0)
+-				proto_down = 0;
+-			else
+-				return on_off("protodown", *argv);
++			proto_down = parse_on_off("protodown", *argv, &err);
++			if (err)
++				return err;
+ 			addattr8(&req->n, sizeof(*req), IFLA_PROTO_DOWN,
+ 				 proto_down);
+ 		} else if (strcmp(*argv, "protodown_reason") == 0) {
 -- 
 2.25.1
 
