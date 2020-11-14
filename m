@@ -2,86 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72CE92B2AE8
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 03:57:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B60572B2AEF
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 04:14:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726270AbgKNC5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 21:57:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35098 "EHLO
+        id S1726166AbgKNDM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 22:12:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725981AbgKNC5I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 21:57:08 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A182BC0613D1;
-        Fri, 13 Nov 2020 18:57:08 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id s2so5450640plr.9;
-        Fri, 13 Nov 2020 18:57:08 -0800 (PST)
+        with ESMTP id S1725981AbgKNDM0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 22:12:26 -0500
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C2EC0613D1
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 19:12:25 -0800 (PST)
+Received: by mail-il1-x142.google.com with SMTP id g15so10254453ilc.9
+        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 19:12:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Y7PcyZ605gjOrpi73JwhlRzdDSnwawKE7lgwWDwY0Ro=;
-        b=Hqw9Mg+aaiygTirEfZCJiA+t522Ga1uLgMtl8v8fuUZUKdA3mNuq4RFcuHS+Y50ZRj
-         W1EtvR+sat++lIs3ej5mEU2zLyETftpP8KOKyHxU/Wy9SgxlDN8AV3XIu0klhdoP3W7O
-         4csEt4aG5SgsWaN7cLCjyB5FiQEh2zNS4GhgG1CQBIrFSYC//7GHUWU8JKnuAHFUfBxg
-         0BbDsMliqRNHsLi+OjqfsKGUZkR3jfzt9fzdSG0a5cEwByHbl8qwog/NzRCKjFdfj59g
-         FTp8iIOlbE5qUTxjq5QJ0a346fu6MBuZSv9qhchrvsc8pEJJ4zaJt4AT0BbXtRi/hpQf
-         AKdA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=eLvSBlLzWICvYBEvB/pElX5QK0QywSviMUnW3Y+1/QM=;
+        b=UL527/z6nerQVw/hT8wzlkMlw8XtG9IktBPKNQfzlyYPI3/cOE0IdXLKN5ObbwGWvX
+         39M3ge+T/0n+/pg7JD/8QJfSqKX1AUvh8sZxVWM9AMzpEtVwHQBMuLSLw+A1S5R5x16R
+         0V0GMlzH5UZjmUafEPiVErYnMQjpGsB3vI3IYtuCqXkZ5qk+ci4TrSweEQXfwPjzwKfk
+         CveT8asWsEN/NcErySyi2pVTZrDvrnZNmnQnhAxkj76PjAg32QcsPTfl9JQHVR0gOdEt
+         SQ9Hv+OEr3zr8R0EWLuj6UD2yPip2Gsm4eg1Hh3LqBalX6In1J7Pk/SK2QLt0SodRDNC
+         am+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Y7PcyZ605gjOrpi73JwhlRzdDSnwawKE7lgwWDwY0Ro=;
-        b=DOwitqnMMgdQTlZe4Xm+TNPM0Pxyuj4fsxSkuoXLO3b9hvS1Oqk0zmXxZ9j5Iq24kc
-         Nt4hsEtC8OlrxqNF2VbcQAqMRoRt2vsMZs0VHisS8awcIM1FpPwZs5QxudRqcD7NsoG0
-         rNTSKFUNuIARFcE1MOsAtxIFCiUUngUK08/+bvbm6QUPxs3X7NqrssOSkd/lvLE/wTMg
-         d9OsRoZh+2Bpqo0XJ7SesDa5Rgfhj75J1VblEzQdxTZpCEp5uiFUPYmcN8K8MnBRAgu4
-         ObYBP7PqIaEUep3hJ9Xyf7ciActYyDrcXbjw0zZL1qy0Eno8MbhA/R468EqShf6zk5gL
-         pBZg==
-X-Gm-Message-State: AOAM533aDSMNYPq/+NXM41/TK2hJbAra5mDvTP5tmvB7xGAlFPCShWQ8
-        vEe1dP6w+O7IL2F6zfvFSag=
-X-Google-Smtp-Source: ABdhPJxtU/Xk5xwDndF5Gfxi0O0JqOfhnJKCFD8uF/l3T4kxY6E+uhI+OSxRhqSn8AaxP8+cxUpiCQ==
-X-Received: by 2002:a17:90b:3648:: with SMTP id nh8mr5779223pjb.27.1605322628178;
-        Fri, 13 Nov 2020 18:57:08 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id n68sm10989716pfn.161.2020.11.13.18.57.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Nov 2020 18:57:07 -0800 (PST)
-Date:   Fri, 13 Nov 2020 18:57:04 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
-        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        bhelgaas@google.com
-Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support for
- PTP getcrosststamp()
-Message-ID: <20201114025704.GA15240@hoboy.vegasvil.org>
-References: <20201112093203.GH1559650@localhost>
- <87pn4i6svv.fsf@intel.com>
- <20201113032451.GB32138@hoboy.vegasvil.org>
- <87ima96pj1.fsf@intel.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=eLvSBlLzWICvYBEvB/pElX5QK0QywSviMUnW3Y+1/QM=;
+        b=EwUcilVI5ViHdsyaJ4Qe1Dqra5UAQR2/vW6tTVo/1K/a9BG14r5w8YbnXWkg6x00Xj
+         dvteI2Czp2H5WKazqoGyKami3WXjEzYneZcO4K0onMTkzrsAg9WmvCQ3i8yGPcCOsEio
+         QMhbUtv8W/czMyjIuRGoQ3HKjU628oQcN8jWWeiillBL0N0XHOlN+y49nSlIQuXZWaAs
+         K9zP0PKqMH9Ica9hLj9Tjl5lnJGQSDYs2zEv+4JhAjERnprfIr9Rm41pMbLAAV99IX4B
+         rZxWD8q+fXaS1K5wbD26DvI3Nydtm3k1d+iz8xELD+0ZiArcwG/Yu3uNcEzOPjrUd1us
+         amXg==
+X-Gm-Message-State: AOAM530adonIaIKfi6yim1hHavUMur2kqrpkaCkfHjDDOqDKPwAiFwi4
+        vYrdVtvwBXnDLeptTWSsm9o=
+X-Google-Smtp-Source: ABdhPJw4AiG/GModYqXHZ5n2vI+5rRZnw1qo/DPS1uVmvbOf0edTLmByOlqeQ0qjIxO29MuOLvttDQ==
+X-Received: by 2002:a05:6e02:1062:: with SMTP id q2mr2177170ilj.223.1605323544716;
+        Fri, 13 Nov 2020 19:12:24 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:99e7:10e8:ee93:9a3d])
+        by smtp.googlemail.com with ESMTPSA id b191sm5287302iof.29.2020.11.13.19.12.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Nov 2020 19:12:24 -0800 (PST)
+Subject: Re: [PATCH iproute2-next v2] tc flower: use right ethertype in
+ icmp/arp parsing
+To:     Zahari Doychev <zahari.doychev@linux.com>, netdev@vger.kernel.org
+Cc:     simon.horman@netronome.com, jhs@mojatatu.com, jianbol@mellanox.com
+References: <20201110075355.52075-1-zahari.doychev@linux.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c51abdae-6596-54ec-2b96-9b010c27cdb1@gmail.com>
+Date:   Fri, 13 Nov 2020 20:12:19 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.4.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ima96pj1.fsf@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20201110075355.52075-1-zahari.doychev@linux.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 13, 2020 at 11:10:58AM -0800, Vinicius Costa Gomes wrote:
-> I am proposing a series that adds support for PCIe PTM (for the igc
-> driver), exporting the values via the PTP_SYS_OFFSET_PRECISE ioctl().
+On 11/10/20 12:53 AM, Zahari Doychev wrote:
+> Currently the icmp and arp parsing functions are called with incorrect
+> ethtype in case of vlan or cvlan filter options. In this case either
+> cvlan_ethtype or vlan_ethtype has to be used. The ethtype is now updated
+> each time a vlan ethtype is matched during parsing.
 > 
-> The way PTM works in the NIC I have, kind of forces me to start the PTM
-> dialogs during initialization, and they are kept running in background,
-> what the _PRECISE ioctl() does is basically collecting the most recent
-> measurement.
+> Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+> ---
+>  tc/f_flower.c | 52 +++++++++++++++++++++++----------------------------
+>  1 file changed, 23 insertions(+), 29 deletions(-)
+> 
 
-What is a PTM?  Why does a PTM have dialogs?  Can it talk?
+Thanks, looks much better.
 
-Forgive my total ignorance!
+applied to iproute2-next.
 
-Thanks,
-Richard
