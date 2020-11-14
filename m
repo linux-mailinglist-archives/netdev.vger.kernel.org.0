@@ -2,197 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE1572B3142
+	by mail.lfdr.de (Postfix) with ESMTP id 60DD72B3141
 	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 23:55:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726319AbgKNWyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726338AbgKNWyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 14 Nov 2020 17:54:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726291AbgKNWyb (ORCPT
+        with ESMTP id S1726301AbgKNWyb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 17:54:31 -0500
 Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E29C0613D1
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C56C0613D2
         for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 14:54:31 -0800 (PST)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4CYVyX3ZyszQjgg;
-        Sat, 14 Nov 2020 23:54:28 +0100 (CET)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4CYVyY1GFczQlKG;
+        Sat, 14 Nov 2020 23:54:29 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1605394466;
+        s=MBO0001; t=1605394467;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dUS9jOOAuzSoUyy/xwxRj5MFhtbHRbp7RM71rXERF2I=;
-        b=IrcqDivV4IWznSQpr8b/JlwnhVE58deuJY2J9+Y4tkZyC1knfwkYsIbc39f+ov0UxVLi4z
-        R0QjpBzHfHy0p8LnQgS0BCEDmC+C3zNrffXKc2l6wouxSEdRJEJpNCAC3goyTjuZ72jL4u
-        5CpL1G9gmwWCcbcS8kx6PQHz0N7tOJDtdLal6eqmzRoQIwirr9GlBnum4Nr6BWlFS69lO+
-        WTvNdA9XFqnTfANwrzC3dhmL1ujhvsKElFl9iKh5HmTW3xq6ni7b50PbJsP4Vnhq3X0sLu
-        VTEFhRVh8j9v1toBZuucACigcxm+s46Tb5RcGf8TiDDCluWlbLuX+ZLLYUlc2A==
+        bh=+u5u3Lg0CbyjmAxM+CEeypcUZ93rxPfCkV/la1WmHw0=;
+        b=ivSpC3R1psv8jBmvoGPQ7ZQf1UsdzCzVXjLmdN7yYqFcWN5LLkMvPb8ygdf0QYWMiidykp
+        KFDQFheF6J6rVX/OksgBSs4oIW5H8WKVPLj3+vito66bRi8nnueISkMMagX3Gp10D4gq/F
+        4WAmVPqcfnuYO4eSV6GQmGicUK5bO9xlQkH9m3AyLMnx/SaoQcySnFdoVXD4wacZ00TJn5
+        QfW/T//+U9er5m4yo4KnpopM0om5Hje8mohfNagtJLb46yI9J3RQlHhK/AlJhqgEnkTMgO
+        oabECd9djRxr3/18Ba7XL1qhSyw5z1YiGXfuxT8eaIP9ecgocmxPvi0HUlW68A==
 Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
-        with ESMTP id cFlkO0XL31jK; Sat, 14 Nov 2020 23:54:25 +0100 (CET)
+        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
+        with ESMTP id xNRU-9kNYod4; Sat, 14 Nov 2020 23:54:25 +0100 (CET)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
 Cc:     Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next 1/7] bridge: link: Port over to parse_on_off()
-Date:   Sat, 14 Nov 2020 23:53:55 +0100
-Message-Id: <97d607c78f923b30a09f11d008b4fcda742c02d4.1605393324.git.me@pmachata.org>
+Subject: [PATCH iproute2-next 2/7] bridge: link: Convert to use print_on_off()
+Date:   Sat, 14 Nov 2020 23:53:56 +0100
+Message-Id: <60fb244156972652b22b3b5809a25b38c7502b39.1605393324.git.me@pmachata.org>
 In-Reply-To: <cover.1605393324.git.me@pmachata.org>
 References: <cover.1605393324.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -0.36 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 812E31825
-X-Rspamd-UID: 92a9b1
+X-MBO-SPAM-Probability: *
+X-Rspamd-Score: 0.09 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 2FB0D17E7
+X-Rspamd-UID: acc96c
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert bridge/link.c from a custom on_off parser to the new global one.
+Instead of rolling a custom on-off printer, use the one added to utils.c.
 
 Signed-off-by: Petr Machata <me@pmachata.org>
 ---
- bridge/link.c | 79 ++++++++++++++++++++++++---------------------------
- 1 file changed, 37 insertions(+), 42 deletions(-)
+ bridge/link.c | 56 ++++++++++++++++++++++-----------------------------
+ 1 file changed, 24 insertions(+), 32 deletions(-)
 
 diff --git a/bridge/link.c b/bridge/link.c
-index 3bc7af209b8b..fa6eda849b32 100644
+index fa6eda849b32..d88c469db78e 100644
 --- a/bridge/link.c
 +++ b/bridge/link.c
-@@ -275,22 +275,6 @@ static void usage(void)
- 	exit(-1);
+@@ -78,14 +78,6 @@ static void print_portstate(__u8 state)
+ 			     "state (%d) ", state);
  }
  
--static bool on_off(char *arg, __s8 *attr, char *val)
+-static void print_onoff(FILE *fp, const char *flag, __u8 val)
 -{
--	if (strcmp(val, "on") == 0)
--		*attr = 1;
--	else if (strcmp(val, "off") == 0)
--		*attr = 0;
--	else {
--		fprintf(stderr,
--			"Error: argument of \"%s\" must be \"on\" or \"off\"\n",
--			arg);
--		return false;
--	}
--
--	return true;
+-	if (is_json_context())
+-		print_bool(PRINT_JSON, flag, NULL, val);
+-	else
+-		fprintf(fp, "%s %s ", flag, val ? "on" : "off");
 -}
 -
- static int brlink_modify(int argc, char **argv)
+ static void print_hwmode(__u16 mode)
  {
- 	struct {
-@@ -323,6 +307,7 @@ static int brlink_modify(int argc, char **argv)
- 	__s16 mode = -1;
- 	__u16 flags = 0;
- 	struct rtattr *nest;
-+	int ret;
+ 	if (mode >= ARRAY_SIZE(hw_mode))
+@@ -123,38 +115,38 @@ static void print_protinfo(FILE *fp, struct rtattr *attr)
+ 			fprintf(fp, "%s    ", _SL_);
  
- 	while (argc > 0) {
- 		if (strcmp(*argv, "dev") == 0) {
-@@ -330,40 +315,49 @@ static int brlink_modify(int argc, char **argv)
- 			d = *argv;
- 		} else if (strcmp(*argv, "guard") == 0) {
- 			NEXT_ARG();
--			if (!on_off("guard", &bpdu_guard, *argv))
--				return -1;
-+			bpdu_guard = parse_on_off("guard", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "hairpin") == 0) {
- 			NEXT_ARG();
--			if (!on_off("hairpin", &hairpin, *argv))
--				return -1;
-+			hairpin = parse_on_off("hairpin", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "fastleave") == 0) {
- 			NEXT_ARG();
--			if (!on_off("fastleave", &fast_leave, *argv))
--				return -1;
-+			fast_leave = parse_on_off("fastleave", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "root_block") == 0) {
- 			NEXT_ARG();
--			if (!on_off("root_block", &root_block, *argv))
--				return -1;
-+			root_block = parse_on_off("root_block", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "learning") == 0) {
- 			NEXT_ARG();
--			if (!on_off("learning", &learning, *argv))
--				return -1;
-+			learning = parse_on_off("learning", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "learning_sync") == 0) {
- 			NEXT_ARG();
--			if (!on_off("learning_sync", &learning_sync, *argv))
--				return -1;
-+			learning_sync = parse_on_off("learning_sync", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "flood") == 0) {
- 			NEXT_ARG();
--			if (!on_off("flood", &flood, *argv))
--				return -1;
-+			flood = parse_on_off("flood", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "mcast_flood") == 0) {
- 			NEXT_ARG();
--			if (!on_off("mcast_flood", &mcast_flood, *argv))
--				return -1;
-+			mcast_flood = parse_on_off("mcast_flood", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "mcast_to_unicast") == 0) {
- 			NEXT_ARG();
--			if (!on_off("mcast_to_unicast", &mcast_to_unicast, *argv))
--				return -1;
-+			mcast_to_unicast = parse_on_off("mcast_to_unicast", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "cost") == 0) {
- 			NEXT_ARG();
- 			cost = atoi(*argv);
-@@ -404,18 +398,19 @@ static int brlink_modify(int argc, char **argv)
- 			flags |= BRIDGE_FLAGS_MASTER;
- 		} else if (strcmp(*argv, "neigh_suppress") == 0) {
- 			NEXT_ARG();
--			if (!on_off("neigh_suppress", &neigh_suppress,
--				    *argv))
--				return -1;
-+			neigh_suppress = parse_on_off("neigh_suppress", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "vlan_tunnel") == 0) {
- 			NEXT_ARG();
--			if (!on_off("vlan_tunnel", &vlan_tunnel,
--				    *argv))
--				return -1;
-+			vlan_tunnel = parse_on_off("vlan_tunnel", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "isolated") == 0) {
- 			NEXT_ARG();
--			if (!on_off("isolated", &isolated, *argv))
--				return -1;
-+			isolated = parse_on_off("isolated", *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "backup_port") == 0) {
- 			NEXT_ARG();
- 			backup_port_idx = ll_name_to_index(*argv);
+ 		if (prtb[IFLA_BRPORT_MODE])
+-			print_onoff(fp, "hairpin",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_MODE]));
++			print_on_off(PRINT_ANY, "hairpin", "hairpin %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_MODE]));
+ 		if (prtb[IFLA_BRPORT_GUARD])
+-			print_onoff(fp, "guard",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_GUARD]));
++			print_on_off(PRINT_ANY, "guard", "guard %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_GUARD]));
+ 		if (prtb[IFLA_BRPORT_PROTECT])
+-			print_onoff(fp, "root_block",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_PROTECT]));
++			print_on_off(PRINT_ANY, "root_block", "root_block %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_PROTECT]));
+ 		if (prtb[IFLA_BRPORT_FAST_LEAVE])
+-			print_onoff(fp, "fastleave",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_FAST_LEAVE]));
++			print_on_off(PRINT_ANY, "fastleave", "fastleave %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_FAST_LEAVE]));
+ 		if (prtb[IFLA_BRPORT_LEARNING])
+-			print_onoff(fp, "learning",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_LEARNING]));
++			print_on_off(PRINT_ANY, "learning", "learning %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_LEARNING]));
+ 		if (prtb[IFLA_BRPORT_LEARNING_SYNC])
+-			print_onoff(fp, "learning_sync",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_LEARNING_SYNC]));
++			print_on_off(PRINT_ANY, "learning_sync", "learning_sync %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_LEARNING_SYNC]));
+ 		if (prtb[IFLA_BRPORT_UNICAST_FLOOD])
+-			print_onoff(fp, "flood",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_UNICAST_FLOOD]));
++			print_on_off(PRINT_ANY, "flood", "flood %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_UNICAST_FLOOD]));
+ 		if (prtb[IFLA_BRPORT_MCAST_FLOOD])
+-			print_onoff(fp, "mcast_flood",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_MCAST_FLOOD]));
++			print_on_off(PRINT_ANY, "mcast_flood", "mcast_flood %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_MCAST_FLOOD]));
+ 		if (prtb[IFLA_BRPORT_MCAST_TO_UCAST])
+-			print_onoff(fp, "mcast_to_unicast",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_MCAST_TO_UCAST]));
++			print_on_off(PRINT_ANY, "mcast_to_unicast", "mcast_to_unicast %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_MCAST_TO_UCAST]));
+ 		if (prtb[IFLA_BRPORT_NEIGH_SUPPRESS])
+-			print_onoff(fp, "neigh_suppress",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_NEIGH_SUPPRESS]));
++			print_on_off(PRINT_ANY, "neigh_suppress", "neigh_suppress %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_NEIGH_SUPPRESS]));
+ 		if (prtb[IFLA_BRPORT_VLAN_TUNNEL])
+-			print_onoff(fp, "vlan_tunnel",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_VLAN_TUNNEL]));
++			print_on_off(PRINT_ANY, "vlan_tunnel", "vlan_tunnel %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_VLAN_TUNNEL]));
+ 
+ 		if (prtb[IFLA_BRPORT_BACKUP_PORT]) {
+ 			int ifidx;
+@@ -166,8 +158,8 @@ static void print_protinfo(FILE *fp, struct rtattr *attr)
+ 		}
+ 
+ 		if (prtb[IFLA_BRPORT_ISOLATED])
+-			print_onoff(fp, "isolated",
+-				    rta_getattr_u8(prtb[IFLA_BRPORT_ISOLATED]));
++			print_on_off(PRINT_ANY, "isolated", "isolated %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_ISOLATED]));
+ 	} else
+ 		print_portstate(rta_getattr_u8(attr));
+ }
 -- 
 2.25.1
 
