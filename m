@@ -2,118 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB7B42B2CF8
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 13:00:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2F72B2D0B
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 13:14:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbgKNL7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 06:59:12 -0500
-Received: from correo.us.es ([193.147.175.20]:40964 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726356AbgKNL7L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Nov 2020 06:59:11 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id BB0F5FFBA1
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 12:59:08 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id AE1CCDA78F
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 12:59:08 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id A3329DA78B; Sat, 14 Nov 2020 12:59:08 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
-        version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 6EC7DDA704;
-        Sat, 14 Nov 2020 12:59:06 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sat, 14 Nov 2020 12:59:06 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 5113642EFB80;
-        Sat, 14 Nov 2020 12:59:06 +0100 (CET)
-Date:   Sat, 14 Nov 2020 12:59:06 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, razor@blackwall.org, jeremy@azazel.net
-Subject: Re: [PATCH net-next,v3 0/9] netfilter: flowtable bridge and vlan
- enhancements
-Message-ID: <20201114115906.GA21025@salvia>
-References: <20201111193737.1793-1-pablo@netfilter.org>
- <20201113175556.25e57856@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201113175556.25e57856@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726725AbgKNMOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 07:14:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726625AbgKNMOQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 07:14:16 -0500
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F968C0613D1
+        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 04:14:16 -0800 (PST)
+Received: by mail-lj1-x242.google.com with SMTP id p12so14173468ljc.9
+        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 04:14:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:to:cc:subject:from:date:message-id
+         :in-reply-to;
+        bh=7VjaBMnVvzc7Shq6LTos+jBHCC8oql/uRCuENVfXe5s=;
+        b=XuYCoTXcSAWYNjF1UmPDA5Z3xpRPisuFHfWYsozy09/CpUrFsxus1odUhqvBgUaxrJ
+         wzHyJaPWlmY4Si5ikiWkdxPTp/bhum5zpivCpNQN3leJkiyJsnvtm3BwAAgr4hdkDczb
+         7JR2+cCj2pUw7oGPCLlHIdbQnZukx+hjXTHjlzUT2+TJukg/Gqg6XKo8AFAYGbj4XzEe
+         ohfQIsQA7l0RBISDqZZFW8TfAuTD1AJI4id5zTNsxCfXLkLyL8eDchRc3W/DSF1imlwl
+         VeScEnPnND59Ew2R3HE7oTfsyQmRKN2uqUWUUoOFKCqUQfjvD5eT6SfSKfPNdHX2kgf6
+         j7wA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:content-transfer-encoding:to:cc:subject:from
+         :date:message-id:in-reply-to;
+        bh=7VjaBMnVvzc7Shq6LTos+jBHCC8oql/uRCuENVfXe5s=;
+        b=phWeFnPMjUIogigeAjOpynHaIj8WTSs63v07IrcvjwvBDSkuGIpAa226el+fVCpFjU
+         lNts5o5dHPt1ecDkadNkkXzK8wyUad0/fZ9x6ECWwZE5DIAmPW+yPAgHKzXQqhrdd89A
+         OvG2gocDNtFf1tvwsPLGlQRtP66Tm5UDm3eYtbtEBMP7Y0+FIUeBaqoeBe6VL0VoES+b
+         VQ/dObAnzRvTs8hF0zO9klT05YZk4la3Ev3v4ZOlvMIJhxkx7SyBIWiSUqde+H45i/cd
+         j7XVWe3fK/jTiXVBNkiq8h5/vjTrQ6ihUqzIj1xffW5PiqObqsTsLDCu02oIorD83ldb
+         QmLw==
+X-Gm-Message-State: AOAM531bOu3CefeBcs/oFBPTv+LWiAUMEaXDD9cjM4M5cduZtL3QGVEw
+        lUfm9QHjquxCPjFo7bx56hOKGA==
+X-Google-Smtp-Source: ABdhPJxb86BrGpKLOJQ7YuvgD4HFDBecSLzHXOxEP2bx8nEAPNt0hYIm4SPCrUH6WsI+GEivukywMw==
+X-Received: by 2002:a2e:b4af:: with SMTP id q15mr3017079ljm.273.1605356054804;
+        Sat, 14 Nov 2020 04:14:14 -0800 (PST)
+Received: from localhost (h-79-28.A259.priv.bahnhof.se. [79.136.79.28])
+        by smtp.gmail.com with ESMTPSA id s21sm2010626ljj.101.2020.11.14.04.14.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 14 Nov 2020 04:14:14 -0800 (PST)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+To:     "Andrew Lunn" <andrew@lunn.ch>
+Cc:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>,
+        <olteanv@gmail.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 1/2] net: dsa: tag_dsa: Unify regular and
+ ethertype DSA taggers
+From:   "Tobias Waldekranz" <tobias@waldekranz.com>
+Date:   Sat, 14 Nov 2020 12:29:32 +0100
+Message-Id: <C72Y9Y96O02K.2J4BFT8MY7S6U@wkz-x280>
+In-Reply-To: <20201114020851.GW1480543@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 13, 2020 at 05:55:56PM -0800, Jakub Kicinski wrote:
-> On Wed, 11 Nov 2020 20:37:28 +0100 Pablo Neira Ayuso wrote:
-> > The following patchset augments the Netfilter flowtable fastpath [1] to
-> > support for network topologies that combine IP forwarding, bridge and
-> > VLAN devices.
-> > 
-> > A typical scenario that can benefit from this infrastructure is composed
-> > of several VMs connected to bridge ports where the bridge master device
-> > 'br0' has an IP address. A DHCP server is also assumed to be running to
-> > provide connectivity to the VMs. The VMs reach the Internet through
-> > 'br0' as default gateway, which makes the packet enter the IP forwarding
-> > path. Then, netfilter is used to NAT the packets before they leave
-> > through the wan device.
-> > 
-> > Something like this:
-> > 
-> >                        fast path
-> >                 .------------------------.
-> >                /                          \
-> >                |           IP forwarding   |
-> >                |          /             \  .
-> >                |       br0               eth0
-> >                .       / \
-> >                -- veth1  veth2
-> >                    .
-> >                    .
-> >                    .
-> >                  eth0
-> >            ab:cd:ef:ab:cd:ef
-> >                   VM
-> > 
-> > The idea is to accelerate forwarding by building a fast path that takes
-> > packets from the ingress path of the bridge port and place them in the
-> > egress path of the wan device (and vice versa). Hence, skipping the
-> > classic bridge and IP stack paths.
-> 
-> The problem that immediately comes to mind is that if there is any
-> dynamic forwarding state the cache you're creating would need to be
-> flushed when FDB changes. Are you expecting users would plug into the
-> flowtable devices where they know things are fairly static?
+On Sat Nov 14, 2020 at 4:08 AM CET, Andrew Lunn wrote:
+> Hi Tobias
+>
+> > +/**
+> > + * enum dsa_cmd - DSA Command
+> > + * @DSA_CMD_TO_CPU: Set on packets that were trapped or mirrored to
+> > + *     the CPU port. This is needed to implement control protocols,
+> > + *     e.g. STP and LLDP, that must not allow those control packets to
+> > + *     be switched according to the normal rules.
+>
+> Maybe we want to mention that this only makes sense for packets
+> egressing the switch?
+>
+> > + * @DSA_CMD_FROM_CPU: Used by the CPU to send a packet to a specific
+> > + *     port, ignoring all the barriers that the switch normally
+> > + *     enforces (VLANs, STP port states etc.). "sudo send packet"
+>
+> This only make sense for packets ingressing the switch. The
+> TO_CPU/FROM_CPU kind of make that clear but..
 
-If any of the flowtable device goes down / removed, the entries are
-removed from the flowtable. This means packets of existing flows are
-pushed up back to classic bridge / forwarding path to re-evaluate the
-fast path.
+Honestly yes, I think it is pretty clear. But I am happy to change it
+if you have any particular formulation you would like in there.
 
-For each new flow, the fast path that is selected freshly, so they use
-the up-to-date FDB to select a new bridge port.
+> > + * @DSA_CMD_TO_SNIFFER: Set on packets that where mirrored to the CPU
+> > + *     as a result of matching some user configured ingress or egress
+> > + *     monitor criteria.
+> > + * @DSA_CMD_FORWARD: Everything else, i.e. the bulk data traffic.
+>
+> I assume this can be used in both direction?
 
-Existing flows still follow the old path. The same happens with FIB
-currently.
+Yes. I can add a sentence about that.
 
-It should be possible to explore purging entries in the flowtable that
-are stale due to changes in the topology (either in FDB or FIB).
+> > + *
+> > + * A 3-bit code is used to relay why a particular frame was sent to
+> > + * the CPU. We only use this to determine if the packet was mirrored
+> > + * or trapped, i.e. whether the packet has been forwarded by hardware
+> > + * or not.
+>
+> Maybe add that, not all generations support all codes.
 
-What scenario do you have specifically in mind? Something like VM
-migrates from one bridge port to another?
+Not sure I have that information. The oldest chipset I've worked with
+is Jade (6095/6185) and in that datasheet the TO_CPU tag is not even
+documented. From Opal+(6097) all the way through Agate, Peridot, and
+Amethyst, the definitions have not changed from what I can see?
 
-Thank you.
+> > +			/* Remote management frames originate from the
+> > +			 * switch itself, there is no DSA port for us
+> > +			 * to ingress it on (the port field is always
+> > +			 * 0 in these tags).
+>
+> If/when we get around to implementing this, i doubt we will ingress it
+> like a frame. It will get picked up here and probably added to some
+> queue and a thread woken up. So maybe just say, not implemented yet,
+> so drop it.
+
+v1 actually had a sentence about this :) I can put it back.
+
+> > +			 */
+> > +			return NULL;
+> > +		case DSA_CODE_ARP_MIRROR:
+> > +		case DSA_CODE_POLICY_MIRROR:
+> > +			/* Mark mirrored packets to notify any upper
+> > +			 * device (like a bridge) that forwarding has
+> > +			 * already been done by hardware.
+> > +			 */
+> > +			skb->offload_fwd_mark =3D 1;
+> > +			break;
+> > +		case DSA_CODE_MGMT_TRAP:
+> > +		case DSA_CODE_IGMP_MLD_TRAP:
+> > +		case DSA_CODE_POLICY_TRAP:
+> > +			/* Traps have, by definition, not been
+> > +			 * forwarded by hardware, so don't mark them.
+> > +			 */
+>
+> Humm, yes, they have not been forwarded by hardware. But is the
+> software bridge going to do the right thing and not flood them? Up
+
+The bridge is free to flood them if it wants to (e.g. IGMP/MLD
+snooping is off) or not (e.g. IGMP/MLD snooping enabled). The point
+is, that is not for a lowly switchdev driver to decide. Our job is to
+relay to the bridge if this skb has been forwarded or not, the end.
+
+> until now, i think we did mark them. So this is a clear change in
+> behaviour. I wonder if we want to break this out into a separate
+> patch? If something breaks, we can then bisect was it the combining
+> which broke it, or the change of this mark.
+
+Since mv88e6xxx can not configure anything that generates
+DSA_CODE_MGMT_TRAP or DSA_CODE_POLICY_TRAP yet, we do not have to
+worry about any change in behavior there.
+
+That leaves us with DSA_CODE_IGMP_MLD_TRAP. Here is the problem:
+
+Currenly, tag_dsa.c will set skb->offload_fwd_mark for IGMP/MLD
+packets, whereas tag_edsa.c will exempt them. So we can not unify the
+two without changing the behavior of one.
+
+I posit that tag_edsa does the right thing, the packet has not been
+forwarded, so we should go with that.
+
+This is precisely the reason why we want to unify these! :)
+
+> I will try to test this on my hardware, but it is probably same as
+> your 6390X and 6352.
+
+Thank you!
