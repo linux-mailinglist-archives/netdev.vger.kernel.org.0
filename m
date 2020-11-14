@@ -2,125 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34DC02B30B9
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 21:51:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 172972B30CF
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 21:57:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726205AbgKNUuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 15:50:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
+        id S1726150AbgKNU4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 15:56:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726150AbgKNUuI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 15:50:08 -0500
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B91C0613D1
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 12:50:06 -0800 (PST)
-Received: by mail-wm1-x343.google.com with SMTP id 23so9513226wmg.1
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 12:50:06 -0800 (PST)
+        with ESMTP id S1726112AbgKNU4B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 15:56:01 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E7BC0613D1
+        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 12:56:01 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id f12so1975530pjp.4
+        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 12:56:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=yZbqohHDXJo0peaT5UeaNuYrTH9axvZBMMAdSxtWAsM=;
-        b=GzuwuDlmkcuAdAD7W2kMrbUyivoIYf9QaQfucB9g11xGzgL4pV86u+ejvu6l966g6a
-         wn6oEsGAXjnUGa8EdFhwhCOyTFBgZuT0ZpRZiuOp1LyHe3u6el/kGl3xwwluzAWckFKr
-         U554A90XuOoyXxiXrfdTpA7NQbNM4AeVRxaSldUi+3wb0CXBFftvojoDWO3c2O6TZZkY
-         02nDnE1T8baNTjGzzIOtUkIN1WI/w8iR0XtXtX9PUTPENsPlvNQLFmY+jPr+9RwEi7Nc
-         r7xOWdzd+rETwvcOA4UrROKsNCUz/Y4kgCEE6Crga5Q1zhNiXYm+XJe0QzzIR9IxRi8O
-         +QEQ==
+        bh=X6HQyQjs8/Q8phh3T7uapsXTlo+TZEJY7ce7ooOp9ZM=;
+        b=sZ1A1zZRiKhMzq54aG7fRP9c/rvQpO6NfHz6XzSK6IsIefhYcgEO9dOj418H/fCxMg
+         Vp74Nclm7WTvczNN7ikWWTmwsn+jOMg/522yboS4QKh+zbZjDxAvJ/zairWrFwl0jDYj
+         fk3fjK0e+pmwA1i7gVxiivCyWOMgueWlNOxUymRCvdhaSX+3W+u8+E1snqgwO1+3Z8Ws
+         yPulLo9E1bbL2FuBMzfHOaFsaUl5Is7GrKIsREiVCVYBgd9g/kZXyzGhjlbuOpEDpuov
+         2AKP3jF+xW8a5wBfCk0cm6fJvNI5TelQNPcU/NlP4NJrg8fMDXp6Ky1YiqWmHQ8owqsZ
+         W0Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=yZbqohHDXJo0peaT5UeaNuYrTH9axvZBMMAdSxtWAsM=;
-        b=tgcjQF4USxdTQgBCnIvmu/R0c/3o2gIeLgLHEIkx7+Pw1F9UPxcvnrq7ohgwVSQS5G
-         WseonrUWSCLsTBo8QCoYTwvS8w2psp4s5TzYzNYeIHDI5gPVz+24VMAdAJvdL4xBiq/I
-         PXiV+gLyDN54fxpeedd1gp5swX6j/2Q7MtYnWzAnz/G5A6E64UCfVSGJ7v951sFGA4MS
-         Rj6A+BLyai06HUVTHOjHkRLwJFrw6c933QI8KXoDzxdrxhUa0+cOfUUWsAfDVoV13WFe
-         gUUMZy37cjvGG5hW71ocR2UKdcqJyM1mC7rMNFv7TtrsDlNXd6VBaOi66vU8JkVBhuO4
-         Y7rQ==
-X-Gm-Message-State: AOAM532m2ig+X8acUiBInl8TPUYU3ccbeHG4gYMxN9vhw3vlgAp1wYSN
-        o5DK0a/NTLUUL0CqFvE/oM+TLW/dAZnZIg==
-X-Google-Smtp-Source: ABdhPJxODtAF/I6wpoh2Gi2fxj7io48By2mV/JSRGMgV50tdla4/kOzTifdsbjcHgm3VmNOuTVnRpA==
-X-Received: by 2002:a7b:c242:: with SMTP id b2mr8122370wmj.162.1605387004756;
-        Sat, 14 Nov 2020 12:50:04 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:f440:c2bc:7fec:c7f5? (p200300ea8f232800f440c2bc7fecc7f5.dip0.t-ipconnect.de. [2003:ea:8f23:2800:f440:c2bc:7fec:c7f5])
-        by smtp.googlemail.com with ESMTPSA id t23sm14077293wmn.4.2020.11.14.12.50.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 14 Nov 2020 12:50:04 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH net-next] r8169: improve rtl8169_start_xmit
-Message-ID: <80085451-3eaf-507a-c7c0-08d607c46fbc@gmail.com>
-Date:   Sat, 14 Nov 2020 21:49:53 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=X6HQyQjs8/Q8phh3T7uapsXTlo+TZEJY7ce7ooOp9ZM=;
+        b=auRJHqbDXF+9d0vRxsHRsD2SX3K7zQ70GCosGFbbHJjwSNf0X5YyTr7iXiPOMOeMvR
+         3UJ+Zr3L3OLXJ6s2+fFgWKzeAQkVbzuaCse2dFsOCnSqY4o1HTpWNDveyUuYP2absVMJ
+         SMV3hdmdhxzjjw07z+AKa77NUq5D9SXSuZdcPEYZWFhVxYkNrm8MtBjICrCKe+xXeGow
+         IG6qHjWhqyBdpyFYPbdZFZB2dhK/CUHt40kQ64iS9VYyMQGxGeIhQylkShO68ZU1c6/B
+         10n6DrxNyN3rQjgTPB6dlQIx2Mc+MEbaSAOol5lz6ZuZdAvqZ3A6qexiImqI7T4MTXxa
+         QGFQ==
+X-Gm-Message-State: AOAM533JvcNAelHo4VmiSgKzdgZFpXgnepfBHgMG86PC0OvUUEEmMDDn
+        07c3If2JfxssIMmXumrIjsSO31gzP5faGPUs
+X-Google-Smtp-Source: ABdhPJyUL51wNZjbvmP4V0cCIXnlylMIAao4XM2NXCgPnX4FKrKCpbdi3FJm5QLicWyLhrEdciAIOQ==
+X-Received: by 2002:a17:90a:34ca:: with SMTP id m10mr8956364pjf.193.1605387360935;
+        Sat, 14 Nov 2020 12:56:00 -0800 (PST)
+Received: from aroeseler-LY545.hsd1.ca.comcast.net ([2601:648:8400:9ef4:34d:9355:e74:4f1b])
+        by smtp.googlemail.com with ESMTPSA id u24sm13669726pfm.51.2020.11.14.12.55.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 Nov 2020 12:56:00 -0800 (PST)
+From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
+To:     davem@davemloft.net
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v3 net-next 0/3] add support sending RFC8335 PROBE 
+Date:   Sat, 14 Nov 2020 12:55:57 -0800
+Message-Id: <cover.1605386600.git.andreas.a.roeseler@gmail.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Improve the following in rtl8169_start_xmit:
-- tp->cur_tx can be accessed in parallel by rtl_tx(), therefore
-  annotate the race by using WRITE_ONCE
-- avoid checking stop_queue a second time by moving the doorbell check
-- netif_stop_queue() uses atomic operation set_bit() that includes a
-  full memory barrier on some platforms, therefore use
-  smp_mb__after_atomic to avoid overhead
+The popular utility ping has several severe limitations such as the
+inability to query specific  interfaces on a node and requiring
+bidirectional connectivity between the probing and the probed
+interfaces. RFC8335 attempts to solve these limitations by creating the
+new utility PROBE which is a specialized ICMP message that makes use of
+the ICMP Extension Structure outlined in RFC4884.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+This patchset adds definitions for the ICMP Extended Echo Request and
+Reply (PROBE) types for both IPv4 and IPv6. It also expands the list of
+supported ICMP messages to accommodate PROBEs.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 8910e900e..940fc6590 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4226,7 +4226,7 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
- 	/* rtl_tx needs to see descriptor changes before updated tp->cur_tx */
- 	smp_wmb();
- 
--	tp->cur_tx += frags + 1;
-+	WRITE_ONCE(tp->cur_tx, tp->cur_tx + frags + 1);
- 
- 	stop_queue = !rtl_tx_slots_avail(tp, MAX_SKB_FRAGS);
- 	if (unlikely(stop_queue)) {
-@@ -4235,13 +4235,6 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
- 		 */
- 		smp_wmb();
- 		netif_stop_queue(dev);
--		door_bell = true;
--	}
--
--	if (door_bell)
--		rtl8169_doorbell(tp);
--
--	if (unlikely(stop_queue)) {
- 		/* Sync with rtl_tx:
- 		 * - publish queue status and cur_tx ring index (write barrier)
- 		 * - refresh dirty_tx ring index (read barrier).
-@@ -4249,11 +4242,15 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
- 		 * status and forget to wake up queue, a racing rtl_tx thread
- 		 * can't.
- 		 */
--		smp_mb();
-+		smp_mb__after_atomic();
- 		if (rtl_tx_slots_avail(tp, MAX_SKB_FRAGS))
- 			netif_start_queue(dev);
-+		door_bell = true;
- 	}
- 
-+	if (door_bell)
-+		rtl8169_doorbell(tp);
-+
- 	return NETDEV_TX_OK;
- 
- err_dma_1:
+Changes since v1:
+ - Switch to correct base tree
+
+Changes since v2:
+ - Switch to net-next tree 67c70b5eb2bf7d0496fcb62d308dc3096bc11553
+
+Andreas Roeseler (3):
+  net: add support for sending RFC8335 PROBE
+  icmp: define PROBE message types
+  ICMPv6: define PROBE message types
+
+ include/uapi/linux/icmp.h   | 3 +++
+ include/uapi/linux/icmpv6.h | 6 ++++++
+ net/ipv4/ping.c             | 4 +++-
+ 3 files changed, 12 insertions(+), 1 deletion(-)
+
 -- 
 2.29.2
 
