@@ -2,76 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69FD82B2E59
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 17:07:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4985C2B2E5C
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 17:08:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727192AbgKNQGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 11:06:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42596 "EHLO
+        id S1727118AbgKNQHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 11:07:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727107AbgKNQGf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 11:06:35 -0500
-X-Greylist: delayed 1624 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 14 Nov 2020 08:06:34 PST
-Received: from iam.tj (soggy.cloud [IPv6:2a01:7e00:e000:151::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA340C0613D1
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 08:06:34 -0800 (PST)
-Received: from [10.0.40.123] (unknown [51.155.44.233])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        by iam.tj (Postfix) with ESMTPSA id A6616340AD;
-        Sat, 14 Nov 2020 16:06:33 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=elloe.vision; s=2019;
-        t=1605369993; bh=CmSsL4QWFFw7wYkkaS7n1xmLtV9lnSawojHwGa6s7l0=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=XnQeM8QlUVHgN5D2l5xQRg7bg/E9pdIB+G9OhwuGc+Cslpo7+FBK/wlLREBZGHsRl
-         ZaRMd9eCu4INBx+tC+pEEoz83FN0LCGz4lgLorzr0RjrvwW3xh93ycls/KzNo63+nn
-         uYG/QGCViRzIxpKLzupQ/eAOTP1GcB6DwN6lomHgxrbOJVrCa1eHxkkfu+Ttg6CPUy
-         qjLfpHZKRubS1TEFHRxrRSTWCk6GtOmBDiA7HnfdxQgYtLjAKBw1Xcl7LawxAssr0b
-         OPsjuzcCpnUu2Y3o1AoxeNqhQe9IFqby1sdetE0bLqF6SrchfChw/GEPpfCe2M28B/
-         NQSPSynG/0vig==
-Subject: Re: dsa: mv88e6xxx not receiving IPv6 multicast packets
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, chris.packham@alliedtelesis.co.nz,
-        f.fainelli@gmail.com, marek.behun@nic.cz, vivien.didelot@gmail.com,
-        info <info@turris.cz>
-References: <1b6ba265-4651-79d2-9b43-f14e7f6ec19b@alliedtelesis.co.nz>
- <0538958b-44b8-7187-650b-35ce276e9d83@elloe.vision>
- <3390878f-ca70-7714-3f89-c4455309d917@elloe.vision>
- <20201114155614.GZ1480543@lunn.ch>
-From:   "Tj (Elloe Linux)" <ml.linux@elloe.vision>
-Organization: Elloe CIC
-Message-ID: <eed7bc92-e1e6-35df-a2cf-97e74a8730fd@elloe.vision>
-Date:   Sat, 14 Nov 2020 16:06:33 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        with ESMTP id S1726884AbgKNQHm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 11:07:42 -0500
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CE5C0613D1;
+        Sat, 14 Nov 2020 08:07:41 -0800 (PST)
+Received: by mail-lj1-x244.google.com with SMTP id y16so14645154ljk.1;
+        Sat, 14 Nov 2020 08:07:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hePRxHDakR/FcZyNIlFOEo3Qbzz67PaHshF+EOjWLkA=;
+        b=XXs7p+h1mogL2MliSrvN22602c6BFIY9gc8y8MWvJNn65MKIUaQdPcaqhg/Mzpmbkz
+         z8VC9Rt1jDw4uIXxX03C8plIhpo6FXuK/fKB8CkwrhB1afyOM7Cu18npXrmOx9omImGa
+         bxvv9QishP68DnAd3+oL4nNSC04Pbgq4p6WoYfJLaaQqR4l5tKdOheuW4lTuee1x3fUg
+         LzSHWgW4dXu8pTWoZWcpjUdoRNeHIojC4KfeJKJJCIV0HqjR/FShSUvJV30zXS8QtPXS
+         AroEsn/84teC1yzU477BkNEcbUshfeo1GNlYBiWcyhcPKlZiGzGx9czLGj+QGjG5Lx0p
+         oXEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hePRxHDakR/FcZyNIlFOEo3Qbzz67PaHshF+EOjWLkA=;
+        b=SBML/JwTZpwKUPJzz0+kFLELQGeZaxM3dsH846XWeuvbOHFGxh/mfd/NF2lwaRk+OU
+         U1tAbL6OyYC8d+/0szo93pp4y8aT7XsxYC0ogQHk2Nhm0yAOvVfqdbOOik1CsM1wjjhQ
+         76e4trWk59PGwCRf/GcGu2hZpfXHfP6f5KWFDJCKif9AuVHZitpMpfAMURZKhYbQaLtO
+         dLD+WKgYZkr8iAXbvclB8L9p2f3DJp0L+ciZ27UZApExU33N1z7nMNXVmhCm6wrxQUwp
+         zpdaqHcPqS1XPVjUF+0L2B53468yPDJgyXDWVpV7HJw+06YIYPyQ3E/zp4M/GdzGSSwD
+         SJrA==
+X-Gm-Message-State: AOAM533vb2YSsuqAupRp3QW/ajF3LAwRWFzWiWp5nMhhmk4w4C1TVnme
+        nogazvDDWgNJnF+iEpCmkCJ958uJWMHi1OjgtVI=
+X-Google-Smtp-Source: ABdhPJzOHGxXwjEZqemBP3a+UVSh0Vab4/4cUDv/2CNW8VKwOJp8IhUlYjy+JRu1p/Bz41h96gfWfAyTlIcaUEhAgvo=
+X-Received: by 2002:a05:651c:1205:: with SMTP id i5mr3254426lja.283.1605370060517;
+ Sat, 14 Nov 2020 08:07:40 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201114155614.GZ1480543@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <20201114135126.29462-1-dev@der-flo.net>
+In-Reply-To: <20201114135126.29462-1-dev@der-flo.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 14 Nov 2020 08:07:29 -0800
+Message-ID: <CAADnVQL4zBmS5Yo3skoA32YjFXz5qu0q9LuJ5Z-61EGwZzgD6Q@mail.gmail.com>
+Subject: Re: [PATCH bpf,perf]] bpf,perf: return EOPNOTSUPP for attaching bpf
+ handler on PERF_COUNT_SW_DUMMY
+To:     Florian Lehner <dev@der-flo.net>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/11/2020 15:56, Andrew Lunn wrote:
->> 1) with isc-dhcp-server configured with very short lease times (180
->> seconds). After mox reboot (or systemctl restart systemd-networkd)
->> clients successfully obtain a lease and a couple of RENEWs (requested
->> after 90 seconds) but then all goes silent, Mox OS no longer sees the
->> IPv6 multicast RENEW packets and client leases expire.
-> 
-> So it takes about 3 minutes to reproduce this?
-> 
-> Can you do a git bisect to figure out which change broke it? It will
-> take you maybe 5 minutes per step, and given the wide range of
-> kernels, i'm guessing you need around 15 steps. So maybe two hours of
-> work.
-> 
-> 	Andrew
+On Sat, Nov 14, 2020 at 5:53 AM Florian Lehner <dev@der-flo.net> wrote:
 >
+> At the moment it is not possible to attach a bpf handler to a perf event
+> of type PERF_TYPE_SOFTWARE with a configuration of PERF_COUNT_SW_DUMMY.
 
-I'll check if we can - the problem might be the Turris Mox kernel is
-based on a board support package drop by Marvell so I'm not clear right
-now how divergent they are. Hopefully the Turris kernel devs can help on
-that.
+It is possible or it is not possible?
 
+Such "commit log as an abstract statement" patches are a mystery to a reader.
+Please explain what problem you're trying to solve and how it's being addressed.
+
+> Signed-off-by: Florian Lehner <dev@der-flo.net>
+> ---
+>  kernel/events/core.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/kernel/events/core.c b/kernel/events/core.c
+> index da467e1dd49a..4e8846b7ceda 100644
+> --- a/kernel/events/core.c
+> +++ b/kernel/events/core.c
+> @@ -9668,6 +9668,10 @@ static int perf_event_set_bpf_handler(struct perf_event *event, u32 prog_fd)
+>         if (event->prog)
+>                 return -EEXIST;
+>
+> +       if (event->attr.type == PERF_TYPE_SOFTWARE &&
+> +           event->attr.config == PERF_COUNT_SW_DUMMY)
+> +               return -EOPNOTSUPP;
+
+Is it a fix or a feature?
+If it is a fix please add 'Fixes:' tag.
