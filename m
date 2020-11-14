@@ -2,75 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 309212B2F10
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 18:35:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 675F12B2F21
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 18:37:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726382AbgKNReq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 12:34:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56058 "EHLO
+        id S1726477AbgKNRhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 12:37:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726365AbgKNReo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 12:34:44 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30685C061A47
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 09:34:44 -0800 (PST)
-Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kdzRi-0000mY-7J; Sat, 14 Nov 2020 18:34:42 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Faiz Abbas <faiz_abbas@ti.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net 15/15] can: m_can: m_can_stop(): set device to software init mode before closing
-Date:   Sat, 14 Nov 2020 18:33:59 +0100
-Message-Id: <20201114173358.2058600-16-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201114173358.2058600-1-mkl@pengutronix.de>
-References: <20201114173358.2058600-1-mkl@pengutronix.de>
+        with ESMTP id S1726189AbgKNRhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 12:37:02 -0500
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DA9C0613D1
+        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 09:37:02 -0800 (PST)
+Received: by mail-oi1-x229.google.com with SMTP id d9so14155123oib.3
+        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 09:37:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U+KMAnf2yzBogfaaMLLEijYBYvZtkYlDENcUi/iosyY=;
+        b=AT9j+dCBAh6nL0Aw/A7DgEVkcQZfCWbC4rwxazxszxvekaQi946ju0MkeaUqYs5l6L
+         DAErJehgky7JWt/ksZELlmCA6bg7GKM/5/Im/DxxdRCv+Ikm4SpLNpu72taHFsT3nTZ1
+         MIxoR1RdvLzU2hL8un3HdAw9kKnyLlNiUnjKJUq1izHT2Hbx/t1XKkMOdBxs7SYnjCmi
+         6bvID2zWAhF38kuj3cAogKyDLAobzv/jK1oUSw8Z6iLLXzGXOIeYJae8TMUMuUD+jnaW
+         9+EmNUfAY9vYJv5QKwr+c1M2j75vMGf2nLMv6Z2Pn66LAUYQFChsgOAGXwGBvO2uPJ+s
+         ygCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U+KMAnf2yzBogfaaMLLEijYBYvZtkYlDENcUi/iosyY=;
+        b=CwRu+lefgTodwOGfCdfDRlmlW/pejEE47Qq+Smmc3SQx7vGvs4SZr/T5wWCAJz/yoT
+         RIZ4TzGL67Cn7UWw/R/PnoDuOcD0/yt3y8XfeiC4P3GHy6JxyvmWKlICWxHxpDtSM2WV
+         wTN+BeZaRPYA+E2bpqfuEXvwdjv/5V6Oit2eGpTyZpiv2u8inz7/S5hOc4skLaRqF2Ms
+         MhnE4JoPtoXZ5Sv3VbAsM2BPghxuMSGmUgpkxxsL/OrYdLU/VJ7KXUDUrdUgLMB/VXbQ
+         F37Th0KOscELAETkIExTfhf604CbNmtHGU1rBtvY5LD70hUmBQeg2EKosUtlWMZ64N23
+         TjsQ==
+X-Gm-Message-State: AOAM530iG9z/vH1ALY1bCpOmqXttti5N5O2TeGGNkWICJqFV3LXwHEYz
+        tb77ns2L1umgNd9uf4E0JP+xaR+wjai3uNmNTYM=
+X-Google-Smtp-Source: ABdhPJx4l/xnI61vPJwXyFVe9A2ViGskedEIQxHRl1cpeIsPddww2DYznlo4w0p3BhKh249quzk/FgQMJRaD9C6rs3k=
+X-Received: by 2002:aca:bc03:: with SMTP id m3mr5221047oif.35.1605375422023;
+ Sat, 14 Nov 2020 09:37:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <CAMeyCbh8vSCnr-9-odi0kg3E8BGCiETOL-jJ650qYQdsY0wxeA@mail.gmail.com>
+ <CAMeyCbjuj2Q2riK2yzKXRfCa_mKToqe0uPXKxrjd6zJQWaXxog@mail.gmail.com>
+ <3f069322-f22a-a2e8-1498-0a979e02b595@gmail.com> <739b43c5c77448c0ab9e8efadd33dbfb@AcuMS.aculab.com>
+ <CAMeyCbj4aVRtVQfzKmHvhUkzh08PqNs2DHS1nobbx0nR4LoXbg@mail.gmail.com>
+ <CAMeyCbjOzJw7e3+e-AwnCzRpYWYT5OjFSH=+eEsZcEBrJ4BCYg@mail.gmail.com> <AM8PR04MB7315635D8FFC131B04B25E00FFE50@AM8PR04MB7315.eurprd04.prod.outlook.com>
+In-Reply-To: <AM8PR04MB7315635D8FFC131B04B25E00FFE50@AM8PR04MB7315.eurprd04.prod.outlook.com>
+From:   Kegl Rohit <keglrohit@gmail.com>
+Date:   Sat, 14 Nov 2020 18:36:51 +0100
+Message-ID: <CAMeyCbiuFAtqpUTtrPx3Afp_Hc41nZTzq0US7vg5HXwPp6SdFQ@mail.gmail.com>
+Subject: Re: [EXT] Re: Fwd: net: fec: rx descriptor ring out of order
+To:     Andy Duan <fugang.duan@nxp.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Faiz Abbas <faiz_abbas@ti.com>
+On Sat, Nov 14, 2020 at 2:58 AM Andy Duan <fugang.duan@nxp.com> wrote:
+>
+> From: Kegl Rohit <keglrohit@gmail.com> Sent: Friday, November 13, 2020 8:21 PM
+> > On Fri, Nov 13, 2020 at 8:33 AM Kegl Rohit <keglrohit@gmail.com> wrote:
+> > >
+> > > > What are the addresses of the ring entries?
+> > > > I bet there is something wrong with the cache coherency and/or
+> > > > flushing.
+> > > >
+> > > > So the MAC hardware has done the write but (somewhere) it isn't
+> > > > visible to the cpu for ages.
+> > >
+> > > CMA memory is disabled in our kernel config.
+> > > So the descriptors allocated with dma_alloc_coherent() won't be CMA memory.
+> > > Could this cause a different caching/flushing behaviour?
+> >
+> > Yes, after tests I think it is caused by the disabled CMA.
+> >
+> > @Andy
+> > I could find this mail and the attached "i.MX6 dma memory bufferable
+> > issue.pptx" in the archive
+> > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fmarc.info
+> > %2F%3Fl%3Dlinux-netdev%26m%3D140135147823760&amp;data=04%7C01
+> > %7Cfugang.duan%40nxp.com%7C121e73ec66684a125e2a08d887cea578%7C
+> > 686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C637408668924362983
+> > %7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJ
+> > BTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=e7Cm24Ay1Ay52UKtzT
+> > BiX9KlhuublndP30vnwxAaugM%3D&amp;reserved=0
+> > Was this issue solved in some kernel versions later on?
+> > Is CMA still necessary with a 5.4 Kernel?
+>
+> Yes, CMA is required. Otherwise it requires one patch for L2 cache.
 
-There might be some requests pending in the buffer when the interface close
-sequence occurs. In some devices, these pending requests might lead to the
-module not shutting down properly when m_can_clk_stop() is called.
-
-Therefore, move the device to init state before potentially powering it down.
-
-Fixes: e0d1f4816f2a ("can: m_can: add Bosch M_CAN controller support")
-Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
-Acked-by: Dan Murphy <dmurphy@ti.com>
-Link: https://lore.kernel.org/r/20200825055442.16994-1-faiz_abbas@ti.com
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/m_can/m_can.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 645101d19989..e7264043f79a 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -1414,6 +1414,9 @@ static void m_can_stop(struct net_device *dev)
- 	/* disable all interrupts */
- 	m_can_disable_all_interrupts(cdev);
- 
-+	/* Set init mode to disengage from the network */
-+	m_can_config_endisable(cdev, true);
-+
- 	/* set the state as STOPPED */
- 	cdev->can.state = CAN_STATE_STOPPED;
- }
--- 
-2.29.2
-
+Where can I find the patch / is the patch already mainline?
+Is it some development patch or already well tested?
+Or would you recommend enabling CMA instead?
+Are other components affected apart from the already mentioned
+peripherals (ENET, Audio, USB) in the attachment?
