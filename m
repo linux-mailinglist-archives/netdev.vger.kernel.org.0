@@ -2,97 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C1382B2E35
+	by mail.lfdr.de (Postfix) with ESMTP id 0B3862B2E34
 	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 16:45:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727092AbgKNPpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 10:45:18 -0500
-Received: from yes.iam.tj ([109.74.197.121]:49752 "EHLO iam.tj"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726885AbgKNPpP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Nov 2020 10:45:15 -0500
-X-Greylist: delayed 343 seconds by postgrey-1.27 at vger.kernel.org; Sat, 14 Nov 2020 10:45:15 EST
-Received: from [10.0.40.123] (unknown [51.155.44.233])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        by iam.tj (Postfix) with ESMTPSA id 8F5F5340AD;
-        Sat, 14 Nov 2020 15:39:28 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=elloe.vision; s=2019;
-        t=1605368368; bh=9H2sw/oxQlxxHUDyoSY/lnJazAvarw7rSLFVUzw0O68=;
-        h=Subject:From:To:Cc:References:Date:In-Reply-To:From;
-        b=bZL+N70WB06q6MzZlH+nB/F/UVmbqRVg2aTCHL2Cjq1pMpxQFzqH1CavpjOd4C5bX
-         uDBPZ6dIFshhLUwf9071iTSIwIpaByrmkjnQlgvVuRf+yqfCo6UxD91LXcht6XJdtI
-         CeOgN5ofjgGNosPSwhE+T7Met+OMNt553OKc/WoKG6PUGvL0C72GxidAzG/fsaozsX
-         wLsUOBKFnORFACs5eTS4SV6xEqTlyGs7TiujASPpV9u2F23AorJMcXSZRMa95KB+n3
-         clrSajPZw+Uqb54gHDAa7+Lz+g3HbxoaL2xcyjiqdH1+rqBZC/4OqVXpbfmsGH8XZp
-         7v/rFCb4QruHA==
-Subject: Re: dsa: mv88e6xxx not receiving IPv6 multicast packets
-From:   "Tj (Elloe Linux)" <ml.linux@elloe.vision>
-To:     netdev@vger.kernel.org
-Cc:     chris.packham@alliedtelesis.co.nz, andrew@lunn.ch,
-        f.fainelli@gmail.com, marek.behun@nic.cz, vivien.didelot@gmail.com,
-        info <info@turris.cz>
-References: <1b6ba265-4651-79d2-9b43-f14e7f6ec19b@alliedtelesis.co.nz>
- <0538958b-44b8-7187-650b-35ce276e9d83@elloe.vision>
-Organization: Elloe CIC
-Message-ID: <3390878f-ca70-7714-3f89-c4455309d917@elloe.vision>
-Date:   Sat, 14 Nov 2020 15:39:28 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726998AbgKNPpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 10:45:03 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55138 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726885AbgKNPpD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 14 Nov 2020 10:45:03 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kdxjU-0072ah-HO; Sat, 14 Nov 2020 16:44:56 +0100
+Date:   Sat, 14 Nov 2020 16:44:56 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 1/2] net: dsa: tag_dsa: Unify regular and
+ ethertype DSA taggers
+Message-ID: <20201114154456.GY1480543@lunn.ch>
+References: <20201114020851.GW1480543@lunn.ch>
+ <C72Y9Y96O02K.2J4BFT8MY7S6U@wkz-x280>
 MIME-Version: 1.0
-In-Reply-To: <0538958b-44b8-7187-650b-35ce276e9d83@elloe.vision>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <C72Y9Y96O02K.2J4BFT8MY7S6U@wkz-x280>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MV88E6085 switch not passing IPv6 multicast packets to CPU.
+> > > + *
+> > > + * A 3-bit code is used to relay why a particular frame was sent to
+> > > + * the CPU. We only use this to determine if the packet was mirrored
+> > > + * or trapped, i.e. whether the packet has been forwarded by hardware
+> > > + * or not.
+> >
+> > Maybe add that, not all generations support all codes.
+> 
+> Not sure I have that information.
 
-Seems to be related to interface not being in promiscuous mode.
+I'm not asking you list per code which switches support it. I'm just
+think we should add a warning, it cannot be assumed all switches
+support all codes. I just looked at the 6161 for example, and it is
+missing 5 from its list.
 
-This issue has been ongoing since at least July 2020. Latest v5.10-rc3
-still suffers the issue on a Turris Mox with mv88e6085. We've not been
-able to reproduce it on the Turris v4.14 stable kernel series so it
-appears to be a regression.
+> > > +			 */
+> > > +			return NULL;
+> > > +		case DSA_CODE_ARP_MIRROR:
+> > > +		case DSA_CODE_POLICY_MIRROR:
+> > > +			/* Mark mirrored packets to notify any upper
+> > > +			 * device (like a bridge) that forwarding has
+> > > +			 * already been done by hardware.
+> > > +			 */
+> > > +			skb->offload_fwd_mark = 1;
+> > > +			break;
+> > > +		case DSA_CODE_MGMT_TRAP:
+> > > +		case DSA_CODE_IGMP_MLD_TRAP:
+> > > +		case DSA_CODE_POLICY_TRAP:
+> > > +			/* Traps have, by definition, not been
+> > > +			 * forwarded by hardware, so don't mark them.
+> > > +			 */
+> >
+> > Humm, yes, they have not been forwarded by hardware. But is the
+> > software bridge going to do the right thing and not flood them? Up
+> 
+> The bridge is free to flood them if it wants to (e.g. IGMP/MLD
+> snooping is off) or not (e.g. IGMP/MLD snooping enabled). The point
+> is, that is not for a lowly switchdev driver to decide. Our job is to
+> relay to the bridge if this skb has been forwarded or not, the end.
+> 
+> > until now, i think we did mark them. So this is a clear change in
+> > behaviour. I wonder if we want to break this out into a separate
+> > patch? If something breaks, we can then bisect was it the combining
+> > which broke it, or the change of this mark.
+> 
+> Since mv88e6xxx can not configure anything that generates
+> DSA_CODE_MGMT_TRAP or DSA_CODE_POLICY_TRAP yet, we do not have to
+> worry about any change in behavior there.
+> 
+> That leaves us with DSA_CODE_IGMP_MLD_TRAP. Here is the problem:
+> 
+> Currenly, tag_dsa.c will set skb->offload_fwd_mark for IGMP/MLD
+> packets, whereas tag_edsa.c will exempt them. So we can not unify the
+> two without changing the behavior of one.
 
-Mox is using Debian 10 Buster.
+I'm not saying that this change is wrong. I'm just afraid as a
+behaviour change, it might break something. If something does break,
+it will be easier to track down, if it is a change on its own. So
+please look if we can add a simple patch to tag_dsa.c which removes
+the marking of such frames. And then the next patch can combine the
+two into one driver. If it does break, git bisect will then tell us
+which patch broke it.
 
-First identified due to DHCPv6 leases not being renewed on clients being
-served by isc-dhcp-server on the Mox.
-
-Analysis showed the client IPv6 multicast solicit packets were being
-received by the Mox hardware (proved via a mirror port on a managed LAN
-switch) but the CPU was not receiving them (observed using tcpdump).
-
-Further investigation has identified this also affects IPv6 neighbour
-discovery for clients when not using frequent RAs from the Mox.
-
-Currently we've found two reproducible scenarios:
-
-1) with isc-dhcp-server configured with very short lease times (180
-seconds). After mox reboot (or systemctl restart systemd-networkd)
-clients successfully obtain a lease and a couple of RENEWs (requested
-after 90 seconds) but then all goes silent, Mox OS no longer sees the
-IPv6 multicast RENEW packets and client leases expire.
-
-2) Immediately after reboot when DHCPv6 renewals are still possible if
-on the Mox we do "tcdump -ni eth1 ip6" and immediately terminate,
-tcpdump takes the interface out of promiscuous mode and IPv6 multicast
-packets immediately cease to be received by the CPU. If we use 'tcpdump
---no-promiscuous-mode ..." so on termination it doesn't try to take the
-interface out of promiscuous mode IPv6 multicast packets continue to be
-seen by the CPU.
-
-We've been pointed to the mv8e6xxx_dump tool and can capture data but
-not sure what specifically to look for.
-
-We've also added some pr_info() debugging into mvneta to analyse when
-promiscuous mode is enabled or disabled since this seems to be strongly
-related to the issue.
-
-We believe there's a big clue in being able to reset the issue by
-restarting systemd-networkd on the Mox. We've looked for but not found
-any clues or indications of services on the Mox causing this but aren't
-ruling this out.
+     Andrew
