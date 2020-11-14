@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ABCB2B29C9
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 01:20:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C40FE2B29CC
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 01:21:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726175AbgKNATZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 19:19:25 -0500
-Received: from mailout4.samsung.com ([203.254.224.34]:11051 "EHLO
+        id S1726189AbgKNAVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 19:21:43 -0500
+Received: from mailout4.samsung.com ([203.254.224.34]:11451 "EHLO
         mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726070AbgKNATZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 19:19:25 -0500
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20201114001922epoutp047aef755294f7e626fca2b75837c4daf1~HN9DlT8vL0425904259epoutp04M
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 00:19:22 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20201114001922epoutp047aef755294f7e626fca2b75837c4daf1~HN9DlT8vL0425904259epoutp04M
+        with ESMTP id S1726158AbgKNAVm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 19:21:42 -0500
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20201114002139epoutp0483f4c953927a92dc3b7c0258199e76e8~HN-C5-lmJ1132811328epoutp04R
+        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 00:21:39 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20201114002139epoutp0483f4c953927a92dc3b7c0258199e76e8~HN-C5-lmJ1132811328epoutp04R
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1605313162;
-        bh=zs/00+691ryveI0MxspXLZ7OB7KyPJVjO4HgU7wBAjs=;
+        s=mail20170921; t=1605313299;
+        bh=KyL2hCGgsFaiWlEtKaeh3s+jfB7E11LNfY3tqcbJ/nc=;
         h=Subject:Reply-To:From:To:CC:Date:References:From;
-        b=dJEgxxT7h2vPKa/MNCtZtf4csI9bOLBuCxNK+cZ1VDWFoKbCijXSa42ObNw4D4/p2
-         sr4Y95tLYNOcxBn9vXr4SqLmqlSxaP1aQximSI++cYq0q0Mg4pdADHDeShdUKrxOpn
-         cCGEK+NZrNUpRDSfa+jDOSJ9C15+iI0pBuEC8b+o=
+        b=nymbtww4fCKVQE9HHsvhXLb5Hhkyj+kMQSzrZvZqUFVeWF69bPkWg66OfUm7Lr1RV
+         L8dTalsqaYTA42kmM2uJsWzRdQ2zI//iNWe7yz2lAPVm/wu96Nygt0NrH+lvhbWdGV
+         wTYJDj2+rg71Eddv2CDs4P8iUvfkPCVw8ch8dQzg=
 Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
-        20201114001921epcas2p323fa28493da773eccc123782917792e6~HN9C8KICW2671726717epcas2p38;
-        Sat, 14 Nov 2020 00:19:21 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.40.182]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4CXwtw2sbFzMqYkY; Sat, 14 Nov
-        2020 00:19:20 +0000 (GMT)
-X-AuditID: b6c32a47-715ff7000000d2c4-a5-5faf2288d5cc
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        95.D4.53956.8822FAF5; Sat, 14 Nov 2020 09:19:20 +0900 (KST)
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20201114002138epcas2p2bf1d93fa9f74fda66f0b23e3df292e7f~HN-B-tcU83081430814epcas2p2P;
+        Sat, 14 Nov 2020 00:21:38 +0000 (GMT)
+Received: from epsmges2p4.samsung.com (unknown [182.195.40.186]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4CXwxX70FtzMqYkY; Sat, 14 Nov
+        2020 00:21:36 +0000 (GMT)
+X-AuditID: b6c32a48-4f9ff7000000cd1f-6b-5faf230ed2ca
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        66.51.52511.E032FAF5; Sat, 14 Nov 2020 09:21:34 +0900 (KST)
 Mime-Version: 1.0
-Subject: [PATCH net-next 2/3] nfc: s3fwrn5: Fix the misspelling in a comment
+Subject: [PATCH net-next 3/3] nfc: s3fwrn5: Change the error code.
 Reply-To: bongsu.jeon@samsung.com
 Sender: Bongsu Jeon <bongsu.jeon@samsung.com>
 From:   Bongsu Jeon <bongsu.jeon@samsung.com>
@@ -49,55 +49,84 @@ X-Drm-Type: N,general
 X-Msg-Generator: Mail
 X-Msg-Type: PERSONAL
 X-Reply-Demand: N
-Message-ID: <20201114001920epcms2p78585234d9079f03673efdab2dc817548@epcms2p7>
-Date:   Sat, 14 Nov 2020 09:19:20 +0900
-X-CMS-MailID: 20201114001920epcms2p78585234d9079f03673efdab2dc817548
+Message-ID: <20201114002134epcms2p1b504111777f3b1be7a0d1706882a5237@epcms2p1>
+Date:   Sat, 14 Nov 2020 09:21:34 +0900
+X-CMS-MailID: 20201114002134epcms2p1b504111777f3b1be7a0d1706882a5237
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="utf-8"
 X-Sendblock-Type: AUTO_CONFIDENTIAL
 CMS-TYPE: 102P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrIKsWRmVeSWpSXmKPExsWy7bCmuW6H0vp4g4P7RCy2NE9it7g9cRqb
-        xfnzG9gtLmzrY7U4tkDMgdVj06pONo++LasYPT5vkgtgjsqxyUhNTEktUkjNS85PycxLt1Xy
-        Do53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXLzAHaqKRQlphTChQKSCwuVtK3synKLy1JVcjI
-        Ly6xVUotSMkpMDQs0CtOzC0uzUvXS87PtTI0MDAyBapMyMlY/Ee94ANLxfJ/zawNjF0sXYwc
-        HBICJhLXHgV2MXJxCAnsYJRYMHsnG0icV0BQ4u8O4S5GTg5hAR+JnlMPmUBsIQFFif8d59gg
-        4roSL/4eBbPZBLQl1h5tBKsREaiUOLDoOCOIzSxgKvHs9FsWEFtCgFdiRvtTKFtaYvvyrYwQ
-        tobEj2W9zBC2qMTN1W/ZYez3x+ZD1YhItN47C1UjKPHg526ouKTE233z2EHulxBoZ5Q4//MH
-        G4Qzg1Hi1Oa/UB36EovPrQC7jlfAV2Lhn3awK1gEVCUeLrvGBFHjIrHp/zMWiKvlJba/ncMM
-        CghmAU2J9bv0IWGlLHHkFlQFn0TH4b/sMH/tmPcEaoqqRG/zFyaYHyfPboG600Ni5Zp90DAM
-        lPj5+BvjBEaFWYiQnoVk7yyEvQsYmVcxiqUWFOempxYbFRgjR+0mRnDa03LfwTjj7Qe9Q4xM
-        HIyHGCU4mJVEeJUd1sQL8aYkVlalFuXHF5XmpBYfYjQF+ngis5Rocj4w8eaVxBuaGpmZGVia
-        WpiaGVkoifOGruyLFxJITyxJzU5NLUgtgulj4uCUamBaa5Dx5FkR95VnYj8P1H7jTyvIVFVh
-        WqmY8vJoh+Q574f+N2s6zVVWztqwo40x5dPy2Or9QaHGLqdP8e24KLf0QSrX27yjn7bahjFM
-        TXytsKSJ7/KDrdK6L1sTDO3v/5sQXnvB1934rlHthbc3LO8cW+Zp/Inzp3Kv+4F9ihVrPX+e
-        7Mu+w5ejdJxtoe5dcd50ueqXFy63erF8Y1u4vqr3H+PkNbybE21ZNrH9MJnY0d9/w/ZwwhGJ
-        3j1fLtnXrLrREKJ9Zs2nd38+1hi/z94kZ9QW8a/O8f5EafnWkx//7jD+s/7+uv45yd95j7lX
-        cX3YsCem9fmtyKuzygTSVR+LNr54XLkixbGvx0Cda8FVJZbijERDLeai4kQAhNFEwQQEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrLKsWRmVeSWpSXmKPExsWy7bCmhS6f8vp4g2vTzCxuT5zGZnH+/AZ2
+        iwvb+lgtji0Qc2Dx2LSqk82jb8sqRo/Pm+QCmKNybDJSE1NSixRS85LzUzLz0m2VvIPjneNN
+        zQwMdQ0tLcyVFPISc1NtlVx8AnTdMnOAlikplCXmlAKFAhKLi5X07WyK8ktLUhUy8otLbJVS
+        C1JyCgwNC/SKE3OLS/PS9ZLzc60MDQyMTIEqE3Iy9h6awFSwhKdi5rxLzA2My7i6GDk5JARM
+        JE58n8vaxcjFISSwg1FiQusbpi5GDg5eAUGJvzuEQWqEBZwkPv3aywhiCwkoSvzvOMcGEdeV
+        ePH3KJjNJqAtsfZoIxOILSJQKXFg0XGwemYBU4lnp9+yQOzilZjR/hTKlpbYvnwrI4StIfFj
+        WS8zhC0qcXP1W3YY+/2x+VA1IhKt985C1QhKPPi5GyouKfF23zx2kPslBNoZJc7//MEG4cxg
+        lDi1+S9Uh77E4nMrwK7jFfCVmLtkB9gGFgFViW3zlrBC1LhI7F9znxXianmJ7W/nMIMCgllA
+        U2L9Ln0QU0JAWeLILRaICj6JjsN/2WH+2jHvCROErSrR2/yFCebHybNbGCFaPSRWb2CBBGGg
+        xM3bCxknMCrMQgT0LCRrZyGsXcDIvIpRLLWgODc9tdiowAQ5bjcxgtOdlscOxtlvP+gdYmTi
+        YDzEKMHBrCTCq+ywJl6INyWxsiq1KD++qDQntfgQoynQwxOZpUST84EJN68k3tDUyMzMwNLU
+        wtTMyEJJnDd0ZV+8kEB6YklqdmpqQWoRTB8TB6dUA5MKs/OJ4quHTd8F/mtlZ5Z7kKpd2WTH
+        5fPRYLt8J88cZiExHa0Hd/Ye8pBfd5onZDFXfeFj7eiQ+uchK4QDsrYE1v9MPXRs4bt/ZovE
+        mrYb/GGVr2DwVYgL9P2SFvjC2umzr98dZdk9Jq36VbcsHz7xWN5SGS91asoDSza23K+Sjv2N
+        b472Hwx/cfumkTGz6+mjazw/OiTuZVpxmOOM1MWjIeWZ6Ws3td4LbfhSb5I8w/3getP+J7zB
+        r5/v+1J6g2XWWr55Gj89XJ5+ns2i4XS68C/jbBdJfY3oaXMmT/34nvesaU++4Y+AqzLa7uVS
+        kbJNb6/senOK4XtNisOnJw23D/KudJnP8qLZ5+DlK0osxRmJhlrMRcWJAPHvXEMABAAA
 DLP-Filter: Pass
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20201114001920epcms2p78585234d9079f03673efdab2dc817548
-References: <CGME20201114001920epcms2p78585234d9079f03673efdab2dc817548@epcms2p7>
+X-CMS-RootMailID: 20201114002134epcms2p1b504111777f3b1be7a0d1706882a5237
+References: <CGME20201114002134epcms2p1b504111777f3b1be7a0d1706882a5237@epcms2p1>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+ENOTSUPP is not a SUSV4 error code, prefer EOPNOTSUPP.
+
 Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
 ---
- drivers/nfc/s3fwrn5/firmware.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nfc/s3fwrn5/s3fwrn5.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/nfc/s3fwrn5/firmware.c b/drivers/nfc/s3fwrn5/firmware.c
-index ec930ee2c847..4cde6dd5c019 100644
---- a/drivers/nfc/s3fwrn5/firmware.c
-+++ b/drivers/nfc/s3fwrn5/firmware.c
-@@ -266,7 +266,7 @@ static int s3fwrn5_fw_complete_update_mode(struct s3fwrn5_fw_info *fw_info)
- }
+diff --git a/drivers/nfc/s3fwrn5/s3fwrn5.h b/drivers/nfc/s3fwrn5/s3fwrn5.h
+index 9d5f34759225..bb8f936d13a2 100644
+--- a/drivers/nfc/s3fwrn5/s3fwrn5.h
++++ b/drivers/nfc/s3fwrn5/s3fwrn5.h
+@@ -44,7 +44,7 @@ static inline int s3fwrn5_set_mode(struct s3fwrn5_info *info,
+ 	enum s3fwrn5_mode mode)
+ {
+ 	if (!info->phy_ops->set_mode)
+-		return -ENOTSUPP;
++		return -EOPNOTSUPP;
  
- /*
-- * Firmware header stucture:
-+ * Firmware header structure:
-  *
-  * 0x00 - 0x0B : Date and time string (w/o NUL termination)
-  * 0x10 - 0x13 : Firmware version
+ 	info->phy_ops->set_mode(info->phy_id, mode);
+ 
+@@ -54,7 +54,7 @@ static inline int s3fwrn5_set_mode(struct s3fwrn5_info *info,
+ static inline enum s3fwrn5_mode s3fwrn5_get_mode(struct s3fwrn5_info *info)
+ {
+ 	if (!info->phy_ops->get_mode)
+-		return -ENOTSUPP;
++		return -EOPNOTSUPP;
+ 
+ 	return info->phy_ops->get_mode(info->phy_id);
+ }
+@@ -62,7 +62,7 @@ static inline enum s3fwrn5_mode s3fwrn5_get_mode(struct s3fwrn5_info *info)
+ static inline int s3fwrn5_set_wake(struct s3fwrn5_info *info, bool wake)
+ {
+ 	if (!info->phy_ops->set_wake)
+-		return -ENOTSUPP;
++		return -EOPNOTSUPP;
+ 
+ 	info->phy_ops->set_wake(info->phy_id, wake);
+ 
+@@ -72,7 +72,7 @@ static inline int s3fwrn5_set_wake(struct s3fwrn5_info *info, bool wake)
+ static inline int s3fwrn5_write(struct s3fwrn5_info *info, struct sk_buff *skb)
+ {
+ 	if (!info->phy_ops->write)
+-		return -ENOTSUPP;
++		return -EOPNOTSUPP;
+ 
+ 	return info->phy_ops->write(info->phy_id, skb);
+ }
 -- 
