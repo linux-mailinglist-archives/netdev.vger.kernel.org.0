@@ -2,96 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 138D22B2EBA
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 18:04:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D53C2B2EF7
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 18:28:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726176AbgKNRDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 12:03:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36110 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726061AbgKNRDv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Nov 2020 12:03:51 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B7DAF223FD;
-        Sat, 14 Nov 2020 17:03:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605373429;
-        bh=pzU/753r2/Z0FkJrG7+Nvoa2z8DU/A2K1iWoWx955N0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bTA7AyOdTwek8wk1L1pvDTaS1swVG1Qk2sYRKirq8SjWhEW/Ke8n68NlEAmewJ41Y
-         brLtzZ2wQf4MhFihaJClr21t4WhsKlkZQ6h08TZN3vu6Jf5r1DVEXrbuRC6Qi3TXnL
-         3tRWOVVIWNOvnrm3j4/mB7FNjOrd6SrXSqRxGh6k=
-Date:   Sat, 14 Nov 2020 09:03:47 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, razor@blackwall.org, jeremy@azazel.net
-Subject: Re: [PATCH net-next,v3 0/9] netfilter: flowtable bridge and vlan
- enhancements
-Message-ID: <20201114090347.2e7c1457@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <87sg9cjaxo.fsf@waldekranz.com>
-References: <20201111193737.1793-1-pablo@netfilter.org>
-        <20201113175556.25e57856@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201114115906.GA21025@salvia>
-        <87sg9cjaxo.fsf@waldekranz.com>
+        id S1726255AbgKNR11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 12:27:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54874 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726070AbgKNR10 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 12:27:26 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739A4C0613D1;
+        Sat, 14 Nov 2020 09:27:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=nFIjmU3PyYTtN+/KPAaiBpQ9mhotPT9InWONOcxLEKw=; b=VP6O6FTLaPgIzlW2qwuSOXOyzW
+        Kolh+nSrb8DTpSIiSxLmzjsPU3KGkOCYELDJBlIBZHa7zSwz3Oyu5Ku2oDCjNOucmmYnEjMoN6fe/
+        aPDqJyQs+QbhNchsftgaET7gT43vvPiV7iv/+CE4bWdndy5XCMhLtTe6SYUO8tOEbgeN0h6YMlgvT
+        4faDo3sLezINoU/WmkX5iX2VcmP/mHpyZpgYzv8yEjVBemVItqcMnQIDrU0q/jFk3MhJ6dbWBslV7
+        3LRH/AV/7IJM27h7IqM5UwczPd1T4+DTgLUxTlJ2hR2fS6QFXJ67ONDYAWqAqCJwBJLlPUgwM5s1a
+        wcvG93Iw==;
+Received: from [2601:1c0:6280:3f0::f32]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kdzKb-0006hj-7C; Sat, 14 Nov 2020 17:27:21 +0000
+Subject: Re: [PATCH net-next] net: linux/skbuff.h: combine NET + KCOV handling
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        linux-kernel@vger.kernel.org
+Cc:     kernel test robot <lkp@intel.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-next@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20201114011110.21906-1-rdunlap@infradead.org>
+ <52502fe4-8f41-0630-5b9c-be2e07b6932c@tessares.net>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <8198558c-55f0-0ea3-3a23-e3dafb2cb09d@infradead.org>
+Date:   Sat, 14 Nov 2020 09:27:16 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <52502fe4-8f41-0630-5b9c-be2e07b6932c@tessares.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 14 Nov 2020 15:00:03 +0100 Tobias Waldekranz wrote:
-> On Sat, Nov 14, 2020 at 12:59, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> > If any of the flowtable device goes down / removed, the entries are
-> > removed from the flowtable. This means packets of existing flows are
-> > pushed up back to classic bridge / forwarding path to re-evaluate the
-> > fast path.
-> >
-> > For each new flow, the fast path that is selected freshly, so they use
-> > the up-to-date FDB to select a new bridge port.
-> >
-> > Existing flows still follow the old path. The same happens with FIB
-> > currently.
-> >
-> > It should be possible to explore purging entries in the flowtable that
-> > are stale due to changes in the topology (either in FDB or FIB).
-> >
-> > What scenario do you have specifically in mind? Something like VM
-> > migrates from one bridge port to another?  
+On 11/14/20 12:01 AM, Matthieu Baerts wrote:
+> Hi Randy,
+> 
+> On 14/11/2020 02:11, Randy Dunlap wrote:
+>> The previous Kconfig patch led to some other build errors as
+>> reported by the 0day bot and my own overnight build testing.
+> 
+> Thank you for looking at that!
+> 
+> I had the same issue and I was going to propose a similar fix with one small difference, please see below.
+> 
+>> --- linux-next-20201113.orig/include/linux/skbuff.h
+>> +++ linux-next-20201113/include/linux/skbuff.h
+>> @@ -4608,7 +4608,7 @@ static inline void skb_reset_redirect(st
+>>   #endif
+>>   }
+>>   -#ifdef CONFIG_KCOV
+>> +#if IS_ENABLED(CONFIG_KCOV) && IS_ENABLED(CONFIG_NET)
+>>   static inline void skb_set_kcov_handle(struct sk_buff *skb,
+> Should we have here CONFIG_SKB_EXTENSIONS instead of CONFIG_NET?
+> 
+> It is valid to use NET thanks to your commit 85ce50d337d1 ("net: kcov: don't select SKB_EXTENSIONS when there is no NET") that links SKB_EXTENSIONS with NET for KCOV but it looks strange to me to use a "non direct" dependence :)
+> I mean: here below, skb_ext_add() and skb_ext_find() are called but they are defined only if SKB_EXTENSIONS is enabled, not only NET.
+> 
+> But as I said, this patch fixes the issue. It's fine for me if we prefer to use CONFIG_NET.
 
-Indeed, 2 VMs A and B, talking to each other, A is _outside_ the
-system (reachable via eth0), B is inside (veth1). When A moves inside
-and gets its veth. Neither B's veth1 not eth0 will change state, so
-cache wouldn't get flushed, right?
+I think it would be safer to use CONFIG_SKB_EXTENSIONS.
 
-> This should work in the case when the bridge ports are normal NICs or
-> switchdev ports, right?
+>> @@ -4636,7 +4636,7 @@ static inline u64 skb_get_kcov_handle(st
+>>   static inline void skb_set_kcov_handle(struct sk_buff *skb,
+>>                          const u64 kcov_handle) { }
+>>   static inline u64 skb_get_kcov_handle(struct sk_buff *skb) { return 0; }
+>> -#endif /* CONFIG_KCOV */
+>> +#endif /* CONFIG_KCOV &&  CONFIG_NET */
 > 
-> In that case, relying on link state is brittle as you can easily have a
-> switch or a media converter between the bridge and the end-station:
-> 
->         br0                  br0
->         / \                  / \
->     eth0   eth1          eth0   eth1
->      /      \      =>     /      \
->   [sw0]     [sw1]      [sw0]     [sw1]
->    /          \         /          \
->   A                                 A
-> 
-> In a scenario like this, A has clearly moved. But neither eth0 nor eth1
-> has seen any changes in link state.
-> 
-> This particular example is a bit contrived. But this is essentially what
-> happens in redundant topologies when reconfigurations occur (e.g. STP).
-> 
-> These protocols will typically signal reconfigurations to all bridges
-> though, so as long as the affected flows are flushed at the same time as
-> the FDB it should work.
-> 
-> Interesting stuff!
+> (Small detail if you post a v2: there is an extra space between "&&" and "CONFIG_NET")
 
-Agreed, could be interesting for all NAT/conntrack setups, not just VMs.
+Oops. Fixed in v2. Thanks for looking.
+
+v2 on the way.
+
+-- 
+~Randy
+
