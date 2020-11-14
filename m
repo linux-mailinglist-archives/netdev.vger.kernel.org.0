@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C09D2B2BD9
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 07:59:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7631D2B2BE0
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 08:03:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726485AbgKNG7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 01:59:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43692 "EHLO
+        id S1726560AbgKNHCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 02:02:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbgKNG7J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 01:59:09 -0500
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C173C0613D1;
-        Fri, 13 Nov 2020 22:59:08 -0800 (PST)
-Received: by mail-yb1-xb41.google.com with SMTP id c129so10827883yba.8;
-        Fri, 13 Nov 2020 22:59:08 -0800 (PST)
+        with ESMTP id S1726133AbgKNHCA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 02:02:00 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC85C0613D1;
+        Fri, 13 Nov 2020 23:01:59 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id t33so10877164ybd.0;
+        Fri, 13 Nov 2020 23:01:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=kr6KK+cr1KiDDXktNJ5mYWiTxYa+mqYyBfAGNUFkpTI=;
-        b=jvS7cbXAOZIrM+/kWyvKvVAegeLDEhcNDIp6QNuGW7/eMAt1lL2RQ9+Ap+ppj4JajO
-         gpazIIWqTT6CTokEbmp1bV4VwrCMRSaj4DPnqps4q2oQjRnFqqimbezE72ZDJmVUuw9a
-         ARAf8uHL25WOzEDsUKzfL+2zJj/wsQXHzfgO7rIibUVeFFMJWCqUXK6QIptHEGVg7TR6
-         UK0hrG5K28AnKCTviJ8YuuFZTHE+K8KQ6Cw4NQlj4rlpYwn2YX8HG1CUS8y57QrQ7+Bt
-         Xusc3x7udUA+nkYKWmfg2Y1tZUnVChJNNwMTBiQTteqzh37MDj58XkYul76qFCkNHC8r
-         K2xg==
+        bh=cCwYM723vu0+HDR43zM2w2KVmNOxRU7b25uAdpj/KzU=;
+        b=uQW7h6BPx5Ya3z/xNyGJ+C+sd9L36R3h52xM3F6vlgcY+1XGqCfc71tBWVRJlzWDnd
+         EegJZ2m5vWaTv5jdJ1SN1Jj+cAsi4GpHx84GQSJQmH7Jhn731cHVXLwqRsTAtXG8ikqn
+         Bc07wvt+Kjln85JIg4DK8nB/4s+bcebhZBXqA0CnWODJq1zzDwBwPh2bxk8EN4w4ujtp
+         FFeNpEOmxekrSoNMCHlMYj0lT2YrKFTrIwLy/IqZAv6lGl1GrLu6zFdD2RYLhjVRxXJG
+         JguD63nIR1xwn2SsZ4GC/WWWjyZTK9R51PL3f425mxReBt+n2gUeZ34dykcQ+8oAVxGE
+         8WZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kr6KK+cr1KiDDXktNJ5mYWiTxYa+mqYyBfAGNUFkpTI=;
-        b=mXmaYlSVrJIKZgqEIceWg8ukRO9ghR0tWcJhZUfSJ3OTY5PPLlnKL5z4BM5610L2es
-         dUSbCvbhtntKdLRVKLEbVuyUkpe4dnhte2035d0MtdMKsGBTII0GF45+gT24WhpPddHN
-         2qgf1YbK7Gx40EeO/aRlpdmkPFntG951qwtJ2SMNrp/JBBmEPdezNdVktdJyBLzlBQ3h
-         ooBCRacGIodpWEGH3XDjon5k38Xzxr9FlpdT7wCfdI2ccQnOVJcqKGNg7No4nHuu8wwe
-         CVr2ij0vN9IARLlJ5ZqHrDLsN5Q9w8KENoih5V8+vcuDWIENXLY37fyiF9vuHfWFgyp+
-         LPJw==
-X-Gm-Message-State: AOAM530H/EOktZmFALqJsqLy4YLUq1Y2E37i3ksKe5qy9f+085icoCyn
-        8kzTyhNOJLFU7mSu5HghNex1qoKaStgiLX0ka54=
-X-Google-Smtp-Source: ABdhPJxcVb5xS+Ze4iFGYIBExqjZbiTpT5dSMLH7J3e4BbpY+XN2bHQjOK6QheeQMfxlyG9T2SN1Ds0oMnd+Jk8NwIU=
-X-Received: by 2002:a25:3d7:: with SMTP id 206mr8634612ybd.27.1605337147244;
- Fri, 13 Nov 2020 22:59:07 -0800 (PST)
+        bh=cCwYM723vu0+HDR43zM2w2KVmNOxRU7b25uAdpj/KzU=;
+        b=l5640U51/zCtHAZdB7mAk0ws40N7bfXTk852XnGYb6fJP6CEP0AAT5Y3JuJAJZhdXW
+         9z5igmj8TzdygEfPfRBtJkuB7oU3XHXNMfIExwFkLPY2GtSwE8gS67M+W5OLDRJK+3xe
+         HiEqzFttx9Wl0PJrNpw2Ktetq9X2idu7LMnfn0lFRdG87WX+mXyrwxRLRC9AGDpJIMR1
+         RRgXMm3flMlcV4LbxocZx0TqqS9Eka21JkbG5OJFCDtahE7XozCyyzVxCz03t1Ldx69+
+         uB+04r1dxr1XruUZj9VCCTQijQXSW+ahkz+WJlu6jObsMmG0Sp6n+9YLywZMqiL3m1z0
+         o/mw==
+X-Gm-Message-State: AOAM530QC5TayxWFg2AEMEahJ5WQmJJV8KVetD5KXGf8OjM75WPVWcyG
+        FUVgRNdWpcuQUVxydk7rXSWo55U9ccJ1Yr4ihV0=
+X-Google-Smtp-Source: ABdhPJw1skR7ONqZ9ZZWxzFVeeLNxYVf7EgcXBv24ecWx2zpqf7en+86gQAyBo6MyWQkBfLjCjga+3aUE/AfEsZqoxg=
+X-Received: by 2002:a25:df8e:: with SMTP id w136mr6721728ybg.230.1605337319290;
+ Fri, 13 Nov 2020 23:01:59 -0800 (PST)
 MIME-Version: 1.0
-References: <1605291013-22575-1-git-send-email-alan.maguire@oracle.com> <1605291013-22575-2-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1605291013-22575-2-git-send-email-alan.maguire@oracle.com>
+References: <1605291013-22575-1-git-send-email-alan.maguire@oracle.com> <1605291013-22575-4-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1605291013-22575-4-git-send-email-alan.maguire@oracle.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 13 Nov 2020 22:58:56 -0800
-Message-ID: <CAEf4BzaaUdMnfADQdT=myDJtQtHoQ_aW7T8XidrCkYZ=pGXuaQ@mail.gmail.com>
-Subject: Re: [RFC bpf-next 1/3] bpf: add module support to btf display helpers
+Date:   Fri, 13 Nov 2020 23:01:48 -0800
+Message-ID: <CAEf4BzZdE4b5JFBvsvAFL-iSkKs7C-iE1UegiKU-X=wZdz+a_g@mail.gmail.com>
+Subject: Re: [RFC bpf-next 3/3] selftests/bpf: verify module-specific types
+ can be shown via bpf_snprintf_btf
 To:     Alan Maguire <alan.maguire@oracle.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -70,115 +71,55 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Nov 13, 2020 at 10:11 AM Alan Maguire <alan.maguire@oracle.com> wrote:
 >
-> bpf_snprintf_btf and bpf_seq_printf_btf use a "struct btf_ptr *"
-> argument that specifies type information about the type to
-> be displayed.  Augment this information to include a module
-> name, allowing such display to support module types.
+> Verify that specifying a module name in "struct btf_ptr *" along
+> with a type id of a module-specific type will succeed.
+>
+> veth_stats_rx() is chosen because its function signature consists
+> of a module-specific type "struct veth_stats" and a kernel-specific
+> one "struct net_device".
 >
 > Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 > ---
->  include/linux/btf.h            |  8 ++++++++
->  include/uapi/linux/bpf.h       |  5 ++++-
->  kernel/bpf/btf.c               | 18 ++++++++++++++++++
->  kernel/trace/bpf_trace.c       | 42 ++++++++++++++++++++++++++++++++----------
->  tools/include/uapi/linux/bpf.h |  5 ++++-
->  5 files changed, 66 insertions(+), 12 deletions(-)
+>  .../selftests/bpf/prog_tests/snprintf_btf_mod.c    | 96 ++++++++++++++++++++++
+>  tools/testing/selftests/bpf/progs/btf_ptr.h        |  1 +
+>  tools/testing/selftests/bpf/progs/veth_stats_rx.c  | 73 ++++++++++++++++
+>  3 files changed, 170 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/snprintf_btf_mod.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/veth_stats_rx.c
 >
-> diff --git a/include/linux/btf.h b/include/linux/btf.h
-> index 2bf6418..d55ca00 100644
-> --- a/include/linux/btf.h
-> +++ b/include/linux/btf.h
-> @@ -209,6 +209,14 @@ static inline const struct btf_var_secinfo *btf_type_var_secinfo(
->  const struct btf_type *btf_type_by_id(const struct btf *btf, u32 type_id);
->  const char *btf_name_by_offset(const struct btf *btf, u32 offset);
->  struct btf *btf_parse_vmlinux(void);
-> +#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
-> +struct btf *bpf_get_btf_module(const char *name);
-> +#else
-> +static inline struct btf *bpf_get_btf_module(const char *name)
-> +{
-> +       return ERR_PTR(-ENOTSUPP);
-> +}
-> +#endif
->  struct btf *bpf_prog_get_target_btf(const struct bpf_prog *prog);
->  #else
->  static inline const struct btf_type *btf_type_by_id(const struct btf *btf,
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 162999b..26978be 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3636,7 +3636,8 @@ struct bpf_stack_build_id {
->   *             the pointer data is carried out to avoid kernel crashes during
->   *             operation.  Smaller types can use string space on the stack;
->   *             larger programs can use map data to store the string
-> - *             representation.
-> + *             representation.  Module-specific data structures can be
-> + *             displayed if the module name is supplied.
->   *
->   *             The string can be subsequently shared with userspace via
->   *             bpf_perf_event_output() or ring buffer interfaces.
-> @@ -5076,11 +5077,13 @@ struct bpf_sk_lookup {
->   * potentially to specify additional details about the BTF pointer
->   * (rather than its mode of display) - is included for future use.
->   * Display flags - BTF_F_* - are passed to bpf_snprintf_btf separately.
-> + * A module name can be specified for module-specific data.
->   */
->  struct btf_ptr {
->         void *ptr;
->         __u32 type_id;
->         __u32 flags;            /* BTF ptr flags; unused at present. */
-> +       const char *module;     /* optional module name. */
-
-I think module name is a wrong API here, similarly how type name was
-wrong API for specifying the type (and thus we use type_id here).
-Using the module's BTF ID seems like a more suitable interface. That's
-what I'm going to use for all kinds of existing BPF APIs that expect
-BTF type to attach BPF programs.
-
-Right now, we use only type_id and implicitly know that it's in
-vmlinux BTF. With module BTFs, we now need a pair of BTF object ID +
-BTF type ID to uniquely identify the type. vmlinux BTF now can be
-specified in two different ways: either leaving BTF object ID as zero
-(for simplicity and backwards compatibility) or specifying it's actual
-BTF obj ID (which pretty much always should be 1, btw). This feels
-like a natural extension, WDYT?
-
-And similar to type_id, no one should expect users to specify these
-IDs by hand, Clang built-in and libbpf should work together to figure
-this out for the kernel to use.
-
-BTW, with module names there is an extra problem for end users. Some
-types could be either built-in or built as a module (e.g., XFS data
-structures). Why would we require BPF users to care which is the case
-on any given host? It feels right now that we should just extend the
-existing __builtin_btf_type_id() helper to generate ldimm64
-instructions that would encode both BTF type ID and BTF object ID.
-This would just naturally add transparent module BTF support without
-BPF programs having to do any changes.
-
-But we need to do a bit of thinking and experimentation with Yonghong,
-haven't gotten around to this yet, you are running a bit ahead of me
-with module BTFs. :)
-
->  };
->
->  /*
 
 [...]
 
->  struct btf_ptr {
->         void *ptr;
->         __u32 type_id;
->         __u32 flags;            /* BTF ptr flags; unused at present. */
+> +       err = veth_stats_rx__load(skel);
+> +       if (CHECK(err, "skel_load", "failed to load skeleton: %d\n", err))
+> +               goto cleanup;
+> +
+> +       bss = skel->bss;
+> +
+> +       bss->veth_stats_btf_id = btf__find_by_name(veth_btf, "veth_stats");
 
-Also, if flags are not used at present, can we repurpose it to just
-encode btf_obj_id and avoid (at least for now) the backwards
-compatibility checks based on btf_ptr size?
+This is really awkward that this needs to be done from user-space.
+Libbpf will be able to do this regardless of whether the type is in
+vmlinux or kernel module. See my comments on patch #1.
 
-> +       const char *module;     /* optional module name. */
->  };
->
->  /*
-> --
-> 1.8.3.1
->
+> +
+> +       if (CHECK(bss->veth_stats_btf_id <= 0, "find 'struct veth_stats'",
+> +                 "could not find 'struct veth_stats' in veth BTF: %d",
+> +                 bss->veth_stats_btf_id))
+> +               goto cleanup;
+> +
+
+[...]
+
+> +       btf_ids[0] = veth_stats_btf_id;
+> +       ptrs[0] = (void *)PT_REGS_PARM1_CORE(ctx);
+> +#if __has_builtin(__builtin_btf_type_id)
+
+nit: there are a bunch of selftests that just assume we have this
+built-in, so I don't think you need to guard it with #if here.
+
+> +       btf_ids[1] = bpf_core_type_id_kernel(struct net_device);
+> +       ptrs[1] = (void *)PT_REGS_PARM2_CORE(ctx);
+> +#endif
+
+[...]
