@@ -2,137 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FD0E2B2B1C
-	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 04:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 181E92B2B2B
+	for <lists+netdev@lfdr.de>; Sat, 14 Nov 2020 04:57:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726166AbgKNDhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Nov 2020 22:37:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725981AbgKNDhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 22:37:18 -0500
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E68C0613D1
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 19:37:16 -0800 (PST)
-Received: by mail-io1-xd44.google.com with SMTP id t8so11811316iov.8
-        for <netdev@vger.kernel.org>; Fri, 13 Nov 2020 19:37:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mHB76bFBVb+Daza5fzEkrTLKypseZA4q9TCyNHg751w=;
-        b=TH5Mo8P4OvpZsbt9Im+XJqMnLcNcYS/2auwCJLt6E6e9Mt9v4Sg6klqiUKYECc/Vrl
-         xlX2CqjJ5ujHYkCbuiRhMfHfuGxRWrVO0EqlRecrjCis+qrdj/loBOfjiCeX0tH9uE50
-         l11Rv5BkBzDohQPx/JR+csQP7q7tlmiih/ztWRDETOlROZkC+5af99QYJ6+6SDz7V4QF
-         Dcy+/SUOOBzHqJyBI/VGHUWhPIUp1racAa7f403Qx2gnuHWSM+QbC4mGpLxTgnuL7ztq
-         dVJ8BYREqpjT5BDTlEPqP8eWmq2RaTksmCE8giQ2ISaPSGm4d3ZVJkC7o6hH3NZaBS1Q
-         GYow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mHB76bFBVb+Daza5fzEkrTLKypseZA4q9TCyNHg751w=;
-        b=IEgHwO6C6BoHWQTBF2Gbd/dO7wraE85h6qwg2sq7cEdFn/bg//dS3ZK4IIU/+wi6ED
-         Wdu8owCR0qPGs6UmZQubztTAjZiKt41mjNG5AzSSGk/9fOOTyv5xd5cu2eXwt1wX3pC0
-         V1a2rsnYKYsWSYZ6UWbS5RYsn96LfB58LDbjvuCyToY9UvMsdF+HuZqX5W2Z6FFilt70
-         b546XYYzwwALtzVis72LqQ4JS004POxQOiH00Uby6E7m3Qb8EgmH6pmfyP1Qv3sWY17q
-         VB7BxBbZ/yBTfCZi7TuSvPrZPCIT8ZFuYr0QMXWqyuT7c1odpF4Qn1ndDBvhExuAILbQ
-         lVKQ==
-X-Gm-Message-State: AOAM533Vwcc8rqksyKYd6K8z/x2ad6Ic2NOTBjw8EZFz+LEIxoxpPmo2
-        KC4vP+pA122PSzJ3pwwA+H9RBupNw/GQSQ==
-X-Google-Smtp-Source: ABdhPJzNdMVeYAeXS6D+omozWB8Z7F4DoLY/t+507sUoY25pY8bRJ0iX5Os5Mdhh7lUQBXbBB/w0ng==
-X-Received: by 2002:a05:6602:124b:: with SMTP id o11mr2045005iou.181.1605325035764;
-        Fri, 13 Nov 2020 19:37:15 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:99e7:10e8:ee93:9a3d])
-        by smtp.googlemail.com with ESMTPSA id v9sm5937069ilh.6.2020.11.13.19.37.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Nov 2020 19:37:15 -0800 (PST)
-Subject: Re: [net-next,v2,4/5] seg6: add support for the SRv6 End.DT4 behavior
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Shrijeet Mukherjee <shrijeet@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        kbuild-all@lists.01.org, clang-built-linux@googlegroups.com,
-        netdev@vger.kernel.org
-References: <20201107153139.3552-5-andrea.mayer@uniroma2.it>
- <202011131747.puABQV5A-lkp@intel.com>
- <20201113085730.5f3c850a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <c7623978-5586-5757-71aa-d12ee046a338@gmail.com>
- <20201113190045.GA1463790@ubuntu-m3-large-x86>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7f73993c-cff9-042c-9b52-2c724f6d1bc4@gmail.com>
-Date:   Fri, 13 Nov 2020 20:37:10 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.3
+        id S1726451AbgKND5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Nov 2020 22:57:09 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:60856 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725981AbgKND5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Nov 2020 22:57:09 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0AE3v3lM082107;
+        Fri, 13 Nov 2020 21:57:03 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1605326223;
+        bh=RQnAC+ZkevKf4QoHaxeqePnrgbvyAt6LyHW3yRnles8=;
+        h=From:To:CC:Subject:Date;
+        b=vHkEPOMnzRCybhJ2Fj6htxpxzBYBsDIw7nsx8cG8rqPg8/Nj6GRjTVqNV6Q0eJdR/
+         xQhoSt7abehypY0y/2+QJ3lauP+hNWH1faiK3Tj2omMLqBK05IP/eLYOa7mQ33YbOJ
+         CV1MVYyjul5nB5IzCKloXMXXXYIVrZFP0OilGmEQ=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0AE3v2wv127189
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 13 Nov 2020 21:57:03 -0600
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 13
+ Nov 2020 21:57:02 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 13 Nov 2020 21:57:02 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0AE3v1ts005268;
+        Fri, 13 Nov 2020 21:57:02 -0600
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>, Tony Lindgren <tony@atomide.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next 0/3] net: ethernet: ti: cpsw: enable broadcast/multicast rate limit support
+Date:   Sat, 14 Nov 2020 05:56:51 +0200
+Message-ID: <20201114035654.32658-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20201113190045.GA1463790@ubuntu-m3-large-x86>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/13/20 12:00 PM, Nathan Chancellor wrote:
-> On Fri, Nov 13, 2020 at 10:05:56AM -0700, David Ahern wrote:
->> On 11/13/20 9:57 AM, Jakub Kicinski wrote:
->>> Good people of build bot, 
->>>
->>> would you mind shedding some light on this one? It was also reported on
->>> v1, and Andrea said it's impossible to repro. Strange that build bot
->>> would make the same mistake twice, tho.
->>>
->>
->> I kicked off a build this morning using Andrea's patches and the config
->> from the build bot; builds fine as long as the first 3 patches are applied.
->>
-> 
-> I can confirm this as well with clang; if I applied the first three
-> patches then this one, there is no error but if you just apply this one,
-> there will be. If you open the GitHub URL, it shows just this patch
-> applied, not the first three, which explains it.
-> 
-> For what it's worth, b4 chokes over this series:
+Hi
 
-Thanks, Nathan. I'll forward to Konstantin.
+This series first adds supports for the ALE feature to rate limit number ingress
+broadcast(BC)/multicast(MC) packets per/sec which main purpose is BC/MC storm
+prevention.
 
-> 
-> $ b4 am -o - 20201107153139.3552-1-andrea.mayer@uniroma2.it | git am
-> Looking up https://lore.kernel.org/r/20201107153139.3552-1-andrea.mayer%40uniroma2.it
-> Grabbing thread from lore.kernel.org/linux-kselftest
-> Analyzing 18 messages in the thread
-> ---
-> Writing /tmp/tmp8425by7fb4-am-stdout
->   [net-next,v2,3/5] seg6: add callbacks for customizing the creation/destruction of a behavior
-> ---
-> Total patches: 1
-> ---
->  Link: https://lore.kernel.org/r/20201107153139.3552-1-andrea.mayer@uniroma2.it
->  Base: not found
-> ---
-> Applying: seg6: add callbacks for customizing the creation/destruction of a behavior
-> error: patch failed: net/ipv6/seg6_local.c:1015
-> error: net/ipv6/seg6_local.c: patch does not apply
-> Patch failed at 0001 seg6: add callbacks for customizing the creation/destruction of a behavior
-> hint: Use 'git am --show-current-patch=diff' to see the failed patch
-> When you have resolved this problem, run "git am --continue".
-> If you prefer to skip this patch, run "git am --skip" instead.
-> To restore the original branch and stop patching, run "git am --abort".
-> 
-> Even if I grab the mbox from lore.kernel.org, it tries to do the same
-> thing and apply the 3rd patch first, which might explain why the 0day
-> bot got confused.
-> 
-> Cheers,
-> Nathan
-> 
+And then enables corresponding support for ingress broadcast(BC)/multicast(MC)
+rate limiting for TI CPSW switchdev and AM65x/J221E CPSW_NUSS drivers by
+implementing HW offload for simple tc-flower policer with matches on dst_mac:
+ - ff:ff:ff:ff:ff:ff has to be used for BC rate limiting
+ - 01:00:00:00:00:00 fixed value has to be used for MC rate limiting
+
+Hence tc policer defines rate limit in terms of bits per second, but the
+ALE supports limiting in terms of packets per second - the rate limit
+bits/sec is converted to number of packets per second assuming minimum
+Ethernet packet size ETH_ZLEN=60 bytes.
+
+The solution inspired patch from Vladimir Oltean [1].
+
+Examples:
+- BC rate limit to 1000pps:
+  tc qdisc add dev eth0 clsact
+  tc filter add dev eth0 ingress flower skip_sw dst_mac ff:ff:ff:ff:ff:ff \
+  action police rate 480kbit burst 64k
+
+  rate 480kbit - 1000pps * 60 bytes * 8, burst - not used.
+
+- MC rate limit to 20000pps:
+  tc qdisc add dev eth0 clsact
+  tc filter add dev eth0 ingress flower skip_sw dst_mac 01:00:00:00:00:00 \
+  action police rate 9600kbit burst 64k
+
+  rate 9600kbit - 20000pps * 60 bytes * 8, burst - not used.
+
+- show: tc filter show dev eth0 ingress
+filter protocol all pref 49151 flower chain 0
+filter protocol all pref 49151 flower chain 0 handle 0x1
+  dst_mac ff:ff:ff:ff:ff:ff
+  skip_sw
+  in_hw in_hw_count 1
+        action order 1:  police 0x2 rate 480Kbit burst 64Kb mtu 2Kb action reclassify overhead 0b
+        ref 1 bind 1
+
+filter protocol all pref 49152 flower chain 0
+filter protocol all pref 49152 flower chain 0 handle 0x1
+  dst_mac 01:00:00:00:00:00
+  skip_sw
+  in_hw in_hw_count 1
+        action order 1:  police 0x1 rate 9600Kbit burst 64Kb mtu 2Kb action reclassify overhead 0b
+        ref 1 bind
+
+Testing MC with iperf:
+- client
+  -- setup tc-flower as per above
+  route add -host 239.255.1.3 eth0
+  iperf -s -B 239.255.1.3 -u -f m &
+  cat /sys/class/net/eth0/statistics/rx_packets
+
+- server
+  route add -host 239.255.1.3 eth0
+  iperf -c 239.255.1.3 -u -f m -i 5 -t 30 -l1472  -b121760000 -t1 //~10000pps
+
+[1] https://lore.kernel.org/patchwork/patch/1217254/
+
+Grygorii Strashko (3):
+  drivers: net: cpsw: ale: add broadcast/multicast rate limit support
+  net: ethernet: ti: cpsw_new: enable broadcast/multicast rate limit
+    support
+  net: ethernet: ti: am65-cpsw: enable broadcast/multicast rate limit
+    support
+
+ drivers/net/ethernet/ti/am65-cpsw-qos.c | 148 ++++++++++++++++++++
+ drivers/net/ethernet/ti/am65-cpsw-qos.h |   8 ++
+ drivers/net/ethernet/ti/cpsw_ale.c      |  66 +++++++++
+ drivers/net/ethernet/ti/cpsw_ale.h      |   2 +
+ drivers/net/ethernet/ti/cpsw_new.c      |   4 +-
+ drivers/net/ethernet/ti/cpsw_priv.c     | 171 ++++++++++++++++++++++++
+ drivers/net/ethernet/ti/cpsw_priv.h     |   8 ++
+ 7 files changed, 406 insertions(+), 1 deletion(-)
+
+-- 
+2.17.1
 
