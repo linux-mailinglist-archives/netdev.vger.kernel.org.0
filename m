@@ -2,118 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 504172B32C5
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 07:48:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3DA22B32C9
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 07:55:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbgKOGsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 01:48:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47398 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726437AbgKOGsH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 15 Nov 2020 01:48:07 -0500
-Received: from localhost (thunderhill.nvidia.com [216.228.112.22])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DA760223AB;
-        Sun, 15 Nov 2020 06:48:05 +0000 (UTC)
-Date:   Sun, 15 Nov 2020 08:48:02 +0200
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     "Ertman, David M" <david.m.ertman@intel.com>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "tiwai@suse.de" <tiwai@suse.de>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "jgg@nvidia.com" <jgg@nvidia.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "ranjani.sridharan@linux.intel.com" 
-        <ranjani.sridharan@linux.intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>,
-        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 01/10] Add auxiliary bus support
-Message-ID: <20201115064802.GB5552@unreal>
-References: <20201023003338.1285642-1-david.m.ertman@intel.com>
- <20201023003338.1285642-2-david.m.ertman@intel.com>
- <X66rMg1lNJq+W/cp@kroah.com>
- <DM6PR11MB284160D4E69D9C7801A6B1C2DDE60@DM6PR11MB2841.namprd11.prod.outlook.com>
- <X68VA6uw5nz51dll@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <X68VA6uw5nz51dll@kroah.com>
+        id S1726491AbgKOGzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 01:55:11 -0500
+Received: from aserp2130.oracle.com ([141.146.126.79]:51698 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726301AbgKOGzL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 01:55:11 -0500
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AF6pKSm140967;
+        Sun, 15 Nov 2020 06:54:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2020-01-29;
+ bh=hWnBy2vgLUkwNArKVKvQODEJQxEy1UWGY6YOMYFxffE=;
+ b=wu3EW8MsMvIWzhADqplS8JMmx2Cn40DQ8YQZwCY745tD8juJ3bE15oBtCjvz7HFbBsOw
+ FFNio1oKtYp/SvBuggPG6zdEI+yOO29KpsCvlwifGQNeMgpPuSO1KMS6rCSTpxw1NBsr
+ QlyFrtAeNhE+6gE4uzJgJRzQJ7nenzbNNFdPn4GNxvhVZEdI0sO+cB1J4hMvH5+Fu5Cq
+ BIspG4KfO8rxMBeVk8nQDFGLSY4Aot7nLGifm4rCA2ikmys/3/U/yIXCpq22hez6/lST
+ 1SxwGQK6SqlvoHNt2/snbL67ygT6SDfF5r1wSDiC5tBCxtdjzuDNixN6UXPyhjsOu65+ PA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2130.oracle.com with ESMTP id 34t4rahx74-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 15 Nov 2020 06:54:57 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AF6jQB7112100;
+        Sun, 15 Nov 2020 06:54:57 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 34trtjfcgc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 15 Nov 2020 06:54:57 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0AF6suHh023012;
+        Sun, 15 Nov 2020 06:54:56 GMT
+Received: from localhost.localdomain (/10.211.9.80)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sat, 14 Nov 2020 22:54:55 -0800
+From:   Dongli Zhang <dongli.zhang@oracle.com>
+To:     linux-mm@kvack.org, netdev@vger.kernel.org
+Cc:     willy@infradead.org, aruna.ramakrishna@oracle.com,
+        bert.barbe@oracle.com, rama.nichanamatlu@oracle.com,
+        venkat.x.venkatsubra@oracle.com, manjunath.b.patil@oracle.com,
+        joe.jin@oracle.com, srinivas.eeda@oracle.com,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, davem@davemloft.net,
+        edumazet@google.com, vbabka@suse.cz, dongli.zhang@oracle.com
+Subject: [PATCH v2 1/1] page_frag: Recover from memory pressure
+Date:   Sat, 14 Nov 2020 22:51:06 -0800
+Message-Id: <20201115065106.10244-1-dongli.zhang@oracle.com>
+X-Mailer: git-send-email 2.17.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9805 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 suspectscore=0 mlxscore=0
+ bulkscore=0 malwarescore=0 spamscore=0 mlxlogscore=999 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011150042
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9805 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 clxscore=1011
+ malwarescore=0 impostorscore=0 lowpriorityscore=0 priorityscore=1501
+ mlxlogscore=999 adultscore=0 phishscore=0 suspectscore=0 spamscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011150042
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 14, 2020 at 12:21:39AM +0100, Greg KH wrote:
-> On Fri, Nov 13, 2020 at 04:07:57PM +0000, Ertman, David M wrote:
-> > > -----Original Message-----
-> > > From: Greg KH <gregkh@linuxfoundation.org>
-> > > Sent: Friday, November 13, 2020 7:50 AM
-> > > To: Ertman, David M <david.m.ertman@intel.com>
-> > > Cc: alsa-devel@alsa-project.org; tiwai@suse.de; broonie@kernel.org; linux-
-> > > rdma@vger.kernel.org; jgg@nvidia.com; dledford@redhat.com;
-> > > netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org;
-> > > ranjani.sridharan@linux.intel.com; pierre-louis.bossart@linux.intel.com;
-> > > fred.oh@linux.intel.com; parav@mellanox.com; Saleem, Shiraz
-> > > <shiraz.saleem@intel.com>; Williams, Dan J <dan.j.williams@intel.com>;
-> > > Patil, Kiran <kiran.patil@intel.com>; linux-kernel@vger.kernel.org;
-> > > leonro@nvidia.com
-> > > Subject: Re: [PATCH v3 01/10] Add auxiliary bus support
-> > >
-> > > On Thu, Oct 22, 2020 at 05:33:29PM -0700, Dave Ertman wrote:
-> > > > Add support for the Auxiliary Bus, auxiliary_device and auxiliary_driver.
-> > > > It enables drivers to create an auxiliary_device and bind an
-> > > > auxiliary_driver to it.
-> > > >
-> > > > The bus supports probe/remove shutdown and suspend/resume callbacks.
-> > > > Each auxiliary_device has a unique string based id; driver binds to
-> > > > an auxiliary_device based on this id through the bus.
-> > > >
-> > > > Co-developed-by: Kiran Patil <kiran.patil@intel.com>
-> > > > Signed-off-by: Kiran Patil <kiran.patil@intel.com>
-> > > > Co-developed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-> > > > Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-> > > > Co-developed-by: Fred Oh <fred.oh@linux.intel.com>
-> > > > Signed-off-by: Fred Oh <fred.oh@linux.intel.com>
-> > > > Co-developed-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-> > > > Reviewed-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > > > Reviewed-by: Parav Pandit <parav@mellanox.com>
-> > > > Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-> > > > Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-> > > > ---
-> > >
-> > > Is this really the "latest" version of this patch submission?
-> > >
-> > > I see a number of comments on it already, have you sent out a newer one,
-> > > or is this the same one that the mlx5 driver conversion was done on top
-> > > of?
-> > >
-> > > thanks,
-> > >
-> > > greg k-h
-> >
-> > V3 is the latest sent so far.  There was a suggestion that v3 might be merged and
-> > the documentation changes could be in a follow up patch.  I have those changes done
-> > and ready though, so no reason not to merge them in and do a resend.
-> >
-> > Please expect v4 in just a little while.
->
-> Thank you, follow-up patches aren't usually a good idea :)
+The ethernet driver may allocate skb (and skb->data) via napi_alloc_skb().
+This ends up to page_frag_alloc() to allocate skb->data from
+page_frag_cache->va.
 
-The changes were in documentation area that will be changed
-anyway after dust will settle and we all see real users and
-more or less stable in-kernel API.
+During the memory pressure, page_frag_cache->va may be allocated as
+pfmemalloc page. As a result, the skb->pfmemalloc is always true as
+skb->data is from page_frag_cache->va. The skb will be dropped if the
+sock (receiver) does not have SOCK_MEMALLOC. This is expected behaviour
+under memory pressure.
 
-Thanks
+However, once kernel is not under memory pressure any longer (suppose large
+amount of memory pages are just reclaimed), the page_frag_alloc() may still
+re-use the prior pfmemalloc page_frag_cache->va to allocate skb->data. As a
+result, the skb->pfmemalloc is always true unless page_frag_cache->va is
+re-allocated, even if the kernel is not under memory pressure any longer.
+
+Here is how kernel runs into issue.
+
+1. The kernel is under memory pressure and allocation of
+PAGE_FRAG_CACHE_MAX_ORDER in __page_frag_cache_refill() will fail. Instead,
+the pfmemalloc page is allocated for page_frag_cache->va.
+
+2: All skb->data from page_frag_cache->va (pfmemalloc) will have
+skb->pfmemalloc=true. The skb will always be dropped by sock without
+SOCK_MEMALLOC. This is an expected behaviour.
+
+3. Suppose a large amount of pages are reclaimed and kernel is not under
+memory pressure any longer. We expect skb->pfmemalloc drop will not happen.
+
+4. Unfortunately, page_frag_alloc() does not proactively re-allocate
+page_frag_alloc->va and will always re-use the prior pfmemalloc page. The
+skb->pfmemalloc is always true even kernel is not under memory pressure any
+longer.
+
+Fix this by freeing and re-allocating the page instead of recycling it.
+
+References: https://lore.kernel.org/lkml/20201103193239.1807-1-dongli.zhang@oracle.com/
+References: https://lore.kernel.org/linux-mm/20201105042140.5253-1-willy@infradead.org/
+Suggested-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Cc: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
+Cc: Bert Barbe <bert.barbe@oracle.com>
+Cc: Rama Nichanamatlu <rama.nichanamatlu@oracle.com>
+Cc: Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>
+Cc: Manjunath Patil <manjunath.b.patil@oracle.com>
+Cc: Joe Jin <joe.jin@oracle.com>
+Cc: SRINIVAS <srinivas.eeda@oracle.com>
+Cc: stable@vger.kernel.org
+Fixes: 79930f5892e ("net: do not deplete pfmemalloc reserve")
+Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
+---
+Changed since v1:
+  - change author from Matthew to Dongli
+  - Add references to all prior discussions
+  - Add more details to commit message
+
+ mm/page_alloc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 23f5066bd4a5..91129ce75ed4 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5103,6 +5103,11 @@ void *page_frag_alloc(struct page_frag_cache *nc,
+ 		if (!page_ref_sub_and_test(page, nc->pagecnt_bias))
+ 			goto refill;
+ 
++		if (nc->pfmemalloc) {
++			free_the_page(page, compound_order(page));
++			goto refill;
++		}
++
+ #if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
+ 		/* if size can vary use size else just use PAGE_SIZE */
+ 		size = nc->size;
+-- 
+2.17.1
+
