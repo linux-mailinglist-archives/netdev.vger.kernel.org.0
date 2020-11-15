@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73D5C2B3817
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 19:53:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31F252B3813
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 19:53:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727634AbgKOSw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 13:52:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33438 "EHLO
+        id S1727593AbgKOSwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 13:52:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727497AbgKOSwq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 13:52:46 -0500
+        with ESMTP id S1727527AbgKOSwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 13:52:47 -0500
 Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F06FC0617A6;
-        Sun, 15 Nov 2020 10:52:46 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id me8so21309178ejb.10;
-        Sun, 15 Nov 2020 10:52:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88524C0613D1;
+        Sun, 15 Nov 2020 10:52:47 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id o21so21333153ejb.3;
+        Sun, 15 Nov 2020 10:52:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Rc+TCBVBSzblNUplMn3xZa+XP9vRttWGmvwn+KB8j44=;
-        b=uUb32eLXE6XnanpT4p5IX7r1Lb05tCLcen5yRrNhqscFezUpVnTWFrLiCHyvdZmUHt
-         6bGRxFPscfGWqVPvM3OAzXKdkDHDs3yddu/n5F0dWOnKxhDIrRrEE/bg0GiwbQ8q3Gdl
-         6HzvNy52D6UnuAqetO0hsmtE/cGxKKRk32SNt+pRF8RjpkM4e5Qv42YTlHvgUC44xopL
-         GRwG2iUI90uzzV/AAGVQO/5flPh3HeE4dbjNbtKrUuL+z1bpmW87m7fYtNtTeTb5GSAr
-         0aTw1BNGSX3tbZ4DhCPwTbRMdUv0WFUNzFPHcjKoK0KAP062iDAYmnv8HgiyZn/Nmq/X
-         2o6Q==
+        bh=tHdUr6fpSlLoSsUqR0Zir33G0bTUJp5jRkYS8g8PmZ4=;
+        b=gpxkUd9/dkkmdPKleMJPJB7kz4sRjVV2Kbrn5gknEKHMn5AUENOqWfDyjgSVW8Znyc
+         nXym0OOIPPzhN+2yD13xZml484CFC78x3EUny6jl/158IHyggecUVTPEtAwQ2WQJmL9a
+         XmeLMZaU05WLhq7T0Eom23BgZVFiHc5gceEI9bivE+NG8mMFC73VDZJjKh3NLO/bNhyV
+         XEY9SKuMwQ+uNGrb7pZunyOqsx2c0dWM6Va3N999+t7ydLkiT1hUSoI0KcEiKPXPc0Yx
+         VvNhq4ZW9kVFAzfbSBx5xQPsZUCaWxWANma6xEdGXcNzPwKJErf0JhhGh6mUZQXFj1pg
+         ImZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Rc+TCBVBSzblNUplMn3xZa+XP9vRttWGmvwn+KB8j44=;
-        b=hIuXrH5TtMgcUXIe25xusLkIQILFHMBMq1COTGFCc4/hwtzXR315QeThkY3BNrQMp9
-         QGgKM7pUlDM0m9764yswRDIOrCdZDQ+pq9mYw+odJLOwNA4VLHHilUlP6/kNrpW2+O3/
-         OzqN2QaOj1OqIOa7m8u4O1nw4fIPDGJrk2CyE3N2wQvflWAnJ1byQgyW+o8Ti0bIMl+W
-         gCsAEs0BkU5yLqQaaTZR9nrU8DmaLx/RoDAbFKWd2jXgU00hdoAaO8bOyvKfmiYNTWpy
-         U881A2szFhTGbciQmiEmuL0pyHYi3ZmosTwArVBcQSmRHmAyNEcwI88/eFwYJ7BUwo+I
-         oTvQ==
-X-Gm-Message-State: AOAM5303nXhGQrw5/PaJi8nFwf2H7Q8+9vpSKrmRiSs/6w2zSKDPV4Hn
-        Tj6hNEmqlkuLMGRXt9uPXuo=
-X-Google-Smtp-Source: ABdhPJzhqcc2lVkj8r/6+Dk8UZP7s9/hkAO2i/qZzvAvWn9FF0C+0jVOEu82IgdDAPCXeV3zwsn2ig==
-X-Received: by 2002:a17:906:b292:: with SMTP id q18mr11146559ejz.93.1605466365268;
-        Sun, 15 Nov 2020 10:52:45 -0800 (PST)
+        bh=tHdUr6fpSlLoSsUqR0Zir33G0bTUJp5jRkYS8g8PmZ4=;
+        b=EHfpAwiqhrfjt5ggBsVsRzi7e12Mf0Rtr6Bdd+9OU80fNlxKNRzI9csK/CrNtW5ljq
+         B+L6wmkxbeEkH6hxHwEIXfb0Vz3mMXTXGakJmeczptKu1gjqzMJK1Trxp+5hec3cRqdQ
+         cIXWVNF5JR0+aJwniJnxXuz9e8FahXGznEXLvmMZkGoSx7aqb7off12ByGqhX2mvWRhR
+         sAHZPUeFYviW4xNNde5FXXBqYfw/v7S3UPbksJnrtMsFbZnLA/3mxBGK9/KV5hyvkWSN
+         ZG4BSDtvdxvP5VIr4EjVH0xhhdgNt7vY7BmQIAO++HsAZCAjlPKmyGCeOv0nOsckBDS6
+         RSVQ==
+X-Gm-Message-State: AOAM530NbBOxCZqGvJPcjel7WSiA61bDQgP4p4B5c5dj1JJFoCluoMvS
+        ECYO92I2zO+gIQgyOoP54DU=
+X-Google-Smtp-Source: ABdhPJyHIgNVBDu5Qb0c7Vx73M2CSe28Ex8GelfAj7Js4a86q4b4sH62ljU4CgOTkE62qWh8l/p3oA==
+X-Received: by 2002:a17:906:a88:: with SMTP id y8mr12421672ejf.469.1605466366301;
+        Sun, 15 Nov 2020 10:52:46 -0800 (PST)
 Received: from localhost.localdomain (p4fc3ea77.dip0.t-ipconnect.de. [79.195.234.119])
-        by smtp.googlemail.com with ESMTPSA id i13sm9233520ejv.84.2020.11.15.10.52.44
+        by smtp.googlemail.com with ESMTPSA id i13sm9233520ejv.84.2020.11.15.10.52.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Nov 2020 10:52:44 -0800 (PST)
+        Sun, 15 Nov 2020 10:52:45 -0800 (PST)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     davem@davemloft.net, kuba@kernel.org,
         linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
@@ -56,9 +56,9 @@ Cc:     jianxin.pan@amlogic.com, linux-kernel@vger.kernel.org,
         narmstrong@baylibre.com, jbrunet@baylibre.com, andrew@lunn.ch,
         f.fainelli@gmail.com,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH RFC v2 3/5] net: stmmac: dwmac-meson8b: use picoseconds for the RGMII RX delay
-Date:   Sun, 15 Nov 2020 19:52:08 +0100
-Message-Id: <20201115185210.573739-4-martin.blumenstingl@googlemail.com>
+Subject: [PATCH RFC v2 4/5] net: stmmac: dwmac-meson8b: move RGMII delays into a separate function
+Date:   Sun, 15 Nov 2020 19:52:09 +0100
+Message-Id: <20201115185210.573739-5-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201115185210.573739-1-martin.blumenstingl@googlemail.com>
 References: <20201115185210.573739-1-martin.blumenstingl@googlemail.com>
@@ -68,65 +68,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Amlogic Meson G12A, G12B and SM1 SoCs have a more advanced RGMII RX
-delay register which allows picoseconds precision. Parse the new
-"amlogic,rgmii-rx-delay-ps" property or fall back to the old
-"amlogic,rx-delay-ns".
+Newer SoCs starting with the Amlogic Meson G12A have more a precise
+RGMII RX delay configuration register. This means more complexity in the
+code. Extract the existing RGMII delay configuration code into a
+separate function to make it easier to read/understand even when adding
+more logic in the future.
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- .../ethernet/stmicro/stmmac/dwmac-meson8b.c   | 22 ++++++++++++-------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-index e27e2e7a53fd..03fce678b9f5 100644
+index 03fce678b9f5..353fe0f53620 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-@@ -83,7 +83,7 @@ struct meson8b_dwmac {
- 	phy_interface_t			phy_mode;
- 	struct clk			*rgmii_tx_clk;
- 	u32				tx_delay_ns;
--	u32				rx_delay_ns;
-+	u32				rx_delay_ps;
- 	struct clk			*timing_adj_clk;
- };
+@@ -268,7 +268,7 @@ static int meson8b_devm_clk_prepare_enable(struct meson8b_dwmac *dwmac,
+ 	return 0;
+ }
  
-@@ -276,7 +276,7 @@ static int meson8b_init_prg_eth(struct meson8b_dwmac *dwmac)
- 	tx_dly_config = FIELD_PREP(PRG_ETH0_TXDLY_MASK,
- 				   dwmac->tx_delay_ns >> 1);
+-static int meson8b_init_prg_eth(struct meson8b_dwmac *dwmac)
++static int meson8b_init_rgmii_delays(struct meson8b_dwmac *dwmac)
+ {
+ 	u32 tx_dly_config, rx_dly_config, delay_config;
+ 	int ret;
+@@ -323,6 +323,13 @@ static int meson8b_init_prg_eth(struct meson8b_dwmac *dwmac)
+ 				PRG_ETH0_ADJ_DELAY | PRG_ETH0_ADJ_SKEW,
+ 				delay_config);
  
--	if (dwmac->rx_delay_ns == 2)
-+	if (dwmac->rx_delay_ps == 2000)
- 		rx_dly_config = PRG_ETH0_ADJ_ENABLE | PRG_ETH0_ADJ_SETUP;
- 	else
- 		rx_dly_config = 0;
-@@ -406,14 +406,20 @@ static int meson8b_dwmac_probe(struct platform_device *pdev)
- 				 &dwmac->tx_delay_ns))
- 		dwmac->tx_delay_ns = 2;
- 
--	/* use 0ns as fallback since this is what most boards actually use */
--	if (of_property_read_u32(pdev->dev.of_node, "amlogic,rx-delay-ns",
--				 &dwmac->rx_delay_ns))
--		dwmac->rx_delay_ns = 0;
-+	/* RX delay defaults to 0ps since this is what many boards use */
-+	if (of_property_read_u32(pdev->dev.of_node,
-+				 "amlogic,rgmii-rx-delay-ps",
-+				  &dwmac->rx_delay_ps)) {
-+		if (!of_property_read_u32(pdev->dev.of_node,
-+					  "amlogic,rx-delay-ns",
-+					  &dwmac->rx_delay_ps))
-+			/* convert ns to ps */
-+			dwmac->rx_delay_ps *= 1000;
-+	}
- 
--	if (dwmac->rx_delay_ns != 0 && dwmac->rx_delay_ns != 2) {
-+	if (dwmac->rx_delay_ps != 0 && dwmac->rx_delay_ps != 2000) {
- 		dev_err(&pdev->dev,
--			"The only allowed RX delays values are: 0ns, 2ns");
-+			"The only allowed RX delays values are: 0ps, 2000ps");
- 		ret = -EINVAL;
++	return 0;
++}
++
++static int meson8b_init_prg_eth(struct meson8b_dwmac *dwmac)
++{
++	int ret;
++
+ 	if (phy_interface_mode_is_rgmii(dwmac->phy_mode)) {
+ 		/* only relevant for RMII mode -> disable in RGMII mode */
+ 		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0,
+@@ -431,6 +438,10 @@ static int meson8b_dwmac_probe(struct platform_device *pdev)
  		goto err_remove_config_dt;
  	}
+ 
++	ret = meson8b_init_rgmii_delays(dwmac);
++	if (ret)
++		goto err_remove_config_dt;
++
+ 	ret = meson8b_init_rgmii_tx_clk(dwmac);
+ 	if (ret)
+ 		goto err_remove_config_dt;
 -- 
 2.29.2
 
