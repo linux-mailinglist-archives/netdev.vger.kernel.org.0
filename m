@@ -2,98 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4556D2B31B6
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 02:04:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E3652B31B8
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 02:04:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726301AbgKOBCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 20:02:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726125AbgKOBCz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 20:02:55 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDACEC0613D1;
-        Sat, 14 Nov 2020 17:02:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=hcJd+0gBC4ggI1CJ0CF5JxBf9S+Caac0TAqY+TSKgv0=; b=ZPxrrpRJPPDkHjS0nl3X6rE8P
-        fFPiB3zOcFSxA6I9SjqXFljBDIf/FmRnLiKFiL9DUA+WiuobM8Yz9GTeeE4dTYYqVJnNge2Cn0ASH
-        6BIkB+Q1GixtdtI7BYmcgrb06o6h/w6vB+nf4nwjaoQev7NjQNBZn/54eYQWOj4NiujyVyKzAzf6g
-        usI7aMl2QMEi/EFKL6tLxqAiNpjbiI2JnuoWJLCY0iEGKwvqpHPXZt+7uSrQpUjNr9eqSWyQeTZ4R
-        fS756FQDhRrI5KgkL4Js32S7ulIJAzzxFmoG4CLVvPsomHQbYoSVfP+1mLr7/feVcoJtL6ymJge8E
-        sjEYBlj2Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59784)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ke6RH-0006CO-F9; Sun, 15 Nov 2020 01:02:43 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ke6RF-0005v0-Lw; Sun, 15 Nov 2020 01:02:41 +0000
-Date:   Sun, 15 Nov 2020 01:02:41 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>,
-        Michal Hrusecki <Michal.Hrusecky@nic.cz>,
-        Tomas Hlavacek <tomas.hlavacek@nic.cz>,
-        =?utf-8?B?QmVkxZlpY2hhIEtvxaFhdHU=?= <bedrich.kosata@nic.cz>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: mvneta: Fix validation of 2.5G HSGMII
- without comphy
-Message-ID: <20201115010241.GF1551@shell.armlinux.org.uk>
-References: <20201115004151.12899-1-afaerber@suse.de>
+        id S1726459AbgKOBDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 20:03:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42978 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726125AbgKOBDM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 14 Nov 2020 20:03:12 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 546B524137;
+        Sun, 15 Nov 2020 01:03:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605402191;
+        bh=FU5CmdD0GZEvL9KLF89pYyDzIii67JkKi/p0LI6XAvg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Cv1/90BqGD0n1mIGO4YQbq5wCzO6xjJHHqza1rKt025/nEOe0txjhDK+4CD4ql+Q/
+         BFPIQUFA7FFWFDU+vOcgAQw3ENc/zhoLoUEzhblUsVpXfb6pM81i5iCQRsQNiJ1cz6
+         uzSPzBHji+XJcPTRQs/xp7OzF7A80ACJF9RiXnzA=
+Date:   Sat, 14 Nov 2020 17:03:10 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lev Stipakov <lstipakov@gmail.com>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lev Stipakov <lev@openvpn.net>
+Subject: Re: [PATCH v3] net: xfrm: use core API for updating/providing stats
+Message-ID: <20201114170310.39e47f8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201113215939.147007-1-lev@openvpn.net>
+References: <f1238670-7d0a-2311-7ee5-c254c8ef2a22@gmail.com>
+        <20201113215939.147007-1-lev@openvpn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201115004151.12899-1-afaerber@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 15, 2020 at 01:41:51AM +0100, Andreas Färber wrote:
-> Commit 1a642ca7f38992b086101fe204a1ae3c90ed8016 (net: ethernet: mvneta:
-> Add 2500BaseX support for SoCs without comphy) added support for 2500BaseX.
+On Fri, 13 Nov 2020 23:59:40 +0200 Lev Stipakov wrote:
+> Commit d3fd65484c781 ("net: core: add dev_sw_netstats_tx_add") has added
+> function "dev_sw_netstats_tx_add()" to update net device per-cpu TX
+> stats.
 > 
-> In case a comphy is not provided, mvneta_validate()'s check
->   state->interface == PHY_INTERFACE_MODE_2500BASEX
-> could never be true (it would've returned with empty bitmask before),
-> so that 2500baseT_Full and 2500baseX_Full do net get added to the mask.
+> Use this function instead of own code.
+> 
+> While on it, remove xfrmi_get_stats64() and replace it with
+> dev_get_tstats64().
+> 
+> Signed-off-by: Lev Stipakov <lev@openvpn.net>
+> Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-This makes me nervous. It was intentional that if there is no comphy
-configured in DT for SoCs such as Armada 388, then there is no support
-to switch between 1G and 2.5G speed. Unfortunately, the configuration
-of the comphy is up to the board to do, not the SoC .dtsi, so we can't
-rely on there being a comphy on Armada 388 systems.
+Since this is a follow up to Heiner's work I'll apply directly as well.
 
-So, one of the side effects of this patch is it incorrectly opens up
-the possibility of allowing 2.5G support on Armada 388 without a comphy
-configured.
-
-We really need a better way to solve this; just relying on the lack of
-comphy and poking at a register that has no effect on Armada 388 to
-select 2.5G speed while allowing 1G and 2.5G to be arbitarily chosen
-doesn't sound like a good idea to me.
-
-Clearly there are differences in mvneta hardware in different SoCs.
-Maybe they should have used different compatibles, so the driver can
-know which variant of the hardware it is dealing with, rather than
-relying on presence/lack of comphy.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks!
