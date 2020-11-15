@@ -2,117 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E66562B3454
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 11:49:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D331A2B347A
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 11:54:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727122AbgKOKtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 05:49:01 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:56560 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726749AbgKOKtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 05:49:00 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AFAjw3L034226;
-        Sun, 15 Nov 2020 10:48:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2020-01-29;
- bh=0SQ04sPpy55hmGwi9wK6B8H2o5DGQMXCFt2rANOMIJQ=;
- b=vuC857aCSvmVZPlZZcuDCMwoGt8JXGZnv4TNihkUw0bUu0I7LSZEN3aUmczFwXRYKkZM
- BICVdxf8d2zT6rq0Zsh5gMDwCu9dvc5QLu8dlNz9yKi//3mD0hJ7gXrSSBkseZvOij8s
- YJD01ZSI0P9W0tQHYZwHomOiSksO5dGquskzOyTaXYR+Wrnt1955nBfss9H225qgD7Ma
- DRqrsoUP0S8WjqQLuxc7ncRbyN3AypqsHUpz03Cg1sGGFyXquIx/67sV/WS1oNBDDBbA
- fIPrY77epKwe/lVOdRSYnRVyt410fHbbf5yBWjEPsF948ZLn18Ypio2XYgViW/ZTSQwD Vg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 34t76kj71e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sun, 15 Nov 2020 10:48:43 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AFAjJGs053689;
-        Sun, 15 Nov 2020 10:46:42 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 34ts0nc20e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 15 Nov 2020 10:46:42 +0000
-Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0AFAkedg026085;
-        Sun, 15 Nov 2020 10:46:40 GMT
-Received: from localhost.uk.oracle.com (/10.175.173.115)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sun, 15 Nov 2020 02:46:40 -0800
-From:   Alan Maguire <alan.maguire@oracle.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next] libbpf: bpf__find_by_name[_kind] should use btf__get_nr_types()
-Date:   Sun, 15 Nov 2020 10:46:35 +0000
-Message-Id: <1605437195-2175-1-git-send-email-alan.maguire@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9805 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
- bulkscore=0 suspectscore=0 spamscore=0 malwarescore=0 phishscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011150065
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9805 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 phishscore=0
- adultscore=0 priorityscore=1501 bulkscore=0 clxscore=1015 mlxlogscore=999
- malwarescore=0 mlxscore=0 spamscore=0 lowpriorityscore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011150065
+        id S1726808AbgKOKxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 05:53:06 -0500
+Received: from yes.iam.tj ([109.74.197.121]:58588 "EHLO iam.tj"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726634AbgKOKxF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 15 Nov 2020 05:53:05 -0500
+Received: from [10.0.40.123] (unknown [51.155.44.233])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        by iam.tj (Postfix) with ESMTPSA id 7055D340AD;
+        Sun, 15 Nov 2020 10:53:02 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=elloe.vision; s=2019;
+        t=1605437583; bh=EGsM0fLMXwCGwT31lO5V/ZpZc2vKWVZKVrwOrZJVn0k=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=t+NaZLxCNFc3XVuspQsN3U4LEW8aOQGwf5m3kcgbmBiezG7dlRqGfMWS1uz4p+pGV
+         Kecp2H7IP1a0BNMloIs/+H0l1JvQBO4SqoPhSiH118pz8rJkfG2TKbiPRj1WgngRKv
+         pWPIKDCeG7IDuTAa3IzCLd5Ds2VLojA+cc0yn8kbz/qA3uc3pkSggMnalMsH3SMUgA
+         BSCHfdZ6ByL8nb5Iua+Ua1kAkrn56rY8v+XLdGIIOHeUQx3g7x1+4fS+QtCV89RVXE
+         qO9LYh3H8KwS249mQKSTTQcKEXEvWwWI5EwqylESdJQlgKK7GDSBhUk/QmA7X/mnIo
+         eFYu7vckisdlg==
+Subject: Re: dsa: mv88e6xxx not receiving IPv6 multicast packets
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, chris.packham@alliedtelesis.co.nz,
+        andrew@lunn.ch, f.fainelli@gmail.com, marek.behun@nic.cz,
+        vivien.didelot@gmail.com, info <info@turris.cz>
+References: <1b6ba265-4651-79d2-9b43-f14e7f6ec19b@alliedtelesis.co.nz>
+ <0538958b-44b8-7187-650b-35ce276e9d83@elloe.vision>
+ <3390878f-ca70-7714-3f89-c4455309d917@elloe.vision>
+ <20201114184915.fv5hfoobdgqc7uxq@skbuf>
+From:   "Tj (Elloe Linux)" <ml.linux@elloe.vision>
+Organization: Elloe CIC
+Message-ID: <c0bb216e-0717-a131-f96d-c5194b281746@elloe.vision>
+Date:   Sun, 15 Nov 2020 10:53:00 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20201114184915.fv5hfoobdgqc7uxq@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When operating on split BTF, btf__find_by_name[_kind] will not
-iterate over all types since they use btf->nr_types to show
-the number of types to iterate over.  For split BTF this is
-the number of types _on top of base BTF_, so it will
-underestimate the number of types to iterate over, especially
-for vmlinux + module BTF, where the latter is much smaller.
+On 14/11/2020 18:49, Vladimir Oltean wrote:
+> On Sat, Nov 14, 2020 at 03:39:28PM +0000, Tj (Elloe Linux) wrote:
+>> MV88E6085 switch not passing IPv6 multicast packets to CPU.
 
-Use btf__get_nr_types() instead.
+> Is there a simple step-by-step reproducer for the issue, that doesn't
+> require a lot of configuration? I've got a Mox with the 6190 switch
+> running net-next and Buildroot that I could try on.
 
-Fixes: ba451366bf44 ("libbpf: Implement basic split BTF support")
-Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
----
- tools/lib/bpf/btf.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Our set-up is Mox A (CPU) + G (mini-PCIe) + F (4x USB 3.0) + 3 x E (8
+port Marvell switch) + D (SFP cage)
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 2d0d064..8ff46cd 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -674,12 +674,12 @@ int btf__resolve_type(const struct btf *btf, __u32 type_id)
- 
- __s32 btf__find_by_name(const struct btf *btf, const char *type_name)
- {
--	__u32 i;
-+	__u32 i, nr_types = btf__get_nr_types(btf);
- 
- 	if (!strcmp(type_name, "void"))
- 		return 0;
- 
--	for (i = 1; i <= btf->nr_types; i++) {
-+	for (i = 1; i <= nr_types; i++) {
- 		const struct btf_type *t = btf__type_by_id(btf, i);
- 		const char *name = btf__name_by_offset(btf, t->name_off);
- 
-@@ -693,12 +693,12 @@ __s32 btf__find_by_name(const struct btf *btf, const char *type_name)
- __s32 btf__find_by_name_kind(const struct btf *btf, const char *type_name,
- 			     __u32 kind)
- {
--	__u32 i;
-+	__u32 i, nr_types = btf__get_nr_types(btf);
- 
- 	if (kind == BTF_KIND_UNKN || !strcmp(type_name, "void"))
- 		return 0;
- 
--	for (i = 1; i <= btf->nr_types; i++) {
-+	for (i = 1; i <= nr_types; i++) {
- 		const struct btf_type *t = btf__type_by_id(btf, i);
- 		const char *name;
- 
--- 
-1.8.3.1
+Whilst working on this we've moved one of the E modules to another A CPU
+in our lab so as not to mess with the gateway.
 
+Running Debian 10, using systemd-networkd, which configures:
+
+eth0 (WAN) static IPv4 and IPv6 - DHCP=no
+eth1 (uplink to the switch ports) DHCP=no
+lan1 (connected to external managed switch) Bridge=br-lan
+br-lan static IPv4 and IPv6, Kind=bridge, IPForward=true
+
+Whilst we're working on this issue only lan1 is connected to anything
+external; a 48-port managed switch. No connection to SPF either.
+
+We assign an IPv6 from our delegated /48 prefix to br-lan and have
+isc-dhcp-server configured on a very short lease (180 seconds) to issue
+leases.
+
+On a LAN client we request a lease using:
+
+dhclient -d -6 wlp4s0
+
+Usually, if this is started just after the Mox systemd-networkd was
+restarted, it'll manage to obtain and then renew a lease about 3 or 4 times.
+
+These will show up in the Mox logs too.
+
+At some point, with absolutely nothing showing in any Mox log in the
+meantime, additional renewals will fail.
+
+We later noticed that after this happens sometime later clients on the
+network lose IPv6 connectivity to the Mox because neighbour discovery is
+also failing - took us a while to spot this because the Mox occasionally
+sends RAs at which point the clients can talk to the Mox again. The
+symptom here was unexplained random-length 'hangs' of SSH sessions to
+the Mox that would affect LAN clients only when the neighbour table
+entry had expired.
+
+I'm trying to create a very small reproducer root file-system on the lab
+Mox.
+
+Right now I've not been able to reproduce it on the lab unit even with a
+clone of the gateway Mox's micro SD-card, but that seems due to it
+failing to complete a regular boot - hence creating a fresh root
+file-system.
