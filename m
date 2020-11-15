@@ -2,105 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D331A2B347A
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 11:54:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E8252B347F
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 11:55:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726808AbgKOKxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 05:53:06 -0500
-Received: from yes.iam.tj ([109.74.197.121]:58588 "EHLO iam.tj"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726634AbgKOKxF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 15 Nov 2020 05:53:05 -0500
-Received: from [10.0.40.123] (unknown [51.155.44.233])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        by iam.tj (Postfix) with ESMTPSA id 7055D340AD;
-        Sun, 15 Nov 2020 10:53:02 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=elloe.vision; s=2019;
-        t=1605437583; bh=EGsM0fLMXwCGwT31lO5V/ZpZc2vKWVZKVrwOrZJVn0k=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=t+NaZLxCNFc3XVuspQsN3U4LEW8aOQGwf5m3kcgbmBiezG7dlRqGfMWS1uz4p+pGV
-         Kecp2H7IP1a0BNMloIs/+H0l1JvQBO4SqoPhSiH118pz8rJkfG2TKbiPRj1WgngRKv
-         pWPIKDCeG7IDuTAa3IzCLd5Ds2VLojA+cc0yn8kbz/qA3uc3pkSggMnalMsH3SMUgA
-         BSCHfdZ6ByL8nb5Iua+Ua1kAkrn56rY8v+XLdGIIOHeUQx3g7x1+4fS+QtCV89RVXE
-         qO9LYh3H8KwS249mQKSTTQcKEXEvWwWI5EwqylESdJQlgKK7GDSBhUk/QmA7X/mnIo
-         eFYu7vckisdlg==
-Subject: Re: dsa: mv88e6xxx not receiving IPv6 multicast packets
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, chris.packham@alliedtelesis.co.nz,
-        andrew@lunn.ch, f.fainelli@gmail.com, marek.behun@nic.cz,
-        vivien.didelot@gmail.com, info <info@turris.cz>
-References: <1b6ba265-4651-79d2-9b43-f14e7f6ec19b@alliedtelesis.co.nz>
- <0538958b-44b8-7187-650b-35ce276e9d83@elloe.vision>
- <3390878f-ca70-7714-3f89-c4455309d917@elloe.vision>
- <20201114184915.fv5hfoobdgqc7uxq@skbuf>
-From:   "Tj (Elloe Linux)" <ml.linux@elloe.vision>
-Organization: Elloe CIC
-Message-ID: <c0bb216e-0717-a131-f96d-c5194b281746@elloe.vision>
-Date:   Sun, 15 Nov 2020 10:53:00 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726891AbgKOKy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 05:54:58 -0500
+Received: from userp2120.oracle.com ([156.151.31.85]:34092 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726826AbgKOKy5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 05:54:57 -0500
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AFArVhe149463;
+        Sun, 15 Nov 2020 10:53:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : in-reply-to : message-id : references : mime-version :
+ content-type; s=corp-2020-01-29;
+ bh=0XMZD16bdaTBBS1c0EriN29o6a/bDa7mcaxrZicQ764=;
+ b=rDK+7NcdTjXfBIsPVN14lB0wYJiwWvdHacUFHFmz1nXYGNQkvlda75Pxnl1YgvgNSBbv
+ p0nh39FGMcuuTo3r944Fl4i+rHlygV25nuKOYLYvFADGVwokVHce1S7AjG1bMqUVCX3L
+ CglZzMtfQV+bI2BQq0KuqZKuEbWZ3zJKSdRlSHsAXkm/PIsvGkVsGmCXn9hfbz+LtrCq
+ khMEnH4Y8RH34AksLmr4xsx92UPRes0BkFmmCgsH64Eo2lPHDr8ceOpKV4bUIstRfiPM
+ e0KJJIu/WmhAX8ufu1RJ2g3LldZrQQNkRHldpeLeBR3onJXyuuxeW2Q57OHzeRDdL1WQ yQ== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 34t7vmt5ay-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 15 Nov 2020 10:53:30 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AFApJ3b062611;
+        Sun, 15 Nov 2020 10:53:30 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 34ts0nc519-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 15 Nov 2020 10:53:29 +0000
+Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0AFArQQd022860;
+        Sun, 15 Nov 2020 10:53:26 GMT
+Received: from dhcp-10-175-173-115.vpn.oracle.com (/10.175.173.115)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sun, 15 Nov 2020 02:53:26 -0800
+Date:   Sun, 15 Nov 2020 10:53:19 +0000 (GMT)
+From:   Alan Maguire <alan.maguire@oracle.com>
+X-X-Sender: alan@localhost
+To:     Yonghong Song <yhs@fb.com>
+cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [RFC bpf-next 1/3] bpf: add module support to btf display
+ helpers
+In-Reply-To: <778cc9b5-2358-e491-1085-2a5c11dbbf57@fb.com>
+Message-ID: <alpine.LRH.2.21.2011151047410.2244@localhost>
+References: <1605291013-22575-1-git-send-email-alan.maguire@oracle.com> <1605291013-22575-2-git-send-email-alan.maguire@oracle.com> <CAEf4BzaaUdMnfADQdT=myDJtQtHoQ_aW7T8XidrCkYZ=pGXuaQ@mail.gmail.com> <CAADnVQK6PFAHQMBgQ=Xp7tUFkUBg5yUgBM+r5mi-Kd5UWNWHzw@mail.gmail.com>
+ <778cc9b5-2358-e491-1085-2a5c11dbbf57@fb.com>
+User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20201114184915.fv5hfoobdgqc7uxq@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9805 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
+ bulkscore=0 suspectscore=0 spamscore=0 malwarescore=0 phishscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011150066
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9805 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 suspectscore=0
+ malwarescore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0 spamscore=0
+ adultscore=0 mlxscore=0 priorityscore=1501 phishscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011150066
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/11/2020 18:49, Vladimir Oltean wrote:
-> On Sat, Nov 14, 2020 at 03:39:28PM +0000, Tj (Elloe Linux) wrote:
->> MV88E6085 switch not passing IPv6 multicast packets to CPU.
+On Sat, 14 Nov 2020, Yonghong Song wrote:
 
-> Is there a simple step-by-step reproducer for the issue, that doesn't
-> require a lot of configuration? I've got a Mox with the 6190 switch
-> running net-next and Buildroot that I could try on.
+> 
+> 
+> On 11/14/20 8:04 AM, Alexei Starovoitov wrote:
+> > On Fri, Nov 13, 2020 at 10:59 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> >>
+> >> On Fri, Nov 13, 2020 at 10:11 AM Alan Maguire <alan.maguire@oracle.com>
+> >> wrote:
+> >>>
+> >>> bpf_snprintf_btf and bpf_seq_printf_btf use a "struct btf_ptr *"
+> >>> argument that specifies type information about the type to
+> >>> be displayed.  Augment this information to include a module
+> >>> name, allowing such display to support module types.
+> >>>
+> >>> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+> >>> ---
+> >>>   include/linux/btf.h            |  8 ++++++++
+> >>>   include/uapi/linux/bpf.h       |  5 ++++-
+> >>>   kernel/bpf/btf.c               | 18 ++++++++++++++++++
+> >>>   kernel/trace/bpf_trace.c       | 42
+> >>>   ++++++++++++++++++++++++++++++++----------
+> >>>   tools/include/uapi/linux/bpf.h |  5 ++++-
+> >>>   5 files changed, 66 insertions(+), 12 deletions(-)
+> >>>
+> >>> diff --git a/include/linux/btf.h b/include/linux/btf.h
+> >>> index 2bf6418..d55ca00 100644
+> >>> --- a/include/linux/btf.h
+> >>> +++ b/include/linux/btf.h
+> >>> @@ -209,6 +209,14 @@ static inline const struct btf_var_secinfo
+> >>> *btf_type_var_secinfo(
+> >>>   const struct btf_type *btf_type_by_id(const struct btf *btf, u32
+> >>>   type_id);
+> >>>   const char *btf_name_by_offset(const struct btf *btf, u32 offset);
+> >>>   struct btf *btf_parse_vmlinux(void);
+> >>> +#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+> >>> +struct btf *bpf_get_btf_module(const char *name);
+> >>> +#else
+> >>> +static inline struct btf *bpf_get_btf_module(const char *name)
+> >>> +{
+> >>> +       return ERR_PTR(-ENOTSUPP);
+> >>> +}
+> >>> +#endif
+> >>>   struct btf *bpf_prog_get_target_btf(const struct bpf_prog *prog);
+> >>>   #else
+> >>>   static inline const struct btf_type *btf_type_by_id(const struct btf
+> >>>   *btf,
+> >>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> >>> index 162999b..26978be 100644
+> >>> --- a/include/uapi/linux/bpf.h
+> >>> +++ b/include/uapi/linux/bpf.h
+> >>> @@ -3636,7 +3636,8 @@ struct bpf_stack_build_id {
+> >>>    *             the pointer data is carried out to avoid kernel crashes
+> >>>    during
+> >>>    *             operation.  Smaller types can use string space on the
+> >>>    stack;
+> >>>    *             larger programs can use map data to store the string
+> >>> - *             representation.
+> >>> + *             representation.  Module-specific data structures can be
+> >>> + *             displayed if the module name is supplied.
+> >>>    *
+> >>>    *             The string can be subsequently shared with userspace via
+> >>>    *             bpf_perf_event_output() or ring buffer interfaces.
+> >>> @@ -5076,11 +5077,13 @@ struct bpf_sk_lookup {
+> >>>    * potentially to specify additional details about the BTF pointer
+> >>>    * (rather than its mode of display) - is included for future use.
+> >>>    * Display flags - BTF_F_* - are passed to bpf_snprintf_btf separately.
+> >>> + * A module name can be specified for module-specific data.
+> >>>   */
+> >>>   struct btf_ptr {
+> >>>          void *ptr;
+> >>>          __u32 type_id;
+> >>>          __u32 flags;            /* BTF ptr flags; unused at present. */
+> >>> +       const char *module;     /* optional module name. */
+> >>
+> >> I think module name is a wrong API here, similarly how type name was
+> >> wrong API for specifying the type (and thus we use type_id here).
+> >> Using the module's BTF ID seems like a more suitable interface. That's
+> >> what I'm going to use for all kinds of existing BPF APIs that expect
+> >> BTF type to attach BPF programs.
+> >>
+> >> Right now, we use only type_id and implicitly know that it's in
+> >> vmlinux BTF. With module BTFs, we now need a pair of BTF object ID +
+> >> BTF type ID to uniquely identify the type. vmlinux BTF now can be
+> >> specified in two different ways: either leaving BTF object ID as zero
+> >> (for simplicity and backwards compatibility) or specifying it's actual
+> >> BTF obj ID (which pretty much always should be 1, btw). This feels
+> >> like a natural extension, WDYT?
+> >>
+> >> And similar to type_id, no one should expect users to specify these
+> >> IDs by hand, Clang built-in and libbpf should work together to figure
+> >> this out for the kernel to use.
+> >>
+> >> BTW, with module names there is an extra problem for end users. Some
+> >> types could be either built-in or built as a module (e.g., XFS data
+> >> structures). Why would we require BPF users to care which is the case
+> >> on any given host?
+> > 
+> > +1.
+> > As much as possible libbpf should try to hide the difference between
+> > type in a module vs type in the vmlinux, since that difference most of the
+> > time is irrelevant from bpf prog pov.
+>
 
-Our set-up is Mox A (CPU) + G (mini-PCIe) + F (4x USB 3.0) + 3 x E (8
-port Marvell switch) + D (SFP cage)
+All sounds good to me - I've split out the libbpf fix and 
+put together an updated patchset for the helpers/test which
+converts the currently unused __u32 "flags" field in
+struct btf_ptr to an "obj_id" field.  If obj_id is > 1 it
+is presumed to be a module ID.  I'd suggest we could move
+ahead with those changes, using the more clunky methods
+to retrieve the module-specific BTF id, and later fix up
+the test to use Yonghong's __builtin_btf_type_id()
+modification.  Does that sound reasonable?
 
-Whilst working on this we've moved one of the E modules to another A CPU
-in our lab so as not to mess with the gateway.
+In connection to this, I wonder if libbpf could
+benefit from a simple helper btf__id() (similar
+to btf__fd()), allowing easy retrieval of the
+object ID associated with module BTF?  I suspect
+we will always have cases in general-purpose
+tracers where we need to look up BTF ids of
+objects dynamically, so such a function would
+help in that case.
 
-Running Debian 10, using systemd-networkd, which configures:
+> I just crafted a llvm patch where for __builtin_btf_type_id(), a 64bit value
+> is returned instead of a 32bit value. libbpf can use the lower
+> 32bit as the btf_type_id and upper 32bit as the kernel module btf id.
+> 
+>    https://reviews.llvm.org/D91489
+> 
+> feel free to experiment with it to see whether it helps.
+> 
+> 
 
-eth0 (WAN) static IPv4 and IPv6 - DHCP=no
-eth1 (uplink to the switch ports) DHCP=no
-lan1 (connected to external managed switch) Bridge=br-lan
-br-lan static IPv4 and IPv6, Kind=bridge, IPForward=true
+Great! I'll give it a try, thanks!
 
-Whilst we're working on this issue only lan1 is connected to anything
-external; a 48-port managed switch. No connection to SPF either.
-
-We assign an IPv6 from our delegated /48 prefix to br-lan and have
-isc-dhcp-server configured on a very short lease (180 seconds) to issue
-leases.
-
-On a LAN client we request a lease using:
-
-dhclient -d -6 wlp4s0
-
-Usually, if this is started just after the Mox systemd-networkd was
-restarted, it'll manage to obtain and then renew a lease about 3 or 4 times.
-
-These will show up in the Mox logs too.
-
-At some point, with absolutely nothing showing in any Mox log in the
-meantime, additional renewals will fail.
-
-We later noticed that after this happens sometime later clients on the
-network lose IPv6 connectivity to the Mox because neighbour discovery is
-also failing - took us a while to spot this because the Mox occasionally
-sends RAs at which point the clients can talk to the Mox again. The
-symptom here was unexplained random-length 'hangs' of SSH sessions to
-the Mox that would affect LAN clients only when the neighbour table
-entry had expired.
-
-I'm trying to create a very small reproducer root file-system on the lab
-Mox.
-
-Right now I've not been able to reproduce it on the lab unit even with a
-clone of the gateway Mox's micro SD-card, but that seems due to it
-failing to complete a regular boot - hence creating a fresh root
-file-system.
+Alan
