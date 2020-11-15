@@ -2,31 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8E0E2B350A
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 14:17:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B96D2B3516
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 14:44:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbgKONPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 08:15:12 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:57383 "EHLO
+        id S1727127AbgKONnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 08:43:19 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41357 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726605AbgKONPL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 08:15:11 -0500
+        with ESMTP id S1726438AbgKONnS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 08:43:18 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from tariqt@nvidia.com)
-        with SMTP; 15 Nov 2020 15:15:04 +0200
+        with SMTP; 15 Nov 2020 15:43:13 +0200
 Received: from dev-l-vrt-206-005.mtl.labs.mlnx (dev-l-vrt-206-005.mtl.labs.mlnx [10.234.206.5])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AFDF4Ca026809;
-        Sun, 15 Nov 2020 15:15:04 +0200
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AFDhDYP028844;
+        Sun, 15 Nov 2020 15:43:13 +0200
 From:   Tariq Toukan <tariqt@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>,
         Tariq Toukan <ttoukan.linux@gmail.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Boris Pismenny <borisp@nvidia.com>
-Subject: [PATCH net V2] net/tls: Fix wrong record sn in async mode of device resync
-Date:   Sun, 15 Nov 2020 15:14:48 +0200
-Message-Id: <20201115131448.2702-1-tariqt@nvidia.com>
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH net-next 0/2] TLS TX HW offload for Bond
+Date:   Sun, 15 Nov 2020 15:42:49 +0200
+Message-Id: <20201115134251.4272-1-tariqt@nvidia.com>
 X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -34,157 +33,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In async_resync mode, we log the TCP seq of records until the async request
-is completed.  Later, in case one of the logged seqs matches the resync
-request, we return it, together with its record serial number.  Before this
-fix, we mistakenly returned the serial number of the current record
-instead.
-
-Fixes: ed9b7646b06a ("net/tls: Add asynchronous resync")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Boris Pismenny <borisp@nvidia.com>
----
- include/net/tls.h    | 16 +++++++++++++++-
- net/tls/tls_device.c | 37 +++++++++++++++++++++++++++----------
- 2 files changed, 42 insertions(+), 11 deletions(-)
-
 Hi,
 
-Please queue to -stable >= v5.9.
+This series opens TLS TX HW offload for bond interfaces.
+This allows bond interfaces to benefit from capable slave devices.
 
-Thanks,
+The first patch adds real_dev field in TLS context structure, and aligns
+usages in TLS module and supporting drivers.
+The second patch opens the offload for bond interfaces.
+
+For the configuration above, SW kTLS keeps picking the same slave
+To keep simple track of the HW and SW TLS contexts, we bind each socket to
+a specific slave for the socket's whole lifetime. This is logically valid
+(and similar to the SW kTLS behavior) in the following bond configuration, 
+so we restrict the offload support to it:
+
+((mode == balance-xor) or (mode == 802.3ad))
+and xmit_hash_policy == layer3+4.
+
+Regards,
 Tariq
 
-v2:
-- tls_bigint_subtract: use integer argument for n, use compile-time
-  check for record size, return void.
-- Wrap long comment on multiple lines.
+Tariq Toukan (2):
+  net/tls: Add real_dev field to TLS context
+  bond: Add TLS TX offload support
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index baf1e99d8193..cf1473099453 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -300,7 +300,8 @@ enum tls_offload_sync_type {
- #define TLS_DEVICE_RESYNC_ASYNC_LOGMAX		13
- struct tls_offload_resync_async {
- 	atomic64_t req;
--	u32 loglen;
-+	u16 loglen;
-+	u16 rcd_delta;
- 	u32 log[TLS_DEVICE_RESYNC_ASYNC_LOGMAX];
- };
- 
-@@ -471,6 +472,18 @@ static inline bool tls_bigint_increment(unsigned char *seq, int len)
- 	return (i == -1);
- }
- 
-+static inline void tls_bigint_subtract(unsigned char *seq, int  n)
-+{
-+	u64 rcd_sn;
-+	__be64 *p;
-+
-+	BUILD_BUG_ON(TLS_MAX_REC_SEQ_SIZE != 8);
-+
-+	p = (__be64 *)seq;
-+	rcd_sn = be64_to_cpu(*p);
-+	*p = cpu_to_be64(rcd_sn - n);
-+}
-+
- static inline struct tls_context *tls_get_ctx(const struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
-@@ -639,6 +652,7 @@ tls_offload_rx_resync_async_request_start(struct sock *sk, __be32 seq, u16 len)
- 	atomic64_set(&rx_ctx->resync_async->req, ((u64)ntohl(seq) << 32) |
- 		     ((u64)len << 16) | RESYNC_REQ | RESYNC_REQ_ASYNC);
- 	rx_ctx->resync_async->loglen = 0;
-+	rx_ctx->resync_async->rcd_delta = 0;
- }
- 
- static inline void
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index cec86229a6a0..54d3e161d198 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -694,36 +694,51 @@ static void tls_device_resync_rx(struct tls_context *tls_ctx,
- 
- static bool
- tls_device_rx_resync_async(struct tls_offload_resync_async *resync_async,
--			   s64 resync_req, u32 *seq)
-+			   s64 resync_req, u32 *seq, u16 *rcd_delta)
- {
- 	u32 is_async = resync_req & RESYNC_REQ_ASYNC;
- 	u32 req_seq = resync_req >> 32;
- 	u32 req_end = req_seq + ((resync_req >> 16) & 0xffff);
-+	u16 i;
-+
-+	*rcd_delta = 0;
- 
- 	if (is_async) {
-+		/* shouldn't get to wraparound:
-+		 * too long in async stage, something bad happened
-+		 */
-+		if (WARN_ON_ONCE(resync_async->rcd_delta == USHRT_MAX))
-+			return false;
-+
- 		/* asynchronous stage: log all headers seq such that
- 		 * req_seq <= seq <= end_seq, and wait for real resync request
- 		 */
--		if (between(*seq, req_seq, req_end) &&
-+		if (before(*seq, req_seq))
-+			return false;
-+		if (!after(*seq, req_end) &&
- 		    resync_async->loglen < TLS_DEVICE_RESYNC_ASYNC_LOGMAX)
- 			resync_async->log[resync_async->loglen++] = *seq;
- 
-+		resync_async->rcd_delta++;
-+
- 		return false;
- 	}
- 
- 	/* synchronous stage: check against the logged entries and
- 	 * proceed to check the next entries if no match was found
- 	 */
--	while (resync_async->loglen) {
--		if (req_seq == resync_async->log[resync_async->loglen - 1] &&
--		    atomic64_try_cmpxchg(&resync_async->req,
--					 &resync_req, 0)) {
--			resync_async->loglen = 0;
-+	for (i = 0; i < resync_async->loglen; i++)
-+		if (req_seq == resync_async->log[i] &&
-+		    atomic64_try_cmpxchg(&resync_async->req, &resync_req, 0)) {
-+			*rcd_delta = resync_async->rcd_delta - i;
- 			*seq = req_seq;
-+			resync_async->loglen = 0;
-+			resync_async->rcd_delta = 0;
- 			return true;
- 		}
--		resync_async->loglen--;
--	}
-+
-+	resync_async->loglen = 0;
-+	resync_async->rcd_delta = 0;
- 
- 	if (req_seq == *seq &&
- 	    atomic64_try_cmpxchg(&resync_async->req,
-@@ -741,6 +756,7 @@ void tls_device_rx_resync_new_rec(struct sock *sk, u32 rcd_len, u32 seq)
- 	u32 sock_data, is_req_pending;
- 	struct tls_prot_info *prot;
- 	s64 resync_req;
-+	u16 rcd_delta;
- 	u32 req_seq;
- 
- 	if (tls_ctx->rx_conf != TLS_HW)
-@@ -786,8 +802,9 @@ void tls_device_rx_resync_new_rec(struct sock *sk, u32 rcd_len, u32 seq)
- 			return;
- 
- 		if (!tls_device_rx_resync_async(rx_ctx->resync_async,
--						resync_req, &seq))
-+						resync_req, &seq, &rcd_delta))
- 			return;
-+		tls_bigint_subtract(rcd_sn, rcd_delta);
- 		break;
- 	}
- 
+ drivers/net/bonding/bond_main.c               | 203 +++++++++++++++++-
+ drivers/net/bonding/bond_options.c            |  10 +-
+ .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c |   2 +-
+ .../mellanox/mlx5/core/en_accel/tls_rxtx.c    |   2 +-
+ include/net/bonding.h                         |   4 +
+ include/net/tls.h                             |   1 +
+ net/tls/tls_device.c                          |   2 +
+ net/tls/tls_device_fallback.c                 |   2 +-
+ 8 files changed, 216 insertions(+), 10 deletions(-)
+
 -- 
 2.21.0
 
