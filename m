@@ -2,176 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57D9A2B334D
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 11:06:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC4442B3351
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 11:18:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbgKOKFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 05:05:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37434 "EHLO
+        id S1726903AbgKOKJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 05:09:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726230AbgKOKFD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 05:05:03 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4674CC0613D1;
-        Sun, 15 Nov 2020 02:05:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=xbB7JpUs0C23en3G8maFju9tp+wQdQlNV3DRGGRnitU=; b=R+Wcg18x0KXaGCdeD/7SwAgqZ
-        yb9yLvBhCxF8qgX6G8YOU1A1+gBVv0rfN1pqLqEnzuJwhVUPJEdLzIP/TeDUe6Kn2bn3LqBMBTZI3
-        5EkjYA707lZRJh8LnxfZm+0bmwGOH6IdX2+0s7xlvUaXhAXRAhTADnsyfB3HUDrfX6D0uyTljHAvc
-        nDaS9bvAm9QcWgmZuOrZQqW53rdssuGjLZxffYHqqXN4Z5b+vzGB/GScRQ8uC/6vLVPBuUEQ1suaT
-        mkiyzE+rwEcgQ1czmLjYKTLSivJfQxmYdeBDn95hFN+/cKn3s06XGxmySP903mSydWGAMPiIiLqfV
-        qjKuq9X1w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59938)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1keEtu-0006Om-Iz; Sun, 15 Nov 2020 10:04:50 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1keEts-0006Lq-Ru; Sun, 15 Nov 2020 10:04:48 +0000
-Date:   Sun, 15 Nov 2020 10:04:48 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>,
-        Michal Hrusecki <Michal.Hrusecky@nic.cz>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH net-next] net: mvneta: Fix validation of 2.5G HSGMII
- without comphy
-Message-ID: <20201115100448.GG1551@shell.armlinux.org.uk>
-References: <20201115004151.12899-1-afaerber@suse.de>
- <20201115010241.GF1551@shell.armlinux.org.uk>
- <4bf5376c-a7d1-17bf-1034-b793113b101e@suse.de>
+        with ESMTP id S1726230AbgKOKJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 05:09:26 -0500
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4586C0613D1;
+        Sun, 15 Nov 2020 02:09:25 -0800 (PST)
+Received: by mail-wm1-x342.google.com with SMTP id w24so20934734wmi.0;
+        Sun, 15 Nov 2020 02:09:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9KClr1LyDLvyufZIL58bcrROX5Pgh+5C+koJbGrnTx4=;
+        b=hQBr53uwtMSDG1+akUP3QAcFKRPXnPsFUMZzcvujaZfRFcw/Z/gwZ0MUH5YPuinPbm
+         PLSkkoQ2PBzRG2LC3sqS4QA7AYgLDawHSdGnnS3JxGaqRpdDvN2YTaGtOWdh7ajsHda5
+         H6Nc0sYgPSbP7cnjGtPFTF8HDtvLSbeimzQg+SDkdIyrCzkC9PQVe8xWkn7GXhEkOe3e
+         ZSwBrUp/NtVV738VLSczbDfuuGlslK+l77m1NncIou5VVVpHYarflc2f/jHWFvM4RMvj
+         4BYThR6KwZe6AE/lhJy/Pu/IGqs7h67oOTrevb5QS4jpx4wM6UjPkDhyh83RYWNAvAxX
+         29xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9KClr1LyDLvyufZIL58bcrROX5Pgh+5C+koJbGrnTx4=;
+        b=NGc3DMhNViSMVh+wnAooWNSE4pT2OYMJcbq9OfIR5Dilsw/CXKlh543zlKuJBkBWgd
+         deiDlXZN9W0knPaTXeXP/7qJwSZ9nrIOJK2Kz9bfZet1r4BDF5GTAVRsvEwfxIGCsZBT
+         kGTuCDFNv1pmf2/H0v38PGRdScSTRlM5UgPr8N5bJHQXC3MkYddbdOxKicb4v/dC16t1
+         GwCf31NTgX4TC7ZKyx/cWS1TElt1V8/0wsafr4UvOP1MQWE9qfJ33Rk2UXrJa1sB62m2
+         dNrxG1Eo73/dhbxRMOo8drL4YGIZ5FWFLqm6DAHHGMr7YKAU8AYCty6Nsfv+d6+flxdh
+         uSXg==
+X-Gm-Message-State: AOAM532a0EfHU7HBwHq4IeJhGVEWDu3qmmEmiTv4YrWL6Zcr9DwrY/iG
+        v8fYbW6JsLb1lBwuYYlOFOM=
+X-Google-Smtp-Source: ABdhPJzpcVgNsTOTJvbGuj4s8M5SGc7Bmyrzw8RbDW2RWBCoRnYc2FSAagC+H8eC97OY6LMGmEe+vw==
+X-Received: by 2002:a1c:ac03:: with SMTP id v3mr10643221wme.9.1605434964581;
+        Sun, 15 Nov 2020 02:09:24 -0800 (PST)
+Received: from localhost.localdomain (p4fc3ea77.dip0.t-ipconnect.de. [79.195.234.119])
+        by smtp.googlemail.com with ESMTPSA id h15sm17959246wrw.15.2020.11.15.02.09.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Nov 2020 02:09:24 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     hauke@hauke-m.de, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH] net: lantiq: Wait for the GPHY firmware to be ready
+Date:   Sun, 15 Nov 2020 11:06:23 +0100
+Message-Id: <20201115100623.257293-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <4bf5376c-a7d1-17bf-1034-b793113b101e@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 15, 2020 at 03:26:01AM +0100, Andreas Färber wrote:
-> Hi Russell,
-> 
-> On 15.11.20 02:02, Russell King - ARM Linux admin wrote:
-> > On Sun, Nov 15, 2020 at 01:41:51AM +0100, Andreas Färber wrote:
-> >> Commit 1a642ca7f38992b086101fe204a1ae3c90ed8016 (net: ethernet: mvneta:
-> >> Add 2500BaseX support for SoCs without comphy) added support for 2500BaseX.
-> >>
-> >> In case a comphy is not provided, mvneta_validate()'s check
-> >>   state->interface == PHY_INTERFACE_MODE_2500BASEX
-> >> could never be true (it would've returned with empty bitmask before),
-> >> so that 2500baseT_Full and 2500baseX_Full do net get added to the mask.
-> > 
-> > This makes me nervous. It was intentional that if there is no comphy
-> > configured in DT for SoCs such as Armada 388, then there is no support
-> > to switch between 1G and 2.5G speed. Unfortunately, the configuration
-> > of the comphy is up to the board to do, not the SoC .dtsi, so we can't
-> > rely on there being a comphy on Armada 388 systems.
-> 
-> Please note that the if clause at the beginning of the validate function
-> does not check for comphy at all. So even with comphy, if there is a
-> code path that attempts to validate state 2500BASEX, it is broken, too.
+A user reports (slightly shortened from the original message):
+  libphy: lantiq,xrx200-mdio: probed
+  mdio_bus 1e108000.switch-mii: MDIO device at address 17 is missing.
+  gswip 1e108000.switch lan: no phy at 2
+  gswip 1e108000.switch lan: failed to connect to port 2: -19
+  lantiq,xrx200-net 1e10b308.eth eth0: error -19 setting up slave phy
 
-I'm afraid you are mistaken.  phy_interface_mode_is_8023z() covers
-both 1000BASEX and 2500BASEX.
+This is a single-port board using the internal Fast Ethernet PHY. The
+user reports that switching to PHY scanning instead of configuring the
+PHY within device-tree works around this issue.
 
-> Do you consider the modification of both ifs (validate and power_up) as
-> correct? Should they be split off from my main _NA change you discuss?
+The documentation for the standalone variant of the PHY11G (which is
+probably very similar to what is used inside the xRX200 SoCs but having
+the firmware burnt onto that standalone chip in the factory) states that
+the PHY needs 300ms to be ready for MDIO communication after releasing
+the reset.
 
-Sorry, don't understand this comment.
+Add a 300ms delay after initializing all GPHYs to ensure that the GPHY
+firmware had enough time to initialize and to appear on the MDIO bus.
+Unfortunately there is no (known) documentation on what the minimum time
+to wait after releasing the reset on an internal PHY so play safe and
+take the one for the external variant. Only wait after the last GPHY
+firmware is loaded to not slow down the initialization too much (
+xRX200 has two GPHYs but newer SoCs have at least three GPHYs).
 
-> > So, one of the side effects of this patch is it incorrectly opens up
-> > the possibility of allowing 2.5G support on Armada 388 without a comphy
-> > configured.
-> > 
-> > We really need a better way to solve this; just relying on the lack of
-> > comphy and poking at a register that has no effect on Armada 388 to
-> > select 2.5G speed while allowing 1G and 2.5G to be arbitarily chosen
-> > doesn't sound like a good idea to me.
-> [snip]
-> 
-> May I add that the comphy needs better documentation?
-> 
-> As a DT contributor I would need the binding to tell me that it's an
-> enum with 2 meaning SGMII2. Not even the max of 2 is documented. The
-> Linux driver talks of ports, but I don't see that term used in U-Boot,
-> and U-Boot APIs appeared to pass very different args in the board code.
+Fixes: 14fceff4771e51 ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/net/dsa/lantiq_gswip.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-It would be nice if the comphy documentation described this parameter
-in detail for all comphys, but alas it hasn't been.
-
-This is described in the binding for Armada 38x
-Documentation/devicetree/bindings/phy/phy-armada38x-comphy.txt:
-
-- #phy-cells : from the generic phy bindings, must be 1. Defines the
-               input port to use for a given comphy lane.
-
-This came from the phy-mvebu-comphy.txt, which was maintained by
-bootlin/free-electrons, and uses the same wording.
-
-For the Armada 38x comphy, it is the internal port number for the
-ethernet controller when the comphy is connected to ethernet. So,
-0 is ethernet@70000, 1 is ethernet@30000, 2 is ethernet@34000. It
-actually defines an index into a table in the comphy driver which is
-used to look up the "Common PHYs Selectors Register" setting for each
-comphy, and also describes the bit index in an undocumented
-configuration register for the ethernet port. Look at Table 1479
-in the public Armada-38x-Functional-Spec-U0A document (which can be
-found via google.) You'll see it talks about XXX PortN. This is the
-"N" value.
-
-The Armada 38x comphy Linux driver does not support non-ethernet
-interfaces (since this was all I needed it for) but the hardware does
-support SATA and USB. The driver can be regarded as incomplete, but it
-is not necessary for it to be complete. These are not described in the
-DT for the SoC since historically they have not needed to be, since
-u-boot does all the setup there - and to add them would require a lot
-of effort to ensure that they were correct for every board. That's
-dangerous to do when we don't have a driver making use of that
-information; there would be no validation that it is correct.
-
-> The binding also still needs to be converted to YAML before we can
-> extend it with any better explanations. (And before you suggest it:
-> Since I obviously don't fully understand that hardware, I'm the wrong
-> person to attempt documenting it. The 38x comphy seems not mentioned in
-> MAINTAINERS, only the 3700 one.)
-
-I'm not sure how we'd better describe it TBH. It is the input port
-number as described by the SoC documentation.
-
-I suppose we could say:
-
-	0 for ethernet@70000
-	1 for ethernet@30000
-	2 for ethernet@34000
-	0 for usb@...
-	1 for usb@...
-	0 for pci@...
-	1 for pci@...
-	... etc ...
-
-But then what if we have that IP re-used on a different SoC where the
-devices are at different addresses in the SoC. So that would mean we
-would need to list out the devices for every SoC in the comphy
-documentation, which is hardly practical.
-
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 74db81dafee3..0a25283bdd13 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -26,6 +26,7 @@
+  */
+ 
+ #include <linux/clk.h>
++#include <linux/delay.h>
+ #include <linux/etherdevice.h>
+ #include <linux/firmware.h>
+ #include <linux/if_bridge.h>
+@@ -1894,6 +1895,16 @@ static int gswip_probe(struct platform_device *pdev)
+ 			dev_err(dev, "gphy fw probe failed\n");
+ 			return err;
+ 		}
++
++		/* The standalone PHY11G requires 300ms to be fully
++		 * initialized and ready for any MDIO communication after being
++		 * taken out of reset. For the SoC-internal GPHY variant there
++		 * is no (known) documentation for the minimum time after a
++		 * reset. Use the same value as for the standalone variant as
++		 * some users have reported internal PHYs not being detected
++		 * without any delay.
++		 */
++		msleep(300);
+ 	}
+ 
+ 	/* bring up the mdio bus */
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.29.2
+
