@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9797D2B3742
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 18:43:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AB0E2B3743
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 18:43:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727404AbgKORlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 12:41:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50726 "EHLO
+        id S1727413AbgKORln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 12:41:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727384AbgKORll (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 12:41:41 -0500
+        with ESMTP id S1727316AbgKORlm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 12:41:42 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00108C0613D2
-        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 09:41:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A299C0613D1
+        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 09:41:42 -0800 (PST)
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1keM1z-0005uQ-3p; Sun, 15 Nov 2020 18:41:39 +0100
+        id 1keM20-0005uQ-1u; Sun, 15 Nov 2020 18:41:40 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Colin Ian King <colin.king@canonical.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net 06/15] can: peak_usb: fix potential integer overflow on shift of a int
-Date:   Sun, 15 Nov 2020 18:41:22 +0100
-Message-Id: <20201115174131.2089251-7-mkl@pengutronix.de>
+        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [net 07/15] can: flexcan: flexcan_setup_stop_mode(): add missing "req_bit" to stop mode property comment
+Date:   Sun, 15 Nov 2020 18:41:23 +0100
+Message-Id: <20201115174131.2089251-8-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201115174131.2089251-1-mkl@pengutronix.de>
 References: <20201115174131.2089251-1-mkl@pengutronix.de>
@@ -39,43 +39,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+In the patch
 
-The left shift of int 32 bit integer constant 1 is evaluated using 32 bit
-arithmetic and then assigned to a signed 64 bit variable. In the case where
-time_ref->adapter->ts_used_bits is 32 or more this can lead to an oveflow.
-Avoid this by shifting using the BIT_ULL macro instead.
+    d9b081e3fc4b ("can: flexcan: remove ack_grp and ack_bit handling from driver")
 
-Fixes: bb4785551f64 ("can: usb: PEAK-System Technik USB adapters driver core")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Link: https://lore.kernel.org/r/20201105112427.40688-1-colin.king@canonical.com
+the unused ack_grp and ack_bit were removed from the driver. However in the
+comment, the "req_bit" was accidentally removed, too.
+
+This patch adds back the "req_bit" bit.
+
+Fixes: d9b081e3fc4b ("can: flexcan: remove ack_grp and ack_bit handling from driver")
+Reported-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+Link: http://lore.kernel.org/r/20201014114810.2911135-1-mkl@pengutronix.de
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/usb/peak_usb/pcan_usb_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/can/flexcan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-index c2764799f9ef..204ccb27d6d9 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-@@ -156,7 +156,7 @@ void peak_usb_get_ts_time(struct peak_time_ref *time_ref, u32 ts, ktime_t *time)
- 		if (time_ref->ts_dev_1 < time_ref->ts_dev_2) {
- 			/* case when event time (tsw) wraps */
- 			if (ts < time_ref->ts_dev_1)
--				delta_ts = 1 << time_ref->adapter->ts_used_bits;
-+				delta_ts = BIT_ULL(time_ref->adapter->ts_used_bits);
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index 881799bd9c5e..4e8fdb6064bd 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -1852,7 +1852,7 @@ static int flexcan_setup_stop_mode(struct platform_device *pdev)
+ 		return -EINVAL;
  
- 		/* Otherwise, sync time counter (ts_dev_2) has wrapped:
- 		 * handle case when event time (tsn) hasn't.
-@@ -168,7 +168,7 @@ void peak_usb_get_ts_time(struct peak_time_ref *time_ref, u32 ts, ktime_t *time)
- 		 *              tsn            ts
- 		 */
- 		} else if (time_ref->ts_dev_1 < ts) {
--			delta_ts = -(1 << time_ref->adapter->ts_used_bits);
-+			delta_ts = -BIT_ULL(time_ref->adapter->ts_used_bits);
- 		}
- 
- 		/* add delay between last sync and event timestamps */
+ 	/* stop mode property format is:
+-	 * <&gpr req_gpr>.
++	 * <&gpr req_gpr req_bit>.
+ 	 */
+ 	ret = of_property_read_u32_array(np, "fsl,stop-mode", out_val,
+ 					 ARRAY_SIZE(out_val));
 -- 
 2.29.2
 
