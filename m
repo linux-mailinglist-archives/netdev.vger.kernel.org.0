@@ -2,104 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1E1E2B3361
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 11:22:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40CD82B3372
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 11:33:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726974AbgKOKVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 05:21:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43674 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726849AbgKOKVm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 15 Nov 2020 05:21:42 -0500
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9D5CB22447;
-        Sun, 15 Nov 2020 10:21:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605435701;
-        bh=rzydftkceju63cCVzuN0vhHudbX1SeIpRs/FyMWETVk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NJMH+ARhBlVaZfdlzWIlEqaZFzUwEXOS2Rfd6FOaNrZxBbeybaf0ozWCmU7O/GxID
-         PDdDGSpwXad9RPkBwvoeXLYXh2+MHpMf9NtTHWJuAE4fbBY+1CVNxI0xviTteiiMx7
-         CwEAFN2+pREj7/2KF+sNzOV8AVmnTk3b8qSmIi9U=
-Received: by mail-ed1-f49.google.com with SMTP id a15so15676408edy.1;
-        Sun, 15 Nov 2020 02:21:41 -0800 (PST)
-X-Gm-Message-State: AOAM532uygchxxigBfOy8sW60yJTzF6M0DHwsAnYzV7samLcgxG4cB3d
-        z1rsfE37JhBET3sJ5UN+1N3WXxxrpk5UQarZkmM=
-X-Google-Smtp-Source: ABdhPJxKJq+2E3NzY82/TP8puJiteJX7GiWRD0G9jz4iNvHTs5V6oRbmUX8fAg7hVa7VlUteGYG02s/rE9KjLwtr2yI=
-X-Received: by 2002:a05:6402:290:: with SMTP id l16mr11065020edv.104.1605435700190;
- Sun, 15 Nov 2020 02:21:40 -0800 (PST)
-MIME-Version: 1.0
-References: <CGME20201113050719epcms2p7ba0a549e386259a01753714da1b79ea3@epcms2p7>
- <20201113050719epcms2p7ba0a549e386259a01753714da1b79ea3@epcms2p7>
- <CAJKOXPePgqWQpJjOeJ9U0jcNG7et6heAid2HnrPeWTDKXLUgjA@mail.gmail.com> <CAEx-X7eEbL8Eoxk0smUCzxb+XOeRQTGBNUZcmDyuZNYCNa1Ghw@mail.gmail.com>
-In-Reply-To: <CAEx-X7eEbL8Eoxk0smUCzxb+XOeRQTGBNUZcmDyuZNYCNa1Ghw@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-Date:   Sun, 15 Nov 2020 11:21:27 +0100
-X-Gmail-Original-Message-ID: <CAJKOXPdXYLPbYwJiroNPtzgE7v5-bHxpmt-g1zNPFrjPo4G_MA@mail.gmail.com>
-Message-ID: <CAJKOXPdXYLPbYwJiroNPtzgE7v5-bHxpmt-g1zNPFrjPo4G_MA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] nfc: s3fwrn82: Add driver for Samsung
- S3FWRN82 NFC Chip
-To:     Bongsu Jeon <bs.jeon87@gmail.com>
-Cc:     bongsu.jeon@samsung.com, "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726884AbgKOKav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 05:30:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41370 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726741AbgKOKau (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 05:30:50 -0500
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A080C0613D1
+        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 02:30:50 -0800 (PST)
+Received: by mail-pj1-x1044.google.com with SMTP id gi3so2595104pjb.3
+        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 02:30:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=KlwQ+OPkLjCj9iFIqiqcLbQaiUChWFXgMezNPIm11mc=;
+        b=loEGtqmIaIq4NrW+BzLwIHrdGuYO7+1hK95d1T1hN8kn34kEiMbD98SQW9e2O3nUaG
+         Suig8l+2S9pBIJZfkj6oAMcP+xHNRbhoILjkGlSYPeE7OxrS+euzAPsCVcYU/3i/+BTS
+         egJyOw//s/kNhNX7KjHYVCUEuEVR5MF+O/qeL5N3AUGnEuatLH11Ank6mCI7cyshUjFT
+         6RmKt/XnYGavyMQRxD7E8CtwlpCHjo86MsFHo/vywB3o3Q4QylI5kogitf/iV/qx4a+B
+         uJlVGlZHOFel3GPG3qHGrk+9quvJcTV9NgoRj4QHujo7mO8E+zvkX9HI4aeNuETyOfjY
+         m4Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=KlwQ+OPkLjCj9iFIqiqcLbQaiUChWFXgMezNPIm11mc=;
+        b=VPAM8Yj7L/U5ZErqM797AetYxq11GjwjmcLievjluL2GWNH4CALVJMAB8j0BVlIIKQ
+         PzAd40qURKqoP2nyFp1qHZV56pZz3CPA8QSsrP1z5sVSa2iwpduciTIVjS0JowOiTuV/
+         COtkcLtgnzrc5zrrS2y0A4tzklnv5MzHE2Ew17tbnwV4ptPq0lQrKYoroByR5wOoxYYq
+         VT/rap+uIP/I+bbRJmYZ0T44rQ2y7UloOhIJE3bv3zQgHX0CON8Wyuf/C6AmJsmMqd2F
+         BUcLCNlMTEivrgknw2L6av+8FOqFyC5CtF0oWPHaUmWtt+Y2I0L9WRpkRSrIv5xNItEo
+         Zy1g==
+X-Gm-Message-State: AOAM5337DssfL5DctWhDo1Sn2N1uwVA3NP17lWobimLfdmfqo7y3pyaU
+        1ubJvD6Z3wfh6SZ+ZlZ02Ck=
+X-Google-Smtp-Source: ABdhPJxtgVJ6oPKaQ9m6iMBCkKN0Em8tP/S9CHw8vxji97KmmpLszcmoIG8mxCvrdJKmWVxov13o/Q==
+X-Received: by 2002:a17:90a:9385:: with SMTP id q5mr11064117pjo.20.1605436249997;
+        Sun, 15 Nov 2020 02:30:49 -0800 (PST)
+Received: from localhost.localdomain ([49.173.165.44])
+        by smtp.gmail.com with ESMTPSA id h11sm14892144pfo.69.2020.11.15.02.30.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Nov 2020 02:30:49 -0800 (PST)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH v3 net] netdevsim: set .owner to THIS_MODULE
+Date:   Sun, 15 Nov 2020 10:30:41 +0000
+Message-Id: <20201115103041.30701-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 15 Nov 2020 at 01:54, Bongsu Jeon <bs.jeon87@gmail.com> wrote:
->
-> On Fri, Nov 13, 2020 at 4:26 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> >
-> > On Fri, 13 Nov 2020 at 06:09, Bongsu Jeon <bongsu.jeon@samsung.com> wrote:
-> > >
-> > >
-> > > Add driver for Samsung S3FWRN82 NFC controller.
-> > > S3FWRN82 is using NCI protocol and I2C communication interface.
-> > >
-> > > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
-> > > ---
-> > >  drivers/nfc/Kconfig             |   1 +
-> > >  drivers/nfc/Makefile            |   1 +
-> > >  drivers/nfc/s3fwrn82/Kconfig    |  15 ++
-> > >  drivers/nfc/s3fwrn82/Makefile   |  10 ++
-> > >  drivers/nfc/s3fwrn82/core.c     | 133 +++++++++++++++
-> > >  drivers/nfc/s3fwrn82/i2c.c      | 288 ++++++++++++++++++++++++++++++++
-> > >  drivers/nfc/s3fwrn82/s3fwrn82.h |  86 ++++++++++
-> > >  7 files changed, 534 insertions(+)
-> > >  create mode 100644 drivers/nfc/s3fwrn82/Kconfig
-> > >  create mode 100644 drivers/nfc/s3fwrn82/Makefile
-> > >  create mode 100644 drivers/nfc/s3fwrn82/core.c
-> > >  create mode 100644 drivers/nfc/s3fwrn82/i2c.c
-> > >  create mode 100644 drivers/nfc/s3fwrn82/s3fwrn82.h
-> >
-> > No, this is a copy of existing s3fwrn5.
-> >
-> > Please do not add drivers which are duplicating existing ones but
-> > instead work on extending them.
-> >
-> > Best regards,
-> > Krzysztof
->
-> I'm bongsu jeon and working for samsung nfc chip development.
-> If I extend the code for another nfc chip model, Could I change the
-> s3fwrn5 directory and Module name?
-> I think the name would confuse some people if they use the other nfc
-> chip like s3fwrn82.
+If THIS_MODULE is not set, the module would be removed while debugfs is
+being used.
+It eventually makes kernel panic.
 
-Hi,
+Fixes: 82c93a87bf8b ("netdevsim: implement couple of testing devlink health reporters")
+Fixes: 424be63ad831 ("netdevsim: add UDP tunnel port offload support")
+Fixes: 4418f862d675 ("netdevsim: implement support for devlink region and snapshots")
+Fixes: d3cbb907ae57 ("netdevsim: add ACL trap reporting cookie as a metadata")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
 
-Renaming would only make git history trickier to follow. Multiple
-drivers get extended and not renamed. Anyone configuring the kernel
-should check through Kconfig description, compatibles or description
-in bindings, so name of directory does not matter when looking for HW
-support. Then someone would add different chip support, and you would
-rename as well? So no, do not rename it.
+v3:
+ - Separate from one big series
 
-Best regards,
-Krzysztof
+v2:
+ - Change headline
+ - Squash patches into per-driver/subsystem
+
+ drivers/net/netdevsim/dev.c         | 2 ++
+ drivers/net/netdevsim/health.c      | 1 +
+ drivers/net/netdevsim/udp_tunnels.c | 1 +
+ 3 files changed, 4 insertions(+)
+
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index d07061417675..e7972e88ffe0 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -96,6 +96,7 @@ static const struct file_operations nsim_dev_take_snapshot_fops = {
+ 	.open = simple_open,
+ 	.write = nsim_dev_take_snapshot_write,
+ 	.llseek = generic_file_llseek,
++	.owner = THIS_MODULE,
+ };
+ 
+ static ssize_t nsim_dev_trap_fa_cookie_read(struct file *file,
+@@ -188,6 +189,7 @@ static const struct file_operations nsim_dev_trap_fa_cookie_fops = {
+ 	.read = nsim_dev_trap_fa_cookie_read,
+ 	.write = nsim_dev_trap_fa_cookie_write,
+ 	.llseek = generic_file_llseek,
++	.owner = THIS_MODULE,
+ };
+ 
+ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
+diff --git a/drivers/net/netdevsim/health.c b/drivers/net/netdevsim/health.c
+index 62958b238d50..21e2974660e7 100644
+--- a/drivers/net/netdevsim/health.c
++++ b/drivers/net/netdevsim/health.c
+@@ -261,6 +261,7 @@ static const struct file_operations nsim_dev_health_break_fops = {
+ 	.open = simple_open,
+ 	.write = nsim_dev_health_break_write,
+ 	.llseek = generic_file_llseek,
++	.owner = THIS_MODULE,
+ };
+ 
+ int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink)
+diff --git a/drivers/net/netdevsim/udp_tunnels.c b/drivers/net/netdevsim/udp_tunnels.c
+index 6ab023acefd6..02dc3123eb6c 100644
+--- a/drivers/net/netdevsim/udp_tunnels.c
++++ b/drivers/net/netdevsim/udp_tunnels.c
+@@ -124,6 +124,7 @@ static const struct file_operations nsim_udp_tunnels_info_reset_fops = {
+ 	.open = simple_open,
+ 	.write = nsim_udp_tunnels_info_reset_write,
+ 	.llseek = generic_file_llseek,
++	.owner = THIS_MODULE,
+ };
+ 
+ int nsim_udp_tunnels_info_create(struct nsim_dev *nsim_dev,
+-- 
+2.17.1
+
