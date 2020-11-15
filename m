@@ -2,134 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 594452B36E5
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 17:59:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ECC92B36E7
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 17:59:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727184AbgKOQ6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 11:58:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44070 "EHLO
+        id S1727254AbgKOQ6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 11:58:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727150AbgKOQ6G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 11:58:06 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5721BC0613D1;
-        Sun, 15 Nov 2020 08:58:06 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id h2so21628113wmm.0;
-        Sun, 15 Nov 2020 08:58:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qF9yStZHuIhpGKt0Se1a4eQvafHT0q3rr8k/OBb7qMU=;
-        b=dRt1W10yyFl73Jg94BQCOvy7cRJANMXu31ils4GfQa7h582dASZGZ2sdFKNMubpGjw
-         Ab9SdyTMlGsLZba3dSNIGPBk/0jjBNQIeLyYn/g2w5kWGVnuSWOvwOKn9BSdzpQW/fWt
-         1LQy3XVhp1m+UGlTQb/muTUfD+C8TdvVTQRnJSg+njmUbKPnktd1VknROoRCXwy4QQjD
-         O5QE5Kg+kOux1GS2hrPpbdUSjs2UYybsGlsjzrPp1+2JMKBBQka2mkxcTxDF/FDP3pFy
-         Q9yQPvchSo0d+5r7ruRk8JEybH2wqOLcedUsUw1AXYj/larMemdtxg9eDH+4udy2OGJM
-         zSfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qF9yStZHuIhpGKt0Se1a4eQvafHT0q3rr8k/OBb7qMU=;
-        b=lpetp6GDYxVa/YKN5ZbCj2FjJ/gFDJYmvlhVrkb9jcmlrbo0lV+wQrIjfMSA9OWBSQ
-         zVTPV/O53bo6dQBL8X+JsU2Gozu707KXu9Ff6zeT+y9nTFiReX/s/seJ2xTlrUDqLY8S
-         7j/WQIAtDOU8KScHHPYiQvzphtBAKGU6XuQJFgFqoU72tN78yNy8e7jxK2AujyMh6b/z
-         k5buLzMp/BpHyZnIrcBYDKq1kh1cygUs4GMOWX4cLOEtjpqMWQgojrFZkcf1gRrcq424
-         MPpq+B4VQotITTDiA/QETHccvJBtsi7wZbWUCSs/bc7Mc0uLRxZHCN8Z9NBxFWL8RdwC
-         353w==
-X-Gm-Message-State: AOAM530oNxl3rlipMlAWXxxVG16Dw1ZCnkKkHrEo/qZxz+fm+O5cV0Di
-        yvlKMQ5LAG/tPgREYxHqc6s=
-X-Google-Smtp-Source: ABdhPJxpcx6TsxMXXphN6Q+l3Z8fDIgYP1kSCzNRXCEBG9fDisnOOfSucphxDlFCuXEkohFD2IEc8Q==
-X-Received: by 2002:a7b:cb82:: with SMTP id m2mr11358489wmi.75.1605459485009;
-        Sun, 15 Nov 2020 08:58:05 -0800 (PST)
-Received: from localhost.localdomain (p4fc3ea77.dip0.t-ipconnect.de. [79.195.234.119])
-        by smtp.googlemail.com with ESMTPSA id 6sm12583924wrn.72.2020.11.15.08.58.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Nov 2020 08:58:04 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     hauke@hauke-m.de, netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v2] net: lantiq: Wait for the GPHY firmware to be ready
-Date:   Sun, 15 Nov 2020 17:57:57 +0100
-Message-Id: <20201115165757.552641-1-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.29.2
+        with ESMTP id S1727230AbgKOQ6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 11:58:43 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57F8C0613D2
+        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 08:58:42 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1keLML-0001jR-Cn; Sun, 15 Nov 2020 17:58:37 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:1e3d:e0be:764c:4a56] (unknown [IPv6:2a03:f580:87bc:d400:1e3d:e0be:764c:4a56])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3FD2D592E3C;
+        Sun, 15 Nov 2020 16:58:34 +0000 (UTC)
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
+References: <20201114173358.2058600-1-mkl@pengutronix.de>
+ <20201114173501.023b5e49@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201114173916.64217d86@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: pull-request: can 2020-11-14
+Message-ID: <f94cf530-eec7-c916-d9f1-0cbb964d8e00@pengutronix.de>
+Date:   Sun, 15 Nov 2020 17:58:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201114173916.64217d86@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="kZiXgTl2iopwhHAswysNXSslwn14TLqvg"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A user reports (slightly shortened from the original message):
-  libphy: lantiq,xrx200-mdio: probed
-  mdio_bus 1e108000.switch-mii: MDIO device at address 17 is missing.
-  gswip 1e108000.switch lan: no phy at 2
-  gswip 1e108000.switch lan: failed to connect to port 2: -19
-  lantiq,xrx200-net 1e10b308.eth eth0: error -19 setting up slave phy
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--kZiXgTl2iopwhHAswysNXSslwn14TLqvg
+Content-Type: multipart/mixed; boundary="kLMyoqPNMqXsw1htTSrNHvAUroJGzvTY0";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, linux-can@vger.kernel.org,
+ kernel@pengutronix.de
+Message-ID: <f94cf530-eec7-c916-d9f1-0cbb964d8e00@pengutronix.de>
+Subject: Re: pull-request: can 2020-11-14
+References: <20201114173358.2058600-1-mkl@pengutronix.de>
+ <20201114173501.023b5e49@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201114173916.64217d86@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201114173916.64217d86@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 
-This is a single-port board using the internal Fast Ethernet PHY. The
-user reports that switching to PHY scanning instead of configuring the
-PHY within device-tree works around this issue.
+--kLMyoqPNMqXsw1htTSrNHvAUroJGzvTY0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 
-The documentation for the standalone variant of the PHY11G (which is
-probably very similar to what is used inside the xRX200 SoCs but having
-the firmware burnt onto that standalone chip in the factory) states that
-the PHY needs 300ms to be ready for MDIO communication after releasing
-the reset.
+On 11/15/20 2:39 AM, Jakub Kicinski wrote:
+> On Sat, 14 Nov 2020 17:35:01 -0800 Jakub Kicinski wrote:
+>> Two invalid fixes tags here, do you want to respin or should I pull?
 
-Add a 300ms delay after initializing all GPHYs to ensure that the GPHY
-firmware had enough time to initialize and to appear on the MDIO bus.
-Unfortunately there is no (known) documentation on what the minimum time
-to wait after releasing the reset on an internal PHY so play safe and
-take the one for the external variant. Only wait after the last GPHY
-firmware is loaded to not slow down the initialization too much (
-xRX200 has two GPHYs but newer SoCs have at least three GPHYs).
+Let me respin this. It'll have the new date tag of today (15th).
 
-Fixes: 14fceff4771e51 ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
-Changes since v1:
-- move the msleep() closer to the actual loop over all GPHY instances
-  as suggested by Andrew
-- added Andrew's Reviewed-by (thank you!)
+> Just realized you probably have these objects in your tree so it'd be
+> useful if I told you which ones ;)
+
+I haven't checked the fixes tags, they were added by the submitter of the=
+ patch.
+How do you test for the fixes? Is that script avaiable somewhere?
+
+> Commit: be719591ede2 ("can: m_can: Fix freeing of can device from perip=
+herials")
+> 	Fixes tag: Fixes: d42f4e1d06d9 ("can: m_can: Create a m_can platform f=
+ramework")
+> 	Has these problem(s):
+> 		- Target SHA1 does not exist
+> Commit: aff1dea235ee ("can: m_can: m_can_class_free_dev(): introduce ne=
+w function")
+> 	Fixes tag: Fixes: d42f4e1d06d9 ("can: m_can: Create a m_can platform f=
+ramework")
+> 	Has these problem(s):
+> 		- Target SHA1 does not exist
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
- drivers/net/dsa/lantiq_gswip.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+--kLMyoqPNMqXsw1htTSrNHvAUroJGzvTY0--
 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 74db81dafee3..09701c17f3f6 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -26,6 +26,7 @@
-  */
- 
- #include <linux/clk.h>
-+#include <linux/delay.h>
- #include <linux/etherdevice.h>
- #include <linux/firmware.h>
- #include <linux/if_bridge.h>
-@@ -1837,6 +1838,16 @@ static int gswip_gphy_fw_list(struct gswip_priv *priv,
- 		i++;
- 	}
- 
-+	/* The standalone PHY11G requires 300ms to be fully
-+	 * initialized and ready for any MDIO communication after being
-+	 * taken out of reset. For the SoC-internal GPHY variant there
-+	 * is no (known) documentation for the minimum time after a
-+	 * reset. Use the same value as for the standalone variant as
-+	 * some users have reported internal PHYs not being detected
-+	 * without any delay.
-+	 */
-+	msleep(300);
-+
- 	return 0;
- 
- remove_gphy:
--- 
-2.29.2
+--kZiXgTl2iopwhHAswysNXSslwn14TLqvg
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+xXjMACgkQqclaivrt
+76n40Qf/X2jE2VK/iB+nMNEAnkplm6c8dbBuMcUi5ARjGTMIZ/5LotL2OEj8+u3a
+7Q4jB5kRMkAl+NN9VKkiwQGyVIT9jzNgLkZRYZjxhi4YK/GLYR7wlgCIXH1sIaNK
+31LrM1DjorE4CyQYdgP/Q1hz9h45dqMf7784WxeNfzeZXUTQXOFVTeeHNPu9+SRR
+qj/OwAwcdq9fmyf3yUk7zrUJTW50cHXXxdcnjhWrWzbBp47Tb5YassWYYyRnSiOP
+kaDF1hLrg+IpejCcBv8dUBfi9+11T5D4INlcOVxLY8QbNqDLd2tXSETQRO+oo82A
+TNj/oxgXxobZvwXOcRsMurxAFGyZ6A==
+=/kOQ
+-----END PGP SIGNATURE-----
+
+--kZiXgTl2iopwhHAswysNXSslwn14TLqvg--
