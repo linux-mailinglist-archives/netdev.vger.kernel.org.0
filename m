@@ -2,285 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AC112B32A9
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 06:54:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68E502B32C3
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 07:48:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726519AbgKOFxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 00:53:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbgKOFxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 00:53:15 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094B6C0613D2
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 21:53:11 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id 81so1677502pgf.0
-        for <netdev@vger.kernel.org>; Sat, 14 Nov 2020 21:53:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mmlx-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=yisTEGEpuLNf6xZbQr7SAnVyH1VRtVC+ny/LYkg0J4w=;
-        b=wyTPMxhtpWvC7Emtna0S2qcY5sK5qWDOSHxY3+fSNmXozOIlIvSeTawBbLP/fE0B9z
-         bnqSNdF4xMjcWpyhLdMLzaROeuWISCHDCjqNnPLOwI5DDOArTX/cTMoO7cO4fuhF+TPs
-         u9E/bXKDPa0pMtts4zJft9LHHd+H2GEgVnz9f+Ks990HQlC9nIVd8fnVAfrk4OwhwMpa
-         YyJW+tN33rF7Ucmdv3tYCW7ml6qhrJb+rufB9jWvb/yY/LAG6oO8mpR+ylOBON12h9Fd
-         5d0iAotc0wwpIRGDK9nbtY1Hqs16Mff92kpyY/uvvUyRZJMJejXQD2J3ITcZKh63g6FI
-         Ki3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=yisTEGEpuLNf6xZbQr7SAnVyH1VRtVC+ny/LYkg0J4w=;
-        b=S1RFLEBhJ/HtYggYBzscp7zDGPFhGegwKPRuDUTfgbc/F0fUK4iDf2mOod6X96eTea
-         Oj8+IpJ0+k1yKLU0hEc0cXr07VvVAyr7fmvnAR4uVTWN4Q6Bs1SBZgsMNnHjDTsbt0pL
-         MbqTovSevNo/d8LoI0YoVTc0tFWuJVg6pNo9bLzFaBHfBiCwrPnsDPtm7/dtORI+OHpc
-         fwjmKHlJjt544nIoy20PR7R7o1JBdTu7WhevVyZkpm0HPUMJs59d6JBbOzCy/zCxdnz4
-         0EQqYH7sw2SeddTBrunsM7HQrwh/C7Tzr8BEx+XXzm4N6huDRmBi9M3qELD1qPzeUs7D
-         l72w==
-X-Gm-Message-State: AOAM532p+hL3aqxZCsO2TWZmXki+C8IlToBh70E1XME2o9jkA+Ey1DNQ
-        oQNNHWCJFgc9MYM5A/UwqTvABA==
-X-Google-Smtp-Source: ABdhPJyVX2qor+e2s977UOIgORSIhDzuZDMpdmOTus8acp40c5R5B5E4m3t9HwqdqJ/zMkX48rRqCg==
-X-Received: by 2002:a63:d46:: with SMTP id 6mr8342237pgn.227.1605419591244;
-        Sat, 14 Nov 2020 21:53:11 -0800 (PST)
-Received: from nitrogen.local.mmlx.us ([199.231.240.229])
-        by smtp.gmail.com with ESMTPSA id c28sm15840255pfj.108.2020.11.14.21.53.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Nov 2020 21:53:10 -0800 (PST)
-From:   Matt Mullins <mmullins@mmlx.us>
-To:     rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net
-Cc:     dvyukov@google.com, Matt Mullins <mmullins@mmlx.us>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH] bpf: don't fail kmalloc while releasing raw_tp
-Date:   Sat, 14 Nov 2020 21:52:55 -0800
-Message-Id: <20201115055256.65625-1-mmullins@mmlx.us>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <00000000000004500b05b31e68ce@google.com>
-References: <00000000000004500b05b31e68ce@google.com>
+        id S1726614AbgKOGr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 01:47:59 -0500
+Received: from userp2120.oracle.com ([156.151.31.85]:60744 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726437AbgKOGr4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 01:47:56 -0500
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AF6lbKr097574;
+        Sun, 15 Nov 2020 06:47:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=qT34ZQmBn15aH/VFvkS7hE3enEiAXnqBdbhLuAultTo=;
+ b=Z3WqJ0Be6NA91gXjoJJ1+Ap4JNQVb04hsGLlbMP5mLJPKb0+NG19GcLXsaGMmVUIkG+v
+ VsXwmwioZVqni5yQz65sjp63Qkbmlkp5nk3IGKkteaYc9WBooEV/Fx6sFY6mjOtSYXpD
+ bL8Kz/hcd1ZaKu5ObduqNecl/1e28jOfLHf998Je9Rt+zxjOib1A1c720XeZuyzZygVq
+ qEnT/UFBCLOCkDAxz4Xz4g1OIPdX1Wt3p6qAItpfeCht4NowTcjJrrezl97Pj28pSoEH
+ m6dnlCOGazWUprNj5WRjUHqMyi9P+UbUZxsCE/clQ8oXdkf/Udkzd1KIwo8PjcxX48GZ Vg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 34t7vmsqc8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 15 Nov 2020 06:47:36 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AF6jJuA150882;
+        Sun, 15 Nov 2020 06:47:36 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3020.oracle.com with ESMTP id 34ts0n74qx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 15 Nov 2020 06:47:36 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0AF6lZGU019587;
+        Sun, 15 Nov 2020 06:47:35 GMT
+Received: from [10.159.239.67] (/10.159.239.67)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sat, 14 Nov 2020 22:47:34 -0800
+Subject: Re: [PATCH] page_frag: Recover from memory pressure
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>
+Cc:     linux-mm@kvack.org, netdev@vger.kernel.org,
+        Aruna Ramakrishna <aruna.ramakrishna@oracle.com>,
+        Bert Barbe <bert.barbe@oracle.com>,
+        Rama Nichanamatlu <rama.nichanamatlu@oracle.com>,
+        Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>,
+        Manjunath Patil <manjunath.b.patil@oracle.com>,
+        Joe Jin <joe.jin@oracle.com>,
+        SRINIVAS <srinivas.eeda@oracle.com>, stable@vger.kernel.org,
+        vbabka@suse.cz
+References: <20201105042140.5253-1-willy@infradead.org>
+ <d673308e-c9a6-85a7-6c22-0377dd33c019@gmail.com>
+ <20201105140224.GK17076@casper.infradead.org>
+ <20201109143249.GB17076@casper.infradead.org>
+ <a8dd751d-2777-6821-47d2-b3d11a569f70@gmail.com>
+From:   Dongli Zhang <dongli.zhang@oracle.com>
+Message-ID: <615096a5-56df-6de3-6d2f-2028c259c2f0@oracle.com>
+Date:   Sat, 14 Nov 2020 22:47:33 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <a8dd751d-2777-6821-47d2-b3d11a569f70@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9805 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
+ bulkscore=0 suspectscore=0 spamscore=0 malwarescore=0 phishscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011150042
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9805 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 suspectscore=0
+ malwarescore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0 spamscore=0
+ adultscore=0 mlxscore=0 priorityscore=1501 phishscore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011150042
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_link_free is always called in process context, including from a
-workqueue and from __fput.  Neither of these have the ability to
-propagate an -ENOMEM to the caller.
+From linux-next, this patch is not in akpm branch.
 
-Reported-by: syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com
-Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
-Signed-off-by: Matt Mullins <mmullins@mmlx.us>
----
-I previously referenced a "pretty ugly" patch.  This is not that one,
-because I don't think there's any way I can make the caller of
-->release() actually handle errors like ENOMEM.
+According to discussion with Matthew offline, I will take the author of this
+patch as Matthew was providing review for patch and suggesting a better
+alternative.
 
-It also looks like most of the other ways tracepoint_probe_unregister is
-called also don't check the error code (e.g. just a quick grep found
-blk_unregister_tracepoints).  Should this just be upgraded to GFP_NOFAIL
-across the board instead of passing around a gfp_t?
+Therefore, it will be much more easier or me to track this patch.
 
- include/linux/trace_events.h |  6 ++++--
- include/linux/tracepoint.h   |  7 +++++--
- kernel/bpf/syscall.c         |  2 +-
- kernel/trace/bpf_trace.c     |  6 ++++--
- kernel/trace/trace_events.c  |  6 ++++--
- kernel/tracepoint.c          | 20 ++++++++++----------
- 6 files changed, 28 insertions(+), 19 deletions(-)
+I will re-send the patch as v2 with:
 
-diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
-index 5c6943354049..166ad7646a98 100644
---- a/include/linux/trace_events.h
-+++ b/include/linux/trace_events.h
-@@ -625,7 +625,8 @@ int perf_event_attach_bpf_prog(struct perf_event *event, struct bpf_prog *prog);
- void perf_event_detach_bpf_prog(struct perf_event *event);
- int perf_event_query_prog_array(struct perf_event *event, void __user *info);
- int bpf_probe_register(struct bpf_raw_event_map *btp, struct bpf_prog *prog);
--int bpf_probe_unregister(struct bpf_raw_event_map *btp, struct bpf_prog *prog);
-+int bpf_probe_unregister(struct bpf_raw_event_map *btp, struct bpf_prog *prog,
-+			 gfp_t flags);
- struct bpf_raw_event_map *bpf_get_raw_tracepoint(const char *name);
- void bpf_put_raw_tracepoint(struct bpf_raw_event_map *btp);
- int bpf_get_perf_event_info(const struct perf_event *event, u32 *prog_id,
-@@ -654,7 +655,8 @@ static inline int bpf_probe_register(struct bpf_raw_event_map *btp, struct bpf_p
- {
- 	return -EOPNOTSUPP;
- }
--static inline int bpf_probe_unregister(struct bpf_raw_event_map *btp, struct bpf_prog *p)
-+static inline int bpf_probe_unregister(struct bpf_raw_event_map *btp,
-+				       struct bpf_prog *p, gfp_t flags)
- {
- 	return -EOPNOTSUPP;
- }
-diff --git a/include/linux/tracepoint.h b/include/linux/tracepoint.h
-index 598fec9f9dbf..7b02f92f3b8f 100644
---- a/include/linux/tracepoint.h
-+++ b/include/linux/tracepoint.h
-@@ -12,6 +12,7 @@
-  * Heavily inspired from the Linux Kernel Markers.
-  */
- 
-+#include <linux/gfp.h>
- #include <linux/smp.h>
- #include <linux/srcu.h>
- #include <linux/errno.h>
-@@ -40,7 +41,8 @@ extern int
- tracepoint_probe_register_prio(struct tracepoint *tp, void *probe, void *data,
- 			       int prio);
- extern int
--tracepoint_probe_unregister(struct tracepoint *tp, void *probe, void *data);
-+tracepoint_probe_unregister(struct tracepoint *tp, void *probe, void *data,
-+			    gfp_t flags);
- extern void
- for_each_kernel_tracepoint(void (*fct)(struct tracepoint *tp, void *priv),
- 		void *priv);
-@@ -260,7 +262,8 @@ static inline struct tracepoint *tracepoint_ptr_deref(tracepoint_ptr_t *p)
- 	unregister_trace_##name(void (*probe)(data_proto), void *data)	\
- 	{								\
- 		return tracepoint_probe_unregister(&__tracepoint_##name,\
--						(void *)probe, data);	\
-+						(void *)probe, data,	\
-+						GFP_KERNEL);		\
- 	}								\
- 	static inline void						\
- 	check_trace_callback_type_##name(void (*cb)(data_proto))	\
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index b999e7ff2583..f6876681c4ab 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2601,7 +2601,7 @@ static void bpf_raw_tp_link_release(struct bpf_link *link)
- 	struct bpf_raw_tp_link *raw_tp =
- 		container_of(link, struct bpf_raw_tp_link, link);
- 
--	bpf_probe_unregister(raw_tp->btp, raw_tp->link.prog);
-+	bpf_probe_unregister(raw_tp->btp, raw_tp->link.prog, GFP_KERNEL | __GFP_NOFAIL);
- 	bpf_put_raw_tracepoint(raw_tp->btp);
- }
- 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index a8d4f253ed77..a4ea58c7506d 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1955,9 +1955,11 @@ int bpf_probe_register(struct bpf_raw_event_map *btp, struct bpf_prog *prog)
- 	return __bpf_probe_register(btp, prog);
- }
- 
--int bpf_probe_unregister(struct bpf_raw_event_map *btp, struct bpf_prog *prog)
-+int bpf_probe_unregister(struct bpf_raw_event_map *btp, struct bpf_prog *prog,
-+			 gfp_t flags)
- {
--	return tracepoint_probe_unregister(btp->tp, (void *)btp->bpf_func, prog);
-+	return tracepoint_probe_unregister(btp->tp, (void *)btp->bpf_func, prog,
-+					   flags);
- }
- 
- int bpf_get_perf_event_info(const struct perf_event *event, u32 *prog_id,
-diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index a85effb2373b..ab1ac89caed2 100644
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -296,7 +296,8 @@ int trace_event_reg(struct trace_event_call *call,
- 	case TRACE_REG_UNREGISTER:
- 		tracepoint_probe_unregister(call->tp,
- 					    call->class->probe,
--					    file);
-+					    file,
-+					    GFP_KERNEL);
- 		return 0;
- 
- #ifdef CONFIG_PERF_EVENTS
-@@ -307,7 +308,8 @@ int trace_event_reg(struct trace_event_call *call,
- 	case TRACE_REG_PERF_UNREGISTER:
- 		tracepoint_probe_unregister(call->tp,
- 					    call->class->perf_probe,
--					    call);
-+					    call,
-+					    GFP_KERNEL);
- 		return 0;
- 	case TRACE_REG_PERF_OPEN:
- 	case TRACE_REG_PERF_CLOSE:
-diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
-index 73956eaff8a9..619666a43c9f 100644
---- a/kernel/tracepoint.c
-+++ b/kernel/tracepoint.c
-@@ -53,10 +53,9 @@ struct tp_probes {
- 	struct tracepoint_func probes[0];
- };
- 
--static inline void *allocate_probes(int count)
-+static inline void *allocate_probes(int count, gfp_t flags)
- {
--	struct tp_probes *p  = kmalloc(struct_size(p, probes, count),
--				       GFP_KERNEL);
-+	struct tp_probes *p  = kmalloc(struct_size(p, probes, count), flags);
- 	return p == NULL ? NULL : p->probes;
- }
- 
-@@ -150,7 +149,7 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
- 		}
- 	}
- 	/* + 2 : one for new probe, one for NULL func */
--	new = allocate_probes(nr_probes + 2);
-+	new = allocate_probes(nr_probes + 2, GFP_KERNEL);
- 	if (new == NULL)
- 		return ERR_PTR(-ENOMEM);
- 	if (old) {
-@@ -174,7 +173,7 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
- }
- 
- static void *func_remove(struct tracepoint_func **funcs,
--		struct tracepoint_func *tp_func)
-+		struct tracepoint_func *tp_func, gfp_t flags)
- {
- 	int nr_probes = 0, nr_del = 0, i;
- 	struct tracepoint_func *old, *new;
-@@ -207,7 +206,7 @@ static void *func_remove(struct tracepoint_func **funcs,
- 		int j = 0;
- 		/* N -> M, (N > 1, M > 0) */
- 		/* + 1 for NULL */
--		new = allocate_probes(nr_probes - nr_del + 1);
-+		new = allocate_probes(nr_probes - nr_del + 1, flags);
- 		if (new == NULL)
- 			return ERR_PTR(-ENOMEM);
- 		for (i = 0; old[i].func; i++)
-@@ -264,13 +263,13 @@ static int tracepoint_add_func(struct tracepoint *tp,
-  * by preempt_disable around the call site.
-  */
- static int tracepoint_remove_func(struct tracepoint *tp,
--		struct tracepoint_func *func)
-+		struct tracepoint_func *func, gfp_t flags)
- {
- 	struct tracepoint_func *old, *tp_funcs;
- 
- 	tp_funcs = rcu_dereference_protected(tp->funcs,
- 			lockdep_is_held(&tracepoints_mutex));
--	old = func_remove(&tp_funcs, func);
-+	old = func_remove(&tp_funcs, func, flags);
- 	if (IS_ERR(old)) {
- 		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
- 		return PTR_ERR(old);
-@@ -344,7 +343,8 @@ EXPORT_SYMBOL_GPL(tracepoint_probe_register);
-  *
-  * Returns 0 if ok, error value on error.
-  */
--int tracepoint_probe_unregister(struct tracepoint *tp, void *probe, void *data)
-+int tracepoint_probe_unregister(struct tracepoint *tp, void *probe, void *data,
-+				gfp_t flags)
- {
- 	struct tracepoint_func tp_func;
- 	int ret;
-@@ -352,7 +352,7 @@ int tracepoint_probe_unregister(struct tracepoint *tp, void *probe, void *data)
- 	mutex_lock(&tracepoints_mutex);
- 	tp_func.func = probe;
- 	tp_func.data = data;
--	ret = tracepoint_remove_func(tp, &tp_func);
-+	ret = tracepoint_remove_func(tp, &tp_func, flags);
- 	mutex_unlock(&tracepoints_mutex);
- 	return ret;
- }
--- 
-2.17.1
+1. change author from Matthew to Dongli
+2. Add references to all prior discussions
+3. Add more details to commit message so that it is much more easier to search
+online when this issue is encountered by other people again.
+4. Add "Acked-by: Vlastimil Babka <vbabka@suse.cz>".
 
+Thank you very much!
+
+Dongli Zhang
+
+On 11/9/20 6:37 AM, Eric Dumazet wrote:
+> 
+> 
+> On 11/9/20 3:32 PM, Matthew Wilcox wrote:
+>> On Thu, Nov 05, 2020 at 02:02:24PM +0000, Matthew Wilcox wrote:
+>>> On Thu, Nov 05, 2020 at 02:21:25PM +0100, Eric Dumazet wrote:
+>>>> On 11/5/20 5:21 AM, Matthew Wilcox (Oracle) wrote:
+>>>>> When the machine is under extreme memory pressure, the page_frag allocator
+>>>>> signals this to the networking stack by marking allocations with the
+>>>>> 'pfmemalloc' flag, which causes non-essential packets to be dropped.
+>>>>> Unfortunately, even after the machine recovers from the low memory
+>>>>> condition, the page continues to be used by the page_frag allocator,
+>>>>> so all allocations from this page will continue to be dropped.
+>>>>>
+>>>>> Fix this by freeing and re-allocating the page instead of recycling it.
+>>>>>
+>>>>> Reported-by: Dongli Zhang <dongli.zhang@oracle.com>
+>>>>> Cc: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
+>>>>> Cc: Bert Barbe <bert.barbe@oracle.com>
+>>>>> Cc: Rama Nichanamatlu <rama.nichanamatlu@oracle.com>
+>>>>> Cc: Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>
+>>>>> Cc: Manjunath Patil <manjunath.b.patil@oracle.com>
+>>>>> Cc: Joe Jin <joe.jin@oracle.com>
+>>>>> Cc: SRINIVAS <srinivas.eeda@oracle.com>
+>>>>> Cc: stable@vger.kernel.org
+>>>>> Fixes: 79930f5892e ("net: do not deplete pfmemalloc reserve")
+>>>>
+>>>> Your patch looks fine, although this Fixes: tag seems incorrect.
+>>>>
+>>>> 79930f5892e ("net: do not deplete pfmemalloc reserve") was propagating
+>>>> the page pfmemalloc status into the skb, and seems correct to me.
+>>>>
+>>>> The bug was the page_frag_alloc() was keeping a problematic page for
+>>>> an arbitrary period of time ?
+>>>
+>>> Isn't this the commit which unmasks the problem, though?  I don't think
+>>> it's the buggy commit, but if your tree doesn't have 79930f5892e, then
+>>> you don't need this patch.
+>>>
+>>> Or are you saying the problem dates back all the way to
+>>> c93bdd0e03e8 ("netvm: allow skb allocation to use PFMEMALLOC reserves")
+>>>
+>>>>> +		if (nc->pfmemalloc) {
+>>>>
+>>>>                 if (unlikely(nc->pfmemalloc)) {
+>>>
+>>> ACK.  Will make the change once we've settled on an appropriate Fixes tag.
+>>
+>> Which commit should I claim this fixes?
+> 
+> Hmm, no big deal, lets not waste time on tracking precise bug origin.
+> 
