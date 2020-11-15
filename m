@@ -2,194 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BED12B3825
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 19:55:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F932B38AF
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 20:31:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727678AbgKOSzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 13:55:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727354AbgKOSzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 13:55:22 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B8AC0613D2
-        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 10:55:22 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1keNBA-0004Io-Ue; Sun, 15 Nov 2020 19:55:13 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:1e3d:e0be:764c:4a56] (unknown [IPv6:2a03:f580:87bc:d400:1e3d:e0be:764c:4a56])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 2664F592F2D;
-        Sun, 15 Nov 2020 18:55:10 +0000 (UTC)
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-References: <20201114152325.523630-1-mailhol.vincent@wanadoo.fr>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: [PATCH v6] can: usb: etas_es58X: add support for ETAS ES58X CAN
- USB interfaces
-Message-ID: <11bada82-7406-d8e1-66e3-43db237ee265@pengutronix.de>
-Date:   Sun, 15 Nov 2020 19:55:05 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1727340AbgKOTaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 14:30:22 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:44567 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727354AbgKOTaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 14:30:21 -0500
+Received: by mail-il1-f200.google.com with SMTP id g14so5058611ilc.11
+        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 11:30:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=ksV7G1LvEOFsXln138z/UT0+mU4z4jF6i3q/RbguKBE=;
+        b=qGB5/B7jV4I9voUjBrgLJ4y4fVCDH9qRoSZ4N4vXtY7q58iX9WpB+qIfp4k7zcakQa
+         ZVYgL0ukbs1g4bBnHVQSgbmO3s2vXW6lzq6EmXlQPqZHX/NNdrqEE7WO0hcD1KHJZsnq
+         819idEMO3wIieIBe92IL/sIsU3g/yfLLBr+w4o5rxD91ehdVBJNVm0bzfq2i5cpiaNPH
+         rwkqq40RjK/kWZlygwgOMv3M7wwP0HLj60ZD1mEn2fDmegNrCg0YtB2J+dPGp500E9wC
+         PScyK2y2DRIikwhPXi5AsVkIg8fTFHp0B/zSj/XfoMuBptGqOyxLV2X3B9tO0vUSjGsZ
+         7jag==
+X-Gm-Message-State: AOAM533C8sZ2ANGJ6nDUHDHQBtrpDF4gmHoOrUEdKEZwNcusAriqx0eX
+        MOSV3O6zK3RZdvjjv9PcX0N5YKnSMTOxGUCmf5uPFB++XdyD
+X-Google-Smtp-Source: ABdhPJyTFNiW2UMuHFLCQHdHACXWFDf603sbZLflQzA5TfYrxntczCO8luJ0Ua5W+B49yf7sdRIasORLokwCEOVWHt+thHMlsb6r
 MIME-Version: 1.0
-In-Reply-To: <20201114152325.523630-1-mailhol.vincent@wanadoo.fr>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="7KjNyHPgHzuIuAFRP5MDixmwX0lOjynfG"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Received: by 2002:a5d:898c:: with SMTP id m12mr5743569iol.196.1605468619350;
+ Sun, 15 Nov 2020 11:30:19 -0800 (PST)
+Date:   Sun, 15 Nov 2020 11:30:19 -0800
+In-Reply-To: <0000000000003b856d05b2bdb5f7@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c1286c05b42a4a3e@google.com>
+Subject: Re: general protection fault in wext_handle_ioctl
+From:   syzbot <syzbot+8b2a88a09653d4084179@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---7KjNyHPgHzuIuAFRP5MDixmwX0lOjynfG
-Content-Type: multipart/mixed; boundary="2TiozWkGeyZmt1hP37spvFYpTH3KfDAmH";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Vincent Mailhol <mailhol.vincent@wanadoo.fr>, linux-can@vger.kernel.org
-Cc: Oliver Hartkopp <socketcan@hartkopp.net>,
- Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
- Wolfgang Grandegger <wg@grandegger.com>,
- "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
- Masahiro Yamada <masahiroy@kernel.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Message-ID: <11bada82-7406-d8e1-66e3-43db237ee265@pengutronix.de>
-Subject: Re: [PATCH v6] can: usb: etas_es58X: add support for ETAS ES58X CAN
- USB interfaces
-References: <20201114152325.523630-1-mailhol.vincent@wanadoo.fr>
-In-Reply-To: <20201114152325.523630-1-mailhol.vincent@wanadoo.fr>
+syzbot has found a reproducer for the following issue on:
 
---2TiozWkGeyZmt1hP37spvFYpTH3KfDAmH
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+HEAD commit:    e28c0d7c Merge branch 'akpm' (patches from Andrew)
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15cd1cc2500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=37bf5609aacce0b6
+dashboard link: https://syzkaller.appspot.com/bug?extid=8b2a88a09653d4084179
+compiler:       clang version 11.0.0 (https://github.com/llvm/llvm-project.git ca2dcbd030eadbf0aa9b660efe864ff08af6e18b)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13706da1500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10229fdc500000
 
-On 11/14/20 4:22 PM, Vincent Mailhol wrote:
-> This driver supports the ES581.4, ES582.1 and ES584.1 interfaces from
-> ETAS GmbH (https://www.etas.com/en/products/es58x.php).
->=20
-> Co-developed-by: Arunachalam Santhanam <arunachalam.santhanam@in.bosch.=
-com>
-> Signed-off-by: Arunachalam Santhanam <arunachalam.santhanam@in.bosch.co=
-m>
-> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8b2a88a09653d4084179@syzkaller.appspotmail.com
 
-The driver fails to compile with CONFIG_SYSFS switched off
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 0 PID: 8462 Comm: syz-executor301 Not tainted 5.10.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:call_commit_handler net/wireless/wext-core.c:900 [inline]
+RIP: 0010:ioctl_standard_call net/wireless/wext-core.c:1029 [inline]
+RIP: 0010:wireless_process_ioctl net/wireless/wext-core.c:954 [inline]
+RIP: 0010:wext_ioctl_dispatch net/wireless/wext-core.c:987 [inline]
+RIP: 0010:wext_handle_ioctl+0x974/0xb20 net/wireless/wext-core.c:1048
+Code: e8 61 1d a3 f8 eb 6c 48 8b 44 24 18 42 80 3c 20 00 48 8b 5c 24 20 74 08 48 89 df e8 26 16 e5 f8 48 8b 1b 48 89 d8 48 c1 e8 03 <42> 80 3c 20 00 74 08 48 89 df e8 0d 16 e5 f8 48 8b 1b 48 89 d8 48
+RSP: 0018:ffffc9000143fe00 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffff88d1ed88
+RDX: ffff8880290e8000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffff88801b738000 R08: ffffffff88d1edaf R09: ffffed10036e7009
+R10: ffffed10036e7009 R11: 0000000000000000 R12: dffffc0000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000008b04
+FS:  0000000001eb8880(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffd3b2be000 CR3: 0000000024723000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ sock_ioctl+0xdc/0x690 net/socket.c:1119
+ vfs_ioctl fs/ioctl.c:48 [inline]
+ __do_sys_ioctl fs/ioctl.c:753 [inline]
+ __se_sys_ioctl+0xfb/0x170 fs/ioctl.c:739
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x441529
+Code: e8 ec 05 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 8b 0d fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffeab8016d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007ffeab801700 RCX: 0000000000441529
+RDX: 00000000200000c0 RSI: 0000000000008b04 RDI: 0000000000000003
+RBP: 0000000000000003 R08: 0000002000000000 R09: 0000002000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000032
+R13: 0000000000000000 R14: 000000000000000c R15: 0000000000000004
+Modules linked in:
+---[ end trace d1b799cc496836f9 ]---
+RIP: 0010:call_commit_handler net/wireless/wext-core.c:900 [inline]
+RIP: 0010:ioctl_standard_call net/wireless/wext-core.c:1029 [inline]
+RIP: 0010:wireless_process_ioctl net/wireless/wext-core.c:954 [inline]
+RIP: 0010:wext_ioctl_dispatch net/wireless/wext-core.c:987 [inline]
+RIP: 0010:wext_handle_ioctl+0x974/0xb20 net/wireless/wext-core.c:1048
+Code: e8 61 1d a3 f8 eb 6c 48 8b 44 24 18 42 80 3c 20 00 48 8b 5c 24 20 74 08 48 89 df e8 26 16 e5 f8 48 8b 1b 48 89 d8 48 c1 e8 03 <42> 80 3c 20 00 74 08 48 89 df e8 0d 16 e5 f8 48 8b 1b 48 89 d8 48
+RSP: 0018:ffffc9000143fe00 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffff88d1ed88
+RDX: ffff8880290e8000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffff88801b738000 R08: ffffffff88d1edaf R09: ffffed10036e7009
+R10: ffffed10036e7009 R11: 0000000000000000 R12: dffffc0000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000008b04
+FS:  0000000001eb8880(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffd3b2be000 CR3: 0000000024723000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-  CC [M]  drivers/net/can/usb/etas_es58x/es58x_core.o
-drivers/net/can/usb/etas_es58x/es58x_core.c: In function =E2=80=98es58x_i=
-nit_netdev=E2=80=99:
-drivers/net/can/usb/etas_es58x/es58x_core.c:2380:32: error: =E2=80=98stru=
-ct netdev_queue=E2=80=99 has no member named =E2=80=98dql=E2=80=99
- 2380 |  netdev_get_tx_queue(netdev, 0)->dql.min_limit =3D
-      |                                ^~
-
-regards,
-Marc
-
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---2TiozWkGeyZmt1hP37spvFYpTH3KfDAmH--
-
---7KjNyHPgHzuIuAFRP5MDixmwX0lOjynfG
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+xeYkACgkQqclaivrt
-76nyBQf+L4OxN9ufKCwxNaHJTYaAZVqlbnW1DUJZKlnNYK2zIC1fQ5bO648Liwls
-3su+QQotABXmLrYol0RbkzvcL4brVts+kJydbTEnDHtBVXHJhvgtirTjJy2CMxzo
-dWfap8eNvS6hPGxzf1GUwvquKv7uZ3bbfKZ7UQfGrNv7htPXTEONZ3xwGCcrZGBD
-l5m0d4EsOnMBM2DI30Ge6XLuZX+Jf9gKOs6MblFH3/TnY5JkxKDiKD0ziWZMmYnF
-QfmbbLIH4S6E2oaB6xySoR5Pt/oYw41YXDPr5IAshYqSy2KqCfXrdQHam5O1cJ6b
-MXHdIUZqfvM/hxGDKSY07qrkPCE63g==
-=lrm6
------END PGP SIGNATURE-----
-
---7KjNyHPgHzuIuAFRP5MDixmwX0lOjynfG--
