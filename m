@@ -2,53 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 318A82B3186
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 01:08:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C139A2B318A
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 01:10:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726310AbgKOAHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 19:07:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36864 "EHLO mail.kernel.org"
+        id S1726359AbgKOAKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 19:10:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37154 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726125AbgKOAHX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Nov 2020 19:07:23 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D67B524178;
-        Sun, 15 Nov 2020 00:07:22 +0000 (UTC)
+        id S1726125AbgKOAKF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 14 Nov 2020 19:10:05 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605398843;
-        bh=qvQxhv9XpGRwUHp8bJekmFyvYs/pOIxUinyLe4I8OeY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sUqkkiIJqRgMBczGHFv8s1n5ADQCYlyRCi3Q9K/BFZHOGKEioLZ9C+0fFT6t4+ASN
-         mqnSMaIwwAXyQpCdIHKocNT83hQhuCOv90U1sENZa8pEJid8JwpWcDoBDbA5A3CKsk
-         MvhG8dMQTuyR4DLDea6XM/26aoDQY7w3aTvSjgTw=
-Date:   Sat, 14 Nov 2020 16:07:21 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Oliver Herms <oliver.peter.herms@gmail.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org
-Subject: Re: [PATCH v2] IPv4: RTM_GETROUTE: Add RTA_ENCAP to result
-Message-ID: <20201114160721.7516f864@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <44d5ba9e-999d-85c3-38c9-e33e2efbeed9@gmail.com>
-References: <20201113085517.GA1307262@tws>
-        <44d5ba9e-999d-85c3-38c9-e33e2efbeed9@gmail.com>
+        s=default; t=1605399004;
+        bh=uUKVVimvuZudJEMDjKpPdA9M2QalJ+mdThNBWwucmdw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=OSXvUaYcXiW89UaUavuc2MFpCvyfCpo1TbCCeTCY5PZ7VCFnoUdd7o1y9xH125Gv3
+         4RIgb6DNdpxHb55o3JQ6K4LowC92OXL/M4tMrOozPB/BtuuvLP/CUwca7PYHZXGgbR
+         loaQsCsIs0YgGmjIVPOjEd5R5v3V+xfgJTA39sZ8=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: stmmac: dwmac_lib: enlarge dma reset timeout
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160539900468.21843.5491714824652750943.git-patchwork-notify@kernel.org>
+Date:   Sun, 15 Nov 2020 00:10:04 +0000
+References: <20201113090902.5c7aab1a@xhacker.debian>
+In-Reply-To: <20201113090902.5c7aab1a@xhacker.debian>
+To:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Nov 2020 09:44:38 -0700 David Ahern wrote:
-> On 11/13/20 1:55 AM, Oliver Herms wrote:
-> > This patch adds an IPv4 routes encapsulation attribute
-> > to the result of netlink RTM_GETROUTE requests
-> > (e.g. ip route get 192.0.2.1).
-> > 
-> > Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
-> 
-> Reviewed-by: David Ahern <dsahern@kernel.org>
+Hello:
 
-Applied, thanks!
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Fri, 13 Nov 2020 09:09:02 +0800 you wrote:
+> If the phy enables power saving technology, the dwmac's software reset
+> needs more time to complete, enlarge dma reset timeout to 200000us.
+> 
+> Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Here is the summary with links:
+  - net: stmmac: dwmac_lib: enlarge dma reset timeout
+    https://git.kernel.org/netdev/net/c/56311a315da7
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
