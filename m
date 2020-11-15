@@ -2,127 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC4442B3351
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 11:18:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1E1E2B3361
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 11:22:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbgKOKJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 05:09:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726230AbgKOKJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 05:09:26 -0500
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4586C0613D1;
-        Sun, 15 Nov 2020 02:09:25 -0800 (PST)
-Received: by mail-wm1-x342.google.com with SMTP id w24so20934734wmi.0;
-        Sun, 15 Nov 2020 02:09:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9KClr1LyDLvyufZIL58bcrROX5Pgh+5C+koJbGrnTx4=;
-        b=hQBr53uwtMSDG1+akUP3QAcFKRPXnPsFUMZzcvujaZfRFcw/Z/gwZ0MUH5YPuinPbm
-         PLSkkoQ2PBzRG2LC3sqS4QA7AYgLDawHSdGnnS3JxGaqRpdDvN2YTaGtOWdh7ajsHda5
-         H6Nc0sYgPSbP7cnjGtPFTF8HDtvLSbeimzQg+SDkdIyrCzkC9PQVe8xWkn7GXhEkOe3e
-         ZSwBrUp/NtVV738VLSczbDfuuGlslK+l77m1NncIou5VVVpHYarflc2f/jHWFvM4RMvj
-         4BYThR6KwZe6AE/lhJy/Pu/IGqs7h67oOTrevb5QS4jpx4wM6UjPkDhyh83RYWNAvAxX
-         29xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9KClr1LyDLvyufZIL58bcrROX5Pgh+5C+koJbGrnTx4=;
-        b=NGc3DMhNViSMVh+wnAooWNSE4pT2OYMJcbq9OfIR5Dilsw/CXKlh543zlKuJBkBWgd
-         deiDlXZN9W0knPaTXeXP/7qJwSZ9nrIOJK2Kz9bfZet1r4BDF5GTAVRsvEwfxIGCsZBT
-         kGTuCDFNv1pmf2/H0v38PGRdScSTRlM5UgPr8N5bJHQXC3MkYddbdOxKicb4v/dC16t1
-         GwCf31NTgX4TC7ZKyx/cWS1TElt1V8/0wsafr4UvOP1MQWE9qfJ33Rk2UXrJa1sB62m2
-         dNrxG1Eo73/dhbxRMOo8drL4YGIZ5FWFLqm6DAHHGMr7YKAU8AYCty6Nsfv+d6+flxdh
-         uSXg==
-X-Gm-Message-State: AOAM532a0EfHU7HBwHq4IeJhGVEWDu3qmmEmiTv4YrWL6Zcr9DwrY/iG
-        v8fYbW6JsLb1lBwuYYlOFOM=
-X-Google-Smtp-Source: ABdhPJzpcVgNsTOTJvbGuj4s8M5SGc7Bmyrzw8RbDW2RWBCoRnYc2FSAagC+H8eC97OY6LMGmEe+vw==
-X-Received: by 2002:a1c:ac03:: with SMTP id v3mr10643221wme.9.1605434964581;
-        Sun, 15 Nov 2020 02:09:24 -0800 (PST)
-Received: from localhost.localdomain (p4fc3ea77.dip0.t-ipconnect.de. [79.195.234.119])
-        by smtp.googlemail.com with ESMTPSA id h15sm17959246wrw.15.2020.11.15.02.09.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Nov 2020 02:09:24 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     hauke@hauke-m.de, netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH] net: lantiq: Wait for the GPHY firmware to be ready
-Date:   Sun, 15 Nov 2020 11:06:23 +0100
-Message-Id: <20201115100623.257293-1-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.29.2
+        id S1726974AbgKOKVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 05:21:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43674 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726849AbgKOKVm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 15 Nov 2020 05:21:42 -0500
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9D5CB22447;
+        Sun, 15 Nov 2020 10:21:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605435701;
+        bh=rzydftkceju63cCVzuN0vhHudbX1SeIpRs/FyMWETVk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=NJMH+ARhBlVaZfdlzWIlEqaZFzUwEXOS2Rfd6FOaNrZxBbeybaf0ozWCmU7O/GxID
+         PDdDGSpwXad9RPkBwvoeXLYXh2+MHpMf9NtTHWJuAE4fbBY+1CVNxI0xviTteiiMx7
+         CwEAFN2+pREj7/2KF+sNzOV8AVmnTk3b8qSmIi9U=
+Received: by mail-ed1-f49.google.com with SMTP id a15so15676408edy.1;
+        Sun, 15 Nov 2020 02:21:41 -0800 (PST)
+X-Gm-Message-State: AOAM532uygchxxigBfOy8sW60yJTzF6M0DHwsAnYzV7samLcgxG4cB3d
+        z1rsfE37JhBET3sJ5UN+1N3WXxxrpk5UQarZkmM=
+X-Google-Smtp-Source: ABdhPJxKJq+2E3NzY82/TP8puJiteJX7GiWRD0G9jz4iNvHTs5V6oRbmUX8fAg7hVa7VlUteGYG02s/rE9KjLwtr2yI=
+X-Received: by 2002:a05:6402:290:: with SMTP id l16mr11065020edv.104.1605435700190;
+ Sun, 15 Nov 2020 02:21:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CGME20201113050719epcms2p7ba0a549e386259a01753714da1b79ea3@epcms2p7>
+ <20201113050719epcms2p7ba0a549e386259a01753714da1b79ea3@epcms2p7>
+ <CAJKOXPePgqWQpJjOeJ9U0jcNG7et6heAid2HnrPeWTDKXLUgjA@mail.gmail.com> <CAEx-X7eEbL8Eoxk0smUCzxb+XOeRQTGBNUZcmDyuZNYCNa1Ghw@mail.gmail.com>
+In-Reply-To: <CAEx-X7eEbL8Eoxk0smUCzxb+XOeRQTGBNUZcmDyuZNYCNa1Ghw@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Date:   Sun, 15 Nov 2020 11:21:27 +0100
+X-Gmail-Original-Message-ID: <CAJKOXPdXYLPbYwJiroNPtzgE7v5-bHxpmt-g1zNPFrjPo4G_MA@mail.gmail.com>
+Message-ID: <CAJKOXPdXYLPbYwJiroNPtzgE7v5-bHxpmt-g1zNPFrjPo4G_MA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] nfc: s3fwrn82: Add driver for Samsung
+ S3FWRN82 NFC Chip
+To:     Bongsu Jeon <bs.jeon87@gmail.com>
+Cc:     bongsu.jeon@samsung.com, "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A user reports (slightly shortened from the original message):
-  libphy: lantiq,xrx200-mdio: probed
-  mdio_bus 1e108000.switch-mii: MDIO device at address 17 is missing.
-  gswip 1e108000.switch lan: no phy at 2
-  gswip 1e108000.switch lan: failed to connect to port 2: -19
-  lantiq,xrx200-net 1e10b308.eth eth0: error -19 setting up slave phy
+On Sun, 15 Nov 2020 at 01:54, Bongsu Jeon <bs.jeon87@gmail.com> wrote:
+>
+> On Fri, Nov 13, 2020 at 4:26 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> >
+> > On Fri, 13 Nov 2020 at 06:09, Bongsu Jeon <bongsu.jeon@samsung.com> wrote:
+> > >
+> > >
+> > > Add driver for Samsung S3FWRN82 NFC controller.
+> > > S3FWRN82 is using NCI protocol and I2C communication interface.
+> > >
+> > > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+> > > ---
+> > >  drivers/nfc/Kconfig             |   1 +
+> > >  drivers/nfc/Makefile            |   1 +
+> > >  drivers/nfc/s3fwrn82/Kconfig    |  15 ++
+> > >  drivers/nfc/s3fwrn82/Makefile   |  10 ++
+> > >  drivers/nfc/s3fwrn82/core.c     | 133 +++++++++++++++
+> > >  drivers/nfc/s3fwrn82/i2c.c      | 288 ++++++++++++++++++++++++++++++++
+> > >  drivers/nfc/s3fwrn82/s3fwrn82.h |  86 ++++++++++
+> > >  7 files changed, 534 insertions(+)
+> > >  create mode 100644 drivers/nfc/s3fwrn82/Kconfig
+> > >  create mode 100644 drivers/nfc/s3fwrn82/Makefile
+> > >  create mode 100644 drivers/nfc/s3fwrn82/core.c
+> > >  create mode 100644 drivers/nfc/s3fwrn82/i2c.c
+> > >  create mode 100644 drivers/nfc/s3fwrn82/s3fwrn82.h
+> >
+> > No, this is a copy of existing s3fwrn5.
+> >
+> > Please do not add drivers which are duplicating existing ones but
+> > instead work on extending them.
+> >
+> > Best regards,
+> > Krzysztof
+>
+> I'm bongsu jeon and working for samsung nfc chip development.
+> If I extend the code for another nfc chip model, Could I change the
+> s3fwrn5 directory and Module name?
+> I think the name would confuse some people if they use the other nfc
+> chip like s3fwrn82.
 
-This is a single-port board using the internal Fast Ethernet PHY. The
-user reports that switching to PHY scanning instead of configuring the
-PHY within device-tree works around this issue.
+Hi,
 
-The documentation for the standalone variant of the PHY11G (which is
-probably very similar to what is used inside the xRX200 SoCs but having
-the firmware burnt onto that standalone chip in the factory) states that
-the PHY needs 300ms to be ready for MDIO communication after releasing
-the reset.
+Renaming would only make git history trickier to follow. Multiple
+drivers get extended and not renamed. Anyone configuring the kernel
+should check through Kconfig description, compatibles or description
+in bindings, so name of directory does not matter when looking for HW
+support. Then someone would add different chip support, and you would
+rename as well? So no, do not rename it.
 
-Add a 300ms delay after initializing all GPHYs to ensure that the GPHY
-firmware had enough time to initialize and to appear on the MDIO bus.
-Unfortunately there is no (known) documentation on what the minimum time
-to wait after releasing the reset on an internal PHY so play safe and
-take the one for the external variant. Only wait after the last GPHY
-firmware is loaded to not slow down the initialization too much (
-xRX200 has two GPHYs but newer SoCs have at least three GPHYs).
-
-Fixes: 14fceff4771e51 ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- drivers/net/dsa/lantiq_gswip.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 74db81dafee3..0a25283bdd13 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -26,6 +26,7 @@
-  */
- 
- #include <linux/clk.h>
-+#include <linux/delay.h>
- #include <linux/etherdevice.h>
- #include <linux/firmware.h>
- #include <linux/if_bridge.h>
-@@ -1894,6 +1895,16 @@ static int gswip_probe(struct platform_device *pdev)
- 			dev_err(dev, "gphy fw probe failed\n");
- 			return err;
- 		}
-+
-+		/* The standalone PHY11G requires 300ms to be fully
-+		 * initialized and ready for any MDIO communication after being
-+		 * taken out of reset. For the SoC-internal GPHY variant there
-+		 * is no (known) documentation for the minimum time after a
-+		 * reset. Use the same value as for the standalone variant as
-+		 * some users have reported internal PHYs not being detected
-+		 * without any delay.
-+		 */
-+		msleep(300);
- 	}
- 
- 	/* bring up the mdio bus */
--- 
-2.29.2
-
+Best regards,
+Krzysztof
