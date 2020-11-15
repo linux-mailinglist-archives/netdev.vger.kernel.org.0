@@ -2,67 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8C842B3943
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 21:58:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA7832B3A74
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 23:53:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727901AbgKOU4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 15:56:45 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:56436 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727434AbgKOU4p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 15 Nov 2020 15:56:45 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1keP4c-007EDm-OK; Sun, 15 Nov 2020 21:56:34 +0100
-Date:   Sun, 15 Nov 2020 21:56:34 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Ciornei <ciorneiioana@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Robert Hancock <robert.hancock@calian.com>
-Subject: Re: [PATCH RESEND net-next 06/18] net: phy: marvell: remove the use
- of .ack_interrupt()
-Message-ID: <20201115205634.GH1701029@lunn.ch>
-References: <20201113165226.561153-1-ciorneiioana@gmail.com>
- <20201113165226.561153-7-ciorneiioana@gmail.com>
+        id S1728205AbgKOWwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 17:52:18 -0500
+Received: from mail.zeus.flokli.de ([88.198.15.28]:39116 "EHLO zeus.flokli.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727302AbgKOWwR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 15 Nov 2020 17:52:17 -0500
+X-Greylist: delayed 412 seconds by postgrey-1.27 at vger.kernel.org; Sun, 15 Nov 2020 17:52:17 EST
+Received: from localhost (ip-178-200-107-224.hsi07.unitymediagroup.de [178.200.107.224])
+        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: flokli@flokli.de)
+        by zeus.flokli.de (Postfix) with ESMTPSA id 2597AF354E9;
+        Sun, 15 Nov 2020 22:45:24 +0000 (UTC)
+From:   Florian Klink <flokli@flokli.de>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Klink <flokli@flokli.de>,
+        Kim Phillips <kim.phillips@arm.com>
+Subject: [PATCH] ipv4: use IS_ENABLED instead of ifdef
+Date:   Sun, 15 Nov 2020 23:45:09 +0100
+Message-Id: <20201115224509.2020651-1-flokli@flokli.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201113165226.561153-7-ciorneiioana@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 13, 2020 at 06:52:14PM +0200, Ioana Ciornei wrote:
-> From: Ioana Ciornei <ioana.ciornei@nxp.com>
-> 
-> In preparation of removing the .ack_interrupt() callback, we must replace
-> its occurrences (aka phy_clear_interrupt), from the 2 places where it is
-> called from (phy_enable_interrupts and phy_disable_interrupts), with
-> equivalent functionality.
-> 
-> This means that clearing interrupts now becomes something that the PHY
-> driver is responsible of doing, before enabling interrupts and after
-> clearing them. Make this driver follow the new contract.
-> 
-> Cc: Maxim Kochetkov <fido_max@inbox.ru>
-> Cc: Baruch Siach <baruch@tkos.co.il>
-> Cc: Robert Hancock <robert.hancock@calian.com>
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Checking for ifdef CONFIG_x fails if CONFIG_x=m.
 
-Hi Ioana
+Use IS_ENABLED instead, which is true for both built-ins and modules.
 
-I tested this series on a couple of Marvell Ethernet switches with
-integrated PHYs using interrupts. Please feel free to add
+Otherwise, a
+> ip -4 route add 1.2.3.4/32 via inet6 fe80::2 dev eth1
+fails with the message "Error: IPv6 support not enabled in kernel." if
+CONFIG_IPV6 is `m`.
 
-Tested-by: Andrew Lunn <andrew@lunn.ch>
+In the spirit of b8127113d01e53adba15b41aefd37b90ed83d631.
 
-to this and the previous patch.
+Cc: Kim Phillips <kim.phillips@arm.com>
+Signed-off-by: Florian Klink <flokli@flokli.de>
+---
+ net/ipv4/fib_frontend.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-    Andrew
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index 86a23e4a6a50..b87140a1fa28 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -696,7 +696,7 @@ int fib_gw_from_via(struct fib_config *cfg, struct nlattr *nla,
+ 		cfg->fc_gw4 = *((__be32 *)via->rtvia_addr);
+ 		break;
+ 	case AF_INET6:
+-#ifdef CONFIG_IPV6
++#if IS_ENABLED(CONFIG_IPV6)
+ 		if (alen != sizeof(struct in6_addr)) {
+ 			NL_SET_ERR_MSG(extack, "Invalid IPv6 address in RTA_VIA");
+ 			return -EINVAL;
+-- 
+2.29.2
+
