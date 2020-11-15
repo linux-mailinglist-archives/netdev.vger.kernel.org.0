@@ -2,118 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63AF22B361F
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 17:27:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1E672B3626
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 17:29:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727115AbgKOQ0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 11:26:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726743AbgKOQ0w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 11:26:52 -0500
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CEDC0613D1
-        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 08:26:52 -0800 (PST)
-Received: by mail-qk1-x742.google.com with SMTP id l2so14402619qkf.0
-        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 08:26:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wLGHDcDHFN2qSQrUpYjjusEu2/USwQ9t+K3H57Ndmb8=;
-        b=q6S79p68f9G4cIo1TtMUxh2JvCsMzwIe/W4yzIHCKN5badr8lAFBIpmnH61eYzrJk5
-         cLIIn3yhoMqFAOY5CEt9Lig7PuAYh5JmqDEalAsChMpJftkvkqJsE+X2API9UR1oIBIH
-         oWjzRtToFZq6kVdCN+SleYy7tq1s5LhPyR/80CCF14K0KW3zdhqjXrIfZ8Gpq+LsN42l
-         D2VbONdO96DvlAmWeQLMF71rBhb9PRSJKEe2zUOUn/F6yWQ1TjghhuPCz71AtOb8ZYMy
-         mPHk7pJ1ciuMC5CvtRG6PmXoZoBeEz1f8E/mSJjYUAkX2CrNlTb2utCRXEaxbhuwppFd
-         1bjg==
+        id S1727172AbgKOQ2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 11:28:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24583 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726743AbgKOQ2r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 11:28:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605457726;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=doET0Hr+4F8UN6ZBNIWUkeYEDhOjDwyxEM72WQlKhPs=;
+        b=KeBv2tFm6eESMa1n9WGPq4oq7eAoA6+y5Kf9WaM2vWf2+iMK2iJPCAC4PHGzoPEpeaEmXs
+        BiBGHZmJqJZBkyRhSaHapyX1Zp9pE5I99nmzvGmCtuWRNxThGL7W26lAinj5l6uPyUFmLr
+        vztvJQn4vnX0bStX6cxVKDpp72z9sQ0=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-559-RhZ8ZhlHPoyWwORCilKlYQ-1; Sun, 15 Nov 2020 11:28:44 -0500
+X-MC-Unique: RhZ8ZhlHPoyWwORCilKlYQ-1
+Received: by mail-wm1-f71.google.com with SMTP id o19so8715415wme.2
+        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 08:28:44 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wLGHDcDHFN2qSQrUpYjjusEu2/USwQ9t+K3H57Ndmb8=;
-        b=JGBJpUfGWeaSXpBku23NqbE6yGa5oHNlNn1Au02BunMaHSBpCEZXnVF6OiHI9XgdEe
-         r8xoUhh0X2zMqMN/zwN7MJ2KvZ4xYYemtzB2Fw1w4+UjEbud7TyXvWbsWKVnHRVdLJ0O
-         VBO4LLY4f1lKQHYg58kxLt9wBFZhiUyHosxFbhLRUZSfjlMbiuUSn+szJLK1vrp+pHj2
-         8TmQp2PyN1ILnUgsee8rKrez5wwUR6yM4dDVT8MCQtZwfNuHB7FEOgg4QDffCXJCdPAa
-         0gyDhDtn2dgqhFIyE+8JGxrgKofuEOJRoA0Q70ngWvaqFRdNhLo1xgd1cpT2ajLU1I85
-         lGXw==
-X-Gm-Message-State: AOAM530oQzBlZZZZAarp/y3uB9Vm6k6z3G3Ao9kC+xo1epgT+qLyBAZk
-        Y7cxm35/N8trYr5urd86rkvgPwH1oKFeYA==
-X-Google-Smtp-Source: ABdhPJwEno0Zsj8byZwZNXvUb4EmdpuDqheoHVqn7MmPyv4ooc5p8yxdCTL8WGWIXNM5JBI+H7nQHQ==
-X-Received: by 2002:a37:8041:: with SMTP id b62mr1000679qkd.244.1605457610347;
-        Sun, 15 Nov 2020 08:26:50 -0800 (PST)
-Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
-        by smtp.googlemail.com with ESMTPSA id o15sm10446765qtq.91.2020.11.15.08.26.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 15 Nov 2020 08:26:49 -0800 (PST)
-Subject: Re: [PATCH v10 net-next 3/3] net/sched: act_frag: add implict packet
- fragment support.
-To:     wenxu <wenxu@ucloud.cn>, Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <1605151497-29986-1-git-send-email-wenxu@ucloud.cn>
- <1605151497-29986-4-git-send-email-wenxu@ucloud.cn>
- <CAM_iQpUu7feBGrunNPqn8FhEhgvfB_c854uEEuo5MQYcEvP_bg@mail.gmail.com>
- <459a1453-8026-cca1-fb7c-ded0890992cf@ucloud.cn>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <81ce3451-a40b-ae54-fb7b-420d5557e839@mojatatu.com>
-Date:   Sun, 15 Nov 2020 11:26:48 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=doET0Hr+4F8UN6ZBNIWUkeYEDhOjDwyxEM72WQlKhPs=;
+        b=SY7kLuNr7Gk0kGgE84yzj5nEG+QShmq0aVntEotBbKjISjsnd+QJ6b/M24XPZF+wbj
+         myNCYgo7SXoUiH7qQlk57Qe9NQgZTd3CgLddcQ1C1QKFvBXJtnD74rz5fX4kVhXu2yuC
+         YA/Wg0n+XUH8P25x9iVmkpF4u+ZHSdlcE5lncorMeLpFqnTKKvdqMU0ZRqdOEO03n78a
+         hMvO86aKYUYMZPQ7VrExas7K7lIqHO61oxVa3Ya2+swyTYVRtFsqcIFwfAFcufODqFjO
+         ffyiTEj0zIkaamycylrD56/p6xetDzhK6NNEC2uaYTpx/ip5gzaJCLwWkNqmK8JP7nn7
+         K0fQ==
+X-Gm-Message-State: AOAM5318DdZZfAtZp1ee/yWthKvY9bcC9s+DfpV1Pe+u0gpLdgYqnNjp
+        EBBq3H8DfwXojUHTgDqEjQvqzTZcRnNLdIBYoOHPJwuG1dmdiBNFXNZ47pQDHfJiUTIFwvmE7HE
+        HcyAfhBJk/QyU0Lnp
+X-Received: by 2002:a1c:bc08:: with SMTP id m8mr12169211wmf.137.1605457722702;
+        Sun, 15 Nov 2020 08:28:42 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz5IJ2EzZ3sasWPbAQUqFuWTTG1lb8K+1luXkOg0L2iHUvuRSatq/UNqDfeqSF/u3b86BstjQ==
+X-Received: by 2002:a1c:bc08:: with SMTP id m8mr12169204wmf.137.1605457722483;
+        Sun, 15 Nov 2020 08:28:42 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id t5sm16708086wmg.19.2020.11.15.08.28.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Nov 2020 08:28:41 -0800 (PST)
+Date:   Sun, 15 Nov 2020 17:28:38 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Tom Parkin <tparkin@katalix.com>
+Cc:     netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [RFC PATCH 1/2] ppp: add PPPIOCBRIDGECHAN ioctl
+Message-ID: <20201115162838.GF11274@linux.home>
+References: <20201106181647.16358-1-tparkin@katalix.com>
+ <20201106181647.16358-2-tparkin@katalix.com>
+ <20201109232401.GM2366@linux.home>
+ <20201110120429.GB5635@katalix.com>
 MIME-Version: 1.0
-In-Reply-To: <459a1453-8026-cca1-fb7c-ded0890992cf@ucloud.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201110120429.GB5635@katalix.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This nagged me:
-What happens if all the frags dont make it out?
-Should you at least return an error code(from tcf_fragment?)
-and get the action err counters incremented?
+On Tue, Nov 10, 2020 at 12:04:29PM +0000, Tom Parkin wrote:
+> On  Tue, Nov 10, 2020 at 00:24:01 +0100, Guillaume Nault wrote:
+> > On Fri, Nov 06, 2020 at 06:16:46PM +0000, Tom Parkin wrote:
+> > > +				err = 0;
+> > > +			}
+> > > +			spin_unlock_bh(&pn->all_channels_lock);
+> > > +			break;
+> > >  		default:
+> > >  			down_read(&pch->chan_sem);
+> > >  			chan = pch->chan;
+> > > @@ -2100,6 +2120,12 @@ ppp_input(struct ppp_channel *chan, struct sk_buff *skb)
+> > >  		return;
+> > >  	}
+> > >  
+> > > +	if (pch->bridge) {
+> > > +		skb_queue_tail(&pch->bridge->file.xq, skb);
+> > 
+> > The bridged channel might reside in a different network namespace.
+> > So it seems that skb_scrub_packet() is needed before sending the
+> > packet.
+> 
+> I'm not sure about this.
+> 
+> PPPIOCBRIDGECHAN is looking up the bridged channel in the ppp_pernet
+> list.  Unless the channel can migrate across network namespaces after
+> the bridge is set up I don't think it would be possible for the
+> bridged channel to be in a different namespace.
+> 
+> Am I missing something here?
 
-cheers,
-jamal
+So yes, channels can't migrate across namespaces. However, the bridged
+channel is looked up from the caller's current namespace, which isn't
+guaranteed to be the same namespace as the channel used in the ioctl().
 
-On 2020-11-15 8:05 a.m., wenxu wrote:
+For example:
+
+setns(ns1, CLONE_NEWNET);
+chan_ns1 = open("/dev/ppp");
+...
+setns(ns2, CLONE_NEWNET);
+chan_ns2 = open("/dev/ppp");
+...
+ioctl(chan_ns1, PPPIOCBRIDGECHAN, chan_ns2_id);
+
+Here, chan_ns1 belongs to ns1, but chan_ns2_id will be looked up in the
+context of ns2. I find it nice to have the possibility to bridge
+channels from different namespaces, but we have to handle the case
+correctly.
+
+> > > +		ppp_channel_push(pch->bridge);
+> > 
+> > I'm not sure if the skb_queue_tail()/ppp_channel_push() sequence really
+> > is necessary. We're not going through a PPP unit, so we have no risk of
+> > recursion here. Also, if ->start_xmit() fails, I see no reason for
+> > requeuing the skb, like __ppp_channel_push() does. I'd have to think
+> > more about it, but I believe that we could call the channel's
+> > ->start_xmit() function directly (respecting the locking constraints
+> > of course).
 > 
-> 在 2020/11/15 2:05, Cong Wang 写道:
->> On Wed, Nov 11, 2020 at 9:44 PM <wenxu@ucloud.cn> wrote:
->>> diff --git a/net/sched/act_frag.c b/net/sched/act_frag.c
->>> new file mode 100644
->>> index 0000000..3a7ab92
->>> --- /dev/null
->>> +++ b/net/sched/act_frag.c
->> It is kinda confusing to see this is a module. It provides some
->> wrappers and hooks the dev_xmit_queue(), it belongs more to
->> the core tc code than any modularized code. How about putting
->> this into net/sched/sch_generic.c?
->>
->> Thanks.
-> 
-> All the operations in the act_frag  are single L3 action.
-> 
-> So we put in a single module. to keep it as isolated/contained as possible
-> 
-> Maybe put this in a single file is better than a module? Buildin in the tc core code or not.
-> 
-> Enable this feature in Kconifg with NET_ACT_FRAG?
-> 
-> +config NET_ACT_FRAG
-> +	bool "Packet fragmentation"
-> +	depends on NET_CLS_ACT
-> +	help
-> +         Say Y here to allow fragmenting big packets when outputting
-> +         with the mirred action.
-> +
-> +	  If unsure, say N.
-> 
-> 
->>
+> I take your point about re-queuing based on the return of
+> ->start_xmit().  For pppoe and pppol2tp start_xmit just swallows the
+> skb on failure in any case, so for this specific usecase queuing is
+> not an issue.
+
+Indeed.
+
+> However, my primary motivation for using ppp_channel_push was actually
+> the handling for managing dropping the packet if the channel was
+> deregistered.
+
+I might be missing something, but I don't see what ppp_channel_push()
+does appart from holding the xmit lock and handling the xmit queue.
+If we agree that there's no need to use the xmit queue, all
+ppp_channel_push() does for us is taking pch->downl, which we probably
+can do on our own.
+
+> It'd be simple enough to add another function which performed the same
+> deregistration check but didn't transmit via. the queue.
+
+That's probably what I'm missing: what do you mean by "deregistration
+check"? I can't see anything like this in ppp_channel_push().
 
