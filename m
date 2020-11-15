@@ -2,79 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 966A92B3504
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 14:07:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8E0E2B350A
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 14:17:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727085AbgKONFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 08:05:45 -0500
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:40758 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726795AbgKONFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 08:05:45 -0500
-Received: from [192.168.1.8] (unknown [116.237.150.27])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 920B75C17F2;
-        Sun, 15 Nov 2020 21:05:42 +0800 (CST)
-Subject: Re: [PATCH v10 net-next 3/3] net/sched: act_frag: add implict packet
- fragment support.
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <1605151497-29986-1-git-send-email-wenxu@ucloud.cn>
- <1605151497-29986-4-git-send-email-wenxu@ucloud.cn>
- <CAM_iQpUu7feBGrunNPqn8FhEhgvfB_c854uEEuo5MQYcEvP_bg@mail.gmail.com>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <459a1453-8026-cca1-fb7c-ded0890992cf@ucloud.cn>
-Date:   Sun, 15 Nov 2020 21:05:44 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S1727120AbgKONPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 08:15:12 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:57383 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726605AbgKONPL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 08:15:11 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from tariqt@nvidia.com)
+        with SMTP; 15 Nov 2020 15:15:04 +0200
+Received: from dev-l-vrt-206-005.mtl.labs.mlnx (dev-l-vrt-206-005.mtl.labs.mlnx [10.234.206.5])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AFDF4Ca026809;
+        Sun, 15 Nov 2020 15:15:04 +0200
+From:   Tariq Toukan <tariqt@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Tariq Toukan <ttoukan.linux@gmail.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>
+Subject: [PATCH net V2] net/tls: Fix wrong record sn in async mode of device resync
+Date:   Sun, 15 Nov 2020 15:14:48 +0200
+Message-Id: <20201115131448.2702-1-tariqt@nvidia.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpUu7feBGrunNPqn8FhEhgvfB_c854uEEuo5MQYcEvP_bg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZTUlKSBhKQhgaHhkfVkpNS05PT05OT0lDS0JVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKTFVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Myo6ORw5Az0zCD4rCTISOk8J
-        HhoKFBJVSlVKTUtOT09OTk9JQk5NVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpKTVVJ
-        SExVSk5LVUlMWVdZCAFZQUlMSk43Bg++
-X-HM-Tid: 0a75cc02e3662087kuqy920b75c17f2
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In async_resync mode, we log the TCP seq of records until the async request
+is completed.  Later, in case one of the logged seqs matches the resync
+request, we return it, together with its record serial number.  Before this
+fix, we mistakenly returned the serial number of the current record
+instead.
 
-在 2020/11/15 2:05, Cong Wang 写道:
-> On Wed, Nov 11, 2020 at 9:44 PM <wenxu@ucloud.cn> wrote:
->> diff --git a/net/sched/act_frag.c b/net/sched/act_frag.c
->> new file mode 100644
->> index 0000000..3a7ab92
->> --- /dev/null
->> +++ b/net/sched/act_frag.c
-> It is kinda confusing to see this is a module. It provides some
-> wrappers and hooks the dev_xmit_queue(), it belongs more to
-> the core tc code than any modularized code. How about putting
-> this into net/sched/sch_generic.c?
->
-> Thanks.
+Fixes: ed9b7646b06a ("net/tls: Add asynchronous resync")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Boris Pismenny <borisp@nvidia.com>
+---
+ include/net/tls.h    | 16 +++++++++++++++-
+ net/tls/tls_device.c | 37 +++++++++++++++++++++++++++----------
+ 2 files changed, 42 insertions(+), 11 deletions(-)
 
-All the operations in the act_frag  are single L3 action.
+Hi,
 
-So we put in a single module. to keep it as isolated/contained as possible
+Please queue to -stable >= v5.9.
 
-Maybe put this in a single file is better than a module? Buildin in the tc core code or not.
+Thanks,
+Tariq
 
-Enable this feature in Kconifg with NET_ACT_FRAG?
+v2:
+- tls_bigint_subtract: use integer argument for n, use compile-time
+  check for record size, return void.
+- Wrap long comment on multiple lines.
 
-+config NET_ACT_FRAG
-+	bool "Packet fragmentation"
-+	depends on NET_CLS_ACT
-+	help
-+         Say Y here to allow fragmenting big packets when outputting
-+         with the mirred action.
+diff --git a/include/net/tls.h b/include/net/tls.h
+index baf1e99d8193..cf1473099453 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -300,7 +300,8 @@ enum tls_offload_sync_type {
+ #define TLS_DEVICE_RESYNC_ASYNC_LOGMAX		13
+ struct tls_offload_resync_async {
+ 	atomic64_t req;
+-	u32 loglen;
++	u16 loglen;
++	u16 rcd_delta;
+ 	u32 log[TLS_DEVICE_RESYNC_ASYNC_LOGMAX];
+ };
+ 
+@@ -471,6 +472,18 @@ static inline bool tls_bigint_increment(unsigned char *seq, int len)
+ 	return (i == -1);
+ }
+ 
++static inline void tls_bigint_subtract(unsigned char *seq, int  n)
++{
++	u64 rcd_sn;
++	__be64 *p;
 +
-+	  If unsure, say N.
++	BUILD_BUG_ON(TLS_MAX_REC_SEQ_SIZE != 8);
++
++	p = (__be64 *)seq;
++	rcd_sn = be64_to_cpu(*p);
++	*p = cpu_to_be64(rcd_sn - n);
++}
++
+ static inline struct tls_context *tls_get_ctx(const struct sock *sk)
+ {
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+@@ -639,6 +652,7 @@ tls_offload_rx_resync_async_request_start(struct sock *sk, __be32 seq, u16 len)
+ 	atomic64_set(&rx_ctx->resync_async->req, ((u64)ntohl(seq) << 32) |
+ 		     ((u64)len << 16) | RESYNC_REQ | RESYNC_REQ_ASYNC);
+ 	rx_ctx->resync_async->loglen = 0;
++	rx_ctx->resync_async->rcd_delta = 0;
+ }
+ 
+ static inline void
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index cec86229a6a0..54d3e161d198 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -694,36 +694,51 @@ static void tls_device_resync_rx(struct tls_context *tls_ctx,
+ 
+ static bool
+ tls_device_rx_resync_async(struct tls_offload_resync_async *resync_async,
+-			   s64 resync_req, u32 *seq)
++			   s64 resync_req, u32 *seq, u16 *rcd_delta)
+ {
+ 	u32 is_async = resync_req & RESYNC_REQ_ASYNC;
+ 	u32 req_seq = resync_req >> 32;
+ 	u32 req_end = req_seq + ((resync_req >> 16) & 0xffff);
++	u16 i;
++
++	*rcd_delta = 0;
+ 
+ 	if (is_async) {
++		/* shouldn't get to wraparound:
++		 * too long in async stage, something bad happened
++		 */
++		if (WARN_ON_ONCE(resync_async->rcd_delta == USHRT_MAX))
++			return false;
++
+ 		/* asynchronous stage: log all headers seq such that
+ 		 * req_seq <= seq <= end_seq, and wait for real resync request
+ 		 */
+-		if (between(*seq, req_seq, req_end) &&
++		if (before(*seq, req_seq))
++			return false;
++		if (!after(*seq, req_end) &&
+ 		    resync_async->loglen < TLS_DEVICE_RESYNC_ASYNC_LOGMAX)
+ 			resync_async->log[resync_async->loglen++] = *seq;
+ 
++		resync_async->rcd_delta++;
++
+ 		return false;
+ 	}
+ 
+ 	/* synchronous stage: check against the logged entries and
+ 	 * proceed to check the next entries if no match was found
+ 	 */
+-	while (resync_async->loglen) {
+-		if (req_seq == resync_async->log[resync_async->loglen - 1] &&
+-		    atomic64_try_cmpxchg(&resync_async->req,
+-					 &resync_req, 0)) {
+-			resync_async->loglen = 0;
++	for (i = 0; i < resync_async->loglen; i++)
++		if (req_seq == resync_async->log[i] &&
++		    atomic64_try_cmpxchg(&resync_async->req, &resync_req, 0)) {
++			*rcd_delta = resync_async->rcd_delta - i;
+ 			*seq = req_seq;
++			resync_async->loglen = 0;
++			resync_async->rcd_delta = 0;
+ 			return true;
+ 		}
+-		resync_async->loglen--;
+-	}
++
++	resync_async->loglen = 0;
++	resync_async->rcd_delta = 0;
+ 
+ 	if (req_seq == *seq &&
+ 	    atomic64_try_cmpxchg(&resync_async->req,
+@@ -741,6 +756,7 @@ void tls_device_rx_resync_new_rec(struct sock *sk, u32 rcd_len, u32 seq)
+ 	u32 sock_data, is_req_pending;
+ 	struct tls_prot_info *prot;
+ 	s64 resync_req;
++	u16 rcd_delta;
+ 	u32 req_seq;
+ 
+ 	if (tls_ctx->rx_conf != TLS_HW)
+@@ -786,8 +802,9 @@ void tls_device_rx_resync_new_rec(struct sock *sk, u32 rcd_len, u32 seq)
+ 			return;
+ 
+ 		if (!tls_device_rx_resync_async(rx_ctx->resync_async,
+-						resync_req, &seq))
++						resync_req, &seq, &rcd_delta))
+ 			return;
++		tls_bigint_subtract(rcd_sn, rcd_delta);
+ 		break;
+ 	}
+ 
+-- 
+2.21.0
 
-
->
