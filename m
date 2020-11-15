@@ -2,100 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8F0E2B3206
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 04:11:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A95252B3209
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 04:11:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726552AbgKODKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 22:10:24 -0500
-Received: from userp2120.oracle.com ([156.151.31.85]:60188 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726392AbgKODKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 22:10:18 -0500
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AF39LHm093452;
-        Sun, 15 Nov 2020 03:10:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=gxNaaU/W3FUj48sXjVNEtaJGXcSYRrY8PpuBzT4uXH0=;
- b=e393Zf5OvhljCzqI7we2NEQu45ChN4/3ng7LvfYS3uvbVaVl6gvEmj6xk3yblTuTo4U3
- rkE6krS/BLzhCLmSmMXIgjaF4dU+kq+Ou+ZKhq2/dwBq4K77EGk9USp2rI+mViMvm1IH
- IYAKVDomK2K39QXFDkmjTM+cl8HG8toetoqhVjhuUi7NoEE1c3l/Mq7QTJIk29KFEXEQ
- QO0OrHqd/cz7J8bFEbPg/te7TCLqigxLoX9CC/esDEe1Nwh//yNig4fg6ISXiJkK3NFm
- nzpzMd0DxfXfExEOU6P9PW5T7ybxlcXUwLqYCwfN7203TquqCj16BQuHkdSpZdLR+cdL iQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 34t7vmsfnc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sun, 15 Nov 2020 03:10:16 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AF3556G072503;
-        Sun, 15 Nov 2020 03:10:15 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 34ts4v35br-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 15 Nov 2020 03:10:15 +0000
-Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0AF3AE6h011936;
-        Sun, 15 Nov 2020 03:10:14 GMT
-Received: from oracle.com (/10.129.135.37)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sat, 14 Nov 2020 19:10:14 -0800
-From:   rao.shoaib@oracle.com
-To:     netdev@vger.kernel.org, kuba@kernel.org
-Cc:     Rao Shoaib <rao.shoaib@oracle.com>
-Subject: [RFC net-next af_unix v1 1/1] af_unix: Allow delivery of SIGURG on AF_UNIX streams socket
-Date:   Sat, 14 Nov 2020 18:58:05 -0800
-Message-Id: <1605409085-20294-2-git-send-email-rao.shoaib@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1605409085-20294-1-git-send-email-rao.shoaib@oracle.com>
-References: <1605409085-20294-1-git-send-email-rao.shoaib@oracle.com>
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9805 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 phishscore=0 bulkscore=0
- adultscore=0 malwarescore=0 mlxlogscore=999 spamscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011150017
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9805 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 suspectscore=0
- malwarescore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0 spamscore=0
- adultscore=0 mlxscore=0 priorityscore=1501 phishscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011150017
+        id S1726591AbgKODLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 22:11:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726392AbgKODLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 22:11:25 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3159BC0613D1;
+        Sat, 14 Nov 2020 19:11:25 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id 35so2272710ple.12;
+        Sat, 14 Nov 2020 19:11:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=ukfVupsoBY8wkZwTJBGd3ADBH/ygOk7x7LJMOM5IEEs=;
+        b=MRiaFED49X65sqy4dYNQV9EFlBoCtJ6jSM8VjfGy4myZ6wJA1DPfztU0Nf6wyZ9KWR
+         2pQinrVzpg6N+MqlYJvUHOdpDCit4uvnhLcbbllPLO2YqBhNRfKbsjYT5X1mKGeIV2ZT
+         OeAUHv7gSb0H1SCPElq75gskVmOGpll/ZScs2QC3qom7uuU/q2d8FsdfkQx3KggP1jAr
+         uf7sHrUoH3+4E0koW5VuyhZPSRZCknpxfupKLJ7OmYVQlQI/GFlFbI42NqXHVvDncdtx
+         9dPsZU2vbvyNJYf/L18ux2G6xRH6sN6dSSqgH1nJCaTRgBt1+ztCzWASqTXRi3qWAtxC
+         6qKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=ukfVupsoBY8wkZwTJBGd3ADBH/ygOk7x7LJMOM5IEEs=;
+        b=Zgh5CllNAynf/aiHivlyGZRs6jcW/8Ybit7dNcVwxYlqPt1FfiITzm4S5iANOIYI/a
+         YUX5QzOo2ZsUY0dRh5+KKdB9sZX0ma4AZfwwdAc1d3aKsLhfGl3c5CdVvDOYkIRSNRpB
+         4gm8mVrJr/2dpxc1PpoTBDsFEGIctIsxZt0tD436jR2cA5PdmXymKMldsQ06nyHjiclm
+         H9kVvkKEF+v1rLSJ/o4ZBqOLQy8HsXjzQz/p67hzeit8xEKgLT3Fv3juZnOs8wRw1+9/
+         jT8b0zx6TtMtdy3fjz2bM3U2TXb4XCx7Iqp6RWHYvgCzKUtWqpwUE/b3vI3tFf2gbl3w
+         xflA==
+X-Gm-Message-State: AOAM530Xb2an3wVysVsWqpI4fTmkiH3RZXkuT1cYPlMQDlkghAAnALM4
+        8cC/VRHvs0TZS1JTxaIlhMp52yxLUQm8EZT8UZeAcj5FJC0=
+X-Google-Smtp-Source: ABdhPJxAe48x9dK9XEgFFP9VHg3XUEQUtTeUxG4WEeqSrj2uudH/qNksnYN0iH19bOhP4w7TGgiv3QQ6We+qVh8/pzs=
+X-Received: by 2002:a17:902:9890:b029:d8:e265:57ae with SMTP id
+ s16-20020a1709029890b02900d8e26557aemr3458405plp.78.1605409884682; Sat, 14
+ Nov 2020 19:11:24 -0800 (PST)
+MIME-Version: 1.0
+References: <20201114103625.323919-1-xie.he.0141@gmail.com>
+In-Reply-To: <20201114103625.323919-1-xie.he.0141@gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Sat, 14 Nov 2020 19:11:13 -0800
+Message-ID: <CAJht_EMN14idYb9uY6eSASVb+ZHM6jZ3c=Kr5mTSjVE+2aYyoA@mail.gmail.com>
+Subject: Re: [PATCH net] net: x25: Correct locking for x25_kill_by_device and x25_kill_by_neigh
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rao Shoaib <rao.shoaib@oracle.com>
+On Sat, Nov 14, 2020 at 2:36 AM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> This patch adds correct locking for x25_kill_by_device and
+> x25_kill_by_neigh, and removes the incorrect locking in x25_connect and
+> x25_disconnect.
 
-For AF_UNIX stream socket send SIGURG to the peer if
-the msg has MSG_OOB flag set.
+I see if I do this change, I need to make sure the sock lock is not
+held when calling x25_remove_socket, to prevent deadlock.
 
-Signed-off-by: Rao Shoaib <rao.shoaib@oracle.com>
----
- net/unix/af_unix.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Sorry. I'll deal with this issue and resubmit.
 
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 92784e5..4f01d74 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -1840,8 +1840,6 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
- 		return err;
- 
- 	err = -EOPNOTSUPP;
--	if (msg->msg_flags&MSG_OOB)
--		goto out_err;
- 
- 	if (msg->msg_namelen) {
- 		err = sk->sk_state == TCP_ESTABLISHED ? -EISCONN : -EOPNOTSUPP;
-@@ -1906,6 +1904,9 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
- 		sent += size;
- 	}
- 
-+	if (msg->msg_flags & MSG_OOB)
-+		sk_send_sigurg(other);
-+
- 	scm_destroy(&scm);
- 
- 	return sent;
--- 
-1.8.3.1
-
+I also see that in x25_find_listener and __x25_find_socket, when we
+traverse x25_list, we should probably also hold the sock lock when we
+read the element of the list, and continue to hold the lock when we
+find the sock we want.
