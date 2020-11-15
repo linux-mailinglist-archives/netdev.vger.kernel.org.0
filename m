@@ -2,77 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A95252B3209
-	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 04:11:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 061152B3211
+	for <lists+netdev@lfdr.de>; Sun, 15 Nov 2020 04:56:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbgKODLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Nov 2020 22:11:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726392AbgKODLZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Nov 2020 22:11:25 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3159BC0613D1;
-        Sat, 14 Nov 2020 19:11:25 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id 35so2272710ple.12;
-        Sat, 14 Nov 2020 19:11:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=ukfVupsoBY8wkZwTJBGd3ADBH/ygOk7x7LJMOM5IEEs=;
-        b=MRiaFED49X65sqy4dYNQV9EFlBoCtJ6jSM8VjfGy4myZ6wJA1DPfztU0Nf6wyZ9KWR
-         2pQinrVzpg6N+MqlYJvUHOdpDCit4uvnhLcbbllPLO2YqBhNRfKbsjYT5X1mKGeIV2ZT
-         OeAUHv7gSb0H1SCPElq75gskVmOGpll/ZScs2QC3qom7uuU/q2d8FsdfkQx3KggP1jAr
-         uf7sHrUoH3+4E0koW5VuyhZPSRZCknpxfupKLJ7OmYVQlQI/GFlFbI42NqXHVvDncdtx
-         9dPsZU2vbvyNJYf/L18ux2G6xRH6sN6dSSqgH1nJCaTRgBt1+ztCzWASqTXRi3qWAtxC
-         6qKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=ukfVupsoBY8wkZwTJBGd3ADBH/ygOk7x7LJMOM5IEEs=;
-        b=Zgh5CllNAynf/aiHivlyGZRs6jcW/8Ybit7dNcVwxYlqPt1FfiITzm4S5iANOIYI/a
-         YUX5QzOo2ZsUY0dRh5+KKdB9sZX0ma4AZfwwdAc1d3aKsLhfGl3c5CdVvDOYkIRSNRpB
-         4gm8mVrJr/2dpxc1PpoTBDsFEGIctIsxZt0tD436jR2cA5PdmXymKMldsQ06nyHjiclm
-         H9kVvkKEF+v1rLSJ/o4ZBqOLQy8HsXjzQz/p67hzeit8xEKgLT3Fv3juZnOs8wRw1+9/
-         jT8b0zx6TtMtdy3fjz2bM3U2TXb4XCx7Iqp6RWHYvgCzKUtWqpwUE/b3vI3tFf2gbl3w
-         xflA==
-X-Gm-Message-State: AOAM530Xb2an3wVysVsWqpI4fTmkiH3RZXkuT1cYPlMQDlkghAAnALM4
-        8cC/VRHvs0TZS1JTxaIlhMp52yxLUQm8EZT8UZeAcj5FJC0=
-X-Google-Smtp-Source: ABdhPJxAe48x9dK9XEgFFP9VHg3XUEQUtTeUxG4WEeqSrj2uudH/qNksnYN0iH19bOhP4w7TGgiv3QQ6We+qVh8/pzs=
-X-Received: by 2002:a17:902:9890:b029:d8:e265:57ae with SMTP id
- s16-20020a1709029890b02900d8e26557aemr3458405plp.78.1605409884682; Sat, 14
- Nov 2020 19:11:24 -0800 (PST)
+        id S1726510AbgKODyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Nov 2020 22:54:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32946 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726177AbgKODyj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 14 Nov 2020 22:54:39 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9444422447;
+        Sun, 15 Nov 2020 03:54:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605412478;
+        bh=NdpELu3ijuYKuP5wu8Fdm+fYg0C6lCTP9JvSu5BVkE0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IZLz1Ik49jlpQMtmYkSDWVdAUJ+umBIjHSfmRVPTOCbMffcicIdxz46Xazqme6ax6
+         mMXp4ZIx3YiTOOFpxLKBSKjM9IETnXgW93vjkXZ84nZc6uIbjNG5gadLRQoLiajPWt
+         ELT7TcrtMivJCWIsam6PurxLw3sZKyFhmTQeQEdw=
+Date:   Sat, 14 Nov 2020 19:54:37 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     Boris Pismenny <borisp@nvidia.com>,
+        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
+Subject: Re: [net] net/tls: fix corrupted data in recvmsg
+Message-ID: <20201114195437.4d0493b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <2f5daf5a-0d38-d766-c345-9875f6d2d66d@novek.ru>
+References: <1605326982-2487-1-git-send-email-vfedorenko@novek.ru>
+        <20201114181249.4fab54d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <2f5daf5a-0d38-d766-c345-9875f6d2d66d@novek.ru>
 MIME-Version: 1.0
-References: <20201114103625.323919-1-xie.he.0141@gmail.com>
-In-Reply-To: <20201114103625.323919-1-xie.he.0141@gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Sat, 14 Nov 2020 19:11:13 -0800
-Message-ID: <CAJht_EMN14idYb9uY6eSASVb+ZHM6jZ3c=Kr5mTSjVE+2aYyoA@mail.gmail.com>
-Subject: Re: [PATCH net] net: x25: Correct locking for x25_kill_by_device and x25_kill_by_neigh
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 14, 2020 at 2:36 AM Xie He <xie.he.0141@gmail.com> wrote:
+Please don't top post.
+
+On Sun, 15 Nov 2020 02:26:30 +0000 Vadim Fedorenko wrote:
+> No, I don't have any BPFs in test.
+> If we have Application Data in TCP queue then tls_sw_advance_skb
+> will change ctx->control from 0x16 to 0x17 (TLS_RECORD_TYPE_DATA)
+> and the loop will continue.
+
+Ah! Missed that, unpausing the parser will make it serve us another
+message and overwrite ctx.
+
+> The patched if will make zc =3D true and
+> data will be decrypted into msg->msg_iter.
+> After that the loop will break on:
+>  =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 if (!control)
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 control =
+=3D tlm->control;
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 else if (control !=3D tlm->control)
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto rec=
+v_end;
 >
-> This patch adds correct locking for x25_kill_by_device and
-> x25_kill_by_neigh, and removes the incorrect locking in x25_connect and
-> x25_disconnect.
+> and the data will be lost.
+> Next call to recvmsg will find ctx->decrypted set to true and will
+> copy the unencrypted data from skb assuming that it has been decrypted
+> already.
+>=20
+> The patch that I put into Fixes: changed the check you mentioned to
+> ctx->control, but originally it was checking the value of control that
+> was stored before calling to tls_sw_advance_skb.
 
-I see if I do this change, I need to make sure the sock lock is not
-held when calling x25_remove_socket, to prevent deadlock.
-
-Sorry. I'll deal with this issue and resubmit.
-
-I also see that in x25_find_listener and __x25_find_socket, when we
-traverse x25_list, we should probably also hold the sock lock when we
-read the element of the list, and continue to hold the lock when we
-find the sock we want.
+Is there a reason why we wouldn't just go back to checking the stored
+control? Or better - put your condition there (control !=3D ctx->control)?
+Decrypting the next record seems unnecessary given we can't return it.
