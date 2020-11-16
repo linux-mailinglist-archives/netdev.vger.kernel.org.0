@@ -2,90 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88F642B4661
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:50:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 443852B4672
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:56:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729569AbgKPOuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 09:50:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47594 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730107AbgKPOuC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 09:50:02 -0500
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00814C0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 06:50:01 -0800 (PST)
-Received: by mail-wr1-x444.google.com with SMTP id d12so18940543wrr.13
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 06:50:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=BPCLhabsRwKbkxxHaDPISDFulyGg56yfLX643YNXiJI=;
-        b=SVa+P6UJKaAUuC40crd8bYpmh57hhWqyH6kuJM6H02bEsOA3hohY9w7B6Du6yEE1ba
-         EhN509KkgOKXE5BT8/k8YoVr4gh+gqF0k386xsaY271t95SsJO3QW0YxhCVl+QRuF2Ue
-         XCsyldoqhR7PFIofV/NR5p+s0B/M03M5RCDZE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=BPCLhabsRwKbkxxHaDPISDFulyGg56yfLX643YNXiJI=;
-        b=o0bEjaE5f4Cvcp8h+jKwbOOH3/GFMXmBDp9hGO2p39uz06/HLCiRYGXb+Poin2HHwA
-         Jxprb1TizErVXiHXCiqVKTueNGw+OkV1VMzHNPlVVwtTelRKtAIHdYoZi6KjLdAbtKjW
-         /bfwdoFug6a2pR/Qe56NzNN80ON1D+3ldAVhTFrd4v2iupyMfAz0iKsbpG4Z5+sd03xh
-         etzPK1UEYE6/JlHBpEQ5cn27Z4uSfC6t6NBmqWnWwfINwOLI6XtA2eJQEzssps9hwpw9
-         s4mzlx0J+B82XNN2AygZF96LzShikqfoQ1eoQmmkFSCYSMj88TwEgrcY8+w5rWPL7U0f
-         se5g==
-X-Gm-Message-State: AOAM532EEDNhyjRxty5UgZpF1ZgnW/Tuizj2tHqI4nyc1O6BTPNLsXga
-        upY+VyYERDu1WKG5tuK2tDQd4w==
-X-Google-Smtp-Source: ABdhPJxyn60waabFePD78AVYYz+Pnem8hEKJlcVFwztIc/rsxDFPUqquEpK5Ysm4bQR9TAC31IP4Yw==
-X-Received: by 2002:adf:e787:: with SMTP id n7mr21402364wrm.153.1605538200675;
-        Mon, 16 Nov 2020 06:50:00 -0800 (PST)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id k22sm19673078wmi.34.2020.11.16.06.49.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 06:50:00 -0800 (PST)
-References: <160522352433.135009.15329422887113794062.stgit@john-XPS-13-9370>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [bpf PATCH v2 0/6] sockmap fixes
-In-reply-to: <160522352433.135009.15329422887113794062.stgit@john-XPS-13-9370>
-Date:   Mon, 16 Nov 2020 15:49:59 +0100
-Message-ID: <87a6vhwe3s.fsf@cloudflare.com>
+        id S1730419AbgKPOzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 09:55:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26896 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730398AbgKPOzG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 09:55:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605538504;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qYYmGZ075mq9dw9VbvycdbVYIQWW/WaQw4d0jouDdDk=;
+        b=I+gobN5d1atCVr1BOciNWINrcQXB998Q5brf3DXKKjw6dkXs/+qIFDPSl8ONrHbrRtLBm2
+        EwpLzoznYwO/B0t0TrSr9w27+L201mMKWxx4hVdmPQKZ6g7IEIvE47Tp5aJXIHhKLYRhUZ
+        KIHwAen6bCxki1BVpQxqwsk44mIRkEQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-265-RZLpqM__PpaeVBuHT4Sbjg-1; Mon, 16 Nov 2020 09:54:59 -0500
+X-MC-Unique: RZLpqM__PpaeVBuHT4Sbjg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9094B80B727;
+        Mon, 16 Nov 2020 14:54:57 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E34B5D9CC;
+        Mon, 16 Nov 2020 14:54:47 +0000 (UTC)
+Date:   Mon, 16 Nov 2020 15:54:46 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Hangbin Liu <haliu@redhat.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Jiri Benc <jbenc@redhat.com>,
+        Toke =?UTF-8?B?SMO4?= =?UTF-8?B?aWxhbmQtSsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>, brouer@redhat.com
+Subject: Re: [PATCHv5 iproute2-next 0/5] iproute2: add libbpf support
+Message-ID: <20201116155446.16fe46cf@carbon>
+In-Reply-To: <CAADnVQ+LNBYq5fdTSRUPy2ZexTdCcB6ErNH_T=r9bJ807UT=pQ@mail.gmail.com>
+References: <20201109070802.3638167-1-haliu@redhat.com>
+        <20201116065305.1010651-1-haliu@redhat.com>
+        <CAADnVQ+LNBYq5fdTSRUPy2ZexTdCcB6ErNH_T=r9bJ807UT=pQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 13, 2020 at 12:26 AM CET, John Fastabend wrote:
-> This includes fixes for sockmap found after I started running skmsg and
-> verdict programs on systems that I use daily. To date with attached
-> series I've been running for multiple weeks without seeing any issues
-> on systems doing calls, mail, movies, etc.
->
-> Also I started running packetdrill and after this series last remaining
-> fix needed is to handle MSG_EOR correctly. This will come as a follow
-> up to this, but because we use sendpage to pass pages into TCP stack
-> we need to enable TCP side some.
->
-> v2:
->  - Added patch3 to use truesize in sk_rmem_schedule (Daniel)
->  - cleaned up some small nits... goto and extra set of brackets (Daniel)
->
-> ---
->
-> John Fastabend (6):
->       bpf, sockmap: fix partial copy_page_to_iter so progress can still be made
->       bpf, sockmap: Ensure SO_RCVBUF memory is observed on ingress redirect
->       bpf, sockmap: Use truesize with sk_rmem_schedule()
->       bpf, sockmap: Avoid returning unneeded EAGAIN when redirecting to self
->       bpf, sockmap: Handle memory acct if skb_verdict prog redirects to self
->       bpf, sockmap: Avoid failures from skb_to_sgvec when skb has frag_list
+On Sun, 15 Nov 2020 23:19:26 -0800
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+
+> On Sun, Nov 15, 2020 at 10:56 PM Hangbin Liu <haliu@redhat.com> wrote:
+> >
+> > This series converts iproute2 to use libbpf for loading and attaching
+> > BPF programs when it is available. This means that iproute2 will
+> > correctly process BTF information and support the new-style BTF-defined
+> > maps, while keeping compatibility with the old internal map definition
+> > syntax.
+> >
+> > This is achieved by checking for libbpf at './configure' time, and using
+> > it if available. By default the system libbpf will be used, but static
+> > linking against a custom libbpf version can be achieved by passing
+> > LIBBPF_DIR to configure. LIBBPF_FORCE can be set to on to force configure
+> > abort if no suitable libbpf is found (useful for automatic packaging
+> > that wants to enforce the dependency), or set off to disable libbpf check
+> > and build iproute2 with legacy bpf.
+> >
+> > The old iproute2 bpf code is kept and will be used if no suitable libbpf
+> > is available. When using libbpf, wrapper code ensures that iproute2 will
+> > still understand the old map definition format, including populating
+> > map-in-map and tail call maps before load.
+> >
+> > The examples in bpf/examples are kept, and a separate set of examples
+> > are added with BTF-based map definitions for those examples where this
+> > is possible (libbpf doesn't currently support declaratively populating
+> > tail call maps).
+> >
+> > At last, Thanks a lot for Toke's help on this patch set.
+> >
+> > v5:
+> > a) Fix LIBBPF_DIR typo and description, use libbpf DESTDIR as LIBBPF_DIR
+> >    dest.
+> > b) Fix bpf_prog_load_dev typo.
+> > c) rebase to latest iproute2-next.  
+> 
+> For the reasons explained multiple times earlier:
+> Nacked-by: Alexei Starovoitov <ast@kernel.org>
+
+We really need to get another BPF-ELF loaded into iproute2.  I have
+done a number of practical projects with TC-BPF and it sucks that
+iproute2 have this out-dated (compiled in) BPF-loader.  Examples
+jumping through hoops to get XDP + TC to collaborate[1], and dealing
+with iproute2 map-elf layout[2].
+
+Thus, IMHO we MUST move forward and get started with converting
+iproute2 to libbpf, and start on the work to deprecate the build in
+BPF-ELF-loader.  I would prefer ripping out the BPF-ELF-loader and
+replace it with libbpf that handle the older binary elf-map layout, but
+I do understand if you want to keep this around. (at least for the next
+couple of releases).
+
+Maybe we can get a little closer to what Alexei wants?
+
+When compiled against dynamic libbpf, then I would use 'ldd' command to
+see what libbpf lib version is used.  When compiled/linked statically
+against a custom libbpf version (already supported via LIBBPF_DIR) then
+*I* think is difficult to figure out that version of libbpf I'm using.
+Could we add the libbpf version info in 'tc -V', as then it would
+remove one of my concerns with static linking.
+
+I actually fear that it will be a bad user experience, when we start to
+have multiple userspace tools that load BPF, but each is compiled and
+statically linked with it own version of libbpf (with git submodule an
+increasing number of tools will have more variations!).  Small
+variations in supported features can cause strange and difficult
+troubleshooting. A practical example is xdp-cpumap-tc[1] where I had to
+instruct the customer to load XDP-program *BEFORE* TC-program to have map
+(that is shared between TC and XDP) being created correctly, for
+userspace tool written in libbpf to have proper map-access and info.
 
 
-Patch 5 potentially can be simplified. Otherwise LGTM. For the series:
+I actually thinks it makes sense to have iproute2 require a specific
+libbpf version, and also to move this version requirement forward, as
+the kernel evolves features that gets added into libbpf.  I know this
+is kind of controversial, and an attempt to pressure distro vendors to
+update libbpf.  Maybe it will actually backfire, as the person
+generating the DEB/RPM software package will/can choose to compile
+iproute2 without ELF-BPF/libbpf support.
 
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+
+[1] https://github.com/xdp-project/xdp-cpumap-tc
+[2] https://github.com/netoptimizer/bpf-examples/blob/71db45b28ec/traffic-pacing-edt/edt_pacer02.c#L33-L35
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
+(p.s. I actually like dynamic libs, as I can do evil tricks like
+LD_PRELOAD, e.g. if system had too old libbpf when I could have my own
+and have iproute2 load it via LD_PRELOAD. I know we shouldn't encourage
+tricks like this, but I've used these kind of trick with success before).
+
