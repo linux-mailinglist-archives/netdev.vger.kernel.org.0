@@ -2,63 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B63C22B3E6C
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 09:18:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D4A62B3E79
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 09:22:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726300AbgKPIRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 03:17:25 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:7905 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726287AbgKPIRZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 03:17:25 -0500
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CZMPK6qrDz6v31;
-        Mon, 16 Nov 2020 16:17:09 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Mon, 16 Nov 2020
- 16:17:21 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>, <lorenzo@google.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] inet_diag: Fix error path to cancel the meseage in inet_req_diag_fill()
-Date:   Mon, 16 Nov 2020 16:20:18 +0800
-Message-ID: <20201116082018.16496-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726498AbgKPIUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 03:20:54 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7245 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbgKPIUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 03:20:50 -0500
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CZMT910cZzkYJF;
+        Mon, 16 Nov 2020 16:20:29 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 16 Nov 2020 16:20:36 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <kuba@kernel.org>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH V4 net-next 0/4] net: hns3: updates for -next
+Date:   Mon, 16 Nov 2020 16:20:50 +0800
+Message-ID: <1605514854-11205-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
+X-Originating-IP: [10.69.192.56]
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nlmsg_cancel() needs to be called in the error path of
-inet_req_diag_fill to cancel the message.
+There are several updates relating to the interrupt coalesce for
+the HNS3 ethernet driver.
 
-Fixes: d545caca827b ("net: inet: diag: expose the socket mark to privileged processes.")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- net/ipv4/inet_diag.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+#1 adds support for QL(quantity limiting, interrupt coalesce
+   based on the frame quantity).
+#2 queries the maximum value of GL from the firmware instead of
+   a fixed value in code.
+#3 adds support for 1us unit GL(gap limiting, interrupt coalesce
+   based on the gap time).
+#4 renames gl_adapt_enable in struct hns3_enet_coalesce to fit
+   its new usage.
 
-diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index 366a4507b5a3..93474b1bea4e 100644
---- a/net/ipv4/inet_diag.c
-+++ b/net/ipv4/inet_diag.c
-@@ -479,8 +479,10 @@ static int inet_req_diag_fill(struct sock *sk, struct sk_buff *skb,
- 	r->idiag_inode	= 0;
- 
- 	if (net_admin && nla_put_u32(skb, INET_DIAG_MARK,
--				     inet_rsk(reqsk)->ir_mark))
-+				     inet_rsk(reqsk)->ir_mark)) {
-+		nlmsg_cancel(skb, nlh);
- 		return -EMSGSIZE;
-+	}
- 
- 	nlmsg_end(skb, nlh);
- 	return 0;
+change log:
+V4 - remove #5~#10 from this series, which needs more discussion.
+V3 - fix a typo error in #1 reported by Jakub Kicinski.
+     rewrite #9 commit log.
+     remove #11 from this series.
+V2 - reorder #2 & #3 to fix compiler error.
+     fix some checkpatch warnings in #10 & #11.
+
+previous version:
+V3: https://patchwork.ozlabs.org/project/netdev/cover/1605151998-12633-1-git-send-email-tanhuazhong@huawei.com/
+V2: https://patchwork.ozlabs.org/project/netdev/cover/1604892159-19990-1-git-send-email-tanhuazhong@huawei.com/
+V1: https://patchwork.ozlabs.org/project/netdev/cover/1604730681-32559-1-git-send-email-tanhuazhong@huawei.com/
+
+
+Huazhong Tan (4):
+  net: hns3: add support for configuring interrupt quantity limiting
+  net: hns3: add support for querying maximum value of GL
+  net: hns3: add support for 1us unit GL configuration
+  net: hns3: rename gl_adapt_enable in struct hns3_enet_coalesce
+
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 99 ++++++++++++++++------
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    | 17 +++-
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 71 +++++++++++++---
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  8 ++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  7 ++
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h   |  8 ++
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  7 ++
+ 9 files changed, 182 insertions(+), 37 deletions(-)
+
 -- 
-2.17.1
+2.7.4
 
