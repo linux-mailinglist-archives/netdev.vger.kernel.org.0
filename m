@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 850CA2B403B
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 10:51:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D92692B403E
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 10:51:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728714AbgKPJsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 04:48:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33178 "EHLO
+        id S1728734AbgKPJs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 04:48:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:24886 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728707AbgKPJst (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 04:48:49 -0500
+        by vger.kernel.org with ESMTP id S1728724AbgKPJsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 04:48:55 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605520128;
+        s=mimecast20190719; t=1605520133;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DnJ/uwt5Bp38ow2VBTEajAAQvQucJRWYZN6o48o7Q7w=;
-        b=TtXcJhxiH4DTFTQnMT0aofZ26RDM02YPYC8N4rHqAtd1gIWroojP5BbYn6bjuzMmb8QhSI
-        qPH7PYP/4+fpnbjb9vy1DRMcBwVfpcloQZD5P3VaJKxj6EYLmGMdFC1rshV8MZg64s5O3m
-        JN9Lf/Px4T34TUMCAuPQo3OBw+b2UIk=
+        bh=yVpli3oW3oDYCS6T8mcWAFOBszIsM0HeptdK4kL3FgE=;
+        b=LEMsg7bpSQzuP/v7m1mStcz4MdsldeRNPp9P0hjKM1waLaeN8UIukJ8yphDMjN+5slZSwl
+        UDiMArrHeXRtYFp+inaw5AtoNWsnHtdgBHuln//D5OH86pNAyK19swzuZJgckbjUwY0SXA
+        E6tU5EetgenYX+FG4Ib4OZ2pms7DLrs=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-435-S1yPCtuNNpao2O4Sc1jN_A-1; Mon, 16 Nov 2020 04:48:46 -0500
-X-MC-Unique: S1yPCtuNNpao2O4Sc1jN_A-1
+ us-mta-426-_WEFnhpCNyKoiqeEThr52A-1; Mon, 16 Nov 2020 04:48:47 -0500
+X-MC-Unique: _WEFnhpCNyKoiqeEThr52A-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E10FB80EFBD;
-        Mon, 16 Nov 2020 09:48:44 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6E8046D583;
+        Mon, 16 Nov 2020 09:48:46 +0000 (UTC)
 Received: from gerbillo.redhat.com (ovpn-114-64.ams2.redhat.com [10.36.114.64])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B9AB11002D41;
-        Mon, 16 Nov 2020 09:48:43 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 49A9D1002C29;
+        Mon, 16 Nov 2020 09:48:45 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v3 10/13] mptcp: try to push pending data on snd una updates
-Date:   Mon, 16 Nov 2020 10:48:11 +0100
-Message-Id: <4904fdfcf76b73394a731ae7a7e32b2a2407c7b4.1605458224.git.pabeni@redhat.com>
+Subject: [PATCH net-next v3 11/13] mptcp: rework poll+nospace handling
+Date:   Mon, 16 Nov 2020 10:48:12 +0100
+Message-Id: <54508381f2b634e1436367f114c7b83f5e2311ad.1605458224.git.pabeni@redhat.com>
 In-Reply-To: <cover.1605458224.git.pabeni@redhat.com>
 References: <cover.1605458224.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -49,42 +49,270 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After the previous patch we may end-up with unsent data
-in the write buffer. If such buffer is full, the writer
-will block for unlimited time.
+From: Florian Westphal <fw@strlen.de>
 
-We need to trigger the MPTCP xmit path even for the
-subflow rx path, on MPTCP snd_una updates.
+MPTCP maintains a status bit, MPTCP_SEND_SPACE, that is set when at
+least one subflow and the mptcp socket itself are writeable.
 
-Keep things simple and just schedule the work queue if
-needed.
+mptcp_poll returns EPOLLOUT if the bit is set.
 
+mptcp_sendmsg makes sure MPTCP_SEND_SPACE gets cleared when last write
+has used up all subflows or the mptcp socket wmem.
+
+This reworks nospace handling as follows:
+
+MPTCP_SEND_SPACE is replaced with MPTCP_NOSPACE, i.e. inverted meaning.
+This bit is set when the mptcp socket is not writeable.
+The mptcp-level ack path schedule will then schedule the mptcp worker
+to allow it to free already-acked data (and reduce wmem usage).
+
+This will then wake userspace processes that wait for a POLLOUT event.
+
+sendmsg will set MPTCP_NOSPACE only when it has to wait for more
+wmem (blocking I/O case).
+
+poll path will set MPTCP_NOSPACE in case the mptcp socket is
+not writeable.
+
+Normal tcp-level notification (SOCK_NOSPACE) is only enabled
+in case the subflow socket has no available wmem.
+
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/mptcp/protocol.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/mptcp/protocol.c | 92 +++++++++++++++++++++++---------------------
+ net/mptcp/protocol.h |  2 +-
+ net/mptcp/subflow.c  | 11 +++---
+ 3 files changed, 54 insertions(+), 51 deletions(-)
 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 9b30c4b39159..821daa922ca3 100644
+index 821daa922ca3..7fcd26011a3d 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -725,6 +725,7 @@ void mptcp_data_acked(struct sock *sk)
+@@ -724,7 +724,7 @@ void mptcp_data_acked(struct sock *sk)
+ {
  	mptcp_reset_timer(sk);
  
- 	if ((!test_bit(MPTCP_SEND_SPACE, &mptcp_sk(sk)->flags) ||
-+	     mptcp_send_head(sk) ||
+-	if ((!test_bit(MPTCP_SEND_SPACE, &mptcp_sk(sk)->flags) ||
++	if ((test_bit(MPTCP_NOSPACE, &mptcp_sk(sk)->flags) ||
+ 	     mptcp_send_head(sk) ||
  	     (inet_sk_state_load(sk) != TCP_ESTABLISHED)))
  		mptcp_schedule_work(sk);
+@@ -835,20 +835,6 @@ static void dfrag_clear(struct sock *sk, struct mptcp_data_frag *dfrag)
+ 	put_page(dfrag->page);
  }
-@@ -1840,6 +1841,8 @@ static void mptcp_worker(struct work_struct *work)
- 		__mptcp_close_subflow(msk);
  
- 	__mptcp_move_skbs(msk);
-+	if (mptcp_send_head(sk))
-+		mptcp_push_pending(sk, 0);
+-static bool mptcp_is_writeable(struct mptcp_sock *msk)
+-{
+-	struct mptcp_subflow_context *subflow;
+-
+-	if (!sk_stream_is_writeable((struct sock *)msk))
+-		return false;
+-
+-	mptcp_for_each_subflow(msk, subflow) {
+-		if (sk_stream_is_writeable(subflow->tcp_sock))
+-			return true;
+-	}
+-	return false;
+-}
+-
+ static void mptcp_clean_una(struct sock *sk)
+ {
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
+@@ -901,13 +887,8 @@ static void mptcp_clean_una_wakeup(struct sock *sk)
+ 	mptcp_clean_una(sk);
  
- 	if (msk->pm.status)
- 		pm_work(msk);
+ 	/* Only wake up writers if a subflow is ready */
+-	if (mptcp_is_writeable(msk)) {
+-		set_bit(MPTCP_SEND_SPACE, &msk->flags);
+-		smp_mb__after_atomic();
+-
+-		/* set SEND_SPACE before sk_stream_write_space clears
+-		 * NOSPACE
+-		 */
++	if (sk_stream_is_writeable(sk)) {
++		clear_bit(MPTCP_NOSPACE, &msk->flags);
+ 		sk_stream_write_space(sk);
+ 	}
+ }
+@@ -1041,17 +1022,25 @@ static void mptcp_nospace(struct mptcp_sock *msk)
+ {
+ 	struct mptcp_subflow_context *subflow;
+ 
+-	clear_bit(MPTCP_SEND_SPACE, &msk->flags);
++	set_bit(MPTCP_NOSPACE, &msk->flags);
+ 	smp_mb__after_atomic(); /* msk->flags is changed by write_space cb */
+ 
+ 	mptcp_for_each_subflow(msk, subflow) {
+ 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
++		bool ssk_writeable = sk_stream_is_writeable(ssk);
+ 		struct socket *sock = READ_ONCE(ssk->sk_socket);
+ 
++		if (ssk_writeable || !sock)
++			continue;
++
+ 		/* enables ssk->write_space() callbacks */
+-		if (sock)
+-			set_bit(SOCK_NOSPACE, &sock->flags);
++		set_bit(SOCK_NOSPACE, &sock->flags);
+ 	}
++
++	/* mptcp_data_acked() could run just before we set the NOSPACE bit,
++	 * so explicitly check for snd_una value
++	 */
++	mptcp_clean_una((struct sock *)msk);
+ }
+ 
+ static bool mptcp_subflow_active(struct mptcp_subflow_context *subflow)
+@@ -1155,12 +1144,6 @@ static struct sock *mptcp_subflow_get_send(struct mptcp_sock *msk,
+ 	return NULL;
+ }
+ 
+-static void ssk_check_wmem(struct mptcp_sock *msk)
+-{
+-	if (unlikely(!mptcp_is_writeable(msk)))
+-		mptcp_nospace(msk);
+-}
+-
+ static void mptcp_push_release(struct sock *sk, struct sock *ssk,
+ 			       struct mptcp_sendmsg_info *info)
+ {
+@@ -1332,7 +1315,6 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 
+ wait_for_memory:
+ 		mptcp_nospace(msk);
+-		mptcp_clean_una(sk);
+ 		if (mptcp_timer_pending(sk))
+ 			mptcp_reset_timer(sk);
+ 		ret = sk_stream_wait_memory(sk, &timeo);
+@@ -1344,7 +1326,6 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		mptcp_push_pending(sk, msg->msg_flags);
+ 
+ out:
+-	ssk_check_wmem(msk);
+ 	release_sock(sk);
+ 	return copied ? : ret;
+ }
+@@ -1921,7 +1902,6 @@ static int __mptcp_init_sock(struct sock *sk)
+ 	INIT_LIST_HEAD(&msk->conn_list);
+ 	INIT_LIST_HEAD(&msk->join_list);
+ 	INIT_LIST_HEAD(&msk->rtx_queue);
+-	__set_bit(MPTCP_SEND_SPACE, &msk->flags);
+ 	INIT_WORK(&msk->work, mptcp_worker);
+ 	msk->out_of_order_queue = RB_ROOT;
+ 	msk->first_pending = NULL;
+@@ -2619,13 +2599,6 @@ bool mptcp_finish_join(struct sock *ssk)
+ 	return true;
+ }
+ 
+-static bool mptcp_memory_free(const struct sock *sk, int wake)
+-{
+-	struct mptcp_sock *msk = mptcp_sk(sk);
+-
+-	return wake ? test_bit(MPTCP_SEND_SPACE, &msk->flags) : true;
+-}
+-
+ static struct proto mptcp_prot = {
+ 	.name		= "MPTCP",
+ 	.owner		= THIS_MODULE,
+@@ -2646,7 +2619,6 @@ static struct proto mptcp_prot = {
+ 	.sockets_allocated	= &mptcp_sockets_allocated,
+ 	.memory_allocated	= &tcp_memory_allocated,
+ 	.memory_pressure	= &tcp_memory_pressure,
+-	.stream_memory_free	= mptcp_memory_free,
+ 	.sysctl_wmem_offset	= offsetof(struct net, ipv4.sysctl_tcp_wmem),
+ 	.sysctl_rmem_offset	= offsetof(struct net, ipv4.sysctl_tcp_rmem),
+ 	.sysctl_mem	= sysctl_tcp_mem,
+@@ -2820,6 +2792,39 @@ static __poll_t mptcp_check_readable(struct mptcp_sock *msk)
+ 	       0;
+ }
+ 
++static bool __mptcp_check_writeable(struct mptcp_sock *msk)
++{
++	struct sock *sk = (struct sock *)msk;
++	bool mptcp_writable;
++
++	mptcp_clean_una(sk);
++	mptcp_writable = sk_stream_is_writeable(sk);
++	if (!mptcp_writable)
++		mptcp_nospace(msk);
++
++	return mptcp_writable;
++}
++
++static __poll_t mptcp_check_writeable(struct mptcp_sock *msk)
++{
++	struct sock *sk = (struct sock *)msk;
++	__poll_t ret = 0;
++	bool slow;
++
++	if (unlikely(sk->sk_shutdown & SEND_SHUTDOWN))
++		return 0;
++
++	if (sk_stream_is_writeable(sk))
++		return EPOLLOUT | EPOLLWRNORM;
++
++	slow = lock_sock_fast(sk);
++	if (__mptcp_check_writeable(msk))
++		ret = EPOLLOUT | EPOLLWRNORM;
++
++	unlock_sock_fast(sk, slow);
++	return ret;
++}
++
+ static __poll_t mptcp_poll(struct file *file, struct socket *sock,
+ 			   struct poll_table_struct *wait)
+ {
+@@ -2838,8 +2843,7 @@ static __poll_t mptcp_poll(struct file *file, struct socket *sock,
+ 
+ 	if (state != TCP_SYN_SENT && state != TCP_SYN_RECV) {
+ 		mask |= mptcp_check_readable(msk);
+-		if (test_bit(MPTCP_SEND_SPACE, &msk->flags))
+-			mask |= EPOLLOUT | EPOLLWRNORM;
++		mask |= mptcp_check_writeable(msk);
+ 	}
+ 	if (sk->sk_shutdown & RCV_SHUTDOWN)
+ 		mask |= EPOLLIN | EPOLLRDNORM | EPOLLRDHUP;
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index fd9c666aed7f..8345011fc0ba 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -86,7 +86,7 @@
+ 
+ /* MPTCP socket flags */
+ #define MPTCP_DATA_READY	0
+-#define MPTCP_SEND_SPACE	1
++#define MPTCP_NOSPACE		1
+ #define MPTCP_WORK_RTX		2
+ #define MPTCP_WORK_EOF		3
+ #define MPTCP_FALLBACK_DONE	4
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 42581ffb0c7e..794259789194 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -997,17 +997,16 @@ static void subflow_data_ready(struct sock *sk)
+ static void subflow_write_space(struct sock *sk)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
++	struct socket *sock = READ_ONCE(sk->sk_socket);
+ 	struct sock *parent = subflow->conn;
+ 
+ 	if (!sk_stream_is_writeable(sk))
+ 		return;
+ 
+-	if (sk_stream_is_writeable(parent)) {
+-		set_bit(MPTCP_SEND_SPACE, &mptcp_sk(parent)->flags);
+-		smp_mb__after_atomic();
+-		/* set SEND_SPACE before sk_stream_write_space clears NOSPACE */
+-		sk_stream_write_space(parent);
+-	}
++	if (sock && sk_stream_is_writeable(parent))
++		clear_bit(SOCK_NOSPACE, &sock->flags);
++
++	sk_stream_write_space(parent);
+ }
+ 
+ static struct inet_connection_sock_af_ops *
 -- 
 2.26.2
 
