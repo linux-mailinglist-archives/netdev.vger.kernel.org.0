@@ -2,69 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DDC22B45D6
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:31:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31D1F2B45E4
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:32:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728926AbgKPO2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 09:28:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726426AbgKPO2d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 09:28:33 -0500
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA52FC0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 06:28:32 -0800 (PST)
-Received: by mail-wr1-x443.google.com with SMTP id u12so11687045wrt.0
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 06:28:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=singlestore.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JrKflSgSOMe93aJ6VW7ZfmXyv0vu7DMT8yvbPc0RDdc=;
-        b=WQhmlf08AdBsMPPsXLBeb7z+Go8g1FnQhZyC6WpJ9GvtDYxj6pNpz+8sZnjNOFPcjC
-         svBeMIXJu2PUqSCHpauT0JVXYcdN6AdutzM5rlMs+NqXKwRJwT/jvIc2gAqE4j4T2nWz
-         db/WDtZxKHi1uHbuUtl+NyclDgoapLqql0VHdWh44iMzCe+lB+Q6AtVn0Lr6owbuxFVo
-         mZpcjJQMWDzyYzgk4uvWBLohlYwYxEbdFnFVfnY5dCG6eUKimjIpmN2YHQv6cu9vaOvI
-         IAHHPm7lGzbpSKifagADv3uii6Ipfcfgn/zrf0Tg8mGT+JzrQPodqj0yhnL5IQAviODU
-         tABg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JrKflSgSOMe93aJ6VW7ZfmXyv0vu7DMT8yvbPc0RDdc=;
-        b=YE9mnFQIa6NmbRjirTK4anJOEVP6AcEoVJfsbkaTOfGNp6a3/e+IhyalLtM4eD2TJd
-         LudPamsc8muH0mgd8WP/zm3ct2aD/jjxoS3XPenWFj5gVBWCujlh2Q33XzOmwKx9EbXo
-         9dZP8GBzKevKzPf07mtcLx7hUr2obWeCJrdHek+sdheKQGZZ9l1jcSM6hj4B7JODU4TT
-         LF6dac3u1SIjWAvCpY42+0eqBdmsDcF9kGiux8/iiPCBe4/jmfZYvwGoFooYNWpk2PNH
-         vKNHrvO19XRDy7OUO6JJMtI7PJDxqI0sdhFAumsQOR/eknodEokoDJsqYVPrJXRnhvzd
-         ubew==
-X-Gm-Message-State: AOAM532JwdA3QuVyxwhz1jQ/p3X0QQAQGdAZLG/ZkWftj59bNhBz6Ki9
-        flVLf4F/Nk/vV4Mi0xnRWUWeJw==
-X-Google-Smtp-Source: ABdhPJynWW8LqCCuROcMY2njI5+Vv3gGgDlkIGQt8yivBkhzu55DbD+0wMXhhpnh7Y4Sai4HP9OgXQ==
-X-Received: by 2002:a5d:66d2:: with SMTP id k18mr18829273wrw.327.1605536911509;
-        Mon, 16 Nov 2020 06:28:31 -0800 (PST)
-Received: from rdias-suse-pc.lan (bl13-26-148.dsl.telepac.pt. [85.246.26.148])
-        by smtp.gmail.com with ESMTPSA id j8sm19294687wrx.11.2020.11.16.06.28.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 06:28:30 -0800 (PST)
-Date:   Mon, 16 Nov 2020 14:28:28 +0000
-From:   Ricardo Dias <rdias@singlestore.com>
-To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, edumazet@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5] tcp: fix race condition when creating child sockets
- from syncookies
-Message-ID: <20201116142828.GA188138@rdias-suse-pc.lan>
-References: <20201116120608.GA187477@rdias-suse-pc.lan>
+        id S1730179AbgKPObb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 09:31:31 -0500
+Received: from mga02.intel.com ([134.134.136.20]:25467 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729614AbgKPObb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 09:31:31 -0500
+IronPort-SDR: 7WkET3B31E6scFgsZJF/xXo8HC3kyPLCYDFfdNfh8E7ic+4RghOCo9YZbpnzRqtGY+YS/dW9ik
+ Hwm1OI8UsfoA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9806"; a="157778516"
+X-IronPort-AV: E=Sophos;i="5.77,482,1596524400"; 
+   d="scan'208";a="157778516"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2020 06:31:29 -0800
+IronPort-SDR: K+El57vBYgY5hP1q9UKFPgeoUch/f9q3VoR1XZukigW7fBy5imXpuuCprZOKjFffXpaEwBbTLh
+ jarEOLfyJcYQ==
+X-IronPort-AV: E=Sophos;i="5.77,482,1596524400"; 
+   d="scan'208";a="543620406"
+Received: from wrzedzic-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.34.230])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2020 06:31:25 -0800
+Subject: Re: [PATCH] xsk: add cq event
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <b18c1f2cfb0c9c0b409c25f4a73248e869c8ac97.1605513087.git.xuanzhuo@linux.alibaba.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <90c58756-934d-adf6-64e8-680cfc019cd4@intel.com>
+Date:   Mon, 16 Nov 2020 15:31:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201116120608.GA187477@rdias-suse-pc.lan>
+In-Reply-To: <b18c1f2cfb0c9c0b409c25f4a73248e869c8ac97.1605513087.git.xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please to not consider this version for review. I'll send a new patch
-version soon.
+On 2020-11-16 09:10, Xuan Zhuo wrote:
+> When we write all cq items to tx, we have to wait for a new event based
+> on poll to indicate that it is writable. But the current writability is
+> triggered based on whether tx is full or not, and In fact, when tx is
+> dissatisfied, the user of cq's item may not necessarily get it, because it
+> may still be occupied by the network card. In this case, we need to know
+> when cq is available, so this patch adds a socket option, When the user
+> configures this option using setsockopt, when cq is available, a
+> readable event is generated for all xsk bound to this umem.
+> 
+> I can't find a better description of this event,
+> I think it can also be 'readable', although it is indeed different from
+> the 'readable' of the new data. But the overhead of xsk checking whether
+> cq or rx is readable is small.
+> 
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+
+Thanks for the patch!
+
+I'm not a fan of having two different "readable" event (both Rx and cq).
+Could you explain a bit what the use case is, so I get a better
+understanding.
+
+The Tx queues has a back-pressure mechanism, determined of the number of
+elements in cq. Is it related to that?
+
+Please explain a bit more what you're trying to solve, and maybe we can
+figure out a better way forward!
 
 
+Thanks!
+Björn
