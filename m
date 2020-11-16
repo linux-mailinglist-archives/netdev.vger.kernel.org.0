@@ -2,407 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A6C2B4106
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 11:25:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 353662B4102
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 11:25:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729163AbgKPKVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 05:21:54 -0500
-Received: from relay.sw.ru ([185.231.240.75]:55166 "EHLO relay3.sw.ru"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728283AbgKPKVy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 05:21:54 -0500
-Received: from [192.168.15.170]
-        by relay3.sw.ru with esmtp (Exim 4.94)
-        (envelope-from <ktkhai@virtuozzo.com>)
-        id 1kebcy-008k4G-Qr; Mon, 16 Nov 2020 13:20:52 +0300
-Subject: Re: [PATCH v4 02/27] net: datagram: fix some kernel-doc markups
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Guillaume Nault <gnault@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <cover.1605521731.git.mchehab+huawei@kernel.org>
- <7a16cca43a8fc1b2491c9848c1cb72804692afda.1605521731.git.mchehab+huawei@kernel.org>
-From:   Kirill Tkhai <ktkhai@virtuozzo.com>
-Message-ID: <8566eebd-c6a9-fa9d-dd47-94885b93b416@virtuozzo.com>
-Date:   Mon, 16 Nov 2020 13:20:59 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1729145AbgKPKVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 05:21:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728574AbgKPKVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 05:21:05 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5997FC0613CF
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 02:21:05 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id cw8so23601398ejb.8
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 02:21:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=EpCdx6ixp9LFmw2piU2X13qWUIfYcG+nteeMAXbXg44=;
+        b=NGEJmjcq260iw2P9sz5e2pCivewtZBnLTJib7zah8UlG7oP0vy4YcXL88dltH/Gc2K
+         5RTIFjxmScyk7J0oAqrZ3kdmEZHfOQg/k1O4+yvDzsyZHm7SCVN3Wgx0JyH4nCIFQWvd
+         pcHOIeFx00U3JHZGEvQkun83UjkCECyGsX2FQCmeUeLuTX7Ir7GqbCT67ekse3aQ6k7c
+         mgFwdaiwM1XzA95q6YkLov+zVHoGMe6X2azInEPkyZ/ldh7cnjCqUAxFjBOD+JQ52zcE
+         N/LEXqKKA/SjvxGx8QZhH6qBUuA2PtBWNdk8FKa6oIWWTKa76LHeTOxWJ5FpeYVfSMk4
+         xd/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=EpCdx6ixp9LFmw2piU2X13qWUIfYcG+nteeMAXbXg44=;
+        b=XYZdiDeStA2lxabYXPugLl0tnQ9TvVf8uz4UXGKjWPyawnQoD0zM+ELzNmId0po1Y0
+         i4eUTRbr7E5EBTTq3Q0BSwlDG6tUam7cVApH4KcMMrsqQGj+iI0y02z+zD6MvvDb3QNa
+         ZvLPHR4bcU+MrS/7VlYz6ooeEajierKadhi4EllvkASZ979s6u0Djcn8jNmQfJKdkv85
+         BNLY0iZ4M6INasHKAlQYC9IqupIGyuAU5B8LrrH/AVZ2Sy1VF0NQKpuxtCm4Q288DVbT
+         RFg8Pf4snvraM75GLUNnpH2QWirhSI24yqrJAUomvXjW2WsPU/I6YX+f+TXI2KiIwtxY
+         Aofg==
+X-Gm-Message-State: AOAM531qMvko88fx5Fx7TKqmQMm6q/BZReVvXuK6pNEdj61G7tS8OwcK
+        7teiSTmm2BbFgzuWWfT9tj0w+zI8g1oZwUEe+5BuiQ==
+X-Google-Smtp-Source: ABdhPJz162CKZ/B4uBySczRTMEY0htqggiPLHVYE9beQaGfKKp1hIsR33uzBvfl+EZ+e+URdaf4XD28V27rRXZi9cH0=
+X-Received: by 2002:a17:906:f8c5:: with SMTP id lh5mr14545185ejb.77.1605522064018;
+ Mon, 16 Nov 2020 02:21:04 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <7a16cca43a8fc1b2491c9848c1cb72804692afda.1605521731.git.mchehab+huawei@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a54:380d:0:0:0:0:0 with HTTP; Mon, 16 Nov 2020 02:21:03
+ -0800 (PST)
+X-Originating-IP: [5.35.10.61]
+In-Reply-To: <CAOJe8K2dBdoviSi7j_6XXpntp8GCBWuMWeAbmHbeZqs_bvG5LQ@mail.gmail.com>
+References: <CAOJe8K3wz=-LC++N-Hvrturt46+AAK1cW8VYXK+VMT9y1OSzmQ@mail.gmail.com>
+ <5fb245b1.1c69fb81.e2685.976dSMTPIN_ADDED_MISSING@mx.google.com> <CAOJe8K2dBdoviSi7j_6XXpntp8GCBWuMWeAbmHbeZqs_bvG5LQ@mail.gmail.com>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Mon, 16 Nov 2020 13:21:03 +0300
+Message-ID: <CAOJe8K1+1-61vUAZWetS_VqAW0F3LdAy4WcuLEHF2UN75GAEcg@mail.gmail.com>
+Subject: Re: [PATCH] xsk: add cq event
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16.11.2020 13:17, Mauro Carvalho Chehab wrote:
-> Some identifiers have different names between their prototypes
-> and the kernel-doc markup.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+On 11/16/20, Denis Kirjanov <kda@linux-powerpc.org> wrote:
+> On 11/16/20, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>> On Mon, 16 Nov 2020 12:13:21 +0300, Denis Kirjanov
+>> <kda@linux-powerpc.org>
+>> wrote:
+>>> On 11/16/20, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>>> > When we write all cq items to tx, we have to wait for a new event
+>>> > based
+>>> > on poll to indicate that it is writable. But the current writability
+>>> > is
+>>> > triggered based on whether tx is full or not, and In fact, when tx is
+>>> > dissatisfied, the user of cq's item may not necessarily get it,
+>>> > because
+>>> > it
+>>> > may still be occupied by the network card. In this case, we need to
+>>> > know
+>>> > when cq is available, so this patch adds a socket option, When the
+>>> > user
+>>> > configures this option using setsockopt, when cq is available, a
+>>> > readable event is generated for all xsk bound to this umem.
+>>> >
+>>> > I can't find a better description of this event,
+>>> > I think it can also be 'readable', although it is indeed different
+>>> > from
+>>> > the 'readable' of the new data. But the overhead of xsk checking
+>>> > whether
+>>> > cq or rx is readable is small.
+>>> >
+>>> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>>> > ---
+>>> >  include/net/xdp_sock.h      |  1 +
+>>> >  include/uapi/linux/if_xdp.h |  1 +
+>>> >  net/xdp/xsk.c               | 28 ++++++++++++++++++++++++++++
+>>> >  3 files changed, 30 insertions(+)
+>>> >
+>>> > diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+>>> > index 1a9559c..faf5b1a 100644
+>>> > --- a/include/net/xdp_sock.h
+>>> > +++ b/include/net/xdp_sock.h
+>>> > @@ -49,6 +49,7 @@ struct xdp_sock {
+>>> >  	struct xsk_buff_pool *pool;
+>>> >  	u16 queue_id;
+>>> >  	bool zc;
+>>> > +	bool cq_event;
+>>> >  	enum {
+>>> >  		XSK_READY = 0,
+>>> >  		XSK_BOUND,
+>>> > diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
+>>> > index a78a809..2dba3cb 100644
+>>> > --- a/include/uapi/linux/if_xdp.h
+>>> > +++ b/include/uapi/linux/if_xdp.h
+>>> > @@ -63,6 +63,7 @@ struct xdp_mmap_offsets {
+>>> >  #define XDP_UMEM_COMPLETION_RING	6
+>>> >  #define XDP_STATISTICS			7
+>>> >  #define XDP_OPTIONS			8
+>>> > +#define XDP_CQ_EVENT			9
+>>> >
+>>> >  struct xdp_umem_reg {
+>>> >  	__u64 addr; /* Start of packet data area */
+>>> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+>>> > index cfbec39..0c53403 100644
+>>> > --- a/net/xdp/xsk.c
+>>> > +++ b/net/xdp/xsk.c
+>>> > @@ -285,7 +285,16 @@ void __xsk_map_flush(void)
+>>> >
+>>> >  void xsk_tx_completed(struct xsk_buff_pool *pool, u32 nb_entries)
+>>> >  {
+>>> > +	struct xdp_sock *xs;
+>>> > +
+>>> >  	xskq_prod_submit_n(pool->cq, nb_entries);
+>>> > +
+>>> > +	rcu_read_lock();
+>>> > +	list_for_each_entry_rcu(xs, &pool->xsk_tx_list, tx_list) {
+>>> > +		if (xs->cq_event)
+>>> > +			sock_def_readable(&xs->sk);
+>>> > +	}
+>>> > +	rcu_read_unlock();
+>>> >  }
+>>> >  EXPORT_SYMBOL(xsk_tx_completed);
+>>> >
+>>> > @@ -495,6 +504,9 @@ static __poll_t xsk_poll(struct file *file, struct
+>>> > socket *sock,
+>>> >  			__xsk_sendmsg(sk);
+>>> >  	}
+>>> >
+>>> > +	if (xs->cq_event && pool->cq && !xskq_prod_is_empty(pool->cq))
+>>> > +		mask |= EPOLLIN | EPOLLRDNORM;
+>>> > +
+>>> >  	if (xs->rx && !xskq_prod_is_empty(xs->rx))
+>>> >  		mask |= EPOLLIN | EPOLLRDNORM;
+>>> >  	if (xs->tx && !xskq_cons_is_full(xs->tx))
+>>> > @@ -882,6 +894,22 @@ static int xsk_setsockopt(struct socket *sock,
+>>> > int
+>>> > level, int optname,
+>>> >  		mutex_unlock(&xs->mutex);
+>>> >  		return err;
+>>> >  	}
+>>> > +	case XDP_CQ_EVENT:
+>>> > +	{
+>>> > +		int cq_event;
+>>> > +
+>>> > +		if (optlen < sizeof(cq_event))
+>>> > +			return -EINVAL;
+>>> > +		if (copy_from_sockptr(&cq_event, optval, sizeof(cq_event)))
+>>> > +			return -EFAULT;
+>>> > +
+>>> > +		if (cq_event)
+>>> > +			xs->cq_event = true;
+>>> > +		else
+>>> > +			xs->cq_event = false;
+>>>
+>>> It's false by default, isn't it?
+>>
+>> I add cq_event inside "xdp_sock", that is got by sk_alloc, this call
+>> sk_prot_alloc by __GFP_ZERO. So I think it is false.
+>
+> Right, I meant that what's the point to set it explicitly to 'false'?
 
-Reviewed-by: Kirill Tkhai <ktkhai@virtuozzo.com>
+Nevermind, It's okay.
 
-> ---
->  net/core/datagram.c   | 2 +-
->  net/core/dev.c        | 4 ++--
->  net/core/skbuff.c     | 2 +-
->  net/ethernet/eth.c    | 6 +++---
->  net/sunrpc/rpc_pipe.c | 3 ++-
->  5 files changed, 9 insertions(+), 8 deletions(-)
-> 
-> diff --git a/net/core/datagram.c b/net/core/datagram.c
-> index 9fcaa544f11a..81809fa735a7 100644
-> --- a/net/core/datagram.c
-> +++ b/net/core/datagram.c
-> @@ -692,41 +692,41 @@ EXPORT_SYMBOL(__zerocopy_sg_from_iter);
->   *	@from: the source to copy from
->   *
->   *	The function will first copy up to headlen, and then pin the userspace
->   *	pages and build frags through them.
->   *
->   *	Returns 0, -EFAULT or -EMSGSIZE.
->   */
->  int zerocopy_sg_from_iter(struct sk_buff *skb, struct iov_iter *from)
->  {
->  	int copy = min_t(int, skb_headlen(skb), iov_iter_count(from));
->  
->  	/* copy up to skb headlen */
->  	if (skb_copy_datagram_from_iter(skb, 0, from, copy))
->  		return -EFAULT;
->  
->  	return __zerocopy_sg_from_iter(NULL, skb, from, ~0U);
->  }
->  EXPORT_SYMBOL(zerocopy_sg_from_iter);
->  
->  /**
-> - *	skb_copy_and_csum_datagram_iter - Copy datagram to an iovec iterator
-> + *	skb_copy_and_csum_datagram - Copy datagram to an iovec iterator
->   *          and update a checksum.
->   *	@skb: buffer to copy
->   *	@offset: offset in the buffer to start copying from
->   *	@to: iovec iterator to copy to
->   *	@len: amount of data to copy from buffer to iovec
->   *      @csump: checksum pointer
->   */
->  static int skb_copy_and_csum_datagram(const struct sk_buff *skb, int offset,
->  				      struct iov_iter *to, int len,
->  				      __wsum *csump)
->  {
->  	return __skb_datagram_iter(skb, offset, to, len, true,
->  			csum_and_copy_to_iter, csump);
->  }
->  
->  /**
->   *	skb_copy_and_csum_datagram_msg - Copy and checksum skb to user iovec.
->   *	@skb: skbuff
->   *	@hlen: hardware length
->   *	@msg: destination
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 60d325bda0d7..4bfdcd6b20e8 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -6902,41 +6902,41 @@ static int ____netdev_has_upper_dev(struct net_device *upper_dev,
->   *
->   * Find out if a device is linked to specified upper device and return true
->   * in case it is. Note that this checks only immediate upper device,
->   * not through a complete stack of devices. The caller must hold the RTNL lock.
->   */
->  bool netdev_has_upper_dev(struct net_device *dev,
->  			  struct net_device *upper_dev)
->  {
->  	struct netdev_nested_priv priv = {
->  		.data = (void *)upper_dev,
->  	};
->  
->  	ASSERT_RTNL();
->  
->  	return netdev_walk_all_upper_dev_rcu(dev, ____netdev_has_upper_dev,
->  					     &priv);
->  }
->  EXPORT_SYMBOL(netdev_has_upper_dev);
->  
->  /**
-> - * netdev_has_upper_dev_all - Check if device is linked to an upper device
-> + * netdev_has_upper_dev_all_rcu - Check if device is linked to an upper device
->   * @dev: device
->   * @upper_dev: upper device to check
->   *
->   * Find out if a device is linked to specified upper device and return true
->   * in case it is. Note that this checks the entire upper device chain.
->   * The caller must hold rcu lock.
->   */
->  
->  bool netdev_has_upper_dev_all_rcu(struct net_device *dev,
->  				  struct net_device *upper_dev)
->  {
->  	struct netdev_nested_priv priv = {
->  		.data = (void *)upper_dev,
->  	};
->  
->  	return !!netdev_walk_all_upper_dev_rcu(dev, ____netdev_has_upper_dev,
->  					       &priv);
->  }
->  EXPORT_SYMBOL(netdev_has_upper_dev_all_rcu);
->  
-> @@ -8140,41 +8140,41 @@ void netdev_adjacent_rename_links(struct net_device *dev, char *oldname)
->  	}
->  }
->  
->  void *netdev_lower_dev_get_private(struct net_device *dev,
->  				   struct net_device *lower_dev)
->  {
->  	struct netdev_adjacent *lower;
->  
->  	if (!lower_dev)
->  		return NULL;
->  	lower = __netdev_find_adj(lower_dev, &dev->adj_list.lower);
->  	if (!lower)
->  		return NULL;
->  
->  	return lower->private;
->  }
->  EXPORT_SYMBOL(netdev_lower_dev_get_private);
->  
->  
->  /**
-> - * netdev_lower_change - Dispatch event about lower device state change
-> + * netdev_lower_state_changed - Dispatch event about lower device state change
->   * @lower_dev: device
->   * @lower_state_info: state to dispatch
->   *
->   * Send NETDEV_CHANGELOWERSTATE to netdev notifiers with info.
->   * The caller must hold the RTNL lock.
->   */
->  void netdev_lower_state_changed(struct net_device *lower_dev,
->  				void *lower_state_info)
->  {
->  	struct netdev_notifier_changelowerstate_info changelowerstate_info = {
->  		.info.dev = lower_dev,
->  	};
->  
->  	ASSERT_RTNL();
->  	changelowerstate_info.lower_state_info = lower_state_info;
->  	call_netdevice_notifiers_info(NETDEV_CHANGELOWERSTATE,
->  				      &changelowerstate_info.info);
->  }
->  EXPORT_SYMBOL(netdev_lower_state_changed);
->  
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index c9a5a3c262c8..ffe3dcc0ebea 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -825,41 +825,41 @@ EXPORT_SYMBOL(skb_tx_error);
->  /**
->   *	consume_skb - free an skbuff
->   *	@skb: buffer to free
->   *
->   *	Drop a ref to the buffer and free it if the usage count has hit zero
->   *	Functions identically to kfree_skb, but kfree_skb assumes that the frame
->   *	is being dropped after a failure and notes that
->   */
->  void consume_skb(struct sk_buff *skb)
->  {
->  	if (!skb_unref(skb))
->  		return;
->  
->  	trace_consume_skb(skb);
->  	__kfree_skb(skb);
->  }
->  EXPORT_SYMBOL(consume_skb);
->  #endif
->  
->  /**
-> - *	consume_stateless_skb - free an skbuff, assuming it is stateless
-> + *	__consume_stateless_skb - free an skbuff, assuming it is stateless
->   *	@skb: buffer to free
->   *
->   *	Alike consume_skb(), but this variant assumes that this is the last
->   *	skb reference and all the head states have been already dropped
->   */
->  void __consume_stateless_skb(struct sk_buff *skb)
->  {
->  	trace_consume_skb(skb);
->  	skb_release_data(skb);
->  	kfree_skbmem(skb);
->  }
->  
->  void __kfree_skb_flush(void)
->  {
->  	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
->  
->  	/* flush skb_cache if containing objects */
->  	if (nc->skb_count) {
->  		kmem_cache_free_bulk(skbuff_head_cache, nc->skb_count,
->  				     nc->skb_cache);
-> diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
-> index dac65180c4ef..4106373180c6 100644
-> --- a/net/ethernet/eth.c
-> +++ b/net/ethernet/eth.c
-> @@ -255,41 +255,41 @@ int eth_header_cache(const struct neighbour *neigh, struct hh_cache *hh, __be16
->  EXPORT_SYMBOL(eth_header_cache);
->  
->  /**
->   * eth_header_cache_update - update cache entry
->   * @hh: destination cache entry
->   * @dev: network device
->   * @haddr: new hardware address
->   *
->   * Called by Address Resolution module to notify changes in address.
->   */
->  void eth_header_cache_update(struct hh_cache *hh,
->  			     const struct net_device *dev,
->  			     const unsigned char *haddr)
->  {
->  	memcpy(((u8 *) hh->hh_data) + HH_DATA_OFF(sizeof(struct ethhdr)),
->  	       haddr, ETH_ALEN);
->  }
->  EXPORT_SYMBOL(eth_header_cache_update);
->  
->  /**
-> - * eth_header_parser_protocol - extract protocol from L2 header
-> + * eth_header_parse_protocol - extract protocol from L2 header
->   * @skb: packet to extract protocol from
->   */
->  __be16 eth_header_parse_protocol(const struct sk_buff *skb)
->  {
->  	const struct ethhdr *eth = eth_hdr(skb);
->  
->  	return eth->h_proto;
->  }
->  EXPORT_SYMBOL(eth_header_parse_protocol);
->  
->  /**
->   * eth_prepare_mac_addr_change - prepare for mac change
->   * @dev: network device
->   * @p: socket address
->   */
->  int eth_prepare_mac_addr_change(struct net_device *dev, void *p)
->  {
->  	struct sockaddr *addr = p;
->  
->  	if (!(dev->priv_flags & IFF_LIVE_ADDR_CHANGE) && netif_running(dev))
-> @@ -506,42 +506,42 @@ unsigned char * __weak arch_get_platform_mac_address(void)
->  
->  int eth_platform_get_mac_address(struct device *dev, u8 *mac_addr)
->  {
->  	const unsigned char *addr = NULL;
->  
->  	if (dev->of_node)
->  		addr = of_get_mac_address(dev->of_node);
->  	if (IS_ERR_OR_NULL(addr))
->  		addr = arch_get_platform_mac_address();
->  
->  	if (!addr)
->  		return -ENODEV;
->  
->  	ether_addr_copy(mac_addr, addr);
->  
->  	return 0;
->  }
->  EXPORT_SYMBOL(eth_platform_get_mac_address);
->  
->  /**
-> - * Obtain the MAC address from an nvmem cell named 'mac-address' associated
-> - * with given device.
-> + * nvmem_get_mac_address - Obtain the MAC address from an nvmem cell named
-> + * 'mac-address' associated with given device.
->   *
->   * @dev:	Device with which the mac-address cell is associated.
->   * @addrbuf:	Buffer to which the MAC address will be copied on success.
->   *
->   * Returns 0 on success or a negative error number on failure.
->   */
->  int nvmem_get_mac_address(struct device *dev, void *addrbuf)
->  {
->  	struct nvmem_cell *cell;
->  	const void *mac;
->  	size_t len;
->  
->  	cell = nvmem_cell_get(dev, "mac-address");
->  	if (IS_ERR(cell))
->  		return PTR_ERR(cell);
->  
->  	mac = nvmem_cell_read(cell, &len);
->  	nvmem_cell_put(cell);
->  
->  	if (IS_ERR(mac))
-> diff --git a/net/sunrpc/rpc_pipe.c b/net/sunrpc/rpc_pipe.c
-> index eadc0ede928c..8241f5a4a01c 100644
-> --- a/net/sunrpc/rpc_pipe.c
-> +++ b/net/sunrpc/rpc_pipe.c
-> @@ -764,41 +764,42 @@ static struct dentry *rpc_mkdir_populate(struct dentry *parent,
->  
->  static int rpc_rmdir_depopulate(struct dentry *dentry,
->  		void (*depopulate)(struct dentry *))
->  {
->  	struct dentry *parent;
->  	struct inode *dir;
->  	int error;
->  
->  	parent = dget_parent(dentry);
->  	dir = d_inode(parent);
->  	inode_lock_nested(dir, I_MUTEX_PARENT);
->  	if (depopulate != NULL)
->  		depopulate(dentry);
->  	error = __rpc_rmdir(dir, dentry);
->  	inode_unlock(dir);
->  	dput(parent);
->  	return error;
->  }
->  
->  /**
-> - * rpc_mkpipe - make an rpc_pipefs file for kernel<->userspace communication
-> + * rpc_mkpipe_dentry - make an rpc_pipefs file for kernel<->userspace
-> + *		       communication
->   * @parent: dentry of directory to create new "pipe" in
->   * @name: name of pipe
->   * @private: private data to associate with the pipe, for the caller's use
->   * @pipe: &rpc_pipe containing input parameters
->   *
->   * Data is made available for userspace to read by calls to
->   * rpc_queue_upcall().  The actual reads will result in calls to
->   * @ops->upcall, which will be called with the file pointer,
->   * message, and userspace buffer to copy to.
->   *
->   * Writes can come at any time, and do not necessarily have to be
->   * responses to upcalls.  They will result in calls to @msg->downcall.
->   *
->   * The @private argument passed here will be available to all these methods
->   * from the file pointer, via RPC_I(file_inode(file))->private.
->   */
->  struct dentry *rpc_mkpipe_dentry(struct dentry *parent, const char *name,
->  				 void *private, struct rpc_pipe *pipe)
->  {
->  	struct dentry *dentry;
-> 
-
+>
+>>
+>> Thanks.
+>>
+>>>
+>>> > +
+>>> > +		return 0;
+>>> > +	}
+>>> >  	default:
+>>> >  		break;
+>>> >  	}
+>>> > --
+>>> > 1.8.3.1
+>>> >
+>>> >
+>>
+>
