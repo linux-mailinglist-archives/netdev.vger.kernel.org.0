@@ -2,107 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 622672B448B
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:16:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCCCD2B4496
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:20:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729040AbgKPNOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 08:14:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24743 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726440AbgKPNOe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 08:14:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605532473;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=bcklXraRLL6YuQnGUW+mYhCFhDJ3s3DEvlUM79PK4ZQ=;
-        b=GfU+pUnS38bLsTeEj7sCezW+xZ/DQrx/MXvSq5+zHilRMeGbhHvtTzmK9etlU+ZhfDQPdY
-        RPRawCiFKXnM91T8bIhQnkieyp5UQUSzDPGz5XEXhbIyqVw53rEnq14orKPprhMYvVt5i+
-        rGEBs8Gtq1T5s9NWo6blvunGKl5XcbY=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-537-rh8j20yrNcyGT8BBFn_7rA-1; Mon, 16 Nov 2020 08:14:31 -0500
-X-MC-Unique: rh8j20yrNcyGT8BBFn_7rA-1
-Received: by mail-wm1-f70.google.com with SMTP id u123so8693811wmu.5
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 05:14:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=bcklXraRLL6YuQnGUW+mYhCFhDJ3s3DEvlUM79PK4ZQ=;
-        b=J3fuu9Q/KXSuaYZEyMIgyvgk99ABRojIo61GFR+AfKvozg4NIMjWgVNnJwT+HPJ/tR
-         /dDI1870W4defigtkZWe0i4WCWGGd2cSbSAh0fI4v7u/7LgzbF7yzd5hh1dxQfJ5mzqS
-         eRpxBuuzbXkdSxZsVnfUdnzOyx7QMse+lqlF9TzNHJfybPG3oGOQWbyJJYuhk7kmUndc
-         2dpS/aRFXXic+JCZjiE7C2+qAuaApv4grYKkOWbB17JIYWwEXp2t6eHzACqXN8V64Okf
-         Hro7REdWqzxJhv/Wnhrjb2dZ2E9KdgtbmmAd1iKP/kYymXZIG9wcLoW4KpDlJMsuFIwk
-         g9Jg==
-X-Gm-Message-State: AOAM533C8x+nvZ4pcY+MXuAOAxcM9fD9mjnBtvl47S1d6RI+wQGnWHUP
-        UFB7f2EAl7m3LpftLaP0Vevz0qqOneYbUqJu4ALdbJ1bug3dKprrPgDrMlapRyOY9x+YJaw+GUW
-        AirULGhsGUl1hv29e
-X-Received: by 2002:a1c:6002:: with SMTP id u2mr14508770wmb.29.1605532467575;
-        Mon, 16 Nov 2020 05:14:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyoKOhCtfX4RQPxreiVjgYctq5k6WupqM3uofRLxRDRD1VbWHuNBhZz0uRXMRsQybcwkP1lsQ==
-X-Received: by 2002:a1c:6002:: with SMTP id u2mr14508747wmb.29.1605532467415;
-        Mon, 16 Nov 2020 05:14:27 -0800 (PST)
-Received: from redhat.com ([147.161.8.56])
-        by smtp.gmail.com with ESMTPSA id e5sm21249161wrs.84.2020.11.16.05.14.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 05:14:26 -0800 (PST)
-Date:   Mon, 16 Nov 2020 08:14:20 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jasowang@redhat.com, lkp@intel.com, lvivier@redhat.com,
-        michael.christie@oracle.com, mst@redhat.com, rdunlap@infradead.org,
-        sfr@canb.auug.org.au, stefanha@redhat.com
-Subject: [GIT PULL] vhost,vdpa: fixes
-Message-ID: <20201116081420-mutt-send-email-mst@kernel.org>
+        id S1728759AbgKPNTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 08:19:44 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7544 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728281AbgKPNTo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 08:19:44 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CZV67296vzhXs1;
+        Mon, 16 Nov 2020 21:19:27 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 16 Nov 2020 21:19:29 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     =?UTF-8?q?Marcel=20Holtmann=20Johan=20Hedberg=20Jakub=20Kicinski=20Joseph=20Hwang=20Alain=20Michaud=20Abhishek=20Pandit-Subedi=20Pali=20Roh=C3=A1r?= 
+        <"marcel@holtmann.orgjohan.hedberg@gmail.comkuba@kernel.orgjosephsih@chromium.orgalainm@chromium.orgabhishekpandit@chromium.orgpali"@kernel.org>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>,
+        <linux-bluetooth@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH] Bluetooth: sco: Fix crash when using BT_SNDMTU/BT_RCVMTU option
+Date:   Mon, 16 Nov 2020 21:24:21 +0800
+Message-ID: <20201116132421.94624-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 0c86d774883fa17e7c81b0c8838b88d06c2c911e:
+This commit add the invalid check for connected socket, without it will
+causes the following crash due to sco_pi(sk)->conn being NULL:
 
-  vdpasim: allow to assign a MAC address (2020-10-30 04:04:35 -0400)
+KASAN: null-ptr-deref in range [0x0000000000000050-0x0000000000000057]
+CPU: 3 PID: 4284 Comm: test_sco Not tainted 5.10.0-rc3+ #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1 04/01/2014
+RIP: 0010:sco_sock_getsockopt+0x45d/0x8e0
+Code: 48 c1 ea 03 80 3c 02 00 0f 85 ca 03 00 00 49 8b 9d f8 04 00 00 48 b8 00
+      00 00 00 00 fc ff df 48 8d 7b 50 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84
+      c0 74 08 3c 03 0f 8e b5 03 00 00 8b 43 50 48 8b 0c
+RSP: 0018:ffff88801bb17d88 EFLAGS: 00010206
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff83a4ecdf
+RDX: 000000000000000a RSI: ffffc90002fce000 RDI: 0000000000000050
+RBP: 1ffff11003762fb4 R08: 0000000000000001 R09: ffff88810e1008c0
+R10: ffffffffbd695dcf R11: fffffbfff7ad2bb9 R12: 0000000000000000
+R13: ffff888018ff1000 R14: dffffc0000000000 R15: 000000000000000d
+FS:  00007fb4f76c1700(0000) GS:ffff88811af80000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005555e3b7a938 CR3: 00000001117be001 CR4: 0000000000770ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+PKRU: 55555554
+Call Trace:
+ ? sco_skb_put_cmsg+0x80/0x80
+ ? sco_skb_put_cmsg+0x80/0x80
+ __sys_getsockopt+0x12a/0x220
+ ? __ia32_sys_setsockopt+0x150/0x150
+ ? syscall_enter_from_user_mode+0x18/0x50
+ ? rcu_read_lock_bh_held+0xb0/0xb0
+ __x64_sys_getsockopt+0xba/0x150
+ ? syscall_enter_from_user_mode+0x1d/0x50
+ do_syscall_64+0x33/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-are available in the Git repository at:
+Fixes: 0fc1a726f897 ("Bluetooth: sco: new getsockopt options BT_SNDMTU/BT_RCVMTU")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to efd838fec17bd8756da852a435800a7e6281bfbc:
-
-  vhost scsi: Add support for LUN resets. (2020-11-15 17:30:55 -0500)
-
-----------------------------------------------------------------
-vhost,vdpa: fixes
-
-Fixes all over the place, most notably vhost scsi IO error fixes.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Laurent Vivier (1):
-      vdpasim: fix "mac_pton" undefined error
-
-Mike Christie (5):
-      vhost: add helper to check if a vq has been setup
-      vhost scsi: alloc cmds per vq instead of session
-      vhost scsi: fix cmd completion race
-      vhost scsi: add lun parser helper
-      vhost scsi: Add support for LUN resets.
-
-Stephen Rothwell (1):
-      swiotlb: using SIZE_MAX needs limits.h included
-
- drivers/vdpa/Kconfig    |   1 +
- drivers/vhost/scsi.c    | 397 ++++++++++++++++++++++++++++++++++--------------
- drivers/vhost/vhost.c   |   6 +
- drivers/vhost/vhost.h   |   1 +
- include/linux/swiotlb.h |   1 +
- 5 files changed, 289 insertions(+), 117 deletions(-)
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 79ffcdef0b7a..22a110f37abc 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -1003,6 +1003,11 @@ static int sco_sock_getsockopt(struct socket *sock, int level, int optname,
+ 
+ 	case BT_SNDMTU:
+ 	case BT_RCVMTU:
++		if (sk->sk_state != BT_CONNECTED) {
++			err = -ENOTCONN;
++			break;
++		}
++
+ 		if (put_user(sco_pi(sk)->conn->mtu, (u32 __user *)optval))
+ 			err = -EFAULT;
+ 		break;
+-- 
+2.25.1
 
