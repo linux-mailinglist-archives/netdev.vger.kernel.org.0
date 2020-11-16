@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF12E2B3B21
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 02:13:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5848A2B3B27
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 02:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728342AbgKPBMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 20:12:13 -0500
-Received: from mailout1.samsung.com ([203.254.224.24]:42602 "EHLO
-        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728046AbgKPBMM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 20:12:12 -0500
+        id S1728357AbgKPBSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 20:18:04 -0500
+Received: from mailout2.samsung.com ([203.254.224.25]:39062 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727690AbgKPBSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 20:18:01 -0500
 Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20201116011209epoutp01b4ae6178553a3a21ac624f3919166e69~H19tztuA02375623756epoutp01k
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 01:12:09 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20201116011209epoutp01b4ae6178553a3a21ac624f3919166e69~H19tztuA02375623756epoutp01k
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20201116011758epoutp02345f3740eec489473351516319084fbb~H2CyW10CB2595125951epoutp02G
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 01:17:58 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20201116011758epoutp02345f3740eec489473351516319084fbb~H2CyW10CB2595125951epoutp02G
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1605489129;
-        bh=JHbfhQmZY2Kdf9uCqVWWi/pKiuSfpP7K0ZJj50SZUM0=;
+        s=mail20170921; t=1605489478;
+        bh=TfUkL+lDZElGHDBaFwcjW6Ej9dQR2j3RjB2y/gxXwDA=;
         h=Subject:Reply-To:From:To:CC:Date:References:From;
-        b=Sj7BqonbIBGAHQz2fHC7z7K6ep1nqPfCwRcej9eg8I3IyTNfq3231KzP8VHZ6XKMx
-         METiEXeFSOidMeLvIcuecRAwzssjKj6xSeIFH7fTJx5HcT1r693OrTssrwSIXyrHZb
-         ldU7AVV3niBWHe/tE6jKWXrsq5AAb3osmwBVVokk=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20201116011209epcas2p1a3b5e55645a2cc736315a93e787cac5a~H19terjmG1868518685epcas2p1g;
-        Mon, 16 Nov 2020 01:12:09 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.40.186]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4CZ9yv6qqDzMqYkb; Mon, 16 Nov
-        2020 01:12:07 +0000 (GMT)
-X-AuditID: b6c32a45-34dff7000001297d-aa-5fb1d1e5d539
-Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
-        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        DE.16.10621.5E1D1BF5; Mon, 16 Nov 2020 10:12:05 +0900 (KST)
+        b=G9B4mHhMKekONFM4UoRloEqHdvWxFhqgzIZP4RYG2s+H9kqWRVL9eGtEoU8+0OUoI
+         d46zg6+njmf81C504DX+CdYCcoUrjTH9yRmaklqfJhMpfRdSEY0dV+CfKFJFCoVjmI
+         CnHemPqk56+KBEUZFOomjCtwelj+qazcfXWn2/yw=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20201116011757epcas2p3037b44374e4f8131d76ac88492e612cf~H2CxutYmV1171511715epcas2p3z;
+        Mon, 16 Nov 2020 01:17:57 +0000 (GMT)
+Received: from epsmges2p4.samsung.com (unknown [182.195.40.181]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4CZB5c1x9szMqYm9; Mon, 16 Nov
+        2020 01:17:56 +0000 (GMT)
+X-AuditID: b6c32a48-4f9ff7000000cd1f-0f-5fb1d3444b51
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        3F.A6.52511.443D1BF5; Mon, 16 Nov 2020 10:17:56 +0900 (KST)
 Mime-Version: 1.0
-Subject: [PATCH net-next 1/3] nfc: s3fwrn5: Remove the max_payload
+Subject: [PATCH net-next 2/3] nfc: s3fwrn5: Fix the misspelling in a comment
 Reply-To: bongsu.jeon@samsung.com
 Sender: Bongsu Jeon <bongsu.jeon@samsung.com>
 From:   Bongsu Jeon <bongsu.jeon@samsung.com>
@@ -50,112 +50,59 @@ X-Drm-Type: N,general
 X-Msg-Generator: Mail
 X-Msg-Type: PERSONAL
 X-Reply-Demand: N
-Message-ID: <20201116011205epcms2p566dbc946d6c7a0198d09b3a872e85f33@epcms2p5>
-Date:   Mon, 16 Nov 2020 10:12:05 +0900
-X-CMS-MailID: 20201116011205epcms2p566dbc946d6c7a0198d09b3a872e85f33
+Message-ID: <20201116011755epcms2p7f7232e0865e8e1bc11a4b528c10d3571@epcms2p7>
+Date:   Mon, 16 Nov 2020 10:17:55 +0900
+X-CMS-MailID: 20201116011755epcms2p7f7232e0865e8e1bc11a4b528c10d3571
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="utf-8"
 X-Sendblock-Type: AUTO_CONFIDENTIAL
 CMS-TYPE: 102P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrDKsWRmVeSWpSXmKPExsWy7bCmhe7TixvjDbZsMbPY0jyJ3eL2xGls
-        FufPb2C3uLxrDpvFnA2b2S2OLRBzYPPYtKqTzaN79j8Wj74tqxg9Pm+SC2CJyrHJSE1MSS1S
-        SM1Lzk/JzEu3VfIOjneONzUzMNQ1tLQwV1LIS8xNtVVy8QnQdcvMAdqtpFCWmFMKFApILC5W
-        0rezKcovLUlVyMgvLrFVSi1IySkwNCzQK07MLS7NS9dLzs+1MjQwMDIFqkzIyeiY2cBUcEK4
-        4v2NtYwNjBsFuhg5OSQETCRmn5zH3MXIxSEksINRovvlCvYuRg4OXgFBib87hEFqhAWcJKbe
-        ucYCYgsJKEr87zjHBhHXlXjx9yiYzSagLbH2aCMTSKuIQIjEx75akJHMAqsZJTp/djJD7OKV
-        mNH+lAXClpbYvnwrI4StIfFjWS9UjajEzdVv2WHs98fmQ9WISLTeOwtVIyjx4OduqLikxNt9
-        89hBlkkItDNKnP/5gw3CmcEocWrzX6gOfYnF51YwQTzmK3HxUBFImEVAVaJ/w0SoEheJKdv/
-        gC1mFpCX2P52DjNIObOApsT6XfogpoSAssSRWywQFXwSHYf/ssO8tWPeEyYIW1Wit/kLE8yL
-        k2e3QJ3pIfF81342SBAGSry8cJdtAqPCLERAz0KydxbC3gWMzKsYxVILinPTU4uNCgyR43YT
-        IzgZarnuYJz89oPeIUYmDsZDjBIczEoivC4mG+OFeFMSK6tSi/Lji0pzUosPMZoCfTyRWUo0
-        OR+YjvNK4g1NjczMDCxNLUzNjCyUxHlDV/bFCwmkJ5akZqemFqQWwfQxcXBKNTCtCtjEz8Zz
-        YOKTB0frc45tmbXzrMZOORuz9SXsxdmXGnTvif7N4L90ktHVMqesLi+xk1vr+cz/CVtP+x5Z
-        7NFZ/SvB135+zXLT/3kxlg3C8RMnfc9+52AZ+8no1lyeqBx9G6OAc68XTuxS7AzUPrMr0tFF
-        6J75vdeXau1y9j6bX3lyK89UTl593uhTy+TmVTxuXXv50rWk3UyVHyYtXdmhMj910gaWBQlC
-        +q5ap55eebbf83DcoVt90+Uq9s8r83WL2Nq0ddK2qa6l27k8a/02/lQ6PZcvYqbqkWR/fodZ
-        zxef+K/Ls5T/Uds12zfLy1oKT7c3PFrnVH7PcGVj2Xv+mSkSrB2O8RpKv86zfluixFKckWio
-        xVxUnAgAMtbRag8EAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrNKsWRmVeSWpSXmKPExsWy7bCmua7L5Y3xBhc2s1psaZ7EbnF74jQ2
+        i/PnN7BbXN41h81izobN7BbHFog5sHlsWtXJ5tE9+x+LR9+WVYwenzfJBbBE5dhkpCampBYp
+        pOYl56dk5qXbKnkHxzvHm5oZGOoaWlqYKynkJeam2iq5+AToumXmAO1WUihLzCkFCgUkFhcr
+        6dvZFOWXlqQqZOQXl9gqpRak5BQYGhboFSfmFpfmpesl5+daGRoYGJkCVSbkZBxdeZypYDlr
+        Rc/uC2wNjFtYuhg5OSQETCQ2fpoDZgsJ7GCUuHlCtYuRg4NXQFDi7w5hkLCwgI9Ez6mHTBAl
+        ihL/O86xQcR1JV78PQpmswloS6w92sgE0ioiECLxsa+2i5GLg1lgNaNE589OZohVvBIz2p9C
+        rZWW2L58KyOErSHxY1kvVI2oxM3Vb9lh7PfH5kPViEi03jsLVSMo8eDnbqi4pMTbffPYQZZJ
+        CLQzSpz/+YMNwpnBKHFq81+oDn2JxedWgH3AK+ArcXX1HzCbRUBVYs7KE2wgV0sIuEgcu2oE
+        EmYWkJfY/nYOM0iYWUBTYv0ufYgKZYkjt1ggKvgkOg7/ZYd5a8e8J0wQtqpEb/MXJpgXJ89u
+        gTrTQ2LVpPvQIAyUeHd+IdsERoVZiICehWTvLIS9CxiZVzGKpRYU56anFhsVmCBH7SZGcCrU
+        8tjBOPvtB71DjEwcjIcYJTiYlUR4XUw2xgvxpiRWVqUW5ccXleakFh9iNAV6eCKzlGhyPjAZ
+        55XEG5oamZkZWJpamJoZWSiJ84au7IsXEkhPLEnNTk0tSC2C6WPi4JRqYDppVtURG6G3SLzK
+        smb/salJnbcO1tnK87Oe8nl/Yp/n50mVR57MqneaE3bq9o3kysmGu7fv7Uy7cDUn64WW6LnQ
+        QpGYp5aaSTFLmzJ9Mo0v+OddLLeLqsqZ3LQqZZm/au+pqIAriUEyx6aEXl0xy+F7gvLUnPAd
+        WT6x+77M2HvHMtqR/dyRO61zzt28YcTY8/zyBuv3vGIWXHxMWnJTF+w2+3Mpe4P1lLikOXfc
+        33QnRcazlLW2lzZMUdZxX2sv3y5/a1/q+p54D+lzb7Uzy15x6ARabPSP9awXY4te8OD8r6sX
+        Hx5j10jca3zfN/Le+QdXPzxvu/4qIijiTMvLxO7YlLRzGwQmnGIzuiAYqsRSnJFoqMVcVJwI
+        AERCqPcOBAAA
 DLP-Filter: Pass
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20201116011205epcms2p566dbc946d6c7a0198d09b3a872e85f33
-References: <CGME20201116011205epcms2p566dbc946d6c7a0198d09b3a872e85f33@epcms2p5>
+X-CMS-RootMailID: 20201116011755epcms2p7f7232e0865e8e1bc11a4b528c10d3571
+References: <CGME20201116011755epcms2p7f7232e0865e8e1bc11a4b528c10d3571@epcms2p7>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-max_payload is unused.
+stucture should be replaced by structure.
 
 Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
 ---
- drivers/nfc/s3fwrn5/core.c    | 3 +--
- drivers/nfc/s3fwrn5/i2c.c     | 4 +---
- drivers/nfc/s3fwrn5/s3fwrn5.h | 3 +--
- 3 files changed, 3 insertions(+), 7 deletions(-)
+ drivers/nfc/s3fwrn5/firmware.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nfc/s3fwrn5/core.c b/drivers/nfc/s3fwrn5/core.c
-index ba6c486d6465..f8e5d78d9078 100644
---- a/drivers/nfc/s3fwrn5/core.c
-+++ b/drivers/nfc/s3fwrn5/core.c
-@@ -136,7 +136,7 @@ static struct nci_ops s3fwrn5_nci_ops = {
- };
- 
- int s3fwrn5_probe(struct nci_dev **ndev, void *phy_id, struct device *pdev,
--	const struct s3fwrn5_phy_ops *phy_ops, unsigned int max_payload)
-+	const struct s3fwrn5_phy_ops *phy_ops)
- {
- 	struct s3fwrn5_info *info;
- 	int ret;
-@@ -148,7 +148,6 @@ int s3fwrn5_probe(struct nci_dev **ndev, void *phy_id, struct device *pdev,
- 	info->phy_id = phy_id;
- 	info->pdev = pdev;
- 	info->phy_ops = phy_ops;
--	info->max_payload = max_payload;
- 	mutex_init(&info->mutex);
- 
- 	s3fwrn5_set_mode(info, S3FWRN5_MODE_COLD);
-diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
-index dc995286be84..0ffa389066a0 100644
---- a/drivers/nfc/s3fwrn5/i2c.c
-+++ b/drivers/nfc/s3fwrn5/i2c.c
-@@ -19,7 +19,6 @@
- 
- #define S3FWRN5_I2C_DRIVER_NAME "s3fwrn5_i2c"
- 
--#define S3FWRN5_I2C_MAX_PAYLOAD 32
- #define S3FWRN5_EN_WAIT_TIME 150
- 
- struct s3fwrn5_i2c_phy {
-@@ -248,8 +247,7 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client,
- 	if (ret < 0)
- 		return ret;
- 
--	ret = s3fwrn5_probe(&phy->ndev, phy, &phy->i2c_dev->dev, &i2c_phy_ops,
--		S3FWRN5_I2C_MAX_PAYLOAD);
-+	ret = s3fwrn5_probe(&phy->ndev, phy, &phy->i2c_dev->dev, &i2c_phy_ops);
- 	if (ret < 0)
- 		return ret;
- 
-diff --git a/drivers/nfc/s3fwrn5/s3fwrn5.h b/drivers/nfc/s3fwrn5/s3fwrn5.h
-index ede68bb5eeae..9d5f34759225 100644
---- a/drivers/nfc/s3fwrn5/s3fwrn5.h
-+++ b/drivers/nfc/s3fwrn5/s3fwrn5.h
-@@ -34,7 +34,6 @@ struct s3fwrn5_info {
- 	struct device *pdev;
- 
- 	const struct s3fwrn5_phy_ops *phy_ops;
--	unsigned int max_payload;
- 
- 	struct s3fwrn5_fw_info fw_info;
- 
-@@ -79,7 +78,7 @@ static inline int s3fwrn5_write(struct s3fwrn5_info *info, struct sk_buff *skb)
+diff --git a/drivers/nfc/s3fwrn5/firmware.c b/drivers/nfc/s3fwrn5/firmware.c
+index ec930ee2c847..4cde6dd5c019 100644
+--- a/drivers/nfc/s3fwrn5/firmware.c
++++ b/drivers/nfc/s3fwrn5/firmware.c
+@@ -266,7 +266,7 @@ static int s3fwrn5_fw_complete_update_mode(struct s3fwrn5_fw_info *fw_info)
  }
  
- int s3fwrn5_probe(struct nci_dev **ndev, void *phy_id, struct device *pdev,
--	const struct s3fwrn5_phy_ops *phy_ops, unsigned int max_payload);
-+	const struct s3fwrn5_phy_ops *phy_ops);
- void s3fwrn5_remove(struct nci_dev *ndev);
- 
- int s3fwrn5_recv_frame(struct nci_dev *ndev, struct sk_buff *skb,
+ /*
+- * Firmware header stucture:
++ * Firmware header structure:
+  *
+  * 0x00 - 0x0B : Date and time string (w/o NUL termination)
+  * 0x10 - 0x13 : Firmware version
 -- 
 2.17.1
 
