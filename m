@@ -2,122 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB0FB2B51D4
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 21:03:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A095E2B51EC
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 21:06:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730983AbgKPUDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 15:03:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727864AbgKPUDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 15:03:05 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F018C0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 12:03:05 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id o144so7892004ybg.7
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 12:03:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MNn7sk5UxmFd4DMhglM6JZ+45NOSZ5Kymw6p2rpGzzs=;
-        b=SvxBSN0maQAf0s4piezz3KCSrqR9stNnRIpRngcapdKFOsKpXk1tPvISYpSXQW2GpO
-         Kug25nw868gu1kEyBlSX02Tqdnt4/Z31DwgnZdNu1GtMK+TW6reBLrjI+Ga7HFNajmHG
-         J9Cuk5kvpo4d+XWqy5Ym6k1xGtWH4nxoBBh0a5m6RGrxJz4F0ubEsMnMcRRIemZXuCXJ
-         CQguOQlYzpquq6jrSolC2Tt4hxyFxvPOk1LaWUn2xYhOY/qfKed6sWfnTRtjkCAOuAiV
-         J+ouQNlUbjWMrJSVpA54LuNyclwjGglvYQC12HwSD722XCdrTwEd3x+juSOd4UwxUuVU
-         mnyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MNn7sk5UxmFd4DMhglM6JZ+45NOSZ5Kymw6p2rpGzzs=;
-        b=hRRCoUHejZsrwqfQUCM74AoJOgd5uYQUJ7Ri81NFN2YcJIQ1VEpks6tjZVdundAMPb
-         Tkku7CkiZ5B3xdukYAmGV97v4c5Jz4zLkoUcrOuFDZfOUc7jehbh5oTCDHCnGIerpc/b
-         sMgRwfqs6UPzA6sWmR5JxyOdEGbbW+zahCc4XLWGFdCLYqeCyXHvkAc3yvPGENJXcBBN
-         hSrFcGVVl/hXqRLb9PqFfeAiQ9zQTcFHZJKO5v37WDVEsivkql799l7WefqrzyuAVkXw
-         FzGzCv9qHqOnPDqkPC4H58MLkULbP4LeI1Oacb9+vS3afdconSsH/OIS/4/KtPRe+8fc
-         VYSA==
-X-Gm-Message-State: AOAM531sjuWtFxefrM9bT+Cto1WTbVK16OOjtG/YyJJZ+uiaRUuRmskE
-        HNjjGcmzT/uVm3vv8jgXOt6sGzRgRQw4kqaR+cCGJocNxIg=
-X-Google-Smtp-Source: ABdhPJyHeTLUFHPVqAr72fUgCrpmNmrVCZwfzEgPhm+RPAa+iIHB0YPoVUJ+KIQzzihSRT3YqbdR0fyTNoP8zBZVVjc=
-X-Received: by 2002:a25:848e:: with SMTP id v14mr18611324ybk.153.1605556984434;
- Mon, 16 Nov 2020 12:03:04 -0800 (PST)
-MIME-Version: 1.0
-References: <20201111204308.3352959-1-jianyang.kernel@gmail.com> <20201114101709.42ee19e0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201114101709.42ee19e0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Mon, 16 Nov 2020 12:02:48 -0800
-Message-ID: <CAF2d9jgYgUa4DPVT8CSsbMs9HFjE5fn_U8-P=JuZeOecfiYt-g@mail.gmail.com>
-Subject: Re: [PATCH net-next] net-loopback: allow lo dev initial state to be controlled
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jian Yang <jianyang.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Jian Yang <jianyang@google.com>
+        id S1731520AbgKPUFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 15:05:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48704 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731488AbgKPUFI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 15:05:08 -0500
+Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EEEB520A8B;
+        Mon, 16 Nov 2020 20:05:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605557108;
+        bh=KH69V18rMUxKg+oWCxZehuAaYIXnsuXmjaKO7YMqvcI=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=PvrRQ1yBXAirL0IMeeXHa2cGqSeEveHnEH1TXaKntTE6BE5sK8pdET2ERcFgU1Fad
+         771Ub9QQq29adfwtVA4IvwW/N857ThRWJjK2RkGynwsyKGbbK2q9I6VRaD3gK87qkD
+         reujwiBblMcxfx9pRDK1oN5IwHVfk8BwxZLV/uzE=
+Message-ID: <32a6628214621766d884308fd9f29abad9e149b9.camel@kernel.org>
+Subject: Re: [PATCH net] net/mlx5: fix error return code in
+ mlx5e_tc_nic_init()
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Wang Hai <wanghai38@huawei.com>, leon@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, lariel@mellanox.com,
+        roid@mellanox.com
+Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 16 Nov 2020 12:05:06 -0800
+In-Reply-To: <20201114115223.39505-1-wanghai38@huawei.com>
+References: <20201114115223.39505-1-wanghai38@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 14, 2020 at 10:17 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 11 Nov 2020 12:43:08 -0800 Jian Yang wrote:
-> > From: Mahesh Bandewar <maheshb@google.com>
-> >
-> > Traditionally loopback devices comes up with initial state as DOWN for
-> > any new network-namespace. This would mean that anyone needing this
-> > device (which is mostly true except sandboxes where networking in not
-> > needed at all), would have to bring this UP by issuing something like
-> > 'ip link set lo up' which can be avoided if the initial state can be set
-> > as UP. Also ICMP error propagation needs loopback to be UP.
-> >
-> > The default value for this sysctl is set to ZERO which will preserve the
-> > backward compatible behavior for the root-netns while changing the
-> > sysctl will only alter the behavior of the newer network namespaces.
->
-> Any reason why the new sysctl itself is not per netns?
->
-Making it per netns would not be very useful since its effect is only
-during netns creation.
+On Sat, 2020-11-14 at 19:52 +0800, Wang Hai wrote:
+> Fix to return a negative error code from the error handling
+> case instead of 0, as done elsewhere in this function.
+> 
+> Fixes: aedd133d17bc ("net/mlx5e: Support CT offload for tc nic
+> flows")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> index e3a968e9e2a0..c7ad5db84f78 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> @@ -5227,8 +5227,10 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
+>  
+>  	tc->ct = mlx5_tc_ct_init(priv, tc->chains, &priv-
+> >fs.tc.mod_hdr,
+>  				 MLX5_FLOW_NAMESPACE_KERNEL);
+> -	if (IS_ERR(tc->ct))
+> +	if (IS_ERR(tc->ct)) {
+> +		err = PTR_ERR(tc->ct);
+>  		goto err_ct;
+> +	}
+>  
+>  	tc->netdevice_nb.notifier_call = mlx5e_tc_netdev_event;
+>  	err = register_netdevice_notifier_dev_net(priv->netdev,
 
-> > +netdev_loopback_state
-> > +---------------------
->
-> loopback_init_state ?
->
-That's fine, thanks for the suggestion.
+Applied to net-mlx5 
+Thanks !
 
-> > +Controls the loopback device initial state for any new network namespaces. By
-> > +default, we keep the initial state as DOWN.
-> > +
-> > +If set to 1, the loopback device will be brought UP during namespace creation.
-> > +This will only apply to all new network namespaces.
-> > +
-> > +Default : 0  (for compatibility reasons)
-> > +
-> >  netdev_max_backlog
-> >  ------------------
-> >
-> > diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
-> > index a1c77cc00416..76dc92ac65a2 100644
-> > --- a/drivers/net/loopback.c
-> > +++ b/drivers/net/loopback.c
-> > @@ -219,6 +219,13 @@ static __net_init int loopback_net_init(struct net *net)
-> >
-> >       BUG_ON(dev->ifindex != LOOPBACK_IFINDEX);
-> >       net->loopback_dev = dev;
-> > +
-> > +     if (sysctl_netdev_loopback_state) {
-> > +             /* Bring loopback device UP */
-> > +             rtnl_lock();
-> > +             dev_open(dev, NULL);
-> > +             rtnl_unlock();
-> > +     }
->
-> The only concern I have here is that it breaks notification ordering.
-> Is there precedent for NETDEV_UP to be generated before all pernet ops
-> ->init was called?
-I'm not sure if any and didn't see any issues in our usage / tests.
-I'm not even sure anyone is watching/monitoring for lo status as such.
+
