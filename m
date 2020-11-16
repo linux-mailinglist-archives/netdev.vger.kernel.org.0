@@ -2,60 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E96362B54FB
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 00:32:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91DCF2B54FE
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 00:32:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729694AbgKPXaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 18:30:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38940 "EHLO mail.kernel.org"
+        id S1729987AbgKPXag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 18:30:36 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:58850 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726227AbgKPXaF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 18:30:05 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605569405;
-        bh=hrhGHOd+8vWh9fJJG1fhWn7TWoyVgpcJuUX0QOFG7M8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=1v4iiRPFG3bNWKFEzdHmow4mnXxlbHCkdxVuyhGvSlSGrsf02LOYZ1QG0PMsM9pZW
-         VgHLRivO+7jWO5PaD2tNZ9yd4j9ebAqjdd/oyk/+omv3pz1bq4Z+X2jQ97NAeDRDie
-         45tl5k8u1JkB3NttBYHIeNoyO3Oz9oirFicDpHGY=
+        id S1726227AbgKPXag (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 18:30:36 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kenx5-007QmT-IU; Tue, 17 Nov 2020 00:30:27 +0100
+Date:   Tue, 17 Nov 2020 00:30:27 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [PATCH net-next 3/3] net: ethernet: ti: am65-cpsw: enable
+ broadcast/multicast rate limit support
+Message-ID: <20201116233027.GC1756591@lunn.ch>
+References: <20201114035654.32658-1-grygorii.strashko@ti.com>
+ <20201114035654.32658-4-grygorii.strashko@ti.com>
+ <20201114191723.rvmhyrqinkhdjtpr@skbuf>
+ <e9f2b153-d467-15fd-bd4a-601211601fca@ti.com>
+ <20201116185919.qwaklquxhhhtqttg@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] cx82310_eth: fix error return code in cx82310_bind()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160556940487.9105.61677391575473381.git-patchwork-notify@kernel.org>
-Date:   Mon, 16 Nov 2020 23:30:04 +0000
-References: <1605247627-15385-1-git-send-email-zhangchangzhong@huawei.com>
-In-Reply-To: <1605247627-15385-1-git-send-email-zhangchangzhong@huawei.com>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux@zary.sk,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201116185919.qwaklquxhhhtqttg@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Fri, 13 Nov 2020 14:07:07 +0800 you wrote:
-> Fix to return a negative error code from the error handling
-> case instead of 0, as done elsewhere in this function.
+> Same as above, just in packets per second.
 > 
-> Fixes: ca139d76b0d9 ("cx82310_eth: re-enable ethernet mode after router reboot")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> 
-> [...]
+> tc qdisc add dev eth0 clsact
+> tc filter add dev eth0 ingress flower skip_sw \
+> 	dst_mac 01:00:00:00:00:00/01:00:00:00:00:00 \
+> 	action police rate 20kpps
 
-Here is the summary with links:
-  - [net] cx82310_eth: fix error return code in cx82310_bind()
-    https://git.kernel.org/netdev/net/c/cfbaa8b33e02
+I agree with Vladimir here. Since the hardware does PPS limits, the TC
+API should also be PPS limit based. And as you said, CPU load is more
+a factor of PPS than BPS, so it is a useful feature in general to
+have. You just need to implement the software version first, before
+you offload it to the hardware.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+    Andrew
