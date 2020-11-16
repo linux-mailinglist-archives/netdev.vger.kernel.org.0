@@ -2,107 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715DB2B4021
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 10:47:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61A0A2B3FE3
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 10:36:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728642AbgKPJqB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 04:46:01 -0500
-Received: from correo.us.es ([193.147.175.20]:45426 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726598AbgKPJqA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 04:46:00 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 3263D508CF6
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 10:45:14 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 1C637ECC1C
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 10:45:14 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 0D010321C57; Mon, 16 Nov 2020 10:33:15 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
-        version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 244DB3984A9;
-        Mon, 16 Nov 2020 10:26:49 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 16 Nov 2020 10:26:43 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id EDD0A42EF4E0;
-        Mon, 16 Nov 2020 10:26:48 +0100 (CET)
-Date:   Mon, 16 Nov 2020 10:26:48 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     netdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        "Jose M . Guisado Gomez" <guigom@riseup.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next] netfilter: nf_reject: bridge: fix build errors
- due to code movement
-Message-ID: <20201116092648.GA405@salvia>
-References: <20201116034203.7264-1-rdunlap@infradead.org>
+        id S1727418AbgKPJfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 04:35:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726621AbgKPJfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 04:35:14 -0500
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49586C0613CF;
+        Mon, 16 Nov 2020 01:35:12 -0800 (PST)
+Received: by mail-lf1-x144.google.com with SMTP id f11so24200040lfs.3;
+        Mon, 16 Nov 2020 01:35:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=phafJMA73+KNOmHJBlDaNagv8vGkjcmIaidHQZjre5g=;
+        b=VimgtruRxZPULC4qattrtFlD0286R2FnJ8dcr0wRMQ6KLayA5SXdQjqeZS80CCvkkt
+         e9xdAjcBxHLSy8LitTPB/6OQ3gPe+7xfhVPvnr7xNvg57M6DxxpvJCUtlRktvv1rWiFr
+         tlPW+C03EQ4J2b4z/y49Uj+VobHVGYHs8jl6sMehtkGJaMTqSa4J2HzaJUZxoehRhX6E
+         Og8nk2jfQdqKB/aWeSaTzSEgjp7c+97Y5VUlRwAK8SKggJ58zNSrOEnyExnxhn6XRJkp
+         AWJ1UyCBRMfORZ//IlTfIx9raiI1onYeaEZ+Z6O3qxpoWZOq5FnlpctAXpFRFDXLq0nG
+         62iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=phafJMA73+KNOmHJBlDaNagv8vGkjcmIaidHQZjre5g=;
+        b=TXHV+WXuYslwX/Ej8zWpE7SFkwbJAPdZtSjOhSHX7Tsv5crB9w7dH1ozR4zrlBIltx
+         Awc8C1JS8fNIhrkmShZhpbJtYYhRvLQE5JkMCvxMlr+8a5TMiCq/7WlRj+8YrWui/v8w
+         lEt2zex4oh87UzJv9aJvCtuty838a+fx2DppeIl5m4m8Ca3f0KJVK8Y0vHD8m9ljJvzf
+         GFp9L08isZXQwR+PfK5RVcX2yIkWosEhQigVlNpTtowXd0nfabzNF4lXPZ+lCSDALaRj
+         KvBzNwdSv+BgSK60DV0g56AqPHCt5qzENedtKtZTCGup1otgjuhSHS1OHefIV8t7pkhu
+         OWFw==
+X-Gm-Message-State: AOAM530l1HYKekXOylToMfr/8axPj8YAJDNLTg8qgwGmhNA0VaRMe3ye
+        J6JZtusROGA4k8ciV6pS2JE=
+X-Google-Smtp-Source: ABdhPJxVqmfN2e4+h/bCRxlDwFEvQCslssey+W3hiVKCreqO4jwBhaQqVcPdVREk+7csPhECbGFrjQ==
+X-Received: by 2002:a19:cb8f:: with SMTP id b137mr5193330lfg.448.1605519310761;
+        Mon, 16 Nov 2020 01:35:10 -0800 (PST)
+Received: from localhost.localdomain (87-205-71-93.adsl.inetia.pl. [87.205.71.93])
+        by smtp.gmail.com with ESMTPSA id t26sm2667986lfp.296.2020.11.16.01.35.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2020 01:35:10 -0800 (PST)
+From:   alardam@gmail.com
+X-Google-Original-From: marekx.majtyka@intel.com
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        andrii.nakryiko@gmail.com, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org, davem@davemloft.net,
+        john.fastabend@gmail.com, hawk@kernel.org, toke@redhat.com
+Cc:     maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
+        bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
+        maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org,
+        Marek Majtyka <marekx.majtyka@intel.com>
+Subject: [PATCH 0/8] New netdev feature flags for XDP
+Date:   Mon, 16 Nov 2020 10:34:44 +0100
+Message-Id: <20201116093452.7541-1-marekx.majtyka@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201116034203.7264-1-rdunlap@infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Marek Majtyka <marekx.majtyka@intel.com>
 
-Thanks for catching up this.
+Implement support for checking if a netdev has native XDP and AF_XDP zero
+copy support. Previously, there was no way to do this other than to try
+to create an AF_XDP socket on the interface or load an XDP program and
+see if it worked. This commit changes this by extending existing
+netdev_features in the following way:
+ * xdp        - full XDP support (XDP_{TX, PASS, DROP, ABORT, REDIRECT})
+ * af-xdp-zc  - AF_XDP zero copy support
+NICs supporting these features are updated by turning the corresponding
+netdev feature flags on.
 
-On Sun, Nov 15, 2020 at 07:42:03PM -0800, Randy Dunlap wrote:
-> Fix build errors in net/bridge/netfilter/nft_reject_bridge.ko
-> by selecting NF_REJECT_IPV4, which provides the missing symbols.
-> 
-> ERROR: modpost: "nf_reject_skb_v4_tcp_reset" [net/bridge/netfilter/nft_reject_bridge.ko] undefined!
-> ERROR: modpost: "nf_reject_skb_v4_unreach" [net/bridge/netfilter/nft_reject_bridge.ko] undefined!
-> 
-> Fixes: fa538f7cf05a ("netfilter: nf_reject: add reject skbuff creation helpers")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: kernel test robot <lkp@intel.com>
-> Cc: Jose M. Guisado Gomez <guigom@riseup.net>
-> Cc: Pablo Neira Ayuso <pablo@netfilter.org>
-> Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
-> Cc: Florian Westphal <fw@strlen.de>
-> Cc: netfilter-devel@vger.kernel.org
-> Cc: coreteam@netfilter.org
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> ---
->  net/bridge/netfilter/Kconfig |    1 +
->  1 file changed, 1 insertion(+)
-> 
-> --- linux-next-20201113.orig/net/bridge/netfilter/Kconfig
-> +++ linux-next-20201113/net/bridge/netfilter/Kconfig
-> @@ -18,6 +18,7 @@ config NFT_BRIDGE_META
->  config NFT_BRIDGE_REJECT
->  	tristate "Netfilter nf_tables bridge reject support"
->  	depends on NFT_REJECT
-> +	depends on NF_REJECT_IPV4
+NOTE:
+ Only the compilation check was performed for:
+  - ice, 
+  - igb,
+  - mlx5, 
+  - bnxt, 
+  - dpaa2, 
+  - mvmeta, 
+  - mvpp2, 
+  - qede,
+  - sfc, 
+  - netsec, 
+  - cpsw, 
+  - xen, 
+  - virtio_net.
 
-I can update the patch here before applying to add:
+Libbpf library is extended in order to provide a simple API for gathering
+information about XDP supported capabilities of a netdev. This API
+utilizes netlink interface towards kernel. With this function it is
+possible to get xsk supported options for netdev beforehand.
+The new API is used in core xsk code as well as in the xdpsock sample.
 
-        depends on NF_REJECT_IPV6
+These new flags also solve the problem with strict recognition of zero
+copy support. The problem is that there are drivers out there that only
+support XDP partially, so it is possible to successfully load the XDP
+program in native mode, but it will still not be able to support zero-copy
+as it does not have XDP_REDIRECT support. With af-xdp-zc flag the check
+is possible and trivial.
 
-as well. It seems both dependencies (IPv4 and IPv6) are missing.
+Marek Majtyka (8):
+  net: ethtool: extend netdev_features flag set
+  drivers/net: turn XDP flags on
+  xsk: add usage of xdp netdev_features flags
+  xsk: add check for full support of XDP in bind
+  libbpf: extend netlink attribute API
+  libbpf: add functions to get XSK modes
+  libbpf: add API to get XSK/XDP caps
+  samples/bpf/xdp: apply netdev XDP/XSK modes info
 
-Thanks.
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   1 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   1 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |   2 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |   4 +
+ drivers/net/ethernet/intel/igb/igb_main.c     |   2 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   3 +
+ drivers/net/ethernet/marvell/mvneta.c         |   1 +
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   1 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   2 +
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |   1 +
+ drivers/net/ethernet/sfc/efx.c                |   1 +
+ drivers/net/ethernet/socionext/netsec.c       |   1 +
+ drivers/net/ethernet/ti/cpsw.c                |   2 +
+ drivers/net/ethernet/ti/cpsw_new.c            |   2 +
+ drivers/net/tun.c                             |   4 +
+ drivers/net/veth.c                            |   1 +
+ drivers/net/virtio_net.c                      |   1 +
+ drivers/net/xen-netfront.c                    |   1 +
+ include/linux/netdev_features.h               |   6 +
+ include/net/xdp.h                             |  13 +
+ include/net/xdp_sock_drv.h                    |  11 +
+ include/uapi/linux/if_xdp.h                   |   1 +
+ net/ethtool/common.c                          |   2 +
+ net/xdp/xsk.c                                 |   4 +-
+ net/xdp/xsk_buff_pool.c                       |  21 +-
+ samples/bpf/xdpsock_user.c                    | 117 +++++-
+ tools/include/uapi/linux/ethtool.h            |  44 ++
+ tools/include/uapi/linux/if_xdp.h             |   1 +
+ tools/lib/bpf/ethtool.h                       |  49 +++
+ tools/lib/bpf/libbpf.h                        |   1 +
+ tools/lib/bpf/libbpf.map                      |   1 +
+ tools/lib/bpf/netlink.c                       | 379 +++++++++++++++++-
+ tools/lib/bpf/nlattr.c                        | 105 +++++
+ tools/lib/bpf/nlattr.h                        |  22 +
+ tools/lib/bpf/xsk.c                           |  54 ++-
+ tools/lib/bpf/xsk.h                           |   3 +-
+ 36 files changed, 845 insertions(+), 20 deletions(-)
+ create mode 100644 tools/lib/bpf/ethtool.h
 
->  	help
->  	  Add support to reject packets.
->  
+-- 
+2.20.1
+
