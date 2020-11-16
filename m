@@ -2,106 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B9E02B4E5A
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 18:49:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CB452B4E5E
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 18:49:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388034AbgKPRpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 12:45:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47116 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387773AbgKPRo7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 12:44:59 -0500
-Received: from mail-ua1-x943.google.com (mail-ua1-x943.google.com [IPv6:2607:f8b0:4864:20::943])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A984CC0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 09:44:59 -0800 (PST)
-Received: by mail-ua1-x943.google.com with SMTP id h26so5607945uan.10
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 09:44:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WZQz2b5v/sf6FchNy6tKc9e7B0GkUbrM/P4Jgv59+zg=;
-        b=qBJBryxDNFcXCMyykmk+gXb4EjKZyjXQy7D6gluwUEUPXGCNWlFB4Mmj1lwqsJRD67
-         vCKznDVcaNbHUFmec2Eb0wBbb4Qx36xcinm43Obm860Hb1FgfMhrSewuLOfyCpsdPg8/
-         81AVS9zVyUaWkqa7vzdqp2dBsmqTLnbcI53q+mIRvC9l8O36VdWzwAD/lKTpAjKg+bca
-         IZ0jpJfPREKZGg3M4w8a31dRgi3rXsGZkDHc+mf8TI+QPWduqt5AKOJ8CD3Zifa/UklF
-         Oe9G68y+u1i4edSgaRCNsMjq8M8WsreJ2nE8joYJ2cwS4psmqAlBtGLm1oKrupAv60v6
-         VvNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WZQz2b5v/sf6FchNy6tKc9e7B0GkUbrM/P4Jgv59+zg=;
-        b=hpJdaHCJSF3nZvF3UO3a/BNUZwfVNRrDZ8bLaNbE+qamTwG4sA9EF96/BgCosSXc3V
-         2eDY2krNayhvEQwTY8axs0SHfJMapnt2jfHt4ef0fqriV0D9ahGWqH9jhJDAUbaXHvcb
-         Jj25dyVUS0H1HD6SDKv1Zk3bnZHmFwtQdI2Jz5GOU/V/UAYxl25H3hB6LOA7Z80dqRPZ
-         Utck4DeVjfgr2VBOOnBvPRNIwhK6KFYipNXiiqJcHATUv8L5JZUglfZPNVGzr0k3ujZb
-         hOpQqKZjwt/rEbgqSK9C8LP9WMgug7/Ki6sRl5F9MEg6ESnDL+ITD0WpoF1UqAqPNjkY
-         y2cQ==
-X-Gm-Message-State: AOAM5314WLNOY4M4IRmVwA1tShH0H+MWAyP2e/rd4qG39fLukIEtzCst
-        E4mvUA1rWQyGL0MJafTPbUWtSjmWvp18jw==
-X-Google-Smtp-Source: ABdhPJwhfa/i6TGc+5aZJkN9jMohK6fFypmMvW+YR2iGDvjTcdVXdjkIqJPzVAl08W2o+czJ2VIVPA==
-X-Received: by 2002:ab0:3774:: with SMTP id o20mr6987481uat.67.1605548698919;
-        Mon, 16 Nov 2020 09:44:58 -0800 (PST)
-Received: from sharpelletti.c.googlers.com.com (182.71.196.35.bc.googleusercontent.com. [35.196.71.182])
-        by smtp.gmail.com with ESMTPSA id w128sm2226403vka.30.2020.11.16.09.44.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 09:44:58 -0800 (PST)
-From:   Ryan Sharpelletti <sharpelletti.kdev@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org,
-        Ryan Sharpelletti <sharpelletti@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Yuchung Cheng <ycheng@google.com>
-Subject: [PATCH net] tcp: only postpone PROBE_RTT if RTT is < current min_rtt estimate
-Date:   Mon, 16 Nov 2020 17:44:13 +0000
-Message-Id: <20201116174412.1433277-1-sharpelletti.kdev@gmail.com>
-X-Mailer: git-send-email 2.29.2.299.gdc1121823c-goog
+        id S2388036AbgKPRpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 12:45:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56100 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731712AbgKPRpj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 12:45:39 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 10D6B20B80;
+        Mon, 16 Nov 2020 17:45:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605548739;
+        bh=tQW67WaRqbqEetQTxYCnJ/yXmPFnNQVNmYTNVKmKS+Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N5Cp/cvZZupZ8JgSE3HETbGgmW35MK+6KDFsi3a2eckV5fEql5j7G55cdbs6hzqIV
+         RQ7XfIH+ki7GHSSCfruj9XO72u0UKzv6B7Qn6RgHW4uZOhpu5AMLWTEJC/4ScJsjcu
+         y0dIL0aaJr9kfIbMDF4DNMJ6hXjwmWeezW+mXEtU=
+Date:   Mon, 16 Nov 2020 09:45:38 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marco Felsch <m.felsch@pengutronix.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Zhang Changzhong <zhangchangzhong@huawei.com>, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: phy: smsc: add missed clk_disable_unprepare in
+ smsc_phy_probe()
+Message-ID: <20201116094538.47937d15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201116092607.psaelzuga3kcrryu@pengutronix.de>
+References: <1605180239-1792-1-git-send-email-zhangchangzhong@huawei.com>
+        <20201114112625.440b52f2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <fc03d4de-14d2-1b61-ac9b-40ea26e6fa9a@gmail.com>
+        <20201116092607.psaelzuga3kcrryu@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ryan Sharpelletti <sharpelletti@google.com>
+On Mon, 16 Nov 2020 10:26:07 +0100 Marco Felsch wrote:
+> > > The code right above looks highly questionable as well:
+> > > 
+> > >         priv->refclk = clk_get_optional(dev, NULL);
+> > >         if (IS_ERR(priv->refclk))
+> > >                 dev_err_probe(dev, PTR_ERR(priv->refclk), "Failed to request clock\n");
+> > >  
+> > >         ret = clk_prepare_enable(priv->refclk);
+> > >         if (ret)
+> > >                 return ret;
+> > > 
+> > > I don't think clk_prepare_enable() will be too happy to see an error
+> > > pointer. This should probably be:
+> > > 
+> > >         priv->refclk = clk_get_optional(dev, NULL);
+> > >         if (IS_ERR(priv->refclk))
+> > >                 return dev_err_probe(dev, PTR_ERR(priv->refclk), 
+> > > 				      "Failed to request clock\n");  
+> > 
+> > Right, especially if EPROBE_DEFER must be returned because the clock
+> > provider is not ready yet, we should have a chance to do that.  
+> 
+> damn.. I missed the return here. Thanks for covering that. Should I send
+> a fix or did you do that already?
 
-During loss recovery, retransmitted packets are forced to use TCP
-timestamps to calculate the RTT samples, which have a millisecond
-granularity. BBR is designed using a microsecond granularity. As a
-result, multiple RTT samples could be truncated to the same RTT value
-during loss recovery. This is problematic, as BBR will not enter
-PROBE_RTT if the RTT sample is <= the current min_rtt sample, meaning
-that if there are persistent losses, PROBE_RTT will constantly be
-pushed off and potentially never re-entered. This patch makes sure
-that BBR enters PROBE_RTT by checking if RTT sample is < the current
-min_rtt sample, rather than <=.
-
-The Netflix transport/TCP team discovered this bug in the Linux TCP
-BBR code during lab tests.
-
-Fixes: 0f8782ea1497 ("tcp_bbr: add BBR congestion control")
-Signed-off-by: Ryan Sharpelletti <sharpelletti@google.com>
-Signed-off-by: Neal Cardwell <ncardwell@google.com>
-Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: Yuchung Cheng <ycheng@google.com>
----
- net/ipv4/tcp_bbr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
-index 6c4d79baff26..6ea3dc2e4219 100644
---- a/net/ipv4/tcp_bbr.c
-+++ b/net/ipv4/tcp_bbr.c
-@@ -945,7 +945,7 @@ static void bbr_update_min_rtt(struct sock *sk, const struct rate_sample *rs)
- 	filter_expired = after(tcp_jiffies32,
- 			       bbr->min_rtt_stamp + bbr_min_rtt_win_sec * HZ);
- 	if (rs->rtt_us >= 0 &&
--	    (rs->rtt_us <= bbr->min_rtt_us ||
-+	    (rs->rtt_us < bbr->min_rtt_us ||
- 	     (filter_expired && !rs->is_ack_delayed))) {
- 		bbr->min_rtt_us = rs->rtt_us;
- 		bbr->min_rtt_stamp = tcp_jiffies32;
--- 
-2.29.2.299.gdc1121823c-goog
-
+Please do, I don't see any fix for this issue in patchwork right now.
