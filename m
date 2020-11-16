@@ -2,54 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E48FD2B4A2F
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 17:01:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ECED2B4A36
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 17:02:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731586AbgKPP7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 10:59:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40582 "EHLO mail.kernel.org"
+        id S1731672AbgKPQCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 11:02:10 -0500
+Received: from mx2.suse.de ([195.135.220.15]:48454 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730492AbgKPP7U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 10:59:20 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0C9AC20A8B;
-        Mon, 16 Nov 2020 15:59:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605542360;
-        bh=rgkh+lLMDpZDsdCUV06ZkL5Vht6RSAzwdxFtmRPXx2g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=McgTkb7jnwNKOUq/OiaDIJ1PWafMsF0ev8KRwLHgkFNbgk9Rj5S+j/f1ROOpDXUKV
-         ruxvOrLf2DYa54e2p87HtZH4pSxK+be56+HXUx48UA83xfDXouBTMxgY1vOz6DgowU
-         F/BUNbScNFI21joagneHO+mcVWZtsD3HUfymICis=
-Date:   Mon, 16 Nov 2020 07:59:19 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] r8169: remove nr_frags argument from
- rtl_tx_slots_avail
-Message-ID: <20201116075919.7add7001@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <34cdb172-c5d5-fb18-dd15-e502a5c23966@gmail.com>
-References: <34cdb172-c5d5-fb18-dd15-e502a5c23966@gmail.com>
+        id S1728858AbgKPQCK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 11:02:10 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 90B08AC1F;
+        Mon, 16 Nov 2020 16:02:09 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 2279C604F6; Mon, 16 Nov 2020 17:02:09 +0100 (CET)
+Date:   Mon, 16 Nov 2020 17:02:09 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Antonio Cardace <acardace@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v3 1/4] ethtool: add ETHTOOL_COALESCE_ALL_PARAMS
+ define
+Message-ID: <20201116160209.enpnpypha6wuajbw@lion.mk-sys.cz>
+References: <20201113231655.139948-1-acardace@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="xqjc7yx3a3doiz2i"
+Content-Disposition: inline
+In-Reply-To: <20201113231655.139948-1-acardace@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 15 Nov 2020 21:55:32 +0100 Heiner Kallweit wrote:
-> The only time when nr_frags isn't SKB_MAX_FRAGS is when entering
-> rtl8169_start_xmit(). However we can use SKB_MAX_FRAGS also here
-> because when queue isn't stopped there should always be room for
-> MAX_SKB_FRAGS + 1 descriptors.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Looks like this depended on the patch I just applied, please try avoid
-this sort of dependencies, the bot can't test this.
+--xqjc7yx3a3doiz2i
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Now the prerequisite is applied please resend.
+On Sat, Nov 14, 2020 at 12:16:52AM +0100, Antonio Cardace wrote:
+> This bitmask represents all existing coalesce parameters.
+>=20
+> Signed-off-by: Antonio Cardace <acardace@redhat.com>
+
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+
+> ---
+>  include/linux/ethtool.h | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+> index 6408b446051f..e3da25b51ae4 100644
+> --- a/include/linux/ethtool.h
+> +++ b/include/linux/ethtool.h
+> @@ -215,6 +215,7 @@ bool ethtool_convert_link_mode_to_legacy_u32(u32 *leg=
+acy_u32,
+>  #define ETHTOOL_COALESCE_TX_USECS_HIGH		BIT(19)
+>  #define ETHTOOL_COALESCE_TX_MAX_FRAMES_HIGH	BIT(20)
+>  #define ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL	BIT(21)
+> +#define ETHTOOL_COALESCE_ALL_PARAMS		GENMASK(21, 0)
+> =20
+>  #define ETHTOOL_COALESCE_USECS						\
+>  	(ETHTOOL_COALESCE_RX_USECS | ETHTOOL_COALESCE_TX_USECS)
+> --=20
+> 2.28.0
+>=20
+
+--xqjc7yx3a3doiz2i
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl+yonsACgkQ538sG/LR
+dpXYrwf/Yj1QPGT2sbVuJJGSx4QSFYKhYStqCrBUAYQT8I5hrP4d7DYVBjzyTsSc
+9Dawg/lwZ8pywCUI/iAwu3IlUtHb714COfwyuv8BFROk1z28T86s2pckJbEuPSL0
++P89JtDXok/FuB47tYQTb/O0oytsZNr6oP36o5Cfd/jf2hsiL4LFepDRW/9wrhd/
+ph30b8mzBEoml6cp0irFsBA0av7oXRrh+kbk57uC/8lenNaoOawxcPyklJIvhZsl
+YD36/HKf3JVHhLnXlZyfQjr4TU6bQTvzggorp+RpCrnp9N7JtZaVPSNtl4b4OYPH
+dNKcm412+/3gcSWUx0JpTiaK+ZqOAQ==
+=ddl7
+-----END PGP SIGNATURE-----
+
+--xqjc7yx3a3doiz2i--
