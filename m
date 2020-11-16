@@ -2,86 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EF662B3AC7
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 01:29:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0313C2B3AC8
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 01:29:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727618AbgKPA2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 19:28:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56470 "EHLO
+        id S1728153AbgKPA2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 19:28:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726311AbgKPA2K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 19:28:10 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1A0C0613CF
-        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 16:28:09 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id z3so11978294pfb.10
-        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 16:28:09 -0800 (PST)
+        with ESMTP id S1726311AbgKPA2M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 19:28:12 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50295C0613CF
+        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 16:28:12 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id 131so1454792pfb.9
+        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 16:28:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=effEwbMK+ASdQ24kMAHXFEwWAymcdj9MovRs/jPNr44=;
-        b=OB7CuQy3JMK9zVirBoti2DISL3ip/MeFq/Zn9GENURAv70WlelE+ek2xazkOLdxn9K
-         mahhPBDX9/u5dCXQaMt6C2R1qttla8WSx2zTCiVORQz5D+KPUQhfEG2Zi6l722v3JBuA
-         1rWVx+a7goSMy+NflT2mGRvTO7KA3vV83OlCQ=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=6rPe1iq7+fcLr9VBmsv3jn5BZ44p0yB9+/X5hPyBzIo=;
+        b=SadjDcwADYRK5IZFsAVcAItSo8LlEk0K3GIyIVfmM5Uj+gFXFnmWthk6uUluTDRmce
+         SXwmz6SgMTS03JUh4HsXFKogsI/WUK0id2aQFAbI1SiNzTqVaJD8cdTmHbE+/Jp0JgoG
+         CT9f7hUCC+FbdJmnsUAOieWkfS0OxCE504VV8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=effEwbMK+ASdQ24kMAHXFEwWAymcdj9MovRs/jPNr44=;
-        b=VT6TBz+6ZMaTsRf7jOxR8C422PDMDivEVK0sve8KnZAbx0yOvgJOAigwWnyt8BEE2k
-         9UzABcGOIRf4IatXSPAWoKoZT/LzVtE6fUloUgk7OyEO7qoVgXRuGARIaUZ2h8vfxmup
-         jO6ekRG52Ajaz0k0QjaDAwjb6QgdxtWJEtwnjGytZcYBwXUkxEtMVQwE/bIKFgSFYrzJ
-         62SDJNDiepVtTSDlvUdJVvo0k0XBISINfXQEAGOmFq0jfNVObupNQue2FoHaFcQQS90m
-         48lJX1oomvB+C+xf1jqTG97trMnvF9u2+/DyJscN5ed/0iGIHHW9mmIMlLsUAjktOfS0
-         Ppsg==
-X-Gm-Message-State: AOAM5334yxSCT/ppHVPY0PuC1debTeMu6f232+qVyfPV+c28uwnC6aiU
-        ckSmLECpNaInS1bhTQG1haTy+pDYpHHONg==
-X-Google-Smtp-Source: ABdhPJyvCuPM99zCD8ZBMm47Udb6udm9p3BoGhrJ7cpxnCkrZngvLOJ5aIWq70NE2k74A0x3ZQVYig==
-X-Received: by 2002:aa7:953c:0:b029:18b:bfb:9fa1 with SMTP id c28-20020aa7953c0000b029018b0bfb9fa1mr11953526pfp.14.1605486488520;
-        Sun, 15 Nov 2020 16:28:08 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=6rPe1iq7+fcLr9VBmsv3jn5BZ44p0yB9+/X5hPyBzIo=;
+        b=Y7PTn+bEYbqZRP1j4D6JKuByZjNqS3RfxcjtgW1URnLhekXkjPll6mrymgRuPzYtZO
+         tN9TfLo1p8xT1D635YoEURENfYXyvwitljnGHFCZ+0uB9krjK/VPgeWch9zhE6EkWfi5
+         agan14lvBhyNXs42cO/Pxfp8ExOIClaufKwcEZtPcHjtR8osvFJ+tQgV21iN0JJU8fVA
+         9nD+DmGOhhYz1ey8EDAV6f6PBGE2g4hK4NC+FHfzW4J01TcFgFwS51w43e7P7K79q81W
+         FGM3HnnD0yMc92yzaqn+4PaoREGbWRSP5KptpXobId6gq691TRv7hSHWp3zflS6RBAKV
+         xl5Q==
+X-Gm-Message-State: AOAM533d0aYImLMZCZ+BSYAL3SRrmY56tKg4TGlRVHPeR1kGLkE4By33
+        +wyZC9qSeoTxmBFbJGYFMRwM/vmAeZjyCw==
+X-Google-Smtp-Source: ABdhPJy6axevHbK/ZUVkylS6spqU8S0yQcAXodhtWYOJh0dfmzHIWM8jKoQl5uK3EoRtfBq1fWALHQ==
+X-Received: by 2002:a62:db03:0:b029:196:45d6:9bb3 with SMTP id f3-20020a62db030000b029019645d69bb3mr3460203pfg.74.1605486491604;
+        Sun, 15 Nov 2020 16:28:11 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i19sm2942563pgk.44.2020.11.15.16.28.05
+        by smtp.gmail.com with ESMTPSA id i19sm2942563pgk.44.2020.11.15.16.28.08
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 15 Nov 2020 16:28:07 -0800 (PST)
+        Sun, 15 Nov 2020 16:28:11 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     kuba@kernel.org
 Cc:     netdev@vger.kernel.org, gospo@broadcom.com
-Subject: [PATCH net 0/4] bnxt_en: Bug fixes.
-Date:   Sun, 15 Nov 2020 19:27:48 -0500
-Message-Id: <1605486472-28156-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 1/4] bnxt_en: read EEPROM A2h address using page 0
+Date:   Sun, 15 Nov 2020 19:27:49 -0500
+Message-Id: <1605486472-28156-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1605486472-28156-1-git-send-email-michael.chan@broadcom.com>
+References: <1605486472-28156-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000dd805205b42e735d"
+        boundary="0000000000000c870205b42e7420"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000dd805205b42e735d
+--0000000000000c870205b42e7420
 
-This first patch fixes a module eeprom A2h addressing issue.  The next
-2 patches fix counter related issues.  The last one skips an
-unsupported firmware call on the VF to avoid the error log.
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-Please queue the 1st 3 patches for -stable.  Thanks.
+The module eeprom address range returned by bnxt_get_module_eeprom()
+should be 256 bytes of A0h address space, the lower half of the A2h
+address space, and page 0 for the upper half of the A2h address space.
 
-Edwin Peer (1):
-  bnxt_en: read EEPROM A2h address using page 0
+Fix the firmware call by passing page_number 0 for the A2h slave address
+space.
 
-Michael Chan (2):
-  bnxt_en: Free port stats during firmware reset.
-  bnxt_en: Fix counter overflow logic.
+Fixes: 42ee18fe4ca2 ("bnxt_en: Add Support for ETHTOOL_GMODULEINFO and ETHTOOL_GMODULEEEPRO")
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Vasundhara Volam (1):
-  bnxt_en: Avoid unnecessary NVM_GET_DEV_INFO cmd error log on VFs.
-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 4 +++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 5 ++++-
- 2 files changed, 7 insertions(+), 2 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 53687bc7fcf5..f133ea5674cb 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -2997,7 +2997,7 @@ static int bnxt_get_module_eeprom(struct net_device *dev,
+ 	/* Read A2 portion of the EEPROM */
+ 	if (length) {
+ 		start -= ETH_MODULE_SFF_8436_LEN;
+-		rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A2, 1,
++		rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A2, 0,
+ 						      start, length, data);
+ 	}
+ 	return rc;
 -- 
 2.18.1
 
 
---000000000000dd805205b42e735d
+--0000000000000c870205b42e7420
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -151,14 +163,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgARNLblAS/GEL
-/vZH9pi69/ObeftXs9kd7JylcAPgiDIwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMTE2MDAyODA4WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgxtvDVcYkklnA
+eZN3XeeKRPJ4qHF50w2XcTUclRlVGCswGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMTE2MDAyODEyWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBACiqtZHQEULv8rzdFEKSrIAyH3CklSlD
-WlHJacUQeCdgqA0i8KGb96zSrTezvOvNLb6vnpPQmmhAsKUfRH+Mi48YUdcGYGFauSCn/8Y0onus
-ZtHADETda6TYFQFbQjYXnr9VSMv9iaOpUopLkF3GJjv4Oy8pOI5Gdjk5k+CILHhh3q9xLRcfFo2M
-/Tj9asE/Q84CoCbGqQ+JiR406TihyRxozNR0Z2Fw1KE1QBgFMq4fR5qY/QDuFFn6x6ffy8TSG11X
-lEGx3HF1zQPHZ/6+EOoKUkh039yv97OkNUIvP8ezAW7Jq6hajQqHmh7LQcPkIxmah0/bSUSJ6iQj
-nmoaG48=
---000000000000dd805205b42e735d--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAEXx14YoaRNiu4lMqeRnSfngPORA5Vqj
+VQtwP7CPO93JqDVV2CK0BRfEbg7KyEHBOum3mQhfu/rfZzmdV9P1W9t7aJHLZyyH2tFB0qS4aeWV
+BWfBTqo9QhXQb+eIrzBzh78eRS/AlbCEut2BKSJCd82HgP/jVEkQO3PHp7lTfcZ73csY+JZ6CsBi
+NwW1kNMpl0THpSOhGGeLPNMByHRjVVC9d13Gn/Z0CjcQ+pmBEZ6RjAO+AfAUeGS+SRWEVHQJ3NGC
+0FkvMVSVRiR72wWJvnKkUpls+YMllh1p4JAdaLQNC31fqwKHlT/3sCIB+nVjVjpaePy2bBVEDqEM
+NdqKGCY=
+--0000000000000c870205b42e7420--
