@@ -2,113 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B91EB2B413C
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 11:38:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 452242B4148
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 11:42:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729187AbgKPKhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 05:37:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:60373 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728881AbgKPKhH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 05:37:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605523026;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ah0fpG4PWNvzFpMdpbWnri6JpzL+gQo7D8V3E1P+olY=;
-        b=iFSLUkEfuPfP2RWaG2XZxmcMv9n6N/0DdEwg1yu+pWNhX4N/izW0b1IWbg19u6E71UIb4v
-        ppJcJmrFTNt+ocBm3O396WyS5EX9Bea+s6LASvxfT2jMz3O4sjtt213t8/7jiM4zPC+cMJ
-        Ko0QLmc51yhjxsVueynTjNj2Jg0T1IQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-84-Ac7rkxrNPLmHhBOCFv0S5A-1; Mon, 16 Nov 2020 05:37:04 -0500
-X-MC-Unique: Ac7rkxrNPLmHhBOCFv0S5A-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A69F1186840E;
-        Mon, 16 Nov 2020 10:37:03 +0000 (UTC)
-Received: from gerbillo.redhat.com (ovpn-114-64.ams2.redhat.com [10.36.114.64])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5BDD0100239A;
-        Mon, 16 Nov 2020 10:37:02 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-sparse@vger.kernel.org
-Subject: [PATCH net-next] net: add annotation for sock_{lock,unlock}_fast
-Date:   Mon, 16 Nov 2020 11:36:39 +0100
-Message-Id: <95cf587fe96127884e555f695fe519d50e63cc17.1605522868.git.pabeni@redhat.com>
+        id S1728932AbgKPKld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 05:41:33 -0500
+Received: from mxout70.expurgate.net ([91.198.224.70]:30151 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726889AbgKPKlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 05:41:32 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kebwt-0008hw-Ty; Mon, 16 Nov 2020 11:41:27 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kebwt-0004Ut-74; Mon, 16 Nov 2020 11:41:27 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id EBE7B240049;
+        Mon, 16 Nov 2020 11:41:26 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 90BC9240047;
+        Mon, 16 Nov 2020 11:41:26 +0100 (CET)
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 524FC21E6A;
+        Mon, 16 Nov 2020 11:41:26 +0100 (CET)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH net-next v3] net/tun: Call netdev notifiers
+Date:   Mon, 16 Nov 2020 11:41:21 +0100
+Message-ID: <20201116104121.20884-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+Content-Transfer-Encoding: quoted-printable
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-ID: 151534::1605523287-00014126-C1E0DC53/0/0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The static checker is fooled by the non-static locking scheme
-implemented by the mentioned helpers.
-Let's make its life easier adding some unconditional annotation
-so that the helpers are now interpreted as a plain spinlock from
-sparse.
+Call netdev notifiers before and after changing the device type.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Martin Schiller <ms@dev.tdt.de>
 ---
- include/net/sock.h | 9 ++++++---
- net/core/sock.c    | 3 ++-
- 2 files changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 1d29aeae74fd..60d321c6b5a5 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1595,7 +1595,8 @@ void release_sock(struct sock *sk);
- 				SINGLE_DEPTH_NESTING)
- #define bh_unlock_sock(__sk)	spin_unlock(&((__sk)->sk_lock.slock))
- 
--bool lock_sock_fast(struct sock *sk);
-+bool lock_sock_fast(struct sock *sk) __acquires(&sk->sk_lock.slock);
-+
- /**
-  * unlock_sock_fast - complement of lock_sock_fast
-  * @sk: socket
-@@ -1606,10 +1607,12 @@ bool lock_sock_fast(struct sock *sk);
-  */
- static inline void unlock_sock_fast(struct sock *sk, bool slow)
- {
--	if (slow)
-+	if (slow) {
- 		release_sock(sk);
--	else
-+		__release(&sk->sk_lock.slock);
-+	} else {
- 		spin_unlock_bh(&sk->sk_lock.slock);
-+	}
- }
- 
- /* Used by processes to "lock" a socket state, so that
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 727ea1cc633c..9badbe7bb4e4 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -3078,7 +3078,7 @@ EXPORT_SYMBOL(release_sock);
-  *
-  *   sk_lock.slock unlocked, owned = 1, BH enabled
-  */
--bool lock_sock_fast(struct sock *sk)
-+bool lock_sock_fast(struct sock *sk) __acquires(&sk->sk_lock.slock)
- {
- 	might_sleep();
- 	spin_lock_bh(&sk->sk_lock.slock);
-@@ -3096,6 +3096,7 @@ bool lock_sock_fast(struct sock *sk)
- 	 * The sk_lock has mutex_lock() semantics here:
- 	 */
- 	mutex_acquire(&sk->sk_lock.dep_map, 0, 0, _RET_IP_);
-+	__acquire(&sk->sk_lock.slock);
- 	local_bh_enable();
- 	return true;
- }
--- 
-2.26.2
+Change from v2:
+use subject_prefix 'net-next' to fix 'fixes_present' issue
+
+Change from v1:
+fix 'subject_prefix' and 'checkpatch' warnings
+
+---
+ drivers/net/tun.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 3d45d56172cb..2d9a00f41023 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -3071,9 +3071,13 @@ static long __tun_chr_ioctl(struct file *file, uns=
+igned int cmd,
+ 				   "Linktype set failed because interface is up\n");
+ 			ret =3D -EBUSY;
+ 		} else {
++			call_netdevice_notifiers(NETDEV_PRE_TYPE_CHANGE,
++						 tun->dev);
+ 			tun->dev->type =3D (int) arg;
+ 			netif_info(tun, drv, tun->dev, "linktype set to %d\n",
+ 				   tun->dev->type);
++			call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE,
++						 tun->dev);
+ 			ret =3D 0;
+ 		}
+ 		break;
+--=20
+2.20.1
 
