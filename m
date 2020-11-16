@@ -2,87 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D5D92B3D7A
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 08:07:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C3052B3D81
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 08:10:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727291AbgKPHG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 02:06:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41602 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727204AbgKPHG7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 02:06:59 -0500
-Received: from dragon (80.251.214.228.16clouds.com [80.251.214.228])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727383AbgKPHHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 02:07:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60842 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727097AbgKPHHs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 02:07:48 -0500
+Received: from iam.tj (soggy.cloud [IPv6:2a01:7e00:e000:151::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 221A2C0613CF
+        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 23:07:48 -0800 (PST)
+Received: from [10.0.40.123] (unknown [51.155.44.233])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 14D0A20DD4;
-        Mon, 16 Nov 2020 07:06:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605510418;
-        bh=JuV7U3bOtW9yCKwQ2YRwqRwM0gsqsHl+TVzuGuy6faQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZS427FLfJu4VL7NCuBLxRB4JYpMVaPTM5MXvJ8Bz4krlcMSqIxgQPWI19y/Gt33h1
-         Emc4YDAGD22mG/nLbaCEEWJdWQFF2PoRuJD+FphF2RLxlgNsWAUgcMnxn6o9nyUJSN
-         x4XiMuXoVcJGABvJnmFJJJLuPTyyAEd3t9rhld7A=
-Date:   Mon, 16 Nov 2020 15:06:53 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Madalin Bucur <madalin.bucur@nxp.com>
-Cc:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH] arm64: dts: fsl: DPAA FMan DMA operations are coherent
-Message-ID: <20201116070652.GA5849@dragon>
-References: <1601901999-28280-1-git-send-email-madalin.bucur@oss.nxp.com>
- <20201030073956.GH28755@dragon>
- <AM6PR04MB3976F19056A613AC92118A2FECE80@AM6PR04MB3976.eurprd04.prod.outlook.com>
+        by iam.tj (Postfix) with ESMTPSA id 5BA31340AD;
+        Mon, 16 Nov 2020 07:07:45 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=elloe.vision; s=2019;
+        t=1605510465; bh=+HDQ/2PMLTuiEzwt9PO+0HAVM4FlCakMLWx2bdXjAdc=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=j1DswzEId5Wiwm4XDmcqclIvnLf/e/RC7BFwmR7X78VKgz6wK8fQvtmx56sxC9fNU
+         OA44pTEF1BCZ4e091MpcYQ2dwx1Kblybk+V2IZQcEcBs4wz7J9I+27jfz8sAxQumLK
+         6H2GRo1kK6vwaMvmWjKXWVr3cz8E7/3FWqq52iMH5pRVgYgTWiZjBP9dOkWV6LNV+p
+         /VxshGsk4UJFUyAyBoWTkYeUjCaawAGQcK7KG4D2y+ngZ0UsHw73MtAswYZCW+Av0R
+         9mhf2snzsIuVLWG1tVQAMUj6c0OorVLJ86rYfhAeywCZNvBaKHemPxrqk+ujcm0ZkQ
+         lTOH9Cy/fffBQ==
+Subject: Re: dsa: mv88e6xxx not receiving IPv6 multicast packets
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        chris.packham@alliedtelesis.co.nz, f.fainelli@gmail.com,
+        marek.behun@nic.cz, vivien.didelot@gmail.com, info <info@turris.cz>
+References: <1b6ba265-4651-79d2-9b43-f14e7f6ec19b@alliedtelesis.co.nz>
+ <0538958b-44b8-7187-650b-35ce276e9d83@elloe.vision>
+ <3390878f-ca70-7714-3f89-c4455309d917@elloe.vision>
+ <20201114184915.fv5hfoobdgqc7uxq@skbuf>
+ <c0bb216e-0717-a131-f96d-c5194b281746@elloe.vision>
+ <20201115160244.GD1701029@lunn.ch>
+ <79ad87d1-15e0-7ccc-e1ad-4aab3fdf0d20@elloe.vision>
+ <20201115172705.GF1701029@lunn.ch>
+From:   "Tj (Elloe Linux)" <ml.linux@elloe.vision>
+Organization: Elloe CIC
+Message-ID: <05b1c5de-3d1d-cc06-0e6a-e93e62c7a2c0@elloe.vision>
+Date:   Mon, 16 Nov 2020 07:07:43 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM6PR04MB3976F19056A613AC92118A2FECE80@AM6PR04MB3976.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20201115172705.GF1701029@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 11, 2020 at 03:33:19PM +0000, Madalin Bucur wrote:
-> > -----Original Message-----
-> > From: linux-arm-kernel <linux-arm-kernel-bounces@lists.infradead.org> On
-> > Behalf Of Shawn Guo
-> > To: Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>
-> > Subject: Re: [PATCH] arm64: dts: fsl: DPAA FMan DMA operations are
-> > coherent
-> > 
-> > On Mon, Oct 05, 2020 at 03:46:39PM +0300, Madalin Bucur wrote:
-> > > Although the DPAA 1 FMan operations are coherent, the device tree
-> > > node for the FMan does not indicate that, resulting in a needless
-> > > loss of performance. Adding the missing dma-coherent property.
-> > >
-> > > Fixes: 1ffbecdd8321 ("arm64: dts: add DPAA FMan nodes")
-> > >
-> > > Signed-off-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
-> > > Tested-by: Camelia Groza <camelia.groza@oss.nxp.com>
-> > 
-> > Applied, thanks.
-> 
-> Hi, Shawn,
-> 
-> will this fix for the device trees be picked up in the stable trees as well?
-> Do I need to do something about it?
+On 15/11/2020 17:27, Andrew Lunn wrote:
 
-When it's landed in Linus' tree, stable kernel will pick it up due to
-the Fixes: tag there.  So you do not need to do anything about it.
-
+> So check if you have an IGMP querier in the network. If not, try
+> turning it on in the bridge,
 > 
-> Thanks
-> Madalin
-> 
-> PS: will this make it into v5.10 or v5.11?
+> ip link set br0 type bridge mcast_querier 1
 
-I'm sending it to arm-soc folks as a material for v5.10-rc.  So if
-everything goes well, it will get into v5.10.
+Thanks Andrew - that does indeed seem to have solved the issue.
 
-Shawn
+I'm relieved this isn't a hardware or driver issue after all but annoyed
+we didn't figure this out ourselves months ago!
+
+Is there any other kernel 'nob' to alter this? I'm trying to understand
+why we're seeing two different results with seemingly identical
+kernel/OS versions and network configurations.
+
