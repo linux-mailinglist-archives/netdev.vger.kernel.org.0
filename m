@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25DDE2B4605
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:41:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5D932B460C
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:44:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730094AbgKPOil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 09:38:41 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:57504 "EHLO vps0.lunn.ch"
+        id S1729982AbgKPOmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 09:42:39 -0500
+Received: from inva021.nxp.com ([92.121.34.21]:54568 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727820AbgKPOil (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 09:38:41 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kefeI-007MMi-6h; Mon, 16 Nov 2020 15:38:30 +0100
-Date:   Mon, 16 Nov 2020 15:38:30 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     hauke@hauke-m.de, netdev@vger.kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: lantiq: Wait for the GPHY firmware to be ready
-Message-ID: <20201116143830.GD1716542@lunn.ch>
-References: <20201115165757.552641-1-martin.blumenstingl@googlemail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201115165757.552641-1-martin.blumenstingl@googlemail.com>
+        id S1726657AbgKPOmi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 09:42:38 -0500
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A57D9200111;
+        Mon, 16 Nov 2020 15:42:36 +0100 (CET)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 991652000E8;
+        Mon, 16 Nov 2020 15:42:36 +0100 (CET)
+Received: from fsr-ub1464-019.ea.freescale.net (fsr-ub1464-019.ea.freescale.net [10.171.81.207])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 416E6202AF;
+        Mon, 16 Nov 2020 15:42:36 +0100 (CET)
+From:   Camelia Groza <camelia.groza@nxp.com>
+To:     kuba@kernel.org, brouer@redhat.com, saeed@kernel.org,
+        davem@davemloft.net
+Cc:     madalin.bucur@oss.nxp.com, ioana.ciornei@nxp.com,
+        netdev@vger.kernel.org, Camelia Groza <camelia.groza@nxp.com>
+Subject: [PATCH net-next v2 0/7] dpaa_eth: add XDP support
+Date:   Mon, 16 Nov 2020 16:42:26 +0200
+Message-Id: <cover.1605535745.git.camelia.groza@nxp.com>
+X-Mailer: git-send-email 1.9.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 15, 2020 at 05:57:57PM +0100, Martin Blumenstingl wrote:
-> A user reports (slightly shortened from the original message):
->   libphy: lantiq,xrx200-mdio: probed
->   mdio_bus 1e108000.switch-mii: MDIO device at address 17 is missing.
->   gswip 1e108000.switch lan: no phy at 2
->   gswip 1e108000.switch lan: failed to connect to port 2: -19
->   lantiq,xrx200-net 1e10b308.eth eth0: error -19 setting up slave phy
-> 
-> This is a single-port board using the internal Fast Ethernet PHY. The
-> user reports that switching to PHY scanning instead of configuring the
-> PHY within device-tree works around this issue.
-> 
-> The documentation for the standalone variant of the PHY11G (which is
-> probably very similar to what is used inside the xRX200 SoCs but having
-> the firmware burnt onto that standalone chip in the factory) states that
-> the PHY needs 300ms to be ready for MDIO communication after releasing
-> the reset.
-> 
-> Add a 300ms delay after initializing all GPHYs to ensure that the GPHY
-> firmware had enough time to initialize and to appear on the MDIO bus.
-> Unfortunately there is no (known) documentation on what the minimum time
-> to wait after releasing the reset on an internal PHY so play safe and
-> take the one for the external variant. Only wait after the last GPHY
-> firmware is loaded to not slow down the initialization too much (
-> xRX200 has two GPHYs but newer SoCs have at least three GPHYs).
-> 
-> Fixes: 14fceff4771e51 ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Enable XDP support for the QorIQ DPAA1 platforms.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Implement all the current actions (DROP, ABORTED, PASS, TX, REDIRECT). No
+Tx batching is added at this time.
 
-    Andrew
+Additional XDP_PACKET_HEADROOM bytes are reserved in each frame's headroom.
+
+After transmit, a reference to the xdp_frame is saved in the buffer for
+clean-up on confirmation in a newly created structure for software
+annotations.
+
+Changes in v2:
+- warn only once if extracting the timestamp from a received frame fails
+  in 2/7
+
+Camelia Groza (7):
+  dpaa_eth: add struct for software backpointers
+  dpaa_eth: add basic XDP support
+  dpaa_eth: limit the possible MTU range when XDP is enabled
+  dpaa_eth: add XDP_TX support
+  dpaa_eth: add XDP_REDIRECT support
+  dpaa_eth: rename current skb A050385 erratum workaround
+  dpaa_eth: implement the A050385 erratum workaround for XDP
+
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 447 +++++++++++++++++++++++--
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.h |  13 +
+ 2 files changed, 430 insertions(+), 30 deletions(-)
+
+--
+1.9.1
+
