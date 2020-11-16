@@ -2,74 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDE2C2B4DF5
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 18:48:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D14CD2B4DF7
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 18:48:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733258AbgKPRkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 12:40:21 -0500
-Received: from mga05.intel.com ([192.55.52.43]:61014 "EHLO mga05.intel.com"
+        id S2387616AbgKPRkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 12:40:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51494 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732936AbgKPRkU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 12:40:20 -0500
-IronPort-SDR: M6my6m3HklLmYMq/h+wCILblybsoprQdDxuzgb+7y5D3djOSwHcw8Ad0GOkMVat4M79qtMbBxy
- 47uV9SRXugVA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9807"; a="255495556"
-X-IronPort-AV: E=Sophos;i="5.77,483,1596524400"; 
-   d="scan'208";a="255495556"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2020 09:40:19 -0800
-IronPort-SDR: wLbC/q5eQ82Ws3LH7O++UpZ29nmqHbCUJB3jzIIGJuxpQViDMqK5jEznR/r7egJXK5mJhkbdsh
- oQRY8oV2NVqA==
-X-IronPort-AV: E=Sophos;i="5.77,483,1596524400"; 
-   d="scan'208";a="543685613"
-Received: from franders-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.35.195])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2020 09:40:11 -0800
-Subject: Re: [PATCH bpf-next v2 06/10] xsk: propagate napi_id to XDP socket Rx
- path
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        maciej.fijalkowski@intel.com, sridhar.samudrala@intel.com,
-        jesse.brandeburg@intel.com, qi.z.zhang@intel.com, kuba@kernel.org,
-        edumazet@google.com, jonathan.lemon@gmail.com, maximmi@nvidia.com,
-        intel-wired-lan@lists.osuosl.org, netanel@amazon.com,
-        akiyano@amazon.com, michael.chan@broadcom.com,
-        sgoutham@marvell.com, ioana.ciornei@nxp.com,
-        ruxandra.radulescu@nxp.com, thomas.petazzoni@bootlin.com,
-        mcroce@microsoft.com, saeedm@nvidia.com, tariqt@nvidia.com,
-        aelior@marvell.com, ecree@solarflare.com,
-        ilias.apalodimas@linaro.org, grygorii.strashko@ti.com,
-        sthemmin@microsoft.com, kda@linux-powerpc.org
-References: <20201116110416.10719-1-bjorn.topel@gmail.com>
- <20201116110416.10719-7-bjorn.topel@gmail.com>
- <20201116064953-mutt-send-email-mst@kernel.org>
- <614a7ce4-2b6b-129b-de7d-71428f7a71f6@intel.com>
- <20201116073848-mutt-send-email-mst@kernel.org>
- <585b011f-0817-a684-d1db-125bb55741fe@intel.com>
- <20201116085548-mutt-send-email-mst@kernel.org>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <6dc830b3-4ca4-c349-4005-952cfa437328@intel.com>
-Date:   Mon, 16 Nov 2020 18:40:07 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.2
+        id S1732674AbgKPRkn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 12:40:43 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7C78420B80;
+        Mon, 16 Nov 2020 17:40:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605548442;
+        bh=4Uv6elfOe4XJfv/8Y1N8ZGGETKRJd1j6WYW+lJKrf4g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DHPelutlJKFzz4P9BebZ/+DPupryCD9L9zH+xvZI9Wzp0ae0CnvT6CJH0Wo1uVkMs
+         4B8PknBQByRQ3abcVU89Kw5hbKSdo3yon+Fm23YYj8FVz1Lu37XulBgv0NKdwrP/3s
+         ZxxVGP98JCALNSYv1zRNG26HDTjzk3PK3CXMYyWs=
+Date:   Mon, 16 Nov 2020 09:40:41 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Zhang Qilong <zhangqilong3@huawei.com>
+Cc:     <rjw@rjwysocki.net>, <fugang.duan@nxp.com>, <davem@davemloft.net>,
+        <linux-pm@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 0/2] Fix usage counter leak by adding a general sync
+ ops
+Message-ID: <20201116094041.7b6c4bc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201110092933.3342784-1-zhangqilong3@huawei.com>
+References: <20201110092933.3342784-1-zhangqilong3@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20201116085548-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020-11-16 14:55, Michael S. Tsirkin wrote:
-[...]
+On Tue, 10 Nov 2020 17:29:31 +0800 Zhang Qilong wrote:
+> In many case, we need to check return value of pm_runtime_get_sync,
+> but it brings a trouble to the usage counter processing. Many callers
+> forget to decrease the usage counter when it failed, which could
+> resulted in reference leak. It has been discussed a lot[0][1]. So we
+> add a function to deal with the usage counter for better coding and
+> view. Then, we replace pm_runtime_resume_and_get with it in fec_main.c
+> to avoid it.
 > 
-> tun too ;)
-> 
+> [0]https://lkml.org/lkml/2020/6/14/88
+> [1]https://patchwork.ozlabs.org/project/linux-tegra/list/?series=178139
 
-:-) AFAIK tun doesn't use "Rx" napi, just netif_tx_napi_add() which
-doesn't generate a napi_id.
+Actually, I lied, this is a fix so applying to net, not net-next.
+
+Thanks!
