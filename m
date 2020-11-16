@@ -2,132 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B814F2B4461
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:06:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D782F2B4446
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:03:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728438AbgKPNEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 08:04:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44426 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728224AbgKPNEp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 08:04:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605531883;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=16F1Ae9+Lt+pnjHUyamx5MmnQ1PJZRCDvWTJnbrAA2g=;
-        b=JUZC7wuZn1iDUFSVlfRP+w7n+02MEPqY0EnGqrFb6MfmejCf5RKB30fIBZBwtROKV8KUdt
-        EGYsDZckJ9cF8gIqmH+6u859yb3hTE3KCpNqYtlHHuT17nyFEW//v1T/8PWjKo8UQWco/3
-        DrmbbGHF2d78zYsdxvz5QYXipOnOm50=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-249-luXAYhZoPHC6RbflqktWbQ-1; Mon, 16 Nov 2020 08:04:39 -0500
-X-MC-Unique: luXAYhZoPHC6RbflqktWbQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 889ED8015AD;
-        Mon, 16 Nov 2020 13:04:37 +0000 (UTC)
-Received: from nusiddiq.home.org.com (ovpn-116-24.sin2.redhat.com [10.67.116.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 01FC01A8EC;
-        Mon, 16 Nov 2020 13:04:33 +0000 (UTC)
-From:   nusiddiq@redhat.com
-To:     dev@openvswitch.org, netdev@vger.kernel.org
-Cc:     Pravin B Shelar <pshelar@ovn.org>, Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Numan Siddique <nusiddiq@redhat.com>
-Subject: [PATCH net-next v2] net: openvswitch: Be liberal in tcp conntrack.
-Date:   Mon, 16 Nov 2020 18:31:26 +0530
-Message-Id: <20201116130126.3065077-1-nusiddiq@redhat.com>
+        id S1728624AbgKPNCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 08:02:08 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:37704 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728583AbgKPNCI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 08:02:08 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0AGD1lKr072874;
+        Mon, 16 Nov 2020 07:01:47 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1605531707;
+        bh=qOn9VBecldSCPtkfrayvV0l2cc/JVvoAqmkbFZ+As/A=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=bGPU51Cb9p4KckeEvI9sPoNtqV3fX1E6/YX8YXmum5L3fx2mriEjOkxLD8AByQRtd
+         pR0WP2G7fpl9l4l27YlaaWYsCOZku8DaUJ9ioxtdOzY7cAdavId4Hq0pylGAwidDtx
+         16Cqv7pilOk1iQ6kEVWbC0J7fEpxAZ0Gef3z/WK0=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0AGD1ldX046622
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 16 Nov 2020 07:01:47 -0600
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 16
+ Nov 2020 07:01:46 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Mon, 16 Nov 2020 07:01:46 -0600
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0AGD1hsN035807;
+        Mon, 16 Nov 2020 07:01:44 -0600
+Subject: Re: [PATCH net-next 2/3] net: ethernet: ti: cpsw_new: enable
+ broadcast/multicast rate limit support
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>, Tony Lindgren <tony@atomide.com>
+References: <20201114035654.32658-1-grygorii.strashko@ti.com>
+ <20201114035654.32658-3-grygorii.strashko@ti.com>
+ <20201114190909.cc3rlnvom6wf2zkg@skbuf>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <7c288b6d-f32f-c5a9-8e8c-ab377423d4a8@ti.com>
+Date:   Mon, 16 Nov 2020 15:01:43 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <20201114190909.cc3rlnvom6wf2zkg@skbuf>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Numan Siddique <nusiddiq@redhat.com>
 
-There is no easy way to distinguish if a conntracked tcp packet is
-marked invalid because of tcp_in_window() check error or because
-it doesn't belong to an existing connection. With this patch,
-openvswitch sets liberal tcp flag for the established sessions so
-that out of window packets are not marked invalid.
 
-A helper function - nf_ct_set_tcp_be_liberal(nf_conn) is added which
-sets this flag for both the directions of the nf_conn.
+On 14/11/2020 21:09, Vladimir Oltean wrote:
+> On Sat, Nov 14, 2020 at 05:56:53AM +0200, Grygorii Strashko wrote:
+>> This patch enables support for ingress broadcast(BC)/multicast(MC) rate limiting
+>> in TI CPSW switchdev driver (the corresponding ALE support was added in previous
+>> patch) by implementing HW offload for simple tc-flower policer with matches
+>> on dst_mac:
+>>   - ff:ff:ff:ff:ff:ff has to be used for BC rate limiting
+>>   - 01:00:00:00:00:00 fixed value has to be used for MC rate limiting
+>>
+>> Hence tc policer defines rate limit in terms of bits per second, but the
+>> ALE supports limiting in terms of packets per second - the rate limit
+>> bits/sec is converted to number of packets per second assuming minimum
+>> Ethernet packet size ETH_ZLEN=60 bytes.
+>>
+>> Examples:
+>> - BC rate limit to 1000pps:
+>>    tc qdisc add dev eth0 clsact
+>>    tc filter add dev eth0 ingress flower skip_sw dst_mac ff:ff:ff:ff:ff:ff \
+>>    action police rate 480kbit burst 64k
+>>
+>>    rate 480kbit - 1000pps * 60 bytes * 8, burst - not used.
+>>
+>> - MC rate limit to 20000pps:
+>>    tc qdisc add dev eth0 clsact
+>>    tc filter add dev eth0 ingress flower skip_sw dst_mac 01:00:00:00:00:00 \
+>>    action police rate 9600kbit burst 64k
+>>
+>>    rate 9600kbit - 20000pps * 60 bytes * 8, burst - not used.
+>>
+>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+>> ---
+> 
+> Your example for multicast would actually be correct if you specified
+> the mask as well. Like this:
+> 
+> tc filter add dev eth0 ingress flower skip_sw \
+> 	dst_mac 01:00:00:00:00:00/01:00:00:00:00:00 \
+> 	action police rate 9600kbit burst 64k
+> 
+> But as things stand, the flow rule would have a certain meaning in
+> software (rate-limit only that particular multicast MAC address) and a
+> different meaning in hardware. Please modify the driver code to also
+> match on the mask.
+> 
 
-Suggested-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Numan Siddique <nusiddiq@redhat.com>
----
- include/net/netfilter/nf_conntrack_l4proto.h | 14 ++++++++++++++
- net/netfilter/nf_conntrack_proto_tcp.c       |  6 ------
- net/openvswitch/conntrack.c                  |  8 ++++++++
- 3 files changed, 22 insertions(+), 6 deletions(-)
+ok.
 
-diff --git a/include/net/netfilter/nf_conntrack_l4proto.h b/include/net/netfilter/nf_conntrack_l4proto.h
-index 88186b95b3c2..9be7320b994f 100644
---- a/include/net/netfilter/nf_conntrack_l4proto.h
-+++ b/include/net/netfilter/nf_conntrack_l4proto.h
-@@ -203,6 +203,20 @@ static inline struct nf_icmp_net *nf_icmpv6_pernet(struct net *net)
- {
- 	return &net->ct.nf_ct_proto.icmpv6;
- }
-+
-+/* Caller must check nf_ct_protonum(ct) is IPPROTO_TCP before calling. */
-+static inline void nf_ct_set_tcp_be_liberal(struct nf_conn *ct)
-+{
-+	ct->proto.tcp.seen[0].flags |= IP_CT_TCP_FLAG_BE_LIBERAL;
-+	ct->proto.tcp.seen[1].flags |= IP_CT_TCP_FLAG_BE_LIBERAL;
-+}
-+
-+/* Caller must check nf_ct_protonum(ct) is IPPROTO_TCP before calling. */
-+static inline bool nf_conntrack_tcp_established(const struct nf_conn *ct)
-+{
-+	return ct->proto.tcp.state == TCP_CONNTRACK_ESTABLISHED &&
-+	       test_bit(IPS_ASSURED_BIT, &ct->status);
-+}
- #endif
- 
- #ifdef CONFIG_NF_CT_PROTO_DCCP
-diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-index c8fb2187ad4b..811c6c9b59e1 100644
---- a/net/netfilter/nf_conntrack_proto_tcp.c
-+++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -834,12 +834,6 @@ static noinline bool tcp_new(struct nf_conn *ct, const struct sk_buff *skb,
- 	return true;
- }
- 
--static bool nf_conntrack_tcp_established(const struct nf_conn *ct)
--{
--	return ct->proto.tcp.state == TCP_CONNTRACK_ESTABLISHED &&
--	       test_bit(IPS_ASSURED_BIT, &ct->status);
--}
--
- /* Returns verdict for packet, or -1 for invalid. */
- int nf_conntrack_tcp_packet(struct nf_conn *ct,
- 			    struct sk_buff *skb,
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 4beb96139d77..6a88daab0190 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -1037,6 +1037,14 @@ static int __ovs_ct_lookup(struct net *net, struct sw_flow_key *key,
- 		    ovs_ct_helper(skb, info->family) != NF_ACCEPT) {
- 			return -EINVAL;
- 		}
-+
-+		if (nf_ct_protonum(ct) == IPPROTO_TCP &&
-+		    nf_ct_is_confirmed(ct) && nf_conntrack_tcp_established(ct)) {
-+			/* Be liberal for tcp packets so that out-of-window
-+			 * packets are not marked invalid.
-+			 */
-+			nf_ct_set_tcp_be_liberal(ct);
-+		}
- 	}
- 
- 	return 0;
 -- 
-2.28.0
-
+Best regards,
+grygorii
