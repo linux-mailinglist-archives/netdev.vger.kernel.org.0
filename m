@@ -2,111 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7DB82B5463
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:30:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B0772B5466
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:31:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730183AbgKPW3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 17:29:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35202 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730174AbgKPW3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 17:29:43 -0500
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74906C0613D2;
-        Mon, 16 Nov 2020 14:29:43 -0800 (PST)
-Received: by mail-oi1-x244.google.com with SMTP id q206so20462967oif.13;
-        Mon, 16 Nov 2020 14:29:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=el2fYd8ySBa3+ZWXicXA9IRpxKlp+zaCI41Z/ZlGF/8=;
-        b=eb1D7T4xM76sGfv40jZcqpoRXtuhCkeuThZ+CVXQaYkXUhMUB3qWpmajJR7KN3UrQm
-         W4i3euO6Rrisvhkx7PFt9TbF1oYZ+nBbvux2JDNOCnCZR3lS7L4riN5cfwuDw2rKuJvX
-         Vhx1xc7570EwX5zJ9l0fN3yhYRU7bMTb52TKUcgBrl3SfJcyOt2XKhML9DVzy73u69sS
-         AZ8iNLn1yHqRfdK4s13X0abVRmfF19ZoWHTEsAv/L7JpHRyMrrAXVWaaCaRJiAd18oFT
-         vfCxRwB4/uBnhzDJCnt6iFuO7fxPTBWJoy+TosXeMwExAZDTTeRgGfja9LlHK2Ncuze9
-         D/vQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=el2fYd8ySBa3+ZWXicXA9IRpxKlp+zaCI41Z/ZlGF/8=;
-        b=au93biyizZoBc8yK7sHWd59ZZ9wt6tW8MpHlq4juJyxlsFd8vCevcZgxD6TLW0aC68
-         gAbuWFvtBURKbBq43v3+CMzNH3176RVIZAB674eN8aW+W9dkeKDSGWyb6OAYlUx1Axqq
-         w2b6ZRQfw6v0isQQTaYNyyyTmohG8PfVtyDxYP+95jG1URVaFjTvITLJu2+RSAAu5DoG
-         r3OKcf9rlVXdMJ5hOb5P5AX47nt5H5VaosY3KHDbq35CsQRsJ0130EvsOcGssUGBsbxO
-         NOl7CVKu5iSeasppX+9ximytqcIjF2rdJ8lY0UMzQQfk9GdUyxbWCInP1gshpW6KNIR9
-         ncDQ==
-X-Gm-Message-State: AOAM530YHSMCPBiB4ho2VzOfBt5fScPuX6Q7zviAvyhecwqyXiJc1KPS
-        0CxRXsWEjCuTJL31lvuPClIAajpY66ufHA==
-X-Google-Smtp-Source: ABdhPJyNHGfQTOvUJuJt1sTZp9GqGv7Mm4QAjPRw6oJxAKQ9jrKr+OcVXm1VmBk0IJuIKgGGhX1kmg==
-X-Received: by 2002:aca:ac91:: with SMTP id v139mr539441oie.95.1605565782644;
-        Mon, 16 Nov 2020 14:29:42 -0800 (PST)
-Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id o63sm5308469ooa.10.2020.11.16.14.29.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 14:29:41 -0800 (PST)
-Subject: [bpf PATCH v3 6/6] bpf,
- sockmap: Avoid failures from skb_to_sgvec when skb has frag_list
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     jakub@cloudflare.com, ast@kernel.org, daniel@iogearbox.net
-Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Date:   Mon, 16 Nov 2020 14:29:28 -0800
-Message-ID: <160556576837.73229.14800682790808797635.stgit@john-XPS-13-9370>
-In-Reply-To: <160556562395.73229.12161576665124541961.stgit@john-XPS-13-9370>
-References: <160556562395.73229.12161576665124541961.stgit@john-XPS-13-9370>
-User-Agent: StGit/0.23-36-gc01b
+        id S1730282AbgKPWbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 17:31:20 -0500
+Received: from correo.us.es ([193.147.175.20]:50950 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730140AbgKPWbS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 17:31:18 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 2C94DDED2A
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 23:31:17 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 1998ADA72F
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 23:31:17 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 0F065DA73F; Mon, 16 Nov 2020 23:31:17 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D12E3DA72F;
+        Mon, 16 Nov 2020 23:31:14 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 16 Nov 2020 23:31:14 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id B3FE14265A5A;
+        Mon, 16 Nov 2020 23:31:14 +0100 (CET)
+Date:   Mon, 16 Nov 2020 23:31:14 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netfilter-devel@vger.kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org, razor@blackwall.org,
+        jeremy@azazel.net
+Subject: Re: [PATCH net-next,v3 0/9] netfilter: flowtable bridge and vlan
+ enhancements
+Message-ID: <20201116223114.GA6905@salvia>
+References: <20201111193737.1793-1-pablo@netfilter.org>
+ <20201113175556.25e57856@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201114115906.GA21025@salvia>
+ <87sg9cjaxo.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87sg9cjaxo.fsf@waldekranz.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When skb has a frag_list its possible for skb_to_sgvec() to fail. This
-happens when the scatterlist has fewer elements to store pages than would
-be needed for the initial skb plus any of its frags.
+On Sat, Nov 14, 2020 at 03:00:03PM +0100, Tobias Waldekranz wrote:
+> On Sat, Nov 14, 2020 at 12:59, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> > If any of the flowtable device goes down / removed, the entries are
+> > removed from the flowtable. This means packets of existing flows are
+> > pushed up back to classic bridge / forwarding path to re-evaluate the
+> > fast path.
+> >
+> > For each new flow, the fast path that is selected freshly, so they use
+> > the up-to-date FDB to select a new bridge port.
+> >
+> > Existing flows still follow the old path. The same happens with FIB
+> > currently.
+> >
+> > It should be possible to explore purging entries in the flowtable that
+> > are stale due to changes in the topology (either in FDB or FIB).
+> >
+> > What scenario do you have specifically in mind? Something like VM
+> > migrates from one bridge port to another?
+> 
+> This should work in the case when the bridge ports are normal NICs or
+> switchdev ports, right?
 
-This case appears rare, but is possible when running an RX parser/verdict
-programs exposed to the internet. Currently, when this happens we throw
-an error, break the pipe, and kfree the msg. This effectively breaks the
-application or forces it to do a retry.
+Yes.
 
-Lets catch this case and handle it by doing an skb_linearize() on any
-skb we receive with frags. At this point skb_to_sgvec should not fail
-because the failing conditions would require frags to be in place.
+> In that case, relying on link state is brittle as you can easily have a
+> switch or a media converter between the bridge and the end-station:
+> 
+>         br0                  br0
+>         / \                  / \
+>     eth0   eth1          eth0   eth1
+>      /      \      =>     /      \
+>   [sw0]     [sw1]      [sw0]     [sw1]
+>    /          \         /          \
+>   A                                 A
+> 
+> In a scenario like this, A has clearly moved. But neither eth0 nor eth1
+> has seen any changes in link state.
+> 
+> This particular example is a bit contrived. But this is essentially what
+> happens in redundant topologies when reconfigurations occur (e.g. STP).
+> 
+> These protocols will typically signal reconfigurations to all bridges
+> though, so as long as the affected flows are flushed at the same time as
+> the FDB it should work.
 
-Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- net/core/skmsg.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 514bc9f6f8ae..25cdbb20f3a0 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -423,9 +423,16 @@ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
- 					struct sock *sk,
- 					struct sk_msg *msg)
- {
--	int num_sge = skb_to_sgvec(skb, msg->sg.data, 0, skb->len);
--	int copied;
-+	int num_sge, copied;
- 
-+	/* skb linearize may fail with ENOMEM, but lets simply try again
-+	 * later if this happens. Under memory pressure we don't want to
-+	 * drop the skb. We need to linearize the skb so that the mapping
-+	 * in skb_to_sgvec can not error.
-+	 */
-+	if (skb_linearize(skb))
-+		return -EAGAIN;
-+	num_sge = skb_to_sgvec(skb, msg->sg.data, 0, skb->len);
- 	if (unlikely(num_sge < 0)) {
- 		kfree(msg);
- 		return num_sge;
-
-
+Yes, watching the FDB should allow to clean up stale flows immediately.
