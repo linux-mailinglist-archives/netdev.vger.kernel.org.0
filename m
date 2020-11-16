@@ -2,179 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88B7F2B54DF
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 00:21:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CB082B54F3
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 00:28:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729023AbgKPXUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 18:20:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43124 "EHLO
+        id S1729479AbgKPX1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 18:27:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725710AbgKPXUm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 18:20:42 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE961C0613CF;
-        Mon, 16 Nov 2020 15:20:41 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id w4so14575270pgg.13;
-        Mon, 16 Nov 2020 15:20:41 -0800 (PST)
+        with ESMTP id S1726236AbgKPX1f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 18:27:35 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F27C0613CF;
+        Mon, 16 Nov 2020 15:27:35 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id i19so26815917ejx.9;
+        Mon, 16 Nov 2020 15:27:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rrDVDEnDH/iiVuvmKCir8fwE7q6Cx1qQiA3IFSfCGz0=;
-        b=PCW5GeqHITY3lFpIHJJ9B+pOiBiazK/kwVnAM6oktEt5yL/NW4UtI6RIpVyUxp8i4f
-         nIf5zNmvJXm5Nzoc59K9VgOl144ZwHjw7r7updK5fz0pveND7e8xo5N0xRckNhPkwC0X
-         J+ZcVVtLCF4E3lau3w+Hvwe6NGkFY7W3VqvPMGMTkSouhpzSR7I74dTXyoIWxeUWEdOY
-         0LL4sq2WGyQxB1AudQGbYsK2oUd5NNDh8NDyI+3xiywhzAQMhgRBPHB83+NQvs/jB2KL
-         0Ju+bcYiX32bo8kieqshKn2YA6piWQ0437rJ6SX+ESsoum6YUITn/vgNGAW+8FSgwO9x
-         ygCA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wUTJnk0WNF2C1OAWXBX/8iYtXEqbW2vzqFSK0d54U9Q=;
+        b=pzxQv8gobywFgQUXzIXno6VDhFKrgI9QizO0rUJSu/TexYTAadGbErSPFqdq+cZ4qf
+         56crq6hU7RInP/hhi2NJKs8lomMMZirrEz1WsPGjWGXjjpxT6R9PDgpo9h55UHxGHxoc
+         CP5iWYwlwR9Z+6EjEpT0YRLRhUWg1Y0x7KgAUk0foSmVsYqq9hCXVjYZPdvJIdQSjxpk
+         7JcOUjjMkaMTNUwruya7K3QiJvMEgjsu1MczHQWvReCNKma/eBdgY4ebeTwAh0p++Hh7
+         bA/013Ni8F/32G4B/vA8EEUKieTDexZCObQgoOPmsauQswxZqK3z7i6nzLSEBWPPCIF/
+         tcxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=rrDVDEnDH/iiVuvmKCir8fwE7q6Cx1qQiA3IFSfCGz0=;
-        b=Jv32insD9Kf0MfRtUIKs2gydacQNCAXxF05PrgXNNiL+9VE43GQAa1hiskK0xmQkC0
-         q3NEeayatLLYp06BmUv/T9wdjTXM/QUtyy6uavmYOb4aqViz5lSriPZAXzGWEW1w6Iz8
-         u5PTnScBkk6CuIEuyM+HQor6cDAE/zCTuf1ll7Vw3zet3LWKymaN4LJa4ukP/vzUeY4F
-         yyoCTlp8V728Rvf3uovhHdbDR952kSJ2sr6p+M48KrHX0yarNKPpEk2fHaSHszGOyD8U
-         q7sJ5U2mOhL0s2hBtGJiar1Y4TdKpVHSuAmALdcT4zm4fBoLdT5gJEVBwAWMMnuDjO6Z
-         YENA==
-X-Gm-Message-State: AOAM530swPVqxS7FR8H2niip6VtoQsjQ9wlDK0D4DOqc8l0wv1sa5JUq
-        V+I42+K+l5/NzZ+gbFwM4d51RALrzRg=
-X-Google-Smtp-Source: ABdhPJwdn6n7imGuaY9Ts2ZhpaGhlerGnfYklTz1R/GHqNzm5wqkdNpl3JkstORn18YE9mXqHHUesw==
-X-Received: by 2002:aa7:8c55:0:b029:18c:45ed:d87e with SMTP id e21-20020aa78c550000b029018c45edd87emr15951872pfd.76.1605568841020;
-        Mon, 16 Nov 2020 15:20:41 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id m68sm6476667pfm.173.2020.11.16.15.20.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Nov 2020 15:20:39 -0800 (PST)
-Subject: Re: [PATCH net] net: Have netpoll bring-up DSA management interface
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Yunjian Wang <wangyunjian@huawei.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20201019171746.991720-1-f.fainelli@gmail.com>
- <20201019200258.jrtymxikwrijkvpq@skbuf>
- <58b07285-bb70-3115-eb03-5e43a4abeae6@gmail.com>
- <20201019211916.j77jptfpryrhau4z@skbuf>
- <20201020181247.7e1c161b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <a8d38b5b-ae85-b1a8-f139-ae75f7c01376@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <d2dbb984-604a-ecbd-e717-2e9942fdbdaa@gmail.com>
-Date:   Mon, 16 Nov 2020 15:20:37 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wUTJnk0WNF2C1OAWXBX/8iYtXEqbW2vzqFSK0d54U9Q=;
+        b=erXtNfjUXroivJ7HoSKBccmxyVpjfk54GXmikGK1nql1+8PoEoJB7cSWUMR/nfKUbb
+         HY7Emw7/2d73IUzxnYq4IDgF6B8QFNrHEZ8HqgZEX3fxJQJbL3cxRyoYk3080AQ9F8Eb
+         mZVCP5OpCgFkBUwy5YJLFc4VJT6oLRY2COlYvfHe6yaeTx/gVztveUircPUv6S2YyIyL
+         WGLJWrJolMFo4hRiT/H4JncT5Bs/Zu+9FQPMHFBXbAaqgzk93AR1ER8S1enJTnhMkHVJ
+         sMh3sDw26pRk2aC0JOj2bXFXH4ZNfH2UQ6kA+2Wbj1/QoxkUVClwFHwx6L4thrwu87ta
+         o9rw==
+X-Gm-Message-State: AOAM5310Lfv286UrU8H9SXyg1GN6H5CT/38VgdjYQX6xqHn3MDdGGwWd
+        PPTZv6SCsU/OHruDpapnOfE=
+X-Google-Smtp-Source: ABdhPJzys1f8xkCG4Mwiu6Pr1gdY+w0qhQp+nisMviraSzmlPkbGUQb+6IneSJyYWhaZ3L1ZGz7gEA==
+X-Received: by 2002:a17:906:5017:: with SMTP id s23mr17580679ejj.359.1605569253053;
+        Mon, 16 Nov 2020 15:27:33 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id mj12sm7275991ejb.117.2020.11.16.15.27.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2020 15:27:32 -0800 (PST)
+Date:   Tue, 17 Nov 2020 01:27:31 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v1 net-next] net: dsa: qca: ar9331: add ethtool stats
+ support
+Message-ID: <20201116232731.4utpige7fguzghsi@skbuf>
+References: <20201115073533.1366-1-o.rempel@pengutronix.de>
+ <20201116133453.270b8db5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201116222146.znetv5u2q2q2vk2j@skbuf>
+ <20201116143544.036baf58@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201116230053.ddub7p6lvvszz7ic@skbuf>
+ <20201116151347.591925ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <a8d38b5b-ae85-b1a8-f139-ae75f7c01376@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201116151347.591925ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/16/20 3:06 PM, Florian Fainelli wrote:
-> On 10/20/20 6:12 PM, Jakub Kicinski wrote:
->> On Tue, 20 Oct 2020 00:19:16 +0300 Vladimir Oltean wrote:
->>> On Mon, Oct 19, 2020 at 02:03:40PM -0700, Florian Fainelli wrote:
->>>>> Completely crazy and outlandish idea, I know, but what's wrong with
->>>>> doing this in DSA?  
->>>>
->>>> I really do not have a problem with that approach however other stacked
->>>> devices like 802.1Q do not do that. It certainly scales a lot better to
->>>> do this within DSA rather than sprinkling DSA specific knowledge
->>>> throughout the network stack. Maybe for "configuration less" stacked
->>>> devices such as DSA, 802.1Q (bridge ports?), bond etc. it would be
->>>> acceptable to ensure that the lower device is always brought up?  
->>>
->>> For upper interfaces with more than one lower (bridge, bond) I'm not so
->>> sure. For uppers with a single lower (DSA, 8021q), it's pretty much a
->>> no-brainer to me. Question is, where to code this? I think it's ok to
->>> leave it in DSA, then 8021q could copy it as well if there was a need.
->>
->> FWIW no strong preference here. Maybe I'd lean slightly towards
->> Florian's approach since we can go to the always upping the CPU netdev
->> from that, if we start with auto-upping CPU netdev - user space may
->> depend on that in general so we can't go back.
->>
->> But up to you folks, this seems like a DSA-specific problem, vlans don't
->> get created before user space is up (AFAIK), so there is no compelling
->> reason to change them in my mind.
-> 
-> Right I remembered in my previous job we had a patch that would support
-> creating VLAN devices when specified over ipconfig on the kernel command
-> line, but that as never upstream AFAICT.
-> 
->>
->> Florian for you patch specifially - can't we use
->> netdev_for_each_lower_dev()?
-> 
-> Looks like I forgot to respond here, yes we could do that because we do
-> call netdev_upper_dev_link() in net/dsa/slave.c. Let me re-post with
-> that done.
+On Mon, Nov 16, 2020 at 03:13:47PM -0800, Jakub Kicinski wrote:
+> On Tue, 17 Nov 2020 01:00:53 +0200 Vladimir Oltean wrote:
+> > On Mon, Nov 16, 2020 at 02:35:44PM -0800, Jakub Kicinski wrote:
+> > > On Tue, 17 Nov 2020 00:21:46 +0200 Vladimir Oltean wrote:
+> > > > On Mon, Nov 16, 2020 at 01:34:53PM -0800, Jakub Kicinski wrote:
+> > > > > You must expose relevant statistics via the normal get_stats64 NDO
+> > > > > before you start dumping free form stuff in ethtool -S.
+> > > >
+> > > > Completely agree on the point, Jakub, but to be honest we don't give him
+> > > > that possibility within the DSA framework today, see .ndo_get_stats64 in
+> > > > net/dsa/slave.c which returns the generic dev_get_tstats64 implementation,
+> > > > and not something that hooks into the hardware counters, or into the
+> > > > driver at all, for that matter.
+> > >
+> > > Simple matter of coding, right? I don't see a problem.
+> > >
+> > > Also I only mentioned .ndo_get_stats64, but now we also have stats in
+> > > ethtool->get_pause_stats.
+> >
+> > Yes, sure we can do that. The pause stats and packet counter ops would
+> > need to be exposed to the drivers by DSA first, though. Not sure if this
+> > is something you expect Oleksij to do or if we could pick that up separately
+> > afterwards.
+>
+> Well, I feel like unless we draw the line nobody will have
+> the incentive to do the work.
+>
+> I don't mind if it's Oleksij or anyone else doing the plumbing work,
+> but the task itself seems rather trivial.
 
-I remember now there was a reason for me to "open code" this, and this
-is because since the patch is intended to be a bug fix, I wanted it to
-be independent from: 2f1e8ea726e9 ("net: dsa: link interfaces with the
-DSA master to get rid of lockdep warnings")
+So then I'll let Oleksij show his availability.
 
-which we would be depending on and is only two-ish releases away. Let me
-know if you prefer different fixes for different branches.
--- 
-Florian
+> > > > But it's good that you raise the point, I was thinking too that we
+> > > > should do better in terms of keeping the software counters in sync with
+> > > > the hardware. But what would be a good reference for keeping statistics
+> > > > on an offloaded interface? Is it ok to just populate the netdev counters
+> > > > based on the hardware statistics?
+> > >
+> > > IIRC the stats on the interface should be a sum of forwarded in software
+> > > and in hardware. Which in practice means interface HW stats are okay,
+> > > given eventually both forwarding types end up in the HW interface
+> > > (/MAC block).
+> >
+> > A sum? Wouldn't that count the packets sent/received by the stack twice?
+>
+> Note that I said _forwarded_. Frames are either forwarded by the HW or
+> SW (former never hit the CPU, while the latter do hit the CPU or
+> originate from it).
+
+Ah, you were just thinking out loud, I really did not understand what
+you meant by the separation between "forwarded in software" and
+"forwarded in hardware".
+Yes, the hardware typically only gives us MAC-level counters anyway.
+Another way to look at it is that the number of packets forwarded in
+hardware from a given port are equal to the total number of RX packets
+on that MAC minus the packets seen by the CPU coming from that port.
+So all in all, it's the MAC-level counters we should expose in
+.ndo_get_stats64, I'm glad you agree. As for the error packets, I
+suppose that would be a driver-specific aggregate.
+
+What about RMON/RFC2819 style etherStatsPkts65to127Octets? We have a
+number of switches supporting that style of counters, including the one
+that Oleksij is adding support for, apparently (but not all switches
+though). I suppose your M.O. is that anything standardizable is welcome
+to be standardized via rtnetlink?
+
+Andrew, Florian, any opinions here?
