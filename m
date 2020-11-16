@@ -2,95 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D30202B5431
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:20:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 432942B5434
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:20:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728951AbgKPWSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 17:18:21 -0500
-Received: from correo.us.es ([193.147.175.20]:48584 "EHLO mail.us.es"
+        id S1728866AbgKPWUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 17:20:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53370 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728906AbgKPWSV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 17:18:21 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 203D1DED26
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 23:18:18 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0FB59DA4C4
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 23:18:18 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 05056DA4C1; Mon, 16 Nov 2020 23:18:18 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
-        version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id BD5F0DA730;
-        Mon, 16 Nov 2020 23:18:15 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 16 Nov 2020 23:18:15 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 9E11B42EF9E0;
-        Mon, 16 Nov 2020 23:18:15 +0100 (CET)
-Date:   Mon, 16 Nov 2020 23:18:15 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, razor@blackwall.org, jeremy@azazel.net
-Subject: Re: [PATCH net-next,v3 0/9] netfilter: flowtable bridge and vlan
- enhancements
-Message-ID: <20201116221815.GA6682@salvia>
-References: <20201111193737.1793-1-pablo@netfilter.org>
- <20201113175556.25e57856@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201114115906.GA21025@salvia>
- <87sg9cjaxo.fsf@waldekranz.com>
- <20201114090347.2e7c1457@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726016AbgKPWUF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 17:20:05 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605565205;
+        bh=+8OHjo2ZQvb0rlojpbIMc5RrI1TQPhnMSDxlq7m9cCc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=yhMnT1KRp1JdTUQXg6qtEo9K4615QmvaxIQtvRIbIcj9XNXB6F7i6tL13q1IWUu0a
+         p5tI3yqUnqy7ivKekRpkMsrG1M8k5YIci8MAmJqljBnikqWt6bA//Agndn72W/6b/D
+         hIrQI4DZeJZtRzNM7AV1AHoUztrtpuW64112oHjo=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201114090347.2e7c1457@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] MAINTAINERS: update cxgb4 and cxgb3 maintainer
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160556520528.8690.12206547593546981883.git-patchwork-notify@kernel.org>
+Date:   Mon, 16 Nov 2020 22:20:05 +0000
+References: <20201116104322.3959-1-rajur@chelsio.com>
+In-Reply-To: <20201116104322.3959-1-rajur@chelsio.com>
+To:     Raju Rangoju <rajur@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ramaraju@chelsio.com, rahul.lakkireddy@chelsio.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 14, 2020 at 09:03:47AM -0800, Jakub Kicinski wrote:
-> On Sat, 14 Nov 2020 15:00:03 +0100 Tobias Waldekranz wrote:
-> > On Sat, Nov 14, 2020 at 12:59, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> > > If any of the flowtable device goes down / removed, the entries are
-> > > removed from the flowtable. This means packets of existing flows are
-> > > pushed up back to classic bridge / forwarding path to re-evaluate the
-> > > fast path.
-> > >
-> > > For each new flow, the fast path that is selected freshly, so they use
-> > > the up-to-date FDB to select a new bridge port.
-> > >
-> > > Existing flows still follow the old path. The same happens with FIB
-> > > currently.
-> > >
-> > > It should be possible to explore purging entries in the flowtable that
-> > > are stale due to changes in the topology (either in FDB or FIB).
-> > >
-> > > What scenario do you have specifically in mind? Something like VM
-> > > migrates from one bridge port to another?  
-> 
-> Indeed, 2 VMs A and B, talking to each other, A is _outside_ the
-> system (reachable via eth0), B is inside (veth1). When A moves inside
-> and gets its veth. Neither B's veth1 not eth0 will change state, so
-> cache wouldn't get flushed, right?
+Hello:
 
-The flow tuple includes the input interface as part of the hash key,
-so packets will not match the existing entries in the flowtable after
-the topology update. The stale flow entries are removed after 30 seconds
-if no matching packets are seen. New flow entries will be created for
-the new topology, a few packets have to go through the classic
-forwarding path so the new flow entries that represent the flow in the
-new topology are created.
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Mon, 16 Nov 2020 16:13:22 +0530 you wrote:
+> Update cxgb4 and cxgb3 driver maintainer
+> 
+> Signed-off-by: Raju Rangoju <rajur@chelsio.com>
+> ---
+>  MAINTAINERS | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+
+Here is the summary with links:
+  - [net] MAINTAINERS: update cxgb4 and cxgb3 maintainer
+    https://git.kernel.org/netdev/net/c/794e442ca39e
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
