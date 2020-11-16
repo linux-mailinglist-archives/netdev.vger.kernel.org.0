@@ -2,131 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCA452B4B7B
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 17:42:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 589B32B4B7F
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 17:45:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732266AbgKPQmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 11:42:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
+        id S1731107AbgKPQnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 11:43:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729689AbgKPQmK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 11:42:10 -0500
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10720C0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 08:42:10 -0800 (PST)
-Received: by mail-il1-x143.google.com with SMTP id n5so15855274ile.7
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 08:42:10 -0800 (PST)
+        with ESMTP id S1730328AbgKPQnL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 11:43:11 -0500
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A675FC0613CF
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 08:43:11 -0800 (PST)
+Received: by mail-pl1-x642.google.com with SMTP id 35so4504100ple.12
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 08:43:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IEjm1oIUbC9ClxlE2u2GKE3Z9asUNRZSfryIpXi58c4=;
-        b=adIgFX6XDXJfZo4/9MP5TA9FbLXm0wPPdhGPctULurb7SLIktgF3KVac/O37suAzIO
-         kopSf+BHLuN2T8jVA6xTsl0nKPpwt3KA8BmQabUaIh0KYOr6U+RrUx75jJuPr5mH65k7
-         pWCcmlZ+EJUT6Oo7Jc23nMoHhQVS3m6BKkpwF0mJBl85C5QLJWr0uPlZ4h2uswP5E7Xx
-         1aBy+owdSFmzHKR/ktCxMlln7FdSVJKXfVpBEv1s/nRikN/jLLU/ewzSR5k9p3mm7CfE
-         M3P4xslCQNCpQkbza8ke+bWFC2Jxuz/5vv87OGOtpxSa+Ra5Zf/wuO7nrCKDI/NsxpEP
-         3SgQ==
+        d=sushko-dev.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HudsOf94vnxAw/6eb+6j53HlU/gPKIu092y8St76tRY=;
+        b=xSIhzicmZLpFqx44w2KUl1rrEg+EvpW5ZtNruTG6R0raBo32JAQUCeFCGJ9P+gb6WR
+         0qgQsb6fE4DAimoH3Kf0iGDfY3w87dgcDYVDNbHRfbof/TZpPiaC27ZqkU74KgHiPWwf
+         WglEWjoHoxDc6Ts/RRX6g23OCowyiFhZNdHMLKFCOgbpSr4pDtfR+UWG18R6ugWnNsj8
+         VJVElowGiF5s2o1PnoCAUw5rpYYyoKa2FXvvmU6elS9y1DTodoFjbmLHF2kwrbpG7ita
+         uREVSV4NTgWf91vXiWk/KTuo9Ou32Npn8ciesgmrnVA6I1WJs3AEY/Zw2K0Nzk8hzx62
+         vvNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IEjm1oIUbC9ClxlE2u2GKE3Z9asUNRZSfryIpXi58c4=;
-        b=eZBCeTFavpsDHRt570Ptni7GtTp7VHYUwULK+mcKF/hIumdWRpw2bKK7N4zewr5tiP
-         Q7Anr0csnhBSo8/q8nxLufkWCOMQBS9qhqpSrUqMFOswSBjOjXtQIh8yWuaqLuhHsjpy
-         Sl28118tM+e1DpUHW8RzG4Dh7EJPtqEcuClH4dhMcn/qE81jABMiGnpJHPz7vDNayn8D
-         RKt/ZCT0joiY/cXkRpP67l8BxLR8re+3FHItgjjmHTWv1TNy6PPby/8QRZfGQXBk0W/p
-         kBHPnip+zLY6bdnGpRgOYL/NgNzieA6PnDYOB4mTJYAcQK7b49vaU+OokCJtvCgZfKhR
-         z9UA==
-X-Gm-Message-State: AOAM531XOUWGYFH0ciKxTGtnlkv6EjpPn9B5k6TgOS3HgQQ47DobjOem
-        ZBCvvcxE9exhgSBN5ZM/6/ivxYc6p6Bso90Gnlo=
-X-Google-Smtp-Source: ABdhPJwMzhjYUK72UJewwFVkuZKkIUJBONPLfxxRqdGN2i6vf8Sus+wmGPipHsOc9d6IoE8Tx4kMDejooT4Mptgn+5U=
-X-Received: by 2002:a92:4993:: with SMTP id k19mr9028839ilg.237.1605544929328;
- Mon, 16 Nov 2020 08:42:09 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HudsOf94vnxAw/6eb+6j53HlU/gPKIu092y8St76tRY=;
+        b=ZeWgDrXTTrHkTUI41tM/7VKGe8w9KeFweoI8w38uZdfh7hKe1Sq22TXsZSiIhGNmje
+         uk7dvMOXdAqTtmO5SPh563rlj9l7Etpm+GQVwzURwnNMqCdW44z2FgoM8paFS45y2BGV
+         Y9zVM0xkDkJXAb1Yv347nnZM4qsyjpkOw/oMgusdouLoJ5Pvb7cZFTFszmDZHRiLbhKn
+         JK8lkLo+RAfRa07ZH40MQs21G7Wwh841jR3VjJTS0337YjndtU5Z2ZlobqUFtYW/5gPq
+         WxfnFPUmxHAUaDpPjdJLrVroVONcAPpbZy/w+BYMNUPNOphky1aQCRyHELNMVgLrOWkL
+         Q4bQ==
+X-Gm-Message-State: AOAM533/4UFN9nTklx4CPiuV2fL37CM02botzdwq4uZuecRJ0mUXEnYf
+        LWgjJVP8TF5UTT1BMkIOS1SoDfdzGPi+Xt7HnRCYu7xL
+X-Google-Smtp-Source: ABdhPJwjPAhBV9ot/jDtG9lORvKXYjhTskA8OnzUvyT4nbwX2uwziZTyvNvwuIyjVBk0o3ilrEfocw==
+X-Received: by 2002:a17:902:758d:b029:d6:65a6:c70b with SMTP id j13-20020a170902758db02900d665a6c70bmr12858442pll.30.1605544990848;
+        Mon, 16 Nov 2020 08:43:10 -0800 (PST)
+Received: from torus.ims.dom ([4.14.189.6])
+        by smtp.gmail.com with ESMTPSA id j13sm18585245pfd.97.2020.11.16.08.43.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2020 08:43:09 -0800 (PST)
+From:   "Ruslan V. Sushko" <rus@sushko.dev>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>, Ruslan Sushko <rus@sushko.dev>
+Subject: [PATCH] net: dsa: mv88e6xxx: Wait for EEPROM done after HW reset
+Date:   Mon, 16 Nov 2020 08:43:01 -0800
+Message-Id: <20201116164301.977661-1-rus@sushko.dev>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-References: <eda2de73-edf2-8b92-edb9-099ebda09ebc@solarflare.com>
- <5ce9986a-4c5c-9ffd-e83d-e6782ff370ba@solarflare.com> <CAKgT0UciV2rSiNBHQOhqHkrx=XBLzOTdHmKXZ6fTxdt1D3c0Gg@mail.gmail.com>
- <72c7dac3-9744-0006-b859-50b4e3ccf5bf@solarflare.com>
-In-Reply-To: <72c7dac3-9744-0006-b859-50b4e3ccf5bf@solarflare.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 16 Nov 2020 08:41:58 -0800
-Message-ID: <CAKgT0UeGPuH=E3ny1yyB0Az11GssOZmTPqmBW9ccksr5Z8x6sg@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] sfc: extend bitfield macros to 19 fields
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 16, 2020 at 4:27 AM Edward Cree <ecree@solarflare.com> wrote:
->
-> On 13/11/2020 19:06, Alexander Duyck wrote:
-> > On Thu, Nov 12, 2020 at 7:23 AM Edward Cree <ecree@solarflare.com> wrote:
-> >> @@ -348,7 +352,11 @@ typedef union efx_oword {
-> >>  #endif
-> >>
-> >>  /* Populate an octword field with various numbers of arguments */
-> >> -#define EFX_POPULATE_OWORD_17 EFX_POPULATE_OWORD
-> >> +#define EFX_POPULATE_OWORD_19 EFX_POPULATE_OWORD
-> >> +#define EFX_POPULATE_OWORD_18(oword, ...) \
-> >> +       EFX_POPULATE_OWORD_19(oword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-> >> +#define EFX_POPULATE_OWORD_17(oword, ...) \
-> >> +       EFX_POPULATE_OWORD_18(oword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-> >>  #define EFX_POPULATE_OWORD_16(oword, ...) \
-> >>         EFX_POPULATE_OWORD_17(oword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-> >>  #define EFX_POPULATE_OWORD_15(oword, ...) \
-> > Are all these macros really needed? It seems like this is adding a
-> > bunch of noise in order to add support for a few additional fields.
-> > Wouldn't it be possible to just define the ones that are actually
-> > needed and add multiple dummy values to fill in the gaps instead of
-> > defining every macro between zero and 19? For example this patch set
-> > adds an option for setting 18 fields, but from what I can tell it is
-> > never used.
-> I guess the reasoningoriginally was that it's easier to read and
->  v-lint if it's just n repetitions of the same pattern.  Whereas if
->  there were jumps, it'd be more likely for a typo to slip through
->  unnoticed and subtly corrupt all the values.
+From: Andrew Lunn <andrew@lunn.ch>
 
-I'm not sure the typo argument holds much water. The fact is it is
-pretty easy to just count the variables doing something like the
-following:
-#define EFX_POPULATE_OWORD_10(oword, ...) \
-        EFX_POPULATE_OWORD_19(oword, \
-                              EFX_DUMMY_FIELD, 0, \
-                              EFX_DUMMY_FIELD, 0, \
-                              EFX_DUMMY_FIELD, 0, \
-                              EFX_DUMMY_FIELD, 0, \
-                              EFX_DUMMY_FIELD, 0, \
-                              EFX_DUMMY_FIELD, 0, \
-                              EFX_DUMMY_FIELD, 0, \
-                              EFX_DUMMY_FIELD, 0, \
-                              EFX_DUMMY_FIELD, 0, \
-                              __VA_ARGS__)
+When the switch is hardware reset, it reads the contents of the
+EEPROM. This can contain instructions for programming values into
+registers and to perform waits between such programming. Reading the
+EEPROM can take longer than the 100ms mv88e6xxx_hardware_reset() waits
+after deasserting the reset GPIO. So poll the EEPROM done bit to
+ensure it is complete.
 
-Any change is basically update the 19 to whatever and add/subtract
-lines using a simple copy/paste.
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Ruslan Sushko <rus@sushko.dev>
+---
+ drivers/net/dsa/mv88e6xxx/chip.c    |  2 ++
+ drivers/net/dsa/mv88e6xxx/global1.c | 31 +++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/global1.h |  1 +
+ 3 files changed, 34 insertions(+)
 
-> But tbh I don't know, it's been like that since the driver was added
->  twelve years ago (8ceee660aacb) when it had all from 0 to 10.  All
->  we've done since then is extend that pattern.
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index bd297ae7cf9e..34cca0a4b31c 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2297,6 +2297,8 @@ static void mv88e6xxx_hardware_reset(struct mv88e6xxx_chip *chip)
+ 		usleep_range(10000, 20000);
+ 		gpiod_set_value_cansleep(gpiod, 0);
+ 		usleep_range(10000, 20000);
++
++		mv88e6xxx_g1_wait_eeprom_done(chip);
+ 	}
+ }
+ 
+diff --git a/drivers/net/dsa/mv88e6xxx/global1.c b/drivers/net/dsa/mv88e6xxx/global1.c
+index f62aa83ca08d..33d443a37efc 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1.c
++++ b/drivers/net/dsa/mv88e6xxx/global1.c
+@@ -75,6 +75,37 @@ static int mv88e6xxx_g1_wait_init_ready(struct mv88e6xxx_chip *chip)
+ 	return mv88e6xxx_g1_wait_bit(chip, MV88E6XXX_G1_STS, bit, 1);
+ }
+ 
++void mv88e6xxx_g1_wait_eeprom_done(struct mv88e6xxx_chip *chip)
++{
++	const unsigned long timeout = jiffies + 1 * HZ;
++	u16 val;
++	int err;
++
++	/* Wait up to 1 second for the switch to finish reading the
++	 * EEPROM.
++	 */
++	while (time_before(jiffies, timeout)) {
++		err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_STS, &val);
++		if (err) {
++			dev_err(chip->dev, "Error reading status");
++			return;
++		}
++
++		/* If the switch is still resetting, it may not
++		 * respond on the bus, and so MDIO read returns
++		 * 0xffff. Differentiate between that, and waiting for
++		 * the EEPROM to be done by bit 0 being set.
++		 */
++		if (val != 0xffff &&
++		    val & BIT(MV88E6XXX_G1_STS_IRQ_EEPROM_DONE))
++			return;
++
++		usleep_range(1000, 2000);
++	}
++
++	dev_err(chip->dev, "Timeout waiting for EEPROM done");
++}
++
+ /* Offset 0x01: Switch MAC Address Register Bytes 0 & 1
+  * Offset 0x02: Switch MAC Address Register Bytes 2 & 3
+  * Offset 0x03: Switch MAC Address Register Bytes 4 & 5
+diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
+index 1e3546f8b072..e05abe61fa11 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1.h
++++ b/drivers/net/dsa/mv88e6xxx/global1.h
+@@ -278,6 +278,7 @@ int mv88e6xxx_g1_set_switch_mac(struct mv88e6xxx_chip *chip, u8 *addr);
+ int mv88e6185_g1_reset(struct mv88e6xxx_chip *chip);
+ int mv88e6352_g1_reset(struct mv88e6xxx_chip *chip);
+ int mv88e6250_g1_reset(struct mv88e6xxx_chip *chip);
++void mv88e6xxx_g1_wait_eeprom_done(struct mv88e6xxx_chip *chip);
+ 
+ int mv88e6185_g1_ppu_enable(struct mv88e6xxx_chip *chip);
+ int mv88e6185_g1_ppu_disable(struct mv88e6xxx_chip *chip);
+-- 
+2.25.4
 
-The reason I bring it up is that it seems like it is dragging  a bunch
-of macros that will likely never need 19 variables forward along with
-it. For example the EFX_POPULATE_[DQ]WORD_<n> seems to only go as high
-as 7. I'm not sure it makes much sense to keep defining new versions
-of the macro when you could just be adding the needed lines to the 7
-variable version of the macro and and come up with something that
-looks like the definition of EFX_SET_OWORD where you could just add an
-EFX_DUMMY_FIELD, 0, for each new variable added. The
-EFX_POPULATE_OWORD_<X> goes all the way to 17 currently, however if we
-exclude that the real distribution seems to be 1 - 10, with just the
-one lone call to the 17 case which is becoming 19 with your patch.
-
-The one issue I can think of is the fact that you will need the 17
-variable version until you change it to the 19, but even then dropping
-the 17 afterwards and adding the 2 additional sets of dummy variables
-to the 10 should be straight forward and still pretty easy to review.
