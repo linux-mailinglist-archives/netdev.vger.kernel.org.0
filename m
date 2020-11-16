@@ -2,136 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E170B2B52AB
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 21:34:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53B132B52B0
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 21:36:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733005AbgKPUeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 15:34:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726426AbgKPUea (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 15:34:30 -0500
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 435D1C0613CF;
-        Mon, 16 Nov 2020 12:34:29 -0800 (PST)
-Received: by mail-yb1-xb41.google.com with SMTP id s8so16819812yba.13;
-        Mon, 16 Nov 2020 12:34:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c8o0lWTV5oFYZGA8cq/w+A4j784ox49dpPJ856/9JoM=;
-        b=i0uHo1Qo0705jAtRWcfkcq4XzbWhc0j+mLT2XM9K4XHtRrUnu/1geVgadH75aauxaS
-         hLSZ2K786RPSLX4dVSe8KOLb5X+9fi7crS1KkuWQeqgCHpXt/vF+HGQh/V9AqPnSo30J
-         WRha7bZ9J/MzVi6uhARO3bEV3M3W7W0lW8J+njB+mufdrgVi56PwMu1KhlxjAhBctbtm
-         3tOc0BwPD0DqC9KWe4D7seLJm7zHjbU73OUP7atwg3OjpLHGEQR6ZzsQNznup27J6ACr
-         1K2RX3ST3kPYc19ohBqm45gJsGw+GONXvoss+Fr4kkerBRd2UyBGLZAoPKIDWXPl67I5
-         EJRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c8o0lWTV5oFYZGA8cq/w+A4j784ox49dpPJ856/9JoM=;
-        b=g+5/otAy4mSvArGOmoABXBMiM8K2y2uiBRLGnYkz7dijJKX/co88Isn+vLs5+cymQL
-         bJHs323TjYhgzKV96ztZIu1eJXAgchCG94E5yWPl2BfI9NaobgWs7VVkOUhH59J2Zzzd
-         vNkDbqKBYe/nDEMkT4RL/XK3DKe4N34x+5J4x56/NrQs9XwTauxm1kbJXzKcvAGKcS+/
-         90tsxmwXxjExj9X/0Z9mJYcIDPYVDWza9k+Qje7bQPt5IHeBwv+c/b7z7ms1WiVeaupn
-         +NzC3WPXtu6/Hltnu6PlYh5WFKQuFv86YNF/sVJjF+mWeqUxSbvSzETmASoXRY2b4Cma
-         oEJA==
-X-Gm-Message-State: AOAM532JMImXdZhLo21AVsD95YR/Y8Oh3d7wbTLdwHEOPta7ADZ4WLEN
-        jm7l1uBjr2v+SQRk4LTV+pPYWTMUgGzqn6UX4o+7oNl//wM=
-X-Google-Smtp-Source: ABdhPJx6mICYvNnDIpxk6wLiDam/OieqWJa9sS6iJdU3ImLG8l0AQjgllc+chm4bBXbvrJpHXk+Cc3zGIWbFF/KBntg=
-X-Received: by 2002:a25:3d7:: with SMTP id 206mr23184703ybd.27.1605558868531;
- Mon, 16 Nov 2020 12:34:28 -0800 (PST)
+        id S1733060AbgKPUet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 15:34:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56650 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726426AbgKPUes (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 15:34:48 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E922D20782;
+        Mon, 16 Nov 2020 20:34:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605558888;
+        bh=2ruH7IpyyY7Zc5GxUUT8zaXzNlCfnxxKHpm5NRrSynw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kqPek+cSqfK3KuBCIHEq81ACpLJg6w6ZwX5PicuP8zzv48hPToHufq2oVBUBTBGcs
+         uJsrzRpTTOC2eghu+tg4ebGCBOLMuOtSsc4lodEqCKrR+F+1rwT7GwX3cbc/1D+msG
+         yynLOcc9kHbxz1jYTpOUnTlVOWBoZd2eCt5piUWQ=
+Date:   Mon, 16 Nov 2020 12:34:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Mahesh Bandewar (=?UTF-8?B?4KSu4KS54KWH4KS2IOCkrOCkguCkoeClh+CktQ==?=
+        =?UTF-8?B?4KS+4KSw?=) " <maheshb@google.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        David Ahern <dsahern@gmail.com>
+Cc:     Jian Yang <jianyang.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Jian Yang <jianyang@google.com>
+Subject: Re: [PATCH net-next] net-loopback: allow lo dev initial state to be
+ controlled
+Message-ID: <20201116123447.2be5a827@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAF2d9jgYgUa4DPVT8CSsbMs9HFjE5fn_U8-P=JuZeOecfiYt-g@mail.gmail.com>
+References: <20201111204308.3352959-1-jianyang.kernel@gmail.com>
+        <20201114101709.42ee19e0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAF2d9jgYgUa4DPVT8CSsbMs9HFjE5fn_U8-P=JuZeOecfiYt-g@mail.gmail.com>
 MIME-Version: 1.0
-References: <20201110011932.3201430-1-andrii@kernel.org> <20201110011932.3201430-4-andrii@kernel.org>
- <B51AA745-00B6-4F2A-A7F0-461E845C8414@fb.com> <SN6PR11MB2751CF60B28D5788B0C15B5AB5E30@SN6PR11MB2751.namprd11.prod.outlook.com>
-In-Reply-To: <SN6PR11MB2751CF60B28D5788B0C15B5AB5E30@SN6PR11MB2751.namprd11.prod.outlook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 16 Nov 2020 12:34:17 -0800
-Message-ID: <CAEf4BzYSN+XnaA4V3jTLEmoUZO=Yxwp7OAwAY+HOvVEKT5kRFA@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 3/5] kbuild: build kernel module BTFs if BTF
- is enabled and pahole supports it
-To:     "Allan, Bruce W" <bruce.w.allan@intel.com>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "Starovoitov, Alexei" <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 16, 2020 at 11:55 AM Allan, Bruce W <bruce.w.allan@intel.com> wrote:
->
-> > -----Original Message-----
-> > From: Song Liu <songliubraving@fb.com>
-> > Sent: Tuesday, November 10, 2020 5:05 PM
-> > To: Andrii Nakryiko <andrii@kernel.org>
-> > Cc: bpf <bpf@vger.kernel.org>; Networking <netdev@vger.kernel.org>;
-> > Starovoitov, Alexei <ast@fb.com>; Daniel Borkmann <daniel@iogearbox.net>;
-> > Kernel Team <Kernel-team@fb.com>; open list <linux-
-> > kernel@vger.kernel.org>; rafael@kernel.org; jeyu@kernel.org; Arnaldo
-> > Carvalho de Melo <acme@redhat.com>; Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org>; Masahiro Yamada
-> > <yamada.masahiro@socionext.com>
-> > Subject: Re: [PATCH v4 bpf-next 3/5] kbuild: build kernel module BTFs if BTF is
-> > enabled and pahole supports it
-> >
-> >
-> >
-> > > On Nov 9, 2020, at 5:19 PM, Andrii Nakryiko <andrii@kernel.org> wrote:
-> >
-> > [...]
-> >
-> > > SPLIT BTF
-> > > =========
+On Mon, 16 Nov 2020 12:02:48 -0800 Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=
+=A5=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=
+=A4=B0) wrote:
+> > > diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
+> > > index a1c77cc00416..76dc92ac65a2 100644
+> > > --- a/drivers/net/loopback.c
+> > > +++ b/drivers/net/loopback.c
+> > > @@ -219,6 +219,13 @@ static __net_init int loopback_net_init(struct n=
+et *net)
 > > >
-> > > $ for f in $(find . -name '*.ko'); do size -A -d $f | grep BTF | awk '{print $2}';
-> > done | awk '{ s += $1 } END { print s }'
-> > > 5194047
-> > >
-> > > $ for f in $(find . -name '*.ko'); do printf "%s %d\n" $f $(size -A -d $f | grep
-> > BTF | awk '{print $2}'); done | sort -nr -k2 | head -n10
-> > > ./drivers/gpu/drm/i915/i915.ko 293206
-> > > ./drivers/gpu/drm/radeon/radeon.ko 282103
-> > > ./fs/xfs/xfs.ko 222150
-> > > ./drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko 198503
-> > > ./drivers/infiniband/hw/mlx5/mlx5_ib.ko 198356
-> > > ./drivers/net/ethernet/broadcom/bnx2x/bnx2x.ko 113444
-> > > ./fs/cifs/cifs.ko 109379
-> > > ./arch/x86/kvm/kvm.ko 100225
-> > > ./drivers/gpu/drm/drm.ko 94827
-> > > ./drivers/infiniband/core/ib_core.ko 91188
-> > >
-> > > Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-> > > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> > >       BUG_ON(dev->ifindex !=3D LOOPBACK_IFINDEX);
+> > >       net->loopback_dev =3D dev;
+> > > +
+> > > +     if (sysctl_netdev_loopback_state) {
+> > > +             /* Bring loopback device UP */
+> > > +             rtnl_lock();
+> > > +             dev_open(dev, NULL);
+> > > +             rtnl_unlock();
+> > > +     } =20
 > >
-> > Acked-by: Song Liu <songliubraving@fb.com>
->
-> This change, commit 5f9ae91f7c0d ("kbuild: Build kernel module BTFs if BTF is enabled and pahole
-> supports it") currently in net-next, linux-next, etc. breaks the use-case of compiling only a specific
-> kernel module (both in-tree and out-of-tree, e.g. 'make M=drivers/net/ethernet/intel/ice') after
-> first doing a 'make modules_prepare'.  Previously, that use-case would result in a warning noting
-> "Symbol info of vmlinux is missing. Unresolved symbol check will be entirely skipped" but now it
-> errors out after noting "No rule to make target 'vmlinux', needed by '<...>.ko'.  Stop."
->
-> Is that intentional?
+> > The only concern I have here is that it breaks notification ordering.
+> > Is there precedent for NETDEV_UP to be generated before all pernet ops =
+=20
+> > ->init was called? =20
+> I'm not sure if any and didn't see any issues in our usage / tests.
+> I'm not even sure anyone is watching/monitoring for lo status as such.
 
-I wasn't aware of such a use pattern, so definitely not intentional.
-But vmlinux is absolutely necessary to generate the module BTF. So I'm
-wondering what's the proper fix here? Leave it as is (that error
-message is actually surprisingly descriptive, btw)? Force vmlinux
-build? Or skip BTF generation for that module?
+Ido, David, how does this sound to you?
 
->
-> Thanks,
-> Bruce.
+I can't think of any particular case where bringing the device up (and
+populating it's addresses) before per netns init is finished could be
+problematic. But if this is going to make kernel coding harder the
+minor convenience of the knob is probably not worth it.
