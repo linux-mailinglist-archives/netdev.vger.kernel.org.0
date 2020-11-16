@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B0842B5459
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:30:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7DB82B5463
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:30:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730097AbgKPW3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 17:29:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35130 "EHLO
+        id S1730183AbgKPW3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 17:29:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726543AbgKPW3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 17:29:23 -0500
+        with ESMTP id S1730174AbgKPW3n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 17:29:43 -0500
 Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A327C0613CF;
-        Mon, 16 Nov 2020 14:29:23 -0800 (PST)
-Received: by mail-oi1-x244.google.com with SMTP id k19so11878094oic.12;
-        Mon, 16 Nov 2020 14:29:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74906C0613D2;
+        Mon, 16 Nov 2020 14:29:43 -0800 (PST)
+Received: by mail-oi1-x244.google.com with SMTP id q206so20462967oif.13;
+        Mon, 16 Nov 2020 14:29:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=wz0IJ/hlMcfL+ARf40dglrvKGm0TqnMJcE8E8aIInjk=;
-        b=EtB0W5/AjEzM//nTSHunLzogOf83F88aMH7RG1i4TamCBAY2986NN9zbCfsTHv5RRI
-         gKoOGXG+tOIr77aPTs/VicUljIJdNPPCAtAiWqSvMhHTI+nSpJ/LKC3G9wsdezx4O3v9
-         hVNE/2Tzi/llHqRHr5zEe/sV9wvhXuLWq+ye+R7fOGPHS/dNmbYHA/fHV7Pu/NNyjmhP
-         uel6pVymrO2bgkZh05JS6svmDCrMlVVrHhdbkk6d3Puz+3SZsiYA1biX0jcwU7qn9kEL
-         AMjqWI6ev5qDs/VS4L8FnM8cQT4J86X9U05mKTdUpbVLiL0sK6uSq02qIzgSvZ4OVrb2
-         MnuA==
+        bh=el2fYd8ySBa3+ZWXicXA9IRpxKlp+zaCI41Z/ZlGF/8=;
+        b=eb1D7T4xM76sGfv40jZcqpoRXtuhCkeuThZ+CVXQaYkXUhMUB3qWpmajJR7KN3UrQm
+         W4i3euO6Rrisvhkx7PFt9TbF1oYZ+nBbvux2JDNOCnCZR3lS7L4riN5cfwuDw2rKuJvX
+         Vhx1xc7570EwX5zJ9l0fN3yhYRU7bMTb52TKUcgBrl3SfJcyOt2XKhML9DVzy73u69sS
+         AZ8iNLn1yHqRfdK4s13X0abVRmfF19ZoWHTEsAv/L7JpHRyMrrAXVWaaCaRJiAd18oFT
+         vfCxRwB4/uBnhzDJCnt6iFuO7fxPTBWJoy+TosXeMwExAZDTTeRgGfja9LlHK2Ncuze9
+         D/vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=wz0IJ/hlMcfL+ARf40dglrvKGm0TqnMJcE8E8aIInjk=;
-        b=eUhh2zSSBblzST/RPz23/WVRPb6u8Dpqsh1xmy2sWSjEy6EH2EFUKeQCh6dVK6W3P7
-         5UdqoUGvxyMu1jP3+Lzl2X1NDMW1HJI6CJCC5ZtRDUjm0g9FQjL9yYDRNY+2DYGip67M
-         Q5UY2VGRnUVcsDur9OTgP70ofws99memQEYE4KP8X1Z8VXnRLpExIOXNZrS8SB/5qq/t
-         qTE5C/KYD0FDFnDhS4V/mnYrBiJFgWoItBRHCLQg6tEMpA+O4wYoa9NF9V1NcrrLO19C
-         MVz+lDWL9a7Ao3A1id2VPvzNj3vE7i2l97+y17SvQcoxL4WW0gEkyQYIr9mcrDjXF7jl
-         ZizQ==
-X-Gm-Message-State: AOAM531I5s8hVFwrp3E3S3DLfGGJnLI9OguEe7FR+O6ZWKA4aa9mvLfI
-        BhJZ0V39qYnYCPCiQ+uTl4zhYMZCw4Bcrw==
-X-Google-Smtp-Source: ABdhPJxONS2U765bzX7oLx2jORWygnzCVebNGLXvmvjq14UCLmSS0mobW8L8doT7SrGD2+GRp0gi3A==
-X-Received: by 2002:a05:6808:494:: with SMTP id z20mr581408oid.10.1605565762485;
-        Mon, 16 Nov 2020 14:29:22 -0800 (PST)
+        bh=el2fYd8ySBa3+ZWXicXA9IRpxKlp+zaCI41Z/ZlGF/8=;
+        b=au93biyizZoBc8yK7sHWd59ZZ9wt6tW8MpHlq4juJyxlsFd8vCevcZgxD6TLW0aC68
+         gAbuWFvtBURKbBq43v3+CMzNH3176RVIZAB674eN8aW+W9dkeKDSGWyb6OAYlUx1Axqq
+         w2b6ZRQfw6v0isQQTaYNyyyTmohG8PfVtyDxYP+95jG1URVaFjTvITLJu2+RSAAu5DoG
+         r3OKcf9rlVXdMJ5hOb5P5AX47nt5H5VaosY3KHDbq35CsQRsJ0130EvsOcGssUGBsbxO
+         NOl7CVKu5iSeasppX+9ximytqcIjF2rdJ8lY0UMzQQfk9GdUyxbWCInP1gshpW6KNIR9
+         ncDQ==
+X-Gm-Message-State: AOAM530YHSMCPBiB4ho2VzOfBt5fScPuX6Q7zviAvyhecwqyXiJc1KPS
+        0CxRXsWEjCuTJL31lvuPClIAajpY66ufHA==
+X-Google-Smtp-Source: ABdhPJyNHGfQTOvUJuJt1sTZp9GqGv7Mm4QAjPRw6oJxAKQ9jrKr+OcVXm1VmBk0IJuIKgGGhX1kmg==
+X-Received: by 2002:aca:ac91:: with SMTP id v139mr539441oie.95.1605565782644;
+        Mon, 16 Nov 2020 14:29:42 -0800 (PST)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id o135sm5229313ooo.38.2020.11.16.14.29.15
+        by smtp.gmail.com with ESMTPSA id o63sm5308469ooa.10.2020.11.16.14.29.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 14:29:21 -0800 (PST)
-Subject: [bpf PATCH v3 5/6] bpf,
- sockmap: Handle memory acct if skb_verdict prog redirects to self
+        Mon, 16 Nov 2020 14:29:41 -0800 (PST)
+Subject: [bpf PATCH v3 6/6] bpf,
+ sockmap: Avoid failures from skb_to_sgvec when skb has frag_list
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     jakub@cloudflare.com, ast@kernel.org, daniel@iogearbox.net
 Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
         netdev@vger.kernel.org
-Date:   Mon, 16 Nov 2020 14:29:08 -0800
-Message-ID: <160556574804.73229.11328201020039674147.stgit@john-XPS-13-9370>
+Date:   Mon, 16 Nov 2020 14:29:28 -0800
+Message-ID: <160556576837.73229.14800682790808797635.stgit@john-XPS-13-9370>
 In-Reply-To: <160556562395.73229.12161576665124541961.stgit@john-XPS-13-9370>
 References: <160556562395.73229.12161576665124541961.stgit@john-XPS-13-9370>
 User-Agent: StGit/0.23-36-gc01b
@@ -65,56 +65,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the skb_verdict_prog redirects an skb knowingly to itself, fix your
-BPF program this is not optimal and an abuse of the API please use
-SK_PASS. That said there may be cases, such as socket load balancing,
-where picking the socket is hashed based or otherwise picks the same
-socket it was received on in some rare cases. If this happens we don't
-want to confuse userspace giving them an EAGAIN error if we can avoid
-it.
+When skb has a frag_list its possible for skb_to_sgvec() to fail. This
+happens when the scatterlist has fewer elements to store pages than would
+be needed for the initial skb plus any of its frags.
 
-To avoid double accounting in these cases. At the moment even if the
-skb has already been charged against the sockets rcvbuf and forward
-alloc we check it again and do set_owner_r() causing it to be orphaned
-and recharged. For one this is useless work, but more importantly we
-can have a case where the skb could be put on the ingress queue, but
-because we are under memory pressure we return EAGAIN. The trouble
-here is the skb has already been accounted for so any rcvbuf checks
-include the memory associated with the packet already. This rolls
-up and can result in unecessary EAGAIN errors in userspace read()
-calls.
+This case appears rare, but is possible when running an RX parser/verdict
+programs exposed to the internet. Currently, when this happens we throw
+an error, break the pipe, and kfree the msg. This effectively breaks the
+application or forces it to do a retry.
 
-Fix by doing an unlikely check and skipping checks if skb->sk == sk.
+Lets catch this case and handle it by doing an skb_linearize() on any
+skb we receive with frags. At this point skb_to_sgvec should not fail
+because the failing conditions would require frags to be in place.
 
-Fixes: 51199405f9672 ("bpf: skb_verdict, support SK_PASS on RX BPF path")
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/core/skmsg.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/core/skmsg.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 9aed5a2c7c5b..514bc9f6f8ae 100644
+index 514bc9f6f8ae..25cdbb20f3a0 100644
 --- a/net/core/skmsg.c
 +++ b/net/core/skmsg.c
-@@ -442,11 +442,19 @@ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
- 	return copied;
- }
- 
-+static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb);
-+
- static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
+@@ -423,9 +423,16 @@ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
+ 					struct sock *sk,
+ 					struct sk_msg *msg)
  {
- 	struct sock *sk = psock->sk;
- 	struct sk_msg *msg;
+-	int num_sge = skb_to_sgvec(skb, msg->sg.data, 0, skb->len);
+-	int copied;
++	int num_sge, copied;
  
-+	/* If we are receiving on the same sock skb->sk is already assigned,
-+	 * skip memory accounting and owner transition seeing it already set
-+	 * correctly.
++	/* skb linearize may fail with ENOMEM, but lets simply try again
++	 * later if this happens. Under memory pressure we don't want to
++	 * drop the skb. We need to linearize the skb so that the mapping
++	 * in skb_to_sgvec can not error.
 +	 */
-+	if (unlikely(skb->sk == sk))
-+		return sk_psock_skb_ingress_self(psock, skb);
- 	msg = sk_psock_create_ingress_msg(sk, skb);
- 	if (!msg)
- 		return -EAGAIN;
++	if (skb_linearize(skb))
++		return -EAGAIN;
++	num_sge = skb_to_sgvec(skb, msg->sg.data, 0, skb->len);
+ 	if (unlikely(num_sge < 0)) {
+ 		kfree(msg);
+ 		return num_sge;
 
 
