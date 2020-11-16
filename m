@@ -2,107 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20FCF2B4653
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:50:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88F642B4661
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:50:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730370AbgKPOsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 09:48:12 -0500
-Received: from mga11.intel.com ([192.55.52.93]:4038 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730274AbgKPOsL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 09:48:11 -0500
-IronPort-SDR: LAJqivcHDpZ0px52oGkX/NKBWeX8XKGNmnbnxjfzF2dT1DILxS1BM7YIkDK5gr0gJLwQEL5SH5
- jT+H3B+zPSQA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9806"; a="167243907"
-X-IronPort-AV: E=Sophos;i="5.77,482,1596524400"; 
-   d="scan'208";a="167243907"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2020 06:48:11 -0800
-IronPort-SDR: Xaqfas80LAh/NU/b0N72/1M2eqTlErFT5vBqC4bzu57KwT2hl3j1jmAevXw/QQIyqZC7+MhrtD
- IEQNbP5+zfcg==
-X-IronPort-AV: E=Sophos;i="5.77,482,1596524400"; 
-   d="scan'208";a="358486017"
-Received: from pgao1-mobl1.amr.corp.intel.com (HELO [10.212.6.211]) ([10.212.6.211])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2020 06:48:10 -0800
-Subject: Re: [PATCH v6] lib: optimize cpumask_local_spread()
-To:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Yuqi Jin <jinyuqi@huawei.com>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Juergen Gross <jgross@suse.com>,
-        Paul Burton <paul.burton@mips.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>
-References: <1604410767-55947-1-git-send-email-zhangshaokun@hisilicon.com>
- <3e2e760d-e4b9-8bd0-a279-b23bd7841ae7@intel.com>
- <eec4c1b6-8dad-9d07-7ef4-f0fbdcff1785@hisilicon.com>
- <5e8b0304-4de1-4bdc-41d2-79fa5464fbc7@intel.com>
- <1ca0d77f-7cf3-57d8-af23-169975b63b32@hisilicon.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
- z5cecg==
-Message-ID: <11889127-21f0-bba9-7beb-5a07f263923e@intel.com>
-Date:   Mon, 16 Nov 2020 06:48:09 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1729569AbgKPOuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 09:50:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47594 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730107AbgKPOuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 09:50:02 -0500
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00814C0613CF
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 06:50:01 -0800 (PST)
+Received: by mail-wr1-x444.google.com with SMTP id d12so18940543wrr.13
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 06:50:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=BPCLhabsRwKbkxxHaDPISDFulyGg56yfLX643YNXiJI=;
+        b=SVa+P6UJKaAUuC40crd8bYpmh57hhWqyH6kuJM6H02bEsOA3hohY9w7B6Du6yEE1ba
+         EhN509KkgOKXE5BT8/k8YoVr4gh+gqF0k386xsaY271t95SsJO3QW0YxhCVl+QRuF2Ue
+         XCsyldoqhR7PFIofV/NR5p+s0B/M03M5RCDZE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=BPCLhabsRwKbkxxHaDPISDFulyGg56yfLX643YNXiJI=;
+        b=o0bEjaE5f4Cvcp8h+jKwbOOH3/GFMXmBDp9hGO2p39uz06/HLCiRYGXb+Poin2HHwA
+         Jxprb1TizErVXiHXCiqVKTueNGw+OkV1VMzHNPlVVwtTelRKtAIHdYoZi6KjLdAbtKjW
+         /bfwdoFug6a2pR/Qe56NzNN80ON1D+3ldAVhTFrd4v2iupyMfAz0iKsbpG4Z5+sd03xh
+         etzPK1UEYE6/JlHBpEQ5cn27Z4uSfC6t6NBmqWnWwfINwOLI6XtA2eJQEzssps9hwpw9
+         s4mzlx0J+B82XNN2AygZF96LzShikqfoQ1eoQmmkFSCYSMj88TwEgrcY8+w5rWPL7U0f
+         se5g==
+X-Gm-Message-State: AOAM532EEDNhyjRxty5UgZpF1ZgnW/Tuizj2tHqI4nyc1O6BTPNLsXga
+        upY+VyYERDu1WKG5tuK2tDQd4w==
+X-Google-Smtp-Source: ABdhPJxyn60waabFePD78AVYYz+Pnem8hEKJlcVFwztIc/rsxDFPUqquEpK5Ysm4bQR9TAC31IP4Yw==
+X-Received: by 2002:adf:e787:: with SMTP id n7mr21402364wrm.153.1605538200675;
+        Mon, 16 Nov 2020 06:50:00 -0800 (PST)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id k22sm19673078wmi.34.2020.11.16.06.49.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2020 06:50:00 -0800 (PST)
+References: <160522352433.135009.15329422887113794062.stgit@john-XPS-13-9370>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [bpf PATCH v2 0/6] sockmap fixes
+In-reply-to: <160522352433.135009.15329422887113794062.stgit@john-XPS-13-9370>
+Date:   Mon, 16 Nov 2020 15:49:59 +0100
+Message-ID: <87a6vhwe3s.fsf@cloudflare.com>
 MIME-Version: 1.0
-In-Reply-To: <1ca0d77f-7cf3-57d8-af23-169975b63b32@hisilicon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/15/20 11:59 PM, Shaokun Zhang wrote:
->> Do you want to take another pass at submitting this patch?
-> 'Another pass'? Sorry for my bad understading, I don't follow it correctly.
+On Fri, Nov 13, 2020 at 12:26 AM CET, John Fastabend wrote:
+> This includes fixes for sockmap found after I started running skmsg and
+> verdict programs on systems that I use daily. To date with attached
+> series I've been running for multiple weeks without seeing any issues
+> on systems doing calls, mail, movies, etc.
+>
+> Also I started running packetdrill and after this series last remaining
+> fix needed is to handle MSG_EOR correctly. This will come as a follow
+> up to this, but because we use sendpage to pass pages into TCP stack
+> we need to enable TCP side some.
+>
+> v2:
+>  - Added patch3 to use truesize in sk_rmem_schedule (Daniel)
+>  - cleaned up some small nits... goto and extra set of brackets (Daniel)
+>
+> ---
+>
+> John Fastabend (6):
+>       bpf, sockmap: fix partial copy_page_to_iter so progress can still be made
+>       bpf, sockmap: Ensure SO_RCVBUF memory is observed on ingress redirect
+>       bpf, sockmap: Use truesize with sk_rmem_schedule()
+>       bpf, sockmap: Avoid returning unneeded EAGAIN when redirecting to self
+>       bpf, sockmap: Handle memory acct if skb_verdict prog redirects to self
+>       bpf, sockmap: Avoid failures from skb_to_sgvec when skb has frag_list
 
-Could you please incorporate the feedback that I've given about this
-version of the patch and write a new version?
+
+Patch 5 potentially can be simplified. Otherwise LGTM. For the series:
+
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
