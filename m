@@ -2,79 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A095E2B51EC
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 21:06:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B03B2B521B
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 21:13:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731520AbgKPUFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 15:05:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48704 "EHLO mail.kernel.org"
+        id S1727359AbgKPUMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 15:12:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51120 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731488AbgKPUFI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 15:05:08 -0500
-Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        id S1726527AbgKPUMe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 15:12:34 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EEEB520A8B;
-        Mon, 16 Nov 2020 20:05:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6519B21D7E;
+        Mon, 16 Nov 2020 20:12:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605557108;
-        bh=KH69V18rMUxKg+oWCxZehuAaYIXnsuXmjaKO7YMqvcI=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=PvrRQ1yBXAirL0IMeeXHa2cGqSeEveHnEH1TXaKntTE6BE5sK8pdET2ERcFgU1Fad
-         771Ub9QQq29adfwtVA4IvwW/N857ThRWJjK2RkGynwsyKGbbK2q9I6VRaD3gK87qkD
-         reujwiBblMcxfx9pRDK1oN5IwHVfk8BwxZLV/uzE=
-Message-ID: <32a6628214621766d884308fd9f29abad9e149b9.camel@kernel.org>
-Subject: Re: [PATCH net] net/mlx5: fix error return code in
- mlx5e_tc_nic_init()
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Wang Hai <wanghai38@huawei.com>, leon@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, lariel@mellanox.com,
-        roid@mellanox.com
-Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 16 Nov 2020 12:05:06 -0800
-In-Reply-To: <20201114115223.39505-1-wanghai38@huawei.com>
-References: <20201114115223.39505-1-wanghai38@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        s=default; t=1605557553;
+        bh=rsDDNAP7QStHKITYGKzN3atRZqTmeb4ZPqllqmP94BE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IfQLAn6d26yWdO9aHkuuDskTBbSu3f9N7swkyAmj33Dg/INRO6wITCEp+62Y4RJgm
+         T1ksmjel8si46L7Tiy5o4MV1JifT539iwOpGI0rk0vxgRqBJ5cqBSZ5lSWxvyjFJXQ
+         06xeXePYVD+S+sZR5CX1c38z6nAOmnAVSWB7hmEE=
+Date:   Mon, 16 Nov 2020 12:12:32 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: linux-next: Tree for Nov 16 (net/core/stream.o)
+Message-ID: <20201116121232.7d74b577@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <8a1d4d64-d8cf-f19b-b425-594e10f3fc5a@infradead.org>
+References: <20201116175912.5f6a78d9@canb.auug.org.au>
+        <8a1d4d64-d8cf-f19b-b425-594e10f3fc5a@infradead.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-11-14 at 19:52 +0800, Wang Hai wrote:
-> Fix to return a negative error code from the error handling
-> case instead of 0, as done elsewhere in this function.
+On Mon, 16 Nov 2020 09:46:21 -0800 Randy Dunlap wrote:
+> On 11/15/20 10:59 PM, Stephen Rothwell wrote:
+> > Hi all,
+> > 
+> > Changes since 20201113:
+>
+> on x86_64:
 > 
-> Fixes: aedd133d17bc ("net/mlx5e: Support CT offload for tc nic
-> flows")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wang Hai <wanghai38@huawei.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> # CONFIG_INET is not set
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> index e3a968e9e2a0..c7ad5db84f78 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> @@ -5227,8 +5227,10 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
->  
->  	tc->ct = mlx5_tc_ct_init(priv, tc->chains, &priv-
-> >fs.tc.mod_hdr,
->  				 MLX5_FLOW_NAMESPACE_KERNEL);
-> -	if (IS_ERR(tc->ct))
-> +	if (IS_ERR(tc->ct)) {
-> +		err = PTR_ERR(tc->ct);
->  		goto err_ct;
-> +	}
->  
->  	tc->netdevice_nb.notifier_call = mlx5e_tc_netdev_event;
->  	err = register_netdevice_notifier_dev_net(priv->netdev,
+> ld: net/core/stream.o: in function `sk_stream_write_space':
+> stream.c:(.text+0x68): undefined reference to `tcp_stream_memory_free'
+> ld: stream.c:(.text+0x80): undefined reference to `tcp_stream_memory_free'
+> ld: net/core/stream.o: in function `sk_stream_wait_memory':
+> stream.c:(.text+0x5b3): undefined reference to `tcp_stream_memory_free'
+> ld: stream.c:(.text+0x5c8): undefined reference to `tcp_stream_memory_free'
+> ld: stream.c:(.text+0x6f8): undefined reference to `tcp_stream_memory_free'
+> ld: net/core/stream.o:stream.c:(.text+0x70d): more undefined references to `tcp_stream_memory_free' follow
 
-Applied to net-mlx5 
-Thanks !
-
-
+Must be: d3cd4924e385 ("tcp: uninline tcp_stream_memory_free()")
