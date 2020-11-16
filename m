@@ -2,278 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A12032B463C
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:50:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20FCF2B4653
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:50:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730401AbgKPOqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 09:46:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28481 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730359AbgKPOqm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 09:46:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605537999;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VtyoBFwApfUeR+vDRDbS2v6ykTOzBNXw+8boxM7uvSQ=;
-        b=JjtRJrSMA18vpUwCw4m/0m3OA2IH/1sQ2Qx7/NwSD+VueRNU+vgJQ7snXxXcXGqhG4XV4q
-        akQ3E5Gs50qq6mWHOA/dxnKRutanFtlvBw03DK6IQmH2/AyBla+HmETTJyiv+0dJhXnrZc
-        ZY5nEqBap4t1g8p2ERfbBs/pQJJ+m1s=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-531-qxYRypjgP5SuRh0zuqhYGA-1; Mon, 16 Nov 2020 09:46:35 -0500
-X-MC-Unique: qxYRypjgP5SuRh0zuqhYGA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 145661009E26;
-        Mon, 16 Nov 2020 14:46:33 +0000 (UTC)
-Received: from [10.40.194.169] (unknown [10.40.194.169])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5E45D5B4C1;
-        Mon, 16 Nov 2020 14:46:30 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Ilya Maximets" <i.maximets@ovn.org>
-Cc:     dev@openvswitch.org, bindiyakurle@gmail.com,
-        mcroce@linux.microsoft.com, "Pravin B Shelar" <pshelar@ovn.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2] datapath: Add a new action dec_ttl
-Date:   Mon, 16 Nov 2020 15:46:28 +0100
-Message-ID: <ACAE49DC-5CAB-4B25-AB65-BA5E660A8833@redhat.com>
-In-Reply-To: <c26e67ec-c57c-3f92-ad04-361cdf0d7bf8@ovn.org>
-References: <160526187892.175404.2281455759948584518.stgit@wsfd-netdev64.ntdv.lab.eng.bos.redhat.com>
- <1a3cb289-44c6-058a-e4a4-4c1833badac4@ovn.org>
- <AF0A2E2E-A794-4B20-9471-9019EAFAA0E2@redhat.com>
- <c26e67ec-c57c-3f92-ad04-361cdf0d7bf8@ovn.org>
+        id S1730370AbgKPOsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 09:48:12 -0500
+Received: from mga11.intel.com ([192.55.52.93]:4038 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730274AbgKPOsL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 09:48:11 -0500
+IronPort-SDR: LAJqivcHDpZ0px52oGkX/NKBWeX8XKGNmnbnxjfzF2dT1DILxS1BM7YIkDK5gr0gJLwQEL5SH5
+ jT+H3B+zPSQA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9806"; a="167243907"
+X-IronPort-AV: E=Sophos;i="5.77,482,1596524400"; 
+   d="scan'208";a="167243907"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2020 06:48:11 -0800
+IronPort-SDR: Xaqfas80LAh/NU/b0N72/1M2eqTlErFT5vBqC4bzu57KwT2hl3j1jmAevXw/QQIyqZC7+MhrtD
+ IEQNbP5+zfcg==
+X-IronPort-AV: E=Sophos;i="5.77,482,1596524400"; 
+   d="scan'208";a="358486017"
+Received: from pgao1-mobl1.amr.corp.intel.com (HELO [10.212.6.211]) ([10.212.6.211])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2020 06:48:10 -0800
+Subject: Re: [PATCH v6] lib: optimize cpumask_local_spread()
+To:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Yuqi Jin <jinyuqi@huawei.com>,
+        Rusty Russell <rusty@rustcorp.com.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Juergen Gross <jgross@suse.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>
+References: <1604410767-55947-1-git-send-email-zhangshaokun@hisilicon.com>
+ <3e2e760d-e4b9-8bd0-a279-b23bd7841ae7@intel.com>
+ <eec4c1b6-8dad-9d07-7ef4-f0fbdcff1785@hisilicon.com>
+ <5e8b0304-4de1-4bdc-41d2-79fa5464fbc7@intel.com>
+ <1ca0d77f-7cf3-57d8-af23-169975b63b32@hisilicon.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+ z5cecg==
+Message-ID: <11889127-21f0-bba9-7beb-5a07f263923e@intel.com>
+Date:   Mon, 16 Nov 2020 06:48:09 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <1ca0d77f-7cf3-57d8-af23-169975b63b32@hisilicon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 11/15/20 11:59 PM, Shaokun Zhang wrote:
+>> Do you want to take another pass at submitting this patch?
+> 'Another pass'? Sorry for my bad understading, I don't follow it correctly.
 
-
-On 13 Nov 2020, at 17:05, Ilya Maximets wrote:
-
-> Cc: netdev
->
-> On 11/13/20 3:28 PM, Eelco Chaudron wrote:
->>
->>
->> On 13 Nov 2020, at 13:06, Ilya Maximets wrote:
->>
->>> On 11/13/20 11:04 AM, Eelco Chaudron wrote:
->>>> Add support for the dec_ttl action. Instead of programming the =
-
->>>> datapath with
->>>> a flow that matches the packet TTL and an IP set, use a single =
-
->>>> dec_ttl action.
->>>>
->>>> The old behavior is kept if the new action is not supported by the =
-
->>>> datapath.
->>>>
->>>> =C2=A0 # ovs-ofctl dump-flows br0
->>>> =C2=A0=C2=A0 cookie=3D0x0, duration=3D12.538s, table=3D0, n_packets=3D=
-4, =
-
->>>> n_bytes=3D392, ip actions=3Ddec_ttl,NORMAL
->>>> =C2=A0=C2=A0 cookie=3D0x0, duration=3D12.536s, table=3D0, n_packets=3D=
-4, =
-
->>>> n_bytes=3D168, actions=3DNORMAL
->>>>
->>>> =C2=A0 # ping -c1 -t 20 192.168.0.2
->>>> =C2=A0 PING 192.168.0.2 (192.168.0.2) 56(84) bytes of data.
->>>> =C2=A0 IP (tos 0x0, ttl 19, id 45336, offset 0, flags [DF], proto IC=
-MP =
-
->>>> (1), length 84)
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 192.168.0.1 > 192.168.0.2: ICMP echo =
-request, id 8865, =
-
->>>> seq 1, length 64
->>>>
->>>> Linux netlink datapath support depends on upstream Linux commit:
->>>> =C2=A0 744676e77720 ("openvswitch: add TTL decrement action")
->>>>
->>>>
->>>> Note that in the Linux kernel tree the OVS_ACTION_ATTR_ADD_MPLS has =
-
->>>> been
->>>> defined, and to make sure the IDs are in sync, it had to be added =
-
->>>> to the
->>>> OVS source tree. This required some additional case statements, =
-
->>>> which
->>>> should be revisited once the OVS implementation is added.
->>>>
->>>>
->>>> Co-developed-by: Matteo Croce <mcroce@linux.microsoft.com>
->>>> Co-developed-by: Bindiya Kurle <bindiyakurle@gmail.com>
->>>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->>>>
->>>> ---
->>>> v2: - Used definition instead of numeric value in =
-
->>>> format_dec_ttl_action()
->>>> =C2=A0=C2=A0=C2=A0 - Changed format from "dec_ttl(ttl<=3D1(<actions>=
-)) to
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "dec_ttl(le_1(<actions>))" to be more=
- in line with the =
-
->>>> check_pkt_len action.
->>>> =C2=A0=C2=A0=C2=A0 - Fixed parsing of "dec_ttl()" action for adding =
-a dp flow.
->>>> =C2=A0=C2=A0=C2=A0 - Cleaned up format_dec_ttl_action()
->>>>
->>>> =C2=A0datapath/linux/compat/include/linux/openvswitch.h |=C2=A0=C2=A0=
-=C2=A0 8 ++
->>>> =C2=A0lib/dpif-netdev.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-
->>>> |=C2=A0=C2=A0=C2=A0 4 +
->>>> =C2=A0lib/dpif.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-
->>>> |=C2=A0=C2=A0=C2=A0 4 +
->>>> =C2=A0lib/odp-execute.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-
->>>> |=C2=A0 102 ++++++++++++++++++++-
->>>> =C2=A0lib/odp-execute.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-
->>>> |=C2=A0=C2=A0=C2=A0 2
->>>> =C2=A0lib/odp-util.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 =
-
->>>> |=C2=A0=C2=A0 42 +++++++++
->>>> =C2=A0lib/packets.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 =
-
->>>> |=C2=A0=C2=A0 13 ++-
->>>> =C2=A0ofproto/ofproto-dpif-ipfix.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 =
-
->>>> |=C2=A0=C2=A0=C2=A0 2
->>>> =C2=A0ofproto/ofproto-dpif-sflow.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 =
-
->>>> |=C2=A0=C2=A0=C2=A0 2
->>>> =C2=A0ofproto/ofproto-dpif-xlate.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 =
-
->>>> |=C2=A0=C2=A0 54 +++++++++--
->>>> =C2=A0ofproto/ofproto-dpif.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-
->>>> |=C2=A0=C2=A0 37 ++++++++
->>>> =C2=A0ofproto/ofproto-dpif.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-
->>>> |=C2=A0=C2=A0=C2=A0 6 +
->>>> =C2=A012 files changed, 253 insertions(+), 23 deletions(-)
->>>>
->>>
->>> <snip>
->>>
->>>> +static void
->>>> +format_dec_ttl_action(struct ds *ds,const struct nlattr *attr,
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct hm=
-ap =
-
->>>> *portno_names)
->>>> +{
->>>> +=C2=A0=C2=A0=C2=A0 const struct nlattr *nla_acts =3D nl_attr_get(at=
-tr);
->>>> +=C2=A0=C2=A0=C2=A0 int len =3D nl_attr_get_size(attr);
->>>> +
->>>> +=C2=A0=C2=A0=C2=A0 ds_put_cstr(ds,"dec_ttl(le_1(");
->>>> +
->>>> +=C2=A0=C2=A0=C2=A0 if (len > 4 && nla_acts->nla_type =3D=3D =
-
->>>> OVS_DEC_TTL_ATTR_ACTION) {
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Linux kernel add an a=
-dditional envelope we =
-
->>>> should strip. */
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 len -=3D nl_attr_len_pad=
-(nla_acts, len);
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 nla_acts =3D nl_attr_nex=
-t(nla_acts);
->>>
->>> CC: Pravin
->>>
->>> I looked at the kernel and I agree that there is a clear bug in =
-
->>> kernel's
->>> implementaion of this action.=C2=A0 It receives messages on format:
->>> =C2=A0 OVS_ACTION_ATTR_DEC_TTL(<list of actions>),
->>> but reports back in format:
->>> =C2=A0 OVS_ACTION_ATTR_DEC_TTL(OVS_DEC_TTL_ATTR_ACTION(<list of =
-
->>> actions>)).
->>>
->>> Since 'OVS_DEC_TTL_ATTR_ACTION' exists, it's clear that original =
-
->>> design
->>> was to have it, i.e. the correct format should be the form that
->>> kernel reports back to userspace.=C2=A0 I'd guess that there was a pl=
-an =
-
->>> to
->>> add more features to OVS_ACTION_ATTR_DEC_TTL in the future, e.g. set
->>> actions execution threshold to something different than 1, so it =
-
->>> make
->>> some sense.
->>>
->>> Anyway, the bug is in the kernel part of parsing the netlink message =
-
->>> and
->>> it should be fixed.
->>
->> It is already in the mainline kernel, so changing it now would break =
-
->> the UAPI.
->> Don't think this is allowed from the kernel side.
->
-> Well, UAPI is what specified in include/uapi/linux/openvswitch.h.  And =
-
-> it says:
->
->         OVS_ACTION_ATTR_DEC_TTL,      /* Nested OVS_DEC_TTL_ATTR_*. */
->
-> So, the action must have nested OVS_DEC_TTL_ATTR_ACTION, otherwise =
-
-> it's malformed.
-> This means that UAPI is broken now in terms that kernel doesn't =
-
-> respect it's
-> own UAPI.  And that's a bug that should be fixed.
-
-Ack, will cook up a patch, and sent it to net.
-
-//Eelco
-
+Could you please incorporate the feedback that I've given about this
+version of the patch and write a new version?
