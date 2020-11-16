@@ -2,125 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 104B22B4535
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:56:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F2222B454C
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:56:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729726AbgKPNyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 08:54:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729718AbgKPNyW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 08:54:22 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FF5C0613D2
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 05:54:20 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id za3so24528889ejb.5
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 05:54:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aD3qfM2yjHhnaLsG2eSOWaWvLo9/5a8N5bYSZ4uCB7Y=;
-        b=LUiuPEMbmS7vgnAVfR+ERX3dRmQvGSdG9XuuqY6sg2/rqrsVHfpklHOazYJrCB0hEA
-         cQLuuLB7ySeXZK247dnTqKW/vW3GjS+2ESt9RHSu+N9Qhx+ZDPNs5IKBUfqTCj0gPdPZ
-         BoG8aof99kghxDkXIz3KLNZ/0+3+pbIephydtlVNr1zEzUDTjMKPYHp1KFm77p0qkbNy
-         OvPkpqdbbvHHwS4TvAa7cBuDmgTDACiqF5vcf96/96SPfxzRwaWNWEQqxfb/ARYFJ/QB
-         +LUHkYDiuAL2B1/AM8GVlROUJ+ZJDPDMcHX8bLG7b4Ni/V7uZwWxof5XTxiylKDIENRm
-         71NQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aD3qfM2yjHhnaLsG2eSOWaWvLo9/5a8N5bYSZ4uCB7Y=;
-        b=isCvUgkMX1EECxxsLDbPhHHcDexp0Kyr91QWLwsMMicu8gEjJxp8kmDV5h2Fs8s3n5
-         3fp/Ri96afpAENnzCelphE/8pptHrd3iSePbeZ07mA5sI58fbsl4tpBVfqYPLVlmrtKE
-         9naFLNo97tDWTwLKUk6klpuBsXORMeU0UKOa//sJYnqnY17RzzaRZXJa6BYV29nkEAX/
-         1TODRRbxBDw7p8fZUP9TCVNWMHbpadJ1C+ftKqckJSrFf16rE7hmd8jHB4wN+dF0v3v0
-         gKkvC6Zn43b2w34kRCVuPz3eI6HRyQRWX6aIYMY2LR8MnlK3x3nAYrOBgjjduSFF/OzM
-         V9ow==
-X-Gm-Message-State: AOAM532wS+I/wVRO/rlZ9rw9EQiwZc5e3KCNfoB2m6JZG+5Z4WSpORlf
-        J+dCCfkd73tV4hnzCmyYP7VlIw==
-X-Google-Smtp-Source: ABdhPJz7P8v17bMp5D5XxlovDjHdxIZm7+U5Y8L6o/R+Ow2OUmKHk+O9OrzxUeIxe43EoK3JOXQJqA==
-X-Received: by 2002:a17:906:60c4:: with SMTP id f4mr14724959ejk.336.1605534859480;
-        Mon, 16 Nov 2020 05:54:19 -0800 (PST)
-Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:76c5:ace8:67f7:ee5b])
-        by smtp.gmail.com with ESMTPSA id rp28sm10467307ejb.77.2020.11.16.05.54.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Nov 2020 05:54:18 -0800 (PST)
-To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
-Cc:     kernel test robot <lkp@intel.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-next@vger.kernel.org,
-        netdev@vger.kernel.org, Florian Westphal <fw@strlen.de>
-References: <20201116031715.7891-1-rdunlap@infradead.org>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: Re: [PATCH net-next v4] net: linux/skbuff.h: combine SKB_EXTENSIONS +
- KCOV handling
-Message-ID: <ffe01857-8609-bad7-ae89-acdaff830278@tessares.net>
-Date:   Mon, 16 Nov 2020 14:54:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        id S1729943AbgKPNzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 08:55:45 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:35679 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728717AbgKPNzo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 08:55:44 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1keeyp-0000EN-3c; Mon, 16 Nov 2020 14:55:39 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1keeyo-0000Dw-0h; Mon, 16 Nov 2020 14:55:38 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 364FD240049;
+        Mon, 16 Nov 2020 14:55:37 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id A99F1240047;
+        Mon, 16 Nov 2020 14:55:36 +0100 (CET)
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 76133200AE;
+        Mon, 16 Nov 2020 14:55:36 +0100 (CET)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        xie.he.0141@gmail.com
+Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH net-next v2 0/6] netdev event handling + neighbour config
+Date:   Mon, 16 Nov 2020 14:55:16 +0100
+Message-ID: <20201116135522.21791-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20201116031715.7891-1-rdunlap@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+Content-Transfer-Encoding: quoted-printable
+X-purgate-type: clean
+X-purgate-ID: 151534::1605534938-00000FB8-DD25A441/0/0
+X-purgate: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Randy,
+Martin Schiller (6):
+  net/x25: handle additional netdev events
+  net/x25: make neighbour params configurable
+  net/x25: replace x25_kill_by_device with x25_kill_by_neigh
+  net/x25: support NETDEV_CHANGE notifier
+  net/lapb: support netdev events
+  net/lapb: fix t1 timer handling
 
-On 16/11/2020 04:17, Randy Dunlap wrote:
-> The previous Kconfig patch led to some other build errors as
-> reported by the 0day bot and my own overnight build testing.
-> 
-> These are all in <linux/skbuff.h> when KCOV is enabled but
-> SKB_EXTENSIONS is not enabled, so fix those by combining those conditions
-> in the header file.
-> 
-> Also, add stubs for skb_ext_add() and skb_ext_find() to reduce the
-> amount of ifdef-ery. (Jakub)
+ include/net/x25.h        |  10 +-
+ include/uapi/linux/x25.h |  56 ++++++-----
+ net/lapb/lapb_iface.c    |  83 ++++++++++++++++
+ net/lapb/lapb_timer.c    |  11 ++-
+ net/x25/af_x25.c         | 206 +++++++++++++++++++++++++++++++--------
+ net/x25/x25_facilities.c |   6 +-
+ net/x25/x25_link.c       | 142 +++++++++++++++++++++++----
+ net/x25/x25_subr.c       |  22 ++++-
+ 8 files changed, 445 insertions(+), 91 deletions(-)
 
-It makes sense, good idea!
+--=20
+2.20.1
 
-Thank you for the new version!
-
-> --- linux-next-20201113.orig/include/linux/skbuff.h
-> +++ linux-next-20201113/include/linux/skbuff.h
-> @@ -4137,7 +4137,6 @@ static inline void skb_set_nfct(struct s
->   #endif
->   }
->   
-> -#ifdef CONFIG_SKB_EXTENSIONS
->   enum skb_ext_id {
->   #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
->   	SKB_EXT_BRIDGE_NF,
-> @@ -4151,12 +4150,11 @@ enum skb_ext_id {
->   #if IS_ENABLED(CONFIG_MPTCP)
->   	SKB_EXT_MPTCP,
->   #endif
-> -#if IS_ENABLED(CONFIG_KCOV)
->   	SKB_EXT_KCOV_HANDLE,
-> -#endif
-
-I don't think we should remove this #ifdef: the number of extensions are 
-currently limited to 8, we might not want to always have KCOV there even 
-if we don't want it. I think adding items in this enum only when needed 
-was the intension of Florian (+cc) when creating these SKB extensions.
-Also, this will increase a tiny bit some structures, see "struct skb_ext()".
-
-But apart from that, I think we are fine, even if we add new extensions 
-in the future after this kcov one.
-
-So if we think it is better to remove these #ifdef here, we should be 
-OK. But if we prefer not to do that, we should then not add stubs for 
-skb_ext_{add,find}() and keep the ones for skb_[gs]et_kcov_handle().
-
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
