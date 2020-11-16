@@ -2,103 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1E752B5079
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 20:02:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C8E2B5114
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 20:28:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727706AbgKPTBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 14:01:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59176 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727518AbgKPTBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 14:01:41 -0500
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C9FDC0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 11:01:39 -0800 (PST)
-Received: by mail-il1-x142.google.com with SMTP id y18so8990805ilp.13
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 11:01:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=BOpXeuasyQ7d9LUFS/ml3Mw0lG26dofP8O3nBKoqKqU=;
-        b=dokgeDeg8ga+yl9YB7oFJMFINgPlPDaAFjo+qhGvJnIdf0jGLWBUqG33TP/Cv/UibU
-         91PEU0j07QqjndpE5+En0RW566fBgWD72KySMNDoR5nuKzIOViHW1YoxRYuFbvLKKaUy
-         BA63UCRcw3ETfq2HtLenuwdGNNlFv3oLpYqI/PtNYfuGMyGkCEw+H1FcGvcVuRkrxc5G
-         v0rstT6jGCtHLxkiI1OPs6fl0NgBda/i2hTTDMEoTuTklUcRbbRbZhNmfNVe4yyfKO85
-         J5Ipq1Y7C6rFHJtMi6wwh7LRmAcLWSZ67l3B5VWm3VBQbZGY3YMcRrFbSzASUUR5kPA4
-         cR+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=BOpXeuasyQ7d9LUFS/ml3Mw0lG26dofP8O3nBKoqKqU=;
-        b=JqxWzeQczTYYf/etsHZU58syOK6Xh2U56Vi8B5v3LvZ48awaM4Rvovio4aooWz+thn
-         TCYZwtSdAyM0o6tBvRkqf5FZqSozEaeA6/V0CTLoGoF/CYK6J1+SId6LA6cz2ZKoDxi0
-         uNvzaR8iRizXqRh1zHnhCfMs7X6SxX/bPA4phMVanb2QJ/piGnEzisAzqcR/m29zNgW3
-         D+NifOXTI04oey2HW4YJYQ3nJhI9hHB1eoLxD2ymOXyP9GmuXevxJd1b2l7zh7pbzLUC
-         cY5BLvJNHs75YUOOZbLiTg4Wjv89wsSCy5972GUm55RwYl+LIqSvjpu7PApuZTC7tXee
-         350w==
-X-Gm-Message-State: AOAM530esdAgoP2PExkuMEWv9f4GiZYgmbqR6Hk7eDRYvqC7qAyPRuIj
-        8dMD2mGtLr1vpMS3lVFFKFxCYatTWvZGtk7oWgU=
-X-Google-Smtp-Source: ABdhPJytsywfx/8gGcZrxJLe8cq3VyOsxf717uJUUKVrY99J8Y1OD0mizLyXptJn+2L4dzq1aLmXy9hlpMwZWm6gpKY=
-X-Received: by 2002:a92:2a01:: with SMTP id r1mr9804787ile.22.1605553298692;
- Mon, 16 Nov 2020 11:01:38 -0800 (PST)
+        id S1729639AbgKPT2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 14:28:01 -0500
+Received: from pbmsgap02.intersil.com ([192.157.179.202]:35822 "EHLO
+        pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727526AbgKPT2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 14:28:01 -0500
+Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
+        by pbmsgap02.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0AGJOBjh011179;
+        Mon, 16 Nov 2020 14:27:59 -0500
+Received: from pbmxdp02.intersil.corp (pbmxdp02.pb.intersil.com [132.158.200.223])
+        by pbmsgap02.intersil.com with ESMTP id 34ta9m0y5n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 16 Nov 2020 14:27:59 -0500
+Received: from pbmxdp01.intersil.corp (132.158.200.222) by
+ pbmxdp02.intersil.corp (132.158.200.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.1979.3; Mon, 16 Nov 2020 14:27:57 -0500
+Received: from localhost (132.158.202.109) by pbmxdp01.intersil.corp
+ (132.158.200.222) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Mon, 16 Nov 2020 14:27:57 -0500
+From:   <min.li.xe@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH net-next 1/5] ptp: clockmatrix: bug fix for idtcm_strverscmp
+Date:   Mon, 16 Nov 2020 14:27:26 -0500
+Message-ID: <1605554850-14437-1-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-References: <1605151497-29986-1-git-send-email-wenxu@ucloud.cn>
- <1605151497-29986-4-git-send-email-wenxu@ucloud.cn> <CAM_iQpUu7feBGrunNPqn8FhEhgvfB_c854uEEuo5MQYcEvP_bg@mail.gmail.com>
- <459a1453-8026-cca1-fb7c-ded0890992cf@ucloud.cn>
-In-Reply-To: <459a1453-8026-cca1-fb7c-ded0890992cf@ucloud.cn>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 16 Nov 2020 11:01:28 -0800
-Message-ID: <CAM_iQpXDzKEEVic5SOiWsc30ipppYMHL4q0-J6mP6u0Brr1KGw@mail.gmail.com>
-Subject: Re: [PATCH v10 net-next 3/3] net/sched: act_frag: add implict packet
- fragment support.
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-16_09:2020-11-13,2020-11-16 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 phishscore=0 adultscore=0 mlxscore=0
+ spamscore=0 suspectscore=4 bulkscore=0 malwarescore=0 mlxlogscore=808
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011160114
+X-Proofpoint-Spam-Reason: mlx
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 15, 2020 at 5:06 AM wenxu <wenxu@ucloud.cn> wrote:
->
->
-> =E5=9C=A8 2020/11/15 2:05, Cong Wang =E5=86=99=E9=81=93:
-> > On Wed, Nov 11, 2020 at 9:44 PM <wenxu@ucloud.cn> wrote:
-> >> diff --git a/net/sched/act_frag.c b/net/sched/act_frag.c
-> >> new file mode 100644
-> >> index 0000000..3a7ab92
-> >> --- /dev/null
-> >> +++ b/net/sched/act_frag.c
-> > It is kinda confusing to see this is a module. It provides some
-> > wrappers and hooks the dev_xmit_queue(), it belongs more to
-> > the core tc code than any modularized code. How about putting
-> > this into net/sched/sch_generic.c?
-> >
-> > Thanks.
->
-> All the operations in the act_frag  are single L3 action.
->
-> So we put in a single module. to keep it as isolated/contained as possibl=
-e
+From: Min Li <min.li.xe@renesas.com>
 
-Yeah, but you hook dev_queue_xmit() which is L2.
+Feed kstrtou8 with NULL terminated string.
 
->
-> Maybe put this in a single file is better than a module? Buildin in the t=
-c core code or not.
->
-> Enable this feature in Kconifg with NET_ACT_FRAG?
+Signed-off-by: Min Li <min.li.xe@renesas.com>
+---
+ drivers/ptp/ptp_clockmatrix.c | 52 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 38 insertions(+), 14 deletions(-)
 
-Sort of... If this is not an optional feature, that is a must-have
-feature for act_ct,
-we should just get rid of this Kconfig.
+diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
+index e020faf..bf2be50 100644
+--- a/drivers/ptp/ptp_clockmatrix.c
++++ b/drivers/ptp/ptp_clockmatrix.c
+@@ -103,42 +103,66 @@ static int timespec_to_char_array(struct timespec64 const *ts,
+ 	return 0;
+ }
+ 
+-static int idtcm_strverscmp(const char *ver1, const char *ver2)
++static int idtcm_strverscmp(const char *version1, const char *version2)
+ {
+ 	u8 num1;
+ 	u8 num2;
+ 	int result = 0;
++	char ver1[16];
++	char ver2[16];
++	char *cur1;
++	char *cur2;
++	char *next1;
++	char *next2;
++
++	strncpy(ver1, version1, 16);
++	strncpy(ver2, version2, 16);
++	cur1 = ver1;
++	cur2 = ver2;
+ 
+ 	/* loop through each level of the version string */
+ 	while (result == 0) {
++		next1 = strchr(cur1, '.');
++		next2 = strchr(cur2, '.');
++
++		/* kstrtou8 could fail for dot */
++		if (next1) {
++			*next1 = '\0';
++			next1++;
++		}
++
++		if (next2) {
++			*next2 = '\0';
++			next2++;
++		}
++
+ 		/* extract leading version numbers */
+-		if (kstrtou8(ver1, 10, &num1) < 0)
++		if (kstrtou8(cur1, 10, &num1) < 0)
+ 			return -1;
+ 
+-		if (kstrtou8(ver2, 10, &num2) < 0)
++		if (kstrtou8(cur2, 10, &num2) < 0)
+ 			return -1;
+ 
+ 		/* if numbers differ, then set the result */
+-		if (num1 < num2)
++		if (num1 < num2) {
+ 			result = -1;
+-		else if (num1 > num2)
++		} else if (num1 > num2) {
+ 			result = 1;
+-		else {
++		} else {
+ 			/* if numbers are the same, go to next level */
+-			ver1 = strchr(ver1, '.');
+-			ver2 = strchr(ver2, '.');
+-			if (!ver1 && !ver2)
++			if (!next1 && !next2)
+ 				break;
+-			else if (!ver1)
++			else if (!next1) {
+ 				result = -1;
+-			else if (!ver2)
++			} else if (!next2) {
+ 				result = 1;
+-			else {
+-				ver1++;
+-				ver2++;
++			} else {
++				cur1 = next1;
++				cur2 = next2;
+ 			}
+ 		}
+ 	}
++
+ 	return result;
+ }
+ 
+-- 
+2.7.4
 
-Also, you need to depend on CONFIG_INET somewhere to use the IP
-fragment, no?
-
-Thanks.
