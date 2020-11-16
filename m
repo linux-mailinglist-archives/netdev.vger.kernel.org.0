@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 981D12B5533
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 00:40:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E6212B5535
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 00:40:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730905AbgKPXiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 18:38:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45852 "EHLO
+        id S1727460AbgKPXiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 18:38:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730834AbgKPXiS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 18:38:18 -0500
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F675C0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 15:38:18 -0800 (PST)
-Received: by mail-il1-x142.google.com with SMTP id l12so16936575ilo.1
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 15:38:18 -0800 (PST)
+        with ESMTP id S1730922AbgKPXiT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 18:38:19 -0500
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6D1C0613D2
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 15:38:19 -0800 (PST)
+Received: by mail-io1-xd43.google.com with SMTP id m9so19264346iox.10
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 15:38:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=R/KH1Zx6pvvwlPcex+1v/rVIsHRzuMbIHzVWH/5s1mU=;
-        b=KwtbHymUWZJcv5S8ebV7GWJ7G+cmnf42lsHn05KJt94fUMwFY8pCs+gtLPwiF9NDhc
-         oe2HZKo/Q55q8QTdehuuL2fPhfPaus6kcYJtwj26rdBq/8Ic9IjAWmhJAuhhZ2K8KBxy
-         j81EZgxYGxIEnfVnSlfvqQEHwhTVVxR5KmASeIqJXJG7S4nSb4Dz0w83fmRJG+M9o6H0
-         xEHEsWQG3JoEFjwmJnFZeJbB8nktaWeSZ5hEm6n62bDuhD0yVS21/Vgi2GXsbPwu+5CC
-         QpANg6iyl3ox2X4PrynKq1wTMIxRUQ2P7dWx4eDM1NcNGfmWHaWu1PhvVwYvFFGm5hT9
-         phJw==
+        bh=ibvkktNZHObaQcpICoKzhru5nZ1s0dOfq/+z59Thq90=;
+        b=PRYejMotlMrjs0eJGE1V3DsLE1A7XOXtVpntptTt4gC6Kn9g7/wRsrJ8L5hpcCq3iG
+         86ZepbczjQ+i8RxzWDEUfXeFAd/eAQvp354Q1cQrFK+dGRfb9yFGxR/URk0tOe3mKz7g
+         XIyDMdgVbftJ7Gko/vpHNN7YWzuTBykfyNLXWXnd3T6oHa7NYldvNzTqWwldKy8dWs8t
+         FKV4eqV+dZFazLpDrcZm6YbrnKg412FyH5SET9HLjBV6t93lTWEsll8cWfQKxhvxFNoM
+         8E7Swp63bm/M3TfAcTCs84I+VVcyGPhIZ6MWbG00DPGuR70XofOy+YCTSskEUO7Bz26U
+         lF9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=R/KH1Zx6pvvwlPcex+1v/rVIsHRzuMbIHzVWH/5s1mU=;
-        b=AcsEVdNm1qvP4dRtiSXeK43nuclyawuJakrJMJNdVZtBJrU0evW3d3waAeueloYE/E
-         my5thKpiT4/EwhBUW8wp4zWBnWjCEmHPCZAY+8pxYt30uWlmgmW53qmsFLk49/RaF/yT
-         DiFG9WnUKHaK7hkJSqCp1E/WxBSv1Zw7rLsZ2ECTV89Bepkf2nHlNgy+XtBgLhPW8+3w
-         1OMa3hSGp6JeEXmEroBIZ4c+6UmBVDxTWQ/u6WmlBqcZ8wHzNGbEDenqd6eaLgX/hKnV
-         /ypecgcQ4BAiGulG9x42scodW/TL7zPXmCw8rdzg9PgH3rtIPOOdTiqF7lwJS67ZVwmV
-         eBKg==
-X-Gm-Message-State: AOAM532uCckggZzCZ4cFRFp0oHZUT00nbbbi5xSrC+3b+spZK1uDNxLP
-        ijPjjnrV2dlPmGcQ2HnlpXd8gA==
-X-Google-Smtp-Source: ABdhPJzxIzMLlq5lYKSLoyX7o92cUlEvouY4ZKyUiVD/sh9NWgS0r6PHOxsKxbR28reCrIsgbpWyLg==
-X-Received: by 2002:a05:6e02:eaa:: with SMTP id u10mr9218286ilj.96.1605569897401;
-        Mon, 16 Nov 2020 15:38:17 -0800 (PST)
+        bh=ibvkktNZHObaQcpICoKzhru5nZ1s0dOfq/+z59Thq90=;
+        b=YdbF8t5tXBhp7IY4w17vrgC9ga2xbAXSYTHxsZXqlUdbQ+/QFXKJhX4M8fEIblkQL+
+         Yz4Ev2BsjxQrXbyj/Xpu+k/YWWSFBxBSrUfYes1TGXYub3tOrsCOKXFnzJ3v3W6oIfZ2
+         piCtkieXJwxjo6+iQ7LjRaT+GrL1y1zWHt0bsj5pnPu0AFkY001ct1m1CkVAmrxt7Ufw
+         EY6sSMmYhn6V1rleJu0j/rox/taEC2fYZlLnr1+8+bTYMAOnTQa/XwtKCRJKCeb1j19o
+         Zsy/ZJZ0gygBwD+LZabfU5NRvhGXwNUu4sOl4y6xbxQ7lklF7sHzTFnHt9ddQgYR0RO2
+         3ZHg==
+X-Gm-Message-State: AOAM531zSOHjGGO9t+f+FC8Gu0hPMASYmyLehLOiYYzsCvl0+elJNmX9
+        O23TtdQByeTsb4r/wQKlA8nz/g==
+X-Google-Smtp-Source: ABdhPJw4qdh8NCJNcGBrafOS43FUhLk+aYch0J88kVZb3uPIdnZsZRQebl/8xqPrw3Yuf5obk1nYhg==
+X-Received: by 2002:a05:6638:3f1:: with SMTP id s17mr1542024jaq.102.1605569898517;
+        Mon, 16 Nov 2020 15:38:18 -0800 (PST)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id f18sm10180099ill.22.2020.11.16.15.38.16
+        by smtp.gmail.com with ESMTPSA id f18sm10180099ill.22.2020.11.16.15.38.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 15:38:16 -0800 (PST)
+        Mon, 16 Nov 2020 15:38:18 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 02/11] net: ipa: make filter/routing hash enable register variable
-Date:   Mon, 16 Nov 2020 17:37:56 -0600
-Message-Id: <20201116233805.13775-3-elder@linaro.org>
+Subject: [PATCH net-next 03/11] net: ipa: support more versions for HOLB timer
+Date:   Mon, 16 Nov 2020 17:37:57 -0600
+Message-Id: <20201116233805.13775-4-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201116233805.13775-1-elder@linaro.org>
 References: <20201116233805.13775-1-elder@linaro.org>
@@ -64,59 +64,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For IPA v3.5.1, the IPA filter/routing hash enable register actually
-does exist, but it is at offset 0x8c into the IPA register space.
-For newer versions of IPA it is at offset 0x148.
+IPA version 3.5.1 represents the timer used in avoiding head-of-line
+blocking with a simple tick count.  IPA v4.2 changes that, instead
+splitting the timer field into two parts (base and scale) to
+represent the ticks in the timer period.
 
-Define a new inline function ipa_reg_filt_rout_hash_en_offset() to
-return the appropriate value for a given version of IPA hardware.
+IPA v4.0 and IPA v4.1 use the same method as IPA v3.5.1.  Change the
+test in ipa_reg_init_hol_block_timer_val() so the result is correct
+for those versions as well.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_main.c | 9 ++++++---
- drivers/net/ipa/ipa_reg.h  | 9 +++++++--
- 2 files changed, 13 insertions(+), 5 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index bfe95a46acaf1..a9d8597f970aa 100644
---- a/drivers/net/ipa/ipa_main.c
-+++ b/drivers/net/ipa/ipa_main.c
-@@ -339,9 +339,12 @@ static void ipa_hardware_config(struct ipa *ipa)
- 	val = u32_encode_bits(granularity, AGGR_GRANULARITY);
- 	iowrite32(val, ipa->reg_virt + IPA_REG_COUNTER_CFG_OFFSET);
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index 548121b1531b7..3c9bbe2bf81c9 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -665,8 +665,8 @@ static u32 ipa_reg_init_hol_block_timer_val(struct ipa *ipa, u32 microseconds)
+ 	/* ...but we still need to fit into a 32-bit register */
+ 	WARN_ON(ticks > U32_MAX);
  
--	/* Disable hashed IPv4 and IPv6 routing and filtering for IPA v4.2 */
--	if (ipa->version == IPA_VERSION_4_2)
--		iowrite32(0, ipa->reg_virt + IPA_REG_FILT_ROUT_HASH_EN_OFFSET);
-+	/* IPA v4.2 does not support hashed tables, so disable them */
-+	if (ipa->version == IPA_VERSION_4_2) {
-+		u32 offset = ipa_reg_filt_rout_hash_en_offset(ipa->version);
-+
-+		iowrite32(0, ipa->reg_virt + offset);
-+	}
+-	/* IPA v3.5.1 just records the tick count */
+-	if (ipa->version == IPA_VERSION_3_5_1)
++	/* IPA v3.5.1 through v4.1 just record the tick count */
++	if (ipa->version < IPA_VERSION_4_2)
+ 		return (u32)ticks;
  
- 	/* Enable dynamic clock division */
- 	ipa_hardware_dcd_config(ipa);
-diff --git a/drivers/net/ipa/ipa_reg.h b/drivers/net/ipa/ipa_reg.h
-index 001961cd526bc..b46e60744f57f 100644
---- a/drivers/net/ipa/ipa_reg.h
-+++ b/drivers/net/ipa/ipa_reg.h
-@@ -151,8 +151,13 @@ static inline u32 ipa_reg_state_aggr_active_offset(enum ipa_version version)
- }
- /* ipa->available defines the valid bits in the STATE_AGGR_ACTIVE register */
- 
--/* The next register is present for IPA v4.2 and above */
--#define IPA_REG_FILT_ROUT_HASH_EN_OFFSET		0x00000148
-+static inline u32 ipa_reg_filt_rout_hash_en_offset(enum ipa_version version)
-+{
-+	if (version == IPA_VERSION_3_5_1)
-+		return 0x000008c;
-+
-+	return 0x0000148;
-+}
- 
- static inline u32 ipa_reg_filt_rout_hash_flush_offset(enum ipa_version version)
- {
+ 	/* For IPA v4.2, the tick count is represented by base and
 -- 
 2.20.1
 
