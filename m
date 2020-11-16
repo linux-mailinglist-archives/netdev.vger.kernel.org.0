@@ -2,183 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 557102B5424
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:12:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D30202B5431
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:20:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727969AbgKPWKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 17:10:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47750 "EHLO mail.kernel.org"
+        id S1728951AbgKPWSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 17:18:21 -0500
+Received: from correo.us.es ([193.147.175.20]:48584 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726016AbgKPWKb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 17:10:31 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        id S1728906AbgKPWSV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 17:18:21 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 203D1DED26
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 23:18:18 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0FB59DA4C4
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 23:18:18 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 05056DA4C1; Mon, 16 Nov 2020 23:18:18 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id BD5F0DA730;
+        Mon, 16 Nov 2020 23:18:15 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 16 Nov 2020 23:18:15 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1E85A223BF;
-        Mon, 16 Nov 2020 22:10:29 +0000 (UTC)
-Date:   Mon, 16 Nov 2020 17:10:27 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     paulmck <paulmck@kernel.org>, Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH] bpf: don't fail kmalloc while releasing raw_tp
-Message-ID: <20201116171027.458a6c17@gandalf.local.home>
-In-Reply-To: <1368007646.46749.1605562481450.JavaMail.zimbra@efficios.com>
-References: <00000000000004500b05b31e68ce@google.com>
-        <20201115055256.65625-1-mmullins@mmlx.us>
-        <20201116121929.1a7aeb16@gandalf.local.home>
-        <1889971276.46615.1605559047845.JavaMail.zimbra@efficios.com>
-        <20201116154437.254a8b97@gandalf.local.home>
-        <20201116160218.3b705345@gandalf.local.home>
-        <1368007646.46749.1605562481450.JavaMail.zimbra@efficios.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 9E11B42EF9E0;
+        Mon, 16 Nov 2020 23:18:15 +0100 (CET)
+Date:   Mon, 16 Nov 2020 23:18:15 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, razor@blackwall.org, jeremy@azazel.net
+Subject: Re: [PATCH net-next,v3 0/9] netfilter: flowtable bridge and vlan
+ enhancements
+Message-ID: <20201116221815.GA6682@salvia>
+References: <20201111193737.1793-1-pablo@netfilter.org>
+ <20201113175556.25e57856@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201114115906.GA21025@salvia>
+ <87sg9cjaxo.fsf@waldekranz.com>
+ <20201114090347.2e7c1457@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201114090347.2e7c1457@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Nov 2020 16:34:41 -0500 (EST)
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
-
-> ----- On Nov 16, 2020, at 4:02 PM, rostedt rostedt@goodmis.org wrote:
+On Sat, Nov 14, 2020 at 09:03:47AM -0800, Jakub Kicinski wrote:
+> On Sat, 14 Nov 2020 15:00:03 +0100 Tobias Waldekranz wrote:
+> > On Sat, Nov 14, 2020 at 12:59, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> > > If any of the flowtable device goes down / removed, the entries are
+> > > removed from the flowtable. This means packets of existing flows are
+> > > pushed up back to classic bridge / forwarding path to re-evaluate the
+> > > fast path.
+> > >
+> > > For each new flow, the fast path that is selected freshly, so they use
+> > > the up-to-date FDB to select a new bridge port.
+> > >
+> > > Existing flows still follow the old path. The same happens with FIB
+> > > currently.
+> > >
+> > > It should be possible to explore purging entries in the flowtable that
+> > > are stale due to changes in the topology (either in FDB or FIB).
+> > >
+> > > What scenario do you have specifically in mind? Something like VM
+> > > migrates from one bridge port to another?  
 > 
-> > On Mon, 16 Nov 2020 15:44:37 -0500
-> > Steven Rostedt <rostedt@goodmis.org> wrote:
-> >   
-> >> If you use a stub function, it shouldn't affect anything. And the worse
-> >> that would happen is that you have a slight overhead of calling the stub
-> >> until you can properly remove the callback.  
-> > 
-> > Something like this:
-> > 
-> > (haven't compiled it yet, I'm about to though).
+> Indeed, 2 VMs A and B, talking to each other, A is _outside_ the
+> system (reachable via eth0), B is inside (veth1). When A moves inside
+> and gets its veth. Neither B's veth1 not eth0 will change state, so
+> cache wouldn't get flushed, right?
 
-Still need more accounting to work on. Almost finished though. ;-)
-
-> > 
-> > -- Steve
-> > 
-> > diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
-> > index 3f659f855074..8eab40f9d388 100644
-> > --- a/kernel/tracepoint.c
-> > +++ b/kernel/tracepoint.c
-> > @@ -53,10 +53,16 @@ struct tp_probes {
-> > 	struct tracepoint_func probes[];
-> > };
-> > 
-> > -static inline void *allocate_probes(int count)
-> > +/* Called in removal of a func but failed to allocate a new tp_funcs */
-> > +static void tp_stub_func(void)  
-> 
-> I'm still not sure whether it's OK to call a (void) function with arguments.
-
-Actually, I've done it. The thing is, what can actually happen? A void
-function that simply returns should not do anything. If anything, the only
-waste is that the caller would save more registers than necessary.
-
-I can't think of anything that can actually happen, but perhaps there is. I
-wouldn't want to make a stub function for every trace point (it wouldn't be
-hard to do).
-
-But perhaps we should ask the compiler people to make sure.
-
-> 
-> > +{
-> > +	return;
-> > +}
-> > +
-> > +static inline void *allocate_probes(int count, gfp_t extra_flags)
-> > {
-> > 	struct tp_probes *p  = kmalloc(struct_size(p, probes, count),
-> > -				       GFP_KERNEL);
-> > +				       GFP_KERNEL | extra_flags);
-> > 	return p == NULL ? NULL : p->probes;
-> > }
-> > 
-> > @@ -150,7 +156,7 @@ func_add(struct tracepoint_func **funcs, struct
-> > tracepoint_func *tp_func,
-> > 		}
-> > 	}
-> > 	/* + 2 : one for new probe, one for NULL func */
-> > -	new = allocate_probes(nr_probes + 2);
-> > +	new = allocate_probes(nr_probes + 2, 0);
-> > 	if (new == NULL)
-> > 		return ERR_PTR(-ENOMEM);
-> > 	if (old) {
-> > @@ -188,8 +194,9 @@ static void *func_remove(struct tracepoint_func **funcs,
-> > 	/* (N -> M), (N > 1, M >= 0) probes */
-> > 	if (tp_func->func) {
-> > 		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
-> > -			if (old[nr_probes].func == tp_func->func &&
-> > -			     old[nr_probes].data == tp_func->data)
-> > +			if ((old[nr_probes].func == tp_func->func &&
-> > +			     old[nr_probes].data == tp_func->data) ||
-> > +			    old[nr_probes].func == tp_stub_func)
-> > 				nr_del++;
-> > 		}
-> > 	}
-> > @@ -207,15 +214,20 @@ static void *func_remove(struct tracepoint_func **funcs,
-> > 		int j = 0;
-> > 		/* N -> M, (N > 1, M > 0) */
-> > 		/* + 1 for NULL */
-> > -		new = allocate_probes(nr_probes - nr_del + 1);
-> > -		if (new == NULL)
-> > -			return ERR_PTR(-ENOMEM);
-> > -		for (i = 0; old[i].func; i++)
-> > -			if (old[i].func != tp_func->func
-> > -					|| old[i].data != tp_func->data)
-> > -				new[j++] = old[i];
-> > -		new[nr_probes - nr_del].func = NULL;
-> > -		*funcs = new;
-> > +		new = allocate_probes(nr_probes - nr_del + 1, __GFP_NOFAIL);
-> > +		if (new) {
-> > +			for (i = 0; old[i].func; i++)
-> > +				if (old[i].func != tp_func->func
-> > +				    || old[i].data != tp_func->data)  
-> 
-> as you point out in your reply, skip tp_stub_func here too.
-> 
-> > +					new[j++] = old[i];
-> > +			new[nr_probes - nr_del].func = NULL;
-> > +		} else {
-> > +			for (i = 0; old[i].func; i++)
-> > +				if (old[i].func == tp_func->func &&
-> > +				    old[i].data == tp_func->data)
-> > +					old[i].func = tp_stub_func;  
-> 
-> I think you'll want a WRITE_ONCE(old[i].func, tp_stub_func) here, matched
-> with a READ_ONCE() in __DO_TRACE. This introduces a new situation where the
-> func pointer can be updated and loaded concurrently.
-
-I thought about this a little, and then only thing we really should worry
-about is synchronizing with those that unregister. Because when we make
-this update, there are now two states. the __DO_TRACE either reads the
-original func or the stub. And either should be OK to call.
-
-Only the func gets updated and not the data. So what exactly are we worried
-about here?
-
-> 
-> > +		}
-> > +		*funcs = old;  
-> 
-> The line above seems wrong for the successful allocate_probe case. You will likely
-> want *funcs = new on successful allocation, and *funcs = old for the failure case.
-
-Yeah, it crashed because of this ;-)
-
-Like I said, untested!
-
--- Steve
+The flow tuple includes the input interface as part of the hash key,
+so packets will not match the existing entries in the flowtable after
+the topology update. The stale flow entries are removed after 30 seconds
+if no matching packets are seen. New flow entries will be created for
+the new topology, a few packets have to go through the classic
+forwarding path so the new flow entries that represent the flow in the
+new topology are created.
