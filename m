@@ -2,80 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D78DF2B4127
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 11:33:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B91EB2B413C
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 11:38:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728980AbgKPKam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 05:30:42 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:39709 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727293AbgKPKam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 05:30:42 -0500
-Received: by mail-ed1-f66.google.com with SMTP id e18so18174775edy.6;
-        Mon, 16 Nov 2020 02:30:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:in-reply-to;
-        bh=lB0bxldVJKg0VtkpxPKNbE5m+VtMP8jCWWtwfQ+qzEI=;
-        b=oZ1lpcmxFTJf2/C3f0vItWK+E+MYFflzagnXE90X5mV84p3BWlDI5HWr22jRY+tqFa
-         ZduLVdLOcKW6RZ+f+DoyWtK70EC83Tu3S7zeohGW9z0lgQTBuiC5iskCrz4B+kgZ0UWL
-         +QCdANyuExUVrJiPHQLEMBa1CJLBG3Ey8nZwcmrA2qSRVC29eEQtTD6V3hZoyyfZZjyY
-         GH2g5BxRu7T8tQFVYvddCbq1WjraZV02ltQdi9bYZD2uPZzYn+d7R97qIvuVoB+UJEkp
-         Sv4Gpy3hbneH6PPG4+2z/6UNixWAKgHOL7BwnMT1ZmCzCVybdZB5UYnx9ZRwmm9etqhP
-         eBRA==
-X-Gm-Message-State: AOAM530r3bD1ODa8HgsUISx9ypUZUTwbeP+PgR4g28wQYeOq2Tj2VvYI
-        Mccei1W/1HP3DfnzolYX/dE=
-X-Google-Smtp-Source: ABdhPJwF8PihJCO8UWjfS3lH9NuSFO89pQ+2JQ+DTZaxYvJ+deHx3AjI1C1Y2x1WFnjyyXkDW7IqqQ==
-X-Received: by 2002:aa7:d14a:: with SMTP id r10mr14714068edo.225.1605522640010;
-        Mon, 16 Nov 2020 02:30:40 -0800 (PST)
-Received: from santucci.pierpaolo ([2.236.81.180])
-        by smtp.gmail.com with ESMTPSA id lc1sm10285588ejb.57.2020.11.16.02.30.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 02:30:39 -0800 (PST)
-Date:   Mon, 16 Nov 2020 11:30:37 +0100
-From:   Santucci Pierpaolo <santucci@epigenesys.com>
-To:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andrii@kernel.org,
-        john.fastabend@gmail.com, kpsingh@chromium.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH v2] selftest/bpf: fix IPV6FR handling in flow dissector
-Message-ID: <X7JUzUj34ceE2wBm@santucci.pierpaolo>
+        id S1729187AbgKPKhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 05:37:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:60373 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728881AbgKPKhH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 05:37:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605523026;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ah0fpG4PWNvzFpMdpbWnri6JpzL+gQo7D8V3E1P+olY=;
+        b=iFSLUkEfuPfP2RWaG2XZxmcMv9n6N/0DdEwg1yu+pWNhX4N/izW0b1IWbg19u6E71UIb4v
+        ppJcJmrFTNt+ocBm3O396WyS5EX9Bea+s6LASvxfT2jMz3O4sjtt213t8/7jiM4zPC+cMJ
+        Ko0QLmc51yhjxsVueynTjNj2Jg0T1IQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-84-Ac7rkxrNPLmHhBOCFv0S5A-1; Mon, 16 Nov 2020 05:37:04 -0500
+X-MC-Unique: Ac7rkxrNPLmHhBOCFv0S5A-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A69F1186840E;
+        Mon, 16 Nov 2020 10:37:03 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-114-64.ams2.redhat.com [10.36.114.64])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5BDD0100239A;
+        Mon, 16 Nov 2020 10:37:02 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-sparse@vger.kernel.org
+Subject: [PATCH net-next] net: add annotation for sock_{lock,unlock}_fast
+Date:   Mon, 16 Nov 2020 11:36:39 +0100
+Message-Id: <95cf587fe96127884e555f695fe519d50e63cc17.1605522868.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <X6rJ7c1C95uNZ/xV@santucci.pierpaolo>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From second fragment on, IPV6FR program must stop the dissection of IPV6
-fragmented packet. This is the same approach used for IPV4 fragmentation.
-This fixes the flow keys calculation for the upper-layer protocols.
-Note that according to RFC8200, the first fragment packet must include
-the upper-layer header.
+The static checker is fooled by the non-static locking scheme
+implemented by the mentioned helpers.
+Let's make its life easier adding some unconditional annotation
+so that the helpers are now interpreted as a plain spinlock from
+sparse.
 
-Signed-off-by: Santucci Pierpaolo <santucci@epigenesys.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
-v2: extend the commit message, as suggested by John Fastabend
-    <john.fastabend@gmail.com>
+ include/net/sock.h | 9 ++++++---
+ net/core/sock.c    | 3 ++-
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
- tools/testing/selftests/bpf/progs/bpf_flow.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/progs/bpf_flow.c b/tools/testing/selftests/bpf/progs/bpf_flow.c
-index 5a65f6b51377..95a5a0778ed7 100644
---- a/tools/testing/selftests/bpf/progs/bpf_flow.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_flow.c
-@@ -368,6 +368,8 @@ PROG(IPV6FR)(struct __sk_buff *skb)
- 		 */
- 		if (!(keys->flags & BPF_FLOW_DISSECTOR_F_PARSE_1ST_FRAG))
- 			return export_flow_keys(keys, BPF_OK);
-+	} else {
-+		return export_flow_keys(keys, BPF_OK);
- 	}
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 1d29aeae74fd..60d321c6b5a5 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1595,7 +1595,8 @@ void release_sock(struct sock *sk);
+ 				SINGLE_DEPTH_NESTING)
+ #define bh_unlock_sock(__sk)	spin_unlock(&((__sk)->sk_lock.slock))
  
- 	return parse_ipv6_proto(skb, fragh->nexthdr);
+-bool lock_sock_fast(struct sock *sk);
++bool lock_sock_fast(struct sock *sk) __acquires(&sk->sk_lock.slock);
++
+ /**
+  * unlock_sock_fast - complement of lock_sock_fast
+  * @sk: socket
+@@ -1606,10 +1607,12 @@ bool lock_sock_fast(struct sock *sk);
+  */
+ static inline void unlock_sock_fast(struct sock *sk, bool slow)
+ {
+-	if (slow)
++	if (slow) {
+ 		release_sock(sk);
+-	else
++		__release(&sk->sk_lock.slock);
++	} else {
+ 		spin_unlock_bh(&sk->sk_lock.slock);
++	}
+ }
+ 
+ /* Used by processes to "lock" a socket state, so that
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 727ea1cc633c..9badbe7bb4e4 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3078,7 +3078,7 @@ EXPORT_SYMBOL(release_sock);
+  *
+  *   sk_lock.slock unlocked, owned = 1, BH enabled
+  */
+-bool lock_sock_fast(struct sock *sk)
++bool lock_sock_fast(struct sock *sk) __acquires(&sk->sk_lock.slock)
+ {
+ 	might_sleep();
+ 	spin_lock_bh(&sk->sk_lock.slock);
+@@ -3096,6 +3096,7 @@ bool lock_sock_fast(struct sock *sk)
+ 	 * The sk_lock has mutex_lock() semantics here:
+ 	 */
+ 	mutex_acquire(&sk->sk_lock.dep_map, 0, 0, _RET_IP_);
++	__acquire(&sk->sk_lock.slock);
+ 	local_bh_enable();
+ 	return true;
+ }
 -- 
-2.17.5
+2.26.2
 
