@@ -2,102 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2F062B53B6
+	by mail.lfdr.de (Postfix) with ESMTP id DF19C2B53B7
 	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 22:21:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727887AbgKPVUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 16:20:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54080 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726035AbgKPVUx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 16:20:53 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2433722240;
-        Mon, 16 Nov 2020 21:20:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605561652;
-        bh=rF3Hz1kpU0y5lwFVLCP2bES+xAXqxFS1AJzEq/S/sM4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=L73HFGlMibLeyBrdJtwu4Stx1UiKgRjSqBXoM1hGSsN8VsXx4LSzwPZz6xMdOH4zN
-         LZ0uSQhvGkQOvFZz3i/OI4Nm38zEjuUZu59h8Cg8AOH1deFWtE04UfhgAQ0hzu8av7
-         ttJTAqEjx3p6tJyLQtmuj8kJANRb04VB6MDGkAPk=
-Date:   Mon, 16 Nov 2020 13:20:51 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Mahesh Bandewar (=?UTF-8?B?4KSu4KS54KWH4KS2IOCkrOCkguCkoeClh+CktQ==?=
-        =?UTF-8?B?4KS+4KSw?=)" <maheshb@google.com>
-Cc:     Jian Yang <jianyang.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Jian Yang <jianyang@google.com>
-Subject: Re: [PATCH net-next] net-loopback: allow lo dev initial state to be
- controlled
-Message-ID: <20201116132051.4eef4247@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAF2d9jjs9WF9JXzBGxrHEgAiFhS1qyDya+5WRZBHoxosAu5F4A@mail.gmail.com>
-References: <20201111204308.3352959-1-jianyang.kernel@gmail.com>
-        <20201114101709.42ee19e0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAF2d9jgYgUa4DPVT8CSsbMs9HFjE5fn_U8-P=JuZeOecfiYt-g@mail.gmail.com>
-        <20201116121711.1e7bb04c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAF2d9jjs9WF9JXzBGxrHEgAiFhS1qyDya+5WRZBHoxosAu5F4A@mail.gmail.com>
+        id S1728611AbgKPVVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 16:21:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726035AbgKPVVQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 16:21:16 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5587AC0613CF;
+        Mon, 16 Nov 2020 13:21:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=7IpcXVHeTBYT8USOupPyxcNDdXDsKJn0Vc/g3Vsna2E=; b=lvAlyYhuPS8XuPLKcwEqw4h/Lk
+        W2jM4Ibq8zLDIg1kBci01EjnwBvAi6aaYHcAtVcd8PalVcAJjqT+KkMi/umRu8Euk1rrs7iqGTWf+
+        CYJTPyjEJ3bhyvUkPSwSW79J9DzLLW/HHzNGqMwdI2Yx/kAf92g4jkvmvKmlBhgul333UwymFA1oJ
+        3CZROhxHLqiQCH5GLAKceOdJyOyLBlvZ1fa3pr/yr8TDENaDGtSpJFCK1T7M8hcJ1C+DaQH2BdcpG
+        lO+gj/BGTg2c6kBQHz2YUPSKAXOy+JrKW8i0rB0q1CWAoZ1zp1bVhHQP00GpB2b/2fiuCjd5gacXN
+        qwdtuELA==;
+Received: from [2601:1c0:6280:3f0::f32] (helo=smtpauth.infradead.org)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kelw0-0007T2-Ve; Mon, 16 Nov 2020 21:21:13 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-next@vger.kernel.org,
+        netdev@vger.kernel.org, Florian Westphal <fw@strlen.de>
+Subject: [PATCH net-next v5] net: linux/skbuff.h: combine SKB_EXTENSIONS + KCOV handling
+Date:   Mon, 16 Nov 2020 13:21:08 -0800
+Message-Id: <20201116212108.32465-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Nov 2020 12:50:22 -0800 Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=
-=A5=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=
-=A4=B0) wrote:
-> On Mon, Nov 16, 2020 at 12:17 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Mon, 16 Nov 2020 12:02:48 -0800 Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=
-=E0=A5=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=
-=E0=A4=B0) wrote: =20
-> > > On Sat, Nov 14, 2020 at 10:17 AM Jakub Kicinski <kuba@kernel.org> wro=
-te: =20
-> > > > On Wed, 11 Nov 2020 12:43:08 -0800 Jian Yang wrote: =20
-> > > > > From: Mahesh Bandewar <maheshb@google.com>
-> > > > >
-> > > > > Traditionally loopback devices comes up with initial state as DOW=
-N for
-> > > > > any new network-namespace. This would mean that anyone needing th=
-is
-> > > > > device (which is mostly true except sandboxes where networking in=
- not
-> > > > > needed at all), would have to bring this UP by issuing something =
-like
-> > > > > 'ip link set lo up' which can be avoided if the initial state can=
- be set
-> > > > > as UP. Also ICMP error propagation needs loopback to be UP.
-> > > > >
-> > > > > The default value for this sysctl is set to ZERO which will prese=
-rve the
-> > > > > backward compatible behavior for the root-netns while changing the
-> > > > > sysctl will only alter the behavior of the newer network namespac=
-es. =20
-> > > =20
-> > > > Any reason why the new sysctl itself is not per netns?
-> > > > =20
-> > > Making it per netns would not be very useful since its effect is only
-> > > during netns creation. =20
-> >
-> > I must be confused. Are all namespaces spawned off init_net, not the
-> > current netns the process is in? =20
-> The namespace hierarchy is maintained in user-ns while we have per-ns
-> sysctls hanging off of a netns object and we don't have parent (netns)
-> reference when initializing newly created netns values. One can copy
-> the current value of the settings from root-ns but I don't think
-> that's a good practice since there is no clear way to affect those
-> values when the root-ns changes them. Also from the isolation
-> perspective (I think) it's better to have this behavior (sysctl
-> values) stand on it's own i.e. have default values and then alter
-> values on it's own without linking to any other netns values.
+The previous Kconfig patch led to some other build errors as
+reported by the 0day bot and my own overnight build testing.
 
-To be clear, what I meant was just to make the sysctl per namespace.
-That way you can deploy a workload with this sysctl set appropriately
-without changing the system-global setting.
+These are all in <linux/skbuff.h> when KCOV is enabled but
+SKB_EXTENSIONS is not enabled, so fix those by combining those conditions
+in the header file.
 
-Is your expectation that particular application stacks would take
-advantage of this, or that people would set this to 1 across the
-fleet?
+Fixes: 6370cc3bbd8a ("net: add kcov handle to skb extensions")
+Fixes: 85ce50d337d1 ("net: kcov: don't select SKB_EXTENSIONS when there is no NET")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Aleksandr Nogikh <nogikh@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: linux-next@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: Florian Westphal <fw@strlen.de>
+---
+v2: (as suggested by Matthieu Baerts <matthieu.baerts@tessares.net>)
+  drop an extraneous space in a comment;
+  use CONFIG_SKB_EXTENSIONS instead of CONFIG_NET;
+v3, v4: dropped
+v5: drop a redundant IS_ENABLED(CONFIG_SKB_EXTENSIONS) in an enum;
+
+ include/linux/skbuff.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- linux-next-20201113.orig/include/linux/skbuff.h
++++ linux-next-20201113/include/linux/skbuff.h
+@@ -4608,7 +4608,7 @@ static inline void skb_reset_redirect(st
+ #endif
+ }
+ 
+-#ifdef CONFIG_KCOV
++#if IS_ENABLED(CONFIG_KCOV) && IS_ENABLED(CONFIG_SKB_EXTENSIONS)
+ static inline void skb_set_kcov_handle(struct sk_buff *skb,
+ 				       const u64 kcov_handle)
+ {
+@@ -4636,7 +4636,7 @@ static inline u64 skb_get_kcov_handle(st
+ static inline void skb_set_kcov_handle(struct sk_buff *skb,
+ 				       const u64 kcov_handle) { }
+ static inline u64 skb_get_kcov_handle(struct sk_buff *skb) { return 0; }
+-#endif /* CONFIG_KCOV */
++#endif /* CONFIG_KCOV && CONFIG_SKB_EXTENSIONS */
+ 
+ #endif	/* __KERNEL__ */
+ #endif	/* _LINUX_SKBUFF_H */
