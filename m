@@ -2,978 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 055A82B5490
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:48:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87F862B549D
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:51:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730735AbgKPWqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 17:46:43 -0500
-Received: from m42-4.mailgun.net ([69.72.42.4]:14447 "EHLO m42-4.mailgun.net"
+        id S1728109AbgKPWvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 17:51:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729529AbgKPWqm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 17:46:42 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1605566800; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=UVfRRMqmShedh6bH5WQy5emWFo9eq5VyvFD4qYG3JWg=; b=NJPCn/PBAERebPoDV/HXvkUpR+jwuPBZp6oztkoOC12Unescy6jFFl0BTEwEdRkzmXvWTOMz
- knmRhuE7aPe6mAapFvKt49lEOyO+4/LhMaezvD9qR4Fqw9KbcVTFRz2WWFlGBoQxug8opyXE
- DyjtVJ+FGQTtNsDM6q643Du9x8o=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 5fb3014bd6e6336a4ee4d7a1 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 16 Nov 2020 22:46:35
- GMT
-Sender: hemantk=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 30AC8C43460; Mon, 16 Nov 2020 22:46:35 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from codeaurora.org (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        id S1726204AbgKPWvM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 17:51:12 -0500
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: hemantk)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0C32CC433C6;
-        Mon, 16 Nov 2020 22:46:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0C32CC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
-From:   Hemant Kumar <hemantk@codeaurora.org>
-To:     manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jhugo@codeaurora.org, bbhatt@codeaurora.org,
-        loic.poulain@linaro.org, netdev@vger.kernel.org,
-        skhan@linuxfoundation.org, Hemant Kumar <hemantk@codeaurora.org>
-Subject: [PATCH v12 5/5] selftest: mhi: Add support to test MHI LOOPBACK channel
-Date:   Mon, 16 Nov 2020 14:46:22 -0800
-Message-Id: <1605566782-38013-6-git-send-email-hemantk@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1605566782-38013-1-git-send-email-hemantk@codeaurora.org>
-References: <1605566782-38013-1-git-send-email-hemantk@codeaurora.org>
+        by mail.kernel.org (Postfix) with ESMTPSA id 75A362244C;
+        Mon, 16 Nov 2020 22:51:09 +0000 (UTC)
+Date:   Mon, 16 Nov 2020 17:51:07 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Matt Mullins <mmullins@mmlx.us>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH] tracepoint: Do not fail unregistering a probe due to memory
+ allocation
+Message-ID: <20201116175107.02db396d@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Loopback test opens the MHI device file node and writes
-a data buffer to it. MHI UCI kernel space driver copies
-the data and sends it to MHI uplink (Tx) LOOPBACK channel.
-MHI device loops back the same data to MHI downlink (Rx)
-LOOPBACK channel. This data is read by test application
-and compared against the data sent. Test passes if data
-buffer matches between Tx and Rx. Test application performs
-open(), poll(), write(), read() and close() file operations.
 
-Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
+[ Kees, I added you because you tend to know about these things.
+  Is it OK to assign a void func(void) that doesn't do anything and returns
+  nothing to a function pointer that could be call with parameters? We need
+  to add stubs for tracepoints when we fail to allocate a new array on
+  removal of a callback, but the callbacks do have arguments, but the stub
+  called does not have arguments.
+
+  Matt, Does this patch fix the error your patch was trying to fix?
+]
+
+The list of tracepoint callbacks is managed by an array that is protected
+by RCU. To update this array, a new array is allocated, the updates are
+copied over to the new array, and then the list of functions for the
+tracepoint is switched over to the new array. After a completion of an RCU
+grace period, the old array is freed.
+
+This process happens for both adding a callback as well as removing one.
+But on removing a callback, if the new array fails to be allocated, the
+callback is not removed, and may be used after it is freed by the clients
+of the tracepoint.
+
+There's really no reason to fail if the allocation for a new array fails
+when removing a function. Instead, the function can simply be replaced by a
+stub function that could be cleaned up on the next modification of the
+array. That is, instead of calling the function registered to the
+tracepoint, it would call a stub function in its place.
+
+Link: https://lore.kernel.org/r/20201115055256.65625-1-mmullins@mmlx.us
+
+Cc: stable@vger.kernel.org
+Fixes: 97e1c18e8d17b ("tracing: Kernel Tracepoints")
+Reported-by: syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com
+Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
+Reported-by: Matt Mullins <mmullins@mmlx.us>
 ---
- Documentation/mhi/uci.rst                          |  32 +
- tools/testing/selftests/Makefile                   |   1 +
- tools/testing/selftests/drivers/.gitignore         |   1 +
- tools/testing/selftests/drivers/mhi/Makefile       |   8 +
- tools/testing/selftests/drivers/mhi/config         |   2 +
- .../testing/selftests/drivers/mhi/loopback_test.c  | 802 +++++++++++++++++++++
- 6 files changed, 846 insertions(+)
- create mode 100644 tools/testing/selftests/drivers/mhi/Makefile
- create mode 100644 tools/testing/selftests/drivers/mhi/config
- create mode 100644 tools/testing/selftests/drivers/mhi/loopback_test.c
-
-diff --git a/Documentation/mhi/uci.rst b/Documentation/mhi/uci.rst
-index ce8740e..0a04afe 100644
---- a/Documentation/mhi/uci.rst
-+++ b/Documentation/mhi/uci.rst
-@@ -79,6 +79,38 @@ MHI client driver performs read operation, same data gets looped back to MHI
- host using LOOPBACK channel 1. LOOPBACK channel is used to verify data path
- and data integrity between MHI Host and MHI device.
+diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
+index 3f659f855074..774b3733cbbe 100644
+--- a/kernel/tracepoint.c
++++ b/kernel/tracepoint.c
+@@ -53,10 +53,16 @@ struct tp_probes {
+ 	struct tracepoint_func probes[];
+ };
  
-+Loopback Test
-+~~~~~~~~~~~~~
+-static inline void *allocate_probes(int count)
++/* Called in removal of a func but failed to allocate a new tp_funcs */
++static void tp_stub_func(void)
++{
++	return;
++}
 +
-+Loopback test application is used to verify data integrity between MHI host and
-+MHI device over LOOPBACK channel. This also confirms that basic MHI data path
-+is working properly. Test performs write() to send tx buffer to MHI device file
-+node for LOOPBACK uplink channel. MHI LOOPBACK downlink channel loops back
-+transmit data to MHI Host. Test application receives data in receive buffer as
-+part of read(). It verifies if tx buffer matches rx buffer. Test application
-+performs poll() before making write() and read() system calls. Test passes if
-+match is found.
-+
-+Test is present under tools/testing/selftests/drivers/mhi. It is compiled using
-+following command in same dir:-
-+
-+make loopback_test
-+
-+Test is run using following command arguments:-
-+
-+loopback_test -c <device_node> -b <transmit buffer size> -l <log level> -i
-+<number of iterations>
-+
-+Required argument:
-+-c : loopback chardev node
-+
-+Optional argument:
-+-b : transmit buffer size. If not present 1024 bytes size transmit buffer
-+     is sent.
-+-i : Number of iterations to perform, If not present only one transmit buffer
-+     is sent.
-+-l : Log level. If not present defaults to DBG_LVL_INFO.
-+
- Other Use Cases
- ---------------
++static inline void *allocate_probes(int count, gfp_t extra_flags)
+ {
+ 	struct tp_probes *p  = kmalloc(struct_size(p, probes, count),
+-				       GFP_KERNEL);
++				       GFP_KERNEL | extra_flags);
+ 	return p == NULL ? NULL : p->probes;
+ }
  
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index d9c2835..084bc1e 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -10,6 +10,7 @@ TARGETS += core
- TARGETS += cpufreq
- TARGETS += cpu-hotplug
- TARGETS += drivers/dma-buf
-+TARGETS += drivers/mhi
- TARGETS += efivarfs
- TARGETS += exec
- TARGETS += filesystems
-diff --git a/tools/testing/selftests/drivers/.gitignore b/tools/testing/selftests/drivers/.gitignore
-index ca74f2e..e4806d5 100644
---- a/tools/testing/selftests/drivers/.gitignore
-+++ b/tools/testing/selftests/drivers/.gitignore
-@@ -1,2 +1,3 @@
- # SPDX-License-Identifier: GPL-2.0-only
- /dma-buf/udmabuf
-+/mhi/loopback_test
-diff --git a/tools/testing/selftests/drivers/mhi/Makefile b/tools/testing/selftests/drivers/mhi/Makefile
-new file mode 100644
-index 0000000..c06c925
---- /dev/null
-+++ b/tools/testing/selftests/drivers/mhi/Makefile
-@@ -0,0 +1,8 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+CFLAGS += -I../../../../../usr/include/ -g -Wall
+@@ -131,6 +137,7 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
+ {
+ 	struct tracepoint_func *old, *new;
+ 	int nr_probes = 0;
++	int stub_funcs = 0;
+ 	int pos = -1;
+ 
+ 	if (WARN_ON(!tp_func->func))
+@@ -147,14 +154,34 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
+ 			if (old[nr_probes].func == tp_func->func &&
+ 			    old[nr_probes].data == tp_func->data)
+ 				return ERR_PTR(-EEXIST);
++			if (old[nr_probes].func == tp_stub_func)
++				stub_funcs++;
+ 		}
+ 	}
+-	/* + 2 : one for new probe, one for NULL func */
+-	new = allocate_probes(nr_probes + 2);
++	/* + 2 : one for new probe, one for NULL func - stub functions */
++	new = allocate_probes(nr_probes + 2 - stub_funcs, 0);
+ 	if (new == NULL)
+ 		return ERR_PTR(-ENOMEM);
+ 	if (old) {
+-		if (pos < 0) {
++		if (stub_funcs) {
++			/* Need to copy one at a time to remove stubs */
++			int probes = 0;
 +
-+LDLIBS = -lpthread
-+TEST_GEN_PROGS := loopback_test
-+
-+include ../../lib.mk
-+
-diff --git a/tools/testing/selftests/drivers/mhi/config b/tools/testing/selftests/drivers/mhi/config
-new file mode 100644
-index 0000000..471dc92
---- /dev/null
-+++ b/tools/testing/selftests/drivers/mhi/config
-@@ -0,0 +1,2 @@
-+CONFIG_MHI_BUS=y
-+CONFIG_MHi_UCI=y
-diff --git a/tools/testing/selftests/drivers/mhi/loopback_test.c b/tools/testing/selftests/drivers/mhi/loopback_test.c
-new file mode 100644
-index 0000000..99b7712
---- /dev/null
-+++ b/tools/testing/selftests/drivers/mhi/loopback_test.c
-@@ -0,0 +1,802 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Loopback test application performs write() to send tx buffer to MHI device
-+ * file node for LOOPBACK uplink channel. MHI LOOPBACK downlink channel loops
-+ * back transmit data to MHI Host. Test application receives data in receive
-+ * buffer as part of read(). It verifies if tx buffer matches rx buffer. Test
-+ * application performs poll() before making write() and read() system
-+ * calls. Test passes if match is found.
-+ *
-+ * Test is compiled using following command:-
-+ *
-+ * make loopback_test
-+ *
-+ * Test is run using following command arguments:-
-+ *
-+ * loopback_test -c <device_node> -b <transmit buffer size> -l <log level> -i
-+ * <number of iterations>
-+ *
-+ * Required argument:
-+ * -c : loopback chardev node
-+ *
-+ * Optional argument:
-+ * -b : transmit buffer size. If not present 1024 bytes size transmit buffer
-+ *      is sent.
-+ * -i : Number of iterations to perform, If not present only one transmit buffer
-+ *      is sent.
-+ * -l : Log level. If not present defaults to DBG_LVL_INFO.
-+ */
-+
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <getopt.h>
-+#include <pthread.h>
-+#include <stdbool.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <sys/poll.h>
-+#include <unistd.h>
-+
-+enum debug_level {
-+	DBG_LVL_VERBOSE,
-+	DBG_LVL_INFO,
-+	DBG_LVL_ERROR,
-+};
-+
-+enum test_status {
-+	TEST_STATUS_SUCCESS,
-+	TEST_STATUS_ERROR,
-+	TEST_STATUS_NO_DEV,
-+};
-+
-+struct lb_test_ctx {
-+	char dev_node[256];
-+	unsigned char *tx_buff;
-+	unsigned char *rx_buff;
-+	unsigned int rx_pkt_count;
-+	unsigned int tx_pkt_count;
-+	int iterations;
-+	bool iter_complete;
-+	bool comp_complete;
-+	bool test_complete;
-+	bool all_complete;
-+	unsigned long buff_size;
-+	long byte_recvd;
-+	long byte_sent;
-+};
-+
-+bool force_exit;
-+char write_data = 'a';
-+int completed_iterations;
-+
-+struct lb_test_ctx test_ctxt;
-+enum debug_level msg_lvl;
-+struct pollfd read_fd;
-+struct pollfd write_fd;
-+enum test_status mhi_test_return_value;
-+enum test_status tx_status;
-+enum test_status rx_status;
-+enum test_status cmp_rxtx_status;
-+
-+#define test_log(test_msg_lvl, format, ...) do { \
-+		if (test_msg_lvl >= msg_lvl) \
-+			fprintf(stderr, format, ##__VA_ARGS__); \
-+} while (0)
-+
-+static void loopback_test_sleep_ms(int ms)
-+{
-+	usleep(1000 * ms);
-+}
-+
-+static enum test_status loopback_test_open(struct pollfd *write_fd,
-+					struct pollfd *read_fd, char *dev_name)
-+{
-+	enum test_status ret_val = TEST_STATUS_SUCCESS;
-+
-+	write_fd->fd = open(dev_name, O_SYNC | O_WRONLY);
-+	if (write_fd->fd < 0) {
-+		test_log(DBG_LVL_ERROR, "Error opening file for w: errno: %d\n", errno);
-+		ret_val = TEST_STATUS_ERROR;
-+	} else {
-+		test_log(DBG_LVL_INFO, "Opened %s, return code: %i.\n",
-+			 dev_name, write_fd->fd);
-+		write_fd->events = POLLOUT;
-+	}
-+
-+	read_fd->fd = open(dev_name, O_SYNC | O_RDONLY);
-+	if (read_fd->fd < 0) {
-+		test_log(DBG_LVL_ERROR, "Error opening file for r: errno: %d\n", errno);
-+		ret_val = TEST_STATUS_ERROR;
-+	} else {
-+		test_log(DBG_LVL_INFO, "Opened %s, return code: %i.\n",
-+			 dev_name, read_fd->fd);
-+		read_fd->events = POLLIN;
-+	}
-+
-+	return ret_val;
-+}
-+
-+static enum test_status loopback_test_close(struct pollfd *write_fd,
-+						 struct pollfd *read_fd)
-+{
-+	enum test_status ret_val = TEST_STATUS_SUCCESS;
-+
-+	if (close(read_fd->fd) == 0) {
-+		test_log(DBG_LVL_INFO, "Closed device handle\n");
-+	} else {
-+		test_log(DBG_LVL_ERROR, "Unable to close handle to device\n");
-+		ret_val = TEST_STATUS_ERROR;
-+	}
-+
-+	if (close(write_fd->fd) == 0) {
-+		test_log(DBG_LVL_INFO, "Closed device handle\n");
-+	} else {
-+		test_log(DBG_LVL_ERROR, "Unable to close handle to device\n");
-+		ret_val = TEST_STATUS_ERROR;
-+	}
-+
-+	return ret_val;
-+}
-+
-+static enum test_status loopback_test_alloc_rx_tx_buff(void)
-+{
-+	test_ctxt.rx_buff = (unsigned char *)malloc(test_ctxt.buff_size);
-+	if (!test_ctxt.rx_buff) {
-+		test_log(DBG_LVL_ERROR, "Failed to allocate rx buff\n");
-+		return TEST_STATUS_ERROR;
-+	}
-+
-+	memset(test_ctxt.rx_buff, 0x00, sizeof(test_ctxt.buff_size));
-+	test_ctxt.tx_buff = (unsigned char *)malloc(test_ctxt.buff_size);
-+	if (!test_ctxt.tx_buff) {
-+		test_log(DBG_LVL_ERROR, "Failed to allocate tx buff\n");
-+		return TEST_STATUS_ERROR;
-+	}
-+
-+	return TEST_STATUS_SUCCESS;
-+}
-+
-+static enum test_status loopback_test_write(struct pollfd *write_fd)
-+{
-+	enum test_status ret_value = TEST_STATUS_SUCCESS;
-+	signed long temp_bytes_sent = 0;
-+	signed long total_bytes_sent = 0;
-+
-+	test_log(DBG_LVL_VERBOSE, "About to write %lu\n", test_ctxt.buff_size);
-+
-+	temp_bytes_sent = write(write_fd->fd,
-+		test_ctxt.tx_buff + test_ctxt.byte_sent, test_ctxt.buff_size);
-+
-+	test_log(DBG_LVL_VERBOSE, "Returned %li\n", temp_bytes_sent);
-+	test_log(DBG_LVL_INFO, "Wrote packet with %li bytes of %02x\n",
-+		 temp_bytes_sent, *(test_ctxt.tx_buff + test_ctxt.byte_sent));
-+
-+	if (temp_bytes_sent < 0) {
-+		/* write returned a negative value i.e. write failed */
-+		test_log(DBG_LVL_ERROR, "write() failed: err code %d\n", errno);
-+		return TEST_STATUS_ERROR;
-+	}
-+
-+	if ((unsigned long)temp_bytes_sent > test_ctxt.buff_size) {
-+		test_log(DBG_LVL_ERROR, "Wrote more bytes than intended\n");
-+		return TEST_STATUS_ERROR;
-+	}
-+
-+	if (temp_bytes_sent == 0) {
-+		loopback_test_sleep_ms(10);
-+	} else if (temp_bytes_sent > 0) {
-+		test_ctxt.tx_pkt_count++;
-+		test_ctxt.byte_sent += temp_bytes_sent;
-+		total_bytes_sent += temp_bytes_sent;
-+		test_log(DBG_LVL_INFO, "Total written packets %d\n",
-+			 test_ctxt.tx_pkt_count);
-+	}
-+
-+	return ret_value;
-+}
-+
-+static void loopback_test_reset_ctxt(void)
-+{
-+	test_ctxt.byte_sent = 0;
-+	__sync_synchronize();
-+	test_ctxt.byte_recvd = 0;
-+	test_ctxt.rx_pkt_count = 0;
-+	test_ctxt.tx_pkt_count = 0;
-+	test_ctxt.comp_complete = false;
-+	memset((void *)test_ctxt.rx_buff, 0x00, test_ctxt.buff_size);
-+}
-+
-+static enum test_status loopback_test_time_out(int *time_count)
-+{
-+	enum test_status ret_val = TEST_STATUS_SUCCESS;
-+
-+	loopback_test_sleep_ms(3);
-+	if ((++*time_count) > 100000) {
-+		test_log(DBG_LVL_ERROR, "Error: all bytes not received for this iteration\n");
-+		ret_val = TEST_STATUS_ERROR;
-+		while (1)
-+			loopback_test_sleep_ms(1000);
-+	}
-+
-+	return ret_val;
-+}
-+
-+static enum test_status loopback_test_poll(struct pollfd *fd,
-+						bool poll_timeout)
-+{
-+	enum test_status ret_val = TEST_STATUS_SUCCESS;
-+	int poll_return = 0;
-+	int i = 0;
-+	int timeout = 1000; /* poll-wait 1 second */
-+	int file_desc_type = -1;
-+
-+	if (fd->events == POLLIN) {
-+		file_desc_type = 1; /* read */
-+		test_log(DBG_LVL_VERBOSE,
-+			 "Poll: opened read handle to device\n");
-+	} else if (fd->events == POLLOUT) {
-+		file_desc_type = 0; /* write */
-+		test_log(DBG_LVL_VERBOSE,
-+			 "Poll: opened write handle to device\n");
-+	}
-+
-+	if (poll_timeout == false)
-+		timeout = -1; /* poll-wait forever */
-+
-+	while (ret_val == TEST_STATUS_SUCCESS) {
-+		if (force_exit == true) {
-+			ret_val = TEST_STATUS_ERROR;
-+		} else {
-+			test_log(DBG_LVL_VERBOSE, "%s Polling %i\n",
-+				 file_desc_type ? "Read" : "Write", i);
-+
-+			poll_return = poll(fd, 1, timeout);
-+			if (poll_return == -1) {
-+				test_log(DBG_LVL_ERROR, "%s Poll error - %d\n",
-+					 file_desc_type ? "Read" : "Write",
-+					 errno);
-+				return TEST_STATUS_ERROR;
-+			} else if (((file_desc_type == 1) &&
-+				   (fd->revents & POLLIN)) ||
-+				   ((file_desc_type == 0) &&
-+				   (fd->revents & POLLOUT))) {
-+				test_log(DBG_LVL_VERBOSE,
-+					 "%s Poll Returned\n",
-+					 file_desc_type ? "Read" : "Write");
-+				return TEST_STATUS_SUCCESS;
-+			} else if (poll_timeout == true) {
-+				i++;
-+				poll_return = 0;
-+				if (i >= 250) {
-+					test_log(DBG_LVL_ERROR,
-+						 "Poll: %s Timed out: 10s\n",
-+					file_desc_type ? "Read" : "Write");
-+					return TEST_STATUS_ERROR;
-+				}
++			pos = -1;
++			for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
++				if (old[nr_probes].func == tp_stub_func)
++					continue;
++				if (pos < 0 && old[nr_probes].prio < prio)
++					pos = probes++;
++				new[probes++] = old[nr_probes];
 +			}
++			nr_probes = probes;
++			if (pos < 0)
++				pos = probes;
++			else
++				nr_probes--; /* Account for insertion */
 +
-+			loopback_test_sleep_ms(10);
-+		}
-+	}
-+
-+	return ret_val;
-+}
-+
-+static void *loopback_test_rx(void *data)
-+{
-+	bool poll_timeout = true;
-+	unsigned long read_size = test_ctxt.buff_size;
-+	long temp_bytes_rec;
-+	enum test_status status;
-+
-+	rx_status = TEST_STATUS_SUCCESS;
-+
-+	while (force_exit == false) {
-+		if (test_ctxt.test_complete) {
-+			test_log(DBG_LVL_INFO, "Rx: exiting thread\n");
-+			pthread_exit(&rx_status);
-+			return NULL;
-+		}
-+
-+		while ((test_ctxt.byte_sent > test_ctxt.byte_recvd) &&
-+		       (force_exit == false)) {
-+			test_log(DBG_LVL_VERBOSE,
-+				 "Rx: Bytes Sent: %li, Received %li\n",
-+				test_ctxt.byte_sent, test_ctxt.byte_recvd);
-+
-+			temp_bytes_rec = 0;
-+
-+			if (test_ctxt.comp_complete == false) {
-+				status = loopback_test_poll(&read_fd,
-+							    poll_timeout);
-+				if (status == TEST_STATUS_ERROR) {
-+					if (test_ctxt.test_complete == true)
-+						rx_status = TEST_STATUS_SUCCESS;
++		} else if (pos < 0) {
+ 			pos = nr_probes;
+ 			memcpy(new, old, nr_probes * sizeof(struct tracepoint_func));
+ 		} else {
+@@ -188,8 +215,9 @@ static void *func_remove(struct tracepoint_func **funcs,
+ 	/* (N -> M), (N > 1, M >= 0) probes */
+ 	if (tp_func->func) {
+ 		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
+-			if (old[nr_probes].func == tp_func->func &&
+-			     old[nr_probes].data == tp_func->data)
++			if ((old[nr_probes].func == tp_func->func &&
++			     old[nr_probes].data == tp_func->data) ||
++			    old[nr_probes].func == tp_stub_func)
+ 				nr_del++;
+ 		}
+ 	}
+@@ -207,15 +235,33 @@ static void *func_remove(struct tracepoint_func **funcs,
+ 		int j = 0;
+ 		/* N -> M, (N > 1, M > 0) */
+ 		/* + 1 for NULL */
+-		new = allocate_probes(nr_probes - nr_del + 1);
+-		if (new == NULL)
+-			return ERR_PTR(-ENOMEM);
+-		for (i = 0; old[i].func; i++)
+-			if (old[i].func != tp_func->func
+-					|| old[i].data != tp_func->data)
+-				new[j++] = old[i];
+-		new[nr_probes - nr_del].func = NULL;
+-		*funcs = new;
++		new = allocate_probes(nr_probes - nr_del + 1, __GFP_NOFAIL);
++		if (new) {
++			for (i = 0; old[i].func; i++)
++				if ((old[i].func != tp_func->func
++				     || old[i].data != tp_func->data)
++				    && old[i].func != tp_stub_func)
++					new[j++] = old[i];
++			new[nr_probes - nr_del].func = NULL;
++			*funcs = new;
++		} else {
++			/*
++			 * Failed to allocate, replace the old function
++			 * with calls to tp_stub_func.
++			 */
++			for (i = 0; old[i].func; i++)
++				if (old[i].func == tp_func->func &&
++				    old[i].data == tp_func->data) {
++					old[i].func = tp_stub_func;
++					/* Set the prio to the next event. */
++					if (old[i + 1].func)
++						old[i].prio =
++							old[i + 1].prio;
 +					else
-+						rx_status = TEST_STATUS_ERROR;
-+
-+					test_log(DBG_LVL_INFO,
-+						 "Rx: exiting thread\n");
-+					pthread_exit(&rx_status);
-+					return NULL;
++						old[i].prio = -1;
 +				}
-+
-+				test_log(DBG_LVL_VERBOSE, "Rx: before read\n");
-+				temp_bytes_rec = read(read_fd.fd,
-+					test_ctxt.rx_buff + test_ctxt.byte_recvd,
-+					read_size);
-+				if (temp_bytes_rec < 0) {
-+					test_log(DBG_LVL_ERROR,
-+					"Rx: read() failed - err code %d\n",
-+					errno);
-+					rx_status = TEST_STATUS_ERROR;
-+					pthread_exit(&rx_status);
-+					return NULL;
-+				}
-+
-+				if (temp_bytes_rec == 0) {
-+					loopback_test_sleep_ms(10);
-+					rx_status = TEST_STATUS_ERROR;
-+					pthread_exit(&rx_status);
-+					return NULL;
-+				}
-+
-+				test_ctxt.rx_pkt_count++;
-+				test_log(DBG_LVL_INFO,
-+				"Rx: Read packet with %li bytes of %02x\n",
-+				temp_bytes_rec,
-+				*(test_ctxt.rx_buff + test_ctxt.byte_recvd));
-+				test_ctxt.byte_recvd += temp_bytes_rec;
-+				test_log(DBG_LVL_INFO,
-+					 "Rx: Total byte_recvd: %li\n",
-+					test_ctxt.byte_recvd);
-+				test_log(DBG_LVL_INFO,
-+					 "Rx: Total read packets %d\n",
-+					test_ctxt.rx_pkt_count);
-+				test_log(DBG_LVL_INFO,
-+					 "Rx: %lu byte buff_size\n",
-+					test_ctxt.buff_size);
-+
-+				read_fd.revents = 0;
-+			}
++			*funcs = old;
 +		}
-+	}
-+	rx_status = TEST_STATUS_ERROR;
-+	pthread_exit(&rx_status);
-+	return NULL;
-+}
-+
-+/* This single compare thread, will compare each byte of tx and rx Buff */
-+static void *loopback_test_compare_rxtx(void *data)
-+{
-+	int k;
-+	bool completion = true;
-+	long curr_ptr = 0;
-+
-+	test_log(DBG_LVL_INFO, "CompareRxTxThread: Inside thread\n");
-+	cmp_rxtx_status = TEST_STATUS_SUCCESS;
-+
-+	for (;;) {
-+		/* if the test is completed exit thread */
-+		if (test_ctxt.all_complete == true) {
-+			curr_ptr = 0;
-+			test_log(DBG_LVL_INFO,
-+				 "CompareRxTx: exiting thread\n");
-+			pthread_exit(&cmp_rxtx_status);
-+			return NULL;
-+		}
-+
-+		/* Simply compares each byte in each Tx and Rx buffer */
-+		while (curr_ptr < test_ctxt.byte_recvd) {
-+			if (*(test_ctxt.rx_buff + curr_ptr) !=
-+					*(test_ctxt.tx_buff + curr_ptr)) {
-+				test_log(DBG_LVL_ERROR,
-+					 "Mismatch Byte num %li\n", curr_ptr);
-+				test_log(DBG_LVL_ERROR,
-+					 "Bytes: Sent 0x%x, Received 0x%x\n",
-+					 *(test_ctxt.tx_buff + curr_ptr),
-+					 *(test_ctxt.rx_buff + curr_ptr));
-+				test_log(DBG_LVL_VERBOSE, "Rx buffer dump:\n");
-+				for (k = 0; k < 1024; k++)
-+					test_log(DBG_LVL_VERBOSE, "%d:0x%x ", k,
-+						 *(test_ctxt.rx_buff + k));
-+
-+				test_log(DBG_LVL_VERBOSE, "\n");
-+
-+				test_log(DBG_LVL_INFO,
-+					 "CompareRxTx: finished iterations %i\n",
-+					completed_iterations);
-+				test_log(DBG_LVL_INFO,
-+					 "CompareRxTx: Total pkts sent %u\n",
-+					test_ctxt.tx_pkt_count);
-+
-+				curr_ptr = 0;
-+				force_exit = true;
-+				cmp_rxtx_status = TEST_STATUS_ERROR;
-+				pthread_exit(&cmp_rxtx_status);
-+				return NULL;
-+			}
-+
-+			test_log(DBG_LVL_VERBOSE,
-+			"CompareRxTx: Bytes Sent 0x%x, Received 0x%x\n",
-+			*(test_ctxt.tx_buff + curr_ptr),
-+			*(test_ctxt.rx_buff + curr_ptr));
-+			curr_ptr++;
-+		}
-+
-+		/*
-+		 * completion will start as true and change depending if the
-+		 * iterations has been completed for all client threads
-+		 */
-+		if (curr_ptr >= test_ctxt.byte_sent)
-+			completion = (completion && test_ctxt.iter_complete);
-+		else
-+			completion = false;
-+
-+		/*
-+		 * Once all client threads have finished their iteration, reset
-+		 * everything and allow the client thread to start their next
-+		 * iteration
-+		 */
-+		if (completion) {
-+			test_ctxt.byte_sent = 0;
-+			__sync_synchronize();
-+			test_ctxt.byte_recvd = 0;
-+			test_ctxt.iter_complete = false;
-+			test_ctxt.comp_complete = true;
-+			curr_ptr = 0;
-+			test_log(DBG_LVL_INFO, "CompareRxTx: TX and RX match\n");
-+		} else {
-+			completion = true;
-+		}
-+	}
-+}
-+
-+static void loopback_test_display_err_data(void)
-+{
-+	test_log(DBG_LVL_ERROR, "Wrote %lu bytes out of a %lu buff size\n",
-+		 test_ctxt.byte_sent, test_ctxt.buff_size);
-+	test_log(DBG_LVL_ERROR, "Remaining bytes to write %lu\n",
-+		 (test_ctxt.buff_size - test_ctxt.byte_sent));
-+}
-+
-+static enum test_status loopback_test_setup_write_packet(void)
-+{
-+	bool poll_timeout = true;
-+
-+	if (loopback_test_poll(&write_fd, poll_timeout) == TEST_STATUS_ERROR)
-+		return TEST_STATUS_ERROR;
-+
-+	test_log(DBG_LVL_VERBOSE, "revents: %d\n", write_fd.revents);
-+
-+	if (write_fd.revents & POLLOUT) {
-+		memset(test_ctxt.tx_buff + test_ctxt.byte_sent, write_data,
-+		       test_ctxt.buff_size);
-+		test_log(DBG_LVL_VERBOSE, "Write %02x of size %lu\n", write_data,
-+			 test_ctxt.buff_size);
-+
-+		if (loopback_test_write(&write_fd) != TEST_STATUS_SUCCESS) {
-+			loopback_test_sleep_ms(1000);
-+			return TEST_STATUS_ERROR;
-+		}
-+
-+		test_log(DBG_LVL_INFO, "Total byte_sent %li\n",
-+			 test_ctxt.byte_sent);
-+		write_fd.revents = 0;
-+	}
-+
-+	return TEST_STATUS_SUCCESS;
-+}
-+
-+static enum test_status loopback_test_wait_to_get_bytes_back(void)
-+{
-+	int time_count = 0;
-+
-+	test_log(DBG_LVL_INFO, "Sent %li bytes, received %li bytes\n",
-+		 test_ctxt.byte_sent, test_ctxt.byte_recvd);
-+
-+	/* read thread will fill bytesRec and wait till it equals byte_sent */
-+	while (test_ctxt.byte_recvd != test_ctxt.byte_sent) {
-+		if (loopback_test_time_out(&time_count) == TEST_STATUS_ERROR)
-+			return TEST_STATUS_ERROR;
-+	}
-+
-+	return TEST_STATUS_SUCCESS;
-+}
-+
-+static void *loopback_test_tx(void *data)
-+{
-+	int i;
-+	int time_count = 0;
-+	int failed_iterations = 0;
-+	enum test_status status = TEST_STATUS_SUCCESS;
-+
-+	tx_status = TEST_STATUS_SUCCESS;
-+
-+	for (i = 0; i < test_ctxt.iterations; i++) {
-+		loopback_test_reset_ctxt();
-+
-+		test_ctxt.iter_complete = false;
-+
-+		/* While the bytes sent is less than the buffsize */
-+		while (((unsigned int)test_ctxt.byte_sent < test_ctxt.buff_size)
-+			&& (status == TEST_STATUS_SUCCESS)) {
-+			if (force_exit == true)
-+				goto exit;
-+
-+			if (status != TEST_STATUS_SUCCESS) {
-+				loopback_test_display_err_data();
-+				tx_status = TEST_STATUS_ERROR;
-+				goto exit;
-+			}
-+
-+			status = loopback_test_setup_write_packet();
-+			if (status == TEST_STATUS_ERROR) {
-+				test_log(DBG_LVL_INFO,
-+					 "Failed after %d iterations\n", i);
-+				failed_iterations++;
-+				goto exit;
-+			}
-+		}
-+
-+		if (loopback_test_wait_to_get_bytes_back() ==
-+			TEST_STATUS_ERROR) {
-+			tx_status = TEST_STATUS_ERROR;
-+			goto exit;
-+		}
-+
-+		__sync_synchronize();
-+
-+		test_ctxt.iter_complete = true;
-+
-+		while (!test_ctxt.comp_complete) {
-+			if (loopback_test_time_out(&time_count) ==
-+				TEST_STATUS_ERROR) {
-+				tx_status = TEST_STATUS_ERROR;
-+				goto exit;
-+			}
-+		}
-+		time_count = 0;
-+	}
-+
-+	if (failed_iterations > 0)
-+		test_log(DBG_LVL_INFO, "Amount of Failed Iterations: %d\n",
-+			 failed_iterations);
-+
-+exit:
-+	loopback_test_reset_ctxt();
-+
-+	/* all of the iterations for this client thread have been completed */
-+	test_ctxt.test_complete = true;
-+
-+	/* close the opened file descriptors */
-+	loopback_test_close(&write_fd, &read_fd);
-+
-+	test_log(DBG_LVL_INFO, "mhi_test_loopback: exiting thread\n");
-+
-+	pthread_exit(&tx_status);
-+
-+	return NULL;
-+}
-+
-+/*
-+ * This function will be called when the user wishes to perform a loopback test.
-+ * In this function, a compare thread will be created to compare the tx buffer
-+ * and the rx Buffer. Device file node is opened for write and read. Tx thread
-+ * is created to send data and Rx thread to receive data.
-+ */
-+enum test_status loopback_test_thread_create(void)
-+{
-+	int i = 0;
-+	enum test_status status = TEST_STATUS_SUCCESS;
-+	enum test_status *write_thread_retval;
-+	enum test_status *read_thread_retval;
-+	enum test_status *compare_thread_retval;
-+
-+	pthread_t compare_rx_tx_thread;
-+	pthread_t loopback_thread;
-+	pthread_t receive_thread;
-+
-+	/* set all tests (including open/close) to not completed */
-+	test_ctxt.all_complete = false;
-+
-+	/* set current test to not completed */
-+	test_ctxt.test_complete = false;
-+
-+	if (loopback_test_alloc_rx_tx_buff() == TEST_STATUS_ERROR) {
-+		status = TEST_STATUS_ERROR;
-+		goto exit;
-+	}
-+
-+	/* Create thread for comparing the rx and tx buffers */
-+	if (pthread_create(&compare_rx_tx_thread, NULL,
-+			   loopback_test_compare_rxtx, NULL) != 0) {
-+		test_log(DBG_LVL_ERROR, "Error creating compare thread\n");
-+		status = TEST_STATUS_ERROR;
-+		goto exit;
-+	}
-+
-+	test_log(DBG_LVL_INFO, "dev_node: %s\n", test_ctxt.dev_node);
-+
-+	/* closing the device node will happen in the loopback thread */
-+	status = loopback_test_open(&write_fd, &read_fd, test_ctxt.dev_node);
-+	if (status == TEST_STATUS_ERROR) {
-+		test_log(DBG_LVL_ERROR, "Failed to open device node\n");
-+		goto exit;
-+	}
-+
-+	/* Spawn the loopback tx thread */
-+	if (pthread_create(&loopback_thread, NULL, loopback_test_tx, NULL)
-+			   != 0) {
-+		test_log(DBG_LVL_ERROR, "Error creating tx thread");
-+		status = TEST_STATUS_ERROR;
-+		goto exit;
-+	}
-+
-+	/* Create thread for receiving packets */
-+	if (pthread_create(&receive_thread, NULL, loopback_test_rx, NULL)
-+			   != 0) {
-+		test_log(DBG_LVL_ERROR, "Error creating rx thread\n");
-+		status = TEST_STATUS_ERROR;
-+		goto exit;
-+	}
-+
-+	test_log(DBG_LVL_INFO, "Waiting for Tx and Rx threads to complete\n");
-+
-+	/* wait till all client and receive threads have finished */
-+	pthread_join(loopback_thread, (void **)(&write_thread_retval));
-+	pthread_join(receive_thread, (void **)(&read_thread_retval));
-+
-+	test_log(DBG_LVL_VERBOSE, "TX and Rx threads completed\n");
-+
-+	test_log(DBG_LVL_INFO, "Write thread status: %s\n",
-+		 *write_thread_retval ? "Fail" : "Pass");
-+	test_log(DBG_LVL_INFO, "Read thread status: %s\n",
-+		 *read_thread_retval ? "Fail" : "Pass");
-+
-+	if ((*write_thread_retval == TEST_STATUS_ERROR) ||
-+	    (*read_thread_retval == TEST_STATUS_ERROR)) {
-+		test_log(DBG_LVL_ERROR, "Returned error, exiting\n");
-+		status = TEST_STATUS_ERROR;
-+		goto exit;
-+	}
-+
-+	test_log(DBG_LVL_INFO, "Thread %i of tests complete\n", i);
-+	test_ctxt.test_complete = false;
-+
-+	test_log(DBG_LVL_INFO, "All loopback threads completed\n");
-+
-+	test_ctxt.all_complete = true;
-+
-+	test_log(DBG_LVL_INFO, "Waiting for comp thread to exit\n");
-+
-+	pthread_join(compare_rx_tx_thread, (void **)(&compare_thread_retval));
-+	if (*compare_thread_retval == TEST_STATUS_ERROR) {
-+		test_log(DBG_LVL_ERROR, "Compare thread returned error\n");
-+		status = TEST_STATUS_ERROR;
-+	}
-+
-+exit:
-+	/* All threads have finished using the Tx and Rx Buffers, free them */
-+	free(test_ctxt.tx_buff);
-+	test_ctxt.tx_buff = NULL;
-+	free(test_ctxt.rx_buff);
-+	test_ctxt.rx_buff = NULL;
-+
-+	return status;
-+}
-+
-+static void *loopback_test_run(void *data)
-+{
-+	enum test_status status = TEST_STATUS_SUCCESS;
-+
-+	force_exit = false;
-+	srand(time(NULL));
-+
-+	status = loopback_test_thread_create();
-+
-+	pthread_exit(&status);
-+
-+	return NULL;
-+}
-+
-+static void loopback_test_set_defaults(void)
-+{
-+	msg_lvl = DBG_LVL_INFO;
-+
-+	memset(&test_ctxt, 0, sizeof(test_ctxt));
-+	test_ctxt.iterations = 1;
-+	test_ctxt.buff_size = 1024;
-+}
-+
-+static void usage(void)
-+{
-+	test_log(DBG_LVL_INFO, "\nUsage:\n");
-+	test_log(DBG_LVL_INFO, "-c: Device node\n");
-+	test_log(DBG_LVL_INFO, "-b: Buffer size (default: 1024 bytes)\n");
-+	test_log(DBG_LVL_INFO, "-i: Number of iterations\n");
-+	test_log(DBG_LVL_INFO, "-l: log level, default - 1\n");
-+	test_log(DBG_LVL_INFO, "log level : 0 -verbose, 1 -info , 2 -err\n");
-+}
-+
-+static int loopback_test_parse(int argc, char *argv[])
-+{
-+	int i = 0;
-+	int command = 0;
-+	int indexptr = 0;
-+	char *optstr = "-:c:b:i:l:";
-+	int *return_value = NULL;
-+	int status = -EINVAL;
-+	pthread_t run_test;
-+
-+	optind = 1;
-+
-+	static const struct option optlongstr[] = {
-+			{ "device node", required_argument, NULL, 'c'},
-+			{0, 0, 0, 0}
-+	};
-+
-+	test_log(DBG_LVL_INFO, "\nStarting MHI loopback tests\n");
-+
-+	test_log(DBG_LVL_VERBOSE, "argc: %d\n", argc);
-+	for (i = 0; i < argc; i++)
-+		test_log(DBG_LVL_VERBOSE, "argv[%i] = %s; ", i, argv[i]);
-+
-+	while ((command = getopt_long(argc, (char **)argv, optstr, optlongstr,
-+				      &indexptr)) && (command != -1)) {
-+		switch (command) {
-+		case 'c':
-+			sprintf(test_ctxt.dev_node, "%s", optarg);
-+			test_log(DBG_LVL_INFO, "%s\n", test_ctxt.dev_node);
-+			break;
-+		case 'b':
-+			test_ctxt.buff_size = atoi(optarg);
-+			test_log(DBG_LVL_INFO, "%lu\n", test_ctxt.buff_size);
-+			break;
-+		case 'i':
-+			test_ctxt.iterations = atoi(optarg);
-+			test_log(DBG_LVL_INFO, "%u\n", test_ctxt.iterations);
-+			break;
-+		case 'l':
-+			msg_lvl = atoi(optarg);
-+			test_log(DBG_LVL_INFO, "log level: %d\n", atoi(optarg));
-+			break;
-+		default:
-+			test_log(DBG_LVL_ERROR, "Invalid Option: %d\n",
-+				 command);
-+			usage();
-+			return TEST_STATUS_ERROR;
-+		}
-+	}
-+
-+	if (pthread_create(&run_test, NULL, loopback_test_run, NULL) != 0) {
-+		test_log(DBG_LVL_ERROR, "Error creating run_mhi_test\n");
-+	} else {
-+		pthread_join(run_test, (void **)(&return_value));
-+
-+		if (*return_value != TEST_STATUS_SUCCESS) {
-+			test_log(DBG_LVL_ERROR, "Test Failed\n");
-+		} else {
-+			test_log(DBG_LVL_INFO, "Test Passed\n");
-+			status = 0;
-+		}
-+	}
-+
-+	return status;
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	int ret = 0;
-+
-+	loopback_test_set_defaults();
-+	test_log(DBG_LVL_INFO, "MHI Loopback test App\n");
-+
-+	if (argc > 1)
-+		ret = loopback_test_parse(argc, argv);
-+	else
-+		usage();
-+
-+	return ret;
-+}
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+ 	}
+ 	debug_print_probes(*funcs);
+ 	return old;
+@@ -295,10 +341,12 @@ static int tracepoint_remove_func(struct tracepoint *tp,
+ 	tp_funcs = rcu_dereference_protected(tp->funcs,
+ 			lockdep_is_held(&tracepoints_mutex));
+ 	old = func_remove(&tp_funcs, func);
+-	if (IS_ERR(old)) {
+-		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
++	if (WARN_ON_ONCE(IS_ERR(old)))
+ 		return PTR_ERR(old);
+-	}
++
++	if (tp_funcs == old)
++		/* Failed allocating new tp_funcs, replaced func with stub */
++		return 0;
+ 
+ 	if (!tp_funcs) {
+ 		/* Removed last function */
