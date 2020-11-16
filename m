@@ -2,122 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3DE92B3ED8
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 09:39:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14D1F2B3EEE
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 09:42:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726837AbgKPIhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 03:37:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726357AbgKPIhR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 03:37:17 -0500
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C96C0613D1
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 00:37:17 -0800 (PST)
-Received: by mail-il1-x143.google.com with SMTP id w8so4338641ilg.12
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 00:37:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SQYTN/rZ1aDgUQSp2jlM2eDGpSqvkEfnliWtIDeccMg=;
-        b=YK2BePIDJ8dNHlG3OvyUOjJpZeUB18Ep80hyvsTOLNqRu4URyDGI6sugPUfeI+JyWu
-         SRwQevK+0Xg0DaYY+oNeKDsffA3BYHFyyDKlmU4CYgAtFvXfFPq5V1+hUS3NFFzAnbSM
-         29lrqn7x73zVsvOY9wylEu0hpvKfG7JrROyMfT7rtak80OmZoPPF3XeJgFLzAO/ZNphn
-         gIxWXiJxx54o1sUNuttrMr4haR/Aq7OD4ycZXEacrllzgnAxD3kRruC9rszOUzybz/Dx
-         LEV6EwKEa0t0JVAjIz5oJT1OGG1zps77FCfwUlcenHe17CmLoA44Za/tBXHQXr3RKpkS
-         lpmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SQYTN/rZ1aDgUQSp2jlM2eDGpSqvkEfnliWtIDeccMg=;
-        b=FDMSmC/alodik0D+oRRCskn6Eq7rgAoGxlXcsa9NduESSAfR3qybMJqiF1evfNzjQd
-         6eYWpjLconU684YVYdaST+Ywu8PKObmjhhrwxh6VOSrojth0rSNUTg0mHfzKf9/qc2+m
-         rJ0hT00iCvX4By0Os7jknk2A+6ofLnw51UaqCFKWyU0oEhFhAUcW1Bm6bCpMgOd7lGOc
-         uzU6bkvvHSEgIJwo1BIk5MBvpme+0zbDXR81TJpH2xYLA/iwfb6nP9dhStyDAc+mJPHq
-         LyvSSFxVctemBtyry3XLv9PAhNCIl+JJDaVgC8NffbHQZ6DviegBHP2ZW5Qeh+jFjbdt
-         E1zQ==
-X-Gm-Message-State: AOAM530t8iAgU9Pm39p5h2oAptKyXPUoIr8+KBtcHpuH3mwCOrBYhUyt
-        6l9oZgpusFbJ+pl6FpxalU7YZECkWgmtdJ5eFaCUiw==
-X-Google-Smtp-Source: ABdhPJxQaf7gf9ZlS72mk+2AyyCjIGHVF7y9ilDqOLl4ASFEx0jIThn480I3uqEqXlE8tfReApMkYNTtaLl2Vz7jERI=
-X-Received: by 2002:a92:6f11:: with SMTP id k17mr7809416ilc.69.1605515836891;
- Mon, 16 Nov 2020 00:37:16 -0800 (PST)
+        id S1728161AbgKPIl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 03:41:58 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:7906 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726620AbgKPIl6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 03:41:58 -0500
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CZMxd275fz6xPd;
+        Mon, 16 Nov 2020 16:41:41 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Mon, 16 Nov 2020
+ 16:41:45 +0800
+Subject: Re: [PATCH V3 net-next 06/10] net: hns3: add ethtool priv-flag for
+ DIM
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@resnulli.us>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>
+References: <1605151998-12633-1-git-send-email-tanhuazhong@huawei.com>
+ <1605151998-12633-7-git-send-email-tanhuazhong@huawei.com>
+ <20201114105423.07c2ce67@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <370fe668-d719-6380-f172-ad01edeb666e@huawei.com>
+Date:   Mon, 16 Nov 2020 16:41:45 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-References: <20201115201029.11903-1-dongli.zhang@oracle.com>
-In-Reply-To: <20201115201029.11903-1-dongli.zhang@oracle.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 16 Nov 2020 09:37:05 +0100
-Message-ID: <CANn89i+TFxPFoajAgUXTYQ2X7j8YPcPK=NY7UOEDWG4BB1sTuA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] page_frag: Recover from memory pressure
-To:     Dongli Zhang <dongli.zhang@oracle.com>
-Cc:     linux-mm <linux-mm@kvack.org>, netdev <netdev@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        aruna.ramakrishna@oracle.com, bert.barbe@oracle.com,
-        rama.nichanamatlu@oracle.com,
-        "venkat x.venkatsubra" <venkat.x.venkatsubra@oracle.com>,
-        manjunath.b.patil@oracle.com, joe.jin@oracle.com,
-        srinivas.eeda@oracle.com, stable@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Vlastimil Babka <vbabka@suse.cz>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201114105423.07c2ce67@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 15, 2020 at 9:16 PM Dongli Zhang <dongli.zhang@oracle.com> wrote:
->
-> The ethernet driver may allocate skb (and skb->data) via napi_alloc_skb().
-> This ends up to page_frag_alloc() to allocate skb->data from
-> page_frag_cache->va.
->
-> During the memory pressure, page_frag_cache->va may be allocated as
-> pfmemalloc page. As a result, the skb->pfmemalloc is always true as
-> skb->data is from page_frag_cache->va. The skb will be dropped if the
-> sock (receiver) does not have SOCK_MEMALLOC. This is expected behaviour
-> under memory pressure.
-...
-> References: https://lore.kernel.org/lkml/20201103193239.1807-1-dongli.zhang@oracle.com/
-> References: https://lore.kernel.org/linux-mm/20201105042140.5253-1-willy@infradead.org/
-> Suggested-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> Cc: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
-> Cc: Bert Barbe <bert.barbe@oracle.com>
-> Cc: Rama Nichanamatlu <rama.nichanamatlu@oracle.com>
-> Cc: Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>
-> Cc: Manjunath Patil <manjunath.b.patil@oracle.com>
-> Cc: Joe Jin <joe.jin@oracle.com>
-> Cc: SRINIVAS <srinivas.eeda@oracle.com>
-> Cc: stable@vger.kernel.org
-> Fixes: 79930f5892e ("net: do not deplete pfmemalloc reserve")
-> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
-> Acked-by: Vlastimil Babka <vbabka@suse.cz>
-> ---
-> Changed since v1:
->   - change author from Matthew to Dongli
->   - Add references to all prior discussions
->   - Add more details to commit message
-> Changed since v2:
->   - add unlikely (suggested by Eric Dumazet)
->
->  mm/page_alloc.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 23f5066bd4a5..91129ce75ed4 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -5103,6 +5103,11 @@ void *page_frag_alloc(struct page_frag_cache *nc,
->                 if (!page_ref_sub_and_test(page, nc->pagecnt_bias))
->                         goto refill;
->
-> +               if (unlikely(nc->pfmemalloc)) {
-> +                       free_the_page(page, compound_order(page));
-> +                       goto refill;
-> +               }
-> +
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-Thanks !
+On 2020/11/15 2:54, Jakub Kicinski wrote:
+> On Thu, 12 Nov 2020 11:33:14 +0800 Huazhong Tan wrote:
+>> Add a control private flag in ethtool for enable/disable
+>> DIM feature.
+>>
+>> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> 
+> Please work on a common ethtool API for the configuration instead of
+> using private flags.
+> 
+> Private flags were overused because the old IOCTL-based ethtool was
+> hard to extend, but we have a netlink API now.
+> 
+> For example here you're making a choice between device and DIM
+> implementation of IRQ coalescing. You can add a new netlink attribute
+> to the ETHTOOL_MSG_COALESCE_GET/ETHTOOL_MSG_COALESCE_SET commands which
+> controls the type of adaptive coalescing (if enabled).
+> 
+
+The device's implementation of IRQ coalescing will be removed, if DIM 
+works ok for a long time. So could this private flag for DIM be 
+uptreamed as a transition scheme? And adding a new netlink attrtibute to 
+controls the type of adaptive coalescing seems useless for other drivers.
+
+> 
+> One question I don't think we have a strong answer for is how to handle
+> this extension from ethtool_ops point of view. Should we add a new
+> "extended" op which drivers may start implementing? Or separate the
+> structure passed in to the ops from the one used as uAPI?
+> 
+> Thoughts anyone?
+> 
+> 
+> Huazhong Tan, since the DIM and EQ/CQ patches may require more
+> infrastructure work feel free to repost the first 4 patches separately,
+> I can apply those as is.
+> 
+
+ok, thanks.
+
+> .
+> 
+
