@@ -2,126 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D1CF2B4466
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:08:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6AD72B4463
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:06:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728554AbgKPNHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 08:07:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:45413 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727212AbgKPNHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 08:07:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605532030;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Hp7/XGrMjjbxTryFPRwkhJ9mINX2i7AhQuO6lk+85Ik=;
-        b=DCMa5AnSMLUNBJ9FJo41TzXUS3IOHeEtmq4MZsRcauDQDJLoO39RTdT8tx27LCO0x4C72Q
-        sSWCrMacCuksnPRc2iFK79BI33rVOOvHlxhxdcrs/eBT90JA1qmz4LCwNwVN3IdKFXFDc7
-        rt00zMQfUQyJd11U3Ho5baViOq4Mw9Y=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-102-DPOOzGJXNCimYk12iC0D7Q-1; Mon, 16 Nov 2020 08:07:08 -0500
-X-MC-Unique: DPOOzGJXNCimYk12iC0D7Q-1
-Received: by mail-wr1-f72.google.com with SMTP id h13so5672220wrr.7
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 05:07:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Hp7/XGrMjjbxTryFPRwkhJ9mINX2i7AhQuO6lk+85Ik=;
-        b=tTLJ0lprAE3f3CVvazgqocnzGj2nIWfcvsyGxC1AGBCH8drVYrmeDRjFMZry8zAKzc
-         1ENsIVoKrAI8/VkKH4ORSWJg/KH9+arV9PgiOwLYhmssPeSOE0yfxh8SK7NwGiS9mwNW
-         vJw/O5CY3soSEKtRwviwzkeY9Xlu77ldTyxyNwh3Q5iH1TPJ7pUFgzyAe6iL3TC1zrpp
-         WU9zk59tUvPls2US+6nAub/7lk3wjJxkNThEn9hlHWbetqZXEa6/H/zrFN4Qwbov/Nqb
-         HoHH7U3pFqsFoHDfe0TtUT3+gUGCFarZC60+m2pLHfujd8PLUg5uAsdRxBNJxphGJ1Xz
-         UL/g==
-X-Gm-Message-State: AOAM530Yvl2VewCwD1mUtj2u6V76nbl5dJalyVpY23UtIA/lJv1p28Jj
-        AnC269iqKeXlY3sqdR3zQwEq5D/8vinX8BZK0YgbnQRFA5Thxk1bgKz06dWJj3SFzZbSBGIt7ih
-        KhN3DC8OmKeeTR8eQnHIOiDkBootUO9iJ
-X-Received: by 2002:adf:f2c7:: with SMTP id d7mr19572632wrp.142.1605532026810;
-        Mon, 16 Nov 2020 05:07:06 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyE0w188WkdB7Bp/Nkxx892OynTXXfN5PEDQwR4CfhprUKR2rGevw9tw4aHr6ZggEnGX56or9k+Codlm4pIusk=
-X-Received: by 2002:adf:f2c7:: with SMTP id d7mr19572601wrp.142.1605532026600;
- Mon, 16 Nov 2020 05:07:06 -0800 (PST)
+        id S1728550AbgKPNFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 08:05:37 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:7921 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727212AbgKPNFh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 08:05:37 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CZTnr59Mdz6v92;
+        Mon, 16 Nov 2020 21:05:20 +0800 (CST)
+Received: from compute.localdomain (10.175.112.70) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Mon, 16 Nov 2020 21:05:30 +0800
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+To:     <aelior@marvell.com>, <GR-everest-linux-l2@marvell.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <Michal.Kalderon@cavium.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] qed: fix error return code in qed_iwarp_ll2_start()
+Date:   Mon, 16 Nov 2020 21:07:13 +0800
+Message-ID: <1605532033-27373-1-git-send-email-zhangchangzhong@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-References: <20201109072930.14048-1-nusiddiq@redhat.com> <20201109213557.GE23619@breakpoint.cc>
- <CAH=CPzqTy3yxgBEJ9cVpp3pmGN9u4OsL9GrA+1w6rVum7B8zJw@mail.gmail.com>
- <20201110122542.GG23619@breakpoint.cc> <CAH=CPzqRKTfQW05UxFQwVpvMSOZ7wNgLeiP3txY8T45jdx_E5Q@mail.gmail.com>
- <20201110131141.GH23619@breakpoint.cc>
-In-Reply-To: <20201110131141.GH23619@breakpoint.cc>
-From:   Numan Siddique <nusiddiq@redhat.com>
-Date:   Mon, 16 Nov 2020 18:36:52 +0530
-Message-ID: <CAH=CPzrBY3_nt7OmhFk2D+7ajZvxOFcE6tZRSd_hYmhpDTcRZA@mail.gmail.com>
-Subject: Re: [net-next] netfiler: conntrack: Add the option to set ct tcp flag
- - BE_LIBERAL per-ct basis.
-To:     Florian Westphal <fw@strlen.de>
-Cc:     ovs dev <dev@openvswitch.org>, netdev <netdev@vger.kernel.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 10, 2020 at 6:41 PM Florian Westphal <fw@strlen.de> wrote:
->
-> Numan Siddique <nusiddiq@redhat.com> wrote:
-> > On Tue, Nov 10, 2020 at 5:55 PM Florian Westphal <fw@strlen.de> wrote:
-> > >
-> > > Numan Siddique <nusiddiq@redhat.com> wrote:
-> > > > On Tue, Nov 10, 2020 at 3:06 AM Florian Westphal <fw@strlen.de> wrote:
-> > > > Thanks for the comments. I actually tried this approach first, but it
-> > > > doesn't seem to work.
-> > > > I noticed that for the committed connections, the ct tcp flag -
-> > > > IP_CT_TCP_FLAG_BE_LIBERAL is
-> > > > not set when nf_conntrack_in() calls resolve_normal_ct().
-> > >
-> > > Yes, it won't be set during nf_conntrack_in, thats why I suggested
-> > > to do it before confirming the connection.
-> >
-> > Sorry for the confusion. What I mean is - I tested  your suggestion - i.e called
-> > nf_ct_set_tcp_be_liberal()  before calling nf_conntrack_confirm().
-> >
-> >  Once the connection is established, for subsequent packets, openvswitch
-> >  calls nf_conntrack_in() [1] to see if the packet is part of the
-> > existing connection or not (i.e ct.new or ct.est )
-> > and if the packet happens to be out-of-window then skb->_nfct is set
-> > to NULL. And the tcp
-> > be flags set during confirmation are not reflected when
-> > nf_conntrack_in() calls resolve_normal_ct().
->
-> Can you debug where this happens?  This looks very very wrong.
-> resolve_normal_ct() has no business to check any of those flags
-> (and I don't see where it uses them, it should only deal with the
->  tuples).
->
-> The flags come into play when nf_conntrack_handle_packet() gets called
-> after resolve_normal_ct has found an entry, since that will end up
-> calling the tcp conntrack part.
->
-> The entry found/returned by resolve_normal_ct should be the same
-> nf_conn entry that was confirmed earlier, i.e. it should be in "liberal"
-> mode.
+Fix to return a negative error code from the error handling
+case instead of 0, as done elsewhere in this function.
 
-I debugged a bit. Calling nf_ct_set_tcp_be_liberal() in ct_commit
-doesn't work because
-  - the first SYN packet during connection establishment is committed
-to the contract.
-  - but tcp_in_window() calls tcp_options() which clears the tcp ct
-flags for the SYN and SYN-ACK packets.
-    And hence the flags get cleared.
+Fixes: 469981b17a4f ("qed: Add unaligned and packed packet processing")
+Fixes: fcb39f6c10b2 ("qed: Add mpa buffer descriptors for storing and processing mpa fpdus")
+Fixes: 1e28eaad07ea ("qed: Add iWARP support for fpdu spanned over more than two tcp packets")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-So I think it should be enough if openvswitch calls
-nf_ct_set_tcp_be_liberal() once the connection is established.
-
-
-I posted v2. Request to take a look.
-
-Thanks
-Numan
-
->
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+index 512cbef..a998611 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+@@ -2754,14 +2754,18 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
+ 	iwarp_info->partial_fpdus = kcalloc((u16)p_hwfn->p_rdma_info->num_qps,
+ 					    sizeof(*iwarp_info->partial_fpdus),
+ 					    GFP_KERNEL);
+-	if (!iwarp_info->partial_fpdus)
++	if (!iwarp_info->partial_fpdus) {
++		rc = -ENOMEM;
+ 		goto err;
++	}
+ 
+ 	iwarp_info->max_num_partial_fpdus = (u16)p_hwfn->p_rdma_info->num_qps;
+ 
+ 	iwarp_info->mpa_intermediate_buf = kzalloc(buff_size, GFP_KERNEL);
+-	if (!iwarp_info->mpa_intermediate_buf)
++	if (!iwarp_info->mpa_intermediate_buf) {
++		rc = -ENOMEM;
+ 		goto err;
++	}
+ 
+ 	/* The mpa_bufs array serves for pending RX packets received on the
+ 	 * mpa ll2 that don't have place on the tx ring and require later
+@@ -2771,8 +2775,10 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
+ 	iwarp_info->mpa_bufs = kcalloc(data.input.rx_num_desc,
+ 				       sizeof(*iwarp_info->mpa_bufs),
+ 				       GFP_KERNEL);
+-	if (!iwarp_info->mpa_bufs)
++	if (!iwarp_info->mpa_bufs) {
++		rc = -ENOMEM;
+ 		goto err;
++	}
+ 
+ 	INIT_LIST_HEAD(&iwarp_info->mpa_buf_pending_list);
+ 	INIT_LIST_HEAD(&iwarp_info->mpa_buf_list);
+-- 
+2.9.5
 
