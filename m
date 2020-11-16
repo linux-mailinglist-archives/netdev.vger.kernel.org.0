@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4BA12B511B
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 20:30:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B998E2B5112
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 20:28:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729866AbgKPT2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 14:28:05 -0500
-Received: from pbmsgap02.intersil.com ([192.157.179.202]:35826 "EHLO
+        id S1728045AbgKPT16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 14:27:58 -0500
+Received: from pbmsgap02.intersil.com ([192.157.179.202]:35810 "EHLO
         pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727526AbgKPT2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 14:28:04 -0500
+        with ESMTP id S1727526AbgKPT15 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 14:27:57 -0500
 Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
-        by pbmsgap02.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0AGJNLIH010641;
-        Mon, 16 Nov 2020 14:28:01 -0500
-Received: from pbmxdp02.intersil.corp (pbmxdp02.pb.intersil.com [132.158.200.223])
-        by pbmsgap02.intersil.com with ESMTP id 34ta9m0y5r-1
+        by pbmsgap02.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0AGJNLIG010641;
+        Mon, 16 Nov 2020 14:27:54 -0500
+Received: from pbmxdp01.intersil.corp (pbmxdp01.pb.intersil.com [132.158.200.222])
+        by pbmsgap02.intersil.com with ESMTP id 34ta9m0y5g-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 16 Nov 2020 14:28:01 -0500
-Received: from pbmxdp01.intersil.corp (132.158.200.222) by
- pbmxdp02.intersil.corp (132.158.200.223) with Microsoft SMTP Server
+        Mon, 16 Nov 2020 14:27:54 -0500
+Received: from pbmxdp03.intersil.corp (132.158.200.224) by
+ pbmxdp01.intersil.corp (132.158.200.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.1979.3; Mon, 16 Nov 2020 14:27:59 -0500
-Received: from localhost (132.158.202.109) by pbmxdp01.intersil.corp
- (132.158.200.222) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Mon, 16 Nov 2020 14:27:59 -0500
+ 15.1.1979.3; Mon, 16 Nov 2020 14:27:52 -0500
+Received: from localhost (132.158.202.109) by pbmxdp03.intersil.corp
+ (132.158.200.224) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Mon, 16 Nov 2020 14:27:52 -0500
 From:   <min.li.xe@renesas.com>
 To:     <richardcochran@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Min Li <min.li.xe@renesas.com>
-Subject: [PATCH net-next 4/5] ptp: clockmatrix: Fix non-zero phase_adj is lost after snap
-Date:   Mon, 16 Nov 2020 14:27:29 -0500
-Message-ID: <1605554850-14437-4-git-send-email-min.li.xe@renesas.com>
+Subject: [PATCH net-next 5/5] ptp: clockmatrix: deprecate firmware older than 4.8.7
+Date:   Mon, 16 Nov 2020 14:27:30 -0500
+Message-ID: <1605554850-14437-5-git-send-email-min.li.xe@renesas.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1605554850-14437-1-git-send-email-min.li.xe@renesas.com>
 References: <1605554850-14437-1-git-send-email-min.li.xe@renesas.com>
@@ -51,358 +51,269 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Min Li <min.li.xe@renesas.com>
 
-Fix non-zero phase_adj is lost after snap. Use ktime_sub
-to do ktime_t subtraction.
+Add deprecated flag to indicate < v4.8.7.
+Fix idtcm_enable_tod() call correct settime().
 
 Signed-off-by: Min Li <min.li.xe@renesas.com>
 ---
- drivers/ptp/ptp_clockmatrix.c | 210 +++++++++++++++++++++++++++++++++++++-----
- drivers/ptp/ptp_clockmatrix.h |   5 +-
- 2 files changed, 190 insertions(+), 25 deletions(-)
+ drivers/ptp/ptp_clockmatrix.c | 69 ++++++++++++++++++++++++-------------------
+ drivers/ptp/ptp_clockmatrix.h | 11 +++----
+ 2 files changed, 45 insertions(+), 35 deletions(-)
 
 diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index 9af6335..9b3ba92 100644
+index 9b3ba92..c71a570 100644
 --- a/drivers/ptp/ptp_clockmatrix.c
 +++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -716,8 +716,9 @@ static int _idtcm_set_dpll_hw_tod(struct idtcm_channel *channel,
- 
- 		if (idtcm->calculate_overhead_flag) {
- 			/* Assumption: I2C @ 400KHz */
--			total_overhead_ns =  ktime_to_ns(ktime_get_raw()
--							 - idtcm->start_time)
-+			ktime_t diff = ktime_sub(ktime_get_raw(),
-+						 idtcm->start_time);
-+			total_overhead_ns =  ktime_to_ns(diff)
- 					     + idtcm->tod_write_overhead_ns
- 					     + SETTIME_CORRECTION;
- 
-@@ -800,12 +801,154 @@ static int _idtcm_set_dpll_scsr_tod(struct idtcm_channel *channel,
- 	return 0;
+@@ -939,8 +939,8 @@ static void restore_output_phase_adj(struct idtcm_channel *channel)
+ 	}
  }
  
-+static int get_output_base_addr(u8 outn)
-+{
-+	int base;
-+
-+	switch (outn) {
-+	case 0:
-+		base = OUTPUT_0;
-+		break;
-+	case 1:
-+		base = OUTPUT_1;
-+		break;
-+	case 2:
-+		base = OUTPUT_2;
-+		break;
-+	case 3:
-+		base = OUTPUT_3;
-+		break;
-+	case 4:
-+		base = OUTPUT_4;
-+		break;
-+	case 5:
-+		base = OUTPUT_5;
-+		break;
-+	case 6:
-+		base = OUTPUT_6;
-+		break;
-+	case 7:
-+		base = OUTPUT_7;
-+		break;
-+	case 8:
-+		base = OUTPUT_8;
-+		break;
-+	case 9:
-+		base = OUTPUT_9;
-+		break;
-+	case 10:
-+		base = OUTPUT_10;
-+		break;
-+	case 11:
-+		base = OUTPUT_11;
-+		break;
-+	default:
-+		base = -EINVAL;
-+	}
-+
-+	return base;
-+}
-+
-+static void save_and_clear_output_phase_adj(struct idtcm_channel *channel)
-+{
-+	u16 output_mask = channel->output_mask;
-+	struct idtcm *idtcm = channel->idtcm;
-+	int delay_needed = 0;
-+	u8 zero[4] = {0};
-+	u8 outn = 0;
-+	int base;
-+
-+	while (output_mask) {
-+
-+		if (output_mask & 1) {
-+
-+			base = get_output_base_addr(outn);
-+
-+			if (!(base > 0)) {
-+				dev_err(&idtcm->client->dev,
-+					"%s - Unsupported out%d",
-+					__func__, outn);
-+				return;
-+			}
-+
-+			/* Save output_phase_adj for outn */
-+			idtcm_read(idtcm, (u16)base, OUT_PHASE_ADJ,
-+				   &channel->output_phase_adj[outn][0],
-+				   sizeof(channel->output_phase_adj[outn]));
-+
-+			if (channel->output_phase_adj[outn][0] |
-+			    channel->output_phase_adj[outn][1] |
-+			    channel->output_phase_adj[outn][2] |
-+			    channel->output_phase_adj[outn][3]) {
-+				delay_needed = 1;
-+
-+				idtcm_write(idtcm, base, OUT_PHASE_ADJ,
-+					    &zero[0], sizeof(zero));
-+			}
-+		}
-+
-+		output_mask = output_mask >> 1;
-+		outn += 1;
-+	}
-+
-+	/* Ensure output phase adjust has settled */
-+	if (delay_needed)
-+		msleep(5000);
-+}
-+
-+
-+static void restore_output_phase_adj(struct idtcm_channel *channel)
-+{
-+	u16 output_mask = channel->output_mask;
-+	struct idtcm *idtcm = channel->idtcm;
-+	u8 wait_once = 0;
-+	u8 outn = 0;
-+	int base;
-+
-+	while (output_mask) {
-+
-+		if ((output_mask & 1) &&
-+		    (channel->output_phase_adj[outn][0] |
-+		     channel->output_phase_adj[outn][1] |
-+		     channel->output_phase_adj[outn][2] |
-+		     channel->output_phase_adj[outn][3])) {
-+
-+			if (!wait_once) {
-+				/* Ensure idtcm_sync_pps_output() is done */
-+				msleep(5000);
-+				wait_once = 1;
-+			}
-+
-+			base = get_output_base_addr(outn);
-+
-+			if (!(base > 0)) {
-+				dev_err(&idtcm->client->dev,
-+					"%s - Unsupported out%d",
-+					__func__, outn);
-+				return;
-+			}
-+
-+			/* Restore non-zero output_phase_adj */
-+			idtcm_write(idtcm, base, OUT_PHASE_ADJ,
-+				    &channel->output_phase_adj[outn][0],
-+				    sizeof(channel->output_phase_adj[outn]));
-+		}
-+
-+		output_mask = output_mask >> 1;
-+		outn += 1;
-+	}
-+}
-+
- static int _idtcm_settime(struct idtcm_channel *channel,
- 			  struct timespec64 const *ts)
+-static int _idtcm_settime(struct idtcm_channel *channel,
+-			  struct timespec64 const *ts)
++static int _idtcm_settime_deprecated(struct idtcm_channel *channel,
++				     struct timespec64 const *ts)
  {
  	struct idtcm *idtcm = channel->idtcm;
-+	int retval;
+ 	int retval;
+@@ -965,9 +965,9 @@ static int _idtcm_settime(struct idtcm_channel *channel,
+ 	return retval;
+ }
+ 
+-static int _idtcm_settime_v487(struct idtcm_channel *channel,
+-			       struct timespec64 const *ts,
+-			       enum scsr_tod_write_type_sel wr_type)
++static int _idtcm_settime(struct idtcm_channel *channel,
++			  struct timespec64 const *ts,
++			  enum scsr_tod_write_type_sel wr_type)
+ {
+ 	return _idtcm_set_dpll_scsr_tod(channel, ts,
+ 					SCSR_TOD_WR_TRIG_SEL_IMMEDIATE,
+@@ -1109,14 +1109,14 @@ static int set_tod_write_overhead(struct idtcm_channel *channel)
+ 	return err;
+ }
+ 
+-static int _idtcm_adjtime(struct idtcm_channel *channel, s64 delta)
++static int _idtcm_adjtime_deprecated(struct idtcm_channel *channel, s64 delta)
+ {
  	int err;
+ 	struct idtcm *idtcm = channel->idtcm;
+ 	struct timespec64 ts;
+ 	s64 now;
  
-+	/* Save and clear out_phase_adj */
-+	save_and_clear_output_phase_adj(channel);
-+
- 	err = _idtcm_set_dpll_hw_tod(channel, ts, HW_TOD_WR_TRIG_SEL_MSB);
+-	if (abs(delta) < PHASE_PULL_IN_THRESHOLD_NS) {
++	if (abs(delta) < PHASE_PULL_IN_THRESHOLD_NS_DEPRECATED) {
+ 		err = idtcm_do_phase_pull_in(channel, delta, 0);
+ 	} else {
+ 		idtcm->calculate_overhead_flag = 1;
+@@ -1136,7 +1136,7 @@ static int _idtcm_adjtime(struct idtcm_channel *channel, s64 delta)
  
- 	if (err) {
-@@ -814,7 +957,12 @@ static int _idtcm_settime(struct idtcm_channel *channel,
- 		return err;
+ 		ts = ns_to_timespec64(now);
+ 
+-		err = _idtcm_settime(channel, &ts);
++		err = _idtcm_settime_deprecated(channel, &ts);
  	}
  
--	return idtcm_sync_pps_output(channel);
-+	retval = idtcm_sync_pps_output(channel);
-+
-+	/* Restore out_phase_adj */
-+	restore_output_phase_adj(channel);
-+
-+	return retval;
+ 	return err;
+@@ -1640,8 +1640,8 @@ static int idtcm_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+ 	return err;
  }
  
- static int _idtcm_settime_v487(struct idtcm_channel *channel,
-@@ -924,6 +1072,7 @@ static int set_tod_write_overhead(struct idtcm_channel *channel)
- 
- 	ktime_t start;
- 	ktime_t stop;
-+	ktime_t diff;
- 
- 	char buf[TOD_BYTE_COUNT] = {0};
- 
-@@ -943,7 +1092,9 @@ static int set_tod_write_overhead(struct idtcm_channel *channel)
- 
- 		stop = ktime_get_raw();
- 
--		current_ns = ktime_to_ns(stop - start);
-+		diff = ktime_sub(stop, start);
-+
-+		current_ns = ktime_to_ns(diff);
- 
- 		if (i == 0) {
- 			lowest_ns = current_ns;
-@@ -1263,11 +1414,19 @@ static int idtcm_output_enable(struct idtcm_channel *channel,
- 			       bool enable, unsigned int outn)
+-static int idtcm_settime(struct ptp_clock_info *ptp,
+-			 const struct timespec64 *ts)
++static int idtcm_settime_deprecated(struct ptp_clock_info *ptp,
++				    const struct timespec64 *ts)
  {
- 	struct idtcm *idtcm = channel->idtcm;
-+	int base;
- 	int err;
- 	u8 val;
+ 	struct idtcm_channel *channel =
+ 		container_of(ptp, struct idtcm_channel, caps);
+@@ -1650,7 +1650,7 @@ static int idtcm_settime(struct ptp_clock_info *ptp,
  
--	err = idtcm_read(idtcm, OUTPUT_MODULE_FROM_INDEX(outn),
--			 OUT_CTRL_1, &val, sizeof(val));
-+	base = get_output_base_addr(outn);
-+
-+	if (!(base > 0)) {
-+		dev_err(&idtcm->client->dev,
-+			"%s - Unsupported out%d", __func__, outn);
-+		return base;
-+	}
-+
-+	err = idtcm_read(idtcm, (u16)base, OUT_CTRL_1, &val, sizeof(val));
+ 	mutex_lock(&idtcm->reg_lock);
+ 
+-	err = _idtcm_settime(channel, ts);
++	err = _idtcm_settime_deprecated(channel, ts);
  
  	if (err)
- 		return err;
-@@ -1277,8 +1436,7 @@ static int idtcm_output_enable(struct idtcm_channel *channel,
- 	else
- 		val &= ~SQUELCH_DISABLE;
- 
--	return idtcm_write(idtcm, OUTPUT_MODULE_FROM_INDEX(outn),
--			   OUT_CTRL_1, &val, sizeof(val));
-+	return idtcm_write(idtcm, (u16)base, OUT_CTRL_1, &val, sizeof(val));
- }
- 
- static int idtcm_output_mask_enable(struct idtcm_channel *channel,
-@@ -1321,6 +1479,23 @@ static int idtcm_perout_enable(struct idtcm_channel *channel,
- 	return idtcm_output_enable(channel, enable, perout->index);
- }
- 
-+static int idtcm_get_pll_mode(struct idtcm_channel *channel,
-+			      enum pll_mode *pll_mode)
-+{
-+	struct idtcm *idtcm = channel->idtcm;
-+	int err;
-+	u8 dpll_mode;
-+
-+	err = idtcm_read(idtcm, channel->dpll_n, DPLL_MODE,
-+			 &dpll_mode, sizeof(dpll_mode));
-+	if (err)
-+		return err;
-+
-+	*pll_mode = (dpll_mode >> PLL_MODE_SHIFT) & PLL_MODE_MASK;
-+
-+	return 0;
-+}
-+
- static int idtcm_set_pll_mode(struct idtcm_channel *channel,
- 			      enum pll_mode pll_mode)
- {
-@@ -1386,7 +1561,7 @@ static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
- 	else if (offset_ps < -MAX_ABS_WRITE_PHASE_PICOSECONDS)
- 		offset_ps = -MAX_ABS_WRITE_PHASE_PICOSECONDS;
- 
--	phase_50ps = DIV_ROUND_CLOSEST(div64_s64(offset_ps, 50), 1);
-+	phase_50ps = div_s64(offset_ps, 50);
- 
- 	for (i = 0; i < 4; i++) {
- 		buf[i] = phase_50ps & 0xff;
-@@ -1403,7 +1578,6 @@ static int _idtcm_adjfine(struct idtcm_channel *channel, long scaled_ppm)
- {
- 	struct idtcm *idtcm = channel->idtcm;
- 	u8 i;
--	bool neg_adj = 0;
- 	int err;
- 	u8 buf[6] = {0};
- 	s64 fcw;
-@@ -1427,18 +1601,11 @@ static int _idtcm_adjfine(struct idtcm_channel *channel, long scaled_ppm)
- 	 * FCW = -------------
- 	 *         111 * 2^4
- 	 */
--	if (scaled_ppm < 0) {
--		neg_adj = 1;
--		scaled_ppm = -scaled_ppm;
--	}
- 
- 	/* 2 ^ -53 = 1.1102230246251565404236316680908e-16 */
- 	fcw = scaled_ppm * 244140625ULL;
- 
--	fcw = div_u64(fcw, 1776);
--
--	if (neg_adj)
--		fcw = -fcw;
-+	fcw = div_s64(fcw, 1776);
- 
- 	for (i = 0; i < 6; i++) {
- 		buf[i] = fcw & 0xff;
-@@ -2105,12 +2272,11 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
- 		}
- 	}
- 
--	err = idtcm_set_pll_mode(channel, PLL_MODE_WRITE_FREQUENCY);
-+	/* Sync pll mode with hardware */
-+	err = idtcm_get_pll_mode(channel, &channel->pll_mode);
- 	if (err) {
  		dev_err(&idtcm->client->dev,
--			"Failed at line %d in func %s!\n",
--			__LINE__,
--			__func__);
-+			"Error: %s - Unable to read pll mode\n", __func__);
+@@ -1663,7 +1663,7 @@ static int idtcm_settime(struct ptp_clock_info *ptp,
+ 	return err;
+ }
+ 
+-static int idtcm_settime_v487(struct ptp_clock_info *ptp,
++static int idtcm_settime(struct ptp_clock_info *ptp,
+ 			 const struct timespec64 *ts)
+ {
+ 	struct idtcm_channel *channel =
+@@ -1673,7 +1673,7 @@ static int idtcm_settime_v487(struct ptp_clock_info *ptp,
+ 
+ 	mutex_lock(&idtcm->reg_lock);
+ 
+-	err = _idtcm_settime_v487(channel, ts, SCSR_TOD_WR_TYPE_SEL_ABSOLUTE);
++	err = _idtcm_settime(channel, ts, SCSR_TOD_WR_TYPE_SEL_ABSOLUTE);
+ 
+ 	if (err)
+ 		dev_err(&idtcm->client->dev,
+@@ -1686,7 +1686,7 @@ static int idtcm_settime_v487(struct ptp_clock_info *ptp,
+ 	return err;
+ }
+ 
+-static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
++static int idtcm_adjtime_deprecated(struct ptp_clock_info *ptp, s64 delta)
+ {
+ 	struct idtcm_channel *channel =
+ 		container_of(ptp, struct idtcm_channel, caps);
+@@ -1695,7 +1695,7 @@ static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 
+ 	mutex_lock(&idtcm->reg_lock);
+ 
+-	err = _idtcm_adjtime(channel, delta);
++	err = _idtcm_adjtime_deprecated(channel, delta);
+ 
+ 	if (err)
+ 		dev_err(&idtcm->client->dev,
+@@ -1708,7 +1708,7 @@ static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	return err;
+ }
+ 
+-static int idtcm_adjtime_v487(struct ptp_clock_info *ptp, s64 delta)
++static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ {
+ 	struct idtcm_channel *channel =
+ 		container_of(ptp, struct idtcm_channel, caps);
+@@ -1717,7 +1717,7 @@ static int idtcm_adjtime_v487(struct ptp_clock_info *ptp, s64 delta)
+ 	enum scsr_tod_write_type_sel type;
+ 	int err;
+ 
+-	if (abs(delta) < PHASE_PULL_IN_THRESHOLD_NS_V487) {
++	if (abs(delta) < PHASE_PULL_IN_THRESHOLD_NS) {
+ 		err = idtcm_do_phase_pull_in(channel, delta, 0);
+ 		if (err)
+ 			dev_err(&idtcm->client->dev,
+@@ -1737,7 +1737,7 @@ static int idtcm_adjtime_v487(struct ptp_clock_info *ptp, s64 delta)
+ 
+ 	mutex_lock(&idtcm->reg_lock);
+ 
+-	err = _idtcm_settime_v487(channel, &ts, type);
++	err = _idtcm_settime(channel, &ts, type);
+ 
+ 	if (err)
+ 		dev_err(&idtcm->client->dev,
+@@ -2081,10 +2081,14 @@ static int idtcm_enable_tod(struct idtcm_channel *channel)
+ 	if (err)
  		return err;
- 	}
+ 
+-	return _idtcm_settime(channel, &ts);
++	if (idtcm->deprecated)
++		return _idtcm_settime_deprecated(channel, &ts);
++	else
++		return _idtcm_settime(channel, &ts,
++				      SCSR_TOD_WR_TYPE_SEL_ABSOLUTE);
+ }
+ 
+-static void idtcm_display_version_info(struct idtcm *idtcm)
++static void idtcm_set_version_info(struct idtcm *idtcm)
+ {
+ 	u8 major;
+ 	u8 minor;
+@@ -2106,31 +2110,36 @@ static void idtcm_display_version_info(struct idtcm *idtcm)
+ 	snprintf(idtcm->version, sizeof(idtcm->version), "%u.%u.%u",
+ 		 major, minor, hotfix);
+ 
++	if (idtcm_strverscmp(idtcm->version, "4.8.7") >= 0)
++		idtcm->deprecated = 0;
++	else
++		idtcm->deprecated = 1;
++
+ 	dev_info(&idtcm->client->dev, fmt, major, minor, hotfix,
+ 		 product_id, hw_rev_id, config_select);
+ }
+ 
+-static const struct ptp_clock_info idtcm_caps_v487 = {
++static const struct ptp_clock_info idtcm_caps = {
+ 	.owner		= THIS_MODULE,
+ 	.max_adj	= 244000,
+ 	.n_per_out	= 12,
+ 	.adjphase	= &idtcm_adjphase,
+ 	.adjfine	= &idtcm_adjfine,
+-	.adjtime	= &idtcm_adjtime_v487,
++	.adjtime	= &idtcm_adjtime,
+ 	.gettime64	= &idtcm_gettime,
+-	.settime64	= &idtcm_settime_v487,
++	.settime64	= &idtcm_settime,
+ 	.enable		= &idtcm_enable,
+ };
+ 
+-static const struct ptp_clock_info idtcm_caps = {
++static const struct ptp_clock_info idtcm_caps_deprecated = {
+ 	.owner		= THIS_MODULE,
+ 	.max_adj	= 244000,
+ 	.n_per_out	= 12,
+ 	.adjphase	= &idtcm_adjphase,
+ 	.adjfine	= &idtcm_adjfine,
+-	.adjtime	= &idtcm_adjtime,
++	.adjtime	= &idtcm_adjtime_deprecated,
+ 	.gettime64	= &idtcm_gettime,
+-	.settime64	= &idtcm_settime,
++	.settime64	= &idtcm_settime_deprecated,
+ 	.enable		= &idtcm_enable,
+ };
+ 
+@@ -2253,15 +2262,15 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
+ 
+ 	channel->idtcm = idtcm;
+ 
+-	if (idtcm_strverscmp(idtcm->version, "4.8.7") >= 0)
+-		channel->caps = idtcm_caps_v487;
++	if (idtcm->deprecated)
++		channel->caps = idtcm_caps_deprecated;
+ 	else
+ 		channel->caps = idtcm_caps;
+ 
+ 	snprintf(channel->caps.name, sizeof(channel->caps.name),
+ 		 "IDT CM TOD%u", index);
+ 
+-	if (idtcm_strverscmp(idtcm->version, "4.8.7") >= 0) {
++	if (!idtcm->deprecated) {
+ 		err = idtcm_enable_tod_sync(channel);
+ 		if (err) {
+ 			dev_err(&idtcm->client->dev,
+@@ -2360,7 +2369,7 @@ static int idtcm_probe(struct i2c_client *client,
+ 	mutex_init(&idtcm->reg_lock);
+ 	mutex_lock(&idtcm->reg_lock);
+ 
+-	idtcm_display_version_info(idtcm);
++	idtcm_set_version_info(idtcm);
+ 
+ 	err = idtcm_load_firmware(idtcm, &client->dev);
  
 diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
-index dd3436e..3790dfa 100644
+index 3790dfa..645de2c 100644
 --- a/drivers/ptp/ptp_clockmatrix.h
 +++ b/drivers/ptp/ptp_clockmatrix.h
-@@ -15,6 +15,7 @@
- #define FW_FILENAME	"idtcm.bin"
- #define MAX_TOD		(4)
- #define MAX_PLL		(8)
-+#define MAX_OUTPUT	(12)
+@@ -45,11 +45,11 @@
+ #define DEFAULT_TOD2_PTP_PLL		(2)
+ #define DEFAULT_TOD3_PTP_PLL		(3)
  
- #define MAX_ABS_WRITE_PHASE_PICOSECONDS (107374182350LL)
- 
-@@ -49,9 +50,6 @@
- #define PHASE_PULL_IN_THRESHOLD_NS_V487	(15000)
- #define TOD_WRITE_OVERHEAD_COUNT_MAX	(2)
- #define TOD_BYTE_COUNT			(11)
--#define WR_PHASE_SETUP_MS		(5000)
--
--#define OUTPUT_MODULE_FROM_INDEX(index)	(OUTPUT_0 + (index) * 0x10)
+-#define POST_SM_RESET_DELAY_MS		(3000)
+-#define PHASE_PULL_IN_THRESHOLD_NS	(150000)
+-#define PHASE_PULL_IN_THRESHOLD_NS_V487	(15000)
+-#define TOD_WRITE_OVERHEAD_COUNT_MAX	(2)
+-#define TOD_BYTE_COUNT			(11)
++#define POST_SM_RESET_DELAY_MS			(3000)
++#define PHASE_PULL_IN_THRESHOLD_NS_DEPRECATED	(150000)
++#define PHASE_PULL_IN_THRESHOLD_NS		(15000)
++#define TOD_WRITE_OVERHEAD_COUNT_MAX		(2)
++#define TOD_BYTE_COUNT				(11)
  
  #define PEROUT_ENABLE_OUTPUT_MASK	(0xdeadbeef)
  
-@@ -125,6 +123,7 @@ struct idtcm_channel {
- 	enum pll_mode		pll_mode;
- 	u8			pll;
- 	u16			output_mask;
-+	u8			output_phase_adj[MAX_OUTPUT][4];
- };
+@@ -132,6 +132,7 @@ struct idtcm {
+ 	u8			page_offset;
+ 	u8			tod_mask;
+ 	char			version[16];
++	u8			deprecated;
  
- struct idtcm {
+ 	/* Overhead calculation for adjtime */
+ 	u8			calculate_overhead_flag;
 -- 
 2.7.4
 
