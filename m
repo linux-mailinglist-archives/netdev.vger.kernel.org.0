@@ -2,139 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D1B02B51B8
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 20:58:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE27F2B513F
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 20:35:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730864AbgKPT6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 14:58:13 -0500
-Received: from pbmsgap01.intersil.com ([192.157.179.201]:36926 "EHLO
-        pbmsgap01.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727393AbgKPT6N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 14:58:13 -0500
-X-Greylist: delayed 1816 seconds by postgrey-1.27 at vger.kernel.org; Mon, 16 Nov 2020 14:58:12 EST
-Received: from pps.filterd (pbmsgap01.intersil.com [127.0.0.1])
-        by pbmsgap01.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0AGJN5Ds022716;
-        Mon, 16 Nov 2020 14:27:57 -0500
-Received: from pbmxdp03.intersil.corp (pbmxdp03.pb.intersil.com [132.158.200.224])
-        by pbmsgap01.intersil.com with ESMTP id 34tbn58xcn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 16 Nov 2020 14:27:57 -0500
-Received: from pbmxdp01.intersil.corp (132.158.200.222) by
- pbmxdp03.intersil.corp (132.158.200.224) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.1979.3; Mon, 16 Nov 2020 14:27:56 -0500
-Received: from localhost (132.158.202.109) by pbmxdp01.intersil.corp
- (132.158.200.222) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Mon, 16 Nov 2020 14:27:55 -0500
-From:   <min.li.xe@renesas.com>
-To:     <richardcochran@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Min Li <min.li.xe@renesas.com>
-Subject: [PATCH net-next 3/5] ptp: clockmatrix: remove 5 second delay before entering write phase mode
-Date:   Mon, 16 Nov 2020 14:27:28 -0500
-Message-ID: <1605554850-14437-3-git-send-email-min.li.xe@renesas.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1605554850-14437-1-git-send-email-min.li.xe@renesas.com>
-References: <1605554850-14437-1-git-send-email-min.li.xe@renesas.com>
-X-TM-AS-MML: disable
+        id S1728207AbgKPTfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 14:35:10 -0500
+Received: from sonic307-54.consmr.mail.ir2.yahoo.com ([87.248.110.31]:34714
+        "EHLO sonic307-54.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726849AbgKPTfJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 14:35:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1605555305; bh=p+7aui/xhcFq254vXt9Ml9fIKGO/JDoL+efw+8eoJ2o=; h=Date:From:Reply-To:Subject:References:From:Subject; b=Gyt7NNK+C4MA7iwUEudPuUHKpKHxFJ5QU0q4PccttEddoWJAhuSghoi4vPKM2ECakWDw7WbsASi1SIhMhx6bQwpEbjZktrv83aq53Tj7+2sjmrL4pT9lQ1i93NQ70UgUROXd+2KCqo11nqjAbn0lNLaLqa8xY7wQKjP5Z3qlSMe3RRoOB1vAptIJjo+dB9DWgtmR5hV6V6tFS68Dlt6QKCK0BrKREi73/8Ox6HScQ2nu2sro5QkFPrdnypjzhnf8C9i2NOVmvP/Yysm0mlFVxUcvyFwXZNgh+/hQln5Uk+MUafZblBwmPFIgwmHl+XQGv0TpRlaGkCMtzKvudOSpPQ==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1605555305; bh=iiKVRVHrNA42DJpFf/lcCMT2w8c2tfkyecZPiN4cpat=; h=Date:From:Subject:From:Subject; b=M7/DvOqpdFrX/G5S6iXcGDT7mqutVkbbtHrNT2xDKq0YQ4HgzORQXD36s0XYeTWx/8NBX8pI2dOaXjSPCXoHQQWWLPQ3BVnXL7LAOeBwmLR6SbialKcm+sktZJqEH0H/4wfU314WKIROlrqysDhSN+sEjVodQcpPqyOGRmSBwtSFvJTkEDpvXvtHn3BtLoOXhLlK7LzVh6M/HssJGGVbs4+Z/O4VYGQN3Na52Sigj69hF3vYwVIIhhwrYEGID4au4Wpcs7PhhFNtqQLrRCzsMV3358l/P4p67Ke+o5PfNuE+vwqq6DYGfXRmpBtPU4CBO8yJnP91a4HtATsf7cCcuA==
+X-YMail-OSG: UjnCEA4VM1nkIYH3MOu1bwO8kXaijtbx16M3ZODJUV6Fic94edWLSoMLzQURo47
+ 5bY9tgUunEjTnc8Gea5zWQ2nHnNfAmWO.iAHA0zNXQCItaG3yQQ0F1ThRu90yYHgwstXQXzNFUi4
+ LIKx5Nsf.VCLb7C3FnAgASWCv41ZwJPr_04y74abA3gVxmf_Yxbud5VVD14i85LQDFfribU4ykpn
+ 06_0_CBLZNLbXpUbOU2sm5vQk2KWBTTcGOCqAxNmCHOWK2SLvIiFpeVaR.65WMtHbUtAK1YNyt2G
+ FDEPD3j2qrq6U3OxW.10CaKAmYSALAOu7nYMFbzeTtCkMNldjf8sBVDXc.X9UUL07sQrfiS5OyE4
+ hcq_icIhIutedt7YqHKG6LZQ632CvMIFGkVdmDyGUTK83zAVlrzo8vegeRZkig0cvJAKnA6zX4fY
+ zEQWo8JLXvalgtzDeWHFf5mm8ybz_6zPz05g5VWA5BfSEWmdgAv5yfrfyv.5hawLbSHfH5KwVpUL
+ GRGHgMiBRrj1xe74XrBuwzQ9sZ7UvJc5JPXevt5KGc1h3Zg97NCoTjWAG_W.Eoe8NLjnwiSBkhyg
+ h5SkYSVPhezBgq78sEUrAGKnRAYWk5.PwZB3e290MJW00bpGnV1X5oh7tLtEz3feZo2aG7AAtnud
+ uyJ6XvQxd0mTxd.dKoFR3IXL0EHZ7tPiTkvLbFX14y3yoBZdoWBH.cooWoVV381mU6wu0b8vh86.
+ pu5AK0xjwxm5LuTQ13siOVf1L6VIdZarPSJjwvmAHTurzc_waaVTSjkwv.9KHryo6mvIhbk7Tru9
+ 6HSrh4TUKeMn7SliAgKxtR_4eZpIe2ZorLCQZshxh6BiMXWRTZv2mum71KsIL0_s1rxP6hYmRWSN
+ D4i2efoh8aGSiCrzt2MYmpuqhHdxnv16e94.YvqzuIA5gUd_zTFTzwiLbwOBQv2D7nEE3R8PxqAP
+ 3aaVfj6NdoeKz.fgZ4wVaNoEsDraLvKvFgqIVa9DJKg6Yk1j2pAyH5Y6zN4MY8iuc0M2GzDLdNPa
+ NEoldctUp.gq9NvMYkvkz3cmDZM121WZl_cjj_VLOIHE_7TvuJ_MLsi1RcN7oTItepLOXK9k1o4W
+ C.mrmJn3rS8jf9teacoNV1jJm.EwqcxRnwBv.dx6Yd7hrEJChBwTXouLzqRbWbYnNJcM_9NSuuZ7
+ 8kYeFs7Dn0Ab30yralwwkp_tbVZrIaqR7x7Shv4Fwg7Fa8GxOCa2SWPFR7TIxuWBgjdvPShGAhSL
+ IVN_6PzAGoCu2smrfBIMOOvZVvHNqC3l2RMWtKlD0VBKhavX.xVb19926Ea0.NEGK9azPGaWSCEw
+ YWOFhqLpS_eoKnqZYJauN._d7FteqZGbtZomwwMAaGhccRwkNcffcl.99MW3rCBkLkOIcHclHbfD
+ vwzRNcfNSRDjKxlkcwAsjQVxrdTm_kYfn5rf6UAiY4VEJAQ3Xg1fSxldbB2Zjce6VZQJSTC9ntan
+ H3M8K.FsvQmPxhbOcSWvDyRZWgEoGYuOixjqmu_dtEjlYqZ.JqJwfPtlvop0IbeI3RqiF0AiEk6g
+ .y7wD4jGA3a.cniVK4RtzjBRc80OaKZNn9z7LF9I116nGF1MQ1ps6lJLDlDMSikDzKs5K.LPRzRc
+ WJHGC53gGyL5TLLRYv1w4u2wiMOT6rpSt9u2ARozXiKt8qP6wHE0UtdaImyqUk7.Q0FzQPAFH84u
+ xkYo0yy1TyVrj5yspF5aocYHGvuxwtxwAnsjgQTRy1LmoMPANOV2UkIbAIJbx1NHriQYRjVCbqq5
+ UVg3ieGozKv38ZAm2r24lIvNIyW5XOox0_tcnPlX.KZBY29N49ndVpDSvhVM_7NjEkmphNNKsfvv
+ eBS1DY3XaMtUS.xSe9MVesaTUyWpSZa8fCEnmeUKHimagBE7mANTIE.ly.BCm_9ZMieJez.XrhGZ
+ TretUzK8JZi.MiyIsNZ8WUQULwlAsuBR.D_eLoCTp8ZQuFSlFwL5tFwzUQfhgRCyyXl0LXczb7Po
+ PvHFnoACqAc9FlqbQIa2RQ9zhjZie8fRNFNxowvBDlq4NVeFUftbhLNHyrNY_gy_xvkVB4bnOSPg
+ x_q.03E5.jFIGrTBJJi2tdGhgfq.t0TSl_CwbHEBhhGMB6_kYHuGWN188Po3dLx6.LoPslLbXMqn
+ LzraCci6EKkoLsGeQp3bBFBP68.E0jkT7uU7BDKfvfbAwuqzOydzBu.U750iluOzTULtk0gHWbL_
+ Y32ncJ_rNri.OZFjhGWUMlsXsq7e_tFWWR5eYr9S.7QyBam2wJegWV9mxYWsSBBgfQnkoAyy39Vy
+ AKTgruqWdG5iMUdk.RVxzZE825hLAOOl0xYs9Pl1HtxiscxmvagYDYn9tTdj64zD5sKSWGHaUZDH
+ nB45lwhZywbfOvwlotnXYAPFfyzKVkLjfnqVMoAebuf545Xf_rUB5bQ5mBefRtg7K4NIWADQ1_CG
+ UQFWMUimQ_P_gJ8UsL7GWCUKYhOytIbDAWncuUfKubFQDY8UVWhtTcb39tHpiyZ8rI_h9BeD4qQj
+ dnwtFzsB.cWi0JHd.fDPIkPF5tRGtGDp1DakFzpQMC9UMpPLa5BAvA5REGYRuwjCYI05moEJ4uAP
+ Mc28Ulzbi9WpRD0nZdh2OnkJxMQew.L1ybLCMppE4xhtyAZObptnNdIGdLUTn8pJ9gaHpfQoYh_M
+ QEmhv6v2Cz_jELn84gr3e0DtBlca_cmYOoaaquOBddpd2fwHjAPN.ldCO8jE2ZEJlRT13QlT6Cit
+ hNiTed32Qf8W5nK2_JJv0VyZjjrC8NDGF1iMfiwrCUclYGVXwjL4apoS5a0rpRKQsLBbENQ5n.Lx
+ Fp3K_N4P3Ey6dvH4.J3MyIxqdkLzfecI5UyvhyByCYqirlO71DRuYbCwK3Epqq.EcbKGTB_ZHIN3
+ kE3w.Y.sdGF3i2KYuesH454nBhf6gQ2tKDX47wiJ6e_sadzlrgBt7X7IK7WUcTOiyGM0rDH0BxZ4
+ HAas_TTmrg6q1xQcRyPAY9pmU0MW91K6rx35vFGInkaoNWai33m_ctP7rW3GjULyOHWBE.TLD6Hd
+ 11HogCbzMdYZnXcPqfzvhKIWxZphOITCfiN4bSHnfRnCC4LCO4Im_d86BkXeftp.pHmWoBdS_Mpp
+ vOGNp7J.wOIHjm6EwG9JENlG82bk_m28K.t_aacVMK2S.ikc1Kh3jyoJFSuzjK7qqO8RQAJr3k6S
+ Lx_.S1TNCJ2Guvk1e2CIPWPtK.uM7dOVMQ8B9fg65plnuCaKvctOjLcZtNwWCFt2DBIPsD5mzSeo
+ sLAjI0U69LUAjTkbFaEUf0iFEfP2gS3FiYtzA35NNvXtIhp_vZqv5jxzN6DUYlvMs0.mZSSNQzFG
+ J2_Vcc0w0Je5KV.TqXEKdYd_ka58yHarSA.06zcYWfouu.XiOHBK.2Bbhdg.le1tOssRLwCe7Cw_
+ VLqTDUTDhOwLZOqbz3oXpaA1hvlCwglbKaErGthJmIwxPfTjoyEQ5YApWUrC1trJPsBIAnUGnMls
+ XtIbR0QWKclXJaElaVN8JuEc7Xtha0k7bvIewlAcWFeqhS8bz4Whl60MqUIsns0Sd8WJ0v9DQZDL
+ 3hKGe3HWeDnMbYc6f5bbwQ9TgT.KH7e60.kov9IW.Efg3iryL7orrK7mLtZ9IWmRqvbHNOlBZchg
+ DFHN506D.frvYhJL7NhpeZhv_D2gayyOztXJ8ms.sBsgvhl3AkDICEOc_gtP3McZQSfiU2B_R3._
+ q4QEZppXh.Xt7R9LmPzlM_tvsxOgw_QwuENZfbvyyuuuNKo6CqGIdJlRkf2_yf.ZGF1_YJHTvLKJ
+ VjMdBS5PBYGxe1AzqXhGd8Lt3iGfObZqpdZ1O5D3d3b_mdyz_Dba.OfkMbbzXtnc6JaTBjP9Rwez
+ HmMkslN5Gxd4ATs9ctderSmemlBylterFWg.kCmOKlMOmbgfyAhTjMGvDSbsOSjN.F.AdDtBvHY6
+ u4dE4Gas5Py.l.my7X__GhBSrzr3Ldvcl7jxBdT__iaLGuZ5Uzw2q224PoOPwa9f0IwwJvAtgmmx
+ 7DpcqLlXNsOrtiqqM.IC7D7J3wCQU5LhVyglJgRK6yYsPKljnMjT8hv_psPJCofkN55W8Zo1K9NP
+ g9cDO_462KUQKP1Gh54kSnwb71kNZ0jsxA4xnxUDYZ_RhWzhJpjF7LAuKkmSjj_6QZIpFmfQ2Z4v
+ 4DkUc27xtJ6yeJvNVZkVRDZg1hdf2cCLDFLT5gt80QIUV4QL83WNxNclBoKWICI5dsHJg1Wd3a4D
+ _Ded78PIvxltdgnWZQlPOyZRDOIEJxSfcbpFegrYI47gxU4m476LWD_imNSkqsx9KN1GawaVkMvE
+ diFK8uDtn01gk497U2qny0XJV9SnmtSO5cOByHpagRTHcjY6CQP.gBX2kvN4b7ByX9yesm6qwHJp
+ 11LLaA21ic8agnQ28mB24RfmOgR9kjz2nk3mbo.kx2Kn.4z9bVjbr6xZ5NkcB_O5heK_SIojHXL9
+ nsHT5UMtgBuh2Yeu5.lnFi6Xh6RWkyM_NP_UgC3dZ18AlzPRQJ8Pf_S75q8FFziIPSWh4vTi6gK9
+ Z9odjpgRMoVYqZ6ATpf2Jkowlw9NrpbGFDmvzOLaA9gDfmUXpT0mLea6.VVDFQSmsWwgCnsuLnNa
+ p9FPS82pH32.w_xUU29XtNjNfpruz6uEaO66cZZZGwRi5IWIK7rwKV3HAPzIBVe2BNr8h.HzdKLI
+ 08FDR0bLxhOGfa9KoDqGJX846sL6Z5T4Q89AYdNaJrOyT4e1SD1roxmOQixRv5qPrljTgEioXI66
+ wxMYj60g5Jw7trugRob4x_3GkHtzOolkgPbEL4hSh9RjSN.Ai7Sf8hGvbc73MNL5fMoNu.7k8Gtq
+ kMyfW2mm4BcgNjQfbfOxjHm0K99uT8dn1bjZ_9ZNVYE_e8zr2w92HM63brBXjSviF3Tm2qADt9nh
+ IoBM8JSVfuImzhcAd6F5Wgj96W8z.LZxIKa6Vmx7i.M60bZGGmQmsswuFNOhyTZzhMICmnCrkSEB
+ 3XUn8UnGwxTe15Dh6mc1kNQVelP1gizSkxQsp0M4eQtduU6UbvdhqziMX9o6NsYGFdWPwiR2a.i9
+ Im5DLppiCH5e.EYPsi3nO6JX7M.yYtTZcw3iSPZDe85YZyQ5TxTQuamWFa_V_Ip0N0aQd_ncfBzY
+ qCSk5mm4H512Xzb0QVp_IREeiq_F_o4kT3_5.BrHGaLedVaLX6ZEhPwMatzWmdjiTlWHrCkleSzk
+ acRxBJ9kZQuWf7WjCHn9dtUP7DzeAdyYu3yROu60LJFoLCfpsJPRUEy34JuqQUrpZw5mM5qrfuYI
+ 67Jk9gAuQUI1s25PuitkUUwRuaLyZA1W0p4uGfwLevtt4rplZGd7MckVkw1qd.BEIIk499ZxZeEL
+ OGaGmA6pwBASwf.dfKKGPmBXXkj3Mi4OzmwmSRvYRWS0UBYJLfSAoY67VYeKaHnAMlhLfnq3KcX2
+ _CQ_jFDBczqrnuxnSD5DQx2tRIbLhZeaQYMf0QgwpeoT1535fpTz.75yLdBWl5MrK7sXVHhj6RfI
+ AcXGpKCWAWeGkcMBmyBmTo8pvRo7Z5.YUUfHJpkFOzIdP1_WvySIQX.Eps0wVcEk7vo89ARjuAmq
+ ynEbZ3UhDuspuGC3vVwaGFkWKiQ0xSgf1po4gEOg2ZHrU2.ZY8Rtdu1924m1Kf7PV7A2XG8B8oXv
+ HPzZ3EoTV6eOf1X052za8jnuhegFrSZ8kbIap7ysuZAlaDWh3J0HJ_b9som.Te8GxYKVMXqES_Z1
+ icSx1TPBZCvHJi2BQ48nCFlFMVmwN7vdthf0UuCo_PfoLtikSKu9fopNuNW3VDV5tPtqXlfHsVjz
+ Ld.4j91hTGOVlrBzUvyIDjckTGICFM1Cpm3xUhzeh2KlbVQxSLIVFZK0mih_tHqE7Uv0YYPVsJcH
+ eUe1mBcwZaLA190sXy3C49Yql_JxkiZ6VK5NCVMQAMmurUjYl66Nd8bzo6K9bUkdf09lrcA4cHSO
+ 9By0CHQD610FYhAeEfT3oBcIv4MpIXWRUHPB889.Xw177XOtpFN5i3ufdRS01CIHXqEiTs0bU1A6
+ LXkHSqLoj45QlgVevpX2kKIkG9AzD28n_IYxkS6m.YIqyDhk9.3oHUzCJrdq6cCZcMoapMR0NCZe
+ 265BCbs5p7Ef1gdXokuaLY1zIWtJeCBp9gAUDGh2wMUsc9LlspLYkH7aLi.sOvZGH39cbHsoU8i8
+ dQ8lyvSOVEnCM78sIulv84M_UN6T2NuNLdilF.x7iuNeCfrj46Pr0dDR5lJm84cQsWL4lMMtEdMa
+ yiCy3_cquGdQDVWyCDh99HTRiNoat2uXjVN8ltsG3DaTEwkwgqXqJ9DNiu1PYlNaIQywm0WNF8xc
+ erppL0aN3xiYxcWWHnlLziX0vwrUPdUKNX4Y2FD0r9akSzq.915PkuPumz55kokQB0uULFrbw9vy
+ Bo1wmAO_yYkxPHLq_FgHHrbpbW37th9fO1PIt4LE.HjZsW.5yO4pt0oAcj1uPCZgV_OLtqUskPwR
+ 8L2g66dZ0.A1fZCGST3RkNQDS2HRfA0n3BmVE2W1BJFOycwyQPsqk1aHo0C2TsNoA.mcunHcn4nk
+ 6x_EXv6Oh1V9T_JNvcrU.sobMVN8wh6qgQKGZf1P4Iq3KVrzH0.ZSYipUn81Y9UwlDcu4rN6ly35
+ J81foC9z4waueH3yvbsS8RWkEhA2_5ER_ZYPkASC04XchfR0BmS0dXe07tQkT.te.t2LACs4wdFE
+ ZBjEm2WZzSqW8ELhRbOetd8W9nlET0Q_j6B7JyA7NE7A.GP30_2Ds3e6yvPhI7_5Es3.hGDQYWmB
+ 5AOs8IrDNAKeinotyKB1LQx1lAWp1OS1pkE51kQKQ0BbWW854R6OSYohrA3s7n8BZ5hetDQtWBt4
+ iolknYFePKcD3DgvqEEEYxRgbZPrRDd8yXqZXILg8IiQNExg1lJCcza4Yo_uz_8SfLWNN.gs2I5G
+ bvJmxW6duI58aJFlnCC2At5AwVY9_YzpYviUjGnTkGqb9SO3iwST07.Fj2rX4.H2rToSWjrtFjY1
+ kXw41c7hwyE0lYkXoxSqSJ2PWdx.6Mss5nqMHOCL.998FHuwRQZY7dMw7XgLpVMeMU.rFsMyojfz
+ OJ6L2gKMgEpMnch7oaFMLpkHdYMqR5r7Gt7_noaIUWgei.qCpxDCAwa59ys0k7P4isG0AfqvK._1
+ lm2CDQdWmbFdlTOoW6KbRkMFxO3at77UIg9I64dcoSXYrS0e4sG_qK.I6HoXVh40SC_mwRo2FZZl
+ V1vdykhRtb0Dv0HzYKtGWZLWvNpM.pmrB_zJRDhZKC8.wcdlacGsz1IlPDfUaMTf2vXMxUL7KIR1
+ bNkpbJvWxD3C78Q50Qv.2Zjmj92NyYD7IMAvGjKg3IcKa8PbKMEHRL7Rh0d8ElkFn6sl5reb6_PN
+ Efq2Tx7R34zJ.yPKYcfsFN_TBfRsPIHl0dNKQAS8EL5fUhPa6Zpe8.2OZLxde7kbb91T251FY_1o
+ C_LkdJ1R02KLZhjLVo83YYpGOYxPhr6QhWisdwgrqDKyMx4zWgSdUUJX69P6cq0toy3pNHbjIFEJ
+ CdGcnC9NmTUFsPa4rQCfDHxRcLc7z9dL3VYPoojnpf_6r5tQeWhsxabZfDBBSPQOeWhfa6kuUt4f
+ dXJUSRrKeUw_qsbzUDYGRokQd8xXJycQ05qF3ocUHZpdg8MO5bR8XszYcZ8gjkSfArMKWjcCOkPn
+ ZuOhXFRmSV_hf0PXLBKA3ZP8APhPcWLLLEbjqJhVAss9T5jwBBmF_orUvw.Zr4GHjjMB3s_Q4H_N
+ FeteZKQRm7aPx6WuLfK6pNthCSRDidD5lcCMCOhCKHT1E8HLFBaH9t7kIGwoKfGDfeO_lpGULGld
+ KM9CsxAjKW_BhV3lh8SvBu92tdRWmtxCTdUfuVEVINsHdvkv0JLL0cGoeDVMU3CSBw1teLZhLJOo
+ QkmAbOsBiYi5o1dgk9kT9Q5jC1js85O_MBNPko.Yr_RxLFghmR6h2HyyO1Jx1v2nEsSW.5sumh6e
+ AuU_t3DPmL2mMK0bPwtQs8jlZZtXY3_81.RbU8ZMS74mpj85IkMbbUdhzXNoo2lasX3hGlDiBQ7h
+ EmtwZWyO8Xq7uE5B7w9mxiJw2L3uUUzyB4ZYax9c9elJ4YTzBUh.CicgG_Hnq0zP4uGllMFe848P
+ Fo8VHA.Y3A8ZYXHxBNWaccn9aIo5klkJbx44uiOOSQXc8_V2n4FP_4QXKu8WTODRqNK5XZyhait3
+ dzZsugXPIz_LspE6IaQNm15D9vBkIGTcy_x7anZT6urLsep8PkWFEAu1awh_vKq4XunGT.2gbDy0
+ pfQJbxkfR6dKXkaXTFKWAJ849.X7eAmSkg32RTrs_0zEnWv.SxWc_Y8o8g5CEaBp.BN7wpg38Mln
+ 1YabTQ7mqpUYajnBSyITcxBhrXgyiJvx4orfzgd45dNOv4rnhXq268gUTNhuQMbuk5JRUyVXvRD2
+ kRul0DUoosnEPdguaemWMdO3k5YEZk.rEb11OJpoqjGQa.Txn.6YJGZOul7xbDT2jxgo0LDiEkQ7
+ _fuE9yyIeBdE3vv00NSMjaH9C4HVfuacd0R8K7q6Z.RgTXt0iM5t3BybYYZGo2mffBzDcJA7Hsdn
+ On71MlpcBOl9R287Vx5HNXmFQdiMyZLdOGsNERuQZD_dXzHiuYgBt0V.QWHWZv21YbdMiX1.V64y
+ bnJXqDvKts_YNOBptfwbdGQoaBfVoSGp95FOuQVMQtiC3axFqdKDN2_5fnJlKWsqjq_Quu8MxBoh
+ zmbl4AA.SLb3qrMG3IfsIQYwqWR0MitNQPDrRLoIiAxQSxiTPxVP5axaMgotExhkzt40rTYFXaHC
+ mraIV_EiV2uNclMu3RG6ovngwQNpYn7YYFkSbXewv_s5zboqFB5L_8oL9bTxYYR7qHTpQyn_aTkp
+ bf8a260i.SaRj9vBkl_27gT.sATAcyKKxZajfkzMWH52GEMaTxsO8NerKETh.GkHY6sqjwuhDX.N
+ cl7V1DtCa9aeRIFc46.Lz0WYV3SiyPxdTIM0dy2FCGw5we.PSQQO6SVfyE2s_xje.g1lkMZb.mWg
+ B.oQw41w.Cw.d220XcL7sBllpVwKfljxipOCmiITeJYps_uhHdqazo5.gpzjykBxz45ZgPBkP5Sd
+ V6DoycRqtt__zYT2K8.u6ltd4AVAVyNeRsKpnwM8fuuEGXCNSGPz5pC_I5R_JpTF_hAS.OLHgWsA
+ BYLWDwgg0xUHJ0J.WxuFVASt8IQxEeaMCyxJOClZ8o09RQtBk.1tKJOIaf6nW4tM0Ap5W9qRqX_q
+ flWqCh2STq89UEo61pES._ZUwZVa6zANqdJvE5YlSFPmYFrkWcrCCRcArcwbEbfYBihtSFE_SZLH
+ 3_2tU_MJDa.H_fA7errU_VlZZPP1aShNDtdyE59pIWhb24QtHe2kpfi47E9X6w2QDlf258wUS3_4
+ kBKHZqhJ.tpQ9ezgHlXsdnxcd1HBXOV1SkPlDIcHG.1BHzbuTSNWYEbI_kYbPQqiqsxfkHWIE7I0
+ Sw0Exp6PkLt22oPW05FYWZgihbpi.lh09pWI.yqFJ4aPQaR6QkvaAe9tLzP16G3Y3T5XecSRtO4o
+ Vw06dvSm91ayAkKtPaxwcOVaYN7NnYf1_er2VyzLDRmyinTRq3rNS7VA1kRvD6rmA9GCncYjXqYh
+ ToLI6no4_DQNBL7eqKafPJX7enMYbI.FyC4KBT3jaBWlllizVzqJtLF0y7yRmC8UDepYOnPPTnj9
+ Nc65xxdZAQzQauahv2IDikwDVENvy01LH2GLHcPD.C4arGHyNuLrO2pHLLGlmY7DecDfejkJZaqV
+ WI5qdEig4Vqb2b_oxBb038UKxpSOjkl55YPNwGqOwdyH_GQgZIul2hOwCcwtpm.z2Zt7VeV3ZJLu
+ EP1Nz2vtqwVztrSOihAyzosOSIt2MYA5ZVn0opcRk6MdmIEdXTa2ZeheE8ve8ydcNGHcjK73wYFn
+ 8t8pRryZ2eQ4mnCY0o1iC4Cu9xd9R8w--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.ir2.yahoo.com with HTTP; Mon, 16 Nov 2020 19:35:05 +0000
+Date:   Mon, 16 Nov 2020 19:35:02 +0000 (UTC)
+From:   "Ms. Milla" <millasth77@gmail.com>
+Reply-To: millasmith7010@gmail.com
+Message-ID: <960417543.10856400.1605555302357@mail.yahoo.com>
+Subject: compensation
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-16_09:2020-11-13,2020-11-16 signatures=0
-X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 adultscore=0 malwarescore=0
- bulkscore=0 spamscore=0 mlxlogscore=999 suspectscore=4 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011160114
-X-Proofpoint-Spam-Reason: mlx
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+References: <960417543.10856400.1605555302357.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16944 YMailNodin Mozilla/5.0 (Windows NT 6.1; rv:82.0) Gecko/20100101 Firefox/82.0
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Min Li <min.li.xe@renesas.com>
 
-Remove write phase mode 5 second setup delay, not needed.
 
-Signed-off-by: Min Li <min.li.xe@renesas.com>
----
- drivers/ptp/ptp_clockmatrix.c | 22 ----------------------
- drivers/ptp/ptp_clockmatrix.h |  1 -
- 2 files changed, 23 deletions(-)
+Dear Friend,
 
-diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index 5991f0f..9af6335 100644
---- a/drivers/ptp/ptp_clockmatrix.c
-+++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -72,16 +72,6 @@ static int contains_full_configuration(const struct firmware *fw)
- 	return (count >= full_count);
- }
- 
--static long set_write_phase_ready(struct ptp_clock_info *ptp)
--{
--	struct idtcm_channel *channel =
--		container_of(ptp, struct idtcm_channel, caps);
--
--	channel->write_phase_ready = 1;
--
--	return 0;
--}
--
- static int char_array_to_timespec(u8 *buf,
- 				  u8 count,
- 				  struct timespec64 *ts)
-@@ -1382,16 +1372,8 @@ static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
- 
- 		if (err)
- 			return err;
--
--		channel->write_phase_ready = 0;
--
--		ptp_schedule_worker(channel->ptp_clock,
--				    msecs_to_jiffies(WR_PHASE_SETUP_MS));
- 	}
- 
--	if (!channel->write_phase_ready)
--		delta_ns = 0;
--
- 	offset_ps = (s64)delta_ns * 1000;
- 
- 	/*
-@@ -1971,7 +1953,6 @@ static const struct ptp_clock_info idtcm_caps_v487 = {
- 	.gettime64	= &idtcm_gettime,
- 	.settime64	= &idtcm_settime_v487,
- 	.enable		= &idtcm_enable,
--	.do_aux_work	= &set_write_phase_ready,
- };
- 
- static const struct ptp_clock_info idtcm_caps = {
-@@ -1984,7 +1965,6 @@ static const struct ptp_clock_info idtcm_caps = {
- 	.gettime64	= &idtcm_gettime,
- 	.settime64	= &idtcm_settime,
- 	.enable		= &idtcm_enable,
--	.do_aux_work	= &set_write_phase_ready,
- };
- 
- static int configure_channel_pll(struct idtcm_channel *channel)
-@@ -2154,8 +2134,6 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
- 	if (!channel->ptp_clock)
- 		return -ENOTSUPP;
- 
--	channel->write_phase_ready = 0;
--
- 	dev_info(&idtcm->client->dev, "PLL%d registered as ptp%d\n",
- 		 index, channel->ptp_clock->index);
- 
-diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
-index 713e41a..dd3436e 100644
---- a/drivers/ptp/ptp_clockmatrix.h
-+++ b/drivers/ptp/ptp_clockmatrix.h
-@@ -125,7 +125,6 @@ struct idtcm_channel {
- 	enum pll_mode		pll_mode;
- 	u8			pll;
- 	u16			output_mask;
--	int			write_phase_ready;
- };
- 
- struct idtcm {
--- 
-2.7.4
+I am sorry, but happy to inform you about my success in getting those funds=
+ transferred under the cooperation of a new partner from Vietnam. Though, I=
+ I tried my best to involve you in the business, but everything changed com=
+pletely. Presently, I am in Vietnam for investment projects with my own sha=
+re of the total sum. Meanwhile, I didn't forget your past efforts and attem=
+pts to assist me in transferring those funds despite that it failed us some=
+how.
 
+Now contact my secretary in Burkina Faso. Her name is Ms. Milla Smith. Her =
+email address is millasmith7010@gmail.com
+
+Ask her to send you the total sum of $450,000.00 which I kept for your comp=
+ensation over the past efforts and attempts to assist me in this matter. I =
+appreciated your efforts at that time very much. So feel free and contact m=
+y secretary Ms. Milla Smith and instruct her where to send the amount to yo=
+u. Please, do let me know immediately you receive it so that wecan share jo=
+y after all the sufferings at that time.
+
+At the moment, I=E2=80=99m very busy here. Because of the investment projec=
+ts which I and my new partner are having at hand. Finally, remember that I =
+had forwarded instructions to the secretary on your behalf to receive that =
+money. So, feel free and get in touch with Ms. Milla Smith.
+
+Extend my greetings to your family.
+
+
+Best regards,
+
+Yours brother
+Mr. Abu Salam
+Greetings from Vietnam
