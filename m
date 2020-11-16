@@ -2,122 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3627B2B44AB
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:27:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B7122B44AD
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:27:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729107AbgKPNZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 08:25:17 -0500
-Received: from mga03.intel.com ([134.134.136.65]:57515 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726615AbgKPNZQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 08:25:16 -0500
-IronPort-SDR: JzVf0gVGQK8zkqajKjwdU+SVWxh8eIk02ZrPkHdRIxvRfd0rFikWhm+7xhvVnRbVsEpf17Gl6k
- hFd3x3VDafPg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9806"; a="170845733"
-X-IronPort-AV: E=Sophos;i="5.77,482,1596524400"; 
-   d="scan'208";a="170845733"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2020 05:25:11 -0800
-IronPort-SDR: nv2dTWv75IeIJ1bfCvVYlAbuaQOTjTPbCb6zwc76bMwk/lKBPcW8QSkuP9TFQszpYdcD9lAUWo
- 3dHMNxPTwwXA==
-X-IronPort-AV: E=Sophos;i="5.77,482,1596524400"; 
-   d="scan'208";a="543602527"
-Received: from syeghiay-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.37.125])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2020 05:25:01 -0800
-Subject: Re: [PATCH bpf-next v2 06/10] xsk: propagate napi_id to XDP socket Rx
- path
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        maciej.fijalkowski@intel.com, sridhar.samudrala@intel.com,
-        jesse.brandeburg@intel.com, qi.z.zhang@intel.com, kuba@kernel.org,
-        edumazet@google.com, jonathan.lemon@gmail.com, maximmi@nvidia.com,
-        intel-wired-lan@lists.osuosl.org, netanel@amazon.com,
-        akiyano@amazon.com, michael.chan@broadcom.com,
-        sgoutham@marvell.com, ioana.ciornei@nxp.com,
-        ruxandra.radulescu@nxp.com, thomas.petazzoni@bootlin.com,
-        mcroce@microsoft.com, saeedm@nvidia.com, tariqt@nvidia.com,
-        aelior@marvell.com, ecree@solarflare.com,
-        ilias.apalodimas@linaro.org, grygorii.strashko@ti.com,
-        sthemmin@microsoft.com, kda@linux-powerpc.org
-References: <20201116110416.10719-1-bjorn.topel@gmail.com>
- <20201116110416.10719-7-bjorn.topel@gmail.com>
- <20201116064953-mutt-send-email-mst@kernel.org>
- <614a7ce4-2b6b-129b-de7d-71428f7a71f6@intel.com>
- <20201116073848-mutt-send-email-mst@kernel.org>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <585b011f-0817-a684-d1db-125bb55741fe@intel.com>
-Date:   Mon, 16 Nov 2020 14:24:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.2
+        id S1729119AbgKPNZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 08:25:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55335 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728420AbgKPNZn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 08:25:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605533142;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LSNkJPt+wjH1jlYQkXrm8+t1fMHnnPEPcU8guCAdnmA=;
+        b=jCZEvPH2OTZW3fS4MlFQjunD6tPvij3OdiG9f4KaDY7ryXypa69FgTsqC38nKeuVKiEc1W
+        jPd3/2TwMh5MzISRPjGbdkex6wHnNGX6rQgxfCQRn85FKxmNa2jUkNF75t9Rp6HAYUxXOP
+        YNB+h79EezwUDk80oxfT2MKOnw2zv40=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-154-wCjSTuH4PRyj_tHQGD0gMA-1; Mon, 16 Nov 2020 08:25:40 -0500
+X-MC-Unique: wCjSTuH4PRyj_tHQGD0gMA-1
+Received: by mail-ot1-f70.google.com with SMTP id 20so7434035otc.10
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 05:25:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=LSNkJPt+wjH1jlYQkXrm8+t1fMHnnPEPcU8guCAdnmA=;
+        b=S6f7HFKicXqJ7qjElH7nseEytT56WcParJ+58ykz2UXwa36punX2fo9H4EGFqBiAaU
+         DbylHRott4Vuq4JUq7p4yophLy4LN3x09P2yEUk4EYowDaMzmVgIbKXI2b1S911aqP9Z
+         vJ1yeKDUrrUqbyOvn3B4oLOJxN7G0jzfMSJbKiqa/OBI8FXnKR0AJGpf5BZcU/9W7zdN
+         /FgnJVPg99sisovyWmWSkjPhYH1JkOiyAONxKkXGtbEg0RnzZgLYS+Cw9LH57YRlDAIN
+         VeJXB9kN0uMDCPlqqt61gWJkOsSVp3iz0DTLmtHDiVq2d6kazoP+CXMULSbS9ymkRFhA
+         3JGw==
+X-Gm-Message-State: AOAM530tOABYQH7VwQ+s440Sv9JBuc3gy4sQnUPXxq+/6TgsR3mxjWdJ
+        sK/KIzRMJUbD3CJ0e+4kgiK+/+fQ7loeZbe0ESIEjDJ2xmNzv35xJvOwsWfOXVSJDoWbyxWBpxV
+        8tR2cmasq3GOiKsSx
+X-Received: by 2002:aca:aa90:: with SMTP id t138mr9995745oie.171.1605533139394;
+        Mon, 16 Nov 2020 05:25:39 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwrcA2prPU1Jbe9yJjkB8jL+sl2t2d8mCJs8iqH0rtGEAwN11et6kly+E4Ca4QR0EDC3hTQsQ==
+X-Received: by 2002:aca:aa90:: with SMTP id t138mr9995708oie.171.1605533138652;
+        Mon, 16 Nov 2020 05:25:38 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id k11sm4636793otr.14.2020.11.16.05.25.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2020 05:25:37 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 05567181CF8; Mon, 16 Nov 2020 14:25:35 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     alardam@gmail.com, magnus.karlsson@intel.com,
+        bjorn.topel@intel.com, andrii.nakryiko@gmail.com, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        davem@davemloft.net, john.fastabend@gmail.com, hawk@kernel.org
+Cc:     maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
+        bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
+        maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org,
+        Marek Majtyka <marekx.majtyka@intel.com>
+Subject: Re: [PATCH 0/8] New netdev feature flags for XDP
+In-Reply-To: <20201116093452.7541-1-marekx.majtyka@intel.com>
+References: <20201116093452.7541-1-marekx.majtyka@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 16 Nov 2020 14:25:35 +0100
+Message-ID: <875z655t80.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20201116073848-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-16 13:42, Michael S. Tsirkin wrote:
-> On Mon, Nov 16, 2020 at 01:01:40PM +0100, BjÃ¶rn TÃ¶pel wrote:
->>
->> On 2020-11-16 12:55, Michael S. Tsirkin wrote:
->>> On Mon, Nov 16, 2020 at 12:04:12PM +0100, BjÃfÂ¶rn TÃfÂ¶pel wrote:
->>>> From: BjÃfÂ¶rn TÃfÂ¶pel <bjorn.topel@intel.com>
->>>>
->>>> Add napi_id to the xdp_rxq_info structure, and make sure the XDP
->>>> socket pick up the napi_id in the Rx path. The napi_id is used to find
->>>> the corresponding NAPI structure for socket busy polling.
->>>>
->>>> Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
->>>> Signed-off-by: BjÃfÂ¶rn TÃfÂ¶pel <bjorn.topel@intel.com>
->>>
->>> A bunch of drivers just pass in 0. could you explain when
->>> is that ok? how bad is it if the wrong id is used?
->>>
->>
->> If zero is passed, which is a non-valid NAPI_ID, busy-polling will never
->> be performed.
->>
->> Depending on the structure of the driver, napi might or might not be
->> initialized (napi_id != 0) or even available. When it wasn't obvious, I
->> simply set it to zero.
->>
->> So, short; No harm if zero, but busy-polling cannot be used in an XDP
->> context.
->>
->>
->> [...]
->>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>>> index 21b71148c532..d71fe41595b7 100644
->>>> --- a/drivers/net/virtio_net.c
->>>> +++ b/drivers/net/virtio_net.c
->>>> @@ -1485,7 +1485,7 @@ static int virtnet_open(struct net_device *dev)
->>>>    			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
->>>>    				schedule_delayed_work(&vi->refill, 0);
->>>> -		err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i);
->>>> +		err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i, 0);
->>>>    		if (err < 0)
->>>>    			return err;
->>>
->>> Should this be rq.napi.napi_id ?
->>>
->>
->> Yes, if rq.napi.napi_id is valid here! Is it?
-> 
-> What initializes it? netif_napi_add? Then I think yes, it's
-> initialized for all queues ...
-> Needs to be tested naturally.
-> 
+alardam@gmail.com writes:
 
-Yeah, netid_napi_add does the id generation.
+> From: Marek Majtyka <marekx.majtyka@intel.com>
+>
+> Implement support for checking if a netdev has native XDP and AF_XDP zero
+> copy support. Previously, there was no way to do this other than to try
+> to create an AF_XDP socket on the interface or load an XDP program and
+> see if it worked. This commit changes this by extending existing
+> netdev_features in the following way:
+>  * xdp        - full XDP support (XDP_{TX, PASS, DROP, ABORT, REDIRECT})
+>  * af-xdp-zc  - AF_XDP zero copy support
+> NICs supporting these features are updated by turning the corresponding
+> netdev feature flags on.
 
-My idea was that driver would gradually move to a correct NAPI id (given
-that it's hard to test w/o HW. Virtio however is simpler to test. :-)
+Thank you for working on this! The lack of a way to discover whether an
+interface supports XDP is really annoying.
 
+However, I don't think just having two separate netdev feature flags for
+XDP and AF_XDP is going to cut it. Whatever mechanism we end up will
+need to be able to express at least the following, in addition to your
+two flags:
 
-Björn
+- Which return codes does it support (with DROP/PASS, TX and REDIRECT as
+  separate options)?
+- Does this interface be used as a target for XDP_REDIRECT
+  (supported/supported but not enabled)?
+- Does the interface support offloaded XDP?
+
+That's already five or six more flags, and we can't rule out that we'll
+need more; so I'm not sure if just defining feature bits for all of them
+is a good idea.
+
+In addition, we should be able to check this in a way so we can reject
+XDP programs that use features that are not supported. E.g., program
+uses REDIRECT return code (or helper), but the interface doesn't support
+it? Reject at attach/load time! Or the user attempts to insert an
+interface into a redirect map, but that interface doesn't implement
+ndo_xdp_xmit()? Reject the insert! Etc.
+
+That last bit can be added later, of course, but we need to make sure we
+design the support in a way that it is possible to do so...
+
+-Toke
+
