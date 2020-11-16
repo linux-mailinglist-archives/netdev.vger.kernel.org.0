@@ -2,114 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DD822B4B93
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 17:47:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 373DD2B4BE6
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 17:59:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732309AbgKPQpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 11:45:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
+        id S1731921AbgKPQ6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 11:58:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731586AbgKPQpd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 11:45:33 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B392C0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 08:45:32 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id v12so14643685pfm.13
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 08:45:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=o7khu+y1k6F3Cwh3naL/BSozOiSx1uzR1Zxg1hKkEHw=;
-        b=yVxS7tFMUDDF2hAntmnfBCptEWqhaOicCid80+SdhHYkm679t9Ix0cTQmD9INU6DI6
-         ED0v/XT8QNxkOW4cwxQfJ+Yzb9lGAQHRRnw0zkI2fxA751cyNJ88mw8xWJltU07NFlEQ
-         8UIsh+jQu/s4zFmuUd30XLvqTrqonBBvsYx9Fyzmq1qgm2cmWbbXvqob/6b4B5E/Rkio
-         fJcCCOBNKPkBv62AgktBUMNByOgUiJhf4Hj20qfMdxtWHhaySGhm4nZfwPHggJoYPE6J
-         K69wEhlSxEuvWV4QkbqVyxGmAehmkB5Rc6Jjo6ct3nOpKLwEFT4BGWcjQ+qq1i45j/vj
-         crRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=o7khu+y1k6F3Cwh3naL/BSozOiSx1uzR1Zxg1hKkEHw=;
-        b=TzX48SmRDp1ukJOuPcRl+9dxe804PpB2iq4Lo46MI9E6tL84NC04Y2tInQRf9bShak
-         Ar+lyk0m5BVJ8WYF37UxWhq2dMZ7eant3u+jgrg+IdPsov8tTwunKyVU4Qfmq/WDTdTH
-         i3p8ng4TmuzHnS5lhSCxYgu0vPI5UlzxyDYGZ/AVylJonZyddKudCrDJhYz9GwStffI8
-         ZXDQ1XvrLeABGprc1yWlQ/Dz4gke9dxLR3h76D+WYAUdu0NwKmcdKnLnFyZqxT9g38JL
-         NYku3omedJ9y3IMMvq3eqj9dDLatgXPXjovf/tosUCCGp9OMoxd9oKPccpZ+EiXBjExq
-         Q5Qw==
-X-Gm-Message-State: AOAM5301nkkEdlmWsvTnNyj+gqJQCk8tElNVL3j1adzje2dqlQ7l2fh1
-        IVbzi0tczEyN/hQspInZQZIOxuAOP3rzWoYI
-X-Google-Smtp-Source: ABdhPJwRszpyHCKExvAKPr/qsD/ZMfQPI7cBSkbDUH/bASi7IjeTgiJDQu2rroAgdCM8ws+0u61tPw==
-X-Received: by 2002:a63:6ecb:: with SMTP id j194mr101099pgc.420.1605545131625;
-        Mon, 16 Nov 2020 08:45:31 -0800 (PST)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id z21sm18402236pfa.158.2020.11.16.08.45.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 08:45:31 -0800 (PST)
-Date:   Mon, 16 Nov 2020 08:45:22 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Hangbin Liu <haliu@redhat.com>, David Ahern <dsahern@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Jiri Benc <jbenc@redhat.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Subject: Re: [PATCHv5 iproute2-next 0/5] iproute2: add libbpf support
-Message-ID: <20201116084522.5b315106@hermes.local>
-In-Reply-To: <CAADnVQ+LNBYq5fdTSRUPy2ZexTdCcB6ErNH_T=r9bJ807UT=pQ@mail.gmail.com>
-References: <20201109070802.3638167-1-haliu@redhat.com>
-        <20201116065305.1010651-1-haliu@redhat.com>
-        <CAADnVQ+LNBYq5fdTSRUPy2ZexTdCcB6ErNH_T=r9bJ807UT=pQ@mail.gmail.com>
+        with ESMTP id S1730972AbgKPQ6q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 11:58:46 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C4AC0613CF;
+        Mon, 16 Nov 2020 08:58:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=PtPDmo8/GjtPHgHqv0oqP2Nv3aCKfAoH8drpowN9sSU=; b=Ei+IOyRhl+ACi7w2CjFmCR3FnX
+        YkebsWLnCfhSnb8pih7QZ3muaC3TWE70sk1nqcbM/P8q34oHSDW0iw3YXx9QqOnEnqiwdUE6TK0eL
+        9JaPkWLWSW+b/udRGFdbSiVmgRW2dd1KxPCpYSMF24sWS7zNQTXClWWQ1w6Bdl2FxV+Kv2e0rcNq+
+        Ik34Oyb2k3k8j6nC01bhzbvotVIGkcULY30bIIZo2tnKK7zpZ8/bSfeIFz/7lvcXFnwbe23j4+wV5
+        cuaRNuOIwyogQMZwcjFYNQLeeXoRY68xF3Ze2knAYWEODBsRic/2se/kEoX9HdE3x+Y26emjaNQIJ
+        J5m6bLiw==;
+Received: from [2601:1c0:6280:3f0::f32]
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kehpw-0006NI-SQ; Mon, 16 Nov 2020 16:58:41 +0000
+Subject: Re: [PATCH net-next] netfilter: nf_reject: bridge: fix build errors
+ due to code movement
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Jose M . Guisado Gomez" <guigom@riseup.net>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20201116034203.7264-1-rdunlap@infradead.org>
+ <20201116092648.GA405@salvia>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <c0200add-7970-dfea-b968-003d33bdfa72@infradead.org>
+Date:   Mon, 16 Nov 2020 08:58:35 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201116092648.GA405@salvia>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 15 Nov 2020 23:19:26 -0800
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-
-> On Sun, Nov 15, 2020 at 10:56 PM Hangbin Liu <haliu@redhat.com> wrote:
-> >
-> > This series converts iproute2 to use libbpf for loading and attaching
-> > BPF programs when it is available. This means that iproute2 will
-> > correctly process BTF information and support the new-style BTF-defined
-> > maps, while keeping compatibility with the old internal map definition
-> > syntax.
-> >
-> > This is achieved by checking for libbpf at './configure' time, and using
-> > it if available. By default the system libbpf will be used, but static
-> > linking against a custom libbpf version can be achieved by passing
-> > LIBBPF_DIR to configure. LIBBPF_FORCE can be set to on to force configure
-> > abort if no suitable libbpf is found (useful for automatic packaging
-> > that wants to enforce the dependency), or set off to disable libbpf check
-> > and build iproute2 with legacy bpf.
-> >
-> > The old iproute2 bpf code is kept and will be used if no suitable libbpf
-> > is available. When using libbpf, wrapper code ensures that iproute2 will
-> > still understand the old map definition format, including populating
-> > map-in-map and tail call maps before load.
-> >
-> > The examples in bpf/examples are kept, and a separate set of examples
-> > are added with BTF-based map definitions for those examples where this
-> > is possible (libbpf doesn't currently support declaratively populating
-> > tail call maps).
-> >
-> > At last, Thanks a lot for Toke's help on this patch set.
-> >
-> > v5:
-> > a) Fix LIBBPF_DIR typo and description, use libbpf DESTDIR as LIBBPF_DIR
-> >    dest.
-> > b) Fix bpf_prog_load_dev typo.
-> > c) rebase to latest iproute2-next.  
+On 11/16/20 1:26 AM, Pablo Neira Ayuso wrote:
+> Hi,
 > 
-> For the reasons explained multiple times earlier:
-> Nacked-by: Alexei Starovoitov <ast@kernel.org>
+> Thanks for catching up this.
+> 
+> On Sun, Nov 15, 2020 at 07:42:03PM -0800, Randy Dunlap wrote:
+>> Fix build errors in net/bridge/netfilter/nft_reject_bridge.ko
+>> by selecting NF_REJECT_IPV4, which provides the missing symbols.
+>>
+>> ERROR: modpost: "nf_reject_skb_v4_tcp_reset" [net/bridge/netfilter/nft_reject_bridge.ko] undefined!
+>> ERROR: modpost: "nf_reject_skb_v4_unreach" [net/bridge/netfilter/nft_reject_bridge.ko] undefined!
+>>
+>> Fixes: fa538f7cf05a ("netfilter: nf_reject: add reject skbuff creation helpers")
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>> Cc: kernel test robot <lkp@intel.com>
+>> Cc: Jose M. Guisado Gomez <guigom@riseup.net>
+>> Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+>> Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+>> Cc: Florian Westphal <fw@strlen.de>
+>> Cc: netfilter-devel@vger.kernel.org
+>> Cc: coreteam@netfilter.org
+>> Cc: Jakub Kicinski <kuba@kernel.org>
+>> ---
+>>  net/bridge/netfilter/Kconfig |    1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> --- linux-next-20201113.orig/net/bridge/netfilter/Kconfig
+>> +++ linux-next-20201113/net/bridge/netfilter/Kconfig
+>> @@ -18,6 +18,7 @@ config NFT_BRIDGE_META
+>>  config NFT_BRIDGE_REJECT
+>>  	tristate "Netfilter nf_tables bridge reject support"
+>>  	depends on NFT_REJECT
+>> +	depends on NF_REJECT_IPV4
+> 
+> I can update the patch here before applying to add:
+> 
+>         depends on NF_REJECT_IPV6
+> 
+> as well. It seems both dependencies (IPv4 and IPv6) are missing.
+> 
+> Thanks.
+> 
+>>  	help
+>>  	  Add support to reject packets.
+>>  
 
-Could you propose a trial balloon patch to show what you would like to see in iproute2?
+Yes, that's good.
+
+Thanks.
+
+-- 
+~Randy
+
