@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CC282B5447
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:28:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07CFE2B544B
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:28:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729558AbgKPW1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 17:27:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34860 "EHLO
+        id S1729718AbgKPW2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 17:28:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728982AbgKPW1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 17:27:41 -0500
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CABC0613CF;
-        Mon, 16 Nov 2020 14:27:41 -0800 (PST)
-Received: by mail-ot1-x331.google.com with SMTP id o3so7057644ota.8;
-        Mon, 16 Nov 2020 14:27:41 -0800 (PST)
+        with ESMTP id S1728982AbgKPW2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 17:28:01 -0500
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CA9C0613CF;
+        Mon, 16 Nov 2020 14:28:01 -0800 (PST)
+Received: by mail-oi1-x242.google.com with SMTP id d9so20517770oib.3;
+        Mon, 16 Nov 2020 14:28:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=RlgwZdM9GqzQMPHs9fItBuNKu4uwvnR753hh212yRb8=;
-        b=qHxuHFsqfqQlp4t05X5lllKzsesPm9qQj4+fuO/OWl+fKVTQxBiF1H33ofs6kAyDxR
-         Zl2OfaEp0l5L64Fs1dLQ5SDWictwOUGUSy6UsU2oXI7RoWl1Y9hjH6lzV+bYif+sDORX
-         qRYGIEtoG1aea/JF2X9imQe4ZzTifdPfF1GNDUMer3czvWJp1seSc51uCKFpDS2/31+4
-         YHFpRAPIxBDjX78eGR1Pr9aZmUV/gYC+o/qKL2gBLiHGyiZgrWN1kHjWKxOpqZz8C5cD
-         tLjsX1Y5UYhxCXpsqAO16uoKhGSutgdRH2lxkmzwnwS4YUv3IAfV777Vjg+3zoXq8n//
-         T1bg==
+        h=subject:from:to:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=IosZaA2J4WB04PBn1llEGI1Q5uikyxZcnchHfDV0ON0=;
+        b=QpCfn048Rb2F2BjKhWu0wJhZm8nH8/AAlMT1F4Nt7xMppyJyhsrkI9aiKlqDAaO+OE
+         PpGNsJ5wdUeitX2n2LbBAjXmFJvsSMsg0ohW/dI/jCuL9FiiJCJCYmLXrtc5+KWwHIx2
+         D+FpBPVgk5Wl8i8eD7VX7udSQGPX7fp1T9sR+SrwahreJJwEaaB/IZAKFPvNn8o+5btu
+         9vr3rIMzOz1/DTMy0kSIBNmfqNdikeX7/auzu2hZgNmjZR0nsze603Soz03v7mfGdHiA
+         5KwG+1rUDDF73nL9D/6oPvB0EL34WM0+QcEWLVdbZfQnJIV+uF+G0guh28r1z5V9R62M
+         J0Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=RlgwZdM9GqzQMPHs9fItBuNKu4uwvnR753hh212yRb8=;
-        b=Gy36X+EPVRBEIJv3UeMyIUEmkZi6iHftHT7Z7GD4uhlwyU6rKVag7o3yPhUyZ2sBcO
-         3Y7fOSe/p8TvEvD7lN6LD5IYLJ+YUxb00tQem0r5RY95DrkH5xU2YioxpZisrZSN94pW
-         YF+QuSe5JyFrnyW4dFXm8OKO0veTHPWnVnm//uESgCySiw+KUAPo/sm/0zjS9z4XjnsL
-         6VHB54MMvPv86AR1We9DoAzuXcLIzzRiuUkbC4v3RFJVE5tAy5i0Ah5JIuStpDAax0Jm
-         4NCw4lfACAsmfcSjJ5DOGwKp+9Iw8WdU5LBQKValcyQOTqnk3KXJb8lI7vzemPxGOZqB
-         OYEw==
-X-Gm-Message-State: AOAM5300F/+VZaTb2ouTuP/Qerp6egvO5Okouf3JPjh6rhJr9qKk1iLw
-        5geH2xzeC6eeqhckkopRLHzYRZwz2i9oNw==
-X-Google-Smtp-Source: ABdhPJzfPJWK9CG2wB4aCbLlOjmMCdx3Of3c+dNfKbIJ81HD91DEfXGZxqDIo8ymbfSRZNJkCTPudA==
-X-Received: by 2002:a9d:19cf:: with SMTP id k73mr1064290otk.360.1605565660190;
-        Mon, 16 Nov 2020 14:27:40 -0800 (PST)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=IosZaA2J4WB04PBn1llEGI1Q5uikyxZcnchHfDV0ON0=;
+        b=JLKwwsUgehMKeeLam+YUo6Y64Uwo3TYTT2H75nPirWYtLcvjDUGRq0VpaeOUYYGvGE
+         E5fAuBIU6cx0gY2k9C0kuzEVZKnggtXkEOuQu0ETywirfVCXrh7KzqWuQS3hcuEnIa/F
+         oPp2Ay//Flhzu8SlutDaq4IX1eKVs4c58pcoYyHc/fre/5XD2n37/qPnQm4M2oUMG+gW
+         1zHfkIIzM6T7WYyQ2TbvPMnbjlam/DpAxc9Xt+8+DK308fCytKa1Dbiobd15mFsLsfh3
+         WnIFylV0AdFMIVX+3nvzGE6o8y/LjgVViV5NvbzMMwy4cSlf6DH9WyC8ejlXpAdCux+G
+         ylAQ==
+X-Gm-Message-State: AOAM530SChHaSqPnM00UDz5nBeQycsxcjU0EtZ1fspwz8nOqUCTlsYra
+        H5YebTy+vaH8g4YtlhpFD80+HsE1EWG1Gg==
+X-Google-Smtp-Source: ABdhPJzrs4QSdqjppUHQQp2IsbW+JMz+NMoR2Oe+/nFhYFhQAEpMqmvTKau6XqIIGs1Tesus7ZZOsQ==
+X-Received: by 2002:aca:a988:: with SMTP id s130mr583643oie.172.1605565680656;
+        Mon, 16 Nov 2020 14:28:00 -0800 (PST)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id 68sm5171333oto.71.2020.11.16.14.27.28
+        by smtp.gmail.com with ESMTPSA id v82sm4971383oif.27.2020.11.16.14.27.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 14:27:35 -0800 (PST)
-Subject: [bpf PATCH v3 0/6] sockmap fixes 
+        Mon, 16 Nov 2020 14:28:00 -0800 (PST)
+Subject: [bpf PATCH v3 1/6] bpf,
+ sockmap: fix partial copy_page_to_iter so progress can still be made
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     jakub@cloudflare.com, ast@kernel.org, daniel@iogearbox.net
 Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
         netdev@vger.kernel.org
-Date:   Mon, 16 Nov 2020 14:27:23 -0800
-Message-ID: <160556562395.73229.12161576665124541961.stgit@john-XPS-13-9370>
+Date:   Mon, 16 Nov 2020 14:27:46 -0800
+Message-ID: <160556566659.73229.15694973114605301063.stgit@john-XPS-13-9370>
+In-Reply-To: <160556562395.73229.12161576665124541961.stgit@john-XPS-13-9370>
+References: <160556562395.73229.12161576665124541961.stgit@john-XPS-13-9370>
 User-Agent: StGit/0.23-36-gc01b
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -62,38 +65,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This includes fixes for sockmap found after I started running skmsg and
-verdict programs on systems that I use daily. To date with attached
-series I've been running for multiple weeks without seeing any issues
-on systems doing calls, mail, movies, etc.
+If copy_page_to_iter() fails or even partially completes, but with fewer
+bytes copied than expected we currently reset sg.start and return EFAULT.
+This proves problematic if we already copied data into the user buffer
+before we return an error. Because we leave the copied data in the user
+buffer and fail to unwind the scatterlist so kernel side believes data
+has been copied and user side believes data has _not_ been received.
 
-Also I started running packetdrill and after this series last remaining
-fix needed is to handle MSG_EOR correctly. This will come as a follow
-up to this, but because we use sendpage to pass pages into TCP stack
-we need to enable TCP side some.
+Expected behavior should be to return number of bytes copied and then
+on the next read we need to return the error assuming its still there. This
+can happen if we have a copy length spanning multiple scatterlist elements
+and one or more complete before the error is hit.
 
-v3:
- - Simplify patch5 as suggested by Jakub
-v2:
- - Added patch3 to use truesize in sk_rmem_schedule (Daniel)
- - cleaned up some small nits... goto and extra set of brackets (Daniel)
+The error is rare enough though that my normal testing with server side
+programs, such as nginx, httpd, envoy, etc., I have never seen this. The
+only reliable way to reproduce that I've found is to stream movies over
+my browser for a day or so and wait for it to hang. Not very scientific,
+but with a few extra WARN_ON()s in the code the bug was obvious.
 
+When we review the errors from copy_page_to_iter() it seems we are hitting
+a page fault from copy_page_to_iter_iovec() where the code checks
+fault_in_pages_writeable(buf, copy) where buf is the user buffer. It
+also seems typical server applications don't hit this case.
 
+The other way to try and reproduce this is run the sockmap selftest tool
+test_sockmap with data verification enabled, but it doesn't reproduce the
+fault. Perhaps we can trigger this case artificially somehow from the
+test tools. I haven't sorted out a way to do that yet though.
+
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
+ net/ipv4/tcp_bpf.c |   15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-John Fastabend (6):
-      bpf, sockmap: fix partial copy_page_to_iter so progress can still be made
-      bpf, sockmap: Ensure SO_RCVBUF memory is observed on ingress redirect
-      bpf, sockmap: Use truesize with sk_rmem_schedule()
-      bpf, sockmap: Avoid returning unneeded EAGAIN when redirecting to self
-      bpf, sockmap: Handle memory acct if skb_verdict prog redirects to self
-      bpf, sockmap: Avoid failures from skb_to_sgvec when skb has frag_list
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 37f4cb2bba5c..8e950b0bfabc 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -15,8 +15,8 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+ {
+ 	struct iov_iter *iter = &msg->msg_iter;
+ 	int peek = flags & MSG_PEEK;
+-	int i, ret, copied = 0;
+ 	struct sk_msg *msg_rx;
++	int i, copied = 0;
+ 
+ 	msg_rx = list_first_entry_or_null(&psock->ingress_msg,
+ 					  struct sk_msg, list);
+@@ -37,11 +37,9 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+ 			page = sg_page(sge);
+ 			if (copied + copy > len)
+ 				copy = len - copied;
+-			ret = copy_page_to_iter(page, sge->offset, copy, iter);
+-			if (ret != copy) {
+-				msg_rx->sg.start = i;
+-				return -EFAULT;
+-			}
++			copy = copy_page_to_iter(page, sge->offset, copy, iter);
++			if (!copy)
++				return copied ? copied : -EFAULT;
+ 
+ 			copied += copy;
+ 			if (likely(!peek)) {
+@@ -56,6 +54,11 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+ 						put_page(page);
+ 				}
+ 			} else {
++				/* Lets not optimize peek case if copy_page_to_iter
++				 * didn't copy the entire length lets just break.
++				 */
++				if (copy != sge->length)
++					return copied;
+ 				sk_msg_iter_var_next(i);
+ 			}
+ 
 
-
- net/core/skmsg.c   | 87 +++++++++++++++++++++++++++++++++++++++-------
- net/ipv4/tcp_bpf.c |  3 +-
- 2 files changed, 76 insertions(+), 14 deletions(-)
-
---
-Signature
 
