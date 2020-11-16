@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 556882B5487
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2FA72B5484
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 23:48:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730559AbgKPWqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 17:46:36 -0500
-Received: from z5.mailgun.us ([104.130.96.5]:40324 "EHLO z5.mailgun.us"
+        id S1730187AbgKPWqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 17:46:33 -0500
+Received: from z5.mailgun.us ([104.130.96.5]:27131 "EHLO z5.mailgun.us"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729529AbgKPWqf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 17:46:35 -0500
+        id S1728751AbgKPWqd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 17:46:33 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1605566794; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1605566792; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=hhdCoRvuxlatbxoQbwAMS/wVtVvNm49fTDYcNelnNRI=; b=E1KUEK30Cr7xWJJuigCq2cqLnypCLb/sO82+3mrshxt2vY/g42FZ8CytNpp/iIlDPwXAOW19
- yICvTJT5CGcPtkUSba4mFh+jS8cWgOodSmRClr3tGAJXD3Fl7ihi59VfgcgtRZJ1WD0+nDSY
- UmMjLkH8VsYce/IQpoaRJo4OTgU=
+ bh=4uneeOzMbZtu2ZTYVJH3SGp7E7ATLRtCujWFI/AoQ6A=; b=JZh2v01Kce973ADMXnx2F6ivQ2/B25Lbfzl9LoUZ8dveedwAx54BE3xFI3g5AU1G++R36PPU
+ FRLvC0RjJm6F6Y254h2ilXVyakqDROG89mhfJVVrvSzqvrLlgBifT7xNgxazKBeD1DYr8olY
+ iBSUF0A0HfV72WrR6qvVu4V8Qd8=
 X-Mailgun-Sending-Ip: 104.130.96.5
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n08.prod.us-west-2.postgun.com with SMTP id
- 5fb301478bd2e3c2228732af (version=TLS1.2,
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 5fb301478bd2e3c22287338d (version=TLS1.2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 16 Nov 2020 22:46:31
  GMT
 Sender: hemantk=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 2F8F0C43463; Mon, 16 Nov 2020 22:46:31 +0000 (UTC)
+        id D4962C43463; Mon, 16 Nov 2020 22:46:31 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -37,9 +37,9 @@ Received: from codeaurora.org (i-global254.qualcomm.com [199.106.103.254])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: hemantk)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3C25CC433C6;
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id F2E7AC43462;
         Mon, 16 Nov 2020 22:46:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3C25CC433C6
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org F2E7AC43462
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
 From:   Hemant Kumar <hemantk@codeaurora.org>
@@ -48,9 +48,9 @@ Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
         jhugo@codeaurora.org, bbhatt@codeaurora.org,
         loic.poulain@linaro.org, netdev@vger.kernel.org,
         skhan@linuxfoundation.org, Hemant Kumar <hemantk@codeaurora.org>
-Subject: [PATCH v12 1/5] bus: mhi: core: Add helper API to return number of free TREs
-Date:   Mon, 16 Nov 2020 14:46:18 -0800
-Message-Id: <1605566782-38013-2-git-send-email-hemantk@codeaurora.org>
+Subject: [PATCH v12 2/5] bus: mhi: core: Move MHI_MAX_MTU to external header file
+Date:   Mon, 16 Nov 2020 14:46:19 -0800
+Message-Id: <1605566782-38013-3-git-send-email-hemantk@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1605566782-38013-1-git-send-email-hemantk@codeaurora.org>
 References: <1605566782-38013-1-git-send-email-hemantk@codeaurora.org>
@@ -58,62 +58,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce mhi_get_free_desc_count() API to return number
-of TREs available to queue buffer. MHI clients can use this
-API to know before hand if ring is full without calling queue
-API.
+Currently this macro is defined in internal MHI header as
+a TRE length mask. Moving it to external header allows MHI
+client drivers to set this upper bound for the transmit
+buffer size.
 
 Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
 Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
 Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- drivers/bus/mhi/core/main.c | 12 ++++++++++++
- include/linux/mhi.h         |  9 +++++++++
- 2 files changed, 21 insertions(+)
+ drivers/bus/mhi/core/internal.h | 1 -
+ include/linux/mhi.h             | 3 +++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/bus/mhi/core/main.c b/drivers/bus/mhi/core/main.c
-index f953e2a..6158720 100644
---- a/drivers/bus/mhi/core/main.c
-+++ b/drivers/bus/mhi/core/main.c
-@@ -260,6 +260,18 @@ int mhi_destroy_device(struct device *dev, void *data)
- 	return 0;
- }
+diff --git a/drivers/bus/mhi/core/internal.h b/drivers/bus/mhi/core/internal.h
+index 2df8de5..7d1f8bc 100644
+--- a/drivers/bus/mhi/core/internal.h
++++ b/drivers/bus/mhi/core/internal.h
+@@ -453,7 +453,6 @@ enum mhi_pm_state {
+ #define CMD_EL_PER_RING			128
+ #define PRIMARY_CMD_RING		0
+ #define MHI_DEV_WAKE_DB			127
+-#define MHI_MAX_MTU			0xffff
+ #define MHI_RANDOM_U32_NONZERO(bmsk)	(prandom_u32_max(bmsk) + 1)
  
-+int mhi_get_free_desc_count(struct mhi_device *mhi_dev,
-+				enum dma_data_direction dir)
-+{
-+	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
-+	struct mhi_chan *mhi_chan = (dir == DMA_TO_DEVICE) ?
-+		mhi_dev->ul_chan : mhi_dev->dl_chan;
-+	struct mhi_ring *tre_ring = &mhi_chan->tre_ring;
-+
-+	return get_nr_avail_ring_elements(mhi_cntrl, tre_ring);
-+}
-+EXPORT_SYMBOL_GPL(mhi_get_free_desc_count);
-+
- void mhi_notify(struct mhi_device *mhi_dev, enum mhi_callback cb_reason)
- {
- 	struct mhi_driver *mhi_drv;
+ enum mhi_er_type {
 diff --git a/include/linux/mhi.h b/include/linux/mhi.h
-index 52b3c60..a4d0f48 100644
+index a4d0f48..53bb41d 100644
 --- a/include/linux/mhi.h
 +++ b/include/linux/mhi.h
-@@ -597,6 +597,15 @@ void mhi_set_mhi_state(struct mhi_controller *mhi_cntrl,
- void mhi_notify(struct mhi_device *mhi_dev, enum mhi_callback cb_reason);
+@@ -15,6 +15,9 @@
+ #include <linux/wait.h>
+ #include <linux/workqueue.h>
  
- /**
-+ * mhi_get_free_desc_count - Get transfer ring length
-+ * Get # of TD available to queue buffers
-+ * @mhi_dev: Device associated with the channels
-+ * @dir: Direction of the channel
-+ */
-+int mhi_get_free_desc_count(struct mhi_device *mhi_dev,
-+				enum dma_data_direction dir);
++/* MHI client drivers to set this upper bound for tx buffer */
++#define MHI_MAX_MTU 0xffff
 +
-+/**
-  * mhi_prepare_for_power_up - Do pre-initialization before power up.
-  *                            This is optional, call this before power up if
-  *                            the controller does not want bus framework to
+ #define MHI_MAX_OEM_PK_HASH_SEGMENTS 16
+ 
+ struct mhi_chan;
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
