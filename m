@@ -2,135 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1859E2B45E6
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:32:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69F532B4600
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:38:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730200AbgKPObg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 09:31:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730196AbgKPObg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 09:31:36 -0500
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3D2C0613D1
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 06:31:35 -0800 (PST)
-Received: by mail-wm1-x343.google.com with SMTP id h2so23942574wmm.0
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 06:31:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=qMjDR0Ym+nhpvOJ6zJJnl+LYMN6YDDREpuIxO7AtctE=;
-        b=maIsAJsZ9C5ds72BdFMn8SZrZag4sqWfO/sawEbHeTLRHGOCxsrX7qrwfnuNG1YA1j
-         QZtGTqZB+Or9el/yGKjjvrccoBtEOZOyFIj2uWR0DabDfm6HTvCTdRnSue5wP33Spa0P
-         i9O51hwM6xuwY4SCPNtQ+frLZ/lUKwXYB+8XA=
+        id S1730264AbgKPOhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 09:37:24 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:43726 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729845AbgKPOhX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 09:37:23 -0500
+Received: by mail-ot1-f67.google.com with SMTP id y22so16198057oti.10;
+        Mon, 16 Nov 2020 06:37:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=qMjDR0Ym+nhpvOJ6zJJnl+LYMN6YDDREpuIxO7AtctE=;
-        b=g03vqHdtZ9hJ8+enAYPpTLX+i05FrZmVX7+leie++ds1AYEKDVVk3IrUFuQLB5H0z5
-         RJnOeO3n8m1N+RtcaupVZu161CQFKBz/9FySoEeStZvq+0SGv9fy4ugDkv0gs4IFdMev
-         JyT8qvFUW3MulOBQHp/jm+uLFU3bNRjUbeaPT1ewBZ2HejsJ1rZgSwnLYuvYKOb1ZgAa
-         bEM1sZnjnNciFVfED+jvSW3gXAA1lHoSv0Zc2Iha4I232sP30CCXCy/+TwQtGsZMaKSK
-         a3IP8ZiOaMYiWGw0d7VZFaBxhnYBLHrZX2PfOVmYyDEuZdhCKX28EFj9NEDL69EV1T58
-         23AA==
-X-Gm-Message-State: AOAM5326Ls9snnFdl8k7IaZFJrLwWdJH+EdPtOFMl+jsyCAUVcG/svPk
-        uXl7UAvm7CukLt+9W4M3jP1Gbg==
-X-Google-Smtp-Source: ABdhPJwH2qVsIs/Q09LWrmiCrFI7JYrstrUAmtDXK2/+Vjjo5XitU8+h0y5abnzV1eFvxC7rtTQtig==
-X-Received: by 2002:a7b:c845:: with SMTP id c5mr15528327wml.135.1605537094497;
-        Mon, 16 Nov 2020 06:31:34 -0800 (PST)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id u16sm22809008wrn.55.2020.11.16.06.31.33
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=U0dn7aZtjbLlMoxw+EC4gwPZPIaLXL0z9WswT9nNc04=;
+        b=d696/cVm13gDEL4kQzqTLpNpMNZ4WqXGDdoHGkElB1SJE3RzVbWHGRg6Fgz0/bAZ30
+         xN86bIhrffi2T6Vof5HOC8aW6/Uf/flRfWzfy4wHwOXOVyLr70Z2NQeptkH11dJT8Bis
+         TEde+ZkydV+aCd5LC+OAZMdqyKhbT5RMUrvD2ur6GsCup7ILBpSBxnYhMaGQhFzjilHQ
+         H7UEONJtonzAujsMVhbLmikvYyeiB8WHxBQJRKCrMyMKm08FDSHErDFnb4Fj4zSBDIej
+         +Bo9GBOvxuxSkCeI1vUVeqC+IgOpRxn2TIA/uDhBZ3UqynApz1KKoOgRcKEZ9XdHgp5X
+         Ft5Q==
+X-Gm-Message-State: AOAM533Ggg7qo2eoAezbnZ23TNTLbW8yKqRk7V0gAMOeHp3cgbFNGX2n
+        1V77Fz9Is3LD68UqASNWmQ==
+X-Google-Smtp-Source: ABdhPJwIV5z+0rmaYuqN6NtU5Zk/X3SZnVZP20sR6OiEeqF705htu2HuRjIcnYyA8eBoDaWRcC4wVg==
+X-Received: by 2002:a05:6830:18d5:: with SMTP id v21mr10045958ote.136.1605537442742;
+        Mon, 16 Nov 2020 06:37:22 -0800 (PST)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id q7sm4738104oig.42.2020.11.16.06.37.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 06:31:33 -0800 (PST)
-References: <160522352433.135009.15329422887113794062.stgit@john-XPS-13-9370> <160522367856.135009.17304729578208922913.stgit@john-XPS-13-9370>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [bpf PATCH v2 5/6] bpf, sockmap: Handle memory acct if skb_verdict prog redirects to self
-In-reply-to: <160522367856.135009.17304729578208922913.stgit@john-XPS-13-9370>
-Date:   Mon, 16 Nov 2020 15:31:32 +0100
-Message-ID: <87blfxweyj.fsf@cloudflare.com>
+        Mon, 16 Nov 2020 06:37:21 -0800 (PST)
+Received: (nullmailer pid 1612218 invoked by uid 1000);
+        Mon, 16 Nov 2020 14:37:20 -0000
+Date:   Mon, 16 Nov 2020 08:37:20 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Marek Vasut <marex@denx.de>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next v2 01/11] dt-bindings: net: dsa: convert ksz
+ bindings document to yaml
+Message-ID: <20201116143720.GA1611573@bogus>
+References: <20201112153537.22383-1-ceggers@arri.de>
+ <20201112153537.22383-2-ceggers@arri.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201112153537.22383-2-ceggers@arri.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 13, 2020 at 12:27 AM CET, John Fastabend wrote:
-> If the skb_verdict_prog redirects an skb knowingly to itself, fix your
-> BPF program this is not optimal and an abuse of the API please use
-> SK_PASS. That said there may be cases, such as socket load balancing,
-> where picking the socket is hashed based or otherwise picks the same
-> socket it was received on in some rare cases. If this happens we don't
-> want to confuse userspace giving them an EAGAIN error if we can avoid
-> it.
->
-> To avoid double accounting in these cases. At the moment even if the
-> skb has already been charged against the sockets rcvbuf and forward
-> alloc we check it again and do set_owner_r() causing it to be orphaned
-> and recharged. For one this is useless work, but more importantly we
-> can have a case where the skb could be put on the ingress queue, but
-> because we are under memory pressure we return EAGAIN. The trouble
-> here is the skb has already been accounted for so any rcvbuf checks
-> include the memory associated with the packet already. This rolls
-> up and can result in unecessary EAGAIN errors in userspace read()
-> calls.
->
-> Fix by doing an unlikely check and skipping checks if skb->sk == sk.
->
-> Fixes: 51199405f9672 ("bpf: skb_verdict, support SK_PASS on RX BPF path")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+On Thu, 12 Nov 2020 16:35:27 +0100, Christian Eggers wrote:
+> Convert the bindings document for Microchip KSZ Series Ethernet switches
+> from txt to yaml.
+> 
+> Signed-off-by: Christian Eggers <ceggers@arri.de>
 > ---
->  net/core/skmsg.c |   17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
->
-> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> index 9aed5a2c7c5b..f747ee341fe8 100644
-> --- a/net/core/skmsg.c
-> +++ b/net/core/skmsg.c
-> @@ -404,11 +404,13 @@ static struct sk_msg *sk_psock_create_ingress_msg(struct sock *sk,
->  {
->  	struct sk_msg *msg;
->  
-> -	if (atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf)
-> -		return NULL;
-> +	if (likely(skb->sk != sk)) {
-> +		if (atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf)
-> +			return NULL;
->  
-> -	if (!sk_rmem_schedule(sk, skb, skb->truesize))
-> -		return NULL;
-> +		if (!sk_rmem_schedule(sk, skb, skb->truesize))
-> +			return NULL;
-> +	}
->  
->  	msg = kzalloc(sizeof(*msg), __GFP_NOWARN | GFP_ATOMIC);
->  	if (unlikely(!msg))
-> @@ -455,9 +457,12 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
->  	 * the BPF program was run initiating the redirect to the socket
->  	 * we will eventually receive this data on. The data will be released
->  	 * from skb_consume found in __tcp_bpf_recvmsg() after its been copied
-> -	 * into user buffers.
-> +	 * into user buffers. If we are receiving on the same sock skb->sk is
-> +	 * already assigned, skip memory accounting and owner transition seeing
-> +	 * it already set correctly.
->  	 */
-> -	skb_set_owner_r(skb, sk);
-> +	if (likely(skb->sk != sk))
-> +		skb_set_owner_r(skb, sk);
->  	return sk_psock_skb_ingress_enqueue(skb, psock, sk, msg);
->  }
->  
+>  .../devicetree/bindings/net/dsa/ksz.txt       | 125 ---------------
+>  .../bindings/net/dsa/microchip,ksz.yaml       | 150 ++++++++++++++++++
+>  MAINTAINERS                                   |   2 +-
+>  3 files changed, 151 insertions(+), 126 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/dsa/ksz.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+> 
 
-I think all the added checks boil down to having:
 
-	struct sock *sk = psock->sk;
+My bot found errors running 'make dt_binding_check' on your patch:
 
-        if (unlikely(skb->sk == sk))
-                return sk_psock_skb_ingress_self(psock, skb);
+yamllint warnings/errors:
 
-... on entry to sk_psock_skb_ingress().
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml: 'oneOf' conditional failed, one must be fixed:
+	'unevaluatedProperties' is a required property
+	'additionalProperties' is a required property
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml: ignoring, error in schema: 
+warning: no schema found in file: ./Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+
+
+See https://patchwork.ozlabs.org/patch/1399036
+
+The base for the patch is generally the last rc1. Any dependencies
+should be noted.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
