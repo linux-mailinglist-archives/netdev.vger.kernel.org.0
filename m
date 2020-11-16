@@ -2,89 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54D332B4AC9
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 17:24:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F40AE2B4B6C
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 17:40:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731942AbgKPQVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 11:21:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731938AbgKPQVY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 11:21:24 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13740C0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 08:21:24 -0800 (PST)
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1605543682;
+        id S1732229AbgKPQid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 11:38:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56335 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732228AbgKPQic (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 11:38:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605544711;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=jtvi8V/LQ5Rz6+0ztSY/Wqp0Vo+6J9KTqf1s3xDgcTo=;
-        b=yMsU7MtjRiWYE/hV3aSXuElkOrLBBaBHa6p6FnbBdqqeeeEQWQw39NYOVGk9Ufvdl6YLJ1
-        bsIGLHFo5EQ9JCHslkNw83dLATvFZM6nr7F7pPrjkKZrQG3WIhpqTQssaVH5KAXC9OHrIR
-        0Thvt4teukV2zWRZAOEkG8bptsH5G+y7gTh54FUZbmxl53zaIH9IoWRkHpBk99+3mf89vn
-        r7U8SHcOFXn0wAehQCG8I/za6Br7t98DOBsk7C2NITGTpAjhKZkfsYNZG/aGbDHYYubyvs
-        IcLKWF+Iq3QuTthm6xct584zQwsP+iH1gu0tRtiIih26SYt2MgnnQ53fv/WMJw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1605543682;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jtvi8V/LQ5Rz6+0ztSY/Wqp0Vo+6J9KTqf1s3xDgcTo=;
-        b=mIao/k0l+YKGI6MGB/D+EmLXVbSEol2bfW+xcs228wXAp5uCbpWzBuT/oNMm2AJnVR5oAZ
-        cXusfG4J4XMKG6Cw==
-To:     linux-atm-general@lists.sourceforge.net
-Cc:     Chas Williams <3chas3@gmail.com>, netdev@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 3/3] atm: lanai: Remove in_interrupt() usage
-Date:   Mon, 16 Nov 2020 17:21:16 +0100
-Message-Id: <20201116162117.387191-4-bigeasy@linutronix.de>
-In-Reply-To: <20201116162117.387191-1-bigeasy@linutronix.de>
-References: <20201116162117.387191-1-bigeasy@linutronix.de>
+        bh=ffJmvhYXz7whcm++8xwN8hrC5cWfzVBr5ihcuVy03Ac=;
+        b=Ju6JQkXri6nxCIdb8DA0FsaktUMwPnvlTYKagy1TFRiXVOrHY/1bF3KidiYv1SJC1Ggnxt
+        7PylS+IVewfHp0ZbgUMGfC20a/r6r18DKtWXTVGdMYj1OT0EsNLw8gDGW3GplpefKCW8JC
+        EmxJkPf12OwCkZ5GOdSsuOWSrz+QP7Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-104-WcN_lQHEOn2HEOVy7tef_g-1; Mon, 16 Nov 2020 11:38:27 -0500
+X-MC-Unique: WcN_lQHEOn2HEOVy7tef_g-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CA38C1005513;
+        Mon, 16 Nov 2020 16:38:25 +0000 (UTC)
+Received: from yoda.fritz.box (unknown [10.40.193.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 82DF25B4A2;
+        Mon, 16 Nov 2020 16:38:24 +0000 (UTC)
+Date:   Mon, 16 Nov 2020 17:38:21 +0100
+From:   Antonio Cardace <acardace@redhat.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v3 3/4] selftests: extract common functions in
+ ethtool-common.sh
+Message-ID: <20201116163821.njb4ldycup2ywcpq@yoda.fritz.box>
+References: <20201113231655.139948-1-acardace@redhat.com>
+ <20201113231655.139948-3-acardace@redhat.com>
+ <20201116161702.wznoj6z4ceujkydj@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201116161702.wznoj6z4ceujkydj@lion.mk-sys.cz>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-lanai_shutdown_tx_vci() uses in_interrupt() to issue a warning message
-if the function was used in context in which it is not safe to sleep.
+On Mon, Nov 16, 2020 at 05:17:02PM +0100, Michal Kubecek wrote:
+> On Sat, Nov 14, 2020 at 12:16:54AM +0100, Antonio Cardace wrote:
+> > Factor out some useful functions so that they can be reused
+> > by other ethtool-netdevsim scripts.
+> > 
+> > Signed-off-by: Antonio Cardace <acardace@redhat.com>
+> 
+> Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+> 
+> Just one comment:
+> 
+> [...]
+> > +function get_netdev_name {
+> > +    local -n old=$1
+> > +
+> > +    new=$(ls /sys/class/net)
+> > +
+> > +    for netdev in $new; do
+> > +	for check in $old; do
+> > +            [ $netdev == $check ] && break
+> > +	done
+> > +
+> > +	if [ $netdev != $check ]; then
+> > +	    echo $netdev
+> > +	    break
+> > +	fi
+> > +    done
+> > +}
+> [...]
+> > +function make_netdev {
+> > +    # Make a netdevsim
+> > +    old_netdevs=$(ls /sys/class/net)
+> > +
+> > +    if ! $(lsmod | grep -q netdevsim); then
+> > +	modprobe netdevsim
+> > +    fi
+> > +
+> > +    echo $NSIM_ID > /sys/bus/netdevsim/new_device
+> > +    echo `get_netdev_name old_netdevs`
+> > +}
+> 
+> This would be rather unpredictable if someone ran another selftest (or
+> anything else that would create a network device) in parallel. IMHO it
+> would be safer (and easier) to get the name of the new device from
+> 
+>   /sys/bus/netdevsim/devices/netdevsim${NSIM_ID}/net/
+> 
+> But as this is not new code and you are just moving existing code, it
+> can be done in a separate patch.
 
-The usage of in_interrupt() in driver code is deprecated as it can not alwa=
-ys
-detect all states where it is not allowed to sleep.
+Yes it does make sense, I can send a patch for this once this is merged.
 
-msleep() has debug code which will trigger a warning if used in bad
-context.
+Thanks for the review.
 
-Remove in_interrupt().
-
-Cc: Chas Williams <3chas3@gmail.com>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/atm/lanai.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/atm/lanai.c b/drivers/atm/lanai.c
-index ac811cfa68431..d7277c26e4232 100644
---- a/drivers/atm/lanai.c
-+++ b/drivers/atm/lanai.c
-@@ -765,8 +765,7 @@ static void lanai_shutdown_tx_vci(struct lanai_dev *lan=
-ai,
- 	struct sk_buff *skb;
- 	unsigned long flags, timeout;
- 	int read, write, lastread =3D -1;
--	APRINTK(!in_interrupt(),
--	    "lanai_shutdown_tx_vci called w/o process context!\n");
-+
- 	if (lvcc->vbase =3D=3D NULL)	/* We were never bound to a VCI */
- 		return;
- 	/* 15.2.1 - wait for queue to drain */
---=20
-2.29.2
+Antonio
 
