@@ -2,136 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B31872B4FF8
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 19:40:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 299B82B4FFD
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 19:42:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727683AbgKPSkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 13:40:18 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:53652 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726473AbgKPSkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 13:40:17 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0AGIe4VZ065486;
-        Mon, 16 Nov 2020 12:40:04 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1605552004;
-        bh=vZvZmpRXLdOHlrWsWFSQrRNMSkunry0WyLmDdpA6E9Q=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=mAIum+d/03aEKtL3z96ILs1FYIi438i/qXPanl4WxXaUN8l0B3Mr6DE2ybAToxjUu
-         GavW2u9m0ewd8iL+5XSVEzB381bOZgzZ/TGbYdPmgGHLpzmEiG2oa4bVWOSYOHTB3e
-         KrBfgNzSL3Ps8nhgMASvyuglV6NhhAG0wPHwcBtg=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0AGIe4pi049994
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 16 Nov 2020 12:40:04 -0600
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 16
- Nov 2020 12:40:03 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Mon, 16 Nov 2020 12:40:03 -0600
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0AGIdxRj054660;
-        Mon, 16 Nov 2020 12:40:00 -0600
-Subject: Re: [PATCH net-next 3/3] net: ethernet: ti: am65-cpsw: enable
- broadcast/multicast rate limit support
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>, Tony Lindgren <tony@atomide.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-References: <20201114035654.32658-1-grygorii.strashko@ti.com>
- <20201114035654.32658-4-grygorii.strashko@ti.com>
- <20201114191723.rvmhyrqinkhdjtpr@skbuf>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <e9f2b153-d467-15fd-bd4a-601211601fca@ti.com>
-Date:   Mon, 16 Nov 2020 20:39:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727047AbgKPSlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 13:41:07 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:27522 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726494AbgKPSlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 13:41:07 -0500
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AGIWO1D017346;
+        Mon, 16 Nov 2020 13:41:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=5OXbyEHiqeKhGMGqNRwltCAd1jn/ZQLtgK9b3eV1Zm4=;
+ b=pW9mHW94bsugmBsm2rOlOx0jyNQl6wSW5yguEJYkseJyDKjFzQTEp2jX9Kj9dHropLEU
+ T3dAzbNLKjJAvQf2CgRUHeh8GPP7dTS1c6gWqE6YLIaWMyjpo6Sr6rtR9PmpAt1y8Mwb
+ ONHxW+Tk6M2xTT0/M9fAvkj5BCz8PM/UdzubjLx/aPhYjTVeJOvnQYAjv47MtaDU1JYW
+ yHQYwUdoo/kmGoNxGy3INoITdq4Zg8vajdd0t/lE+/xfF/iOpo1LT1ynXBJPzIkCQRYt
+ 0YH9kjT36/X1C9HKTxcPBPAWP90Oz24twbB21TA+uh+LywYSlT+YmZN1EWGPwpWemi+T nw== 
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 34usvfh9pe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 Nov 2020 13:41:00 -0500
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AGIW3nQ015813;
+        Mon, 16 Nov 2020 18:40:59 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma01wdc.us.ibm.com with ESMTP id 34t6v8rqnx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 Nov 2020 18:40:59 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AGIewJ75308954
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 16 Nov 2020 18:40:59 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DE497B205F;
+        Mon, 16 Nov 2020 18:40:58 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1D191B2066;
+        Mon, 16 Nov 2020 18:40:58 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.160.39.145])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 16 Nov 2020 18:40:57 +0000 (GMT)
+Subject: Re: [PATCH net-next 04/12] ibmvnic: Introduce xmit_more support using
+ batched subCRQ hcalls
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        dnbanerg@us.ibm.com, brking@linux.vnet.ibm.com, pradeep@us.ibm.com,
+        drt@linux.vnet.ibm.com, sukadev@linux.vnet.ibm.com,
+        ljp@linux.vnet.ibm.com, cforno12@linux.ibm.com,
+        ricklind@linux.ibm.com
+References: <1605208207-1896-1-git-send-email-tlfalcon@linux.ibm.com>
+ <1605208207-1896-5-git-send-email-tlfalcon@linux.ibm.com>
+ <20201114154632.55e87b1c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+Message-ID: <68899039-c1d7-0b2a-430b-03dfa51a9a49@linux.ibm.com>
+Date:   Mon, 16 Nov 2020 12:40:57 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-In-Reply-To: <20201114191723.rvmhyrqinkhdjtpr@skbuf>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+In-Reply-To: <20201114154632.55e87b1c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-16_09:2020-11-13,2020-11-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 mlxscore=0 bulkscore=0 malwarescore=0
+ phishscore=0 mlxlogscore=915 lowpriorityscore=0 suspectscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011160106
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 14/11/2020 21:17, Vladimir Oltean wrote:
-> On Sat, Nov 14, 2020 at 05:56:54AM +0200, Grygorii Strashko wrote:
->> This patch enables support for ingress broadcast(BC)/multicast(MC) rate limiting
->> in TI AM65x CPSW driver (the corresponding ALE support was added in previous
->> patch) by implementing HW offload for simple tc-flower policer with matches
->> on dst_mac:
->>   - ff:ff:ff:ff:ff:ff has to be used for BC rate limiting
->>   - 01:00:00:00:00:00 fixed value has to be used for MC rate limiting
+On 11/14/20 5:46 PM, Jakub Kicinski wrote:
+> On Thu, 12 Nov 2020 13:09:59 -0600 Thomas Falcon wrote:
+>> Include support for the xmit_more feature utilizing the
+>> H_SEND_SUB_CRQ_INDIRECT hypervisor call which allows the sending
+>> of multiple subordinate Command Response Queue descriptors in one
+>> hypervisor call via a DMA-mapped buffer. This update reduces hypervisor
+>> calls and thus hypervisor call overhead per TX descriptor.
 >>
->> Hence tc policer defines rate limit in terms of bits per second, but the
->> ALE supports limiting in terms of packets per second - the rate limit
->> bits/sec is converted to number of packets per second assuming minimum
->> Ethernet packet size ETH_ZLEN=60 bytes.
->>
->> Examples:
->> - BC rate limit to 1000pps:
->>    tc qdisc add dev eth0 clsact
->>    tc filter add dev eth0 ingress flower skip_sw dst_mac ff:ff:ff:ff:ff:ff \
->>    action police rate 480kbit burst 64k
->>
->>    rate 480kbit - 1000pps * 60 bytes * 8, burst - not used.
->>
->> - MC rate limit to 20000pps:
->>    tc qdisc add dev eth0 clsact
->>    tc filter add dev eth0 ingress flower skip_sw dst_mac 01:00:00:00:00:00 \
->>    action police rate 9600kbit burst 64k
->>
->>    rate 9600kbit - 20000pps * 60 bytes * 8, burst - not used.
->>
->> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
->> ---
-> 
-> I understand this is unpleasant feedback, but don't you want to extend
-> tc-police to have an option to rate-limit based on packet count and not
-> based on byte count?
+>> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+> The common bug with xmit_more is not flushing the already queued
+> notifications when there is a drop. Any time you drop a skb you need
+> to check it's not an skb that was the end of an xmit_more train and
+> if so flush notifications (or just always flush on error).
+>
+> Looking at the driver e.g. this starting goto:
+>
+>          if (ibmvnic_xmit_workarounds(skb, netdev)) {
+>                  tx_dropped++;
+>                  tx_send_failed++;
+>                  ret = NETDEV_TX_OK;
+>                  goto out;
+>          }
+>
+> Does not seem to hit any flush on its way out AFAICS.
 
-Huh.
-I'd be appreciated if you could provide more detailed opinion of how it can look like?
-Sry, it's my first experience with tc.
+Hi, I included those updates in a later patch to ease review but see now 
+that that was a mistake. I will merge those bits back into this patch 
+and resubmit.
 
-> The assumption you make in the driver that the
-> packets are all going to be minimum-sized is not a great one.
-> I can
-> imagine that the user's policer budget is vastly exceeded if they enable
-> jumbo frames and they put a policer at 9.6 Mbps, and this is not at all
-> according to their expectation. 20Kpps assuming 60 bytes per packet
-> might be 9.6 Mbps, and the user will assume this bandwidth profile is
-> not exceeded, that's the whole point. But 20Kpps assuming 9KB per packet
-> is 1.44Gbps. Weird.
+Thanks!
 
-Sry, not sure I completely understood above. This is specific HW feature, which can
-imit packet rate only. And it is expected to be applied by admin who know what he is doing.
-The main purpose is to preserve CPU resource, which first of all affected by packet rate.
-So, I see it as not "assumption", but requirement/agreement which will be reflected
-in docs and works for a specific use case which is determined by presence of:
-  - skip_sw flag
-  - specific dst_mac/dst_mac_mask pair
-in which case rate determines pps and not K/Mbps.
-
-
-Also some ref on previous discussion [1] [2]
-[1] https://www.spinics.net/lists/netdev/msg494630.html
-[2] https://lore.kernel.org/patchwork/patch/481285/
-
--- 
-Best regards,
-grygorii
