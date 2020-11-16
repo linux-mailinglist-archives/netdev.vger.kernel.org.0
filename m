@@ -2,64 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89C372B536D
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 22:07:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E72AF2B5395
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 22:16:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732453AbgKPVGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 16:06:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47516 "EHLO mail.kernel.org"
+        id S1731926AbgKPVPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 16:15:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50960 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729667AbgKPVGz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 16:06:55 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        id S1725994AbgKPVPG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 16:15:06 -0500
+Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 30F5E20829;
-        Mon, 16 Nov 2020 21:06:53 +0000 (UTC)
-Date:   Mon, 16 Nov 2020 16:06:51 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     paulmck <paulmck@kernel.org>, Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH] bpf: don't fail kmalloc while releasing raw_tp
-Message-ID: <20201116160651.0e2d9b63@gandalf.local.home>
-In-Reply-To: <20201116160218.3b705345@gandalf.local.home>
-References: <00000000000004500b05b31e68ce@google.com>
-        <20201115055256.65625-1-mmullins@mmlx.us>
-        <20201116121929.1a7aeb16@gandalf.local.home>
-        <1889971276.46615.1605559047845.JavaMail.zimbra@efficios.com>
-        <20201116154437.254a8b97@gandalf.local.home>
-        <20201116160218.3b705345@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3795C20888;
+        Mon, 16 Nov 2020 21:15:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605561306;
+        bh=KKKLqy05JpAvCjkxBFWdO5hMPGcadZx9kPhUbI8AJHA=;
+        h=In-Reply-To:References:From:Subject:To:Cc:Date:From;
+        b=vgmAOVrIK2rI8Dv6s6VoLfFghIVyDqzuR7OfxYPgXPJhZ+hBDjcdYC8e54afzzvHV
+         gx6/qMloTBbQA147g6H+LxvAqQ4UhfJmdgXOMDaaxpLFRPE2vDwtoK+QWvwaB6yTzQ
+         aXmEhacgnEle+TUydS51i8KvGTo8/x5vqWHaDML0=
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <alpine.DEB.2.22.394.2011161633240.2682@hadrien>
+References: <alpine.DEB.2.22.394.2011161633240.2682@hadrien>
+From:   Antoine Tenart <atenart@kernel.org>
+Subject: Re: [PATCH v2] net: phy: mscc: fix excluded_middle.cocci warnings
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Quentin Schulz <quentin.schulz@bootlin.com>,
+        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Denis Efremov <efremov@linux.com>,
+        netdev@vger.kernel.org
+Message-ID: <160556130103.369564.5641893167437988724@surface.local>
+Date:   Mon, 16 Nov 2020 22:15:01 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Nov 2020 16:02:18 -0500
-Steven Rostedt <rostedt@goodmis.org> wrote:
+Hello Julia,
 
-> +		if (new) {
-> +			for (i = 0; old[i].func; i++)
-> +				if (old[i].func != tp_func->func
-> +				    || old[i].data != tp_func->data)
-> +					new[j++] = old[i];
+Quoting Julia Lawall (2020-11-16 16:34:44)
+> From: kernel test robot <lkp@intel.com>
+>=20
+> Condition !A || A && B is equivalent to !A || B.
+>=20
+> Generated by: scripts/coccinelle/misc/excluded_middle.cocci
+>=20
+> Fixes: b76f0ea01312 ("coccinelle: misc: add excluded_middle.cocci script")
+> CC: Denis Efremov <efremov@linux.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
 
-Oops, need to check for old[i].func != tp_stub_func here too.
+Reviewed-by: Antoine Tenart <atenart@kernel.org>
 
--- Steve
+Thanks!
+Antoine
 
-> +			new[nr_probes - nr_del].func = NULL;
-> +		} else {
+> ---
+>=20
+> v2: add netdev mailing list
+>=20
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
+t master
+> head:   e28c0d7c92c89016c12a677616668957351e7542
+> commit: b76f0ea013125358d1b4ca147a6f9b6883dd2493 coccinelle: misc: add ex=
+cluded_middle.cocci script
+> :::::: branch date: 8 hours ago
+> :::::: commit date: 8 weeks ago
+>=20
+> Please take the patch only if it's a positive warning. Thanks!
+>=20
+>  mscc_ptp.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> --- a/drivers/net/phy/mscc/mscc_ptp.c
+> +++ b/drivers/net/phy/mscc/mscc_ptp.c
+> @@ -136,7 +136,7 @@ static void vsc85xx_ts_write_csr(struct
+>=20
+>         phy_ts_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_158=
+8);
+>=20
+> -       if (!cond || (cond && upper))
+> +       if (!cond || upper)
+>                 phy_ts_base_write(phydev, MSCC_PHY_TS_CSR_DATA_MSB, upper=
+);
+>=20
+>         phy_ts_base_write(phydev, MSCC_PHY_TS_CSR_DATA_LSB, lower);
