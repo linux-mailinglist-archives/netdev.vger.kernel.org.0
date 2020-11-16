@@ -2,124 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 035932B3F97
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 10:16:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E6A02B3FA4
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 10:23:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726594AbgKPJP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 04:15:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726281AbgKPJP4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 04:15:56 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3A8C0613CF;
-        Mon, 16 Nov 2020 01:15:56 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id 34so9389862pgp.10;
-        Mon, 16 Nov 2020 01:15:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=kzcHf4qEtowuNNsUci4VPgRhokFzxujl5WcBs5MXL4Y=;
-        b=cxNZPywu6qn3f/MOS6B3JGgPe4gVgy+5jwt1bYI/GjP14ktcLrewAb82Fja+nhfy4D
-         nDjKUebt1TU9vX2v6LH36i/hDhoJMOgUCro7brt7Mr8npsk2y2btJld/1E4d34PGpDG6
-         oBoe5EjNZLKPMamw7du6wdQe7Qm8DOajzVJLYJuGGlSW3425eAoigMuKkHnEP89hp4cx
-         vGTkiMYB3B2LQD4+FRj3dbMx4dTffJE67jDJMDLEuOPa8bKHVaHfV3RGYCqP9Tr+KkeX
-         LF630I/5MENJLG/gr3Y6g2zf4mi6YC3bQKQWUke7ENz+XXGgS4lOGuCy2MztFqWT+UUf
-         xXjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=kzcHf4qEtowuNNsUci4VPgRhokFzxujl5WcBs5MXL4Y=;
-        b=rfQLxFbVjtmBKo8L6RsW7sqGG3nWMrIPZ1g4JAKjtal0zNXIm2989/1axGOfX6szwT
-         81m7y17FU+Td0WChbjyrNOrRPqw4BduMCwpuu9omp/IKTvnx5rEOqa2eoGt3s93H8o5u
-         jIbecRCJcY/d9eFJeXZl9Y6aON1TEngCiMKhocUPQ9YO0wtd7pfyHRd5G4i4EK1juOE1
-         HKL7y4c5y8ev1FKtUzZeVDr+HRW7qO3JBFEx/I32tX/IHXxD7hBZQnRwvtPSvauofQaW
-         oHPnqfSFAyDM4OkDNDNmWRYHr+uU3DdbSdZ950gqq84GFtSMm0tH1a84x4U5yb/jFPya
-         gVUA==
-X-Gm-Message-State: AOAM532BvudpsXen1iWi9f8B4x2vsy+jK4+yeH/Hq+9TSHMrqS11CB01
-        zvOVvSaKge+LZQ2oemMCWfL4tYKQjLc=
-X-Google-Smtp-Source: ABdhPJzEeHJxst6LWnNBgewnVuNPLaDp5agvIVLK8G1015Wytqa/+U/qIVT8CG0VayJ4nAkTmneO7A==
-X-Received: by 2002:a63:2848:: with SMTP id o69mr9774875pgo.413.1605518155269;
-        Mon, 16 Nov 2020 01:15:55 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id u24sm17663466pfm.51.2020.11.16.01.15.54
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 16 Nov 2020 01:15:54 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        gnault@redhat.com, pabeni@redhat.com, lorenzo@kernel.org
-Subject: [PATCH net-next] ip_gre: remove CRC flag from dev features in gre_gso_segment
-Date:   Mon, 16 Nov 2020 17:15:47 +0800
-Message-Id: <52ee1b515df977b68497b1b08290d00a22161279.1605518147.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        id S1727418AbgKPJWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 04:22:33 -0500
+Received: from mailout05.rmx.de ([94.199.90.90]:55885 "EHLO mailout05.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726837AbgKPJWd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 04:22:33 -0500
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout05.rmx.de (Postfix) with ESMTPS id 4CZNrj0zRpz9xCZ;
+        Mon, 16 Nov 2020 10:22:29 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CZNrS3HBTz2TTNs;
+        Mon, 16 Nov 2020 10:22:16 +0100 (CET)
+Received: from n95hx1g2.localnet (192.168.54.154) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 16 Nov
+ 2020 10:21:15 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        "Richard Cochran" <richardcochran@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Vivien Didelot" <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 03/11] net: dsa: microchip: split ksz_common.h
+Date:   Mon, 16 Nov 2020 10:21:14 +0100
+Message-ID: <21145167.0O08aVLsga@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <5328227.AyQhSCNoNJ@n95hx1g2>
+References: <20201112153537.22383-1-ceggers@arri.de> <20201112230254.v6bzsud3jlcmsjm2@skbuf> <5328227.AyQhSCNoNJ@n95hx1g2>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.154]
+X-RMX-ID: 20201116-102216-4CZNrS3HBTz2TTNs-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to let it always do CRC checksum in sctp_gso_segment()
-by removing CRC flag from the dev features in gre_gso_segment() for
-SCTP over GRE, just as it does in Commit 527beb8ef9c0 ("udp: support
-sctp over udp in skb_udp_tunnel_segment") for SCTP over UDP.
+On Friday, 13 November 2020, 17:56:34 CET, Christian Eggers wrote:
+> On Friday, 13 November 2020, 00:02:54 CET, Vladimir Oltean wrote:
+> > On Thu, Nov 12, 2020 at 04:35:29PM +0100, Christian Eggers wrote:
+> > > Parts of ksz_common.h (struct ksz_device) will be required in
+> > > net/dsa/tag_ksz.c soon. So move the relevant parts into a new header
+> > > file.
+> > > 
+> > > Signed-off-by: Christian Eggers <ceggers@arri.de>
+> > > ---
+> > 
+> > I had to skip ahead to see what you're going to use struct ksz_port and
+> > 
+> > struct ksz_device for. It looks like you need:
+> > 	struct ksz_port::tstamp_rx_latency_ns
+> > 	struct ksz_device::ptp_clock_lock
+> > 	struct ksz_device::ptp_clock_time
+> > 
+> > Not more.
+I have tried to put these members into separate structs:
 
-It could set csum/csum_start in GSO CB properly in sctp_gso_segment()
-after that commit, so it would do checksum with gso_make_checksum()
-in gre_gso_segment(), and Commit 622e32b7d4a6 ("net: gre: recompute
-gre csum for sctp over gre tunnels") can be reverted now.
+include/linux/dsa/ksz_common.h:
+struct ksz_port_ptp_shared {
+	u16 tstamp_rx_latency_ns;   /* rx delay from wire to tstamp unit */
+};
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/ipv4/gre_offload.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+struct ksz_device_ptp_shared {
+	spinlock_t ptp_clock_lock; /* for ptp_clock_time */
+	/* approximated current time, read once per second from hardware */
+	struct timespec64 ptp_clock_time;
+};
 
-diff --git a/net/ipv4/gre_offload.c b/net/ipv4/gre_offload.c
-index e0a2465..a5935d4 100644
---- a/net/ipv4/gre_offload.c
-+++ b/net/ipv4/gre_offload.c
-@@ -15,12 +15,12 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
- 				       netdev_features_t features)
- {
- 	int tnl_hlen = skb_inner_mac_header(skb) - skb_transport_header(skb);
--	bool need_csum, need_recompute_csum, gso_partial;
- 	struct sk_buff *segs = ERR_PTR(-EINVAL);
- 	u16 mac_offset = skb->mac_header;
- 	__be16 protocol = skb->protocol;
- 	u16 mac_len = skb->mac_len;
- 	int gre_offset, outer_hlen;
-+	bool need_csum, gso_partial;
- 
- 	if (!skb->encapsulation)
- 		goto out;
-@@ -41,10 +41,10 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
- 	skb->protocol = skb->inner_protocol;
- 
- 	need_csum = !!(skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM);
--	need_recompute_csum = skb->csum_not_inet;
- 	skb->encap_hdr_csum = need_csum;
- 
- 	features &= skb->dev->hw_enc_features;
-+	features &= ~NETIF_F_SCTP_CRC;
- 
- 	/* segment inner packet. */
- 	segs = skb_mac_gso_segment(skb, features);
-@@ -99,15 +99,7 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
- 		}
- 
- 		*(pcsum + 1) = 0;
--		if (need_recompute_csum && !skb_is_gso(skb)) {
--			__wsum csum;
--
--			csum = skb_checksum(skb, gre_offset,
--					    skb->len - gre_offset, 0);
--			*pcsum = csum_fold(csum);
--		} else {
--			*pcsum = gso_make_checksum(skb, 0);
--		}
-+		*pcsum = gso_make_checksum(skb, 0);
- 	} while ((skb = skb->next));
- out:
- 	return segs;
--- 
-2.1.0
+drivers/net/dsa/microchip/ksz_common.h:
+...
+#include <linux/dsa/ksz_common.h>
+...
+struct ksz_port {
+...
+#if IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ9477_PTP)
+	struct ksz_port_ptp_shared ptp_shared;	/* shared with tag_ksz.c */
+	u16 tstamp_tx_latency_ns;	/* tx delay from tstamp unit to wire */
+	struct hwtstamp_config tstamp_config;
+	struct sk_buff *tstamp_tx_xdelay_skb;
+	unsigned long tstamp_state;
+#endif
+};
+...
+struct ksz_device {
+...
+#if IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ9477_PTP)
+	struct ptp_clock *ptp_clock;
+	struct ptp_clock_info ptp_caps;
+	struct mutex ptp_mutex;
+	struct ksz_device_ptp_shared ptp_shared;   /* shared with tag_ksz.c */
+#endif
+};
+
+The problem with such technique is, that I still need to dereference
+struct ksz_device in tag_ksz.c:
+
+static void ksz9477_rcv_timestamp(struct sk_buff *skb, u8 *tag,
+				  struct net_device *dev, unsigned int port)
+{
+...
+	struct dsa_switch *ds = dev->dsa_ptr->ds;
+	struct ksz_device *ksz = ds->priv;
+	struct ksz_port *prt = &ksz->ports[port];
+...
+}
+
+As struct dsa_switch::priv is already occupied by the pointer to
+struct ksz_device, I see no way accessing the ptp specific device/port
+information in tag_ksz.c.
+
+> > 
+> > Why don't you go the other way around, i.e. exporting some functions
+> > from your driver, and calling them from the tagger?
+> 
+> Good question... But as for as I can see, there are a single tagger and
+> multiple device drivers (currently KSZ8795 and KSZ9477).
+> 
+> Moving the KSZ9477 specific stuff, which is required by the tagger, into the
+> KSZ9477 device driver, would make the tagger dependent on the driver(s).
+> Currently, no tagger seems to have this direction of dependency (at least I
+> cannot find this in net/dsa/Kconfig).
+> 
+> If I shall change this anyway, I would use #ifdefs within the tag_ksz driver
+> in order to avoid unnecessary dependencies to the KSZ9477 driver for the
+> case only KSZ8795 is selected.
+> 
+> > You could even move
+> > the entire ksz9477_tstamp_to_clock() into the driver as-is, as far as I
+> > can see.
+
+regards
+Christian
+
+
 
