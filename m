@@ -2,80 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B0DE2B45E2
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:32:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1859E2B45E6
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 15:32:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730051AbgKPOb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 09:31:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44700 "EHLO
+        id S1730200AbgKPObg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 09:31:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729614AbgKPOb3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 09:31:29 -0500
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4700DC0613CF;
-        Mon, 16 Nov 2020 06:31:29 -0800 (PST)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1kefXN-0006id-9l; Mon, 16 Nov 2020 15:31:21 +0100
-Date:   Mon, 16 Nov 2020 15:31:21 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-next@vger.kernel.org,
-        netdev@vger.kernel.org, Florian Westphal <fw@strlen.de>
-Subject: Re: [PATCH net-next v4] net: linux/skbuff.h: combine SKB_EXTENSIONS
- + KCOV handling
-Message-ID: <20201116143121.GC22792@breakpoint.cc>
-References: <20201116031715.7891-1-rdunlap@infradead.org>
- <ffe01857-8609-bad7-ae89-acdaff830278@tessares.net>
+        with ESMTP id S1730196AbgKPObg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 09:31:36 -0500
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3D2C0613D1
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 06:31:35 -0800 (PST)
+Received: by mail-wm1-x343.google.com with SMTP id h2so23942574wmm.0
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 06:31:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=qMjDR0Ym+nhpvOJ6zJJnl+LYMN6YDDREpuIxO7AtctE=;
+        b=maIsAJsZ9C5ds72BdFMn8SZrZag4sqWfO/sawEbHeTLRHGOCxsrX7qrwfnuNG1YA1j
+         QZtGTqZB+Or9el/yGKjjvrccoBtEOZOyFIj2uWR0DabDfm6HTvCTdRnSue5wP33Spa0P
+         i9O51hwM6xuwY4SCPNtQ+frLZ/lUKwXYB+8XA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=qMjDR0Ym+nhpvOJ6zJJnl+LYMN6YDDREpuIxO7AtctE=;
+        b=g03vqHdtZ9hJ8+enAYPpTLX+i05FrZmVX7+leie++ds1AYEKDVVk3IrUFuQLB5H0z5
+         RJnOeO3n8m1N+RtcaupVZu161CQFKBz/9FySoEeStZvq+0SGv9fy4ugDkv0gs4IFdMev
+         JyT8qvFUW3MulOBQHp/jm+uLFU3bNRjUbeaPT1ewBZ2HejsJ1rZgSwnLYuvYKOb1ZgAa
+         bEM1sZnjnNciFVfED+jvSW3gXAA1lHoSv0Zc2Iha4I232sP30CCXCy/+TwQtGsZMaKSK
+         a3IP8ZiOaMYiWGw0d7VZFaBxhnYBLHrZX2PfOVmYyDEuZdhCKX28EFj9NEDL69EV1T58
+         23AA==
+X-Gm-Message-State: AOAM5326Ls9snnFdl8k7IaZFJrLwWdJH+EdPtOFMl+jsyCAUVcG/svPk
+        uXl7UAvm7CukLt+9W4M3jP1Gbg==
+X-Google-Smtp-Source: ABdhPJwH2qVsIs/Q09LWrmiCrFI7JYrstrUAmtDXK2/+Vjjo5XitU8+h0y5abnzV1eFvxC7rtTQtig==
+X-Received: by 2002:a7b:c845:: with SMTP id c5mr15528327wml.135.1605537094497;
+        Mon, 16 Nov 2020 06:31:34 -0800 (PST)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id u16sm22809008wrn.55.2020.11.16.06.31.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2020 06:31:33 -0800 (PST)
+References: <160522352433.135009.15329422887113794062.stgit@john-XPS-13-9370> <160522367856.135009.17304729578208922913.stgit@john-XPS-13-9370>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [bpf PATCH v2 5/6] bpf, sockmap: Handle memory acct if skb_verdict prog redirects to self
+In-reply-to: <160522367856.135009.17304729578208922913.stgit@john-XPS-13-9370>
+Date:   Mon, 16 Nov 2020 15:31:32 +0100
+Message-ID: <87blfxweyj.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ffe01857-8609-bad7-ae89-acdaff830278@tessares.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Matthieu Baerts <matthieu.baerts@tessares.net> wrote:
-> > --- linux-next-20201113.orig/include/linux/skbuff.h
-> > +++ linux-next-20201113/include/linux/skbuff.h
-> > @@ -4137,7 +4137,6 @@ static inline void skb_set_nfct(struct s
-> >   #endif
-> >   }
-> > -#ifdef CONFIG_SKB_EXTENSIONS
-> >   enum skb_ext_id {
-> >   #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
-> >   	SKB_EXT_BRIDGE_NF,
-> > @@ -4151,12 +4150,11 @@ enum skb_ext_id {
-> >   #if IS_ENABLED(CONFIG_MPTCP)
-> >   	SKB_EXT_MPTCP,
-> >   #endif
-> > -#if IS_ENABLED(CONFIG_KCOV)
-> >   	SKB_EXT_KCOV_HANDLE,
-> > -#endif
-> 
-> I don't think we should remove this #ifdef: the number of extensions are
-> currently limited to 8, we might not want to always have KCOV there even if
-> we don't want it. I think adding items in this enum only when needed was the
-> intension of Florian (+cc) when creating these SKB extensions.
-> Also, this will increase a tiny bit some structures, see "struct skb_ext()".
+On Fri, Nov 13, 2020 at 12:27 AM CET, John Fastabend wrote:
+> If the skb_verdict_prog redirects an skb knowingly to itself, fix your
+> BPF program this is not optimal and an abuse of the API please use
+> SK_PASS. That said there may be cases, such as socket load balancing,
+> where picking the socket is hashed based or otherwise picks the same
+> socket it was received on in some rare cases. If this happens we don't
+> want to confuse userspace giving them an EAGAIN error if we can avoid
+> it.
+>
+> To avoid double accounting in these cases. At the moment even if the
+> skb has already been charged against the sockets rcvbuf and forward
+> alloc we check it again and do set_owner_r() causing it to be orphaned
+> and recharged. For one this is useless work, but more importantly we
+> can have a case where the skb could be put on the ingress queue, but
+> because we are under memory pressure we return EAGAIN. The trouble
+> here is the skb has already been accounted for so any rcvbuf checks
+> include the memory associated with the packet already. This rolls
+> up and can result in unecessary EAGAIN errors in userspace read()
+> calls.
+>
+> Fix by doing an unlikely check and skipping checks if skb->sk == sk.
+>
+> Fixes: 51199405f9672 ("bpf: skb_verdict, support SK_PASS on RX BPF path")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  net/core/skmsg.c |   17 +++++++++++------
+>  1 file changed, 11 insertions(+), 6 deletions(-)
+>
+> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+> index 9aed5a2c7c5b..f747ee341fe8 100644
+> --- a/net/core/skmsg.c
+> +++ b/net/core/skmsg.c
+> @@ -404,11 +404,13 @@ static struct sk_msg *sk_psock_create_ingress_msg(struct sock *sk,
+>  {
+>  	struct sk_msg *msg;
+>  
+> -	if (atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf)
+> -		return NULL;
+> +	if (likely(skb->sk != sk)) {
+> +		if (atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf)
+> +			return NULL;
+>  
+> -	if (!sk_rmem_schedule(sk, skb, skb->truesize))
+> -		return NULL;
+> +		if (!sk_rmem_schedule(sk, skb, skb->truesize))
+> +			return NULL;
+> +	}
+>  
+>  	msg = kzalloc(sizeof(*msg), __GFP_NOWARN | GFP_ATOMIC);
+>  	if (unlikely(!msg))
+> @@ -455,9 +457,12 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
+>  	 * the BPF program was run initiating the redirect to the socket
+>  	 * we will eventually receive this data on. The data will be released
+>  	 * from skb_consume found in __tcp_bpf_recvmsg() after its been copied
+> -	 * into user buffers.
+> +	 * into user buffers. If we are receiving on the same sock skb->sk is
+> +	 * already assigned, skip memory accounting and owner transition seeing
+> +	 * it already set correctly.
+>  	 */
+> -	skb_set_owner_r(skb, sk);
+> +	if (likely(skb->sk != sk))
+> +		skb_set_owner_r(skb, sk);
+>  	return sk_psock_skb_ingress_enqueue(skb, psock, sk, msg);
+>  }
+>  
 
-Yes, I would also prefer to retrain the ifdef.
+I think all the added checks boil down to having:
 
-Another reason was to make sure that any skb_ext_add(..., MY_EXT) gives
-a compile error if the extension is not enabled.
+	struct sock *sk = psock->sk;
 
-> So if we think it is better to remove these #ifdef here, we should be OK.
-> But if we prefer not to do that, we should then not add stubs for
-> skb_ext_{add,find}() and keep the ones for skb_[gs]et_kcov_handle().
+        if (unlikely(skb->sk == sk))
+                return sk_psock_skb_ingress_self(psock, skb);
 
-Yes, exactly, I did not add these stubs because I could not figure out
-a case where an empty skb_ext_{add,find} would be wanted.
-
-If your code calls skb_ext_add() but no skb extensions exist you forgot
-a SELECT/DEPENDS SKB_EXTENSIONS in Kconfig & compiler error would tell
-you that.
+... on entry to sk_psock_skb_ingress().
