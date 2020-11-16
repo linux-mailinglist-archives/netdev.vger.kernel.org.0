@@ -2,115 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C72C2B4C1D
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 18:07:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1DB92B4C24
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 18:07:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732435AbgKPRF1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 16 Nov 2020 12:05:27 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:30768 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726236AbgKPRF1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 12:05:27 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-32-6hGtgbgIP0GQA7QZEJA7DA-1; Mon, 16 Nov 2020 17:05:23 +0000
-X-MC-Unique: 6hGtgbgIP0GQA7QZEJA7DA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 16 Nov 2020 17:05:22 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 16 Nov 2020 17:05:22 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Martin Schiller' <ms@dev.tdt.de>,
-        "andrew.hendry@gmail.com" <andrew.hendry@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "xie.he.0141@gmail.com" <xie.he.0141@gmail.com>
-CC:     "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next v2 2/6] net/x25: make neighbour params
- configurable
-Thread-Topic: [PATCH net-next v2 2/6] net/x25: make neighbour params
- configurable
-Thread-Index: AQHWvCDo0EreTMkGI0G9xcVRt+utm6nK+twg
-Date:   Mon, 16 Nov 2020 17:05:22 +0000
-Message-ID: <5d4faa10de734ba0af7a471b0eadd782@AcuMS.aculab.com>
-References: <20201116135522.21791-1-ms@dev.tdt.de>
- <20201116135522.21791-3-ms@dev.tdt.de>
-In-Reply-To: <20201116135522.21791-3-ms@dev.tdt.de>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1732554AbgKPRGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 12:06:37 -0500
+Received: from devianza.investici.org ([198.167.222.108]:42465 "EHLO
+        devianza.investici.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729841AbgKPRGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 12:06:37 -0500
+Received: from mx2.investici.org (unknown [127.0.0.1])
+        by devianza.investici.org (Postfix) with ESMTP id 4CZb8B3sKsz6vMV;
+        Mon, 16 Nov 2020 17:06:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=privacyrequired.com;
+        s=stigmate; t=1605546394;
+        bh=1728LY6WO61ZBnNeVZNds1Pd/nP78DAwyQe8T/HtmJw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GP42SCO0XBsbwdUR8HapJHSXr/RkjEFAMm8eU2obxrhQvu7vTiCDouv6YgyOzdKJM
+         pU5pKS+MtIhcbOCq22Ff5AVdZE8dkwWVQOKIE27ekKcAS5wJMfLtKuGF/4Dxx9vt8P
+         iL7l/D9zM2GGUuhX0ds/dE+9PqskJyrSCu6K9rCk=
+Received: from [198.167.222.108] (mx2.investici.org [198.167.222.108]) (Authenticated sender: laniel_francis@privacyrequired.com) by localhost (Postfix) with ESMTPSA id 4CZb8B1nhCz6vLs;
+        Mon, 16 Nov 2020 17:06:34 +0000 (UTC)
+From:   Francis Laniel <laniel_francis@privacyrequired.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH v5 0/3] Fix inefficiences and rename nla_strlcpy
+Date:   Mon, 16 Nov 2020 18:06:33 +0100
+Message-ID: <3291815.yzSIL3OBH5@machine>
+In-Reply-To: <20201116080652.5eae929c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201113111133.15011-1-laniel_francis@privacyrequired.com> <7105193.AbosYe1RmR@machine> <20201116080652.5eae929c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Schiller
-> Sent: 16 November 2020 13:55
-> Extended struct x25_neigh and x25_subscrip_struct to configure following
-> params through SIOCX25SSUBSCRIP:
->   o mode (DTE/DCE)
->   o number of channels
->   o facilities (packet size, window size)
->   o timer T20
-> 
-> Based on this configuration options the following changes/extensions
-> where made:
->   o DTE/DCE handling to select the next lc (DCE=from bottom / DTE=from
->     top)
->   o DTE/DCE handling to set correct clear/reset/restart cause
->   o take default facilities from neighbour settings
-> 
-...
-> +/*
-> + *	DTE/DCE subscription options.
-> + *
-> + *      As this is missing lots of options, user should expect major
-> + *	changes of this structure in 2.5.x which might break compatibility.
+Le lundi 16 novembre 2020, 17:06:52 CET Jakub Kicinski a =E9crit :
+> On Sun, 15 Nov 2020 18:05:39 +0100 Francis Laniel wrote:
+> > Le dimanche 15 novembre 2020, 01:18:37 CET Jakub Kicinski a =E9crit :
+> > > On Fri, 13 Nov 2020 10:56:26 -0800 Kees Cook wrote:
+> > > > Thanks! This looks good to me.
+> > > >=20
+> > > > Jakub, does this look ready to you?
+> > >=20
+> > > Yup, looks good, sorry!
+> > >=20
+> > > But it didn't get into patchwork cleanly :/
+> > >=20
+> > > One more resend please? (assuming we're expected to take this
+> > > into net-next)
+> >=20
+> > I will send it again and tag it for net-next.
+> >=20
+> > Just to know, is patchwork this:
+> > https://patchwork.kernel.org/project/netdevbpf/list/
+>=20
+> Yes, that's the one.
 
-A little out of date!
+OK! The tool seems cool.
 
-> + *      The somewhat ugly dimension 200-sizeof() is needed to maintain
-> + *	backward compatibility.
-> + */
-> +struct x25_subscrip_struct {
-> +	char device[200 - ((2 * sizeof(unsigned long)) +
-> +		    sizeof(struct x25_facilities) +
-> +		    (2 * sizeof(unsigned int)))];
-> +	unsigned int		dce;
-> +	unsigned int		lc;
-> +	struct x25_facilities	facilities;
-> +	unsigned long		t20;
-> +	unsigned long		global_facil_mask;	/* 0 to disable negotiation */
-> +	unsigned int		extended;
-> +};
+So normally I resend the patches, but I do not see them in patchwork.
+Is there something am I supposed to do so they can be visible through=20
+patchwork?
 
-Would it be better to used fixed size integer types to avoid
-'compat_32' issues?
-
-It might even be worth adding padding after the existing
-32bit layout to align any additional fields at the same offset
-in both 64bit and 32bit systems.
-
-I was also wondering if you can use an anonymous structure
-member for the actual fields and then use 200 - sizeof (struct foo)
-for the pad?
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
 
