@@ -2,190 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E082B3E35
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 09:00:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66BD32B3E3B
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 09:04:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728024AbgKPH7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 02:59:51 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7543 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727711AbgKPH7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 02:59:50 -0500
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CZM112qyDzhbNW;
-        Mon, 16 Nov 2020 15:59:33 +0800 (CST)
-Received: from [10.67.76.251] (10.67.76.251) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Mon, 16 Nov 2020
- 15:59:37 +0800
-Subject: Re: [PATCH v6] lib: optimize cpumask_local_spread()
-To:     Dave Hansen <dave.hansen@intel.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Yuqi Jin <jinyuqi@huawei.com>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Juergen Gross <jgross@suse.com>,
-        Paul Burton <paul.burton@mips.com>,
-        Michal Hocko <mhocko@suse.com>,
-        "Michael Ellerman" <mpe@ellerman.id.au>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        "Anshuman Khandual" <anshuman.khandual@arm.com>
-References: <1604410767-55947-1-git-send-email-zhangshaokun@hisilicon.com>
- <3e2e760d-e4b9-8bd0-a279-b23bd7841ae7@intel.com>
- <eec4c1b6-8dad-9d07-7ef4-f0fbdcff1785@hisilicon.com>
- <5e8b0304-4de1-4bdc-41d2-79fa5464fbc7@intel.com>
-From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
-Message-ID: <1ca0d77f-7cf3-57d8-af23-169975b63b32@hisilicon.com>
-Date:   Mon, 16 Nov 2020 15:59:38 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
-MIME-Version: 1.0
-In-Reply-To: <5e8b0304-4de1-4bdc-41d2-79fa5464fbc7@intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.76.251]
-X-CFilter-Loop: Reflected
+        id S1728147AbgKPICG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 03:02:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727973AbgKPICF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 03:02:05 -0500
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C38C0613CF;
+        Mon, 16 Nov 2020 00:02:05 -0800 (PST)
+Received: by mail-pf1-x443.google.com with SMTP id q5so13389919pfk.6;
+        Mon, 16 Nov 2020 00:02:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=9Y1yLZPbBL2X5WIYzh0MGolabV4K2PbjAEx9PhCuf+Q=;
+        b=kpM8zXJ/HI3JAXzLtyf43BKIVH0eKHa0+/czdTViRIu70kSn8YwBwt5Rin3vQ1B/V5
+         7rXATO838psjNSblinn929eJATjAnVZjiR9bnBk7hZCcLju6mVRew6AJMrt7wFc1Fl7S
+         Z4caCceE4pIaUUNt8DXbXosT+gL+8NBJSi+6VSoqKw3MwAzoY9hX8xE/41NgWxBDT2cz
+         VytAjDZDgdc1kgxYrOIabmqd6Nab8eg0PTEn3nDiLhbeERmkgdQNx0QEg16oqQ+mrgae
+         1m0uVRk2yg2jAyfXUj0VOdFRGT45FT3oSt4te7MN+DRJpItPZs1OXwD4UwfwkMWN3IGD
+         R89A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=9Y1yLZPbBL2X5WIYzh0MGolabV4K2PbjAEx9PhCuf+Q=;
+        b=LkYT4hJrH67LJBYpx57gTh5Tt94fcfTBzvBTge8zHr+x11mlFRSbbdyRT5jby3DWv4
+         y/Y2S8GxxuBj/9Iwa5Hlk3h9KLcnuVwJIsvQvoZ7tjmXrnsHFNjTP1FifFVTV89uolth
+         kjnsE90LxoiEggHM/EQUfqoqvhWGrfdWSpKIkj23kLRgnUJ5uaVw0z57J+k5L5Mq0luF
+         N2S0QBHMapTQa+7eGBnMmULSIPuie6QAfMVRX5x5DA07tXA/6zYQQg2UNKh6XkNLybod
+         ooS/kIbRxHY7aW5JI4pUKYV8mXe7+da/wyVjj/KOYM3H5NQAQb7ld8fFMbraFD9VRd/9
+         zEwg==
+X-Gm-Message-State: AOAM530tApaQ5VBKHuO0vPl9IUIo+Zh3BfBlJ3Zt9n1xkEIn9L2M0AJm
+        jGzEWRAZF1Hd8zZcjbtsl5k=
+X-Google-Smtp-Source: ABdhPJzhWi0/OjAlz2/BIbIgxQj1UreWhYu3egSm7uojQxyPCrwoHDeQL3pL61qwOodl2i14XkH5LA==
+X-Received: by 2002:a62:8857:0:b029:18b:cf28:9bbe with SMTP id l84-20020a6288570000b029018bcf289bbemr12903100pfd.45.1605513725298;
+        Mon, 16 Nov 2020 00:02:05 -0800 (PST)
+Received: from localhost.localdomain ([8.210.202.142])
+        by smtp.gmail.com with ESMTPSA id w10sm15031227pgj.91.2020.11.16.00.01.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 16 Nov 2020 00:02:04 -0800 (PST)
+From:   Yejune Deng <yejune.deng@gmail.com>
+To:     wensong@linux-vs.org, horms@verge.net.au, ja@ssi.bg,
+        pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yejune.deng@gmail.com
+Subject: [PATCH] ipvs: replace atomic_add_return()
+Date:   Mon, 16 Nov 2020 16:01:47 +0800
+Message-Id: <1605513707-7579-1-git-send-email-yejune.deng@gmail.com>
+X-Mailer: git-send-email 1.9.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+atomic_inc_return() looks better
 
-在 2020/11/14 0:02, Dave Hansen 写道:
-> On 11/12/20 6:06 PM, Shaokun Zhang wrote:
->>>> On Huawei Kunpeng 920 server, there are 4 NUMA node(0 - 3) in the 2-cpu
->>>> system(0 - 1). The topology of this server is followed:
->>>
->>> This is with a feature enabled that Intel calls sub-NUMA-clustering
->>> (SNC), right?  Explaining *that* feature would also be great context for
->>
->> Correct,
->>
->>> why this gets triggered on your system and not normally on others and
->>> why nobody noticed this until now.
->>
->> This is on intel 6248 platform:
-> 
-> I have no idea what a "6248 platform" is.
-> 
+Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
+---
+ net/netfilter/ipvs/ip_vs_core.c | 2 +-
+ net/netfilter/ipvs/ip_vs_sync.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-My apologies that it's Cascade Lake, [1]
+diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+index c0b8215..54e086c 100644
+--- a/net/netfilter/ipvs/ip_vs_core.c
++++ b/net/netfilter/ipvs/ip_vs_core.c
+@@ -2137,7 +2137,7 @@ static int ip_vs_in_icmp_v6(struct netns_ipvs *ipvs, struct sk_buff *skb,
+ 	if (cp->flags & IP_VS_CONN_F_ONE_PACKET)
+ 		pkts = sysctl_sync_threshold(ipvs);
+ 	else
+-		pkts = atomic_add_return(1, &cp->in_pkts);
++		pkts = atomic_inc_return(&cp->in_pkts);
+ 
+ 	if (ipvs->sync_state & IP_VS_STATE_MASTER)
+ 		ip_vs_sync_conn(ipvs, cp, pkts);
+diff --git a/net/netfilter/ipvs/ip_vs_sync.c b/net/netfilter/ipvs/ip_vs_sync.c
+index 16b4806..9d43277 100644
+--- a/net/netfilter/ipvs/ip_vs_sync.c
++++ b/net/netfilter/ipvs/ip_vs_sync.c
+@@ -615,7 +615,7 @@ static void ip_vs_sync_conn_v0(struct netns_ipvs *ipvs, struct ip_vs_conn *cp,
+ 	cp = cp->control;
+ 	if (cp) {
+ 		if (cp->flags & IP_VS_CONN_F_TEMPLATE)
+-			pkts = atomic_add_return(1, &cp->in_pkts);
++			pkts = atomic_inc_return(&cp->in_pkts);
+ 		else
+ 			pkts = sysctl_sync_threshold(ipvs);
+ 		ip_vs_sync_conn(ipvs, cp, pkts);
+@@ -776,7 +776,7 @@ void ip_vs_sync_conn(struct netns_ipvs *ipvs, struct ip_vs_conn *cp, int pkts)
+ 	if (!cp)
+ 		return;
+ 	if (cp->flags & IP_VS_CONN_F_TEMPLATE)
+-		pkts = atomic_add_return(1, &cp->in_pkts);
++		pkts = atomic_inc_return(&cp->in_pkts);
+ 	else
+ 		pkts = sysctl_sync_threshold(ipvs);
+ 	goto sloop;
+-- 
+1.9.1
 
->>>> +static void calc_node_distance(int *node_dist, int node)
->>>> +{
->>>> +	int i;
->>>> +
->>>> +	for (i = 0; i < nr_node_ids; i++)
->>>> +		node_dist[i] = node_distance(node, i);
->>>> +}
->>>
->>> This appears to be the only place node_dist[] is written.  That means it
->>> always contains a one-dimensional slice of the two-dimensional data
->>> represented by node_distance().
->>>
->>> Why is a copy of this data needed?
->>
->> It is used to store the distance with the @node for later, apologies that I
->> can't follow your question correctly.
-> 
-> Right, the data that you store is useful.  *But*, it's also a verbatim
-> copy of the data from node_distance().  Why not just use node_distance()
-> directly in your code rather than creating a partial copy of it in the
-
-Ok, I will remove this redundant function in next version.
-
-> local node_dist[] array?
-> 
-> 
->>>>  unsigned int cpumask_local_spread(unsigned int i, int node)
->>>>  {
->>>> -	int cpu, hk_flags;
->>>> +	static DEFINE_SPINLOCK(spread_lock);
->>>> +	static int node_dist[MAX_NUMNODES];
->>>> +	static bool used[MAX_NUMNODES];
->>>
->>> Not to be *too* picky, but there is a reason we declare nodemask_t as a
->>> bitmap and not an array of bools.  Isn't this just wasteful?
->>>
->>>> +	unsigned long flags;
->>>> +	int cpu, hk_flags, j, id;
->>>>  	const struct cpumask *mask;
->>>>  
->>>>  	hk_flags = HK_FLAG_DOMAIN | HK_FLAG_MANAGED_IRQ;
->>>> @@ -220,20 +256,28 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
->>>>  				return cpu;
->>>>  		}
->>>>  	} else {
->>>> -		/* NUMA first. */
->>>> -		for_each_cpu_and(cpu, cpumask_of_node(node), mask) {
->>>> -			if (i-- == 0)
->>>> -				return cpu;
->>>> -		}
->>>> +		spin_lock_irqsave(&spread_lock, flags);
->>>> +		memset(used, 0, nr_node_ids * sizeof(bool));
->>>> +		calc_node_distance(node_dist, node);
->>>> +		/* Local node first then the nearest node is used */
->>>
->>> Is this comment really correct?  This makes it sound like there is only
->>
->> I think it is correct, that's what we want to choose the nearest node.
->>
->>> fallback to a single node.  Doesn't the _code_ fall back basically
->>> without limit?
->>
->> If I follow your question correctly, without this patch, if the local
->> node is used up, one random node will be choosed, right? Now we firstly
->> choose the nearest node by the distance, if all nodes has been choosen,
->> it will return the initial solution.
-> 
-> The comment makes it sound like the code does:
-> 	1. Do the local node
-> 	2. Do the next nearest node
-> 	3. Stop
-> 
-
-That's more clear, I will udpate the comments as the new patch.
-
-> In reality, I *think* it's more of a loop where it search
-> ever-increasing distances away from the local node.
-> 
-> I just think the comment needs to be made more precise.
-
-Got it.
-
-> 
->>>> +		for (j = 0; j < nr_node_ids; j++) {
->>>> +			id = find_nearest_node(node_dist, used);
->>>> +			if (id < 0)
->>>> +				break;
->>>>  
->>>> -		for_each_cpu(cpu, mask) {
->>>> -			/* Skip NUMA nodes, done above. */
->>>> -			if (cpumask_test_cpu(cpu, cpumask_of_node(node)))
->>>> -				continue;
->>>> +			for_each_cpu_and(cpu, cpumask_of_node(id), mask)
->>>> +				if (i-- == 0) {
->>>> +					spin_unlock_irqrestore(&spread_lock,
->>>> +							       flags);
->>>> +					return cpu;
->>>> +				}
->>>> +			used[id] = 1;
->>>> +		}
->>>> +		spin_unlock_irqrestore(&spread_lock, flags);
->>>
->>> The existing code was pretty sparsely commented.  This looks to me to
->>> make it more complicated and *less* commented.  Not the best combo.
->>
->> Apologies for the bad comments, hopefully I describe it clearly by the above
->> explantion.
-> 
-> Do you want to take another pass at submitting this patch?
-
-'Another pass'? Sorry for my bad understading, I don't follow it correctly.
-
-Thanks,
-Shaokun
-
-[1]https://en.wikichip.org/wiki/intel/xeon_gold/6248
-
-> .
-> 
