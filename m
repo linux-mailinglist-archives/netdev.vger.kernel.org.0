@@ -2,180 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFEE22B3F94
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 10:14:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 035932B3F97
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 10:16:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728485AbgKPJNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 04:13:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51904 "EHLO
+        id S1726594AbgKPJP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 04:15:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727812AbgKPJNZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 04:13:25 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0854EC0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 01:13:23 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id t9so17933022edq.8
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 01:13:22 -0800 (PST)
+        with ESMTP id S1726281AbgKPJP4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 04:15:56 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3A8C0613CF;
+        Mon, 16 Nov 2020 01:15:56 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id 34so9389862pgp.10;
+        Mon, 16 Nov 2020 01:15:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=b64DklvkPbJlghCpQ9o33D4Srw1SHKJxfzxD/FgwdD0=;
-        b=jUJCvlVe/hM1y+Lb2TrbXSWEld4ElJHChOmjbH3XmloUiNlfkQPnoC81kynrL3dk5e
-         9glLcAujNINZE5THL50H3wF7IeifGRpVxckLb1XZVdvueiRaXs0pKiXWdvS72+EnXCfz
-         b4dbKIM6jdALr5LLE2z4X8t7IL59HSHub3UqeDN9yDEeHO6kanZ+4ay7uSOAkSMGd6pK
-         MNZHkTIeaGdZn6bBaEV+zp37O/XeO4dEflxdg8bhSI3DVplGC/0Aw/Alihej/IxNhO17
-         aIUjEJqXob77gF83WYO/lt8xQ/sb6ykfmErd+osD0g3CKZ/z9s9mB9ifOl+8Xw5T1TxZ
-         hE0g==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=kzcHf4qEtowuNNsUci4VPgRhokFzxujl5WcBs5MXL4Y=;
+        b=cxNZPywu6qn3f/MOS6B3JGgPe4gVgy+5jwt1bYI/GjP14ktcLrewAb82Fja+nhfy4D
+         nDjKUebt1TU9vX2v6LH36i/hDhoJMOgUCro7brt7Mr8npsk2y2btJld/1E4d34PGpDG6
+         oBoe5EjNZLKPMamw7du6wdQe7Qm8DOajzVJLYJuGGlSW3425eAoigMuKkHnEP89hp4cx
+         vGTkiMYB3B2LQD4+FRj3dbMx4dTffJE67jDJMDLEuOPa8bKHVaHfV3RGYCqP9Tr+KkeX
+         LF630I/5MENJLG/gr3Y6g2zf4mi6YC3bQKQWUke7ENz+XXGgS4lOGuCy2MztFqWT+UUf
+         xXjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=b64DklvkPbJlghCpQ9o33D4Srw1SHKJxfzxD/FgwdD0=;
-        b=jqZFtG1kClfVqgBWp8+3qPSn2ANU458R/uUrqpvdyJdUIIpRN8j+ialTd4+CTQv5jA
-         hiPeuDKR/Y5jk38X06BKtuEsEDh9fO2vb0k448HwOj4gmYwNf4ulflYp79S31nM/Z7g1
-         N1wPysJnXxMXtZLun5N7boZ6Ep7hW7/WM/FaoJYYWjvD5WQHzkaENv5aWOZHgdq30tFw
-         vf4uX/RYiAyacFhZ8mqO752THlP5k8nkDF/I51edV8qHV3RplflCmYcfib5mXz16Oa6o
-         /FeAzPDhQHKCIRoY5Frb+jMZ45n/QGCPds0IYpQVV3YoRC8eSJLMnND/y1GY1Rm9zwXR
-         IZRg==
-X-Gm-Message-State: AOAM532g2l7f0tiNy51JJcxSqCqCtB+QCh1xZgo6I3FUvjs7tPk9tgtG
-        74Y5FFiwgjN8OgUrBNiLQaMdTelqBs6WOgwcRb1SzA==
-X-Google-Smtp-Source: ABdhPJzbb2CEFmZHPu02GiWFosq6pO5nK8WyF+Ii74ndpPPn+AWTh6mMqEkNn929jplJTFTFCpOa0MrY1mMrn6H/oWE=
-X-Received: by 2002:a05:6402:48d:: with SMTP id k13mr14919406edv.92.1605518001742;
- Mon, 16 Nov 2020 01:13:21 -0800 (PST)
-MIME-Version: 1.0
-Received: by 2002:a54:380d:0:0:0:0:0 with HTTP; Mon, 16 Nov 2020 01:13:21
- -0800 (PST)
-X-Originating-IP: [5.35.10.61]
-In-Reply-To: <b18c1f2cfb0c9c0b409c25f4a73248e869c8ac97.1605513087.git.xuanzhuo@linux.alibaba.com>
-References: <b18c1f2cfb0c9c0b409c25f4a73248e869c8ac97.1605513087.git.xuanzhuo@linux.alibaba.com>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Mon, 16 Nov 2020 12:13:21 +0300
-Message-ID: <CAOJe8K3wz=-LC++N-Hvrturt46+AAK1cW8VYXK+VMT9y1OSzmQ@mail.gmail.com>
-Subject: Re: [PATCH] xsk: add cq event
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=kzcHf4qEtowuNNsUci4VPgRhokFzxujl5WcBs5MXL4Y=;
+        b=rfQLxFbVjtmBKo8L6RsW7sqGG3nWMrIPZ1g4JAKjtal0zNXIm2989/1axGOfX6szwT
+         81m7y17FU+Td0WChbjyrNOrRPqw4BduMCwpuu9omp/IKTvnx5rEOqa2eoGt3s93H8o5u
+         jIbecRCJcY/d9eFJeXZl9Y6aON1TEngCiMKhocUPQ9YO0wtd7pfyHRd5G4i4EK1juOE1
+         HKL7y4c5y8ev1FKtUzZeVDr+HRW7qO3JBFEx/I32tX/IHXxD7hBZQnRwvtPSvauofQaW
+         oHPnqfSFAyDM4OkDNDNmWRYHr+uU3DdbSdZ950gqq84GFtSMm0tH1a84x4U5yb/jFPya
+         gVUA==
+X-Gm-Message-State: AOAM532BvudpsXen1iWi9f8B4x2vsy+jK4+yeH/Hq+9TSHMrqS11CB01
+        zvOVvSaKge+LZQ2oemMCWfL4tYKQjLc=
+X-Google-Smtp-Source: ABdhPJzEeHJxst6LWnNBgewnVuNPLaDp5agvIVLK8G1015Wytqa/+U/qIVT8CG0VayJ4nAkTmneO7A==
+X-Received: by 2002:a63:2848:: with SMTP id o69mr9774875pgo.413.1605518155269;
+        Mon, 16 Nov 2020 01:15:55 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id u24sm17663466pfm.51.2020.11.16.01.15.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 16 Nov 2020 01:15:54 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        gnault@redhat.com, pabeni@redhat.com, lorenzo@kernel.org
+Subject: [PATCH net-next] ip_gre: remove CRC flag from dev features in gre_gso_segment
+Date:   Mon, 16 Nov 2020 17:15:47 +0800
+Message-Id: <52ee1b515df977b68497b1b08290d00a22161279.1605518147.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/16/20, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> When we write all cq items to tx, we have to wait for a new event based
-> on poll to indicate that it is writable. But the current writability is
-> triggered based on whether tx is full or not, and In fact, when tx is
-> dissatisfied, the user of cq's item may not necessarily get it, because it
-> may still be occupied by the network card. In this case, we need to know
-> when cq is available, so this patch adds a socket option, When the user
-> configures this option using setsockopt, when cq is available, a
-> readable event is generated for all xsk bound to this umem.
->
-> I can't find a better description of this event,
-> I think it can also be 'readable', although it is indeed different from
-> the 'readable' of the new data. But the overhead of xsk checking whether
-> cq or rx is readable is small.
->
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> ---
->  include/net/xdp_sock.h      |  1 +
->  include/uapi/linux/if_xdp.h |  1 +
->  net/xdp/xsk.c               | 28 ++++++++++++++++++++++++++++
->  3 files changed, 30 insertions(+)
->
-> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-> index 1a9559c..faf5b1a 100644
-> --- a/include/net/xdp_sock.h
-> +++ b/include/net/xdp_sock.h
-> @@ -49,6 +49,7 @@ struct xdp_sock {
->  	struct xsk_buff_pool *pool;
->  	u16 queue_id;
->  	bool zc;
-> +	bool cq_event;
->  	enum {
->  		XSK_READY = 0,
->  		XSK_BOUND,
-> diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
-> index a78a809..2dba3cb 100644
-> --- a/include/uapi/linux/if_xdp.h
-> +++ b/include/uapi/linux/if_xdp.h
-> @@ -63,6 +63,7 @@ struct xdp_mmap_offsets {
->  #define XDP_UMEM_COMPLETION_RING	6
->  #define XDP_STATISTICS			7
->  #define XDP_OPTIONS			8
-> +#define XDP_CQ_EVENT			9
->
->  struct xdp_umem_reg {
->  	__u64 addr; /* Start of packet data area */
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index cfbec39..0c53403 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -285,7 +285,16 @@ void __xsk_map_flush(void)
->
->  void xsk_tx_completed(struct xsk_buff_pool *pool, u32 nb_entries)
->  {
-> +	struct xdp_sock *xs;
-> +
->  	xskq_prod_submit_n(pool->cq, nb_entries);
-> +
-> +	rcu_read_lock();
-> +	list_for_each_entry_rcu(xs, &pool->xsk_tx_list, tx_list) {
-> +		if (xs->cq_event)
-> +			sock_def_readable(&xs->sk);
-> +	}
-> +	rcu_read_unlock();
->  }
->  EXPORT_SYMBOL(xsk_tx_completed);
->
-> @@ -495,6 +504,9 @@ static __poll_t xsk_poll(struct file *file, struct
-> socket *sock,
->  			__xsk_sendmsg(sk);
->  	}
->
-> +	if (xs->cq_event && pool->cq && !xskq_prod_is_empty(pool->cq))
-> +		mask |= EPOLLIN | EPOLLRDNORM;
-> +
->  	if (xs->rx && !xskq_prod_is_empty(xs->rx))
->  		mask |= EPOLLIN | EPOLLRDNORM;
->  	if (xs->tx && !xskq_cons_is_full(xs->tx))
-> @@ -882,6 +894,22 @@ static int xsk_setsockopt(struct socket *sock, int
-> level, int optname,
->  		mutex_unlock(&xs->mutex);
->  		return err;
->  	}
-> +	case XDP_CQ_EVENT:
-> +	{
-> +		int cq_event;
-> +
-> +		if (optlen < sizeof(cq_event))
-> +			return -EINVAL;
-> +		if (copy_from_sockptr(&cq_event, optval, sizeof(cq_event)))
-> +			return -EFAULT;
-> +
-> +		if (cq_event)
-> +			xs->cq_event = true;
-> +		else
-> +			xs->cq_event = false;
+This patch is to let it always do CRC checksum in sctp_gso_segment()
+by removing CRC flag from the dev features in gre_gso_segment() for
+SCTP over GRE, just as it does in Commit 527beb8ef9c0 ("udp: support
+sctp over udp in skb_udp_tunnel_segment") for SCTP over UDP.
 
-It's false by default, isn't it?
+It could set csum/csum_start in GSO CB properly in sctp_gso_segment()
+after that commit, so it would do checksum with gso_make_checksum()
+in gre_gso_segment(), and Commit 622e32b7d4a6 ("net: gre: recompute
+gre csum for sctp over gre tunnels") can be reverted now.
 
-> +
-> +		return 0;
-> +	}
->  	default:
->  		break;
->  	}
-> --
-> 1.8.3.1
->
->
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/ipv4/gre_offload.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
+
+diff --git a/net/ipv4/gre_offload.c b/net/ipv4/gre_offload.c
+index e0a2465..a5935d4 100644
+--- a/net/ipv4/gre_offload.c
++++ b/net/ipv4/gre_offload.c
+@@ -15,12 +15,12 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
+ 				       netdev_features_t features)
+ {
+ 	int tnl_hlen = skb_inner_mac_header(skb) - skb_transport_header(skb);
+-	bool need_csum, need_recompute_csum, gso_partial;
+ 	struct sk_buff *segs = ERR_PTR(-EINVAL);
+ 	u16 mac_offset = skb->mac_header;
+ 	__be16 protocol = skb->protocol;
+ 	u16 mac_len = skb->mac_len;
+ 	int gre_offset, outer_hlen;
++	bool need_csum, gso_partial;
+ 
+ 	if (!skb->encapsulation)
+ 		goto out;
+@@ -41,10 +41,10 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
+ 	skb->protocol = skb->inner_protocol;
+ 
+ 	need_csum = !!(skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM);
+-	need_recompute_csum = skb->csum_not_inet;
+ 	skb->encap_hdr_csum = need_csum;
+ 
+ 	features &= skb->dev->hw_enc_features;
++	features &= ~NETIF_F_SCTP_CRC;
+ 
+ 	/* segment inner packet. */
+ 	segs = skb_mac_gso_segment(skb, features);
+@@ -99,15 +99,7 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
+ 		}
+ 
+ 		*(pcsum + 1) = 0;
+-		if (need_recompute_csum && !skb_is_gso(skb)) {
+-			__wsum csum;
+-
+-			csum = skb_checksum(skb, gre_offset,
+-					    skb->len - gre_offset, 0);
+-			*pcsum = csum_fold(csum);
+-		} else {
+-			*pcsum = gso_make_checksum(skb, 0);
+-		}
++		*pcsum = gso_make_checksum(skb, 0);
+ 	} while ((skb = skb->next));
+ out:
+ 	return segs;
+-- 
+2.1.0
+
