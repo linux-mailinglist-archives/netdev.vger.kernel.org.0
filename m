@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4486F2B425D
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 12:15:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 331172B425F
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 12:16:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729271AbgKPLNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 06:13:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42418 "EHLO
+        id S1729626AbgKPLNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 06:13:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728603AbgKPLNp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 06:13:45 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E98C0613CF;
-        Mon, 16 Nov 2020 03:13:45 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id j19so6107682pgg.5;
-        Mon, 16 Nov 2020 03:13:45 -0800 (PST)
+        with ESMTP id S1728211AbgKPLNu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 06:13:50 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF46C0613CF;
+        Mon, 16 Nov 2020 03:13:50 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id b3so8196887pls.11;
+        Mon, 16 Nov 2020 03:13:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=+SbxyZahfMfXnU/FChOm2quTfC2gyIuFdUfnHAtZnoI=;
-        b=dm4VnmqrFU23MKn/TKtIS4x/rNBKQpkzivbC6Xa+MPM04MO8nbeTUZY8HTgfvYys1j
-         EOYiVrhB58A2akTYPFjGXf7c2SMKcPDfdAOiRAGjSu+oOvaTYIfJ+Dk+od/gIVIu2D8r
-         cbAXyVwzvuDEhe9GUS0IqSfIbRiAgw61hQ6AMbBpv7o2B07EiT2/VFrTgsIiM9Kj4YMs
-         fMj06Fw8BwmdGHUA0QAA8rCG19HY4PSZu+iB0zY4NfNI9ZV19WWE+YrumAo01AqbuRyQ
-         bNu465+g6EAYR8Rx3rjh4x/Z8Y+Y4BRhvMbr2o7xLXlnZC8QqcDlOa18ogeYc9eqYMMT
-         MikQ==
+        bh=44RUaPFcwFiB3nkeuTIXUu39UgaMmkBucMAXuU99ZwQ=;
+        b=TIcuSgUWSWuwn2Jjx1KnB6sHrdeMikkoB9olf3FVb3jeqC3BzKywc7h6cKpbHMBeX3
+         +NEr1FzsgcBQBmtEwqaNPYoOya73w9zL+Q90R2ToYPhHOsPcvJesPpVSyjwmnxm0LpJN
+         1QXDy+xlDUxI9Nu8Sw+nfSJ5trm8df+m7JZhLzjAQknzTVRjM3byAfcJqtOeDYoHg7+9
+         HTK20aO3/V2kwQWHCWudepK15mqqNhP/wJwxPayM6HtQGGDZskemvInKngX5aDttsBdP
+         iw8ua714FhhRDHCdNCl3+rbbG7pUQk/XSXEnBP/DjOucqNkTTo0OTG+T7Oj0b1sQUR1p
+         /rmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=+SbxyZahfMfXnU/FChOm2quTfC2gyIuFdUfnHAtZnoI=;
-        b=sDj24V1ySvPnldSVJlt8pftQephcGpQF/gsi4ZIM2tEPeWVkEgx7h1JYSDXQe0vyyo
-         Z3zcWrvxJCszVVAMHhidpgctKZf4s978qk2ZQve8CI0raby1P0bTMApwv7Gh0h87Brf1
-         oWjYqvu8SvJwdCRJelOfSB8wYA9FLzPzv7iEz6XNWIOpeXcdo988zF3ADNQCHds4h87B
-         DIyE4zqKJ0jjL7Sf16s6KKcZdIJcdZVbjmP67bqW8INMp1u0G4n3+AdaYeF2Z8DJL6Ha
-         1r7xl/53d5S5Qx9AA/My/wvsG4CaZ7hy0XmFtn4BjT9pcICwkS4/xOKNnn0cIbhBbjTh
-         9yKw==
-X-Gm-Message-State: AOAM533VFtaIm/ajeQh+mraYWIouPUBtt0+AHx/QPs6XK43XxUOCbWR+
-        pjxPwSTdsfWF7+EYAyrumNM=
-X-Google-Smtp-Source: ABdhPJybPSvfextFY3UUIP4zrPkriv1bO8XhL0wD6bS3IGeBhbnbQ10ErLFdZ26Ko4b4QBOR6o+FWg==
-X-Received: by 2002:a17:90a:fd0d:: with SMTP id cv13mr15802905pjb.124.1605525225333;
-        Mon, 16 Nov 2020 03:13:45 -0800 (PST)
+        bh=44RUaPFcwFiB3nkeuTIXUu39UgaMmkBucMAXuU99ZwQ=;
+        b=hnC4DjkcSCuLH/YToLtSAh3QFkBqC341dPv7XWSZSR26QBYvwhIub7EAkFW7qCOPD5
+         Xho9Wu2Z3C+F8wWFPNYrXpXhS6ho34WqhYCHpL7xuIi+dzkd1RScnpBmpcSvWSM7pHbZ
+         11F+d6RMMR6PRnBgSi9GRUUQS8yuM9f7xnbflCOOu/OIuwtyc+8XDx2u9R8Gyn4LFB3z
+         /7igP7cqvD1BAudzz5j6YOozvwtfnVioa7kFjibO1v9Lcy9sDjSiC//48Eu9wtdz1UAK
+         kYkNS3QEheEBrKsAskunY3VrH76SeP3IWiPtalCHGVKcjbiTS3bvUZzy3oyJudKmhTc+
+         oDpA==
+X-Gm-Message-State: AOAM533O/AHffv50KY2ZUYqsSL9unQsyHnAXBXWfnllLQGAG6njDSE5v
+        Bb+h2E14duFwe1/vLYHllUY=
+X-Google-Smtp-Source: ABdhPJyZfCFm7Pec1GQujbx90ewEdjqUNaZF5VJN51QlLDhc5+u0TOr06c1NI6pNZtLBSC/TZGogQQ==
+X-Received: by 2002:a17:902:361:b029:d7:cd0b:e6f2 with SMTP id 88-20020a1709020361b02900d7cd0be6f2mr12816425pld.77.1605525230298;
+        Mon, 16 Nov 2020 03:13:50 -0800 (PST)
 Received: from localhost.localdomain ([192.55.54.40])
-        by smtp.gmail.com with ESMTPSA id u24sm19486826pfm.81.2020.11.16.03.13.40
+        by smtp.gmail.com with ESMTPSA id u24sm19486826pfm.81.2020.11.16.03.13.45
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 16 Nov 2020 03:13:44 -0800 (PST)
+        Mon, 16 Nov 2020 03:13:49 -0800 (PST)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -53,9 +53,9 @@ To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
 Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
         anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
         maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH bpf-next v3 1/5] samples/bpf: increment Tx stats at sending
-Date:   Mon, 16 Nov 2020 12:12:43 +0100
-Message-Id: <1605525167-14450-2-git-send-email-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next v3 2/5] i40e: remove unnecessary sw_ring access from xsk Tx
+Date:   Mon, 16 Nov 2020 12:12:44 +0100
+Message-Id: <1605525167-14450-3-git-send-email-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1605525167-14450-1-git-send-email-magnus.karlsson@gmail.com>
 References: <1605525167-14450-1-git-send-email-magnus.karlsson@gmail.com>
@@ -65,69 +65,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Increment the statistics over how many Tx packets have been sent at
-the time of sending instead of at the time of completion. This as a
-completion event means that the buffer has been sent AND returned to
-user space. The packet always gets sent shortly after sendto() is
-called. The kernel might, for performance reasons, decide to not
-return every single buffer to user space immediately after sending,
-for example, only after a batch of packets have been
-transmitted. Incrementing the number of packets sent at completion,
-will in that case be confusing as if you send a single packet, the
-counter might show zero for a while even though the packet has been
-transmitted.
+Remove the unnecessary access to the software ring for the AF_XDP
+zero-copy driver. This was used to record the length of the packet so
+that the driver Tx completion code could sum this up to produce the
+total bytes sent. This is now performed during the transmission of the
+packet, so no need to record this in the software ring.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 Acked-by: John Fastabend <john.fastabend@gmail.com>
 ---
- samples/bpf/xdpsock_user.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index 1149e94..2567f0d 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -1146,7 +1146,6 @@ static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk,
- 		xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
- 		xsk_ring_cons__release(&xsk->umem->cq, rcvd);
- 		xsk->outstanding_tx -= rcvd;
--		xsk->ring_stats.tx_npkts += rcvd;
- 	}
- }
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index 567fd67..20d2632 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -392,7 +392,6 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+ {
+ 	unsigned int sent_frames = 0, total_bytes = 0;
+ 	struct i40e_tx_desc *tx_desc = NULL;
+-	struct i40e_tx_buffer *tx_bi;
+ 	struct xdp_desc desc;
+ 	dma_addr_t dma;
  
-@@ -1168,7 +1167,6 @@ static inline void complete_tx_only(struct xsk_socket_info *xsk,
- 	if (rcvd > 0) {
- 		xsk_ring_cons__release(&xsk->umem->cq, rcvd);
- 		xsk->outstanding_tx -= rcvd;
--		xsk->ring_stats.tx_npkts += rcvd;
- 	}
- }
+@@ -404,9 +403,6 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+ 		xsk_buff_raw_dma_sync_for_device(xdp_ring->xsk_pool, dma,
+ 						 desc.len);
  
-@@ -1260,6 +1258,7 @@ static void tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
- 	}
+-		tx_bi = &xdp_ring->tx_bi[xdp_ring->next_to_use];
+-		tx_bi->bytecount = desc.len;
+-
+ 		tx_desc = I40E_TX_DESC(xdp_ring, xdp_ring->next_to_use);
+ 		tx_desc->buffer_addr = cpu_to_le64(dma);
+ 		tx_desc->cmd_type_offset_bsz =
+@@ -415,7 +411,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+ 				   0, desc.len, 0);
  
- 	xsk_ring_prod__submit(&xsk->tx, batch_size);
-+	xsk->ring_stats.tx_npkts += batch_size;
- 	xsk->outstanding_tx += batch_size;
- 	*frame_nb += batch_size;
- 	*frame_nb %= NUM_FRAMES;
-@@ -1348,6 +1347,7 @@ static void l2fwd(struct xsk_socket_info *xsk, struct pollfd *fds)
- 		}
- 		return;
- 	}
-+	xsk->ring_stats.rx_npkts += rcvd;
+ 		sent_frames++;
+-		total_bytes += tx_bi->bytecount;
++		total_bytes += desc.len;
  
- 	ret = xsk_ring_prod__reserve(&xsk->tx, rcvd, &idx_tx);
- 	while (ret != rcvd) {
-@@ -1379,7 +1379,7 @@ static void l2fwd(struct xsk_socket_info *xsk, struct pollfd *fds)
- 	xsk_ring_prod__submit(&xsk->tx, rcvd);
- 	xsk_ring_cons__release(&xsk->rx, rcvd);
- 
--	xsk->ring_stats.rx_npkts += rcvd;
-+	xsk->ring_stats.tx_npkts += rcvd;
- 	xsk->outstanding_tx += rcvd;
- }
- 
+ 		xdp_ring->next_to_use++;
+ 		if (xdp_ring->next_to_use == xdp_ring->count)
 -- 
 2.7.4
 
