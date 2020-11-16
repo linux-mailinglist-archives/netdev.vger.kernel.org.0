@@ -2,98 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E72AF2B5395
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 22:16:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2F062B53B6
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 22:21:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731926AbgKPVPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 16:15:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50960 "EHLO mail.kernel.org"
+        id S1727887AbgKPVUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 16:20:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54080 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725994AbgKPVPG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 16:15:06 -0500
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
+        id S1726035AbgKPVUx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 16:20:53 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3795C20888;
-        Mon, 16 Nov 2020 21:15:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2433722240;
+        Mon, 16 Nov 2020 21:20:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605561306;
-        bh=KKKLqy05JpAvCjkxBFWdO5hMPGcadZx9kPhUbI8AJHA=;
-        h=In-Reply-To:References:From:Subject:To:Cc:Date:From;
-        b=vgmAOVrIK2rI8Dv6s6VoLfFghIVyDqzuR7OfxYPgXPJhZ+hBDjcdYC8e54afzzvHV
-         gx6/qMloTBbQA147g6H+LxvAqQ4UhfJmdgXOMDaaxpLFRPE2vDwtoK+QWvwaB6yTzQ
-         aXmEhacgnEle+TUydS51i8KvGTo8/x5vqWHaDML0=
-Content-Type: text/plain; charset="utf-8"
+        s=default; t=1605561652;
+        bh=rF3Hz1kpU0y5lwFVLCP2bES+xAXqxFS1AJzEq/S/sM4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=L73HFGlMibLeyBrdJtwu4Stx1UiKgRjSqBXoM1hGSsN8VsXx4LSzwPZz6xMdOH4zN
+         LZ0uSQhvGkQOvFZz3i/OI4Nm38zEjuUZu59h8Cg8AOH1deFWtE04UfhgAQ0hzu8av7
+         ttJTAqEjx3p6tJyLQtmuj8kJANRb04VB6MDGkAPk=
+Date:   Mon, 16 Nov 2020 13:20:51 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Mahesh Bandewar (=?UTF-8?B?4KSu4KS54KWH4KS2IOCkrOCkguCkoeClh+CktQ==?=
+        =?UTF-8?B?4KS+4KSw?=)" <maheshb@google.com>
+Cc:     Jian Yang <jianyang.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Jian Yang <jianyang@google.com>
+Subject: Re: [PATCH net-next] net-loopback: allow lo dev initial state to be
+ controlled
+Message-ID: <20201116132051.4eef4247@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAF2d9jjs9WF9JXzBGxrHEgAiFhS1qyDya+5WRZBHoxosAu5F4A@mail.gmail.com>
+References: <20201111204308.3352959-1-jianyang.kernel@gmail.com>
+        <20201114101709.42ee19e0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAF2d9jgYgUa4DPVT8CSsbMs9HFjE5fn_U8-P=JuZeOecfiYt-g@mail.gmail.com>
+        <20201116121711.1e7bb04c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAF2d9jjs9WF9JXzBGxrHEgAiFhS1qyDya+5WRZBHoxosAu5F4A@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <alpine.DEB.2.22.394.2011161633240.2682@hadrien>
-References: <alpine.DEB.2.22.394.2011161633240.2682@hadrien>
-From:   Antoine Tenart <atenart@kernel.org>
-Subject: Re: [PATCH v2] net: phy: mscc: fix excluded_middle.cocci warnings
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Quentin Schulz <quentin.schulz@bootlin.com>,
-        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Denis Efremov <efremov@linux.com>,
-        netdev@vger.kernel.org
-Message-ID: <160556130103.369564.5641893167437988724@surface.local>
-Date:   Mon, 16 Nov 2020 22:15:01 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Julia,
+On Mon, 16 Nov 2020 12:50:22 -0800 Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=
+=A5=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=
+=A4=B0) wrote:
+> On Mon, Nov 16, 2020 at 12:17 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Mon, 16 Nov 2020 12:02:48 -0800 Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=
+=E0=A5=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=
+=E0=A4=B0) wrote: =20
+> > > On Sat, Nov 14, 2020 at 10:17 AM Jakub Kicinski <kuba@kernel.org> wro=
+te: =20
+> > > > On Wed, 11 Nov 2020 12:43:08 -0800 Jian Yang wrote: =20
+> > > > > From: Mahesh Bandewar <maheshb@google.com>
+> > > > >
+> > > > > Traditionally loopback devices comes up with initial state as DOW=
+N for
+> > > > > any new network-namespace. This would mean that anyone needing th=
+is
+> > > > > device (which is mostly true except sandboxes where networking in=
+ not
+> > > > > needed at all), would have to bring this UP by issuing something =
+like
+> > > > > 'ip link set lo up' which can be avoided if the initial state can=
+ be set
+> > > > > as UP. Also ICMP error propagation needs loopback to be UP.
+> > > > >
+> > > > > The default value for this sysctl is set to ZERO which will prese=
+rve the
+> > > > > backward compatible behavior for the root-netns while changing the
+> > > > > sysctl will only alter the behavior of the newer network namespac=
+es. =20
+> > > =20
+> > > > Any reason why the new sysctl itself is not per netns?
+> > > > =20
+> > > Making it per netns would not be very useful since its effect is only
+> > > during netns creation. =20
+> >
+> > I must be confused. Are all namespaces spawned off init_net, not the
+> > current netns the process is in? =20
+> The namespace hierarchy is maintained in user-ns while we have per-ns
+> sysctls hanging off of a netns object and we don't have parent (netns)
+> reference when initializing newly created netns values. One can copy
+> the current value of the settings from root-ns but I don't think
+> that's a good practice since there is no clear way to affect those
+> values when the root-ns changes them. Also from the isolation
+> perspective (I think) it's better to have this behavior (sysctl
+> values) stand on it's own i.e. have default values and then alter
+> values on it's own without linking to any other netns values.
 
-Quoting Julia Lawall (2020-11-16 16:34:44)
-> From: kernel test robot <lkp@intel.com>
->=20
-> Condition !A || A && B is equivalent to !A || B.
->=20
-> Generated by: scripts/coccinelle/misc/excluded_middle.cocci
->=20
-> Fixes: b76f0ea01312 ("coccinelle: misc: add excluded_middle.cocci script")
-> CC: Denis Efremov <efremov@linux.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
+To be clear, what I meant was just to make the sysctl per namespace.
+That way you can deploy a workload with this sysctl set appropriately
+without changing the system-global setting.
 
-Reviewed-by: Antoine Tenart <atenart@kernel.org>
-
-Thanks!
-Antoine
-
-> ---
->=20
-> v2: add netdev mailing list
->=20
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
-t master
-> head:   e28c0d7c92c89016c12a677616668957351e7542
-> commit: b76f0ea013125358d1b4ca147a6f9b6883dd2493 coccinelle: misc: add ex=
-cluded_middle.cocci script
-> :::::: branch date: 8 hours ago
-> :::::: commit date: 8 weeks ago
->=20
-> Please take the patch only if it's a positive warning. Thanks!
->=20
->  mscc_ptp.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> --- a/drivers/net/phy/mscc/mscc_ptp.c
-> +++ b/drivers/net/phy/mscc/mscc_ptp.c
-> @@ -136,7 +136,7 @@ static void vsc85xx_ts_write_csr(struct
->=20
->         phy_ts_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_158=
-8);
->=20
-> -       if (!cond || (cond && upper))
-> +       if (!cond || upper)
->                 phy_ts_base_write(phydev, MSCC_PHY_TS_CSR_DATA_MSB, upper=
-);
->=20
->         phy_ts_base_write(phydev, MSCC_PHY_TS_CSR_DATA_LSB, lower);
+Is your expectation that particular application stacks would take
+advantage of this, or that people would set this to 1 across the
+fleet?
