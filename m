@@ -2,115 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D782F2B4446
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:03:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1CF2B4466
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 14:08:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728624AbgKPNCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 08:02:08 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:37704 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728583AbgKPNCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 08:02:08 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0AGD1lKr072874;
-        Mon, 16 Nov 2020 07:01:47 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1605531707;
-        bh=qOn9VBecldSCPtkfrayvV0l2cc/JVvoAqmkbFZ+As/A=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=bGPU51Cb9p4KckeEvI9sPoNtqV3fX1E6/YX8YXmum5L3fx2mriEjOkxLD8AByQRtd
-         pR0WP2G7fpl9l4l27YlaaWYsCOZku8DaUJ9ioxtdOzY7cAdavId4Hq0pylGAwidDtx
-         16Cqv7pilOk1iQ6kEVWbC0J7fEpxAZ0Gef3z/WK0=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0AGD1ldX046622
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 16 Nov 2020 07:01:47 -0600
-Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 16
- Nov 2020 07:01:46 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Mon, 16 Nov 2020 07:01:46 -0600
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0AGD1hsN035807;
-        Mon, 16 Nov 2020 07:01:44 -0600
-Subject: Re: [PATCH net-next 2/3] net: ethernet: ti: cpsw_new: enable
- broadcast/multicast rate limit support
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>, Tony Lindgren <tony@atomide.com>
-References: <20201114035654.32658-1-grygorii.strashko@ti.com>
- <20201114035654.32658-3-grygorii.strashko@ti.com>
- <20201114190909.cc3rlnvom6wf2zkg@skbuf>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <7c288b6d-f32f-c5a9-8e8c-ab377423d4a8@ti.com>
-Date:   Mon, 16 Nov 2020 15:01:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728554AbgKPNHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 08:07:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:45413 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727212AbgKPNHL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 08:07:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605532030;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Hp7/XGrMjjbxTryFPRwkhJ9mINX2i7AhQuO6lk+85Ik=;
+        b=DCMa5AnSMLUNBJ9FJo41TzXUS3IOHeEtmq4MZsRcauDQDJLoO39RTdT8tx27LCO0x4C72Q
+        sSWCrMacCuksnPRc2iFK79BI33rVOOvHlxhxdcrs/eBT90JA1qmz4LCwNwVN3IdKFXFDc7
+        rt00zMQfUQyJd11U3Ho5baViOq4Mw9Y=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-102-DPOOzGJXNCimYk12iC0D7Q-1; Mon, 16 Nov 2020 08:07:08 -0500
+X-MC-Unique: DPOOzGJXNCimYk12iC0D7Q-1
+Received: by mail-wr1-f72.google.com with SMTP id h13so5672220wrr.7
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 05:07:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Hp7/XGrMjjbxTryFPRwkhJ9mINX2i7AhQuO6lk+85Ik=;
+        b=tTLJ0lprAE3f3CVvazgqocnzGj2nIWfcvsyGxC1AGBCH8drVYrmeDRjFMZry8zAKzc
+         1ENsIVoKrAI8/VkKH4ORSWJg/KH9+arV9PgiOwLYhmssPeSOE0yfxh8SK7NwGiS9mwNW
+         vJw/O5CY3soSEKtRwviwzkeY9Xlu77ldTyxyNwh3Q5iH1TPJ7pUFgzyAe6iL3TC1zrpp
+         WU9zk59tUvPls2US+6nAub/7lk3wjJxkNThEn9hlHWbetqZXEa6/H/zrFN4Qwbov/Nqb
+         HoHH7U3pFqsFoHDfe0TtUT3+gUGCFarZC60+m2pLHfujd8PLUg5uAsdRxBNJxphGJ1Xz
+         UL/g==
+X-Gm-Message-State: AOAM530Yvl2VewCwD1mUtj2u6V76nbl5dJalyVpY23UtIA/lJv1p28Jj
+        AnC269iqKeXlY3sqdR3zQwEq5D/8vinX8BZK0YgbnQRFA5Thxk1bgKz06dWJj3SFzZbSBGIt7ih
+        KhN3DC8OmKeeTR8eQnHIOiDkBootUO9iJ
+X-Received: by 2002:adf:f2c7:: with SMTP id d7mr19572632wrp.142.1605532026810;
+        Mon, 16 Nov 2020 05:07:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyE0w188WkdB7Bp/Nkxx892OynTXXfN5PEDQwR4CfhprUKR2rGevw9tw4aHr6ZggEnGX56or9k+Codlm4pIusk=
+X-Received: by 2002:adf:f2c7:: with SMTP id d7mr19572601wrp.142.1605532026600;
+ Mon, 16 Nov 2020 05:07:06 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201114190909.cc3rlnvom6wf2zkg@skbuf>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20201109072930.14048-1-nusiddiq@redhat.com> <20201109213557.GE23619@breakpoint.cc>
+ <CAH=CPzqTy3yxgBEJ9cVpp3pmGN9u4OsL9GrA+1w6rVum7B8zJw@mail.gmail.com>
+ <20201110122542.GG23619@breakpoint.cc> <CAH=CPzqRKTfQW05UxFQwVpvMSOZ7wNgLeiP3txY8T45jdx_E5Q@mail.gmail.com>
+ <20201110131141.GH23619@breakpoint.cc>
+In-Reply-To: <20201110131141.GH23619@breakpoint.cc>
+From:   Numan Siddique <nusiddiq@redhat.com>
+Date:   Mon, 16 Nov 2020 18:36:52 +0530
+Message-ID: <CAH=CPzrBY3_nt7OmhFk2D+7ajZvxOFcE6tZRSd_hYmhpDTcRZA@mail.gmail.com>
+Subject: Re: [net-next] netfiler: conntrack: Add the option to set ct tcp flag
+ - BE_LIBERAL per-ct basis.
+To:     Florian Westphal <fw@strlen.de>
+Cc:     ovs dev <dev@openvswitch.org>, netdev <netdev@vger.kernel.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Nov 10, 2020 at 6:41 PM Florian Westphal <fw@strlen.de> wrote:
+>
+> Numan Siddique <nusiddiq@redhat.com> wrote:
+> > On Tue, Nov 10, 2020 at 5:55 PM Florian Westphal <fw@strlen.de> wrote:
+> > >
+> > > Numan Siddique <nusiddiq@redhat.com> wrote:
+> > > > On Tue, Nov 10, 2020 at 3:06 AM Florian Westphal <fw@strlen.de> wrote:
+> > > > Thanks for the comments. I actually tried this approach first, but it
+> > > > doesn't seem to work.
+> > > > I noticed that for the committed connections, the ct tcp flag -
+> > > > IP_CT_TCP_FLAG_BE_LIBERAL is
+> > > > not set when nf_conntrack_in() calls resolve_normal_ct().
+> > >
+> > > Yes, it won't be set during nf_conntrack_in, thats why I suggested
+> > > to do it before confirming the connection.
+> >
+> > Sorry for the confusion. What I mean is - I tested  your suggestion - i.e called
+> > nf_ct_set_tcp_be_liberal()  before calling nf_conntrack_confirm().
+> >
+> >  Once the connection is established, for subsequent packets, openvswitch
+> >  calls nf_conntrack_in() [1] to see if the packet is part of the
+> > existing connection or not (i.e ct.new or ct.est )
+> > and if the packet happens to be out-of-window then skb->_nfct is set
+> > to NULL. And the tcp
+> > be flags set during confirmation are not reflected when
+> > nf_conntrack_in() calls resolve_normal_ct().
+>
+> Can you debug where this happens?  This looks very very wrong.
+> resolve_normal_ct() has no business to check any of those flags
+> (and I don't see where it uses them, it should only deal with the
+>  tuples).
+>
+> The flags come into play when nf_conntrack_handle_packet() gets called
+> after resolve_normal_ct has found an entry, since that will end up
+> calling the tcp conntrack part.
+>
+> The entry found/returned by resolve_normal_ct should be the same
+> nf_conn entry that was confirmed earlier, i.e. it should be in "liberal"
+> mode.
+
+I debugged a bit. Calling nf_ct_set_tcp_be_liberal() in ct_commit
+doesn't work because
+  - the first SYN packet during connection establishment is committed
+to the contract.
+  - but tcp_in_window() calls tcp_options() which clears the tcp ct
+flags for the SYN and SYN-ACK packets.
+    And hence the flags get cleared.
+
+So I think it should be enough if openvswitch calls
+nf_ct_set_tcp_be_liberal() once the connection is established.
 
 
-On 14/11/2020 21:09, Vladimir Oltean wrote:
-> On Sat, Nov 14, 2020 at 05:56:53AM +0200, Grygorii Strashko wrote:
->> This patch enables support for ingress broadcast(BC)/multicast(MC) rate limiting
->> in TI CPSW switchdev driver (the corresponding ALE support was added in previous
->> patch) by implementing HW offload for simple tc-flower policer with matches
->> on dst_mac:
->>   - ff:ff:ff:ff:ff:ff has to be used for BC rate limiting
->>   - 01:00:00:00:00:00 fixed value has to be used for MC rate limiting
->>
->> Hence tc policer defines rate limit in terms of bits per second, but the
->> ALE supports limiting in terms of packets per second - the rate limit
->> bits/sec is converted to number of packets per second assuming minimum
->> Ethernet packet size ETH_ZLEN=60 bytes.
->>
->> Examples:
->> - BC rate limit to 1000pps:
->>    tc qdisc add dev eth0 clsact
->>    tc filter add dev eth0 ingress flower skip_sw dst_mac ff:ff:ff:ff:ff:ff \
->>    action police rate 480kbit burst 64k
->>
->>    rate 480kbit - 1000pps * 60 bytes * 8, burst - not used.
->>
->> - MC rate limit to 20000pps:
->>    tc qdisc add dev eth0 clsact
->>    tc filter add dev eth0 ingress flower skip_sw dst_mac 01:00:00:00:00:00 \
->>    action police rate 9600kbit burst 64k
->>
->>    rate 9600kbit - 20000pps * 60 bytes * 8, burst - not used.
->>
->> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
->> ---
-> 
-> Your example for multicast would actually be correct if you specified
-> the mask as well. Like this:
-> 
-> tc filter add dev eth0 ingress flower skip_sw \
-> 	dst_mac 01:00:00:00:00:00/01:00:00:00:00:00 \
-> 	action police rate 9600kbit burst 64k
-> 
-> But as things stand, the flow rule would have a certain meaning in
-> software (rate-limit only that particular multicast MAC address) and a
-> different meaning in hardware. Please modify the driver code to also
-> match on the mask.
-> 
+I posted v2. Request to take a look.
 
-ok.
+Thanks
+Numan
 
--- 
-Best regards,
-grygorii
+>
+
