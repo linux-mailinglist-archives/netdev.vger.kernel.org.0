@@ -2,95 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 707F82B3AC9
+	by mail.lfdr.de (Postfix) with ESMTP id DEEF02B3ACA
 	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 01:29:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728241AbgKPA2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Nov 2020 19:28:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
+        id S1728261AbgKPA2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Nov 2020 19:28:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726311AbgKPA2P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 19:28:15 -0500
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D9B6C0613CF
-        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 16:28:15 -0800 (PST)
-Received: by mail-pf1-x444.google.com with SMTP id y7so11955239pfq.11
-        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 16:28:15 -0800 (PST)
+        with ESMTP id S1726311AbgKPA2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Nov 2020 19:28:18 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DB3C0613CF
+        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 16:28:18 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id j19so4605883pgg.5
+        for <netdev@vger.kernel.org>; Sun, 15 Nov 2020 16:28:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=eh95oG6m78nGWcDQKnSbVSOp6jJ+eezsqO/KsSw4K9k=;
-        b=V0JoSfAo/W/rRJtr6SbxHKeQNA5gMhMt2+yP07b74qa7F/y9lvbVlDdXmUhZlpclLn
-         xAqGQT3In86hgTd+vbNGOxmNEhvrxMMRRRAfkZR8fczmTupzMfZqKydvONqDbupLk6gC
-         MO1aSRK+XiHNTVVHqAQIuHSML3Vo71skREmPc=
+        bh=ay7zhmBkaHC5Ra+dBoVCVWdhN2ITDGmxmdv79eXwAgE=;
+        b=AYUqGN7xNocwgnOwvymhC1iT3Cz1qCr7v9sl/J/fLYaiFdKhCEhyCYAr+B1y1Ki+hW
+         DMCs3dc9/1+Oyazuu640E3p3g0qi2rZvP6xbbaloD9hF87mVAwmhFChnIARCVHjBjr4b
+         1tPvMZGVPA9EWEUuGR98btJUYk2dPmubuSVXQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=eh95oG6m78nGWcDQKnSbVSOp6jJ+eezsqO/KsSw4K9k=;
-        b=pbua8TQnq5KcjvQb/5zvF97tEQv6RfO5vsmcY86rvFnHFgBBWgfSC9g95UeJH6JJ/h
-         KGz1OyRIakZDlGoZENsOATuiXpZhfETU2QFkQMqiyvmG8h6JaE0dAa9dbK4v6OYXvsx2
-         91bZI12ZOHl207KW3/+rIfpqlQkgisFk/jTvPcGFa2WGKd7e9uCUYiTYPrN7DseV/bon
-         u3OI8oymONOvGJgDeF2WZzjUDhc45Do5m2BT9UJqZTwrwgfPjsdmmMTdaKckd90+jPXd
-         +JO/2ENL7zCwQc04QGAVDbrGD6BGGmShpM1quloTOmHPosLM4i9u5DYgxv7QhBR/No79
-         mO8g==
-X-Gm-Message-State: AOAM531Ujd4qXYsHo+JxoTSPDqJeGX9HVhhP5YSS64zrgA9at6AFH7vy
-        IuC3z7JGrQ3UN85ngt5zDDd+i8kI4eHl0g==
-X-Google-Smtp-Source: ABdhPJwBwnXTAu0dnVo8b0dfZiHspbNZWhQh7SVwz+HKUZIAvSyx7VNeZCtUaK2NHWuWx6ADtgOoHQ==
-X-Received: by 2002:a17:90a:3cc4:: with SMTP id k4mr6492780pjd.106.1605486494567;
-        Sun, 15 Nov 2020 16:28:14 -0800 (PST)
+        bh=ay7zhmBkaHC5Ra+dBoVCVWdhN2ITDGmxmdv79eXwAgE=;
+        b=KLz0JT9hNT9kmcGvs4dCrCiW9kmN2xaTXoPya0oFVLYJtsUJIWC1lmiFna1oJgXZrr
+         Bwt8a/DXYpqsA9MwODJka3v1PpbHpeY2DHKcSW4IaYqeDIQraGEq5oBJpg4pYXdouG1z
+         IsCCcFwtuC60fxI+ruUA9RFCLlmyPH89WyeL69NZIsnEwMQD0/U4yXOtZZh38FM7R2/w
+         6qYNyF2rSbZdXzUr+l7RlaFCC3P8paXnfyrMv/VYTMxMU+hI5ZQc8HNusupmJ7Ia9zfY
+         h+Xc4115xg4wTj6AukKoH1wv/IczoqERbuUN//8OKcHfeB90FzfpfMdGIEmfe7z71G6u
+         zsVQ==
+X-Gm-Message-State: AOAM530hEjldI+530MAiNIxVS+nwajfk2Dox4z1Zkg0pmyGl3eMFUiuc
+        svVJ3j3tfBM2liCqMFuqUD3GWvPoM83Zag==
+X-Google-Smtp-Source: ABdhPJxRsVJmovsamKluv3durcCbKYX/i1N9dz6LMWfraqLLD/h4MgFRjXr9tlgyK7xizDsx0Juc+Q==
+X-Received: by 2002:a17:90b:1642:: with SMTP id il2mr12094688pjb.81.1605486497601;
+        Sun, 15 Nov 2020 16:28:17 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i19sm2942563pgk.44.2020.11.15.16.28.12
+        by smtp.gmail.com with ESMTPSA id i19sm2942563pgk.44.2020.11.15.16.28.15
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 15 Nov 2020 16:28:14 -0800 (PST)
+        Sun, 15 Nov 2020 16:28:17 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     kuba@kernel.org
 Cc:     netdev@vger.kernel.org, gospo@broadcom.com
-Subject: [PATCH net 2/4] bnxt_en: Free port stats during firmware reset.
-Date:   Sun, 15 Nov 2020 19:27:50 -0500
-Message-Id: <1605486472-28156-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 3/4] bnxt_en: Fix counter overflow logic.
+Date:   Sun, 15 Nov 2020 19:27:51 -0500
+Message-Id: <1605486472-28156-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1605486472-28156-1-git-send-email-michael.chan@broadcom.com>
 References: <1605486472-28156-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000038836105b42e7415"
+        boundary="0000000000006900e305b42e740f"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000038836105b42e7415
+--0000000000006900e305b42e740f
 
-Firmware is unable to retain the port counters during any kind of
-fatal or non-fatal resets, so we must clear the port counters to
-avoid false detection of port counter overflow.
+bnxt_add_one_ctr() adds a hardware counter to a software counter and
+adjusts for the hardware counter wraparound against the mask.  The logic
+assumes that the hardware counter is always smaller than or equal to
+the mask.
+
+This assumption is mostly correct.  But in some cases if the firmware
+is older and does not provide the accurate mask, the driver can use
+a mask that is smaller than the actual hardware mask.  This can cause
+some extra carry bits to be added to the software counter, resulting in
+counters that far exceed the actual value.  Fix it by masking the
+hardware counter with the mask passed into bnxt_add_one_ctr().
 
 Fixes: fea6b3335527 ("bnxt_en: Accumulate all counters.")
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 7975f59735d6..448e1ba762ee 100644
+index 448e1ba762ee..7c21aaa8b9af 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -4099,7 +4099,8 @@ static void bnxt_free_mem(struct bnxt *bp, bool irq_re_init)
- 	bnxt_free_ntp_fltrs(bp, irq_re_init);
- 	if (irq_re_init) {
- 		bnxt_free_ring_stats(bp);
--		if (!(bp->fw_cap & BNXT_FW_CAP_PORT_STATS_NO_RESET))
-+		if (!(bp->fw_cap & BNXT_FW_CAP_PORT_STATS_NO_RESET) ||
-+		    test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
- 			bnxt_free_port_stats(bp);
- 		bnxt_free_ring_grps(bp);
- 		bnxt_free_vnics(bp);
+@@ -7758,6 +7758,7 @@ static void bnxt_add_one_ctr(u64 hw, u64 *sw, u64 mask)
+ {
+ 	u64 sw_tmp;
+ 
++	hw &= mask;
+ 	sw_tmp = (*sw & ~mask) | hw;
+ 	if (hw < (*sw & mask))
+ 		sw_tmp += mask + 1;
 -- 
 2.18.1
 
 
---00000000000038836105b42e7415
+--0000000000006900e305b42e740f
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -160,14 +167,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgrfHfOML/Yng6
-3ss6jlxntEJWQduIni65XufgqneNIfEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMTE2MDAyODE0WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgvmUeJmf+cbf6
+2tOHlvoKSP+gh4ed3sgHTpclVK+XQoIwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMTE2MDAyODE4WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAJMWfHNVMTSi60SdOU71tGallViIfOfM
-cjVYFC2aOhjjQrAnnU1J8rG584WBlHahIoZyPWoAukghBCm3KbUyprx4ndJajB10slZup9/MZAeQ
-DzTPxvYam8pCcT07O5+5BUqKSygkLuNwHOROGoEirJxajVdL+apJ33mq8m+4zEiafNC7tsS38gd4
-lHZCXQynjC79tpAM6R7sx+INAOOp315tHwlyGsc7QWAlHtGKRIop7Sv9hwnhI+qyMisBzniaC5o6
-E+gszaoK94ZSC1+gZjq9Od8+iZbiu5c67Th1UuxZGr01DKzvWhW3CuC86tfK4XKHiNQ0kH3QotSn
-Tgkukm4=
---00000000000038836105b42e7415--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAEMbUJC1H8epg9OpIsOi0yr83PZPMLML
+uNvzQKtlXHc3KWDONbidVKJu+m4nPyHhrySvicnInz6Jst2ybaMlW+1Sed0OJsQ3hGWRDTGMzdOY
+qkDs9zvTAvUmZkO0DgKnLPCwf7Ue6GD8brBPTjWEhlQulWWadS+kyukak6OrF3i0BAJRd7foAHuF
+uFV7Raw588L+TZw9ZXBes+tzrAoVFewkigh0vFtx+cAcyC4h9CwlR8VdAPw/CTNiUrrFU6Gyzl7E
+ALxi62E7PJyrqlRWsgxmc3xQvaR1m4glVaGkTKqBPErz+oP8VKB24cVXHirIkRIT43BYc7RXnhdQ
+U8Exvh8=
+--0000000000006900e305b42e740f--
