@@ -2,118 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A5CB2B3F4D
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 10:02:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F1652B3F60
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 10:07:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728277AbgKPJBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 04:01:31 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:35337 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728232AbgKPJBb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 04:01:31 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1keaO6-0000yG-Se; Mon, 16 Nov 2020 10:01:26 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1keaO5-0002tn-Pu; Mon, 16 Nov 2020 10:01:25 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 2D69F240049;
-        Mon, 16 Nov 2020 10:01:25 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id A01B9240047;
-        Mon, 16 Nov 2020 10:01:24 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 8BC1F20438;
-        Mon, 16 Nov 2020 10:01:20 +0100 (CET)
+        id S1728442AbgKPJGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 04:06:51 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:36075 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728434AbgKPJGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 04:06:51 -0500
+Received: by mail-wr1-f65.google.com with SMTP id j7so17798860wrp.3;
+        Mon, 16 Nov 2020 01:06:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tfut9vbpdfv8HXF8bwI2zTYoeL/KwnRwgcqOdkpMjQM=;
+        b=nqxKsNrvd9qsY+Gx8fS43J0FeiNOVLE89HZGbgYXd0BjirldeuERZC/oaMybkt34TZ
+         fVGBLCaryXKOM8odjOLpJ5vhNV/5DwWBXklS7tfZ7tC3n0KctykKBDpCfkWPKfL/Y7kD
+         Jjr8CrvqxHrwy9LxAf8B+VSqLaLKaC0f4l1Qzm1hd5rPpvf1vSVL+8pb6zqmVzWRbiGM
+         w+rBmo0KhO8bHsdx0wNfCKX5fC/Woj9EIeKfzCJrPZSBSE5hroIBRA4VWk2sz/sOXQhr
+         4HGmusY0vfQ4wMY+snHuMntw+nc/cFO3QGEtZTbrYyEd0pdUvSuMgEi/hU7cXOgh+Q/V
+         j80A==
+X-Gm-Message-State: AOAM531hckKidwTTw1RvOGjPSfaVBbkr95lKlk16yaQWQECM6XnUO8Fl
+        nYNfxLiYMUePU3NMtcX2M50=
+X-Google-Smtp-Source: ABdhPJymJXtGdK1p6/QBa66dXs3Ikztq26pKrXwaX8dSdc06QcZrx7F9wwgxmGLGLUUkbDSWVt1dGQ==
+X-Received: by 2002:adf:f881:: with SMTP id u1mr19170576wrp.103.1605517609770;
+        Mon, 16 Nov 2020 01:06:49 -0800 (PST)
+Received: from kozik-lap (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
+        by smtp.googlemail.com with ESMTPSA id c17sm22001179wro.19.2020.11.16.01.06.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2020 01:06:48 -0800 (PST)
+Date:   Mon, 16 Nov 2020 10:06:47 +0100
+From:   "krzk@kernel.org" <krzk@kernel.org>
+To:     Bongsu Jeon <bongsu.jeon@samsung.com>
+Cc:     Krzysztof Opasiak <k.opasiak@samsung.com>,
+        "linux-nfc@lists.01.org" <linux-nfc@lists.01.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/3] nfc: s3fwrn5: Remove the max_payload
+Message-ID: <20201116090647.GA5937@kozik-lap>
+References: <CGME20201116011205epcms2p566dbc946d6c7a0198d09b3a872e85f33@epcms2p5>
+ <20201116011205epcms2p566dbc946d6c7a0198d09b3a872e85f33@epcms2p5>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 16 Nov 2020 10:01:20 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Hendry <andrew.hendry@gmail.com>
-Subject: Re: [PATCH net-next] MAINTAINERS: Add Martin Schiller as a maintainer
- for the X.25 stack
-Organization: TDT AG
-In-Reply-To: <20201114111029.326972-1-xie.he.0141@gmail.com>
-References: <20201114111029.326972-1-xie.he.0141@gmail.com>
-Message-ID: <3a556cae7d869059fa3b30c921a91658@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.15
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate: clean
-X-purgate-ID: 151534::1605517286-000074F7-6B5C9E26/0/0
-X-purgate-type: clean
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201116011205epcms2p566dbc946d6c7a0198d09b3a872e85f33@epcms2p5>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-14 12:10, Xie He wrote:
-> Martin Schiller is an active developer and reviewer for the X.25 code.
-> His company is providing products based on the Linux X.25 stack.
-> So he is a good candidate for maintainers of the X.25 code.
+On Mon, Nov 16, 2020 at 10:12:05AM +0900, Bongsu Jeon wrote:
+> max_payload is unused.
 > 
-> The original maintainer of the X.25 network layer (Andrew Hendry) has
-> not sent any email to the netdev mail list since 2013. So he is 
-> probably
-> inactive now.
-> 
-> Cc: Martin Schiller <ms@dev.tdt.de>
-> Cc: Andrew Hendry <andrew.hendry@gmail.com>
-> Signed-off-by: Xie He <xie.he.0141@gmail.com>
-> ---
->  MAINTAINERS | 19 +++++++++----------
->  1 file changed, 9 insertions(+), 10 deletions(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index af9f6a3ab100..ab8b2c9ad00e 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -9842,13 +9842,6 @@ S:	Maintained
->  F:	arch/mips/lantiq
->  F:	drivers/soc/lantiq
-> 
-> -LAPB module
-> -L:	linux-x25@vger.kernel.org
-> -S:	Orphan
-> -F:	Documentation/networking/lapb-module.rst
-> -F:	include/*/lapb.h
-> -F:	net/lapb/
-> -
->  LASI 53c700 driver for PARISC
->  M:	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
->  L:	linux-scsi@vger.kernel.org
-> @@ -18986,12 +18979,18 @@ L:	linux-kernel@vger.kernel.org
->  S:	Maintained
->  N:	axp[128]
-> 
-> -X.25 NETWORK LAYER
-> -M:	Andrew Hendry <andrew.hendry@gmail.com>
-> +X.25 STACK
-> +M:	Martin Schiller <ms@dev.tdt.de>
->  L:	linux-x25@vger.kernel.org
-> -S:	Odd Fixes
-> +S:	Maintained
-> +F:	Documentation/networking/lapb-module.rst
->  F:	Documentation/networking/x25*
-> +F:	drivers/net/wan/hdlc_x25.c
-> +F:	drivers/net/wan/lapbether.c
-> +F:	include/*/lapb.h
->  F:	include/net/x25*
-> +F:	include/uapi/linux/x25.h
-> +F:	net/lapb/
->  F:	net/x25/
-> 
->  X86 ARCHITECTURE (32-BIT AND 64-BIT)
+> Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
 
-Acked-by: Martin Schiller <ms@dev.tdt.de>
+Please version your patches (this should be a v2) and describe changes
+between versions in changelog, either in cover letter or after ---
+separator.
+
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+
+Best regards,
+Krzysztof
