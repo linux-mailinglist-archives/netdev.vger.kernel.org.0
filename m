@@ -2,194 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECE7C2B53DD
-	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 22:37:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5614B2B53E0
+	for <lists+netdev@lfdr.de>; Mon, 16 Nov 2020 22:37:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727795AbgKPVeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 16:34:44 -0500
-Received: from mail.efficios.com ([167.114.26.124]:60978 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726035AbgKPVen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 16:34:43 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 276C22D1426;
-        Mon, 16 Nov 2020 16:34:42 -0500 (EST)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id f-Ce_6a2g1Tu; Mon, 16 Nov 2020 16:34:41 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id AA8BB2D105C;
-        Mon, 16 Nov 2020 16:34:41 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com AA8BB2D105C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1605562481;
-        bh=EMWqZDrzoqtCJkVXP8nY7dQB0JH0OvHZOGk4DxHpjVM=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=hSxrcYILoORHcHBaFoqN2cdA8LD7oKbqIuXhoatCyzyUzgdV69Xm1l3oU/ajsCS7w
-         gTC88Teotu//DfDBOh5Q/2rG+ZMJ5+McWGT0AZWysjQqYhLfzhENYHxMLpGHnMT9Yz
-         M8jPGagXnGIqFiTDMlBihZmgS4bzVlV6tXztuQuUPIjoYu4LXyhJnRqw5YncBY+kyz
-         +HVNeVVtkNnXyb21sTD0mPTh6z5mNZdE2x1WH4uevhsk2AkT6MKSNBLmYXaDFZIyAv
-         OWP/slVcdpBNbK0ZTZz4EIfe/EnYTijLnpKk+CFl/EvrdQiZVTlaBNNV4Cbo0umYWw
-         S+b5kEmZXzSlA==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id bZ-GxLbRQbYG; Mon, 16 Nov 2020 16:34:41 -0500 (EST)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 90DFF2D105B;
-        Mon, 16 Nov 2020 16:34:41 -0500 (EST)
-Date:   Mon, 16 Nov 2020 16:34:41 -0500 (EST)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     rostedt <rostedt@goodmis.org>
-Cc:     paulmck <paulmck@kernel.org>, Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Message-ID: <1368007646.46749.1605562481450.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20201116160218.3b705345@gandalf.local.home>
-References: <00000000000004500b05b31e68ce@google.com> <20201115055256.65625-1-mmullins@mmlx.us> <20201116121929.1a7aeb16@gandalf.local.home> <1889971276.46615.1605559047845.JavaMail.zimbra@efficios.com> <20201116154437.254a8b97@gandalf.local.home> <20201116160218.3b705345@gandalf.local.home>
-Subject: Re: [PATCH] bpf: don't fail kmalloc while releasing raw_tp
+        id S1729584AbgKPVe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 16:34:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60722 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726035AbgKPVez (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 16:34:55 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B063E2224F;
+        Mon, 16 Nov 2020 21:34:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605562495;
+        bh=lSGys+8LKdYd14eGCQNhlTPa72dn/l05p/h7XghfMf0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=y0bArRZ8uGQASEyaDNauaVUvPbxaTPo+0EXoOpgzEY+uHqEj0Qgg4lJCpYSkFxXlJ
+         e8V49DOEGbOy+M7CQWCYm3JBmUkpPnntvjUqSe1gxktNJrdwzX0OgPzKfnUqug5+eE
+         6DCYLttpGZP107kQhZP5uSy4XcAHoaDWiJ8DNK8E=
+Date:   Mon, 16 Nov 2020 13:34:53 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v1 net-next] net: dsa: qca: ar9331: add ethtool stats
+ support
+Message-ID: <20201116133453.270b8db5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201115073533.1366-1-o.rempel@pengutronix.de>
+References: <20201115073533.1366-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_3975 (ZimbraWebClient - FF82 (Linux)/8.8.15_GA_3975)
-Thread-Topic: don't fail kmalloc while releasing raw_tp
-Thread-Index: rv+RzkkQl7L/OC9Xs4agP4GYhHq4hQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On Nov 16, 2020, at 4:02 PM, rostedt rostedt@goodmis.org wrote:
+On Sun, 15 Nov 2020 08:35:33 +0100 Oleksij Rempel wrote:
+> +static const struct ar9331_mib_desc ar9331_mib[] = {
+> +	MIB_DESC(1, 0x00, "RxBroad"),
+> +	MIB_DESC(1, 0x04, "RxPause"),
+> +	MIB_DESC(1, 0x08, "RxMulti"),
+> +	MIB_DESC(1, 0x0c, "RxFcsErr"),
+> +	MIB_DESC(1, 0x10, "RxAlignErr"),
+> +	MIB_DESC(1, 0x14, "RxRunt"),
+> +	MIB_DESC(1, 0x18, "RxFragment"),
+> +	MIB_DESC(1, 0x1c, "Rx64Byte"),
+> +	MIB_DESC(1, 0x20, "Rx128Byte"),
+> +	MIB_DESC(1, 0x24, "Rx256Byte"),
+> +	MIB_DESC(1, 0x28, "Rx512Byte"),
+> +	MIB_DESC(1, 0x2c, "Rx1024Byte"),
+> +	MIB_DESC(1, 0x30, "Rx1518Byte"),
+> +	MIB_DESC(1, 0x34, "RxMaxByte"),
+> +	MIB_DESC(1, 0x38, "RxTooLong"),
+> +	MIB_DESC(2, 0x3c, "RxGoodByte"),
+> +	MIB_DESC(2, 0x44, "RxBadByte"),
+> +	MIB_DESC(1, 0x4c, "RxOverFlow"),
+> +	MIB_DESC(1, 0x50, "Filtered"),
+> +	MIB_DESC(1, 0x54, "TxBroad"),
+> +	MIB_DESC(1, 0x58, "TxPause"),
+> +	MIB_DESC(1, 0x5c, "TxMulti"),
+> +	MIB_DESC(1, 0x60, "TxUnderRun"),
+> +	MIB_DESC(1, 0x64, "Tx64Byte"),
+> +	MIB_DESC(1, 0x68, "Tx128Byte"),
+> +	MIB_DESC(1, 0x6c, "Tx256Byte"),
+> +	MIB_DESC(1, 0x70, "Tx512Byte"),
+> +	MIB_DESC(1, 0x74, "Tx1024Byte"),
+> +	MIB_DESC(1, 0x78, "Tx1518Byte"),
+> +	MIB_DESC(1, 0x7c, "TxMaxByte"),
+> +	MIB_DESC(1, 0x80, "TxOverSize"),
+> +	MIB_DESC(2, 0x84, "TxByte"),
+> +	MIB_DESC(1, 0x8c, "TxCollision"),
+> +	MIB_DESC(1, 0x90, "TxAbortCol"),
+> +	MIB_DESC(1, 0x94, "TxMultiCol"),
+> +	MIB_DESC(1, 0x98, "TxSingleCol"),
+> +	MIB_DESC(1, 0x9c, "TxExcDefer"),
+> +	MIB_DESC(1, 0xa0, "TxDefer"),
+> +	MIB_DESC(1, 0xa4, "TxLateCol"),
+> +};
 
-> On Mon, 16 Nov 2020 15:44:37 -0500
-> Steven Rostedt <rostedt@goodmis.org> wrote:
-> 
->> If you use a stub function, it shouldn't affect anything. And the worse
->> that would happen is that you have a slight overhead of calling the stub
->> until you can properly remove the callback.
-> 
-> Something like this:
-> 
-> (haven't compiled it yet, I'm about to though).
-> 
-> -- Steve
-> 
-> diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
-> index 3f659f855074..8eab40f9d388 100644
-> --- a/kernel/tracepoint.c
-> +++ b/kernel/tracepoint.c
-> @@ -53,10 +53,16 @@ struct tp_probes {
-> 	struct tracepoint_func probes[];
-> };
-> 
-> -static inline void *allocate_probes(int count)
-> +/* Called in removal of a func but failed to allocate a new tp_funcs */
-> +static void tp_stub_func(void)
-
-I'm still not sure whether it's OK to call a (void) function with arguments.
-
-> +{
-> +	return;
-> +}
-> +
-> +static inline void *allocate_probes(int count, gfp_t extra_flags)
-> {
-> 	struct tp_probes *p  = kmalloc(struct_size(p, probes, count),
-> -				       GFP_KERNEL);
-> +				       GFP_KERNEL | extra_flags);
-> 	return p == NULL ? NULL : p->probes;
-> }
-> 
-> @@ -150,7 +156,7 @@ func_add(struct tracepoint_func **funcs, struct
-> tracepoint_func *tp_func,
-> 		}
-> 	}
-> 	/* + 2 : one for new probe, one for NULL func */
-> -	new = allocate_probes(nr_probes + 2);
-> +	new = allocate_probes(nr_probes + 2, 0);
-> 	if (new == NULL)
-> 		return ERR_PTR(-ENOMEM);
-> 	if (old) {
-> @@ -188,8 +194,9 @@ static void *func_remove(struct tracepoint_func **funcs,
-> 	/* (N -> M), (N > 1, M >= 0) probes */
-> 	if (tp_func->func) {
-> 		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
-> -			if (old[nr_probes].func == tp_func->func &&
-> -			     old[nr_probes].data == tp_func->data)
-> +			if ((old[nr_probes].func == tp_func->func &&
-> +			     old[nr_probes].data == tp_func->data) ||
-> +			    old[nr_probes].func == tp_stub_func)
-> 				nr_del++;
-> 		}
-> 	}
-> @@ -207,15 +214,20 @@ static void *func_remove(struct tracepoint_func **funcs,
-> 		int j = 0;
-> 		/* N -> M, (N > 1, M > 0) */
-> 		/* + 1 for NULL */
-> -		new = allocate_probes(nr_probes - nr_del + 1);
-> -		if (new == NULL)
-> -			return ERR_PTR(-ENOMEM);
-> -		for (i = 0; old[i].func; i++)
-> -			if (old[i].func != tp_func->func
-> -					|| old[i].data != tp_func->data)
-> -				new[j++] = old[i];
-> -		new[nr_probes - nr_del].func = NULL;
-> -		*funcs = new;
-> +		new = allocate_probes(nr_probes - nr_del + 1, __GFP_NOFAIL);
-> +		if (new) {
-> +			for (i = 0; old[i].func; i++)
-> +				if (old[i].func != tp_func->func
-> +				    || old[i].data != tp_func->data)
-
-as you point out in your reply, skip tp_stub_func here too.
-
-> +					new[j++] = old[i];
-> +			new[nr_probes - nr_del].func = NULL;
-> +		} else {
-> +			for (i = 0; old[i].func; i++)
-> +				if (old[i].func == tp_func->func &&
-> +				    old[i].data == tp_func->data)
-> +					old[i].func = tp_stub_func;
-
-I think you'll want a WRITE_ONCE(old[i].func, tp_stub_func) here, matched
-with a READ_ONCE() in __DO_TRACE. This introduces a new situation where the
-func pointer can be updated and loaded concurrently.
-
-> +		}
-> +		*funcs = old;
-
-The line above seems wrong for the successful allocate_probe case. You will likely
-want *funcs = new on successful allocation, and *funcs = old for the failure case.
-
-Thanks,
-
-Mathieu
-
-> 	}
-> 	debug_print_probes(*funcs);
-> 	return old;
-> @@ -300,6 +312,10 @@ static int tracepoint_remove_func(struct tracepoint *tp,
-> 		return PTR_ERR(old);
-> 	}
-> 
-> +	if (tp_funcs == old)
-> +		/* Failed allocating new tp_funcs, replaced func with stub */
-> +		return 0;
-> +
-> 	if (!tp_funcs) {
-> 		/* Removed last function */
->  		if (tp->unregfunc && static_key_enabled(&tp->key))
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+You must expose relevant statistics via the normal get_stats64 NDO
+before you start dumping free form stuff in ethtool -S.
