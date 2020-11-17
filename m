@@ -2,104 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCDD72B5643
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 02:27:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 746A02B5656
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 02:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730966AbgKQB1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 20:27:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59438 "EHLO mail.kernel.org"
+        id S1726424AbgKQBkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 20:40:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60780 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728534AbgKQB1o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 20:27:44 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9004A2468F;
-        Tue, 17 Nov 2020 01:27:43 +0000 (UTC)
+        id S1725730AbgKQBkF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 20:40:05 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605576463;
-        bh=47TEkotzt3F/LTmw1Gm/QSF0wkfHZUX07oPBgXjQUeg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AH8Z82mDw5vxnNF2Q0AHlhLi72YipYyuDpVL7fOcH1Rwp4kUJ5GzwmxJwcJLHbyh+
-         ZlUB6pBO322shxSkmgEl3GkWk05bfH1/mnA+cOmcN06mn+Q0OWup9S2w/SrlBV/GGe
-         i8Vdtc5bmjEKVbVQpkk/nnNwEBPSurIsN6sfGz0o=
-Date:   Mon, 16 Nov 2020 17:27:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     <min.li.xe@renesas.com>
-Cc:     <richardcochran@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/5] ptp: clockmatrix: bug fix for
- idtcm_strverscmp
-Message-ID: <20201116172742.5f86a49b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1605554850-14437-1-git-send-email-min.li.xe@renesas.com>
-References: <1605554850-14437-1-git-send-email-min.li.xe@renesas.com>
+        s=default; t=1605577205;
+        bh=aWa1sRw7CoxvhNmPL9K51E1+wWHyG8lRZmRe8hEAmnk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=zG+/Wrf4/tiiESFEtfmnWYdJeYJuVuQJVSY70ICNthQwZsVpvFrcoReOOX6AZSUdT
+         hOEsTyEw4krlB17pL5qP+q8B+kTgv1KzhMOvttIgkTI1AnmxLzXIHxooFwtZBMG9A/
+         CMXh/LmsoHVDGU7mu0pc7wClhGVM9APeka2edq1U=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: ipa: lock when freeing transaction
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160557720487.5616.9020550394630303825.git-patchwork-notify@kernel.org>
+Date:   Tue, 17 Nov 2020 01:40:04 +0000
+References: <20201114182017.28270-1-elder@linaro.org>
+In-Reply-To: <20201114182017.28270-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, evgreen@chromium.org,
+        subashab@codeaurora.org, cpratapa@codeaurora.org,
+        bjorn.andersson@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, swboyd@chromium.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Nov 2020 14:27:26 -0500 min.li.xe@renesas.com wrote:
-> From: Min Li <min.li.xe@renesas.com>
->=20
-> Feed kstrtou8 with NULL terminated string.
+Hello:
 
-Is this a fix? Does it need to be backported to stable?
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Also please add a cover letter for the series describing the overall
-goal of this work, what testing has been done etc.
+On Sat, 14 Nov 2020 12:20:17 -0600 you wrote:
+> Transactions sit on one of several lists, depending on their state
+> (allocated, pending, complete, or polled).  A spinlock protects
+> against concurrent access when transactions are moved between these
+> lists.
+> 
+> Transactions are also reference counted.  A newly-allocated
+> transaction has an initial count of 1; a transaction is released in
+> gsi_trans_free() only if its decremented reference count reaches 0.
+> Releasing a transaction includes removing it from the polled (or if
+> unused, allocated) list, so the spinlock is acquired when we release
+> a transaction.
+> 
+> [...]
 
->  drivers/ptp/ptp_clockmatrix.c | 52 +++++++++++++++++++++++++++++++------=
-------
->  1 file changed, 38 insertions(+), 14 deletions(-)
->=20
-> diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-> index e020faf..bf2be50 100644
-> --- a/drivers/ptp/ptp_clockmatrix.c
-> +++ b/drivers/ptp/ptp_clockmatrix.c
-> @@ -103,42 +103,66 @@ static int timespec_to_char_array(struct timespec64=
- const *ts,
->  	return 0;
->  }
-> =20
-> -static int idtcm_strverscmp(const char *ver1, const char *ver2)
-> +static int idtcm_strverscmp(const char *version1, const char *version2)
->  {
->  	u8 num1;
->  	u8 num2;
->  	int result =3D 0;
-> +	char ver1[16];
-> +	char ver2[16];
-> +	char *cur1;
-> +	char *cur2;
-> +	char *next1;
-> +	char *next2;
-> +
-> +	strncpy(ver1, version1, 16);
-> +	strncpy(ver2, version2, 16);
+Here is the summary with links:
+  - [net] net: ipa: lock when freeing transaction
+    https://git.kernel.org/netdev/net/c/064c9c32b17c
 
-This patch triggers the following warning on a 32bit build:
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-In file included from ../arch/x86/include/asm/page_32.h:35,
-                 from ../arch/x86/include/asm/page.h:14,
-                 from ../arch/x86/include/asm/thread_info.h:12,
-                 from ../include/linux/thread_info.h:38,
-                 from ../arch/x86/include/asm/preempt.h:7,
-                 from ../include/linux/preempt.h:78,
-                 from ../include/linux/spinlock.h:51,
-                 from ../include/linux/mmzone.h:8,
-                 from ../include/linux/gfp.h:6,
-                 from ../include/linux/firmware.h:7,
-                 from ../drivers/ptp/ptp_clockmatrix.c:8:
-In function =E2=80=98strncpy=E2=80=99,
-    inlined from =E2=80=98idtcm_strverscmp.constprop=E2=80=99 at ../drivers=
-/ptp/ptp_clockmatrix.c:118:2:
-../include/linux/string.h:290:30: warning: =E2=80=98__builtin_strncpy=E2=80=
-=99 specified bound 16 equals destination size [-Wstringop-truncation]
-  290 | #define __underlying_strncpy __builtin_strncpy
-      |                              ^
-../include/linux/string.h:300:9: note: in expansion of macro =E2=80=98__und=
-erlying_strncpy=E2=80=99
-  300 |  return __underlying_strncpy(p, q, size);
-      |         ^~~~~~~~~~~~~~~~~~~~
+
