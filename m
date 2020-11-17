@@ -2,82 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B50AA2B587D
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:49:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F4F32B588E
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:55:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbgKQDtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 22:49:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
+        id S1726510AbgKQDxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 22:53:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbgKQDtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:49:16 -0500
+        with ESMTP id S1725730AbgKQDxL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:53:11 -0500
 Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C144CC0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:49:16 -0800 (PST)
-Received: by mail-pl1-x641.google.com with SMTP id 35so5336585ple.12
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:49:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9EEC0613CF;
+        Mon, 16 Nov 2020 19:53:11 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id cp9so9514344plb.1;
+        Mon, 16 Nov 2020 19:53:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=p1wfkYbF5Mpf3xAPmESuehLUjM7efL5pfmZn2uqtG6A=;
-        b=tVplDpqtW6fkUtpAYAALu8u6nxEdVxy9RBtXriTFZLMg16pLDOutTddLLR0aqaRMWU
-         6tzVWffOUSstjktcuKfg3flfKn9GrbUyYI4pBOn6BRlGDKajU7Ix48BZiZubvmhPgN2K
-         xgsLft7VjfgqtOdLwCAKUw5oYd5hJ96p51GPHk6JavXQsmmerKOkzUSgVKGjZbHd4pgA
-         4n6VkMlsxyomVj1USXaflDIKWCcGQmGXRcAIknQz0HBTMIdW1uRK7kpeMKxkFHfhxQvd
-         8Y/hsN8MYSAYPKQV/h/pWZTw1U4jmxnZJgRrVVVJ6bHb2Rnm0xRDihgeIzWRyqi7s822
-         nHmQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rnq0FD2NfJKSKIx+lFv4Z3fz9FpdZvTnhCYs6byLT8o=;
+        b=UasFGDKDAJUlQ0x4b4RKB7sXi0bVOi3lWg5vEVNXzOBdE0RNSIcxUnmBjFFMdE8ZQE
+         Z47nQhrswOCNIYGYfMK8+CNPFl2GUmqc8TZE6zAduiMp28FrGxp/BnEzsSPHv5GOSxBT
+         j8BBs4axKSjTTzBX994hPfQCrZ2YRC7o3nsctVGEDSy6O0/vBnnwsgYAYvCtGdwAs+O5
+         QWa+0LwrEzP3UF8DHhb3jh3TlagZdvqDDYHn9NaSbl2KyerehsvdnpfrM6rgfGRkpkBY
+         N8EW7XCWfwZB4gSschiRsdKRUGTK/825oUhEtl9Azu0PBS2GT9qjg76TyXpzzEPSSGZ+
+         lWJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=p1wfkYbF5Mpf3xAPmESuehLUjM7efL5pfmZn2uqtG6A=;
-        b=Qp7AcWZqopqQNlFGrw+8ht6BWcT7ZAujYEUAbnaS6p+sGIYs6A7NOw0gAf63xqiwdu
-         2ZVq4nf/ZdgBHZLbMyRTyzy12KrwtaWFQz1F63vuLa89fvGH9GJfZmPg6+cCQyxwjuxF
-         LVvldH4MUssxFTlZrDEqwB7QnIIz9W2WEnv41et7/0nNWmPaxuwxM5xcDvNPJ/fD0Om5
-         Y8IGDDAeMQz0IuGQivLEOuoxu8GottDhdl+bIG52eTta5u0BQQe2iN0Vo9e7iuoxGcqw
-         MAjqvYLF5cvmiTZo9BiYJ8wIAfrLa9JDOH4ln17kLXx62oeXTrDCSYChdGgekmTfzYSp
-         dpsQ==
-X-Gm-Message-State: AOAM5331FTJWfxJgF/GHm5NefyTcgq2PZXU0XBWj8m7XhY22Fn4StyHD
-        srjHkiahM/p8QCI8JSjEcwF/5HNJdLI=
-X-Google-Smtp-Source: ABdhPJx+sUirwdjxc6VFMPEBcaKDSnLqBlO/ApubxTdrR6DRYhb0Hb+uOx6BKvZoeBLCZgk32r4ObQ==
-X-Received: by 2002:a17:902:758d:b029:d6:65a6:c70b with SMTP id j13-20020a170902758db02900d665a6c70bmr14739906pll.30.1605584955870;
-        Mon, 16 Nov 2020 19:49:15 -0800 (PST)
-Received: from [10.230.28.242] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j1sm1016321pji.22.2020.11.16.19.49.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Nov 2020 19:49:15 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 3/3] net: dsa: tag_dsa: Use a consistent
- comment style
-To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
-        netdev@vger.kernel.org
-References: <20201114234558.31203-1-tobias@waldekranz.com>
- <20201114234558.31203-4-tobias@waldekranz.com>
+        bh=rnq0FD2NfJKSKIx+lFv4Z3fz9FpdZvTnhCYs6byLT8o=;
+        b=ih+btKghAtrRTYyeZAm2GtJlDXNEEr0qlVQV/Qcv6heaj3zOu3TuAuXLiXGqN/Hdym
+         pEfZ1mF5WC40/rib1ahn+jGLSIUJt3rv/eD18EAQkjM5tNVnzRi1lp2KxGV5EtuO8sbz
+         E5i18LXJLerxz7xDKKpi0vy1FEimbME9n6WduTNRqUGy2Q7gnH1i9+0yaN92vLk5U23a
+         KaY7qAKV15a7Z//h2uPflZXL5gfPAwJgOQ+KLYXktzqlkNbLcjc+I6XFMQhQG7XReqLE
+         rLIxTA1CtdT7TLSDXSjaSVyGzCyBlcWOr+ENdrStM1Vqn8jMWHUusG6j49V0mNXhC63j
+         pG1g==
+X-Gm-Message-State: AOAM532vf/GNcvciM57HKKVG/CzwUerzhKko/R/rFEvZJqXBfKy+ovRd
+        KHxXm4NrFncLcfMeN9UAh5xQZUFwtL4=
+X-Google-Smtp-Source: ABdhPJx1pUbInrYnMvsoWQeK8Y1g55Jyh0NuutkOpY6iK0kH53x0LUdMXdw42BsqbuToEAB2cu8RoQ==
+X-Received: by 2002:a17:902:244:b029:d6:c451:8566 with SMTP id 62-20020a1709020244b02900d6c4518566mr15452803plc.46.1605585191027;
+        Mon, 16 Nov 2020 19:53:11 -0800 (PST)
+Received: from 1G5JKC2.Broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id d12sm1034965pjs.27.2020.11.16.19.53.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2020 19:53:10 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <c42c14e3-d06d-fed8-24b6-fe10dcc10737@gmail.com>
-Date:   Mon, 16 Nov 2020 19:49:13 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.4.3
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Yunjian Wang <wangyunjian@huawei.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net v2] net: Have netpoll bring-up DSA management interface
+Date:   Mon, 16 Nov 2020 19:52:34 -0800
+Message-Id: <20201117035236.22658-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20201114234558.31203-4-tobias@waldekranz.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+DSA network devices rely on having their DSA management interface up and
+running otherwise their ndo_open() will return -ENETDOWN. Without doing
+this it would not be possible to use DSA devices as netconsole when
+configured on the command line. These devices also do not utilize the
+upper/lower linking so the check about the netpoll device having upper
+is not going to be a problem.
 
+The solution adopted here is identical to the one done for
+net/ipv4/ipconfig.c with 728c02089a0e ("net: ipv4: handle DSA enabled
+master network devices"), with the network namespace scope being
+restricted to that of the process configuring netpoll.
 
-On 11/14/2020 3:45 PM, Tobias Waldekranz wrote:
-> Use a consistent style of one-line/multi-line comments throughout the
-> file.
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Fixes: 04ff53f96a93 ("net: dsa: Add netconsole support")
+Tested-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+Changes in v2:
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+- added Vladimir's Tested-by tag
+- resubmit for the new patchwork to pick up the patch
+
+ net/core/netpoll.c | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
+
+diff --git a/net/core/netpoll.c b/net/core/netpoll.c
+index c310c7c1cef7..960948290001 100644
+--- a/net/core/netpoll.c
++++ b/net/core/netpoll.c
+@@ -29,6 +29,7 @@
+ #include <linux/slab.h>
+ #include <linux/export.h>
+ #include <linux/if_vlan.h>
++#include <net/dsa.h>
+ #include <net/tcp.h>
+ #include <net/udp.h>
+ #include <net/addrconf.h>
+@@ -657,15 +658,15 @@ EXPORT_SYMBOL_GPL(__netpoll_setup);
+ 
+ int netpoll_setup(struct netpoll *np)
+ {
+-	struct net_device *ndev = NULL;
++	struct net_device *ndev = NULL, *dev = NULL;
++	struct net *net = current->nsproxy->net_ns;
+ 	struct in_device *in_dev;
+ 	int err;
+ 
+ 	rtnl_lock();
+-	if (np->dev_name[0]) {
+-		struct net *net = current->nsproxy->net_ns;
++	if (np->dev_name[0])
+ 		ndev = __dev_get_by_name(net, np->dev_name);
+-	}
++
+ 	if (!ndev) {
+ 		np_err(np, "%s doesn't exist, aborting\n", np->dev_name);
+ 		err = -ENODEV;
+@@ -673,6 +674,19 @@ int netpoll_setup(struct netpoll *np)
+ 	}
+ 	dev_hold(ndev);
+ 
++	/* bring up DSA management network devices up first */
++	for_each_netdev(net, dev) {
++		if (!netdev_uses_dsa(dev))
++			continue;
++
++		err = dev_change_flags(dev, dev->flags | IFF_UP, NULL);
++		if (err < 0) {
++			np_err(np, "%s failed to open %s\n",
++			       np->dev_name, dev->name);
++			goto put;
++		}
++	}
++
+ 	if (netdev_master_upper_dev_get(ndev)) {
+ 		np_err(np, "%s is a slave device, aborting\n", np->dev_name);
+ 		err = -EBUSY;
 -- 
-Florian
+2.25.1
+
