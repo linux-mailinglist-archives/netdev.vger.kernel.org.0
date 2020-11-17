@@ -2,120 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B526B2B57FB
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:39:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4524B2B586C
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:44:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726287AbgKQDiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 22:38:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726181AbgKQDiW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:38:22 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97AB9C0613CF;
-        Mon, 16 Nov 2020 19:38:20 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id n5so17326490ile.7;
-        Mon, 16 Nov 2020 19:38:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7Yue+oGyk3PAnj2SUaXwlEbRxJd0lTE7ieGCNqEqHCo=;
-        b=czQEZP3IcAYK1tW9o9aSwo4g4YVxhiz7WhVUDPwjAgraQFDlpYFn2lAj/yBsTxgVmo
-         Qy+nthGkf9Ye7jVm6QVSPKu4U0iEcdhm79FV+TltVzcd5Owcld3wrHszNZ9aJsdY5bUg
-         YN/sADkC2sc+g83zF7zz6S0nlLcGEuOGh8XRzbMCPAK+Y4RLb/OYSkyVZoOfKFtq6QLu
-         eiDAclQHlM/7mqvkMYnW0bAUUqJZfucJbXrQTmVhkHhOp8mjDjrw1POxuf6zeMoVqqOE
-         oyNSQWl/mXLvlK4WKmahMjligNGe+a94rso/6ciObGfFXZD7l4j5Xefz/Dg4fwg6XVCz
-         9+UQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7Yue+oGyk3PAnj2SUaXwlEbRxJd0lTE7ieGCNqEqHCo=;
-        b=Uor448qQzF6IIFu2IaYjxW+6n54Vjoz5NPKITcRpkeopQQzLDOGd61ncK4E78NswIK
-         aYdJ3Dqda12kmhICcocoZa7/+u0Q0Z40dxT3av4LhLhN5l/D3N2faYac632YZmNeo2sI
-         DIH1MkqNVhuOPpMur3G5bHvAv/WPRxi0IJYBAN2DB7LCG7hq8GGowpudMDJQm1mhps9G
-         +YLup19lRrOmNeBHSRAOgP7CPlGsSw0mng4BzyexEFUq+jn4f8Gydw+Ss7q4Oq9+zCvm
-         NiSifomAAD+Jgdg3wBUwQ3+2Gx6KTIb4i4YO87BeVIaBgWTDtkhamop6CDkb4t60Yntj
-         Ab8Q==
-X-Gm-Message-State: AOAM5334mr8o5TaS6k/xduadGeR/YwHaKBFXdcR6xlkY7RS9358n5n5X
-        4wDtSxZyNZODX0Zyu/kK8ks=
-X-Google-Smtp-Source: ABdhPJwvj2bOWz90iajFuqI/gSHYeiY6CfD8e3zInbTFS1BtXd9JPot5QdkkZ3++B9LBjzUn6xCtqQ==
-X-Received: by 2002:a92:9ad5:: with SMTP id c82mr11420044ill.225.1605584299943;
-        Mon, 16 Nov 2020 19:38:19 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:c472:ae53:db1e:5dd0])
-        by smtp.googlemail.com with ESMTPSA id z82sm7688605iof.26.2020.11.16.19.38.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Nov 2020 19:38:19 -0800 (PST)
-Subject: Re: [PATCHv5 iproute2-next 0/5] iproute2: add libbpf support
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Jiri Benc <jbenc@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-References: <20201109070802.3638167-1-haliu@redhat.com>
- <20201116065305.1010651-1-haliu@redhat.com>
- <CAADnVQ+LNBYq5fdTSRUPy2ZexTdCcB6ErNH_T=r9bJ807UT=pQ@mail.gmail.com>
- <20201116155446.16fe46cf@carbon>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <62d26815-60f8-ca9f-bdbf-d75070935f1d@gmail.com>
-Date:   Mon, 16 Nov 2020 20:38:15 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.3
+        id S1728158AbgKQDoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 22:44:06 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:5446 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726342AbgKQDlP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:41:15 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AH3duTU004371
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:13 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=NhAS56Nr0Cg3zb5k/ZGP5s59LHTHFzDuL6w5EJ3Ow8s=;
+ b=erR5AR5fSLTSfzP9VWOkWwpAWLUeFxQnQPfbp+8NsaLNXCTdTc4BLtbYVpo5jgI7+K+x
+ iOwq8JDoPXlTTqK+JIXuv6gJIdshwC85Yy9ybajccCxZhl05DYpz9mRD2D5zgMxxfhat
+ dFXEck8HUqVusjIZQZuIm6xwP24f5zWtypU= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 34tdmruh5j-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:13 -0800
+Received: from intmgw004.06.prn3.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 16 Nov 2020 19:41:10 -0800
+Received: by devvm3388.prn0.facebook.com (Postfix, from userid 111017)
+        id 12283C63A56; Mon, 16 Nov 2020 19:41:10 -0800 (PST)
+From:   Roman Gushchin <guro@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <andrii@kernel.org>, <akpm@linux-foundation.org>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <kernel-team@fb.com>
+Subject: [PATCH bpf-next v6 00/34] bpf: switch to memcg-based memory accounting
+Date:   Mon, 16 Nov 2020 19:40:34 -0800
+Message-ID: <20201117034108.1186569-1-guro@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20201116155446.16fe46cf@carbon>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-17_01:2020-11-13,2020-11-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ lowpriorityscore=0 clxscore=1015 priorityscore=1501 mlxscore=0
+ suspectscore=38 adultscore=0 phishscore=0 mlxlogscore=999 spamscore=0
+ bulkscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2011170027
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/16/20 7:54 AM, Jesper Dangaard Brouer wrote:
-> When compiled against dynamic libbpf, then I would use 'ldd' command to
-> see what libbpf lib version is used.  When compiled/linked statically
-> against a custom libbpf version (already supported via LIBBPF_DIR) then
-> *I* think is difficult to figure out that version of libbpf I'm using.
-> Could we add the libbpf version info in 'tc -V', as then it would
-> remove one of my concerns with static linking.
+Currently bpf is using the memlock rlimit for the memory accounting.
+This approach has its downsides and over time has created a significant
+amount of problems:
 
-Adding libbpf version to 'tc -V' and 'ip -V' seems reasonable.
+1) The limit is per-user, but because most bpf operations are performed
+   as root, the limit has a little value.
 
-As for the bigger problem, trying to force user space components to
-constantly chase latest and greatest S/W versions is not the right answer.
+2) It's hard to come up with a specific maximum value. Especially because
+   the counter is shared with non-bpf users (e.g. memlock() users).
+   Any specific value is either too low and creates false failures
+   or too high and useless.
 
-The crux of the problem here is loading bpf object files and what will
-most likely be a never ending stream of enhancements that impact the
-proper loading of them. bpftool is much more suited to the job of
-managing bpf files versus iproute2 which is the de facto implementation
-for networking APIs. bpftool ships as part of a common linux tools
-package, so it will naturally track kernel versions for those who want /
-need latest and greatest versions. Users who are not building their own
-agents for managing bpf files (which I think is much more appropriate
-for production use cases than forking command line utilities) can use
-bpftool to load files, manage maps which are then attached to the
-programs, etc, and then invoke iproute2 to handle the networking attach
-/ detach / list with detailed information.
+3) Charging is not connected to the actual memory allocation. Bpf code
+   should manually calculate the estimated cost and precharge the counter=
+,
+   and then take care of uncharging, including all fail paths.
+   It adds to the code complexity and makes it easy to leak a charge.
 
-That said, the legacy bpf code in iproute2 has created some
-expectations, and iproute2 can not simply remove existing capabilities.
-Moving iproute2 to libbpf provides an improvement over the current
-status by allowing ‘modern’ bpf object files to be loaded without
-affecting legacy users, even if it does not allow latest and greatest
-bpf capabilities at every moment in time (again, a constantly moving
-reference point).
+4) There is no simple way of getting the current value of the counter.
+   We've used drgn for it, but it's far from being convenient.
 
-iproute2 is a networking configuration tool, not a bpf management tool.
-Hangbin’s approach gives full flexibility to those who roll their own
-and for distributions who value stability, it allows iproute2 to use
-latest and greatest libbpf for those who want to chase the pot of gold
-at the end of the rainbow, or they can choose stability with an OS
-distro’s libbpf or legacy bpf. I believe this is the right compromise at
-this point in time.
+5) Cryptic -EPERM is returned on exceeding the limit. Libbpf even had
+   a function to "explain" this case for users.
+
+In order to overcome these problems let's switch to the memcg-based
+memory accounting of bpf objects. With the recent addition of the percpu
+memory accounting, now it's possible to provide a comprehensive accountin=
+g
+of the memory used by bpf programs and maps.
+
+This approach has the following advantages:
+1) The limit is per-cgroup and hierarchical. It's way more flexible and a=
+llows
+   a better control over memory usage by different workloads. Of course, =
+it
+   requires enabled cgroups and kernel memory accounting and properly con=
+figured
+   cgroup tree, but it's a default configuration for a modern Linux syste=
+m.
+
+2) The actual memory consumption is taken into account. It happens automa=
+tically
+   on the allocation time if __GFP_ACCOUNT flags is passed. Uncharging is=
+ also
+   performed automatically on releasing the memory. So the code on the bp=
+f side
+   becomes simpler and safer.
+
+3) There is a simple way to get the current value and statistics.
+
+In general, if a process performs a bpf operation (e.g. creates or update=
+s
+a map), it's memory cgroup is charged. However map updates performed from
+an interrupt context are charged to the memory cgroup which contained
+the process, which created the map.
+
+Providing a 1:1 replacement for the rlimit-based memory accounting is
+a non-goal of this patchset. Users and memory cgroups are completely
+orthogonal, so it's not possible even in theory.
+Memcg-based memory accounting requires a properly configured cgroup tree
+to be actually useful. However, it's the way how the memory is managed
+on a modern Linux system.
+
+
+The patchset consists of the following parts:
+1) 4 mm patches, which are already in the mm tree, but are required
+   to avoid a regression (otherwise vmallocs cannot be mapped to userspac=
+e).
+2) memcg-based accounting for various bpf objects: progs and maps
+3) removal of the rlimit-based accounting
+4) removal of rlimit adjustments in userspace samples
+
+First 4 patches are not supposed to be merged via the bpf tree. I'm inclu=
+ding
+them to make sure bpf tests will pass.
+
+v6:
+  - rebased to the latest version of the remote charging API
+  - fixed signatures, added acks
+
+v5:
+  - rebased to the latest version of the remote charging API
+  - implemented kmem accounting from an interrupt context, by Shakeel
+  - rebased to latest changes in mm allowed to map vmallocs to userspace
+  - fixed a build issue in kselftests, by Alexei
+  - fixed a use-after-free bug in bpf_map_free_deferred()
+  - added bpf line info coverage, by Shakeel
+  - split bpf map charging preparations into a separate patch
+
+v4:
+  - covered allocations made from an interrupt context, by Daniel
+  - added some clarifications to the cover letter
+
+v3:
+  - droped the userspace part for further discussions/refinements,
+    by Andrii and Song
+
+v2:
+  - fixed build issue, caused by the remaining rlimit-based accounting
+    for sockhash maps
+
+
+Roman Gushchin (34):
+  mm: memcontrol: use helpers to read page's memcg data
+  mm: memcontrol/slab: use helpers to access slab page's memcg_data
+  mm: introduce page memcg flags
+  mm: convert page kmemcg type to a page memcg flag
+  bpf: memcg-based memory accounting for bpf progs
+  bpf: prepare for memcg-based memory accounting for bpf maps
+  bpf: memcg-based memory accounting for bpf maps
+  bpf: refine memcg-based memory accounting for arraymap maps
+  bpf: refine memcg-based memory accounting for cpumap maps
+  bpf: memcg-based memory accounting for cgroup storage maps
+  bpf: refine memcg-based memory accounting for devmap maps
+  bpf: refine memcg-based memory accounting for hashtab maps
+  bpf: memcg-based memory accounting for lpm_trie maps
+  bpf: memcg-based memory accounting for bpf ringbuffer
+  bpf: memcg-based memory accounting for bpf local storage maps
+  bpf: refine memcg-based memory accounting for sockmap and sockhash
+    maps
+  bpf: refine memcg-based memory accounting for xskmap maps
+  bpf: eliminate rlimit-based memory accounting for arraymap maps
+  bpf: eliminate rlimit-based memory accounting for bpf_struct_ops maps
+  bpf: eliminate rlimit-based memory accounting for cpumap maps
+  bpf: eliminate rlimit-based memory accounting for cgroup storage maps
+  bpf: eliminate rlimit-based memory accounting for devmap maps
+  bpf: eliminate rlimit-based memory accounting for hashtab maps
+  bpf: eliminate rlimit-based memory accounting for lpm_trie maps
+  bpf: eliminate rlimit-based memory accounting for queue_stack_maps
+    maps
+  bpf: eliminate rlimit-based memory accounting for reuseport_array maps
+  bpf: eliminate rlimit-based memory accounting for bpf ringbuffer
+  bpf: eliminate rlimit-based memory accounting for sockmap and sockhash
+    maps
+  bpf: eliminate rlimit-based memory accounting for stackmap maps
+  bpf: eliminate rlimit-based memory accounting for xskmap maps
+  bpf: eliminate rlimit-based memory accounting for bpf local storage
+    maps
+  bpf: eliminate rlimit-based memory accounting infra for bpf maps
+  bpf: eliminate rlimit-based memory accounting for bpf progs
+  bpf: samples: do not touch RLIMIT_MEMLOCK
+
+ fs/buffer.c                                   |   2 +-
+ fs/iomap/buffered-io.c                        |   2 +-
+ include/linux/bpf.h                           |  27 +--
+ include/linux/memcontrol.h                    | 215 +++++++++++++++++-
+ include/linux/mm.h                            |  22 --
+ include/linux/mm_types.h                      |   5 +-
+ include/linux/page-flags.h                    |  11 +-
+ include/trace/events/writeback.h              |   2 +-
+ kernel/bpf/arraymap.c                         |  30 +--
+ kernel/bpf/bpf_local_storage.c                |  18 +-
+ kernel/bpf/bpf_struct_ops.c                   |  19 +-
+ kernel/bpf/core.c                             |  22 +-
+ kernel/bpf/cpumap.c                           |  20 +-
+ kernel/bpf/devmap.c                           |  23 +-
+ kernel/bpf/hashtab.c                          |  33 +--
+ kernel/bpf/helpers.c                          |  37 ++-
+ kernel/bpf/local_storage.c                    |  38 +---
+ kernel/bpf/lpm_trie.c                         |  17 +-
+ kernel/bpf/queue_stack_maps.c                 |  16 +-
+ kernel/bpf/reuseport_array.c                  |  12 +-
+ kernel/bpf/ringbuf.c                          |  33 +--
+ kernel/bpf/stackmap.c                         |  16 +-
+ kernel/bpf/syscall.c                          | 177 ++++----------
+ kernel/fork.c                                 |   7 +-
+ mm/debug.c                                    |   4 +-
+ mm/huge_memory.c                              |   4 +-
+ mm/memcontrol.c                               | 139 +++++------
+ mm/page_alloc.c                               |   8 +-
+ mm/page_io.c                                  |   6 +-
+ mm/slab.h                                     |  38 +---
+ mm/workingset.c                               |   2 +-
+ net/core/bpf_sk_storage.c                     |   2 +-
+ net/core/sock_map.c                           |  40 +---
+ net/xdp/xskmap.c                              |  15 +-
+ samples/bpf/map_perf_test_user.c              |   6 -
+ samples/bpf/offwaketime_user.c                |   6 -
+ samples/bpf/sockex2_user.c                    |   2 -
+ samples/bpf/sockex3_user.c                    |   2 -
+ samples/bpf/spintest_user.c                   |   6 -
+ samples/bpf/syscall_tp_user.c                 |   2 -
+ samples/bpf/task_fd_query_user.c              |   5 -
+ samples/bpf/test_lru_dist.c                   |   3 -
+ samples/bpf/test_map_in_map_user.c            |   6 -
+ samples/bpf/test_overhead_user.c              |   2 -
+ samples/bpf/trace_event_user.c                |   2 -
+ samples/bpf/tracex2_user.c                    |   6 -
+ samples/bpf/tracex3_user.c                    |   6 -
+ samples/bpf/tracex4_user.c                    |   6 -
+ samples/bpf/tracex5_user.c                    |   3 -
+ samples/bpf/tracex6_user.c                    |   3 -
+ samples/bpf/xdp1_user.c                       |   6 -
+ samples/bpf/xdp_adjust_tail_user.c            |   6 -
+ samples/bpf/xdp_monitor_user.c                |   5 -
+ samples/bpf/xdp_redirect_cpu_user.c           |   6 -
+ samples/bpf/xdp_redirect_map_user.c           |   6 -
+ samples/bpf/xdp_redirect_user.c               |   6 -
+ samples/bpf/xdp_router_ipv4_user.c            |   6 -
+ samples/bpf/xdp_rxq_info_user.c               |   6 -
+ samples/bpf/xdp_sample_pkts_user.c            |   6 -
+ samples/bpf/xdp_tx_iptunnel_user.c            |   6 -
+ samples/bpf/xdpsock_user.c                    |   7 -
+ .../selftests/bpf/progs/bpf_iter_bpf_map.c    |   2 +-
+ .../selftests/bpf/progs/map_ptr_kern.c        |   7 -
+ 63 files changed, 460 insertions(+), 743 deletions(-)
+
+--=20
+2.26.2
+
