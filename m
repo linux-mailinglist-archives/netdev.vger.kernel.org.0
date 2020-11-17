@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B9BA2B585A
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:44:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 860152B5845
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:44:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728079AbgKQDni (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 22:43:38 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:33036 "EHLO
+        id S1727948AbgKQDmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 22:42:55 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:24966 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726902AbgKQDlR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:41:17 -0500
+        by vger.kernel.org with ESMTP id S1726543AbgKQDlT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:41:19 -0500
 Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0AH3cYER024897
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:16 -0800
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0AH3cYEU024897
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:17 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=71ldEajIaYUv8dlOx85zNUyfx3l4oS87UVCe+qPnAkg=;
- b=IEBRwBVEcNvPLX9dxqWDByLT0uXkyKWdO5OKlJpy7k7A86xpD7gcEmOmj7e5k00Zekdw
- zKb+rAOklwxg9I9VxCBnpFaNB26WOVQaRZ0WPRTYufwLVUFqGpxUi8fzljJFu5fuaaqv
- 5f6VTIO54yD1qbZ+mkmCtlCDirgIdXHXEvM= 
+ bh=5+g1vFpP44Fja8arvawtJQQABGc/XVnUEYIir2wRvvo=;
+ b=F8xQfY6RLjmqWBfzHeVK8iG8Ebngj2mgldNcei8QEMgI8rj7CebWrVzI3isONw5Myfpw
+ 0e8i5xKBhBAc4MjmB/PgSaDU7V/wlxLuwAb0LrD7VaZbK6EEUKxaETRD1Qm3rZtkxhCS
+ ZpGPuyr1N49LNzTqXQ4MakhSCI5u/Z61WjI= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 34tbssbt8h-13
+        by m0001303.ppops.net with ESMTP id 34tbssbt8h-16
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:16 -0800
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:17 -0800
 Received: from intmgw004.06.prn3.facebook.com (2620:10d:c085:108::8) by
  mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 16 Nov 2020 19:41:12 -0800
+ 15.1.1979.3; Mon, 16 Nov 2020 19:41:13 -0800
 Received: by devvm3388.prn0.facebook.com (Postfix, from userid 111017)
-        id 2D8F4C63A62; Mon, 16 Nov 2020 19:41:10 -0800 (PST)
+        id 31FC8C63A64; Mon, 16 Nov 2020 19:41:10 -0800 (PST)
 From:   Roman Gushchin <guro@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
         <andrii@kernel.org>, <akpm@linux-foundation.org>,
         <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <kernel-team@fb.com>
-Subject: [PATCH bpf-next v6 06/34] bpf: prepare for memcg-based memory accounting for bpf maps
-Date:   Mon, 16 Nov 2020 19:40:40 -0800
-Message-ID: <20201117034108.1186569-7-guro@fb.com>
+Subject: [PATCH bpf-next v6 07/34] bpf: memcg-based memory accounting for bpf maps
+Date:   Mon, 16 Nov 2020 19:40:41 -0800
+Message-ID: <20201117034108.1186569-8-guro@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20201117034108.1186569-1-guro@fb.com>
 References: <20201117034108.1186569-1-guro@fb.com>
@@ -50,8 +50,8 @@ Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-11-17_01:2020-11-13,2020-11-17 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- suspectscore=38 impostorscore=0 adultscore=0 priorityscore=1501
- phishscore=0 lowpriorityscore=0 spamscore=0 bulkscore=0 mlxlogscore=999
+ suspectscore=13 impostorscore=0 adultscore=0 priorityscore=1501
+ phishscore=0 lowpriorityscore=0 spamscore=0 bulkscore=0 mlxlogscore=695
  malwarescore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-2009150000 definitions=main-2011170027
 X-FB-Internal: deliver
@@ -59,176 +59,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the absolute majority of cases if a process is making a kernel
-allocation, it's memory cgroup is getting charged.
+This patch enables memcg-based memory accounting for memory allocated
+by __bpf_map_area_alloc(), which is used by many types of bpf maps for
+large memory allocations.
 
-Bpf maps can be updated from an interrupt context and in such
-case there is no process which can be charged. It makes the memory
-accounting of bpf maps non-trivial.
-
-Fortunately, after commit 4127c6504f25 ("mm: kmem: enable kernel
-memcg accounting from interrupt contexts") and b87d8cefe43c
-("mm, memcg: rework remote charging API to support nesting")
-it's finally possible.
-
-To do it, a pointer to the memory cgroup of the process which created
-the map is saved, and this cgroup is getting charged for all
-allocations made from an interrupt context.
-
-Allocations made from a process context will be accounted in a usual way.
+Following patches in the series will refine the accounting for
+some of the map types.
 
 Signed-off-by: Roman Gushchin <guro@fb.com>
 Acked-by: Song Liu <songliubraving@fb.com>
 ---
- include/linux/bpf.h  |  4 ++++
- kernel/bpf/helpers.c | 37 ++++++++++++++++++++++++++++++++++++-
- kernel/bpf/syscall.c | 25 +++++++++++++++++++++++++
- 3 files changed, 65 insertions(+), 1 deletion(-)
+ kernel/bpf/syscall.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 581b2a2e78eb..1d6e7b125877 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -37,6 +37,7 @@ struct bpf_iter_aux_info;
- struct bpf_local_storage;
- struct bpf_local_storage_map;
- struct kobject;
-+struct mem_cgroup;
-=20
- extern struct idr btf_idr;
- extern spinlock_t btf_idr_lock;
-@@ -161,6 +162,9 @@ struct bpf_map {
- 	u32 btf_value_type_id;
- 	struct btf *btf;
- 	struct bpf_map_memory memory;
-+#ifdef CONFIG_MEMCG_KMEM
-+	struct mem_cgroup *memcg;
-+#endif
- 	char name[BPF_OBJ_NAME_LEN];
- 	u32 btf_vmlinux_value_type_id;
- 	bool bypass_spec_v1;
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index 25520f5eeaf6..b6327cbe7e41 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -14,6 +14,7 @@
- #include <linux/jiffies.h>
- #include <linux/pid_namespace.h>
- #include <linux/proc_ns.h>
-+#include <linux/sched/mm.h>
-=20
- #include "../../lib/kstrtox.h"
-=20
-@@ -41,11 +42,45 @@ const struct bpf_func_proto bpf_map_lookup_elem_proto=
- =3D {
- 	.arg2_type	=3D ARG_PTR_TO_MAP_KEY,
- };
-=20
-+#ifdef CONFIG_MEMCG_KMEM
-+static __always_inline int __bpf_map_update_elem(struct bpf_map *map, vo=
-id *key,
-+						 void *value, u64 flags)
-+{
-+	struct mem_cgroup *old_memcg;
-+	bool in_interrupt;
-+	int ret;
-+
-+	/*
-+	 * If update from an interrupt context results in a memory allocation,
-+	 * the memory cgroup to charge can't be determined from the context
-+	 * of the current task. Instead, we charge the memory cgroup, which
-+	 * contained a process created the map.
-+	 */
-+	in_interrupt =3D in_interrupt();
-+	if (in_interrupt)
-+		old_memcg =3D set_active_memcg(map->memcg);
-+
-+	ret =3D map->ops->map_update_elem(map, key, value, flags);
-+
-+	if (in_interrupt)
-+		set_active_memcg(old_memcg);
-+
-+	return ret;
-+}
-+#else
-+static __always_inline int __bpf_map_update_elem(struct bpf_map *map, vo=
-id *key,
-+						 void *value, u64 flags)
-+{
-+	return map->ops->map_update_elem(map, key, value, flags);
-+}
-+#endif
-+
- BPF_CALL_4(bpf_map_update_elem, struct bpf_map *, map, void *, key,
- 	   void *, value, u64, flags)
- {
- 	WARN_ON_ONCE(!rcu_read_lock_held());
--	return map->ops->map_update_elem(map, key, value, flags);
-+
-+	return __bpf_map_update_elem(map, key, value, flags);
- }
-=20
- const struct bpf_func_proto bpf_map_update_elem_proto =3D {
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index f3fe9f53f93c..2d77fc2496da 100644
+index 2d77fc2496da..fcadf953989f 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -31,6 +31,7 @@
- #include <linux/poll.h>
- #include <linux/bpf-netns.h>
- #include <linux/rcupdate_trace.h>
-+#include <linux/memcontrol.h>
+@@ -280,7 +280,7 @@ static void *__bpf_map_area_alloc(u64 size, int numa_=
+node, bool mmapable)
+ 	 * __GFP_RETRY_MAYFAIL to avoid such situations.
+ 	 */
 =20
- #define IS_FD_ARRAY(map) ((map)->map_type =3D=3D BPF_MAP_TYPE_PERF_EVENT=
-_ARRAY || \
- 			  (map)->map_type =3D=3D BPF_MAP_TYPE_CGROUP_ARRAY || \
-@@ -456,6 +457,27 @@ void bpf_map_free_id(struct bpf_map *map, bool do_id=
-r_lock)
- 		__release(&map_idr_lock);
- }
-=20
-+#ifdef CONFIG_MEMCG_KMEM
-+static void bpf_map_save_memcg(struct bpf_map *map)
-+{
-+	map->memcg =3D get_mem_cgroup_from_mm(current->mm);
-+}
-+
-+static void bpf_map_release_memcg(struct bpf_map *map)
-+{
-+	mem_cgroup_put(map->memcg);
-+}
-+
-+#else
-+static void bpf_map_save_memcg(struct bpf_map *map)
-+{
-+}
-+
-+static void bpf_map_release_memcg(struct bpf_map *map)
-+{
-+}
-+#endif
-+
- /* called from workqueue */
- static void bpf_map_free_deferred(struct work_struct *work)
- {
-@@ -464,6 +486,7 @@ static void bpf_map_free_deferred(struct work_struct =
-*work)
-=20
- 	bpf_map_charge_move(&mem, &map->memory);
- 	security_bpf_map_free(map);
-+	bpf_map_release_memcg(map);
- 	/* implementation dependent freeing */
- 	map->ops->map_free(map);
- 	bpf_map_charge_finish(&mem);
-@@ -875,6 +898,8 @@ static int map_create(union bpf_attr *attr)
- 	if (err)
- 		goto free_map_sec;
-=20
-+	bpf_map_save_memcg(map);
-+
- 	err =3D bpf_map_new_fd(map, f_flags);
- 	if (err < 0) {
- 		/* failed to allocate fd.
+-	const gfp_t gfp =3D __GFP_NOWARN | __GFP_ZERO;
++	const gfp_t gfp =3D __GFP_NOWARN | __GFP_ZERO | __GFP_ACCOUNT;
+ 	unsigned int flags =3D 0;
+ 	unsigned long align =3D 1;
+ 	void *area;
 --=20
 2.26.2
 
