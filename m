@@ -2,149 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CF142B5B79
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 10:03:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D6F72B5BAC
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 10:22:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727156AbgKQJBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 04:01:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
+        id S1726982AbgKQJTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 04:19:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726815AbgKQJBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 04:01:41 -0500
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFF48C0613CF;
-        Tue, 17 Nov 2020 01:01:40 -0800 (PST)
-Received: by mail-wm1-x343.google.com with SMTP id 10so2479851wml.2;
-        Tue, 17 Nov 2020 01:01:40 -0800 (PST)
+        with ESMTP id S1726466AbgKQJTm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 04:19:42 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49FF0C0613CF
+        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 01:19:41 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id t11so21621601edj.13
+        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 01:19:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=5raLdf7B4TvIbmYn8Vn+fWUB4a35RkPUvlLZKikY920=;
-        b=LiqIwar8Eo9wGvlsPcEOJLQfjsvLPMeDVyaOmhY3ZFODkPkfE9X5sOiJJzuZsnMK1L
-         H2jHZm1Rx/Mynid4tdpWg59GEP00AiV94GS2SLmbviSuJHNKsP6ljAnUpvGMClROIHUv
-         1Ap5KvWt6Rbp3PTmklkxsKQVsjnSFWUmF6a12tiLDz9CIRPZ9df+MR09R8j8EjRi6cvQ
-         DERnwCwEwmLa3xthDja8zT6DQ9z4ZwtAVaBztLOvR9SXy7dp5LXYyyhPmxJJY939Rzv5
-         VyBdUNZZrnKy6sz/XYDSw/YfpaPzbx5t4feKDTawJqZJJ00oprpwmmmPu23+0r1OIuGp
-         tZPQ==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=TqMwoXlLGLYY6cUKl8e9D85L5mY2Ccy8ksn24MB45r8=;
+        b=XopOFs3zG2ZDLVPf/rH5fmQmJ5erk2jyk3Q0UYyhK1ivmPTkOEGsOawSXdSJhRrC6O
+         cRwBlRabVWaK6x24wuUBmaqBqXuG+wmFczA8QJxXFNTppS3ziN5w5HBJCreuUw6Whb9/
+         sfc3xTIq0wscAShwDqf7KtBdfrlC3TEmBOqhTqPFRA0wu2+QoBKC+ELcIuPn84SRdaIn
+         ID3Wltj+ktblkmHHa0Y69r7oNRyg6xsqkquSihtiR8+4QmR+hEhb8gxXjUOC5X1aIk73
+         68RxRezc8VxTCakAm9yMG2Pk68/Alf61y0FO5HerWCEKlu06mAf7PqWODI8gZDJ4VWjQ
+         i2Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=5raLdf7B4TvIbmYn8Vn+fWUB4a35RkPUvlLZKikY920=;
-        b=KxS3X4K155ZlXu1OgNpiU5pm/6fMR1+3gajMJOBmzVnjOn6ZeWZmlTOU7qs6TnPuEU
-         BYkm5VBCbxbgSl5rkUdwuPv6eewah3b2nV895fnI/cbk8r/Fax2ApJzHiwrMGLPapRBJ
-         U4lsSW78P3MNyz9uZfGmNWhKlvbYhC55SGR1ERuOcdui7P0AbFJrv5JI5i86kHpSZu3E
-         Qokdct7F/XtWH7fwXDHrndd9AN31lHpfL8bdbHHNkrrVRohC05Y9IJRXwe7C+Be3k/vf
-         ZxUMHj5Jo8hEvvOO465hot2xyol+KxlYBfcZWS9D1G+XFkR/RezKCBnBDF/69EQJFN9B
-         Kv2Q==
-X-Gm-Message-State: AOAM532yDjl7U/ra0J4kCCLFGvDEPHy7D9vgMuD1Fr6rKmGTmrEwWEBA
-        q8bwtroDrD3QRWfuQ0qHDUB5YegHhUNTcw==
-X-Google-Smtp-Source: ABdhPJyLHh1/PDp0wkJgvxiSn7piVBdua7eF08Px6miCKSoFgqa4v/YnhZGYEgN3npzDi4GjPMDJxA==
-X-Received: by 2002:a05:600c:2949:: with SMTP id n9mr3062720wmd.29.1605603699143;
-        Tue, 17 Nov 2020 01:01:39 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:703b:c7f4:f658:541b? (p200300ea8f232800703bc7f4f658541b.dip0.t-ipconnect.de. [2003:ea:8f23:2800:703b:c7f4:f658:541b])
-        by smtp.googlemail.com with ESMTPSA id v19sm27593925wrf.40.2020.11.17.01.01.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Nov 2020 01:01:38 -0800 (PST)
-Subject: Re: [PATCH net] atl1c: fix error return code in atl1c_probe()
-To:     Chris Snook <chris.snook@gmail.com>
-Cc:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, yanaijie@huawei.com,
-        christophe.jaillet@wanadoo.fr, mst@redhat.com,
-        Leon Romanovsky <leon@kernel.org>, jesse.brandeburg@intel.com,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <1605581721-36028-1-git-send-email-zhangchangzhong@huawei.com>
- <34800149-ce40-b993-1d82-5f26abc61b28@gmail.com>
- <CAMXMK6v+nAdcChQ4wkc8gRt6i1uwGHgnmqBvZf9k-HFmPkSWcQ@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <7fae4733-570c-6cb1-5537-de6469afbea5@gmail.com>
-Date:   Tue, 17 Nov 2020 10:01:32 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=TqMwoXlLGLYY6cUKl8e9D85L5mY2Ccy8ksn24MB45r8=;
+        b=HSxVAp97IyCxfUY//3HghZ7UpOC1WjkjzeV4JA1K4fAYTOW3PJHpfNatRjRHxmwWvV
+         UaokES5Vv+GNPmgfdGUAlfYYmFLyYSi7EpIFRz0NlH4fA10nUiX50MOwznCiX2WIAoOc
+         ucQDLsHXNo6h2+HArQYoanwB74tOBgTPzaFtChQNKmdfmKCOpe4UGNLcddUVI283f9xz
+         n5qIgv2skL0v619RZoS2yjRh32119u8ZoROPoRop+BLwnW147lvhhpj5tDttoyQ8QeD4
+         3LVZW+Ip6OgFAGgMmhvDWaMhercF/ccuw82rwru9fqRVxvgnJdeM4FYz4bI4bHtCspgS
+         a4Jg==
+X-Gm-Message-State: AOAM533LK4JooVeJ1l07S18SwiB1MPzsGi1ycOHmhNY/aF9dBmVCUs6x
+        LEH6YfYGMo2CT8VJk1bEyrg=
+X-Google-Smtp-Source: ABdhPJyQk+JHV5A2A4NS+s+V24G0nh9XGLlQ2b66jdlMT2KiLJrOGcLx7Pk8iW75CogAaGjjkzXMFg==
+X-Received: by 2002:aa7:d34e:: with SMTP id m14mr19156326edr.42.1605604780023;
+        Tue, 17 Nov 2020 01:19:40 -0800 (PST)
+Received: from tws ([2a0f:6480:3:1:d65d:64ff:fed0:4a9d])
+        by smtp.gmail.com with ESMTPSA id e1sm11799734edy.8.2020.11.17.01.19.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2020 01:19:39 -0800 (PST)
+Date:   Tue, 17 Nov 2020 10:19:38 +0100
+From:   Oliver Herms <oliver.peter.herms@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, kuba@kernel.org
+Subject: [PATCH v2] IPv6: RTM_GETROUTE: Add RTA_ENCAP to result
+Message-ID: <20201117091938.GA562664@tws>
 MIME-Version: 1.0
-In-Reply-To: <CAMXMK6v+nAdcChQ4wkc8gRt6i1uwGHgnmqBvZf9k-HFmPkSWcQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 17.11.2020 um 08:43 schrieb Chris Snook:
-> The full text of the preceding comment explains the need:
-> 
-> /*
-> * The atl1c chip can DMA to 64-bit addresses, but it uses a single
-> * shared register for the high 32 bits, so only a single, aligned,
-> * 4 GB physical address range can be used at a time.
-> *
-> * Supporting 64-bit DMA on this hardware is more trouble than it's
-> * worth.  It is far easier to limit to 32-bit DMA than update
-> * various kernel subsystems to support the mechanics required by a
-> * fixed-high-32-bit system.
-> */
-> 
-> Without this, we get data corruption and crashes on machines with 4 GB
-> of RAM or more.
-> 
-> - Chris
-> 
-> On Mon, Nov 16, 2020 at 11:14 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>
->> Am 17.11.2020 um 03:55 schrieb Zhang Changzhong:
->>> Fix to return a negative error code from the error handling
->>> case instead of 0, as done elsewhere in this function.
->>>
->>> Fixes: 85eb5bc33717 ("net: atheros: switch from 'pci_' to 'dma_' API")
->>> Reported-by: Hulk Robot <hulkci@huawei.com>
->>> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
->>> ---
->>>  drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 4 ++--
->>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
->>> index 0c12cf7..3f65f2b 100644
->>> --- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
->>> +++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
->>> @@ -2543,8 +2543,8 @@ static int atl1c_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->>>        * various kernel subsystems to support the mechanics required by a
->>>        * fixed-high-32-bit system.
->>>        */
->>> -     if ((dma_set_mask(&pdev->dev, DMA_BIT_MASK(32)) != 0) ||
->>> -         (dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32)) != 0)) {
->>> +     err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
->>
->> I wonder whether you need this call at all, because 32bit is the default.
->> See following
->>
->> "By default, the kernel assumes that your device can address 32-bits
->> of DMA addressing."
->>
->> in https://www.kernel.org/doc/Documentation/DMA-API-HOWTO.txt
->>
->>> +     if (err) {
->>>               dev_err(&pdev->dev, "No usable DMA configuration,aborting\n");
->>>               goto err_dma;
->>>       }
->>>
->>
+This patch adds an IPv6 routes encapsulation attribute
+to the result of netlink RTM_GETROUTE requests
+(i.e. ip route get 2001:db8::).
 
-Please don't top-post.
->From what I've seen the kernel configures 32bit as default DMA size.
-See beginning of pci_device_add(), there the coherent mask is set to 32bit.
+Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
+---
+ net/ipv6/route.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-And in pci_setup_device() see the following:
-  /*
-         * Assume 32-bit PCI; let 64-bit PCI cards (which are far rarer)
-         * set this higher, assuming the system even supports it.
-         */
-        dev->dma_mask = 0xffffffff;
-
-
-That means if you would like to use 64bit DMA then you'd need to configure this explicitly.
-You could check to which mask dev->dma_mask and dev->coherent_dma_mask are set
-w/o the call to dma_set_mask_and_coherent.
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 82cbb46a2a4f..d7e94eac3136 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -5489,6 +5489,10 @@ static int rt6_fill_node(struct net *net, struct sk_buff *skb,
+ 	rtm->rtm_scope = RT_SCOPE_UNIVERSE;
+ 	rtm->rtm_protocol = rt->fib6_protocol;
+ 
++	if (dst && dst->lwtstate && lwtunnel_fill_encap(skb, dst->lwtstate,
++	    RTA_ENCAP, RTA_ENCAP_TYPE) < 0)
++		goto nla_put_failure;
++
+ 	if (rt6_flags & RTF_CACHE)
+ 		rtm->rtm_flags |= RTM_F_CLONED;
+ 
+-- 
+2.25.1
 
