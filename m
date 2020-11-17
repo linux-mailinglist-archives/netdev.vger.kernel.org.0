@@ -2,113 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C54D12B6DFA
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 20:02:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 217B42B6E0B
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 20:08:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727940AbgKQTAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 14:00:45 -0500
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:55105 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726644AbgKQTAp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 14:00:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1605639643; x=1637175643;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uJGo6j8ljzoyAXtuqCtiWI7gZtN1UjVC/lwvJf0+CrE=;
-  b=jyEpGExGLrxrCeWlSub5hZStpLLfucObUPzH0eYr91BJyrNwH7EqwTp4
-   /2ChQ6/aqKB/ckxN3Q7zB/o8nL4nOPCrWDSt+gFNux56SlDB64IH3j65+
-   gtqAMjOqL84zPK/EB3iSL820RtdaOnnjLShaCRtVRmrpps1shcGLs3KqS
-   hvNqsUdc1qKRg0JnZkjjl50gsndiLrUWImwgQxU+OuuWa7T0wuIdTYV9a
-   ErrsDeU9RqhxBokADAhrpjsCyJIlfTqjuBSKdL5XnKu8jt27+t5OwvTKQ
-   BYwiruDSYUQbkyEAEYT/rmYKFrbk35pLGe01+P2DHuYEhKggs+D7GMJRO
-   A==;
-IronPort-SDR: wq5GUw4ZcCdWfdFbnT+sTxxoOtlAtdlJ3i488p4VgXIX82brdwCzyRFxJAm0BmPrcgq55k9PQK
- fi8hilKi43EKoV3ZzqIyxBksIoZLOsMi0va4REXx5XUKpQWo4TM437C7v27095HvY/FHOxwdUK
- quDPxconGD/+CUBqHDdRF9HkVQzg5dzjjsq46SQYqF+wCeU/J7aRpQ0/jrb2wXMmrUzoWz864Q
- 0/ZspERyU+2JEKChag6ggk+WRasQbSYw9UeKWk8eHP6jeVnWPnjCypXGwWqOkkFZHFUGkNKG9Z
- AJU=
-X-IronPort-AV: E=Sophos;i="5.77,486,1596524400"; 
-   d="scan'208";a="96659063"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Nov 2020 12:00:43 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 17 Nov 2020 12:00:42 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Tue, 17 Nov 2020 12:00:42 -0700
-Date:   Tue, 17 Nov 2020 20:00:41 +0100
-From:   Joergen Andreasen <joergen.andreasen@microchip.com>
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <Arvid.Brodin@xdin.com>,
-        <m-karicheri2@ti.com>, <vinicius.gomes@intel.com>,
-        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
-        <saeedm@mellanox.com>, <jiri@mellanox.com>, <idosch@mellanox.com>,
-        <alexandre.belloni@bootlin.com>, <UNGLinuxDriver@microchip.com>,
-        <ivan.khoronzhuk@linaro.org>, <andre.guedes@linux.intel.com>,
-        <allan.nielsen@microchip.com>, <po.liu@nxp.com>,
-        <mingkai.hu@nxp.com>, <claudiu.manoil@nxp.com>,
-        <vladimir.oltean@nxp.com>, <leoyang.li@nxp.com>
-Subject: Re: [RFC, net-next] net: qos: introduce a redundancy flow action
-Message-ID: <20201117190041.dejmwpi4kvgrcotj@soft-dev16>
-References: <20201117063013.37433-1-xiaoliang.yang_1@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20201117063013.37433-1-xiaoliang.yang_1@nxp.com>
-User-Agent: NeoMutt/20171215
+        id S1726417AbgKQTHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 14:07:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56900 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725613AbgKQTHc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 14:07:32 -0500
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979A6C0613CF;
+        Tue, 17 Nov 2020 11:07:31 -0800 (PST)
+Received: by mail-ot1-x343.google.com with SMTP id 79so20494733otc.7;
+        Tue, 17 Nov 2020 11:07:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=9fgySF6K68SlluAGbdqXKQeVrDTrhLPgdEXfhoFPwX8=;
+        b=XoZH8GpCCWfsU+IoFOA00/Zk5jH4C2i3Xv8NjBnsgNDw7x87/1ZRrXEnh0/DTnx7wd
+         yT4rS+fQosOlWkWUSSMb1S4wkcVmamnYgFHuDu+G/giPJGRAsEvHsBx7aVrSHf5yeLVu
+         GBn6DveQkZ/WKVf5bLD0LGrYI2s6h7faYVGbrZOzbMxeD2SFxmwpCH44B7bKQL27z8lM
+         4VyzAdV4V/XemAMsQJDh5Q7eGlNMtjqaKFguAlWJbNYkAq4bEzyjuhhwosv4+ZzhO6wF
+         HCO6gKEQhTZ5pIeZJVxN2Vn6vy4SOFRsUhT86MkV/l7NJpIMMFVDTEo3sSFAwVce/39L
+         rHGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=9fgySF6K68SlluAGbdqXKQeVrDTrhLPgdEXfhoFPwX8=;
+        b=Np/jbq0WWkammvnLB6pZDxb6dClUk+72TTw/IQHjwdql20/CvApxxyRIvrdiINbD8f
+         IFbmA48Czz2SmODiUO/rEuIQ9WIcPQhjw5tgD1W0LDCV8fy8kkjZDU7L3oHwf5RxDULK
+         kSrNddeSh8utcFMcg3Us8rQuqqiBwVjAqQ2AsaYneL8D2uOVbwWXetwO/TXfFVG7WyCh
+         AakSagYtB3VIYrqYtl2Ui8t3nwpANJoqx7yN0gerMBBYoHsOj8YoiQB82uhpQgqcY/E6
+         VYGbj3SN3XgPUQMqfMIPtrKvdCBuYEOZWljBHFnAA/2CCEhGh5DhQySBSFVxBTDwsMIY
+         t7IA==
+X-Gm-Message-State: AOAM533FcA8PxdnJtGkQkpz0A2hUcmoHjFWQvVcL4XPjAJVJ5Xkv7O+u
+        l3tPG5n9MvY/XT1iiFH3WXvKV4C/l8KD1g==
+X-Google-Smtp-Source: ABdhPJyvLHJlKU9g2W718K3p65afXZsjKc8wVd1jMSWIOnG1FdT8bzA4YxQmeyGQS90q+L6HzaBBUg==
+X-Received: by 2002:a9d:460a:: with SMTP id y10mr3761572ote.99.1605640050975;
+        Tue, 17 Nov 2020 11:07:30 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id w22sm1804563oie.49.2020.11.17.11.07.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2020 11:07:30 -0800 (PST)
+Date:   Tue, 17 Nov 2020 11:07:22 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, kuba@kernel.org, john.fastabend@gmail.com
+Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
+        anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
+        maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org
+Message-ID: <5fb41f6ae195_310220813@john-XPS-13-9370.notmuch>
+In-Reply-To: <1605525167-14450-5-git-send-email-magnus.karlsson@gmail.com>
+References: <1605525167-14450-1-git-send-email-magnus.karlsson@gmail.com>
+ <1605525167-14450-5-git-send-email-magnus.karlsson@gmail.com>
+Subject: RE: [PATCH bpf-next v3 4/5] xsk: introduce batched Tx descriptor
+ interfaces
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 11/17/2020 14:30, Xiaoliang Yang wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
 > 
-> This patch introduce a redundancy flow action to implement frame
-> replication and elimination for reliability, which is defined in
-> IEEE P802.1CB.
+> Introduce batched descriptor interfaces in the xsk core code for the
+> Tx path to be used in the driver to write a code path with higher
+> performance. This interface will be used by the i40e driver in the
+> next patch. Though other drivers would likely benefit from this new
+> interface too.
 > 
-> There are two modes for redundancy action: generator and recover mode.
-> Generator mode add redundancy tag and replicate the frame to different
-> egress ports. Recover mode drop the repeat frames and remove redundancy
-> tag from the frame.
+> Note that batching is only implemented for the common case when
+> there is only one socket bound to the same device and queue id. When
+> this is not the case, we fall back to the old non-batched version of
+> the function.
 > 
-> Below is the setting example in user space:
->         > tc qdisc add dev swp0 clsact
->         > tc filter add dev swp0 ingress protocol 802.1Q flower \
->                 skip_hw dst_mac 00:01:02:03:04:05 vlan_id 1 \
->                 action redundancy generator split dev swp1 dev swp2
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> ---
+>  include/net/xdp_sock_drv.h |  7 ++++
+>  net/xdp/xsk.c              | 57 +++++++++++++++++++++++++++++
+>  net/xdp/xsk_queue.h        | 89 +++++++++++++++++++++++++++++++++++++++-------
+>  3 files changed, 140 insertions(+), 13 deletions(-)
 > 
->         > tc filter add dev swp0 ingress protocol 802.1Q flower
->                 skip_hw dst_mac 00:01:02:03:04:06 vlan_id 1 \
->                 action redundancy recover
-> 
-> Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 
-Hi Xiaoliang,
+Acked-by: John Fastabend <john.fastabend@gmail.com>
 
-I like your idea about using filter actions for FRER configuration.
+> +
+> +u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *descs,
+> +				   u32 max_entries)
+> +{
+> +	struct xdp_sock *xs;
+> +	u32 nb_pkts;
+> +
+> +	rcu_read_lock();
+> +	if (!list_is_singular(&pool->xsk_tx_list)) {
+> +		/* Fallback to the non-batched version */
 
-I think this is a good starting point but I think that this approach will only
-allow us to configure end systems and not relay systems in bridges/switches.
+I'm going to ask even though I believe its correct.
 
-In the following I refer to sections and figures in 802.1CB-2017.
+If we fallback here and then an entry is added to the list while we are
+in the fallback logic everything should still be OK, correct?
 
-I am missing the following possibilities:
-Configure split without adding an r-tag (Figure C-4 Relay system C).
-Configure recovery without popping the r-tag (Figure C4 Relay system F).
-Disable flooding and learning per VLAN (Section C.7).
-Select between vector and match recovery algorithm (Section 7.4.3.4 and 7.4.3.5).
-Configure history length if vector algorithm is used (Section 10.4.1.6).
-Configure reset timeout (Section 10.4.1.7).
-Adding an individual recovery function (Section 7.5).
-Counters to be used for latent error detection (Section 7.4.4).
-
-I would prefer to use the term 'frer' instead of 'red' or 'redundancy'
-in all definitions and functions except for 'redundancy-tag'.
--- 
-Joergen Andreasen, Microchip
+> +		rcu_read_unlock();
+> +		return xsk_tx_peek_release_fallback(pool, descs, max_entries);
+> +	}
+> +
+> +	xs = list_first_or_null_rcu(&pool->xsk_tx_list, struct xdp_sock, tx_list);
+> +	if (!xs) {
+> +		nb_pkts = 0;
+> +		goto out;
+> +	}
+> +
+> +	nb_pkts = xskq_cons_peek_desc_batch(xs->tx, descs, pool, max_entries);
+> +	if (!nb_pkts) {
+> +		xs->tx->queue_empty_descs++;
+> +		goto out;
+> +	}
+> +
+> +	/* This is the backpressure mechanism for the Tx path. Try to
+> +	 * reserve space in the completion queue for all packets, but
+> +	 * if there are fewer slots available, just process that many
+> +	 * packets. This avoids having to implement any buffering in
+> +	 * the Tx path.
+> +	 */
+> +	nb_pkts = xskq_prod_reserve_addr_batch(pool->cq, descs, nb_pkts);
+> +	if (!nb_pkts)
+> +		goto out;
+> +
+> +	xskq_cons_release_n(xs->tx, nb_pkts);
+> +	__xskq_cons_release(xs->tx);
+> +	xs->sk.sk_write_space(&xs->sk);
+> +
+> +out:
+> +	rcu_read_unlock();
+> +	return nb_pkts;
+> +}
+> +EXPORT_SYMBOL(xsk_tx_peek_release_desc_batch);
+> +
