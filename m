@@ -2,108 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 318002B6F52
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 20:52:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18D612B6F55
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 20:52:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730564AbgKQTuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 14:50:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35336 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728309AbgKQTue (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 14:50:34 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4F0C0613CF;
-        Tue, 17 Nov 2020 11:50:34 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id v12so17967306pfm.13;
-        Tue, 17 Nov 2020 11:50:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LDAEmhNdku9VAWF7fGVJyr3eF+5Nl9MfyP1c5wCk+Qg=;
-        b=Lm0ry1bUCaP1i76eXxbXB695bO5Z9mRG8713U6+3u15LHetOu1oB3JAwSaD9bZtvcC
-         /wyLo0KKvWQTKGowO5utZS58GfnQC08x5pAJcm/ehyy5v3dciOXl6wptSQuqLxxzUmb3
-         8Tx/wikGTWiMWXarqZWrxvgIKWKM25YNwcQ370iQQEwRBe8r2EHpWoUKAo6lqYQM4XDB
-         hZPpPymDK7V3Uy9ON8H/9oODLOFcf98mfcG0bFSq4RKzXwiX35gQuGJH7/wEZCqDNtJd
-         Qj6QNC22AbtezIceA5870sZ3qKZlgw5FNFZ0LUM5GlRMb3QDQeRzpc4tboYr9s10VifI
-         Gvsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LDAEmhNdku9VAWF7fGVJyr3eF+5Nl9MfyP1c5wCk+Qg=;
-        b=OHw+OFZpAd2Vki/n/PWToApnn+bC+dwmcOPTmzFuibsaLffdxKoJ8XwmuuFspJ0Up+
-         WC/ZN64KW0uFnSEkufVh5bMaROI44CTaW3ZsFVAg0fXez71CW3QHYCg2xMyReoeXRZ0K
-         lqYyiIDhNtDQLVp6rlCQ19dKF2OlH8//naVdFwAz+ZcXUkEliBuFzVIEtoSFHT7HqlbH
-         JKFNuaqzcwcnzfwpvipFWiuZDCmoWw3bHJseKDAt8A3D+WvdQyyPqp4aH2YsInMFM7qM
-         bOCINaeZfpvWUDcODYl221ood3Ljl3frApGpIDUwZ4CvFgfGIUJEa2Yv4J3hn+OCPI3Q
-         w8KA==
-X-Gm-Message-State: AOAM532dhN3B75dGVXNPqMJSs7k5/HZ73mmY/2qpnf9sMch6x14rREot
-        ITRVRcvZrR8AHnYahRdrmB1nevwSWDFmm7+s7pwFUOZEDPM=
-X-Google-Smtp-Source: ABdhPJyrt2/yEdjoVLA8SLqCI1GEtqRtkALsHHeiQczj/+I6NgFaSf4UAPq4bnKwzIwZcwb4Wv1D8MJJCMcSeWnmZ9I=
-X-Received: by 2002:a63:1d0b:: with SMTP id d11mr2265333pgd.368.1605642634151;
- Tue, 17 Nov 2020 11:50:34 -0800 (PST)
+        id S1730831AbgKQTuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 14:50:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:60780 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730497AbgKQTuv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 14:50:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605642644;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=lE+FZheUZpti8mdkEGCCEVmsflsjl1KanhD5yFuSSVg=;
+        b=UuZ886cOwrrhP6Q1xPFHIDucopD4jimgIJlj2d2l0Aibn696fVR7hJCKKyKMsZsj4nZV9w
+        etqSpbTFE+q7gLkPPNsWo6mJGqHa64tz2p9QiZYKFd70kyYi7J3Hnxb5/Rge03g+g0+EE9
+        1a4bDwOzVE8jJxsKm/ERFdY2jgJzgRY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-58-iCGLMcoNOuqaT5xaBk_Kwg-1; Tue, 17 Nov 2020 14:50:43 -0500
+X-MC-Unique: iCGLMcoNOuqaT5xaBk_Kwg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6BBB864142;
+        Tue, 17 Nov 2020 19:50:42 +0000 (UTC)
+Received: from calimero.vinschen.de (ovpn-114-159.ams2.redhat.com [10.36.114.159])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3BC106B8E1;
+        Tue, 17 Nov 2020 19:50:42 +0000 (UTC)
+Received: by calimero.vinschen.de (Postfix, from userid 500)
+        id ED2E9A80920; Tue, 17 Nov 2020 20:50:40 +0100 (CET)
+From:   Corinna Vinschen <vinschen@redhat.com>
+To:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Cc:     darcari@redhat.com
+Subject: igc: fix link speed advertising
+Date:   Tue, 17 Nov 2020 20:50:40 +0100
+Message-Id: <20201117195040.178651-1-vinschen@redhat.com>
 MIME-Version: 1.0
-References: <20201116135522.21791-1-ms@dev.tdt.de> <20201116135522.21791-4-ms@dev.tdt.de>
-In-Reply-To: <20201116135522.21791-4-ms@dev.tdt.de>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Tue, 17 Nov 2020 11:50:23 -0800
-Message-ID: <CAJht_EN0fhD08+wH5kSBWvciHU7uM7iKJu_UcEXwZBKssuqNVw@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 3/6] net/x25: replace x25_kill_by_device with x25_kill_by_neigh
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 16, 2020 at 6:00 AM Martin Schiller <ms@dev.tdt.de> wrote:
->
-> Remove unnecessary function x25_kill_by_device.
+Link speed advertising in igc has two problems:
 
-> -/*
-> - *     Kill all bound sockets on a dropped device.
-> - */
-> -static void x25_kill_by_device(struct net_device *dev)
-> -{
-> -       struct sock *s;
-> -
-> -       write_lock_bh(&x25_list_lock);
-> -
-> -       sk_for_each(s, &x25_list)
-> -               if (x25_sk(s)->neighbour && x25_sk(s)->neighbour->dev == dev)
-> -                       x25_disconnect(s, ENETUNREACH, 0, 0);
-> -
-> -       write_unlock_bh(&x25_list_lock);
-> -}
-> -
->  /*
->   *     Handle device status changes.
->   */
-> @@ -273,7 +257,11 @@ static int x25_device_event(struct notifier_block *this, unsigned long event,
->                 case NETDEV_DOWN:
->                         pr_debug("X.25: got event NETDEV_DOWN for device: %s\n",
->                                  dev->name);
-> -                       x25_kill_by_device(dev);
-> +                       nb = x25_get_neigh(dev);
-> +                       if (nb) {
-> +                               x25_kill_by_neigh(nb);
-> +                               x25_neigh_put(nb);
-> +                       }
->                         x25_route_device_down(dev);
->                         x25_link_device_down(dev);
->                         break;
+- When setting the advertisement via ethtool, the link speed is converted
+  to the legacy 32 bit representation for the intel PHY code.
+  This inadvertently drops ETHTOOL_LINK_MODE_2500baseT_Full_BIT (being
+  beyond bit 31).  As a result, any call to `ethtool -s ...' drops the
+  2500Mbit/s link speed from the PHY settings.  Only reloading the driver
+  alleviates that problem.
 
-This patch might not be entirely necessary. x25_kill_by_neigh and
-x25_kill_by_device are just two helper functions. One function takes
-nb as the argument and the other one takes dev as the argument. But
-they do almost the same things. It doesn't harm to keep both. In C++
-we often have different functions with the same name doing almost the
-same things.
+  Fix this by converting the ETHTOOL_LINK_MODE_2500baseT_Full_BIT to the
+  Intel PHY ADVERTISE_2500_FULL bit explicitely.
 
-The original code also seems to be a little more efficient than the new code.
+- Rather than checking the actual PHY setting, the .get_link_ksettings
+  function always fills link_modes.advertising with all link speeds
+  the device is capable of.
+
+  Fix this by checking the PHY autoneg_advertised settings and report
+  only the actually advertised speeds up to ethtool.
+
+Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
+---
+ drivers/net/ethernet/intel/igc/igc_ethtool.c | 24 +++++++++++++++-----
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+index 61d331ce38cd..75cb4ca36bac 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
++++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+@@ -1675,12 +1675,18 @@ static int igc_ethtool_get_link_ksettings(struct net_device *netdev,
+ 	cmd->base.phy_address = hw->phy.addr;
+ 
+ 	/* advertising link modes */
+-	ethtool_link_ksettings_add_link_mode(cmd, advertising, 10baseT_Half);
+-	ethtool_link_ksettings_add_link_mode(cmd, advertising, 10baseT_Full);
+-	ethtool_link_ksettings_add_link_mode(cmd, advertising, 100baseT_Half);
+-	ethtool_link_ksettings_add_link_mode(cmd, advertising, 100baseT_Full);
+-	ethtool_link_ksettings_add_link_mode(cmd, advertising, 1000baseT_Full);
+-	ethtool_link_ksettings_add_link_mode(cmd, advertising, 2500baseT_Full);
++	if (hw->phy.autoneg_advertised & ADVERTISE_10_HALF)
++		ethtool_link_ksettings_add_link_mode(cmd, advertising, 10baseT_Half);
++	if (hw->phy.autoneg_advertised & ADVERTISE_10_FULL)
++		ethtool_link_ksettings_add_link_mode(cmd, advertising, 10baseT_Full);
++	if (hw->phy.autoneg_advertised & ADVERTISE_100_HALF)
++		ethtool_link_ksettings_add_link_mode(cmd, advertising, 100baseT_Half);
++	if (hw->phy.autoneg_advertised & ADVERTISE_100_FULL)
++		ethtool_link_ksettings_add_link_mode(cmd, advertising, 100baseT_Full);
++	if (hw->phy.autoneg_advertised & ADVERTISE_1000_FULL)
++		ethtool_link_ksettings_add_link_mode(cmd, advertising, 1000baseT_Full);
++	if (hw->phy.autoneg_advertised & ADVERTISE_2500_FULL)
++		ethtool_link_ksettings_add_link_mode(cmd, advertising, 2500baseT_Full);
+ 
+ 	/* set autoneg settings */
+ 	if (hw->mac.autoneg == 1) {
+@@ -1792,6 +1798,12 @@ igc_ethtool_set_link_ksettings(struct net_device *netdev,
+ 
+ 	ethtool_convert_link_mode_to_legacy_u32(&advertising,
+ 						cmd->link_modes.advertising);
++	/* Converting to legacy u32 drops ETHTOOL_LINK_MODE_2500baseT_Full_BIT.
++	 * We have to check this and convert it to ADVERTISE_2500_FULL
++	 * (aka ETHTOOL_LINK_MODE_2500baseX_Full_BIT) explicitely.
++	 */
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising, 2500baseT_Full))
++		advertising |= ADVERTISE_2500_FULL;
+ 
+ 	if (cmd->base.autoneg == AUTONEG_ENABLE) {
+ 		hw->mac.autoneg = 1;
+-- 
+2.27.0
+
