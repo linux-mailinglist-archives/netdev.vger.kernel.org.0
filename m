@@ -2,147 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6D152B664A
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 15:05:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 009A12B661E
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 15:01:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729944AbgKQNNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 08:13:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729935AbgKQNNQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 08:13:16 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85258C0617A6
-        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 05:13:14 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id dk16so29284134ejb.12
-        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 05:13:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=pg/yyi9JRP4LZiCpylSmbD4jIZutsHvW/MdxJPfPpUc=;
-        b=aYBMoo77/5cNRmKDqoRDn52XAF6qiK7a2CG8tcb9nCrnDdPwd9StGwg/UPm4gkWfGF
-         IpXgsBjhfRj+JzjmAtYinBAHUpclRlPRDF4+Sq/kG1c8ECezftKvqbb4UrqMu3NaR1r7
-         qQgF86VBPOqshZ0hqdaQz70pgz+Xrq8Ut+y1Nj+QtWTa0dLNBw7i5fuXl3apLFXTuPD9
-         tEji99OSDyT3xWx+m+ka8y9WO+/iP3YpyL2IJqUgOBwSfim9lckTd9mxSEpgYExCwqVH
-         ttmwxo+TJIHJSX8k+V9p769+N9ElTIg4K6BYMmPKvsXgo98JLEaGTpCQx5GJwh36CRPv
-         uubg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=pg/yyi9JRP4LZiCpylSmbD4jIZutsHvW/MdxJPfPpUc=;
-        b=nJcmUy/1R9r5JCZ88PqLrUwul9/XJJRmaLUvcByokXICoBrwDVJDtHi3Q1MEuuy/Ge
-         miw9gbMmnOgAYvRNl2YeJU4fwTUtVWkj+96FOl9Zc4uFDx0c7KaveiDUVq0oA6UtWynU
-         NUehS5rnRQ8wveyhivQCWotYVF7fxCkYmN2PYZx/a1aWFdrwEBH1ebsVSoGLGjW+aVVq
-         cPTof7nVzOxlacRCCVFZiurbpmMLJV8KwQUMCbEyN+5gAWGcVbQod8Hyljmgib2pQhEt
-         R5zUM8w/Gd/kCfWq1JW+cfCS7N9OK7O/o8gHtC/PAkvRTJ9INmtQ098pe3D69mmEJkv2
-         kvBw==
-X-Gm-Message-State: AOAM533R36Zn7s9hFAUY11h6i8OH/NhzOiYzmnfwMrnCnM47QnkMQAHZ
-        BlHjitm18FG8cUVwAnnSm9qH5BqRZRTqR51xbk1y4A==
-X-Google-Smtp-Source: ABdhPJwYHXeILii9dacTYuuNdTsqcVHIh+cc1ehWXbhUtGjuEQ3DdoJwrDQx4o0HUxpKBFo31uFVOZC4HPSPVrtrVVc=
-X-Received: by 2002:a17:906:1b09:: with SMTP id o9mr20092638ejg.79.1605618793059;
- Tue, 17 Nov 2020 05:13:13 -0800 (PST)
+        id S1733298AbgKQOBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 09:01:24 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:36844 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387562AbgKQOA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 09:00:59 -0500
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0AHE0pFr078503;
+        Tue, 17 Nov 2020 08:00:51 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1605621651;
+        bh=IRXrpQKQSd5gA7IrwYkGoDS5kdYPeIdfK1pxJXpAd04=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=gMEuoss5YCgctlsV8nUL3lA+QiKK6D3edcSJcseFCfDIu4i64JOg/aSdb+T+iOlyj
+         kSmQMuUDfg4vQ6OcX/RIorb1YUiv4RToYh8T00m6MrLOFb3p4xk4DZNuNq4Wm4VZqc
+         80Irb6UnSgwlNVamoo4YavkZd2+sH3lvwrfFNCnI=
+Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0AHE0pU2012141
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 17 Nov 2020 08:00:51 -0600
+Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 17
+ Nov 2020 08:00:50 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 17 Nov 2020 08:00:50 -0600
+Received: from [10.250.39.187] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0AHE0oLG017715;
+        Tue, 17 Nov 2020 08:00:50 -0600
+Subject: Re: [net 11/15] can: tcan4x5x: tcan4x5x_can_remove(): fix order of
+ deregistration
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-can@vger.kernel.org>, <kernel@pengutronix.de>
+References: <20201115174131.2089251-1-mkl@pengutronix.de>
+ <20201115174131.2089251-12-mkl@pengutronix.de>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <67debcb1-5fb6-76bd-b1b1-24d97389aa6b@ti.com>
+Date:   Tue, 17 Nov 2020 08:00:45 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Received: by 2002:a54:380d:0:0:0:0:0 with HTTP; Tue, 17 Nov 2020 05:13:12
- -0800 (PST)
-X-Originating-IP: [5.35.10.61]
-In-Reply-To: <1605614877-5670-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-References: <1605614877-5670-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Tue, 17 Nov 2020 16:13:12 +0300
-Message-ID: <CAOJe8K3-x36TU2kuW-uR8eqkNyoPsLWZYvD53MPcWxA6i5g72g@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: emaclite: Add error handling for of_address_
- and _mdio_setup functions
-To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        michal.simek@xilinx.com, mchehab+samsung@kernel.org,
-        gregkh@linuxfoundation.org, nicolas.ferre@microchip.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com, Shravya Kumbham <shravya.kumbham@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201115174131.2089251-12-mkl@pengutronix.de>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/17/20, Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com> wrote:
-> From: Shravya Kumbham <shravya.kumbham@xilinx.com>
->
-> Add ret variable, condition to check the return value and error
-> path for the of_address_to_resource() function. It also adds error
-> handling for mdio setup and decrement refcount of phy node.
->
-> Addresses-Coverity: Event check_return value.
-> Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> ---
-> Changes for v2:
->
-> - Change subject_prefix to target net tree.
-> - Add error handling for mdio_setup and remove phy_read changes.
->   Error checking of phy_read will be added along with phy_write
->   in a followup patch. Document the changes in commit description.
-> ---
->  drivers/net/ethernet/xilinx/xilinx_emaclite.c | 16 +++++++++++++---
->  1 file changed, 13 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> index 0c26f5bcc523..4e0005164785 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> @@ -820,7 +820,7 @@ static int xemaclite_mdio_write(struct mii_bus *bus, int
-> phy_id, int reg,
->  static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
->  {
->  	struct mii_bus *bus;
-> -	int rc;
-> +	int rc, ret;
->  	struct resource res;
->  	struct device_node *np = of_get_parent(lp->phy_node);
->  	struct device_node *npp;
-> @@ -834,7 +834,12 @@ static int xemaclite_mdio_setup(struct net_local *lp,
-> struct device *dev)
->  	}
->  	npp = of_get_parent(np);
->
-> -	of_address_to_resource(npp, 0, &res);
-> +	ret = of_address_to_resource(npp, 0, &res);
-> +	if (ret) {
-> +		dev_err(dev, "%s resource error!\n",
-> +			dev->of_node->full_name);
-> +		return ret;
-> +	}
+Marc
 
-npp is not returned to of_node_put() in the error case below
+On 11/15/20 11:41 AM, Marc Kleine-Budde wrote:
+> Change the order in tcan4x5x_can_remove() to be the exact inverse of
+> tcan4x5x_can_probe(). First m_can_class_unregister(), then power down the
+> device.
+>
+> Fixes: 5443c226ba91 ("can: tcan4x5x: Add tcan4x5x driver to the kernel")
+> Cc: Dan Murphy <dmurphy@ti.com>
+> Link: http://lore.kernel.org/r/20201019154233.1262589-10-mkl@pengutronix.de
+> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> ---
+>   drivers/net/can/m_can/tcan4x5x.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/can/m_can/tcan4x5x.c b/drivers/net/can/m_can/tcan4x5x.c
+> index f058bd9104e9..4fdb7121403a 100644
+> --- a/drivers/net/can/m_can/tcan4x5x.c
+> +++ b/drivers/net/can/m_can/tcan4x5x.c
+> @@ -527,10 +527,10 @@ static int tcan4x5x_can_remove(struct spi_device *spi)
+>   {
+>   	struct tcan4x5x_priv *priv = spi_get_drvdata(spi);
+>   
+> -	tcan4x5x_power_enable(priv->power, 0);
+> -
+>   	m_can_class_unregister(priv->mcan_dev);
+>   
+> +	tcan4x5x_power_enable(priv->power, 0);
+> +
+>   	return 0;
+>   }
+>   
 
->  	if (lp->ndev->mem_start != res.start) {
->  		struct phy_device *phydev;
->  		phydev = of_phy_find_device(lp->phy_node);
-> @@ -1173,7 +1178,11 @@ static int xemaclite_of_probe(struct platform_device
-> *ofdev)
->  	xemaclite_update_address(lp, ndev->dev_addr);
->
->  	lp->phy_node = of_parse_phandle(ofdev->dev.of_node, "phy-handle", 0);
-> -	xemaclite_mdio_setup(lp, &ofdev->dev);
-> +	rc = xemaclite_mdio_setup(lp, &ofdev->dev);
-> +	if (rc) {
-> +		dev_warn(dev, "error registering MDIO bus: %d\n", rc);
-> +		goto error;
-> +	}
->
->  	dev_info(dev, "MAC address is now %pM\n", ndev->dev_addr);
->
-> @@ -1197,6 +1206,7 @@ static int xemaclite_of_probe(struct platform_device
-> *ofdev)
->  	return 0;
->
->  error:
-> +	of_node_put(lp->phy_node);
->  	free_netdev(ndev);
->  	return rc;
->  }
-> --
-> 2.7.4
->
->
+Reviewed-by: Dan Murphy<dmurphy@ti.com>
+
