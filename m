@@ -2,117 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8114C2B71C9
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 23:45:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBAB42B71CE
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 23:51:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729192AbgKQWoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 17:44:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726319AbgKQWn7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 17:43:59 -0500
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B104EC0613CF
-        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 14:43:59 -0800 (PST)
-Received: by mail-il1-x144.google.com with SMTP id t13so197123ilp.2
-        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 14:43:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=8mEaGZ9JSgyO5QxbIh9RVYFKLSFIX0M76gaNGsdHHKY=;
-        b=VBnxBm5vZAKEFgriIPutSnAPepw87PABWphpa7b9X87JIoOlMJ06AFLOLisNmtdhVb
-         d+651rmahj02ehIG9ke8rL7mmf2gukmzFKrH6+L1cfON3OpxXmyoNXFN6ej/ytNnoslg
-         Obxp79RCAjTETsy8dXJ0rGFXz+2l2NnFnyuTafK/ExBRZN9E4wpcxH74U8NM6QPw742O
-         DPff5HP9dKb0WqsCukAlAii3C6uqiMh3i70AzmbKwPRjTqjFVqx8qNI3YzMqZYYXC7bB
-         Jgo6ngPNpgZ/wSTGinxL6MUHatcGcOTjIS4QlJmCUhWKrjSqB1qMQoSRUE0X2Sced5di
-         rUrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=8mEaGZ9JSgyO5QxbIh9RVYFKLSFIX0M76gaNGsdHHKY=;
-        b=QDrGLVa93o8t7B806txZNyVGu2K8yJ5b2OkjBTQEvGDZia1/5MGi0MN24b/l/dWmuY
-         sOFmSrxJ1wX2GH7aNucKP4Bm05XZKXaCcbhnqX3xireMiKqgVMaBJzeRussnGOZiDmre
-         BMnYssHFlrFDcz7YHZN6rB+4NCr/d4miBoWS0hbSikQVnfoDeZYWNhU6hkC1fW0EFPsp
-         JNMwl98x7Vay4nZrChooAUv9AsnUY5F9hPozkYfimFNZeBTjmlrYWmSdivF0catYnKUQ
-         ULNYx8Kf6eQJltMyNdsuxT2vxxV8BHC//aVojC99TJkis33DArsM7Av9YPnIckjwp1Zg
-         7g1Q==
-X-Gm-Message-State: AOAM530P8FAgqNu2/yTgAhcez/nMESqACLbsKufsspURs+i5ZGarBnmM
-        ItncIeb3IlQGXoPTvHnXCY6Za61k+lS4Ygi0DwQ=
-X-Google-Smtp-Source: ABdhPJzK8JllimrjNnrVx9XrRQ/bi2i2+Apl00vllPlq10413sllRQElNPT3ui7qJecCFgzwHjXSm98FQ9VyiOgDE84=
-X-Received: by 2002:a92:de50:: with SMTP id e16mr14002927ilr.144.1605653039069;
- Tue, 17 Nov 2020 14:43:59 -0800 (PST)
+        id S1728736AbgKQWuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 17:50:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46824 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726182AbgKQWuF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Nov 2020 17:50:05 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605653404;
+        bh=YrLaqOe9C+UDU5uAC+l1xW4/IZCVZjGK9RriFH1wbh8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=IrSrS9F4OcqTHooI5n1yx3u+ObS4rX5dMDkzQu6OWZ//VAi7qyAuAiJfDsPY5jtt/
+         Rv1XvkVKZZ82b5HJaVAcIydHUbWZ2MfKU9eT1y41U3Ku8m6nYb2Ad+Hn+b/AddjT+l
+         svrlkd3IoE3L+krm9Q6s7V+73X0hGy/YU5wvBBXk=
 MIME-Version: 1.0
-References: <1605151497-29986-1-git-send-email-wenxu@ucloud.cn>
- <1605151497-29986-4-git-send-email-wenxu@ucloud.cn> <CAM_iQpUu7feBGrunNPqn8FhEhgvfB_c854uEEuo5MQYcEvP_bg@mail.gmail.com>
- <459a1453-8026-cca1-fb7c-ded0890992cf@ucloud.cn> <CAM_iQpXDzKEEVic5SOiWsc30ipppYMHL4q0-J6mP6u0Brr1KGw@mail.gmail.com>
- <2fe1ec73-eeeb-f32e-b006-afd135e03433@ucloud.cn>
-In-Reply-To: <2fe1ec73-eeeb-f32e-b006-afd135e03433@ucloud.cn>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 17 Nov 2020 14:43:48 -0800
-Message-ID: <CAM_iQpXtw4YLWjoSGwxhZMnG8Kismiu-nmqgFJpsZ6AuzX82tg@mail.gmail.com>
-Subject: Re: [PATCH v10 net-next 3/3] net/sched: act_frag: add implict packet
- fragment support.
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net V2] net/tls: Fix wrong record sn in async mode of device
+ resync
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160565340479.2978.9885735567980765309.git-patchwork-notify@kernel.org>
+Date:   Tue, 17 Nov 2020 22:50:04 +0000
+References: <20201115131448.2702-1-tariqt@nvidia.com>
+In-Reply-To: <20201115131448.2702-1-tariqt@nvidia.com>
+To:     Tariq Toukan <tariqt@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        saeedm@nvidia.com, moshe@nvidia.com, ttoukan.linux@gmail.com,
+        borisp@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 16, 2020 at 8:06 PM wenxu <wenxu@ucloud.cn> wrote:
->
->
-> On 11/17/2020 3:01 AM, Cong Wang wrote:
-> > On Sun, Nov 15, 2020 at 5:06 AM wenxu <wenxu@ucloud.cn> wrote:
-> >>
-> >> =E5=9C=A8 2020/11/15 2:05, Cong Wang =E5=86=99=E9=81=93:
-> >>> On Wed, Nov 11, 2020 at 9:44 PM <wenxu@ucloud.cn> wrote:
-> >>>> diff --git a/net/sched/act_frag.c b/net/sched/act_frag.c
-> >>>> new file mode 100644
-> >>>> index 0000000..3a7ab92
-> >>>> --- /dev/null
-> >>>> +++ b/net/sched/act_frag.c
-> >>> It is kinda confusing to see this is a module. It provides some
-> >>> wrappers and hooks the dev_xmit_queue(), it belongs more to
-> >>> the core tc code than any modularized code. How about putting
-> >>> this into net/sched/sch_generic.c?
-> >>>
-> >>> Thanks.
-> >> All the operations in the act_frag  are single L3 action.
-> >>
-> >> So we put in a single module. to keep it as isolated/contained as poss=
-ible
-> > Yeah, but you hook dev_queue_xmit() which is L2.
-> >
-> >> Maybe put this in a single file is better than a module? Buildin in th=
-e tc core code or not.
-> >>
-> >> Enable this feature in Kconifg with NET_ACT_FRAG?
-> > Sort of... If this is not an optional feature, that is a must-have
-> > feature for act_ct,
-> > we should just get rid of this Kconfig.
-> >
-> > Also, you need to depend on CONFIG_INET somewhere to use the IP
-> > fragment, no?
-> >
-> > Thanks.
->
-> Maybe the act_frag should rename to sch_frag and buildin kernel.
+Hello:
 
-sch_frag still sounds like a module. ;) This is why I proposed putting
-it into sch_generic.c.
+This patch was applied to netdev/net.git (refs/heads/master):
 
->
-> This fcuntion can be used for all tc subsystem. There is no need for
->
-> CONFIG_INET. The sched system depends on NET.
+On Sun, 15 Nov 2020 15:14:48 +0200 you wrote:
+> In async_resync mode, we log the TCP seq of records until the async request
+> is completed.  Later, in case one of the logged seqs matches the resync
+> request, we return it, together with its record serial number.  Before this
+> fix, we mistakenly returned the serial number of the current record
+> instead.
+> 
+> Fixes: ed9b7646b06a ("net/tls: Add asynchronous resync")
+> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> Reviewed-by: Boris Pismenny <borisp@nvidia.com>
+> 
+> [...]
 
-CONFIG_INET is different from CONFIG_NET, right?
+Here is the summary with links:
+  - [net,V2] net/tls: Fix wrong record sn in async mode of device resync
+    https://git.kernel.org/netdev/net/c/138559b9f99d
 
-Thanks.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
