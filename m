@@ -2,102 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A4502B718D
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 23:26:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA75F2B71A8
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 23:38:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729109AbgKQW0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 17:26:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38206 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725823AbgKQW0D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Nov 2020 17:26:03 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0CDF3241A6;
-        Tue, 17 Nov 2020 22:26:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605651962;
-        bh=oolxzZft70FKdrR5koKNa14651ERpY0sfPZUoLt+SKw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ngK+nrIRMKPhN+J5uZcql2PrzLrKZaW8pxtXdhSBlqaOF+DNS5W3tkYFFWqhz9jub
-         3xEOKj78jUGahxn++pXBprA8VephbYFUS+GCtwgt0ApkOwqc4tVU8+HvNTH+ugf2pF
-         bI3VHTWcHH0Dp5kwkh9LqNO/CwAGRpJzHaNvTfyo=
-Date:   Tue, 17 Nov 2020 14:25:59 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tom Seewald <tseewald@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rohit Maheshwari <rohitm@chelsio.com>
-Subject: Re: [PATCH] cxbgb4: Fix build failure when CHELSIO_TLS_DEVICE=n
-Message-ID: <20201117142559.37e6847f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201116023140.28975-1-tseewald@gmail.com>
-References: <20201116023140.28975-1-tseewald@gmail.com>
+        id S1729147AbgKQWhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 17:37:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728044AbgKQWhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 17:37:24 -0500
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30461C0613CF;
+        Tue, 17 Nov 2020 14:37:24 -0800 (PST)
+Received: by mail-vs1-xe43.google.com with SMTP id r14so11993680vsa.13;
+        Tue, 17 Nov 2020 14:37:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FH0fknj5QJLn7ACk6eHCDF4ifC/QH5RQ09fYM2ZGJIo=;
+        b=hg1BLUQst6GW972wQO6yoKvxwrDLtitHDX81KV5ZMKYkm1fpa7VVhZgNtu5jPgyT0w
+         gZoilM8SDc7ws/l97y7/fGIDQc1xdWxC67c5OrLjxiX4hklbRE2JwNlBc+MTiw5n8IOk
+         srJBpwZBOuOOfaDT3UVMLQoiG4/3gXs+Tp1mRJeLhK6ddivscYjHTAnVouU0eEt0Kv/R
+         n0a/bj7JZBvYK/3essXFR/8AEWDgwpilXQCa1YTZxAkcq5wI7fqoO7Se5SWBWh1FGXq4
+         6pj+SayHv+uwgI8haQTnINfIUgQMtxtFaFMY5kysWywMaqBTll86xwKUv+okb7EknlFX
+         BYFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FH0fknj5QJLn7ACk6eHCDF4ifC/QH5RQ09fYM2ZGJIo=;
+        b=pOmo5pvnP7W5PoY/thxaup0woFZ8UJNYkju5MPK9C71U+9PRfJd0XNJO3f0e3udYCk
+         JNYa5r7yjZycuZXnA3rly4FbBJbtzlK2ovwp1gJxxyE05QRrNIdCCPsYU0T1ynFYACAS
+         OuBL6P+tiarokgiHao+3lnOs3nL/rNVTZXRseaMNonbIVFggkjiDUVyuOgRRRo1XuC7S
+         3Vst6pdAsNKoQtR4w5fmm5TQpTgTOiW9DLawDPvoOYCBfuqdXgJaVbfyRTDoGA8+T1/R
+         YdmfvYAVGhfzk4Sq0fOCSq6csaOPf65eJfWgaerdkNMhwK1W6EqHDyQCsTO0Be+D/wfs
+         gckw==
+X-Gm-Message-State: AOAM530is4IlV/l88zVpr8OGFBrMxiy3AgtJok4fkIYzjSZ4KNUdP5yX
+        FcsCqVcfW6xSP0q7zS8ctN5HRUeCQQzPfMJN4Jc=
+X-Google-Smtp-Source: ABdhPJw0dHxEKGFCmqFVt2j3PyuzKce5F1S5+aX55J/xRjd/U8OC7zjcqARyFKNqCL/poMscrkcf+hmqP2z4gvA/Jes=
+X-Received: by 2002:a67:ff10:: with SMTP id v16mr1472632vsp.40.1605652643329;
+ Tue, 17 Nov 2020 14:37:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201116170155.26967-1-TheSven73@gmail.com> <20201117020956.GF1752213@lunn.ch>
+ <20201117104756.766b5953@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201117104756.766b5953@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Tue, 17 Nov 2020 17:37:12 -0500
+Message-ID: <CAGngYiXtnZ9WTOEtdvz1hnUkiSbJMX+rk6nvmVyhSOX8d5rNFg@mail.gmail.com>
+Subject: Re: [PATCH net-next v1] lan743x: replace devicetree phy parse code
+ with library function
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        David S Miller <davem@davemloft.net>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Roelof Berg <rberg@berg-solutions.de>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 15 Nov 2020 20:31:40 -0600 Tom Seewald wrote:
-> After commit 9d2e5e9eeb59 ("cxgb4/ch_ktls: decrypted bit is not enough")
-> building the kernel with CHELSIO_T4=y and CHELSIO_TLS_DEVICE=n results
-> in the following error:
-> 
-> ld: drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.o: in function
-> `cxgb_select_queue':
-> cxgb4_main.c:(.text+0x2dac): undefined reference to `tls_validate_xmit_skb'
-> 
-> This is caused by cxgb_select_queue() calling cxgb4_is_ktls_skb() without
-> checking if CHELSIO_TLS_DEVICE=y. Fix this by calling cxgb4_is_ktls_skb()
-> only when this config option is enabled.
-> 
-> Fixes: 9d2e5e9eeb59 ("cxgb4/ch_ktls: decrypted bit is not enough")
-> Signed-off-by: Tom Seewald <tseewald@gmail.com>
-> ---
->  drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-> index 7fd264a6d085..8e8783afd6df 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-> @@ -1176,7 +1176,9 @@ static u16 cxgb_select_queue(struct net_device *dev, struct sk_buff *skb,
->  		txq = netdev_pick_tx(dev, skb, sb_dev);
->  		if (xfrm_offload(skb) || is_ptp_enabled(skb, dev) ||
->  		    skb->encapsulation ||
-> -		    cxgb4_is_ktls_skb(skb) ||
-> +#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
-> +		cxgb4_is_ktls_skb(skb) ||
-> +#endif /* CHELSIO_TLS_DEVICE */
->  		    (proto != IPPROTO_TCP && proto != IPPROTO_UDP))
->  			txq = txq % pi->nqsets;
->  
+On Tue, Nov 17, 2020 at 1:47 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 17 Nov 2020 03:09:56 +0100 Andrew Lunn wrote:
+> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Applied, thanks!
 
-The tls header already tries to solve this issue, it just does it
-poorly. This is a better fix:
-
-diff --git a/include/net/tls.h b/include/net/tls.h
-index baf1e99d8193..2ff3f4f7954a 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -441,11 +441,11 @@ struct sk_buff *
- tls_validate_xmit_skb(struct sock *sk, struct net_device *dev,
-                      struct sk_buff *skb);
- 
- static inline bool tls_is_sk_tx_device_offloaded(struct sock *sk)
- {
--#ifdef CONFIG_SOCK_VALIDATE_XMIT
-+#ifdef CONFIG_TLS_DEVICE
-        return sk_fullsock(sk) &&
-               (smp_load_acquire(&sk->sk_validate_xmit_skb) ==
-               &tls_validate_xmit_skb);
- #else
-        return false;
-
-
-Please test this and submit if it indeed solves the problem.
-
-Thanks!
+Thank you Andrew and Jakub !
