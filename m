@@ -2,319 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BCD62B69FF
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 17:29:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CF032B6978
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 17:11:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727624AbgKQQ2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 11:28:15 -0500
-Received: from pbmsgap01.intersil.com ([192.157.179.201]:43310 "EHLO
-        pbmsgap01.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725901AbgKQQ2O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 11:28:14 -0500
-X-Greylist: delayed 1298 seconds by postgrey-1.27 at vger.kernel.org; Tue, 17 Nov 2020 11:28:13 EST
-Received: from pps.filterd (pbmsgap01.intersil.com [127.0.0.1])
-        by pbmsgap01.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0AHFxQPt031483;
-        Tue, 17 Nov 2020 11:06:35 -0500
-Received: from pbmxdp01.intersil.corp (pbmxdp01.pb.intersil.com [132.158.200.222])
-        by pbmsgap01.intersil.com with ESMTP id 34tbn59bc7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 17 Nov 2020 11:06:34 -0500
-Received: from pbmxdp03.intersil.corp (132.158.200.224) by
- pbmxdp01.intersil.corp (132.158.200.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.1979.3; Tue, 17 Nov 2020 11:06:33 -0500
-Received: from localhost (132.158.202.109) by pbmxdp03.intersil.corp
- (132.158.200.224) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Tue, 17 Nov 2020 11:06:33 -0500
-From:   <min.li.xe@renesas.com>
-To:     <richardcochran@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Min Li <min.li.xe@renesas.com>
-Subject: [PATCH v2 net-next 5/5] ptp: clockmatrix: deprecate firmware older than 4.8.7
-Date:   Tue, 17 Nov 2020 11:06:02 -0500
-Message-ID: <1605629162-31876-6-git-send-email-min.li.xe@renesas.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1605629162-31876-1-git-send-email-min.li.xe@renesas.com>
-References: <1605629162-31876-1-git-send-email-min.li.xe@renesas.com>
-X-TM-AS-MML: disable
+        id S1727010AbgKQQKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 11:10:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41386 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725767AbgKQQKD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Nov 2020 11:10:03 -0500
+Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 97F7A2463D;
+        Tue, 17 Nov 2020 16:10:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605629401;
+        bh=8XfGb6kRV71gq8MgGR6Lzjg87391NOSJbLR+3IFAdF8=;
+        h=Date:From:To:Cc:Subject:From;
+        b=pJGR+0lFEfWLYhgiiVD0W6QgMjylRhNdE2GFxxnGP1OjTUMnxhPTEUDFrvtE271Gt
+         qAZCm14hc/bHQWNEIo7uHq25toqWIq6wPMiPA/EDJGegcJ8uAuPkof8iGxQWFEyVG9
+         YVv/wU62F+99XD25gNDH0lcoVUXj3uLPDeqw++Yw=
+Date:   Tue, 17 Nov 2020 10:09:58 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] mwifiex: Fix fall-through warnings for Clang
+Message-ID: <20201117160958.GA18807@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-17_04:2020-11-17,2020-11-17 signatures=0
-X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 adultscore=0 malwarescore=0
- bulkscore=0 spamscore=0 mlxlogscore=999 suspectscore=4 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011170115
-X-Proofpoint-Spam-Reason: mlx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Min Li <min.li.xe@renesas.com>
+In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
+warnings by explicitly adding multiple break statements instead of
+letting the code fall through to the next case.
 
-Add deprecated flag to indicate < v4.8.7.
-Fix idtcm_enable_tod() call correct settime().
-
-Signed-off-by: Min Li <min.li.xe@renesas.com>
+Link: https://github.com/KSPP/linux/issues/115
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/ptp/ptp_clockmatrix.c | 69 ++++++++++++++++++++++++-------------------
- drivers/ptp/ptp_clockmatrix.h | 11 +++----
- 2 files changed, 45 insertions(+), 35 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c | 2 ++
+ drivers/net/wireless/marvell/mwifiex/sta_event.c   | 1 +
+ drivers/net/wireless/marvell/mwifiex/uap_cmd.c     | 1 +
+ drivers/net/wireless/marvell/mwifiex/wmm.c         | 1 +
+ 4 files changed, 5 insertions(+)
 
-diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index b10c6b9..007d3e0 100644
---- a/drivers/ptp/ptp_clockmatrix.c
-+++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -939,8 +939,8 @@ static void restore_output_phase_adj(struct idtcm_channel *channel)
+diff --git a/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c b/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
+index 119ccacd1fcc..6b5d35d9e69f 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
+@@ -201,6 +201,7 @@ static int mwifiex_ret_802_11_snmp_mib(struct mwifiex_private *priv,
+ 			mwifiex_dbg(priv->adapter, INFO,
+ 				    "info: SNMP_RESP: DTIM period=%u\n",
+ 				    ul_temp);
++			break;
+ 		default:
+ 			break;
+ 		}
+@@ -1393,6 +1394,7 @@ int mwifiex_process_sta_cmdresp(struct mwifiex_private *priv, u16 cmdresp_no,
+ 		break;
+ 	case HostCmd_CMD_TDLS_OPER:
+ 		ret = mwifiex_ret_tdls_oper(priv, resp);
++		break;
+ 	case HostCmd_CMD_MC_POLICY:
+ 		break;
+ 	case HostCmd_CMD_CHAN_REPORT_REQUEST:
+diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
+index bc79ca4cb803..68c63268e2e6 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
+@@ -99,6 +99,7 @@ static int mwifiex_check_ibss_peer_capabilities(struct mwifiex_private *priv,
+ 			case IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_3895:
+ 				sta_ptr->max_amsdu =
+ 					MWIFIEX_TX_DATA_BUF_SIZE_4K;
++				break;
+ 			default:
+ 				break;
+ 			}
+diff --git a/drivers/net/wireless/marvell/mwifiex/uap_cmd.c b/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
+index b48a85d791f6..18e89777b784 100644
+--- a/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
++++ b/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
+@@ -108,6 +108,7 @@ int mwifiex_set_secure_params(struct mwifiex_private *priv,
+ 			if (params->crypto.wpa_versions & NL80211_WPA_VERSION_2)
+ 				bss_config->wpa_cfg.pairwise_cipher_wpa2 |=
+ 								CIPHER_AES_CCMP;
++			break;
+ 		default:
+ 			break;
+ 		}
+diff --git a/drivers/net/wireless/marvell/mwifiex/wmm.c b/drivers/net/wireless/marvell/mwifiex/wmm.c
+index b8f19ca73414..0b375608df7d 100644
+--- a/drivers/net/wireless/marvell/mwifiex/wmm.c
++++ b/drivers/net/wireless/marvell/mwifiex/wmm.c
+@@ -1396,6 +1396,7 @@ mwifiex_send_processed_packet(struct mwifiex_private *priv,
+ 		break;
+ 	case 0:
+ 		mwifiex_write_data_complete(adapter, skb, 0, ret);
++		break;
+ 	default:
+ 		break;
  	}
- }
- 
--static int _idtcm_settime(struct idtcm_channel *channel,
--			  struct timespec64 const *ts)
-+static int _idtcm_settime_deprecated(struct idtcm_channel *channel,
-+				     struct timespec64 const *ts)
- {
- 	struct idtcm *idtcm = channel->idtcm;
- 	int retval;
-@@ -965,9 +965,9 @@ static int _idtcm_settime(struct idtcm_channel *channel,
- 	return retval;
- }
- 
--static int _idtcm_settime_v487(struct idtcm_channel *channel,
--			       struct timespec64 const *ts,
--			       enum scsr_tod_write_type_sel wr_type)
-+static int _idtcm_settime(struct idtcm_channel *channel,
-+			  struct timespec64 const *ts,
-+			  enum scsr_tod_write_type_sel wr_type)
- {
- 	return _idtcm_set_dpll_scsr_tod(channel, ts,
- 					SCSR_TOD_WR_TRIG_SEL_IMMEDIATE,
-@@ -1109,14 +1109,14 @@ static int set_tod_write_overhead(struct idtcm_channel *channel)
- 	return err;
- }
- 
--static int _idtcm_adjtime(struct idtcm_channel *channel, s64 delta)
-+static int _idtcm_adjtime_deprecated(struct idtcm_channel *channel, s64 delta)
- {
- 	int err;
- 	struct idtcm *idtcm = channel->idtcm;
- 	struct timespec64 ts;
- 	s64 now;
- 
--	if (abs(delta) < PHASE_PULL_IN_THRESHOLD_NS) {
-+	if (abs(delta) < PHASE_PULL_IN_THRESHOLD_NS_DEPRECATED) {
- 		err = idtcm_do_phase_pull_in(channel, delta, 0);
- 	} else {
- 		idtcm->calculate_overhead_flag = 1;
-@@ -1136,7 +1136,7 @@ static int _idtcm_adjtime(struct idtcm_channel *channel, s64 delta)
- 
- 		ts = ns_to_timespec64(now);
- 
--		err = _idtcm_settime(channel, &ts);
-+		err = _idtcm_settime_deprecated(channel, &ts);
- 	}
- 
- 	return err;
-@@ -1640,8 +1640,8 @@ static int idtcm_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
- 	return err;
- }
- 
--static int idtcm_settime(struct ptp_clock_info *ptp,
--			 const struct timespec64 *ts)
-+static int idtcm_settime_deprecated(struct ptp_clock_info *ptp,
-+				    const struct timespec64 *ts)
- {
- 	struct idtcm_channel *channel =
- 		container_of(ptp, struct idtcm_channel, caps);
-@@ -1650,7 +1650,7 @@ static int idtcm_settime(struct ptp_clock_info *ptp,
- 
- 	mutex_lock(&idtcm->reg_lock);
- 
--	err = _idtcm_settime(channel, ts);
-+	err = _idtcm_settime_deprecated(channel, ts);
- 
- 	if (err)
- 		dev_err(&idtcm->client->dev,
-@@ -1663,7 +1663,7 @@ static int idtcm_settime(struct ptp_clock_info *ptp,
- 	return err;
- }
- 
--static int idtcm_settime_v487(struct ptp_clock_info *ptp,
-+static int idtcm_settime(struct ptp_clock_info *ptp,
- 			 const struct timespec64 *ts)
- {
- 	struct idtcm_channel *channel =
-@@ -1673,7 +1673,7 @@ static int idtcm_settime_v487(struct ptp_clock_info *ptp,
- 
- 	mutex_lock(&idtcm->reg_lock);
- 
--	err = _idtcm_settime_v487(channel, ts, SCSR_TOD_WR_TYPE_SEL_ABSOLUTE);
-+	err = _idtcm_settime(channel, ts, SCSR_TOD_WR_TYPE_SEL_ABSOLUTE);
- 
- 	if (err)
- 		dev_err(&idtcm->client->dev,
-@@ -1686,7 +1686,7 @@ static int idtcm_settime_v487(struct ptp_clock_info *ptp,
- 	return err;
- }
- 
--static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
-+static int idtcm_adjtime_deprecated(struct ptp_clock_info *ptp, s64 delta)
- {
- 	struct idtcm_channel *channel =
- 		container_of(ptp, struct idtcm_channel, caps);
-@@ -1695,7 +1695,7 @@ static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
- 
- 	mutex_lock(&idtcm->reg_lock);
- 
--	err = _idtcm_adjtime(channel, delta);
-+	err = _idtcm_adjtime_deprecated(channel, delta);
- 
- 	if (err)
- 		dev_err(&idtcm->client->dev,
-@@ -1708,7 +1708,7 @@ static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
- 	return err;
- }
- 
--static int idtcm_adjtime_v487(struct ptp_clock_info *ptp, s64 delta)
-+static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
- {
- 	struct idtcm_channel *channel =
- 		container_of(ptp, struct idtcm_channel, caps);
-@@ -1717,7 +1717,7 @@ static int idtcm_adjtime_v487(struct ptp_clock_info *ptp, s64 delta)
- 	enum scsr_tod_write_type_sel type;
- 	int err;
- 
--	if (abs(delta) < PHASE_PULL_IN_THRESHOLD_NS_V487) {
-+	if (abs(delta) < PHASE_PULL_IN_THRESHOLD_NS) {
- 		err = idtcm_do_phase_pull_in(channel, delta, 0);
- 		if (err)
- 			dev_err(&idtcm->client->dev,
-@@ -1737,7 +1737,7 @@ static int idtcm_adjtime_v487(struct ptp_clock_info *ptp, s64 delta)
- 
- 	mutex_lock(&idtcm->reg_lock);
- 
--	err = _idtcm_settime_v487(channel, &ts, type);
-+	err = _idtcm_settime(channel, &ts, type);
- 
- 	if (err)
- 		dev_err(&idtcm->client->dev,
-@@ -2081,10 +2081,14 @@ static int idtcm_enable_tod(struct idtcm_channel *channel)
- 	if (err)
- 		return err;
- 
--	return _idtcm_settime(channel, &ts);
-+	if (idtcm->deprecated)
-+		return _idtcm_settime_deprecated(channel, &ts);
-+	else
-+		return _idtcm_settime(channel, &ts,
-+				      SCSR_TOD_WR_TYPE_SEL_ABSOLUTE);
- }
- 
--static void idtcm_display_version_info(struct idtcm *idtcm)
-+static void idtcm_set_version_info(struct idtcm *idtcm)
- {
- 	u8 major;
- 	u8 minor;
-@@ -2106,31 +2110,36 @@ static void idtcm_display_version_info(struct idtcm *idtcm)
- 	snprintf(idtcm->version, sizeof(idtcm->version), "%u.%u.%u",
- 		 major, minor, hotfix);
- 
-+	if (idtcm_strverscmp(idtcm->version, "4.8.7") >= 0)
-+		idtcm->deprecated = 0;
-+	else
-+		idtcm->deprecated = 1;
-+
- 	dev_info(&idtcm->client->dev, fmt, major, minor, hotfix,
- 		 product_id, hw_rev_id, config_select);
- }
- 
--static const struct ptp_clock_info idtcm_caps_v487 = {
-+static const struct ptp_clock_info idtcm_caps = {
- 	.owner		= THIS_MODULE,
- 	.max_adj	= 244000,
- 	.n_per_out	= 12,
- 	.adjphase	= &idtcm_adjphase,
- 	.adjfine	= &idtcm_adjfine,
--	.adjtime	= &idtcm_adjtime_v487,
-+	.adjtime	= &idtcm_adjtime,
- 	.gettime64	= &idtcm_gettime,
--	.settime64	= &idtcm_settime_v487,
-+	.settime64	= &idtcm_settime,
- 	.enable		= &idtcm_enable,
- };
- 
--static const struct ptp_clock_info idtcm_caps = {
-+static const struct ptp_clock_info idtcm_caps_deprecated = {
- 	.owner		= THIS_MODULE,
- 	.max_adj	= 244000,
- 	.n_per_out	= 12,
- 	.adjphase	= &idtcm_adjphase,
- 	.adjfine	= &idtcm_adjfine,
--	.adjtime	= &idtcm_adjtime,
-+	.adjtime	= &idtcm_adjtime_deprecated,
- 	.gettime64	= &idtcm_gettime,
--	.settime64	= &idtcm_settime,
-+	.settime64	= &idtcm_settime_deprecated,
- 	.enable		= &idtcm_enable,
- };
- 
-@@ -2253,15 +2262,15 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
- 
- 	channel->idtcm = idtcm;
- 
--	if (idtcm_strverscmp(idtcm->version, "4.8.7") >= 0)
--		channel->caps = idtcm_caps_v487;
-+	if (idtcm->deprecated)
-+		channel->caps = idtcm_caps_deprecated;
- 	else
- 		channel->caps = idtcm_caps;
- 
- 	snprintf(channel->caps.name, sizeof(channel->caps.name),
- 		 "IDT CM TOD%u", index);
- 
--	if (idtcm_strverscmp(idtcm->version, "4.8.7") >= 0) {
-+	if (!idtcm->deprecated) {
- 		err = idtcm_enable_tod_sync(channel);
- 		if (err) {
- 			dev_err(&idtcm->client->dev,
-@@ -2360,7 +2369,7 @@ static int idtcm_probe(struct i2c_client *client,
- 	mutex_init(&idtcm->reg_lock);
- 	mutex_lock(&idtcm->reg_lock);
- 
--	idtcm_display_version_info(idtcm);
-+	idtcm_set_version_info(idtcm);
- 
- 	err = idtcm_load_firmware(idtcm, &client->dev);
- 
-diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
-index 3790dfa..645de2c 100644
---- a/drivers/ptp/ptp_clockmatrix.h
-+++ b/drivers/ptp/ptp_clockmatrix.h
-@@ -45,11 +45,11 @@
- #define DEFAULT_TOD2_PTP_PLL		(2)
- #define DEFAULT_TOD3_PTP_PLL		(3)
- 
--#define POST_SM_RESET_DELAY_MS		(3000)
--#define PHASE_PULL_IN_THRESHOLD_NS	(150000)
--#define PHASE_PULL_IN_THRESHOLD_NS_V487	(15000)
--#define TOD_WRITE_OVERHEAD_COUNT_MAX	(2)
--#define TOD_BYTE_COUNT			(11)
-+#define POST_SM_RESET_DELAY_MS			(3000)
-+#define PHASE_PULL_IN_THRESHOLD_NS_DEPRECATED	(150000)
-+#define PHASE_PULL_IN_THRESHOLD_NS		(15000)
-+#define TOD_WRITE_OVERHEAD_COUNT_MAX		(2)
-+#define TOD_BYTE_COUNT				(11)
- 
- #define PEROUT_ENABLE_OUTPUT_MASK	(0xdeadbeef)
- 
-@@ -132,6 +132,7 @@ struct idtcm {
- 	u8			page_offset;
- 	u8			tod_mask;
- 	char			version[16];
-+	u8			deprecated;
- 
- 	/* Overhead calculation for adjtime */
- 	u8			calculate_overhead_flag;
 -- 
-2.7.4
+2.27.0
 
