@@ -2,726 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 198612B581C
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:44:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B28302B5841
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:44:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727649AbgKQDlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 22:41:31 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:59918 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727473AbgKQDla (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:41:30 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AH3dv6Y004443
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:26 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=uZ7+AVWsuqLlCdRdCgFoU5B73NvCvT5xE/QA6MuBqbY=;
- b=Gz+6q6P4fWyeB70sW0YDLK/PE8I5Qe6RD3ZgTHIKPJlXBha6DLbcIE8s9+aQZhAySUNZ
- Fdwp8/V6GVj/WLtbU5rHvLVq4RGiXt1vDOAst0XdkN7zI8LCJV3yRsbVtNpbsmKPfT6J
- HhyFK/603UbI8ZNNrK4bEF6fiu2JL3pdJ8k= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 34tdmruh63-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:25 -0800
-Received: from intmgw004.06.prn3.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+        id S1727904AbgKQDmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 22:42:47 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8772 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727892AbgKQDmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:42:45 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0AH3cZtO024957;
+        Mon, 16 Nov 2020 19:42:30 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=9mYTdJZ0Rj3C/ChWgVaJ68z21aCoWI08mwu76njSMac=;
+ b=MZVOfyaPTCYE3yimo2XSrXyMyCBt5ZEvdXRyzApe+A7xz/mJ2tmoBAIdIIW8ty6kDu9S
+ 1sFy4HMQcVEwHbfI21F92wRNn+eLieBNu8FjDtscdHSlCvW3yXBGFIjhW5L0tJYiuley
+ ji/64AnIZlN8eIYP1qNcXI9QPnhI5Dht8U4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 34tbssbtcg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 16 Nov 2020 19:42:30 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 16 Nov 2020 19:41:16 -0800
-Received: by devvm3388.prn0.facebook.com (Postfix, from userid 111017)
-        id ACB60C63A9B; Mon, 16 Nov 2020 19:41:10 -0800 (PST)
+ 15.1.1979.3; Mon, 16 Nov 2020 19:42:29 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iHy2FmZZek1kyrUCL+ajAOQS0uDPwWOlo7yo+Dxb778zgdN+PKug+zRIYPMSU1UNh45xFRWcRAFQBxMeplwU+oiHg3oFzkLV+dYL/whdDqthjjOq5ya0lBrGXdYg4K11sEAw5VG1P47FAMmV3L5hogKY7JAyeWVruu1B+oMkGyeKXCpfGA2WlhdkAC7y0/d9N+Cp/kRz+yOY8ia/aMY5fxK7wxWNamKpzQQodnWZdcjjG50ZetUBz2G+FasVHeVUbixIPzBwTMljhvLwooqgcUcfmdQlN9xvZYzpzySeagtLb1mt1Ou4OafDjHg4nlaKCxnXlhcF7feax63PJt/aGw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9mYTdJZ0Rj3C/ChWgVaJ68z21aCoWI08mwu76njSMac=;
+ b=KnupwChqoJhW4MXDvoMYL+SeSXHEicdAH5CapUkGzy4V1A8pNDSlXMIfk5PZNUtGX0dxhX+GmaLuhvDo31KD1fho0nyrXgkCOalCQygjf+UW0Uq7ky3EeITdArBcockoKADcfnUl2JcYiqAvhCmkzjtxmWZAt9D/Ew40cCIOw8iBpURet/HcYmUpOSUQDvZc9HLHBHiGmh6qMqACXc+9zsO1QaKdNxHZ3aOoNcw3p0msmpfkWexcU8+YiMuqlNkb6oIe014+ZmAickbDdTj+JyiJgWiSn8vfh1neBgD8aepO/soDYb6vr6fVD58UmyZLE4TA0KzTpWUsVhJNnY2PMw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9mYTdJZ0Rj3C/ChWgVaJ68z21aCoWI08mwu76njSMac=;
+ b=IdMD0xxF+xO3Va5LfTJkNGsCBcvCpL5uaF6X1cRdtVE5bOJnO48xZNe0lYKUaRJ7UhHvfLYcoDkeCBR6iA2t0WCgflX5bDGN7As/GmsSorDMili9FnwkepscyuwsBopLJzi8lOYEFDEPIJj9Gl2iTT5XSQa/pbiO3OMfrUA58Rc=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4136.namprd15.prod.outlook.com (2603:10b6:a03:96::24)
+ by BYAPR15MB2661.namprd15.prod.outlook.com (2603:10b6:a03:15b::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.28; Tue, 17 Nov
+ 2020 03:42:26 +0000
+Received: from BYAPR15MB4136.namprd15.prod.outlook.com
+ ([fe80::3925:e1f9:4c6a:9396]) by BYAPR15MB4136.namprd15.prod.outlook.com
+ ([fe80::3925:e1f9:4c6a:9396%6]) with mapi id 15.20.3564.025; Tue, 17 Nov 2020
+ 03:42:25 +0000
+Date:   Mon, 16 Nov 2020 19:42:20 -0800
 From:   Roman Gushchin <guro@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
         <andrii@kernel.org>, <akpm@linux-foundation.org>,
         <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <kernel-team@fb.com>
-Subject: [PATCH bpf-next v6 34/34] bpf: samples: do not touch RLIMIT_MEMLOCK
-Date:   Mon, 16 Nov 2020 19:41:08 -0800
-Message-ID: <20201117034108.1186569-35-guro@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201117034108.1186569-1-guro@fb.com>
-References: <20201117034108.1186569-1-guro@fb.com>
+Subject: Re: [PATCH v6 00/34] bpf: switch to memcg-based memory accounting
+Message-ID: <20201117034220.GA109785@carbon.dhcp.thefacebook.com>
+References: <20201117025529.1034387-1-guro@fb.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201117025529.1034387-1-guro@fb.com>
+X-Originating-IP: [2620:10d:c090:400::5:1580]
+X-ClientProxiedBy: MWHPR01CA0033.prod.exchangelabs.com (2603:10b6:300:101::19)
+ To BYAPR15MB4136.namprd15.prod.outlook.com (2603:10b6:a03:96::24)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from carbon.dhcp.thefacebook.com (2620:10d:c090:400::5:1580) by MWHPR01CA0033.prod.exchangelabs.com (2603:10b6:300:101::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.25 via Frontend Transport; Tue, 17 Nov 2020 03:42:24 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9b017e6b-7496-4d1c-e1dd-08d88aaacca1
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2661:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2661E4FCD11E994BBED4D5D2BEE20@BYAPR15MB2661.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vfK7fgrEGBW3bwcH9yTdGPqNu3r+Lj6m+7ltaegOc7I+llDUZEikqXCGJ40xdo1metj9u2vHB/iuWPVg7dDZpYZkFTlSVCeX8ysDurmiF89bmrD8sbDfrevvsjV0f6iBL1zynP/Gg7FjCdiQ3Iucq/bI4LvVIjqObsv5V/TPwwfJBnoxn9ZPerr5+hhmMthFVQK2aQTBrITdEZ5o6ptA5ECnGLPCP+fzCx8Wg17ViwY91UDNSbv1GCLSYLYwSeQ+FcEhlMpIDuCeHqSeXOtAVjciknYcWVaHisOdhVntbbT780kq4tdCLr8WtcP4WqvBUFPvieMVaWeNq81oljWFdQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4136.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(346002)(396003)(136003)(376002)(39860400002)(6506007)(16526019)(8676002)(52116002)(7696005)(1076003)(4744005)(66946007)(66476007)(66556008)(86362001)(5660300002)(2906002)(316002)(15650500001)(478600001)(55016002)(9686003)(4326008)(83380400001)(8936002)(6666004)(6916009)(33656002)(186003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: XzymWl1+Ht7sVYUyZQn22KekkO6P37wtBVNEY07ytEiIwRIZdwLxIRIOT1MZ2GXfu4/ATQ3Wvr1Eb2aJ/PBhoq+C0J8A18Em3GkYr4pA4xuOAh9DyP/1cyMYDMyan5eZ37mLxCSktbGxXYGfvR3whzH8AGwTCXUvbIEHHFnAhJYFAYzB/R4vAtdAC/HlEWvyUmubSIZpGFQZH1aoFqzpyGkksyjXAkkYguKCdiFm5W4JoIODcvcoWxMSXM52Kpkppmgdw/8rzKBk4YhD+klldoZGrp5Joto4l2LL1GJmVFb4RrtZaQbBpvRuCuBccgDWmPcJRmeTqiP9SvgTiC4ABkqLPyW6tfIpAUKS/HNfqMnvDVrmNH1V1CI6eEErfWRryCBaza2hhTQYWwmwWhIe3vK2UAYcHqnc32THC5zWyvy+hfAfKKVZ/lG7Qdg3pSetKfEIm4/c3oN15Uty96NIJO7lLM5QUG5miGJ9GkHdGMGia+X6kySOgn5pEf/TRmVe4gaJ3w18t5VTVGQu8p+8FDVJZo7yxtWLHL7QyU64bVUZnlF7i4J7lOL8dbs7/sJixriSWXjEu91Wc+tM+fiFa0hGcPqt9sVvw/ZoBA2cZnwbOyV41RHQOF4+9kZVbZFHA95u9JyqnOAZoSs5Iko1r+5GMvMEA7/o/9oTxCFb0y1DvjwBazWwXSgtJUI02ZRM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9b017e6b-7496-4d1c-e1dd-08d88aaacca1
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4136.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2020 03:42:25.7458
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: n1A5XNiIE6d/emhAQUCsKjeo9HCI6FZCTlF1vj7e2laQcdtZZvPyiH/O/TezuiEv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2661
+X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-11-17_01:2020-11-13,2020-11-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- lowpriorityscore=0 clxscore=1015 priorityscore=1501 mlxscore=0
- suspectscore=13 adultscore=0 phishscore=0 mlxlogscore=999 spamscore=0
- bulkscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ suspectscore=34 impostorscore=0 adultscore=0 priorityscore=1501
+ phishscore=0 lowpriorityscore=0 spamscore=0 bulkscore=0 mlxlogscore=812
+ malwarescore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-2009150000 definitions=main-2011170027
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since bpf is not using rlimit memlock for the memory accounting
-and control, do not change the limit in sample applications.
+On Mon, Nov 16, 2020 at 06:54:55PM -0800, Roman Gushchin wrote:
+> Currently bpf is using the memlock rlimit for the memory accounting.
+> This approach has its downsides and over time has created a significant
+> amount of problems:
+> 
 
-Signed-off-by: Roman Gushchin <guro@fb.com>
-Acked-by: Song Liu <songliubraving@fb.com>
----
- samples/bpf/map_perf_test_user.c    | 6 ------
- samples/bpf/offwaketime_user.c      | 6 ------
- samples/bpf/sockex2_user.c          | 2 --
- samples/bpf/sockex3_user.c          | 2 --
- samples/bpf/spintest_user.c         | 6 ------
- samples/bpf/syscall_tp_user.c       | 2 --
- samples/bpf/task_fd_query_user.c    | 5 -----
- samples/bpf/test_lru_dist.c         | 3 ---
- samples/bpf/test_map_in_map_user.c  | 6 ------
- samples/bpf/test_overhead_user.c    | 2 --
- samples/bpf/trace_event_user.c      | 2 --
- samples/bpf/tracex2_user.c          | 6 ------
- samples/bpf/tracex3_user.c          | 6 ------
- samples/bpf/tracex4_user.c          | 6 ------
- samples/bpf/tracex5_user.c          | 3 ---
- samples/bpf/tracex6_user.c          | 3 ---
- samples/bpf/xdp1_user.c             | 6 ------
- samples/bpf/xdp_adjust_tail_user.c  | 6 ------
- samples/bpf/xdp_monitor_user.c      | 5 -----
- samples/bpf/xdp_redirect_cpu_user.c | 6 ------
- samples/bpf/xdp_redirect_map_user.c | 6 ------
- samples/bpf/xdp_redirect_user.c     | 6 ------
- samples/bpf/xdp_router_ipv4_user.c  | 6 ------
- samples/bpf/xdp_rxq_info_user.c     | 6 ------
- samples/bpf/xdp_sample_pkts_user.c  | 6 ------
- samples/bpf/xdp_tx_iptunnel_user.c  | 6 ------
- samples/bpf/xdpsock_user.c          | 7 -------
- 27 files changed, 132 deletions(-)
+I'm sorry, I've missed the "bpf-next" prefix in the subject.
+Resending.
 
-diff --git a/samples/bpf/map_perf_test_user.c b/samples/bpf/map_perf_test=
-_user.c
-index 8b13230b4c46..9db949290a78 100644
---- a/samples/bpf/map_perf_test_user.c
-+++ b/samples/bpf/map_perf_test_user.c
-@@ -421,7 +421,6 @@ static void fixup_map(struct bpf_object *obj)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	int nr_cpus =3D sysconf(_SC_NPROCESSORS_ONLN);
- 	struct bpf_link *links[8];
- 	struct bpf_program *prog;
-@@ -430,11 +429,6 @@ int main(int argc, char **argv)
- 	char filename[256];
- 	int i =3D 0;
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	if (argc > 1)
- 		test_flags =3D atoi(argv[1]) ? : test_flags;
-=20
-diff --git a/samples/bpf/offwaketime_user.c b/samples/bpf/offwaketime_use=
-r.c
-index 5734cfdaaacb..73a986876c1a 100644
---- a/samples/bpf/offwaketime_user.c
-+++ b/samples/bpf/offwaketime_user.c
-@@ -95,18 +95,12 @@ static void int_exit(int sig)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_object *obj =3D NULL;
- 	struct bpf_link *links[2];
- 	struct bpf_program *prog;
- 	int delay =3D 1, i =3D 0;
- 	char filename[256];
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	if (load_kallsyms()) {
- 		printf("failed to process /proc/kallsyms\n");
- 		return 2;
-diff --git a/samples/bpf/sockex2_user.c b/samples/bpf/sockex2_user.c
-index af925a5afd1d..bafa567b840c 100644
---- a/samples/bpf/sockex2_user.c
-+++ b/samples/bpf/sockex2_user.c
-@@ -16,7 +16,6 @@ struct pair {
-=20
- int main(int ac, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_object *obj;
- 	int map_fd, prog_fd;
- 	char filename[256];
-@@ -24,7 +23,6 @@ int main(int ac, char **argv)
- 	FILE *f;
-=20
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
--	setrlimit(RLIMIT_MEMLOCK, &r);
-=20
- 	if (bpf_prog_load(filename, BPF_PROG_TYPE_SOCKET_FILTER,
- 			  &obj, &prog_fd))
-diff --git a/samples/bpf/sockex3_user.c b/samples/bpf/sockex3_user.c
-index 7793f6a6ae7e..6ae99ecc766c 100644
---- a/samples/bpf/sockex3_user.c
-+++ b/samples/bpf/sockex3_user.c
-@@ -26,7 +26,6 @@ struct pair {
- int main(int argc, char **argv)
- {
- 	int i, sock, key, fd, main_prog_fd, jmp_table_fd, hash_map_fd;
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_program *prog;
- 	struct bpf_object *obj;
- 	const char *section;
-@@ -34,7 +33,6 @@ int main(int argc, char **argv)
- 	FILE *f;
-=20
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
--	setrlimit(RLIMIT_MEMLOCK, &r);
-=20
- 	obj =3D bpf_object__open_file(filename, NULL);
- 	if (libbpf_get_error(obj)) {
-diff --git a/samples/bpf/spintest_user.c b/samples/bpf/spintest_user.c
-index f090d0dc60d6..0d7e1e5a8658 100644
---- a/samples/bpf/spintest_user.c
-+++ b/samples/bpf/spintest_user.c
-@@ -10,7 +10,6 @@
-=20
- int main(int ac, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	char filename[256], symbol[256];
- 	struct bpf_object *obj =3D NULL;
- 	struct bpf_link *links[20];
-@@ -20,11 +19,6 @@ int main(int ac, char **argv)
- 	const char *section;
- 	struct ksym *sym;
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	if (load_kallsyms()) {
- 		printf("failed to process /proc/kallsyms\n");
- 		return 2;
-diff --git a/samples/bpf/syscall_tp_user.c b/samples/bpf/syscall_tp_user.=
-c
-index 76a1d00128fb..a0ebf1833ed3 100644
---- a/samples/bpf/syscall_tp_user.c
-+++ b/samples/bpf/syscall_tp_user.c
-@@ -115,7 +115,6 @@ static int test(char *filename, int num_progs)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	int opt, num_progs =3D 1;
- 	char filename[256];
-=20
-@@ -131,7 +130,6 @@ int main(int argc, char **argv)
- 		}
- 	}
-=20
--	setrlimit(RLIMIT_MEMLOCK, &r);
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
-=20
- 	return test(filename, num_progs);
-diff --git a/samples/bpf/task_fd_query_user.c b/samples/bpf/task_fd_query=
-_user.c
-index b68bd2f8fdc9..0f2050ff54f9 100644
---- a/samples/bpf/task_fd_query_user.c
-+++ b/samples/bpf/task_fd_query_user.c
-@@ -290,16 +290,11 @@ static int test_debug_fs_uprobe(char *binary_path, =
-long offset, bool is_return)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	extern char __executable_start;
- 	char filename[256], buf[256];
- 	__u64 uprobe_file_offset;
-=20
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
-=20
- 	if (load_kallsyms()) {
- 		printf("failed to process /proc/kallsyms\n");
-diff --git a/samples/bpf/test_lru_dist.c b/samples/bpf/test_lru_dist.c
-index b313dba4111b..c92c5c06b965 100644
---- a/samples/bpf/test_lru_dist.c
-+++ b/samples/bpf/test_lru_dist.c
-@@ -489,7 +489,6 @@ static void test_parallel_lru_loss(int map_type, int =
-map_flags, int nr_tasks)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	int map_flags[] =3D {0, BPF_F_NO_COMMON_LRU};
- 	const char *dist_file;
- 	int nr_tasks =3D 1;
-@@ -508,8 +507,6 @@ int main(int argc, char **argv)
-=20
- 	setbuf(stdout, NULL);
-=20
--	assert(!setrlimit(RLIMIT_MEMLOCK, &r));
--
- 	srand(time(NULL));
-=20
- 	nr_cpus =3D bpf_num_possible_cpus();
-diff --git a/samples/bpf/test_map_in_map_user.c b/samples/bpf/test_map_in=
-_map_user.c
-index 98656de56b83..472d65c70354 100644
---- a/samples/bpf/test_map_in_map_user.c
-+++ b/samples/bpf/test_map_in_map_user.c
-@@ -114,17 +114,11 @@ static void test_map_in_map(void)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_link *link =3D NULL;
- 	struct bpf_program *prog;
- 	struct bpf_object *obj;
- 	char filename[256];
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	obj =3D bpf_object__open_file(filename, NULL);
- 	if (libbpf_get_error(obj)) {
-diff --git a/samples/bpf/test_overhead_user.c b/samples/bpf/test_overhead=
-_user.c
-index 94f74112a20e..c100fd46cd8a 100644
---- a/samples/bpf/test_overhead_user.c
-+++ b/samples/bpf/test_overhead_user.c
-@@ -125,12 +125,10 @@ static void unload_progs(void)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	char filename[256];
- 	int num_cpu =3D 8;
- 	int test_flags =3D ~0;
-=20
--	setrlimit(RLIMIT_MEMLOCK, &r);
-=20
- 	if (argc > 1)
- 		test_flags =3D atoi(argv[1]) ? : test_flags;
-diff --git a/samples/bpf/trace_event_user.c b/samples/bpf/trace_event_use=
-r.c
-index ac1ba368195c..9664749bf618 100644
---- a/samples/bpf/trace_event_user.c
-+++ b/samples/bpf/trace_event_user.c
-@@ -294,13 +294,11 @@ static void test_bpf_perf_event(void)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_object *obj =3D NULL;
- 	char filename[256];
- 	int error =3D 1;
-=20
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
--	setrlimit(RLIMIT_MEMLOCK, &r);
-=20
- 	signal(SIGINT, err_exit);
- 	signal(SIGTERM, err_exit);
-diff --git a/samples/bpf/tracex2_user.c b/samples/bpf/tracex2_user.c
-index 3d6eab711d23..1626d51dfffd 100644
---- a/samples/bpf/tracex2_user.c
-+++ b/samples/bpf/tracex2_user.c
-@@ -116,7 +116,6 @@ static void int_exit(int sig)
-=20
- int main(int ac, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	long key, next_key, value;
- 	struct bpf_link *links[2];
- 	struct bpf_program *prog;
-@@ -125,11 +124,6 @@ int main(int ac, char **argv)
- 	int i, j =3D 0;
- 	FILE *f;
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	obj =3D bpf_object__open_file(filename, NULL);
- 	if (libbpf_get_error(obj)) {
-diff --git a/samples/bpf/tracex3_user.c b/samples/bpf/tracex3_user.c
-index 83e0fecbb01a..33e16ba39f25 100644
---- a/samples/bpf/tracex3_user.c
-+++ b/samples/bpf/tracex3_user.c
-@@ -107,7 +107,6 @@ static void print_hist(int fd)
-=20
- int main(int ac, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_link *links[2];
- 	struct bpf_program *prog;
- 	struct bpf_object *obj;
-@@ -127,11 +126,6 @@ int main(int ac, char **argv)
- 		}
- 	}
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	obj =3D bpf_object__open_file(filename, NULL);
- 	if (libbpf_get_error(obj)) {
-diff --git a/samples/bpf/tracex4_user.c b/samples/bpf/tracex4_user.c
-index e8faf8f184ae..cea399424bca 100644
---- a/samples/bpf/tracex4_user.c
-+++ b/samples/bpf/tracex4_user.c
-@@ -48,18 +48,12 @@ static void print_old_objects(int fd)
-=20
- int main(int ac, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_link *links[2];
- 	struct bpf_program *prog;
- 	struct bpf_object *obj;
- 	char filename[256];
- 	int map_fd, i, j =3D 0;
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK, RLIM_INFINITY)");
--		return 1;
--	}
--
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	obj =3D bpf_object__open_file(filename, NULL);
- 	if (libbpf_get_error(obj)) {
-diff --git a/samples/bpf/tracex5_user.c b/samples/bpf/tracex5_user.c
-index c17d3fb5fd64..08dfdc77ad2a 100644
---- a/samples/bpf/tracex5_user.c
-+++ b/samples/bpf/tracex5_user.c
-@@ -34,7 +34,6 @@ static void install_accept_all_seccomp(void)
-=20
- int main(int ac, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_link *link =3D NULL;
- 	struct bpf_program *prog;
- 	struct bpf_object *obj;
-@@ -43,8 +42,6 @@ int main(int ac, char **argv)
- 	char filename[256];
- 	FILE *f;
-=20
--	setrlimit(RLIMIT_MEMLOCK, &r);
--
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	obj =3D bpf_object__open_file(filename, NULL);
- 	if (libbpf_get_error(obj)) {
-diff --git a/samples/bpf/tracex6_user.c b/samples/bpf/tracex6_user.c
-index 33df9784775d..28296f40c133 100644
---- a/samples/bpf/tracex6_user.c
-+++ b/samples/bpf/tracex6_user.c
-@@ -175,15 +175,12 @@ static void test_bpf_perf_event(void)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_link *links[2];
- 	struct bpf_program *prog;
- 	struct bpf_object *obj;
- 	char filename[256];
- 	int i =3D 0;
-=20
--	setrlimit(RLIMIT_MEMLOCK, &r);
--
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	obj =3D bpf_object__open_file(filename, NULL);
- 	if (libbpf_get_error(obj)) {
-diff --git a/samples/bpf/xdp1_user.c b/samples/bpf/xdp1_user.c
-index c447ad9e3a1d..116e39f6b666 100644
---- a/samples/bpf/xdp1_user.c
-+++ b/samples/bpf/xdp1_user.c
-@@ -79,7 +79,6 @@ static void usage(const char *prog)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_prog_load_attr prog_load_attr =3D {
- 		.prog_type	=3D BPF_PROG_TYPE_XDP,
- 	};
-@@ -117,11 +116,6 @@ int main(int argc, char **argv)
- 		return 1;
- 	}
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	ifindex =3D if_nametoindex(argv[optind]);
- 	if (!ifindex) {
- 		perror("if_nametoindex");
-diff --git a/samples/bpf/xdp_adjust_tail_user.c b/samples/bpf/xdp_adjust_=
-tail_user.c
-index ba482dc3da33..a70b094c8ec5 100644
---- a/samples/bpf/xdp_adjust_tail_user.c
-+++ b/samples/bpf/xdp_adjust_tail_user.c
-@@ -82,7 +82,6 @@ static void usage(const char *cmd)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_prog_load_attr prog_load_attr =3D {
- 		.prog_type	=3D BPF_PROG_TYPE_XDP,
- 	};
-@@ -143,11 +142,6 @@ int main(int argc, char **argv)
- 		}
- 	}
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK, RLIM_INFINITY)");
--		return 1;
--	}
--
- 	if (!ifindex) {
- 		fprintf(stderr, "Invalid ifname\n");
- 		return 1;
-diff --git a/samples/bpf/xdp_monitor_user.c b/samples/bpf/xdp_monitor_use=
-r.c
-index 03d0a182913f..49ebc49aefc3 100644
---- a/samples/bpf/xdp_monitor_user.c
-+++ b/samples/bpf/xdp_monitor_user.c
-@@ -687,7 +687,6 @@ static void print_bpf_prog_info(void)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_program *prog;
- 	int longindex =3D 0, opt;
- 	int ret =3D EXIT_FAILURE;
-@@ -719,10 +718,6 @@ int main(int argc, char **argv)
- 	}
-=20
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return ret;
--	}
-=20
- 	/* Remove tracepoint program when program is interrupted or killed */
- 	signal(SIGINT, int_exit);
-diff --git a/samples/bpf/xdp_redirect_cpu_user.c b/samples/bpf/xdp_redire=
-ct_cpu_user.c
-index f78cb18319aa..576411612523 100644
---- a/samples/bpf/xdp_redirect_cpu_user.c
-+++ b/samples/bpf/xdp_redirect_cpu_user.c
-@@ -765,7 +765,6 @@ static int load_cpumap_prog(char *file_name, char *pr=
-og_name,
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	char *prog_name =3D "xdp_cpu_map5_lb_hash_ip_pairs";
- 	char *mprog_filename =3D "xdp_redirect_kern.o";
- 	char *redir_interface =3D NULL, *redir_map =3D NULL;
-@@ -804,11 +803,6 @@ int main(int argc, char **argv)
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	prog_load_attr.file =3D filename;
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
- 		return err;
-=20
-diff --git a/samples/bpf/xdp_redirect_map_user.c b/samples/bpf/xdp_redire=
-ct_map_user.c
-index 35e16dee613e..31131b6e7782 100644
---- a/samples/bpf/xdp_redirect_map_user.c
-+++ b/samples/bpf/xdp_redirect_map_user.c
-@@ -96,7 +96,6 @@ static void usage(const char *prog)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_prog_load_attr prog_load_attr =3D {
- 		.prog_type	=3D BPF_PROG_TYPE_XDP,
- 	};
-@@ -135,11 +134,6 @@ int main(int argc, char **argv)
- 		return 1;
- 	}
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	ifindex_in =3D if_nametoindex(argv[optind]);
- 	if (!ifindex_in)
- 		ifindex_in =3D strtoul(argv[optind], NULL, 0);
-diff --git a/samples/bpf/xdp_redirect_user.c b/samples/bpf/xdp_redirect_u=
-ser.c
-index 9ca2bf457cda..41d705c3a1f7 100644
---- a/samples/bpf/xdp_redirect_user.c
-+++ b/samples/bpf/xdp_redirect_user.c
-@@ -97,7 +97,6 @@ static void usage(const char *prog)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_prog_load_attr prog_load_attr =3D {
- 		.prog_type	=3D BPF_PROG_TYPE_XDP,
- 	};
-@@ -136,11 +135,6 @@ int main(int argc, char **argv)
- 		return 1;
- 	}
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	ifindex_in =3D if_nametoindex(argv[optind]);
- 	if (!ifindex_in)
- 		ifindex_in =3D strtoul(argv[optind], NULL, 0);
-diff --git a/samples/bpf/xdp_router_ipv4_user.c b/samples/bpf/xdp_router_=
-ipv4_user.c
-index c2da1b51ff95..b5f03cb17a3c 100644
---- a/samples/bpf/xdp_router_ipv4_user.c
-+++ b/samples/bpf/xdp_router_ipv4_user.c
-@@ -625,7 +625,6 @@ static void usage(const char *prog)
-=20
- int main(int ac, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_prog_load_attr prog_load_attr =3D {
- 		.prog_type	=3D BPF_PROG_TYPE_XDP,
- 	};
-@@ -670,11 +669,6 @@ int main(int ac, char **argv)
- 		return 1;
- 	}
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
- 		return 1;
-=20
-diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_u=
-ser.c
-index 93fa1bc54f13..74a2926eba08 100644
---- a/samples/bpf/xdp_rxq_info_user.c
-+++ b/samples/bpf/xdp_rxq_info_user.c
-@@ -450,7 +450,6 @@ static void stats_poll(int interval, int action, __u3=
-2 cfg_opt)
- int main(int argc, char **argv)
- {
- 	__u32 cfg_options=3D NO_TOUCH ; /* Default: Don't touch packet memory *=
-/
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_prog_load_attr prog_load_attr =3D {
- 		.prog_type	=3D BPF_PROG_TYPE_XDP,
- 	};
-@@ -474,11 +473,6 @@ int main(int argc, char **argv)
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	prog_load_attr.file =3D filename;
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
- 		return EXIT_FAIL;
-=20
-diff --git a/samples/bpf/xdp_sample_pkts_user.c b/samples/bpf/xdp_sample_=
-pkts_user.c
-index 4b2a300c750c..706475e004cb 100644
---- a/samples/bpf/xdp_sample_pkts_user.c
-+++ b/samples/bpf/xdp_sample_pkts_user.c
-@@ -109,7 +109,6 @@ static void usage(const char *prog)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	struct bpf_prog_load_attr prog_load_attr =3D {
- 		.prog_type	=3D BPF_PROG_TYPE_XDP,
- 	};
-@@ -143,11 +142,6 @@ int main(int argc, char **argv)
- 		return 1;
- 	}
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	prog_load_attr.file =3D filename;
-=20
-diff --git a/samples/bpf/xdp_tx_iptunnel_user.c b/samples/bpf/xdp_tx_iptu=
-nnel_user.c
-index a419bee151a8..1d4f305d02aa 100644
---- a/samples/bpf/xdp_tx_iptunnel_user.c
-+++ b/samples/bpf/xdp_tx_iptunnel_user.c
-@@ -155,7 +155,6 @@ int main(int argc, char **argv)
- 	struct bpf_prog_load_attr prog_load_attr =3D {
- 		.prog_type	=3D BPF_PROG_TYPE_XDP,
- 	};
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	int min_port =3D 0, max_port =3D 0, vip2tnl_map_fd;
- 	const char *optstr =3D "i:a:p:s:d:m:T:P:FSNh";
- 	unsigned char opt_flags[256] =3D {};
-@@ -254,11 +253,6 @@ int main(int argc, char **argv)
- 		}
- 	}
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK, RLIM_INFINITY)");
--		return 1;
--	}
--
- 	if (!ifindex) {
- 		fprintf(stderr, "Invalid ifname\n");
- 		return 1;
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index 1149e94ca32f..2fb5393c6388 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -1463,7 +1463,6 @@ static void enter_xsks_into_map(struct bpf_object *=
-obj)
-=20
- int main(int argc, char **argv)
- {
--	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
- 	bool rx =3D false, tx =3D false;
- 	struct xsk_umem_info *umem;
- 	struct bpf_object *obj;
-@@ -1473,12 +1472,6 @@ int main(int argc, char **argv)
-=20
- 	parse_command_line(argc, argv);
-=20
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
--			strerror(errno));
--		exit(EXIT_FAILURE);
--	}
--
- 	if (opt_num_xsks > 1)
- 		load_xdp_program(argv, &obj);
-=20
---=20
-2.26.2
-
+Thanks!
