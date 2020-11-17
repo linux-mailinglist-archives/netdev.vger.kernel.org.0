@@ -2,113 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAF682B55E7
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 02:00:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE362B55E9
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 02:00:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729990AbgKQA77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 19:59:59 -0500
-Received: from novek.ru ([213.148.174.62]:34138 "EHLO novek.ru"
+        id S1730850AbgKQBAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 20:00:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54592 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726523AbgKQA76 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 19:59:58 -0500
-Received: from [192.168.0.18] (unknown [37.228.234.253])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 77841501633;
-        Tue, 17 Nov 2020 04:00:06 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 77841501633
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1605574807; bh=esG0HxRJsMiHA0jHy+RpnHMsXMg+jFgEQ/lDzedTfo0=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=CZcTd3PJAF0HlZwa3CbcdhmvQG2Lfe+8hu/wMWqV7YGUlOYv9LQUft+9ytl5EIg6i
-         x9I3S6fm8zRSrZ6x2DLfbSh064p8vYFDGzcfy11XEPrlWl2NTWTcTlJVFbXQzNzkZy
-         SWK9CoLnSCmXe2+n7KtBuqeasmysoKz/GCM+MPb4=
-Subject: Re: [net v2] net/tls: fix corrupted data in recvmsg
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
-References: <1605413760-21153-1-git-send-email-vfedorenko@novek.ru>
- <20201116162608.2c54953e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <cd2f4bfe-8fff-ddab-d271-08f0917a5b48@novek.ru>
- <20201116165454.5b5dd864@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-Message-ID: <f88588ce-03c7-74e0-1c43-0213d9133abd@novek.ru>
-Date:   Tue, 17 Nov 2020 00:59:54 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726523AbgKQBAF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 20:00:05 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605574805;
+        bh=qxb2bNK1ibr9KQzXsnZnNk3RpwESyMXG9MMrBtT03z4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cxk8s75USiK0Eyw2ARxDwjuKp+wKptW/PbBynYENkNDnRiCXHJrkDrqeeZSm+kxN7
+         n/CuWoLIV0XxYzfHxMrTZzkfkcTbfzGL6ySR2mlQGZMZFaXT8dsz4E5d7/Zfrfr2Mb
+         /vRjmLkWdkQlAD9dMZtJI5mLxrWB+2ljFHkKHcGo=
 MIME-Version: 1.0
-In-Reply-To: <20201116165454.5b5dd864@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next] bpf: Fix the irq and nmi check in bpf_sk_storage for
+ tracing usage
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160557480494.19963.4345087543810572466.git-patchwork-notify@kernel.org>
+Date:   Tue, 17 Nov 2020 01:00:04 +0000
+References: <20201116200113.2868539-1-kafai@fb.com>
+In-Reply-To: <20201116200113.2868539-1-kafai@fb.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kuba@kernel.org, kernel-team@fb.com, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-On 17.11.2020 00:54, Jakub Kicinski wrote:
-> On Tue, 17 Nov 2020 00:45:11 +0000 Vadim Fedorenko wrote:
->> On 17.11.2020 00:26, Jakub Kicinski wrote:
->>> On Sun, 15 Nov 2020 07:16:00 +0300 Vadim Fedorenko wrote:
->>>> If tcp socket has more data than Encrypted Handshake Message then
->>>> tls_sw_recvmsg will try to decrypt next record instead of returning
->>>> full control message to userspace as mentioned in comment. The next
->>>> message - usually Application Data - gets corrupted because it uses
->>>> zero copy for decryption that's why the data is not stored in skb
->>>> for next iteration. Revert check to not decrypt next record if
->>>> current is not Application Data.
->>>>
->>>> Fixes: 692d7b5d1f91 ("tls: Fix recvmsg() to be able to peek across multiple records")
->>>> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
->>>> ---
->>>>    net/tls/tls_sw.c | 2 +-
->>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
->>>> index 95ab5545..2fe9e2c 100644
->>>> --- a/net/tls/tls_sw.c
->>>> +++ b/net/tls/tls_sw.c
->>>> @@ -1913,7 +1913,7 @@ int tls_sw_recvmsg(struct sock *sk,
->>>>    			 * another message type
->>>>    			 */
->>>>    			msg->msg_flags |= MSG_EOR;
->>>> -			if (ctx->control != TLS_RECORD_TYPE_DATA)
->>>> +			if (control != TLS_RECORD_TYPE_DATA)
->>> Sorry I wasn't clear enough, should this be:
->>>
->>> 	if (ctx->control != control)
->>>
->>> ? Otherwise if we get a control record first and then data record
->>> the code will collapse them, which isn't correct, right?
->>>   
->>>>    				goto recv_end;
->>>>    		} else {
->>>>    			break;
->> I think you mean when ctx->control is control record and control is
->> data record.
-> Yup.
->
->> In this case control message will be decrypted without
->> zero copy and will be stored in skb for the next recvmsg, but will
->> not be returned together with data message.
-> Could you point me to a line which breaks the loop in that case?
->
-Sure!
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
 
-		if (!control)
-			control = tlm->control;
-		else if (control != tlm->control)
-			goto recv_end;
+On Mon, 16 Nov 2020 12:01:13 -0800 you wrote:
+> The intention of the current check is to avoid using bpf_sk_storage
+> in irq and nmi.  Jakub pointed out that the current check cannot
+> do that.  For example, in_serving_softirq() returns true
+> if the softirq handling is interrupted by hard irq.
+> 
+> Fixes: 8e4597c627fb ("bpf: Allow using bpf_sk_storage in FENTRY/FEXIT/RAW_TP")
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> 
+> [...]
 
+Here is the summary with links:
+  - [bpf-next] bpf: Fix the irq and nmi check in bpf_sk_storage for tracing usage
+    https://git.kernel.org/bpf/bpf-next/c/b93ef089d35c
 
-In that case control != tlm->control
-Variable control is set only once and never changes again.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
->> This behavior is the same
->> as for TLSv1.3 when record type is known only after decrypting.
->> But if we want completely different flow for TLSv1.2 and TLSv1.3
->> then changing to check difference in message types makes sense.
 
