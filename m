@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECB602B6D80
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 19:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C02842B6D86
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 19:38:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731362AbgKQSgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 13:36:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
+        id S1731435AbgKQSgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 13:36:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727007AbgKQSgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 13:36:11 -0500
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8859C0613CF;
-        Tue, 17 Nov 2020 10:36:11 -0800 (PST)
-Received: by mail-pj1-x1042.google.com with SMTP id mn12so756738pjb.1;
-        Tue, 17 Nov 2020 10:36:11 -0800 (PST)
+        with ESMTP id S1729502AbgKQSgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 13:36:49 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592DCC0613CF;
+        Tue, 17 Nov 2020 10:36:49 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id 62so16594415pgg.12;
+        Tue, 17 Nov 2020 10:36:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WVQ30Yx+YvNOyWaEigqtiOAJGX0VFEmySL9gW02Js/A=;
-        b=bYY0WzsOpD/W+b7cawX7fuVnFvjpAfzalj8svibghtuSTggNioME8qD+RDs0iPi/vW
-         wtZ3pDDYJ4h4N2rmJJEdW+d6vy0mrSUXQkm3UrKvYjATFJV4LgG+0OJQgqUPyohWZS8B
-         2+NTSFwADvWARtJEFmbmqfXjDEKGuge+QrLX/PEbHdRR6Sa/rr8mbu5iKjH9qRWfTIjh
-         Bweqq+Q7bdkMgKgpYKxGF4cBeMFjUVN/0IzQeL5+sM8ctg/E83gZAx1EWKpK/3LITGdg
-         O4MatckP4+uFXm8jZl83k1Sl5nAWJedPl9vPB5xqr+EChri+Q7JtNF4zSWJWx1H2rYxT
-         BOfw==
+        bh=2Un7bkg9kXjFs/tVAi75i1Yourocf7dyVv1ILRh6JPc=;
+        b=D1amKCllKBkpeP1HKint4pL8bRnIH8WYMUMAYX1vO49nYeZjFa8FiBzSBfdsr6CKpC
+         gVGLhJJ5ks5qUPh0OWlGcmhn5/IzJ7HnePG3i0DrYEc7rFYnU5gUtDNqbpiRya3xiW8f
+         rdSlY98HNxUMAQ6HbXuqKaci6Ap+lstjKnPZ2cUceP/rwHUNSBS6z9pMxiLv0HWf0E3T
+         8DYpTpC0cfziBcmxzsPUX54UtVqQU3VjyvzL+EDX1+67oUv9Q50K+jOhvowId7/NAcbn
+         Zg7+3XkaEt/yMclBSSHYZpbrfou7p8rvTGnsbtYC/yLnSxUeVIpAiCuhYTcSSnDVOJUx
+         P63Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=WVQ30Yx+YvNOyWaEigqtiOAJGX0VFEmySL9gW02Js/A=;
-        b=o/3HADeJLkSz32OG1CFv6TdLLHN4hKOgko2po6L5hd1VVBubZk9bFf6xlfAaHhAFTe
-         8+hh15MIPlNwnFPUtCrJseUGnVGiarF4za73XJgeKTDqplkzHxe4fSHmedj8wCwASBZd
-         oakJOqNv7tLzuY33ZVIqvGHP5r7oKipZrbo74w9m6ADyk9mpZI9ZpLjTemmV62hNxLde
-         xL6CeL6ZsUNUS2/yffadiLP2GVNcuJf85YKVYnSsS/t3Ht0ThoNtAIncal7tHlnECOeS
-         OgpSWvRCPVhryS53oDIgcBKuIB9b+dYzOcE7tUWfSLO/MAdP07n+SYduJpsF46UIVSEe
-         lreQ==
-X-Gm-Message-State: AOAM530U12Zm5pxoXynKcVQfew96TgHs5jxck740lJBElZNc3P/+1r1n
-        KcFuZE8/4XNtjKCpyUaymP9I77V9SoU=
-X-Google-Smtp-Source: ABdhPJz3LC3EoTEhJ6mTh1BtZzmY8sKd0rqfKFDhbCkZ4H87gn59+UUE1kp+rTc3tCEK3BIEbKj/4g==
-X-Received: by 2002:a17:902:8d97:b029:d8:94dd:43ea with SMTP id v23-20020a1709028d97b02900d894dd43eamr883296plo.43.1605638171352;
-        Tue, 17 Nov 2020 10:36:11 -0800 (PST)
+        bh=2Un7bkg9kXjFs/tVAi75i1Yourocf7dyVv1ILRh6JPc=;
+        b=i/e8h7kfeHfT3QINT48pl8wachHtfpivRjEtpexyKTHPVjDVdYwUIWFzJLAQuukGfF
+         9NGCWoNpFzIJKs5tYy/WCtOkrXYYdCa9I7ucw7LK0J0GkCjrXOU6AS3O180KONESosSi
+         F1WKca4qY3QT19DN0BXbcqPeLBCcuILIHUCY8K3g2LNkEhEOv5u2wR9kg1xzi6e5roSC
+         1621EphL0ele99zgwh6hesmq4vt0IXiJFw0qePNsUkPYzsuRtNJeOUN4xPbKnlg0+AHV
+         Q1Rd5vYhufsZ45PUFFQRJzHFj1DpmQEtGX88Z7vvBWKhwOh4PjPViDs6YmPU49cLD4W4
+         a4tw==
+X-Gm-Message-State: AOAM530hwZOmAOCd3LVLcABlXr2z0oQjwlp9CYKptfCTNcZ6Yj0IigPL
+        gqbrV4iBDGlRYiPkWnPMLfQ=
+X-Google-Smtp-Source: ABdhPJzLO6AiAxQSaNTQXTAyTQ+7nEvk72+29BnXqffKWnk/eoN4MgNV2yGqWm5GYGyXhFeASfgGhg==
+X-Received: by 2002:a65:5588:: with SMTP id j8mr4534952pgs.245.1605638208955;
+        Tue, 17 Nov 2020 10:36:48 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 92sm4165937pjv.32.2020.11.17.10.36.03
+        by smtp.googlemail.com with ESMTPSA id q19sm22568824pfh.37.2020.11.17.10.36.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Nov 2020 10:36:10 -0800 (PST)
-Subject: Re: [PATCH RFC v2 3/5] net: stmmac: dwmac-meson8b: use picoseconds
- for the RGMII RX delay
+        Tue, 17 Nov 2020 10:36:48 -0800 (PST)
+Subject: Re: [PATCH RFC v2 4/5] net: stmmac: dwmac-meson8b: move RGMII delays
+ into a separate function
 To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         davem@davemloft.net, kuba@kernel.org,
         linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
@@ -58,7 +58,7 @@ Cc:     jianxin.pan@amlogic.com, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, khilman@baylibre.com,
         narmstrong@baylibre.com, jbrunet@baylibre.com, andrew@lunn.ch
 References: <20201115185210.573739-1-martin.blumenstingl@googlemail.com>
- <20201115185210.573739-4-martin.blumenstingl@googlemail.com>
+ <20201115185210.573739-5-martin.blumenstingl@googlemail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -114,12 +114,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <88c043ba-e7a4-6b4d-f93f-efdf6c525e95@gmail.com>
-Date:   Tue, 17 Nov 2020 10:36:00 -0800
+Message-ID: <bea47acf-00ac-3be7-aada-f95a22f29175@gmail.com>
+Date:   Tue, 17 Nov 2020 10:36:38 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20201115185210.573739-4-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20201115185210.573739-5-martin.blumenstingl@googlemail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -128,17 +128,14 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 11/15/20 10:52 AM, Martin Blumenstingl wrote:
-> Amlogic Meson G12A, G12B and SM1 SoCs have a more advanced RGMII RX
-> delay register which allows picoseconds precision. Parse the new
-> "amlogic,rgmii-rx-delay-ps" property or fall back to the old
-> "amlogic,rx-delay-ns".
+> Newer SoCs starting with the Amlogic Meson G12A have more a precise
+> RGMII RX delay configuration register. This means more complexity in the
+> code. Extract the existing RGMII delay configuration code into a
+> separate function to make it easier to read/understand even when adding
+> more logic in the future.
 > 
 > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-
-Maybe also issue a warning when the 'amlogic,rx-delay-ns' property is
-found in addition to the 'amlogic,rgmii-rx-delay-ps'? Up to you how to
-manage existing DTBs being deployed.
 -- 
 Florian
