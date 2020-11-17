@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 711EF2B5BE6
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 10:42:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B3B22B5BEA
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 10:42:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726348AbgKQJlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 04:41:00 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:15068 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbgKQJlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 04:41:00 -0500
+        id S1727365AbgKQJlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 04:41:20 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:10411 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725355AbgKQJlU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 04:41:20 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1605606060; x=1637142060;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=Wca108g4Nk6XHkCSVKvOkGkT5Gv3I3upAbNqX3Q6J+c=;
-  b=duJqciKhr8hB+ry3uZOtEeg1nffLpHd7sP5hK0voFblPXJEZoDQs3mnZ
-   9zT5VTo5q9DJN1dUNbzESEFDDTPTlBaZhqN2dYLIl46wx6tz05hIWKe4P
-   PSGM2IMzQ/L3qn5kGu2UGRc49v1F5yCiM9fLqxsaH6z5Ali74FxKkrdFI
-   Q=;
+  s=amazon201209; t=1605606080; x=1637142080;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=+7noeoH7kZjzLDKf5z3YvNItSMxEV1uiKyWB4NySDiQ=;
+  b=eEWyVZhePVq05yoGDnVYEIMFgDcg3NN0xEP7SJ23y9a8qDpZhMS2Vhdt
+   kgzJiDpH8QZtpUqx2J2k/R06ZBWws8r5tzo3mGcJSAmneJ5R3gBaES7Ma
+   LmgqbQ5nfPC3/ACcNlIaGTyJuhsgecYKC9GDG6hhMKNuhBCBwkdXgaVPk
+   w=;
 X-IronPort-AV: E=Sophos;i="5.77,485,1596499200"; 
-   d="scan'208";a="94821401"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-303d0b0e.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 17 Nov 2020 09:40:58 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-1e-303d0b0e.us-east-1.amazon.com (Postfix) with ESMTPS id 13F03A1830;
-        Tue, 17 Nov 2020 09:40:55 +0000 (UTC)
+   d="scan'208";a="66876881"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1a-7d76a15f.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 17 Nov 2020 09:41:19 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1a-7d76a15f.us-east-1.amazon.com (Postfix) with ESMTPS id 33D1AA0570;
+        Tue, 17 Nov 2020 09:41:18 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 17 Nov 2020 09:40:55 +0000
+ id 15.0.1497.2; Tue, 17 Nov 2020 09:41:17 +0000
 Received: from 38f9d3582de7.ant.amazon.com.com (10.43.161.237) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 17 Nov 2020 09:40:51 +0000
+ id 15.0.1497.2; Tue, 17 Nov 2020 09:41:07 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -43,10 +44,12 @@ CC:     Benjamin Herrenschmidt <benh@amazon.com>,
         Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
         Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [RFC PATCH bpf-next 0/8] Socket migration for SO_REUSEPORT.
-Date:   Tue, 17 Nov 2020 18:40:15 +0900
-Message-ID: <20201117094023.3685-1-kuniyu@amazon.co.jp>
+Subject: [RFC PATCH bpf-next 1/8] net: Introduce net.ipv4.tcp_migrate_req.
+Date:   Tue, 17 Nov 2020 18:40:16 +0900
+Message-ID: <20201117094023.3685-2-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20201117094023.3685-1-kuniyu@amazon.co.jp>
+References: <20201117094023.3685-1-kuniyu@amazon.co.jp>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.43.161.237]
@@ -56,78 +59,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SO_REUSEPORT option allows sockets to listen on the same port and to
-accept connections evenly. However, there is a defect in the current
-implementation. When a SYN packet is received, the connection is tied to a
-listening socket. Accordingly, when the listener is closed, in-flight
-requests during the three-way handshake and child sockets in the accept
-queue are dropped even if other listeners could accept such connections.
+This commit adds a new sysctl option: net.ipv4.tcp_migrate_req. If this
+option is enabled, and then we call listen() for SO_REUSEPORT enabled
+sockets and close one, we will be able to migrate its child sockets to
+another listener.
 
-This situation can happen when various server management tools restart
-server (such as nginx) processes. For instance, when we change nginx
-configurations and restart it, it spins up new workers that respect the new
-configuration and closes all listeners on the old workers, resulting in
-in-flight ACK of 3WHS is responded by RST.
+Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+---
+ Documentation/networking/ip-sysctl.rst | 15 +++++++++++++++
+ include/net/netns/ipv4.h               |  1 +
+ net/ipv4/sysctl_net_ipv4.c             |  9 +++++++++
+ 3 files changed, 25 insertions(+)
 
-As a workaround for this issue, we can do connection draining by eBPF:
-
-  1. Before closing a listener, stop routing SYN packets to it.
-  2. Wait enough time for requests to complete 3WHS.
-  3. Accept connections until EAGAIN, then close the listener.
-
-Although this approach seems to work well, EAGAIN has nothing to do with
-how many requests are still during 3WHS. Thus, we have to know the number
-of such requests by counting SYN packets by eBPF to complete connection
-draining.
-
-  1. Start counting SYN packets and accept syscalls using eBPF map.
-  2. Stop routing SYN packets.
-  3. Accept connections up to the count, then close the listener.
-
-In cases that eBPF is used only for connection draining, it seems a bit
-expensive. Moreover, there is some situation that we cannot modify and
-build a server program to implement the workaround. This patchset
-introduces a new sysctl option to free userland programs from the kernel
-issue. If we enable net.ipv4.tcp_migrate_req before creating a reuseport
-group, we can redistribute requests and connections from a listener to
-others in the same reuseport group at close() or shutdown() syscalls.
-
-Note that the source and destination listeners MUST have the same settings
-at the socket API level; otherwise, applications may face inconsistency and
-cause errors. In such a case, we have to use eBPF program to select a
-specific listener or to cancel migration.
-
-Kuniyuki Iwashima (8):
-  net: Introduce net.ipv4.tcp_migrate_req.
-  tcp: Keep TCP_CLOSE sockets in the reuseport group.
-  tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
-  tcp: Migrate TFO requests causing RST during TCP_SYN_RECV.
-  tcp: Migrate TCP_NEW_SYN_RECV requests.
-  bpf: Add cookie in sk_reuseport_md.
-  bpf: Call bpf_run_sk_reuseport() for socket migration.
-  bpf: Test BPF_PROG_TYPE_SK_REUSEPORT for socket migration.
-
- Documentation/networking/ip-sysctl.rst        |  15 ++
- include/linux/bpf.h                           |   1 +
- include/net/inet_connection_sock.h            |  13 ++
- include/net/netns/ipv4.h                      |   1 +
- include/net/request_sock.h                    |  13 ++
- include/net/sock_reuseport.h                  |   8 +-
- include/uapi/linux/bpf.h                      |   1 +
- net/core/filter.c                             |  34 +++-
- net/core/sock_reuseport.c                     | 110 +++++++++--
- net/ipv4/inet_connection_sock.c               |  84 ++++++++-
- net/ipv4/inet_hashtables.c                    |   9 +-
- net/ipv4/sysctl_net_ipv4.c                    |   9 +
- net/ipv4/tcp_ipv4.c                           |   9 +-
- net/ipv6/tcp_ipv6.c                           |   9 +-
- tools/include/uapi/linux/bpf.h                |   1 +
- .../bpf/prog_tests/migrate_reuseport.c        | 175 ++++++++++++++++++
- .../bpf/progs/test_migrate_reuseport_kern.c   |  53 ++++++
- 17 files changed, 511 insertions(+), 34 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_migrate_reuseport_kern.c
-
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index dd2b12a32b73..4116771bf5ef 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -712,6 +712,21 @@ tcp_syncookies - INTEGER
+ 	network connections you can set this knob to 2 to enable
+ 	unconditionally generation of syncookies.
+ 
++tcp_migrate_req - INTEGER
++	By default, when a listening socket is closed, child sockets are also
++	closed. If it has SO_REUSEPORT enabled, the dropped connections should
++	have been accepted by other listeners on the same port. This option
++	makes it possible to migrate child sockets to another listener when
++	calling close() or shutdown().
++
++	Default: 0
++
++	Note that the source and destination listeners _must_ have the same
++	settings at the socket API level. If there are different kinds of
++	sockets on the port, disable this option or use
++	BPF_PROG_TYPE_SK_REUSEPORT program to select the correct socket by
++	bpf_sk_select_reuseport() or to cancel migration by returning SK_DROP.
++
+ tcp_fastopen - INTEGER
+ 	Enable TCP Fast Open (RFC7413) to send and accept data in the opening
+ 	SYN packet.
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index 8e4fcac4df72..a3edc30d6a63 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -132,6 +132,7 @@ struct netns_ipv4 {
+ 	int sysctl_tcp_syn_retries;
+ 	int sysctl_tcp_synack_retries;
+ 	int sysctl_tcp_syncookies;
++	int sysctl_tcp_migrate_req;
+ 	int sysctl_tcp_reordering;
+ 	int sysctl_tcp_retries1;
+ 	int sysctl_tcp_retries2;
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 3e5f4f2e705e..6b76298fa271 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -933,6 +933,15 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.proc_handler	= proc_dointvec
+ 	},
+ #endif
++	{
++		.procname	= "tcp_migrate_req",
++		.data		= &init_net.ipv4.sysctl_tcp_migrate_req,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE
++	},
+ 	{
+ 		.procname	= "tcp_reordering",
+ 		.data		= &init_net.ipv4.sysctl_tcp_reordering,
 -- 
 2.17.2 (Apple Git-113)
 
