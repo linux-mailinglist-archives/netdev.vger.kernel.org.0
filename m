@@ -2,113 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EA002B6BE1
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 18:37:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 194942B6C72
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 19:00:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729600AbgKQRg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 12:36:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59234 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729446AbgKQRg2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 12:36:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605634587;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ttfvIb6ojFXvnD7jK5/JUSS/M1skJOwi75jp84lLKuo=;
-        b=Pbw5I2kszJpjIblvjk4CV9QeSrVHQf6fw6P9RcXTQ09CaMFR7HryMSHqMKfGliKxOZ9xLn
-        GZRkNCEmJUmWAElVZHNK8GWxdYhS6yV/MckUivUrtqLiHl0VSjWrTxUDtrOqznA17VaKyU
-        1e3CdQ4XzxI5Gh5nyLXGp06/KcRw1gE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-276-eNcysYIoOmOK6P2OyOHoDw-1; Tue, 17 Nov 2020 12:36:23 -0500
-X-MC-Unique: eNcysYIoOmOK6P2OyOHoDw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6EE0D1084D61;
-        Tue, 17 Nov 2020 17:36:21 +0000 (UTC)
-Received: from ovpn-112-19.ams2.redhat.com (ovpn-112-19.ams2.redhat.com [10.36.112.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A4BF160C04;
-        Tue, 17 Nov 2020 17:36:19 +0000 (UTC)
-Message-ID: <ad72a4d612d95e0d5c0b6923926e43239c506171.camel@redhat.com>
-Subject: Re: [PATCH net-next] net: add annotation for sock_{lock,unlock}_fast
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-sparse@vger.kernel.org
-Date:   Tue, 17 Nov 2020 18:36:18 +0100
-In-Reply-To: <20201117165830.e44pu3nd5vx3jzmz@ltop.local>
-References: <95cf587fe96127884e555f695fe519d50e63cc17.1605522868.git.pabeni@redhat.com>
-         <20201116222750.nmfyxnj6jvd3rww4@ltop.local>
-         <a41e88a82b4d7433dded23e9fbd0465ad8529e36.camel@redhat.com>
-         <20201117165830.e44pu3nd5vx3jzmz@ltop.local>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1730083AbgKQSAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 13:00:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46350 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729918AbgKQSAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 13:00:49 -0500
+X-Greylist: delayed 1452 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 Nov 2020 10:00:48 PST
+Received: from moc6.cz (hosting.moc6.cz [IPv6:2a02:c60:c70:8900::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F30C0613CF;
+        Tue, 17 Nov 2020 10:00:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=moc6.cz;
+        s=mail20201116; h=Message-ID:Subject:Cc:To:From:Date:Reply-To:In-Reply-To;
+        bh=ENyjSleBoxU28yUIVg6xq5vz4ZwZ5cArdcaoaBhpfbE=; b=cVbIbsG+tSCPSwrYkk4HoY14Ee
+        rEONBpmJ5roN3oT7obH4zureIAKfrplrmDcQr/RW9LqVbQRM07D4XjGb+Eiy5sQ5PSyX8WsRe9F1g
+        v7kD6GHYRw7vsQ0ZFn86do+5Qka9phHb4FySFeAYX5zoOGUjjNgtJlqMFcSLI2bCf3JgSCm4ez2Sq
+        3LgLE7VjOIxRYJZpnax6OkzvoUN2UWTHO9dwexZi4Ffps+425xt7xBwnYDPbOVb096uS4aCtBycby
+        vAiEJ8FJekPENATjDBc02c/vaC1hwAJp9Zdckg3ndztdeJPYBYj3vJLhzmNHbT/G0e0wCO3zhSQq9
+        KILfQW5UAh3foJLXEO54hZahsu2OOwBascQTRy7G18HehymR7VxCvJ6RY8cQm72bkMtpbo4e1YGit
+        5DENpDQ3RvMM5pU8kR1PrykmAsTzrAIzXGvL1gJFuF75ZTU8xKC8EkH4FdxbpZPP2isjYlBLksYCB
+        QymVh2D608hITsTRLsqp2CO55NixmxTgCaeFQjUwSAyFNmxnUWm7qTxxG+Vriu89erF6ixMgbR0vc
+        w17qfu7kQNCA5S6YugnsVgdpoJ7lHvoz0qeKdO3Y+dyTia/sCAYl466ivij4t8V70PW0xh53eU114
+        CuBHAqzw2NTUk8L58Plj32sD5v620apozRfW4HT+0=;
+Received: from Debian-exim by moc6.cz with local (Exim 4.94)
+        (envelope-from <Debian-exim@moc6.cz>)
+         authenticated: Debian-exim
+        id 1kf4u7-002JN2-K6; Tue, 17 Nov 2020 18:36:31 +0100
+Date:   Tue, 17 Nov 2020 18:36:31 +0100
+From:   Filip Moc <dev@moc6.cz>
+To:     linux-kernel@vger.kernel.org
+Cc:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, Filip Moc <dev@moc6.cz>
+Subject: [PATCH] net: usb: qmi_wwan: Set DTR quirk for MR400
+Message-ID: <20201117173631.GA550981@moc6.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+LTE module MR400 embedded in TL-MR6400 v4 requires DTR to be set.
 
-On Tue, 2020-11-17 at 17:58 +0100, Luc Van Oostenryck wrote:
-> On Tue, Nov 17, 2020 at 09:38:45AM +0100, Paolo Abeni wrote:
-> > Hello,
-> > 
-> > Thank you for the feedback!
-> > 
-> > On Mon, 2020-11-16 at 23:27 +0100, Luc Van Oostenryck wrote:
-> > > > @@ -1606,10 +1607,12 @@ bool lock_sock_fast(struct sock *sk);
-> > > >   */
-> > > >  static inline void unlock_sock_fast(struct sock *sk, bool slow)
-> > > >  {
-> > > > -	if (slow)
-> > > > +	if (slow) {
-> > > >  		release_sock(sk);
-> > > > -	else
-> > > > +		__release(&sk->sk_lock.slock);
-> > > 
-> > > The correct solution would be to annotate the declaration of
-> > > release_sock() with '__releases(&sk->sk_lock.slock)'.
-> > 
-> > If I add such annotation to release_sock(), I'll get several sparse
-> > warnings for context imbalance (on each lock_sock()/release_sock()
-> > pair), unless I also add an '__acquires()' annotation to lock_sock(). 
-> > 
-> > The above does not look correct to me ?!? When release_sock() completes
-> > the socket spin lock is not held.
-> 
-> Yes, that's fine, but I suppose it somehow releases the mutex that
-> is taken in lock_sock_fast() when returning true, right?
+Signed-off-by: Filip Moc <dev@moc6.cz>
+---
+ drivers/net/usb/qmi_wwan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Well, it has mutex semantics, but does not really acquire any mutex.
-
-> > The annotation added above is
-> > somewhat an artifact to let unlock_sock_fast() matches lock_sock_fast()
-> > from sparse perspective. I intentionally avoided changing
-> > the release_sock() annotation to avoid introducing more artifacts.
-> > 
-> > The proposed schema is not 100% accurate, as it will also allow e.g. a
-> > really-not-fitting bh_lock_sock()/unlock_sock_fast() pair, but I could
-> > not come-up with anything better.
-> > 
-> > Can we go with the schema I proposed?
-> 
-> Well, I suppose it's a first step.
-> But can you then add a '__releases(...)' to unlock_sock_fast()?
-> It's not needed by sparse because it's an inline function and sparse
-> can then deduce it but it will help to see the pairing with
-> lock_sock_fast() is OK.
-
-Ok, I'll send a v2 with such annotation.
-
-Thanks!
-
-Paolo
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index afeb09b9624e..d166c321ee9b 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1047,7 +1047,7 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x05c6, 0x9011, 4)},
+ 	{QMI_FIXED_INTF(0x05c6, 0x9021, 1)},
+ 	{QMI_FIXED_INTF(0x05c6, 0x9022, 2)},
+-	{QMI_FIXED_INTF(0x05c6, 0x9025, 4)},	/* Alcatel-sbell ASB TL131 TDD LTE  (China Mobile) */
++	{QMI_QUIRK_SET_DTR(0x05c6, 0x9025, 4)},	/* Alcatel-sbell ASB TL131 TDD LTE (China Mobile) */
+ 	{QMI_FIXED_INTF(0x05c6, 0x9026, 3)},
+ 	{QMI_FIXED_INTF(0x05c6, 0x902e, 5)},
+ 	{QMI_FIXED_INTF(0x05c6, 0x9031, 5)},
+-- 
+2.28.0
 
