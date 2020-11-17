@@ -2,408 +2,839 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58EC42B595D
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 06:38:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E80BF2B59AD
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 07:22:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbgKQFiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 00:38:10 -0500
-Received: from mailout4.samsung.com ([203.254.224.34]:62993 "EHLO
-        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726537AbgKQFiJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 00:38:09 -0500
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20201117053804epoutp043fa00032812b7de4c5fcb83857018a4a~INPLQlLjl0457104571epoutp04i
-        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 05:38:04 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20201117053804epoutp043fa00032812b7de4c5fcb83857018a4a~INPLQlLjl0457104571epoutp04i
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1605591484;
-        bh=ZGu+C1Pv/M4NO1wCJwQlyriHGg8iK7U2CD5tZVIy8GI=;
-        h=Subject:Reply-To:From:To:CC:Date:References:From;
-        b=gcXhpE3zH425gjrQAeu95744Ui4X3vgKG2050KQch/2AR/o77vj7zGrGjE0No2OVK
-         lrknWmGypMm32LA+xtviMnJ84M7DAedz4okYJRWhvcWFd4F3Cc7O+OnK2xABtCiDdX
-         i3zNGnzNDyIGGsBd7qSf9EG3H3BEqq10/Xxrq2rU=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20201117053804epcas2p1c3f4fef30c31d033e362bac54e5086c2~INPK9kEU60510005100epcas2p1X;
-        Tue, 17 Nov 2020 05:38:04 +0000 (GMT)
-Received: from epsmges2p2.samsung.com (unknown [182.195.40.181]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4CZvqG5WLkzMqYkh; Tue, 17 Nov
-        2020 05:38:02 +0000 (GMT)
-X-AuditID: b6c32a46-1d9ff7000000dbf8-0c-5fb361b7efd8
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        F1.F1.56312.7B163BF5; Tue, 17 Nov 2020 14:37:59 +0900 (KST)
-Mime-Version: 1.0
-Subject: [PATCH net-next] net/nfc/nci: Support NCI 2.x initial sequence
-Reply-To: bongsu.jeon@samsung.com
-Sender: Bongsu Jeon <bongsu.jeon@samsung.com>
-From:   Bongsu Jeon <bongsu.jeon@samsung.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20201117053759epcms2p80e47c3e9be01d564c775c045a42678f7@epcms2p8>
-Date:   Tue, 17 Nov 2020 14:37:59 +0900
-X-CMS-MailID: 20201117053759epcms2p80e47c3e9be01d564c775c045a42678f7
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrBKsWRmVeSWpSXmKPExsWy7bCmme72xM3xBu3ntCy2NE9it5hzvoXF
-        4sK2PlaLy7vmsFkcWyDmwOqxZeVNJo9NqzrZPPq2rGL0+LxJLoAlKscmIzUxJbVIITUvOT8l
-        My/dVsk7ON453tTMwFDX0NLCXEkhLzE31VbJxSdA1y0zB2itkkJZYk4pUCggsbhYSd/Opii/
-        tCRVISO/uMRWKbUgJafA0LBArzgxt7g0L10vOT/XytDAwMgUqDIhJ6P5UC97weWQipcbZjI2
-        MD5w7WLk5JAQMJHY/baZvYuRi0NIYAejxN5PO1m7GDk4eAUEJf7uEAapERZwl/jUO5UZxBYS
-        UJT433GODSKuK/Hi71Ewm01AW2Lt0UYmEFtEIExi7ssusDizQJnE8UcbmCB28UrMaH/KAmFL
-        S2xfvpURwtaQ+LGslxnCFpW4ufotO4z9/th8qBoRidZ7Z6FqBCUe/NwNFZeUeLtvHtj9EgLt
-        jBLnf/5gg3BmMEqc2vwXqkNfYvG5FWBX8Ar4Snz7dZYVxGYRUJW49XAZK0SNi8T8Hy1QV8tL
-        bH87hxkUEMwCmhLrd+mDmBICyhJHbrFAVPBJdBz+yw7z1455T6B+VJXobf7CBPPj5NktUHd6
-        SJz72QwNw0CJw7s3ME9gVJiFCOlZSPbOQti7gJF5FaNYakFxbnpqsVGBEXLkbmIEJ0Ettx2M
-        U95+0DvEyMTBeIhRgoNZSYTXxWRjvBBvSmJlVWpRfnxRaU5q8SFGU6CPJzJLiSbnA9NwXkm8
-        oamRmZmBpamFqZmRhZI4b+jKvnghgfTEktTs1NSC1CKYPiYOTqkGpv0fkvjTyhME3+6cK5d5
-        7l9GpqRkztoJme6906zc5n3Nca9oT3nrvXPx0lP735W8Nr2wjLdtdbjBwrRZVT5TL/400PRa
-        63BfnZvvb+qvFcrfT82Yut5m8v71K04wZfGetDDgKW/IesEi++1/2ZGOwxqRSiyt/8qj9l2W
-        ev1e/aTp9WULzvnuf7Pu74lz2no7p0xfUSF6xrJsply87852xaDTIk3Bc7j3TBc8xCHHlFTK
-        8vKA1pyKeQ8ZuNny12lVHjzB88Cqzy+KfZLx0/uzJvreSir/ufTnnr5tmxt7S59w5MjN+pK+
-        qsRHj/dZ5iOJ1PfZj047N3xnd0pRttUK0fzdU5NoefNS4deCCYUvLZVYijMSDbWYi4oTAe7+
-        ZesLBAAA
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20201117053759epcms2p80e47c3e9be01d564c775c045a42678f7
-References: <CGME20201117053759epcms2p80e47c3e9be01d564c775c045a42678f7@epcms2p8>
+        id S1727065AbgKQGWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 01:22:03 -0500
+Received: from inva020.nxp.com ([92.121.34.13]:54272 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726854AbgKQGWC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Nov 2020 01:22:02 -0500
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 848191A11A5;
+        Tue, 17 Nov 2020 07:21:57 +0100 (CET)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 8EB761A11A3;
+        Tue, 17 Nov 2020 07:21:48 +0100 (CET)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 18B91402D2;
+        Tue, 17 Nov 2020 07:21:37 +0100 (CET)
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     xiaoliang.yang_1@nxp.com, Arvid.Brodin@xdin.com,
+        m-karicheri2@ti.com, vinicius.gomes@intel.com,
+        michael.chan@broadcom.com, vishal@chelsio.com, saeedm@mellanox.com,
+        jiri@mellanox.com, idosch@mellanox.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        ivan.khoronzhuk@linaro.org, andre.guedes@linux.intel.com,
+        allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
+        po.liu@nxp.com, mingkai.hu@nxp.com, claudiu.manoil@nxp.com,
+        vladimir.oltean@nxp.com, leoyang.li@nxp.com
+Subject: [RFC, net-next] net: qos: introduce a redundancy flow action
+Date:   Tue, 17 Nov 2020 14:30:13 +0800
+Message-Id: <20201117063013.37433-1-xiaoliang.yang_1@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-implement the NCI 2.x initial sequence to support NCI 2.x NFCC.
-Since NCI 2.0, CORE_RESET and CORE_INIT sequence have been changed.
-If NFCEE supports NCI 2.x, then NCI 2.x initial sequence will work.
+This patch introduce a redundancy flow action to implement frame
+replication and elimination for reliability, which is defined in
+IEEE P802.1CB.
 
-In NCI 1.0, Initial sequence and payloads are as below:
-(DH)                     (NFCC)
- |  -- CORE_RESET_CMD --> |
- |  <-- CORE_RESET_RSP -- |
- |  -- CORE_INIT_CMD -->  |
- |  <-- CORE_INIT_RSP --  |
- CORE_RESET_RSP payloads are Status, NCI version, Configuration Status.
- CORE_INIT_CMD payloads are empty.
- CORE_INIT_RSP payloads are Status, NFCC Features,
-    Number of Supported RF Interfaces, Supported RF Interface,
-    Max Logical Connections, Max Routing table Size,
-    Max Control Packet Payload Size, Max Size for Large Parameters,
-    Manufacturer ID, Manufacturer Specific Information.
+There are two modes for redundancy action: generator and recover mode.
+Generator mode add redundancy tag and replicate the frame to different
+egress ports. Recover mode drop the repeat frames and remove redundancy
+tag from the frame.
 
-In NCI 2.0, Initial Sequence and Parameters are as below:
-(DH)                     (NFCC)
- |  -- CORE_RESET_CMD --> |
- |  <-- CORE_RESET_RSP -- |
- |  <-- CORE_RESET_NTF -- |
- |  -- CORE_INIT_CMD -->  |
- |  <-- CORE_INIT_RSP --  |
- CORE_RESET_RSP payloads are Status.
- CORE_RESET_NTF payloads are Reset Trigger,
-    Configuration Status, NCI Version, Manufacturer ID,
-    Manufacturer Specific Information Length,
-    Manufacturer Specific Information.
- CORE_INIT_CMD payloads are Feature1, Feature2.
- CORE_INIT_RSP payloads are Status, NFCC Features,
-    Max Logical Connections, Max Routing Table Size,
-    Max Control Packet Payload Size,
-    Max Data Packet Payload Size of the Static HCI Connection,
-    Number of Credits of the Static HCI Connection,
-    Max NFC-V RF Frame Size, Number of Supported RF Interfaces,
-    Supported RF Interfaces.
+Below is the setting example in user space:
+	> tc qdisc add dev swp0 clsact
+	> tc filter add dev swp0 ingress protocol 802.1Q flower \
+		skip_hw dst_mac 00:01:02:03:04:05 vlan_id 1 \
+		action redundancy generator split dev swp1 dev swp2
 
-Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+	> tc filter add dev swp0 ingress protocol 802.1Q flower
+		skip_hw dst_mac 00:01:02:03:04:06 vlan_id 1 \
+		action redundancy recover
+
+Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 ---
- include/net/nfc/nci.h | 39 ++++++++++++++++++++++
- net/nfc/nci/core.c    | 23 +++++++++++--
- net/nfc/nci/ntf.c     | 21 ++++++++++++
- net/nfc/nci/rsp.c     | 75 +++++++++++++++++++++++++++++++++++++------
- 4 files changed, 146 insertions(+), 12 deletions(-)
+ include/net/flow_offload.h                |   6 +
+ include/net/tc_act/tc_redundancy.h        |  69 +++
+ include/uapi/linux/if_ether.h             |   1 +
+ include/uapi/linux/pkt_cls.h              |   1 +
+ include/uapi/linux/tc_act/tc_redundancy.h |  36 ++
+ net/sched/Kconfig                         |  14 +
+ net/sched/Makefile                        |   1 +
+ net/sched/act_redundancy.c                | 495 ++++++++++++++++++++++
+ net/sched/cls_api.c                       |  31 ++
+ 9 files changed, 654 insertions(+)
+ create mode 100644 include/net/tc_act/tc_redundancy.h
+ create mode 100644 include/uapi/linux/tc_act/tc_redundancy.h
+ create mode 100644 net/sched/act_redundancy.c
 
-diff --git a/include/net/nfc/nci.h b/include/net/nfc/nci.h
-index 0550e0380b8d..b434f984bc8c 100644
---- a/include/net/nfc/nci.h
-+++ b/include/net/nfc/nci.h
-@@ -25,6 +25,8 @@
- #define NCI_MAX_PARAM_LEN					251
- #define NCI_MAX_PAYLOAD_SIZE					255
- #define NCI_MAX_PACKET_SIZE					258
-+#define NCI_MAX_LARGE_PARAMS_NCI_v2				15
-+#define NCI_VER_2_MASK						0x20
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 123b1e9ea304..aed41f3801b7 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -147,6 +147,7 @@ enum flow_action_id {
+ 	FLOW_ACTION_MPLS_POP,
+ 	FLOW_ACTION_MPLS_MANGLE,
+ 	FLOW_ACTION_GATE,
++	FLOW_ACTION_REDUNDANCY,
+ 	NUM_FLOW_ACTIONS,
+ };
  
- /* NCI Status Codes */
- #define NCI_STATUS_OK						0x00
-@@ -131,6 +133,9 @@
- #define NCI_LF_CON_BITR_F_212					0x02
- #define NCI_LF_CON_BITR_F_424					0x04
- 
-+/* NCI 2.x Feature Enable Bit */
-+#define NCI_FEATURE_DISABLE					0x00
+@@ -271,6 +272,11 @@ struct flow_action_entry {
+ 			u32		num_entries;
+ 			struct action_gate_entry *entries;
+ 		} gate;
++		struct {
++			u8		mode;
++			u32		split_num;
++			struct net_device **split_devs;
++		} redundancy;
+ 	};
+ 	struct flow_action_cookie *cookie; /* user defined action cookie */
+ };
+diff --git a/include/net/tc_act/tc_redundancy.h b/include/net/tc_act/tc_redundancy.h
+new file mode 100644
+index 000000000000..77b043636f93
+--- /dev/null
++++ b/include/net/tc_act/tc_redundancy.h
+@@ -0,0 +1,69 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/* Copyright 2020 NXP */
 +
- /* NCI Reset types */
- #define NCI_RESET_TYPE_KEEP_CONFIG				0x00
- #define NCI_RESET_TYPE_RESET_CONFIG				0x01
-@@ -220,6 +225,11 @@ struct nci_core_reset_cmd {
- } __packed;
++#ifndef __NET_TC_REDUNDANCY_H
++#define __NET_TC_REDUNDANCY_H
++
++#include <net/act_api.h>
++#include <linux/tc_act/tc_redundancy.h>
++
++struct tcf_redundancy_split_dev {
++	struct list_head list;
++	struct net_device *dev;
++};
++
++struct tcf_redundancy {
++	struct tc_action	common;
++	u8			mode;
++	struct list_head	split_list;
++	u32			gen_seq_num;
++	u32			sequence_history;
++	u32			recov_seq_num;
++};
++
++#define to_redundancy(a) ((struct tcf_redundancy *)a)
++
++static inline bool is_tcf_redundancy(const struct tc_action *a)
++{
++#ifdef CONFIG_NET_CLS_ACT
++	if (a->ops && a->ops->id == TCA_ID_REDUNDANCY)
++		return true;
++#endif
++	return false;
++}
++
++static inline u8 tcf_redundancy_mode(const struct tc_action *a)
++{
++	u8 mode;
++
++	mode = to_redundancy(a)->mode;
++
++	return mode;
++}
++
++static inline struct net_device **
++	tcf_redundancy_create_dev_array(const struct tc_action *a, int *len)
++{
++	struct tcf_redundancy_split_dev *entry;
++	struct tcf_redundancy *red_act;
++	struct net_device **devices;
++	int i = 0;
++
++	red_act = to_redundancy(a);
++
++	list_for_each_entry(entry, &red_act->split_list, list)
++		i++;
++
++	devices = kcalloc(i, sizeof(*devices), GFP_ATOMIC);
++	if (!devices)
++		return NULL;
++	*len = i;
++
++	i = 0;
++	list_for_each_entry(entry, &red_act->split_list, list)
++		devices[i++] = entry->dev;
++
++	return devices;
++}
++
++#endif
+diff --git a/include/uapi/linux/if_ether.h b/include/uapi/linux/if_ether.h
+index a0b637911d3c..c465d68b1d93 100644
+--- a/include/uapi/linux/if_ether.h
++++ b/include/uapi/linux/if_ether.h
+@@ -114,6 +114,7 @@
+ #define ETH_P_EDSA	0xDADA		/* Ethertype DSA [ NOT AN OFFICIALLY REGISTERED ID ] */
+ #define ETH_P_DSA_8021Q	0xDADB		/* Fake VLAN Header for DSA [ NOT AN OFFICIALLY REGISTERED ID ] */
+ #define ETH_P_IFE	0xED3E		/* ForCES inter-FE LFB type */
++#define ETH_P_RTAG	0xF1C1		/* Redundancy Tag(IEEE 802.1CB) */
+ #define ETH_P_AF_IUCV   0xFBFB		/* IBM af_iucv [ NOT AN OFFICIALLY REGISTERED ID ] */
  
- #define NCI_OP_CORE_INIT_CMD		nci_opcode_pack(NCI_GID_CORE, 0x01)
-+/* To support NCI 2.x */
-+struct nci_core_init_v2_cmd {
-+	__u8	feature1;
-+	__u8	feature2;
+ #define ETH_P_802_3_MIN	0x0600		/* If the value in the ethernet type is less than this value
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index ee95f42fb0ec..17a82cae74f4 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -135,6 +135,7 @@ enum tca_id {
+ 	TCA_ID_MPLS,
+ 	TCA_ID_CT,
+ 	TCA_ID_GATE,
++	TCA_ID_REDUNDANCY,
+ 	/* other actions go here */
+ 	__TCA_ID_MAX = 255
+ };
+diff --git a/include/uapi/linux/tc_act/tc_redundancy.h b/include/uapi/linux/tc_act/tc_redundancy.h
+new file mode 100644
+index 000000000000..2ddffff73f24
+--- /dev/null
++++ b/include/uapi/linux/tc_act/tc_redundancy.h
+@@ -0,0 +1,36 @@
++/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
++/* Copyright 2020 NXP */
++
++#ifndef __LINUX_TC_REDUNDANCY_H
++#define __LINUX_TC_REDUNDANCY_H
++
++#include <linux/pkt_cls.h>
++
++struct tc_redundancy {
++	tc_gen;
++};
++
++enum {
++	TCA_REDUNDANCY_ENTRY_UNSPEC,
++	TCA_REDUNDANCY_ENTRY_PORT,
++	__TCA_REDUNDANCY_ENTRY_MAX,
++};
++#define TCA_REDUNDANCY_ENTRY_MAX (__TCA_REDUNDANCY_ENTRY_MAX - 1)
++
++enum {
++	TCA_REDUNDANCY_UNSPEC,
++	TCA_REDUNDANCY_TM,
++	TCA_REDUNDANCY_PARMS,
++	TCA_REDUNDANCY_PAD,
++	TCA_REDUNDANCY_MODE,
++	TCA_REDUNDANCY_SPLITLIST,
++	__TCA_REDUNDANCY_MAX,
++};
++#define TCA_REDUNDANCY_MAX (__TCA_REDUNDANCY_MAX - 1)
++
++enum {
++	TCA_REDUNDANCY_GENERATOR,
++	TCA_REDUNDANCY_RECOVER,
++};
++
++#endif
+diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+index a3b37d88800e..fba452fb9bd5 100644
+--- a/net/sched/Kconfig
++++ b/net/sched/Kconfig
+@@ -997,6 +997,20 @@ config NET_ACT_GATE
+ 	  To compile this code as a module, choose M here: the
+ 	  module will be called act_gate.
+ 
++config NET_ACT_REDUNDANCY
++	tristate "Frame redundancy tc action"
++	depends on NET_CLS_ACT
++	help
++	  Say Y here to support frame replication and elimination for
++	  reliability, which is defined by IEEE 802.1CB.
++	  This action allow to control the ingress flow to split to
++	  multiple egress ports, each frame will add a redundancy tag.
++	  It also allow to remove redundancy tag and drop repeat frames.
++
++	  If unsure, say N.
++	  To compile this code as a module, choose M here: the
++	  module will be called act_redundancy.
++
+ config NET_IFE_SKBMARK
+ 	tristate "Support to encoding decoding skb mark on IFE action"
+ 	depends on NET_ACT_IFE
+diff --git a/net/sched/Makefile b/net/sched/Makefile
+index 66bbf9a98f9e..1809e894510f 100644
+--- a/net/sched/Makefile
++++ b/net/sched/Makefile
+@@ -31,6 +31,7 @@ obj-$(CONFIG_NET_IFE_SKBTCINDEX)	+= act_meta_skbtcindex.o
+ obj-$(CONFIG_NET_ACT_TUNNEL_KEY)+= act_tunnel_key.o
+ obj-$(CONFIG_NET_ACT_CT)	+= act_ct.o
+ obj-$(CONFIG_NET_ACT_GATE)	+= act_gate.o
++obj-$(CONFIG_NET_ACT_REDUNDANCY)	+= act_redundancy.o
+ obj-$(CONFIG_NET_SCH_FIFO)	+= sch_fifo.o
+ obj-$(CONFIG_NET_SCH_CBQ)	+= sch_cbq.o
+ obj-$(CONFIG_NET_SCH_HTB)	+= sch_htb.o
+diff --git a/net/sched/act_redundancy.c b/net/sched/act_redundancy.c
+new file mode 100644
+index 000000000000..c937b772c29d
+--- /dev/null
++++ b/net/sched/act_redundancy.c
+@@ -0,0 +1,495 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/* Copyright 2020 NXP */
++
++#include <linux/module.h>
++#include <linux/types.h>
++#include <linux/kernel.h>
++#include <linux/string.h>
++#include <linux/errno.h>
++#include <linux/skbuff.h>
++#include <linux/rtnetlink.h>
++#include <linux/init.h>
++#include <linux/slab.h>
++#include <net/act_api.h>
++#include <net/netlink.h>
++#include <net/pkt_cls.h>
++#include <net/tc_act/tc_redundancy.h>
++
++#define SEQ_HISTORY_LEN 32
++
++static unsigned int redundancy_net_id;
++static struct tc_action_ops act_redundancy_ops;
++
++struct redundancy_tag {
++	__be16 proto;
++	__be16 reserved;
++	__be16 sequence;
 +} __packed;
- 
- #define NCI_OP_CORE_SET_CONFIG_CMD	nci_opcode_pack(NCI_GID_CORE, 0x02)
- struct set_config_param {
-@@ -316,6 +326,11 @@ struct nci_core_reset_rsp {
- 	__u8	config_status;
- } __packed;
- 
-+/* To support NCI ver 2.x */
-+struct nci_core_reset_rsp_nci_ver2 {
-+	__u8	status;
++
++struct rtag_ethhdr {
++	unsigned char		h_dest[ETH_ALEN];
++	unsigned char		h_source[ETH_ALEN];
++	struct redundancy_tag	h_rtag;
++	__be16			h_proto;
 +} __packed;
 +
- #define NCI_OP_CORE_INIT_RSP		nci_opcode_pack(NCI_GID_CORE, 0x01)
- struct nci_core_init_rsp_1 {
- 	__u8	status;
-@@ -334,6 +349,20 @@ struct nci_core_init_rsp_2 {
- 	__le32	manufact_specific_info;
- } __packed;
- 
-+/* To support NCI ver 2.x */
-+struct nci_core_init_rsp_nci_ver2 {
-+	__u8	status;
-+	__le32	nfcc_features;
-+	__u8	max_logical_connections;
-+	__le16	max_routing_table_size;
-+	__u8	max_ctrl_pkt_payload_len;
-+	__u8	max_data_pkt_hci_payload_len;
-+	__u8	number_of_hci_credit;
-+	__le16	max_nfc_v_frame_size;
-+	__u8	num_supported_rf_interfaces;
-+	__u8	supported_rf_interfaces[];
++struct rtag_vlan_ethhdr {
++	unsigned char		h_dest[ETH_ALEN];
++	unsigned char		h_source[ETH_ALEN];
++	__be16			h_vlan_proto;
++	__be16			h_vlan_TCI;
++	struct redundancy_tag	h_rtag;
++	__be16			h_proto;
 +} __packed;
 +
- #define NCI_OP_CORE_SET_CONFIG_RSP	nci_opcode_pack(NCI_GID_CORE, 0x02)
- struct nci_core_set_config_rsp {
- 	__u8	status;
-@@ -372,6 +401,16 @@ struct nci_nfcee_discover_rsp {
- /* --------------------------- */
- /* ---- NCI Notifications ---- */
- /* --------------------------- */
-+#define NCI_OP_CORE_RESET_NTF		nci_opcode_pack(NCI_GID_CORE, 0x00)
-+struct nci_core_reset_ntf {
-+	__u8	reset_trigger;
-+	__u8	config_status;
-+	__u8	nci_ver;
-+	__u8	manufact_id;
-+	__u8	manufacturer_specific_len;
-+	__u32	manufact_specific_info;
-+} __packed;
++static const struct nla_policy entry_policy[TCA_REDUNDANCY_ENTRY_MAX + 1] = {
++	[TCA_REDUNDANCY_ENTRY_PORT]	= { .type = NLA_U32 },
++};
 +
- #define NCI_OP_CORE_CONN_CREDITS_NTF	nci_opcode_pack(NCI_GID_CORE, 0x06)
- struct conn_credit_entry {
- 	__u8	conn_id;
-diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
-index 4953ee5146e1..68889faadda2 100644
---- a/net/nfc/nci/core.c
-+++ b/net/nfc/nci/core.c
-@@ -165,7 +165,14 @@ static void nci_reset_req(struct nci_dev *ndev, unsigned long opt)
- 
- static void nci_init_req(struct nci_dev *ndev, unsigned long opt)
- {
--	nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, 0, NULL);
-+	struct nci_core_init_v2_cmd *cmd = (struct nci_core_init_v2_cmd *)opt;
++static const struct nla_policy red_policy[TCA_REDUNDANCY_MAX + 1] = {
++	[TCA_REDUNDANCY_PARMS]		=
++		NLA_POLICY_EXACT_LEN(sizeof(struct tc_redundancy)),
++	[TCA_REDUNDANCY_MODE]		= { .type = NLA_U8 },
++	[TCA_REDUNDANCY_SPLITLIST]	= { .type = NLA_NESTED },
++};
 +
-+	if (!cmd) {
-+		nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, 0, NULL);
++static void tcf_red_release_splitlist(struct list_head *listhead)
++{
++	struct tcf_redundancy_split_dev *entry, *e;
++
++	list_for_each_entry_safe(entry, e, listhead, list) {
++		list_del(&entry->list);
++		kfree(entry);
++	}
++}
++
++static int tcf_red_parse_splitlist(struct net *net, struct nlattr *list_attr,
++				   struct tcf_redundancy *red_act,
++				   struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[TCA_REDUNDANCY_ENTRY_MAX + 1] = { };
++	struct tcf_redundancy_split_dev *entry;
++	struct net_device *dev;
++	struct nlattr *n;
++	int err, rem;
++	u32 ifindex;
++
++	if (!list_attr)
++		return -EINVAL;
++
++	nla_for_each_nested(n, list_attr, rem) {
++		err = nla_parse_nested(tb, TCA_REDUNDANCY_ENTRY_MAX, n,
++				       entry_policy, extack);
++		if (err < 0) {
++			NL_SET_ERR_MSG(extack, "Could not parse nested entry");
++			return -EINVAL;
++		}
++		ifindex = nla_get_u32(tb[TCA_REDUNDANCY_ENTRY_PORT]);
++		dev = dev_get_by_index(net, ifindex);
++		entry = kzalloc(sizeof(*entry), GFP_ATOMIC);
++		if (!entry) {
++			NL_SET_ERR_MSG(extack, "Not enough memory for entry");
++			tcf_red_release_splitlist(&red_act->split_list);
++			return -ENOMEM;
++		}
++		entry->dev = dev;
++		list_add_tail(&entry->list, &red_act->split_list);
++	}
++	return 0;
++}
++
++static int tcf_red_init(struct net *net, struct nlattr *nla,
++			struct nlattr *est, struct tc_action **a,
++			int ovr, int bind, bool rtnl_held,
++			struct tcf_proto *tp, u32 flags,
++			struct netlink_ext_ack *extack)
++{
++	struct tc_action_net *tn = net_generic(net, redundancy_net_id);
++	struct nlattr *tb[TCA_REDUNDANCY_MAX + 1];
++	struct tcf_chain *goto_ch = NULL;
++	struct tcf_redundancy *red_act;
++	struct tc_redundancy *parm;
++	int ret = 0, err, index;
++
++	if (!nla)
++		return -EINVAL;
++
++	err = nla_parse_nested(tb, TCA_REDUNDANCY_MAX, nla, red_policy, extack);
++	if (err < 0)
++		return err;
++
++	if (!tb[TCA_REDUNDANCY_PARMS])
++		return -EINVAL;
++
++	parm = nla_data(tb[TCA_REDUNDANCY_PARMS]);
++	index = parm->index;
++
++	err = tcf_idr_check_alloc(tn, &index, a, bind);
++	if (err < 0)
++		return err;
++
++	if (err && bind)
++		return 0;
++
++	if (!err) {
++		ret = tcf_idr_create(tn, index, est, a,
++				     &act_redundancy_ops, bind, false, 0);
++
++		if (ret) {
++			tcf_idr_cleanup(tn, index);
++			return ret;
++		}
++		ret = ACT_P_CREATED;
++	} else if (!ovr) {
++		tcf_idr_release(*a, bind);
++		return -EEXIST;
++	}
++
++	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
++	if (err < 0)
++		goto release_idr;
++
++	red_act = to_redundancy(*a);
++
++	spin_lock_bh(&red_act->tcf_lock);
++	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
++
++	if (ret == ACT_P_CREATED)
++		INIT_LIST_HEAD(&red_act->split_list);
++
++	red_act->mode = nla_get_u8(tb[TCA_REDUNDANCY_MODE]);
++	if (tb[TCA_REDUNDANCY_SPLITLIST])
++		tcf_red_parse_splitlist(net, tb[TCA_REDUNDANCY_SPLITLIST],
++					red_act, extack);
++
++	red_act->gen_seq_num = 0;
++	red_act->recov_seq_num = 0;
++	red_act->sequence_history = 0xFFFFFFFF;
++	spin_unlock_bh(&red_act->tcf_lock);
++
++	if (goto_ch)
++		tcf_chain_put_by_act(goto_ch);
++
++	return ret;
++
++release_idr:
++	tcf_idr_release(*a, bind);
++	return err;
++}
++
++static int tcf_red_tag_insert(struct sk_buff *skb,
++			      struct tcf_redundancy *red_act)
++{
++	int rtag_len = sizeof(struct redundancy_tag);
++	struct rtag_vlan_ethhdr *red_vlan_hdr;
++	struct rtag_ethhdr *red_hdr;
++	struct redundancy_tag *rtag;
++	unsigned char *dst, *src;
++
++	red_vlan_hdr = (struct rtag_vlan_ethhdr *)skb_mac_header(skb);
++	if (red_vlan_hdr->h_vlan_proto == htons(ETH_P_8021Q)) {
++		rtag = &red_vlan_hdr->h_rtag;
 +	} else {
-+		/* if nci version is 2.0, then use the feature parameters */
-+		nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, sizeof(struct nci_core_init_v2_cmd), cmd);
++		red_hdr = (struct rtag_ethhdr *)skb_mac_header(skb);
++		rtag = &red_hdr->h_rtag;
 +	}
- }
- 
- static void nci_init_complete_req(struct nci_dev *ndev, unsigned long opt)
-@@ -497,8 +504,18 @@ static int nci_open_device(struct nci_dev *ndev)
- 	}
- 
- 	if (!rc) {
--		rc = __nci_request(ndev, nci_init_req, 0,
--				   msecs_to_jiffies(NCI_INIT_TIMEOUT));
-+		if (!(ndev->nci_ver & NCI_VER_2_MASK)) {
-+			rc = __nci_request(ndev, nci_init_req, 0,
-+					   msecs_to_jiffies(NCI_INIT_TIMEOUT));
-+		} else {
-+			struct nci_core_init_v2_cmd nci_init_v2_cmd;
 +
-+			nci_init_v2_cmd.feature1 = NCI_FEATURE_DISABLE;
-+			nci_init_v2_cmd.feature2 = NCI_FEATURE_DISABLE;
++	if (rtag->proto == htons(ETH_P_RTAG))
++		return 0;
 +
-+			rc = __nci_request(ndev, nci_init_req, (unsigned long)&nci_init_v2_cmd,
-+					   msecs_to_jiffies(NCI_INIT_TIMEOUT));
++	if (skb_cow_head(skb, rtag_len) < 0)
++		return -ENOMEM;
++
++	src = skb_mac_header(skb);
++	skb->data = skb_mac_header(skb);
++	skb_push(skb, rtag_len);
++
++	skb_reset_mac_header(skb);
++	dst = skb_mac_header(skb);
++	memmove(dst, src, (unsigned char *)rtag - src);
++
++	rtag--;
++	rtag->proto = htons(ETH_P_RTAG);
++	rtag->sequence = htons(red_act->gen_seq_num);
++	rtag->reserved = 0;
++
++	return 0;
++}
++
++static void tcf_red_recover_reset(u16 sequence, struct tcf_redundancy *red_act)
++{
++	red_act->sequence_history = 0xFFFFFFFF;
++	red_act->recov_seq_num = sequence;
++}
++
++static int tcf_red_recover_drop(u16 sequence,
++				struct tcf_redundancy *red_act)
++{
++	int drop = 1;
++	u32 len;
++	int i, bit;
++
++	if (sequence > (red_act->recov_seq_num + SEQ_HISTORY_LEN) ||
++	    sequence < (red_act->recov_seq_num - SEQ_HISTORY_LEN)) {
++		tcf_red_recover_reset(sequence, red_act);
++		return 0;
++	}
++
++	if (sequence > red_act->recov_seq_num) {
++		len = sequence - red_act->recov_seq_num;
++		for (i = 0; i < len; i++) {
++			bit = SEQ_HISTORY_LEN - 1 - i;
++			if (!(red_act->sequence_history & BIT(bit)))
++				red_act->tcf_qstats.drops++;
 +		}
- 	}
- 
- 	if (!rc && ndev->ops->post_setup)
-diff --git a/net/nfc/nci/ntf.c b/net/nfc/nci/ntf.c
-index 33e1170817f0..98af04c86b2c 100644
---- a/net/nfc/nci/ntf.c
-+++ b/net/nfc/nci/ntf.c
-@@ -27,6 +27,23 @@
- 
- /* Handle NCI Notification packets */
- 
-+static void nci_core_reset_ntf_packet(struct nci_dev *ndev,
-+				      struct sk_buff *skb)
-+{
-+	/* Handle NCI 2.x core reset notification */
-+	struct nci_core_reset_ntf *ntf = (void *)skb->data;
++		red_act->sequence_history <<= len;
++		red_act->sequence_history |= 1;
++		red_act->recov_seq_num = sequence;
 +
-+	ndev->nci_ver = ntf->nci_ver;
-+	pr_debug("nci_ver 0x%x, config_status 0x%x\n",
-+		 ntf->nci_ver, ntf->config_status);
++		return 0;
++	}
 +
-+	ndev->manufact_id = ntf->manufact_id;
-+	ndev->manufact_specific_info =
-+		__le32_to_cpu(ntf->manufact_specific_info);
++	len = red_act->recov_seq_num - sequence;
 +
-+	nci_req_complete(ndev, NCI_STATUS_OK);
++	if (red_act->sequence_history & (1 << len))
++		return drop;
++
++	red_act->sequence_history |= (1 << len);
++
++	return 0;
 +}
 +
- static void nci_core_conn_credits_ntf_packet(struct nci_dev *ndev,
- 					     struct sk_buff *skb)
- {
-@@ -756,6 +773,10 @@ void nci_ntf_packet(struct nci_dev *ndev, struct sk_buff *skb)
- 	}
- 
- 	switch (ntf_opcode) {
-+	case NCI_OP_CORE_RESET_NTF:
-+		nci_core_reset_ntf_packet(ndev, skb);
-+		break;
++static int tcf_red_tag_remove(struct sk_buff *skb,
++			      struct tcf_redundancy *red_act)
++{
++	int rtag_len = sizeof(struct redundancy_tag);
++	struct rtag_vlan_ethhdr *red_vlan_hdr;
++	struct rtag_ethhdr *red_hdr;
++	struct redundancy_tag *rtag;
++	unsigned char *dst, *src;
++	u16 sequence;
 +
- 	case NCI_OP_CORE_CONN_CREDITS_NTF:
- 		nci_core_conn_credits_ntf_packet(ndev, skb);
- 		break;
-diff --git a/net/nfc/nci/rsp.c b/net/nfc/nci/rsp.c
-index a48297b79f34..dcb371d7923b 100644
---- a/net/nfc/nci/rsp.c
-+++ b/net/nfc/nci/rsp.c
-@@ -31,16 +31,19 @@ static void nci_core_reset_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
- 
- 	pr_debug("status 0x%x\n", rsp->status);
- 
--	if (rsp->status == NCI_STATUS_OK) {
--		ndev->nci_ver = rsp->nci_ver;
--		pr_debug("nci_ver 0x%x, config_status 0x%x\n",
--			 rsp->nci_ver, rsp->config_status);
--	}
-+	/* Handle NCI 1.x ver */
-+	if (skb->len != 1) {
-+		if (rsp->status == NCI_STATUS_OK) {
-+			ndev->nci_ver = rsp->nci_ver;
-+			pr_debug("nci_ver 0x%x, config_status 0x%x\n",
-+				 rsp->nci_ver, rsp->config_status);
-+		}
- 
--	nci_req_complete(ndev, rsp->status);
-+		nci_req_complete(ndev, rsp->status);
++	red_vlan_hdr = (struct rtag_vlan_ethhdr *)skb_mac_header(skb);
++	if (red_vlan_hdr->h_vlan_proto == htons(ETH_P_8021Q)) {
++		rtag = &red_vlan_hdr->h_rtag;
++	} else {
++		red_hdr = (struct rtag_ethhdr *)skb_mac_header(skb);
++		rtag = &red_hdr->h_rtag;
 +	}
++
++	if (rtag->proto != htons(ETH_P_RTAG))
++		return 0;
++
++	sequence = ntohs(rtag->sequence);
++
++	src = skb_mac_header(skb);
++	skb->data = skb_mac_header(skb);
++	skb_pull(skb, rtag_len);
++
++	skb_reset_mac_header(skb);
++	dst = skb_mac_header(skb);
++	memmove(dst, src, (unsigned char *)rtag - src);
++
++	return tcf_red_recover_drop(sequence, red_act);
++}
++
++static int tcf_red_act(struct sk_buff *skb, const struct tc_action *a,
++		       struct tcf_result *res)
++{
++	struct tcf_redundancy *red_act = to_redundancy(a);
++	struct tcf_redundancy_split_dev *entry;
++	struct net_device *splitdev;
++	struct sk_buff *skb2 = skb;
++	int err, ret, retval;
++
++	tcf_lastuse_update(&red_act->tcf_tm);
++	tcf_action_update_bstats(&red_act->common, skb);
++
++	retval = READ_ONCE(red_act->tcf_action);
++
++	if (red_act->mode == TCA_REDUNDANCY_RECOVER) {
++		/* Recover skb */
++		spin_lock(&red_act->tcf_lock);
++		ret = tcf_red_tag_remove(skb, red_act);
++		if (ret)
++			retval = TC_ACT_SHOT;
++
++		spin_unlock(&red_act->tcf_lock);
++		return retval;
++	}
++
++	err = tcf_red_tag_insert(skb, red_act);
++	if (err) {
++		tcf_action_inc_overlimit_qstats(&red_act->common);
++		return TC_ACT_SHOT;
++	}
++
++	list_for_each_entry(entry, &red_act->split_list, list) {
++		splitdev = entry->dev;
++		skb2 = skb_clone(skb, GFP_ATOMIC);
++		skb2->skb_iif = splitdev->ifindex;
++		skb2->dev = splitdev;
++		dev_queue_xmit(skb2);
++	}
++
++	spin_lock(&red_act->tcf_lock);
++	red_act->gen_seq_num++;
++	spin_unlock(&red_act->tcf_lock);
++
++	return retval;
++}
++
++static int dumping_entry(struct sk_buff *skb,
++			 struct tcf_redundancy_split_dev *entry)
++{
++	struct nlattr *item;
++
++	item = nla_nest_start_noflag(skb, 0);
++	if (!item)
++		return -ENOSPC;
++
++	if (nla_put_u32(skb, TCA_REDUNDANCY_ENTRY_PORT,
++			entry->dev->ifindex))
++		goto nla_put_failure;
++
++	return nla_nest_end(skb, item);
++
++nla_put_failure:
++	nla_nest_cancel(skb, item);
++	return -1;
++}
++
++static int tcf_red_dump(struct sk_buff *skb, struct tc_action *a,
++			int bind, int ref)
++{
++	unsigned char *b = skb_tail_pointer(skb);
++	struct tcf_redundancy_split_dev *entry;
++	struct tcf_redundancy *red_act = to_redundancy(a);
++	struct tc_redundancy opt = {
++		.index	= red_act->tcf_index,
++		.refcnt	= refcount_read(&red_act->tcf_refcnt) - ref,
++		.bindcnt = atomic_read(&red_act->tcf_bindcnt) - bind,
++	};
++	struct tcf_t t;
++	struct nlattr *entry_list;
++
++	spin_lock_bh(&red_act->tcf_lock);
++	opt.action = red_act->tcf_action;
++
++	if (nla_put(skb, TCA_REDUNDANCY_PARMS, sizeof(opt), &opt))
++		goto nla_put_failure;
++
++	if (nla_put_u8(skb, TCA_REDUNDANCY_MODE, red_act->mode))
++		goto nla_put_failure;
++
++	entry_list = nla_nest_start_noflag(skb, TCA_REDUNDANCY_SPLITLIST);
++	if (!entry_list)
++		goto nla_put_failure;
++
++	list_for_each_entry(entry, &red_act->split_list, list) {
++		if (dumping_entry(skb, entry) < 0)
++			goto nla_put_failure;
++	}
++	nla_nest_end(skb, entry_list);
++
++	tcf_tm_dump(&t, &red_act->tcf_tm);
++	if (nla_put_64bit(skb, TCA_REDUNDANCY_TM, sizeof(t),
++			  &t, TCA_REDUNDANCY_PAD))
++		goto nla_put_failure;
++	spin_unlock_bh(&red_act->tcf_lock);
++
++	return skb->len;
++
++nla_put_failure:
++	spin_unlock_bh(&red_act->tcf_lock);
++	nlmsg_trim(skb, b);
++
++	return -1;
++}
++
++static int tcf_red_walker(struct net *net, struct sk_buff *skb,
++			  struct netlink_callback *cb, int type,
++			  const struct tc_action_ops *ops,
++			  struct netlink_ext_ack *extack)
++{
++	struct tc_action_net *tn = net_generic(net, redundancy_net_id);
++
++	return tcf_generic_walker(tn, skb, cb, type, ops, extack);
++}
++
++static int tcf_red_search(struct net *net, struct tc_action **a, u32 index)
++{
++	struct tc_action_net *tn = net_generic(net, redundancy_net_id);
++
++	return tcf_idr_search(tn, a, index);
++}
++
++static void tcf_red_stats_update(struct tc_action *a, u64 bytes, u64 packets,
++				 u64 drops, u64 lastuse, bool hw)
++{
++	struct tcf_redundancy *red_act = to_redundancy(a);
++	struct tcf_t *tm = &red_act->tcf_tm;
++
++	tcf_action_update_stats(a, bytes, packets, drops, hw);
++	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
++}
++
++static void tcf_red_cleanup(struct tc_action *a)
++{
++	struct tcf_redundancy *red_act = to_redundancy(a);
++
++	tcf_red_release_splitlist(&red_act->split_list);
++}
++
++static size_t tcf_red_get_fill_size(const struct tc_action *act)
++{
++	return nla_total_size(sizeof(struct tc_redundancy));
++}
++
++static struct tc_action_ops act_redundancy_ops = {
++	.kind		=	"redundancy",
++	.id		=	TCA_ID_REDUNDANCY,
++	.owner		=	THIS_MODULE,
++	.act		=	tcf_red_act,
++	.init		=	tcf_red_init,
++	.cleanup	=	tcf_red_cleanup,
++	.dump		=	tcf_red_dump,
++	.walk		=	tcf_red_walker,
++	.stats_update	=	tcf_red_stats_update,
++	.get_fill_size	=	tcf_red_get_fill_size,
++	.lookup		=	tcf_red_search,
++	.size		=	sizeof(struct tcf_redundancy),
++};
++
++static __net_init int redundancy_init_net(struct net *net)
++{
++	struct tc_action_net *tn = net_generic(net, redundancy_net_id);
++
++	return tc_action_net_init(net, tn, &act_redundancy_ops);
++}
++
++static void __net_exit redundancy_exit_net(struct list_head *net_list)
++{
++	tc_action_net_exit(net_list, redundancy_net_id);
++};
++
++static struct pernet_operations redundancy_net_ops = {
++	.init = redundancy_init_net,
++	.exit_batch = redundancy_exit_net,
++	.id   = &redundancy_net_id,
++	.size = sizeof(struct tc_action_net),
++};
++
++static int __init redundancy_init_module(void)
++{
++	return tcf_register_action(&act_redundancy_ops, &redundancy_net_ops);
++}
++
++static void __exit redundancy_cleanup_module(void)
++{
++	tcf_unregister_action(&act_redundancy_ops, &redundancy_net_ops);
++}
++
++module_init(redundancy_init_module);
++module_exit(redundancy_cleanup_module);
++MODULE_LICENSE("GPL v2");
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index ba0715ee9eac..68ae5ffe07a0 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -39,6 +39,7 @@
+ #include <net/tc_act/tc_ct.h>
+ #include <net/tc_act/tc_mpls.h>
+ #include <net/tc_act/tc_gate.h>
++#include <net/tc_act/tc_redundancy.h>
+ #include <net/flow_offload.h>
+ 
+ extern const struct nla_policy rtm_tca_policy[TCA_MAX + 1];
+@@ -3534,6 +3535,30 @@ static int tcf_gate_get_entries(struct flow_action_entry *entry,
+ 	return 0;
  }
  
--static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
-+static __u8 nci_core_init_rsp_packet_v1(struct nci_dev *ndev, struct sk_buff *skb)
++static void tcf_redundancy_devlist_destructor(void *priv)
++{
++	struct netdevice **devices = priv;
++
++	kfree(devices);
++}
++
++static int tcf_redundancy_get_splitdevs(struct flow_action_entry *entry,
++					const struct tc_action *act)
++{
++	u32 len;
++
++	entry->redundancy.split_devs = tcf_redundancy_create_dev_array(act, &len);
++	if (!entry->redundancy.split_devs)
++		return -EINVAL;
++
++	entry->redundancy.split_num = len;
++
++	entry->destructor = tcf_redundancy_devlist_destructor;
++	entry->destructor_priv = entry->redundancy.split_devs;
++
++	return 0;
++}
++
+ static enum flow_action_hw_stats tc_act_hw_stats(u8 hw_stats)
  {
- 	struct nci_core_init_rsp_1 *rsp_1 = (void *) skb->data;
- 	struct nci_core_init_rsp_2 *rsp_2;
-@@ -48,7 +51,7 @@ static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
- 	pr_debug("status 0x%x\n", rsp_1->status);
- 
- 	if (rsp_1->status != NCI_STATUS_OK)
--		goto exit;
-+		return rsp_1->status;
- 
- 	ndev->nfcc_features = __le32_to_cpu(rsp_1->nfcc_features);
- 	ndev->num_supported_rf_interfaces = rsp_1->num_supported_rf_interfaces;
-@@ -77,6 +80,60 @@ static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
- 	ndev->manufact_specific_info =
- 		__le32_to_cpu(rsp_2->manufact_specific_info);
- 
-+	return NCI_STATUS_OK;
-+}
-+
-+static __u8 nci_core_init_rsp_packet_v2(struct nci_dev *ndev, struct sk_buff *skb)
-+{
-+	struct nci_core_init_rsp_nci_ver2 *rsp = (void *)skb->data;
-+	__u8 rf_interface_idx = 0;
-+	__u8 rf_extension_cnt = 0;
-+	__u8 *supported_rf_interface = rsp->supported_rf_interfaces;
-+
-+	pr_debug("status %x\n", rsp->status);
-+
-+	if (rsp->status != NCI_STATUS_OK)
-+		return rsp->status;
-+
-+	ndev->nfcc_features = __le32_to_cpu(rsp->nfcc_features);
-+	ndev->num_supported_rf_interfaces = rsp->num_supported_rf_interfaces;
-+
-+	if (ndev->num_supported_rf_interfaces >
-+	    NCI_MAX_SUPPORTED_RF_INTERFACES) {
-+		ndev->num_supported_rf_interfaces =
-+			NCI_MAX_SUPPORTED_RF_INTERFACES;
-+	}
-+
-+	while (rf_interface_idx < ndev->num_supported_rf_interfaces) {
-+		ndev->supported_rf_interfaces[rf_interface_idx] = *supported_rf_interface++;
-+
-+		/* skip rf extension parameters */
-+		rf_extension_cnt = *supported_rf_interface++;
-+		supported_rf_interface += rf_extension_cnt;
-+	}
-+
-+	ndev->max_logical_connections = rsp->max_logical_connections;
-+	ndev->max_routing_table_size =
-+			__le16_to_cpu(rsp->max_routing_table_size);
-+	ndev->max_ctrl_pkt_payload_len =
-+			rsp->max_ctrl_pkt_payload_len;
-+	ndev->max_size_for_large_params = NCI_MAX_LARGE_PARAMS_NCI_v2;
-+
-+	return NCI_STATUS_OK;
-+}
-+
-+static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
-+{
-+	__u8 status = 0;
-+
-+	if (!(ndev->nci_ver & NCI_VER_2_MASK))
-+		status = nci_core_init_rsp_packet_v1(ndev, skb);
-+	else
-+		status = nci_core_init_rsp_packet_v2(ndev, skb);
-+
-+	if (status != NCI_STATUS_OK)
-+		goto exit;
-+
- 	pr_debug("nfcc_features 0x%x\n",
- 		 ndev->nfcc_features);
- 	pr_debug("num_supported_rf_interfaces %d\n",
-@@ -103,7 +160,7 @@ static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
- 		 ndev->manufact_specific_info);
- 
- exit:
--	nci_req_complete(ndev, rsp_1->status);
-+	nci_req_complete(ndev, status);
- }
- 
- static void nci_core_set_config_rsp_packet(struct nci_dev *ndev,
+ 	if (WARN_ON_ONCE(hw_stats > TCA_ACT_HW_STATS_ANY))
+@@ -3703,6 +3728,12 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 			err = tcf_gate_get_entries(entry, act);
+ 			if (err)
+ 				goto err_out_locked;
++		} else if (is_tcf_redundancy(act)) {
++			entry->id = FLOW_ACTION_REDUNDANCY;
++			entry->redundancy.mode = tcf_redundancy_mode(act);
++			err = tcf_redundancy_get_splitdevs(entry, act);
++			if (err)
++				goto err_out;
+ 		} else {
+ 			err = -EOPNOTSUPP;
+ 			goto err_out_locked;
 -- 
 2.17.1
 
