@@ -2,108 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED01E2B5C42
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 10:53:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF9392B5C4D
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 10:54:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727150AbgKQJwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 04:52:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36064 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726203AbgKQJwu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Nov 2020 04:52:50 -0500
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BE1C52468B;
-        Tue, 17 Nov 2020 09:52:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605606769;
-        bh=Rlig78Pb0uNLGtJ3Ok3/qbYM5Uv76h75XO55+CP1Hoc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=b8JgK5rjS0eWIsAaQ5NJsimjam/qFv5MqW73dzOIHIyU01Hf5B+KNpAGmpEpbhKDm
-         5e2u4lkx+KLqiYiq5pt0ujMlXVbdLW3L5LstK7M3puWPgG+V4HX2X5Xm9KZP5kIeZm
-         2H+8ceHn3PRFWSYgHaipCnc6q4/FxG3L4QVJ/qT0=
-Received: by mail-ot1-f47.google.com with SMTP id k3so18781348otp.12;
-        Tue, 17 Nov 2020 01:52:49 -0800 (PST)
-X-Gm-Message-State: AOAM533wzjKoFVcTl8dyq+ka2eoEwRGGkJynnPZuVuUR2mtbxCtFhD/L
-        +amfekZTNNy/2qv3J9hkxRSifcEELFmBx3y12FM=
-X-Google-Smtp-Source: ABdhPJyl1veztj6xiVYIvHL1ACH898Blx8LCS43ezyXrRZd/YpBL7x33Vt0bx7C4pNsMQ/C5ZZKBoeRcjHgC635KvDk=
-X-Received: by 2002:a9d:62c1:: with SMTP id z1mr2396047otk.108.1605606768928;
- Tue, 17 Nov 2020 01:52:48 -0800 (PST)
+        id S1727477AbgKQJxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 04:53:08 -0500
+Received: from mxout70.expurgate.net ([91.198.224.70]:49734 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727377AbgKQJxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 04:53:07 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kexfY-000J4Z-WF; Tue, 17 Nov 2020 10:53:01 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kexfY-000Dne-4b; Tue, 17 Nov 2020 10:53:00 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 6539A240041;
+        Tue, 17 Nov 2020 10:52:59 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id DB331240040;
+        Tue, 17 Nov 2020 10:52:58 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id A2EED21E27;
+        Tue, 17 Nov 2020 10:52:58 +0100 (CET)
 MIME-Version: 1.0
-References: <20201117021839.4146-1-a@unstable.cc> <CAMj1kXFxk31wtD3H8V0KbMd82UL_babEWpVTSkfqPpNjSqPNLA@mail.gmail.com>
- <5096882f-2b39-eafb-4901-0899783c5519@unstable.cc>
-In-Reply-To: <5096882f-2b39-eafb-4901-0899783c5519@unstable.cc>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 17 Nov 2020 10:52:36 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXGZATR7XyFb2SWiAxcBCUzXgvojvgR9fHczEu9zrpF9ug@mail.gmail.com>
-Message-ID: <CAMj1kXGZATR7XyFb2SWiAxcBCUzXgvojvgR9fHczEu9zrpF9ug@mail.gmail.com>
-Subject: Re: [PATCH cryptodev] crypto: lib/chacha20poly1305 - allow users to
- specify 96bit nonce
-To:     Antonio Quartulli <a@unstable.cc>
-Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        wireguard@lists.zx2c4.com,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Antonio Quartulli <antonio@openvpn.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 17 Nov 2020 10:52:58 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 5/6] net/lapb: support netdev events
+Organization: TDT AG
+In-Reply-To: <CAJht_EM-ic4-jtN7e9F6zcJgG3OTw_ePXiiH1i54M+Sc8zq6bg@mail.gmail.com>
+References: <20201116135522.21791-1-ms@dev.tdt.de>
+ <20201116135522.21791-6-ms@dev.tdt.de>
+ <CAJht_EM-ic4-jtN7e9F6zcJgG3OTw_ePXiiH1i54M+Sc8zq6bg@mail.gmail.com>
+Message-ID: <f3ab8d522b2bcd96506352656a1ef513@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.15
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-ID: 151534::1605606780-000035B9-6429194D/0/0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Nov 2020 at 10:47, Antonio Quartulli <a@unstable.cc> wrote:
->
-> Hi,
->
->
-> On 17/11/2020 09:31, Ard Biesheuvel wrote:
-> > If you are going back to the drawing board with in-kernel acceleration
-> > for OpenVPN, I strongly suggest to:
-> > a) either stick to one implementation, and use the library interface,
-> > or use dynamic dispatch using the crypto API AEAD abstraction, which
-> > already implements 96-bit nonces for ChaCha20Poly1305,
->
-> What we are implementing is a simple Data Channel Offload, which is
-> expected to be compatible with the current userspace implementation.
-> Therefore we don't want to change how encryption is performed.
->
-> Using the crypto API AEAD abstraction will be my next move at this point.
->
+On 2020-11-16 21:16, Xie He wrote:
+> Do you mean we will now automatically establish LAPB connections
+> without upper layers instructing us to do so?
 
-Aren't you already using that for gcm(aes) ?
+Yes, as soon as the physical link is established, the L2 and also the
+L3 layer (restart handshake) is established.
 
-> I just find it a bit strange that an API of a well defined crypto schema
-> is implemented in a way that accommodates only some of its use cases.
->
+In this context I also noticed that I should add another patch to this
+patch-set to correct the restart handling.
 
-You mean the 64-bit nonce used by the library version of
-ChaCha20Poly1305? I agree that this is a bit unusual, but a library
-interface doesn't seem like the right abstraction for this in the
-first place, so I guess it is irrelevant.
+As already mentioned I have a stack of fixes and extensions lying around
+that I would like to get upstream.
 
->
-> But I guess it's accepted that we will have to live with two APIs for a bit.
->
->
-> > b) consider using Aegis128 instead of AES-GCM or ChaChaPoly - it is
-> > one of the winners of the CAESAR competition, and on hardware that
-> > supports AES instructions, it is extremely efficient, and not
-> > encumbered by the same issues that make AES-GCM tricky to use.
-> >
-> > We might implement a library interface for Aegis128 if that is preferable.
->
-> Thanks for the pointer!
-> I guess we will consider supporting Aegis128 once it gets standardized
-> (AFAIK it is not yet).
->
+> If that is the case, is the one-byte header for instructing the LAPB
+> layer to connect / disconnect no longer needed?
 
-It is. The CAESAR competition is over, and produced a suite of
-recommended algorithms, one of which is Aegis128 for the high
-performance use case. (Note that other variants of Aegis did not make
-it into the final recommendation)
+The one-byte header is still needed to signal the status of the LAPB
+connection to the upper layer.
