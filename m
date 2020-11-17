@@ -2,97 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 404DB2B5587
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 01:06:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 991632B558E
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 01:11:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730819AbgKQAGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 19:06:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58726 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730227AbgKQAGE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 19:06:04 -0500
-Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A4A3A2464E;
-        Tue, 17 Nov 2020 00:06:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605571564;
-        bh=/qXy6iUBieTcbNx34GG4h+99G17GpKF65fFvPR8ZISs=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=xvSP9MaVW5Qsl9+5O1UGaNDk7UqnN239ypi/TLGWN8NqKFrsXVnX/gd5mZwNn1PTH
-         i3BWUvZAfpHYvH4579vX76QrJ8AyrtlJgtAJgrGhXjRZfcJ93N6jwCExUff3jPpVPK
-         crppCmqvrEJHCbdzJx+GVF4V7h0ME0zvkQ+yvpHY=
-Message-ID: <cdd576ebad038a3a9801e7017b7794e061e3ddcc.camel@kernel.org>
-Subject: Re: [PATCH net-next 00/13] Add mlx5 subfunction support
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>, Parav Pandit <parav@nvidia.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        gregkh@linuxfoundation.org, jiri@nvidia.com, jgg@nvidia.com,
-        dledford@redhat.com, leonro@nvidia.com, davem@davemloft.net
-Date:   Mon, 16 Nov 2020 16:06:02 -0800
-In-Reply-To: <20201116145226.27b30b1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201112192424.2742-1-parav@nvidia.com>
-         <20201116145226.27b30b1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1730311AbgKQAKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 19:10:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726310AbgKQAKJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 19:10:09 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BBEC0613CF;
+        Mon, 16 Nov 2020 16:10:08 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id oq3so26937305ejb.7;
+        Mon, 16 Nov 2020 16:10:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ppRstic7XTJh/uf7Jx+jTLo+WvkvrU+CGv1Rj4lms1E=;
+        b=pnzqAwtq+jNVH+avp7WBMiZCJdeqcm33mxvm1datyN/7pceATheh1NiqhSNVIoUfFo
+         b8gS+XsZttCOaNiapOq3IITRTgPJ5Apgu411g+b8pDT4PgcIWqVMga1aKrPJMWllbsQY
+         onWtZ95q6yFpeQw5q5ES1n8mCFMT8lWuNb/A3p9ustK0ZXofrwhRB1E0GLFSFCce26hs
+         Ex0i1WQOYngclSPkfOL4GOcr6JesI/vR5diq13t+gmTgW9a9raELCI6ebqJ3TvkZLB+G
+         mLLHHqLmRvgysoNC+gUFuebUrMWlauh24+gaFDpcn92Wg0od1Hbn8Br/DiqA0yj/JNQC
+         2J+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ppRstic7XTJh/uf7Jx+jTLo+WvkvrU+CGv1Rj4lms1E=;
+        b=mWUWRAuq1DuxjQNHpKYJFmX/pmfltt4rALOB1YkbwX6KXkVrCYQAXz+9KG4c8gsmbk
+         jPM4VkM/EO30SEqwsRz9wI46xMf8B5TpPFRIdNEVrmNCnRmYzMJayVCEF06ISFSN7BVE
+         xeawAV5bM5M4hjfvvwATowzirECWLhMvpZgkesi4m+mTLaW5RTj2b6p2unxdjTciPFvw
+         zI0Qw0Hrk/1uDPYF0I2tfnnQpzNpqdrNB6HIOrxt58JOaw0KFRUilz8saReFj9ciWuoj
+         qf4RHzm0nDisob4kYUE/XFYNiYV+k/LJcIJL4GJxBmuoXhIvLmB6wfqbg0pn9P8OOzFA
+         fvYw==
+X-Gm-Message-State: AOAM531C6QArKewAxyKLLoziV7OFGeicBKCYxR1dheg48yeUx9SzliNz
+        wSzxRVaDhZMNiXPlQTx6UoM=
+X-Google-Smtp-Source: ABdhPJzrKJgrdSR+WNmGn4P1hSccyf2PomTB6p98NH9gAwmgdJYqhEPQxP/B3GI5vBW1Upw6XrBOAg==
+X-Received: by 2002:a17:906:50e:: with SMTP id j14mr16850435eja.403.1605571807672;
+        Mon, 16 Nov 2020 16:10:07 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id cn8sm11112845edb.18.2020.11.16.16.10.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2020 16:10:07 -0800 (PST)
+Date:   Tue, 17 Nov 2020 02:10:05 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v1 net-next] net: dsa: qca: ar9331: add ethtool stats
+ support
+Message-ID: <20201117001005.b7o7fytd2stawrm7@skbuf>
+References: <20201115073533.1366-1-o.rempel@pengutronix.de>
+ <20201116133453.270b8db5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201116222146.znetv5u2q2q2vk2j@skbuf>
+ <20201116143544.036baf58@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201116230053.ddub7p6lvvszz7ic@skbuf>
+ <20201116151347.591925ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201116232731.4utpige7fguzghsi@skbuf>
+ <7cb26c4f-0c5d-0e08-5bbe-676f5d66a858@gmail.com>
+ <20201116160213.3de5280c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201116160213.3de5280c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-11-16 at 14:52 -0800, Jakub Kicinski wrote:
-> On Thu, 12 Nov 2020 21:24:10 +0200 Parav Pandit wrote:
-> > This series introduces support for mlx5 subfunction (SF).
-> > A subfunction is a portion of a PCI device that supports multiple
-> > classes of devices such as netdev, RDMA and more.
-> > 
-> > This patchset is based on Leon's series [3].
-> > It is a third user of proposed auxiliary bus [4].
-> > 
-> > Subfunction support is discussed in detail in RFC [1] and [2].
-> > RFC [1] and extension [2] describes requirements, design, and
-> > proposed
-> > plumbing using devlink, auxiliary bus and sysfs for systemd/udev
-> > support.
-> 
-> So we're going to have two ways of adding subdevs? Via devlink and
-> via
-> the new vdpa netlink thing?
-> 
+On Mon, Nov 16, 2020 at 04:02:13PM -0800, Jakub Kicinski wrote:
+> For a while now we have been pushing back on stats which have a proper
+> interface to be added to ethtool -S. So I'd expect the list of stats
+> exposed via ethtool will end up being shorter than in this patch.
 
-Via devlink you add the Sub-function bus device - think of it as
-spawning a new VF - but has no actual characteristics
-(netdev/vpda/rdma) "yet" until user admin decides to load an interface
-on it via aux sysfs.
-
-Basically devlink adds a new eswitch port (the SF port) and loading the
-drivers and the interfaces is done via the auxbus subsystem only after
-the SF is spawned by FW.
-
-
-> Question number two - is this supposed to be ready to be applied to
-> net-next? It seems there is a conflict.
-> 
-
-This series requires other mlx5 and auxbus infrastructure dependencies
-that was already submitted by leon 2-3 weeks ago and pending Greg's
-review, once finalized it will be merged into mlx5-next, then I will
-ask you to pull mlx5-next and only after, you can apply this series
-cleanly to net-next, sorry for the mess but we had to move forward and
-show how auxdev subsystem is being actually used.
-
-Leon's series:
-https://patchwork.ozlabs.org/project/netdev/cover/20201101201542.2027568-1-leon@kernel.org/
-
-> Also could you please wrap your code at 80 chars?
-> 
-
-I prefer no to do this in mlx5, in mlx5 we follow a 95 chars rule.
-But if you insist :) .. 
-
-Thanks,
-Saeed.
-
-
+Hmm, not sure if that's ever going to be the case. Even with drivers
+that are going to expose standardized forms of counters, I'm not sure
+it's going to be nice to remove them from ethtool -S. Testing teams all
+over the world have scripts that grep for those. Unfortunately I think
+ethtool -S will always remain a dumping ground of hell, and the place
+where you search for a counter based on its name from the hardware block
+guide as opposed to its standardized name/function. And that might mean
+there's no reason to not accept Oleksij's patch right away. Even if he
+might volunteer to actually follow up with a patch where he exposes the
+.ndo_get_stats64 from DSA towards drivers, as well as implements
+.ndo_has_offload_stats and .ndo_get_offload_stats within DSA, that will
+most likely be done as separate patches to this one, and not change in
+any way how this patch looks.
