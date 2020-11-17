@@ -2,97 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 594BB2B5668
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 02:49:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E80AF2B566B
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 02:52:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbgKQBtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 20:49:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37690 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbgKQBta (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 20:49:30 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877D3C0613CF;
-        Mon, 16 Nov 2020 17:49:30 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id v12so15925834pfm.13;
-        Mon, 16 Nov 2020 17:49:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=qVlMrW/TYBHLQQxRZjCiFsfg0UaJrVYq50hk7EVwNTc=;
-        b=CwKKHbTAbA9eRasruBLt5R49ZKjD9W11itiye3oGBbg6WbpVdMtSV7X4ADgqA08cVC
-         AlYl096vNNQITnhdw/Bx+Dsbw4EyGHxIoRraox6xge9OqaFJqudfImT+6BkUow0v9I2U
-         jmB7MovNElHNNOnGwOtwVMxM/QQXIdGlb9iwsVL/TS+gvIlAE/vP4HHxIKiFdSdBvtgp
-         4cwbNblDGogluFOEtzPlIw4BUj9I+FosMqrrSkoGyMpPlEsHANszCB2eMK6JIYCOOoMy
-         1UutzUqsbeJ5kEOGz16zDyJ7twmfaUw0PyDSrN3wWjUAEnWuGNGnvZO1zJztfXOZFKjb
-         zlaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qVlMrW/TYBHLQQxRZjCiFsfg0UaJrVYq50hk7EVwNTc=;
-        b=SNRURmTEm7LwiYiYQABS+mm72AZlEd5gqIVp1r8quv4i457nDPfPjbEwtuswWNO+hv
-         mr77PyzQc0NKGOgL774VmKDxrEkBeUb2laGLeC5/P9MRIab8LkhhpMHZdgDIKRvSlY+M
-         UmqjpQ7i1P3CWX86JgGC4sP+INknjHins0EVGS7vUQd5X+zhlXw/8c0S2fZVq7J5Wqdn
-         l+dNhoigOLY1mTPjIycP+jstzqnbgDtsr8eQ65fl7mPytl/+GSK3Ql2AbyX/KP6s6X+M
-         9fWtkwwOFunan281kStpFCiwswLcCLSFZDDy9a4flv+t1BYjEd6CQyz1ixBiJsRwxSEu
-         YTiw==
-X-Gm-Message-State: AOAM5333dEVgZxwkJQwPUZNNMygVk/uCXlKfTB95nYHaghwp4eui68Vg
-        hwqahPhBkFkkQSZKQTcC1gM=
-X-Google-Smtp-Source: ABdhPJwgNjCXHUARq5qV1yIwzmK+tclFLwSQJ83ewczMR+FyB/eIGq90Nr+1wccTZGeCviNQsBsp7A==
-X-Received: by 2002:a17:90a:5c86:: with SMTP id r6mr1877972pji.235.1605577769978;
-        Mon, 16 Nov 2020 17:49:29 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id u197sm19850353pfc.127.2020.11.16.17.49.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 17:49:29 -0800 (PST)
-Date:   Mon, 16 Nov 2020 17:49:26 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
-        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        bhelgaas@google.com
-Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support for
- PTP getcrosststamp()
-Message-ID: <20201117014926.GA26272@hoboy.vegasvil.org>
-References: <20201114025704.GA15240@hoboy.vegasvil.org>
- <874klo7pwp.fsf@intel.com>
+        id S1726981AbgKQBuL convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 16 Nov 2020 20:50:11 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:55329 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbgKQBuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 20:50:11 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 0AH1o4WJ1014800, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb03.realtek.com.tw[172.21.6.96])
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 0AH1o4WJ1014800
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 17 Nov 2020 09:50:04 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.33) by
+ RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Tue, 17 Nov 2020 09:50:03 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS04.realtek.com.tw (172.21.6.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 17 Nov 2020 09:50:03 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa]) by
+ RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa%3]) with mapi id
+ 15.01.2044.006; Tue, 17 Nov 2020 09:50:03 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+Subject: RE: [PATCH net-next] r8153_ecm: avoid to be prior to r8152 driver
+Thread-Topic: [PATCH net-next] r8153_ecm: avoid to be prior to r8152 driver
+Thread-Index: AQHWu+Uk6MVFESXbN0aOZKSDeZR30KnJ9OqAgACBuYCAARgAcA==
+Date:   Tue, 17 Nov 2020 01:50:03 +0000
+Message-ID: <02f38e505a3a45389e2f3c06b2f6c850@realtek.com>
+References: <7fd014f2-c9a5-e7ec-f1c6-b3e4bb0f6eb6@samsung.com>
+        <CGME20201116065317eucas1p2a2d141857bbdd6b4998dd11937d52f56@eucas1p2.samsung.com>
+        <1394712342-15778-393-Taiwan-albertk@realtek.com>
+        <5f3db229-940c-c8ed-257b-0b4b3dd2afbb@samsung.com>
+ <20201116090231.423afc8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201116090231.423afc8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.146]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <874klo7pwp.fsf@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 16, 2020 at 05:06:30PM -0800, Vinicius Costa Gomes wrote:
-> The PTM dialogs are a pair of messages: a Request from the endpoint (in
-> my case, the NIC) to the PCIe root (or switch), and a Response from the
-> other side (this message includes the Master Root Time, and the
-> calculated propagation delay).
+Jakub Kicinski <kuba@kernel.org>
+> Sent: Tuesday, November 17, 2020 1:03 AM
+[...]
+> > Yes, this fixes this issue, although I would prefer a separate Kconfig
+> > entry for r8153_ecm with proper dependencies instead of this ifdefs in
+> > Makefile.
 > 
-> The interface exposed by the NIC I have allows basically to start/stop
-> these PTM dialogs (I was calling them PTM cycles) and to configure the
-> interval between each cycle (~1ms - ~512ms).
+> Agreed, this is what dependency resolution is for.
+> 
+> Let's just make this a separate Kconfig entry.
 
-Ah, now I am starting to understand...
+Excuse me. I am not familiar with Kconfig.
 
-Just to be clear, this is yet another time measurement over PCIe,
-different than the cross time stamp that we already have, right?
+I wish r8153_ecm could be used, even
+CONFIG_USB_RTL8152 is not defined.
 
-Also, what is the point of providing time measurements every 1
-millisecond?
+How should set it in Kconfig? 
 
-> Another thing of note, is that trying to start the PTM dialogs "on
-> demand" syncronously with the ioctl() doesn't seem too reliable, it
-> seems to want to be kept running for a longer time.
+Best Regards,
+Hayes
 
-So, I think the simplest thing would be to have a one-shot
-measurement, if possible.  Then you could use the existing API and let
-the user space trigger the time stamps.
-
-Thanks,
-Richard
