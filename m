@@ -2,128 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6CD42B5CB8
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 11:18:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 692252B5CC6
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 11:22:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727414AbgKQKQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 05:16:47 -0500
-Received: from smtp73.iad3a.emailsrvr.com ([173.203.187.73]:38050 "EHLO
-        smtp73.iad3a.emailsrvr.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727401AbgKQKQr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 05:16:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=openvpn.net;
-        s=20170822-45nk5nwl; t=1605607660;
-        bh=OoSt4zI/A55xd2DmFGEKW06kRreOILROaH9aCHdoT70=;
-        h=To:From:Subject:Date:From;
-        b=MgM5nsMqzl6NvYT70GkQLaNWEi3sv6HhVY8rhkLkqN81v03JT1oBZOuJ2UfFwEVr2
-         fibYI7U9518Oi7nddW/kZVDex+x4jI0IZX3B5Kjx1oHVHupMKDN5cjk6CQnBtJMLiy
-         uxayVsr7qFYgGoAprmv/CNMmsxuSOhMplBYvx0Eg=
-X-Auth-ID: antonio@openvpn.net
-Received: by smtp26.relay.iad3a.emailsrvr.com (Authenticated sender: antonio-AT-openvpn.net) with ESMTPSA id 8742A1A17;
-        Tue, 17 Nov 2020 05:07:38 -0500 (EST)
-To:     Ard Biesheuvel <ardb@kernel.org>, Antonio Quartulli <a@unstable.cc>
-Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        wireguard@lists.zx2c4.com,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20201117021839.4146-1-a@unstable.cc>
- <CAMj1kXFxk31wtD3H8V0KbMd82UL_babEWpVTSkfqPpNjSqPNLA@mail.gmail.com>
- <5096882f-2b39-eafb-4901-0899783c5519@unstable.cc>
- <CAMj1kXGZATR7XyFb2SWiAxcBCUzXgvojvgR9fHczEu9zrpF9ug@mail.gmail.com>
-From:   Antonio Quartulli <antonio@openvpn.net>
-Organization: OpenVPN Inc.
-Subject: Re: [PATCH cryptodev] crypto: lib/chacha20poly1305 - allow users to
- specify 96bit nonce
-Message-ID: <47819bd4-3bed-d7e5-523a-6ec5c70caad8@openvpn.net>
-Date:   Tue, 17 Nov 2020 11:06:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
-MIME-Version: 1.0
-In-Reply-To: <CAMj1kXGZATR7XyFb2SWiAxcBCUzXgvojvgR9fHczEu9zrpF9ug@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1726545AbgKQKW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 05:22:26 -0500
+Received: from mail-eopbgr50043.outbound.protection.outlook.com ([40.107.5.43]:21062
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725774AbgKQKWZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Nov 2020 05:22:25 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mwQAueBqqCbpYpADbgH6bFm7n+86t68k+0sCkJapNmVecDfMt+tSerEpx+q9N5zqltDAsuuk/jpZBa47biLlaxpuv6QpnveKNCE3wQk7FQGTbClQZC5OQIo96t5OnxEtkgSaxtIgOM5M+YP4pZ/admL8H6xJ33WEt18Dpp0VhqOTd1TCbzxmlpGep1w4AuR1EHZVApIowgHiXdW1B0q07+Pv0JeAHBTU+an69wN7mdV0h4G25d+3T6l8qV+0IyDYg9TPd3Dkc1O0DWL/W3eJdIRBRq9wJkKsfByDUlSrEEneHe+EArB6IOpRejLZnAq5kUJSMbI53tkbMasRiEVX+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RLknlAtrNt5flfN2YZha8x9LvJig9NaFdbCiLex0upg=;
+ b=N/MQpRRpEuFNZHnztCMsDNCJhtr4b+Jk32iu4QMuoGrJqNbHZP2BLo79GhAIjUAJRGzwcNZuIG5EybDzPJ1CwzUMbuNzpyeDZWWH3bILq0WfXfkqkNEqpb6w43Pmibs5jBz6YXASHGFuax4JBxTRAU0/uJNasMJMA6frqjzmnUBKGTWCdDE7E9GRZf2NUjzXlRGmTCwzh0IjdKgbyUsCye1oMBeMDjLwzYXM/Z92+rhJABmEevdLGmEDTDTITJhegAUORNP8MaYHPIOBvAmpUSsGEkvP2/2HWUoGM8cew0fijifNZdreJqItpIPly8y+6S/g0gXQnfYSxxKdRHIUjA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RLknlAtrNt5flfN2YZha8x9LvJig9NaFdbCiLex0upg=;
+ b=Y/jhiZCFl8LfaJJX7QdmV29WCPnKYjIZP758fCVTErKFX1jZ4LzM7YBaBX8rcKiXF1XBHA5DMlgQtZAfz4Q84qngpIXQ9p/3artvTdDeALAQgjFsw/wvzD3DpBLjFSjYVXM4Jy9fihrdMtlsEfGbvA2Dy3mSPRHNpM2qhic6OoM=
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
+ by AM0PR04MB4914.eurprd04.prod.outlook.com (2603:10a6:208:ce::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.28; Tue, 17 Nov
+ 2020 10:22:20 +0000
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::21b9:fda3:719f:f37b]) by AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::21b9:fda3:719f:f37b%3]) with mapi id 15.20.3564.030; Tue, 17 Nov 2020
+ 10:22:20 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: RE: [PATCH net] enetc: Workaround for MDIO register access issue
+Thread-Topic: [PATCH net] enetc: Workaround for MDIO register access issue
+Thread-Index: AQHWuSFXFSkkYIBaN0+iRGfbV9ZtTqnLpPoAgAB6d5A=
+Date:   Tue, 17 Nov 2020 10:22:20 +0000
+Message-ID: <AM0PR04MB6754D77454B6DA79FB59917896E20@AM0PR04MB6754.eurprd04.prod.outlook.com>
+References: <20201112182608.26177-1-claudiu.manoil@nxp.com>
+ <20201117024450.GH1752213@lunn.ch>
+In-Reply-To: <20201117024450.GH1752213@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Classification-ID: 3c7d4df9-03f3-4138-8fe9-03b0ab2b7cbf-1-1
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.27.120.177]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: c31f4fce-01ca-4fd0-85a7-08d88ae2aaa8
+x-ms-traffictypediagnostic: AM0PR04MB4914:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR04MB4914BD1EC896C8563470FAEC96E20@AM0PR04MB4914.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: AuFgjJ6b62+FkcnBsvvgrFu3ZaAKDSlIBmwGvEn2C10Q9LLTjIv24RZQyOSdCcBOryvJybIZUoi+0BJwmdw4A9LrwjkwGv3/2f+LaRW1G987LCCSkPT2uIGkJAsxXhlrG35FGD1gl2hcHhsjHBa3hMhcn4hii/kcakmjbOleokOlp0lsUSQE8mrri3cf9XtLeUUn53l5G9IUjvmT0V6ZFMkbJvsLTc+qfIrQkwe9/+/+55MwC43JQx1kGVQyVyAsAGphj6LDYZp6HmFu0buz45VFBYKREVmrpODpCyoBN9aFewv5p9j4QTxzCQ91xX0B0E7Kv+uBBCyCrXZmWiSFjA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39860400002)(396003)(366004)(346002)(376002)(66446008)(64756008)(66556008)(66476007)(478600001)(76116006)(7696005)(66946007)(83380400001)(6916009)(44832011)(6506007)(8936002)(52536014)(54906003)(2906002)(8676002)(316002)(86362001)(33656002)(55016002)(5660300002)(186003)(71200400001)(4326008)(26005)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 0lk+2AabCZhYVGN02vThEOSIRdtPlRGqyY76se10kV/ySm+9Lltzq+wG4DPXrxJafD0FBOaSvxBgDze7kzd5DdKB2Jh41/iyP7XcisR6qN8255Fz3asgkc9a1KE8Rv+YV+I5xnEhN9PA6mmjq5GgcIIxXyvfLCDbXnG61eBWD9wH3ejRiUApsPdR55dhNvkm1UdhmlLycsZgvHWJ28sjXn8Sybm0CRmHGEmyZHXBc/0Jvay/rXNDVvFrKs3oL7H5zBrj1Gu4CLsgAtTRs3C9jtG/AduieeuybsFS8jpyZH39fHKF4Agn4lV5EJufEPpBhXQuYgaCel93PzPRH4A/ua0Ze7KmPciDUdpf0gphekLFYJ11wWBmbz/n1des7j2IhCU7D3kZOE8oPYOHhdVO4eEPAdJvSj4NiTyhsbBxkOFr/3NL9YbKFtplCRU8UO3hro60WCkLs4unh8N3VxzJCzxmrJPR8aLXqwZ/aTirINcEI4U1k/t9/jbktZeUJdOmUlw/Zeet8xmSximPlNMgFmMYK28JUl1VEgNMLRFw832pLSx7FIML073r3CQbWjCVHU82jiJ0LuKuPvOdFOGJLI+iWX4/ouOWyv8L7vis77CgD3MVHYi7H9JP7M7jmgknxJT/R42Fe9IFqGiyCmDL3w==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c31f4fce-01ca-4fd0-85a7-08d88ae2aaa8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Nov 2020 10:22:20.2678
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2ndI6bqAfPUPR02vcTnKoIfaA3SN4FolhmI/wVlpSL7GCtAGORjMtePiWcIND/i+oBctw6BPSxBcOTkzid4R3A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4914
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+>-----Original Message-----
+>From: Andrew Lunn <andrew@lunn.ch>
+>Sent: Tuesday, November 17, 2020 4:45 AM
+>To: Claudiu Manoil <claudiu.manoil@nxp.com>
+>Cc: netdev@vger.kernel.org; Jakub Kicinski <kuba@kernel.org>; David S .
+>Miller <davem@davemloft.net>; Alexandru Marginean
+><alexandru.marginean@nxp.com>; Vladimir Oltean
+><vladimir.oltean@nxp.com>
+>Subject: Re: [PATCH net] enetc: Workaround for MDIO register access issue
+>
+>> +static inline void enetc_lock_mdio(void)
+>> +{
+>> +	read_lock(&enetc_mdio_lock);
+>> +}
+>> +
+>
+>> +static inline u32 _enetc_rd_mdio_reg_wa(void __iomem *reg)
+>> +{
+>> +	unsigned long flags;
+>> +	u32 val;
+>> +
+>> +	write_lock_irqsave(&enetc_mdio_lock, flags);
+>> +	val =3D ioread32(reg);
+>> +	write_unlock_irqrestore(&enetc_mdio_lock, flags);
+>> +
+>> +	return val;
+>> +}
+>
+>Can you mix read_lock() with write_lock_irqsave()?  Normal locks you
+>should not mix, so i assume read/writes also cannot be mixed?
+>
 
-On 17/11/2020 10:52, Ard Biesheuvel wrote:
-> On Tue, 17 Nov 2020 at 10:47, Antonio Quartulli <a@unstable.cc> wrote:
->>
->> Hi,
->>
->>
->> On 17/11/2020 09:31, Ard Biesheuvel wrote:
->>> If you are going back to the drawing board with in-kernel acceleration
->>> for OpenVPN, I strongly suggest to:
->>> a) either stick to one implementation, and use the library interface,
->>> or use dynamic dispatch using the crypto API AEAD abstraction, which
->>> already implements 96-bit nonces for ChaCha20Poly1305,
->>
->> What we are implementing is a simple Data Channel Offload, which is
->> expected to be compatible with the current userspace implementation.
->> Therefore we don't want to change how encryption is performed.
->>
->> Using the crypto API AEAD abstraction will be my next move at this point.
->>
-> 
-> Aren't you already using that for gcm(aes) ?
-
-Yes, correct. That's why I had no real objection to using it :-)
-
-At first I was confused and I thought this new library interface was
-"the preferred way" for using chacha20poly1305, therefore I went down
-this path.
-
-> 
->> I just find it a bit strange that an API of a well defined crypto schema
->> is implemented in a way that accommodates only some of its use cases.
->>
-> 
-> You mean the 64-bit nonce used by the library version of
-> ChaCha20Poly1305? I agree that this is a bit unusual, but a library
-> interface doesn't seem like the right abstraction for this in the
-> first place, so I guess it is irrelevant.
-
-Alright.
-
-> 
->>
->> But I guess it's accepted that we will have to live with two APIs for a bit.
->>
->>
->>> b) consider using Aegis128 instead of AES-GCM or ChaChaPoly - it is
->>> one of the winners of the CAESAR competition, and on hardware that
->>> supports AES instructions, it is extremely efficient, and not
->>> encumbered by the same issues that make AES-GCM tricky to use.
->>>
->>> We might implement a library interface for Aegis128 if that is preferable.
->>
->> Thanks for the pointer!
->> I guess we will consider supporting Aegis128 once it gets standardized
->> (AFAIK it is not yet).
->>
-> 
-> It is. The CAESAR competition is over, and produced a suite of
-> recommended algorithms, one of which is Aegis128 for the high
-> performance use case. (Note that other variants of Aegis did not make
-> it into the final recommendation)
-
-oops, I was not up-to-date. Thanks again!
-We'll definitely look into this soon.
-
-
-Best Regards,
-
--- 
-Antonio Quartulli
-OpenVPN Inc.
+Not sure I understand your concerns, but this is the readers-writers lockin=
+g
+scheme. The readers (read_lock) are "lightweight", they get the most calls,
+can be taken from any context including interrupt context, and compete only
+with the writers (write_lock). The writers can take the lock only when ther=
+e are
+no readers holding it, and the writer must insure that it doesn't get preem=
+pted
+(by interrupts etc.) when holding the lock (irqsave). The good part is that=
+ mdio
+operations are not frequent. Also, we had this code out of the tree for qui=
+te some
+time, it's well exercised.
