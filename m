@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B05E32B55C7
+	by mail.lfdr.de (Postfix) with ESMTP id 431A02B55C6
 	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 01:42:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731478AbgKQAkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 19:40:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49754 "EHLO mail.kernel.org"
+        id S1730772AbgKQAkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 19:40:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49760 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729367AbgKQAkF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729495AbgKQAkF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 16 Nov 2020 19:40:05 -0500
 Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1605573605;
-        bh=zMQW2Ot90G2WINtuptuKiyco9CER8ScYxej0iBWIMP4=;
+        bh=1X3a6pusibxgUUs6BZZXGXf5rNn97QYSBMRr/M1ekUs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AIbpUGMyYA84DHSLfUMFTAMP1qAxOkVUchdjYnCAxGSJrbyx5YEt5T+Pw3RAeULB6
-         4SWSrw4e5ceB93n78tsb42v7aBsCfXGxhYnpK/ekHYYQy9xSsronq0bFgWCI3JHkB/
-         XwIVqRVhjQ7gNbtRwcFaYXei5lGNbUTdO2BwPDTk=
+        b=a1hR7QP7SRgGMAus5nniKjZVFZjtHukDaahk5Br13fCpNUZxMsmHpaWU9/A5KlK0o
+         cKWMaqxH654OOkPiduMnTKZBNO8TBKW9rNUhjp5rAywlVeqo4lQVM6yXXVb7txAfCB
+         KEq4kBrqcfsxXUejAPbvj/Z9x2ntK96TA6Rx5weA=
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: mvneta: fix possible memory leak in
- mvneta_swbm_add_rx_fragment
+Subject: Re: [PATCH net] net: qualcomm: rmnet: Fix incorrect receive packet
+ handling during cleanup
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160557360530.10137.9059888755046904016.git-patchwork-notify@kernel.org>
+Message-Id: <160557360535.10137.9289534530126610366.git-patchwork-notify@kernel.org>
 Date:   Tue, 17 Nov 2020 00:40:05 +0000
-References: <df6a2bad70323ee58d3901491ada31c1ca2a40b9.1605291228.git.lorenzo@kernel.org>
-In-Reply-To: <df6a2bad70323ee58d3901491ada31c1ca2a40b9.1605291228.git.lorenzo@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, brouer@redhat.com,
-        ilias.apalodimas@linaro.org, echaudro@redhat.com
+References: <1605298325-3705-1-git-send-email-subashab@codeaurora.org>
+In-Reply-To: <1605298325-3705-1-git-send-email-subashab@codeaurora.org>
+To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        stranche@codeaurora.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -40,20 +39,19 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Fri, 13 Nov 2020 19:16:57 +0100 you wrote:
-> Recycle the page running page_pool_put_full_page() in
-> mvneta_swbm_add_rx_fragment routine when the last descriptor
-> contains just the FCS or if the received packet contains more than
-> MAX_SKB_FRAGS fragments
+On Fri, 13 Nov 2020 13:12:05 -0700 you wrote:
+> During rmnet unregistration, the real device rx_handler is first cleared
+> followed by the removal of rx_handler_data after the rcu synchronization.
 > 
-> Fixes: ca0e014609f0 ("net: mvneta: move skb build after descriptors processing")
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Any packets in the receive path may observe that the rx_handler is NULL.
+> However, there is no check when dereferencing this value to use the
+> rmnet_port information.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: mvneta: fix possible memory leak in mvneta_swbm_add_rx_fragment
-    https://git.kernel.org/netdev/net/c/9c79a8ab5f12
+  - [net] net: qualcomm: rmnet: Fix incorrect receive packet handling during cleanup
+    https://git.kernel.org/netdev/net/c/fc70f5bf5e52
 
 You are awesome, thank you!
 --
