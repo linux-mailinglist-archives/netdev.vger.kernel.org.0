@@ -2,85 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCC042B701B
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 21:32:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5AC12B703E
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 21:38:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727719AbgKQUcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 15:32:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727629AbgKQUcF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 15:32:05 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359F6C0613CF;
-        Tue, 17 Nov 2020 12:32:04 -0800 (PST)
-Received: from zn.tnic (p200300ec2f10130053cbbcbd889a5460.dip0.t-ipconnect.de [IPv6:2003:ec:2f10:1300:53cb:bcbd:889a:5460])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 018CC1EC03CE;
-        Tue, 17 Nov 2020 21:32:02 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1605645123;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=3C8iZQVCyNe8hkbWuwV/tblbPZQNKnK6sRC+nVZs2vs=;
-        b=i+QDHSEnYVK5bfheQXKktIj3n8699yZScn/2NCs9OhD68XNHt/PTz4m4xxcqoXPs47+YOp
-        4RRMtF6WP5zTMt0nJXguuBh6ezlTJhzfqc64pItHPlGTrV93g17OgJKd7GjeHbz+te+zvg
-        r33PwHDPgyIvTfNC7i6WLaDIAwUx+M8=
-Date:   Tue, 17 Nov 2020 21:31:55 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc:     linux-kernel@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        x86@kernel.org, hpa@zytor.com, dmitry.torokhov@gmail.com,
-        derek.kiernan@xilinx.com, dragan.cvetic@xilinx.com,
-        richardcochran@gmail.com, linux-hyperv@vger.kernel.org,
-        linux-input@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/2] x86: make vmware support optional
-Message-ID: <20201117203155.GO5719@zn.tnic>
-References: <20201117202308.7568-1-info@metux.net>
+        id S1727520AbgKQUiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 15:38:13 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:9043 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726020AbgKQUiM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 15:38:12 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fb434aa0001>; Tue, 17 Nov 2020 12:38:02 -0800
+Received: from sx1.mtl.com (172.20.13.39) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 17 Nov
+ 2020 20:38:01 +0000
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        "Maxim Mikityanskiy" <maximmi@mellanox.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH net 1/2] net/tls: Protect from calling tls_dev_del for TLS RX twice
+Date:   Tue, 17 Nov 2020 12:33:54 -0800
+Message-ID: <20201117203355.389661-1-saeedm@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201117202308.7568-1-info@metux.net>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [172.20.13.39]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1605645482; bh=4Ch/Wg6AoY2f8JHpAMaRUFIVmUSPWpsqb0k6D9cNgew=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=JSFCpBdVtGoNTYaU8wghki7EGYApagxfCa5KEINED+hYEHU9BeIvqpWNRctdYZPpy
+         lAPG2bS8+dai6h3PKEHBuoCYmhMIo5hcrn4akGBpVMZJg1/brJIKVQWjQ0H/Mt37XN
+         QTtRyUGHvvrOLNpJKQPpagu7LRV+5AWsLBQREccgjNhMHu0JN7yF7/hY8ne8afNcv+
+         8LacHPE26NwtDYhlnO7W5kwNk8Grlq+F81X2kWsiIrcbEtSsbbNJwz2m40/0Oc9pla
+         lv+oO51MQV2caKdhBbwWDPHz4MKgXRH9q9rlKq+g/XLnHBQK4JD3eXeyimybaFLLKp
+         emC/t+R5uoYMA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 17, 2020 at 09:23:07PM +0100, Enrico Weigelt, metux IT consult wrote:
-> Make it possible to opt-out from vmware support
+From: Maxim Mikityanskiy <maximmi@mellanox.com>
 
-Why?
+tls_device_offload_cleanup_rx doesn't clear tls_ctx->netdev after
+calling tls_dev_del if TLX TX offload is also enabled. Clearing
+tls_ctx->netdev gets postponed until tls_device_gc_task. It leaves a
+time frame when tls_device_down may get called and call tls_dev_del for
+RX one extra time, confusing the driver, which may lead to a crash.
 
-I can think of a couple of reasons but maybe yours might not be the one
-I'm thinking of.
+This patch corrects this racy behavior by adding a flag to prevent
+tls_device_down from calling tls_dev_del the second time.
 
-> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
-> ---
->  arch/x86/Kconfig                 | 7 +++++++
->  arch/x86/kernel/cpu/Makefile     | 4 +++-
->  arch/x86/kernel/cpu/hypervisor.c | 2 ++
->  drivers/input/mouse/Kconfig      | 2 +-
->  drivers/misc/Kconfig             | 2 +-
->  drivers/ptp/Kconfig              | 2 +-
->  6 files changed, 15 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index f6946b81f74a..c227c1fa0091 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -801,6 +801,13 @@ config X86_HV_CALLBACK_VECTOR
->  
->  source "arch/x86/xen/Kconfig"
->  
-> +config VMWARE_GUEST
-> +	bool "Vmware Guest support"
-> +	default y
+Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
+Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+For -stable: 5.3
 
-depends on HYPERVISOR_GUEST. The hyperv one too.
+ include/net/tls.h    | 1 +
+ net/tls/tls_device.c | 3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
--- 
-Regards/Gruss,
-    Boris.
+diff --git a/include/net/tls.h b/include/net/tls.h
+index baf1e99d8193..a0deddfde412 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -199,6 +199,7 @@ enum tls_context_flags {
+ 	 * to be atomic.
+ 	 */
+ 	TLS_TX_SYNC_SCHED =3D 1,
++	TLS_RX_DEV_RELEASED =3D 2,
+ };
+=20
+ struct cipher_context {
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index cec86229a6a0..b2261caac6be 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -1241,6 +1241,7 @@ void tls_device_offload_cleanup_rx(struct sock *sk)
+=20
+ 	netdev->tlsdev_ops->tls_dev_del(netdev, tls_ctx,
+ 					TLS_OFFLOAD_CTX_DIR_RX);
++	set_bit(TLS_RX_DEV_RELEASED, &tls_ctx->flags);
+=20
+ 	if (tls_ctx->tx_conf !=3D TLS_HW) {
+ 		dev_put(netdev);
+@@ -1274,7 +1275,7 @@ static int tls_device_down(struct net_device *netdev)
+ 		if (ctx->tx_conf =3D=3D TLS_HW)
+ 			netdev->tlsdev_ops->tls_dev_del(netdev, ctx,
+ 							TLS_OFFLOAD_CTX_DIR_TX);
+-		if (ctx->rx_conf =3D=3D TLS_HW)
++		if (ctx->rx_conf =3D=3D TLS_HW && !test_bit(TLS_RX_DEV_RELEASED, &ctx->f=
+lags))
+ 			netdev->tlsdev_ops->tls_dev_del(netdev, ctx,
+ 							TLS_OFFLOAD_CTX_DIR_RX);
+ 		WRITE_ONCE(ctx->netdev, NULL);
+--=20
+2.26.2
 
-https://people.kernel.org/tglx/notes-about-netiquette
