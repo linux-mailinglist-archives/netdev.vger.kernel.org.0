@@ -2,73 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA75F2B71A8
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 23:38:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4B9E2B71B9
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 23:40:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729147AbgKQWhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 17:37:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728044AbgKQWhY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 17:37:24 -0500
-Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30461C0613CF;
-        Tue, 17 Nov 2020 14:37:24 -0800 (PST)
-Received: by mail-vs1-xe43.google.com with SMTP id r14so11993680vsa.13;
-        Tue, 17 Nov 2020 14:37:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FH0fknj5QJLn7ACk6eHCDF4ifC/QH5RQ09fYM2ZGJIo=;
-        b=hg1BLUQst6GW972wQO6yoKvxwrDLtitHDX81KV5ZMKYkm1fpa7VVhZgNtu5jPgyT0w
-         gZoilM8SDc7ws/l97y7/fGIDQc1xdWxC67c5OrLjxiX4hklbRE2JwNlBc+MTiw5n8IOk
-         srJBpwZBOuOOfaDT3UVMLQoiG4/3gXs+Tp1mRJeLhK6ddivscYjHTAnVouU0eEt0Kv/R
-         n0a/bj7JZBvYK/3essXFR/8AEWDgwpilXQCa1YTZxAkcq5wI7fqoO7Se5SWBWh1FGXq4
-         6pj+SayHv+uwgI8haQTnINfIUgQMtxtFaFMY5kysWywMaqBTll86xwKUv+okb7EknlFX
-         BYFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FH0fknj5QJLn7ACk6eHCDF4ifC/QH5RQ09fYM2ZGJIo=;
-        b=pOmo5pvnP7W5PoY/thxaup0woFZ8UJNYkju5MPK9C71U+9PRfJd0XNJO3f0e3udYCk
-         JNYa5r7yjZycuZXnA3rly4FbBJbtzlK2ovwp1gJxxyE05QRrNIdCCPsYU0T1ynFYACAS
-         OuBL6P+tiarokgiHao+3lnOs3nL/rNVTZXRseaMNonbIVFggkjiDUVyuOgRRRo1XuC7S
-         3Vst6pdAsNKoQtR4w5fmm5TQpTgTOiW9DLawDPvoOYCBfuqdXgJaVbfyRTDoGA8+T1/R
-         YdmfvYAVGhfzk4Sq0fOCSq6csaOPf65eJfWgaerdkNMhwK1W6EqHDyQCsTO0Be+D/wfs
-         gckw==
-X-Gm-Message-State: AOAM530is4IlV/l88zVpr8OGFBrMxiy3AgtJok4fkIYzjSZ4KNUdP5yX
-        FcsCqVcfW6xSP0q7zS8ctN5HRUeCQQzPfMJN4Jc=
-X-Google-Smtp-Source: ABdhPJw0dHxEKGFCmqFVt2j3PyuzKce5F1S5+aX55J/xRjd/U8OC7zjcqARyFKNqCL/poMscrkcf+hmqP2z4gvA/Jes=
-X-Received: by 2002:a67:ff10:: with SMTP id v16mr1472632vsp.40.1605652643329;
- Tue, 17 Nov 2020 14:37:23 -0800 (PST)
+        id S1729344AbgKQWis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 17:38:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42220 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726319AbgKQWis (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Nov 2020 17:38:48 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CA01B206E0;
+        Tue, 17 Nov 2020 22:38:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605652727;
+        bh=8nds6rZbc08PfryBuLS5pWYwADwquMGg0RinCE8DZh8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qL57K1mwpFYi0YB8h3GJ+4SXUBGRnLGjpZWmsKeeG6OqV3SU3cQ3O4QQDtqtO35Xt
+         evXJJHWPVt2sRJshzjcvME3WsBcgWnS6vbUeFumZMGZgQarcB93f12ZpOBAdX/zqv9
+         9Y6L35qeaISomuTdBi8r+98O1hWgL9nKi7ILI1wY=
+Date:   Tue, 17 Nov 2020 14:38:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     Boris Pismenny <borisp@nvidia.com>,
+        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
+Subject: Re: [net] net/tls: missing received data after fast remote close
+Message-ID: <20201117143847.2040f609@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <1605440628-1283-1-git-send-email-vfedorenko@novek.ru>
+References: <1605440628-1283-1-git-send-email-vfedorenko@novek.ru>
 MIME-Version: 1.0
-References: <20201116170155.26967-1-TheSven73@gmail.com> <20201117020956.GF1752213@lunn.ch>
- <20201117104756.766b5953@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201117104756.766b5953@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Tue, 17 Nov 2020 17:37:12 -0500
-Message-ID: <CAGngYiXtnZ9WTOEtdvz1hnUkiSbJMX+rk6nvmVyhSOX8d5rNFg@mail.gmail.com>
-Subject: Re: [PATCH net-next v1] lan743x: replace devicetree phy parse code
- with library function
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Roelof Berg <rberg@berg-solutions.de>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 17, 2020 at 1:47 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 17 Nov 2020 03:09:56 +0100 Andrew Lunn wrote:
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Applied, thanks!
+On Sun, 15 Nov 2020 14:43:48 +0300 Vadim Fedorenko wrote:
+> In case when tcp socket received FIN after some data and the
+> parser haven't started before reading data caller will receive
+> an empty buffer.
 
-Thank you Andrew and Jakub !
+This is pretty terse, too terse for me to understand..
+
+> This behavior differs from plain TCP socket and
+> leads to special treating in user-space. Patch unpauses parser
+> directly if we have unparsed data in tcp receive queue.
+
+Sure, but why is the parser paused? Does it pause itself on FIN?
+
+> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+> index 2fe9e2c..4db6943 100644
+> --- a/net/tls/tls_sw.c
+> +++ b/net/tls/tls_sw.c
+> @@ -1289,6 +1289,9 @@ static struct sk_buff *tls_wait_data(struct sock *sk, struct sk_psock *psock,
+>  	struct sk_buff *skb;
+>  	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>  
+> +	if (!ctx->recv_pkt && skb_queue_empty(&sk->sk_receive_queue))
+> +		__strp_unpause(&ctx->strp);
+> +
+>  	while (!(skb = ctx->recv_pkt) && sk_psock_queue_empty(psock)) {
+>  		if (sk->sk_err) {
+>  			*err = sock_error(sk);
+
