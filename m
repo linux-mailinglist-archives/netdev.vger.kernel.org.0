@@ -2,80 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67D392B7260
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 00:25:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97ADB2B72C5
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 00:59:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729883AbgKQXYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 18:24:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728193AbgKQXYm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 18:24:42 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BA0C0613CF;
-        Tue, 17 Nov 2020 15:24:42 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id w13so38620eju.13;
-        Tue, 17 Nov 2020 15:24:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=i6RVgl+K3ML+5PVXUdqwR/4VZ02Q4BTpTLQVaFvPT+c=;
-        b=PsCgL260YOZjfdv3pT1AKS1mv6FOmyVhdsk7xRXaKkE7/kTUY+MRsPeTmCOwfz8Btc
-         mRE2PWQwE3k3CdPTKgQS5SSumSCXRXtnBTSnDUvrHv1mQzN9kXhiKix+BV0rDGF3yFRp
-         sbuhjuOUJx96exTowNdmQQ9NZzoM0vqo7EEOCK8rN2ybaXso9UB/N+R9Ittg1ESpCNfZ
-         C0PfTd8bU1Eqr/uAemS1xWdya4EAU3Rffm/+ry592er4IX0rIfIapw9mO6jDHPZXnmzH
-         0er9SVzzAJqEMwT7s8MMNIMKGieJFKii/8MhQ4oRZEZdAd3YRTjxVHHAjrD1O74TcZK1
-         rpIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=i6RVgl+K3ML+5PVXUdqwR/4VZ02Q4BTpTLQVaFvPT+c=;
-        b=GrhFvBARdyS7O4jgL6ivspMVZ0qPXee/oFr1iZv39z3psSooTnjOesH8o+7qduU6ZB
-         XY1328GwvSa1gS3ceHfdeytppruR4SfSm91I2MI5KjVdu8KACwxbRvi/0f6GWPTLB8n/
-         SDM7s9iwAKJh3W8UdYDg1L90gQJ6MWarwCCI57fkRO6wUUPxb3gTh3lyb+0c73RXFqHf
-         MMxTCF3xYqNThRaHtLKTbULKLdHAQoOHdvsKFSsbS83VHntA36fgI6wfOgRxMmWwvJ2K
-         jyJoXIGeKFBQxVQODE0oYfGMETh+87zRnSifmugrS75/BQwPLZo7VkPTwZT6Gacj4aks
-         Jd7Q==
-X-Gm-Message-State: AOAM532X7sctpE4zXHumpKnGb6ehdJrK84aBqMrgXU6xgBiAOIsPVcDv
-        UqvXKMw6kYX3rOqc0rzmPgk=
-X-Google-Smtp-Source: ABdhPJyI1A3oa+IAQpeXvhHDsLWy013pASD5EspAWMMhSBKljB0gVNObL21Cps0tvREo1+FKT5xAHg==
-X-Received: by 2002:a17:906:a186:: with SMTP id s6mr22217864ejy.193.1605655481311;
-        Tue, 17 Nov 2020 15:24:41 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id v1sm9638595eds.25.2020.11.17.15.24.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2020 15:24:40 -0800 (PST)
-Date:   Wed, 18 Nov 2020 01:24:39 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 4/4] ptp: ptp_ines: use enum ptp_msg_type
-Message-ID: <20201117232439.m3o45csuh6qs6cwr@skbuf>
-References: <20201117193124.9789-4-ceggers@arri.de>
- <202011180758.0o8fM3th-lkp@intel.com>
+        id S1728047AbgKQX7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 18:59:23 -0500
+Received: from m9785.mail.qiye.163.com ([220.181.97.85]:11475 "EHLO
+        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726274AbgKQX7X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 18:59:23 -0500
+Received: from [192.168.1.8] (unknown [116.234.4.84])
+        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 2332A5C15FD;
+        Wed, 18 Nov 2020 07:21:09 +0800 (CST)
+Subject: Re: [PATCH v10 net-next 3/3] net/sched: act_frag: add implict packet
+ fragment support.
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <1605151497-29986-1-git-send-email-wenxu@ucloud.cn>
+ <1605151497-29986-4-git-send-email-wenxu@ucloud.cn>
+ <CAM_iQpUu7feBGrunNPqn8FhEhgvfB_c854uEEuo5MQYcEvP_bg@mail.gmail.com>
+ <459a1453-8026-cca1-fb7c-ded0890992cf@ucloud.cn>
+ <CAM_iQpXDzKEEVic5SOiWsc30ipppYMHL4q0-J6mP6u0Brr1KGw@mail.gmail.com>
+ <2fe1ec73-eeeb-f32e-b006-afd135e03433@ucloud.cn>
+ <CAM_iQpXtw4YLWjoSGwxhZMnG8Kismiu-nmqgFJpsZ6AuzX82tg@mail.gmail.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <7f897550-119f-e149-3c9d-cf2eb8964d63@ucloud.cn>
+Date:   Wed, 18 Nov 2020 07:21:10 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202011180758.0o8fM3th-lkp@intel.com>
+In-Reply-To: <CAM_iQpXtw4YLWjoSGwxhZMnG8Kismiu-nmqgFJpsZ6AuzX82tg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
+        oVCBIfWUFZS0lCT0xNQx5DHhhPVkpNS05NTk5JTUJOQ0tVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0hKTFVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OE06KDo*MD05HD0cTRMqIUgK
+        TAlPChpVSlVKTUtOTU5OSU1CTEhPVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpKTVVJ
+        SE9VT1VDT1lXWQgBWUFIQkJMNwY+
+X-HM-Tid: 0a75d88310102087kuqy2332a5c15fd
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 07:17:41AM +0800, kernel test robot wrote:
-> >> drivers/ptp/ptp_ines.c:690:26: error: conflicting types for 'tag_to_msgtype'
->      690 | static enum ptp_msg_type tag_to_msgtype(u8 tag)
->          |                          ^~~~~~~~~~~~~~
->    drivers/ptp/ptp_ines.c:178:11: note: previous declaration of 'tag_to_msgtype' was here
->      178 | static u8 tag_to_msgtype(u8 tag);
->          |           ^~~~~~~~~~~~~~
 
-Wait for the patches to simmer a little bit more before resending. And
-please make sure to create a cover letter when doing so.
+在 2020/11/18 6:43, Cong Wang 写道:
+> On Mon, Nov 16, 2020 at 8:06 PM wenxu <wenxu@ucloud.cn> wrote:
+>>
+>> On 11/17/2020 3:01 AM, Cong Wang wrote:
+>>> On Sun, Nov 15, 2020 at 5:06 AM wenxu <wenxu@ucloud.cn> wrote:
+>>>> 在 2020/11/15 2:05, Cong Wang 写道:
+>>>>> On Wed, Nov 11, 2020 at 9:44 PM <wenxu@ucloud.cn> wrote:
+>>>>>> diff --git a/net/sched/act_frag.c b/net/sched/act_frag.c
+>>>>>> new file mode 100644
+>>>>>> index 0000000..3a7ab92
+>>>>>> --- /dev/null
+>>>>>> +++ b/net/sched/act_frag.c
+>>>>> It is kinda confusing to see this is a module. It provides some
+>>>>> wrappers and hooks the dev_xmit_queue(), it belongs more to
+>>>>> the core tc code than any modularized code. How about putting
+>>>>> this into net/sched/sch_generic.c?
+>>>>>
+>>>>> Thanks.
+>>>> All the operations in the act_frag  are single L3 action.
+>>>>
+>>>> So we put in a single module. to keep it as isolated/contained as possible
+>>> Yeah, but you hook dev_queue_xmit() which is L2.
+>>>
+>>>> Maybe put this in a single file is better than a module? Buildin in the tc core code or not.
+>>>>
+>>>> Enable this feature in Kconifg with NET_ACT_FRAG?
+>>> Sort of... If this is not an optional feature, that is a must-have
+>>> feature for act_ct,
+>>> we should just get rid of this Kconfig.
+>>>
+>>> Also, you need to depend on CONFIG_INET somewhere to use the IP
+>>> fragment, no?
+>>>
+>>> Thanks.
+>> Maybe the act_frag should rename to sch_frag and buildin kernel.
+> sch_frag still sounds like a module. ;) This is why I proposed putting
+> it into sch_generic.c.
+>
+>> This fcuntion can be used for all tc subsystem. There is no need for
+>>
+>> CONFIG_INET. The sched system depends on NET.
+> CONFIG_INET is different from CONFIG_NET, right?
+
+you are right. ip_do_fragment depends on this!
+
+>
+> Thanks.
+>
