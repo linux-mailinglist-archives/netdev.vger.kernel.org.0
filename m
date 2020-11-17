@@ -2,95 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DE562B699D
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 17:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 702C32B69B7
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 17:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727533AbgKQQNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 11:13:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28953 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727519AbgKQQNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 11:13:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605629588;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BVsfR8T15xda2UvQfXxognwTfJY/c2OoSf9W43fPmOU=;
-        b=P9a4WBS6D+nbmoLi82bbyVUKwAhN1YZuwshnCGGF1Il221trkpxUV4hdmwm4KuqGLoNrSW
-        qDpCgE9pkM5tTp1scVg2DrEI0eLLo/baFOCZeNy1PwOTUaZ32WWU4ppaROkC4zHATvC4hf
-        9MtqzpunEUBQxfIQKR1C8xJMEoABEmM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-459-I2h5SXcZMLSFM8fbYaGRAQ-1; Tue, 17 Nov 2020 11:13:04 -0500
-X-MC-Unique: I2h5SXcZMLSFM8fbYaGRAQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 644825F9DE;
-        Tue, 17 Nov 2020 16:13:01 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A69A85C1D0;
-        Tue, 17 Nov 2020 16:12:49 +0000 (UTC)
-Date:   Tue, 17 Nov 2020 17:12:48 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, brakmo <brakmo@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        David Ahern <dsa@cumulusnetworks.com>,
-        Yonghong Song <yhs@fb.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Ira Weiny <ira.weiny@intel.com>, Thomas Graf <tgraf@suug.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Xdp <xdp-newbies@vger.kernel.org>,
-        brouer@redhat.com
-Subject: Re: [PATCH bpf-next 9/9] samples: bpf: remove bpf_load loader
- completely
-Message-ID: <20201117171248.465494b7@carbon>
-In-Reply-To: <20201117145644.1166255-10-danieltimlee@gmail.com>
-References: <20201117145644.1166255-1-danieltimlee@gmail.com>
-        <20201117145644.1166255-10-danieltimlee@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+        id S1727032AbgKQQPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 11:15:35 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:19272 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726532AbgKQQPe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 11:15:34 -0500
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AHG3rX6031098;
+        Tue, 17 Nov 2020 11:15:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=RwPEBTPhS0kMtIu0enl7fJZuAmeJfDeqZE1QEn1Ypsc=;
+ b=Ptvoa3+w6var7qIXI4WzRvsJ0UkJhHQM0P2mm1ps07mqMy7c/kk76WiNKiOIQpjIgth8
+ 6FChsQP1WPndBvSjB+NN6YBz3L7p1q8mHUtb4wx6T7MYtl8/QU+dYpY5ewUhlnbCtlyC
+ pRu67tVuPfFiiMkUeaWuHOxupp0198qERIVjxFguCNkUOrsJGrGAdvWuvCS24vduIgSN
+ PlCrF9/r40pDiCOoKkcklXMCnFKHeUmS4YvDBx+eFL6q42rqYGOWa2rXmE8NS1VBwpIA
+ 6xp12RJENbo8kadq9jYBbfmf6I6BwT5+iQfuKaCRlvXxnA744lboPkcX553fOudr6lvk 6g== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34v961t05p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 17 Nov 2020 11:15:31 -0500
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AHG8ZVM001832;
+        Tue, 17 Nov 2020 16:15:28 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 34t6gh3a48-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 17 Nov 2020 16:15:28 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AHGFP4D65012188
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 17 Nov 2020 16:15:26 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C374EA4067;
+        Tue, 17 Nov 2020 16:15:25 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7D33BA4064;
+        Tue, 17 Nov 2020 16:15:25 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 17 Nov 2020 16:15:25 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next 0/9] s390/qeth: updates 2020-11-17
+Date:   Tue, 17 Nov 2020 17:15:11 +0100
+Message-Id: <20201117161520.1089-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-17_06:2020-11-17,2020-11-17 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ adultscore=0 suspectscore=0 lowpriorityscore=0 spamscore=0 bulkscore=0
+ impostorscore=0 mlxscore=0 mlxlogscore=856 clxscore=1015 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011170117
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Nov 2020 14:56:44 +0000
-"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
+Hi Jakub,
 
-> Numerous refactoring that rewrites BPF programs written with bpf_load
-> to use the libbpf loader was finally completed, resulting in BPF
-> programs using bpf_load within the kernel being completely no longer
-> present.
-> 
-> This commit removes bpf_load, an outdated bpf loader that is difficult
-> to keep up with the latest kernel BPF and causes confusion.
-> 
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  samples/bpf/bpf_load.c          | 667 --------------------------------
->  samples/bpf/bpf_load.h          |  57 ---
->  samples/bpf/xdp2skb_meta_kern.c |   2 +-
->  3 files changed, 1 insertion(+), 725 deletions(-)
->  delete mode 100644 samples/bpf/bpf_load.c
->  delete mode 100644 samples/bpf/bpf_load.h
+please apply the following patch series for qeth to netdev's net-next tree.
 
-I've very happy that we can finally remove this ELF-BPF loader :-)
+This brings some cleanups, and a bunch of improvements for our
+.get_link_ksettings() code.
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Julian Wiedmann (8):
+  s390/qeth: don't call INIT_LIST_HEAD() on iob's list entry
+  s390/qeth: reduce rtnl locking for switchdev events
+  s390/qeth: tolerate error when querying card info
+  s390/qeth: improve QUERY CARD INFO processing
+  s390/qeth: set static link info during initialization
+  s390/qeth: clean up default cases for ethtool link mode
+  s390/qeth: use QUERY OAT for initial link info
+  s390/qeth: improve selection of ethtool link modes
+
+Kaixu Xia (1):
+  s390/qeth: remove useless if/else
+
+ drivers/s390/net/qeth_core.h      |  24 ++-
+ drivers/s390/net/qeth_core_main.c | 232 ++++++++++++++++++++++++++--
+ drivers/s390/net/qeth_core_mpc.h  |  40 ++++-
+ drivers/s390/net/qeth_ethtool.c   | 243 +++++++++++-------------------
+ drivers/s390/net/qeth_l2_main.c   |  33 ++--
+ drivers/s390/net/qeth_l3_main.c   |   5 +-
+ 6 files changed, 378 insertions(+), 199 deletions(-)
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.17.1
 
