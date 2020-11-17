@@ -2,113 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 805E62B5E03
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 12:10:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 165AE2B5E40
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 12:29:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728220AbgKQLJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 06:09:27 -0500
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:10704 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727267AbgKQLJ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 06:09:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1605611367; x=1637147367;
-  h=references:from:to:cc:subject:in-reply-to:date:
-   message-id:mime-version;
-  bh=EH841G87dGNBNV2s4l1T/JKSnRrnO9+AX7+FxZUsGfA=;
-  b=VXM2Z//ssFcynFDUCh3LsuMsH+Reo3RT6Ye23+xPyupb6/yzhVvRCGug
-   U1qYqsFm+5lYfUojcurHLqWdRW4v/Cd5dMbdDu0nZusU3h5ZtsL9RmwWb
-   zSl9QJsKXC8HwNLvUrpqqYmKfbPavbnaLmfFK4EcwU6O918DWwFVbTjeC
-   zhwGsrIWRSuGymmIiihxUaboYU2wqsKwPMcZhuPpcV45IJqgmyBN3NBI0
-   sYrjCMDNiasi26QQTDNXm43sigwOZwk+TsG5NapD60ATjtpP6QBQFaOJu
-   k69cmlmVBIc3PWBA6M0a/Qk7MGqyatXsgwHGcZwPtJhXZetRBPjYsNmvW
-   Q==;
-IronPort-SDR: SLbY2ruvV7EnKhrDAyNn8E7FJ9mQE5Rnwqs0yPBy8qD8PibdwCBTM7lkmeWy1iF5tPDyWERv+Y
- ATnEllerhduQNfY2EteykTO2wTuzh0i2up5jrMF/UCocCqDDNbjsohFnaoGkgK9LpoYvrlNqGY
- ngiI6Re/cQaUjIBXWx4Owc9C4M9QY2tn2WddJdzTFW1v+I5XhzZOffmiV4kP19XaOzrTkRN+Nu
- 9M17SJuzgZg3f8oK0b99hRaaCk9h5jUifcqDSNfGoU+FpAy4Jdb8/9TOz+meTjZnpexFDod5Bd
- itY=
-X-IronPort-AV: E=Sophos;i="5.77,485,1596524400"; 
-   d="scan'208";a="98732930"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Nov 2020 04:09:27 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 17 Nov 2020 04:09:26 -0700
-Received: from soft-dev2.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3
- via Frontend Transport; Tue, 17 Nov 2020 04:09:24 -0700
-References: <20201110100642.2153-1-bjarni.jonasson@microchip.com> <20201110102552.GZ1551@shell.armlinux.org.uk> <87blg5qou5.fsf@microchip.com> <20201110151248.GA1551@shell.armlinux.org.uk> <87a6voqntq.fsf@microchip.com> <20201115121921.GI1551@shell.armlinux.org.uk>
-User-agent: mu4e 0.9.18; emacs 25.2.2
-From:   Bjarni Jonasson <bjarni.jonasson@microchip.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        id S1728102AbgKQL2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 06:28:47 -0500
+Received: from mailout01.rmx.de ([94.199.90.91]:51055 "EHLO mailout01.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727815AbgKQL2r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Nov 2020 06:28:47 -0500
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout01.rmx.de (Postfix) with ESMTPS id 4Cb3bt4cv1z2SVD8;
+        Tue, 17 Nov 2020 12:28:42 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4Cb3bT6n2Lz2TSDJ;
+        Tue, 17 Nov 2020 12:28:21 +0100 (CET)
+Received: from n95hx1g2.localnet (192.168.54.38) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 17 Nov
+ 2020 12:27:18 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH] phy: phylink: Fix CuSFP issue in phylink
-In-Reply-To: <20201115121921.GI1551@shell.armlinux.org.uk>
-Date:   Tue, 17 Nov 2020 12:09:22 +0100
-Message-ID: <877dqkqly5.fsf@microchip.com>
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add hardware time stamping support
+Date:   Tue, 17 Nov 2020 12:27:17 +0100
+Message-ID: <1813904.kIZFssEuCH@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <2477133.fPTnnZM2lx@n95hx1g2>
+References: <20201019172435.4416-1-ceggers@arri.de> <20201110193245.uwsmrqzio5hco7fb@skbuf> <2477133.fPTnnZM2lx@n95hx1g2>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.38]
+X-RMX-ID: 20201117-122823-4Cb3bT6n2Lz2TSDJ-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thursday, 12 November 2020, 16:28:44 CET, Christian Eggers wrote:
+> Hi Vladimir,
+> 
+> On Tuesday, 10 November 2020, 20:32:45 CET, Vladimir Oltean wrote:
+> > But something is still wrong if you need to special-case the negative
+> > correctionField, it looks like the arithmetic is not done on the correct
+> > number of bits, either by the driver or by the hardware.
+> 
+> I got it! 
+I got it not!
 
-Russell King - ARM Linux admin writes:
+While keeping the (negative) correction field works perfect when using
+PTP over L2 (what I did the last weeks), this causes an unwanted side effect
+when using UDP:
 
-> On Wed, Nov 11, 2020 at 09:52:18AM +0100, Bjarni Jonasson wrote:
->>
->> Russell King - ARM Linux admin writes:
->>
->> > On Tue, Nov 10, 2020 at 03:16:34PM +0100, Bjarni Jonasson wrote:
->> >>
->> >> Russell King - ARM Linux admin writes:
->> >>
->> >> > On Tue, Nov 10, 2020 at 11:06:42AM +0100, Bjarni Jonasson wrote:
->> >> >> There is an issue with the current phylink driver and CuSFPs which
->> >> >> results in a callback to the phylink validate function without any
->> >> >> advertisement capabilities.  The workaround (in this changeset)
->> >> >> is to assign capabilities if a 1000baseT SFP is identified.
->> >> >
->> >> > How does this happen?  Which PHY is being used?
->> >>
->> >> This occurs just by plugging in the CuSFP.
->> >> None of the CuSFPs we have tested are working.
->> >> This is a dump from 3 different CuSFPs, phy regs 0-3:
->> >> FS SFP: 01:40:79:49
->> >> HP SFP: 01:40:01:49
->> >> Marvel SFP: 01:40:01:49
->> >> This was working before the delayed mac config was implemented (in dec
->> >> 2019).
->> >
->> > You're dumping PHY registers 0 and 1 there, not 0 through 3, which
->> > the values confirm. I don't recognise the format either. PHY registers
->> > are always 16-bit.
->> Sorry about that. Here is it again:
->> Marvell SFP : 0x0140 0x0149 0x0141 0x0cc1
->> FS SFP      : 0x1140 0x7949 0x0141 0x0cc2
->> Cisco SFP   : 0x0140 0x0149 0x0141 0x0cc1
->> I.e. its seems to be a Marvell phy (0x0141) in all cases.
->> And this occurs when phylink_start() is called.
->
-> So they're all 88E1111 devices, which is the most common PHY for
-> CuSFPs.
->
-> Do you have the Marvell PHY driver either built-in or available as a
-> module? I suspect the problem is you don't. You will need the Marvell
-> PHY driver to correctly drive the PHY, you can't rely on the fallback
-> driver for SFPs.
-Correct.  I was using the generic driver and that does clearly not
-work.  After including the Marvell driver the callback to the validate
-function happens as expected.  Thanks for the support.
---
-Bjarni Jonasson Microchip
+...
+> User Datagram Protocol, Src Port: 319, Dst Port: 319
+> 
+>     Source Port: 319
+>     Destination Port: 319
+>     Length: 62
+>  
+>  Checksum: 0x2285 incorrect, should be 0x2286 (maybe caused by "UDP checksum offload"?)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+>     [Checksum Status: Bad]
+>     [Stream index: 0]
+>     [Timestamps]
+> 
+> Precision Time Protocol (IEEE1588)
+> 
+>     0000 .... = transportSpecific: 0x0
+>     .... 0011 = messageId: Peer_Delay_Resp Message (0x3)
+>     0000 .... = Reserved: 0
+>     .... 0010 = versionPTP: 2
+>     messageLength: 54
+>     subdomainNumber: 0
+>     Reserved: 0
+>     flags: 0x0000
+>     correction: 5579788,000000 nanoseconds
+>     Reserved: 0
+>     ClockIdentity: 0x849000fffe0980f7
+>     SourcePortID: 1
+>     sequenceId: 785
+>     control: Other Message (5)
+>     logMessagePeriod: 127
+>     requestreceiptTimestamp (seconds): 0
+>     requestreceiptTimestamp (nanoseconds): 0
+>     requestingSourcePortIdentity: 0x849000fffe0980f6
+>     requestingSourcePortId: 2
+While correction field is ok (residential delay ~5ms, using one printk...),
+the UDP checksum is off by one in all PDelay_Resp messages.
+
+The KSZ device offers on option to set the UDP checksum to zero, but this also
+didn't help and additionally wouldn't work for IPv6.
+
+It seems that I should return to "moving T2 from the correction field to the
+tail tag" on tx.
+ 
+regards
+Christian
+
+
+
+
