@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA78A2B6886
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 16:21:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 500C52B6887
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 16:21:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730254AbgKQPUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 10:20:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:42563 "EHLO
+        id S1730492AbgKQPUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 10:20:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:28556 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730019AbgKQPUa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 10:20:30 -0500
+        by vger.kernel.org with ESMTP id S1730019AbgKQPUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 10:20:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605626428;
+        s=mimecast20190719; t=1605626431;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=rW/AWiECPY2JBQ4sj4W+VXCtGgita6vVeKBNU4bYUc4=;
-        b=h/Gfs5T8clq0p/Ec+mKGobwTFxX6u1H5EPngXB+Salq3N5KJdi+rPxflAUX9fQK4xP9khY
-        DdP+pGPslYOcl1qxi1H7gbOTe9+j8zFERTlcnX3JLwJO5gDyvm0PSHNljh53z4T3XARwMd
-        aeChnPqfRsWg8mfAEajPCQzyOxjtPkk=
+        bh=5nIiS4VXjK7crWMoMjKe+Kw8Quf3xc3QnFBb1artYkg=;
+        b=JAOe8U1VncL813Kwd1uh1EcuSQLG3AYaAXqN5KdinVteupaxgEBK9R1p7enUSO76smRiA2
+        /ymmkQjrUhqIFd3sKvI/2qGZB/X7z3qV1Aob2qczwDj2zsDDfAhyWZbubnDVVWJulOS8vx
+        5Tn71VCzznKSTq3AdcJkPV+25BcfZGQ=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-104-mUerdknrNBKLTYIXQWnXXA-1; Tue, 17 Nov 2020 10:20:26 -0500
-X-MC-Unique: mUerdknrNBKLTYIXQWnXXA-1
+ us-mta-162-lMSam2ehOnS45pdTa_jtNg-1; Tue, 17 Nov 2020 10:20:28 -0500
+X-MC-Unique: lMSam2ehOnS45pdTa_jtNg-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B46D410866A1;
-        Tue, 17 Nov 2020 15:20:25 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4BEBB1017DD5;
+        Tue, 17 Nov 2020 15:20:27 +0000 (UTC)
 Received: from yoda.fritz.box (unknown [10.40.192.212])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 84A345D707;
-        Tue, 17 Nov 2020 15:20:24 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1C90D5D707;
+        Tue, 17 Nov 2020 15:20:25 +0000 (UTC)
 From:   Antonio Cardace <acardace@redhat.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next v4 3/6] netdevsim: support ethtool ring and coalesce settings
-Date:   Tue, 17 Nov 2020 16:20:12 +0100
-Message-Id: <20201117152015.142089-4-acardace@redhat.com>
+Subject: [PATCH net-next v4 4/6] selftests: extract common functions in ethtool-common.sh
+Date:   Tue, 17 Nov 2020 16:20:13 +0100
+Message-Id: <20201117152015.142089-5-acardace@redhat.com>
 In-Reply-To: <20201117152015.142089-1-acardace@redhat.com>
 References: <20201117152015.142089-1-acardace@redhat.com>
 MIME-Version: 1.0
@@ -49,132 +49,172 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add ethtool ring and coalesce settings support for testing.
+Factor out some useful functions so that they can be reused
+by other ethtool-netdevsim scripts.
 
 Signed-off-by: Antonio Cardace <acardace@redhat.com>
-Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
 ---
-v3 -> v4:
- - move supported_coalesce_params struct field as first field
- - extracted pauseparam refactoring in a different patch
----
- drivers/net/netdevsim/ethtool.c   | 68 +++++++++++++++++++++++++++++--
- drivers/net/netdevsim/netdevsim.h |  3 ++
- 2 files changed, 67 insertions(+), 4 deletions(-)
+ .../drivers/net/netdevsim/ethtool-common.sh   | 69 +++++++++++++++++++
+ .../drivers/net/netdevsim/ethtool-pause.sh    | 63 +----------------
+ 2 files changed, 71 insertions(+), 61 deletions(-)
+ create mode 100644 tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh
 
-diff --git a/drivers/net/netdevsim/ethtool.c b/drivers/net/netdevsim/ethtool.c
-index a1500f849203..166f0d6cbcf7 100644
---- a/drivers/net/netdevsim/ethtool.c
-+++ b/drivers/net/netdevsim/ethtool.c
-@@ -42,23 +42,83 @@ nsim_set_pauseparam(struct net_device *dev, struct ethtool_pauseparam *pause)
- 	return 0;
- }
-
-+static int nsim_get_coalesce(struct net_device *dev,
-+			     struct ethtool_coalesce *coal)
-+{
-+	struct netdevsim *ns = netdev_priv(dev);
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh b/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh
+new file mode 100644
+index 000000000000..fa44cf6e732c
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh
+@@ -0,0 +1,69 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0-only
 +
-+	memcpy(coal, &ns->ethtool.coalesce, sizeof(ns->ethtool.coalesce));
-+	return 0;
++NSIM_ID=$((RANDOM % 1024))
++NSIM_DEV_SYS=/sys/bus/netdevsim/devices/netdevsim$NSIM_ID
++NSIM_DEV_DFS=/sys/kernel/debug/netdevsim/netdevsim$NSIM_ID/ports/0
++NSIM_NETDEV=
++num_passes=0
++num_errors=0
++
++function cleanup_nsim {
++    if [ -e $NSIM_DEV_SYS ]; then
++	echo $NSIM_ID > /sys/bus/netdevsim/del_device
++    fi
 +}
 +
-+static int nsim_set_coalesce(struct net_device *dev,
-+			     struct ethtool_coalesce *coal)
-+{
-+	struct netdevsim *ns = netdev_priv(dev);
-+
-+	memcpy(&ns->ethtool.coalesce, coal, sizeof(ns->ethtool.coalesce));
-+	return 0;
++function cleanup {
++    cleanup_nsim
 +}
 +
-+static void nsim_get_ringparam(struct net_device *dev,
-+			       struct ethtool_ringparam *ring)
-+{
-+	struct netdevsim *ns = netdev_priv(dev);
++trap cleanup EXIT
 +
-+	memcpy(ring, &ns->ethtool.ring, sizeof(ns->ethtool.ring));
++function get_netdev_name {
++    local -n old=$1
++
++    new=$(ls /sys/class/net)
++
++    for netdev in $new; do
++	for check in $old; do
++            [ $netdev == $check ] && break
++	done
++
++	if [ $netdev != $check ]; then
++	    echo $netdev
++	    break
++	fi
++    done
 +}
 +
-+static int nsim_set_ringparam(struct net_device *dev,
-+			      struct ethtool_ringparam *ring)
-+{
-+	struct netdevsim *ns = netdev_priv(dev);
++function check {
++    local code=$1
++    local str=$2
++    local exp_str=$3
 +
-+	memcpy(&ns->ethtool.ring, ring, sizeof(ns->ethtool.ring));
-+	return 0;
++    if [ $code -ne 0 ]; then
++	((num_errors++))
++	return
++    fi
++
++    if [ "$str" != "$exp_str"  ]; then
++	echo -e "Expected: '$exp_str', got '$str'"
++	((num_errors++))
++	return
++    fi
++
++    ((num_passes++))
 +}
 +
- static const struct ethtool_ops nsim_ethtool_ops = {
--	.get_pause_stats	= nsim_get_pause_stats,
--	.get_pauseparam		= nsim_get_pauseparam,
--	.set_pauseparam		= nsim_set_pauseparam,
-+	.supported_coalesce_params	= ETHTOOL_COALESCE_ALL_PARAMS,
-+	.get_pause_stats	        = nsim_get_pause_stats,
-+	.get_pauseparam		        = nsim_get_pauseparam,
-+	.set_pauseparam		        = nsim_set_pauseparam,
-+	.set_coalesce			= nsim_set_coalesce,
-+	.get_coalesce			= nsim_get_coalesce,
-+	.get_ringparam			= nsim_get_ringparam,
-+	.set_ringparam			= nsim_set_ringparam,
- };
-
-+static void nsim_ethtool_ring_init(struct netdevsim *ns)
-+{
-+	ns->ethtool.ring.rx_max_pending = 4096;
-+	ns->ethtool.ring.rx_jumbo_max_pending = 4096;
-+	ns->ethtool.ring.rx_mini_max_pending = 4096;
-+	ns->ethtool.ring.tx_max_pending = 4096;
++function make_netdev {
++    # Make a netdevsim
++    old_netdevs=$(ls /sys/class/net)
++
++    if ! $(lsmod | grep -q netdevsim); then
++	modprobe netdevsim
++    fi
++
++    echo $NSIM_ID > /sys/bus/netdevsim/new_device
++    echo `get_netdev_name old_netdevs`
 +}
-+
- void nsim_ethtool_init(struct netdevsim *ns)
- {
- 	struct dentry *ethtool, *dir;
-
- 	ns->netdev->ethtool_ops = &nsim_ethtool_ops;
-
-+	nsim_ethtool_ring_init(ns);
-+
- 	ethtool = debugfs_create_dir("ethtool", ns->nsim_dev_port->ddir);
-
- 	dir = debugfs_create_dir("pause", ethtool);
- 	debugfs_create_bool("report_stats_rx", 0600, dir,
- 			    &ns->ethtool.pauseparam.report_stats_rx);
- 	debugfs_create_bool("report_stats_tx", 0600, dir,
--			    &ns->ethtool.report_stats_tx);
-+			    &ns->ethtool.pauseparam.report_stats_tx);
-+
-+	dir = debugfs_create_dir("ring", ethtool);
-+	debugfs_create_u32("rx_max_pending", 0600, dir,
-+			   &ns->ethtool.ring.rx_max_pending);
-+	debugfs_create_u32("rx_jumbo_max_pending", 0600, dir,
-+			   &ns->ethtool.ring.rx_jumbo_max_pending);
-+	debugfs_create_u32("rx_mini_max_pending", 0600, dir,
-+			   &ns->ethtool.ring.rx_mini_max_pending);
-+	debugfs_create_u32("tx_max_pending", 0600, dir,
-+			   &ns->ethtool.ring.tx_max_pending);
- }
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 4b3023e49094..b023dc0a4259 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -15,6 +15,7 @@
-
- #include <linux/debugfs.h>
- #include <linux/device.h>
-+#include <linux/ethtool.h>
- #include <linux/kernel.h>
- #include <linux/list.h>
- #include <linux/netdevice.h>
-@@ -60,6 +61,8 @@ struct nsim_ethtool_pauseparam {
-
- struct nsim_ethtool {
- 	struct nsim_ethtool_pauseparam pauseparam;
-+	struct ethtool_coalesce coalesce;
-+	struct ethtool_ringparam ring;
- };
-
- struct netdevsim {
---
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/ethtool-pause.sh b/tools/testing/selftests/drivers/net/netdevsim/ethtool-pause.sh
+index 25c896b9e2eb..b4a7abfe5454 100755
+--- a/tools/testing/selftests/drivers/net/netdevsim/ethtool-pause.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/ethtool-pause.sh
+@@ -1,60 +1,7 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0-only
+ 
+-NSIM_ID=$((RANDOM % 1024))
+-NSIM_DEV_SYS=/sys/bus/netdevsim/devices/netdevsim$NSIM_ID
+-NSIM_DEV_DFS=/sys/kernel/debug/netdevsim/netdevsim$NSIM_ID/ports/0
+-NSIM_NETDEV=
+-num_passes=0
+-num_errors=0
+-
+-function cleanup_nsim {
+-    if [ -e $NSIM_DEV_SYS ]; then
+-	echo $NSIM_ID > /sys/bus/netdevsim/del_device
+-    fi
+-}
+-
+-function cleanup {
+-    cleanup_nsim
+-}
+-
+-trap cleanup EXIT
+-
+-function get_netdev_name {
+-    local -n old=$1
+-
+-    new=$(ls /sys/class/net)
+-
+-    for netdev in $new; do
+-	for check in $old; do
+-            [ $netdev == $check ] && break
+-	done
+-
+-	if [ $netdev != $check ]; then
+-	    echo $netdev
+-	    break
+-	fi
+-    done
+-}
+-
+-function check {
+-    local code=$1
+-    local str=$2
+-    local exp_str=$3
+-
+-    if [ $code -ne 0 ]; then
+-	((num_errors++))
+-	return
+-    fi
+-
+-    if [ "$str" != "$exp_str"  ]; then
+-	echo -e "Expected: '$exp_str', got '$str'"
+-	((num_errors++))
+-	return
+-    fi
+-
+-    ((num_passes++))
+-}
++source ethtool-common.sh
+ 
+ # Bail if ethtool is too old
+ if ! ethtool -h | grep include-stat 2>&1 >/dev/null; then
+@@ -62,13 +9,7 @@ if ! ethtool -h | grep include-stat 2>&1 >/dev/null; then
+     exit 4
+ fi
+ 
+-# Make a netdevsim
+-old_netdevs=$(ls /sys/class/net)
+-
+-modprobe netdevsim
+-echo $NSIM_ID > /sys/bus/netdevsim/new_device
+-
+-NSIM_NETDEV=`get_netdev_name old_netdevs`
++NSIM_NETDEV=$(make_netdev)
+ 
+ set -o pipefail
+ 
+-- 
 2.28.0
 
