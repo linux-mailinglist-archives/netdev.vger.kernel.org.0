@@ -2,112 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FB712B56C6
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 03:41:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECE032B5705
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 03:47:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727073AbgKQCiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 21:38:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45098 "EHLO
+        id S1726365AbgKQCo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 21:44:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726771AbgKQCiB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 21:38:01 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E2CC0613CF;
-        Mon, 16 Nov 2020 18:38:01 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id v21so2273781pgi.2;
-        Mon, 16 Nov 2020 18:38:01 -0800 (PST)
+        with ESMTP id S1726338AbgKQCo7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 21:44:59 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270B5C0613CF
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 18:44:59 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id 131so5556374pfb.9
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 18:44:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=G0DEGjjDiDmPveVipYJGdwwZdGpe8MZoy5sy/lp+AYk=;
-        b=Q3jbUvXt1o/TZioJ69dwSqSViemWYwalrjEtjq6V00Ll26CxTS6m52rM4Ud11Yo45G
-         F+nzur6SC5HVqkGE725YisV4bO6rwKNF19YrFAJRJguoFvpxL8fuQ3DmM1s6x8reJzzV
-         QJ7wCPXdTvA6gVodrnZ21cAgj4EMCKtTt5DszsHMdlEVflFaSQQV5aqjypmKiJRaiKdI
-         6AI87YfYVV/35A4ym+iSY0ZR7NZNKoYz70VCWXUVdXFP/WjTFxDkoZ8xllclbZMO0+K6
-         aC/Ayq8N9xieycNoekjKiYZ5I/QS/jD9hp+U9iG3ubk14SnmLiLOSrM20CyNjYFwqgGa
-         w7jw==
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Pd1zYh5RVEYnJOC3MzDRHf+Tit96UpAzZR80A62Org0=;
+        b=s8XjI2sgOKo6I1uz6WseYIzvxucVKoM6YRCyA+rwvik58NoPFASiEKhP3Y+1LtDwOG
+         QEEBcconBE633m0S3ixwFdI6K+R+xcQprjIg2epB/TyUGRdzBIziJUg2A76L8iSeAhxM
+         MByk1bR4XXD/JYSgQ7suxIcnaW+uk+Bv9z8W/RoY+e+4iQC+3+Ji0Ab7T6FuDi/ZKfhA
+         1pikUBh1DDtCHGvssJvIx4wAjeO114HFGFlk9ZTV9MH0Xuz5ciSs64QgO2J3ULSAsmPy
+         qO+/W5OxxTA2TmtEQrBd/nM3Ifc/ChuCFZcPdehaeK54HOZOwVFjY2J7wxYg77Xx156A
+         1VlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=G0DEGjjDiDmPveVipYJGdwwZdGpe8MZoy5sy/lp+AYk=;
-        b=asVxN81LyMw7fvns9AW8AmikSfkUamhRjiYwFy6+lUrM0rw6YwyPwN/y7iiLb9tuQf
-         0J6/P+nHKxqEqzRpkEtL9pSqFmSQDZ3c2lSh3GcVPXVTEBB/8w8d++gvzImGO3OhK+D2
-         /BZbbM7yt5g58OSIsd3PDUNO0uot9A5yIfdC1LT0OHPsgorqqG8OWweVl4v/7aa7ke2p
-         6A76MC5qQm+kQVAkhHX7OzHYl6ozkYoqd2OsSPptNfCyaHUpmD7gw4cHtVPPuuGIo4Pl
-         Q8z8SpJdDee5P5QBc4kCnq9IzJTzOzUUDc5vyIvQbCRoVGFJMsIv73RhTEmRdBc9KZpg
-         oZyw==
-X-Gm-Message-State: AOAM530XDIU/A85/vR7CDnUiaJghpT3siZtSPI+GsLp9nWjHHKM/0ofF
-        M3vubUU5ArdLXbGZ0tgOQ9w=
-X-Google-Smtp-Source: ABdhPJyIYstmthDQGzz23HPHktLu38SuvuyNa/62CpdWKhmjf0KY5VMgs5V6HGmjJYekZhriYlywcg==
-X-Received: by 2002:a63:5a62:: with SMTP id k34mr1769169pgm.391.1605580681003;
-        Mon, 16 Nov 2020 18:38:01 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:65f6])
-        by smtp.gmail.com with ESMTPSA id 64sm8798532pfe.0.2020.11.16.18.37.58
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=Pd1zYh5RVEYnJOC3MzDRHf+Tit96UpAzZR80A62Org0=;
+        b=IzELqLgSAPTFWeHT3k7TYUyjJxLk8jyY5rDdXJJAAeSMQMHrB3Egg9gCkz/CzjKl9p
+         elvJ6rTq/ZU2Vd0ajLQRqAI6ClAe0noaeLfVoyax0UuDD8EYvfDOfuikQzpqm6hoEsVE
+         u/Pzz3mMDjlsdM1OhXHAqWF7YbYNuCvRvVXuUyFvDVtM44hKFetiJYXrIEvcSoLf9CIv
+         amlnQlnFi/DOXrEqqIYkLIFEjyC8V16MSjrxjsXuiq+jaQ4P2n1OzBKD5ic62/P557hV
+         KIdcCUn3Q3RLlhfpCLqWlX7YUvkuYBWzqoNqltqH/qheA8KS+KEPzE8cvcigtG5ZEoeF
+         C+Fg==
+X-Gm-Message-State: AOAM533705vb3Oer0T6L1RqNrN+4fResII5nbS+CNEzPqZF2pjQLh7xv
+        p0krQVZVa1ha9A0PaqmO+1hrscpXUs6RWQ==
+X-Google-Smtp-Source: ABdhPJw84zw9RV+OfJT0eSRiAWJYWBolg1Dajj7i8HkY6Ipn/sZJEsW/9JqOacizDFOJE+T8b6uvaQ==
+X-Received: by 2002:a63:5b4a:: with SMTP id l10mr1733193pgm.259.1605581098638;
+        Mon, 16 Nov 2020 18:44:58 -0800 (PST)
+Received: from localhost.localdomain ([45.124.203.19])
+        by smtp.gmail.com with ESMTPSA id e8sm855820pjr.30.2020.11.16.18.44.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2020 18:37:59 -0800 (PST)
-Date:   Mon, 16 Nov 2020 18:37:57 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Jiri Benc <jbenc@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCHv5 iproute2-next 0/5] iproute2: add libbpf support
-Message-ID: <20201117023757.qypmhucuws3sajyb@ast-mbp>
-References: <20201109070802.3638167-1-haliu@redhat.com>
- <20201116065305.1010651-1-haliu@redhat.com>
- <CAADnVQ+LNBYq5fdTSRUPy2ZexTdCcB6ErNH_T=r9bJ807UT=pQ@mail.gmail.com>
- <20201116155446.16fe46cf@carbon>
+        Mon, 16 Nov 2020 18:44:57 -0800 (PST)
+Sender: "joel.stan@gmail.com" <joel.stan@gmail.com>
+From:   Joel Stanley <joel@jms.id.au>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Andrew Jeffery <andrew@aj.id.au>,
+        Ivan Mikhaylov <i.mikhaylov@yadro.com>, netdev@vger.kernel.org
+Subject: [PATCH net v3] net: ftgmac100: Fix crash when removing driver
+Date:   Tue, 17 Nov 2020 13:14:48 +1030
+Message-Id: <20201117024448.1170761-1-joel@jms.id.au>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201116155446.16fe46cf@carbon>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 16, 2020 at 03:54:46PM +0100, Jesper Dangaard Brouer wrote:
-> 
-> Thus, IMHO we MUST move forward and get started with converting
-> iproute2 to libbpf, and start on the work to deprecate the build in
-> BPF-ELF-loader.  I would prefer ripping out the BPF-ELF-loader and
-> replace it with libbpf that handle the older binary elf-map layout, but
-> I do understand if you want to keep this around. (at least for the next
-> couple of releases).
+When removing the driver we would hit BUG_ON(!list_empty(&dev->ptype_specific))
+in net/core/dev.c due to still having the NC-SI packet handler
+registered.
 
-I don't understand why legacy code has to be around.
-Having the legacy code and an option to build tc without libbpf creates
-backward compatibility risk to tc users:
-Newer tc may not load bpf progs that older tc did.
+ # echo 1e660000.ethernet > /sys/bus/platform/drivers/ftgmac100/unbind
+  ------------[ cut here ]------------
+  kernel BUG at net/core/dev.c:10254!
+  Internal error: Oops - BUG: 0 [#1] SMP ARM
+  CPU: 0 PID: 115 Comm: sh Not tainted 5.10.0-rc3-next-20201111-00007-g02e0365710c4 #46
+  Hardware name: Generic DT based system
+  PC is at netdev_run_todo+0x314/0x394
+  LR is at cpumask_next+0x20/0x24
+  pc : [<806f5830>]    lr : [<80863cb0>]    psr: 80000153
+  sp : 855bbd58  ip : 00000001  fp : 855bbdac
+  r10: 80c03d00  r9 : 80c06228  r8 : 81158c54
+  r7 : 00000000  r6 : 80c05dec  r5 : 80c05d18  r4 : 813b9280
+  r3 : 813b9054  r2 : 8122c470  r1 : 00000002  r0 : 00000002
+  Flags: Nzcv  IRQs on  FIQs off  Mode SVC_32  ISA ARM  Segment none
+  Control: 00c5387d  Table: 85514008  DAC: 00000051
+  Process sh (pid: 115, stack limit = 0x7cb5703d)
+ ...
+  Backtrace:
+  [<806f551c>] (netdev_run_todo) from [<80707eec>] (rtnl_unlock+0x18/0x1c)
+   r10:00000051 r9:854ed710 r8:81158c54 r7:80c76bb0 r6:81158c10 r5:8115b410
+   r4:813b9000
+  [<80707ed4>] (rtnl_unlock) from [<806f5db8>] (unregister_netdev+0x2c/0x30)
+  [<806f5d8c>] (unregister_netdev) from [<805a8180>] (ftgmac100_remove+0x20/0xa8)
+   r5:8115b410 r4:813b9000
+  [<805a8160>] (ftgmac100_remove) from [<805355e4>] (platform_drv_remove+0x34/0x4c)
 
-> I actually fear that it will be a bad user experience, when we start to
-> have multiple userspace tools that load BPF, but each is compiled and
-> statically linked with it own version of libbpf (with git submodule an
-> increasing number of tools will have more variations!).
+Fixes: bd466c3fb5a4 ("net/faraday: Support NCSI mode")
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+---
+v3: Apply to net so it can go in as a fix
+v2: Also unregister in _probe
+---
+ drivers/net/ethernet/faraday/ftgmac100.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-So far people either freeze bpftool that they use to load progs
-or they use libbpf directly in their applications.
-Any other way means that the application behavior will be unpredictable.
-If a company built a bpf-based product and wants to distibute such
-product as a package it needs a way to specify this dependency in pkg config.
-'tc -V' is not something that can be put in a spec.
-The main iproute2 version can be used as a dependency, but it's meaningless
-when presence of libbpf and its version is not strictly derived from
-iproute2 spec.
-The users should be able to write in their spec:
-BuildRequires: iproute-tc >= 5.10
-and be confident that tc will load the prog they've developed and tested.
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index 00024dd41147..80fb1f537bb3 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1907,6 +1907,8 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 	clk_disable_unprepare(priv->rclk);
+ 	clk_disable_unprepare(priv->clk);
+ err_ncsi_dev:
++	if (priv->ndev)
++		ncsi_unregister_dev(priv->ndev);
+ 	ftgmac100_destroy_mdio(netdev);
+ err_setup_mdio:
+ 	iounmap(priv->base);
+@@ -1926,6 +1928,8 @@ static int ftgmac100_remove(struct platform_device *pdev)
+ 	netdev = platform_get_drvdata(pdev);
+ 	priv = netdev_priv(netdev);
+ 
++	if (priv->ndev)
++		ncsi_unregister_dev(priv->ndev);
+ 	unregister_netdev(netdev);
+ 
+ 	clk_disable_unprepare(priv->rclk);
+-- 
+2.29.2
 
-> I actually thinks it makes sense to have iproute2 require a specific
-> libbpf version, and also to move this version requirement forward, as
-> the kernel evolves features that gets added into libbpf. 
-
-+1
