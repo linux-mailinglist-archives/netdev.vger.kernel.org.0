@@ -2,60 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 431A02B55C6
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 01:42:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C21772B55D4
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 01:45:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730772AbgKQAkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 19:40:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49760 "EHLO mail.kernel.org"
+        id S1731497AbgKQApF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 19:45:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51396 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729495AbgKQAkF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Nov 2020 19:40:05 -0500
-Content-Type: text/plain; charset="utf-8"
+        id S1729748AbgKQApE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 19:45:04 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2075824682;
+        Tue, 17 Nov 2020 00:45:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605573605;
-        bh=1X3a6pusibxgUUs6BZZXGXf5rNn97QYSBMRr/M1ekUs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=a1hR7QP7SRgGMAus5nniKjZVFZjtHukDaahk5Br13fCpNUZxMsmHpaWU9/A5KlK0o
-         cKWMaqxH654OOkPiduMnTKZBNO8TBKW9rNUhjp5rAywlVeqo4lQVM6yXXVb7txAfCB
-         KEq4kBrqcfsxXUejAPbvj/Z9x2ntK96TA6Rx5weA=
+        s=default; t=1605573904;
+        bh=06jblf0tzRJ08jMztos5luGT1Zgly8HSetaL/BmSdwY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LFJYqnqMbmfysww4TC06viz9xlubCUHegAm07Z2L4He2+wS/KsOlaiXe+AhEmIB+1
+         0ki0oCSVofpe4+PSVCpxqfIBv4p0eZbhlh1Lzg1uPNU3TF7zCdwihKwbe6o8CaYaHn
+         AmVzhqO5O7C/dwYkn1XwHjOc+7tHiTJkjjgM80/o=
+Date:   Mon, 16 Nov 2020 16:45:03 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Antonio Cardace <acardace@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next v3 4/4] selftests: add ring and coalesce
+ selftests
+Message-ID: <20201116164503.7dcedcae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201113231655.139948-4-acardace@redhat.com>
+References: <20201113231655.139948-1-acardace@redhat.com>
+        <20201113231655.139948-4-acardace@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: qualcomm: rmnet: Fix incorrect receive packet
- handling during cleanup
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160557360535.10137.9289534530126610366.git-patchwork-notify@kernel.org>
-Date:   Tue, 17 Nov 2020 00:40:05 +0000
-References: <1605298325-3705-1-git-send-email-subashab@codeaurora.org>
-In-Reply-To: <1605298325-3705-1-git-send-email-subashab@codeaurora.org>
-To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        stranche@codeaurora.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Fri, 13 Nov 2020 13:12:05 -0700 you wrote:
-> During rmnet unregistration, the real device rx_handler is first cleared
-> followed by the removal of rx_handler_data after the rcu synchronization.
+On Sat, 14 Nov 2020 00:16:55 +0100 Antonio Cardace wrote:
+> Add scripts to test ring and coalesce settings
+> of netdevsim.
 > 
-> Any packets in the receive path may observe that the rx_handler is NULL.
-> However, there is no check when dereferencing this value to use the
-> rmnet_port information.
-> 
-> [...]
+> Signed-off-by: Antonio Cardace <acardace@redhat.com>
 
-Here is the summary with links:
-  - [net] net: qualcomm: rmnet: Fix incorrect receive packet handling during cleanup
-    https://git.kernel.org/netdev/net/c/fc70f5bf5e52
+> @@ -0,0 +1,68 @@
+> +#!/bin/bash
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +
+> +source ethtool-common.sh
+> +
+> +function get_value {
+> +    local key=$1
+> +
+> +    echo $(ethtool -c $NSIM_NETDEV | \
+> +        awk -F':' -v pattern="$key:" '$0 ~ pattern {gsub(/[ \t]/, "", $2); print $2}')
+> +}
+> +
+> +if ! ethtool -h | grep -q coalesce; then
+> +    echo "SKIP: No --coalesce support in ethtool"
+> +    exit 4
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I think the skip exit code for selftests is 2
 
+> +fi
+> +
+> +NSIM_NETDEV=$(make_netdev)
+> +
+> +set -o pipefail
+> +
+> +declare -A SETTINGS_MAP=(
+> +    ["rx-frames-low"]="rx-frame-low"
+> +    ["tx-frames-low"]="tx-frame-low"
+> +    ["rx-frames-high"]="rx-frame-high"
+> +    ["tx-frames-high"]="tx-frame-high"
+> +    ["rx-usecs"]="rx-usecs"
+> +    ["rx-frames"]="rx-frames"
+> +    ["rx-usecs-irq"]="rx-usecs-irq"
+> +    ["rx-frames-irq"]="rx-frames-irq"
+> +    ["tx-usecs"]="tx-usecs"
+> +    ["tx-frames"]="tx-frames"
+> +    ["tx-usecs-irq"]="tx-usecs-irq"
+> +    ["tx-frames-irq"]="tx-frames-irq"
+> +    ["stats-block-usecs"]="stats-block-usecs"
+> +    ["pkt-rate-low"]="pkt-rate-low"
+> +    ["rx-usecs-low"]="rx-usecs-low"
+> +    ["tx-usecs-low"]="tx-usecs-low"
+> +    ["pkt-rate-high"]="pkt-rate-high"
+> +    ["rx-usecs-high"]="rx-usecs-high"
+> +    ["tx-usecs-high"]="tx-usecs-high"
+> +    ["sample-interval"]="sample-interval"
+> +)
+> +
+> +for key in ${!SETTINGS_MAP[@]}; do
+> +    query_key=${SETTINGS_MAP[$key]}
+> +    value=$((RANDOM % $((2**32-1))))
+> +    ethtool -C $NSIM_NETDEV "$key" "$value"
+> +    s=$(get_value "$query_key")
 
+It would be better to validate the entire config, not just the most
+recently set key. This way we would catch the cases where setting
+attr breaks the value of another.
+
+> +    check $? "$s" "$value"
+> +done
