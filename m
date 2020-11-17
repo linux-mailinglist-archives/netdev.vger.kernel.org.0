@@ -2,61 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F08C42B69C0
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 17:17:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D52EE2B6A70
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 17:40:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbgKQQQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 11:16:05 -0500
-Received: from smtprelay0190.hostedemail.com ([216.40.44.190]:38320 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727127AbgKQQQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 11:16:04 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id B98D51822563C;
-        Tue, 17 Nov 2020 16:16:02 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1538:1567:1593:1594:1711:1714:1730:1747:1777:1792:2393:2525:2560:2563:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3622:3865:3866:3867:3870:3871:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:4362:5007:6119:7903:9025:10004:10400:10848:11232:11658:11914:12043:12048:12297:12555:12698:12737:12740:12760:12895:13069:13311:13357:13439:13845:14181:14659:14721:21080:21627:30012:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: rake43_3008f7827332
-X-Filterd-Recvd-Size: 1517
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf11.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 17 Nov 2020 16:16:00 +0000 (UTC)
-Message-ID: <b9989e7d048765111826d1df549a364485ea546f.camel@perches.com>
-Subject: Re: [PATCH][next] mwifiex: Fix fall-through warnings for Clang
-From:   Joe Perches <joe@perches.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Date:   Tue, 17 Nov 2020 08:15:59 -0800
-In-Reply-To: <20201117160958.GA18807@embeddedor>
-References: <20201117160958.GA18807@embeddedor>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S1727919AbgKQQjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 11:39:39 -0500
+Received: from pbmsgap01.intersil.com ([192.157.179.201]:44142 "EHLO
+        pbmsgap01.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726964AbgKQQjj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 11:39:39 -0500
+Received: from pps.filterd (pbmsgap01.intersil.com [127.0.0.1])
+        by pbmsgap01.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0AHFrdgJ028277;
+        Tue, 17 Nov 2020 11:06:33 -0500
+Received: from pbmxdp01.intersil.corp (pbmxdp01.pb.intersil.com [132.158.200.222])
+        by pbmsgap01.intersil.com with ESMTP id 34tbn59bc6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 17 Nov 2020 11:06:33 -0500
+Received: from pbmxdp03.intersil.corp (132.158.200.224) by
+ pbmxdp01.intersil.corp (132.158.200.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.1979.3; Tue, 17 Nov 2020 11:06:31 -0500
+Received: from localhost (132.158.202.109) by pbmxdp03.intersil.corp
+ (132.158.200.224) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Tue, 17 Nov 2020 11:06:31 -0500
+From:   <min.li.xe@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH v2 net-next 3/5] ptp: clockmatrix: remove 5 second delay before entering write phase mode
+Date:   Tue, 17 Nov 2020 11:06:00 -0500
+Message-ID: <1605629162-31876-4-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1605629162-31876-1-git-send-email-min.li.xe@renesas.com>
+References: <1605629162-31876-1-git-send-email-min.li.xe@renesas.com>
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-17_04:2020-11-17,2020-11-17 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 adultscore=0 malwarescore=0
+ bulkscore=0 spamscore=0 mlxlogscore=999 suspectscore=4 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011170115
+X-Proofpoint-Spam-Reason: mlx
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-11-17 at 10:09 -0600, Gustavo A. R. Silva wrote:
-> In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
-> warnings by explicitly adding multiple break statements instead of
-> letting the code fall through to the next case.
+From: Min Li <min.li.xe@renesas.com>
 
-Thanks Gustavo.
+Remove write phase mode 5 second setup delay, not needed.
 
-I think this is better style than the gcc allowed
-undescribed fallthrough to break;
+Signed-off-by: Min Li <min.li.xe@renesas.com>
+---
+ drivers/ptp/ptp_clockmatrix.c | 22 ----------------------
+ drivers/ptp/ptp_clockmatrix.h |  1 -
+ 2 files changed, 23 deletions(-)
 
-gcc developers disagree though:
-
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91432
-
+diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
+index 6a3d02b..c06df61 100644
+--- a/drivers/ptp/ptp_clockmatrix.c
++++ b/drivers/ptp/ptp_clockmatrix.c
+@@ -72,16 +72,6 @@ static int contains_full_configuration(const struct firmware *fw)
+ 	return (count >= full_count);
+ }
+ 
+-static long set_write_phase_ready(struct ptp_clock_info *ptp)
+-{
+-	struct idtcm_channel *channel =
+-		container_of(ptp, struct idtcm_channel, caps);
+-
+-	channel->write_phase_ready = 1;
+-
+-	return 0;
+-}
+-
+ static int char_array_to_timespec(u8 *buf,
+ 				  u8 count,
+ 				  struct timespec64 *ts)
+@@ -1382,16 +1372,8 @@ static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
+ 
+ 		if (err)
+ 			return err;
+-
+-		channel->write_phase_ready = 0;
+-
+-		ptp_schedule_worker(channel->ptp_clock,
+-				    msecs_to_jiffies(WR_PHASE_SETUP_MS));
+ 	}
+ 
+-	if (!channel->write_phase_ready)
+-		delta_ns = 0;
+-
+ 	offset_ps = (s64)delta_ns * 1000;
+ 
+ 	/*
+@@ -1971,7 +1953,6 @@ static const struct ptp_clock_info idtcm_caps_v487 = {
+ 	.gettime64	= &idtcm_gettime,
+ 	.settime64	= &idtcm_settime_v487,
+ 	.enable		= &idtcm_enable,
+-	.do_aux_work	= &set_write_phase_ready,
+ };
+ 
+ static const struct ptp_clock_info idtcm_caps = {
+@@ -1984,7 +1965,6 @@ static const struct ptp_clock_info idtcm_caps = {
+ 	.gettime64	= &idtcm_gettime,
+ 	.settime64	= &idtcm_settime,
+ 	.enable		= &idtcm_enable,
+-	.do_aux_work	= &set_write_phase_ready,
+ };
+ 
+ static int configure_channel_pll(struct idtcm_channel *channel)
+@@ -2154,8 +2134,6 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
+ 	if (!channel->ptp_clock)
+ 		return -ENOTSUPP;
+ 
+-	channel->write_phase_ready = 0;
+-
+ 	dev_info(&idtcm->client->dev, "PLL%d registered as ptp%d\n",
+ 		 index, channel->ptp_clock->index);
+ 
+diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
+index 713e41a..dd3436e 100644
+--- a/drivers/ptp/ptp_clockmatrix.h
++++ b/drivers/ptp/ptp_clockmatrix.h
+@@ -125,7 +125,6 @@ struct idtcm_channel {
+ 	enum pll_mode		pll_mode;
+ 	u8			pll;
+ 	u16			output_mask;
+-	int			write_phase_ready;
+ };
+ 
+ struct idtcm {
+-- 
+2.7.4
 
