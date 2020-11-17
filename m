@@ -2,81 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9923E2B71DC
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 23:56:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 051262B71F3
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 00:07:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729166AbgKQWzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 17:55:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36034 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726498AbgKQWzj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 17:55:39 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B87C0613CF;
-        Tue, 17 Nov 2020 14:55:39 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id k27so4381759ejs.10;
-        Tue, 17 Nov 2020 14:55:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qEpMsX7umrh9W1uoj4wOxIl7k65AMD4+895y5wqaPqQ=;
-        b=KZY7kjNmYGv4a0Uipuqg5wXyUqIQvGZYBkO5n34n9uNgWczhClk8jRt0v8EfYTdbfz
-         zpuaA69UXFIxk58q4VOKQTpN6dlzqtiYWPpHQ8QWRZ7R+X/MEtnc9Z/Bxx3rDS3JsOdF
-         6BZi773NNYPLSTnnQYSgeIp93X4FQfZS6kZdQrk1cDYPMXoAhOxba1zVeQG74hZ8SpR/
-         u2ssh18JioOyWC6ItFwTUVXoLANoNeHfJHKO3DSulKre7HDpYYpU06VWgybLDmQ+wFvo
-         nBNABrOAYeTFCZq7kIzCgB+WATeKAD0ESkOWL42kTq9DDrORR6g3pGkGTR6c5EmHqK46
-         jrWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qEpMsX7umrh9W1uoj4wOxIl7k65AMD4+895y5wqaPqQ=;
-        b=jI5mTsiXirSVo3oah+m/27bfNJLz1/GC8UOPFqqGyi9RX7mqWd9LAeRRwfHCFR9dwn
-         TmIzsliMoef2uoyBx/1K2BnHDSnH9pM2poPGUtAy9p48N047hnglqPB9FmwJiR0CUNuO
-         bEjQtQmkFgwPwzvxyroRgdXSyC1ly1+zYUWLzXki4w2Zax8g9e7rGBWrKSGDPXEQrBFH
-         DmXAFvvipE/ZarxviL+Z6xKLJV7Hs/psyQS5lhmozY9npBpwILq3vUmfZoCXbp/FfmsX
-         dePJaqwsU0jGIRv6E7OiJTuHSmHO96cs20mPjNiZ8E75j7N4q+DpDwSd5NN0Y1wW2kWE
-         yzng==
-X-Gm-Message-State: AOAM530s/PrOaADjhUWdxtqM5ZuFryzKIwp70RGhl1RUA0FKlkgiHBzY
-        8Oud8869nKUvgZc61VsqNIA6sA7AF2IhN0Czdcs=
-X-Google-Smtp-Source: ABdhPJxbijK6/juoUqP/6V1GLG3p23sEWaIracp25d6S9D3+wLH6rLRBCosXcMAiY74K1MjHk1++m3w5bCpmNLMLoSs=
-X-Received: by 2002:a17:906:76d3:: with SMTP id q19mr20994562ejn.162.1605653737992;
- Tue, 17 Nov 2020 14:55:37 -0800 (PST)
+        id S1726433AbgKQXFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 18:05:53 -0500
+Received: from mail.efficios.com ([167.114.26.124]:48338 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726199AbgKQXFx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 18:05:53 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 120D32E572F;
+        Tue, 17 Nov 2020 18:05:52 -0500 (EST)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 55Cdjqm2TOjt; Tue, 17 Nov 2020 18:05:51 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id C2F392E572E;
+        Tue, 17 Nov 2020 18:05:51 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com C2F392E572E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1605654351;
+        bh=4EF5Pyi9GurCoXIT1YIBSNpuGGryjRU/WtX91KjzkWk=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=fd6lbXHkF4L3gy4LMwDQMF56a1l97+Al8jnBzfWblTIxc6H5OOueNc3cVcouMvIHo
+         HkL5IRyXtcOBEzDDBjns1AgGfABE3jLN47sHjqlsAuvNHXPfNlXLXPTbhn9pytO3ib
+         Iib531WdH8viGhWQNPNsd/uvqZx2D+kwAIih8XYP+XbNA1F4dw2JWpnrygzQqhpHI+
+         qJPvQT0jY/hnrMxnng1Fh8HxxIHsRKVGyTeX0X8QyBUfmq4HuJvslXqcZSYSjjlx50
+         LrgjIlCe+spHwgiPDihC/XqmexXOYRNq7ODRk/ii7KIMTgQ22sQ8eACYsje/zxmpFf
+         WcfH+ltNeOaJg==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id M9rmpwAeEYN0; Tue, 17 Nov 2020 18:05:51 -0500 (EST)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id B07312E5722;
+        Tue, 17 Nov 2020 18:05:51 -0500 (EST)
+Date:   Tue, 17 Nov 2020 18:05:51 -0500 (EST)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     rostedt <rostedt@goodmis.org>
+Cc:     paulmck <paulmck@kernel.org>, Matt Mullins <mmullins@mmlx.us>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Message-ID: <609819191.48825.1605654351686.JavaMail.zimbra@efficios.com>
+In-Reply-To: <20201116171027.458a6c17@gandalf.local.home>
+References: <00000000000004500b05b31e68ce@google.com> <20201115055256.65625-1-mmullins@mmlx.us> <20201116121929.1a7aeb16@gandalf.local.home> <1889971276.46615.1605559047845.JavaMail.zimbra@efficios.com> <20201116154437.254a8b97@gandalf.local.home> <20201116160218.3b705345@gandalf.local.home> <1368007646.46749.1605562481450.JavaMail.zimbra@efficios.com> <20201116171027.458a6c17@gandalf.local.home>
+Subject: Re: [PATCH] bpf: don't fail kmalloc while releasing raw_tp
 MIME-Version: 1.0
-References: <20201115185210.573739-1-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20201115185210.573739-1-martin.blumenstingl@googlemail.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Tue, 17 Nov 2020 23:55:27 +0100
-Message-ID: <CAFBinCAXLqxqK=oB2eVDV+WY5up0dRYZ9=46riQ3uOWnw9jmng@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 0/5] dwmac-meson8b: picosecond precision RX delay support
-To:     khilman@baylibre.com
-Cc:     jianxin.pan@amlogic.com, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Neil Armstrong <narmstrong@baylibre.com>, jbrunet@baylibre.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, linux-amlogic@lists.infradead.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_3975 (ZimbraWebClient - FF82 (Linux)/8.8.15_GA_3975)
+Thread-Topic: don't fail kmalloc while releasing raw_tp
+Thread-Index: rDgx+9686j10JxC+vTlp4lzx8j00fQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kevin,
+----- On Nov 16, 2020, at 5:10 PM, rostedt rostedt@goodmis.org wrote:
 
-On Sun, Nov 15, 2020 at 7:52 PM Martin Blumenstingl
-<martin.blumenstingl@googlemail.com> wrote:
+> On Mon, 16 Nov 2020 16:34:41 -0500 (EST)
+> Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
+
 [...]
-> I have tested this on an X96 Air 4GB board (not upstream yet).
-[...]
-> Also I have tested this on a X96 Max board without any .dts changes
 
-can you please add this series to your testing branch?
-I am interested in feedback from Kernel CI for all the boards which
-are there as well as any other testing bots
+>> I think you'll want a WRITE_ONCE(old[i].func, tp_stub_func) here, matched
+>> with a READ_ONCE() in __DO_TRACE. This introduces a new situation where the
+>> func pointer can be updated and loaded concurrently.
+> 
+> I thought about this a little, and then only thing we really should worry
+> about is synchronizing with those that unregister. Because when we make
+> this update, there are now two states. the __DO_TRACE either reads the
+> original func or the stub. And either should be OK to call.
+> 
+> Only the func gets updated and not the data. So what exactly are we worried
+> about here?
 
+Indeed with a stub function, I don't see any need for READ_ONCE/WRITE_ONCE.
 
-Thank you!
-Best regards,
-Martin
+However, if we want to compare the function pointer to some other value and
+conditionally do (or skip) the call, I think you'll need the READ_ONCE/WRITE_ONCE
+to make sure the pointer is not re-fetched between comparison and call.
+
+Thanks,
+
+Mathieu
+
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
