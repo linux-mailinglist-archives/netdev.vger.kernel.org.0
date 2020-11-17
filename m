@@ -2,170 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F952B666E
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 15:06:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BEF52B66B7
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 15:06:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387669AbgKQODK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 09:03:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730967AbgKQODJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 09:03:09 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDCDC0613CF
-        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 06:03:09 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kf1ZW-0001SW-GL; Tue, 17 Nov 2020 15:03:02 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:4295:bc9e:e8ea:bff7] (unknown [IPv6:2a03:f580:87bc:d400:4295:bc9e:e8ea:bff7])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id B82DB5947F0;
-        Tue, 17 Nov 2020 14:02:59 +0000 (UTC)
-Subject: Re: [net 11/15] can: tcan4x5x: tcan4x5x_can_remove(): fix order of
- deregistration
-To:     Dan Murphy <dmurphy@ti.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-References: <20201115174131.2089251-1-mkl@pengutronix.de>
- <20201115174131.2089251-12-mkl@pengutronix.de>
- <67debcb1-5fb6-76bd-b1b1-24d97389aa6b@ti.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <189eba5e-458e-8d48-a0ca-8d72a0ac2224@pengutronix.de>
-Date:   Tue, 17 Nov 2020 15:02:36 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1730077AbgKQOG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 09:06:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47595 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728360AbgKQOGY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 09:06:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605621983;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UspmaeppXpINYHqjCQN1dQiXGQvIicJA54gqiqQ+u6Q=;
+        b=BsPeod2+eVPso6VPkNJHWcbCTEA21KtNtu8KxB72ttzmf9eHx/60y7uX9zJvVLtNXZB4nf
+        +audUgs4B6geW8jUD0/pRVfPdy66H/T0VmhRreYTrTz6kRlcBDZR1cr2SLyo/Wp0UQugxl
+        Wg6rHANUJMStxtr54CEq7d+WUQsCHeA=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-341-Qohy4UMGMvSv4r2fiFTNZw-1; Tue, 17 Nov 2020 09:06:21 -0500
+X-MC-Unique: Qohy4UMGMvSv4r2fiFTNZw-1
+Received: by mail-wm1-f69.google.com with SMTP id o203so1462178wmo.3
+        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 06:06:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UspmaeppXpINYHqjCQN1dQiXGQvIicJA54gqiqQ+u6Q=;
+        b=sfooVJ6OQJjKC/UaFABOl8v765y5dUtINm5Fyd03b1LK9R99Cu3OVs1Kv5Bt2YgdTe
+         boFCi4969LHu3x+tAxrfkwSTBJM9VJnRIk+VI/MACIQ8CFt72d5Ov8Gw9lizGzr0kY7E
+         0GCukXRpeTQ5hXEZmjdbKG8FUH6EGeLtFAMEIibWKvCarpRjKcUfhZDfF7MPFmI4oYza
+         UuRfs5OnBO4IaCrkkNmTusoQj2CoUidNxmv9hGrGA+OQpbE8hTHxbDKDeMIpm7+ripF3
+         uTXDKTCReF7ydCGZLkDThHV8soSngUVYDpaxbUK8ApCnL4zBcwEWamUX+xylEQrVMl/U
+         sBKA==
+X-Gm-Message-State: AOAM530FCcVwbPZP6gcnVbcWpzrBKTvFXrzxhboAsAqtFhL0NXxqb96Q
+        3Ucj0KlsOn68BrCfushsQH0t2GqcJUFyPCbpBf7u7Zngxa+X65vU6yhPW4R1Vv/40pxWCMTNVix
+        62DL7YmZXryv9RE4i
+X-Received: by 2002:adf:9b95:: with SMTP id d21mr24559921wrc.335.1605621979595;
+        Tue, 17 Nov 2020 06:06:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwhSYbi+WC19aTHz0B4Dm8F1kUlvECnXg3hRisQ3WDbkcJYAD/TjJQ7nb/UTTh8ludLybHY7Q==
+X-Received: by 2002:adf:9b95:: with SMTP id d21mr24559899wrc.335.1605621979350;
+        Tue, 17 Nov 2020 06:06:19 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id j15sm29504850wrm.62.2020.11.17.06.06.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2020 06:06:18 -0800 (PST)
+Date:   Tue, 17 Nov 2020 15:06:16 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Tom Parkin <tparkin@katalix.com>
+Cc:     netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [RFC PATCH 1/2] ppp: add PPPIOCBRIDGECHAN ioctl
+Message-ID: <20201117140616.GA17578@linux.home>
+References: <20201106181647.16358-1-tparkin@katalix.com>
+ <20201106181647.16358-2-tparkin@katalix.com>
+ <20201109232401.GM2366@linux.home>
+ <20201110120429.GB5635@katalix.com>
+ <20201115162838.GF11274@linux.home>
+ <20201117122638.GB4640@katalix.com>
 MIME-Version: 1.0
-In-Reply-To: <67debcb1-5fb6-76bd-b1b1-24d97389aa6b@ti.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="bMB4ETkZmLiIyqD6M5cH99QkVA060hpql"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201117122638.GB4640@katalix.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---bMB4ETkZmLiIyqD6M5cH99QkVA060hpql
-Content-Type: multipart/mixed; boundary="Yp3vkKdxFxADtTXsdDuvSGoK0mDAQC7bA";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Dan Murphy <dmurphy@ti.com>, netdev@vger.kernel.org
-Cc: davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
- kernel@pengutronix.de
-Message-ID: <189eba5e-458e-8d48-a0ca-8d72a0ac2224@pengutronix.de>
-Subject: Re: [net 11/15] can: tcan4x5x: tcan4x5x_can_remove(): fix order of
- deregistration
-References: <20201115174131.2089251-1-mkl@pengutronix.de>
- <20201115174131.2089251-12-mkl@pengutronix.de>
- <67debcb1-5fb6-76bd-b1b1-24d97389aa6b@ti.com>
-In-Reply-To: <67debcb1-5fb6-76bd-b1b1-24d97389aa6b@ti.com>
+On Tue, Nov 17, 2020 at 12:26:38PM +0000, Tom Parkin wrote:
+> On  Sun, Nov 15, 2020 at 17:28:38 +0100, Guillaume Nault wrote:
+> > On Tue, Nov 10, 2020 at 12:04:29PM +0000, Tom Parkin wrote:
+> > > On  Tue, Nov 10, 2020 at 00:24:01 +0100, Guillaume Nault wrote:
+> > > However, my primary motivation for using ppp_channel_push was actually
+> > > the handling for managing dropping the packet if the channel was
+> > > deregistered.
+> > 
+> > I might be missing something, but I don't see what ppp_channel_push()
+> > does appart from holding the xmit lock and handling the xmit queue.
+> > If we agree that there's no need to use the xmit queue, all
+> > ppp_channel_push() does for us is taking pch->downl, which we probably
+> > can do on our own.
+> > 
+> > > It'd be simple enough to add another function which performed the same
+> > > deregistration check but didn't transmit via. the queue.
+> > 
+> > That's probably what I'm missing: what do you mean by "deregistration
+> > check"? I can't see anything like this in ppp_channel_push().
+> 
+> It's literally just the check on pch->chan once pch->downl is held.
+> So it would be trivial to do the same thing in a different codepath: I
+> just figured why reinvent the wheel :-)
 
---Yp3vkKdxFxADtTXsdDuvSGoK0mDAQC7bA
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Okay, I was thinking of something more complex. I agree with not
+reinventing existing functions, but in this case, I think that
+ppp_channel_push() does too many unecessary operations (like recursion
+handling and processing the parent unit's queue). Also, a helper
+function would be the natural place for calling skb_scrub_packet()
+and for handling concurent access or modification of the ->bridge
+pointer (as discussed earlier in this thread).
 
-On 11/17/20 3:00 PM, Dan Murphy wrote:
-> Reviewed-by: Dan Murphy<dmurphy@ti.com>
+> 
+> Sorry for the confusion.
 
-Thanks. The patches are already mainline.
+No problem. It's nice to see some work being done in this area :).
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---Yp3vkKdxFxADtTXsdDuvSGoK0mDAQC7bA--
-
---bMB4ETkZmLiIyqD6M5cH99QkVA060hpql
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+z1/wACgkQqclaivrt
-76kYkQgAh8ZJ5QVakxrOaVrUfHBGtT0q7tnsxD5R+Aw8Q22MdyV74ffXqEvMaLLL
-N369ade//as+HmcljS2Ix8pnHdsBHSRKlpgBUlU9GrpZcXEKCHTBxaJ/0SGOnSlr
-3BrL15TuwNCq/g0qeKaCC0xAmx8qU3psdvnI4GB81w52I4JHWFMocRZ/3joFysun
-B6HMx1DWNrUQF6ozLFbr7wgZ53YnM6oUH9Sa3FLYWIcc0YuVHJB47sVpkdIyNFkE
-npc3ovGNkNSTwFqHPf3sM0+ZyInDiGjrrg2ZFO9xuxorYbIAKSY8vPjUIxRXWvOr
-tfnV1tnnVtEeQJ9mmOJoamZaBhi8yQ==
-=fvDg
------END PGP SIGNATURE-----
-
---bMB4ETkZmLiIyqD6M5cH99QkVA060hpql--
