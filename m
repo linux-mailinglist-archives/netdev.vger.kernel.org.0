@@ -2,91 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0BDD2B5E86
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 12:42:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61DAD2B5EC0
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 12:57:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728213AbgKQLli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 06:41:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728190AbgKQLlh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 06:41:37 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7173C0613CF;
-        Tue, 17 Nov 2020 03:41:35 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id mn12so254858pjb.1;
-        Tue, 17 Nov 2020 03:41:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yK3guKziVoImJRhpkshknGVxmHiW95ym33CYvh9hWIg=;
-        b=iAHVYAOVqqisGtYQ1zLY0u5RV/IpSgDvGtHY1zSzhYT9KvPCYxuNdAunM+7uEjoFom
-         lBX2sOiIKtsoUpPB0B7BV76aN70jI5fFWwzYRD31JMCXP4VbREULcfWlywAHWQd3ZL5w
-         2mJbP8rHhnFr6kvAEdxqyi28oM+a0wnOhDymiLhVM09ENww3vx+wgfreo0t0V/8aQqbZ
-         TaK4/x77n4c6aR8488P0z2ZbTTjvDD6Q2Ir+2k930YktFjt5W0yMrZ2C2SKq93/s7B8V
-         gy0nLp6SWcVavACgJo+o3lvZpvlWKPSrPkkWAhLb5IMCzWmc29cBHeWcKf5xe1T825QT
-         wRhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yK3guKziVoImJRhpkshknGVxmHiW95ym33CYvh9hWIg=;
-        b=L341BxavWC1HkeNKYY7lMRNDTsuJH6BfsaODgChf44AiY/9Dwe1meW1EfEr/lxabtM
-         AJudFCTU6kHBrU5+NZCI95h/p3iQ6k62vRtEvzaVHjqyb6asu/DDxGyPLBD3geMshHL9
-         GJdWmq7C5iA33+Km6qr6pSa8QqhhUJ9PKdbdk4ejO7z1HlU7tlp7JHXLSYqnwysKQfSo
-         8WTYBywLOWipegGQF4+3e512CnF8EQDqMIB59CgyaT8+/orrfxkUZayBrTLe+ErwWHzj
-         65aWzvvgmropPecaY8V6zao5sVVz3wh74Z/4+kaax2sA0aEyz9XODeX5w+C+qBlKjDRk
-         GJjw==
-X-Gm-Message-State: AOAM530Dvoz2w9JCfuVYBRgM20q45HdeNuvsqEoYHEZoGWiBsdh2iz2d
-        TFHjCZR8QOFqhxJwLAJkUJSUoBYKWCWGb1Zx+aU=
-X-Google-Smtp-Source: ABdhPJzScNXrJOYgnPFaNtKAot0MXcj2P1ewsfdZXeYwIDnhGYiMFRqdo/5lv2zFx2verObteWcqkz7iJeMfjXkU+dU=
-X-Received: by 2002:a17:902:9890:b029:d8:e265:57ae with SMTP id
- s16-20020a1709029890b02900d8e26557aemr12757128plp.78.1605613295524; Tue, 17
- Nov 2020 03:41:35 -0800 (PST)
+        id S1728214AbgKQL5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 06:57:09 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.184]:34688 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726266AbgKQL5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 06:57:09 -0500
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4FDF720078;
+        Tue, 17 Nov 2020 11:57:08 +0000 (UTC)
+Received: from us4-mdac16-17.at1.mdlocal (unknown [10.110.49.199])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4C160800A3;
+        Tue, 17 Nov 2020 11:57:08 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.32])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D6216100052;
+        Tue, 17 Nov 2020 11:57:07 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 798A0280066;
+        Tue, 17 Nov 2020 11:57:07 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 17 Nov
+ 2020 11:56:59 +0000
+Subject: Re: [PATCHv5 iproute2-next 0/5] iproute2: add libbpf support
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+CC:     Hangbin Liu <haliu@redhat.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Jiri Benc <jbenc@redhat.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+References: <20201109070802.3638167-1-haliu@redhat.com>
+ <20201116065305.1010651-1-haliu@redhat.com>
+ <CAADnVQ+LNBYq5fdTSRUPy2ZexTdCcB6ErNH_T=r9bJ807UT=pQ@mail.gmail.com>
+ <20201116155446.16fe46cf@carbon> <20201117023757.qypmhucuws3sajyb@ast-mbp>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <9a781009-e7e5-4f8c-0e49-bd7386ca5818@solarflare.com>
+Date:   Tue, 17 Nov 2020 11:56:48 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20201116135522.21791-1-ms@dev.tdt.de> <20201116135522.21791-5-ms@dev.tdt.de>
-In-Reply-To: <20201116135522.21791-5-ms@dev.tdt.de>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Tue, 17 Nov 2020 03:41:24 -0800
-Message-ID: <CAJht_ENE5fGr-rgOd-5Tk_g5RJibaWBn_ey5Avo-2R2opMGcDA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 4/6] net/x25: support NETDEV_CHANGE notifier
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201117023757.qypmhucuws3sajyb@ast-mbp>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25794.003
+X-TM-AS-Result: No-1.616200-8.000000-10
+X-TMASE-MatchedRID: pBwXUM+nCwvmLzc6AOD8DfHkpkyUphL99DmY4JJYLjqOzyCsYRwNaV5X
+        KvMz90rKW3I0dGGaO19n86jNK8UwScgDLACebdhjqjZ865FPtpq++TOpgkEMVsO2KBTZiZuoo8W
+        MkQWv6iUD0yuKrQIMCKHUf3pt8cg10C1sQRfQzEHEQdG7H66TyHEqm8QYBtMO6evPLtXT51WKCU
+        W2lNAiLdrymL0ynPCM/LGiN4MNJtXvqQlwbGo16RZ3CUoM+gEJ40nEG0TFCn9xhzFlmBZJpcNY2
+        bKRPim/1DXsKeBNv04EqZlWBkJWd7MZNZFdSWvH4SKOe96QQgc=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--1.616200-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25794.003
+X-MDID: 1605614228-i42Abmkal-Gs
+X-PPE-DISP: 1605614228;i42Abmkal-Gs
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 16, 2020 at 6:00 AM Martin Schiller <ms@dev.tdt.de> wrote:
->
-> This makes it possible to handle carrier lost and detection.
-> In case of carrier lost, we shutdown layer 3 and flush all sessions.
->
-> @@ -275,6 +275,19 @@ static int x25_device_event(struct notifier_block *this, unsigned long event,
->                                  dev->name);
->                         x25_link_device_remove(dev);
->                         break;
-> +               case NETDEV_CHANGE:
-> +                       pr_debug("X.25: got event NETDEV_CHANGE for device: %s\n",
-> +                                dev->name);
-> +                       if (!netif_carrier_ok(dev)) {
-> +                               pr_debug("X.25: Carrier lost -> set link state down: %s\n",
-> +                                        dev->name);
-> +                               nb = x25_get_neigh(dev);
-> +                               if (nb) {
-> +                                       x25_link_terminated(nb);
-> +                                       x25_neigh_put(nb);
-> +                               }
-> +                       }
-> +                       break;
->                 }
->         }
+On 17/11/2020 02:37, Alexei Starovoitov wrote:
+> If a company built a bpf-based product and wants to distibute such
+> product as a package it needs a way to specify this dependency in pkg config.
+> 'tc -V' is not something that can be put in a spec.
+> The main iproute2 version can be used as a dependency, but it's meaningless
+> when presence of libbpf and its version is not strictly derived from
+> iproute2 spec.
 
-I think L2 will notify L3 if the L2 connection is terminated. Is this
-patch necessary?
+But if libbpf is dynamically linked, they can put
+Requires: libbpf >= 0.3.0
+Requires: iproute-tc >= 5.10
+and get the dependency behaviour they need.  No?
+
+-ed
