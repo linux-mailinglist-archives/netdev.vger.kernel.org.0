@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A66B2B5AEE
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 09:27:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E6912B5AF0
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 09:27:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727087AbgKQI05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 03:26:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42228 "EHLO
+        id S1727134AbgKQI1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 03:27:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726982AbgKQI04 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 03:26:56 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AEEC0613CF;
-        Tue, 17 Nov 2020 00:26:55 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id w4so15634379pgg.13;
-        Tue, 17 Nov 2020 00:26:55 -0800 (PST)
+        with ESMTP id S1726982AbgKQI1A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 03:27:00 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0ABDC0613CF;
+        Tue, 17 Nov 2020 00:26:59 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id w14so16824241pfd.7;
+        Tue, 17 Nov 2020 00:26:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lWxaqBdhoJLWHCbKsjLTbdE3l/2x2uYyyZVuBw0tu10=;
-        b=APkdHfk/ecF1LsBLszpAlRHHUwF7IvXnqcnbxW7hhhJ8MKPNjYd61AHClU+GAS9Qt4
-         R9hODm2CQko74tD9/grElbeGbTMah1o+R59Qs+iATBj77obw3bLj3/ob91je2Z43dVAk
-         RIwTgxt8VleMTe1AOusML/W2EbHSFdrV5OU3XTiwk/S7WiwiTo/+XOq0zTgBzqJ/A7P0
-         P8m/DFXGmsex+YBDdjhBAnpV+9b88KMpqpFCgQQr6/U2tAHPIpSKsJG51YQfgioItgP/
-         j3H74wtl4arDpK+MSakCpCbGRSGNHd31fnKy1LGcZ5+KMPsZfklQFgEYpjFEmm7m8mXJ
-         ikTw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=thC0vwUoC+dS5Z/fyfQ4HgfqnUUZ2rF5Qe//4cJ/e/s=;
+        b=RSih97Qg5lNmEj0m87IY+niwHqXQAIC0ruEFGfQ30wLErhKzhrQ/CxWBfri5UoFeld
+         Gim6tHlV6PtmyWAhIqA3IPrcXvEuQKObM42h1lCx3Ig5eMwhemVLyVXlXGYPNlv+QtiW
+         GP7RbKgbLDoi34rHR4sn6rA7LydveHF5Ct2mJ/nlCJNyjvJTbn+BsihXINkZVHhsJgU9
+         DdU6Nu5+Q7G8KvUDixsnqLHkbTbvc3dzrf8XHGmYNMhdC+b1DsvkI6Nq9N3om+PMNOKr
+         tsAg+hvHCONXRTybQAwlqJ2ZlFGlzw4zs7UWeCJsor4+3V60Ud6WRhs1epEDwUYt916a
+         i1qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lWxaqBdhoJLWHCbKsjLTbdE3l/2x2uYyyZVuBw0tu10=;
-        b=LR0Md8ve23lTccz8aFEd+qM8yMJe6+VlLBfObipLhp5dqXKT28Du5Iu/9lxMb4b9ej
-         okkMsADTiZGgdUHQK6snKOuW+lEzypNgbgDuWlmhA3+kIqrtj2178K8mFYl8nFqbeMvb
-         Za+0TigESt0StbxtdbFvada+uuhJFOrtVu4bfvxToKZGmGS9+HjhftpayolBqX2kDBU7
-         H2YKlCGUbiaYVvoS0SACeairKw5ov1j25v73dgmwq146mvKUcPBEhDmH6aqf4bHCEpan
-         RGohzdvtSsOzkZPW4NpdWrg6/3zXfdvzR0NCb0SwZ9ZXn/z1K3eYE5TA3jli99T/rHAz
-         JQTw==
-X-Gm-Message-State: AOAM533RirrPHov645J+g/C0CPVvMVBtlQ6CJx3QvfTZnuWyzBEAN4rt
-        9qGO1l/qILOL3aYzAMc9MAU=
-X-Google-Smtp-Source: ABdhPJw/20J9aJnynQ18oyYmbo4w4o3XFMN3krvy2E2soJiudn0nqgqvnqu0j1/LsbLxThkGz/UZ/A==
-X-Received: by 2002:a63:4c24:: with SMTP id z36mr2569977pga.432.1605601614730;
-        Tue, 17 Nov 2020 00:26:54 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=thC0vwUoC+dS5Z/fyfQ4HgfqnUUZ2rF5Qe//4cJ/e/s=;
+        b=fWzlVbOctZvdBLLjRWecsR3Q2p2I1lybQIevTTy/+2szTyPcMi2CD1DUUwN9tj1zYm
+         44GXzD9TyBocgtTWt7TOy4PVZo1qNxvdEGsvN8R/ztiTgA9Ux+3RnT/V8BvNYXJOAybJ
+         CIVSASwG4JFoO62fos4FzZeWG3bFsI2sjtRmC4KJ0C5EvhfRGU4m+cSEWNDJQlqqHFiS
+         k/Y0Jkeilp7nB4wvSrQoLVMa9QPx7h4tpyTSykrN4FmXTm1D4G9A15FqLIHu4rwTeKny
+         x88v4MDcBMx955w1pZX6Zqzy+FJsiv4QwnJ1VNZM2/SWnIxHeQkBnUP61dZpnDoPkTd3
+         soZw==
+X-Gm-Message-State: AOAM530Ri8ep766SAT3se3q05+3Nr+hh/hTky3rVVleAMiF8gv8KbbLa
+        /ioqIF6d88rmFURvKjPCbQ8=
+X-Google-Smtp-Source: ABdhPJwHbpYcDC4CrF1mzIpvea+B1cveoQuoSptG8JPZ/wuGPZ8c47r1CEbwD7dwW7n1FDA6IsIGyQ==
+X-Received: by 2002:a65:5948:: with SMTP id g8mr2607912pgu.51.1605601619614;
+        Tue, 17 Nov 2020 00:26:59 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com ([192.55.54.40])
-        by smtp.gmail.com with ESMTPSA id c12sm2251671pjs.8.2020.11.17.00.26.50
+        by smtp.gmail.com with ESMTPSA id c12sm2251671pjs.8.2020.11.17.00.26.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2020 00:26:53 -0800 (PST)
+        Tue, 17 Nov 2020 00:26:58 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
         bpf@vger.kernel.org
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
         xi.wang@gmail.com, luke.r.nels@gmail.com,
         linux-riscv@lists.infradead.org
-Subject: [PATCH bpf-next 0/3] RISC-V selftest/bpf fixes
-Date:   Tue, 17 Nov 2020 09:26:35 +0100
-Message-Id: <20201117082638.43675-1-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next 1/3] selftests/bpf: Fix broken riscv build
+Date:   Tue, 17 Nov 2020 09:26:36 +0100
+Message-Id: <20201117082638.43675-2-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20201117082638.43675-1-bjorn.topel@gmail.com>
+References: <20201117082638.43675-1-bjorn.topel@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -64,30 +66,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contain some fixes for selftests/bpf when building/running
-on a RISC-V host. Details can be found in each individual commit.
+The selftests/bpf Makefile includes system include directories from
+the host, when building BPF programs. On RISC-V glibc requires that
+__riscv_xlen is defined. This is not the case for "clang -target bpf",
+which messes up __WORDSIZE (errno.h -> ... -> wordsize.h) and breaks
+the build.
 
+By explicitly defining __risc_xlen correctly for riscv, we can
+workaround this.
 
-Cheers,
-Björn
+Fixes: 167381f3eac0 ("selftests/bpf: Makefile fix "missing" headers on build with -idirafter")
+Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
+---
+ tools/testing/selftests/bpf/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Björn Töpel (3):
-  selftests/bpf: Fix broken riscv build
-  selftests/bpf: Avoid running unprivileged tests with alignment
-    requirements
-  selftests/bpf: Mark tests that require unaligned memory access
-
- tools/testing/selftests/bpf/Makefile          |  3 +-
- tools/testing/selftests/bpf/test_verifier.c   | 12 +++--
- .../selftests/bpf/verifier/ctx_sk_lookup.c    |  7 +++
- .../bpf/verifier/direct_value_access.c        |  3 ++
- .../testing/selftests/bpf/verifier/map_ptr.c  |  1 +
- .../selftests/bpf/verifier/raw_tp_writable.c  |  1 +
- .../selftests/bpf/verifier/ref_tracking.c     |  4 ++
- .../testing/selftests/bpf/verifier/regalloc.c |  8 ++++
- .../selftests/bpf/verifier/wide_access.c      | 46 +++++++++++--------
- 9 files changed, 63 insertions(+), 22 deletions(-)
-
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index c1708ffa6b1c..9d48769ad268 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -219,7 +219,8 @@ $(RESOLVE_BTFIDS): $(BPFOBJ) | $(BUILD_DIR)/resolve_btfids	\
+ # build would have failed anyways.
+ define get_sys_includes
+ $(shell $(1) -v -E - </dev/null 2>&1 \
+-	| sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }')
++	| sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }') \
++	$(shell $(1) -dM -E - </dev/null | grep '#define __riscv_xlen ' |sed 's/#define /-D/' | sed 's/ /=/')
+ endef
+ 
+ # Determine target endianness.
 -- 
 2.27.0
 
