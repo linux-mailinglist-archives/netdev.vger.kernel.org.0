@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49DAB2B5838
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:44:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A531B2B584C
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:44:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727166AbgKQDmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 22:42:37 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17074 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726524AbgKQDlU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:41:20 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AH3e2Ge024177
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:19 -0800
+        id S1728014AbgKQDnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 22:43:14 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:36908 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727021AbgKQDlS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:41:18 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AH3duwa004393
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:17 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=M+0ILuiaD6+1fkeZ4SUYhsSshDmJ3vpGG9x3Lp/tMEM=;
- b=FZ3Cxt3Pa084GSQRqiF5iIZ1IPvGZ7Mb4zLNWq5/zXAgJ7bPE0GRN5psiYDrvfxCzaBG
- d1MmWo8rSgLszWEScGAW60cq9rAGUizW0+gw5IGWgM8kyoEBlh2d5Si0MxL23AlQO7qF
- AD8+Up/UW4Ub0kP707lhrfO1h2FoZBcHh0U= 
+ bh=qdqw2vIRlP2yIbod8BHIh3XnNn0ZSs325Y5RG0+0/sU=;
+ b=g1lC1YWSbiryDoqP+wY9oOgmikGpRHewX/DGVOQK1EgoqEekmZ2lD8AltCgQB586esiO
+ Ge43fbQPuqf2YPgUoNHa6tY6wKLZr4wU6cUcTH/ccohT+UkSc0Gb9KvWK9OqZgOJUILk
+ Lg/xSatytn3U3XbIVZz8HBKkO8tJV3jg0tc= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 34u0698p89-2
+        by mx0a-00082601.pphosted.com with ESMTP id 34tdmruh5u-9
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:19 -0800
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:41:17 -0800
 Received: from intmgw003.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1979.3; Mon, 16 Nov 2020 19:41:14 -0800
 Received: by devvm3388.prn0.facebook.com (Postfix, from userid 111017)
-        id 87804C63A8B; Mon, 16 Nov 2020 19:41:10 -0800 (PST)
+        id 8BEDBC63A8D; Mon, 16 Nov 2020 19:41:10 -0800 (PST)
 From:   Roman Gushchin <guro@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
         <andrii@kernel.org>, <akpm@linux-foundation.org>,
         <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <kernel-team@fb.com>
-Subject: [PATCH bpf-next v6 26/34] bpf: eliminate rlimit-based memory accounting for reuseport_array maps
-Date:   Mon, 16 Nov 2020 19:41:00 -0800
-Message-ID: <20201117034108.1186569-27-guro@fb.com>
+Subject: [PATCH bpf-next v6 27/34] bpf: eliminate rlimit-based memory accounting for bpf ringbuffer
+Date:   Mon, 16 Nov 2020 19:41:01 -0800
+Message-ID: <20201117034108.1186569-28-guro@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20201117034108.1186569-1-guro@fb.com>
 References: <20201117034108.1186569-1-guro@fb.com>
@@ -49,63 +49,96 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-11-17_01:2020-11-13,2020-11-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- impostorscore=0 phishscore=0 suspectscore=38 priorityscore=1501
- spamscore=0 mlxlogscore=754 adultscore=0 lowpriorityscore=0 bulkscore=0
- malwarescore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ lowpriorityscore=0 clxscore=1015 priorityscore=1501 mlxscore=0
+ suspectscore=38 adultscore=0 phishscore=0 mlxlogscore=725 spamscore=0
+ bulkscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-2009150000 definitions=main-2011170027
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do not use rlimit-based memory accounting for reuseport_array maps.
+Do not use rlimit-based memory accounting for bpf ringbuffer.
 It has been replaced with the memcg-based memory accounting.
+
+bpf_ringbuf_alloc() can't return anything except ERR_PTR(-ENOMEM)
+and a valid pointer, so to simplify the code make it return NULL
+in the first case. This allows to drop a couple of lines in
+ringbuf_map_alloc() and also makes it look similar to other memory
+allocating function like kmalloc().
 
 Signed-off-by: Roman Gushchin <guro@fb.com>
 Acked-by: Song Liu <songliubraving@fb.com>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 ---
- kernel/bpf/reuseport_array.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+ kernel/bpf/ringbuf.c | 24 ++++--------------------
+ 1 file changed, 4 insertions(+), 20 deletions(-)
 
-diff --git a/kernel/bpf/reuseport_array.c b/kernel/bpf/reuseport_array.c
-index a55cd542f2ce..4838922f723d 100644
---- a/kernel/bpf/reuseport_array.c
-+++ b/kernel/bpf/reuseport_array.c
-@@ -150,9 +150,8 @@ static void reuseport_array_free(struct bpf_map *map)
+diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
+index ee5f55d9276e..c8892b58501e 100644
+--- a/kernel/bpf/ringbuf.c
++++ b/kernel/bpf/ringbuf.c
+@@ -48,7 +48,6 @@ struct bpf_ringbuf {
 =20
- static struct bpf_map *reuseport_array_alloc(union bpf_attr *attr)
+ struct bpf_ringbuf_map {
+ 	struct bpf_map map;
+-	struct bpf_map_memory memory;
+ 	struct bpf_ringbuf *rb;
+ };
+=20
+@@ -135,7 +134,7 @@ static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t d=
+ata_sz, int numa_node)
+=20
+ 	rb =3D bpf_ringbuf_area_alloc(data_sz, numa_node);
+ 	if (!rb)
+-		return ERR_PTR(-ENOMEM);
++		return NULL;
+=20
+ 	spin_lock_init(&rb->spinlock);
+ 	init_waitqueue_head(&rb->waitq);
+@@ -151,8 +150,6 @@ static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t d=
+ata_sz, int numa_node)
+ static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
  {
--	int err, numa_node =3D bpf_map_attr_numa_node(attr);
-+	int numa_node =3D bpf_map_attr_numa_node(attr);
- 	struct reuseport_array *array;
--	struct bpf_map_memory mem;
- 	u64 array_size;
+ 	struct bpf_ringbuf_map *rb_map;
+-	u64 cost;
+-	int err;
 =20
- 	if (!bpf_capable())
-@@ -161,20 +160,13 @@ static struct bpf_map *reuseport_array_alloc(union =
-bpf_attr *attr)
- 	array_size =3D sizeof(*array);
- 	array_size +=3D (u64)attr->max_entries * sizeof(struct sock *);
+ 	if (attr->map_flags & ~RINGBUF_CREATE_FLAG_MASK)
+ 		return ERR_PTR(-EINVAL);
+@@ -174,26 +171,13 @@ static struct bpf_map *ringbuf_map_alloc(union bpf_=
+attr *attr)
 =20
--	err =3D bpf_map_charge_init(&mem, array_size);
+ 	bpf_map_init_from_attr(&rb_map->map, attr);
+=20
+-	cost =3D sizeof(struct bpf_ringbuf_map) +
+-	       sizeof(struct bpf_ringbuf) +
+-	       attr->max_entries;
+-	err =3D bpf_map_charge_init(&rb_map->map.memory, cost);
 -	if (err)
--		return ERR_PTR(err);
+-		goto err_free_map;
 -
- 	/* allocate all map elements and zero-initialize them */
- 	array =3D bpf_map_area_alloc(array_size, numa_node);
--	if (!array) {
--		bpf_map_charge_finish(&mem);
-+	if (!array)
- 		return ERR_PTR(-ENOMEM);
--	}
+ 	rb_map->rb =3D bpf_ringbuf_alloc(attr->max_entries, rb_map->map.numa_no=
+de);
+-	if (IS_ERR(rb_map->rb)) {
+-		err =3D PTR_ERR(rb_map->rb);
+-		goto err_uncharge;
++	if (!rb_map->rb) {
++		kfree(rb_map);
++		return ERR_PTR(-ENOMEM);
+ 	}
 =20
- 	/* copy mandatory map attributes */
- 	bpf_map_init_from_attr(&array->map, attr);
--	bpf_map_charge_move(&array->map.memory, &mem);
-=20
- 	return &array->map;
+ 	return &rb_map->map;
+-
+-err_uncharge:
+-	bpf_map_charge_finish(&rb_map->map.memory);
+-err_free_map:
+-	kfree(rb_map);
+-	return ERR_PTR(err);
  }
+=20
+ static void bpf_ringbuf_free(struct bpf_ringbuf *rb)
 --=20
 2.26.2
 
