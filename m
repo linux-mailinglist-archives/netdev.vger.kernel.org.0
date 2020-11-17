@@ -2,845 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1369C2B6816
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 15:58:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D72E32B6840
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 16:09:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729923AbgKQO6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 09:58:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46194 "EHLO
+        id S1730243AbgKQPIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 10:08:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729519AbgKQO6J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 09:58:09 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC019C0617A6;
-        Tue, 17 Nov 2020 06:58:08 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id t18so10368559plo.0;
-        Tue, 17 Nov 2020 06:58:08 -0800 (PST)
+        with ESMTP id S1729056AbgKQPIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 10:08:42 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF24C0613CF;
+        Tue, 17 Nov 2020 07:08:42 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id c66so17468984pfa.4;
+        Tue, 17 Nov 2020 07:08:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WcSvgD989fY0SopbWiRUz6u/u98cNhlUBbCX++2pZEc=;
-        b=ROgf6yHMIbKadzugM274Hy/jTmaPX3QeLmsh9gQwBSwSaEerrssoyzTRCgZIVofgEM
-         EB+of3U/sK5G4d7+cCUd/iz+d9wx9wlSUUzIV7FmIZwVzq6MOATMglLuWISiw8TD1Xjk
-         2ZYZl93LvgPigg9PmWP5hzilg2ByzcMp3ucAADdg/uaNr1Xhsx6gGPyUyXJHqO+trIpQ
-         wfukgjPFZaGs7xemVEgO8J7zYGsi5kNPayH6iLzcXlTbwXBhcRGPdDRKgRJU3/tZyFi/
-         YTvVYYc8J8E6TMdua0ZxIl+lYrFmgFfepfCw9QJeU4cT9UNA6vM9mAYkToOv8S+NOn3m
-         uj7g==
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yu/K9MDzQlqf/QF4RaavB4uksqaawxhzJ50+1rdsBnk=;
+        b=JIzdEBzYmPEMwt/tM3t7S0N+KgTIhh7EeqOd3VdKKIjHoO+RE2yDEjnOEUxnen+TO8
+         ECxsbMLVtFqR5Ma1nrDTAAJPZaHGyzMm0dX99dO3pPQUSIScf0oVxi+NpqsnaoO8614U
+         JxM312Y8tObtxObfkpKqwWGPrXafmNqdtOjbp76WiKlSedwBW4UBBzlJEpCAzKiXoy7O
+         61TbqThRwqIH/RVEuPw9w5fgSCkjcaDuz4b52KRZ0yZhN/hmPltopAjaOve/VvEH0jIA
+         OPcl9Y41wdkq4acYRlEhFp+LxAKQ5QhYlJxsd7CoOZQFM3Ahm7Ii8BY+2xXA1xJGYZ+V
+         6inA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WcSvgD989fY0SopbWiRUz6u/u98cNhlUBbCX++2pZEc=;
-        b=IXn1DztLKykvGPVIkRiXVDGx4a8O8ChEmLG0Mr37swPG8E2OTMXviNuX3nPInu+csL
-         dXJ2UTdfjf2G59janI8xV6dLwCrg9zjJDXMgnFCaQZa7oCr/CPJLgFD+s4nrn8Q4HYJ8
-         hf4XVLwQXTb9ALrJzfOn7xy/XosZf6iK4Yz2uAB5Z8IbO6+Ody5FsFJVVJeK1x1u/j2R
-         YvblHLzeQ/PzMnpA6t8ltaZssQZ7QPRO0W2X62TzitNgFXeu9hIEYi9zfNm+Ngh8STtV
-         TGhw1UNBXkCCNN1x9dsX+TdfcrHoGdc59uJ5Rej/GgNg2QKLXKsTNWQP2t3MWw/etpgi
-         hpwA==
-X-Gm-Message-State: AOAM531ezApqe1VHpdyyWI/QazjNgcwtk0FBeyT7/9AobXsF7ctU4jKT
-        NdjRY5iwmNMeGISQ6AJl1w==
-X-Google-Smtp-Source: ABdhPJxfazkZzSfr0M1e72Q1iwhMIjXpeKa927AzMkX6SRAXbbyVhTG58ufkux8eTuCc9QSpztL1dw==
-X-Received: by 2002:a17:90a:2c09:: with SMTP id m9mr4607314pjd.205.1605625088336;
-        Tue, 17 Nov 2020 06:58:08 -0800 (PST)
-Received: from localhost.localdomain ([182.209.58.45])
-        by smtp.gmail.com with ESMTPSA id q13sm3517981pjq.15.2020.11.17.06.58.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2020 06:58:07 -0800 (PST)
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, brakmo <brakmo@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        David Ahern <dsa@cumulusnetworks.com>,
-        Yonghong Song <yhs@fb.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Ira Weiny <ira.weiny@intel.com>, Thomas Graf <tgraf@suug.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Xdp <xdp-newbies@vger.kernel.org>
-Subject: [PATCH bpf-next 9/9] samples: bpf: remove bpf_load loader completely
-Date:   Tue, 17 Nov 2020 14:56:44 +0000
-Message-Id: <20201117145644.1166255-10-danieltimlee@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201117145644.1166255-1-danieltimlee@gmail.com>
-References: <20201117145644.1166255-1-danieltimlee@gmail.com>
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=yu/K9MDzQlqf/QF4RaavB4uksqaawxhzJ50+1rdsBnk=;
+        b=Pk7AtTC64lU/ziOK//Q3QtBxJE+b82Td1L/ZIfwfCxfWUkt4xdMj86LSFCM4NUNk77
+         0MAL0aCmKitG0s6qxOj8CgJegILxFJLx3CQQyCXvtu7ao9rv2zihyPdyKW35i1jO93c8
+         clPCG5oPR6U6h4/Yxri0HSnzCtrHTPsxiN488eQpnKXczNUvRNoYJE8uYjmKQUUxKlju
+         0wAkBrZvWSL6lj80POQATLDPisVPRzEKMFXra2abrxfgXa4Gxs5G1Nr82cmEfRX2jq+5
+         mjiwWCCLRG5De7mHsnrnbrMFrcyheb5uCEgOej2nYvu/f+1Bhmjrquh+XgvcWq6BvuR8
+         mCEQ==
+X-Gm-Message-State: AOAM530K1Eu3pnEr9D0A76TKxuZLPiStkuxdxZbmfJaUMT3BSOl674aP
+        4NE6OELDk66ejvcdfv6s+fw=
+X-Google-Smtp-Source: ABdhPJw5OKfITfkoQW3kgroBy5O1W5WB1dfp6D9z3L41/iNJTNsGWOGsyfhcWvEpskjULBG26ilkcA==
+X-Received: by 2002:a62:51c4:0:b029:160:922:d7a1 with SMTP id f187-20020a6251c40000b02901600922d7a1mr18841093pfb.34.1605625721974;
+        Tue, 17 Nov 2020 07:08:41 -0800 (PST)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id d18sm21444243pfo.133.2020.11.17.07.08.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Nov 2020 07:08:41 -0800 (PST)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
+References: <20201110100642.2153-1-bjarni.jonasson@microchip.com>
+ <20201110102552.GZ1551@shell.armlinux.org.uk> <87blg5qou5.fsf@microchip.com>
+ <20201110151248.GA1551@shell.armlinux.org.uk> <87a6voqntq.fsf@microchip.com>
+ <20201115121921.GI1551@shell.armlinux.org.uk> <877dqkqly5.fsf@microchip.com>
+ <20201117134546.GA1797886@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH] phy: phylink: Fix CuSFP issue in phylink
+Message-ID: <b9c293f8-dcd2-47ab-7c35-d46a7eeec321@gmail.com>
+Date:   Tue, 17 Nov 2020 07:08:38 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.4.3
 MIME-Version: 1.0
+In-Reply-To: <20201117134546.GA1797886@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Numerous refactoring that rewrites BPF programs written with bpf_load
-to use the libbpf loader was finally completed, resulting in BPF
-programs using bpf_load within the kernel being completely no longer
-present.
 
-This commit removes bpf_load, an outdated bpf loader that is difficult
-to keep up with the latest kernel BPF and causes confusion.
 
-Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
----
- samples/bpf/bpf_load.c          | 667 --------------------------------
- samples/bpf/bpf_load.h          |  57 ---
- samples/bpf/xdp2skb_meta_kern.c |   2 +-
- 3 files changed, 1 insertion(+), 725 deletions(-)
- delete mode 100644 samples/bpf/bpf_load.c
- delete mode 100644 samples/bpf/bpf_load.h
+On 11/17/2020 5:45 AM, Andrew Lunn wrote:
+>>> Do you have the Marvell PHY driver either built-in or available as a
+>>> module? I suspect the problem is you don't. You will need the Marvell
+>>> PHY driver to correctly drive the PHY, you can't rely on the fallback
+>>> driver for SFPs.
+>> Correct.  I was using the generic driver and that does clearly not
+>> work.  After including the Marvell driver the callback to the validate
+>> function happens as expected.  Thanks for the support.
+> 
+> Hi Russell
+> 
+> Maybe we should have MDIO_I2C driver select the Marvell PHY driver?
 
-diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
-deleted file mode 100644
-index c5ad528f046e..000000000000
---- a/samples/bpf/bpf_load.c
-+++ /dev/null
-@@ -1,667 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--#include <stdio.h>
--#include <sys/types.h>
--#include <sys/stat.h>
--#include <fcntl.h>
--#include <libelf.h>
--#include <gelf.h>
--#include <errno.h>
--#include <unistd.h>
--#include <string.h>
--#include <stdbool.h>
--#include <stdlib.h>
--#include <linux/bpf.h>
--#include <linux/filter.h>
--#include <linux/perf_event.h>
--#include <linux/netlink.h>
--#include <linux/rtnetlink.h>
--#include <linux/types.h>
--#include <sys/socket.h>
--#include <sys/syscall.h>
--#include <sys/ioctl.h>
--#include <sys/mman.h>
--#include <poll.h>
--#include <ctype.h>
--#include <assert.h>
--#include <bpf/bpf.h>
--#include "bpf_load.h"
--#include "perf-sys.h"
--
--#define DEBUGFS "/sys/kernel/debug/tracing/"
--
--static char license[128];
--static int kern_version;
--static bool processed_sec[128];
--char bpf_log_buf[BPF_LOG_BUF_SIZE];
--int map_fd[MAX_MAPS];
--int prog_fd[MAX_PROGS];
--int event_fd[MAX_PROGS];
--int prog_cnt;
--int prog_array_fd = -1;
--
--struct bpf_map_data map_data[MAX_MAPS];
--int map_data_count;
--
--static int populate_prog_array(const char *event, int prog_fd)
--{
--	int ind = atoi(event), err;
--
--	err = bpf_map_update_elem(prog_array_fd, &ind, &prog_fd, BPF_ANY);
--	if (err < 0) {
--		printf("failed to store prog_fd in prog_array\n");
--		return -1;
--	}
--	return 0;
--}
--
--static int write_kprobe_events(const char *val)
--{
--	int fd, ret, flags;
--
--	if (val == NULL)
--		return -1;
--	else if (val[0] == '\0')
--		flags = O_WRONLY | O_TRUNC;
--	else
--		flags = O_WRONLY | O_APPEND;
--
--	fd = open(DEBUGFS "kprobe_events", flags);
--
--	ret = write(fd, val, strlen(val));
--	close(fd);
--
--	return ret;
--}
--
--static int load_and_attach(const char *event, struct bpf_insn *prog, int size)
--{
--	bool is_socket = strncmp(event, "socket", 6) == 0;
--	bool is_kprobe = strncmp(event, "kprobe/", 7) == 0;
--	bool is_kretprobe = strncmp(event, "kretprobe/", 10) == 0;
--	bool is_tracepoint = strncmp(event, "tracepoint/", 11) == 0;
--	bool is_raw_tracepoint = strncmp(event, "raw_tracepoint/", 15) == 0;
--	bool is_xdp = strncmp(event, "xdp", 3) == 0;
--	bool is_perf_event = strncmp(event, "perf_event", 10) == 0;
--	bool is_cgroup_skb = strncmp(event, "cgroup/skb", 10) == 0;
--	bool is_cgroup_sk = strncmp(event, "cgroup/sock", 11) == 0;
--	bool is_sockops = strncmp(event, "sockops", 7) == 0;
--	bool is_sk_skb = strncmp(event, "sk_skb", 6) == 0;
--	bool is_sk_msg = strncmp(event, "sk_msg", 6) == 0;
--	size_t insns_cnt = size / sizeof(struct bpf_insn);
--	enum bpf_prog_type prog_type;
--	char buf[256];
--	int fd, efd, err, id;
--	struct perf_event_attr attr = {};
--
--	attr.type = PERF_TYPE_TRACEPOINT;
--	attr.sample_type = PERF_SAMPLE_RAW;
--	attr.sample_period = 1;
--	attr.wakeup_events = 1;
--
--	if (is_socket) {
--		prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
--	} else if (is_kprobe || is_kretprobe) {
--		prog_type = BPF_PROG_TYPE_KPROBE;
--	} else if (is_tracepoint) {
--		prog_type = BPF_PROG_TYPE_TRACEPOINT;
--	} else if (is_raw_tracepoint) {
--		prog_type = BPF_PROG_TYPE_RAW_TRACEPOINT;
--	} else if (is_xdp) {
--		prog_type = BPF_PROG_TYPE_XDP;
--	} else if (is_perf_event) {
--		prog_type = BPF_PROG_TYPE_PERF_EVENT;
--	} else if (is_cgroup_skb) {
--		prog_type = BPF_PROG_TYPE_CGROUP_SKB;
--	} else if (is_cgroup_sk) {
--		prog_type = BPF_PROG_TYPE_CGROUP_SOCK;
--	} else if (is_sockops) {
--		prog_type = BPF_PROG_TYPE_SOCK_OPS;
--	} else if (is_sk_skb) {
--		prog_type = BPF_PROG_TYPE_SK_SKB;
--	} else if (is_sk_msg) {
--		prog_type = BPF_PROG_TYPE_SK_MSG;
--	} else {
--		printf("Unknown event '%s'\n", event);
--		return -1;
--	}
--
--	if (prog_cnt == MAX_PROGS)
--		return -1;
--
--	fd = bpf_load_program(prog_type, prog, insns_cnt, license, kern_version,
--			      bpf_log_buf, BPF_LOG_BUF_SIZE);
--	if (fd < 0) {
--		printf("bpf_load_program() err=%d\n%s", errno, bpf_log_buf);
--		return -1;
--	}
--
--	prog_fd[prog_cnt++] = fd;
--
--	if (is_xdp || is_perf_event || is_cgroup_skb || is_cgroup_sk)
--		return 0;
--
--	if (is_socket || is_sockops || is_sk_skb || is_sk_msg) {
--		if (is_socket)
--			event += 6;
--		else
--			event += 7;
--		if (*event != '/')
--			return 0;
--		event++;
--		if (!isdigit(*event)) {
--			printf("invalid prog number\n");
--			return -1;
--		}
--		return populate_prog_array(event, fd);
--	}
--
--	if (is_raw_tracepoint) {
--		efd = bpf_raw_tracepoint_open(event + 15, fd);
--		if (efd < 0) {
--			printf("tracepoint %s %s\n", event + 15, strerror(errno));
--			return -1;
--		}
--		event_fd[prog_cnt - 1] = efd;
--		return 0;
--	}
--
--	if (is_kprobe || is_kretprobe) {
--		bool need_normal_check = true;
--		const char *event_prefix = "";
--
--		if (is_kprobe)
--			event += 7;
--		else
--			event += 10;
--
--		if (*event == 0) {
--			printf("event name cannot be empty\n");
--			return -1;
--		}
--
--		if (isdigit(*event))
--			return populate_prog_array(event, fd);
--
--#ifdef __x86_64__
--		if (strncmp(event, "sys_", 4) == 0) {
--			snprintf(buf, sizeof(buf), "%c:__x64_%s __x64_%s",
--				is_kprobe ? 'p' : 'r', event, event);
--			err = write_kprobe_events(buf);
--			if (err >= 0) {
--				need_normal_check = false;
--				event_prefix = "__x64_";
--			}
--		}
--#endif
--		if (need_normal_check) {
--			snprintf(buf, sizeof(buf), "%c:%s %s",
--				is_kprobe ? 'p' : 'r', event, event);
--			err = write_kprobe_events(buf);
--			if (err < 0) {
--				printf("failed to create kprobe '%s' error '%s'\n",
--				       event, strerror(errno));
--				return -1;
--			}
--		}
--
--		strcpy(buf, DEBUGFS);
--		strcat(buf, "events/kprobes/");
--		strcat(buf, event_prefix);
--		strcat(buf, event);
--		strcat(buf, "/id");
--	} else if (is_tracepoint) {
--		event += 11;
--
--		if (*event == 0) {
--			printf("event name cannot be empty\n");
--			return -1;
--		}
--		strcpy(buf, DEBUGFS);
--		strcat(buf, "events/");
--		strcat(buf, event);
--		strcat(buf, "/id");
--	}
--
--	efd = open(buf, O_RDONLY, 0);
--	if (efd < 0) {
--		printf("failed to open event %s\n", event);
--		return -1;
--	}
--
--	err = read(efd, buf, sizeof(buf));
--	if (err < 0 || err >= sizeof(buf)) {
--		printf("read from '%s' failed '%s'\n", event, strerror(errno));
--		return -1;
--	}
--
--	close(efd);
--
--	buf[err] = 0;
--	id = atoi(buf);
--	attr.config = id;
--
--	efd = sys_perf_event_open(&attr, -1/*pid*/, 0/*cpu*/, -1/*group_fd*/, 0);
--	if (efd < 0) {
--		printf("event %d fd %d err %s\n", id, efd, strerror(errno));
--		return -1;
--	}
--	event_fd[prog_cnt - 1] = efd;
--	err = ioctl(efd, PERF_EVENT_IOC_ENABLE, 0);
--	if (err < 0) {
--		printf("ioctl PERF_EVENT_IOC_ENABLE failed err %s\n",
--		       strerror(errno));
--		return -1;
--	}
--	err = ioctl(efd, PERF_EVENT_IOC_SET_BPF, fd);
--	if (err < 0) {
--		printf("ioctl PERF_EVENT_IOC_SET_BPF failed err %s\n",
--		       strerror(errno));
--		return -1;
--	}
--
--	return 0;
--}
--
--static int load_maps(struct bpf_map_data *maps, int nr_maps,
--		     fixup_map_cb fixup_map)
--{
--	int i, numa_node;
--
--	for (i = 0; i < nr_maps; i++) {
--		if (fixup_map) {
--			fixup_map(&maps[i], i);
--			/* Allow userspace to assign map FD prior to creation */
--			if (maps[i].fd != -1) {
--				map_fd[i] = maps[i].fd;
--				continue;
--			}
--		}
--
--		numa_node = maps[i].def.map_flags & BPF_F_NUMA_NODE ?
--			maps[i].def.numa_node : -1;
--
--		if (maps[i].def.type == BPF_MAP_TYPE_ARRAY_OF_MAPS ||
--		    maps[i].def.type == BPF_MAP_TYPE_HASH_OF_MAPS) {
--			int inner_map_fd = map_fd[maps[i].def.inner_map_idx];
--
--			map_fd[i] = bpf_create_map_in_map_node(maps[i].def.type,
--							maps[i].name,
--							maps[i].def.key_size,
--							inner_map_fd,
--							maps[i].def.max_entries,
--							maps[i].def.map_flags,
--							numa_node);
--		} else {
--			map_fd[i] = bpf_create_map_node(maps[i].def.type,
--							maps[i].name,
--							maps[i].def.key_size,
--							maps[i].def.value_size,
--							maps[i].def.max_entries,
--							maps[i].def.map_flags,
--							numa_node);
--		}
--		if (map_fd[i] < 0) {
--			printf("failed to create map %d (%s): %d %s\n",
--			       i, maps[i].name, errno, strerror(errno));
--			return 1;
--		}
--		maps[i].fd = map_fd[i];
--
--		if (maps[i].def.type == BPF_MAP_TYPE_PROG_ARRAY)
--			prog_array_fd = map_fd[i];
--	}
--	return 0;
--}
--
--static int get_sec(Elf *elf, int i, GElf_Ehdr *ehdr, char **shname,
--		   GElf_Shdr *shdr, Elf_Data **data)
--{
--	Elf_Scn *scn;
--
--	scn = elf_getscn(elf, i);
--	if (!scn)
--		return 1;
--
--	if (gelf_getshdr(scn, shdr) != shdr)
--		return 2;
--
--	*shname = elf_strptr(elf, ehdr->e_shstrndx, shdr->sh_name);
--	if (!*shname || !shdr->sh_size)
--		return 3;
--
--	*data = elf_getdata(scn, 0);
--	if (!*data || elf_getdata(scn, *data) != NULL)
--		return 4;
--
--	return 0;
--}
--
--static int parse_relo_and_apply(Elf_Data *data, Elf_Data *symbols,
--				GElf_Shdr *shdr, struct bpf_insn *insn,
--				struct bpf_map_data *maps, int nr_maps)
--{
--	int i, nrels;
--
--	nrels = shdr->sh_size / shdr->sh_entsize;
--
--	for (i = 0; i < nrels; i++) {
--		GElf_Sym sym;
--		GElf_Rel rel;
--		unsigned int insn_idx;
--		bool match = false;
--		int j, map_idx;
--
--		gelf_getrel(data, i, &rel);
--
--		insn_idx = rel.r_offset / sizeof(struct bpf_insn);
--
--		gelf_getsym(symbols, GELF_R_SYM(rel.r_info), &sym);
--
--		if (insn[insn_idx].code != (BPF_LD | BPF_IMM | BPF_DW)) {
--			printf("invalid relo for insn[%d].code 0x%x\n",
--			       insn_idx, insn[insn_idx].code);
--			return 1;
--		}
--		insn[insn_idx].src_reg = BPF_PSEUDO_MAP_FD;
--
--		/* Match FD relocation against recorded map_data[] offset */
--		for (map_idx = 0; map_idx < nr_maps; map_idx++) {
--			if (maps[map_idx].elf_offset == sym.st_value) {
--				match = true;
--				break;
--			}
--		}
--		if (match) {
--			insn[insn_idx].imm = maps[map_idx].fd;
--		} else {
--			printf("invalid relo for insn[%d] no map_data match\n",
--			       insn_idx);
--			return 1;
--		}
--	}
--
--	return 0;
--}
--
--static int cmp_symbols(const void *l, const void *r)
--{
--	const GElf_Sym *lsym = (const GElf_Sym *)l;
--	const GElf_Sym *rsym = (const GElf_Sym *)r;
--
--	if (lsym->st_value < rsym->st_value)
--		return -1;
--	else if (lsym->st_value > rsym->st_value)
--		return 1;
--	else
--		return 0;
--}
--
--static int load_elf_maps_section(struct bpf_map_data *maps, int maps_shndx,
--				 Elf *elf, Elf_Data *symbols, int strtabidx)
--{
--	int map_sz_elf, map_sz_copy;
--	bool validate_zero = false;
--	Elf_Data *data_maps;
--	int i, nr_maps;
--	GElf_Sym *sym;
--	Elf_Scn *scn;
--	int copy_sz;
--
--	if (maps_shndx < 0)
--		return -EINVAL;
--	if (!symbols)
--		return -EINVAL;
--
--	/* Get data for maps section via elf index */
--	scn = elf_getscn(elf, maps_shndx);
--	if (scn)
--		data_maps = elf_getdata(scn, NULL);
--	if (!scn || !data_maps) {
--		printf("Failed to get Elf_Data from maps section %d\n",
--		       maps_shndx);
--		return -EINVAL;
--	}
--
--	/* For each map get corrosponding symbol table entry */
--	sym = calloc(MAX_MAPS+1, sizeof(GElf_Sym));
--	for (i = 0, nr_maps = 0; i < symbols->d_size / sizeof(GElf_Sym); i++) {
--		assert(nr_maps < MAX_MAPS+1);
--		if (!gelf_getsym(symbols, i, &sym[nr_maps]))
--			continue;
--		if (sym[nr_maps].st_shndx != maps_shndx)
--			continue;
--		/* Only increment iif maps section */
--		nr_maps++;
--	}
--
--	/* Align to map_fd[] order, via sort on offset in sym.st_value */
--	qsort(sym, nr_maps, sizeof(GElf_Sym), cmp_symbols);
--
--	/* Keeping compatible with ELF maps section changes
--	 * ------------------------------------------------
--	 * The program size of struct bpf_load_map_def is known by loader
--	 * code, but struct stored in ELF file can be different.
--	 *
--	 * Unfortunately sym[i].st_size is zero.  To calculate the
--	 * struct size stored in the ELF file, assume all struct have
--	 * the same size, and simply divide with number of map
--	 * symbols.
--	 */
--	map_sz_elf = data_maps->d_size / nr_maps;
--	map_sz_copy = sizeof(struct bpf_load_map_def);
--	if (map_sz_elf < map_sz_copy) {
--		/*
--		 * Backward compat, loading older ELF file with
--		 * smaller struct, keeping remaining bytes zero.
--		 */
--		map_sz_copy = map_sz_elf;
--	} else if (map_sz_elf > map_sz_copy) {
--		/*
--		 * Forward compat, loading newer ELF file with larger
--		 * struct with unknown features. Assume zero means
--		 * feature not used.  Thus, validate rest of struct
--		 * data is zero.
--		 */
--		validate_zero = true;
--	}
--
--	/* Memcpy relevant part of ELF maps data to loader maps */
--	for (i = 0; i < nr_maps; i++) {
--		struct bpf_load_map_def *def;
--		unsigned char *addr, *end;
--		const char *map_name;
--		size_t offset;
--
--		map_name = elf_strptr(elf, strtabidx, sym[i].st_name);
--		maps[i].name = strdup(map_name);
--		if (!maps[i].name) {
--			printf("strdup(%s): %s(%d)\n", map_name,
--			       strerror(errno), errno);
--			free(sym);
--			return -errno;
--		}
--
--		/* Symbol value is offset into ELF maps section data area */
--		offset = sym[i].st_value;
--		def = (struct bpf_load_map_def *)(data_maps->d_buf + offset);
--		maps[i].elf_offset = offset;
--		memset(&maps[i].def, 0, sizeof(struct bpf_load_map_def));
--		memcpy(&maps[i].def, def, map_sz_copy);
--
--		/* Verify no newer features were requested */
--		if (validate_zero) {
--			addr = (unsigned char *) def + map_sz_copy;
--			end  = (unsigned char *) def + map_sz_elf;
--			for (; addr < end; addr++) {
--				if (*addr != 0) {
--					free(sym);
--					return -EFBIG;
--				}
--			}
--		}
--	}
--
--	free(sym);
--	return nr_maps;
--}
--
--static int do_load_bpf_file(const char *path, fixup_map_cb fixup_map)
--{
--	int fd, i, ret, maps_shndx = -1, strtabidx = -1;
--	Elf *elf;
--	GElf_Ehdr ehdr;
--	GElf_Shdr shdr, shdr_prog;
--	Elf_Data *data, *data_prog, *data_maps = NULL, *symbols = NULL;
--	char *shname, *shname_prog;
--	int nr_maps = 0;
--
--	/* reset global variables */
--	kern_version = 0;
--	memset(license, 0, sizeof(license));
--	memset(processed_sec, 0, sizeof(processed_sec));
--
--	if (elf_version(EV_CURRENT) == EV_NONE)
--		return 1;
--
--	fd = open(path, O_RDONLY, 0);
--	if (fd < 0)
--		return 1;
--
--	elf = elf_begin(fd, ELF_C_READ, NULL);
--
--	if (!elf)
--		return 1;
--
--	if (gelf_getehdr(elf, &ehdr) != &ehdr)
--		return 1;
--
--	/* clear all kprobes */
--	i = write_kprobe_events("");
--
--	/* scan over all elf sections to get license and map info */
--	for (i = 1; i < ehdr.e_shnum; i++) {
--
--		if (get_sec(elf, i, &ehdr, &shname, &shdr, &data))
--			continue;
--
--		if (0) /* helpful for llvm debugging */
--			printf("section %d:%s data %p size %zd link %d flags %d\n",
--			       i, shname, data->d_buf, data->d_size,
--			       shdr.sh_link, (int) shdr.sh_flags);
--
--		if (strcmp(shname, "license") == 0) {
--			processed_sec[i] = true;
--			memcpy(license, data->d_buf, data->d_size);
--		} else if (strcmp(shname, "version") == 0) {
--			processed_sec[i] = true;
--			if (data->d_size != sizeof(int)) {
--				printf("invalid size of version section %zd\n",
--				       data->d_size);
--				return 1;
--			}
--			memcpy(&kern_version, data->d_buf, sizeof(int));
--		} else if (strcmp(shname, "maps") == 0) {
--			int j;
--
--			maps_shndx = i;
--			data_maps = data;
--			for (j = 0; j < MAX_MAPS; j++)
--				map_data[j].fd = -1;
--		} else if (shdr.sh_type == SHT_SYMTAB) {
--			strtabidx = shdr.sh_link;
--			symbols = data;
--		}
--	}
--
--	ret = 1;
--
--	if (!symbols) {
--		printf("missing SHT_SYMTAB section\n");
--		goto done;
--	}
--
--	if (data_maps) {
--		nr_maps = load_elf_maps_section(map_data, maps_shndx,
--						elf, symbols, strtabidx);
--		if (nr_maps < 0) {
--			printf("Error: Failed loading ELF maps (errno:%d):%s\n",
--			       nr_maps, strerror(-nr_maps));
--			goto done;
--		}
--		if (load_maps(map_data, nr_maps, fixup_map))
--			goto done;
--		map_data_count = nr_maps;
--
--		processed_sec[maps_shndx] = true;
--	}
--
--	/* process all relo sections, and rewrite bpf insns for maps */
--	for (i = 1; i < ehdr.e_shnum; i++) {
--		if (processed_sec[i])
--			continue;
--
--		if (get_sec(elf, i, &ehdr, &shname, &shdr, &data))
--			continue;
--
--		if (shdr.sh_type == SHT_REL) {
--			struct bpf_insn *insns;
--
--			/* locate prog sec that need map fixup (relocations) */
--			if (get_sec(elf, shdr.sh_info, &ehdr, &shname_prog,
--				    &shdr_prog, &data_prog))
--				continue;
--
--			if (shdr_prog.sh_type != SHT_PROGBITS ||
--			    !(shdr_prog.sh_flags & SHF_EXECINSTR))
--				continue;
--
--			insns = (struct bpf_insn *) data_prog->d_buf;
--			processed_sec[i] = true; /* relo section */
--
--			if (parse_relo_and_apply(data, symbols, &shdr, insns,
--						 map_data, nr_maps))
--				continue;
--		}
--	}
--
--	/* load programs */
--	for (i = 1; i < ehdr.e_shnum; i++) {
--
--		if (processed_sec[i])
--			continue;
--
--		if (get_sec(elf, i, &ehdr, &shname, &shdr, &data))
--			continue;
--
--		if (memcmp(shname, "kprobe/", 7) == 0 ||
--		    memcmp(shname, "kretprobe/", 10) == 0 ||
--		    memcmp(shname, "tracepoint/", 11) == 0 ||
--		    memcmp(shname, "raw_tracepoint/", 15) == 0 ||
--		    memcmp(shname, "xdp", 3) == 0 ||
--		    memcmp(shname, "perf_event", 10) == 0 ||
--		    memcmp(shname, "socket", 6) == 0 ||
--		    memcmp(shname, "cgroup/", 7) == 0 ||
--		    memcmp(shname, "sockops", 7) == 0 ||
--		    memcmp(shname, "sk_skb", 6) == 0 ||
--		    memcmp(shname, "sk_msg", 6) == 0) {
--			ret = load_and_attach(shname, data->d_buf,
--					      data->d_size);
--			if (ret != 0)
--				goto done;
--		}
--	}
--
--done:
--	close(fd);
--	return ret;
--}
--
--int load_bpf_file(char *path)
--{
--	return do_load_bpf_file(path, NULL);
--}
--
--int load_bpf_file_fixup_map(const char *path, fixup_map_cb fixup_map)
--{
--	return do_load_bpf_file(path, fixup_map);
--}
-diff --git a/samples/bpf/bpf_load.h b/samples/bpf/bpf_load.h
-deleted file mode 100644
-index 4fcd258c616f..000000000000
---- a/samples/bpf/bpf_load.h
-+++ /dev/null
-@@ -1,57 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef __BPF_LOAD_H
--#define __BPF_LOAD_H
--
--#include <bpf/bpf.h>
--
--#define MAX_MAPS 32
--#define MAX_PROGS 32
--
--struct bpf_load_map_def {
--	unsigned int type;
--	unsigned int key_size;
--	unsigned int value_size;
--	unsigned int max_entries;
--	unsigned int map_flags;
--	unsigned int inner_map_idx;
--	unsigned int numa_node;
--};
--
--struct bpf_map_data {
--	int fd;
--	char *name;
--	size_t elf_offset;
--	struct bpf_load_map_def def;
--};
--
--typedef void (*fixup_map_cb)(struct bpf_map_data *map, int idx);
--
--extern int prog_fd[MAX_PROGS];
--extern int event_fd[MAX_PROGS];
--extern char bpf_log_buf[BPF_LOG_BUF_SIZE];
--extern int prog_cnt;
--
--/* There is a one-to-one mapping between map_fd[] and map_data[].
-- * The map_data[] just contains more rich info on the given map.
-- */
--extern int map_fd[MAX_MAPS];
--extern struct bpf_map_data map_data[MAX_MAPS];
--extern int map_data_count;
--
--/* parses elf file compiled by llvm .c->.o
-- * . parses 'maps' section and creates maps via BPF syscall
-- * . parses 'license' section and passes it to syscall
-- * . parses elf relocations for BPF maps and adjusts BPF_LD_IMM64 insns by
-- *   storing map_fd into insn->imm and marking such insns as BPF_PSEUDO_MAP_FD
-- * . loads eBPF programs via BPF syscall
-- *
-- * One ELF file can contain multiple BPF programs which will be loaded
-- * and their FDs stored stored in prog_fd array
-- *
-- * returns zero on success
-- */
--int load_bpf_file(char *path);
--int load_bpf_file_fixup_map(const char *path, fixup_map_cb fixup_map);
--
--int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags);
--#endif
-diff --git a/samples/bpf/xdp2skb_meta_kern.c b/samples/bpf/xdp2skb_meta_kern.c
-index 9b783316e860..d5631014a176 100644
---- a/samples/bpf/xdp2skb_meta_kern.c
-+++ b/samples/bpf/xdp2skb_meta_kern.c
-@@ -6,7 +6,7 @@
-  * This uses the XDP data_meta infrastructure, and is a cooperation
-  * between two bpf-programs (1) XDP and (2) clsact at TC-ingress hook.
-  *
-- * Notice: This example does not use the BPF C-loader (bpf_load.c),
-+ * Notice: This example does not use the BPF C-loader,
-  * but instead rely on the iproute2 TC tool for loading BPF-objects.
-  */
- #include <uapi/linux/bpf.h>
+It was suggested a while ago that MARVELL_PHY follow the SFP
+configuration symbol and that we would warn when a CuSFP module was used
+with the Generic PHY driver:
+
+https://www.mail-archive.com/netdev@vger.kernel.org/msg253839.html
+
+Eventually we did not make progress towards creating a list of modules
+that would require a specialized PHY driver, maybe we can start now?
 -- 
-2.25.1
-
+Florian
