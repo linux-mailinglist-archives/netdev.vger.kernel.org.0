@@ -2,71 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87ACD2B5870
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:45:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C2062B5879
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:47:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727690AbgKQDoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 22:44:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
+        id S1726541AbgKQDrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 22:47:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbgKQDoT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:44:19 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A656AC0613CF;
-        Mon, 16 Nov 2020 19:44:19 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id r12so19743916iot.4;
-        Mon, 16 Nov 2020 19:44:19 -0800 (PST)
+        with ESMTP id S1725730AbgKQDre (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:47:34 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F41C0613CF
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:47:33 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id 62so15116311pgg.12
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:47:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=57lbXEPj7jmNMETWFLeFaZrg6lk8ttcI8EA76YL2pTI=;
-        b=eSKEDg7flLp4D1xoqZ18+arU7NXV4g8oO1m1RWGJoWcR2z06I7q55NoUPBmwfyCpmY
-         +M0SWFotPWRCiX+TGv0Ttx7lTJEds1dHPK++mDc6ARujz/A21t6WD07GwzrMliseeOLs
-         2kIW+eYOKvnBiB+GL0POaDVXQXP5Rw3Qy/YywlPunIKsXoY3iWzC67AhVzbskHYCqo+C
-         zvFSrBQ6aJ+MVua6yhNS7xQK9GOnhdhEF1x/vtNMg++yM2rVIt9MoikEDr3xmyZoDI0T
-         3UyAi3N3JdADZkQLkz34egyA6lP9k1pe18zesJ13e3dyDZS5Cl7zowqhxx4jpqaExgqp
-         vO8g==
+        bh=wxVPzA+uCtYAXyDLNpzdLAQkszyEfOrv2H7FBcDsrzw=;
+        b=pkoPTThx43JA5XsRyac7Z5N3mH7VZIxJDUI75qx/fgm9xzbAOqaceMdrYQcPf3e4sk
+         3T4SDBNep/I6/L9pi/RtGEKgGF/Nv96a8oZudOhOg7wOrhadIi/pvSITjQh7ZNNRMimc
+         dvlkC9DlXEkNhU5MRkEfKyeUba8uxll/kCjbcah/bFIGRa8bVdbD4w02qhz8XLkCgPSc
+         2FCbj6ZwGfqZUcDVbF4up4S8y1rA5ZgnsEiXQolp+KBm9vghJ5HpQRNSGucU8gImBM0a
+         Q44S5WHBrxEAcuYhq5H7Rt+dC+dRUCCzuBFgTq1CZx511LOeHcD1xjtwbHGPhH6t8Rk8
+         137Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=57lbXEPj7jmNMETWFLeFaZrg6lk8ttcI8EA76YL2pTI=;
-        b=uK0RsIVkMG01/CZAP/dC/i0zGcROmpmgr6eaVZapZjJA7sNo4dFgmD1tVPlKOw+/m5
-         YBLD/45pHN7PdR48ZgdCbRf3yxLviO+AiePXyph3I2Jn732KwWmgXVJL8+zS6Ztdv7iT
-         Ot4HrJmjt1AHxHrS6Hx5dMSp1a6QH9Ii3HeEm+yLYltgfsj8JMyLm24giUFjHODMAdl6
-         v6JbMFpEnisPkKygLYaUtJpJ5RxN5XzDcgHcwc3AFuKEd+40Yvoz2JxlBWlLs/VWFM4D
-         T3ddJ57MMoo3F2cPaZl6lA1DexQiZNQreEq74WB/dK9kr8IKPyzmbPznZMWzL+2zxuIZ
-         qztg==
-X-Gm-Message-State: AOAM5300+1bHwR2LskTvr0LdxCJLk5n69I5mZVS9qpXmgbqOLqdi3/p+
-        lslsfO0CBelO8J5uhg6ywts8dAq1cH4=
-X-Google-Smtp-Source: ABdhPJw/yEB+ALCGdMUZTF7R+rcBxaLw/KLDk/LjnT/LhqsFVjxtGZJGtYSIsdkP62NeXytg4aZCaQ==
-X-Received: by 2002:a6b:4401:: with SMTP id r1mr10057525ioa.78.1605584659034;
-        Mon, 16 Nov 2020 19:44:19 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:c472:ae53:db1e:5dd0])
-        by smtp.googlemail.com with ESMTPSA id c89sm12728838ilf.26.2020.11.16.19.44.17
+        bh=wxVPzA+uCtYAXyDLNpzdLAQkszyEfOrv2H7FBcDsrzw=;
+        b=Hbb5v8wDjuFHyRfqyZ9KWkOMTParfq1wPWjFqjxC3XRKXgw+z8qf2esbZbbSgeF7pu
+         Wcqq5HoGbK/4fhOpOCd/cNVXL7DEnQcLnxBfjXBgLfA+cGWOWxK0IRsSMCpCnczMPDuL
+         Qc9Q7hpa94AXWJohXzOwXY7Z/BzVzZtynv5UcDQCEhtD7H+DKuRtp9Xo8WVev+cbpWJx
+         tM1nOXfH6utCgTE0+KpNutRMs1ufApP/zVvKYDJStjCGMAm+7L1gG9VbxkwzmKWvMOTC
+         s09GNCgzZndIZcL8eR9KR9jwpincDgxxFaXu3DCtZ9QR3Hy0fwYJwJKWNAP6cPUZqxWY
+         ENNQ==
+X-Gm-Message-State: AOAM532KIJDdvzdctlhJzDcxeog7vAddLOtySk+CCfR/Ntd6Rr7L6+U0
+        MtMt0cRI3Ya0mRazmnIg2HvkCkIaK5Q=
+X-Google-Smtp-Source: ABdhPJx8kD/qYSO6Fz2pcqiica6wMosF4zBm0W2zRo9/vPUF/zygOdQJ0nSGFN9Z6zD59eu+vxnNww==
+X-Received: by 2002:a17:90a:a417:: with SMTP id y23mr2357649pjp.97.1605584852512;
+        Mon, 16 Nov 2020 19:47:32 -0800 (PST)
+Received: from [10.230.28.242] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id j25sm18935600pfa.199.2020.11.16.19.47.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Nov 2020 19:44:18 -0800 (PST)
-Subject: Re: [PATCH v4 bpf-next 3/5] kbuild: build kernel module BTFs if BTF
- is enabled and pahole supports it
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     kernel-team@fb.com, linux-kernel@vger.kernel.org,
-        rafael@kernel.org, jeyu@kernel.org,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net
-References: <20201110011932.3201430-1-andrii@kernel.org>
- <20201110011932.3201430-4-andrii@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f52c83a9-c350-5ba8-e178-10a0d7d0fed6@gmail.com>
-Date:   Mon, 16 Nov 2020 20:44:15 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.3
+        Mon, 16 Nov 2020 19:47:31 -0800 (PST)
+Subject: Re: [PATCH v3 net-next 1/3] net: dsa: tag_dsa: Allow forwarding of
+ redirected IGMP traffic
+To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
+        netdev@vger.kernel.org
+References: <20201114234558.31203-1-tobias@waldekranz.com>
+ <20201114234558.31203-2-tobias@waldekranz.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <8dadf02b-20a6-8fb4-7004-c5de14cdc4a7@gmail.com>
+Date:   Mon, 16 Nov 2020 19:47:29 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.4.3
 MIME-Version: 1.0
-In-Reply-To: <20201110011932.3201430-4-andrii@kernel.org>
+In-Reply-To: <20201114234558.31203-2-tobias@waldekranz.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -74,29 +70,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/9/20 6:19 PM, Andrii Nakryiko wrote:
-> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> index d7a7bc3b6098..1e78faaf20a5 100644
-> --- a/lib/Kconfig.debug
-> +++ b/lib/Kconfig.debug
-> @@ -274,6 +274,15 @@ config DEBUG_INFO_BTF
->  	  Turning this on expects presence of pahole tool, which will convert
->  	  DWARF type info into equivalent deduplicated BTF type info.
->  
-> +config PAHOLE_HAS_SPLIT_BTF
-> +	def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'` -ge "119")
-> +
-> +config DEBUG_INFO_BTF_MODULES
-> +	def_bool y
-> +	depends on DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF
-> +	help
-> +	  Generate compact split BTF type information for kernel modules.
-> +
->  config GDB_SCRIPTS
->  	bool "Provide GDB scripts for kernel debugging"
->  	help
 
-Thank you for adding a config option for this feature vs bumping the
-required pahole version in scripts/link-vmlinux.sh. This is a much more
-friendly way of handling kernel features that require support from build
-tools.
+
+On 11/14/2020 3:45 PM, Tobias Waldekranz wrote:
+> When receiving an IGMP/MLD frame with a TO_CPU tag, the switch has not
+> performed any forwarding of it. This means that we should not set the
+> offload_fwd_mark on the skb, in case a software bridge wants it
+> forwarded.
+> 
+> This is a port of:
+> 
+> 1ed9ec9b08ad ("dsa: Allow forwarding of redirected IGMP traffic")
+> 
+> Which corrected the issue for chips using EDSA tags, but not for those
+> using regular DSA tags.
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
