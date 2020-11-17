@@ -2,91 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61DAD2B5EC0
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 12:57:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 054F72B5ED9
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 13:11:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728214AbgKQL5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 06:57:09 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.184]:34688 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726266AbgKQL5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 06:57:09 -0500
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4FDF720078;
-        Tue, 17 Nov 2020 11:57:08 +0000 (UTC)
-Received: from us4-mdac16-17.at1.mdlocal (unknown [10.110.49.199])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4C160800A3;
-        Tue, 17 Nov 2020 11:57:08 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.32])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D6216100052;
-        Tue, 17 Nov 2020 11:57:07 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 798A0280066;
-        Tue, 17 Nov 2020 11:57:07 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 17 Nov
- 2020 11:56:59 +0000
-Subject: Re: [PATCHv5 iproute2-next 0/5] iproute2: add libbpf support
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Jiri Benc <jbenc@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-References: <20201109070802.3638167-1-haliu@redhat.com>
- <20201116065305.1010651-1-haliu@redhat.com>
- <CAADnVQ+LNBYq5fdTSRUPy2ZexTdCcB6ErNH_T=r9bJ807UT=pQ@mail.gmail.com>
- <20201116155446.16fe46cf@carbon> <20201117023757.qypmhucuws3sajyb@ast-mbp>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <9a781009-e7e5-4f8c-0e49-bd7386ca5818@solarflare.com>
-Date:   Tue, 17 Nov 2020 11:56:48 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727815AbgKQMIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 07:08:46 -0500
+Received: from mail-bn7nam10on2088.outbound.protection.outlook.com ([40.107.92.88]:4576
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725446AbgKQMIq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Nov 2020 07:08:46 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MR3OksGE+iS13BRwIddkuWQOPl6cBNCGFCTYpbT+CAPR1m2CrLeAiuh7SexTqpyTvLa6RfApVuOGhTr3wXazwNVTamuA1ppKaF0O7bCf9dhKkkf8MUsjZnJI6PCXuBj+Cy/g2EmFCdLrfDonsw96MPTr5nK1JN4dKPBdA7b4jWWYRsV7xuj7kQ3GlxZhjnv+qSxWvtL16YK7eCDvNGCBy1SCC3pxMQdBoJ0foBGi5QOOvKXhANTNAZ5eGq/sUnJctuYad5Qp86dyjX0CYI+y4Y0wE+vZdM4dWS8fzmEUOaGey4x65n4erN7pNS5Et6N3s54pC2VUJR/gFNhLoheaXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gPlJUK4TPJkN6hQ3N92zr++dT/2zCXtL72BxYRNjg3I=;
+ b=hpiMpW1RSZwFcnsay3uTTwuk6FPeVBJXuwEgqqBWASxEznW+EPwx8+wr+THwWyFx2NOnTDqXEjP9QocM9e3PcnPN+IAwX1uRD1pXimtxBg+sr6uHp0wzEJrUTIyGfkieFyilIkWyvF67Dg3w/A/PRCOJpfk8cykksXA8BHIRwPbmcVI7BwkcOHb5C7PdmJcjuxlAp3uyadx4SR5qZk3qG3a/fep0Tgb76akhd8kXwU/UcftB1+G9nvh0FnYV1uErMeOuOLuC6NaTL47f0IApTYRM4etCx6QoiXPJMWN/PH40PHI2fIARr2O48h5AHjaZpbg5NVwev5IwjW0WASZNwg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=davemloft.net smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gPlJUK4TPJkN6hQ3N92zr++dT/2zCXtL72BxYRNjg3I=;
+ b=T/caYAeuKCmsmLhm5fWLOXOWf9T5uTIBYMKwZSF/PR851CRQOMwQPtQGsKpjRNAqbyfBo/DHu6yKxNeFAMXZ9EFwH50yMK6J8MYX6egwxppYISt5OEVrG3nyCOHomwZGfs7LaK2zqPD8u68fKrr0z1rzShtALuL7AN2L2S2CZj8=
+Received: from DM6PR06CA0023.namprd06.prod.outlook.com (2603:10b6:5:120::36)
+ by DM6PR02MB6329.namprd02.prod.outlook.com (2603:10b6:5:1d4::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20; Tue, 17 Nov
+ 2020 12:08:37 +0000
+Received: from CY1NAM02FT054.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:120:cafe::14) by DM6PR06CA0023.outlook.office365.com
+ (2603:10b6:5:120::36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.28 via Frontend
+ Transport; Tue, 17 Nov 2020 12:08:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ CY1NAM02FT054.mail.protection.outlook.com (10.152.74.100) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.3564.22 via Frontend Transport; Tue, 17 Nov 2020 12:08:36 +0000
+Received: from xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1913.5; Tue, 17 Nov 2020 04:08:02 -0800
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server id
+ 15.1.1913.5 via Frontend Transport; Tue, 17 Nov 2020 04:08:02 -0800
+Envelope-to: git@xilinx.com,
+ michal.simek@xilinx.com,
+ davem@davemloft.net,
+ kuba@kernel.org,
+ mchehab+samsung@kernel.org,
+ gregkh@linuxfoundation.org,
+ linux-arm-kernel@lists.infradead.org,
+ nicolas.ferre@microchip.com,
+ linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org
+Received: from [172.23.64.106] (port=41946 helo=xhdvnc125.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <radhey.shyam.pandey@xilinx.com>)
+        id 1kezmC-0003wG-Un; Tue, 17 Nov 2020 04:08:01 -0800
+Received: by xhdvnc125.xilinx.com (Postfix, from userid 13245)
+        id 1E6CF121216; Tue, 17 Nov 2020 17:38:00 +0530 (IST)
+From:   Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     <kuba@kernel.org>, <michal.simek@xilinx.com>,
+        <mchehab+samsung@kernel.org>, <gregkh@linuxfoundation.org>,
+        <nicolas.ferre@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <git@xilinx.com>,
+        Shravya Kumbham <shravya.kumbham@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Subject: [PATCH net v2] net: emaclite: Add error handling for of_address_ and _mdio_setup functions
+Date:   Tue, 17 Nov 2020 17:37:57 +0530
+Message-ID: <1605614877-5670-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+X-Mailer: git-send-email 2.1.1
 MIME-Version: 1.0
-In-Reply-To: <20201117023757.qypmhucuws3sajyb@ast-mbp>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25794.003
-X-TM-AS-Result: No-1.616200-8.000000-10
-X-TMASE-MatchedRID: pBwXUM+nCwvmLzc6AOD8DfHkpkyUphL99DmY4JJYLjqOzyCsYRwNaV5X
-        KvMz90rKW3I0dGGaO19n86jNK8UwScgDLACebdhjqjZ865FPtpq++TOpgkEMVsO2KBTZiZuoo8W
-        MkQWv6iUD0yuKrQIMCKHUf3pt8cg10C1sQRfQzEHEQdG7H66TyHEqm8QYBtMO6evPLtXT51WKCU
-        W2lNAiLdrymL0ynPCM/LGiN4MNJtXvqQlwbGo16RZ3CUoM+gEJ40nEG0TFCn9xhzFlmBZJpcNY2
-        bKRPim/1DXsKeBNv04EqZlWBkJWd7MZNZFdSWvH4SKOe96QQgc=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.616200-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25794.003
-X-MDID: 1605614228-i42Abmkal-Gs
-X-PPE-DISP: 1605614228;i42Abmkal-Gs
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 07a492b3-74a0-4a22-0f28-08d88af182ee
+X-MS-TrafficTypeDiagnostic: DM6PR02MB6329:
+X-Microsoft-Antispam-PRVS: <DM6PR02MB63296D6C2A0293675C20CAACC7E20@DM6PR02MB6329.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:747;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9vUv/YrfE37l5MWEhEcL7jSe5tkvNaQcvn3D8cS/VtHAdyMW+l4courUmF7bkiaLcRrvI/PbQMJWTIVrkALY+lmWiwNDFskRVp0uJj0mgq9eIqkA+ZO2JLDk6NGZXIcstMtUcDjKzVrzBPhPvLzNhfw/WZIasnMUJNlLCSaxVm+3UUq6TaA47qCh5ag/VumtsS5pyuGaLKgumRxjBdwJJ15wwBTzXS0BoCvMagGBOknxzOwBaDFZanQkT07uWCObpFF0AZEeAISHHUs9wlqZfyBQKUn5YZcL3QJqRSvStPhmt6xgjxkrcY7g7yL0CWHcCBFLNSn7zOeE4aZON2jgzIrINBibTmbYAeLeT/2BXIeivYHYmhMjgDfxAbPubX/nyQfsHsVs54tJb1BTik8edcC3aLdPRC0ELi5IeJ4wc0o=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(376002)(346002)(396003)(39860400002)(136003)(46966005)(82740400003)(47076004)(7636003)(6266002)(54906003)(110136005)(356005)(478600001)(70586007)(70206006)(82310400003)(2616005)(426003)(26005)(336012)(36756003)(2906002)(6666004)(42186006)(4326008)(83380400001)(316002)(36906005)(8936002)(8676002)(5660300002)(107886003)(186003)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2020 12:08:36.0016
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 07a492b3-74a0-4a22-0f28-08d88af182ee
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: CY1NAM02FT054.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB6329
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/11/2020 02:37, Alexei Starovoitov wrote:
-> If a company built a bpf-based product and wants to distibute such
-> product as a package it needs a way to specify this dependency in pkg config.
-> 'tc -V' is not something that can be put in a spec.
-> The main iproute2 version can be used as a dependency, but it's meaningless
-> when presence of libbpf and its version is not strictly derived from
-> iproute2 spec.
+From: Shravya Kumbham <shravya.kumbham@xilinx.com>
 
-But if libbpf is dynamically linked, they can put
-Requires: libbpf >= 0.3.0
-Requires: iproute-tc >= 5.10
-and get the dependency behaviour they need.  No?
+Add ret variable, condition to check the return value and error
+path for the of_address_to_resource() function. It also adds error
+handling for mdio setup and decrement refcount of phy node.
 
--ed
+Addresses-Coverity: Event check_return value.
+Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+---
+Changes for v2:
+
+- Change subject_prefix to target net tree.
+- Add error handling for mdio_setup and remove phy_read changes.
+  Error checking of phy_read will be added along with phy_write
+  in a followup patch. Document the changes in commit description.
+---
+ drivers/net/ethernet/xilinx/xilinx_emaclite.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+index 0c26f5bcc523..4e0005164785 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
++++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+@@ -820,7 +820,7 @@ static int xemaclite_mdio_write(struct mii_bus *bus, int phy_id, int reg,
+ static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
+ {
+ 	struct mii_bus *bus;
+-	int rc;
++	int rc, ret;
+ 	struct resource res;
+ 	struct device_node *np = of_get_parent(lp->phy_node);
+ 	struct device_node *npp;
+@@ -834,7 +834,12 @@ static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
+ 	}
+ 	npp = of_get_parent(np);
+ 
+-	of_address_to_resource(npp, 0, &res);
++	ret = of_address_to_resource(npp, 0, &res);
++	if (ret) {
++		dev_err(dev, "%s resource error!\n",
++			dev->of_node->full_name);
++		return ret;
++	}
+ 	if (lp->ndev->mem_start != res.start) {
+ 		struct phy_device *phydev;
+ 		phydev = of_phy_find_device(lp->phy_node);
+@@ -1173,7 +1178,11 @@ static int xemaclite_of_probe(struct platform_device *ofdev)
+ 	xemaclite_update_address(lp, ndev->dev_addr);
+ 
+ 	lp->phy_node = of_parse_phandle(ofdev->dev.of_node, "phy-handle", 0);
+-	xemaclite_mdio_setup(lp, &ofdev->dev);
++	rc = xemaclite_mdio_setup(lp, &ofdev->dev);
++	if (rc) {
++		dev_warn(dev, "error registering MDIO bus: %d\n", rc);
++		goto error;
++	}
+ 
+ 	dev_info(dev, "MAC address is now %pM\n", ndev->dev_addr);
+ 
+@@ -1197,6 +1206,7 @@ static int xemaclite_of_probe(struct platform_device *ofdev)
+ 	return 0;
+ 
+ error:
++	of_node_put(lp->phy_node);
+ 	free_netdev(ndev);
+ 	return rc;
+ }
+-- 
+2.7.4
+
