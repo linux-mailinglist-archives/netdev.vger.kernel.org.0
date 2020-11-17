@@ -2,68 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 667142B5B0D
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 09:35:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B5FD2B5B1D
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 09:40:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726854AbgKQIfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 03:35:46 -0500
-Received: from mail.zx2c4.com ([192.95.5.64]:42039 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726211AbgKQIfq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Nov 2020 03:35:46 -0500
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 5f5f8117;
-        Tue, 17 Nov 2020 08:31:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=Hr+jI+KVdqgUSqaJucRaw9uwCVA=; b=ZAGMil
-        2h6me0N7K8kyNY4QsrK8PyskCMWyz9/JNkfEywmRPm2FPJumdSZdhMUWiS7+rAhK
-        Lf9kiMA4h/IN7aF+k5H1loaXIr4qOzlRV9lfv6JZIYnKhDaGyBHKW6R8gF9ChgRe
-        Vm+9S2rfvh/+/VC4GecX8VNItLHAF4CKT3EyesP/UgT26Us4wp2hhswk1IzIw6Ap
-        02a+1gT0CIlz15iy4VTiydfYh8WAxb/eA4wbKlzqH4UTPZuhsyC8QjkAckdW0OF4
-        LqBy0oobxCWUkYnFLWLg7GyAHS1YdUF5f88okOEmPC7YXb5CrtQJXJti3DAsOK9s
-        cJCi2qRlx5f9ZrAg==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 14ca90a1 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Tue, 17 Nov 2020 08:31:54 +0000 (UTC)
-Received: by mail-yb1-f174.google.com with SMTP id c129so18201561yba.8;
-        Tue, 17 Nov 2020 00:35:42 -0800 (PST)
-X-Gm-Message-State: AOAM533TrTfq/08KF4CH8nr3aKc3kICHKnOdcu2qnwmGbjX6VM+J7X8u
-        k2HK4AypLey+Id8F3NkQKZ8DLzAzZmeNlN8KvVw=
-X-Google-Smtp-Source: ABdhPJxltpJ7lh/BAV2z4t5JKlLag1wKxZinZcAn5MaBtMCCdqxT5sWm5uXwl/7xTG7nwungx+QhIoCScN+KUkPRPIw=
-X-Received: by 2002:a25:6f83:: with SMTP id k125mr26083401ybc.123.1605602142005;
- Tue, 17 Nov 2020 00:35:42 -0800 (PST)
-MIME-Version: 1.0
-References: <20201117021839.4146-1-a@unstable.cc> <CAMj1kXFxk31wtD3H8V0KbMd82UL_babEWpVTSkfqPpNjSqPNLA@mail.gmail.com>
-In-Reply-To: <CAMj1kXFxk31wtD3H8V0KbMd82UL_babEWpVTSkfqPpNjSqPNLA@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 17 Nov 2020 09:35:31 +0100
-X-Gmail-Original-Message-ID: <CAHmME9p8XNfz1ZdELVFXC4=QY-S6VzJfyf4oREgTM96WJUKeTQ@mail.gmail.com>
-Message-ID: <CAHmME9p8XNfz1ZdELVFXC4=QY-S6VzJfyf4oREgTM96WJUKeTQ@mail.gmail.com>
-Subject: Re: [PATCH cryptodev] crypto: lib/chacha20poly1305 - allow users to
- specify 96bit nonce
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Antonio Quartulli <a@unstable.cc>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
-        linux-security-module <linux-security-module@vger.kernel.org>,
-        Antonio Quartulli <antonio@openvpn.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
+        id S1726543AbgKQIiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 03:38:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:34395 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725355AbgKQIiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 03:38:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605602333;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vaOGo31PBT7Vq3G2jzSyf5AtCROEyUyp3uQByGZ0L3w=;
+        b=CYeZd1WToivQTKOJzcV0O+LVDtSzj1UczI+LqzfVy2uFqvmtTThGE63UqNdr3pQVr0pw20
+        AwTlVNz6pKSO9HqKvrul8FlZ+b+lRmadADE1gPAZdfLQvWm5nCSo8+05p/o67CZlawb5Qa
+        rStLXnv6y+LgofTw8lQRYHd4/tIQsos=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-512-AmW52dlXNNa4oaP6IaAcxA-1; Tue, 17 Nov 2020 03:38:49 -0500
+X-MC-Unique: AmW52dlXNNa4oaP6IaAcxA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0B531108E1A5;
+        Tue, 17 Nov 2020 08:38:48 +0000 (UTC)
+Received: from ovpn-114-34.ams2.redhat.com (ovpn-114-34.ams2.redhat.com [10.36.114.34])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9EE555D9CC;
+        Tue, 17 Nov 2020 08:38:46 +0000 (UTC)
+Message-ID: <a41e88a82b4d7433dded23e9fbd0465ad8529e36.camel@redhat.com>
+Subject: Re: [PATCH net-next] net: add annotation for sock_{lock,unlock}_fast
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-sparse@vger.kernel.org
+Date:   Tue, 17 Nov 2020 09:38:45 +0100
+In-Reply-To: <20201116222750.nmfyxnj6jvd3rww4@ltop.local>
+References: <95cf587fe96127884e555f695fe519d50e63cc17.1605522868.git.pabeni@redhat.com>
+         <20201116222750.nmfyxnj6jvd3rww4@ltop.local>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 17, 2020 at 9:32 AM Ard Biesheuvel <ardb@kernel.org> wrote:
-> If you are going back to the drawing board with in-kernel acceleration
-> for OpenVPN
+Hello,
 
-As far as I can tell, they're mostly after compatibility with their
-existing userspace stuff. Otherwise, if they were going back to the
-drawing board, they could just make openvpn userspace set up xfrm or
-wg tunnels to achieve basically the same design. And actually, the
-xfrm approach kind of makes a lot of sense for what they're doing; it
-was designed for that type of split-daemon tunneling design.
+Thank you for the feedback!
+
+On Mon, 2020-11-16 at 23:27 +0100, Luc Van Oostenryck wrote:
+> > @@ -1606,10 +1607,12 @@ bool lock_sock_fast(struct sock *sk);
+> >   */
+> >  static inline void unlock_sock_fast(struct sock *sk, bool slow)
+> >  {
+> > -	if (slow)
+> > +	if (slow) {
+> >  		release_sock(sk);
+> > -	else
+> > +		__release(&sk->sk_lock.slock);
+> 
+> The correct solution would be to annotate the declaration of
+> release_sock() with '__releases(&sk->sk_lock.slock)'.
+
+If I add such annotation to release_sock(), I'll get several sparse
+warnings for context imbalance (on each lock_sock()/release_sock()
+pair), unless I also add an '__acquires()' annotation to lock_sock(). 
+
+The above does not look correct to me ?!? When release_sock() completes
+the socket spin lock is not held. The annotation added above is
+somewhat an artifact to let unlock_sock_fast() matches lock_sock_fast()
+from sparse perspective. I intentionally avoided changing
+the release_sock() annotation to avoid introducing more artifacts.
+
+The proposed schema is not 100% accurate, as it will also allow e.g. a
+really-not-fitting bh_lock_sock()/unlock_sock_fast() pair, but I could
+not come-up with anything better.
+
+Can we go with the schema I proposed?
+
+Thanks,
+
+Paolo
+
