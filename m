@@ -2,67 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD9BD2B5614
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 02:13:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37A9C2B5615
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 02:13:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731790AbgKQBMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 20:12:37 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7254 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728551AbgKQBMh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 20:12:37 -0500
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CZnwd24nXzkYWX;
-        Tue, 17 Nov 2020 09:12:17 +0800 (CST)
-Received: from [10.67.76.251] (10.67.76.251) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Tue, 17 Nov 2020
- 09:12:28 +0800
-Subject: Re: [PATCH v6] lib: optimize cpumask_local_spread()
-To:     Dave Hansen <dave.hansen@intel.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Yuqi Jin <jinyuqi@huawei.com>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Juergen Gross <jgross@suse.com>,
-        Paul Burton <paul.burton@mips.com>,
-        Michal Hocko <mhocko@suse.com>,
-        "Michael Ellerman" <mpe@ellerman.id.au>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        "Anshuman Khandual" <anshuman.khandual@arm.com>
-References: <1604410767-55947-1-git-send-email-zhangshaokun@hisilicon.com>
- <3e2e760d-e4b9-8bd0-a279-b23bd7841ae7@intel.com>
- <eec4c1b6-8dad-9d07-7ef4-f0fbdcff1785@hisilicon.com>
- <5e8b0304-4de1-4bdc-41d2-79fa5464fbc7@intel.com>
- <1ca0d77f-7cf3-57d8-af23-169975b63b32@hisilicon.com>
- <11889127-21f0-bba9-7beb-5a07f263923e@intel.com>
-From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
-Message-ID: <9b69f841-7b4a-5ff7-817f-523ccdb9cb67@hisilicon.com>
-Date:   Tue, 17 Nov 2020 09:12:28 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        id S1731811AbgKQBM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 20:12:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57712 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727486AbgKQBM4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 20:12:56 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9356D24686;
+        Tue, 17 Nov 2020 01:12:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605575575;
+        bh=YA/28z6YHt3X/FyRZ5je9vABev9eox77FVMXcFx7ArA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BfDFH6f+pThMZc9WgUHkRIK+nu28QLijkYeIgO/EN35vptdTKC1QdT9U4Q/2eiqrp
+         8b76nL4KaCWKWqy+nLosWfPUHELGLiC+/Jmybntk8eNqNzLek8UiPK+/syZQIcYc9p
+         hTe5doK+Yuc3KUDMT9DtMwA86sLrJVsU6jIS55ro=
+Date:   Mon, 16 Nov 2020 17:12:54 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     Boris Pismenny <borisp@nvidia.com>,
+        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
+Subject: Re: [net v2] net/tls: fix corrupted data in recvmsg
+Message-ID: <20201116171254.07b99498@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <f88588ce-03c7-74e0-1c43-0213d9133abd@novek.ru>
+References: <1605413760-21153-1-git-send-email-vfedorenko@novek.ru>
+        <20201116162608.2c54953e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <cd2f4bfe-8fff-ddab-d271-08f0917a5b48@novek.ru>
+        <20201116165454.5b5dd864@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <f88588ce-03c7-74e0-1c43-0213d9133abd@novek.ru>
 MIME-Version: 1.0
-In-Reply-To: <11889127-21f0-bba9-7beb-5a07f263923e@intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.76.251]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
-
-在 2020/11/16 22:48, Dave Hansen 写道:
-> On 11/15/20 11:59 PM, Shaokun Zhang wrote:
->>> Do you want to take another pass at submitting this patch?
->> 'Another pass'? Sorry for my bad understading, I don't follow it correctly.
+On Tue, 17 Nov 2020 00:59:54 +0000 Vadim Fedorenko wrote:
+> >>> Sorry I wasn't clear enough, should this be:
+> >>>
+> >>> 	if (ctx->control != control)
+> >>>
+> >>> ? Otherwise if we get a control record first and then data record
+> >>> the code will collapse them, which isn't correct, right?
+> >>>     
+> >>>>    				goto recv_end;
+> >>>>    		} else {
+> >>>>    			break;  
+> >> I think you mean when ctx->control is control record and control is
+> >> data record.  
+> > Yup.
+> >  
+> >> In this case control message will be decrypted without
+> >> zero copy and will be stored in skb for the next recvmsg, but will
+> >> not be returned together with data message.  
+> > Could you point me to a line which breaks the loop in that case?
+> >  
+> Sure!
 > 
-> Could you please incorporate the feedback that I've given about this
-> version of the patch and write a new version?
-
-Yeah, I will do it soon addressed your comments.
-
-Cheers,
-Shaokun.
-
+> 		if (!control)
+> 			control = tlm->control;
+> 		else if (control != tlm->control)
+> 			goto recv_end;
 > 
+> 
+> In that case control != tlm->control
+> Variable control is set only once and never changes again.
+
+You're right! Applied, thanks!
