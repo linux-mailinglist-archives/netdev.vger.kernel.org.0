@@ -2,62 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A54B62B5700
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 03:46:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 491E52B570F
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 03:52:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726156AbgKQCnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 21:43:31 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7691 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725994AbgKQCnb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 21:43:31 -0500
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CZqxT0vftzkXRZ;
-        Tue, 17 Nov 2020 10:43:09 +0800 (CST)
-Received: from compute.localdomain (10.175.112.70) by
- DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Tue, 17 Nov 2020 10:43:25 +0800
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-To:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] ah6: fix error return code in ah6_input()
-Date:   Tue, 17 Nov 2020 10:45:05 +0800
-Message-ID: <1605581105-35295-1-git-send-email-zhangchangzhong@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1726044AbgKQCtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 21:49:42 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:59258 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725554AbgKQCtl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Nov 2020 21:49:41 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ker3o-007SRm-N0; Tue, 17 Nov 2020 03:49:36 +0100
+Date:   Tue, 17 Nov 2020 03:49:36 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 1/3] net: dsa: tag_dsa: Allow forwarding of
+ redirected IGMP traffic
+Message-ID: <20201117024936.GI1752213@lunn.ch>
+References: <20201114234558.31203-1-tobias@waldekranz.com>
+ <20201114234558.31203-2-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201114234558.31203-2-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix to return a negative error code from the error handling
-case instead of 0, as done elsewhere in this function.
+On Sun, Nov 15, 2020 at 12:45:56AM +0100, Tobias Waldekranz wrote:
+> When receiving an IGMP/MLD frame with a TO_CPU tag, the switch has not
+> performed any forwarding of it. This means that we should not set the
+> offload_fwd_mark on the skb, in case a software bridge wants it
+> forwarded.
+> 
+> This is a port of:
+> 
+> 1ed9ec9b08ad ("dsa: Allow forwarding of redirected IGMP traffic")
+> 
+> Which corrected the issue for chips using EDSA tags, but not for those
+> using regular DSA tags.
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
----
- net/ipv6/ah6.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-diff --git a/net/ipv6/ah6.c b/net/ipv6/ah6.c
-index d88d976..440080d 100644
---- a/net/ipv6/ah6.c
-+++ b/net/ipv6/ah6.c
-@@ -588,7 +588,8 @@ static int ah6_input(struct xfrm_state *x, struct sk_buff *skb)
- 	memcpy(auth_data, ah->auth_data, ahp->icv_trunc_len);
- 	memset(ah->auth_data, 0, ahp->icv_trunc_len);
- 
--	if (ipv6_clear_mutable_options(ip6h, hdr_len, XFRM_POLICY_IN))
-+	err = ipv6_clear_mutable_options(ip6h, hdr_len, XFRM_POLICY_IN);
-+	if (err)
- 		goto out_free;
- 
- 	ip6h->priority    = 0;
--- 
-2.9.5
-
+    Andrew
