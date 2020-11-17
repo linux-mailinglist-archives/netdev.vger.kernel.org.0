@@ -2,139 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B80D2B702B
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 21:36:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 244BB2B7039
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 21:37:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727276AbgKQUe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 15:34:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42082 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726156AbgKQUe4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Nov 2020 15:34:56 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6A0FF2225B;
-        Tue, 17 Nov 2020 20:34:53 +0000 (UTC)
-Date:   Tue, 17 Nov 2020 15:34:51 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH] tracepoint: Do not fail unregistering a probe due to
- memory allocation
-Message-ID: <20201117153451.3015c5c9@gandalf.local.home>
-In-Reply-To: <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
-References: <20201116175107.02db396d@gandalf.local.home>
-        <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com>
-        <20201117142145.43194f1a@gandalf.local.home>
-        <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1728568AbgKQUgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 15:36:50 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:55294 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726805AbgKQUgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 15:36:49 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0AHKaihr072887;
+        Tue, 17 Nov 2020 14:36:44 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1605645404;
+        bh=7g8+febBysogqn0CrrzambHHvshikLPusWzANaG4ARM=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=WzvjfoShrXMk2Oaw229UmzxJt/tpCFx90MecnbO11SqjKHmyE0Qbw2Nq7VTS1YkMO
+         vZ8Zp74GzEvy1fjyG94uj7+GFN1h0gc/GhhsWGDBKnkUKiAzxFqkoDRf9BaXJqCH5E
+         2mQNOExw1W4B6ACKTeGe6pENbOmXikxsoLakBHlk=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0AHKaiFg048577
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 17 Nov 2020 14:36:44 -0600
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 17
+ Nov 2020 14:36:43 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 17 Nov 2020 14:36:43 -0600
+Received: from [10.250.40.192] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0AHKahRp018100;
+        Tue, 17 Nov 2020 14:36:43 -0600
+Subject: Re: [PATCH net-next v4 2/4] dt-bindings: net: Add Rx/Tx output
+ configuration for 10base T1L
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <davem@davemloft.net>, <f.fainelli@gmail.com>,
+        <hkallweit1@gmail.com>, <robh@kernel.org>,
+        <ciorneiioana@gmail.com>, <devicetree@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20201117201555.26723-1-dmurphy@ti.com>
+ <20201117201555.26723-3-dmurphy@ti.com> <20201117203150.GA1800835@lunn.ch>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <553087de-e6e4-23b9-e8c0-d77b430703f3@ti.com>
+Date:   Tue, 17 Nov 2020 14:36:38 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201117203150.GA1800835@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Nov 2020 14:47:20 -0500 (EST)
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
+Andrew
 
-> There seems to be more effect on the data size: adding the "stub_func" field
-> in struct tracepoint adds 8320 bytes of data to my vmlinux. But considering
-> the layout of struct tracepoint:
-> 
-> struct tracepoint {
->         const char *name;               /* Tracepoint name */
->         struct static_key key;
->         struct static_call_key *static_call_key;
->         void *static_call_tramp;
->         void *iterator;
->         int (*regfunc)(void);
->         void (*unregfunc)(void);
->         struct tracepoint_func __rcu *funcs;
->         void *stub_func;
-> };
-> 
-> I would argue that we have many other things to optimize there if we want to
-> shrink the bloat, starting with static keys and system call reg/unregfunc pointers.
+On 11/17/20 2:31 PM, Andrew Lunn wrote:
+> On Tue, Nov 17, 2020 at 02:15:53PM -0600, Dan Murphy wrote:
+>> Per the 802.3cg spec the 10base T1L can operate at 2 different
+>> differential voltages 1v p2p and 2.4v p2p. The abiility of the PHY to
+> ability
+Ack
+>
+>> drive that output is dependent on the PHY's on board power supply.
+>> This common feature is applicable to all 10base T1L PHYs so this binding
+>> property belongs in a top level ethernet document.
+>>
+>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>> ---
+>>   Documentation/devicetree/bindings/net/ethernet-phy.yaml | 6 ++++++
+>>   1 file changed, 6 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+>> index 6dd72faebd89..bda1ce51836b 100644
+>> --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+>> +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+>> @@ -174,6 +174,12 @@ properties:
+>>         PHY's that have configurable TX internal delays. If this property is
+>>         present then the PHY applies the TX delay.
+>>   
+>> +  max-tx-rx-p2p-microvolt:
+>> +    description: |
+>> +      Configures the Tx/Rx p2p differential output voltage for 10base-T1L PHYs.
+> Does it configure, or does it limit? I _think_ this is a negotiation
+> parameter, so the PHY might decide to do 1100mV if the link peer is
+> near by even when max-tx-rx-p2p-microvolt has the higher value.
 
-This is the part that I want to decrease, and yes there's other fish to fry
-in that code, but I really don't want to be adding more.
+For this device we can configure or force it to only work at 1.1v p2p 
+otherwise 2.4 is the default.
 
-> 
-> > 
-> > Since all tracepoints callbacks have at least one parameter (__data), we
-> > could declare tp_stub_func as:
-> > 
-> > static void tp_stub_func(void *data, ...)
-> > {
-> >	return;
-> > }
-> > 
-> > And now C knows that tp_stub_func() can be called with one or more
-> > parameters, and had better be able to deal with it!  
-> 
-> AFAIU this won't work.
-> 
-> C99 6.5.2.2 Function calls
-> 
-> "If the function is defined with a type that is not compatible with the type (of the
-> expression) pointed to by the expression that denotes the called function, the behavior is
-> undefined."
+But each LP's have to be configured for the same voltage. unless auto 
+negotiation is on then it negotiates the voltage.
 
-But is it really a problem in practice. I'm sure we could create an objtool
-function to check to make sure we don't break anything at build time.
+Dan
 
-> 
-> and
-> 
-> 6.7.5.3 Function declarators (including prototypes), item 15:
-> 
-> "For two function types to be compatible, both shall specify compatible return types.
-
-But all tracepoint callbacks have void return types, which means they are
-compatible.
-
-> 
-> Moreover, the parameter type lists, if both are present, shall agree in the number of
-> parameters and in use of the ellipsis terminator; corresponding parameters shall have
-> compatible types. [...]"
-
-Which is why I gave the stub function's first parameter the same type that
-all tracepoint callbacks have a prototype that starts with "void *data"
-
-and my solution is to define:
-
-	void tp_stub_func(void *data, ...) { return; }
-
-Which is in line with: "corresponding parameters shall have compatible
-types". The corresponding parameter is simply "void *data".
-
-> 
-> What you suggest here is to use the ellipsis in the stub definition, but the caller
-> prototype does not use the ellipsis, which brings us into undefined behavior territory
-> again.
-
-And I believe the "undefined behavior" is that you can't trust what is in
-the parameters if the callee chooses to look at them, and that is not the
-case here. But since the called function doesn't care, I highly doubt it
-will ever be an issue. I mean, the only way this can break is if the caller
-places something in the stack that it expects the callee to fix. With all
-the functions in assembly we have, I'm pretty confident that if a compiler
-does something like this, it would break all over the place.
-
--- Steve
+>
+>       Andrew
