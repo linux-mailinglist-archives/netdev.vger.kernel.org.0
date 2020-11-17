@@ -2,88 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0F232B7129
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 23:00:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E7E92B713E
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 23:09:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728385AbgKQWAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 17:00:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60720 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726433AbgKQWAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Nov 2020 17:00:09 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605650408;
-        bh=nJe27WpcM/U4Xti35M0uG8AHrm3YMUVm1KR0EuwZwAU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JQAYJuuAP+aU/rEf7mF0DQx+DuBcWD0oiOq7Mk4gtpLpGU5ST+oME72MsfxXwS/Vy
-         FZwC+pllSL5BviNliOBx/4zNlkFgq+TS7o9a0fzqCnFNmLbUh7mJvI8XhP5TGvgPd2
-         332s/AsHrwQIFAPh+JsVn7hrOuUjFq0BcjJWIwyk=
+        id S1728771AbgKQWHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 17:07:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727672AbgKQWHz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 17:07:55 -0500
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444B8C0617A6
+        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 14:07:55 -0800 (PST)
+Received: by mail-vs1-xe43.google.com with SMTP id l22so11997160vsa.4
+        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 14:07:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=umEa7JuHmTxIADXNGGqKNEHKb3a04RTaswLCVFJxa4M=;
+        b=tI4mA80+Xd+JUJ/JzwWEysBKnaTvgHAU/hR2i1Wqs9FEiBXbaulhbQxwgONQh5AKZk
+         9JQ4pKVTUHba6Ba5Ytj7wdoKe8NLQYcL6W0bKir9B6Qnbtv0atVqDA0X0VacBHNxQDFc
+         ltG2s+9QQ7PnpRfVrsZPaVcgwAWqw+EiOCi4RmC6O3YM2781T5LdZvaitL/10JhqaZE0
+         OYM9rgwZTQ3VNwb7RqVlGg3K7NXXVUTEDT6iT8glzocYQdWjMcXuKb6lyIn66gVC+zQH
+         wo4wTmGsb1H3lf79eje+pGYOANlnYRA6ObW6mqh/7w8dArzIczPEEvgTCxMWKTYqcYaH
+         0L0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=umEa7JuHmTxIADXNGGqKNEHKb3a04RTaswLCVFJxa4M=;
+        b=MiCV4OYkGr0qEI7LG05atliFDkaWWaFhsahbuEHvuJRBXw6f4H4Xvl+eFH24awNg/I
+         53gw+oOKUdoC8YGNB8ayizYRPSX00GXets/iBSIPTPBwf3OTpP6RlvBEK/ivvwt616Jk
+         6XkSBZ81GPzFLt7DElNnsvBfkVvoEJFIltILG6/pbZ5CR33ieeKuJ+XvPiF7uAtlX2HQ
+         rwiMAgw2we4DMnWp2iVNMWsfBgKIjnSyX2LGOg7PeYdbr+8zjQ8cJivBMmwv9HrCs2Tv
+         BMv6f+Kyvpfm9my+47F/RN1AuwwgXHHSAKv9PfJKSYVK1UiHkqYMmw5UVVQtG1XnzeLb
+         e9AA==
+X-Gm-Message-State: AOAM5318zPobqHhM6WxRENtOITaNV65Jh3ApdouyJ+A4GuZzazbzbxqs
+        L6Lt4UFRROpZcEWGFDbeKMYRAqqykvKR4C70HoDizA==
+X-Google-Smtp-Source: ABdhPJy1j7yuSAkeHluT8wnz4btQvLYJWOobaaWW1k9hE9h6H7I1udmnoO2ccRadkiR3syWb8ZwHFHLeDEr/GT1JY7A=
+X-Received: by 2002:a05:6102:22da:: with SMTP id a26mr1462614vsh.13.1605650874215;
+ Tue, 17 Nov 2020 14:07:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 net-next 00/13] Add ethtool ntuple filters support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160565040832.10116.551528627224189010.git-patchwork-notify@kernel.org>
-Date:   Tue, 17 Nov 2020 22:00:08 +0000
-References: <20201114195303.25967-1-naveenm@marvell.com>
-In-Reply-To: <20201114195303.25967-1-naveenm@marvell.com>
-To:     Naveen Mamindlapalli <naveenm@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, saeed@kernel.org,
-        alexander.duyck@gmail.com, sgoutham@marvell.com,
-        lcherian@marvell.com, gakula@marvell.com, jerinj@marvell.com,
-        sbhatta@marvell.com, hkelam@marvell.com
+References: <20201117205902.405316-1-samitolvanen@google.com> <202011171338.BB25DBD1E6@keescook>
+In-Reply-To: <202011171338.BB25DBD1E6@keescook>
+From:   Sami Tolvanen <samitolvanen@google.com>
+Date:   Tue, 17 Nov 2020 14:07:43 -0800
+Message-ID: <CABCJKudJojTh+is8mdMicczgWiTXw+KwCuepmG5gLVmqPWjnHA@mail.gmail.com>
+Subject: Re: [PATCH net] cfg80211: fix callback type mismatches in wext-compat
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Nov 17, 2020 at 1:45 PM Kees Cook <keescook@chromium.org> wrote:
+>
+> On Tue, Nov 17, 2020 at 12:59:02PM -0800, Sami Tolvanen wrote:
+> > Instead of casting callback functions to type iw_handler, which trips
+> > indirect call checking with Clang's Control-Flow Integrity (CFI), add
+> > stub functions with the correct function type for the callbacks.
+>
+> Oh, wow. iw_handler with union iwreq_data look like really nasty hacks.
+> Aren't those just totally bypassing type checking? Where do the
+> callbacks actually happen? I couldn't find them...
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+The callbacks to these happen in ioctl_standard_call in wext-core.c.
 
-On Sun, 15 Nov 2020 01:22:50 +0530 you wrote:
-> This patch series adds support for ethtool ntuple filters, unicast
-> address filtering, VLAN offload and SR-IOV ndo handlers. All of the
-> above features are based on the Admin Function(AF) driver support to
-> install and delete the low level MCAM entries. Each MCAM entry is
-> programmed with the packet fields to match and what actions to take
-> if the match succeeds. The PF driver requests AF driver to allocate
-> set of MCAM entries to be used to install the flows by that PF. The
-> entries will be freed when the PF driver is unloaded.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v4,net-next,01/13] octeontx2-af: Modify default KEX profile to extract TX packet fields
-    https://git.kernel.org/netdev/net-next/c/f1517f6f1d6f
-  - [v4,net-next,02/13] octeontx2-af: Verify MCAM entry channel and PF_FUNC
-    https://git.kernel.org/netdev/net-next/c/041a1c171581
-  - [v4,net-next,03/13] octeontx2-af: Generate key field bit mask from KEX profile
-    https://git.kernel.org/netdev/net-next/c/9b179a960a96
-  - [v4,net-next,04/13] octeontx2-af: Add mbox messages to install and delete MCAM rules
-    https://git.kernel.org/netdev/net-next/c/55307fcb9258
-  - [v4,net-next,05/13] octeontx2-pf: Add support for ethtool ntuple filters
-    https://git.kernel.org/netdev/net-next/c/f0a1913f8a6f
-  - [v4,net-next,06/13] octeontx2-pf: Add support for unicast MAC address filtering
-    https://git.kernel.org/netdev/net-next/c/63ee51575f6c
-  - [v4,net-next,07/13] octeontx2-af: Add debugfs entry to dump the MCAM rules
-    https://git.kernel.org/netdev/net-next/c/4d6beb9c8032
-  - [v4,net-next,08/13] octeontx2-af: Modify nix_vtag_cfg mailbox to support TX VTAG entries
-    https://git.kernel.org/netdev/net-next/c/9a946def264d
-  - [v4,net-next,09/13] octeontx2-pf: Implement ingress/egress VLAN offload
-    https://git.kernel.org/netdev/net-next/c/fd9d7859db6c
-  - [v4,net-next,10/13] octeontx2-pf: Add support for SR-IOV management functions
-    https://git.kernel.org/netdev/net-next/c/f0c2982aaf98
-  - [v4,net-next,11/13] octeontx2-af: Handle PF-VF mac address changes
-    https://git.kernel.org/netdev/net-next/c/4f88ed2cc5af
-  - [v4,net-next,12/13] octeontx2-af: Add new mbox messages to retrieve MCAM entries
-    https://git.kernel.org/netdev/net-next/c/dbab48cecc94
-  - [v4,net-next,13/13] octeontx2-af: Delete NIX_RXVLAN_ALLOC mailbox message
-    https://git.kernel.org/netdev/net-next/c/5a579667850a
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Sami
