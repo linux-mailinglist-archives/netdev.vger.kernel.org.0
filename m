@@ -2,82 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B63D72B6FA9
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 21:09:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC9132B6F97
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 21:07:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731370AbgKQUHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 15:07:53 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:1930 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731628AbgKQUHq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 15:07:46 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fb42d960000>; Tue, 17 Nov 2020 12:07:50 -0800
-Received: from sx1.mtl.com (172.20.13.39) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 17 Nov
- 2020 20:07:43 +0000
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        "Wang Hai" <wanghai38@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 9/9] net/mlx5: fix error return code in mlx5e_tc_nic_init()
-Date:   Tue, 17 Nov 2020 11:57:02 -0800
-Message-ID: <20201117195702.386113-10-saeedm@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201117195702.386113-1-saeedm@nvidia.com>
-References: <20201117195702.386113-1-saeedm@nvidia.com>
+        id S1731439AbgKQUGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 15:06:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37878 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731414AbgKQUGu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 15:06:50 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B9AC0617A6
+        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 12:06:50 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id o9so31218013ejg.1
+        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 12:06:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Gs7R2ev+GdvZkSQzyJKlOzGhV1YIG/geSIkcbosi9pE=;
+        b=SFN5xJOiz2XcXHz3OFDRYlyYwt7CLXtwyLFD9t/jgtx2R4I6SqUtSNFKGyVnXuNP3U
+         mqJcSQRqIIPqMLfz8gIHoCGG0tBdBJGnrB58UfgFMLDfjxL/YttrUPW5EPsXEnw/zOBl
+         3S3svsw6LdCWPwOj3gf5VEHkJ+Atbmee4/EYugZy1ZBHF3kcuYaazFkTGRyqw5csgJiP
+         NFL1SllAnbKorUOgYYcKvrZBKeoq4j2QqNPHn5n2xyIdiLtcpsOQEuATGUlMa85IETnY
+         IrQToDk/aJKuP6ZTx5lZqjKKY4iUKkFisE/WkNxFpf82J9gn5Tz43OJqIgEKkJZxDvj1
+         5qtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Gs7R2ev+GdvZkSQzyJKlOzGhV1YIG/geSIkcbosi9pE=;
+        b=S/rUKQrw47LyTxjpm/bI0NASMBxUAE0M7YJNbxORt/wwQA2AMkriMI06fonlRy2gdC
+         NRNrmFubFkhmI61zt8OzfEQS9IqljdL8wyKdPk1A4jN1Hd+jQ4v/M268iOC4/CSdi83J
+         Ida1zsfpfArDcZ8DvCmlRrn2jS2rrfivE1d8ljD+khDfKiqFTajMPyC4stDn7KQ1TZvF
+         fEOl9un26lIEFPY0toGFLicz543O8Y+IGDGcnJvoKvQFbGt4HyckN3F9ghUj5NJwUyeA
+         j5smoR0/cJArO29gAwvQ7Sfin76kTJqvAmUl25IPO1zkaB4577iYu6eP7zSQygch448Y
+         DLvw==
+X-Gm-Message-State: AOAM5326rJnlWbmH5t1CyDx/HwxNITn/q+xEn+bTjL1AN/MteVUqyh1J
+        3rt4zecjIKpp46vGQtkRaPCmUw==
+X-Google-Smtp-Source: ABdhPJyw0TAxMlvDFPbO5r0vaRxG3Do/B02IFkrtB4Ds+fgy9DAGN4O9NkmbIQXxlPyRpdRAKA0hZQ==
+X-Received: by 2002:a17:906:ee2:: with SMTP id x2mr10069840eji.326.1605643609131;
+        Tue, 17 Nov 2020 12:06:49 -0800 (PST)
+Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
+        by smtp.gmail.com with ESMTPSA id f18sm12345754edt.32.2020.11.17.12.06.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2020 12:06:48 -0800 (PST)
+Date:   Tue, 17 Nov 2020 21:06:47 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, oss-drivers@netronome.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] nfp: tls: Fix unreachable code issue
+Message-ID: <20201117200646.GA10136@netronome.com>
+References: <20201117171347.GA27231@embeddedor>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1605643670; bh=kvrzQm2EDXsRFW73B5B5OmD65b5PiaPb/wwbkvA5piU=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=DHzi3T0jFxoTZvp2ZRmI19m4G/7jFZp/c7Spq6TYFGNBdN92kLPrEZv9rXQ0aovab
-         1vxgc5iJxYlXl/VKvsCNNdPLg57enLordwy5lM4NOrPi3Yr9PT16hka9aEhV6jyjRZ
-         WmrNpe736bSLRNtsAO0WLtJJCAD2+omjL4hYmODAUdIPs2eMnE9gGGfQnhVi0QyIYZ
-         S0D4/KbaW/cIlZTRGfDViFDWemsabb8DPNjCx0ZbmEr7K9BkSZndYXvI02tGN7p9J6
-         MTIXQ25QLMj0YgsM3agcmxFrWsJN46VSR0iSWcE0edzmPa3qq+NYs/XzZOQvFLvvP/
-         Vkh2v2XrpvuFw==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201117171347.GA27231@embeddedor>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+On Tue, Nov 17, 2020 at 11:13:47AM -0600, Gustavo A. R. Silva wrote:
+> Fix the following unreachable code issue:
+> 
+>    drivers/net/ethernet/netronome/nfp/crypto/tls.c: In function 'nfp_net_tls_add':
+>    include/linux/compiler_attributes.h:208:41: warning: statement will never be executed [-Wswitch-unreachable]
+>      208 | # define fallthrough                    __attribute__((__fallthrough__))
+>          |                                         ^~~~~~~~~~~~~
+>    drivers/net/ethernet/netronome/nfp/crypto/tls.c:299:3: note: in expansion of macro 'fallthrough'
+>      299 |   fallthrough;
+>          |   ^~~~~~~~~~~
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Fix to return a negative error code from the error handling
-case instead of 0, as done elsewhere in this function.
-
-Fixes: aedd133d17bc ("net/mlx5e: Support CT offload for tc nic flows")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/=
-ethernet/mellanox/mlx5/core/en_tc.c
-index 2e2fa0440032..ce710f22b1ff 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -5229,8 +5229,10 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
-=20
- 	tc->ct =3D mlx5_tc_ct_init(priv, tc->chains, &priv->fs.tc.mod_hdr,
- 				 MLX5_FLOW_NAMESPACE_KERNEL);
--	if (IS_ERR(tc->ct))
-+	if (IS_ERR(tc->ct)) {
-+		err =3D PTR_ERR(tc->ct);
- 		goto err_ct;
-+	}
-=20
- 	tc->netdevice_nb.notifier_call =3D mlx5e_tc_netdev_event;
- 	err =3D register_netdevice_notifier_dev_net(priv->netdev,
---=20
-2.26.2
-
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
