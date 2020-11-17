@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C02842B6D86
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 19:38:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8B222B6D88
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 19:38:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731435AbgKQSgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 13:36:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52088 "EHLO
+        id S1731202AbgKQSiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 13:38:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729502AbgKQSgt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 13:36:49 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592DCC0613CF;
-        Tue, 17 Nov 2020 10:36:49 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id 62so16594415pgg.12;
-        Tue, 17 Nov 2020 10:36:49 -0800 (PST)
+        with ESMTP id S1726860AbgKQSiD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 13:38:03 -0500
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F041AC0613CF;
+        Tue, 17 Nov 2020 10:38:02 -0800 (PST)
+Received: by mail-pj1-x1044.google.com with SMTP id f12so933725pjp.4;
+        Tue, 17 Nov 2020 10:38:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2Un7bkg9kXjFs/tVAi75i1Yourocf7dyVv1ILRh6JPc=;
-        b=D1amKCllKBkpeP1HKint4pL8bRnIH8WYMUMAYX1vO49nYeZjFa8FiBzSBfdsr6CKpC
-         gVGLhJJ5ks5qUPh0OWlGcmhn5/IzJ7HnePG3i0DrYEc7rFYnU5gUtDNqbpiRya3xiW8f
-         rdSlY98HNxUMAQ6HbXuqKaci6Ap+lstjKnPZ2cUceP/rwHUNSBS6z9pMxiLv0HWf0E3T
-         8DYpTpC0cfziBcmxzsPUX54UtVqQU3VjyvzL+EDX1+67oUv9Q50K+jOhvowId7/NAcbn
-         Zg7+3XkaEt/yMclBSSHYZpbrfou7p8rvTGnsbtYC/yLnSxUeVIpAiCuhYTcSSnDVOJUx
-         P63Q==
+        bh=yu92GNSLaJazZbwGQ6R6KeiEaYOAIoD6D1oOqv5idBY=;
+        b=ZmyIu4rdDl1SZD/zRg0ts2ItNCDOh+c9fezEKou8I7NGQHIjjWIw9RyCuPvu081NXI
+         r26f4Y40K9tEBDNOnOHaBOh4m7KzPjLoWZKV3YyNC5qiSsKYDt+YDwymaxFtPQjh+ul/
+         sXZWn5+H0DXjJwLpuAaM9zoK5IxPUuSKx7oh/2+RXFmKUsdej4svog+n9cOmZfQa+vbW
+         frl2A7y081AadLFAy+lKt0spqw3ATb/1/Uf7ZDtrPiN9YhLSB93ABv4hiyceH2i15pTx
+         KC9+34usj3NAXvC6IK3jItS9YeR1NW3hBtdRkXxBDDhRo6gaHZYWfJZ24PBQibIRZrPd
+         N2aQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=2Un7bkg9kXjFs/tVAi75i1Yourocf7dyVv1ILRh6JPc=;
-        b=i/e8h7kfeHfT3QINT48pl8wachHtfpivRjEtpexyKTHPVjDVdYwUIWFzJLAQuukGfF
-         9NGCWoNpFzIJKs5tYy/WCtOkrXYYdCa9I7ucw7LK0J0GkCjrXOU6AS3O180KONESosSi
-         F1WKca4qY3QT19DN0BXbcqPeLBCcuILIHUCY8K3g2LNkEhEOv5u2wR9kg1xzi6e5roSC
-         1621EphL0ele99zgwh6hesmq4vt0IXiJFw0qePNsUkPYzsuRtNJeOUN4xPbKnlg0+AHV
-         Q1Rd5vYhufsZ45PUFFQRJzHFj1DpmQEtGX88Z7vvBWKhwOh4PjPViDs6YmPU49cLD4W4
-         a4tw==
-X-Gm-Message-State: AOAM530hwZOmAOCd3LVLcABlXr2z0oQjwlp9CYKptfCTNcZ6Yj0IigPL
-        gqbrV4iBDGlRYiPkWnPMLfQ=
-X-Google-Smtp-Source: ABdhPJzLO6AiAxQSaNTQXTAyTQ+7nEvk72+29BnXqffKWnk/eoN4MgNV2yGqWm5GYGyXhFeASfgGhg==
-X-Received: by 2002:a65:5588:: with SMTP id j8mr4534952pgs.245.1605638208955;
-        Tue, 17 Nov 2020 10:36:48 -0800 (PST)
+        bh=yu92GNSLaJazZbwGQ6R6KeiEaYOAIoD6D1oOqv5idBY=;
+        b=Eme73P6y79ImhlN9K/eqnjd4U+t7I6bLW7h2jOc7RTubetYDMr5MdKnJ62NZ7nOVt+
+         E3JDWzYE4jtq9zhW6EWe45+G8v2SbRoSnPG6+LxTVETT1VeK+aAjHnlwUx4U9s/vVvFc
+         87m6x61Ezq3XptuQL3alOshtssYbYvAI2FRj/1EGuJpm7ZwrH2rtPb2XONkRj7o4zEbU
+         2eMiJBYY/8usg4r6rjeWMJUoB/tX7ONyN6F0qrfvr0fVwhaQJWwaQn8IT43KUxr/Ni3r
+         TNFmIVPa2gAQEtF8R3iiyL3OL/YJ+iB3u8tL4COhdULgN73yV6GFYofNj7HetVgtu36i
+         DA5A==
+X-Gm-Message-State: AOAM530s0LWhn5gOlHtVhoOU2jCgnCatIYp24E3cOoE274eNlQ3/3LSU
+        8HbAFggzYd02dKQRLN+KniI=
+X-Google-Smtp-Source: ABdhPJzh8ruo2Qq2CiTdpU3CKCHjF26KmnAV0cgydIFJY1fbynk22VVOKoacTamYbbVugLiJnDbGRw==
+X-Received: by 2002:a17:90a:d246:: with SMTP id o6mr382734pjw.236.1605638282512;
+        Tue, 17 Nov 2020 10:38:02 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id q19sm22568824pfh.37.2020.11.17.10.36.41
+        by smtp.googlemail.com with ESMTPSA id y69sm1267645pfb.12.2020.11.17.10.37.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Nov 2020 10:36:48 -0800 (PST)
-Subject: Re: [PATCH RFC v2 4/5] net: stmmac: dwmac-meson8b: move RGMII delays
- into a separate function
+        Tue, 17 Nov 2020 10:38:01 -0800 (PST)
+Subject: Re: [PATCH RFC v2 5/5] net: stmmac: dwmac-meson8b: add support for
+ the RGMII RX delay on G12A
 To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         davem@davemloft.net, kuba@kernel.org,
         linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
@@ -58,7 +58,7 @@ Cc:     jianxin.pan@amlogic.com, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, khilman@baylibre.com,
         narmstrong@baylibre.com, jbrunet@baylibre.com, andrew@lunn.ch
 References: <20201115185210.573739-1-martin.blumenstingl@googlemail.com>
- <20201115185210.573739-5-martin.blumenstingl@googlemail.com>
+ <20201115185210.573739-6-martin.blumenstingl@googlemail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -114,12 +114,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <bea47acf-00ac-3be7-aada-f95a22f29175@gmail.com>
-Date:   Tue, 17 Nov 2020 10:36:38 -0800
+Message-ID: <db97971e-3dc5-2187-2965-2cae547506a6@gmail.com>
+Date:   Tue, 17 Nov 2020 10:37:51 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20201115185210.573739-5-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20201115185210.573739-6-martin.blumenstingl@googlemail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -128,11 +128,13 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 11/15/20 10:52 AM, Martin Blumenstingl wrote:
-> Newer SoCs starting with the Amlogic Meson G12A have more a precise
-> RGMII RX delay configuration register. This means more complexity in the
-> code. Extract the existing RGMII delay configuration code into a
-> separate function to make it easier to read/understand even when adding
-> more logic in the future.
+> Amlogic Meson G12A (and newer: G12B, SM1) SoCs have a more advanced RX
+> delay logic. Instead of fine-tuning the delay in the nanoseconds range
+> it now allows tuning in 200 picosecond steps. This support comes with
+> new bits in the PRG_ETH1[19:16] register.
+> 
+> Add support for validating the RGMII RX delay as well as configuring the
+> register accordingly on these platforms.
 > 
 > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
