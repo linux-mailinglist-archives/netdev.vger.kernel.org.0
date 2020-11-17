@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C2062B5879
-	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:47:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C208D2B587B
+	for <lists+netdev@lfdr.de>; Tue, 17 Nov 2020 04:49:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbgKQDrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Nov 2020 22:47:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
+        id S1726635AbgKQDtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Nov 2020 22:49:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbgKQDre (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:47:34 -0500
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F41C0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:47:33 -0800 (PST)
-Received: by mail-pg1-x541.google.com with SMTP id 62so15116311pgg.12
-        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:47:33 -0800 (PST)
+        with ESMTP id S1725730AbgKQDtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Nov 2020 22:49:04 -0500
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A62C0613CF
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:49:04 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id u2so9495225pls.10
+        for <netdev@vger.kernel.org>; Mon, 16 Nov 2020 19:49:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wxVPzA+uCtYAXyDLNpzdLAQkszyEfOrv2H7FBcDsrzw=;
-        b=pkoPTThx43JA5XsRyac7Z5N3mH7VZIxJDUI75qx/fgm9xzbAOqaceMdrYQcPf3e4sk
-         3T4SDBNep/I6/L9pi/RtGEKgGF/Nv96a8oZudOhOg7wOrhadIi/pvSITjQh7ZNNRMimc
-         dvlkC9DlXEkNhU5MRkEfKyeUba8uxll/kCjbcah/bFIGRa8bVdbD4w02qhz8XLkCgPSc
-         2FCbj6ZwGfqZUcDVbF4up4S8y1rA5ZgnsEiXQolp+KBm9vghJ5HpQRNSGucU8gImBM0a
-         Q44S5WHBrxEAcuYhq5H7Rt+dC+dRUCCzuBFgTq1CZx511LOeHcD1xjtwbHGPhH6t8Rk8
-         137Q==
+        bh=HRc12UJTQ3GGiSgPYFkMIQjNBC2gST7WUWe1lY+eIlI=;
+        b=XrkfqVF0+trZQLgA5VkVY81PcgHDcq3rpbtyuCdD4JBp81dhrRauFBrZK1FnvIs5F9
+         H5cWn6/eRuAuYHV+fGxGp44+iDu2/9ZnfDGussE9nPN1iiQYQNfjfgRY5PePG44CRgtP
+         D7NPAr+jN0egDXx+z0iXqo1jps6d8ve/aoxsmb5VrQeTdLPETgEpq94D5ZC1knw78mju
+         L0AeO8Di1q2IxY9vLhU6yJKvf6y1fvUJ+/GaENinIHpCE5L+w9qLbvN3e7cvAn4wRx35
+         7m0Rs/AXEOPF9WluU0dYFt0XacJH4cB3tQrU9RVByGiWq5tO5sGpZxTXaKNkZt/aKIqG
+         pPGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=wxVPzA+uCtYAXyDLNpzdLAQkszyEfOrv2H7FBcDsrzw=;
-        b=Hbb5v8wDjuFHyRfqyZ9KWkOMTParfq1wPWjFqjxC3XRKXgw+z8qf2esbZbbSgeF7pu
-         Wcqq5HoGbK/4fhOpOCd/cNVXL7DEnQcLnxBfjXBgLfA+cGWOWxK0IRsSMCpCnczMPDuL
-         Qc9Q7hpa94AXWJohXzOwXY7Z/BzVzZtynv5UcDQCEhtD7H+DKuRtp9Xo8WVev+cbpWJx
-         tM1nOXfH6utCgTE0+KpNutRMs1ufApP/zVvKYDJStjCGMAm+7L1gG9VbxkwzmKWvMOTC
-         s09GNCgzZndIZcL8eR9KR9jwpincDgxxFaXu3DCtZ9QR3Hy0fwYJwJKWNAP6cPUZqxWY
-         ENNQ==
-X-Gm-Message-State: AOAM532KIJDdvzdctlhJzDcxeog7vAddLOtySk+CCfR/Ntd6Rr7L6+U0
-        MtMt0cRI3Ya0mRazmnIg2HvkCkIaK5Q=
-X-Google-Smtp-Source: ABdhPJx8kD/qYSO6Fz2pcqiica6wMosF4zBm0W2zRo9/vPUF/zygOdQJ0nSGFN9Z6zD59eu+vxnNww==
-X-Received: by 2002:a17:90a:a417:: with SMTP id y23mr2357649pjp.97.1605584852512;
-        Mon, 16 Nov 2020 19:47:32 -0800 (PST)
+        bh=HRc12UJTQ3GGiSgPYFkMIQjNBC2gST7WUWe1lY+eIlI=;
+        b=hDZcC7cxDtk11ZTdKLLLWimRb+bt5VEqm0klpFsRqyt3YqdalcZfwYdWXISjdh6vbg
+         ts6ccRnQKoHsFUd406MpoWLpI/imUFsDwUB2YN/RUS5Ec9NH37kJPXsEMH9xL4q0KHWz
+         Se7/ZwDMGl7EQDKIKX3gcl4B27SL1NJ8uKUXMMBP/6ubYoW9kgca7A4/dwNUrAh+Z2IB
+         rA8hHe5qBeG3joTE+v5wE6grff05NTOZGYN0gG4U0fvREWR35Dm9txzN+zV5oPl/+2/2
+         HLtNZcTD8xSn1ytmJ4znMTIv+eJxFW7gnpV7p6RVqNPCjSs5bLs1q1ZIri0s/nYmxI/J
+         sCxQ==
+X-Gm-Message-State: AOAM5324/GpFRcXjxT65QYGS6P3BsUGuMec9LgaMtmiy3T6lOfEou4Ij
+        yOEr7J+eMCsGiwgoh3eEGSaKoY3YMEA=
+X-Google-Smtp-Source: ABdhPJz8kpR0NmkJDIAjwuqgpuYkJ4Xbxp126A/9jK1aISnPEgoDbX5NypcV0hwRnGHvnvLRp5p9KQ==
+X-Received: by 2002:a17:902:c14a:b029:d8:dc05:d7ef with SMTP id 10-20020a170902c14ab02900d8dc05d7efmr13278522plj.83.1605584943596;
+        Mon, 16 Nov 2020 19:49:03 -0800 (PST)
 Received: from [10.230.28.242] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j25sm18935600pfa.199.2020.11.16.19.47.30
+        by smtp.gmail.com with ESMTPSA id 144sm19645073pfb.71.2020.11.16.19.48.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Nov 2020 19:47:31 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 1/3] net: dsa: tag_dsa: Allow forwarding of
- redirected IGMP traffic
+        Mon, 16 Nov 2020 19:49:03 -0800 (PST)
+Subject: Re: [PATCH v3 net-next 2/3] net: dsa: tag_dsa: Unify regular and
+ ethertype DSA taggers
 To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
         kuba@kernel.org
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
         netdev@vger.kernel.org
 References: <20201114234558.31203-1-tobias@waldekranz.com>
- <20201114234558.31203-2-tobias@waldekranz.com>
+ <20201114234558.31203-3-tobias@waldekranz.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <8dadf02b-20a6-8fb4-7004-c5de14cdc4a7@gmail.com>
-Date:   Mon, 16 Nov 2020 19:47:29 -0800
+Message-ID: <2473d53c-553a-5d80-7624-1d615d0e079b@gmail.com>
+Date:   Mon, 16 Nov 2020 19:48:58 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.4.3
 MIME-Version: 1.0
-In-Reply-To: <20201114234558.31203-2-tobias@waldekranz.com>
+In-Reply-To: <20201114234558.31203-3-tobias@waldekranz.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -73,17 +73,15 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 11/14/2020 3:45 PM, Tobias Waldekranz wrote:
-> When receiving an IGMP/MLD frame with a TO_CPU tag, the switch has not
-> performed any forwarding of it. This means that we should not set the
-> offload_fwd_mark on the skb, in case a software bridge wants it
-> forwarded.
+> Ethertype DSA encodes exactly the same information in the DSA tag as
+> the non-ethertype variety. So refactor out the common parts and reuse
+> them for both protocols.
 > 
-> This is a port of:
+> This is ensures tag parsing and generation is always consistent across
+> all mv88e6xxx chips.
 > 
-> 1ed9ec9b08ad ("dsa: Allow forwarding of redirected IGMP traffic")
-> 
-> Which corrected the issue for chips using EDSA tags, but not for those
-> using regular DSA tags.
+> While we are at it, explicitly deal with all possible CPU codes on
+> receive, making sure to set offload_fwd_mark as appropriate.
 > 
 > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 
