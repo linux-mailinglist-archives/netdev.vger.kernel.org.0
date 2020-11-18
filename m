@@ -2,62 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E71092B733C
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 01:41:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB5702B7347
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 01:43:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727646AbgKRAkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 19:40:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59378 "EHLO mail.kernel.org"
+        id S1729196AbgKRAmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 19:42:46 -0500
+Received: from hydra.tuxags.com ([64.13.172.54]:58814 "EHLO mail.tuxags.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727514AbgKRAkG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Nov 2020 19:40:06 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605660006;
-        bh=eG++Teymcbn8d08FjfeOzwIt/Dgoql9v2L3PraeXXtA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UR9siwn+UWW+yvk9K6UO1qfgQ7bve7u8CLD9qpo7nJ4Ux+PhNUmSGTqGF48TVW57W
-         LSPaamZwg+Q9JHEkcgerZAE1HDBV0DWkamW2tu1FRw3ZXWSpCvfz0KEJF+M7FlslvB
-         Uyt8G+T1noB7uDObOm15Ld8sJ/nM/0NpcLzzqkc0=
+        id S1725943AbgKRAmp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Nov 2020 19:42:45 -0500
+Received: by mail.tuxags.com (Postfix, from userid 1000)
+        id 2C755144F139C; Tue, 17 Nov 2020 16:42:44 -0800 (PST)
+Date:   Tue, 17 Nov 2020 16:42:44 -0800
+From:   Matt Mullins <mmullins@mmlx.us>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     rostedt <rostedt@goodmis.org>, paulmck <paulmck@kernel.org>,
+        Matt Mullins <mmullins@mmlx.us>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH] bpf: don't fail kmalloc while releasing raw_tp
+Message-ID: <20201118004242.rygrwivqcdgeowi7@hydra.tuxags.com>
+Mail-Followup-To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        rostedt <rostedt@goodmis.org>, paulmck <paulmck@kernel.org>,
+        Matt Mullins <mmullins@mmlx.us>, Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <00000000000004500b05b31e68ce@google.com>
+ <20201115055256.65625-1-mmullins@mmlx.us>
+ <20201116121929.1a7aeb16@gandalf.local.home>
+ <1889971276.46615.1605559047845.JavaMail.zimbra@efficios.com>
+ <20201116154437.254a8b97@gandalf.local.home>
+ <20201116160218.3b705345@gandalf.local.home>
+ <1368007646.46749.1605562481450.JavaMail.zimbra@efficios.com>
+ <20201116171027.458a6c17@gandalf.local.home>
+ <609819191.48825.1605654351686.JavaMail.zimbra@efficios.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] qed: fix ILT configuration of SRC block
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160566000627.20766.10416783880536054730.git-patchwork-notify@kernel.org>
-Date:   Wed, 18 Nov 2020 00:40:06 +0000
-References: <20201116132944.2055-1-dbogdanov@marvell.com>
-In-Reply-To: <20201116132944.2055-1-dbogdanov@marvell.com>
-To:     Dmitry Bogdanov <dbogdanov@marvell.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        irusskikh@marvell.com, aelior@marvell.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <609819191.48825.1605654351686.JavaMail.zimbra@efficios.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Mon, 16 Nov 2020 16:29:44 +0300 you wrote:
-> The code refactoring of ILT configuration was not complete, the old
-> unused variables were used for the SRC block. That could lead to the memory
-> corruption by HW when rx filters are configured.
-> This patch completes that refactoring.
+On Tue, Nov 17, 2020 at 06:05:51PM -0500, Mathieu Desnoyers wrote:
+> ----- On Nov 16, 2020, at 5:10 PM, rostedt rostedt@goodmis.org wrote:
 > 
-> Fixes: 8a52bbab39c9 (qed: Debug feature: ilt and mdump)
-> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
+> > On Mon, 16 Nov 2020 16:34:41 -0500 (EST)
+> > Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
 > 
 > [...]
+> 
+> >> I think you'll want a WRITE_ONCE(old[i].func, tp_stub_func) here, matched
+> >> with a READ_ONCE() in __DO_TRACE. This introduces a new situation where the
+> >> func pointer can be updated and loaded concurrently.
+> > 
+> > I thought about this a little, and then only thing we really should worry
+> > about is synchronizing with those that unregister. Because when we make
+> > this update, there are now two states. the __DO_TRACE either reads the
+> > original func or the stub. And either should be OK to call.
+> > 
+> > Only the func gets updated and not the data. So what exactly are we worried
+> > about here?
+> 
+> Indeed with a stub function, I don't see any need for READ_ONCE/WRITE_ONCE.
 
-Here is the summary with links:
-  - [net] qed: fix ILT configuration of SRC block
-    https://git.kernel.org/netdev/net/c/93be52612431
+I'm not sure if this is a practical issue, but without WRITE_ONCE, can't
+the write be torn?  A racing __traceiter_ could potentially see a
+half-modified function pointer, which wouldn't work out too well.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+This was actually my gut instinct before I wrote the __GFP_NOFAIL
+instead -- currently that whole array's memory ordering is provided by
+RCU and I didn't dive deep enough to evaluate getting too clever with
+atomic modifications to it.
 
-
+> 
+> However, if we want to compare the function pointer to some other value and
+> conditionally do (or skip) the call, I think you'll need the READ_ONCE/WRITE_ONCE
+> to make sure the pointer is not re-fetched between comparison and call.
+> 
+> Thanks,
+> 
+> Mathieu
+> 
+> -- 
+> Mathieu Desnoyers
+> EfficiOS Inc.
+> http://www.efficios.com
