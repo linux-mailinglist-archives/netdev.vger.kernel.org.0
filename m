@@ -2,100 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77EEE2B735D
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 01:48:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDA022B7365
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 01:52:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727777AbgKRAra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 19:47:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725767AbgKRAr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 19:47:29 -0500
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EF4C061A48;
-        Tue, 17 Nov 2020 16:47:28 -0800 (PST)
-Received: by mail-pl1-x642.google.com with SMTP id y22so50138plr.6;
-        Tue, 17 Nov 2020 16:47:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5VVUDsIQSbxm2kV6TXkpMyNop6FcshPxk4X8Om/Gvsg=;
-        b=C3jo8906JKjYOkkYJIW9j2p4HK2VlJk9cY+Vbx1gNpN+dBsDkZctcOkWnY77EyQaf8
-         XAPkUoRy3Ua8vQVyH/L1njUgvRdyXxmhf1mr9XPhTafx21sLi1cxtBIJDS1X6cOJq6yc
-         /9zs5N5oFfEmj9bPRp/Lnx/WJK3CXP0lTgZSRPDX/9PmyAIRUfIPOJj9FhDaAn2PliYZ
-         XHwujUqfseA7CctUHuorAMx6hnfbCPuou6Tx82IGxtCXd1ijUoNHTEvujKgISTT1h9Ds
-         13PB6xRp8+apXZm4ZLdxUTvIkkB/EaChfr4RbrCxYfUEHcv0+SX1PsJyYCgQgIEwRMNl
-         vJfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5VVUDsIQSbxm2kV6TXkpMyNop6FcshPxk4X8Om/Gvsg=;
-        b=WtlKi3m4ZPT3PpyHX2HaahKPyNfD172QWmbxiKKiIvGxuoedbWgFHqCZDRiOLZCC3A
-         GCQN/n+eyDA9KcxLLNrQRWhGh9JSrDvoigY3hXmkwfOPrW1Z2y2pLsIAkr/P76Hgyp7F
-         pVYR01EtpRiBkkg0TNF6r6+yO+QX3SAyhOisFtcX3BDIpnPlvoDwkKnO/1rjbtDTYfWM
-         NqESgLc1m63CC5FPBZ04veMIa/vxJfjOHV3+ZQtVj3zCHJMTWpp1GRYKDqRK4zggEmZi
-         uUFbgkcwGiwGQ+MeRjK4/EQXMgtoShedRjIUuyXpJELlHwpuZqv05Z8Xqq/lOGax5ZA9
-         b9IA==
-X-Gm-Message-State: AOAM533Q03/MOyP8ax3Jol4YkfmpQ/cG7gRiNlmeJPo21ZTv+BT7i+JE
-        8ukNGrt5UOvnp3rfy4/EmScic81pkcpnvQ==
-X-Google-Smtp-Source: ABdhPJy5UWxuFtmpm7KypkH7TEKSVPcZs2RVxxqutxJLsY9riHHM0IT5Bvga844ocE2sOv79zwISoA==
-X-Received: by 2002:a17:90a:5217:: with SMTP id v23mr1581575pjh.160.1605660447897;
-        Tue, 17 Nov 2020 16:47:27 -0800 (PST)
-Received: from aroeseler-LY545.hsd1.ca.comcast.net ([2601:648:8400:9ef4:34d:9355:e74:4f1b])
-        by smtp.googlemail.com with ESMTPSA id y124sm22355993pfy.28.2020.11.17.16.47.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2020 16:47:27 -0800 (PST)
-From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
-To:     davem@davemloft.net
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 net-next 3/3] net: add support for sending RFC8335 PROBE
-Date:   Tue, 17 Nov 2020 16:47:26 -0800
-Message-Id: <9b256be32638926353a24c5600a689e7b339d595.1605659597.git.andreas.a.roeseler@gmail.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <cover.1605659597.git.andreas.a.roeseler@gmail.com>
-References: <cover.1605659597.git.andreas.a.roeseler@gmail.com>
+        id S1727227AbgKRAuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 19:50:55 -0500
+Received: from novek.ru ([213.148.174.62]:50126 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725767AbgKRAuy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Nov 2020 19:50:54 -0500
+Received: from [192.168.0.18] (unknown [37.228.234.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 25ED3502C3D;
+        Wed, 18 Nov 2020 03:51:01 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 25ED3502C3D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1605660662; bh=6adnlXsOMVIeP37vOGMsmEGtjr2MAdGOSkL3cU89Ql8=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=ZB3nL7p4Zg84JtY3RLZBDuylGzLiDRA0rVf0FtJJHdZZoBl5X4G76lUu28Ki6Ujxw
+         R/tzS7xAw3LXBHmsYX4araz/kwfHmR2pZsyd8UJZ1Dg3QR1OaRO2Bb2MFdI4fZ1cVQ
+         ga82qnvdTihJG/X645WEt3vLDOiN5fIwggVpFdGU=
+Subject: Re: [net] net/tls: missing received data after fast remote close
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Boris Pismenny <borisp@nvidia.com>,
+        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
+References: <1605440628-1283-1-git-send-email-vfedorenko@novek.ru>
+ <20201117143847.2040f609@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <71f25f4d-a92c-8c56-da34-9d6f7f808c18@novek.ru>
+Date:   Wed, 18 Nov 2020 00:50:48 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20201117143847.2040f609@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modifying the ping_supported function to support probe message types
-allows the user to send probe requests through the existing framework
-for sending ping requests.
+On 17.11.2020 22:38, Jakub Kicinski wrote:
+> On Sun, 15 Nov 2020 14:43:48 +0300 Vadim Fedorenko wrote:
+>> In case when tcp socket received FIN after some data and the
+>> parser haven't started before reading data caller will receive
+>> an empty buffer.
+> This is pretty terse, too terse for me to understand..
+The flow is simple. Server sends small amount of data right after the
+connection is configured and closes the connection. In this case
+receiver sees TLS Handshake data, configures TLS socket right after
+Change Cipher Spec record. While the configuration is in process, TCP
+socket receives small Application Data record, Encrypted Alert record
+and FIN packet. So the TCP socket changes sk_shutdown to RCV_SHUTDOWN
+and sk_flag with SK_DONE bit set.
+>> This behavior differs from plain TCP socket and
+>> leads to special treating in user-space. Patch unpauses parser
+>> directly if we have unparsed data in tcp receive queue.
+> Sure, but why is the parser paused? Does it pause itself on FIN?
+No, it doesn't start even once. The trace looks like:
 
-Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
----
-Changes since v1:
- - Switch to correct base tree
+tcp_recvmsg is called
+tcp_recvmsg returns 1 (Change Cipher Spec record data)
+tls_setsockopt is called
+tls_setsockopt returns
+tls_recvmsg is called
+tls_recvmsg returns 0
+__strp_recv is called
+stack
+         __strp_recv+1
+         tcp_read_sock+169
+         strp_read_sock+104
+         strp_work+68
+         process_one_work+436
+         worker_thread+80
+         kthread+276
+         ret_from_fork+34tls_read_size called
 
-Changes since v2:
- - Switch to net-next tree 67c70b5eb2bf7d0496fcb62d308dc3096bc11553
-
-Changes since v3:
- - Reorder patches add defines first 
----
- net/ipv4/ping.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
-index 248856b301c4..39bdcb2bfc92 100644
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -453,7 +453,9 @@ EXPORT_SYMBOL_GPL(ping_bind);
- static inline int ping_supported(int family, int type, int code)
- {
- 	return (family == AF_INET && type == ICMP_ECHO && code == 0) ||
--	       (family == AF_INET6 && type == ICMPV6_ECHO_REQUEST && code == 0);
-+	       (family == AF_INET && type == ICMP_EXT_ECHO && code == 0) ||
-+	       (family == AF_INET6 && type == ICMPV6_ECHO_REQUEST && code == 0) ||
-+	       (family == AF_INET6 && type == ICMPV6_EXT_ECHO_REQUEST && code == 0);
- }
- 
- /*
--- 
-2.29.2
+So it looks like strp_work was scheduled after tls_recvmsg and
+nothing triggered parser because all the data was received before
+tls_setsockopt ended the configuration process.
+>
+>> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+>> index 2fe9e2c..4db6943 100644
+>> --- a/net/tls/tls_sw.c
+>> +++ b/net/tls/tls_sw.c
+>> @@ -1289,6 +1289,9 @@ static struct sk_buff *tls_wait_data(struct sock *sk, struct sk_psock *psock,
+>>   	struct sk_buff *skb;
+>>   	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>   
+>> +	if (!ctx->recv_pkt && skb_queue_empty(&sk->sk_receive_queue))
+>> +		__strp_unpause(&ctx->strp);
+>> +
+>>   	while (!(skb = ctx->recv_pkt) && sk_psock_queue_empty(psock)) {
+>>   		if (sk->sk_err) {
+>>   			*err = sock_error(sk);
 
