@@ -2,106 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5FF42B850C
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:49:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 131E62B8511
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:49:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726136AbgKRTqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 14:46:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725710AbgKRTqQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 14:46:16 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161ADC0613D4;
-        Wed, 18 Nov 2020 11:46:16 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id b17so3634655ljf.12;
-        Wed, 18 Nov 2020 11:46:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KKZ4gb6lDjaHxR6iESt9TC7rWEjeXXRpmBGWuLjwqho=;
-        b=UD2kY9Ja3dRw3CDr2g34AQQdxq9Id4kG+7UsWQFKu7Se6KpwNZmwIKzxkH0CBiN73E
-         WzSYz4z6USEXQJJzSyuPeDj32w3IKuLLnTqREi1ObZD6euPYVUjtv4mBJaUdLJhZ50fZ
-         rJnJtZBZGWvWI7t7R/a2VmG/fgbH9e5QYMysS5OzzLD9D517t6kW68NjdgSRjBrv81l8
-         ALaTrA7Y3XV0tBmKNR4rFTTW6Hfyg0Z+ghgJlOKUVNAAfjkJJgb5lffKZS9ta6tC/oIe
-         cjcLJ5++yvAyjgsE0k/O/egJi0ygALZDUBdILGotcOg338c/r3vWqVekySTSuL606oa8
-         eiRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KKZ4gb6lDjaHxR6iESt9TC7rWEjeXXRpmBGWuLjwqho=;
-        b=Gduq4ReqIfmHbkkmj1m3r4k0KrXvUA/+0HToYhQotllu1TYWLrq3zxfJJSXEDs4VlW
-         O/+r0mpv+0RKEjdQpHyGj2L7o7XWflgf4w4BS2Tsrt1P1haHUQnl2GHktwNOkMFwN3bv
-         vU60mRZkSc+Pwc4L/u3WbAMLVZorFxpLTfqKfNeNi6Chrzp+GyeQDmmypkemJkJ99iQq
-         1R/fsg3XrgicqdAOHwFhBPjL4pae8VYsCOUBTJ8JKA5JXASikv5A1JfkDDvQ5QhtdOtA
-         wuza7eombRWwbBiFej00Avp0SVk3FnHgOcrVPIF9SPPuadG5Hthg7KhNw9vTBMKc8+BG
-         F5Jw==
-X-Gm-Message-State: AOAM531kb/QSaQ7e4qflL8y8xF1Fe/Wb8eXiXMCeb79oexTrTdTnujni
-        gVhLmTCupMaeYMN/excgGMzpbAFbstVpEDfFo7GDTbJReRY=
-X-Google-Smtp-Source: ABdhPJwzuPmS1cgjgZVNL6pP4CI/HcN9peF/Y7NTvyncavVMzXu/u/1FNFCypGB6OXXldxaxhG+zlLvnZVpBNqBTEbQ=
-X-Received: by 2002:a2e:86c5:: with SMTP id n5mr4627251ljj.450.1605728774563;
- Wed, 18 Nov 2020 11:46:14 -0800 (PST)
+        id S1726457AbgKRTq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 14:46:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40464 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726357AbgKRTq5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 14:46:57 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F094A246AA;
+        Wed, 18 Nov 2020 19:46:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605728816;
+        bh=r4rtZMhdAiBSx+HYth3NByAdBaTUCKCee8fL0I2kNRA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lHosobLoK22MXnVs0MjQ4ibqeRWzsM41/a6EmjFHtqfruDDk9og6FzvPaO2faW0zv
+         jQOzL9YbAkVIz/w2o10YIQlrnodjuJmvIEddKJIog1qKb02XCdvby4FWQi8+pJ4hnn
+         FJxAwQkeq4Ut9VCw2cr3TAjjTkzgoyf5DvczvGq4=
+Date:   Wed, 18 Nov 2020 11:46:54 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     akpm@linux-foundation.org
+Cc:     Dongli Zhang <dongli.zhang@oracle.com>, linux-mm@kvack.org,
+        netdev@vger.kernel.org, willy@infradead.org,
+        aruna.ramakrishna@oracle.com, bert.barbe@oracle.com,
+        rama.nichanamatlu@oracle.com, venkat.x.venkatsubra@oracle.com,
+        manjunath.b.patil@oracle.com, joe.jin@oracle.com,
+        srinivas.eeda@oracle.com, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, vbabka@suse.cz
+Subject: Re: [PATCH v3 1/1] page_frag: Recover from memory pressure
+Message-ID: <20201118114654.3435f76c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201115201029.11903-1-dongli.zhang@oracle.com>
+References: <20201115201029.11903-1-dongli.zhang@oracle.com>
 MIME-Version: 1.0
-References: <20201116175107.02db396d@gandalf.local.home> <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com>
- <20201117142145.43194f1a@gandalf.local.home> <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
- <20201117153451.3015c5c9@gandalf.local.home> <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
- <87h7pmwyta.fsf@mid.deneb.enyo.de> <20201118092228.4f6e5930@gandalf.local.home>
-In-Reply-To: <20201118092228.4f6e5930@gandalf.local.home>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 18 Nov 2020 11:46:02 -0800
-Message-ID: <CAADnVQLv2pnw1x66Y_cYmdBg=sF+7s31VVoEmSerDnbuR0pU_g@mail.gmail.com>
-Subject: Re: violating function pointer signature
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Florian Weimer <fw@deneb.enyo.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 6:22 AM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> Thus, all functions will be non-variadic in these cases.
+On Sun, 15 Nov 2020 12:10:29 -0800 Dongli Zhang wrote:
+> The ethernet driver may allocate skb (and skb->data) via napi_alloc_skb().
+> This ends up to page_frag_alloc() to allocate skb->data from
+> page_frag_cache->va.
+> 
+> During the memory pressure, page_frag_cache->va may be allocated as
+> pfmemalloc page. As a result, the skb->pfmemalloc is always true as
+> skb->data is from page_frag_cache->va. The skb will be dropped if the
+> sock (receiver) does not have SOCK_MEMALLOC. This is expected behaviour
+> under memory pressure.
+> 
+> However, once kernel is not under memory pressure any longer (suppose large
+> amount of memory pages are just reclaimed), the page_frag_alloc() may still
+> re-use the prior pfmemalloc page_frag_cache->va to allocate skb->data. As a
+> result, the skb->pfmemalloc is always true unless page_frag_cache->va is
+> re-allocated, even if the kernel is not under memory pressure any longer.
+> 
+> Here is how kernel runs into issue.
+> 
+> 1. The kernel is under memory pressure and allocation of
+> PAGE_FRAG_CACHE_MAX_ORDER in __page_frag_cache_refill() will fail. Instead,
+> the pfmemalloc page is allocated for page_frag_cache->va.
+> 
+> 2: All skb->data from page_frag_cache->va (pfmemalloc) will have
+> skb->pfmemalloc=true. The skb will always be dropped by sock without
+> SOCK_MEMALLOC. This is an expected behaviour.
+> 
+> 3. Suppose a large amount of pages are reclaimed and kernel is not under
+> memory pressure any longer. We expect skb->pfmemalloc drop will not happen.
+> 
+> 4. Unfortunately, page_frag_alloc() does not proactively re-allocate
+> page_frag_alloc->va and will always re-use the prior pfmemalloc page. The
+> skb->pfmemalloc is always true even kernel is not under memory pressure any
+> longer.
+> 
+> Fix this by freeing and re-allocating the page instead of recycling it.
 
-That's not the only case where it will blow up.
-Try this on sparc:
-struct foo {
-int a;
-};
-
-struct foo foo_struct(void) {
-struct foo f = {};
-return f;
-}
-int foo_int(void) {
-return 0;
-}
-or this link:
-https://godbolt.org/z/EdM47b
-
-Notice:
-jmp %i7+12
-The function that returns small struct will jump to a different
-instruction in the caller.
-
-I think none of the tracepoints return structs and void foo(void) is
-fine on x86.
-Just pointing out that it's more than just variadic.
+Andrew, are you taking this via -mm or should I put it in net? 
+I'm sending a PR to Linus tomorrow.
