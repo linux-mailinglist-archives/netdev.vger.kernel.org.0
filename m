@@ -2,245 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D24B22B7F7E
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 15:35:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDB092B7F91
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 15:40:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726433AbgKROeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 09:34:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55756 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725834AbgKROeK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 09:34:10 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 13B3220A8B;
-        Wed, 18 Nov 2020 14:34:06 +0000 (UTC)
-Date:   Wed, 18 Nov 2020 09:34:05 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Florian Weimer <fw@deneb.enyo.de>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: [PATCH v3] tracepoint: Do not fail unregistering a probe due to
- memory allocation
-Message-ID: <20201118093405.7a6d2290@gandalf.local.home>
-In-Reply-To: <874klmwxxm.fsf@mid.deneb.enyo.de>
-References: <20201116175107.02db396d@gandalf.local.home>
-        <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com>
-        <20201117142145.43194f1a@gandalf.local.home>
-        <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
-        <20201117153451.3015c5c9@gandalf.local.home>
-        <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
-        <87h7pmwyta.fsf@mid.deneb.enyo.de>
-        <20201118141226.GV3121392@hirez.programming.kicks-ass.net>
-        <874klmwxxm.fsf@mid.deneb.enyo.de>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1727049AbgKROiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 09:38:12 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:60898 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725613AbgKROiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 09:38:11 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1kfOax-0007uF-Sd; Wed, 18 Nov 2020 14:38:03 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Naveen Mamindlapalli <naveenm@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] octeontx2-af: Fix access of iter->entry after iter object has been kfree'd
+Date:   Wed, 18 Nov 2020 14:38:03 +0000
+Message-Id: <20201118143803.463297-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+From: Colin Ian King <colin.king@canonical.com>
 
-The list of tracepoint callbacks is managed by an array that is protected
-by RCU. To update this array, a new array is allocated, the updates are
-copied over to the new array, and then the list of functions for the
-tracepoint is switched over to the new array. After a completion of an RCU
-grace period, the old array is freed.
+The call to pc_delete_flow can kfree the iter object, so the following
+dev_err message that accesses iter->entry can accessmemory that has
+just been kfree'd.  Fix this by adding a temporary variable 'entry'
+that has a copy of iter->entry and also use this when indexing into
+the array mcam->entry2target_pffunc[]. Also print the unsigned value
+using the %u format specifier rather than %d.
 
-This process happens for both adding a callback as well as removing one.
-But on removing a callback, if the new array fails to be allocated, the
-callback is not removed, and may be used after it is freed by the clients
-of the tracepoint.
-
-There's really no reason to fail if the allocation for a new array fails
-when removing a function. Instead, the function can simply be replaced by a
-stub function that could be cleaned up on the next modification of the
-array. That is, instead of calling the function registered to the
-tracepoint, it would call a stub function in its place.
-
-Link: https://lore.kernel.org/r/20201115055256.65625-1-mmullins@mmlx.us
-Link: https://lore.kernel.org/r/20201116175107.02db396d@gandalf.local.home
-Link: https://lore.kernel.org/r/20201117211836.54acaef2@oasis.local.home
-
-Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: Andrii Nakryiko <andriin@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@chromium.org>
-Cc: netdev <netdev@vger.kernel.org>
-Cc: bpf <bpf@vger.kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Florian Weimer <fw@deneb.enyo.de>
-Fixes: 97e1c18e8d17b ("tracing: Kernel Tracepoints")
-Reported-by: syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com
-Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
-Reported-by: Matt Mullins <mmullins@mmlx.us>
-Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Addresses-Coverity: ("Read from pointer after free")
+Fixes: 55307fcb9258 ("octeontx2-af: Add mbox messages to install and delete MCAM rules")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
-Changes since v2:
-   - Went back to using a stub function and not touching
-      the fast path.
-   - Removed adding __GFP_NOFAIL from the allocation of the removal.
+ drivers/infiniband/hw/mlx5/mem.c                       | 2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c | 8 +++++---
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
- kernel/tracepoint.c | 80 ++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 64 insertions(+), 16 deletions(-)
-
-diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
-index 3f659f855074..3e261482296c 100644
---- a/kernel/tracepoint.c
-+++ b/kernel/tracepoint.c
-@@ -53,6 +53,12 @@ struct tp_probes {
- 	struct tracepoint_func probes[];
- };
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+index 4ddfdff33a61..14832b66d1fe 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+@@ -1218,11 +1218,13 @@ int rvu_mbox_handler_npc_delete_flow(struct rvu *rvu,
+ 	mutex_unlock(&mcam->lock);
  
-+/* Called in removal of a func but failed to allocate a new tp_funcs */
-+static void tp_stub_func(void)
-+{
-+	return;
-+}
+ 	list_for_each_entry_safe(iter, tmp, &del_list, list) {
++		u16 entry = iter->entry;
 +
- static inline void *allocate_probes(int count)
- {
- 	struct tp_probes *p  = kmalloc(struct_size(p, probes, count),
-@@ -131,6 +137,7 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
- {
- 	struct tracepoint_func *old, *new;
- 	int nr_probes = 0;
-+	int stub_funcs = 0;
- 	int pos = -1;
+ 		/* clear the mcam entry target pcifunc */
+-		mcam->entry2target_pffunc[iter->entry] = 0x0;
++		mcam->entry2target_pffunc[entry] = 0x0;
+ 		if (npc_delete_flow(rvu, iter, pcifunc))
+-			dev_err(rvu->dev, "rule deletion failed for entry:%d",
+-				iter->entry);
++			dev_err(rvu->dev, "rule deletion failed for entry:%u",
++				entry);
+ 	}
  
- 	if (WARN_ON(!tp_func->func))
-@@ -147,14 +154,34 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
- 			if (old[nr_probes].func == tp_func->func &&
- 			    old[nr_probes].data == tp_func->data)
- 				return ERR_PTR(-EEXIST);
-+			if (old[nr_probes].func == tp_stub_func)
-+				stub_funcs++;
- 		}
- 	}
--	/* + 2 : one for new probe, one for NULL func */
--	new = allocate_probes(nr_probes + 2);
-+	/* + 2 : one for new probe, one for NULL func - stub functions */
-+	new = allocate_probes(nr_probes + 2 - stub_funcs);
- 	if (new == NULL)
- 		return ERR_PTR(-ENOMEM);
- 	if (old) {
--		if (pos < 0) {
-+		if (stub_funcs) {
-+			/* Need to copy one at a time to remove stubs */
-+			int probes = 0;
-+
-+			pos = -1;
-+			for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
-+				if (old[nr_probes].func == tp_stub_func)
-+					continue;
-+				if (pos < 0 && old[nr_probes].prio < prio)
-+					pos = probes++;
-+				new[probes++] = old[nr_probes];
-+			}
-+			nr_probes = probes;
-+			if (pos < 0)
-+				pos = probes;
-+			else
-+				nr_probes--; /* Account for insertion */
-+
-+		} else if (pos < 0) {
- 			pos = nr_probes;
- 			memcpy(new, old, nr_probes * sizeof(struct tracepoint_func));
- 		} else {
-@@ -188,8 +215,9 @@ static void *func_remove(struct tracepoint_func **funcs,
- 	/* (N -> M), (N > 1, M >= 0) probes */
- 	if (tp_func->func) {
- 		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
--			if (old[nr_probes].func == tp_func->func &&
--			     old[nr_probes].data == tp_func->data)
-+			if ((old[nr_probes].func == tp_func->func &&
-+			     old[nr_probes].data == tp_func->data) ||
-+			    old[nr_probes].func == tp_stub_func)
- 				nr_del++;
- 		}
- 	}
-@@ -208,14 +236,32 @@ static void *func_remove(struct tracepoint_func **funcs,
- 		/* N -> M, (N > 1, M > 0) */
- 		/* + 1 for NULL */
- 		new = allocate_probes(nr_probes - nr_del + 1);
--		if (new == NULL)
--			return ERR_PTR(-ENOMEM);
--		for (i = 0; old[i].func; i++)
--			if (old[i].func != tp_func->func
--					|| old[i].data != tp_func->data)
--				new[j++] = old[i];
--		new[nr_probes - nr_del].func = NULL;
--		*funcs = new;
-+		if (new) {
-+			for (i = 0; old[i].func; i++)
-+				if ((old[i].func != tp_func->func
-+				     || old[i].data != tp_func->data)
-+				    && old[i].func != tp_stub_func)
-+					new[j++] = old[i];
-+			new[nr_probes - nr_del].func = NULL;
-+			*funcs = new;
-+		} else {
-+			/*
-+			 * Failed to allocate, replace the old function
-+			 * with calls to tp_stub_func.
-+			 */
-+			for (i = 0; old[i].func; i++)
-+				if (old[i].func == tp_func->func &&
-+				    old[i].data == tp_func->data) {
-+					old[i].func = tp_stub_func;
-+					/* Set the prio to the next event. */
-+					if (old[i + 1].func)
-+						old[i].prio =
-+							old[i + 1].prio;
-+					else
-+						old[i].prio = -1;
-+				}
-+			*funcs = old;
-+		}
- 	}
- 	debug_print_probes(*funcs);
- 	return old;
-@@ -295,10 +341,12 @@ static int tracepoint_remove_func(struct tracepoint *tp,
- 	tp_funcs = rcu_dereference_protected(tp->funcs,
- 			lockdep_is_held(&tracepoints_mutex));
- 	old = func_remove(&tp_funcs, func);
--	if (IS_ERR(old)) {
--		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
-+	if (WARN_ON_ONCE(IS_ERR(old)))
- 		return PTR_ERR(old);
--	}
-+
-+	if (tp_funcs == old)
-+		/* Failed allocating new tp_funcs, replaced func with stub */
-+		return 0;
- 
- 	if (!tp_funcs) {
- 		/* Removed last function */
+ 	return 0;
 -- 
-2.25.4
+2.28.0
 
