@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 320772B746A
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 03:58:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8A052B7470
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 03:58:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727198AbgKRCzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 21:55:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44930 "EHLO
+        id S1727262AbgKRC5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 21:57:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727053AbgKRCzO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 21:55:14 -0500
+        with ESMTP id S1726298AbgKRC5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 21:57:53 -0500
 Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832A8C0613D4;
-        Tue, 17 Nov 2020 18:55:13 -0800 (PST)
-Received: by mail-oo1-xc43.google.com with SMTP id l10so54980oom.6;
-        Tue, 17 Nov 2020 18:55:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750ABC0613D4;
+        Tue, 17 Nov 2020 18:57:53 -0800 (PST)
+Received: by mail-oo1-xc43.google.com with SMTP id c25so49641ooe.13;
+        Tue, 17 Nov 2020 18:57:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=tEwnmHhIEBiF4ip6J2MWPrfZE1yNIQonDIzMaMDdDvM=;
-        b=NDKe/JPt7K5aQAIYsKRW4qi5dUaX6bMle2gk9Xr0l3CC9PCYDXVxUby5N/vQ1ES4Pd
-         oOS843e3Zhi7CH2lACr/vcn2KZ2Oo6g6BR9/1O/logjwpGfUaSz7sPqRiR21DItRH3DG
-         z52oflR7hSbVffXDnNJtLRAFHce28sX2r7lcAZTYv0ixB171H69O8rr8d7xVw3Svd/qx
-         lWwcIcIYbOAe2I+4ZzjBJKfukz7muxT33HFAOjFknju7YVHODHiIgQwsgcWhASorKjNY
-         zeejI37zQbpY38fy8yDDn00KnKEkLBhKtEa80250KZDHt9ewJdub9h8AG117DZzGpuds
-         0Bpg==
+        bh=PRy8v2fDNXdncY+CvqHKMoW0jx0iwPASvgOwfw3H6WE=;
+        b=DoolhP6gZWQXyd56o6ZtAv0rSnjdzpne1xakbkx4o3mSg9rwoXv2dYun0Q0e6gBzBS
+         8PTSLTyDXVX/NJNSObjfN8VqcBJ+IRKo/ffBprME0yH05jSwwiogBimPaFjXZFUeSfto
+         F4O1b0C/fXGTHSoQAsxEpDsa+3qWwJl1m6BItZ5b3pJOoMDKtAclLmTUTyoUH/k56L0P
+         Rc6K5K7yumG/4vIqZAUaHhOBnnQRAfgG3sGC3i1Nz2kx+TixBrKinvUZG55g0M1+dLXb
+         Y7mmIwNSOOy8VFOogKRfWwcmzyZ7xfPhQSG1uAeGEL14m8qqg0d4Uo6X+NvSZRjxnX/H
+         TixA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=tEwnmHhIEBiF4ip6J2MWPrfZE1yNIQonDIzMaMDdDvM=;
-        b=Un2cf/NsOfxKuwCVJAcZ2uHWCDDzLS5W+YXcbERnqx4UBeGsHwhxQcm9NUL0LNc0z0
-         aBhzLt4nir6obl1H8uKmrMwwTjw228CkTl7oQVpYhDzlgWv9SW7BHfpXOWL9EjtlM8b8
-         WMdQhVgxHm7PMtLxR6ne558w4GMr+HHXwY9YNhuq5UV7DRgDmaPvIwiVSbDPX86iqWaj
-         Wnqca8Fg9Wr0y/UzktyXYDSzg/HIwaFXbCaraJvfsQ4hfOl3IXiOnBLEXRI2Drmwizhe
-         HhyjJJ6w7LXrSQ7EvsN4FZjlh5xYqr5Z2MRUoORvQF0CL3yk5UBKGHItlnF/xmFLDTMx
-         GWbw==
-X-Gm-Message-State: AOAM531IaB3kxewuf9sgexJN8zanwgPmEnfnclR/oiJGJ4gn6vVAyquf
-        KAEM0JELZ7oQg+8gljJKy82HY0VyG9Wt/uXMYQ==
-X-Google-Smtp-Source: ABdhPJzRjuZgyhfgqXMOz7fG3Ka0cwdzRenoNOLT116CNG2LIn0CFNpWW+KaC111Or8HXNF3cx5nETwIX+56qQSDf4w=
-X-Received: by 2002:a4a:928a:: with SMTP id i10mr5092779ooh.47.1605668112908;
- Tue, 17 Nov 2020 18:55:12 -0800 (PST)
+        bh=PRy8v2fDNXdncY+CvqHKMoW0jx0iwPASvgOwfw3H6WE=;
+        b=DC8AW4AVS7zWEVeDvbNwhLFs/hYd5WDWXDuzqCB066+a3FTouzH8QIw3K/pM+BiXlW
+         3v27pzHCQ9+WmAGl3bn0WglogerU5r0Qq90S3fABwXgz4ES+pqw/9gfhpDfQ+Xch43FG
+         8Q/zvZSnbiwW8Jcb56QCitNwR5DvOZglq3hUrgKyV42zcKv8cwWZGsJACiQIdxFzRwNI
+         Q6CEImbO05vjE6OIRRZ96gTiPSniIJNd8Y/zaG6so28iiHI5RbcynvM5n1DG5he4YRI7
+         n70uEFh1idCgvUg7lpie6/xRYK7Oiwwhpue37DpNQ0SunJoLCOcZLrgnQ8ZpSD69GY1g
+         d6Mg==
+X-Gm-Message-State: AOAM533jU3+/R6AOieioK9fsmW6lCUmkSjTzydFFHqelhNOhDgRi4ugA
+        01rNpbkhB0paGKl4RtWU5llldZm52LbbrFFmQA==
+X-Google-Smtp-Source: ABdhPJzNFaZYyl/DLKNUHPv+jYBR1FeV47W/lLMEhbEA+pbPycF5/40tfGt8DnXF/YsL+gVtq7mDKgBS5gRmVIIZaZs=
+X-Received: by 2002:a4a:4085:: with SMTP id n127mr5148530ooa.80.1605668272877;
+ Tue, 17 Nov 2020 18:57:52 -0800 (PST)
 MIME-Version: 1.0
 References: <20201117145644.1166255-1-danieltimlee@gmail.com>
- <20201117145644.1166255-2-danieltimlee@gmail.com> <CAEf4BzZ9Sr0PXvZAa74phnwm7um9AoN4ELGkNBMvyzvh7vYzRQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzZ9Sr0PXvZAa74phnwm7um9AoN4ELGkNBMvyzvh7vYzRQ@mail.gmail.com>
+ <20201117145644.1166255-10-danieltimlee@gmail.com> <CAEf4BzaOMOhX14zXGzkPmLxCHLj+e4a98d9YtT4RdJNNtrPnOQ@mail.gmail.com>
+In-Reply-To: <CAEf4BzaOMOhX14zXGzkPmLxCHLj+e4a98d9YtT4RdJNNtrPnOQ@mail.gmail.com>
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Wed, 18 Nov 2020 11:54:56 +0900
-Message-ID: <CAEKGpzhCeRZct-zW_DG0Aj_PD1FvtUOzbF5c134wwoGgqgf6rA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/9] selftests: bpf: move tracing helpers to trace_helper
+Date:   Wed, 18 Nov 2020 11:57:36 +0900
+Message-ID: <CAEKGpzjytK7yot=Z0FCkZWydLBJis-i60vRHqZTEF1UWYnGBOw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 9/9] samples: bpf: remove bpf_load loader completely
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -71,33 +71,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 10:58 AM Andrii Nakryiko
+On Wed, Nov 18, 2020 at 11:49 AM Andrii Nakryiko
 <andrii.nakryiko@gmail.com> wrote:
 >
-> On Tue, Nov 17, 2020 at 6:57 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+> On Tue, Nov 17, 2020 at 6:58 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
 > >
-> > Under the samples/bpf directory, similar tracing helpers are
-> > fragmented around. To keep consistent of tracing programs, this commit
-> > moves the helper and define locations to increase the reuse of each
-> > helper function.
+> > Numerous refactoring that rewrites BPF programs written with bpf_load
+> > to use the libbpf loader was finally completed, resulting in BPF
+> > programs using bpf_load within the kernel being completely no longer
+> > present.
+> >
+> > This commit removes bpf_load, an outdated bpf loader that is difficult
+> > to keep up with the latest kernel BPF and causes confusion.
 > >
 > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> >
 > > ---
-> > [...]
-> > -static void read_trace_pipe2(void)
 >
-> This is used only in hbm.c, why move it into trace_helpers.c?
+> RIP, bpf_load().
 >
+> Probably makes more sense to combine this patch with the previous patch.
+>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-I think this function can be made into a helper that can be used in
-other programs. Which is basically same as 'read_trace_pipe' and
-also writes the content of that pipe to file either. Well, it's not used
-anywhere else, but I moved this function for the potential of reuse.
-
-Since these 'read_trace_pipe's are helpers that are only used
-under samples directory, what do you think about moving these
-helpers to something like samples/bpf/trace_pipe.h?
+Will merge and send the next version of patch!
 
 Thanks for your time and effort for the review.
 
