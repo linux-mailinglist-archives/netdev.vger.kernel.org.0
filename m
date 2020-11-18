@@ -2,82 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 955B42B8716
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 23:05:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0914A2B8738
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 23:08:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726889AbgKRWER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 17:04:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725832AbgKRWEP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 17:04:15 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A54AC0613D6
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 14:04:15 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mgr@pengutronix.de>)
-        id 1kfVYk-000592-1e; Wed, 18 Nov 2020 23:04:14 +0100
-Received: from mgr by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mgr@pengutronix.de>)
-        id 1kfVYe-0000z3-Es; Wed, 18 Nov 2020 23:04:08 +0100
-From:   Michael Grzeschik <m.grzeschik@pengutronix.de>
+        id S1727166AbgKRWGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 17:06:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43549 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725822AbgKRWGR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 17:06:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605737176;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=NdjeARxGuLTeRkhnnivxFdfoRVbvyIFUDejtLn+aBXk=;
+        b=Kj+rspu1cbJC6uj2LEePAyRdp7FoJ0WvLfduRNh7u7KH7jR7glVwf9I6glz0TVraE6E9IK
+        RCUsDhcXWDrvF8vp8+X7u6EYARVbBfRi8S/p3T3sGJxOMwe0Ev9Co4FJQelZ4p3h85Kqz7
+        ePUkW/jREPjbCg3pr73MGrMyzUjDLEI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-98-6P_4UpxaP4SfaOehq43F4w-1; Wed, 18 Nov 2020 17:06:14 -0500
+X-MC-Unique: 6P_4UpxaP4SfaOehq43F4w-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2F20C89CCC0;
+        Wed, 18 Nov 2020 22:06:13 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-112-97.ams2.redhat.com [10.36.112.97])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AACA160C05;
+        Wed, 18 Nov 2020 22:06:11 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
-        kernel@pengutronix.de, matthias.schiffer@ew.tq-group.com,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com
-Subject: [PATCH 11/11] net: dsa: microchip: ksz8795: use num_vlans where possible
-Date:   Wed, 18 Nov 2020 23:03:57 +0100
-Message-Id: <20201118220357.22292-12-m.grzeschik@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201118220357.22292-1-m.grzeschik@pengutronix.de>
-References: <20201118220357.22292-1-m.grzeschik@pengutronix.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
+Subject: [PATCH net-next] mptcp: update rtx timeout only if required.
+Date:   Wed, 18 Nov 2020 23:05:34 +0100
+Message-Id: <1a72039f112cae048c44d398ffa14e0a1432db3d.1605737083.git.pabeni@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: mgr@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The value of the define VLAN_TABLE_ENTRIES can be derived from
-num_vlans. This patch is using the variable num_vlans instead and
-removes the extra define.
+We must start the retransmission timer only there are
+pending data in the rtx queue.
+Otherwise we can hit a WARN_ON in mptcp_reset_timer(),
+as syzbot demonstrated.
 
-Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+Reported-and-tested-by: syzbot+42aa53dafb66a07e5a24@syzkaller.appspotmail.com
+Fixes: d9ca1de8c0cd ("mptcp: move page frag allocation in mptcp_sendmsg()")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c     | 2 +-
- drivers/net/dsa/microchip/ksz8795_reg.h | 1 -
- 2 files changed, 1 insertion(+), 2 deletions(-)
+ net/mptcp/protocol.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 418f71e5b90761c..ca44959b49126e3 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1087,7 +1087,7 @@ static int ksz8795_setup(struct dsa_switch *ds)
- 			   (BROADCAST_STORM_VALUE *
- 			   BROADCAST_STORM_PROT_RATE) / 100);
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 8df013daea88..aeda4357de9a 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1261,11 +1261,12 @@ static void mptcp_push_pending(struct sock *sk, unsigned int flags)
+ 		mptcp_push_release(sk, ssk, &info);
  
--	for (i = 0; i < VLAN_TABLE_ENTRIES; i++)
-+	for (i = 0; i < (dev->num_vlans / 4); i++)
- 		ksz8795_r_vlan_entries(dev, i);
+ out:
+-	/* start the timer, if it's not pending */
+-	if (!mptcp_timer_pending(sk))
+-		mptcp_reset_timer(sk);
+-	if (copied)
++	if (copied) {
++		/* start the timer, if it's not pending */
++		if (!mptcp_timer_pending(sk))
++			mptcp_reset_timer(sk);
+ 		__mptcp_check_send_data_fin(sk);
++	}
+ }
  
- 	/* Setup STP address for STP operation. */
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index 681d19ab27b89da..40372047d40d828 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -989,7 +989,6 @@
- #define TAIL_TAG_OVERRIDE		BIT(6)
- #define TAIL_TAG_LOOKUP			BIT(7)
- 
--#define VLAN_TABLE_ENTRIES		(4096 / 4)
- #define FID_ENTRIES			128
- 
- #endif
+ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 -- 
-2.29.2
+2.26.2
 
