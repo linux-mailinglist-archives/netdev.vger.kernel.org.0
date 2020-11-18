@@ -2,143 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 921BD2B74A5
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 04:22:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09F8E2B74AC
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 04:26:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726742AbgKRDVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 22:21:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725613AbgKRDVk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 22:21:40 -0500
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C848C0613D4;
-        Tue, 17 Nov 2020 19:21:40 -0800 (PST)
-Received: by mail-oi1-x242.google.com with SMTP id w188so689583oib.1;
-        Tue, 17 Nov 2020 19:21:40 -0800 (PST)
+        id S1727200AbgKRDYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 22:24:04 -0500
+Received: from mail-eopbgr110139.outbound.protection.outlook.com ([40.107.11.139]:29232
+        "EHLO GBR01-CWL-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725613AbgKRDYD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Nov 2020 22:24:03 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YYNsSDn1YD2+lldEgO6iimSyjMYqwgneF3m9W7MNgTTNMIhjZ0gVuS40QlBTyJ6TJFg0w8ZTDc1HAXyMcP2epGwP9F0K2QI9o6QYvDI6G9EXeLThjIfF3Ybbw7SSh5XDlMbhbiykBz+ezaYd9l1yPxc7BP4AvhOgvZtNC9+/boJ5Cjmt95cenVT6jo89NR+aMR+U7w5Iv/NJQnMkhc71kIW3LfwHytI7QiX+1j6uit7Vj2PLHZysIwiNrU9c59App+Bc9vsT52I/yqkNegN2ADz8QG7KlB1szCPQXOHKkfu/Pvb7wyyFkWqmtlzlSxKr91iZhEaPMCCegC3NG0ZhJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zHtzx+wB5MMWLb8h0WiHkoAXvB4iwhv08yPvhxAEFhg=;
+ b=B7rizKWoM3L7UYNuk3U53UgapyEV4s8ltThkP4UdrB6l7YH1vsUmsIJnVdoNRX8ybKRCh6w0DqMuFPSG50gwf/nYIyGw3S/KxF+3Sw7Drw+SrkTaJf7b4zYHiVV9ALRAjZT341QuP1jDB0IrI3aHimjQGuZmRufQn+4BhpJ1WUV+c4o31xk/XuzG8XjIyW2p3jlkD8I3+ixwrTFmxQhf2evI/7bissekSwCGJsI0kowWblO07XQ13/qnbJrrWH1/6xJno1Y45n5Bq/hQYISD0e1hj6IpVaal1+H5RsM+gHmx0F5leSljINJJT/Dteqo6xBYcnih9cGi3b/N3PluiWQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=purelifi.com; dmarc=pass action=none header.from=purelifi.com;
+ dkim=pass header.d=purelifi.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5EwzV1WY7UR9Ao6IjTB0tUNCWpA/QmhX9rFcnwQF/QI=;
-        b=BXsi3BHwkSZgpqF/ruIi1iLCxuN82HUaEjNUG8i2SBzUyfp6/01OXd5kLjCdsLbDr0
-         IG7HlFCySu9+l9F+JjkuhHpInef7I/hi963bqnWJSrGp7zdvsNQVVoRwcLvx5lburgNw
-         401eBUM4Vpb3KFAnEstjkXTeKj7RCX2wiqxNSUZ6Oxvnfqk/mgUuRfqKNhkvdsjg2YAV
-         Hdih0WIRHQrOD3PaMmoMwGGb5fD3AlpJMExbVFjmY2pyInWo+FJnKB84EYMNpBcdbFrs
-         BW7LYTcuizWzzLfDY1A9ab/tHq08ORkegHqtBb7WFwIeRL+bJk8f9LhEBvrrGTGJsdW2
-         MN0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5EwzV1WY7UR9Ao6IjTB0tUNCWpA/QmhX9rFcnwQF/QI=;
-        b=GtJDAYB9W81mLmdDyJHstlcic/Yrbt8GnvbiP08tWwTTpdhmlUSup1wKoBfSt9Kgis
-         D/Pw7TecROvTfzT3fZu3986rH552PJ8oxulF619EI/3NOl5H+KkXaovqV/JhRDhGeFBz
-         fHg6SBE2QH9O2mTTRn/kf5rgaypZpgpxd0jwQQjNydc7cJwxH8dWv2xpo2zOi2AcT4wp
-         GmXcREPRaL4AGXEKO1ySfXRAvsekZEny/PG2zug8AinKoaoubqLU5+9f69SJrHJ6XLBc
-         Yjt7jCTX1IqFgSOcs2Lp7VOVAWG3/u++fwpFshf6p4TZq1KsPVx7t4eYLw5Q5Wk+edIi
-         6cxg==
-X-Gm-Message-State: AOAM533w+PYlGMRnvq5eMnZtx69Q7RxgvTmVVpqOogJzvmjHQHZ49sWJ
-        Q93t30S6o1zxIWS3+la2eaMYjgQILMyTAmoWLQ==
-X-Google-Smtp-Source: ABdhPJzn7VyOySNpFE2m+Ct+hNPNMmJ6SatQ5RcWAq+bMaBCefU5Rj2+9+rflNkEL7cVVIA3sa4yepUnFgEpDReRvPQ=
-X-Received: by 2002:aca:e007:: with SMTP id x7mr1531079oig.40.1605669699775;
- Tue, 17 Nov 2020 19:21:39 -0800 (PST)
-MIME-Version: 1.0
-References: <20201117145644.1166255-1-danieltimlee@gmail.com>
- <20201117145644.1166255-4-danieltimlee@gmail.com> <CAEf4BzbBT38n8YQNco7yfijahaKXWQWLqxiNGEq1q7Lj7N+_vA@mail.gmail.com>
-In-Reply-To: <CAEf4BzbBT38n8YQNco7yfijahaKXWQWLqxiNGEq1q7Lj7N+_vA@mail.gmail.com>
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Wed, 18 Nov 2020 12:21:23 +0900
-Message-ID: <CAEKGpzi8suN-ftSiERx4WT2y1vtq+=L=0aBYva8NgYmhkWbNeA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/9] samples: bpf: refactor test_cgrp2_sock2
- program with libbpf
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, brakmo <brakmo@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        David Ahern <dsa@cumulusnetworks.com>,
-        Yonghong Song <yhs@fb.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Ira Weiny <ira.weiny@intel.com>, Thomas Graf <tgraf@suug.ch>,
+ d=purevlc.onmicrosoft.com; s=selector2-purevlc-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zHtzx+wB5MMWLb8h0WiHkoAXvB4iwhv08yPvhxAEFhg=;
+ b=d849topV7PrH5hUmfVmwx+FXJuhGIl/jXt5VCdBLIU85xGNE4x0IjOLG9Glam2JUYz8dFms+l7WTTAn+ayFR5LSoQiGH6q/Z4r8KmahWUNnJ80TsKio/g5qv53Cr1g/8vIiW99d48pqAxg4SCFGb3tWMRRp6Z6ywXh7/4IAESLY=
+Received: from CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:3a::14)
+ by CWXP265MB2886.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:c6::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20; Wed, 18 Nov
+ 2020 03:24:00 +0000
+Received: from CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f8b6:b3c:d651:2dde]) by CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f8b6:b3c:d651:2dde%6]) with mapi id 15.20.3589.021; Wed, 18 Nov 2020
+ 03:24:00 +0000
+From:   Srinivasan Raju <srini.raju@purelifi.com>
+To:     Joe Perches <joe@perches.com>
+CC:     Mostafa Afgani <mostafa.afgani@purelifi.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Xdp <xdp-newbies@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS (WIRELESS)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] [v7] wireless: Initial driver submission for pureLiFi STA
+ devices
+Thread-Topic: [PATCH] [v7] wireless: Initial driver submission for pureLiFi
+ STA devices
+Thread-Index: AQHWu/oh8T+esyecpUerAB1FdPgUnqnLOtQAgAIBPDI=
+Date:   Wed, 18 Nov 2020 03:24:00 +0000
+Message-ID: <CWXP265MB1799EB495B08F1B942C2833BE0E10@CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM>
+References: <20201016063444.29822-1-srini.raju@purelifi.com>
+         <20201116092253.1302196-1-srini.raju@purelifi.com>,<e246d2d2feed162e2f8f7bf46481dec7b6ce729a.camel@perches.com>
+In-Reply-To: <e246d2d2feed162e2f8f7bf46481dec7b6ce729a.camel@perches.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: perches.com; dkim=none (message not signed)
+ header.d=none;perches.com; dmarc=none action=none header.from=purelifi.com;
+x-originating-ip: [103.104.125.239]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0ceaaaae-ef83-431b-524d-08d88b716454
+x-ms-traffictypediagnostic: CWXP265MB2886:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CWXP265MB288643624C2FAB440111BF5CE0E10@CWXP265MB2886.GBRP265.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VjHVAHIdDkhDiUxdpZj0cQcUyGx+BBxnwQ3bQ7WB0QpGyLP5ujdTUsXciAqEZvtmeqqckts0TTH3x08r/61hHHCXpKcXsy57uMKFt0Dr+u1xRqSZwnRhtt9o2e7d1RNMLGlc0V2cmiKxUPS/byf9NIuWGyzZCegEf6yTwVFGbrs6wAnfvBGQ+317vkdwi1Ui3T2JRfrJdcuRW+ikoAnMWTa+1asMGW+SEucCtCHeVQMjPMFYzKC8/LzjORUt42PXIk3VugJY4WgsX5VjVyk1e+Ko44gnaJ1kgG8A263HtOtpXuILPmFvXDua6rlIN+H7
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(6029001)(4636009)(346002)(366004)(376002)(396003)(39830400003)(136003)(5660300002)(86362001)(54906003)(7696005)(9686003)(52536014)(71200400001)(55016002)(8936002)(558084003)(8676002)(2906002)(4326008)(33656002)(6916009)(478600001)(316002)(6506007)(7416002)(66946007)(66446008)(66476007)(64756008)(66556008)(91956017)(76116006)(186003)(26005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: 7QyKLe1Pqfl2RECyuCuGge3ZAVqsmRCSnScLkHIY3OKEpmiTzXq1/uFSvE2MpTnNs9VosLl9razY5fMXG8LJtUfZm6T6Iq1Yp8tmx9qXWk61Y2y6mR4D3/iZPcN6Put6J9d4fVScjSYW9DZtByd4vMnyjDvxrPOseRwh5G3PVKbjOd0bBOXHUdG1vtU/k6xuDdNuLd8+vNTP+tEEsZ7Xe+gEH0gOc/h+tq99F1ienxBvi35CD/2b9Ad8OIetzQFi13a+o6a9M+fvQUCPYSatXjjKX2vUTyNXWMal1iwssbWnNk/LBt0LZ2JCDXHDtYqpBuv7k5gZNhuI3Cif2yI8nmVRZKtXePBPj+/CHrhrrBrgBeDmxtctJU9wmlCSRSoZruHQ6Q9bclrqdIjHK/HIRlpRdkgXmWHa8LUAwepP3pO4fT5Em6ukJITXS+Gks8Csfu0BWbJYMXkyu9Sdr4EsVgMypx+uJ++d3XsY6PUX0whcbLDfGA0SY+te0xC757gwgojub31WbblLAxbh+g5pulVo1iGg68TFy2QB7Vp/it2fiZopz3cXp6nUH6xuzv1NodmlgVADQ1sHuuc05dnO0Bcv9VHzBKEq/Rqj2MK6DR1jHg+foUHHSFfAy/7nsU0HfVE1zKf+Duq93tIjn1HT9A==
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: purelifi.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ceaaaae-ef83-431b-524d-08d88b716454
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Nov 2020 03:24:00.2662
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5cf4eba2-7b8f-4236-bed4-a2ac41f1a6dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NxM3TXHHa38gqXv61Pvtrkll2wuPzoji/rfNRz8IZtIq1lWpUqvEQGeZgTvYSHyZfgLLxCe8uuYAJX31biv7JQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWXP265MB2886
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 12:02 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Nov 17, 2020 at 6:57 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
-> >
-> > This commit refactors the existing cgroup program with libbpf bpf
-> > loader. The original test_cgrp2_sock2 has keeped the bpf program
-> > attached to the cgroup hierarchy even after the exit of user program.
-> > To implement the same functionality with libbpf, this commit uses the
-> > BPF_LINK_PINNING to pin the link attachment even after it is closed.
-> >
-> > Since this uses LINK instead of ATTACH, detach of bpf program from
-> > cgroup with 'test_cgrp2_sock' is not used anymore.
-> >
-> > The code to mount the bpf was added to the .sh file in case the bpff
-> > was not mounted on /sys/fs/bpf. Additionally, to fix the problem that
-> > shell script cannot find the binary object from the current path,
-> > relative path './' has been added in front of binary.
-> >
-> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> > ---
-> >  samples/bpf/Makefile            |  2 +-
-> >  samples/bpf/test_cgrp2_sock2.c  | 63 ++++++++++++++++++++++++---------
-> >  samples/bpf/test_cgrp2_sock2.sh | 21 ++++++++---
-> >  3 files changed, 64 insertions(+), 22 deletions(-)
-> >
->
-> [...]
->
-> >
-> > -       return EXIT_SUCCESS;
-> > +       err = bpf_link__pin(link, link_pin_path);
-> > +       if (err < 0) {
-> > +               printf("err : %d\n", err);
->
-> more meaningful error message would be helpful
->
-
-Thanks for pointing out, I will fix it directly!
-
-> > +               goto cleanup;
-> > +       }
-> > +
-> > +       ret = EXIT_SUCCESS;
-> > +
-> > +cleanup:
-> > +       if (ret != EXIT_SUCCESS)
-> > +               bpf_link__destroy(link);
-> > +
-> > +       bpf_object__close(obj);
-> > +       return ret;
-> >  }
->
-> [...]
->
-> >
-> >  function attach_bpf {
-> > -       test_cgrp2_sock2 /tmp/cgroupv2/foo sock_flags_kern.o $1
-> > +       ./test_cgrp2_sock2 /tmp/cgroupv2/foo sock_flags_kern.o $1
->
-> Can you please add Fixes: tag for this?
->
-
-Will add it in the next version of patch :)
-
-Thanks for your time and effort for the review.
-
--- 
-Best,
-Daniel T. Lee
+=0A=
+> trivial notes and some style and content defects:=0A=
+> (I stopped reading after awhile)=0A=
+=0A=
+Thanks, I will address the comments.=0A=
+=0A=
+Regards=0A=
+Srini=
