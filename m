@@ -2,116 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26A6C2B73B8
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 02:25:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 121432B73BA
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 02:25:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728185AbgKRBVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 20:21:51 -0500
-Received: from mga03.intel.com ([134.134.136.65]:40896 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727359AbgKRBVv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Nov 2020 20:21:51 -0500
-IronPort-SDR: sFbfgEnJFJrYLy5VkkuTF9B/+JPlb8jsM4gh606QZn119y9aUKpf7GuVF5TCF/JD3CpmlmV75+
- RGDNhVKKYR9A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9808"; a="171143594"
-X-IronPort-AV: E=Sophos;i="5.77,486,1596524400"; 
-   d="scan'208";a="171143594"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2020 17:21:50 -0800
-IronPort-SDR: FPn8pfqeTRrllz4kT4hF5E0RLenEnVSifImz/pmSo4YJt2hHf9eKLbdu8kWBnMfv3mG/I1Rvo2
- jTzrVO4Lvidw==
-X-IronPort-AV: E=Sophos;i="5.77,486,1596524400"; 
-   d="scan'208";a="310403267"
-Received: from pnoll-mobl.amr.corp.intel.com (HELO ellie) ([10.255.230.106])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2020 17:21:49 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
-        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        bhelgaas@google.com
-Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support
- for PTP getcrosststamp()
-In-Reply-To: <20201117014926.GA26272@hoboy.vegasvil.org>
-References: <20201114025704.GA15240@hoboy.vegasvil.org>
- <874klo7pwp.fsf@intel.com> <20201117014926.GA26272@hoboy.vegasvil.org>
-Date:   Tue, 17 Nov 2020 17:21:48 -0800
-Message-ID: <87d00b5uj7.fsf@intel.com>
+        id S1728340AbgKRBWD convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 17 Nov 2020 20:22:03 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:36454 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727174AbgKRBWC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 20:22:02 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 0AI1LuIU2004179, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb03.realtek.com.tw[172.21.6.96])
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 0AI1LuIU2004179
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 18 Nov 2020 09:21:56 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Wed, 18 Nov 2020 09:21:55 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa]) by
+ RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa%3]) with mapi id
+ 15.01.2044.006; Wed, 18 Nov 2020 09:21:55 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+Subject: RE: [PATCH net-next] r8153_ecm: avoid to be prior to r8152 driver
+Thread-Topic: [PATCH net-next] r8153_ecm: avoid to be prior to r8152 driver
+Thread-Index: AQHWu+Uk6MVFESXbN0aOZKSDeZR30KnJ9OqAgACBuYCAARgAcIAAbCuAgAEfDcA=
+Date:   Wed, 18 Nov 2020 01:21:55 +0000
+Message-ID: <8249fd02c3484d6484c6e278478561a6@realtek.com>
+References: <7fd014f2-c9a5-e7ec-f1c6-b3e4bb0f6eb6@samsung.com>
+        <CGME20201116065317eucas1p2a2d141857bbdd6b4998dd11937d52f56@eucas1p2.samsung.com>
+        <1394712342-15778-393-Taiwan-albertk@realtek.com>
+        <5f3db229-940c-c8ed-257b-0b4b3dd2afbb@samsung.com>
+        <20201116090231.423afc8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <02f38e505a3a45389e2f3c06b2f6c850@realtek.com>
+ <20201117081149.20723b4a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201117081149.20723b4a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.146]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Richard Cochran <richardcochran@gmail.com> writes:
+Jakub Kicinski <kuba@kernel.org>
+> Sent: Wednesday, November 18, 2020 12:12 AM
+[...]
+> Something like this?
+> 
+> config USB_RTL8153_ECM
+> 	tristate <headline text>
+> 	select MII
+> 	select USB_NET_CDCETHER
+> 	depends on USB_RTL8152 || USB_RTL8152=n
+> 	help
+> 		<you help text>
+> 
+> 
+> select clauses will pull in the dependencies you need, and the
+> dependency on RTL8152 will be satisfied either when RTL8152's code
+> is reachable (both are modules or RTL8152 is built in) or when RTL8152
+> is not built at all.
+> 
+> Does that help?
 
-> On Mon, Nov 16, 2020 at 05:06:30PM -0800, Vinicius Costa Gomes wrote:
->> The PTM dialogs are a pair of messages: a Request from the endpoint (in
->> my case, the NIC) to the PCIe root (or switch), and a Response from the
->> other side (this message includes the Master Root Time, and the
->> calculated propagation delay).
->> 
->> The interface exposed by the NIC I have allows basically to start/stop
->> these PTM dialogs (I was calling them PTM cycles) and to configure the
->> interval between each cycle (~1ms - ~512ms).
->
-> Ah, now I am starting to understand...
->
-> Just to be clear, this is yet another time measurement over PCIe,
-> different than the cross time stamp that we already have, right?
->
+Thanks a lot.
+I would test it.
 
-Not so different. This series implement the getcrosststamp() function in
-the igc driver, the difference from e1000e (another NIC driver that
-supports getcrosststamp()) is that e1000e uses the fact that it has more
-or less direct access to the CPU clock. In my case the access is less
-direct as it happens via standardized PCIe PTM.
+Best Regards,
+Hayes
 
-> Also, what is the point of providing time measurements every 1
-> millisecond?
-
-I sincerely have no idea. I had no power on how the hardware was
-designed, and how PTM was implemented in HW.
-
->
->> Another thing of note, is that trying to start the PTM dialogs "on
->> demand" syncronously with the ioctl() doesn't seem too reliable, it
->> seems to want to be kept running for a longer time.
->
-> So, I think the simplest thing would be to have a one-shot
-> measurement, if possible.  Then you could use the existing API and let
-> the user space trigger the time stamps.
-
-Agreed that would be easiest/simplest. But what I have in hand seems to
-not like it, i.e. I have an earlier series implementing this "one shot" way
-and it's not reliable over long periods of time or against having the
-system time adjusted.
-
-So I think I am stuck with proposing a new API, if I am reading this
-right.
-
-Something like PTP_EXTTS_REQUEST is what was suggested, so
-PTP_CROSSTS_REQUEST?
-
-struct ptp_crossts_request {
-	unsigned int index;
-        struct ptp_clock_time period; /* Desired period, zero means disable */
-	unsigned int flags;
-	unsigned int rsv[2]; 
-};
-
-And a new event type, something like:
-
-struct ptp_extts_event {
-	struct ptp_clock_time hostts;
-	struct ptp_clock_time devicets;
-	unsigned int index;      
-	unsigned int flags;      
-};
-
-
-Cheers,
--- 
-Vinicius
