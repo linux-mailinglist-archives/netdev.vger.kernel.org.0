@@ -2,177 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EC8C2B7B2D
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 11:25:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 200132B7B6B
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 11:36:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727352AbgKRKXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 05:23:11 -0500
-Received: from mail.katalix.com ([3.9.82.81]:35484 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726141AbgKRKXK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 05:23:10 -0500
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id E39117D2ED;
-        Wed, 18 Nov 2020 10:23:07 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1605694988; bh=ItgvLUg3BFBdy1rDlKm0Fjw9nHRiHse7t99eLqmeSE4=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Wed,=2018=20Nov=202020=2010:23:07=20+0000|From:=20Tom=20P
-         arkin=20<tparkin@katalix.com>|To:=20Siddhant=20Gupta=20<siddhantgu
-         pta416@gmail.com>|Cc:=20davem@davemloft.net,=20kuba@kernel.org,=20
-         corbet@lwn.net,=0D=0A=09netdev@vger.kernel.org,=20linux-doc@vger.k
-         ernel.org,=0D=0A=09linux-kernel@vger.kernel.org,=20mamtashukla555@
-         gmail.com,=0D=0A=09himadrispandya@gmail.com|Subject:=20Re:=20[PATC
-         H]=20Documentation:=20networking:=20Fix=20Column=20span=20alignmen
-         t=0D=0A=20warnings=20in=20l2tp.rst|Message-ID:=20<20201118102307.G
-         A4903@katalix.com>|References:=20<20201117095207.GA16407@Sleakybea
-         st>|MIME-Version:=201.0|Content-Disposition:=20inline|In-Reply-To:
-         =20<20201117095207.GA16407@Sleakybeast>;
-        b=KxppM36001NtVJ/Oawpy21dGdXzlrsz8LWtETzMfm290w6mQwl/DBXN2A+Tcrurz+
-         kXpVZ09RCUm1snROcPHwOngOc11md3quI4MEileVG+Xizm6xd0hh3JkI0UHCkwFT66
-         fZqQsb4rCLCRwNBIVpL61s2hobb4udL5c9AaUd6tZ+hm4bY/4AJvML0anQQPccghkg
-         rAoESa8Pzp1WMDHgf+j7t7dov7O5mAA4AnClut1ev0zX8CyXslUbQBYKDt/MeTbb8A
-         dVinZQ+abW/ir9UGq6GpWLxpbHiQRB8k3Hj15g6ECqcAilUeicKUk4FwzWk7990kU3
-         A7zeJfg88qMJQ==
-Date:   Wed, 18 Nov 2020 10:23:07 +0000
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Siddhant Gupta <siddhantgupta416@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mamtashukla555@gmail.com,
-        himadrispandya@gmail.com
-Subject: Re: [PATCH] Documentation: networking: Fix Column span alignment
- warnings in l2tp.rst
-Message-ID: <20201118102307.GA4903@katalix.com>
-References: <20201117095207.GA16407@Sleakybeast>
+        id S1726174AbgKRKek (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 05:34:40 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:37664 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725497AbgKRKek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 05:34:40 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from tariqt@nvidia.com)
+        with SMTP; 18 Nov 2020 12:34:36 +0200
+Received: from dev-l-vrt-206-005.mtl.labs.mlnx (dev-l-vrt-206-005.mtl.labs.mlnx [10.234.206.5])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AIAYa8Q027799;
+        Wed, 18 Nov 2020 12:34:36 +0200
+From:   Tariq Toukan <tariqt@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
+        Tariq Toukan <ttoukan.linux@gmail.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH net-next] net/mlx4_en: Remove unused performance counters
+Date:   Wed, 18 Nov 2020 12:34:27 +0200
+Message-Id: <20201118103427.4314-1-tariqt@nvidia.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="cWoXeonUoKmBZSoM"
-Content-Disposition: inline
-In-Reply-To: <20201117095207.GA16407@Sleakybeast>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Performance analysis counters are maintained under the MLX4_EN_PERF_STAT
+definition, which is never set.
+Clean them up, with all related structures and logic.
 
---cWoXeonUoKmBZSoM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+---
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |  1 -
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  3 ---
+ drivers/net/ethernet/mellanox/mlx4/en_tx.c    | 13 -----------
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  | 22 -------------------
+ .../net/ethernet/mellanox/mlx4/mlx4_stats.h   | 18 +--------------
+ 5 files changed, 1 insertion(+), 56 deletions(-)
 
-On  Tue, Nov 17, 2020 at 15:22:07 +0530, Siddhant Gupta wrote:
-> Fix Column span alignment problem warnings in the file
->
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+index 106513f772c3..157f7eef92f1 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+@@ -2027,7 +2027,6 @@ static void mlx4_en_clear_stats(struct net_device *dev)
+ 		if (mlx4_en_DUMP_ETH_STATS(mdev, priv->port, 1))
+ 			en_dbg(HW, priv, "Failed dumping statistics\n");
+ 
+-	memset(&priv->pstats, 0, sizeof(priv->pstats));
+ 	memset(&priv->pkstats, 0, sizeof(priv->pkstats));
+ 	memset(&priv->port_stats, 0, sizeof(priv->port_stats));
+ 	memset(&priv->rx_flowstats, 0, sizeof(priv->rx_flowstats));
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+index b0f79a5151cf..55fc33de4ce7 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+@@ -914,7 +914,6 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
+ 		wmb(); /* ensure HW sees CQ consumer before we post new buffers */
+ 		ring->cons = cq->mcq.cons_index;
+ 	}
+-	AVG_PERF_COUNTER(priv->pstats.rx_coal_avg, polled);
+ 
+ 	mlx4_en_refill_rx_buffers(priv, ring);
+ 
+@@ -966,8 +965,6 @@ int mlx4_en_poll_rx_cq(struct napi_struct *napi, int budget)
+ 		/* in case we got here because of !clean_complete */
+ 		done = budget;
+ 
+-		INC_PERF_COUNTER(priv->pstats.napi_quota);
+-
+ 		cpu_curr = smp_processor_id();
+ 		idata = irq_desc_get_irq_data(cq->irq_desc);
+ 		aff = irq_data_get_affinity_mask(idata);
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
+index 3ddb7268e415..b15ec32758a3 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
+@@ -864,9 +864,6 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	if (unlikely(!priv->port_up))
+ 		goto tx_drop;
+ 
+-	/* fetch ring->cons far ahead before needing it to avoid stall */
+-	ring_cons = READ_ONCE(ring->cons);
+-
+ 	real_size = get_real_size(skb, shinfo, dev, &lso_header_size,
+ 				  &inline_ok, &fragptr);
+ 	if (unlikely(!real_size))
+@@ -898,10 +895,6 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	netdev_txq_bql_enqueue_prefetchw(ring->tx_queue);
+ 
+-	/* Track current inflight packets for performance analysis */
+-	AVG_PERF_COUNTER(priv->pstats.inflight_avg,
+-			 (u32)(ring->prod - ring_cons - 1));
+-
+ 	/* Packet is good - grab an index and transmit it */
+ 	index = ring->prod & ring->size_mask;
+ 	bf_index = ring->prod;
+@@ -1012,7 +1005,6 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		ring->packets++;
+ 	}
+ 	ring->bytes += tx_info->nr_bytes;
+-	AVG_PERF_COUNTER(priv->pstats.tx_pktsz_avg, skb->len);
+ 
+ 	if (tx_info->inl)
+ 		build_inline_wqe(tx_desc, skb, shinfo, fragptr);
+@@ -1141,10 +1133,6 @@ netdev_tx_t mlx4_en_xmit_frame(struct mlx4_en_rx_ring *rx_ring,
+ 	index = ring->prod & ring->size_mask;
+ 	tx_info = &ring->tx_info[index];
+ 
+-	/* Track current inflight packets for performance analysis */
+-	AVG_PERF_COUNTER(priv->pstats.inflight_avg,
+-			 (u32)(ring->prod - READ_ONCE(ring->cons) - 1));
+-
+ 	tx_desc = ring->buf + (index << LOG_TXBB_SIZE);
+ 	data = &tx_desc->data;
+ 
+@@ -1169,7 +1157,6 @@ netdev_tx_t mlx4_en_xmit_frame(struct mlx4_en_rx_ring *rx_ring,
+ 		 cpu_to_be32(MLX4_EN_BIT_DESC_OWN) : 0);
+ 
+ 	rx_ring->xdp_tx++;
+-	AVG_PERF_COUNTER(priv->pstats.tx_pktsz_avg, length);
+ 
+ 	ring->prod += MLX4_EN_XDP_TX_NRTXBB;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
+index a46efe37cfa9..014ce8d3d97b 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
++++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
+@@ -170,27 +170,6 @@
+ #define MLX4_EN_LOOPBACK_RETRIES	5
+ #define MLX4_EN_LOOPBACK_TIMEOUT	100
+ 
+-#ifdef MLX4_EN_PERF_STAT
+-/* Number of samples to 'average' */
+-#define AVG_SIZE			128
+-#define AVG_FACTOR			1024
+-
+-#define INC_PERF_COUNTER(cnt)		(++(cnt))
+-#define ADD_PERF_COUNTER(cnt, add)	((cnt) += (add))
+-#define AVG_PERF_COUNTER(cnt, sample) \
+-	((cnt) = ((cnt) * (AVG_SIZE - 1) + (sample) * AVG_FACTOR) / AVG_SIZE)
+-#define GET_PERF_COUNTER(cnt)		(cnt)
+-#define GET_AVG_PERF_COUNTER(cnt)	((cnt) / AVG_FACTOR)
+-
+-#else
+-
+-#define INC_PERF_COUNTER(cnt)		do {} while (0)
+-#define ADD_PERF_COUNTER(cnt, add)	do {} while (0)
+-#define AVG_PERF_COUNTER(cnt, sample)	do {} while (0)
+-#define GET_PERF_COUNTER(cnt)		(0)
+-#define GET_AVG_PERF_COUNTER(cnt)	(0)
+-#endif /* MLX4_EN_PERF_STAT */
+-
+ /* Constants for TX flow */
+ enum {
+ 	MAX_INLINE = 104, /* 128 - 16 - 4 - 4 */
+@@ -599,7 +578,6 @@ struct mlx4_en_priv {
+ 	struct work_struct linkstate_task;
+ 	struct delayed_work stats_task;
+ 	struct delayed_work service_task;
+-	struct mlx4_en_perf_stats pstats;
+ 	struct mlx4_en_pkt_stats pkstats;
+ 	struct mlx4_en_counter_stats pf_stats;
+ 	struct mlx4_en_flow_stats_rx rx_priority_flowstats[MLX4_NUM_PRIORITIES];
+diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h
+index 51d4eaab6a2f..7b51ae8cf759 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h
++++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h
+@@ -2,12 +2,6 @@
+ #ifndef _MLX4_STATS_
+ #define _MLX4_STATS_
+ 
+-#ifdef MLX4_EN_PERF_STAT
+-#define NUM_PERF_STATS			NUM_PERF_COUNTERS
+-#else
+-#define NUM_PERF_STATS			0
+-#endif
+-
+ #define NUM_PRIORITIES	9
+ #define NUM_PRIORITY_STATS 2
+ 
+@@ -46,16 +40,6 @@ struct mlx4_en_port_stats {
+ #define NUM_PORT_STATS		10
+ };
+ 
+-struct mlx4_en_perf_stats {
+-	u32 tx_poll;
+-	u64 tx_pktsz_avg;
+-	u32 inflight_avg;
+-	u16 tx_coal_avg;
+-	u16 rx_coal_avg;
+-	u32 napi_quota;
+-#define NUM_PERF_COUNTERS		6
+-};
+-
+ struct mlx4_en_xdp_stats {
+ 	unsigned long rx_xdp_drop;
+ 	unsigned long rx_xdp_tx;
+@@ -135,7 +119,7 @@ enum {
+ };
+ 
+ #define NUM_ALL_STATS	(NUM_MAIN_STATS + NUM_PORT_STATS + NUM_PKT_STATS + \
+-			 NUM_FLOW_STATS + NUM_PERF_STATS + NUM_PF_STATS + \
++			 NUM_FLOW_STATS + NUM_PF_STATS + \
+ 			 NUM_XDP_STATS + NUM_PHY_STATS)
+ 
+ #define MLX4_FIND_NETDEV_STAT(n) (offsetof(struct net_device_stats, n) / \
+-- 
+2.21.0
 
-Thanks for the patch, Siddhant.
-
-Could you provide some information on how these warnings were
-triggered?  Using Sphinx 2.4.4 I can't reproduce any warnings for
-l2tp.rst using the "make htmldocs" target.
-
-> Signed-off-by: Siddhant Gupta <siddhantgupta416@gmail.com>
-> ---
->  Documentation/networking/l2tp.rst | 26 +++++++++++++-------------
->  1 file changed, 13 insertions(+), 13 deletions(-)
->=20
-> diff --git a/Documentation/networking/l2tp.rst b/Documentation/networking=
-/l2tp.rst
-> index 498b382d25a0..0c0ac4e70586 100644
-> --- a/Documentation/networking/l2tp.rst
-> +++ b/Documentation/networking/l2tp.rst
-> @@ -171,7 +171,8 @@ DEBUG              N        Debug flags.
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=
-=3D=3D=3D =3D=3D=3D
->  Attribute          Required Use
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=
-=3D=3D=3D =3D=3D=3D
-> -CONN_ID            N        Identifies the tunnel id to be queried.
-> +CONN_ID            N        Identifies the tunnel id=20
-> +                            to be queried.
->                              Ignored in DUMP requests.
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=
-=3D=3D=3D =3D=3D=3D
-> =20
-> @@ -208,8 +209,8 @@ onto the new session. This is covered in "PPPoL2TP So=
-ckets" later.
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=
-=3D=3D=3D =3D=3D=3D
->  Attribute          Required Use
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=
-=3D=3D=3D =3D=3D=3D
-> -CONN_ID            Y        Identifies the parent tunnel id of the sessi=
-on
-> -                            to be destroyed.
-> +CONN_ID            Y        Identifies the parent tunnel id=20
-> +                            of the session to be destroyed.
->  SESSION_ID         Y        Identifies the session id to be destroyed.
->  IFNAME             N        Identifies the session by interface name. If
->                              set, this overrides any CONN_ID and SESSION_=
-ID
-> @@ -222,13 +223,12 @@ IFNAME             N        Identifies the session =
-by interface name. If
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=
-=3D=3D=3D =3D=3D=3D
->  Attribute          Required Use
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=
-=3D=3D=3D =3D=3D=3D
-> -CONN_ID            Y        Identifies the parent tunnel id of the sessi=
-on
-> -                            to be modified.
-> +CONN_ID            Y        Identifies the parent tunnel=20
-> +                            id of the session to be modified.
->  SESSION_ID         Y        Identifies the session id to be modified.
-> -IFNAME             N        Identifies the session by interface name. If
-> -                            set, this overrides any CONN_ID and SESSION_=
-ID
-> -                            attributes. Currently supported for L2TPv3
-> -                            Ethernet sessions only.
-> +IFNAME             N        Identifies the session by interface name. If=
- set,
-> +                            this overrides any CONN_ID and SESSION_ID
-> +                            attributes. Currently supported for L2TPv3 E=
-thernet sessions only.
->  DEBUG              N        Debug flags.
->  RECV_SEQ           N        Enable rx data sequence numbers.
->  SEND_SEQ           N        Enable tx data sequence numbers.
-> @@ -243,10 +243,10 @@ RECV_TIMEOUT       N        Timeout to wait when re=
-ordering received
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=
-=3D=3D=3D =3D=3D=3D
->  Attribute          Required Use
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=
-=3D=3D=3D =3D=3D=3D
-> -CONN_ID            N        Identifies the tunnel id to be queried.
-> -                            Ignored for DUMP requests.
-> -SESSION_ID         N        Identifies the session id to be queried.
-> -                            Ignored for DUMP requests.
-> +CONN_ID            N        Identifies the tunnel id=20
-> +                            to be queried. Ignored for DUMP requests.
-> +SESSION_ID         N        Identifies the session id=20
-> +                            to be queried. Ignored for DUMP requests.
->  IFNAME             N        Identifies the session by interface name.
->                              If set, this overrides any CONN_ID and
->                              SESSION_ID attributes. Ignored for DUMP
-> --=20
-> 2.25.1
->=20
-
---cWoXeonUoKmBZSoM
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl+09gYACgkQlIwGZQq6
-i9DTxwf/SLwfWCMrHaCrc4Y+s2s8cVTn2d4yH1dKDB3Wx9wXpNjw/OeG92gDOGvF
-HREPGel/uM92rPitEZ+rfWAAm3sQzOTX1hGLmovprJWEK2EznlDEToh+1dkmTVNN
-UYC/iUKEFkQ32nrF3D5SX8iaHax/8rZUW3h0G9qbZCIk1y2jfOqI978uC5zTCC8Q
-URN+h+/W6ULEttnH9J+yRBZmRzEApF/JgOkxLYCcqPn2ZI4/TerWaUOnHNT5O16K
-b62YofMIDz6Wb749dDzzr1OLUMINNG2+JnycxvBwtVNW8YELizqS66uAdtaua6AS
-O++/glHN4Htiel173mJFhpml2sRj5Q==
-=1GS3
------END PGP SIGNATURE-----
-
---cWoXeonUoKmBZSoM--
