@@ -2,79 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F5202B8157
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 17:00:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D17682B8164
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 17:04:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbgKRP6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 10:58:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726598AbgKRP6d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 10:58:33 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2D1C0613D4;
-        Wed, 18 Nov 2020 07:58:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=GOzh1Hc0R1jOyAk5KDQ96c8P+a7sxOoxzcRvNbeKPUI=; b=At2O//XLDIexF2NGZbUhn7yyVa
-        +Zc9ZMWhA/asE2jZ/Hch0edDH/Zna/j/o1WqR7l8RLKVAH8ePaNx4axvv+k7bpbXGe0IQl+oScGBj
-        Yfgq0caBcZKqhYlyqWHQWdkBtq3PrCHWU/HDpK1nYKz0KTGa9hcLnHqsLS/X7/c42Yc5JeKyJlgja
-        /EjYzWcLx55nvYWqznQ0SaVk9G8WXbDxYMPqE+pNSVUD6QY+P4d6UO5d9XmWukc4nRetjpHHg/nCO
-        gEIBd2CvRvhEusc/MVzi51XIhlp9GE6mtn6qmLLGBKOiAmNIIFkJOcq46u06JI83Wh1DZLJrfkH8t
-        b6Lchzpg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kfPqJ-0008Ad-LJ; Wed, 18 Nov 2020 15:57:59 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 557E83019CE;
-        Wed, 18 Nov 2020 16:57:57 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 115AF235C0B18; Wed, 18 Nov 2020 16:57:57 +0100 (CET)
-Date:   Wed, 18 Nov 2020 16:57:57 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        linmiaohe@huawei.com, martin.varghese@nokia.com, pabeni@redhat.com,
-        pshelar@ovn.org, fw@strlen.de, gnault@redhat.com,
-        steffen.klassert@secunet.com, kyk.segfault@gmail.com,
-        viro@zeniv.linux.org.uk, vladimir.oltean@nxp.com,
-        edumazet@google.com, saeed@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@huawei.com
-Subject: Re: [PATCH net-next] net: add in_softirq() debug checking in
- napi_consume_skb()
-Message-ID: <20201118155757.GY3121392@hirez.programming.kicks-ass.net>
-References: <1603971288-4786-1-git-send-email-linyunsheng@huawei.com>
- <20201031153824.7ae83b90@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <5b04ad33-1611-8d7b-8fec-4269c01ecab3@huawei.com>
- <20201102114110.4a20d461@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <5bd6de52-b8e0-db6f-3362-862ae7b2c728@huawei.com>
- <20201118074348.3bbd1468@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        id S1726632AbgKRQB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 11:01:28 -0500
+Received: from mail.efficios.com ([167.114.26.124]:44436 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726496AbgKRQB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 11:01:27 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id A801B2ECB82;
+        Wed, 18 Nov 2020 11:01:25 -0500 (EST)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id ZwJ7XCNKGbub; Wed, 18 Nov 2020 11:01:25 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 4FBAC2ECB05;
+        Wed, 18 Nov 2020 11:01:25 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 4FBAC2ECB05
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1605715285;
+        bh=k0a1RGHOSG7fsNrb43ytVhAyD3oE/dKDtNyXyy8B/xU=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=Qbs2RxYPZHVq3437Ui3yAsk8VLrqTSOLM6tl8uIbE1D+3t4YO2Lzq3YRH8NDzfHvP
+         Y7wmgNkD2kbQTYE7CrMESIGdDzNS2OYcviVTNFj9lO8FzleB+aAwXymiLaY248KdBP
+         4l/jvyiHO91lZYWLaKOcS+k4MjSMBv4ddr2cLNCASbYr/oPZWG++KoEJByvG/RNNBr
+         qgVNXbzRuXBxGwGamciMRHLOkRpbxBDO27twHHbEdQxM2CvTifblwcTzCnNfekT4Ov
+         q2eYPl+HXVOqbn2m/5gfqWm3d0kOsctj6Jc02dcCFzmQgQawcEQFtNS5FLetkN0h9Z
+         0EM+PrO/Uq9yw==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id jkAbwSowY55M; Wed, 18 Nov 2020 11:01:25 -0500 (EST)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 398402EC75B;
+        Wed, 18 Nov 2020 11:01:25 -0500 (EST)
+Date:   Wed, 18 Nov 2020 11:01:25 -0500 (EST)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     rostedt <rostedt@goodmis.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Matt Mullins <mmullins@mmlx.us>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Message-ID: <1762005214.49230.1605715285133.JavaMail.zimbra@efficios.com>
+In-Reply-To: <20201118090256.55656208@gandalf.local.home>
+References: <20201116175107.02db396d@gandalf.local.home> <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com> <20201117142145.43194f1a@gandalf.local.home> <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com> <20201117153451.3015c5c9@gandalf.local.home> <20201118132136.GJ3121378@hirez.programming.kicks-ass.net> <20201118090256.55656208@gandalf.local.home>
+Subject: Re: violating function pointer signature
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201118074348.3bbd1468@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_3975 (ZimbraWebClient - FF82 (Linux)/8.8.15_GA_3975)
+Thread-Topic: violating function pointer signature
+Thread-Index: Obd4w6s/wcVB2Hvi8sMQ1l1Yr980kA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 07:43:48AM -0800, Jakub Kicinski wrote:
+----- On Nov 18, 2020, at 9:02 AM, rostedt rostedt@goodmis.org wrote:
 
-> TBH the last sentence I wrote isn't clear even to me at this point ;D
+> On Wed, 18 Nov 2020 14:21:36 +0100
+> Peter Zijlstra <peterz@infradead.org> wrote:
 > 
-> Maybe using just the macros from preempt.h - like this?
+>> I think that as long as the function is completely empty (it never
+>> touches any of the arguments) this should work in practise.
+>> 
+>> That is:
+>> 
+>>   void tp_nop_func(void) { }
 > 
-> #define lockdep_assert_in_softirq()                                    \
-> do {                                                                   \
->        WARN_ON_ONCE(__lockdep_enabled                  &&              \
->                     (!in_softirq() || in_irq() || in_nmi())	\
-> } while (0)
+> My original version (the OP of this thread) had this:
 > 
-> We know what we're doing so in_softirq() should be fine (famous last
-> words).
+> +static void tp_stub_func(void)
+> +{
+> +	return;
+> +}
+> 
+>> 
+>> can be used as an argument to any function pointer that has a void
+>> return. In fact, I already do that, grep for __static_call_nop().
+>> 
+>> I'm not sure what the LLVM-CFI crud makes of it, but that's their
+>> problem.
+> 
+> If it is already done elsewhere in the kernel, then I will call this
+> precedence, and keep the original version.
 
-So that's not actually using any lockdep state. But if that's what you
-need, I don't have any real complaints.
+It works for me. Bonus points if you can document in a comment that this
+trick depends on the cdecl calling convention.
+
+Thanks,
+
+Mathieu
+
+> 
+> This way Alexei can't complain about adding a check in the fast path of
+> more than one callback attached.
+> 
+> -- Steve
+
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
