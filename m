@@ -2,54 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D2D2B8540
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 21:02:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 615562B8556
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 21:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726925AbgKRUCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 15:02:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45080 "EHLO mail.kernel.org"
+        id S1726714AbgKRUJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 15:09:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45916 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726141AbgKRUCl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 15:02:41 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        id S1726299AbgKRUJr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 15:09:47 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D9DDC20782;
-        Wed, 18 Nov 2020 20:02:37 +0000 (UTC)
-Date:   Wed, 18 Nov 2020 15:02:36 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Florian Weimer <fw@deneb.enyo.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: violating function pointer signature
-Message-ID: <20201118150236.65a538eb@gandalf.local.home>
-In-Reply-To: <CAADnVQLv2pnw1x66Y_cYmdBg=sF+7s31VVoEmSerDnbuR0pU_g@mail.gmail.com>
-References: <20201116175107.02db396d@gandalf.local.home>
-        <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com>
-        <20201117142145.43194f1a@gandalf.local.home>
-        <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
-        <20201117153451.3015c5c9@gandalf.local.home>
-        <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
-        <87h7pmwyta.fsf@mid.deneb.enyo.de>
-        <20201118092228.4f6e5930@gandalf.local.home>
-        <CAADnVQLv2pnw1x66Y_cYmdBg=sF+7s31VVoEmSerDnbuR0pU_g@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        by mail.kernel.org (Postfix) with ESMTPSA id C3DB62100A;
+        Wed, 18 Nov 2020 20:09:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605730187;
+        bh=/3r0ST05xJSzGUnRqs6k7/gzVgXvpCVKmESDDqVZ7oY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CntlHIoipoc39ssSbL8KbTkJjbu43zhTFzl7olRgQz6LFwz9vTfVlTqmRbZ7AZLMJ
+         uUNbJz2PXyZoiFp9j72jGWpLzo8nN6Cvub3DawFuYR75tEklQFz3zKCdrQENVdB+NC
+         zcXIiI2QjaUfWMwLbQrzzHpwTLRSyNyILGfC3m2c=
+Date:   Wed, 18 Nov 2020 12:09:45 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     siddhant gupta <siddhantgupta416@gmail.com>
+Cc:     Tom Parkin <tparkin@katalix.com>, davem@davemloft.net,
+        corbet@lwn.net, netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Mamta Shukla <mamtashukla555@gmail.com>,
+        Himadri Pandya <himadrispandya@gmail.com>
+Subject: Re: [PATCH] Documentation: networking: Fix Column span alignment
+ warnings in l2tp.rst
+Message-ID: <20201118120945.468701ab@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CA+imup-3pT47CVL7GZn_vJtHGngNexBR060y2gRfw2v5Gr8P0Q@mail.gmail.com>
+References: <20201117095207.GA16407@Sleakybeast>
+        <20201118102307.GA4903@katalix.com>
+        <CA+imup-3pT47CVL7GZn_vJtHGngNexBR060y2gRfw2v5Gr8P0Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,38 +45,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 11:46:02 -0800
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-
-> On Wed, Nov 18, 2020 at 6:22 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+On Wed, 18 Nov 2020 16:44:11 +0530 siddhant gupta wrote:
+> On Wed, 18 Nov 2020 at 15:53, Tom Parkin <tparkin@katalix.com> wrote:
 > >
-> > Thus, all functions will be non-variadic in these cases.  
+> > On  Tue, Nov 17, 2020 at 15:22:07 +0530, Siddhant Gupta wrote:  
+> > > Fix Column span alignment problem warnings in the file
+> > >  
+> >
+> > Thanks for the patch, Siddhant.
+> >
+> > Could you provide some information on how these warnings were
+> > triggered?  Using Sphinx 2.4.4 I can't reproduce any warnings for
+> > l2tp.rst using the "make htmldocs" target.
+> >  
 > 
-> That's not the only case where it will blow up.
-> Try this on sparc:
-> struct foo {
-> int a;
-> };
-> 
-> struct foo foo_struct(void) {
-> struct foo f = {};
-> return f;
-> }
-> int foo_int(void) {
-> return 0;
-> }
-> or this link:
-> https://godbolt.org/z/EdM47b
-> 
-> Notice:
-> jmp %i7+12
-> The function that returns small struct will jump to a different
-> instruction in the caller.
-> 
-> I think none of the tracepoints return structs and void foo(void) is
-> fine on x86.
-> Just pointing out that it's more than just variadic.
+> I am currently using Sphinx v1.8.5 and I made use of command "make
+> htmldocs >> doc_xxx.log 2>&1" for directing the errors into a file and
+> the statements in the file showed me these warning, also to confirm
+> those I tried using "rst2html" on l2tp.rst file and got same set of
+> warnings.
 
-I also said that this is limited to only functions that have void return.
-
--- Steve
+No errors here either, Sphinx 2.2.2, unless Documentation/ has some
+explicit rule about this let's not reshuffle text for an old version 
+of the compiler.
