@@ -2,273 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A12D02B7463
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 03:53:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDEB52B7468
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 03:58:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727130AbgKRCwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 21:52:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726205AbgKRCwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 21:52:42 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C3BC0613D4;
-        Tue, 17 Nov 2020 18:52:41 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id x17so265112ybr.8;
-        Tue, 17 Nov 2020 18:52:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SjrGYc5Ndjj6nsLD1eKS/w+aJSqMDah243ks049chjo=;
-        b=if68CQLVqWxGxvG6RStF5PBp4I0vqJViEbSerf4+bETPhuk8pn7L1Hf/J1Yx1OFHZJ
-         pD+tIl9MN3OQCJtkcPgGTSMrlXw6tM61v4OM5fTaiGPAu02l+S7zhEr25AJvv1pKYpY/
-         HqYm8zxA+78+giGhez0RvpTLcxJxJy8A4K2GoL7df0QxzXMsd395O3ttId9ii9lCpNIB
-         hGdkk7G0zJXtMgCIy5XE7CCqjDqeqM9P/tmV3GlOz+bBttu5a2Lrtb/ygs/p0kn57H7n
-         cC/Lp0D/zySDK3+5ukGeGJbU4W6uq086vQLbc1glG6VW1U0dDRF6JAlFshLZ2vuIVo+g
-         1HSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SjrGYc5Ndjj6nsLD1eKS/w+aJSqMDah243ks049chjo=;
-        b=HbwzOTjzVLB/httzkaHZ/U+tS6vj/1YXaT4FNpkH9ZBlhiaBgELcWdc06iENDdJV+w
-         iqUXAg62oIwEqOmtvZHX3chtFZ5XusfSJ3tkvjR5QGJXJOtoSG2AcpS9IGexcswFrz/y
-         3H/s+OFk5EBjn/OEflUnWu1L0p/fY25IofF/4vZXQF89jmou1IDWW4WdRHxjQVODFGuu
-         VkyKF2ZdgFfRbx38oX4TuKwvcVz9H7angOHnVf2MtI9/OSQrRHCmmzJjH3tSzBURNVAn
-         FWURiX6LOfMCyzX6eNhLYHS2/Rh/v+4hiKimbRgdFeXJsFJjm5mP02dMuDKPaDMzcX/5
-         PiCQ==
-X-Gm-Message-State: AOAM532RM3te25f4uoO/PLL4+xFTsOkbwv0YcH+r7LzWEskPsEy+fIM+
-        085c2r7lYc0WY2BUoNrekfQHGX+up1TEBnwzAio=
-X-Google-Smtp-Source: ABdhPJzVAU4YiipKY+4bEZIAi7gkda2dDET+ruYaSVAkdBOEOiwXereVxV8Ajzs/0oMRjAjoyM3U1mx0JDPidS2nIj4=
-X-Received: by 2002:a25:df82:: with SMTP id w124mr4010868ybg.347.1605667960351;
- Tue, 17 Nov 2020 18:52:40 -0800 (PST)
+        id S1726807AbgKRCyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 21:54:54 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:7928 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726325AbgKRCyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 21:54:54 -0500
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CbS8B3nNqz6wtQ;
+        Wed, 18 Nov 2020 10:54:34 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 18 Nov 2020 10:54:41 +0800
+From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Yuqi Jin <jinyuqi@huawei.com>, Dave Hansen <dave.hansen@intel.com>,
+        "Rusty Russell" <rusty@rustcorp.com.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Juergen Gross <jgross@suse.com>,
+        Paul Burton <paul.burton@mips.com>,
+        "Michal Hocko" <mhocko@suse.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        "Shaokun Zhang" <zhangshaokun@hisilicon.com>
+Subject: [PATCH v7] lib: optimize cpumask_local_spread()
+Date:   Wed, 18 Nov 2020 10:54:32 +0800
+Message-ID: <1605668072-44780-1-git-send-email-zhangshaokun@hisilicon.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <20201117145644.1166255-1-danieltimlee@gmail.com> <20201117145644.1166255-6-danieltimlee@gmail.com>
-In-Reply-To: <20201117145644.1166255-6-danieltimlee@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 17 Nov 2020 18:52:29 -0800
-Message-ID: <CAEf4BzZBjVw4ptGZE8V9SM4htW_Nf_TjXkUKEHjF9bxgO43DQA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/9] samples: bpf: refactor ibumad program with libbpf
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, brakmo <brakmo@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        David Ahern <dsa@cumulusnetworks.com>,
-        Yonghong Song <yhs@fb.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Ira Weiny <ira.weiny@intel.com>, Thomas Graf <tgraf@suug.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Xdp <xdp-newbies@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 17, 2020 at 6:57 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> This commit refactors the existing ibumad program with libbpf bpf
-> loader. Attach/detach of Tracepoint bpf programs has been managed
-> with the generic bpf_program__attach() and bpf_link__destroy() from
-> the libbpf.
->
-> Also, instead of using the previous BPF MAP definition, this commit
-> refactors ibumad MAP definition with the new BTF-defined MAP format.
->
-> To verify that this bpf program works without an infiniband device,
-> try loading ib_umad kernel module and test the program as follows:
->
->     # modprobe ib_umad
->     # ./ibumad
->
-> Moreover, TRACE_HELPERS has been removed from the Makefile since it is
-> not used on this program.
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  samples/bpf/Makefile      |  2 +-
->  samples/bpf/ibumad_kern.c | 26 +++++++--------
->  samples/bpf/ibumad_user.c | 66 ++++++++++++++++++++++++++++++---------
->  3 files changed, 65 insertions(+), 29 deletions(-)
->
-> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> index 36b261c7afc7..bfa595379493 100644
-> --- a/samples/bpf/Makefile
-> +++ b/samples/bpf/Makefile
-> @@ -109,7 +109,7 @@ xsk_fwd-objs := xsk_fwd.o
->  xdp_fwd-objs := xdp_fwd_user.o
->  task_fd_query-objs := task_fd_query_user.o $(TRACE_HELPERS)
->  xdp_sample_pkts-objs := xdp_sample_pkts_user.o $(TRACE_HELPERS)
-> -ibumad-objs := bpf_load.o ibumad_user.o $(TRACE_HELPERS)
-> +ibumad-objs := ibumad_user.o
->  hbm-objs := hbm.o $(CGROUP_HELPERS) $(TRACE_HELPERS)
->
->  # Tell kbuild to always build the programs
-> diff --git a/samples/bpf/ibumad_kern.c b/samples/bpf/ibumad_kern.c
-> index 3a91b4c1989a..26dcd4dde946 100644
-> --- a/samples/bpf/ibumad_kern.c
-> +++ b/samples/bpf/ibumad_kern.c
-> @@ -16,19 +16,19 @@
->  #include <bpf/bpf_helpers.h>
->
->
-> -struct bpf_map_def SEC("maps") read_count = {
-> -       .type        = BPF_MAP_TYPE_ARRAY,
-> -       .key_size    = sizeof(u32), /* class; u32 required */
-> -       .value_size  = sizeof(u64), /* count of mads read */
-> -       .max_entries = 256, /* Room for all Classes */
-> -};
-> -
-> -struct bpf_map_def SEC("maps") write_count = {
-> -       .type        = BPF_MAP_TYPE_ARRAY,
-> -       .key_size    = sizeof(u32), /* class; u32 required */
-> -       .value_size  = sizeof(u64), /* count of mads written */
-> -       .max_entries = 256, /* Room for all Classes */
-> -};
-> +struct {
-> +       __uint(type, BPF_MAP_TYPE_ARRAY);
-> +       __type(key, u32); /* class; u32 required */
-> +       __type(value, u64); /* count of mads read */
-> +       __uint(max_entries, 256); /* Room for all Classes */
-> +} read_count SEC(".maps");
-> +
-> +struct {
-> +       __uint(type, BPF_MAP_TYPE_ARRAY);
-> +       __type(key, u32); /* class; u32 required */
-> +       __type(value, u64); /* count of mads written */
-> +       __uint(max_entries, 256); /* Room for all Classes */
-> +} write_count SEC(".maps");
->
->  #undef DEBUG
->  #ifndef DEBUG
-> diff --git a/samples/bpf/ibumad_user.c b/samples/bpf/ibumad_user.c
-> index fa06eef31a84..66a06272f242 100644
-> --- a/samples/bpf/ibumad_user.c
-> +++ b/samples/bpf/ibumad_user.c
-> @@ -23,10 +23,15 @@
->  #include <getopt.h>
->  #include <net/if.h>
->
-> -#include "bpf_load.h"
-> +#include <bpf/bpf.h>
->  #include "bpf_util.h"
->  #include <bpf/libbpf.h>
->
-> +struct bpf_link *tp_links[3] = {};
-> +struct bpf_object *obj;
+From: Yuqi Jin <jinyuqi@huawei.com>
 
-statics and you can drop = {} part.
+In multi-processor and NUMA system, I/O driver will find cpu cores that
+which shall be bound IRQ. When cpu cores in the local numa have been
+used up, it is better to find the node closest to the local numa node
+for performance, instead of choosing any online cpu immediately.
 
-> +static int map_fd[2];
-> +static int tp_cnt;
-> +
->  static void dump_counts(int fd)
->  {
->         __u32 key;
-> @@ -53,6 +58,11 @@ static void dump_all_counts(void)
->  static void dump_exit(int sig)
->  {
->         dump_all_counts();
-> +       /* Detach tracepoints */
-> +       while (tp_cnt)
-> +               bpf_link__destroy(tp_links[--tp_cnt]);
-> +
-> +       bpf_object__close(obj);
->         exit(0);
->  }
->
-> @@ -73,19 +83,11 @@ static void usage(char *cmd)
->
->  int main(int argc, char **argv)
->  {
-> +       struct bpf_program *prog;
->         unsigned long delay = 5;
-> +       char filename[256];
->         int longindex = 0;
->         int opt;
-> -       char bpf_file[256];
-> -
-> -       /* Create the eBPF kernel code path name.
-> -        * This follows the pattern of all of the other bpf samples
-> -        */
-> -       snprintf(bpf_file, sizeof(bpf_file), "%s_kern.o", argv[0]);
-> -
-> -       /* Do one final dump when exiting */
-> -       signal(SIGINT, dump_exit);
-> -       signal(SIGTERM, dump_exit);
->
->         while ((opt = getopt_long(argc, argv, "hd:rSw",
->                                   long_options, &longindex)) != -1) {
-> @@ -107,10 +109,38 @@ int main(int argc, char **argv)
->                 }
->         }
->
-> -       if (load_bpf_file(bpf_file)) {
-> -               fprintf(stderr, "ERROR: failed to load eBPF from file : %s\n",
-> -                       bpf_file);
-> -               return 1;
-> +       /* Do one final dump when exiting */
-> +       signal(SIGINT, dump_exit);
-> +       signal(SIGTERM, dump_exit);
-> +
-> +       snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
-> +       obj = bpf_object__open_file(filename, NULL);
-> +       if (libbpf_get_error(obj)) {
-> +               fprintf(stderr, "ERROR: opening BPF object file failed\n");
-> +               return 0;
+On arm64 or x86 platform that has 2-sockets and 4-NUMA nodes, if the
+network card is located in node2 of socket1, while the number queues
+of network card is greater than the number of cores of node2, when all
+cores of node2 has been bound to the queues, the remaining queues will
+be bound to the cores of node0 which is further than NUMA node3. It is
+not friendly for performance or Intel's DDIO (Data Direct I/O Technology)
+when if the user enables SNC (sub-NUMA-clustering).
+Let's improve it and find the nearest unused node through NUMA distance
+for the non-local NUMA nodes.
 
-not really a success, no?
+On Huawei Kunpeng 920 server, there are 4 NUMA node(0 - 3) in the 2-cpu
+system(0 - 1). The topology of this server is followed:
+available: 4 nodes (0-3)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+node 0 size: 63379 MB
+node 0 free: 61899 MB
+node 1 cpus: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47
+node 1 size: 64509 MB
+node 1 free: 63942 MB
+node 2 cpus: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71
+node 2 size: 64509 MB
+node 2 free: 63056 MB
+node 3 cpus: 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
+node 3 size: 63997 MB
+node 3 free: 63420 MB
+node distances:
+node   0   1   2   3
+  0:  10  16  32  33
+  1:  16  10  25  32
+  2:  32  25  10  16
+  3:  33  32  16  10
 
-> +       }
-> +
-> +       /* load BPF program */
-> +       if (bpf_object__load(obj)) {
-> +               fprintf(stderr, "ERROR: loading BPF object file failed\n");
-> +               goto cleanup;
-> +       }
-> +
-> +       map_fd[0] = bpf_object__find_map_fd_by_name(obj, "read_count");
-> +       map_fd[1] = bpf_object__find_map_fd_by_name(obj, "write_count");
-> +       if (map_fd[0] < 0 || map_fd[1] < 0) {
-> +               fprintf(stderr, "ERROR: finding a map in obj file failed\n");
-> +               goto cleanup;
-> +       }
-> +
-> +       bpf_object__for_each_program(prog, obj) {
-> +               tp_links[tp_cnt] = bpf_program__attach(prog);
-> +               if (libbpf_get_error(tp_links[tp_cnt])) {
-> +                       fprintf(stderr, "ERROR: bpf_program__attach failed\n");
-> +                       tp_links[tp_cnt] = NULL;
-> +                       goto cleanup;
-> +               }
-> +               tp_cnt++;
->         }
+We perform PS (parameter server) business test, the behavior of the
+service is that the client initiates a request through the network card,
+the server responds to the request after calculation.  When two PS
+processes run on node2 and node3 separately and the network card is
+located on 'node2' which is in cpu1, the performance of node2 (26W QPS)
+and node3 (22W QPS) is different.
 
-This cries for the BPF skeleton... But one step at a time :)
+It is better that the NIC queues are bound to the cpu1 cores in turn, then
+XPS will also be properly initialized, while cpumask_local_spread only
+considers the local node. When the number of NIC queues exceeds the
+number of cores in the local node, it returns to the online core directly.
+So when PS runs on node3 sending a calculated request, the performance is
+not as good as the node2.
 
->
->         while (1) {
-> @@ -118,5 +148,11 @@ int main(int argc, char **argv)
->                 dump_all_counts();
->         }
->
-> +cleanup:
-> +       /* Detach tracepoints */
-> +       while (tp_cnt)
-> +               bpf_link__destroy(tp_links[--tp_cnt]);
-> +
-> +       bpf_object__close(obj);
->         return 0;
+The IRQ from 369-392 will be bound from NUMA node0 to NUMA node3 with this
+patch, before the patch:
 
-same, in a lot of cases it's not a success, probably need int err
-variable somewhere.
+Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
+0
+Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
+1
+...
+Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
+22
+Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
+23
+After the patch:
+Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
+72
+Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
+73
+...
+Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
+94
+Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
+95
 
->  }
-> --
-> 2.25.1
->
+So the performance of the node3 is the same as node2 that is 26W QPS when
+the network card is still in 'node2' with the patch.
+
+Cc: Dave Hansen <dave.hansen@intel.com>
+Cc: Rusty Russell <rusty@rustcorp.com.au>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Paul Burton <paul.burton@mips.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Mike Rapoport <rppt@linux.ibm.com>
+Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+Signed-off-by: Yuqi Jin <jinyuqi@huawei.com>
+Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+---
+ChangeLog from v6:
+    1. Addressed Dave comments
+    2. Fix the warning from Hulk Robot
+    3. Simply the git log.
+
+ChangeLog from v5:
+    1. Rebase to 5.10-rc2
+
+ChangeLog from v4:
+    1. Rebase to 5.6-rc3 
+
+ChangeLog from v3:
+    1. Make spread_lock local to cpumask_local_spread();
+    2. Add more descriptions on the affinities change in log;
+
+ChangeLog from v2:
+    1. Change the variables as static and use spinlock to protect;
+    2. Give more explantation on test and performance;
+
+ lib/cpumask.c | 60 ++++++++++++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 47 insertions(+), 13 deletions(-)
+
+diff --git a/lib/cpumask.c b/lib/cpumask.c
+index 97a005ffde31..516d7237e302 100644
+--- a/lib/cpumask.c
++++ b/lib/cpumask.c
+@@ -325,20 +325,47 @@ void __init free_bootmem_cpumask_var(cpumask_var_t mask)
+ }
+ #endif
+ 
++static int find_nearest_node(int node, bool *used)
++{
++	int i, min_dist, node_id = -1;
++
++	/* Choose the first unused node to compare */
++	for (i = 0; i < nr_node_ids; i++) {
++		if (used[i] == false) {
++			min_dist = node_distance(node, i);
++			node_id = i;
++			break;
++		}
++	}
++
++	/* Compare and return the nearest node */
++	for (i = 0; i < nr_node_ids; i++) {
++		if (node_distance(node, i) < min_dist && used[i] == false) {
++			min_dist = node_distance(node, i);
++			node_id = i;
++		}
++	}
++
++	return node_id;
++}
++
+ /**
+  * cpumask_local_spread - select the i'th cpu with local numa cpu's first
+  * @i: index number
+  * @node: local numa_node
+  *
+  * This function selects an online CPU according to a numa aware policy;
+- * local cpus are returned first, followed by non-local ones, then it
+- * wraps around.
++ * local cpus are returned first, followed by the next one which is the
++ * nearest unused NUMA node based on NUMA distance, then it wraps around.
+  *
+  * It's not very efficient, but useful for setup.
+  */
+ unsigned int cpumask_local_spread(unsigned int i, int node)
+ {
+-	int cpu, hk_flags;
++	static DEFINE_SPINLOCK(spread_lock);
++	static bool used[MAX_NUMNODES];
++	unsigned long flags;
++	int cpu, hk_flags, j, id;
+ 	const struct cpumask *mask;
+ 
+ 	hk_flags = HK_FLAG_DOMAIN | HK_FLAG_MANAGED_IRQ;
+@@ -352,20 +379,27 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
+ 				return cpu;
+ 		}
+ 	} else {
+-		/* NUMA first. */
+-		for_each_cpu_and(cpu, cpumask_of_node(node), mask) {
+-			if (i-- == 0)
+-				return cpu;
++		spin_lock_irqsave(&spread_lock, flags);
++		memset(used, 0, nr_node_ids * sizeof(bool));
++		/* select node according to the distance from local node */
++		for (j = 0; j < nr_node_ids; j++) {
++			id = find_nearest_node(node, used);
++			if (id < 0)
++				break;
++
++			for_each_cpu_and(cpu, cpumask_of_node(id), mask)
++				if (i-- == 0) {
++					spin_unlock_irqrestore(&spread_lock,
++							       flags);
++					return cpu;
++				}
++			used[id] = true;
+ 		}
++		spin_unlock_irqrestore(&spread_lock, flags);
+ 
+-		for_each_cpu(cpu, mask) {
+-			/* Skip NUMA nodes, done above. */
+-			if (cpumask_test_cpu(cpu, cpumask_of_node(node)))
+-				continue;
+-
++		for_each_cpu(cpu, mask)
+ 			if (i-- == 0)
+ 				return cpu;
+-		}
+ 	}
+ 	BUG();
+ }
+-- 
+2.7.4
+
