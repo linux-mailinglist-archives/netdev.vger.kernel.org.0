@@ -2,67 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F32F2B87DD
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 23:41:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 392F32B87B2
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 23:32:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727166AbgKRWkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 17:40:51 -0500
-Received: from gargamel.turcom.com.tr ([193.254.252.9]:51312 "EHLO
-        etrn.turcom.com.tr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726295AbgKRWku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 17:40:50 -0500
-Received: from mail.stargazete.com (mail.stargazete.com [88.255.77.166])
-        by etrn.turcom.com.tr (Postfix) with ESMTPS id 0C17011F375;
-        Thu, 19 Nov 2020 00:07:47 +0300 (+03)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.stargazete.com (Postfix) with ESMTP id E82139261E35;
-        Wed, 18 Nov 2020 21:07:46 +0000 (UTC)
-Received: from mail.stargazete.com ([127.0.0.1])
-        by localhost (mail.stargazete.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id LieFjvOmLCeg; Wed, 18 Nov 2020 21:07:46 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.stargazete.com (Postfix) with ESMTP id 81A0B9260E91;
-        Wed, 18 Nov 2020 21:00:05 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.stargazete.com 81A0B9260E91
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stargazete.com;
-        s=BE41E402-1210-11EB-A9CA-1AF0DF4E1435; t=1605733205;
-        bh=eS6YGRou0utqjQd2YaXZkaFeXSioe/GKdvIucbq5rMI=;
-        h=MIME-Version:To:From:Date:Message-Id;
-        b=g/r9tZM+EhUE/le5GW5oKyUBBeGmMvYDWUnq8BVDcFLk8U9CYG5WEgfaeO/6kb3pH
-         ZUHUlcdBcNeY0xcfQcqq4HzaIIADgYipS8g7gUjTlQAQhE+2J0hVeu1eLLBFRZwV0Q
-         5wDAY/XufYkDkBTzcU41CcjSbq1oEGKSF4HjOoEnfqZzbLiiUuucKXm7DaPrVpj3dc
-         DVtaFBZ3i9FTB9p4PFlQOHTf8TcQKdynMOmqiYeglXYKyveYKyQ3fSGspKwKZ9qQ2v
-         97LZQ1LhwHk/8HZVAavBQMPD+rhzSg+NjgGhuUikYHAOlGZSQ2tJ9GdHfz3zQbds//
-         Sy+DSrtw/FvCg==
-X-Virus-Scanned: amavisd-new at stargazete.com
-Received: from mail.stargazete.com ([127.0.0.1])
-        by localhost (mail.stargazete.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id E0sptE90D5ri; Wed, 18 Nov 2020 21:00:05 +0000 (UTC)
-Received: from [172.20.10.4] (unknown [154.230.136.106])
-        by mail.stargazete.com (Postfix) with ESMTPSA id 3003D9249939;
-        Wed, 18 Nov 2020 20:53:05 +0000 (UTC)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1726697AbgKRWaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 17:30:22 -0500
+Received: from correo.us.es ([193.147.175.20]:51094 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725823AbgKRWaU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 17:30:20 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 6150E18FD87
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 23:30:17 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 514E3DA8FB
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 23:30:17 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 46B5EDA901; Wed, 18 Nov 2020 23:30:17 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D8F14DA722;
+        Wed, 18 Nov 2020 23:30:14 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 18 Nov 2020 23:30:14 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id 93FBC42514AC;
+        Wed, 18 Nov 2020 23:30:14 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        razor@blackwall.org, tobias@waldekranz.com, jeremy@azazel.net
+Subject: [PATCH net-next,v4 0/9] netfilter: flowtable bridge and vlan enhancements
+Date:   Wed, 18 Nov 2020 23:30:02 +0100
+Message-Id: <20201118223011.3216-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Loan
-To:     Recipients <rtosun@stargazete.com>
-From:   rtosun@stargazete.com
-Date:   Wed, 18 Nov 2020 12:53:00 -0800
-Reply-To: samuelbrandon110@gmail.com
-Message-Id: <20201118205306.3003D9249939@mail.stargazete.com>
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-ARE YOU IN NEED OF LOAN @3% INTEREST RATE FOR BUSINESS AND PRIVATE
-PURPOSES? IF YES:
-FILL AND RETURN
-Name: =3D=3D=3D
-Amount needed: =3D=3D=3D
-Duration: =3D=3D
-country =3D=3D=3D
-Purpose: =3D=3D=3D
-Mobile number
- Dear Sir/Madam
+The following patchset augments the Netfilter flowtable fastpath [1] to
+support for network topologies that combine IP forwarding, bridge and
+VLAN devices.
+
+This v4 includes updates for Patches:
+- Patch #3 Check for possible device stack overflow in
+  dev_fill_forward_path(), per Jakub Kicinski.
+- Patch #3 Remove memset for the net_device_path_ctx structure in
+  dev_fill_forward_path() and avoid full memset of struct
+  net_device_path_stack.
+- Patch #5 Check for valid bridge dst pointer after READ_ONCE, per Nikolay
+  Aleksandrov.
+- Patch #6 remove initialization of the net_device_path_ctx structure,
+  already done from patch #3.
+
+A typical scenario that can benefit from this infrastructure is composed
+of several VMs connected to bridge ports where the bridge master device
+'br0' has an IP address. A DHCP server is also assumed to be running to
+provide connectivity to the VMs. The VMs reach the Internet through
+'br0' as default gateway, which makes the packet enter the IP forwarding
+path. Then, netfilter is used to NAT the packets before they leave
+through the wan device.
+
+Something like this:
+
+                       fast path
+                .------------------------.
+               /                          \
+               |           IP forwarding   |
+               |          /             \  .
+               |       br0               eth0
+               .       / \
+               -- veth1  veth2
+                   .
+                   .
+                   .
+                 eth0
+           ab:cd:ef:ab:cd:ef
+                  VM
+
+The idea is to accelerate forwarding by building a fast path that takes
+packets from the ingress path of the bridge port and place them in the
+egress path of the wan device (and vice versa). Hence, skipping the
+classic bridge and IP stack paths.
+
+This patchset is composed of:
+
+Patch #1 adds a placeholder for the hash calculation, instead of using
+         the dir field.
+
+Patch #2 adds the transmit path type field to the flow tuple. Two transmit
+         paths are supported so far: the neighbour and the xfrm transmit
+         paths. This patch comes in preparation to add a new direct ethernet
+         transmit path (see patch #7).
+
+Patch #3 adds dev_fill_forward_path() and .ndo_fill_forward_path() to
+         netdev_ops. This new function describes the list of netdevice hops
+         to reach a given destination MAC address in the local network topology,
+         e.g.
+
+                           IP forwarding
+                          /             \
+                       br0              eth0
+                       / \
+                   veth1 veth2
+                    .
+                    .
+                    .
+                   eth0
+             ab:cd:ef:ab:cd:ef
+
+          where veth1 and veth2 are bridge ports and eth0 provides Internet
+          connectivity. eth0 is the interface in the VM which is connected to
+          the veth1 bridge port. Then, for packets going to br0 whose
+          destination MAC address is ab:cd:ef:ab:cd:ef, dev_fill_forward_path()
+          provides the following path: br0 -> veth1.
+
+Patch #4 adds .ndo_fill_forward_path for VLAN devices, which provides the next
+         device hop via vlan->real_dev. This annotates the VLAN id and protocol.
+         This is useful to know what VLAN headers are expected from the ingress
+         device. This also provides information regarding the VLAN headers
+         to be pushed in the egress path.
+
+Patch #5 adds .ndo_fill_forward_path for bridge devices, which allows to make
+         lookups to the FDB to locate the next device hop (bridge port) in the
+         forwarding path.
+
+Patch #6 updates the flowtable to use the dev_fill_forward_path()
+         infrastructure to obtain the ingress device in the fastpath.
+
+Patch #7 updates the flowtable to use dev_fill_forward_path() to obtain the
+         egress device in the forwarding path. This also adds the direct
+         ethernet transmit path, which pushes the ethernet header to the
+         packet and send it through dev_queue_xmit(). This patch adds
+         support for the bridge, so bridge ports use this direct xmit path.
+
+Patch #8 adds ingress VLAN support (up to 2 VLAN tags, QinQ). The VLAN
+         information is also provided by dev_fill_forward_path(). Store the
+         VLAN id and protocol in the flow tuple for hash lookups. The VLAN
+         support in the xmit path is achieved by annotating the first vlan
+         device found in the xmit path and by calling dev_hard_header()
+         (previous patch #7) before dev_queue_xmit().
+
+Patch #9 extends nft_flowtable.sh selftest: This is adding a test to
+         cover bridge and vlan support coming in this patchset.
+
+= Performance numbers
+
+My testbed environment consists of three containers:
+
+  192.168.20.2     .20.1     .10.1   10.141.10.2
+         veth0       veth0 veth1      veth0
+        ns1 <---------> nsr1 <--------> ns2
+                            SNAT
+     iperf -c                          iperf -s
+
+where nsr1 is used for forwarding. There is a bridge device br0 in nsr1,
+veth0 is a port of br0. SNAT is performed on the veth1 device of nsr1.
+
+- ns2 runs iperf -s
+- ns1 runs iperf -c 10.141.10.2 -n 100G
+
+My results are:
+
+- Baseline (no flowtable, classic forwarding path + netfilter): ~16 Gbit/s
+- Fastpath (with flowtable, this patchset): ~25 Gbit/s
+
+This is an improvement of ~50% compared to baseline.
+
+Please, apply this patchset.
+
+Thank you.
+
+Pablo Neira Ayuso (9):
+  netfilter: flowtable: add hash offset field to tuple
+  netfilter: flowtable: add xmit path types
+  net: resolve forwarding path from virtual netdevice and HW destination address
+  net: 8021q: resolve forwarding path for vlan devices
+  bridge: resolve forwarding path for bridge devices
+  netfilter: flowtable: use dev_fill_forward_path() to obtain ingress device
+  netfilter: flowtable: use dev_fill_forward_path() to obtain egress device
+  netfilter: flowtable: add vlan support
+  selftests: netfilter: flowtable bridge and VLAN support
+
+ include/linux/netdevice.h                     |  35 +++
+ include/net/netfilter/nf_flow_table.h         |  43 +++-
+ net/8021q/vlan_dev.c                          |  15 ++
+ net/bridge/br_device.c                        |  27 +++
+ net/core/dev.c                                |  36 ++++
+ net/netfilter/nf_flow_table_core.c            |  51 +++--
+ net/netfilter/nf_flow_table_ip.c              | 200 ++++++++++++++----
+ net/netfilter/nft_flow_offload.c              | 159 +++++++++++++-
+ .../selftests/netfilter/nft_flowtable.sh      |  82 +++++++
+ 9 files changed, 588 insertions(+), 60 deletions(-)
+
+--
+2.20.1
+
