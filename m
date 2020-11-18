@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DF872B854B
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 21:07:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E91B52B854E
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 21:07:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726362AbgKRUHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 15:07:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35104 "EHLO
+        id S1726527AbgKRUHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 15:07:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725710AbgKRUHQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 15:07:16 -0500
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09E0C0613D4
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 12:07:16 -0800 (PST)
-Received: by mail-pl1-x649.google.com with SMTP id j12so1850933plj.20
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 12:07:16 -0800 (PST)
+        with ESMTP id S1725710AbgKRUHU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 15:07:20 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181A3C0613D4
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 12:07:20 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id w8so4089621ybq.4
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 12:07:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=jIQIpkd1u2dhmvMkde7f4Crf0+RGMzwf23gd/v5mBFA=;
-        b=Q8D/uSGI/yz/Zx6wPl0CT4F5vE7H+e4cqBz+Zg8lKhY0Hmn3+DCf5cETP/Ub6orSMJ
-         Uts3NXD8msRUKyOjuWA2Gmck5Tg/Xe3aKUZJTdgOLuWmh69qm0qRZfqhXCdiaxWw3fdi
-         wHVSxEsB3QSWCV9VeNsjl7lGnHHeSJY9lj/dH5CHOGDGMsxXlGA8oZHC7CJmgrW1wcwm
-         xoE2OG4dlAqWNvc7sD82XDdRn0g2aG0FaRRbnzq2pJ9wqHvmumNwH3lEqfVfncsfEpwB
-         vhkjfQFDzTGO0M6Xr2JEh9eIeITjSDCmZAcout2L/vpLxZH2Bmg+fxVLZiWV6SA14bJS
-         rD6g==
+        bh=AujCKgYJhnDkM058WtqUGOklnts1B0HNyUZaNDRuuQQ=;
+        b=dApvoR09gTj3QUFLWQMo+ls1/rAizTC+a/7Fj5MjX3j9MHL5oJbcSbP0F5//XnXqYr
+         hPlauMSV3LxXZ5IX6TKcDKfFC0rc6hmkcgk0Seq+ikD1hcy5kSkcrbOGExWtgQ7wVPNZ
+         xNsMVEZvBF6sBsU4/eqioVarDS7gCc98rmv9TvXOl1Yae3puFveWW+vUI2dvA99g7A6X
+         E3yd48tcFaD4/gx8iETI8NFPlqEIbIagRjiViDb/t/BA8JXHSunt/5v+SICaPS7F/OCK
+         5QquxZH7+/c0v0v4PgFtr924r0+jVJPWKCv/quOZAcYJ9rMTx62P6XAwo/wv6C8lpHBO
+         b3IQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=jIQIpkd1u2dhmvMkde7f4Crf0+RGMzwf23gd/v5mBFA=;
-        b=G3Iu8fbZjfZ2hr2pKfEIJxxxCQtXHJc+mY5qnvKQCr0yrAgWr4HFsG2cS8v1xmtymi
-         uTYGV/9oSERXocXJHE9jpARTdmg6kQ6dwonNWnS3u2c1+9dcxnWulVB/yXI/gMWM4cNj
-         Y/f8lpfzj/4QnYi+ZXQrQDtTK4OJZOLL5+u+lXg47Oab5FtZiOcgRfx+JGpb1KEU5omA
-         qa5UENTFqkqxdJF45kMJM9ccocWH5rkHXAWqaJrb7ggqonEXVJejtre3IzihMqJsK/2D
-         RLMuudW+Jmt3NeKbY5S1t1GKTgdxJKhMYiEOipTl/7kuk3Nq8H1gPjo53PCsYiMDr6CW
-         C4tg==
-X-Gm-Message-State: AOAM531szAGMn4fs1P4cGNvVn5BPqnp54L/9BkmqMcSNN2of+Jg+LbIR
-        ShSnppBJd/gR4k2BlYMWeGDm8ssXRg8=
-X-Google-Smtp-Source: ABdhPJyVw0xqrq0vSmAc4B5DTUNbhlxN3NCJ3Xc+u7vW6IkFXeZJwoFLe20zg26PNsA7uS0KTAGQ8MQkzSI=
+        bh=AujCKgYJhnDkM058WtqUGOklnts1B0HNyUZaNDRuuQQ=;
+        b=pPa6n2PNP5Tn2AvZ9x2Q53VLZtL4Jdo67rYWbimOUYFgFekE9NBl77e1GnCO9kzNYu
+         /D+8EZeXCZELq0dQHNH7yfwOzj01IxarTtrpC62ySDSV+IDC8nS0kDHkZvtGODRRI8yJ
+         pv7NxzZu2+PbYUbU8feruQWzZfCF7peiobOx8FQK/+G134Pp6ALtC7PjnD3Y3EMy1Tyn
+         qgXqCRcQ5iI+7DGRIQ4yq+7veGIBeVXU8NAOq5K6yFgSQkJeQLnpi5tTtzL5arnSABeZ
+         TpBbQA2w9KTfhMM+noCRdqykFCilOYd333mgVb7EHzx+VMNRsb0d0M/8Lg76UZMvUTSw
+         /rKw==
+X-Gm-Message-State: AOAM533S5Tn4axeNEFG6HRwauNwgECL7jWM8t7o1SP2B/6pPiP1Nq3zm
+        feEkdlBua86ZhUPdA9ZqP/eoVsqLoMo=
+X-Google-Smtp-Source: ABdhPJyYnX9dCYMVa7OXG3SSS364NblkClXfMTiQ6AkoF2DZwQiczxH/WVHhu5i50t+Z5u+4QfqP7kmqAIk=
 Sender: "weiwan via sendgmr" <weiwan@weiwan.svl.corp.google.com>
 X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:1ea0:b8ff:fe75:cf08])
- (user=weiwan job=sendgmr) by 2002:a62:8cd6:0:b029:18b:ad92:503b with SMTP id
- m205-20020a628cd60000b029018bad92503bmr5962239pfd.77.1605730036412; Wed, 18
- Nov 2020 12:07:16 -0800 (PST)
-Date:   Wed, 18 Nov 2020 11:10:05 -0800
+ (user=weiwan job=sendgmr) by 2002:a25:ba4c:: with SMTP id z12mr9344035ybj.366.1605730039293;
+ Wed, 18 Nov 2020 12:07:19 -0800 (PST)
+Date:   Wed, 18 Nov 2020 11:10:06 -0800
 In-Reply-To: <20201118191009.3406652-1-weiwan@google.com>
-Message-Id: <20201118191009.3406652-2-weiwan@google.com>
+Message-Id: <20201118191009.3406652-3-weiwan@google.com>
 Mime-Version: 1.0
 References: <20201118191009.3406652-1-weiwan@google.com>
 X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
-Subject: [PATCH net-next v3 1/5] net: implement threaded-able napi poll loop support
+Subject: [PATCH net-next v3 2/5] net: add sysfs attribute to control napi
+ threaded mode
 From:   Wei Wang <weiwan@google.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -67,249 +67,143 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com> 
 
-This patch allows running each napi poll loop inside its
-own kernel thread.
-The rx mode can be enabled per napi instance via the
-newly addded napi_set_threaded() api; the requested kthread
-will be created on demand and shut down on device stop.
+this patch adds a new sysfs attribute to the network
+device class. Said attribute is a bitmask that allows controlling
+the threaded mode for all the napi instances of the given
+network device.
 
-Once that threaded mode is enabled and the kthread is
-started, napi_schedule() will wake-up such thread instead
-of scheduling the softirq.
-
-The threaded poll loop behaves quite likely the net_rx_action,
-but it does not have to manipulate local irqs and uses
-an explicit scheduling point based on netdev_budget.
+The threaded mode can be switched only if related network device
+is down.
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
 Signed-off-by: Wei Wang <weiwan@google.com>
 Reviewed-by: Eric Dumazet <edumazet@google.com>
 ---
- include/linux/netdevice.h |   5 ++
- net/core/dev.c            | 113 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 118 insertions(+)
+ net/core/net-sysfs.c | 103 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 103 insertions(+)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 03433a4c929e..5ba430f56085 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -347,6 +347,7 @@ struct napi_struct {
- 	struct list_head	dev_list;
- 	struct hlist_node	napi_hash_node;
- 	unsigned int		napi_id;
-+	struct task_struct	*thread;
- };
- 
- enum {
-@@ -357,6 +358,7 @@ enum {
- 	NAPI_STATE_LISTED,	/* NAPI added to system lists */
- 	NAPI_STATE_NO_BUSY_POLL,/* Do not add in napi_hash, no busy polling */
- 	NAPI_STATE_IN_BUSY_POLL,/* sk_busy_loop() owns this NAPI */
-+	NAPI_STATE_THREADED,	/* The poll is performed inside its own thread*/
- };
- 
- enum {
-@@ -367,6 +369,7 @@ enum {
- 	NAPIF_STATE_LISTED	 = BIT(NAPI_STATE_LISTED),
- 	NAPIF_STATE_NO_BUSY_POLL = BIT(NAPI_STATE_NO_BUSY_POLL),
- 	NAPIF_STATE_IN_BUSY_POLL = BIT(NAPI_STATE_IN_BUSY_POLL),
-+	NAPIF_STATE_THREADED	 = BIT(NAPI_STATE_THREADED),
- };
- 
- enum gro_result {
-@@ -488,6 +491,8 @@ static inline bool napi_complete(struct napi_struct *n)
- 	return napi_complete_done(n, 0);
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 94fff0700bdd..df8dd25e5e4b 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -538,6 +538,108 @@ static ssize_t phys_switch_id_show(struct device *dev,
  }
+ static DEVICE_ATTR_RO(phys_switch_id);
  
-+int napi_set_threaded(struct napi_struct *n, bool threaded);
-+
- /**
-  *	napi_disable - prevent NAPI from scheduling
-  *	@n: NAPI context
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 4bfdcd6b20e8..a5d2ead8be78 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -91,6 +91,7 @@
- #include <linux/etherdevice.h>
- #include <linux/ethtool.h>
- #include <linux/skbuff.h>
-+#include <linux/kthread.h>
- #include <linux/bpf.h>
- #include <linux/bpf_trace.h>
- #include <net/net_namespace.h>
-@@ -1488,9 +1489,19 @@ void netdev_notify_peers(struct net_device *dev)
- }
- EXPORT_SYMBOL(netdev_notify_peers);
- 
-+static int napi_threaded_poll(void *data);
-+
-+static void napi_thread_start(struct napi_struct *n)
++static unsigned long *__alloc_thread_bitmap(struct net_device *netdev,
++					    int *bits)
 +{
-+	if (test_bit(NAPI_STATE_THREADED, &n->state) && !n->thread)
-+		n->thread = kthread_create(napi_threaded_poll, n, "%s-%d",
-+					   n->dev->name, n->napi_id);
-+}
-+
- static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
- {
- 	const struct net_device_ops *ops = dev->netdev_ops;
 +	struct napi_struct *n;
- 	int ret;
- 
- 	ASSERT_RTNL();
-@@ -1522,6 +1533,9 @@ static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
- 	if (!ret && ops->ndo_open)
- 		ret = ops->ndo_open(dev);
- 
-+	list_for_each_entry(n, &dev->napi_list, dev_list)
-+		napi_thread_start(n);
 +
- 	netpoll_poll_enable(dev);
- 
- 	if (ret)
-@@ -1567,6 +1581,14 @@ int dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
- }
- EXPORT_SYMBOL(dev_open);
- 
-+static void napi_thread_stop(struct napi_struct *n)
-+{
-+	if (!n->thread)
-+		return;
-+	kthread_stop(n->thread);
-+	n->thread = NULL;
++	*bits = 0;
++	list_for_each_entry(n, &netdev->napi_list, dev_list)
++		(*bits)++;
++
++	return kmalloc_array(BITS_TO_LONGS(*bits), sizeof(unsigned long),
++			     GFP_ATOMIC | __GFP_ZERO);
 +}
 +
- static void __dev_close_many(struct list_head *head)
- {
- 	struct net_device *dev;
-@@ -1595,6 +1617,7 @@ static void __dev_close_many(struct list_head *head)
- 
- 	list_for_each_entry(dev, head, close_list) {
- 		const struct net_device_ops *ops = dev->netdev_ops;
-+		struct napi_struct *n;
- 
- 		/*
- 		 *	Call the device specific close. This cannot fail.
-@@ -1606,6 +1629,9 @@ static void __dev_close_many(struct list_head *head)
- 		if (ops->ndo_stop)
- 			ops->ndo_stop(dev);
- 
-+		list_for_each_entry(n, &dev->napi_list, dev_list)
-+			napi_thread_stop(n);
++static ssize_t threaded_show(struct device *dev,
++			     struct device_attribute *attr, char *buf)
++{
++	struct net_device *netdev = to_net_dev(dev);
++	struct napi_struct *n;
++	unsigned long *bmap;
++	size_t count = 0;
++	int i, bits;
 +
- 		dev->flags &= ~IFF_UP;
- 		netpoll_poll_enable(dev);
- 	}
-@@ -4245,6 +4271,11 @@ int gro_normal_batch __read_mostly = 8;
- static inline void ____napi_schedule(struct softnet_data *sd,
- 				     struct napi_struct *napi)
- {
-+	if (napi->thread) {
-+		wake_up_process(napi->thread);
-+		return;
++	if (!rtnl_trylock())
++		return restart_syscall();
++
++	if (!dev_isalive(netdev))
++		goto unlock;
++
++	bmap = __alloc_thread_bitmap(netdev, &bits);
++	if (!bmap) {
++		count = -ENOMEM;
++		goto unlock;
 +	}
 +
- 	list_add_tail(&napi->poll_list, &sd->poll_list);
- 	__raise_softirq_irqoff(NET_RX_SOFTIRQ);
- }
-@@ -6667,6 +6698,30 @@ static void init_gro_hash(struct napi_struct *napi)
- 	napi->gro_bitmask = 0;
- }
- 
-+int napi_set_threaded(struct napi_struct *n, bool threaded)
-+{
-+	ASSERT_RTNL();
-+
-+	if (n->dev->flags & IFF_UP)
-+		return -EBUSY;
-+
-+	if (threaded == !!test_bit(NAPI_STATE_THREADED, &n->state))
-+		return 0;
-+	if (threaded)
-+		set_bit(NAPI_STATE_THREADED, &n->state);
-+	else
-+		clear_bit(NAPI_STATE_THREADED, &n->state);
-+
-+	/* if the device is initializing, nothing todo */
-+	if (test_bit(__LINK_STATE_START, &n->dev->state))
-+		return 0;
-+
-+	napi_thread_stop(n);
-+	napi_thread_start(n);
-+	return 0;
-+}
-+EXPORT_SYMBOL(napi_set_threaded);
-+
- void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
- 		    int (*poll)(struct napi_struct *, int), int weight)
- {
-@@ -6807,6 +6862,64 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
- 	return work;
- }
- 
-+static int napi_thread_wait(struct napi_struct *napi)
-+{
-+	set_current_state(TASK_INTERRUPTIBLE);
-+
-+	while (!kthread_should_stop() && !napi_disable_pending(napi)) {
-+		if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
-+			__set_current_state(TASK_RUNNING);
-+			return 0;
-+		}
-+
-+		schedule();
-+		set_current_state(TASK_INTERRUPTIBLE);
++	i = 0;
++	list_for_each_entry(n, &netdev->napi_list, dev_list) {
++		if (test_bit(NAPI_STATE_THREADED, &n->state))
++			set_bit(i, bmap);
++		i++;
 +	}
-+	__set_current_state(TASK_RUNNING);
-+	return -1;
++
++	count = bitmap_print_to_pagebuf(true, buf, bmap, bits);
++	kfree(bmap);
++
++unlock:
++	rtnl_unlock();
++
++	return count;
 +}
 +
-+static int napi_threaded_poll(void *data)
++static ssize_t threaded_store(struct device *dev,
++			      struct device_attribute *attr,
++			      const char *buf, size_t len)
 +{
-+	struct napi_struct *napi = data;
++	struct net_device *netdev = to_net_dev(dev);
++	struct napi_struct *n;
++	unsigned long *bmap;
++	int i, bits;
++	size_t ret;
 +
-+	while (!napi_thread_wait(napi)) {
-+		struct list_head dummy_repoll;
-+		int budget = netdev_budget;
-+		unsigned long time_limit;
-+		bool again = true;
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
 +
-+		INIT_LIST_HEAD(&dummy_repoll);
-+		local_bh_disable();
-+		time_limit = jiffies + 2;
-+		do {
-+			/* ensure that the poll list is not empty */
-+			if (list_empty(&dummy_repoll))
-+				list_add(&napi->poll_list, &dummy_repoll);
++	if (!rtnl_trylock())
++		return restart_syscall();
 +
-+			budget -= napi_poll(napi, &dummy_repoll);
-+			if (unlikely(budget <= 0 ||
-+				     time_after_eq(jiffies, time_limit))) {
-+				cond_resched();
-+
-+				/* refresh the budget */
-+				budget = netdev_budget;
-+				__kfree_skb_flush();
-+				time_limit = jiffies + 2;
-+			}
-+
-+			if (napi_disable_pending(napi))
-+				again = false;
-+			else if (!test_bit(NAPI_STATE_SCHED, &napi->state))
-+				again = false;
-+		} while (again);
-+
-+		__kfree_skb_flush();
-+		local_bh_enable();
++	if (!dev_isalive(netdev)) {
++		ret = len;
++		goto unlock;
 +	}
-+	return 0;
-+}
 +
- static __latent_entropy void net_rx_action(struct softirq_action *h)
- {
- 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
++	if (netdev->flags & IFF_UP) {
++		ret = -EBUSY;
++		goto unlock;
++	}
++
++	bmap = __alloc_thread_bitmap(netdev, &bits);
++	if (!bmap) {
++		ret = -ENOMEM;
++		goto unlock;
++	}
++
++	ret = bitmap_parselist(buf, bmap, bits);
++	if (ret)
++		goto free_unlock;
++
++	i = 0;
++	list_for_each_entry(n, &netdev->napi_list, dev_list) {
++		napi_set_threaded(n, test_bit(i, bmap));
++		i++;
++	}
++	ret = len;
++
++free_unlock:
++	kfree(bmap);
++
++unlock:
++	rtnl_unlock();
++	return ret;
++}
++static DEVICE_ATTR_RW(threaded);
++
+ static struct attribute *net_class_attrs[] __ro_after_init = {
+ 	&dev_attr_netdev_group.attr,
+ 	&dev_attr_type.attr,
+@@ -570,6 +672,7 @@ static struct attribute *net_class_attrs[] __ro_after_init = {
+ 	&dev_attr_proto_down.attr,
+ 	&dev_attr_carrier_up_count.attr,
+ 	&dev_attr_carrier_down_count.attr,
++	&dev_attr_threaded.attr,
+ 	NULL,
+ };
+ ATTRIBUTE_GROUPS(net_class);
 -- 
 2.29.2.454.gaff20da3a2-goog
 
